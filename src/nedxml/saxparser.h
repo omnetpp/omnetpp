@@ -113,14 +113,21 @@ class SAXParser
 
     /**
      * Parse XML input read from the given file. Methods of the SAX handler
-     * will be called as the parser processes the file.
+     * will be called as the parser processes the file. Returns false if
+     * there was an error; in that case use getErrorMessage() to learn the
+     * cause of the error.
      */
-    int parse(FILE *f);
+    bool parse(FILE *f);
 
     /**
      * Returns the current line number in the input. Can be called from SAX handler code.
      */
     int getCurrentLineNumber();
+
+    /**
+     * Can be called after parse() returned false. Returns the error description.
+     */
+    const char *getErrorMessage()  {return errortext;}
 };
 
 #endif

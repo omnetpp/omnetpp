@@ -30,11 +30,11 @@ void SAXParser::setHandler(SAXHandler *sh)
     sh->setParser(this);
 }
 
-int SAXParser::parse(FILE *f)
+bool SAXParser::parse(FILE *f)
 {
-    NEDError(NULL, "XML input is not supported: this copy of NEDXML was "
-                   "compiled without an XML parser (libXML or Expat)");
-    return 0;
+    strcpy(errortext, "XML input is not supported: this copy of NEDXML was "
+                      "compiled without an XML parser (libXML or Expat)");
+    return false;
 }
 
 int SAXParser::getCurrentLineNumber()

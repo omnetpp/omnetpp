@@ -161,7 +161,9 @@ cXMLElement *cXMLDocCache::parseDocument(const char *filename)
     SAXParser parser;
 
     parser.setHandler(&sh);
-    parser.parse(f);
+    bool ok = parser.parse(f);
+    if (!ok)
+        throw new cException("Error parsing `%s': %s", filename, parse.getErrorMessage());
 
     return sh.getTree();
 #endif

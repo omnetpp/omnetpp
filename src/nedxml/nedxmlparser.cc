@@ -30,7 +30,11 @@ NEDElement *parseXML(const char *filename)
     SAXParser parser;
 
     parser.setHandler(&sh);
-    parser.parse(f);
-
+    bool ok = parser.parse(f);
+    if (!ok)
+    {
+        NEDError(NULL, "Error parsing `%s': %s", filename, parse.getErrorMessage());
+        return 0;
+    }
     return sh.getTree();
 }

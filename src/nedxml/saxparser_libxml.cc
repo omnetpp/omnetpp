@@ -126,7 +126,7 @@ static xmlSAXHandler libxmlSAXParser = {
 
 xmlParserCtxtPtr ctxt;  //FIXME very ugly -- should be class member or something...
 
-int SAXParser::parse(FILE *f)
+bool SAXParser::parse(FILE *f)
 {
     ctxt = xmlCreatePushParserCtxt(&libxmlSAXParser, saxhandler, NULL, 0, NULL);
 
@@ -141,13 +141,18 @@ int SAXParser::parse(FILE *f)
     Buffer[0]=EOF;
     xmlParseChunk(ctxt, Buffer, 10, 0);
 
+    bool ok = true;
     if (!ctxt->wellFormed)
     {
-        // FIXME todo...
+        ok = false;
+        sprintf(errortext, "parser error %d at line %d",
+                ctxt->errNo, // TODO something better
+                ctxt->input->line);
     }
     ctxt->sax = NULL;
 
     xmlFreeParserCtxt(ctxt);
+    return ok;
 }
 
 int SAXParser::getCurrentLineNumber()

@@ -75,7 +75,7 @@ void SAXParser::setHandler(SAXHandler *sh)
     sh->setParser(this);
 }
 
-int SAXParser::parse(FILE *f)
+bool SAXParser::parse(FILE *f)
 {
     // prepare parser
     XML_Parser parser = XML_ParserCreate(NULL);
@@ -91,8 +91,8 @@ int SAXParser::parse(FILE *f)
 
     // read file chunk-by-chunk and parse it
     char buf[BUFSIZ];
-    int done;
-    int ret=0;
+    bool done;
+    bool err=false;
     do {
         size_t len = fread(buf, 1, sizeof(buf), f);
         done = len < sizeof(buf);
@@ -101,14 +101,14 @@ int SAXParser::parse(FILE *f)
             sprintf(errortext, "%s at line %d",
                     XML_ErrorString(XML_GetErrorCode(parser)),
                     XML_GetCurrentLineNumber(parser));
-            ret=1;
-            done=1;
+            err=true;
+            done=true;
         }
     } while (!done);
 
     // cleanup and return
     XML_ParserFree(parser);
-    return ret;
+    return !err;
 }
 
 int SAXParser::getCurrentLineNumber()
