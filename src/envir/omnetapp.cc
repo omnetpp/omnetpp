@@ -29,6 +29,7 @@
 #include "csimul.h"
 #include "cpar.h"
 #include "cnetmod.h"
+#include "random.h"
 
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */

@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include "cobject.h"     // cStaticFlag
 #include "csimul.h"
+#include "random.h"
 #include "cenvir.h"
 #include "onstartup.h"
 
