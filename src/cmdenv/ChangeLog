@@ -1,3 +1,9 @@
+2004-02-05  Andras Varga
+
+	* heap.cc made disabled by default (and has to be explicitly enabled 
+	by defining USE_CMDENV_HEAPDEBUG), and changed to throw std::alloc
+	on out-of-memory condition.
+
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-01-06  Andras Varga

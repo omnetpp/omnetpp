@@ -1,15 +1,13 @@
 //==========================================================================
-//  HEAP.CPP
+//  HEAP.CC
 //
-//    A safety pool heap management module with debugging features
-//
-//    !
-//    !  This file DOES CONTAIN user servicable parts!
-//    !
+//  A safety pool heap manager with some debugging features.
+//  Debugging features can be selected via #defines, see below.
 //
 //    Contents:
 //       MemManager  - memory management class
 //       new, delete - allocation operators
+//       bool cmdenvMemoryIsLow() function
 //
 //==========================================================================
 
@@ -20,21 +18,33 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+//
+// Compile this file only if explicitly enabled
+//
+#ifndef USE_CMDENV_HEAPDEBUG
+
+bool cmdenvMemoryIsLow()  {return false;}
+
+#else
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>   // malloc
+
 #if defined(__MSDOS__) || defined(__CONSOLE__)
 #include <conio.h>
 #include <alloc.h>
 #endif
 
+#include <cstddef>
+#include <exception>
+
+
 //=================================================================
 //
-//       **** Defines for memory allocation debugging ****
+// #defines for memory allocation debugging, turn them on as needed.
 //
-//  GO AHEAD and EDIT the following #defines!!!
-//
-//  They may help if you have problems with heap allocations.
+// They may help if you have problems with heap allocations.
 //  o  #defining HEAPCHECK, COUNTBLOCKS and ALLOCTABLE is recommended
 //     while you are developing.
 //  o  For running a tested simulation, you can turn them off.
@@ -70,37 +80,27 @@ void breakpoint()
 }
 #endif
 
-/*----------*
- PORTABILITY NOTE
- Here are the symbols Borland C++ 4.5 #defines for different platforms:
-
- DOS (real mode) : __MSDOS__
- DOS 16 bit DPMI : __MSDOS__, _Windows (!), __DPMI16__
- DOS 32 bit DPMI : __WIN32__ (!), _Windows (!), __DPMI32__, __FLAT__, __CONSOLE__
- Windows 16bit   : __MSDOS__ (!), _Windows
- Win32 Console   : __WIN32__, _Windows, __FLAT__, __CONSOLE__
- Win32 GUI       : __WIN32__, _Windows, __FLAT__
-  --VA
- *----------*/
-
 
 //==========================================================================
-// MemManager
-//  States:
-//   safetypool      lowmem
-//     NULL           false     -> before construction or after destruction
-//   NOT NULL         false     -> ok, size of safety pool = maxpoolsize
-//     NULL           true      -> low memory, no safety pool
-//   NOT NULL         true      -> never occurs
+#define DEFAULT_POOLSIZE (256*1024)
+
+//
+// Safery pool memory manager
 //
 class MemManager
 {
    private:
+      //  States:
+      //   safetypool      lowmem
+      //     NULL           false     -> before construction or after destruction
+      //   NOT NULL         false     -> ok, size of safety pool = maxpoolsize
+      //     NULL           true      -> low memory, no safety pool
+      //   NOT NULL         true      -> never occurs
       void *safetypool;
       int maxpoolsize;
       bool lowmem;
    public:
-      MemManager(int mps=16384);
+      MemManager(int mps = DEFAULT_POOLSIZE);
       ~MemManager();
       void makeRoom();
       void restorePool();
@@ -139,7 +139,7 @@ void MemManager::restorePool()
     }
 }
 
-//==========================================================================
+
 // static instance of MemManager and a function accessible from outside
 static MemManager memManager;
 
@@ -296,7 +296,7 @@ void *operator new(size_t m)
 #ifdef HEAPCHECK
       checkheap("NEW");
 #endif
-      if (m==0) return NULL;
+      if (m==0) m=1;
       void *p;
       if ((p=malloc(m)) != NULL)   // allocation successful
       {
@@ -330,25 +330,30 @@ void *operator new(size_t m)
          memManager.makeRoom();
          return (void *)new char[m];  // recursive call
       }
-      else   // really no more memory, must call exit()
+      else   // really no more memory, throw exception
       {
 #ifdef COUNTBLOCKS
 #ifdef ALLOCTABLE
          if (table_off)
-            printf("\n[HEAP.CC-debug:NEW(%lu) FAILED,alloctable full,about to exit!]",
+            printf("\n[HEAP.CC-debug:NEW(%lu) FAILED,alloctable full,will throw bad::alloc!]",
                    (long)m );
          else
-            printf("\n[HEAP.CC-debug: NEW#%lu (%lu) FAILED,%u blocks%s,about to exit!]",
+            printf("\n[HEAP.CC-debug: NEW#%lu (%lu) FAILED,%u blocks%s,will throw bad::alloc!]",
                    last_id, (long)m, blocksintable, memManager.lowMemory() ? " LOWMEM!":"" );
          dispheap();
 #else
-         printf("\n[HEAP.CC-debug:NEW (%lu) FAILED,%u blocks%s,exiting!]",
+         printf("\n[HEAP.CC-debug:NEW (%lu) FAILED,%u blocks%s,throwing bad::alloc!]",
                  (long)m, blocksonheap, memManager.lowMemory() ? " LOWMEM!":"" );
 #endif
 #endif
-         printf("\n[NEW (%lu) FAILED,exiting!]\n", (long)m );
+#if defined(_MSC_VER) && (_MSC_VER<=1200)
+         // no bad_alloc in MSVC 6.0 version yet
+         printf("\n[NEW (%lu) FAILED,calling exit(1)]\n", (long)m );
          exit(1);
-         return p;   // to suppress compiler warning
+#else
+         printf("\n[NEW (%lu) FAILED,throwing bad::alloc!]\n", (long)m );
+         throw std::bad_alloc;
+#endif
       }
 }
 
@@ -396,3 +401,7 @@ void operator delete(void *p)
     if(id==breakat) brk("DELETE");
 #endif
 }
+
+#endif //USE_CMDENV_HEAPDEBUG
+
+
