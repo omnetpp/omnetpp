@@ -70,7 +70,11 @@ void Txc11::forwardMessage(TicTocMsg11 *msg)
 
 void Txc11::initialize()
 {
-    numSent = numReceived = 0;
+    // Initialize variables
+    numSent = 0;
+    numReceived = 0;
+    WATCH(numSent);
+    WATCH(numReceived);
 
     // Module 0 sends the first message
     if (index()==0)

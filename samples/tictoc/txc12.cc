@@ -83,6 +83,7 @@ void Txc12::initialize()
     numReceived = 0;
     WATCH(numSent);
     WATCH(numReceived);
+
     hopCountStats.setName("hopCountStats");
     hopCountStats.setRangeAutoUpper(0, 10, 1.5);
     hopCountVector.setName("HopCount");
