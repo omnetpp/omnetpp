@@ -1,3 +1,8 @@
+2004-02-21  Andras Varga
+
+	* cmodule.cc: setGateSize() made more tolerant; this is needed for
+	"gate++" NED feature (see nedxml/ChangeLog)
+
 2004-02-20  Andras Varga
 
 	* ctype.cc, cchannel.cc, cgate.cc: introduced cChannelType which 
