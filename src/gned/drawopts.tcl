@@ -274,18 +274,21 @@ proc _setButtonImg {combo button} {
 }
 
 proc _chooseIcon {oldicon win {pwin {}}} {
-     global gned bitmaps
+     global gned bitmaps config
 
      # side effect: set gned(radio) "icon"
      set dlg $pwin.iconbox
      createOkCancelDialog $dlg "Icon selection"
+     wm geometry $dlg "660x500"
 
-#     set prefixes {block others place old}
-#     set sizes {vl l n s vs}
-#     label-combo $dlg.f.prefix "Category:" $prefixes ;#[list _fillCanvasWithIcons $dlg "old/*,n"]
-#     label-combo $dlg.f.sizes "Size:" $sizes ;#[list _fillCanvasWithIcons $dlg "old/*,n"]
-#     pack   $dlg.f.prefix -side top -anchor w
-#     pack   $dlg.f.sizes -side top -anchor w
+     set prefixes $gned(iconprefixes)
+     set sizes {large normal small {very small}}
+     label-combo $dlg.f.prefix "Category:" $prefixes $config(iconprefix)
+     label-combo $dlg.f.sizes "Size:" $sizes  $config(iconsize)
+     combo-onchange $dlg.f.prefix.e [list _chooseIconOnChange $dlg]
+     combo-onchange $dlg.f.sizes.e [list _chooseIconOnChange $dlg]
+     pack  $dlg.f.prefix -side top -anchor w
+     pack  $dlg.f.sizes -side top -anchor w
 
      frame  $dlg.f.select
      pack   $dlg.f.select -side top -expand 0 -fill x
@@ -299,42 +302,73 @@ proc _chooseIcon {oldicon win {pwin {}}} {
      pack $w -expand 1 -fill both -padx 14 -pady 6
 
      frame $w.tb -height 16
-     canvas $w.c -yscrollcommand "$w.vsb set" -height 150 -bd 0
+     canvas $w.c  -height 150 -bd 0 -yscrollcommand "$w.vsb set" -xscrollcommand "$w.hsb set"
      scrollbar $w.vsb -command "$w.c yview"
+     scrollbar $w.hsb -command "$w.c xview" -orient horiz
 
      grid rowconfig $w 0 -weight 1 -minsize 0
+     grid columnconfig $w 0 -weight 1 -minsize 0
      grid $w.c   -in $w -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
-     grid $w.vsb -in $w -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+     grid $w.hsb -in $w -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky ews
+     grid $w.vsb -in $w -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky nes
 
-     frame $w.c.f -bd 0
-     $w.c create window 0 0 -anchor nw -window $w.c.f
-
-     _fillCanvasWithIcons $dlg "block/*,n"
-
-     wm resizable $dlg 0 1
+     _chooseIconOnChange $dlg
 
      if {[execOkCancelDialog $dlg] == 1} {
          set icon [$dlg.f.select.name cget -text]
          $win configure -value $icon
+
+         set config(iconprefix) [$dlg.f.prefix.e get]
+         set config(iconsize)   [$dlg.f.sizes.e get]
      }
      destroy $dlg
 }
 
-proc _fillCanvasWithIcons {dlg filter} {
+proc _chooseIconOnChange {dlg} {
+
+     set prefix [$dlg.f.prefix.e get]
+     set size   [$dlg.f.sizes.e get]
+
+     if [string match "l*" $size] {
+         set sz "l"
+     } elseif [string match "n*" $size] {
+         set sz "n"
+     } elseif [string match "s*" $size] {
+         set sz "s"
+     } elseif [string match "v*s*" $size] {
+         set sz "vs"
+     } else {
+         set sz "n"
+     }
+
+     _fillCanvasWithIcons $dlg "$prefix*,$sz" 5
+}
+
+proc _fillCanvasWithIcons {dlg filter numcols} {
      global gned bitmaps
 
      set w $dlg.f.icons
      set c $w.c
      set f $w.c.f
 
+     catch {destroy $f}
+     frame $f -bd 0
+     $c create window 0 0 -anchor nw -window $f
+
      set li 0
      set col 0
-     foreach imgName [lsort [array names bitmaps $filter]] {
+     foreach i [lsort [array names bitmaps $filter]] {
+         set img $bitmaps($i)
+
+         set imgName $i
+         regsub -- ",n" $imgName "" imgName
+         regsub -- "," $imgName "_" imgName
+
          set e $f.$imgName
 
          frame $e -relief flat -borderwidth 2
 
-         button $e.b -image $bitmaps($imgName) -command "_iconSelected $dlg.f.select.name $imgName $f"
+         button $e.b -image $img -command "_iconSelected $dlg.f.select.name $imgName $f"
          bind $e.b <Double-1> "$dlg.buttons.okbutton invoke"
          label $e.l -text $imgName
          pack $e.l -side bottom -anchor s -padx 2
@@ -344,7 +378,7 @@ proc _fillCanvasWithIcons {dlg filter} {
 
          # next column
          incr col
-         if {$col == 6} {
+         if {$col == $numcols} {
              incr li
              set col 0
          }
@@ -354,7 +388,7 @@ proc _fillCanvasWithIcons {dlg filter} {
 
      # adjust canvas width to frame width
      $w.c config -width [winfo width $f]
-     $w.c config -scrollregion "0 0 0 [winfo height $f]"
+     $w.c config -scrollregion "0 0 [winfo width $f] [winfo height $f]"
 }
 
 proc _iconSelected {select imgname frame} {
@@ -365,7 +399,6 @@ proc _iconSelected {select imgname frame} {
      $frame.$imgname config -relief solid
 
      $select configure -text $imgname
-
 }
 
 proc isValidColor {color} {

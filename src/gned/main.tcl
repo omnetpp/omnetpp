@@ -28,6 +28,8 @@ set config(editor-whole-words)    0
 set config(editor-regexp)         0
 set config(editor-backwards)      0
 set config(default-dir)           "."
+set config(iconprefix)            ""
+set config(iconsize)              "normal"
 
 # widgets (these variables will be filled in later)
 set gned(canvas) ""
@@ -44,6 +46,8 @@ set gned(canvas_id) ""
 set gned(canvas_lastid) 0
 set gned(editmode) "draw"
 set gned(icons) {}
+set gned(iconprefixes) {}
+set gned(iconsizes) {}
 
 # canvas(1,canvas)     canvas widget
 # canvas(1,textedit)   textedit widget
@@ -456,6 +460,8 @@ proc loadBitmaps {path} {
    }
 
    set gned(icons) [lsort $gned(icons)]
+   set gned(iconprefixes) [lsort $gned(iconprefixes)]
+   set gned(iconsizes) [lsort $gned(iconsizes)]
 
    if {$bitmap_ctr==0} {
        puts "*** no bitmaps (gif) in $path"
@@ -510,6 +516,13 @@ proc do_add_bitmap {img prefix name size} {
    } else {
        set bitmaps($prefix${name}_$size) $img
        lappend gned(icons) "$prefix${name}_$size"
+   }
+
+   if {[lsearch $gned(iconprefixes) $prefix]==-1} {
+       lappend gned(iconprefixes) $prefix
+   }
+   if {[lsearch $gned(iconsizes) $size]==-1} {
+       lappend gned(iconsizes) $size
    }
 }
 
