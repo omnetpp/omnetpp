@@ -1,0 +1,38 @@
+%description:
+Test that a cObject-subclass controlInfo()'s ownership is properly managed,
+and it gets deleted when message gets deleted
+
+%global:
+
+class {Ctrl} : public cObject
+{
+  public:
+    {Ctrl}() : cObject() { }
+    ~{Ctrl}() {ev << "control info deleted\n";}
+};
+
+%activity:
+cMessage *msg = new cMessage("msg");
+{Ctrl} *ctrl = new {Ctrl}();
+ev << "1. owner:" << ctrl->owner()->name() << "\n";
+
+msg->setControlInfo(ctrl);
+ev << "2. owner:" << ctrl->owner()->name() << "\n";
+
+msg->removeControlInfo();
+ev << "3. owner:" << ctrl->owner()->name() << "\n";
+
+msg->setControlInfo(ctrl);
+ev << "4. owner:" << ctrl->owner()->name() << "\n";
+delete msg;
+
+ev << "done\n";
+
+%contains: stdout
+1. owner:{network}
+2. owner:msg
+3. owner:{network}
+4. owner:msg
+control info deleted
+done
+
