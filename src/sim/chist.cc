@@ -275,9 +275,6 @@ void cEqdHistogramBase::loadFromFile(FILE *f)
 //=========================================================================
 // cLongHistogram - member functions
 
-// FIXME  EZ SZAR!!!!  one cannot simply say "one cell for each value"!!!!! THIS MUST BE FIXED!!!!
-
-
 cLongHistogram::cLongHistogram(const char *name, int numcells) :
 cEqdHistogramBase(name,numcells)
 {
