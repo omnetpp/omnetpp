@@ -129,7 +129,6 @@ proc generate_imports {key indent islast} {
     append out "${indent}import "
     appendRightComment out $ned($key,right-comment)
     append out [generateChildren $key $indent]
-    #appendTrailingComment out $ned($key,trailing-comment) ""
     return $out
 }
 
@@ -236,7 +235,7 @@ proc generate_param {key indent islast} {
     global ned
     set out ""
     appendBannerComment out $ned($key,banner-comment) $indent
-    append out "${indent}$ned($key,name) : $ned($key,datatype)"
+    append out "${indent}$ned($key,name): $ned($key,datatype)"
     if {$islast} {append out ";"} else {append out ","}
     appendRightComment out $ned($key,right-comment)
     return $out
