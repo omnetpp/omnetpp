@@ -572,9 +572,10 @@ Module_Class_Members(\textit{classname}, \textit{baseclass}, \textit{stacksize})
 \end{Verbatim}
 
 The first two arguments are obvious (\textit{baseclass} is usually \cclass{cSimpleModule}),
-but \textit{stacksize} needs some explanation. If you use \fname{activity()},
+but \textit{stacksize} needs some explanation. For simple modules implemented
+with \ttt{handleMessage()} it should be zero, but if you use \fname{activity()},
 the module code runs as a coroutine\index{coroutine}, so it will need a separate
-stack. (This will be discussed in detail later.)
+stack of 16-32K. (This will be discussed in detail later.)
 
 
 As an example, the class declaration
@@ -593,9 +594,8 @@ expands to something like this:
 class SlidingWindowProtocol : public cSimpleModule
 {
   public:
-    SlidingWindowProtocol(const char *name, cModule *parentmodule,
-        unsigned stacksize = 0) :
-        cSimpleModule(name, parentmodule, stacksize) {}
+    SlidingWindowProtocol(const char *name, cModule *parent, unsigned stacksize=0) :
+        cSimpleModule(name, parent, stacksize) {}
     ...
 };
 \end{verbatim}
@@ -626,16 +626,14 @@ class TokenRingMAC : public cSimpleModule
 {
   public:
     cQueue queue; // a data member
-    TokenRingMAC(const char *name, cModule *parentmodule,
-                 unsigned stacksize = 0);
+    TokenRingMAC(const char *name, cModule *parent, unsigned stacksize=0);
     ...
 };
 
-TokenRingMAC(const char *name, cModule *parentmodule,
-    unsigned stacksize) :
-    cSimpleModule(name, parentmodule, stacksize), queue("queue")
+TokenRingMAC(const char *name, cModule *parent, unsigned stacksize) :
+    cSimpleModule(name, parent, stacksize), queue("queue")
 {
-  // initialize data members
+    // initialize data members
 }
 \end{verbatim}
 
