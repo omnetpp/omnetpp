@@ -22,7 +22,7 @@
 
 using std::ostream;
 
-#define NEDC_VERSION "3.0pre1"
+#define NEDC_VERSION "3.0a3"
 #define NEDC_VERSION_HEX "0x02F1"
 
 

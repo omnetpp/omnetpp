@@ -15,7 +15,7 @@
 #
 # intro text
 #
-puts {GNED 3.0a2 - Graphical Network Editor, part of OMNeT++
+puts {GNED 3.0a3 - Graphical Network Editor, part of OMNeT++
 (c) 1992-2004 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 

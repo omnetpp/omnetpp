@@ -93,7 +93,7 @@ WITH_PARSIM=yes
 #
 # If commented out, the configure script will try to autodetect it
 #
-#MPI_CFLAGS="-I /usr/include/mpi2c++"
+#MPI_CFLAGS="-I /usr/include"
 #MPI_LIBS="-llamf77mpi -lmpi -llam -lutil"
 
 #
