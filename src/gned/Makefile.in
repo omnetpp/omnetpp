@@ -2,7 +2,7 @@
 # Definitions to be customized by 'configure'
 #
 CXX=@CXX@
-LD=@LD@
+CC=@CC@
 YACC=@YACC@
 LEX=@LEX@
 

@@ -42,9 +42,9 @@ ASMOBJS=
 #
 default : sim_std @SIM_PVM_IF_POSSIBLE@
 
-sim_std : libsim_std.$(LIB_SUFFIX)
+sim_std : libsim_std$(LIB_SUFFIX)
 
-sim_pvm : libsim_pvm.$(LIB_SUFFIX)
+sim_pvm : libsim_pvm$(LIB_SUFFIX)
 
 libsim_std$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 	$(AR) libsim_std$(A_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
