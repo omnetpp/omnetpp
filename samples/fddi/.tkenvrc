@@ -1,3 +1,29 @@
-"TUBw" "TUB_wired" "2" "268x266+8+11"
-"TUBw.NRing" "TUBNRing" "2" "522x454+11+304"
-"TUBw.SRing" "TUBSRing" "2" "469x324+173+346"
+# Tkenv configuration
+option updatefreq_fast	{50}
+option updatefreq_express	{10000}
+option stepdelay	{300 ms}
+option use_mainwindow	{1}
+option print_banners	{1}
+option animation_enabled	{1}
+option nexteventmarkers	{1}
+option senddirect_arrows	{1}
+option anim_methodcalls	{1}
+option animation_msgnames	{1}
+option animation_msgcolors	{1}
+option penguin_mode	{0}
+option animation_speed	{1}
+option bkpts_enabled	{1}
+config last-nedfile	{}
+config filtobjlist-name	{}
+config editor-findstring	{}
+config filtobjlist-class	{}
+config display-treeview	{1}
+config editor-backwards	{1}
+config filtobjlist-order	{Class}
+config editor-regexp	{0}
+config editor-whole-words	{0}
+config editor-case-sensitive	{0}
+inspector "TUBw.NRing" "TUBNRing" "2" "522x454+11+304"
+inspector "TUBw" "TUB_wired" "2" "268x266+8+11"
+inspector "TUBw.SRing" "TUBSRing" "2" "469x324+173+346"
+

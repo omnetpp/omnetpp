@@ -15,16 +15,12 @@
 //--------------------------------------------------------------*/
 
 simple SSM_IIF // input interface: generates messages on the basis of statistics
-        machines:
-                host;
         gates:
                 in: in;
                 out: out;
 endsimple
 
 simple SSM_OIF // output interface: collects statistics from messages
-        machines:
-                host;
         parameters:
                 OIFControlFile: string,
                 frequency: numeric;

@@ -57,9 +57,6 @@ endnetwork
 // Technical University Northern & Southern rings.
 //
 module TUB_wired
-    machines:
-        NR_host,
-        SR_host;
     parameters:
         NRLoadControlFile : string,
         SRLoadControlFile : string,
@@ -68,8 +65,6 @@ module TUB_wired
         SRLoadMultiplier : numeric;
     submodules:
         NRing: TUBNRing;
-            on:
-                NR_host;
             parameters:
                 LoadControlFile = NRLoadControlFile,
                 FDDI_Generator_type = FDDI_Generator_type,
@@ -78,8 +73,6 @@ module TUB_wired
                 LoadMultiplier = NRLoadMultiplier; // to be changed!!!
             display: "i=ring";
         SRing: TUBSRing;
-            on:
-                SR_host;
             parameters:
                 LoadControlFile = SRLoadControlFile,
                 FDDI_Generator_type = FDDI_Generator_type,
@@ -99,9 +92,6 @@ endmodule
 // Statistical Synchronisation interfaces.
 //
 module TUB_SSM
-    machines:
-        NR_host,
-        SR_host;
     parameters:
         NRLoadControlFile : string,
         SRLoadControlFile : string,
@@ -114,8 +104,6 @@ module TUB_SSM
         SROIFControlFile : string;
     submodules:
         NRing: TUBNRing;
-            on:
-                NR_host;
             parameters:
                 LoadControlFile = NRLoadControlFile,
                 FDDI_Generator_type = FDDI_Generator_type,
@@ -124,8 +112,6 @@ module TUB_SSM
                 LoadMultiplier = ref NRLoadMultiplier;
             display: "p=150,50;i=ring";
         SRing: TUBSRing;
-            on:
-                SR_host;
             parameters:
                 LoadControlFile = SRLoadControlFile,
                 FDDI_Generator_type = FDDI_Generator_type,
@@ -134,26 +120,18 @@ module TUB_SSM
                 LoadMultiplier = ref SRLoadMultiplier;
             display: "p=150,250;i=ring";
         NRing_oif: SSM_OIF_type like SSM_OIF;
-            on:
-                NR_host;
             parameters:
                 frequency = SSM_OIF_frequency,
                 OIFControlFile = NROIFControlFile;
             display: "p=50,110";
         NRing_iif: SSM_IIF;
-            on:
-                NR_host;
             display: "p=250,110";
         SRing_oif: SSM_OIF_type like SSM_OIF;
-            on:
-                SR_host;
             parameters:
                 frequency = SSM_OIF_frequency,
                 OIFControlFile = SROIFControlFile;
             display: "p=250,180";
         SRing_iif: SSM_IIF;
-            on:
-                SR_host;
             display: "p=50,180";
     connections:
         NRing.out --> NRing_oif.in;
@@ -167,9 +145,6 @@ endmodule
 
 
 network TUBw : TUB_wired
-    on:
-        NR_host,
-        SR_host;
     parameters:
         NRLoadControlFile = input ( "nr_lctrl", "NR LoadControlFile: "),
         SRLoadControlFile = input ( "sr_lctrl", "SR LoadControlFile: "),
@@ -181,9 +156,6 @@ endnetwork
 
 
 network TUBs : TUB_SSM
-    on:
-        NR_host,
-        SR_host;
     parameters:
         NRLoadControlFile = input ( "nr_lctrl", "NR LoadControlFile: "),
         SRLoadControlFile = input ( "sr_lctrl", "SR LoadControlFile: "),

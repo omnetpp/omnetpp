@@ -99,8 +99,6 @@ endmodule
 // a Single Attachment Station in the network
 //
 module FDDI_SAS
-    machines:
-        host;
     parameters:
         FDDI_Generator_type : string,
         StationID : numeric,
@@ -110,20 +108,14 @@ module FDDI_SAS
         out: out;
     submodules:
         MAC: FDDI_MAC;
-            on:
-                host;
             parameters:
                 StationID = StationID,
                 address = address;
         gen: FDDI_Generator_type like FDDI_Generator;
-            on:
-                host;
             parameters:
                 StationID = StationID,
                 address = address;
         sink: FDDI_Sink;
-            on:
-                host;
 
     connections:
         in --> MAC.in;
@@ -139,8 +131,6 @@ endmodule
 // An FDDI Sniffer (a special SAS)
 //
 module FDDI_Sniffer
-    machines:
-        host;
     parameters:
         StationID : numeric,
         address : string;
@@ -149,20 +139,14 @@ module FDDI_Sniffer
         out: out;
     submodules:
         MAC: FDDI_MAC4Sniffer;
-            on:
-                host;
             parameters:
                 StationID = StationID,
                 address = address;
         gen: FDDI_Generator4Sniffer;
-            on:
-                host;
             parameters:
                 StationID = StationID,
                 address = address;
         monitor: FDDI_Monitor;
-            on:
-                host;
 
     connections:
         in --> MAC.in;
@@ -180,8 +164,6 @@ endmodule
 // (a special SAS: has no Generator and Sink, interconnects rings)
 //
 module FDDI_Router_port
-    machines:
-        host;
     parameters:
         StationID : numeric,
         address : string;
@@ -192,14 +174,10 @@ module FDDI_Router_port
         out: ring_out;
     submodules:
         MAC: FDDI_MAC;
-            on:
-                host;
             parameters:
                 StationID = StationID,
                 address = address;
         addr_gen: FDDI_Address_Generator;
-            on:
-                host;
             parameters:
                 StationID = StationID,
                 address = address;

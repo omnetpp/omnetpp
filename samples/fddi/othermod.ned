@@ -20,8 +20,6 @@
 // generates messages for an FDDI Station
 //
 simple FDDI_Generator
-    machines:
-        host;
     parameters:
         StationID : numeric,
         address : string;
@@ -35,8 +33,6 @@ endsimple
 // generates new addresses in an FDDI Router
 //
 simple FDDI_Address_Generator
-    machines:
-        host;
     parameters:
         StationID : numeric,
         address : string;
@@ -65,8 +61,6 @@ endsimple
 // generates messages for an FDDI Sniffer
 //
 simple FDDI_Generator4Sniffer
-    machines:
-        host;
     parameters:
         StationID : numeric,
         address : string;
@@ -92,8 +86,6 @@ endsimple
 // disposes the messages
 //
 simple FDDI_Sink
-    machines:
-        host;
     gates:
         in: in;
 endsimple
@@ -104,8 +96,6 @@ endsimple
 // monitors the network
 //
 simple FDDI_Monitor
-    machines:
-        host;
     gates:
         in: in;
         // out: out;
@@ -117,8 +107,6 @@ endsimple
 // Ringwise Load Control: Changes the value of LoadMultiplier
 //
 simple LoadControl
-    machines:
-        host;
     parameters:
         LoadControlFile : string;
 endsimple

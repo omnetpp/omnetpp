@@ -1,3 +1,4 @@
+// FIXME kill all SSM stuff!!!!!!!!!!!!!!!!!!!!!!!!!11
 //==========================================================================
 //  SSM_IFS.CC  - Simple module definitions of the SSM I/O interfaces for
 //                Discrete System Simulation in OMNeT++
@@ -30,6 +31,7 @@ Define_Module( SSM_IIF )
 
 void SSM_OIF_by_frequency::activity()
   {
+#if 0
   //cOutVector packet_length("OIF-packet-length",1);
   long frequency, counter=0; // if counter reaches frequency: send statistics
   simtime_t last_arrival=0; // time of last packet arrivial, must be initialised to 0
@@ -75,10 +77,12 @@ void SSM_OIF_by_frequency::activity()
       }
     delete msg;
    }
+#endif
   }
 
 void SSM_OIF_by_time::activity()
   {
+#if 0
   //ev.printf("OIF start %s\n",fullPath()); // DEBUG
   // Read the control parameters from file and schedule activities like
   // "send" and "delete", send the necessary syncpoints.
@@ -248,10 +252,12 @@ void SSM_OIF_by_time::activity()
         }
       }
     }
+#endif
   }
 
 void SSM_IIF::activity()
   {
+#if 0
   cLongHistogram *length=0; // the received distribution of packet length
   cDoubleHistogram *delay=0; // the received distribution of inter-arrival time
   cMessage *current_genpack=0; // pointer to the currently scheduled genarator msg
@@ -303,4 +309,5 @@ void SSM_IIF::activity()
         error("SSM_IIF Error: Bad msgkind: %i in %s", msgkind, fullPath());
       }
     }
+#endif
   }
