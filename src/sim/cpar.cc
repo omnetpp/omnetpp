@@ -213,7 +213,6 @@ void cPar::info(char *buf)
 
 void cPar::writeContents(ostream& os)
 {
-    char buf[256];
     if (isRedirected())
     {
         os << "  Type:   redirection ('I')\n";
