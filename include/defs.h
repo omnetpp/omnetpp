@@ -60,6 +60,15 @@
 #define NULL ((void*)0)
 #endif
 
+
+// maximum lengths for className(), fullPath() and info() strings
+#define MAX_CLASSNAME       100
+#define MAX_OBJECTFULLPATH     1024
+#define MAX_OBJECTINFO          500
+
+// in case someone still needs the old name
+#define FULLPATHBUF_SIZE  MAX_OBJECTFULLPATH
+
 //=== other common defines
 
 #ifndef PI

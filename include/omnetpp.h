@@ -19,6 +19,7 @@
 
 #include "defs.h"
 #include "util.h"
+#include "opp_string.h"
 #include "random.h"
 #include "distrib.h"
 #include "cexception.h"

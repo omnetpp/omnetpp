@@ -19,24 +19,27 @@
 #define __CPOLYMORPHIC_H
 
 #include "defs.h"
+#include "opp_string.h"
 
 /**
  * This is the ultimate base class for cObject, and thus for nearly all
  * OMNeT++ classes. cPolymorphic is a <b>lightweight common base class</b>:
- * it only contains virtual member functions but no data members,
- * hence the memory footprint of a cPolymorphic instance consists of the
- * <i>vptr</i> (pointer to the virtual member functions table) only.
+ * it only contains virtual member functions but NO DATA MEMBERS at all.
  *
- * This also means that deriving your classes from cPolymorphic
- * (as opposed to having no base class) comes for free.
- * (The vptr is present anyway if you have at least one virtual member
- * function.)
+ * It is recommended to use cPolymorphic as a base class for any class
+ * that has at least one virtual member function. This makes the class more
+ * interoperable with OMNeT++, and causes no extra overhead at all.
+ * sizeof(cPolymorphic) should yield 4 on a 32-bit architecture (4-byte
+ * <i>vptr</i>, and using cPolymorphic as a base class doesn't add anything
+ * to the size because a class with a virtual function already has a vptr.
  *
- * The purpose of introducing cPolymorphic is to strengthen type safety.
- * <tt>cPolymorphic *</tt> pointers should replace <tt>void *</tt> in most places
- * where you need pointers to "any data structure".
- * Using cPolymorphic will allow the safe downcasts using <tt>dynamic_cast</tt>,
- * and also some reflection using className().
+ * cPolymorphic allows the object to be displayed in graphical user
+ * interface (Tkenv) via the className(), info() and detailedInfo() methods.
+ *
+ * Using cPolymorphic also strengthens type safety. <tt>cPolymorphic *</tt>
+ * pointers should replace <tt>void *</tt> in most places where you need
+ * pointers to "any data structure". Using cPolymorphic will allow safe
+ * downcasts using <tt>dynamic_cast</tt>.
  *
  * @ingroup SimCore
  */
@@ -62,6 +65,31 @@ class SIM_API cPolymorphic
      * in subclasses.
      */
     virtual const char *className() const;
+
+    /**
+     * Can be redefined to produce a one-line description of object into `buf'.
+     * The string appears in the graphical user interface (Tkenv) e.g. when
+     * the object is displayed in a listbox.
+     *
+     * The provided buffer is of finite size (MAX_OBJECTINFO, currently 500),
+     * and the function should take care not to overrun it. Creating a very
+     * long description is useless anyway, because it will be displayed all
+     * on one line.
+     *
+     * @see detailedInfo()
+     */
+    virtual void info(char *buf)  {*buf='\0';}
+
+    /**
+     * Can be redefined to produce a detailed, multi-line, arbitrarily long
+     * description of the object. The buffer can be expanded as needed using
+     * member functions of opp_string. The string appears in the graphical
+     * user interface (Tkenv) together with other object data (e.g. class name)
+     * wherever it is feasible to display a multi-line string.
+     *
+     * The function should return the same buf object it received.
+     */
+    virtual opp_string& detailedInfo(opp_string& buf)  {return buf;}
 };
 
 #endif

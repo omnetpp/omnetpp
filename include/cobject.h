@@ -26,9 +26,7 @@
 #include "cexception.h"
 
 
-
 #define MAX_INTERNAL_NAME 11  /* should be 4n+3 */
-#define FULLPATHBUF_SIZE  1024
 
 //=== classes declared here
 class  cObject;
@@ -145,7 +143,7 @@ class SIM_API cObject : public cPolymorphic
     static long live_objs;
 
   protected:
-    static char fullpathbuf[FULLPATHBUF_SIZE]; // buffer for fullPath()
+    static char fullpathbuf[MAX_OBJECTFULLPATH]; // buffer for fullPath()
 
   private:
     // internal
@@ -160,6 +158,9 @@ class SIM_API cObject : public cPolymorphic
 
     // internal
     static void setDefaultOwner(cDefaultList *list);
+
+    // called internally by cSimpleModule::snapshot(), and in turn it calls writeContents()
+    virtual void writeTo(std::ostream& os);
 
   protected:
     /** @name Ownership control.
@@ -349,26 +350,13 @@ class SIM_API cObject : public cPolymorphic
     /** @name Reflection, support for debugging and snapshots. */
     //@{
     /**
-     * Produces a one-line description of object into `buf'.
-     * This function is used by the graphical user interface (Tkenv). See
-     * also <I>Functions supporting snapshots</I>.
-     */
-    virtual void info(char *buf);
-
-    /**
-     * This function is called internally by cSimpleModule::snapshot().
-     * It writes out info about the object into the stream. Relies on
-     * writeContents(). writeTo() does not need to
-     * be redefined.
-     */
-    virtual void writeTo(std::ostream& os);
-
-    /**
-     * This function is called internally by writeTo(). It is
+     * This function is indirectly invoked by snapshot(). It is
      * expected to write textual information about the object and other
-     * objects it contains to the stream. The default version (cObject::writeContents())
-     * uses forEach() to call info() for contained objects. Redefine
-     * as needed.
+     * objects it contains to the stream.
+     *
+     * This default version (cObject::writeContents()) prints detailedInfo()
+     * and uses forEach() to call info() for contained objects. It only needs
+     * to be redefined if this behaviour is should be customized.
      */
     virtual void writeContents(std::ostream& os);
     //@}

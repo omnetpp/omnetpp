@@ -202,7 +202,7 @@ class SIM_API cSimpleModule : public cModule
      * DEPRECATED.
      * Returns pointer to the current phase string.
      */
-    const char *phase() const  {return correct(phasestr);}
+    const char *phase() const  {return phasestr.c_str();}
 
     /**
      * To be called from module functions. Outputs textual information

@@ -1,0 +1,108 @@
+//==========================================================================
+//   OPP_STRING.H - header for
+//                             OMNeT++
+//            Discrete System Simulation in C++
+//
+//
+//  opp_string class
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2004 Andras Varga
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+#ifndef __OPP_STRING_H
+#define __OPP_STRING_H
+
+#include <ostream>
+#include "defs.h"
+#include "util.h"
+
+/**
+ * Basic string class. opp_string has only one data member,
+ * a char* pointer. Allocation/deallocation of the contents takes place
+ * via opp_strdup() and operator delete
+ *
+ * Recommended use: as class member, where otherwise the class members
+ * would have to call opp_strdup() and delete for the char* member.
+ *
+ * @ingroup SimSupport
+ */
+class SIM_API opp_string
+{
+  private:
+    char *str;
+
+  public:
+    /**
+     * Constructor.
+     */
+    opp_string()               {str = 0;}
+
+    /**
+     * Constructor.
+     */
+    opp_string(const char *s)  {str = opp_strdup(s);}
+
+    /**
+     * Copy constructor.
+     */
+    opp_string(opp_string& s)  {str = opp_strdup(s.str);}
+
+    /**
+     * Destructor.
+     */
+    ~opp_string()              {delete[] str;}
+
+    /**
+     * Return pointer to the string.
+     */
+    const char *c_str() const {return str ? str : "";}
+
+    /**
+     * Null (empty) string or not.
+     */
+    bool empty() const        {return !str || !str[0];}
+
+    /**
+     * Returns pointer to the internal buffer where the string is stored.
+     * It is allowed to write into the string via this pointer, but the
+     * length of the string should not be exceeded.
+     */
+    char *buffer()         {return str;}
+
+    /**
+     * Allocates a buffer of the given size.
+     */
+    // FIXME make it preserve contents
+    char *reserve(unsigned size)
+                               {delete[] str;str=new char[size];return str;}
+
+    /**
+     * Deletes the old value and opp_strdup()'s the new value
+     * to create the object's own copy.
+     */
+    const char *operator=(const char *s)
+                               {delete[] str;str=opp_strdup(s);return str;}
+
+    /**
+     * Assignment.
+     */
+    opp_string& operator=(const opp_string& s)
+                               {delete[] str;str=opp_strdup(s.str);return *this;}
+
+};
+
+inline std::ostream& operator<<(std::ostream& out, const opp_string& str)
+{
+    out << str.c_str();
+    return out;
+}
+
+#endif
+
+

@@ -1,3 +1,23 @@
+2004-03-06   Andras Varga
+
+	* cobject.h, cpolymorphic.h: several changes:
+	- info() method moved to cPolymorphic
+	- buffer size for info() now explicitly declared as MAX_OBJECTINFO
+	- new method detailedInfo() added to cPolymorphic -- this method
+	  is allowed to produce a more verbose, multi-line description of
+	  the object. Support for displaying it will be built into Tkenv.
+	  Can be used to display internal tables (routing table, ARP cache,
+	  etc) and other data structures.
+	- default writeContents() implementation changed to use detailedInfo()
+	- writeTo() method made "internal"
+
+	* util.h, opp_string.h: opp_string changes:
+	- created separate header opp_string.h
+	- added c_str(), empty() methods for similarity to std::string
+	- removed const char* conversion -- it was often tested against NULL
+	  to see if string was empty, and caused confusion. c_str() never
+	  returns NULL.
+
 2004-03-03  ------ omnetpp-3.0a2 released ------
 
 2004-03-01  Andras Varga
@@ -6,8 +26,8 @@
 	cPolymorphic* so that it can be used with type safety. Only classes
 	derived from cPolymorphic can be registered using Register_Class().
 
-	* envirext.h: classes cScheduler, cOutputVectorManager, 
-	cOutputScalarManager, cSnapshotManager are now subclassed from 
+	* envirext.h: classes cScheduler, cOutputVectorManager,
+	cOutputScalarManager, cSnapshotManager are now subclassed from
 	cPolymorphic.
 
 	* cobject.h, cpolymorphic.h: cPolymorphic removed from cobject.h and
@@ -26,42 +46,42 @@
 
 	* ctype.h, cchannel.h, cgate.h: introduced cChannelType which replaces
 	cLinkType. cChannelType is a lot more flexible since its factory
-	method create() allows creating channels of any class, not just 
+	method create() allows creating channels of any class, not just
 	cSimpleChannel. Custom channel behaviour can thus be implemented
 	by authoring an own channel class and registering it via an
 	appropriate cChannelType and the Define_Channel() macro.
 
 2004-02-12  Andras Varga
 
-	* cgate.h, cchannel.h: gave a bool return value to deliver(), "false" 
+	* cgate.h, cchannel.h: gave a bool return value to deliver(), "false"
 	meaning that message object should be deleted.
 
-2004-02-11  Andras Varga 
+2004-02-11  Andras Varga
 
 	* csimul.h, cscheduler.h: semantic change in getNextEvent()'s and
 	selectNextModule()'s return value: NULL now means that the scheduler
 	got interrupted by the user while it was waiting (typically with parsim
 	or real-time sim).
 
-2004-02-09  Andras Varga 
+2004-02-09  Andras Varga
 
 	* cexception.h: added storage of module class name (NED type name)
 
-2004-02-09  Andras Varga 
+2004-02-09  Andras Varga
 
 	* ctypes.h: added methods to cModuleInterface so that it's possible
 	to dynamically assemble it (needed by networkbuilder)
 
-2004-02-07  Andras Varga 
+2004-02-07  Andras Varga
 
-	* ctypes.h: added createOneIfClassIsKnown(const char *classname) 
+	* ctypes.h: added createOneIfClassIsKnown(const char *classname)
 	function
 
 2004-02-06  Andras Varga
 
 	* cgate.h: added cGate::disconnect(); revised cGate::connectTo()
 
-	* cchannel.h: added setDelay(double), setError(double), 
+	* cchannel.h: added setDelay(double), setError(double),
 	setDatarate(double) to cSimpleChannel
 
 2004-02-04  ------ omnetpp-3.0pre1 released ------

@@ -20,7 +20,7 @@
 
 #include <stdarg.h>  // for va_list
 #include "defs.h"
-#include "util.h"
+#include "opp_string.h"
 
 class cObject;
 class cModule;
@@ -102,19 +102,19 @@ class SIM_API cException
     /**
      * Returns the text of the error.
      */
-    const char *message() {return msg;}
+    const char *message() {return msg.c_str();}
 
     /**
-     * Returns the class name (NED type name) of the module where the 
+     * Returns the class name (NED type name) of the module where the
      * exception occurred.
      */
-    const char *moduleClassName() {return moduleclassname;}
+    const char *moduleClassName() {return moduleclassname.c_str();}
 
     /**
      * Returns the full path of the module where the exception
      * occurred.
      */
-    const char *moduleFullPath() {return modulefullpath;}
+    const char *moduleFullPath() {return modulefullpath.c_str();}
 
     /**
      * Returns the ID of the module where the exception occurred,
