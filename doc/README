@@ -5,8 +5,8 @@ Copyright (c) 1998, 1999 Andras Varga.
 
 OMNeT++ is subject to the license described in the "License" file.
 You may as a special exception elect to use the GNU General Public License
-(see the "GPLElect" file). Please contact me if you wish to negotiate
-an alternative license.
+(see the "GPLElect" file) for the core components. Please contact me if you
+wish to negotiate an alternative license.
 
 
 What is OMNeT++?
@@ -144,12 +144,12 @@ I'd like to acknowledge the help and support of several people who contributed
 (with providing their opinions, sending bug reports/fixes, etc.) to making
 OMNeT++ better and more useful for the Internet community: Richard Lyon,
 Joel Sherrill, Nimrod Mesika, Dan Talayco, Y. Ahmet Sekercioglu, Brent Weech,
-Alan Kennington, Kontogiannis Theophanis and Dario Mariani. Thanks!!!
+Alan Kennington, Kontogiannis Theophanis, Dario Mariani and others. Thanks!!!
 
 I'd also like to thank John Ousterhout and other developers for Tcl and Tk
 which proved to be an extemely productive environment to build user interfaces;
-and D. Richard Hipp for tree.tcl that served as a base for the tree widget in
-GNED, and Victor Wagner for balloon.tcl.
+to D. Richard Hipp for tree.tcl that served as a base for the tree widget in
+GNED, and to Victor Wagner for balloon.tcl.
 
 
 Feedback requested

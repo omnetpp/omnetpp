@@ -24,21 +24,21 @@ may not redistribute the modified version. If you want your modifications
 to be incorporated into the Software or distribute a modified version of
 the Software, you must contact the authors.
 
-The sources of simulation models and simulation results produced using
+The sources of simulation models and the simulation results produced using
 the Software and extensions to the Software are not covered by this License;
 they fall under the license provided by their copyright holders.
 
 You may distribute simulation models in binary forms which contain OMNeT++
-libraries, if it does otherwise comply to this License (see clause about
+libraries, if doing so otherwise complies to this License (see clause about
 non-profit use). 
 
 If you use OMNeT++ in any work, the resulting document(s) (report, paper,
 article, book, etc.) should contain a reference to the Software and its
-author.
+authors.
 
-You may elect to use the GNU General Public License for the following
-components of OMNeT++: nedc, sim, envir, cmdenv, utils, samples and
-the auxiliary files that are necessary to build them. (The component names
+You may elect to use the GNU General Public License for a particular copy of
+the following components of OMNeT++: nedc, sim, envir, cmdenv, utils, samples,
+and the auxiliary files that are necessary to build them. (The component names
 above refer to the contents of the corresponding subdirectories in the
 distribution.) The "GPLElect" file describes how to technically perform
 the election.
@@ -58,5 +58,5 @@ MODIFICATIONS.
 
 ---
 The author can be contacted at the address above or via e-mail:
-andras@whale.hit.bme.hu
+andras@metechnology.com, andras@whale.hit.bme.hu
 

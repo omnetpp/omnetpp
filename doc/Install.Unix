@@ -1,63 +1,71 @@
-OMNeT++ Installation on UNIX
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(last updated: Aug 15, 1998)
+Installing OMNeT++ on Unix
+==========================
 
----OUT OF DATE---
+1. Installing OMNeT++
 
-UNPACKING
-~~~~~~~~~~
-Uncompress and un-tar the omnetpp.tgz file:
-        1. copy omnetpp.tgz into your home directory
-        2. tar xvfz omnetpp.tgz
+Download the omnetpp source code and documentation from the omnetpp site.
+Make sure you select to download the Unix archive omnetpp.tgz.
 
-This will unpack everything into ~/omnetpp.
+Copy the omnetpp archive to the directory where you want to install it
+(usually your home directory). Extract the archive using the command:
 
+    tar zxvf omnetpp.tgz
 
-COMPILING AND INSTALLING
-~~~~~~~~~~~~~~~~~~~~~~~~
-It's recommended you have gcc installed (also flex and bison). If you have
-some other C++ compiler, you'll have to manually set some variables
-in the configure script.
-Type:
-        cd ~/omnetpp
-        ./configure
-        ./makeall
+A sub-directory called omnetpp will be created which will contain the simulator
+files. You should now add the following lines to your startup file (.bashrc
+or .bash_profile if you're using bash; .profile if you're using some other
+sh-like shell):
 
-It will build all the libraries and the example programs for you.
-By default, OMNeT++ will build dynamic libraries (this keeps the
-size of the executables smaller). You'll have to set the
-LD_LIBRARY_PATH variable to ensure the dynamic linker will find
-the necessary libraries.
-If you have an sh-like shell (bash etc):
+    export PATH=$PATH:~/omnetpp/bin
+    export LD_LIBRARY_PATH=~/omnetpp/lib
 
-        export LD_LIBRARY_PATH=~/omnetpp/lib
+For these variables to be included in the environment you will need to
+restart the shell before proceeding (logout and login again).
 
-If you have a csh-like shell (tcsh etc):
+First you should check configure.user to make sure it contains the settings
+you need:
+    vi configure.user
 
-        setenv LD_LIBRARY_PATH ~/omnetpp/lib
+Then the usual GNU-like stuff:
+    ./configure
+    make
 
-Anyway, you can switch over to static libraries by editing the LIB_SUFFIX 
-variable in the configure script and running configure again.
+You should now test all samples and check they run correctly. As an example,
+the dyna example is started by entering the following commands:
 
-You should also add ~/omnetpp/bin to your PATH.
+    cd ~/omnetpp/samples/dyna
+    ./dyna
+
+By default the samples will run using the Tcl/Tk environment. You should see
+nice gui windows and dialogs.
 
 
-RUNNING THE EXAMPLE PROGRAMS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-To run one of the example programs (say token):
+2. Reconfiguring the libraries
 
-     cd ~/omnetpp/samples/token
-     ./token
+If you need to recompile the OMNeT++ components with different flags (e.g.
+for debugging or optimized for speed), then cd to the top-level omnetpp
+directory, edit configure.user accordingly, then say:
 
-By default, the simulation will run with the graphical Tkenv user interface.
-To change the user interface to Cmdenv, generate a new makefile with
-     
-     makemake -f -u cmdenv
+    ./configure
+    make clean
+    make
 
-Then type `make' and run the `token' program again.
+If you want to recompile just a single library, then cd to the directory
+of the library and type:
 
-You can run the executable with the -h option to get some help.
-The executable reads its configuration from omnetpp.ini, you can find
-customizable thing in it (perhaps the most important, model parameters).
+    make clean
+    make 
+    make install-local
 
---VA
+The last line is that copies the libraries from the src/ tree to lib/.
+Note that typing `make' in the top-level omnetpp directory includes
+`make install-local' for all libraries and programs.
+
+
+3. Portability issues
+
+OMNeT++ has been tested on Linux, but it should work on other Unixes too.
+It probably makes things easier if you have gcc and the usual GNU tools
+installed, but you should be able to get along using other C++ compilers too.
+If you get it to work, please send me a mail!
+

@@ -102,7 +102,7 @@ of emacs is available from:
 http://www.cs.washington.edu/homes/voelker/ntemacs.html
 
 
-3. Installing omnet++
+3. Installing OMNeT++
 
 Download the omnetpp source code and documentation from the omnetpp site.
 Make sure you select to download the unix archive omnetpp.tgz.
@@ -117,7 +117,7 @@ Copy the omnetpp archive to the directory where you want to install it
     tar zxvf omnetpp.tgz
 
 A sub-directory called omnetpp will be created which will contain the simulator
-files. You should now add the following lines to your startup file .bashrc
+files. You should now add the following lines to your startup file .bashrc:
 
     export PATH=$PATH:~/omnetpp/bin
     export LD_LIBRARY_PATH=~/omnetpp/lib
@@ -127,8 +127,11 @@ restart the bash shell before proceeding. All following commands in this
 section are entered on the bash command line.
 
 First you should check configure.user to make sure it contains the settings
-you need. Note that currently you cannot build dynamic libraries (DLLs)
-out of the OMNeT++ sources.
+you need:
+    notepad configure.user
+
+Note that currently you cannot build dynamic libraries (DLLs) from OMNeT++
+sources on CygWin.
 
 Then the usual GNU-like stuff:
     ./configure
@@ -140,7 +143,7 @@ example, the dyna example is started by entering the following commands:
     cd ~/omnetpp/samples/dyna
     ./dyna
 
-By default the samples will run using the tcl/tk environment. You should see
+By default the samples will run using the Tcl/Tk environment. You should see
 nice gui windows and dialogs.
 
 
@@ -168,20 +171,18 @@ Note that typing `make' in the top-level omnetpp directory includes
 
 5. Comments
 
-I have tested a number of my own simulation models using the command line
+I have tested a number of simulation models using the command line
 environment. These work correctly. Given that CYGWIN is still in beta I am
 sure that there will be other bugs which will only become apparent as more
 people use omnetpp and CYGWIN. I guess the warning here is to double check
 any simulation results you obtain.
 
-I only use Windows NT. Hopefully others will test omnet++ using Windows
+I only use Windows NT. Hopefully others will test OMNeT++ using Windows
 95/98.
 
 Any questions concerning the use of CYGWIN should be directed to the CYGWIN
 mail list at gnu-win32@cygnus.com. Omnetpp specific questions should be
-directed to mail list at omnetpp-l@it.swin.edu.au.
+directed to the mail list at omnetpp-l@it.swin.edu.au.
 
 If you find any errors in this document please let me know.
-
-
 

@@ -19,15 +19,20 @@ compound modules in graphic or in NED source form, and switch to the other view
 any time. The GUI has been improved too: toolbar icons, tooltips, NED syntax
 highlight. GNED is still in beta and there's some missing functionality.
 
-Tkenv's user interface has also undergone some beautifying: toolbar icons,
-tooltips, etc.
+Tkenv's user interface has also undergone some beautifying and bugfixing:
+now it has toolbar icons, tooltips, etc.
 
-OMNETPP_BITMAP_PATH may now contain a list of directories; it includes "." and
-"./bitmaps" by default, so individual simulation models can have their own icon
-sets.
+OMNETPP_BITMAP_PATH can now contain a list of directories; it includes "." and
+"./bitmaps" by default, so individual simulation models can have their own
+icons in their own directories.
 
-Several bugfixes and smaller enhancements have been made; see the ChangeLog in
-the directory of the individual components for details.
+Smaller enhancements were made in the simulation library, some of them are:
+behavior of cancelEvent() changed; an isScheduled() member added to cMessage;
+added callInitialize() and callFinish() to the module classes (for compound
+modules they work recursively).
+
+See the ChangeLog in the directory of the individual components for details
+on what has been changed/fixed/improved. 
 
 Contributions have been added. They include NED syntax highlight for Emacs,
 and recipes and sample code to use Octave with OMNeT++.
