@@ -317,21 +317,24 @@ SIM_API int geometric(double p, int rng=0);
  */
 SIM_API int negbinomial(int n, double p, int rng=0);
 
-/**
- * Returns a random integer from the hypergeometric distribution with
- * parameters a,b and n.
- *
- * If you have a+b items (a items of type A and b items of type B)
- * and you draw n items from them without replication, this function
- * will return the number of type A items in the drawn set.
- *
- * Generation uses inverse transform due to Fishman (see Banks, page 165).
- *
- * @param a, b  a,b>0
- * @param n     0<=n<=a+b
- * @param rng the underlying random number generator
- */
-SIM_API int hypergeometric(int a, int b, int n, int rng=0);
+//
+// hypergeometric() doesn't work yet
+//
+// /**
+//  * Returns a random integer from the hypergeometric distribution with
+//  * parameters a,b and n.
+//  *
+//  * If you have a+b items (a items of type A and b items of type B)
+//  * and you draw n items from them without replication, this function
+//  * will return the number of type A items in the drawn set.
+//  *
+//  * Generation uses inverse transform due to Fishman (see Banks, page 165).
+//  *
+//  * @param a, b  a,b>0
+//  * @param n     0<=n<=a+b
+//  * @param rng the underlying random number generator
+//  */
+// SIM_API int hypergeometric(int a, int b, int n, int rng=0);
 
 /**
  * Returns a random integer from the Poisson distribution with parameter lambda,
