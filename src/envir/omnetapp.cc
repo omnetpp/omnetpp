@@ -358,6 +358,11 @@ void TOmnetApp::puts(const char *s)
      ::printf( "%s", s);
 }
 
+void TOmnetApp::flush()
+{
+     ::fflush(stdout);
+}
+
 bool TOmnetApp::gets(const char *promptstr, char *buf, int len)
 {
     ::printf("%s", promptstr);

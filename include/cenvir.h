@@ -210,10 +210,17 @@ class ENVIR_API cEnvir
     void printf(const char *fmt="\n",...);
 
     /**
-     * Similar to cEnvir::printf(), but just writes out its
-     * argument string with no formatting.
+     * Similar to ev.printf(), but just writes out its argument string with no formatting.
      */
     void puts(const char *s);
+
+    /**
+     * Flushes the output buffer of ev.printf() and ev<< operations.
+     * Only some user interfaces need it: it can be useful with Cmdenv which
+     * writes to the standard output, but no need for it with Tkenv which
+     * displays all output immediately anyway.
+     */
+    void flush();
 
     /**
      * Similar to cEnvir::askf(), but just writes out the prompt

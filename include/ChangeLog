@@ -1,3 +1,11 @@
+2003-01-07  Andras Varga
+
+	* cenvir.h: added ev.flush()
+
+2003-01-05  Andras Varga
+
+	* macros.h: added macro Define_Function2
+
 2002-12-19  Andras Varga
 
 	* always use <iostream> instead of <iostream.h>

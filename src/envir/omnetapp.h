@@ -110,15 +110,15 @@ class ENVIR_API TOmnetApp
 
     virtual cIniFile *getIniFile();
 
-    /** 
-     * Used internally to read opt_xxxxx setting from ini file 
+    /**
+     * Used internally to read opt_xxxxx setting from ini file
      */
     virtual void readOptions();
     virtual void readPerRunOptions(int run_nr);
 
-    /** 
-     * Used internally to make options effective in cSimulation 
-     * and other places 
+    /**
+     * Used internally to make options effective in cSimulation
+     * and other places
      */
     virtual void makeOptionsEffective();
 
@@ -128,7 +128,7 @@ class ENVIR_API TOmnetApp
     virtual const char *getParameter(int run_nr, const char *parname);
 
     /**
-     * Called from nedc-generated network setup function to get 
+     * Called from nedc-generated network setup function to get
      * logical machine --> physical machine mapping
      */
     virtual const char *getPhysicalMachineFor(const char *logical_mach);
@@ -156,6 +156,7 @@ class ENVIR_API TOmnetApp
     //@{
     virtual void putmsg(const char *s);
     virtual void puts(const char *s);
+    virtual void flush();
     virtual bool gets(const char *promptstr, char *buf, int len=255);  // 0==OK 1==CANCEL
     virtual int  askYesNo(const char *question); //0==NO 1==YES -1==CANCEL
     virtual void foreignPuts(const char *hostname, const char *mod, const char *str);

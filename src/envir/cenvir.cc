@@ -212,7 +212,7 @@ void cEnvir::setup(int argc, char *argv[])
 
 int cEnvir::run()
 {
-    if (app) 
+    if (app)
         return app->run();
     return 1;
 }
@@ -311,6 +311,16 @@ void cEnvir::puts(const char *str)
         app->puts( str );
     else
         ::printf("%s", buffer);
+}
+
+void cEnvir::flush()
+{
+    if (disable_tracing) return;
+
+    if (app)
+        app->flush();
+    else
+        ::fflush(stdout);
 }
 
 bool cEnvir::gets(const char *promptstr, char *buf, int len)
