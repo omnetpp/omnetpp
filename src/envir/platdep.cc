@@ -53,12 +53,12 @@ bool opp_loadlibrary(const char *libname)
                         NULL );
          opp_string msg; msg=(const char *)lpMsgBuf;
          LocalFree( lpMsgBuf );
-         msg.buffer()[strlen(msg)-3] = '\0';  // chop ".\r\n"
-         throw new cException("Cannot load library '%s': %s",libname,(const char *)msg);
+         msg.buffer()[strlen(msg.c_str())-3] = '\0';  // chop ".\r\n"
+         throw new cException("Cannot load library '%s': %s", libname, msg.c_str());
      }
      return true;
 #else
-     throw new cException("Cannot load '%s': dlopen() syscall not available",libname);
+     throw new cException("Cannot load '%s': dlopen() syscall not available", libname);
 #endif
 }
 

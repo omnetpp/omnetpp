@@ -55,12 +55,6 @@
 #endif
 
 
-// heuristic upper limits for various strings: obj->className(), obj->fullPath(), obj->info()
-#define MAX_CLASSNAME       100
-#define MAX_OBJECTFULLPATH  500
-#define MAX_OBJECTINFO      500
-
-
 using std::ostream;
 
 
@@ -140,18 +134,18 @@ void TOmnetApp::setup()
          simulation.init();
 
          // install output vector manager
-         CREATE_BY_CLASSNAME(outvectmgr, opt_outputvectormanager_class, cOutputVectorManager, "output vector manager");
+         CREATE_BY_CLASSNAME(outvectmgr, opt_outputvectormanager_class.c_str(), cOutputVectorManager, "output vector manager");
 
          // install output scalar manager
-         CREATE_BY_CLASSNAME(outscalarmgr, opt_outputscalarmanager_class, cOutputScalarManager, "output scalar manager");
+         CREATE_BY_CLASSNAME(outscalarmgr, opt_outputscalarmanager_class.c_str(), cOutputScalarManager, "output scalar manager");
 
          // install snapshot manager
-         CREATE_BY_CLASSNAME(snapshotmgr, opt_snapshotmanager_class, cSnapshotManager, "snapshot manager");
+         CREATE_BY_CLASSNAME(snapshotmgr, opt_snapshotmanager_class.c_str(), cSnapshotManager, "snapshot manager");
 
          // set up for distributed execution
          if (!opt_parsim)
          {
-             CREATE_BY_CLASSNAME(scheduler, opt_scheduler_class, cScheduler, "event scheduler");
+             CREATE_BY_CLASSNAME(scheduler, opt_scheduler_class.c_str(), cScheduler, "event scheduler");
              scheduler->setSimulation(&simulation);
              simulation.setScheduler(scheduler);
          }
@@ -159,9 +153,9 @@ void TOmnetApp::setup()
          {
 #ifdef WITH_PARSIM
              // create components
-             CREATE_BY_CLASSNAME(parsimcomm, opt_parsimcomm_class, cParsimCommunications, "parallel simulation communications layer");
+             CREATE_BY_CLASSNAME(parsimcomm, opt_parsimcomm_class.c_str(), cParsimCommunications, "parallel simulation communications layer");
              parsimpartition = new cParsimPartition();
-             CREATE_BY_CLASSNAME(parsimsynchronizer, opt_parsimsynch_class, cParsimSynchronizer, "parallel simulation synchronization layer");
+             CREATE_BY_CLASSNAME(parsimsynchronizer, opt_parsimsynch_class.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
 
              // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
              parsimpartition->setContext(&simulation,parsimcomm,parsimsynchronizer);
@@ -383,12 +377,12 @@ void TOmnetApp::processFileName(opp_string& fname)
         if (!hostname)
             throw new cException("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
                                  "or COMPUTERNAME (Windows) environment variable",
-                                 (const char *)fname);
+                                 fname.c_str());
         int pid = getProcessId();
 
         // add ".<hostname>.<pid>" to fname
         opp_string origfname = fname;
-        fname.allocate(strlen(origfname)+1+strlen(hostname)+10+1);
+        fname.reserve(strlen(origfname.c_str())+1+strlen(hostname)+10+1);
         sprintf(fname.buffer(),"%s.%s.%d", origfname.buffer(), hostname, pid);
     }
 }
@@ -516,12 +510,12 @@ void TOmnetApp::processListFile(const char *listfilename)
     // files should be relative to list file, so try cd into list file's directory
     opp_string dir, fnameonly;
     splitFileName(listfilename, dir, fnameonly);
-    PushDir d(dir);
+    PushDir d(dir.c_str());
 
     // FIXME error handling is really poor here (what if can't cd, etc!)
     // FIXME put this code into main.cc too!
 
-    std::ifstream in(fnameonly, std::ios::in);
+    std::ifstream in(fnameonly.c_str(), std::ios::in);
     if (in.fail())
         throw new cException("Cannot open list file '%s'",listfilename);
 

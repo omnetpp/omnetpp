@@ -81,6 +81,10 @@ void TObjInspector::update()
    object->info(buf);
    setLabel(".nb.info.info.e",buf);
 
+   opp_string details;
+   object->detailedInfo(details);
+   setLabel(".nb.info.details.e",details.c_str());
+
    if (fieldspage)
        fieldspage->update();
 }

@@ -66,7 +66,7 @@ class ENVIR_API cOmnetAppRegistration : public cObject
 
     // new functions
     TOmnetApp *createOne(ArgList *args, cIniFile *inifile)  {return creatorfunc(args,inifile);}
-    const char *description()  {return desc;}
+    const char *description()  {return desc.c_str();}
     int score()  {return scor;}
 };
 

@@ -63,7 +63,9 @@ akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/carray.h \
   ../../include/globals.h \
   args.h \
@@ -99,7 +101,9 @@ cenvir.obj: cenvir.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/envirext.h \
@@ -120,7 +124,9 @@ cinifile.obj: cinifile.cc \
   ../../include/defs.h \
   ../../include/cpar.h \
   ../../include/cobject.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   envdefs.h
 filemgrs.obj: filemgrs.cc \
   ../../include/defs.h \
@@ -135,7 +141,9 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   envdefs.h \
   ../../include/carray.h \
   ../../include/globals.h \
@@ -150,6 +158,12 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/ctypes.h
+fsutils.obj: fsutils.cc \
+  ../../include/opp_string.h \
+  fsutils.h \
+  ../../include/cexception.h \
+  ../../include/defs.h \
+  ../../include/util.h
 main.obj: main.cc \
   ../../include/cobject.h \
   ../../include/csimul.h \
@@ -158,7 +172,9 @@ main.obj: main.cc \
   ../../include/onstartup.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/globals.h \
   ../../include/cmsgheap.h \
@@ -170,6 +186,7 @@ omnetapp.obj: omnetapp.cc \
   omnetapp.h \
   cinifile.h \
   patmatch.h \
+  fsutils.h \
   ../../include/ctypes.h \
   ../../include/ccoroutine.h \
   ../../include/csimul.h \
@@ -186,6 +203,8 @@ omnetapp.obj: omnetapp.cc \
   ../../include/envirext.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
@@ -202,8 +221,10 @@ platdep.obj: platdep.cc \
   ../../include/util.h \
   ../../include/cexception.h \
   ../../include/cenvir.h \
+  ../../include/opp_string.h \
   ../../include/cpar.h \
-  ../../include/cobject.h
+  ../../include/cobject.h \
+  ../../include/cpolymorphic.h
 seeds.obj: seeds.cc \
   omnetapp.h \
   ../../include/carray.h \
@@ -216,6 +237,8 @@ seeds.obj: seeds.cc \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/cpar.h
 speedmtr.obj: speedmtr.cc \

@@ -56,9 +56,9 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
     sprintf(section,"Run %d", simulation.runNumber() );
 
     opp_string inientry;
-    inientry.allocate(opp_strlen(modulename)+1+opp_strlen(vectorname)+sizeof(".akaroa")+1);
+    inientry.reserve(opp_strlen(modulename)+1+opp_strlen(vectorname)+sizeof(".akaroa")+1);
     sprintf(inientry.buffer(),"%s.%s.akaroa", modulename, vectorname);
-    vp->ak_controlled = ev.app->getIniFile()->getAsBool2(section, "General", (const char *)inientry, true);
+    vp->ak_controlled = ev.app->getIniFile()->getAsBool2(section, "General", inientry.c_str(), true);
 
     if (vp->ak_controlled)
     {

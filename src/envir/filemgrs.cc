@@ -65,9 +65,9 @@ cFileOutputVectorManager::~cFileOutputVectorManager()
 
 void cFileOutputVectorManager::openFile()
 {
-    f = fopen(fname,"a");
+    f = fopen(fname.c_str(),"a");
     if (f==NULL)
-        throw new cException("Cannot open output file `%s'",(const char *)fname);
+        throw new cException("Cannot open output file `%s'",fname.c_str());
 }
 
 void cFileOutputVectorManager::closeFile()
@@ -88,7 +88,7 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
     }
 
     CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  %d\n",
-                  vp->id, (const char *)vp->modulename, (const char *) vp->vectorname? (const char*) vp->vectorname : "(null)", vp->tuple));
+                  vp->id, vp->modulename.c_str(), vp->vectorname.c_str(), vp->tuple));
     vp->initialised = true;
 }
 
@@ -97,7 +97,7 @@ void cFileOutputVectorManager::startRun()
     // clean up file from previous runs
     closeFile();
     createFileName(fname, simulation.runNumber(), "output-vector-file", "omnetpp.vec");
-    remove(fname);
+    remove(fname.c_str());
 }
 
 void cFileOutputVectorManager::endRun()
@@ -168,7 +168,7 @@ bool cFileOutputVectorManager::record(void *vectorhandle, simtime_t t, double va
 
 const char *cFileOutputVectorManager::fileName() const
 {
-    return (const char *)fname;
+    return fname.c_str();
 }
 
 
@@ -190,9 +190,9 @@ cFileOutputScalarManager::~cFileOutputScalarManager()
 
 void cFileOutputScalarManager::openFile()
 {
-    f = fopen(fname,"a");
+    f = fopen(fname.c_str(),"a");
     if (f==NULL)
-        throw new cException("Cannot open output file `%s'",(const char *)fname);
+        throw new cException("Cannot open output file `%s'",fname.c_str());
 }
 
 void cFileOutputScalarManager::closeFile()
@@ -265,7 +265,7 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, c
 
 const char *cFileOutputScalarManager::fileName() const
 {
-    return (const char *)fname;
+    return fname.c_str();
 }
 
 //=================================================================
@@ -284,7 +284,7 @@ void cFileSnapshotManager::startRun()
 {
     // clean up file from previous runs
     createFileName(fname, simulation.runNumber(), "snapshot-file", "omnetpp.sna");
-    remove(fname);
+    remove(fname.c_str());
 }
 
 void cFileSnapshotManager::endRun()
@@ -293,7 +293,7 @@ void cFileSnapshotManager::endRun()
 
 ostream *cFileSnapshotManager::getStreamForSnapshot()
 {
-    ostream *os = new ofstream( fname, ios::out|ios::app);
+    ostream *os = new ofstream(fname.c_str(), ios::out|ios::app);
     return os;
 }
 
@@ -304,6 +304,6 @@ void cFileSnapshotManager::releaseStreamForSnapshot(std::ostream *os)
 
 const char *cFileSnapshotManager::fileName() const
 {
-    return (const char *)fname;
+    return fname.c_str();
 }
 

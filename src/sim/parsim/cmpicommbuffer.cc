@@ -381,7 +381,7 @@ void cMPICommBuffer::unpack(opp_string& d)
 {
     int len;
     unpack(len);
-    d.allocate(len+1);
+    d.reserve(len+1);
     if (MPI_Unpack(mBuffer, mMsgSize, &mPosition, d.buffer(), len, MPI_CHAR, MPI_COMM_WORLD))
         throw new cException("cMPICommBuffer::unpack(char*): MPI_Unpack() returned error");
     d.buffer()[len] = '\0';

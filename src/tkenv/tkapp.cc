@@ -114,13 +114,13 @@ void TOmnetTkApp::setup()
     // path for the Tcl user interface files
 #ifdef OMNETPP_TKENV_DIR
     tkenv_dir = getenv("OMNETPP_TKENV_DIR");
-    if (!tkenv_dir)
+    if (tkenv_dir.empty())
         tkenv_dir = OMNETPP_TKENV_DIR;
 #endif
 
     // path for icon directory
     bitmap_dir = getenv("OMNETPP_BITMAP_PATH");
-    if (!bitmap_dir)
+    if (bitmap_dir.empty())
         bitmap_dir = OMNETPP_BITMAP_PATH;
 
     // set up Tcl/Tk
@@ -134,7 +134,7 @@ void TOmnetTkApp::setup()
     // add OMNeT++'s commands to Tcl
     createTkCommands( interp, tcl_commands );
 
-    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", TCLCONST((const char *)bitmap_dir), TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", TCLCONST(bitmap_dir.c_str()), TCL_GLOBAL_ONLY);
 
     // eval Tcl sources: either from .tcl files or from compiler-in string
     // literal (tclcode.cc)...
@@ -143,8 +143,8 @@ void TOmnetTkApp::setup()
     //
     // Case A: TCL code in separate .tcl files
     //
-    Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  TCLCONST((const char *)tkenv_dir), TCL_GLOBAL_ONLY);
-    if (Tcl_EvalFile(interp,fastconcat(tkenv_dir,"/tkenv.tcl"))==TCL_ERROR)
+    Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  TCLCONST(tkenv_dir.c_str()), TCL_GLOBAL_ONLY);
+    if (Tcl_EvalFile(interp,fastconcat(tkenv_dir.c_str(),"/tkenv.tcl"))==TCL_ERROR)
     {
         fprintf(stderr, "\n<!> Error starting Tkenv: %s. "
                         "Is the OMNETPP_TKENV_DIR environment variable set correctly? "
@@ -183,7 +183,7 @@ void TOmnetTkApp::setup()
     // create windowtitle prefix
     if (getParsimNumPartitions()>0)
     {
-        windowtitleprefix.allocate(24);
+        windowtitleprefix.reserve(24);
         sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ",
                                             getParsimProcId(), getParsimNumPartitions());
     }
@@ -630,10 +630,10 @@ void TOmnetTkApp::newRun(int run)
     readPerRunOptions( run_nr );
     makeOptionsEffective();
 
-    cNetworkType *network = findNetwork( opt_network_name );
+    cNetworkType *network = findNetwork(opt_network_name.c_str());
     if (!network)
     {
-        CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", (const char *)opt_network_name, "' not found.} info ok",NULL));
+        CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", opt_network_name.c_str(), "' not found.} info ok",NULL));
         return;
     }
 

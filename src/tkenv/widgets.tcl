@@ -271,6 +271,16 @@ proc label-sunkenlabel {w label {text {}}} {
     $w.e config -text $text
 }
 
+proc label-message {w label {text {}}} {
+    # utility function: create a frame with a label+"readonly entry"
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    message $w.e -relief groove -justify left -anchor w -aspect 10000
+    pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
+    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
+    $w.e config -text $text
+}
+
 proc label-combo {w label list {text {}} {cmd {}}} {
     # utility function: create a frame with a label+combo
     frame $w

@@ -102,7 +102,7 @@ const char *cGate::fullName() const
 
 const char *cGate::fullPath() const
 {
-    return fullPath(fullpathbuf,FULLPATHBUF_SIZE);
+    return fullPath(fullpathbuf,MAX_OBJECTFULLPATH);
 }
 
 const char *cGate::fullPath(char *buffer, int bufsize) const

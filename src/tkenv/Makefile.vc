@@ -80,6 +80,7 @@ inspector.obj: inspector.cc \
   inspector.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/opp_string.h \
   ../../include/random.h \
   ../../include/distrib.h \
   ../../include/cexception.h \
@@ -121,6 +122,7 @@ inspector.obj: inspector.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
+  ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   tkutil.h
 inspfactory.obj: inspfactory.cc \
@@ -131,6 +133,7 @@ inspfactory.obj: inspfactory.cc \
   inspfactory.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/opp_string.h \
   ../../include/random.h \
   ../../include/distrib.h \
   ../../include/cexception.h \
@@ -172,6 +175,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
+  ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   tkutil.h
 modinsp.obj: modinsp.cc \
@@ -183,10 +187,10 @@ modinsp.obj: modinsp.cc \
   ../../include/cstat.h \
   ../../include/cdensity.h \
   ../../include/cdispstr.h \
+  modinsp.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
-  modinsp.h \
   arrow.h \
   graphlayout.h \
   ../../include/cmodule.h \
@@ -199,14 +203,16 @@ modinsp.obj: modinsp.cc \
   ../../include/csimul.h \
   ../../include/cdefaultlist.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/macros.h \
   inspector.h \
-  ../../include/ctypes.h \
-  tkutil.h
+  tkutil.h \
+  ../../include/macros.h \
+  ../../include/ctypes.h
 objinsp.obj: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -215,6 +221,7 @@ objinsp.obj: objinsp.cc \
   objinsp.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/opp_string.h \
   ../../include/random.h \
   ../../include/distrib.h \
   ../../include/cexception.h \
@@ -256,6 +263,7 @@ objinsp.obj: objinsp.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
+  ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   inspector.h \
   tkutil.h \
@@ -281,7 +289,9 @@ statinsp.obj: statinsp.cc \
   ../../include/csimul.h \
   ../../include/cdefaultlist.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
@@ -299,7 +309,9 @@ structinsp.obj: structinsp.cc \
   ../../include/cenum.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/macros.h \
   inspector.h \
   ../../include/onstartup.h \
@@ -322,7 +334,9 @@ tkapp.obj: tkapp.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/cmodule.h \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
@@ -358,7 +372,9 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/globals.h \
   ../../include/cmsgheap.h \
@@ -384,7 +400,9 @@ tkutil.obj: tkutil.cc \
   tkutil.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -413,7 +431,9 @@ visitor.obj: visitor.cc \
   visitor.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
   ../../include/carray.h \

@@ -324,7 +324,7 @@ void cMemCommBuffer::unpack(opp_string& d)
 {
     int len;
     unpack(len);
-    d.allocate(len+1);
+    d.reserve(len+1);
     EXTRACTARRAY(char,d.buffer(),len);
     d.buffer()[len] = '\0';
 }

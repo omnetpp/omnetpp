@@ -58,7 +58,9 @@ cmdenv.obj: cmdenv.cc \
   ../../include/cobject.h \
   ../../include/onstartup.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \

@@ -88,13 +88,13 @@ void TCmdenvApp::readOptions()
     opt_extrastack = ini_file->getAsInt("Cmdenv", "extra-stack", CMDENV_EXTRASTACK);
     opt_outputfile = ini_file->getAsString("Cmdenv", "output-file", "");
 
-    if (opt_outputfile.buffer()!=NULL)
+    if (!opt_outputfile.empty())
     {
         processFileName(opt_outputfile);
-        ::printf("Cmdenv: redirecting output to file `%s'...\n",(const char *)opt_outputfile);
-        FILE *out = fopen(opt_outputfile, "w");
+        ::printf("Cmdenv: redirecting output to file `%s'...\n",opt_outputfile.c_str());
+        FILE *out = fopen(opt_outputfile.c_str(), "w");
         if (!out)
-            throw new cException("Cannot open output file `%s'",(const char *)opt_outputfile);
+            throw new cException("Cannot open output file `%s'",opt_outputfile.c_str());
         fout = out;
     }
 }
@@ -144,14 +144,14 @@ void TCmdenvApp::setup()
     // If the list of runs is not given explicitly, must execute all runs
     // that have an ini file section; if no runs have ini file sections,
     // must do one run.
-    if ((const char *)opt_runstoexec==NULL)
+    if (opt_runstoexec.empty())
     {
-       buffer[0]='\0';
+       buffer[0]='\0'; 
        for (cIniFileSectionIterator sect(ini_file); !sect.end(); sect++)
        {
           if (strncmp(sect.section(),"Run ",4)==0)
           {
-              strcat(buffer,sect.section()+4);
+              strcat(buffer,sect.section()+4); // FIXME danger of buffer overrun here
               strcat(buffer,",");
           }
        }
@@ -193,11 +193,11 @@ int TCmdenvApp::run()
         return 0;
     }
 
-    EnumStringIterator run_nr( (const char *)opt_runstoexec );
+    EnumStringIterator run_nr( opt_runstoexec.c_str() );
     if (run_nr.error())
     {
         ev.printfmsg("Error parsing list of runs to execute: `%s'",
-                     (const char *)opt_runstoexec );
+                     opt_runstoexec.c_str() );
         return 1;
     }
 
@@ -216,12 +216,12 @@ int TCmdenvApp::run()
             readPerRunOptions(run_nr());
 
             // find network
-            cNetworkType *network = findNetwork(opt_network_name);
+            cNetworkType *network = findNetwork(opt_network_name.c_str());
             if (!network)
-                throw new cException("Network `%s' not found, check .ini and .ned files", (const char *)opt_network_name);
+                throw new cException("Network `%s' not found, check .ini and .ned files", opt_network_name.c_str());
 
             // set up network
-            ::fprintf(fout, "Setting up network `%s'...\n", (const char *)opt_network_name);
+            ::fprintf(fout, "Setting up network `%s'...\n", opt_network_name.c_str());
             ::fflush(fout);
 
             simulation.setupNetwork(network, run_nr());

@@ -29,11 +29,6 @@
 class Speedometer;
 class TInspector;
 
-// heuristic upper limits for various strings: obj->className(), obj->fullPath(), obj->info()
-#define MAX_CLASSNAME       100
-#define MAX_OBJECTFULLPATH  500
-#define MAX_OBJECTINFO      500
-
 //=========================================================================
 // TOmnetTkApp: Tcl/Tk-based user interface.
 
@@ -208,11 +203,11 @@ class TOmnetTkApp : public TOmnetApp
 
       void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
-      const char *getIniFileName()       {return opt_inifile_name;}
+      const char *getIniFileName()       {return opt_inifile_name.c_str();}
       const char *getOutVectorFileName() {return outvectmgr->fileName();}
       const char *getOutScalarFileName() {return outscalarmgr->fileName();}
       const char *getSnapshotFileName()  {return snapshotmgr->fileName();}
-      const char *getWindowTitlePrefix() {return correct(windowtitleprefix);}
+      const char *getWindowTitlePrefix() {return windowtitleprefix.c_str();}
 
 };
 

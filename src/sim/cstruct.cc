@@ -122,7 +122,7 @@ long cStructDescriptor::string2enum(const char *s, const char *enumname)
 
 void cStructDescriptor::oppstring2string(const opp_string& str, char *buf, int buflen)
 {
-    strncpy(buf, str, buflen);
+    strncpy(buf, str.c_str(), buflen);
     buf[buflen-1] = '\0';
 }
 

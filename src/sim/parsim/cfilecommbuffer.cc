@@ -389,7 +389,7 @@ void cFileCommBuffer::unpack(opp_string& d)
 {
     char *s;
     unpack((const char *&)s);
-    d.allocate(strlen(s)+1);
+    d.reserve(strlen(s)+1);
     strcpy(d.buffer(),s);
     delete [] s;
 }

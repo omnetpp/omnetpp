@@ -526,6 +526,7 @@ exit $ret;
 #  %getsize{fieldname}
 #  %tostring{fieldname}
 #  %fromstring{fieldname}
+#  %maybe_c_str{fieldname}
 #
 
 sub prepareForCodeGeneration
@@ -657,6 +658,7 @@ sub prepareForCodeGeneration
         } else {
             $fkind{$fieldname} = 'basic';
         }
+        $maybe_c_str{$fieldname} = "";
         if ($fkind{$fieldname} eq 'struct') {
             $datatype{$fieldname} = $ftype;
             $argtype{$fieldname} = "const $ftype&";
@@ -747,8 +749,9 @@ sub prepareForCodeGeneration
                 $argtype{$fieldname} = "const char *";
                 $rettype{$fieldname} = "const char *";
                 $tostring{$fieldname} = "oppstring2string";
-                $fromstring{$fieldname} = "opp_string";
+                $fromstring{$fieldname} = "";
                 $fval{$fieldname} = '""' unless ($fval{$fieldname} ne '');
+                $maybe_c_str{$fieldname} = ".c_str()";
             } else {
                 print STDERR "*** Error: unknown data type '$ftype' (is it struct?)\n"; $ret=1;
                 $datatype{$fieldname} = $ftype;
@@ -1058,7 +1061,7 @@ sub generateClass
                 print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k)$getterconst\n";
                 print CC "{\n";
                 print CC "    if (k>=$farraysize{$fieldname}) throw new cException(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
-                print CC "    return $var{$fieldname}\[k\];\n";
+                print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
@@ -1092,7 +1095,7 @@ sub generateClass
                 print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k)$getterconst\n";
                 print CC "{\n";
                 print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size $varsize{$fieldname} indexed by \%d\", k);\n";
-                print CC "    return $var{$fieldname}\[k\];\n";
+                print CC "    return $var{$fieldname}\[k\]$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
@@ -1102,7 +1105,7 @@ sub generateClass
             } else {
                 print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}()$getterconst\n";
                 print CC "{\n";
-                print CC "    return $var{$fieldname};\n";
+                print CC "    return $var{$fieldname}$maybe_c_str{$fieldname};\n";
                 print CC "}\n\n";
                 print CC "void $msgclass\:\:$setter{$fieldname}($argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";

@@ -20,6 +20,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "opp_string.h"
 #include "fsutils.h"
 #include "cexception.h"
 
@@ -85,7 +86,7 @@ void splitFileName(const char *pathname, opp_string& dir, opp_string& fnameonly)
 
 PushDir::PushDir(const char *changetodir)
 {
-    olddir.allocate(1024);
+    olddir.reserve(1024);
     if (!getcwd(olddir.buffer(),1024))
         throw new cException("Cannot get the name of current directory");
     if (chdir(changetodir))
@@ -94,8 +95,8 @@ PushDir::PushDir(const char *changetodir)
 
 PushDir::~PushDir()
 {
-    if (chdir((const char *)olddir))
-        throw new cException("Cannot change back to directory `%s'", (const char *)olddir);
+    if (chdir(olddir.c_str()))
+        throw new cException("Cannot change back to directory `%s'", olddir.c_str());
 }
 
 //-----------
@@ -129,16 +130,16 @@ const char *Globber::getNext()
     {
         // first call
         data = new GlobPrivateData();
-        if (!strchr((const char *)fnamepattern,'*') && !strchr((const char *)fnamepattern,'?'))
+        if (!strchr(fnamepattern.c_str(),'*') && !strchr(fnamepattern.c_str(),'?'))
         {
             data->nowildcard = true;
-            return (const char *)fnamepattern;
+            return fnamepattern.c_str();
         }
 
         data->nowildcard = false;
 
         // remember directory in data->dir
-        strcpy(data->dir,(const char *)fnamepattern);
+        strcpy(data->dir,fnamepattern.c_str());
         char *s = data->dir + strlen(data->dir);
         while (--s>=data->dir)
             if (*s=='/' || *s=='\\')
@@ -149,7 +150,7 @@ const char *Globber::getNext()
             throw new cException("Wildcard characters in directory names are not allowed: `%s'", data->dir);
 
         // get first file
-        data->handle = _findfirst((const char *)fnamepattern, &data->fdata);
+        data->handle = _findfirst(fnamepattern.c_str(), &data->fdata);
         if (data->handle<0)
         {
             _findclose(data->handle);
@@ -205,14 +206,14 @@ const char *Globber::getNext()
     if (!data)
     {
         data = new GlobPrivateData();
-        if (!strchr((const char *)fnamepattern,'*') && !strchr((const char *)fnamepattern,'?'))
+        if (!strchr(fnamepattern.c_str(),'*') && !strchr(fnamepattern.c_str(),'?'))
         {
             data->nowildcard = true;
-            return (const char *)fnamepattern;
+            return fnamepattern.c_str();
         }
 
         data->nowildcard = false;
-        if (glob((const char *)fnamepattern, 0, NULL, &data->globdata)!=0)
+        if (glob(fnamepattern.c_str(), 0, NULL, &data->globdata)!=0)
             return NULL;
         data->globpos = 0;
         return data->globdata.gl_pathv[data->globpos++];

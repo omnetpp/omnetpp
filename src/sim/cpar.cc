@@ -408,7 +408,7 @@ const char *cPar::prompt()
 {
      if (isRedirected())
          return ind.par->prompt();
-     return promptstr;
+     return promptstr.c_str();
 }
 
 bool cPar::isInput() const
@@ -1163,8 +1163,8 @@ cPar& cPar::read()
     do {
         bool esc;
         getAsText( buf, 255 );
-        if (promptstr)
-            esc = ev.gets(promptstr,buf);
+        if (!promptstr.empty())
+            esc = ev.gets(promptstr.c_str(),buf);
         else if (name())
             esc = ev.askf(buf,255, "Enter parameter `%s':",fullPath());
         else
@@ -1440,7 +1440,7 @@ cModulePar::~cModulePar()
 
 const char *cModulePar::fullPath() const
 {
-    return fullPath(fullpathbuf,FULLPATHBUF_SIZE);
+    return fullPath(fullpathbuf,MAX_OBJECTFULLPATH);
 }
 
 const char *cModulePar::fullPath(char *buffer, int bufsize) const

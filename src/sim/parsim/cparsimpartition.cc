@@ -185,10 +185,10 @@ void cParsimPartition::processReceivedBuffer(cCommBuffer *buffer, int tag, int s
     {
         case TAG_TERMINATIONEXCEPTION:
             buffer->unpack(errmsg);
-            throw new cReceivedTerminationException(sourceProcId, (const char *)errmsg);
+            throw new cReceivedTerminationException(sourceProcId, errmsg.c_str());
         case TAG_EXCEPTION:
             buffer->unpack(errmsg);
-            throw new cReceivedException(sourceProcId, (const char *)errmsg);
+            throw new cReceivedException(sourceProcId, errmsg.c_str());
         default:
             throw new cException("cParsimPartition::processReceivedBuffer(): unexpected tag %d "
                                  "from procId %d", tag, sourceProcId);
