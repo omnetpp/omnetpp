@@ -752,7 +752,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
         std::string submodulesize_var = node->getName();
         submodulesize_var += "_size";
 
-        out << indent << submodulesize_var.c_str() << " = ";
+        out << indent << "int " << submodulesize_var.c_str() << " = ";
         generateItem(vectorsize, indent, mode);
         out << ";\n";
 
