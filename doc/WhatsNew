@@ -37,6 +37,8 @@ was introduced to store settings between runs. Further Properties dialogs
 you want to exit the program. File|Save all was also implemented. A number of
 other fixes improved the robustness and reliability of the code.
 
+A short section was added to the manual about parallel simulation in general.
+
 
 In the OMNeT++ 2.0 beta 5 version (June 2000)
 ---------------------------------------------
