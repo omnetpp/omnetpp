@@ -1,6 +1,7 @@
 D  [0-9]
 L  [a-zA-Z_]
 E  [Ee][+-]?{D}+
+S  [ \t\v\n\r\f]
 
 %x cplusplusbody
 
@@ -43,8 +44,9 @@ extern "C" { int isatty(int); }
 extern YYSTYPE yylval;
 extern YYLTYPE yylloc;
 
-void comment (void);
-void count (void);
+void comment(void);
+void count(void);
+void extendCount(void);
 
 #define WARN(m) \
         sprintf (yyfailure, "! %s", m); \
@@ -139,8 +141,9 @@ char textbuf[TEXTBUF_LEN];
 \'[^\']\'               { count(); return CHARCONSTANT; }
 
 "{{"                    { count(); BEGIN(cplusplusbody); }
-<cplusplusbody>"}}"     { count(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
-<cplusplusbody>.        { count(); /*FIXME*/ }
+<cplusplusbody>"}}"     { extendCount(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
+<cplusplusbody>{S}      { extendCount(); }
+<cplusplusbody>.        { extendCount(); }
 
 ";"                     { count(); return (';'); }
 ","                     { count(); return (','); }
@@ -181,7 +184,7 @@ char textbuf[TEXTBUF_LEN];
 ">"                     { count(); return GT; }
 ">="                    { count(); return GE; }
 
-[ \t\v\n\r\f]           { count(); }
+{S}                     { count(); }
 .                       { count(); return INVALID_CHAR; }
 
 %%
@@ -223,15 +226,23 @@ void comment(void)
 * - yytext[] is the current token passed by (f)lex
 ***************************************************/
 
-void count(void)
+void _count(int updateprevpos)
 {
         static int textbuflen;
         int i;
 
-        /* init textbuf */
-        if (pos.li==1 && pos.co==0) {textbuf[0]='\0'; textbuflen=0;}
+        /* printf("DBG: count(): prev=%d,%d  pos=%d,%d yytext=>>%s<<\n",
+               prevpos.li, prevpos.co, pos.li, pos.co, yytext);
+        */
 
-        prevpos = pos;
+        /* init textbuf */
+        if (pos.li==1 && pos.co==0) {
+                textbuf[0]='\0'; textbuflen=0;
+        }
+
+        if (updateprevpos) {
+                prevpos = pos;
+        }
         for (i = 0; yytext[i] != '\0'; i++) {
                 if (yytext[i] == '\n') {
                         pos.co = 0;
@@ -259,6 +270,16 @@ void count(void)
         yylloc.last_line    = pos.li;
         yylloc.last_column  = pos.co;
 
+}
+
+void count(void)
+{
+    _count(1);
+}
+
+void extendCount(void)
+{
+    _count(0);
 }
 
 /***************************************************
