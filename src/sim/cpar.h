@@ -125,7 +125,7 @@ class cPar : public cObject
    public:
      cPar(cPar& other);
      cPar(char *namestr=NULL);
-     cPar(char *namestr, cPar& other);       // tp=type char: one of CSBLDFPITX
+     cPar(char *namestr, cPar& other);
 
      virtual ~cPar();
 

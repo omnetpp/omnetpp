@@ -37,11 +37,12 @@
 # define FALSE     false
 #endif
 
-#if (defined(__BORLANDC__) && (__BORLANDC__<=0x410)) || (defined(__WATCOMC__) && (__WATCOMC__<1060))
-typedef int bool;
-#define true   1
-#define false  0
-#endif
+//// old compilers which don't know bool are no longer supported
+// #if (defined(__BORLANDC__) && (__BORLANDC__<=0x410)) || (defined(__WATCOMC__) && (__WATCOMC__<1060))
+// typedef int bool;
+// #define true   1
+// #define false  0
+// #endif
 
 #ifndef PI
 #define PI        3.141592653589793

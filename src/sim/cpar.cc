@@ -496,7 +496,7 @@ char *cPar::stringValue()
 
     if (isInput()) read();
     if (typechar=='S')
-         {if (ss.sht) return ss.str; else return ls.str;}
+         return ss.sht ? ss.str : ls.str;
     else
          {opp_error(eBADCAST,className(),name(),typechar,'S');return NULL;}
 }
