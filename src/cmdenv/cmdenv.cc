@@ -277,7 +277,7 @@ void TCmdenvApp::simulate()
                {
                    if (mod->phase()[0]==0)
                    {
-                       printf( "** Event #%ld  T=%s.  Module #%d `%s'.\n",
+                       printf( "** Event #%ld  T=%s.  Module #%d `%s'\n",
                                simulation.eventNumber(),
                                simtimeToStr( simulation.simTime() ),
                                mod->id(),
@@ -286,7 +286,7 @@ void TCmdenvApp::simulate()
                    }
                    else
                    {
-                       printf( "** Event #%ld  T=%s.  Module #%d `%s' in phase `%s'.\n",
+                       printf( "** Event #%ld  T=%s.  Module #%d `%s' in phase `%s'\n",
                                simulation.eventNumber(),
                                simtimeToStr( simulation.simTime() ),
                                mod->id(),
@@ -319,7 +319,7 @@ void TCmdenvApp::simulate()
                {
                    if (opt_perfdisplay)
                    {
-                       printf( "** Event #%ld \tT=%s.\n",
+                       printf( "** Event #%ld \tT=%s\n",
                                simulation.eventNumber(),
                                simtimeToStr(simulation.simTime()));
                        printf( "      ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
@@ -329,7 +329,7 @@ void TCmdenvApp::simulate()
                    }
                    else
                    {
-                       printf( "** Event #%ld \tT=%s \tev/sec=%g.\n",
+                       printf( "** Event #%ld \tT=%s \tev/sec=%g\n",
                                simulation.eventNumber(),
                                simtimeToStr(simulation.simTime()),
                                speedometer.eventsPerSec());

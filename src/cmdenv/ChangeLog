@@ -11,7 +11,7 @@
 	When in express mode, these entries are used:
 	  status-frequency=<integer> (default: 50000) -
 	     - print status update every n events
-	  perf-display=yes/no (default: yes)
+	  performance-display=yes/no (default: yes)
 	     - print detailed performance status
 	Obsoleted entries: display-update=, verbose-simulation=.
 
