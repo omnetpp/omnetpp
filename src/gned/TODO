@@ -1,3 +1,7 @@
+Bugs:
+- module name mismatch in the submods and conns sections ==> "assert failed"
+- resize-bar: right-click while resizing leaves the bar on screen
+
 Parse/Generate:
 - sometimes generates empty lines into the code
 - comments around display strings, channel attributes are lost
