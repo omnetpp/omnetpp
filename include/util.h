@@ -23,6 +23,10 @@
 #include "defs.h"
 
 
+// forward declarations
+class cModule;
+
+
 /**
  * Number of random number generators.
  */
@@ -378,6 +382,74 @@ class SIM_API opp_string
     opp_string& operator=(const opp_string& s)
                                {delete[] str;str=opp_strdup(s.str);return *this;}
 };
+
+//==========================================================================
+
+#define MAX_METHODCALL 1024
+
+/**
+ * Denotes module class member function as callable from other modules.
+ *
+ * Usage: <tt>Enter_Method("getRoutingTable(node=%d)",node);<tt>
+ *
+ * The macro should be put at the top of every module member function
+ * that may be called from other modules. This macro arranges to 
+ * temporarily switch the context to this module (the old context
+ * will be restored automatically when the method returns), 
+ * and also lets the graphical user interface animate the method call.
+ *
+ * The argument(s) should specify the method name (and parameters) --
+ * it will be used for the animation. The argument list works as in 
+ * <tt>printf()</tt>, so it's easy to include the actual parameter values.
+ *
+ * @see Enter_Method_Simple() macro
+ */
+#define Enter_Method cContextSwitcher __ctx(this); __ctx.methodCall  
+
+/**
+ * Denotes module class member function as callable from other modules.
+ * This macro is similar to the Enter_Method() macro, only it does
+ * not do animation and thus it doesn't expect the methods name as 
+ * argument. 
+ *
+ * Usage: <tt>Enter_Method_Silent();<tt>
+ *
+ * @see Enter_Method() macro
+ */
+#define Enter_Method_Silent() cContextSwitcher __ctx(this)  
+
+/**
+ * Helper class, used internally by the Enter_Method() and Enter_Method_Silent()
+ * macros. The macro should be put at the top of module methods that
+ * may be called from other modules, and it creates an instance of this class. 
+ * The constructor switches the context to the module containing the method,
+ * and the destructor restores the original context.    
+ *
+ * @see cSimulation::contextModule(), cSimulation::setContextModule()
+ * @ingroup Internals
+ */
+class cContextSwitcher
+{
+  private:
+    cModule *callerContext; 
+  public: 
+    /**
+     * Switches context to the given module
+     */
+    cContextSwitcher(cModule *thisptr);
+
+    /**
+     * Restores the original context
+     */
+    ~cContextSwitcher();
+
+    /**
+     * Tells the user interface about the method call (so that it can be 
+     * animated, etc.)
+     */
+    void methodCall(const char *fmt,...);
+};
+
 
 //==========================================================================
 //=== Implementation of utility functions:

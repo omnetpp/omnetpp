@@ -178,6 +178,13 @@ class ENVIR_API cEnvir
      * breakpoint() call.
      */
     void breakpointHit(const char *lbl, cSimpleModule *mod);
+
+    /**
+     * Notifies the environment that one module called a member function 
+     * of another module object. This hook enables a graphical user 
+     * interface animate the method call in the network diagram.    
+     */
+    void moduleMethodCalled(cModule *from, cModule *to, const char *method);
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */

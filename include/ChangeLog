@@ -1,3 +1,13 @@
+2003-10-02  Andras Varga
+
+	* util.h: added Enter_Method() and Enter_Method_Silent() macros
+	which should be added to top of module class methods, and do
+	context switching and animation of method calls. (Macros build on
+	cContextSwitcher internal class.)
+
+	* cenvir.h: added method moduleMethodCalled(), needed for animating
+	method calls between modules
+
 2003-09-25  Andras Varga
 
 	* cmessage.h: support for message display strings. You have to
@@ -10,9 +20,9 @@
 	animate	sendDirect().
 
         * cmodule.h: refined the rules for sendDirect(), and documented it.
-	Namely, fromGate()==NULL must hold for the destination gate, that
-	is, modules MUST have dedicated gates for receiving via sendDirect(). 
-	You cannot have a gate which receives messages via both connections 
+	Namely, fromGate()==NULL must hold for the destination gate, that is, 
+	modules MUST have dedicated gates for receiving via sendDirect(). 
+	You cannot have a gate which receives messages via both a connection
 	and sendDirect().
 
     	This restriction makes models cleaner (you must have dedicated gates
