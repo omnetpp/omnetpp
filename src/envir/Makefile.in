@@ -26,7 +26,8 @@ HAVE_DLOPEN=@HAVE_DLOPEN@
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
 
-OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o platdep.o speedmtr.o filemgrs.o
+OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o \
+     patmatch.o platdep.o speedmtr.o filemgrs.o akoutvectormgr.o
 
 #
 # Targets
@@ -75,6 +76,9 @@ speedmtr.o : speedmtr.cc
 filemgrs.o : filemgrs.cc
 	$(CXX) -c $(COPTS) filemgrs.cc
 
+akoutvectormgr.o : akoutvectormgr.cc
+	$(CXX) -c $(COPTS) akoutvectormgr.cc
+
 depend:
 	$(MAKEDEPEND) -I. -I../../include -- *.cc
 	$(MAKEDEPEND) -I. -I../../include -fMakefile.in -- *.cc
@@ -97,6 +101,7 @@ cenvir.o: cenvir.cc \
   ../../include/cnetmod.h \
   slaveapp.h \
   speedmtr.h \
+  filemgrs.h \
   envdefs.h \
   ../../include/defs.h \
   ../../include/cpar.h \
@@ -122,6 +127,7 @@ cinifile.o: cinifile.cc \
   ../../include/cobject.h \
   envdefs.h
 filemgrs.o: filemgrs.cc \
+  ../../include/defs.h \
   ../../include/cenvir.h \
   omnetapp.h \
   ../../include/csimul.h \
@@ -129,7 +135,6 @@ filemgrs.o: filemgrs.cc \
   ../../include/cstat.h \
   ../../include/macros.h \
   filemgrs.h \
-  ../../include/defs.h \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
@@ -149,8 +154,8 @@ main.o: main.cc \
   ../../include/cobject.h \
   ../../include/csimul.h \
   ../../include/cenvir.h \
-  ../../include/defs.h \
   ../../include/util.h \
+  ../../include/defs.h \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
@@ -200,8 +205,8 @@ seeds.o: seeds.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cobject.h \
-  ../../include/defs.h \
   ../../include/util.h \
+  ../../include/defs.h \
   ../../include/cpar.h
 slaveapp.o: slaveapp.cc \
   slaveapp.h \

@@ -263,13 +263,9 @@ const char *TOmnetApp::getDisplayString(int run_no, const char *name)
     return ini_file->getAsString2(section,"DisplayStrings",name,NULL);
 }
 
-const char *TOmnetApp::getConfigEntry(int run_no, const char *name)
+cIniFile *TOmnetApp::getIniFile()
 {
-    char section[16];
-    sprintf(section,"Run %d",run_no);
-
-    ini_file->error(); // clear error flag
-    return ini_file->getAsString2(section,"General",name,NULL);
+    return ini_file;
 }
 
 //-------------------------------------------------------------

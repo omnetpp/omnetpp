@@ -57,6 +57,7 @@ class cFileOutputVectorManager : public cOutputVectorManager
     void openFile();
     void closeFile();
     void initVector(sVectorData *vp);
+    virtual sVectorData *createVectorData();
 
   public:
     /** @name Constructors, destructor */
@@ -127,11 +128,11 @@ class cFileOutputScalarManager : public cOutputScalarManager
     FILE *f;           // file ptr of output file
 
   protected:
+    bool initialized;
+
     void openFile();
     void closeFile();
-
     void init();
-    bool initialized;
 
   public:
     /** @name Constructors, destructor */

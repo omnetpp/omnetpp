@@ -1,3 +1,25 @@
+2002-07-08  Andras Varga
+
+	* filemgrs.cc: added fname-append-host=true/false ini file setting.
+	When turned on, appends the host name to the names of the output
+	files (output vector, output scalar, snapshot files). This is 
+	useful when the simulation is run on multiple machines concurrently
+	(parallel independent runs (Akaroa) or parallel/distributed simulation),
+	and all running instances write to the same directory (e.g. shared
+	via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
+
+	* added akoutvectormgr.h/cc: integrated Steffen Sroka's Akaroa 
+	extension that supports multiple independent replicated simulation runs.
+	Akaroa can be activated by specifying
+	  [General]
+	  outputvectormanager-class=AkOutputVectorManager
+	in the ini file. By default, all output vectors are under Akaroa 
+	control; the <modulename>.<vectorname>.akaroa=false setting can be used
+	to make Akaroa ignore specific vectors.
+	For more info see the Akaroa home page and the OMNeT++ documentation.
+
+	TBD: Akaroa integration into the makefiles; documentation
+
 2002-06-13  Andras Varga
 
 	* filemgrs.cc: 2 bugfixes: (1) output scalar file did not get opened

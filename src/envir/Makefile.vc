@@ -11,7 +11,8 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN)
-OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj slaveapp.obj seeds.obj patmatch.obj platdep.obj speedmtr.obj filemgrs.obj
+OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj slaveapp.obj \
+     seeds.obj patmatch.obj platdep.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
 #
@@ -65,6 +66,9 @@ speedmtr.obj : speedmtr.cc
 
 filemgrs.obj : filemgrs.cc
 	$(CXX) $(COPTS) /c /Tp filemgrs.cc
+
+akoutvectormgr.obj : akoutvectormgr.cc
+	$(CXX) $(COPTS) /c /Tp akoutvectormgr.cc
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
@@ -155,6 +159,7 @@ omnetapp.obj: omnetapp.cc \
   cinifile.h \
   patmatch.h \
   ../../include/ctypes.h \
+  ../../include/ccoroutine.h \
   ../../include/csimul.h \
   ../../include/cpar.h \
   ../../include/cnetmod.h \
@@ -168,7 +173,6 @@ omnetapp.obj: omnetapp.cc \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \

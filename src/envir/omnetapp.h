@@ -101,7 +101,8 @@ class ENVIR_API TOmnetApp
                                      bool& enabled, /*output*/
                                      double& starttime, double& stoptime);
      virtual const char *getDisplayString(int run_no,const char *name);
-     virtual const char *getConfigEntry(int run_no, const char *name);
+
+     virtual cIniFile *getIniFile();
 
      // used internally to read opt_xxxxx setting from ini file
      virtual void readOptions();
