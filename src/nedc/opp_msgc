@@ -1068,7 +1068,7 @@ sub generateClass
                 }
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "    delete [] this->$var{$fieldname};\n";
-                print CC "    this->$var{$fieldname} = new $datatype{$fieldname}\[other.$varsize{$fieldname}\];\n";
+                print CC "    this->$var{$fieldname} = (other.$varsize{$fieldname}==0) ? NULL : new $datatype{$fieldname}\[other.$varsize{$fieldname}\];\n";
                 print CC "    $varsize{$fieldname} = other.$varsize{$fieldname};\n";
                 print CC "    for (i=0; i<$varsize{$fieldname}; i++)\n";
                 if ($classtype{$ftype{$fieldname}} eq 'cobject') {
@@ -1180,8 +1180,7 @@ sub generateClass
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "void $msgclass\:\:$alloc{$fieldname}(unsigned int size)\n";
                 print CC "{\n";
-                #FIXME set null pointer if size==0 (it's not done automatically by C++!); check other places for same bug!
-                print CC "    $datatype{$fieldname} *$var{$fieldname}2 = new $datatype{$fieldname}\[size\];\n";
+                print CC "    $datatype{$fieldname} *$var{$fieldname}2 = (size==0) ? NULL : new $datatype{$fieldname}\[size\];\n";
                 print CC "    unsigned int sz = $varsize{$fieldname} < size ? $varsize{$fieldname} : size;\n";
                 print CC "    unsigned int i;\n";
                 print CC "    for (i=0; i<sz; i++)\n";
