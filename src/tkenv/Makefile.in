@@ -91,6 +91,7 @@ inspector.o: inspector.cc \
   inspector.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/opp_string.h \
   ../../include/random.h \
   ../../include/distrib.h \
   ../../include/cexception.h \
@@ -132,6 +133,9 @@ inspector.o: inspector.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
+  ../../include/cparsimcomm.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
@@ -145,6 +149,7 @@ inspfactory.o: inspfactory.cc \
   inspfactory.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/opp_string.h \
   ../../include/random.h \
   ../../include/distrib.h \
   ../../include/cexception.h \
@@ -186,6 +191,9 @@ inspfactory.o: inspfactory.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
+  ../../include/cparsimcomm.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
@@ -200,10 +208,10 @@ modinsp.o: modinsp.cc \
   ../../include/cstat.h \
   ../../include/cdensity.h \
   ../../include/cdispstr.h \
+  modinsp.h \
   tkapp.h \
   tklib.h \
   inspfactory.h \
-  modinsp.h \
   arrow.h \
   graphlayout.h \
   ../../include/cmodule.h \
@@ -215,20 +223,22 @@ modinsp.o: modinsp.cc \
   ../../include/cgate.h \
   ../../include/csimul.h \
   ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
+  inspector.h \
   ../envir/omnetapp.h \
-  ../../include/cenvir.h \
+  tkutil.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/macros.h \
-  inspector.h \
-  ../../include/ctypes.h \
-  tkutil.h
+  ../../include/ctypes.h
 objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -237,6 +247,7 @@ objinsp.o: objinsp.cc \
   objinsp.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/opp_string.h \
   ../../include/random.h \
   ../../include/distrib.h \
   ../../include/cexception.h \
@@ -278,6 +289,9 @@ objinsp.o: objinsp.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
+  ../../include/cparsimcomm.h \
+  ../../include/ccommbuffer.h \
+  ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
@@ -305,13 +319,15 @@ statinsp.o: statinsp.cc \
   ../../include/cgate.h \
   ../../include/csimul.h \
   ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../envir/omnetapp.h \
-  ../../include/cenvir.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
@@ -327,18 +343,19 @@ structinsp.o: structinsp.cc \
   structinsp.h \
   ../../include/cobject.h \
   ../../include/cenum.h \
+  ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../envir/omnetapp.h \
   ../../include/carray.h \
   ../../include/globals.h \
-  ../../include/cenvir.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/onstartup.h \
-  ../../include/cpar.h \
   ../../include/macros.h \
   inspector.h \
   ../../include/ctypes.h \
@@ -362,9 +379,10 @@ tkapp.o: tkapp.cc \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../envir/envdefs.h \
-  ../../include/cpar.h \
   ../../include/cmodule.h \
   ../../include/ccoroutine.h \
   ../../include/carray.h \
@@ -375,6 +393,7 @@ tkapp.o: tkapp.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
+  ../../include/cpar.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../../include/envirext.h \
@@ -400,10 +419,11 @@ tkcmd.o: tkcmd.cc \
   ../envir/patmatch.h \
   visitor.h \
   ../../include/defs.h \
-  ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/globals.h \
   ../../include/cmsgheap.h \
@@ -414,6 +434,7 @@ tkcmd.o: tkcmd.cc \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
+  ../../include/cpar.h \
   ../../include/cenum.h \
   ../envir/envdefs.h \
   ../envir/omnetapp.h \
@@ -435,8 +456,9 @@ tklib.o: tklib.cc \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/onstartup.h \
-  ../../include/cpar.h
+  ../../include/opp_string.h
 tkutil.o: tkutil.cc \
   ../../include/cobject.h \
   ../../include/cmodule.h \
@@ -445,9 +467,12 @@ tkutil.o: tkutil.cc \
   ../envir/patmatch.h \
   visitor.h \
   tkutil.h \
+  ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -459,11 +484,9 @@ tkutil.o: tkutil.cc \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
   ../envir/omnetapp.h \
-  ../../include/cenvir.h \
   ../envir/args.h \
   ../envir/envdefs.h \
-  ../../include/envirext.h \
-  ../../include/cpar.h
+  ../../include/envirext.h
 visitor.o: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \
@@ -481,7 +504,9 @@ visitor.o: visitor.cc \
   visitor.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
   ../../include/carray.h \

@@ -112,6 +112,17 @@ cppmsggenerator.o: cppmsggenerator.cc \
   nedelement.h \
   cppexprgenerator.h \
   nedcompiler.h
+lex.yy.o: lex.yy.cc \
+  nedgrammar.h \
+  ned.tab.h
+ned.tab.o: ned.tab.cc \
+  nedgrammar.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedelement.h
 nedbasicvalidator.o: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \

@@ -73,21 +73,23 @@ cmdenv.o: cmdenv.cc \
   ../../include/globals.h \
   ../../include/cobject.h \
   ../../include/onstartup.h \
+  ../../include/cenvir.h \
   ../../include/util.h \
+  ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/carray.h \
-  ../../include/cenvir.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
-  ../../include/cpar.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/cdefaultlist.h
+  ../../include/cdefaultlist.h \
+  ../../include/cpar.h
 enumstr.o: enumstr.cc \
   enumstr.h
 heap.o: heap.cc
