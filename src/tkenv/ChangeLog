@@ -310,3 +310,5 @@ Sept 5, 1999
   - main window renamed from ".omnetpp" to "."; now modal dialogs cannot go
     behind the main window (including the big red "STOP!" dialog).
 ------ omnetpp-2.0b2 released ------
+Oct 12, 1999
+  - bugfix in balloon.tcl
