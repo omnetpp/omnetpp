@@ -1,5 +1,10 @@
 2004-10-15  Andras Varga
 
+	* fixed display strings: didn't handle "," and "=" in args to "t=" 
+	properly
+
+2004-10-15  Andras Varga
+
 	* window.tcl: fix: "View file" option didn't like some file names
 
 2004-10-10  Andras Varga

@@ -22,9 +22,9 @@
 #
 
 
-# split_dispstr --
+# get_parsed_display_string --
 #
-# Split up display string into an array.
+# Return parsed display string in an array.
 #    str:     display string
 #    array:   dest array name
 #    w:       inspector window name
@@ -33,34 +33,24 @@
 #    parent:  if nonzero, parameter is searched in the parent module too;
 #             otherwise, only that very module is considered
 # Example:
-#   if "p=50,$y_pos;i=cloud" is parsed into array 'a' and the "y_pos" module
-#   parameter is 99, the result is:
+#   with "p=50,$y_pos;i=cloud", and if "y_pos" module parameter is 99, the result:
 #      $a(p) = {50 99}
 #      $a(i) = {cloud}
 #
-proc split_dispstr {str array w modptr parent} {
+proc get_parsed_display_string {str array w modptr parent} {
    upvar $array arr
 
-   regsub -all -- {\\n} $str "\n" str
-   regsub -all -- {\\t} $str "\t" str
+   opp_displaystring $str parse arr
 
-   foreach tag [split $str {;}] {
-      set tag [split $tag {=}]
-      set key [lindex $tag 0]
-      set val [split [lindex $tag 1] {,}]
-
+   foreach key [array names arr] {
       set i 0
-      foreach v $val {
+      foreach v $arr($key) {
          if {[string range $v 0 0]=={$}} {
             if {$modptr==""} {error "Cannot substitute parameters into this display string"}
             set v [opp_inspectorcommand $w dispstrpar $modptr [string range $v 1 end] $parent]
-            set val [lreplace $val $i $i $v]
+            set arr($key) [lreplace $arr($key) $i $i $v]
          }
          incr i
-      }
-
-      if {$key != ""} {
-         set arr($key) $val
       }
    }
 }
@@ -140,7 +130,7 @@ proc draw_submod {c submodptr x y name dispstr} {
 
    if [catch {
 
-       split_dispstr $dispstr tags [winfo toplevel $c] $submodptr 1
+       get_parsed_display_string $dispstr tags [winfo toplevel $c] $submodptr 1
 
        # set sx and sy (and look up image)
        set isx 0
@@ -294,7 +284,7 @@ proc draw_enclosingmod {c ptr name dispstr} {
 
    if [catch {
 
-       split_dispstr $dispstr tags [winfo toplevel $c] $ptr 0
+       get_parsed_display_string $dispstr tags [winfo toplevel $c] $ptr 0
 
        # determine top-left origin
        if {![info exists tags(p)]} {set tags(p) {}}
@@ -367,7 +357,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 
     if [catch {
 
-       split_dispstr $dispstr tags [winfo toplevel $c] {} 0
+       get_parsed_display_string $dispstr tags [winfo toplevel $c] {} 0
 
        if {![info exists tags(m)]} {set tags(m) {a}}
 
@@ -442,7 +432,7 @@ proc draw_message {c msgptr x y} {
         # supports "b","i" and "o" tags, they work just as with submodules only default
         # is different (small red ball), plus special color "kind" is supported which
         # gives the original, message kind dependent colors
-        split_dispstr $dispstr tags [winfo toplevel $c] {} 1
+        get_parsed_display_string $dispstr tags [winfo toplevel $c] {} 1
 
         # set sx and sy
         if [info exists tags(i)] {

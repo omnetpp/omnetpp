@@ -837,9 +837,40 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 {
    if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
-   // FIXME this method should be eliminated....
    const char *dispstr = argv[1];
-   if (0==strcmp(argv[2], "getTagArg"))
+   if (0==strcmp(argv[2], "ptrparse"))
+   {
+       if (argc!=4) {Tcl_SetResult(interp, "wrong argcount for ptrparse", TCL_STATIC); return TCL_ERROR;}
+       cDisplayString *dp = (cDisplayString *)strToPtr( argv[1] );
+       const char *array = argv[3];
+       for (int k=0; k<dp->getNumTags(); k++)
+       {
+           Tcl_Obj *arglist = Tcl_NewListObj(0, NULL);
+           for (int i=0; i<dp->getNumArgs(k); i++)
+           {
+               const char *s = dp->getTagArg(k,i);
+               Tcl_ListObjAppendElement(interp, arglist, Tcl_NewStringObj(TCLCONST(s),-1));
+           }
+           Tcl_SetVar2Ex(interp, TCLCONST(array), TCLCONST(dp->getTagName(k)), arglist, 0);
+       }
+   }
+   else if (0==strcmp(argv[2], "parse"))
+   {
+       if (argc!=4) {Tcl_SetResult(interp, "wrong argcount for parse", TCL_STATIC); return TCL_ERROR;}
+       const char *array = argv[3];
+       cDisplayString dp(dispstr);
+       for (int k=0; k<dp.getNumTags(); k++)
+       {
+           Tcl_Obj *arglist = Tcl_NewListObj(0, NULL);
+           for (int i=0; i<dp.getNumArgs(k); i++)
+           {
+               const char *s = dp.getTagArg(k,i);
+               Tcl_ListObjAppendElement(interp, arglist, Tcl_NewStringObj(TCLCONST(s),-1));
+           }
+           Tcl_SetVar2Ex(interp, TCLCONST(array), TCLCONST(dp.getTagName(k)), arglist, 0);
+       }
+   }
+   else if (0==strcmp(argv[2], "getTagArg"))
    {
        // gettag <tag> <k> -- get kth component of given tag
        if (argc!=5) {Tcl_SetResult(interp, "wrong argcount for getTagArg", TCL_STATIC); return TCL_ERROR;}
