@@ -38,10 +38,10 @@ proc create_objinspector {name geom} {
     label-sunkenlabel $nb.info.class {C++ class:}
     label-sunkenlabel $nb.info.info {obj->info() says:}
 
-    pack $nb.info.name -expand 1 -fill x -side top
-    pack $nb.info.fullpath -expand 1 -fill x -side top
-    pack $nb.info.class -expand 1 -fill x -side top
-    pack $nb.info.info -expand 1 -fill x -side top
+    pack $nb.info.name -fill x -side top
+    pack $nb.info.fullpath -fill x -side top
+    pack $nb.info.class -fill x -side top
+    pack $nb.info.info -fill x -side top
 
     # page 2: fields
     if {$fieldspage_needed} {
@@ -88,38 +88,36 @@ proc create_messageinspector {name geom} {
     notebook_addpage $nb params   {Params}
 
     # page 1: info
-    label-entry $nb.info.class Class:
     label-entry $nb.info.name Name:
     label-entry $nb.info.kind Kind:
     label-entry $nb.info.length Length:
     label-entry $nb.info.prio Priority:
     label-entry $nb.info.error BitErrors:
-    button $nb.info.encapmsg -font $fonts(normal) -width 30
+    label-button $nb.info.encapmsg {Encapsulated msg:}
 
-    pack $nb.info.class -expand 1 -fill x -side top
-    pack $nb.info.name -expand 1 -fill x -side top
-    pack $nb.info.kind -expand 1 -fill x -side top
-    pack $nb.info.length -expand 1 -fill x -side top
-    pack $nb.info.prio -expand 1 -fill x -side top
-    pack $nb.info.error -expand 1 -fill x -side top
-    pack $nb.info.encapmsg -expand 1 -fill x -side top
+    pack $nb.info.name -fill x -side top
+    pack $nb.info.kind -fill x -side top
+    pack $nb.info.length -fill x -side top
+    pack $nb.info.prio -fill x -side top
+    pack $nb.info.error -fill x -side top
+    pack $nb.info.encapmsg -fill x -side top
 
     # page 2: send/deliv
     label-sunkenlabel $nb.send.created Created:
     label-sunkenlabel $nb.send.sent Sent:
     label-sunkenlabel $nb.send.arrived Arrival:
     label-entry $nb.send.tstamp Timestamp:
-    button $nb.send.owner -font $fonts(normal) -width 30
-    button $nb.send.src -font $fonts(normal) -width 30
-    button $nb.send.dest -font $fonts(normal) -width 30
+    label-button $nb.send.owner {Current owner:}
+    label-button $nb.send.src Sender:
+    label-button $nb.send.dest Destination:
 
-    pack $nb.send.created -expand 1 -fill x -side top
-    pack $nb.send.sent -expand 1 -fill x -side top
-    pack $nb.send.arrived -expand 1 -fill x -side top
-    pack $nb.send.tstamp -expand 1 -fill x -side top
-    pack $nb.send.owner -expand 1 -fill x -side top
-    pack $nb.send.src -expand 1 -fill x -side top
-    pack $nb.send.dest -expand 1 -fill x -side top
+    pack $nb.send.created -fill x -side top
+    pack $nb.send.sent -fill x -side top
+    pack $nb.send.arrived -fill x -side top
+    pack $nb.send.tstamp -fill x -side top
+    pack $nb.send.owner -fill x -side top
+    pack $nb.send.src -fill x -side top
+    pack $nb.send.dest -fill x -side top
 
     # page 3: fields
     if {$fieldspage_needed} {
@@ -142,7 +140,7 @@ proc create_watchinspector {name geom} {
     label-entry $w.main.name xxx
     $w.main.name.l config -width 20
     focus $w.main.name.e
-    pack $w.main.name -anchor center -expand 1 -fill x -side top
+    pack $w.main.name -fill x -side top
 }
 
 proc create_parinspector {name geom} {
@@ -152,24 +150,21 @@ proc create_parinspector {name geom} {
     create_inspector_toplevel $w $geom
 
     frame $w.main
-    frame $w.bot
-    pack $w.main -anchor center -expand 0 -fill both -side top
-    pack $w.bot -anchor center -expand 0 -fill x -side bottom
+    pack $w.main -anchor center -expand 1 -fill both -side top
 
     label-entry $w.main.value Value:
     label-sunkenlabel $w.main.type Type:
     label-entry $w.main.newtype {New type:}
     label-entry $w.main.prompt Prompt:
     label-entry $w.main.input {Input flag:}
+    label-button $w.main.indirection {Redirected to:}
 
-    pack $w.main.value -anchor center -expand 1 -fill x -side top
-    pack $w.main.type -anchor center -expand 1 -fill x -side top
-    pack $w.main.newtype -anchor center -expand 1 -fill x -side top
-    pack $w.main.prompt -anchor center -expand 1 -fill x -side top
-    pack $w.main.input -anchor center -expand 1 -fill x -side top
-
-    button $w.bot.indirection -font $fonts(normal)
-    pack $w.bot.indirection -anchor center -expand 1 -fill x -side left
+    pack $w.main.value -fill x -side top
+    pack $w.main.type -fill x -side top
+    pack $w.main.newtype -fill x -side top
+    pack $w.main.prompt -fill x -side top
+    pack $w.main.input -fill x -side top
+    pack $w.main.indirection -fill x -side top
 }
 
 
@@ -182,7 +177,7 @@ proc create_packetinspector {name geom} {
     label-entry $nb.info.protocol Protocol:
     label-entry $nb.info.pdu PDU:
 
-    pack $nb.info.protocol -after $nb.info.kind -expand 1 -fill x -side top
-    pack $nb.info.pdu -after $nb.info.protocol -expand 1 -fill x -side top
+    pack $nb.info.protocol -after $nb.info.kind -fill x -side top
+    pack $nb.info.pdu -after $nb.info.protocol -fill x -side top
 }
 

@@ -90,7 +90,7 @@ void TModuleWindow::update()
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    cModule *mod = (cModule *)object;
 
-   setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+   setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 }
 
 //=======================================================================
@@ -296,9 +296,9 @@ int TGraphicalModWindow::redrawMessages(Tcl_Interp *interp, int, const char **)
 {
    cSimpleModule *mod = (cSimpleModule *)object;
 
-   setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
-   //setInspectButton(".toolbar.params", &(mod->paramv),INSP_DEFAULT);
-   //setInspectButton(".toolbar.gates", &(mod->gatev),INSP_DEFAULT);
+   setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+   //setToolbarInspectButton(".toolbar.params", &(mod->paramv),INSP_DEFAULT);
+   //setToolbarInspectButton(".toolbar.gates", &(mod->gatev),INSP_DEFAULT);
 
    // loop through all messages in the event queue and display them
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
@@ -374,36 +374,40 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
    cModule *mod = (cModule *)strToPtr( argv[1] );
    if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
+   const char *parname = argv[2];
    int k;
    cPar *par = 0;
 
-   k = mod->findPar( argv[2] );
+   k = mod->findPar(parname);
    if (k>=0)
       par = &(mod->par(k));
 
    if (!par && searchparents && mod->parentModule())
    {
-      k = mod->parentModule()->findPar( argv[2] );
+      k = mod->parentModule()->findPar( parname );
       if (k>=0)
          par = &(mod->parentModule()->par(k));
    }
 
    if (!par)
    {
-      sprintf(interp->result, // FIXME use Tcl_SetResult()
-              (!searchparents ? "module '%s' has no '%s' parameter" :
-               "module '%s' and its parent have no '%s' parameter"),
-              mod->fullPath(), argv[2]);
+      static char buf[50+MAX_OBJECTFULLPATH+50];
+      sprintf(buf, (!searchparents ? "module '%s' has no '%.50s' parameter" :
+                                     "module '%s' or its parents have no '%.50s' parameter"),
+                    mod->fullPath(), parname);
+      Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_ERROR;
    }
 
    if (par->type()=='S')
-     Tcl_SetResult(interp, const_cast<char*>(par->stringValue()), TCL_VOLATILE);
+   {
+      Tcl_SetResult(interp, const_cast<char*>(par->stringValue()), TCL_VOLATILE);
+   }
    else
    {
-     char buf[30];
-     sprintf(buf, "%g", par->doubleValue());
-     Tcl_SetResult(interp, buf, TCL_VOLATILE);
+      char buf[30];
+      sprintf(buf, "%g", par->doubleValue());
+      Tcl_SetResult(interp, buf, TCL_VOLATILE);
    }
    return TCL_OK;
 }
@@ -448,7 +452,7 @@ void TCompoundModInspector::update()
 
    cCompoundModule *mod = (cCompoundModule *)object;
 
-   setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+   setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 
    setEntry(".nb.info.name.e", mod->name());
    char id[16]; sprintf(id,"%ld", (long)mod->id());
@@ -515,7 +519,7 @@ void TSimpleModInspector::update()
 
    cSimpleModule *mod = (cSimpleModule *)object;
 
-   setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+   setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 
    char buf[40];
    setEntry(".nb.info.name.e", mod->name());
@@ -622,16 +626,9 @@ void TGateInspector::update()
    setLabel(".main.trfinish.e", g->transmissionFinishes() );
 
    cGate *gate;
-   setInspectButton(".main.from",gate=g->fromGate(), INSP_DEFAULT);
-   if (gate) sprintf(buf,"From: %.50s", gate->fullPath());
-        else strcpy(buf,"(Path starts at this module)");
-   setButtonText(".main.from", buf);
-   setInspectButton(".main.to",gate=g->toGate(), INSP_DEFAULT);
-   if (gate) sprintf(buf,"To: %.50s", gate->fullPath());
-        else strcpy(buf,"(Path ends at this module)");
-   setButtonText(".main.to", buf);
-
-   setInspectButton(".toolbar.mod",g->ownerModule(), INSP_DEFAULT);
+   setInspectButton(".main.from",gate=g->fromGate(), true, INSP_DEFAULT);
+   setInspectButton(".main.to",gate=g->toGate(), true, INSP_DEFAULT);
+   setToolbarInspectButton(".toolbar.mod",g->ownerModule(), INSP_DEFAULT);
 }
 
 //=======================================================================
@@ -750,7 +747,7 @@ void TGraphicalGateWindow::update()
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    cGate *gate = (cGate *)object;
 
-   setInspectButton(".toolbar.module", gate->ownerModule(),INSP_DEFAULT);
+   setToolbarInspectButton(".toolbar.module", gate->ownerModule(),INSP_DEFAULT);
 
    // redraw modules only on explicit request
 

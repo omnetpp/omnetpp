@@ -196,7 +196,31 @@ const char *TInspector::getEntry( const char *entry )
    return interp->result;
 }
 
-void TInspector::setInspectButton( const char *button, cObject *object, int type )
+void TInspector::setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype)
+{
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   if (object)
+   {
+      char buf[16];
+      sprintf(buf, "%d", inspectortype);
+      const char *text = displayfullpath ? object->fullPath() : object->name();
+      char text2[30] = "";
+      if (dynamic_cast<cModule *>(object))
+      {
+          sprintf(text2, " (id=%d)", ((cModule *)object)->id());
+      }
+      CHK(Tcl_VarEval(interp, windowname, button,".e config -state normal ",
+                              "-text {", text, text2, "} ",
+                              "-command {opp_inspect ",ptrToStr(object)," ",buf,"}",
+                              NULL));
+   }
+   else
+   {
+      CHK(Tcl_VarEval(interp, windowname,button,".e config -state disabled -text {n/a}",NULL));
+   }
+}
+
+void TInspector::setToolbarInspectButton(const char *button, cObject *object, int type)
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    if (object)
@@ -210,12 +234,6 @@ void TInspector::setInspectButton( const char *button, cObject *object, int type
    {
       CHK(Tcl_VarEval(interp, windowname,button," config -state disabled",NULL));
    }
-}
-
-void TInspector::setButtonText( const char *button, const char *text)
-{
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-   CHK(Tcl_VarEval(interp, windowname,button," config -text {",text,"}",NULL));
 }
 
 void TInspector::deleteInspectorListbox( const char *listbox)

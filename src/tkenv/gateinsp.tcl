@@ -32,7 +32,7 @@ proc create_gateinspector {name geom} {
     set help_tips($w.toolbar.mod) {Inspect owner module}
 
     frame $w.main
-    pack $w.main -anchor center -expand 0 -fill both -side top
+    pack $w.main -anchor center -expand 1 -fill both -side top
 
     label-sunkenlabel $w.main.name {ID and name:}
     label-sunkenlabel $w.main.mod  {Module:}
@@ -40,17 +40,17 @@ proc create_gateinspector {name geom} {
     label-sunkenlabel $w.main.error {Error:}
     label-sunkenlabel $w.main.datarate {Data rate:}
     label-sunkenlabel $w.main.trfinish {Tx finishes:}
-    button $w.main.from -font $fonts(normal) -width 30
-    button $w.main.to -font $fonts(normal) -width 30
+    label-button $w.main.from {From:}
+    label-button $w.main.to {To:}
 
-    pack $w.main.name -expand 1 -fill x -side top
-    pack $w.main.mod -expand 1 -fill x -side top
-    pack $w.main.delay -expand 1 -fill x -side top
-    pack $w.main.error -expand 1 -fill x -side top
-    pack $w.main.datarate -expand 1 -fill x -side top
-    pack $w.main.trfinish -expand 1 -fill x -side top
-    pack $w.main.from -expand 1 -fill x -side top
-    pack $w.main.to -expand 1 -fill x -side top
+    pack $w.main.name -fill x -side top
+    pack $w.main.mod -fill x -side top
+    pack $w.main.delay -fill x -side top
+    pack $w.main.error -fill x -side top
+    pack $w.main.datarate -fill x -side top
+    pack $w.main.trfinish -fill x -side top
+    pack $w.main.from -fill x -side top
+    pack $w.main.to -fill x -side top
 }
 
 

@@ -243,10 +243,10 @@ proc create_statisticinspector {name geom} {
     label-sunkenlabel $w.main.min Min:
     label-sunkenlabel $w.main.max Max:
 
-    pack $w.main.count -anchor center -expand 1 -fill x -side top
-    pack $w.main.mean -anchor center -expand 1 -fill x -side top
-    pack $w.main.stddev -anchor center -expand 1 -fill x -side top
-    pack $w.main.min -anchor center -expand 1 -fill x -side top
-    pack $w.main.max -anchor center -expand 1 -fill x -side top
+    pack $w.main.count -fill x -side top
+    pack $w.main.mean -fill x -side top
+    pack $w.main.stddev -fill x -side top
+    pack $w.main.min -fill x -side top
+    pack $w.main.max -fill x -side top
 }
 

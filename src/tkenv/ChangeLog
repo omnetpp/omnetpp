@@ -1,24 +1,31 @@
+2003-01-16  Andras Varga
+
+	* enhancement: inspectors: made buttons that open inspectors for other 
+	objects (e.g. encapsulated message in message inspector) look like 
+	other inspector fields (i.e. label+button).
+
 2003-01-14  Andras Varga
 
-	* graphical module inspector: don't bug the user with error dialogs if 
-	icon for a module is not found; just only display the 'unknown' icon.
+	* enhancement: graphical module inspector: don't bug the user with 
+	error dialogs if icon for a module is not found; just only display the 'unknown' icon.
 
 2003-01-12  Andras Varga
 
-	* fixes on the inspector type selection dialog
+	* enhancement: usability fixes on the inspector type selection dialog
 
 2003-01-11  Andras Varga
 
-	* main.tcl: appearance of menus on Unix made more contemporary 
-	(via option add's)
+	* enhancement: main.tcl: appearance of menus on Unix made more 
+	contemporary (via option add's)
 
 2003-01-10  Andras Varga
 
-	* implemented object tree view on left of main Tkenv window
+	* enhancement: implemented object tree view on left of main Tkenv 
+	window
 
 2003-01-06  Andras Varga
 
-	* misc improvements: display string added to module inspectors
+	* misc enhancements: display string added to module inspectors
 	(editable); inspector toolbar improved; rest of Tcl_SetResult() fixed;
 	submodule drawing (interpretation of display strings) made entirely
 	consistent with GNED; subtle bug fixed which sometimes caused display 
@@ -30,10 +37,11 @@
 	meant "p=x,y,row" or "p=x,y,ring" if the submod was in a vector,
 	and this caused counterintuitive displacements because a (dx,dy) shift
 	coming from the layout was superponed onto the position (x,y)).
+	POTENTIAL INCOMPATIBILITY.
 
 2003-01-05  Andras Varga
 
-	* misc improvements, e.g. New Run and New Network icons added to toolbar
+	* enhancements: New Run and New Network icons added to toolbar, etc.
 
 2002-12-21  Andras Varga
 

@@ -71,8 +71,9 @@ class TInspector : public cObject
       void setLabel(const char *label, long l);
       void setLabel(const char *label, double d);
       const char *getEntry(const char *entry);
-      void setInspectButton(const char *button, cObject *object, int type);
-      void setButtonText(const char *button, const char *text);
+      void setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype);
+      void setToolbarInspectButton(const char *button, cObject *object, int inspectortype);
+
       void deleteInspectorListbox(const char *listbox);
       void fillInspectorListbox(const char *listbox, cObject *object,
                                 InfoFunc infofunc,bool deep);

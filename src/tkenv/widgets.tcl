@@ -153,6 +153,16 @@ proc label-scale {w label} {
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
 }
 
+proc label-button {w label {text {}}} {
+    # utility function: create a frame with label+button
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    button $w.e
+    pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
+    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
+    $w.e config -text $text
+}
+
 proc commentlabel {w text} {
     # utility function: create a frame with a message widget
     frame $w

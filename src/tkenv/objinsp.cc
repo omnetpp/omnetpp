@@ -212,7 +212,6 @@ void TMessageInspector::update()
 
    cMessage *msg = (cMessage *)object;
 
-   setEntry(".nb.info.class.e", msg->className());
    setEntry(".nb.info.name.e", msg->name() );
    setEntry(".nb.info.kind.e", (long)msg->kind() );
    setEntry(".nb.info.length.e", (long)msg->length() );
@@ -223,29 +222,10 @@ void TMessageInspector::update()
    setLabel(".nb.send.sent.e", simtimeToStr(msg->sendingTime()) );
    setLabel(".nb.send.arrived.e", simtimeToStr(msg->arrivalTime()) );
 
-   char buf[64];
-
-   cMessage *emsg = msg->encapsulatedMsg();
-   setInspectButton(".nb.info.encapmsg", emsg, INSP_DEFAULT);
-   if (emsg) sprintf(buf,"Encapsulated: %.50s", emsg->name());
-       else strcpy(buf,"-no encapsulated msg-");
-   setButtonText(".nb.info.encapmsg", buf);
-
-   cObject *obj;
-   setInspectButton(".nb.send.owner", obj=msg->owner(), INSP_DEFAULT);
-   if (obj) sprintf(buf,"Owner: %.50s", obj->fullPath());
-       else strcpy(buf,"-no owner-");
-   setButtonText(".nb.send.owner", buf);
-
-   cModule *mod;
-   setInspectButton(".nb.send.src",mod=simulation.module(msg->senderModuleId()), INSP_DEFAULT);
-   if (mod) sprintf(buf,"Src: %.50s (id=%d)", mod->fullPath(), mod->id());
-       else strcpy(buf,"Src: n/a");
-   setButtonText(".nb.send.src", buf);
-   setInspectButton(".nb.send.dest",mod=simulation.module(msg->arrivalModuleId()), INSP_DEFAULT);
-   if (mod) sprintf(buf,"Dest: %.50s (id=%d)", mod->fullPath(), mod->id());
-       else strcpy(buf,"Dest: n/a");
-   setButtonText(".nb.send.dest", buf);
+   setInspectButton(".nb.info.encapmsg", msg->encapsulatedMsg(), false, INSP_DEFAULT);
+   setInspectButton(".nb.send.owner", msg->owner(), true, INSP_DEFAULT);
+   setInspectButton(".nb.send.src",simulation.module(msg->senderModuleId()), true, INSP_DEFAULT);
+   setInspectButton(".nb.send.dest",simulation.module(msg->arrivalModuleId()), true, INSP_DEFAULT);
 
    if (fieldspage)
        fieldspage->update();
@@ -445,11 +425,7 @@ void TParInspector::update()
    setEntry(".main.newtype.e", "" );
    setEntry(".main.prompt.e", correct(p->prompt()) );
    setEntry(".main.input.e", p->isInput() ? "1" : "0" );
-
-   cObject *obj;
-   setInspectButton(".bot.indirection",obj=p->redirection(),INSP_DEFAULT);
-   if (obj) sprintf(buf,"Value taken from: %.50s",obj->fullPath());
-   setButtonText(".bot.indirection", obj ? buf : "-not redirected-");
+   setInspectButton(".main.indirection",p->redirection(), true, INSP_DEFAULT);
 }
 
 void TParInspector::writeBack()
