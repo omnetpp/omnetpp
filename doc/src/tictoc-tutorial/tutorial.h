@@ -18,6 +18,9 @@ on your operating system. (The latter two are out of our scope here --
 there are excellent books, tutorials on the web, etc. if you need
 to update your knowledge on that.)
 
+To make the examples easier to follow, all source code in here is
+cross-linked to the OMNeT++ API documentation.
+
 This document and the TicToc model are an expanded version of
 the original TicToc tutorial from Ahmet Sekercioglu (Monash University).
 
