@@ -2,7 +2,7 @@
 
 2004-11-18  Andras Varga
 
-	* menuproc.tc: added exit confirmation question "Do you want to call 
+	* menuproc.tc: added exit confirmation question "Do you want to call
 	finish() before exiting? Yes No Cancel"
 
 2004-11-03  ------ omnetpp-3.0a9 released ------
@@ -10,7 +10,7 @@
 2004-11-01  Andras Varga
 
 	* main.tcl, modinsp2.tcl: created display string tag for icon size:
-	"is=" (can be "vl", "l", "n", "s", "vs" for very large, large, normal, 
+	"is=" (can be "vl", "l", "n", "s", "vs" for very large, large, normal,
 	small, very small). Similarly, tag "is2=" sets size of auxiliary icon
 	("i2=" tag). The underscore notation ("i=penguin_s") also still exists.
 
@@ -19,19 +19,19 @@
 	* tkapp.cc: fix: readPerRunOptions() was not protected by try/catch
 
 2004-10-25  Andras Varga
-	
+
 	* tkapp.cc, tkcmd.cc, etc: updated for info() and fullPath()
 	signature changes (see include/ChangeLog)
 
 2004-10-20  Andras Varga
 
-	* main.tcl, modinsp2.tcl: preparations for new icons, categorized into 
+	* main.tcl, modinsp2.tcl: preparations for new icons, categorized into
 	several subdirs under bitmaps/. Current icons will be moved to
 	into the bitmaps/old subdirectory.
-	
+
 	Tkenv now loads icons from subdirectories of dirs in OMNETPP_BITMAP-
-	_PATH as well, and they can be referenced from display strings like 
-	"subdir/icon", "subdir/subsubdir/icon" , etc. If an icon "icon" in 
+	_PATH as well, and they can be referenced from display strings like
+	"subdir/icon", "subdir/subsubdir/icon" , etc. If an icon "icon" in
 	a display string is not found, it is tried as "old/icon" as well.
 
 2004-10-18  Andras Varga
@@ -45,7 +45,7 @@
 
 2004-10-15  Andras Varga
 
-	* modinsp2.tcl, tkcmd.cc: fixed display strings: didn't handle "," and 
+	* modinsp2.tcl, tkcmd.cc: fixed display strings: didn't handle "," and
 	"=" in args to "t=" properly
 
 	* tkapp.cc: improved "Fast Run until next local event" function: now
@@ -57,7 +57,7 @@
 
 2004-10-10  Andras Varga
 
-	* inspector.cc, tkutil.cc/h: fix: label always displayed "0 objects" 
+	* inspector.cc, tkutil.cc/h: fix: label always displayed "0 objects"
 	above inspector listboxes; refactoring
 
 2004-10-10  Andras Varga
@@ -68,12 +68,12 @@
 
 2004-09-27  Andras Varga
 
-        * inspector.cc: display class name too on "inspect" buttons 
+        * inspector.cc: display class name too on "inspect" buttons
         (e.g. "encapsulated message" button in cMessage inspector)
 
 2004-09-26  Andras Varga
 
-        * modinsp2.tcl: graphical module windows: adjust window size to fit 
+        * modinsp2.tcl: graphical module windows: adjust window size to fit
         size of graphics
 
 2004-09-24  ------ omnetpp-3.0a7 released ------
@@ -84,14 +84,14 @@
 
 2004-08-16  Andras Varga
 
-        * tkutil.cc: worked around compilation error in WinSCard.h when 
+        * tkutil.cc: worked around compilation error in WinSCard.h when
         compiling with MSVC .NET
 
 2004-08-14  Andras Varga
 
         * tkapp.cc: new omnetpp.ini entry: [Tkenv]/bitmap-path=. Value should
         be quoted; directories should be separated by ";". The contents of the
-        OMNETPP_BITMAP_PATH environment var (or if that's not set, the 
+        OMNETPP_BITMAP_PATH environment var (or if that's not set, the
         compilation-time bitmap path) gets concatenated to this one.
         Beware: if you don't quote the value, only the first dir will be
         used and the rest ignored, because ";" denotes comments omnetpp.ini!
@@ -121,27 +121,6 @@
 
 2004-03-22  ------ omnetpp-3.0a3 released ------
 
-FIXME make inspectors more consistent:
-  ObjectInspector's "info" page should appear also in ContainerInspector (and maybe other inspectors as well)
-  ObjectInspector (and all inspectors) should allow name change
-  info() and detailedInfo() should appear in all inspectors somewhere
-  cWatchInspector: if cPolymorphic is watched, display its info() and detailedInfo()
-  cWatchInspector probably not needed (cObjectInspector will do)
-FIXME cGate inspectors have now two "up" buttons!!!
-TBD there should be a limit on the number of inspector windows open, to prevent
-accidentally opening thousand windows with objects of identical names
-TODO: Need display string option to turn off module labels
-TODO: need <Copy> icon on module output window toolbars
-TODO: treeview into each object inspector!
-TODO: BUSY cursor!!! at network setup, callfinish, inspector refresh,etc
-TODO: needed function: "express run until next event in this module"
-TODO: needed new mode: express run for other modules, fast/normal for this module
-FIXME: container inspector listboxes: always prints "0 objects"
-FIXME: "r=" bug: if I also have "q=queue" or "t=some text" tags, the circle 
-is no longer centered around the icon
-TODO: page should also display className(), info() etc of control info object
-TODO: cgate inspector: display string should be editable
-
 2004-04-20  Andras Varga
 
         * added "Control Info" page into cMessage inspector.
@@ -155,14 +134,14 @@ TODO: cgate inspector: display string should be editable
 
 2004-03-03  Andras Varga
 
-        * modinsp2.tcl, etc: implemented option to display className() of 
-        animated messages. New omnetpp.ini option: 
+        * modinsp2.tcl, etc: implemented option to display className() of
+        animated messages. New omnetpp.ini option:
           [Tkenv]/animation-msgclassnames=true/false (default is true)
 
 2004-03-01  Andras Varga
 
         * inspector.tcl/cc, etc: all inspector windows got an "Inspect owner"
-        toolbar button; on module inspectors this works as "Inspect parent 
+        toolbar button; on module inspectors this works as "Inspect parent
         module".
 
         * fix: Filtered Object List dialog ignored scheduled events list
@@ -173,19 +152,19 @@ TODO: cgate inspector: display string should be editable
 
         * tkapp.cc/h: added moduleReparented() cEnvir method
 
-2004-02-18  Andras Varga 
+2004-02-18  Andras Varga
 
         * tkapp.cc/h, menuproc.tcl: on-the-fly switching from one runmode to
         another (run,normal,express)
 
-        * menuproc.tcl,dialogs.tcl: added [x] Confirm exit checkbox to 
+        * menuproc.tcl,dialogs.tcl: added [x] Confirm exit checkbox to
         Simulation options dialog
 
         * dialogs.tcl: express mode "STOP" dialog refined
 
         * dialogs.tcl: Find dialog improved
 
-2004-02-11  Andras Varga 
+2004-02-11  Andras Varga
 
         * tkapp.cc: propagated semantic change in getNextEvent()'s and
         selectNextModule()'s return value (see include/ChangeLog)
@@ -194,7 +173,7 @@ TODO: cgate inspector: display string should be editable
 
         * cstructinsp.cc: fix: prepare for missing descriptor object
         [bug reported by Kurtis Kredo]
-        
+
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-01-20  Andras Varga
@@ -203,11 +182,11 @@ TODO: cgate inspector: display string should be editable
 
 2004-01-17  Andras Varga
 
-        * modinsp2.tcl: added two experimental submodule display string tags: 
+        * modinsp2.tcl: added two experimental submodule display string tags:
         - "i2=" tag (with similar syntax to "i=") displays a small "modifier"
         icon on top of the original one. Suggested icons are x_check, x_down,
-        x_up, x_exclamation, x_question, etc. 
-        - "t=" tag displays a status string. t=<text>,<pos>,<color>. 
+        x_up, x_exclamation, x_question, etc.
+        - "t=" tag displays a status string. t=<text>,<pos>,<color>.
         <pos> is "l", "r" or "t" for left, right and top.
 
 2004-01-09  Andras Varga
@@ -265,9 +244,9 @@ TODO: cgate inspector: display string should be editable
         (blue,lightgray,wheat), RGB (#ff0000) or HSB (@40ff80; hue-saturation-
         brightness), and percentage is the degree of colorization, 20% being
         the default. Percentage has no effect if the target color is missing.
-        Brightness of icon is also affected -- to keep original brightness, 
-        specify a color with about 50% brightness (e.g. #808080 mid-grey, 
-        #008000 mid-green). Examples: "i=server1,gold" creates 
+        Brightness of icon is also affected -- to keep original brightness,
+        specify a color with about 50% brightness (e.g. #808080 mid-grey,
+        #008000 mid-green). Examples: "i=server1,gold" creates
         a gold server icon; "i=earth2,#808080,100" makes icon grayscale;
         "i=queue,white,100" gives "over-exposed" b&w icon. Colorization
         works with both submodule and message icons.

@@ -82,9 +82,6 @@
 
 2004-05-15  ------ omnetpp-3.0a4 released ------
 
-FIXME: cStdDev: info() should print mean(), stdDev() too!
-FIXME: setTagArg("t", 0, "foo,bar") --> "invalid position"! (arg cannot contain comma)
-
 2004-04-16  Andras Varga
 
         * cpar.cc, cenum.cc: fixed two possible bugs after Johnny's valgrinding

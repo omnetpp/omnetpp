@@ -1,9 +1,5 @@
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
-FIXME todo: create parsim/ (and nedxml/?) subdirectories here
-cMessage: change prio() from int to short (2 bytes less)
-add deleteGate()
-
 2004-11-18  Andras Varga
 
 	* index.h: title page change; adjustments in doxygen comments in other

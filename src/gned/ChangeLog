@@ -2,11 +2,6 @@
 
 2004-11-03  ------ omnetpp-3.0a9 released ------
 
-Remaining issues: 
-- gate directions not observed in Conn Props dialog.
-- when submodule has random placement, strange thing happens after OK'ing Props dialog
-- new Tkenv display string tags not supported yet
-
 2004-11-02  Andras Varga
 
 	* drawopts.tcl: updated icon selection support for categorized icons 
