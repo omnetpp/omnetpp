@@ -98,7 +98,7 @@ htmlfile_spec := $BASE.html
 :{}     :\tilde:&:tilde;:
 :{}     :\label:<a name=":"></a>:
 :{}     :\ref:<a href="#:">[click]</a>:
-:{1}    :\index:::
+:{}     :\index:<!--:-->:
 :{2}    :\href#1#2:<a href="#1">#2</a>::
 :{1}    :\cite#1:[<a href="#bib-#1">#1</a>]::
 @{}     @\caption@<center><i>Figure: @</i></center>@

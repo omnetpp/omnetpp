@@ -196,7 +196,7 @@ The following classes are part of the simulation class library:
   \item{messages}
   \item{container classes (e.g. queue, array)}
   \item{data collection classes}
-  \item{statistic and distribution estimation classes (histograms, $P^{2}$
+  \item{statistic and distribution estimation classes (histograms, P$^2$
   algorithm for calculating quantiles etc.)}
   \item{transient detection and result accuracy detection classes}
 \end{itemize}
@@ -305,7 +305,7 @@ The simulation system provides the following components:
     It is written in C++, compiled and put together to form a library
     (a file with .a or .lib extension)}
   \item{User interfaces\index{simulation!user interface}.
-    \index{user interface|see{simulation interface}} {\opp} user interfaces
+    \index{user interface} {\opp} user interfaces
     are used with simulation execution, to facilitate debugging,
     demonstration, or batch execution of simulations. There are
     several user interfaces, written in C++, compiled and put together
@@ -413,29 +413,27 @@ The simulation system itself:
       \tbf{tictoc-tutorial/}  introduction into using {\opp}
       \tbf{api/}         API reference in HTML
       \tbf{nedxml-api/}  API reference for the NEDXML library
+      \tbf{src/}         sources of the documentation
     \tbf{src/}           {\opp} sources
-      \tbf{nedc/}        NED compiler\index{ned!compiler}
+      \tbf{nedc/}        NED compiler, message compiler
       \tbf{sim/}         simulation kernel
         \tbf{parsim/}    files for distributed execution
         \tbf{netbuilder/}files for dynamically reading NED files
       \tbf{envir/}       common code for user interfaces
       \tbf{cmdenv/}      command-line user interface
       \tbf{tkenv/}       Tcl/Tk-based user interface
-      \tbf{gned/}        graphical NED editor\index{ned!graphical interface}
+      \tbf{gned/}        graphical NED editor
       \tbf{plove/}       output vector analyzer and plotting tool
       \tbf{scalars}      output scalar analyzer and plotting tool
       \tbf{nedxml/}      NEDXML library
-      \tbf{utils/}       makefile-autocreator etc
+      \tbf{utils/}       makefile-creator, documentation tool, etc.
     \tbf{test/}          regression test suite
       \tbf{core/}        regression test suite for the simulation library
       \tbf{distrib/}     regression test suite for built-in distributions
       ...
 \end{Verbatim}
 
-Sample simulations are within the \texttt{samples} directory. Each of the
-sample directories contain a network description (.ned file) and
-corresponding simple module code (\texttt{.h}, \texttt{.cc} files).
-Makefiles are included.
+Sample simulations are in the \texttt{samples} directory.
 
 \begin{Verbatim}[commandchars=\\\{\}]
     \tbf{samples/}     directories for sample simulations
@@ -443,7 +441,6 @@ Makefiles are included.
       \tbf{cqn/}       Closed Queueing Network
       ...
 \end{Verbatim}
-
 
 The \texttt{contrib} directory contains material from the {\opp} community.
 
