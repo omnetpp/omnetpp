@@ -346,4 +346,8 @@ April 4-10, 2000
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
  - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
+   (eliminated a lot of gcc -Wall warnings)
+Apr 13, 2000
+ - code for Express Run (runSimulationNoTracing()) modified so that it prints
+   module output (ev<<...) for the finish() functions [suggested by Niko]
 

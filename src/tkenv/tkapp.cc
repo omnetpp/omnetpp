@@ -330,6 +330,7 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
            );
     simulation.stopClock();
     is_running = false;
+    ev.disable_tracing = false;
 
     if (!simulation.ok())
     {
@@ -338,8 +339,6 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
        else
           simulation.endRun();
     }
-
-    ev.disable_tracing = false;
 
     updateSimtimeDisplay();
     updateNextModuleDisplay();
