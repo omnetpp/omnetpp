@@ -4,6 +4,7 @@
 	allocation table size failed. New table size was always 0
 	(insert): check that enum strings have different keys. Otherwise
 	abort
+	(insert): use opp_error instead of fprintf for error messages
 
 2002-01-23 Andras Varga
 

@@ -21,7 +21,6 @@
 *--------------------------------------------------------------*/
 
 #include <stdio.h>           // sprintf, fprintf
-#include <stdlib.h>          // EXIT_FAILURE
 #include <string.h>          // memcmp, memcpy, memset
 #include "macros.h"
 #include "ctypes.h"
@@ -132,9 +131,8 @@ void cEnum::insert(int key, const char *str)
     if (vect[k].key == key && vect[k].string && strcmp(vect[k].string, str))
       {
         // oops! same keys but different strings!
-        fprintf(stderr, "Key mismatch for enum %s: %s and %s have the same value (%d)\n",
+        opp_error("Key mismatch for enum %s: %s and %s have the same value (%d)\n",
                 name(), vect[k].string, str, key);
-        exit (EXIT_FAILURE);
       }
     else if (vect[k].key != key)
       {
