@@ -78,7 +78,7 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 SUBDIRS= 
 
 # object files in this directory
-OBJS= tictoc1_n.o tictoc10_n.o tictoc11_n.o tictoc2_n.o tictoc3_n.o tictoc4_n.o tictoc5_n.o tictoc6_n.o tictoc7_n.o tictoc8_n.o tictoc9_n.o tictoc10_m.o tictoc11_m.o txc1.o txc10.o txc11.o txc3.o txc4.o txc5.o txc6.o txc7.o txc8.o txc9.o
+OBJS= tictoc1_n.o tictoc10_n.o tictoc11_n.o tictoc2_n.o tictoc3_n.o tictoc4_n.o tictoc5_n.o tictoc6_n.o tictoc7_n.o tictoc8_n.o tictoc9_n.o tictoc10_m.o tictoc11_m.o txc1.o txc10.o txc11.o txc2.o txc3.o txc4.o txc5.o txc6.o txc7.o txc8.o txc9.o
 
 #------------------------------------------------------------------------------
 
@@ -179,6 +179,9 @@ txc10.o: txc10.cc
 txc11.o: txc11.cc
 	$(CXX) -c $(COPTS) txc11.cc
 
+txc2.o: txc2.cc
+	$(CXX) -c $(COPTS) txc2.cc
+
 txc3.o: txc3.cc
 	$(CXX) -c $(COPTS) txc3.cc
 
@@ -229,6 +232,7 @@ re-makemake-m:
 txc1.o: txc1.cc
 txc10.o: txc10.cc
 txc11.o: txc11.cc
+txc2.o: txc2.cc
 txc3.o: txc3.cc
 txc4.o: txc4.cc
 txc5.o: txc5.cc

@@ -8,6 +8,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#include <string.h>
 #include <omnetpp.h>
 
 
