@@ -26,7 +26,7 @@ REMINDER:
      - Version, configuser.vc
      - sim: defs.h (OMNETPP_VERSION)
      - nedc: jar.c (NEDC_VERSION, NEDC_VERSION_HEX)
-     - tkenv: tkenv.tcl (startup banner), and menuproc.tcl (about box)
+     - tkenv: menuproc.tcl (about box)
      - gned: gned.tcl (startup banner), and menuproc.tcl (about box)
      - plove: plove.tcl (startup banner)
      - prephtml.pl
