@@ -39,7 +39,7 @@ NEDFileBuffer::~NEDFileBuffer()
 {
     delete wholeFile;
     delete lineBeg;
-    delete commentBuf;
+    delete [] commentBuf;
 }
 
 bool NEDFileBuffer::readFile(const char *filename)
