@@ -1,11 +1,9 @@
 %description:
 check that unnamed cOutVector doesn't core dump.
-This only happens under SUN Solaris
 
 %activity:
-
 cOutVector vec;
-vec.record( 35);
+vec.record(35);
 
 %exitcode: 1
 
