@@ -64,11 +64,16 @@ The last line is that copies the libraries from the src/ tree to lib/.
 
 4. Linking simulations
 
-Hints to compile OMNeT++ simulations from the MSVC IDE:
-  - rename the .cc files to .cpp (ren *.cc *.cpp)
-  - make sure to turn off exception handling and RTTI
+Hints for compiling OMNeT++ simulations from the MSVC IDE:
+  - rename .cc files to .cpp (ren *.cc *.cpp) and add them to the project
+  - add .ned files to the project and set custom build option for them:
+       command: nedc -s _n.cpp $(InputName)
+       output file: $(InputName)_n.cpp
+  - for each .ned file, add a corresponding _n.cpp file
+  - make sure to turn off exception handling and RTTI (they interfere with the
+    coroutine library)
   - to use Tkenv, link with sim_std.lib, envir.lib, tkenv.lib and the Tcl/Tk
-    libraries
+    libraries. Build Tkenv simulations as Win32 Console apps.
   - to use Cmdenv, link with sim_std.lib, envir.lib, and cmdenv.lib
 
 
@@ -84,8 +89,8 @@ Plove should work.
 
 A usual caveat is that Gnuplot expects forward slashes in filenames and Plove
 supplies backslashes or vica versa (there are multiple incompatible builds of
-Gnuplot on NT); it you suspect this might be the problem, reverse this setting
-in Options|External programs.
+Gnuplot on NT); it you suspect this might be the problem, reverse the
+slash/backslash setting in Options|External programs.
 
 Have fun!
 
