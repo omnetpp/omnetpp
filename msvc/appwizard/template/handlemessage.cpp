@@ -18,13 +18,16 @@ class $$MODULE_NAME$$ : public cSimpleModule
     // module state variables
     enum {IDLE,BUSY} module_state;  // just an example
 
-    // summary result data to be stored from finish()
+    // scalar results (to be stored from finish())
     int total_msgs;  // just an example
 
     // member functions
     Module_Class_Members($$MODULE_NAME$$,cSimpleModule,0)
     virtual void initialize();
-    virtual void handleMessage();
+    virtual void handleMessage(cMessage *msg);
+    // ...
+    // further member functions (if you want to break up handleMessage() into smaller functions)
+    // ...
     virtual void finish();
 };
 
@@ -46,10 +49,12 @@ void $$MODULE_NAME$$::handleMessage(cMessage *msg)
 {
     // handle the message according to the simple module algorithm
     // ...
+    // (msg must be either sent further, scheduled, or deleted)
+    // ...
 }
 
 void $$MODULE_NAME$$::finish()
 {
     // save summary results (if any)
-    writeScalar("total_msgs", total_msgs);
+    recordScalar("total_msgs", total_msgs);
 }
