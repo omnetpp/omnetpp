@@ -75,6 +75,7 @@ class SIM_API cPolymorphic
      * Can be redefined (as done in cObject) to return an object name.
      * This version just returns "".
      */
+    //FIXME change to std::string?
     virtual const char *fullName() const  {return "";}
 
     /**
@@ -83,6 +84,7 @@ class SIM_API cPolymorphic
      * with the object's location in the object hierarchy.
      * This version just returns fullName() (which is by default "").
      */
+    //FIXME change to std::string
     virtual const char *fullPath() const   {return fullName();}
 
     /**
@@ -98,7 +100,7 @@ class SIM_API cPolymorphic
      * @see detailedInfo()
      */
     virtual void info(char *buf)  {*buf='\0';}
-    //virtual std::string info() const  {return std::string();}
+    //FIXME virtual std::string info() const  {return std::string();}
 
     /**
      * Can be redefined to produce a detailed, multi-line, arbitrarily long
