@@ -83,7 +83,7 @@ LEX=flex.exe
 
 # Compiler switches
 
-CFLAGS_DEBUG=/nologo /MLd /Gm /ZI /Od /FD /GZ /Zm150
+CFLAGS_DEBUG=/nologo /MLd /Gm /ZI /Od /FD /GZ /Zm150 /GX
 LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
 
 CFLAGS_RELEASE=/nologo /ML /O2 /D "NDEBUG" /FD /Zm150
@@ -135,7 +135,7 @@ GNED_IF_POSSIBLE=gned
 # This option is available at present for Tkenv, GNED and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-TKENV_EMBED_TCL=yes
+TKENV_EMBED_TCL=no
 GNED_EMBED_TCL=yes
 PLOVE_EMBED_TCL=yes
 
@@ -144,4 +144,4 @@ PLOVE_EMBED_TCL=yes
 # console apps). Set the following variable to "yes" to enable compiling
 # GUI apps.
 #
-USE_WINMAIN=yes
+USE_WINMAIN=no
