@@ -9,10 +9,12 @@ FIXME make inspectors more consistent:
 FIXME cGate inspectors have now two "up" buttons!!!
 TBD there should be a limit on the number of inspector windows open, to prevent
 accidentally opening thousand windows with objects of identical names
-Need display string option to turn off module labels
+TODO: Need display string option to turn off module labels
 TODO: need <Copy> icon on module output window toolbars
 TODO: treeview into eacgh object inspector!
 TODO: BUSY cursor!!! at network setup, callfinish, etc
+TODO: bubble(): show it in all ancestor modules too (maybe text prefixed with
+      submodule name)
 
 2004-04-20  Andras Varga
 
