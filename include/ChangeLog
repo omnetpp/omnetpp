@@ -1,3 +1,8 @@
+2002-06-12  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* doxy.cfg (GENERATE_TAGFILE): ../doc/api/tags renamed to
+	../doc/api/opptags.xml
+
 2002-06-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* doxy.cfg (GENERATE_TAGFILE): generate ../doc/api/tags. This
