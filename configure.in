@@ -468,6 +468,7 @@ AC_CONFIG_FILES(
   src/cmdenv/Makefile
   src/envir/Makefile
   src/gned/Makefile
+  src/nedxml/Makefile
   src/nedc/Makefile
   src/plove/Makefile
   src/sim/Makefile
@@ -514,6 +515,7 @@ AC_SUBST(YACC)
 AC_SUBST(LEX)
 AC_SUBST(CC)
 AC_SUBST(CXX)
+AC_SUBST(CPPFLAGS)
 AC_SUBST(MYPWD)
 AC_SUBST(NEDC)
 AC_SUBST(NEDCFLAGS)
