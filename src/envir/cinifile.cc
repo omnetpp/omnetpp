@@ -94,8 +94,8 @@ void cIniFile::_readFile(const char *fname, int section_id)
             fgets(buf+len,bufsize-len,file);
             len+=strlen(buf+len);
 
-            // if CR/LF is missing from line end, it was too long
-            if (len>0 && buf[len-1]!='\n' && buf[len-1]!='\r')
+            // if CR/LF is missing from line end: line too long or unterminated last line
+            if (len>0 && buf[len-1]!='\n' && buf[len-1]!='\r' && len>=MAX_LINE)
                 SYNTAX_ERROR("line too long, sorry");
 
             // chop CR/LF

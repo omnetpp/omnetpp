@@ -1,3 +1,7 @@
+2003-03-15  Andras Varga
+
+	* cinifile.cc/h: bugfix: complained about unterminated last line
+
 2003-03-04  Andras Varga
 
 	* cinifile.cc/h: made it faster to process large ini files (added
