@@ -255,6 +255,7 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
     label-combo $f.xrotate "Rotate X labels by" {0 30 45 60 90}
     label-combo $f.xdiv "X axis subdivisions" {1 2 4 5 10}
     label-combo $f.ydiv "Y axis subdivisions" {1 2 4 5 10}
+    # FIXME axis min, max, logarithmic
     $f.xlabel.e configure -textvariable tmp(axisxlabel)
     $f.ylabel.e configure -textvariable tmp(axisylabel)
     $f.titlefont.e configure -textvariable tmp(axistitlefont)
