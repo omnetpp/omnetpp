@@ -32,7 +32,8 @@ CPPOBJS= ccoroutine.o ctypes.o carray.o cgate.o cmodule.o csimul.o cobject.o cpa
 	 cstat.o chist.o cdensity.o cvarhist.o cpsquare.o cksplit.o task.o \
          cmessage.o cdetect.o cstk.o util.o cllist.o ctopo.o errmsg.o \
 	 cmsgheap.o cnetmod.o coutvect.o cqueue.o chead.o cwatch.o \
-         cpacket.o cfsm.o cenum.o cstruct.o cchannel.o cexception.o cdispstr.o
+         cpacket.o cfsm.o cenum.o cstruct.o cchannel.o cexception.o cdispstr.o \
+         onstartup.o
 CPPOBJS_STD= std/netpack.o
 CPPOBJS_MPI= mpi/mpimod.o mpi/mpipack.o
 CPPOBJS_PVM= pvm/pvmmod.o pvm/pvmpack.o
@@ -175,6 +176,9 @@ cdispstr.o : cdispstr.cc
 
 cexception.o : cexception.cc
 	$(CXX) -c $(COPTS) cexception.cc
+
+onstartup.o : onstartup.cc
+	$(CXX) -c $(COPTS) onstartup.cc
 
 util.o : util.cc
 	$(CXX) -c $(COPTS) util.cc

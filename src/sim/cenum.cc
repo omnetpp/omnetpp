@@ -34,7 +34,7 @@ Register_Class( cEnum );
 //==========================================================================
 //=== cEnum - member functions
 
-cEnum::cEnum(const cEnum& list) : cObject("", &enums)
+cEnum::cEnum(const cEnum& list) : cObject()
 {
      vect=NULL;
      size=0;
@@ -42,7 +42,7 @@ cEnum::cEnum(const cEnum& list) : cObject("", &enums)
      operator=(list);
 }
 
-cEnum::cEnum(const char *name, int siz) : cObject(name, &enums)
+cEnum::cEnum(const char *name, int siz) : cObject(name)
 {
     size = Max(siz,0);
     items = 0;
@@ -169,7 +169,7 @@ sEnumBuilder::sEnumBuilder(const char *name, ...)
     if (!e)
     {
 	e = new cEnum(name);
-        // new object will automatically add itself to the 'enums' list
+        e->setOwner(&enums);
     }
 
     va_list va;

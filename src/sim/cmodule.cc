@@ -50,7 +50,7 @@ cModule::cModule(const cModule& mod) : cObject(),
  gatev(NULL, 0,2),
  paramv(NULL, 0,2),
  machinev(NULL,0,2),
- members( NULL, NULL)
+ members(NULL)
 {
     take( &members );
 
@@ -62,11 +62,11 @@ cModule::cModule(const cModule& mod) : cObject(),
 }
 
 cModule::cModule(const char *name, cModule *parentmod) :
- cObject(name, NULL),
+ cObject(name),
  gatev("gates",0,2),
  paramv("parameters",0,2),
  machinev("machines",0,2),
- members( "class-data-members", NULL)
+ members("class-data-members")
 {
     take( &gatev );
     take( &paramv );
@@ -588,7 +588,7 @@ void cSimpleModule::activate(void *p)
 
 cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
   cModule( mod.name(), mod.parentmodp ),
-  locals( NULL, NULL),
+  locals(NULL),
   putAsideQueue( NULL, NULL, false )
 {
     take( &locals );
@@ -603,7 +603,7 @@ cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
 
 cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stksize) :
   cModule( name, parentmod ),
-  locals( "local-objects", NULL),
+  locals( "local-objects"),
   putAsideQueue( "putaside-queue", cMessage::cmpbydelivtime, false )
 {
     state = sREADY;

@@ -1,3 +1,9 @@
+2002-10-07  Andras Varga
+
+	* cobject.cc, ctypes.cc, added onstartup.cc: refactoring: global 
+	registration lists now use EXECUTE_ON_STARTUP macro, see 
+	include/ChangeLog for more info.
+
 2002-10-04  Andras Varga
 
 	* error handling with exceptions has been refined.

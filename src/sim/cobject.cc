@@ -109,11 +109,10 @@ cObject::cObject()
     DETERMINE_STORAGE();
     tkownership = true;
     namestr = NULL;
+    firstchildp = NULL;
 
     ownerp = NULL;
     setOwner( defaultOwner() );
-    if (storage()!='S')    /* to enable building global cHead lists */
-          firstchildp = NULL;
 }
 
 cObject::cObject(const char *name)
@@ -121,23 +120,10 @@ cObject::cObject(const char *name)
     DETERMINE_STORAGE();
     tkownership = true;
     namestr = opp_strdup( name );
+    firstchildp = NULL;
 
     ownerp = NULL;
     setOwner( defaultOwner() );
-    if (storage()!='S')    /* to enable building global cHead lists */
-          firstchildp = NULL;
-}
-
-cObject::cObject(const char *name, cObject *ownerobj)
-{
-    DETERMINE_STORAGE();
-    namestr = opp_strdup( name );
-    tkownership = true;
-
-    ownerp = NULL;
-    setOwner( ownerobj );
-    if (storage()!='S')    /* to enable building global cHead lists */
-          firstchildp = NULL;
 }
 
 cObject::~cObject()

@@ -31,27 +31,22 @@
 //==========================================================================
 //=== Global objects:
 
-cHead superhead         ( "root",               NULL       );
-cHead networks          ( "networks",           &superhead );
-cHead modinterfaces     ( "module-interfaces",  &superhead );
-cHead modtypes          ( "module-types",       &superhead );
-cHead linktypes         ( "link-types",         &superhead );
-cHead functions         ( "functions",          &superhead );
-cHead classes           ( "classes",            &superhead );
-cHead inspectorfactories( "inspector-factories",&superhead );
-cHead enums             ( "enums",              &superhead );
+cHead networks("networks");
+cHead modinterfaces("module-interfaces");
+cHead modtypes("module-types");
+cHead linktypes("link-types");
+cHead functions("functions");
+cHead classes("classes");
+cHead inspectorfactories("inspector-factories");
+cHead enums("enums");
 
 //=== Registration
-Register_Class( cHead )
+Register_Class( cHead );
 
 //==========================================================================
 //=== cHead - member functions
 
 cHead::cHead(const char *name) : cObject(name)
-{
-}
-
-cHead::cHead(const char *name, cHead *h) : cObject(name, h)
 {
 }
 

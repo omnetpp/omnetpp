@@ -42,7 +42,7 @@
 //==========================================================================
 //=== Global object:
 
-cSimulation simulation( "simulation", &superhead );
+cSimulation simulation("simulation");
 
 //==========================================================================
 
@@ -77,8 +77,8 @@ cSimulation::cSimulation(const cSimulation& r) :
     operator=(r);
 }
 
-cSimulation::cSimulation(const char *name, cHead *h) :
- cObject(name, h),
+cSimulation::cSimulation(const char *name) :
+ cObject(name),
  locals("simulation-locals"),
  runningmod_deleter(),
  msgQueue( "message-queue" )

@@ -66,7 +66,7 @@ Define_Function( log10, 1 )
 //=== cModuleInterface - member functions
 
 cModuleInterface::cModuleInterface(const char *name, sDescrItem *descr_tab ) :
-  cObject(name, &modinterfaces)
+  cObject(name)
 {
     gatev = NULL;
     paramv = NULL;
@@ -75,7 +75,7 @@ cModuleInterface::cModuleInterface(const char *name, sDescrItem *descr_tab ) :
     setup( descr_tab );
 
     // if no interface has been registered with this name, register ourselves
-    if (modinterfaces.find(name)!=NULL)
+    if (modinterfaces.find(name)!=NULL)  // FIXME!!!!!!!!
     {
         setOwner( &modinterfaces );
     }
@@ -144,7 +144,7 @@ void cModuleInterface::setup( sDescrItem *descr_tab )
 }
 
 cModuleInterface::cModuleInterface(const cModuleInterface& mi) :
-  cObject( NULL, &modtypes),
+  cObject(),
   gatev(NULL),
   paramv(NULL),
   machinev(NULL)
@@ -292,7 +292,7 @@ void cModuleInterface::check_consistency()
 cModuleType::cModuleType(const char *classname,
                          const char *interf_name,
                          ModuleCreateFunc cf) :
-  cObject(classname, &modtypes)
+  cObject(classname)
 {
     // create_func:
     //   Ptr to a small function that creates a module of type classname.
@@ -315,7 +315,7 @@ cModuleType::cModuleType(const char *classname,
 
 
 cModuleType::cModuleType(const cModuleType& mi) :
-  cObject( NULL, &modtypes)
+  cObject()
 {
     setName(mi.name());
     operator=( mi );
@@ -435,15 +435,14 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
 //=== cLinkType - member functions
 
 cLinkType::cLinkType(const char *name, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)()) :
-  cObject(name, &linktypes)
+  cObject()
 {
     delayfunc = d;
     errorfunc = e;
     dataratefunc = dr;
 }
 
-cLinkType::cLinkType(const cLinkType& li) :
-  cObject( NULL, &linktypes)
+cLinkType::cLinkType(const cLinkType& li) : cObject()
 {
     setName(li.name());
     operator=( li );
@@ -476,10 +475,18 @@ cPar *cLinkType::createDataRate() const
 }
 
 //=========================================================================
-//=== cNetworkType - all functions inline
+cNetworkType::cNetworkType(const char *name, void (*f)()) : cObject(name)
+{
+    setupfunc = f;
+}
 
 //=========================================================================
 //=== cFunctionType - all functions inline
+cFunctionType::cFunctionType(const char *name, MathFunc f0, int argc) : cObject(name) 
+{
+    f=f0;
+    argcount=argc;
+}
 
 cFunctionType *findfunctionbyptr(MathFunc f)
 {
@@ -494,6 +501,11 @@ cFunctionType *findfunctionbyptr(MathFunc f)
 }
 
 //=========================================================================
+
+cClassRegister::cClassRegister(const char *name, void *(*f)()) : cObject(name)
+{
+    creatorfunc = f;
+}
 
 //=== creates an object of type passed in a string
 //    e.g: cObject *param = createOne( "cPar" );
@@ -512,8 +524,7 @@ void *createOne(const char *classname)
 //=========================================================================
 //=== cInspectorFactory - all functions inline
 
-cInspectorFactory::cInspectorFactory(const char *name, TInspector *(*f)(cObject *,int,void *)) :
-  cObject(name,(cObject *)&inspectorfactories)
+cInspectorFactory::cInspectorFactory(const char *name, TInspector *(*f)(cObject *,int,void *)) : cObject(name)
 {
     inspFactoryFunc = f;
 }

@@ -15,7 +15,8 @@ CPPOBJS= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj cmodule.obj csi
 	 cstat.obj chist.obj cdensity.obj cvarhist.obj cpsquare.obj cksplit.obj \
          cmessage.obj cdetect.obj cstk.obj util.obj cllist.obj ctopo.obj errmsg.obj \
 	 cmsgheap.obj cnetmod.obj coutvect.obj cqueue.obj chead.obj cwatch.obj \
-         cpacket.obj cfsm.obj cstruct.obj cchannel.obj cenum.obj cexception.obj cdispstr.obj
+         cpacket.obj cfsm.obj cstruct.obj cchannel.obj cenum.obj cexception.obj cdispstr.obj \
+         onstartup.obj
 CPPOBJS_STD= std\netpack.obj
 CPPOBJS_PVM= pvm\pvmmod.obj pvm/pvmpack.obj
 CPPOBJS_MPI= mpi\mpimod.obj mpi/mpipack.obj
@@ -147,6 +148,9 @@ cenum.obj: cenum.cc
 
 cexception.obj: cexception.cc
 	$(CXX) $(COPTS) /c /Tp cexception.cc
+
+onstartup.obj: onstartup.cc
+	$(CXX) $(COPTS) /c /Tp onstartup.cc
 
 util.obj : util.cc
 	$(CXX) $(COPTS) /c /Tp util.cc
