@@ -102,3 +102,5 @@ Apr 16, 2000
    (usman.html, toc.html plus chapN.html files); it also adds heading numbering.
 Apr 19, 2000
  - added some Purify support to makemake [from Ulrich Kaage]
+Apr 30, 2000
+ - TVEnv support removed from makemake [suggested by Niko]
