@@ -23,10 +23,9 @@
 #include "appreg.h"
 #include "cinifile.h"
 #include "cenvir.h"
-#include "cmodule.h"
+#include "csimplemodule.h"
 #include "cmessage.h"
 #include "ctypes.h"
-#include "cnetmod.h"
 #include "speedmtr.h"
 
 #include "tkdefs.h"
@@ -41,7 +40,7 @@
 //
 // Register the Tkenv user interface
 //
-Register_OmnetApp("Tkenv",TOmnetTkApp,false,20,"Tkenv (Tk-based graphical user interface)");
+Register_OmnetApp("Tkenv",TOmnetTkApp,20,"Tkenv (Tk-based graphical user interface)");
 
 // some functions that can/should be called from Envir in order to force the
 // linker to include the Tkenv library into the executable:
@@ -96,6 +95,7 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cIniFile *inifile) :
 {
     interp = 0;  // Tcl/Tk not set up yet
     simstate = SIM_NONET;
+    stop_simulation = false;
 
     // The opt_* vars will be set by readOptions()
 }
@@ -158,10 +158,8 @@ void TOmnetTkApp::setup()
     //
     // Case B: compiled-in TCL code
     //
-    // The tclcode.cc file must be generated from the TCL scripts
+    // The tclcode.cc file is generated from the Tcl scripts
     // with the tcl2c program (to be compiled from tcl2c.c).
-    // The Unix makefile automatically does so; on Win95/NT, you have
-    // to do it by hand: bcc tcl2c.c; tcl2c tclcode.cc *.tcl
     //
 #   include "tclcode.cc"
     if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR)
@@ -259,12 +257,14 @@ void TOmnetTkApp::doOneStep()
     catch (cTerminationException *e)
     {
         simstate = SIM_TERMINATED;
+        stoppedWithTerminationException(e);
         displayMessage(e);
         delete e;
     }
     catch (cException *e)
     {
         simstate = SIM_ERROR;
+        stoppedWithException(e);
         displayError(e);
         delete e;
     }
@@ -360,16 +360,19 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
     catch (cTerminationException *e)
     {
         simstate = SIM_TERMINATED;
+        stoppedWithTerminationException(e);
         displayMessage(e);
         delete e;
     }
     catch (cException *e)
     {
         simstate = SIM_ERROR;
+        stoppedWithException(e);
         displayError(e);
         delete e;
     }
     stopClock();
+    stop_simulation = false;
 
     if (simstate==SIM_TERMINATED)
     {
@@ -436,16 +439,19 @@ void TOmnetTkApp::runSimulationExpress(simtime_t until_time,long until_event)
     catch (cTerminationException *e)
     {
         simstate = SIM_TERMINATED;
+        stoppedWithTerminationException(e);
         displayMessage(e);
         delete e;
     }
     catch (cException *e)
     {
         simstate = SIM_ERROR;
+        stoppedWithException(e);
         displayError(e);
         delete e;
     }
     stopClock();
+    stop_simulation = false;
     ev.disable_tracing = false;
 
     if (simstate==SIM_TERMINATED)
@@ -547,7 +553,6 @@ void TOmnetTkApp::newNetwork(const char *network_name)
         readPerRunOptions(0);
         makeOptionsEffective();
         opt_network_name = network->name();
-
         // pass run number 0 to setupNetwork(): this means that only the [All runs]
         // section of the ini file will be searched for parameter values
         simulation.setupNetwork(network, 0);
@@ -924,6 +929,18 @@ void TOmnetTkApp::readOptions()
 void TOmnetTkApp::readPerRunOptions(int run_nr)
 {
     TOmnetApp::readPerRunOptions( run_nr );
+}
+
+bool TOmnetTkApp::idle()
+{
+    eState origsimstate = simstate;
+    simstate = SIM_BUSY;
+    Tcl_Eval(interp, "update");
+    simstate = origsimstate;
+
+    bool stop = stop_simulation;
+    stop_simulation = false;
+    return stop;
 }
 
 void TOmnetTkApp::objectDeleted( cObject *object )
@@ -1368,7 +1385,7 @@ void TOmnetTkApp::putmsg(const char *str)
 {
     if (!interp)
     {
-        TOmnetApp::putmsg(str); // fallback in case Tkenv didn't fire up correctly
+        ::printf("<!> %s\n", str); // fallback in case Tkenv didn't fire up correctly
         return;
     }
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",str,"} info ok",NULL));
@@ -1378,7 +1395,7 @@ void TOmnetTkApp::puts(const char *str)
 {
     if (!interp)
     {
-        TOmnetApp::puts(str); // fallback in case Tkenv didn't fire up correctly
+        ::printf("%s", str); // fallback in case Tkenv didn't fire up correctly
         return;
     }
 
@@ -1393,10 +1410,11 @@ void TOmnetTkApp::puts(const char *str)
 
     // output string into main window
     cModule *module = simulation.contextModule();
+    const char *tag = (!module) ? "log" : "";
     if (!module || opt_use_mainwindow)
     {
         CHK(Tcl_VarEval(interp,
-            ".main.text insert end ",quotedstr,"\n"
+            ".main.text insert end ",quotedstr," ", tag ,"\n"
             ".main.text see end", NULL));
     }
 
@@ -1408,7 +1426,7 @@ void TOmnetTkApp::puts(const char *str)
         if (insp)
         {
             CHK(Tcl_VarEval(interp,
-              insp->windowName(),".main.text insert end ",quotedstr,"\n",
+              insp->windowName(),".main.text insert end ",quotedstr," ", tag, "\n",
               insp->windowName(),".main.text see end", NULL));
         }
         mod = mod->parentModule();

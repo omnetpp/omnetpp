@@ -22,7 +22,6 @@
 #include "cmessage.h"
 #include "cpar.h"
 #include "carray.h"
-#include "cnetmod.h"
 #include "coutvect.h"
 #include "cstat.h"
 #include "cdensity.h"

@@ -18,7 +18,7 @@
 #include "cenvir.h"
 #include "carray.h"
 #include "csimul.h"
-#include "cmodule.h"
+#include "csimplemodule.h"
 #include "cmessage.h"
 #include "cchannel.h"
 #include "cstat.h"
@@ -905,6 +905,7 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        case TOmnetTkApp::SIM_TERMINATED:  statename = "SIM_TERMINATED"; break;
        case TOmnetTkApp::SIM_ERROR:       statename = "SIM_ERROR"; break;
        case TOmnetTkApp::SIM_FINISHCALLED:statename = "SIM_FINISHCALLED"; break;
+       case TOmnetTkApp::SIM_BUSY:        statename = "SIM_BUSY"; break;
        default: Tcl_SetResult(interp, "invalid simulation state", TCL_STATIC); return TCL_ERROR;
    }
    Tcl_SetResult(interp, statename, TCL_STATIC);

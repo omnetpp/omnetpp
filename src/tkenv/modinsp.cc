@@ -18,11 +18,10 @@
 #include <string.h>
 #include <math.h>
 
-#include "cmodule.h"
+#include "csimplemodule.h"
 #include "cmessage.h"
 #include "cpar.h"
 #include "carray.h"
-#include "cnetmod.h"
 #include "coutvect.h"
 #include "cstat.h"
 #include "cdensity.h"

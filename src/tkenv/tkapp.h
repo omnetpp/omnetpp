@@ -43,6 +43,8 @@ class TOmnetTkApp : public TOmnetApp
       // state transitions:
       //    SIM_NONET -> SIM_NEW -> (SIM_RUNNING <-> SIM_READY) -> SIM_TERMINATED -> SIM_FINISHCALLED -> SIM_NONET
       //                                               `-> SIM_ERROR
+      // plus, at any time it may be temporarily BUSY inside an in idle() call
+      //
       enum eState {
           SIM_NONET = 0,
           SIM_NEW = 1,
@@ -50,7 +52,8 @@ class TOmnetTkApp : public TOmnetApp
           SIM_READY = 3,
           SIM_TERMINATED = 4,
           SIM_ERROR = 5,
-          SIM_FINISHCALLED = 6
+          SIM_FINISHCALLED = 6,
+          SIM_BUSY = 7  // busy doing active wait
       };
 
       struct sPathEntry {
@@ -118,6 +121,8 @@ class TOmnetTkApp : public TOmnetApp
 
       virtual void readOptions();
       virtual void readPerRunOptions(int run_nr);
+
+      virtual bool idle();
 
       // if using Tkenv, modules should have ~16K extra stack
       virtual unsigned extraStackForEnvir();

@@ -1,3 +1,11 @@
+FIXME PARSIM---------------
+2003-04-09  Andras Varga
+
+	* tkapp.cc: use new cSimulation method guessNextEvent() for updating
+	"Next module" display.
+----------------------------------
+
+
 2003-11-09  Andras Varga
 
 	* added toolbar icon and menu item for dynamically loading NED files.

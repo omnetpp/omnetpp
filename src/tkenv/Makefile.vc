@@ -116,6 +116,7 @@ inspector.obj: inspector.cc \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
   ../../include/cmodule.h \
+  ../../include/csimplemodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
   ../../include/chist.h \
@@ -125,7 +126,6 @@ inspector.obj: inspector.cc \
   ../../include/coutvect.h \
   ../../include/cdetect.h \
   ../../include/ctopo.h \
-  ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
   ../../include/cenvir.h \
@@ -163,6 +163,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
   ../../include/cmodule.h \
+  ../../include/csimplemodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
   ../../include/chist.h \
@@ -172,7 +173,6 @@ inspfactory.obj: inspfactory.cc \
   ../../include/coutvect.h \
   ../../include/cdetect.h \
   ../../include/ctopo.h \
-  ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
   ../../include/cenvir.h \
@@ -184,11 +184,10 @@ inspfactory.obj: inspfactory.cc \
   ../../include/envirext.h \
   ../../include/ccoroutine.h
 modinsp.obj: modinsp.cc \
-  ../../include/cmodule.h \
+  ../../include/csimplemodule.h \
   ../../include/cmessage.h \
   ../../include/cpar.h \
   ../../include/carray.h \
-  ../../include/cnetmod.h \
   ../../include/coutvect.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -197,6 +196,7 @@ modinsp.obj: modinsp.cc \
   inspfactory.h \
   modinsp.h \
   arrow.h \
+  ../../include/cmodule.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
@@ -239,6 +239,7 @@ objinsp.obj: objinsp.cc \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
   ../../include/cmodule.h \
+  ../../include/csimplemodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
   ../../include/chist.h \
@@ -248,7 +249,6 @@ objinsp.obj: objinsp.cc \
   ../../include/coutvect.h \
   ../../include/cdetect.h \
   ../../include/ctopo.h \
-  ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
   ../../include/cenvir.h \
@@ -266,7 +266,6 @@ statinsp.obj: statinsp.cc \
   ../../include/cmessage.h \
   ../../include/cpar.h \
   ../../include/carray.h \
-  ../../include/cnetmod.h \
   ../../include/coutvect.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -307,10 +306,9 @@ structinsp.obj: structinsp.cc \
   ../../include/chead.h
 tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
-  ../../include/cmodule.h \
+  ../../include/csimplemodule.h \
   ../../include/cmessage.h \
   ../../include/ctypes.h \
-  ../../include/cnetmod.h \
   tkdefs.h \
   tkapp.h \
   tklib.h \
@@ -322,6 +320,7 @@ tkapp.obj: tkapp.cc \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cexception.h \
+  ../../include/cmodule.h \
   ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/carray.h \
@@ -337,13 +336,14 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
   ../../include/csimul.h \
-  ../../include/cmodule.h \
+  ../../include/csimplemodule.h \
   ../../include/cmessage.h \
   ../../include/cchannel.h \
   ../../include/cstat.h \
   ../../include/cwatch.h \
   ../../include/ctypes.h \
   ../../include/cstruct.h \
+  ../../include/cdispstr.h \
   tkapp.h \
   tklib.h \
   inspector.h \
@@ -358,6 +358,7 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
+  ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/cenum.h \

@@ -25,6 +25,10 @@ proc check_running {} {
                              is running. Please stop it first.} info ok
        return 1
     }
+    if {[opp_getsimulationstate] == "SIM_BUSY"} {
+       messagebox {Warning} {The simulation is currently busy -- press STOP to abort it.} info ok
+       return 1
+    }
     return 0
 }
 
@@ -390,7 +394,7 @@ proc rebuild {} {
 proc stop_simulation {} {
     # implements Simulate|Stop
 
-    if {[opp_getsimulationstate] == "SIM_RUNNING"} {
+    if {[opp_getsimulationstate] == "SIM_RUNNING" || [opp_getsimulationstate] == "SIM_BUSY"} {
        opp_stopsimulation
     } else {
        #messagebox {Error} {Simulation is not running.} info ok
