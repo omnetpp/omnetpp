@@ -123,4 +123,7 @@ re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+fifo.obj: fifo.cpp \
+  fifo.h
+gen.obj: gen.cpp
+sink.obj: sink.cpp

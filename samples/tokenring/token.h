@@ -59,8 +59,20 @@ class Generator : public cSimpleModule
 
 class Sink : public cSimpleModule
 {
-    Module_Class_Members(Sink,cSimpleModule,16384)
-    virtual void activity();
+  protected:
+    // output vector to record statistics
+    cOutVector endToEndDelay;
+
+    // histograms
+    cKSplit endToEndDelayKS;
+    cPSquare endToEndDelayPS;
+
+    bool debug;
+
+  public:
+    Module_Class_Members(Sink,cSimpleModule,0)
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
 };
 
 #endif

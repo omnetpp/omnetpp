@@ -397,38 +397,34 @@ void TokenRingMAC::finish()
 }
 
 
-void Sink::activity()
+void Sink::initialize()
 {
-    // output vector to record statistics
-    cOutVector endToEndDelay("End-to-End Delay",1);
+    endToEndDelay.setName("End-to-End Delay");
 
-    // collect histogram
-    cKSplit endToEndDelayKS("End-to-End Delay histogram (K-split)");
+    endToEndDelayKS.setName("End-to-End Delay histogram (K-split)");
     endToEndDelayKS.setRangeAutoUpper(0.0, 100, 2.0);
-    cPSquare endToEndDelayPS("End-to-End Delay histogram (P2)");
+    endToEndDelayPS.setName("End-to-End Delay histogram (P2)");
 
-    bool debug=true;
+    debug=true;
     WATCH(debug);
+}
 
-    for(;;)
+void Sink::handleMessage(cMessage *msg)
+{
+    simtime_t eed = simTime() - msg->creationTime();
+    if (debug)
     {
-        // receive a message
-        cMessage *msg = receive();
-        simtime_t eed = simTime() - msg->creationTime();
-        if (debug)
-        {
-            ev << "Received app. data: \"" << msg->name() << "\", "
-                  "length=" << msg->length()/8 << "bytes, " <<
-                  "end-to-end delay=" << simtimeToStr(eed) << endl;
-        }
-
-        // record statistics to output vector file
-        endToEndDelay.record(eed);
-        endToEndDelayKS.collect(eed);
-        endToEndDelayPS.collect(eed);
-
-        // message no longer needed
-        delete msg;
+        ev << "Received app. data: \"" << msg->name() << "\", "
+              "length=" << msg->length()/8 << "bytes, " <<
+              "end-to-end delay=" << simtimeToStr(eed) << endl;
     }
+
+    // record statistics to output vector file and histograms
+    endToEndDelay.record(eed);
+    endToEndDelayKS.collect(eed);
+    endToEndDelayPS.collect(eed);
+
+    // message no longer needed
+    delete msg;
 }
 

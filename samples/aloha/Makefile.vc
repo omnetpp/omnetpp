@@ -102,4 +102,5 @@ re-makemake:
 	opp_nmakemake -f -f -e cpp  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+host.obj: host.cpp
+server.obj: server.cpp

@@ -114,4 +114,7 @@ re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+client.obj: client.cpp
+server.obj: server.cpp
+servproc.obj: servproc.cpp
+switch.obj: switch.cpp

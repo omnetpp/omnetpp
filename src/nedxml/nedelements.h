@@ -139,10 +139,10 @@ enum {NED_CONST_BOOL, NED_CONST_INT, NED_CONST_REAL, NED_CONST_STRING, NED_CONST
 /**
  * GENERATED CLASS. Represents the &lt;ned-files&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT ned-files ((ned-files|ned-file)*)>
  * 
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -180,7 +180,7 @@ class NedFilesNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;ned-file&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT ned-file ((import|channel|simple-module|compound-module|network|
  *                      cplusplus|struct-decl|class-decl|enum-decl|
  *                      enum|message|class|struct)*)>
@@ -189,7 +189,7 @@ class NedFilesNode : public NEDElement
  *      source-code         CDATA     #IMPLIED
  *      preferred-indent    CDATA     "4"
  *      banner-comment      CDATA     #IMPLIED >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -250,13 +250,13 @@ class NedFileNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;import&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT import (imported-file*)>
  * <!ATTLIST import
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -302,13 +302,13 @@ class ImportNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;imported-file&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT imported-file EMPTY>
  * <!ATTLIST imported-file
  *      filename            CDATA     #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -353,7 +353,7 @@ class ImportedFileNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;channel&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT channel (channel-attr*, display-string?)>
  * <!ATTLIST channel
  *      name                NMTOKEN   #REQUIRED
@@ -361,7 +361,7 @@ class ImportedFileNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -414,14 +414,14 @@ class ChannelNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;channel-attr&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT channel-attr (expression?)>
  * <!ATTLIST channel-attr
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -470,7 +470,7 @@ class ChannelAttrNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;network&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT network (substmachines?,substparams?)>
  * <!ATTLIST network
  *      name                NMTOKEN   #REQUIRED
@@ -479,7 +479,7 @@ class ChannelAttrNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -535,7 +535,7 @@ class NetworkNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;simple-module&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT simple-module (machines?, params?, gates?, display-string?)>
  * <!ATTLIST simple-module
  *      name                NMTOKEN   #REQUIRED
@@ -543,7 +543,7 @@ class NetworkNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -598,7 +598,7 @@ class SimpleModuleNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;compound-module&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT compound-module (machines?, params?, gates?,
  *                   submodules?, connections?, display-string?)>
  * <!ATTLIST compound-module
@@ -607,7 +607,7 @@ class SimpleModuleNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -664,12 +664,12 @@ class CompoundModuleNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;params&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT params (param*)>
  * <!ATTLIST params
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -712,14 +712,14 @@ class ParamsNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;param&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT param EMPTY>
  * <!ATTLIST param
  *      name                NMTOKEN   #REQUIRED
  *      data-type           CDATA     "numeric"
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -767,12 +767,12 @@ class ParamNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;gates&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT gates (gate*)>
  * <!ATTLIST gates
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -815,7 +815,7 @@ class GatesNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;gate&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT gate EMPTY>
  * <!ATTLIST gate
  *      name                NMTOKEN   #REQUIRED
@@ -823,7 +823,7 @@ class GatesNode : public NEDElement
  *      is-vector       (true|false)  "false"
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -874,12 +874,12 @@ class GateNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;machines&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT machines (machine*)>
  * <!ATTLIST machines
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -922,13 +922,13 @@ class MachinesNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;machine&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT machine EMPTY>
  * <!ATTLIST machine
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -973,12 +973,12 @@ class MachineNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;submodules&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT submodules (submodule*)>
  * <!ATTLIST submodules
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1021,7 +1021,7 @@ class SubmodulesNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;submodule&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT submodule (expression?, substmachines*, substparams*,
  *                      gatesizes*, display-string?)>
  * <!ATTLIST submodule
@@ -1031,7 +1031,7 @@ class SubmodulesNode : public NEDElement
  *      vector-size         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1090,13 +1090,13 @@ class SubmoduleNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;substparams&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT substparams (expression?, substparam*)>
  * <!ATTLIST substparams
  *      condition           CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1143,14 +1143,14 @@ class SubstparamsNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;substparam&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT substparam (expression?)>
  * <!ATTLIST substparam
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1199,13 +1199,13 @@ class SubstparamNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;gatesizes&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT gatesizes (expression?, gatesize*)>
  * <!ATTLIST gatesizes
  *      condition           CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1252,14 +1252,14 @@ class GatesizesNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;gatesize&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT gatesize (expression?)>
  * <!ATTLIST gatesize
  *      name                NMTOKEN   #REQUIRED
  *      vector-size         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1308,13 +1308,13 @@ class GatesizeNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;substmachines&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT substmachines (expression?, substmachine*)>
  * <!ATTLIST substmachines
  *      condition           CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1361,13 +1361,13 @@ class SubstmachinesNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;substmachine&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT substmachine EMPTY>
  * <!ATTLIST substmachine
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1412,13 +1412,13 @@ class SubstmachineNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;connections&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT connections ((connection|for-loop)*)>
  * <!ATTLIST connections
  *      check-unconnected (true|false) "true"
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1465,7 +1465,7 @@ class ConnectionsNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;connection&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT connection ((expression|conn-attr|display-string)*)>
  * <!ATTLIST connection
  *      condition           CDATA     #IMPLIED
@@ -1482,7 +1482,7 @@ class ConnectionsNode : public NEDElement
  *      arrow-direction  (left|right) "right"
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1563,13 +1563,13 @@ class ConnectionNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;conn-attr&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT conn-attr (expression*)>
  * <!ATTLIST conn-attr
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
  *      right-comment       CDATA     "" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1615,13 +1615,13 @@ class ConnAttrNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;for-loop&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT for-loop (loop-var+,connection*)>
  * <!ATTLIST for-loop
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1668,7 +1668,7 @@ class ForLoopNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;loop-var&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT loop-var (expression*)>
  * <!ATTLIST loop-var
  *      param-name          NMTOKEN   #REQUIRED
@@ -1676,7 +1676,7 @@ class ForLoopNode : public NEDElement
  *      to-value            CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1728,13 +1728,13 @@ class LoopVarNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;display-string&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT display-string EMPTY>
  * <!ATTLIST display-string
  *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1779,11 +1779,11 @@ class DisplayStringNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;expression&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT expression ((operator|function|param-ref|ident|const))>
  * <!ATTLIST expression
  *      target              NMTOKEN   #IMPLIED >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1827,11 +1827,11 @@ class ExpressionNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;operator&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT operator ((operator|function|param-ref|ident|const)+)>
  * <!ATTLIST operator
  *      name                NMTOKEN   #REQUIRED >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1875,11 +1875,11 @@ class OperatorNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;function&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT function ((operator|function|param-ref|ident|const)*)>
  * <!ATTLIST function
  *      name                NMTOKEN   #REQUIRED >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1923,7 +1923,7 @@ class FunctionNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;param-ref&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT param-ref (expression*)>
  * <!ATTLIST param-ref
  *      module              CDATA     #IMPLIED
@@ -1932,7 +1932,7 @@ class FunctionNode : public NEDElement
  *      param-index         CDATA     #IMPLIED
  *      is-ref           (true|false) "false"
  *      is-ancestor      (true|false) "false" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -1987,11 +1987,11 @@ class ParamRefNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;ident&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT ident EMPTY>
  * <!ATTLIST ident
  *      name                NMTOKEN   #REQUIRED >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2030,13 +2030,13 @@ class IdentNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;const&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT const EMPTY>
  * <!ATTLIST const
  *      type  (bool|int|real|string|time)  #REQUIRED
  *      text                CDATA     #IMPLIED
  *      value               CDATA     #IMPLIED>
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2081,14 +2081,14 @@ class ConstNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;cplusplus&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT cplusplus EMPTY>
  * <!ATTLIST cplusplus
  *      body                CDATA     #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2136,14 +2136,14 @@ class CplusplusNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;struct-decl&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT struct-decl EMPTY>
  * <!ATTLIST struct-decl
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2191,7 +2191,7 @@ class StructDeclNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;class-decl&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT class-decl EMPTY>
  * <!ATTLIST class-decl
  *      name                NMTOKEN   #REQUIRED
@@ -2199,7 +2199,7 @@ class StructDeclNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2250,14 +2250,14 @@ class ClassDeclNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;enum-decl&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT enum-decl EMPTY>
  * <!ATTLIST enum-decl
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2305,7 +2305,7 @@ class EnumDeclNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;enum&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT enum (enum-fields?)>
  * <!ATTLIST enum
  *      name                NMTOKEN   #REQUIRED
@@ -2314,7 +2314,7 @@ class EnumDeclNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2369,12 +2369,12 @@ class EnumNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;enum-fields&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT enum-fields (enum-field*)>
  * <!ATTLIST enum-fields
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2417,14 +2417,14 @@ class EnumFieldsNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;enum-field&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT enum-field EMPTY>
  * <!ATTLIST enum-field
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2472,7 +2472,7 @@ class EnumFieldNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;message&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT message (properties?,fields?)>
  * <!ATTLIST message
  *      name                NMTOKEN   #REQUIRED
@@ -2481,7 +2481,7 @@ class EnumFieldNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2537,7 +2537,7 @@ class MessageNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;class&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT class (properties?,fields?)>
  * <!ATTLIST class
  *      name                NMTOKEN   #REQUIRED
@@ -2546,7 +2546,7 @@ class MessageNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2602,7 +2602,7 @@ class ClassNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;struct&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT struct (properties?,fields?)>
  * <!ATTLIST struct
  *      name                NMTOKEN   #REQUIRED
@@ -2611,7 +2611,7 @@ class ClassNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2667,12 +2667,12 @@ class StructNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;fields&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT fields (field*)>
  * <!ATTLIST fields
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2715,7 +2715,7 @@ class FieldsNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;field&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT field EMPTY>
  * <!ATTLIST field
  *      name                NMTOKEN   #REQUIRED
@@ -2727,7 +2727,7 @@ class FieldsNode : public NEDElement
  *      default-value       CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2790,12 +2790,12 @@ class FieldNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;properties&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT properties (property*)>
  * <!ATTLIST properties
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2838,14 +2838,14 @@ class PropertiesNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;property&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT property EMPTY>
  * <!ATTLIST property
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */
@@ -2893,11 +2893,11 @@ class PropertyNode : public NEDElement
 /**
  * GENERATED CLASS. Represents the &lt;unknown&gt; XML element in memory. DTD declaration:
  * 
- * <code>
+ * <pre>
  * <!ELEMENT unknown        ANY>
  * <!ATTLIST unknown
  *      element             NMTOKEN   #REQUIRED>
- * </code>
+ * </pre>
  * 
  * @ingroup Data
  */

@@ -135,4 +135,4 @@ re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+node.obj: node.cpp

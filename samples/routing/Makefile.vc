@@ -114,4 +114,5 @@ re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+app.obj: app.cpp
+routing.obj: routing.cpp

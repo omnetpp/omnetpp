@@ -201,4 +201,14 @@ re-makemake:
 	opp_nmakemake -f -f -e cpp  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+txc1.obj: txc1.cpp
+txc10.obj: txc10.cpp
+txc11.obj: txc11.cpp
+txc2.obj: txc2.cpp
+txc3.obj: txc3.cpp
+txc4.obj: txc4.cpp
+txc5.obj: txc5.cpp
+txc6.obj: txc6.cpp
+txc7.obj: txc7.cpp
+txc8.obj: txc8.cpp
+txc9.obj: txc9.cpp

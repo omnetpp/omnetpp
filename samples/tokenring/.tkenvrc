@@ -10,27 +10,33 @@ option senddirect_arrows	{1}
 option anim_methodcalls	{1}
 option methodcalls_delay	{200}
 option animation_msgnames	{1}
+option animation_msgclassnames	{1}
 option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{0}
 option bubbles	{1}
 option animation_speed	{1}
 option bkpts_enabled	{1}
+option expressmode_autoupdate	{1}
+config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
 config filtobjlist-maxcount	{100000}
 config editor-findstring	{}
+config rununtil-time	{}
 config editor-regexp	{0}
 config filtobjlist-class	{}
+config rununtil-mode	{Express (tracing off)}
 config filtobjlist-name	{}
+config confirm-exit	{1}
 config editor-backwards	{1}
 config display-treeview	{1}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
+inspector "token.comp[4].sink.End-to-End Delay histogram (K-split)" "cKSplit" "2" "309x210+289+450"
 inspector "token" "TokenRing" "2" "268x353+11+3"
 inspector "token.comp[0]" "Computer" "2" "229x257+37+389"
-inspector "token.comp[4].sink.End-to-End Delay histogram (K-split)" "cKSplit" "2" "309x210+289+450"
 inspector "token.comp[0].mac.Queueing time (sec)" "cOutVector" "2" "379x201+289+220"
 inspector "token.comp[0].mac.sendQueue" "cQueue" "1" "379x186+289+5"
 
