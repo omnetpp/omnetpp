@@ -1186,23 +1186,25 @@ int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int objectModuleLocals_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cModule *mod = (cModule *)strToPtr( argv[1] );
-   if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   if (!mod || !mod->isSimple()) return TCL_ERROR;
-   cSimpleModule *simplemod = static_cast<cSimpleModule *>(mod);
-   // FIXME Tcl_SetResult(interp, ptrToStr( &(simplemod->locals) ), TCL_VOLATILE);
+   //FIXME eliminate
+   //if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   //cModule *mod = (cModule *)strToPtr( argv[1] );
+   //if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   //if (!mod || !mod->isSimple()) return TCL_ERROR;
+   //cSimpleModule *simplemod = static_cast<cSimpleModule *>(mod);
+   //Tcl_SetResult(interp, ptrToStr( &(simplemod->locals) ), TCL_VOLATILE);
    return TCL_OK;
 }
 
 int objectModuleMembers_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   cModule *mod = (cModule *)strToPtr( argv[1] );
-   if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   if (!mod || !mod->isSimple()) return TCL_ERROR;
-   cSimpleModule *simplemod = static_cast<cSimpleModule *>(mod);
-   // FIXME Tcl_SetResult(interp, ptrToStr( &(simplemod->members) ), TCL_VOLATILE);
+   //FIXME eliminate; BUT in the tree, children of a module must be sorted!
+   //if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   //cModule *mod = (cModule *)strToPtr( argv[1] );
+   //if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   //if (!mod || !mod->isSimple()) return TCL_ERROR;
+   //cSimpleModule *simplemod = static_cast<cSimpleModule *>(mod);
+   //Tcl_SetResult(interp, ptrToStr( &(simplemod->members) ), TCL_VOLATILE);
    return TCL_OK;
 }
 

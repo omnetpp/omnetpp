@@ -459,7 +459,7 @@ double BasicSpringEmbedderLayout::relax()
         double flensq = fx * fx + fy * fy;
         if (flensq > 0)
         {
-            double flen = sqrt(flensq);
+            //double flen = sqrt(flensq);
             //n1.dx += repulsiveForce * fx / flen;
             //n1.dy += repulsiveForce * fy / flen;
             n1.dx += repulsiveForce * fx;

@@ -144,8 +144,6 @@ void TGraphicalModWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = getTkApplication()->getInterp();
-
    if (not_drawn) return;
 
    // redraw modules only if really needed
@@ -303,8 +301,9 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
         // perhaps we should use the size of the 1st element in the vector?
         int rx = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, (sx+sy)*submod->size()/4);
         int ry = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, rx);
-        x += rx - rx*sin(submod->index()*2*PI/submod->size());
-        y += ry - ry*cos(submod->index()*2*PI/submod->size());
+
+        x += (int) floor(rx - rx*sin(submod->index()*2*PI/submod->size()));
+        y += (int) floor(ry - ry*cos(submod->index()*2*PI/submod->size()));
     }
     else
     {
@@ -459,7 +458,6 @@ void TGraphicalModWindow::redrawModules()
         const cDisplayString& ds = submod->hasDisplayString() ? submod->displayString() : blank;
 
         // call Tcl procedure to draw the submodule
-        int x, y;
         assert(submodPosMap.find(submod)!=submodPosMap.end());
         Point pos = submodPosMap[submod];
         char coords[32];
