@@ -75,8 +75,8 @@ while (@ARGV)
 #
 # parse file
 #
-$filename =~ /./ || die "*** no file name given\n";
-$filename =~ /\.[^\\\/]*$/ || die "*** file name must contain a dot\n";
+$filename =~ /./ || die "*** Error: no file name given\n";
+$filename =~ /\.[^\\\/]*$/ || die "*** Error: file name must contain a dot\n";
 $filename =~ s|\\|/|g;
 $hfile = $filename;
 $hfile =~ s|\.[^.]*$|$hsuffix|;
@@ -100,7 +100,7 @@ if ($here eq "true")
 $ret = 0;
 
 $msg = "";
-open(IN,$filename) || die "*** cannot open input file $filename";
+open(IN,$filename) || die "*** Error: cannot open input file $filename";
 while (<IN>)
 {
     s|\r||;
@@ -109,8 +109,8 @@ while (<IN>)
 }
 close(IN);
 
-open(H,">$hfile") || die "*** cannot open output file $hfile";
-open(CC,">$ccfile") || die "*** cannot open output file $ccfile";
+open(H,">$hfile") || die "*** Error: cannot open output file $hfile";
+open(CC,">$ccfile") || die "*** Error: cannot open output file $ccfile";
 
 print H "//\n// Generated file, do not edit! Created by opp_msgc.\n//\n\n";
 print H "#ifndef $hdef\n";
@@ -141,7 +141,7 @@ foreach $class (@classes) {
 # parse cppincludes
 while ($msg =~ s/cppinclude\s+(["\<].*?["\>])//s)
 {
-    print STDERR "*** warning: cppinclude is deprecated, use cplusplus {{ ... }} syntax instead\n";
+    print STDERR "*** Warning: cppinclude is deprecated, use cplusplus {{ ... }} syntax instead\n";
     print H "#include $1\n";
 }
 while ($msg =~ s/cplusplus\s+{{(.*?)}};?//s)
@@ -155,7 +155,7 @@ print H "\n";
 # parse imports
 while ($msg =~ s/import\s+(".*?");//s)
 {
-    print STDERR "*** imports are not supported (yet)\n"; $ret=1;
+    print STDERR "*** Error: imports are not supported (yet)\n"; $ret=1;
 }
 
 # parse type announcements in ned text
@@ -167,10 +167,10 @@ while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject)\s+([A-Za-z
     if ($type0 eq 'struct') {
         $type = 'struct';
     } elsif ($type0 eq 'cobject') {
-        print STDERR "*** warning: 'cobject' keyword is deprecated, write 'class' instead\n";
+        print STDERR "*** Warning: 'cobject' keyword is deprecated, write 'class' instead\n";
         $type = 'cobject';
     } elsif ($type0 eq 'noncobject') {
-        print STDERR "*** warning: 'noncobject' is deprecated, write 'class noncobject' instead\n";
+        print STDERR "*** Warning: 'noncobject' is deprecated, write 'class noncobject' instead\n";
         $type = 'noncobject';
     } elsif ($type0 eq 'class') {
         $type = 'cobject';
@@ -182,7 +182,7 @@ while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject)\s+([A-Za-z
 
     if (grep(/^\Q$class\E$/,@classes)) {
         if ($classtype{$class} ne $type) {
-            print STDERR "*** different declarations for '$class' are inconsistent\n"; $ret=1;
+            print STDERR "*** Error: different declarations for '$class' are inconsistent\n"; $ret=1;
         }
     } else {
         $classtype{$class} = $type;
@@ -197,7 +197,7 @@ while ($msg =~ s/enum\s+([A-Za-z_][A-Za-z0-9_]*)\s*;//s)
     $enumname = $1;
 
     if (grep(/^\Q$enumname\E$/,@classes)) {
-        print STDERR "*** inconsistent declarations for '$enum'\n"; $ret=1;
+        print STDERR "*** Error: inconsistent declarations for '$enum'\n"; $ret=1;
     } else {
         push(@enums, $enumname);
     }
@@ -223,7 +223,7 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     else
     {
         $enumhdr =~ s/\s+/ /sg;
-        print STDERR "*** invalid enum declaration syntax '$enumhdr'\n"; $ret=1;
+        print STDERR "*** Error: invalid enum declaration syntax '$enumhdr'\n"; $ret=1;
         $enumname = "???";
         $baseenum = '';
     }
@@ -251,7 +251,7 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
             $fieldname = $1;
         } else {
             $scrap .= $field;
-            print STDERR "*** missing identifier name in enum $enumname\n"; $ret=1;
+            print STDERR "*** Error: missing identifier name in enum $enumname\n"; $ret=1;
         }
 
         # store field
@@ -264,7 +264,7 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
         $scrap =~ s/\n\n+/\n\n/sg;
         $scrap =~ s/^\n//s;
         $scrap =~ s/\n$//s;
-        print STDERR "*** some parts not understood in enum $enumname:\n"; $ret=1;
+        print STDERR "*** Error: some parts not understood in enum $enumname:\n"; $ret=1;
         print STDERR "'$scrap'\n";
     }
 
@@ -272,7 +272,7 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     # generate code
     #
     if (grep(/^\Q$enumname\E$/,@enums)) {
-        print STDERR "*** enum '$enumname' already defined\n"; $ret=1;
+        print STDERR "*** Error: enum '$enumname' already defined\n"; $ret=1;
     }
     push(@enums, $enumname);
 
@@ -334,7 +334,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     else
     {
         $msghdr =~ s/\s+/ /sg;
-        print STDERR "*** invalid declaration syntax for '$msghdr'\n"; $ret=1;
+        print STDERR "*** Error: invalid declaration syntax for '$msghdr'\n"; $ret=1;
         $msgname = "???";
         $msgbase = '';
     }
@@ -365,7 +365,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             $scrap =~ s/\n\n+/\n\n/sg;
             $scrap =~ s/^\n//s;
             $scrap =~ s/\n$//s;
-            print STDERR "*** some parts not understood in 'properties' section of '$msgname':\n"; $ret=1;
+            print STDERR "*** Error: some parts not understood in 'properties' section of '$msgname':\n"; $ret=1;
             print STDERR "'$scrap'\n";
         }
     }
@@ -384,7 +384,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             if ($field =~ s/^\s*abstract\s+//s) {
                 $isabstract = 1;
                 if ($keyword eq 'struct') {
-                    print STDERR "*** a struct cannot have abstract fields in '$msgname'\n"; $ret=1;
+                    print STDERR "*** Error: a struct cannot have abstract fields in '$msgname'\n"; $ret=1;
                 }
             } else {
                 $isabstract = 0;
@@ -409,10 +409,10 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $isarray = 1;
                 $arraysize = $1;
                 if ($arraysize !~ /^[0-9]*$/ && $arraysize !~ /^[A-Za-z_][A-Za-z0-9_]*$/) {
-                    print STDERR "*** array size must be numeric or symbolic constant (not '$arraysize') in '$msgname'\n"; $ret=1;
+                    print STDERR "*** Error: array size must be numeric or symbolic constant (not '$arraysize') in '$msgname'\n"; $ret=1;
                 }
                 if ($arraysize eq '' && $keyword eq 'struct') {
-                    print STDERR "*** a struct cannot have dynamic array fields in '$msgname'\n"; $ret=1;
+                    print STDERR "*** Error: a struct cannot have dynamic array fields in '$msgname'\n"; $ret=1;
                 }
             } else {
                 $isarray = 0;
@@ -443,13 +443,13 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             $scrap =~ s/\n\n+/\n\n/sg;
             $scrap =~ s/^\n//s;
             $scrap =~ s/\n$//s;
-            print STDERR "*** some parts not understood in 'fields' section of '$msgname':\n"; $ret=1;
+            print STDERR "*** Error: some parts not understood in 'fields' section of '$msgname':\n"; $ret=1;
             print STDERR "'$scrap'\n";
         }
     }
     else
     {
-        print STDERR "*** no 'fields' section in '$msgname'\n"; $ret=1;
+        print STDERR "*** Error: no 'fields' section in '$msgname'\n"; $ret=1;
         next;
     }
 
@@ -469,7 +469,7 @@ if ($scrap =~ /[^ \t\n]/s)
     $scrap =~ s/\n\n+/\n\n/sg;
     $scrap =~ s/^\n//s;
     $scrap =~ s/\n$//s;
-    print STDERR "*** following parts of input file were not understood:\n"; $ret=1;
+    print STDERR "*** Error: following parts of input file were not understood:\n"; $ret=1;
     print STDERR "'$scrap'\n";
 }
 
@@ -479,6 +479,11 @@ print H "#endif // $hdef\n";
 close(H);
 close(CC);
 
+if ($ret)
+{
+    unlink($hfile);
+    unlink($ccfile);
+}
 exit $ret;
 
 
@@ -539,7 +544,7 @@ sub prepareForCodeGeneration
         }
     } else {
         if (!grep(/^\Q$msgbase\E$/,@classes)) {
-            print STDERR "*** unknown base class '$msgbase'\n"; $ret=1;
+            print STDERR "*** Error: unknown base class '$msgbase'\n"; $ret=1;
         }
         $classtype = $classtype{$msgbase};
     }
@@ -547,9 +552,9 @@ sub prepareForCodeGeneration
     # check earlier declarations and register this class
     if (grep(/^\Q$msgname\E$/,@classes)) {
         if ($hasdescriptor{$msgname}) {
-            print STDERR "*** attempt to redefine '$msgname'\n"; $ret=1;
+            print STDERR "*** Error: attempt to redefine '$msgname'\n"; $ret=1;
         } elsif ($classtype{$msgname} ne $classtype) {
-            print STDERR "*** definition of '$msgname' inconsistent with earlier declaration(s)\n"; $ret=1;
+            print STDERR "*** Error: definition of '$msgname' inconsistent with earlier declaration(s)\n"; $ret=1;
         } else {
             # OK
             $hasdescriptor{$msgname} = 1;
@@ -604,13 +609,13 @@ sub prepareForCodeGeneration
     foreach $fieldname (@fieldlist)
     {
         if ($fisabstract{$fieldname} && !$gap) {
-            print STDERR "*** abstract fields assume 'customize=true' property in '$msgname'\n"; $ret=1;
+            print STDERR "*** Error: abstract fields assume 'customize=true' property in '$msgname'\n"; $ret=1;
         }
         if ($fval{$fieldname} ne '' && $classtype eq 'struct') {
-            print STDERR "*** default values not possible with structs (no constructor is generated!) in '$msgname'\n"; $ret=1;
+            print STDERR "*** Error: default values not possible with structs (no constructor is generated!) in '$msgname'\n"; $ret=1;
         }
         if ($fenumname{$fieldname} ne '' && !grep(/^\Q$fenumname{$fieldname}\E$/,@enums)) {
-            print STDERR "*** undeclared enum '$fenumname{$fieldname}' used in '$msgname'\n"; $ret=1;
+            print STDERR "*** Error: undeclared enum '$fenumname{$fieldname}' used in '$msgname'\n"; $ret=1;
         }
 
         # variable name
@@ -641,7 +646,7 @@ sub prepareForCodeGeneration
         if ($ftype =~ /^(.*?)\s*\*$/) {
             $ftype = $1;
             $fpointer = 1;
-            print STDERR "*** pointers not supported yet in '$msgname'\n"; $ret=1;
+            print STDERR "*** Error: pointers not supported yet in '$msgname'\n"; $ret=1;
         } else {
             $fpointer = 0;
         }
@@ -745,7 +750,7 @@ sub prepareForCodeGeneration
                 $fromstring{$fieldname} = "opp_string";
                 $fval{$fieldname} = '""' unless ($fval{$fieldname} ne '');
             } else {
-                print STDERR "*** unknown data type '$ftype' (is it struct?)\n"; $ret=1;
+                print STDERR "*** Error: unknown data type '$ftype' (is it struct?)\n"; $ret=1;
                 $datatype{$fieldname} = $ftype;
                 $argtype{$fieldname} = $ftype;
                 $rettype{$fieldname} = $ftype;

@@ -1,3 +1,7 @@
+2004-03-05  Andras Varga
+
+	* opp_msgc: remove output files (_m.cc,_m.h) if translation fails
+
 2004-03-03  ------ omnetpp-3.0a2 released ------
 
 2004-03-03  Andras Varga
