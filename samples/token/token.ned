@@ -85,14 +85,14 @@ module Computer
                 address = address,
                 dataRate = dataRate,
                 THT = THT;
-            display: "p=105,126;i=queue;b=32,30";
+            display: "p=105,126;i=queue;q=sendQueue";
         gen: Generator;
             parameters:
                 numStations = numStations,
                 address = address;
-            display: "p=79,60;i=gen;b=32,30";
+            display: "p=79,60;i=gen";
         sink: Sink;
-            display: "p=132,60;i=sink;b=32,30";
+            display: "p=132,60;i=sink";
     connections:
         in --> mac.phy_in;
         mac.phy_out --> out;

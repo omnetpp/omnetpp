@@ -1,3 +1,7 @@
+2003-10-06  Andras Varga
+
+	* token.ned: added "q=" tag to display string (displays queue length)
+
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-03-15  ------ omnetpp-2.3b2 released ------
