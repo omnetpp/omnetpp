@@ -10,14 +10,9 @@ OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 OMNETPP_BITMAP_PATH=@OMNETPP_BITMAP_PATH@
 
 TK_INCL_PATH=@TK_INCL_PATH@
-X_INCL_PATH=@X_INCL_PATH@
-
-X_LIBS=@X_LIBS@
 TK_LIBS=@TK_LIBS@
 SYS_LIBS=@SYS_LIBS@
 
-TK_LIB_PATH=@TK_LIB_PATH@
-X_LIB_PATH=@X_LIB_PATH@
 
 # Local definitions
 # ebnf_tab=ebnf_tab
@@ -27,16 +22,16 @@ lexyy=lex.yy
 
 GNED_INCLUDES=arrow.h parsened.h tklib.h
 
-CC_OPTS=-fwritable-strings $(TK_INCL_PATH) $(X_INCL_PATH)
+CC_OPTS=-fwritable-strings $(TK_INCL_PATH)
 
 OMNETPP_GNED_DIR=$(OMNETPP_SRC_DIR)/gned
 
-OBJS = gned.o tklib.o arrow.o  $(ebnf_tab).o $(lexyy).o parsened.o disp.o nedfile.o
+OBJS = gned.o tklib.o arrow.o $(ebnf_tab).o $(lexyy).o parsened.o disp.o nedfile.o
 
 all : gned
 
 gned : $(OBJS)
-	$(LD) $(OBJS) $(TK_LIB_PATH) $(TK_LIBS) $(X_LIB_PATH) $(X_LIBS) $(SYS_LIBS) -o gned
+	$(LD) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
 
 
 gned.o : gned.cc $(INCLUDES)
