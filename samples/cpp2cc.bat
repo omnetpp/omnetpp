@@ -10,6 +10,6 @@ ren fifo2\*.cpp *.cc
 ren hcube\*.cpp *.cc
 ren hist\*.cpp *.cc
 ren nim\*.cpp *.cc
-ren ned\*.cpp *.cc
+ren topo\*.cpp *.cc
 ren token\*.cpp *.cc
 ren dyna2\*.cpp *.cc
