@@ -46,8 +46,8 @@ enum {
 };
 
 //=== dynamic allocation in module functions
-#define NEW             new((___nosuchclass *)NULL)
-#define DELETE(x)       memFree((void *&)x)
+#define opp_new             new((___nosuchclass *)NULL)
+#define opp_delete          memFree((void *&)x)
 
 //=== classes mentioned/declared here:
 class  cMessage;

@@ -824,5 +824,7 @@ Apr 10, 2000
       int findSubmodule(const char *submodname, int idx=-1); // moduleID (or -1)
       cModule *submodule(const char *submodname, int idx=-1);
  - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
-
+ - in cmodule.h, the old NEW and DELETE macros (for raw memory allocation) were
+   renamed to opp_new and opp_free. (Beware when using opp_free: it does NOT
+   call the destructor of the passed object!)
 
