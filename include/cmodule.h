@@ -304,7 +304,8 @@ class SIM_API cModule : public cDefaultList
 
     /**
      * Sets gate vector size. If the vector size is increased, Ids of existing
-     * gates in the vector may change.
+     * gates in the vector may change. The function returns the new Id of the
+     * first gate in the vector.
      *
      * Note: setGateSize() should not be called when Id change can cause problems:
      * after initialize() of this module has been invoked, or when messages have
@@ -316,7 +317,7 @@ class SIM_API cModule : public cDefaultList
      * as Ids, thus if the vector would expand to already issued gate Ids, the
      * whole vector must be moved to a different Id range.)
      */
-    void setGateSize(const char *s, int size);
+    int setGateSize(const char *s, int size);
 
     /**
      * Adds a parameter to the module.

@@ -288,7 +288,7 @@ cGate *cModule::addGate(const char *gname, char tp)
      return newg;
 }
 
-void cModule::setGateSize(const char *gname, int newsize)
+int cModule::setGateSize(const char *gname, int newsize)
 {
     int pos = findGate(gname,-1);
     if (pos<0)
@@ -313,7 +313,7 @@ void cModule::setGateSize(const char *gname, int newsize)
                 throw new cException(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->fullPath());
             delete gate;
         }
-        return;
+        return pos;
     }
 
     // OK, it'll be expand.
@@ -339,6 +339,7 @@ void cModule::setGateSize(const char *gname, int newsize)
             cGate *gate = (cGate *) gatev.get(pos+i);
             gate->setIndex(i, newsize);
         }
+        return pos;
     }
     else
     {
@@ -380,6 +381,7 @@ void cModule::setGateSize(const char *gname, int newsize)
             gate->setOwnerModule(this, newpos+i);
             gate->setIndex(i, newsize);
         }
+        return newpos;
     }
 }
 

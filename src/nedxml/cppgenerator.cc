@@ -385,9 +385,8 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    for (int i=0; i<n; i++)\n";
     out << "        if (!mod->gate(baseId+i)->isConnectedOutside())\n";
     out << "            return mod->gate(baseId+i);\n";
-    out << "    const int delta = 1;\n";
-    out << "    mod->setGateSize(gatename,n+delta);\n";
-    out << "    return mod->gate(baseId+n);\n";
+    out << "    int newBaseId = mod->setGateSize(gatename,n+1);\n";
+    out << "    return mod->gate(newBaseId+n);\n";
     out << "}\n";
     out << "\n";
 

@@ -258,9 +258,8 @@ cGate *cNEDNetworkBuilder::getFirstUnusedSubmodGate(cModule *modp, const char *g
     for (int i=0; i<n; i++)
         if (!modp->gate(baseId+i)->isConnectedOutside())
             return modp->gate(baseId+i);
-    const int delta = 1;
-    modp->setGateSize(gatename,n+delta);
-    return modp->gate(baseId+n);
+    int newBaseId = modp->setGateSize(gatename,n+1);
+    return modp->gate(newBaseId+n);
 }
 
 void cNEDNetworkBuilder::addLoopConnection(cModule *modp, ForLoopNode *forloop)
