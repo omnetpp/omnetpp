@@ -1,6 +1,23 @@
 2004-12-13   Andras Varga
 
-	*
+	* several values made configurable; all entries below are in the
+	[General] section:
+
+	parsim-debug = <true/false>
+	   default: true
+	parsim-idealsimulationprotocol-tablesize = <int>
+	   default: TABLESIZE
+	parsim-mpicommunications-mpibuffer = <bytes>
+	   default: 256K * (numPartitions-1) + 16K;
+	parsim-namedpipecommunications-prefix = <string>
+	   Windows: default value is "omnetpp" ();
+	   Unix: default value is "comm/", which means pipes will be created
+	   in the comm/ subdirectory.
+	parsim-nullmessageprotocol-lookahead-class = <class name string>
+	   class must be subclassed from cNMPLookahead
+	   default: "cLinkDelayLookahead"
+	parsim-nullmessageprotocol-laziness = <0..1>
+	   default: 0.5
 
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
