@@ -49,7 +49,8 @@ Register_Class(cNamedPipeCommunications);
 #define PIPE_INBUFFERSIZE  (1024*1024) /*1MB*/
 
 
-std::string getWindowsError()
+// TBD resolve duplication -- we have this in Envir as well
+static std::string getWindowsError()
 {
     long errorcode = GetLastError();
     LPVOID lpMsgBuf;
