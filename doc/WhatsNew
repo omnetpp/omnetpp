@@ -1,19 +1,21 @@
 What's New
 ==========
 
-In the OMNeT++ 2.3 release (November 2002)
+In the OMNeT++ 2.3 release (December 2002)
 ------------------------------------------
-Two major archievements of this release are:
+Major archievements of this release are:
 
 - extensive refactoring of the simulation kernel (backwards compatibility
   was no.1 concern, so very few models will have to be changed to work
-  with 2.3), and
+  with 2.3);
 
 - alpha version of the new NED compiler architecture, built upon XML
-  foundations.
+  foundations;
 
-In addition to those above, several big and small improvements have been
-done to improve usability of the toolkit. Let's see!
+- more complete support for MSVC
+
+In addition to those above, many big and small changes have been done to 
+improve usability of the toolkit. Let's see it in details!
 
 Simulation kernel refactoring:
 
@@ -24,8 +26,8 @@ Simulation kernel refactoring:
   exceptions. This not only resulted in cleaner kernel code, but also has
   benefits for you:
   * you can now use try...catch for better error handling. The API documen-
-    tation was updated to show which methods throw exceptions. (Common
-    exception class is cException.)
+    tation describes which methods throw exceptions. (Common exception class 
+    is cException.)
   * methods like end(), endSimulation(), deleteModule() terminate the module
     immediately even when called from handleMessage(). (In earlier versions,
     handleMessage() had to go through in any case.)
@@ -39,7 +41,7 @@ Simulation kernel refactoring:
   use dynamic_cast<> in your code, and you don't need to redefine className()
   in your own classes because we can figure it out in the base class, cObject.
 
-- eliminated gcc 3.0.x warnings --------------------------------------------to be done!!!!
+- eliminated gcc 3.0.x warnings
 
 - several smaller auxiliary classes were made inner classes to their 'main'
   classes. (Examples: cQueueIterator --> cQueue::Iterator, sTopoNode -->
@@ -84,11 +86,11 @@ Simulation kernel refactoring:
   * operator[] deprecated (use module(int) method instead)
   * del() renamed to deleteModule(); add() renamed to addModule()
 
-- introduced channel objects:
-	* added cchannel.h: cChannel, cSimpleChannel introduced
-	* cGate: added setChannel(), channel()
-	* cGate: DEPRECATED setDelay(), setError(), setDatarate(), setLink()
-	methods. Channel objects should be used instead.
+- channels are now represented by real objects (subclassed from cChannel) 
+  rather than parameters in cGate. Channels can be assigned to connections 
+  via cGate's setChannel() method; at the same time, DEPRECATED cGate's 
+  setDelay(), setError(), setDatarate(), setLink() methods (these attributes 
+  should be set on the channel object).
 
 - cSubModIterator: operator[] deprecated (use operator()(int) method instead)
 
@@ -97,8 +99,11 @@ Simulation kernel refactoring:
 
 Simulation kernel new features:
 
-- cGate: added isConnectedOutside() and isConnectedInside() utility methods.
-- cGate: added connectTo() method; DEPRECATED setFrom() and setTo()
+- cGate: added isConnectedOutside() and isConnectedInside() utility methods;
+  added connectTo() method, and DEPRECATED setFrom() and setTo()
+
+- cMessage: added convenience methods for attaching objects to a message:
+  addObject(), getObject(), hasObject(), removeObject(). 
 
 - cArray: created set(cObject*) method to add optional hashtable-like
   behaviour to cArray: this method replaces the object with the same
@@ -115,7 +120,9 @@ Build:
    to compile every source using /GR, otherwise Tkenv crashes (RTTI
    exception)!
 
-- makemake for Windows/MSVC! This is a perl script.
+- new utilities: opp_nmakemake creates MSVC makefiles; opp_neddoc creates
+  HTML documentation for NED files; opp_neddocall creates HTML documentation
+  for all nedfiles in a directory tree; opp_test now works on Windows too.
 
 - makefile now generates ../doc/api/tags. This tag file can be included
   when generating model documentation.
@@ -126,28 +133,32 @@ Build:
   documentation of all source files (*.h and *.cc) using Doxygen. The
   HTML files are placed into the sub-directory ./htmldoc.
 
-- ported to Tk8.4 (several 'char *' to 'const char *' changes)
+- now we support Tk8.4 (several 'char *' to 'const char *' changes)
 
 GNED:
-- added about 120 new full color icons  --------------------------------------- to be done!
-- icon selector window improved; now you can also select icons by category
+- improved icon selector dialog; bugfixes
 
 Cmdenv:
+
 - the -h command-line switch now lists linked-in networks and modules
+
 - Cmdenv can now display event/sec, event/simsec, simsec/sev, no. of message
   objects, etc. during execution, and omnetpp.ini entries that control how
   much info Cmdenv prints when running were made easier to use.
+
 - introduced express-mode=yes/no (default: no) switch, with meaning similar
   to Tkenv (non-express mode: detailed information printed; express mode:
   only periodic status updates)
+
 - in normal mode (express-mode=no), the following ini file entries are
   taken into account:
   * module-messages=yes/no (default: yes)
        printing module ev<< output on/off (as before)
   * event-banners=yes/no (default: yes)
        printing event banners on/off; replaces verbose-simulation=
+
 - in express mode, following entries are used:
-  * status-frequency=<integer> (default: 50000)         ------------------ FIXME: MAKE 100000!
+  * status-frequency=<integer> (default: 100000)
         print status update every n events (on today's computers, and
         for a typical model, this will produce an update perhaps a few times
         per second)
@@ -156,21 +167,29 @@ Cmdenv:
 - obsoleted omnetpp.ini entries: display-update=, verbose-simulation=.
 
 Tkenv:
+
 - inspector windows are now restored from a ./.tkenvrc file if you restart the
   simulation (as soons as inspected object gets created in the simulation, its
   window pops up - objects must have unique names for this to work properly!)
+
 - outvector inspectors: added basic labeling to axes
+
 - with "ring" layout, changed display order of modules from clockwise to the
   more natural counter-clockwise
+
 - clear main window when simulation is restarted
+
 - extensive internal refactoring (inspector registration and creation
   rewritten; code split to several more source files; method renamings, etc)
+
 - on very long connection arrows, message animation could take forever; now
   an upper bound is set
+
 - increased event number status bar field width by 3 digits - it was limited
   in size to 1.000.000 events.
 
 Envir:
+
 - filemgrs.cc: added fname-append-host=true/false ini file setting.
   When turned on, appends the host name to the names of the output
   files (output vector, output scalar, snapshot files). This is
@@ -193,22 +212,36 @@ Envir:
   scalar file got removed between runs
 
 New NED compiler architecture:
-- added nedxml library to src/
-- added nedtool to nedc
+
+- experimental perl-based message compiler msgc now avaiable in bin/
+
+- added nedtool, the new NED and message compiler (alpha). nedtool converts
+  NED from/to XML, providing much better integration possibilities (for example
+  it is now possible to use XML/XSLT to generate NED topologies from external
+  data sources -- or to extract NED info to arbitrary XML format.)
+
+- added nedxml library (the library under nedtool) to src/, and its API-doc
+  to doc/nedxml-api
 
 Other:
-- use combobox widget of Bryan Oakley in Plove, Tkenv, GNED ----------------------- to be done!!!
+
+- use combobox widget of Bryan Oakley in Plove, Tkenv, GNED
+
 - test suite: number of test cases grew from 19 to 52 since omnetpp-2.2;
-  covers most of the core functionality (modules, messages, queues) now
+  covers most of the core functionality (modules, messages, queues) now;
+  test can be run with MSVC too
 
 Sample simulations:
+
 - PVMEx removed. It didn't really fulfill its purpose of meaningfully
   demonstrating parallel execution.
+
 - added new directory samples/ned, with an objective to demonstrate NED
   features. Currently it shows how to build various topologies (chain, mesh,
   ring, star, random graph, binary tree, hexagonal grid, etc.)
 
 Manual:
+
 - various fixes and clarifications (thanks to Phillip Feldman for his numerous
   comments!)
 

@@ -99,7 +99,7 @@ void TCmdenvApp::readPerRunOptions( int run_nr )
     opt_expressmode = ini_file->getAsBool2( section,"Cmdenv", "express-mode", false);
     opt_modulemsgs = ini_file->getAsBool2( section,"Cmdenv", "module-messages", true );
     opt_eventbanners = ini_file->getAsBool2( section,"Cmdenv", "event-banners", true );
-    opt_status_frequency_ev = ini_file->getAsInt2( section,"Cmdenv", "status-frequency", 50000 );
+    opt_status_frequency_ev = ini_file->getAsInt2( section,"Cmdenv", "status-frequency", 100000 );
     //opt_status_frequency_sec = ini_file->getAsTime2( section,"Cmdenv", "status-frequency-interval", 5.0 );
     opt_perfdisplay = ini_file->getAsBool2( section,"Cmdenv", "performance-display", false );
 
