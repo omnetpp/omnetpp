@@ -655,7 +655,7 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
         if (node->getIsAncestor())
         {
             if (node->getIsRef())
-                out << "cPar().setRedirection(&(";
+                out << "cPar().setRedirection(&("; // note: cannot use tmpval here, because redirection would remain!
             out << "mod->ancestorPar(\"" << node->getParamName() << "\")";
             if (node->getIsRef())
                 out << "))";
@@ -663,7 +663,7 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
         else
         {
             if (node->getIsRef())
-                out << "cPar().setRedirection(&(";
+                out << "cPar().setRedirection(&("; // note: cannot use tmpval here, because redirection would remain!
             if (strnotnull(node->getModule()))
             {
                 out << node->getModule() << "_p";
