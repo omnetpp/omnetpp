@@ -62,6 +62,24 @@ bool cDoubleExpression::parseText(const char *text)
 
 char *cPar::possibletypes = "SBLDFIXCTP";
 
+static const char *typeName(char typechar)
+{
+    switch (typechar)
+    {
+        case 'S': return "string (S)";
+        case 'B': return "bool (B)";
+        case 'L': return "long (L)";
+        case 'D': return "double (D)";
+        case 'F': return "function with constant args (F)";
+        case 'I': return "indirect (I)";
+        case 'X': return "reverse Polish expression (X)";
+        case 'C': return "compiled expression (C)";
+        case 'T': return "random number from distribution (T)";
+        case 'P': return "pointer (P)";
+        default:  return "invalid type char";
+    }
+}
+
 // constructors
 cPar::cPar(const char *name) : cObject( name )
 {
@@ -585,7 +603,7 @@ cPar& cPar::setDoubleValue(ExprElem *x, int n)
         return ind.par->setDoubleValue(x,n);
 
     if (!x)
-        throw new cException(this,eBADINIT, 'X');
+        throw new cException(this,eBADINIT,typeName('X'));
 
     beforeChange();
     deleteold();
@@ -625,7 +643,7 @@ cPar& cPar::setDoubleValue(cDoubleExpression *p)
         return ind.par->setDoubleValue(p);
 
     if (!p)
-        throw new cException(this,eBADINIT, 'P');
+        throw new cException(this,eBADINIT,typeName('P'));
 
     beforeChange();
     deleteold();
@@ -642,7 +660,7 @@ cPar& cPar::setDoubleValue(cStatistic *res)
         return ind.par->setDoubleValue(res);
 
     if (!res)
-        throw new cException(this,eBADINIT, 'T');
+        throw new cException(this,eBADINIT,typeName('T'));
 
     beforeChange();
     deleteold();
@@ -698,7 +716,7 @@ cPar& cPar::setRedirection(cPar *par)
         return ind.par->setRedirection(par);
 
     if (!par)
-        throw new cException(this,eBADINIT, 'I');
+        throw new cException(this,eBADINIT,typeName('I'));
 
     // check for circular references
     cPar *p = par;
@@ -740,7 +758,7 @@ const char *cPar::stringValue()
     if (isInput())
         read();
     if (typechar!='S')
-        throw new cException(this,eBADCAST,typechar,'S');
+        throw new cException(this,eBADCAST,typeName(typechar),typeName('S'));
     return ss.sht ? ss.str : ls.str;
 }
 
@@ -768,7 +786,7 @@ bool cPar::boolValue()
     else if (isNumeric())
         return doubleValue()!=0;
     else
-        throw new cException(this,eBADCAST,typechar,'B');
+        throw new cException(this,eBADCAST,typeName(typechar),typeName('B'));
 }
 
 long cPar::longValue()
@@ -782,7 +800,7 @@ long cPar::longValue()
     else if (isNumeric())
         return (long)doubleValue();
     else
-        throw new cException(this,eBADCAST,typechar,'L');
+        throw new cException(this,eBADCAST,typeName(typechar),typeName('L'));
 }
 
 double cPar::doubleValue()
@@ -808,7 +826,7 @@ double cPar::doubleValue()
                func.argc==3 ? ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3) :
                               ((MathFunc4Args)func.f)(func.p1,func.p2,func.p3,func.p4);
     else
-        throw new cException(this,eBADCAST,typechar,'D');
+        throw new cException(this,eBADCAST,typeName(typechar),typeName('D'));
 }
 
 void *cPar::pointerValue()
@@ -820,7 +838,7 @@ void *cPar::pointerValue()
     if (typechar=='P')
         return ptr.ptr;
     else
-        throw new cException(this,eBADCAST,typechar,'P');
+        throw new cException(this,eBADCAST,typeName(typechar),typeName('P'));
 }
 
 cObject *cPar::objectValue()
@@ -832,7 +850,7 @@ cObject *cPar::objectValue()
     if (typechar=='O')
         return obj.obj;
     else
-        throw new cException(this,eBADCAST,typechar,'O');
+        throw new cException(this,eBADCAST,typeName(typechar),typeName('O'));
 }
 
 bool cPar::isNumeric() const
@@ -1286,7 +1304,7 @@ double cPar::evaluate()
 double cPar::fromstat()
 {
     if (typechar!='T')
-        throw new cException(this,eBADCAST,typechar,'T');
+        throw new cException(this,eBADCAST,typeName(typechar),typeName('T'));
     return  dtr.res->random();
 }
 

@@ -3,6 +3,10 @@
 	* cmodule.cc: setGateSize() made more tolerant; this is needed for
 	"gate++" NED feature (see nedxml/ChangeLog)
 
+	* cpar.cc: turned type character into English type names in cPar error
+	messages, e.g. "Cannot cast from type `D' to `S'" became 
+	"Cannot cast from type double (D) to string (S)'".
+
 2004-02-20  Andras Varga
 
 	* ctype.cc, cchannel.cc, cgate.cc: introduced cChannelType which 

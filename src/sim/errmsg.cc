@@ -28,7 +28,7 @@
 
 char *emsg[] = {
   "No error -- everything's fine",                       // eOK
-  "Cannot cast from type `%c' to `%c'",                  // eBADCAST
+  "Cannot cast from type %s to %s",                      // eBADCAST
   "cPar indirection would create circular reference",    // eCIRCREF
   "Bad number of arguments, %d expected",                // eNUMARGS
   "Cannot find module interface `%s', needed to create module of type `%s' -- "
@@ -44,7 +44,7 @@ char *emsg[] = {
   "Incausality during simulation",                       // eINCAUSAL
   "Message sent to already terminated module `%s'",      // eMODFIN
   "Transfer to nonexistent, finished or compound module",// eBADTRANSF
-  "setValue(): Type `%c' does not suit arg types",       // eBADINIT
+  "setValue(): Type %s does not suit arg types",         // eBADINIT
   "Something unexpected happened (internal error)",      // eUNEXP
   "Cannot use receive..() or wait() with handleMessage()", // eNORECV
   "",                                                    // eSTKLOW
