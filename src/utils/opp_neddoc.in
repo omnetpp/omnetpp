@@ -67,7 +67,8 @@ nedtool -x -e -t -y -m -o $TMPFILE $files || exit 1
 
 if [ -n "$PS2GIF" ]; then
     echo 'exporting screenshots (Postscript) using GNED...'
-    gned -- -c $outdir $files || exit 1
+    nedfilesonly=`echo $files | sed 's/[^ ]*\.msg//g'`
+    gned -- -c $outdir $nedfilesonly || exit 1
     echo 'converting Postscript to GIF using '$PS2GIF'...'
     for i in $outdir/*.eps; do
        gif=`echo $i | sed 's/eps$/gif/'`
