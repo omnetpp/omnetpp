@@ -61,10 +61,10 @@
 #endif
 
 
-// maximum lengths for className(), fullPath() and info() strings
+// maximum lengths for className(), fullPath() and old info(buf) strings
 #define MAX_CLASSNAME       100
-#define MAX_OBJECTFULLPATH     1024
-#define MAX_OBJECTINFO          500
+#define MAX_OBJECTFULLPATH  1024
+#define MAX_OBJECTINFO      500
 
 // in case someone still needs the old name
 #define FULLPATHBUF_SIZE  MAX_OBJECTFULLPATH

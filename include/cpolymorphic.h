@@ -20,6 +20,7 @@
 
 #include <string>
 #include "defs.h"
+#include "util.h"
 
 class cStructDescriptor;
 
@@ -42,7 +43,7 @@ class cStructDescriptor;
  * Using cPolymorphic also strengthens type safety. <tt>cPolymorphic *</tt>
  * pointers should replace <tt>void *</tt> in most places where you need
  * pointers to "any data structure". Using cPolymorphic will allow safe
- * downcasts using <tt>dynamic_cast</tt> and also OMNeT++'s 
+ * downcasts using <tt>dynamic_cast</tt> and also OMNeT++'s
  * <tt>check_and_cast</tt>.
  *
  * @ingroup SimCore
@@ -50,7 +51,7 @@ class cStructDescriptor;
 class SIM_API cPolymorphic
 {
   public:
-    // internal: creates and returns a descriptor object for this object passed 
+    // internal: creates and returns a descriptor object for this object passed
     // as argument. This version return an instance of the class className()+
     // "Descriptor".
     virtual cStructDescriptor *createDescriptor();
@@ -98,17 +99,19 @@ class SIM_API cPolymorphic
     /**
      * Can be redefined to produce a one-line description of object into `buf'.
      * The string appears in the graphical user interface (Tkenv) e.g. when
-     * the object is displayed in a listbox.
-     *
-     * The provided buffer is of finite size (MAX_OBJECTINFO, currently 500),
-     * and the function should take care not to overrun it. Creating a very
-     * long description is useless anyway, because it will be displayed all
-     * on one line.
+     * the object is displayed in a listbox. The returned string should 
+     * possibly be at most 80-100 characters long, and must not contain 
+     * newline.
      *
      * @see detailedInfo()
      */
-    virtual void info(char *buf)  {*buf='\0';}
-    //FIXME virtual std::string info() const  {return std::string();}
+    virtual std::string info() const  {return std::string();}
+
+    /**
+     * DEPRECATED. Copies first MAX_OBJECTINFO characters of 
+     * <tt>info().c_str()</tt> into `buf'. Use info() instead.
+     */
+    virtual void info(char *buf)  {opp_strprettytrunc(buf, info().c_str(), MAX_OBJECTINFO);}
 
     /**
      * Can be redefined to produce a detailed, multi-line, arbitrarily long

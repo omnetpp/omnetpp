@@ -306,7 +306,7 @@ class SIM_API cStdDev : public cStatistic
      * Produces a one-line description of object contents into the buffer passed as argument.
      * See cObject for more details.
      */
-    virtual void info(char *buf);
+    virtual std::string info() const;
 
     /**
      * Writes textual information about this object to the stream.

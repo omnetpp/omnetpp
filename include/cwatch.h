@@ -178,7 +178,7 @@ class SIM_API cWatch : public cObject
      * Produces a one-line information about the object.
      * Output is like this: "int samples = 12 (12U, 0xC)"
      */
-    virtual void info(char *buf);
+    virtual std::string info() const;
 
     /**
      * Writes the value of the variable to the output stream.
@@ -194,7 +194,7 @@ class SIM_API cWatch : public cObject
      * Does actual work for info() and writeContents().
      * The output looks like this: "int samples = 12 (12U, 0xC)".
      */
-    virtual void printTo(char *s);
+    virtual void printTo(char *s) const;
 
     /**
      * Returns the type of the referenced variable.

@@ -691,7 +691,7 @@ class SIM_API cCompoundModule : public cModule
      * Produces a one-line description of object contents into the buffer passed as argument.
      * See cObject for more details.
      */
-    virtual void info(char *buf);
+    virtual std::string info() const;
     //@}
 
     /** @name Redefined cModule functions. */

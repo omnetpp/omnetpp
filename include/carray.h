@@ -24,7 +24,7 @@
 
 
 /**
- * Use of this class is STRONGLY DISCOURAGED, it is provided for backward 
+ * Use of this class is STRONGLY DISCOURAGED, it is provided for backward
  * compatibility only. Use std::vector instead.
  *
  * Container class to hold small non-class items (int, double, etc).
@@ -90,7 +90,7 @@ class SIM_API cBag : public cObject
      * Produces a one-line description of object contents into the buffer passed as argument.
      * See cObject for more details.
      */
-    virtual void info(char *buf);
+    virtual std::string info() const;
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -313,7 +313,7 @@ class SIM_API cArray : public cObject
      * Produces a one-line description of object contents into the buffer passed as argument.
      * See cObject for more details.
      */
-    virtual void info(char *buf);
+    virtual std::string info() const;
 
     /**
      * Calls the given function for each object contained.
