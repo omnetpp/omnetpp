@@ -169,6 +169,7 @@ struct ParserState
     CplusplusNode *cplusplus;
     StructDeclNode *structdecl;
     ClassDeclNode *classdecl;
+    EnumDeclNode *enumdecl;
     EnumNode *enump;
     MessageNode *messagep;
     ClassNode *classp;
@@ -265,6 +266,7 @@ definition
         | cplusplus
         | struct_decl
         | class_decl
+        | enum_decl
 
         | enum
                 { if (ps.storeSourceCode) ps.enump->setSourceCode(toString(@1)); }
@@ -2133,6 +2135,15 @@ class_decl
                 }
         ;
 
+enum_decl
+        : ENUM NAME ';'
+                {
+                  ps.enumdecl = (EnumDeclNode *)createNodeWithTag(NED_ENUM_DECL, ps.nedfile );
+                  ps.enumdecl->setName(toString(@2));
+                  setComments(ps.enumdecl,@1,@2);
+                }
+        ;
+
 enum
         : ENUM NAME '{'
                 {
@@ -2362,6 +2373,11 @@ fielddatatype
 
 opt_fieldvector
         : '[' INTCONSTANT ']'
+                {
+                  ps.field->setIsVector(true);
+                  ps.field->setVectorSize(toString(@2));
+                }
+        | '[' NAME ']'
                 {
                   ps.field->setIsVector(true);
                   ps.field->setVectorSize(toString(@2));

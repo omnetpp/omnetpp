@@ -74,6 +74,7 @@ class NEDValidatorBase
     virtual void validateElement(CplusplusNode *node) = 0;
     virtual void validateElement(StructDeclNode *node) = 0;
     virtual void validateElement(ClassDeclNode *node) = 0;
+    virtual void validateElement(EnumDeclNode *node) = 0;
     virtual void validateElement(EnumNode *node) = 0;
     virtual void validateElement(EnumFieldsNode *node) = 0;
     virtual void validateElement(EnumFieldNode *node) = 0;

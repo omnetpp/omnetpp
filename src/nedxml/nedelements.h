@@ -60,6 +60,7 @@ class ConstNode;
 class CplusplusNode;
 class StructDeclNode;
 class ClassDeclNode;
+class EnumDeclNode;
 class EnumNode;
 class EnumFieldsNode;
 class EnumFieldNode;
@@ -117,6 +118,7 @@ enum NEDElementCode {
     NED_CPLUSPLUS,
     NED_STRUCT_DECL,
     NED_CLASS_DECL,
+    NED_ENUM_DECL,
     NED_ENUM,
     NED_ENUM_FIELDS,
     NED_ENUM_FIELD,
@@ -176,7 +178,7 @@ class NedFilesNode : public NEDElement
  * 
  * <pre>
  * <!ELEMENT ned-file ((import|channel|simple-module|compound-module|network|
- *                      cplusplus|struct-decl|class-decl|
+ *                      cplusplus|struct-decl|class-decl|enum-decl|
  *                      enum|message|class|struct)*)>
  * <!ATTLIST ned-file
  *      filename            CDATA     #IMPLIED
@@ -225,6 +227,7 @@ class NedFileNode : public NEDElement
     virtual CplusplusNode *getFirstCplusplusChild() const;
     virtual StructDeclNode *getFirstStructDeclChild() const;
     virtual ClassDeclNode *getFirstClassDeclChild() const;
+    virtual EnumDeclNode *getFirstEnumDeclChild() const;
     virtual EnumNode *getFirstEnumChild() const;
     virtual MessageNode *getFirstMessageChild() const;
     virtual ClassNode *getFirstClassChild() const;
@@ -2085,6 +2088,57 @@ class ClassDeclNode : public NEDElement
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual ClassDeclNode *getNextClassDeclNodeSibling() const;
+    //@}
+};
+
+/**
+ * GENERATED CLASS. Represents the <enum-decl> XML element in memory. DTD declaration:
+ * 
+ * <pre>
+ * <!ELEMENT enum-decl EMPTY>
+ * <!ATTLIST enum-decl
+ *      name                NMTOKEN   #REQUIRED
+ *      banner-comment      CDATA     #IMPLIED
+ *      right-comment       CDATA     "&#10;"
+ *      trailing-comment    CDATA     "&#10;" >
+ * </pre>
+ * 
+ * @ingroup Data
+ */
+class EnumDeclNode : public NEDElement
+{
+  private:
+    std::string name;
+    std::string bannerComment;
+    std::string rightComment;
+    std::string trailingComment;
+  public:
+    EnumDeclNode() {applyDefaults();}
+    EnumDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~EnumDeclNode() {}
+    /** @name Redefined NEDElement methods, incl. generic access to attributes */
+    //@{
+    virtual const char *getTagName() const {return "enum-decl";}
+    virtual int getTagCode() const {return NED_ENUM_DECL;}
+    virtual int getNumAttributes() const;
+    virtual const char *getAttributeName(int k) const;
+    virtual const char *getAttribute(int k) const;
+    virtual void setAttribute(int k, const char *val);
+    virtual const char *getAttributeDefault(int k) const;
+    //@}
+
+    /** @name Typed access to attributes, children and siblings */
+    //@{
+    const char * getName() const  {return name.c_str();}
+    void setName(const char * val)  {name = val;}
+    const char * getBannerComment() const  {return bannerComment.c_str();}
+    void setBannerComment(const char * val)  {bannerComment = val;}
+    const char * getRightComment() const  {return rightComment.c_str();}
+    void setRightComment(const char * val)  {rightComment = val;}
+    const char * getTrailingComment() const  {return trailingComment.c_str();}
+    void setTrailingComment(const char * val)  {trailingComment = val;}
+
+    virtual EnumDeclNode *getNextEnumDeclNodeSibling() const;
     //@}
 };
 

@@ -172,6 +172,11 @@ ClassDeclNode *NedFileNode::getFirstClassDeclChild() const
     return (ClassDeclNode *)getFirstChildWithTag(NED_CLASS_DECL);
 }
 
+EnumDeclNode *NedFileNode::getFirstEnumDeclChild() const
+{
+    return (EnumDeclNode *)getFirstChildWithTag(NED_ENUM_DECL);
+}
+
 EnumNode *NedFileNode::getFirstEnumChild() const
 {
     return (EnumNode *)getFirstChildWithTag(NED_ENUM);
@@ -2386,6 +2391,60 @@ ClassDeclNode *ClassDeclNode::getNextClassDeclNodeSibling() const
     return (ClassDeclNode *)getNextSiblingWithTag(NED_CLASS_DECL);
 }
 
+int EnumDeclNode::getNumAttributes() const
+{
+    return 4;
+}
+
+const char *EnumDeclNode::getAttributeName(int k) const
+{
+    switch (k) {
+        case 0: return "name";
+        case 1: return "banner-comment";
+        case 2: return "right-comment";
+        case 3: return "trailing-comment";
+        default: return 0;
+    }
+}
+
+const char *EnumDeclNode::getAttribute(int k) const
+{
+    switch (k) {
+        case 0: return name.c_str();
+        case 1: return bannerComment.c_str();
+        case 2: return rightComment.c_str();
+        case 3: return trailingComment.c_str();
+        default: return 0;
+    }
+}
+
+void EnumDeclNode::setAttribute(int k, const char *val)
+{
+    switch (k) {
+        case 0: name = val; break;
+        case 1: bannerComment = val; break;
+        case 2: rightComment = val; break;
+        case 3: trailingComment = val; break;
+        default: ;
+    }
+}
+
+const char *EnumDeclNode::getAttributeDefault(int k) const
+{
+    switch (k) {
+        case 0: return "";
+        case 1: return "";
+        case 2: return "\n";
+        case 3: return "\n";
+        default: return 0;
+    }
+}
+
+EnumDeclNode *EnumDeclNode::getNextEnumDeclNodeSibling() const
+{
+    return (EnumDeclNode *)getNextSiblingWithTag(NED_ENUM_DECL);
+}
+
 int EnumNode::getNumAttributes() const
 {
     return 6;
@@ -3094,6 +3153,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='c' && !strcmp(tagname,"cplusplus"))  return new CplusplusNode();
     if (tagname[0]=='s' && !strcmp(tagname,"struct-decl"))  return new StructDeclNode();
     if (tagname[0]=='c' && !strcmp(tagname,"class-decl"))  return new ClassDeclNode();
+    if (tagname[0]=='e' && !strcmp(tagname,"enum-decl"))  return new EnumDeclNode();
     if (tagname[0]=='e' && !strcmp(tagname,"enum"))  return new EnumNode();
     if (tagname[0]=='e' && !strcmp(tagname,"enum-fields"))  return new EnumFieldsNode();
     if (tagname[0]=='e' && !strcmp(tagname,"enum-field"))  return new EnumFieldNode();
@@ -3150,6 +3210,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_CPLUSPLUS: return new CplusplusNode();
         case NED_STRUCT_DECL: return new StructDeclNode();
         case NED_CLASS_DECL: return new ClassDeclNode();
+        case NED_ENUM_DECL: return new EnumDeclNode();
         case NED_ENUM: return new EnumNode();
         case NED_ENUM_FIELDS: return new EnumFieldsNode();
         case NED_ENUM_FIELD: return new EnumFieldNode();

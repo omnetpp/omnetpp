@@ -283,6 +283,10 @@ void NEDSemanticValidator::validateElement(ClassDeclNode *node)
 {
 }
 
+void NEDSemanticValidator::validateElement(EnumDeclNode *node)
+{
+}
+
 void NEDSemanticValidator::validateElement(EnumNode *node)
 {
     // FIXME check extends-name

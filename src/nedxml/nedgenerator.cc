@@ -819,6 +819,15 @@ void NEDGenerator::doClassDecl(ClassDeclNode *node, const char *indent, bool isl
     appendTrailingComment(node->getTrailingComment(), "");
 }
 
+void NEDGenerator::doEnumDecl(EnumDeclNode *node, const char *indent, bool islast, const char *)
+{
+    appendBannerComment(node->getBannerComment(), indent);
+    out << indent << "enum ";
+    out << node->getName() << ";";
+    appendRightComment(node->getRightComment(), indent);
+    appendTrailingComment(node->getTrailingComment(), "");
+}
+
 void NEDGenerator::doEnum(EnumNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
@@ -1015,6 +1024,8 @@ void NEDGenerator::generateNedItem(NEDElement *node, const char *indent, bool is
             doStructDecl((StructDeclNode *)node, indent, islast, arg); break;
         case NED_CLASS_DECL:
             doClassDecl((ClassDeclNode *)node, indent, islast, arg); break;
+        case NED_ENUM_DECL:
+            doEnumDecl((EnumDeclNode *)node, indent, islast, arg); break;
         case NED_ENUM:
             doEnum((EnumNode *)node, indent, islast, arg); break;
         case NED_ENUM_FIELDS:

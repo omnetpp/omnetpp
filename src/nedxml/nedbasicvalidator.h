@@ -86,6 +86,7 @@ class NEDBasicValidator : public NEDValidatorBase
     virtual void validateElement(CplusplusNode *node);
     virtual void validateElement(StructDeclNode *node);
     virtual void validateElement(ClassDeclNode *node);
+    virtual void validateElement(EnumDeclNode *node);
     virtual void validateElement(EnumNode *node);
     virtual void validateElement(EnumFieldsNode *node);
     virtual void validateElement(EnumFieldNode *node);

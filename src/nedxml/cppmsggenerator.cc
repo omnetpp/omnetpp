@@ -53,6 +53,11 @@ void NEDCppGenerator::doClassDecl(ClassDeclNode *node, const char *indent, int m
     // nothing to output
 }
 
+void NEDCppGenerator::doEnumDecl(EnumDeclNode *node, const char *indent, int mode, const char *)
+{
+    // nothing to output
+}
+
 void NEDCppGenerator::doEnum(EnumNode *node, const char *indent, int mode, const char *)
 {
     outh << "enum " << node->getName() << " {\n";

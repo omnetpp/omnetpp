@@ -497,6 +497,10 @@ void NEDBasicValidator::validateElement(ClassDeclNode *node)
 {
 }
 
+void NEDBasicValidator::validateElement(EnumDeclNode *node)
+{
+}
+
 void NEDBasicValidator::validateElement(EnumNode *node)
 {
 }

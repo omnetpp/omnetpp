@@ -30,7 +30,7 @@ void NEDDTDValidator::validateElement(NedFilesNode *node)
 
 void NEDDTDValidator::validateElement(NedFileNode *node)
 {
-    int tags[] = {NED_IMPORT,NED_CHANNEL,NED_SIMPLE_MODULE,NED_COMPOUND_MODULE,NED_NETWORK,NED_CPLUSPLUS,NED_STRUCT_DECL,NED_CLASS_DECL,NED_ENUM,NED_MESSAGE,NED_CLASS,NED_STRUCT};
+    int tags[] = {NED_IMPORT,NED_CHANNEL,NED_SIMPLE_MODULE,NED_COMPOUND_MODULE,NED_NETWORK,NED_CPLUSPLUS,NED_STRUCT_DECL,NED_CLASS_DECL,NED_ENUM_DECL,NED_ENUM,NED_MESSAGE,NED_CLASS,NED_STRUCT};
     checkChoice(node, tags, sizeof(tags)/sizeof(int), '*');
 
     checkCommentAttribute(node, "banner-comment");
@@ -436,6 +436,17 @@ void NEDDTDValidator::validateElement(ClassDeclNode *node)
     checkNameAttribute(node, "name");
     const char *vals1[] = {"true","false"};
     checkEnumeratedAttribute(node, "is-cobject", vals1, sizeof(vals1)/sizeof(const char *));
+    checkCommentAttribute(node, "banner-comment");
+    checkCommentAttribute(node, "right-comment");
+    checkCommentAttribute(node, "trailing-comment");
+}
+
+void NEDDTDValidator::validateElement(EnumDeclNode *node)
+{
+    checkEmpty(node);
+
+    checkRequiredAttribute(node, "name");
+    checkNameAttribute(node, "name");
     checkCommentAttribute(node, "banner-comment");
     checkCommentAttribute(node, "right-comment");
     checkCommentAttribute(node, "trailing-comment");
