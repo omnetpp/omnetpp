@@ -25,6 +25,8 @@
 #include "filewriter.h"
 #include "windowavg.h"
 #include "filternodes.h"
+#include "mergernodes.h"
+#include "xyplotnode.h"
 
 
 NodeTypeRegistry *NodeTypeRegistry::inst;
@@ -54,6 +56,8 @@ NodeTypeRegistry::NodeTypeRegistry()
     add(new VectorFileReaderNodeType());
     add(new VectorFileWriterNodeType());
     add(new FileWriterNodeType());
+    add(new MergerNodeType());
+    add(new XYPlotNodeType());
 
     add(new WindowAverageNodeType());
     add(new NopNodeType());

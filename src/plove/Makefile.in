@@ -55,6 +55,7 @@ ENGINE_OBJS =  engine/exception.o \
                engine/getvectors.o \
                engine/filternodes.o \
                engine/mergernodes.o \
+               engine/xyplotnode.o \
                engine/compoundfilter.o
 
 OBJS = $(PLOVE_OBJS) $(ENGINE_OBJS)

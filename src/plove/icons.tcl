@@ -134,6 +134,13 @@ set icons(savescript) [image create photo -data {
     S7UW04H4UTdBqEcMCAqEwkTJ83EEBKiEEG16jklo1fqbbrk/KsljEiOZGe9UmsYus+1MBAA7
 }]
 
+set icons(xyplot) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAA/j4AwXl8+fsFBvojF+RdXe9vSeyLXOqUYuauc9iG
+    hs+lpdClpeHWjcbFxSH5BAEAAA8ALAAAAAAUABMAAARV8MlJq70Yu837lkMweeQW
+    BsNYJodyptRKEAXqVADg5DtwzATEp1JSFGiKYcwTCCgQSaWK09zoOJZO1drJbrYl
+    L5iLJY7JUsk5XAmUduUMTk6vWwCXCAA7
+}]
+
 set icons(hist) [image create photo -data {
     R0lGODlhFAATALMAAAAAAMbGxgAA/0AAAIAAAAAA/+HXjv8AAP//AMDAwAGFAf//
     /////////////////yH5BAEAAAEALAAAAAAUABMAAARAMMhJq70Ym837vl7IWaEg

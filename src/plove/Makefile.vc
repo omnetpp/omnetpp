@@ -45,6 +45,7 @@ ENGINE_OBJS =  engine/exception.obj \
                engine/getvectors.obj \
                engine/filternodes.obj \
                engine/mergernodes.obj \
+               engine/xyplotnode.obj \
                engine/compoundfilter.obj
 
 

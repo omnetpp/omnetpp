@@ -29,7 +29,8 @@ Port *XYPlotNode::addYPort()
 
 bool XYPlotNode::isReady() const
 {
-    if (xin()->length()==0 || xin()->closing())
+    // all input ports must have something (except those at EOF)
+    if (xin()->length()==0 && !xin()->closing())
         return false;
     for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
         if ((*it)()->length()==0 && !(*it)()->closing())
@@ -45,22 +46,18 @@ void XYPlotNode::process()
     // EOF, skip it.
     if (xin()->length()==0)
     {
-         ASSERT(xin()->closing()); // isReady guarantees this
-         {
-             // "x" at EOF
-             //FIXME read & discard all "y" values
-         }
-         else
-         {
-             // no "x" yet
-             return; // FIXME this may cause
-         }
+         // "x" at EOF, discard all "y" values
+         ASSERT(xin()->eof()); // isReady() guarantees this
+         for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
+             (*it)()->flush();
+         if (finished())
+             out()->close();
+         return;
     }
 
     Datum xd;
     xin()->read(&xd,1);
 
-    bool allEof = true;
     for (PortVector::iterator it=yin.begin(); it!=yin.end(); it++)
     {
         Channel *ychan = (*it)();
@@ -68,29 +65,27 @@ void XYPlotNode::process()
         Datum d;
         while ((yp=ychan->peek())!=NULL && yp->x < xd.x)
         {
-            ychan()->read(&d,1);
+            ychan->read(&d,1);
         }
         while ((yp=ychan->peek())!=NULL && yp->x == xd.x)
         {
-            ychan()->read(&d,1);
+            ychan->read(&d,1);
             d.x = xd.y;
             out()->write(&d,1);
         }
     }
 
-    // FIXME we're finished if "x" is at EOF!!! just throw away everything from y
     if (finished())
         out()->close();
 }
 
 bool XYPlotNode::finished() const
 {
-    // only finished if all ports are at EOF (closing && no values buffered)
-    // FIXME we're finished if "x" is at EOF!!! just throw away everything from y
-    if (!xin()->closing() || xin()->length()>0)
+    // only finished if all ports are at EOF
+    if (!xin()->eof())
         return false;
     for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
-        if (!(*it)()->closing() || (*it)()->length()>0)
+        if (!(*it)()->eof())
             return false;
     return true;
 }

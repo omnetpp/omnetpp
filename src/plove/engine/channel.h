@@ -28,8 +28,9 @@
 class Channel
 {
     private:
-        // note: a Channel should *never* have pointer back to its Ports
-        // because VectorFileReader stores ports in a vector and might realloc!
+        // note: a Channel should *never* hold a pointer back to its Ports
+        // because ports may be copied after having been assigned to channels
+        // (e.g. in VectorFileReader which uses std::vector)
         bool nomorewrites;
         std::deque<Datum> buffer;
         Node *consumernode;
@@ -43,6 +44,7 @@ class Channel
         const Datum *peek() const;
         void write(Datum *a, int n);
         int read(Datum *a, int max);
+        void flush() {buffer.clear();}
         bool closing()  {return nomorewrites;}
         bool eof()  {return nomorewrites && length()==0;}
         void close()  {nomorewrites=true;}
