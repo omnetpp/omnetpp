@@ -183,10 +183,11 @@ class SIM_API cChannel : public cObject
     //@{
 
     /**
-     * This function is called internally by the simulation kernel for transmission
-     * modelling.
+     * This function is called internally by the simulation kernel for transmission modelling.
+     * A false return value means that the message object should be deleted by the caller;
+     * this can be used to model that the message was lost in the channel.
      */
-    virtual void deliver(cMessage *msg, simtime_t at);
+    virtual bool deliver(cMessage *msg, simtime_t at);
     //@}
 };
 
@@ -375,7 +376,7 @@ class SIM_API cSimpleChannel : public cChannel
     /**
      * Performs bit error rate, delay and transmission time modelling.
      */
-    virtual void deliver(cMessage *msg, simtime_t at);
+    virtual bool deliver(cMessage *msg, simtime_t at);
     //@}
 };
 

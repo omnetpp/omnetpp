@@ -1,3 +1,8 @@
+2004-02-12  Andras Varga
+
+	* cgate.h, cchannel.h: gave a bool return value to deliver(), "false" 
+	meaning that message object should be deleted.
+
 2004-02-11  Andras Varga 
 
 	* csimul.h, cscheduler.h: semantic change in getNextEvent()'s and

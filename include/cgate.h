@@ -143,8 +143,11 @@ class SIM_API cGate : public cObject
     /**
      * This function is called internally by the send() functions and
      * channel classes' deliver() to deliver the message to its destination.
+     * A false return value means that the message object should be deleted
+     * by the caller. (This is used e.g. with parallel simulation, for
+     * messages leaving the partition.)
      */
-    virtual void deliver(cMessage *msg, simtime_t at);
+    virtual bool deliver(cMessage *msg, simtime_t at);
 
     /** @name Setting up the gate. */
     //@{
