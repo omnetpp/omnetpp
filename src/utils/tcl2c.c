@@ -30,10 +30,8 @@
 const char *findFirstFile(const char *mask);
 const char *findNextFile();
 
-#if defined(_MSC_VER)
-
 /*
- * MSVC version
+ * code for Windows/MSVC
  */
 #include <io.h>
 long handle;
@@ -51,11 +49,11 @@ const char *findNextFile()
     return fdata.name;
 }
 
-#else
-
 /*
- * Borland C version
- */
+
+ *
+ * code for Borland C -- currently not used
+ *
 #include <dir.h>
 struct ffblk ffblk;
 const char *findFirstFile(const char *mask)
@@ -69,7 +67,7 @@ const char *findNextFile()
     return done ? NULL : ffblk.ff_name;
 }
 
-#endif
+*/
 
 #endif /* _WIN32 */
 

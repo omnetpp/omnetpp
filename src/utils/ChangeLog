@@ -1,3 +1,8 @@
+2002-10-30  Andras Varga
+
+	* tcl2c.c: commented out old code for Borland C++, it was in the way
+	when compiling with MinGW. BC is not supported anyway.
+
 2002-10-19  Andras Varga
 
 	* opp_test: added %global option; it can be used with %activity 
