@@ -230,7 +230,7 @@ proc new_run {} {
        if {[regexp -nocase -- {^(Run *)?([0-9]+) *$} $section dummy dummy1 runno]} {
            set descr [opp_getinientryasstring $section "description"]
            if {$descr != ""}  {
-               lappend runlist "Run $runno -- $descr"
+               lappend runlist "Run $runno: $descr"
            } else {
                lappend runlist "Run $runno"
            }
@@ -246,13 +246,19 @@ proc new_run {} {
             set run "General"
         }
     }
+    set descr [opp_getinientryasstring $run "description"]
+    if {$descr != ""}  {
+        lappend run "Run $runno: $descr"
+    } else {
+        lappend run "Run $runno"
+    }
 
     # pop up selection dialog
     set ok [comboSelectionDialog "Set up new Run" "Set up one of the runs described in omnetpp.ini." {Select run:} run $runlist]
     if {$ok == 1} {
        if {$run == "General"} {
            set runno "-1"
-       } elseif {[regexp -nocase -- {^(Run *)?([0-9]+) *(--.*)?$} $run dummy dummy1 runno]} {
+       } elseif {[regexp -nocase -- {^(Run *)?([0-9]+)(:.*)?$} $run dummy dummy1 runno]} {
            # OK -- regexp matched
        } else {
            messagebox "Error" "Which run do you mean by '$run'?" info ok
