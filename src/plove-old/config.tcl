@@ -4,7 +4,7 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992,99 Andras Varga
+#  Copyright (C) 1992-2001 Andras Varga
 #  Technical University of Budapest, Dept. of Telecommunications,
 #  Stoczek u.2, H-1111 Budapest, Hungary.
 #
@@ -127,7 +127,7 @@ proc editExtProgs {} {
         catch {unset tmp}
         set tmp(gp-slash) $config(gp-slash)
         checkbutton .ize.f.f1.slash -variable tmp(gp-slash) \
-            -text "my gnuplot prefers filenames with fwd slashes" 
+            -text "my gnuplot prefers filenames with fwd slashes"
     }
     label-entry .ize.f.f1.awk     "awk:" $config(awk)
     label-entry .ize.f.f1.mknod   "mknod:" $config(mknod)

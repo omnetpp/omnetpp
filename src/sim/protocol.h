@@ -11,7 +11,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,99 Andras Varga
+  Copyright (C) 1992-2001 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -29,7 +29,7 @@
 //
 // This file is an initial try to collect protocols and frame/packet
 // types and assign ids to them, for use with cPacket. The aim is
-// to standardize on protocol models. 
+// to standardize on protocol models.
 //
 // Hopefully these enum lists will grow as people develop models and
 // send in new protocol codes.
@@ -102,7 +102,7 @@ enum {
 //
 // Using generic PDU type names will make it easier to write more general
 // and easier-to-reuse protocol models.
-// 
+//
 // Additions, corrections welcome!
 //
 enum {

@@ -11,7 +11,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,96 Andras Varga and Gyorgy Pongor,
+  Copyright (C) 1992-2001 Andras Varga and Gyorgy Pongor,
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
     if (argc==1)
     {
 	 fprintf(stderr,
-		"seedtool - part of OMNeT++, (c) 1992,99 Andras Varga, TU Budapest\n"
+		"seedtool - part of OMNeT++, (c) 1992-2001 Andras Varga, TU Budapest\n"
                 "See the license for distribution terms and warranty disclaimer.\n"
                 "\n"
               	"A tool to help select good random number generator seed values.\n"

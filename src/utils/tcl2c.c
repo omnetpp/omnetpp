@@ -7,11 +7,11 @@
 //   Utility for embedding TCL code into C/C++ as large string constant.
 //   Output is somewhat scrambled so that the TCL code is not readable
 //   if someone looks into the resulting executables.
-//          
+//
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,99 Andras Varga
+  Copyright (C) 1992-2001 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 

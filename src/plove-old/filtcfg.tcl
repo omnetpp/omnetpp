@@ -4,7 +4,7 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992,99 Andras Varga
+#  Copyright (C) 1992-2001 Andras Varga
 #  Technical University of Budapest, Dept. of Telecommunications,
 #  Stoczek u.2, H-1111 Budapest, Hungary.
 #
@@ -219,9 +219,9 @@ proc filtCfgEdit {lb} {
 
     frame .fedit.f.f4
     commentlabel .fedit.f.f4.c \
-{Awk expressions and programs can use the t,x variables which will be 
-replaced with $2 and $3 when the filter is executed.  All three types 
-of filters can contain parameters of the form $(par); their values can 
+{Awk expressions and programs can use the t,x variables which will be
+replaced with $2 and $3 when the filter is executed.  All three types
+of filters can contain parameters of the form $(par); their values can
 be entered when the filter is selected for a vector. The $(par) strings
 will be replaced by the actual numbers when the filter is executed.}
     pack .fedit.f.f4 -anchor center -expand 0 -fill x -side top

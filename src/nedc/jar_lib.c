@@ -13,14 +13,13 @@
 /*  By: Jan Heijmans                               */
 /*      Alex Paalvast                              */
 /*      Robert van der Leij                        */
-/*  Revised: Andras Varga 1996                     */
+/*  Revised: Andras Varga 1996-2001                */
 /*                                                 */
-/* Last modified 7. May. 1996.                     */
 /*                                                 */
 /***************************************************/
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,99 Andras Varga
+  Copyright (C) 1992-2001 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 

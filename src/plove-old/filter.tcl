@@ -4,7 +4,7 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992,99 Andras Varga
+#  Copyright (C) 1992-2001 Andras Varga
 #  Technical University of Budapest, Dept. of Telecommunications,
 #  Stoczek u.2, H-1111 Budapest, Hungary.
 #
@@ -221,8 +221,8 @@ proc same {ids field default} {
     foreach id $ids {
         if {[string compare $f $vec($id,$field)]!=0} {
             return $default
-        }   
-    }    
+        }
+    }
     return $f
 }
 
@@ -254,7 +254,7 @@ proc filterParDialog {ids} {
     createOkCancelDialog .ize "Plotting options"
 
     # add entry fields and focus on first one
-    label-entry       .ize.f.title "Title:" $vectitle 
+    label-entry       .ize.f.title "Title:" $vectitle
     label-combo       .ize.f.style "Style:" $plotstyles $vecstyle
     label-combo       .ize.f.filt  "Filter:" $filt(names) $vecfilt "filterSelected"
     label-sunkenlabel .ize.f.descr "Filter descr:"

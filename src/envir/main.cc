@@ -8,7 +8,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,99 Andras Varga
+  Copyright (C) 1992-2001 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -29,7 +29,7 @@ ENVIR_API int main(int argc, char *argv[])
 {
     cStaticFlag dummy;
 
-    printf("OMNeT++ Discrete Event Simulation  (c) 1992,99 Andras Varga, TU Budapest\n");
+    printf("OMNeT++ Discrete Event Simulation  (c) 1992-2001 Andras Varga, TU Budapest\n");
     printf("See the license for distribution terms and warranty disclaimer\n");
 
     if (!simulation.ok())

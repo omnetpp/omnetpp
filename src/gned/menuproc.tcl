@@ -6,7 +6,7 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992,99 Andras Varga
+#  Copyright (C) 1992-2001 Andras Varga
 #  Technical University of Budapest, Dept. of Telecommunications,
 #  Stoczek u.2, H-1111 Budapest, Hungary.
 #
@@ -430,10 +430,10 @@ proc helpAbout {} {
 
     label .about.f.l -text \
 {
-GNED 2.0 Beta 5
+GNED 2.0
 Part of the OMNeT++ Discrete Event Simulator
 
-(C) 1997-99 Andras Varga
+(C) 1997-2001 Andras Varga
 
 NO WARRANTY. See Help|Release notes and the 'license' file for details.
 }

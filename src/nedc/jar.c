@@ -12,12 +12,12 @@
 /*  By: Jan Heijmans                               */
 /*      Alex Paalvast                              */
 /*      Robert van der Leij                        */
-/*  Revised: Andras Varga 1996                     */
+/*  Revised: Andras Varga 1996-2001                */
 /*                                                 */
 /***************************************************/
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,99 Andras Varga
+  Copyright (C) 1992-2001 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -495,7 +495,7 @@ int main (int argc, char *argv [])
                 /*
                 * print help text
                 */
-                printf( "NEDC " NEDC_VERSION " - part of OMNeT++. (c) 1992,99 Andras Varga, TU Budapest\n"
+                printf( "NEDC " NEDC_VERSION " - part of OMNeT++. (c) 1992-2001 Andras Varga, TU Budapest\n"
                         "See the license for distribution terms and warranty disclaimer.\n"
                         "\n"
                         "Network Description Compiler.\n"

@@ -6,7 +6,7 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992,99 Andras Varga
+#  Copyright (C) 1992-2001 Andras Varga
 #  Technical University of Budapest, Dept. of Telecommunications,
 #  Stoczek u.2, H-1111 Budapest, Hungary.
 #
@@ -17,8 +17,8 @@
 #
 # intro text
 #
-puts {GNED 2.0 Beta 5 - Graphical Network Editor, part of OMNeT++
-(c) 1992,99 Andras Varga, TU Budapest
+puts {GNED 2.0 - Graphical Network Editor, part of OMNeT++
+(c) 1992-2001 Andras Varga, TU Budapest
 See the license for distribution terms and warranty disclaimer.
 
 GNED uses human-readable NED as the ONLY file format. It is a fully
