@@ -54,7 +54,6 @@ cDefaultList::cDefaultList(const char *name) :
 
 void cDefaultList::construct()
 {
-    delta = 4;
     size = 2;
     count = 0;
     vect = new cObject *[size];
@@ -91,8 +90,8 @@ void cDefaultList::doInsert(cObject *obj)
         }
         else
         {
-            // must allocate bigger vector
-            size += delta;
+            // must allocate bigger vector (grow 25% but at least 2)
+            size += (size<8) ? 2 : (size>>2);
             cObject **v = new cObject *[size];
             memcpy(v, vect, sizeof(cObject*)*count);
             delete [] vect;
