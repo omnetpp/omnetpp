@@ -1,8 +1,8 @@
 What's New
 ==========
 
-In the OMNeT++ 2.3b1 release (February 2003)
---------------------------------------------
+OMNeT++ 2.3b1 release (February 2003)
+-------------------------------------
 Licensing change: The license used in previous versions has been replaced
 with a new "Academic Public License" (doc/License). This license gives
 noncommercial users rights to use, modify and distribute copies of OMNeT++.
@@ -20,8 +20,7 @@ Major changes of this release in nutshell:
 - Added the implementation of several distributions: continuous distributions
   gamma, beta, Erlang, chi^2, student-t, Cauchy, triangular, lognormal, Weibull
   and Pareto; discrete distributions Bernoulli, binomial, geometric, negbino-
-  mial, hypergeometric and Poisson [contributed by Werner Sandmann and Kay
-  Michael Masslow].
+  mial and Poisson [contributed by Werner Sandmann and Kay Michael Masslow]. 
 
 - Contains an alpha version of the new NED compiler architecture,
   built upon XML foundations. This includes a tool for generating
@@ -121,7 +120,8 @@ Simulation kernel new features:
 - Added convenience functions to cGate, cMessage, and cArray (see
   API-Changes.txt for details).
 
-- A new utility class cDisplayString lets you easily manipulate display strings.
+- A new utility class cDisplayStringParser lets you easily manipulate display 
+  strings.
 
 Message subclassing, new NED compiler architecture:
 - The Perl-based message compiler opp_msgc is now available in bin/. Message
@@ -150,11 +150,11 @@ Build:
   Older Cygwin versions with the 2.95.x compiler cannot be used any more.
 
 - Improved MSVC support: opp_nmakemake creates MSVC makefiles; running the
-  test suite now works smoothly with with MSVC; opp_stacktool displays reserved
+  test suite now works smoothly with MSVC; opp_stacktool displays reserved
   stack size for executables.
 
-- MSVC projects now need *different* flags! Every source should be compiled
-  with exceptions enabled and using /GR, otherwise there will be RTTI
+- MSVC projects now need *different* compiler flags. Every source should be 
+  compiled with exceptions enabled and using /GR, otherwise there will be RTTI
   exceptions. Because of the Fiber API, reserved stack size should be set to
   a low value, 64K.
 
@@ -176,7 +176,7 @@ Build:
 - Test suite: the number of test cases has grown from 19 to ~100 since
   omnetpp-2.2; now it covers a bigger part of the core functionality (modules,
   messages, queues, parameter) as well as message subclassing and some aspects
-  of NED and Cmdenv.
+  of NED and Cmdenv. Tests for the distributions are in test/distr.
 
 GNED, Plove:
 - The Plove GUI has been redesigned, with focus on intuitiveness and usability.
@@ -269,6 +269,11 @@ Sample simulations:
 - A new example simulation Topo has been created to demonstrate NED features.
   Currently it shows how to build various parametric topologies (chain, mesh,
   ring, star, random graph, binary tree, hexagonal grid) using NED.
+
+
+OMNeT++ 2.2p1,p2,p3
+-------------------
+Only exist in source patch form.
 
 
 In the OMNeT++ 2.2 release (May 2002)

@@ -2038,6 +2038,8 @@ weightedMultiShortestPathsTo(sTopoNode *target);
 
 \section{Generating random numbers}
 
+\subsection{Random number generators}
+
 Having high quality random numbers\index{random!numbers} is usually
 very important in simulation programs. The random number generator
 used in {\opp} is a linear congruential generator\index{linear
@@ -2083,9 +2085,6 @@ long intrand()
 }
 \end{verbatim}
 
-
-
-\subsection{Using random number generators directly}
 
 The generator is directly accessible through the \fname{intrand()} function:
 
@@ -2138,18 +2137,44 @@ double prob = genk_dblrand(k);    // ""
 
 
 
-\subsection{Random numbers from distributions}
-
-
+\subsection{Random variates}
 
 The following functions are based on \fname{dblrand()} and return
 random variables of different distributions\index{distribution!random variables}\index{random!numbers from distributions}:
 
-\fname[uniform()]{double uniform(double lower\_limit, double upper\_limit);}\\
-\fname[intuniform()]{double intuniform(double lower\_limit, double upper\_limit);}\\
-\fname[exponential()]{double exponential(double mean);}\\
-\fname[normal()]{double normal(double mean, double deviation);}\\
-\fname[truncnormal()]{double truncnormal(double mean, double deviation);}\\
+Random variate functions use one of the random number generators (RNGs)
+provided by \opp. By default this is generator 0, but you can specify
+which one to be used.
+
+{\opp} has the following predefined distributions\index{distribution!predefined}:
+
+\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
+\hline
+\tbf{Function} & \tbf{Description}\\\hline
+\multicolumn{2}{|c|}{\tbf{Continuous distributions}}\\\hline
+\fname{uniform(a, b, \textit{rng=0})} & uniform distribution in the range [a,b) \\\hline
+\fname{exponential(mean, \textit{rng=0})} & exponential distribution with the given mean \\\hline
+\fname{normal(mean, stddev, \textit{rng=0})} & normal distribution with the given mean and standard deviation \\\hline
+\fname{truncnormal(mean, stddev, \textit{rng=0})} & normal distribution truncated to nonnegative values \\\hline
+\fname{gamma\_d(alpha, beta, \textit{rng=0})} & gamma distribution with parameters alpha>0, beta>0 \\\hline
+\fname{beta(alpha1, alpha2, \textit{rng=0})} & beta distribution with parameters alpha1>0, alpha2>0 \\\hline
+\fname{erlang\_k(k, mean, \textit{rng=0})} & Erlang distribution with k>0 phases and the given mean \\\hline
+\fname{chi\_square(k, \textit{rng=0})} & chi-square distribution with k>0 degrees of freedom \\\hline
+\fname{student\_t(i, \textit{rng=0})} & student-t distribution with i>0 degrees of freedom \\\hline
+\fname{cauchy(a, b, \textit{rng=0})} & Cauchy distribution with parameters a,b where b>0 \\\hline
+\fname{triang(a, b, c, \textit{rng=0})} & triangular distribution with parameters a<=b<=c, a!=c \\\hline
+\fname{lognormal(m, s, rng=0)} & lognormal distribution with mean m and variance s>0 \\\hline
+\fname{weibull(a, b, \textit{rng=0})} & Weibull distribution with parameters a>0, b>0 \\\hline
+\fname{pareto\_shifted(a, b, c, \textit{rng=0})} & generalized Pareto distribution with parameters a, b and shift c \\\hline
+\multicolumn{2}{|c|}{\tbf{Discrete distributions}} \\\hline
+\fname{intuniform(a, b, \textit{rng=0})} & uniform integer from a..b \\\hline
+\fname{bernoulli(p, \textit{rng=0})} & result of a Bernoulli trial with probability 0<=p<=1 (1 with probability p and 0 with probability (1-p)) \\\hline
+\fname{binomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>=0 and 0<=p<=1 \\\hline
+\fname{geometric(p, \textit{rng=0})} & geometric distribution with parameter 0<=p<=1 \\\hline
+\fname{negbinomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>0 and 0<=p<=1\\\hline
+\fname{poisson(lambda, \textit{rng=0})} & Poisson distribution with parameter lambda \\\hline
+
+\end{longtable}
 
 
 They are the same functions that can be used in NED files.
@@ -2161,29 +2186,10 @@ generates a number with normal distribution and if the result is
 negative, it keeps generating other numbers until the outcome is
 nonnegative.
 
-
-The counterparts of the above functions using generator \textit{k}:
-
-\fname[genk\_uniform()]{double genk\_uniform(double k, double lower\_limit, double upper\_limit);}\\
-\fname[genk\_intuniform()]{double genk\_intuniform(double k, double lower\_limit, double upper\_limit);}\\
-\fname[genk\_exponential]{double genk\_exponential(double k, double mean);}\\
-\fname[genk\_normal()]{double genk\_normal(double k, double mean, double deviation);}\\
-\fname[genk\_truncnormal]{double genk\_truncnormal(double k, double mean, double deviation);}\\
-
-
-Note that they take the number of the generator as a double;
-it is so because these functions are designed so that they can
-be used with the \cclass{cPar} class and in NED files. You will find more
-information about this in the section describing \cclass{cPar}.
-
 If the above distributions do not suffice, you can write your own
 functions\index{distribution!custom}. If you register your functions
 with the \fmac{Register\_Function()} macro, you can use them in NED
-files and ini files too. You can find the implementation of many
-distributions in the class library of GNU C++.
-
-
-
+files and ini files too.
 
 
 \subsection{Random numbers from histograms}

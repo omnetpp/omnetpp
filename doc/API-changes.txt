@@ -25,8 +25,8 @@ Simulation library:
 (+)	new distributions: continuous distributions gamma_d(), beta(),
  	erlang_k(), chi_square(), student_t(), cauchy(), triang(),
  	lognormal(), weibull(), pareto_shifted(); discrete distributions
- 	bernoulli(), binomial(), geometric(), negbinomial(), hypergeometric(),
- 	poisson(). [contributed by Werner Sandmann]
+ 	bernoulli(), binomial(), geometric(), negbinomial(), poisson(). 
+ 	[contributed by Werner Sandmann]
 
 (+)	exceptions are used throughout the simulation library to signal
 	errors. You can also use try...catch in your code.
