@@ -47,10 +47,6 @@ typedef int bool;
 #define PI        3.141592653589793
 #endif
 
-#define NUM_RANDOM_GENERATORS    32
-
-#define INTRAND_MAX  0x7fffffffL  /* = 2**31-1 */
-
 #ifndef Min
 #define Min(a,b)     ( (a)<(b) ? (a) : (b) )
 #define Max(a,b)     ( (a)>(b) ? (a) : (b) )

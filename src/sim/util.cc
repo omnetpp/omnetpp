@@ -76,10 +76,11 @@ long genk_randseed(int gen_nr)
 
 long randseed(long seed)
 {
-       if (seed==0 || seed>=INTRAND_MAX)
+       if (seed<=0 || seed>=INTRAND_MAX)
           {opp_error("Invalid random number seed %ld",seed);return 0;}
+
        long res = seeds[0];
-       if (seed>0) seeds[0] = seed;
+       seeds[0] = seed;
        return res;
 }
 
@@ -87,15 +88,16 @@ long genk_randseed(int gen_nr, long seed)
 {
        if (gen_nr<0 || gen_nr>=NUM_RANDOM_GENERATORS)
           {opp_error("Invalid random number generator %d",gen_nr);return 0;}
-       if (seed==0 || seed>=INTRAND_MAX)
+       if (seed<=0 || seed>=INTRAND_MAX)
           {opp_error("Invalid random number seed %ld",seed);return 0;}
+
        long res = seeds[gen_nr];
-       if (seed>0) seeds[gen_nr] = seed;
+       seeds[gen_nr] = seed;
        return res;
 }
 
 /*------- long int pseudorandom number generator -------------
-*    Range:          1 ... 2**31-2
+*    Range:          1 ... 2**31-2  (INTRAND_MAX=2**31-2)
 *    Period length:  2**31-2
 *    Global variable used:   long int theSeed : seed
 *    Method:  x=(x * 7**5) mod (2**31-1)
@@ -108,7 +110,7 @@ long intrand()
 {
      const long int a=16807, q=127773, r=2836;
      seeds[0]=a*(seeds[0]%q) - r*(seeds[0]/q);
-     if (seeds[0]<=0) seeds[0]+=INTRAND_MAX;
+     if (seeds[0]<=0) seeds[0]+=INTRAND_MAX+1;
      return seeds[0];
 }
 
@@ -116,10 +118,11 @@ long genk_intrand(int gen_nr)
 {
      if (gen_nr<0 || gen_nr>=NUM_RANDOM_GENERATORS)
         {opp_error("Invalid random number generator %d",gen_nr);return 0;}
+
      const long int a=16807, q=127773, r=2836;
      long& seed = seeds[gen_nr];
      seed=a*(seed%q) - r*(seed/q);
-     if (seed<=0) seed+=INTRAND_MAX;
+     if (seed<=0) seed+=INTRAND_MAX+1;
      return seed;
 }
 
@@ -137,20 +140,22 @@ long intrand(long r)
 {
      if (r>0)
          return intrand()%r;   // good if r<<MAX_LONG
-     else if (r<0)
-         return -intrand()%(-r);
+     else if (r==0)
+         opp_error("intrand(r) called with r=0 (cannot generate 0<=x<0 integer)");
      else
-         return 0L;
+         opp_error("intrand(r) called with negative r argument");
+     return 0L;
 }
 
 long genk_intrand(int gen_nr, long r)
 {
      if (r>0)
          return genk_intrand(gen_nr)%r;   // good if r<<MAX_LONG
-     else if (r<0)
-         return -genk_intrand(gen_nr)%(-r);
+     else if (r==0)
+         opp_error("genk_intrand(g,r) called with r=0 (cannot generate 0<=x<0 integer)");
      else
-         return 0L;
+         opp_error("genk_intrand(g,r) called with negative r argument");
+     return 0L;
 }
 
 

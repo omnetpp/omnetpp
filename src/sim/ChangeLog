@@ -601,6 +601,9 @@ Aug 2, 1999
   - fixed the bug in intrand(r) and genk_intrand(r) that caused division by
     zero if called with r=0L; also, for r<0 it now returns a random number in
     [r+1,0]
+  - INTRAND_MAX corrected to 2**31-2
+
+  random number generator must be tested!!!!
 
   KNOWN BUGS:
      cModule::initialize() doesn't get called with dynamic modules

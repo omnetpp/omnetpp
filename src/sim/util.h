@@ -24,6 +24,11 @@
 #include "defs.h"
 
 
+#define NUM_RANDOM_GENERATORS    32
+
+#define INTRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
+
+
 //
 // Conversion between simtime_t (=double) and strings like "1s 34ms"
 //
