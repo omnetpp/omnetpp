@@ -37,7 +37,7 @@ htmlfile_spec := $BASE.html
 :{}	:\textsf:<i>:</>:
 :{}	:\underline:<ul>:</>:
 :{}	:\chapter:<hr><hr><H1>:</H1>:
-:{}	:\section:<hr><H2>:</H2>:
+:{}	:\section:<H2>:</H2>:
 :{}	:\subsection:<H3>:</H3>:
 :{}	:\subsubsection:<br><p class="subheading">:</p>:
 :{}	:\centerline:<p align=center>:</>:

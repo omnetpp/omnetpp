@@ -1,13 +1,14 @@
 \chapter{Simple Modules}
 \label{cha:simple-modules}
+\index{module!simple}
 
-The activities of simple\index{module!simple} modules are implemented by the user.
-The algorithms are programmed in C++, using the {\opp} class
+
+\textit{Simple modules} are the active components in the model.
+Simple modules are programmed in C++, using the {\opp} class
 library. The following sections contain a short introduction
-to discrete event simulation in general, how its concepts are
+to discrete event simulation in general, explains how its concepts are
 implemented in {\opp}, and gives an overview and practical advice
-on how to design and code simple\index{module!simple} modules.
-
+on how to design and code simple modules.
 
 
 
@@ -32,8 +33,7 @@ place in the system between the events (in contrast to
 \textit{continuous} systems where state changes are continuous). Those
 systems that can be viewed as Discrete Event Systems can be modeled
 using Discrete Event Simulation\index{discrete event simulation}.
-(Continuous systems are modelled using differential equations and
-suchlike.)
+(Other systems can be modelled e.g. with continuous simulation models.)
 
 For example, computer networks are usually viewed as discrete
 event systems. Some of the events are:
@@ -138,8 +138,8 @@ to redefine some virtual member functions to make it do useful work.
 These member functions are the following:
 \begin{itemize}
   \item{void \fname{initialize()}}
-  \item{void \fname{activity()}}
   \item{void \fname[handleMessage()]{handleMessage(cMessage *msg)}}
+  \item{void \fname{activity()}}
   \item{void \fname{finish()}}
 \end{itemize}
 
@@ -148,25 +148,29 @@ necessary simple\index{module!simple} and compound modules and
 connects them according to the NED definitions. {\opp} also calls the
 \fname{initialize()} functions of all modules.
 
-The \fname{activity()} and \fname{handleMessage()} functions are
+The \fname{handleMessage()} and \fname{activity()} functions are
 called during event processing. This means that the user will
 implement the model's behavior in these functions.
-\fname{activity()} and \fname{handleMessage()} implement
-different event processing strategies\index{event processing
-  strategies}: for each simple\index{module!simple} module, the user
-has to redefine exactly one of these functions. \fname{activity()} is
-a coroutine-based\index{coroutine} solution which implements the
-process interaction approach (coroutines are non-pre\-emp\-tive
-[cooperative] threads). \fname{handleMessage()} is a method that is called
+\fname{handleMessage()} and \fname{activity()} implement
+different event processing strategies: for each simple module, the user
+has to redefine exactly one of these functions.
+
+\fname{handleMessage()} is a method that is called
 by the simulation kernel when the module receives a message.
+\fname{activity()} is a coroutine-based\index{coroutine} solution
+which implements the process interaction approach (coroutines are
+non-preemptive (i.e. cooperative) threads). Generally, it is recommended
+that you prefer \fname{handleMessage()} to \fname{activity()} --
+mainly because \fname{activity()} doesn't scale well.
+Later in this chapter we'll discuss both methods including their advantages
+and disadvantages.
+
 Modules written with \fname{activity()} and \fname{handleMessage()}
 can be freely mixed within a simulation model.
 
 The \fname{finish()} functions are called when the simulation
 terminates successfully. The most typical use of \fname{finish()}
 is the recording of statistics collected during simulation.
-
-All these functions will be discussed later in detail.
 
 
 
