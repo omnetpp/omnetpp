@@ -21,7 +21,7 @@ proc editConnectionProps {key} {
     global tmp
 
     set modkey [getContainingModule $key]
-puts "dbg: modkey=$modkey"
+    set tmp(modulekey) $modkey   ;# needed by validation proc...
 
     # create dialog with OK and Cancel buttons
     set w .connprops
@@ -95,8 +95,8 @@ puts "dbg: modkey=$modkey"
     $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
 
     # fill "Gates" page
-    ConnProps:fillGateSpec $nb.gates.from $key src
-    ConnProps:fillGateSpec $nb.gates.to $key dest
+    ConnProps:fillGateSpec $nb.gates.from $key src $modkey
+    ConnProps:fillGateSpec $nb.gates.to $key dest $modkey
     ConnProps:refreshGateCombo $nb.gates.from $modkey
     ConnProps:refreshGateCombo $nb.gates.to $modkey
     $nb.gates.condition.e  insert 0 $ned($key,condition)
@@ -129,6 +129,27 @@ puts "dbg: modkey=$modkey"
 
         # 'Gates' page
         set ned($key,condition) [$nb.gates.condition.e get]
+
+        set srcmodname [$nb.gates.from.mod.name get]
+        if {$srcmodname=="" || $srcmodname=="<parent>"} {
+            set ned($key,src-ownerkey) $modkey
+        } else {
+            set ned($key,src-ownerkey) [findSubmodule $modkey $srcmodname]
+            if {$ned($key,src-ownerkey)==""} {
+                # something bad happened (validation didn't work?) -- hide it...
+                set ned($key,src-ownerkey) $modkey
+            }
+        }
+        set destmodname [$nb.gates.to.mod.name get]
+        if {$destmodname=="" || $destmodname=="<parent>"} {
+            set ned($key,dest-ownerkey) $modkey
+        } else {
+            set ned($key,dest-ownerkey) [findSubmodule $modkey $destmodname]
+            if {$ned($key,dest-ownerkey)==""} {
+                # something bad happened (validation didn't work?) -- hide it...
+                set ned($key,dest-ownerkey) $modkey
+            }
+        }
 
         set ned($key,src-mod-index) [$nb.gates.from.mod.index get]
         set ned($key,dest-mod-index) [$nb.gates.to.mod.index get]
@@ -199,6 +220,10 @@ proc ConnProps:validate {w} {
     global tmp
     set nb $w.f.nb
     if [catch {
+        set modkey $tmp(modulekey) ;# this is ugly, but how otherwise...
+        assertSubmodExists $nb.gates.from.mod.name "source submodule" $modkey
+        assertSubmodExists $nb.gates.to.mod.name "destination submodule" $modkey
+
         assertEntryFilledIn $nb.gates.from.gate.name "source gate name"
         assertEntryIsValidName $nb.gates.from.gate.name "source gate name"
 
@@ -242,7 +267,8 @@ proc ConnProps:gateSpec {w} {
 
     # add "Module ... index [...]" line
     label $w.mod.l1 -text  "  Module:" -anchor w -width 8
-    label $w.mod.name -width 20 -relief sunken -anchor w
+    #label $w.mod.name -width 20 -relief sunken -anchor w
+    combobox::combobox $w.mod.name -width 14
     label $w.mod.lb -text  "  index \["
     entry $w.mod.index -width 6
     label $w.mod.rb -text  "\]   "
@@ -268,47 +294,54 @@ proc ConnProps:gateSpec {w} {
     pack $w.gate.rb -expand 0 -side left -padx 2 -pady 2
 }
 
-proc ConnProps:fillGateSpec {w key srcdest} {
+proc ConnProps:fillGateSpec {w key srcdest modkey} {
     global ned
 
-    set modkey $ned($key,${srcdest}-ownerkey)
-    $w.mod.name config -text $ned($modkey,name)
+    set submodkey $ned($key,${srcdest}-ownerkey)
+    #$w.mod.name config -text $ned($submodkey,name)
+    comboconfig $w.mod.name [concat "<parent>" [getNameList $modkey submods]]
+    $w.mod.name delete 0 end
+    if {$ned($submodkey,type)=="submod"} {
+        $w.mod.name insert 0 $ned($submodkey,name)
+    } else {
+        $w.mod.name insert 0 "<parent>"
+    }
     $w.mod.index insert 0 $ned($key,${srcdest}-mod-index)
     $w.gate.name insert 0 $ned($key,${srcdest}gate)
     $w.gate.index insert 0 $ned($key,${srcdest}-gate-index)
+
+    bind $w.gate.name <FocusIn> [list ConnProps:refreshGateCombo $w $modkey]
 }
 
 proc ConnProps:refreshGateCombo {w modkey} {
     global ned
     #puts "dbg: modkey=$modkey"
-    set submodname [$w.mod.name cget -text]
-    if {$submodname==""} {
+    #set submodname [$w.mod.name cget -text]
+    set submodname [$w.mod.name get]
+    if {$submodname=="" || $submodname=="<parent>"} {
         # gates of parent module
-        # FIXME this doesn't work because submodname is not "" but the type name of enclosing compound module
         comboconfig $w.gate.name [getNameList $modkey gates]
     } else {
-        set submodskey [getChildrenWithType $modkey submods]
-        #puts "dbg: submodskey=$submodskey"
-        if {$submodskey!=""} {
-            set submodkey [getChildrenWithName $submodskey $submodname]
-            #puts "dbg: submodkey=$submodkey"
-            if {[llength $submodkey]==1} {
-                if {$ned($submodkey,like-name)!=""} {
-                    set modtypename $ned($submodkey,like-name)
-                } else {
-                    set modtypename $ned($submodkey,type-name)
-                }
-                set modtypekey [concat [itemKeyFromName $modtypename module] \
-                                       [itemKeyFromName $modtypename simple]]
-                #puts "dbg: modtypekey=$modtypekey"
-                if {$modtypekey!=""} {
-                    # if there are multiple definitions of this type, just take the first one
-                    set modtypekey [lindex $modtypekey 0]
-                    #puts "dbg: modtypekey-2=$modtypekey"
-                    comboconfig $w.gate.name [getNameList $modtypekey gates]
-                }
-            }
+        #
+        # find appropriate module definition and look up what gates it has
+        #
+        set submodkey [findSubmodule $modkey $submodname]
+        set submodkey [lindex $submodkey 0]; # to be safe
+        #puts "dbg: submodkey=$submodkey"
+        if {$submodkey==""} {return}
+        if {$ned($submodkey,like-name)!=""} {
+            set modtypename $ned($submodkey,like-name)
+        } else {
+            set modtypename $ned($submodkey,type-name)
         }
+        set modtypekey [concat [itemKeyFromName $modtypename module] \
+                               [itemKeyFromName $modtypename simple]]
+        #puts "dbg: modtypekey=$modtypekey"
+        if {$modtypekey==""} {return}
+        # if there are multiple definitions of this type, just take the first one
+        set modtypekey [lindex $modtypekey 0]
+        #puts "dbg: modtypekey-2=$modtypekey"
+        comboconfig $w.gate.name [getNameList $modtypekey gates]
     }
 }
 

@@ -228,9 +228,25 @@ proc assertEntryIsValidName {w what} {
 }
 
 
+# assertSubmodExists --
 #
+# Helper proc to be used from execOkCancelDialog validation procs.
+# This one is only used from the connection properties dialog.
 #
-#
-proc createModuleTypeCombo {w} {
+proc assertSubmodExists {w what modkey} {
+    global ned
 
+    set value [$w get]
+    if {$value=="" || $value=="<parent>"} {
+        return
+    }
+    if ![isNameLegal $value] {
+        focus $w
+        error "Note: $what does not contain a valid name!"
+    }
+    if {[findSubmodule $modkey $value]==""} {
+        focus $w
+        error "Note: \"$value\" is not a submodule in this compound module!"
+    }
 }
+

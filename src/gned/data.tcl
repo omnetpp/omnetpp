@@ -738,3 +738,18 @@ proc getNameList {componentkey sectiontype} {
     return $list
 }
 
+# findSubmodule --
+#
+# Find submodule from its name within a specified compound module
+#
+proc findSubmodule {modkey submodname} {
+    global ned
+
+    set submodskey [getChildrenWithType $modkey submods]
+    if {$submodskey==""} {
+        return ""
+    }
+    set submodkey [getChildrenWithName $submodskey $submodname]
+    return $submodkey
+}
+
