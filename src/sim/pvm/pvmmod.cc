@@ -43,6 +43,10 @@
 // PVM_DEBUG: enables a lot of ev.printf()s
 //#define PVM_DEBUG
 
+// Register_Class is necessary because Envir instantiates cPvmMod
+// via createOne("cPvmMod")
+Register_Class( cPvmMod );
+
 
 extern int pack_str(char * str);
 extern char *upack_str(int& err);
@@ -160,6 +164,42 @@ void cPvmMod::info(char *buf)
 }
 
 //-------------------------------------------------------------------------
+// callInitialize() and callFinish(). cPvmMod doesn't use initialize() or
+// finish() at the moment, but these functions are provided here nevertheless.
+//
+void cPvmMod::callInitialize()
+{
+    // This is the interface for calling initialize().
+    // We switch to the module's context for the duration of the call.
+
+    cModule *oldcontext = simulation.contextModule();
+    simulation.setContextModule( this );
+
+    initialize();
+
+    if (oldcontext)
+        simulation.setContextModule( oldcontext );
+    else
+        simulation.setGlobalContext();
+}
+
+void cPvmMod::callFinish()
+{
+    // This is the interface for calling finish().
+    // We switch to the module's context for the duration of the call.
+
+    cModule *oldcontext = simulation.contextModule();
+    simulation.setContextModule( this );
+
+    finish();
+
+    if (oldcontext)
+        simulation.setContextModule( oldcontext );
+    else
+        simulation.setGlobalContext();
+}
+
+/-------------------------------------------------------------------------
 // start_segments:
 //    The console module checks whether all PVM hosts are running and
 //    starts up each segment.

@@ -55,6 +55,10 @@ struct sSyncPoint {
 
 class cPvmMod : public cNetMod
 {
+	public:
+	  virtual void callInitialize(); // --LG
+	  virtual void callFinish(); // --LG
+
         private:
          cArray out_gatev;             // separate list for output gates
 
@@ -85,7 +89,7 @@ class cPvmMod : public cNetMod
          virtual ~cPvmMod();
          virtual char *className()  {return "cPvmMod";}
          virtual void info(char *buf);
-         virtual TInspector *inspector(int type, void *data=NULL);
+//         virtual TInspector *inspector(int type, void *data=NULL);
 
          // redefined virtual functions
          virtual void sync_after_modinits(); // sync before processing first 'real' event
