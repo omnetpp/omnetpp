@@ -1,3 +1,7 @@
+2004-02-09  Andras Varga
+
+	* main.cc: improved list file handling
+
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-01-22  Andras Varga

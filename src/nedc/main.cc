@@ -319,11 +319,25 @@ bool processListFile(const char *listfilename)
 
     while (in.getline(line, maxline))
     {
-        line[in.gcount()-1] = '\0';
-        if (!processFile(line))
+        int len = in.gcount();
+        if (line[len-1]=='\n')
+            line[len-1] = '\0';
+        const char *fname = line;
+        if (fname[0]=='@')
         {
-            in.close();
-            return false;
+            if (!processListFile(fname+1))
+            {
+                in.close();
+                return false;
+            }
+        }
+        else if (fname[0] && fname[0]!='#')
+        {
+            if (!processFile(fname))
+            {
+                in.close();
+                return false;
+            }
         }
     }
 
