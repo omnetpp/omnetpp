@@ -101,6 +101,49 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 
 //-----------------------------------------------------------------------
 
+void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)
+{
+    int n = visitor->getArraySize();
+    cObject **objs = visitor->getArray();
+    for (int i=0; i<n; i++)
+    {
+        cObject *obj = objs[i];
+        const char *ptr = ptrToStr(obj);
+        static char buf[MAX_OBJECTINFO];
+        obj->info(buf);
+        CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
+                                "ptr {",ptr,"} "
+                                "name {",(fullpath ? obj->fullPath() : obj->fullName()),"} "
+                                "class {",obj->className(),"} "
+                                "info {",buf,"}"
+                                "}",NULL));
+    }
+}
+
+int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep)
+{
+    int n;
+    if (deep)
+    {
+        cCollectObjectsVisitor visitor;
+        visitor.setSizeLimit(100000); // FIXME hardwired constant!
+        visitor.process(object);
+        n = visitor.getArraySize();
+        feedCollectionIntoInspectorListbox(&visitor, interp, listbox, true);
+    }
+    else
+    {
+        cCollectChildrenVisitor visitor(object);
+        visitor.setSizeLimit(100000); // FIXME hardwired constant!
+        visitor.process(object);
+        n = visitor.getArraySize();
+        feedCollectionIntoInspectorListbox(&visitor, interp, listbox, false);
+    }
+    return n;
+}
+
+
+//FIXME obsolete?
 static void insert_into_inspectorlistbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
 {
     const char *ptr = ptrToStr(obj);
@@ -112,36 +155,6 @@ static void insert_into_inspectorlistbox(Tcl_Interp *interp, const char *listbox
                             "class {",obj->className(),"} "
                             "info {",buf,"}"
                             "}",NULL));
-}
-
-static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, const char *lstbox, bool dp)
-{
-    static const char *listbox;
-    static Tcl_Interp *interp;
-    static bool deep;
-    static int ctr;
-    if (!obj) {       // setup
-         listbox = lstbox;
-         interp = intrp;
-         deep = dp;
-         ctr  = 0;
-         return false;
-    }
-    if( !beg ) return false;
-    if( (deep || ctr>0) && !memoryIsLow() ) // if deep=false, exclude owner object
-    {
-        insert_into_inspectorlistbox(interp, listbox, obj, deep);
-    }
-    return deep || ctr++ == 0;
-}
-
-int fillListboxWithChildObjects( cObject *object, Tcl_Interp *interp, const char *listbox, bool deep)
-{
-    // feeds all children of 'object' into the listbox
-    // CHK(Tcl_VarEval(interp, listbox, " delete 0 end", NULL ));
-    do_fill_listbox(NULL,false, interp, listbox, deep);
-    object->forEach( (ForeachFunc)do_fill_listbox );
-    return 0; //FIXME!!!!!!!!!
 }
 
 static void do_fill_module_listbox(cModule *parent, Tcl_Interp *interp, const char *listbox, bool simpleonly, bool deep)
