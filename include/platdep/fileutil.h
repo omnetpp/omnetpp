@@ -16,7 +16,7 @@
 #ifndef __PLATDEP_FILEUTIL_H
 #define __PLATDEP_FILEUTIL_H
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #include <direct.h>
 #include <stdlib.h> // _MAX_PATH
 #include <ctype.h>
@@ -64,15 +64,19 @@ inline std::string directoryOf(const char *pathname)
 
 inline std::string absolutePath(const char *pathname)
 {
-#ifdef __WIN32__
+#ifdef _WIN32
     if ((pathname[0] && pathname[1]==':' && (pathname[2]=='/' || pathname[2]=='\\')) ||
         ((pathname[0]=='/' || pathname[0]=='\\') && (pathname[1]=='/' || pathname[1]=='\\')))
         return std::string(pathname);  // already absolute
 
     char wd[_MAX_PATH];
     if (pathname[0] && pathname[1]==':') // drive only, must get cwd on that drive
-        return std::string(_getdcwd(toupper(pathname[0])-'A'+1,wd,_MAX_PATH)) + "\\" + (pathname+2);
-    if (pathname[0]=='/' || pathname[1]=='\\')
+    {
+        if (!_getdcwd(toupper(pathname[0])-'A'+1,wd,_MAX_PATH))
+            return std::string(pathname);  // error (no such drive?), cannot help
+        return std::string(wd) + "\\" + (pathname+2);
+    }
+    if (pathname[0]=='/' || pathname[0]=='\\')
     {
         // directory only, must prepend with current drive
         wd[0] = 'A'+_getdrive()-1;
@@ -80,7 +84,9 @@ inline std::string absolutePath(const char *pathname)
         wd[2] = '\0';
         return std::string(wd) + pathname;
     }
-    return std::string(_getcwd(wd,_MAX_PATH)) + "\\" + pathname;
+    if (!_getcwd(wd,_MAX_PATH))
+        return std::string(pathname);  // error, cannot help
+    return std::string(wd) + "\\" + pathname;
 #else
     if (pathname[0] == '/')
         return std::string(pathname);  // already absolute

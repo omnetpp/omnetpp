@@ -20,7 +20,7 @@
 #include <dlfcn.h>
 #endif
 
-#ifdef __WIN32__
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>   // LoadLibrary() etc
 #endif
@@ -43,7 +43,7 @@ inline bool opp_loadlibrary(const char *libname)
      if (!dlopen(libfname.c_str(),RTLD_NOW))
          throw std::runtime_error(std::string("Cannot load library '")+libfname+"': "+dlerror());
      return true;
-#elif defined(__WIN32__)
+#elif defined(_WIN32)
      std::string libfname(libname);
      libfname += ".dll";
      if (!LoadLibrary(libfname.c_str()))
