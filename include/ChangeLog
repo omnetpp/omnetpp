@@ -1,3 +1,10 @@
+2002-10-08  Andras Varga
+
+	* chead.h: removed deleteChildren() from cHead destructor call.
+
+	* cobject.h: refactoring/simplification: removed deleteChildren() and 
+	destructChildren() methods; dealloc(cObject *) renamed to discard().
+
 2002-10-07  Andras Varga
 
 	* macros.h, cobject.h: refactoring of internal workings: way of 
@@ -5,6 +12,9 @@
 	have been reorganized. Now it uses a new EXECUTE_ON_STARTUP() macro
 	instead of having hardwired into global objects' constructor to 
 	join lists. As a consequence, cObject constructors could be simplified.
+
+	* onstartup.h: new file, contains EXECUTE_ON_STARTUP() macro and 
+	underlying object.
 
 	* Interface() macro renamed to ModuleInterface() (name clashed with
 	COM stuff on Windows); Register_Interface() macro renamed to 

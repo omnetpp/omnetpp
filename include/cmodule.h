@@ -684,6 +684,7 @@ class SIM_API cSimpleModule : public cModule
   private:
     // internal use
     static void activate(void *p);
+    void discardLocals();
 
   protected:
     // internal use

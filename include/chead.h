@@ -85,10 +85,10 @@ class SIM_API cHead : public cObject
     cHead(const cHead& h) : cObject(h)  {setName(h.name());operator=(h);}
 
     /**
-     * The destructor deletes all objects in the list that were created
-     * on the heap.
+     * Destructor. Inherited from cObject, it deletes all owned objects 
+     * (i.e. those in the list) that were created on the heap.
      */
-    virtual ~cHead()  {deleteChildren();}
+    virtual ~cHead()  {}
 
     /**
      * Assignment is not supported for this class. This function raises an error when called.

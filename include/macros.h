@@ -178,7 +178,7 @@
 
 // internal: registers a module interface specified with the Interface..EndInterface macros
 #define Register_ModuleInterface(CLASSNAME) \
-  EXECUTE_ON_STARTUP(CLASSNAME##__if, new cModuleInterface(#CLASSNAME, CLASSNAME##__descr))->setOwner(&modinterfaces);)
+  EXECUTE_ON_STARTUP(CLASSNAME##__if, (new cModuleInterface(#CLASSNAME, CLASSNAME##__descr))->setOwner(&modinterfaces);)
 
 // internal: gate types. To be used with module interface declarations.
 #define GateDir_Input      'I'

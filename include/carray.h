@@ -339,7 +339,7 @@ class SIM_API cArray : public cObject
      * Inserts the object into the array. If the array already contains
      * an object with the same name, it will be replaced (hashtable-like
      * behavior.) The replaced object, if it was owned by the container,
-     * is deleted using dealloc().
+     * is deleted using discard().
      * The return value is the object's index in the array.
      */
     int set(cObject *obj);

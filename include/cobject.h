@@ -144,7 +144,7 @@ class SIM_API cObject
      * Disposes of `object'; it MUST be owned by this object.
      * The function is called when the container object has to delete
      * the contained object obj. It the object was dynamically
-     * allocated (by new), it is deleted, otherwise (e.g., if
+     * allocated (by operator new), it is deleted, otherwise (e.g., if
      * it is a global or a local variable) it is just removed from the
      * ownership hierarchy.
      *
@@ -156,7 +156,7 @@ class SIM_API cObject
      *         obj->setOwner(NULL);
      * </pre>
      */
-    void dealloc(cObject *object)
+    void discard(cObject *object)
         {if(object->storage()=='D') delete object; else object->setOwner(NULL);}
     //@}
 
@@ -449,26 +449,6 @@ class SIM_API cObject
      * @see storage()
      */
     void *operator new(size_t m);
-
-    /**
-     * Deletes all dynamic objects (those allocated on the heap) whose owner
-     * is this object. Other owned objects are left intact.
-     */
-    void deleteChildren();
-
-    /**
-     * Disposes of all objects whose owner is this object. This method is called
-     * internally when destroying a simple module with all objects it holds.
-     *
-     * The actual method of "disposing of" an object depends on the storage
-     * class of the object:
-     *   - <i>dynamic</i> (allocated on the heap): operator delete
-     *   - <i>auto<i> (allocated on the stack, i.e. it is a local variable of activity()): direct destructor call
-     *   - <i>static</i> (global variable): setOwner(NULL) which makes the object join its default owner
-     *
-     * @see storage()
-     */
-    void destructChildren();
 
     /**
      * Finds the object with the given name. This function is useful when called
