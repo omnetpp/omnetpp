@@ -131,8 +131,7 @@ void TOmnetApp::setup()
             ev.printf("Total stack size %dK increased to %dK\n", opt_total_stack_kb, MAIN_STACK_KB+4);
             opt_total_stack_kb = MAIN_STACK_KB+4;
          }
-         cCoroutine::init( 1024*opt_total_stack_kb, 1024*MAIN_STACK_KB );
-         simulation.init();
+         cCoroutine::init(1024*opt_total_stack_kb, 1024*MAIN_STACK_KB);
 
          // install XML document cache
          xmlcache = new cXMLDocCache();

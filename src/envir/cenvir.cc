@@ -115,6 +115,8 @@ void cEnvir::setup(int argc, char *argv[])
 {
     try
     {
+        simulation.init();
+
         // construct global lists
         ExecuteOnStartup::executeAll();
 
