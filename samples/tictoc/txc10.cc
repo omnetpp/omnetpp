@@ -48,10 +48,10 @@ Define_Module(Txc10);
 TicTocMsg10 *Txc10::generateMessage()
 {
     // Produce source and destination addresses.
-    int src = index();
-    int n = gate("out")->size();
+    int src = index();   // our module index
+    int n = size();      // module vector size
     int dest = intuniform(0,n-2);
-    if (dest==index()) dest++;
+    if (dest==src) dest++;
 
     char msgname[20];
     sprintf(msgname, "tic-%d-to-%d", src, dest);

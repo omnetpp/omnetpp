@@ -683,11 +683,18 @@ with an error).
 @skip ::finish
 @until }
 
-<img src="step10a.gif">
+<img src="step11a.gif">
 
-<img src="step10b.gif">
+<img src="step11b.gif">
 
 Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
+
+
+@section plove Plotting the output vectors
+
+
+@section scalars Scalar statistics
+
 */
 
 --------------------------------------------------------------------------
