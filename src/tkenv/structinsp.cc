@@ -91,24 +91,25 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                    flushIfNeeded(FLUSHLIMIT);
                    break;
                case cStructDescriptor::FT_STRUCT:
-                   sprintf(writeptr,"%*s%s\t%s = {\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld));
+                   sprintf(writeptr,"%*s%s\t%s = ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld));
                    flushIfNeeded(FLUSHLIMIT);
 
                    sd1 = cStructDescriptor::createDescriptorFor(sd->getFieldStructName(fld),
                                                                 sd->getFieldStructPointer(fld,0));
                    if (!sd1)
                    {
-                       sprintf(writeptr,"%*s    (no descriptor for %s)\n", indent, "", sd->getFieldTypeString(fld));
+                       sprintf(writeptr,"{...}  (details unknown)\n");
                        flushIfNeeded(FLUSHLIMIT);
                    }
                    else
                    {
+                       sprintf(writeptr,"{\n");
+                       flushIfNeeded(FLUSHLIMIT);
                        displayStruct(sd1,level+1);
                        delete sd1;
+                       sprintf(writeptr,"}\n");
+                       flushIfNeeded(FLUSHLIMIT);
                    }
-
-                   sprintf(writeptr,"}\n");
-                   flushIfNeeded(FLUSHLIMIT);
                    break;
                default:
                    sprintf(writeptr,"%*s%s\t%s = \t(unknown type)\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld));
@@ -142,24 +143,25 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                        flushIfNeeded(FLUSHLIMIT);
                        break;
                    case cStructDescriptor::FT_STRUCT_ARRAY:
-                       sprintf(writeptr,"%*s%s\t%s[%d] = {\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
+                       sprintf(writeptr,"%*s%s\t%s[%d] = ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
                        flushIfNeeded(FLUSHLIMIT);
 
                        sd1 = cStructDescriptor::createDescriptorFor(sd->getFieldStructName(fld),
                                                                     sd->getFieldStructPointer(fld,i));
                        if (!sd1)
                        {
-                           sprintf(writeptr,"%*s    (no descriptor for %s)\n", indent, "", sd->getFieldTypeString(fld));
+                           sprintf(writeptr,"{...}  (details unknown)\n");
                            flushIfNeeded(FLUSHLIMIT);
                        }
                        else
                        {
+                           sprintf(writeptr,"{\n");
+                           flushIfNeeded(FLUSHLIMIT);
                            displayStruct(sd1,level+1);
                            delete sd1;
+                           sprintf(writeptr,"}\n");
+                           flushIfNeeded(FLUSHLIMIT);
                        }
-
-                       sprintf(writeptr,"}\n");
-                       flushIfNeeded(FLUSHLIMIT);
                        break;
                    default:
                        sprintf(writeptr,"%*s%s\t%s[%d] = \t(unknown type)\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
