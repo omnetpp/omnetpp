@@ -33,6 +33,7 @@ set unixbrowser "netscape"
 set i 0
 set first ""
 foreach line {
+   {"About..."         "README"}
    {"Tictoc"           "tictoc"           "./tictoc"    "tictoc.exe"}
    {"Fifo"             "fifo"             "./fifo"      "fifo.exe"}
    {"Queueing"         "queueing"         "./queueing"  "queueing.exe"}
