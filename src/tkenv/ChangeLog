@@ -1,8 +1,17 @@
 2003-01-06  Andras Varga
 
-	* display string added to module inspectors (editable)
+	* misc improvements: display string added to module inspectors
+	(editable); inspector toolbar improved; rest of Tcl_SetResult() fixed;
+	submodule drawing (interpretation of display strings) made entirely
+	consistent with GNED; subtle bug fixed which sometimes caused display 
+	string updates not take effect.
 
-	* inspector toolbar improved
+	* layout handling rules slightly changed: "p=x,y" now ALWAYS means 
+	"p=x,y,exact", even if the submodule is part of a vector for which
+	a "row" or "ring" autolayout is chosen automatically. (Before, "p=x,y"
+	meant "p=x,y,row" or "p=x,y,ring" if the submod was in a vector,
+	and this caused counterintuitive displacements because a (dx,dy) shift
+	coming from the layout was superponed onto the position (x,y)).
 
 2003-01-05  Andras Varga
 

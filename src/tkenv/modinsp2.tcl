@@ -108,9 +108,6 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
 
        split_dispstr $dispstr tags [winfo toplevel $c] $submodptr 1
 
-       set bx 10
-       set by 10
-
        # set sx and sy
        if [info exists tags(i)] {
            set img [lindex $tags(i) 0]
@@ -137,8 +134,18 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
 
        set x [lindex $tags(p) 0]
        set y [lindex $tags(p) 1]
-       set layout [lindex $tags(p) 2]
-       if {$layout=="" && $n>1} {set layout $default_layout}
+
+       # choose layout. rules:
+       #  - $default_layout ("row" or "ring") is only used if there's no "p" tag at all.
+       #  - if there is a "p" tag, it must specify explicitly the layout, otherwise
+       #    "exact" is assumed.
+
+       set layout "exact"
+       if {$tags(p)!=""} {
+           if {[lindex $tags(p) 2]!=""} {set layout [lindex $tags(p) 2]}
+       } else {
+           if {$n>1} {set layout $default_layout}
+       }
 
        if {$x=="" || $y==""} {
            global hack_y
@@ -153,13 +160,9 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
            }
            if {$hack_y<$y} {set hack_y $y}
        }
-       set x [expr $x + $bx]
-       set y [expr $y + $by]
 
        # handle auto layouts for submod vectors
        switch $layout {
-           {} {
-           }
            r -
            row {
                set spc [lindex $tags(p) 3]
@@ -258,8 +261,12 @@ proc draw_enclosingmod {c ptr name dispstr} {
 
        split_dispstr $dispstr tags [winfo toplevel $c] $ptr 0
 
-       set bx 10
-       set by 10
+       # determine top-left origin
+       if {![info exists tags(p)]} {set tags(p) {}}
+       set bx [lindex $tags(p) 0]
+       set by [lindex $tags(p) 1]
+       if {$bx==""} {set bx 10}
+       if {$by==""} {set by 10}
 
        if {![info exists tags(b)]} {set tags(b) {{} {} {}}}
 
