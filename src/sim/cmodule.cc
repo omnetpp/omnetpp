@@ -632,6 +632,11 @@ const char *cModule::displayString(int type)
          return displayString().getString();
 }
 
+void cModule::bubble(const char *text)
+{
+    ev.bubble(this, text);
+}
+
 //==========================================================================
 //=== cCompoundModule - member functions
 
