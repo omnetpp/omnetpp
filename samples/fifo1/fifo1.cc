@@ -10,6 +10,7 @@ void FF1AbstractFifo::activity()
 {
     msgServiced = NULL;
     endServiceMsg = new cMessage("end-service");
+    queue.setName("queue");
 
     for(;;)
     {
