@@ -3,9 +3,6 @@
 # for compiling with MSVC. You are free to edit the settings in here.
 #
 
-# Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-2.3
-
 #
 # base directories
 #
@@ -17,6 +14,13 @@ OMNETPP_VERSION=omnetpp-2.3
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
 OMNETPP_ROOT=d:/home/omnetpp
+
+# Version. Should ideally come from the 'Version' file...
+OMNETPP_VERSION=omnetpp-2.3
+
+#
+# Location of Tcl/Tk, PVM, MPI, Expat
+#
 TK_DIR=d:/home/tools/Tcl-8.4.1
 TK_VER=8.4
 PVM_DIR=d:/home/tools/pvm3
@@ -27,8 +31,8 @@ EXPAT_DIR=d:/home/tools/expat-1.95.2
 # Choice of XML parser. Possible choices: expat or none (perhaps libxml in the
 # future?). If set to 'none', nedxml will compile but not support XML input.
 #
-#XMLPARSER=expat
-XMLPARSER=none
+XMLPARSER=expat
+#XMLPARSER=none
 
 #
 # other directories & files based on the base dirs
@@ -74,8 +78,9 @@ PERL=perl.exe
 MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
 
 # OMNeT++ tools
-NEDC=$(OMNETPP_BIN_DIR)/nedc.exe
-REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace.exe
+NEDC=$(OMNETPP_BIN_DIR)/nedc
+MSGC=$(OMNETPP_BIN_DIR)/opp_msgc
+REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
 
 # the Tcl/Tk interpreter, used by Plove
 WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
@@ -142,13 +147,13 @@ GNED_IF_POSSIBLE=gned
 # This option is available at present for Tkenv, GNED and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-TKENV_EMBED_TCL=no
-GNED_EMBED_TCL=no
-PLOVE_EMBED_TCL=no
+TKENV_EMBED_TCL=yes
+GNED_EMBED_TCL=yes
+PLOVE_EMBED_TCL=yes
 
 #
 # It is possible to compile GNED and Plove as Windows GUI apps (ie. not
 # console apps). Set the following variable to "yes" to enable compiling
 # GUI apps.
 #
-USE_WINMAIN=no
+USE_WINMAIN=yes
