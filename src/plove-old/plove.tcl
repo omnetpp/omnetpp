@@ -22,6 +22,7 @@ if [info exist OMNETPP_PLOVE_DIR] {
 
    set dir $OMNETPP_PLOVE_DIR
 
+   source [file join $dir combobox.tcl]
    source [file join $dir panes.tcl]
    source [file join $dir filter.tcl]
    source [file join $dir filtcfg.tcl]

@@ -21,6 +21,8 @@
 #    PROCEDURES FOR CREATING NEW 'WIDGET TYPES'
 #===================================================================
 
+package require combobox 1.0
+
 proc iconbutton {w args} {
     global fonts
 
@@ -40,25 +42,26 @@ proc combo {w list {cmd {}}} {
 
     global fonts
 
-    menubutton $w -menu $w.m -font $fonts(bold) -relief raised -width 14 -indicatoron 1
-    menu $w.m -tearoff 0
+    combobox::combobox $w
     foreach i $list {
-        $w.m add command -label $i -command "$w configure -text \{$i\}; $cmd"
+        $w list insert end $i
     }
-    catch {$w config -text [lindex $list 0]}
+    catch {$w configure -value [lindex $list 0]}
+    $w configure -command "$cmd ;#"
     return $w
 }
 
 proc comboconfig {w list {cmd {}}} {
     # reconfigures a combo box widget
 
-    $w.m delete 0 end
+    $w list delete 0 end
     foreach i $list {
-       $w.m add command -label $i -command "$w configure -text \{$i\}; $cmd"
+        $w list insert end $i
     }
-    if {[lsearch $list [$w cget -text]] == -1} {
-        $w.m invoke 0
+    if {[lsearch $list [$w cget -value]] == -1} {
+        catch {$w configure -value [lindex $list 0]}
     }
+    $w configure -command "$cmd ;#"
     return $w
 }
 
@@ -90,9 +93,9 @@ proc label-combo {w label list {text {}} {cmd {}}} {
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
     if {$text != ""} {
-         $w.e config -text $text
+         $w.e configure -value $text
     } else {
-         $w.e config -text [lindex $list 0]
+         $w.e configure -value [lindex $list 0]
     }
 }
 

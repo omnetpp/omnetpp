@@ -166,7 +166,7 @@ proc filterSelected {} {
 
     global filt global tmp
 
-    set name [.ize.f.filt.e cget -text]
+    set name [.ize.f.filt.e cget -value]
 
     if {[lsearch -exact $filt(names) $name] == -1} {
         tk_messageBox -title Error -icon warning -message "No filter named $name." -type ok
@@ -190,7 +190,7 @@ proc filterSelected {} {
 
     # refresh frame with parameters
     destroy .ize.f.ff
-    frame .ize.f.ff -border 1 -relief sunken
+    frame .ize.f.ff -border 0 -relief groove
 
     set parlist [getFilterParList $name]
 
@@ -256,7 +256,7 @@ proc filterParDialog {ids} {
     # add entry fields and focus on first one
     label-entry       .ize.f.title "Title:" $vectitle
     label-combo       .ize.f.style "Style:" $plotstyles $vecstyle
-    label-combo       .ize.f.filt  "Filter:" $filt(names) $vecfilt "filterSelected"
+    label-combo       .ize.f.filt  "Filter:" $filt(names) $vecfilt
     label-sunkenlabel .ize.f.descr "Filter descr:"
     frame .ize.f.ff
 
@@ -275,6 +275,8 @@ proc filterParDialog {ids} {
 
     focus .ize.f.title.e
 
+    .ize.f.filt.e configure -command "filterSelected ;#"
+
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .ize] == 1} {
         set vectitle [.ize.f.title.e get]
@@ -282,11 +284,11 @@ proc filterParDialog {ids} {
         set titbase [regexp_to_stringmatch $titbase]
         if {![regsub -- $titbase $vectitle "" vecprefix]} {set vecprefix ""}
 
-        set vecstyle [.ize.f.style.e cget -text]
+        set vecstyle [.ize.f.style.e cget -value]
         if {$vecstyle=="-"} {
            set vecstyle ""
         }
-        set vecfilt  [.ize.f.filt.e cget -text]
+        set vecfilt  [.ize.f.filt.e cget -value]
         if {$vecfilt=="-"} {
            set vecfilt ""
            set vecfiltpars ""
