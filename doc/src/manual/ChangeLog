@@ -1,3 +1,8 @@
+2003-06-15  Andras Varga
+
+	* major revision -- see history.tex for details. Changes we made 
+	on a local copy of files, then checked in at once.
+
 2003-04-30  Andras Varga
 	
 	* ch-sim-lib.tex: added section "Object ownership management";
