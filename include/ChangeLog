@@ -1,3 +1,7 @@
+2001-07-07 Andras Varga
+
+        * cmessage.h,cmodule.h,util.h: cleaned up DOC++ comments 
+
 2001-07-02 Andras Varga
 
         * cenum.h,cstruct.h: DOC++ comments added (not yet complete)

@@ -234,7 +234,7 @@ SIM_API double genk_truncnormal(double gen_nr, double m, double d);
 
 
 /**
- * Utility functions to support nedc-compiled expressions.
+ * @name Utility functions to support nedc-compiled expressions.
  */
 //@{
 
@@ -301,7 +301,7 @@ SIM_API double shift_right(double a, double b);
 
 
 /**
- * Value-added string functions.
+ * @name Value-added string functions.
  *
  *  They also accept NULL pointers (treat them as ptr to "") and use
  *  operator new instead of malloc().

@@ -39,20 +39,19 @@ class cMessageHeap;
 //=== classes declared here:
 class  cMessage;
 
-//=== predefined packet kind values
-//
-// NOTE:
-// - zero and positive values can be freely used
-// - negative values are reserved for the OMNeT++ system and standard libs
-//
-enum {
-  // internal
-  MK_STARTER = -1,  // used by scheduleStart()
-  MK_TIMEOUT = -2,  // used by wait() etc
-
-  // cPacket
-  MK_PACKET  = -3,  // network packet
-  MK_INFO    = -4   // information packet
+/**
+ * Predefined message kind values (values for cMessage's kind(),
+ * setKind() methods).
+ *
+ * Negative values are reserved for the OMNeT++ system and its
+ * standard libraries. Zero and positive values can be freely used
+ * by simulation models.
+ */
+enum eMessageKind {
+  MK_STARTER = -1,  /// Starter message. Used by scheduleStart().
+  MK_TIMEOUT = -2,  /// Internal timeout message. Used by wait(), etc.
+  MK_PACKET  = -3,  /// Network packet. Used by cPacket.
+  MK_INFO    = -4   /// Information packet. Used by cPacket.
 };
 
 //==========================================================================
@@ -98,9 +97,7 @@ class SIM_API cMessage : public cObject
     unsigned long insertordr;  // used by cMessageHeap
 
 
-    /**
-     * MISSINGDOC: cMessage:void _createparlist()
-     */
+    // helper function
     void _createparlist();
 
     // global variables for statistics
@@ -108,6 +105,8 @@ class SIM_API cMessage : public cObject
     static unsigned long live_msgs;
 
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Copy constructor, creates an exact copy of the argument msg.
@@ -124,7 +123,14 @@ class SIM_API cMessage : public cObject
      */
     virtual ~cMessage();
 
-    // redefined functions
+    /**
+     * Duplication and the assignment operator work all right with cMessage.
+     */
+    cMessage& operator=(cMessage& msg);
+    //@}
+
+    /** @name Redefined cObject functions. */
+    //@{
 
     /**
      * Returns pointer to the class name string, "cMessage".
@@ -157,12 +163,6 @@ class SIM_API cMessage : public cObject
     virtual void writeContents(ostream& os);
 
     /**
-     * Duplication and the assignment operator work all right with cMessage.
-     */
-    cMessage& operator=(cMessage& msg);
-
-
-    /**
      * MISSINGDOC: cMessage:int netPack()
      */
     virtual int netPack();
@@ -171,104 +171,96 @@ class SIM_API cMessage : public cObject
      * MISSINGDOC: cMessage:int netUnpack()
      */
     virtual int netUnpack();
+    //@}
 
-    // new functions
+    /** @name Message attributes. */
+    //@{
 
     /**
      * Sets message kind.  The message kind member is not used by OMNeT++,
      * it can be used freely by the user.
      */
-    void setKind(int k)     {msgkind=k;}    // set msg kind
+    void setKind(int k)     {msgkind=k;}
 
     /**
      * Sets message priority.  The priority member is used when the simulator
      * inserts messages in the message queue (FES) to order messages
      * with identical arrival time values.
      */
-    void setPriority(int p) {prior=p;}      // set priority
+    void setPriority(int p) {prior=p;}
 
     /**
-     * Sets message length. When the message is transmitted through a
-     * channel, its error flag will be set with a probability depending
-     * on the length of the message and the channel's bit error rate.
+     * Sets message length. When the message is sent through a
+     * channel, message length affects transmission delay
+     * and the probability of setting the bit error flag.
      */
-    void setLength(long l);                 // set message length
+    void setLength(long l);
 
     /**
-     * MISSINGDOC: cMessage:void addLength(long)
+     * Change message length by the given value. The value may be negative, but
+     * a negative resulting message length is an error. Useful for modeling
+     * encapsulation/decapsulation. (See also encapsulate() and decapsulate().)
      */
-    void addLength(long l);                 // change message length
+    void addLength(long l);
 
     /**
-     * MISSINGDOC: cMessage:void setBitError(bool)
+     * Set bit error flag.
      */
-    void setBitError(bool err) {error=err;} // set error flag
+    void setBitError(bool err) {error=err;}
 
     /**
      * Sets the message's time stamp to the current simulation time.
      */
-    void setTimestamp() {tstamp=simulation.simTime();} // set time stamp to current time
+    void setTimestamp() {tstamp=simulation.simTime();}
 
     /**
      * Directly sets the message's time stamp.
      */
-    void setTimestamp(simtime_t t) {tstamp=t;}  // set time stamp to given value
+    void setTimestamp(simtime_t t) {tstamp=t;}
 
     /**
-     * MISSINGDOC: cMessage:void setContextPointer(void*)
+     * Set context pointer.
      */
-    void setContextPointer(void *p) {contextptr=p;} // set context pointer
-
-
-    /**
-     * Returns message kind. The message kind member is not used by OMNeT++,
-     * it can be used freely by the user.
-     */
-    int  kind()     {return msgkind;}       // get msg kind
+    void setContextPointer(void *p) {contextptr=p;}
 
     /**
-     * Returns message priority.  The priority member is not used by
-     * OMNeT++, it can be used freely by the user.
+     * Returns message kind.
      */
-    int  priority() {return prior;}         // get priority
+    int  kind()     {return msgkind;}
+
+    /**
+     * Returns message priority.
+     */
+    int  priority() {return prior;}
 
     /**
      * Returns message length.
      */
-    long length()   {return len;}           // get message length
+    long length()   {return len;}
 
     /**
-     * Returns true if error flag is set, false otherwise.
+     * Returns true if bit error flag is set, false otherwise.
      */
-    bool hasBitError() {return error;}      // bit error occurred or not
+    bool hasBitError() {return error;}
 
     /**
      * Returns the message's time stamp.
      */
-    simtime_t timestamp() {return tstamp;}  // get time stamp
+    simtime_t timestamp() {return tstamp;}
 
     /**
-     * MISSINGDOC: cMessage:unsigned long insertOrder()
+     * FIXME: INTERNAL: Used by cMessageHeap.
      */
-    unsigned long insertOrder() {return insertordr;} // used by cMessageHeap
+    unsigned long insertOrder() {return insertordr;}
 
     /**
-     * MISSINGDOC: cMessage:void*contextPointer()
+     * Returns the context pointer.
      */
-    void *contextPointer() {return contextptr;} // get context pointer
+    void *contextPointer() {return contextptr;}
+    //@}
 
-
-    /**
-     * MISSINGDOC: cMessage:bool isSelfMessage()
-     */
-    bool isSelfMessage() {return togate==-1;}  // tell if message was posted by scheduleAt()
-
-    /**
-     * MISSINGDOC: cMessage:bool isScheduled()
-     */
-    bool isScheduled() {return heapindex!=-1;} // tell if message is among future events
-
-    // parameter list
+    /** @name Parameter list. */
+    //@{
 
     /**
      * Returns the cArray member of the message which holds
@@ -280,47 +272,46 @@ class SIM_API cMessage : public cObject
         {if (!parlistp) _createparlist(); return *parlistp;}
 
     /**
-     * Convenience functions, add a parameter to the message's parameter
-     * list.
+     * Add a parameter to the message's parameter list. Convenience function.
      */
     cPar& addPar(const char *s)  {cPar *p=new cPar(s);parList().add(p);return *p;}
 
     /**
-     * MISSINGDOC: cMessage:cPar&addPar(cPar*)
+     * Add a parameter to the message's parameter list. Convenience function.
      */
     cPar& addPar(cPar *p)  {parList().add(p); return *p;}
 
     /**
-     * Convenience functions, add a parameter to the message's parameter
-     * list.
+     * Add a parameter to the message's parameter list. DEPRECATED.
      */
-    cPar& addPar(cPar& p)  {parList().add(&p); return p;} // DEPRECATED
+    cPar& addPar(cPar& p)  {parList().add(&p); return p;}
 
     /**
-     * Convenience function, returns the indexth object in the
-     * message's parameter list, converting it to a cPar.
+     * Returns the indexth object in the message's parameter list,
+     * converting it to a cPar. Convenience function.
      */
-    cPar& par(int n);                                   // get parameter by index
+    cPar& par(int n);
 
     /**
-     * Convenience function, returns the object with the given name in
-     * the message's parameter list, converting it to a cPar.
+     * Returns the object with the given name in the message's parameter list,
+     * converting it to a cPar. Convenience function.
      */
-    cPar& par(const char *s);                           // get parameter by name
+    cPar& par(const char *s);
 
     /**
-     * Convenience function, returns the index of the parameter with
-     * the given name in the message's parameter list, or -1 if it could
-     * not be found.
+     * Returns the index of the parameter with the given name in the message's
+     * parameter list, or -1 if it could not be found. Convenience function.
      */
-    int findPar(const char *s) const;                   // get index of parameter, -1 if doesn't exist
+    int findPar(const char *s) const;
 
     /**
-     * MISSINGDOC: cMessage:bool hasPar(char*)
+     * Check if a parameter exists.
      */
-    bool hasPar(const char *s) {return findPar(s)>=0;}  // check if parameter exists
+    bool hasPar(const char *s) {return findPar(s)>=0;}
+    //@}
 
-    // message encapsulation
+    /** @name Message encapsulation. */
+    //@{
 
     /**
      * Encapsulates msg in the message. msg->length()
@@ -339,114 +330,131 @@ class SIM_API cMessage : public cObject
      * Returns a pointer to the encapsulated message, or NULL.
      */
     cMessage *encapsulatedMsg() {return encapmsg;}
+    //@}
 
-    // sending/arrival information
+    /** @name Sending/arrival information. */
+    //@{
+
+    /**
+     * Return true if message was posted by scheduleAt().
+     */
+    bool isSelfMessage() {return togate==-1;}
+
+    /**
+     * Return true if message is among future events.
+     */
+    bool isScheduled() {return heapindex!=-1;}
 
     /**
      * Returns pointers to the gate from which the message was sent and
      * on which gate it arrived. A NULL pointer is returned
      * for new (unsent) messages and messages sent via scheduleAt().
      */
-    cGate *senderGate() const;                // return NULL if scheduled
+    cGate *senderGate() const;
 
     /**
      * Returns pointers to the gate from which the message was sent and
      * on which gate it arrived. A NULL pointer is returned
      * for new (unsent) messages and messages sent via scheduleAt().
      */
-    cGate *arrivalGate() const;               //    or unsent message
-
+    cGate *arrivalGate() const;
 
     /**
      * Returns sender module's index in the module vector or -1 if the
      * message hasn't been sent/scheduled yet.
      */
-    int senderModuleId() const {return frommod;}   // source module
+    int senderModuleId() const {return frommod;}
 
     /**
      * Returns index of gate sent through in the sender module or -1
      * if the message hasn't been sent/scheduled yet.
      */
-    int senderGateId() const   {return fromgate;}  //    "   gate
+    int senderGateId() const   {return fromgate;}
 
     /**
      * Returns receiver module's index in the module vector or -1 if
      * the message hasn't been sent/scheduled yet.
      */
-    int arrivalModuleId() const {return tomod;}    // destination
+    int arrivalModuleId() const {return tomod;}
 
     /**
      * Returns index of gate the message arrived on in the sender module
      * or -1 if the message hasn't sent/scheduled yet.
      */
-    int arrivalGateId() const  {return togate;}    //    "   gate
+    int arrivalGateId() const  {return togate;}
 
 
     /**
      * Returns time when the message was created.
      */
-    simtime_t creationTime() const {return created;} // creation time
+    simtime_t creationTime() const {return created;}
 
     /**
      * Returns time when the message was sent/scheduled or 0 if the message
      * hasn't been sent yet.
      */
-    simtime_t sendingTime()  const {return sent;}    // sending time
+    simtime_t sendingTime()  const {return sent;}
 
     /**
      * Returns time when the message has arrived or 0 if the message
      * hasn't been sent/scheduled yet.
      */
-    simtime_t arrivalTime()  const {return delivd;}  // delivery time
+    simtime_t arrivalTime()  const {return delivd;}
 
 
     /**
      * Return true if the message has arrived through gate g.
      */
-    bool arrivedOn(int g) const {return g==togate;}  // arrived on gate g?
+    bool arrivedOn(int g) const {return g==togate;}
 
     /**
      * Return true if the message has arrived through the gate
      * given with its name and index (if multiple gate).
      */
-    bool arrivedOn(const char *s, int g=0);    // arrived on gate s[g]?
+    bool arrivedOn(const char *s, int g=0);
+    //@}
 
-    // message appearance in Tkenv
+    /** @name Miscellaneous. */
+    //@{
 
     /**
-     * FIXME: message appearance in Tkenv
+     * Override to define a display string for the message. Display string
+     * affects message appearance in Tkenv.
+     * This default implementation returns "".
      */
-    virtual const char *displayString();       // returns ""; redefine to get custom appearance
-
+    virtual const char *displayString();
 
     /**
      * Static function that compares two messages by their delivery times,
-     * then by their priorities.
+     * then by their priorities. Usable as cQeueue CompareFunc.
      */
-    static int cmpbydelivtime(cObject *one, cObject *other); // compare delivery times
+    static int cmpbydelivtime(cObject *one, cObject *other);
 
     /**
      * Static function that compares two messages by their priority.
      * It can be used to sort messages in a priority queue.
+     * Usable as cQeueue CompareFunc.
      */
-    static int cmpbypriority(cObject *one, cObject *other);  // compare priorities
-
-    // statistics
+    static int cmpbypriority(cObject *one, cObject *other);
 
     /**
-     * FIXME: statistics
+     * Returns the total number of messages created so far during the
+     * current simulation run. May be useful for debugging, profiling, etc.
      */
     static unsigned long totalMessageCount() {return total_msgs;}
 
     /**
-     * MISSINGDOC: cMessage:static unsigned long liveMessageCount()
+     * Returns the total number of messages that currently exist in the
+     * simulation. May be useful for detecting memory leaks caused
+     * by forgetting to delete messages.
      */
     static unsigned long liveMessageCount()  {return live_msgs;}
 
     /**
-     * MISSINGDOC: cMessage:static void resetMessageCounters()
+     * Reset counters used by totalMessageCount() and liveMessageCount().
      */
     static void resetMessageCounters()  {total_msgs=live_msgs=0L;}
+    //@}
 };
 
 #endif

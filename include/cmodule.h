@@ -60,12 +60,16 @@ class  cNetMod;
 class  cSimulation;
 class  cNetworkType;
 
-
-//=== to connect two gates:
+/**
+ * Connect two gates.
+ */
 SIM_API void connect(cModule *frm, int frg,
                      cLinkType *linkp,
                      cModule *tom, int tog);
 
+/**
+ * Connect two gates.
+ */
 SIM_API void connect(cModule *frm, int frg,
                      cPar *delayp, cPar *errorp, cPar *dataratep,
                      cModule *tom, int tog);
@@ -81,10 +85,10 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
 //==========================================================================
 
 /**
- * Common base for cSimpleModule and cCompoundModule. Provides gates,
- * parameters, error handling.
+ * Common base for <tt>cSimpleModule</tt> and <tt>cCompoundModule</tt>.
+ * Provides gates, parameters, error handling, etc.
  *
- * NOTE: dup() cannot be use with modules. Use mod->moduleType()->create()/buildInside()
+ * NOTE: <tt>dup()</tt> cannot be use with modules. Use <tt>mod->moduleType()->create()</tt>/<tt>buildInside()</tt>
  * instead.
  */
 class SIM_API cModule : public cObject
@@ -101,7 +105,6 @@ class SIM_API cModule : public cObject
     cModule *parentmodp;    // pointer to parent module
 
   public:
-
     // The following members are only made public for use by the inspector
     // classes. Do not use them directly from simple modules.
     cArray gatev;           // vector of gates
@@ -121,46 +124,65 @@ class SIM_API cModule : public cObject
     void *data_for_inspector;
 
   protected:
-
-    /**
-     * FIXME: The following members are only made public for use by the inspector
-     * classes. Do not use them directly from simple modules.
-     */
-    virtual void arrived(cMessage *msg,int n) = 0; // internal use
+    // internal use
+    virtual void arrived(cMessage *msg,int n) = 0;
 
   protected:
-    // The following functions are expected to be redefined in concrete
-    // module types. They are made protected because they are supposed
-    // to be called only via callInitialize() and callFinish().
-
-    // multi-stage init functions are called before simulation starts
-
-    /**
-     * TBD
+    /** @name Initialization and finish hooks.
+     *
+     * Initialize and finish functions should (may) be provided by the user,
+     * to perform special tasks at the beginning and the end of the simulation.
+     * The functions are made protected because they are supposed
+     * to be called only via <tt>callInitialize()</tt> and <tt>callFinish()</tt>.
+     *
+     * The initialization process was designed to support multi-stage
+     * initialization of compound modules (i.e. initialization in several
+     * 'waves'). (Calling the <tt>initialize()</tt> function of a simple module is
+     * hence a special case). The initialization process is performed
+     * on a module like this. First, the number of necessary initialization
+     * stages is determined by calling <tt>numInitStages()</tt>, then <tt>initialize(stage)</tt>
+     * is called with <tt>0,1,...numstages-1</tt> as argument. The default
+     * implementation of <tt>numInitStages()</tt> and <tt>initialize(stage)</tt> provided here
+     * defaults to single-stage initialization, that is, <tt>numInitStages()</tt>
+     * returns 1 and <tt>initialize(stage)</tt> simply calls <tt>initialize()</tt> in stage 0.
+     *
+     * All initialization and finish functions are redefined in <tt>cCompoundModule</tt>
+     * to recursively traverse all submodules.
      */
-    virtual void initialize(int stage) {initialize();}  // multi-stage init: defaults to single-stage init
+    //@{
 
     /**
-     * TBD
+     * Multi-stage initialization hook. This default implementation does
+     * single-stage init, that is, calls <tt>initialize()</tt> in stage 0.
      */
-    virtual int  numInitStages()       {return 1;}      // multi-stage init: defaults to single-stage init
+    virtual void initialize(int stage) {if(stage==0) initialize();}
 
     /**
-     * TBD
+     * Multi-stage initialization hook, should be redefined to return the
+     * number of initialization stages required. This default implementation
+     * does single-stage init, that is, returns 1.
      */
-    virtual void initialize();                          // single-stage init
-
-    // finish() is called after end of simulation (if it terminated without error)
+    virtual int  numInitStages()       {return 1;}
 
     /**
-     * TBD
+     * Single-stage initialization hook. This default implementation
+     * does nothing.
+     */
+    virtual void initialize();
+
+    /**
+     * Finish hook. <tt>finish()</tt> is called after end of simulation, if it
+     * terminated without error. This default implementation does nothing.
      */
     virtual void finish();
+    //@}
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
-     * Constructor.
+     * Copy constructor.
      */
     cModule(cModule& mod);
 
@@ -174,7 +196,14 @@ class SIM_API cModule : public cObject
      */
     virtual ~cModule() {}
 
-    // redefined functions
+    /**
+     * MISSINGDOC: cModule:cModule&operator=(cModule&)
+     */
+    cModule& operator=(cModule& mod);
+    //@}
+
+    /** @name Redefined cObject functions. */
+    //@{
 
     /**
      * Returns pointer to the class name string, "cModule".
@@ -197,78 +226,76 @@ class SIM_API cModule : public cObject
     virtual const char *inspectorFactoryName() const {return "cModuleIFC";}
 
     /**
-     * MISSINGDOC: cModule:cModule&operator=(cModule&)
-     */
-    cModule& operator=(cModule& mod);
-
-    /**
      * Returns full name of the module in a static buffer, in the form
-     * "name" or "name[index]".
+     * <tt>"name"</tt> or <tt>"name[index]"</tt>.
      */
-    virtual const char *fullName() const;       // "name[12]" (in a static buffer!)
+    virtual const char *fullName() const;
 
     /**
      * MISSINGDOC: cModule:char*fullPath()
      */
-    virtual const char *fullPath() const;       // "sys.m[3].name[12]" (static buff!)
+    virtual const char *fullPath() const;
+    //@}
 
-    // setting up the module
+    /** @name Setting up the module. */
+    //@{
 
     /**
-     * FIXME: setting up the module
+     * FIXME: Set module ID. Used internally during setting up the module.
      */
-    virtual void setId(int n);              // set module id
+    virtual void setId(int n);
 
     /**
-     * MISSINGDOC: cModule:void setIndex(int,int)
+     * FIXME: Set module index within vector (if module is part of
+     * a module vector). Used internally during setting up the module.
      */
-    void setIndex(int i, int n);            // if multiple module
+    void setIndex(int i, int n);
 
     /**
-     * MISSINGDOC: cModule:void setModuleType(cModuleType*)
+     * FIXME: Set associated cModuleType for the module. Used internally
+     * during setting up the module.
      */
     void setModuleType(cModuleType *mtype);
 
-
     /**
-     * MISSINGDOC: cModule:void addGate(char*,char)
+     * Add a gate. The type character tp can be <tt>'I'</tt> or <tt>'O'</tt> for input
+     * and output, respectively.
      */
-    void addGate(const char *s, char tp);         // add one gate
+    void addGate(const char *s, char tp);
 
     /**
-     * MISSINGDOC: cModule:void setGateSize(char*,int)
+     * Set gate vector size.
      */
-    void setGateSize(const char *s, int size);    // set gate vector size
-
+    void setGateSize(const char *s, int size);
 
     /**
-     * MISSINGDOC: cModule:void addPar(char*)
+     * Add a parameter to the module.
      */
-    void addPar(const char *s);                   // add parameter
-
+    void addPar(const char *s);
 
     /**
-     * MISSINGDOC: cModule:void addMachinePar(char*)
+     * Add a machine parameter to the module.
      */
-    void addMachinePar(const char *pnam);            // NET: add machine par
+    void addMachinePar(const char *pnam);
 
     /**
-     * MISSINGDOC: cModule:void setMachinePar(char*,char*)
+     * Set value of a machine parameter.
      */
-    void setMachinePar(const char *pnam, const char *val); // NET: set parameter value
-
+    void setMachinePar(const char *pnam, const char *val);
 
     /**
-     * MISSINGDOC: cModule:void buildInside()
+     * FIXME: Build submodules & internal connections.
      */
-    virtual void buildInside() {}           // build submodules & internal connections
+    virtual void buildInside() {}
+    //@}
 
-    // miscellaneous functions
+    /** @name Information about the module itself. */
+    //@{
 
     /**
-     * Pure virtual function. It is redefined in cSimpleModule
-     * to return true and in cCompoundModule to return
-     * false.
+     * Returns this is a simple or compound module. Pure virtual function,
+     * redefined in <tt>cSimpleModule</tt> to return true and in <tt>cCompoundModule</tt>
+     * to return false.
      */
     virtual bool isSimple() = 0;
 
@@ -278,13 +305,14 @@ class SIM_API cModule : public cObject
     cModuleType *moduleType()   {return mod_type;}
 
     /**
-     * Returns the index of the module in the module vector (cSimulation
-     * simulation).
+     * Returns the index of the module in the module vector
+     * (#cSimulation simulation#).
      */
     int id()                    {return mod_id;}
 
     /**
-     * Returns reference to the module's parent.
+     * Returns the module's parent module. For the system module, it returns
+     * <tt>NULL</tt>.
      */
     cModule *parentModule()     {return parentmodp;}
 
@@ -294,131 +322,138 @@ class SIM_API cModule : public cObject
      */
     bool isOnLocalMachine();
 
-    // if this module is in a module vector:
-
     /**
-     * FIXME: if this module is in a module vector:
+     * Returns true if this module is in a module vector.
      */
     bool isVector() const       {return vectsize>=0;}
 
     /**
-     * Returns the index of the module if it is multiple, otherwise 0.
+     * Returns the index of the module if it is in a module vector, otherwise 0.
      */
     int index() const           {return idx;}
 
     /**
-     * Returns the size of the multiple module, or 1.
+     * Returns the size of the module vector the module is in, or 1.
      */
     int size() const            {return vectsize<0?1:vectsize;}
+    //@}
 
-    // submodule access:
+    /** @name Submodule access. */
+    //@{
 
     /**
      * Finds an immediate submodule with the given name and (optional)
      * index, and returns its module ID. If the submodule was not found,
      * returns -1.
      */
-    int findSubmodule(const char *submodname, int idx=-1);  // returns module id (-1 on error)
+    int findSubmodule(const char *submodname, int idx=-1);
 
     /**
      * Finds an immediate submodule with the given name and (optional)
      * index, and returns its pointer. If the submodule was not found,
      * returns NULL.
      */
-    cModule *submodule(const char *submodname, int idx=-1); // returns module ptr
+    cModule *submodule(const char *submodname, int idx=-1);
 
     /**
      * Finds a submodule potentially several levels deeper, given with
      * its relative path from this module. (The path is a string of module
      * full names separated by dots). If the submodule was not found,
-     * returns NULL.
+     * returns <tt>NULL</tt>.
      */
-    cModule *moduleByRelativePath(const char *path);        // find sub-sub-...-modules
+    cModule *moduleByRelativePath(const char *path);
+    //@}
 
-    // module gates
+    /** @name Gates. */
+    //@{
 
     /**
      * Returns total number of module gates.
      */
-    int gates() const {return gatev.items();}             // total num of gates
+    int gates() const {return gatev.items();}
 
     /**
-     * MISSINGDOC: cModule:cGate*gate(int)
+     * Return a gate by its ID. Issues a warning if gate does not exist.
      */
-    cGate *gate(int g) {return (cGate*)gatev[g];}   // gate by id
+    cGate *gate(int g) {return (cGate*)gatev[g];}
 
     /**
-     * MISSINGDOC: cModule:cGate*gate(int)
+     * Return a gate by its ID. Issues a warning if gate does not exist.
      */
-    const cGate *gate(int g) const {return (const cGate*)gatev[g];}   // gate by id
+    const cGate *gate(int g) const {return (const cGate*)gatev[g];}
 
     /**
-     * MISSINGDOC: cModule:cGate*gate(char*,int)
+     * Look up a gate by its name and index.
+     * Issues a warning if gate was not found.
      */
-    cGate *gate(const char *gatename,int sn=-1);    // gate by name & index
+    cGate *gate(const char *gatename,int sn=-1);
 
     /**
-     * MISSINGDOC: cModule:cGate*gate(char*,int)
+     * Look up a gate by its name and index.
+     * Issues a warning if gate was not found.
      */
-    const cGate *gate(const char *gatename,int sn=-1) const;    // gate by name & index
+    const cGate *gate(const char *gatename,int sn=-1) const;
 
     /**
-     * Returns index of the gate specified by name and index (if multiple
-     * gate). Returns -1 if the gate doesn't exist.
+     * Return the ID of the gate specified by name and index.
+     * Returns -1 if the gate doesn't exist.
      */
-    int findGate(const char *gatename, int sn=-1) const;  // id of a gate (-1 on error)
+    int findGate(const char *gatename, int sn=-1) const;
 
     /**
-     * MISSINGDOC: cModule:bool hasGate(char*,int,)>}
+     * Check if a gate exists.
      */
-    bool hasGate(const char *gatename, int sn=-1) const {return findGate(gatename,sn)>=0;} // check if gate exists
-
+    bool hasGate(const char *gatename, int sn=-1) const {return findGate(gatename,sn)>=0;}
 
     /**
      * For compound modules, it checks if all gates are connected inside
-     * the module (it returns true if they are OK); for simple
-     * modules, it returns true.
+     * the module (it returns <tt>true</tt> if they are OK); for simple
+     * modules, it returns <tt>true</tt>. This function is usually called from
+     * from NEDC-generated code.
      */
-    bool checkInternalConnections();      // true means OK; called from NEDC code
+    bool checkInternalConnections();
+    //@}
 
-    // module parameters
+    /** @name Parameters. */
+    //@{
 
     /**
      * Returns total number of the module's parameters.
      */
-    int params() {return paramv.items();}    // no. of pars
+    int params() {return paramv.items();}
 
     /**
      * Returns reference to the module parameter identified with its
-     * index p. Returns *NULL if the object doesn't
-     * exist.
+     * index p. Returns <tt>*NULL</tt> if the object doesn't exist.
      */
-    cPar& par(int p);                        // par by index
+    cPar& par(int p);
 
     /**
      * Returns reference to the module parameter specified with its name.
-     * Returns *NULL if the object doesn't exist.
+     * Returns <tt>*NULL</tt> if the object doesn't exist.
      */
-    cPar& par(const char *parname);          // par by name
+    cPar& par(const char *parname);
 
     /**
      * Returns index of the module parameter specified with its name.
      * Returns -1 if the object doesn't exist.
      */
-    int findPar(const char *parname);        // index of a par (-1 of not found)
+    int findPar(const char *parname);
 
     /**
      * Searches for the parameter in the parent modules, up to the system
      * module. It the parameter is not found, an error message is generated.
      */
-    cPar& ancestorPar(const char *parname);  // search for par in parents;error if not found
+    cPar& ancestorPar(const char *parname);
 
     /**
-     * MISSINGDOC: cModule:bool hasPar(char*)
+     * Check if a parameter exists.
      */
-    bool hasPar(const char *s) {return findPar(s)>=0;}  // check if parameter exists
+    bool hasPar(const char *s) {return findPar(s)>=0;}
+    //@}
 
-    // machine parameters
+    /** @name Machine parameters (used by parallel execution). */
+    //@{
 
     /**
      * FIXME: machine parameters
@@ -434,74 +469,85 @@ class SIM_API cModule : public cObject
      * MISSINGDOC: cModule:char*machinePar(char*)
      */
     const char *machinePar(const char *machinename); // NET
+    //@}
 
-    // interface for calling initialize() and finish() from outside
-
-    /**
-     * FIXME: interface for calling initialize() and finish() from outside
+    /** @name Interface for calling <tt>initialize()</tt>/<tt>finish()</tt>.
+     * Those functions may not be called directly, only via
+     * <tt>callInitialize()</tt> and <tt>callFinish()</tt> provided here.
      */
-    virtual void callInitialize();               // full multi-stage init for this module
+    //@{
 
     /**
-     * MISSINGDOC: cModule:bool callInitialize(int)
+     * Interface for calling <tt>initialize()</tt> from outside.
+     * Implements full multi-stage init for this module and its submodules.
      */
-    virtual bool callInitialize(int stage) = 0;  // does single stage of initialization; returns true if more stages are required
+    virtual void callInitialize();
 
     /**
-     * MISSINGDOC: cModule:void callFinish()
+     * Interface for calling <tt>initialize()</tt> from outside. It does a single stage
+     * of initialization, and returns <tt>true</tt> if more stages are required.
      */
-    virtual void callFinish() = 0;               // calls finish()
-
-    // dynamic module creation
+    virtual bool callInitialize(int stage) = 0;
 
     /**
-     * Pure virtual function; it is redefined in both cCompoundModule
-     * and cSimpleModule. It creates starting message for dynamically
+     * Interface for calling <tt>finish()</tt> from outside.
+     */
+    virtual void callFinish() = 0;
+    //@}
+
+    /** @name Dynamic module creation. */
+    //@{
+
+    /**
+     * Pure virtual function; it is redefined in both <tt>cCompoundModule</tt>
+     * and <tt>cSimpleModule</tt>. It creates starting message for dynamically
      * created module (or recursively for its submodules). See the user
      * manual for explanation how to use dynamically created modules.
      */
-    virtual void scheduleStart(simtime_t t) = 0; // creates starting msg
+    virtual void scheduleStart(simtime_t t) = 0;
 
     /**
-     * Pure virtual function; it is redefined in both cCompoundModule
-     * and cSimpleModule. Deletes a dynamically created module
-     * and recursively all its submodules.
+     * Deletes a dynamically created module and recursively all its submodules.
+     * This is a pure virtual function; it is redefined in both <tt>cCompoundModule</tt>
+     * and <tt>cSimpleModule</tt>.
      */
-    virtual void deleteModule() = 0;             // deletes module
+    virtual void deleteModule() = 0;
+    //@}
 
-    // enable/disable warnings
+    /** @name Enable/disable warnings */
+    //@{
 
     /**
      * Warning messages can be enabled/disabled individually for each
      * module. This function returns the warning status for this module:
-     * true=enabled, false=disabled.
+     * <tt>true</tt>=enabled, <tt>false</tt>=disabled.
      */
     bool warnings()            {return warn;}
 
     /**
-     * Enables or disables warnings for this module: true=enable,
-     * false=disable.
+     * Enables or disables warnings for this module: <tt>true</tt>=enable, <tt>false</tt>=disable.
      */
     void setWarnings(bool wr)  {warn=wr;}
+    //@}
 
-    // visualization/animation support
+    /** @name Display strings. */
+    //@{
 
     /**
-     * TBD
+     * FIXME: Change the display string for this module.
      */
     void setDisplayString(int type, const char *dispstr, bool immediate=true);
 
     /**
-     * TBD
+     * Returns the display string for this module.
      */
     const char *displayString(int type);
-
 
     /**
      * MISSINGDOC: cModule:void setDisplayStringNotify(DisplayStringNotifyFunc,void*)
      */
     void setDisplayStringNotify(DisplayStringNotifyFunc notify_func, void *data);
-
+    //@}
 };
 
 //==========================================================================
@@ -519,17 +565,17 @@ struct sBlock
 //--------------------------------------------------------------------------
 
 /**
- * cSimpleModule is a base class for all simple module classes.
- * Most important, cSimpleModule has the virtual member functions
- * activity() and handleMessage(), one of which has to be redefined in
+ * <tt>cSimpleModule</tt> is a base class for all simple module classes.
+ * Most important, <tt>cSimpleModule</tt> has the virtual member functions
+ * <tt>activity()</tt> and <tt>handleMessage()</tt>, one of which has to be redefined in
  * the user's simple modules.
  *
  * All basic functions associated with the simulation such as sending
- * and receiving messages are implemented as cSimpleModule's member
+ * and receiving messages are implemented as <tt>cSimpleModule</tt>'s member
  * functions.
  *
- * The activity() functions run as coroutines during simulation.
- * Coroutines are brought to cSimpleModule from the cCoroutine base class.
+ * The <tt>activity()</tt> functions run as coroutines during simulation.
+ * Coroutines are brought to <tt>cSimpleModule</tt> from the <tt>cCoroutine</tt> base class.
  */
 class SIM_API cSimpleModule : public cCoroutine, public cModule
 {
@@ -544,40 +590,45 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     cMessage *timeoutmsg;   // msg used in wait() and receive() with timeout
 
   private:
-
-    /**
-     * MISSINGDOC: cSimpleModule:static void activate(void*)
-     */
-    static void activate(void *p);  // internal use
+    // internal use
+    static void activate(void *p);
 
   protected:
-
-    /**
-     * MISSINGDOC: cSimpleModule:void arrived(cMessage*,int)
-     */
-    virtual void arrived(cMessage *msg,int n);  // internal use
+    // internal use
+    virtual void arrived(cMessage *msg,int n);
 
   public:
     cHead locals;           // list of local variables of module function
     cQueue putAsideQueue;   // put-aside queue
 
   protected:
-    // The following functions are expected to be redefined in concrete
-    // simple module types. They are made protected because they shouldn't
-    // be called directly from outside.
+    /** @name Hooks for defining module behaviour.
+     *
+     * FIXME:
+     * activity() and handleMessage(), one of which has to be redefined in
+     * the user's simple modules.
+     *
+     * They are made protected because they shouldn't be called directly
+     * from outside.
+     */
+    //@{
 
     /**
-     * Contains the module function. It is empty in cSimpleModule
-     * and should be redefined in descendants.
+     * Should be redefined to contain the module activity function.
+     * This default implementation issues an error message.
      */
-    virtual void activity();                   // coroutine function
+    virtual void activity();
 
     /**
-     * MISSINGDOC: cSimpleModule:void handleMessage(cMessage*)
+     * Should be redefined to contain the module's message handling function.
+     * This default implementation issues an error message.
      */
-    virtual void handleMessage(cMessage *msg); // alternative to activity()
+    virtual void handleMessage(cMessage *msg);
+    //@}
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -594,7 +645,14 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      */
     virtual ~cSimpleModule();
 
-    // redefined functions
+    /**
+     * MISSINGDOC: cSimpleModule:cSimpleModule&operator=(cSimpleModule&)
+     */
+    cSimpleModule& operator=(cSimpleModule& mod);
+    //@}
+
+    /** @name Redefined cObject functions. */
+    //@{
 
     /**
      * Returns pointer to the class name string, "cSimpleModule".
@@ -617,16 +675,13 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     virtual const char *inspectorFactoryName() const {return "cSimpleModuleIFC";}
 
     /**
-     * MISSINGDOC: cSimpleModule:cSimpleModule&operator=(cSimpleModule&)
-     */
-    cSimpleModule& operator=(cSimpleModule& mod);
-
-    /**
      * MISSINGDOC: cSimpleModule:void forEach(ForeachFunc)
      */
     virtual void forEach(ForeachFunc f);
+    //@}
 
-    // redefined cModule functions:
+    /** @name Redefined cModule functions. */
+    //@{
 
     /**
      * FIXME: redefined cModule functions:
@@ -637,17 +692,6 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * Returns true.
      */
     virtual bool isSimple() {return true;}
-
-  public:
-    // return event handling scheme
-
-    /**
-     * FIXME: return event handling scheme
-     */
-    bool usesActivity()  {return usesactivity;}
-
-    // interface for calling initialize() and finish() from outside
-    //virtual void callInitialize();
 
     /**
      * FIXME: interface for calling initialize() and finish() from outside
@@ -660,33 +704,45 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      */
     virtual void callFinish();
 
-    // dynamic module creation
-
     /**
      * Creates a starting message for the module.
      */
-    virtual void scheduleStart(simtime_t t); // creates starting msg
+    virtual void scheduleStart(simtime_t t);
 
     /**
      * Deletes a dynamically created module.
      */
-    virtual void deleteModule();             // deletes module
+    virtual void deleteModule();
+    //@}
 
-    // module time
+    /** @name Information about the module. */
+    //@{
+
+    /**
+     * Returns event handling scheme.
+     */
+    bool usesActivity()  {return usesactivity;}
+    //@}
+
+    /** @name Simulation time. */
+    //@{
 
     /**
      * Returns the current simulation time (that is, the arrival time
      * of the last message returned by a receiveNew() call).
      */
-    simtime_t simTime();   // (cannot make inline because of declaration order)
+    simtime_t simTime();   // cannot make inline because of declaration order!
+    //@}
 
-    // user-settable phase string
+    /** @name Debugging aids. */
+    //@{
 
     /**
-     * Sets the phase string (the function creates a copy of the string).
+     * Sets the phase string.
      * The string can be displayed in user interfaces which support tracing
      * / debugging (currently only Tkenv) and the string can contain
      * information that tells the user what the module is currently doing.
+     * The module creates its own copy of the string.
      */
     void setPhase(const char *phase)  {phasestr=phase;}
 
@@ -694,8 +750,6 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * Returns pointer to the current phase string.
      */
     const char *phase()  {return correct(phasestr);}
-
-    // debugging aids
 
     /**
      * To be called from module functions. Outputs textual information
@@ -724,6 +778,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     void breakpoint(const char *label);     // user breakpoint
 
     /**
+     * Sets phase string and temporarily yield control to the user interface.
      * If the user interface supports step-by-step execution, one can
      * stop execution at each receive() call of the module function
      * and examine the objects, variables, etc. If the state of simulation
@@ -732,9 +787,11 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * the phase string, so pause("here") is the same
      * as setPhase("here"); pause().
      */
-    void pause(const char *phase=NULL);     // set phase & temporarily yield control to main
+    void pause(const char *phase=NULL);
+    //@}
 
-    // sending a message through an output gate
+    /** @name Message sending. */
+    //@{
 
     /**
      * Sends a message through the gate given with its ID.
@@ -752,17 +809,16 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      */
     int send(cMessage *msg, cGate *outputgate);
 
-    // delayed sending through an output gate
-
     /**
-     * Sends a message through the gate given with its index as if it
-     * was sent delay seconds later.
+     * Delayed sending. Sends a message through the gate given with
+     * its index as if it was sent delay seconds later.
      */
     int sendDelayed(cMessage *msg, double delay, int gateid);
 
     /**
-     * Sends a message through the gate given with its name and index
-     * (if multiple gate) as if it was sent delay seconds later.
+     * Delayed sending. Sends a message through the gate given with
+     * its name and index (if multiple gate) as if it was sent delay
+     * seconds later.
      */
     int sendDelayed(cMessage *msg, double delay, const char *gatename, int sn=-1);
 
@@ -772,38 +828,41 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      */
     int sendDelayed(cMessage *msg, double delay, cGate *outputgate);
 
-    // sending messages directly to another module (to an input gate)
-
     /**
-     * FIXME: send a message directly to another module (to an input gate)
+     * Send a message directly to another module (to an input gate).
      */
     int sendDirect(cMessage *msg, double delay, cModule *mod, int inputgateid);
 
     /**
-     * FIXME: send a message directly to another module (to an input gate)
+     * Send a message directly to another module (to an input gate).
      */
     int sendDirect(cMessage *msg, double delay, cModule *mod, const char *inputgatename, int sn=-1);
 
     /**
-     * FIXME: send a message directly to another module (to an input gate)
+     * Send a message directly to another module (to an input gate).
      */
     int sendDirect(cMessage *msg, double delay, cGate *inputgate);
+    //@}
 
-    // self-messages
+    /** @name Self-messages. */
+    //@{
 
     /**
-     * FIXME: self-messages
+     * Schedule a self-message. Receive() will return the message at
+     * t simulation time.
      */
-    int scheduleAt(simtime_t t, cMessage *msg); // receive() will return msg at t
+    int scheduleAt(simtime_t t, cMessage *msg);
 
     /**
      * Removes the given message from the message queue. The message
      * needs to have been sent using the scheduleAt() function.
      * This function can be used to cancel a timer implemented with scheduleAt().
      */
-    cMessage *cancelEvent(cMessage *msg);       // remove cMessage sent by scheduleAt() from FES
+    cMessage *cancelEvent(cMessage *msg);
+    //@}
 
-    // parallel execution
+    /** @name Parallel simulation. */
+    //@{
 
     /**
      * Used with parallel execution: synchronize with receiver segment.
@@ -812,21 +871,30 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     int syncpoint(simtime_t t, int gateid);
 
     /**
-     * MISSINGDOC: cSimpleModule:int syncpoint(simtime_t,char*,int)
+     * Used with parallel execution: synchronize with receiver segment.
+     * Blocks receiver at t until a message arrives.
      */
     int syncpoint(simtime_t t, const char *gatename, int sn=-1);
 
     /**
-     * MISSINGDOC: cSimpleModule:int cancelSyncpoint(simtime_t,int)
+     * Used with parallel execution: cancel a synchronization point set by a
+     * syncpoint() call.
      */
     int cancelSyncpoint(simtime_t t, int gateid);
 
     /**
-     * MISSINGDOC: cSimpleModule:int cancelSyncpoint(simtime_t,char*,int)
+     * Used with parallel execution: cancel a synchronization point set by a
+     * syncpoint() call.
      */
     int cancelSyncpoint(simtime_t t, const char *gatename, int sn=-1);
+    //@}
 
-    // see if there's a message scheduled for this time
+    /** @name Receiving messages.
+     *
+     * These functions can only be used with activity(), but not with
+     * handleMessage().
+     */
+    //@{
 
     /**
      * Tells if the next message in the event queue is for the same module
@@ -834,8 +902,6 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * two or more messages arrived to the module at the same time.)
      */
     bool isThereMessage();
-
-    // get message from the put-aside queue OR the FES
 
     /**
      * Receive a message from the put-aside queue or the FES.
@@ -868,8 +934,6 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * called frequently.
      */
     cMessage *receiveOn(int gateid, simtime_t timeout=MAXTIME);
-
-    // get message from the FES
 
     /**
      * Remove the next message from the event queue and return a pointer
@@ -906,14 +970,21 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * called frequently.
      */
     cMessage *receiveNewOn(int gateid, simtime_t timeout=MAXTIME);
+    //@}
 
-    // simulation control
+    /** @name Waiting. */
+    //@{
 
     /**
-     * Wait for the given interval. The messages received meanwhile are inserted
-     * into the put-aside queue.
+     * Wait for the given interval. This function can only be used with
+     * activity(), but not with handleMessage(). The messages received
+     * meanwhile are inserted into the put-aside queue.
      */
     void wait(simtime_t time);
+    //@}
+
+    /** @name Stopping the module or the simulation. */
+    //@{
 
     /**
      * Ends the run of the simple module. The simulation is not stopped
@@ -927,14 +998,16 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     void endSimulation();
 
     /**
-     * Issue user error message.
+     * Issue an error message.
      */
     void error(const char *fmt,...) const;
+    //@}
 
     //// access putaside-queue -- soon!
     //virtual cQueue& putAsideQueue();
 
-    // record into scalar result file
+    /** @name Statistics collection */
+    //@{
 
     /**
      * Record a double into the scalar result file.
@@ -950,8 +1023,10 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * Record a statistics object into the scalar result file.
      */
     void recordStats(const char *name, cStatistic *stats);
+    //@}
 
-    // value-added 'raw' heap allocation for module functions:
+    /** @name Heap allocation. */
+    //@{
 
     /**
      * Dynamic memory allocation. This function should be used instead
@@ -971,12 +1046,9 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * above and NULLs the pointer.
      */
     void memFree(void *&p);            // free block & NULL pointer
+    //@}
 
-    // for internal use ONLY:
-
-    //
     // INTERNAL: free module's local allocations
-    //
     void clearHeap();
 
     /**
@@ -997,12 +1069,13 @@ class SIM_API cCompoundModule : public cModule
     friend class TCompoundModInspector;
 
   protected:
-    /**
-     * MISSINGDOC: cCompoundModule:void arrived(cMessage*,int)
-     */
-    virtual void arrived(cMessage *msg,int n); //internal use
+    // internal use
+    virtual void arrived(cMessage *msg,int n);
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
+
     /**
      * Copy constructor.
      */
@@ -1018,7 +1091,14 @@ class SIM_API cCompoundModule : public cModule
      */
     virtual ~cCompoundModule();
 
-    // redefined functions
+    /**
+     * MISSINGDOC: cCompoundModule:cCompoundModule&operator=(cCompoundModule&)
+     */
+    cCompoundModule& operator=(cCompoundModule& mod);
+    //@}
+
+    /** @name Redefined cObject functions. */
+    //@{
 
     /**
      * FIXME: redefined functions
@@ -1039,33 +1119,28 @@ class SIM_API cCompoundModule : public cModule
      * MISSINGDOC: cCompoundModule:char*inspectorFactoryName()
      */
     virtual const char *inspectorFactoryName() const {return "cCompoundModuleIFC";}
+    //@}
+
+    /** @name Redefined cModule functions. */
+    //@{
 
     /**
-     * MISSINGDOC: cCompoundModule:cCompoundModule&operator=(cCompoundModule&)
+     * Redefined cModule method. Returns false.
      */
-    cCompoundModule& operator=(cCompoundModule& mod);
-
-    // redefined cModule functions
+    virtual bool isSimple()  {return false;}
 
     /**
-     * Returns false.
-     */
-    virtual bool isSimple() {return false;}
-
-    // interface for calling initialize() and finish() from outside
-    //virtual void callInitialize();           // full multi-stage init
-
-    /**
-     * FIXME: first for this module, then for submods
+     * Redefined cModule method.
+     * Calls initialize() first for this module first, then recursively
+     * for all its submodules.
      */
     virtual bool callInitialize(int stage);
 
     /**
-     * FIXME: first for submods, then for itself
+     * Redefined cModule method.
+     * Calls finish() first for submodules recursively, then for this module.
      */
     virtual void callFinish();
-
-    // dynamic module creation
 
     /**
      * Calls scheduleStart() recursively for all its (immediate)
@@ -1078,6 +1153,7 @@ class SIM_API cCompoundModule : public cModule
      * deletes itself.
      */
     virtual void deleteModule();
+    //@}
 };
 
 //==========================================================================
@@ -1091,7 +1167,6 @@ class SIM_API cSubModIterator
     cModule *parent;
     int i;
   public:
-
     /**
      * Constructor.
      */
