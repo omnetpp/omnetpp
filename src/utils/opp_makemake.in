@@ -462,8 +462,9 @@ echo
 echo '# subdirectories to recurse into'
 echo "SUBDIRS= $subdirs"
 echo
+# note: without ($wildcard..), gcc will complain it can't find foo/*.o if foo/ is empty 
 echo '# object files in this directory'
-echo "OBJS= $objs"
+echo "OBJS= $(wildcard $objs)"
 echo
 
 echo '# header files generated (from msg files)'
