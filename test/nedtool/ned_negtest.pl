@@ -11,8 +11,10 @@ $num_unresolved=0;
 $num_pass=0;
 
 $verbose=1;
+$debug=0;
 
 $isWindows = ($ENV{OS} =~ /windows/i) ? 1 : 0;
+$shell='/bin/sh';  # only used on Unix
 
 if (@ARGV == ())
 {
@@ -28,9 +30,11 @@ foreach $testfile (@filenames)
 {
     print "testing $testfile\n" if ($debug);
 
+    $outfile = $testfile.".out";
     $errfile = $testfile.".err";
+    unlink($outfile);
     unlink($errfile);
-    $status = runprog ($nedtool, $testfile, "2>$errfile");
+    $status = exec_program ("$nedtool $testfile", $outfile, $errfile);
     if ($status eq '0') {
         fail($testfile, "nedtool failed to detect error in NED file (exit code 0)");
         next;
@@ -88,14 +92,61 @@ if ($num_unresolved>0 && $verbose) {
     print "UNRESOLVED tests: ".join(' ', @unresolved_tests)."\n";
 }
 
-sub runprog()
+# args: command, stdout-file, stderr-file
+# return: exit code, or -1 if program crashed
+sub exec_program()
 {
-    my @prog = @_;
-    print "running: ".join(' ',@prog)."\n" if $debug;
-    if ($isWindows) {
-        system($ENV{COMSPEC}, "/c", @prog);
-    } else {
-        system(@prog);
+    my $cmd = shift;
+    my $outfile = shift;
+    my $errfile = shift;
+
+    if ($isWindows)
+    {
+        print "  running \"$cmd >$outfile 2>$errfile\"\n" if ($debug);
+        # The following line mysteriously fails to redirect on some Windows configuration.
+        # This can be observed together with cvs reporting "editor session fails" -- root cause is common?
+        #$status = system ("$cmd >$outfile 2>$errfile");
+        $shell=$ENV{'COMSPEC'};
+        if ($shell eq "") {
+            print STDERR "$arg0: WARNING: no %COMSPEC% environment variable, using cmd.exe\n"; 
+            $shell="cmd.exe";
+        }
+        # On the next line, cmd.exe may fail to pass back program exit code. 
+        # When this happens, use the above (commented out) "system" line.
+        $status = system($shell, split(" ", "/c $cmd >$outfile 2>$errfile"));
+        print "  returned status = $status\n" if ($debug);
+        if ($status == 0)
+        {
+            return 0;
+        }
+        elsif (256*int($status/256) != $status)
+        {
+            # this will never happen on Windows: if program doesn't exist, 256 is returned...
+            return -1;
+        }
+        else
+        {
+            return $status/256;
+        }
+
+    }
+    else
+    {
+        print "  running \"$shell -c '$cmd' >$outfile 2>$errfile\"\n" if ($debug);
+        $status = system ("$shell -c '$cmd' >$outfile 2>$errfile");
+        print "  returned status = $status\n" if ($debug);
+        if ($status == 0)
+        {
+            return 0;
+        }
+        elsif (256*int($status/256) != $status)
+        {
+            return -1;
+        }
+        else
+        {
+            return $status/256;
+        }
     }
 }
 

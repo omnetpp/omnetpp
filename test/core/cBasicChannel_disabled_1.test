@@ -73,7 +73,7 @@ Define_Module({Node2});
 
 void {Node2}::handleMessage(cMessage *msg)
 {
-    ev << "received " << msg->name << "\n";
+    ev << "received " << msg->name() << "\n";
     delete msg;
 }
 
