@@ -171,36 +171,10 @@ std::string cGate::info() const
     return out.str();
 }
 
-void cGate::initDisplayString()
-{
-    char dispname[128]; // FIXME buffer overflow danger
-    const char *ds = NULL;
-    if (type()=='O')
-    {
-        cModule *parent = ownerModule()->parentModule();
-        if (parent)
-        {
-            sprintf(dispname, "%s.%s.%s",parent->className(),ownerModule()->fullName(), fullName());
-            ds = ev.getDisplayString(simulation.runNumber(),dispname);
-        }
-    }
-    else
-    {
-        sprintf(dispname, "%s.%s",ownerModule()->className(),fullName());
-        ds = ev.getDisplayString(simulation.runNumber(),dispname);
-    }
-    if (!ds)
-        {delete dispstr; dispstr = NULL;}
-    else
-        displayString().parse(ds);
-
-}
-
 void cGate::setOwnerModule(cModule *m, int gid)
 {
     omodp = m;
     gateid = gid;
-    initDisplayString();
 }
 
 void cGate::setIndex(int sn, int vs)
@@ -216,9 +190,6 @@ void cGate::setIndex(int sn, int vs)
         fullname = new char[opp_strlen(name())+10];
         sprintf(fullname, "%s[%d]", name(), index());
     }
-
-    // display string may depend on gate index
-    initDisplayString();
 }
 
 void cGate::connectTo(cGate *g, cChannel *chan)

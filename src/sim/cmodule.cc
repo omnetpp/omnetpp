@@ -89,8 +89,6 @@ cModule::cModule(const char *name, cModule *parentmod) :
 
     ev_enabled = true; // may be overridden from cEnvir::moduleCreated() hook
 
-    initDisplayStrings();
-
     // cModuleType::create() call will create gates, params
 }
 
@@ -174,34 +172,6 @@ void cModule::setIndex(int i, int n)
         fullname = new char[opp_strlen(name())+10];
         sprintf(fullname, "%s[%d]", name(), index());
     }
-
-    // display strings may depend on module index
-    initDisplayStrings();
-}
-
-void cModule::initDisplayStrings()
-{
-    if (parentModule())
-    {
-        // create "Classname.name[index]" string
-        char dispname[MAX_OBJECTFULLPATH];
-        strcpy(dispname, parentModule()->className());
-        char *s = dispname+strlen(dispname);
-        *s++ = '.';
-        strcpy(s, fullName());
-
-        const char *ds = ev.getDisplayString(simulation.runNumber(),dispname);
-        if (!ds)
-            {delete dispstr; dispstr = NULL;}
-        else
-            displayString().parse(ds);
-    }
-
-    const char *bgds = ev.getDisplayString(simulation.runNumber(),className());
-    if (!bgds)
-        {delete bgdispstr; bgdispstr = NULL;}
-    else
-        backgroundDisplayString().parse(bgds);
 }
 
 void cModule::insertSubmodule(cModule *mod)

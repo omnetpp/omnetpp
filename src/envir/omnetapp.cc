@@ -382,11 +382,6 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
         throw new cException("Error in output vector interval %s=%s",buffer,s);
 }
 
-const char *TOmnetApp::getDisplayString(int run_no, const char *name)
-{
-    return getConfig()->getAsString2(getRunSectionName(run_no),"DisplayStrings",name,NULL);
-}
-
 cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)
 {
     cXMLElement *documentnode = xmlcache->getDocument(filename);

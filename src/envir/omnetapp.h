@@ -143,7 +143,6 @@ class ENVIR_API TOmnetApp
                                     bool& enabled, /*output*/
                                     double& starttime, double& stoptime);
 
-    virtual const char *getDisplayString(int run_no,const char *name);
     virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
     //@}
 

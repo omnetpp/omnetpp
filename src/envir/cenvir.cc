@@ -258,11 +258,6 @@ bool cEnvir::isModuleLocal(cModule *parentmod, const char *modname, int index)
     return app->isModuleLocal(parentmod, modname, index);
 }
 
-const char *cEnvir::getDisplayString(int run_no,const char *name)
-{
-    return app->getDisplayString(run_no,name);
-}
-
 cXMLElement *cEnvir::getXMLDocument(const char *filename, const char *path)
 {
     return app->getXMLDocument(filename, path);

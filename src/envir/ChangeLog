@@ -1,3 +1,10 @@
+2004-12-16  Andras Varga
+
+	* optimizations
+
+	* removed ev.getDisplayString() and support for display strings in
+	omnetpp.ini (section [DisplayStrings])
+
 2004-12-10  Andras Varga
 
 	* omnetapp.cc/.h: implemented getUniqueNumber()

@@ -522,7 +522,7 @@ char *yytext;
 #define INITIAL 0
 #line 6 "ebnf.lex"
 /***************************************************/
-/*            OMNeT++ NEDC (JAR) source            */
+/*       OMNeT++/OMNEST NEDC (JAR) source          */
 /*                                                 */
 /*  File: ebnf.lex                                 */
 /*                                                 */
