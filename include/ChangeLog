@@ -1,3 +1,9 @@
+2005-01-10  Andras Varga
+
+	* create platdep/ subdirectory
+
+	* cscheduler.h: added cRealTimeScheduler class
+
 2004-12-29  ------ omnetpp-3.0 released ------
 
 2004-12-22  Andras Varga

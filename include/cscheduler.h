@@ -122,5 +122,65 @@ class cSequentialScheduler : public cScheduler
     virtual cMessage *getNextEvent();
 };
 
+
+/**
+ * Real-time scheduler class. When installed as scheduler using the scheduler-class
+ * omnetpp.ini entry, it will syncronize simulation execution to real (wall clock)
+ * time.
+ *
+ * Operation: a "base time" is determined when startRun() is called. Later on,
+ * the scheduler object calls usleep() from getNextEvent() to synchronize the
+ * simulation time to real time, that is, to wait until
+ * the current time minus base time becomes equal to the simulation time.
+ * Should the simulation lag behind real time, this scheduler will try to catch up
+ * by omitting sleep calls altogether.
+ *
+ * Scaling is supported via the realtimescheduler-scaling omnetpp.ini entry.
+ * For example, if it is set to 2.0, the simulation will try to execute twice
+ * as fast as real time.
+ *
+ * @ingroup Internals
+ */
+class cRealTimeScheduler : public cScheduler
+{
+  protected:
+    // configuration:
+    bool scaling;
+    double factor;
+
+    // state:
+    timeval baseTime;
+
+    bool waitUntil(const timeval& targetTime);
+
+  public:
+    /**
+     * Constructor.
+     */
+    cRealTimeScheduler() : cScheduler()  {}
+
+    /**
+     * Destructor.
+     */
+    virtual ~cRealTimeScheduler() {}
+
+    /**
+     * Called at the beginning of a simulation run.
+     */
+    virtual void startRun();
+
+    /**
+     * Called at the end of a simulation run.
+     */
+    virtual void endRun();
+
+    /**
+     * Scheduler function -- it comes from cScheduler interface.
+     * This function synchronizes to real time: it waits (usleep()) until
+     * the real time reaches the time of the next simulation event.
+     */
+    virtual cMessage *getNextEvent();
+};
+
 #endif
 
