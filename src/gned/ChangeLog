@@ -157,4 +157,5 @@ Oct 12, 1999
       eliminated annoying generation of extra blank lines (except after "import")
 Nov 11, 1999
   - begun writing Properties dialogs
-
+Nov 12, 1999
+  - spreadsheet widget added

@@ -131,19 +131,36 @@ proc editSubmoduleProps {key} {
     pack .submprops.f.nb.general.like  -expand 0 -fill x -side top
     pack .submprops.f.nb.general.link -expand 0 -fill x -side top
     pack .submprops.f.nb.general.vs  -expand 0 -fill x -side top
-    pack .submprops.f.nb.general.comment -expand 1 -fill both -side top
+    pack .submprops.f.nb.general.comment -expand 0 -fill x -side top
 
     # create "Parameters" page
-    # label-text  .submprops.f.nb.pars.pars "Parameters:" 7
-    # pack .submprops.f.nb.pars.pars  -expand 1 -fill both -side top
+    label .submprops.f.nb.pars.l -text "Parameters:"
+    spreadsheet .submprops.f.nb.pars.tbl 20 {
+      {Name    name    {entry $e -textvariable $v -width 16 -bd 1 -relief sunken}}
+      {Value   value   {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
+      {Comment comment {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
+    }
+    pack .submprops.f.nb.pars.l  -side top -anchor w
+    pack .submprops.f.nb.pars.tbl -expand 1 -fill both
 
     # create "Gate sizes" page
-    # label-text  .submprops.f.nb.gates.gsiz "Gate sizes:" 7
-    # pack .submprops.f.nb.gates.gsiz -expand 1 -fill both -side top
+    label .submprops.f.nb.gates.l -text "Gatesizes:"
+    spreadsheet .submprops.f.nb.gates.tbl 20 {
+      {Gate   name       {entry $e -textvariable $v -width 16 -bd 1 -relief sunken}}
+      {Size   vectorsize {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
+      {Comment comment   {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
+    }
+    pack .submprops.f.nb.gates.l  -side top -anchor w
+    pack .submprops.f.nb.gates.tbl -expand 1 -fill both
 
     # create "Machines" page
-    # label-text  .submprops.f.nb.gates.gsiz "Gate sizes:" 7
-    # pack .submprops.f.nb.gates.gsiz -expand 1 -fill both -side top
+    label .submprops.f.nb.on.l -text "On machines:"
+    spreadsheet .submprops.f.nb.on.tbl 20 {
+      {{On machine} mach    {entry $e -textvariable $v -width 16 -bd 1 -relief sunken}}
+      {Comment      comment {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
+    }
+    pack .submprops.f.nb.on.l  -side top -anchor w
+    pack .submprops.f.nb.on.tbl -expand 1 -fill both
 
     focus .submprops.f.nb.general.name.e
 
@@ -169,8 +186,7 @@ proc editSubmoduleProps {key} {
     .submprops.f.nb.general.vs.e insert 0 $ned($key,vectorsize)
     .submprops.f.nb.general.comment.t insert 1.0 $ned($key,banner-comment)
 
-    # .submprops.f.nb.pars.pars.t insert 1.0 $ned($key,parameters)
-    # .submprops.f.nb.gates.gsiz.t insert 1.0 $ned($key,gatesizes)
+    fillSpreadsheetFromNed .submprops.f.nb.pars.tbl [getChildrenWithType $key substparams]
 
     focus .submprops.f.nb.general.name.e
 
@@ -520,6 +536,7 @@ proc editChannelProps {key} {
     destroy .chanprops
 }
 
+
 proc getCommentFromText {w} {
     set comment [$w get 1.0 end]
     if {$comment=="\n"} {
@@ -532,3 +549,18 @@ proc getCommentFromText {w} {
     return $comment
 }
 
+proc fillSpreadsheetFromNed {w parentkey} {
+    global ned ddfields tablePriv
+
+    set li 0
+    foreach key [getChildren $parentkey] {
+        foreach attr $ddfields($ned($key,type)) {
+            set tablePriv($w,$li,$attr) $ned($key,$attr)
+        }
+        incr li
+    }
+}
+
+proc updateNedFromSpreadsheet {w parentkey itemtype keyattr} {
+
+}

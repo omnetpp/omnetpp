@@ -220,6 +220,86 @@ proc vertResizeBar:buttonRelease {x wToBeResized} {
     catch {destroy .resizeBar}
 }
 
+# spreadsheet --
+#
+# Create a "spreadsheet" widget
+#
+# one $columnlist entry:
+#   {title column-name command-to-create-widget-in-cell}
+#
+#  the command should use two variables:
+#    $e - widget must be created with name stored in $e
+#    $v - widget must be bound to variable whose name is in $v
+#
+# Example:
+# spreadsheet .t 20 {
+#   {Name    name    {entry $e -textvariable $v -width 8 -bd 1 -relief sunken}}
+#   {Value   value   {entry $e -textvariable $v -width 12 -bd 1 -relief sunken}}
+#   {Comment comment {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
+# }
+# pack .t -expand 1 -fill both
+#
+proc spreadsheet {w numlines columnlist} {
+
+    frame $w; # -bg green
+    frame $w.tb -height 16
+    canvas $w.c -yscrollcommand "$w.vsb set" -height 150 -bd 0
+    scrollbar $w.vsb -command "$w.c yview"
+
+    grid $w.tb -in $w -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $w.c   -in $w -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $w.vsb -in $w -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news
+
+    frame $w.c.f -bd 0
+    $w.c create window 0 0 -anchor nw -window $w.c.f
+
+    set tb $w.tb
+    set f $w.c.f
+
+    for {set li 0} {$li<$numlines} {incr li} {
+       set col 0
+       foreach entry $columnlist {
+           # get fields from entry
+           set title   [lindex $entry 0]
+           set attr    [lindex $entry 1]
+           set wcmd    [lindex $entry 2]
+
+           # add table entry
+               set e $f.li$li-$attr
+               set v tablePriv($w,$li,$attr)
+               eval $wcmd
+               grid $e -in $f -row $li -column $col -rowspan 1 -columnspan 1 -sticky news
+           # next column
+           incr col
+       }
+    }
+
+    update
+
+    # create title labels
+    set dx 2
+    foreach entry $columnlist {
+        # get fields from entry
+        set title   [lindex $entry 0]
+        set attr    [lindex $entry 1]
+
+        set e $f.li0-$attr
+        label $tb.$attr -bd 1 -relief raised -text $title
+
+        # add title bar
+        set width [expr [winfo width $e]]
+        place $tb.$attr -in $tb -x $dx -y 0 -width $width -height [winfo height $tb]
+        set dx [expr $dx + $width]
+    }
+
+    # adjust canvas width to frame width
+    $w.c config -width [winfo width $f]
+    $w.c config -scrollregion "0 0 0 [winfo height $f]"
+
+    #focus $w.l0c0
+}
+
+
 # notebook .x bottom
 # notebook_addpage .x p1 Egy
 # notebook_addpage .x p2 Ketto
