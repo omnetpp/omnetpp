@@ -2299,6 +2299,8 @@ trap 'rm -fr `echo "Makefile
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
+echo XXXXXXX:$OMNETPP_BITMAP_PATH
+
 # Protect against being on the right side of a sed subst in config.status.
 sed 's/%@/@@/; s/@%/@@/; s/%g\$/@g/; /@g\$/s/[\\\\&%]/\\\\&/g;
  s/@@/%@/; s/@@/@%/; s/@g\$/%g/' > conftest.subs <<\\CEOF
