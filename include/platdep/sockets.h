@@ -26,16 +26,17 @@
 //
 // Winsock version
 //
-#include <winsock2.h>
+#include <winsock.h>
 
 // Winsock prefixes error codes with "WS"
 #define SOCKETERR(x)  WS#x
 inline int sock_errno()  {return WSAGetLastError();}
 
-// Shutdown mode constants are named differently
-#define SHUT_RD   SD_RECEIVE
-#define SHUT_WR   SD_SEND
-#define SHUT_RDWR SD_BOTH
+// Shutdown mode constants are named differently (and only in winsock2.h 
+// which we don't want to pull in)
+#define SHUT_RD   0x00  // as SD_RECEIVE in winsock2.h
+#define SHUT_WR   0x01  // as SD_SEND in winsock2.h
+#define SHUT_RDWR 0x02  // as SD_BOTH in winsock2.h
 
 typedef int socklen_t;
 
@@ -44,7 +45,7 @@ inline int initsocketlibonce() {
     if (inited) return 0;
     inited = true;
     WSAData wsaData;
-    return WSAStartup(MAKEWORD(2,0), &wsaData);
+    return WSAStartup(MAKEWORD(1,1), &wsaData);
 }
 
 

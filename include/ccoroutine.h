@@ -33,6 +33,7 @@
 #if _MSC_VER>=1200
 #define _WIN32_WINNT 0x0400
 #endif
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 // their min() and max() macros interfere with us
 #undef min

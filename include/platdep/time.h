@@ -30,7 +30,7 @@
 #else
 # include <sys/types.h>
 # include <sys/timeb.h>  // ftime(), timeb
-# include <winsock2.h>  // for timeval (!?)
+# include <winsock.h>  // for timeval (!)
 # undef min  // would conflict with omnetpp's util.h
 # undef max
 
