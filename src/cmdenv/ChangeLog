@@ -1,3 +1,7 @@
+2002-10-08  Andras Varga
+
+	* cmdenv.cc: -h command-line option now lists linked-in modules too
+
 2002-10-04  Andras Varga
 
 	* error handling changed from simulation.ok() to exceptions.

@@ -323,10 +323,18 @@ void TCmdenvApp::help()
     ev << "  -fsomething.ini  specifies ini file to use (instead of omnetpp.ini)\n";
     ev << "  -r1,2,5-10       specifies runs to be executed\n";
     ev << "\n";
-    ev << "Networks linked into this executable:\n";
+
+    ev << "Available networks:\n";
     cIterator iter(networks);
-    for (int i=1; iter(); i++,iter++)
-       ev << "  " << i << ". " << ((cNetworkType *)iter())->name() << '\n';
+    for (; iter(); iter++)
+        ev << "  " << ((cNetworkType *)iter())->name() << '\n';
+    ev << "\n";
+
+    ev << "Available modules:\n";
+    cIterator iter2(modtypes);
+    for (; iter2(); iter2++)
+        ev << "  " << ((cModuleType *)iter2())->name() << '\n';
+    ev << "\n";
 }
 
 void TCmdenvApp::puts(const char *s)
