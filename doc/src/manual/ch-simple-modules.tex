@@ -1400,7 +1400,7 @@ The \fname{finish()} functions are called when the event
 loop\index{event loop} has terminated, and only if it terminated
 normally (i.e. not with a runtime error).  The calling order is the
 reverse as with \fname{initialize()}: first submodules, then the
-containing compound module. (The bottom line is that in the moment
+containing compound module. (The bottom line is that at the moment
 there's no ``official'' possibility to redefine \fname{initialize()}
 and \fname{finish()} for compound modules; the unofficial way is to
 write into the nedc-generated C++ code. Future versions of {\opp} will
@@ -1498,7 +1498,7 @@ handle the \textit{stage=0} and \textit{stage=1} cases.
   \footnote{Note \ttt{const} in the \ttt{numInitStages()} declaration.
   If you forget it, by C++ rules you create a \textit{different} function
   instead of redefining the existing one in the base class, thus the
-  existing one will remain if effect and return 1.}
+  existing one will remain in effect and return 1.}
 
 The \fname{callInitialize()} function performs the full multi-stage initialization
 for that module and all its submodules.
