@@ -658,14 +658,28 @@ struct sBlock
 //--------------------------------------------------------------------------
 
 /**
- * cSimpleModule is a base class for all simple module classes.
- * Most important, cSimpleModule has the virtual member functions
- * activity() and handleMessage(), one of which has to be redefined in
- * the user's simple modules.
+ * cSimpleModule is the base class for all simple module classes.
+ * cSimpleModule, although stuffed with simulation-related functionality,
+ * doesn't do anything useful by itself: one has to redefine
+ * one or more virtual member functions to make it do useful work:
  *
- * All basic functions associated with the simulation such as sending
- * and receiving messages are implemented as cSimpleModule's member
- * functions.
+ *    - void initialize()
+ *    - void activity()
+ *    - void handleMessage(cMessage *msg)
+ *    - void finish()
+ *
+ * initialize() is called after OMNeT++ created the module.
+ *
+ * One has to redefine either activity() or handleMessage() to contain
+ * the internal logic of the module. activity() and handleMessage() implement
+ * different event processing strategies: activity() is a coroutine-based
+ * solution which implements the process-interaction approach (coroutines are
+ * non-preemptive [cooperative] threads). handleMessage() is a method that is
+ * called by the simulation kernel when the module receives a message.
+ *
+ * The finish() functions are called when the simulation terminates
+ * successfully. Typical use of finish() is recording statistics
+ * collected during simulation.
  *
  * The activity() functions run as coroutines during simulation.
  * Coroutines are brought to cSimpleModule from the cCoroutine base class.
