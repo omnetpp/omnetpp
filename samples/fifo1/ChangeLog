@@ -8,3 +8,5 @@ Oct 12, 1999
 Oct 17, 1999
  - the "1" suffix was added to all file names (to make it possible to link
    all sample simulations into a single executable)
+Jan 18, 2000
+ - added explicit cast to math expressions with cPar...

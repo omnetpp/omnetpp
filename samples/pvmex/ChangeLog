@@ -1,2 +1,4 @@
 Oct 10, 1999
  - standardized indentation of source files
+Jan 18, 2000
+ - added explicit cast to math expressions with cPar...

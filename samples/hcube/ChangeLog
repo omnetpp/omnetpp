@@ -1,3 +1,5 @@
 Oct 10, 1999
  - standardized indentation of source files
  - HC prefix added to Generator and Sink modules
+Jan 18, 2000
+ - added explicit cast to math expressions with cPar...
