@@ -34,9 +34,9 @@
 #ifdef PORTABLE_COROUTINES
 
 //
-// all "beef" are used to test stack overflow/stack usage by checking
-// whether byte patterns written in the memory have been overwritten by
-// couroutine function's normal stack usage
+// All "beef" are used to test stack overflow/stack usage by checking
+// whether byte patterns placed in the memory have been overwritten by
+// the coroutine function's normal stack usage.
 //
 
 #define DEADBEEF       0xdeafbeef
@@ -48,12 +48,12 @@ struct _Task
   JMP_BUF jmpb;                 // jump state
   JMP_BUF rst_jmpb;             // jump state restart task
   int used;                     // used or free
-  unsigned size;           // size of actually allocated block
+  unsigned size;                // size of actually allocated block
   _Task *next;                  // pointer to next control block
 
   CoroutineFnp fnp;             // pointer to task function
   void *arg;                    // argument to task function
-  unsigned stack_size;     // requested stack size
+  unsigned stack_size;          // requested stack size
 
   _Task *prevbeef;              // pointer to previous eat() invocation's block
   unsigned long guardbeef2;     // contains DEADBEEF; should stay last field
