@@ -2,71 +2,16 @@
 
 	* cmodule.cc: implemented bubble()
 
-2004-01-06  Andras Varga
+2004-01-05  Andras Varga
 
-	* cdispstr.cc: notify() and assemble() only if needed (there's change)
+	* HEAVY CHANGES throughout the code, see include/ChangeLog entry with
+	same date.
 
-
-	cmodule.cc, cgate.cc: displayString(), displayStringAsParent() now
-	returns a cDisplayString object (see include/ChangeLog for more info)
-
-cDisplayStringParser renamed to cDisplayString (see include/ChangeLog)
-added globals.cc for global registration lists
-
-cDisplayStringParser: backslash parsing improved (now recognizes backslash
-sequences: \t, \n, \r, \f, \b, \x0A, with same meaning as in C.)
-
-cenum.cc: sEnumBuilder removed
-callInitialize(), callFinish() impl. moved to base class, cModule.
-
-new ownership mechanism:
-- memory footprint reduced from 20 to 8 bytes per simulation object!
-  (cObject subclasses: cMessage, cGate, etc.).
-  Before it was 4 pointers (ownerp, firstchildp, nextp, prevp) plus 
-  1 char (storage class) and 1 bool (tkownership), and now it's only 1 pointer 
-  (ownerp) plus 1 int (pos).
-- faster: change of ownership was up to 6 comparisons and 9 assignments,
-  now it's 1 comparison, 3 assignments and 1 increment.
-- catches more errors: it now detects attempts to delete or take objects
-  that are currently in a queue,  array, or the FES. (in other words, it's 
-  no longer possible to silently steal an object from its legitimate owner.)
-- cObject's custom 'operator new' could be eliminated, together with 
-  determining the storage class.
-- downside: container objects have to call drop() before deleting contained
-  objects (basically, 'delete obj' calls have to be changed to 
-  'dropAndDelete(obj)'.
-- tkownership was also removed also for lack of usefulness
-
-other optimization:
-- short object names (up to 10 chars) are stored inside the object's memory
-  (an object with 10-character name doesn't allocate more than an object
-  with no name assigned)
-
-------------------merged cset:-------------------------
-putasideQueue removed
-receiveNew(), receiveNewOn(), etc removed
-setOwner() removed
-ownership handling simplified: heapflag, storage, operator new all gone
-removed firstchildp,nextp,prevp; ownerp remained, pos added
-cHead, cIterator killed
-cModule -- submodules are kept via firstchildp, etc pointers
-cSubmodIterator rewritten to use firstchildp, prevp, nextp (much more efficient)
-cModule -- machine pars removed
-cModuleInterface -- machine pars removed
-global registration lists transformed to cArrays accessed via cSingleton
-cSingleton in onstartup.h -- find better place!! also, chead.* almost empty now
-in merge *.cc, done until message.cc
-defaultowner made a static in cObject
-change: modules are now owned by cSimulation (not parent mod)
-check cModule::deleteModule(...)
-takeownership removed from cObject, and put into cQueue, cArray and cPar
-name string optimized; up to 10 chars it's stored inside the object
-(might be extended to 14 chars if measurements show long names are popular)
-
-object counter added
-stack cleanup by exceptions (stack unwinding)
----------------------------------------------------------
-
+	* cDisplayStringParser:
+	- cDisplayStringParser renamed to cDisplayString
+	- backslash parsing improved (now recognizes backslash sequences 
+	  \t, \n, \r, \f, \b, \x0A with same meaning as in C/C++)
+	- notify() and assemble() only if needed (there is some change)
 
 2003-11-30  Andras Varga
 
@@ -79,7 +24,7 @@ stack cleanup by exceptions (stack unwinding)
 
 2003-11-13  Andras Varga
 
-	* distrib.cc: added typecast for MSVC 7.0 compiler [reported by Bob 
+	* distrib.cc: added typecast for MSVC 7.0 compiler [reported by Bob
 	Scheffler]
 
 2003-11-13  Andras Varga

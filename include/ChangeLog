@@ -1,3 +1,6 @@
+TBD break up ctypes.cc?
+TBD cGate::disconnect()
+
 2004-01-09  Andras Varga
 
 	* cenvir.h: added bubble() to cEnvir
@@ -14,60 +17,113 @@
 	returns a cDisplayString which can be changed with its own member
 	functions: insertTag(), setTagArg(), removeTag(), etc.
 	Example: coloring the icon: displayString().setTagArg("i",1,"cyan").
-	setDisplayString() got deprecated -- there's really no need for it 
+	setDisplayString() got deprecated -- there's really no need for it
 	any more.
 
-	* cGate became 8 bytes (2 pointers) smaller: notify_inspector and 
+	* cGate became 8 bytes (2 pointers) smaller: notify_inspector and
 	data_for_inspector members got eliminated (notification is now
 	in the cDisplayString class). Same for cModule.
 
-	cenvir.h: new notification methods: moduleCreated(), 
+	* cenvir.h: new notification methods: moduleCreated(),
 	moduleDeleted(), connectionCreated(), connectionRemoved(),
 	displayStringChanged(cGate*), displayStringChanged(cModule*),
 	displayStringAsParentChanged()
 
-	backwards compatibility stuff collected in compat.h
+	* backwards compatibility stuff collected in compat.h
 
-cDisplayStringParser renamed to cDisplayString (compatibility typedef added)
-added globals.h for global registration lists
+2004-01-05  Andras Varga
 
-TBD break up ctypes.cc?
+	* Heavy redesign of cObject and cModule internals with performance
+	and memory consumption improvements and cleaner code. Summary:
+	- new ownership mechanism reduces memory footprint from 20 to 8 bytes
+	  per simulation object (cObject subclasses: cMessage, cGate, etc.).
+	  Before it was 4 pointers (ownerp, firstchildp, nextp, prevp) plus
+	  1 char (storage class) and 1 bool (tkownership), and now it's only
+	  1 pointer (ownerp) plus 1 int (pos).
+	- faster: change of ownership was up to 6 comparisons and 9 assignments,
+  	  now it's 1 comparison, 3 assignments and 1 increment.
+	- catches more errors: it now detects attempts to delete or take
+	  objects that are currently in a queue, array, or the FES. (in other
+	  words, it's no longer possible to silently steal an object from its
+	  legitimate owner.)
+	- cObject's custom 'operator new' could be eliminated, together with
+  	  determining the storage class.
+	- downside: container objects have to call drop() before deleting contained
+  	  objects (basically, 'delete obj' calls have to be changed to
+  	  'dropAndDelete(obj)'.
+	- tkownership was also removed also for lack of usefulness
+	- other optimization is that short object names (up to 11 chars) are
+	  stored inside the object's memory (an object with 11-character name
+	  doesn't allocate more than an object with no name assigned).
+        Details follow:
 
+	* in activity() modules, stack cleanup is now done by C++ exceptions
+	(utilizes stack unwinding). Implications: cObject's heapflag, stor
+	and operator new could all be thrown out (cleaner code, performance
+	improvement, plus reduces cObject size by 2 bytes)
 
-removed ancient cSimpleModule memAlloc(), memFree() stuff
-killed cModule's locals, members -- owner is now the module itself!!!
-cenum.h: sEnumBuilder removed
+	* short object name strings are stored inside cObject (that is,
+	cObject contains union {char *nameptr, char shortname[]} now)
+	--> short object names come for FREE (don't allocate extra
+	memory compared to nameless objects.) This results in memory savings
+	(on average) and performance improvent (less calls to 'new').
+	Names count as short up to 11 chars. (This might be extended to
+	15 chars if measurements show long names are popular.)
 
-putasideQueue removed
-receiveNew(), receiveNewOn(), etc removed
-setOwner() removed
-ownership handling simplified: heapflag, storage, operator new all gone
-removed firstchildp,nextp,prevp; ownerp remained, pos added
-cHead, cIterator killed
-cModule -- submodules are kept via firstchildp, etc pointers
-cSubmodIterator rewritten to use firstchildp, prevp, nextp (much more efficient)
-cModule -- machine pars removed
-cModuleInterface -- machine pars removed
-global registration lists transformed to cArrays accessed via cSingleton
-cSingleton in onstartup.h -- find better place!! also, chead.* almost empty now
-in merge *.cc, done until message.cc
-defaultowner made a static in cObject
-change: modules are now owned by cSimulation (not parent mod)
-check cModule::deleteModule(...)
-takeownership removed from cObject, and put into cQueue, cArray and cPar
-name string optimized; up to 10 chars it's stored inside the object
-(might be extended to 14 chars if measurements show long names are popular)
+	* Object ownership handling in cObject was redesigned, with *both*
+	performance improvement and memory saving, plus more protection against
+	programming errors (now any object which is stored in a Queue, cArray
+	etc cannot be "taken" by any other object -- it must be removed from
+	the container first). Basic idea: owned objects were previously stored
+	in every cObject via firstchildp, nextp, prevp pointers, every class
+	(cQueue, cArray etc) had its own (extra) pointers to contained objects;
+	Now it became every object's responsibility to keep ptrs to owned
+	objects. Consequences:
+	- setOwner() was removed (it caused a lot of misunderstandings)
+	- cDefaultList was introduced
+	- firstchildp, nextp, prevp got removed from cObject; ownerp was kept;
+	  pos was added (necessary for storing things in cDefaultList).
+	  --> reduces cObject size by 8 bytes (on 32-bit architectures)
+	- cHead, cIterator was removed
+	- removed cModule's `locals', `members' -- the owner is now the cModule
+	  class itself (cModule became subclass of cDefaultList).
+	- defaultowner made a static in cObject
+        - added total_objs and live_objs counters (useful for tracing memory
+          leaks)
+	- isSoftOwner() introduced -- soft owner is an object which allows
+	  other objects take away an owned object from it (e.g. cQueue and
+	  cArray are hard owners, cDefaultList and cModul is soft owner)
 
-object counter added
-stack cleanup by exceptions (stack unwinding)
+	* takeownership flag removed from cObject, and put only into classes
+	where needed: cQueue, cArray and cPar (reduces cObject size by 2 bytes)
 
+	* cModule optimization:
+	- submodules are now kept via firstsubmodp, prevp, nextp pointers
+	- cSubmodIterator rewritten to use firstsubmodp, prevp, nextp (more
+	  efficient!)
+	- also: modules are now owned by cSimulation (not the parent module)
 
-cArray::Iterator added
+	* removed deprecated/obsolete methods: putasideQueue; receiveNew(),
+	receiveNewOn(), etc; cSimpleModule's memAlloc()+memFree();
+
+	* removed machine parameters from cModule and cModuleInterface (parsim
+	extension no longer uses them)
+
+	* callInitialize(), callFinish() impl. moved to base class, cModule.
+
+	* cDisplayStringParser renamed to cDisplayString (compatibility typedef added)
+
+	* cArray::Iterator added
+
+	* cenum.h: sEnumBuilder removed
+
+	* global registration lists moved to globals.h and transformed into
+	cArrays, accessed via new class cSingleton
 
 2003-12-09  Andras Varga
 
 	* distrib.h: fixed description of lognormal distribution -- the m,s
-	parameters referred to the underlying normal distribution, not 
+	parameters referred to the underlying normal distribution, not
 	lognormal itself. [reported by Ian Grivell]
 
 2003-11-23  Andras Varga
