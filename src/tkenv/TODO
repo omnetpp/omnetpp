@@ -1,8 +1,11 @@
 General:
- - rearrange modules with the mouse (problem: where/how to save positions..?)
- - display strings to configure animated message objects
  - hotkeys for Step,Run,...
  - .tkenvrc to store options
+ - reload omnetpp.ini before new run
+ - Edit/Find doesn't remember prev string; no 'find next'
+ - Edit/Find for module debug windows too, not only for main window
+ - rearrange modules with mouse (problem: where to save positions? .tkenvrc?)
+ - display strings to configure animated message objects
  - arrow drawing not always consistent with GNED (?)
  - outvect inspector options dialog, new checkbox: [ ] automatic settings
  - reload omnetpp.ini between runs
@@ -10,5 +13,3 @@ General:
  - inspector list should save window positions
  - automatic loading of inspector lists (use "placeholder" windows for
    not-yet-existing objects)
- - Edit/Find doesn't remember prev string; no 'find next'
- - Edit/Find for module debug windows too, not only for main window
