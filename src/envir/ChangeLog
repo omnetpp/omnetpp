@@ -10,7 +10,7 @@
 	to other list files). Relative or absolute file name paths are also
 	allowed in list files; relative paths are relative from the location
 	of the list file.
-
+FIXME still globbing needs to be added. maybe create a FileNameGlobber util class?
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-01-09  Andras Varga

@@ -44,6 +44,7 @@ class cNEDNetworkBuilder
     virtual void setDisplayString(cModule *submodp, SubmoduleNode *submod);
     virtual void assignSubmoduleParams(cModule *submodp, NEDElement *submod);
     virtual void setupGateVectors(cModule *submodp, NEDElement *submod);
+    virtual void readInputParams(cModule *submodp);
     virtual void addLoopConnection(cModule *modp, ForLoopNode *forloop);
     virtual void doLoopVar(cModule *modp, LoopVarNode *loopvar);
     virtual void addConnection(cModule *modp, ConnectionNode *conn);
@@ -53,6 +54,8 @@ class cNEDNetworkBuilder
     virtual ExpressionNode *getExpr(NEDElement *node, const char *exprname);
 
     virtual double evaluate(cModule *modp, ExpressionNode *expr, cModule *submodp=NULL);
+
+    virtual cPar *resolveParamRef(ParamRefNode *node, cModule *parentmodp, cModule *submodp);
 
     virtual double evaluateNode(NEDElement *node, cModule *parentmodp, cModule *submodp);
     virtual double evalOperator(OperatorNode *node, cModule *parentmodp, cModule *submodp);

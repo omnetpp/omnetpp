@@ -63,6 +63,8 @@ void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
 
     cModule *networkp = modtype->create(modname, NULL);
     assignSubmoduleParams(networkp, networknode);
+    readInputParams(networkp);
+
     networkp->buildInside();
 }
 
@@ -119,7 +121,9 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         cModule *submodp = modtype->create(modname, modp);
         setDisplayString(submodp, submod);
         assignSubmoduleParams(submodp, submod);
+        readInputParams(submodp);
         setupGateVectors(submodp, submod);
+
         submodp->buildInside();
     }
     else
@@ -130,7 +134,9 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
             cModule *submodp = modtype->create(modname, modp, vectorsize, i);
             setDisplayString(submodp, submod);
             assignSubmoduleParams(submodp, submod);
+            readInputParams(submodp);
             setupGateVectors(submodp, submod);
+
             submodp->buildInside();
         }
     }
@@ -192,6 +198,18 @@ void cNEDNetworkBuilder::setupGateVectors(cModule *submodp, NEDElement *submod)
             }
         }
     }
+}
+
+void cNEDNetworkBuilder::readInputParams(cModule *submodp)
+{
+	int n = submodp->params();
+	for (int i=0; i<n; i++)
+	{
+	   if (submodp->par(i).isInput())
+	   {
+	      submodp->par(i).read();
+	   }
+	}
 }
 
 void cNEDNetworkBuilder::addLoopConnection(cModule *modp, ForLoopNode *forloop)
@@ -350,6 +368,42 @@ double cNEDNetworkBuilder::evaluate(cModule *modp, ExpressionNode *expr, cModule
     return evaluateNode(expr->getFirstChild(), modp, submodp);
 }
 
+cPar *cNEDNetworkBuilder::resolveParamRef(ParamRefNode *node, cModule *parentmodp, cModule *submodp)
+{
+    // FIXME submodp may be network module, then parentmodp==NULL?
+    const char *paramname = node->getParamName();
+    cPar *par;
+    if (node->getIsAncestor())
+    {
+        // find ancestor parameter
+        par = &(parentmodp->ancestorPar(paramname)); // this throws exception if not found
+    }
+    else
+    {
+        // find module
+        cModule *modp;
+        if (strnull(node->getModule()))
+        {
+            modp = parentmodp;
+        }
+        else
+        {
+            const char *modname = node->getModule();
+            ExpressionNode *modindexp = getExpr(node, "module-index");
+            int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp,submodp);
+            modp = parentmodp->submodule(modname,modindex);
+            if (!modp)
+            {
+                if (!modindexp)
+                    throw new cException("dynamic module builder: submodule `%s' not found", modname);
+                else
+                    throw new cException("dynamic module builder: submodule `%s[%d]' not found", modname, modindex);
+            }
+        }
+        par = &(modp->par(paramname)); // this throws exception if not found
+    }
+    return par;
+}
 
 //----------------------------------------------------------------------------
 // direct expression evaluation
@@ -536,42 +590,10 @@ double cNEDNetworkBuilder::evalParamref(ParamRefNode *node, cModule *parentmodp,
 {
     // Note: the getIsRef() modifier can be ignored, because this expression
     // is evaluated once (and not stored)
-
-// FIXME parentmodp may be NULL!!!!!!
-
-    if (node->getIsAncestor())
-    {
-        // find and return ancestor parameter
-        double val = parentmodp->ancestorPar(node->getParamName());
-        return val;
-    }
-    else
-    {
-        // find module
-        cModule *modp;
-        if (strnull(node->getModule()))
-        {
-            modp = parentmodp;
-        }
-        else
-        {
-            const char *modname = node->getModule();
-            ExpressionNode *modindexp = getExpr(node, "module-index");
-            int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp, submodp);
-            modp = parentmodp->submodule(modname,modindex);
-            if (!modp)
-            {
-                if (!modindexp)
-                    throw new cException("dynamic module builder: submodule `%s' not found", modname);
-                else
-                    throw new cException("dynamic module builder: submodule `%s[%d]' not found", modname, modindex);
-            }
-        }
-
-        // evaluate and return parameter
-        double val = modp->par(node->getParamName());
-        return val;
-    }
+    cPar *par = resolveParamRef(node,parentmodp,submodp);
+    ASSERT(par);
+    double val = par->doubleValue();
+    return val;
 }
 
 double cNEDNetworkBuilder::evalIdent(IdentNode *node, cModule *, cModule *)
@@ -663,6 +685,21 @@ void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule
     if (cnode && cnode->getType()==NED_CONST_STRING)
     {
         p.setStringValue(cnode->getValue());
+        return;
+    }
+
+    // handle direct parameter assignments
+    ParamRefNode *pnode = expr->getFirstParamRefChild();
+    if (pnode)
+    {
+        cPar *par = resolveParamRef(pnode, parentmodp, submodp);
+        char buf[512]; // FIXME dbg code only (2 lines)
+        par->info(buf);
+        printf("DBG: param assignment: %s = %s = %s\n", p.fullPath(), par->fullName(), buf);
+        if (pnode->getIsRef())
+            p.setRedirection(par);
+        else
+            p = *par;
         return;
     }
 
@@ -914,39 +951,8 @@ void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *x
 
 void cNEDNetworkBuilder::addXElemsParamref(ParamRefNode *node, cPar::ExprElem *xelems, int& pos, cModule *submodp)
 {
-    // FIXME submodp may be network module, then parentmodp==NULL?
-    const char *paramname = node->getParamName();
-    cModule *parentmodp = submodp->parentModule();
-    cPar *par;
-    if (node->getIsAncestor())
-    {
-        // find ancestor parameter
-        par = &(parentmodp->ancestorPar(paramname)); // this throws exception if not found
-    }
-    else
-    {
-        // find module
-        cModule *modp;
-        if (strnull(node->getModule()))
-        {
-            modp = parentmodp;
-        }
-        else
-        {
-            const char *modname = node->getModule();
-            ExpressionNode *modindexp = getExpr(node, "module-index");
-            int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp); // FIXME ",modp" needed?
-            modp = parentmodp->submodule(modname,modindex);
-            if (!modp)
-            {
-                if (!modindexp)
-                    throw new cException("dynamic module builder: submodule `%s' not found", modname);
-                else
-                    throw new cException("dynamic module builder: submodule `%s[%d]' not found", modname, modindex);
-            }
-        }
-        par = &(modp->par(paramname)); // this throws exception if not found
-    }
+    cModule *parentmodp = submodp->parentModule(); // FIXME what if submodp==NULL?????
+    cPar *par = resolveParamRef(node,parentmodp,submodp);
 
     // store either the object itself or a copy
     ASSERT(par);
