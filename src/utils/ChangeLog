@@ -1,3 +1,11 @@
+2004-07-10  Andras Varga
+
+	* opp_test: added further checks: %contains-filt, %not-contains-filt, 
+        %contains-regex-filt, %not-contains-regex-filt. These checks
+        regard only the lines beginning with "::" in the output (all other
+        lines will be discarded before match). This makes it easier to
+        write test cases if the test code produces lots of output.
+
 2004-06-07  ------ omnetpp-3.0a5 released ------
 
 2004-05-15  ------ omnetpp-3.0a4 released ------

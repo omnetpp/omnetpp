@@ -62,6 +62,11 @@ All files will be created in the working directory.
     'not-contains'       => 'vbf',
     'contains-regex'     => 'vbf',
     'not-contains-regex' => 'vbf',
+    'contains-filt'      => 'vbf',
+    'not-contains-filt'  => 'vbf',
+    'contains-regex-filt' => 'vbf',
+    'not-contains-regex-filt' => 'vbf',
+
     'exitcode'           => '1v',
     'ignore-exitcode'    => '1v'
 );
@@ -446,8 +451,7 @@ sub testcase_run()
     # delete temp files before running the test case
     foreach $key (keys(%values))
     {
-        if ($key =~ /^contains\(/ || $key =~ /^not-contains\(/ ||
-            $key =~ /^contains-regex\(/ || $key =~ /^not-contains-regex\(/)
+        if ($key =~ /^contains/)  # any form of "contains-..."
         {
             # read file
             if ($values{$key} eq 'stdout') {
@@ -508,8 +512,7 @@ sub testcase_run()
     # check output files
     foreach $key (keys(%values))
     {
-        if ($key =~ /^contains\(/ || $key =~ /^not-contains\(/ ||
-            $key =~ /^contains-regex\(/ || $key =~ /^not-contains-regex\(/)
+        if ($key =~ /^contains/)  # any form of "contains-..."
         {
             # read file
             if ($values{$key} eq 'stdout') {
@@ -529,10 +532,15 @@ sub testcase_run()
                 return;
             }
             $txt = '';
+            $dofilter = ($key =~ /-filt\(/);
             while (<IN>)
             {
-                s/[\r\n]*$//;
-                $txt.= $_."\n";
+                # when filt is on, match only lines beginning with "::"
+                if (!$dofilter || /^::/)
+                {
+                    s/ *[\r\n]*$//;
+                    $txt.= $_."\n";
+                }
             }
             close IN;
 
@@ -541,9 +549,9 @@ sub testcase_run()
             $pattern =~ s/^\s*(.*?)\s*$/$1/s; # trim pattern
 
             # check contains or not-contains
-            if ($key =~ /^contains-regex\(/) {
+            if ($key =~ /^contains-regex(-filt)?\(/) {
                 if (!($txt =~ /$pattern/s)) {
-                   fail($testfilename, "$values{$key} fails %contains-regex rule");
+                   fail($testfilename, "$values{$key} fails \%$key rule");
                    if (length($txt)<=8192) {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
@@ -552,9 +560,9 @@ sub testcase_run()
                    return;
                 }
             }
-            if ($key =~ /^not-contains-regex\(/) {
+            if ($key =~ /^not-contains-regex(-filt)?\(/) {
                 if ($txt =~ /$pattern/s) {
-                   fail($testfilename, "$values{$key} fails %not-contains-regex rule");
+                   fail($testfilename, "$values{$key} fails \%$key rule");
                    if (length($txt)<=8192) {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
@@ -563,9 +571,9 @@ sub testcase_run()
                    return;
                 }
             }
-            if ($key =~ /^contains\(/) {
+            if ($key =~ /^contains(-filt)?\(/) {
                 if (!($txt =~ /\Q$pattern\E/s)) {
-                   fail($testfilename, "$values{$key} fails %contains rule");
+                   fail($testfilename, "$values{$key} fails \%$key rule");
                    if (length($txt)<=8192) {
                       print "expected substring:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
@@ -574,9 +582,9 @@ sub testcase_run()
                    return;
                 }
             }
-            if ($key =~ /^not-contains\(/) {
+            if ($key =~ /^not-contains(-filt)?\(/) {
                 if ($txt =~ /\Q$pattern\E/s) {
-                   fail($testfilename, "$values{$key} fails %not-contains rule");
+                   fail($testfilename, "$values{$key} fails \%$key rule");
                    if (length($txt)<=8192) {
                       print "expected substring:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
