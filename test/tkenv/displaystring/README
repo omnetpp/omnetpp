@@ -3,13 +3,10 @@ Model for testing of display string features.
 
 Does not (yet) test a bunch of features such as:
 - background border and fill
+- rectangle border and fill
 - queue length display (q=), transmission range display (r=)
-- labels (t=)
-- status icon (i2=)
-- icon size (is=, is2=)
-- categorized icons
 - icon coloring
 - bubble()
-- tooltips (tt)
+
 
 

@@ -3,13 +3,29 @@ import "icons";
 
 module TextAndTooltip
     submodules:
-        txt1: Dummy;
+        icon1: Dummy;
             display: "p=100,100;i=block/sink;t=some lines\nof text\n(default pos);tt=This is a\ntooltip for txt1.";
-        txt2: Dummy;
+        icon2: Dummy;
             display: "p=200,100;i=block/sink;t=some lines\nof text\n(left),l;tt=This is a\ntooltip for txt2.";
-        txt3: Dummy;
+        icon3: Dummy;
             display: "p=300,100;i=block/sink;t=some lines\nof text\n(top),t;tt=This is a\ntooltip for txt4.";
-        txt4: Dummy;
+        icon4: Dummy;
             display: "p=400,100;i=block/sink;t=some lines\nof text\n(right),r;tt=This is a\ntooltip for txt3.";
+        xicon1: Dummy;
+            display: "p=100,200;i=block/sink;i2=status/busy;t=some lines\nof text\n(default pos);tt=This is a\ntooltip for txt1.";
+        xicon2: Dummy;
+            display: "p=200,200;i=block/sink;i2=status/busy;t=some lines\nof text\n(left),l;tt=This is a\ntooltip for txt2.";
+        xicon3: Dummy;
+            display: "p=300,200;i=block/sink;i2=status/busy;t=some lines\nof text\n(top),t;tt=This is a\ntooltip for txt4.";
+        xicon4: Dummy;
+            display: "p=400,200;i=block/sink;i2=status/busy;t=some lines\nof text\n(right),r;tt=This is a\ntooltip for txt3.";
+        range1: Dummy;
+            display: "p=100,300;i=block/sink;i2=status/busy;r=80;t=some lines\nof text\n(default pos);tt=This is a\ntooltip for txt1.";
+        range2: Dummy;
+            display: "p=200,300;i=block/sink;i2=status/busy;r=80;t=some lines\nof text\n(left),l;tt=This is a\ntooltip for txt2.";
+        range3: Dummy;
+            display: "p=300,300;i=block/sink;i2=status/busy;r=80;t=some lines\nof text\n(top),t;tt=This is a\ntooltip for txt4.";
+        range4: Dummy;
+            display: "p=400,300;i=block/sink;i2=status/busy;r=80;t=some lines\nof text\n(right),r;tt=This is a\ntooltip for txt3.";
 endmodule
 
