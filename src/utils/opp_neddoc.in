@@ -1,5 +1,6 @@
 #! /bin/sh
 OUTDIR=html
+FIGURES=no
 NEDDOC_XSL=`dirname $0`/neddoc.xsl
 NEDDOC_PL=`dirname $0`/neddocproc.pl
 TMPFILE=/tmp/opp_neddoc.tmp.$$
@@ -15,12 +16,30 @@ if [ ! -d $OUTDIR ]; then
   mkdir $OUTDIR || exit -1
 fi
 rm -f $OUTDIR/*
+
 echo transforming to xml...
 nedtool -x -e -t -y -m -o $TMPFILE $* || exit 1
+
 echo applying xslt stylesheet...
-xsltproc  --stringparam outputdir $OUTDIR $NEDDOC_XSL $TMPFILE || exit 1
+xsltproc  --stringparam outputdir $OUTDIR --stringparam figures $FIGURES $NEDDOC_XSL $TMPFILE || exit 1
+
 echo formatting comments...
 perl $NEDDOC_PL $OUTDIR/*.html || exit 1
+
+if [$FIGURES = 'yes']; then
+    echo exporting screenshots using GNED...
+    # FIXME it always exports to html/!!!
+    gned -- -c $* || exit 1
+    for i in $OUTDIR/*.eps; do
+       gif=`echo $i | sed 's/eps$/gif/'`
+       convert -delay 1000 $i $gif
+    done
+else
+    echo exporting screenshots using GNED... skipped
+fi
+
 echo documentation created in $OUTDIR/ -- start page is index.html
 cleanup
+
+
 
