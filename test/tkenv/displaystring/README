@@ -1,0 +1,12 @@
+
+Model for testing of display string features.
+
+Does not (yet) test a bunch of features such as:
+- background border and fill
+- automatic placement
+- layout of module vectors (row, matrix, ring, etc)
+- queue length display, transmission range display
+- more?
+
+
+
