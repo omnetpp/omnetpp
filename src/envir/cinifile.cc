@@ -529,6 +529,14 @@ const char *cIniFile::fileName() const
 
 std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section, const char *keypart1, const char *keypart2)
 {
+    // For getting RNG mapping, this is called with:
+    //    keypart1: concrete module fullPath, e.g. "net.rngCalc[0]"
+    //    keypart2: ".rng-"
+    // and this should match entries like:
+    //    *.rngCalc[0].rng-0 = 1
+    //    *.rngCalc[*].rng-0 = 2
+    //    *.rngCalc[*].rng-1 = 3
+
     int i;
 
     // search for section
