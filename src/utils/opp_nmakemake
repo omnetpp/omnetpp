@@ -36,6 +36,7 @@ $xobjs = "";
 $doxyconf = "doxy.cfg";
 $ccext = "";  # we'll try to autodetect it
 $cfgfile="";
+$basedir="";
 $linkwithobjects="n";
 $ignorened="n";
 $force="n";
@@ -62,16 +63,22 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
               [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
-    -e, --ext             C++ source file extension, usually "cc" or "cpp".
+    -e ext, --ext ext     C++ source file extension, usually "cc" or "cpp".
                           By default, this is determined by looking at
                           existing files in the directory.
     -N, --ignore-ned      Leave out .ned files from the makefile. Useful when
                           you want to load all .ned files dynamically (see
                           preload-ned-files omnetpp.ini option).
-    -o, --outputfile      Name of simulation executable/library
+    -o filename, --outputfile filename
+                          Name of simulation executable/library
     -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
                           cies in the makefrag.vc file.
+    -b directory, --basedir directory
+                          Project base (root) directory; all absolute paths
+                          (-I, -L, object file names, etc.) which point into
+                          this directory will be converted to relative, to
+                          ease compiling the project in a different directory.
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several
                           directories. With this option, -u, -p and -l have
@@ -84,13 +91,16 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
     -x, --notstamp        Do not require a .tstamp file to be present in the
                           link directories and (if -w option is present)
                           -I directories after this option.
-    -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv
+    -u name, --userinterface name
+                          Use Cmdenv or Tkenv. Defaults to Tkenv
     -Idir                 Additional NED and C++ include directory
     -Ldir                 Add a directory to the library path
     -llibrary             Additional library to link against
                           (e.g. -lmylibrary.lib)
-    -c, --configfile      Included config file (default:"../../configuser.vc")
-    -i, --includefragment Append file to near end of Makefile. The file
+    -c filename, --configfile filename
+                          Included config file (default:"../../configuser.vc")
+    -i filename, --includefragment filename
+                          Append file to near end of Makefile. The file
                           makefrag.vc (if exists) is appended automatically
                           if no -i options are given. This option is useful
                           if a source file (.ned, .msg or .cc) is to be
@@ -129,9 +139,14 @@ could not figure out.
     {
         $recursive = "y";
     }
+    elsif ($arg eq '-b' || $arg eq '--basedir')
+    {
+        $basedir = shift @ARGV;
+    }
     elsif ($arg eq '-c' || $arg eq '--configfile')
     {
         $cfgfile = shift @ARGV;
+        $cfgfile = abs2rel($cfgfile,$basedir);
     }
     elsif ($arg eq '-n' || $arg eq '--nolink')
     {
@@ -161,21 +176,27 @@ could not figure out.
     }
     elsif ($arg eq '-i' || $arg eq '--includefragment')
     {
-        push(@fragments, shift @ARGV);
+        $frag = shift @ARGV;
+        $frag = abs2rel($frag,$basedir);
+        push(@fragments, $frag);
     }
     elsif ($arg =~ /^-I/)
     {
-        $includes .= " ".$arg;
+        $dir = $arg;
+        $dir =~ s/^-I//;
+        $dir = abs2rel($dir, $basedir);
+        $includes .= " -I".$dir;
         if ($tstamp eq "y")
         {
-            $arg =~ s/^-I//;
-            push(@tstampdirs, $arg);
+            push(@tstampdirs, $dir);
         }
     }
     elsif ($arg =~ /^-L/)
     {
-        $arg =~ s/^-L//;
-        $libpath .= " /libpath:\"$arg\"";
+        $dir = $arg;
+        $dir =~ s/^-L//;
+        $dir = abs2rel($dir, $basedir);
+        $libpath .= " /libpath:\"$dir\"";
     }
     elsif ($arg =~ /^-l/)
     {
@@ -187,6 +208,7 @@ could not figure out.
         $arg =~ s|/|\\|g;
         if (-d $arg)
         {
+            $arg = abs2rel($arg, $basedir);
             push(@linkdirs, $arg);
             if ($tstamp eq "y")
             {
@@ -195,6 +217,7 @@ could not figure out.
         }
         elsif (-f $arg)
         {
+            $arg = abs2rel($arg, $basedir);
             push(@xobjs, $arg);
         }
         else
@@ -645,5 +668,62 @@ close OUT;
 print "$makefile created.\n";
 print "Please type `nmake -f $makefile depend' NOW to add dependencies!\n";
 
+#----
+
+#
+# Converts absolute path $abs to relative path (relative to the current
+# directory $cur), provided that both $abs and $cur are under a
+# "project base directory" $base. Otherwise it returns the original path.
+# All "\" are converted to "/".
+#
+sub abs2rel($;$;$;)
+{
+    my($abs, $base, $cur) = @_;
+
+    if ($base eq '') {
+        return $abs;
+    }
+    if ($cur eq '') {
+        $cur = cwd;
+    }
+
+    # some normalization
+    $abs  =~ s|\\|/|g;
+    $cur  =~ s|\\|/|g;
+    $base =~ s|\\|/|g;
+
+    $abs  =~ s|/./|/|g;
+    $cur  =~ s|/./|/|g;
+    $base =~ s|/./|/|g;
+
+    $cur  =~ s|/*$|/|;
+    $base =~ s|/*$|/|;
+
+    if (!($abs =~ /^$base/i && $cur =~ /^$base/i)) {
+        return $abs;
+    }
+
+    while (1)
+    {
+       # keep cutting off common prefixes until we can
+       $abs =~ m|^(.*?/)|;
+       my $prefix = $1;
+       last if ($prefix eq '');
+       if ($cur =~ /^$prefix/i) {
+           $abs =~ s/^$prefix//i;
+           $cur =~ s/^$prefix//i;
+       } else {
+           last;
+       }
+    }
+
+
+    # assemble relative path: change every directory name in $cur to "..",
+    # then add $abs to it.
+    $cur =~ s|[^/]+|..|g;
+    my $rel = $cur.$abs;
+
+    return $rel;
+}
 
 

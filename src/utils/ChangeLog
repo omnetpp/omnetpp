@@ -1,50 +1,59 @@
+2004-09-14  Andras Varga
+
+        * opp_nmakemake: added -b <basedir> option. <basedir> is supposed
+        to be the toplevel directory of large multi-directory simulation model.
+        The -b option will cause all path names (passed with -I, -L, etc.) 
+        to be converted from absolute to relative. This means that makefiles
+        will not need to be re-generated or edited then the project is
+        compiled in a different directory.
+
 2004-08-12  Andras Varga
 
-	* neddocproc.pl: backslashing can be used to prevent unintentional 
-	hyperlinking of a word which is also a component (e.g. module) name.
-	That is, \IP is the same as <nohtml>IP</nohtml>: "IP" won't get hyper-
-	linked in the HTML output, even if there's a module type called IP.
-	Single backslashes will be removed from the HTML output -- double 
-	them if you want them to appear.
+        * neddocproc.pl: backslashing can be used to prevent unintentional 
+        hyperlinking of a word which is also a component (e.g. module) name.
+        That is, \IP is the same as <nohtml>IP</nohtml>: "IP" won't get hyper-
+        linked in the HTML output, even if there's a module type called IP.
+        Single backslashes will be removed from the HTML output -- double 
+        them if you want them to appear.
 
 2004-08-09  Andras Varga
 
-	* opp_neddoc.in: on Windows, listing directories which have no .ned 
-	or *.msg on the command line caused opp_neddoc stop with "file not 
-	found" error
+        * opp_neddoc.in: on Windows, listing directories which have no .ned 
+        or *.msg on the command line caused opp_neddoc stop with "file not 
+        found" error
 
 2004-07-22  ------ omnetpp-3.0a6 released ------
 
 2004-07-20  Andras Varga
 
-	* neddoc.xsl: "NED file" pages in generated HTML now contain full
-	NED file listing
+        * neddoc.xsl: "NED file" pages in generated HTML now contain full
+        NED file listing
 
-	* opp_neddoc.in, neddoc.xsl: added -z (--no-source) option to turn off
-	adding the source code on component pages (but NED file pages will
-	still contain the source)
+        * opp_neddoc.in, neddoc.xsl: added -z (--no-source) option to turn off
+        adding the source code on component pages (but NED file pages will
+        still contain the source)
 
 2004-07-19  Andras Varga
 
-	* opp_nmakemake,opp_makemake: added -x (--notstamp) option: the 
-	makefile won't require a .tstamp file to be present in directories
-	that appear after the -x option on the command line.
+        * opp_nmakemake,opp_makemake: added -x (--notstamp) option: the 
+        makefile won't require a .tstamp file to be present in directories
+        that appear after the -x option on the command line.
 
-	* opp_neddoc: added support for tags @author, @date, @todo, @bug, 
-	@see, @since, @warning, @version
+        * opp_neddoc: added support for tags @author, @date, @todo, @bug, 
+        @see, @since, @warning, @version
 
 2004-07-16  Andras Varga
 
-	* opp_test: added preload-ned-files=*.ned to default omnetpp.ini
+        * opp_test: added preload-ned-files=*.ned to default omnetpp.ini
 
 2004-07-12  Andras Varga
 
-	* opp_makemake.in,opp_nmakemake: fixed bug which caused .tstamp to be
-	always updated, and thus depended directories to be always re-built.
+        * opp_makemake.in,opp_nmakemake: fixed bug which caused .tstamp to be
+        always updated, and thus depended directories to be always re-built.
 
 2004-07-10  Andras Varga
 
-	* opp_test: added further checks: %contains-filt, %not-contains-filt, 
+        * opp_test: added further checks: %contains-filt, %not-contains-filt, 
         %contains-regex-filt, %not-contains-regex-filt. These checks
         regard only the lines beginning with "::" in the output (all other
         lines will be discarded before match). This makes it easier to
@@ -56,215 +65,215 @@
 
 2004-05-15  Andras Varga
 
-	* opp_neddoc.in: prefer ImageMagick's convert to Ghostscript when
-	converting EPS to JPG. Many Ghostscript versions do not crop EPS files:
-	they ignore the -dEPSCrop flag and the %%BoundingBox line in the EPS
-	file. (One GS that I tested and works well is AFPL Ghostscript 8.11.)
-	ImageMagick also uses Ghostscript to do the conversion but works
-	around the problem: adds the line "120 45 translate" to the front of 
-	the EPS file (where the numbers	are -1 times the top-left corner of 
-	the %%BoundingBox) before invoking GS, then after GS it crops the
-	resulting raster image to the correct size.
+        * opp_neddoc.in: prefer ImageMagick's convert to Ghostscript when
+        converting EPS to JPG. Many Ghostscript versions do not crop EPS files:
+        they ignore the -dEPSCrop flag and the %%BoundingBox line in the EPS
+        file. (One GS that I tested and works well is AFPL Ghostscript 8.11.)
+        ImageMagick also uses Ghostscript to do the conversion but works
+        around the problem: adds the line "120 45 translate" to the front of 
+        the EPS file (where the numbers are -1 times the top-left corner of 
+        the %%BoundingBox) before invoking GS, then after GS it crops the
+        resulting raster image to the correct size.
 
 2004-04-14  Andras Varga
 
-	* neddoc.xsl: fixed bug which caused some inheritance arrows to be 
-	drawn in wrong direction
+        * neddoc.xsl: fixed bug which caused some inheritance arrows to be 
+        drawn in wrong direction
 
 2004-03-22  ------ omnetpp-3.0a3 released ------
 
 2004-03-05  Andras Varga
 
-	* opp_makemake: added --genconfig option which generates config file
-	which can be included by makefiles (see opp_makemake -c option).
+        * opp_makemake: added --genconfig option which generates config file
+        which can be included by makefiles (see opp_makemake -c option).
 
-	* opp_makemake, opp_nmakemake: old targets "re-makemake" and 
-	"re-makemake-m" renamed to "makefiles" and "makefile-ins". 
-	Old target names also kept for compatibility but should not be used
-	any more.
+        * opp_makemake, opp_nmakemake: old targets "re-makemake" and 
+        "re-makemake-m" renamed to "makefiles" and "makefile-ins". 
+        Old target names also kept for compatibility but should not be used
+        any more.
 
-	* opp_nmakemake: some quirks fixed; used "exit /b 1" to return error
-	code (not good without /b!)
+        * opp_nmakemake: some quirks fixed; used "exit /b 1" to return error
+        code (not good without /b!)
 
 2004-03-04  Andras Varga
 
-	* opp_makemake, opp_nmakemake: improved dealing with .msg files.
-	To deal with dependencies within a single directory, an
-	   $(OBJS) : $(GENERATEDHEADERS)
-	dependency was added which forces opp_msgc run first. For dealing
-	with multi-directory models, there's a "generateheaders" target
-	which the toplevel makefile can depend on, forcing to generate
-	all _m.h files before actual compilation begins. The toplevel
-	makefile should contain the following dependency then:
-	   subdirs $(OBJS) : generateheaders
-	(It is not good to add this to every makefile, because it'll
-	run too many times, cascading...)
+        * opp_makemake, opp_nmakemake: improved dealing with .msg files.
+        To deal with dependencies within a single directory, an
+           $(OBJS) : $(GENERATEDHEADERS)
+        dependency was added which forces opp_msgc run first. For dealing
+        with multi-directory models, there's a "generateheaders" target
+        which the toplevel makefile can depend on, forcing to generate
+        all _m.h files before actual compilation begins. The toplevel
+        makefile should contain the following dependency then:
+           subdirs $(OBJS) : generateheaders
+        (It is not good to add this to every makefile, because it'll
+        run too many times, cascading...)
 
 2004-03-03  ------ omnetpp-3.0a2 released ------
 
 2004-03-03  Andras Varga
 
-	* opp_makemake, opp_nmakemake: makefiles now generate a .tstamp
-	file on successful build. Useful with multi-directory models: 
-	with -w option, the generated makefile will depend on the timestamps
-	of included directories, so e.g. a simulation executable gets re-built 
-	automatically if its components in other directories have been changed
-	*and* built. 
+        * opp_makemake, opp_nmakemake: makefiles now generate a .tstamp
+        file on successful build. Useful with multi-directory models: 
+        with -w option, the generated makefile will depend on the timestamps
+        of included directories, so e.g. a simulation executable gets re-built 
+        automatically if its components in other directories have been changed
+        *and* built. 
 
-	ATTENTION: this doesn't guarantee that other directories are 
-	up-to date!!! Only that *when* they are re-built, executables that
-	use them will be re-built too. You still have to do a top-level make
-	if you want to ensure that included directories are up-to-date too.
+        ATTENTION: this doesn't guarantee that other directories are 
+        up-to date!!! Only that *when* they are re-built, executables that
+        use them will be re-built too. You still have to do a top-level make
+        if you want to ensure that included directories are up-to-date too.
 
-       	* opp_makemake, opp_nmakemake: re-makemake target made recursive
-       	[suggested by Daniel Willkomm]
+        * opp_makemake, opp_nmakemake: re-makemake target made recursive
+        [suggested by Daniel Willkomm]
 
 2004-02-22  Andras Varga
 
-	* opp_test: added -a, -N options. -N can be used to test dynamic
-	NED loading
+        * opp_test: added -a, -N options. -N can be used to test dynamic
+        NED loading
 
 2004-02-18  Andras Varga
 
-	* opp_makemake.in: -N, --ignore-ned added (see below)
+        * opp_makemake.in: -N, --ignore-ned added (see below)
 
 2004-02-09  Andras Varga
 
-    	* opp_nmakemake: added -N, --ignore-ned option which leaves out .ned 
-    	files from the makefile. Useful when you want to load all .ned files 
-    	dynamically instead of linking them into the simulation program
-    	(see preload-ned-files omnetpp.ini option).
+        * opp_nmakemake: added -N, --ignore-ned option which leaves out .ned 
+        files from the makefile. Useful when you want to load all .ned files 
+        dynamically instead of linking them into the simulation program
+        (see preload-ned-files omnetpp.ini option).
 
 2004-02-06  Andras Varga
 
-	* opp_makemake.in,opp_nmakemake: 'depend' target made recursive
+        * opp_makemake.in,opp_nmakemake: 'depend' target made recursive
 
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-02-03  Andras Varga
 
-	* neddoc.xsl: module etc names in generated .dot files need quotes 
-	otherwise they may clash with dot's reserved keywords ("Node")
+        * neddoc.xsl: module etc names in generated .dot files need quotes 
+        otherwise they may clash with dot's reserved keywords ("Node")
 
 2003-12-06  Andras Varga
 
-	* opp_nmakemake now will make some effort to find configuser.vc 
-	by itself when no -c option is given
+        * opp_nmakemake now will make some effort to find configuser.vc 
+        by itself when no -c option is given
 
 2003-12-05  Andras Varga
 
-	* opp_neddoc and parts polished and brought to work on Windows.
-	See tests at test/opp_neddoc.
+        * opp_neddoc and parts polished and brought to work on Windows.
+        See tests at test/opp_neddoc.
 
 2003-10-02  Andras Varga
 
-	* opp_makemake.in, opp_nmakemake: a thorough rewrite of how 
-	multi-directory models are handled. This version should be usable, 
-	it's been proven on IPSuite and MPLS (I generated _all_ of its 
-	Makefiles including the toplevel one with opp_(n)makemake). 
-	The changes in nutshell:
-	- opp_(n)makemake no longer invokes `make' in other directories
-	  while generating the makefile. (It wasn't a very good idea in
-	  the first place)
-	- it is now possible to generate a Makefile that imports the 
-	  settings from another file (via Makefile inclusion). Thus
-	  you don't have to regenerate all the Makefiles (or edit the
-	  settings in them) if you move to a different machine or change
-	  the compile flags.
-	- "recursive make" (descenting into subdirs) is now independent
-	  from which directories you want to link with object files.
-	  Recursive make is enabled with the -r option, and it'll simply
-	  cause the Makefile to go into all subdirs and run make in them.
-	  That's all. If you need to ensure a specific order or you want
-	  to leave out certain subdirs, you can put additional dependencies
-	  and rules into makefrag (makefrag.vc).
-	- any file you list on the opp_(n)makemake command line is still 
-	  something to link with. No change here. 
-	- any directory on the opp_(n)makemake command line is a something
-	  that (will) contain object files you want to link with. 
-	  opp_(n)makemake won't specifically list the object files in the 
-	  Makefile, it'll just say *.o (or *.obj). Also, it won't add 
-	  dependencies to that directory -- you have to add that manually 
-	  (see "recursive make" above).
-	- one shortcut I found useful: the -w option causes linking with all
-	  object files found in the -I (include) directories. That saves you
-	  from listing directories with -I (because you want to import NED
-	  files from there and #include header files) and again as argument
-	  (because you also want to link with the object files from there) --
-	  you just add -w, and the -I's.
-	Note that primarily, linking with object files is considered and not
-	building static or shared libraries. Putting modules into static
-	libraries doesn't work very well on Unix (the linker tends to optimize
-	too eagerly and leave out your modules from the executable), but 
-	shared libraries are fine. On Windows, static libs have the same
-	problem as on Unix; DLLs are more difficult to build.
-	   Any customization should go to the makefrag(.vc) file. The above 
-	machinery should probably be satisfactory for except very large and 
-	very modular simulation models. If you find that you've outgrown
-	the opp_makemake features, you should probably consider moving to
-	CMake or Automake which are far more powerful.
+        * opp_makemake.in, opp_nmakemake: a thorough rewrite of how 
+        multi-directory models are handled. This version should be usable, 
+        it's been proven on IPSuite and MPLS (I generated _all_ of its 
+        Makefiles including the toplevel one with opp_(n)makemake). 
+        The changes in nutshell:
+        - opp_(n)makemake no longer invokes `make' in other directories
+          while generating the makefile. (It wasn't a very good idea in
+          the first place)
+        - it is now possible to generate a Makefile that imports the 
+          settings from another file (via Makefile inclusion). Thus
+          you don't have to regenerate all the Makefiles (or edit the
+          settings in them) if you move to a different machine or change
+          the compile flags.
+        - "recursive make" (descenting into subdirs) is now independent
+          from which directories you want to link with object files.
+          Recursive make is enabled with the -r option, and it'll simply
+          cause the Makefile to go into all subdirs and run make in them.
+          That's all. If you need to ensure a specific order or you want
+          to leave out certain subdirs, you can put additional dependencies
+          and rules into makefrag (makefrag.vc).
+        - any file you list on the opp_(n)makemake command line is still 
+          something to link with. No change here. 
+        - any directory on the opp_(n)makemake command line is a something
+          that (will) contain object files you want to link with. 
+          opp_(n)makemake won't specifically list the object files in the 
+          Makefile, it'll just say *.o (or *.obj). Also, it won't add 
+          dependencies to that directory -- you have to add that manually 
+          (see "recursive make" above).
+        - one shortcut I found useful: the -w option causes linking with all
+          object files found in the -I (include) directories. That saves you
+          from listing directories with -I (because you want to import NED
+          files from there and #include header files) and again as argument
+          (because you also want to link with the object files from there) --
+          you just add -w, and the -I's.
+        Note that primarily, linking with object files is considered and not
+        building static or shared libraries. Putting modules into static
+        libraries doesn't work very well on Unix (the linker tends to optimize
+        too eagerly and leave out your modules from the executable), but 
+        shared libraries are fine. On Windows, static libs have the same
+        problem as on Unix; DLLs are more difficult to build.
+           Any customization should go to the makefrag(.vc) file. The above 
+        machinery should probably be satisfactory for except very large and 
+        very modular simulation models. If you find that you've outgrown
+        the opp_makemake features, you should probably consider moving to
+        CMake or Automake which are far more powerful.
 
 2003-08-20  Andras Varga
 
-	* opp_makemake.in, opp_nmakemake: added missing dependency of _m.h 
-	files on .msg files.
+        * opp_makemake.in, opp_nmakemake: added missing dependency of _m.h 
+        files on .msg files.
 
 2003-07-28  Andras Varga
 
-	* opp_neddoc/opp_neddocall: enhanced documentation generation, output 
-	is now multi-frame html. Generated files go to the html/ subdirectory.
+        * opp_neddoc/opp_neddocall: enhanced documentation generation, output 
+        is now multi-frame html. Generated files go to the html/ subdirectory.
 
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-05-24  Andras Varga
 
-	* opp_nmakemake: changed handling of -e option -- now, if no -e	option
-	is given, opp_nmakemake tries to detect the C++ file extension 
-	from files already in the directory.
+        * opp_nmakemake: changed handling of -e option -- now, if no -e option
+        is given, opp_nmakemake tries to detect the C++ file extension 
+        from files already in the directory.
 
 2003-03-15  ------ omnetpp-2.3b2 released ------
 
 2003-03-15  Andras Varga
 
-	* opp_nmakemake: fixed -l and -L options; clarified help text
+        * opp_nmakemake: fixed -l and -L options; clarified help text
 
 2003-03-13  Andras Varga
 
-	* opp_test: changed #include "omnetpp.h" to <omnetpp.h> in generated
-	code
+        * opp_test: changed #include "omnetpp.h" to <omnetpp.h> in generated
+        code
 
 2003-03-11  Andras Varga
 
-	* opp_test: couldn't run test program on Unix if "." was not 
-	in the PATH
+        * opp_test: couldn't run test program on Unix if "." was not 
+        in the PATH
 
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
 2003-02-08  Andras Varga 
-	
-	* opp_test: enhancement: %contains and %not-contains now do 
-	substring match. Regexp match can be done with %contains-regex 
-	and %not-contains-regex.
+        
+        * opp_test: enhancement: %contains and %not-contains now do 
+        substring match. Regexp match can be done with %contains-regex 
+        and %not-contains-regex.
 
 2003-01-30  Andras Varga 
-	
-	* opp_makemake.in: now runs make depend after makefile creation
+        
+        * opp_makemake.in: now runs make depend after makefile creation
 
 2002-12-18  Andras Varga 
 
-	* opp_stacktool.cmd added: it displays maximum reserved stack size
-	for a program.
+        * opp_stacktool.cmd added: it displays maximum reserved stack size
+        for a program.
 
-	* seedtool.cc: incorporated fix from N. Reijers. If too many seeds, 
-	too far apart are requested, there were zeroes in the generated
-	sequence. (See src for more info.)
+        * seedtool.cc: incorporated fix from N. Reijers. If too many seeds, 
+        too far apart are requested, there were zeroes in the generated
+        sequence. (See src for more info.)
 
 2002-12-08  Andras Varga
 
-	* opp_makemake, opp_nmakemake: handling of .ned files that use the 
-	'experimental message subclassing' feature has changed. These files 
-	should have .msg suffix, and they will be compiled by opp_msgc into 
-	_m.h and _m.cc files. The '//--subclassing--' line is no longer needed.
+        * opp_makemake, opp_nmakemake: handling of .ned files that use the 
+        'experimental message subclassing' feature has changed. These files 
+        should have .msg suffix, and they will be compiled by opp_msgc into 
+        _m.h and _m.cc files. The '//--subclassing--' line is no longer needed.
 
 2002-12-06  Andras Varga
 
@@ -273,192 +282,192 @@
 
         * opp_makemake_vc.pl renamed to opp_nmakemake
 
-	* use .cmd files with NT command line extensions (%~ notation)
-	to run opp_test, opp_makedep, opp_nmakemake and splitvec from Windows 
-	command prompt
+        * use .cmd files with NT command line extensions (%~ notation)
+        to run opp_test, opp_makedep, opp_nmakemake and splitvec from Windows 
+        command prompt
 
-	* removed 'require Cwd' from perl scripts: we don't want to use any
-	Perl modules, to avoid having to bundle a full Perl distribution into
-	the Windows installer
+        * removed 'require Cwd' from perl scripts: we don't want to use any
+        Perl modules, to avoid having to bundle a full Perl distribution into
+        the Windows installer
 
 2002-11-14  Andras Varga
 
-	* opp_test: changes for Windows
+        * opp_test: changes for Windows
 
-	* opp_makemake_vc.pl: added makefile creator for MSVC. 100% Perl,
-	no other Unix tool needed. The created Makefile.vc includes 
-	configuser.vc for all compiler, linker, etc settings.
+        * opp_makemake_vc.pl: added makefile creator for MSVC. 100% Perl,
+        no other Unix tool needed. The created Makefile.vc includes 
+        configuser.vc for all compiler, linker, etc settings.
 
 2002-10-30  Andras Varga
 
-	* tcl2c.c: commented out old code for Borland C++, it was in the way
-	when compiling with MinGW. BC is not supported anyway.
+        * tcl2c.c: commented out old code for Borland C++, it was in the way
+        when compiling with MinGW. BC is not supported anyway.
 
 2002-10-19  Andras Varga
 
-	* opp_test: added %global option; it can be used with %activity 
-	and its body will be placed into the C++ source at global scope,
-	so it's a good place for helper functions, etc.
+        * opp_test: added %global option; it can be used with %activity 
+        and its body will be placed into the C++ source at global scope,
+        so it's a good place for helper functions, etc.
 
 2002-06-12  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	* opp_makemake.in (htmldocs): Target htmldoc renamed to
-	htmldocs. Now, creates directory htmldoc instead of html
-	(clean): remove automatically generated documentation
-	(htmldocs): use | instead of / as sed separator where file pathes
-	can occur
+        * opp_makemake.in (htmldocs): Target htmldoc renamed to
+        htmldocs. Now, creates directory htmldoc instead of html
+        (clean): remove automatically generated documentation
+        (htmldocs): use | instead of / as sed separator where file pathes
+        can occur
 
 2002-06-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	* opp_makemake.in (doxyconf): new variable; names the doxygen
-	configuration file
-	(nedfiles): new variable, holds all ned files including those in
-	sub-directories
-	(neddoc.html): new Makefile target for NED documentation
-	generation. Creates neddoc.html
-	(htmldoc): new Makefile target for C++ code documentation
-	generation. Docu is placed into ./html sub-directory
-	(doc): new Makefile target that calls target neddoc.html and
-	htmldoc
-	(): various code for NED file collection; exludes NED files that
-	contain experimental subclassing ("//--subclassing--")
+        * opp_makemake.in (doxyconf): new variable; names the doxygen
+        configuration file
+        (nedfiles): new variable, holds all ned files including those in
+        sub-directories
+        (neddoc.html): new Makefile target for NED documentation
+        generation. Creates neddoc.html
+        (htmldoc): new Makefile target for C++ code documentation
+        generation. Docu is placed into ./html sub-directory
+        (doc): new Makefile target that calls target neddoc.html and
+        htmldoc
+        (): various code for NED file collection; exludes NED files that
+        contain experimental subclassing ("//--subclassing--")
 
-	* opp_neddoc.in: use OMNETPP_UTILS_DIR as path to
-	neddoc.xsl. Added signal traps and a cleanup() function
+        * opp_neddoc.in: use OMNETPP_UTILS_DIR as path to
+        neddoc.xsl. Added signal traps and a cleanup() function
 
 2002-06-10  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	* Makefile.in (all): copy opp_neddoc to bin dir.
+        * Makefile.in (all): copy opp_neddoc to bin dir.
 
-	* opp_neddoc.in (NEDDOC_XSL): use OMNETPP_UTILS_DIR as path to
-	neddoc.xsl
+        * opp_neddoc.in (NEDDOC_XSL): use OMNETPP_UTILS_DIR as path to
+        neddoc.xsl
 
 2002-07-07  Andras Varga
 
-	* added NED documentation tool (neddoc.xsl, opp_neddoc, 
-	opp_neddoc.cmd)
+        * added NED documentation tool (neddoc.xsl, opp_neddoc, 
+        opp_neddoc.cmd)
 
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-04-06  Andras Varga
 
-	* opp_test added (moved here from test/); makefile installs it into bin/
+        * opp_test added (moved here from test/); makefile installs it into bin/
         * makedep.pl renamed to opp_makedep and made a standalone program;
         makefile installs it into bin/
 
 2002-04-02  Ulrich Kaage <kaage@int.uni-karlsruhe.de>  <kaage@int.etec.uni-karlsruhe.de>
 
-	* opp_makemake.in (): when parsing option -u: use brackets around
-	tr groups
+        * opp_makemake.in (): when parsing option -u: use brackets around
+        tr groups
 
 2002-03-03  Andras Varga
 
-	* opp_makemake: added -L option; removed Makefile.in from the depend
+        * opp_makemake: added -L option; removed Makefile.in from the depend
         target. [patch by Johnny Lai]
 
 2002-01-23  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	* opp_makemake.in (clean): remove also *_n.h files.
+        * opp_makemake.in (clean): remove also *_n.h files.
 
 2001-10-18  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	* opp_makemake.in: introduced NEDCFLAGS and NEDCOPTS so that
-	compile flag -Wno-unused can be used for compiling _n.cc files
-	only. NEDCFLAGS is defined in configure.in and set in
-	configure.user in the top level directory.
+        * opp_makemake.in: introduced NEDCFLAGS and NEDCOPTS so that
+        compile flag -Wno-unused can be used for compiling _n.cc files
+        only. NEDCFLAGS is defined in configure.in and set in
+        configure.user in the top level directory.
 
 2001-08-28  Andras Varga 
 
-	* added makedep.pl. The makedepend program in newer XFree versions
+        * added makedep.pl. The makedepend program in newer XFree versions
         (4.0 up?) is unusable because it no longer supports the -Y option :(
         This Perl script I found on the web and enhanced it significantly.
 
 2001-06-19  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	* Makefile.in (all): use "ln -sf" instead of "ln -s" to avoid an
-	error when link already exists.
+        * Makefile.in (all): use "ln -sf" instead of "ln -s" to avoid an
+        error when link already exists.
 
 2001-05-24 Andras Varga
 
-	* ------ omnetpp-2.1 released ------
+        * ------ omnetpp-2.1 released ------
 
-	* prephtml, wc-l moved to _scripts
+        * prephtml, wc-l moved to _scripts
 
 2001-03-29 Andras Varga
 
-	* replace utility renamed to opp_replace
+        * replace utility renamed to opp_replace
 
 2001-03-27 Andras Varga
 
-	* Makefile change: now it copies makemake, splitvec and seedtool
-	to bin/ (instead of making soft links).
+        * Makefile change: now it copies makemake, splitvec and seedtool
+        to bin/ (instead of making soft links).
 
-	* makemake renamed to opp_makemake
+        * makemake renamed to opp_makemake
 
 2001-02-27 Andras Varga
 
-	* ------ omnetpp-2.0p1 released ------
+        * ------ omnetpp-2.0p1 released ------
 
-	* fixed bug in tcl2c which prevented it from compiling with Cygwin
+        * fixed bug in tcl2c which prevented it from compiling with Cygwin
 
 2001-02-06 Andras Varga
 
-	* ------ omnetpp-2.0 released ------
+        * ------ omnetpp-2.0 released ------
 
-	* tcl2c now compiles with MSVC.
+        * tcl2c now compiles with MSVC.
 
 2000-09-30 Andras Varga
 
-	* typos in makemake.in
+        * typos in makemake.in
 
 2000-05-07 Andras Varga
 
-	* ------ omnetpp-2.0b5 released ------
+        * ------ omnetpp-2.0b5 released ------
 
-	* ------ omnetpp-2.0b4 released ------
+        * ------ omnetpp-2.0b4 released ------
 
-	* replace.c added [from Balazs Kelemen]
+        * replace.c added [from Balazs Kelemen]
 
 2000-04-30 Andras Varga
 
-	* TVEnv support removed from makemake [suggested by Niko]
+        * TVEnv support removed from makemake [suggested by Niko]
 
-	* prephtml now puts a version number into the html file
+        * prephtml now puts a version number into the html file
 
 2000-04-19 Andras Varga
 
-	* added some Purify support to makemake [from Ulrich Kaage]
+        * added some Purify support to makemake [from Ulrich Kaage]
 
 2000-04-16 Andras Varga
 
-	* prephtml script enhanced: now it splits up the manual to several
-	HTML files (usman.html, toc.html plus chapN.html files); it also
-	adds heading numbering.
+        * prephtml script enhanced: now it splits up the manual to several
+        HTML files (usman.html, toc.html plus chapN.html files); it also
+        adds heading numbering.
 
 2000-04-10 Andras Varga
 
-	* TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+        * TRUE/FALSE (defines) replaced by true/false (C++ keywords)
 
 1999-12-05 Andras Varga
 
-	* ------ omnetpp-2.0b3 released ------
+        * ------ omnetpp-2.0b3 released ------
 
-	* Makefile.vc added
+        * Makefile.vc added
 
 1999-10-10 Andras Varga
 
-	* ------ omnetpp-2.0b2 released ------
+        * ------ omnetpp-2.0b2 released ------
 
-	* makemake: better error handling with recursive makefiles; EXE_SUFFIX added
+        * makemake: better error handling with recursive makefiles; EXE_SUFFIX added
 
-	* tcl2c.c: encoding simplified (old one was unnecessarily
-	complicated and didn't work under cygwin)
+        * tcl2c.c: encoding simplified (old one was unnecessarily
+        complicated and didn't work under cygwin)
 
 1999-07-17 Andras Varga
 
-	* ------ omnetpp-2.0b released ------
+        * ------ omnetpp-2.0b released ------
 
-	* seedtool help text changed
+        * seedtool help text changed
 
 
 
@@ -467,7 +476,7 @@
         * all sources checked in under CVS
 
         * makefile.in modified for use with GNU Autoconf; also renamed to
-	Makefile.in
+        Makefile.in
 
         * version.log renamed to ChangeLog
 
@@ -505,7 +514,7 @@
         * support for the models/ directory
 
         * configure now puts OMNETPP_ROOT-relative paths into the
-	makefiles etc.
+        makefiles etc.
 
 
 1998-08-16  Andras Varga
@@ -535,7 +544,7 @@
 1998-06-15  Andras Varga
 
         * makemake rewritten. Accepts several command-line options, can
-	handle source trees etc.
+        handle source trees etc.
 
 
 1998-06-04  Andras Varga
@@ -560,13 +569,13 @@
         * bugfixes
 
         * sim, envir, nedc, plove, gned, utils placed into a src
-	subdirectory
+        subdirectory
 
 
 1998-04-29  Andras Varga
 
         * makedist creates a lib/ directory with soft links to the
-	libraries
+        libraries
 
 
 1998-04-26  Andras Varga
@@ -597,7 +606,7 @@
         * 'make clean' added to makemake-generated makefiles
 
         * ifeq's removed from makefiles (they are not supported
-	everywhere)
+        everywhere)
 
         * configur script improved (now checks for gcc, bison etc.)
 
@@ -612,10 +621,10 @@
         * added 'configur' script
 
         * renamed (and modified) some scripts:
-	   tounix-->dos2unix
-	   buildall-->makeall
-	   buildlib.bat-->makeall.bat
-	   jar_mkmk-->makemake
+           tounix-->dos2unix
+           buildall-->makeall
+           buildlib.bat-->makeall.bat
+           jar_mkmk-->makemake
 
 
 1997-12-16  Andras Varga
@@ -647,7 +656,7 @@
         * splitvec.bat added
 
         * bug: jar_mkmk gives an error if there's no ned file in the
-	directory
+        directory
 
 
 1997-06-23  Andras Varga
