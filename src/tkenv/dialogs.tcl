@@ -57,12 +57,13 @@ proc comboSelectionDialog {title text label variable list} {
 
     upvar $variable var
 
-
     label $w.f.m -text $text -anchor w -justify left
     label-combo $w.f.c $label $list $var
     pack $w.f.m -fill x -padx 2 -pady 2 -side top
     pack $w.f.c -fill x -padx 2 -pady 2 -side top
     focus $w.f.c.e
+
+    $w.f.c.e config -width 30
 
     if [execOkCancelDialog $w] {
         set var [$w.f.c.e cget -value]

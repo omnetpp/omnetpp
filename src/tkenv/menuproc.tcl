@@ -199,7 +199,7 @@ proc new_network {} {
 
     # pop up dialog, with current network as default
     set netname [opp_getnetworktype]
-    set ok [comboSelectionDialog "Set up network" "Set up a network, using parameters described \nin the \[General\] section of omnetpp.ini." "Select network:" netname $netnames]
+    set ok [comboSelectionDialog "Set up network" "Set up a network, using parameter values defined \nin the \[General\] section of omnetpp.ini." "Select network:" netname $netnames]
     if {$ok == 1} {
        busy "Setting up network..."
        opp_newnetwork $netname
@@ -255,7 +255,7 @@ proc new_run {} {
     }
 
     # pop up selection dialog
-    set ok [comboSelectionDialog "Set up new Run" "Set up one of the runs described in omnetpp.ini." {Select run:} run $runlist]
+    set ok [comboSelectionDialog "Set up new Run" "Set up one of the runs defined in omnetpp.ini." {Select run:} run $runlist]
     if {$ok == 1} {
        if {$run == "General"} {
            set runno "-1"
