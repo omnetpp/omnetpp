@@ -1,0 +1,61 @@
+%description:
+check NED user-defined functions (Define_Function() macro) in modules and
+networks
+
+%file: {}.ned
+
+simple {Simple}
+   parameters:
+      p0, p1, p2, p3;
+endsimple
+
+network {Net}: {Simple}
+   parameters:
+      p0 = {testfunc0}(),
+      p1 = {testfunc1}(10),
+      p2 = {testfunc2}(10,20),
+      p3 = {testfunc3}(10,20,30);
+endnetwork
+
+%file: {}.cc
+
+#include "omnetpp.h"
+
+double {testfunc0}() {return 0;}
+double {testfunc1}(double a) {return a;}
+double {testfunc2}(double a, double b) {return a+b;}
+double {testfunc3}(double a, double b, double c) {return a+b+c;}
+
+Define_Function({testfunc0},0);
+Define_Function({testfunc1},1);
+Define_Function({testfunc2},2);
+Define_Function({testfunc3},3);
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+#define PRINT_PARAMETER(x) ev << #x << " = " << (double)par(#x) << endl;
+
+void {Simple}::activity()
+{
+    PRINT_PARAMETER( p0 );
+    PRINT_PARAMETER( p1 );
+    PRINT_PARAMETER( p2 );
+    PRINT_PARAMETER( p3 );
+}
+
+%inifile: {}.ini
+[General]
+network={Net}
+
+%contains: stdout
+p0 = 0
+p1 = 10
+p2 = 30
+p3 = 60
+

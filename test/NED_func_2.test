@@ -1,0 +1,49 @@
+%description:
+check NED user-defined functions (Define_Function() macro) in channels
+
+%file: {}.ned
+
+channel {Chan}
+   error {testfunc0}();
+   delay {testfunc1}(10);
+   datarate {testfunc2}(10,20);
+endchannel
+
+simple {Simple}
+endsimple
+
+network {Net}: {Simple}
+endnetwork
+
+%file: {}.cc
+
+#include "omnetpp.h"
+
+double {testfunc0}() {return 0;}
+double {testfunc1}(double a) {return a;}
+double {testfunc2}(double a, double b) {return a+b;}
+double {testfunc3}(double a, double b, double c) {return a+b+c;}
+
+Define_Function({testfunc0},0);
+Define_Function({testfunc1},1);
+Define_Function({testfunc2},2);
+Define_Function({testfunc3},3);
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    //FIXME: should check channel or something like that...
+}
+
+
+%inifile: {}.ini
+[General]
+network={Net}
+

@@ -26,5 +26,7 @@ warnings=yes
 [Parameters]
 #*.mod_type = "GenMod"
 
+%exitcode: 1
+
 %contains: stdout
-<!> Module ned_genericModuleType_1_net: No module parameter called `mod_type'.
+Error in module {}_net: Unknown parameter named mod_type
