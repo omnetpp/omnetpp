@@ -67,7 +67,7 @@ void cParsimPartition::shutdown()
 {
     if (!comm) return; // if initialization failed
 
-    cException e("Process is shutting down");
+    cException e("Process has shutting down");
     broadcastException(&e);
 
     comm->shutdown();
