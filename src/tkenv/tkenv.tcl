@@ -63,7 +63,7 @@ proc start_tkenv {} {
   calibrate_animdelay
 
   if {!$HAVE_BLT} {
-      puts "\n*** BLT NOT FOUND. Please install this Tcl/Tk extension to get an improved GUI!"
+      puts "\n*** BLT Tcl/Tk extension NOT FOUND -- please install it"
   }
 
   global tcl_platform
