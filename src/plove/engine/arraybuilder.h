@@ -37,6 +37,7 @@ class ArrayBuilderNode : public SingleSinkNode
         virtual bool finished() const;
 
         void sort();
+        size_t length() {return veclen;}
         void extractVector(double *&x, double *&y, size_t& len);
 };
 

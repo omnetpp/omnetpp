@@ -96,7 +96,7 @@ proc createVectorPlot {{idlist {}}} {
             set yvecname "vy$elemcounter"
             incr elemcounter
 
-            opp_makebltvector $arraybuilder($id) $xvecname $yvecname
+            opp_arraybuilder $arraybuilder($id) getvectors $xvecname $yvecname
             set color [getChartColor $i]
             set symbol [getChartSymbol $i]
             $graph element create line$id -x $xvecname -y $yvecname -color $color -label $vec($id,title)
@@ -180,7 +180,7 @@ proc createVectorScatterPlot {idlist xid chartname} {
                 set yvecname "vy$elemcounter"
                 incr elemcounter
 
-                opp_makebltvector $arraybuilder($id) $xvecname $yvecname
+                opp_arraybuilder $arraybuilder($id) getvectors $xvecname $yvecname
                 set color [getChartColor $i]
                 set symbol [getChartSymbol $i]
                 $graph element create line$id -x $xvecname -y $yvecname -color $color -label $vec($id,title)

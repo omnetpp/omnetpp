@@ -19,6 +19,7 @@
 #include <string.h>
 #include <assert.h>
 #include "tklib.h"
+#include <bltVector.h>
 
 #include "engine/node.h"
 #include "engine/nodetype.h"
@@ -28,9 +29,6 @@
 #include "engine/compoundfilter.h"
 #include "engine/getvectors.h"
 
-#ifdef HAVE_BLT
-#include <bltVector.h>
-#endif
 
 #ifndef _WIN32
 #include <sys/stat.h>  // mknod()
@@ -61,7 +59,7 @@ int createNode_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getPort_cmd(ClientData, Tcl_Interp *, int, const char **);
 int connect_cmd(ClientData, Tcl_Interp *, int, const char **);
 
-int makeBltVector_cmd(ClientData, Tcl_Interp *, int, const char **);
+int arraybuilder_cmd(ClientData, Tcl_Interp *, int, const char **);
 int makeNamedPipe_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int compoundFilterTypeCreate_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -83,7 +81,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getport",          getPort_cmd        }, // args: <node> <portname>
    { "opp_connect",          connect_cmd        }, // args: <node1> <portname1> <node2> <portname2>
 
-   { "opp_makebltvector",    makeBltVector_cmd  }, // args: <arraybuildernode> <x-bltvector> <y-bltvector>
+   { "opp_arraybuilder",     arraybuilder_cmd   }, // args: <arraybuildernode> <command> ...
    { "opp_makenamedpipe",    makeNamedPipe_cmd  }, // args: <name>
 
    { "opp_compoundfiltertype_create", compoundFilterTypeCreate_cmd}, // args: <nodetype>
@@ -288,40 +286,54 @@ int connect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    return TCL_OK;
 }
 
-// helper: Tcl_FreeProc needed for makeBltVector_cmd()
+// helper: Tcl_FreeProc needed for arraybuilder_cmd()
 static void deleteDoubleArray(char *p)
 {
     double *array = (double *)p;
     delete [] array;
 }
 
-int makeBltVector_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int arraybuilder_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-#ifdef HAVE_BLT
-   if (argc!=4) {Tcl_SetResult(interp, "wrong # args: should be \"opp_makebltvector arraybuilderNode bltVectorX bltVectorY\"", TCL_STATIC); return TCL_ERROR;}
+   if (argc<3) {Tcl_SetResult(interp, "wrong # args: should be \"opp_arraybuilder <arraybuilderNode> <command> ...\"", TCL_STATIC); return TCL_ERROR;}
 
-   CATCH_EXCEPTIONS(
-       ArrayBuilderNode *node = dynamic_cast<ArrayBuilderNode *>((Node *)strToPtr(argv[1]));
-       if (!node) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-       const char *bltvectornameX = argv[2];
-       const char *bltvectornameY = argv[3];
+   ArrayBuilderNode *node = dynamic_cast<ArrayBuilderNode *>((Node *)strToPtr(argv[1]));
+   if (!node) {Tcl_SetResult(interp, "null or malformed pointer, or not an arraybuilder node", TCL_STATIC); return TCL_ERROR;}
+   const char *cmd = argv[2];
 
+   if (!strcmp(cmd,"getvectors"))
+   {
+       if (argc!=5) {Tcl_SetResult(interp, "wrong # args: should be \"opp_arraybuilder <arraybuilderNode> getvectors <xvec> <yvec>\"", TCL_STATIC); return TCL_ERROR;}
+       const char *bltvectornameX = argv[3];
+       const char *bltvectornameY = argv[4];
        double *x; double *y;
        size_t length;
        node->extractVector(x, y, length);
-
-       Blt_Vector *vecX;
-       Blt_Vector *vecY;
-       Blt_CreateVector(interp, const_cast<char*>(bltvectornameX), 1, &vecX);
-       Blt_CreateVector(interp, const_cast<char*>(bltvectornameY), 1, &vecY);
-       Blt_ResetVector(vecX, x, length, length, deleteDoubleArray);
-       Blt_ResetVector(vecY, y, length, length, deleteDoubleArray);
-   )
-   return TCL_OK;
-#else
-   Tcl_SetResult(interp, "Plove compiled without support for BLT (check HAVE_BLT option!)", TCL_STATIC);
-   return TCL_ERROR;
-#endif
+       CATCH_EXCEPTIONS(
+           Blt_Vector *vecX;
+           Blt_Vector *vecY;
+           Blt_CreateVector(interp, const_cast<char*>(bltvectornameX), 1, &vecX);
+           Blt_CreateVector(interp, const_cast<char*>(bltvectornameY), 1, &vecY);
+           Blt_ResetVector(vecX, x, length, length, deleteDoubleArray);
+           Blt_ResetVector(vecY, y, length, length, deleteDoubleArray);
+       )
+       return TCL_OK;
+   }
+   else if (!strcmp(cmd,"getlength"))
+   {
+       Tcl_SetObjResult(interp, Tcl_NewIntObj(node->length()));
+       return TCL_OK;
+   }
+   else if (!strcmp(cmd,"sort"))
+   {
+       node->sort();
+       return TCL_OK;
+   }
+   else
+   {
+       Tcl_SetResult(interp, "2nd arg should be: getvectors, getlength or sort", TCL_STATIC);
+       return TCL_ERROR;
+   }
 }
 
 int makeNamedPipe_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
