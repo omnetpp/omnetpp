@@ -51,14 +51,14 @@ OBJS = \
   ../nim/debug/players.obj \
   ../token/debug/token_n.obj \
   ../token/debug/token.obj \
-  ../ned/debug/binarytree_n.obj  \
-  ../ned/debug/chain_n.obj  \
-  ../ned/debug/fullgraph_n.obj \
-  ../ned/debug/hexgrid_n.obj \
-  ../ned/debug/mesh_n.obj \
-  ../ned/debug/randomgraph_n.obj \
-  ../ned/debug/star_n.obj \
-  ../ned/debug/nodes.obj
+  ../topo/debug/binarytree_n.obj  \
+  ../topo/debug/chain_n.obj  \
+  ../topo/debug/fullgraph_n.obj \
+  ../topo/debug/hexgrid_n.obj \
+  ../topo/debug/mesh_n.obj \
+  ../topo/debug/randomgraph_n.obj \
+  ../topo/debug/star_n.obj \
+  ../topo/debug/node.obj
 
 OPP_LIBS=/libpath:"$(OMNETPP_LIB_DIR)" sim_std.lib tkenv.lib envir.lib
 

@@ -14,4 +14,5 @@ ren hcube\*.cc *.cpp
 ren hist\*.cc *.cpp
 ren nim\*.cc *.cpp
 ren token\*.cc *.cpp
+ren ned\*.cc *.cpp
 ren dyna2\*.cc *.cpp

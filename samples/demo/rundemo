@@ -30,7 +30,7 @@ foreach i {
    {nim ../nim Nim}
    {token ../token Token}
    {dyna2 ../dyna2 Dyna2}
-   {ned ../ned NED}
+   {topo ../topo Topo}
 } {
    set sample [lindex $i 0]
    lappend samples $sample
