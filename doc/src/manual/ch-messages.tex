@@ -58,23 +58,39 @@ of the simulation programmer. A more-or-less complete list:
 \subsubsection{Basic usage}
 
 
-A \cclass{cMessage} object can be created in the following way:
+The \cclass{cMessage} constructor accepts several arguments.
+Most commonly, you would create a message using an \textit{object name}
+(a \ttt{const char *} string) and a \textit{message kind} (\ttt{int}):
 
 \begin{verbatim}
-cMessage *msg = new cMessage("msg-name", kind, length,
-                             priority, errorflag);
+cMessage *msg = new cMessage("MessageName", msgKind);
 \end{verbatim}
+
+Both arguments are optional and initialize to the null string (\ttt{""})
+and 0, so the following statements are also valid:
+
+\begin{verbatim}
+cMessage *msg = new cMessage();
+cMessage *msg = new cMessage("MessageName");
+\end{verbatim}
+
+It is a good idea to \textit{always} use message names -- they can be
+extremely useful when debugging or demonstrating your simulation.
+
+Message kind is usually initialized with a symbolic constant
+(e.g. an \textit{enum} value) which signals what the message object
+represents in the simulation (i.e. a data packet, a jam signal, a job, etc.)
+Please use \textit{positive values or zero} only as message kind --
+negative values are reserved for use by the simulation kernel.
+
+
+The \cclass{cMessage} constructor accepts further arguments too
+(\textit{length}, \textit{priority}, \textit{bit error flag}),
+but for readability of the code it is best to set them explicitly
+via the \ttt{set...()} methods described below.
+Length and priority are integers, and the bit error flag is boolean.
 
 \index{message!data members}
-
-The kind, length, and priority are integers, and errorflag is boolean.
-All arguments have default values, so the following initializations
-are also valid:
-
-\begin{verbatim}
-cMessage *msg1 = new cMessage;
-cMessage *msg2 = new cMessage("data-packet", DATAPACKET_KIND, 8*1500 );
-\end{verbatim}
 
 
 Once a message has been created, its data members can be changed by the following functions:
@@ -258,38 +274,40 @@ enough ``context'' information about the event.
 
 
 
-\subsection{The cPacket class}
+\subsection{Modeling packets and frames}
 
+The \cclass{cPacket} class is now deprecated. Please do not use it
+in new models.
+  \footnote{\cclass{cPacket} was a subclass of \cclass{cMessage}, and it
+  was originally intended as a base class for packets or frames
+  in a telecommunications network. \cclass{cPacket} added two data members:
+  \textit{protocol} and \textit{PDU} (\textit{Protocol Data Unit}, an OSI term).
+  It was envisioned that \textit{procotol} and \textit{PDU} would take
+  their values from globally maintained enums. As it turned out,
+  this was utopistic. In practice, usage of \textit{protocol} was inconsistent
+  (\textit{protocol} and \textit{message kind} played similar roles,
+  creating confusion), and models did not use \textit{PDU} at all.
+  Hence the deprecation of \cclass{cPacket}.}
 
-The \cclass{cPacket} class is derived from \cclass{cMessage}. It is intended as
-a base for all messages that model packets or frames in a telecommunications
-network.
+In future {\opp} models, the protocol should be represented
+in the message subclass (i.e. instances of class
+\texttt{IPv6Packet} represent IPv6 packets,
+and \texttt{EthernetFrame} represents Ethernet frames) and/or
+in the message kind value. PDU usually is represented
+as a field inside the message class (a protocol header field).
 
-\cclass{cPacket} adds two new data members to \cclass{cMessage}:
-\textit{protocol} and \textit{PDU} type (packet, frame or event type).
-Both are short integers, and are handled by the following member
-functions:
+If the former case, the C++ \ttt{dynamic\_cast} operator can be used
+to determine if a message object is of a specific protocol:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-short \fname{protocol()};
-short \fname{pdu()};
-setProtocol(short p);
-setPdu(short p);
-\end{Verbatim}
+\begin{verbatim}
+cMessage *msg = receive();
+if (dynamic_cast<IPv6Packet *>(msg) != NULL)
+{
+    IPv6Packet *ipv6packet = (IPv6Packet *)msg;
+    ...
+}
+\end{verbatim}
 
-Acceptable message kind values are:
-\begin{itemize}
-\item{MK\_PACKET}\index{MK\_PACKET}
-\item{MK\_INFO}\index{MK\_INFO}
-\end{itemize}
-
-The \cclass{cPacket} constructor sets the message kind to \fname{MK\_PACKET}.
-Both \fname{MK\_PACKET} and \fname{MK\_INFO} are defined as negative integers.
-(Remember, negative message kind values are reserved for the simulation library.)
-
-The protocol and PDU fields would ideally take a value from the \fname{protocol.h}
-header in the simulation library. The contents of \fname{protocol.h}
-is currently experimental; comments and contributions are welcome.
 
 
 
@@ -499,14 +517,13 @@ There's might be some misunderstanding around the purpose and
 concept of message definitions, so it seems to be a good idea
 to deal with them right here.
 
-This is \textbf{\textbf{not:}}
+It is \textit{\textbf{not:}}
 
 \begin{itemize}
-  \item{\textit{... a preprocessor to C++.} You cannot (and you're not meant to)
-     write C++ statements into \ttt{.msg} files. It defines data only -- not any
-     kind of active behaviour.}
   \item{\textit{... an attempt to reproduce the functionality of C++ with another
-     syntax.} Do not look for templates, conditional compilation, etc.}
+     syntax.} Do not look for complex C++ types, templates, conditional compilation, etc.
+     Also, it defines \textit{data} only (or rather: an interface to access
+     data) -- not any kind of active behaviour.}
   \item{\textit{... a generic class generator.} This is meant for defining message
      contents, and data structure you put in messages.
      Defining methods is not supported on purpose.
@@ -523,14 +540,13 @@ representation for some field, you can have it by customizing the class.
 There are questions you might ask:
 
 \begin{itemize}
-  \item{\textit{Why no support for \ttt{std::vector} and other STL classes?}
-     Message definitions focus on the interface
-     (getter/setter methods) of the classes, while STL belongs to the
-     implementation (STL purposefully wants to provide \textit{nuts and bolts}
-     for C++ programs).
-     Actually you \textit{can} use STL vectors: you can specify
-     array fields of dynamic size as abstract, and you can provide an
-     \ttt{std::vector}-based implementation by customizing the class.}
+  \item{\textit{Why doesn't it support \ttt{std::vector} and other STL classes?}
+     Well, it does... Message definitions focus on the interface
+     (getter/setter methods) of the classes, optionally leaving the implementation
+     to you -- so you can implement fields (dynamic array fields)
+     using \ttt{std::vector}.
+     (This aligns with the idea behind STL -- it was designed to be
+     \textit{nuts and bolts} for C++ programs).}
   \item{\textit{Why does it support C++ data types and not octets,
      bytes, bits, etc..?}
      That would restrict the scope of message definitions to networking,
@@ -616,11 +632,11 @@ virtual void setHasPayload(bool hasPayload);
 Note that the methods are all declared \fname{virtual} to give you the possibility
 of overriding them in subclasses.
 
-Two constructors will be generated: one that optionally accepts an object name,
-and a copy constructor:
+Two constructors will be generated: one that optionally accepts object name and
+(for \cclass{cMessage} subclasses) message kind, and a copy constructor:
 
 \begin{verbatim}
-FooPacket(const char *name=NULL);
+FooPacket(const char *name=NULL, int kind=0);
 FooPacket(const FooPacket& other);
 \end{verbatim}
 
