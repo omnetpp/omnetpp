@@ -1,19 +1,19 @@
-\chapter{An Example: The NIM Game}
+\chapter{An Example: The Nim Game}
 \label{cha:the-nim-game}
 
 
-This chapter contains a full example program that can give you 
-some basic idea of using the simulator. An enhanced version of 
-the NIM example can be found among the sample programs.
+This chapter contains a full example program that can give you
+some basic idea of using the simulator. An enhanced version of
+the Nim example can be found among the sample programs.
 
-Nim is an ancient game with two players and a bunch of sticks. 
-The players take turns, removing 1, 2, 3 or 4 sticks from the 
-heap of sticks at each turn. The one who takes the last stick 
-is the loser. 
+Nim is an ancient game with two players and a bunch of sticks.
+The players take turns, removing 1, 2, 3 or 4 sticks from the
+heap of sticks at each turn. The one who takes the last stick
+is the loser.
 
 
-Of course, building a model of the Nim game is not much of a 
-simulation project, but it nicely demonstrates the modeling approach 
+Of course, building a model of the Nim game is not much of a
+simulation project, but it nicely demonstrates the modeling approach
 used by {\opp}.
 
 
@@ -27,11 +27,11 @@ Describing the model consists of two phases:
 
 \section{Topology}
 
-The game can be modelled in {\opp} as a network with three modules: 
-the ''game'' (a manager module) and two players. 
-The modules will communicate by exchanging messages. The ''game'' 
-module keeps the current number of tokens and organizes the game; 
-in each turn, the player modules receives the number of tokens 
+The game can be modelled in {\opp} as a network with three modules:
+the ''game'' (a manager module) and two players.
+The modules will communicate by exchanging messages. The ''game''
+module keeps the current number of tokens and organizes the game;
+in each turn, the player modules receives the number of tokens
 from the Game module and sends back its move.
 
 \begin{figure}[htbp]
@@ -46,13 +46,13 @@ modules (e.g. they have no submodules.) Each module is an instance of
 a module type. We'll need a module type to represent the \texttt{Game} module;
 let's call it \texttt{Game} too.
 
-We can implement two kinds of players: \texttt{SmartPlayer}, which knows 
-the winning algorithm, and \texttt{SimplePlayer}, which simply takes a 
-random number of sticks. In our example, \texttt{Player1} will be a \texttt{SmartPlayer} 
+We can implement two kinds of players: \texttt{SmartPlayer}, which knows
+the winning algorithm, and \texttt{SimplePlayer}, which simply takes a
+random number of sticks. In our example, \texttt{Player1} will be a \texttt{SmartPlayer}
 and \texttt{Player2} will be a \texttt{SimplePlayer}.
 
-The enclosing module, \texttt{Nim} is a compound module (it has submodules). 
-It is also defined as a module type of which one instance is 
+The enclosing module, \texttt{Nim} is a compound module (it has submodules).
+It is also defined as a module type of which one instance is
 created, the system module.
 
 Modules have input and output gates\index{gate} (the tiny boxes
@@ -65,8 +65,8 @@ modules communicate by sending messages through the connections.
 The user defines the topology\index{topology!defining} of the network in NED files\index{ned!files}.
 
 
-We placed the model description in two files; the first file 
-defines the simple module types and the second one the system 
+We placed the model description in two files; the first file
+defines the simple module types and the second one the system
 module.
 
 The first file (NED keywords are typed in boldface):
@@ -148,7 +148,7 @@ The second file:
 
 \section{Simple modules}
 
-The module types \texttt{SmartPlayer}, \texttt{SimplePlayer} and \texttt{Game} are implemented 
+The module types \texttt{SmartPlayer}, \texttt{SimplePlayer} and \texttt{Game} are implemented
 in C++, using the {\opp} library classes and functions.
 
 Each simple\index{module!simple} module type is derived from the C++
@@ -158,23 +158,23 @@ simple\index{module!simple} modules in the network are executed as
 coroutines\index{coroutine}, so they appear as if they were running in
 parallel.  Messages are instances of the class \cclass{cMessage}.
 
-We present here the C++ sources of the \texttt{SmartPlayer} and \texttt{Game} module 
+We present here the C++ sources of the \texttt{SmartPlayer} and \texttt{Game} module
 types.
 
-The \texttt{SmartPlayer} first introduces himself by sending its name 
-to the \texttt{Game} module. Then it enters an infinite loop; with each 
-iteration, it receives a message from \texttt{Game} with the number of 
-sticks left, it calculates its move and sends back a message 
+The \texttt{SmartPlayer} first introduces himself by sending its name
+to the \texttt{Game} module. Then it enters an infinite loop; with each
+iteration, it receives a message from \texttt{Game} with the number of
+sticks left, it calculates its move and sends back a message
 containing the move.
 
 Here's the source:
 
-\begin{Verbatim}
+\begin{verbatim}
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 // derive SmartPlayer from cSimpleModule
 class SmartPlayer : public cSimpleModule
@@ -182,8 +182,8 @@ class SmartPlayer : public cSimpleModule
     Module_Class_Members( SmartPlayer, cSimpleModule, 8192)
     // this is a macro; it expands to constructor definition etc.
     // 8192 is the size for the coroutine stack (in bytes)
- 
-virtual void activity(); 
+
+virtual void activity();
     // this redefined virtual function holds the algorithm
 };
 
@@ -223,12 +223,12 @@ void SmartPlayer::activity()
            << " sticks.\n";             // interface of the simulator
 
         cMessage *msgout = new cMessage;// create empty message
-        msgout->setKind( move );        // use message kind as storage 
+        msgout->setKind( move );        // use message kind as storage
                                         // for move
-        send( msgout, "out"); // send the message to Game 
+        send( msgout, "out"); // send the message to Game
     }
 }
-\end{Verbatim}
+\end{verbatim}
 
 The \texttt{Game} module first waits for a message from both players
 and extracts the message names that are also the players' names.  Then
@@ -242,7 +242,7 @@ simulation.
 The source:
 
 
-\begin{Verbatim}
+\begin{verbatim}
 //-------------------------------------------------------------
 // file: game.cc
 // (part of NIM - an OMNeT++ demo simulation)
@@ -251,13 +251,13 @@ The source:
 #include <stdio.h>
 #include <string.h>
 
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 // derive Game from cSimpleModule
 class Game : public cSimpleModule
 {
     Module_Class_Members(Game,cSimpleModule,8192)
-      // this is a macro; it expands to constructor definition etc. 
+      // this is a macro; it expands to constructor definition etc.
       // 8192 is the size for the coroutine stack (in bytes)
 
     virtual void activity();
@@ -297,7 +297,7 @@ void Game::activity()
     {
         ev << "Sticks left: " << num_sticks << "\n";
         ev << "Player " << player_to_move << " ("
-           << player[player_to_move] << ") to move.\n"; 
+           << player[player_to_move] << ") to move.\n";
 
         cMessage *msg = new cMessage("", num_sticks);
                         // num\_sticks will be the msg kind
@@ -326,27 +326,27 @@ void Game::activity()
 
     endSimulation();
 }
-\end{Verbatim}
+\end{verbatim}
 
 
 
 
 \section{Running the simulation}
 
-Once the source files are ready, one needs to compile and link 
-them into a simulation executable. One can specify the user interface 
+Once the source files are ready, one needs to compile and link
+them into a simulation executable. One can specify the user interface
 to be linked.
 
-Before running the simulation, one can put parameter values and 
-all sorts of other settings into an initialization file that 
+Before running the simulation, one can put parameter values and
+all sorts of other settings into an initialization file that
 will be read when the simulation program starts\index{simulation!configuration}:
 
 \index{omnetpp.ini}
 
-\begin{Verbatim}
-;---------------------
-; file: omnetpp.ini
-;---------------------
+\begin{verbatim}
+#
+# file: omnetpp.ini
+#
 
 [General]
 network = nim
@@ -354,30 +354,30 @@ random-seed = 3
 ini-warnings = false
 
 [Cmdenv]
-module-messages = yes
-verbose-simulation = no
-\end{Verbatim}
+express-mode = no
+\end{verbatim}
 
-Suppose we link the NIM simulation with the command line user 
-interface. We get the executable nim (nim.exe under Windows). 
+Suppose we link the Nim simulation with the command line user
+interface. We get the executable nim (nim.exe under Windows).
 When we run it, we'll get the following screen output:
 
-\begin{Verbatim}
+\begin{verbatim}
 % ./nim
-\end{Verbatim}
+\end{verbatim}
 
 Or:
 
-\begin{Verbatim}
-C:\OMNETPP\SAMPLES\NIM> nim.exe
+\begin{verbatim}
+C:\OMNeT++\samples\nim> nim
 
-OMNeT++ Discrete Simulation, TUB Dept. of Telecommunications, 1990-97
+OMNeT++ Discrete Event Simulation  (C) 1992-2003 Andras Varga
+See the license for distribution terms and warranty disclaimer
+Setting up Cmdenv (command-line user interface)...
 
 Preparing for Run #1...
-
 Setting up network `nim'...
-
 Running simulation...
+
 Let the game begin!
 Player 1: SmartPlayer Player 2: SimplePlayer
 
@@ -404,31 +404,26 @@ Player 1 (SmartPlayer) won!
 <!> Module nim.game: Simulation stopped with endSimulation().
 
 End run of OMNeT++
-\end{Verbatim}
-
-
-
+\end{verbatim}
 
 
 
 \section{Other examples}
 
-An enhanced version of the NIM example can be found among the sample
+An enhanced version of the Nim example can be found among the sample
 programs. It adds a third, interactive player and derives specific
 player types from a \texttt{Player} abstract class. It also adds the
 possibility that actual types for \texttt{player1} and
 \texttt{player2} can be specified in the ini file or interactively
 entered by the user at the beginning of the simulation.
 
-Nim does not show very much of how complex algorithms like communication 
-protocols can be implemented in {\opp}. To have an idea about 
-that, look at the Token Ring example. It is also extensively 
-commented, though you may need to peep into the user manual to 
-fully understand it.
-
-Other programs in the example manual are Dyna and FDDI. Dyna 
-models a simple client-server network and demonstrates dynamic 
-module creation. The FDDI example is an accurate FDDI MAC simulation 
+Nim does not show very much of how complex algorithms like communication
+protocols can be implemented in {\opp}. To have an idea about
+that, look at the Token Ring example. It is also extensively
+commented, though you may need to peep into the user manual to
+fully understand it. The Dyna simulation models a simple
+client-server network and demonstrates dynamic module creation.
+The FDDI example is an accurate FDDI MAC simulation
 which was written on the basis of the ANSI standard.
 
 
@@ -457,7 +452,7 @@ output vectors}\\\hline
 &
 {\raggedright ring topology with the number of nodes as parameter\\
 using \cclass{cQueue}\\
-\fname{wait()} and the putaside-queue\index{putaside}\\
+\fname{wait()}\\
 output vectors}\\\hline
 % ROW 5
 \textbf{fifo1} & single-server queue
@@ -498,7 +493,7 @@ star topology with the number of modules as parameters}\\\hline
 \end{longtable}
 
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
-%%% End: 
+%%% End:
