@@ -11,7 +11,6 @@ TARGET = hcube
 # User interface (uncomment one) (-u option)
 # USERIF_LIBS=$(CMDENV_LIBS)
 USERIF_LIBS=$(TKENV_LIBS)
-# USERIF_LIBS=$(TVENV_LIBS)
 
 # Uncomment the second line for parallel execution (PVM3) support (-p option):
 KERNEL_LIBS=$(STD_KERNEL_LIBS)
@@ -36,22 +35,23 @@ CXX=@CXX@
 CC=@CC@
 AR=@AR@
 SHLIB_LD=@SHLIB_LD@
+MAKEDEPEND=@MAKEDEPEND@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
+DEPFLAGS=@DEPFLAGS@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
-TV_LIBS=@TV_LIBS@
 TK_LIBS=@TK_LIBS@
 PVM_LIBS=@PVM_LIBS@
 SYS_LIBS=@SYS_LIBS@
+SYS_LIBS_PURE=-lm $(shell $(CXX) -print-file-name=libstdc++.a)
 
 # User interface libs
 CMDENV_LIBS=-lenvir -lcmdenv
-TVENV_LIBS=-lenvir -ltvenv $(TV_LIBS)
 TKENV_LIBS=-lenvir -ltkenv $(TK_LIBS)
 
 # Simulation kernel
@@ -70,6 +70,9 @@ OBJS= gensink_n.o hc_net_n.o hc_rte_n.o hcube_n.o gensink.o hc_rte.o
 
 $(TARGET): $(OBJS) $(EXRA_OBJS) Makefile
 	$(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
+
+purify: $(OBJS) $(EXRA_OBJS)   Makefile
+	purify $(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
 
 gensink_n.o: gensink_n.cc
 	$(CXX) -c $(COPTS) gensink_n.cc
@@ -106,8 +109,8 @@ clean:
 	rm -f *.vec *.sca
 
 depend:
-	makedepend -Y $(INCLUDE_PATH) -- *.cc
-	makedepend -Y $(INCLUDE_PATH) -fMakefile.in -- *.cc
+	$(MAKEDEPEND) $(DEPFLAGS) $(INCLUDE_PATH) -- *.cc
+	$(MAKEDEPEND) $(DEPFLAGS) $(INCLUDE_PATH) -fMakefile.in -- *.cc
 
 re-makemake:
 	opp_makemake -f    #recreate Makefile
@@ -117,5 +120,3 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-gensink.o: gensink.h
-hc_rte.o: hc_rte.h
