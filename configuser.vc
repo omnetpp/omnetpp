@@ -55,13 +55,13 @@ OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
 #
 TK_CFLAGS=/I "$(TK_INCL_DIR)"
 TK_LIBS=tcl82.lib tk82.lib /libpath:"$(TK_LIB_DIR)"
-PVM_INCL_DIR=
+PVM_INCL_DIR=d:/work/pvm3/include
 PVM_LIBS=
 SYS_LIBS=
 
 TKENV_IF_POSSIBLE=tkenv
 TVENV_IF_POSSIBLE=missing-library
-SIM_PVM_IF_POSSIBLE=missing-library
+SIM_PVM_IF_POSSIBLE=sim_pvm
 GNED_IF_POSSIBLE=gned
 
 #
