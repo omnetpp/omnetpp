@@ -76,7 +76,7 @@ class SIM_API cSimulation : public cObject
 
     // simulation global vars
     cModule *systemmodp;      // pointer to system module
-    cSimpleModule *runningmodp; // the currently executing module (NULL if in main)
+    cSimpleModule *runningmodp; // the module currently executing activity() (NULL if handleMessage() or in main)
     cModule *contextmodp;     // module in context (or NULL)
     cNetworkType *networktype; // network type
     cScheduler *schedulerp;   // event scheduler
