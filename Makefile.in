@@ -45,7 +45,7 @@ SAMPLES=dyna dyna2 fddi fifo1 fifo2 hcube hist nim token ned demo
 libs: utils $(LIBS)
 progs: $(PROGS)
 samples: $(SAMPLES)
-
+docs: api nedxml-api manual
 
 #
 # Libraries
@@ -125,8 +125,14 @@ tutorials:
 #
 # Documentation
 #
-docs:
-	cd $(OMNETPP_INCL_DIR) && $(MAKE)
+api:
+	cd $(OMNETPP_INCL_DIR) && $(MAKE) doc
+
+nedxml-api:
+	cd $(OMNETPP_SRC_DIR)/nedxml && $(MAKE) doc
+
+manual:
+	cd $(OMNETPP_DOC_DIR)/usman && $(MAKE)
 
 #
 # Test
