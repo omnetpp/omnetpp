@@ -36,7 +36,6 @@ class SIM_API cDefaultList : public cObject
     friend class cObject;
     cObject **vect;   // vector of objects
     int size;         // size of vector
-    int delta;        // if needed, grows by delta
     int count;        // number of elements stored
 
   private:
