@@ -127,6 +127,19 @@ SIM_API long genk_intrand(int gen_nr,long r);
 inline  double genk_dblrand(int gen_nr);
 //@}
 
+//==========================================================================
+//=== Implementation of utility functions:
+
+inline double dblrand()
+{
+   return (double)intrand() / (double)((unsigned long)INTRAND_MAX+1UL);
+}
+
+inline double genk_dblrand(int gen_nr)
+{
+   return (double)genk_intrand(gen_nr) / (double)((unsigned long)INTRAND_MAX+1UL);
+}
+
 #endif
 
 

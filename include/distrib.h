@@ -52,34 +52,38 @@ SIM_API double exponential(double mean, int rng=0);
 
 /**
  * Returns a random variate from the normal distribution with the given mean
- * and variance.
+ * and standard deviation.
  *
  * @param mean mean of the normal distribution
- * @param variance variance of the normal distribution
+ * @param stddev standard deviation of the normal distribution
  * @param rng the underlying random number generator
  */
-SIM_API double normal(double mean, double variance, int rng=0);
+SIM_API double normal(double mean, double stddev, int rng=0);
 
 /**
  * Normal distribution truncated to nonnegative values.
  * It is implemented with a loop that discards negative values until
  * a nonnegative one comes. This means that the execution time is not bounded:
- * a large negative mean with much smaller variance will likely result
+ * a large negative mean with much smaller stddev is likely to result
  * in a large number of iterations.
  *
- * The mean and variance given as parameters refer are parameters
- * to the normal distribution <i>before</i> truncation. The actual
- * random variate returned will have a different mean and variance.
+ * The mean and stddev parameters serve as parameters to the normal
+ * distribution <i>before</i> truncation. The actual random variate returned
+ * will have a different mean and standard deviation.
  *
  * @param mean mean of the normal distribution
- * @param variance variance of the normal distribution
+ * @param stddev standard deviation of the normal distribution
  * @param rng the underlying random number generator
  */
-SIM_API double truncnormal(double mean, double variance, int rng=0);
+SIM_API double truncnormal(double mean, double stddev, int rng=0);
 
 /**
  * Returns a random variate from the gamma distribution with parameters
- * alpha, beta > 0.
+ * alpha>0, beta>0.
+ *
+ * Gamma is the generalization of the Erlang distribution for non-integer
+ * k values, which becomes the alpha parameter. The chi-square distribution
+ * is a special case of the gamma distribution.
  *
  * Generation method depends on the value of alpha:
  *
@@ -102,26 +106,32 @@ SIM_API double gamma_d(double alpha, double beta, int rng=0);
  * Returns a random variate from the beta distribution with parameters
  * alpha1, alpha2.
  *
- * Generation is using relationship to Gamma distribution.
+ * Generation is using relationship to Gamma distribution: if Y1 has gamma
+ * distribution with alpha=alpha1 and beta=1 and Y2 has gamma distribution
+ * with alpha=alpha2 and beta=2, then Y = Y1/(Y1+Y2) has beta distribution
+ * with parameters alpha1 and alpha2.
  *
- * @param alpha1
- * @param alpha2 >0
+ * @param alpha1, alpha2 >0
  * @param rng the underlying random number generator
  */
 SIM_API double beta(double alpha1, double alpha2, int rng=0);
 
 /**
  * Returns a random variate from the Erlang distribution with k phases
- * and parameter m.
+ * and mean mean.
  *
- * Generation is similar to exponential distribution, using
- * the fact that exponential distributions sum up to Erlang.
+ * This is the sum of k mutually independent random variables, each with
+ * exponential distribution. Thus, the kth arrival time
+ * in the Poisson process follows the Erlang distribution.
  *
- * @param k phases
- * @param m >0
+ * Generation makes use of the fact that exponential distributions
+ * sum up to Erlang.
+ *
+ * @param k number of phases, k>0
+ * @param mean >0
  * @param rng the underlying random number generator
  */
-SIM_API double erlang_k(unsigned int k, double m, int rng=0);
+SIM_API double erlang_k(unsigned int k, double mean, int rng=0);
 
 /**
  * Returns a random variate from the chi-square distribution
@@ -130,29 +140,33 @@ SIM_API double erlang_k(unsigned int k, double m, int rng=0);
  * distribution with unit variance, then the sum-of-squares (sum(Yi^2))
  * has a chi-square distribution with k degrees of freedom.
  *
- * Generation is using relationship to Gamma distribution.
+ * Generation is using relationship to gamma distribution.
  *
- * @param k degrees of freedom
+ * @param k degrees of freedom, k>0
  * @param rng the underlying random number generator
  */
 SIM_API double chi_square(unsigned int k, int rng=0);
 
 /**
- * Returns a random variate from the Student-t distribution with
+ * Returns a random variate from the student-t distribution with
  * i degrees of freedom. If Y1 has a normal distribution and Y2 has a chi-square
  * distribution with k degrees of freedom then X = Y1 / sqrt(Y2/k)
- * has a Student-t distribution with k degrees of freedom.
+ * has a student-t distribution with k degrees of freedom.
  *
- * Generation is using relationship to Gamma and Chi-Square.
+ * Generation is using relationship to gamma and chi-square.
  *
- * @param i degrees of freedom
+ * @param i degrees of freedom, i>0
  * @param rng the underlying random number generator
  */
 SIM_API double student_t(unsigned int i, int rng=0);
 
 /**
- * Returns a random variate from the Cauchy distribution with parameters a,b
- * where b>0.
+ * Returns a random variate from the Cauchy distribution (also called
+ * Lorentzian distribution) with parameters a,b where b>0.
+ *
+ * This is a continuous distribution describing resonance behavior.
+ * It also describes the distribution of horizontal distances at which
+ * a line segment tilted at a random angle cuts the x-axis.
  *
  * Generation uses inverse transform.
  *
@@ -164,11 +178,11 @@ SIM_API double cauchy(double a, double b, int rng=0);
 
 /**
  * Returns a random variate from the triangular distribution with parameters
- * a < b < c.
+ * a <= b <= c.
  *
  * Generation uses inverse transform.
  *
- * @param a, b, c   a < b < c
+ * @param a, b, c   a <= b <= c
  * @param rng the underlying random number generator
  */
 SIM_API double triang(double a, double b, double c, int rng=0);
@@ -191,6 +205,10 @@ inline double lognormal(double m, double s, int rng=0)
 /**
  * Returns a random variate from the Weibull distribution with parameters
  * a, b > 0.
+ *
+ * The Weibull distribution gives the distribution of lifetimes of objects.
+ * It was originally proposed to quantify fatigue data, but it is also used
+ * in analysis of systems involving a "weakest link."
  *
  * Generation uses inverse transform.
  *
@@ -294,8 +312,11 @@ SIM_API int negbinomial(int n, double p, int rng=0);
  * Returns a random integer from the hypergeometric distribution with
  * parameters a,b and n.
  *
- * Generation according to inverse transform due to Fishman
- * (see Banks, page 165)
+ * If you have a+b items (a items of type A and b items of type B)
+ * and you draw n items from them without replication, this function
+ * will return the number of type A items in the drawn set.
+ *
+ * Generation uses inverse transform due to Fishman (see Banks, page 165).
  *
  * @param a, b  a,b>0
  * @param n     0<=n<=a+b
@@ -304,13 +325,14 @@ SIM_API int negbinomial(int n, double p, int rng=0);
 SIM_API int hypergeometric(int a, int b, int n, int rng=0);
 
 /**
- * Returns a random integer from the Poisson distribution with parameter lambda.
+ * Returns a random integer from the Poisson distribution with parameter lambda,
+ * that is, the number of arrivals over unit time where the time between
+ * successive arrivals follow exponential distribution with parameter lambda.
  *
  * Generation method depends on value of lambda:
  *
  *   - 0<lambda<=30: count number of events
- *   - lambda>30: Acceptance-Rejection due to Atkinson
- *     (see Banks, page 166)
+ *   - lambda>30: Acceptance-Rejection due to Atkinson (see Banks, page 166)
  *
  * @param lambda  > 0
  * @param rng the underlying random number generator
@@ -326,48 +348,31 @@ SIM_API int poisson(double lambda, int rng=0);
  */
 //@{
 /**
- * Same as uniform(), only uses random generator
- * gen_nr instead of generator 0.
+ * DEPRECATED: use uniform() instead.
  */
 SIM_API double genk_uniform(double gen_nr, double a, double b);
 
 /**
- * Same as intuniform(), only uses random generator
- * gen_nr instead of generator 0.
+ * DEPRECATED: use intuniform() instead.
  */
 SIM_API double genk_intuniform(double gen_nr, double a, double b);
 
 /**
- * Same as exponential(), only uses random generator
- * gen_nr instead of generator 0.
+ * DEPRECATED: use exponential() instead.
  */
 SIM_API double genk_exponential(double gen_nr, double p);
 
 /**
- * Same as normal(), only uses random generator
- * gen_nr instead of generator 0.
+ * DEPRECATED: use normal() instead.
  */
 SIM_API double genk_normal(double gen_nr, double mean, double variance);
 
 /**
- * Same as truncnormal(), only uses random generator
- * gen_nr instead of generator 0.
+ * DEPRECATED: use truncnormal() instead.
  */
 SIM_API double genk_truncnormal(double gen_nr, double mean, double variance);
 //@}
 
-//==========================================================================
-//=== Implementation of utility functions:
-
-inline double dblrand()
-{
-   return (double)intrand() / (double)((unsigned long)INTRAND_MAX+1UL);
-}
-
-inline double genk_dblrand(int gen_nr)
-{
-   return (double)genk_intrand(gen_nr) / (double)((unsigned long)INTRAND_MAX+1UL);
-}
 
 #endif
 

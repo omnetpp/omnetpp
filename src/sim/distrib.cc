@@ -32,7 +32,6 @@
 // FIXME TBD:
 //   add asserts for parameters
 //   find a way to verify/test distributions
-//   make them independent of RNGs
 //
 
 
@@ -69,6 +68,10 @@ double truncnormal(double m, double d, int rng)
 
 double gamma_d(double alpha, double beta, int rng)
 {
+    if (alpha<=0 || beta<=0)
+        throw new cException("gamma(): alpha and beta params must be positive "
+                             "(alpha=%lg, beta=%lg)", alpha, beta);
+
     // FIXME: temporarily disabled because of compile warning:
     // "not all control paths return a value"
     throw new cException("gamma_d() incomplete!");
@@ -164,8 +167,13 @@ double gamma_d(double alpha, double beta, int rng)
     }
 }
 
+
 double beta(double alpha1, double alpha2, int rng)
 {
+    if (alpha1<=0 || alpha2<=0)
+        throw new cException("beta(): alpha1 and alpha2 parameters must be positive "
+                             "(alpha1=%lg, alpha2=%lg)", alpha1, alpha2);
+
     double Y1 = gamma_d(alpha1, 1.0, rng);
     double Y2 = gamma_d(alpha2, 2.0, rng);
 
@@ -202,12 +210,18 @@ double student_t(unsigned int i, int rng)
 
 double cauchy(double a, double b, int rng)
 {
+    if (b<=0)
+        throw new cException("cauchy(): parameters must be b>0 (a=%lg, b=%lg, c=%lg)", a, b);
+
     return a + b * tan(M_PI * genk_dblrand(rng));
 }
 
 
 double triang(double a, double b, double c, int rng)
 {
+    if (b<a || c<b || a==c)
+        throw new cException("triang(): parameters must be a<=b<=c, a<c (a=%lg, b=%lg, c=%lg)", a, b, c);
+
     double U, beta, T;
 
     U = genk_dblrand(rng);
@@ -227,12 +241,16 @@ double triang(double a, double b, double c, int rng)
 
 double weibull(double a, double b, int rng)
 {
+    if (a<=0 || b<=0)
+        throw new cException("weibull(): a,b parameters must be positive (a=%lg, b=%lg)", a, b);
+
     return a * pow(-log(1.0 - genk_dblrand(rng)), 1.0 / b);
 }
 
 
 double pareto_shifted(double a, double b, double c, int rng)
 {
+    // FIXME: check arg values
     double u_pow = pow(1.0 - genk_dblrand(rng), 1.0 / a);
     return (b - c * u_pow) / u_pow;
 }
@@ -268,9 +286,12 @@ int intuniform(int a, int b, int rng)
 int binomial(int n, double p, int rng)
 {
     int X = 0;
+    // sum up n bernoulli trials
     for (int i = 0; i < n; i++)
     {
-        X += bernoulli(p, rng);
+        double U = genk_dblrand(rng);
+        if (p > U)
+            X++;
     }
     return X;
 }
@@ -296,17 +317,16 @@ int negbinomial(int n, double p, int rng)
 
 int hypergeometric(int a, int b, int n, int rng)
 {
-    // FIXME libg++ uses following calculation:
-    //   double d = (pGenerator -> asDouble() > pP) ? (1.0 - pP) :  (pP);
-    //   return(-pMean * log(pGenerator -> asDouble()) / (2.0 * d) );
-    // check it!
+    if (a<0 || b<0 || n>a+b)
+        throw new cException("hypergeometric(): params must be a>=0, b>=0, n=<a+b "
+                             "(a=%d, b=%d, n=%d)", a,b,n);
 
     double U = genk_dblrand(rng);
     double alpha = _factorial(b) / (double) _factorial(a + b - n);
     double beta = _factorial(b - n) / (double) _factorial(a + b);
     double A = alpha / beta;
     double B = A;
-    int X = 0.0;
+    int X = 0;
 
     while (U > A)
     {
@@ -445,45 +465,36 @@ Define_Function2(poisson, _dbl_poisson, 1);
 
 // compatibility genk_ versions:
 
-double genk_uniform(double gen_nr, double a, double b)
+double genk_uniform(double rng, double a, double b)
 {
-    return a + genk_dblrand((int)gen_nr) * (b-a);
+    return uniform(a, b, (int)rng);
 }
 
-double genk_intuniform(double gen_nr, double a, double b)
+double genk_intuniform(double rng, double a, double b)
 {
-    long a1 = (long)a,
-         b1 = (long)b;
-    return a1 + genk_intrand((int)gen_nr) % (b1-a1+1);
+    return uniform((int)a, (int)b, (int)rng);
 }
 
-double genk_exponential(double gen_nr, double p)
+double genk_exponential(double rng, double p)
 {
-    return -p * log(genk_dblrand((int)gen_nr));
+    return exponential(p, (int)rng);
 }
 
-double genk_normal(double gen_nr, double m, double d)
+double genk_normal(double rng, double m, double d)
 {
-    return m + d * sqrt(-2.0*log(genk_dblrand((int)gen_nr))) *
-                   cos(PI*2*genk_dblrand((int)gen_nr));
+    return normal(m, d, (int)rng);
 }
 
-double genk_truncnormal(double gen_nr, double m, double d)
+double genk_truncnormal(double rng, double m, double d)
 {
-    double res;
-    do {
-         res = m + d * sqrt(-2.0*log(genk_dblrand((int)gen_nr))) *
-                       cos(PI*2*genk_dblrand((int)gen_nr));
-    } while(res<0);
-
-    return res;
+    return truncnormal(m, d, (int)rng);
 }
 
 // register functions for findFunction()
-Define_Function( genk_uniform, 3 )
-Define_Function( genk_intuniform, 3 )
-Define_Function( genk_exponential, 2 )
-Define_Function( genk_normal, 3 )
-Define_Function( genk_truncnormal, 3 )
+Define_Function(genk_uniform, 3);
+Define_Function(genk_intuniform, 3);
+Define_Function(genk_exponential, 2);
+Define_Function(genk_normal, 3);
+Define_Function(genk_truncnormal, 3);
 
 

@@ -12,6 +12,9 @@
 	distrib.h, and random number generator functions were moved to new file
 	random.h.
 
+	* distrib.h: bugfix: 2nd arg to normal() is really the stddev, not
+	variance. Documentation fixed.
+
 2003-01-14  Andras Varga
 
 	* cwatch.h: added support for 'bool'
