@@ -1114,11 +1114,11 @@ NEDC="nedc"
 MAKEDEPEND="makedepend -Y"
 
 case "$CXX" in
-   "c++") # linux machine
-      CXXLIB=stdc++
-   ;;
    "cxx") # Tru64 machine
       CXXLIB=cxx
+   ;;
+   *) # GNU C++ ?
+      CXXLIB=stdc++
    ;;
 esac
 
