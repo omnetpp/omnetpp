@@ -65,6 +65,7 @@ void TCmdenvApp::readOptions()
      TOmnetApp::readOptions();
 
      opt_runstoexec = ini_file->getAsString("Cmdenv", "runs-to-execute", "");
+     opt_extrastack = ini_file->getAsInt("Cmdenv", "extra-stack", CMDENV_EXTRASTACK);
 }
 
 void TCmdenvApp::readPerRunOptions( int run_nr )
@@ -263,6 +264,11 @@ void TCmdenvApp::puts(const char *s)
 {
      if (opt_modulemsgs || simulation.contextModule()==NULL)
          TOmnetApp::puts( s );
+}
+
+unsigned TCmdenvApp::extraStackForEnvir()
+{
+     return opt_extrastack;
 }
 
 bool TCmdenvApp::memoryIsLow()

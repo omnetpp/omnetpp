@@ -25,6 +25,9 @@
 #include "csimul.h"
 #include "omnetapp.h"
 
+
+#define CMDENV_EXTRASTACK  8192
+
 //==========================================================================
 // TCmdenvApp: command line user interface.
 
@@ -34,6 +37,7 @@ class TCmdenvApp : public TOmnetApp
      // new simulation options:
      int opt_helponly;
      opp_string opt_runstoexec;
+     unsigned opt_extrastack;
 
      int opt_modulemsgs;
      int opt_verbose;
@@ -62,7 +66,7 @@ class TCmdenvApp : public TOmnetApp
      //virtual bool gets(const char *promptstr, char *buf, int len=255);
      //virtual bool askYesNo(const char *question);
 
-     virtual unsigned extraStackForEnvir() {return 8192;}
+     virtual unsigned extraStackForEnvir();
 
      // cmdenv has an own memory manager (heap.cc)
      virtual bool memoryIsLow();

@@ -679,6 +679,7 @@ void TOmnetTkApp::readOptions()
 {
     TOmnetApp::readOptions();
 
+    opt_extrastack = ini_file->getAsInt("Tkenv", "extra-stack", TKENV_EXTRASTACK);
     opt_default_run = ini_file->getAsInt( "Tkenv", "default-run", 0);
     opt_stepdelay = long(1000*ini_file->getAsTime( "Tkenv", "slowexec-delay", 0.3 )+.5);
     opt_updatefreq_fast = ini_file->getAsInt( "Tkenv", "update-freq-fast", 10 );
@@ -883,6 +884,11 @@ int TOmnetTkApp::askYesNo(const char *question)
     CHK(Tcl_VarEval(interp,"messagebox {Warning} {",question,"}"
                            " question yesno", NULL));
     return interp->result[0]=='y';
+}
+
+unsigned TOmnetTkApp::extraStackForEnvir()
+{
+     return opt_extrastack;
 }
 
 //======================================================================

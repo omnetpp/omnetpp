@@ -20,7 +20,10 @@
 
 #include "omnetapp.h"
 
+#define TKENV_EXTRASTACK   16384
+
 //=========================================================================
+// TOmnetTkApp: Tcl/Tk-based user interface.
 
 class TOmnetTkApp : public TOmnetApp
 {
@@ -36,6 +39,7 @@ class TOmnetTkApp : public TOmnetApp
       long opt_stepdelay;          // Delay between steps in 100th seconds
       int  opt_updatefreq_fast;    // FastRun updates display every N events
       int  opt_updatefreq_express; // RunNoTracing updates display every N events
+      unsigned opt_extrastack;     // per-module extra stack
 
       Tcl_Interp *interp;      // TCL interpreter
       opp_string tkenv_dir;    // directory of Tkenv's *.tcl files
@@ -70,8 +74,8 @@ class TOmnetTkApp : public TOmnetApp
       virtual void readOptions();
       virtual void readPerRunOptions(int run_nr);
 
-      // if using Tkenv, modules should have 16K extra stack
-      virtual unsigned extraStackForEnvir() {return 16384;}
+      // if using Tkenv, modules should have ~16K extra stack
+      virtual unsigned extraStackForEnvir();
 
       // New functions:
       void newNetwork( const char *networkname );
