@@ -175,8 +175,16 @@ copied to the lib/ and bin/ subdirs.
 
 8. Using DLLs
 ~~~~~~~~~~~~~
-It is possible to build a DLL version of the OMNeT++ libraries. To do so,
-set the desired library suffix to ".dll" in configuser.vc:
+
+Using DLLs is not possible, and it will probably never be. It is impossible
+to implement the kind of global registration lists ("modules", "networks", etc)
+in the same elegant way as under Unix, because a DLL, while initializing,
+cannot write outside its address space. It's the initialisation code when
+the constructors of global objects run.  Greetings to Bill Gates, and thanks
+for the wonderful DLL mechanism...
+
+It is possible, however, to build (useless) DLLs from the OMNeT++ libraries.
+To do so, set the desired library suffix to ".dll" in configuser.vc:
   LIB_SUFFIX=.dll
 After re-building OMNeT++, the DLLs should appear in the lib/ directory,
 together with the respective import libraries which have the .ilib suffix.
