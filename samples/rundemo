@@ -24,13 +24,15 @@ set unixbrowser "netscape"
 #set unixbrowser "konqueror"
 
 array set colors {
-   color1 #d0b48f
-   color2 #9e9fa1
-   color3 #4cb28a
-   color4 #c4c4cc
-   color5 #c1b59d
+   color1 #c1b59d
+   color2 #e85b13
+   color3 #c4c4cc
+   color4 #4cb28a
+   color5 #d0b48f
    color6 #80a3a7
 }
+
+#  #9e9fa1
 
 #
 # title line:   {"color" "title"}
