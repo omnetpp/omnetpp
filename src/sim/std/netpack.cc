@@ -30,9 +30,9 @@ int is_started_as_master()
     return NONPARALLEL_MODE;
 }
 
-// Using this source, it is possible to build a simulator with
-// on a single processor. In this case, the network pack/unpack functions
-// have no functionality (dummy functions).
+// Using this source, it is possible to build a simulator without the PVM libs.
+// In this case, the network pack/unpack functions have no functionality
+// (dummy functions).
 
 #define DUMMY_NETPACK_NETUPACK( CLASSNAME ) \
         int CLASSNAME::netPack()  {return 0;} \
