@@ -1117,6 +1117,5 @@ proc ::combobox::widgetName {w} {
     error "internal error: $w is not a child of a combobox"
 }
 
-
 # end of combobox.tcl
 

@@ -2183,6 +2183,7 @@ foreach command {TabToWindow CancelRepeat ListboxUpDown} {
         }
     }
 }
+unset tmp  ;# patch by Andras
 
 # end of combobox.tcl
 
