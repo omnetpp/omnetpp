@@ -80,10 +80,7 @@ void TObjInspector::update()
    static char buf[MAX_OBJECTINFO];
    object->info(buf);
    setLabel(".nb.info.info.e",buf);
-
-   opp_string details;
-   object->detailedInfo(details);
-   setLabel(".nb.info.details.e",details.c_str());
+   setLabel(".nb.info.details.e",object->detailedInfo().c_str());
 
    if (fieldspage)
        fieldspage->update();
