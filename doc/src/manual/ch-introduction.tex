@@ -362,7 +362,6 @@ by three exchange students from TU Delft: Jan Heijmans, Alex Paalvast
 and Robert van der Leij. nedc was first called JAR after their initials
 until it got renamed to nedc. nedc was further developed and refactored
 several times until it finally retired and got replaced by nedtool in {\opp} 3.0.
-
 The second group of Delft exchange students (Maurits Andr\'{e},
 George van Montfort, Gerard van de Weerd) arrived in fall 1995.
 They performed some testing of the simulation library, and
@@ -371,17 +370,18 @@ of Token Ring, and simulation of the NIM game which survived until {\opp} 3.0.
 These student exchanges were organized by Dr. Leon Rothkranz
 at TU Delft, and Gy\"{o}rgy Pongor at TU Budapest.
 
+The diploma thesis of Zolt\'{a}n Vass (spring 1996) was to prepare
+{\opp} for parallel execution over PVM to {\opp}. This code has been
+replaced with the new Parallel Simulation Architecture in {\opp} 3.0.
+G\'{a}bor Lencse (lencse@hit.bme.hu) was also interested in parallel
+simulation, namely a method called Statistical Synchronization (SSM).
+He implemented the FDDI model (practically unchanged until now), and added
+some extensions into NED for SSM. These extensions have been removed
+since then ({\opp} 3.0 does parallel execution on different principles).
 
-G\'{a}bor Lencse (lencse@hit.bme.hu)
-JAR (NEDC) support for distributed execution:\\
-Removed in OMNeT++ 3.0.
-
-PVM support (as final project), spring 1996:\\
-\tab Zolt\'{a}n Vass\tab \tab BME-HIT
-Removed and replaced with different codebase in OMNeT++ 3.0.
-
-P$^{2}$, k-split algorithms and more, from fall 1996:\\
-\tab Babak Fakhamzadeh\tab TU Delft
+The P$^{2}$ algorithm and the original implementation of the k-split algorithm
+was programmed in fall 1996 by Babak Fakhamzadeh from TU Delft.
+k-split was later reimplemented by Andr\'{a}s.
 
 Several bugfixes and valuable suggestions for improvements came
 from the user community of {\opp}. It would be impossible to
@@ -391,7 +391,7 @@ instead, the README and ChangeLog files contain acknowledgements.
 Between summer 2001 and fall 2004, the {\opp} CVS was hosted
 at the University of Karlsruhe. Credit for setting
 up and maintaining the CVS server goes to Ulrich Kaage.
-Ulrich can also be credited with converting the Manual from
+Ulrich can also be credited with converting the User Manual from
 Microsoft Word format to LaTeX, which was a huge undertaking
 and great help.
 
