@@ -114,7 +114,7 @@ module TokenRing
                 THT = THT,
                 dataRate = dataRate,
                 numStations = numStations;
-            display: "i=device/pc4;q=sendQueue;p=183,88,ring";
+            display: "i=device/pc4;q=sendQueue;p=80,80,ring";
     connections:
         comp[numStations - 1].out --> delay cableDelay --> comp[0].in;
 

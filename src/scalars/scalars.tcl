@@ -14,7 +14,7 @@
 #----------------------------------------------------------------#
 
 puts {Scalars 3.1 -- Output scalar plotting tool, part of OMNeT++/OMNEST.
-(c) 2004 Andras Varga
+(c) 2004-2005 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 }
 

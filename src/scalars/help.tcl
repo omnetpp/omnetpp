@@ -19,7 +19,7 @@ proc helpAbout {} {
 Scalars 3.1
 Part of OMNeT++/OMNEST
 
-(c) 2004 Andras Varga
+(c) 2004-2005 Andras Varga
 
 NO WARRANTY -- see license for details.
 }
