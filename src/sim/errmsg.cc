@@ -69,7 +69,7 @@ char *emsg[] = {
   "This object cannot DUP itself",                       // eCANTDUP
   "FSM: infinite loop of transient states (now in state %s)", // eINFLOOP
   "FSM: state changed during state entry code (now in state %s)", // eSTATECHG
-  "assignment, copying, dup() not supported by this class", // eCANTCOPY
+  "Assignment, copying, dup() not supported by this class", // eCANTCOPY
   "Badly connected gate",                                // eBADGATE
   "Gate not connected to anything",                      // eNOTCONN
   "",                                                    // eBADKEY
@@ -82,8 +82,8 @@ char *emsg[] = {
   "receiveOn(): gate %d is output gate",                 // eOUTGATE
   "Channel error out of range [0..1]",                   // NL eCHERROR
   "Delay time less than zero",                           // NL eCHDELAY
-  "Array index out of boundaries",                       // NL eARRAY
-  "",  /* this msg is never printed */                   // eCUSTOM
+  "Array index out of bounds",                           // NL eARRAY
+  "%s",                                                  // eCUSTOM
   "Not enough memory on heap for module %s",             // eNOMEM2
   "User error: %s",                                      // eUSER
   ""

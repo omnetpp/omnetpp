@@ -21,6 +21,7 @@
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
 #include <assert.h>
+#include <exception>
 #include "csimplemodule.h"
 #include "cgate.h"
 #include "cmessage.h"
@@ -108,7 +109,17 @@ void cSimpleModule::activate(void *p)
         simulation.exception = e;
         simulation.exception_type = 0;
     }
-    // FIXME handle other exception too: std::exception, unsigned int, any (...) etc
+    catch (std::exception e)
+    {
+        simulation.exception = new cException("standard C++ exception %s: %s",
+                                               opp_typename(typeid(e)), e.what());
+        simulation.exception_type = 0;
+    }
+    catch (...)
+    {
+        simulation.exception = new cException("unknown exception occurred");
+        simulation.exception_type = 0;
+    }
 
     // The End
     simulation.transferToMain(); // send back exception -- will come back sometime for stack cleanup
