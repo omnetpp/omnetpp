@@ -1,0 +1,41 @@
+%description:
+Shift operator in NED (Stefan Feuerhahn's bug)
+
+%file: {}.ned
+
+simple {Simple}
+   parameters:
+      p00;
+endsimple
+
+network {net}: {Simple}
+   parameters:
+      p00 = (192 << 24);
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    for (int i=0; i<params(); i++)
+        ev << par(i).name() << "=" << std::hex << (unsigned long)par(i) << endl;
+    ev << endl;
+}
+
+%inifile: {}.ini
+[General]
+network={net}
+
+%contains-regex: stdout
+p00=c0000000
+.
