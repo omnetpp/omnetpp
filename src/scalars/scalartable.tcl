@@ -21,7 +21,11 @@ proc loadScalarFile {fname} {
     busyCursor "Loading $fname..."
 
     puts "DBG: loading file"
-    opp_loadScalar $fname
+    if [catch {opp_loadScalar $fname} err] {
+        idleCursor
+        tk_messageBox -icon warning -type ok -title Error -message "Error reading $fname: $err"
+        return
+    }
 
     puts "DBG: refreshing filter combos"
     refreshFilters
