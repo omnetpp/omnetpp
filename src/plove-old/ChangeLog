@@ -48,5 +48,7 @@ July 17, 1999
 ------ omnetpp-2.0b2 released ------
 Jan 18, 2000
   - bugfix: Plove hung on selecting filters
-
 ------ omnetpp-2.0b3 released ------
+Apr 5, 2000
+  - Makefile.vc now creates plove.bat (requires correct WISH= setting in
+    configuser.vc)
