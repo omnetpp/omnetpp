@@ -28,6 +28,7 @@ module {Compound}
             gatesizes:
                 in1[index],
                 in2[a+index];
+    connections nocheck:
 endmodule
 
 network {network}: {Compound}

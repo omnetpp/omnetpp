@@ -31,6 +31,7 @@ module {Compound}
                 p7 = input(sizeof(foo)),
                 p8 = input(a+sizeof(in)),
                 p9 = input(a+sizeof(foo));
+    connections nocheck:
 endmodule
 
 // we need this only because the top-level module cannot

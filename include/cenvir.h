@@ -47,6 +47,7 @@ template <class E, class T = std::char_traits<E> >
     class basic_evbuf : public std::basic_stringbuf<E,T> {
 public:
     basic_evbuf(cEnvir *ev) : _ev(ev) {}
+    bool isempty() {return pptr()==pbase();}
 protected:
     virtual int sync();
     virtual std::streamsize xsputn(const E *s, std::streamsize n) {
@@ -152,6 +153,10 @@ class ENVIR_API cEnvir : public std::ostream
     // evbuf (the streambuf underlying cEnvir's ostream base class)
     // writes via this function.
     void sputn(const char *s, int n);
+
+    // internal: flushes the internal stream buffer by terminating last line if needed
+    // note: exploits the fact that evbuf does sync() on "\n"'s
+    void flushstream_ifneeded() {if (!ev_buf.isempty()) ev_buf.sputn("\n",1);}
 
   public:
     /** @name Constructor, destructor.
