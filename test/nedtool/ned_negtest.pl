@@ -65,7 +65,7 @@ foreach $testfile (@filenames)
     $pattern =~ s/^\s*(.*?)\s*$/\1/s; # trim pattern
 
     # check contains or not-contains
-    if (!($txt =~ /$pattern/s)) {
+    if (!($txt =~ /\Q$pattern\E/s)) {
         fail($testfile, "different error message");
         print "expected output: >>>$pattern<<<\nactual output: >>>$txt<<<\n" if ($verbose);
         next;
