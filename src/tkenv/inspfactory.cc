@@ -29,34 +29,21 @@ cHead inspectorfactories("inspectorfactories");
 
 cInspectorFactory *findInspectorFactoryFor(cObject *obj, int type)
 {
-    if (type!=INSP_DEFAULT)
+    cInspectorFactory *best=NULL;
+    double bestweight=0;
+    for (cIterator i(inspectorfactories); !i.end(); i++)
     {
-        // choose the 1st one that can create this type
-        // FIXME: not good, see cPacket vs cMessage, INSP_OBJECT!!!
-        for (cIterator i(inspectorfactories); !i.end(); i++)
+        cInspectorFactory *ifc = (cInspectorFactory *) i();
+        if (ifc->supportsObject(obj) &&
+            (type==INSP_DEFAULT || ifc->inspectorType()==type) &&
+            ifc->qualityAsDefault(obj)>bestweight
+           )
         {
-            cInspectorFactory *ifc = (cInspectorFactory *) i();
-            if (ifc->supportsObject(obj) && ifc->inspectorType()==type)
-                return ifc;
+            bestweight = ifc->qualityAsDefault(obj);
+            best = ifc;
         }
-        return NULL;
     }
-    else
-    {
-        // otherwise choose best one
-        cInspectorFactory *best=NULL;
-        double bestweight=0;
-        for (cIterator i(inspectorfactories); !i.end(); i++)
-        {
-            cInspectorFactory *ifc = (cInspectorFactory *) i();
-            if (ifc->supportsObject(obj) && ifc->qualityAsDefault(obj)>bestweight)
-            {
-                bestweight = ifc->qualityAsDefault(obj);
-                best = ifc;
-            }
-        }
-        return best; // may be NULL too
-    }
+    return best; // may be NULL too
 }
 
 
