@@ -378,7 +378,7 @@ else
             AC_MSG_ERROR([Cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
         fi
     else
-        AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts; version 8.4.0+ required])
+        AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts. Version 8.4.0+ and devel package required. Check config.log for more info!])
     fi
 fi
 
