@@ -248,9 +248,9 @@ proc new_run {} {
     } else {
         set descr [opp_getinientryasstring "Run $runno" "description"]
         if {$descr != ""}  {
-            lappend run "Run $runno: $descr"
+            set run "Run $runno: $descr"
         } else {
-            lappend run "Run $runno"
+            set run "Run $runno"
         }
     }
 
