@@ -918,22 +918,20 @@ methods to process separate packet types and separate timers.
 
 
 The code for simple packet generators and sinks programmed with \fname{handleMessage()} might
-be as simple as this:
+be as simple as the following pseoudocode:
 
-\begin{Verbatim}[commandchars=\\\{\}]
-PacketGenerator::handleMessage(m)
-\{
-    create and send out packet
-    schedule m again to trigger next call to handleMessage
-      // (self-message)
-\}
-PacketSink::handleMessage(m)
-\{
-    delete m
-\}
-\end{Verbatim}
+\begin{verbatim}
+PacketGenerator::handleMessage(msg)
+{
+    create and send out a new packet;
+    schedule msg again to trigger next call to handleMessage;
+}
 
-
+PacketSink::handleMessage(msg)
+{
+    delete msg;
+}
+\end{verbatim}
 
 Note that \textit{PacketGenerator} will need to redefine \fname{initialize()}
 to create \textit{m} and schedule the first event.
@@ -947,7 +945,7 @@ discussed yet, but the code is probably understandable nevertheless.)
 class Generator : public cSimpleModule
 \{
     Module_Class_Members(Generator,cSimpleModule,0)
-    // note zero stack size!
+                                // note zero stack size!
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 \};
