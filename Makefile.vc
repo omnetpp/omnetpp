@@ -26,8 +26,7 @@ ENVIR_ILIB=
 #=====================================================================
 
 
-#all: check-env components
-all: components
+all: check-env components reminder
 
 #components: libs progs samples
 components: libs progs
@@ -57,18 +56,23 @@ samples: $(SAMPLES)
 #
 
 envir_ilib:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE) envir.ilib
 
 sim:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\sim && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 envir:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 cmdenv:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\cmdenv && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 tkenv:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\tkenv && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
@@ -76,15 +80,19 @@ tkenv:
 #
 
 nedc:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\nedc && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 gned:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\gned && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 plove:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\plove && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 utils:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\utils &&  $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
@@ -92,33 +100,43 @@ utils:
 #
 
 dyna:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 fddi:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fddi && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 fifo1:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo1 && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 fifo2:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo2 && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 hcube:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hcube && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 hist:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hist && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 nim:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\nim && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 pvmex:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\pvmex && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 token:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\token && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 demo:
+	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\demo && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #=====================================================================
@@ -128,14 +146,27 @@ demo:
 #=====================================================================
 
 
-#check-env:
-#	@ echo *** TBD check-env
+check-env:
+	@echo ===== Checking environment =====
+	@echo  Checking if $(CXX) works...
+	@( $(CXX) /? /nologo <nul > nul || echo Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1 )
+#preprocessed
+!IF ! EXIST($(OMNETPP_ROOT))
+!ERROR Directory defined in configuser.vc as OMNETPP_ROOT does not exist
+!ENDIF
+# TBD !IF ! EXIST($(TK_DIR))
+# TBD !ERROR Directory defined in configuser.vc as TK_DIR does not exist
+# TBD !ENDIF
+	@echo = Done =
 
 clean:
 	-for %%i in ( $(LIBS) $(PROGS) ) do \
 	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
-	-del /q $(OMNETPP_BIN_DIR:/=\)\*.*
-	-del /q $(OMNETPP_LIB_DIR:/=\)\*.*
+	-del /q $(OMNETPP_BIN_DIR:/=\)\*.exe
+	-del /q $(OMNETPP_BIN_DIR:/=\)\*.bat
+	-del /q $(OMNETPP_LIB_DIR:/=\)\*.lib
+	-del /q $(OMNETPP_LIB_DIR:/=\)\*.dll
+	-del /q $(OMNETPP_LIB_DIR:/=\)\*.ilib
 	-for %%i in ( $(SAMPLES) ) do \
 	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && del *.obj *.exe
 
@@ -145,4 +176,11 @@ depend:
 #	for %%i in ( $(SAMPLES) ) do \
 #	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
 
-
+reminder:
+	@echo ### Compilation finished
+!IF "$(TCL_LIBRARY)" == ""
+	@echo ###
+	@echo ### Don't forget to set the TCL_LIBRARY environment variable!
+        @rem TBD echo ### TCL_LIBRARY=$(TK_LIB_DIR)/TCL$(TK_VER_DOTS)
+	@echo ### 
+!ENDIF
