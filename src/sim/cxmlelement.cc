@@ -202,6 +202,8 @@ cXMLElementList cXMLElement::getChildrenByTagName(const char *tagname) const
 cXMLElementList cXMLElement::getElementsByTagName(const char *tagname) const
 {
     cXMLElementList list;
+    if (!strcasecmp(getTagName(),tagname))
+        list.push_back(this);
     doGetElementsByTagName(tagname,list);
     return list;
 }
