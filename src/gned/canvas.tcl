@@ -19,21 +19,47 @@
 
 # openModuleOnCanvas --
 #
-# switch to module's canvas or create a new canvas for it
+# Switch to module's canvas or create a new canvas for it.
+# Return: id of canvas
 #
 proc openModuleOnCanvas {modkey} {
     set canv_id [canvasIdFromItemKey $modkey]
 
     if {$canv_id==""} {
-        openModuleOnNewCanvas $modkey
+        set canv_id [openModuleOnNewCanvas $modkey]
     } else {
         switchToCanvas $canv_id
     }
+puts "dbg: openModuleOnCanvas returning $canv_id"
+    return $canv_id
 }
+
+
+# openUnnamedCanvas --
+#
+# This procedure is called when the user tries to close the last canvas.
+# One canvas must always be open, so we open/create an "unnamed" module
+# on a new canvas.
+# Return value: canvas id
+#
+proc openUnnamedCanvas {} {
+    # Look for an unnamed, non-dirty ned file. Add a module to it
+    # (if it doesn't already have one) and open it on a new canvas.
+
+puts "dbg: openUnnamedCanvas should reuse existing 'unnamed' modules"
+    if {1} {
+        set nedfilekey [addItem nedfile 0]
+        set modkey [addItem module $nedfilekey]
+    }
+    set canv_id [openModuleOnCanvas $modkey]
+    return $canv_id
+}
+
 
 # openModuleOnNewCanvas --
 #
-# create a new canvas and display the given component on it
+# Create a new canvas and display the given component on it.
+# Return: id of new canvas
 #
 proc openModuleOnNewCanvas {modkey} {
     global gned ned canvas fonts
@@ -79,55 +105,42 @@ proc openModuleOnNewCanvas {modkey} {
 
     # show the canvas -- must be the last one because it needs the module name
     switchToCanvas $canv_id
+puts "dbg: openModuleOnNewCanvas created $canv_id"
+    return $canv_id
 }
 
-# closeCanvas --
-#
-# Close the canvas given by canvas id. Returns 1 if successful.
-#
-proc closeCanvas {id} {
-    #FIXME:
-    puts "dbg: closeCanvas to be fixed"
-    switchToCanvas $id
-    closeCurrentCanvas
-
-    # success not guaranteed here!!!
-    # pretend success:
-    return 1
-}
 
 # switchToCanvas --
 #
 # Activate the given canvas (as if its tab was clicked by the user)
 #
-proc switchToCanvas {id} {
+proc switchToCanvas {canv_id} {
     global gned canvas ned
     set w .omnetpp
 
+puts "dbg: switchToCanvas $canv_id entered"
+
     # unmap old canvas
     if {$gned(canvas_id)!=""} {
-        set canv_id $gned(canvas_id)
-        $canvas($canv_id,tab) config -relief flat -bg #d9d9d9
-        if {$canvas($canv_id,mode)=="textedit"} {
-            grid forget $canvas($canv_id,textedit)
-        } elseif {$canvas($canv_id,mode)=="graphics"} {
-            grid forget $canvas($canv_id,canvas)
+        set old_canv_id $gned(canvas_id)
+        $canvas($old_canv_id,tab) config -relief flat -bg #d9d9d9
+        if {$canvas($old_canv_id,mode)=="textedit"} {
+            grid forget $canvas($old_canv_id,textedit)
+        } elseif {$canvas($old_canv_id,mode)=="graphics"} {
+            grid forget $canvas($old_canv_id,canvas)
         } else {
             error "invalid mode"
         }
     }
 
     # set global vars
-    set gned(canvas_id) $id
-    set gned(canvas)    $canvas($id,canvas)
-    set gned(tab)       $canvas($id,tab)
+    set gned(canvas_id) $canv_id
+    set gned(canvas)    $canvas($canv_id,canvas)
+    set gned(tab)       $canvas($canv_id,tab)
 
     # map new canvas/textedit and update tabs
-    set canv_id $id
     $canvas($canv_id,tab) config -relief ridge -bg wheat2
-
     setCanvasMode $canvas($canv_id,mode)
-
 }
 
 # setCanvasMode --
@@ -210,6 +223,20 @@ puts "dbg: must check if NED text has in fact changed"
          return
     }
 
+    # actually close the canvas
+    destroyCanvas $canv_id
+}
+
+
+# destroyCanvas --
+#
+# Destroy the canvas given with its id.
+#
+proc destroyCanvas {canv_id} {
+    global canvas gned
+
+puts "dbg: destroyCanvas $canv_id"
+
     # find canvas that will be current after closing this one
     # select previous one, then if it fails, try next one
     for {set newid [expr $canv_id-1]} {$newid>0} {incr newid -1} {
@@ -221,15 +248,13 @@ puts "dbg: must check if NED text has in fact changed"
         }
     }
 
-    # cannot close last canvas
+    # switch to new canvas; make sure there's always at least one canvas open
     if {![info exist canvas($newid,canvas)]} {
-         tk_messageBox -icon warning -type ok -title GNED \
-            -message "One canvas must always be open."
-         return
+        # openUnnamedCanvas includes switching to the new canvas
+        set newid [openUnnamedCanvas]
+    } else {
+        switchToCanvas $newid
     }
-
-    # switch to the other canvas
-    switchToCanvas $newid
 
     # destroy widgets and variables associated with old canvas
     destroy $canvas($canv_id,canvas)
@@ -258,3 +283,5 @@ proc adjustWindowTitle {} {
     $canvas($gned(canvas_id),tab) config -text $ned($modkey,name)
 
 }
+
+

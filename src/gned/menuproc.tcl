@@ -221,10 +221,6 @@ proc editCheck {} {
                            to make automatic corrections."
 }
 
-proc viewManager {} {
-  BringUpManager
-}
-
 #proc optionsLoadBackground {} {
 #   global gned
 #

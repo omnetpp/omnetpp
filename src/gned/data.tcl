@@ -106,6 +106,8 @@ proc insertItem {key parentkey} {
 proc deleteItem {key} {
    global ned canvas
 
+puts "dbg: deleteItem $key entered (ROUTINE TO BE COMPLETED!)"
+
    # delete children recursively
    foreach childkey $ned($key,childrenkeys) {
       deleteItem $childkey
@@ -113,7 +115,7 @@ proc deleteItem {key} {
 
    # delete non-child linked objects
    #   (e.g. connections when a submod is deleted)
-   puts "dbg: deleteItem to be completed!!!"
+   #FIXME: code comes here
 
    # delete item from canvas (if it's there)
    set canv_id [canvasIdFromItemKey $key]
@@ -124,6 +126,12 @@ proc deleteItem {key} {
       }
    }
 
+   # if a canvas displayed exactly this item, close that canvas
+   set canv_id [canvasIdFromItemKey $key]
+   if {$canv_id!="" && $canvas($canv_id,module-key)==$key} {
+      destroyCanvas $canv_id
+   }
+
    # unlink from parent
    set parentkey $ned($key,parentkey)
    set pos [lsearch -exact $ned($parentkey,childrenkeys) $key]
@@ -132,15 +140,6 @@ proc deleteItem {key} {
    # delete from array
    foreach i [array names ned "$key,*"] {
       unset ned($i)
-   }
-
-   # close canvas if item was displayed on one
-   set canv_id [canvasIdFromItemKey $key]
-puts "dbg: needs to close canvas?"
-   if {$canv_id!=""} {
-puts "dbg: closing canvas"
-      # FIXME: something like forceCloseCanvas would be better
-      closeCanvas $key
    }
 }
 
