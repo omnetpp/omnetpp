@@ -182,9 +182,6 @@ class SIM_API cModule : public cDefaultList
     // we'll need different gate objects
     virtual cGate *createGateObject(const char *gname, char tp);
 
-    // internal: get initial display strings from Envir
-    void initDisplayStrings();
-
   protected:
     /** @name Initialization and finish hooks.
      *

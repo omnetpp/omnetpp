@@ -4,6 +4,8 @@
 
 	* cmodule.h: added lastsubmodp (speeds up insertSubmodule())
 
+	* cenvir.h: removed ev.getDisplayString() with no replacement
+
 2004-12-10  Andras Varga
 
 	* csimul.h: added getUniqueNumber(), for generating unique IDs for

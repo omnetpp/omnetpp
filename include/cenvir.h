@@ -326,11 +326,6 @@ class ENVIR_API cEnvir : public std::ostream
     bool isModuleLocal(cModule *parentmod, const char *modname, int index);
 
     /**
-     * Returns display string for an object given with its full name.
-     */
-    const char *getDisplayString(int run_no, const char *name);
-
-    /**
      * Resolves reference to an XML model configuration file. First argument
      * is the file name of the XML document. The optional second argument
      * may contain an XPath-like expression to denote an element within

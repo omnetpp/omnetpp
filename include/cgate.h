@@ -59,10 +59,6 @@ class SIM_API cGate : public cObject
 
     cDisplayString *dispstr; // the display string (created on demand)
 
-  protected:
-    // internal: get initial display string from Envir
-    void initDisplayString();
-
   public:
     // internal: used from Tkenv: find out if cGate has a display string.
     // displayString() would create the object immediately which we want to avoid.
