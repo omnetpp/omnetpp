@@ -5,16 +5,15 @@ Queues is a queueing network tutorial and basic queueing library for OMNeT++.
 Author: Nicky van Foreest (n.d.vanforeest@math.utwente.nl)
 License: GPL
 
-queues-0.1 has implemented some core functionality to run queueing network
-simulations with OMNeT++
+queues-1.0 has implemented some core functionality to run queueing network
+simulations with OMNeT++.
 
 Features:
-   - Tutorial of running queueing simulations
+   - Tutorial to running queueing simulations
    - Start of a library with queueing functionality
-   <<snip>>
 
 Usage:
-Read the included tutorial file.
+Read the included tutorial file: tutorial.pdf
 
 Note:
 You are invited to contribute functionality to the library.

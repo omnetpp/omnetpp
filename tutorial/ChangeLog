@@ -8,3 +8,7 @@ May 6, 2001 (AV)
  - in tutorial.tex, replaced all occurrences of 'makemake' with 'opp_makemake'
  - added makefile for creating pdf from the latex sources
  - added MSVC makefile, updated unix makefile
+May 8, 2001 (Nicky)
+ - corrected typos in tutorial.tex
+ - improved doc_src makefile
+ - other smaller fixes
