@@ -17,6 +17,12 @@
 #----------------------------------------------------------------#
 
 
+foreach i {label-cid icon-cid rect-cid rect2-cid arrow-cid background-cid dirty unnamed selected} {
+   set ned_internal($i) 1
+}
+
+
+
 proc saveXML {nedfilekey fname} {
    global ned
 
@@ -35,19 +41,20 @@ proc saveXML {nedfilekey fname} {
    }
 }
 
-
 proc generateXML {key indent} {
-    global ned ned_attlist
+    global ned ned_attlist ned_internal
 
     # generate attributes
     set type $ned($key,type)
     set out ""
-    append out "$indent<$type\n"
-    foreach field $ned_attlist($type) {
-        set val $ned($key,$field)
-        regsub -all "\n" $val "\\n" val
-        regsub -all "\"" $val "\\&quot;" val
-        append out "$indent  $field=\"$val\"\n"
+    append out "$indent<$type id=\"$key\"\n"
+    foreach field [lsort $ned_attlist($type)] {
+        if {![info exist ned_internal($field)]} {
+            set val $ned($key,$field)
+            regsub -all "\n" $val "\\n" val
+            regsub -all "\"" $val "\\&quot;" val
+            append out "$indent  $field=\"$val\"\n"
+        }
     }
 
     # generate children if there are any
