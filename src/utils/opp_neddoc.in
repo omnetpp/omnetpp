@@ -96,7 +96,7 @@ echo 'applying xslt stylesheet...'
 xsltproc  --stringparam outputdir "$outdir" --stringparam imagesxml "$imagesxml" $NEDDOC_XSL $TMPFILE >/dev/null || exit 1
 
 echo 'formatting comments...'
-perl $NEDDOC_PL $outdir/*.html || exit 1
+perl $NEDDOC_PL $outdir || exit 1
 
 echo 'documentation created in '$outdir'/ -- start page is index.html'
 cleanup
