@@ -1,0 +1,15 @@
+%description:
+cQueue.insert(): what if object is inserted into another queue.
+Here we realy test cObject::take() (nothing cQueue specific)
+
+%activity:
+cMessage *msg = new cMessage("one");
+cQueue q("q");
+
+scheduleAt(10, msg);
+q.insert(msg);
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error in module .*: \(cMessage\)one is currently in .*scheduled-events, it cannot be inserted into \(cQueue\).*q

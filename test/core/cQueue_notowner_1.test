@@ -1,0 +1,16 @@
+%description:
+cQueue.insert(): what if object is inserted into another queue.
+Here we realy test cObject::take() (nothing cQueue specific)
+
+%activity:
+cMessage *msg = new cMessage("one");
+cQueue q1("q1");
+cQueue q2("q2");
+
+q1.insert(msg);
+q2.insert(msg);
+
+%exitcode: 1
+
+%contains-regex: stdout
+Error in module .*: \(cMessage\)one is currently in \(cQueue\).*q1, it cannot be inserted into \(cQueue\).*q2
