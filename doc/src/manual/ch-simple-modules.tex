@@ -2794,11 +2794,11 @@ from \ttt{check\_and\_cast}.
 
 The second issue is how to let the simulation kernel know that
 a method call across modules is taking place. Why is this necessary
-in the first place? The simulation kernel always has to know which
+in the first place? First, the simulation kernel always has to know which
 module's code is currently executing, in order to several internal
 mechanisms to work correctly. (One such mechanism is ownership handling.)
-Another reason is that the Tkenv simulation GUI can animate
-method calls, but to be able to do that, it has to know about them.
+Second, the Tkenv simulation GUI can animate method calls,
+but to be able to do that, it has to know about them.
 
 The solution is to add the \ttt{Enter\_Method()} or \ttt{Enter\_Method\_Silent()}
 macro at the top of the methods that may be invoked from other
