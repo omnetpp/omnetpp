@@ -83,6 +83,13 @@ clean:
 scalars.obj: scalars.cc \
   tklib.h
 tkcmd.obj: tkcmd.cc \
-  tklib.h
+  tklib.h \
+  tkutil.h \
+  engine/scalarmanager.h \
+  engine/filtering.h \
+  engine/texception.h
 tklib.obj: tklib.cc \
-  tklib.h
+  tklib.h \
+  tkutil.h
+tkutil.obj: tkutil.cc \
+  tkutil.h
