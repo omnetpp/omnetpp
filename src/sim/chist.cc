@@ -67,8 +67,8 @@ cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
     delete [] cellv;  cellv = NULL;
     if (res.cellv)
     {
-        cellv = new unsigned long[num_cells];
-        memcpy(cellv, res.cellv, num_cells*sizeof(unsigned long));
+        cellv = new unsigned[num_cells];
+        memcpy(cellv, res.cellv, num_cells*sizeof(unsigned));
     }
     return *this;
 }
@@ -84,7 +84,7 @@ void cHistogramBase::clearResult ()
 void cHistogramBase::transform()
 {
     int i;
-    cellv = new unsigned long[num_cells];
+    cellv = new unsigned [num_cells];
     for (i=0; i<num_cells; i++) cellv[i]=0;
 
     setupRange();
@@ -104,7 +104,7 @@ void cHistogramBase::saveToFile(FILE *f) const
     cDensityEstBase::saveToFile(f);
     fprintf(f,"%d\t #= num_cells\n", num_cells);
     fprintf(f,"%d\t #= cellv[] exists\n", cellv!=NULL);
-    if (cellv) for (int i=0; i<num_cells; i++) fprintf(f," %ul\n",cellv[i]);
+    if (cellv) for (int i=0; i<num_cells; i++) fprintf(f," %u\n",cellv[i]);
 }
 
 void cHistogramBase::loadFromFile(FILE *f)
@@ -117,8 +117,8 @@ void cHistogramBase::loadFromFile(FILE *f)
     delete [] cellv; cellv = NULL;
     if (cellv_exists)
     {
-        cellv = new unsigned long[num_cells];
-        for (int i=0; i<num_cells; i++) freadvarsf(f," %ul",cellv+i);
+        cellv = new unsigned[num_cells];
+        for (int i=0; i<num_cells; i++) freadvarsf(f," %u",cellv+i);
     }
 }
 
@@ -265,11 +265,9 @@ void cLongHistogram::setupRange()
 
 double cLongHistogram::random() const
 {
-    if (num_samples==0)
-    {
-        return 0;
-    }
-    else if (num_samples<num_firstvals)
+    if( num_samples==0 )
+        return 0L;
+    else if( num_samples<num_firstvals )
     {
         // randomly select a sample from the stored ones
         return firstvals[genk_intrand(genk,num_samples)];
@@ -305,11 +303,9 @@ cDoubleHistogram::~cDoubleHistogram()
 
 double cDoubleHistogram::random() const
 {
-    if (num_samples==0)
-    {
-        return 0;
-    }
-    else if (num_samples<num_firstvals)
+    if( num_samples==0 )
+        return 0L;
+    else if( num_samples<num_firstvals )
     {
         // randomly select a sample from the stored ones
         return firstvals[genk_intrand(genk,num_samples)];

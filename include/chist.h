@@ -37,7 +37,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
 {
   protected:
     int num_cells;        // nr. of categories
-    unsigned long *cellv; // array of counters
+    unsigned *cellv;      // array of counters
 
   public:
     /** @name Constructors, destructor, assignment. */

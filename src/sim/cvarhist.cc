@@ -40,8 +40,9 @@ Register_Class(cVarHistogram);
 //=========================================================================
 // cVarHistogram - member functions
 //
+// num_cells = -1 means that 0 bin boundaries are defined ( num_cells+1 is 0 )
 cVarHistogram::cVarHistogram(const char *name, int maxnumcells, int transformtype ) :
-cHistogramBase(name,-1)  // num_cells=-1 means that no bin boundaries are defined (num_cells+1 is 0)
+cHistogramBase(name,-1) //--LG
 {
     range_mode = RANGE_NOTSET;
     transform_type = transformtype;
@@ -95,8 +96,8 @@ cVarHistogram& cVarHistogram::operator=(const cVarHistogram& res) //--LG
     if (res.cellv)
     {
         delete [] cellv;
-        cellv = new unsigned long[max_num_cells];
-        memcpy(cellv, res.cellv, num_cells*sizeof(unsigned long));
+        cellv = new unsigned [max_num_cells];
+        memcpy(cellv, res.cellv, num_cells*sizeof(unsigned));
     }
 
     max_num_cells = res.max_num_cells;
@@ -156,7 +157,7 @@ void cVarHistogram::createEquiProbableCells()
     assert(max_num_cells>=2); // maybe 1 is enough...
 
     // allocate cellv and bin_bounds
-    cellv = new unsigned long[max_num_cells];
+    cellv = new unsigned [max_num_cells];
     bin_bounds = new double [max_num_cells+1];
 
     qsort(firstvals, num_samples, sizeof(double), double_compare_function);
@@ -262,7 +263,7 @@ void cVarHistogram::transform() //--LG
         }
 
         // create cell vector and insert observations
-        cellv = new unsigned long[num_cells];
+        cellv = new unsigned [num_cells];
         for (i=0; i<num_cells; i++) cellv[i]=0;
 
         for (i=0; i<num_samples; i++)
@@ -306,16 +307,16 @@ void cVarHistogram::collectTransformed(double val)
     }
 }
 
+// clear results
 void cVarHistogram::clearResult() //--LG
 {
     cHistogramBase::clearResult();
-
-    num_cells = -1;
 
     delete [] bin_bounds;
     bin_bounds = NULL;
 }
 
+// return kth basepoint
 double cVarHistogram::basepoint(int k) const
 {
     if (k<num_cells+1)
@@ -419,8 +420,8 @@ void cVarHistogram::loadFromFile(FILE *f)
     // increase allocated size of cellv[] to max_num_cells
     if (cellv && max_num_cells>num_cells)
     {
-        unsigned long *new_cellv = new unsigned long[max_num_cells];
-        memcpy(new_cellv, cellv, num_cells*sizeof(unsigned long));
+        unsigned int *new_cellv = new unsigned [max_num_cells];
+        memcpy(new_cellv, cellv, num_cells*sizeof(unsigned));
         delete [] cellv; cellv = new_cellv;
     }
 

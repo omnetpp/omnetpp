@@ -2,12 +2,12 @@
 
 2003-02-15  Andras Varga
 
-	* cstat.cc, chist.cc,..: observation count and histogram cell value 
-	made unsigned long. TBD: when observation count would overflow,
-	issue a warning and stop collecting. This is not done yet. 
-	Also TBD: check for integer overflows in cKSplit and cPSquare.
+	* chist.cc: fix: clearResult() now doesn't reset num_cells.
 
-	* chist.h: fix: clearResult() now doesn't reset num_cells.
+	* To be done in the future: observation count and histogram cell values
+	should be made unsigned long, and when obs. count would overflow, 
+	issue a warning and ignore further collect() calls. Also TBD: 
+	check for integer overflows in cKSplit and cPSquare.
 
 2003-02-14  Andras Varga
 
