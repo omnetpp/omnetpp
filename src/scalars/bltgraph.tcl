@@ -363,7 +363,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     # only if {[winfo class $graph]=="Barchart"} ?
     set f $nb.bars
     label-entry $f.barbaseline "Baseline"
-    label-combo $f.barmode "Bar placement" {infront stacked aligned overlap}
+    label-combo $f.barmode "Bar placement" {aligned overlap infront stacked}
     pack $f.barbaseline $f.barmode -side top -expand 0 -fill x
     $f.barbaseline.e configure -textvariable tmp(barbaseline)
     $f.barmode.e configure -textvariable tmp(barmode)
@@ -384,41 +384,41 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
 
     # execute dialog
     if {[execOkCancelDialog $w] == 1} {
-        $graph config -title $tmp(graphtitle)
-        $graph config -font $tmp(titlefont)
+        # the catch{} statements below may make detecting errors more difficult
+        # but spare us the validation
+        catch {$graph config -title $tmp(graphtitle)}
+        catch {$graph config -font $tmp(titlefont)}
 
-        $graph axis config x -title $tmp(axisxlabel)
-        $graph axis config y -title $tmp(axisylabel)
-        $graph axis config x -titlefont $tmp(axistitlefont)
-        $graph axis config y -titlefont $tmp(axistitlefont)
-        $graph axis config x -tickfont $tmp(axistickfont)
-        $graph axis config y -tickfont $tmp(axistickfont)
-        $graph axis config x -rotate $tmp(axisxrotate)
-        $graph axis config x -subdivisions $tmp(axisxdiv)
-        $graph axis config y -subdivisions $tmp(axisydiv)
+        catch {$graph axis config x -title $tmp(axisxlabel)}
+        catch {$graph axis config y -title $tmp(axisylabel)}
+        catch {$graph axis config x -titlefont $tmp(axistitlefont)}
+        catch {$graph axis config y -titlefont $tmp(axistitlefont)}
+        catch {$graph axis config x -tickfont $tmp(axistickfont)}
+        catch {$graph axis config y -tickfont $tmp(axistickfont)}
+        catch {$graph axis config x -rotate $tmp(axisxrotate)}
+        catch {$graph axis config x -subdivisions $tmp(axisxdiv)}
+        catch {$graph axis config y -subdivisions $tmp(axisydiv)}
 
         if {[winfo class $graph]=="Barchart"} {
-            $graph configure -barmode $tmp(barmode)
-            $graph configure -baseline $tmp(barbaseline)
-            #$graph axis configure y -min $tmp(barbaseline)
-        }
-        foreach i [$graph element names] {
-            if {[$graph element type $i]=="line"} {
+            catch {$graph configure -barmode $tmp(barmode)}
+            catch {$graph configure -baseline $tmp(barbaseline)}
+        } else {
+            foreach i [$graph element names] {
                 set pixels $tmp(symbolsize)
                 if {$tmp(showsymbols)=="no"} {set pixels 0}
-                $graph element configure $i -pixels $pixels
+                catch {$graph element configure $i -pixels $pixels}
                 set linewidth 1
                 if {$tmp(showlines)=="no"} {set linewidth 0}
-                $graph element configure $i -linewidth $linewidth
-                $graph element configure $i -smooth $tmp(linesmooth)
+                catch {$graph element configure $i -linewidth $linewidth}
+                catch {$graph element configure $i -smooth $tmp(linesmooth)}
             }
         }
 
-        $graph legend config -hide [expr !$tmp(legendshow)]
-        $graph legend config -position $tmp(legendpos)
-        $graph legend config -anchor $tmp(legendanchor)
-        $graph legend config -relief $tmp(legendrelief)
-        $graph legend config -font $tmp(legendfont)
+        catch {$graph legend config -hide [expr !$tmp(legendshow)]}
+        catch {$graph legend config -position $tmp(legendpos)}
+        catch {$graph legend config -anchor $tmp(legendanchor)}
+        catch {$graph legend config -relief $tmp(legendrelief)}
+        catch {$graph legend config -font $tmp(legendfont)}
     }
     set tmp(graphprops-last-open-tab) [$nb index select]
     destroy $w
