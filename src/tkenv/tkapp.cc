@@ -890,7 +890,4 @@ int TOmnetTkApp::askYesNo(const char *question)
 // dummy function to force Unix linkers collect all symbols needed
 
 void _dummy_for_inspectors();
-static void _dummy_func()
-{
-      _dummy_for_inspectors();
-}
+void _dummy_func() {_dummy_for_inspectors();}
