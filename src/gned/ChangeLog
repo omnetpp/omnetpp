@@ -2,10 +2,14 @@
 2003-08-12  Andras Varga
 	
 	* enhancement: in Submodule and Network Properties dialogs, choose 
-	module list from combobox
+	module list from combobox.
+	
+	* enhancement: in Connection Properties dialogs, module and gate 
+	can be selected from combo, and channel also. Input is also fully 
+	validated. Remaining issue: gate directions not observed.
 
-TODO: save/restore size of dialogs
-FIXME!!! when submodule has random placement, strange thing happpens after OKing Props dialog
+FIXME!!! when submodule has random placement, strange thing happpens 
+after OK'ing Props dialog
 
 2003-08-11  Andras Varga
 
