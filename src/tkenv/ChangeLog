@@ -1,3 +1,7 @@
+2004-10-15  Andras Varga
+
+	* window.tcl: fix: "View file" option didn't like some file names
+
 2004-10-10  Andras Varga
 
 	* inspector.cc, tkutil.cc/h: fix: label always displayed "0 objects" 

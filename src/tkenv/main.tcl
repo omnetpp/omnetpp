@@ -178,7 +178,7 @@ proc create_omnetpp_window {} {
       {command -label {Output scalar file} -underline 7 -command view_outputscalarfile}
       {command -label {Snapshot file} -underline 0 -command view_snapshotfile}
       {separator}
-      {command -label {View/Edit file...} -underline 0 -command {edit_textfile}}
+      {command -label {View text file...} -underline 0 -command {edit_textfile}}
     } {
       eval .menubar.viewmenu$m add $i
     }

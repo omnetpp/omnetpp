@@ -157,15 +157,11 @@ proc savefile {win filename} {
 proc create_fileviewer {filename} {
     global icons help_tips
 
-    # create a widget name from filename
-    set w $filename
-    if {$w == ""} return
-    regsub {[\. ]} $w {_} w
-    set w .[string tolower $w]
+    if {$filename == ""} return
 
-    if {[winfo exists $w]} {
-        wm deiconify $w; return
-    }
+    # create a widget name from filename
+    set w ".win[clock seconds]"
+    if {[winfo exists $w]} {destroy $w}
 
     # creating widgets
     toplevel $w -class Toplevel
