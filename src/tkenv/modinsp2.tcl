@@ -374,7 +374,7 @@ proc create_graphicalmodwindow {name} {
     iconbutton $w.toolbar.params -image $icons(params) ;#command assigned from C++
     iconbutton $w.toolbar.gates  -image $icons(gates)  ;#command assigned from C++
     iconbutton $w.toolbar.sep4   -separator
-    iconbutton $w.toolbar.redraw -image $icons(redraw) -command "graphmodwin_redraw $w"
+    iconbutton $w.toolbar.redraw -image $icons(redraw) -command "graphmodwin_redraw $w 1"
     foreach i {ascont win sep1 parent sep2 step sep3 params gates sep4 redraw} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
@@ -419,14 +419,14 @@ proc create_graphicalmodwindow {name} {
     graphmodwin_redraw $w
 }
 
-proc graphmodwin_redraw w {
+proc graphmodwin_redraw {w {nextseed 0}} {
 
     $w.c delete all
 
     global hack_y
     set hack_y 0
 
-    opp_inspectorcommand $w redraw
+    opp_inspectorcommand $w redraw $nextseed
 }
 
 proc graphmodwin_dblclick c {

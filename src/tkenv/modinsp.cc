@@ -96,6 +96,7 @@ TGraphicalModWindow::TGraphicalModWindow(cObject *obj,int typ,void *dat) :
     TInspector(obj,typ,dat)
 {
    needs_redraw = false;
+   random_seed = 1;
 
    // register a callback in the module object which will set needs_redraw
    // if setDisplayString() is called
@@ -139,9 +140,19 @@ void TGraphicalModWindow::update()
    }
 }
 
-int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int, char **)
+int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int ac, char **av)
 {
+   // go to next seed if called with "1" (so that each redraw rearranges randomly placed submodules)
+   if (ac>=2 && av[1][0]=='1')
+      random_seed++;
+
    bool w = simulation.warnings(); simulation.setWarnings(false);
+
+   // reset seed for tcl/tk ("random arrangement" depends on seed!)
+   char buf[16];
+   sprintf(buf,"%d",random_seed);
+   CHK(Tcl_VarEval(interp, "expr srand(",buf,")",NULL));
+   CHK(Tcl_VarEval(interp, "expr rand()",NULL)); // consume 1st value (it was linear to seed)
 
    // loop through all submodules and draw them
    for (cSubModIterator submod(*(cModule *)object); !submod.end(); submod++)

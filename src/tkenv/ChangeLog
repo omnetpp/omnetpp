@@ -1,3 +1,12 @@
+2002-03-05  Andras Varga
+
+	* modinsp.cc, modinsp2.tcl: Bugfix: each display string change had
+        the unwanted side effect of rearranging randomly placed submodules.
+        Basic idea of fix: start Tcl's RNG from the same seed value
+        at each redraw, thus we get identical results; seed is stored per
+        (and in the) inspector object. 'Rearrange' button changes the seed to
+        get a different arrangement.
+
 2002-03-03  Andras Varga
 
 	* tkapp.cc, tkapp.h, tkcmd.cc: adopted to changes in the sim kernel.

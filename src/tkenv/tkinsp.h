@@ -251,6 +251,7 @@ class TGraphicalModWindow : public TInspector
    public:
       char canvas[128];
       bool needs_redraw;
+      int random_seed;
    public:
       TGraphicalModWindow(cObject *obj,int typ,void *dat=NULL);
       ~TGraphicalModWindow();
