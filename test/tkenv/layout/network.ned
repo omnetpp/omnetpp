@@ -378,25 +378,29 @@ network hexGrid : HexGrid
 endnetwork
 
 module Dyna
+    parameters:
+        numNodes: numeric;
     submodules:
         server: Node;
             display: "i=server1,gold";
         switch: Node;
-            gatesizes: in[10], out[10];
+            gatesizes: in[numNodes+1], out[numNodes+1];
             display: "i=switch2,cyan";
-        client: Node[6];
-            display: "i=pc,green;p=,,row";
+        client: Node[numNodes];
+            display: "i=pc,green;p=,,m,10";
     connections nocheck:
         server.out[0] --> switch.in[0];
-        for i=0..5 do
+        for i=0..numNodes-1 do
             client[i].out[0] --> switch.in[i+1];
         endfor;
 endmodule
 
 network dyna : Dyna
+    parameters:
+       numNodes = input(10);
 endnetwork
 
-module Random
+module RandomNet
     parameters:
         numNodes: numeric;
     submodules:
@@ -409,7 +413,7 @@ module Random
         endfor;
 endmodule
 
-network random : Random
+network randomNet : RandomNet
     parameters:
        numNodes = input(60);
 endnetwork
