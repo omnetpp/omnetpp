@@ -182,13 +182,21 @@ proc bltGraph_ZoomOut {} {
 }
 
 proc bltGraph_SavePicture {} {
+    set w .bltwin
+    set graph [$w.nb tab cget select -window].g
 
+    set img [image create photo]
+    $graph snap $img
+    # or this: blt::winop snap $graph $img
+
+    # then save image  FIXME ask fname
+    $img write "graph.gif" -format "GIF"
 }
 
 proc bltGraph_SavePostscript {} {
     set w .bltwin
     set graph [$w.nb tab cget select -window].g
-    # FIXME
+    # FIXME ask fname
     $graph postscript output "graph.ps"
 }
 
