@@ -5,6 +5,9 @@ Demonstrates static shortest-path routing. Routing tables are set up at the
 beginning of the simulation using the cTopology class. The model is 
 intentionally kept simple to facilitate understanding. 
 
+The network topology is the one widely known as the "NTT backbone", and it was
+contributed by Mudassar Farooq.
+
 Every node queries the topology of the network independently, using a cTopology
 object. Then it computes shortest paths to every other node, and stores the
 first nodes of the paths in a next-hop table. (Actually the table contains
