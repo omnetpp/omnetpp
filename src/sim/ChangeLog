@@ -15,6 +15,10 @@
 	investigate the context (stack frames, variables etc) of a runtime 
 	error.
 
+	* cmessage.cc: setControlInfo(), removeControlInfo(), destructor:
+	control info isn't supposed to be a cObject, but if it is, call
+	take() and drop() on it. [reported by Kurtis Kredo II]
+
 2005-03-07  Andras Varga
 
 	* chist.cc: changed to eliminate warnings about converting double to 

@@ -80,7 +80,10 @@ cMessage::~cMessage()
 {
     dropAndDelete(parlistp);
     dropAndDelete(encapmsg);
-    delete ctrlp;
+    if (dynamic_cast<cObject *>(ctrlp))
+        dropAndDelete((cObject *)ctrlp);
+    else
+        delete ctrlp;
     live_msgs--;
 }
 
@@ -320,6 +323,8 @@ void cMessage::setControlInfo(cPolymorphic *p)
         throw new cRuntimeError(this,"setControlInfo(): pointer is NULL");
     if (ctrlp)
         throw new cRuntimeError(this,"setControlInfo(): message already has control info attached");
+    if (dynamic_cast<cObject *>(p))
+        take((cObject *)p);
     ctrlp = p;
 }
 
@@ -327,6 +332,8 @@ cPolymorphic *cMessage::removeControlInfo()
 {
     cPolymorphic *p = ctrlp;
     ctrlp = NULL;
+    if (dynamic_cast<cObject *>(p))
+        drop((cObject *)p);
     return p;
 }
 
