@@ -152,8 +152,8 @@ void cStatistic::freadvarsf (FILE *f,  const char *fmt, ...)
     while (end>=line && (*end=='\n' || *end=='\r')) *end-- = '\0';
 
     // match '#=' tags
-    char *fmt_comment = strstr(fmt,"#=");
-    char *line_comment = strstr(line,"#=");
+    const char *fmt_comment = strstr(fmt,"#=");
+    const char *line_comment = strstr(line,"#=");
     if (fmt_comment && line_comment && strcmp(fmt_comment,line_comment)!=0)
         throw new cException(this, "bad file format in loadFromFile(): expected `%s' and got `%s'",fmt,line);
 
