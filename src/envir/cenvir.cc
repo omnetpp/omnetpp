@@ -376,19 +376,21 @@ void cEnvir::printf(const char *fmt,...)
 
     va_list va;
     va_start(va, fmt);
-    vsprintf(buffer, fmt, va);
+    int len = vsprintf(buffer, fmt, va); // len<0 means error
     va_end(va);
 
-    // has to go through ostream (and so sputn() too) to preserve ordering
-    *this << (char *)buffer;  // Note: the cast is necessary! otherwise the pointer value gets printed.
+    // has to go through evbuf to preserve ordering
+    if (len>0)
+        ev_buf.sputn(buffer,len);
 }
 
 void cEnvir::puts(const char *s)
 {
     if (disable_tracing) return;
 
-    // has to go through ostream (and so sputn() too) to preserve ordering
-    *this << s;
+    // has to go through evbuf to preserve ordering
+    int len = strlen(s);
+    ev_buf.sputn(s,len);
 }
 
 void cEnvir::sputn(const char *s, int n)
