@@ -41,7 +41,7 @@ Register_Class( cWeightedStdDev )
 //=========================================================================
 // cStatistic - almost all functions are inline
 
-cStatistic::cStatistic(cStatistic& r) : cObject()
+cStatistic::cStatistic(_CONST cStatistic& r) : cObject()
 {
     setName(r.name());
     td=NULL;
@@ -57,16 +57,20 @@ cStatistic::cStatistic(const char *name) :
     genk=0;
 }
 
-cStatistic& cStatistic::operator=(cStatistic& res)   //--VA
+cStatistic& cStatistic::operator=(_CONST cStatistic& res)   //--VA
 {
     if (this==&res) return *this;
 
     cObject::operator=( res );
     genk = res.genk;
-    if (td && td->owner()==this)  free( td );
-    if (ra && ra->owner()==this)  free( ra );
-    td = res.td; if (td && td->owner()==&res)  take( td = (cTransientDetection *)td->dup() );
-    ra = res.ra; if (ra && ra->owner()==&res)  take( ra = (cAccuracyDetection *)ra->dup() );
+    if (td && td->owner()==this)  free(td);
+    if (ra && ra->owner()==this)  free(ra);
+    td = res.td;
+    if (td && td->owner()==CONSTCAST(cStatistic*,&res))
+        take( td = (cTransientDetection *)td->dup() );
+    ra = res.ra;
+    if (ra && ra->owner()==CONSTCAST(cStatistic*,&res))
+        take( ra = (cAccuracyDetection *)ra->dup() );
     return *this;
 }
 
@@ -132,7 +136,7 @@ void cStdDev::info(char *buf)
     sprintf( buf+strlen(buf), " (n=%ld)", num_samples);
 }
 
-cStdDev& cStdDev::operator=(cStdDev& res)
+cStdDev& cStdDev::operator=(_CONST cStdDev& res)
 {
     if (this==&res) return *this;
 
@@ -239,7 +243,7 @@ void cStdDev::loadFromFile(FILE *f)
 //==========================================================================
 // cWeightedStdDev - member functions
 
-cWeightedStdDev& cWeightedStdDev::operator=(cWeightedStdDev& res)
+cWeightedStdDev& cWeightedStdDev::operator=(_CONST cWeightedStdDev& res)
 {
     if (this==&res) return *this;
 

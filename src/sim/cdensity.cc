@@ -52,7 +52,7 @@ cDensityEstBase::~cDensityEstBase()
     delete [] firstvals;
 }
 
-cDensityEstBase& cDensityEstBase::operator=(cDensityEstBase& res)
+cDensityEstBase& cDensityEstBase::operator=(_CONST cDensityEstBase& res)
 {
     if (this==&res) return *this;
 

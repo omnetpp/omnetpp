@@ -63,7 +63,7 @@ cTopology::cTopology(const char *name) : cObject(name)
     nodev = NULL;
 }
 
-cTopology::cTopology(cTopology& topo) : cObject()
+cTopology::cTopology(_CONST cTopology& topo) : cObject()
 {
     nodev = NULL;
     setName(topo.name());
@@ -81,7 +81,7 @@ void cTopology::info(char *buf)
     sprintf(buf+strlen(buf)," %d nodes", num_nodes);
 }
 
-cTopology& cTopology::operator=(cTopology&)
+cTopology& cTopology::operator=(_CONST cTopology&)
 {
     opp_error("(%s)%s: operator= not implemented yet",className(),fullName());
     return *this;

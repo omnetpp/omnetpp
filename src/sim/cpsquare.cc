@@ -35,7 +35,7 @@ Register_Class( cPSquare )
 
 //=========================================================================
 //
-cPSquare::cPSquare(cPSquare& r) : cDensityEstBase()
+cPSquare::cPSquare(_CONST cPSquare& r) : cDensityEstBase()
 {
     setName( r.name() );
     operator=(r);
@@ -64,7 +64,7 @@ cPSquare::~cPSquare()
     delete[] n;
 }
 
-cPSquare& cPSquare::operator=(cPSquare& res)
+cPSquare& cPSquare::operator=(_CONST cPSquare& res)
 {
     if (this==&res) return *this;
 

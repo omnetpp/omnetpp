@@ -73,7 +73,7 @@ cMessageHeap::cMessageHeap(const char *name, int siz) : cObject(name)
     h = new cMessage *[size+1];    // +1 is necessary because h[0] is not used
 }
 
-cMessageHeap::cMessageHeap(cMessageHeap& heap) : cObject()
+cMessageHeap::cMessageHeap(_CONST cMessageHeap& heap) : cObject()
 {
     h=NULL; n=0;
     setName( heap.name() );
@@ -118,7 +118,7 @@ void cMessageHeap::clear()
     n=0;
 }
 
-cMessageHeap& cMessageHeap::operator=(cMessageHeap& heap)
+cMessageHeap& cMessageHeap::operator=(_CONST cMessageHeap& heap)
 {
     if (this==&heap) return *this;
 
@@ -133,7 +133,7 @@ cMessageHeap& cMessageHeap::operator=(cMessageHeap& heap)
 
     for (int i=1; i<=n; i++)
     {
-        if (heap.h[i]->owner()==&heap)
+        if (heap.h[i]->owner()==CONSTCAST(cMessageHeap*,&heap))
             take( h[i]=(cMessage *)heap.h[i]->dup() );
         else
             h[i]=heap.h[i];

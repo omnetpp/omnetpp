@@ -39,7 +39,7 @@
 //=NL======================================================================
 // cTDExpandingWindows - member functions
 
-cTDExpandingWindows::cTDExpandingWindows(cTDExpandingWindows& r) : cTransientDetection()
+cTDExpandingWindows::cTDExpandingWindows(_CONST cTDExpandingWindows& r) : cTransientDetection()
 {
     func=0;
     setName(r.name());
@@ -62,7 +62,7 @@ cTDExpandingWindows::~cTDExpandingWindows()
     reset();
 }
 
-cTDExpandingWindows& cTDExpandingWindows::operator=(cTDExpandingWindows& res)
+cTDExpandingWindows& cTDExpandingWindows::operator=(_CONST cTDExpandingWindows& res)
 {
     if (this==&res) return *this;
 
@@ -219,7 +219,7 @@ void cTDExpandingWindows::detectTransient()
 //==NL======================================================================
 // cADByStddev - member functions
 
-cADByStddev::cADByStddev(cADByStddev& r) : cAccuracyDetection()
+cADByStddev::cADByStddev(_CONST cADByStddev& r) : cAccuracyDetection()
 {
     go=resaccval=false;
     detreps=sctr=0;
@@ -241,7 +241,7 @@ cADByStddev::cADByStddev(const char *name,
    ssum=sqrsum=0.0;
 }
 
-cADByStddev& cADByStddev::operator=(cADByStddev& res)
+cADByStddev& cADByStddev::operator=(_CONST cADByStddev& res)
 {
    if (this==&res) return *this;
 

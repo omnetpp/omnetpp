@@ -72,7 +72,7 @@ double divfunc_babak(_CONST cKSplit&, sGrid& g, double mother, double *d)
 
 //==========================================================================
 
-cKSplit::cKSplit(cKSplit& r) : cDensityEstBase()
+cKSplit::cKSplit(_CONST cKSplit& r) : cDensityEstBase()
 {
     setName( r.name() );
     gridv=NULL; iter=NULL;
@@ -101,7 +101,7 @@ cKSplit::~cKSplit()
     delete iter;
 }
 
-cKSplit& cKSplit::operator=(cKSplit& res)
+cKSplit& cKSplit::operator=(_CONST cKSplit& res)
 {
     if (this==&res) return *this;
 

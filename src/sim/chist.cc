@@ -58,7 +58,7 @@ cHistogramBase::~cHistogramBase()
     delete [] cellv;
 }
 
-cHistogramBase& cHistogramBase::operator=(cHistogramBase& res)
+cHistogramBase& cHistogramBase::operator=(_CONST cHistogramBase& res)
 {
     if (this==&res) return *this;
 
@@ -134,7 +134,7 @@ cHistogramBase(name,numcells)
     cellsize=0;
 }
 
-cEqdHistogramBase& cEqdHistogramBase::operator=(cEqdHistogramBase& res)
+cEqdHistogramBase& cEqdHistogramBase::operator=(_CONST cEqdHistogramBase& res)
 {
     if (this==&res) return *this;
 

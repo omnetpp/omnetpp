@@ -48,7 +48,7 @@ int cNetMod::isLocalMachineIn(_CONST cArray& list)
     return false;
 }
 
-cNetMod& cNetMod::operator=(cNetMod& other)
+cNetMod& cNetMod::operator=(_CONST cNetMod& other)
 {
     if (this==&other) return *this;
 

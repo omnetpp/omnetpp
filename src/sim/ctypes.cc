@@ -143,11 +143,11 @@ void cModuleInterface::setup( sDescrItem *descr_tab )
     if (m==0) machinev[m].name = opp_strdup( "default" ); // add "default"
 }
 
-cModuleInterface::cModuleInterface( cModuleInterface& mi ) :
- cObject( NULL, &modtypes),
- gatev(NULL),
- paramv(NULL),
- machinev(NULL)
+cModuleInterface::cModuleInterface(_CONST cModuleInterface& mi) :
+  cObject( NULL, &modtypes),
+  gatev(NULL),
+  paramv(NULL),
+  machinev(NULL)
 {
     setName(mi.name());
     operator=( mi );
@@ -164,7 +164,7 @@ cModuleInterface::~cModuleInterface()
     delete[] machinev;
 }
 
-cModuleInterface& cModuleInterface::operator=(cModuleInterface&)
+cModuleInterface& cModuleInterface::operator=(_CONST cModuleInterface&)
 {
     opp_error("cModuleInterface cannot copy itself!");
     return *this;
@@ -315,7 +315,7 @@ cModuleType::cModuleType(const char *classname,
 }
 
 
-cModuleType::cModuleType(cModuleType& mi) :
+cModuleType::cModuleType(_CONST cModuleType& mi) :
   cObject( NULL, &modtypes)
 {
     setName(mi.name());
@@ -327,7 +327,7 @@ cModuleType::~cModuleType()
     delete interface_name;
 }
 
-cModuleType& cModuleType::operator=(cModuleType& mt)
+cModuleType& cModuleType::operator=(_CONST cModuleType& mt)
 {
     if (this==&mt) return *this;
 
@@ -437,21 +437,21 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
 //=== cLinkType - member functions
 
 cLinkType::cLinkType(const char *name, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)()) :
-cObject(name, &linktypes)
+  cObject(name, &linktypes)
 {
     delayfunc = d;
     errorfunc = e;
     dataratefunc = dr;
 }
 
-cLinkType::cLinkType( cLinkType& li ) :
-cObject( NULL, &linktypes)
+cLinkType::cLinkType(_CONST cLinkType& li) :
+  cObject( NULL, &linktypes)
 {
     setName(li.name());
     operator=( li );
 }
 
-cLinkType& cLinkType::operator=(cLinkType& li)
+cLinkType& cLinkType::operator=(_CONST cLinkType& li)
 {
     if (this==&li) return *this;
 

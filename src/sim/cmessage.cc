@@ -38,7 +38,7 @@ unsigned long cMessage::live_msgs;
 //=========================================================================
 //=== cMessage - member functions
 
-cMessage::cMessage(cMessage& msg) : cObject()
+cMessage::cMessage(_CONST cMessage& msg) : cObject()
 {
     parlistp = NULL;
     encapmsg = NULL;
@@ -118,7 +118,7 @@ void cMessage::writeContents(ostream& os)
     }
 }
 
-cMessage& cMessage::operator=(cMessage& msg)
+cMessage& cMessage::operator=(_CONST cMessage& msg)
 {
     if (this==&msg) return *this;
 
@@ -134,14 +134,14 @@ cMessage& cMessage::operator=(cMessage& msg)
 
     if (parlistp)
         delete parlistp;
-    if (msg.parlistp && msg.parlistp->owner()==&msg)
+    if (msg.parlistp && msg.parlistp->owner()==CONSTCAST(cMessage*,&msg))
         take( parlistp = (cArray *)msg.parlistp->dup() );
     else
         parlistp = msg.parlistp;
 
     if (encapmsg && encapmsg->owner()==this)
         free( encapmsg );
-    if (msg.encapmsg && msg.encapmsg->owner()==&msg)
+    if (msg.encapmsg && msg.encapmsg->owner()==CONSTCAST(cMessage*,&msg))
         take( encapmsg = (cMessage *)msg.encapmsg->dup() );
     else
         encapmsg = msg.encapmsg;

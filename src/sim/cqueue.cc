@@ -31,7 +31,7 @@ Register_Class( cQueue )
 //=========================================================================
 //=== cQueue - member functions
 
-cQueue::cQueue(cQueue& queue) : cObject()
+cQueue::cQueue(_CONST cQueue& queue) : cObject()
 {
     headp = tailp = NULL; n = 0;
     setName( queue.name() );
@@ -92,7 +92,7 @@ void cQueue::clear()
     n = 0;
 }
 
-cQueue& cQueue::operator=(cQueue& queue)
+cQueue& cQueue::operator=(_CONST cQueue& queue)
 {
     if (this==&queue) return *this;
 
@@ -105,7 +105,7 @@ cQueue& cQueue::operator=(cQueue& queue)
     bool old_tk = takeOwnership();
     for( cQueueIterator iter(queue); iter.end(); iter++)
     {
-        if (iter()->owner()==&queue)
+        if (iter()->owner()==CONSTCAST(cQueue*,&queue))
             {takeOwnership(true); insert( iter()->dup() );}
         else
             {takeOwnership(false); insert( iter() );}

@@ -30,7 +30,7 @@
 //==========================================================================
 //=== cWatch - member functions
 
-cWatch::cWatch(cWatch& vs) : cObject()
+cWatch::cWatch(_CONST cWatch& vs) : cObject()
 {
       setName(vs.name());
       operator=(vs);
@@ -77,9 +77,9 @@ void cWatch::printTo(char *buf)
                     else
                        sprintf(buf, "cObject *%s = (not NULL, but maybe not a valid object)",
                                name() );
-                       //// cannot call info(): recursivity!!!
-                       //// even this is dangerous:
-                       //sprintf(buf, "cObject *%s --> (%s) `%s'", name(),
+                       // // cannot call info(): recursivity!!!
+                       // // even this is dangerous:
+                       // sprintf(buf, "cObject *%s --> (%s) `%s'", name(),
                        //                   (*(cObject **)ptr)->className(),
                        //                   (*(cObject **)ptr)->name() );
                     break;

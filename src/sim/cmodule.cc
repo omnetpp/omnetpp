@@ -46,7 +46,7 @@ bool cModule::pause_in_sendmsg;
 //=========================================================================
 //=== cModule - member functions
 
-cModule::cModule(cModule& mod) : cObject(),
+cModule::cModule(_CONST cModule& mod) : cObject(),
  gatev(NULL, 0,2),
  paramv(NULL, 0,2),
  machinev(NULL,0,2),
@@ -82,13 +82,13 @@ cModule::cModule(const char *name, cModule *parentmod) :
     /* cModuleType::create() call will create gates, params and machines */
 }
 
-cObject *cModule::dup()
+cObject *cModule::dup() _CONST
 {
     opp_error(eCANTDUP);
     return NO(cObject);
 }
 
-cModule& cModule::operator=(cModule&)
+cModule& cModule::operator=(_CONST cModule&)
 {
     opp_error(eCANTDUP);
     return *NO(cModule);
@@ -539,7 +539,7 @@ void cSimpleModule::activate(void *p)
     smod->end();
 }
 
-cSimpleModule::cSimpleModule(cSimpleModule& mod ) :
+cSimpleModule::cSimpleModule(_CONST cSimpleModule& mod) :
   cCoroutine(),
   cModule( mod.name(), mod.parentmodp ),
   locals( NULL, NULL),
@@ -591,7 +591,7 @@ cSimpleModule::~cSimpleModule()
     clearHeap();
 }
 
-cSimpleModule& cSimpleModule::operator=(cSimpleModule& other)
+cSimpleModule& cSimpleModule::operator=(_CONST cSimpleModule& other)
 {
     if (this==&other) return *this;
 
@@ -1275,7 +1275,7 @@ void cSimpleModule::recordStats(const char *name, cStatistic *stats)
 //==========================================================================
 //=== cCompoundModule - member functions
 
-cCompoundModule::cCompoundModule(cCompoundModule& mod) :
+cCompoundModule::cCompoundModule(_CONST cCompoundModule& mod) :
   cModule( mod.name(), mod.parentmodp )
 {
     setName(mod.name());
@@ -1296,7 +1296,7 @@ void cCompoundModule::info( char *buf )
     sprintf(buf,"%-15.15s (%s,#%d)", fullName(), className(), id() );
 }
 
-cCompoundModule& cCompoundModule::operator=(cCompoundModule& mod)
+cCompoundModule& cCompoundModule::operator=(_CONST cCompoundModule& mod)
 {
     if (this==&mod) return *this;
 

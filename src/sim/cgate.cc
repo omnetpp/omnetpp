@@ -35,7 +35,7 @@
 //=========================================================================
 //=== cGate -- member functions
 
-cGate::cGate(cGate& gate) : cObject()
+cGate::cGate(_CONST cGate& gate) : cObject()
 {
     linkp = NULL;
     delayp = errorp = dataratep = NULL;
@@ -81,7 +81,7 @@ void cGate::forEach(ForeachFunc do_fn)
     do_fn(this,false);
 }
 
-cGate& cGate::operator=(cGate& gate)
+cGate& cGate::operator=(_CONST cGate& gate)
 {
    if (this==&gate) return *this;
 
@@ -98,11 +98,11 @@ cGate& cGate::operator=(cGate& gate)
 
    linkp = gate.linkp;  // gates never own link objects, just point to them
    delayp = gate.delayp;
-   if (delayp->owner()==&gate) delayp = (cPar *)delayp->dup();
+   if (delayp->owner()==CONSTCAST(cGate*,&gate)) delayp = (cPar *)delayp->dup();
    errorp = gate.errorp;
-   if (errorp->owner()==&gate) errorp = (cPar *)errorp->dup();
+   if (errorp->owner()==CONSTCAST(cGate*,&gate)) errorp = (cPar *)errorp->dup();
    dataratep = gate.dataratep;
-   if (dataratep->owner()==&gate) dataratep= (cPar *)dataratep->dup();
+   if (dataratep->owner()==CONSTCAST(cGate*,&gate)) dataratep= (cPar *)dataratep->dup();
 
    setDisplayString( gate.displayString() );
 

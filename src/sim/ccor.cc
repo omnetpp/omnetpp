@@ -283,7 +283,7 @@ cCoroutine::~cCoroutine()
     if (task) task_free( task );
 }
 
-cCoroutine& cCoroutine::operator=(cCoroutine& cor)
+cCoroutine& cCoroutine::operator=(_CONST cCoroutine& cor)
 {
     if (this==&cor) return *this;
 
@@ -428,7 +428,7 @@ void cCoroutine::free()
     stack_size = 0;
 }
 
-cCoroutine& cCoroutine::operator=(cCoroutine& cor)
+cCoroutine& cCoroutine::operator=(_CONST cCoroutine& cor)
 {
     if (this==&cor) return *this;
 

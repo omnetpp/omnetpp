@@ -31,7 +31,7 @@ Register_Class( cLinkedList )
 //=========================================================================
 //=== cLinkedList - member functions
 
-cLinkedList::cLinkedList(cLinkedList& llist) : cObject()
+cLinkedList::cLinkedList(_CONST cLinkedList& llist) : cObject()
 {
     headp = tailp = NULL; n = 0;
     setName( llist.name() );
@@ -91,7 +91,7 @@ void cLinkedList::clear()
     n = 0;
 }
 
-cLinkedList& cLinkedList::operator=(cLinkedList& llist)
+cLinkedList& cLinkedList::operator=(_CONST cLinkedList& llist)
 {
     if (this==&llist) return *this;
 
@@ -99,7 +99,7 @@ cLinkedList& cLinkedList::operator=(cLinkedList& llist)
 
     cObject::operator=(llist);
 
-    for( cLinkedListIterator iter(llist); iter.end(); iter++)
+    for (cLinkedListIterator iter(llist); iter.end(); iter++)
     {
        void *item;
        if (dupfunc)

@@ -88,7 +88,7 @@ static bool _do_list(cObject *obj, bool beg, ostream& s);
 #define DETERMINE_STORAGE()  stor = heapflag   ? (heapflag=0, 'D') : \
                                     staticflag ? 'A' : 'S' ;
 
-cObject::cObject(const cObject& obj)
+cObject::cObject(_CONST cObject& obj)
 {
     DETERMINE_STORAGE();
     tkownership = true;
@@ -155,7 +155,7 @@ void *cObject::operator new(size_t m)
     return p;
 }
 
-cObject& cObject::operator=(const cObject&)
+cObject& cObject::operator=(_CONST const cObject&)
 {
     // ownership not affected
     // name string is NOT copied from other object! (24.02.97 --VA)

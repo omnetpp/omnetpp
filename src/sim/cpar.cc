@@ -52,7 +52,7 @@ cPar::cPar(const char *name) : cObject( name )
     typechar = 'L'; lng.val = 0L;
 }
 
-cPar::cPar(cPar& par) : cObject()
+cPar::cPar(_CONST cPar& par) : cObject()
 {
     takeOwnership( false );         // doesn't take the objects!
     changedflag = inputflag = false;
@@ -1018,7 +1018,7 @@ double cPar::fromstat()
 }
 
 
-cPar& cPar::operator=(cPar& val)
+cPar& cPar::operator=(_CONST cPar& val)
 {
     // This function is sort of tricky:
     //   It copies the 'val' object (whether it is of type 'I' OR NOT)
@@ -1067,7 +1067,7 @@ cPar& cPar::operator=(cPar& val)
     else if (typechar=='T')
     {
          cStatistic *&p = dtr.res;
-         if (p->owner()==&val)
+         if (p->owner()==CONSTCAST(cPar*,&val))
             take( p=(cStatistic *)p->dup() );
     }
     else if (typechar=='P')
@@ -1081,7 +1081,7 @@ cPar& cPar::operator=(cPar& val)
     else if (typechar=='O')
     {
          cObject *&p = obj.obj;
-         if (p->owner()==&val)
+         if (p->owner()==CONSTCAST(cPar*,&val))
             take( p=p->dup() );
     }
     // type 'I' does not use ownership so we can skip it.
@@ -1119,7 +1119,7 @@ void cModulePar::_construct()
     lastchange=simulation.simTime();
 }
 
-cModulePar::cModulePar(cPar& other) : cPar(other)
+cModulePar::cModulePar(_CONST cPar& other) : cPar(other)
 {
     _construct();
 }
@@ -1153,7 +1153,7 @@ const char *cModulePar::fullPath() const
     return buf;
 }
 
-cModulePar& cModulePar::operator=(cModulePar& otherpar)
+cModulePar& cModulePar::operator=(_CONST cModulePar& otherpar)
 {
     if (this==&otherpar) return *this;
 

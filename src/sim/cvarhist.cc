@@ -88,7 +88,7 @@ void cVarHistogram::addBinBound(double x) //--LG
     num_cells++;
 }
 
-cVarHistogram& cVarHistogram::operator=(cVarHistogram& res) //--LG
+cVarHistogram& cVarHistogram::operator=(_CONST cVarHistogram& res) //--LG
 {
     if (this==&res) return *this;
 

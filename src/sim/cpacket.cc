@@ -29,13 +29,13 @@ Register_Class( cPacket )
 
 //=========================================================================
 
-cPacket::cPacket(cPacket& m) : cMessage()
+cPacket::cPacket(_CONST cPacket& m) : cMessage()
 {
     setName(m.name());
     operator=(m);
 }
 
-cPacket& cPacket::operator=(cPacket& m)
+cPacket& cPacket::operator=(_CONST cPacket& m)
 {
     if (this==&m) return *this;
 
