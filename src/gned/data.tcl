@@ -97,6 +97,10 @@ proc deleteItem {key} {
     #debug "deleteItem $key entered"
 
     # prevent race conditions...
+    if {[info exist ned($key,being-deleted)]} {
+       # we were here already
+       return
+    }   
     set ned($key,being-deleted) 1
 
     # delete children recursively
