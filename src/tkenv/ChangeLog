@@ -1,3 +1,9 @@
+2003-11-09  Andras Varga
+
+	* added toolbar icon and menu item for dynamically loading NED files.
+	(Only works if sim.kernel was compiled with the feature enabled,
+	see sim/ChangeLog entry from the same date.)
+
 2003-11-07  Andras Varga
 
 	* started working on a Tkenv plugin API. It's still in embryonal state. 

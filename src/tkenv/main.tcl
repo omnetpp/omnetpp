@@ -29,6 +29,7 @@ set config(display-treeview) 1
 set config(filtobjlist-class)  ""
 set config(filtobjlist-name)   ""
 set config(filtobjlist-order)  "Class"
+set config(last-nedfile) ""
 
 set pluginlist {}
 
@@ -84,6 +85,9 @@ proc create_omnetpp_window {} {
     foreach i {
       {command -command new_run -label {Set up a run...} -underline 7}
       {command -command new_network -label {Set up a network...} -underline 7}
+      {separator}
+      {command -command load_nedfile -label {Load NED file...} -underline 0}
+      {separator}
       {command -command create_snapshot -label {Create snapshot...} -underline 7}
       {separator}
       {command -command exit_omnetpp -label Exit -underline 1}
@@ -202,6 +206,7 @@ proc create_omnetpp_window {} {
       {sep01    -separator}
       {newrun   -image $icons(newrun)  -command {new_run}}
       {newnet   -image $icons(newnet)  -command {new_network}}
+      {loadned  -image $icons(loadned) -command {load_nedfile}}
 
       {sep0     -separator}
       {step     -image $icons(step)    -command {one_step}}
@@ -229,6 +234,7 @@ proc create_omnetpp_window {} {
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
 
+    set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
     set help_tips(.toolbar.newrun)  {Set up a run}
     set help_tips(.toolbar.newnet)  {Set up a network}
     set help_tips(.toolbar.step)    {Execute one event (F4)}
@@ -351,12 +357,6 @@ proc create_omnetpp_window {} {
     pack .statusbar2 -anchor center -expand 0 -fill x -side top
     pack .statusbar3 -anchor center -expand 0 -fill x -side top
     pack .main       -anchor center -expand 1 -fill both -side top
-
-    ## not sure why following lines were in, but removing it doesn't seem to harm
-    #global tcl_platform
-    #if {$tcl_platform(platform) == "windows"} {
-    #    update
-    #}
 
     focus .main.text
 

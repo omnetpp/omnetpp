@@ -136,6 +136,8 @@ class TOmnetTkApp : public TOmnetApp
       void startAll();
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
 
+      void loadNedFile(const char *fname);
+
       bool isBreakpointActive(const char *label, cSimpleModule *mod);
       void stopAtBreakpoint(const char *label, cSimpleModule *mod);
 

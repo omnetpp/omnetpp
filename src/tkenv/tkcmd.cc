@@ -376,6 +376,8 @@ int objectChannelTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectFunctions_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectClasses_cmd(ClientData, Tcl_Interp *, int, const char **);
 
+int loadNEDFile_cmd(ClientData, Tcl_Interp *, int, const char **);
+
 // command table
 OmnetTclCommand tcl_commands[] = {
    // Commands invoked from the menu
@@ -443,6 +445,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_object_channeltypes", objectChannelTypes_cmd },
    { "opp_object_functions",    objectFunctions_cmd    },
    { "opp_object_classes",      objectClasses_cmd      },
+   // NEDXML
+   { "opp_loadnedfile",         loadNEDFile_cmd        },   // args: <ptr> ret: <xml>
    // end of list
    { NULL, },
 };
@@ -1567,6 +1571,15 @@ int objectClasses_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( &classes ), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int loadNEDFile_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "1 arg expected", TCL_STATIC); return TCL_ERROR;}
+   const char *fname = argv[1];
+   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   app->loadNedFile(fname);
    return TCL_OK;
 }
 

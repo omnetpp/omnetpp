@@ -119,6 +119,33 @@ saved into \"$snapshotfile\". Do you want to open it now in a file viewer window
     }
 }
 
+proc load_nedfile {} {
+   global config
+
+   set fname $config(last-nedfile)
+
+   if {[string compare [file tail $fname] $fname]==0} {
+       set dir "."
+   } else {
+       set dir [file dirname $fname]
+   }
+
+   set fname [file tail $fname]
+   set fname [tk_getOpenFile -defaultextension ".ned" \
+              -initialdir $dir -initialfile $fname \
+              -filetypes {{{NED files} {*.ned}} {{All files} {*}}}]
+
+   if {$fname!=""} {
+      set config(last-nedfile) $fname
+      if [catch {opp_loadnedfile $fname} err] {
+        opp_updateinspectors
+        messagebox {Error} "Error: $err" error ok
+        return
+      }
+      opp_updateinspectors
+   }
+}
+
 proc new_network {} {
     # implements File|New network...
 

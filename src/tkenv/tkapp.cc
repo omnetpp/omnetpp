@@ -509,6 +509,19 @@ void TOmnetTkApp::finishSimulation()
     updateInspectors();
 }
 
+void TOmnetTkApp::loadNedFile(const char *fname)
+{
+    try
+    {
+        simulation.loadNedFile(fname);
+    }
+    catch (cException *e)
+    {
+        displayError(e);
+        delete e;
+    }
+}
+
 void TOmnetTkApp::newNetwork(const char *network_name)
 {
     cNetworkType *network = findNetwork( network_name );
