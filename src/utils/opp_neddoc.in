@@ -146,8 +146,8 @@ if [ "$have_dot" = "yes" ]; then
        echo -n '#'
        gif=`echo $i | sed 's/dot$/gif/'`
        map=`echo $i | sed 's/dot$/map/'`
-       $DOT -Tgif  <$i >$gif 2>$outdir/dot.err || exit 1
-       $DOT -Tcmap <$i >$map 2>$outdir/dot.err || exit 1
+       $DOT -Tgif  <$i >$gif 2>>$outdir/dot.err || exit 1
+       $DOT -Tcmap <$i >$map 2>>$outdir/dot.err || exit 1
        if [ -n "$GIFTRANS" ]; then
            mv $gif $gif.tmp || exit 1
            $GIFTRANS -t white $gif.tmp >$gif || exit 1
