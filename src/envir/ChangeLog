@@ -3,6 +3,18 @@
 	* omnetapp.h/cc, cenvir.cc: added numRNGs(), rng(k) functions (see 
 	include/ChangeLog)
 
+	* omnetapp.cc: new omnetpp.ini entries:
+	  [General]
+	  num-rngs=n  (default:1)
+	  rng-class="classname"  (default:cMersenneTwister)
+	classes accepted: "cMersenneTwister", "cLCG32"
+	per-run settings:
+	  [General] or [Run n]
+	  seed-N-mt=seedvalue  (for MT; default: auto seed selection)
+	  seed-N-lcg32=seedvalue  (for cLCG32; default: auto seed selection)
+	N can be 0..num-rngs; see sim/cmersennetwister.cc and clcg32.cc for
+	exact auto-seeding procedure
+
 2004-10-25  Andras Varga
 	
 	* updated for fullPath() signature change (see include/ChangeLog)
