@@ -4,9 +4,30 @@ DYNA
 Models a client-server application.
 
 Demonstrates:
+ - experimental message subclassing
  - dynamic module creation
  - using WATCH()
  - star topology (with the number of modules passed as parameters)
+
+---------------------------------------------------------------
+***IMPORTANT***IMPORTANT***IMPORTANT***IMPORTANT***IMPORTANT***
+
+Experimental message subclassing must be enabled explicitly when
+running configure in the OMNeT++ top level directory:
+
+$ configure --enable-nedc-subcl
+
+After recompiling you can cd back into this directory and type:
+
+$ opp_makemake
+$ make
+
+Please note that there is currently no support given for experimental
+message subclassing.
+
+Please read the documentation in ${OMNETPP_ROOT}/src/nedc/msgdoc.txt
+
+---------------------------------------------------------------
 
 Dyna is a model of a simple client-server network. The network contains
 several clients and one server, connected in star topology:
