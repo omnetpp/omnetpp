@@ -1,25 +1,25 @@
 //-------------------------------------------------------------
 // File: hc_rte.ned
-// 
+//
 // Declaration of HypercubeRte simple module type
-// 
+//
 // Author: Andras Varga (TU Budapest)
 //-------------------------------------------------------------
 
 
-// HypercubeRte --
-// 
+// HCRouter --
+//
 // implements deflection routing in a hypercube network
-// 
-simple HypercubeRte 
-    parameters: 
-        address : numeric, 
-        dim : numeric; 
-    gates: 
-        in: in[]; 
-        in: from_gen; 
-        out: out[]; 
-        out: to_sink; 
-endsimple 
+//
+simple HCRouter
+    parameters:
+        address : numeric,
+        dim : numeric;
+    gates:
+        in: in[];
+        in: from_gen;
+        out: out[];
+        out: to_sink;
+endsimple
 
 

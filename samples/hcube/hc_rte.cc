@@ -16,7 +16,7 @@
 #define PROPDEL     (0.99*SLOT_TIME)
 
 // Module registration:
-Define_Module( HypercubeRte )
+Define_Module( HCRouter )
 
 void deflectionRouting(int my_address,int dim,
                        int *rte_dest, int num_rte, int *rte_port,
@@ -25,7 +25,7 @@ void deflectionRouting(int my_address,int dim,
 //
 // Activity of the simple module
 //
-void HypercubeRte::activity()
+void HCRouter::activity()
 {
    int my_address = par("address");
    int dim = par("dim");

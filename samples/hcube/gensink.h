@@ -1,13 +1,13 @@
 // file: gensink.h
 
-class Generator : public cSimpleModule
+class HCGenerator : public cSimpleModule
 {
-       Module_Class_Members(Generator,cSimpleModule,16384)
+       Module_Class_Members(HCGenerator,cSimpleModule,16384)
        virtual void activity();
 };
 
-class Sink : public cSimpleModule
+class HCSink : public cSimpleModule
 {
-       Module_Class_Members(Sink,cSimpleModule,16384)
+       Module_Class_Members(HCSink,cSimpleModule,16384)
        virtual void activity();
 };
