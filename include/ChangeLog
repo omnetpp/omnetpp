@@ -1,5 +1,7 @@
 2001-07-13 Andras Varga
 
+	* switched to DoxyGen for generating documentation: doxy.cfg added
+
        	* cmsgheap.h coutvect.h cpacket.h ctopo.h: added/cleaned up DOC++
         comments 
 
