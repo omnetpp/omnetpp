@@ -37,4 +37,6 @@ clean:
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+main.obj: main.cc \
+  ../../include/platdep/misc.h \
+  ../../include/platdep/fileutil.h

@@ -25,6 +25,7 @@
 #include "cexception.h"
 #include "fsutils.h"
 #include "platdep/fileutil.h"  // directoryOf
+#include "cstrtokenizer.h"
 
 
 #define MAX_LINE   1024
@@ -410,6 +411,28 @@ double cIniFile::getAsTime(const char *sect, const char *key, double defaultval)
     return strToSimtime(s);
 }
 
+std::string cIniFile::getAsFilenames(const char *sect, const char *key, const char *defaultval)
+{
+    sEntry *entry = _findEntry(sect, key);
+    if (!entry)
+    {
+       if (warnings)
+          ev.printf("Entry [%s]/%s= not in ini file, \"%s\" used as default\n",
+                     sect,key,defaultval?defaultval:"");
+       return defaultval;
+    }
+
+    const char *baseDir = files[entry->file_id].directory;
+
+    // tokenize the string, and prepend each item with baseDir
+    std::string result;
+    cStringTokenizer tokenizer(entry->value);
+    const char *token;
+    while ((token = tokenizer.nextToken())!=NULL)
+        result += concatDirAndFile(baseDir, token);
+    return result;
+}
+
 const char *cIniFile::getAsCustom(const char *sect, const char *key, const char *defaultval)
 {
     const char *s = _getValue(sect, key, true);
@@ -501,6 +524,19 @@ const char *cIniFile::getAsString2(const char *sect1, const char *sect2, const c
     const char *a = getAsString(sect1,key,defaultval);
     if (notfound)
          a = getAsString(sect2,key,defaultval);
+    warnings = w;
+    if (notfound && warnings)
+         ev.printf("Ini file entry %s= not in [%s] or [%s], \"%s\" used as default\n",
+                   key,sect1,sect2,defaultval?defaultval:"");
+    return a;
+}
+
+std::string cIniFile::getAsFilenames2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
+{
+    bool w = warnings; warnings = false;
+    std::string a = getAsFilenames(sect1,key,defaultval);
+    if (notfound)
+         a = getAsFilenames(sect2,key,defaultval);
     warnings = w;
     if (notfound && warnings)
          ev.printf("Ini file entry %s= not in [%s] or [%s], \"%s\" used as default\n",

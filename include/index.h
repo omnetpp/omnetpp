@@ -181,7 +181,8 @@
  * Classes that make it easier to write simulation models: <!-- blank line needed for autobrief=yes -->
  *
  *    - cXMLElement makes XML configuration available for simple modules
- *    - cTopology supports routing in telecommunication or multiprocessor networks.
+ *    - cTopology supports routing in telecommunication or multiprocessor networks
+ *    - cStringTokenizer splits up a string to words
  *    - cFSM is used to build Final State Machines
  *    - cWatch makes variables visible (inspectable) in Tkenv
  *    - cVisitor: subclass from this to traverse the tree of simulation objects

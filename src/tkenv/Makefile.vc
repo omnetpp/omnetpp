@@ -123,6 +123,7 @@ inspector.obj: inspector.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cxmlelement.h \
+  ../../include/cstrtokenizer.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
@@ -183,6 +184,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cxmlelement.h \
+  ../../include/cstrtokenizer.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
@@ -280,6 +282,7 @@ objinsp.obj: objinsp.cc \
   ../../include/envirext.h \
   ../../include/cconfig.h \
   ../../include/cxmlelement.h \
+  ../../include/cstrtokenizer.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
@@ -353,6 +356,7 @@ tkapp.obj: tkapp.cc \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
   ../../include/ctypes.h \
+  ../../include/cscheduler.h \
   tkdefs.h \
   tkapp.h \
   tklib.h \
@@ -400,7 +404,6 @@ tkcmd.obj: tkcmd.cc \
   inspector.h \
   inspfactory.h \
   visitor.h \
-  ../../include/platdep/loadlib.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/util.h \
@@ -421,8 +424,7 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cpar.h \
   ../../include/cenum.h \
   tkutil.h \
-  ../../include/macros.h \
-  ../../include/platdep/misc.h
+  ../../include/macros.h
 tklib.obj: tklib.cc \
   tklib.h \
   tkapp.h

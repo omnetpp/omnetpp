@@ -118,7 +118,7 @@ cenvir.obj: cenvir.cc \
   omnetapp.h \
   appreg.h \
   ../../include/cmodule.h \
-  ../../include/platdep/loadlib.h \
+  fsutils.h \
   speedmtr.h \
   filemgrs.h \
   akaroarng.h \
@@ -148,7 +148,6 @@ cenvir.obj: cenvir.cc \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
-  ../../include/platdep/misc.h \
   ../../include/macros.h
 cinifile.obj: cinifile.cc \
   ../../include/cenvir.h \
@@ -156,6 +155,8 @@ cinifile.obj: cinifile.cc \
   cinifile.h \
   patmatch.h \
   ../../include/cexception.h \
+  fsutils.h \
+  ../../include/platdep/fileutil.h \
   ../../include/defs.h \
   envdefs.h \
   ../../include/cconfig.h \
@@ -203,8 +204,10 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cdefaultlist.h \
   ../../include/ctypes.h
 fsutils.obj: fsutils.cc \
-  ../../include/platdep/misc.h \
   fsutils.h \
+  ../../include/platdep/misc.h \
+  ../../include/platdep/loadlib.h \
+  ../../include/onstartup.h \
   ../../include/cexception.h \
   ../../include/util.h \
   ../../include/opp_string.h \
@@ -236,6 +239,7 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cparsimcomm.h \
   ../../include/platdep/time.h \
   ../../include/platdep/misc.h \
+  ../../include/platdep/fileutil.h \
   ../../include/platdep/fileglobber.h \
   ../../include/platdep/fileglobber.c \
   envdefs.h \

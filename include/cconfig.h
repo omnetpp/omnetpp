@@ -117,6 +117,13 @@ class ENVIR_API cConfiguration : public cPolymorphic
     virtual double getAsTime(const char *sect, const char *key, double defaultvalue=0.0) = 0;
     /** Returns a config value as string */
     virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue="") = 0; // quotes stripped (if any)
+    /**
+     * Assumes the config value is to be understood as a list of paths (file
+     * or directory names, possibly containing wildcards) separated by spaces,
+     * and modifies each of them to be relative to the base directory (see
+     * getBaseDirectoryFor() method) unless they are already absolute.
+     */
+    virtual std::string getAsFilenames(const char *section, const char *key, const char *defaultvalue="") = 0;
     /** Returns a config entry's "raw" (unparsed) value */
     virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL) = 0; // with quotes (if any)
     /**
@@ -125,7 +132,7 @@ class ENVIR_API cConfiguration : public cPolymorphic
      * This method in the cInifile class returns the location of the ini file in which
      * the given entry occurred. Other cConfiguration implementations may return "."
      * to mean the current working directory. For example, this function is used by the
-     * preload-ned-files= ini file entry to ensure that files are loaded from the correct 
+     * preload-ned-files= ini file entry to ensure that files are loaded from the correct
      * place.
      */
     virtual const char *getBaseDirectoryFor(const char *section, const char *key) = 0;
@@ -148,6 +155,11 @@ class ENVIR_API cConfiguration : public cPolymorphic
     virtual double getAsTime2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0) = 0;
     /** Returns a config value as string */
     virtual const char *getAsString2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
+    /**
+     * Returns getAsFilenames(section1, key) or getAsFilenames(section2, key),
+     * depending where the given entry was found.
+     */
+    virtual std::string getAsFilenames2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
     /** Returns a config entry's "raw" (unparsed) value */
     virtual const char *getAsCustom2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
     /**

@@ -65,6 +65,7 @@
 #include "envirext.h"
 #include "cconfig.h"
 #include "cxmlelement.h"
+#include "cstrtokenizer.h"
 #include "cscheduler.h"
 #include "compat.h"
 #include "cparsimcomm.h"
