@@ -71,6 +71,10 @@ void Dist::activity()
         fprintf(f,"\",%lg\n",h->cellPDF(k));
     }
     fclose(f);
+
+    // next line is for Tkenv, so that one can inspect the histogram
+    wait(1.0);
+    
     delete h;
 }
 
