@@ -20,4 +20,4 @@ else
 %exitcode: 1
 
 %contains: stdout
-parse error or something
+Error parsing

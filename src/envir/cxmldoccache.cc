@@ -163,7 +163,7 @@ cXMLElement *cXMLDocCache::parseDocument(const char *filename)
     parser.setHandler(&sh);
     bool ok = parser.parse(f);
     if (!ok)
-        throw new cException("Error parsing `%s': %s", filename, parse.getErrorMessage());
+        throw new cException("Error parsing `%s': %s", filename, parser.getErrorMessage());
 
     return sh.getTree();
 #endif

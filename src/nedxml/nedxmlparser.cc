@@ -33,7 +33,7 @@ NEDElement *parseXML(const char *filename)
     bool ok = parser.parse(f);
     if (!ok)
     {
-        NEDError(NULL, "Error parsing `%s': %s", filename, parse.getErrorMessage());
+        NEDError(NULL, "Error parsing `%s': %s", filename, parser.getErrorMessage());
         return 0;
     }
     return sh.getTree();

@@ -69,6 +69,7 @@ DOT=d:/home/tools/Graphviz/bin/dot.exe
 # future?). If set to 'none', nedxml will compile but won't support XML input.
 #
 XMLPARSER=expat
+#XMLPARSER=libxml
 #XMLPARSER=none
 
 #
@@ -169,6 +170,8 @@ TK_CFLAGS=/I "$(TK_INCL_DIR)"
 TK_LIBS=$(TCL_LIB) $(TK_LIB) $(BLT_LIB) /libpath:"$(TK_LIB_DIR)"
 MPI_CFLAGS=/I "$(MPI_INCL_DIR)"
 MPI_LIBS=
+
+#FIXME support libxml too
 XML_CFLAGS=/I "$(EXPAT_INCL_DIR)"
 XML_LIBS=$(EXPAT_LIB) /libpath:"$(EXPAT_LIB_DIR)"
 SYS_LIBS=
