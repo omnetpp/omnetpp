@@ -216,11 +216,10 @@ void cObject::ownedObjectDeleted(cObject *obj)
 
 void cObject::yieldOwnership(cObject *obj, cObject *newowner)
 {
-    char buf[120];
     throw new cRuntimeError("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
                             obj->className(), obj->fullName(),
                             className(), fullPath().c_str(),
-                            newowner->className(), newowner->fullPath(buf,120));
+                            newowner->className(), newowner->fullPath().c_str());
 }
 
 void cObject::removeFromOwnershipTree()

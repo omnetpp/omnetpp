@@ -114,12 +114,13 @@ cSimulation::cSimulation(const char *name) :
     // err = eOK; -- commented out to enable errors prior to starting main()
     networktype = NULL;
     run_number = 0;
+
+    // see init()
 }
 
 cSimulation::~cSimulation()
 {
-    deleteNetwork();
-    drop(&msgQueue);
+    // see shutdown()
 }
 
 void cSimulation::init()
@@ -131,6 +132,14 @@ void cSimulation::init()
     // take() cannot be done from the ctor for the same reason.
     removeFromOwnershipTree();
     take(&msgQueue);
+}
+
+void cSimulation::shutdown()
+{
+    // deleteNetwork() is better called before the dtor (which runs after main())
+    deleteNetwork();
+    // let go of msgQueue (removeFromOwnershipTree() cannot be called)
+    msgQueue.ownerp = NULL;
 }
 
 void cSimulation::forEachChild(cVisitor *v)
