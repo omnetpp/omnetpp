@@ -676,7 +676,7 @@ void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule
     if (!needsDynamicExpression(expr))
     {
         // static evaluation will do
-        double d = evaluate(parentmodp, expr);
+        double d = evaluate(parentmodp, expr, submodp);
         p.setDoubleValue(d);
     }
     else
