@@ -983,10 +983,14 @@ When an expression is used for a parameter value, it is evaluated
 each time the parameter value is accessed (unless the parameter is
 declared \ttt{const}, see \ref{sec:ch-ned-lang:const}). This means
 that a simple module querying a non-const parameter during simulation
-may get different values each time (e.g. if the value involves a
+may get different values every time (e.g. if the value involves a
 random variable, or it contains other parameters taken by reference).
 Other expressions (including \ttt{const} parameter values)
 are evaluated only once.
+
+XML-type parameters can be used to conveniently access external
+XML files or parts of them. XML-type parameters can be assigned
+with the \ttt{xmldoc()} operator, also described in this section.
 
 
 \subsection{Constants}
@@ -1154,6 +1158,56 @@ We assume that gate vectors \ttt{in[]} and \ttt{out[]} have the same size.
         \tbf{endfor};
 \tbf{endmodule}
 \end{Verbatim}
+
+
+\subsection{The \fname{xmldoc()} operator}
+
+The \ttt{xmldoc()} operator can be used to assign XML-type parameters,
+that is, point them to XML files or to specific elements inside XML files.
+
+\ttt{xmldoc()} has two flavours: one accepts a file name, the second accepts
+a file name plus an XPath-like expression which selects an element
+inside the XML file. Examples:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+xmlparam = \tbf{xmldoc}("someconfig.xml");
+xmlparam = \tbf{xmldoc}("someconfig.xml", "/config/profile[@id='2']");
+\end{Verbatim}
+
+{\opp} supports a subset of the XPath 1.0 specification; details are
+documented below.
+
+From the C++ code you'd access the XML element in the following way:
+
+\begin{verbatim}
+cXMLElement *rootelement = par("xmlparam").asXML();
+\end{verbatim}
+
+The \cclass{cXMLElement} class provides a DOM-like access to the XML document.
+You can then navigate the document tree, extract the information you need,
+and store it in variables or your internal data structure.
+\cclass{cXMLElement} is documented in Chapter \ref{the-simulation-library}.
+
+% FIXME introduce omnetpp.ini and param assignments somewhere before this point
+
+You can also XML parameters from omnetpp.ini:
+
+\begin{verbatim}
+[Parameters]
+**.interface[*].config = xmldoc("conf.xml")
+\end{verbatim}
+
+or
+
+\begin{verbatim}
+[Parameters]
+**.interface[*].config = xmldoc("all-in-one.xml", "/config/interfaces/interface[2]")
+\end{verbatim}
+
+
+\subsection{XML documents and the XPath subset supported}
+
+% FIXME
 
 
 \subsection{Functions}
