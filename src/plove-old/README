@@ -1,7 +1,13 @@
 PLOVE
 ~~~~~
 
+REQUIREMENTS
+------------
+gnuplot, awk, grep. zcat (same binary as gzip/gunzip) is also useful.
+
+
 OVERVIEW
+--------
 
 Plove is a handy tool for plotting OMNeT++ output vectors. It uses
 gnuplot to do the actual work.
@@ -38,10 +44,25 @@ On startup, Plove automatically reads the .ploverc file in your home
 directory. The file contains general gnuplot settings, the filter
 configuration etc (that is, the stuff from the Options menu).
 
-Windows users should make a shortcut to the 'plove' file and associate it
-with the wish.exe application.
+
+WINDOWS
+-------
+
+Windows users should create a plove.bat file which starts plove using wish,
+e.g:
+   @c:\tcl82\bin\wish82.exe -f c:\omnetpp\src\plove\plove
+or rename the plove file to plove.tcl and associate the .tcl extension with
+the wish application.
+
+Be sure to fill in the Options|External programs dialog. If still you cannot
+load an output vector file properly (you see garbage in the left listbox),
+your grep program is probably broken (it has difficulties with Unix-style,
+LF-terminated lines). Especially, the Borland grep is not good. You should
+get a decent one, for example from the Cygwin package.
+
 
 USAGE
+-----
 
 First, you load an output vector file (.vec) into the left pane. You can
 also load gzipped vector files (.vec.gz) without having to decompress them.
@@ -64,6 +85,7 @@ into the left pane for storage.
 
 
 WRITING FILTERS
+---------------
 
 As you might have guessed already, filters get an output vector on
 their standard input (as plain text, with the timestamp being the second
@@ -98,19 +120,15 @@ doesn't seem to work, choose File|Save script and do your debugging on the
 resulting script. For example, it is a common mistake to leave out 'print'
 from the script.
 
+
 PORTABILITY
+-----------
 
 Plove works fine on Unix and (with some limitations) on Win95/NT.
 (The limitations come from the facts that Win95/NT doesn't have named
 pipes in the way Unix does, the length of the command line is limited,
 the shell is crippled etc... I had to use a dozen temporary files.
 And expect the Win95/NT version to be slower than Unix version.)
-
-On Windows, if you cannot load an output vector file properly,
-then your grep probably has difficulties with Unix-style files
-(LF-terminated lines). For example, Borland's grep is like this.
-If no plot shows up, then you probably have to set the awk, gnuplot
-etc. paths in Options|External programs.
 
 Known bug:
 If you plot too many vectors at the same time, some of them may not
