@@ -69,6 +69,8 @@ LEX=flex.exe
 
 # Compiler switches
 
+#CFLAGS_DEBUG=/nologo /MLd /Od /GZ /Zi /Gm /FD /Zm150 -D_CONST=const
+#CFLAGS_RELEASE=/nologo /ML /O2 /D "NDEBUG" /FD /Zm150 -D_CONST=const
 CFLAGS_DEBUG=/nologo /MLd /Od /GZ /Zi /Gm /FD /Zm150
 CFLAGS_RELEASE=/nologo /ML /O2 /D "NDEBUG" /FD /Zm150
 

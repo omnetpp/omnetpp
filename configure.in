@@ -116,7 +116,7 @@ AS="as"
 AR="ar cr"
 SHLIB_LD="$CXX -shared"
 NEDC="nedc"
-MAKEDEPEND="makedepend -Y"
+MAKEDEPEND="perl `pwd`/src/utils/makedep.pl -Y"
 
 case "$CXX" in
    "cxx") # Tru64 machine
