@@ -12,7 +12,7 @@ No DOCTYPE -- no complaint.
 cXMLElement *node = ev.getXMLDocument("{}.xml");
 node->debugDump();
 
-%contains: stdout
-<foo>
+%contains-regex: stdout
+<foo>[ \n]*
   <bar one="X"/>
 </foo>

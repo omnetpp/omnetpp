@@ -1,5 +1,6 @@
 %description:
-Tests namespaces in XML documents.
+Tests namespaces in XML documents. Elements and attributes are created with
+name prefix; xmlns attribute may or may not be removed (parser dependent).
 
 %file: {}.xml
 <?xml version="1.0" ?>
@@ -13,8 +14,8 @@ Tests namespaces in XML documents.
 cXMLElement *node = ev.getXMLDocument("{}.xml");
 node->debugDump();
 
-%contains: stdout
-<foo>
+%contains-regex: stdout
+<foo.*>[ \n]*
   <bar one="X"/>
   <z:bar one="X"/>
   <bar z:one="X"/>

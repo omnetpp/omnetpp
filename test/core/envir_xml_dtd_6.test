@@ -2,6 +2,8 @@
 If document has DTD, parser must use it for validation and attribute completion.
 Document doesn't conform to DTD: extra attribute -- should be an error.
 
+THIS TEST DOES NOT PASS WITH EXPAT -- IT DOES NOT SUPPORT DTD VALIDATION.
+
 %file: {}.dtd
 <!ELEMENT foo ( bar )>
 <!ATTLIST foo

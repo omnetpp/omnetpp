@@ -20,13 +20,13 @@ Comments and processing instructions are ignored.
 cXMLElement *node = ev.getXMLDocument("{}.xml");
 node->debugDump();
 
-%contains: stdout
-<foo id="1">
+%contains-regex: stdout
+<foo id="1">[ \n]*
   <foo color="red" id="2">one</foo>
-  <bar color="red" id="3">
+  <bar color="red" id="3">[ \n]*
     <foo id="4">two
 
-        </foo>
+        </foo>[ \n]*
     <bar id="5">three</bar>
   </bar>
 </foo>
