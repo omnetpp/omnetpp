@@ -594,4 +594,7 @@ Jul 10, 1999
   - fixed bug in cQueue and cLinkedList (didn't always increment item count
     on insertion)
   - fixed bug in cPar::info(): didn't handle boolean (B) type
-  KNOWN BUGS: cModule::initialize() doesn't get called with dynamic modules
+
+  KNOWN BUGS:
+     cModule::initialize() doesn't get called with dynamic modules
+     randseed() --> split to 2 separate funcs with and without args
