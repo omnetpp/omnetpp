@@ -36,5 +36,33 @@
 
 #endif
 
+
+#ifdef __WIN32__
+#include <windows.h>
+#undef min
+#undef max
+#include <string>
+
+// errorCode usually comes from GetLastError()
+inline std::string opp_getWindowsError(DWORD errorCode)
+{
+     // Some nice microsoftism to produce an error msg...
+     LPVOID lpMsgBuf;
+     FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                    FORMAT_MESSAGE_FROM_SYSTEM |
+                    FORMAT_MESSAGE_IGNORE_INSERTS,
+                    NULL,
+                    errorCode,
+                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                    (LPTSTR) &lpMsgBuf,
+                    0,
+                    NULL );
+     int len = strlen((const char *)lpMsgBuf);
+     std::string ret((const char *)lpMsgBuf, 0, len>3 ? len-3 : len); // chop ".\r\n"
+     LocalFree( lpMsgBuf );
+     return ret;
+}
+#endif
+
 #endif
 

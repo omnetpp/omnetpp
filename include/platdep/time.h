@@ -29,6 +29,8 @@
 # include <winsock2.h>  // for timeval (!?)
 # undef min  // would conflict with omnetpp's util.h
 # undef max
+
+// Windows doesn't have gettimeofday(), so emulate it with ftime()
 inline int gettimeofday(struct timeval *tv, struct timezone *)
 {
     struct timeb tb;
@@ -37,10 +39,6 @@ inline int gettimeofday(struct timeval *tv, struct timezone *)
     tv->tv_usec = tb.millitm * 1000UL;
     return 0;
 }
-#endif
-
-#ifdef _MSC_VER
-#define usleep(x) _sleep((x)/1000)
 #endif
 
 inline timeval timeval_add(const timeval& a, const timeval& b)
