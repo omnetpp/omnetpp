@@ -402,6 +402,7 @@ void NEDDTDValidator::validateElement(ConstNode *node)
     checkRequiredAttribute(node, "type");
     const char *vals0[] = {"bool","int","real","string","time"};
     checkEnumeratedAttribute(node, "type", vals0, sizeof(vals0)/sizeof(const char *));
+    checkRequiredAttribute(node, "value");
 }
 
 void NEDDTDValidator::validateElement(CplusplusNode *node)

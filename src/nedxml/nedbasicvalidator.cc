@@ -15,6 +15,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "nederror.h"
 #include "nedbasicvalidator.h"
 
@@ -507,33 +508,42 @@ void NEDBasicValidator::validateElement(ConstNode *node)
 {
     // verify syntax of constant
     int type = node->getType();
+    const char *value = node->getValue();
     //const char *text = node->getText();
-    //const char *value = node->getValue();
+
+    if (strnull(value))
+        INTERNAL_ERROR0(node,"required attribute 'value' missing");
 
     if (type==NED_CONST_BOOL)
     {
         // check bool
-        // FIXME TBD
+        if (strcmp(value,"true") && strcmp(value,"false"))
+            NEDError(node, "bool constant should be 'true' or 'false'");
     }
     else if (type==NED_CONST_INT)
     {
         // check int
-        // FIXME TBD
+        char *s;
+        strtol(value, &s, 0);
+        if (s && *s)
+            NEDError(node, "invalid integer constant '%s'", value);
     }
     else if (type==NED_CONST_REAL)
     {
         // check real
-        // FIXME TBD
+        char *s;
+        strtod(value, &s);
+        if (s && *s)
+            NEDError(node, "invalid real constant '%s'", value);
     }
     else if (type==NED_CONST_STRING)
     {
-        // check string
-        // FIXME TBD
+        // string: no restriction
     }
     else if (type==NED_CONST_TIME)
     {
         // check time
-        // FIXME TBD
+        // TBD
     }
 }
 

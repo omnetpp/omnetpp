@@ -255,7 +255,7 @@
 <!ATTLIST const
      type  (bool|int|real|string|time)  #REQUIRED
      text                CDATA     #IMPLIED
-     value               CDATA     #IMPLIED>
+     value               CDATA     #REQUIRED>
 
 <!--
   **  NED-II: message subclassing part
