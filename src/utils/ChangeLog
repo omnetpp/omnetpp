@@ -92,3 +92,5 @@ Oct 10, 1999
   - tcl2c.c: encoding simplified (old one was unnecessarily complicated and
     didn't work under cygwin)
 ------ omnetpp-2.0b2 released ------
+Dec 5,1999
+  - Makefile.vc added

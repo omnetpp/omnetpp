@@ -181,6 +181,8 @@ Dec 5, 1999
     in OMNETPP_GNED_DIR and ..BITMAP_PATH on Win32 because Tcl/Tk accepts both.
   - added generated files enbf.tab.c and lex.yy.c to CVS to make it possible to
     build GNED where flex/bison is not available
+Dec 5,1999
+  - Makefile.vc added
 Dec 6, 1999
   - adapted to Tcl8.2: font size changed.
   - improved dialog box positioning
