@@ -4934,7 +4934,7 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/dyna/Makefile samples/fddi/Makefile samples/fifo1/Makefile samples/fifo2/Makefile samples/hcube/Makefile samples/hist/Makefile samples/nim/Makefile samples/token/Makefile samples/ned/Makefile samples/demo/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
+ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/dyna/Makefile samples/fddi/Makefile samples/fifo1/Makefile samples/fifo2/Makefile samples/hcube/Makefile samples/hist/Makefile samples/nim/Makefile samples/token/Makefile samples/topo/Makefile samples/demo/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
 
 #----------------------
 # Substitutions.
@@ -5293,7 +5293,7 @@ do
   "samples/hist/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/hist/Makefile" ;;
   "samples/nim/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/nim/Makefile" ;;
   "samples/token/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/token/Makefile" ;;
-  "samples/ned/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/ned/Makefile" ;;
+  "samples/topo/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/topo/Makefile" ;;
   "samples/demo/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/demo/Makefile" ;;
   "tutorial/queues/Makefile" ) CONFIG_FILES="$CONFIG_FILES tutorial/queues/Makefile" ;;
   "include/Makefile" ) CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;

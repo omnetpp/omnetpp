@@ -568,7 +568,7 @@ AC_CONFIG_FILES(
   samples/hist/Makefile
   samples/nim/Makefile
   samples/token/Makefile
-  samples/ned/Makefile
+  samples/topo/Makefile
   samples/demo/Makefile
   tutorial/queues/Makefile
   include/Makefile
