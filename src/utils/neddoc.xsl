@@ -53,26 +53,26 @@
       </html>
    </xsl:document>
 
-   <xsl:document href="{$outputdir}/style.css">
+   <xsl:document href="{$outputdir}/style.css" method="text">
       body,td,p,ul,ol,li,h1,h2,h3,h4 {font-family:arial,sans-serif }
-      body,td,p,ul,ol,li { font-size=10pt }
-      h1 { font-size=18pt; text-align=center }
-      pre.comment { font-size=10pt; padding-left=5pt }
-      pre.src { font-size=8pt; background=#E0E0E0; padding-left=5pt }
-      th { font-size=10pt; text-align=left; vertical-align=top; background=#E0E0f0 }
-      td { font-size=10pt; text-align=left; vertical-align=top }
-      .navbar     { font-size=8pt; }
-      .navbarlink { font-size=8pt; }
-      .indextitle { font-size=12pt; }
-      .comptitle  { font-size=14pt; }
-      .subtitle   { font-size=12pt; margin-bottom: 3px}
-      .footer     { font-size=8pt; margin-top=0px; text-align=center; color=#303030; }
-      FIXME.paramtable { border=2px ridge; border-collapse=collapse;}
-      img.screenshot { border=none }
-      .src-keyword { font-weight=bold }
-      .src-comment { font-style=italic; color=#404040 }
-      .src-string  { color=#006000 }
-      .src-number  { color=#0000c0 }
+      body,td,p,ul,ol,li { font-size:10pt }
+      h1 { font-size:18pt; text-align:center }
+      pre.comment { font-size:10pt; padding-left:5pt }
+      pre.src { font-size:8pt; background:#E0E0E0; padding-left:5pt }
+      th { font-size:10pt; text-align:left; vertical-align:top; background:#E0E0f0 }
+      td { font-size:10pt; text-align:left; vertical-align:top }
+      .navbar     { font-size:8pt; }
+      .navbarlink { font-size:8pt; }
+      .indextitle { font-size:12pt; }
+      .comptitle  { font-size:14pt; }
+      .subtitle   { font-size:12pt; margin-bottom: 3px}
+      .footer     { font-size:8pt; margin-top:0px; text-align:center; color:#303030; }
+      FIXME.paramtable { border:2px ridge; border-collapse:collapse;}
+      img.screenshot { border:none }
+      .src-keyword { font-weight:bold }
+      .src-comment { font-style:italic; color:#404040 }
+      .src-string  { color:#006000 }
+      .src-number  { color:#0000c0 }
    </xsl:document>
 
    <xsl:call-template name="write-html-page">

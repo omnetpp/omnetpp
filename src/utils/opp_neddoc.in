@@ -62,17 +62,17 @@ else
     files=$*
 fi
 
-echo transforming to xml...
+echo 'transforming to xml...'
 nedtool -x -e -t -y -m -o $TMPFILE $files || exit 1
 
 if [ -n "$PS2GIF" ]; then
-    echo exporting screenshots (Postscript) using GNED...
+    echo 'exporting screenshots (Postscript) using GNED...'
     gned -- -c $outdir $files || exit 1
-    echo converting Postscript to GIF using $PS2GIF...
+    echo 'converting Postscript to GIF using '$PS2GIF'...'
     for i in $outdir/*.eps; do
        gif=`echo $i | sed 's/eps$/gif/'`
        $PS2GIF $i $gif || exit 1
-       echo -n #
+       echo -n '#'
     done
     echo
     # hack: must convert $outdir to absolute path, otherwise xslt will take it
@@ -83,17 +83,18 @@ if [ -n "$PS2GIF" ]; then
       *) imagesxml=`pwd`/$imagesxml ;;
     esac
 else
-    echo exporting screenshots using GNED... skipped
+    echo 'exporting screenshots using GNED... skipped'
     imagesxml=
 fi
 
-echo applying xslt stylesheet...
-xsltproc  --stringparam outputdir "$outdir" --stringparam imagesxml "$imagesxml" $NEDDOC_XSL $TMPFILE || exit 1
+echo 'applying xslt stylesheet...'
+# FIXME xslt outputs lots of blank lines, hence the >/dev/null
+xsltproc  --stringparam outputdir "$outdir" --stringparam imagesxml "$imagesxml" $NEDDOC_XSL $TMPFILE >/dev/null || exit 1
 
-echo formatting comments...
+echo 'formatting comments...'
 perl $NEDDOC_PL $outdir/*.html || exit 1
 
-echo documentation created in $outdir/ -- start page is index.html
+echo 'documentation created in $outdir/ -- start page is index.html'
 cleanup
 
 

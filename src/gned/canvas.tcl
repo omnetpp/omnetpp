@@ -389,7 +389,8 @@ proc exportCanvasesToPostscript {dir imgxmlfile} {
         update idletasks
 
         # export canvas
-        $canv postscript -file $psfile -x $bbx1 -y $bby1 -width [expr $bbx2-$bbx1] -height [expr $bby2-$bby1]
+        $canv postscript -file $psfile -x $bbx1 -y $bby1 -width $width -height $height \
+                         -pagex 0 -pagey 0 -pagewidth $width -pageheight $height
 
         # create imagemap
         set submodskey [getChildrenWithType $modkey submods]
