@@ -233,13 +233,12 @@ class cXMLElement
      *  - "." : this element
      *  - "./foo" : first "foo" child of this node
      *  - "foo" : same as "./foo" (initial "./" can be omitted)
-     *  - "./foo/bar" : first "foo" child of this node
-     *  - "./foo/bar" : first "bar" child of first "foo" child of this node
+     *  - "./foo" : first "foo" child of this node
      *  - "./foo/bar" : first "bar" child of first "foo" child of this node
      *  - ".//bar" : first "bar" anywhere under this node (depth-first search!)
-     *  - "./ * /bar" : first "bar" child of two levels below this node
-     *  - "./foo[0]" : first "foo" child
-     *  - "./foo[1]" : second "foo" child
+     *  - "./ * /bar" : first "bar" child two levels below this node
+     *  - "./foo[0]" : first "foo" child of this node
+     *  - "./foo[1]" : second "foo" child of this node
      *  - "./foo[@color='green']" : first "foo" child which has attribute "color" with value "green"
      *  - ".//bar[1]" : a "bar" anywhere under this node which is the second "bar" among its siblings
      *  - ".// * [@color='yellow']" : an element under this node with attribute color="yellow"
@@ -248,7 +247,7 @@ class cXMLElement
      * The method throws an exception if the path expression is invalid,
      * and returns NULL if the element is not found.
      */
-    //FIXME get rid of spaces around "*" somehow
+    //FIXME get rid of spaces around "*" in the above doc somehow (without creating /*, or */)
     cXMLElement *getElementByPath(const char *pathexpression);
     //@}
 };
