@@ -1,3 +1,9 @@
+2003-05-01  Andras Varga
+
+	* opp_msgc fix: perl in RedHat 9 (rpm 5.8.0-88) is broken, it doesn't 
+	recognize the [^\s] construct in regexps. Workaround: replaced [^\s]
+	with [^ \t\r\n].
+
 2003-03-19  Andras Varga
 
 	* opp_msgc: accept, but (since imports are not yet supported) ignore 
