@@ -60,7 +60,7 @@ void SSM_OIF_by_frequency::activity()
     // DO NOT substract the (no of idle symbols)/2
     if ( ++counter == frequency )
       {
-// FILE *debug=fopen(fullPath(),"a");
+// FILE *debug=fopen(fullPath().c_str(),"a");
 // length->saveToFile(debug);
 // delay->saveToFile(debug);
 // fclose(debug);
@@ -83,7 +83,7 @@ void SSM_OIF_by_frequency::activity()
 void SSM_OIF_by_time::activity()
   {
 #if 0
-  //ev.printf("OIF start %s\n",fullPath()); // DEBUG
+  //ev.printf("OIF start %s\n",fullPath().c_str()); // DEBUG
   // Read the control parameters from file and schedule activities like
   // "send" and "delete", send the necessary syncpoints.
   // This code is ment to be run when simTime()==0 otherwise backschedule may
@@ -94,7 +94,7 @@ void SSM_OIF_by_time::activity()
   if ( !f )
     {
     ev.printf("OIF Warning: Cannot open input file %s\n",filepathname);
-    ev.printf("No Statistics will be collected by %s\n",fullPath());
+    ev.printf("No Statistics will be collected by %s\n",fullPath().c_str());
     //endSimulation();
     return;
     }
@@ -200,7 +200,7 @@ void SSM_OIF_by_time::activity()
         }
       case SSM_OIF_SEND:
         {
-// FILE *debug=fopen(fullPath(),"a");
+// FILE *debug=fopen(fullPath().c_str(),"a");
 // length->saveToFile(debug);
 // delay->saveToFile(debug);
 // fclose(debug);
@@ -280,7 +280,7 @@ void SSM_IIF::activity()
           }
         length = (cLongHistogram *) msg->parList().remove("length");
         delay = (cDoubleHistogram *) msg->parList().remove("inter-arrival time");
-// FILE *debug=fopen(fullPath(),"a");
+// FILE *debug=fopen(fullPath().c_str(),"a");
 // length->saveToFile(debug);
 // delay->saveToFile(debug);
 // fclose(debug);
@@ -306,7 +306,7 @@ void SSM_IIF::activity()
         break;
         }
       default:
-        error("SSM_IIF Error: Bad msgkind: %i in %s", msgkind, fullPath());
+        error("SSM_IIF Error: Bad msgkind: %i in %s", msgkind, fullPath().c_str());
       }
     }
 #endif

@@ -313,7 +313,7 @@ class SIM_API cObject : public cPolymorphic
      * like "comp.modem[5].baud-rate". NOTE: the returned pointer points
      * into a static buffer, which is overwritten by subsequent calls!
      */
-    virtual const char *fullPath() const;
+    virtual std::string fullPath() const;
 
     /**
      * Returns the full path of the object in the object hierarchy,
@@ -519,7 +519,7 @@ T check_and_cast(cPolymorphic *p)
         throw new cException("check_and_cast(): cannot cast NULL pointer to type '%s'",opp_typename(typeid(T)));
     T ret = dynamic_cast<T>(p);
     if (!ret)
-        throw new cException("check_and_cast(): cannot cast (%s *)%s to type '%s'",p->className(),p->fullPath(),opp_typename(typeid(T)));
+        throw new cException("check_and_cast(): cannot cast (%s *)%s to type '%s'",p->className(),p->fullPath().c_str(),opp_typename(typeid(T)));
     return ret;
 }
 

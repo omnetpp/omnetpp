@@ -347,7 +347,7 @@ void FDDI_MAC::TRTExpired(cMessage *msg)
     {
     State = TOKEN_LOST;
     delete msg;
-    error("FDDI_MAC Error: Token was lost (TRT expired twice in %s)\n",fullPath());
+    error("FDDI_MAC Error: Token was lost (TRT expired twice in %s)\n",fullPath().c_str());
     }
   }
 
@@ -486,7 +486,7 @@ void FDDI_MAC::activity()
 	  case TOKEN_CAPTURE_END  : TokenCaptureEnd(msg);   break;
 	  case TRANSMIT_OWN_BEGIN : TransmitOwnBegin(msg);  break;
 	  default:
-	    error("FDDI_MAC Error: Bad msgkind: %i in %s", msgkind, fullPath());
+	    error("FDDI_MAC Error: Bad msgkind: %i in %s", msgkind, fullPath().c_str());
 
 	  }
       else if ( msgkind == FDDI_TOKEN )
@@ -508,7 +508,7 @@ void FDDI_MAC::activity()
       else
 	{
 	ev.printf("Msg pointer=%p\n", msg);
-	error("(2)FDDI_MAC Error: Bad msgkind: %i in %s", msgkind, fullPath());
+	error("(2)FDDI_MAC Error: Bad msgkind: %i in %s", msgkind, fullPath().c_str());
 	}
       }
     } // endfor

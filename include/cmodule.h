@@ -289,7 +289,7 @@ class SIM_API cModule : public cDefaultList
     /**
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
      */
-    virtual const char *fullPath() const;
+    virtual std::string fullPath() const;
 
     /**
      * Returns the full path name of the module. Example: <tt>"mynet.node[12].gen"</tt>.

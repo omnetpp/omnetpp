@@ -1,8 +1,18 @@
 2004-10-25  Andras Varga
-	
-	* all files: void info(char *buf) changed to std::string info() const
-	-- new signature is both safer (no danger of accidental buffer overrun)
-	and easier to use.
+
+        * all files: void info(char *buf) changed to std::string info() const
+        -- new signature is both safer (no danger of accidental buffer overrun)
+        and easier to use.
+
+        * cpolymorphic.h, cobject.h, cgate.h, cmodule.h, etc: fullPath()
+        return value changed from const char* to std::string. The previous
+        version produced the string in a static buffer which was inherently
+        dangerous. POTENTIAL INCOMPATIBILITY: fullPath() calls in sprintf(),
+        ev.printf(), new cException() etc calls should be changed to
+        fullPath().c_str(). (ev<< statements are not affected because ev can
+        handle std::string just as well as const char *).
+
+        Note: fullPath(char *buffer, int maxlen) still exists.
 
 2004-10-04  ------ omnetpp-3.0a8 released ------
 
@@ -10,14 +20,14 @@
 
 2004-09-15  Andras Varga
 
-        * ctopo.h: added two utility functions to cTopology:  
+        * ctopo.h: added two utility functions to cTopology:
         void extractByModuleType(const char **types)
         void extractByModuleType(const std::vector<std::string> types)
 
 2004-08-11   Andras Varga
 
         * cmessage.h: changed default length of cMessage to zero (was 1)
-        
+
 2004-07-22  ------ omnetpp-3.0a6 released ------
 
 2004-07-10   Andras Varga

@@ -125,7 +125,7 @@ class SIM_API cGate : public cObject
     /**
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
      */
-    virtual const char *fullPath() const;
+    virtual std::string fullPath() const;
 
     /**
      * The original fullPath() method is redefined to hide the

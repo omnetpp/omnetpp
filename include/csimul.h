@@ -137,7 +137,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Redefined. (Reason: a C++ rule that overloaded virtual methods must be redefined together.)
      */
-    virtual const char *fullPath() const;
+    virtual std::string fullPath() const;
 
     /**
      * Returns the name of the simulation object, "simulation".

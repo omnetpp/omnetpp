@@ -93,14 +93,13 @@ class SIM_API cPolymorphic
      * with the object's location in the object hierarchy.
      * This version just returns fullName() (which is by default "").
      */
-    //FIXME change to std::string
-    virtual const char *fullPath() const   {return fullName();}
+    virtual std::string fullPath() const   {return std::string(fullName());}
 
     /**
      * Can be redefined to produce a one-line description of object into `buf'.
      * The string appears in the graphical user interface (Tkenv) e.g. when
-     * the object is displayed in a listbox. The returned string should 
-     * possibly be at most 80-100 characters long, and must not contain 
+     * the object is displayed in a listbox. The returned string should
+     * possibly be at most 80-100 characters long, and must not contain
      * newline.
      *
      * @see detailedInfo()
@@ -108,7 +107,7 @@ class SIM_API cPolymorphic
     virtual std::string info() const  {return std::string();}
 
     /**
-     * DEPRECATED. Copies first MAX_OBJECTINFO characters of 
+     * DEPRECATED. Copies first MAX_OBJECTINFO characters of
      * <tt>info().c_str()</tt> into `buf'. Use info() instead.
      */
     virtual void info(char *buf)  {opp_strprettytrunc(buf, info().c_str(), MAX_OBJECTINFO);}
