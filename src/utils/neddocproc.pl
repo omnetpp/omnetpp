@@ -58,11 +58,17 @@ foreach $fname (glob($fnamepatt))
               # remove '//#' lines (those are comments to be ignored by documentation generation)
               $comment =~ s|(?<=\n) *//#.*?\n||gs;
 
-              # remove '//' from beginning of lines
-              $comment =~ s|\n *// ?|\n|gs;
+              # remove '// ', '/// ' and '//////...' from beginning of lines
+              $comment =~ s|\n[ \t]*//+ ?|\n|gs;
 
               # extract existing <pre> sections to prevent tampering inside them
               $comment =~ s|&lt;pre&gt;(.*?)&lt;/pre&gt;|$pre{++$ctr}=$1;"<pre$ctr>"|gse;
+
+              # a plain '-------' line outside <pre> is replaced by a divider (<hr> tag)
+              $comment =~ s|\n[ \t]*------+[ \t]*\n|\n<hr/>\n|gs;
+
+              # lines outside <pre> containing whitespace only count as blank
+              $comment =~ s|\n[ \t]+\n|\n\n|gs;
 
               # insert blank line (for later processing) in front of lines beginning with '-'
               $comment =~ s|\n( *-)|\n\n\1|gs;

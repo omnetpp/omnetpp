@@ -24,18 +24,23 @@
 //                                                line
 //.
 //(This should still be the same paragraph as
-//	above. Next line contains several spaces:
+//	above.) Next line contains several spaces:
 //               
-// and then some tabs:
+// (a) and then some tabs:
 //	
-//and they should separate the paragraphs.
+//(b) and they should separate the paragraphs -- (a) and (b) marks above 
+// should be at start of separate paragraphs.
 //
-// If /// is used at the start of the line, that should be accepted as well,
+//
+// If /// or //// or longer / sequnce is used at the start of the line, 
+// that should be accepted (and ignored) as well,
 /// like
-///this.
-//But not any more "/" -- this:
-//////////// is really too many. Just as four slashes:
-////like here.
+///here, or
+///////////////////////////////////////here.
+//
+// A //------ sequence is translated to a horizontal divider line, see below:
+//       -----------------------------
+// OK.
 //
 simple Paragraphs_1a
 endsimple
