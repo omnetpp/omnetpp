@@ -329,7 +329,7 @@ the cycle length of about $2^{31}$ is too small (on todays
 fast computers it is easy to exhaust all random numbers), and
 the structure of the generated ``random'' points is too regular.
 The \cite{Hellekalek98} paper provides a broader overview of issues
-associated with RNGs used for simulation, and it's well worth reading.
+associated with RNGs used for simulation, and it is well worth reading.
 It also contains useful links and references on the topic.
 
 \subsubsection{The Akaroa RNG}
@@ -690,7 +690,7 @@ delete array.remove( index );
 \subsubsection{Iteration}
 
 
-\cclass{cArray} has no iterator, but it's easy to loop through all the
+\cclass{cArray} has no iterator, but it is easy to loop through all the
 indices with an integer variable. The \fname{items()} member function
 returns the largest index plus one.
 
@@ -2670,10 +2670,10 @@ Some examples of programming errors that can be caught
 by the ownership facility:
 
 \begin{itemize}
-    \item{attempts to send a message while it's still in a queue,
+    \item{attempts to send a message while it is still in a queue,
     encapsulated in another message, etc.}
 
-    \item{attempts to send/schedule a message while it's still owned
+    \item{attempts to send/schedule a message while it is still owned
     by the simulation kernel (i.e. scheduled as a future event)}
 
     \item{attempts to send the very same message object to multiple
@@ -2698,7 +2698,7 @@ As an example, this means if you delete a message, its encapsulated
 message (see \fname{encapsulate()} method) and attached
 \fname{cPar} objects are also deleted. If you delete a queue,
 all messages it contains and also owns will also be deleted.
-  \footnote{Note that it's not necessary for a container object like
+  \footnote{Note that it is not necessary for a container object like
   a queue to actually own all inserted objects. This behavior
   can be controlled via the \textit{takeownership} flag,
   as explained later.}
@@ -2741,7 +2741,7 @@ cMessage *msg = new cMessage("HELLO");
 actually creates the message object and automatically adds it
 to the module's local objects list.
   \footnote{More precisely: to the \textit{currently executing} module's
-  local object list, because that's the best guess a \fname{cMessage}
+  local object list, because that is the best guess a \fname{cMessage}
   constructor can do.}
 
 The local objects list also plays a role when an object is
@@ -2769,7 +2769,7 @@ The \fname{send()} and \fname{scheduleAt()} functions make use
 of the ownership mechanism to do some sanity check:
 the message being sent/scheduled \textit{must} be owned
 by module's local objects list.
-If it is not, then it's an error, because then the message is
+If it is not, then it is an error, because then the message is
 probably with another module (i.e. already sent), or
 currently scheduled, or inside a queue, a message or some
 other object -- in either case, you do not have any authority
@@ -2797,7 +2797,7 @@ the class members list in simple module inspectors.
 \subsection{Garbage collection}
 \label{sec:ch-sim-lib:garbage-collection}
 
-\subsubsection{How it's done}
+\subsubsection{How it is done}
 
 The local objects list is also the reason why you rarely need to
 put delete statements in your simple module destructors.
@@ -3000,7 +3000,7 @@ Here's what the \textit{remove} family of operations in \cclass{cQueue}
 \end{itemize}
 
 After the object was removed from a \cclass{cQueue}/\cclass{cArray},
-you may further use it, or if it's not needed any more, you can delete it.
+you may further use it, or if it is not needed any more, you can delete it.
 
 The \textit{release ownership} phrase requires further explanation.
 When you remove and object from a queue or array, the ownership

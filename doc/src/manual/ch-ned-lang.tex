@@ -6,7 +6,7 @@
 
 The topology\index{topology} of a model is specified using
 the NED language\index{ned!language}.
-The NED language facilitates the modular description of a network. 
+The NED language facilitates the modular description of a network.
 This means that a network description\index{network!description} may consist
 of a number of component descriptions (channels\index{channel},
 simple\index{module!simple}/compound\index{module!compound} module
@@ -505,7 +505,7 @@ NED gives you the possibility to add a string-valued parameter,
 say \ttt{routingNodeType} to the \ttt{RoutingTestNetwork} compound module.
 Then you can tell NED that types of the submodules inside \ttt{RoutingTestNetwork}
 are not of any fixed module type, but contained in the \ttt{routingNodeType}
-parameter. That's all -- now you are free to assign any of
+parameter. That is all -- now you are free to assign any of
 the \texttt{"DistVecRoutingNode"}, \texttt{"AntNetRouting1Node"} or
 \texttt{"AntNetRouting2Node"} string constants to this parameter
 (you can do that in NED, in the config file (\ttt{omnetpp.ini}),
@@ -1075,7 +1075,7 @@ means that if compound module doesn't have such a parameter,
 further modules up in the module hierarchy will be searched for the parameter.
 \ttt{ancestor} is considered bad practice because it violates the encapsulation
 principle and can only be checked at runtime. It is provided for the
-rare case when it's really needed.
+rare case when it is really needed.
 
 \ttt{ref} \textit{param} takes the parameter by reference, meaning that
 runtime changes to the parameter will propagate to all modules which
@@ -1294,7 +1294,7 @@ It is possible to add new ones, see \ref{sec:ch-ned-lang:defining-functions}.
 \subsection{Random values}
 
 Expressions may contain random variates from different distributions.
-Such parameters, unless declared as \ttt{const}, 
+Such parameters, unless declared as \ttt{const},
 return different values each time they are evaluated.
 
 If the parameter is declared as \ttt{const}, it is only evaluated

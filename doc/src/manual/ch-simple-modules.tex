@@ -1221,8 +1221,8 @@ wait()
 
 
 Thus, the \fname{receive()} and \fname{wait()} calls are
-special points in the \fname{activity()} function, because that's
-where:
+special points in the \fname{activity()} function, because
+they are where
 
 \begin{itemize}
   \item{simulation time elapses in the module, and}
@@ -1675,7 +1675,7 @@ output format by undefining \ttt{FSM\_Print()} after including
 The \fmac{FSM\_Switch()} is a macro. It expands to a \fname{switch()}
 statement embedded in a \fname{for()} loop which repeats until the
 FSM\index{FSM} reaches a steady state. (The actual code is rather
-scary, but if you're dying to see it, it's in \texttt{cfsm.h}.)
+scary, but if you're dying to see it, it is in \texttt{cfsm.h}.)
 
 Infinite loops are avoided by counting state transitions: if
 an FSM goes through 64 transitions without reaching a steady
@@ -2773,7 +2773,7 @@ created modules.
 
 Once created and started, dynamic modules aren't any different from
 ``static'' modules; for example, one could also delete static modules
-during simulation (only that's rarely useful.)
+during simulation (though it is rarely useful.)
 
 
 \subsection{Overview}
@@ -2790,7 +2790,7 @@ class (this function basically only consists of a \ttt{return new
 
 The \cclass{cModuleType} object can be looked up by its name
 string (which is the same as the module class name). Once you have its
-pointer, it's possible to call its factory method and create an
+pointer, it is possible to call its factory method and create an
 instance of the corresponding module class -- without having to
 include the C++ header file containing module's class declaration
 into your source file.
@@ -2941,7 +2941,7 @@ simulation. If a module doesn't live that long, \fname{finish()} is not
 invoked, but you can still manually invoke it.
 
 You can use the \fname{callFinish()} function to arrange \fname{finish()}
-to be called. It's usually not a good idea to invoke \fname{finish()}
+to be called. It is usually not a good idea to invoke \fname{finish()}
 directly. If you're deleting a compound module, \fname{callFinish()} will
 recursively invoke \fname{finish()} for all submodules, and if you're deleting
 a simple module from another module, \fname{callFinish()} will do the context
