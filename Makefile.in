@@ -108,8 +108,8 @@ pvmex:
 token:
 	cd $(OMNETPP_SAMPLES_DIR)/token && $(MAKE)
 
-all:
-	cd $(OMNETPP_SAMPLES_DIR)/all && $(MAKE)
+demo:
+	cd $(OMNETPP_SAMPLES_DIR)/demo && $(MAKE)
 
 #=====================================================================
 #
