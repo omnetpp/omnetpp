@@ -5,6 +5,7 @@ Parse/Generate:
 - comments around display strings, channel attributes are lost
 - add default comments for newly created modules!
 - after an "import", generates an empty line into the code
+- one place to fix in ebnf.y
 - should eliminate "staircase comment" effect, like:
     param1: string,
                     // param2: string;
