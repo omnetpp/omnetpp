@@ -18,7 +18,6 @@
 
 #ifdef _MSC_VER
 #include <process.h>
-#include <direct.h>
 #include <io.h>
 #include <direct.h>
 #include <stdlib.h> // _MAX_PATH
@@ -34,41 +33,8 @@
 
 #include <sys/types.h>
 #include <unistd.h>  // getpid(), getcwd(), etc
-#include <glob.h>
 
 #endif
-
-#include <string>
-#include <exception>   // std::runtime_exception
-
-
-/**
- * Utility for resolving wildcards in file names. If the pattern doesn't contain
- * a wildcard, it is returned as it is, regardless whether such file exists
- * or not.
- */
-class FileGlobber
-{
-  private:
-    std::string fnamepattern;
-    GlobPrivateData *data;
-  public:
-    /**
-     * Constructor. Accepts the wildcard pattern to glob.
-     */
-    FileGlobber(const char *filenamepattern);
-
-    /**
-     * Destructor
-     */
-    ~FileGlobber();
-
-    /**
-     * Returns a file names, one at each call, and finally it returns NULL.
-     * Caution: may throw std::runtime_exception!
-     */
-    const char *getNext();
-};
 
 #endif
 
