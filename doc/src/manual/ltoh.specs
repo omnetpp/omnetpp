@@ -97,7 +97,7 @@ htmlfile_spec := $BASE.htm
 
 :comm   :\omnetpp:OMNeT++::
 :comm   :\omnest:OMNEST::
-:comm   :\new:[New!]::
+:comm   :\new:<sup><b>[New!]</b></sup>::
 :comm   :\changed:[Changed!]::
 :{}     :\ttt:<tt>:</tt>:
 :{}     :\tbf:<b>:</b>:

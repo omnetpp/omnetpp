@@ -474,7 +474,12 @@ Values for module parameters can be placed into the \texttt{[Parameters]}
 or the \texttt{[Run 1]}, \texttt{[Run 2]} etc. sections of the ini file.
 The run-specific settings take precedence over the overall settings.
 
-An example \ttt{omnetpp.ini}:
+Though runs are identified by numbers, you can assign them short
+descriptive labels, which will get displayed e.g. in the Tkenv
+run selection dialog. Just place a \ttt{description="some text"}
+line under the \ttt{[Run x]} heading. {\new}
+
+An example \ttt{omnetpp.ini} (everything after \# is a comment):
 
 \begin{verbatim}
 [Parameters]
@@ -482,17 +487,21 @@ net.numHosts = 15
 net.server.transactionsPerSecond = 100
 
 [Run 1]
+description="general settings"
 # uses settings from the [Parameters] section
 
 [Run 2]
+description="higher transaction rate"
 net.server.transactionsPerSecond = 150  # overrides the value in [Parameters]
 # net.numHosts comes from the [Parameters] section
 
 [Run 3]
+description="more hosts and higher transaction rate"
 # override both setting in [Parameters]
 net.numHosts = 20
 net.server.transactionsPerSecond = 150
 \end{verbatim}
+
 
 
 
