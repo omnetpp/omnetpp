@@ -1,8 +1,27 @@
 2002-10-26  Andras Varga
 
-	* sticky inspectors; automatically save/load .tkenvrc in the current
-	directory.
+	* outvector inspectors: added basic labeling to axes
 
+	* implemented that inspector windows are restored if you restart
+	the simulation, and even if you quit/restart Tkenv. List of open
+	inspectors is saved in ./tkenvrc which is automatically loaded
+	on startup and written on exit. 
+	
+	In .tkenvrc, inspectors are identified by object name (obj->fullPath()) 
+	and class name (obj->className()), so make sure to use locally unique
+	names for variables you want to inspect.
+
+	Inspector windows usually cannot be opened immediately when .tkenvrc 
+	is loaded (the corresponding objects don't exist yet), so Tkenv keeps 
+	a "pending inspectors list" for the inspectors to be opened.
+	At each display update, Tkenv tries to find the corresponding objects 
+	in the network and open inspectors for them. Be aware that this
+	object search is relatively expensive operation, so Tkenv performance
+	may degrade if there are too many pending inspectors. If the network
+	you're running under Tkenv changes often, it's a good idea to 
+	delete .tkenvrc manually sometimes to clean it from garbage, from 
+	obsolete entries.
+	 
 2002-10-04  Andras Varga
 
 	* error handling changed from simulation.ok() to exceptions.

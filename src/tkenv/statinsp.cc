@@ -240,6 +240,7 @@ TOutVectorWindow::TOutVectorWindow(cObject *obj,int typ,void *dat,int size) :
    drawing_mode = DRAW_LINES;
    miny = 0; maxy = 10;
    time_factor = 1;   // x scaling
+   moving_tline = 0;
 }
 
 TOutVectorWindow::~TOutVectorWindow()
@@ -330,7 +331,7 @@ void TOutVectorWindow::update()
 
    // temporarily define X() and Y() coordinate translation macros
 #define X(t)   (int)(canvaswidth-10-(tbase-(t))/tf)
-#define Y(y)   (int)(canvasheight-10-((y)-miny)*((long)canvasheight-20)/rangey)
+#define Y(y)   (int)(canvasheight-20-((y)-miny)*((long)canvasheight-30)/rangey)
 
    //printf("cw=%d  ch=%d  tbase=%f trange=%f  miny=%f  maxy=%f rangey=%f\n",
    //        canvaswidth, canvasheight,tbase,trange, miny, maxy, rangey);
@@ -444,6 +445,58 @@ void TOutVectorWindow::update()
            }
        }
    }
+
+   double tmin = tmin = tbase-tf*(canvaswidth-20);
+
+   if (moving_tline<tmin)
+       moving_tline=tbase;
+
+   double midy = (miny+maxy)/2;
+
+   // add some basic labeling
+   char coords[64], value[64];
+   sprintf(coords,"%d %d %d %d", X(tmin)-2, Y(miny), X(tbase)+2, Y(miny));
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+
+   sprintf(coords,"%d %d %d %d", X(tmin)-2, Y(maxy), X(tbase)+2, Y(maxy));
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+
+   sprintf(coords,"%d %d %d %d", X(tbase)-2, Y(midy), X(tbase)+2, Y(midy));
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+
+   sprintf(coords,"%d %d %d %d", X(tbase), Y(maxy)-2, X(tbase), Y(miny)+2);
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+
+   sprintf(coords,"%d %d %d %d", X(tmin), Y(maxy)-2, X(tmin), Y(miny)+2);
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+
+   sprintf(coords,"%d %d %d %d", X(moving_tline), Y(maxy)-2, X(moving_tline), Y(miny)+2);
+   CHK(Tcl_VarEval(interp, canvas," create line ",coords," -fill black", NULL));
+
+   sprintf(coords,"%d %d", X(tbase)-3, Y(miny));
+   sprintf(value,"%.9g", miny);
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor se", NULL));
+
+   sprintf(coords,"%d %d", X(tbase)-3, Y(maxy));
+   sprintf(value,"%.9g", maxy);
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor ne", NULL));
+
+   sprintf(coords,"%d %d", X(tbase)-3, Y(midy));
+   sprintf(value,"%.9g", midy);
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor e", NULL));
+
+   sprintf(coords,"%d %d", X(tbase)+3, Y(miny));
+   sprintf(value,"%.9g", tbase);
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor ne", NULL));
+
+   sprintf(coords,"%d %d", X(tmin)-3, Y(miny));
+   sprintf(value,"%.9g", tmin);
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor nw", NULL));
+
+   sprintf(coords,"%d %d", X(moving_tline)-3, Y(miny));
+   sprintf(value,"%.9g", moving_tline);
+   CHK(Tcl_VarEval(interp, canvas," create text ",coords," -text ", value, " -anchor n", NULL));
+
 #undef X
 #undef Y
 }
@@ -459,13 +512,21 @@ void TOutVectorWindow::generalInfo( char *buf )
         strcpy(buf,"(no write since opening window)");
         return;
    }
+
+/*
+   simtime_t tbase = simulation.simTime();
+   simtime_t firstt = circbuf.buf[circbuf.tail()].t;
+   char buf1[32], buf2[32];
+   sprintf(buf, "t=%s .. %s  value=%g .. %g", simtimeToStr(firstt,buf1),
+                simtimeToStr(tbase,buf2), miny, maxy);
+*/
    int tuple = ((cOutVector *)object)->tuple;
    CircBuffer::CBEntry& p = circbuf.buf[ circbuf.head ];
    if (tuple==1)
-     sprintf(buf, "Last: t=%s  value=%g",
+     sprintf(buf, "Last value: t=%s  value=%g",
                    simtimeToStr(p.t), p.value1);
    else
-     sprintf(buf, "Last: t=%s  val1=%g  val2=%g",
+     sprintf(buf, "Last value: t=%s  val1=%g  val2=%g",
                    simtimeToStr(p.t), p.value1, p.value2);
 }
 
@@ -479,6 +540,8 @@ void TOutVectorWindow::valueInfo( char *buf, int valueindex )
    else
      sprintf(buf, "t=%s  val1=%g  val2=%g",
                   simtimeToStr(p.t), p.value1, p.value2);
+
+   moving_tline = p.t;
 }
 
 void TOutVectorWindow::getConfig( char *buf )
