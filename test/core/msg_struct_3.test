@@ -22,7 +22,8 @@ struct {MyStruct}
 
 %activity:
 
-#define PRINT(X) ev << #X << ":" << X << endl
+// print everything as number because who knows how '\0' in cc[] is treated by <<
+#define PRINT(X) ev << #X << ":" << (double)X << endl
 
 {MyStruct} x;
 
@@ -39,7 +40,7 @@ PRINT(x.d);
 
 %contains: stdout
 x.b:0
-x.c:
+x.c:0
 x.s:0
 x.us:0
 x.i:0
