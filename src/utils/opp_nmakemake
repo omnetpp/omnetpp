@@ -492,12 +492,14 @@ foreach $i (glob("*.msg"))
     $obj =~ s/\.msg/_m.obj/g;
     $c = $i;
     $c =~ s/\.msg/_m.$ccext/g;
+    $h = $i;
+    $h =~ s/\.msg/_m.h/g;
 
     print OUT "$obj: $c\n";
     print OUT "\t\$(CXX) -c \$(NEDCOPTS) /Tp $c\n";
     print OUT "\n";
 
-    print OUT "$c: $i\n";
+    print OUT "$c $h: $i\n";
     print OUT "\t\$(MSGC:/=\\) -s _m.$ccext \$(INCLUDE_PATH) $i\n";
     print OUT "\n";
 }

@@ -434,12 +434,13 @@ do
 
         obj=`echo $i | sed 's/\.msg/_m.o/g'`
         c=`echo $i | sed 's/\.msg/_m.cc/g'`
+        h=`echo $i | sed 's/\.msg/_m.h/g'`
 
         echo "$obj: $c"
         echo '	$(CXX) -c $(NEDCOPTS) '$c
         echo
 
-        echo "$c: $i"
+        echo "$c $h: $i"
         echo '	$(MSGC) $(INCLUDE_PATH) '$i
         echo
 done
