@@ -4,7 +4,7 @@
 #
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-2.0b3pre
+OMNETPP_VERSION=omnetpp-2.0b3
 
 #
 # directories

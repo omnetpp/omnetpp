@@ -17,13 +17,13 @@
 #
 # intro text
 #
-puts {GNED 2.0 Beta 1 - Graphical Network Editor, part of OMNeT++
+puts {GNED 2.0 Beta 3 - Graphical Network Editor, part of OMNeT++
 (c) 1992,99 Andras Varga, TU Budapest
 See the license for distribution terms and warranty disclaimer.
 
-This is the first version of GNED that uses human-readable NED as the ONLY
-file format. It is a fully two-way tool: you can edit the modules in graphics
-or in NED source form, and switch to the other view any time.
+GNED uses human-readable NED as the ONLY file format. It is a fully
+two-way tool: you can edit the modules in graphics or in NED source form,
+and switch to the other view any time.
 
 WARNING! Code under development -- see TODO for known bugs and missing features.}
 
