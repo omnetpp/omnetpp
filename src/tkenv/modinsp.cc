@@ -79,9 +79,21 @@ void TModuleWindow::update()
 
 //=======================================================================
 
+// helper function
+static void dispStringCallback(cModule *mod, bool immediate, void *data)
+{
+   ((TGraphicalModWindow *)data)->displayStringChange(mod,immediate);
+}
+
 TGraphicalModWindow::TGraphicalModWindow(cObject *obj,int typ,void *dat) :
     TInspector(obj,typ,dat)
 {
+   needs_redraw = false;
+
+   // register a callback in the module object which will set needs_redraw
+   // if setDisplayString() is called
+   cModule *mod = (cModule *)object;
+   mod->setDisplayStringNotify(dispStringCallback, this);
 }
 
 void TGraphicalModWindow::createWindow()
@@ -95,7 +107,25 @@ void TGraphicalModWindow::createWindow()
    CHK(Tcl_VarEval(interp, "create_graphicalmodwindow ", windowname, NULL ));
 }
 
-int TGraphicalModWindow::redraw(Tcl_Interp *interp, int, char **)
+void TGraphicalModWindow::update()
+{
+   TInspector::update();
+
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+
+   // redraw modules only on explicit request
+   if (needs_redraw)
+   {
+       CHK(Tcl_VarEval(interp, "graphmodwin_redraw ", windowname, NULL));
+       needs_redraw = false;
+   }
+   else
+   {
+       redrawMessages(interp,0,NULL);
+   }
+}
+
+int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int, char **)
 {
    bool w = simulation.warnings(); simulation.setWarnings(false);
 
@@ -207,28 +237,23 @@ int TGraphicalModWindow::redraw(Tcl_Interp *interp, int, char **)
       }
    }
 
-   // loop through all messages in the event queue
-   update();
+   // display messages
+   redrawMessages(interp, 0, NULL);
 
    simulation.setWarnings(w);
 
    return TCL_OK;
 }
 
-void TGraphicalModWindow::update()
+int TGraphicalModWindow::redrawMessages(Tcl_Interp *interp, int, char **)
 {
-   TInspector::update();
-
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    cSimpleModule *mod = (cSimpleModule *)object;
 
    setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
    setInspectButton(".toolbar.params", &(mod->paramv),INSP_DEFAULT);
    setInspectButton(".toolbar.gates", &(mod->gatev),INSP_DEFAULT);
 
-   // redraw modules only on explicit request
-
-   // loop through all messages in the event queue
+   // loop through all messages in the event queue and display them
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
    for (cMessageHeapIterator msg(simulation.msgQueue); !msg.end(); msg++)
    {
@@ -255,6 +280,20 @@ void TGraphicalModWindow::update()
          }
       }
    }
+   return TCL_OK;
+}
+
+void TGraphicalModWindow::displayStringChange(cModule *, bool immediate)
+{
+   if (immediate)
+   {
+      Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+      CHK(Tcl_VarEval(interp, "graphmodwin_redraw ", windowname, NULL));
+   }
+   else
+   {
+      needs_redraw = true;
+   }
 }
 
 int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
@@ -266,36 +305,41 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **a
 
    if (strcmp(argv[0],"arrowcoords")==0)
    {
-      return arrowcoords(interp,argc,argv);
+      return ::arrowcoords(interp,argc,argv);
    }
    else if (strcmp(argv[0],"redraw")==0)
    {
-      return redraw(interp,argc,argv);
+      return redrawModules(interp,argc,argv);
    }
    else if (strcmp(argv[0],"modpar")==0)
    {
-      // args: <module ptr> <parname>
-      if (argc!=3) {interp->result="wrong number of args"; return TCL_ERROR;}
-
-      cModule *mod = (cModule *)strToPtr( argv[1] );
-      int parindex = mod->findPar( argv[2] );
-
-      if (parindex<0)
-      {
-         sprintf(interp->result, "module '%s' has no '%s' parameter",
-                 mod->fullPath(), argv[2]);
-         return TCL_ERROR;
-      }
-
-      cPar& par = mod->par(parindex);
-      if (par.type()=='S')
-        interp->result = CONST_CAST(par.stringValue());
-      else
-        sprintf(interp->result, "%g", par.doubleValue());
-
-      return TCL_OK;
+      return getModPar(interp,argc,argv);
    }
    return TCL_ERROR;
+}
+
+int TGraphicalModWindow::getModPar(Tcl_Interp *interp, int argc, char **argv)
+{
+   // args: <module ptr> <parname>
+   if (argc!=3) {interp->result="wrong number of args"; return TCL_ERROR;}
+
+   cModule *mod = (cModule *)strToPtr( argv[1] );
+   int parindex = mod->findPar( argv[2] );
+
+   if (parindex<0)
+   {
+      sprintf(interp->result, "module '%s' has no '%s' parameter",
+              mod->fullPath(), argv[2]);
+      return TCL_ERROR;
+   }
+
+   cPar& par = mod->par(parindex);
+   if (par.type()=='S')
+     interp->result = CONST_CAST(par.stringValue());
+   else
+     sprintf(interp->result, "%g", par.doubleValue());
+
+   return TCL_OK;
 }
 
 //=======================================================================

@@ -215,13 +215,18 @@ class TGraphicalModWindow : public TInspector
 {
    public:
       char canvas[128];
+      bool needs_redraw;
    public:
       TGraphicalModWindow(cObject *obj,int typ,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, char **argv);
 
-      virtual int redraw(Tcl_Interp *interp, int argc, char **argv);
+      virtual int redrawModules(Tcl_Interp *interp, int argc, char **argv);
+      virtual int redrawMessages(Tcl_Interp *interp, int argc, char **argv);
+      virtual int getModPar(Tcl_Interp *interp, int argc, char **argv);
+      virtual void displayStringChange(cModule *, bool immediate);
+
 };
 
 class TCompoundModInspector: public TInspector
