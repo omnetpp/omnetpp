@@ -301,9 +301,32 @@ void TOmnetApp::endRun()
 
 //-------------------------------------------------------------
 
-const char *TOmnetApp::getParameter(int run_no, const char *parname)
+std::string TOmnetApp::getParameter(int run_no, const char *parname)
 {
-    return getConfig()->getAsCustom2(getRunSectionName(run_no),"Parameters",parname,NULL);
+    const char *str = getConfig()->getAsCustom2(getRunSectionName(run_no),"Parameters",parname,"");
+    if (str[0]=='x' && !strncmp(str,"xmldoc",6) && !isalnum(str[6]))
+    {
+        // Make XML file location relative to the ini file in which it occurs.
+        // Find substring between first two quotes (that is, the XML filename),
+        // and prefix it with the directory.
+        char *begQuote = strchr(str+6,'"');
+        if (!begQuote)
+            return std::string(str);
+        char *endQuote = strchr(begQuote+1,'"');
+        while (endQuote && *(endQuote-1)=='\\' && *(endQuote-2)!='\\')
+            endQuote = strchr(endQuote+1,'"');
+        if (!endQuote)
+            return std::string(str);
+        std::string fname(begQuote+1, endQuote-begQuote-1);
+        const char *baseDir = getConfig()->getBaseDirectoryFor(getRunSectionName(run_no),"Parameters",parname);
+        fname = tidyFilename(concatDirAndFile(baseDir, fname.c_str()).c_str());
+        std::string ret = std::string(str, begQuote-str+1) + fname + endQuote;
+        return ret;
+    }
+    else
+    {
+        return std::string(str);
+    }
 }
 
 bool TOmnetApp::getParameterUseDefault(int run_no, const char *parname)

@@ -242,7 +242,7 @@ void cEnvir::shutdown()
 
 //-----------------------------------------------------------------
 
-const char *cEnvir::getParameter(int run_no, const char *parname)
+std::string cEnvir::getParameter(int run_no, const char *parname)
 {
     return app->getParameter(run_no, parname);
 }

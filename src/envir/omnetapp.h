@@ -132,7 +132,7 @@ class ENVIR_API TOmnetApp
     /**
      * Called by cPar::read() to get param value from the ini file
      */
-    virtual const char *getParameter(int run_nr, const char *parname);
+    virtual std::string getParameter(int run_nr, const char *parname);
     virtual bool getParameterUseDefault(int run_no, const char *parname);
 
     virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
