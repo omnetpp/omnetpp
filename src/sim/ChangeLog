@@ -785,3 +785,10 @@ Feb 3, 2000
 Mar 12, 2000
  - pvm files really fixed. Debugging done by Gabor Lencse.
  - sum() and sqrSum() members added to statistics classes (cStdDev & subclasses)
+ - cPar fix: boolValue(), longValue() and doubleValue() made rather liberal:
+   now they all allow conversion from all of B,L and the double types D,T,X,F.
+   This is necessary because of the way parameter assignments in NED are
+   handled. For example, bool and long expressions (e.g. "i==0 || i==n") are
+   compiled into cPar X expressions which will _need_ to be converted to
+   bool/long after evaluation.
+ - isNumeric() added to cPar

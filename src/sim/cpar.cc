@@ -500,8 +500,34 @@ char *cPar::stringValue()
     if (typechar=='S')
          return ss.sht ? ss.str : ls.str;
     else
-         //{opp_error(eBADCAST,className(),name(),typechar,'S');return NULL;}
-         {opp_error(eBADCAST,className(),fullPath(),typechar,'S');return NULL;}
+         {opp_error(eBADCAST,className(),name(),typechar,'S');return NULL;}
+}
+
+//
+// Note:
+// boolValue(), longValue() and doubleValue() are rather liberal: they all
+// allow conversion from all of B,L and the double types D,T,X,F.
+// Aesthetically, this is nasty a feature (because it is against the strongly
+// typed nature of C++; you can do narrowing conversions [double->bool]
+// without a warning, etc.), but it is necessary because of the way parameter
+// assignments in NED are handled. For example, bool and long expressions
+// (e.g. "i==0 || i==n") are compiled into cPar X expressions which will _need_
+// to be converted to bool and long after evaluation.
+//
+
+bool cPar::boolValue()
+{
+    if (isRedirected())
+        return ind.par->boolValue();
+
+    if (isInput()) read();
+
+    if (typechar=='B' || typechar=='L')
+        return lng.val!=0;
+    else if (isNumeric())
+        return doubleValue()!=0;
+    else
+        {opp_error(eBADCAST,className(),name(),typechar,'B');return FALSE;}
 }
 
 long cPar::longValue()
@@ -511,21 +537,11 @@ long cPar::longValue()
 
     if (isInput()) read();
     if (typechar=='L' || typechar=='B')
-         return lng.val;
+        return lng.val;
+    else if (isNumeric())
+        return (long)doubleValue();
     else
-         return (long)doubleValue();
-}
-
-bool cPar::boolValue()
-{
-    if (isRedirected())
-        return ind.par->boolValue();
-
-    if (isInput()) read();
-    if (typechar=='B')
-         return lng.val!=0;
-    else
-         {opp_error(eBADCAST,className(),name(),typechar,'B');return FALSE;}
+        {opp_error(eBADCAST,className(),name(),typechar,'L');return 0L;}
 }
 
 double cPar::doubleValue()
@@ -534,21 +550,21 @@ double cPar::doubleValue()
         return ind.par->doubleValue();
 
     if (isInput()) read();
-    if (typechar=='L')
+    if (typechar=='B' || typechar=='L')
         return (double)lng.val;
     else if (typechar=='D')
         return dbl.val;
     else if (typechar=='T')
-         return fromstat();
+        return fromstat();
     else if (typechar=='X')
-         return evaluate();
+        return evaluate();
     else if (typechar=='F')
-         return func.argc==0 ? ((MathFuncNoArg)func.f)() :
-                func.argc==1 ? ((MathFunc1Arg) func.f)(func.p1) :
-                func.argc==2 ? ((MathFunc2Args)func.f)(func.p1,func.p2) :
-                               ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3);
+        return func.argc==0 ? ((MathFuncNoArg)func.f)() :
+               func.argc==1 ? ((MathFunc1Arg) func.f)(func.p1) :
+               func.argc==2 ? ((MathFunc2Args)func.f)(func.p1,func.p2) :
+                              ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3);
     else
-         {opp_error(eBADCAST,className(),name(),typechar,'D');return 0.0;}
+        {opp_error(eBADCAST,className(),name(),typechar,'D');return 0.0;}
 }
 
 void *cPar::pointerValue()
@@ -575,9 +591,25 @@ cObject *cPar::objectValue()
         {opp_error(eBADCAST,className(),name(),typechar,'O'); return NULL;}
 }
 
+bool cPar::isNumeric()
+{
+    // returns true if it is safe to call doubleValue()/longValue()/boolValue()
+    if (isRedirected())
+        return ind.par->isNumeric();
+
+    return typechar=='B' ||
+           typechar=='L' ||
+           typechar=='D' ||
+           typechar=='T' ||
+           typechar=='X' ||
+           typechar=='F';
+}
+
+
 bool cPar::equalsTo(cPar *par)
 {
-    if (typechar != par->typechar) return FALSE;
+    if (typechar != par->typechar)
+        return FALSE;
 
     switch (typechar) {
         case 'S': return strcmp(stringValue(),par->stringValue())==0;

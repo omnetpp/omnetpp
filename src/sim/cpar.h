@@ -165,7 +165,10 @@ class cPar : public cObject
      void * pointerValue();
      cObject *objectValue();
 
-     // compares stored value
+     // returns true if it is safe to call doubleValue()/longValue()/boolValue()
+     bool isNumeric();
+
+     // compares the stored values; the two objects must have the same typechar, etc. to be equal
      bool equalsTo(cPar *par);
 
      // query/set value as string (e.g. "uniform(10,3)")
