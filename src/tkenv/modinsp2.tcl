@@ -215,9 +215,9 @@ proc draw_submod {c submodptr x y name dispstr} {
        # queue length
        if {[info exists tags(q)]} {
            set r [get_submod_coords $c $submodptr]
-           set x [expr [lindex $r 2]+1]
-           set y [lindex $r 1]
-           $c create text $x $y -text "q:?" -anchor nw -tags "dx qlen qlen-$submodptr"
+           set qx [expr [lindex $r 2]+1]
+           set qy [lindex $r 1]
+           $c create text $qx $qy -text "q:?" -anchor nw -tags "dx tooltip qlen qlen-$submodptr"
        }
 
        # modifier icon (i2 tag)
@@ -226,10 +226,10 @@ proc draw_submod {c submodptr x y name dispstr} {
                set tags(is2) {}
            }
            set r [get_submod_coords $c $submodptr]
-           set x [expr [lindex $r 2]+2]
-           set y [expr [lindex $r 1]-2]
+           set mx [expr [lindex $r 2]+2]
+           set my [expr [lindex $r 1]-2]
            set img2 [dispstr_getimage $tags(i2) $tags(is2)]
-           $c create image $x $y -image $img2 -anchor ne -tags "dx tooltip submod $submodptr"
+           $c create image $mx $my -image $img2 -anchor ne -tags "dx tooltip submod $submodptr"
        }
 
        # text (t tag)
@@ -243,24 +243,24 @@ proc draw_submod {c submodptr x y name dispstr} {
 
            set r [get_submod_coords $c $submodptr]
            if {$pos=="l"} {
-               set x [lindex $r 0]
-               set y [lindex $r 1]
+               set tx [lindex $r 0]
+               set ty [lindex $r 1]
                set anch "ne"
                set just "right"
            } elseif {$pos=="r"} {
-               set x [lindex $r 2]
-               set y [lindex $r 1]
+               set tx [lindex $r 2]
+               set ty [lindex $r 1]
                set anch "nw"
                set just "left"
            } elseif {$pos=="t"} {
-               set x [expr ([lindex $r 0]+[lindex $r 2])/2]
-               set y [expr [lindex $r 1]+2]
+               set tx [expr ([lindex $r 0]+[lindex $r 2])/2]
+               set ty [expr [lindex $r 1]+2]
                set anch "s"
                set just "center"
            } else {
                error "wrong position in t= tag, should be `l', `r' or `t'"
            }
-           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx"
+           $c create text $tx $ty -text $txt -fill $color -anchor $anch -justify $just -tags "dx"
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>
@@ -345,7 +345,7 @@ proc draw_enclosingmod {c ptr name dispstr} {
        $c create $sh $bx $by [expr $bx+$sx] [expr $by+$sy] \
            -fill $fill -width $width -outline $outline \
            -tags "dx mod $ptr"
-       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname"
+       $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "dx tooltip modname $ptr"
        $c lower mod
 
        set bb [$c bbox all]
@@ -405,6 +405,26 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        if {$width == ""} {set width 1}
 
        $c create line $arrow_coords -arrow last -fill $fill -width $width -tags "dx tooltip conn $gateptr"
+
+       if {[info exists tags(t)]} {
+           set txt [lindex $tags(t) 0]
+           set color [lindex $tags(t) 1]
+           if {$color == ""} {set color "#005030"}
+           if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
+           set x1 [lindex $arrow_coords 0]
+           set y1 [lindex $arrow_coords 1]
+           set x2 [lindex $arrow_coords 2]
+           set y2 [lindex $arrow_coords 3]
+           set x [expr ($x1+$x2+$x2)/3]
+           set y [expr ($y1+$y2+$y2)/3]
+           if {$x1<$x2} {
+              set anch "n"
+           } else {
+              set anch "s"
+           }
+           set just "center"
+           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx"
+       }
 
     } errmsg] {
        tk_messageBox -type ok -title Error -icon error -parent [winfo toplevel [focus]] \
@@ -1069,7 +1089,7 @@ proc graphmodwin_update_submod {c modptr} {
 #
 # Helper proc.
 #
-proc graphmodwin_qlen_getqptr {c} {
+proc graphmodwin_qlen_getqptr_current {c} {
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -1079,6 +1099,11 @@ proc graphmodwin_qlen_getqptr {c} {
    }
    if {$modptr==""} {return}
 
+   return [graphmodwin_qlen_getqptr $c $modptr]
+
+}
+
+proc graphmodwin_qlen_getqptr {c modptr} {
    set win [winfo toplevel $c]
    set dispstr [opp_getobjectfield $modptr displayString]
    set qname [opp_displaystring $dispstr getTagArg "q" 0]
@@ -1090,14 +1115,14 @@ proc graphmodwin_qlen_getqptr {c} {
 }
 
 proc graphmodwin_qlen_dblclick c {
-   set qptr [graphmodwin_qlen_getqptr $c]
+   set qptr [graphmodwin_qlen_getqptr_current $c]
    if {$qptr!="" && $qptr!=[opp_object_nullpointer]} {
        opp_inspect $qptr "(default)"
    }
 }
 
 proc graphmodwin_qlen_rightclick {c X Y} {
-   set qptr [graphmodwin_qlen_getqptr $c]
+   set qptr [graphmodwin_qlen_getqptr_current $c]
    if {$qptr!="" && $qptr!=[opp_object_nullpointer]} {
        popup_insp_menu $qptr $X $Y
    }

@@ -3,6 +3,21 @@
 	* gate inspector dialog revised (connection display string made 
 	editable)
 
+	* modinsp2.tcl, inspector.tcl: implemented new display string
+	tag:
+	    tt=<tooltip-string>
+	It can be used in module, submodule, connection and msg display
+	strings, and will cause the given string to appear in a tooltip.
+
+	* modinsp2.tcl: implemented the "t=<string>,<color>" display
+	string tag for connections.
+
+	* improvement: queue length display in module graphics now has
+	tooltip
+
+	* fix: circle (drawn with "r=" display string tag) was sometimes
+	incorrectly positioned
+
 2005-03-17  Andras Varga
 
 	* tkapp.cc: added calls to new scheduler->executionResumed()

@@ -344,9 +344,6 @@ proc get_help_tip {w x y item} {
        # if this is a simulation object, get its pointer
        set ptr ""
        set tags [$w gettags $item]
-       if {[lsearch $tags "qlen"] != -1} {
-          return "double-click to inspect queue"
-       }
 
        if {[lsearch $tags "tooltip"] == -1} {
           return ""
@@ -354,19 +351,23 @@ proc get_help_tip {w x y item} {
 
        if {[lsearch $tags "ptr*"] != -1} {
           regexp "ptr.*" $tags ptr
+       } elseif {[lsearch $tags "qlen-ptr*"] != -1} {
+          regexp "ptr.*" $tags modptr
+          set ptr [graphmodwin_qlen_getqptr $w $modptr]
        } elseif {[lsearch $tags "node-ptr*"] != -1} {
           regexp "ptr.*" $tags ptr
        }
        set ptr [lindex $ptr 0]
 
-       if {$ptr!=""} {
+       if {$ptr!="" && $ptr!=[opp_object_nullpointer]} {
           set tip "([opp_getobjectclassname $ptr]) [opp_getobjectfullname $ptr] [opp_getobjectinfostring $ptr]"
           regsub {  +} $tip {  } tip
+          set dispstr ""
           if {[lsearch $tags "modname"] == -1} {
-             set dispstr [opp_getobjectfield $ptr displayString]
+             catch { set dispstr [opp_getobjectfield $ptr displayString] }
           } else {
              # if it has tag "modname", it is the enclosing module
-             set dispstr [opp_getobjectfield $ptr backgroundDisplayString]
+             catch { set dispstr [opp_getobjectfield $ptr backgroundDisplayString] }
           }
           set tt_tag [opp_displaystring $dispstr getTagArg "tt" 0]
           if {$tt_tag!=""} {
