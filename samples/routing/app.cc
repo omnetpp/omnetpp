@@ -59,7 +59,7 @@ void App::initialize()
 
     hopCounts.setName("hopCounts");
     hopCounts.setRangeAutoUpper(0,20,1.5);
-    hopCounts.setNumCells(1000); // FIXME ez nagyin bena!!!
+    hopCounts.setNumCells(1000);
 
     generatePacket = new cMessage("nextPacket");
     scheduleAt(exponential(iatime), generatePacket);

@@ -1,4 +1,3 @@
-// FIXME kill all SSM stuff!!!!!!!!!!!!!!!!!!!!!!!!!11
 //==========================================================================
 //  SSM_IFS.CC  - Simple module definitions of the SSM I/O interfaces for
 //                Discrete System Simulation in OMNeT++
