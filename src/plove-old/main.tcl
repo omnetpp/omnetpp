@@ -414,7 +414,7 @@ proc createMainWindow {{geom ""}} {
     set w .
     wm focusmodel $w passive
     if {$geom != ""} {wm geometry $w $geom} else {wm geometry $w "640x360"}
-    wm maxsize $w 1009 738
+    #wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
     wm resizable $w 1 1
