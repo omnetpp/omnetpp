@@ -1,3 +1,9 @@
+2003-02-08  Andras Varga 
+	
+	* opp_test: enhancement: %contains and %not-contains now do 
+	substring match. Regexp match can be done with %contains-regex 
+	and %not-contains-regex.
+
 2003-01-30  Andras Varga 
 	
 	* opp_makemake.in: now runs make depend after makefile creation

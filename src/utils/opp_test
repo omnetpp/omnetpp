@@ -56,6 +56,8 @@ All files will be created in the working directory.
 
     'contains'           => 'vbf',
     'not-contains'       => 'vbf',
+    'contains-regex'     => 'vbf',
+    'not-contains-regex' => 'vbf',
     'exitcode'           => '1v',
     'ignore-exitcode'    => '1v'
 );
@@ -432,7 +434,8 @@ sub testcase_run()
     # delete temp files before running the test case
     foreach $key (keys(%values))
     {
-        if ($key =~ /^contains\b/ || $key =~ /^not-contains\b/)
+        if ($key =~ /^contains\(/ || $key =~ /^not-contains\(/ ||
+            $key =~ /^contains-regex\(/ || $key =~ /^not-contains-regex\(/)
         {
             # read file
             if ($values{$key} eq 'stdout') {
@@ -486,7 +489,8 @@ sub testcase_run()
     # check output files
     foreach $key (keys(%values))
     {
-        if ($key =~ /^contains\b/ || $key =~ /^not-contains\b/)
+        if ($key =~ /^contains\(/ || $key =~ /^not-contains\(/ ||
+            $key =~ /^contains-regex\(/ || $key =~ /^not-contains-regex\(/)
         {
             # read file
             if ($values{$key} eq 'stdout') {
@@ -518,9 +522,9 @@ sub testcase_run()
             $pattern =~ s/^\s*(.*?)\s*$/$1/s; # trim pattern
 
             # check contains or not-contains
-            if ($key =~ /^contains\b/) {
+            if ($key =~ /^contains-regex\(/) {
                 if (!($txt =~ /$pattern/s)) {
-                   fail($testfilename, "$values{$key} fails %contains rule");
+                   fail($testfilename, "$values{$key} fails %contains-regex rule");
                    if (length($txt)<=8192) {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
@@ -529,13 +533,35 @@ sub testcase_run()
                    return;
                 }
             }
-            if ($key =~ /^not-contains\b/) {
+            if ($key =~ /^not-contains-regex\(/) {
                 if ($txt =~ /$pattern/s) {
-                   fail($testfilename, "$values{$key} fails %not-contains rule");
+                   fail($testfilename, "$values{$key} fails %not-contains-regex rule");
                    if (length($txt)<=8192) {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in working directory\n" if ($verbose);
+                   }
+                   return;
+                }
+            }
+            if ($key =~ /^contains\(/) {
+                if (!($txt =~ /\Q$pattern\E/s)) {
+                   fail($testfilename, "$values{$key} fails %contains rule");
+                   if (length($txt)<=8192) {
+                      print "expected substring:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
+                   } else {
+                      print "expected substring:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in working directory\n" if ($verbose);
+                   }
+                   return;
+                }
+            }
+            if ($key =~ /^not-contains\(/) {
+                if ($txt =~ /\Q$pattern\E/s) {
+                   fail($testfilename, "$values{$key} fails %not-contains rule");
+                   if (length($txt)<=8192) {
+                      print "expected substring:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
+                   } else {
+                      print "expected substring:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in working directory\n" if ($verbose);
                    }
                    return;
                 }
