@@ -122,32 +122,30 @@ void cCollectObjectsVisitor::visit(cObject *obj)
 cFilteredCollectObjectsVisitor::cFilteredCollectObjectsVisitor()
 {
     category = ~0U;
-    classnamepatterntf = NULL;
-    objfullpathpatterntf = NULL;
+    classnamepattern = NULL;
+    objfullpathpattern = NULL;
 }
 
 cFilteredCollectObjectsVisitor::~cFilteredCollectObjectsVisitor()
 {
-    delete classnamepatterntf;
-    delete objfullpathpatterntf;
+    delete classnamepattern;
+    delete objfullpathpattern;
 }
 
 bool cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
-                                                   const char *classnamepattern,
-                                                   const char *objfullpathpattern)
+                                                   const char *classnamepatt,
+                                                   const char *objfullpathpatt)
 {
     category = cat;
-    if (classnamepattern && classnamepattern[0])
+    if (classnamepatt && classnamepatt[0])
     {
-        classnamepatterntf = new short[512]; // FIXME!
-        if (!transform_pattern(classnamepattern,classnamepatterntf))
-            return false; // bad pattern: unmatched '{'
+        classnamepattern = new cPatternMatcher();
+        classnamepattern->setPattern(classnamepatt, false, true, false); // FIXME exception?
     }
-    if (objfullpathpattern && objfullpathpattern[0])
+    if (objfullpathpatt && objfullpathpatt[0])
     {
-        objfullpathpatterntf = new short[512]; // FIXME!
-        if (!transform_pattern(objfullpathpattern,objfullpathpatterntf))
-            return false; // bad pattern: unmatched '{'
+        objfullpathpattern = new cPatternMatcher();
+        objfullpathpattern->setPattern(objfullpathpatt, false, true, false); // FIXME exception?
     }
     return true;
 }
@@ -176,8 +174,8 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
                                         !dynamic_cast<cModulePar *>(obj) &&
                                         !dynamic_cast<cChannel *>(obj) &&
                                         !dynamic_cast<cGate *>(obj)));
-    ok = ok && (!objfullpathpatterntf || stringmatch(objfullpathpatterntf,obj->fullPath()));
-    ok = ok && (!classnamepatterntf || stringmatch(classnamepatterntf,obj->className()));
+    ok = ok && (!objfullpathpattern || objfullpathpattern->matches(obj->fullPath()));
+    ok = ok && (!classnamepattern || classnamepattern->matches(obj->className()));
 
     if (ok)
     {

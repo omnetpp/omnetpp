@@ -60,6 +60,8 @@ cModuleInterface *createModuleInterfaceFrom(NEDElement *modulenode)
                typecode = ParType_String;
             if (strcmp(datatype,"bool"))
                typecode = ParType_Bool;
+            if (strcmp(datatype,"xml"))
+               typecode = ParType_XML;
             if (strcmp(datatype,"any"))
                typecode = ParType_Any;
             else

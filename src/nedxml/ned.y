@@ -40,9 +40,9 @@
 
 %token INTCONSTANT REALCONSTANT NAME STRINGCONSTANT CHARCONSTANT
 %token TRUE_ FALSE_
-%token INPUT_
+%token INPUT_ XMLDOC
 %token REF ANCESTOR
-%token CONSTDECL NUMERICTYPE STRINGTYPE BOOLTYPE ANYTYPE
+%token CONSTDECL NUMERICTYPE STRINGTYPE BOOLTYPE XMLTYPE ANYTYPE
 
 %token CPLUSPLUS CPLUSPLUSBODY
 %token MESSAGE CLASS STRUCT ENUM NONCOBJECT
@@ -730,6 +730,10 @@ parameter
         | NAME ':' BOOLTYPE
                 {
                   ps.param = addParameter(ps.params,@1,TYPE_BOOL);
+                }
+        | NAME ':' XMLTYPE
+                {
+                  ps.param = addParameter(ps.params,@1,TYPE_XML);
                 }
         | NAME ':' ANYTYPE
                 {
@@ -1924,6 +1928,10 @@ expression
                 {
                   if (ps.parseExpressions) $$ = createExpression($1);
                 }
+        | xmldocvalue
+                {
+                  if (ps.parseExpressions) $$ = createExpression($1);
+                }
         ;
 
 /*
@@ -1939,6 +1947,13 @@ inputvalue
                 { if (ps.parseExpressions) $$ = createFunction("input"); }
         | INPUT_
                 { if (ps.parseExpressions) $$ = createFunction("input"); }
+        ;
+
+xmldocvalue
+        : XMLDOC '(' stringconstant ',' stringconstant ')'
+                { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3, $5); }
+        | XMLDOC '(' stringconstant ')'
+                { if (ps.parseExpressions) $$ = createFunction("xmldoc", $3); }
         ;
 
 expr
@@ -2055,8 +2070,7 @@ parameter_expr
         ;
 
 string_expr
-        : STRINGCONSTANT
-                { $$ = createConst(NED_CONST_STRING, toString(trimQuotes(@1))); }
+        : stringconstant
         ;
 
 boolconst_expr
@@ -2077,6 +2091,11 @@ special_expr
                 { if (ps.parseExpressions) $$ = createFunction("index"); }
         | SIZEOF '(' NAME ')'
                 { if (ps.parseExpressions) $$ = createFunction("sizeof", createIdent(toString(@3))); }
+        ;
+
+stringconstant
+        : STRINGCONSTANT
+                { $$ = createConst(NED_CONST_STRING, toString(trimQuotes(@1))); }
         ;
 
 numconst
@@ -2562,6 +2581,7 @@ ParamNode *addParameter(NEDElement *params, YYLTYPE namepos, int type)
        case TYPE_CONST_NUM: s = "numeric const"; break;
        case TYPE_STRING:    s = "string"; break;
        case TYPE_BOOL:      s = "bool"; break;
+       case TYPE_XML:       s = "xml"; break;
        case TYPE_ANYTYPE:   s = "anytype"; break;
        default: s="?";
    }

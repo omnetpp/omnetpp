@@ -26,7 +26,6 @@
 #include "ctypes.h"
 #include "cstruct.h"
 #include "cdispstr.h"
-#include "cinifile.h"
 #include "cdispstr.h"
 #include "tkapp.h"
 #include "tklib.h"
@@ -217,11 +216,11 @@ int getIniSectionNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   cIniFile *inifile = app->getIniFile();
-   int n = inifile->getNumSections();
+   cConfiguration *cfg = app->getConfig();
+   int n = cfg->getNumSections();
    const char **sections = new const char *[n];
    for (int i=0; i<n; i++)
-       sections[i] = inifile->getSectionName(i);
+       sections[i] = cfg->getSectionName(i);
    char *buf = Tcl_Merge(n,const_cast<char **>(sections));
    delete [] sections;
    Tcl_SetResult(interp, buf, TCL_DYNAMIC);

@@ -105,10 +105,12 @@ char textbuf[TEXTBUF_LEN];
 "if"                    { count(); return IF; }
 "index"                 { count(); return SUBMODINDEX; }
 "nocheck"               { count(); return NOCHECK; }
+"xmldoc"                { count(); return XMLDOC; }
 
 "numeric"               { count(); return NUMERICTYPE; }
 "string"                { count(); return STRINGTYPE; }
 "bool"                  { count(); return BOOLTYPE; }
+"xml"                   { count(); return XMLTYPE; }
 "anytype"               { count(); return ANYTYPE; }
 
 "cplusplus"             { count(); use_chanattrname_token = 0; return CPLUSPLUS; }

@@ -16,118 +16,269 @@
 *--------------------------------------------------------------*/
 
 
-#include <stdlib.h>  // for NULL
-
+#include <assert.h>
+#include <string.h>
 #include "patmatch.h"
+#include "cexception.h"
 
 
-enum {ANY=-2,    // ?
-      ANYCL=-3,  // *
-      SET=-4,    // {   (begin set)
-      NEGSET=-5, // {^  (begin negated set)
-      ENDSET=-6  // }   (end set)
-};
-
-bool transform_pattern(const char *from, short *to)
+cPatternMatcher::cPatternMatcher()
 {
-    //DEBUG:printf(" ******** patt=%s",from);
-    // Prepares pattern for the match function.
-    // Retval: 1=successful, 0=bad pattern (unmatched '{')
-    //  handles quoted chars: replaces \x with x (where x can by any char)
-    //  replaces *,?,{,{^,} with ANY,ANYCL,SET,NEGSET,ENDSET
-    //  expands sets: {0-9} becomes SET,0,1,2,3,4,5,6,7,8,9,ENDSET
+}
 
-    short c;
-    while ((c = *from++) != '\0')
+cPatternMatcher::~cPatternMatcher()
+{
+}
+
+void cPatternMatcher::setPattern(const char *patt, bool dottedpath, bool fullstring, bool casesensitive)
+{
+    pattern.clear();
+    iscasesensitive = casesensitive;
+
+    // "tokenize" pattern
+    const char *s = patt;
+    while (*s!='\0')
     {
-        switch( c )
+        Elem e;
+        switch(*s)
         {
-           case '?':  c=ANY; break;
-           case '*':  c=ANYCL; break;
-           case '\\': c = *from++; break;
-           case '{':  // begin set or negated set
-                      if ((c = *from++)=='^') {
-                          *to++ = NEGSET; c = *from++;
-                      } else {
-                          *to++ = SET;
-                      }
-                      // transform set
-                      do {
-                          if (*from=='-' && from[1]!='}')
-                          {
-                             while (c<=from[1]) // expand set
-                                *to++ = c++;
-                             from += 2;
-                          }
-                          else if (c=='\0')
-                             return 0; // error: unmatched '{'
-                          else
-                             *to++ = c;
-                      } while ((c = *from++) != '}');
-                      // close set in transformed pattern
-                      c = ENDSET; break;
+           case '?':  e.type = dottedpath ? COMMONCHAR : ANYCHAR; s++; break;
+           case '[':  if (pattern.empty() || pattern.back().type!=LITERALSTRING || !parseNumRange(s, ']', e.fromnum, e.tonum))
+                          parseLiteralString(s,e);
+                      else
+                          e.type = NUMRANGE;
+                      break;
+           case '{':  if (parseNumRange(s, '}', e.fromnum, e.tonum))
+                          {e.type = NUMRANGE; s++;}
+                      else
+                          parseSet(s,e);
+                      break;
+           case '*':  if (*(s+1)=='*')
+                          {e.type = ANYSEQ; s+=2;}
+                      else
+                          {e.type = dottedpath ? COMMONSEQ : ANYSEQ; s++;}
+                      break;
+           default:   parseLiteralString(s,e); break;
         }
-        *to++ = c;
+        pattern.push_back(e);
     }
-    *to = '\0';
-    return 1;
+
+    if (!fullstring)
+    {
+        // for substring match, we add "**" at both ends of the pattern (unless already there)
+        Elem e;
+        e.type = ANYSEQ;
+        if (pattern.empty() || pattern.back().type!=ANYSEQ)
+            pattern.push_back(e);
+        if (pattern.front().type!=ANYSEQ)
+            pattern.insert(pattern.begin(),e);
+    }
+    Elem e;
+    e.type = END;
+    pattern.push_back(e);
 }
 
-static const short *ismatch(const short *pat, short c)
+void cPatternMatcher::parseSet(const char *&s, Elem& e)
 {
-    // Matches one character on the beginning of the pattern.
-    // Retval: NULL:doesn't match, Other pointer:rest of pattern
-
-    if (c=='\0')    // end of string matches nothing
-        return NULL;
-    switch(*pat++)
+    s++; // skip "{"
+    e.type = SET;
+    if (*s=='^')
     {
-        case ANY:
-           return pat;
-        case SET:
-           while (*pat!=ENDSET)
-              if (*pat++ == c)
-                  {while (*pat++!=ENDSET); return pat;}
-           return NULL;
-        case NEGSET:
-           while (*pat!=ENDSET)
-              if (*pat++ == c)
-                  return NULL;
-           return pat+1;
-        default:
-           return *(pat-1)==c ? pat : (short *)NULL;
+        e.type = NEGSET;
+        s++;
+    }
+    // Note: to make "}" part of the set, it must be first within the braces
+    const char *sbeg = s;
+    while (*s && (*s!='}' || s==sbeg))
+    {
+        char range[3];
+        range[2] = 0;
+        if (*(s+1)=='-' && *(s+2) && *(s+2)!='}')
+        {
+            // store "A-Z" as "AZ"
+            range[0] = *s;
+            range[1] = *(s+2);
+            s+=3;
+        }
+        else
+        {
+            // store "X" as "XX"
+            range[0] = range[1] = *s;
+            s++;
+        }
+        if (!iscasesensitive)
+        {
+            // if one end of range is alpha and the other is not, funny things will happen
+            range[0] = toupper(range[0]);
+            range[1] = toupper(range[1]);
+        }
+        e.setchars += range;
+    }
+    if (!*s)
+        throw new cException("unmatched '}' in expression");
+    s++; // skip "}"
+}
+
+void cPatternMatcher::parseLiteralString(const char *&s, Elem& e)
+{
+    e.type = LITERALSTRING;
+    while (*s && *s!='?' && *s!='{' && *s!='*')
+    {
+        long dummy;
+        const char *s1;
+        if (*s=='\\')
+            e.literalstring += *(++s);
+        else
+            e.literalstring += *s;
+        if (*s=='[' && parseNumRange((s1=s),']',dummy,dummy))
+            break;
+        s++;
     }
 }
 
-bool stringmatch(const short *pat, const char *line)
+bool cPatternMatcher::parseNumRange(const char *&str, char closingchar, long& lo, long& up)
 {
-    short c;
-    const short *p;
-    const char *lnext;
-    // fixed match (no '*') as far as it goes
-    while (*pat != ANYCL)
+    //
+    // try to parse "[n..m]" or "{n..m}" and return true on success.
+    // str should point at "[" or "{"; on success return it'll point to "]" or "}",
+    // and on failure it'll be unchanged. n and m will be stored in lo and up.
+    // They are optional -- if missing, lo or up will be set to -1.
+    //
+    lo = up = -1L;
+    const char *s = str+1; // skip "[" or "{"
+    if (isdigit(*s))
     {
-        if ((c = *line++) == '\0')
-           return *pat=='\0';
-        if ((pat = ismatch(pat,c))==NULL)
-           return 0;
+        lo = atol(s);
+        while (isdigit(*s)) s++;
     }
-    // try to match rest of line to current section of the pattern
-    // (until next '*' or end of pattern)
-    while (*++pat != '\0')
+    if (*s!='.' || *(s+1)!='.')
+        return false;
+    s+=2;
+    if (isdigit(*s))
     {
-        lnext = line;
-        do {
-            line = lnext; lnext++; p = pat;
-            while (p!=NULL && *p!=ANYCL)
-            {
-               if ((c = *line++)=='\0')  // end of string
-                   return *p=='\0';      // good if also at end of pattern
-               p = ismatch(p,c);
-            }
-        } while (p==NULL);
-        pat = p;  // OK so far, go to next pattern section
+        up = atol(s);
+        while (isdigit(*s)) s++;
     }
-    return 1;
+    if (*s!=closingchar)
+        return false;
+    str = s;
+    return true;
+}
+
+void cPatternMatcher::dump(int from)
+{
+    for (int k=from; k<pattern.size(); k++)
+    {
+        Elem& e = pattern[k];
+        switch (e.type)
+        {
+            case LITERALSTRING: printf("\"%s\"", e.literalstring.c_str()); break;
+            case ANYCHAR: printf("?!"); break;
+            case COMMONCHAR: printf("?"); break;
+            case SET: printf("SET(%s)", e.setchars.c_str()); break;
+            case NEGSET: printf("NEGSET(%s)", e.setchars.c_str()); break;
+            case NUMRANGE: printf("%ld..%ld", e.fromnum, e.tonum); break;
+            case ANYSEQ: printf("**"); break;
+            case COMMONSEQ: printf("*"); break;
+            case END: break;
+            default: assert(0);
+        }
+        printf(" ");
+    }
+}
+
+bool cPatternMatcher::isInSet(char c, const char *set)
+{
+    assert((strlen(set)&1)==0);
+    if (!iscasesensitive)
+        c = toupper(c); // set is already uppercase here
+    while (*set)
+    {
+        if (c>=*set && c<=*(set+1))
+            return true;
+        set+=2;
+    }
+    return false;
+}
+
+bool cPatternMatcher::match(const char *s, int k)
+{
+    //printf("DBG: "); dump(k); printf("   \t\"%s\"\n",s);
+    while (true)
+    {
+        Elem& e = pattern[k];
+        long num;
+        switch (e.type)
+        {
+            case LITERALSTRING:
+                if (iscasesensitive ?
+                    strncmp(s, e.literalstring.c_str(), e.literalstring.length()) :
+                    strnicmp(s, e.literalstring.c_str(), e.literalstring.length()) // FIXME NOT POSIX!
+                   )
+                    return false;
+                s += e.literalstring.length();
+                break;
+            case ANYCHAR:
+                if (!*s)
+                    return false;
+                s++;
+                break;
+            case COMMONCHAR:
+                if (!*s || *s=='.' || *s=='[' || *s==']')
+                    return false;
+                s++;
+                break;
+            case SET:
+                if (!*s)
+                    return false;
+                if (!isInSet(*s, e.setchars.c_str()))
+                    return false;
+                s++;
+                break;
+            case NEGSET:
+                if (!*s)
+                    return false;
+                if (isInSet(*s, e.setchars.c_str()))
+                    return false;
+                s++;
+                break;
+            case NUMRANGE:
+                if (!isdigit(*s))
+                    return false;
+                num = atol(s);
+                while (isdigit(*s)) s++;
+                if ((e.fromnum>=0 && num<e.fromnum) || (e.tonum>=0 && num>e.tonum))
+                    return false;
+                break;
+            case ANYSEQ:
+                // FIXME shortcut if pattern ends in ANYSEQ or ANYSEQ LITERALSTRING
+                do {
+                    if (match(s,k+1))
+                        return true;
+                    s++;
+                } while (*s);
+                break; // at EOS
+            case COMMONSEQ:
+                do {
+                    if (match(s,k+1))
+                        return true;
+                    if (!*s || *s=='.' || *s=='[' || *s==']')
+                        break;
+                    s++;
+                } while (*s);
+                break; // at EOS
+            case END:
+                return !*s;
+            default:
+                assert(0);
+        }
+        k++;
+        assert(k<pattern.size());
+    }
+}
+
+bool cPatternMatcher::matches(const char *s)
+{
+    return match(s,0);
 }
 

@@ -38,19 +38,19 @@
 
 // the macro
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
-  TOmnetApp *CLASSNAME##__create(ArgList *args, cIniFile *inifile) {return new CLASSNAME(args, inifile);} \
+  TOmnetApp *CLASSNAME##__create(ArgList *args, cConfiguration *config) {return new CLASSNAME(args, config);} \
   EXECUTE_ON_STARTUP(__##CLASSNAME##_ui, (omnetapps.instance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,CLASSNAME##__create))))
 
 class TOmnetApp;
 class ArgList;
-class cIniFile;
+class cConfiguration;
 
 extern ENVIR_API cSingleton<cArray> omnetapps;
 
 // registration class
 class ENVIR_API cOmnetAppRegistration : public cObject
 {
-    typedef TOmnetApp *(*AppCreatorFunc)(ArgList *,cIniFile *);
+    typedef TOmnetApp *(*AppCreatorFunc)(ArgList *,cConfiguration *);
     AppCreatorFunc creatorfunc;
     opp_string desc;
     int scor;
@@ -65,7 +65,7 @@ class ENVIR_API cOmnetAppRegistration : public cObject
     virtual const char *className() const {return "cOmnetAppRegistration";}
 
     // new functions
-    TOmnetApp *createOne(ArgList *args, cIniFile *inifile)  {return creatorfunc(args,inifile);}
+    TOmnetApp *createOne(ArgList *args, cConfiguration *config)  {return creatorfunc(args,config);}
     const char *description()  {return desc.c_str();}
     int score()  {return scor;}
 };

@@ -115,7 +115,7 @@ class TOmnetTkApp : public TOmnetApp
       TInspectorList inspectors;   // list of inspector objects
 
    public:
-      TOmnetTkApp(ArgList *args, cIniFile *inifile);
+      TOmnetTkApp(ArgList *args, cConfiguration *config);
       ~TOmnetTkApp();
 
       // redefined virtual functions from TOmnetApp
@@ -205,7 +205,7 @@ class TOmnetTkApp : public TOmnetApp
 
       void findDirectPath(cModule *frommodule, cModule *tomodule, PathVec& pathvec);
 
-      const char *getIniFileName()       {return opt_inifile_name.c_str();}
+      const char *getIniFileName()       {return getConfig()->fileName();}
       const char *getOutVectorFileName() {return outvectmgr->fileName();}
       const char *getOutScalarFileName() {return outscalarmgr->fileName();}
       const char *getSnapshotFileName()  {return snapshotmgr->fileName();}

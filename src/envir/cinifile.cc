@@ -1,5 +1,5 @@
 //==========================================================================
-//  INIFILE.CPP - part of
+//  CINIFILE.CC - part of
 //                             OMNeT++
 //             Discrete System Simulation in C++
 //
@@ -22,14 +22,13 @@
 #include "util.h"  //strToSimtime
 #include "cinifile.h"
 #include "patmatch.h"
+#include "cexception.h"
 
 
 #define MAX_LINE   1024
 
-//==========================================================================
-//=== cIniFile - member functions
-//
-cIniFile::cIniFile(const char *filename)
+
+cIniFile::cIniFile()
 {
     sectiontable_size = 32;
     sections = new char*[sectiontable_size];
@@ -40,10 +39,9 @@ cIniFile::cIniFile(const char *filename)
     num_entries = 0;
 
     warnings=false;
-    _error = false;
-    fname = opp_strdup(filename);
+    notfound = false;
 
-    readFile( filename );
+    fname = NULL;
 }
 
 cIniFile::~cIniFile()
@@ -51,13 +49,16 @@ cIniFile::~cIniFile()
     clearContents();
 }
 
-#define SYNTAX_ERROR(txt) \
-          { _error=true;\
-            ev.printfmsg("Error reading `%s', line %d: %s",fname,line,txt);\
-            return; }
-
-void cIniFile::readFile(const char *fname)
+void cIniFile::initializeFrom(cConfiguration *)
 {
+}
+
+#define SYNTAX_ERROR(txt) throw new cException("Error reading `%s' line %d: %s",fname,line,txt);
+
+void cIniFile::readFile(const char *filename)
+{
+    delete [] fname;
+    fname = opp_strdup(filename);
     _readFile(fname,-1);
 }
 
@@ -70,17 +71,13 @@ void cIniFile::_readFile(const char *fname, int section_id)
     int line=0;
     int i;
 
-    _error = false;
     buf[bufsize-1] = '\0'; // 'line too long' guard
 
     file = fopen(fname,"r");
     if (file==NULL)
-    {
-        _error=true;
-        ev.printfmsg("Cannot open `%s'.",fname);
-        return;
-    }
+        throw new cException("Cannot open ini file `%s'", fname);
 
+    bool oldwildcardsmode = false; // if true, '*' matches anything (also a ".")
     while (!feof(file))
     {
         // start read a line
@@ -111,7 +108,16 @@ void cIniFile::_readFile(const char *fname, int section_id)
         // skip leading spaces, empty/comment lines
         char *s=buf;
         while (*s==' ' || *s=='\t') s++;
-        if (*s==0 || *s==';' || *s=='#')  continue; // empty or comment line
+
+        // compatibility mode
+        if (!strncmp(s,"#% old-wildcards",16))
+        {
+            ev.printf("\n*** Turned on old-wildcards mode for `%s'.\n\n", fname);
+            oldwildcardsmode = true;
+        }
+
+        // skip empty and comment lines
+        if (*s==0 || *s==';' || *s=='#')  continue;
 
         // process 'include' stuff
         if (memcmp(s,"include",7)==0 && (s[7]==' ' || s[7]=='\t'))
@@ -197,7 +203,8 @@ void cIniFile::_readFile(const char *fname, int section_id)
               entry.value = opp_strdup(e);
            }
            entry.accessed = 0;
-           entry.haswildcard = strchr(entry.key,'*') || strchr(entry.key,'?') || strchr(entry.key,'{');
+           entry.keypattern = new cPatternMatcher();
+           entry.keypattern->setPattern(entry.key, !oldwildcardsmode, true, true);
 
            // // maybe already exists
            // for (i=0; i<num_entries; i++)
@@ -250,6 +257,7 @@ void cIniFile::clearContents()
     for (i=0; i<num_entries; i++)
     {
        delete [] entries[i].key;
+       delete entries[i].keypattern;
        delete [] entries[i].value;
        delete [] entries[i].rawvalue;
     }
@@ -263,7 +271,7 @@ void cIniFile::clearContents()
 
 const char *cIniFile::_getValue(const char *sect, const char *ent, int raw)
 {
-    _error=false;  // clear error flag
+    notfound=false;  // clear error flag
     int i;
 
     // search for section
@@ -284,31 +292,18 @@ const char *cIniFile::_getValue(const char *sect, const char *ent, int raw)
               return (raw && entries[i].rawvalue) ? entries[i].rawvalue : entries[i].value;
           }
 
-          if (entries[i].haswildcard)
+          if (entries[i].keypattern->matches(ent))
           {
-             // try pattern matching
-             short pat[256];
-             if (transform_pattern(entries[i].key,pat) && stringmatch(pat,ent))
-             {
-                 entries[i].accessed=1;
-                 return (raw && entries[i].rawvalue) ? entries[i].rawvalue : entries[i].value;
-             }
+              entries[i].accessed=1;
+              return (raw && entries[i].rawvalue) ? entries[i].rawvalue : entries[i].value;
           }
        }
     }
     // not found
-    _error=true;
+    notfound=true;
     return NULL;
 }
 
-int cIniFile::error()
-{
-    int e = _error;
-    _error = false;
-    return e;
-}
-
-//-----------
 
 int cIniFile::getNumSections()
 {
@@ -325,20 +320,6 @@ const char *cIniFile::getSectionName(int k)
 bool cIniFile::exists(const char *sect, const char *ent)
 {
     return _getValue(sect, ent, 1)!=NULL;
-}
-
-const char *cIniFile::getRaw(const char *sect, const char *ent, const char *defaultval)
-{
-    const char *s = _getValue(sect, ent, 1);
-    if (s==0)
-    {
-       if (warnings)
-          ev.printf("Entry [%s]/%s= not in ini file, \"%s\" used as default\n",
-                     sect,ent,defaultval?defaultval:"");
-       return defaultval;
-    }
-
-    return s;
 }
 
 bool cIniFile::getAsBool(const char *sect, const char *ent, bool defaultval)
@@ -433,6 +414,27 @@ double cIniFile::getAsTime(const char *sect, const char *ent, double defaultval)
     return strToSimtime(s);
 }
 
+const char *cIniFile::getAsCustom(const char *sect, const char *ent, const char *defaultval)
+{
+    const char *s = _getValue(sect, ent, 1);
+    if (s==0)
+    {
+       if (warnings)
+          ev.printf("Entry [%s]/%s= not in ini file, \"%s\" used as default\n",
+                     sect,ent,defaultval?defaultval:"");
+       return defaultval;
+    }
+
+    return s;
+}
+
+bool cIniFile::notFound()
+{
+    bool e = notfound;
+    notfound = false;
+    return e;
+}
+
 //-----------
 
 bool cIniFile::exists2(const char *sect1, const char *sect2, const char *ent)
@@ -440,27 +442,14 @@ bool cIniFile::exists2(const char *sect1, const char *sect2, const char *ent)
     return exists(sect1, ent) || exists(sect2, ent);
 }
 
-const char *cIniFile::getRaw2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
-{
-    bool w = warnings; warnings = false;
-    const char *a = getRaw(sect1,key,defaultval);
-    if (_error)
-         a = getRaw(sect2,key,defaultval);
-    warnings = w;
-    if (_error && warnings)
-         ev.printf("Ini file entry %s= not in [%s] or [%s], \"%s\" used as default\n",
-                   key,sect1,sect2,defaultval?defaultval:"");
-    return a;
-}
-
 bool cIniFile::getAsBool2(const char *sect1, const char *sect2, const char *key, bool defaultval)
 {
     bool w = warnings; warnings = false;
     bool a = getAsBool(sect1,key,defaultval);
-    if (_error)
+    if (notfound)
          a = getAsBool(sect2,key,defaultval);
     warnings = w;
-    if (_error && warnings)
+    if (notfound && warnings)
          ev.printf("Ini file entry %s= not in [%s] or [%s], %s used as default\n",
                    key,sect1,sect2,defaultval?"true":"false");
     return a;
@@ -470,10 +459,10 @@ long cIniFile::getAsInt2(const char *sect1, const char *sect2, const char *key, 
 {
     bool w = warnings; warnings = false;
     long a = getAsInt(sect1,key,defaultval);
-    if (_error)
+    if (notfound)
          a = getAsInt(sect2,key,defaultval);
     warnings = w;
-    if (_error && warnings)
+    if (notfound && warnings)
          ev.printf("Ini file entry %s= not in [%s] or [%s], %ld used as default\n",
                    key,sect1,sect2,defaultval);
     return a;
@@ -483,10 +472,10 @@ double cIniFile::getAsDouble2(const char *sect1, const char *sect2, const char *
 {
     bool w = warnings; warnings = false;
     double a = getAsDouble(sect1,key,defaultval);
-    if (_error)
+    if (notfound)
          a = getAsDouble(sect2,key,defaultval);
     warnings = w;
-    if (_error && warnings)
+    if (notfound && warnings)
          ev.printf("Ini file entry %s= not in [%s] or [%s], %g used as default\n",
                    key,sect1,sect2,defaultval);
     return a;
@@ -496,10 +485,10 @@ const char *cIniFile::getAsString2(const char *sect1, const char *sect2, const c
 {
     bool w = warnings; warnings = false;
     const char *a = getAsString(sect1,key,defaultval);
-    if (_error)
+    if (notfound)
          a = getAsString(sect2,key,defaultval);
     warnings = w;
-    if (_error && warnings)
+    if (notfound && warnings)
          ev.printf("Ini file entry %s= not in [%s] or [%s], \"%s\" used as default\n",
                    key,sect1,sect2,defaultval?defaultval:"");
     return a;
@@ -509,12 +498,30 @@ double cIniFile::getAsTime2(const char *sect1, const char *sect2, const char *ke
 {
     bool w = warnings; warnings = false;
     double a = getAsTime(sect1,key,defaultval);
-    if (_error)
+    if (notfound)
          a = getAsTime(sect2,key,defaultval);
     warnings = w;
-    if (_error && warnings)
+    if (notfound && warnings)
          ev.printf("Ini file entry %s= not in [%s] or [%s], %g used as default\n",
                    key,sect1,sect2,defaultval);
     return a;
+}
+
+const char *cIniFile::getAsCustom2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
+{
+    bool w = warnings; warnings = false;
+    const char *a = getAsCustom(sect1,key,defaultval);
+    if (notfound)
+         a = getAsCustom(sect2,key,defaultval);
+    warnings = w;
+    if (notfound && warnings)
+         ev.printf("Ini file entry %s= not in [%s] or [%s], \"%s\" used as default\n",
+                   key,sect1,sect2,defaultval?defaultval:"");
+    return a;
+}
+
+const char *cIniFile::fileName() const
+{
+    return fname;
 }
 

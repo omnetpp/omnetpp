@@ -15,6 +15,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
 #include <ctype.h>
 #include <stdio.h>
 #include <assert.h>
@@ -22,7 +26,6 @@
 
 #include "args.h"
 #include "omnetapp.h"
-#include "cinifile.h"
 #include "patmatch.h"
 #include "fsutils.h"
 
@@ -33,6 +36,8 @@
 #include "cpar.h"
 #include "random.h"
 #include "cmodule.h"
+#include "cxmlelement.h"
+#include "cxmldoccache.h"
 
 #ifdef WITH_PARSIM
 #include "cparsimcomm.h"
@@ -72,10 +77,11 @@ static char buffer[1024];
 
 //-------------------------------------------------------------
 
-TOmnetApp::TOmnetApp(ArgList *arglist, cIniFile *inifile)
+TOmnetApp::TOmnetApp(ArgList *arglist, cConfiguration *conf)
 {
     args = arglist;
-    ini_file = inifile;
+    config = conf;
+    xmlcache = NULL;
     opt_genk_randomseed = new long[NUM_RANDOM_GENERATORS];
     next_startingseed = 0;
 
@@ -97,7 +103,8 @@ TOmnetApp::~TOmnetApp()
 {
     delete [] opt_genk_randomseed;
     delete args;
-    delete ini_file;
+    delete config;
+    delete xmlcache;
 
     delete outvectmgr;
     delete outscalarmgr;
@@ -115,12 +122,6 @@ void TOmnetApp::setup()
 {
      try
      {
-         opt_inifile_name = ini_file->filename();
-
-         // DEBUG code: print out ini file contents
-         // for (cIniFileIterator i(ini_file); !i.end(); i++)
-         //     printf("[%s] %s= %s\n", i.section(), i.entry(), i.value());
-
          // set opt_* variables from ini file(s)
          readOptions();
 
@@ -132,6 +133,9 @@ void TOmnetApp::setup()
          }
          cCoroutine::init( 1024*opt_total_stack_kb, 1024*MAIN_STACK_KB );
          simulation.init();
+
+         // install XML document cache
+         xmlcache = new cXMLDocCache();
 
          // install output vector manager
          CREATE_BY_CLASSNAME(outvectmgr, opt_outputvectormanager_class.c_str(), cOutputVectorManager, "output vector manager");
@@ -170,7 +174,7 @@ void TOmnetApp::setup()
          }
 
          // preload NED files
-         const char *nedfiles = ini_file->getAsString("General", "preload-ned-files", NULL);
+         const char *nedfiles = getConfig()->getAsString("General", "preload-ned-files", NULL);
          if (nedfiles)
          {
              // iterate through file names
@@ -272,8 +276,7 @@ const char *TOmnetApp::getParameter(int run_no, const char *parname)
     char section[16];
     sprintf(section,"Run %d",run_no);
 
-    ini_file->error(); // clear error flag
-    return ini_file->getRaw2(section,"Parameters",parname,NULL);
+    return getConfig()->getAsCustom2(section,"Parameters",parname,NULL);
 }
 
 bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index)
@@ -290,13 +293,12 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
     char section[16];
     sprintf(section,"Run %d",1 /*run_no*/); // FIXME get run_no from somewhere!!!
 
-    ini_file->error(); // clear error flag
     char parname[MAX_OBJECTFULLPATH];
     if (index<0)
         sprintf(parname,"%s.%s.partition-id", parentmod->fullPath(), modname);
     else
         sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath(), modname, index);
-    int procId = ini_file->getAsInt2(section,"Partitioning",parname,-1);
+    int procId = getConfig()->getAsInt2(section,"Partitioning",parname,-1);
     if (procId<0)
         throw new cException("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);
     if (procId>=parsimcomm->getNumPartitions())
@@ -323,11 +325,11 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
 
     // get 'module.vector.disabled=' entry
     strcpy(end,"enabled");
-    enabled = ini_file->getAsBool2(section,"OutVectors",buffer,true);
+    enabled = getConfig()->getAsBool2(section,"OutVectors",buffer,true);
 
     // get 'module.vector.interval=' entry
     strcpy(end,"interval");
-    const char *s = ini_file->getAsString2(section,"OutVectors",buffer,NULL);
+    const char *s = getConfig()->getAsString2(section,"OutVectors",buffer,NULL);
     if (!s)
     {
        starttime = 0;
@@ -354,13 +356,22 @@ const char *TOmnetApp::getDisplayString(int run_no, const char *name)
     char section[16];
     sprintf(section,"Run %d",run_no);
 
-    ini_file->error(); // clear error flag
-    return ini_file->getAsString2(section,"DisplayStrings",name,NULL);
+    return getConfig()->getAsString2(section,"DisplayStrings",name,NULL);
 }
 
-cIniFile *TOmnetApp::getIniFile()
+cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)
 {
-    return ini_file;
+    cXMLElement *documentnode = xmlcache->getDocument(filename);
+    assert(documentnode);
+    if (path)
+        return cXMLElement::getDocumentElementByPath(documentnode, path);
+    else 
+        return documentnode->getFirstChild();
+}
+
+cConfiguration *TOmnetApp::getConfig()
+{
+    return config;
 }
 
 //-------------------------------------------------------------
@@ -389,85 +400,87 @@ void TOmnetApp::processFileName(opp_string& fname)
 
 void TOmnetApp::readOptions()
 {
-    ini_file->error(); // clear error flag
+    cConfiguration *cfg = getConfig();
 
     // this must be the very first:
-    opt_ini_warnings = ini_file->getAsBool( "General", "ini-warnings", false );
-    ini_file->warnings = opt_ini_warnings;
+    opt_ini_warnings = cfg->getAsBool( "General", "ini-warnings", false );
+    //FIXME cfg->setWarnings(opt_ini_warnings);
 
-    opt_total_stack_kb = ini_file->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB );
-    if (ini_file->getAsBool("General", "distributed", false))
+    opt_total_stack_kb = cfg->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB );
+    if (cfg->getAsBool("General", "distributed", false))
          ev.printfmsg("Warning: ini file entry distributed= is obsolete (parallel simulation support was reimplemented in version 2.4)");
-    opt_parsim = ini_file->getAsBool("General", "parallel-simulation", false);
+    opt_parsim = cfg->getAsBool("General", "parallel-simulation", false);
     if (!opt_parsim)
     {
-        opt_scheduler_class = ini_file->getAsString("General", "scheduler-class", "cSequentialScheduler");
+        opt_scheduler_class = cfg->getAsString("General", "scheduler-class", "cSequentialScheduler");
     }
     else
     {
 #ifdef WITH_PARSIM
-        opt_parsimcomm_class = ini_file->getAsString("General", "parsim-communications-class", "cFileCommunications");
-        opt_parsimsynch_class = ini_file->getAsString("General", "parsim-synchronization-class", "cNullMessageProtocol");
+        opt_parsimcomm_class = cfg->getAsString("General", "parsim-communications-class", "cFileCommunications");
+        opt_parsimsynch_class = cfg->getAsString("General", "parsim-synchronization-class", "cNullMessageProtocol");
 #else
         throw new cException("Parallel simulation is turned on in the ini file, but OMNeT++ was compiled without parallel simulation support (WITH_PARSIM=no)");
 #endif
     }
-    opt_load_libs = ini_file->getAsString( "General", "load-libs", "" );
+    opt_load_libs = cfg->getAsString( "General", "load-libs", "" );
 
-    opt_outputvectormanager_class = ini_file->getAsString( "General", "outputvectormanager-class", "cFileOutputVectorManager" );
-    opt_outputscalarmanager_class = ini_file->getAsString( "General", "outputscalarmanager-class", "cFileOutputScalarManager" );
-    opt_snapshotmanager_class = ini_file->getAsString( "General", "snapshotmanager-class", "cFileSnapshotManager" );
+    opt_outputvectormanager_class = cfg->getAsString( "General", "outputvectormanager-class", "cFileOutputVectorManager" );
+    opt_outputscalarmanager_class = cfg->getAsString( "General", "outputscalarmanager-class", "cFileOutputScalarManager" );
+    opt_snapshotmanager_class = cfg->getAsString( "General", "snapshotmanager-class", "cFileSnapshotManager" );
 
-    opt_fname_append_host = ini_file->getAsBool("General","fname-append-host",false);
+    opt_fname_append_host = cfg->getAsBool("General","fname-append-host",false);
 
     // other options are read on per-run basis
 }
 
 void TOmnetApp::readPerRunOptions(int run_nr)
 {
+    cConfiguration *cfg = getConfig();
+
     char section[16];
     sprintf(section,"Run %d",run_nr);
 
     // get options from ini file
-    opt_network_name = ini_file->getAsString2( section, "General", "network", "default" );
-    opt_pause_in_sendmsg = ini_file->getAsBool2( section, "General", "pause-in-sendmsg", false );
-    opt_warnings = ini_file->getAsBool2( section, "General", "warnings", true );
-    opt_simtimelimit = ini_file->getAsTime2( section, "General", "sim-time-limit", 0.0 );
-    opt_cputimelimit = (long)ini_file->getAsTime2( section, "General", "cpu-time-limit", 0.0 );
-    opt_netifcheckfreq = ini_file->getAsInt2( section, "General", "netif-check-freq", 1);
+    opt_network_name = cfg->getAsString2( section, "General", "network", "default" );
+    opt_pause_in_sendmsg = cfg->getAsBool2( section, "General", "pause-in-sendmsg", false );
+    opt_warnings = cfg->getAsBool2( section, "General", "warnings", true );
+    opt_simtimelimit = cfg->getAsTime2( section, "General", "sim-time-limit", 0.0 );
+    opt_cputimelimit = (long)cfg->getAsTime2( section, "General", "cpu-time-limit", 0.0 );
+    opt_netifcheckfreq = cfg->getAsInt2( section, "General", "netif-check-freq", 1);
 
     // temporarily disable warnings
-    bool w = ini_file->warnings; ini_file->warnings = false;
+    //bool w = cfg->warnings; cfg->warnings = false;
     int fromtable = 0;
     // seeds for random number generators
-    opt_genk_randomseed[0] = ini_file->getAsInt2( section, "General", "random-seed",
+    opt_genk_randomseed[0] = cfg->getAsInt2( section, "General", "random-seed",
                                           starting_seeds[next_startingseed] );
-    if (ini_file->error())
+    if (cfg->notFound())
     {
-        opt_genk_randomseed[0] = ini_file->getAsInt2( section, "General", "gen0-seed",
+        opt_genk_randomseed[0] = cfg->getAsInt2( section, "General", "gen0-seed",
                                           starting_seeds[next_startingseed] );
         // if default value was used, increment next_startingseed
-        if (ini_file->error())
+        if (cfg->notFound())
         {
              next_startingseed = (next_startingseed+1)%NUM_STARTINGSEEDS;
              fromtable++;
         }
     }
 
-    for(int i=1;i<NUM_RANDOM_GENERATORS;i++)
+    for (int i=1;i<NUM_RANDOM_GENERATORS;i++)
     {
          char entry[16];
          sprintf(entry,"gen%d-seed",i);
-         opt_genk_randomseed[i] = ini_file->getAsInt2( section, "General", entry, starting_seeds[next_startingseed]);
+         opt_genk_randomseed[i] = cfg->getAsInt2( section, "General", entry, starting_seeds[next_startingseed]);
          // if default value was used (=from table), increment next_startingseed
-         if (ini_file->error())
+         if (cfg->notFound())
          {
              next_startingseed = (next_startingseed+1)%NUM_STARTINGSEEDS;
              fromtable++;
          }
     }
     // restore warning state
-    ini_file->warnings = w;
+    //cfg->warnings = w;
 
     // report
     if (opt_ini_warnings)

@@ -25,7 +25,6 @@
 #include "cmdenv.h"
 #include "enumstr.h"
 #include "appreg.h"
-#include "cinifile.h"
 #include "csimplemodule.h"
 #include "cmessage.h"
 #include "args.h"
@@ -69,7 +68,7 @@ char *timeToStr(time_t t, char *buf=NULL)
 //==========================================================================
 // TCmdenvApp: command line user interface.
 
-TCmdenvApp::TCmdenvApp(ArgList *args, cIniFile *inifile) : TOmnetApp(args, inifile)
+TCmdenvApp::TCmdenvApp(ArgList *args, cConfiguration *config) : TOmnetApp(args, config)
 {
     // initialize fout to stdout, then we'll replace it if redirection is
     // requested in the ini file
@@ -84,9 +83,11 @@ void TCmdenvApp::readOptions()
 {
     TOmnetApp::readOptions();
 
-    opt_runstoexec = ini_file->getAsString("Cmdenv", "runs-to-execute", "");
-    opt_extrastack = ini_file->getAsInt("Cmdenv", "extra-stack", CMDENV_EXTRASTACK);
-    opt_outputfile = ini_file->getAsString("Cmdenv", "output-file", "");
+    cConfiguration *cfg = getConfig();
+
+    opt_runstoexec = cfg->getAsString("Cmdenv", "runs-to-execute", "");
+    opt_extrastack = cfg->getAsInt("Cmdenv", "extra-stack", CMDENV_EXTRASTACK);
+    opt_outputfile = cfg->getAsString("Cmdenv", "output-file", "");
 
     if (!opt_outputfile.empty())
     {
@@ -103,25 +104,26 @@ void TCmdenvApp::readPerRunOptions( int run_nr )
 {
     TOmnetApp::readPerRunOptions( run_nr);
 
+    cConfiguration *cfg = getConfig();
+
     char section[16];
     sprintf(section,"Run %d",run_nr);
-    ini_file->error(); // clear error flag
 
-    opt_expressmode = ini_file->getAsBool2( section,"Cmdenv", "express-mode", false);
-    opt_autoflush = ini_file->getAsBool2( section,"Cmdenv", "autoflush", false);
-    opt_modulemsgs = ini_file->getAsBool2( section,"Cmdenv", "module-messages", true );
-    opt_eventbanners = ini_file->getAsBool2( section,"Cmdenv", "event-banners", true );
-    opt_eventbanner_details = ini_file->getAsBool2( section,"Cmdenv", "event-banner-details", false);
-    opt_messagetrace = ini_file->getAsBool2( section,"Cmdenv", "message-trace", false );
-    opt_status_frequency_ev = ini_file->getAsInt2( section,"Cmdenv", "status-frequency", 100000 );
-    //opt_status_frequency_sec = ini_file->getAsTime2( section,"Cmdenv", "status-frequency-interval", 5.0 );
-    opt_perfdisplay = ini_file->getAsBool2( section,"Cmdenv", "performance-display", true);
+    opt_expressmode = cfg->getAsBool2( section,"Cmdenv", "express-mode", false);
+    opt_autoflush = cfg->getAsBool2( section,"Cmdenv", "autoflush", false);
+    opt_modulemsgs = cfg->getAsBool2( section,"Cmdenv", "module-messages", true );
+    opt_eventbanners = cfg->getAsBool2( section,"Cmdenv", "event-banners", true );
+    opt_eventbanner_details = cfg->getAsBool2( section,"Cmdenv", "event-banner-details", false);
+    opt_messagetrace = cfg->getAsBool2( section,"Cmdenv", "message-trace", false );
+    opt_status_frequency_ev = cfg->getAsInt2( section,"Cmdenv", "status-frequency", 100000 );
+    //opt_status_frequency_sec = cfg->getAsTime2( section,"Cmdenv", "status-frequency-interval", 5.0 );
+    opt_perfdisplay = cfg->getAsBool2( section,"Cmdenv", "performance-display", true);
 
     // warnings on old entries
-    if (ini_file->exists2( section,"Cmdenv", "display-update"))
+    if (cfg->exists2( section,"Cmdenv", "display-update"))
          ev.printfmsg("Warning: ini file entry display-update= is obsolete, "
                       "use status-frequency= instead!");
-    if (ini_file->exists2( section,"Cmdenv", "verbose-simulation"))
+    if (cfg->exists2( section,"Cmdenv", "verbose-simulation"))
          ev.printfmsg("Warning: ini file entry verbose-simulation= is obsolete, use event-banners= instead!");
 }
 
@@ -147,11 +149,12 @@ void TCmdenvApp::setup()
     if (opt_runstoexec.empty())
     {
        buffer[0]='\0';
-       for (cIniFileSectionIterator sect(ini_file); !sect.end(); sect++)
+       cConfiguration *cfg = getConfig();
+       for (int i=0; i<cfg->getNumSections(); i++)
        {
-          if (strncmp(sect.section(),"Run ",4)==0)
+          if (strncmp(cfg->getSectionName(i),"Run ",4)==0)
           {
-              strcat(buffer,sect.section()+4); // FIXME danger of buffer overrun here
+              strcat(buffer,cfg->getSectionName(i)+4); // FIXME danger of buffer overrun here
               strcat(buffer,",");
           }
        }

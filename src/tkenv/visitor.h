@@ -22,10 +22,9 @@
 
 
 /**
- * cVisitor base class
- *
- * FIXME after this class boils down, should be moved to sim/.
+ * cVisitor base class.
  */
+// FIXME after this class boils down, should be moved to sim/.
 class cVisitor
 {
   private:
@@ -63,6 +62,8 @@ class cVisitor
 };
 
 /**
+ * Adds the capability of storing object pointers to cVisitor.
+ *
  * Sample code:
  *   cCollectObjectsVisitor v;
  *   v.visit(object);
@@ -101,14 +102,16 @@ class cCollectObjectsVisitor : public cVisitor
 #define CATEGORY_OTHERS      0x80
 
 /**
- *
+ * Traverses an object tree, and collects objects that belong to certain
+ * "categories" (see CATEGORY_... constants) and their className()
+ * and/or fullPath() matches a pattern. Used by the Tkenv "Object Filter" dialog.
  */
 class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 {
   private:
     unsigned int category;
-    short *classnamepatterntf;
-    short *objfullpathpatterntf;
+    cPatternMatcher *classnamepattern;
+    cPatternMatcher *objfullpathpattern;
   protected:
     virtual void visit(cObject *obj);
   public:
@@ -124,7 +127,7 @@ class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
 };
 
 /**
- *
+ * Visitor to collect the children of an object only (depth==1).
  */
 class cCollectChildrenVisitor : public cCollectObjectsVisitor
 {
@@ -137,7 +140,7 @@ class cCollectChildrenVisitor : public cCollectObjectsVisitor
 };
 
 /**
- *
+ * Visitor to count the number of children of an object.
  */
 class cCountChildrenVisitor : public cVisitor
 {

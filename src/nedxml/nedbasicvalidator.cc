@@ -413,6 +413,17 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
              NEDError(node, "operator 'input' takes 0, 1 or 2 arguments");
          return;
     }
+    else if (!strcmp(func,"xmldoc"))
+    {
+         if (args!=1 && args!=2)
+             {NEDError(node, "'xmldoc()' takes 1 or 2 arguments");return;}
+         NEDElement *op1 = node->getFirstChild();
+         NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
+         if (op1->getTagCode()!=NED_CONST || ((ConstNode *)op1)->getType()!=NED_CONST_STRING ||
+             (op2 && (op2->getTagCode()!=NED_CONST || ((ConstNode *)op2)->getType()!=NED_CONST_STRING)))
+             NEDError(node, "'xmldoc()' arguments must be string literals");
+         return;
+    }
 
     // check if we know about it
     bool name_found = false;

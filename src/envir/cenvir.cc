@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "ctypes.h"
 #include "args.h"
 #include "distrib.h"
 #include "cinifile.h"
@@ -42,6 +43,13 @@ cSingleton<cArray> omnetapps("omnetapps");
 // output buffer
 #define ENVIR_TEXTBUF_LEN 1024
 static char buffer[ENVIR_TEXTBUF_LEN];
+
+
+#define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
+     baseclass *var ## _tmp = (baseclass *) createOne(classname); \
+     var = dynamic_cast<baseclass *>(var ## _tmp); \
+     if (!var) \
+         throw new cException("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 
 //=== The DUMMY SECTION -- a tribute to smart linkers
@@ -120,18 +128,13 @@ void cEnvir::setup(int argc, char *argv[])
         const char *fname = args->argValue('f',0);  // 1st '-f filename' option
         if (!fname) fname="omnetpp.ini";   // or default filename
 
-        cIniFile *ini_file = new cIniFile( fname );
-        if (ini_file->error())
-            throw new cException("Processing of ini file '%s' failed", fname);
+        cIniFile *inifile = new cIniFile();
+        inifile->readFile(fname);
 
         // process additional '-f filename' options if there are any
         int k;
         for (k=1; (fname=args->argValue('f',k))!=NULL; k++)
-        {
-            ini_file->readFile( fname );
-            if (ini_file->error())
-                throw new cException("Processing of additional ini file '%s' failed", fname);
-        }
+            inifile->readFile( fname );
 
         //
         // Load all libraries specified on the command line or in the ini file.
@@ -144,7 +147,7 @@ void cEnvir::setup(int argc, char *argv[])
             opp_loadlibrary(libname);
 
         // load shared libs given in [General]/load-libs=
-        const char *libs = ini_file->getAsString( "General", "load-libs", NULL);
+        const char *libs = inifile->getAsString( "General", "load-libs", NULL);
         if (libs && libs[0])
         {
             // 'libs' contains several file names separated by whitespaces
@@ -162,6 +165,26 @@ void cEnvir::setup(int argc, char *argv[])
         }
 
         //
+        // Create custom configuration object, if needed.
+        //
+        const char *configclass = inifile->getAsString( "General", "configuration-class", NULL);
+        cConfiguration *configobject = NULL;
+        if (!configclass)
+        {
+            configobject = inifile;
+        }
+        else
+        {
+            // create custom configuration object
+            CREATE_BY_CLASSNAME(configobject, configclass, cConfiguration, "configuration");
+            configobject->initializeFrom(inifile);
+            delete inifile;
+
+            // FIXME do load-libs from this config as well
+        }
+
+
+        //
         // Choose and set up user interface (TOmnetApp subclass). Everything else
         // will be done by the user interface class.
         //
@@ -169,7 +192,7 @@ void cEnvir::setup(int argc, char *argv[])
         // was it specified explicitly which one to use?
         const char *appname = args->argValue('u',0);  // 1st '-u name' option
         if (!appname)
-            appname = ini_file->getAsString( "General", "user-interface", NULL);
+            appname = configobject->getAsString( "General", "user-interface", NULL);
 
         cOmnetAppRegistration *appreg = NULL;
         if (appname && appname[0])
@@ -201,7 +224,7 @@ void cEnvir::setup(int argc, char *argv[])
         // Finally, set up user interface object. All the rest will be done there.
         //
         ::printf("Setting up %s...\n", appreg->description());
-        app = appreg->createOne(args, ini_file);
+        app = appreg->createOne(args, configobject);
         app->setup();
         isgui = app->isGUI();
     }
@@ -246,6 +269,11 @@ bool cEnvir::isModuleLocal(cModule *parentmod, const char *modname, int index)
 const char *cEnvir::getDisplayString(int run_no,const char *name)
 {
     return app->getDisplayString(run_no,name);
+}
+
+cXMLElement *cEnvir::getXMLDocument(const char *filename, const char *path)
+{
+    return app->getXMLDocument(filename, path);
 }
 
 //-----------------------------------------------------------------
@@ -490,6 +518,11 @@ int cEnvir::argCount()
 char **cEnvir::argVector()
 {
     return app->argList()->argVector();
+}
+
+cConfiguration *cEnvir::config()
+{
+    return app->getConfig();
 }
 
 bool cEnvir::idle()

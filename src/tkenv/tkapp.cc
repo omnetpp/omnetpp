@@ -22,7 +22,6 @@
 #include <time.h>
 
 #include "appreg.h"
-#include "cinifile.h"
 #include "cenvir.h"
 #include "csimplemodule.h"
 #include "cmessage.h"
@@ -80,18 +79,9 @@ static bool moduleContains(cModule *potentialparent, cModule *mod)
 }
 
 
-//=========================================================================
-// TOmnetTkApp
-//        is the application class that runs the Tcl/Tk environment
-//        of the OMNeT++ simulator. An instance of this class is created
-//        by the envir object (typed cEnvir) which provides an interface
-//        between the simulator and its run environment.
-//        Class declaration and member function definitions for TOmnetTkApp
-//        follow here.
-//=========================================================================
 
-TOmnetTkApp::TOmnetTkApp(ArgList *args, cIniFile *inifile) :
-  TOmnetApp(args, inifile)
+TOmnetTkApp::TOmnetTkApp(ArgList *args, cConfiguration *config) :
+  TOmnetApp(args, config)
 {
     interp = 0;  // Tcl/Tk not set up yet
     simstate = SIM_NONET;
@@ -953,31 +943,33 @@ void TOmnetTkApp::readOptions()
 {
     TOmnetApp::readOptions();
 
-    opt_extrastack = ini_file->getAsInt("Tkenv", "extra-stack", TKENV_EXTRASTACK);
-    opt_default_run = ini_file->getAsInt( "Tkenv", "default-run", 0);
+    cConfiguration *cfg = getConfig();
+
+    opt_extrastack = cfg->getAsInt("Tkenv", "extra-stack", TKENV_EXTRASTACK);
+    opt_default_run = cfg->getAsInt( "Tkenv", "default-run", 0);
 
     // Note: most entries below should be obsoleted (with .tkenvrc taking over)
-    opt_stepdelay = long(1000*ini_file->getAsTime( "Tkenv", "slowexec-delay", 0.3 )+.5);
-    opt_updatefreq_fast = ini_file->getAsInt( "Tkenv", "update-freq-fast", 50);
-    opt_updatefreq_express = ini_file->getAsInt( "Tkenv", "update-freq-express", 10000 );
-    opt_bkpts_enabled = ini_file->getAsBool( "Tkenv", "breakpoints-enabled", true );
-    opt_animation_enabled = ini_file->getAsBool( "Tkenv", "animation-enabled", true );
-    opt_nexteventmarkers = ini_file->getAsBool( "Tkenv", "next-event-markers", true );
-    opt_senddirect_arrows = ini_file->getAsBool( "Tkenv", "senddirect-arrows", true );
-    opt_anim_methodcalls = ini_file->getAsBool( "Tkenv", "anim-methodcalls", true );
-    opt_methodcalls_delay = long(1000*ini_file->getAsTime( "Tkenv", "methodcalls-delay", 0.2)+.5);
-    opt_animation_msgnames = ini_file->getAsBool( "Tkenv", "animation-msgnames", true );
-    opt_animation_msgclassnames = ini_file->getAsBool( "Tkenv", "animation-msgclassnames", true );
-    opt_animation_msgcolors = ini_file->getAsBool( "Tkenv", "animation-msgcolors", true );
-    opt_penguin_mode = ini_file->getAsBool( "Tkenv", "penguin-mode", false );
-    opt_showlayouting = ini_file->getAsBool( "Tkenv", "show-layouting", false);
-    opt_bubbles = ini_file->getAsBool( "Tkenv", "show-bubbles", true );
-    opt_animation_speed = ini_file->getAsDouble( "Tkenv", "animation-speed", 1);
+    opt_stepdelay = long(1000*cfg->getAsTime( "Tkenv", "slowexec-delay", 0.3 )+.5);
+    opt_updatefreq_fast = cfg->getAsInt( "Tkenv", "update-freq-fast", 50);
+    opt_updatefreq_express = cfg->getAsInt( "Tkenv", "update-freq-express", 10000 );
+    opt_bkpts_enabled = cfg->getAsBool( "Tkenv", "breakpoints-enabled", true );
+    opt_animation_enabled = cfg->getAsBool( "Tkenv", "animation-enabled", true );
+    opt_nexteventmarkers = cfg->getAsBool( "Tkenv", "next-event-markers", true );
+    opt_senddirect_arrows = cfg->getAsBool( "Tkenv", "senddirect-arrows", true );
+    opt_anim_methodcalls = cfg->getAsBool( "Tkenv", "anim-methodcalls", true );
+    opt_methodcalls_delay = long(1000*cfg->getAsTime( "Tkenv", "methodcalls-delay", 0.2)+.5);
+    opt_animation_msgnames = cfg->getAsBool( "Tkenv", "animation-msgnames", true );
+    opt_animation_msgclassnames = cfg->getAsBool( "Tkenv", "animation-msgclassnames", true );
+    opt_animation_msgcolors = cfg->getAsBool( "Tkenv", "animation-msgcolors", true );
+    opt_penguin_mode = cfg->getAsBool( "Tkenv", "penguin-mode", false );
+    opt_showlayouting = cfg->getAsBool( "Tkenv", "show-layouting", false);
+    opt_bubbles = cfg->getAsBool( "Tkenv", "show-bubbles", true );
+    opt_animation_speed = cfg->getAsDouble( "Tkenv", "animation-speed", 1);
     if (opt_animation_speed<0) opt_animation_speed=0;
     if (opt_animation_speed>2) opt_animation_speed=3;
-    opt_print_banners = ini_file->getAsBool( "Tkenv", "print-banners", true );
-    opt_use_mainwindow = ini_file->getAsBool( "Tkenv", "use-mainwindow", true );
-    opt_expressmode_autoupdate = ini_file->getAsBool( "Tkenv", "expressmode-autoupdate", true );
+    opt_print_banners = cfg->getAsBool( "Tkenv", "print-banners", true );
+    opt_use_mainwindow = cfg->getAsBool( "Tkenv", "use-mainwindow", true );
+    opt_expressmode_autoupdate = cfg->getAsBool( "Tkenv", "expressmode-autoupdate", true );
 }
 
 void TOmnetTkApp::readPerRunOptions(int run_nr)

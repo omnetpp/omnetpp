@@ -27,9 +27,10 @@
 #include "args.h"
 #include "envdefs.h"
 #include "envirext.h"
+#include "cconfig.h"
 
 
-class cIniFile;
+class cXMLDocCache;
 class cScheduler;
 // WITH_PARSIM:
 class cParsimCommunications;
@@ -50,11 +51,9 @@ class ENVIR_API TOmnetApp
 {
   protected:
     bool initialized;
-    cIniFile *ini_file;
+    cConfiguration *config;
+    cXMLDocCache *xmlcache;
     ArgList *args;
-
-    // options common for all simulation applications
-    opp_string opt_inifile_name;
 
     int opt_total_stack_kb;
 
@@ -106,7 +105,7 @@ class ENVIR_API TOmnetApp
     /**
      * Constructor takes command-line args and ini file instance.
      */
-    TOmnetApp(ArgList *args, cIniFile *inifile);
+    TOmnetApp(ArgList *args, cConfiguration *config);
 
     /**
      * Destructor.
@@ -136,11 +135,15 @@ class ENVIR_API TOmnetApp
                                     double& starttime, double& stoptime);
 
     virtual const char *getDisplayString(int run_no,const char *name);
+    virtual cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
     //@}
 
     /** @name Internal methods */
     //@{
-    virtual cIniFile *getIniFile();
+    /**
+     * Provides access to the configuration
+     */
+    virtual cConfiguration *getConfig();
 
     /**
      * Used internally to read opt_xxxxx setting from ini file.

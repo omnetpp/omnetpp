@@ -19,6 +19,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
+
 #include <math.h>
 #include <string.h>
 #include <stdio.h>
@@ -31,6 +36,7 @@
 #include "errmsg.h"
 #include "cmodule.h"  // for cModulePar
 #include "csimul.h"   // for cModulePar
+#include "cxmlelement.h"
 #include "cenvir.h"
 #include "cexception.h"
 
@@ -80,6 +86,7 @@ static const char *typeName(char typechar)
         case 'C': return "compiled expression (C)";
         case 'T': return "random number from distribution (T)";
         case 'P': return "pointer (P)";
+        case 'M': return "XML element (M)";
         default:  return "invalid type char";
     }
 }
@@ -207,6 +214,11 @@ void cPar::info(char *buf)
                   };
                   break;
         case 'B': sprintf(b,"%s (B)", lng.val?"true":"false"); break;
+        case 'M': if (xml.node)
+                      sprintf(b,"<%s> from %s (M)", xml.node->getTagName(), xml.node->getSourceLocation());
+                  else
+                      sprintf(b,"nil (M)");
+                  break;
         default : strcat(b, "? (unknown type)"); break;
     }
 }
@@ -252,7 +264,7 @@ void cPar::netPack(cCommBuffer *buffer)
     // For error checking & handling
     if (typechar != 'S' && typechar != 'C' && typechar != 'L' && typechar != 'D'
         && typechar != 'F' && typechar != 'T' && typechar != 'I' && typechar != 'X'
-        && typechar != 'P' && typechar != 'O')
+        && typechar != 'P' && typechar != 'O' && typechar != 'M')
     {
         throw new cException(this,"netPack: unsupported type '%c'",typechar);
     }
@@ -317,6 +329,9 @@ void cPar::netPack(cCommBuffer *buffer)
         if (notNull(obj.obj, buffer))
             packObject(obj.obj,buffer);
         break;
+
+    case 'M':
+        throw new cException(this,"netPack(): cannot transmit pointer to XML element (type 'M')");
     }
 #endif
 }
@@ -385,7 +400,8 @@ void cPar::netUnpack(cCommBuffer *buffer)
     case 'I':
     case 'X':
     case 'P':
-        throw new cException(this,"netUnpack(): unpacking I,P and X types not implemented");
+    case 'M':
+        throw new cException(this,"netUnpack(): unpacking types I, P, X, M not implemented");
 
     case 'O':
         if (!checkFlag(buffer))
@@ -713,6 +729,20 @@ cPar& cPar::setObjectValue(cObject *_obj)
     return *this;
 }
 
+cPar& cPar::setXMLValue(cXMLElement *node)
+{
+    if (isRedirected())
+        return ind.par->setXMLValue(node);
+
+    beforeChange();
+    deleteold();
+    xml.node = node;
+    typechar = 'M';
+    inputflag=false;
+    afterChange();
+    return *this;
+}
+
 cPar& cPar::setRedirection(cPar *par)
 {
     if (isRedirected())
@@ -856,6 +886,18 @@ cObject *cPar::objectValue()
         throw new cException(this,eBADCAST,typeName(typechar),typeName('O'));
 }
 
+cXMLElement *cPar::xmlValue()
+{
+    if (isRedirected())
+        return ind.par->xmlValue();
+
+    if (isInput()) read();
+    if (typechar=='M')
+        return xml.node;
+    else
+        throw new cException(this,eBADCAST,typeName(typechar),typeName('M'));
+}
+
 bool cPar::isNumeric() const
 {
     // returns true if it is safe to call doubleValue()/longValue()/boolValue()
@@ -893,6 +935,7 @@ bool cPar::equalsTo(cPar *par)
         case 'T': return dtr.res == par->dtr.res;
         case 'P': return ptr.ptr == par->ptr.ptr;
         case 'O': return obj.obj == par->obj.obj;
+        case 'M': return xml.node == par->xml.node;
         case 'X': throw new cException(this, "equalsTo() with X type not implemented");
         case 'C': throw new cException(this, "equalsTo() with C type not implemented");
         default: return 0;
@@ -964,6 +1007,11 @@ string cPar::getAsText() const
        case 'O': return string("object ")+(obj.obj?obj.obj->fullPath():"NULL");
        case 'C': return string("compiled expression ")+cexpr.expr->getAsText();
        case 'X': return string("reverse Polish expression");
+       case 'M': if (xml.node)
+                     return string("<")+xml.node->getTagName()+"> from "+xml.node->getSourceLocation();
+                 else
+                     return string("NULL");
+                 break;
        default : return string("???");
     }
 }
@@ -974,6 +1022,19 @@ string cPar::getAsText() const
  On success, cPar is updated and true is returned, otherwise
  it returns false. No error message is ever generated.
 ----------------------------*/
+
+static bool parseQuotedString(string& str, const char *&s)
+{
+    while (*s==' ' || *s=='\t') s++;
+    if (*s!='"') return false;
+    const char *beg = ++s;
+    while (*s && (*s!='"' || *(s-1)=='\\'))
+        s++;
+    if (*s!='"') return false;
+    str.assign(beg, s-beg);
+    s++;
+    return true;
+}
 
 bool cPar::setFromText(const char *text, char tp)
 {
@@ -1045,6 +1106,37 @@ bool cPar::setFromText(const char *text, char tp)
     {
         if (!strchr("?D",tp)) goto error;
         setDoubleValue(d);
+    }
+    else if (!strncmp(tmp,"xmldoc",6))
+    {
+        if (!strchr("?M",tp)) goto error;
+
+        // parse xmldoc("filename") or xmldoc("filename", "pathexpr")
+        const char *s=tmp;
+        s+=6;  // skip "xmldoc"
+        while (*s==' ' || *s=='\t') s++;
+        if (*s!='(') goto error;  // no "("
+        s++; // skip "("
+        std::string fname, pathexpr;
+        while (*s==' ' || *s=='\t') s++;
+        if (!parseQuotedString(fname, s)) goto error;
+        while (*s==' ' || *s=='\t') s++;
+        if (*s!=',' && *s!=')') goto error;  // no ")" or ","
+        if (*s==',')
+        {
+            s++;  // skip ","
+            if (!parseQuotedString(pathexpr, s)) goto error;
+            while (*s==' ' || *s=='\t') s++;
+            if (*s!=')') goto error;  // no ")"
+        }
+        s++; // skip ")"
+        while (*s==' ' || *s=='\t') s++;
+        if (*s) goto error;  // trailing rubbish
+
+        cXMLElement *node = ev.getXMLDocument(fname.c_str(), pathexpr.empty() ? NULL : pathexpr.c_str());
+        if (!node)
+            throw new cException(this,"%s: element not found", tmp);
+        setXMLValue(node);
     }
     else // maybe function; try to parse it
     {
@@ -1160,9 +1252,16 @@ cPar& cPar::read()
             reply = ev.gets(promptstr.c_str(), getAsText().c_str());
         else
             reply = ev.gets((string("Enter parameter `")+fullPath()+"':").c_str(), getAsText().c_str());
-        success = setFromText(reply.c_str(),'?');
-        if (!success)
-            ev.printfmsg("Syntax error, try again.");
+
+        try {
+           success = false;
+           success = setFromText(reply.c_str(),'?');
+           if (!success)
+              throw new cException("Syntax error, please try again.");
+        } catch (cException *e) {
+            ev.printfmsg("%s", e->message());
+            delete e;
+        }
     } while (!success);
     return *this;
 }

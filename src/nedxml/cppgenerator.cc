@@ -22,7 +22,7 @@
 
 using std::ostream;
 
-#define NEDC_VERSION "3.0a3"
+#define NEDC_VERSION "3.0a6"
 #define NEDC_VERSION_HEX "0x02F1"
 
 
@@ -420,6 +420,15 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    return channel;\n";
     out << "}\n";
     out << "\n";
+
+    out << "static cXMLElement *_getXMLDocument(const char *fname, const char *pathexpr=NULL)\n";
+    out << "{\n";
+    out << "    cXMLElement *node = ev.getXMLDocument(fname, pathexpr);\n";
+    out << "    if (!node)\n";
+    out << "        throw new cException(!pathexpr ? \"xmldoc(\\\"%s\\\"): element not found\" : \"xmldoc(\\\"%s\\\", \\\"%s\\\"): element not found\",fname,pathexpr);\n";
+    out << "    return node;\n";
+    out << "}\n";
+    out << "\n";
 }
 
 // generators
@@ -671,7 +680,9 @@ void NEDCppGenerator::doParam(ParamNode *node, const char *indent, int mode, con
         typecode = "ParType_String";
     else if (!strcmp(datatype,"bool"))
         typecode = "ParType_Bool";
-    else if (!strcmp(datatype,"any"))
+    else if (!strcmp(datatype,"xml"))
+        typecode = "ParType_XML";
+    else if (!strcmp(datatype,"anytype"))
         typecode = "ParType_Any";
     else
         {INTERNAL_ERROR1(node, "doParam(): unexpected parameter datatype '%s'", datatype);typecode = "ParType_Any";}

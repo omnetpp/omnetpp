@@ -25,7 +25,6 @@
 #include <akaroa/ak_message.H>
 #include "cenvir.h"
 #include "omnetapp.h"
-#include "cinifile.h"
 #include "csimul.h"
 #include "cmodule.h"
 #include "cstat.h"

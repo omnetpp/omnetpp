@@ -24,30 +24,32 @@
 #include <string.h> // strncpy
 #include "defs.h"
 #include "envdefs.h"
+#include "cconfig.h"
+#include "patmatch.h"
 
 
 class cIniFile;
 class cIniFileIterator;
 
-//=====================================================================
-//=== cIniFile
-
-class ENVIR_API cIniFile
+/**
+ * Ini file reader class.
+ */
+class ENVIR_API cIniFile : public cConfiguration
 {
-  friend class cIniFileIterator;
-  friend class cIniFileSectionIterator;
+    friend class cIniFileIterator;
+    friend class cIniFileSectionIterator;
 
   private:
     char *fname;                // file name
 
     struct sEntry {             // one entry contains:
         int section_id;         //  section it belongs to
-        char *key;              //  the parameter
+        char *key;              //  key
+        cPatternMatcher *keypattern; // key as pattern
         char *value;            //  its value (without quotes)
         char *rawvalue;         //  if original was quoted, this is the
                                 //        strdupped version of it, otherwise NULL
         bool accessed;          //  has it been accessed?
-        bool haswildcard;       //  does key contain a wildcard?
     };
 
     char **sections;            // table of section names
@@ -58,46 +60,66 @@ class ENVIR_API cIniFile
     int entrytable_size;        // size of entry table allocated
     int num_entries;            // number of entries used
 
-    int _error;                 // OK=0, ERROR=1
-
     const char *_getValue(const char *section, const char *key,int raw);
     void _readFile(const char *fname, int section_id);
-
-  public:
-    cIniFile(const char *fname);
-    ~cIniFile();
-
-    void readFile(const char *fname);
     void clearContents();
 
-    const char *filename() {return fname;}
+    bool warnings;
+    bool notfound;
 
-    int error();    // true if there was an error
-    bool warnings;  // enable/disable warnings
+  public:
+    cIniFile();
+    virtual ~cIniFile();
 
-    int getNumSections();
-    const char *getSectionName(int k);
+    /**
+     * Redefined method from cConfiguration.
+     */
+    virtual void initializeFrom(cConfiguration *conf);
 
-    // get an entry from [section]
-    bool exists(const char *section, const char *key);
-    const char *getRaw(const char *section, const char *key, const char *defaultval=NULL); // with quotes (if any)
-    bool getAsBool(const char *section, const char *key, bool defaultval=false);
-    long getAsInt(const char *section, const char *key, long defaultval=0);
-    double getAsDouble(const char *section, const char *key, double defaultval=0.0);
-    const char *getAsString(const char *section, const char *key, const char *defaultval=""); // quotes stripped (if any)
-    double getAsTime(const char *sect, const char *key, double defaultval=0.0);
+    /** @name Inifile-specific methods. Used only from "boot-time" code. */
+    //@{
+    void readFile(const char *fname);
+    void setWarnings(bool warn) {warnings = warn;}
+    //@}
 
-    // get an entry from [sect1] or if it isn't there, from [sect2]
-    bool exists2(const char *sect1, const char *sect2, const char *key);
-    const char *getRaw2(const char *sect1, const char *sect2, const char *key, const char *defaultval=NULL);
-    bool getAsBool2(const char *sect1, const char *sect2, const char *key, bool defaultval=false);
-    long getAsInt2(const char *sect1, const char *sect2, const char *key, long defaultval=0);
-    double getAsDouble2(const char *sect1, const char *sect2, const char *key, double defaultval=0.0);
-    const char *getAsString2(const char *sect1, const char *sect2, const char *key, const char *defaultval="");
-    double getAsTime2(const char *sect1, const char *sect2, const char *key, double defaultval=0.0);
+    /** @name Redefined section query methods from cConfiguration */
+    //@{
+    virtual int getNumSections();
+    virtual const char *getSectionName(int k);
+    //@}
 
+    /** @name Redefined getter methods from cConfiguration */
+    //@{
+    virtual bool exists(const char *section, const char *key);
+    virtual bool getAsBool(const char *section, const char *key, bool defaultvalue=false);
+    virtual long getAsInt(const char *section, const char *key, long defaultvalue=0);
+    virtual double getAsDouble(const char *section, const char *key, double defaultvalue=0.0);
+    virtual double getAsTime(const char *section, const char *key, double defaultvalue=0.0);
+    virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue=""); // quotes stripped (if any)
+    virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL); // with quotes (if any)
+    virtual bool notFound();
+    //@}
+
+    /** @name Redefined two-section getter methods from cConfiguration */
+    //@{
+    virtual bool exists2(const char *section1, const char *section2, const char *key);
+    virtual bool getAsBool2(const char *section1, const char *section2, const char *key, bool defaultvalue=false);
+    virtual long getAsInt2(const char *section1, const char *section2, const char *key, long defaultvalue=0);
+    virtual double getAsDouble2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0);
+    virtual double getAsTime2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0);
+    virtual const char *getAsString2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
+    virtual const char *getAsCustom2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
+    //@}
+
+    /**
+     * Redefined method from cConfiguration.
+     */
+    virtual const char *fileName() const;
 };
 
+/**
+ * Helper class, currently not used.
+ */
 class ENVIR_API cIniFileIterator
 {
    private:
@@ -112,19 +134,6 @@ class ENVIR_API cIniFileIterator
       const char *entry()     {return ini->entries[idx].key;}
       const char *value()     {return ini->entries[idx].value;}
       bool accessed()         {return ini->entries[idx].accessed;}
-};
-
-class ENVIR_API cIniFileSectionIterator
-{
-   private:
-      cIniFile *ini;
-      int idx;
-   public:
-      cIniFileSectionIterator(cIniFile *i) {ini=i; idx=0;}
-      void reset()            {idx=0;}
-      bool end()              {return (bool)(idx>=ini->num_sections);}
-      void operator++(int)    {if (idx<ini->num_sections) idx++;}
-      const char *section()   {return ini->sections[idx];}
 };
 
 #endif

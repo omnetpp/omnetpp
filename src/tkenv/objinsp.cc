@@ -15,6 +15,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
 #include <string.h>
 #include <math.h>
 
@@ -435,6 +439,7 @@ void TParInspector::update()
        case 'T': t=" T distribution"; break;
        case 'P': t=" P void* ptr"   ; break;
        case 'O': t=" O object ptr"  ; break;
+       case 'M': t=" M XML element" ; break;
        default:  t=" ??? unknown";
    }
    setLabel(".main.type.e", t );
@@ -452,31 +457,18 @@ void TParInspector::writeBack()
    char newtype = getEntry(".main.newtype.e")[0];
    if (!newtype) newtype = '?';
 
-   if( p->setFromText( getEntry(".main.value.e"), newtype) )
-   {
-      setEntry(".main.newtype.e", "" );
+   bool ok = false;
+   try {
+      ok = p->setFromText(getEntry(".main.value.e"), newtype);
+      if (!ok)
+         throw new cException(newtype=='?' ? "Syntax error, value not changed." : "Syntax error or wrong type, value not changed.");
+   } catch (cException *e) {
+         TclQuotedString msg(e->message());
+         delete e;
+         CHK(Tcl_VarEval(interp,"messagebox {Error} ", msg.get(), " error ok", NULL));
    }
-   else
-   {
-      if (newtype=='?')
-      {
-         CHK(Tcl_Eval(interp,"messagebox {Warning}"
-                " {Incorrect setting, value not changed} info ok"));
-      }
-      else
-      {
-         CHK(Tcl_Eval(interp,"messagebox {Warning}"
-                " {Incorrect setting. Try auto type selection?} question yesno"));
-         if (Tcl_GetStringResult(interp)[0]=='y')
-         {
-            if( p->setFromText( getEntry(".main.value.e"), '?' ))
-                setEntry(".main.newtype.e", "" );
-            else
-                CHK(Tcl_Eval(interp,"messagebox {Warning}"
-                  " {Incorrect setting, value not changed} info ok"));
-         }
-      }
-   }
+   if (ok)
+      setEntry(".main.newtype.e", "");
    p->setPrompt( getEntry(".main.prompt.e") );
    p->setInput( getEntry(".main.input.e")[0]=='1' );
 

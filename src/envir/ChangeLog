@@ -1,3 +1,53 @@
+2004-06-22   Andras Varga
+
+	* cenvir.cc, omnetapp.cc/h: added new cEnvir method getXMLDocument().
+	* added cxmldoccache.cc/h: contains cXMLDocCache class which reads and
+	caches XML config files
+
+2004-06-21   Andras Varga
+
+	* patmatch.cc/h: replaced old transform_pattern() and stringmatch()
+	methods with shiny new pattern matching class. cPatternMatcher can do 
+	case sensitive/insensitive, full string/substring match, and supports
+	more pattern features, namely: numeric ranges and distinction between
+	"*" and "**". See class documentation for more info
+
+	* inifile.cc/h: cPatternMatcher used as the engine for wildcard 
+	resolution in ini files. The default mode is "dottedpath on",
+	where "*" does NOT match ".", "[" and "]", so e.g. "foo[*].param" 
+	will no	longer match "foo[1].bar[5].param". The new wildcard "**"
+	will match anything. One can switch back to the old mode (for 
+	compatibility) by adding the line 
+	     #% old-wildcards
+	at the top of (every) ini file.
+
+2004-06-17   Andras Varga
+
+	* cinifile.cc/h: cInifile is now subclassed from cConfiguration
+	(see include/ChangeLog). Class interface slightly changed.
+
+	* cenvir.cc: added new ini file option:
+	  [General]
+	  configuration-class=...
+	This makes it possible to use other data source than omnetpp.ini (or
+	in general, ini files) for configuration. E.g. it is possible to use
+	XML or database input.
+	The startup sequence is this (see cEnvir::setup()):
+	  1. First, omnetpp.ini (or the ini file(s) specified via the "-f"
+	     command-line option) is read.
+	  2. Shared libraries in [General]/load-libs are loaded. (Also the
+	     ones specified with the "-l" command-line option.)
+	  3. [General]/configuration-class is examined, and if it's present,
+	     and a configuration object of the given class is instantiated.
+	     The configuration object may read further entries from the
+	     ini file (e.g. database connect parameters, or XML file name).
+	  4. The original omnetpp.ini config object is deleted. No other
+	     settings are taken from it.
+	  5. [General]/load-libs from the new configuration object is
+	     processed.
+	  6. Then everything goes on as normal, using the new config object.
+
+
 2004-06-07  ------ omnetpp-3.0a5 released ------
 
 2004-05-15  ------ omnetpp-3.0a4 released ------
@@ -24,13 +74,13 @@
 
 2004-02-22  Andras Varga
 
-	* added fsutils.cc/h; implemented wildcards in list files 
+	* added fsutils.cc/h; implemented wildcards in list files
 
 2004-02-10  Andras Varga
 
 	* omnetapp.cc: error messages to display module class name (NED type)
 	of current module
-		
+
 2004-02-09  Andras Varga
 
 	* omnetapp.cc/h: preload-ned-files= omnetpp.ini option now supports
@@ -51,14 +101,14 @@
 
 2004-01-01  Andras Varga
 
-	* omnetapp.cc/h, cenvir.cc: handle new cEnvir notifications: 
-	moduleCreated(), moduleDeleted(), connectionCreated(), 
-	connectionRemoved(), displayStringChanged(cGate*), 
+	* omnetapp.cc/h, cenvir.cc: handle new cEnvir notifications:
+	moduleCreated(), moduleDeleted(), connectionCreated(),
+	connectionRemoved(), displayStringChanged(cGate*),
 	displayStringChanged(cModule*),	displayStringAsParentChanged()
 
 2003-12-11  Andras Varga
 
-	* all files: follow changes in sim/; C-style casts replaced with 
+	* all files: follow changes in sim/; C-style casts replaced with
 	static_cast<>
 
 2003-11-13  Andras Varga

@@ -618,7 +618,13 @@ proc edit_textfile {} {
 }
 
 proc view_inifile {} {
-    view_file [opp_getfilename ini]
+    set fname [opp_getfilename ini]
+    if {$fname == ""} {
+       messagebox {Info} "The current configuration manager doesn't use file input." info ok
+       return
+    }
+
+    view_file $fname
 }
 
 proc view_outputvectorfile {} {

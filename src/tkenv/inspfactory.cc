@@ -14,6 +14,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
 #include <stdarg.h>
 #include "omnetpp.h"
 #include "tkapp.h"

@@ -56,7 +56,7 @@ class TCmdenvApp : public TOmnetApp
      FILE *fout;
 
    public:
-     TCmdenvApp(ArgList *args, cIniFile *inifile);
+     TCmdenvApp(ArgList *args, cConfiguration *config);
      ~TCmdenvApp();
 
      // redefined virtual funcs:

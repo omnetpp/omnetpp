@@ -115,6 +115,8 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr)
             if ((!op1 || op1->getTagCode()==NED_CONST) && (!op2 || op2->getTagCode()==NED_CONST))
                 return false;
         }
+        if (!strcmp(funcname,"xmldoc"))
+            return false;
     }
     return true;
 }
@@ -501,6 +503,24 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
             }
             out << ", p->setInput(true), (*p))";
         }
+        return;
+    }
+    else if (!strcmp(funcname,"xmldoc"))
+    {
+        if (mode!=MODE_INLINE_EXPRESSION) {INTERNAL_ERROR0(node, "doFunction(): xmldoc() must be generated inline");return;}
+
+        NEDElement *op1 = node->getFirstChild();
+        NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
+
+        out << "_getXMLDocument(";
+        if (op1) {
+            generateItem(op1,indent,mode);
+        }
+        if (op2) {
+            out << ", ";
+            generateItem(op2,indent,mode);
+        }
+        out << ")";
         return;
     }
 
