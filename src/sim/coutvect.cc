@@ -29,7 +29,7 @@
 #include "cexception.h"
 
 
-cOutVector::cOutVector(const char *name, int tupl) : cObject(name)
+cOutVector::cOutVector(const char *nam, int tupl) : cObject(nam)
 {
     enabled = true;
     handle = NULL;
@@ -42,8 +42,11 @@ cOutVector::cOutVector(const char *name, int tupl) : cObject(name)
     {
         tuple = 0;
         throw new cException("(%s)%s: constructor: invalid value (%d) for tuple; supported values are 1 and 2", className(), fullPath(), tupl);
-        return;
     }
+
+    // register early if possible (only needed for Akaroa...)
+    if (nam)
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tuple);
 }
 
 cOutVector::~cOutVector()
@@ -52,12 +55,15 @@ cOutVector::~cOutVector()
         ev.deregisterOutputVector(handle);
 }
 
-void cOutVector::setName(const char *name)
+void cOutVector::setName(const char *nam)
 {
     if (handle)
         throw new cException("(%s)%s: setName(): changing name of an output vector after record() calls is not allowed", className(), fullPath());
-    cObject::setName(name);
-    return;
+    cObject::setName(nam);
+
+    // register early (only needed for Akaroa...)
+    if (nam)
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tuple);
 }
 
 void cOutVector::info(char *buf)

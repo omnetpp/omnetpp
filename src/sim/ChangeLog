@@ -1,3 +1,11 @@
+2002-07-08  Andras Varga
+
+	* coutvect.cc (cOutVector methods): register vector as early as 
+	possible. This is needed by the Akaroa output vector manager because
+	Akaroa needs to know the total number of parameters before recording 
+	the first value. (This change has the side effect that empty vectors
+	also get declared in the output vector file, which is redundant.)
+
 2002-07-04  Andras Varga
 
 	* cdispstr.h added: utility class cDisplayString
