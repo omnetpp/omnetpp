@@ -346,7 +346,11 @@ void NEDSemanticValidator::validateElement(EnumDeclNode *node)
 
 void NEDSemanticValidator::validateElement(EnumNode *node)
 {
-    // FIXME check extends-name
+    // check extends-name
+    const char *baseName = node->getExtendsName();
+    NEDElement *base = symboltable->getEnumDeclaration(baseName);
+    if (!base)
+        NEDError(node, "unknown base enum type '%s'",baseName);
 }
 
 void NEDSemanticValidator::validateElement(EnumFieldsNode *node)
@@ -359,17 +363,29 @@ void NEDSemanticValidator::validateElement(EnumFieldNode *node)
 
 void NEDSemanticValidator::validateElement(MessageNode *node)
 {
-    // FIXME check extends-name
+    // check extends-name
+    const char *baseClassName = node->getExtendsName();
+    NEDElement *baseClass = symboltable->getClassDeclaration(baseClassName);
+    if (!baseClass)
+        NEDError(node, "unknown base class '%s'",baseClassName);
 }
 
 void NEDSemanticValidator::validateElement(ClassNode *node)
 {
-    // FIXME check extends-name
+    // check extends-name
+    const char *baseClassName = node->getExtendsName();
+    NEDElement *baseClass = symboltable->getClassDeclaration(baseClassName);
+    if (!baseClass)
+        NEDError(node, "unknown base class '%s'",baseClassName);
 }
 
 void NEDSemanticValidator::validateElement(StructNode *node)
 {
-    // FIXME check extends-name
+    // check extends-name
+    const char *baseClassName = node->getExtendsName();
+    NEDElement *baseClass = symboltable->getClassDeclaration(baseClassName);
+    if (!baseClass)
+        NEDError(node, "unknown base class '%s'",baseClassName);
 }
 
 void NEDSemanticValidator::validateElement(FieldsNode *node)
