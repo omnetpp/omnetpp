@@ -115,6 +115,7 @@ for ($i=0; $i<$nheadings; $i++)
       for ($j=1; $j<=$level[$i]; $j++) {
          $number[$i] .= $hnum[$j].'.';
       }
+      $number[$i] =~ s/\.$//;
 
       # store chapter number
       $chapnum[$i] = $hnum[1];
@@ -131,15 +132,33 @@ for ($i=0; $i<$nheadings; $i++)
 
 #
 # find cross-references and associate them with the section
+#  1. set up mapping: xref labels to the sections containing them
+#  2. modify xrefs accordingly
 #
-$html =~ s|(\<A HREF=\"#(.*?)\"\>\[click\]\</A\>)|fix_cross_reference($2)|sgei;
-
-sub fix_cross_reference ()
+for ($i=0; $i<$nheadings; $i++)
 {
-      my $txt = shift @_;
-      #$txt =~ s/\<p\>//sg;
-      return "<a href=\"#$txt\">$txt</a>";
+      $label2name{$label[$i]} = $number[$i];
 }
+
+$scrap = $html;
+while ($scrap =~ s/\<a name="([^"]+)"//si)
+{
+      $aname = $1;
+      if ($aname =~ /^sec[0-9]/)  {
+          $cursection = $aname;
+      } elsif ($aname =~ /^fig/) {
+          # leave figures alone
+          $xref{$aname} = $aname;
+          $xrefname{$aname} = "below";
+      } else {
+          # adjust other xrefs to point to the section containing them
+          $xref{$aname} = $cursection;
+          $xrefname{$aname} = "[$label2name{$cursection}]";
+          if ($xrefname{$aname} eq '[]') {$xrefname{$aname} = "[click]";}
+          print "  $aname --> $cursection: $xrefname{$aname}\n";
+      }
+}
+$html =~ s|\<A HREF=\"#([^\"]+)\"\>\[click\]\</A\>|\<a href=\"#$xref{$1}\"\>$xrefname{$1}\</a\>|sgi;
 
 
 #
