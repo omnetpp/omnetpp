@@ -58,7 +58,7 @@ proc editCanvasLabel {c id cmd} {
 #
 proc resizeCanvasEntry {w} {
     set txt [$w get]
-    $w config -width [expr [string length $txt]+2]
+    $w config -width [expr [string length $txt]+1]
 }
 
 

@@ -34,6 +34,7 @@ proc initTreeManager {} {
         if {$key!=""} {
             Tree:setselection %W $key
         }
+        dragAndDropStart $key %X %Y
     }
 
     bind $gned(manager).tree <Double-1> {
@@ -52,14 +53,12 @@ proc initTreeManager {} {
         }
     }
 
-    # FIXME!
-    #bind $gned(manager).tree <B1-Motion> {
-    #    # create dragged icon
-    #}
+    bind $gned(manager).tree <B1-Motion> {
+        dragAndDropMotion %X %Y
+    }
 
     bind $gned(manager).tree <ButtonRelease-1> {
-        # FIXME!
-        dragAndDropFinish $key %X %Y
+        dragAndDropFinish %X %Y
     }
 
 }

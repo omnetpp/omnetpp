@@ -161,6 +161,9 @@ proc renameItem {key name} {
        return $ned($key,name)
     }
 
+    # make name unique
+    puts "TBD: renameItem: make name unique"
+
     # rename
     set ned($key,name) $name
 

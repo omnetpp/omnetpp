@@ -643,6 +643,7 @@ proc selectOrMoveEnd {c x y} {
        if {$ned($key,type)=="module" || $ned($key,type)=="submod"} {
           set cid [$c find withtag current]
           if {$cid==$ned($key,label-cid)} {
+             # FIXME: probably we shouldn't call renameItem directly
              editCanvasLabel $c $cid "renameItem $key"
           }
        }

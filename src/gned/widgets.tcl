@@ -284,7 +284,7 @@ proc tableEdit {w numlines columnlist} {
        }
     }
 
-    update
+    update idletasks
 
     # create title labels
     set dx 2

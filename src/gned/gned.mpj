@@ -28,6 +28,7 @@ files1=chanprops.tcl
 files1=connprops.tcl
 files1=Data.tcl
 files1=Datadict.tcl
+files1=dragdrop.tcl
 files1=Drawitem.tcl
 files1=drawopts.tcl
 files1=Fileview.tcl
