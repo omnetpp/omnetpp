@@ -39,16 +39,13 @@ and Ideal Simulation Protocol (Bagrodia).
 
 OMNeT++ Home Page: www.omnetpp.org
 
-
-OMNeT++ is PhDware!
-~~~~~~~~~~~~~~~~~~~
-OMNeT++ is supposed to help its author (me) get a PhD degree. Which means
-I need as many references as possible to my work! If you use OMNeT++ for your
-research and happen to publish the results in some form, please include
-a reference to OMNeT++ and LET ME KNOW!
+Important
+~~~~~~~~~
+If you use OMNeT++ for your research and happen to publish the results in some 
+form, please include a reference to OMNeT++ and let me know.
 
 In any case, if you find OMNeT++ useful for your work, I'd be more than happy
-learn about that! Just send me a short mail. Thanks in advance!
+learn about that.
 
 
 What you'll find in the OMNeT++ directory
