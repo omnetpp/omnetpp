@@ -42,6 +42,8 @@ Simulation library:
 
 (+) 	added cModule::gateSize()
 
+(+) 	added cModule::changeParentTo()
+
 (-)	cDisplayStringParser renamed to cDisplayString (compatibility typedef
 	exists)
 
