@@ -3783,7 +3783,7 @@ echo "$as_me: WARNING: cannot find wish, part of Tcl/Tk - Plove will not work" >
 fi
 
 #----------------------
-# Check for Tcl/Tk (version 8.4 required).
+# Check for Tcl/Tk.
 #----------------------
 
    save_CXXFLAGS=$CXXFLAGS
@@ -4455,6 +4455,276 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   (exit $ac_status); }; }; then
   echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; tcltk_ok=no;
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $tcltk_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   LIBS="$opp_x11lib -ltk83 -ltcl83"
+
+   echo "$as_me:$LINENO: checking for Tcl/Tk 8.3 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk83 -ltcl83\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.3 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk83 -ltcl83\"... $ECHO_C" >&6
+
+   cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <tk.h>
+int
+main ()
+{
+Tk_MainLoop();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk83 -ltcl83"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; tcltk_ok=no;
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $tcltk_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   LIBS="$opp_x11lib -ltk8.3 -ltcl8.3"
+
+   echo "$as_me:$LINENO: checking for Tcl/Tk 8.3 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk8.3 -ltcl8.3\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.3 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk8.3 -ltcl8.3\"... $ECHO_C" >&6
+
+   cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <tk.h>
+int
+main ()
+{
+Tk_MainLoop();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.3 -ltcl8.3"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; tcltk_ok=no;
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $tcltk_ok = no -a "$cygwin" = yes; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   LIBS="$opp_x11lib -lcygtk83 -lcygtcl83"
+
+   echo "$as_me:$LINENO: checking for Tcl/Tk 8.3 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -lcygtk83 -lcygtcl83\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.3 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -lcygtk83 -lcygtcl83\"... $ECHO_C" >&6
+
+   cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <tk.h>
+int
+main ()
+{
+Tk_MainLoop();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; tcltk_ok=yes; TK_LIBS="$opp_x11lib -lcygtk83 -lcygtcl83"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; tcltk_ok=no;
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $tcltk_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   LIBS="$opp_x11lib -ltk82 -ltcl82"
+
+   echo "$as_me:$LINENO: checking for Tcl/Tk 8.2 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk82 -ltcl82\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.2 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk82 -ltcl82\"... $ECHO_C" >&6
+
+   cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <tk.h>
+int
+main ()
+{
+Tk_MainLoop();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk82 -ltcl82"
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; tcltk_ok=no;
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+
+   CXXFLAGS=$save_CXXFLAGS
+   LIBS=$save_LIBS
+
+fi
+if test $tcltk_ok = no; then
+
+   save_CXXFLAGS=$CXXFLAGS
+   save_LIBS=$LIBS
+
+   CXXFLAGS="$opp_x11inc $TK_CFLAGS"
+   LIBS="$opp_x11lib -ltk8.2 -ltcl8.2"
+
+   echo "$as_me:$LINENO: checking for Tcl/Tk 8.2 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk8.2 -ltcl8.2\"" >&5
+echo $ECHO_N "checking for Tcl/Tk 8.2 with CFLAGS=\"$opp_x11inc $TK_CFLAGS\" LIBS=\"$opp_x11lib -ltk8.2 -ltcl8.2\"... $ECHO_C" >&6
+
+   cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+#include <tk.h>
+int
+main ()
+{
+Tk_MainLoop();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; tcltk_ok=yes; TK_LIBS="$opp_x11lib -ltk8.2 -ltcl8.2"
 else
   echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
