@@ -1,3 +1,8 @@
+2002-07-07  Andras Varga
+
+	* added NED documentation tool (neddoc.xsl, opp_neddoc, 
+	opp_neddoc.cmd)
+
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-04-06  Andras Varga
@@ -37,7 +42,7 @@
 
 	* Makefile.in (all): use "ln -sf" instead of "ln -s" to avoid an
 	error when link already exists.
-	
+
 2001-05-24 Andras Varga
 
 	* ------ omnetpp-2.1 released ------
@@ -120,7 +125,7 @@
 
 	* seedtool help text changed
 
-	
+
 
 1999-06-21  Andras Varga
 
