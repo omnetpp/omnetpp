@@ -734,8 +734,16 @@ Sources: @ref tictoc12.ned, @ref tictoc12.msg, @ref txc12.cc, @ref omnetpp.ini
 
 @section plove Plotting the output vectors
 
+<img src="plove1.gif">
+
+<img src="plove2.gif">
+
 
 @section scalars Scalar statistics
+
+<img src="sca1.gif">
+
+<img src="sca2.gif">
 
 */
 
