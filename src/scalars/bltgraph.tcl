@@ -185,19 +185,39 @@ proc bltGraph_SavePicture {} {
     set w .bltwin
     set graph [$w.nb tab cget select -window].g
 
-    set img [image create photo]
-    $graph snap $img
-    # or this: blt::winop snap $graph $img
+    set fname [tk_getSaveFile -defaultextension ".gif" -parent .bltwin \
+               -initialdir [pwd] -initialfile "graph.gif" \
+               -filetypes {{{GIF files} {*.gif}} {{All files} {*}}}]
 
-    # then save image  FIXME ask fname
-    $img write "graph.gif" -format "GIF"
+    if {$fname!=""} {
+       if [catch {
+           set img [image create photo]
+           $graph snap $img
+           # or this: blt::winop snap $graph $img
+           $img write "graph.gif" -format "GIF"
+       } err] {
+           tk_messageBox -icon error -type ok  -parent .bltwin -message "Error: $err"
+           return
+       }
+    }
 }
 
 proc bltGraph_SavePostscript {} {
     set w .bltwin
     set graph [$w.nb tab cget select -window].g
-    # FIXME ask fname
-    $graph postscript output "graph.ps"
+
+    set fname [tk_getSaveFile -defaultextension ".ps" -parent .bltwin \
+               -initialdir [pwd] -initialfile "graph.ps" \
+               -filetypes {{{Postscript files} {*.ps}} {{All files} {*}}}]
+
+    if {$fname!=""} {
+        if [catch {
+            $graph postscript output $fname
+        } err] {
+            tk_messageBox -icon error -type ok  -parent .bltwin -message "Error: $err"
+            return
+        }
+    }
 }
 
 proc bltGraph_Properties {{what "lines"}} {

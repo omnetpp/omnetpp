@@ -45,7 +45,7 @@ proc chartXLabel {w value} {
 proc checkChartLimits {idlists} {
     set numseries [llength $idlists]
     if {$numseries>50} {
-        tk_messageBox -icon warning -type ok -title Warning \
+        tk_messageBox -icon warning -type ok -title Warning -parent .bltwin \
              -message "Too many series: $numseries, they don't fit on the chart! Dropping some of them to cut the number to 50."
         set idlists [lreplace $idlists 50 end]
     }
@@ -53,7 +53,7 @@ proc checkChartLimits {idlists} {
     set len [llength [lindex $idlists 0]]
     if {$len>9990} {
         # 10,001 is BLT built-in limit -- grep for MAXTICKS
-        tk_messageBox -icon warning -type ok -title Warning \
+        tk_messageBox -icon warning -type ok -title Warning -parent .bltwin \
              -message "Too many items on x axis: $len. Dropping some of them to cut the number to ~10,000."
 
         set oldidlists $idlists
