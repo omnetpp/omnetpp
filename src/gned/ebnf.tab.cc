@@ -123,7 +123,6 @@
 #include <malloc.h>         /* for alloca() */
 #include "ebnf.h"           /* selects between NEDC and GNED */
 #include "ebnfcfg.h"        /* selects between NEDC and GNED */
-
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
 
@@ -137,7 +136,8 @@
 #endif                      /* Required to compile ebnf.y derivatives */ 
 #endif
 
-
+#define CONST_CAST(x) (char *)(x)
+  
 int yylex (void);
 void yyrestart(FILE *);
 void yyerror (char *s);
@@ -2624,8 +2624,8 @@ int addGate(int gates_key, YYLTYPE namepos, int is_in, int is_vector )
 {
    int gate_key = np->create("gate", gates_key);
    np->set(gate_key, "name", namepos);
-   np->set(gate_key, "gatetype", is_in ? "in" : "out");
-   np->set(gate_key, "isvector", is_vector ? "1" : "0");
+   np->set(gate_key, "gatetype", CONST_CAST (is_in ? "in" : "out"));
+   np->set(gate_key, "isvector", CONST_CAST (is_vector ? "1" : "0"));
    return gate_key;
 }
 
