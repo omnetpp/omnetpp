@@ -22,7 +22,7 @@ class SAXParser;
 
 
 /**
- * Base class for SAX event handlers needed by XMLParser.
+ * Base class for SAX event handlers needed by SAXParser.
  * This is a simplified SAX handler interface.
  *
  * All event handlers provided by this class are empty, one must
