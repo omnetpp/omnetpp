@@ -75,11 +75,12 @@ void SelectNextModule_1::activity()
     cQueue q;
     repCount = par("repCount");
 
-    q.insert(new cMessage());
+    scheduleAt(0.0, new cMessage());
 
     tmr.start();
     for (int i=0; i<repCount; i++)
     {
+        //simulation.msgQueue.peekFirst();
         simulation.selectNextModule();
     }
     tmr.stop();
