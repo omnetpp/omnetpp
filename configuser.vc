@@ -10,8 +10,8 @@ OMNETPP_VERSION=omnetpp-2.0b3
 # directories
 #
 OMNETPP_ROOT=d:/work/omnetpp
-TK_INCL_DIR=d:/tcl/tcl/include
-TK_LIB_DIR=d:/tcl/tcl/lib
+TK_INCL_DIR=e:/tcl/include
+TK_LIB_DIR=e:/tcl/lib
 
 OMNETPP_SRC_DIR=$(OMNETPP_ROOT)/src
 OMNETPP_SAMPLES_DIR=$(OMNETPP_ROOT)/samples

@@ -374,32 +374,46 @@ AC_OUTPUT(
 chmod +x src/utils/makemake
 
 #----------------------
-# Env. vars
+# Check if the path contains omnetpp/bin (it should)
+# Note: the method used here also works with Cygwin, but requires
+# write permission to $OMNETPP_BIN_DIR.
 #----------------------
 
-if echo $PATH | grep `eval echo $OMNETPP_BIN_DIR` >/dev/null; then
-  echo "Your PATH contains $OMNETPP_BIN_DIR. Good."
+probefile=__tmp__
+echo '' >$OMNETPP_BIN_DIR/$probefile
+chmod +x  $OMNETPP_BIN_DIR/$probefile
+if $probefile >/dev/null 2>/dev/null; then
+  echo "Your PATH contains $OMNETPP_BIN_DIR. Good!"
 else
   cat << EOT
 
-You should put $OMNETPP_BIN_DIR into your path.
+Your PATH doesn't contain $OMNETPP_BIN_DIR!
 Add the following line to your startup file:
   export PATH=\$PATH:$OMNETPP_BIN_DIR  # .(bash_)profile if you use sh/bash
   setenv PATH \$PATH:$OMNETPP_BIN_DIR  # .cshrc if you use csh,tcsh etc.
 
 EOT
 fi
+rm $OMNETPP_BIN_DIR/$probefile
 
-if test "$build_shared_libs" = yes; then
+#----------------------
+# Check LD_LIBRARY path if we're building shared libs. This is not necessary
+# with Cygwin because Windows locates DLLs another way.
+#----------------------
+
+if test "$build_shared_libs" = yes -a "$cygwin" != yes; then
   if echo $LD_LIBRARY_PATH | grep `eval echo $OMNETPP_LIB_DIR` >/dev/null; then
-    echo "Your LD_LIBRARY_PATH is set. Good."
+    echo "Your LD_LIBRARY_PATH is set. Good!"
   else
     cat << EOT
 
-Note: Shared libraries were selected in configure. So that the dynamic
-linker can find the OMNeT++ shared libs, you either have to create
-symbolic links from /usr/lib to the OMNeT++ shared libraries (as root),
-or better, set the LD_LIBRARY_PATH environment variable.
+You selected shared libraries in configure.user but your LD_LIBRARY_PATH
+doesn't seem to contain $OMNETPP_LIB_DIR!
+
+So that the dynamic linker can find the OMNeT++ shared libs, you either have
+to create symbolic links from /usr/lib to the OMNeT++ shared libraries
+(you can do it as root), or better, set the LD_LIBRARY_PATH environment
+variable.
 
 Add the corresponding line to your startup file:
   export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
