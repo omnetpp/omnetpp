@@ -9,11 +9,9 @@ SHLIB_LD=@SHLIB_LD@
 
 CFLAGS=@CFLAGS@
 
-OMNETPP_ROOT=@OMNETPP_ROOT@
-OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
-OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
+OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 
-PVM_INCL_PATH=@PVM_INCL_PATH@
+PVM_INCL_DIR=@PVM_INCL_DIR@
 
 # LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
 LIB_SUFFIX=@LIB_SUFFIX@
@@ -24,9 +22,7 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 # Local definitions
 #
-SIM_INCL_PATH=-Istd -Ipvm
-
-COPTS=$(CFLAGS) $(SIM_INCL_PATH) $(OMNETPP_INCL_PATH)
+COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -Istd -Ipvm
 
 CPPOBJS= ccor.o ctypes.o carray.o cgate.o cmodule.o csimul.o cobject.o cpar.o \
 	 cstat.o chist.o cdensity.o cvarhist.o cpsquare.o cksplit.o \
@@ -158,10 +154,10 @@ std/netpack.o : std/netpack.cc
 	$(CXX) -c $(COPTS) std/netpack.cc -o std/netpack.o
 
 pvm/pvmpack.o : pvm/pvmpack.cc
-	$(CXX) -c $(COPTS) $(PVM_INCL_PATH) pvm/pvmpack.cc -o pvm/pvmpack.o
+	$(CXX) -c $(COPTS) -I$(PVM_INCL_DIR) pvm/pvmpack.cc -o pvm/pvmpack.o
 
 pvm/pvmmod.o : pvm/pvmmod.cc
-	$(CXX) -c $(COPTS) $(PVM_INCL_PATH) pvm/pvmmod.cc -o pvm/pvmmod.o
+	$(CXX) -c $(COPTS) -I$(PVM_INCL_DIR) pvm/pvmmod.cc -o pvm/pvmmod.o
 
 missing-library:
 	@ echo

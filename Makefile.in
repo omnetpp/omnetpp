@@ -7,7 +7,6 @@
 #
 # Directories
 #
-OMNETPP_ROOT = 	        @OMNETPP_ROOT@
 OMNETPP_SRC_DIR =       @OMNETPP_SRC_DIR@
 OMNETPP_MODELS_DIR =    @OMNETPP_MODELS_DIR@
 OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
@@ -145,3 +144,4 @@ depend:
 
 dist:
 	echo 'to be done'
+

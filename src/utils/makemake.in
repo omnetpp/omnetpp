@@ -203,13 +203,13 @@ cat <<EOT
 TARGET = $outfile$suffix
 
 # User interface (uncomment one) (-u option)
-${c_cmd}USERIF_LIBS = \$(CMDENV_LIBS)
-${c_tk}USERIF_LIBS = \$(TKENV_LIBS)
-${c_tv}USERIF_LIBS = \$(TVENV_LIBS)
+${c_cmd}USERIF_LIBS= \$(CMDENV_LIBS)
+${c_tk}USERIF_LIBS= \$(TKENV_LIBS)
+${c_tv}USERIF_LIBS= \$(TVENV_LIBS)
 
 # Uncomment the second line for parallel execution (PVM3) support (-p option):
-${c_std}KERNEL_LIBS = \$(STD_KERNEL_LIBS)
-${c_pvm}KERNEL_LIBS = \$(PVM_KERNEL_LIBS)
+${c_std}KERNEL_LIBS= \$(STD_KERNEL_LIBS)
+${c_pvm}KERNEL_LIBS= \$(PVM_KERNEL_LIBS)
 
 # .ned or .h include paths with -I
 INCLUDE_PATH = $includes
@@ -230,22 +230,22 @@ if [ $makefilein = "n" ]; then
 # makefile
 cat <<EOT
 
-NEDC=    @NEDC@
-CXX=     @CXX@
-CC=      @CC@
-AR=      @AR@
+NEDC=@NEDC@
+CXX=@CXX@
+CC=@CC@
+AR=@AR@
 SHLIB_LD=@SHLIB_LD@
 
-CFLAGS=  @CFLAGS@
-LDFLAGS= @LDFLAGS@
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
 
-OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
-OMNETPP_LIB_PATH=@OMNETPP_LIB_PATH@
+OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
+OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
-TV_LIBS=  @TV_LIBS@
-TK_LIBS=  @TK_LIBS@
-PVM_LIBS= @PVM_LIBS@
-SYS_LIBS= @SYS_LIBS@
+TV_LIBS=@TV_LIBS@
+TK_LIBS=@TK_LIBS@
+PVM_LIBS=@PVM_LIBS@
+SYS_LIBS=@SYS_LIBS@
 EOT
 
 else
@@ -254,22 +254,22 @@ else
 null=
 cat <<EOT
 
-NEDC=    @${null}NEDC@
-CXX=     @${null}CXX@
-CC=      @${null}CC@
-AR=      @${null}AR@
+NEDC=@${null}NEDC@
+CXX=@${null}CXX@
+CC=@${null}CC@
+AR=@${null}AR@
 SHLIB_LD=@${null}SHLIB_LD@
 
-CFLAGS=  @${null}CFLAGS@
-LDFLAGS= @${null}LDFLAGS@
+CFLAGS=@${null}CFLAGS@
+LDFLAGS=@${null}LDFLAGS@
 
-OMNETPP_INCL_PATH=@${null}OMNETPP_INCL_PATH@
-OMNETPP_LIB_PATH=@${null}OMNETPP_LIB_PATH@
+OMNETPP_INCL_DIR=@${null}OMNETPP_INCL_DIR@
+OMNETPP_LIB_DIR=@${null}OMNETPP_LIB_DIR@
 
-TV_LIBS=  @${null}TV_LIBS@
-TK_LIBS=  @${null}TK_LIBS@
-PVM_LIBS= @${null}PVM_LIBS@
-SYS_LIBS= @${null}SYS_LIBS@
+TV_LIBS=@${null}TV_LIBS@
+TK_LIBS=@${null}TK_LIBS@
+PVM_LIBS=@${null}PVM_LIBS@
+SYS_LIBS=@${null}SYS_LIBS@
 EOT
 
 fi
@@ -277,18 +277,18 @@ fi
 cat <<EOT
 
 # User interface libs
-CMDENV_LIBS = -lenvir -lcmdenv
-TVENV_LIBS = -lenvir -ltvenv \$(TV_LIBS)
-TKENV_LIBS = -lenvir -ltkenv \$(TK_LIBS)
+CMDENV_LIBS=-lenvir -lcmdenv
+TVENV_LIBS=-lenvir -ltvenv \$(TV_LIBS)
+TKENV_LIBS=-lenvir -ltkenv \$(TK_LIBS)
 
 # Simulation kernel
-STD_KERNEL_LIBS = -lsim_std
-PVM_KERNEL_LIBS = -lsim_pvm \$(PVM_LIBS)
+STD_KERNEL_LIBS=-lsim_std
+PVM_KERNEL_LIBS=-lsim_pvm \$(PVM_LIBS)
 
 # Simulation kernel and user interface libraries
-OMNETPP_LIBS = \$(OMNETPP_LIB_PATH) \$(KERNEL_LIBS) \$(USERIF_LIBS) \$(SYS_LIBS)
+OMNETPP_LIBS=-L\$(OMNETPP_LIB_DIR) \$(KERNEL_LIBS) \$(USERIF_LIBS) \$(SYS_LIBS)
 
-COPTS=\$(CFLAGS) \$(INCLUDE_PATH) \$(OMNETPP_INCL_PATH)
+COPTS=\$(CFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 
@@ -301,7 +301,7 @@ else
 fi
 
 echo '# Object files from this directory to link'
-echo "OBJS = $objs"
+echo "OBJS= $objs"
 echo
 
 case "$type" in
@@ -337,30 +337,22 @@ do
 
 	obj=`echo $i | sed 's/\.ned/_n.o/g'`
 	c=`echo $i | sed 's/\.ned/_n.cc/g'`
-	h=`echo $i | sed 's/\.ned/.h/g'`
 
-	echo -n $obj': '
-	if test -s $h
-	then
-		echo -n $h' '
-	fi
-	echo $c '$(OMNETPP_INCLUDES)'
+	echo "$obj: $c"
 	echo '	$(CXX) -c $(COPTS) '$c
 	echo
 
-	echo $c':' $i
+	echo "$c: $i"
 	echo '	$(NEDC) $(INCLUDE_PATH) '$i
 	echo
 done
 
-headers=`echo *.h | sed 's/\*\.h//'`
 for i in `echo *.cc | sed 's/[^ ]*_n\.cc//g'`
 do
         if [ "$i" = "*.cc" ]; then break; fi;
 
 	obj=`echo $i | sed 's/\.cc/.o/g'`
-	h=`echo $i | sed 's/\.cc/.h/g'`
-	echo $obj':' $i $headers
+	echo "$obj: $i"
 	echo '	$(CXX) -c $(COPTS) '$i
 	echo
 done
@@ -388,4 +380,4 @@ EOT
 
 ) > $outputfile
 
-# echo "$outputfile ready -- 'make depend' still needed"
+echo "$outputfile ready -- 'make depend' still needed"

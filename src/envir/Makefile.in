@@ -6,9 +6,7 @@ AR=@AR@
 SHLIB_LD=@SHLIB_LD@
 RANLIB=@RANLIB@
 
-OMNETPP_ROOT=@OMNETPP_ROOT@
-OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
-OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
+OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 
 CFLAGS=@CFLAGS@
 
@@ -23,7 +21,7 @@ USE_DLOPEN=@USE_DLOPEN@
 #
 # Local definitions
 #
-COPTS=$(CLFAGS) $(OMNETPP_INCL_PATH)
+COPTS=$(CLFAGS) -I$(OMNETPP_INCL_DIR)
 
 OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o
 
@@ -52,7 +50,7 @@ main.o : main.cc
 	$(CXX) -c $(COPTS) main.cc
 
 omnetapp.o : omnetapp.cc
-	$(CXX) -c $(COPTS) -DDYNAMIC_LINKAGE=$(DYNAMIC_LINKAGE) omnetapp.cc
+	$(CXX) -c $(COPTS) -DUSE_DLOPEN=$(USE_DLOPEN) omnetapp.cc
 
 slaveapp.o : slaveapp.cc
 	$(CXX) -c $(COPTS) slaveapp.cc

@@ -9,20 +9,18 @@ LEX=@LEX@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 
-OMNETPP_ROOT=@OMNETPP_ROOT@
-OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 OMNETPP_BITMAP_PATH=@OMNETPP_BITMAP_PATH@
 
-TK_INCL_PATH=@TK_INCL_PATH@
+TK_INCL_DIR=@TK_INCL_DIR@
 TK_LIBS=@TK_LIBS@
 SYS_LIBS=@SYS_LIBS@
 
 #
 # Local definitions
 #
-COPTS=-fwritable-strings $(CFLAGS) $(TK_INCL_PATH)
+COPTS=$(CFLAGS) -fwritable-strings -I$(TK_INCL_DIR)
 
-OMNETPP_GNED_DIR=$(OMNETPP_SRC_DIR)/gned
+OMNETPP_GNED_DIR=`pwd`
 
 OBJS = gned.o tklib.o arrow.o ebnf.tab.o lex.yy.o parsened.o disp.o nedfile.o
 
