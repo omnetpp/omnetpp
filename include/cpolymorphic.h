@@ -30,16 +30,18 @@
  * that has at least one virtual member function. This makes the class more
  * interoperable with OMNeT++, and causes no extra overhead at all.
  * sizeof(cPolymorphic) should yield 4 on a 32-bit architecture (4-byte
- * <i>vptr</i>, and using cPolymorphic as a base class doesn't add anything
+ * <i>vptr</i>), and using cPolymorphic as a base class doesn't add anything
  * to the size because a class with a virtual function already has a vptr.
  *
  * cPolymorphic allows the object to be displayed in graphical user
- * interface (Tkenv) via the className(), info() and detailedInfo() methods.
+ * interface (Tkenv) via the className(), info() and detailedInfo() methods
+ * which you may choose to redefine in your own subclasses.
  *
  * Using cPolymorphic also strengthens type safety. <tt>cPolymorphic *</tt>
  * pointers should replace <tt>void *</tt> in most places where you need
  * pointers to "any data structure". Using cPolymorphic will allow safe
- * downcasts using <tt>dynamic_cast</tt>.
+ * downcasts using <tt>dynamic_cast</tt> and also OMNeT++'s 
+ * <tt>check_and_cast</tt>.
  *
  * @ingroup SimCore
  */
