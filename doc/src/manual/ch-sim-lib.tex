@@ -46,7 +46,7 @@ This chapter discusses the rest of the simulation library:
 \section{Class library conventions}
 
 \subsubsection{Base class}
-\label{sec:ch-sim-lib:cObject}
+\label{sec:ch-sim-lib:cobject}
 
 
 Classes in the {\opp} simulation library are derived from \cclass{cObject}.
@@ -602,14 +602,13 @@ ordering function.
 The \fname{tail()} and \fname{head()} functions return pointers to the objects
 at the tail and head of the queue, without affecting queue contents.
 
-
-
 The \fname{pop()} function can be used to remove items from the
 tail of the queue, and the \fname{remove()} function can be
 used to remove any item known by its pointer from the queue:
 
-
-\fname[queue.remove()]{queue.remove( msg );}
+\begin{verbatim}
+queue.remove( msg );
+\end{verbatim}
 
 
 
@@ -1058,7 +1057,7 @@ actually done to the other \cclass{cPar} object:
   \begin{center}
     \includegraphics[width=3.608in, height=1.908in]{figures/usmanFig11}
     \caption{cPar redirection}
-    \label{fig:ch-sim-lib:cPar-redirection}
+    \label{fig:ch-sim-lib:cpar-redirection}
   \end{center}
 \end{figure}
 
@@ -1409,8 +1408,8 @@ returns NULL). \fname{nodeFor()} uses binary search within the
 
 \cclass{sTopoNode}'s other member functions let you determine the
 connections of this node: \fname{inLinks()}, \fname{outLinks()} return
-the number of connections, \fname[in()]{in(i)} and
-\fname[out()]{out(i)} return pointers to graph edge objects.
+the number of connections, \ttt{in(i)} and
+\ttt{out(i)} return pointers to graph edge objects.
 
 
 By calling member functions of the graph edge object, you can
@@ -2085,7 +2084,7 @@ void setParameters(double acc=0.1,
 \section{Recording simulation results}
 
 \subsection{Output vectors: cOutVector}
-\label{sec:ch-sim-lib:cOutVector}
+\label{sec:ch-sim-lib:coutvector}
 
 Objects of type \cclass{cOutVector} are responsible for writing time series
 data (referred to as \textit{output vectors}) to a file. The \fname{record()}

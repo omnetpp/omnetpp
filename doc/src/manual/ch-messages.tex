@@ -25,7 +25,7 @@ of the simulation programmer. A more-or-less complete list:
     name appears in many places in Tkenv (for example, in animations),
     and it is generally very useful to choose a descriptive name.
     This attribute is inherited from \cclass{cObject} (see section
-    \ref{sec:ch-sim-lib:cObject}).}
+    \ref{sec:ch-sim-lib:cobject}).}
   \item{The \textit{message kind} attribute is supposed to carry some message
     type information. Zero and positive values can be freely used
     for any purpose. Negative values are reserved for use by the
@@ -273,7 +273,7 @@ the message arrived on a specific gate given with id or
 name+index.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-bool \fname[arrivedOn()]{arrivedOn}(int id);
+bool \fname{arrivedOn}(int id);
 bool \fname{arrivedOn}(const char *gname, int gindex=0);
 \end{Verbatim}
 

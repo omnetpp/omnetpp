@@ -11,8 +11,8 @@ $ext = "html";
 $opp_version = "3.0";
 $tagfile = "../../api/opptags.xml";
 
-$apidir = "../api";
-#$apidir = "../../api";
+#$apidir = "../api";
+$apidir = "../../api";
 
 #
 # general template for our output HTML pages; real contents will go to __BODY__
