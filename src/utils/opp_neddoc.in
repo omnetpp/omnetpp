@@ -1,5 +1,6 @@
 #! /bin/sh
 PS2GIF=@PS2GIF@
+DOT=@DOT@
 NEDDOC_XSL=`dirname $0`/neddoc.xsl
 NEDDOC_PL=`dirname $0`/neddocproc.pl
 TMPFILE=/tmp/opp_neddoc.tmp.$$
@@ -8,6 +9,9 @@ TMPFILE=/tmp/opp_neddoc.tmp.$$
 outdir=html
 screenshots=yes
 unassignedpars=yes
+if [ -n $DOT ]; then
+    have_dot=yes
+fi    
 while [ $# -gt 0 ]; do
     case "$1" in
     -o)       shift ; outdir=$1 ;;
@@ -31,8 +35,8 @@ if [ -n "$do_help" ]; then
     echo "(c) 2003 Andras Varga"
     echo ""
     if [ ! -n "$PS2GIF" ]; then
-    echo "(Note: generating figures not possible -- ImageMagick's 'convert' is not present.)"
-    echo ""
+        echo "(Note: generating figures not possible -- ImageMagick's 'convert' is not present.)"
+        echo ""
     fi
     echo "Usage: opp_neddoc [-o <dir>] [-n] [-a] file1 file2 ..."
     echo " -a, --all         process all *.ned and *.msg files recursively"
@@ -105,6 +109,16 @@ xsltproc --stringparam outputdir "$outdir" --stringparam imagesxml "$imagesxml" 
 echo 'formatting comments...'
 perl $NEDDOC_PL $outdir || exit 1
 
+if [ "$have_dot" = "yes" ]; then
+    echo 'generating diagrams via '$DOT'...'
+    for i in $outdir/*.dot; do
+       gif=`echo $i | sed 's/dot$/gif/'`
+       $DOT $i $gif || exit 1
+       echo -n '#'
+    done
+    echo
+fi
+ 
 echo 'documentation created in '$outdir'/ -- start page is index.html'
 cleanup
 
