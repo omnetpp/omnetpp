@@ -51,7 +51,7 @@ TicTocMsg12 *Txc12::generateMessage()
     int src = index();
     int n = size();
     int dest = intuniform(0,n-2);
-    if (dest==src) dest++;
+    if (dest>=src) dest++;
 
     char msgname[20];
     sprintf(msgname, "tic-%d-to-%d", src, dest);

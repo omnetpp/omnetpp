@@ -51,7 +51,7 @@ TicTocMsg10 *Txc10::generateMessage()
     int src = index();   // our module index
     int n = size();      // module vector size
     int dest = intuniform(0,n-2);
-    if (dest==src) dest++;
+    if (dest>=src) dest++;
 
     char msgname[20];
     sprintf(msgname, "tic-%d-to-%d", src, dest);
