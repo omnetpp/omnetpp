@@ -35,6 +35,7 @@ usman.html : $(HTM_FILES) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.p
 	del usman.tmp
 	copy usman.html ..\..\manual
 	copy *.gif ..\..\manual
+	copy figures\*.gif ..\..\manual
 
 clean:
 	-del *.htm
