@@ -117,7 +117,12 @@ Further columns on data lines are the simulation time and the recorded value.
 
 \subsection{Working without Plove}
 
-FIXME why?
+In case you have a large number of repeated experiments, you'll probably
+want to automate processing of the output vector files. {\opp} lets you
+use any tool you see fit for this purpose, because the output
+vector files are text files and their format is simple enough to be
+processed by common tools such as \textit{perl}, \textit{awk},
+\textit{octave}, etc.
 
 \subsubsection{Extracting vectors from the file}
 
@@ -188,32 +193,145 @@ contents similar to the following:
 
 
 As you can see, the vector Id column has been stripped from the files.
+The resulting files can be directly loaded e.g. into spreadsheets or other
+programs (\ref{sec:ana-sim:tools}).
+
+
+\section{Scalar statistics}
+\label{sec:ch-ana-sim:output-scalars}
+
+Output vectors capture the transient behaviour of the simulation run.
+However, to compare model behaviour under various parameter settings,
+output scalars are more useful.
+
+\subsection{Format of output scalar files}
+
+Scalar results are recorded with \fname{recordScalar()} calls,
+usually from the \ttt{finish()} methods of modules, with code like this:
+
+\begin{verbatim}
+void EtherMAC::finish()
+{
+    double t = simTime();
+    if (t==0) return;
+
+    recordScalar("simulated time", t);
+    recordScalar("rx channel idle (%)", 100*totalChannelIdleTime/t);
+    recordScalar("rx channel utilization (%)", 100*totalSuccessfulRxTxTime/t);
+    recordScalar("rx channel collision (%)", 100*totalCollisionTime);
+
+    recordScalar("frames sent",    numFramesSent);
+    recordScalar("frames rcvd",    numFramesReceivedOK);
+    recordScalar("bytes sent",     numBytesSent);
+    recordScalar("bytes rcvd",     numBytesReceivedOK);
+    recordScalar("collisions",     numCollisions);
+
+    recordScalar("frames/sec sent", numFramesSent/t);
+    recordScalar("frames/sec rcvd", numFramesReceivedOK/t);
+    recordScalar("bits/sec sent",   8*numBytesSent/t);
+    recordScalar("bits/sec rcvd",   8*numBytesReceivedOK/t);
+}
+\end{verbatim}
+
+The corresponding output scalar file (by default, \fname{omnetpp.sca})
+will look like this:
+
+\begin{verbatim}
+run 1 "lan"
+scalar "lan.hostA.mac" "simulated time"             120.249243
+scalar "lan.hostA.mac" "rx channel idle (%)"        97.5916992
+scalar "lan.hostA.mac" "rx channel utilization (%)" 2.40820676
+scalar "lan.hostA.mac" "rx channel collision (%)"   0.011312
+scalar "lan.hostA.mac" "frames sent"                99
+scalar "lan.hostA.mac" "frames rcvd"                3088
+scalar "lan.hostA.mac" "bytes sent"                 64869
+scalar "lan.hostA.mac" "bytes rcvd"                 3529448
+scalar "lan.hostA.mac" "frames/sec sent"            0.823290006
+scalar "lan.hostA.mac" "frames/sec rcvd"            25.6799953
+scalar "lan.hostA.mac" "bits/sec sent"              4315.63632
+scalar "lan.hostA.mac" "bits/sec rcvd"              234808.83
+scalar "lan.hostB.mac" "simulated time"             120.249243
+scalar "lan.hostB.mac" "rx channel idle (%)"        97.5916992
+scalar "lan.hostB.mac" "rx channel utilization (%)" 2.40820676
+scalar "lan.hostB.mac" "rx channel collision (%)"   0.011312
+[...]
+scalar "lan.hostC.mac" "simulated time"             120.249243
+scalar "lan.hostC.mac" "rx channel idle (%)"        97.5916992
+scalar "lan.hostC.mac" "rx channel utilization (%)" 2.40820676
+scalar "lan.hostC.mac" "rx channel collision (%)"   0.011312
+[...]
+
+run 2 "lan"
+scalar "lan.hostA.mac" "simulated time"             235.678665
+[...]
+\end{verbatim}
+
+Every \fname{recordScalar()} call generates one "scalar" line in the file.
+(If you record statistics objects (\cclass{cStatictic} subclasses
+such as \cclass{cStdDev}) via their \fname{recordScalar()} methods,
+they'll generate several lines: mean, standard deviation, etc.)
+In addition, several simulation runs can record their results into a single file --
+this facilitates comparing them, creating x-y plots
+(\textit{offered load vs throughput}-type diagrams), etc.
 
 
 
+\subsection{The Scalars tool}
 
-\subsection{Analysis and visualization tools}
+The \fprog{Scalars} program can be used to visualize the contents of the
+\fname{omnetpp.sca} file. It can draw bar charts, x-y plots
+(e.g. throughput vs offered load), or export data via the clipboard
+for more detailed analysis into spreadsheets or other programs.
 
-Due to their straightforward file format, vector files or files
-produced by \fprog{splitvec} can be analysed and/or plotted by
-a number of applications in addition to \fprog{Plove}.
+You can open a scalar file either from the Scalars program's menu
+or by specifying it as a command-line argument to Scalars.
+
+The program displays the data in a table with columns showing the
+file name, run number, module name where it was recorded, and the value.
+There're usually too many rows to get an overview, so you can filter
+by choosing from (or editing) the three combo boxes at the top.
+(The filters also accept \ttt{*}, \ttt{**} wildcards.)
+
+You could actually load further scalar files into the window,
+and thus analyse them together.
+
+You can copy the selected rows to the clipboard by Edit|Copy or
+the corresponding toolbar button, and paste them e.g. into
+OpenOffice Calc, MS Excel or Gnumeric.
+
+The bar chart toolbar button creates -- well -- a bar chart
+in a new window. You can customize the chart by right-clicking
+on it and choosing from the context menu. It can also be exported
+to EPS, GIF, or as metafile via the Windows clipbard (the latter
+is not available on Unix of course).
+
+
+
+\section{Analysis and visualization tools}
+\label{sec:ana-sim:tools}
+
+Output vector files (or files produced by \fprog{splitvec}) and
+output scalar files can be analysed and/or plotted by
+a number of applications in addition to \fprog{Plove} and \fprog{Scalars}.
 These programs can produce output in various forms (on the screen,
 as PostScript, in various image formats, etc.)
 
 One straightforward solution is to import or paste them into spreadsheet
 programs such as OpenOffice Calc, Gnumeric or MS Excel. These programs
 have good charting and statistical features, but the number of rows
-is usually limited at around 32,000..64,000.
+is usually limited to about 32,000..64,000.
+
 Alternatively, one can use numerical packages such as \textit{Octave},
 \textit{Matlab} or the statistics package \textit{R}.
 In addition to their support for statistical computations, they can also
 create various plots.
+
 There are also open-source programs directly for plotting, \textit{Gnuplot}
 still being the most commonly used one. Other, potentially more powerful ones
 include \textit{Grace}, \textit{ROOT} and \textit{PlotMTV}.
 
 
-\subsubsection{Grace}
+\subsection{Grace}
 
 \textit{Grace} (also known as \textit{xmgrace}, a successor of \textit{ACE/gr} or
 \textit{Xmgr}) is a GPL-ed powerful data visualization program
@@ -229,7 +347,7 @@ and analysis functions (e.g. correlation, histogram), fitting, splines, etc.,
 and it also sports its own built-in programming language.
 
 
-\subsubsection{ROOT}
+\subsection{ROOT}
 
 \textit{ROOT} is a powerful object-oriented data analysis framework,
 with strong support for plotting and graphics in general.
@@ -245,12 +363,12 @@ Curt Brune's page at Stanford (http://www.slac.stanford.edu/~curt/omnet++/)
 shows examples what you can achieve using ROOT with {\opp}.
 
 
-\subsubsection{Gnuplot}
+\subsection{Gnuplot}
 \index{Gnuplot}
 
-Gnuplot has an interactive command interface. To get the vectors in
-\texttt{mysim1.vec} and \texttt{mysim4.vec} plotted in the same graph,
-you can type:
+Gnuplot has an interactive command interface. To plot the data in
+\texttt{mysim1.vec} and \texttt{mysim4.vec} (produced by \fprog{splitvec})
+plotted in the same graph, you can type:
 
 \begin{verbatim}
 plot "mysim1.vec" with lines, "mysim4.vec" with lines
@@ -269,47 +387,6 @@ is available for Windows and other platforms.
 On Windows, you can copy the resulting graph to the clipboard from
 the Gnuplot window's system menu, then insert it into the application you
 are working with.
-
-
-\section{Scalar statistics}
-\label{sec:ch-ana-sim:output-scalars}
-
-% FIXME format of output vectors
-
-Output vectors capture the transient behaviour of the simulation run.
-However, to compare model behaviour under various parameter settings,
-output scalars are more useful.
-
-Output scalar results are recorded with \fname{recordScalar()} calls,
-usually from the \ttt{finish()} methods of modules.
-
-The \fprog{Scalars} tool can be used to visualize the contents of the
-\fname{omnetpp.sca} file. It can draw bar charts, x-y plots
-(e.g. throughput vs offered load), or export data via the clipboard
-for more detailed analysis into spreadsheets or other programs.
-
-You can open a scalar file either from the Scalars program's menu
-or by specifying it as a command-line argument to Scalars.
-
-The program displays the data in a table with columns showing the
-file name, run number, module name where it was recorded, and the value.
-There're usually too many rows to get an overview, so you can filter
-by choosing from (or editing) the three combo boxes at the top.
-(The filters also accept the *, ** wildcards.)
-
-You could actually load further scalar files into the window,
-and thus analyse them together.
-
-You can copy the selected rows to the clipboard by Edit|Copy or
-the corresponding toolbar button, and paste them e.g. into
-OpenOffice Calc, MS Excel or Gnumeric.
-
-The bar chart toolbar button creates -- well -- a bar chart
-in a new window. You can customize the chart by right-clicking
-on it and choosing from the context menu. It can also be exported
-to EPS, GIF, or as metafile via the Windows clipbard (the latter
-is not available on Unix of course).
-
 
 
 
