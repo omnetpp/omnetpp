@@ -75,7 +75,7 @@ proc drawItemRecursive {key {canv_id {}}} {
 
         # ... then the enclosing module (its size and position may
         #     depend on submodule placement)
-        redrawItem $key $canv_id
+        drawItem $key $canv_id
 
         # ...then the connections, normal and loop
         set sectionkey [getChildrenWithType $key conns]

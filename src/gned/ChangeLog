@@ -171,3 +171,5 @@ Nov 20-21, 1999
   - changed appendTo to append in makened.tcl
   - renamed arrays: ddfields()-->ned_attlist(), ddict()-->ned_attr(), ddesc-->ned_desc()
   - several bugs fixed
+Nov 30, 1999
+  - bugfix in drawItemRecursive
