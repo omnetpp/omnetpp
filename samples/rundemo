@@ -100,7 +100,7 @@ foreach line {
 
 
 proc createWindow {} {
-    global wantScrollbar samples first db fonts colors
+    global wantScrollbar samples first db fonts colors tcl_platform
 
     wm focusmodel . passive
     wm minsize . 1 1
@@ -109,7 +109,12 @@ proc createWindow {} {
     wm deiconify .
     wm title . "OMNeT++ Demo Simulations"
     wm protocol . WM_DELETE_WINDOW {exit}
-    wm geometry . "650x510"
+
+    if {$tcl_platform(platform) == "unix"} {
+        wm geometry . "690x570"
+    } else {
+        wm geometry . "650x510"
+    }
 
     #################################
     # Menu bar
