@@ -422,6 +422,7 @@ proc load_bitmaps {path} {
 
    set files {}
    foreach dir [split $path $sep] {
+       if {$dir==""} continue
        set files [concat $files \
                      [glob -nocomplain -- [file join $dir {*.gif}]] \
                      [glob -nocomplain -- [file join $dir {*.xpm}]] \

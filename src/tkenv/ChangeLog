@@ -1,3 +1,12 @@
+2004-08-14  Andras Varga
+
+	* tkapp.cc: new omnetpp.ini entry: [Tkenv]/bitmap-path=. Value should
+	be quoted; directories should be separated by ";". The contents of the
+	OMNETPP_BITMAP_PATH environment var (or if that's not set, the 
+	compilation-time bitmap path) gets concatenated to this one.
+	Beware: if you don't quote the value, only the first dir will be
+	used and the rest ignored, because ";" denotes comments omnetpp.ini!
+
 2004-08-12  Andras Varga
 
 	* modinsp2.tcl: "t=" tag: center text by default

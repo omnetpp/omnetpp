@@ -89,6 +89,7 @@ class TOmnetTkApp : public TOmnetApp
       int  opt_updatefreq_express; // RunExpress updates display every N events
       unsigned opt_extrastack;     // per-module extra stack
       bool opt_expressmode_autoupdate;// update inspectors at every display refresh in EXPRESS mode or not
+      opp_string opt_bitmap_path;  // directory of module icon files
 
       // state variables
       bool animating;              // while execution, do message animation or not
@@ -98,7 +99,6 @@ class TOmnetTkApp : public TOmnetApp
       opp_string windowtitleprefix;// contains "procId=.." when using parsim
 
       opp_string tkenv_dir;        // directory of Tkenv's *.tcl files
-      opp_string bitmap_dir;       // directory of module icon files
 
       int run_nr;                  // number of current simulation run
 

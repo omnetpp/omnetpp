@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <string>
 
 #include "appreg.h"
 #include "cenvir.h"
@@ -109,10 +110,12 @@ void TOmnetTkApp::setup()
         tkenv_dir = OMNETPP_TKENV_DIR;
 #endif
 
-    // path for icon directory
-    bitmap_dir = getenv("OMNETPP_BITMAP_PATH");
-    if (bitmap_dir.empty())
-        bitmap_dir = OMNETPP_BITMAP_PATH;
+    // path for icon directories
+    std::string bitmap_path = getenv("OMNETPP_BITMAP_PATH");
+    if (bitmap_path.empty())
+        bitmap_path = OMNETPP_BITMAP_PATH;
+    if (!opt_bitmap_path.empty())
+        bitmap_path = std::string(opt_bitmap_path.c_str()) + ";" + bitmap_path;
 
     // set up Tcl/Tk
     interp = initTk( args->argCount(), args->argVector() );
@@ -125,7 +128,7 @@ void TOmnetTkApp::setup()
     // add OMNeT++'s commands to Tcl
     createTkCommands( interp, tcl_commands );
 
-    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", TCLCONST(bitmap_dir.c_str()), TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", TCLCONST(bitmap_path.c_str()), TCL_GLOBAL_ONLY);
 
     // eval Tcl sources: either from .tcl files or from compiler-in string
     // literal (tclcode.cc)...
@@ -983,6 +986,7 @@ void TOmnetTkApp::readOptions()
     opt_print_banners = cfg->getAsBool( "Tkenv", "print-banners", true );
     opt_use_mainwindow = cfg->getAsBool( "Tkenv", "use-mainwindow", true );
     opt_expressmode_autoupdate = cfg->getAsBool( "Tkenv", "expressmode-autoupdate", true );
+    opt_bitmap_path = cfg->getAsString( "Tkenv", "bitmap-path", "");
 }
 
 void TOmnetTkApp::readPerRunOptions(int run_nr)
