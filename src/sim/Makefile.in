@@ -41,7 +41,7 @@ CPPOBJS_STD = task.o ccoroutine.o ctypes.o carray.o cgate.o \
 CPPOBJS_NETBUILDER= netbuilder/cdynamicmodule.o netbuilder/cdynamicnetwork.o \
                     netbuilder/cnednetworkbuilder.o netbuilder/loadnedfile.o
 CPPOBJS_PARSIM = parsim/ccommbuffer.o parsim/cmemcommbuffer.o \
-         parsim/cparsimsegment.o parsim/cplaceholdermod.o parsim/cproxygate.o \
+         parsim/cparsimpartition.o parsim/cplaceholdermod.o parsim/cproxygate.o \
          parsim/cparsimprotocolbase.o parsim/cnosynchronization.o \
          parsim/cnullmessageprot.o parsim/clinkdelaylookahead.o \
          parsim/cidealsimulationprot.o parsim/cispeventlogger.o \
