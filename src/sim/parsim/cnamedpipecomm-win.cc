@@ -17,17 +17,20 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+
+#include "cnamedpipecomm.h"
+
+#ifdef USE_WINDOWS_PIPES
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <io.h>   // _sleep()
+
 #include "cexception.h"
-#include "cnamedpipecomm.h"
 #include "cmemcommbuffer.h"
 #include "macros.h"
 #include "cenvir.h"
-
-#ifdef USE_WINDOWS_PIPES
 
 #include <windows.h>
 
