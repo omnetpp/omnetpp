@@ -1886,6 +1886,8 @@ class Sink : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
+Define_Module(Sink);
+
 void Sink::initialize()
 {
     endToEndDelayVec.setName("End-to-End Delay");
@@ -1963,6 +1965,8 @@ class Sink : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
 };
+
+Define_Module(Sink);
 
 void Sink::initialize()
 {
@@ -2302,12 +2306,10 @@ also has the advantages but also some costs.
 As a general rule, small \ttt{struct}-like classes like \ttt{IPAddress},
 \ttt{MACAddress}, \ttt{RoutingTableEntry}, \ttt{TCPConnectionDescriptor}, etc.
 are better \textit{not} sublassed from \cclass{cObject}.
-On the other hand, if you want to store your objects in {\opp} objects
-like \cclass{cQueue}, or you'll want to store {\opp} classes in your object,
-then you \textit{must} subclass from \cclass{cObject}.
-If your class fits neither category, you'll need to
-see if \cclass{cObject} brings any benefit for you, and
-decide accordingly.
+If your class has at least one virtual member function, consider
+subclassing from \cclass{cPolymorphic}, which does not cause any
+extra cost because it doesn't have data members at all only
+virtual functions.
 
 
 \subsection{cObject virtual methods}
@@ -2317,10 +2319,10 @@ Most classes in the simulation class library are descendants of
 \cclass{cObject} or a \cclass{cObject} descendant, you must redefine
 some member functions so that objects of the new type can fully
 co-operate with other parts of the simulation system. A more or less
-complete list of these functions is presented here. Do not be
-embarrassed at the length of the list: most functions are not
+complete list of these functions is presented here. You do not need to
+worry at the length of the list: most functions are not
 absolutely necessary to implement. For example, you do not need to
-redefine \fname{forEach()} unless your class is a container class.
+redefine \fname{forEachChild()} unless your class is a container class.
 
 The following methods \textbf{must} be implemented:
 
@@ -2351,11 +2353,11 @@ The following function \textbf{should} be implemented if your class contains
 via pointers or as data member) other object subclassed from \cclass{cObject}.
 
 \begin{itemize}
-  \item{\textit{Iteration function,} \ttt{void forEach(ForeachFunc f)}.
+  \item{\textit{Iteration function,} \ttt{void forEachChild(cVisitor * v)}.
         The implementation should call the function passed
         for each object it contains via pointer or
         as data member; see the API Reference on \cclass{cObject} on how to
-        implement \ttt{foreach()}. \fname{foreach()} is used by Tkenv and
+        implement \ttt{forEachChild()}. \fname{forEachChild()} is used by Tkenv and
         \fname{snapshot()} to navigate, search or display the object tree.}
 \end{itemize}
 
@@ -2426,7 +2428,7 @@ class NewClass : public cObject
     virtual cObject *dup() const;
     NewClass& operator=(const NewClass& other);
 
-    virtual void foreach(ForeachFunc f);
+    virtual void forEachChild(cVisitor *v);
 
     virtual void info(char *buf);
     virtual void writeContents(ostream& os);
@@ -2568,21 +2570,17 @@ management will be covered in section \ref{sec:ch-sim-lib:ownership-management}.
 
 
 \begin{verbatim}
-void NewClass::forEach(ForeachFunc f)
+void NewClass::forEachChild(cVisitor *v)
 {
-    if (f(this,true))
-    {
-        queue->forEach(f);
-        if (msg)
-            msg->forEach(f);
-    }
-    f(this,false);
+    v->visit(queue);
+    if (msg)
+        v->visit(msg);
 }
 \end{verbatim}
 
-The \fname{foreach()} function should be called for each {\opp}
-member of the class. See the API Reference for more information
-of \fname{foreach()}.
+The \fname{forEachChild()} function should call \ttt{v->visit(obj)}
+for each \ttt{obj} member of the class. See the API Reference for more
+information of \fname{forEachChild()}.
 
 \begin{verbatim}
 void NewClass::info(char *buf)
@@ -2614,7 +2612,7 @@ void NewClass::writeContents(ostream& os)
 \fname{writecontents()} is expected to write values of all
 data members to the stream.  You do not need to include anything
 about contained \cclass{cObject}-based objects, because they
-will be included via \fname{foreach()}.
+will be included via \fname{forEachChild()}.
 
 
 See the virtual functions of \cclass{cObject} in the class library reference
@@ -2652,7 +2650,7 @@ may own attached \fname{cPar} objects or another message
 
 From an object you can navigate to its owner by calling the \fname{owner()}
 method, defined in \cclass{cObject}. The other direction, enumerating the
-objects owned can be done via \fname{foreach()} that loops through all
+objects owned can be done via \fname{forEachChild()} that loops through all
 contained objects and checking the owner of each object.
 
 

@@ -18,7 +18,7 @@ structure of the actual system. Some of the main features are:
 
 
 An {\opp} model consists of hierarchically nested
-modules\index{module!hierarchy}, which communicate by passing 
+modules\index{module!hierarchy}, which communicate by passing
 messages to each another.
 {\opp} models are often referred to as \textit{networks}. The top
 level module is the \textit{system module}.  The system module
@@ -243,7 +243,7 @@ all internals of the simulation are visible.
 % do something non-typical.
 %
 %
-% The \textit{foreach}\index{forEach mechanism} mechanism allows one to
+% The \textit{foreach}\index{forEachChild mechanism} mechanism allows one to
 % enumerate the objects inside a container object in a uniform way and
 % do some operation on them. This feature which makes it possible to
 % handle many objects together. (The \textit{foreach} feature is extensively used
@@ -339,12 +339,12 @@ files\index{output!vector file}, output scalar files
 {\opp} provides a GUI tool named Plove to view and plot the contents
 of output vector files. It is not expected that someone will
 process the result files using {\opp} alone: output files are text
-files in a format which can be read into math packages like Matlab 
+files in a format which can be read into math packages like Matlab
 or Octave, or imported into spreadsheets like OpenOffice Calc, \
-Gnumeric or MS Excel (some preprocessing using \fprog{sed}, \fprog{awk} 
+Gnumeric or MS Excel (some preprocessing using \fprog{sed}, \fprog{awk}
 or \fprog{perl} might be required, this will be discussed later).
-All these external programs provide rich functionality for statistical 
-analysis and visualization, and it is outside the scope of {\opp} to 
+All these external programs provide rich functionality for statistical
+analysis and visualization, and it is outside the scope of {\opp} to
 duplicate their efforts. This manual briefly describes
 some data plotting programs and how to use them with {\opp}.
 
