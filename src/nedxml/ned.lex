@@ -145,6 +145,8 @@ char textbuf[TEXTBUF_LEN];
 <cplusplusbody>{S}      { extendCount(); }
 <cplusplusbody>.        { extendCount(); }
 
+"++"                    { count(); return PLUSPLUS; }
+
 ";"                     { count(); return (';'); }
 ","                     { count(); return (','); }
 ":"                     { count(); return (':'); }

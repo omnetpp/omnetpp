@@ -182,10 +182,12 @@
      src-module          NMTOKEN   #IMPLIED
      src-module-index    CDATA     #IMPLIED
      src-gate            NMTOKEN   #REQUIRED
+     src-gate-plusplus (true|false) "false"
      src-gate-index      CDATA     #IMPLIED
      dest-module         NMTOKEN   #IMPLIED
      dest-module-index   CDATA     #IMPLIED
      dest-gate           NMTOKEN   #REQUIRED
+     dest-gate-plusplus (true|false) "false"
      dest-gate-index     CDATA     #IMPLIED
      arrow-direction  (left|right) "right"
      banner-comment      CDATA     #IMPLIED

@@ -49,7 +49,7 @@
 %token EXTENDS FIELDS PROPERTIES ABSTRACT
 %token CHARTYPE SHORTTYPE INTTYPE LONGTYPE DOUBLETYPE UNSIGNED_
 
-%token SIZEOF SUBMODINDEX
+%token SIZEOF SUBMODINDEX PLUSPLUS
 %token EQ NE GT GE LS LE
 %token AND OR XOR NOT
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
@@ -1508,6 +1508,11 @@ leftgate_old
                 {
                   ps.conn->setSrcGate( toString( @1) );
                 }
+        | NAME PLUSPLUS
+                {
+                  ps.conn->setSrcGate( toString( @1) );
+                  ps.conn->setSrcGatePlusplus(true);
+                }
         ;
 
 parentleftgate_old
@@ -1523,6 +1528,13 @@ parentleftgate_old
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
+                }
+        | NAME PLUSPLUS
+                {
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn->setSrcModule("");
+                  ps.conn->setSrcGate(toString(@1));
+                  ps.conn->setSrcGatePlusplus(true);
                 }
         ;
 
@@ -1553,6 +1565,11 @@ rightgate_old
                 {
                   ps.conn->setDestGate( toString( @1) );
                 }
+        | NAME PLUSPLUS
+                {
+                  ps.conn->setDestGate( toString( @1) );
+                  ps.conn->setDestGatePlusplus(true);
+                }
         ;
 
 parentrightgate_old
@@ -1564,6 +1581,11 @@ parentrightgate_old
         | NAME
                 {
                   ps.conn->setDestGate( toString( @1) );
+                }
+        | NAME PLUSPLUS
+                {
+                  ps.conn->setDestGate( toString( @1) );
+                  ps.conn->setDestGatePlusplus(true);
                 }
         ;
 
@@ -1737,6 +1759,11 @@ leftgate
                 {
                   ps.conn->setSrcGate( toString( @1) );
                 }
+        | NAME PLUSPLUS
+                {
+                  ps.conn->setSrcGate( toString( @1) );
+                  ps.conn->setSrcGatePlusplus(true);
+                }
         ;
 
 parentleftgate
@@ -1752,6 +1779,13 @@ parentleftgate
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
                   ps.conn->setSrcGate(toString(@1));
+                }
+        | NAME PLUSPLUS
+                {
+                  ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
+                  ps.conn->setSrcModule("");
+                  ps.conn->setSrcGate(toString(@1));
+                  ps.conn->setSrcGatePlusplus(true);
                 }
         ;
 
@@ -1782,6 +1816,11 @@ rightgate
                 {
                   ps.conn->setDestGate( toString( @1) );
                 }
+        | NAME PLUSPLUS
+                {
+                  ps.conn->setDestGate( toString( @1) );
+                  ps.conn->setDestGatePlusplus(true);
+                }
         ;
 
 parentrightgate
@@ -1793,6 +1832,11 @@ parentrightgate
         | NAME
                 {
                   ps.conn->setDestGate( toString( @1) );
+                }
+        | NAME PLUSPLUS
+                {
+                  ps.conn->setDestGate( toString( @1) );
+                  ps.conn->setDestGatePlusplus(true);
                 }
         ;
 

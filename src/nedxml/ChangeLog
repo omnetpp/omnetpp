@@ -1,3 +1,15 @@
+2004-02-20  Andras Varga
+
+	* cppgenerator.cc: implemented cChannel && cChannelType; several
+	refinements in generated code
+
+	* ned.dtd, ebnf.y: added support for "mod.out++ --> in++" connection
+	syntax,	where "++" causes the first, yet unconnected gate to be used,
+	and (with submodule gate vectors) it also expands the vector if 
+	necessary, so "gatesizes:" is not needed. Gate vectors of the parent
+	module cannot be expanded further (because network is built and
+	connected top-down.)
+
 2004-02-11  Andras Varga
 
 	* ned.y: didn't accept negative numbers and symbolic constants in

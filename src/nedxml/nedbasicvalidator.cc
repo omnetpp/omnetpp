@@ -302,6 +302,7 @@ void NEDBasicValidator::validateElement(ConnectionNode *node)
 
     // FIXME make sure submodule and gate names are valid
     // FIXME gates & modules are really vector (or really not)
+    // FIXME plusplus and gate index expression cannot be both there
 }
 
 void NEDBasicValidator::validateElement(ConnAttrNode *node)

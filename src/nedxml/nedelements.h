@@ -1369,10 +1369,12 @@ class ConnectionsNode : public NEDElement
  *      src-module          NMTOKEN   #IMPLIED
  *      src-module-index    CDATA     #IMPLIED
  *      src-gate            NMTOKEN   #REQUIRED
+ *      src-gate-plusplus (true|false) "false"
  *      src-gate-index      CDATA     #IMPLIED
  *      dest-module         NMTOKEN   #IMPLIED
  *      dest-module-index   CDATA     #IMPLIED
  *      dest-gate           NMTOKEN   #REQUIRED
+ *      dest-gate-plusplus (true|false) "false"
  *      dest-gate-index     CDATA     #IMPLIED
  *      arrow-direction  (left|right) "right"
  *      banner-comment      CDATA     #IMPLIED
@@ -1388,10 +1390,12 @@ class ConnectionNode : public NEDElement
     std::string srcModule;
     std::string srcModuleIndex;
     std::string srcGate;
+    bool srcGatePlusplus;
     std::string srcGateIndex;
     std::string destModule;
     std::string destModuleIndex;
     std::string destGate;
+    bool destGatePlusplus;
     std::string destGateIndex;
     int arrowDirection;
     std::string bannerComment;
@@ -1421,6 +1425,8 @@ class ConnectionNode : public NEDElement
     void setSrcModuleIndex(const char * val)  {srcModuleIndex = val;}
     const char * getSrcGate() const  {return srcGate.c_str();}
     void setSrcGate(const char * val)  {srcGate = val;}
+    bool getSrcGatePlusplus() const  {return srcGatePlusplus;}
+    void setSrcGatePlusplus(bool val)  {srcGatePlusplus = val;}
     const char * getSrcGateIndex() const  {return srcGateIndex.c_str();}
     void setSrcGateIndex(const char * val)  {srcGateIndex = val;}
     const char * getDestModule() const  {return destModule.c_str();}
@@ -1429,6 +1435,8 @@ class ConnectionNode : public NEDElement
     void setDestModuleIndex(const char * val)  {destModuleIndex = val;}
     const char * getDestGate() const  {return destGate.c_str();}
     void setDestGate(const char * val)  {destGate = val;}
+    bool getDestGatePlusplus() const  {return destGatePlusplus;}
+    void setDestGatePlusplus(bool val)  {destGatePlusplus = val;}
     const char * getDestGateIndex() const  {return destGateIndex.c_str();}
     void setDestGateIndex(const char * val)  {destGateIndex = val;}
     int getArrowDirection() const  {return arrowDirection;}

@@ -295,11 +295,15 @@ void NEDDTDValidator::validateElement(ConnectionNode *node)
     checkNameAttribute(node, "src-module");
     checkRequiredAttribute(node, "src-gate");
     checkNameAttribute(node, "src-gate");
+    const char *vals4[] = {"true","false"};
+    checkEnumeratedAttribute(node, "src-gate-plusplus", vals4, sizeof(vals4)/sizeof(const char *));
     checkNameAttribute(node, "dest-module");
     checkRequiredAttribute(node, "dest-gate");
     checkNameAttribute(node, "dest-gate");
-    const char *vals9[] = {"left","right"};
-    checkEnumeratedAttribute(node, "arrow-direction", vals9, sizeof(vals9)/sizeof(const char *));
+    const char *vals9[] = {"true","false"};
+    checkEnumeratedAttribute(node, "dest-gate-plusplus", vals9, sizeof(vals9)/sizeof(const char *));
+    const char *vals11[] = {"left","right"};
+    checkEnumeratedAttribute(node, "arrow-direction", vals11, sizeof(vals11)/sizeof(const char *));
     checkCommentAttribute(node, "banner-comment");
     checkCommentAttribute(node, "right-comment");
 }

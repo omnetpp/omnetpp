@@ -388,6 +388,22 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "}\n";
     out << "\n";
 
+    out << "static cGate *_getFirstUnusedGateNoExpand(cModule *mod, const char *gatename)\n";
+    out << "{\n";
+    out << "    cGate *g = mod->gate(gatename);\n";
+    out << "    // FIXME implement!!!\n";
+    out << "    return g;\n";
+    out << "}\n";
+    out << "\n";
+
+    out << "static cGate *_getFirstUnusedGate(cModule *mod, const char *gatename)\n";
+    out << "{\n";
+    out << "    cGate *g = mod->gate(gatename);\n";
+    out << "    // FIXME implement!!!\n";
+    out << "    return g;\n";
+    out << "}\n";
+    out << "\n";
+
     out << "static cFunctionType *_getFunction(const char *funcname, int argcount)\n";
     out << "{\n";
     out << "    cFunctionType *functype = findFunction(funcname,argcount);\n";
@@ -868,16 +884,23 @@ void NEDCppGenerator::doConnections(ConnectionsNode *node, const char *indent, i
     if (node->getCheckUnconnected())
     {
        // check connections
-       // FIXME compile-time check as far as possible
        out << indent << "// check all gates are connected:\n";
        out << indent << "mod->checkInternalConnections();\n\n";
     }
 }
 
-void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex)
+void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex, bool isplusplus)
 {
+   if (isplusplus && gateindex)
+       INTERNAL_ERROR0(NULL,"resolveGate(): \"++\" and gate index expression cannot exist together");
+
    // wrap
-   out << "_checkGate(";
+   if (isplusplus && !strnotnull(modname))
+       out << "_getFirstUnusedGateNoExpand("; // parent module gate
+   else if (isplusplus)
+       out << "_getFirstUnusedGate("; // submodule gate
+   else
+       out << "_checkGate(";
 
    // module
    if (!strnotnull(modname))
@@ -967,12 +990,14 @@ void NEDCppGenerator::doConnection(ConnectionNode *node, const char *indent, int
     // create connection
     out << indent << "srcgate = ";
     resolveGate(node->getSrcModule(), findExpression(node,"src-module-index"),
-                node->getSrcGate(), findExpression(node,"src-gate-index"));
+                node->getSrcGate(), findExpression(node,"src-gate-index"),
+                node->getSrcGatePlusplus());
     out << ";\n";
 
     out << indent << "destgate = ";
     resolveGate(node->getDestModule(), findExpression(node,"dest-module-index"),
-                node->getDestGate(), findExpression(node,"dest-gate-index"));
+                node->getDestGate(), findExpression(node,"dest-gate-index"),
+                node->getDestGatePlusplus());
     out << ";\n";
 
 

@@ -1525,7 +1525,7 @@ ForLoopNode *ConnectionsNode::getFirstForLoopChild() const
 
 int ConnectionNode::getNumAttributes() const
 {
-    return 12;
+    return 14;
 }
 
 const char *ConnectionNode::getAttributeName(int k) const
@@ -1535,14 +1535,16 @@ const char *ConnectionNode::getAttributeName(int k) const
         case 1: return "src-module";
         case 2: return "src-module-index";
         case 3: return "src-gate";
-        case 4: return "src-gate-index";
-        case 5: return "dest-module";
-        case 6: return "dest-module-index";
-        case 7: return "dest-gate";
-        case 8: return "dest-gate-index";
-        case 9: return "arrow-direction";
-        case 10: return "banner-comment";
-        case 11: return "right-comment";
+        case 4: return "src-gate-plusplus";
+        case 5: return "src-gate-index";
+        case 6: return "dest-module";
+        case 7: return "dest-module-index";
+        case 8: return "dest-gate";
+        case 9: return "dest-gate-plusplus";
+        case 10: return "dest-gate-index";
+        case 11: return "arrow-direction";
+        case 12: return "banner-comment";
+        case 13: return "right-comment";
         default: return 0;
     }
 }
@@ -1554,14 +1556,16 @@ const char *ConnectionNode::getAttribute(int k) const
         case 1: return srcModule.c_str();
         case 2: return srcModuleIndex.c_str();
         case 3: return srcGate.c_str();
-        case 4: return srcGateIndex.c_str();
-        case 5: return destModule.c_str();
-        case 6: return destModuleIndex.c_str();
-        case 7: return destGate.c_str();
-        case 8: return destGateIndex.c_str();
-        case 9: return enumToString(arrowDirection, lr_vals, lr_nums, lr_n);
-        case 10: return bannerComment.c_str();
-        case 11: return rightComment.c_str();
+        case 4: return boolToString(srcGatePlusplus);
+        case 5: return srcGateIndex.c_str();
+        case 6: return destModule.c_str();
+        case 7: return destModuleIndex.c_str();
+        case 8: return destGate.c_str();
+        case 9: return boolToString(destGatePlusplus);
+        case 10: return destGateIndex.c_str();
+        case 11: return enumToString(arrowDirection, lr_vals, lr_nums, lr_n);
+        case 12: return bannerComment.c_str();
+        case 13: return rightComment.c_str();
         default: return 0;
     }
 }
@@ -1573,14 +1577,16 @@ void ConnectionNode::setAttribute(int k, const char *val)
         case 1: srcModule = val; break;
         case 2: srcModuleIndex = val; break;
         case 3: srcGate = val; break;
-        case 4: srcGateIndex = val; break;
-        case 5: destModule = val; break;
-        case 6: destModuleIndex = val; break;
-        case 7: destGate = val; break;
-        case 8: destGateIndex = val; break;
-        case 9: arrowDirection = stringToEnum(val, lr_vals, lr_nums, lr_n); break;
-        case 10: bannerComment = val; break;
-        case 11: rightComment = val; break;
+        case 4: srcGatePlusplus = stringToBool(val); break;
+        case 5: srcGateIndex = val; break;
+        case 6: destModule = val; break;
+        case 7: destModuleIndex = val; break;
+        case 8: destGate = val; break;
+        case 9: destGatePlusplus = stringToBool(val); break;
+        case 10: destGateIndex = val; break;
+        case 11: arrowDirection = stringToEnum(val, lr_vals, lr_nums, lr_n); break;
+        case 12: bannerComment = val; break;
+        case 13: rightComment = val; break;
         default: ;
     }
 }
@@ -1592,14 +1598,16 @@ const char *ConnectionNode::getAttributeDefault(int k) const
         case 1: return "";
         case 2: return "";
         case 3: return "";
-        case 4: return "";
+        case 4: return "false";
         case 5: return "";
         case 6: return "";
         case 7: return "";
         case 8: return "";
-        case 9: return "right";
+        case 9: return "false";
         case 10: return "";
-        case 11: return "\n";
+        case 11: return "right";
+        case 12: return "";
+        case 13: return "\n";
         default: return 0;
     }
 }
