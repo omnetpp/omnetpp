@@ -1,0 +1,31 @@
+%description:
+Test that simple module stack is properly cleaned up at the end of the
+simulation.
+
+%global:
+class {Noisy}
+{
+  public:
+    {Noisy}() {ev << "Noisy ctor!\n";}
+    virtual ~{Noisy}() {ev << "Noisy dtor!\n";}
+};
+
+
+
+%activity:
+ev << "begin\n";
+{Noisy} x;
+wait(1000);
+wait(1000);
+
+%inifile: {}.ini
+[General]
+network={}_network
+sim-time-limit=5s
+
+%contains-regex: stdout
+begin
+Noisy ctor!
+.*time limit reached.*
+Noisy dtor!
+

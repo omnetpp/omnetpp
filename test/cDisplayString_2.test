@@ -21,7 +21,7 @@ a=,a2,a3;x=joe,jim;b=,b2,,b4
 a=,a2,a3;x=joe,jim;b=b0,b2,,b4
 a=,a2,a3;x=joe,jim;b=b0,b2,,b4,,,,b7
 a=,a2,a3;x=joe,jim;b=b0,b2,,b4,,,,b7,b8
-a=,a2,a3;x=joe,jim;b=b0,b2,,b4,,,,b7,b8
-x=joe,jim;b=b0,b2,,b4,,,,b7,b8
+c=,,,c3;a=,a2,a3;x=joe,jim;b=b0,b2,,b4,,,,b7,b8
+c=,,,c3;x=joe,jim;b=b0,b2,,b4,,,,b7,b8
 .
 

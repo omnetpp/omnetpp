@@ -1,0 +1,45 @@
+%description:
+check backslash handling in cDisplayString
+
+%activity:
+// unfortunately, because of the C++ compiler we have to duplicate all backslashes :(
+cDisplayStringParser ds("a=c:\\\\tmp\\\\;b=,the \\; mark,Hello\\, Dolly!;"
+                        "c=1\\t2\\n\\3\\t4\\n\\!\\*\\\"\\'\\a\\xB.");
+
+ds.insertTag("x",1);
+ds.setTagArg("a",1,"alpha");
+ds.setTagArg("b",0,"bubu");
+ds.setTagArg("c",1,"chick");
+
+ev << ds.getString() << endl;
+
+ev << ds.getTagArg("a",0) << endl;
+ev << ds.getTagArg("a",1) << endl;
+ev << ds.getTagArg("b",0) << endl;
+ev << ds.getTagArg("b",1) << endl;
+ev << ds.getTagArg("b",2) << endl;
+ev << ds.getTagArg("c",0) << endl;
+ev << ds.getTagArg("c",1) << endl;
+ev << ".\n";
+
+%contains: stdout
+a=c:\\tmp\\,alpha;x;b=bubu,the \; mark,Hello\, Dolly!;c=1\t2\n3\t4\n!*"'a\x0B.,chick
+c:\tmp\
+alpha
+bubu
+the ; mark
+Hello, Dolly!
+1	2
+3	4
+!*"'a
+
+%contains: stdout
+.
+chick
+.
+
+
+
+
+
+

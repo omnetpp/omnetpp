@@ -1,5 +1,5 @@
 %description:
-Tests an activity() simple module deleting anoter activity() simple module 
+Tests a handleMessage() simple module deleting an activity() simple module
 which
   (a) stays inside a wait() call
   (b) stays inside a receive() call and has scheduled events.
@@ -67,15 +67,21 @@ void {NodeB}::activity()
 
 class {Deleter} : public cSimpleModule
 {
-    Module_Class_Members({Deleter},cSimpleModule,16384)
-    virtual void activity();
+    Module_Class_Members({Deleter},cSimpleModule,0);
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
 };
 
 Define_Module({Deleter});
 
-void {Deleter}::activity()
+void {Deleter}::initialize()
 {
-    wait(3);
+    scheduleAt(3, new cMessage("timer"));
+}
+
+void {Deleter}::handleMessage(cMessage *msg)
+{
+    delete msg;
 
     ev << "Deleting nodeA, nodeB at t=" << simTime() << endl;
     cModule *nodeA = parentModule()->submodule("nodeA");
@@ -83,9 +89,6 @@ void {Deleter}::activity()
     nodeA->deleteModule();
     nodeB->deleteModule();
     ev << "Deleted" << endl;
-
-    wait(2);
-    ev << "Still here at t=" << simTime() << endl;
 }
 
 %inifile: {}.ini
@@ -104,5 +107,5 @@ NodeA {network}.nodeA at t=2
 NodeB {network}.nodeB at t=2
 Deleting nodeA, nodeB at t=3
 Deleted
-Still here at t=5
+
 

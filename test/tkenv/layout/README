@@ -1,0 +1,6 @@
+
+Tests auto-layouting capability in Tkenv.
+
+Currently problematic ones:
+- net60 oscillates around a stable solution
+- networkLayers is total failure

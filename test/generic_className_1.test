@@ -18,7 +18,6 @@ PRINT_CLASSNAME( cArray )
 PRINT_CLASSNAME( cTDExpandingWindows )
 PRINT_CLASSNAME( cADByStddev )
 PRINT_CLASSNAME( cFSM )
-PRINT_CLASSNAME( cHead )
 PRINT_CLASSNAME( cLongHistogram )
 PRINT_CLASSNAME( cDoubleHistogram )
 PRINT_CLASSNAME( cKSplit )
@@ -43,7 +42,6 @@ cArray: cArray
 cTDExpandingWindows: cTDExpandingWindows
 cADByStddev: cADByStddev
 cFSM: cFSM
-cHead: cHead
 cLongHistogram: cLongHistogram
 cDoubleHistogram: cDoubleHistogram
 cKSplit: cKSplit

@@ -1,0 +1,25 @@
+%description:
+Test that dynamically allocated, cObject-based objects are properly cleaned up
+at the end of the simulation.
+
+Note: If the object was not cObject-based, OMNeT++ doesn't know anything
+about it and it cannot be deleted -- it's a good idea to wrap them
+into e.g. an auto_ptr which can delete it if the auto_ptr goes out of scope.
+
+%global:
+class {Noisy} : public cObject
+{
+  public:
+    {Noisy}() {ev << "Noisy ctor!\n";}
+    virtual ~{Noisy}() {ev << "Noisy dtor!\n";}
+};
+
+%activity:
+ev << "begin\n";
+new {Noisy};
+
+%contains-regex: stdout
+begin
+Noisy ctor!
+.*No more events.*
+Noisy dtor!

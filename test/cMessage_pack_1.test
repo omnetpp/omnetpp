@@ -1,0 +1,41 @@
+%description:
+Tests cMessage.netPack/netUnpack.
+
+%global:
+#include <string.h>
+#include "../src/sim/parsim/cfilecommbuffer.h"
+
+%activity:
+
+#define PRINT(X)  ev << #X << ":" << (X) << endl
+
+cFileCommBuffer *buffer = new cFileCommBuffer();
+
+cMessage msg("msg");
+msg.setKind(5);
+msg.setPriority(8);
+msg.setLength(1500);
+msg.setBitError(false);
+msg.setTimestamp(0.2234);
+msg.netPack(buffer);
+
+cMessage msg2("tmp");
+msg2.netUnpack(buffer);
+ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
+
+PRINT(msg2.name());
+PRINT(msg2.priority());
+PRINT(msg2.length());
+PRINT(msg2.hasBitError());
+PRINT(msg2.timestamp());
+PRINT(msg2.encapsulatedMsg()==NULL);
+
+%contains: stdout
+isBufferEmpty:1
+msg2.name():msg
+msg2.priority():8
+msg2.length():1500
+msg2.hasBitError():0
+msg2.timestamp():0.2234
+msg2.encapsulatedMsg()==NULL:1
+

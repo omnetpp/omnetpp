@@ -36,7 +36,7 @@ fclose(f3);
 
 %contains: {}_h.dat
 #
-# (cLongHistogram) cLongHistogram_file_1_network.local-objects.
+# (cLongHistogram) {}_network.
 #
 7	 #= num_samples
 9 20	 #= min, max
@@ -65,7 +65,7 @@ fclose(f3);
 
 %contains: {}_h2.dat
 #
-# (cLongHistogram) cLongHistogram_file_1_network.local-objects.
+# (cLongHistogram) {}_network.
 #
 7	 #= num_samples
 9 20	 #= min, max

@@ -1,30 +1,23 @@
 %description:
-Subclassing cObject: *must* take ownership of members subclassed from cObject.
-
-Note take(&y) call in the code below. If it wasn't there, crash would occur
-at end of simulation because double destruction of 'y': both the simple module
-(which is by default the owner of all objects) and X destructor will call
-y's destructor.
+Subclassing cObject: *must* take ownership of members subclassed from cObject,
+and destructor must call drop().
 
 %global:
 
-class Noisy : public cObject
+class {Noisy} : public cObject
 {
   public:
-    Noisy(const char *name=NULL) : cObject(name) {ev << "noisy born\n";}
-    ~Noisy() {ev << "noisy died\n";}
+    {Noisy}(const char *name=NULL) : cObject(name) {ev << "noisy born\n";}
+    ~{Noisy}() {ev << "noisy died\n";}
 };
 
 class X2 : public cObject
 {
   public:
-    Noisy y;
+    {Noisy} y;
 
-    X2() : cObject() {
-        take(&y);  // try to comment this out and watch what happens
-    }
-
-    ~X2() { }
+    X2() : cObject() {take(&y);}
+    ~X2() {drop(&y);}
 };
 
 %activity:
