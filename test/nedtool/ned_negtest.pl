@@ -14,9 +14,14 @@ $verbose=1;
 
 $isWindows = ($ENV{OS} =~ /windows/i) ? 1 : 0;
 
-@filenames = @ARGV;
-if (@filenames==()) {
+if (@ARGV == ())
+{
    @filenames = glob("*.ned");
+}
+while (@ARGV)
+{
+    $arg = shift @ARGV;
+    push(@filenames,glob($arg));
 }
 
 foreach $testfile (@filenames)

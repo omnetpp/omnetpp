@@ -1,0 +1,2 @@
+perl ned_negtest.pl $*
+rm *.err
