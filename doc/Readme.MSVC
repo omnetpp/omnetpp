@@ -45,9 +45,8 @@ First download the following packages:
  - Perl (used by some tools)
  - libxml, libxslt
 
-Appendix C (at the end of this file) and 3rdparty.txt lists additional
-optional packages that can be useful, and sites where the packages can be
-downloaded from.
+3rdparty.txt lists additional optional packages that can be useful, and sites 
+where these packages can be downloaded from.
 
 To unpack .tgz or .tar.gz (gzipped, tar packed) files you can use gzip and tar,
 or ALZip or other archivers. Some versions of WinZip have been reported to
@@ -77,22 +76,22 @@ you want to install OMNeT++, and extract the archive using the command:
    for file concatenation. Use "omnetpp" instead.
 
 In this text we'll assume that the directory which contains the
-simulator files is called c:\omnetpp-2.3.
+simulator files is called c:\omnetpp-3.0.
 
 Make sure the MSVC executables (nmake,cl,link,...) are in the path.
 The BIN directories of the VC should appear in the PATH environment variable.
 They are C:\PROGRA~1\MICROS~1\VC98\BIN and C:\PROGRA~1\MICROS~1\MSDEV98\BIN
 by default.
 
-It is also recommended that you put the c:\omnetpp-2.3\bin directory
+It is also recommended that you put the c:\omnetpp-3.0\bin directory
 into the path. (See section "Checking and modifying environment variables",
 appendix B)
 
 Check the configuser.vc file to make sure it contains the proper settings.
 You'll probably have to correct the following settings in it:
-    OMNETPP_ROOT=c:\omnetpp-2.3
-    TK_DIR=e:/tcl
-    TK_VER=8.4
+    OMNETPP_ROOT=
+    TK_DIR=
+    TK_VER=
 
 Then type:
     nmake -f Makefile.vc
@@ -190,7 +189,7 @@ way:
     settings for *all* configurations (In the Project|Settings dialog,
     select 'All configurations' from the combo in the top-left corner.)
     - include path: You must tell MSVC the location of omnetpp.h and other
-      header files.  Add c:\omnetpp-2.3\include to the include path in
+      header files.  Add c:\omnetpp-3.0\include to the include path in
       Project|Settings --> 'C/C++' tab --> 'Preprocessor' category -->
       Additional include directories.
     - library path: MSVC needs to know where to find sim_std.lib, envir.lib
@@ -236,7 +235,7 @@ You may also use the OMNeT++ App Wizard and AddNEDFileToProject macro
 6. Using auto-generated makefiles
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-From 2.3b1, OMNeT++ can automatically generate makefiles for your simulations.
+OMNeT++ can automatically generate makefiles for your simulations.
 Open a command prompt, cd to the directory of your sources, then type
 
     opp_nmakemake
@@ -252,8 +251,8 @@ opp_nmakemake accepts a number of command-line switches, run it with the
 directories, the makefile be extended by makefile fragments written by
 you, etc.
 
-The generated makefile includes configuser.vc from the c:\omnetpp-2.3
-directory -- it can be edited if you need different settings.
+The generated makefile includes configuser.vc from the c:\omnetpp-3.0
+directory.
 
 
 7. Reconfiguring the libraries
@@ -305,30 +304,12 @@ Settings --> C/C++ --> Preprocessor --> Preprocessor definitions). If you
 fail to do so, you'll get undefined linker symbols!
 
 
-9. Using Plove
-~~~~~~~~~~~~~~
-
-If you want to use Plove, you should download and install Gnuplot.
-You'll also need a couple of Unix tools like grep and awk, the easiest way
-to get them is to download and install the Cygwin package from www.cygnus.com.
-
-When you have everything installed, start Plove and set the appropriate
-configuration in Options|External programs. If you entered everything correctly,
-Plove should work.
-
-A usual caveat is that Gnuplot expects forward slashes in filenames and Plove
-supplies backslashes or vica versa (there are multiple incompatible builds of
-Gnuplot on NT); if you suspect this might be the problem, reverse the
-slash/backslash setting in Options|External programs.
-
-
-10. Misc notes
-~~~~~~~~~~~~~~
+9. Misc notes
+~~~~~~~~~~~~~
 When using MSVC from the command line, you may get the error popup
 "MSPDB60.DLL not found in the following path: ...". Funny is that the
-displayed path includes MSDev98\Bin, where the MSPDB60.DLL resides indeed!!!
-Solution is to copy this dll to the VC98\Bin directory. As a quick web search
-showed, I'm not the only one who got this weird error...
+displayed path includes MSDev98\Bin, where the MSPDB60.DLL resides indeed.
+Solution is to copy this dll to the VC98\Bin directory.
 
 
 Have fun!
@@ -344,7 +325,10 @@ MSVC variables:
  Path=%PATH%;C:\PROGRA~1\Tcl\bin;C:\PROGRA~1\MICROS~1\Common\msdev98\BIN;C:\PROGRA~1\MICROS~1\VC98\BIN
 
 Tcl/Tk variables:
- TCL_LIBRARY=C:\PROGRA~1\TCL\LIB\TCL8.3
+ TCL_LIBRARY=C:\PROGRA~1\Tcl\lib\tcl8.4
+
+Bison variables:
+ BISON_SIMPLE=d:/home/tools/UnxUtils/usr/local/share/bison.simple 
 
 Note:
 - Visual C++: As we use command line compilation, the BIN
@@ -356,7 +340,7 @@ Note:
 - Tcl/Tk requires the following:
   - the DLL directory of Tcl should appear in the PATH.
   - the TCL_LIBRARY environment variable should be set to the directory
-    which contains init.tcl. It is usually the C:/PROGRA~1/TCL/LIB/TCLx.x
+    which contains init.tcl. It is usually the C:/PROGRA~1/Tcl/lib/tclx.x
     directory.
 
 
@@ -390,33 +374,4 @@ the settings, log out and log in again.
 Managing environment variables is also discussed in several Microsoft Knowledge
 Base articles, e.g. 310519. Go to support.microsoft.com and type "environment
 variables" in the Search box.
-
-
-Appendix C
-~~~~~~~~~~
-
-* OMNeT++: The official site of OMNeT++ is
-      http://www.hit.bme.hu/phd/vargaa/omnetpp.htm you can download the latest
-      version of OMNeT++ from http://www.hit.bme.hu/anonftp/omnetpp/latest/ .
-  File format: .tgz (gzipped tar)
-
-* Tcl/Tk: (Ver 8.3) You can find installable executables in
-      ftp://ftp.scriptics.com/pub/tcl/ .
-      The 8.3 setup is ftp://ftp.scriptics.com/pub/tcl/tcl8_3/tcl83b2.exe .
-
-* Gnuplot: Good Win32 ports are available from ...
-
-* gzip and tar: These are GNU tools. There are several ports of these software
-      one is ftp://sourceware.cygnus.com/pub/cygwin/ . Recommended to use UNTGZ
-      Decompression Utility 0.95 freeware version ftp://garbo.uwasa.fi/pc/unix/
-      (untgz095.zip)
-  File Format: Zip
-  Usage: untgz32.exe xxx.tgz
-
-* WinZip: (Ver 7.0) Official site http://www.winzip.com/ download evaluation
-      version from there or recommended to use http://www.tucows.com/ .
-
-* flex / bison: They are included in the Cygwin package (http://www.cygnus.com)
-      another option is http://www.monmouth.com/~wstreett/lex-yacc/lex-yacc.html
-
 
