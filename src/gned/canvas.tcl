@@ -129,6 +129,8 @@ proc openModuleOnNewCanvas {modkey} {
     #bind $txt  <Control-v> "tk_textPaste $txt"
 
     # draw the module on the canvas
+    global hack_y
+    set hack_y 0
     drawItemRecursive $modkey $canv_id
 
     # show the canvas -- must be near the end because it needs the module name
@@ -348,7 +350,7 @@ proc adjustWindowTitle {} {
 #
 # Loops through all open canvases and saves the pictures into postscript files
 # in the given directory. Also writes an xml file which can be used to
-# generate clickable image maps. 
+# generate clickable image maps.
 #
 # This proc is used to implement the -c command-line option.
 #

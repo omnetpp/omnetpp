@@ -17,7 +17,7 @@
 # called when the user wants to switch from Graphics view to NED view
 #
 proc switchToNED {} {
-    global gned canvas 
+    global gned canvas
 
     set canv_id $gned(canvas_id)
     if {$canvas($canv_id,mode)=="textedit"} return
@@ -185,6 +185,8 @@ proc switchToGraphics {} {
     # update canvas
     set canvas($canv_id,module-key) $modkey
     $canvas($canv_id,canvas) delete all
+    global hack_y
+    set hack_y 0
     drawItemRecursive $modkey
 
     # graphics view

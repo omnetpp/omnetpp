@@ -324,16 +324,35 @@ proc draw_module {c key} {
 # draw_submod: internal to drawItem
 proc draw_submod {c key} {
     global ned icons
+    global hack_y
 
+    # determine $icon, $sx and $sy
     set icon  [_getPar {} "$key,disp-icon" ""]
-
-    set x  [_getPar {} "$key,disp-xpos" [expr 100+100*rand()]]
-    set y  [_getPar {} "$key,disp-ypos" [expr 100+100*rand()]]
-
     if {$icon==""} {
         set sx [_getPar {} "$key,disp-xsize" 40]
         set sy [_getPar {} "$key,disp-ysize" 24]
+    } else {
+        # check if icon exists
+        if [catch {image type $icon}] {
+            set icon $icons(unknown)
+        }
+        set sx [expr [image width $icon]+4]
+        set sy [expr [image height $icon]+4]
+    }
 
+    # determine position
+    set x  [_getPar {} "$key,disp-xpos" ""]
+    set y  [_getPar {} "$key,disp-ypos" ""]
+
+    if {$x=="" || $y==""} {
+        set hack_y [expr $hack_y + 2*$sy]
+        if {$x==""} {set x [expr $sx+150*rand()]}
+        if {$y==""} {set y $hack_y}
+    }
+    if {$hack_y<$y} {set hack_y $y}
+
+    # determine bounding box and create canvas items
+    if {$icon==""} {
         set x1 [expr $x-$sx/2]
         set y1 [expr $y-$sy/2]
         set x2 [expr $x+$sx/2]
@@ -346,17 +365,7 @@ proc draw_submod {c key} {
         set r   [$c create rect $x1 $y1 $x2 $y2 -width $thickness -outline $outline -fill $fill]
         set lbl [$c create text $x $y2 -anchor n]
         set ic ""
-
     } else {
-
-        # check if icon exists
-        if [catch {image type $icon}] {
-            set icon $icons(unknown)
-        }
-
-        set sx [expr [image width $icon]+4]
-        set sy [expr [image height $icon]+4]
-
         set x1 [expr $x-$sx/2]
         set y1 [expr $y-$sy/2]
         set x2 [expr $x+$sx/2]
@@ -367,10 +376,12 @@ proc draw_submod {c key} {
         set ic  [$c create image $x $y -image $icon]
     }
 
+    # store canvas item ids and add tags
     set ned($key,rect-cid)   $r
     set ned($key,label-cid)  $lbl
     set ned($key,icon-cid)   $ic
 
+    # add tags
     $c addtag "submod" withtag $r
     $c addtag "submod" withtag $lbl
     $c addtag "submod" withtag $ic
@@ -379,6 +390,7 @@ proc draw_submod {c key} {
     $c addtag "key-$key" withtag $lbl
     $c addtag "key-$key" withtag $ic
 
+    # set label
     if {$ned($key,vectorsize)!=""} {
         set txt "$ned($key,name)\[$ned($key,vectorsize)\]"
     } else {

@@ -1,6 +1,14 @@
+2003-08-01  Andras Varga
+
+	* random submodule placement (used when display string doesn't contain
+	coordinates) changed to work identically to Tkenv: x is random and
+	y keeps growing
+
 2003-07-28  Andras Varga
 
-	* canvas.tcl, gned.tcl: implemented "export postscript and exit" mode
+	* canvas.tcl, gned.tcl: implemented "export postscript and exit" mode;
+	also exports images.xml that contains info for creating clickable image
+	maps
 
 2003-06-16  ------ omnetpp-2.3 released ------
 
