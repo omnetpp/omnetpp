@@ -216,6 +216,7 @@ int TCmdenvApp::run()
             ::fflush(fout);
 
             readPerRunOptions(run_nr());
+            makeOptionsEffective();
 
             // find network
             cNetworkType *network = findNetwork(opt_network_name.c_str());
@@ -228,8 +229,6 @@ int TCmdenvApp::run()
 
             simulation.setupNetwork(network, run_nr());
             setupnetwork_done = true;
-
-            makeOptionsEffective();
 
             // prepare for simulation run
             ::fprintf(fout, "Initializing...\n");

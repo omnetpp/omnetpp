@@ -1,3 +1,8 @@
+2004-10-27  Andras Varga
+
+	* cmdenv.cc: minor ajustment: makeOptionsEffective() should be called 
+	right after readPerRunOptions()
+
 2004-10-25  Andras Varga
 	
 	* cmdenv.cc: updated for info() and fullPath() signature changes 
