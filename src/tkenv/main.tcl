@@ -255,10 +255,10 @@ proc create_omnetpp_window {} {
     label .statusbar2.livemsgs \
         -relief groove -text {Live msgs: 0} -width 20 -anchor w
 
-    label .statusbar3.simsecpersec \
-        -relief groove -text {Simsec/sec: n/a} -width 22 -anchor w
     label .statusbar3.eventspersec \
         -relief groove -text {Ev/sec: n/a} -width 15 -anchor w
+    label .statusbar3.simsecpersec \
+        -relief groove -text {Simsec/sec: n/a} -width 22 -anchor w
     label .statusbar3.eventspersimsec \
         -relief groove -text {Ev/simsec: n/a} -width 18 -anchor w
 
@@ -271,8 +271,8 @@ proc create_omnetpp_window {} {
     pack .statusbar2.totalmsgs -anchor n -expand 1 -fill x -side left
     pack .statusbar2.livemsgs -anchor n -expand 1 -fill x -side left
 
-    pack .statusbar3.simsecpersec -anchor n -expand 1 -fill x -side left
     pack .statusbar3.eventspersec -anchor n -expand 1 -fill x -side left
+    pack .statusbar3.simsecpersec -anchor n -expand 1 -fill x -side left
     pack .statusbar3.eventspersimsec -anchor n -expand 1 -fill x -side left
 
 

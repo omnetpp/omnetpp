@@ -395,8 +395,3 @@ Jan 3, 2000
    number of messages created, number of currently existing message objects)
 Jan 13, 2000
  - added performance status bar (simsec/sec, events/sec, events/simsec gauges)
-
- TBD:
-      add Speedometer calls to all necessary places;
-      time-driven intervals;
-      configurable toolbars;

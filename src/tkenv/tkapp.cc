@@ -80,6 +80,7 @@ class Speedometer
   public:
     Speedometer();
     void addEvent(simtime_t t);
+    double secondsInThisInterval();
     void beginNewInterval();
     double eventsPerSec();
     double eventsPerSimSec();
@@ -109,6 +110,12 @@ void Speedometer::addEvent(simtime_t t)
 
     events++;
     current_simtime = t;
+}
+
+double Speedometer::secondsInThisInterval()
+{
+    long elapsed_clocks = clock() - intvstart_clock;
+    return (double)elapsed_clocks / CLOCKS_PER_SEC;
 }
 
 void Speedometer::beginNewInterval()
@@ -359,8 +366,11 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
             if (simulation.eventNumber()%opt_updatefreq_fast==0)
             {
                 updateSimtimeDisplay();
-                speedometer.beginNewInterval();
-                updatePerformanceDisplay(speedometer);
+                if (speedometer.secondsInThisInterval() > 1.0)
+                {
+                    speedometer.beginNewInterval();
+                    updatePerformanceDisplay(speedometer);
+                }
                 updateInspectors();
                 Tcl_Eval(interp, "update");
             }
@@ -370,8 +380,11 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
             if (!fast || simulation.eventNumber()%opt_updatefreq_fast==0)
             {
                 updateSimtimeDisplay();
-                speedometer.beginNewInterval();
-                updatePerformanceDisplay(speedometer);
+                if (speedometer.secondsInThisInterval() > 1.0)
+                {
+                    speedometer.beginNewInterval();
+                    updatePerformanceDisplay(speedometer);
+                }
                 if (!stopinmod) updateInspectors();
                 Tcl_Eval(interp, "update");
             }
@@ -429,8 +442,11 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
         if (simulation.eventNumber()%opt_updatefreq_express==0)
         {
             updateSimtimeDisplay();
-            speedometer.beginNewInterval();
-            updatePerformanceDisplay(speedometer);
+            if (speedometer.secondsInThisInterval() > 1.0)
+            {
+                speedometer.beginNewInterval();
+                updatePerformanceDisplay(speedometer);
+            }
             Tcl_Eval(interp, "update");
         }
 
@@ -749,28 +765,28 @@ void TOmnetTkApp::updatePerformanceDisplay(Speedometer& speedometer)
     char buf[16];
     sprintf(buf, "%g", speedometer.simSecPerSec());
     CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {"
-                        "simsec/sec: ", buf,
+                        "Simsec/sec: ", buf,
                         "}", NULL ));
     sprintf(buf, "%g", speedometer.eventsPerSec());
     CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {"
-                        "ev/sec: ", buf,
+                        "Ev/sec: ", buf,
                         "}", NULL ));
     sprintf(buf, "%g", speedometer.eventsPerSimSec());
     CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {"
-                        "ev/simsec: ", buf,
+                        "Ev/simsec: ", buf,
                         "}", NULL ));
 }
 
 void TOmnetTkApp::clearPerformanceDisplay()
 {
     CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {"
-                        "simsec/sec: n/a"
+                        "Simsec/sec: n/a"
                         "}", NULL ));
     CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {"
-                        "ev/sec: n/a"
+                        "Ev/sec: n/a"
                         "}", NULL ));
     CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {"
-                        "ev/simsec: n/a"
+                        "Ev/simsec: n/a"
                         "}", NULL ));
 }
 
