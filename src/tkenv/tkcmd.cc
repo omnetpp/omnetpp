@@ -22,6 +22,7 @@
 #include "csimul.h"
 #include "cmodule.h"
 #include "ctypes.h"
+#include "cstruct.h"
 #include "tkapp.h"
 #include "tklib.h"
 #include "tkinsp.h"
@@ -61,6 +62,7 @@ int deleteInspector_cmd(ClientData, Tcl_Interp *, int, char **);
 int updateInspectors_cmd(ClientData, Tcl_Interp *, int, char **);
 int inspectorType_cmd(ClientData, Tcl_Interp *, int, char **);
 int inspectorCommand_cmd(ClientData, Tcl_Interp *, int, char **);
+int hasDescriptor_cmd(ClientData, Tcl_Interp *, int, char **);
 
 int objectNullPointer_cmd(ClientData, Tcl_Interp *, int, char **);
 int objectRoot_cmd(ClientData, Tcl_Interp *, int, char **);
@@ -110,6 +112,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_updateinspectors",  updateInspectors_cmd  }, // args: -
    { "opp_inspectortype",     inspectorType_cmd     }, // translates inspector type code to namestr and v.v.
    { "opp_inspectorcommand",  inspectorCommand_cmd  }, // args: <window> <args-to-be-passed-to-inspectorCommand>
+   { "opp_hasdescriptor",     hasDescriptor_cmd     }, // args: <window>
    // Functions that return object pointers
    { "opp_object_nullpointer",  objectNullPointer_cmd  },
    { "opp_object_root",         objectRoot_cmd         },
@@ -630,6 +633,18 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    assert(insp!=NULL);
 
    return insp->inspectorCommand(interp, argc-2, argv+2);
+}
+
+int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+{
+   if (argc!=2) return TCL_ERROR;
+   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+
+   cObject *object; int type;
+   splitInspectorName( argv[1], object, type);
+
+   interp->result = cStructDescriptor::hasDescriptor(object->className()) ? "1" : "0";
+   return TCL_OK;
 }
 
 //--------------

@@ -1,3 +1,19 @@
+2001-11-25  Andras Varga
+
+	* implemented "message subclassing": message inspectors have now a
+        Fields page which displays fields exposed through the cStructDescriptor
+        interface. (If there's no cStructDescriptor for the object, the Fields
+        tab is missing.)
+
+        * the default object inspector has been improved; it also displays a
+        Fields page if there's a cStructDescriptor for the object.
+
+        * TODO: Fields page will have to be refined (now it's a simple
+        multi-line text widget).
+
+        * widget.tcl: label texts created with label-sunkenlabel are now
+        justfied left
+
 2001-09-14  Andras Varga
 
         * updated to cModule's new display string methods

@@ -42,7 +42,6 @@ struct InspTypeName {int code; char *namestr;} insp_typenames[] =
      { INSP_PARAMETERS,       "Parameters"    },
      { INSP_GATES,            "Gates"         },
      { INSP_SUBMODS,          "Submodules"    },
-     { INSP_STRUCT,           "NED struct"    },
      { -1,                     NULL           }
 };
 
@@ -237,11 +236,20 @@ void TInspector::fillModuleListbox(const char *listbox, cModule *parent,
    setLabel(w, buf);
 }
 
+//=======================================================================
+
+TInspectorPanel::TInspectorPanel(const char *widgetname, cObject *obj)
+{
+   strcpy(this->widgetname, widgetname);
+   object = obj;
+}
+
 
 //=======================================================================
 TObjInspector::TObjInspector(cObject *obj,int typ,void *dat) :
     TInspector(obj,typ,dat)
 {
+    fieldspage = NULL;
 }
 
 void TObjInspector::createWindow()
@@ -252,16 +260,51 @@ void TObjInspector::createWindow()
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    CHK(Tcl_VarEval(interp, "create_objinspector ", windowname, NULL ));
+
+   if (cStructDescriptor::hasDescriptor(object->className()))
+   {
+       char fieldspagewidget[256];
+       sprintf(fieldspagewidget, "%s.nb.fields", windowname);
+       fieldspage = new TStructPanel(fieldspagewidget, object);
+   }
 }
 
 void TObjInspector::update()
 {
    TInspector::update();
 
+   setLabel(".nb.info.name.e",object->name());
+   setLabel(".nb.info.fullpath.e",object->fullPath());
+   setLabel(".nb.info.class.e",object->className());
+
    char buf[129];
    object->info(buf);
-   setLabel(".main.info",buf);
+   setLabel(".nb.info.info.e",buf);
+
+   if (fieldspage)
+       fieldspage->update();
 }
+
+void TObjInspector::writeBack()
+{
+   if (fieldspage)
+       fieldspage->writeBack();
+
+   TInspector::writeBack();    // must be there after all changes
+}
+
+int TObjInspector::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+{
+   if (fieldspage)
+       return fieldspage->inspectorCommand(interp, argc, argv);
+   return TCL_ERROR;
+}
+
+TObjInspector::~TObjInspector()
+{
+   delete fieldspage;
+}
+
 
 //=======================================================================
 TContainerInspector::TContainerInspector(cObject *obj,int typ,void *dat,InfoFunc f) :
@@ -299,6 +342,7 @@ void TContainerInspector::update()
 TMessageInspector::TMessageInspector(cObject *obj,int typ,void *dat) :
     TInspector(obj,typ,dat)
 {
+   fieldspage = NULL;
 }
 
 void TMessageInspector::createWindow()
@@ -309,6 +353,13 @@ void TMessageInspector::createWindow()
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    CHK(Tcl_VarEval(interp, "create_messageinspector ", windowname, NULL ));
+
+   if (cStructDescriptor::hasDescriptor(object->className()))
+   {
+       char fieldspagewidget[256];
+       sprintf(fieldspagewidget, "%s.nb.fields", windowname);
+       fieldspage = new TStructPanel(fieldspagewidget, object);
+   }
 }
 
 void TMessageInspector::update()
@@ -351,6 +402,9 @@ void TMessageInspector::update()
        else strcpy(buf,"Dest: n/a");
    setButtonText(".nb.send.dest", buf);
 
+   if (fieldspage)
+       fieldspage->update();
+
    deleteInspectorListbox( ".nb.params" );
    fillInspectorListbox(".nb.params", &msg->parList(), infofunc_infotext, false);
 }
@@ -366,8 +420,24 @@ void TMessageInspector::writeBack()
    msg->setBitError( atol( getEntry(".nb.info.error.e"))!=0 );
    msg->setTimestamp( atof( getEntry(".nb.send.tstamp.e")) );
 
+   if (fieldspage)
+       fieldspage->writeBack();
+
    TInspector::writeBack();    // must be there after all changes
 }
+
+int TMessageInspector::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+{
+   if (fieldspage)
+       return fieldspage->inspectorCommand(interp, argc, argv);
+   return TCL_ERROR;
+}
+
+TMessageInspector::~TMessageInspector()
+{
+   delete fieldspage;
+}
+
 
 //=======================================================================
 

@@ -53,12 +53,11 @@ Register_InspectorFactory( cFSMIFC,            createCFSMInspector);
 TInspector *createCObjectInspector(cObject *object, int type, void *data)
 {
    switch (type) {
-     case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,INSP_CONTAINER,-1); // FIXME: add INSP_STRUCT if needed!
+     case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,INSP_CONTAINER,-1);
                           return NO(TInspector);
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
-     case INSP_STRUCT:    return new TStructInspector( object, INSP_STRUCT, data ); // FIXME: only if descriptor exists!
      default:             return NO(TInspector);
    }
 }

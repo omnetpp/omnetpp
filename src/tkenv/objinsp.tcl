@@ -150,21 +150,52 @@ proc inspect_this {win type} {
 
 
 #===================================================================
+#    STRUCT (FIELDS) PANEL
+#===================================================================
+
+proc create_structpanel {w} {
+    # FIXME: a text is a temporary solution... should be sth like a property sheet
+    text $w.txt -height 12 -width 40
+    pack $w.txt -expand 1 -fill both -side top
+}
+
+
+#===================================================================
 #    INSPECTOR WINDOWS
 #===================================================================
 
 proc create_objinspector {name} {
-    # create default inspector: displays the info() string
+
     set w $name
     create_inspector_toplevel $w
 
-    frame $w.main -borderwidth 1
-    label $w.main.lbl -text "\"object->info()\" string:"
-    message $w.main.info -relief sunken -aspect 1000 -justify left
+    set nb $w.nb
+    notebook $nb
+    $nb config  -width 300 -height 200
+    pack $nb -expand 1 -fill both
 
-    pack $w.main -anchor center -expand 1 -fill both -side top
-    pack $w.main.lbl -anchor center -expand 1 -fill both -side top
-    pack $w.main.info -anchor center -expand 1 -fill both -side top
+    set fieldspage_needed [opp_hasdescriptor $w]
+
+    notebook_addpage $nb info {General}
+    if {$fieldspage_needed} {
+        notebook_addpage $nb fields {Fields}
+    }
+
+    # page 1: info
+    label-sunkenlabel $nb.info.name {Name:}
+    label-sunkenlabel $nb.info.fullpath {Full path:}
+    label-sunkenlabel $nb.info.class {C++ class:}
+    label-sunkenlabel $nb.info.info {obj->info() says:}
+
+    pack $nb.info.name -expand 1 -fill x -side top
+    pack $nb.info.fullpath -expand 1 -fill x -side top
+    pack $nb.info.class -expand 1 -fill x -side top
+    pack $nb.info.info -expand 1 -fill x -side top
+
+    # page 2: fields
+    if {$fieldspage_needed} {
+        create_structpanel $nb.fields
+    }
 }
 
 proc create_containerinspector {name args} {
@@ -196,9 +227,13 @@ proc create_messageinspector {name} {
     $nb config  -width 300 -height 200
     pack $nb -expand 1 -fill both
 
+    set fieldspage_needed [opp_hasdescriptor $w]
+
     notebook_addpage $nb info     {General}
     notebook_addpage $nb send     {Sending/Arrival}
-    # notebook_addpage $nb fields {Fields}
+    if {$fieldspage_needed} {
+        notebook_addpage $nb fields {Fields}
+    }
     notebook_addpage $nb params   {Params}
 
     # page 1: info
@@ -234,7 +269,9 @@ proc create_messageinspector {name} {
     pack $nb.send.dest -expand 1 -fill x -side top
 
     # page 3: fields
-    # ---future extension---
+    if {$fieldspage_needed} {
+        create_structpanel $nb.fields
+    }
 
     # page 4: params
     create_inspector_listbox $nb.params

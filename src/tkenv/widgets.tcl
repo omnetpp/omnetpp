@@ -76,9 +76,9 @@ proc label-sunkenlabel {w label {text {}}} {
     # utility function: create a frame with a label+"readonly entry"
     frame $w
     label $w.l -anchor w -width 16 -text $label
-    label $w.e -relief groove -justify left
+    label $w.e -relief groove -justify left -anchor w
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
-    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
+    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side left
     $w.e config -text $text
 }
 

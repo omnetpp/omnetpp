@@ -32,7 +32,6 @@ enum { INSP_GETTYPES=-1,
        INSP_PARAMETERS,
        INSP_GATES,
        INSP_SUBMODS,
-       INSP_STRUCT,         // cStructDescriptor-based one
        NUM_INSPECTORTYPES   // this must be the last one
 };
 
@@ -82,15 +81,46 @@ class TInspector : public cObject
 
 };
 
+// this defines a panel that can be inserted into any inspector
+class TInspectorPanel
+{
+   protected:
+      char widgetname[80];
+      cObject *object;
+   public:
+      TInspectorPanel(const char *widgetname, cObject *obj);
+      virtual void update() = 0;
+      virtual void writeBack() = 0;
+      virtual int inspectorCommand(Tcl_Interp *, int, char **) = 0;
+};
+
+//=========================================================================
+// panels
+
+class TStructPanel : public TInspectorPanel
+{
+   public:
+      TStructPanel(const char *widgetname, cObject *obj);
+      virtual void update();
+      virtual void writeBack();
+      virtual int inspectorCommand(Tcl_Interp *, int, char **);
+};
+
 //=========================================================================
 // inspectors
 
+
 class TObjInspector : public TInspector
 {
+   protected:
+      TStructPanel *fieldspage;
    public:
       TObjInspector(cObject *obj,int typ,void *dat=NULL);
+      ~TObjInspector();
       virtual void createWindow();
       virtual void update();
+      virtual void writeBack();
+      virtual int inspectorCommand(Tcl_Interp *interp, int argc, char **argv);
 };
 
 class TContainerInspector : public TInspector
@@ -179,11 +209,15 @@ class TOutVectorWindow : public TInspector
 
 class TMessageInspector: public TInspector
 {
+   protected:
+      TStructPanel *fieldspage;
    public:
       TMessageInspector(cObject *obj,int typ,void *dat=NULL);
+      ~TMessageInspector();
       virtual void createWindow();
       virtual void update();
       virtual void writeBack();
+      virtual int inspectorCommand(Tcl_Interp *interp, int argc, char **argv);
 };
 
 class TWatchInspector: public TInspector
@@ -279,16 +313,5 @@ class TPacketInspector: public TMessageInspector
       virtual void update();
       virtual void writeBack();
 };
-
-class TStructInspector: public TInspector
-{
-   public:
-      TStructInspector(cObject *obj,int typ,void *dat=NULL);
-      virtual void createWindow();
-      virtual void update();
-      virtual void writeBack();
-      virtual int inspectorCommand(Tcl_Interp *, int, char **);
-};
-
 
 #endif

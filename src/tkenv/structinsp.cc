@@ -28,33 +28,21 @@
 
 //=======================================================================
 
-TStructInspector::TStructInspector(cObject *obj,int typ,void *dat) :
-    TInspector(obj,typ,dat)
+TStructPanel::TStructPanel(const char *widgetname, cObject *obj) :
+    TInspectorPanel(widgetname,obj)
 {
 }
 
-void TStructInspector::createWindow()
+void TStructPanel::update()
 {
-   TInspector::createWindow(); // create window name etc.
-
-   // create inspector window by calling the specified proc with
-   // the object's pointer. Window name will be like ".ptr80003a9d-1"
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "create_structinspector ", windowname, NULL ));
-}
-
-void TStructInspector::update()
-{
-   TInspector::update();
-
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
 
    // get descriptor object
    cStructDescriptor *sd = cStructDescriptor::createDescriptorFor( object );
    if (!sd)
    {
-       CHK(Tcl_VarEval(interp, windowname, ".main.txt delete 1.0 end", NULL));
-       CHK(Tcl_VarEval(interp, windowname, ".main.txt insert 1.0 {No cStructDescriptor registered for this class!}", NULL));
+       CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));
+       CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {No cStructDescriptor registered for this class!}", NULL));
    }
 
    // print everything in a 4K buffer, then display it in a text control.
@@ -76,19 +64,19 @@ void TStructInspector::update()
                // FIXME: handle enumnames too!
                case cStructDescriptor::FT_BASIC:
                    sd->getFieldAsString(fld, 0, val, 128); // FIXME: error handling!
-                   sprintf(s,"%s%s = %s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
+                   sprintf(s,"%s\t%s = \t%s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
                    s+=strlen(s);
                    break;
                case cStructDescriptor::FT_SPECIAL:
-                   sprintf(s,"%s%s = ...\n", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
+                   sprintf(s,"%s\t%s = \t...\n", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
                    s+=strlen(s);
                    break;
                case cStructDescriptor::FT_STRUCT:
-                   sprintf(s,"%s%s = {...}\n", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
+                   sprintf(s,"%s\t%s = \t{...}\n", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
                    s+=strlen(s);
                    break;
                default:
-                   sprintf(s,"%s%s = (unknown type)\n", sd->getFieldTypeString(fld), sd->getFieldName(fld));
+                   sprintf(s,"%s\t%s = \t(unknown type)\n", sd->getFieldTypeString(fld), sd->getFieldName(fld));
                    s+=strlen(s);
            }
        }
@@ -102,19 +90,19 @@ void TStructInspector::update()
                    // FIXME: handle enumnames too!
                    case cStructDescriptor::FT_BASIC_ARRAY:
                        sd->getFieldAsString(fld, i, val, 128); // FIXME: error handling!
-                       sprintf(s,"%s%s[%d] = %s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, val);
+                       sprintf(s,"%s\t%s[%d] = \t%s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, val);
                        s+=strlen(s);
                        break;
                    case cStructDescriptor::FT_SPECIAL_ARRAY:
-                       sprintf(s,"%s%s[%d] = ...\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
+                       sprintf(s,"%s\t%s[%d] = \t...\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
                        s+=strlen(s);
                        break;
                    case cStructDescriptor::FT_STRUCT_ARRAY:
-                       sprintf(s,"%s%s[%d] = {...}\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
+                       sprintf(s,"%s\t%s[%d] = \t{...}\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
                        s+=strlen(s);
                        break;
                    default:
-                       sprintf(s,"%s%s[%d] = (unknown type)\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
+                       sprintf(s,"%s\t%s[%d] = \t(unknown type)\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
                        s+=strlen(s);
                }
            }
@@ -122,17 +110,17 @@ void TStructInspector::update()
    }
    delete sd;
 
-   CHK(Tcl_VarEval(interp, windowname, ".main.txt delete 1.0 end", NULL));
-   CHK(Tcl_VarEval(interp, windowname, ".main.txt insert 1.0 {", buf, "}", NULL));
+   CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));
+   CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {", buf, "}", NULL));
 
 }
 
-void TStructInspector::writeBack()
+void TStructPanel::writeBack()
 {
    // TBD
 }
 
-int TStructInspector::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
+int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, char **argv)
 {
    // a Tcl-based struct inspector might use this...
 
