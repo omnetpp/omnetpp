@@ -390,12 +390,12 @@ Sep 29, 2000
  - added new layout to 'p' tag: exact (abbreviation: e or x); this lets
    one position modules in a module vector one by one
  - submodule display strings may use the parent module's parameters too
-Jan 3, 2000
+Jan 3, 2001
  - added 2nd status bar (containing: number of messages in the FES, total
    number of messages created, number of currently existing message objects)
-Jan 13, 2000
+Jan 13, 2001
  - added performance status bar (simsec/sec, events/sec, events/simsec gauges)
-Jan 15, 2000
+Jan 15, 2001
  - new feature: debug output window (for ev<< messages) can now be opened
    for compound modules too: it accumulates messages from all submodules.
    [suggested by Ulrich Kaage]
