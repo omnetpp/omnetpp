@@ -56,8 +56,8 @@ TKENV_API void tkenvDummy() {}
 //        follow here.
 //=========================================================================
 
-TOmnetTkApp::TOmnetTkApp(int argc, char *argv[]) :
-  TOmnetApp( argc, argv),
+TOmnetTkApp::TOmnetTkApp(ArgList *args, cIniFile *inifile) :
+  TOmnetApp(args, inifile),
   inspectors("inspectors", NULL)
 {
     interp = 0;  // Tcl/Tk not set up yet
@@ -70,14 +70,12 @@ TOmnetTkApp::~TOmnetTkApp()
 {
 }
 
-void TOmnetTkApp::setup(int argc, char *argv[])
+void TOmnetTkApp::setup()
 {
     // initialize base class
-    TOmnetApp::setup(argc, argv);  // includes readOptions()
+    TOmnetApp::setup();  // includes readOptions()
     if (!simulation.ok())
-    {
         return;
-    }
 
     // path for the Tcl user interface files
 #ifdef OMNETPP_TKENV_DIR
@@ -92,7 +90,7 @@ void TOmnetTkApp::setup(int argc, char *argv[])
         bitmap_dir = OMNETPP_BITMAP_PATH;
 
     // set up Tcl/Tk
-    interp = initTk( argc, argv );
+    interp = initTk( args->argCount(), args->argVector() );
     if (!interp)
     {
         interp = 0;

@@ -23,7 +23,7 @@ HAVE_DLOPEN=@HAVE_DLOPEN@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -DBUILDING_ENVIR
+COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
 
 OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o
 
@@ -35,9 +35,11 @@ all : libenvir$(LIB_SUFFIX)
 libenvir$(A_LIB_SUFFIX) : $(OBJS)
 	$(AR) libenvir$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) libenvir$(A_LIB_SUFFIX)
+	../utils/install-lib libenvir$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(A_LIB_SUFFIX)
 
 libenvir$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libenvir$(SO_LIB_SUFFIX) $(OBJS)
+	../utils/install-lib libenvir$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(SO_LIB_SUFFIX)
 
 args.o : args.cc args.h
 	$(CXX) -c $(COPTS) args.cc
@@ -52,7 +54,7 @@ main.o : main.cc
 	$(CXX) -c $(COPTS) main.cc
 
 omnetapp.o : omnetapp.cc
-	$(CXX) -c $(COPTS) -DHAVE_DLOPEN=$(HAVE_DLOPEN) omnetapp.cc
+	$(CXX) -c $(COPTS) omnetapp.cc
 
 slaveapp.o : slaveapp.cc
 	$(CXX) -c $(COPTS) slaveapp.cc
@@ -69,9 +71,6 @@ depend:
 
 clean:
 	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)
-
-install-local: libenvir$(LIB_SUFFIX)
-	../utils/install-lib libenvir$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

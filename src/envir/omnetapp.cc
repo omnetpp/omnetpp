@@ -51,9 +51,10 @@
 static char buffer[1024];
 
 
-TOmnetApp::TOmnetApp(int,char *[])
+TOmnetApp::TOmnetApp(ArgList *arglist, cIniFile *inifile)
 {
-     ini_file = NULL;
+     args = arglist;
+     ini_file = inifile;
      opt_genk_randomseed = new long[NUM_RANDOM_GENERATORS];
      next_startingseed = 0;
 }
@@ -61,37 +62,14 @@ TOmnetApp::TOmnetApp(int,char *[])
 TOmnetApp::~TOmnetApp()
 {
      delete opt_genk_randomseed;
+     delete args;
      delete ini_file;
 }
 
-void TOmnetApp::setup(int, char *[])
+void TOmnetApp::setup()
 {
-     // '-fsomething.ini' option(s) specify ini files to be read
-     char *fname = argValue('f',0);
-     if (!fname) fname="omnetpp.ini";
-     opt_inifile_name = fname;
-     ini_file = new cIniFile( fname );
-     if (ini_file->error())
-     {
-        opp_error("Ini file processing failed");
-        return;
-     }
+     opt_inifile_name = ini_file->filename();
 
-     int k;
-     for (k=1; (fname=argValue('f',k))!=(char *)NULL; k++)
-     {
-        ini_file->readFile( fname );
-        if (ini_file->error())
-        {
-            opp_error("Processing of additional ini file failed");
-            return;
-        }
-     }
-
-     // load shared libraries given with '-l' option(s)
-     char *libname;
-     for (k=0; simulation.ok() && (libname=argValue('l',k))!=NULL; k++)
-        loadLibrary(libname);
 
      // DEBUG code: print out ini file contents
      // for (cIniFileIterator i(ini_file); !i.end(); i++)
@@ -108,22 +86,6 @@ void TOmnetApp::setup(int, char *[])
      }
      cCoroutine::init( 1024*opt_total_stack_kb, 1024*MAIN_STACK_KB );
      simulation.setup();
-
-     // load dynamic libs given in [General]/load-libs=
-     if (opt_load_libs)
-     {
-         char *buf = opp_strdup(opt_load_libs);
-         char *lib, *s = buf;
-         while (isspace(*s)) s++;
-         while (*s)
-         {
-            lib = s;
-            while (*s && !isspace(*s)) s++;
-            if (*s) *s++ = 0;
-            loadLibrary(lib);
-         }
-         delete buf;
-     }
 
      if (opt_distributed)
      {
@@ -327,16 +289,6 @@ void TOmnetApp::makeOptionsEffective()
      simulation.parchangefilemgr.setFileName( opt_parchangefile_name );
      for(int i=0;i<NUM_RANDOM_GENERATORS;i++)
          genk_randseed( i, opt_genk_randomseed[i] );
-}
-
-void TOmnetApp::loadLibrary(const char *libname)
-{
-#if HAVE_DLOPEN
-     if (!dlopen(libname,RTLD_NOW))
-         opp_error("Cannot load library: %s",dlerror());
-#else
-     opp_error("Cannot load '%s': dlopen() syscall not available",libname);
-#endif
 }
 
 //--------------------------------------------------------------------

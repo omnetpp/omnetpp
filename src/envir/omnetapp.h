@@ -24,6 +24,7 @@
 #include "carray.h"
 #include "chead.h"
 #include "cenvir.h"
+#include "args.h"
 #include "envdefs.h"
 
 
@@ -46,6 +47,7 @@ class ENVIR_API TOmnetApp
 {
    protected:
      cIniFile *ini_file;
+     ArgList *args;
 
      // options common for all simulation applications
      opp_string opt_inifile_name;
@@ -76,11 +78,11 @@ class ENVIR_API TOmnetApp
      int next_startingseed;  // index of next seed to use
 
    public:
-     TOmnetApp(int argc, char *argv[]);
+     TOmnetApp(ArgList *args, cIniFile *inifile);
      virtual ~TOmnetApp();
 
      // functions called from cEnvir's similar functions
-     virtual void setup(int argc, char *argv[]);
+     virtual void setup();
      virtual void run() = 0;
      virtual void shutdown();
 
@@ -101,9 +103,6 @@ class ENVIR_API TOmnetApp
 
      // used internally to make options effective in cSimulation and other places
      virtual void makeOptionsEffective();
-
-     // dynamically load a library (uses dlopen())
-     virtual void loadLibrary(const char *libname);
 
      // functions called from the objects of the simulation kernel
      // to notify application of certain events
@@ -127,6 +126,9 @@ class ENVIR_API TOmnetApp
 
      // interface to memory manager
      virtual bool memoryIsLow();
+
+     // original command-line args
+     ArgList *argList()  {return args;}
 };
 
 #endif

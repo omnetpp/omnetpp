@@ -269,8 +269,7 @@ int loadLib_cmd(ClientData, Tcl_Interp *, int argc, char **argv)
 {
    if (argc!=2) return TCL_ERROR;
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   app->loadLibrary( argv[1] );
-   return TCL_OK;
+   return opp_loadlibrary(argv[1]) ? TCL_OK : TCL_ERROR;
 }
 
 //--------------

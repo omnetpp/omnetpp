@@ -21,40 +21,40 @@
 #include <stdio.h>
 #include "args.h"
 
-static int argC;       /* no of args */
-static char **argV;    /* argument vector */
 
-void argInit(int argc, char *argv[])
+ArgList::ArgList(int ac, char *av[])
 {
-   argC = argc;
-   argV = argv;
+    argc = ac;
+    argv = av;
 }
 
-int argGiven(char c)
+bool ArgList::argGiven(char c)
 {
-   int i;
-   for(i=1; i<argC; i++)
-     if (argV[i][0]=='-' && toupper(argV[i][1])==toupper(c))
-        return 1;
-   return 0;
+    int i;
+    for(i=1; i<argc; i++)
+        if (argv[i][0]=='-' && toupper(argv[i][1])==toupper(c))
+            return true;
+    return false;
 }
 
-char *argValue(char c, int k)
+char *ArgList::argValue(char c, int k)
 {
-   int i;
-   for(i=1; i<argC; i++)
-     if (argV[i][0]=='-' && toupper(argV[i][1])==toupper(c))
-        if (k-- == 0) break;
-   if (i==argC) return NULL; // no such switch
+    int i;
+    for(i=1; i<argc; i++)
+       if (argv[i][0]=='-' && toupper(argv[i][1])==toupper(c))
+           if (k-- == 0) break;
+    if (i==argc)
+       return NULL; // no such switch
 
-   if (argV[i][2])
-   {
-      return argV[i]+2;  // like: -fOUTPUTFILE
-   }
-   else
-   {
-      if (i==argC-1 || argV[i+1][0]=='-') return NULL;
-      return argV[i+1];  // like: -f OUTPUTFILE
-   }
+    if (argv[i][2])
+    {
+        return argv[i]+2;  // like: -fOUTPUTFILE
+    }
+    else
+    {
+        if (i==argc-1 || argv[i+1][0]=='-')
+            return NULL;
+        return argv[i+1];  // like: -f OUTPUTFILE
+    }
 }
 

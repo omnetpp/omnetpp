@@ -48,7 +48,7 @@ bool cmdenvMemoryIsLow();
 //==========================================================================
 // TCmdenvApp: command line user interface.
 
-TCmdenvApp::TCmdenvApp(int argc, char *argv[]) : TOmnetApp(argc, argv)
+TCmdenvApp::TCmdenvApp(ArgList *args, cIniFile *inifile) : TOmnetApp(args, inifile)
 {
      opt_modulemsgs = TRUE;
      opt_verbose = TRUE;
@@ -78,16 +78,19 @@ void TCmdenvApp::readPerRunOptions( int run_nr )
      opt_displayinterval = ini_file->getAsTime2( section,"Cmdenv", "display-update", 10.0 );
 }
 
-void TCmdenvApp::setup(int argc, char *argv[])
+void TCmdenvApp::setup()
 {
-     TOmnetApp::setup(argc, argv);    // implies readOptions()
+     // initialize base class
+     TOmnetApp::setup();    // implies readOptions()
+     if (!simulation.ok())
+         return;
 
      // '-h' (help) flag
-     opt_helponly = argGiven( 'h' );
+     opt_helponly = args->argGiven( 'h' );
      if (opt_helponly) return;  // only give a command line help
 
      // '-r' option: specifies runs to execute; overrides ini file setting
-     char *r = argValue( 'r' );
+     char *r = args->argValue( 'r' );
      if (r)
         opt_runstoexec = r;
 

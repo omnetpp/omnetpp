@@ -13,9 +13,12 @@ COPTS=$(CFLAGS)
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 
 all: seedtool tcl2c
+	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);rm -f makemake;ln -s $$dir/makemake .)
+	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);rm -f splitvec;ln -s $$dir/splitvec .)
 
 seedtool : seedtool.cc
 	$(CXX) seedtool.cc -o seedtool
+	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
 
 tcl2c: tcl2c.c
 	$(CC) tcl2c.c -o tcl2c
@@ -26,10 +29,5 @@ depend:
 
 clean:
 	rm -f *.o seedtool$(EXE_SUFFIX) tcl2c$(EXE_SUFFIX)
-
-install-local: seedtool
-	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
-	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);rm -f makemake;ln -s $$dir/makemake .)
-	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);rm -f splitvec;ln -s $$dir/splitvec .)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

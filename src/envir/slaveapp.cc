@@ -42,7 +42,7 @@ Register_OmnetApp(TSlaveApp,true,10,"default slave interface, for distributed ex
 //
 //--------------
 
-TSlaveApp::TSlaveApp(int argc, char *argv[]) : TOmnetApp(argc, argv)
+TSlaveApp::TSlaveApp(ArgList *args, cIniFile *inifile) : TOmnetApp(args, inifile)
 {
      // these are default values and will be overwritten by ini file settings
      opt_write_slavelog = TRUE;

@@ -48,16 +48,20 @@ sim_pvm : libsim_pvm$(LIB_SUFFIX)
 libsim_std$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 	$(AR) libsim_std$(A_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 	$(RANLIB) libsim_std$(A_LIB_SUFFIX)
+	../utils/install-lib libsim_std$A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(A_LIB_SUFFIX)
 
 libsim_std$(SO_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 	$(SHLIB_LD) -o libsim_std$(SO_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+	../utils/install-lib libsim_std$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(SO_LIB_SUFFIX)
 
 libsim_pvm$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 	$(AR) libsim_pvm$(A_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 	$(RANLIB) libsim_pvm$(A_LIB_SUFFIX)
+	../utils/install-lib libsim_pvm$(A_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_pvm$(A_LIB_SUFFIX)
 
 libsim_pvm$(SO_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 	$(SHLIB_LD) -o libsim_pvm$(SO_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+	../utils/install-lib libsim_pvm$(SO_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_pvm$(SO_LIB_SUFFIX)
 
 ccor.o : ccor.cc
 	$(CXX) -c $(COPTS) ccor.cc
@@ -170,10 +174,6 @@ depend:
 
 clean:
 	rm -f *.o libsim_std$(A_LIB_SUFFIX) libsim_std$(SO_LIB_SUFFIX) libsim_pvm$(A_LIB_SUFFIX) libsim_pvm$(SO_LIB_SUFFIX)
-
-install-local: libsim_std$(LIB_SUFFIX) @SIM_PVM_IF_POSSIBLE@
-	../utils/install-lib libsim_std$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(LIB_SUFFIX)
-	../utils/install-lib libsim_pvm$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_pvm$(LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

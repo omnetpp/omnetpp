@@ -21,9 +21,20 @@
 
 #include "envdefs.h"
 
-ENVIR_API void argInit(int argc, char *argv[]);  // args passed to main()
+class ENVIR_API ArgList
+{
+  private:
+    int argc;
+    char **argv;
+  public:
+    ArgList(int argc, char *argv[]);
 
-ENVIR_API int argGiven(char c);                  // returns 0 or 1
-ENVIR_API char *argValue(char c, int k=0);       // returns NULL or ptr to arg string
+    // functions to handle one-character command-line options
+    bool argGiven(char c);
+    char *argValue(char c, int k=0);
+
+    int argCount()      {return argc;}
+    char **argVector()  {return argv;}
+};
 
 #endif

@@ -38,13 +38,15 @@ class cEnvir;
 ENVIR_API extern cEnvir ev;
 
 // return codes for runningMode()
-enum { SLAVE_MODE = 0,  // must be 0
-       MASTER_MODE = 1,
-       NONPARALLEL_MODE = 2,
-       STARTUPERROR_MODE = 3
-     };
+enum {
+    SLAVE_MODE = 0,  // must be 0
+    MASTER_MODE = 1,
+    NONPARALLEL_MODE = 2,
+    STARTUPERROR_MODE = 3
+};
 
 ENVIR_API bool memoryIsLow();
+ENVIR_API bool opp_loadlibrary(const char *libname);
 
 //==========================================================================
 // cEnvir
@@ -52,8 +54,6 @@ ENVIR_API bool memoryIsLow();
 class ENVIR_API cEnvir
 {
   public:
-    int argc;
-    char **argv;
     TOmnetApp *app;  // user interface application
     int disable_tracing;
   private:
@@ -103,6 +103,10 @@ class ENVIR_API cEnvir
     // extraStackForEnvir() is called from cSimpleModule; returns how much extra
     // stack space the user interface recommends for the simple modules
     unsigned extraStackForEnvir();
+
+    // access to original command-line arguments
+    int argCount();
+    char **argVector();
 };
 
 //==========================================================================

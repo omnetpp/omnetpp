@@ -50,11 +50,11 @@ class TOmnetTkApp : public TOmnetApp
       cHead inspectors;        // list of inspector objects
    public:
 
-      TOmnetTkApp(int argc, char *argv[]);
+      TOmnetTkApp(ArgList *args, cIniFile *inifile);
       ~TOmnetTkApp();
 
       // redefined virtual functions from TOmnetApp
-      virtual void setup(int argc, char *argv[]);
+      virtual void setup();
       virtual void run();
 
       virtual void objectDeleted(cObject *object); // notify environment

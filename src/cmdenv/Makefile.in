@@ -33,9 +33,11 @@ all: libcmdenv$(LIB_SUFFIX)
 libcmdenv$(A_LIB_SUFFIX) : $(OBJS)
 	$(AR) libcmdenv$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) libcmdenv$(A_LIB_SUFFIX)
+	../utils/install-lib libcmdenv$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcmdenv$(A_LIB_SUFFIX)
 
 libcmdenv$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libcmdenv$(SO_LIB_SUFFIX) $(OBJS)
+	../utils/install-lib libcmdenv$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcmdenv$(SO_LIB_SUFFIX)
 
 cmdenv.o : cmdenv.cc
 	$(CXX) -c $(COPTS) cmdenv.cc
@@ -52,9 +54,6 @@ depend:
 
 clean:
 	rm -f *.o libcmdenv$(A_LIB_SUFFIX) libcmdenv$(SO_LIB_SUFFIX)
-
-install-local: libcmdenv$(LIB_SUFFIX)
-	../utils/install-lib libcmdenv$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcmdenv$(LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

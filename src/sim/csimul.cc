@@ -382,7 +382,7 @@ bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
          {
             // the hosts we need are the system module's machines
             cArray& machines = systemModule()->machinev;
-            netInterface()->start_segments( machines, ev.argc, ev.argv);
+            netInterface()->start_segments( machines, ev.argCount(), ev.argVector());
             if (!ok()) goto error;
 
             // signal the slaves which run to set up

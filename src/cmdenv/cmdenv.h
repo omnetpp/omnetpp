@@ -40,11 +40,11 @@ class TCmdenvApp : public TOmnetApp
      simtime_t opt_displayinterval;
 
    public:
-     TCmdenvApp(int argc, char *argv[]);
+     TCmdenvApp(ArgList *args, cIniFile *inifile);
      ~TCmdenvApp();
 
      // redefined virtual funcs:
-     virtual void setup(int argc, char *argv[]);
+     virtual void setup();
      virtual void run();
      //virtual void shutdown();
 

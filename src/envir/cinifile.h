@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    cInifile
+//    cIniFile
 //
 //==========================================================================
 
@@ -43,6 +43,7 @@ class ENVIR_API cIniFile
   friend class cIniFileSectionIterator;
 
   private:
+    char *fname;
     struct sEntry {             //one entry contains:
         char *section;          //  name of section it belongs to
         char *key;              //  the parameter
@@ -66,6 +67,8 @@ class ENVIR_API cIniFile
 
     void readFile(const char *fname);
     void clearContents();
+
+    const char *filename() {return fname;}
 
     int error();    // TRUE if there was an error
     bool warnings;  // enable/disable warnings

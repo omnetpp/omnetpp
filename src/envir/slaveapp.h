@@ -40,7 +40,7 @@ class ENVIR_API TSlaveApp : public TOmnetApp
      bool opt_modmsgs2cons;
 
    public:
-     TSlaveApp(int argc, char *argv[]);
+     TSlaveApp(ArgList *args, cIniFile *inifile);
      ~TSlaveApp();
 
      // redefined functions

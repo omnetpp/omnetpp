@@ -6,7 +6,7 @@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /DBUILDING_ENVIR
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN) 
 
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj slaveapp.obj seeds.obj patmatch.obj
 
@@ -44,7 +44,7 @@ main.obj : main.cc
 	$(CXX) $(COPTS) /c /Tp main.cc
 
 omnetapp.obj : omnetapp.cc
-	$(CXX) /DHAVE_DLOPEN=$(HAVE_DLOPEN) $(COPTS) /c /Tp omnetapp.cc
+	$(CXX) $(COPTS) /c /Tp omnetapp.cc
 
 slaveapp.obj : slaveapp.cc
 	$(CXX) $(COPTS) /c /Tp slaveapp.cc

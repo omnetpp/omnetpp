@@ -24,6 +24,7 @@ OBJS=ebnf.tab.o lex.yy.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o
 #
 nedc: $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) -o nedc
+	../utils/install-prog nedc $(OMNETPP_BIN_DIR)
 
 lex.yy.o: jar_func.h lex.yy.c
 	$(CXX) -c $(COPTS) lex.yy.c
@@ -61,10 +62,6 @@ depend:
 
 clean:
 	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc$(EXE_SUFFIX) *_n.cc
-
-install-local: nedc
-	../utils/install-prog nedc $(OMNETPP_BIN_DIR)
-
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

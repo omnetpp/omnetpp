@@ -43,9 +43,11 @@ tkenv : libtkenv$(LIB_SUFFIX)
 libtkenv$(A_LIB_SUFFIX) : $(OBJS)
 	$(AR) libtkenv$(A_LIB_SUFFIX) $(OBJS)
 	$(RANLIB) libtkenv$(A_LIB_SUFFIX)
+	../utils/install-lib libtkenv$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libtkenv$(A_LIB_SUFFIX)
 
 libtkenv$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libtkenv$(SO_LIB_SUFFIX) $(OBJS)
+	../utils/install-lib libtkenv$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libtkenv$(SO_LIB_SUFFIX)
 
 tkapp.o : tkapp.cc
 	$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" tkapp.cc
@@ -86,10 +88,6 @@ depend:
 
 clean:
 	rm -f *.o libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX)
-
-install-local: @TKENV_IF_POSSIBLE@
-	../utils/install-lib libtkenv$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libtkenv$(LIB_SUFFIX)
-
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

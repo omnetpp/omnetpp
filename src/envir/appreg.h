@@ -41,23 +41,26 @@
 
 // the macro
 #define Register_OmnetApp(CLASSNAME,ISSLAVE,SCORE,DESCR) \
-  TOmnetApp *CLASSNAME##__create(int argc, char *argv[]) {return new CLASSNAME(argc,argv);} \
+  TOmnetApp *CLASSNAME##__create(ArgList *args, cIniFile *inifile) {return new CLASSNAME(args, inifile);} \
   cOmnetAppRegistration CLASSNAME##__reg(#CLASSNAME,ISSLAVE,SCORE,DESCR,CLASSNAME##__create);
 
 class TOmnetApp;
+class ArgList;
+class cIniFile;
 
 extern ENVIR_API cHead omnetapps;
 
 // registration class
 class ENVIR_API cOmnetAppRegistration : public cObject
 {
-    TOmnetApp *(*creatorfunc)(int, char *[]);
+    typedef TOmnetApp *(*AppCreatorFunc)(ArgList *,cIniFile *);
+    AppCreatorFunc creatorfunc;
     opp_string desc;
     int scor;
     bool isslave;
   public:
     cOmnetAppRegistration(const char *name, bool isSlave, int score,
-                          const char *description, TOmnetApp *(*f)(int, char *[])) :
+                          const char *description, AppCreatorFunc f) :
       cObject(name, (cObject *)&omnetapps),
       isslave(isSlave), desc(description), scor(score), creatorfunc(f) {}
     virtual ~cOmnetAppRegistration()  {}
@@ -66,7 +69,7 @@ class ENVIR_API cOmnetAppRegistration : public cObject
     virtual const char *className()  {return "cOmnetAppRegistration";}
 
     // new functions
-    TOmnetApp *createOne(int argc, char *argv[])  {return creatorfunc(argc,argv);}
+    TOmnetApp *createOne(ArgList *args, cIniFile *inifile)  {return creatorfunc(args,inifile);}
     const char *description()  {return desc;}
     int score()  {return scor;}
     bool isSlave()  {return isslave;}

@@ -17,11 +17,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "args.h"
+#include "cinifile.h"
 #include "cenvir.h"
 #include "omnetapp.h"
 #include "slaveapp.h"   // dummy_func()
@@ -42,7 +44,6 @@ static char buffer[1024];
 // as a linker symbol. Otherwise we get "undefined symbol" for it.
 void tslave_dummy_function() {TSlaveApp x(0,NULL);}
 
-
 //========================================================================
 
 // User interface factory functions.
@@ -53,9 +54,9 @@ cOmnetAppRegistration *chooseBestOmnetApp(bool slave)
     // choose the one with appropriate slave flag and highest score.
     for (cIterator i(omnetapps); !i.end(); i++)
     {
-       cOmnetAppRegistration *appreg = (cOmnetAppRegistration*) i();
-       if (appreg->isSlave()==slave && (!best_appreg || appreg->score()>best_appreg->score()))
-           best_appreg = appreg;
+        cOmnetAppRegistration *appreg = (cOmnetAppRegistration*) i();
+        if (appreg->isSlave()==slave && (!best_appreg || appreg->score()>best_appreg->score()))
+            best_appreg = appreg;
     }
     return best_appreg;
 }
@@ -64,48 +65,143 @@ cOmnetAppRegistration *chooseBestOmnetApp(bool slave)
 
 cEnvir::cEnvir()
 {
-     running_mode = NONPARALLEL_MODE;
-     prmpt[0] = '\0';
-     disable_tracing = FALSE;
+    running_mode = NONPARALLEL_MODE;
+    prmpt[0] = '\0';
+    disable_tracing = FALSE;
 
-     app = NULL;
+    app = NULL;
 }
 
 cEnvir::~cEnvir()
 {
 }
 
-void cEnvir::setup(int ac, char *av[])
+void cEnvir::setup(int argc, char *argv[])
 {
-     argc = ac;
-     argv = av;
+    ArgList *args = new ArgList(argc,argv);
 
-     argInit(argc,argv);
+    //
+    // First, load the ini file. It might contain the name of the user interface
+    // to instantiate.
+    //
+    const char *fname = args->argValue('f',0);  // 1st '-f filename' option
+    if (!fname) fname="omnetpp.ini";   // or default filename
 
-     running_mode = is_started_as_master();
-     // ==> MASTER_MODE, SLAVE_MODE, NONPARALLEL_MODE or STARTUPERROR_MODE
+    cIniFile *ini_file = new cIniFile( fname );
+    if (ini_file->error())
+    {
+        opp_error("Ini file processing failed");
+        return;
+    }
 
-     // choose and set up user interface (TOmnetApp subclass)
-     bool slave = (running_mode==SLAVE_MODE); // slave or normal app?
-     cOmnetAppRegistration *appreg = chooseBestOmnetApp(slave);
-     if (!appreg)
-         {opp_error("No appropriate user interface (Cmdenv,Tkenv,etc.) found");return;}
+    // process additional '-f filename' options if there are any
+    int k;
+    for (k=1; (fname=args->argValue('f',k))!=NULL; k++)
+    {
+        ini_file->readFile( fname );
+        if (ini_file->error())
+        {
+            opp_error("Processing of additional ini file failed");
+            return;
+        }
+    }
 
-     ::printf("Setting up %s...\n", appreg->description());
+    //
+    // Load all libraries specified on the command line or in the ini file.
+    // (The user interface library also might be among them.)
+    //
 
-     app = appreg->createOne(ac,av);
-     app->setup(ac,av);
+    // load shared libraries given with '-l' option(s)
+    const char *libname;
+    for (k=0; simulation.ok() && (libname=args->argValue('l',k))!=NULL; k++)
+       opp_loadlibrary(libname);
+
+    // load shared libs given in [General]/load-libs=
+    const char *libs = ini_file->getAsString( "General", "load-libs", "" );
+    if (libs)
+    {
+        // 'libs' contains several file names separated by whitespaces
+        char *buf = opp_strdup(libs);
+        char *lib, *s = buf;
+        while (isspace(*s)) s++;
+        while (*s)
+        {
+            lib = s;
+            while (*s && !isspace(*s)) s++;
+            if (*s) *s++ = 0;
+            opp_loadlibrary(lib);
+        }
+        delete buf;
+    }
+
+    //
+    // Determine if this is a distributed simulation, and if so, whether we run
+    // as master (=console) or slave. This also affects which user interface
+    // to set up.
+    // ==> MASTER_MODE, SLAVE_MODE, NONPARALLEL_MODE or STARTUPERROR_MODE
+    //
+    running_mode = is_started_as_master();
+
+    //
+    // Choose and set up user interface (TOmnetApp subclass). Everything else
+    // will be done by the user interface class.
+    //
+
+    // was it specified explicitly which one to use?
+    const char *appname = args->argValue('u',0);  // 1st '-u name' option
+    if (!appname)
+        appname = ini_file->getAsString( "General", "user-interface", "" );
+
+    cOmnetAppRegistration *appreg = NULL;
+    if (appname)
+    {
+        // try to look up specified user interface; if we don't have it already,
+        // try to load dynamically...
+        appreg = (cOmnetAppRegistration *) omnetapps.find(appname);
+        if (!appreg)
+        {
+            // try to load it dynamically
+            // TBD add extension: .so or .dll
+            if (opp_loadlibrary(appname))
+            {
+                appreg = (cOmnetAppRegistration *) omnetapps.find(appname);
+            }
+        }
+        if (!appreg)
+        {
+            opp_error("Could not start user interface '%s'",appname);
+            return;
+        }
+    }
+    else
+    {
+        // user interface not explicitly selected: pick one from what we have
+        bool slave = (running_mode==SLAVE_MODE); // slave or normal app?
+        appreg = chooseBestOmnetApp(slave);
+        if (!appreg)
+        {
+            opp_error("No appropriate user interface (Cmdenv,Tkenv,etc.) found");
+            return;
+        }
+    }
+
+    //
+    // Finally, set up user interface object. All the rest will be done there.
+    //
+    ::printf("Setting up %s...\n", appreg->description());
+    app = appreg->createOne(args, ini_file);
+    app->setup();
 }
 
 void cEnvir::run()
 {
-     if (app) app->run();
+    if (app) app->run();
 }
 
 void cEnvir::shutdown()
 {
-     delete app;
-     app = NULL;
+    delete app;
+    app = NULL;
 }
 
 //-----------------------------------------------------------------
@@ -220,7 +316,7 @@ bool cEnvir::askf(char *buf, int len, const char *promptfmt,...)
     bool esc = app->gets( buffer, buf, len );
     if (esc) opp_error(eCANCEL);
     return (bool)esc;
-}
+ }
 
 bool cEnvir::askYesNo(const char *msgfmt,...)
 {
@@ -244,7 +340,59 @@ unsigned cEnvir::extraStackForEnvir()
     return app->extraStackForEnvir();
 }
 
+int cEnvir::argCount()
+{
+    return app->argList()->argCount();
+}
+
+char **cEnvir::argVector()
+{
+    return app->argList()->argVector();
+}
+
 bool memoryIsLow()
 {
     return ev.app->memoryIsLow();
 }
+
+//--------------------------------------------------------------
+
+#include "envdefs.h"   // __WIN32__
+#ifdef __WIN32__
+#include <windows.h>   // LoadLibrary() et al.
+#endif
+
+bool opp_loadlibrary(const char *libname)
+{
+#if HAVE_DLOPEN
+     if (!dlopen(libname,RTLD_NOW))
+     {
+         opp_error("Cannot load library '%s': %s",libname,dlerror());
+         return false;
+     }
+     return true;
+#elif defined(__WIN32__)
+     if (!LoadLibrary(libname))
+     {
+         // Some nice microsoftism to produce an error msg :-(
+         LPVOID lpMsgBuf;
+         FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
+                        FORMAT_MESSAGE_FROM_SYSTEM |
+                        FORMAT_MESSAGE_IGNORE_INSERTS,
+                        NULL,
+                        GetLastError(),
+                        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                        (LPTSTR) &lpMsgBuf,
+                        0,
+                        NULL );// Process any inserts in lpMsgBuf.
+         opp_error("Cannot load library '%s': %s",libname,lpMsgBuf);
+         LocalFree( lpMsgBuf );
+         return false;
+     }
+     return true;
+#else
+     opp_error("Cannot load '%s': dlopen() syscall not available",libname);
+     return false;
+#endif
+}
+

@@ -31,13 +31,14 @@
 //==========================================================================
 //=== cIniFile - member functions
 //
-cIniFile::cIniFile(const char *fname)
+cIniFile::cIniFile(const char *filename)
 {
     warnings=FALSE;
     num_sections = num_entries = 0;
     _error = FALSE;
+    fname = opp_strdup(filename);
 
-    readFile( fname );
+    readFile( filename );
 }
 
 cIniFile::~cIniFile()
@@ -219,11 +220,14 @@ void cIniFile::clearContents()
        delete [] section[i];
     for (i=0; i<num_entries; i++)
     {
-       delete entry[i].key;
-       delete entry[i].value;
-       delete entry[i].rawvalue;
+       delete [] entry[i].key;
+       delete [] entry[i].value;
+       delete [] entry[i].rawvalue;
     }
     num_sections = num_entries = 0;
+
+    delete fname;
+    fname = NULL;
 }
 
 const char *cIniFile::_getValue(const char *sect, const char *ent, int raw)
