@@ -1,0 +1,81 @@
+%description:
+Test "disabled" parameter of channels
+
+%file: {}.ned
+
+channel {MyConn}
+    delay 0.004;
+    error 0.1;
+endchannel
+
+simple {Node1}
+    gates:
+        out: out;
+endsimple
+
+simple {Node2}
+    gates:
+        in: in;
+endsimple
+
+module {Network}
+    submodules:
+        node1: {Node1};
+        node2: {Node2};
+    connections:
+        node1.out --> {MyConn} --> node2.in;
+endmodule
+
+network
+     {network}: {Network};
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Node1} : public cSimpleModule
+{
+    Module_Class_Members({Node1},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Node1});
+
+void {Node1}::activity()
+{
+    // set channel to disabled
+    cSimpleChannel *chan = check_and_cast<cSimpleChannel *>(gate("out")->channel());
+    chan->setDisabled(true);
+
+    // send packets
+    for (int i=0; i<5; i++)
+    {
+        cMessage *msg = new cMessage("msg");
+        msg->setLength(10);
+        send(msg, "out");
+        wait(1);
+    }
+}
+
+#include <omnetpp.h>
+
+class {Node2} : public cSimpleModule
+{
+    int errors[5];
+
+    Module_Class_Members({Node2},cSimpleModule,0)
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module({Node2});
+
+void {Node2}::handleMessage(cMessage *msg)
+{
+    ev << "received " << msg->name << "\n";
+    delete msg;
+}
+
+%not-contains: stdout
+received
+
