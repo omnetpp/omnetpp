@@ -18,7 +18,9 @@
 #ifndef __NEDGRAMMAR_H
 #define __NEDGRAMMAR_H
 
+// define the following if -p (-P) options are in use with bison/flex
 #define PARSER_PREFIX_USED
+
 #ifdef PARSER_PREFIX_USED
 
 // from lex.yy.cc:
@@ -48,6 +50,9 @@
 #define yychar nedyychar
 #define yydebug nedyydebug
 #define yynerrs nedyynerrs
+
+// only new bisons define the following, but works with older ones (1.28) too
+#define yylloc nedyylloc
 
 #endif
 
