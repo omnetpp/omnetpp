@@ -250,7 +250,8 @@ else
         }
         else
         {
-            error("$arg not found");
+            print STDERR "opp_nedtool: warning: $arg not found, ignoring\n";
+            #error("$arg not found");
         }
     }
 }
@@ -450,8 +451,14 @@ sub collect_files
     my $dir = tobackslash(shift);
     my $listfile = tobackslash(shift);
     if ($isWindows) {
-        # COMSPEC is necessary to prevent getting other "dir" programs in the path
-        runprog("$ENV{COMSPEC} /c dir /s /b $dir\\*.ned $dir\\*.msg >>$listfile");
+        # COMSPEC is necessary to prevent getting other "dir" programs in the path.
+        # Issue: "dir" returns error (nonzero exit code) if no file was listed.
+        # To prevent that from stopping opp_neddoc with error, we forcefully return 0
+        # here. Downside is that any "real" error will go unnoticed, but if there
+        # was a problem with $ENV{COMSPEC} we'd have choked on it already.
+        # (TODO: we could check output was really "File Not Found")
+        runprog("$ENV{COMSPEC} /c dir /s /b $dir\\*.ned $dir\\*.msg >>$listfile 2>>nul");
+        0;
     } else {
         runprog("find $dir -name '*.ned' -o -name '*.msg' >>$listfile");
     }
