@@ -354,6 +354,9 @@ May 5, 2000
  - implemented module parameter substitution in display strings (like
    "p=$x_pos,$y_pos"). Substitution still not supported in connection display
    strings.
- - setDisplayString() now takes effect during simulation execution. Tkenv now
-   also handles the new 'immediate' argument to setDisplayString().
+ - setDisplayString() now takes effect during simulation execution. Tkenv also
+   handles the new 'immediate' argument to setDisplayString().
+   Annoyance: setDisplayString() also does a 'Rearrange randomly placed
+   submodules'. This is not so trivial to change (module positions will need
+   to be explicitly stored)...
 

@@ -436,7 +436,7 @@ bool cModule::isOnLocalMachine()                                   //NET
     return simulation.netInterface()==NULL || simulation.netInterface()->isLocalMachineIn( machinev );
 }
 
-void cModule::setDisplayString(int type, const char *s)
+void cModule::setDisplayString(int type, const char *s, bool immediate)
 {
     if (type<0 || type>=dispNUMTYPES)
     {
@@ -447,7 +447,16 @@ void cModule::setDisplayString(int type, const char *s)
 
     dispstr[type] = s;
 
-    if (notify_inspector) notify_inspector(type,data_for_inspector);
+    if (type==dispENCLOSINGMOD)
+    {
+         if (notify_inspector) notify_inspector(this,immediate,data_for_inspector);
+    }
+    else if (type==dispSUBMOD)
+    {
+         // notify the parent module's inspector
+         cModule *p = parentModule();
+         if (p && p->notify_inspector) p->notify_inspector(this,immediate,p->data_for_inspector);
+    }
 }
 
 const char *cModule::displayString(int type)
@@ -478,7 +487,7 @@ const char *cModule::displayString(int type)
     return s ? s : "";
 }
 
-void cModule::setDisplayStringNotify(void (*notify_func)(int,void*), void *data)
+void cModule::setDisplayStringNotify(DisplayStringNotifyFunc notify_func, void *data)
 {
     notify_inspector = notify_func;
     data_for_inspector = data;

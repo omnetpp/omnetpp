@@ -850,4 +850,19 @@ Apr 19, 2000
    Fixed in cGate::deliver(cMessage *msg): transmission delay calculation
    should be done _before_ propagation delay.
  - in util.h, fastconcat() renamed to opp_concat(); compatibility #define added
+May 5, 2000
+ - setDisplayString() now works in Tkenv (sim/cmodule.cc also affected)
+ - setDisplayString() got a new argument, bool immediate.  It specifies whether
+   the display string change should take effect immediately, or only after
+   processing the current event (default is immediate=true).
+      If several display string changes are going to be done within one event,
+   then immediate=false is useful because it reduces the number of necessary
+   redraws. Immediate=false also uses less stack. But its drawback is that
+   a setDisplayString() followed by a send() would actually be displayed
+   in reverse order (message animation first), because message animations are
+   performed immediately (actually within the send() call).
+ - once we have setDisplayString(), seems like we'll need a display string
+   parser/assembler object to be able to easily change specific values within
+   the display string without bothering the rest of it. Maybe for the some
+   next version; but if you want to contribute one, go ahead :-)
 

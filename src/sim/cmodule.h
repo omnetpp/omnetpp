@@ -74,14 +74,15 @@ SIM_API void connect(cModule *frm, int frg,
 class ___nosuchclass;
 void *operator new(size_t m,___nosuchclass *);
 
+// Function to notify inspector about display string changes
+//  args: (sub)module which changed; immediate refresh wanted or not; inspector's data
+typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
 
 //==========================================================================
 // cModule - common base for cSimpleModule and cCompoundModule
 //    type, its cModuleType, gates and parameters, error handling
 //  NOTE: 1. no instance of cModule can be created!
 //        2. dup() cannot be used! Use mod->moduleType()->create()/buildInside().
-
-typedef TInspector *(InspCreateFunc)(cObject *, int, void *);
 
 class SIM_API cModule : public cObject
 {
@@ -113,7 +114,7 @@ class SIM_API cModule : public cObject
 
     opp_string dispstr[dispNUMTYPES]; // see setDisplayString(..) etc.
 
-    void (*notify_inspector)(int,void*); // to notify inspector disp str changes
+    DisplayStringNotifyFunc notify_inspector;
     void *data_for_inspector;
 
   protected:
@@ -207,10 +208,10 @@ class SIM_API cModule : public cObject
     void setWarnings(bool wr)  {warn=wr;}
 
     // visualization/animation support
-    void setDisplayString(int type, const char *dispstr);
+    void setDisplayString(int type, const char *dispstr, bool immediate=true);
     const char *displayString(int type);
 
-    void setDisplayStringNotify(void (*notify_func)(int,void*), void *data);
+    void setDisplayStringNotify(DisplayStringNotifyFunc notify_func, void *data);
 
 };
 
