@@ -21,94 +21,119 @@
 proc editConnectionProps {key} {
     global gned ned canvas
 
-    tk_messageBox -icon warning -type ok -title GNED -message "Sorry! This dialog hasn't been implemented yet."
-    return
+puts "DBG: editConnectionProps: dialog doesn't work yet!"
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .connprops "Connection Properties"
+    wm geometry .connprops "490x380"
 
     # add notebook pages
-    notebook .connprops.f.nb
-    pack .connprops.f.nb -expand 1 -fill both
-    notebook_addpage .connprops.f.nb gates "Gates"
-    notebook_addpage .connprops.f.nb props "Properties"
-    notebook_addpage .connprops.f.nb loop  "Loop"
+    set nb .connprops.f.nb
+    notebook $nb
+    pack $nb -expand 1 -fill both
+    notebook_addpage $nb general "General"
+    notebook_addpage $nb gates "Gates"
+    notebook_addpage $nb attrs "Attributes"
+    notebook_showpage $nb gates
 
-    # add entry fields for Gates
-    label-entry .connprops.f.nb.gates.srcgate "From gate:"
-    label-entry .connprops.f.nb.gates.destgate "To gate:"
-    label-entry .connprops.f.nb.gates.condition "Condition:"
-    label-text  .connprops.f.nb.gates.comment "Comments:" 2
-    # Properties
-    label-entry .connprops.f.nb.props.error "Bit error rate:"
-    label-entry .connprops.f.nb.props.delay "Prop. delay:"
-    label-entry .connprops.f.nb.props.datarate "Data Rate:"
-    label-entry .connprops.f.nb.props.channel "Channel name:"
-    # Loop
-    label-entry .connprops.f.nb.loop.src_index "Source Index:"
-    label-entry .connprops.f.nb.loop.dest_index "Destination Index:"
-    label-entry .connprops.f.nb.loop.src_gate_index "Source Gate Index:"
-    label-entry .connprops.f.nb.loop.dest_gate_index "Destinaton Gate Index:"
-    label-entry .connprops.f.nb.loop.for "For Expression:"
-    # Gates
-    pack .connprops.f.nb.gates.srcgate  -expand 0 -fill x -side top
-    pack .connprops.f.nb.gates.destgate  -expand 0 -fill x -side top
-    pack .connprops.f.nb.gates.condition  -expand 0 -fill x -side top
-    pack .connprops.f.nb.gates.comment -expand 1 -fill both -side top
-    # Properties
-    pack .connprops.f.nb.props.error  -expand 0 -fill x -side top
-    pack .connprops.f.nb.props.delay  -expand 0 -fill x -side top
-    pack .connprops.f.nb.props.datarate -expand 0 -fill x -side top
-    pack .connprops.f.nb.props.channel -expand 0 -fill x -side top
-    # Loop
-    pack .connprops.f.nb.loop.src_index  -expand 0 -fill x -side top
-    pack .connprops.f.nb.loop.dest_index  -expand 0 -fill x -side top
-    pack .connprops.f.nb.loop.src_gate_index  -expand 0 -fill x -side top
-    pack .connprops.f.nb.loop.dest_gate_index  -expand 0 -fill x -side top
-    pack .connprops.f.nb.loop.for  -expand 0 -fill x -side top
+    # create "General" page
+    label-text  $nb.general.comment "Doc. comments:" 6
+    label-text  $nb.general.rcomment "End-of-line comments:" 2
+    pack $nb.general.comment -expand 0 -fill x -side top
+    pack $nb.general.rcomment -expand 0 -fill x -side top
 
-    # Gates
-    .connprops.f.nb.gates.srcgate.e insert 0 $ned($key,srcgate)
-    .connprops.f.nb.gates.destgate.e insert 0 $ned($key,destgate)
-    .connprops.f.nb.gates.condition.e  insert 0 $ned($key,condition)
-    .connprops.f.nb.gates.comment.t insert 1.0 $ned($key,comment)
-    if {$ned($key,channel-ownerkey)!=""} {
-        set chown $ned($key,channel-ownerkey)
-       .connprops.f.nb.props.error.e insert 0 $ned($chown,error)
-       .connprops.f.nb.props.delay.e insert 0 $ned($chown,delay)
-       .connprops.f.nb.props.datarate.e insert 0 $ned($chown,datarate)
-       .connprops.f.nb.props.channel.e insert 0 $ned($chown,name)
-    } else {
-        # Properties
-       .connprops.f.nb.props.error.e insert 0 $ned($key,error)
-       .connprops.f.nb.props.delay.e insert 0 $ned($key,delay)
-       .connprops.f.nb.props.datarate.e insert 0 $ned($key,datarate)
-       .connprops.f.nb.props.channel.e insert 0 $ned($key,channel-name)
+    # create "Gates" page
+    label-entry $nb.gates.srcgate "From gate:"
+    label-entry $nb.gates.destgate "To gate:"
+    label-entry $nb.gates.condition "Condition:"
+
+    label-entry $nb.gates.src_index "Source Index:"
+    label-entry $nb.gates.dest_index "Destination Index:"
+    label-entry $nb.gates.src_gate_index "Source Gate Index:"
+    label-entry $nb.gates.dest_gate_index "Destinaton Gate Index:"
+    label-entry $nb.gates.for "For Expression:"
+
+    pack $nb.gates.srcgate  -expand 0 -fill x -side top
+    pack $nb.gates.destgate  -expand 0 -fill x -side top
+    pack $nb.gates.condition  -expand 0 -fill x -side top
+
+    pack $nb.gates.src_index  -expand 0 -fill x -side top
+    pack $nb.gates.dest_index  -expand 0 -fill x -side top
+    pack $nb.gates.src_gate_index  -expand 0 -fill x -side top
+    pack $nb.gates.dest_gate_index  -expand 0 -fill x -side top
+    pack $nb.gates.for  -expand 0 -fill x -side top
+
+
+    # create "Attributes" page
+    radiobutton $nb.attrs.r1 -text "Predefined channel:" -value 1 -variable tmp(usechannel)
+    label-entry $nb.attrs.channel "Channel name:"
+    radiobutton $nb.attrs.r2 -text "Custom:" -value 0  -variable tmp(usechannel)
+    label-entry $nb.attrs.delay "Prop. delay:"
+    label-entry $nb.attrs.datarate "Data Rate:"
+    label-entry $nb.attrs.error "Bit error rate:"
+
+    label $nb.attrs.l -text  "Additional attributes:"
+    tableEdit $nb.attrs.tbl 10 {
+      {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
+      {Value              value          {entry $e -textvariable $v -width 20 -bd 1}}
+      {{End-line comment} right-comment  {entry $e -textvariable $v -width 15 -bd 1}}
+      {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
     }
-    # Loop
-    .connprops.f.nb.loop.src_index.e  insert 0 $ned($key,src_index)
-    .connprops.f.nb.loop.dest_index.e  insert 0 $ned($key,dest_index)
-    .connprops.f.nb.loop.src_gate_index.e  insert 0 $ned($key,src_gate_index)
-    .connprops.f.nb.loop.dest_gate_index.e insert 0 $ned($key,dest_gate_index)
-    .connprops.f.nb.loop.for.e insert 0 $ned($key,for_expression)
+
+    pack $nb.attrs.r1 -expand 0 -fill none -side top -anchor w
+    pack $nb.attrs.channel -expand 0 -fill x -side top
+    pack $nb.attrs.r2 -expand 0 -fill none -side top -anchor w
+    pack $nb.attrs.delay  -expand 0 -fill x -side top
+    pack $nb.attrs.datarate -expand 0 -fill x -side top
+    pack $nb.attrs.error  -expand 0 -fill x -side top
+
+    pack $nb.attrs.l -side top -anchor w
+    pack $nb.attrs.tbl -side top -pady 4
+
+    # fill "Gates" page
+    $nb.gates.srcgate.e insert 0 $ned($key,srcgate)
+    $nb.gates.destgate.e insert 0 $ned($key,destgate)
+    $nb.gates.condition.e  insert 0 $ned($key,condition)
+    $nb.gates.src_index.e  insert 0 $ned($key,src_index)
+    $nb.gates.dest_index.e  insert 0 $ned($key,dest_index)
+    $nb.gates.src_gate_index.e  insert 0 $ned($key,src_gate_index)
+    $nb.gates.dest_gate_index.e insert 0 $ned($key,dest_gate_index)
+#    $nb.gates.for.e insert 0 $ned($key,for_expression)
+
+    # fill "Attributes" page
+if 0 {
+    if {$ned($key,channel-ownerkey)!=""} {
+       set chown $ned($key,channel-ownerkey)
+       $nb.attrs.error.e insert 0 $ned($chown,error)
+       $nb.attrs.delay.e insert 0 $ned($chown,delay)
+       $nb.attrs.datarate.e insert 0 $ned($chown,datarate)
+       $nb.attrs.channel.e insert 0 $ned($chown,name)
+    } else {
+       # Attributes
+       $nb.attrs.error.e insert 0 $ned($key,error)
+       $nb.attrs.delay.e insert 0 $ned($key,delay)
+       $nb.attrs.datarate.e insert 0 $ned($key,datarate)
+       $nb.attrs.channel.e insert 0 $ned($key,channel-name)
+    }
+}
+
     # focus on first one
-    focus .connprops.f.nb.gates.srcgate.e
+    focus $nb.gates.srcgate.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .connprops] == 1} {
         # Gates
-        set ned($key,srcgate)  [.connprops.f.nb.gates.srcgate.e get]
-        set ned($key,destgate) [.connprops.f.nb.gates.destgate.e get]
-        set ned($key,condition) [.connprops.f.nb.gates.condition.e get]
-        set ned($key,comment)  [.connprops.f.nb.gates.comment.t get 1.0 end]
-        # Loop
-        set ned($key,src_index) [.connprops.f.nb.loop.src_index.e get]
-        set ned($key,dest_index) [.connprops.f.nb.loop.dest_index.e get]
-        set ned($key,src_gate_index) [.connprops.f.nb.loop.src_gate_index.e get]
-        set ned($key,dest_gate_index) [.connprops.f.nb.loop.dest_gate_index.e get]
-        set ned($key,for_expression) [.connprops.f.nb.loop.for.e get]
+        set ned($key,srcgate)  [$nb.gates.srcgate.e get]
+        set ned($key,destgate) [$nb.gates.destgate.e get]
+        set ned($key,condition) [$nb.gates.condition.e get]
 
-        set chname             [.connprops.f.nb.props.channel.e get]
+        set ned($key,src_index) [$nb.gates.src_index.e get]
+        set ned($key,dest_index) [$nb.gates.dest_index.e get]
+        set ned($key,src_gate_index) [$nb.gates.src_gate_index.e get]
+        set ned($key,dest_gate_index) [$nb.gates.dest_gate_index.e get]
+        set ned($key,for_expression) [$nb.gates.for.e get]
+
+        set chname             [$nb.attrs.channel.e get]
         if {$chname!=""} {
            #megnezem hogy van e ilyen nevu channel
            set chkey [itemKeyFromName $chname channel]
@@ -124,9 +149,9 @@ proc editConnectionProps {key} {
                    # kitoltom a nevet
                    set ned($chkey,name) $chname
                    # feltoltom ertekekkel
-                   set ned($chkey,error)    [.connprops.f.nb.props.error.e get]
-                   set ned($chkey,delay)    [.connprops.f.nb.props.delay.e get]
-                   set ned($chkey,datarate) [.connprops.f.nb.props.datarate.e get]
+                   set ned($chkey,error)    [$nb.attrs.error.e get]
+                   set ned($chkey,delay)    [$nb.attrs.delay.e get]
+                   set ned($chkey,datarate) [$nb.attrs.datarate.e get]
                    # kikeresek mindent ahoz hogy be tudja allitani a ownerkeyt
                    set canv_id $gned(canvas_id)
                    set modkey $canvas($canv_id,module-key)
@@ -136,17 +161,17 @@ proc editConnectionProps {key} {
                    set ned($key,channel-ownerkey) $chkey
                 } else {
                    set ned($key,channel-ownerkey) ""
-                   set ned($key,error)    [.connprops.f.nb.props.error.e get]
-                   set ned($key,delay)    [.connprops.f.nb.props.delay.e get]
-                   set ned($key,datarate) [.connprops.f.nb.props.datarate.e get]
+                   set ned($key,error)    [$nb.attrs.error.e get]
+                   set ned($key,delay)    [$nb.attrs.delay.e get]
+                   set ned($key,datarate) [$nb.attrs.datarate.e get]
                    set ned($key,channel-name) $chname
                 }
            }
         } else {
            set ned($key,channel-ownerkey) ""
-           set ned($key,error)    [.connprops.f.nb.props.error.e get]
-           set ned($key,delay)    [.connprops.f.nb.props.delay.e get]
-           set ned($key,datarate) [.connprops.f.nb.props.datarate.e get]
+           set ned($key,error)    [$nb.attrs.error.e get]
+           set ned($key,delay)    [$nb.attrs.delay.e get]
+           set ned($key,datarate) [$nb.attrs.datarate.e get]
            set ned($key,channel-name) $chname
         }
     }

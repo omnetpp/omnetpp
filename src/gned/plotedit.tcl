@@ -144,6 +144,7 @@ proc popupMenu {c x y} {
     foreach i {
       {command -command "editProps $key" -label {Properties...} -underline 0}
       {command -command "editDrawOptions $key" -label {Drawing options...} -underline 0}
+      {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
       {separator}
       {command -command "deleteItem $key" -label {Delete} -underline 1}
     } {

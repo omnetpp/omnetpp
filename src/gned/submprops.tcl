@@ -19,7 +19,7 @@
 
 
 proc editSubmoduleProps {key} {
-    global gned ned
+    global gned ned tmp
 
     #
     # Set up dialog.
@@ -27,7 +27,7 @@ proc editSubmoduleProps {key} {
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .submprops "Submodule Properties"
-    wm geometry .submprops "480x320"
+    wm geometry .submprops "480x330"
 
     set nb .submprops.f.nb
 
@@ -41,23 +41,38 @@ proc editSubmoduleProps {key} {
 
     # create "General" page
     label-entry $nb.general.name "Name:"
-    label-entry $nb.general.type "Type:"
-    label-entry $nb.general.like "Like:"
     label-entry $nb.general.vs   "Vector size:"
-    label-text  $nb.general.comment "Comments:" 4
+    radiobutton $nb.general.r1 -text "Type is fixed:" -value 0  -variable tmp(uselike)
+    label-entry $nb.general.type "Type:"
+    radiobutton $nb.general.r2 -text "Type is passed in a parameter:" -value 1  -variable tmp(uselike)
+    label-entry $nb.general.likepar "Parameter name:"
+    label-entry $nb.general.likemod "Prototype module:"
+    label-text  $nb.general.comment "Doc. comments:" 4
+    label-text  $nb.general.rcomment "End-line comments:" 2
 
     pack $nb.general.name  -expand 0 -fill x -side top
-    pack $nb.general.type  -expand 0 -fill x -side top
-    pack $nb.general.like  -expand 0 -fill x -side top
     pack $nb.general.vs    -expand 0 -fill x -side top
+    pack $nb.general.r1  -expand 0 -fill none -side top -anchor w
+    pack $nb.general.type  -expand 0 -fill x -side top
+    pack $nb.general.r2  -expand 0 -fill none -side top -anchor w
+    pack $nb.general.likepar  -expand 0 -fill x -side top
+    pack $nb.general.likemod  -expand 0 -fill x -side top
     pack $nb.general.comment -expand 0 -fill x -side top
+    pack $nb.general.rcomment -expand 0 -fill x -side top
 
     # fill "General" page with values
     $nb.general.name.e insert 0 $ned($key,name)
-    $nb.general.type.e insert 0 $ned($key,type-name)
-    $nb.general.like.e insert 0 $ned($key,like-name)
     $nb.general.vs.e insert 0 $ned($key,vectorsize)
+    if {$ned($key,like-name)==""} {
+        set tmp(uselike) 0
+        $nb.general.type.e insert 0 $ned($key,type-name)
+    } else {
+        set tmp(uselike) 1
+        $nb.general.likepar.e insert 0 $ned($key,type-name)
+        $nb.general.likemod.e insert 0 $ned($key,like-name)
+    }
     $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
+    $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
 
     # create "Parameters" page
     createSectionsComboAndTables $nb.pars $key substparams parameters  {
@@ -103,10 +118,17 @@ proc editSubmoduleProps {key} {
 
         # process "General" page.
         set ned($key,name) [$nb.general.name.e get]
-        set ned($key,type-name) [$nb.general.type.e get]
-        set ned($key,like-name) [$nb.general.like.e get]
         set ned($key,vectorsize) [$nb.general.vs.e get]
+
+        if {!$tmp(uselike)} {
+            set ned($key,type-name) [$nb.general.type.e get]
+            set ned($key,like-name) ""
+        } else {
+            set ned($key,type-name) [$nb.general.likepar.e get]
+            set ned($key,like-name) [$nb.general.likemod.e get]
+        }
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
+        set ned($key,right-comment) [getCommentFromText $nb.general.rcomment.t]
 
         # process "Parameters" page.
         updateNedFromSectionTables $nb.pars $key substparams substparam name
