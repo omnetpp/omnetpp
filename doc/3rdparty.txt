@@ -1,51 +1,68 @@
-Third party software
-====================
 
-The Win32 binary distribution of OMNeT++ contains software which are
-independent of OMNeT++, and are distributed under their own licenses.
+                THIRD PARTY SOFTWARE
 
-The same software packages are recommended if you want to build OMNeT++
-on Windows from source, using MSVC or the MinGW compiler.
+
+The Win32 binary distribution of OMNeT++ contains several open source
+components which are covered by their own licenses. These components
+are listed below, together with their web sites where you can find
+more information and the source code.
+
+We'd like to thank the open source community for developing and making
+these packages available. OMNeT++ would not have been possible without
+them.
 
 
 Tcl/Tk
-------
+
 OMNeT++ GUIs are based on Tcl/Tk, an open-source script language and GUI
 toolkit, written by James Ousterhout and many others. Tcl/Tk currently
 maintained at sourceforge.net; it is available from
 http://tcltk.sourceforge.net, and it is distributed under a BSD-like license.
 
 BLT
----
-BLT is an extension to the Tk toolkit, adding new widgets and miscellaneous 
-commands. It does not require any patching of the Tcl or Tk source files. 
+
+BLT is an extension to the Tk toolkit, adding new widgets and miscellaneous
+commands. It does not require any patching of the Tcl or Tk source files.
 OMNeT++ uses BLT mainly for its chart, graph and table (multi-column listbox)
-widgets. BLT is available from http://blt.sourceforge.net, and it is 
+widgets. BLT is available from http://blt.sourceforge.net, and it is
 distributed under a BSD-like license.
 
 LibXML/LibXSLT
---------------
+
 LibXML and LibXSLT are an open-source XML parser and XSLT processor, written
 by Daniel Veillard for the GNOME project. The source is available from
 http://www.xmlsoft.org. OMNeT++ is bundled with Win32 binaries maintained
-by Igor Zlatkovic, and currently available from 
-http://www.zlatkovic.com/libxml.en.html
-LibXML, LibXSLT and LibICONV (also a needed component) are distributed
+by Igor Zlatkovic, and currently available from http://www.zlatkovic.com.
+LibXML, LibXSLT and ICONV (also a needed component) are distributed
 under the GNU Lesser General Public License (LGPL).
 
 Perl
-----
+
 Some of the tools are written in Perl, an open-source script language written
 by Larry Wall. The source is available from http://www.perl.com.
 OMNeT++ is bundled with files from the ActiveState Perl distribution
 (http://www.activestate.com). Perl is distributed under its own Artistic License.
 
+GraphViz
+
+The model documentation tool opp_neddoc relies on the dot tool from Graphviz,
+developed at AT&T to generate usage and inheritance diagrams. The GraphViz
+home page is http://www.graphviz.org. The package is distributed under the
+AT&T Graphviz Source Code Agreement which permits redistribution of binaries.
+
+Giftrans
+
+opp_neddoc also uses the little program giftrans, attributed to Andreas Ley
+<ley@rz.uni-karlsruhe.de> on the page http://www.gsp.com/cgi-bin/man.cgi?
+section=1&topic=giftrans, along with a BSD-like license.
+
 UnxUtils
---------
+
 Several GNU Unix tools have been included: grep, gawk, pwd, sed, gzip, gunzip,
-zcat. These programs fall under the GNU General Public License, and the 
+zcat. These programs fall under the GNU General Public License, and the
 source is available from http://www.gnu.org. OMNeT++ is bundled with binaries
 from UnxUtils, a package which contains Win32 binary ports of these tools.
 UnxUtils is hosted at sourceforge.net: http://unxutils.sourceforge.net.
+
 
 
