@@ -1,3 +1,8 @@
+2003-10-07  Johnny Lai  
+
+	* jar.c : nedc added -h support for intel compiler on Linux
+	(__INTEL_COMPILER && __linux__)
+
 2003-09-30  Andras Varga
 
 	* opp_msgc: with customize=true, adds a default dup() function to the 

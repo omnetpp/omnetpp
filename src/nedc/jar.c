@@ -30,7 +30,7 @@
 #include "jar_func.h"
 #include "jar_lib.h"
 
-#if defined __GNUC__ || defined CXX
+#if defined __GNUC__ || defined CXX || (defined __INTEL_COMPILER && defined __linux__)
 #include <unistd.h> //getcwd
 #include <stdlib.h> //mkstemp
 #endif
@@ -394,7 +394,7 @@ int do_secondpass (char *root_fname)
         int perr;
         name_type ned_fname, cc_fname;
 
-#if defined __GNUC__ || defined CXX
+#if defined __GNUC__ || defined CXX || (defined __INTEL_COMPILER && defined __linux__)
         char path[256];
         if (here)
           if (getcwd(path, sizeof(path)) != NULL)
@@ -430,7 +430,7 @@ int do_secondpass (char *root_fname)
         sprintf (cc_fname, "%s%s", root_fname, suffix);
         if (verbose) printf("target file: %s\n", cc_fname);
 
-#if defined __GNUC__ || defined CXX
+#if defined __GNUC__ || defined CXX || (defined __INTEL_COMPILER && defined __linux__)
         const char name_template[7] = "XXXXXX";
         name_type oldfname;
         strncpy(oldfname, cc_fname, strlen(cc_fname) + 1);
@@ -515,7 +515,7 @@ int do_secondpass (char *root_fname)
         }
         fclose (yyout);
 
-#if defined __GNUC__ || defined CXX
+#if defined __GNUC__ || defined CXX || (defined __INTEL_COMPILER && defined __linux__)
         if (rename(cc_fname, oldfname) == -1)
         {
           fprintf(stderr, "rename failed for src=%s dest=%s", cc_fname, oldfname);
