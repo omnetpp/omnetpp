@@ -32,7 +32,6 @@ Module/submodule parameters can be included with the \ttt{\$name} notation:
 \begin{verbatim}
   "p=$xpos,$ypos;b=rect,60,10;o=$fillcolor,black,2"
 \end{verbatim}
-%%$
 
 Objects that may have display strings are:
 \begin{itemize}
@@ -161,6 +160,24 @@ Defaults: \textit{fillcolor}=\#8080ff (a lightblue), \textit{outlinecolor}=black
 
 No default. If no icon name is present, \textit{box} is used.}\\\hline
 \end{longtable}
+
+%-----
+%       * main.tcl, modinsp2.tcl: created display string tag for icon size:
+%       "is=" (can be "vl", "l", "n", "s", "vs" for very large, large, normal,
+%       small, very small). Similarly, tag "is2=" sets size of auxiliary icon
+%       ("i2=" tag). The underscore notation ("i=penguin_s") also still exists.
+%-----
+%       * main.tcl, modinsp2.tcl: preparations for new icons, categorized into
+%       several subdirs under bitmaps/. Current icons will be moved to
+%       into the bitmaps/old subdirectory.
+%
+%       Tkenv now loads icons from subdirectories of dirs in OMNETPP_BITMAP-
+%       _PATH as well, and they can be referenced from display strings like
+%       "subdir/icon", "subdir/subsubdir/icon" , etc. If an icon "icon" in
+%       a display string is not found, it is tried as "old/icon" as well.
+%-----
+%        * modinsp2.tcl: "t=" tag: center text by default
+%-----
 
 
 Examples:
