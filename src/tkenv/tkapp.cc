@@ -656,7 +656,7 @@ void TOmnetTkApp::updateSimtimeDisplay()
                         "}", NULL ));
 
     // statistics
-    sprintf(buf, "%lu", simulation.msgQueue.length());
+    sprintf(buf, "%u", simulation.msgQueue.length());
     CHK(Tcl_VarEval(interp, FESLENGTH_LABEL " config -text {"
                         "Msgs in FES: ", buf,
                         "}", NULL ));

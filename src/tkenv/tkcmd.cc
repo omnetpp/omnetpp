@@ -640,7 +640,7 @@ int inspectorCommand_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 {
    if (argc!=2) return TCL_ERROR;
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   //TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
 
    cObject *object; int type;
    splitInspectorName( argv[1], object, type);

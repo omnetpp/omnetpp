@@ -1,5 +1,10 @@
 2002-03-03  Andras Varga
 
+	* filemgrs.cc: increased precision of numbers in output vector files
+	("%g" fprintf formats changed to "%.9g"). [suggested by George Young]
+
+2002-03-03  Andras Varga
+
 	* Various changes: management of output vectors, output scalars and
 	snapshots were moved into to the user interface library. See following
 	entries and include/ChangeLog.
