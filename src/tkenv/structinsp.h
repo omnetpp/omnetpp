@@ -23,12 +23,14 @@
 class cStructDescriptor;
 
 #define BUFSIZE     2048           /* buffer size */
-#define FLUSHLIMIT  (BUFSIZE-256)  /* one sprintf() should be less than 256 chars */
+#define MAXWRITE    255            /* one sprintf() shouldn't be more than 255 chars */
+#define FLUSHLIMIT  (BUFSIZE-MAXWRITE-2)
 
 class TStructPanel : public TInspectorPanel
 {
    protected:
       char buf[BUFSIZE];
+      char tmpbuf[MAXWRITE+1];
       char *writeptr;
 
       void flushIfNeeded(int limit);

@@ -58,7 +58,6 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
    // print everything in a buffer, and periodically display it as the buffer gets full.
    // this is a temporary solution, should be replaced by something more professional!
 
-   char val[128];
    int indent = level*4;
 
    for (int fld=0; fld<sd->getFieldCount(); fld++)
@@ -74,19 +73,19 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
            switch(type)
            {
                case cStructDescriptor::FT_BASIC:
-                   val[0]='\0';
-                   sd->getFieldAsString(fld, 0, val, 128);
+                   tmpbuf[0]='\0';
+                   sd->getFieldAsString(fld, 0, tmpbuf, MAXWRITE);
                    if (sd->getFieldEnumName(fld))
                    {
                        // display enum value as int and as string
                        cEnum* enm = findEnum(sd->getFieldEnumName(fld));
                        if (enm)
                        {
-                           int key = atol(val);
-                           sprintf(val, "%d (%s)", key, enm->stringFor(key));
+                           int key = atol(tmpbuf);
+                           sprintf(tmpbuf, "%d (%s)", key, enm->stringFor(key));
                        }
                    }
-                   sprintf(writeptr,"%*s%s %s  =  %s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
+                   sprintf(writeptr,"%*s%s %s  =  %s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), tmpbuf);
                    flushIfNeeded(FLUSHLIMIT);
                    break;
                case cStructDescriptor::FT_SPECIAL:
@@ -94,16 +93,16 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                    flushIfNeeded(FLUSHLIMIT);
                    break;
                case cStructDescriptor::FT_STRUCT:
-                   val[0]='\0';
-                   sd->getFieldAsString(fld, 0, val, 128);
-                   sprintf(writeptr,"%*s%s %s  =  %s ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
+                   tmpbuf[0]='\0';
+                   sd->getFieldAsString(fld, 0, tmpbuf, MAXWRITE);
+                   sprintf(writeptr,"%*s%s %s  =  %s ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), tmpbuf);
                    flushIfNeeded(FLUSHLIMIT);
 
                    sd1 = cStructDescriptor::createDescriptorFor(sd->getFieldStructName(fld),
                                                                 sd->getFieldStructPointer(fld,0));
                    if (!sd1)
                    {
-                       sprintf(writeptr, (val[0] ? "\n" : "{...}\n"));
+                       sprintf(writeptr, (tmpbuf[0] ? "\n" : "{...}\n"));
                        flushIfNeeded(FLUSHLIMIT);
                    }
                    else
@@ -129,18 +128,18 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                switch(type)
                {
                    case cStructDescriptor::FT_BASIC_ARRAY:
-                       sd->getFieldAsString(fld, i, val, 128); // FIXME: error handling!
+                       sd->getFieldAsString(fld, i, tmpbuf, MAXWRITE); // FIXME: error handling!
                        if (sd->getFieldEnumName(fld))
                        {
                            // display enum value as int and as string
                            cEnum* enm = findEnum(sd->getFieldEnumName(fld));
                            if (enm)
                            {
-                               int key = atol(val);
-                               sprintf(val, "%d (%s)", key, enm->stringFor(key));
+                               int key = atol(tmpbuf);
+                               sprintf(tmpbuf, "%d (%s)", key, enm->stringFor(key));
                            }
                        }
-                       sprintf(writeptr,"%*s%s %s[%d]  =  %s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, val);
+                       sprintf(writeptr,"%*s%s %s[%d]  =  %s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, tmpbuf);
                        flushIfNeeded(FLUSHLIMIT);
                        break;
                    case cStructDescriptor::FT_SPECIAL_ARRAY:
@@ -148,16 +147,16 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                        flushIfNeeded(FLUSHLIMIT);
                        break;
                    case cStructDescriptor::FT_STRUCT_ARRAY:
-                       val[0]='\0';
-                       sd->getFieldAsString(fld, i, val, 128);
-                       sprintf(writeptr,"%*s%s %s[%d]  =  %s ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, val);
+                       tmpbuf[0]='\0';
+                       sd->getFieldAsString(fld, i, tmpbuf, MAXWRITE);
+                       sprintf(writeptr,"%*s%s %s[%d]  =  %s ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, tmpbuf);
                        flushIfNeeded(FLUSHLIMIT);
 
                        sd1 = cStructDescriptor::createDescriptorFor(sd->getFieldStructName(fld),
                                                                     sd->getFieldStructPointer(fld,i));
                        if (!sd1)
                        {
-                           sprintf(writeptr, (val[0] ? "\n" : "{...}\n"));
+                           sprintf(writeptr, (tmpbuf[0] ? "\n" : "{...}\n"));
                            flushIfNeeded(FLUSHLIMIT);
                        }
                        else
@@ -299,8 +298,7 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
       int i=0;
       if (argc==4)
          i = atoi(argv[2]);
-      char buf[128];
-      if (!sd->getFieldAsString(fld, i, buf, 128))
+      if (!sd->getFieldAsString(fld, i, tmpbuf, MAXWRITE))
       {
          Tcl_SetResult(interp, "error in getFieldAsString()", TCL_STATIC);
          return TCL_ERROR;
