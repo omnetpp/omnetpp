@@ -764,7 +764,7 @@ proc findSubmodule {modkey submodname} {
 # doesn't work yet
 #
 proc nedClipboard:cut {} {
-       tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
+       tk_messageBox -title "GNED" -icon info -type ok -message "Copy/paste is only available in text mode."
        return
        editCopy
        deleteSelected
@@ -776,7 +776,7 @@ proc nedClipboard:cut {} {
 # doesn't work yet
 #
 proc nedClipboard:copy {} {
-       tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
+       tk_messageBox -title "GNED" -icon info -type ok -message "Copy/paste is only available in text mode."
        return
 
        global clipboard_ned ned
@@ -808,7 +808,7 @@ proc nedClipboard:copy {} {
 # doesn't work yet
 #
 proc nedClipboard:paste {} {
-       tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
+       tk_messageBox -title "GNED" -icon info -type ok -message "Copy/paste is only available in text mode."
        return
 
        global clipboard_ned ned gned canvas

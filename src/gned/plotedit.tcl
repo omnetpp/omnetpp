@@ -1021,6 +1021,10 @@ proc _redrawArrow {c key} {
    set cid $ned($key,arrow-cid)
    set s_coords [_getCoords $c $ned($ned($key,src-ownerkey),rect-cid)]
    set d_coords [_getCoords $c $ned($ned($key,dest-ownerkey),rect-cid)]
+   if {[llength [eval list $s_coords $d_coords]]!=8} {
+       # something is wrong, better bail out
+       return
+   }
 
    # note: the "-" marks are a trick so that empty strings do not cause
    #       trouble. Without them, if some of the achors is "", arrowcoords
