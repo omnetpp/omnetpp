@@ -41,7 +41,6 @@ typedef char *(*InfoFunc)(cObject *);
 char *ptrToStr(void *ptr, char *buffer=NULL);
 void *strToPtr(const char *s );
 void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor);
-char *my_itol(long l, char *buf);
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
 int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, bool simpleonly, bool deep);

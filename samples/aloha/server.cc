@@ -139,7 +139,7 @@ void Server::handleMessage(cMessage *msg)
                 displayString().setTagArg("t",0,"COLLISION");
                 displayString().setTagArg("t",2,"#800000");
                 char buf[32];
-                sprintf(buf, "Collision! (%d frames)", currentCollisionNumFrames);
+                sprintf(buf, "Collision! (%ld frames)", currentCollisionNumFrames);
                 bubble(buf);
             }
         }

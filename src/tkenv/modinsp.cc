@@ -721,7 +721,6 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
    if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    const char *parname = argv[2];
-   int k;
 
    cPar *par;
    TRY( par = displayStringPar(parname, mod, searchparents) );

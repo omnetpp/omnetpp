@@ -195,8 +195,8 @@ void BasicSpringEmbedderLayout::getNodePosition(cModule *mod, int& x, int& y)
     assert(findNode(mod)!=NULL);
 
     Node *n = findNode(mod);
-    x = n->x;
-    y = n->y;
+    x = (int) n->x;
+    y = (int) n->y;
 }
 
 void BasicSpringEmbedderLayout::execute()

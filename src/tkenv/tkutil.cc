@@ -70,14 +70,6 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 }
 
 
-// helper
-char *my_itol(long l, char *buf)
-{
-    sprintf(buf, "%ld", l);
-    return buf;
-}
-
-
 //-----------------------------------------------------------------------
 
 static void insert_into_inspectorlistbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
