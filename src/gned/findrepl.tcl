@@ -25,42 +25,46 @@ proc findReplaceDialog {w mode} {
     set tmp(whole-words)     $config(editor-whole-words)
     set tmp(regexp)          $config(editor-regexp)
 
+    # dialog should be child of the window which contains the text widget
+    set dlg [winfo toplevel $w].dlg
+    if {$dlg=="..dlg"} {set dlg .dlg}
+
     # create dialog with OK and Cancel buttons
     if {$mode == "find"} {
         set title "Find"
     } else {
         set title "Find/Replace"
     }
-    createOkCancelDialog .dlg $title
+    createOkCancelDialog $dlg $title
 
     # add entry fields
-    label-entry .dlg.f.find "Find string:"
-    pack .dlg.f.find  -expand 0 -fill x -side top
-    .dlg.f.find.e insert 0 $config(editor-findstring)
-    .dlg.f.find.e select range 0 end
+    label-entry $dlg.f.find "Find string:"
+    pack $dlg.f.find  -expand 0 -fill x -side top
+    $dlg.f.find.e insert 0 $config(editor-findstring)
+    $dlg.f.find.e select range 0 end
 
     if {$mode == "replace"} {
-        label-entry .dlg.f.repl "Replace with:"
-        pack .dlg.f.repl  -expand 0 -fill x -side top
-        .dlg.f.repl.e insert 0 $config(editor-replacestring)
+        label-entry $dlg.f.repl "Replace with:"
+        pack $dlg.f.repl  -expand 0 -fill x -side top
+        $dlg.f.repl.e insert 0 $config(editor-replacestring)
     }
 
-    checkbutton .dlg.f.regexp -text {regular expression} -variable tmp(regexp)
-    pack .dlg.f.regexp  -anchor w -side top
+    checkbutton $dlg.f.regexp -text {regular expression} -variable tmp(regexp)
+    pack $dlg.f.regexp  -anchor w -side top
 
-    checkbutton .dlg.f.case -text {case sensitive} -variable tmp(case-sensitive)
-    pack .dlg.f.case  -anchor w -side top
+    checkbutton $dlg.f.case -text {case sensitive} -variable tmp(case-sensitive)
+    pack $dlg.f.case  -anchor w -side top
 
-    checkbutton .dlg.f.words -text {whole words only} -variable tmp(whole-words)
-    pack .dlg.f.words  -anchor w -side top
+    checkbutton $dlg.f.words -text {whole words only} -variable tmp(whole-words)
+    pack $dlg.f.words  -anchor w -side top
 
-    focus .dlg.f.find.e
+    focus $dlg.f.find.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
-    if {[execOkCancelDialog .dlg] == 1} {
+    if {[execOkCancelDialog $dlg] == 1} {
 
         # collect data from dialog
-        set findstring [.dlg.f.find.e get]
+        set findstring [$dlg.f.find.e get]
         set case $tmp(case-sensitive)
         set words $tmp(whole-words)
         set regexp $tmp(regexp)
@@ -71,11 +75,11 @@ proc findReplaceDialog {w mode} {
         set config(editor-findstring) $findstring
 
         if {$mode == "replace"} {
-            set replstring [.dlg.f.repl.e get]
+            set replstring [$dlg.f.repl.e get]
             set config(editor-replacestring) $replstring
         }
 
-        destroy .dlg
+        destroy $dlg
 
         # execute find/replace
         if {$mode == "find"} {
@@ -84,7 +88,7 @@ proc findReplaceDialog {w mode} {
             doReplace $w $findstring $replstring $case $words $regexp
         }
    }
-   catch {destroy .dlg}
+   catch {destroy $dlg}
 }
 
 # findNext --
@@ -107,7 +111,8 @@ proc findNext {w} {
 #
 proc doFind {w findstring case words regexp} {
     if {[_doFind $w $findstring $case $words $regexp] == ""} {
-        tk_messageBox  -title "Find" -icon warning -type ok -message "'$findstring' not found."
+        tk_messageBox -parent [winfo toplevel $w] -title "Find" -icon warning \
+                      -type ok -message "'$findstring' not found."
     }
 }
 
@@ -168,50 +173,54 @@ proc askReplaceYesNo {w} {
 
     global result
 
-    catch {destroy .dlg}
-    toplevel .dlg
-    wm title .dlg "Find/Replace"
-    wm protocol .dlg WM_DELETE_WINDOW { }
-    wm transient .dlg [winfo toplevel [winfo parent .dlg]]
+    # dialog should be child of the window which contains the text widget
+    set dlg [winfo toplevel $w].dlg
+    if {$dlg=="..dlg"} {set dlg .dlg}
+
+    catch {destroy $dlg}
+    toplevel $dlg
+    wm title $dlg "Find/Replace"
+    wm protocol $dlg WM_DELETE_WINDOW { }
+    wm transient $dlg [winfo toplevel [winfo parent $dlg]]
 
     set bbox [$w bbox insert]
     if {[llength $bbox] == 4} {
         set x [expr [winfo rootx $w] + [lindex $bbox 0] - 100 ]
         set y [expr [winfo rooty $w] + [lindex $bbox 1] + 40 ]
-        wm geometry .dlg "+$x+$y"
+        wm geometry $dlg "+$x+$y"
     }
 
-    frame .dlg.x
-    label .dlg.x.bm -bitmap question
-    label .dlg.x.l  -text "Replace this occurrence?"
+    frame $dlg.x
+    label $dlg.x.bm -bitmap question
+    label $dlg.x.l  -text "Replace this occurrence?"
 
-    frame .dlg.f
-    button .dlg.f.yes -text "Yes" -underline 0 \
-        -command {set result yes ; destroy .dlg}
-    button .dlg.f.no -text "No" -underline 0 \
-        -command {set result no; destroy .dlg}
-    button .dlg.f.all -text "All" -underline 0 \
-        -command {set result all; destroy .dlg}
-    button .dlg.f.close -text "Close" -underline 0 \
-        -command {set result close; destroy .dlg}
+    frame $dlg.f
+    button $dlg.f.yes -text "Yes" -underline 0 \
+        -command "set result yes ; destroy $dlg"
+    button $dlg.f.no -text "No" -underline 0 \
+        -command "set result no; destroy $dlg"
+    button $dlg.f.all -text "All" -underline 0 \
+        -command "set result all; destroy $dlg"
+    button $dlg.f.close -text "Close" -underline 0 \
+        -command "set result close; destroy $dlg"
 
-    pack .dlg.x -side top  -fill x
-    pack .dlg.x.bm -side left -padx 5  -pady 5
-    pack .dlg.x.l -side top -fill x -expand 1
-    pack .dlg.f -side bottom -anchor w
-    pack .dlg.f.yes .dlg.f.no .dlg.f.all .dlg.f.close -side left -padx 5 -pady 5
+    pack $dlg.x -side top  -fill x
+    pack $dlg.x.bm -side left -padx 5  -pady 5
+    pack $dlg.x.l -side top -fill x -expand 1
+    pack $dlg.f -side bottom -anchor w
+    pack $dlg.f.yes $dlg.f.no $dlg.f.all $dlg.f.close -side left -padx 5 -pady 5
 
-    bind .dlg <y> {.dlg.f.yes invoke}
-    bind .dlg <Y> {.dlg.f.yes invoke}
-    bind .dlg <n> {.dlg.f.no invoke}
-    bind .dlg <N> {.dlg.f.no invoke}
-    bind .dlg <a> {.dlg.f.all invoke}
-    bind .dlg <A> {.dlg.f.all invoke}
-    bind .dlg <c> {.dlg.f.close invoke}
-    bind .dlg <C> {.dlg.f.close invoke}
-    bind .dlg <Return> {.dlg.f.yes invoke}
-    bind .dlg <Escape> {.dlg.f.close invoke}
-    focus .dlg.f.yes
+    bind $dlg <y> "$dlg.f.yes invoke"
+    bind $dlg <Y> "$dlg.f.yes invoke"
+    bind $dlg <n> "$dlg.f.no invoke"
+    bind $dlg <N> "$dlg.f.no invoke"
+    bind $dlg <a> "$dlg.f.all invoke"
+    bind $dlg <A> "$dlg.f.all invoke"
+    bind $dlg <c> "$dlg.f.close invoke"
+    bind $dlg <C> "$dlg.f.close invoke"
+    bind $dlg <Return> "$dlg.f.yes invoke"
+    bind $dlg <Escape> "$dlg.f.close invoke"
+    focus $dlg.f.yes
 
     tkwait variable result
     return $result
