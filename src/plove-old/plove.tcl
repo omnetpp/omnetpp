@@ -4,16 +4,14 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2001 Andras Varga
-#  Technical University of Budapest, Dept. of Telecommunications,
-#  Stoczek u.2, H-1111 Budapest, Hungary.
+#  Copyright (C) 1992-2003 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
 puts {Plove 2.2 - Output vector plotting tool (Gnuplot front-end), part of OMNeT++.
-(c) 1992-2001 Andras Varga, TU Budapest
+(c) 1992-2003 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 }
 

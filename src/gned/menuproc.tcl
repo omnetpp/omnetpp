@@ -6,9 +6,7 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2001 Andras Varga
-#  Technical University of Budapest, Dept. of Telecommunications,
-#  Stoczek u.2, H-1111 Budapest, Hungary.
+#  Copyright (C) 1992-2003 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
@@ -429,7 +427,7 @@ proc helpAbout {} {
     aboutDialog "About OMNeT++/GNED" {
 OMNeT++/GNED
 
-(c) 1997-2002 Andras Varga
+(C) 1997-2003 Andras Varga
 
 NO WARRANTY -- see license for details.}
 }
@@ -439,5 +437,5 @@ proc notImplemented {args} {
     # the most versatile function :-)
     set parent [winfo toplevel [focus]]
     tk_messageBox -type ok -icon info -parent $parent \
-          -title "GNED" -message "Not implemented yet :-("
+          -title "GNED" -message "Not implemented yet."
 }

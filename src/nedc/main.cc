@@ -126,7 +126,7 @@ NedFilesNode *outputtree;
 void printUsage()
 {
     fprintf(stderr,
-       "nedtool -- part of OMNeT++, (c) 2002 Andras Varga\n"
+       "nedtool -- part of OMNeT++, (C) 2002-2003 Andras Varga\n"
        "Syntax: nedtool [options] <file1> <file2> ...\n"
        "    or: nedtool [options] @<filelist>\n"
        "  -c: generate C++ (default)\n"

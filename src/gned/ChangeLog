@@ -1,7 +1,7 @@
 2002-12-03  Andras Varga
 
-	* plotedit.tcl: bugfix: it was not possible to raw exacly horizontal or
-	vertial connection arrows
+	* plotedit.tcl: bugfix: it was not possible to draw exactly horizontal 
+	or vertical connection arrows
 
 	* drawopts.tcl: bugfix: Tcl error when icon in loaded NED file was not 
 	found
