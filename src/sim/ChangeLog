@@ -929,3 +929,5 @@ Jan 15, 2001
    the ownership of the inserted object [reported by Ulrich Kaage]
 Jan 16, 2001
  - added OMNETPP_VERSION to defs.h (0x0200 for OMNeT++ 2.0)
+Jan 24, 2001
+ - bugfix: cArray and cBag didn't work properly after clear()

@@ -57,10 +57,10 @@ void cBag::info(char *buf)
 {
     cObject::info( buf );
 
-    if( lastused == -1 )
+    if (lastused==-1)
         sprintf( buf+strlen(buf), " (empty)" );
     else
-        sprintf( buf+strlen(buf), " (n=%d) ", lastused+1);
+        sprintf( buf+strlen(buf), " (size=%d) ", lastused+1);
 }
 
 cBag& cBag::operator=(cBag& bag)
@@ -95,59 +95,66 @@ void cBag::clear()
    vect = NULL;
    size = firstfree = 0;
    lastused = -1;
+   for (int i=0; i<size; i++) USED(i)=false; // just to be safe
 }
 
 int cBag::add(void *obj)
 {
    int retval;
-   if (firstfree < size) {
+   if (firstfree < size) // fits in current vector
+   {
       USED(firstfree) = true;
       memcpy( ELEM(firstfree), obj, elemsize);
       retval = firstfree;
       lastused = Max(lastused,firstfree);
-      do
+      do {
          firstfree++;
-      while (USED(firstfree) && firstfree<size);
-   } else {
+      } while (USED(firstfree) && firstfree<=lastused);
+   }
+   else // must allocate bigger vector
+   {
       char *v = new char[ (size+delta)*BLK ];
       memcpy(v, vect, size*BLK );
       delete vect;
       vect = v;
-      for( int i=size; i<size+delta; i++ ) USED(i)=false;
+      for (int i=size; i<size+delta; i++) USED(i)=false;
       USED(size) = true;
       memcpy( ELEM(size), obj, elemsize);
       retval = size;
       lastused = size;
       firstfree = size+1;
       size += delta;
-      }
+   }
    return retval;
 }
 
 int cBag::addAt(int m, void *obj) // --LG
 {
-   if (m < size) {
+   if (m < size)  // fits in current vector
+   {
       USED(m) = true;
       memcpy( ELEM(m), obj, elemsize);
       lastused = Max(lastused,m);
       if (m==firstfree)
-         while (USED(firstfree) && firstfree<size)
+         do {
             firstfree++;
+         } while (USED(firstfree) && firstfree<=lastused);
       return m;
-   } else {
+   }
+   else // must allocate bigger vector
+   {
       int newsize = Max(size+delta,m+1);
       char *v = new char[ newsize*BLK ];
       memcpy(v, vect, size*BLK );
       delete vect;
       vect = v;
-      for( int i=size; i<newsize; i++ ) USED(i)=false;
+      for (int i=size; i<newsize; i++) USED(i)=false;
       USED(m) = true;
       memcpy( ELEM(m), obj, elemsize);
       lastused = m;
       if (m==firstfree)
-         while (USED(firstfree) && firstfree<size)
-            firstfree++;
-      size =newsize;
+          firstfree++;
+      size = newsize;
       return m;
    }
 }
@@ -179,7 +186,7 @@ void *cBag::get(int m)
 
 bool cBag::isUsed(int m)
 {
-    if( m>=0 && m<=lastused )
+    if (m>=0 && m<=lastused)
         return USED(m);
     else
         return false;
@@ -250,7 +257,7 @@ cArray& cArray::operator=(cArray& list)
     vect = new cObject *[size];
     if (vect) memcpy( vect, list.vect, size * sizeof(cObject *) );
 
-    for( int i=0; i<=last; i++)
+    for (int i=0; i<=last; i++)
         if (vect[i] && vect[i]->owner()==&list)
             take( vect[i] = vect[i]->dup() );
     return *this;
@@ -260,10 +267,10 @@ void cArray::info(char *buf)
 {
     cObject::info( buf );
 
-    if( last == -1 )
+    if (last==-1)
         sprintf( buf+strlen(buf), " (empty)" );
     else
-        sprintf( buf+strlen(buf), " (n=%d)", last+1);
+        sprintf( buf+strlen(buf), " (size=%d)", last+1);
 }
 
 void cArray::forEach( ForeachFunc do_fn )
@@ -282,8 +289,11 @@ void cArray::forEach( ForeachFunc do_fn )
 void cArray::clear()
 {
     for (int i=0; i<=last; i++)
+    {
         if (vect[i] && vect[i]->owner()==this)
            free( vect[i] );
+        vect[i] = NULL;  // this is not strictly necessary
+    }
     firstfree = 0;
     last = -1;
 }
@@ -296,17 +306,17 @@ int cArray::add(cObject *obj)
     }
 
     int retval;
-    if (takeOwnership())  take( obj );
-    if (firstfree < size)
+    if (takeOwnership()) take( obj );
+    if (firstfree < size)  // fits in current vector
     {
         vect[firstfree] = obj;
         retval = firstfree;
         last = Max(last,firstfree);
         do {
             firstfree++;
-        } while (firstfree<size && vect[firstfree]!=NULL);
+        } while (firstfree<=last && vect[firstfree]!=NULL);
     }
-    else
+    else // must allocate bigger vector
     {
         cObject **v = new cObject *[size+delta];
         memcpy(v, vect, sizeof(cObject*)*size );
@@ -348,7 +358,7 @@ int cArray::addAt(int m, cObject *obj)
         if (firstfree==m)
            do {
               firstfree++;
-           } while (firstfree<size && vect[firstfree]!=NULL);
+           } while (firstfree<=last && vect[firstfree]!=NULL);
     }
     else // must allocate bigger vector
     {
