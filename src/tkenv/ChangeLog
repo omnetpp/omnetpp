@@ -1,7 +1,10 @@
 2004-10-15  Andras Varga
 
-	* fixed display strings: didn't handle "," and "=" in args to "t=" 
-	properly
+	* modinsp2.tcl, tkcmd.cc: fixed display strings: didn't handle "," and 
+	"=" in args to "t=" properly
+
+	* tkapp.cc: improved "Fast Run until next local event" function: now
+	it always animates events occurring in the local module
 
 2004-10-15  Andras Varga
 

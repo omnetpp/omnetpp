@@ -377,8 +377,6 @@ bool TOmnetTkApp::doRunSimulation()
     {
         if (runmode==RUNMODE_EXPRESS)
             return true;  // should continue, but in a different mode
-        animating = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW);
-        bool frequent_updates = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW);
 
         // query which module will execute the next event
         cSimpleModule *mod = simulation.selectNextModule();
@@ -391,6 +389,9 @@ bool TOmnetTkApp::doRunSimulation()
         if (untilmodule_reached && !firstevent)
             break;
         firstevent = false;
+
+        animating = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW) || untilmodule_reached;
+        bool frequent_updates = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW);
 
         speedometer.addEvent(simulation.simTime());
 
