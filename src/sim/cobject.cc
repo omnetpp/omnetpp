@@ -120,7 +120,7 @@ void cObject::copyNotSupported() const
 
 const char *cObject::className() const 
 {
-    return opp_typename(typeid(this));
+    return opp_typename(typeid(*this));
 }
 
 void cObject::info(char *buf)
