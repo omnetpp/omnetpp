@@ -90,7 +90,7 @@ void cEnvir::setup(int ac, char *av[])
      if (!appreg)
          {opp_error("No appropriate user interface (Cmdenv,Tkenv,etc.) found");return;}
 
-     printf("Setting up %s", appreg->description());
+     ::printf("Setting up %s\n", appreg->description());
 
      app = appreg->createOne(ac,av);
      app->setup(ac,av);

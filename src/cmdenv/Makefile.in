@@ -61,7 +61,8 @@ install-local: libcmdenv$(LIB_SUFFIX)
 cmdenv.o: cmdenv.h ../sim/ctypes.h ../sim/chead.h ../sim/cobject.h
 cmdenv.o: ../sim/defs.h ../sim/util.h ../sim/csimul.h ../sim/errmsg.h
 cmdenv.o: ../sim/cmsgheap.h ../sim/coutvect.h ../sim/ccor.h
-cmdenv.o: ../envir/omnetapp.h ../sim/carray.h ../sim/cenvir.h enumstr.h
-cmdenv.o: ../envir/slaveapp.h ../envir/cinifile.h ../sim/cmodule.h
-cmdenv.o: ../sim/cqueue.h ../sim/cgate.h ../sim/cnetmod.h ../envir/args.h
+cmdenv.o: ../envir/omnetapp.h ../sim/carray.h ../sim/cenvir.h
+cmdenv.o: ../envir/envdefs.h enumstr.h ../envir/appreg.h ../envir/cinifile.h
+cmdenv.o: ../sim/cmodule.h ../sim/cqueue.h ../sim/cgate.h ../sim/cnetmod.h
+cmdenv.o: ../envir/args.h
 enumstr.o: enumstr.h
