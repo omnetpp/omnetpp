@@ -35,31 +35,31 @@ Register_Class( cMessageHeap );
 
 inline int operator <= (cMessage& a, cMessage& b)
 {
-     return (a.arrivalTime() < b.arrivalTime()) ? 1 :
-            (a.arrivalTime() > b.arrivalTime()) ? 0 :
-            (a.priority() < b.priority()) ? 1 :
-            (a.priority() > b.priority()) ? 0 :
-             a.insertOrder() <= b.insertOrder();
+    return (a.arrivalTime() < b.arrivalTime()) ? 1 :
+           (a.arrivalTime() > b.arrivalTime()) ? 0 :
+           (a.priority() < b.priority()) ? 1 :
+           (a.priority() > b.priority()) ? 0 :
+            a.insertOrder() <= b.insertOrder();
 }
 
 inline int operator > (cMessage& a, cMessage& b)
 {
-     return !(a<=b);
+    return !(a<=b);
 }
 
 static int qsort_cmp_msgs(const void *p1, const void *p2)
 {
-      cMessage *m1 = *(cMessage **)p1;
-      cMessage *m2 = *(cMessage **)p2;
+    cMessage *m1 = *(cMessage **)p1;
+    cMessage *m2 = *(cMessage **)p2;
 
-      simtime_t dt = m1->arrivalTime() - m2->arrivalTime();
-      if (dt<0)       return -1;
-      else if (dt>0)  return 1;
+    simtime_t dt = m1->arrivalTime() - m2->arrivalTime();
+    if (dt<0)       return -1;
+    else if (dt>0)  return 1;
 
-      int dpri = m1->priority() - m2->priority();
-      if (dpri) return dpri;
+    int dpri = m1->priority() - m2->priority();
+    if (dpri) return dpri;
 
-      return (m1->insertOrder() < m2->insertOrder()) ? -1 : 1;
+    return (m1->insertOrder() < m2->insertOrder()) ? -1 : 1;
 }
 
 //==========================================================================
@@ -67,177 +67,179 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
 
 cMessageHeap::cMessageHeap(const char *name, int siz) : cObject(name)
 {
-     insertcntr = 0L;
-     n = 0;
-     size = siz;
-     h = new cMessage *[size+1];    // +1 is necessary because h[0] is not used
+    insertcntr = 0L;
+    n = 0;
+    size = siz;
+    h = new cMessage *[size+1];    // +1 is necessary because h[0] is not used
 }
 
 cMessageHeap::cMessageHeap(cMessageHeap& heap) : cObject()
 {
-     h=NULL; n=0;
-     setName( heap.name() );
-     operator=(heap);
+    h=NULL; n=0;
+    setName( heap.name() );
+    operator=(heap);
 }
 
 cMessageHeap::~cMessageHeap()
 {
-     // delete only the h[] array, NOT the objects (owned objects are
-     //   deleted by cObject's destructor)
-     delete [] h;
-     h=NULL;
-     n=0;
+    // delete only the h[] array, NOT the objects (owned objects are
+    //   deleted by cObject's destructor)
+    delete [] h;
+    h=NULL;
+    n=0;
 }
 
 void cMessageHeap::info(char *buf)
 {
-     cObject::info( buf );
+    cObject::info( buf );
 
-     if( n==0 )
+    if( n==0 )
         sprintf( buf+strlen(buf), " (empty)" );
-     else
+    else
         sprintf( buf+strlen(buf), " n=%d first=%s",
                  n, simtimeToStr(h[1]->arrivalTime()));
 }
 
 void cMessageHeap::forEach( ForeachFunc do_fn )
 {
-     sort();
+    sort();
 
-     if (do_fn(this,true))
-         for (int i=1; i<=n; i++)
-             if (h[i]) h[i]->forEach( do_fn );
-     do_fn(this,false);
+    if (do_fn(this,true))
+        for (int i=1; i<=n; i++)
+            if (h[i]) h[i]->forEach( do_fn );
+    do_fn(this,false);
 }
 
 void cMessageHeap::clear()
 {
-     for (int i=1; i<=n; i++)
+    for (int i=1; i<=n; i++)
         if (h[i] && h[i]->owner()==this)
-           {h[i]->heapindex=-1; free(h[i]);}
-     n=0;
+            {h[i]->heapindex=-1; free(h[i]);}
+    n=0;
 }
 
 cMessageHeap& cMessageHeap::operator=(cMessageHeap& heap)
 {
-      clear();
+    if (this==&heap) return *this;
 
-      cObject::operator=(heap);
+    clear();
 
-      n = heap.n;
-      size = heap.size;
-      delete [] h;
-      h = new cMessage *[size+1];
+    cObject::operator=(heap);
 
-      for (int i=1; i<=n; i++)
-      {
-         if (heap.h[i]->owner()==&heap)
+    n = heap.n;
+    size = heap.size;
+    delete [] h;
+    h = new cMessage *[size+1];
+
+    for (int i=1; i<=n; i++)
+    {
+        if (heap.h[i]->owner()==&heap)
             take( h[i]=(cMessage *)heap.h[i]->dup() );
-         else
+        else
             h[i]=heap.h[i];
-      }
-      return *this;
+    }
+    return *this;
 }
 
 void cMessageHeap::sort()
 {
-      qsort(h+1,n,sizeof(cMessage *),qsort_cmp_msgs);
-      for (int i=1; i<=n; i++) h[i]->heapindex=i;
+    qsort(h+1,n,sizeof(cMessage *),qsort_cmp_msgs);
+    for (int i=1; i<=n; i++) h[i]->heapindex=i;
 }
 
 void cMessageHeap::insert(cMessage *event)
 {
-      int i,j;
+    int i,j;
 
-      event->insertordr = insertcntr++;
+    event->insertordr = insertcntr++;
 
-      if (++n > size)
-      {
-         size *= 2;
-         cMessage **hnew = new cMessage *[size+1];
-         for (i=1; i<=n-1; i++)
+    if (++n > size)
+    {
+        size *= 2;
+        cMessage **hnew = new cMessage *[size+1];
+        for (i=1; i<=n-1; i++)
              hnew[i]=h[i];
-         delete [] h;
-         h = hnew;
-      }
+        delete [] h;
+        h = hnew;
+    }
 
-      if (takeOwnership())  take(event);
+    if (takeOwnership())  take(event);
 
-      for (j=n; j>1; j=i)
-      {
-         i=j/2;
-         if (*h[i] <= *event)   //direction
+    for (j=n; j>1; j=i)
+    {
+        i=j/2;
+        if (*h[i] <= *event)   //direction
             break;
 
-         (h[j]=h[i])->heapindex=j;
-      }
-      (h[j]=event)->heapindex=j;
+        (h[j]=h[i])->heapindex=j;
+    }
+    (h[j]=event)->heapindex=j;
 }
 
 void cMessageHeap::shiftup(int from)
 {
-      // restores heap structure (in a sub-heap)
-      int i,j;
-      cMessage *temp;
+    // restores heap structure (in a sub-heap)
+    int i,j;
+    cMessage *temp;
 
-      i=from;
-      while ((j=2*i) <= n)
-      {
-         if (j<n && (*h[j] > *h[j+1]))   //direction
+    i=from;
+    while ((j=2*i) <= n)
+    {
+        if (j<n && (*h[j] > *h[j+1]))   //direction
             j++;
-         if (*h[i] > *h[j])  //is change necessary?
-         {
+        if (*h[i] > *h[j])  //is change necessary?
+        {
             temp=h[j];
             (h[j]=h[i])->heapindex=j;
             (h[i]=temp)->heapindex=i;
             i=j;
-         }
-         else
+        }
+        else
             break;
-      }
+    }
 }
 
 cMessage *cMessageHeap::peekFirst()
 {
-      return n==0 ? NO(cMessage) : h[1];
+    return n==0 ? NO(cMessage) : h[1];
 }
 
 cMessage *cMessageHeap::getFirst()
 {
-      if (n>0)
-      {
-         // first is taken out and replaced by the last one
-         cMessage *event = h[1];
-         (h[1]=h[n--])->heapindex=1;
-         shiftup();
-         if (event->owner()==this) drop(event);
-         event->heapindex=-1;
-         return event;
-      }
-      return NO(cMessage);
+    if (n>0)
+    {
+        // first is taken out and replaced by the last one
+        cMessage *event = h[1];
+        (h[1]=h[n--])->heapindex=1;
+        shiftup();
+        if (event->owner()==this) drop(event);
+        event->heapindex=-1;
+        return event;
+    }
+    return NO(cMessage);
 }
 
 cMessage *cMessageHeap::get(cMessage *event)
 {
-      // make sure it is really on the heap
-      if (event->heapindex==-1)
-         return NO(cMessage);
+    // make sure it is really on the heap
+    if (event->heapindex==-1)
+        return NO(cMessage);
 
-      // sanity check:
-      // if (h[event->heapindex]!=event)  error!!!!
+    // sanity check:
+    // if (h[event->heapindex]!=event)  error!!!!
 
-      // last element will be used to fill the hole
-      int father, out = event->heapindex;
-      cMessage *fill = h[n--];
-      while ((father=out/2)!=0 && *h[father] > *fill)
-      {
-         (h[out]=h[father])->heapindex=out;  // father is moved down
-         out=father;
-      }
-      (h[out]=fill)->heapindex=out;
-      shiftup(out);
-      if (event->owner()==this) drop(event);
-      event->heapindex=-1;
-      return event;
+    // last element will be used to fill the hole
+    int father, out = event->heapindex;
+    cMessage *fill = h[n--];
+    while ((father=out/2)!=0 && *h[father] > *fill)
+    {
+        (h[out]=h[father])->heapindex=out;  // father is moved down
+        out=father;
+    }
+    (h[out]=fill)->heapindex=out;
+    shiftup(out);
+    if (event->owner()==this) drop(event);
+    event->heapindex=-1;
+    return event;
 }
 

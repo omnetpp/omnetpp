@@ -54,6 +54,8 @@ cDensityEstBase::~cDensityEstBase()
 
 cDensityEstBase& cDensityEstBase::operator=(cDensityEstBase& res)
 {
+   if (this==&res) return *this;
+
    cStdDev::operator=(res);
 
    rangemin = res.rangemin;

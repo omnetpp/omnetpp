@@ -33,34 +33,34 @@ Register_Class( cLinkedList )
 
 cLinkedList::cLinkedList(cLinkedList& llist) : cObject()
 {
-     headp = tailp = NULL; n = 0;
-     setName( llist.name() );
-     operator=(llist);
+    headp = tailp = NULL; n = 0;
+    setName( llist.name() );
+    operator=(llist);
 }
 
 cLinkedList::cLinkedList(const char *name) :
 cObject( name )
 {
-     headp=tailp=NULL;
-     n=0;
-     delfunc = NULL;
-     dupfunc = NULL;
-     itemsize = 0;
+    headp=tailp=NULL;
+    n=0;
+    delfunc = NULL;
+    dupfunc = NULL;
+    itemsize = 0;
 }
 
 cLinkedList::~cLinkedList()
 {
-     clear();
+    clear();
 }
 
 void cLinkedList::info(char *buf)
 {
-     cObject::info( buf );
+    cObject::info( buf );
 
-     if( n==0 )
-        sprintf( buf+strlen(buf), " (empty)" );
-     else
-        sprintf( buf+strlen(buf), " (n=%d)", n);
+    if( n==0 )
+       sprintf( buf+strlen(buf), " (empty)" );
+    else
+       sprintf( buf+strlen(buf), " (n=%d)", n);
 }
 
 void cLinkedList::config( VoidDelFunc _delfunc, VoidDupFunc _dupfunc,
@@ -90,22 +90,24 @@ void cLinkedList::clear()
 
 cLinkedList& cLinkedList::operator=(cLinkedList& llist)
 {
-      clear();
+    if (this==&llist) return *this;
 
-      cObject::operator=(llist);
+    clear();
 
-      for( cLinkedListIterator iter(llist); iter.end(); iter++)
-      {
-         void *item;
-         if (dupfunc)
-            item = dupfunc(iter());
-         else if (itemsize>0)
-            memcpy(item=new char[itemsize],iter(),itemsize);
-         else
-            item=iter();
-         insert( item );
-      }
-      return *this;
+    cObject::operator=(llist);
+
+    for( cLinkedListIterator iter(llist); iter.end(); iter++)
+    {
+       void *item;
+       if (dupfunc)
+          item = dupfunc(iter());
+       else if (itemsize>0)
+          memcpy(item=new char[itemsize],iter(),itemsize);
+       else
+          item=iter();
+       insert( item );
+    }
+    return *this;
 }
 
 //== STRUCTURE OF THE LIST:
@@ -114,118 +116,118 @@ cLinkedList& cLinkedList::operator=(cLinkedList& llist)
 
 sLLElem *cLinkedList::find_llelem(void *item)
 {
-      sLLElem *p = headp;
-      while( p && p->item!=item )
-               p = p->next;
-      return p;
+    sLLElem *p = headp;
+    while( p && p->item!=item )
+             p = p->next;
+    return p;
 }
 
 void cLinkedList::insbefore_llelem(sLLElem *p, void *item)
 {
-      sLLElem *e = new sLLElem;
-      e->item = item;
+    sLLElem *e = new sLLElem;
+    e->item = item;
 
-      e->prev = p->prev;
-      e->next = p;
-      p->prev = e;
-      if (e->prev)
-           e->prev->next = e;
-      else
-           headp = e;
-      n++;
+    e->prev = p->prev;
+    e->next = p;
+    p->prev = e;
+    if (e->prev)
+         e->prev->next = e;
+    else
+         headp = e;
+    n++;
 }
 
 void cLinkedList::insafter_llelem(sLLElem *p, void *item)
 {
-      sLLElem *e = new sLLElem;
-      e->item = item;
+    sLLElem *e = new sLLElem;
+    e->item = item;
 
-      e->next = p->next;
-      e->prev = p;
-      p->next = e;
-      if (e->next)
-           e->next->prev = e;
-      else
-           tailp = e;
-      n++;
+    e->next = p->next;
+    e->prev = p;
+    p->next = e;
+    if (e->next)
+         e->next->prev = e;
+    else
+         tailp = e;
+    n++;
 }
 
 void *cLinkedList::remove_llelem(sLLElem *p)
 {
-      if( p->prev )
-         p->prev->next = p->next;
-      else
-         headp = p->next;
-      if( p->next )
-         p->next->prev = p->prev;
-      else
-         tailp = p->prev;
+    if( p->prev )
+       p->prev->next = p->next;
+    else
+       headp = p->next;
+    if( p->next )
+       p->next->prev = p->prev;
+    else
+       tailp = p->prev;
 
-      void *retitem = p->item;
-      delete p;
-      n--;
-      return retitem;
+    void *retitem = p->item;
+    delete p;
+    n--;
+    return retitem;
 }
 
 
 void cLinkedList::insert(void *item)
 {
-      sLLElem *p = headp;
+    sLLElem *p = headp;
 
-      if (p)
-          insbefore_llelem(p,item);
-      else if (tailp)
-          insafter_llelem(tailp,item);
-      else
-      {
-          // insert as the only item
-          sLLElem *e = new sLLElem;
-          e->item = item;
-          headp = tailp = e;
-          e->prev = e->next = NULL;
-          n++;
-      }
+    if (p)
+        insbefore_llelem(p,item);
+    else if (tailp)
+        insafter_llelem(tailp,item);
+    else
+    {
+        // insert as the only item
+        sLLElem *e = new sLLElem;
+        e->item = item;
+        headp = tailp = e;
+        e->prev = e->next = NULL;
+        n++;
+    }
 }
 
 void cLinkedList::insertBefore(void *where, void *item)
 {
-      sLLElem *p = find_llelem(where);
-      if (p)
-         insbefore_llelem(p,item);
-      else
-         opp_error("(%s)%s: insertBefore(w,o): item w not in list",
-                           className(),fullName());
+    sLLElem *p = find_llelem(where);
+    if (p)
+       insbefore_llelem(p,item);
+    else
+       opp_error("(%s)%s: insertBefore(w,o): item w not in list",
+                         className(),fullName());
 }
 
 void cLinkedList::insertAfter(void *where, void *item)
 {
-      sLLElem *p = find_llelem(where);
-      if (p)
-         insafter_llelem(p,item);
-      else
-         opp_error("(%s)%s: insertAfter(w,o): item w not in list",
-                           className(),fullName());
+    sLLElem *p = find_llelem(where);
+    if (p)
+       insafter_llelem(p,item);
+    else
+       opp_error("(%s)%s: insertAfter(w,o): item w not in list",
+                         className(),fullName());
 }
 
 void *cLinkedList::remove(void *item)
 {
-      if(!item) return NULL;
+    if(!item) return NULL;
 
-      sLLElem *p = find_llelem(item);
-      if (!p) {
-           opp_warning("(%s)%s: remove(): item not in list",className(),fullName());
-           return item;
-      }
-      return remove_llelem( p );
+    sLLElem *p = find_llelem(item);
+    if (!p) {
+         opp_warning("(%s)%s: remove(): item not in list",className(),fullName());
+         return item;
+    }
+    return remove_llelem( p );
 }
 
 void *cLinkedList::pop()
 {
-      if (!tailp) {
-           opp_error("(%s)%s: pop(): list empty",className(),fullName());
-           return NULL;
-      }
-      return remove_llelem( tailp );
+    if (!tailp) {
+         opp_error("(%s)%s: pop(): list empty",className(),fullName());
+         return NULL;
+    }
+    return remove_llelem( tailp );
 }
 
 

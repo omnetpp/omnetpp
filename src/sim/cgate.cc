@@ -83,6 +83,8 @@ void cGate::forEach(ForeachFunc do_fn)
 
 cGate& cGate::operator=(cGate& gate)
 {
+   if (this==&gate) return *this;
+
    cObject::operator=(gate);
 
    omodp = NULL; gateid = -1;        // to be set later

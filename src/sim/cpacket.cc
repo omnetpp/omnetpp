@@ -37,6 +37,8 @@ cPacket::cPacket(cPacket& m) : cMessage()
 
 cPacket& cPacket::operator=(cPacket& m)
 {
+    if (this==&m) return *this;
+
     cMessage::operator=(m);
     _protocol = m._protocol;
     _pdu = m._pdu;

@@ -114,31 +114,26 @@ class SIM_API cSimulation : public cObject
 
      // new functions
      void setup();                      // things that cannot be done
-                                        // from the constructor which is
-                                        // called before main()
+                                        // from the constructor (which is
+                                        // called before main())
 
      // module vector management
      int add(cModule *mod);             // add a new cModule; returns id
      void del(int id);                  // delete (& destroy) a module
      int lastModuleIndex()              // last module
          {return last_id;}
-     bool isUnique(const char *s);      // internal
 
-     // find module and return id (-1 if not found)
+     // find modules by pointer and by path
      int find(cModule *mod);
-     int find(const char *modulename,int index=-1, int parentmod_id=-1);
-
-     // find module
      cModule *moduleByPath(const char *modulepath);
-     cModule *module(const char *modulename,int index=-1,int parentmod_id=-1);
 
-     // look up by id
+     // look up modules by id
      cModule *module(int id)                  // get module by ID
          {return id>=0 && id<size ? vect[id] : NO(cModule);}
      cModule& operator[](int id)              // act as a vector
          {return id>=0 && id<size ? *vect[id] : *NO(cModule);}
 
-     // selecting system module
+     // set/get system module
      void setSystemModule(cModule *p)
          {systemmodp = p;}
      cModule *systemModule()

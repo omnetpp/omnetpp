@@ -60,6 +60,8 @@ cHistogramBase::~cHistogramBase()
 
 cHistogramBase& cHistogramBase::operator=(cHistogramBase& res)
 {
+   if (this==&res) return *this;
+
    cDensityEstBase::operator=(res);
 
    num_cells = res.num_cells;
@@ -172,6 +174,8 @@ cHistogramBase(name,numcells)
 
 cEqdHistogramBase& cEqdHistogramBase::operator=(cEqdHistogramBase& res)
 {
+   if (this==&res) return *this;
+
    cHistogramBase::operator=(res);
    cellsize = res.cellsize;
    return *this;

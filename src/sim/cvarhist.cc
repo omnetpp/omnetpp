@@ -90,8 +90,9 @@ void cVarHistogram::addBinBound(double x) //--LG
 
 cVarHistogram& cVarHistogram::operator=(cVarHistogram& res) //--LG
 {
-   cHistogramBase::operator=(res);
+   if (this==&res) return *this;
 
+   cHistogramBase::operator=(res);
    // hack: as this ^ uses num_cells instead of max_num_cells, we must correct it:
    if (res.cellv)
    {

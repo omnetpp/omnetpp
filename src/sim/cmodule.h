@@ -159,7 +159,7 @@ class SIM_API cModule : public cObject
     virtual bool isSimple() = 0;
     cModuleType *moduleType()   {return mod_type;}
     int id()                    {return mod_id;}
-    cModule *parentModule();
+    cModule *parentModule()     {return parentmodp;}
     bool isOnLocalMachine();
 
     // if this module is in a module vector:
@@ -167,11 +167,15 @@ class SIM_API cModule : public cObject
     int index()                 {return idx;}
     int size()                  {return vectsize<0?1:vectsize;}
 
+    // submodule access:
+    int findSubmodule(const char *submodname, int idx=-1);  // returns module id (-1 on error)
+    cModule *submodule(const char *submodname, int idx=-1); // returns module ptr
+
     // module gates
     int gates() {return gatev.items();}             // total num of gates
     cGate *gate(int g) {return (cGate*)gatev[g];}   // gate by id
     cGate *gate(const char *gatename,int sn=-1);    // gate by name & index
-    int findGate(const char *gatename, int sn=-1);  // id of a gate
+    int findGate(const char *gatename, int sn=-1);  // id of a gate (-1 on error)
     bool hasGate(const char *gatename, int sn=-1) {return findGate(gatename,sn)>=0;} // check if gate exists
 
     bool checkInternalConnections();      // true means OK; called from NEDC code
@@ -180,7 +184,7 @@ class SIM_API cModule : public cObject
     int params() {return paramv.items();}    // no. of pars
     cPar& par(int p);                        // par by index
     cPar& par(const char *parname);          // par by name
-    int findPar(const char *parname);        // index of a par; -1 of not found
+    int findPar(const char *parname);        // index of a par (-1 of not found)
     cPar& ancestorPar(const char *parname);  // search for par in parents;error if not found
     bool hasPar(const char *s) {return findPar(s)>=0;}  // check if parameter exists
 

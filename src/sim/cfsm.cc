@@ -38,6 +38,8 @@ cFSM::cFSM(const char *name) :
 
 cFSM& cFSM::operator=(cFSM& vs)
 {
+    if (this==&vs) return *this;
+
     cObject::operator=(vs);
     _statename=vs._statename;
     _state=vs._state;

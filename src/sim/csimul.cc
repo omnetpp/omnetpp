@@ -76,160 +76,160 @@ cSimulation::cSimulation(const char *name, cHead *h) :
  runningmod_deleter(),
  msgQueue( "message-queue" )
 {
-     take( &locals );
-     take( &msgQueue );
+    take( &locals );
+    take( &msgQueue );
 
-     runningmodp = NULL;
-     contextmodp = NULL;
-     locallistp = &locals;
+    runningmodp = NULL;
+    contextmodp = NULL;
+    locallistp = &locals;
 
-     netmodp = NULL;
+    netmodp = NULL;
 
-     backtomod = NULL;
+    backtomod = NULL;
 
-     delta = 32;
-     size = 0;
-     last_id = 0;  // vect[0] is not used for historical reasons
-     vect = NULL;
+    delta = 32;
+    size = 0;
+    last_id = 0;  // vect[0] is not used for historical reasons
+    vect = NULL;
 
-     // err = eOK; -- commented out to enable errors prior to starting main()
-     networktype = NULL;
-     run_number = 0;
-     tmlimit = 0;
-     simtmlimit = 0;
+    // err = eOK; -- commented out to enable errors prior to starting main()
+    networktype = NULL;
+    run_number = 0;
+    tmlimit = 0;
+    simtmlimit = 0;
 
-     netif_check_freq = 1000;    // frequency of processing msgs from other segments
-     netif_check_cntr = 0;
+    netif_check_freq = 1000;    // frequency of processing msgs from other segments
+    netif_check_cntr = 0;
 
 }
 
 cSimulation::~cSimulation()
 {
-     deleteNetwork();
-     delete netmodp;
+    deleteNetwork();
+    delete netmodp;
 }
 
 static void runningmod_deleter_func(void *)
 {
-     // function to help dynamically created modules delete themselves
-     for(;;)
-     {
-         simulation.del( simulation.runningModule()->id() );
-         currentmod_was_deleted = true;  // checked & reset at cSimulation::doOneEvent()
-         simulation.transferToMain();
-     }
+    // function to help dynamically created modules delete themselves
+    for(;;)
+    {
+        simulation.del( simulation.runningModule()->id() );
+        currentmod_was_deleted = true;  // checked & reset at cSimulation::doOneEvent()
+        simulation.transferToMain();
+    }
 }
 
 void cSimulation::setup()
 {
-     runningmod_deleter.setup( runningmod_deleter_func, NULL, 16384 );
+    runningmod_deleter.setup( runningmod_deleter_func, NULL, 16384 );
 }
 
 void cSimulation::forEach( ForeachFunc do_fn )
 {
-     if (do_fn(this,true))
-     {
-         if (systemmodp!=NULL)
-             systemmodp->forEach( do_fn );
-         msgQueue.forEach( do_fn );
-     }
-     do_fn(this,false);
+    if (do_fn(this,true))
+    {
+        if (systemmodp!=NULL)
+            systemmodp->forEach( do_fn );
+        msgQueue.forEach( do_fn );
+    }
+    do_fn(this,false);
 }
 
 static bool _do_writesnapshot(cObject *obj, bool beg, ostream& s)
 {
-      static ostream *os;
+    static ostream *os;
 
-      if (!obj) {os = &s;return false;} //setup call
+    if (!obj) {os = &s;return false;} //setup call
 
-      if (os->fail()) return false;   // there was an error, quit
-      if (beg) obj->writeTo( *os );
-      return !os->fail();      // check stream status
+    if (os->fail()) return false;   // there was an error, quit
+    if (beg) obj->writeTo( *os );
+    return !os->fail();      // check stream status
 }
 
 bool cSimulation::snapshot(cObject *object, const char *label)
 {
-     if (!object)
-         {opp_error("snapshot(): object pointer is NULL");return false;}
+    if (!object)
+        {opp_error("snapshot(): object pointer is NULL");return false;}
 
-     filebuf file;
-     file.open( snapshotfilemgr.fileName(), ios::out|ios::app);
-     ostream os( &file );
+    filebuf file;
+    file.open( snapshotfilemgr.fileName(), ios::out|ios::app);
+    ostream os( &file );
 
-     bool w = warnings(); // temporarily disable warnings
-     setWarnings( false );
+    bool w = warnings(); // temporarily disable warnings
+    setWarnings( false );
 
-     os << "================================================" << "\n";
-     os << "||               SNAPSHOT                     ||" << "\n";
-     os << "================================================" << "\n";
-     os << "| Of object:    `" << object->fullPath() << "'" << "\n";
-     os << "| Label:        `" << label << "'" << "\n";
-     os << "| Sim. time:     " << simtimeToStr(simTime()) << "\n";
-     os << "| Network:      `" << (networktype->name() ?
-                                  networktype->name():"unnamed") << "'\n";
-     os << "| Run no.        " << run_number << '\n';
-     os << "| Started at:    " << *localtime(&simbegtime) << '\n';
-     os << "| Time:          " << *localtime(&simendtime) << '\n';
-     os << "| Elapsed:       " << elapsedtime << " sec\n";
-     if (err)
-        os << "| Simulation stopped with error message.\n";
-     if (contextModule())
-        os << "| Initiated from: `" << contextModule()->fullPath() << "'\n";
-     else
-        os << "| Initiated by:  user\n";
-     os << "================================================" << "\n\n";
+    os << "================================================" << "\n";
+    os << "||               SNAPSHOT                     ||" << "\n";
+    os << "================================================" << "\n";
+    os << "| Of object:    `" << object->fullPath() << "'" << "\n";
+    os << "| Label:        `" << label << "'" << "\n";
+    os << "| Sim. time:     " << simtimeToStr(simTime()) << "\n";
+    os << "| Network:      `" << (networktype->name() ?
+                                 networktype->name():"unnamed") << "'\n";
+    os << "| Run no.        " << run_number << '\n';
+    os << "| Started at:    " << *localtime(&simbegtime) << '\n';
+    os << "| Time:          " << *localtime(&simendtime) << '\n';
+    os << "| Elapsed:       " << elapsedtime << " sec\n";
+    if (err)
+       os << "| Simulation stopped with error message.\n";
+    if (contextModule())
+       os << "| Initiated from: `" << contextModule()->fullPath() << "'\n";
+    else
+       os << "| Initiated by:  user\n";
+    os << "================================================" << "\n\n";
 
-     _do_writesnapshot( NULL,false, os );         // setup
-     object->forEach( (ForeachFunc)_do_writesnapshot );   // do
+    _do_writesnapshot( NULL,false, os );         // setup
+    object->forEach( (ForeachFunc)_do_writesnapshot );   // do
 
-     setWarnings( w );
-     file.close();
+    setWarnings( w );
+    file.close();
 
-     if (os.fail()) opp_error("Can't write snapshot file");
+    if (os.fail()) opp_error("Can't write snapshot file");
 
-     return !os.fail(); // success
+    return !os.fail(); // success
 }
 
 static void write_cmod( ostream& os, cModule& m, int indent )
 {
-     static char sp[] = "                                                 ";
-     os << (sp+sizeof(sp)-indent) << "`" << m.fullName() << "'";
-     os << " #" << m.id() << " ";
-     //os <<  (m.isSimple() ? "simple" : "compound");
-     os <<  "(" << m.moduleType()->name() << ")\n";
+    static char sp[] = "                                                 ";
+    os << (sp+sizeof(sp)-indent) << "`" << m.fullName() << "'";
+    os << " #" << m.id() << " ";
+    //os <<  (m.isSimple() ? "simple" : "compound");
+    os <<  "(" << m.moduleType()->name() << ")\n";
 }
 
 static void writesubmodules(ostream& os, cModule *p, int indent )
 {
-     write_cmod( os, *p, indent );
-     for (int i=1; i<=simulation.lastModuleIndex(); i++)
+    write_cmod( os, *p, indent );
+    for (int i=1; i<=simulation.lastModuleIndex(); i++)
         if (&simulation[i] && p==simulation[i].parentModule())
             writesubmodules(os, &simulation[i], indent+4 );
 }
 
 void cSimulation::writeContents( ostream& os )
 {
-     os << "  Modules in the network:\n";
-     writesubmodules(os, systemModule(), 5 );
+    os << "  Modules in the network:\n";
+    writesubmodules(os, systemModule(), 5 );
 }
 
 void cSimulation::setNetInterface(cNetMod *netif)
 {
-     netmodp = netif;
-     take( netif );
+    netmodp = netif;
+    take( netif );
 }
 
 int cSimulation::add(cModule *mod)
 {
-     // Insert module into the vector.
-     // The module will get (last_id+1) as ID. We do not reuse "holes"
-     // (empty slots) in the vector because we want the module ids to be
-     // unique during the whole simulation.
+    // Insert module into the vector.
+    // The module will get (last_id+1) as ID. We do not reuse "holes"
+    // (empty slots) in the vector because we want the module ids to be
+    // unique during the whole simulation.
 
-     last_id++;
+    last_id++;
 
-     if (last_id>=size)
-     {
+    if (last_id>=size)
+    {
         // vector full, grow by delta
         cModule **v = new cModule *[size+delta];
         memcpy(v, vect, sizeof(cModule*)*size );
@@ -237,312 +237,296 @@ int cSimulation::add(cModule *mod)
         delete vect;
         vect = v;
         size += delta;
-     }
+    }
 
-     vect[last_id] = mod;
-     mod->setId(last_id);
-     return last_id;
+    vect[last_id] = mod;
+    mod->setId(last_id);
+    return last_id;
 }
 
 void cSimulation::del(int id)
 {
-     if (id<0 || id>last_id)
-     {
-         opp_error("cSimulation::del(): module id %d out of range",id);
-         return;
-     }
+    if (id<0 || id>last_id)
+    {
+        opp_error("cSimulation::del(): module id %d out of range",id);
+        return;
+    }
 
-     delete vect[id];
-     vect[id] = NULL;
+    delete vect[id];
+    vect[id] = NULL;
 }
 
 int cSimulation::find(cModule *obj)
 {
-     if(obj==NULL) return -1;
-     int i;
-     for (i=1; i<size; i++) if (vect[i]==obj) break;
-     if (i<size)
-         return i;
-     else
-         return -1;
+    if(obj==NULL) return -1;
+    int i;
+    for (i=1; i<size; i++) if (vect[i]==obj) break;
+    if (i<size)
+        return i;
+    else
+        return -1;
 }
 
-bool cSimulation::isUnique(const char *s)
+cModule *cSimulation::moduleByPath(const char *path)
 {
-     for (int i=1, k=-1; i<size; i++)
-        if (vect[i] && vect[i]->isName(s) && (!vect[i]->isVector() || vect[i]->index()==0))
-           if (k==-1) k=i;
-           else return false;
-     return true;
-}
+    // Format of path p: "SysModule.DemandGen[2].Source"
+    // Max length of accepted path: 200 chars
+    const int MAXLEN=200;
+    char buf[MAXLEN+1];
+    strncpy(buf,path,MAXLEN);
+    buf[MAXLEN]='\0';
 
-int cSimulation::find(const char *s, int n, int pt)
-{
-     if (pt==-1 && !isUnique(s))
-        opp_warning("cSimulation::find(): Module name `%s' not unique, use moduleByPath()",s);
+    // start tokenizing
+    char *s, *b;
+    s = strtok(buf,".");
 
-     for (int i=1; i<size; i++)
-        if ( vect[i] && vect[i]->isName(s) &&
-             ((n<0 && !vect[i]->isVector()) || vect[i]->index()==n) &&
-             (pt==-1 || (vect[i]->parentModule()!=NULL && vect[i]->parentModule()->id()==pt)) )
-           return i;
-     return -1;
-}
-
-// Format of path p: "SysModule.DemandGen[2].Source"
-cModule *cSimulation::moduleByPath(const char *p)
-{
-     char buf[201];
-     char *s, *b;
-     strncpy(buf,p,200); buf[200]=0;
-     s = strtok(buf,".");
-     int m = systemModule()->id();
-     if (!vect[m]->isName(s))
-     {
+    // system module must match 1st component in the path
+    cModule *modp = systemModule();
+    if (!modp->isName(s))
         return NO(cModule);
-     }
-     while ((s=strtok(NULL,"."))!=NULL && m!=-1)
+
+    // match further components
+    while ((s=strtok(NULL,"."))!=NULL && modp!=NULL)
+    {
         if ((b=strchr(s,'['))==NULL)
-           m = find(s,0,m);  // no index given
-        else
-           if (s[strlen(s)-1]!=']')
-              m=-1; // missing ']' -- syntax error
-           else {
-              *b=0;
-              m = find(s,atol(b+1),m);
-           }
-     if (m==-1)
-     {
-        return NO(cModule);
-     }
-     return vect[m];
+           modp = modp->submodule(s);  // no index given
+        else {
+            if (s[strlen(s)-1]!=']')
+               modp=NULL; // missing ']' -- syntax error
+            else {
+               *b=0;
+               modp = modp->submodule(s,atol(b+1));
+            }
+        }
+    }
+    return modp;  // NULL if not found
 }
 
-cModule *cSimulation::module(const char *s,int n,int pt)
-{
-     int i=find(s,n,pt);
-     return i>=0 ? vect[i] : NO(cModule);
-}
+//cModule *cSimulation::module(const char *s,int n,int pt)
+//{
+//    int i=find(s,n,pt);
+//    return i>=0 ? vect[i] : NO(cModule);
+//}
 
 void cSimulation::resetClock()
 {
-     laststarted = simendtime = simbegtime = time(0);
-     elapsedtime = 0LU;
+    laststarted = simendtime = simbegtime = time(0);
+    elapsedtime = 0LU;
 }
 
 void cSimulation::startClock()
 {
-     laststarted = time(0);
+    laststarted = time(0);
 }
 
 void cSimulation::stopClock()
 {
-     simendtime = time(0);
-     elapsedtime +=  simendtime - laststarted;
-     simulatedtime = simTime();
+    simendtime = time(0);
+    elapsedtime +=  simendtime - laststarted;
+    simulatedtime = simTime();
 }
 
 void cSimulation::checkTimes()
 {
-     if (simtmlimit!=0 && simTime()>=simtmlimit)
-          opp_terminate(eSIMTIME);
-     else if (tmlimit!=0 && elapsedtime+time(0)-laststarted>=tmlimit)
-          opp_terminate(eREALTIME);
+    if (simtmlimit!=0 && simTime()>=simtmlimit)
+         opp_terminate(eSIMTIME);
+    else if (tmlimit!=0 && elapsedtime+time(0)-laststarted>=tmlimit)
+         opp_terminate(eREALTIME);
 }
 
 bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
 {
-      // checks
-      err = eOK;
+    // checks
+    err = eOK;
 
-      if (!network || !network->setupfunc)
-      {
-          // bad network
-          opp_error(eSETUP);
-          return false;
-      }
+    if (!network || !network->setupfunc)
+    {
+        // bad network
+        opp_error(eSETUP);
+        return false;
+    }
 
-      // set run number
-      run_number = run_num;
+    // set run number
+    run_number = run_num;
 
-      // set cNetworkType pointer
-      networktype = network;
+    // set cNetworkType pointer
+    networktype = network;
 
-      // call NEDC-generated network setup function (with warnings turned off)
-      bool w=warnings();setWarnings(false);// temporarily turn off warnings
-      networktype->setupfunc();
-      setWarnings( w );
-      if (!ok()) goto error;
+    // call NEDC-generated network setup function (with warnings turned off)
+    bool w=warnings();setWarnings(false);// temporarily turn off warnings
+    networktype->setupfunc();
+    setWarnings( w );
+    if (!ok()) goto error;
 
-      // handle distributed execution
-      if (netInterface()!=NULL)
-      {
-         // master: starts OMNeT++ on other hosts
-         if (ev.runningMode()==MASTER_MODE)
-         {
-            // the hosts we need are the system module's machines
-            cArray& machines = systemModule()->machinev;
-            netInterface()->start_segments( machines, ev.argCount(), ev.argVector());
-            if (!ok()) goto error;
+    // handle distributed execution
+    if (netInterface()!=NULL)
+    {
+       // master: starts OMNeT++ on other hosts
+       if (ev.runningMode()==MASTER_MODE)
+       {
+          // the hosts we need are the system module's machines
+          cArray& machines = systemModule()->machinev;
+          netInterface()->start_segments( machines, ev.argCount(), ev.argVector());
+          if (!ok()) goto error;
 
-            // signal the slaves which run to set up
-            //   this causes slaves to start building up the network
-            netInterface()->send_runnumber( run_number );
-            if (!ok()) goto error;
+          // signal the slaves which run to set up
+          //   this causes slaves to start building up the network
+          netInterface()->send_runnumber( run_number );
+          if (!ok()) goto error;
 
-            // process messages from other segments:
-            //   display info/error messages, answer questions about param. values etc.
-            netInterface()->process_netmsgs();
-            if (!ok()) goto error;
-         }
+          // process messages from other segments:
+          //   display info/error messages, answer questions about param. values etc.
+          netInterface()->process_netmsgs();
+          if (!ok()) goto error;
+       }
 
-         // all segments: match gate pairs
-         netInterface()->setup_connections();
-         if (!ok()) goto error;
+       // all segments: match gate pairs
+       netInterface()->setup_connections();
+       if (!ok()) goto error;
 
-         // again: display possible info/error messages
-         if (ev.runningMode()==MASTER_MODE)
-         {
-            netInterface()->process_netmsgs();
-            if (!ok()) goto error;
-         }
-      }
+       // again: display possible info/error messages
+       if (ev.runningMode()==MASTER_MODE)
+       {
+          netInterface()->process_netmsgs();
+          if (!ok()) goto error;
+       }
+    }
 
-      // network set up correctly
-      return true;
+    // network set up correctly
+    return true;
 
-      // if failed, clean up the whole stuff
-      error:
-      deleteNetwork();
-      return false;
+    // if failed, clean up the whole stuff
+    error:
+    deleteNetwork();
+    return false;
 }
 
 void cSimulation::startRun()
 {
-     // temporarily disable warnings
-     bool w = warnings(); setWarnings(false);
+    // temporarily disable warnings
+    bool w = warnings(); setWarnings(false);
 
-     err = eOK;
-     msgQueue.clear();
-     resetClock();
-     sim_time = 0;
-     event_num = 0;
-     backtomod = NULL;
-     netif_check_cntr = 0;
+    err = eOK;
+    msgQueue.clear();
+    resetClock();
+    sim_time = 0;
+    event_num = 0;
+    backtomod = NULL;
+    netif_check_cntr = 0;
 
-     // prepare simple modules for simulation run:
-     //    1. create starter message for all modules,
-     //    2. then call initialize() for them (recursively)
-     //  This order is important because initialize() functions might contain
-     //  send() calls which could otherwise insert msgs BEFORE starter messages
-     //  for the destination module and cause trouble in cSimpleMod's activate().
-     if (systemmodp)
-     {
-         systemmodp->scheduleStart(0.0);
-         systemmodp->callInitialize();
-     }
+    // prepare simple modules for simulation run:
+    //    1. create starter message for all modules,
+    //    2. then call initialize() for them (recursively)
+    //  This order is important because initialize() functions might contain
+    //  send() calls which could otherwise insert msgs BEFORE starter messages
+    //  for the destination module and cause trouble in cSimpleMod's activate().
+    if (systemmodp)
+    {
+        systemmodp->scheduleStart(0.0);
+        systemmodp->callInitialize();
+    }
 
-     // distributed execution:
-     //  create a msg that will notify the network interface that all
-     //  module activity()s have been started
-     if (netInterface()!=NULL)
-     {
-         cMessage *msg = new cMessage;
-         msg->sent = msg->delivd = 0;
-         simulation.msgQueue.insert( msg );
-         netInterface()->after_modinit_msg = msg;
-     }
+    // distributed execution:
+    //  create a msg that will notify the network interface that all
+    //  module activity()s have been started
+    if (netInterface()!=NULL)
+    {
+        cMessage *msg = new cMessage;
+        msg->sent = msg->delivd = 0;
+        simulation.msgQueue.insert( msg );
+        netInterface()->after_modinit_msg = msg;
+    }
 
-     // delete output files (except scalar output file)
-     outvectfilemgr.deleteFile();    // output vector file manager
-     parchangefilemgr.deleteFile();  // parameter change log file manager
-     snapshotfilemgr.deleteFile();   // snapshot file manager
+    // delete output files (except scalar output file)
+    outvectfilemgr.deleteFile();    // output vector file manager
+    parchangefilemgr.deleteFile();  // parameter change log file manager
+    snapshotfilemgr.deleteFile();   // snapshot file manager
 
-     scalarfile_header_written=false;
+    scalarfile_header_written=false;
 
-     setWarnings(w);
+    setWarnings(w);
 }
 
 void cSimulation::callFinish()
 {
-     // call user-defined finish() functions for all modules recursively
-     if (systemmodp)
-     {
-         systemmodp->callFinish();
-     }
+    // call user-defined finish() functions for all modules recursively
+    if (systemmodp)
+    {
+        systemmodp->callFinish();
+    }
 }
 
 void cSimulation::endRun()
 {
-     // close files
-     outvectfilemgr.closeFile();    // output vector file manager
-     scalarfilemgr.closeFile();     // output scalar file manager
-     parchangefilemgr.closeFile();  // parameter change log file manager
-     snapshotfilemgr.closeFile();   // snapshot file manager
+    // close files
+    outvectfilemgr.closeFile();    // output vector file manager
+    scalarfilemgr.closeFile();     // output scalar file manager
+    parchangefilemgr.closeFile();  // parameter change log file manager
+    snapshotfilemgr.closeFile();   // snapshot file manager
 }
 
 void cSimulation::deleteNetwork()
 {
-     if (networktype==NULL)
-     {
-         return;  // network already deleted
-     }
+    if (networktype==NULL)
+    {
+        return;  // network already deleted
+    }
 
-     if (runningmodp!=NULL)
-     {
-         opp_error("Attempt to delete network during simulation");
-         return;
-     }
+    if (runningmodp!=NULL)
+    {
+        opp_error("Attempt to delete network during simulation");
+        return;
+    }
 
-     if (netInterface()!=NULL)
-     {
-         if (ev.runningMode()==MASTER_MODE)
-         {
-             // process final messages (error displays etc) from slaves
-             netInterface()->process_netmsgs();
-         }
+    if (netInterface()!=NULL)
+    {
+        if (ev.runningMode()==MASTER_MODE)
+        {
+            // process final messages (error displays etc) from slaves
+            netInterface()->process_netmsgs();
+        }
 
-         // reset the network interface itself
-         netInterface()->restart();
-     }
+        // reset the network interface itself
+        netInterface()->restart();
+    }
 
-     // clear remaining messages
-     msgQueue.clear();
+    // clear remaining messages
+    msgQueue.clear();
 
-     // for (int i=1; i<size; i++) delete vect[i]; -- incorrect!!!
-     //   (we own only the system module)
+    // for (int i=1; i<size; i++) delete vect[i]; -- incorrect!!!
+    //   (we own only the system module)
 
-     if (systemmodp)  // delete whole network through ownership hierarchy
-     {
+    if (systemmodp)  // delete whole network through ownership hierarchy
+    {
         delete systemmodp;
         systemmodp = NULL;
-     }
+    }
 
-     delete vect;
-     vect = NULL;
-     size = 0;
-     last_id = 0;
+    delete vect;
+    vect = NULL;
+    size = 0;
+    last_id = 0;
 
-     setGlobalContext();
+    setGlobalContext();
 
-     networktype = NULL;
+    networktype = NULL;
 
-     modtypes.deleteChildren();
-     linktypes.deleteChildren();
+    modtypes.deleteChildren();
+    linktypes.deleteChildren();
 }
 
 cSimpleModule *cSimulation::selectNextModule()
 {
-     // is a send() or a pause() pending?
-     if (backtomod!=NULL)
-     {
-         cSimpleModule *p = backtomod;
-         return p;
-     }
+    // is a send() or a pause() pending?
+    if (backtomod!=NULL)
+    {
+        cSimpleModule *p = backtomod;
+        return p;
+    }
 
-     // no more events?
-     if (msgQueue.empty())
-     {
+    // no more events?
+    if (msgQueue.empty())
+    {
         // message queue empty.
         // However, if we run distributed, still there might be something
         // coming from the network, from other processes
@@ -558,67 +542,67 @@ cSimpleModule *cSimulation::selectNextModule()
         // seems like really end of the simulation run
         opp_terminate(eENDEDOK);
         return NULL;
-     }
+    }
 
-     // we're about to return this message's destination module:
-     cMessage *msg = msgQueue.peekFirst();
+    // we're about to return this message's destination module:
+    cMessage *msg = msgQueue.peekFirst();
 
-     // distributed execution stuff:
-     if (netInterface()!=NULL)
-     {
+    // distributed execution stuff:
+    if (netInterface()!=NULL)
+    {
         // from time to time, process possible messages from other segments
         if (++netif_check_cntr>=netif_check_freq)
         {
-           netif_check_cntr = 0;
-           netInterface()->process_netmsgs();
-           msg = msgQueue.peekFirst();
+            netif_check_cntr = 0;
+            netInterface()->process_netmsgs();
+            msg = msgQueue.peekFirst();
         }
 
         // sync_after_modinits() must be called after all local
         // simple module activity()s have been started
         if (msg==netInterface()->after_modinit_msg)
         {
-             netInterface()->sync_after_modinits();
+            netInterface()->sync_after_modinits();
 
-             netInterface()->after_modinit_msg = NULL;
-             delete msgQueue.getFirst();
-             return selectNextModule();
+            netInterface()->after_modinit_msg = NULL;
+            delete msgQueue.getFirst();
+            return selectNextModule();
         }
 
         // possibly block on next syncpoint.
         // if blocked, new msgs may have arrived so re-do selectNextModule()
         if (netInterface()->block_on_syncpoint(msg->arrivalTime()))
-             return selectNextModule();
-     }
+            return selectNextModule();
+    }
 
-     // check if dest module exists and still running
-     cSimpleModule *modp = (cSimpleModule *)vect[msg->tomod];
-     if (modp==NULL)
-     {
+    // check if dest module exists and still running
+    cSimpleModule *modp = (cSimpleModule *)vect[msg->tomod];
+    if (modp==NULL)
+    {
         opp_error("Message's destination module no longer exists");
         return NULL;
-     }
-     if (modp->moduleState()==sENDED)
-     {
-         if (msg->togate==-1)  // self-message is OK, ignore it
-         {
-             delete msgQueue.getFirst();
-             return selectNextModule();
-         }
-         else
-         {
-             opp_error("Message's destination module `%s' already terminated",
-                             modp->fullPath());
-             return NULL;
-         }
-     }
+    }
+    if (modp->moduleState()==sENDED)
+    {
+        if (msg->togate==-1)  // self-message is OK, ignore it
+        {
+            delete msgQueue.getFirst();
+            return selectNextModule();
+        }
+        else
+        {
+            opp_error("Message's destination module `%s' already terminated",
+                            modp->fullPath());
+            return NULL;
+        }
+    }
 
-     // advance simulation time
-     sim_time = msg->arrivalTime();
+    // advance simulation time
+    sim_time = msg->arrivalTime();
 
-     // check time limits
-     checkTimes();
-     return modp;
+    // check time limits
+    checkTimes();
+    return modp;
 }
 
 int cSimulation::transferTo(cSimpleModule *sm)
@@ -635,27 +619,27 @@ int cSimulation::transferTo(cSimpleModule *sm)
 
 void cSimulation::doOneEvent(cSimpleModule *mod)
 {
-     if (mod->usesActivity())
-     {
-        transferTo( mod );
+    if (mod->usesActivity())
+    {
+       transferTo( mod );
 
-        // check stack overflow, but only if this module still exists
-        //   (note: currentmod_was_deleted is set by runningmod_deleter)
-        if (currentmod_was_deleted)
-           currentmod_was_deleted = false;
-        else
-           if (mod->stackOverflow())
-              opp_error("Stack violation (%s stack too small?) in module `%s'",
-                        mod->className(),mod->fullPath());
-     }
-     else
-     {
-         // call handleMessage() in the module's context
-         setContextModule( mod );
-         cMessage *msg = msgQueue.getFirst();
-         mod->handleMessage( msg );
-         setGlobalContext();
-     }
+       // check stack overflow, but only if this module still exists
+       //   (note: currentmod_was_deleted is set by runningmod_deleter)
+       if (currentmod_was_deleted)
+          currentmod_was_deleted = false;
+       else
+          if (mod->stackOverflow())
+             opp_error("Stack violation (%s stack too small?) in module `%s'",
+                       mod->className(),mod->fullPath());
+    }
+    else
+    {
+        // call handleMessage() in the module's context
+        setContextModule( mod );
+        cMessage *msg = msgQueue.getFirst();
+        mod->handleMessage( msg );
+        setGlobalContext();
+    }
 }
 
 int cSimulation::transferToMain()

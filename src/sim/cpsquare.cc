@@ -66,6 +66,8 @@ cPSquare::~cPSquare()
 
 cPSquare& cPSquare::operator=(cPSquare& res)
 {
+    if (this==&res) return *this;
+
     cDensityEstBase::operator=(res);
 
     numobs=res.numobs;

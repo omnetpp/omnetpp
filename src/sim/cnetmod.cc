@@ -42,15 +42,18 @@ cNetMod::cNetMod() : cModule("network-interface",NULL)
 //    (which is the list of hosts it was mapped to be run on).
 int cNetMod::isLocalMachineIn(cArray& list)
 {
-        for (int i=0; i<list.items(); i++)
-           if (list[i]!=NULL && !opp_strcmp( localhost(), ((cPar *)list[i])->stringValue()))
-              return true;
-        return false;
+    for (int i=0; i<list.items(); i++)
+        if (list[i]!=NULL && !opp_strcmp( localhost(), ((cPar *)list[i])->stringValue()))
+            return true;
+    return false;
 }
 
 cNetMod& cNetMod::operator=(cNetMod& other)
 {
-        cModule::operator=(other);
-        segments=other.segments;
-        return *this;
+    if (this==&other) return *this;
+
+    cModule::operator=(other);
+    segments=other.segments;
+    return *this;
 }
+

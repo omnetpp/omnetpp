@@ -335,6 +335,8 @@ cModuleType::~cModuleType()
 
 cModuleType& cModuleType::operator=(cModuleType& mt)
 {
+    if (this==&mt) return *this;
+
     create_func = mt.create_func;
     interface_name = opp_strdup(mt.interface_name);
     interface = mt.interface;
@@ -457,6 +459,8 @@ cObject( NULL, &linktypes)
 
 cLinkType& cLinkType::operator=(cLinkType& li)
 {
+    if (this==&li) return *this;
+
     cObject::operator=( li );
     delayfunc = li.delayfunc;
     errorfunc = li.errorfunc;

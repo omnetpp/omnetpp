@@ -124,6 +124,7 @@ class SIM_API cArray : public cObject
 
     cObject *remove(int m);         // remove item from list
     cObject *remove(const char *objname);
+    cObject *remove(cObject *obj);
 };
 
 #endif

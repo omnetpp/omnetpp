@@ -50,31 +50,33 @@ cBag::cBag(cBag& bag) : cObject()
 cBag::cBag(const char *name, int esiz, int siz, int delt) :
 cObject( name ), vect(NULL)
 {
-     setup(esiz, siz, delt);
+    setup(esiz, siz, delt);
 }
 
 void cBag::info(char *buf)
 {
-     cObject::info( buf );
+    cObject::info( buf );
 
-     if( lastused == -1 )
+    if( lastused == -1 )
         sprintf( buf+strlen(buf), " (empty)" );
-     else
+    else
         sprintf( buf+strlen(buf), " (n=%d) ", lastused+1);
 }
 
 cBag& cBag::operator=(cBag& bag)
 {
-     cObject::operator=( bag );
-     elemsize = bag.elemsize;
-     size = bag.size;
-     delta = bag.delta;
-     lastused = bag.lastused;
-     firstfree = bag.firstfree;
-     delete vect;
-     vect = new char[ size*BLK ];
-     if( vect )  memcpy( vect, bag.vect, size*BLK );
-     return *this;
+    if (this==&bag) return *this;
+
+    cObject::operator=( bag );
+    elemsize = bag.elemsize;
+    size = bag.size;
+    delta = bag.delta;
+    lastused = bag.lastused;
+    firstfree = bag.firstfree;
+    delete vect;
+    vect = new char[ size*BLK ];
+    if( vect )  memcpy( vect, bag.vect, size*BLK );
+    return *this;
 }
 
 void cBag::setup(int esiz, int siz, int delt)
@@ -152,50 +154,50 @@ int cBag::addAt(int m, void *obj) // --LG
 
 int cBag::find(void *obj)
 {
-     int i;
-     for (i=0; i<=lastused; i++)
-         if( USED(i) && memcmp( ELEM(i), obj, elemsize)==0 ) break;
-     if (i<=lastused)
-         return i;
-     else
-         return -1;
+    int i;
+    for (i=0; i<=lastused; i++)
+        if( USED(i) && memcmp( ELEM(i), obj, elemsize)==0 ) break;
+    if (i<=lastused)
+        return i;
+    else
+        return -1;
 }
 
 void *cBag::get(int m)
 {
-     if( m>=0 && m<=lastused && USED(m) )
-     {
-          return ELEM(m);
-     }
-     else
-     {
-          opp_warning("(%s)%s: slot #%d empty, returning NULL",
-                              className(),fullName(),m);
-          return NULL;
-     }
+    if( m>=0 && m<=lastused && USED(m) )
+    {
+        return ELEM(m);
+    }
+    else
+    {
+        opp_warning("(%s)%s: slot #%d empty, returning NULL",
+                    className(),fullName(),m);
+        return NULL;
+    }
 }
 
 bool cBag::isUsed(int m)
 {
-     if( m>=0 && m<=lastused )
-         return USED(m);
-     else
-         return false;
+    if( m>=0 && m<=lastused )
+        return USED(m);
+    else
+        return false;
 }
 
 void *cBag::remove(int m)
 {
-     if( m<0 || m>lastused || !USED(m) ) {
-          return NULL;
-     } else {
-          USED(m)=false;
-          firstfree = Min(firstfree, m);
-          if (m==lastused)
-              do {
-                 lastused--;
-              } while ( !USED(lastused) && lastused>=0);
-          return ELEM(m);
-     }
+    if( m<0 || m>lastused || !USED(m) ) {
+        return NULL;
+    } else {
+        USED(m)=false;
+        firstfree = Min(firstfree, m);
+        if (m==lastused)
+            do {
+               lastused--;
+            } while ( !USED(lastused) && lastused>=0);
+        return ELEM(m);
+    }
 }
 
 #undef BOOL
@@ -209,94 +211,103 @@ void *cBag::remove(int m)
 
 cArray::cArray(cArray& list) : cObject()
 {
-     vect=NULL;
-     last=-1;
-     setName( list.name() );
-     operator=(list);
+    vect=NULL;
+    last=-1;
+    setName( list.name() );
+    operator=(list);
 }
 
 cArray::cArray(const char *name, int siz, int dt) :
 cObject( name )
 {
-     delta = Max(1,dt);
-     size = Max(siz,0);
-     firstfree = 0;
-     last = -1;
-     vect = new cObject *[size];
-     for (int i=0; i<size; i++) vect[i]=NULL;
+    delta = Max(1,dt);
+    size = Max(siz,0);
+    firstfree = 0;
+    last = -1;
+    vect = new cObject *[size];
+    for (int i=0; i<size; i++) vect[i]=NULL;
 }
 
 cArray::~cArray()
 {
-     // no clear()!
-     delete vect;
+    // no clear()!
+    delete vect;
 }
 
 cArray& cArray::operator=(cArray& list)
 {
-     clear();
+    if (this==&list) return *this;
 
-     cObject::operator=( list );
+    clear();
 
-     size = list.size;
-     delta = list.delta;
-     firstfree = list.firstfree;
-     last = list.last;
-     delete vect;
-     vect = new cObject *[size];
-     if (vect) memcpy( vect, list.vect, size * sizeof(cObject *) );
+    cObject::operator=( list );
 
-     for( int i=0; i<=last; i++)
-         if (vect[i] && vect[i]->owner()==&list)
-             take( vect[i] = vect[i]->dup() );
-     return *this;
+    size = list.size;
+    delta = list.delta;
+    firstfree = list.firstfree;
+    last = list.last;
+    delete vect;
+    vect = new cObject *[size];
+    if (vect) memcpy( vect, list.vect, size * sizeof(cObject *) );
+
+    for( int i=0; i<=last; i++)
+        if (vect[i] && vect[i]->owner()==&list)
+            take( vect[i] = vect[i]->dup() );
+    return *this;
 }
 
 void cArray::info(char *buf)
 {
-     cObject::info( buf );
+    cObject::info( buf );
 
-     if( last == -1 )
+    if( last == -1 )
         sprintf( buf+strlen(buf), " (empty)" );
-     else
+    else
         sprintf( buf+strlen(buf), " (n=%d)", last+1);
 }
 
 void cArray::forEach( ForeachFunc do_fn )
 {
-     if (do_fn(this,true))
-         for (int i=0; i<=last; i++)
-         {
-             cObject *p = vect[i];
-             if (p) p->forEach( do_fn );
-         }
-     do_fn(this,false);
+    if (do_fn(this,true))
+    {
+        for (int i=0; i<=last; i++)
+        {
+            cObject *p = vect[i];
+            if (p) p->forEach( do_fn );
+        }
+    }
+    do_fn(this,false);
 }
 
 void cArray::clear()
 {
-     for (int i=0; i<=last; i++)
+    for (int i=0; i<=last; i++)
         if (vect[i] && vect[i]->owner()==this)
            free( vect[i] );
-     firstfree = 0;
-     last = -1;
+    firstfree = 0;
+    last = -1;
 }
 
 int cArray::add(cObject *obj)
 {
-     int retval;
-     if (takeOwnership())  take( obj );
-     if (firstfree < size)
-     {
+    if (!obj) {
+        opp_error("(%s)%s: cannot insert NULL pointer",className(),fullName());
+        return -1;
+    }
+
+    int retval;
+    if (takeOwnership())  take( obj );
+    if (firstfree < size)
+    {
         vect[firstfree] = obj;
         retval = firstfree;
         last = Max(last,firstfree);
         do {
-           firstfree++;
+            firstfree++;
         } while (firstfree<size && vect[firstfree]!=NULL);
-     }
-     else
-     {
+    }
+    else
+    {
         cObject **v = new cObject *[size+delta];
         memcpy(v, vect, sizeof(cObject*)*size );
         memset(v+size, 0, sizeof(cObject*)*delta);
@@ -306,14 +317,19 @@ int cArray::add(cObject *obj)
         retval = last = size;
         firstfree = size+1;
         size += delta;
-     }
-     return retval;
+    }
+    return retval;
 }
 
 int cArray::addAt(int m, cObject *obj)
 {
-     if (m<size)  // fits in current vector
-     {
+    if (!obj) {
+        opp_error("(%s)%s: cannot insert NULL pointer",className(),fullName());
+        return -1;
+    }
+
+    if (m<size)  // fits in current vector
+    {
         if (m<0)
         {
            opp_error("(%s)%s: addAt(): negative position %d",
@@ -333,9 +349,9 @@ int cArray::addAt(int m, cObject *obj)
            do {
               firstfree++;
            } while (firstfree<size && vect[firstfree]!=NULL);
-     }
-     else // must allocate bigger vector
-     {
+    }
+    else // must allocate bigger vector
+    {
         cObject **v = new cObject *[m+delta];
         memcpy(v, vect, sizeof(cObject*)*size);
         memset(v+size, 0, sizeof(cObject*)*(m+delta-size));
@@ -347,80 +363,89 @@ int cArray::addAt(int m, cObject *obj)
         last = m;
         if (firstfree==m)
            firstfree++;
-     }
-     return m;
+    }
+    return m;
 }
 
 int cArray::find(cObject *obj)
 {
-     int i;
-     for (i=0; i<=last; i++)
+    int i;
+    for (i=0; i<=last; i++)
          if (vect[i]==obj)
             break;
-     if (i<=last)
+    if (i<=last)
          return i;
-     else
+    else
          return -1;
 }
 
 int cArray::find(const char *objname)
 {
-     int i;
-     for (i=0; i<=last; i++)
+    int i;
+    for (i=0; i<=last; i++)
         if (vect[i] && vect[i]->isName(objname))
             break;
-     if (i<=last)
+    if (i<=last)
          return i;
-     else
+    else
          return -1;
 }
 
 cObject *cArray::get(int m)
 {
-     if (m>=0 && m<=last && vect[m])
-          return vect[m];
-     else
-          {opp_warning(eNULLPTR,className(),fullName(),m);return NO(cObject);}
+    if (m>=0 && m<=last && vect[m])
+        return vect[m];
+    else
+        {opp_warning(eNULLPTR,className(),fullName(),m);return NO(cObject);}
 }
 
 cObject *cArray::get(const char *objname)
 {
     int m = find( objname );
-    if (m!=-1)
-        return get(m);
-    else
-    {
+    if (m==-1) {
         opp_warning("(%s)%s: get(): no object called `%s'",className(),fullName(),objname);
         return NO(cObject);
     }
+    return get(m);
 }
 
 cObject *cArray::remove(const char *objname)
 {
     int m = find( objname );
-    if (m!=-1)
-        return remove(m);
-    else
-    {
+    if (m==-1) {
         opp_warning("(%s)%s: remove(): no object called `%s'",className(),fullName(),objname);
         return NO(cObject);
     }
+    return remove(m);
+}
+
+cObject *cArray::remove(cObject *obj)
+{
+    if (!obj) return NO(cObject);
+
+    int m = find( obj );
+    if (m==-1) {
+        opp_warning("(%s)%s: remove(): object `%s' not in array",className(),fullName(),obj->fullName());
+        return NO(cObject);
+    }
+    return remove(m);
 }
 
 cObject *cArray::remove(int m)
 {
-     if (m<0 || m>last || vect[m]==NULL)
-          {opp_warning(eNULLPTR,className(),fullName(),m);return NO(cObject);}
-     else
-     {
-          cObject *obj = vect[m]; vect[m] = NULL;
-          firstfree = Min(firstfree, m);
-          if (m==last)
-              do {
-                 last--;
-              } while (vect[last]==NULL && last>=0);
-          if (obj->owner()==this)  drop( obj );
-          return obj;
-     }
+    if (m<0 || m>last || vect[m]==NULL) {
+        opp_warning(eNULLPTR,className(),fullName(),m);
+        return NO(cObject);
+    }
+
+    cObject *obj = vect[m]; vect[m] = NULL;
+    firstfree = Min(firstfree, m);
+    if (m==last)
+        do {
+            last--;
+        } while (vect[last]==NULL && last>=0);
+    if (obj->owner()==this)  drop( obj );
+    return obj;
 }
+
 

@@ -158,7 +158,7 @@ void *cObject::operator new(size_t m)
 cObject& cObject::operator=(cObject&)
 {
     // ownership not affected
-    // namestr is not set! (24.02.97 --VA)
+    // name string is NOT copied from other object! (24.02.97 --VA)
     return *this;
 }
 

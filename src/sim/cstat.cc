@@ -59,6 +59,8 @@ cStatistic::cStatistic(const char *name) :
 
 cStatistic& cStatistic::operator=(cStatistic& res)   //--VA
 {
+    if (this==&res) return *this;
+
     cObject::operator=( res );
     genk = res.genk;
     if (td && td->owner()==this)  free( td );
@@ -132,6 +134,8 @@ void cStdDev::info(char *buf)
 
 cStdDev& cStdDev::operator=(cStdDev& res)
 {
+    if (this==&res) return *this;
+
     cStatistic::operator=(res);
     num_samples = res.num_samples;
     min_samples = res.min_samples;
@@ -237,6 +241,8 @@ void cStdDev::loadFromFile(FILE *f)
 
 cWeightedStdDev& cWeightedStdDev::operator=(cWeightedStdDev& res)
 {
+    if (this==&res) return *this;
+
     cStdDev::operator=(res);
     sum_weights = res.sum_weights;
     return *this;

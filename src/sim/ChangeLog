@@ -811,3 +811,17 @@ April 6-10, 2000
    runtime from the different .so files.
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+ - operator=(cXXX& other) functions now include the
+      if (this==&other) return *this;
+ - indentation canonized (4 spaces) in most files (where I had the patience)
+ - remove(cObject *) added to cArray
+ - cArray error handling improved
+ - these functions were removed from cSimulation:
+      int find(const char *modulename,int index=-1, int parentmod_id=-1);
+      cModule *module(const char *modulename,int index=-1,int parentmod_id=-1);
+      bool isUnique(const char *s);
+   They are replaced by corresponding functions in cModule:
+      int findSubmodule(const char *submodname, int idx=-1); // moduleID (or -1)
+      cModule *submodule(const char *submodname, int idx=-1);
+
+

@@ -285,6 +285,8 @@ cCoroutine::~cCoroutine()
 
 cCoroutine& cCoroutine::operator=(cCoroutine& cor)
 {
+    if (this==&cor) return *this;
+
     setup( cor.task->fnp, cor.task->arg, cor.task->stack_size );
     return *this;
 }
@@ -344,107 +346,109 @@ static cCoroutine *current_task = NULL;
 
 void cCoroutine::init( unsigned, unsigned)
 {
-        main_task.started = true;
-        current_task = &main_task;
+    main_task.started = true;
+    current_task = &main_task;
 }
 
 void cCoroutine::switchTo( cCoroutine *cor )
 {
-        if (!cor->started)
+    if (!cor->started)
+    {
+        if(SETJMP(current_task->jmpbuf)==0)
         {
-             if(SETJMP(current_task->jmpbuf)==0)
-             {
-                cor->started = true;
-                current_task->sp = get_sp_reg();
-                current_task = cor;
+            cor->started = true;
+            current_task->sp = get_sp_reg();
+            current_task = cor;
 
-                static CoroutineFnp _fnp;
-                static void *_arg;
-                _fnp = cor->fnp;
-                _arg = cor->arg;
-                set_sp_reg(cor->sp);   // manually switch to another stack
-                (*_fnp)( _arg );       // start coroutine function
-             }
+            static CoroutineFnp _fnp;
+            static void *_arg;
+            _fnp = cor->fnp;
+            _arg = cor->arg;
+            set_sp_reg(cor->sp);   // manually switch to another stack
+            (*_fnp)( _arg );       // start coroutine function
         }
-        else
+    }
+    else
+    {
+        if(SETJMP(current_task->jmpbuf)==0)
         {
-             if(SETJMP(current_task->jmpbuf)==0)
-             {
-                current_task->sp = get_sp_reg();
-                current_task = cor;
-                LONGJMP(cor->jmpbuf,1);
-             }
+            current_task->sp = get_sp_reg();
+            current_task = cor;
+            LONGJMP(cor->jmpbuf,1);
         }
+    }
 }
 
 void cCoroutine::switchtoMain()
 {
-        cCoroutine::switchTo( &main_task );
+    cCoroutine::switchTo( &main_task );
 }
 
 cCoroutine::cCoroutine()
 {
-        stack = NULL;
+    stack = NULL;
 }
 
 bool cCoroutine::setup( CoroutineFnp _fnp, void *_arg, unsigned _stack_size )
 {
-        fnp = _fnp;
-        arg = _arg;
-        stack_size = _stack_size;
+    fnp = _fnp;
+    arg = _arg;
+    stack_size = _stack_size;
 #ifdef __MSDOS__
-        if (_8087)
-        {           // 80x87 present
-            stack = stkbeg = (int *)new char[stack_size];
-        }
-        else
-        {           // 80x87 not present, emulator used
-                    // it has its working memory at _SS:0000
-            stack = (int *)new char[stack_size+EMUWSP+16];
-            if (stack==NULL) return false;
-            stkbeg = (int *)((char *)stack+EMUWSP+16);
-        }
-#else
+    if (_8087)
+    {           // 80x87 present
         stack = stkbeg = (int *)new char[stack_size];
+    }
+    else
+    {           // 80x87 not present, emulator used
+                // it has its working memory at _SS:0000
+        stack = (int *)new char[stack_size+EMUWSP+16];
+        if (stack==NULL) return false;
+        stkbeg = (int *)((char *)stack+EMUWSP+16);
+    }
+#else
+    stack = stkbeg = (int *)new char[stack_size];
 #endif
-        stklow = (int *)((char *)stkbeg + SAFETY_AREA);
+    stklow = (int *)((char *)stkbeg + SAFETY_AREA);
 
-        restart();
-        return true;
+    restart();
+    return true;
 
 }
 
 cCoroutine::~cCoroutine()
 {
-        free();
+    free();
 }
 
 void cCoroutine::free()
 {
-        if (stack) delete stack;
-        stack = NULL;
-        stack_size = 0;
+    if (stack) delete stack;
+    stack = NULL;
+    stack_size = 0;
 }
 
 cCoroutine& cCoroutine::operator=(cCoroutine& cor)
 {
-        if (stack) delete stack;
-        setup( cor.fnp, cor.arg, cor.stack_size );
-        return *this;
+    if (this==&cor) return *this;
+
+    if (stack) delete stack;
+    setup( cor.fnp, cor.arg, cor.stack_size );
+    return *this;
 }
 
 void cCoroutine::restart()
 {
-        started = false;
-        sp = (int *) ((char *)stkbeg+stack_size);
+    started = false;
+    sp = (int *) ((char *)stkbeg+stack_size);
 
 #ifdef __MSDOS__
-        if (!_8087)    // fp emulator used, with its working mem at _SS:0000
-        {
-             sp = (int *)MK_FP( FP_SEG(stack)+1, EMUWSP+stack_size);
-             _fpreset();    // init emulator workspace with the original one
-             memcpy( MK_FP(FP_SEG(stack)+1,0), MK_FP(_SS,0), EMUWSP);
-        }
+    if (!_8087)    // fp emulator used, with its working mem at _SS:0000
+    {
+         sp = (int *)MK_FP( FP_SEG(stack)+1, EMUWSP+stack_size);
+         _fpreset();    // init emulator workspace with the original one
+         memcpy( MK_FP(FP_SEG(stack)+1,0), MK_FP(_SS,0), EMUWSP);
+    }
 #endif
 }
 
@@ -465,7 +469,7 @@ unsigned cCoroutine::stackUsage()
 
 int *cCoroutine::getMainSP()
 {
-        return main_task.sp;
+    return main_task.sp;
 }
 
 #endif

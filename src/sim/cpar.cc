@@ -1021,7 +1021,10 @@ cPar& cPar::operator=(cPar& val)
     // this very object and not what it points to,
     // use cancelRedirection() first!
 
-    if (isRedirected()) {return ind.par->operator=(val);}
+    if (this==&val) return *this;
+
+    if (isRedirected())
+        return ind.par->operator=(val);
 
     valueChanges();
     deleteold();
@@ -1146,6 +1149,8 @@ const char *cModulePar::fullPath()
 
 cModulePar& cModulePar::operator=(cModulePar& otherpar)
 {
+    if (this==&otherpar) return *this;
+
     cPar::operator=(otherpar);
     return *this;
 }

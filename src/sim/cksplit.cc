@@ -103,7 +103,7 @@ cKSplit::~cKSplit()
 
 cKSplit& cKSplit::operator=(cKSplit& res)
 {
-    int i;
+    if (this==&res) return *this;
 
     cDensityEstBase::operator= (res);
 
@@ -119,7 +119,7 @@ cKSplit& cKSplit::operator=(cKSplit& res)
     else
     {
        gridv = new sGrid[gridv_size + 1];
-       for (i=1; i<=lastgrid; i++)
+       for (int i=1; i<=lastgrid; i++)
           gridv[i] = res.gridv[i];
     }
 
