@@ -282,10 +282,13 @@ nonzero. \ttt{gen0-seed} is equivalent to \ttt{random-seed}.\\\hline
 in kilobytes. You need to increase this value if you get the
 ``Cannot allocate coroutine stack...'' error.\\\hline
 %%
-\fpar{load-libs} = & {\raggedright Name of shared libraries (.so files) to load after startup.
-You can use it to load simple module code etc. Example:
+\fpar{load-libs} = & {\raggedright List of shared libraries (separated by
+spaces) to load in the initialization phase. {\opp} appends a platform-specific
+extension to the library name: \ttt{.dll} on Windows and \ttt{.so} on Unix systems.
+This feature can be used to dynamically load Envir extensions (RNGs, output vector
+managers, etc.) or simple modules. Example:
 
-\fpar{load-libs} = \ttt{../x25/x25.so ../lapb/lapb.so}}\\\hline
+\fpar{load-libs} = \ttt{"../lib/rng2 ../lib/ospfrouting"}}\\\hline
 %%
 \fpar{netif-check-freq} = & Used with parallel execution.\\\hline
 %%
@@ -322,18 +325,22 @@ in \ttt{envirext.h}.\\\hline
 \label{sec:ch-run-sim:parameter-settings}
 \index{module!parameters}
 
+\subsection{Run-specific and general sections}
+
 Values for module parameters go into the \texttt{[Parameters]} or the
 \texttt{[Run 1]}, \texttt{[Run 2]} etc. sections of the ini file. The
 run-specific settings take precedence over the overall settings.
 Parameters that were assigned a (non-input) value in the NED file are
 not influenced by ini file settings.
 
+\subsection{Wildcards}
+
 Wildcards (\ttt{*,?})\index{ini file!wildcards} can be used to supply values
 to several model parameters at a time. Filename (glob) style patterns
 are used. One difference to the usual rules is that character ranges
 should be written with curly braces instead of square brackets (that is,
-letters are \ttt{\{a-zA-Z\}} not \ttt{[a-zA-Z]}) because square brackets
-are already reserved for the notation of module vector indices.
+\textit{any-letter} is \ttt{\{a-zA-Z\}} not \ttt{[a-zA-Z]}), because
+square brackets are already reserved for the notation of module vector indices.
 
 If you use wildcards, the order of entries is important: if a parameter
 name matches several wildcards-patterns, the first matching occurrence
@@ -358,6 +365,8 @@ token.stations[0].waitTime = 5ms
 token.stations[*].waitTime = 1000ms
 \end{Verbatim}
 
+
+\subsection{Applying the defaults}
 
 It is also possible to utilize the default values specifified with
 \ttt{input(}\textit{default-value}\ttt{)} in the NED files.{\new}
@@ -474,10 +483,58 @@ except all end-to-end delays and the ones in any module called Router2.
 \section{Configuring the random number generators}
 \label{sec:ch-run-sim:rng-config}
 
-As is was pointed out earlier, it is of great importance that
-different simulation runs and different random number sources
-within one simulation run use non-overlapping sequences of random
-numbers\index{random!numbers}.
+The random number architecture of {\opp} was already outlined
+in section \ref{cha:sim-lib:generating-random-numbers}. Here
+we'll cover the configuration of RNGs in omnetpp.ini.
+
+\subsection{RNG choice and seed selection}
+
+New omnetpp.ini entries:
+
+\begin{verbatim}
+[General]
+num-rngs=n  (default:1)
+rng-class="classname"  (default:cMersenneTwister)
+\end{verbatim}
+
+classes accepted: "cMersenneTwister", "cLCG32"
+cAkaroaRNG. Akaroa's RNG has some limitations, see class
+doc for details.
+
+per-run settings:
+
+\begin{verbatim}
+[General] or [Run n]
+seed-N-mt=seedvalue  (for MT; default: auto seed selection)
+seed-N-lcg32=seedvalue  (for cLCG32; default: auto seed selection)
+\end{verbatim}
+
+N can be 0..num-rngs; see sim/cmersennetwister.cc and clcg32.cc for
+exact auto-seeding procedure
+
+
+\subsection{RNG mapping}
+
+RNG mapping implemented. New ini file entries:
+
+\begin{verbatim}
+[General]
+<modulepath>.rng-N=M  (where N,M are numeric, M<num-rngs)
+\end{verbatim}
+
+This maps module-local RNG N to physical RNG M. The following
+example maps all "gen" module's default (N=0) RNG to physical RNG 1,
+and all "noisychannel" module's default (N=0) RNG to physical RNG 2.
+
+\begin{verbatim}
+[General]
+num-rngs=3
+**.gen[*].rng-0=1
+**.noisychannel[*].rng-0=2
+\end{verbatim}
+
+This mapping allows variance reduction techniques to be applied to
+OMNeT++ models, without any model change or recompilation.
 
 
 In {\opp}, you have three choices:
@@ -485,7 +542,6 @@ In {\opp}, you have three choices:
   \item{Automatic seed selection.}
   \item{Specify seeds in the ini file (with the help of the seedtool
     program, see later)}
-  \item{Manually set the seed from within the program.}
 \end{enumerate}
 
 \subsection{Manual seed configuration}
@@ -499,16 +555,6 @@ values apart from the seeds used for previous runs. Since the
 generation of new seed values is costly, {\opp} has a table of
 pre-calculated seeds (256 values); if they are all used up, {\opp}
 starts from the beginning of the table again.
-
-\textbf{Warning!} Be aware that each time the simulation program
-is started, {\opp} starts assigning seeds from the beginning
-of the table. That is, if you execute Run 1, Run 2, Run 3 one
-at a time (e.g. from a shell script, using the Cmdenv -r command-line
-flag), all your runs will be executed using the \textit{same} seeds!
-This behavior is almost surely not what you want, and it will be
-fixed in future versions of {\opp}. Until then, it is a good
-idea to stick to manually generating seeds and explicitly adding them
-to the ini file.
 
 
 Automatic seed selection may not be appropriate for you for several

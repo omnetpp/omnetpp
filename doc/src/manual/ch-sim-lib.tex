@@ -185,7 +185,7 @@ cMessage *copyMsg = (cMessage *) msg->dup();
 turn relies on the assignment operator between objects.
 \fname{operator=()} can be used to copy contents of an object into
 another object of the same type. This is a deep copy: object
-contained in the object will also be duplicated if necessary. 
+contained in the object will also be duplicated if necessary.
 \fname{operator=()} does not copy the name string -- this task is done
 by the copy constructor\index{copy constructor}.
 
@@ -286,6 +286,7 @@ simtime_t t = strToSimtime0(s); // now s points to "and something extra"
 
 
 \section{Generating random numbers}
+\label{cha:sim-lib:generating-random-numbers}
 
 Random numbers in simulation are never random. Rather, they are
 produced using deteministic algorithms. Algorithms take a \textit{seed} value
@@ -2350,7 +2351,7 @@ The following methods \textbf{must} be implemented:
 \end{itemize}
 
 If your class contains other objects subclassed from \cclass{cObject},
-either via pointers or as data member, the following function \textbf{should} 
+either via pointers or as data member, the following function \textbf{should}
 be implemented:
 
 \begin{itemize}
