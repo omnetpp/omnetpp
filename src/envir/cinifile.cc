@@ -447,6 +447,7 @@ std::string cIniFile::getAsFilenames(const char *sect, const char *key, const ch
             result += tidyFilename(concatDirAndFile(baseDir, token).c_str()) + " ";
         }
     }
+    result.erase(result.end()-1); // chop trailing space
     return result;
 }
 
