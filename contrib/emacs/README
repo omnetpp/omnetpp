@@ -2,10 +2,12 @@
 NED Syntax Highlight in GNU Emacs
 =================================
 
+
     Author's comment:
     "I have attached a lisp file that implements syntax highlighting
     when editing OMNeT++ .ned file with GNU Emacs. It's not that sophisticated
     but it works OK. Maybe, someone finds this useful (my students like it :-)"
+
 
 The file ned-mode.el is a simple hack to allow syntax highlighting when
 editing OMNeT++ .ned files with Emacs. It has been tested with Emacs 20.3.
