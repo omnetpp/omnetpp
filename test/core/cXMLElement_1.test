@@ -1,5 +1,5 @@
 %description:
-Check ev.getXMLDocument() basic functionality
+Check ev.getXMLDocument()'s optional path expression
 
 %file: {}.xml
 
