@@ -340,7 +340,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $fisarray{$fieldname} = $isarray;
                 $farraysize{$fieldname} = $arraysize;
                 $fenumname{$fieldname} = $fieldenum;
-                #print "$fieldname: $ftype{$fieldname} =$fval{$fieldname}  []:$fisarray{$fieldname}  [$farraysize{$fieldname}]\n";
+#                print "$fieldname: $ftype{$fieldname} =$fval{$fieldname}  []:$fisarray{$fieldname}  [$farraysize{$fieldname}]\n";
             }
             else {$crap.=$field;}
         }
@@ -756,16 +756,23 @@ sub generateClass
                     print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
                     print CC "        $var{$fieldname}\[i\] = 0;\n";
                 }
+		if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+		  print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
+		  print CC "        $var{$fieldname}\[i\].setOwner(this);\n";
+		}
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "    $varsize{$fieldname} = 0;\n";
                 print CC "    $var{$fieldname} = 0;\n";
             } else {
                 if ($fval{$fieldname} ne '') {
-                    print CC "    $var{$fieldname} = $fval{$fieldname};\n";
+		  print CC "    $var{$fieldname} = $fval{$fieldname};\n";
                 }
-            }
-        }
-    }
+		if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+		  print CC "    $var{$fieldname}.setOwner(this);\n";
+		}
+	      }
+	  }
+      }
     print CC "}\n\n";
     if ($msgbaseclass eq "") {
         print CC "$msgclass\:\:$msgclass(const $msgclass& other)\n";
@@ -778,17 +785,19 @@ sub generateClass
     }
     foreach $fieldname (@fieldlist)
     {
-        if (!$fisvirtual{$fieldname}) {
-            if ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                print CC "    $varsize{$fieldname} = 0;\n";
-                print CC "    $var{$fieldname} = 0;\n";
-            }
-        }
-# # FIXME (UK): Ownership 	
-# #  	$ftype = $ftype{$fieldname};
-# #  	if ($classtype{$ftype} eq 'cobject') {
-# #  	  print CC "    $var{$fieldname}.setOwner(this);\n";
-# #  	}
+      if (!$fisvirtual{$fieldname}) {
+	if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+	  if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+	    print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
+	    print CC "        $var{$fieldname}\[i\].setOwner(this);\n";
+	  }
+	} elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+	  print CC "    $varsize{$fieldname} = 0;\n";
+	  print CC "    $var{$fieldname} = 0;\n";
+	} elsif (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cobject') {
+	  print CC "    $var{$fieldname}.setOwner(this);\n";
+	}
+      }
     }
     print CC "    operator=(other);\n";
     print CC "}\n\n";
@@ -839,12 +848,12 @@ sub generateClass
                 print CC "}\n\n";
                 print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned k) const\n";
                 print CC "{\n";
-                print CC "    if (k>=$farraysize{$fieldname}) return 0;\n";
+                print CC "    if (k>=$farraysize{$fieldname}) opp_error(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    return $var{$fieldname}\[k\];\n";
                 print CC "}\n\n";
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
-                print CC "    if (k>=$farraysize{$fieldname}) return;\n";
+                print CC "    if (k>=$farraysize{$fieldname}) opp_error(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    this->$var{$fieldname}\[k\] = $var{$fieldname};\n";
                 print CC "}\n\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
@@ -866,12 +875,12 @@ sub generateClass
                 print CC "}\n\n";
                 print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned k) const\n";
                 print CC "{\n";
-                print CC "    if (k>=$varsize{$fieldname}) return 0;\n";
+                print CC "    if (k>=$varsize{$fieldname}) opp_error(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
                 print CC "    return $var{$fieldname}\[k\];\n";
                 print CC "}\n\n";
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
-                print CC "    if (k>=$varsize{$fieldname}) return;\n";
+                print CC "    if (k>=$varsize{$fieldname}) opp_error(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
                 print CC "    this->$var{$fieldname}\[k\]=$var{$fieldname};\n";
                 print CC "}\n\n";
             } else {
