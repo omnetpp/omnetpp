@@ -288,10 +288,11 @@ bool processFile(const char *fname)
         else
         {
             ofstream out(outfname);
-            ofstream outh(outhdrfname); // FIXME only if needed...
+            //ofstream outh(outhdrfname);
+            ofstream outh; // FIXME open if we process msg files
             generateCpp(out, outh, tree, &symboltable);
             out.close();
-            outh.close(); // FIXME only if needed...
+            outh.close();
         }
 
         delete tree;
