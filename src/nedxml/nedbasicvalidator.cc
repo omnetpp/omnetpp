@@ -18,7 +18,6 @@
 #include "nederror.h"
 #include "nedbasicvalidator.h"
 
-// FIXME duplicate!!! also present in cppgenerator.cc
 static struct { char *fname; int args; } known_funcs[] =
 {
    /* <math.h> */
@@ -29,17 +28,64 @@ static struct { char *fname; int args; } known_funcs[] =
    {"exp", 1},     {"pow", 2},     {"sqrt", 1},
    {"log",  1},    {"log10", 1},
 
-   /* OMNeT++ */
-   {"uniform", 2},      {"intuniform", 2},       {"exponential", 1},
-   {"normal", 2},       {"truncnormal", 2},
-   {"genk_uniform", 3}, {"genk_intuniform",  3}, {"genk_exponential", 2},
-   {"genk_normal", 3},  {"genk_truncnormal", 3},
-   {"min", 2},          {"max", 2},
+   /* OMNeT++ general */
+   {"min", 2},
+   {"max", 2},
 
-   /* OMNeT++, to support expressions */
-   {"bool_and",2}, {"bool_or",2}, {"bool_xor",2}, {"bool_not",1},
-   {"bin_and",2},  {"bin_or",2},  {"bin_xor",2},  {"bin_compl",1},
-   {"shift_left",2}, {"shift_right",2},
+   /* OMNeT++: distributions without rng-id arg */
+   {"uniform",2},
+   {"exponential",1},
+   {"normal",2},
+   {"truncnormal",2},
+   {"gamma_d",2},
+   {"beta",2},
+   {"erlang_k",2},
+   {"chi_square",1},
+   {"student_t",1},
+   {"cauchy",2},
+   {"triang",3},
+   {"lognormal",2},
+   {"weibull",2},
+   {"pareto_shifted",3},
+   {"intuniform",2},
+   {"bernoulli",1},
+   {"binomial",2},
+   {"geometric",1},
+   {"negbinomial",2},
+   {"hypergeometric",3},
+   {"poisson",1},
+
+   /* OMNeT++: distributions with rng-id arg */
+   {"uniform",3},
+   {"exponential",2},
+   {"normal",3},
+   {"truncnormal",3},
+   {"gamma_d",3},
+   {"beta",3},
+   {"erlang_k",3},
+   {"chi_square",2},
+   {"student_t",2},
+   {"cauchy",3},
+   {"triang",4},
+   {"lognormal",3},
+   {"weibull",3},
+   {"pareto_shifted",4},
+   {"intuniform",3},
+   {"bernoulli",2},
+   {"binomial",3},
+   {"geometric",2},
+   {"negbinomial",3},
+   {"hypergeometric",4},
+   {"poisson",2},
+
+   /* OMNeT++: old genk_* stuff */
+   {"genk_uniform",3},
+   {"genk_intuniform",3},
+   {"genk_exponential",2},
+   {"genk_normal",3},
+   {"genk_truncnormal",3},
+
+   /* END */
    {NULL,0}
 };
 
@@ -338,11 +384,7 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
 {
     // if we know the function, check argument count
     const char *func = node->getName();
-
-    // count arguments
-    int args = 0;
-    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
-       args++;
+    int args = node->getNumChildren();
 
     // if it's an operator, treat specially
     if (!strcmp(func,"index"))
@@ -371,15 +413,23 @@ void NEDBasicValidator::validateElement(FunctionNode *node)
     }
 
     // check if we know about it
-    int i;
-    for (i=0; known_funcs[i].fname!=NULL;i++)
-        if (!strcmp(func,known_funcs[i].fname))
-            break;
-    if (known_funcs[i].fname!=NULL)
+    bool name_found = false;
+    bool argc_matches = false;
+    for (int i=0; known_funcs[i].fname!=NULL;i++)
     {
-        // found, check arg count matches
-        if (known_funcs[i].args!=args)
-            NEDError(node, "function '%s' should have %d operands, not %d", func, known_funcs[i].args, args);
+        if (!strcmp(func,known_funcs[i].fname))
+        {
+            name_found = true;
+            if (known_funcs[i].args == args)
+            {
+                argc_matches = true;
+                break;
+            }
+        }
+    }
+    if (name_found && !argc_matches)
+    {
+        NEDError(node, "function '%s' cannot take %d operands", func, args);
     }
 }
 

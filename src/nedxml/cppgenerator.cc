@@ -418,12 +418,12 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "}\n";
     out << "\n";
 
-    out << "static MathFunc _getFunction(const char *funcname)\n";
+    out << "static cFunctionType *_getFunction(const char *funcname, int argcount)\n";
     out << "{\n";
-    out << "    cFunctionType *functype = findFunction(funcname);\n";
+    out << "    cFunctionType *functype = findFunction(funcname,argcount);\n";
     out << "    if (!functype)\n";
-    out << "        throw new cException(\"Function %s not found\", funcname);\n";
-    out << "    return functype->f;\n";
+    out << "        throw new cException(\"Function %s with %d args not found\", funcname, argcount);\n";
+    out << "    return functype;\n";
     out << "}\n";
     out << "\n";
 
@@ -583,7 +583,15 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
 #endif
 
     // generate children (except expressions)
-    generateChildrenWithTags(node, "substmachines,substparams,gatesizes,display-string", indent, mode);
+    generateChildrenWithTags(node, "substmachines,substparams,gatesizes", indent, mode);
+
+    // add display string
+    DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
+    if (dispstr)
+    {
+        out << "\n" << indent << submodule_var.c_str() << "->setDisplayStringAsParent(\""
+            <<  dispstr->getValue() << "\");\n";
+    }
 
     // build function call
     out << indent << "// build submodules recursively (if it has any):\n";
@@ -659,6 +667,13 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     indent = increaseIndent(indent);
     out << indent << "cModule *mod = this;\n\n";
     printTemporaryVariables(indent);
+
+    // add display string
+    DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
+    if (dispstr)
+    {
+        out << "\n" << indent << "mod->setDisplayStringAsParent(\"" << dispstr->getValue() << "\");\n";
+    }
 
     // generate submodules
     generateChildrenWithTags(node, "submodules", indent);
@@ -809,7 +824,14 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
 #endif
 
     // generate children (except expressions)
-    generateChildrenWithTags(node, "substmachines,substparams,gatesizes,display-string", indent, mode);
+    generateChildrenWithTags(node, "substmachines,substparams,gatesizes", indent, mode);
+
+    // add display string
+    DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
+    if (dispstr)
+    {
+        out << "\n" << indent << submodule_var.c_str() << "->setDisplayString(\"" <<  dispstr->getValue() << "\");\n";
+    }
 
     // build function call
     out << indent << "// build submodules recursively (if it has any):\n";

@@ -237,4 +237,21 @@ NEDElement *NEDElement::getNextSiblingWithTag(int tagcode) const
 }
 
 
+int NEDElement::getNumChildren() const
+{
+    int n=0;
+    for (NEDElement *node = firstchild; node; node = node->getNextSibling())
+        n++;
+    return n;
+}
+
+int NEDElement::getNumChildrenWithTag(int tagcode) const
+{
+    int n=0;
+    for (NEDElement *node = firstchild; node; node = node->getNextSibling())
+        if (node->getTagCode()==tagcode)
+            n++;
+    return n;
+}
+
 

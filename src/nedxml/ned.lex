@@ -88,11 +88,9 @@ char textbuf[TEXTBUF_LEN];
 "submodules"            { count(); return SUBMODULES; }
 "connections"           { count(); return CONNECTIONS; }
 "display"               { count(); return DISPLAY; }
-"on"                    { count(); return ON; }          /* --LG */
+"on"                    { count(); return ON; }
 "like"                  { count(); return LIKE; }
-"machines"              { count(); return MACHINES; }         /* --LG */
-"io-interfaces"         { count(); return IO_INTERFACES; }    /* --LG */
-"ifpair"                { count(); return IFPAIR; }    /* --LG */
+"machines"              { count(); return MACHINES; }
 "-->"                   { count(); return RIGHT_ARROW; }
 "<--"                   { count(); return LEFT_ARROW; }
 ".."                    { count(); return TO; }
@@ -124,6 +122,10 @@ char textbuf[TEXTBUF_LEN];
 "int"                   { count(); return INTTYPE; }
 "long"                  { count(); return LONGTYPE; }
 "double"                { count(); return DOUBLETYPE; }
+
+"delay"                 { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
+"error"                 { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
+"datarate"              { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
 
 {L}({L}|{D})*           { count(); return NAME; }
 {D}+                    { count(); return INTCONSTANT; }

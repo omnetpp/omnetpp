@@ -276,6 +276,16 @@ class NEDElement
      * </pre>
      */
     virtual NEDElement *getNextSiblingWithTag(int tagcode) const;
+
+    /**
+     * Returns the number of child elements.
+     */
+    virtual int getNumChildren() const;
+
+    /**
+     * Returns the number of child elements with the given tag code.
+     */
+    virtual int getNumChildrenWithTag(int tagcode) const;
     //@}
 };
 

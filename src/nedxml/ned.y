@@ -35,9 +35,8 @@
 %token NETWORK
 %token ENDSIMPLE ENDMODULE ENDCHANNEL
 %token ENDNETWORK ENDFOR
-%token MACHINES ON         /* --LG */
-%token IO_INTERFACES            /* --LG */
-%token IFPAIR                   /* --LG */
+%token MACHINES ON
+%token CHANATTRNAME   /* only needed to parse old-syntax NED */
 
 %token INTCONSTANT REALCONSTANT NAME STRINGCONSTANT CHARCONSTANT
 %token TRUE_ FALSE_
@@ -113,6 +112,16 @@ void yyerror (char *s);
 #include "nedfilebuffer.h"
 #include "nedelements.h"
 #include "nedutil.h"
+
+/*
+ * use_chanattrname_token:
+ * It turns on/off recognizing the "delay", "error", "datarate" words
+ * as CHANATTRNAME tokens. If it's off, they're simply returned as NAME.
+ * The CHANATTRNAME token is necessary to get the parsing of connection
+ * attributes right with the old NED syntax -- in the new syntax
+ * they should be treated as any arbitrary word (NAME).
+ */
+int use_chanattrname_token;
 
 static YYLTYPE NULLPOS={0,0,0,0,0,0};
 
@@ -204,7 +213,7 @@ const char *toString(long);
 
 ExpressionNode *createExpression(NEDElement *expr);
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2=NULL, NEDElement *operand3=NULL);
-FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL);
+FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDElement *arg2=NULL, NEDElement *arg3=NULL, NEDElement *arg4=NULL);
 ParamRefNode *createParamRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
 IdentNode *createIdent(const char *name);
 ConstNode *createConst(int type, const char *value, const char *text=NULL);
@@ -291,6 +300,7 @@ channeldefinition_old
 channelheader_old
         : CHANNEL NAME
                 {
+                  use_chanattrname_token = 1;
                   ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile );
                   ps.channel->setName(toString(@2));
                   setComments(ps.channel,@1,@2);
@@ -303,13 +313,13 @@ opt_channelattrblock_old
         ;
 
 channelattrblock_old
-        : channelattrblock_old NAME expression opt_semicolon
+        : channelattrblock_old CHANATTRNAME expression opt_semicolon
                 {
                   ps.chanattr = addChanAttr(ps.channel,toString(@2));
                   addExpression(ps.chanattr, "value",@3,$3);
                   setComments(ps.channel,@2,@3);
                 }
-        | NAME expression opt_semicolon
+        | CHANATTRNAME expression opt_semicolon
                 {
                   ps.chanattr = addChanAttr(ps.channel,toString(@1));
                   addExpression(ps.chanattr, "value",@2,$2);
@@ -343,6 +353,7 @@ channeldefinition
 channelheader
         : CHANNEL NAME
                 {
+                  use_chanattrname_token = 0;
                   ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile );
                   ps.channel->setName(toString(@2));
                   setComments(ps.channel,@1,@2);
@@ -383,6 +394,7 @@ simpledefinition_old
 simpleheader_old
         : SIMPLE NAME
                 {
+                  use_chanattrname_token = 1;
                   ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
                   ((SimpleModuleNode *)ps.module)->setName(toString(@2));
                   setComments(ps.module,@1,@2);
@@ -417,6 +429,7 @@ simpledefinition
 simpleheader
         : SIMPLE NAME
                 {
+                  use_chanattrname_token = 0;
                   ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
                   ((SimpleModuleNode *)ps.module)->setName(toString(@2));
                   setComments(ps.module,@1,@2);
@@ -441,6 +454,7 @@ moduledefinition_old
 moduleheader_old
         : MODULE NAME
                 {
+                  use_chanattrname_token = 1;
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleNode *)ps.module)->setName(toString(@2));
                   setComments(ps.module,@1,@2);
@@ -478,6 +492,7 @@ moduledefinition
 moduleheader
         : MODULE NAME
                 {
+                  use_chanattrname_token = 0;
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleNode *)ps.module)->setName(toString(@2));
                   setComments(ps.module,@1,@2);
@@ -1547,12 +1562,12 @@ channeldescr_old
                   ps.connattr = addConnAttr(ps.conn,"channel");
                   addExpression(ps.connattr, "value",@1,createExpression(createConst(NED_CONST_STRING, toString(@1))));
                 }
-        | NAME expression
+        | CHANATTRNAME expression
                 {
                   ps.connattr = addConnAttr(ps.conn,toString(@1));
                   addExpression(ps.connattr, "value",@2,$2);
                 }
-        | channeldescr_old NAME expression
+        | channeldescr_old CHANATTRNAME expression
                 {
                   ps.connattr = addConnAttr(ps.conn,toString(@2));
                   addExpression(ps.connattr, "value",@3,$3);
@@ -1957,7 +1972,9 @@ expr
                 { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3, $5); }
         | NAME '(' expr ',' expr ',' expr ')'
                 { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3, $5, $7); }
-        ;
+        | NAME '(' expr ',' expr ',' expr ',' expr ')'
+                { if (ps.parseExpressions) $$ = createFunction(toString(@1), $3, $5, $7, $9); }
+         ;
 
 simple_expr
         : parameter_expr
@@ -2632,13 +2649,14 @@ OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *o
    return opnode;
 }
 
-FunctionNode *createFunction(const char *funcname, NEDElement *arg1, NEDElement *arg2, NEDElement *arg3)
+FunctionNode *createFunction(const char *funcname, NEDElement *arg1, NEDElement *arg2, NEDElement *arg3, NEDElement *arg4)
 {
    FunctionNode *funcnode = (FunctionNode *)createNodeWithTag(NED_FUNCTION);
    funcnode->setName(funcname);
    if (arg1) funcnode->appendChild(arg1);
    if (arg2) funcnode->appendChild(arg2);
    if (arg3) funcnode->appendChild(arg3);
+   if (arg4) funcnode->appendChild(arg4);
    return funcnode;
 }
 

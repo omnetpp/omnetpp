@@ -22,29 +22,29 @@ inline bool strnotnull(const char *s)
     return s && s[0];
 }
 
-static struct { char *fname; int args; } known_funcs[] =
-{
-   /* <math.h> */
-   {"fabs", 1},    {"fmod", 2},
-   {"acos", 1},    {"asin", 1},    {"atan", 1},   {"atan2", 1},
-   {"sin", 1},     {"cos", 1},     {"tan", 1},    {"hypot", 2},
-   {"ceil", 1},    {"floor", 1},
-   {"exp", 1},     {"pow", 2},     {"sqrt", 1},
-   {"log",  1},    {"log10", 1},
-
-   /* OMNeT++ */
-   {"uniform", 2},      {"intuniform", 2},       {"exponential", 1},
-   {"normal", 2},       {"truncnormal", 2},
-   {"genk_uniform", 3}, {"genk_intuniform",  3}, {"genk_exponential", 2},
-   {"genk_normal", 3},  {"genk_truncnormal", 3},
-   {"min", 2},          {"max", 2},
-
-   /* OMNeT++, to support expressions */
-   {"bool_and",2}, {"bool_or",2}, {"bool_xor",2}, {"bool_not",1},
-   {"bin_and",2},  {"bin_or",2},  {"bin_xor",2},  {"bin_compl",1},
-   {"shift_left",2}, {"shift_right",2},
-   {NULL,0}
-};
+// static struct { char *fname; int args; } known_funcs[] =
+// {
+//    /* <math.h> */
+//    {"fabs", 1},    {"fmod", 2},
+//    {"acos", 1},    {"asin", 1},    {"atan", 1},   {"atan2", 1},
+//    {"sin", 1},     {"cos", 1},     {"tan", 1},    {"hypot", 2},
+//    {"ceil", 1},    {"floor", 1},
+//    {"exp", 1},     {"pow", 2},     {"sqrt", 1},
+//    {"log",  1},    {"log10", 1},
+//
+//    /* OMNeT++ */
+//    {"uniform", 2},      {"intuniform", 2},       {"exponential", 1},
+//    {"normal", 2},       {"truncnormal", 2},
+//    {"genk_uniform", 3}, {"genk_intuniform",  3}, {"genk_exponential", 2},
+//    {"genk_normal", 3},  {"genk_truncnormal", 3},
+//    {"min", 2},          {"max", 2},
+//
+//    /* OMNeT++, to support expressions */
+//    {"bool_and",2}, {"bool_or",2}, {"bool_xor",2}, {"bool_not",1},
+//    {"bin_and",2},  {"bin_or",2},  {"bin_xor",2},  {"bin_compl",1},
+//    {"shift_left",2}, {"shift_right",2},
+//    {NULL,0}
+// };
 
 
 int CppExpressionGenerator::count = 0;
@@ -369,16 +369,20 @@ void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, 
 
 void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, int mode)
 {
+    // get function name, arg count, args
     const char *funcname = node->getName();
+    int argcount = node->getNumChildren();
     NEDElement *op1 = node->getFirstChild();
     NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
     NEDElement *op3 = op2 ? op2->getNextSibling() : NULL;
+    NEDElement *op4 = op3 ? op3->getNextSibling() : NULL;
 
     // both modes seem to be the same...
 
     // operators should be handled specially
     if (!strcmp(funcname,"index"))
     {
+        // TBD validation: if (argcount!=0) -->error
         out << "submod_i";
         return;
     }
@@ -386,6 +390,8 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     {
         //ASSERT( op1 && op1->getTagCode()==NED_IDENT);
         //const char *name = ((IdentNode *)op1)->getName();
+
+        // TBD validation: if (argcount!=1) -->error
 
         // FIXME TBD
         INTERNAL_ERROR0(node, "sizeof operator not implemented yet");
@@ -397,6 +403,8 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     }
     else if (!strcmp(funcname,"input"))
     {
+        // TBD validation: if (argcount!=1 && argcount!=2) -->error
+
         if (mode==MODE_INLINE_EXPRESSION)
         {
             out << "(tmpval=";
@@ -429,31 +437,32 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
         return;
     }
 
-    // do we know this function?
-    int i;
-    for (i=0; known_funcs[i].fname!=NULL;i++)
-        if (!strcmp(funcname,known_funcs[i].fname))
-            break;
-    if (known_funcs[i].fname!=NULL) // found
-    {
-        out << funcname;
-    }
-    else // unknown
-    {
-        out << "_getFunction(\"" << funcname << "\")";
-    }
+    // normal function: emit function call code
+
+    // // do we know this function?
+    // int i;
+    // for (i=0; known_funcs[i].fname!=NULL;i++)
+    //     if (!strcmp(funcname,known_funcs[i].fname))
+    //         break;
+    // if (known_funcs[i].fname!=NULL) // found
+    // {
+    //     out << funcname;
+    // }
+    // else // unknown
+    // {
+    //       ... _getFunction stuff, see below
+    // }
+
+    const char *methods[] = {"mathFuncNoArg()", "mathFunc1Arg()", "mathFunc2Args()",
+                             "mathFunc3Args()", "mathFunc4Args()"};
+    out << "_getFunction(\"" << funcname << "\"," << argcount << ")->" << methods[argcount];
 
     out << "(";
-    if (op1) {
-        generateItem(op1,indent,mode);
-    }
-    if (op2) {
-        out << ", ";
-        generateItem(op2,indent,mode);
-    }
-    if (op3) {
-        out << ", ";
-        generateItem(op3,indent,mode);
+    for (NEDElement *child=node->getFirstChild(); child; child = child->getNextSibling())
+    {
+        if (child != node->getFirstChild())
+            out << ", ";
+        generateItem(child,indent,mode);
     }
     out << ")";
 }
