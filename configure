@@ -1759,7 +1759,7 @@ fi
       fi
     done
 
-    # now we'll verify if we have matching Tk
+    # now we verify that we have a matching Tk; if not, clear the tcltk_found flag
     if test "$tcltk_found" = "yes"; then
       
 save_LDFLAGS=$LDFLAGS
@@ -2553,7 +2553,7 @@ else
   if ($probefile) >/dev/null 2>/dev/null; then
     echo "Your PATH contains $OMNETPP_BIN_DIR. Good!"
   else
-    cat << EOT
+    cat 1>&2 << EOT
 
 Warning: your PATH doesn't contain $OMNETPP_BIN_DIR!
 Add the following line to your startup file:
@@ -2574,7 +2574,7 @@ if test "$build_shared_libs" = yes -a "$cygwin" != yes; then
   if echo $LD_LIBRARY_PATH | grep `eval echo $OMNETPP_LIB_DIR` >/dev/null; then
     echo "Your LD_LIBRARY_PATH is set. Good!"
   else
-    cat << EOT
+    cat 1>&2 << EOT
 
 Warning: You selected shared libraries in configure.user, but your
 LD_LIBRARY_PATH doesn't seem to contain $OMNETPP_LIB_DIR!
