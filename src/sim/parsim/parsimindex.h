@@ -15,6 +15,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+/**
+ * @mainpage OMNeT++ Parallel simulation support
+ *
+ * Please click on the Modules link at the top of this page to start browsing.
+ */
 
 /**
  * @defgroup Parsim  Parallel simulation support
