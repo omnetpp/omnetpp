@@ -74,9 +74,12 @@ void HistogramDemo::activity()
         fclose(f);
     }
 
-    ev << "[Tkenv] Select Options|Load inspector list or click the\n";
-    ev << "        Objects/Watches tab in the module inspector window.\n";
-    ev << "[Tvenv] Choose Inspect|Local objects... from menu then select from list.\n";
+    ev << "If Tkenv is used (it is the default), you may click the Objects/Watches tab\n"
+          "in the module inspector window and double-click the items to open graphical\n"
+          "inspector windows for the distributions.\n\n";
+    ev << "An alternative is to load 'inspect.lst' by selecting Options|Load inspector list\n"
+          "from the menu; this will also open the inspector windows.\n";
+
     ev << endl;
     wait(0);
 
