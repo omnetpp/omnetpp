@@ -31,7 +31,7 @@ default: $(GNED_IF_POSSIBLE)
 gned : gned.exe
 
 gned.exe : $(OBJS)
-	$(LINK) /out:"gned.exe" $(OBJS) $(LDFLAGS) $(TK_LIBS) $(SYS_LIBS)
+	$(LINK) /out:"gned.exe" gned.res $(OBJS) $(LDFLAGS) $(TK_LIBS) $(SYS_LIBS)
 	copy gned.exe $(OMNETPP_BIN_DIR:/=\)
 
 gned.obj : gned.cc
@@ -66,6 +66,9 @@ ebnf.tab.c: ebnf.y
 
 lex.yy.c: ebnf.lex
 	$(LEX) ebnf.lex
+
+gned.res: gned.rc gned.ico
+	$(RC) -fo gned.res -r gned.rc
 
 tclcode.cc: *.tcl
 	..\utils\tcl2c tclcode.cc *.tcl

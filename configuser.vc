@@ -50,6 +50,7 @@ LINK=link.exe
 AS=cl.exe
 AR=link.exe /lib
 SHLIB_LD=link.exe /dll
+RC=rc.exe
 
 # OMNeT++ tools
 NEDC=$(OMNETPP_BIN_DIR)/nedc.exe
