@@ -29,8 +29,13 @@
  * is assured.
  *
  * http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/ewhat-is-mt.html
+ *
+ * Actual code used is MersenneTwister.h from Richard J. Wagner,
+ * v1.0, 15 May 2003, rjwagner@writeme.com.
+ *
+ * http://www-personal.engin.umich.edu/~wagnerr/MersenneTwister.html
  */
-class cMersenneTwister : public cRNG
+class SIM_API cMersenneTwister : public cRNG
 {
   protected:
     MTRand rng;
@@ -44,15 +49,23 @@ class cMersenneTwister : public cRNG
      */
     virtual void initialize(int runnumber, int id, cConfiguration *cfg);
 
-    /**
-     * Generates a random number on the interval [0,0x7fffffff]
-     */
+    /** Random integer in the range [0,intRandMax()] */
     virtual unsigned long intRand();
 
-    /**
-     * Generates a random number on the [0,1) real interval
-     */
+    /** Maximum value that can be returned by intRand() */
+    virtual unsigned long intRandMax();
+
+    /** Random integer in [0,n], n < intRandMax() */
+    virtual unsigned long intRand(unsigned long n);
+
+    /** Random double on the [0,1) interval */
     virtual double doubleRand();
+
+    /** Random double on the (0,1) interval */
+    virtual double doubleRandNonz();
+
+    /** Random double on the [0,1] interval */
+    virtual double doubleRandIncl1();
 };
 
 Register_Class(cMersenneTwister);
@@ -66,12 +79,32 @@ void cMersenneTwister::initialize(int runnumber, int id, cConfiguration *cfg)
 
 unsigned long cMersenneTwister::intRand()
 {
-    return rng.randExc();
+    return rng.randInt();
+}
+
+unsigned long cMersenneTwister::intRandMax()
+{
+    return 0xffffffffUL; // 2^32-1
+}
+
+unsigned long cMersenneTwister::intRand(unsigned long n)
+{
+    return rng.randInt(n);
 }
 
 double cMersenneTwister::doubleRand()
 {
-    useThisRNG();
-    return mt19937_genrand_real2();
+    return rng.randExc();
 }
+
+double cMersenneTwister::doubleRandNonz()
+{
+    return rng.randDblExc();
+}
+
+double cMersenneTwister::doubleRandIncl1()
+{
+    return rng.rand();
+}
+
 

@@ -18,18 +18,13 @@
 #ifndef __CRNG_H
 #define __CRNG_H
 
-#include <typeinfo>
-#include <iostream>
-#include "cenvir.h"
 #include "defs.h"
-#include "util.h"
 #include "cpolymorphic.h"
-#include "cexception.h"
 
 /**
  * Interface for random number generator classes
  */
-class cRNG : public cPolymorphic
+class SIM_API cRNG : public cPolymorphic
 {
   public:
     cRNG() {}
@@ -42,14 +37,39 @@ class cRNG : public cPolymorphic
     virtual void initialize(int runnumber, int id, cConfiguration *cfg) = 0;
 
     /**
-     * Should be redefined to generate a random number on the interval [0,0x7fffffff]
+     * Random integer in the range [0,intRandMax()]
      */
     virtual unsigned long intRand() = 0;
 
     /**
-     * Should be redefined to generate a random number on the [0,1) real interval
+     * Maximum value that can be returned by intRand(), e.g. 2^31-2 with LCG32.
+     */
+    virtual unsigned long intRandMax() = 0;
+
+    /**
+     * Random integer in [0,n], n < intRandMax()
+     */
+    virtual unsigned long intRand(unsigned long n) = 0;
+
+    /**
+     * Random double on the [0,1) interval
      */
     virtual double doubleRand() = 0;
+
+    /**
+     * Random double on the (0,1) interval
+     */
+    virtual double doubleRandNonz() = 0;
+
+    /**
+     * Random double on the [0,1] interval
+     */
+    virtual double doubleRandIncl1() = 0;
+
+    /**
+     * Random double on the (0,1] interval
+     */
+    double doubleRandNonzIncl1() {return 1-doubleRand();}
 };
 
 #endif
