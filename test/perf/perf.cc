@@ -18,8 +18,13 @@ class Timer
 
 class Queue_1 : public cSimpleModule
 {
+  protected:
+    int repCount;
+    Timer tmr;
+  public:
     Module_Class_Members(Queue_1,cSimpleModule,32768);
     virtual void activity();
+    virtual void finish();
 };
 
 Define_Module(Queue_1);
@@ -27,7 +32,7 @@ Define_Module(Queue_1);
 void Queue_1::activity()
 {
     cQueue q;
-    int repCount = par("repCount");
+    repCount = par("repCount");
 
     // fill queue to desired level
     int qLevel = par("qLevel");
@@ -36,7 +41,6 @@ void Queue_1::activity()
     q.insert(new cMessage());
 
     // exercise queue and measure time
-    Timer tmr;
     tmr.start();
     for (int i=0; i<repCount; i++)
     {
@@ -44,8 +48,13 @@ void Queue_1::activity()
         q.insert(msg);
     }
     tmr.stop();
+}
+
+void Queue_1::finish()
+{
     ev << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
 }
+
 
 //---------------
 
