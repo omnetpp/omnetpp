@@ -29,6 +29,7 @@ cDisplayString::cDisplayString()
     bufferend = NULL;
     tags = NULL;
     numtags = 0;
+    needsassemble = false;
 
     object = NULL;
     role = NONE;
@@ -42,6 +43,7 @@ cDisplayString::cDisplayString(const char *displaystr)
     bufferend = NULL;
     tags = NULL;
     numtags = 0;
+    needsassemble = false;
 
     object = NULL;
     role = NONE;
@@ -55,6 +57,7 @@ cDisplayString::cDisplayString(const cDisplayString& ds)
     bufferend = NULL;
     tags = NULL;
     numtags = 0;
+    needsassemble = false;
 
     object = NULL;
     role = NONE;
@@ -70,6 +73,9 @@ cDisplayString::~cDisplayString()
 
 void cDisplayString::notify()
 {
+    needsassemble = true;
+
+    // should be called AFTER update's done
     switch (role)
     {
         case NONE: break;
@@ -82,16 +88,25 @@ void cDisplayString::notify()
 
 const char *cDisplayString::getString() const
 {
-    assemble();
-    return dispstr;
+    if (needsassemble)
+        assemble();
+    return dispstr ? dispstr : "";
 }
 
 
 bool cDisplayString::parse(const char *displaystr)
 {
+    // if it's the same, nothing to do
+    if (needsassemble)
+        assemble();
+    if (!opp_strcmp(dispstr,displaystr))
+        return true;
+
+    // parse and store new string
     delete [] dispstr;
     dispstr = opp_strdup(displaystr);
     bool fullyOK = parse();
+
     notify();
     return fullyOK;
 }
@@ -170,13 +185,17 @@ bool cDisplayString::setTagArg(int tagindex, int index, const char *value)
     if (index>=tags[tagindex].numargs)
         tags[tagindex].numargs = index+1;
 
-    // set value
-    if (tags[tagindex].args[index] && !isinbuffer(tags[tagindex].args[index]))
-        delete [] tags[tagindex].args[index];
-    tags[tagindex].args[index] = opp_strdup(value);
+    // if it's the same, nothing to do
+    char *&slot = tags[tagindex].args[index];
+    if (!opp_strcmp(slot,value))
+        return true;
 
-    // success
+    // set value
+    if (slot && !isinbuffer(slot))
+        delete [] slot;
+    slot = opp_strdup(value);
     notify();
+
     return true;
 }
 
@@ -400,6 +419,7 @@ void cDisplayString::assemble() const
             strcatescaped(dispstr, tags[t].args[i]);
         }
     }
+    needsassemble = false;
 }
 
 void cDisplayString::strcatescaped(char *d, const char *s)

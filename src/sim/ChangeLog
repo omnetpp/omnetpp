@@ -1,3 +1,8 @@
+2004-01-06  Andras Varga
+
+	* cdispstr.cc: notify() and assemble() only if needed (there's change)
+
+
 	cmodule.cc, cgate.cc: displayString(), displayStringAsParent() now
 	returns a cDisplayString object (see include/ChangeLog for more info)
 
