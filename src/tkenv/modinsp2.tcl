@@ -674,7 +674,7 @@ proc graphmodwin_do_animate_senddirect {win x1 y1 x2 y2 msgptr msgname msgkind m
     set c $win.c
     
     if [opp_getsimoption senddirect_arrows] {
-        set arrow [$c create line $x1 $y1 $x2 $y2 -dash {.  } -arrow last -fill black -width 1]
+        set arrow [$c create line $x1 $y1 $x2 $y2 -dash {.} -arrow last -fill black -width 1]
         graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind "thru"
         $c delete $arrow
     } else {    
