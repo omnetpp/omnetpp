@@ -104,7 +104,7 @@ class cOutputVectorManager : public cPolymorphic
 
     /**
      * Returns the output vector file name. Returns NULL if this object is not
-     * working into a file output.
+     * producing file output.
      */
     virtual const char *fileName() const = 0;
     //@}
@@ -177,7 +177,7 @@ class cOutputScalarManager : public cPolymorphic
 
     /**
      * Returns the output scalar file name. Returns NULL if this object is not
-     * working into a file output.
+     * producing file output.
      */
     virtual const char *fileName() const = 0;
     //@}
@@ -244,7 +244,7 @@ class cSnapshotManager : public cPolymorphic
 
     /**
      * Returns the snapshot file name. Returns NULL if this object is not
-     * working into a file output.
+     * producing file output.
      */
     virtual const char *fileName() const = 0;
     //@}

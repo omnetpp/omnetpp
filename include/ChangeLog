@@ -1,3 +1,23 @@
+2004-06-24  Andras Varga
+
+	* cpar.h: added type M (XML element) to cPar. New methods:
+	setXMLValue(cXMLElement*), cXMLElement *xmlValue(), op=(cXMLElement*),
+	op cXMLElement*().
+
+2004-06-22  Andras Varga
+
+	* added cxmlelement.cc
+
+2004-06-17   Andras Varga
+
+	* added cconfig.h: contains cConfiguration, an abstract base class
+	for configuration managers. cConfiguration makes it possible to
+	use different sources than omnetpp.ini, e.g. database or XML.
+	See ChangeLog in src/envir.
+
+	* cenvir.h: added method cConfiguration *config(). This lets e.g.
+	scheduler classes (see cScheduler) have entries in omnetpp.ini.
+
 2004-06-07  ------ omnetpp-3.0a5 released ------
 
 2004-05-15  ------ omnetpp-3.0a4 released ------

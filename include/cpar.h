@@ -31,6 +31,7 @@ class  cModulePar;
 
 //=== class mentioned
 class  cStatistic;
+class  cXMLElement;
 
 
 //==========================================================================
@@ -97,6 +98,7 @@ class cDoubleExpression : public cExpression
  *   <LI> T distribution from a cStatistic,
  *   <LI> P pointer to cObject,
  *   <LI> I indirection (refers to another cPar)
+ *   <LI> M XML element (pointer to a cXMLElement)
  * </UL>
  *
  * For all types, an input flag can be set. In this case,
@@ -286,6 +288,7 @@ class SIM_API cPar : public cObject
                 VoidDupFunc dupfunc;
                 size_t itemsize;                } ptr;  // P:void* pointer
        struct { cObject *obj;                   } obj;  // O:object pointer
+       struct { cXMLElement *node;              } xml;  // M:XML element pointer
     };
 
   private:
@@ -498,6 +501,11 @@ class SIM_API cPar : public cObject
     cPar& setObjectValue(cObject *obj);
 
     /**
+     * Sets the value to the given cXMLElement.
+     */
+    cPar& setXMLValue(cXMLElement *node);
+
+    /**
      * Configures memory management for the void* pointer ('P') type.
      * Similar to cLinkedList's configPointer() function.
      *
@@ -567,6 +575,11 @@ class SIM_API cPar : public cObject
      * Returns value as pointer to cObject. The cPar type must be pointer (O).
      */
     cObject *objectValue();
+
+    /**
+     * Returns value as pointer to cXMLElement. The cPar type must be XML (M).
+     */
+    cXMLElement *xmlValue();
     //@}
 
     /** @name Redirection */
@@ -749,6 +762,11 @@ class SIM_API cPar : public cObject
     cPar& operator=(cObject *obj)    {return setObjectValue(obj);}
 
     /**
+     * Equivalent to setXMLValue().
+     */
+    cPar& operator=(cXMLElement *node) {return setXMLValue(node);}
+
+    /**
      * Equivalent to boolValue().
      */
     operator bool()          {return boolValue();}
@@ -807,6 +825,12 @@ class SIM_API cPar : public cObject
      * Equivalent to objectValue().
      */
     operator cObject *()     {return objectValue();}
+
+    /**
+     * Equivalent to xmlValue().
+     */
+    operator cXMLElement *() {return xmlValue();}
+
     //@}
 
     /** @name Compare function */

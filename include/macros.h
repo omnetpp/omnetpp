@@ -195,6 +195,7 @@
 #define ParType_Numeric    "LDCXFT"
 #define ParType_Bool       "B"
 #define ParType_String     "S"
+#define ParType_XML        "M"
 
 #endif
 

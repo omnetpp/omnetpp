@@ -29,8 +29,9 @@ class cGate;
 class cModule;
 class cSimpleModule;
 class cStatistic;
+class cConfiguration;
+class cXMLElement;
 class TOmnetApp;
-
 class cEnvir;
 
 using std::endl;
@@ -50,10 +51,9 @@ protected:
 #if !defined(_MSC_VER) || _MSC_VER>1200
         std::streamsize r = std::basic_stringbuf<E,T>::xsputn(s,n);
 #else
-        // **HACK** I want to do a really simple thing here -- to call the
-        // same function in the base class. However, MSVC6.0 gives a weird
-        // compilation error on the above line. I couldn't find any other
-        // workaround than copying here the body of the original xsputn()
+        // **HACK** The above line (calling the same function in the base class)
+        // doesn't work with MSVC6.0: it gives a weird compilation error.
+        // So as a workaround I copied here the body of the original xsputn()
         // function from the MSVC header, VC98/Include/streambuf.
         const E *_S = s;
         std::streamsize _N = n;
@@ -303,6 +303,29 @@ class ENVIR_API cEnvir : public std::ostream
      * Returns display string for an object given with its full name.
      */
     const char *getDisplayString(int run_no, const char *name);
+
+    /**
+     * Resolves reference to an XML model configuration file. First argument
+     * is the file name of the XML document. The optional second argument
+     * may contain an XPath-like expression to denote an element within
+     * the XML document. If path is not present, the root element is returned.
+     *
+     * See documentation of cXMLElement::getElementByPath() for path syntax.
+     * There's a difference however: paths starting with "." are not
+     * accepted, and the first path component must name the root element
+     * of the document (with getElementByPath() it would match a child element
+     * of the current element). That is, a leading "/" is always assumed
+     * at the beginning of the path expression, even if it may not explicitly
+     * be there.
+     *
+     * The method throws an exception if the document cannot be found or the
+     * given path expression is invalid. Returns NULL if the element denoted
+     * by the path expression doesn't exist in the document.
+     *
+     * The returned object tree should not be modified because cEnvir may
+     * cache the file and return the same pointer to several callers.
+     */
+    cXMLElement *getXMLDocument(const char *filename, const char *path=NULL);
     //@}
 
     /** @name Input/output methods called from simple modules or the simulation kernel. */
@@ -358,6 +381,7 @@ class ENVIR_API cEnvir : public std::ostream
      * no formatting.
      * It is recommended to use C++-style I/O instead of this function.
      */
+    // FIXME why is it still here?
     void puts(const char *s);
 
     /**
@@ -498,6 +522,15 @@ class ENVIR_API cEnvir : public std::ostream
      * Access to original command-line arguments.
      */
     char **argVector();
+
+    /**
+     * Access to the configuration data (by default, omnetpp.ini).
+     * This is provided here for the benefit of schedulers, parallel
+     * simulation algorithms and other simulation kernel extensions.
+     * Models (simple modules) should NOT access the configuration --
+     * they should rely on module parameters to get input.
+     */
+    cConfiguration *config();
 
     /**
      * May be called from the simulation while actively waiting
