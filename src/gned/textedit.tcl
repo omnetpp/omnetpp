@@ -45,11 +45,12 @@ proc configureEditor {w} {
     }
     bind $w <Control-f> {editFind}
     bind $w <Control-F> {editFind}
-    bind $w <Control-g> {editReplace}
-    bind $w <Control-G> {editReplace}
+    # 'break' is needed below because ^H is originally bound to Backspace ('Text' tag)
+    bind $w <Control-h> {editReplace;break}
+    bind $w <Control-H> {editReplace;break}
 }
 
-# syntaxHightlight --
+# syntaxHighlight --
 #
 # Applies NED syntax highlight to the text widget passed.
 # Should be used like this:

@@ -43,7 +43,7 @@ Load/save:
 
 Text editor:
 - "find next" missing
-- ctrl-H doesn't bring up Find/Replace dialog [from Niko]
+- ctrl-H doesn't bring up Find/Replace dialog [from Niko]  ***FIXED***
 - <Enter> in the Find/Replace dialog causes error (at least in Windows)
 - pgup, ctrl-pgup doesn't work correctly
 - syntax highlighting not 100% OK: it can be fooled with string constants

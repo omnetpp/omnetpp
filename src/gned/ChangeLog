@@ -201,3 +201,5 @@ Apr 13, 2000
    [suggested by Niko]
 May 7, 2000
  - Makefile.vc improvements from Balazs Kelemen
+May 19,2000
+ - fixed <Ctrl-H> in text editor
