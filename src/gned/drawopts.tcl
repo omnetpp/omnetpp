@@ -91,6 +91,8 @@ proc editSubmoduleDrawOptions {key} {
     label .submopts.f.sep1 -text "_____________________________"
     radiobutton .submopts.f.r1 -text "Icon" -value icon  -variable gned(radio)
     label-iconchooser .submopts.f.icon "Selected icon:" $ned($key,disp-icon)
+    label-colorchooser .submopts.f.icolor "Colorize icon:" $ned($key,disp-iconcolor)
+    label-combo .submopts.f.icolorpc "Colorization (%):" {default 10 20 30 40 50 60 70 80 90 100}
     label .submopts.f.sep2 -text "_____________________________"
     radiobutton .submopts.f.r2 -text "Rectangle" -value rect -variable gned(radio)
     label-combo .submopts.f.thick "Line thickness:" {default 1 2 3 4}
@@ -101,6 +103,8 @@ proc editSubmoduleDrawOptions {key} {
     pack .submopts.f.sep1 -expand 1 -fill x
     pack .submopts.f.r1 -expand 0 -fill y  -side top -anchor w
     pack .submopts.f.icon -expand 1 -fill both  -side top
+    pack .submopts.f.icolor -expand 1 -fill both  -side top
+    pack .submopts.f.icolorpc -expand 1 -fill both  -side top
     pack .submopts.f.sep2 -expand 1 -fill x
     pack .submopts.f.r2 -expand 0 -fill y  -side top -anchor w
     pack .submopts.f.thick -expand 1 -fill both  -side top
@@ -110,6 +114,10 @@ proc editSubmoduleDrawOptions {key} {
     set thickness $ned($key,disp-linethickness)
     if {$thickness==""} {set thickness "default"}
     .submopts.f.thick.e configure -value $thickness
+
+    set iconcolorpc $ned($key,disp-iconcolorpc)
+    if {$iconcolorpc==""} {set iconcolorpc "default"}
+    .submopts.f.icolorpc.e configure -value $iconcolorpc
 
     focus .submopts.f.thick.e
 
@@ -136,11 +144,16 @@ proc editSubmoduleDrawOptions {key} {
         set ned($key,disp-xsize) [expr int([lindex $centsiz 2])]
         set ned($key,disp-ysize) [expr int([lindex $centsiz 3])]
 
-        # fill color
+        # icon color, fill color, outline color
+        set ned($key,disp-iconcolor) [.submopts.f.icolor.f.e get]
         set ned($key,disp-fillcolor) [.submopts.f.fill.f.e get]
-
-        # outline color
         set ned($key,disp-outlinecolor) [.submopts.f.outl.f.e get]
+
+        # icon color percentage
+        set iconcolorpc [.submopts.f.icolorpc.e cget -value]
+        if {$iconcolorpc=="default"} {set iconcolorpc ""}
+        if {![regexp {^[0-9]*$} $iconcolorpc]} {set iconcolorpc ""}
+        set ned($key,disp-iconcolorpc) $iconcolorpc
 
         # redraw item and connections to/from it
         redrawItemOnAnyCanvas $key
