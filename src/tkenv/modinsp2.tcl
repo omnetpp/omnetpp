@@ -330,7 +330,7 @@ proc draw_enclosingmod {c ptr name dispstr} {
 
        if {![info exists tags(o)]} {set tags(o) {}}
        set fill [lindex $tags(o) 0]
-       if {$fill == ""} {set fill #c0c0c0}
+       if {$fill == ""} {set fill #d0d0d0}
        if {$fill == "-"} {set fill ""}
        if {[string index $fill 0]== "@"} {set fill [opp_hsb_to_rgb $fill]}
        set outline [lindex $tags(o) 1]

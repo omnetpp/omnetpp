@@ -1,3 +1,7 @@
+2004-12-10  Andras Varga
+
+	* default background color changed from #c0c0c0 to #d0d0d0 
+
 2004-11-29  Andras Varga
 
   	* tkapp.cc: on Mac OS/X, implement ftime() with gettimeofday() [patch 
