@@ -68,21 +68,24 @@ static void libxmlEndCdataSectionHandler(void *userData)
 static void libxmlWarningHandler(void *userData, const char *msg, ...) {
   va_list args;
   va_start(args, msg);
-//  g_logv("XML", G_LOG_LEVEL_WARNING, msg, args);
+  // g_logv("XML", G_LOG_LEVEL_WARNING, msg, args);
+  // printf(msg, args);
   va_end(args);
 }
 
 static void libxmlErrorHandler(void *userData, const char *msg, ...) {
   va_list args;
   va_start(args, msg);
-//  g_logv("XML", G_LOG_LEVEL_CRITICAL, msg, args);
+  // g_logv("XML", G_LOG_LEVEL_CRITICAL, msg, args);
+  // printf(msg, args);
   va_end(args);
 }
 
 static void libxmlFatalErrorHandler(void *userData, const char *msg, ...) {
   va_list args;
   va_start(args, msg);
-//  g_logv("XML", G_LOG_LEVEL_ERROR, msg, args);
+  // g_logv("XML", G_LOG_LEVEL_ERROR, msg, args);
+  // printf(msg, args);
   va_end(args);
 }
 
@@ -128,25 +131,6 @@ xmlParserCtxtPtr ctxt;  //FIXME very ugly -- should be class member or something
 
 bool SAXParser::parse(FILE *f)
 {
-    //
-    // Attempts to do DTD validation and default attr completion:
-    //   xmlDoValidityCheckingDefaultValue = 1;
-    //   xmlLoadExtDtdDefaultValue |= XML_DETECT_IDS;
-    //   xmlLoadExtDtdDefaultValue |= XML_COMPLETE_ATTRS;
-    //   xmlSubstituteEntitiesDefaultValue = 1;
-    //
-    // This happens inside LibXML:
-    //   ctxt->loadsubset = xmlLoadExtDtdDefaultValue;
-    //   ctxt->validate = xmlDoValidityCheckingDefaultValue;
-    //
-    // Another (newer) way:
-    //   options |= XML_PARSE_DTDLOAD;
-    //   options |= XML_PARSE_DTDATTR;
-    //   options |= XML_PARSE_DTDVALID;
-    //   xmlCtxtUseOptions(ctxt, options);  (or xmlParseDoc(..., options))
-    //     ^^ this also sets ctxt->loadsubset,ctxt->validate
-    //  
-
     ctxt = xmlCreatePushParserCtxt(&libxmlSAXParser, saxhandler, NULL, 0, NULL);
 
     int n;
@@ -156,9 +140,7 @@ bool SAXParser::parse(FILE *f)
         xmlParseChunk(ctxt, Buffer, n, 0);
     }
 
-    /* to get an endDocument event we have to send EOF */
-    Buffer[0]=EOF;
-    xmlParseChunk(ctxt, Buffer, 10, 0);
+    xmlParseChunk(ctxt, Buffer, 0, 1);
 
     bool ok = true;
     if (!ctxt->wellFormed)
@@ -171,7 +153,6 @@ bool SAXParser::parse(FILE *f)
 
     if (!ctxt->valid)
     {
-        // FIXME validation code, test it!!!
         ok = false;
         sprintf(errortext, "validation error %d at line %d",
                 ctxt->errNo, // TODO something better
