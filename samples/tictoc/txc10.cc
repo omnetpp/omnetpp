@@ -20,12 +20,18 @@
 
 
 /**
- * In this step we want to add a destination address to the message.
+ * In this step the destination address is no longer node 2 -- we draw a 
+ * random destination, and we'll add the destination address to the message.
+ *
  * The best way is to subclass cMessage and add destination as a data member.
  * Hand-coding the message class is usually tiresome because it contains
  * a lot of boilerplate code, so we let OMNeT++ generate the class for us.
  * The message class specification is in tictoc10.msg -- tictoc10_m.h
  * and .cc will be generated from this file automatically.
+ *
+ * To make the model execute longer, after a message arrives to its destination
+ * the destination node will generate another message with a random destination
+ * address, and so forth.
  */
 class Txc10 : public cSimpleModule
 {
