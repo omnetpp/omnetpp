@@ -292,15 +292,6 @@ if test $tcltk_ok = no; then
        fi
     fi
 fi
-if test $tcltk_ok = no -a "$cygwin" = yes; then
-    # in Cygwin, we try 8.4, 8.3 and 8.0:
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84, 
-                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
-    if test $tcltk_ok = no; then
-        OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk83 -lcygtcl83,
-                      tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk83 -lcygtcl83")
-    fi
-fi
 if test $tcltk_ok = no; then
     OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84,
                   tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
@@ -309,6 +300,10 @@ if test $tcltk_ok = no; then
     OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.4 -ltcl8.4,
                   tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4")
 fi
+if test $tcltk_ok = no -a "$cygwin" = yes; then
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
+fi
 if test $tcltk_ok = no; then
     OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk83 -ltcl83,
                   tcltk_ok, TK_LIBS="$opp_x11lib -ltk83 -ltcl83")
@@ -316,6 +311,10 @@ fi
 if test $tcltk_ok = no; then
     OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.3 -ltcl8.3,
                   tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.3 -ltcl8.3")
+fi
+if test $tcltk_ok = no -a "$cygwin" = yes; then
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk83 -lcygtcl83,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk83 -lcygtcl83")
 fi
 if test $tcltk_ok = no; then
     OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk82 -ltcl82,
@@ -326,14 +325,22 @@ if test $tcltk_ok = no; then
                   tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.2 -ltcl8.2")
 fi
 if test $tcltk_ok = yes; then
-   TKENV_IF_POSSIBLE=tkenv
-   GNED_IF_POSSIBLE=gned
-   PLOVE_IF_POSSIBLE=plove
+    TKENV_IF_POSSIBLE=tkenv
+    GNED_IF_POSSIBLE=gned
+    PLOVE_IF_POSSIBLE=plove
 else
-   TKENV_IF_POSSIBLE=missing-library
-   GNED_IF_POSSIBLE=missing-library
-   PLOVE_IF_POSSIBLE=missing-library
-   AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts; version 8.2+ needed])
+    TKENV_IF_POSSIBLE=missing-library
+    GNED_IF_POSSIBLE=missing-library
+    PLOVE_IF_POSSIBLE=missing-library
+    if test "$no_x" = "yes"; then
+        if test "$cygwin" = yes; then
+            AC_MSG_ERROR([cannot build Tcl/Tk apps, probably due to missing X11 headers -- try installing the XFree86 packages or get the X headers from the OMNeT++ site])
+        else
+            AC_MSG_ERROR([cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs])
+        fi
+    else
+        AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts; version 8.2+ needed])
+    fi
 fi
 
 
