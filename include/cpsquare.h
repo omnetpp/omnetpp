@@ -72,7 +72,6 @@ class SIM_API cPSquare : public cDensityEstBase
      */
     virtual cObject *dup() const   {return new cPSquare(*this);}
 
-#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
@@ -86,7 +85,6 @@ class SIM_API cPSquare : public cDensityEstBase
      * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
-#endif
 
     /**
      * Writes textual information about this object to the stream.

@@ -133,7 +133,6 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual void writeContents(std::ostream& os);
 
-#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
@@ -147,7 +146,6 @@ class SIM_API cDensityEstBase : public cStdDev
      * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
-#endif
     //@}
 
     /** @name Redefined cStatistic member functions. */

@@ -75,7 +75,6 @@ class SIM_API cPacket : public cMessage
      */
     virtual void info(char *buf);
 
-#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
@@ -89,7 +88,6 @@ class SIM_API cPacket : public cMessage
      * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
-#endif
     //@}
 
     /** @name New attributes. */

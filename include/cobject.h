@@ -78,7 +78,7 @@ typedef bool (*ForeachFunc)(cObject *,bool);
  *
  * @ingroup SimCore
  */
-// TBD use cPolimorphic
+// TBD use cPolymorphic
 // TBD move more virtual functions from cObject to cPolymorphic...?
 // TBD revise every cObject*, maybe change it to cPolymorphic
 class SIM_API cPolymorphic

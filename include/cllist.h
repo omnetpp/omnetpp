@@ -167,7 +167,6 @@ class SIM_API cLinkedList : public cObject
      */
     virtual void info(char *buf);
 
-#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
@@ -181,7 +180,6 @@ class SIM_API cLinkedList : public cObject
      * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
-#endif
     //@}
 
     /** @name Container functions. */

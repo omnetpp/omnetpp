@@ -64,7 +64,7 @@ class SIM_API cQueue : public cObject
 
       public:
         /**
-         * Constructor. Iterator will walk on the queue passed as argument. 
+         * Constructor. Iterator will walk on the queue passed as argument.
          * The current object will be the first (if athead==true) or
          * the last (athead==false) object in the queue.
          */
@@ -177,7 +177,6 @@ class SIM_API cQueue : public cObject
      */
     virtual void forEach(ForeachFunc f);
 
-#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
@@ -191,7 +190,6 @@ class SIM_API cQueue : public cObject
      * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
-#endif
     //@}
 
     /** @name Setup, insertion and removal functions. */

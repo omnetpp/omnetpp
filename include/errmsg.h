@@ -70,7 +70,7 @@ enum {
         eNOMODDEF    = 44,
         eNOCHANDEF   = 45,
         eNOSUCHNET   = 46,
-        ePVM         = 47,
+        eNOPARSIM    = 47,
         eBADARGS     = 48,
         eBACKSCHED   = 49,
         eOUTGATE     = 50,

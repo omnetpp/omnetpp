@@ -114,7 +114,6 @@ class SIM_API cDefaultList : public cObject
      */
     virtual void forEach(ForeachFunc f);
 
-#ifdef WITH_PARSIM
     /**
      * Packing and unpacking cannot be supported with this class.
      * This methods raises an error.
@@ -126,7 +125,6 @@ class SIM_API cDefaultList : public cObject
      * This methods raises an error.
      */
     virtual void netUnpack(cCommBuffer *buffer);
-#endif
     //@}
 
     /** @name Container functions. */

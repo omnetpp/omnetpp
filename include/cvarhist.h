@@ -134,7 +134,6 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
      */
     virtual cObject *dup() const    {return new cVarHistogram(*this);}
 
-#ifdef WITH_PARSIM
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
@@ -148,7 +147,6 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
      * See cObject for more details.
      */
     virtual void netUnpack(cCommBuffer *buffer);
-#endif
     //@}
 
     /** @name Redefined member functions from cStatistic and its subclasses. */
