@@ -359,6 +359,7 @@ int objectNetworks_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectModuleTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectChannelTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectFunctions_cmd(ClientData, Tcl_Interp *, int, const char **);
+int objectClasses_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 // command table
 OmnetTclCommand tcl_commands[] = {
@@ -420,6 +421,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_object_moduletypes",  objectModuleTypes_cmd  },
    { "opp_object_channeltypes", objectChannelTypes_cmd },
    { "opp_object_functions",    objectFunctions_cmd    },
+   { "opp_object_classes",      objectClasses_cmd      },
    { NULL, },
 };
 
@@ -1288,5 +1290,12 @@ int objectFunctions_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( &functions ), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int objectClasses_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+{
+   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   Tcl_SetResult(interp, ptrToStr( &classes ), TCL_VOLATILE);
    return TCL_OK;
 }

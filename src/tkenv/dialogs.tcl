@@ -531,10 +531,10 @@ proc filteredobjectlist_dialog {} {
     label $wfiltpars.order.label -text "Ordered by:" -justify left
     pack $wfiltpars.order.label -anchor w -expand 0 -fill none -side top
 
-    entry $wfiltpars.class.entry
+    combo $wfiltpars.class.entry [concat {{}} [getClassNames]]
     pack $wfiltpars.class.entry -anchor w -expand 0 -fill x -side top
     entry $wfiltpars.name.entry
-    pack $wfiltpars.name.entry -anchor w -expand 0 -fill x -side top
+    pack $wfiltpars.name.entry -anchor w -expand 0 -fill both -side top
     combo $wfiltpars.order.entry {{Class} {Full name} {Name}}
     pack $wfiltpars.order.entry -anchor w -expand 0 -fill x -side top
 
@@ -574,9 +574,9 @@ proc filteredobjectlist_dialog {} {
     # leave listbox empty -- filling it with all objects might take too long
 
     # Configure dialog
-    bind $wfiltpars.class.entry <Return> "$w.f.filter.buttons.refresh invoke"
+    bind $wfiltpars.class.entry.entry <Return> "$w.f.filter.buttons.refresh invoke"
     bind $wfiltpars.name.entry <Return> "$w.f.filter.buttons.refresh invoke"
-    bind $wfiltpars.order.entry <Return> "$w.f.filter.buttons.refresh invoke"
+    bind $wfiltpars.order.entry.entry <Return> "$w.f.filter.buttons.refresh invoke"
     bind $lb <Double-Button-1> "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
     bind $lb <Key-Return> "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
     bind $lb <Button-3> "filteredobjectlist_popup $w \[lindex \[$lb get @%x,%y\] 0\] %X %Y"
@@ -591,6 +591,24 @@ proc filteredobjectlist_dialog {} {
     destroy $w
 }
 
+# getClassNames --
+#
+# helper proc for filteredobjectlist_dialog
+#
+proc getClassNames {} {
+    # FIXME modules and channels are not registered as classes!
+    set classes [concat [opp_getchildobjects [opp_object_classes]] \
+                        [opp_getchildobjects [opp_object_channeltypes]] \
+                        [opp_getchildobjects [opp_object_moduletypes]] ]
+    # get the names
+    set classnames {}
+    foreach classptr $classes {
+        lappend classnames [opp_getobjectfullname $classptr]
+    }
+    lappend classnames {cWatch}  ;# FIXME cWatch is not registered!
+
+    return [lsort -dictionary $classnames]
+}
 
 # filteredobjectlist_refresh --
 #
