@@ -16,7 +16,7 @@
 OMNETPP_ROOT=d:/home/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-3.0b1
+OMNETPP_VERSION=omnetpp-3.0
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
@@ -97,7 +97,7 @@ SCALARS_IF_POSSIBLE=scalars
 # This option is available at present for Tkenv, GNED, Scalars and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=yes
+EMBED_TCL_CODE=no
 
 #
 # It is possible to compile GNED, Scalars and Plove as Windows GUI apps

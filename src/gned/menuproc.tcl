@@ -483,8 +483,9 @@ proc optionsViewFile {} {
 }
 
 proc helpAbout {} {
-    aboutDialog "About OMNeT++/GNED" {
-OMNeT++/GNED
+    aboutDialog "About GNED" {
+GNED 3.0
+Part of OMNeT++/OMNEST
 
 (C) 1997-2004 Andras Varga
 

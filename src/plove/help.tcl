@@ -15,8 +15,9 @@
 
 proc helpAbout {} {
     # implements Help|About
-    aboutDialog "About OMNeT++/Plove" {
-OMNeT++/Plove
+    aboutDialog "About Plove" {
+Plove 3.0
+Part of OMNeT++/OMNEST
 
 (c) 1997-2003 Andras Varga
 

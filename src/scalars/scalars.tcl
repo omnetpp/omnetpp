@@ -13,7 +13,7 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-puts {Scalars -- Experimental output scalar plotting tool.
+puts {Scalars 3.0 -- Output scalar plotting tool, part of OMNeT++/OMNEST.
 (c) 2004 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 }

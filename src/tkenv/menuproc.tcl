@@ -83,9 +83,11 @@ proc check_running {} {
 proc about {} {
     # implements Help|About
 
-    aboutDialog "About OMNeT++/Tkenv" {\
-OMNeT++/Tkenv
+    aboutDialog "About OMNeT++/OMNEST" {\
+This simulation model was created using:
 
+OMNeT++/OMNEST
+Discrete Event Simulation Framework
 (c) Andras Varga, 1992-2004
 
 NO WARRANTY -- see license for details.

@@ -13,7 +13,8 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-puts {Plove 3.0a3 - Output vector plotting tool (Gnuplot front-end), part of OMNeT++.
+puts {Plove 2.3 - Output vector plotting tool (Gnuplot front-end) of OMNeT++ 2.3.
+This program is obsolete - Plove 3.0 is recommended instead.
 (c) 1992-2004 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 }

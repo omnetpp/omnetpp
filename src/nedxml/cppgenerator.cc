@@ -24,8 +24,8 @@
 
 using std::ostream;
 
-#define NEDC_VERSION "3.0a6"
-#define NEDC_VERSION_HEX "0x02F1"
+#define NEDC_VERSION "3.0"
+#define NEDC_VERSION_HEX "0x0300"
 
 
 void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab)
