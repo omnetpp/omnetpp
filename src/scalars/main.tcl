@@ -35,13 +35,13 @@ proc createMenubar {w} {
        {filemenu     -$label_opt File -underline 0}
        {editmenu     -$label_opt Edit -underline 0}
        {chartmenu    -$label_opt Chart -underline 0}
-       {optionsmenu  -$label_opt Options -underline 0}
        {helpmenu     -$label_opt Help -underline 0}
     } {
        set label_opt "label"; set m ""
        eval $w add cascade -menu $w.$i
        menu "$w.[lindex $i 0]" -tearoff 0
     }
+    # not yet:   {optionsmenu  -$label_opt Options -underline 0}
 
     # File menu
     foreach i {
@@ -68,11 +68,11 @@ proc createMenubar {w} {
     }
 
     # Options menu
-    foreach i {
-      {separator}
-    } {
-      eval $w.optionsmenu$m add $i
-    }
+    #foreach i {
+    #  {separator}
+    #} {
+    #  eval $w.optionsmenu$m add $i
+    #}
 
     # Help menu
     foreach i {
