@@ -1,40 +1,40 @@
 # Microsoft Developer Studio Generated Dependency File, included by fifo2.mak
 
 .\fifo2.cpp : \
-	"..\..\src\sim\carray.h"\
-	"..\..\src\sim\ccor.h"\
-	"..\..\src\sim\cdensity.h"\
-	"..\..\src\sim\cdetect.h"\
-	"..\..\src\sim\cenvir.h"\
-	"..\..\src\sim\cfsm.h"\
-	"..\..\src\sim\cgate.h"\
-	"..\..\src\sim\chead.h"\
-	"..\..\src\sim\chist.h"\
-	"..\..\src\sim\cksplit.h"\
-	"..\..\src\sim\cllist.h"\
-	"..\..\src\sim\cmessage.h"\
-	"..\..\src\sim\cmodule.h"\
-	"..\..\src\sim\cmsgheap.h"\
-	"..\..\src\sim\cnetmod.h"\
-	"..\..\src\sim\cobject.h"\
-	"..\..\src\sim\coutvect.h"\
-	"..\..\src\sim\cpacket.h"\
-	"..\..\src\sim\cpar.h"\
-	"..\..\src\sim\cpsquare.h"\
-	"..\..\src\sim\cqueue.h"\
-	"..\..\src\sim\csimul.h"\
-	"..\..\src\sim\cstat.h"\
-	"..\..\src\sim\cstk.h"\
-	"..\..\src\sim\ctopo.h"\
-	"..\..\src\sim\ctypes.h"\
-	"..\..\src\sim\cvarhist.h"\
-	"..\..\src\sim\cwatch.h"\
-	"..\..\src\sim\defs.h"\
-	"..\..\src\sim\errmsg.h"\
-	"..\..\src\sim\macros.h"\
-	"..\..\src\sim\omnetpp.h"\
+	"..\..\include\carray.h"\
+	"..\..\include\ccor.h"\
+	"..\..\include\cdensity.h"\
+	"..\..\include\cdetect.h"\
+	"..\..\include\cenvir.h"\
+	"..\..\include\cfsm.h"\
+	"..\..\include\cgate.h"\
+	"..\..\include\chead.h"\
+	"..\..\include\chist.h"\
+	"..\..\include\cksplit.h"\
+	"..\..\include\cllist.h"\
+	"..\..\include\cmessage.h"\
+	"..\..\include\cmodule.h"\
+	"..\..\include\cmsgheap.h"\
+	"..\..\include\cnetmod.h"\
+	"..\..\include\cobject.h"\
+	"..\..\include\coutvect.h"\
+	"..\..\include\cpacket.h"\
+	"..\..\include\cpar.h"\
+	"..\..\include\cpsquare.h"\
+	"..\..\include\cqueue.h"\
+	"..\..\include\csimul.h"\
+	"..\..\include\cstat.h"\
+	"..\..\include\cstk.h"\
+	"..\..\include\ctopo.h"\
+	"..\..\include\ctypes.h"\
+	"..\..\include\cvarhist.h"\
+	"..\..\include\cwatch.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\errmsg.h"\
+	"..\..\include\macros.h"\
+	"..\..\include\omnetpp.h"\
 	".\fifo2.h"\
-	
+
 
 !IF  "$(CFG)" == "fifo2 - Win32 Debug Tkenv"
 
@@ -44,7 +44,7 @@
 
 !ELSEIF  "$(CFG)" == "fifo2 - Win32 Release Cmdenv"
 
-!ENDIF 
+!ENDIF
 
 !IF  "$(CFG)" == "fifo2 - Win32 Debug Tkenv"
 
@@ -54,42 +54,42 @@
 
 !ELSEIF  "$(CFG)" == "fifo2 - Win32 Release Cmdenv"
 
-!ENDIF 
+!ENDIF
 
 .\gen2.cpp : \
-	"..\..\src\sim\carray.h"\
-	"..\..\src\sim\ccor.h"\
-	"..\..\src\sim\cdensity.h"\
-	"..\..\src\sim\cdetect.h"\
-	"..\..\src\sim\cenvir.h"\
-	"..\..\src\sim\cfsm.h"\
-	"..\..\src\sim\cgate.h"\
-	"..\..\src\sim\chead.h"\
-	"..\..\src\sim\chist.h"\
-	"..\..\src\sim\cksplit.h"\
-	"..\..\src\sim\cllist.h"\
-	"..\..\src\sim\cmessage.h"\
-	"..\..\src\sim\cmodule.h"\
-	"..\..\src\sim\cmsgheap.h"\
-	"..\..\src\sim\cnetmod.h"\
-	"..\..\src\sim\cobject.h"\
-	"..\..\src\sim\coutvect.h"\
-	"..\..\src\sim\cpacket.h"\
-	"..\..\src\sim\cpar.h"\
-	"..\..\src\sim\cpsquare.h"\
-	"..\..\src\sim\cqueue.h"\
-	"..\..\src\sim\csimul.h"\
-	"..\..\src\sim\cstat.h"\
-	"..\..\src\sim\cstk.h"\
-	"..\..\src\sim\ctopo.h"\
-	"..\..\src\sim\ctypes.h"\
-	"..\..\src\sim\cvarhist.h"\
-	"..\..\src\sim\cwatch.h"\
-	"..\..\src\sim\defs.h"\
-	"..\..\src\sim\errmsg.h"\
-	"..\..\src\sim\macros.h"\
-	"..\..\src\sim\omnetpp.h"\
-	
+	"..\..\include\carray.h"\
+	"..\..\include\ccor.h"\
+	"..\..\include\cdensity.h"\
+	"..\..\include\cdetect.h"\
+	"..\..\include\cenvir.h"\
+	"..\..\include\cfsm.h"\
+	"..\..\include\cgate.h"\
+	"..\..\include\chead.h"\
+	"..\..\include\chist.h"\
+	"..\..\include\cksplit.h"\
+	"..\..\include\cllist.h"\
+	"..\..\include\cmessage.h"\
+	"..\..\include\cmodule.h"\
+	"..\..\include\cmsgheap.h"\
+	"..\..\include\cnetmod.h"\
+	"..\..\include\cobject.h"\
+	"..\..\include\coutvect.h"\
+	"..\..\include\cpacket.h"\
+	"..\..\include\cpar.h"\
+	"..\..\include\cpsquare.h"\
+	"..\..\include\cqueue.h"\
+	"..\..\include\csimul.h"\
+	"..\..\include\cstat.h"\
+	"..\..\include\cstk.h"\
+	"..\..\include\ctopo.h"\
+	"..\..\include\ctypes.h"\
+	"..\..\include\cvarhist.h"\
+	"..\..\include\cwatch.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\errmsg.h"\
+	"..\..\include\macros.h"\
+	"..\..\include\omnetpp.h"\
+
 
 !IF  "$(CFG)" == "fifo2 - Win32 Debug Tkenv"
 
@@ -99,42 +99,42 @@
 
 !ELSEIF  "$(CFG)" == "fifo2 - Win32 Release Cmdenv"
 
-!ENDIF 
+!ENDIF
 
 .\sink2.cpp : \
-	"..\..\src\sim\carray.h"\
-	"..\..\src\sim\ccor.h"\
-	"..\..\src\sim\cdensity.h"\
-	"..\..\src\sim\cdetect.h"\
-	"..\..\src\sim\cenvir.h"\
-	"..\..\src\sim\cfsm.h"\
-	"..\..\src\sim\cgate.h"\
-	"..\..\src\sim\chead.h"\
-	"..\..\src\sim\chist.h"\
-	"..\..\src\sim\cksplit.h"\
-	"..\..\src\sim\cllist.h"\
-	"..\..\src\sim\cmessage.h"\
-	"..\..\src\sim\cmodule.h"\
-	"..\..\src\sim\cmsgheap.h"\
-	"..\..\src\sim\cnetmod.h"\
-	"..\..\src\sim\cobject.h"\
-	"..\..\src\sim\coutvect.h"\
-	"..\..\src\sim\cpacket.h"\
-	"..\..\src\sim\cpar.h"\
-	"..\..\src\sim\cpsquare.h"\
-	"..\..\src\sim\cqueue.h"\
-	"..\..\src\sim\csimul.h"\
-	"..\..\src\sim\cstat.h"\
-	"..\..\src\sim\cstk.h"\
-	"..\..\src\sim\ctopo.h"\
-	"..\..\src\sim\ctypes.h"\
-	"..\..\src\sim\cvarhist.h"\
-	"..\..\src\sim\cwatch.h"\
-	"..\..\src\sim\defs.h"\
-	"..\..\src\sim\errmsg.h"\
-	"..\..\src\sim\macros.h"\
-	"..\..\src\sim\omnetpp.h"\
-	
+	"..\..\include\carray.h"\
+	"..\..\include\ccor.h"\
+	"..\..\include\cdensity.h"\
+	"..\..\include\cdetect.h"\
+	"..\..\include\cenvir.h"\
+	"..\..\include\cfsm.h"\
+	"..\..\include\cgate.h"\
+	"..\..\include\chead.h"\
+	"..\..\include\chist.h"\
+	"..\..\include\cksplit.h"\
+	"..\..\include\cllist.h"\
+	"..\..\include\cmessage.h"\
+	"..\..\include\cmodule.h"\
+	"..\..\include\cmsgheap.h"\
+	"..\..\include\cnetmod.h"\
+	"..\..\include\cobject.h"\
+	"..\..\include\coutvect.h"\
+	"..\..\include\cpacket.h"\
+	"..\..\include\cpar.h"\
+	"..\..\include\cpsquare.h"\
+	"..\..\include\cqueue.h"\
+	"..\..\include\csimul.h"\
+	"..\..\include\cstat.h"\
+	"..\..\include\cstk.h"\
+	"..\..\include\ctopo.h"\
+	"..\..\include\ctypes.h"\
+	"..\..\include\cvarhist.h"\
+	"..\..\include\cwatch.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\errmsg.h"\
+	"..\..\include\macros.h"\
+	"..\..\include\omnetpp.h"\
+
 
 !IF  "$(CFG)" == "fifo2 - Win32 Debug Tkenv"
 
@@ -144,5 +144,5 @@
 
 !ELSEIF  "$(CFG)" == "fifo2 - Win32 Release Cmdenv"
 
-!ENDIF 
+!ENDIF
 

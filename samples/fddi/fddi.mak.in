@@ -2,30 +2,30 @@
 !IF "$(CFG)" == ""
 CFG=fddi - Win32 Debug Tkenv
 !MESSAGE No configuration specified. Defaulting to fddi - Win32 Debug Tkenv.
-!ENDIF 
+!ENDIF
 
 !IF "$(CFG)" != "fddi - Win32 Debug Tkenv" && "$(CFG)" != "fddi - Win32 Debug Cmdenv" && "$(CFG)" != "fddi - Win32 Release Tkenv" && "$(CFG)" != "fddi - Win32 Release Cmdenv"
 !MESSAGE Invalid configuration "$(CFG)" specified.
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "fddi.mak" CFG="fddi - Win32 Debug Tkenv"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "fddi - Win32 Debug Tkenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "fddi - Win32 Debug Cmdenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "fddi - Win32 Release Tkenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "fddi - Win32 Release Cmdenv" (based on "Win32 (x86) Console Application")
-!MESSAGE 
+!MESSAGE
 !ERROR An invalid configuration is specified.
-!ENDIF 
+!ENDIF
 
 !IF "$(OS)" == "Windows_NT"
 NULL=
-!ELSE 
+!ELSE
 NULL=nul
-!ENDIF 
+!ENDIF
 
 !IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
 
@@ -61,45 +61,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\src\sim" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fddi.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fddi.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\fddi.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\fddi.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\fddi.pdb" /debug /machine:I386 /out:"$(OUTDIR)\fddi.exe" /pdbtype:sept /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@" 
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\fddi.pdb" /debug /machine:I386 /out:"$(OUTDIR)\fddi.exe" /pdbtype:sept /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\fddi_mac.obj" \
 	"$(INTDIR)\fddi_mac_n.obj" \
@@ -150,45 +150,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\src\sim" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fddi.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fddi.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\fddi.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\fddi.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\fddi.pdb" /debug /machine:I386 /out:"$(OUTDIR)\fddi.exe" /pdbtype:sept /libpath:"..\..\lib" 
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\fddi.pdb" /debug /machine:I386 /out:"$(OUTDIR)\fddi.exe" /pdbtype:sept /libpath:"..\..\lib"
 LINK32_OBJS= \
 	"$(INTDIR)\fddi_mac.obj" \
 	"$(INTDIR)\fddi_mac_n.obj" \
@@ -236,45 +236,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\src\sim" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fddi.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fddi.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\fddi.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\fddi.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\fddi.pdb" /machine:I386 /out:"$(OUTDIR)\fddi.exe" /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@" 
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\fddi.pdb" /machine:I386 /out:"$(OUTDIR)\fddi.exe" /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\fddi_mac.obj" \
 	"$(INTDIR)\fddi_mac_n.obj" \
@@ -322,45 +322,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\src\sim" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fddi.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fddi.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\fddi.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\fddi.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\fddi.pdb" /machine:I386 /out:"$(OUTDIR)\fddi.exe" /libpath:"..\..\lib" 
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\fddi.pdb" /machine:I386 /out:"$(OUTDIR)\fddi.exe" /libpath:"..\..\lib"
 LINK32_OBJS= \
 	"$(INTDIR)\fddi_mac.obj" \
 	"$(INTDIR)\fddi_mac_n.obj" \
@@ -377,16 +377,16 @@ LINK32_OBJS= \
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-!ENDIF 
+!ENDIF
 
 
 !IF "$(NO_EXTERNAL_DEPS)" != "1"
 !IF EXISTS("fddi.dep")
 !INCLUDE "fddi.dep"
-!ELSE 
+!ELSE
 !MESSAGE Warning: cannot find "fddi.dep"
-!ENDIF 
-!ENDIF 
+!ENDIF
+!ENDIF
 
 
 !IF "$(CFG)" == "fddi - Win32 Debug Tkenv" || "$(CFG)" == "fddi - Win32 Debug Cmdenv" || "$(CFG)" == "fddi - Win32 Release Tkenv" || "$(CFG)" == "fddi - Win32 Release Cmdenv"
@@ -403,11 +403,11 @@ InputPath=.\fddi_mac.ned
 InputName=fddi_mac
 
 ".\fddi_mac_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
 
@@ -415,11 +415,11 @@ InputPath=.\fddi_mac.ned
 InputName=fddi_mac
 
 ".\fddi_mac_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
 
@@ -427,11 +427,11 @@ InputPath=.\fddi_mac.ned
 InputName=fddi_mac
 
 ".\fddi_mac_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
 
@@ -439,13 +439,13 @@ InputPath=.\fddi_mac.ned
 InputName=fddi_mac
 
 ".\fddi_mac_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\fddi_mac_n.cpp
 
@@ -460,11 +460,11 @@ InputPath=.\fddi_nets.ned
 InputName=fddi_nets
 
 ".\fddi_nets_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
 
@@ -472,11 +472,11 @@ InputPath=.\fddi_nets.ned
 InputName=fddi_nets
 
 ".\fddi_nets_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
 
@@ -484,11 +484,11 @@ InputPath=.\fddi_nets.ned
 InputName=fddi_nets
 
 ".\fddi_nets_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
 
@@ -496,13 +496,13 @@ InputPath=.\fddi_nets.ned
 InputName=fddi_nets
 
 ".\fddi_nets_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\fddi_nets_n.cpp
 
@@ -517,11 +517,11 @@ InputPath=.\fddi_nodes.ned
 InputName=fddi_nodes
 
 ".\fddi_nodes_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
 
@@ -529,11 +529,11 @@ InputPath=.\fddi_nodes.ned
 InputName=fddi_nodes
 
 ".\fddi_nodes_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
 
@@ -541,11 +541,11 @@ InputPath=.\fddi_nodes.ned
 InputName=fddi_nodes
 
 ".\fddi_nodes_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
 
@@ -553,13 +553,13 @@ InputPath=.\fddi_nodes.ned
 InputName=fddi_nodes
 
 ".\fddi_nodes_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\fddi_nodes_n.cpp
 
@@ -574,11 +574,11 @@ InputPath=.\fddi_rings.ned
 InputName=fddi_rings
 
 ".\fddi_rings_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
 
@@ -586,11 +586,11 @@ InputPath=.\fddi_rings.ned
 InputName=fddi_rings
 
 ".\fddi_rings_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
 
@@ -598,11 +598,11 @@ InputPath=.\fddi_rings.ned
 InputName=fddi_rings
 
 ".\fddi_rings_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
 
@@ -610,13 +610,13 @@ InputPath=.\fddi_rings.ned
 InputName=fddi_rings
 
 ".\fddi_rings_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\fddi_rings_n.cpp
 
@@ -636,11 +636,11 @@ InputPath=.\othermod.ned
 InputName=othermod
 
 ".\othermod_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
 
@@ -648,11 +648,11 @@ InputPath=.\othermod.ned
 InputName=othermod
 
 ".\othermod_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
 
@@ -660,11 +660,11 @@ InputPath=.\othermod.ned
 InputName=othermod
 
 ".\othermod_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
 
@@ -672,13 +672,13 @@ InputPath=.\othermod.ned
 InputName=othermod
 
 ".\othermod_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\othermod_n.cpp
 
@@ -698,11 +698,11 @@ InputPath=.\ssm_ifs.ned
 InputName=ssm_ifs
 
 ".\ssm_ifs_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
 
@@ -710,11 +710,11 @@ InputPath=.\ssm_ifs.ned
 InputName=ssm_ifs
 
 ".\ssm_ifs_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
 
@@ -722,11 +722,11 @@ InputPath=.\ssm_ifs.ned
 InputName=ssm_ifs
 
 ".\ssm_ifs_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
 
@@ -734,13 +734,13 @@ InputPath=.\ssm_ifs.ned
 InputName=ssm_ifs
 
 ".\ssm_ifs_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\ssm_ifs_n.cpp
 
@@ -748,5 +748,5 @@ SOURCE=.\ssm_ifs_n.cpp
 
 
 
-!ENDIF 
+!ENDIF
 

@@ -2,30 +2,30 @@
 !IF "$(CFG)" == ""
 CFG=hcube - Win32 Debug Tkenv
 !MESSAGE No configuration specified. Defaulting to hcube - Win32 Debug Tkenv.
-!ENDIF 
+!ENDIF
 
 !IF "$(CFG)" != "hcube - Win32 Debug Tkenv" && "$(CFG)" != "hcube - Win32 Debug Cmdenv" && "$(CFG)" != "hcube - Win32 Release Tkenv" && "$(CFG)" != "hcube - Win32 Release Cmdenv"
 !MESSAGE Invalid configuration "$(CFG)" specified.
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "hcube.mak" CFG="hcube - Win32 Debug Tkenv"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "hcube - Win32 Debug Tkenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "hcube - Win32 Debug Cmdenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "hcube - Win32 Release Tkenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "hcube - Win32 Release Cmdenv" (based on "Win32 (x86) Console Application")
-!MESSAGE 
+!MESSAGE
 !ERROR An invalid configuration is specified.
-!ENDIF 
+!ENDIF
 
 !IF "$(OS)" == "Windows_NT"
 NULL=
-!ELSE 
+!ELSE
 NULL=nul
-!ENDIF 
+!ENDIF
 
 !IF  "$(CFG)" == "hcube - Win32 Debug Tkenv"
 
@@ -58,45 +58,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\src\sim" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\hcube.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\hcube.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\hcube.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\hcube.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\hcube.pdb" /debug /machine:I386 /out:"$(OUTDIR)\hcube.exe" /pdbtype:sept /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@" 
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\hcube.pdb" /debug /machine:I386 /out:"$(OUTDIR)\hcube.exe" /pdbtype:sept /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\gensink.obj" \
 	"$(INTDIR)\gensink_n.obj" \
@@ -141,45 +141,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\src\sim" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\hcube.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\hcube.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\hcube.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\hcube.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\hcube.pdb" /debug /machine:I386 /out:"$(OUTDIR)\hcube.exe" /pdbtype:sept /libpath:"..\..\lib" 
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\hcube.pdb" /debug /machine:I386 /out:"$(OUTDIR)\hcube.exe" /pdbtype:sept /libpath:"..\..\lib"
 LINK32_OBJS= \
 	"$(INTDIR)\gensink.obj" \
 	"$(INTDIR)\gensink_n.obj" \
@@ -221,45 +221,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\src\sim" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\hcube.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\hcube.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\hcube.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\hcube.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\hcube.pdb" /machine:I386 /out:"$(OUTDIR)\hcube.exe" /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@" 
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\hcube.pdb" /machine:I386 /out:"$(OUTDIR)\hcube.exe" /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\gensink.obj" \
 	"$(INTDIR)\gensink_n.obj" \
@@ -301,45 +301,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\src\sim" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\hcube.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\hcube.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\hcube.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\hcube.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\hcube.pdb" /machine:I386 /out:"$(OUTDIR)\hcube.exe" /libpath:"..\..\lib" 
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\hcube.pdb" /machine:I386 /out:"$(OUTDIR)\hcube.exe" /libpath:"..\..\lib"
 LINK32_OBJS= \
 	"$(INTDIR)\gensink.obj" \
 	"$(INTDIR)\gensink_n.obj" \
@@ -353,16 +353,16 @@ LINK32_OBJS= \
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-!ENDIF 
+!ENDIF
 
 
 !IF "$(NO_EXTERNAL_DEPS)" != "1"
 !IF EXISTS("hcube.dep")
 !INCLUDE "hcube.dep"
-!ELSE 
+!ELSE
 !MESSAGE Warning: cannot find "hcube.dep"
-!ENDIF 
-!ENDIF 
+!ENDIF
+!ENDIF
 
 
 !IF "$(CFG)" == "hcube - Win32 Debug Tkenv" || "$(CFG)" == "hcube - Win32 Debug Cmdenv" || "$(CFG)" == "hcube - Win32 Release Tkenv" || "$(CFG)" == "hcube - Win32 Release Cmdenv"
@@ -379,11 +379,11 @@ InputPath=.\gensink.ned
 InputName=gensink
 
 ".\gensink_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Debug Cmdenv"
 
@@ -391,11 +391,11 @@ InputPath=.\gensink.ned
 InputName=gensink
 
 ".\gensink_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Release Tkenv"
 
@@ -403,11 +403,11 @@ InputPath=.\gensink.ned
 InputName=gensink
 
 ".\gensink_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Release Cmdenv"
 
@@ -415,13 +415,13 @@ InputPath=.\gensink.ned
 InputName=gensink
 
 ".\gensink_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\gensink_n.cpp
 
@@ -436,11 +436,11 @@ InputPath=.\hc_net.ned
 InputName=hc_net
 
 ".\hc_net_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Debug Cmdenv"
 
@@ -448,11 +448,11 @@ InputPath=.\hc_net.ned
 InputName=hc_net
 
 ".\hc_net_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Release Tkenv"
 
@@ -460,11 +460,11 @@ InputPath=.\hc_net.ned
 InputName=hc_net
 
 ".\hc_net_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Release Cmdenv"
 
@@ -472,13 +472,13 @@ InputPath=.\hc_net.ned
 InputName=hc_net
 
 ".\hc_net_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\hc_net_n.cpp
 
@@ -498,11 +498,11 @@ InputPath=.\hc_rte.ned
 InputName=hc_rte
 
 ".\hc_rte_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Debug Cmdenv"
 
@@ -510,11 +510,11 @@ InputPath=.\hc_rte.ned
 InputName=hc_rte
 
 ".\hc_rte_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Release Tkenv"
 
@@ -522,11 +522,11 @@ InputPath=.\hc_rte.ned
 InputName=hc_rte
 
 ".\hc_rte_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Release Cmdenv"
 
@@ -534,13 +534,13 @@ InputPath=.\hc_rte.ned
 InputName=hc_rte
 
 ".\hc_rte_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\hc_rte_n.cpp
 
@@ -555,11 +555,11 @@ InputPath=.\hcube.ned
 InputName=hcube
 
 ".\hcube_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Debug Cmdenv"
 
@@ -567,11 +567,11 @@ InputPath=.\hcube.ned
 InputName=hcube
 
 ".\hcube_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Release Tkenv"
 
@@ -579,11 +579,11 @@ InputPath=.\hcube.ned
 InputName=hcube
 
 ".\hcube_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "hcube - Win32 Release Cmdenv"
 
@@ -591,13 +591,13 @@ InputPath=.\hcube.ned
 InputName=hcube
 
 ".\hcube_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\hcube_n.cpp
 
@@ -605,5 +605,5 @@ SOURCE=.\hcube_n.cpp
 
 
 
-!ENDIF 
+!ENDIF
 
