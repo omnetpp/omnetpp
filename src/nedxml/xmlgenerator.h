@@ -18,8 +18,10 @@
 #define __XMLGENERATOR_H
 
 
-#include <iostream.h>
+#include <iostream>
 #include "nedelements.h"
+
+using std::ostream;
 
 /**
  * Simple front-end to NEDXMLGenerator.

@@ -61,7 +61,7 @@
 # define	CLASS	310
 # define	FIELDS	311
 # define	PROPERTIES	312
-# define	VIRTUAL	313
+# define	ABSTRACT	313
 # define	CHARTYPE	314
 # define	SHORTTYPE	315
 # define	INTTYPE	316
@@ -589,12 +589,12 @@ static const char *const yytname[] =
   "CONSTDECL", "NUMERICTYPE", "STRINGTYPE", "BOOLTYPE", "ANYTYPE", 
   "CPPINCLUDE", "SYSINCFILENAME", "STRUCT", "COBJECT", "NONCOBJECT", 
   "ENUM", "EXTENDS", "MESSAGE", "CLASS", "FIELDS", "PROPERTIES", 
-  "VIRTUAL", "CHARTYPE", "SHORTTYPE", "INTTYPE", "LONGTYPE", "DOUBLETYPE", 
-  "SIZEOF", "SUBMODINDEX", "EQ", "NE", "GT", "GE", "LS", "LE", "AND", 
-  "OR", "XOR", "NOT", "BIN_AND", "BIN_OR", "BIN_XOR", "BIN_COMPL", 
-  "SHIFT_LEFT", "SHIFT_RIGHT", "INVALID_CHAR", "'?'", "':'", "'+'", "'-'", 
-  "'*'", "'/'", "'%'", "'^'", "UMIN", "';'", "','", "'{'", "'}'", "'='", 
-  "'['", "']'", "'.'", "'('", "')'", "networkdescription", 
+  "ABSTRACT", "CHARTYPE", "SHORTTYPE", "INTTYPE", "LONGTYPE", 
+  "DOUBLETYPE", "SIZEOF", "SUBMODINDEX", "EQ", "NE", "GT", "GE", "LS", 
+  "LE", "AND", "OR", "XOR", "NOT", "BIN_AND", "BIN_OR", "BIN_XOR", 
+  "BIN_COMPL", "SHIFT_LEFT", "SHIFT_RIGHT", "INVALID_CHAR", "'?'", "':'", 
+  "'+'", "'-'", "'*'", "'/'", "'%'", "'^'", "UMIN", "';'", "','", "'{'", 
+  "'}'", "'='", "'['", "']'", "'.'", "'('", "')'", "networkdescription", 
   "somedefinitions", "definition", "import", "@1", "filenames", 
   "filename", "channeldefinition_old", "channelheader_old", 
   "opt_channelattrblock_old", "channelattrblock_old", "endchannel_old", 
@@ -3540,7 +3540,7 @@ case 464:
                   ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
                   ps.field->setName(toString(yylsp[0]));
                   ps.field->setDataType(toString(yylsp[-1]));
-                  ps.field->setIsVirtual(true);
+                  ps.field->setIsAbstract(true);
                 ;
     break;}
 case 465:

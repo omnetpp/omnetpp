@@ -13,11 +13,13 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <iostream.h>
-
 #include <string.h>
+#include <iostream>
+
 #include "nedelement.h"
 #include "nederror.h"
+
+using std::ostream;
 
 
 long NEDElement::lastid = 0;

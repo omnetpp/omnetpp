@@ -17,7 +17,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include <stdio.h>
 #include "nederror.h"
 #include "saxparser.h"
 

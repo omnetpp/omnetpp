@@ -2851,7 +2851,7 @@ const char *FieldNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "data-type";
-        case 2: return "is-virtual";
+        case 2: return "is-abstract";
         case 3: return "is-vector";
         case 4: return "vector-size";
         case 5: return "enum-name";
@@ -2867,7 +2867,7 @@ const char *FieldNode::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return dataType.c_str();
-        case 2: return boolToString(isVirtual);
+        case 2: return boolToString(isAbstract);
         case 3: return boolToString(isVector);
         case 4: return vectorSize.c_str();
         case 5: return enumName.c_str();
@@ -2883,7 +2883,7 @@ void FieldNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: dataType = val; break;
-        case 2: isVirtual = stringToBool(val); break;
+        case 2: isAbstract = stringToBool(val); break;
         case 3: isVector = stringToBool(val); break;
         case 4: vectorSize = val; break;
         case 5: enumName = val; break;

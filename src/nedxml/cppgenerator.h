@@ -19,11 +19,13 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "iostream.h"
+#include <iostream>
+
 #include "nedelements.h"
 #include "cppexprgenerator.h"
 #include "nedcompiler.h" // for NEDSymbolTable
 
+using std::ostream;
 
 /**
  * Simple front-end to NEDCppGenerator.

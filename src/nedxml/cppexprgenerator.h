@@ -16,12 +16,19 @@
 #ifndef __CPPEXPRGENERATOR_H
 #define __CPPEXPRGENERATOR_H
 
-#include "iostream.h"
-#include "nedelements.h"
+#ifdef _MSC_VER
+// disable tons of "identifier was truncated to '255' characters in the debug
+// information" warnings that comes as bonus with using STL
+#pragma warning(disable:4786)
+#endif
+
 #include <string>
 #include <map>
 #include <vector>
+#include <iostream>
+#include "nedelements.h"
 
+using std::ostream;
 
 /**
  * Helper class for NEDCppGenerator. Should be used in the following manner:

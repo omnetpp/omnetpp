@@ -74,7 +74,7 @@ typedef struct yyltype
 # define	CLASS	310
 # define	FIELDS	311
 # define	PROPERTIES	312
-# define	VIRTUAL	313
+# define	ABSTRACT	313
 # define	CHARTYPE	314
 # define	SHORTTYPE	315
 # define	INTTYPE	316

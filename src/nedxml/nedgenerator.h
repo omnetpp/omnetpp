@@ -16,8 +16,10 @@
 #ifndef __NEDGENERATOR_H
 #define __NEDGENERATOR_H
 
-#include "iostream.h"
+#include <iostream>
 #include "nedelements.h"
+
+using std::ostream;
 
 /**
  * Simple front-end to NEDGenerator.

@@ -893,8 +893,8 @@ void NEDGenerator::doField(FieldNode *node, const char *indent, bool islast, con
 {
     appendBannerComment(node->getBannerComment(), indent);
     out << indent;
-    if (node->getIsVirtual())
-        out << "virtual ";
+    if (node->getIsAbstract())
+        out << "abstract ";
     out << node->getDataType() << " " << node->getName();
     if (node->getIsVector() && strnotnull(node->getVectorSize()))
         out << "[" << node->getVectorSize() << "]";

@@ -2489,7 +2489,7 @@ class FieldsNode : public NEDElement
  * <!ATTLIST field
  *      name                NMTOKEN   #REQUIRED
  *      data-type           CDATA     #REQUIRED
- *      is-virtual      (true|false)  "false"
+ *      is-abstract     (true|false)  "false"
  *      is-vector       (true|false)  "false"
  *      vector-size         CDATA     #IMPLIED
  *      enum-name           NMTOKEN   #IMPLIED
@@ -2505,7 +2505,7 @@ class FieldNode : public NEDElement
   private:
     std::string name;
     std::string dataType;
-    bool isVirtual;
+    bool isAbstract;
     bool isVector;
     std::string vectorSize;
     std::string enumName;
@@ -2533,8 +2533,8 @@ class FieldNode : public NEDElement
     void setName(const char * val)  {name = val;}
     const char * getDataType() const  {return dataType.c_str();}
     void setDataType(const char * val)  {dataType = val;}
-    bool getIsVirtual() const  {return isVirtual;}
-    void setIsVirtual(bool val)  {isVirtual = val;}
+    bool getIsAbstract() const  {return isAbstract;}
+    void setIsAbstract(bool val)  {isAbstract = val;}
     bool getIsVector() const  {return isVector;}
     void setIsVector(bool val)  {isVector = val;}
     const char * getVectorSize() const  {return vectorSize.c_str();}

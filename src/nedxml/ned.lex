@@ -117,7 +117,7 @@ char textbuf[256], lasttextbuf[256] = "";
 "class"                 { count(); return CLASS; }
 "fields"                { count(); return FIELDS; }
 "properties"            { count(); return PROPERTIES; }
-"virtual"               { count(); return VIRTUAL; }
+"abstract"              { count(); return ABSTRACT; }
 
 "char"                  { count(); return CHARTYPE; }
 "short"                 { count(); return SHORTTYPE; }

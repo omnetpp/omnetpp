@@ -14,14 +14,16 @@
 *--------------------------------------------------------------*/
 
 
-#include <iostream.h>
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <iostream>
 
 #include "nedelements.h"
 #include "cppgenerator.h"
 #include "nederror.h"
+
+using std::ostream;
 
 inline bool strnotnull(const char *s)
 {
@@ -120,7 +122,7 @@ struct NEDCppGenerator::FieldDesc
     std::string fieldname;
     std::string ftype;
     std::string fval;
-    bool fisvirtual;
+    bool fisabstract;
     bool fisarray;
     std::string farraysize;
     std::string fenumname;
@@ -309,7 +311,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
             fld[i].fieldname = field->getName();
             fld[i].ftype = field->getDataType();
             fld[i].fval = field->getDefaultValue();
-            fld[i].fisvirtual = field->getIsVirtual();
+            fld[i].fisabstract = field->getIsAbstract();
             fld[i].fisarray = field->getIsVector();
             fld[i].farraysize = field->getVectorSize();
             fld[i].fenumname = field->getEnumName();
@@ -318,7 +320,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
         for (i=0; i<numfields; i++)
         {
 #if 0
-            if (fld[i].fisvirtual && !cld.usegap)
+            if (fld[i].fisabstract && !cld.usegap)
                 INTERNAL_ERROR0(NULL, "virtual fields assume 'customize=true' property in 'cld.msgname'");
             if (fld[i].fval != "" && cld.classtype == CLASSTYPE_STRUCT)
                 INTERNAL_ERROR0(NULL, "default values not possible with structs (no constructor is generated!) in 'cld.msgname'");
@@ -508,7 +510,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
 
     for (i=0; i<numfields; i++)
     {
-        if (!fld[i].fisvirtual)
+        if (!fld[i].fisabstract)
         {
             if (fld[i].fisarray && fld[i].farraysize != "")
             {
@@ -561,7 +563,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
     outh << "    // field getter/setter methods\n";
     for (i=0; i<numfields; i++)
     {
-        const char *pure = fld[i].fisvirtual ? " = 0" : "";
+        const char *pure = fld[i].fisabstract ? " = 0" : "";
         if (fld[i].fisarray && fld[i].farraysize != "")
         {
             outh << "    virtual unsigned int " << fld[i].getsize << "() const" << pure << ";\n";
@@ -631,7 +633,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
     out << "{\n";
     for (i=0; i<numfields; i++)
     {
-        if (!fld[i].fisvirtual)
+        if (!fld[i].fisabstract)
         {
             if (fld[i].fisarray && fld[i].farraysize != "")
             {
@@ -682,7 +684,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
     }
     for (i=0; i<numfields; i++)
     {
-        if (!fld[i].fisvirtual)
+        if (!fld[i].fisabstract)
         {
             if (fld[i].fisarray && fld[i].farraysize != "")
             {
@@ -710,7 +712,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
     out << cld.msgclass << "::~" << cld.msgclass << "()\n";
     out << "{\n";
     for (i=0; i<numfields; i++)
-        if (!fld[i].fisvirtual && fld[i].fisarray && fld[i].farraysize == "")
+        if (!fld[i].fisabstract && fld[i].fisarray && fld[i].farraysize == "")
             out << "    delete [] " << fld[i].var << ";\n";
     out << "}\n\n";
 
@@ -722,7 +724,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
         out << "    " << cld.msgbaseclass << "::operator=(other);\n";
     for (i=0; i<numfields; i++)
     {
-        if (!fld[i].fisvirtual)
+        if (!fld[i].fisabstract)
         {
             if (fld[i].fisarray && fld[i].farraysize != "")
             {
@@ -749,7 +751,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
     // field getters/setters
     for (i=0; i<numfields; i++)
     {
-        if (!fld[i].fisvirtual)
+        if (!fld[i].fisabstract)
         {
             if (fld[i].fisarray && fld[i].farraysize != "")
             {
@@ -827,7 +829,7 @@ void NEDCppGenerator::generateStruct(NEDCppGenerator::ClassDesc& cld, NEDCppGene
     outh << "{\n";
     for (i=0; i<numfields; i++)
     {
-        if (!fld[i].fisvirtual)
+        if (!fld[i].fisabstract)
         {
             if (fld[i].fisarray && fld[i].farraysize != "")
             {

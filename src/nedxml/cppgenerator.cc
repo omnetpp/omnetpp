@@ -14,7 +14,6 @@
 *--------------------------------------------------------------*/
 
 
-#include <iostream.h>
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
@@ -23,8 +22,10 @@
 #include "cppgenerator.h"
 #include "nederror.h"
 
-#define NEDC_VERSION "2.90" //FIXME
-#define NEDC_VERSION_HEX "0x0290" //FIXME
+using std::ostream;
+
+#define NEDC_VERSION "2.30" //FIXME
+#define NEDC_VERSION_HEX "0x0230" //FIXME
 
 
 void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab)
@@ -41,7 +42,7 @@ inline bool strnotnull(const char *s)
 //-----------------------------------------------------------------------
 
 NEDCppGenerator::NEDCppGenerator(ostream& _out, ostream& _outh, NEDSymbolTable *symtab) :
-  out(_out), outh(_outh), symboltable(symtab), exprgen(_out)
+  out(_out), outh(_outh), exprgen(_out), symboltable(symtab)
 {
     indentsize = 4;
     in_network = false;
@@ -63,7 +64,7 @@ const char *NEDCppGenerator::increaseIndent(const char *indent)
     static char spaces[] = "                                                                     ";
 
     // bump...
-    int ilen = strlen(indent);
+    unsigned ilen = strlen(indent);
     if (ilen+indentsize <= sizeof(spaces)-1)
         ilen+=indentsize;
     const char *newindent = spaces+sizeof(spaces)-1-ilen;

@@ -342,7 +342,7 @@
 <!ATTLIST field
      name                NMTOKEN   #REQUIRED
      data-type           CDATA     #REQUIRED
-     is-virtual      (true|false)  "false"
+     is-abstract     (true|false)  "false"
      is-vector       (true|false)  "false"
      vector-size         CDATA     #IMPLIED
      enum-name           NMTOKEN   #IMPLIED

@@ -14,12 +14,14 @@
 *--------------------------------------------------------------*/
 
 
-#include <iostream.h>
-#include <iomanip.h>
 #include <string.h>
-
+#include <iostream>
+#include <iomanip>
 #include "nedelements.h"
 #include "xmlgenerator.h"
+
+using std::ostream;
+using std::endl;
 
 void generateXML(ostream& out, NEDElement *tree, bool srcloc, int indentsize)
 {

@@ -303,7 +303,7 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
 char *NEDFileBuffer::stripComment(const char *comment, int numlines)
 {
     // expand buffer if necessary
-    if (commentBufLen < strlen(comment)+1)
+    if (commentBufLen < (int)strlen(comment)+1)
     {
         commentBufLen = strlen(comment)+1;
         delete commentBuf;

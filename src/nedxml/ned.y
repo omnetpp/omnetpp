@@ -48,7 +48,7 @@
 %token CONSTDECL NUMERICTYPE STRINGTYPE BOOLTYPE ANYTYPE
 
 %token CPPINCLUDE SYSINCFILENAME STRUCT COBJECT NONCOBJECT
-%token ENUM EXTENDS MESSAGE CLASS FIELDS PROPERTIES VIRTUAL
+%token ENUM EXTENDS MESSAGE CLASS FIELDS PROPERTIES ABSTRACT
 %token CHARTYPE SHORTTYPE INTTYPE LONGTYPE DOUBLETYPE
 
 %token SIZEOF SUBMODINDEX
@@ -2279,12 +2279,12 @@ field
                 {
                   setComments(ps.field,@1,@6);
                 }
-        | VIRTUAL fielddatatype NAME
+        | ABSTRACT fielddatatype NAME
                 {
                   ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
                   ps.field->setName(toString(@3));
                   ps.field->setDataType(toString(@2));
-                  ps.field->setIsVirtual(true);
+                  ps.field->setIsAbstract(true);
                 }
             opt_fieldvector opt_fieldenum opt_fieldvalue ';'
                 {
