@@ -19,12 +19,14 @@
 #ifndef __FDDI_MAC_H
 #define __FDDI_MAC_H
 
+#include <omnetpp.h>
+
 class CountDownCounter // implements counter that counts downwards
   {
   private:
     simtime_t StartTime;
     double InitValue;
-    BOOL enabled;
+    bool enabled;
   public:
     void operator= (double InitVal)
       {
@@ -59,22 +61,22 @@ class FDDI_MAC : public cSimpleModule // Media Access Control sublayer for FDDI
   cMessage *msg_to_repeat;  // this msg will be repeated when REPEAT_BEGIN event arrives
   simtime_t RepeatEndsAt; // the current repeating will end at this time
 
-  BOOL EarlyToken;      // Token is early
-  BOOL RestrictedToken; // Token is restricted
-  int LateCounter;      // TRT expired LateCounter times since last TOKEN_ARRIVE
-  cMessage *TRTExpire;  // holds a pointer to the TRT expire event
+  bool EarlyToken;         // Token is early
+  bool RestrictedToken;    // Token is restricted
+  int LateCounter;         // TRT expired LateCounter times since last TOKEN_ARRIVE
+  cMessage *TRTExpire;     // holds a pointer to the TRT expire event
   long AllocatedSyncBandwidth; // Allocated Synchronous Bandwidth (in bytes)
-  long UsedSyncBandwidth; // Used Synchronous Bandwidth (in bytes)
-  double T_Opr; // operational value for the TTRT (Target Token Rotation Time)
-  short RingID; // This FDDI_MAC is connected to ring RingID
-  long IdleTimes; // # of tokens arrived since packet was transmitted for the last time
-  int my_station_id;   // the stations are numbered, number 0 issues the token
-  BOOL IAmRestrictedOwner;      // This station is a/the ResrictedToken owner
-  BOOL SyncFinished;    // transm. of sync. packets is already finished
+  long UsedSyncBandwidth;  // Used Synchronous Bandwidth (in bytes)
+  double T_Opr;            // operational value for the TTRT (Target Token Rotation Time)
+  short RingID;            // This FDDI_MAC is connected to ring RingID
+  long IdleTimes;          // # of tokens arrived since packet was transmitted for the last time
+  int my_station_id;       // the stations are numbered, number 0 issues the token
+  bool IAmRestrictedOwner; // This station is a/the ResrictedToken owner
+  bool SyncFinished;       // transm. of sync. packets is already finished
 
-  cQueue sync_buf;  // the queue of the synchronous packets
-  cQueue async_buf; // the queue of the asynchronous packets
-  int priority_i;   // holds the cycle variable for the priority classes
+  cQueue sync_buf;         // the queue of the synchronous packets
+  cQueue async_buf;        // the queue of the asynchronous packets
+  int priority_i;          // holds the cycle variable for the priority classes
 
 // external events:
   void TokenArrived(cMessage *msg);

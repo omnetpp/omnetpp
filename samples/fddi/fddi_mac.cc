@@ -15,9 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
-#include "omnetpp.h"
-
-#pragma hdrstop // BC 3.1 precompiled headers
+#include <omnetpp.h>
 
 #include "fddi_def.h"
 #include "fddi_mac.h"
@@ -25,7 +23,7 @@
 #define TRACE_MSG // turn on output messages
 // #define STATE_CHK // turn on E-FSM state checking
 
-static BOOL accelerated = FALSE;
+static bool accelerated = FALSE;
 
 Define_Module( FDDI_MAC )
 Define_Module( FDDI_MAC4Ring )
@@ -130,7 +128,7 @@ void FDDI_MAC::TokenRepeatBegin(cMessage *msg)
   State |= TOKEN_REPEAT;
   cMessage *tok = new cMessage("FDDI_TOKEN", FDDI_TOKEN);
   tok->setLength(TokenLength);
-  tok->addPar(*new cPar("restricted",'B',RestrictedToken));
+  tok->addPar("restricted") = (bool)RestrictedToken;
   send( tok, "out");
   cMessage *m = new cMessage("TOKEN_REPEAT_END",TOKEN_REPEAT_END,0);
   scheduleAt(simTime()+token_time,m);
@@ -362,7 +360,7 @@ void FDDI_MAC::PlayTTRP() // Play the Timed Token Ring Protocol
     if ( AllocatedSyncBandwidth >= UsedSyncBandwidth+length )
       { // this packet can be transmitted
       UsedSyncBandwidth+=length;
-      m->addPar( *new cPar("sendtime", 'D', simTime()) );
+      m->addPar("sendtime") = simTime();
       send(m,"out");
       State |= TRANSMIT_OWN;
       double sending_time=length*byte_tr_time;
@@ -387,7 +385,7 @@ void FDDI_MAC::PlayTTRP() // Play the Timed Token Ring Protocol
        (!RestrictedToken || IAmRestrictedOwner) && ((double)THT)>0 )
     { // the 1st packet can be transmitted
     cMessage *m = (cMessage *)async_buf.getTail();
-    m->addPar( *new cPar("sendtime", 'D', simTime()) );
+    m->addPar("sendtime") = simTime();
     send(m,"out");
     State |= TRANSMIT_OWN;
     int length=m->length();
@@ -401,7 +399,7 @@ void FDDI_MAC::PlayTTRP() // Play the Timed Token Ring Protocol
   // now the token must be passed
   cMessage *tok = new cMessage("FDDI_TOKEN", FDDI_TOKEN);
   tok->setLength(TokenLength);
-  tok->addPar(*new cPar("restricted",'B',RestrictedToken));
+  tok->addPar("restricted") = RestrictedToken;
   send( tok, "out");
   State &= ~TRANSMIT_OWN;
   State |= TOKEN_SEND;
@@ -455,7 +453,7 @@ void FDDI_MAC::activity()
     // Issue a token:
     cMessage *tok = new cMessage("FDDI_TOKEN", FDDI_TOKEN);
     tok->setLength(TokenLength);
-    tok->addPar(*new cPar("restricted",'B', (int)FALSE));
+    tok->addPar("restricted") = FALSE;
     send( tok, "out");
     }
   for(;;)

@@ -15,9 +15,7 @@
 *--------------------------------------------------------------*/
 
 #include <string.h>
-#include "omnetpp.h"
-
-#pragma hdrstop // BC 3.1 precompiled headers
+#include <omnetpp.h>
 
 #include "ssmifdef.h"
 #include "fddi_def.h"

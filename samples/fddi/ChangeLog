@@ -169,6 +169,7 @@ FDDI76.arj
   - updated to the new histograms in sim161
 FDDI77.arj
   - added fddi.ide; doesn't run correctly under NT though (causes exception)
+    [later discovered it was caused by the mystrlwr() bug, see Jul 11, 1999]
 FDDI78.arj
   - makefile renamed to makefile.in
 FDDI79.arj
@@ -191,3 +192,8 @@ Oct 10, 1999
 Oct 17, 1999
   - Computer renamed to FDDIStation (clashed with Token's Computer when
     linking all sample simulations into one executable)
+Dec 23, 1999
+  - BC3.1 support removed
+  - rewritten msg->addPar( *new cPar(...)) lines (see change to cPar interface
+    in the sim library)
+  - minor cosmetics changes

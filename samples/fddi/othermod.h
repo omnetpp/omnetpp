@@ -19,6 +19,8 @@
 #ifndef __OTHERMOD_H
 #define __OTHERMOD_H
 
+#include <omnetpp.h>
+
 struct histogram_plus_address
   {
   cLongHistogram length;

@@ -19,15 +19,8 @@
 #ifndef __SSMIFDEF_H
 #define __SSMIFDEF_H
 
-#define BOOL int
-
-#if defined(__BORLANDC__) && __BCPLUSPLUS__<=0x310 && defined(__MSDOS__)
-  #define SSM_OIF_HEAPSIZE 8192
-  #define SSM_IIF_HEAPSIZE 4096
-#else
-  #define SSM_OIF_HEAPSIZE 32728
-  #define SSM_IIF_HEAPSIZE 16384
-#endif
+#define SSM_OIF_HEAPSIZE 32728
+#define SSM_IIF_HEAPSIZE 16384
 
 #define SSM_STATISTICS  90 /* SSM statistics from OIF to IIF */
 #define SSM_IIF_GENPACK 91 /* SSM IIF message to self */

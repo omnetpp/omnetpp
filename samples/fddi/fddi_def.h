@@ -19,15 +19,9 @@
 #ifndef __FDDI_DEF_H
 #define __FDDI_DEF_H
 
-#define BOOL int
+#define FDDI_MAC_HEAPSIZE 65535
 
-#if defined(__BORLANDC__) && __BCPLUSPLUS__<=0x310 && defined(__MSDOS__)
-  #define FDDI_MAC_HEAPSIZE 8192
-#else
-  #define FDDI_MAC_HEAPSIZE 65535
-#endif
-
-// definitions for the FDDI modell
+// definitions for the FDDI model
 
 // constants
 #define byte_tr_time 8e-8 /* 8*(1/100 000 000)= 8e-8 */

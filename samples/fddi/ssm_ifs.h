@@ -19,6 +19,7 @@
 #ifndef __SSM_IFS_H
 #define __SSM_IFS_H
 
+#include <omnetpp.h>
 
 class SSM_OIF_by_frequency : public cSimpleModule
   {
@@ -42,3 +43,4 @@ class SSM_IIF : public cSimpleModule
   };
 
 #endif
+
