@@ -7,7 +7,8 @@ goto end
 :NT
 PATH %PATH%;%~dp0
 nedtool.exe -x -e -y -m -o %TEMP%\$$$ %* || goto CLEANUP
-xsltproc.exe %~dp0\neddoc.xsl %TEMP%\$$$
+xsltproc.exe -o neddoc.html %~dp0\neddoc.xsl %TEMP%\$$$ || goto CLEANUP
+echo neddoc.html created
 :CLEANUP
 del %TEMP%\$$$ 2>nul
 :END
