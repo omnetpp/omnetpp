@@ -38,10 +38,25 @@ This file is distributed WITHOUT ANY WARRANTY. See the file
 //=== Registration
 Register_Class( cPar )
 
+
+//==========================================================================
+//=== cDoubleExpression - member functions
+
+void cDoubleExpression::getAsText(char *buf, int maxlen)
+{
+    sprintf(buf, "%d", evaluate());
+}
+
+bool cDoubleExpression::parseText(const char *text)
+{
+    opp_error("cDoubleExpression: parseText() does not work with compiled expressions");
+    return false;
+}
+
 //==========================================================================
 //=== cPar - member functions
 
-char *cPar::possibletypes = "SBLDFIXTP";
+char *cPar::possibletypes = "SBLDFIXCTP";
 
 // constructors
 cPar::cPar(const char *name) : cObject( name )
@@ -89,6 +104,10 @@ void cPar::deleteold()
     {
         if (dtr.res->owner()==this)
             dealloc( dtr.res );
+    }
+    else if (typechar=='C')
+    {
+        delete cexpr.expr;
     }
     else if (typechar=='P')
     {
@@ -149,7 +168,8 @@ void cPar::info( char *buf )
                   break;
         case 'L': sprintf(b,"%ld (L)",lng.val); break;
         case 'D': sprintf(b,"%g (D)",dbl.val); break;
-        case 'X': sprintf(b,"expression"); break;
+        case 'C': sprintf(b,"compiled expression"); break;
+        case 'X': sprintf(b,"reverse Polish expression"); break;
         case 'T': sprintf(b,"(%s) (T)", dtr.res ? dtr.res->fullPath():"nil"); break;
         case 'P': sprintf(b,"(%p) (P)", ptr.ptr); break;
         case 'O': sprintf(b,"(%s) (O)", obj.obj ? obj.obj->fullPath():"nil"); break;
@@ -406,6 +426,23 @@ cPar& cPar::setDoubleValue(sXElem *x, int n)
     return *this;
 }
 
+cPar& cPar::setDoubleValue(cDoubleExpression *p)
+{
+    if (isRedirected())
+        return ind.par->setDoubleValue(p);
+
+    if (!p)
+        {opp_error(eBADINIT,className(),name(), 'P');return *this;}
+
+    beforeChange();
+    deleteold();
+    cexpr.expr = p;
+    typechar = 'C';
+    inputflag=false;
+    afterChange();
+    return *this;
+}
+
 cPar& cPar::setDoubleValue(cStatistic *res)
 {
     if (isRedirected())
@@ -573,6 +610,8 @@ double cPar::doubleValue()
         return fromstat();
     else if (typechar=='X')
         return evaluate();
+    else if (typechar=='C')
+        return cexpr.expr->evaluate();
     else if (typechar=='F')
         return func.argc==0 ? ((MathFuncNoArg)func.f)() :
                func.argc==1 ? ((MathFunc1Arg) func.f)(func.p1) :
@@ -617,6 +656,7 @@ bool cPar::isNumeric() const
            typechar=='D' ||
            typechar=='T' ||
            typechar=='X' ||
+           typechar=='C' ||
            typechar=='F';
 }
 
@@ -642,6 +682,7 @@ bool cPar::equalsTo(cPar *par)
         case 'P': return ptr.ptr == par->ptr.ptr;
         case 'O': return obj.obj == par->obj.obj;
         case 'X': opp_error("(%s): equalsTo() with X type not implemented",className());
+        case 'C': opp_error("(%s): equalsTo() with C type not implemented",className());
         default: return 0;
     }
 }
@@ -713,7 +754,8 @@ void cPar::getAsText(char *buf, int maxlen)
        case 'T': sprintf(bb,"distribution %.99s", dtr.res ? dtr.res->fullPath():"nil"); break;
        case 'P': sprintf(bb,"pointer %p", ptr.ptr); break;
        case 'O': sprintf(bb,"object %.99s", obj.obj ? obj.obj->fullPath():"nil"); break;
-       case 'X': sprintf(bb,"expression"); break;
+       case 'C': sprintf(bb,"compiled expression"); break;
+       case 'X': sprintf(bb,"reverse Polish expression"); break;
        default : bb[0]='?'; bb[1]=0; break;
     }
     strncpy( buf, bb, maxlen<128 ? maxlen : 128);
@@ -1067,6 +1109,11 @@ cPar& cPar::operator=(const cPar& val)
     {
          // make our copy of the string
          ls.str = opp_strdup(ls.str);
+    }
+    else if (typechar=='C')
+    {
+         // make our copy of expression
+         cexpr.expr = (cDoubleExpression *) cexpr.expr->dup();
     }
     else if (typechar=='X')
     {

@@ -35,6 +35,56 @@ class  cModulePar;
 //=== class mentioned
 class  cStatistic;
 
+
+//==========================================================================
+
+/**
+ * Abstract base class for expressions, to be used with cPar.
+ *
+ * @see cPar
+ */
+class cExpression
+{
+  public:
+    virtual ~cExpression() {}
+    virtual void getAsText(char *buf, int maxlen) = 0;
+    virtual bool parseText(const char *text) = 0;
+    virtual cExpression *dup() = 0;
+};
+
+/**
+ * Abstract base class for double-valued expressions. Currently 
+ * used by the new, nedxml-based nedc, which generates
+ * cDoubleExpression-based compiled expressions (used via cPar) 
+ * for e.g. submodule parameters. 
+ *
+ * The actual expression should be supplied by creating a subclass
+ * and overriding evaluate().  The expression may use parameters
+ * stored in data members of the class; parameters can be initialized
+ * e.g. in the constructor.
+ *
+ * Example:
+ *   <pre>
+ *   class Expr12 : public cDoubleExpression {
+ *       private:
+ *           long p1;
+ *           cPar& p2;
+ *       public:
+ *           Expr12(long ap1, cPar& ap2) : p1(ap1), p2(ap2) {}
+ *           virtual double evaluate() {return 3*p1+p2;}
+ *   };
+ *   </pre>
+ *
+ * @see cPar
+ */
+class cDoubleExpression : public cExpression
+{
+  public:
+    virtual void getAsText(char *buf, int maxlen);
+    virtual bool parseText(const char *text);
+    virtual double evaluate() = 0;
+};
+
 //==========================================================================
 
 /**
@@ -187,6 +237,7 @@ struct sXElem
  *   <LI> basic types: C char, S string, L long, D double
  *   <LI> F math function (MathFuncNoArgs,MathFunc1Args,etc),
  *   <LI> X expression (table of sXElems),
+ *   <LI> C compiled expression (subclassed from cDoubleExpression),
  *   <LI> T distribution from a cStatistic,
  *   <LI> P pointer to cObject,
  *   <LI> I indirection (refers to another cPar)
@@ -209,7 +260,7 @@ class SIM_API cPar : public cObject
   protected:
     static char *possibletypes;
   private:
-    char typechar;     // S/B/L/D/F/T/X/P/O/I
+    char typechar;     // S/B/L/D/F/T/X/C/P/O/I
     bool inputflag;
     bool changedflag;
     opp_string promptstr; // prompt text used when the value is being input
@@ -222,6 +273,7 @@ class SIM_API cPar : public cObject
        struct { MathFunc f; int argc;
                 double p1,p2,p3;                } func; // F:math function
        struct { cStatistic *res;                } dtr;  // T:distribution
+       struct { cDoubleExpression *expr;        } cexpr;// C:compiled expression
        struct { sXElem *xelem; int n;           } expr; // X:expression
        struct { cPar *par;                      } ind;  // I:indirection
        struct { void *ptr;
@@ -390,6 +442,15 @@ class SIM_API cPar : public cObject
     cPar& setDoubleValue(sXElem *x, int n);
 
     /**
+     * Sets the value to the given compiled expression. 
+     * Every time the cPar's value is asked, the evaluate() function of
+     * cDoubleExpression will be called. The passed object will be 
+     * deallocated (using operator delete) from the cPar destructor, and
+     * also when the cPar object is assigned another value.
+     */
+    cPar& setDoubleValue(cDoubleExpression *expr);
+
+    /**
      * Sets the value to the given math function with no arguments.
      * Every time the cPar's value is asked the function will be called.
      */
@@ -457,14 +518,14 @@ class SIM_API cPar : public cObject
     //@{
 
     /**
-     * Returns value as a boolean. The cPar type must be bool (B) or long (L).
+     * Returns value as a boolean. The cPar type must be bool (B) or a numeric type.
      */
     bool boolValue();
 
     /**
      * Returns value as long. The cPar type must be types long (L),
-     * double (D), Boolean (B), function (F), distribution (T) or
-     * expression (X).
+     * double (D), Boolean (B), function (F), distribution (T),
+     * compiled expression (C) or expression (X).
      */
     long longValue();
 
@@ -475,8 +536,8 @@ class SIM_API cPar : public cObject
 
     /**
      * Returns value as double. The cPar type must be types long (L),
-     * double (D), function (F), Boolean (B), distribution (T) and expression
-     * (X).
+     * double (D), function (F), Boolean (B), distribution (T),
+     * compiled expression (C) or expression (X).
      */
     double doubleValue();
 
