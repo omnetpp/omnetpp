@@ -316,7 +316,8 @@ void TCmdenvApp::simulate()
            while (true)
            {
                cSimpleModule *mod = simulation.selectNextModule();
-               ASSERT(mod!=NULL);
+               if (!mod)
+                   throw new cTerminationException("scheduler interrupted while waiting");
 
                // print event banner if neccessary
                if (opt_eventbanners)
@@ -350,7 +351,8 @@ void TCmdenvApp::simulate()
            while (true)
            {
                cSimpleModule *mod = simulation.selectNextModule();
-               ASSERT(mod!=NULL);
+               if (!mod)
+                   throw new cTerminationException("scheduler interrupted while waiting");
 
                // print event banner from time to time
                // ... if (simulation.eventNumber() >= last_update_ev + opt_status_frequency_ev && ...

@@ -242,17 +242,15 @@ void TOmnetTkApp::doOneStep()
     try
     {
         cSimpleModule *mod = simulation.selectNextModule();
-        ASSERT(mod!=NULL);
-
-        if (opt_print_banners)
-           printEventBanner(mod);
-
-        simulation.doOneEvent( mod );
-
+        if (mod)  // selectNextModule() not interrupted
+        {
+            if (opt_print_banners)
+               printEventBanner(mod);
+            simulation.doOneEvent(mod);
+        }
         updateSimtimeDisplay();
         updateNextModuleDisplay();
         updateInspectors();
-
         simstate = SIM_READY;
     }
     catch (cTerminationException *e)
@@ -304,7 +302,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
         {
             // query which module will execute the next event
             cSimpleModule *mod = simulation.selectNextModule();
-            ASSERT(mod!=NULL);
+            if (!mod) break; // selectNextModule() interrupted (parsim)
 
             // if stepping locally in module, we stop both immediately
             // *before* and *after* executing the event in that module,
@@ -413,7 +411,7 @@ void TOmnetTkApp::runSimulationExpress(simtime_t until_time,long until_event)
         do
         {
             cSimpleModule *mod = simulation.selectNextModule();
-            ASSERT(mod!=NULL);
+            if (!mod) break; // selectNextModule() interrupted (parsim)
 
             simulation.doOneEvent( mod );
 

@@ -1,3 +1,8 @@
+2004-02-11  Andras Varga 
+
+	* tkapp.cc: propagated semantic change in getNextEvent()'s and
+	selectNextModule()'s return value (see include/ChangeLog)
+
 2004-02-07  Andras Varga
 
 	* cstructinsp.cc: fix: prepare for missing descriptor object

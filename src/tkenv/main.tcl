@@ -350,6 +350,7 @@ proc create_omnetpp_window {} {
     text .main.text -yscrollcommand ".main.sb set"
     scrollbar .main.sb -command ".main.text yview"
     .main.text tag configure event -foreground blue
+    .main.text tag configure log -foreground #006000
     .main.text tag configure SELECT -back #808080 -fore #ffffff
 
     pack .main.sb -anchor center -expand 0 -fill y  -side right
