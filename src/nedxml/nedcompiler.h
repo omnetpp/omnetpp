@@ -51,7 +51,10 @@ class NEDFileCache
     /** Destructor */
     ~NEDFileCache();
 
+    /** Add a file (parsed into an object tree) to the cache */
     void addFile(const char *name, NEDElement *node);
+
+    /** Get a file (represented as object tree) from the cache */
     NEDElement *getFile(const char *name);
 };
 
@@ -90,10 +93,19 @@ class NEDSymbolTable
 
     /** @name Look up and return a component identified with its name */
     //@{
+    /** Look up a channel declaration */
     NEDElement *getChannelDeclaration(const char *name);
+
+    /** Look up a module declaration */
     NEDElement *getModuleDeclaration(const char *name);
+
+    /** Look up a network declaration */
     NEDElement *getNetworkDeclaration(const char *name);
+
+    /** Look up an enum declaration */
     NEDElement *getEnumDeclaration(const char *name);
+
+    /** Look up a class declaration */
     NEDElement *getClassDeclaration(const char *name);
     //@}
 };
