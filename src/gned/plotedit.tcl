@@ -302,11 +302,7 @@ proc selectOrMoveStart {c x y ctrl} {
     _cancelLabelEdit $c
 
     if {$config(snaptogrid)} {
-       set gridsize 8
-       incr x [expr $gridsize/2]
-       incr y [expr $gridsize/2]
-       set x [expr $x - fmod($x,$gridsize)]
-       set y [expr $y - fmod($y,$gridsize)]
+       snapToGrid x y
     }
 
     set mouse(startingX) $x
@@ -499,11 +495,7 @@ proc selectOrMoveDrag {c x y} {
 
     if {$config(snaptogrid)} {
        if {$mouse(mode)!="reanchor" && $mouse(mode)!="endp-reanchor"} {
-          set gridsize 8
-          incr x [expr $gridsize/2]
-          incr y [expr $gridsize/2]
-          set x [expr $x - fmod($x,$gridsize)]
-          set y [expr $y - fmod($y,$gridsize)]
+          snapToGrid x y
        }
     }
 
@@ -610,12 +602,9 @@ proc selectOrMoveEnd {c x y} {
     set y [expr int([$c canvasy $y])]
 
     if {$config(snaptogrid)} {
-       set gridsize 8
-       incr x [expr $gridsize/2]
-       incr y [expr $gridsize/2]
-       set x [expr $x - fmod($x,$gridsize)]
-       set y [expr $y - fmod($y,$gridsize)]
+       snapToGrid x y
     }
+
     if {$mouse(mode) == "resize" || $mouse(mode) == "move"} {
 
        # update size and position data in ned()
@@ -689,11 +678,7 @@ proc drawStart {c x y} {
     _cancelLabelEdit $c
 
     if {$config(snaptogrid)} {
-       set gridsize 8
-       incr x [expr $gridsize/2]
-       incr y [expr $gridsize/2]
-       set x [expr $x - fmod($x,$gridsize)]
-       set y [expr $y - fmod($y,$gridsize)]
+       snapToGrid x y
     }
 
     set cid [$c find withtag current]
@@ -734,11 +719,7 @@ proc drawDrag {c x y} {
     set y [expr int([$c canvasy $y])]
 
     if {$config(snaptogrid)} {
-       set gridsize 8
-       incr x [expr $gridsize/2]
-       incr y [expr $gridsize/2]
-       set x [expr $x - fmod($x,$gridsize)]
-       set y [expr $y - fmod($y,$gridsize)]
+       snapToGrid x y
     }
 
     if {$mouse(mode) == "submod"} {
@@ -760,11 +741,7 @@ proc drawEnd {c x y} {
     set y [expr int([$c canvasy $y])]
 
     if {$config(snaptogrid)} {
-       set gridsize 8
-       incr x [expr $gridsize/2]
-       incr y [expr $gridsize/2]
-       set x [expr $x - fmod($x,$gridsize)]
-       set y [expr $y - fmod($y,$gridsize)]
+       snapToGrid x y
     }
 
     if {$mouse(mode) == "submod"} {
@@ -1076,3 +1053,19 @@ proc markCanvasDirty {} {
     markNedfileOfItemDirty $modkey
 }
 
+
+# snapToGrid --
+#
+# Modify the value of the passed two variables containing coordinates
+# to achieve 'snap to grid' effect
+#
+proc snapToGrid {xvar yvar} {
+    upvar $xvar x
+    upvar $yvar y
+
+    set gridsize 8
+    incr x [expr $gridsize/2]
+    incr y [expr $gridsize/2]
+    set x [expr $x - fmod($x,$gridsize)]
+    set y [expr $y - fmod($y,$gridsize)]
+}
