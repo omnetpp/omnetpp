@@ -31,8 +31,6 @@
 # THIS PROC IS CALLED FROM C++ CODE, at each inspector display update.
 #
 proc inspectorupdate_callback {} {
-    # experimental code (for Token sample prog):
-    # opp_inspectbyname {token.comp[0].sink.local-objects.queuing-time} {cOutVector} {As Graphics}
     inspectorlist_openinspectors
 }
 
@@ -44,8 +42,12 @@ proc inspectorlist_openinspectors {} {
     global pil_name pil_class pil_type pil_geom
 
     foreach key [array names pil_name] {
-        #puts [list opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)]
-        opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)
+        # check if element is still in the array: if an inspector was several times
+        # on the list (ie. both w/ type=0 and type!=0), opening it removes both elements...
+        if [info exists pil_name($key)] {
+            #DBG: puts [list opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)]
+            opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)
+        }
     }
 }
 
@@ -66,7 +68,7 @@ proc inspectorlist_storename {w} {
 #
 # add an inspector to the list
 #
-# called when an inspector window closed because the undelying object
+# called when an inspector window gets closed because the underlying object
 # was destroyed -- in this case remember it on the 'pending inspectors' list
 # so that we can reopen the inspector when (if) the object reappears.
 #
@@ -170,7 +172,6 @@ proc inspectorlist_load {f} {
       set pil_class($key)  $class
       set pil_type($key)   $type
       set pil_geom($key)   $geom
-
 
       incr lineno
     }

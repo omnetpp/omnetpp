@@ -49,13 +49,8 @@ proc create_omnetpp_window {} {
     # Menu bar
     #################################
 
-    if {$tcl_version < 8.0} {
-        frame .menubar -borderwidth 1 -relief raised
-        pack .menubar -expand 0 -fill x -side top
-    } else {
-        menu .menubar
-        . config -menu .menubar
-    }
+    menu .menubar
+    . config -menu .menubar
 
     # Create menus
     foreach i {
@@ -139,6 +134,8 @@ proc create_omnetpp_window {} {
       {command -command inspect_anyobject -label {From list of all objects...} -underline 0}
       {command -command inspect_matching -label {By pattern matching...} -underline 3}
       {command -command inspect_bypointer -label {By pointer...} -underline 4}
+      {separator}
+      {command -command opp_updateinspectors -label {Refresh inspectors} -underline 0}
     } {
       eval .menubar.inspectmenu$m add $i
     }
@@ -182,8 +179,7 @@ proc create_omnetpp_window {} {
     # Options menu
     foreach i {
       {command -command simulation_options -label {Simulation options...} -underline 0}
-      {separator}
-      {command -label {Update inspectors now} -underline 0 -command opp_updateinspectors}
+      {command -command toggle_treeview -label {Show/hide object tree} -underline 1}
       {separator}
       {command -label {Load inspector list...} -underline 0 -command load_inspectorlist}
       {command -label {Save open inspectors list...} -underline 1 -command save_inspectorlist}
@@ -196,15 +192,6 @@ proc create_omnetpp_window {} {
       {command -command about -label {About OMNeT++/Tkenv} -underline 0}
     } {
       eval .menubar.helpmenu$m add $i
-    }
-
-    # Pack menus on menubar
-    if {$tcl_version < 8.0} {
-        foreach i {
-          filemenu editmenu simulatemenu tracemenu inspectmenu viewmenu optionsmenu helpmenu
-        } {
-          pack .menubar.$i -anchor n -expand 0 -fill none -side left
-        }
     }
 
     #################################
@@ -360,9 +347,6 @@ proc create_omnetpp_window {} {
     #################################
     # Pack everything
     #################################
-    if {$tcl_version < 8.0} {
-        pack .menubar   -anchor center -expand 0 -fill x -side top
-    }
     pack .toolbar    -anchor center -expand 0 -fill x -side top
     pack .statusbar  -anchor center -expand 0 -fill x -side top
     pack .statusbar2 -anchor center -expand 0 -fill x -side top
