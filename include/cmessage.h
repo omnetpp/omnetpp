@@ -87,19 +87,19 @@ class SIM_API cMessage : public cObject
 
   private:
     int msgkind;               // message kind -- <0 reserved, 0>= user-defined meaning
-    int prior;              // priority -- used for scheduling msgs with equal times
-    long len;               // length of message -- used for bit errors and transm.delay
+    int prior;                 // priority -- used for scheduling msgs with equal times
+    long len;                  // length of message -- used for bit errors and transm.delay
     bool error : 1;            // bit error occurred during transmission
     unsigned refcount : 7;     // reference count for encapsulated message (0: not encapsulated, max 127)
     unsigned char srcprocid;   // reserved for use by parallel execution: id of source partition 
-    cArray *parlistp;       // ptr to list of parameters
-    cMessage *encapmsg;     // ptr to encapsulated msg
-    void *contextptr;       // a stored pointer -- user-defined meaning
+    cArray *parlistp;          // ptr to list of parameters
+    cMessage *encapmsg;        // ptr to encapsulated msg
+    void *contextptr;          // a stored pointer -- user-defined meaning
 
-    int frommod,fromgate;   // source module and gate IDs -- set internally
-    int tomod,togate;       // dest. module and gate IDs -- set internally
-    simtime_t created;      // creation time -- set be constructor
-    simtime_t sent,delivd;  // time of sending & delivery -- set internally
+    int frommod,fromgate;      // source module and gate IDs -- set internally
+    int tomod,togate;          // dest. module and gate IDs -- set internally
+    simtime_t created;         // creation time -- set be constructor
+    simtime_t sent,delivd;     // time of sending & delivery -- set internally
     simtime_t tstamp;          // time stamp -- user-defined meaning
 
     int heapindex;             // used by cMessageHeap (-1 if not on heap)
