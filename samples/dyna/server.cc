@@ -28,7 +28,7 @@ void Server::activity()
              switch( type )
              {
                  case CONN_REQ:
-                    mod = srvproc_type->createInitStart("serverproc",this);
+                    mod = srvproc_type->createScheduleInit("serverproc",this);
 
                     ev << "CONN_REQ: Created process ID=" << mod->id() << endl;
 
