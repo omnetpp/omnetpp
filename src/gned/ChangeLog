@@ -138,4 +138,5 @@ Aug 11, 1999
   - changed widget.tcl -- must be updated elsewhere!
 Aug 15, 1999
   - fixed bugs in nedfile.cc (lines 86,91,92 contained "==" instead of "=")
-
+Aug 18, 1999
+  - initial version of syntax highlight implemented

@@ -111,6 +111,8 @@ proc openModuleOnNewCanvas {modkey} {
     canvas $canv -background #a0e0a0  -relief ridge -border 2
     text   $txt  -background wheat2   -relief ridge -border 2 -wrap none -font $fonts(fixed)
 
+    configTextForSyntaxHightlight $txt
+
     button $tab -command "switchToCanvas $canv_id" -relief ridge \
                 -bg wheat2 -highlightthickness 0 -height 1
     pack $tab -anchor n -expand 0 -fill none -side left

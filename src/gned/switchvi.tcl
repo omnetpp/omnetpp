@@ -37,6 +37,9 @@ proc switchToNED {} {
     $t insert end $nedcode
     catch {$t mark set insert $curpos}
     $t see insert
+
+    # initial syntax hightlight
+    syntaxHighlight $t 1.0 end
 }
 
 
