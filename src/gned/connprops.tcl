@@ -21,6 +21,9 @@
 proc editConnectionProps {key} {
     global gned ned canvas
 
+    tk_messageBox -icon warning -type ok -title GNED -message "Sorry! This dialog hasn't been implemented yet."
+    return
+
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .connprops "Connection Properties"
 

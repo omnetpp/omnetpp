@@ -44,7 +44,6 @@ if [info exist OMNETPP_GNED_DIR] {
      source [file join $dir drawitem.tcl]
      source [file join $dir plotedit.tcl]
      source [file join $dir textedit.tcl]
-     source [file join $dir props.tcl]
      source [file join $dir drawopts.tcl]
      source [file join $dir fileview.tcl]
      source [file join $dir loadsave.tcl]
@@ -57,6 +56,15 @@ if [info exist OMNETPP_GNED_DIR] {
      source [file join $dir treemgr.tcl]
      source [file join $dir main.tcl]
      source [file join $dir balloon.tcl]
+     source [file join $dir props.tcl]
+     source [file join $dir chanprops.tcl]
+     source [file join $dir connprops.tcl]
+     source [file join $dir imptprops.tcl]
+     source [file join $dir modprops.tcl]
+     source [file join $dir netwprops.tcl]
+     source [file join $dir props.tcl]
+     source [file join $dir submprops.tcl]
+
    } errmsg] {
      puts "**** Error: $errmsg"
    }

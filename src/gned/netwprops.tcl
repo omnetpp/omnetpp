@@ -3,8 +3,7 @@
 #            part of the GNED, the Tcl/Tk graphical topology editor of
 #                            OMNeT++
 #
-#   By Andras Varga
-#   Additions: Istvan Pataki, Gabor Vincze ({deity|vinczeg}@sch.bme.hu)
+#   By Istvan Pataki, Gabor Vincze ({deity|vinczeg}@sch.bme.hu)
 #
 #==========================================================================
 
@@ -20,6 +19,9 @@
 
 proc editNetworkProps {key} {
     global gned ned canvas
+
+    tk_messageBox -icon warning -type ok -title GNED -message "Sorry! This dialog hasn't been implemented yet."
+    return
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .netprops "Network Properties"

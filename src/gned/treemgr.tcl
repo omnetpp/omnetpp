@@ -206,9 +206,9 @@ proc toplevelComponentPopup {key} {
     global ned
     # FIXME:
     foreach i {
-      {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
-      {separator}
+      {command -command "editProps $key" -label {Properties...} -underline 0}
       {command -command "openModuleOnCanvas $key" -label {Open on canvas} -underline 0}
+      {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
       {separator}
       {command -command "moveUpItem $key; updateTreeManager" -label {Move up} -underline 5}
       {command -command "moveDownItem $key; updateTreeManager" -label {Move down} -underline 5}
