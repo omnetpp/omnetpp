@@ -67,10 +67,10 @@ set icons(cut) [image create photo -data {
     p/aN61UABIMBLxgQBI7C2eBYLBqTl6WkOYVapMasICjCOpG3pZNHLnMiADs=
 }]
 
-set icons(delete) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxv//////////////////////////////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAAQ2MMhJq734ApDDrtunhSBZiic3heoosp3HmvHc
-    xjJd2zgMZ7/cjRKUFI26le5IpCUtKCNuGosAADs=
+set icons(del) [image create photo -data {
+    R0lGODlhFAATALMAAIQAAOferf//////////////////////////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAAQtMMhJq704aww6B1fnVWMoUmV2Bqkmttu6TS84
+    syNsybgL2x8gyqW6GY/IZCYCADs=
 }]
 
 set icons(draw) [image create photo -data {
@@ -120,6 +120,12 @@ set icons(incl_vs) [image create photo -data {
     R0lGODlhEAAQALMAAAAAAFpaWnt7e4SEhMbGxv////8AgP//////////////////////////
     /////////yH5BAEAAAYALAAAAAAQABAAAARK0JhBq5V4ls03GZnGCYBQEAWIDR3gFq67dqTp
     AXOnE7jEcoQAANgTwWLE3PF1Uy6TvhbzVPxtkM3oNTakKrld3opALpvFErBaFgEAOw==
+}]
+
+set icons(container_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAISEAISEhMbGxv//////////////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAQABAAAAQukMhJq70428C730MohgEYAoBYVl67UsE4vlN8
+    puTmdqY80BLbAKXS7YCapHIZAQA7
 }]
 
 set icons(module) [image create photo -data {

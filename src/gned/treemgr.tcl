@@ -87,23 +87,7 @@ proc getNodeInfo {w op {key {}}} {
       }
 
       text {
-        # FIXME: this should turn into a call to some itemDescription proc
-        if {[info exist ned($key,name)] && [info exist ned($key,vectorsize)] && $ned($key,vectorsize)!=""} {
-          # return "$key:$ned($key,type) $ned($key,name)\[$ned($key,vectorsize)\]"
-          return "$ned($key,type) $ned($key,name)\[$ned($key,vectorsize)\]"
-        } elseif {[info exist ned($key,name)] && [info exist ned($key,size)] && $ned($key,size)!=""} {
-          # return "$key:$ned($key,type) $ned($key,name)\[$ned($key,size)\]"
-          return "$ned($key,type) $ned($key,name)\[$ned($key,size)\]"
-        } elseif {[info exist ned($key,name)] && [info exist ned($key,isvector)] && $ned($key,isvector)} {
-          # return "$key:$ned($key,type) $ned($key,name)\[\]"
-          return "$ned($key,type) $ned($key,name)\[\]"
-        } elseif [info exist ned($key,name)] {
-          # return "$key:$ned($key,type) $ned($key,name)"
-          return "$ned($key,type) $ned($key,name)"
-        } else {
-          # return "$key:$ned($key,type)"
-          return "$ned($key,type)"
-        }
+        return [itemLabel $key]
       }
 
       options {
@@ -351,3 +335,69 @@ proc displayCodeForItem {key} {
 }
 
 
+# itemLabel --
+#
+# Produce item label for treeview.
+#
+proc itemLabel {key} {
+    global ned
+
+    if {$ned($key,type)=="conn"} {
+        # src and dest module and gate indices
+        set src_index ""
+        set dest_index ""
+        set src_gate_index ""
+        set dest_gate_index ""
+        if {$ned($key,src-mod-index)!=""}   {set src_index "\[$ned($key,src-mod-index)\]"}
+        if {$ned($key,dest-mod-index)!=""}  {set dest_index "\[$ned($key,dest-mod-index)\]"}
+        if {$ned($key,src-gate-index)!=""}  {set src_gate_index "\[$ned($key,src-gate-index)\]"}
+        if {$ned($key,dest-gate-index)!=""} {set dest_gate_index "\[$ned($key,dest-gate-index)\]"}
+
+        # src and dest gates
+        if {$ned($ned($key,src-ownerkey),type)=="module"} {
+            set src "$ned($key,srcgate)$src_gate_index"
+        } else {
+            set src "$ned($ned($key,src-ownerkey),name)$src_index.$ned($key,srcgate)$src_gate_index"
+        }
+        if {$ned($ned($key,dest-ownerkey),type)=="module"} {
+            set dest "$ned($key,destgate)$dest_gate_index"
+        } else {
+            set dest "$ned($ned($key,dest-ownerkey),name)$dest_index.$ned($key,destgate)$dest_gate_index"
+        }
+
+        # direction
+        if {$ned($key,arrowdir-l2r)} {
+            set arrow "-->"
+        } else {
+            set arrow "<--"
+
+            set tmp $src
+            set src $dest
+            set dest $tmp
+        }
+        return "conn $src $arrow $dest"
+
+    } elseif {$ned($key,type)=="submod"} {
+        set str "$ned($key,name): $ned($key,type-name)"
+        if {$ned($key,vectorsize)!=""} {
+            append str "\[$ned($key,vectorsize)\]"
+        }
+        if {$ned($key,like-name)!=""} {
+            append str " like $ned($key,like-name)"
+        }
+        return $str
+
+    } elseif {[info exist ned($key,name)] && [info exist ned($key,vectorsize)] && $ned($key,vectorsize)!=""} {
+        return "$ned($key,type) $ned($key,name)\[$ned($key,vectorsize)\]"
+    } elseif {[info exist ned($key,name)] && [info exist ned($key,size)] && $ned($key,size)!=""} {
+        return "$ned($key,type) $ned($key,name)\[$ned($key,size)\]"
+    } elseif {[info exist ned($key,name)] && [info exist ned($key,isvector)] && $ned($key,isvector)} {
+        return "$ned($key,type) $ned($key,name)\[\]"
+    } elseif {[info exist ned($key,name)] && [info exist ned($key,value)]} {
+        return "$ned($key,type) $ned($key,name) = $ned($key,value)"
+    } elseif [info exist ned($key,name)] {
+        return "$ned($key,type) $ned($key,name)"
+    } else {
+        return "$ned($key,type)"
+    }
+}

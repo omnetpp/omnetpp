@@ -177,6 +177,7 @@ set ned_attr(module,aux-isselected)       {0}
 #
 set ned_desc(params,plusindent)       {    }
 set ned_desc(params,parents)          {simple module}
+set ned_desc(params,treeicon)         {container_vs}
 set ned_attr(params,banner-comment)   {}
 set ned_attr(params,right-comment)    {}
 
@@ -195,6 +196,7 @@ set ned_attr(param,datatype)         {numeric}
 #
 set ned_desc(gates,plusindent)       {    }
 set ned_desc(gates,parents)          {simple module}
+set ned_desc(gates,treeicon)         {container_vs}
 set ned_attr(gates,banner-comment)   {}
 set ned_attr(gates,right-comment)    {}
 
@@ -214,6 +216,7 @@ set ned_attr(gate,isvector)         {0}
 #
 set ned_desc(machines,plusindent)       {    }
 set ned_desc(machines,parents)          {simple module}
+set ned_desc(machines,treeicon)         {container_vs}
 set ned_attr(machines,banner-comment)   {}
 set ned_attr(machines,right-comment)    {}
 
@@ -231,6 +234,7 @@ set ned_attr(machine,name)             {machine}
 #
 set ned_desc(submods,plusindent)       {    }
 set ned_desc(submods,parents)          {module}
+set ned_desc(submods,treeicon)         {container_vs}
 set ned_attr(submods,banner-comment)   {}
 set ned_attr(submods,right-comment)    {}
 
@@ -264,6 +268,7 @@ set ned_attr(submod,aux-isselected)       {0}
 #
 set ned_desc(substparams,plusindent)       {    }
 set ned_desc(substparams,parents)          {submod}
+set ned_desc(substparams,treeicon)         {container_vs}
 set ned_attr(substparams,banner-comment)   {}
 set ned_attr(substparams,right-comment)    {}
 set ned_attr(substparams,condition)        {}
@@ -283,6 +288,7 @@ set ned_attr(substparam,value)            {}
 #
 set ned_desc(gatesizes,plusindent)       {    }
 set ned_desc(gatesizes,parents)          {submod}
+set ned_desc(gatesizes,treeicon)         {container_vs}
 set ned_attr(gatesizes,banner-comment)   {}
 set ned_attr(gatesizes,right-comment)    {}
 set ned_attr(gatesizes,condition)        {}
@@ -302,6 +308,7 @@ set ned_attr(gatesize,size)             {}
 #
 set ned_desc(substmachines,plusindent)       {    }
 set ned_desc(substmachines,parents)          {submod}
+set ned_desc(substmachines,treeicon)         {container_vs}
 set ned_attr(substmachines,banner-comment)   {}
 set ned_attr(substmachines,right-comment)    {}
 set ned_attr(substmachines,condition)        {}
@@ -320,6 +327,7 @@ set ned_attr(substmachine,value)            {}
 #
 set ned_desc(conns,plusindent)       {    }
 set ned_desc(conns,parents)          {module}
+set ned_desc(conns,treeicon)         {container_vs}
 set ned_attr(conns,banner-comment)   {}
 set ned_attr(conns,right-comment)    {}
 set ned_attr(conns,nocheck)          {0}

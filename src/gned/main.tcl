@@ -268,7 +268,7 @@ proc createMainWindow {} {
       {sep0     -separator}
       {draw     -image $icons(draw)     -command {drawBindings $gned(canvas)}}
       {select   -image $icons(select)   -command {selectOrMoveBindings $gned(canvas)}}
-      {delete   -image $icons(delete)   -command {deleteSelected}}
+      {delete   -image $icons(del)      -command {deleteSelected}}
       {sep1     -separator}
       {grid     -image $icons(grid)     -command {toggleGrid 1}}
       {bounds   -image $icons(bounds)   -command {resetModuleBounds}}

@@ -239,6 +239,8 @@ proc deleteSelected {} {
             deleteItem $key
         }
     }
+
+    updateTreeManager
 }
 
 
