@@ -60,7 +60,6 @@
  *    - cTopology supports routing in telecommunication or multiprocessor networks.
  *    - cFSM is used to build Final State Machines
  *    - cWatch makes variables visible (inspectable) in Tkenv
- *    - opp_string: basic string class
  *
  * Many other classes closely related to the above ones are not listed
  * here explicitly, but you can find them via 'See also' links from their

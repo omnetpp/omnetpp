@@ -18,8 +18,8 @@
 #ifndef __CPOLYMORPHIC_H
 #define __CPOLYMORPHIC_H
 
+#include <string>
 #include "defs.h"
-#include "opp_string.h"
 
 /**
  * This is the ultimate base class for cObject, and thus for nearly all
@@ -96,17 +96,15 @@ class SIM_API cPolymorphic
      * @see detailedInfo()
      */
     virtual void info(char *buf)  {*buf='\0';}
+    //virtual std::string info() const  {return std::string();}
 
     /**
      * Can be redefined to produce a detailed, multi-line, arbitrarily long
-     * description of the object. The buffer can be expanded as needed using
-     * member functions of opp_string. The string appears in the graphical
+     * description of the object. The string appears in the graphical
      * user interface (Tkenv) together with other object data (e.g. class name)
      * wherever it is feasible to display a multi-line string.
-     *
-     * The function should return the same buf object it received.
      */
-    virtual opp_string& detailedInfo(opp_string& buf)  {return buf;}
+    virtual std::string detailedInfo() const  {return std::string();}
     //@}
 };
 

@@ -23,14 +23,15 @@
 #include "util.h"
 
 /**
- * Basic string class. opp_string has only one data member,
- * a char* pointer. Allocation/deallocation of the contents takes place
- * via opp_strdup() and operator delete
+ * Lightweight string class, used internally in some parts of OMNeT++. 
+ * In simulation models it is better to use std::string or const char *
+ * instead.
  *
- * Recommended use: as class member, where otherwise the class members
- * would have to call opp_strdup() and delete for the char* member.
+ * opp_string has only one data member, a char* pointer. Allocation and
+ * deallocation of the contents takes place via opp_strdup() and operator 
+ * delete.
  *
- * @ingroup SimSupport
+ * @ingroup Internals
  */
 class SIM_API opp_string
 {
@@ -96,12 +97,6 @@ class SIM_API opp_string
                                {delete[] str;str=opp_strdup(s.str);return *this;}
 
 };
-
-inline std::ostream& operator<<(std::ostream& out, const opp_string& str)
-{
-    out << str.c_str();
-    return out;
-}
 
 #endif
 
