@@ -396,6 +396,7 @@ AC_OUTPUT(
   samples/nim/Makefile
   samples/pvmex/Makefile
   samples/token/Makefile
+  samples/all/Makefile
 )
 
 chmod +x src/utils/makemake

@@ -28,16 +28,17 @@ components: libs progs install-local samples
 #
 #=====================================================================
 
+LIBS=sim envir cmdenv tkenv tvenv
+PROGS=utils nedc gned plove
+SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token all
 
 #
-# Group targets. Note that utils has to be built before libs and progs
+# Group targets. Note that utils has to be built BEFORE other libs and progs
 # because tcl2c might be needed to build tkenv or gned.
 #
-libs: utils sim envir cmdenv tkenv tvenv
-
-progs: utils nedc gned plove
-
-samples: dyna fddi fifo1 fifo2 hcube hist nim pvmex token
+libs: utils $(LIBS)
+progs: $(PROGS)
+samples: $(SAMPLES)
 
 
 #
@@ -107,6 +108,8 @@ pvmex:
 token:
 	cd $(OMNETPP_SAMPLES_DIR)/token && $(MAKE)
 
+all:
+	cd $(OMNETPP_SAMPLES_DIR)/all && $(MAKE)
 
 #=====================================================================
 #
@@ -123,23 +126,23 @@ check-env:
 	fi
 
 clean:
-	for i in sim envir tkenv tvenv cmdenv nedc gned plove utils; do \
+	for i in $(LIBS) $(PROGS); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
-	for i in dyna fddi fifo1 fifo2 hcube hist nim pvmex token; do \
+	for i in $(SAMPLES); do \
 	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); \
 	done
 
 depend:
-	for i in sim envir tkenv tvenv cmdenv nedc gned plove utils; do \
+	for i in $(LIBS) $(PROGS); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) depend); \
 	done
-	for i in dyna fddi fifo1 fifo2 hcube hist nim pvmex token; do \
+	for i in $(SAMPLES); do \
 	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) depend); \
 	done
 
 install-local:
-	for i in sim envir tkenv tvenv cmdenv nedc gned plove utils; do \
+	for i in $(LIBS) $(PROGS); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) install-local); \
 	done
 

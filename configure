@@ -2468,6 +2468,7 @@ CONFIG_FILES=\${CONFIG_FILES-"Makefile
   samples/nim/Makefile
   samples/pvmex/Makefile
   samples/token/Makefile
+  samples/all/Makefile
 "}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
