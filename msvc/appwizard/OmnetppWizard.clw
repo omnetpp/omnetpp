@@ -11,10 +11,10 @@ ClassCount=3
 Class1=CCustom1Dlg
 
 ResourceCount=4
-Resource1=IDD_CUSTOM1
+Resource1=IDD_EDIT
 Class2=CEditComp
 Resource2=IDD_CUSTOM1 (DIRS)
-Resource3=IDD_EDIT
+Resource3=IDD_CUSTOM1
 Class3=CDirs
 Resource4=IDD_DIRS
 

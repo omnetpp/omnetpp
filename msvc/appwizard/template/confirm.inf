@@ -16,4 +16,9 @@ $$ELSE
 $$ENDIF
 $$ENDLOOP // SIMPLE_N
 
-WARNING! You have to CLOSE and then open (recent) the workspace after creation finished.
+IMPORTANT!!!
+  You have to CLOSE and REOPEN the workspace after creation 
+  has finished, for project file settings to take effect!
+  You can use the File|Recent Workspaces command. The warning
+  issued when you first reopen the project can be ignored.
+

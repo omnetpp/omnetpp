@@ -149,17 +149,17 @@ STYLE DS_CONTROL | WS_CHILD
 FONT 8, "MS Sans Serif"
 BEGIN
     GROUPBOX        "",IDC_STATIC,100,0,204,196,BS_FLAT
-    GROUPBOX        "OMNeT++ root directory",IDC_STATIC,108,33,189,34
+    GROUPBOX        "&OMNeT++ root directory",IDC_STATIC,108,33,189,34
     EDITTEXT        IDC_OPPDIR,113,44,132,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_OPPDIR_BROWSE,249,44,44,14
-    GROUPBOX        "TCL/TK directory",IDC_STATIC,108,81,189,59
+    GROUPBOX        "&Tcl/Tk lib directory",IDC_STATIC,108,81,189,59
     EDITTEXT        IDC_TCLDIR,113,92,132,14,ES_AUTOHSCROLL
     PUSHBUTTON      "Browse...",IDC_TCLDIR_BROWSE,249,92,44,14
     LTEXT           "Specify the directory of the installed components.",
                     IDC_STATIC,108,12,187,16
-    LTEXT           "TCL/TK version:",IDC_STATIC,113,117,53,8
+    LTEXT           "Tcl/Tk &version:",IDC_STATIC,113,117,53,8
     EDITTEXT        IDC_TCLVER,173,115,21,14,ES_AUTOHSCROLL
-    CONTROL         121,IDC_STATIC,"Static",SS_BITMAP,15,31,53,69
+    CONTROL         121,IDC_STATIC,"Static",SS_BITMAP,4,4,53,69
 END
 
 
