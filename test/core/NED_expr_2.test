@@ -29,9 +29,9 @@ void {Simple}::activity()
 {
     for (int i=0; i<params(); i++)
         ev << par(i).name() << "=" << std::hex << (unsigned long)par(i) << endl;
-    ev << endl;
+    ev << ".\n";
 }
 
-%contains-regex: stdout
+%contains: stdout
 p00=c0000000
 .
