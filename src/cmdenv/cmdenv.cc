@@ -98,7 +98,7 @@ void TCmdenvApp::setup(int argc, char *argv[])
      // If the list of runs is not given explicitly, must execute all runs
      // that have an ini file section; if no runs have ini file sections,
      // must do one run.
-     if ((char *)opt_runstoexec==NULL)
+     if ((const char *)opt_runstoexec==NULL)
      {
         buffer[0]='\0';
         for (cIniFileSectionIterator sect(ini_file); !sect.end(); sect++)
@@ -123,11 +123,11 @@ void TCmdenvApp::run()
          return;
      }
 
-     EnumStringIterator run_nr( (char *)opt_runstoexec );
+     EnumStringIterator run_nr( (const char *)opt_runstoexec );
      if (run_nr.error())
      {
          ev.printfmsg("Error parsing list of runs to execute: `%s'",
-                      (char *)opt_runstoexec );
+                      (const char *)opt_runstoexec );
          return;
      }
 
@@ -141,11 +141,11 @@ void TCmdenvApp::run()
          cNetworkType *network = findNetwork( opt_network_name );
          if (network==NULL)
          {
-             opp_error("Network `%s' not found, check .ini and .ned files", (char *)opt_network_name);
+             opp_error("Network `%s' not found, check .ini and .ned files", (const char *)opt_network_name);
              continue;
          }
 
-         ev.printf("Setting up network `%s'...\n", (char *)opt_network_name);
+         ev.printf("Setting up network `%s'...\n", (const char *)opt_network_name);
 
          simulation.setupNetwork( network, run_nr() );
          if (simulation.ok())
@@ -261,7 +261,7 @@ void TCmdenvApp::help()
 //---------------------------------------------------------------------
 // input/output
 
-void TCmdenvApp::puts(char *s)
+void TCmdenvApp::puts(const char *s)
 {
      if (opt_modulemsgs || simulation.contextModule()==NULL)
          TOmnetApp::puts( s );

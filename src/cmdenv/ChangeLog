@@ -105,3 +105,6 @@ Dec 4,1999
 Dec 5,1999
   - Makefile.vc added
 ------ omnetpp-2.0b3 released ------
+Mar 26, 2000
+ - 'char *' pointers made const-correct (lots of 'char *' --> 'const char *'
+   replacements throughout the code)

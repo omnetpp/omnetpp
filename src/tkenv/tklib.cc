@@ -25,6 +25,7 @@
 #include "tklib.h"
 #include "tkinsp.h"
 #include "tkapp.h"
+#include "patmatch.h"
 
 //=======================================================================
 
@@ -154,7 +155,7 @@ char *infofunc_nameonly( cObject *object)
 {
     static char buf[128];
     char *d = printptr(object,buf);
-    char *s = object->fullName();
+    const char *s = object->fullName();
     strcpy(d, (s && s[0]) ? s : "<noname>" );
     return buf;
 }
@@ -171,7 +172,7 @@ char *infofunc_fullpath( cObject *object)
 {
     static char buf[128];
     char *d = printptr(object,buf);
-    char *s = object->fullPath();
+    const char *s = object->fullPath();
     strcpy(d, (s && s[0]) ? s : "<noname>" );
     return buf;
 }
@@ -180,8 +181,8 @@ char *infofunc_typeandfullpath( cObject *object)
 {
     static char buf[128];
     char *d = printptr(object,buf);
-    char *clname = object->className();
-    char *path = object->fullPath();
+    const char *clname = object->className();
+    const char *path = object->fullPath();
     int padding = 16-strlen(clname); if (padding<1) padding=1;
     sprintf(d, "(%s)%*s %.80s", clname, padding,"", path );
     return buf;
@@ -192,123 +193,11 @@ char *infofunc_module( cObject *object)
     static char buf[128];
     char *d = printptr(object,buf);
     cModule *mod = (cModule *)object;
-    char *path = mod->fullPath();
-    char *clname = mod->className();
+    const char *path = mod->fullPath();
+    const char *clname = mod->className();
     int padding = 16-strlen(clname); if (padding<1) padding=1;
     sprintf(d, "#%-3d (%s)%*s %.80s", mod->id(), clname, padding,"", path);
     return buf;
-}
-
-//----------------------------------------------------------------------
-// pattern matching stuff
-
-enum {ANY=-2,	 // ?
-      ANYCL=-3,  // *
-      SET=-4,	 // {	(begin set)
-      NEGSET=-5, // {^	(begin negated set)
-      ENDSET=-6  // }	(end set)
-};
-
-bool transform_pattern(unsigned char *from, short *to)
-{
-    // Prepares pattern for the match function.
-    // Retval: TRUE: successful, FALSE: bad pattern (unmatched '{')
-    //	handles quoted chars: replaces \x with x (where x can by any char)
-    //	replaces *,?,[,[^,] with ANY,ANYCL,SET,NEGSET,ENDSET
-    //	expands sets: [0-9] becomes SET,0,1,2,3,4,5,6,7,8,9,ENDSET
-
-    short c;
-    while ((c = *from++) != '\0')
-    {
-	switch( c )
-	{
-	   case '?':  c=ANY; break;
-	   case '*':  c=ANYCL; break;
-	   case '\\': c = *from++; break;
-	   case '{':  // begin set or negated set
-		      if ((c = *from++)=='^') {
-			  *to++ = NEGSET; c = *from++;
-		      } else {
-			  *to++ = SET;
-		      }
-		      // transform set
-		      do {
-			  if (*from=='-' && from[1]!='}')
-			  {
-			     while (c<=from[1]) // expand set
-				*to++ = c++;
-			     from += 2;
-			  }
-			  else if (c=='\0')
-			     return FALSE; // error: unmatched '{'
-			  else
-			     *to++ = c;
-		      } while ((c = *from++) != '}');
-		      // close set in transformed pattern
-		      c = ENDSET; break;
-	}
-	*to++ = c;
-    }
-    *to = '\0';
-    return TRUE;
-}
-
-static short *ismatch(short *pat, short c)
-{
-    // Matches one character on the beginning of the pattern.
-    // Retval: NULL:doesn't match, Other pointer:rest of pattern
-
-    if (c=='\0')    // end of string matches nothing
-	return NULL;
-    switch(*pat++)
-    {
-	case ANY:
-	   return pat;
-	case SET:
-	   while (*pat!=ENDSET)
-	      if (*pat++ == c)
-		  {while (*pat++!=ENDSET); return pat;}
-	   return NULL;
-	case NEGSET:
-	   while (*pat!=ENDSET)
-	      if (*pat++ == c)
-		  return NULL;
-	   return pat+1;
-	default:
-	   return *(pat-1)==c ? pat : (short *)NULL;
-    }
-}
-
-bool stringmatch(short *pat, unsigned char *line)
-{
-    short c;
-    short *p;
-    unsigned char *lnext;
-    // fixed match (no '*') as far as it goes
-    while (*pat != ANYCL)
-    {
-	if ((c = *line++) == '\0')
-	   return *pat=='\0';
-	if ((pat = ismatch(pat,c))==NULL)
-	   return FALSE;
-    }
-    // try to match rest of line to current section of the pattern
-    // (until next '*' or end of pattern)
-    while (*++pat != '\0')
-    {
-	lnext = line;
-	do {
-	    line = lnext; lnext++; p = pat;
-	    while (p!=NULL && *p!=ANYCL)
-	    {
-	       if ((c = *line++)=='\0')  // end of string
-		   return *p=='\0';	 // good if also at end of pattern
-	       p = ismatch(p,c);
-	    }
-	} while (p==NULL);
-	pat = p;  // OK so far, go to next pattern section
-    }
-    return TRUE;
 }
 
 //----------------------------------------------------------------------
@@ -332,9 +221,8 @@ static bool do_inspect_matching( cObject *obj, bool beg, short *patt, int typ, b
     if( !beg ) return FALSE;
     if( (deep || ctr>0) && !memoryIsLow() ) // if deep=FALSE, exclude owner object
     {
-	 char *fullpath = obj->fullPath();
-	 //if (Tcl_StringMatch(fullpath,pattern)) // did hang the whole X
-	 if (stringmatch(pattern,(unsigned char *)fullpath))
+	 const char *fullpath = obj->fullPath();
+	 if (stringmatch(pattern,fullpath))
 	 {
 	   if (!countonly)
 	       ((TOmnetTkApp *)(ev.app))->inspect(obj,type,NULL);
@@ -348,7 +236,7 @@ int inspect_matching(cObject *object, Tcl_Interp *, char *pattern, int type, boo
 {
     // open inspectors for children of 'object' whose fullpath matches pattern
     short trf_pattern[512];
-    if (transform_pattern((unsigned char *)pattern, trf_pattern)==FALSE)
+    if (transform_pattern(pattern, trf_pattern)==FALSE)
        return 0; // bad pattern: unmatched '{'
     inspmatch_ctr=0;
     do_inspect_matching(NULL,FALSE, trf_pattern, type, countonly);

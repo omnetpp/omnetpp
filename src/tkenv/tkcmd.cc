@@ -279,7 +279,7 @@ int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    cNetworkType *n = simulation.networkType();
-   interp->result = (n==NULL) ? CONST_CAST("") : n->name();
+   interp->result = CONST_CAST(!n ? "" : n->name());
    return TCL_OK;
 }
 
@@ -289,13 +289,13 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
 
    if (0==strcmp(argv[1],"ini"))
-        interp->result = app->getIniFileName();
+        interp->result = CONST_CAST(app->getIniFileName());
    else if (0==strcmp(argv[1],"snapshot"))
-        interp->result = app->getSnapshotFileName();
+        interp->result = CONST_CAST(app->getSnapshotFileName());
    else if (0==strcmp(argv[1],"outvector"))
-        interp->result = app->getOutVectorFileName();
+        interp->result = CONST_CAST(app->getOutVectorFileName());
    else if (0==strcmp(argv[1],"parchanges"))
-        interp->result = app->getParChangeFileName();
+        interp->result = CONST_CAST(app->getParChangeFileName());
    else
         return TCL_ERROR;
    return TCL_OK;
@@ -305,7 +305,7 @@ int getObjectFullpath_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 {
    if (argc!=2) return TCL_ERROR;
    cObject *object = (cObject *)strToPtr( argv[1] );
-   interp->result = object->fullPath();
+   interp->result = CONST_CAST(object->fullPath());
    return TCL_OK;
 }
 

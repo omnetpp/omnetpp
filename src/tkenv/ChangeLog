@@ -332,3 +332,6 @@ Jan 17-18,2000
     (Those lines got commented out long ago for some reason...) Under win32,
     the app menu is still accessible despite the grab (Tk bug?).
 ------ omnetpp-2.0b3 released ------
+Mar 26, 2000
+ - 'char *' pointers made const-correct (lots of 'char *' --> 'const char *'
+   replacements throughout the code)

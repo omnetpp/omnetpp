@@ -124,14 +124,14 @@ void TInspector::update()
    }
 }
 
-void TInspector::setEntry( char *entry, char *val )
+void TInspector::setEntry(const char *entry, const char *val)
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    CHK(Tcl_VarEval(interp, windowname,entry," delete 0 end;",
                            windowname,entry," insert 0 {",val,"}",NULL));
 }
 
-void TInspector::setEntry( char *entry, long l )
+void TInspector::setEntry( const char *entry, long l )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    char buf[16];
@@ -140,7 +140,7 @@ void TInspector::setEntry( char *entry, long l )
                            windowname,entry," insert 0 {",buf,"}",NULL));
 }
 
-void TInspector::setEntry( char *entry, double d )
+void TInspector::setEntry( const char *entry, double d )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    char buf[24];
@@ -149,13 +149,13 @@ void TInspector::setEntry( char *entry, double d )
                            windowname,entry," insert 0 {",buf,"}",NULL));
 }
 
-void TInspector::setLabel( char *label, char *val )
+void TInspector::setLabel( const char *label, const char *val )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    CHK(Tcl_VarEval(interp, windowname,label," config -text {",val,"}",NULL));
 }
 
-void TInspector::setLabel( char *label, long l )
+void TInspector::setLabel( const char *label, long l )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    char buf[16];
@@ -163,7 +163,7 @@ void TInspector::setLabel( char *label, long l )
    CHK(Tcl_VarEval(interp, windowname,label," config -text {",buf,"}",NULL));
 }
 
-void TInspector::setLabel( char *label, double d )
+void TInspector::setLabel( const char *label, double d )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    char buf[16];
@@ -171,14 +171,14 @@ void TInspector::setLabel( char *label, double d )
    CHK(Tcl_VarEval(interp, windowname,label," config -text {",buf,"}",NULL));
 }
 
-char *TInspector::getEntry( char *entry )
+const char *TInspector::getEntry( const char *entry )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    CHK(Tcl_VarEval(interp, windowname,entry," get",NULL));
    return interp->result;
 }
 
-void TInspector::setInspectButton( char *button, cObject *object, int type )
+void TInspector::setInspectButton( const char *button, cObject *object, int type )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    if (object)
@@ -194,19 +194,19 @@ void TInspector::setInspectButton( char *button, cObject *object, int type )
    }
 }
 
-void TInspector::setButtonText( char *button, char *text)
+void TInspector::setButtonText( const char *button, const char *text)
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    CHK(Tcl_VarEval(interp, windowname,button," config -text {",text,"}",NULL));
 }
 
-void TInspector::deleteInspectorListbox( char *listbox)
+void TInspector::deleteInspectorListbox( const char *listbox)
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    CHK(Tcl_VarEval(interp,windowname,listbox,".main.list delete 0 end",NULL));
 }
 
-void TInspector::fillInspectorListbox(char *listbox, cObject *object,
+void TInspector::fillInspectorListbox(const char *listbox, cObject *object,
                              InfoFunc infofunc,bool deep)
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
@@ -221,7 +221,7 @@ void TInspector::fillInspectorListbox(char *listbox, cObject *object,
    setLabel(w, buf);
 }
 
-void TInspector::fillModuleListbox(char *listbox, cModule *parent,
+void TInspector::fillModuleListbox(const char *listbox, cModule *parent,
                                 InfoFunc infofunc,bool simpleonly,bool deep )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
@@ -437,7 +437,7 @@ void TWatchInspector::writeBack()
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
    cWatch *watch = (cWatch *)object;
 
-   char *s = getEntry(".main.name.e");
+   const char *s = getEntry(".main.name.e");
    void *p = watch->pointer();
    switch (watch->typeChar())
    {

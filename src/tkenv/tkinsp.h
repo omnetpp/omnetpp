@@ -64,20 +64,20 @@ class TInspector : public cObject
       virtual int inspectorCommand(Tcl_Interp *, int, char **) {return TCL_ERROR;}
 
       // utility functions:
-      void setEntry( char *entry, char *val );
-      void setEntry( char *entry, long l );
-      void setEntry( char *entry, double d );
-      void setLabel( char *label, char *val );
-      void setLabel( char *label, long l );
-      void setLabel( char *label, double d );
-      char *getEntry( char *entry );
-      void setInspectButton( char *button, cObject *object, int type );
-      void setButtonText( char *button, char *text);
-      void deleteInspectorListbox( char *listbox);
-      void fillInspectorListbox(char *listbox,cObject *object,
+      void setEntry(const char *entry, const char *val);
+      void setEntry(const char *entry, long l);
+      void setEntry(const char *entry, double d);
+      void setLabel(const char *label, const char *val);
+      void setLabel(const char *label, long l);
+      void setLabel(const char *label, double d);
+      const char *getEntry(const char *entry);
+      void setInspectButton(const char *button, cObject *object, int type);
+      void setButtonText(const char *button, const char *text);
+      void deleteInspectorListbox(const char *listbox);
+      void fillInspectorListbox(const char *listbox, cObject *object,
                                 InfoFunc infofunc,bool deep);
-      void fillModuleListbox(char *listbox, cModule *parent,
-                                InfoFunc infofunc,bool simpleonly,bool deep );
+      void fillModuleListbox(const char *listbox, cModule *parent,
+                             InfoFunc infofunc, bool simpleonly, bool deep);
 
 };
 

@@ -105,7 +105,7 @@ void TOmnetTkApp::setup(int argc, char *argv[])
     // add OMNeT++'s commands to Tcl
     createTkCommands( interp, tcl_commands );
 
-    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", bitmap_dir, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", CONST_CAST((const char *)bitmap_dir), TCL_GLOBAL_ONLY);
 
     // eval Tcl sources: either from .tcl files or from compiler-in string
     // literal (tclcode.cc)...
@@ -114,7 +114,7 @@ void TOmnetTkApp::setup(int argc, char *argv[])
     //
     // Case A: TCL code in separate .tcl files
     //
-    Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  tkenv_dir, TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  CONST_CAST((const char *)tkenv_dir), TCL_GLOBAL_ONLY);
     if (Tcl_EvalFile(interp,fastconcat(tkenv_dir,"/tkenv.tcl"))==TCL_ERROR)
     {
         fprintf(stderr, "\n<!> Error starting Tkenv: %s. "
@@ -374,7 +374,7 @@ void TOmnetTkApp::callFinish()
     updateInspectors();
 }
 
-void TOmnetTkApp::newNetwork( char *network_name )
+void TOmnetTkApp::newNetwork( const char *network_name )
 {
     cNetworkType *network = findNetwork( network_name );
 
@@ -424,7 +424,7 @@ void TOmnetTkApp::newRun( int run )
     cNetworkType *network = findNetwork( opt_network_name );
     if (network==NULL)
     {
-         opp_error("Network `%s' not found",(char *)opt_network_name);
+         opp_error("Network `%s' not found",(const char *)opt_network_name);
          return;
     }
 
@@ -447,7 +447,7 @@ void TOmnetTkApp::newRun( int run )
     updateInspectors();
 }
 
-bool TOmnetTkApp::isBreakpointActive(char *, cSimpleModule *)
+bool TOmnetTkApp::isBreakpointActive(const char *, cSimpleModule *)
 {
     // args: label, module
 
@@ -461,7 +461,7 @@ bool TOmnetTkApp::isBreakpointActive(char *, cSimpleModule *)
          return FALSE;
 }
 
-void TOmnetTkApp::stopAtBreakpoint(char *label, cSimpleModule *mod)
+void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
 {
     updateSimtimeDisplay();
 
@@ -551,7 +551,7 @@ void TOmnetTkApp::updateInspectors()
     }
 }
 
-void TOmnetTkApp::createSnapshot( char *label )
+void TOmnetTkApp::createSnapshot( const char *label )
 {
     simulation.snapshot(&simulation, label );
 }
@@ -559,7 +559,7 @@ void TOmnetTkApp::createSnapshot( char *label )
 void TOmnetTkApp::updateNetworkRunDisplay()
 {
     char runnr[10];
-    char *networkname;
+    const char *networkname;
 
     if (simulation.runNumber()<=0)
          sprintf(runnr, "?");
@@ -591,24 +591,25 @@ void TOmnetTkApp::updateSimtimeDisplay()
 
 void TOmnetTkApp::updateNextModuleDisplay()
 {
-    char subsc[16], *namestr;
+    char subsc[16];
+    const char *modulename;
     cSimpleModule *mod;
 
     if (!simulation.ok())
     {
-      namestr = "n/a";
+      modulename = "n/a";
       subsc[0]=0;
     }
     else if ((mod=simulation.selectNextModule())==NULL)
     {
-      namestr = "n/a";
+      modulename = "n/a";
       subsc[0]=0;
     } else {
-      namestr = mod->fullPath();
+      modulename = mod->fullPath();
       sprintf(subsc,"#%lu ",mod->id());
     }
     CHK(Tcl_VarEval(interp, ".statusbar.nextlabel config -text {"
-                        "Next: ", subsc, namestr,
+                        "Next: ", subsc, modulename,
                         "}", NULL ));
 }
 
@@ -809,13 +810,13 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
     }
 }
 
-void TOmnetTkApp::breakpointHit( char *label, cSimpleModule *mod )
+void TOmnetTkApp::breakpointHit( const char *label, cSimpleModule *mod )
 {
     if (isBreakpointActive(label,mod))
         stopAtBreakpoint(label,mod);
 }
 
-void TOmnetTkApp::putmsg(char *str)
+void TOmnetTkApp::putmsg(const char *str)
 {
     if (!interp)
     {
@@ -825,7 +826,7 @@ void TOmnetTkApp::putmsg(char *str)
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",str,"} info ok",NULL));
 }
 
-void TOmnetTkApp::puts(char *str)
+void TOmnetTkApp::puts(const char *str)
 {
     if (!interp)
     {
@@ -854,7 +855,7 @@ void TOmnetTkApp::puts(char *str)
     }
 }
 
-bool TOmnetTkApp::gets(char *promptstr, char *buf, int len)
+bool TOmnetTkApp::gets(const char *promptstr, char *buf, int len)
 {
     char title[70];
     cModule *mod = simulation.contextModule();
@@ -879,7 +880,7 @@ bool TOmnetTkApp::gets(char *promptstr, char *buf, int len)
     }
 }
 
-int TOmnetTkApp::askYesNo(char *question)
+int TOmnetTkApp::askYesNo(const char *question)
 {
     // should return -1 when CANCEL is pressed
     CHK(Tcl_VarEval(interp,"messagebox {Warning} {",question,"}"

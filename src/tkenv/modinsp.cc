@@ -101,7 +101,7 @@ int TGraphicalModWindow::redraw(Tcl_Interp *interp, int, char **)
 
       // first, see if there's an explicit position ("p=" tag) given
       int p_tag_present;
-      char *dstr = submod()->displayString(dispSUBMOD);
+      const char *dstr = submod()->displayString(dispSUBMOD);
       if (dstr[0]==0)
          p_tag_present = 0;
       else if (dstr[0]=='p' && dstr[1]=='=')
@@ -114,7 +114,7 @@ int TGraphicalModWindow::redraw(Tcl_Interp *interp, int, char **)
 
       if (!p_tag_present && submod()->size()>1)
       {
-         char *name = submod()->name();
+         const char *name = submod()->name();
          for (cSubModIterator m(*(cModule *)object); !m.end(); m++)
          {
             if (strcmp(m()->name(),name)==0)
@@ -281,7 +281,7 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **a
 
       cPar& par = mod->par(parindex);
       if (par.type()=='S')
-        interp->result = par.stringValue();
+        interp->result = CONST_CAST(par.stringValue());
       else
         sprintf(interp->result, "%lg", par.doubleValue());
 

@@ -57,13 +57,14 @@ class TCmdenvApp : public TOmnetApp
      void simulate();
 
      // redefined I/O functions:
-     //virtual void putmsg(char *s);
-     virtual void puts(char *s);
-     //virtual bool gets(char *promptstr, char *buf, int len=255);
-     //virtual bool askYesNo(char *question );
+     //virtual void putmsg(const char *s);
+     virtual void puts(const char *s);
+     //virtual bool gets(const char *promptstr, char *buf, int len=255);
+     //virtual bool askYesNo(const char *question);
 
      virtual unsigned extraStackForEnvir() {return 8192;}
 
 };
 
 #endif
+

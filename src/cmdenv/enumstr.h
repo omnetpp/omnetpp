@@ -27,11 +27,11 @@
 
 class EnumStringIterator
 {
-     char *str;
+     const char *str;  // pointer to the original string (not a copy)
      int current, until;
      int err;
    public:
-     EnumStringIterator(char *s);
+     EnumStringIterator(const char *s);
      int operator++(int);
      int operator()() {return err ? -1 : current;}
      int error()      {return err;}

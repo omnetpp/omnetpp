@@ -708,7 +708,7 @@ void cPar::getAsText(char *buf, int maxlen)
  it returns FALSE. No error message is ever generated.
 ----------------------------*/
 
-bool cPar::setFromText( char *text, char tp)
+bool cPar::setFromText(const char *text, char tp)
 {
     tp = (char) toupper(tp);
 

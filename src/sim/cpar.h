@@ -173,7 +173,7 @@ class cPar : public cObject
 
     // query/set value as string (e.g. "uniform(10,3)")
     virtual void getAsText(char *buf, int maxlen);
-    virtual bool setFromText(char *text, char tp);
+    virtual bool setFromText(const char *text, char tp);
 
     // redirection
     cPar& setRedirection(cPar *par);

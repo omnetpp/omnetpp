@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include "enumstr.h"
 
-EnumStringIterator::EnumStringIterator(char *s)
+EnumStringIterator::EnumStringIterator(const char *s)
 {
      // loop through string to check its syntax
      str = s;
@@ -37,12 +37,12 @@ EnumStringIterator::EnumStringIterator(char *s)
      }
 }
 
-static void skip_whitespace(char *&str)
+static void skip_whitespace(const char *&str)
 {
      while (*str==' ' || *str=='\t') str++;
 }
 
-static int get_number(char *&str, int& number)
+static int get_number(const char *&str, int& number)
 {
 
      while (*str==' ' || *str=='\t') str++;

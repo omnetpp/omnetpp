@@ -32,7 +32,7 @@ class TOmnetTkApp : public TOmnetApp
       bool opt_animation_enabled;  // msg animation
       bool opt_animation_msgnames; // msg animation: display message name or not
       bool opt_animation_msgcolors;// msg animation: display msg kind as color code or not
-      double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast 
+      double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
       long opt_stepdelay;          // Delay between steps in 100th seconds
       int  opt_updatefreq_fast;    // FastRun updates display every N events
       int  opt_updatefreq_express; // RunNoTracing updates display every N events
@@ -46,7 +46,7 @@ class TOmnetTkApp : public TOmnetApp
       bool  bkpt_hit;          // TRUE when must stop sim. due to breakpoint
       bool  stop_simulation;   // TRUE when must stop simulation
       bool  is_running;        // TRUE while simulation is running
-     
+
       cHead inspectors;        // list of inspector objects
    public:
 
@@ -60,12 +60,12 @@ class TOmnetTkApp : public TOmnetApp
       virtual void objectDeleted(cObject *object); // notify environment
       virtual void messageSent(cMessage *msg);
       virtual void messageDelivered(cMessage *msg);
-      virtual void breakpointHit(char *lbl, cSimpleModule *mod);
+      virtual void breakpointHit(const char *lbl, cSimpleModule *mod);
 
-      virtual void putmsg(char *s);
-      virtual void puts(char *s);
-      virtual bool gets(char *promptstr, char *buf, int len=255);
-      virtual int  askYesNo(char *question);
+      virtual void putmsg(const char *s);
+      virtual void puts(const char *s);
+      virtual bool gets(const char *promptstr, char *buf, int len=255);
+      virtual int  askYesNo(const char *question);
 
       virtual void readOptions();
       virtual void readPerRunOptions(int run_nr);
@@ -74,14 +74,14 @@ class TOmnetTkApp : public TOmnetApp
       virtual unsigned extraStackForEnvir() {return 16384;}
 
       // New functions:
-      void newNetwork( char *networkname );
+      void newNetwork( const char *networkname );
       void newRun( int run_no );
-      void createSnapshot(char *label);
+      void createSnapshot(const char *label);
 
       void rebuildSim();
       void doOneStep();
-      void runSimulation(simtime_t until_time, long until_event, 
-                         bool slowexec, bool fast, 
+      void runSimulation(simtime_t until_time, long until_event,
+                         bool slowexec, bool fast,
                          cSimpleModule *stopinmod=NULL);
       void runSimulationNoTracing( simtime_t until_time, long until_event );
       void startAll();
@@ -91,8 +91,8 @@ class TOmnetTkApp : public TOmnetApp
       void newMsgWindow();
       void newFileWindow();
 
-      bool isBreakpointActive(char *label, cSimpleModule *mod);
-      void stopAtBreakpoint(char *label, cSimpleModule *mod);
+      bool isBreakpointActive(const char *label, cSimpleModule *mod);
+      void stopAtBreakpoint(const char *label, cSimpleModule *mod);
 
       void updateInspectors();
       TInspector *inspect(cObject *obj, int type, void *dat);
@@ -105,10 +105,10 @@ class TOmnetTkApp : public TOmnetApp
       void clearNextModuleDisplay();
       void printEventBanner(cSimpleModule *mod);
 
-      char *getIniFileName()       {return (char *)opt_inifile_name;}
-      char *getSnapshotFileName()  {return (char *)opt_snapshotfile_name;}
-      char *getOutVectorFileName() {return (char *)opt_outvectfile_name;}
-      char *getParChangeFileName() {return (char *)opt_parchangefile_name;}
+      const char *getIniFileName()       {return opt_inifile_name;}
+      const char *getSnapshotFileName()  {return opt_snapshotfile_name;}
+      const char *getOutVectorFileName() {return opt_outvectfile_name;}
+      const char *getParChangeFileName() {return opt_parchangefile_name;}
 };
 
 #endif
