@@ -1,0 +1,68 @@
+%description:
+check "gatesizes" in NED:
+- if missing, gate vector size should be zero
+- if present, should set gate vector size accordingly
+- explicitly set zero and one vector size should work too
+
+%file: {}.ned
+
+simple {GenMod}
+  gates:
+    in: in, in1[], in2[], in3[], in4[];
+    out: out, out1[], out2[], out3[], out4[];
+endsimple
+
+module {Net}
+  submodules:
+    specMod: {GenMod}
+      gatesizes:
+        in2[10], in3[0], in4[1], out2[20], out3[0], out4[1];
+  connections nocheck:
+endmodule
+
+network {network} : {Net}
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {GenMod} : public cSimpleModule
+{
+    Module_Class_Members({GenMod},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({GenMod});
+
+#define PRINT(name)  ev << name << (gate(name)->isVector() ? "[]" : "") << ":" \
+                        << gate(name)->size() << "," << gateSize(name) << "\n"
+
+void {GenMod}::activity()
+{
+   PRINT("in");
+   PRINT("in1");
+   PRINT("in2");
+   PRINT("in3");
+   PRINT("in4");
+   PRINT("out");
+   PRINT("out1");
+   PRINT("out2");
+   PRINT("out3");
+   PRINT("out4");
+}
+
+
+%contains: stdout
+in:1,1
+in1[]:0,0
+in2[]:10,10
+in3[]:0,0
+in4[]:1,1
+out:1,1
+out1[]:0,0
+out2[]:20,20
+out3[]:0,0
+out4[]:1,1
+
+
