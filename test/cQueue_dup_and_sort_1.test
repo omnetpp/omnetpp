@@ -1,18 +1,10 @@
 %name: cQueue_dup_and_sort_1
 
 %description:
-Check that cQueue::operator=() preserves order
-Check that compareFunc() works correctly
+check that cQueue::operator=() preserves order
+check that sorting by compareFunc() works correctly
 
-%file: {test}.ned
-simple {Queues}
-endsimple
-
-network {net} : {Queues}
-endnetwork
-
-
-%file: {test}.cc
+%module: {Queues}
 
 #include "omnetpp.h"
 
@@ -62,7 +54,7 @@ void {Queues}::activity()
   cQueue initial("Initial");
   cQueue duplicate("Duplicate");
 
-
+  // test as a fifo (unsorted)
   fillQueue(initial);
   duplicate = initial;
   output(initial, "Unsorted");
@@ -71,6 +63,7 @@ void {Queues}::activity()
   initial.clear();
   duplicate.clear();
 
+  // test as sorted descending
   initial.setup(&compareFunc, false);
 
   fillQueue(initial);
@@ -81,19 +74,14 @@ void {Queues}::activity()
   initial.clear();
   duplicate.clear();
 
+  // test as sorted ascending
   initial.setup(&compareFunc, true);
 
   fillQueue(initial);
   duplicate = initial;
   output(initial, "Ascending");
   output(duplicate, "Ascending");
-  
-  
 }
-
-%inifile: {test}.ini
-[General]
-network={net}
 
 %ignore-exitcode:1
 
