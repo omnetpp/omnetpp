@@ -3,71 +3,79 @@ Sample simulations
 ==================
 
 Here's a short list of the sample simulations and what they do.
-N  name
-T  topic
-D  which OMNeT++ features it demonstrates
+T: topic
+D: which OMNeT++ features it demonstrates
 
 ----
 
-N  Nim
-T  a simple two-player game
-D  module inheritance
+Nim
+===
+T: a simple two-player game
+D: module inheritance
    module type as parameter 
 
 
-N  HCube
-T  hypercube network with deflection routing
-D  hypercube topology with dimension as parameter
+HCube
+=====
+T: hypercube network with deflection routing
+D: hypercube topology with dimension as parameter
    topology templates
    output vectors 
 
 
-N  Token
-T  Token Ring network
-D  ring topology with the number of nodes as parameter
+Token
+=====
+T: Token Ring network
+D: ring topology with the number of nodes as parameter
    using cQueue 
    wait() and the putaside-queue 
    output vectors 
 
 
-N  Fifo1
-T  single-server queue
-D  simple module inheritance
+Fifo1
+=====
+T: single-server queue
+D: simple module inheritance
    decomposing activity() into several functions 
    using simple statistics and output vectors
    printing stack usage info to help optimize memory consumption
    using finish() 
 
 
-N  Fifo2
-T  another fifo implementation
-D  using handleMessage() 
-D  decomposing handleMessage() into several functions 
+Fifo2
+=====
+T: another fifo implementation
+D: using handleMessage() 
+   decomposing handleMessage() into several functions 
    the FSM macros
    simple module inheritance
    using simple statistics and output vectors
    using finish() 
 
 
-N  FDDI
-T  FDDI MAC simulation
-D  using statistics classes and many other features 
+FDDI
+====
+T: FDDI MAC simulation
+D: using statistics classes and many other features 
 
 
-N  Hist
-T  demo of the histogram classes
-D  collecting observations into statistics objects
+Hist
+====
+T: demo of the histogram classes
+D: collecting observations into statistics objects
    saving statistics objects to file and restoring them
    using the inspect.lst file in Tkenv 
 
 
-N  Dyna
-T  a client-server network
-D  dynamic module creation
+Dyna
+====
+T: a client-server network
+D: dynamic module creation
    using WATCH() 
    star topology with the number of modules as parameters 
 
 
-N  PVMEX
-T  distributed execution
-D  how to assign processors to modules
+PVMEX
+=====
+T: distributed execution
+D: how to assign processors to modules
