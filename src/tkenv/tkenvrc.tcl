@@ -80,7 +80,7 @@ proc load_tkenvrc {{fname ".tkenvrc"}} {
                 opp_setsimoption $key $value
             }
         }] {
-            tk_messageBox -icon warning -type ok -title {Error reading Tkenvrc} -message "$fname line $lineno is invalid, ignoring"
+            tk_messageBox -icon warning -type ok -title {Error reading tkenvrc} -message "$fname line $lineno is invalid, ignoring"
         }
         incr lineno
     }

@@ -310,7 +310,7 @@ void TGraphicalModWindow::redrawMessages()
    // loop through all messages in the event queue and display them
    for (cMessageHeapIterator msg(simulation.msgQueue); !msg.end(); msg++)
    {
-      char gateptr[32], msgptr[32], msgkind[16];
+      char msgptr[32], msgkind[16];
       ptrToStr(msg(),msgptr);
       sprintf(msgkind,"%d",msg()->kind());
 
