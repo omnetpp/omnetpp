@@ -30,6 +30,7 @@ makefilein=n
 doxyconf=doxy.cfg
 nedfiles=""
 msgfiles=""
+cfgfile=""
 
 while [ ! $# = 0 ] ; do
     case "$1" in
@@ -39,11 +40,14 @@ while [ ! $# = 0 ] ; do
 opp_makemake: write OMNeT++ Makefile based on source files in current directory
 
 opp_makemake [-h] [-f] [-m] [-o make-target] [-n] [-s] [-u user-interface]
-         [-p] [-Idir] [-Llibrary-path] [-llibrary] [-i makefile-fragment-file]
-         [directories, library and object files]...
+        [-c configfile] [-p] [-Idir] [-Llibrary-path] [-llibrary] 
+        [-i makefile-fragment-file] [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
     -m, --makefile-in     Create Makefile.in instead of Makefile
+    -c, --configfile      Omit variable definitions from generated Makefile, 
+                          and let the Makefile include the given config file
+                          instead.
     -o, --outputfile      Name of simulation executable/library
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several dirs.
@@ -73,6 +77,11 @@ EOT
 
         -f | --force)
         force=y
+        ;;
+
+        -c | --configfile)
+        shift
+        cfgfile=$1
         ;;
 
         -o | --outputfile)
@@ -277,7 +286,12 @@ LIBS=$libpath$libs
 #------------------------------------------------------------------------------
 EOT
 
-if [ $makefilein = "n" ]; then
+if [ "$cfgfile" != "" ]; then
+  
+  # Makefile
+  echo "include $cfgfile"
+   
+elif [ $makefilein = "n" ]; then
 # Makefile
 cat <<EOT
 
