@@ -3,9 +3,8 @@
 - nedgen: indent should be skipped if we're not at end of line (ie prev comment="")
 - cppgen: machine parameters
 - all FIXMEs
-- channels into src/sim/
 - use vsnprintf() instead of vsprintf everywhere (also in sim/!)
-- update ned.dtd to NED-2! properties, chan-attrs helyett parameters, 
+- update ned.dtd to NED-2! properties, chan-attrs instead of parameters, 
 - disp string should become a property, etc.
 - comments as child elements (w/ content as body) rather than attributes
 - possibly include full NED source in XML? (useful for opp_neddoc)

@@ -385,7 +385,10 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     else if (!strcmp(funcname,"sizeof"))
     {
         //ASSERT( op1 && op1->getTagCode()==NED_IDENT);
-        const char *name = ((IdentNode *)op1)->getName();
+        //const char *name = ((IdentNode *)op1)->getName();
+
+        // FIXME TBD
+        INTERNAL_ERROR0(node, "sizeof operator not implemented yet");
 
         // find among local module gates
         // if not found, find among submodules

@@ -58,7 +58,7 @@ const char *NEDGenerator::increaseIndent(const char *indent)
 
     // bump...
     int ilen = strlen(indent);
-    if (ilen+indentsize <= sizeof(spaces)-1)
+    if (ilen+indentsize <= (int)sizeof(spaces)-1)
         ilen+=indentsize;
     const char *newindent = spaces+sizeof(spaces)-1-ilen;
     return newindent;
@@ -680,7 +680,7 @@ void NEDGenerator::doOperator(OperatorNode *node, const char *indent, bool islas
     {
         // binary
         int prio = getOperatorPriority(node->getName(), 2);
-        bool leftassoc = isOperatorLeftAssoc(node->getName());
+        //bool leftassoc = isOperatorLeftAssoc(node->getName());
 
         bool needsParen = false;
         bool spacious = false; // FIXME something better here!!!

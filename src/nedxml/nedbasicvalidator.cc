@@ -403,8 +403,8 @@ void NEDBasicValidator::validateElement(ConstNode *node)
 {
     // verify syntax of constant
     int type = node->getType();
-    const char *text = node->getText();
-    const char *value = node->getValue();
+    //const char *text = node->getText();
+    //const char *value = node->getValue();
 
     if (type==NED_CONST_BOOL)
     {
