@@ -338,11 +338,11 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     cModule *mod;
 #ifdef WITH_PARSIM
     if (ev.isModuleLocal(parentmod,modname,index))
-        mod = create_func(modname, parentmod);
+        mod = createModuleObject(modname, parentmod);
     else
         mod = new cPlaceHolderModule(modname, parentmod);
 #else
-    mod = create_func(modname, parentmod);
+    mod = createModuleObject(modname, parentmod);
 #endif
 
     // set vector size, module type
@@ -365,15 +365,26 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     int id = simulation.registerModule(mod);
     mod->setId(id);
 
-    // add parameters and gates to the new module, using module interface object
-    cModuleInterface *iface = moduleInterface();
-    iface->addParametersGatesTo( mod );
+    // add parameters and gates to the new module
+    addParametersGatesTo(mod);
 
     // notify envir
     ev.moduleCreated(mod);
 
     // done -- if it's a compound module, buildInside() will do the rest
     return mod;
+}
+
+cModule *cModuleType::createModuleObject(const char *modname, cModule *parentmod)
+{
+    return create_func(modname, parentmod);
+}
+
+void cModuleType::addParametersGatesTo(cModule *mod)
+{
+    // add parameters and gates to the new module, using module interface object
+    cModuleInterface *iface = moduleInterface();
+    iface->addParametersGatesTo(mod);
 }
 
 void cModuleType::buildInside(cModule *mod)

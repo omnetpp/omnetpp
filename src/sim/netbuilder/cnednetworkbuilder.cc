@@ -159,8 +159,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         int vectorsize = evaluate(modp, vectorsizeexpr);
         for (int i=0; i<vectorsize; i++)
         {
-            cModule *submodp = modtype->create(modname, modp);
-            submodp->setIndex(i, vectorsize);
+            cModule *submodp = modtype->create(modname, modp, i, vectorsize);
             setDisplayString(submodp, submod);
             assignSubmoduleParams(submodp, submod->getFirstSubstparamsChild());
             setupGateVectors(submodp, submod->getFirstGatesizesChild());

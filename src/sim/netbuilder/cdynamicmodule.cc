@@ -36,27 +36,20 @@ cDynamicModuleType::cDynamicModuleType(const char *name, CompoundModuleNode *mod
     modulenode = moduleNode;
 }
 
-cModule *cDynamicModuleType::create(const char *name, cModule *parentmod, bool)
+cModule *cDynamicModuleType::createModuleObject(const char *modname, cModule *parentmod)
 {
-    cDynamicCompoundModule *mod = new cDynamicCompoundModule(name, parentmod);
-    mod->setModuleType( this );
-    simulation.addModule(mod);
-
-    if (parentmod!=NULL)
-    {
-        mod->setOwner( parentmod );
-    }
-    else
-    {
-         mod->setOwner( &simulation );
-         simulation.setSystemModule( mod );
-    }
-
-    cNEDNetworkBuilder builder;
-    builder.addParametersGatesTo(mod, modulenode);
-    return mod;
+    return new cDynamicCompoundModule(modname, parentmod);
 }
 
+void cDynamicModuleType::addParametersGatesTo(cModule *mod)
+{
+// FIXME this should go into a cModuleInterface->addParametersGatesTo()
+    // add parameters and gates to the new module, using builder
+    cNEDNetworkBuilder builder;
+    builder.addParametersGatesTo(mod, modulenode);
+}
+
+//FIXME this is deprecated or what....
 void cDynamicModuleType::buildInside(cModule *mod)
 {
     cNEDNetworkBuilder builder;

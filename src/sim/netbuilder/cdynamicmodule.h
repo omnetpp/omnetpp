@@ -41,14 +41,12 @@ class cDynamicModuleType : public cModuleType
   protected:
     CompoundModuleNode *modulenode;  // contains NEDElement tree
 
+    virtual cModule *createModuleObject(const char *modname, cModule *parentmod);
+    virtual void addParametersGatesTo(cModule *mod);
+
   public:
     cDynamicModuleType(const char *name, CompoundModuleNode *moduleNode);
     virtual ~cDynamicModuleType();
-
-    /**
-     * FIXME comment
-     */
-    virtual cModule *create(const char *name, cModule *parent, bool local=true); // FIXME 'local' will go away!
 
     /**
      * FIXME comment

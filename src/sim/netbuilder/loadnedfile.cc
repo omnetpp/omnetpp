@@ -96,8 +96,7 @@ void loadNedFile(const char *fname, bool isXML)
 
             // create dynamic module type object
             cModuleType *modtype = new cDynamicModuleType(name, compoundmodulenode);
-            modtype->setOwner(&modtypes);
-            // FIXME must create cModuleInterface, too!
+            modtypes.instance()->add(modtype);
         }
         else if (node->getTagCode()==NED_NETWORK)
         {
@@ -112,7 +111,7 @@ void loadNedFile(const char *fname, bool isXML)
 
             // create dynamic network type object
             cNetworkType *networktype = new cDynamicNetworkType(name, networknode);
-            networktype->setOwner(&networks);
+            networks.instance()->add(networktype);
         }
         else
         {
