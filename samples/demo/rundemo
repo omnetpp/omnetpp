@@ -87,10 +87,10 @@ proc createWindow {} {
     pack .main.lo -expand 0 -fill x  -side bottom
     pack .main.mid -expand 1 -fill both -side top
 
-    label .main.up.banner -bg $colors(banner) -relief groove
+    label .main.up.banner -bg $colors(banner) -relief groove  -font $fonts(bold)
     pack .main.up.banner -fill x -side top
 
-    text .main.mid.text -yscrollcommand ".main.mid.sb set" -width 60 -height 20
+    text .main.mid.text -yscrollcommand ".main.mid.sb set" -width 74 -height 20  -font $fonts(fixed) -wrap none
     scrollbar .main.mid.sb -command ".main.mid.text yview"
     pack .main.mid.sb -anchor center -expand 0 -fill y  -side right
     pack .main.mid.text -anchor center -expand 1 -fill both -side left
@@ -98,7 +98,7 @@ proc createWindow {} {
     button .main.lo.start -bg $colors(startbutton) -font $fonts(bold)
     pack .main.lo.start -expand 1 -fill x  -padx 10 -pady 6
 
-    label .sel.banner -text "Sample simulations:" -bg $colors(banner) -relief groove
+    label .sel.banner -text "Sample simulations:" -bg $colors(banner) -relief groove -font $fonts(bold)
     pack .sel.banner -fill x -side top
     foreach i $samples {
         button .sel.$i -text $name($i) -command "showDemo $i"
