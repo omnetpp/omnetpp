@@ -24,12 +24,12 @@ Make sure the MSVC executables (nmake,cl,link,...) are in the path.
 It is also recommended that you put the c:\omnetpp-2.0\bin directory
 into the path.
 
-You should edit the configuser.vc file to make sure it contains
-the settings you need. You'll need to correct the paths in the following lines:
+Check the configuser.vc file to make sure it contains the proper settings.
+You'll probably need to correct the paths in the following lines:
   OMNETPP_ROOT=c:\omnetpp-2.0
   TK_INCL_DIR=c:\tcl\include
   TK_LIB_DIR=c:\tcl\lib
-and maybe also the .lib file names in the definition of TK_LIBS a few lines 
+and maybe also the .lib file names in the definition of TK_LIBS a few lines
 further below.
 
 Then type
@@ -40,20 +40,60 @@ and lib subdirectories within the top-level omnetpp directory.
 
 3. Building the samples from the MSVC IDE
 
-Unfortunately MSVC doesn't like the .cc extension, so you have to rename
-the .cc files to .cpp using samples/cc2cpp.bat.
+Unfortunately MSVC doesn't like the .cc extension, so first you have to rename
+the .cc files to .cpp. You can do that with samples/cc2cpp.bat.
 
-To build a sample simulation, start MSVC and open the workspace file.
-Change the Tcl/Tk library paths in the project settings. Then the simulations
-should build.
+To link executables with Tkenv, the MSVC project files need the location of
+the Tcl/Tk dlls & libs. Instead of having the path hardwired, the project files
+expect to find it in the TK_LIB_PATH environment variable, so you have to
+set it before starting MSVC.
 
-If you want to change from Tkenv to Cmdenv or vica versa, select the right item
-from the 'Configuration' combo in the project settings dialog and re-link.
+The names of the Tcl/Tk libs is assumed to be tcl82.lib and tk82.lib -- if you
+use a different version, you'll have to manually change the project files.
+
+To build a sample simulation, start MSVC and open the project (.dsp) file.
+The simulation should build without any project file adjustment.
+
+To change from Tkenv to Cmdenv or vica versa, choose Build|Set active
+configuration from the menu and select one of 'Debug-Tkenv', 'Release-Tkenv',
+'Debug-Cmdenv', 'Release-Cmdenv', then re-link the executable.
+
+If you have big models, you'll probably have to increase the stack size.
+You'll find the setting under Project|Settings --> 'Link' tab --> choose
+'Output' from combo --> Stack allocations, Reserve. Be aware that if you
+don't specify anything here, MSVC defaults to 1MB -- way too small.
+
+If you need to modify the names of the Tcl/Tk libs (because you installed
+a Tcl/Tk version other than 8.2), see Project|Settings --> 'Link' tab -->
+choose 'Input' from combo --> Libraries.
 
 
-4. Reconfiguring the libraries
+4. Creating project files for your simulations
 
-If you need to recompile the OMNeT++ components with different flags (e.g.
+Some hint how to do it:
+ 1. Start by copying & renaming one of the .dsp files from the samples
+    directory. It already contains the Tkenv/Cmdenv configurations, etc.
+ 2. Rename all .cc files to .cpp (ren *.cc *.cpp) and add them to the project.
+ 3. Add the .ned files to the project and set custom build option for them:
+       command: nedc -s _n.cpp $(InputName)
+       output file: $(InputName)_n.cpp
+    Hint: you can select all .ned files together, and 'All configurations'
+    from the combo at the left of the Settings dialog...
+ 4. For each .ned file, add a corresponding _n.cpp file.
+    Hint: if you 'Compile' the .ned files, the _n.cpp files will be created,
+    and you can select them all at once in the 'Add files' dialog.
+ 5. Make sure to turn off exception handling and RTTI (they interfere with the
+    coroutine library), and set the necessary reserved stack size.
+ 6. Note: for Tkenv, link with sim_std.lib, envir.lib, tkenv.lib and the
+    Tcl/Tk libraries (link as Win32 Console app...). For Cmdenv, you need
+    to link with sim_std.lib, envir.lib, and cmdenv.lib.
+Maybe some time in the future there will be wizards to ease some of these
+steps...
+
+
+5. Reconfiguring the libraries
+
+If you need to recompile the OMNeT++ libraries with different flags (e.g.
 for debugging or optimized for speed), then cd to the top-level omnetpp
 directory, edit configuser.vc accordingly, then say:
 
@@ -70,21 +110,6 @@ of the library and type:
 The last command is what copies the libraries from the src/ tree to lib/.
 (Note: Typing `nmake -f Makefile.vc' in the top-level omnetpp directory
 already includes `nmake install-local' for all libraries and programs.)
-
-
-5. Linking simulations
-
-Hints for compiling OMNeT++ simulations from the MSVC IDE:
-  - rename .cc files to .cpp (ren *.cc *.cpp) and add them to the project
-  - add .ned files to the project and set custom build option for them:
-       command: nedc -s _n.cpp $(InputName)
-       output file: $(InputName)_n.cpp
-  - for each .ned file, add a corresponding _n.cpp file
-  - make sure to turn off exception handling and RTTI (they interfere with the
-    coroutine library)
-  - to use Tkenv, link with sim_std.lib, envir.lib, tkenv.lib and the Tcl/Tk
-    libraries. Build Tkenv simulations as Win32 Console apps.
-  - to use Cmdenv, link with sim_std.lib, envir.lib, and cmdenv.lib
 
 
 6. Using Plove
