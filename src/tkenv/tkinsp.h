@@ -53,6 +53,8 @@ class TInspector : public cObject
       TInspector(cObject *obj, int typ, void *dat=NULL);
       ~TInspector();
 
+      virtual void hostObjectDeleted();
+
       // virtual functions to be redefined in descendants:
       virtual void createWindow();
       bool windowExists();

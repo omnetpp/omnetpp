@@ -906,6 +906,7 @@ void TOmnetTkApp::objectDeleted( cObject *object )
         TInspector *insp = (TInspector *) i();
         if (insp->object == object)
         {
+            insp->hostObjectDeleted();
             delete insp;
             // i is no longer valid, must restart it...
             i.init(inspectors);

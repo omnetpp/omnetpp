@@ -93,6 +93,9 @@ proc exit_omnetpp {} {
             return
         }
     }
+
+    save_tkenvrc
+
     opp_exitomnetpp
 }
 
@@ -431,14 +434,7 @@ proc save_inspectorlist {} {
           messagebox {Error} "Error: $f" info ok
           return
        }
-       # loop through all toplevel windows and if the window name looks like
-       # and inspector window's name, write a line about it in the file
-       foreach win [winfo children .] {
-          if [regexp {\.(ptr.*)-([0-9]+)} $win match object type] {
-              puts $f "\"[opp_getobjectfullpath $object]\" \
-                       \"[opp_inspectortype $type]\""
-          }
-       }
+       inspectorlist_save $f
        close $f
     }
 }
@@ -455,37 +451,7 @@ proc load_inspectorlist {} {
           messagebox {Error} "Error: $f" info ok
           return
        }
-
-       # read file line by line
-       set lineno 1
-       while {[gets $f line] >= 0} {
-         if {$line == ""} {incr lineno; continue}
-         if [string match {#*} $line] {incr lineno; continue}
-         if [catch {set objectname [lindex $line 0]; set type [lindex $line 1]}] {
-             messagebox {Open Inspectors in File} "`$filename' line $lineno is invalid." info ok
-             incr lineno; continue
-         }
-         # each line contains an object name and an inspector type
-         # check how many are there of them and act accordingly
-         set count [opp_inspect_matching $objectname $type countonly]
-         if {$count == 0} {
-             messagebox {Open Inspectors in File} \
-                                "`$filename' line $lineno:\n\
-                                There is no object of name `$objectname'." info ok
-         } elseif {$count >= 2} {
-             set ans [messagebox {Open Inspectors in File} \
-                                 "`$filename' line $lineno:\n\
-                                 There are $count objects with name `$objectname'.\n\
-                                 Do you really want to inspect them?" \
-                                 question yesno]
-             if {$ans == "yes"} {
-                opp_inspect_matching $objectname $type
-             }
-         } else {
-             opp_inspect_matching $objectname $type
-         }
-         incr lineno
-       }
+       inspectorlist_load $f
        close $f
     }
 }
@@ -574,5 +540,30 @@ proc view_file {filename} {
     } else {
        create_fileviewer $filename
     }
+}
+
+proc load_tkenvrc {} {
+  if [catch {
+      if [catch {open ".tkenvrc" r} f] {
+      } else {
+          puts "Loading .tkenvrc..."
+          inspectorlist_load $f
+          close $f
+      }
+  } err] {
+      messagebox {Error} "Error: $err" info ok
+      return
+  }
+}
+
+proc save_tkenvrc {} {
+  if [catch {
+      set f [open ".tkenvrc" w]
+      inspectorlist_save $f
+      close $f
+  } err] {
+      messagebox {Error} "Error: $err" info ok
+      return
+  }
 }
 

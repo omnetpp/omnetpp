@@ -56,5 +56,7 @@ proc start_tkenv {} {
   load_bitmaps $OMNETPP_BITMAP_PATH
   load_plugins $OMNETPP_PLUGIN_PATH
   calibrate_animdelay
+
+  load_tkenvrc
 }
 

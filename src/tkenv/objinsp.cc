@@ -111,6 +111,12 @@ void TInspector::showWindow()
    CHK(Tcl_VarEval(interp, "focus ", windowname, NULL ));
 }
 
+void TInspector::hostObjectDeleted()
+{
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+   CHK(Tcl_VarEval(interp, "inspector_hostobjectdeleted ", windowname, NULL ));
+}
+
 void TInspector::update()
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;

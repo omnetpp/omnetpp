@@ -17,10 +17,16 @@
 # Inspector list handling
 #
 
+# PIL stands for Pending Inspector List
+#set pil_name() {}
+#set pil_class() {}
+#set pil_type() {}
+#set pil_geom() {}
 
-# data structure
-set inspectorlist() {}
-set inspectorkeys {}
+# must store a copy if object names and class names because this info
+# is no longer available when we get called from cObject dtor:
+#set insp_w2name() {}
+#set insp_w2class() {}
 
 
 #
@@ -34,94 +40,135 @@ proc inspectorupdate_callback {} {
 
 
 #
-# try to open all inspectors in list; already open ones are simply ignored
+# try to open inspectors in 'pending inspectors' list
 #
 proc inspectorlist_openinspectors {} {
-    global inspectorlist inspectorkeys
+    global pil_name pil_class pil_type pil_geom
 
-    foreach key $inspectorkeys {
-        opp_inspectbyname $inspectorlist($key,name) $inspectorlist($key,classname) \
-                          $inspectorlist($key,insptype) $inspectorlist($key,geometry)
+    foreach key [array names pil_name] {
+        #puts [list opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)]
+        opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)
     }
 }
 
 
-#
-# add an inspector to the list
-# (called when an inspector window is opened)
-#
-proc inspectorlist_add {w} {
-    global inspectorlist inspectorkeys
+proc inspectorlist_storename {w} {
+    global insp_w2name insp_w2class
 
     if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
         error "window name $w doesn't look like an inspector window"
     }
 
-    set key $w
-    lappend inspectorkeys $key
-    set inspectorlist($key,name)       [opp_getobjectfullpath $object]
-    set inspectorlist($key,classname)  [opp_getobjectclassname $object]
-    set inspectorlist($key,insptype)   [opp_inspectortype $type]
-    set inspectorlist($key,geometry)   [wm geometry $w]
+    set insp_w2name($w) [opp_getobjectfullpath $object]
+    set insp_w2class($w) [opp_getobjectclassname $object]
+    #puts "DBG: object and class name for $w stored"
+}
+
+
+#
+# add an inspector to the list
+#
+# called when an inspector window closed because the undelying object
+# was destroyed -- in this case remember it on the 'pending inspectors' list
+# so that we can reopen the inspector when (if) the object reappears.
+#
+proc inspectorlist_add {w} {
+    global pil_name pil_class pil_type pil_geom pil_nextindex
+    global insp_w2name insp_w2class
+
+    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
+        error "window name $w doesn't look like an inspector window"
+    }
+
+    # we cannot use here the opp_getobjectfullpath, opp_getclass methods because
+    # we're called from the cObject destructor, name and class are long gone!
+    set objname $insp_w2name($w)
+    set classname $insp_w2class($w)
+    set key "$objname:$classname:$type"
+
+    set pil_name($key)   $objname
+    set pil_class($key)  $classname
+    set pil_type($key)   $type
+    set pil_geom($key)   [wm geometry $w]
+    #puts "DBG: $key added to insp list"
 }
 
 #
-# remove an inspector from the list
-# (called when an inspector window is closed manually)
+# remove an inspector from the 'pending inspectors' list (if it was in the list)
+#
+# called when an inspector window is opened.
 #
 proc inspectorlist_remove {w} {
-    global inspectorlist inspectorkeys
+    global pil_name pil_class pil_type pil_geom
 
-    # FIXME not good!! have to look up by name+classname+insptype!
-    set key $w
+    if {![regexp {\.(ptr.*)-([0-9]+)} $w match object type]} {
+        error "window name $w doesn't look like an inspector window"
+    }
 
-    set pos [lsearch -exact $inspectorkeys $key]
-    set inspectorkeys [lreplace $inspectorkeys $pos $pos]
+    set key "[opp_getobjectfullpath $object]:[opp_getobjectclassname $object]:$type"
 
-    unset inspectorlist($key,name)
-    unset inspectorlist($key,classname)
-    unset inspectorlist($key,insptype)
-    unset inspectorlist($key,geometry)
-}
-
-#
-# store geometry info of an inspector window
-# (called when an object gets deleted or before saving inspector list)
-#
-proc inspectorlist_storegeometry {w} {
-    global inspectorlist
-
-    set key $w
-    set inspectorlist($key,geometry)   [wm geometry $w]
+    catch {
+        unset pil_name($key)
+        unset pil_class($key)
+        unset pil_type($key)
+        unset pil_geom($key)
+        #puts "DBG: $key removed from insp list"
+    }
 }
 
 #
 # save inspector list to given stream
 #
-proc inspectorlist_save {fout} {
-    global inspectorlist inspectorkeys
+proc inspectorlist_save {f} {
+    global pil_name pil_class pil_type pil_geom
 
-    # FIXME not good!!! loop through all *windows*!
-    foreach key $inspectorkeys {
-        set w $key
-        inspectorlist_storegeometry $w
+    foreach win [winfo children .] {
+       if [regexp {\.(ptr.*)-([0-9]+)} $win match object type] {
+           set objname [opp_getobjectfullpath $object]
+           set class [opp_getobjectclassname $object]
+           set geom [wm geometry $win]
+
+           puts $f "\"$objname\" \"$class\" \"$type\" \"$geom\""
+       }
     }
 
-    # save them
-    foreach key $inspectorkeys {
-        puts $fout "\{$inspectorlist($key,name)\} " nonewline
-        puts $fout "\{$inspectorlist($key,classname)\} " nonewline
-        puts $fout "\{$inspectorlist($key,insptype)\} " nonewline
-        puts $fout "\{$inspectorlist($key,geometry)\}"
+    foreach key [array names pil_name] {
+       puts $f "\"$pil_name($key)\" \"$pil_class($key)\" \"$pil_type($key)\" \"$pil_geom($key)\""
     }
 }
 
 #
 # load inspector list from a given stream; contents add to current inspector list
 #
-proc inspectorlist_load {fin} {
-    global inspectorlist inspectorkeys
+proc inspectorlist_load {f} {
+    global pil_name pil_class pil_type pil_geom
 
-    #TBD
+    # read file line by line
+    set lineno 1
+    while {[gets $f line] >= 0} {
+      if {$line == ""} {incr lineno; continue}
+      if [string match {#*} $line] {incr lineno; continue}
+      if [catch {
+          set objname [lindex $line 0];
+          set class [lindex $line 1];
+          set type [lindex $line 2]
+          set geom [lindex $line 3]
+      }] {
+          messagebox {Open Inspectors in File} "`$filename' line $lineno is invalid." info ok
+          incr lineno; continue
+      }
+
+      set key "$objname:$class:$type"
+
+      set pil_name($key)   $objname
+      set pil_class($key)  $class
+      set pil_type($key)   $type
+      set pil_geom($key)   $geom
+
+
+      incr lineno
+    }
+
+    inspectorlist_openinspectors
 }
 
