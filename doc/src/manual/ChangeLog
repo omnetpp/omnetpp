@@ -1,3 +1,11 @@
+2003-04-30  Andras Varga
+	
+	* ch-sim-lib.tex: added section "Object ownership management";
+	removed section "Using shared objects"
+
+	* usman.tex: removed OPNET and Parsec comparisons (ch-parsec.tex,
+	 ch-opnet.tex) from the manual
+
 2003-03-15  ------ omnetpp-2.3b2 released ------
 
 2003-02-15  ------ omnetpp-2.3b1 released ------

@@ -1,4 +1,4 @@
-set PERL=d:\perl\bin\perl.exe
+set PERL=c:\perl\bin\perl.exe
 %PERL% ltoh.pl history.tex
 %PERL% ltoh.pl ch-introduction.tex
 %PERL% ltoh.pl ch-overview.tex
@@ -12,8 +12,8 @@ set PERL=d:\perl\bin\perl.exe
 %PERL% ltoh.pl ch-ana-sim.tex
 %PERL% ltoh.pl ch-parallel-exec.tex
 %PERL% ltoh.pl ch-opp-design.tex
-%PERL% ltoh.pl ch-opnet.tex
-%PERL% ltoh.pl ch-parsec.tex
+rem %PERL% ltoh.pl ch-opnet.tex
+rem %PERL% ltoh.pl ch-parsec.tex
 %PERL% ltoh.pl ch-ned-grammar.tex
 %PERL% ltoh.pl references.tex
 
@@ -31,8 +31,8 @@ set PERL=d:\perl\bin\perl.exe
 @type ch-ana-sim.html >> usman.tmp
 @type ch-parallel-exec.html >> usman.tmp
 @type ch-opp-design.html >> usman.tmp
-@type ch-opnet.html >> usman.tmp
-@type ch-parsec.html >> usman.tmp
+rem @type ch-opnet.html >> usman.tmp
+rem @type ch-parsec.html >> usman.tmp
 @type ch-ned-grammar.html >> usman.tmp
 @type references.html >> usman.tmp
 del ch-*.html history.html references.html
