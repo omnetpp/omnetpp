@@ -45,11 +45,7 @@ template <class E, class T = std::char_traits<E> >
 public:
     basic_evbuf(cEnvir *ev) : _ev(ev) {}
 protected:
-    virtual int sync() {
-        _ev->sputn(pbase(), pptr()-pbase());
-        setp(pbase(),epptr());
-        return 0;
-    }
+    virtual int sync();
     virtual std::streamsize xsputn(const E *s, std::streamsize n) {
 #if !defined(_MSC_VER) || _MSC_VER>1200
         std::streamsize r = std::basic_stringbuf<E,T>::xsputn(s,n);
@@ -520,6 +516,11 @@ class ENVIR_API cEnvir : public std::ostream
     //@}
 };
 
-
+template <class E, class T>
+int basic_evbuf<E,T>::sync() {
+        _ev->sputn(this->pbase(), this->pptr()-this->pbase());
+        setp(this->pbase(),this->epptr());
+        return 0;
+    }
 
 #endif
