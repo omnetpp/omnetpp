@@ -196,6 +196,16 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
                set x [expr $x + $rx + $rx*sin($i*6.2832/$n)]
                set y [expr $y + $ry - $ry*cos($i*6.2832/$n)]
            }
+           e -
+           x -
+           exact {
+               set dx [lindex $tags(p) 3]
+               if {$dx==""} {set dx 0}
+               set dy [lindex $tags(p) 4]
+               if {$dy==""} {set dy 0}
+               set x [expr $x + $dx]
+               set y [expr $y + $dy]
+           }
            default {
                error "'p' tag: invalid 3rd argument '$layout'"
            }

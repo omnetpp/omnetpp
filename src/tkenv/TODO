@@ -11,3 +11,4 @@ General:
  - inspector list should save window positions
  - automatic loading of inspector lists (use "placeholder" windows for
    not-yet-existing objects)
+ - Edit/Find doesn't remember prev string; no 'find next'

@@ -387,4 +387,7 @@ Sep 29, 2000
    string tag's 3rd arg (layout) was invalid
  - the 'p' display string tag's 3rd arg (layout) can now be abbreviated:
    row: r, col: c or column, matrix: m, ring: ri
+ - added new layout to 'p' tag: exact (abbreviation: e or x); this lets
+   one position modules in a module vector one by one
+
  - submodule display strings may use the parent module's parameters too
