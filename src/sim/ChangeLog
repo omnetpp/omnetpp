@@ -1,3 +1,9 @@
+2002-07-03  Andras Varga
+
+	* csimul.cc (doOneEvent()): bugfix: added missing ev.messageDelivered()
+	call that could cause a "phantom" message being animated in Tkenv with
+        handleMessage()-based simple modules
+
 2002-06-27  Andras Varga
 
 	* cexception.cc/h added; most opp_error() calls replaced with 

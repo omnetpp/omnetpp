@@ -621,6 +621,8 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         setContextModule( mod );
         cMessage *msg = msgQueue.getFirst();
 
+        ev.messageDelivered( msg );
+
         try {
             mod->handleMessage( msg );
         }
