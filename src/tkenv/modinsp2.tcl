@@ -451,15 +451,22 @@ proc calibrate_animdelay {} {
    if {$ms100>80000 && $ms100<120000} {set ms100 100000}
 
 
-   # do a test loop
-   set ad 4000
-   set t0 [clock clicks]
-   for {set i 0} {$i<$ad} {incr i} {}
-   set t1 [clock clicks]
-   set loopticks [expr $t1-$t0]
-   if {$loopticks==0} {set loopticks 1}
+   # test proc speed: how many "clock clicks" does an empty 4000 loop take?
+   set repeatcount 10
+   while {1} {
+      #puts "dbg: repeatcount=$repeatcount"
+      set ad [expr 4000*$repeatcount]
+      set t0 [clock clicks]
+      for {set i 0} {$i<$ad} {incr i} {}
+      set t1 [clock clicks]
+      #puts "dbg: t0=$t0, t1=$t1"
+      if {$t1!=$t0} break
+      set repeatcount [expr 5*$repeatcount]
+   }
+   set loopticks [expr ($t1-$t0)/$repeatcount]
+   #puts "dbg: loopticks=$loopticks"
 
-   # calc animdelay
+   # calc preliminary animdelay from loopticks
    set animdelay [expr 100*$ms100/$loopticks]
 
    # empirical correction

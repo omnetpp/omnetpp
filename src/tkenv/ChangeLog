@@ -294,3 +294,5 @@ July 11-13, 1999
     window. In everyday use this small memory leak cannot be a problem.
   - TO DO: spaces to be added between icons
   - widgets.tcl edited --> copy it to other subdirs
+July 17, 1999
+  - modinsp2.tcl: fixed bug in animdelay calibration
