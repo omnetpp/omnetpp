@@ -931,4 +931,8 @@ Jan 16, 2001
  - added OMNETPP_VERSION to defs.h (0x0200 for OMNeT++ 2.0)
 Jan 24, 2001
  - bugfix: cArray and cBag didn't work properly after clear()
- - bugfix: makefile and makefile.vc didn't handle PVM properly
+ - bugfix: makefile and makefile.vc didn't handle PVM properly [reported by
+   Ahmet Sekercioglu]
+Feb 5, 2001
+ - ev<< and ev>> now supports cPar objects too [from Nicky van Foreest]
+ - old BC3.1 support removed from cenvir.h

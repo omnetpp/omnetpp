@@ -112,17 +112,16 @@ class ENVIR_API cEnvir
 //==========================================================================
 //  Overloaded operators to provide iostream-like I/O for cEnvir
 
-#if !defined(__BORLANDC__) || __BCPLUSPLUS__>0x0310
-/* Compilers don't agree whether char==unsigned/signed char */
+inline cEnvir& operator<< (cEnvir& ev, cPar& p)
+  {char buf[81]; p.getAsText(buf,80); ev.puts(buf); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, const char *s)
   {ev.puts(s); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, char c)
-  {ev.printf("%c",c); return ev;}
-#endif
 inline cEnvir& operator<< (cEnvir& ev, const signed char *s)
   {ev.puts((const char *)s); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, const unsigned char *s)
   {ev.puts((const char *)s); return ev;}
+inline cEnvir& operator<< (cEnvir& ev, char c)
+  {ev.printf("%c",c); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, unsigned char c)
   {ev.printf("%c",c); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, signed char c)
@@ -146,27 +145,24 @@ inline cEnvir& operator<< (cEnvir& ev, long double d)
 
 // use the '*' operator instead/besides ev.setPrompt()
 // e.g.: ev*"How many?" >> n;
-#if !defined(__BORLANDC__) || __BCPLUSPLUS__>0x0310
-/* Compilers don't agree whether char==unsigned/signed char */
 inline cEnvir& operator* (cEnvir& ev, char *s)
  {return ev.setPrompt((char *)s);}
-#endif
 inline cEnvir& operator* (cEnvir& ev, const signed char *s)
  {return ev.setPrompt((const char *)s);}
 inline cEnvir& operator* (cEnvir& ev, const unsigned char *s)
  {return ev.setPrompt((const char *)s);}
 
 // note: each >> operator reads a whole line!
-#if !defined(__BORLANDC__) || __BCPLUSPLUS__>0x0310
+inline cEnvir& operator>> (cEnvir& ev, cPar& p)
+ {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); p.setFromText(buf,'?'); return ev;}
 inline cEnvir& operator>> (cEnvir& ev, char *s)
  {ev.gets(ev.prompt(),(char *)s, 80); return ev;}
-inline cEnvir& operator>> (cEnvir& ev, char& c)
- {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;}
-#endif
 inline cEnvir& operator>> (cEnvir& ev, signed char *s)
  {ev.gets(ev.prompt(),(char *)s, 80); return ev;}
 inline cEnvir& operator>> (cEnvir& ev, unsigned char *s)
  {ev.gets(ev.prompt(),(char *)s, 80); return ev;}
+inline cEnvir& operator>> (cEnvir& ev, char& c)
+ {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;}
 inline cEnvir& operator>> (cEnvir& ev, signed char& c)
  {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;}
 inline cEnvir& operator>> (cEnvir& ev, unsigned char& c)
