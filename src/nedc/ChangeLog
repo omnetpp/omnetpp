@@ -223,3 +223,7 @@ July 10, 1999
   - ebnf.y fixed, nedc works fine again.
 July 17, 1999
   - help text changed
+Aug 15, 1999
+  - bugfix: with "like", simulation crashed if the actual module type didn't
+    have all parameters. (Brent's bug)
+

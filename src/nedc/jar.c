@@ -116,6 +116,9 @@ void print_header (FILE *f)
         fprintf (f, "#define check_anc_param(ptr,parname,compoundmod) \\\n"
                     "    {if ((ptr)==NULL) {opp_error(\"Unknown ancestor parameter named %%s in compound module %%s\", \\\n"
                     "                                parname,compoundmod);return;}}\n");
+        fprintf (f, "#define check_param(ptr,parname) \\\n"
+                    "    {if ((ptr)==NULL) {opp_error(\"Unknown parameter named %%s\", \\\n"
+                    "                                parname);return;}}\n");
         fprintf (f, "#if !defined(__cplusplus)\n"
                     "#  error Compile as C++!\n"
                     "#endif\n"
@@ -162,7 +165,7 @@ void do_channel (char *cname, char *delay, char *error, char *datarate)
                 if (nl_find (channel_list, cname))
                 {
                         sprintf (errstr,
-                                "Duplicate channel namestr \"%s\"\n",
+                                "Duplicate channel name \"%s\"\n",
                                 cname);
                         adderr;
                 }

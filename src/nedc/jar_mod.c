@@ -579,8 +579,16 @@ void do_substparameter(char *pname, char *expr)
 
         /* set parameter value */
         get_expression(expr,tmp,value);
-        fprintf(tmp, "%s%s->par( \"%s\" ) = %s;\n\n",
-                     indent, submodule_var, pname, value);
+        /*
+         * fprintf(tmp, "%s%s->par( \"%s\" ) = %s;\n\n",
+         *            indent, submodule_var, pname, value);
+         */
+        fprintf(tmp, "%spar = &(%s->par(\"%s\"));\n",
+                     indent, submodule_var, pname);
+        fprintf(tmp, "%scheck_param(par, \"%s\");\n",
+                     indent, pname);
+        fprintf(tmp, "%s*par = %s;\n\n",
+                     indent, value);
 
         jar_free (pname);
         jar_free (expr);
