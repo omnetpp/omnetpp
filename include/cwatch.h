@@ -48,9 +48,9 @@ class  cWatch;
  * otherwise a new cWatch object is created every time. The alternative
  * is LWATCH which works by creating a local variable.
  *
- * LWATCH expands to something like
+ * LWATCH() expands to a cWatch object as local variable.
  * <PRE>
- *   cWatch i__varshell("i",i);
+ *   cWatch tmp("i",i);
  * </PRE>
  *
  * @hideinitializer

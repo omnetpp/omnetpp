@@ -683,7 +683,7 @@ class SIM_API cPar : public cObject
 
     /**
      * Replaces the object value with its evaluation (a double).
-     * Implemented as something like setValue('D', this->doubleValue()).
+     * Equivalent to <tt>setValue('D', this->doubleValue())</tt>.
      */
     void convertToConst();
 
