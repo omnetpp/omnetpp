@@ -43,6 +43,7 @@ Objects that may have display strings are:
         arrow thickness
   \item \textit{compound modules} -- display string can specify background color,
         border color, border thickness
+  \item \textit{messages} -- display string can specify icon, icon color, etc.
 \end{itemize}
 
 The following NED sample shows where to place display strings in the code.
@@ -220,7 +221,8 @@ Examples:
 
 \subsection{Background display strings}
 
-The tags that can be used in enclosing module display strings are:
+Compound module display strings specify the background. They can contain
+the following tags:
 
 
 \begin{longtable}{|p{6cm}|p{8cm}|}
@@ -374,10 +376,8 @@ Examples:
    "b=15,15,rect;o=white,kind,5"
 \end{verbatim}
 
+%FIXME more examples, WITH EXPLANATIONS
 
-%FIXME more examples
-
-%FIXME displayString().setTagArg(), bubble() etc here!
 
 \section{Colors}
 \label{sec:ch-graphics:colors}
@@ -490,6 +490,45 @@ Icons come in various sizes: normal, large, small, very small. Sizes are
 encoded into the icon name's suffix: \ttt{\_l}, \ttt{\_s}, \ttt{\_vs}.
 In display strings, one can either use the suffix (\ttt{"i=device/router_l"}),
 or the \ttt{"is}" (\textit{icon size}) display string tag ("i=device/router;is=l").
+
+
+\section{Layouting}
+\label{sec:ch-graphics:layouting}
+
+{\opp} implements an automatic layouting feature, using
+a variation of the SpringEmbedder algorithm. Modules which have
+no explicit positions assigned (first two args of the "p=" tag
+are missing) will be placed by the algorithm. Modules with fixed
+coordinates will not be moved.
+
+Predefined row, matrix, ring or other arrangements (defined
+via the 3rd and further args of the "p=" tag) will be moved as one unit
+(the full row/matrix/ring will be moved to an optimal place.)
+
+SpringEmbedder is a graph layouting algorithm based on a physical model.
+Graph nodes (modules) repent each other like electric charges
+of the same sign, and connections are sort of springs which try
+to contract and pull the nodes they're attached to. There is also friction
+built in to prevent oscillation of the nodes. The layouting algorithm
+simulates this physical system until it reaches equilibrium
+(or times out). The physical rules above have been slightly tweaked
+to get better results.
+
+If the full graph is too big after layouting, it is scaled back so that
+it fits on the screen, UNLESS IT CONTAINS
+ANY FIXED-POSITION MODULE. (For obvious reasons: if there's a module
+with manually specified position, we don't want to move that one).
+- Size is ignored by the present layouter, so longish modules (such as
+an Ethernet segment) may produce funny results.
+- Parameters to the layouter algoritm (repulsive/attractive forces,
+number of iterations,random number seed) can be specified in the "l="
+tag to the parent module, but this is experimental and may change.
+Currently parameters (with their default values):
+"l=<repulsion=10>,<attraction=0.3>,<edgelen=40>,<maxiter=200>,<seed>"
+- Tip: to present rescaling, specify a bounding box for the parent
+module module that is large enough, e.g. "b=2000,3000"
+
+%FIXME displayString().setTagArg(), bubble() etc here!
 
 
 \section{GNED -- Graphical NED Editor}
