@@ -6,7 +6,8 @@
 #
 # Targets
 #
-all: api nedxml-api parsim-api do-tictoc-tutorial do-queues-tutorial do-manual
+all: api nedxml-api parsim-api do-tictoc-tutorial do-manual 
+  # do-queues-tutorial 
 
 apis: api nedxml-api parsim-api do-tictoc-tutorial
 
