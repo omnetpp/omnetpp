@@ -29,10 +29,11 @@
 
 #include "jar_func.h"
 
+//#define HEAPCHECK
 
 void *jar_malloc (unsigned size)
 {
-#ifdef __BORLANDC__
+#if defined(HEAPCHECK) && defined(__BORLANDC__)
    if (heapcheck()<=0)
       {fprintf(stderr,"heapcheck() failed in jar_malloc()!\n");abort();}
 #endif
@@ -41,7 +42,7 @@ void *jar_malloc (unsigned size)
 
 void jar_free (void *ptr)
 {
-#ifdef __BORLANDC__
+#if defined(HEAPCHECK) && defined(__BORLANDC__)
    if (heapcheck()<=0)
       {fprintf(stderr,"heapcheck() failed in jar_free()!\n");abort();}
    if (ptr==NULL) return;

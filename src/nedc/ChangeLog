@@ -276,3 +276,6 @@ Sep 30, 2000
  - improvement just for Cygwin: lexer now explicitly ignores '\r' (=CR) chars
 Nov 19, 2000
  - ebnf.y updated from GNED (no effect on nedc)
+Jan 16, 2001
+ - disabled heapcheck in jar_mem.c (this makes nedc a lot faster if compiled with
+   Borland C++)
