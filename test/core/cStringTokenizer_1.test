@@ -1,0 +1,34 @@
+%description:
+verify that multiple cStringTokenizers don't interfere with each other via
+strtok's static buffer
+
+%activity:
+
+char *str1 = "10 20 30 40 50 60 70";
+char *str2 = "aa bb cc dd ee ff gg";
+
+cStringTokenizer tok1(str1);
+ev << tok1.nextToken() << " ";
+ev << tok1.nextToken() << " ";
+
+cStringTokenizer tok2(str2);
+ev << tok2.nextToken() << " ";
+ev << tok2.nextToken() << " ";
+
+for (;;)
+{
+    const char *s;
+
+    s = tok1.nextToken();
+    if (!s) break;
+    ev << s << " ";
+
+    s = tok2.nextToken();
+    if (!s) break;
+    ev << s << " ";
+}
+ev << ".";
+
+%contains: stdout
+10 20 aa bb 30 cc 40 dd 50 ee 60 ff 70 gg .
+
