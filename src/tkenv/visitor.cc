@@ -75,7 +75,7 @@ void cCollectObjectsVisitor::visit(cObject *obj)
     addPointer(obj);
 
     // go to children
-    traverseChildrenOf(obj);
+    obj->forEachChild(this);
 }
 
 //-----------------------------------------------------------------------
@@ -144,7 +144,7 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
     }
 
     // go to children
-    traverseChildrenOf(obj);
+    obj->forEachChild(this);
 }
 
 //----------------------------------------------------------------
@@ -152,7 +152,7 @@ void cFilteredCollectObjectsVisitor::visit(cObject *obj)
 void cCollectChildrenVisitor::visit(cObject *obj)
 {
     if (obj==parent)
-        traverseChildrenOf(obj);
+        obj->forEachChild(this);
     else
         addPointer(obj);
 }
@@ -162,7 +162,7 @@ void cCollectChildrenVisitor::visit(cObject *obj)
 void cCountChildrenVisitor::visit(cObject *obj)
 {
     if (obj==parent)
-        traverseChildrenOf(obj);
+        obj->forEachChild(this);
     else
         count++;
 }
