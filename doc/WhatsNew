@@ -54,6 +54,17 @@ The following list summarizes *all* changes since OMNeT++ 2.3:
   data, and let you implement custom input/output, real-time simulation, 
   hardware-in-the-loop simulation and more.
 
+Delta from 3.0 beta 1:
+
+- User Manual revised
+
+- Several bugfixes and new test cases, significant performance improvements 
+  in the network setup code
+
+- The new <parametername>.use-default=true notation in omnetpp.ini makes it
+  possible to apply the NED file defaults (specified via input()) to some
+  or all unbound module parameters.
+
 
 OMNeT++ 3.0 beta 1 (Nov 24 2004)
 --------------------------------
