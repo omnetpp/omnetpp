@@ -17,7 +17,7 @@ module cmTest6_Main
             p2 = fabs( ref timeout * 2 ),
             p3 = max( timeout, 10 ),
             p4 = 3 * semmi(),
-            p5 = timeout==0 ? 0 : 1,
+            p5 = timeout==0 ? 0 : 1==2 || 3==3,
             p6 = timeout==0 || timeout==1,
             p7 = timeout!=0 && timeout==1;
 endmodule cmTest6_Main

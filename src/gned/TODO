@@ -9,6 +9,7 @@ Bugs:
 Parse/Generate:
 - comments around display strings, channel attributes are lost
 - add default comments for newly created modules!
+- display string parsing loses 'matrix' and 'row' modes
 - display string parsing -- rewrite!!!
 - error recovery in the grammar: TBD
 

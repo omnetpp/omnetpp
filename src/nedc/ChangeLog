@@ -264,4 +264,6 @@ Apr 5, 2000
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
  - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
+Apr 13, 2000
+ - Changed operator precedence to bind ||,&& thighter than ?: [suggested by Niko]
 
