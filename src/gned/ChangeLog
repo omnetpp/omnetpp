@@ -191,3 +191,5 @@ Dec 19, 1999
   - wsize proc added to widgets.tcl
   - font changes
 ------ omnetpp-2.0b3 released ------
+Mar 27, 2000
+ - bugfix: conditional (?:) operator caused parse error [reported by Niko]

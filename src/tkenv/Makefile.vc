@@ -6,7 +6,7 @@
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "..\envir" $(TK_CFLAGS)
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "..\envir" $(TK_CFLAGS) /DBUILDING_TKENV
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj objinsp.obj modinsp.obj statinsp.obj inspect.obj arrow.obj
 
