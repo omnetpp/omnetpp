@@ -318,7 +318,8 @@ proc message_windows {} {
 
 proc clear_windows {} {
     # implements Trace|Clear windows...
-    # should delete the contents of all text windows!!!
+    # also called back from C++ code 
+    # FIXME: should delete the contents of all text windows!!!
     .main.text delete 1.0 end
 }
 

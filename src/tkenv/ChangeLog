@@ -1,9 +1,13 @@
+2002-11-03  Andras Varga
+
+	* tkapp.cc: clear main window when simulation is restarted
+
 2002-10-27  Andras Varga
 
 	* inspect.cc, tkapp.cc,..: inspectorfactory registration moved here 
 	from sim/
 
-	* totally reorganized the way inspectors are found and created
+	* reorganized the way inspectors are found and created
 
 2002-10-26  Andras Varga
 

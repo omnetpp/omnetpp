@@ -210,6 +210,9 @@ void TOmnetTkApp::shutdown()
         delete insp;
     }
 
+    // delete network if not yet done
+    simulation.deleteNetwork();
+
     TOmnetApp::shutdown();
 }
 
@@ -524,6 +527,8 @@ void TOmnetTkApp::newNetwork(const char *network_name)
             simstate = SIM_NONET;
         }
 
+        CHK(Tcl_VarEval(interp, "clear_windows", NULL));
+
         // set up new network
         readPerRunOptions(0);
         makeOptionsEffective();
@@ -581,6 +586,8 @@ void TOmnetTkApp::newRun(int run)
         CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", (const char *)opt_network_name, "' not found.} info ok",NULL));
         return;
     }
+
+    CHK(Tcl_VarEval(interp, "clear_windows", NULL));
 
     try
     {
@@ -767,11 +774,11 @@ void TOmnetTkApp::updateSimtimeDisplay()
                         "}", NULL ));
     sprintf(buf, "%lu", cMessage::totalMessageCount());
     CHK(Tcl_VarEval(interp, TOTALMSGS_LABEL " config -text {"
-                        "Total msgs: ", buf,
+                        "Msgs created: ", buf,
                         "}", NULL ));
     sprintf(buf, "%lu", cMessage::liveMessageCount());
     CHK(Tcl_VarEval(interp, LIVEMSGS_LABEL " config -text {"
-                        "Live msgs: ", buf,
+                        "Msgs present: ", buf,
                         "}", NULL ));
 
 }

@@ -104,7 +104,7 @@ proc get_submod_coords {c tag} {
 #
 proc draw_submod {c submodptr name dispstr i n default_layout} {
 
-   # puts "DEBUG: draw_submod $c $submodptr $name $dispstr $i $n $default_layout"
+   #puts "DEBUG: draw_submod $c $submodptr $name $dispstr $i $n $default_layout"
 
    if [catch {
 
