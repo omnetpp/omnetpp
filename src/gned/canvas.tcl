@@ -371,7 +371,7 @@ proc exportCanvasesToPostscript {dir} {
         #$canv config -height [expr $y2-$y1]
         update idletasks
 
-        regsub -- {[./\\]} $nedfilename "_" tmp
+        regsub -- {[.:/\\]} $nedfilename "_" tmp
         set psfile [file join $dir "${modname}__${tmp}.eps"]
         $canv postscript -file $psfile -x $x1 -y $y1 -width [expr $x2-$x1] -height [expr $y2-$y1]
     }
