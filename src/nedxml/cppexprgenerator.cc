@@ -116,8 +116,6 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr)
                 return false;
         }
     }
-
-    // FIXME: some paramrefs and functions may also qualify
     return true;
 }
 
@@ -232,7 +230,7 @@ const char *CppExpressionGenerator::getTypeForArg(NEDElement *node)
     else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"index"))
         return "long";
     else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"sizeof"))
-        return "????"; // FIXME
+        return "???"; // FIXME cModule* or cGate* ?
     else if (node->getTagCode()==NED_FUNCTION)
     {
         const char *types[] = {"MathFuncNoArg", "MathFunc1Arg", "MathFunc2Args",
@@ -532,7 +530,7 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
     {
         if (node->getIsAncestor())
         {
-            // FIXME fill this in
+            out << "mod->ancestorPar(\"" << node->getParamName() << "\")";
         }
         else
         {
