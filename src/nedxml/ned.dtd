@@ -252,10 +252,13 @@
      name                NMTOKEN   #REQUIRED >
 
 <!ELEMENT const EMPTY>
+<!-- Note: value is in fact REQUIRED, but empty attr value should
+     also be accepted because that represents the "" string literal
+ -->
 <!ATTLIST const
      type  (bool|int|real|string|time)  #REQUIRED
      text                CDATA     #IMPLIED
-     value               CDATA     #REQUIRED>
+     value               CDATA     #IMPLIED>
 
 <!--
   **  NED-II: message subclassing part

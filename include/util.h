@@ -396,9 +396,9 @@ inline void opp_appendindex(char *s, unsigned int i)
    while (*s) s++;
    *s = '[';
    if (i<10)  
-       {*s++ = '0'+i; *s=']'; return;}
+       {*s++ = '0'+i; *s++=']'; *s=0; return;}
    if (i<100) 
-       {*s++ = '0'+i/10; *s++ = '0'+i%10; *s=']'; return;}
+       {*s++ = '0'+i/10; *s++='0'+i%10; *s++=']'; *s=0; return;}
    sprintf(s,"%d]",i);
 }
 

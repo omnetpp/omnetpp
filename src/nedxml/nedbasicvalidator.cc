@@ -538,8 +538,8 @@ void NEDBasicValidator::validateElement(ConstNode *node)
     const char *value = node->getValue();
     //const char *text = node->getText();
 
-    if (strnull(value))
-        INTERNAL_ERROR0(node,"required attribute 'value' missing");
+    // Note: null value is valid as well, because that represents the "" string literal!
+    if (strnull(value)) value="";
 
     if (type==NED_CONST_BOOL)
     {
