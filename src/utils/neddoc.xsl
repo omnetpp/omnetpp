@@ -158,8 +158,8 @@
       <xsl:with-param name="href" select="'overview.html'"/>
       <xsl:with-param name="content">
          <xsl:choose>
-            <xsl:when test="//ned-file/@banner-comment[contains(.,'@indexpage')]">
-               <xsl:call-template name="extract-indexpage"/>
+            <xsl:when test="//ned-file/@banner-comment[contains(.,'@titlepage')]">
+               <xsl:call-template name="extract-titlepage"/>
             </xsl:when>
             <xsl:otherwise>   
          <center><h1>OMNeT++ Model Documentation</h1></center>
@@ -1043,10 +1043,10 @@
    </xsl:choose>
 </xsl:template>
 
-<xsl:template name="extract-indexpage">
+<xsl:template name="extract-titlepage">
    <pre class="comment">
-      <xsl:for-each select="//ned-file/@banner-comment[contains(.,'@indexpage')]">
-         <xsl:variable name="tmp1" select="substring-after(.,'@indexpage')"/>
+      <xsl:for-each select="//ned-file/@banner-comment[contains(.,'@titlepage')]">
+         <xsl:variable name="tmp1" select="substring-after(.,'@titlepage')"/>
          <xsl:variable name="text" select="substring-before(concat($tmp1,'@page'),'@page')"/>
          <xsl:value-of select="$text"/>
       </xsl:for-each>
