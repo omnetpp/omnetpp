@@ -39,7 +39,7 @@ htmlfile_spec := $BASE.htm
 :{}	:\chapter:<hr><hr><H1>:</H1>:
 :{}	:\section:<H2>:</H2>:
 :{}	:\subsection:<H3>:</H3>:
-:{}	:\subsubsection:<br><p class="subheading">:</p>:
+:{}	:\subsubsection:<p class="subheading">:</p>:
 :{}	:\centerline:<p align=center>:</>:
 :{}	:\footnote:<br><ul><font size=-1>[:]</font></ul>:
 :{}	:\mbox:::

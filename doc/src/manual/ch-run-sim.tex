@@ -955,6 +955,7 @@ are allowed in module types, submodule and gate names.
 
 
 \subsection{Specifying seed values}
+\label{sec:ch-run-sim:rng-config}
 
 As is was pointed out earlier, it is of great importance that
 different simulation runs and different random number sources
@@ -996,7 +997,7 @@ reasons. First, you may need more than 256 seeds values; or, if you
 use variance reduction techniques, you may want to use the same seeds
 for several simulation runs. In this case, there is a standalone
 program to generate appropriate seed values (\fprog{seedtool} will be
-discussed in Section \ref{sec:ch-run-sim:choosing-good-seed}), and you
+discussed in Section \ref{sec:ch-run-sim:seedtool}), and you
 can specify the seeds explicitly in the ini file.
 
 
@@ -1033,7 +1034,7 @@ so.
 
 
 \section{Choosing good seed values: the seedtool utility}
-\label{sec:ch-run-sim:choosing-good-seed}
+\label{sec:ch-run-sim:seedtool}
 
 For selecting good seeds, the \fprog{seedtool} program can be used (it
 is in the utils directory). When started without command-line
@@ -1271,6 +1272,9 @@ done
 
 
 \section{Akaroa support: Multiple Replications in Parallel}
+\label{sec:ch-run-sim:akaroa}
+\index{Akaroa}
+\index{Multiple Replications in Parallel}
 
 \subsection{Introduction}
 

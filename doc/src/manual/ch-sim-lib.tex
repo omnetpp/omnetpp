@@ -281,9 +281,9 @@ a ``random'' number and the next seed. Such algorithms and their
 implementations are called \textit{random number generators} or RNGs,
 or sometimes pseudo random number generators or PRNGs to highlight
 their deterministic nature.
-  \footnote{There exist real random numbers too, see e.g.
+  \footnote{There are real random numbers as well, see e.g.
   http://www.random.org/, http://www.comscire.com, or the Linux
-  /dev/random device.}
+  \textit{/dev/random} device. For non-random numbers, try www.noentropy.net.}
 
 Starting from the same seed, RNGs always produce the same sequence
 of random numbers. This is a useful property and of great importance,
@@ -295,71 +295,82 @@ are used to produce random variates from them that correspond to
 specific distributions.
 
 \subsection{Random number generators}
+\index{random number generator}
 
-\subsubsection{The current RNG}
+\subsubsection{Mersenne Twister}
 
-The currently used random number generator in {\opp} is
-a linear congruential generator\index{linear congruential generator}
-(LCG) with a cycle length of $2^{31}-2$.
-The startup code of {\opp} contains code that checks if the random number
-generator works OK, so you do not have to worry about this if you port
-the simulator to a new architecture or use a different compiler.
+By default, {\opp} uses the Mersenne Twister RNG (MT) by M. Matsumoto and
+T. Nishimura \cite{Matsumoto98}. MT has a period of $2^19937-1$,
+and 623-dimensional equidistribution property is assured. MT is
+also very fast: as fast or faster than ANSI C's \ttt{rand()}.
 
-The random number generator was taken from \cite{Jain91}, pp. 441-444,455.
-Its period length is $2^{31}-2$ with range $1...2^{31}-2$. The
-formula is $x := (x * 7^{5}) mod (2^{31}-1)$, to be performed in
-exactly 32-bit integer arithmetics, and one can verify the implementation
-by asserting that if $x[0] = 1$ then $x[10000] = 1,043,618,065$.
+\subsubsection{The "minimal standard" RNG}
 
-The concrete implementation:
-
-\begin{verbatim}
-long intrand()
-{
-  const long int a=16807, q=127773, r=2836;
-  seed=a*(seed%q) - r*(seed/q);
-  if (seed<=0) seed+=INTRAND_MAX;
-  return seed;
-}
-\end{verbatim}
-
-
-\subsubsection{Caution!}
-
-The above ``minimal standard'' RNG is only suitable for small-scale
-simulation studies. As shown by Karl Entacher et al. in \cite{Entacher02},
+{\opp} releases prior to 3.0 used a linear congruential generator
+(LCG) with a cycle length of $2^{31}-2$, described in
+\cite{Jain91}, pp. 441-444,455. This RNG is still available
+and can be selected from \ttt{omnetpp.ini} (Chapter \ref{cha:run-sim}).
+This RNG is only suitable for small-scale simulation studies.
+As shown by Karl Entacher et al. in \cite{Entacher02},
 the cycle length of about $2^{31}$ is too small (on todays
 fast computers it is easy to exhaust all random numbers), and
 the structure of the generated ``random'' points is too regular.
-The \cite{Hellekalek98} paper gives you a broader overview of issues
+The \cite{Hellekalek98} paper provides a broader overview of issues
 associated with RNGs used for simulation, and it's well worth reading.
-It also gives you useful links and references to further reading
-on the topic.
+It also contains useful links and references on the topic.
 
-Work is underway to create a flexible and extensible
-random number architecture in future versions of {\opp},
-and to integrate modern RNGs such as L'Ecuyer's CMRG \cite{LEcuyer02}
-with a period of about $2^{191}$ and/or
-Mersenne Twister \cite{Matsumoto98}.
+\subsubsection{The Akaroa RNG}
 
+When you execute simulations under Akaroa control (see section
+\ref{sec:ch-run-sim:akaroa}), you can also select Akaroa's
+RNG as the RNG underlying for the {\opp} random number functions.
+The Akaroa RNG also has to be selected from \ttt{omnetpp.ini}
+(section \ref{sec:ch-run-sim:rng-config}).
 
-\subsubsection{Multiple RNGs}
+\subsubsection{Other RNGs}
 
-If a simulation program uses random numbers for more than one purpose,
-the numbers should come from different random number generators.
-{\opp} provides several independent random number generators (by
-default 32; this number is \#defined as
-\fmac{NUM\_RANDOM\_GENE\-RATORS} in \ttt{utils.h}).
-
-To avoid unwanted correlation, it is also important that different
-simulation runs and different random number sources within one
-simulation run use non-overlapping series of random numbers,
-so the generators should be started with seeds well apart. For
-selecting good seeds, the seedtool\index{seedtool} program can be used (it is
-documented later).
+{\opp} allows plugging in your own RNGs as well. This mechanism,
+based on the \cclass{cRNG} interface, is described in section
+\ref{sec:ch-opp-design:customization}.
+For example, one candidate to include could be L'Ecuyer's CMRG \cite{LEcuyer02}
+which has a period of about $2^{191}$ and can provide a large
+number of \textit{guaranteed} independent streams.
 
 
-\subsubsection{Accessing RNGs}
+\subsection{Streams and RNG mapping}
+
+Simulation programs may consume random numbers from several streams,
+that is, from several independent RNG instances. For example, if a
+network simulation uses random numbers for generating packets and
+for simulating bit errors in the transmission, it might be a good
+idea to use different random streams for both. Since the seeds
+for each stream can be configured independently, this arrangement
+would allow you to perform several simulation runs with the same traffic
+but with bit errors occurring in different places.
+A simulation technique called \textit{variance reduction} is
+also related to the use of different random number streams.
+
+It is also important that different streams and also different
+simulation runs use non-overlapping series of random numbers.
+Overlap in the generated random number sequences can introduce
+unwanted correlation in your results.
+
+The number of random number streams as well as seeds for the individual
+streams can be configured in \fname{omnetpp.ini}
+(section \ref{sec:ch-run-sim:rng-config}).
+For the "minimal standard RNG", the \fprog{seedtool} program can be
+used for selecting good seeds (section \ref{sec:ch-run-sim:seedtool}).
+
+In {\opp}, streams are identified with RNG numbers. The RNG numbers
+used in simple modules may be \textit{arbitrarily mapped} to the actual
+random number streams (actual RNG instances) from \fname{omnetpp.ini}
+(section \ref{sec:ch-run-sim:rng-config}). The mapping allows
+for great flexibility in RNG usage and random number streams
+configuration -- even for simulation models which were not written
+with RNG awareness.
+
+
+\subsection{Accessing the RNGs}
 
 Integers can be generated via the \fname{intrand()} function:
 
