@@ -21,9 +21,57 @@
 
 #include <stdio.h>
 
-#if defined(__MSDOS__) || defined(_Windows)
+#if defined(_WIN32)
+#define MUST_EXPAND_WILDCARDS 1
+
+/*
+ * On Windows, wildcards must be expanded by hand :-(((
+ */
+const char *findFirstFile(const char *mask);
+const char *findNextFile();
+
+#if defined(_MSC_VER)
+
+/*
+ * MSVC version
+ */
+#include <io.h>
+long handle;
+struct _finddata_t fdata;
+const char *findFirstFile(const char *mask)
+{
+    handle = _findfirst(mask, &fdata);
+    if (handle<0) {_findclose(handle); return NULL;}
+    return fdata.name;
+}
+const char *findNextFile()
+{
+    int done=_findnext(handle, &fdata);
+    if (done) {_findclose(handle); return NULL;}
+    return fdata.name;
+}
+
+#else
+
+/*
+ * Borland C version
+ */
 #include <dir.h>
+struct ffblk ffblk;
+const char *findFirstFile(const char *mask)
+{
+    int done = findfirst(argv[k],&ffblk,0);
+    return done ? NULL : ffblk.ff_name;
+}
+const char *findNextFile()
+{
+    int done = findnext(&ffblk);
+    return done ? NULL : ffblk.ff_name;
+}
+
 #endif
+
+#endif /* _Windows */
 
 int main(int argc, char **argv)
 {
@@ -50,21 +98,17 @@ int main(int argc, char **argv)
     sum = 0;
     for (k=2; k<argc; k++) {
 
-        char *fname;
+        const char *fname;
 
-#if defined(__MSDOS__) || defined(_Windows)
-        struct ffblk ffblk;
-        int done;
-
-        done = findfirst(argv[k],&ffblk,0);
-        if (done) {
+#ifdef MUST_EXPAND_WILDCARDS
+        fname = findFirstFile(argv[k]);
+        if (!fname) {
             fprintf(stderr,"%s: not found: %s\n",argv[0],argv[k]);
             return 1;
         }
 
-        while (!done)
+        while (fname)
         {
-           fname = ffblk.ff_name;
 #else
            fname = argv[k];
 #endif
@@ -92,8 +136,8 @@ int main(int argc, char **argv)
            fclose(fin);
            if (n>0)  fprintf(fout,"\n  ");
 
-#if defined(__MSDOS__) || defined(_Windows)
-           done = findnext(&ffblk);
+#ifdef MUST_EXPAND_WILDCARDS
+           fname = findNextFile();
         }
 #endif
     }
