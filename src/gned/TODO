@@ -17,13 +17,12 @@ Data struct change:
 - turn display strings into independent objects?
 
 Drawing:
-- random placement of submods should avoid overlaps if possible
+- random placement of submods should be the same as in Tkenv
 - should support ovals too (not only rects)
 - it's possible to fool the connection drawing: if, while dragging out
   a connection, you click the righ mouse button and release both mouse buttons
   over the menu that popped up, the half-cooked connection arrow will stay
   on the canvas
-- Tkenv uses 2-pixel-wide arrows by default, GNED uses 1 pixel. Modify Tkenv?
 
 Load/save:
 - refuse to load the same file twice
@@ -37,21 +36,21 @@ Load/save:
 
 Text editor:
 - pgup, ctrl-pgup doesn't work correctly
-- make status line: line number etc.
 - syntax highlighting not 100% OK: it can be fooled with string constants
   containing `//' or `\"' sequences; `in:' and `out:' are not highlighted
 - syntax highlight: <paste> should update the whole file
 
 General:
-- INCREASE PERFORMANCE! Get rid of "foreach i [array names ned ...]" statements...
 - introduce ~/.gnedrc
 - switching back from text to graphics should check if text really changed or not
 - display string: numeric parameters must be checked!!!
 - cut,copy,paste should work everywhere (menu,toolbar,keys),
   for both text and graphics
 - ctrl-mousemove should copy the items on canvas
-- different vertical toolbar when changing from graphics to NED view
-- scrolbar for the tabs below if there are too many windows open
+- different vertical toolbar when changing from graphics to NED view;
+  on that toolbar: Find, Replace
+- scrollbar for the tabs below if there are too many windows open
+- speed up data structure, get rid of "foreach i [array names ned ...]" statements...
 
 Dialogs:
 - TBD
