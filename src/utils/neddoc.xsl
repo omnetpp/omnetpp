@@ -643,6 +643,9 @@
 <xsl:template name="write-html-page">
    <xsl:param name="href"/>
    <xsl:param name="content"/>
+   <xsl:if test="substring($href, string-length($href)-4)!='.html' and substring($href, string-length($href)-3)!='.htm'">
+       <xsl:message terminate="yes">error: invalid name for HTML output file: "<xsl:value-of select="$href"/>" -- should end in .html or .htm</xsl:message>
+   </xsl:if>
    <xsl:document href="{$outputdir}/{$href}" method="html" indent="yes">
       <html>
          <head>
