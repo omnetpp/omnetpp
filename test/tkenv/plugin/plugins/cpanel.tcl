@@ -31,7 +31,7 @@ proc cpanel_slider {w label} {
 # Set up dialog
 #
 proc cpanel_createControls {} {
-    global param
+    global param priv
 
     set w ".cpanel"
     toplevel $w
@@ -92,14 +92,15 @@ proc cpanel_createControls {} {
     #trace add variable param(arrivalRate2) write cpanel_paramChanged
     #trace add variable param(serviceRate1) write cpanel_paramChanged
     #trace add variable param(serviceRate2) write cpanel_paramChanged
-    #trace add variable param(animspeed)    write cpanel_paramChanged
 
     # this is the old syntax, still accepted by Tcl8.4
     trace variable param(arrivalRate1) w cpanel_paramChanged
     trace variable param(arrivalRate2) w cpanel_paramChanged
     trace variable param(serviceRate1) w cpanel_paramChanged
     trace variable param(serviceRate2) w cpanel_paramChanged
-    trace variable param(animspeed)    w cpanel_paramChanged
+
+    # following line uses undocumented tkenv internals and will break next time
+    trace variable priv(animspeed)    w cpanel_paramChanged
 
     # this button brings back main window (if it was withdrawn originally)
     set img_more [image create photo -file "plugins/more.gif"]
@@ -122,7 +123,6 @@ proc cpanel_readParams {} {
         set param(serviceRate1) [opp_getmodulepar $modp "serviceRate1"]
         set param(serviceRate2) [opp_getmodulepar $modp "serviceRate2"]
     }
-    set param(animspeed) [opp_getsimoption "animation_speed"]
 
     # override original settings...
     opp_setsimoption "animation_enabled" 1
@@ -152,8 +152,6 @@ proc cpanel_paramChanged {arr name op} {
         } elseif {$name=="serviceRate2"} {
             set modp [opp_modulebypath "fifonet1"]
             opp_setmodulepar $modp "serviceRate2" $value
-        } elseif {$name=="animspeed"} {
-            opp_setsimoption "animation_speed" $value
         } else {
             error "wrong param name"
         }
