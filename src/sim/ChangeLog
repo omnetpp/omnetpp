@@ -1,3 +1,8 @@
+2005-04-05  Andras Varga
+
+	* cstringtokenizer.cc: fix: prepared cStringTokenizer for receiving 
+	NULL as input/delimiter string. [reported by Tom Parker]
+
 2005-03-31  ------ omnetpp-3.1 released ------
 
 2005-03-22  Andras Varga
