@@ -100,8 +100,6 @@ int objectNullPointer_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectSystemModule_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectMessageQueue_cmd(ClientData, Tcl_Interp *, int, const char **);
-int objectModuleLocals_cmd(ClientData, Tcl_Interp *, int, const char **);
-int objectModuleMembers_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectNetworks_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectModuleTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
 int objectChannelTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -174,8 +172,6 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_object_simulation",   objectSimulation_cmd   },
    { "opp_object_systemmodule", objectSystemModule_cmd },
    { "opp_object_messagequeue", objectMessageQueue_cmd },
-   { "opp_object_modulelocals", objectModuleLocals_cmd },
-   { "opp_object_modulemembers",objectModuleMembers_cmd},
    { "opp_object_networks",     objectNetworks_cmd     },
    { "opp_object_moduletypes",  objectModuleTypes_cmd  },
    { "opp_object_channeltypes", objectChannelTypes_cmd },
@@ -1310,30 +1306,6 @@ int objectMessageQueue_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, ptrToStr( &simulation.msgQueue ), TCL_VOLATILE);
-   return TCL_OK;
-}
-
-int objectModuleLocals_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
-{
-   //FIXME eliminate
-   //if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   //cModule *mod = (cModule *)strToPtr( argv[1] );
-   //if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   //if (!mod || !mod->isSimple()) return TCL_ERROR;
-   //cSimpleModule *simplemod = static_cast<cSimpleModule *>(mod);
-   //Tcl_SetResult(interp, ptrToStr( &(simplemod->locals) ), TCL_VOLATILE);
-   return TCL_OK;
-}
-
-int objectModuleMembers_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
-{
-   //FIXME eliminate; BUT in the tree, children of a module must be sorted!
-   //if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   //cModule *mod = (cModule *)strToPtr( argv[1] );
-   //if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   //if (!mod || !mod->isSimple()) return TCL_ERROR;
-   //cSimpleModule *simplemod = static_cast<cSimpleModule *>(mod);
-   //Tcl_SetResult(interp, ptrToStr( &(simplemod->members) ), TCL_VOLATILE);
    return TCL_OK;
 }
 
