@@ -155,7 +155,7 @@ void *cObject::operator new(size_t m)
     return p;
 }
 
-cObject& cObject::operator=(_CONST const cObject&)
+cObject& cObject::operator=(_CONST cObject&)
 {
     // ownership not affected
     // name string is NOT copied from other object! (24.02.97 --VA)

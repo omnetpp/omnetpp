@@ -147,7 +147,7 @@ class SIM_API cObject
      * Copy constructor. In derived classes, it is usually implemented
      * as <tt>{operator=(obj);</tt>
      */
-    cObject(const cObject& obj);
+    cObject(_CONST cObject& obj);
 
     /**
      * Create object with no name and default owner.
