@@ -91,14 +91,21 @@ inline bool timeval_greater(const timeval& a, const timeval& b)
         return (unsigned long)a.tv_sec > (unsigned long)b.tv_sec;
 }
 
-/**
- * User must take care that result doesn't overflow
- */
+// On 32-bit architectures, good up to ~1200 hours
+inline unsigned long timeval_msec(const timeval& a) 
+{
+    return 1000*a.tv_sec + (a.tv_usec/1000);
+}
+
+// User must take care that result doesn't overflow!
 inline long timeval_diff_usec(const timeval& t2, const timeval& t1)
 {
     long sec = t2.tv_sec - t1.tv_sec;
     long usec = t2.tv_usec - t1.tv_usec;
     return sec*1000000L + usec;
 }
+
+inline timeval operator+(const timeval& a, const timeval& b) {return timeval_add(a,b);}
+inline timeval operator-(const timeval& a, const timeval& b) {return timeval_substract(a,b);}
 
 #endif
