@@ -193,10 +193,10 @@ class SIM_API cObject : public cPolymorphic
 
     /**
      * This is a shortcut for the sequence
-     * <pre>
+     * <code>
      *   drop(obj);
      *   delete obj;
-     * </pre>
+     * </code>
      *
      * It is especially useful when writing destructors and assignment operators.
      *
@@ -413,13 +413,12 @@ class SIM_API cObject : public cPolymorphic
      * to initialize the static variables inside the function with the
      * additional args passed. Then they call forEach(do_fn)
      * for the given object. Finally, read the results by calling do_fn(NULL,
-     * false, <additional args>), where additional args can
+     * false, additional-args), where additional-args can
      * be pointers where the result should be stored. ForeachFuncs
      * mustn't call themselves recursively!
      *
-     * <I>I know the foreach() mechanism described here is a bit weird.
-     * Actually I wrote it a long ago, and changing it now would take quite
-     * some work. And after all, it works..</I>
+     * <i>The foreach() mechamism will soon be replaced by a design
+     * based on the Visitor pattern.</i>
      */
     virtual void forEach(ForeachFunc f);
 
@@ -501,13 +500,13 @@ inline std::ostream& operator<< (std::ostream& os, cObject& o) {
  * is thrown.
  *
  * Example:
- * <pre>
+ * <code>
  *   cMessage *msg = receive();
  *   // MyPacket is a subclass of cMessage. The next line makes sure
  *   // it is actually a MyPacket that we received -- if not, the simulation
  *   // stops with an error message as the result of the exception
  *   MyPacket *pkt = check_and_cast<MyPacket *>(msg);
- * </pre>
+ * </code>
  *
  * @ingroup Functions
  */

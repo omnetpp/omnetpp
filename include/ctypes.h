@@ -74,21 +74,21 @@ typedef cPar *(*ParCreateFunc)();
  * modules. They are created in the following way:
  *
  *  1) starting point is the NED declarations of simple modules, e.g:
- *     <PRE><TT>
+ *     <code>
  *        simple Generator
  *          parameters: ia_rate;
  *          gates: out: out;
  *        endsimple
- *     </PRE></TT>
+ *     </code>
  *
  *  2) the nedc compiler translates the NED declaration into a
  *     ModuleInterface...End macro and places it into the _n.cc file.
- *     <PRE><TT>
+ *     <code>
  *        ModuleInterface(Generator)
  *          Parameter("speed", Numeric)
  *          Gate( "out", Output)
  *        EndInterface
- *     </PRE></TT>
+ *     </code>
  *
  *     The above translates into cModuleInterface::DeclarationItem array
  *     by means of #define macros.

@@ -62,7 +62,7 @@ class cExpression
  * e.g. in the constructor.
  *
  * Example:
- *   <pre>
+ *   <code>
  *   class Expr12 : public cDoubleExpression {
  *       private:
  *           long p1;
@@ -71,7 +71,7 @@ class cExpression
  *           Expr12(long ap1, cPar& ap2) : p1(ap1), p2(ap2) {}
  *           virtual double evaluate() {return 3*p1+p2;}
  *   };
- *   </pre>
+ *   </code>
  *
  * @see cPar
  */

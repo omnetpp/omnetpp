@@ -167,12 +167,12 @@ class cXMLElement
      * getFirstChild() and getNextSibling() can be used to loop through
      * the child list:
      *
-     * <pre>
+     * <code>
      * for (cXMLElement *child=node->getFirstChild(); child; child = child->getNextSibling())
      * {
      *    ...
      * }
-     * </pre>
+     * </code>
      *
      */
     virtual cXMLElement *getNextSibling() const;
@@ -251,9 +251,9 @@ class cXMLElement
     cXMLElement *getElementByPath(const char *pathexpression);
 
     /**
-     * Dumps tree content to ev in a XML-like format. This method is only 
-     * useful for debugging, because it does not perform necessary escaping 
-     * in text nodes and attribute values, so the output is not necessarily 
+     * Dumps tree content to ev in a XML-like format. This method is only
+     * useful for debugging, because it does not perform necessary escaping
+     * in text nodes and attribute values, so the output is not necessarily
      * valid XML.
      */
     void debugDump(int depth=0) const;

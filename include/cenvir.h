@@ -343,16 +343,16 @@ class ENVIR_API cEnvir : public std::ostream
      * where output from <tt>ev&lt;&lt;</tt> and <tt>ev.printf()</tt> statement is
      * not printed or logged anywhere but discarded. Model code may make <tt>ev&lt;&lt;</tt>
      * statements conditional on this flag to save CPU cycles. For example:
-     * <pre>
+     * <code>
      *     if (!ev.disabled())  ev << "Packet " << msg->name() << " received";
-     * </pre>
+     * </code>
      *
      * The following version may also be useful (it makes use of the fact that <<
      * binds stronger than ?:)
-     * <pre>
+     * <code>
      *     #define EV  ev.disabled()?ev:ev
      *     EV << "Packet " << msg->name() << " received";
-     * </pre>
+     * </code>
      */
     bool disabled() {return disable_tracing;}
 
