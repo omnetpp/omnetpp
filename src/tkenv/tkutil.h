@@ -73,10 +73,14 @@ typedef char *(*InfoFunc)(cObject *);
 
 char *ptrToStr(void *ptr, char *buffer=NULL);
 void *strToPtr(const char *s );
+
 void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor);
 
+void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath);
+
+void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath);
+
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
-int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, bool simpleonly, bool deep);
 
 void inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry);
 

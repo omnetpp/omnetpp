@@ -84,7 +84,7 @@ class TInspector
 
       void deleteInspectorListbox(const char *listbox);
       void fillInspectorListbox(const char *listbox, cObject *object, bool deep);
-      void fillModuleListbox(const char *listbox, cModule *parent, bool simpleonly, bool deep);
+      void fillListboxWithSubmodules(const char *listbox, cModule *parent);
       //@}
 };
 

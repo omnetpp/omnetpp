@@ -827,7 +827,7 @@ void TCompoundModInspector::update()
    setEntry(".nb.info.dispstrpt.e", mod->displayStringAsParent());
 
    deleteInspectorListbox( ".nb.submods" );
-   fillModuleListbox(".nb.submods", mod, false, false);
+   fillListboxWithSubmodules(".nb.submods", mod);
 
    deleteInspectorListbox( ".nb.params" );
    fillInspectorListbox(".nb.params", &mod->paramv, false);
@@ -921,7 +921,7 @@ void TSimpleModInspector::update()
    fillInspectorListbox(".nb.vars", mod, false);
 
    deleteInspectorListbox( ".nb.submods" );
-   fillModuleListbox(".nb.submods", mod, false, false);
+   fillListboxWithSubmodules(".nb.submods", mod);
 }
 
 void TSimpleModInspector::writeBack()

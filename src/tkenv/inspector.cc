@@ -286,12 +286,16 @@ void TInspector::fillInspectorListbox(const char *listbox, cObject *object, bool
    setLabel(w, buf);
 }
 
-void TInspector::fillModuleListbox(const char *listbox, cModule *parent,bool simpleonly,bool deep)
+void TInspector::fillListboxWithSubmodules(const char *listbox, cModule *parent)
 {
    Tcl_Interp *interp = getTkApplication()->getInterp();
    char w[256], buf[256];
    sprintf(w, "%s%s.main.list", windowname,listbox);
-   int n = fillListboxWithChildModules(parent, interp, w, simpleonly, deep);
+
+   // feed into listbox
+   int n=0;
+   for (cSubModIterator submod(*parent); !submod.end(); submod++, n++)
+        insertIntoInspectorListbox(interp, w, submod(), false);
 
    // set "number of items" display
    sprintf(w, "%s.label", listbox);

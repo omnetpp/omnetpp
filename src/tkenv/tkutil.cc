@@ -101,23 +101,26 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 
 //-----------------------------------------------------------------------
 
+void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
+{
+    const char *ptr = ptrToStr(obj);
+    static char buf[MAX_OBJECTINFO];
+    obj->info(buf);
+    CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
+                            "ptr {",ptr,"} "
+                            "name {",(fullpath ? obj->fullPath() : obj->fullName()),"} "
+                            "class {",obj->className(),"} "
+                            "info {",buf,"}"
+                            "}",NULL));
+}
+
 void feedCollectionIntoInspectorListbox(cCollectObjectsVisitor *visitor, Tcl_Interp *interp, const char *listbox, bool fullpath)
 {
     int n = visitor->getArraySize();
     cObject **objs = visitor->getArray();
+
     for (int i=0; i<n; i++)
-    {
-        cObject *obj = objs[i];
-        const char *ptr = ptrToStr(obj);
-        static char buf[MAX_OBJECTINFO];
-        obj->info(buf);
-        CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
-                                "ptr {",ptr,"} "
-                                "name {",(fullpath ? obj->fullPath() : obj->fullName()),"} "
-                                "class {",obj->className(),"} "
-                                "info {",buf,"}"
-                                "}",NULL));
-    }
+        insertIntoInspectorListbox(interp, listbox, objs[i], fullpath);
 }
 
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep)
@@ -140,50 +143,6 @@ int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char 
         feedCollectionIntoInspectorListbox(&visitor, interp, listbox, false);
     }
     return n;
-}
-
-
-//FIXME obsolete?
-static void insert_into_inspectorlistbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
-{
-    const char *ptr = ptrToStr(obj);
-    static char buf[MAX_OBJECTINFO];
-    obj->info(buf);
-    CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
-                            "ptr {",ptr,"} "
-                            "name {",(fullpath ? obj->fullPath() : obj->fullName()),"} "
-                            "class {",obj->className(),"} "
-                            "info {",buf,"}"
-                            "}",NULL));
-}
-
-static void do_fill_module_listbox(cModule *parent, Tcl_Interp *interp, const char *listbox, bool simpleonly, bool deep)
-{
-    // loop through module vector
-    for (int i=0; i<=simulation.lastModuleId() && !memoryIsLow(); i++ )
-    {
-        cModule *mod = simulation.module(i);
-        if (mod && mod!=simulation.systemModule() && mod->parentModule()==parent)
-        {
-           if (!simpleonly || mod->isSimple())
-              insert_into_inspectorlistbox(interp, listbox, mod, deep);
-
-           // handle 'deep' option using recursivity
-           if (deep)
-              do_fill_module_listbox(mod,interp,listbox,simpleonly,deep);
-        }
-    }
-}
-
-int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, bool simpleonly, bool deep)
-{
-    if (deep)
-    {
-        if (!simpleonly || parent->isSimple())
-            insert_into_inspectorlistbox(interp, listbox, parent,deep);
-    }
-    do_fill_module_listbox(parent,interp,listbox,simpleonly,deep);
-    return 0; //FIXME!!!!!!!!!
 }
 
 //----------------------------------------------------------------------
