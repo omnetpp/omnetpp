@@ -321,6 +321,21 @@ if test ! -n "$TK_LIBS"; then
 fi
 
 #----------------------
+# Check for EXPAT header and lib
+#----------------------
+
+AC_CHECK_HEADER(expat.h, ,
+   AC_MSG_WARN(expat header is missing; nedxml library can't be build.
+   If you *do* have expat installed then add the include path to CPPFLAGS.
+   You can get expat from http://expat.sourceforge.net/), )
+
+AC_CHECK_LIB(expat, XML_ParserCreate, EXPAT_LIB="-lexpat",
+   AC_MSG_WARN(expat library is missing; nedtool can't be build.)
+   )
+
+
+
+#----------------------
 # Checks for header files.
 #----------------------
 
@@ -492,7 +507,7 @@ AC_CONFIG_FILES(
 
 
 #----------------------
-# Subtitutions.
+# Substitutions.
 #----------------------
 
 AC_SUBST(OMNETPP_VERSION)
@@ -541,6 +556,7 @@ AC_SUBST(MPI_LIBS)
 AC_SUBST(PVM_CFLAGS)
 AC_SUBST(PVM_LIBS)
 AC_SUBST(SYS_LIBS)
+AC_SUBST(EXPAT_LIB)
 
 AC_SUBST(TKENV_IF_POSSIBLE)
 AC_SUBST(SIM_PVM_IF_POSSIBLE)
