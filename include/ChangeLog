@@ -1,9 +1,17 @@
+2005-03-22  Andras Varga
+
+	* cenvir.h: cEnvir::getParameter() return type changed from 
+	const char * to std::string. This was needed because if the
+	parameter value contains the xmldoc() function, getParameter()
+	will modify the file name in it to make it relative to the 
+	position of the ini file the setting was read from.
+
 2005-03-18  Andras Varga
 
 	* cconfig.h: added getBaseDirectoryFor() and getLocation() functions 
 	to cConfiguration
 
-	* added cstrtokenizer.h
+	* added cstrtokenizer.h, which contains cStringTokenizer
 
 2005-03-17  Andras Varga
 

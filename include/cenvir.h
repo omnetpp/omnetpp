@@ -309,10 +309,10 @@ class ENVIR_API cEnvir : public std::ostream
 
     /**
      * Called by the simulation kernel (cPar) to obtain value for an input
-     * module parameter. Returns NULL if the configuration doesn't specify
+     * module parameter. Returns empty string if the configuration doesn't specify
      * a value for this parameter.
      */
-    const char *getParameter(int run_no, const char *parname);
+    std::string getParameter(int run_no, const char *parname);
 
     /**
      * Called by the simulation kernel (cPar) to learn whether it should
