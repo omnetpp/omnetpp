@@ -367,7 +367,7 @@ class SIM_API cObject : public cPolymorphic
      * objects it contains to the stream.
      *
      * This default version (cObject::writeContents()) prints detailedInfo()
-     * and uses forEach() to call info() for contained objects. It only needs
+     * and uses forEachChild() to call info() for contained objects. It only needs
      * to be redefined if this behaviour is should be customized.
      */
     virtual void writeContents(std::ostream& os);
@@ -412,7 +412,7 @@ class SIM_API cObject : public cPolymorphic
      * returns a pointer to it or NULL if the object hasn't
      * been found. If deep is false, only objects directly
      * contained will be searched, otherwise the function searches the
-     * whole subtree for the object. It uses the forEach() mechanism.
+     * whole subtree for the object. It uses the forEachChild() mechanism.
      *
      * Do not use it for finding submodules!
      */
