@@ -262,10 +262,24 @@ void do_system (char *stname )
                 return;
         }
 
-        fprintf (yyout, "Define_Network( %s, %s_setup);\n\n",
-                         stname, stname);
+        fprintf (yyout,
+             "class %s : public cNetworkType\n"
+             "{\n"
+             "  public:\n",
+             stname);
+        fprintf (yyout,
+             "    %s(const char *name) : cNetworkType(name) {}\n"
+             "    %s(const %s& n)  {setName(n.name());operator=(n);}\n"
+             "    virtual const char *className() const {return \"%s\";}\n\n",
+             stname, stname, stname, stname);
+        fprintf (yyout,
+             "    virtual void setupNetwork();\n"
+             "};\n\n",
+             stname);
 
-        fprintf (yyout, "void %s_setup()\n", stname);
+        fprintf (yyout, "Define_Network( %s );\n\n", stname);
+
+        fprintf (yyout, "void %s::setupNetwork()\n", stname);
         fprintf (yyout, "{\n\n");
 
         print_temp_vars (yyout);

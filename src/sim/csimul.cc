@@ -309,8 +309,8 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
 {
     // FIXME handle exceptions during the setup process!
 
-    if (!network || !network->setupfunc)
-        throw new cException(eSETUP);
+    if (!network)
+        throw new cException(eNONET);
 
     // set run number
     run_number = run_num;
@@ -321,7 +321,7 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
     try
     {
         // call NEDC-generated network setup function
-        networktype->setupfunc();
+        networktype->setupNetwork();
 
         // handle distributed execution
         if (netInterface()!=NULL)
@@ -619,6 +619,8 @@ void cSimulation::setContextModule(cModule *p)
 cSimpleModule *cSimulation::contextSimpleModule() const
 {
     // cannot go inline (upward cast would require including cmodule.h in csimul.h)
+    if (!contextmodp || !contextmodp->isSimple())
+        return NULL;
     return (cSimpleModule *)contextmodp;
 }
 

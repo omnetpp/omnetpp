@@ -1,7 +1,7 @@
 2002-10-19  Andras Varga
 
-	* cmodule.cc, ctypes.cc: refactoring around buildInside(), see 
-	include/ChangeLog
+	* cmodule.cc, ctypes.cc, csimul.cc: refactoring around buildInside(),
+        cNetworkType and Define_Network(), see include/ChangeLog.
 
 2002-10-09  Andras Varga
 

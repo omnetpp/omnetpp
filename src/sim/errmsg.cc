@@ -60,7 +60,7 @@ char *emsg[] = {
   "receive()/receiveNew(): negative timeout",            // eNEGTOUT
   "Message cannot be delivered",                         // eNODEL
   "Simulation cancelled",                                // eCANCEL
-  "Network setup failed",                                // eSETUP
+  "Network definition not found",                        // eNONET
   "(%s)%s: Badly formed Reverse Polish expression",      // eBADEXP
   "All finish() functions called, simulation ended",     // eFINISH
   "Simulation stopped with endSimulation()",             // eENDSIM

@@ -466,12 +466,6 @@ cPar *cLinkType::createDataRate() const
 }
 
 //=========================================================================
-cNetworkType::cNetworkType(const char *name, void (*f)()) : cObject(name)
-{
-    setupfunc = f;
-}
-
-//=========================================================================
 //=== cFunctionType - all functions inline
 cFunctionType::cFunctionType(const char *name, MathFunc f0, int argc) : cObject(name)
 {
