@@ -476,6 +476,7 @@ exit $ret;
 #  $keyword
 #  $classtype
 #  $gap
+#  $omitgetverb
 #  $msgclass
 #  $realmsgclass
 #  $msgbaseclass
@@ -580,6 +581,12 @@ sub prepareForCodeGeneration
         $msgbasedescclass = "cStructDescriptor";
     }
 
+    if ($pval{"omitGetVerb"} eq "true") {
+        $omitgetverb = 1;
+    } else {
+        $omitgetverb = 0;
+    }
+
     foreach $fieldname (@fieldlist)
     {
         if ($fisabstract{$fieldname} && !$gap) {
@@ -593,17 +600,22 @@ sub prepareForCodeGeneration
         }
 
         # variable name
-        $var{$fieldname} = $fieldname;
-        $varsize{$fieldname} = $var{$fieldname}."_arraysize";
+        $var{$fieldname} = $fieldname."_var";
+        $varsize{$fieldname} = $fieldname."_arraysize";
 
         # method names
         if ($classtype ne 'struct') {
             $capfieldname = $fieldname;
             $capfieldname =~ s/(.)(.*)/uc($1).$2/e;
-            $getter{$fieldname} = "get".$capfieldname;
             $setter{$fieldname} = "set".$capfieldname;
             $alloc{$fieldname} = "set".$capfieldname."ArraySize";
-            $getsize{$fieldname} = "get".$capfieldname."ArraySize";
+            if ($omitgetverb) {
+                $getter{$fieldname} = $fieldname;
+                $getsize{$fieldname} = $fieldname."ArraySize";
+            } else {
+                $getter{$fieldname} = "get".$capfieldname;
+                $getsize{$fieldname} = "get".$capfieldname."ArraySize";
+            }
         }
 
         # pointer

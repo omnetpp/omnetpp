@@ -1,7 +1,19 @@
+2004-03-01  Andras Varga
+
+	* opp_msgc: added omitGetVerb boolean property. If turned on, generates
+	field getter methods without the "get" word, e.g. a field called
+	destAddr can be read by method destAddr() and not getDestAddr().
+	Example usage:
+	   class Foo {
+	       properties:
+	           omitGetVerb=true;
+	       ...
+	   };
+
 2004-02-24  Andras Varga
 
-	* main.cc: didn't understand -I without space [reported by Andreas 
-	Koepke]
+	* main.cc: nedtool didn't understand -I without space [reported by 
+	Andreas Koepke]
 
 2004-02-09  Andras Varga
 
