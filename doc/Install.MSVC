@@ -1,13 +1,39 @@
 Using OMNeT++ with Microsoft Visual C++
 =======================================
 
-1. Prerequisite: install Tcl/Tk
+This is an installation HOWTO for OMNeT++ for Microsoft Visual C++.
+This specification is written for Visual C++ 6.0 and OMNeT++ 2.0b4.
 
-Download and install Tcl/Tk. You need at least version 8.0p1, but it's better
-to download the latest version (currently 8.2).
+A good part of this documentation comes from a document written by
+Balazs KELEMEN (kelemen@sch.bme.hu) in March 2000.
 
 
-2. Installing OMNeT++
+1. Requirements
+~~~~~~~~~~~~~~~
+
+You need to have Microsoft Visual Studio, Microsoft Visual C++ 6.0 installed
+your Windows NT 4.0 (or higher).
+  The minimal install requires 30 Mbytes free space on your hard disk to compile
+OMNeT++ and to install all related packages. (And about +20MB temporary space
+for the downloaded packages and documentations.)
+
+
+2. Packages to download and install
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First download the following packages:
+ - OMNeT++
+ - Tcl/Tk
+ - Gnuplot
+ - bison/flex (only if you want to modify nedc or gned)
+Some sites where all this stuff can be found are listed at the end of
+this file (Appendix B).
+
+To unpack .tgz or .tar.gz (gzipped, tar packed) files you can use gzip and tar,
+or WinZip.
+
+3. Compilation
+~~~~~~~~~~~~~~
 
 Download the omnetpp source code and documentation from the omnetpp site.
 If you downloaded a zip file, extract its contents to the installation
@@ -21,26 +47,88 @@ will contain the simulator files. In this text we'll assume this directory
 is c:\omnetpp-2.0.
 
 Make sure the MSVC executables (nmake,cl,link,...) are in the path.
+The BIN directories of the VC should appear in the PATH environment variable.
+They are C:\PROGRA~1\MICROS~1\VC98\BIN and C:\PROGRA~1\MICROS~1\MSDEV98\BIN
+by default.
+
 It is also recommended that you put the c:\omnetpp-2.0\bin directory
 into the path.
 
 Check the configuser.vc file to make sure it contains the proper settings.
-You'll probably need to correct the paths in the following lines:
+You'll probably have to correct the settings in the following lines:
   OMNETPP_ROOT=c:\omnetpp-2.0
-  TK_INCL_DIR=c:\tcl\include
-  TK_LIB_DIR=c:\tcl\lib
-and maybe also the file names in the definition a few lines further below:
-  WISH=$(TK_LIB_DIR)/../bin/wish82.exe
-  ...
-  TK_LIBS=tcl82.lib tk82.lib /libpath:"$(TK_LIB_DIR)"
+  TK_DIR=e:/tcl
+  TK_VER=8.2
 
 Then type
     nmake -f Makefile.vc
 This should build the executables and the libraries and copy them to the bin
 and lib subdirectories within the top-level omnetpp directory.
 
+- - - - -
 
-3. Building the samples from the MSVC IDE
+  1. Install the tcl/tk package.
+
+  2. Set the environment variables. (See Appendix A!)
+     These variables should be set by the install program of the related package,
+     unfortunately this is not done. You have to set these manually on the User
+     Variables in the Environment settings in the preferences of the system.
+     You can find a list of these variables in the Appendix A of this howto.
+
+     - Visual C environments (*): As we use command line compilation, the BIN
+       directory of the Visual C and the DLL directory of the Visual Studio
+       should appear in the PATH environment variable.
+       Lib and include directories should be appear in the LIB and INCLUDE
+       environment variable.
+
+     - TCL environments (**): To run tcl based programs the DLL directory of Tcl
+       should appear on the PATH environment variable. To run TCL applications
+       the script directory of Tcl should be set on the TCL_LIBRARY.
+
+     *  required for compilation
+     ** required for execution
+
+
+  3. Get and extract the OMNeT++ source.
+
+  4. Edit the configuser.vc file in the source root.
+       Use '/' directory separators, because these variables will be compiled
+       into executables.
+       Usually only the first set of variables should be changed
+
+  5. MAKE
+       To compile the executables the libraries and the sample files and other
+       utilities type
+         nmake -f Makefile.vc
+       If you only want to create the executables or the libraries type
+         nmake -f Makefile.vc progs
+         nmake -f Makefile.vc libs
+
+       'nmake -f Makefile.vc clean' will delete all built files.
+
+       Note: While you compile the sample files you will see lots of warning
+         messages about unreferenced variables.
+       Note2: As the Visual Studio accepts only .cpp as an extension of a C++
+         file, the filenames of the generic sample files will be renamed.
+
+
+4. Using
+~~~~~~~~
+
+As the result of the compilation the following files has been created.
+In the BIN directory:
+    seedtool.exe nedc.exe gned.exe
+
+In the LIB directory:
+    tkenv.lib sim_std.lib envir.lib cmdenv.lib
+
+To run tkenv based programs (like gned.exe) the TCL_LIBRARY environment
+variable should be set to the script directory of the Tcl. It is usually the
+C:/PROGRA~1/TCL/LIB/TCLx.x directory.
+
+
+5. Building the samples from the MSVC IDE
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Unfortunately MSVC doesn't like the .cc extension, so first you have to rename
 the .cc files to .cpp. You can do that with samples/cc2cpp.bat.
@@ -75,8 +163,8 @@ init.tcl..." error message when you start a simulation program (or Gned or
 Plove), then that didn't happen and you have to set the variable yourself.
 
 
-4. Creating project files for your simulations
-
+6. Creating project files for your simulations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Some hint how to do it:
  1. Start by copying & renaming one of the .dsp files from the samples
     directory. It already contains the Tkenv/Cmdenv configurations, etc.
@@ -99,7 +187,8 @@ Some hint how to do it:
 It is planned to create wizards in the future to ease some of these steps.
 
 
-5. Reconfiguring the libraries
+7. Reconfiguring the libraries
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If you need to recompile the OMNeT++ libraries with different flags (e.g.
 for debugging or optimized for speed), then cd to the top-level omnetpp
@@ -114,8 +203,13 @@ of the library and type:
     nmake -f Makefile.vc clean
     nmake -f Makefile.vc
 
+NOTE: the 'install-local' make target found in earlier OMNeT++ versions
+was removed in 2.0beta4. The built libraries and programs are immediately
+copied to the lib/ and bin/ subdirs.
 
-6. Using Plove
+
+8. Using Plove
+~~~~~~~~~~~~~~
 
 If you want to use Plove, you should download and install Gnuplot.
 You'll also need a couple of Unix tools like grep and awk, the easiest way
@@ -133,4 +227,41 @@ slash/backslash setting in Options|External programs.
 
 Have fun!
 
+
+Appendix A
+~~~~~~~~~~
+Check the existence of these variables (<Variable>=<Default value>):
+
+INCLUDE=%INCLUDE%;C:\PROGRA~1\MICROS~1\VC98\INCLUDE
+LIB=%LIB%;C:\PROGRA~1\MICROS~1\VC98\LIB
+Path=%PATH%;C:\PROGRA~1\Tcl\bin;C:\PROGRA~1\MICROS~1\Common\msdev98\BIN;C:\PROGRA~1\MICROS~1\VC98\BIN
+TCL_LIBRARY=C:\PROGRA~1\TCL\LIB\TCL8.3
+
+
+Appendix B
+~~~~~~~~~~
+
+* OMNeT++: (Ver 2.0b4) The official site of OMNeT++ is
+      http://www.hit.bme.hu/phd/vargaa/omnetpp.htm you can download the latest
+      version of OMNeT++ from http://www.hit.bme.hu/anonftp/omnetpp/latest/ .
+  File format: .tgz (gzipped tar)
+
+* Tcl/Tk: (Ver 8.3) You can find installable executables in
+      ftp://ftp.scriptics.com/pub/tcl/ .
+      The 8.3 setup is ftp://ftp.scriptics.com/pub/tcl/tcl8_3/tcl83b2.exe .
+
+* Gnuplot: Good Win32 ports are available from ...
+
+* gzip and tar: These are GNU tools. There are several ports of these software
+      one is ftp://sourceware.cygnus.com/pub/cygwin/ . Recommended to use UNTGZ
+      Decompression Utility 0.95 freeware version ftp://garbo.uwasa.fi/pc/unix/
+      (untgz095.zip)
+  File Format: Zip
+  Usage: untgz32.exe xxx.tgz
+
+* WinZip: (Ver 7.0) Official site http://www.winzip.com/ download evaluation
+      version from there or recommended to use http://www.tucows.com/ .
+
+* flex / bison: They are included in the Cygwin package (http://www.cygnus.com)
+      another option is http://www.monmouth.com/~wstreett/lex-yacc/lex-yacc.html
 
