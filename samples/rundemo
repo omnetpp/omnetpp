@@ -219,14 +219,14 @@ proc showDemo {sample} {
 
    } elseif {$db($sample,type)=="program"} {
 
-   if {$tcl_platform(platform) == "unix"} {
-         set cmd "cd $db($sample,dir); $db($sample,uprog)"
-   } else {
-         set cmd "cd $db($sample,dir); $db($sample,wprog)"
-   }
+       if {$tcl_platform(platform) == "unix"} {
+           set cmd "cd $db($sample,dir); $db($sample,uprog)"
+       } else {
+           set cmd "cd $db($sample,dir); $db($sample,wprog)"
+       }
        .main.up.banner config -text "$db($sample,title) README"
        .main.lo.start config -text "Launch $db($sample,title)\n($cmd)"
-   .main.lo.start config -command "runSample $sample"
+       .main.lo.start config -command "runSample $sample"
        pack forget .main.lo
        pack .main.lo -expand 0 -fill x -side bottom -before .main.mid
        loadFile .main.mid.text "$db($sample,dir)/README"
