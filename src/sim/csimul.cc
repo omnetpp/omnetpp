@@ -36,6 +36,10 @@
 #include "cstat.h"
 #include "cexception.h"
 
+#ifdef WITH_NETBUILDER
+#include "netbuilder/loadnedfile.h"
+#endif
+
 
 //==========================================================================
 //=== Global object:
@@ -215,6 +219,16 @@ void cSimulation::writeContents( ostream& os )
 {
     os << "  Modules in the network:\n";
     writesubmodules(os, systemModule(), 5 );
+}
+
+void cSimulation::loadNedFile(const char *nedfile)
+{
+#ifdef WITH_NETBUILDER
+    ::loadNedFile(nedfile, false);
+#else
+    throw new cException("cannot load `%s': simulation kernel was compiled without "
+                         "support for dynamic loading of NED files", nedfile);
+#endif
 }
 
 void cSimulation::setNetInterface(cNetMod *netif)

@@ -17,10 +17,16 @@ CPPOBJS= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj cmodule.obj csi
          cmsgheap.obj cnetmod.obj coutvect.obj cqueue.obj chead.obj cwatch.obj \
          cpacket.obj cfsm.obj cstruct.obj cchannel.obj cenum.obj cexception.obj cdispstr.obj \
          onstartup.obj random.obj distrib.obj
+
+CPPOBJS_NETBUILDER= netbuilder\cdynamicmodule.obj netbuilder\cdynamicnetwork.obj \
+                    netbuilder\cnednetworkbuilder.obj netbuilder\loadnedfile.obj
 CPPOBJS_STD= std\netpack.obj
 CPPOBJS_PVM= pvm\pvmmod.obj pvm/pvmpack.obj
 CPPOBJS_MPI= mpi\mpimod.obj mpi/mpipack.obj
 LIBS= $(OMNETPP_SRC_DIR)/envir/envir.ilib
+
+NEDXML_CFLAGS= /I "$(OMNETPP_SRC_DIR)/nedxml"
+
 
 #
 # Targets
@@ -176,6 +182,18 @@ pvm\pvmpack.obj : pvm\pvmpack.cc
 pvm\pvmmod.obj : pvm\pvmmod.cc
 	$(CXX) $(PVM_CFLAGS) /Fo"pvm\pvmmod.obj" $(COPTS) /c /Tp pvm\pvmmod.cc
 
+netbuilder\cdynamicmodule.obj : netbuilder\cdynamicmodule.cc
+	$(CXX) $(COPTS) $(NEDXML_CFLAGS) /Fo"netbuilder\cdynamicmodule.obj" /c /Tp netbuilder\cdynamicmodule.cc
+
+netbuilder\cdynamicnetwork.obj : netbuilder\cdynamicnetwork.cc
+	$(CXX) $(COPTS) $(NEDXML_CFLAGS) /Fo"netbuilder\cdynamicnetwork.obj" /c /Tp netbuilder\cdynamicnetwork.cc
+
+netbuilder\cnednetworkbuilder.obj : netbuilder\cnednetworkbuilder.cc
+	$(CXX) $(COPTS) $(NEDXML_CFLAGS) /Fo"netbuilder\cnednetworkbuilder.obj" /c /Tp netbuilder\cnednetworkbuilder.cc
+
+netbuilder\loadnedfile.obj : netbuilder\loadnedfile.cc
+	$(CXX) $(COPTS) $(NEDXML_CFLAGS) /Fo"netbuilder\loadnedfile.obj" /c /Tp netbuilder\loadnedfile.cc
+
 missing-pvm-library:
 	@ echo *** No PVM installation -- skipping sim_pvm
 
@@ -189,6 +207,7 @@ clean:
 	-del *.obj
 	-del sim_std.lib sim_std.dll sim_std.ilib sim_std.exp std\*.obj 2> nul
 	-del sim_pvm.lib sim_pvm.dll sim_pvm.ilib sim_pvm.exp pvm\*.obj 2> nul
+	-del netbuilder\*.obj 2> nul
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 

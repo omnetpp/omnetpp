@@ -213,6 +213,12 @@ class SIM_API cSimulation : public cObject
     //@{
 
     /**
+     * Load a NED file and create dynamic module types from it.
+     * Works only if src/netbuilder sources are linked in.
+     */
+    void loadNedFile(const char *nedfile);
+
+    /**
      * Sets network interface module.
      */
     void setNetInterface(cNetMod *netif);

@@ -1,3 +1,9 @@
+2003-11-09  Andras Varga
+
+	* csimul.h: added cSimulation::loadNedFile() which can be used to
+	dynamically load NED files. See src/sim/ChangeLog for more info
+	on how to enable this feature and what other libraries it requires.
+
 2003-10-02  Andras Varga
 
 	* util.h: added Enter_Method() and Enter_Method_Silent() macros

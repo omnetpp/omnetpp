@@ -1,3 +1,19 @@
+2003-11-09  Andras Varga
+
+	* csimul.cc: added optional support for dynamic loading of NED files.
+	If WITH_NETBUILDER was defined (e.g. via -D compiler option) when 
+	compiling the sim. kernel, one can use the cSimulation::loadNedFile()
+	function to pull in compound modules, channels and network definitions
+	from NED files at runtime. If the sim. kernel was compiled without
+	WITH_NETBUILDER, the cSimulation::loadNedFile() throws an exception
+	when called.
+	   cSimulation::loadNedFile() works by invoking code in src/netbuilder,
+	which in turn relies on the nedxml library. Thus, when WITH_NETBUILDER
+	is used, simulation executables must be linked with the nedxml library 
+	(and thus also with an XML parser, if nedxml was compiled to support 
+	XML input). When compiling without WITH_NETBUILDER, nedxml and also
+	the stuff in src/netbuilder can be left out from the link.
+
 2003-11-01  Andras Varga
 
 	* cdispstr.cc: cDisplayString::setTagArg() now adds the tag if it 
