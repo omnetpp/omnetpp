@@ -1080,16 +1080,26 @@ simple_expr
         ;
 
 parameter_expr
-        : REF NAME
-                {NEDC( $$ = do_parname ($2,0,0); )}
-        | NAME
-                {NEDC( $$ = do_parname ($1,0,1); )}
-        | REF ANCESTOR NAME
-                {NEDC( $$ = do_parname ($3,1,0); )}
-        | ANCESTOR REF NAME
-                {NEDC( $$ = do_parname ($3,1,0); )}
+        : NAME
+                {NEDC( $$ = do_parname (0,0,$1,0,1); )}
+        | REF NAME
+                {NEDC( $$ = do_parname (0,0,$2,0,0); )}
         | ANCESTOR NAME
-                {NEDC( $$ = do_parname ($2,1,1); )}
+                {NEDC( $$ = do_parname (0,0,$2,1,1); )}
+        | REF ANCESTOR NAME
+                {NEDC( $$ = do_parname (0,0,$3,1,0); )}
+        | ANCESTOR REF NAME
+                {NEDC( $$ = do_parname (0,0,$3,1,0); )}
+
+        | NAME '.' NAME
+                {NEDC( $$ = do_parname ($1,0,$3,0,1); )}
+        | REF NAME '.' NAME
+                {NEDC( $$ = do_parname ($2,0,$4,0,0); )}
+
+        | NAME vector '.' NAME
+                {NEDC( $$ = do_parname ($1,$2,$4,0,1); )}
+        | REF NAME vector '.' NAME
+                {NEDC( $$ = do_parname ($2,$3,$5,0,0); )}
         ;
 
 string_expr

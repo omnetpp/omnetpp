@@ -671,6 +671,54 @@ void cmd_check_submod_pars (void)
         }
 }
 
+
+void cmd_check_submodpar_exists (char *modname, int modvec, char *parname)
+{
+        int i;
+        int rmodvec;
+        name_type modtype;
+
+        /* find submodule name within current compound module */
+        i = nl_find (cmd.submods, modname);
+        if (!i)
+        {
+                sprintf (errstr,
+                        "\"%s\" is not a submodule\n",
+                        modname);
+                adderr;
+                return;
+        }
+
+        /* vector submodule needs index when referencing */
+        nl_get_par (cmd.submods, i, NULL, &rmodvec, NULL);
+        if (rmodvec != modvec)
+        {
+                if (rmodvec)
+                        sprintf (errstr,
+                                "\"%s\" is a vector submodule\n",
+                                modname);
+                else
+                        sprintf (errstr,
+                                "\"%s\" is not a vector submodule\n",
+                                modname);
+                adderr;
+        }
+
+        /* get submodule type and check it really has this parameter */
+        nl_get (cmd.submods_typ, i, modtype);
+        if (mdl_find_mod (modtype))
+        {
+                if (!mdl_find_par (modtype, parname))
+                {
+                        sprintf (errstr,
+                                "submodule \"%s\" (type \"%s\") has no parameter called \"%s\"\n",
+                                modname, modtype, parname);
+                        adderr;
+                }
+        }
+}
+
+
 void cmd_check_gates (void)
 {
         int i;

@@ -159,6 +159,8 @@ char * cmd_retr_submod_mach(int i);
 void cmd_check_submod_pars (void);
 void cmd_check_gates (void);
 void cmd_check_mach (void); /* --LG */
+void cmd_check_submodpar_exists (char *modname, int modvec, char *parname);
+
 
 /*--- Global current module definition ---*/
 extern current_mod_def cmd;

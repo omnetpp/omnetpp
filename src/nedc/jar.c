@@ -32,8 +32,8 @@
 #include "jar_func.h"
 #include "jar_lib.h"
 
-#define NEDC_VERSION      "2.1"
-#define NEDC_VERSION_HEX  "0x0201"
+#define NEDC_VERSION      "2.2pre1"
+#define NEDC_VERSION_HEX  "0x0202FF"
 
 #ifdef __MSDOS__
         #define SLASH "\\"

@@ -309,18 +309,25 @@ char *do_addminus(char *expr)
     return jar_strdup(temp_res);
 }
 
-char *do_parname (char *namestr, int isanc, int byvalue)
+char *do_parname (char *submodname, char *submodindex, char *namestr, int isanc, int byvalue)
 {
     expr_type temp_res;
 
-    int isfor, /* index in loop connection */
-        ispar; /* parameter of current compound module */
+    int isfor;        /* index in loop connection? */
+    int ismodpar;     /* parameter of current compound module? */
+    int issubmodpar;  /* parameter of a submodule? */
 
-    if (firstpass)
-         {jar_free (namestr);return NULL;}
+    if (firstpass)  {
+         jar_free (namestr);
+         jar_free (submodname);
+         jar_free (submodindex);
+         return NULL;
+    }
 
-    isfor = nl_find (for_list, namestr);
-    ispar = mdl_find_par (module_name, namestr);
+    /* try sort out what we've got here: exactly one of the three must be true */
+    issubmodpar = (submodname!=NULL);
+    isfor = !issubmodpar && !isanc && nl_find(for_list, namestr)!=0;
+    ismodpar = !issubmodpar && !isfor;
 
     if (isfor)
     {
@@ -329,9 +336,66 @@ char *do_parname (char *namestr, int isanc, int byvalue)
          EXPR_USE(temp_res) = USE_LITERAL;
          EXPR_TYPE(temp_res) = TYPE_NUMERIC;
     }
-    else if (!isanc)
+    else if (issubmodpar)
     {
-        if (!ispar) /* check if exists */
+        name_type submodvar;
+        expr_type value;
+
+        /* submodpars mustn't have ancestor modifier (guaranteed by the grammar) */
+        assert(!isanc);
+
+        /* check submod & its parameter exists, etc. */
+        cmd_check_submodpar_exists (submodname, submodindex!=NULL, namestr);
+
+        /* get submodule variable (must compute also the index for this) */
+        if (jar_strlen (submodindex) == 0)
+        {
+                sprintf (submodvar, "%s_mod", submodname);
+        }
+        else
+        {
+                if (EXPR_USE(submodindex)!=USE_LITERAL)
+                {
+                      sprintf(errstr,
+                              "submodule index must be a constant, a for-variable or a (submodule) parameter\n");
+                      adderr;
+                }
+                if (EXPR_TYPE(submodindex)!=TYPE_NUMERIC &&
+                    EXPR_TYPE(submodindex)!=TYPE_CONST_NUM &&
+                    EXPR_TYPE(submodindex)!=TYPE_ANYTYPE)
+                {
+                      sprintf(errstr,
+                              "submodule index must be numeric\n");
+                      adderr;
+                }
+
+                get_expression(submodindex,tmp,value);
+                fprintf (tmp, "%scheck_module_index((long)%s,%s_mod,\"%s\", \"%s\");\n",
+                        indent, value,submodname, submodname, cmd.namestr );
+                sprintf (submodvar, "%s_mod[(long)%s]", submodname,value);
+        }
+
+        /* now generate code */
+        if (byvalue)
+        {
+             sprintf(temp_res, EXPR_PREFIX "%s->par( \"%s\" )", submodvar, namestr);
+             EXPR_USE(temp_res) = USE_LITERAL;
+             EXPR_TYPE(temp_res) = TYPE_ANYTYPE; /* FIXME: should look up real type!!! */
+        }
+        else /* by ref */
+        {
+             sprintf(temp_res, EXPR_PREFIX
+                               "%svalue.cancelRedirection();\n" /* I-bug */
+                               "%svalue.setRedirection(&%s->par( \"%s\"));\n",
+                               indent,
+                               indent, submodvar, namestr);
+             EXPR_USE(temp_res) = USE_VALUE;
+             EXPR_TYPE(temp_res) = TYPE_ANYTYPE; /* FIXME: should look up real type!!! */
+        }
+    }
+    else if (ismodpar && !isanc)
+    {
+        if (mdl_find_par(module_name, namestr)==0) /* check if exists */
         {
              sprintf(errstr,
                      "Parameter \"%s\" unknown in module definition \"%s\"\n",
@@ -354,8 +418,9 @@ char *do_parname (char *namestr, int isanc, int byvalue)
              EXPR_USE(temp_res) = USE_LITERAL;
              EXPR_TYPE(temp_res) = partype;
         }
-        else
-        { /* by ref */
+        else /* by ref */
+        {
+
              mod_def_elem *modp;
              name_elem *parp;
              char partype;
@@ -374,7 +439,7 @@ char *do_parname (char *namestr, int isanc, int byvalue)
              EXPR_TYPE(temp_res) = partype;
         }
     }
-    else /* ancestor */
+    else if (ismodpar && isanc) /* ancestor parameter */
     {
         if (byvalue)
         {
@@ -405,8 +470,15 @@ char *do_parname (char *namestr, int isanc, int byvalue)
              EXPR_TYPE(temp_res) = TYPE_ANYTYPE; /* can't make better guess */
         }
     }
+    else
+    {
+        /* if get here, something went very wrong before */
+        assert(0);
+    }
 
     jar_free (namestr);
+    jar_free (submodname);
+    jar_free (submodindex);
     return jar_strdup(temp_res);
 }
 

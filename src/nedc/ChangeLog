@@ -1,3 +1,11 @@
+2001-10-26 Andras Varga
+
+	* ebnf.y, jar_expr.c, jar_lib.c, jar_func.h, jar_lib.h: implemented
+        that an expression may refer to a submodule parameter. Syntax:
+        submod.par or submod[index].par. Limitations: index may not be 
+        an expression itself (must be constant, for-variable or (submodule)
+        parameter); the generated expression is of 'anytype' (no type-check).
+
 2001-10-06 Andras Varga
 
 	* msgc.pl msgtest.ned msgdoc.txt nedcwrapper.sh: checked in files for

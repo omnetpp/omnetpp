@@ -129,7 +129,7 @@ void get_expression(const char *expr, FILE *f, char *destbuf ); /* call this to 
 char *do_op(int args, char op, char *p1,char *p2,char *p3);
 char *do_func(int args,char *fname, char *p1,char *p2,char *p3);
 
-char *do_parname(char *namestr, int isanc, int isref); /* --VA*/
+char *do_parname(char *submodname, char *submodindex, char *namestr, int isanc, int isref); /* --VA*/
 char *do_sizeof(char *gname); /* --VA*/
 char *do_inputvalue(char *val, char *promptstr); /* --VA*/
 char *do_addminus(char *numconst);
