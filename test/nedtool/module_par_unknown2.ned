@@ -1,4 +1,4 @@
-//ERROR: module type does not have a parameter named 'a'
+//ERROR: module type 'Gen' has no parameter named 'a'
 simple Gen
     parameters:
 endsimple
