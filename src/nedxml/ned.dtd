@@ -32,8 +32,7 @@
 <!ELEMENT import (imported-file*)>
 <!ATTLIST import
      banner-comment      CDATA     #IMPLIED
-     right-comment       CDATA     "&#10;"
-     trailing-comment    CDATA     "&#10;" >
+     right-comment       CDATA     "&#10;" >
 
 <!ELEMENT imported-file EMPTY>
 <!ATTLIST imported-file

@@ -254,8 +254,7 @@ class NedFileNode : public NEDElement
  * <!ELEMENT import (imported-file*)>
  * <!ATTLIST import
  *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
+ *      right-comment       CDATA     "&#10;" >
  * </pre>
  * 
  * @ingroup Data
@@ -265,7 +264,6 @@ class ImportNode : public NEDElement
   private:
     std::string bannerComment;
     std::string rightComment;
-    std::string trailingComment;
   public:
     /** @name Constructors, destructor */
     //@{
@@ -291,8 +289,6 @@ class ImportNode : public NEDElement
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
     void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
 
     virtual ImportNode *getNextImportNodeSibling() const;
     virtual ImportedFileNode *getFirstImportedFileChild() const;

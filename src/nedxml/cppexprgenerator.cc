@@ -448,7 +448,8 @@ void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, 
         // unary.
         const char *name = node->getName();
         bool ulongcast = !strcmp(name,"~");
-        out << name << (ulongcast ? "(unsigned long)(" : "(double)(");
+        bool boolcast = !strcmp(name,"!");
+        out << name << (ulongcast ? "(unsigned long)(" : boolcast ? "(bool)(" : "(double)(");
         generateItem(op1,indent,mode);
         out << ")";
     }
@@ -617,6 +618,7 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
     {
         if (node->getIsAncestor())
         {
+            // TBD distinguish ref and non-ref
             out << "mod->ancestorPar(\"" << node->getParamName() << "\")";
         }
         else
@@ -625,29 +627,31 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
             out << "mod";
             if (strnotnull(node->getModule()))
             {
+                // TBD implement: parameter of another submodule
                 out << "->submodule(\"" << node->getModule() << "\")";
                 ExpressionNode *modindex = (ExpressionNode *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");
                 if (modindex)
                 {
                     out << "[_checkModuleIndex((int)(";
                     generateExpressionUsage(modindex,indent);
-                    // FIXME modname_size will be undefined here........
+                    // modname_size will be undefined here...
                     out << ")," << node->getModule() << "_size,\"" << node->getModule() << "\")]";
                 }
             }
+            // TBD check: this will always be by reference?
             out << "->par(\"" << node->getParamName() << "\")";
-            // FIXME this will always be by reference?
         }
     }
     else // MODE_INLINE_EXPRESSION
     {
         if (node->getIsAncestor())
         {
+            // TBD distinguish ref and non-ref
             out << "mod->ancestorPar(\"" << node->getParamName() << "\")";
         }
         else
         {
-            // FIXME handle node->getIsRef(), if ever needed with inline expressions(?)
+            // TBD handle node->getIsRef(), if ever needed with inline expressions(?)
             if (strnotnull(node->getModule()))
             {
                 out << node->getModule() << "_p";

@@ -221,7 +221,6 @@ void NEDGenerator::doImports(ImportNode *node, const char *indent, bool islast, 
     out << indent << "import ";
     appendRightComment(node->getRightComment(), indent);
     generateChildren(node, increaseIndent(indent));
-    appendTrailingComment(node->getTrailingComment(), "");
 }
 
 void NEDGenerator::doImport(ImportedFileNode *node, const char *indent, bool islast, const char *)

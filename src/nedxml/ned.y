@@ -290,7 +290,7 @@ import
                 }
           filenames ';'
                 {
-                  /* no setTrailingComment(ps.imports,@3); comment already stored with last filename */
+                  // NOTE: no setTrailingComment(ps.imports,@3) -- comment already stored with last filename */
                 }
         ;
 

@@ -1826,7 +1826,7 @@ case 21:
 case 22:
 #line 292 "ned.y"
 {
-                  /* no setTrailingComment(ps.imports,@3); comment already stored with last filename */
+                  // NOTE: no setTrailingComment(ps.imports,@3) -- comment already stored with last filename */
                 ;
     break;}
 case 25:

@@ -12,6 +12,9 @@
 *--------------------------------------------------------------*/
 
 
+/***** UNFINISHED CODE -- DEVELOPMENT IN PROGRESS *****/
+
+
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
@@ -205,17 +208,17 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
     else
     {
 #if 0
-        // FIXME use symboltable here!
-        cld.classtype = cld.classtype[[cld.msgbase]]; //FIXME!
+        // TBD use symboltable here!
+        cld.classtype = cld.classtype[[cld.msgbase]];
 #endif
         cld.classtype = CLASSTYPE_COBJECT;
     }
 
 #if 0
     // check earlier declarations and register this class
-    if (grep(/^\Qmsgname \ E /, @classes))  //FIXME!
+    if (grep(/^\Qmsgname \ E /, @classes))
     {
-        if (hasdescriptor[[cld.msgname]])  //FIXME!
+        if (hasdescriptor[[cld.msgname]])
         {
             INTERNAL_ERROR2(node, "attempt to redefine '%s'", cld.msgname.c_str());
             ret = 1;
@@ -242,7 +245,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
     //
     // produce all sorts of derived names
     //
-    cld.usegap = false; //FIXME pval[["customize"]]=="true"
+    cld.usegap = false; // pval[["customize"]]=="true"
 
     if (cld.usegap)
     {
@@ -280,7 +283,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
         cld.msgbaseclass = cld.msgbase;
     }
 
-    cld.hasbasedescriptor = false; // FIXME should be hasdescriptor[[cld.msgbaseclass]];
+    cld.hasbasedescriptor = false; // should be hasdescriptor[[cld.msgbaseclass]];
     if (cld.hasbasedescriptor)
     {
         cld.msgbasedescclass = cld.msgbaseclass + "Descriptor";
@@ -347,13 +350,13 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
             fld[i].fispointer = false;
             if (strchr(fld[i].ftype.c_str(), '*'))  // fld[i].ftype contains '*'
             {
-                // FIXME todo: cut trailing '*' from fld[i].ftype
+                // todo: cut trailing '*' from fld[i].ftype
                 fld[i].fispointer = true;
-                INTERNAL_ERROR1(node, "pointers not supported yet in '%s'", cld.msgname.c_str()); // FIXME
+                INTERNAL_ERROR1(node, "pointers not supported yet in '%s'", cld.msgname.c_str());
             }
 
             // data type, argument type, conversion to/from string...
-            if (1 /*FIXME: grep(/^\Qfld[i].ftype\E/,@classes)  */ )
+            if (1 /* grep(/^\Qfld[i].ftype\E/,@classes) */ )
             {
                 fld[i].fkind = FIELDTYPE_STRUCT;
             }
@@ -473,7 +476,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
                 else
                 {
                     INTERNAL_ERROR1(node, "unknown data type '%s' (is it struct?)", fld[i].ftype.c_str());
-                    // FIXME is following needed here?
+                    // is following needed here?
                     fld[i].datatype = fld[i].ftype;
                     fld[i].argtype = fld[i].ftype;
                     fld[i].tostring = "";
@@ -484,7 +487,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
             }
             else if (fld[i].fkind == FIELDTYPE_SPECIAL)
             {
-                // ***********FIXME******  ???
+                // ...
             }
             else
             {
@@ -659,7 +662,7 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
                 {
                     out << "    " << fld[i].var << " = " << fld[i].fval << ";\n";
                 }
-                if (fld[i].classtype == CLASSTYPE_COBJECT) //FIXME
+                if (fld[i].classtype == CLASSTYPE_COBJECT) // ?
                 {
                     out << "    " << fld[i].var << ".setOwner(this);\n";
                 }

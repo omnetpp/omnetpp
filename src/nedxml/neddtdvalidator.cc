@@ -44,7 +44,6 @@ void NEDDTDValidator::validateElement(ImportNode *node)
 
     checkCommentAttribute(node, "banner-comment");
     checkCommentAttribute(node, "right-comment");
-    checkCommentAttribute(node, "trailing-comment");
 }
 
 void NEDDTDValidator::validateElement(ImportedFileNode *node)

@@ -203,7 +203,7 @@ StructNode *NedFileNode::getFirstStructChild() const
 
 int ImportNode::getNumAttributes() const
 {
-    return 3;
+    return 2;
 }
 
 const char *ImportNode::getAttributeName(int k) const
@@ -211,7 +211,6 @@ const char *ImportNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "banner-comment";
         case 1: return "right-comment";
-        case 2: return "trailing-comment";
         default: return 0;
     }
 }
@@ -221,7 +220,6 @@ const char *ImportNode::getAttribute(int k) const
     switch (k) {
         case 0: return bannerComment.c_str();
         case 1: return rightComment.c_str();
-        case 2: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -231,7 +229,6 @@ void ImportNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: bannerComment = val; break;
         case 1: rightComment = val; break;
-        case 2: trailingComment = val; break;
         default: ;
     }
 }
@@ -241,7 +238,6 @@ const char *ImportNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "\n";
-        case 2: return "\n";
         default: return 0;
     }
 }
