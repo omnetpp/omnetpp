@@ -113,8 +113,8 @@ token:
 dyna2:
 	cd $(OMNETPP_SAMPLES_DIR)/dyna2 && $(MAKE)
 
-ned:
-	cd $(OMNETPP_SAMPLES_DIR)/ned && $(MAKE)
+topo:
+	cd $(OMNETPP_SAMPLES_DIR)/topo && $(MAKE)
 
 demo:
 	cd $(OMNETPP_SAMPLES_DIR)/demo && $(MAKE)
