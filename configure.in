@@ -29,6 +29,7 @@ fi
 
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
+OMNETPP_TUTORIAL_DIR="$OMNETPP_ROOT/tutorial"
 # OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
 OMNETPP_BITMAP_PATH=".;./bitmaps;$OMNETPP_ROOT/bitmaps"
 
@@ -409,6 +410,8 @@ AC_OUTPUT(
   samples/pvmex/Makefile
   samples/token/Makefile
   samples/demo/Makefile
+  samples/demo/Makefile
+  tutorial/queues/Makefile
 )
 
 chmod +x src/utils/opp_makemake
