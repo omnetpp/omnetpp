@@ -176,3 +176,6 @@ Nov 30, 1999
 Dec 2, 1999
   - implemented Imports, Channel, Network Properties dialogs
   - adjusted tree-view context menus
+Dec 5, 1999
+  - compiled with MSVC. enbf.h added. Removed changing slashes to backslashes
+    in OMNETPP_GNED_DIR and ..BITMAP_PATH on Win32 because Tcl/Tk accepts both.
