@@ -1,6 +1,8 @@
-rem *** just a dirty script for compiling on NT ***
+@rem *** just a dirty script for compiling on NT ***
 bison -d -v ebnf.y
-copy ebnf_tab.c ebnf.tab.c
-copy ebnf_tab.h ebnf.tab.h
 flex ebnf.lex
-copy lexyy.c lex.yy.c
+
+@rem Older versions of bison and flex generate filenames with underscores:
+@rem copy ebnf_tab.c ebnf.tab.c
+@rem copy ebnf_tab.h ebnf.tab.h
+@rem copy lexyy.c lex.yy.c

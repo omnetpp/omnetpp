@@ -107,7 +107,7 @@ int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *commands)
 }
 
 // run the Tk application
-int runTk( Tcl_Interp *interp )
+int runTk( Tcl_Interp *)
 {
     // Custom event loop
     //	the C++ variable exit_omnetpp is used for exiting
