@@ -275,6 +275,7 @@ void TOmnetApp::startRun()
     }
     simulation.scheduler()->startRun();
     simulation.startRun();
+    ev.flushlastline();
 }
 
 void TOmnetApp::endRun()

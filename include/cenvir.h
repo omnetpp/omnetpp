@@ -156,7 +156,7 @@ class ENVIR_API cEnvir : public std::ostream
 
     // internal: flushes the internal stream buffer by terminating last line if needed
     // note: exploits the fact that evbuf does sync() on "\n"'s
-    void flushstream_ifneeded() {if (!ev_buf.isempty()) ev_buf.sputn("\n",1);}
+    void flushlastline() {if (!ev_buf.isempty()) ev_buf.sputn("\n",1);}
 
   public:
     /** @name Constructor, destructor.

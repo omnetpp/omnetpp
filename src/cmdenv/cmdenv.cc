@@ -234,7 +234,6 @@ int TCmdenvApp::run()
 
             startRun();
             startrun_done = true;
-            ev.flushstream_ifneeded();
 
             // run the simulation
             ::fprintf(fout, "\nRunning simulation...\n");
@@ -247,7 +246,7 @@ int TCmdenvApp::run()
             ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", run_nr());
             ::fflush(fout);
             simulation.callFinish();
-            ev.flushstream_ifneeded();
+            ev.flushlastline();
         }
         catch (cException *e)
         {
@@ -344,7 +343,7 @@ void TCmdenvApp::simulate()
                simulation.doOneEvent( mod );
 
                // flush so that output from different modules don't get mixed
-               ev.flushstream_ifneeded();
+               ev.flushlastline();
 
                checkTimeLimits();
                if (sigint_received)

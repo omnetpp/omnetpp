@@ -403,6 +403,9 @@ bool TOmnetTkApp::doRunSimulation()
 
         simulation.doOneEvent( mod );
 
+        // flush so that output from different modules don't get mixed
+        ev.flushlastline();
+
         // display update
         if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
         {
@@ -531,6 +534,7 @@ void TOmnetTkApp::finishSimulation()
     try
     {
         simulation.callFinish();
+        ev.flushlastline();
     }
     catch (cException *e)
     {
