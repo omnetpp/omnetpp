@@ -125,14 +125,16 @@ proc create_omnetpp_window {} {
     }
 
     # Inspect menu
+    # The following two items have been replaced by the new Find/inspect objects... dialog:
+    #  {command -command inspect_anyobject -label {From list of all objects...} -underline 0}
+    #  {command -command inspect_matching -label {By pattern matching...} -underline 3}
     foreach i {
       {command -command inspect_systemmodule -label {Network} -underline 0}
       {command -command inspect_messagequeue -label {Scheduled events (FES)} -underline 0}
       {separator}
       {cascade -label {Available components} -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}
-      {command -command inspect_anyobject -label {From list of all objects...} -underline 0}
-      {command -command inspect_matching -label {By pattern matching...} -underline 3}
+      {command -command inspect_filteredobjectlist -label {Find/inspect objects...} -underline 0}
       {command -command inspect_bypointer -label {By pointer...} -underline 4}
       {separator}
       {command -command opp_updateinspectors -label {Refresh inspectors} -underline 0}
@@ -150,17 +152,6 @@ proc create_omnetpp_window {} {
     } {
       eval .menubar.inspectmenu$m.components add $i
     }
-
-    # Inspect|Special menu
-    #  {cascade -label {Special} -underline 1 -menu .menubar.inspectmenu$m.special}
-    # menu .menubar.inspectmenu$m.special -tearoff 0
-    # foreach i {
-    #  {command -command inspect_anyobject -label {From list of all objects...} -underline 0}
-    #  {command -command inspect_matching -label {By pattern matching...} -underline 3}
-    #  {command -command inspect_bypointer -label {By pointer...} -underline 4}
-    #} {
-    #  eval .menubar.inspectmenu$m.special add $i
-    #}
 
     # View menu
     foreach i {
@@ -222,6 +213,7 @@ proc create_omnetpp_window {} {
       {sep5     -separator}
       {network  -image $icons(network) -command {inspect_systemmodule}}
       {fes      -image $icons(fes)     -command {inspect_messagequeue}}
+      {objs     -image $icons(config)  -command {inspect_filteredobjectlist}}
       {sep6     -separator}
       {tree     -image $icons(tree)    -command {toggle_treeview}}
       {options  -image $icons(config)  -command {simulation_options}}
@@ -244,6 +236,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
     set help_tips(.toolbar.fes)     {Inspect scheduled events (Future Event Set)}
+    set help_tips(.toolbar.objs)    {Find/inspect objects}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
     set help_tips(.toolbar.find)    {Find string in main window}

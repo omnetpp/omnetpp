@@ -124,8 +124,8 @@ proc new_network {} {
 
     if [check_running] return
 
-    # get list of network names; FIXME should call opp_getchildobjects when it gets implemented
-    set networks [lreplace [opp_getsubobjects [opp_object_networks]] 0 0]
+    # get list of network names
+    set networks [opp_getchildobjects [opp_object_networks]]
     set netnames {}
     foreach net $networks {
         lappend netnames [opp_getobjectfullname $net]
@@ -389,42 +389,49 @@ proc clear_windows {} {
     .main.text delete 1.0 end
 }
 
-proc inspect_anyobject {} {
-    # implements Inspect|Any simulation object...
-    opp_inspect [opp_object_simulation] {(default)} d
+proc inspect_filteredobjectlist {} {
+    # implements Find/inspect objects...
+    filteredobjectlist_dialog
 }
 
-proc inspect_matching {} {
-    # implements Inspect|By pattern matching...
-    set pattern ""
-    set ok [inputbox {Inspect by pattern matching...} \
-                     "Enter pattern to match object pathname.\n\n\
-                      Wildcards can be used: *=any string, ?=any char, {a-z}=any char from set,\n\
-                      {^a-z}=any char NOT from the set. Example: '*.node\[{5-8}].*.histogram'" \
-                     pattern]
-    if {$ok == 0} return
+# Obsoleted by inspect_filteredobjectlist:
+# proc inspect_anyobject {} {
+#    # implements Inspect|Any simulation object...
+#    opp_inspect [opp_object_simulation] {(default)} d
+# }
 
-    set count [opp_inspect_matching $pattern (default) countonly]
-    if {$count == 0} {
-        messagebox {Inspect...} "No match from pattern `$pattern'." info ok
-    } elseif {$count > 8} {
-        set ans [messagebox {Warning...} \
-                            "The pattern `$pattern' matches $count objects. \
-                             Do you really want to inspect them all?" \
-                            question yesno]
-        if {$ans == "yes"} {
-           set type [listboxSelectionDialog {Choose Type...} {Select inspector type.} \
-                         [opp_inspectortype all]]
-           if {$type == ""} return
-           opp_inspect_matching $pattern $type
-        }
-    } else {
-        set type [listboxSelectionDialog {Choose Type...} {Select inspector type.} \
-                         [opp_inspectortype all]]
-        if {$type == ""} return
-        opp_inspect_matching $pattern $type
-    }
-}
+# Obsoleted by inspect_filteredobjectlist:
+# proc inspect_matching {} {
+#     # implements Inspect|By pattern matching...
+#     set pattern ""
+#     set ok [inputbox {Inspect by pattern matching...} \
+#                      "Enter pattern to match object pathname.\n\n\
+#                       Wildcards can be used: *=any string, ?=any char, {a-z}=any char from set,\n\
+#                       {^a-z}=any char NOT from the set. Example: '*.node\[{5-8}].*.histogram'" \
+#                      pattern]
+#     if {$ok == 0} return
+#
+#     set count [opp_inspect_matching $pattern (default) countonly]
+#     if {$count == 0} {
+#         messagebox {Inspect...} "No match from pattern `$pattern'." info ok
+#     } elseif {$count > 8} {
+#         set ans [messagebox {Warning...} \
+#                             "The pattern `$pattern' matches $count objects. \
+#                              Do you really want to inspect them all?" \
+#                             question yesno]
+#         if {$ans == "yes"} {
+#            set type [listboxSelectionDialog {Choose Type...} {Select inspector type.} \
+#                          [opp_inspectortype all]]
+#            if {$type == ""} return
+#            opp_inspect_matching $pattern $type
+#         }
+#     } else {
+#         set type [listboxSelectionDialog {Choose Type...} {Select inspector type.} \
+#                          [opp_inspectortype all]]
+#         if {$type == ""} return
+#         opp_inspect_matching $pattern $type
+#     }
+# }
 
 proc inspect_bypointer {} {
     # implements Inspect|By pointer...

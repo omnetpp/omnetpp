@@ -70,45 +70,46 @@ proc comboSelectionDialog {title text label variable list} {
     return 0
 }
 
-proc listboxSelectionDialog {title text list} {
-
-    set w .listdialog
-    createOkCancelDialog $w $title
-
-    label $w.f.label -text $text -justify left
-    pack $w.f.label -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top
-
-    frame $w.f.main
-    scrollbar $w.f.main.sb -command "$w.f.main.list yview"
-    listbox $w.f.main.list  -height 6 -yscrollcommand "$w.f.main.sb set"
-    pack $w.f.main.sb -anchor center -expand 0 -fill y -side right
-    pack $w.f.main.list  -anchor center -expand 1 -fill both  -side left
-    pack $w.f.main  -anchor center -expand 1 -fill both -side top
-
-    set lb $w.f.main.list
-    foreach i $list {
-       $lb insert end $i
-    }
-    $lb selection set 0
-
-    # Configure dialog
-    bind $lb <Double-Button-1> "$w.buttons.okbutton invoke"
-    bind $lb <Key-Return> "$w.buttons.okbutton invoke"
-
-    focus $lb
-
-    if [execOkCancelDialog $w] {
-       if {[$lb curselection] != ""} {
-           set selection [$lb get [$lb curselection]]
-       } else {
-          set selection ""
-       }
-       destroy $w
-       return $selection
-    }
-    destroy $w
-    return ""
-}
+# FIXME potentially obsolete:
+# proc listboxSelectionDialog {title text list} {
+#
+#    set w .listdialog
+#    createOkCancelDialog $w $title
+#
+#    label $w.f.label -text $text -justify left
+#    pack $w.f.label -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top
+#
+#    frame $w.f.main
+#    scrollbar $w.f.main.sb -command "$w.f.main.list yview"
+#    listbox $w.f.main.list  -height 6 -yscrollcommand "$w.f.main.sb set"
+#    pack $w.f.main.sb -anchor center -expand 0 -fill y -side right
+#    pack $w.f.main.list  -anchor center -expand 1 -fill both  -side left
+#    pack $w.f.main  -anchor center -expand 1 -fill both -side top
+#
+#    set lb $w.f.main.list
+#    foreach i $list {
+#       $lb insert end $i
+#    }
+#    $lb selection set 0
+#
+#    # Configure dialog
+#    bind $lb <Double-Button-1> "$w.buttons.okbutton invoke"
+#    bind $lb <Key-Return> "$w.buttons.okbutton invoke"
+#
+#    focus $lb
+#
+#    if [execOkCancelDialog $w] {
+#       if {[$lb curselection] != ""} {
+#           set selection [$lb get [$lb curselection]]
+#       } else {
+#          set selection ""
+#       }
+#       destroy $w
+#       return $selection
+#    }
+#    destroy $w
+#    return ""
+#}
 
 proc inspectfromlistbox_insp {lb type} {
     set sel [$lb curselection]
@@ -494,4 +495,131 @@ proc _doFind {w findstring case words regexp backwards} {
     return $length
 }
 
+
+# filteredobjectlist_dialog --
+#
+# Implements the "Find/inspect objects" dialog
+#
+proc filteredobjectlist_dialog {} {
+    set w .objdlg
+    createCloseDialog $w "Find/inspect objects"
+
+    # two panels: $w.f.filter is the upper panel for filters, and
+    # $w.f.main is the lower one with the listbox.
+
+    # panel for filters
+    frame $w.f.filter
+    pack $w.f.filter -anchor center -expand 0 -fill x -side top
+
+    label $w.f.filter.title -text "Filter list of all objects in the simulation:" -justify left -anchor w
+    pack $w.f.filter.title -anchor w -expand 1 -fill x -side top
+
+    frame $w.f.filter.pars -relief groove -bd 2
+    pack $w.f.filter.pars -anchor center -expand 1 -fill x -side top
+    set wfiltpars $w.f.filter.pars
+    frame $wfiltpars.class
+    frame $wfiltpars.name
+    frame $wfiltpars.order
+    pack $wfiltpars.class -anchor center -expand 0 -fill both -side left
+    pack $wfiltpars.name $wfiltpars.order -anchor center -expand 1 -fill both -side left
+    pack $wfiltpars.order -anchor center -expand 0 -fill both -side left
+
+    label $wfiltpars.class.label -text "Class:" -justify left
+    pack $wfiltpars.class.label -anchor w -expand 0 -fill none -side top
+    label $wfiltpars.name.label -text "Object name (full path):" -justify left
+    pack $wfiltpars.name.label -anchor w -expand 0 -fill none -side top
+    label $wfiltpars.order.label -text "Ordered by:" -justify left
+    pack $wfiltpars.order.label -anchor w -expand 0 -fill none -side top
+
+    entry $wfiltpars.class.entry
+    pack $wfiltpars.class.entry -anchor w -expand 0 -fill x -side top
+    entry $wfiltpars.name.entry
+    pack $wfiltpars.name.entry -anchor w -expand 0 -fill x -side top
+    combo $wfiltpars.order.entry {{Class} {Full name} {Name}}
+    pack $wfiltpars.order.entry -anchor w -expand 0 -fill x -side top
+
+    set helptext "Class and object name accepts wildcards:\n\
+                  *=any string, ?=any char, {a-z}=any char from set, {^a-z}=any char NOT from the set.\n\
+                  Example: *.node\[{5-8}].*.histogram\n\
+                  To match parts of the string, use * before and after the string. Example: *Packet*\n\
+                  Match is case sensitive -- 'a' and 'A' count as different."
+
+    label $w.f.filter.help -text $helptext -justify left -anchor w
+    pack $w.f.filter.help -anchor w -expand 1 -fill x -side top
+
+    frame $w.f.filter.buttons
+    pack $w.f.filter.buttons -anchor center -expand 1 -fill x -side top
+    button $w.f.filter.buttons.refresh -text Refresh -command "filteredobjectlist_refresh $w"
+    pack $w.f.filter.buttons.refresh -anchor e -expand 0 -fill none -side top
+
+
+    # number of objects
+    label $w.f.numobj -text "Found 0 objects" -justify left -anchor w
+    pack $w.f.numobj -anchor w -expand 0 -fill x -side top
+
+    # panel for listbox
+    frame $w.f.main
+    scrollbar $w.f.main.sb -command "$w.f.main.list yview"
+    listbox $w.f.main.list  -height 10 -yscrollcommand "$w.f.main.sb set" -width 60
+    pack $w.f.main.sb -anchor center -expand 0 -fill y -side right
+    pack $w.f.main.list  -anchor center -expand 1 -fill both  -side left
+    pack $w.f.main  -anchor center -expand 1 -fill both -side top
+
+    set lb $w.f.main.list
+
+    set type "(default)"
+    button $w.buttons.inspect -text "Open inspector" -command "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
+    pack $w.buttons.inspect -side top -anchor e -padx 2
+
+    # leave listbox empty -- filling it with all objects might take too long
+
+    # Configure dialog
+    bind $wfiltpars.class.entry <Return> "filteredobjectlist_refresh $w"
+    bind $wfiltpars.name.entry <Return> "filteredobjectlist_refresh $w"
+    bind $wfiltpars.order.entry <Return> "filteredobjectlist_refresh $w"
+    bind $lb <Double-Button-1> "$w.buttons.inspect invoke"
+    bind $lb <Key-Return> "$w.buttons.inspect invoke"
+
+    focus $wfiltpars.name.entry
+
+    ## potentially useful stuff:
+    # set type [listboxSelectionDialog {Choose Type...} {Select inspector type.} [opp_inspectortype all]]
+    # if {$type == ""} return
+
+    execCloseDialog $w
+    destroy $w
+}
+
+
+# filteredobjectlist_refresh --
+#
+# helper proc for filteredobjectlist_dialog
+#
+proc filteredobjectlist_refresh {w} {
+    set class [$w.f.filter.pars.class.entry get]
+    set name [$w.f.filter.pars.name.entry get]
+    set orderby [$w.f.filter.pars.order.entry get]
+
+    # tk_messageBox -type ok -title INFO -icon info -message "$class:$name:$orderby"
+
+    # get list
+    set objlist [opp_getsubobjectsfilt [opp_object_systemmodule] $class $name $orderby]
+
+    # number of objects display
+    $w.f.numobj config -text "Found [llength $objlist] objects"
+
+    # insert into listbox
+    set lb $w.f.main.list
+    $lb delete 0 end
+    foreach ptr $objlist {
+        # FIXME doctor the info string -- cut off object name and class if exists...
+        set classname [opp_getobjectclassname $ptr]
+        set fullpath [opp_getobjectfullpath $ptr]
+        set infostr0 [opp_getobjectinfostring $ptr]
+        regsub "^.*\\($classname\\)" $infostr0 "" infostr
+
+        $lb insert end "$ptr ($classname)  $fullpath    $infostr"
+    }
+    $lb selection set 0
+}
 

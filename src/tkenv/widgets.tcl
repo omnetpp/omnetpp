@@ -534,8 +534,8 @@ proc center {w} {
 
 # createOkCancelDialog --
 #
-# creates dialog with OK and Cancel buttons
-# user's widgets can go into frame $w.f
+# Creates dialog with OK and Cancel buttons.
+# User's widgets can go into frame $w.f, and extra buttons can go into frame $w.buttons.
 #
 proc createOkCancelDialog {w title} {
     global tk_version tcl_platform
@@ -616,6 +616,86 @@ proc execOkCancelDialog w {
     return $opp($w)
 }
 
+# createCloseDialog --
+#
+# Creates dialog with a Close button.
+# User's widgets can go into frame $w.f, and extra buttons can go into frame $w.buttons.
+#
+proc createCloseDialog {w title} {
+    global tk_version tcl_platform
+
+    catch {destroy $w}
+    toplevel $w -class Toplevel
+    if {$tk_version<8.2 || $tcl_platform(platform)!="windows"} {
+        wm transient $w [winfo toplevel [winfo parent $w]]
+    }
+    wm title $w $title
+    wm iconname $w Dialog
+    wm focusmodel $w passive
+    wm overrideredirect $w 0
+    wm resizable $w 1 1
+    wm deiconify $w
+    wm protocol $w WM_DELETE_WINDOW { }
+
+    # preliminary placement (assumes 350x250 dialog)...
+    set pre_x [expr ([winfo screenwidth $w]-350)/2-[winfo vrootx [winfo parent $w]]]
+    set pre_y [expr ([winfo screenheight $w]-250)/2-[winfo vrooty [winfo parent $w]]]
+    wm geom $w +$pre_x+$pre_y
+
+    frame $w.f
+    frame $w.buttons
+    button $w.buttons.closebutton  -text {Close}
+
+    pack $w.buttons -expand 0 -fill x -padx 5 -pady 5 -side bottom
+    pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top
+    pack $w.buttons.closebutton  -anchor n -side right -padx 2
+}
+
+
+# execCloseDialog --
+#
+# Executes the dialog.
+#
+proc execCloseDialog w {
+
+    global opp
+
+    $w.buttons.closebutton configure -command "set opp($w) 1"
+
+    #bind $w <Return> "if {\[winfo class \[focus\]\]!=\"Text\"} {set opp($w) 1}"
+    bind $w <Escape> "set opp($w) 0"
+
+    wm protocol $w WM_DELETE_WINDOW "set opp($w) 0"
+
+    # next line mysteriously solves "lost focus" problem of popup dialogs...
+    after 1 "wm deiconify $w"
+
+    center $w
+
+    set oldGrab [grab current $w]
+    if {$oldGrab != ""} {
+        set grabStatus [grab status $oldGrab]
+    }
+    grab $w
+
+    # Wait for the user to respond, then restore the focus and
+    # return the index of the selected button.  Restore the focus
+    # before deleting the window, since otherwise the window manager
+    # may take the focus away so we can't redirect it.  Finally,
+    # restore any grab that was in effect.
+
+    tkwait variable opp($w)
+
+    if {$oldGrab != ""} {
+        if {$grabStatus == "global"} {
+            grab -global $oldGrab
+        } else {
+            grab $oldGrab
+        }
+    }
+    return $opp($w)
+}
+
 
 # aboutDialog --
 #
@@ -630,3 +710,5 @@ proc aboutDialog {title contents} {
     execOkCancelDialog .about
     destroy .about
 }
+
+

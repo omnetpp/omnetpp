@@ -30,10 +30,10 @@
 #include "tklib.h"
 #include "inspector.h"
 #include "inspfactory.h"
+#include "patmatch.h"
 
-// temporary place for visitor stuff -- after it boils down, should be
-// moved to sim/
 
+// FIXME temporary place for visitor stuff -- after it boils down, should be moved to sim/
 
 //-----------------------------------------------------------------------
 
@@ -85,8 +85,8 @@ void cVisitor::traverseChildrenOf(cObject *obj)
 /**
  * Sample code:
  *   cCollectObjectsVisitor v;
- *   v->visit(object);
- *   cObject **objs = v->getArray();
+ *   v.visit(object);
+ *   cObject **objs = v.getArray();
  */
 class cCollectObjectsVisitor : public cVisitor
 {
@@ -139,6 +139,71 @@ void cCollectObjectsVisitor::visit(cObject *obj)
     traverseChildrenOf(obj);
 }
 
+//-----------------------------------------------------------------------
+/**
+ * Sample code:
+ *   cFilteredCollectObjectsVisitor v;
+ *   v.setFilterPars("c*Queue", "*.q");
+ *   v.visit(object);
+ *   cObject **objs = v.getArray();
+ */
+class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
+{
+  private:
+    short *classnamepatterntf;
+    short *objfullpathpatterntf;
+  public:
+    cFilteredCollectObjectsVisitor();
+    ~cFilteredCollectObjectsVisitor();
+    bool setFilterPars(const char *classnamepattern, const char *objfullpathpattern);
+    virtual void visit(cObject *obj);
+};
+
+cFilteredCollectObjectsVisitor::cFilteredCollectObjectsVisitor()
+{
+    classnamepatterntf = NULL;
+    objfullpathpatterntf = NULL;
+}
+
+cFilteredCollectObjectsVisitor::~cFilteredCollectObjectsVisitor()
+{
+    delete classnamepatterntf;
+    delete objfullpathpatterntf;
+}
+
+bool cFilteredCollectObjectsVisitor::setFilterPars(const char *classnamepattern,
+                                                   const char *objfullpathpattern)
+{
+    if (classnamepattern && classnamepattern[0])
+    {
+        classnamepatterntf = new short[512]; // FIXME!
+        if (!transform_pattern(classnamepattern,classnamepatterntf))
+            return false; // bad pattern: unmatched '{'
+    }
+    if (objfullpathpattern && objfullpathpattern[0])
+    {
+        objfullpathpatterntf = new short[512]; // FIXME!
+        if (!transform_pattern(objfullpathpattern,objfullpathpatterntf))
+            return false; // bad pattern: unmatched '{'
+    }
+    return true;
+}
+
+void cFilteredCollectObjectsVisitor::visit(cObject *obj)
+{
+    const char *fullpath = obj->fullPath();
+    const char *classname = obj->className();
+    bool nameok = !objfullpathpatterntf || stringmatch(objfullpathpatterntf,fullpath);
+    bool classok = !classnamepatterntf || stringmatch(classnamepatterntf,classname);
+    if (nameok && classok)
+    {
+        addPointer(obj);
+    }
+
+    // go to children
+    traverseChildrenOf(obj);
+}
+
 //----------------------------------------------------------------
 
 class cCollectChildrenVisitor : public cCollectObjectsVisitor
@@ -160,6 +225,26 @@ void cCollectChildrenVisitor::visit(cObject *obj)
 
 //----------------------------------------------------------------
 
+void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
+{
+   int n = visitor->getArraySize();
+   cObject **objs = visitor->getArray();
+   const int ptrsize = 21; // one ptr should be max 20 chars (good for even 64bit-ptrs)
+   char *buf = Tcl_Alloc(ptrsize*n);
+   char *s=buf;
+   for (int i=0; i<n; i++)
+   {
+       ptrToStr(objs[i],s);
+       s+=strlen(s);
+       assert(strlen(s)<=20);
+       *s++ = ' ';
+   }
+   *s='\0';
+   Tcl_SetResult(interp, buf, TCL_DYNAMIC);
+}
+
+//----------------------------------------------------------------
+
 class cCountChildrenVisitor : public cVisitor
 {
   private:
@@ -177,6 +262,41 @@ void cCountChildrenVisitor::visit(cObject *obj)
         traverseChildrenOf(obj);
     else
         count++;
+}
+
+//----------------------------------------------------------------
+// utilities for sorting objects:
+
+#define OBJPTR(a) (*(cObject **)a)
+static int qsort_cmp_byname(const void *a, const void *b)
+{
+    return opp_strcmp(OBJPTR(a)->fullName(), OBJPTR(b)->fullName());
+}
+static int qsort_cmp_byfullpath(const void *a, const void *b)
+{
+    char buf1[MAX_OBJECTFULLPATH];
+    char buf2[MAX_OBJECTFULLPATH];
+    return opp_strcmp(OBJPTR(a)->fullPath(buf1,MAX_OBJECTFULLPATH), OBJPTR(b)->fullPath(buf2,MAX_OBJECTFULLPATH));
+}
+static int qsort_cmp_byclass(const void *a, const void *b)
+{
+    return opp_strcmp(OBJPTR(a)->className(), OBJPTR(b)->className());
+}
+#undef OBJPTR
+
+void sortObjectsByName(cObject **objs, int n)
+{
+    qsort(objs, n, sizeof(cObject*), qsort_cmp_byname);
+}
+
+void sortObjectsByFullPath(cObject **objs, int n)
+{
+    qsort(objs, n, sizeof(cObject*), qsort_cmp_byfullpath);
+}
+
+void sortObjectsByClassName(cObject **objs, int n)
+{
+    qsort(objs, n, sizeof(cObject*), qsort_cmp_byclass);
 }
 
 //----------------------------------------------------------------
@@ -209,6 +329,7 @@ int getObjectId_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNumChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
 int fillListbox_cmd(ClientData, Tcl_Interp *, int, const char **);
 int stopSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -256,29 +377,30 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_finish_simulation",finishSimulation_cmd}, // args: -
    { "opp_loadlib",          loadLib_cmd        }, // args: <fname>
    // Utility commands
-   { "opp_getrunnumber",     getRunNumber_cmd   }, // args: -  ret: current run
-   { "opp_getnetworktype",   getNetworkType_cmd   }, // args: -  ret: type of current network
-   { "opp_getinisectionnames",getIniSectionNames_cmd}, // args: -
-   { "opp_getfilename",      getFileName_cmd      }, // args: <filetype>  ret: filename
-   { "opp_getobjectfullname",getObjectFullName_cmd}, // args: <pointer>  ret: fullName()
-   { "opp_getobjectfullpath",getObjectFullPath_cmd}, // args: <pointer>  ret: fullPath()
-   { "opp_getobjectclassname",getObjectClassName_cmd}, // args: <pointer>  ret: className()
-   { "opp_getobjectbaseclass",getObjectBaseClass_cmd}, // args: <pointer>  ret: a base class
-   { "opp_getobjectid",      getObjectId_cmd}, // args: <pointer>  ret: object ID (if object has one) or ""
+   { "opp_getrunnumber",     getRunNumber_cmd         }, // args: -  ret: current run
+   { "opp_getnetworktype",   getNetworkType_cmd       }, // args: -  ret: type of current network
+   { "opp_getinisectionnames",getIniSectionNames_cmd  }, // args: -
+   { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: filename
+   { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: fullName()
+   { "opp_getobjectfullpath",getObjectFullPath_cmd    }, // args: <pointer>  ret: fullPath()
+   { "opp_getobjectclassname",getObjectClassName_cmd  }, // args: <pointer>  ret: className()
+   { "opp_getobjectbaseclass",getObjectBaseClass_cmd  }, // args: <pointer>  ret: a base class
+   { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
-   { "opp_getchildobjects",  getChildObjects_cmd    }, // args: <pointer> ret: list with its child object ptrs
-   { "opp_getnumchildobjects",getNumChildObjects_cmd}, // args: <pointer> ret: length of child objects list
-   { "opp_getsubobjects",    getSubObjects_cmd    }, // args: <pointer> ret: list with all object ptrs in subtree
+   { "opp_getchildobjects",  getChildObjects_cmd      }, // args: <pointer> ret: list with its child object ptrs
+   { "opp_getnumchildobjects",getNumChildObjects_cmd  }, // args: <pointer> ret: length of child objects list
+   { "opp_getsubobjects",    getSubObjects_cmd        }, // args: <pointer> ret: list with all object ptrs in subtree
+   { "opp_getsubobjectsfilt",getSubObjectsFilt_cmd    }, // args: <pointer> <args> ret: filtered list of object ptrs in subtree
    { "opp_getsimulationstate", getSimulationState_cmd }, // args: -  ret: NONET,READY,RUNNING,ERROR,TERMINATED,etc.
-   { "opp_fill_listbox",     fillListbox_cmd    }, // args: <listbox> <ptr> <options>
-   { "opp_stopsimulation",   stopSimulation_cmd }, // args: -
-   { "opp_getsimoption",     getSimOption_cmd   }, // args: <option-namestr>
-   { "opp_setsimoption",     setSimOption_cmd   }, // args: <option-namestr> <value>
+   { "opp_fill_listbox",     fillListbox_cmd          }, // args: <listbox> <ptr> <options>
+   { "opp_stopsimulation",   stopSimulation_cmd   }, // args: -
+   { "opp_getsimoption",     getSimOption_cmd     }, // args: <option-namestr>
+   { "opp_setsimoption",     setSimOption_cmd     }, // args: <option-namestr> <value>
    { "opp_getstringhashcode",getStringHashCode_cmd}, // args: <string> ret: numeric hash code
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
-   { "opp_inspect_matching",  inspectMatching_cmd   }, // args: <pattern>
+   { "opp_inspect_matching",  inspectMatching_cmd   }, // args: <pattern>  FIXME probably obsolete
    { "opp_inspectbyname",     inspectByName_cmd     }, // args: <objfullpath> <classname> <insptype> <geom>
    { "opp_updateinspector",   updateInspector_cmd   }, // args: <window>
    { "opp_writebackinspector",writeBackInspector_cmd}, // args: <window>
@@ -620,20 +742,7 @@ int getChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    cCollectChildrenVisitor visitor(object);
    visitor.visit(object);
 
-   const int ptrsize = 21; // one ptr should be max 20 chars (good for even 64bit-ptrs)
-   int n = visitor.getArraySize();
-   cObject **objs = visitor.getArray();
-   char *buf = Tcl_Alloc(ptrsize*n);
-   char *s=buf;
-   for (int i=0; i<n; i++)
-   {
-       ptrToStr(objs[i],s);
-       s+=strlen(s);
-       assert(strlen(s)<=20);
-       *s++ = ' ';
-   }
-   *s='\0';
-   Tcl_SetResult(interp, buf, TCL_DYNAMIC);
+   setObjectListResult(interp, &visitor);
    return TCL_OK;
 }
 
@@ -663,20 +772,37 @@ int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    cCollectObjectsVisitor visitor;
    visitor.visit(object);
 
-   const int ptrsize = 21; // one ptr should be max 20 chars (good for even 64bit-ptrs)
-   int n = visitor.getArraySize();
-   cObject **objs = visitor.getArray();
-   char *buf = Tcl_Alloc(ptrsize*n);
-   char *s=buf;
-   for (int i=0; i<n; i++)
-   {
-       ptrToStr(objs[i],s);
-       s+=strlen(s);
-       assert(strlen(s)<=20);
-       *s++ = ' ';
-   }
-   *s='\0';
-   Tcl_SetResult(interp, buf, TCL_DYNAMIC);
+   setObjectListResult(interp, &visitor);
+   return TCL_OK;
+}
+
+int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   // args: <ptr> <class> <fullpath> <orderby>, where <class> and <fullpath> may contain wildcards
+   if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cObject *object = (cObject *)strToPtr( argv[1] );
+   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   const char *classnamepattern = argv[2];
+   const char *objfullpathpattern = argv[3];
+   const char *orderby = argv[4];
+
+   // get filtered list
+   cFilteredCollectObjectsVisitor visitor;
+   visitor.setFilterPars(classnamepattern, objfullpathpattern);
+   visitor.visit(object);
+
+   // order it
+   if (!strcmp(orderby,"Name"))
+       sortObjectsByName(visitor.getArray(), visitor.getArraySize());
+   else if (!strcmp(orderby,"Full name"))
+       sortObjectsByFullPath(visitor.getArray(), visitor.getArraySize());
+   else if (!strcmp(orderby,"Class"))
+       sortObjectsByClassName(visitor.getArray(), visitor.getArraySize());
+   else
+       {Tcl_SetResult(interp, "wrong sort criteria", TCL_STATIC); return TCL_ERROR;}
+
+   // return list
+   setObjectListResult(interp, &visitor);
    return TCL_OK;
 }
 
