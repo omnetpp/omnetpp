@@ -30,14 +30,15 @@ OBJS=plove.o
 
 all: plove
 	rm -f $(OMNETPP_BIN_DIR)/plove $(OMNETPP_BIN_DIR)/plove.exe $(OMNETPP_BIN_DIR)/plove.bat
-	- cp plove $(OMNETPP_BIN_DIR)
-	- cp plove.bat $(OMNETPP_BIN_DIR)
-	- cp plove.exe $(OMNETPP_BIN_DIR)
+	if test -f plove; then cp plove $(OMNETPP_BIN_DIR); fi
+	if test -f plove.bat; then cp plove.bat $(OMNETPP_BIN_DIR); fi
+	if test -f plove.exe; then cp plove.exe $(OMNETPP_BIN_DIR); fi
 
 plove: $(PLOVE_VARIANT)
+	@echo '' # NOP to prevent automatic rules from firing
 
 plove-sh:
-	echo "@$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh $$*" > plove
+	echo "$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh $$*" > plove
 	chmod +x plove
 
 plove-bat:
