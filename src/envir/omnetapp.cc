@@ -129,7 +129,7 @@ void TOmnetApp::setup()
          readOptions();
 
          // initialize coroutine library
-         if (opt_total_stack_kb<=MAIN_STACK_KB)
+         if (TOTAL_STACK_KB!=0 && opt_total_stack_kb<=MAIN_STACK_KB+4)
          {
             ev.printf("Total stack size %dK increased to %dK\n", opt_total_stack_kb, MAIN_STACK_KB+4);
             opt_total_stack_kb = MAIN_STACK_KB+4;
@@ -408,7 +408,7 @@ void TOmnetApp::readOptions()
     opt_ini_warnings = cfg->getAsBool( "General", "ini-warnings", false );
     //FIXME cfg->setWarnings(opt_ini_warnings);
 
-    opt_total_stack_kb = cfg->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB );
+    opt_total_stack_kb = cfg->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB);
     if (cfg->getAsBool("General", "distributed", false))
          ev.printfmsg("Warning: config entry distributed= is obsolete (parallel simulation support was reimplemented for version 3.0)");
     opt_parsim = cfg->getAsBool("General", "parallel-simulation", false);
