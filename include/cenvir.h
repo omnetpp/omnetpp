@@ -294,8 +294,7 @@ class ENVIR_API cEnvir : public std::ostream
     /**
      * Notifies the environment that a module display string has been changed.
      */
-    //FIXME "AsParent" is not really a good name...
-    void displayStringAsParentChanged(cModule *parentmodule);
+    void backgroundDisplayStringChanged(cModule *parentmodule);
     //@}
 
     /** @name Methods called by the simulation kernel to access configuration settings. */

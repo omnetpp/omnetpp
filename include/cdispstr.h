@@ -75,7 +75,7 @@ class cDisplayString
 
     // needed to notify Envir
     cObject *object;     // a cModule or cGate pointer
-    enum {NONE, CONNECTION, MODULE, MODULE_AS_PARENT} role; // what
+    enum {NONE, CONNECTION, MODULE, MODULEBACKGROUND} role; // what
 
   private:
     // helper functions
@@ -94,7 +94,7 @@ class cDisplayString
     // internal:
     void setRoleToConnection(cGate *gate) {object=gate; role=CONNECTION;}
     void setRoleToModule(cModule *submodule) {object=submodule; role=MODULE;}
-    void setRoleToModuleAsParent(cModule *module) {object=module; role=MODULE_AS_PARENT;}
+    void setRoleToModuleBackground(cModule *module) {object=module; role=MODULEBACKGROUND;}
 
   public:
     /** Constructors, destructor. */

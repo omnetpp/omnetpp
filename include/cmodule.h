@@ -132,8 +132,8 @@ class SIM_API cModule : public cDefaultList
     int  idx;               // index if module vector, 0 otherwise
     int  vectsize;          // vector size, -1 if not a vector
 
-    cDisplayString *dispstr;       // display string as submodule
-    cDisplayString *parentdispstr; // display string as parent (enclosing) module
+    cDisplayString *dispstr;   // display string as submodule (icon, etc)
+    cDisplayString *bgdispstr; // display string when enclosing module (background color, etc)
 
     bool ev_enabled;        // in Cmdenv this tells if ev<< output if printed for this module
 
@@ -144,7 +144,7 @@ class SIM_API cModule : public cDefaultList
     // internal: used from Tkenv: find out if cGate has a display string.
     // displayString() would create the object immediately which we want to avoid.
     bool hasDisplayString() {return dispstr!=NULL;}
-    bool hasDisplayStringAsParent() {return parentdispstr!=NULL;}
+    bool hasBackgroundDisplayString() {return bgdispstr!=NULL;}
 
     // internal: currently used by Cmdenv
     void setEvEnabled(bool e)  {ev_enabled = e;}
@@ -616,7 +616,7 @@ class SIM_API cModule : public cDefaultList
      * Returns the display string which is used when this module is a compound module
      * whose internals are being displayed in a window.
      */
-    cDisplayString& displayStringAsParent();
+    cDisplayString& backgroundDisplayString();
 
     /**
      * DEPRECATED. Use displayString() and cDisplayString methods instead.
@@ -624,18 +624,18 @@ class SIM_API cModule : public cDefaultList
     void setDisplayString(const char *dispstr, bool immediate=true);
 
     /**
-     * DEPRECATED. Use displayStringAsParent() and cDisplayString methods instead.
+     * DEPRECATED. Use backgroundDisplayString() and cDisplayString methods instead.
      */
-    void setDisplayStringAsParent(const char *dispstr, bool immediate=true);
+    void setBackgroundDisplayString(const char *dispstr, bool immediate=true);
 
     /**
-     * DEPRECATED. Use displayString()/displayStringAsParent() and cDisplayString
+     * DEPRECATED. Use displayString()/backgroundDisplayString() and cDisplayString
      * methods instead.
      */
     const char *displayString(int type);
 
     /**
-     * DEPRECATED. Use displayString()/displayStringAsParent() and cDisplayString
+     * DEPRECATED. Use displayString()/backgroundDisplayString() and cDisplayString
      * methods instead.
      */
     void setDisplayString(int type, const char *dispstr, bool immediate=true);

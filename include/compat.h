@@ -32,6 +32,9 @@
 #define getTail()      pop()
 // cSimulation
 #define lastModuleIndex() lastModuleId()
+// cModule
+#define displayStringAsParent()  backgroundDisplayString()
+#define setDisplayStringAsParent setBackgroundDisplayString
 
 // following ones became inner classes:
 typedef cKSplit::Iterator      cKSplitIterator;

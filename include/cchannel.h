@@ -197,11 +197,10 @@ class SIM_API cChannel : public cObject
  *
  * @ingroup SimCore
  */
-// FIXME we could probably find a better name for this
 class SIM_API cSimpleChannel : public cChannel
 {
   private:
-    cPar *disabledp;    // TBD implement! if not NULL and value is nonzero, channel is down (will delete all packets). Points to an object in the parlist.
+    cPar *disabledp;    // if not NULL and value is nonzero, channel is down (will delete all packets). Points to an object in the parlist.
     cPar *delayp;       // propagation delay or NULL. Points to an object in the parlist.
     cPar *errorp;       // bit error rate or NULL. Points to an object in the parlist.
     cPar *dataratep;    // data rate or NULL. Points to an object in the parlist.
@@ -305,6 +304,12 @@ class SIM_API cSimpleChannel : public cChannel
     virtual void setDatarate(double d);
 
     /**
+     * Sets the "disabled" parameter of the channel. A disabled channel
+     * discards all messages sent on it.
+     */
+    virtual void setDisabled(bool d);
+
+    /**
      * DEPRECATED.
      */
     virtual void setDelay(cPar *p);
@@ -333,6 +338,11 @@ class SIM_API cSimpleChannel : public cChannel
      * Returns the data rate of the channel.
      */
     virtual double datarate() const  {return !dataratep ? 0.0 : dataratep->doubleValue();}
+
+    /**
+     * Returns the "disabled" parameter of the channel.
+     */
+    virtual bool disabled() const  {return !disabledp ? false : disabledp->boolValue();}
     //@}
 
     /** @name Redefined cChannel methods. */

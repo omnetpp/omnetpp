@@ -1,3 +1,8 @@
+2004-11-25  Andras Varga
+
+	* cmodule.h: displayStringAsParent() renamed to backgroundDisplay-
+	String()
+
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
 2004-11-18  Andras Varga
