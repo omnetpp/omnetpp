@@ -73,8 +73,7 @@ cTopology::~cTopology()
 
 void cTopology::info(char *buf)
 {
-    cObject::info( buf );
-    sprintf(buf+strlen(buf)," %d nodes", num_nodes);
+    sprintf(buf,"(%d nodes)", num_nodes);
 }
 
 #ifdef WITH_PARSIM

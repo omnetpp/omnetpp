@@ -1,3 +1,7 @@
+2003-11-30  Andras Varga
+
+	* all files: info() no longer contains object name and class
+
 2003-11-22  Andras Varga
 
 	* carray.cc: fixed bug in cBag which caused crash under certain rare

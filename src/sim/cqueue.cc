@@ -61,12 +61,10 @@ cQueue::~cQueue()
 
 void cQueue::info(char *buf)
 {
-    cObject::info( buf );
-
-    if( n==0 )
-        sprintf( buf+strlen(buf), " (empty)" );
+    if (n==0)
+        sprintf(buf, "(empty)");
     else
-        sprintf( buf+strlen(buf), " (n=%d)", n);
+        sprintf(buf, "(length=%d)", n);
 }
 
 void cQueue::forEach( ForeachFunc do_fn )

@@ -158,8 +158,7 @@ cSimpleModule& cSimpleModule::operator=(const cSimpleModule& other)
 
 void cSimpleModule::info(char *buf)
 {
-    // no call to cObject::info()!
-    sprintf(buf,"%-20.20s (%s) (id=%d)", fullName(), className(), id() );
+    sprintf(buf, "id=%d", id());
 }
 
 void cSimpleModule::forEach(ForeachFunc do_fn)

@@ -36,10 +36,7 @@ cWatch::cWatch(const cWatch& vs) : cObject()
 
 void cWatch::info(char *buf)
 {
-      // sprintf(buf,"(%s) ", className());
-      // printTo( buf + strlen(buf) );
-
-      printTo( buf );
+      printTo(buf);
 }
 
 void cWatch::writeContents(ostream& os)

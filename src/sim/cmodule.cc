@@ -538,9 +538,9 @@ cCompoundModule::~cCompoundModule()
 {
 }
 
-void cCompoundModule::info( char *buf )
+void cCompoundModule::info(char *buf)
 {
-    sprintf(buf,"%-15.15s (%s) (id=%d)", fullName(), className(), id() );
+    sprintf(buf, "id=%d", id());
 }
 
 cCompoundModule& cCompoundModule::operator=(const cCompoundModule& mod)

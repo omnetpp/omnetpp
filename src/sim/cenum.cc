@@ -78,12 +78,10 @@ cEnum& cEnum::operator=(const cEnum& list)
 
 void cEnum::info(char *buf)
 {
-    cObject::info( buf );
-
     if (items==0)
-        sprintf( buf+strlen(buf), " (empty)" );
+        sprintf(buf, "(empty)");
     else
-        sprintf( buf+strlen(buf), " (n=%d)", items);
+        sprintf(buf, "(%d constants)", items);
 }
 
 void cEnum::insert(int key, const char *str)

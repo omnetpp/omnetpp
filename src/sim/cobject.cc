@@ -125,7 +125,7 @@ void cObject::copyNotSupported() const
 
 void cObject::info(char *buf)
 {
-    sprintf( buf, "%-12s (%s)", fullName()?fullName():"<noname>", className());
+    buf[0] = '\0';
 }
 
 void cObject::netPack(cCommBuffer *buffer)

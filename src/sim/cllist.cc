@@ -54,12 +54,10 @@ cLinkedList::~cLinkedList()
 
 void cLinkedList::info(char *buf)
 {
-    cObject::info( buf );
-
-    if( n==0 )
-       sprintf( buf+strlen(buf), " (empty)" );
+    if (n==0)
+       sprintf(buf, "(empty)");
     else
-       sprintf( buf+strlen(buf), " (n=%d)", n);
+       sprintf(buf, "(length=%d)", n);
 }
 
 #ifdef WITH_PARSIM

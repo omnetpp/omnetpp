@@ -135,14 +135,10 @@ void cPar::deleteold()
 //----------------------------------------------------------------------
 // redefine virtual cObject funcs
 
-void cPar::info( char *buf )
+void cPar::info(char *buf)
 {
-    cObject::info( buf );
-
-    // find end of string and append a space
     char *b = buf;
-    while(*b) b++;
-    *b++ = ' '; *b='\0';
+    *b='\0';
 
     // redirection?
     if (isRedirected())

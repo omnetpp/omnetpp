@@ -153,8 +153,7 @@ cStdDev::cStdDev(const char *s) : cStatistic(s)
 
 void cStdDev::info(char *buf)
 {
-    cStatistic::info( buf );
-    sprintf( buf+strlen(buf), " (n=%ld)", num_samples);
+    sprintf(buf, "(n=%ld)", num_samples);
 }
 
 #ifdef WITH_PARSIM

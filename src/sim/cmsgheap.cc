@@ -89,12 +89,10 @@ cMessageHeap::~cMessageHeap()
 
 void cMessageHeap::info(char *buf)
 {
-    cObject::info( buf );
-
-    if( n==0 )
-        sprintf( buf+strlen(buf), " (empty)" );
+    if (n==0)
+        sprintf(buf, "(empty)" );
     else
-        sprintf( buf+strlen(buf), " n=%d first=%s",
+        sprintf(buf, "(length=%d first=%s)",
                  n, simtimeToStr(h[1]->arrivalTime()));
 }
 

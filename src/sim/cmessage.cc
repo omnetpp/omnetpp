@@ -76,12 +76,8 @@ cMessage::~cMessage()
 
 void cMessage::info(char *buf)
 {
-    cObject::info(buf);
-
-    // find end of string and append a space
     char *b = buf;
-    while(*b) b++;
-    *b++ = ' '; *b='\0';
+    *b='\0';
 
     const char *deletedstr = "<deleted module>";
 

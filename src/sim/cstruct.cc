@@ -92,10 +92,10 @@ void cStructDescriptor::enum2string(long e, const char *enumname, char *buf, int
     const char *s = enump->stringFor(e);
     if (!s) {
         // no string for this numeric value
-        sprintf(buf+strlen(buf), " (unknown)");
+        sprintf(buf, "(unknown)");
         return;
     }
-    sprintf(buf+strlen(buf), " (%s)",s);
+    sprintf(buf, "(%s)",s);
 }
 
 

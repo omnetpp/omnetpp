@@ -55,12 +55,10 @@ cObject( name ), vect(NULL)
 
 void cBag::info(char *buf)
 {
-    cObject::info( buf );
-
     if (lastused==-1)
-        sprintf( buf+strlen(buf), " (empty)" );
+        sprintf(buf, "(empty)");
     else
-        sprintf( buf+strlen(buf), " (size=%d) ", lastused+1);
+        sprintf(buf, "(size=%d)", lastused+1);
 }
 
 cBag& cBag::operator=(const cBag& bag)
@@ -293,12 +291,10 @@ cArray& cArray::operator=(const cArray& list)
 
 void cArray::info(char *buf)
 {
-    cObject::info( buf );
-
     if (last==-1)
-        sprintf( buf+strlen(buf), " (empty)" );
+        sprintf(buf, "(empty)");
     else
-        sprintf( buf+strlen(buf), " (size=%d)", last+1);
+        sprintf(buf, "(size=%d)", last+1);
 }
 
 void cArray::forEach( ForeachFunc do_fn )

@@ -67,11 +67,10 @@ void cOutVector::setName(const char *nam)
 
 void cOutVector::info(char *buf)
 {
-    cObject::info(buf);
     if (handle)
-        sprintf( buf+strlen(buf), " (received %ld values, stored %ld)", num_received, num_stored);
+        sprintf(buf, "(received %ld values, stored %ld)", num_received, num_stored);
     else
-        sprintf( buf+strlen(buf), " (no values recorded yet)");
+        sprintf(buf, "(no values recorded yet)");
 }
 
 bool cOutVector::record(double value)

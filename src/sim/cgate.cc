@@ -166,11 +166,7 @@ void cGate::info(char *buf)
 {
     // info() string will be like:
     //    "(cGate) outgate  --> <parent>.outgate  DE" (DER:DelayErrorDatarate)
-    cObject::info( buf );
-
-    // find end of string
     char *b = buf;
-    while(*b) b++;
 
     char channel[5], *arrow, *s;
     cGate *g, *conng;

@@ -63,15 +63,8 @@ cChannel::~cChannel()
 
 void cChannel::info(char *buf)
 {
-    cObject::info( buf );
-
-    // find end of string and append a space
-    char *b = buf;
-    while(*b) b++;
-    *b++ = ' '; *b='\0';
-
-    // append useful info
     //TBD
+    buf[0] = '\0';
 }
 
 void cChannel::forEach( ForeachFunc do_fn )
@@ -207,13 +200,7 @@ cSimpleChannel::~cSimpleChannel()
 
 void cSimpleChannel::info(char *buf)
 {
-    cChannel::info( buf );
-
-    // find end of string and append a space
-    char *b = buf;
-    while(*b) b++;
-    *b++ = ' '; *b='\0';
-
+    cChannel::info(buf);
     // append other info
     //TBD
 }
