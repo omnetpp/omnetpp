@@ -1,16 +1,16 @@
 #! /bin/sh
 echo
 echo '*** Distributed execution of the Closed Queueing Network ***'
-echo 'If you'"'"'re running CQN under the GUI, you'"'"'ll have to click [Run] in all'
-echo 'three windows to start the simulation. See Readme.txt for more info.'
+echo 'IMPORTANT: If you'"'"'re running CQN under the GUI, you'"'"'ll have to click [Run]'
+echo 'in all three windows to start the simulation. See Readme.txt for more info.'
 echo
 
 rm -rf comm
 mkdir comm
 mkdir comm/read
 
-../cqn -p0,3 &
-../cqn -p1,3 &
-../cqn -p2,3 &
+../cqn -p0,3  > cqn-0.log &
+../cqn -p1,3  > cqn-1.log &
+../cqn -p2,3  > cqn-2.log &
 
 
