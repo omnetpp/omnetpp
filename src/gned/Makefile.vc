@@ -19,6 +19,7 @@ gned : gned.exe
 
 gned.exe : $(OBJS)
 	$(LINK) /out:"gned.exe" $(OBJS) $(LDFLAGS) $(TK_LIBS) $(SYS_LIBS)
+	copy gned.exe $(OMNETPP_BIN_DIR:/=\)
 
 gned.obj : gned.cc
 	$(CXX) /DOMNETPP_GNED_DIR="\"$(OMNETPP_GNED_DIR)\"" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp  gned.cc
@@ -67,10 +68,6 @@ depend:
 
 clean:
 	del *.obj lex.yy.c ebnf.tab.c ebnf.tab.h gned.exe
-
-install-local: default
-	copy gned.exe $(OMNETPP_BIN_DIR:/=\)
-
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

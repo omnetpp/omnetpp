@@ -17,6 +17,7 @@ nedc : nedc.exe
 
 nedc.exe: $(OBJS)
 	$(LINK) /out:"nedc.exe" $(OBJS) $(LDFLAGS)
+	copy nedc.exe $(OMNETPP_BIN_DIR:/=\)
 
 lex.yy.obj: jar_func.h lex.yy.c
 	$(CXX) /I "." $(COPTS) /c /Tp lex.yy.c
@@ -53,10 +54,6 @@ depend:
 
 clean:
 	del *.obj lex.yy.c ebnf.tab.c ebnf.tab.h nedc.exe *_n.cc
-
-install-local: nedc.exe
-	copy nedc.exe $(OMNETPP_BIN_DIR:/=\)
-
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

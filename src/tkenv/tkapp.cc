@@ -31,6 +31,7 @@
 #include "ctypes.h"
 #include "cnetmod.h"
 
+#include "tkdefs.h"
 #include "tkapp.h"
 #include "tklib.h"
 #include "tkinsp.h"
@@ -40,6 +41,9 @@
 // Register the Tkenv user interface
 //
 Register_OmnetApp(TOmnetTkApp,false,20,"Tkenv (Tk-based graphical user interface)");
+
+// Windows: Export at least one symbol so that an import lib can be created
+TKENV_API void tkenvDummy() {}
 
 
 //=========================================================================

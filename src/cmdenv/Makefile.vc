@@ -19,9 +19,12 @@ all: cmdenv$(LIB_SUFFIX)
 
 cmdenv.lib : $(OBJS)
 	$(AR) /nologo /out:cmdenv.lib $(OBJS)
+	copy cmdenv.lib $(OMNETPP_LIB_DIR:/=\)
 
 cmdenv.dll : $(OBJS) $(LIBS)
-	$(SHLIB_LD) /nologo /out:cmdenv.dll /implib:cmdenv.ilib $(OBJS) $(LIBS)
+	$(SHLIB_LD) /nologo /out:cmdenv.dll /implib:cmdenv.ilib /subsystem:console /def:cmdenv.def $(OBJS) $(LIBS)
+	copy cmdenv.dll $(OMNETPP_LIB_DIR:/=\)
+	copy cmdenv.ilib $(OMNETPP_LIB_DIR:/=\)
 
 cmdenv.obj : cmdenv.cc
 	$(CXX) $(COPTS) /c /Tp cmdenv.cc
@@ -37,9 +40,6 @@ depend:
 
 clean:
 	del *.obj cmdenv.lib cmdenv.dll cmdenv.ilib cmdenv.exp
-
-install-local: cmdenv$(LIB_SUFFIX)
-	copy cmdenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

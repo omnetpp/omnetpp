@@ -21,9 +21,12 @@ tkenv : tkenv$(LIB_SUFFIX)
 
 tkenv.lib : $(OBJS)
 	$(AR) /nologo /out:tkenv.lib $(OBJS)
+        copy tkenv.lib $(OMNETPP_LIB_DIR:/=\)
 
 tkenv.dll : $(OBJS) $(LIBS)
-	$(SHLIB_LD) /nologo /out:tkenv.dll /implib:tkenv.ilib $(OBJS) $(LIBS)
+	$(SHLIB_LD) /nologo /out:tkenv.dll /implib:tkenv.ilib /subsystem:console /def:tkenv.def $(OBJS) $(LIBS)
+        copy tkenv.dll $(OMNETPP_LIB_DIR:/=\)
+        copy tkenv.ilib $(OMNETPP_LIB_DIR:/=\)
 
 tkapp.obj : tkapp.cc
 	$(CXX) /DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp tkapp.cc
@@ -63,10 +66,6 @@ depend:
 
 clean:
 	del *.obj tkenv.lib tkenv.dll tkenv.ilib tkenv.exp
-
-install-local: $(TKENV_IF_POSSIBLE)
-	copy tkenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
-
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

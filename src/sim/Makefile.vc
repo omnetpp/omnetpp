@@ -28,12 +28,16 @@ sim_pvm : sim_pvm$(LIB_SUFFIX)
 
 sim_std.lib : $(CPPOBJS) $(CPPOBJS_STD)
 	$(AR) /nologo /out:sim_std.lib $(CPPOBJS) $(CPPOBJS_STD)
+        copy sim_std.lib $(OMNETPP_LIB_DIR:/=\)
 
 sim_std.dll : $(CPPOBJS) $(CPPOBJS_STD) $(LIBS)
-	$(SHLIB_LD) /nologo /out:sim_std.dll /implib:sim_std.ilib $(CPPOBJS) $(CPPOBJS_STD) $(LIBS)
+	$(SHLIB_LD) /nologo /out:sim_std.dll /implib:sim_std.ilib /subsystem:console /def:sim_std.def $(CPPOBJS) $(CPPOBJS_STD) $(LIBS)
+        copy sim_std.dll $(OMNETPP_LIB_DIR:/=\)
+        copy sim_std.ilib $(OMNETPP_LIB_DIR:/=\)
 
 sim_pvm.lib : $(CPPOBJS) $(CPPOBJS_PVM)
 	$(AR) /nologo /out:sim_pvm.lib $(CPPOBJS) $(CPPOBJS_PVM)
+        copy sim_pvm.lib $(OMNETPP_LIB_DIR:/=\)
 
 #TBD: sim_pvm.dll
 
@@ -142,10 +146,6 @@ depend:
 clean:
 	del *.obj sim_std.lib sim_std.dll sim_std.ilib sim_std.exp
 	del       sim_pvm.lib sim_pvm.dll sim_pvm.ilib sim_pvm.exp
-
-install-local: sim_std$(LIB_SUFFIX) $(SIM_PVM_IF_POSSIBLE)
-	copy sim_std$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
-	copy sim_pvm$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

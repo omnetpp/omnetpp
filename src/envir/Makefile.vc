@@ -19,13 +19,17 @@ all : envir$(LIB_SUFFIX)
 
 envir.lib : $(OBJS)
 	$(AR) /nologo /out:envir.lib $(OBJS)
+	copy envir.lib $(OMNETPP_LIB_DIR:/=\)
 
-envir.ilib : $(OBJS) 
-	rem How can one create only the import lib, without trying to link the DLL???
-	- $(SHLIB_LD) /nologo /implib:envir.ilib $(OBJS) >nul
+envir.ilib : $(OBJS)
+	@rem How can one create only the import lib, without trying to link the DLL?
+        @rem With this command, we need the '>nul' to hide the 'undefine symbol' errors
+	- $(SHLIB_LD) /nologo /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) >nul
 
 envir.dll : $(OBJS) $(LIBS)
-	$(SHLIB_LD) /nologo /out:envir.dll /implib:envir.ilib $(OBJS) $(LIBS)
+	$(SHLIB_LD) /nologo /out:envir.dll /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) $(LIBS)
+	copy envir.dll $(OMNETPP_LIB_DIR:/=\)
+	copy envir.ilib $(OMNETPP_LIB_DIR:/=\)
 
 args.obj : args.cc args.h
 	$(CXX) $(COPTS) /c /Tp args.cc
@@ -56,9 +60,6 @@ depend:
 
 clean:
 	del *.obj envir.lib envir.dll envir.ilib envir.exp
-
-install-local: envir$(LIB_SUFFIX)
-	copy envir$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

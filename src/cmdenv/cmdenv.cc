@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "cmddefs.h"
 #include "cmdenv.h"
 #include "enumstr.h"
 #include "appreg.h"
@@ -38,6 +39,8 @@ static char buffer[1024];
 //
 Register_OmnetApp(TCmdenvApp,false,10,"Cmdenv (command-line user interface)");
 
+// Windows: Export at least one symbol so that an import lib can be created
+CMDENV_API void cmdenvDummy() {}
 
 // a function defined in heap.cc
 bool cmdenvMemoryIsLow();

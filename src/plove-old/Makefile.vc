@@ -5,16 +5,15 @@
 
 #all: plove.bat -- not good, doesn't overwrite stock plove.bat
 all:
-	@ echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove > plove.bat
+	echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove > plove.bat
+        copy plove.bat $(OMNETPP_BIN_DIR:/=\)
 
 plove.bat:
-	@ echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove > plove.bat
+	echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove > plove.bat
+        copy plove.bat $(OMNETPP_BIN_DIR:/=\)
 
 depend:
 
 clean:
-
-install-local: plove.bat
-        @ copy plove.bat $(OMNETPP_BIN_DIR:/=\)\plove.bat
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
