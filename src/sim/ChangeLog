@@ -1,3 +1,17 @@
+2003-01-19  Andras Varga
+
+	* distrib.cc (new): contains implementations of distributions 
+	contributed by Werner Sandmann (TU Bonn): continuous distributions
+        gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(), 
+        triang(),lognormal(), weibull(), pareto_shifted(), and discrete
+        distributions bernoulli(), binomial(), geometric(), negbinomial(),
+        hypergeometric(), poisson()
+	
+	* random.cc (new), distrib.cc, util.cc: From util.cc, existing 
+	distributions (uniform, normal,	exponential, etc) were moved to 
+	distrib.cc, and random number generator functions were moved to 
+	new file random.cc.
+
 2003-01-14  Andras Varga
 
 	* cwatch.cc: added support for 'bool'

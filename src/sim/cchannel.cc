@@ -23,6 +23,8 @@
 #include "carray.h"
 #include "cpar.h"
 #include "cenvir.h"
+#include "random.h"
+#include "distrib.h"
 #include "csimul.h"
 #include "macros.h"
 #include "cgate.h"

@@ -26,6 +26,8 @@
 #include <math.h>
 #include <assert.h>
 #include "cstat.h"
+#include "random.h"
+#include "distrib.h"
 #include "macros.h"
 #include "cdetect.h"  //NL
 #include "cexception.h"

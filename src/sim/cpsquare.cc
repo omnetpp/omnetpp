@@ -24,6 +24,8 @@
 #include "macros.h"
 #include "cpsquare.h"
 #include "cexception.h"
+#include "random.h"
+#include "distrib.h"
 
 using std::endl;
 

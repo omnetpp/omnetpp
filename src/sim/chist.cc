@@ -26,6 +26,8 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#include "random.h"
+#include "distrib.h"
 #include "macros.h"
 #include "cdetect.h"
 #include "chist.h"

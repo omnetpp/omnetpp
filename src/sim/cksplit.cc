@@ -24,6 +24,8 @@
 #include "macros.h"
 #include "cenvir.h"
 #include "cksplit.h"
+#include "random.h"
+#include "distrib.h"
 #include "cexception.h"
 
 using std::endl;

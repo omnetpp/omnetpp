@@ -25,6 +25,8 @@
 #include <math.h>
 #include <assert.h>
 #include "macros.h"
+#include "random.h"
+#include "distrib.h"
 #include "cvarhist.h"
 #include "cexception.h"
 

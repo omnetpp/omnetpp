@@ -685,7 +685,7 @@ void cSimpleModule::forEach(ForeachFunc do_fn)
       gatev.forEach( do_fn );
       locals.forEach( do_fn );
       members.forEach( do_fn );
-      putAsideQueue.forEach( do_fn );
+      //putAsideQueue.forEach( do_fn );
       for (cSubModIterator submod(*this); !submod.end(); submod++)
          submod()->forEach( do_fn );
    }
