@@ -6,10 +6,9 @@
 
 The topology\index{topology} of a model is specified using
 the NED language\index{ned!language}.
-The NED language supports modular
-description of a network. This means that a network
-description\index{network!description} consists of a number of
-component descriptions (channels\index{channel},
+The NED language facilitates the modular description of a network. 
+This means that a network description\index{network!description} may consist
+of a number of component descriptions (channels\index{channel},
 simple\index{module!simple}/compound\index{module!compound} module
 types). The channels, simple modules and compound
 modules of one network description can be reused in another network
@@ -143,7 +142,7 @@ The syntax:
 \end{Verbatim}
 
 Three attributes can be assigned values in the body of the channel declaration,
-all of them optional: \ttt{delay}, \ttt{error} and \ttt{datarate}.
+all of them are optional: \ttt{delay}, \ttt{error} and \ttt{datarate}.
 \ttt{delay} is the propagation delay in (simulated) seconds;
 \ttt{error} is the bit error rate that speficifies the probability
 that a bit is incorrectly transmitted; and \ttt{datarate}
@@ -286,12 +285,12 @@ and from \ttt{omnetpp.ini}.
 \index{module!simple!gates}
 
 Gates are the connection points of modules. The starting and
-ending points of the connections between modules are gates. OMNeT++
+ending points of the connections between modules are gates. {\opp}
 supports simplex (one-directional) connections, so there are
-two kinds of gates: input and output. Messages are sent through
+input and output gates. Messages are sent through
 output gates and received through input gates.
 
-Gates are identified with their names.
+Gates are identified by their names.
 By convention, gate names begin with lower-case letters.
 
 Gate vectors are supported: a gate vector\index{gate!vector}
@@ -966,7 +965,7 @@ The simulation program that uses those NED files will be
 able to run any of them; you typically select the desired one
 in the config file (\ttt{omnetpp.ini}).
 
-The syntax of a network definition is similar that of a submodule
+The syntax of a network definition is similar to that of a submodule
 declaration:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -986,7 +985,7 @@ compound modules of types \ttt{WirelessHost}, \ttt{WirelessHub}, etc.
 Naturally, only module types without gates can
 be used in network definitions.
 
-Just as for submodules, you do not need to assign values to all
+Just as in submodules, you do not need to assign values to all
 parameters. Unassigned parameters can get their values from the
 config file (\ttt{omnetpp.ini}) or will be interactively prompted for.
 
@@ -1072,9 +1071,9 @@ The syntax for the latter is \ttt{submod.param} or \ttt{submod[index].param}.
 
 There are two keywords that you can use with a parameter name:
 \ttt{ancestor} and \ttt{ref}.  The first one (\ttt{ancestor} \textit{param})
-means that if compound module doesn't have such parameter,
+means that if compound module doesn't have such a parameter,
 further modules up in the module hierarchy will be searched for the parameter.
-\ttt{ancestor} is considered evil because it violates the encapsulation
+\ttt{ancestor} is considered bad practice because it violates the encapsulation
 principle and can only be checked at runtime. It is provided for the
 rare case when it's really needed.
 
@@ -1201,7 +1200,7 @@ xmlparam = \tbf{xmldoc}("someconfig.xml", "/config/profile[@id='2']");
 {\opp} supports a subset of the XPath 1.0 specification; details are
 documented below.
 
-From the C++ code you'd access the XML element in the following way:
+From the C++ code you'd access the XML element like this:
 
 \begin{verbatim}
 cXMLElement *rootelement = par("xmlparam").xmlValue();
@@ -1212,7 +1211,7 @@ You can then navigate the document tree, extract the information you need,
 and store it in variables or your internal data structure.
 \cclass{cXMLElement} is documented in Chapter \ref{cha:the-simulation-library}.
 
-You can also XML parameters from omnetpp.ini:
+You can also read XML parameters from omnetpp.ini:
 
 \begin{verbatim}
 [Parameters]
@@ -1255,8 +1254,7 @@ Expression syntax is the following:
 These interpretations are consistent with the XPath specification.
   \footnote{While the XPath specification defines other axes, alternative
   axis syntax (using "::") and more powerful predicates, for our purposes
-  (finding elements in XML config files) the above support is completely
-  enough.}
+  (finding elements in XML config files) the above support is sufficient.}
 
 Examples:
 
@@ -1296,16 +1294,16 @@ It is possible to add new ones, see \ref{sec:ch-ned-lang:defining-functions}.
 \subsection{Random values}
 
 Expressions may contain random variates from different distributions.
-This has the effect that unless the parameter was declared \ttt{const},
-it returns a different value each time it is evaluated.
+Such parameters, unless declared as \ttt{const}, 
+return different values each time they are evaluated.
 
-If the parameter \textit{was} declared \ttt{const}, it is only evaluated
+If the parameter is declared as \ttt{const}, it is only evaluated
 once at the beginning of the simulation, and subsequent queries
 on the parameter will always return the same value.
 
 Random variate functions use one of the random number generators (RNGs)
 provided by \opp. By default this is generator 0, but you can specify
-which one to be used.
+which one is to be used.
 
 {\opp} has the following predefined distributions\index{distribution!predefined}:
 

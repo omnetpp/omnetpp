@@ -18,7 +18,8 @@ structure of the actual system. Some of the main features are:
 
 
 An {\opp} model consists of hierarchically nested
-modules\index{module!hierarchy} which communicate with messages.
+modules\index{module!hierarchy}, which communicate by passing 
+messages to each another.
 {\opp} models are often referred to as \textit{networks}. The top
 level module is the \textit{system module}.  The system module
 contains \textit{submodules}, which can also contain submodules
@@ -117,8 +118,8 @@ between their inside and the outside world.
 
 \subsection{Modeling of packet transmissions}
 
-Connections can be assigned three parameters which facilitate
-the modeling of communication networks, but can be useful for
+Connections can be assigned three parameters, which facilitate
+the modeling of communication networks, but can be useful in
 other models too: \textit{propagation delay}, \textit{bit error rate}
 and \textit{data rate}, all three being optional. One can specify
 link parameters individually for each connection, or define link types
@@ -176,17 +177,17 @@ in Chapter \ref{cha:the-ned-language}.
 
 \section{Programming the algorithms}
 
-The simple\index{module!simple} modules of a model contain the algorithms
+The simple\index{module!simple} modules of a model contain algorithms
 as C++ functions.
 The full flexibility and power of the programming language can
 be used, supported by the {\opp} simulation class library.
-Simulation programmer can choose between event-driven and process-style
-description, and one can freely use object-oriented concepts
+The simulation programmer can choose between event-driven and process-style
+description, and can freely use object-oriented concepts
 (inheritance, polymorphism etc) and design patterns to extend the
 functionality of the simulator.
 
 Simulation objects (messages, modules, queues etc.) are represented
-with C++ classes. They have been designed to work together efficiently,
+by C++ classes. They have been designed to work together efficiently,
 creating a powerful simulation programming framework.
 The following classes are part of the simulation class library:
 
@@ -282,15 +283,15 @@ all internals of the simulation are visible.
 \index{simulation!building}
 \index{simulation!running}
 
-This section gives some idea how to work with {\opp} in practice:
-issues like model files, compiling and running simulations are
+This section provides insight into working with {\opp} in practice:
+Issues such as model files, compiling and running simulations are
 discussed.
 
 An {\opp} model consists of the following parts:
 \begin{itemize}
   \item{NED language topology description(s)\index{ned!files} (\texttt{.ned} files)
     which describe the module structure with parameters, gates etc.
-    NED files can be written with any text editor or using the
+    NED files can be written using any text editor or the
     GNED graphical editor\index{ned!graphical editor}.}
   \item{Message definitions (\texttt{.msg} files). You can define various message
     types and add data fields to them. {\opp} will translate message definitions
@@ -306,7 +307,7 @@ The simulation system provides the following components:
     (a file with .a or .lib extension)}
   \item{User interfaces\index{simulation!user interface}.
     \index{user interface} {\opp} user interfaces
-    are used with simulation execution, to facilitate debugging,
+    are used in simulation execution, to facilitate debugging,
     demonstration, or batch execution of simulations. There are
     several user interfaces, written in C++, compiled and put together
     into libraries (\texttt{.a} or \texttt{.lib} files).}
@@ -327,7 +328,7 @@ thus it can be run on other machines without {\opp} or the model files
 being present. When the program is started, it reads a configuration
 file\index{simulation!configuration file} (usually called
 \texttt{omnetpp.ini}\index{omnetpp.ini}). This file contains settings that
-control how the simulation is run, values for model parameters, etc.
+control how the simulation is executed, values of model parameters, etc.
 The configuration file can also prescribe several simulation runs; in
 the simplest case, they will be executed by the simulation program one
 after another.
@@ -336,34 +337,34 @@ The output of the simulation is written into data files: output vector
 files\index{output!vector file}, output scalar files
 \index{output!scalar file}, and possibly the user's own output files.
 {\opp} provides a GUI tool named Plove to view and plot the contents
-of output vector files. But it is not expected that someone will
+of output vector files. It is not expected that someone will
 process the result files using {\opp} alone: output files are text
-files in a format which (maybe after some preprocessing using
-\fprog{sed}, \fprog{awk} or \fprog{perl}) can be read into math
-packages like Matlab or Octave, or imported into
-spreadsheets like OpenOffice Calc, Gnumeric or MS Excel.
-All these external programs have rich
-functionality for statistical analysis and visualization, and {\opp}
-does not try to duplicate their efforts. This manual briefly describes
+files in a format which can be read into math packages like Matlab 
+or Octave, or imported into spreadsheets like OpenOffice Calc, \
+Gnumeric or MS Excel (some preprocessing using \fprog{sed}, \fprog{awk} 
+or \fprog{perl} might be required, this will be discussed later).
+All these external programs provide rich functionality for statistical 
+analysis and visualization, and it is outside the scope of {\opp} to 
+duplicate their efforts. This manual briefly describes
 some data plotting programs and how to use them with {\opp}.
 
-Output scalar files can be visualized with the Scalars tool.
+Output scalar files can be visualized using the Scalars tool.
 It can draw bar charts, x-y plots (e.g. throughput vs offered load),
 or export data via the clipboard for more detailed analysis into
-spreadsheets or other programs.
+spreadsheets and other programs.
 
 
 \subsubsection{User interfaces}
 \index{simulation!user interface}
 
-The primary purpose of user interfaces is to make the inside
-of the model visible to the user, to start/stop simulation execution,
-and possibly allow the user intervene by changing variables/objects
+The primary purpose of user interfaces is to make the internals
+of the model visible to the user, to control simulation execution,
+and possibly allow the user to intervene by changing variables/objects
 inside the model. This is very important in the development/debugging
 phase of the simulation project. Just as important, a hands-on
-experience allows the user to get a `feel' about the model's
-behaviour. A nice graphical user interface can also be used to
-demonstrate how the model works internally.
+experience allows the user to get a `feel' of the model's
+behaviour. The graphical user interface can also be used to
+demonstrate a model's operation.
 
 
 The same simulation model can be executed with different user
@@ -376,8 +377,8 @@ fast user interface that supports batch execution.
 \subsubsection{Component libraries}
 \index{module!libraries}
 
-Module types can be stored in files separately from the place
-of their actual usage. This means that the user can group existing
+Module types can be stored in files separate from the place
+of their actual use. This enables the user to group existing
 module types and create component libraries.
 
 
@@ -386,7 +387,7 @@ module types and create component libraries.
 
 A simulation executable can store several independent models
 that use the same set of simple modules. The user can specify
-in the configuration file which model he/she wants to run. This
+in the configuration file which model is to be run. This
 allows one to build one large executable that contains several
 simulation models, and distribute it as a standalone simulation
 tool. The flexibility of the topology description language also
