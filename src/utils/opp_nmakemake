@@ -273,18 +273,23 @@ if ($recursive eq 'y')
 }
 
 @extdirobjs = ();
+@extdirtstamps = ();
 if ($linkwithobjects eq 'y')
 {
     foreach $i (split(' ',$includes))
     {
         $i =~ s/^-I//;
-        push(@extdirobjs, "$i/*.obj");
+        if ($i ne ".") {
+            push(@extdirobjs, "$i/*.obj");
+            push(@extdirtstamps, "$i/.tstamp");
+        }
     }
 }
 
 foreach $i (@linkdirs)
 {
     push(@extdirobjs, "$i/*.obj");
+    push(@extdirtstamps, "$i/.tstamp");
 }
 
 if ($ignorened eq "y") {
@@ -294,7 +299,7 @@ if ($ignorened eq "y") {
 }
 foreach $i (@objs)
 {
-    #FIXME what the hell's this???
+    # how does this work?
     $i =~ s/\*[^ ]*//g;
     $i =~ s/[^ ]*_n\.$ccext//g;
     $i =~ s/[^ ]*_m\.$ccext//g;
@@ -345,6 +350,7 @@ elsif ($userif eq 'TKENV')
 $sobjs = join( " \\\n            ", @sobj_list);
 $xobjs = join( " \\\n            ", @xobjs);
 $extdirobjs = join( " \\\n            ", @extdirobjs);
+$extdirtstamps = join( " \\\n            ", @extdirtstamps);
 
 print OUT "
 
@@ -363,6 +369,9 @@ EXTRA_OBJS=$xobjs
 
 # object files from other directories to link with
 EXT_DIR_OBJS=$extdirobjs
+
+# time stamps of other directories (used as dependency)
+EXT_DIR_TSTAMPS=$extdirtstamps
 
 # Additional libraries (-L option -l option)
 LIBS=$libpath$libs
@@ -449,17 +458,20 @@ else
 
 if ($type eq 'exe')
 {
-    print OUT "\$(TARGET): \$(OBJS) \$(EXTRA_OBJS) $subdirs_target $makefile\n";
+    print OUT "\$(TARGET): \$(OBJS) \$(EXTRA_OBJS) \$(EXT_DIR_TSTAMPS) $subdirs_target $makefile\n";
     print OUT "\t\$(LINK) \$(LDFLAGS) \$(OBJS) \$(EXTRA_OBJS) \$(EXT_DIR_OBJS) \$(LIBS) \$(OMNETPP_LIBS) /out:\$(TARGET)\n";
+    print OUT "\t\@echo.>.tstamp\n";
 }
 elsif ($type eq 'so')
 {
-    print OUT "\$(TARGET): \$(OBJS) \$(EXTRA_OBJS) $subdirs_target $makefile\n";
+    print OUT "\$(TARGET): \$(OBJS) \$(EXTRA_OBJS) \$(EXT_DIR_TSTAMPS) $subdirs_target $makefile\n";
     print OUT "\t\$(SHLIB_LD) -o \$(TARGET) \$(OBJS) \$(EXTRA_OBJS) \$(EXT_DIR_OBJS)\n";
+    print OUT "\t\@echo.>.tstamp\n";
 }
 elsif ($type eq 'o')
 {
     print OUT "\$(TARGET): \$(OBJS) $makefile $subdirs_target\n";
+    print OUT "\t\@echo.>.tstamp\n";
 }
 print OUT "\n";
 
@@ -467,6 +479,16 @@ print OUT "\n";
 print OUT "# purify: \$(OBJS) \$(EXTRA_OBJS) $subdirs_target $makefile\n";
 print OUT "# \tpurify \$(CXX) \$(LDFLAGS) \$(OBJS) \$(EXTRA_OBJS) \$(EXT_DIR_OBJS) \$(LIBS) -L\$(OMNETPP_LIB_DIR) \$(KERNEL_LIBS) \$(USERIF_LIBS) \$(SYS_LIBS_PURE) -o \$(TARGET).pure\n";
 print OUT "\n";
+
+if (@extdirtstamps != ()) {
+    print OUT "\$(EXT_DIR_TSTAMPS):\n";
+    print OUT "\t\@echo Error: \$(\@:/=\\) does not exist.\n";
+    print OUT "\t\@echo This means that at least the above dependency directory has not been built.\n";
+    print OUT "\t\@echo Maybe you need to do a top-level make?\n";
+    print OUT "\t\@echo.\n";
+    print OUT "\t\@exit 1\n";
+    print OUT "\n";
+}
 
 # rules for recursive build
 # simplified because @#$!? microsoft doesn't know about phony targets
@@ -546,7 +568,7 @@ print OUT "
 # rule for 'clean'
 print OUT "
 clean:
-\t-del *.obj *.idb *.pdb \$(TARGET)\$(EXE_SUFFIX) 2>NUL
+\t-del *.obj *.idb *.pdb \$(TARGET)\$(EXE_SUFFIX) .tstamp 2>NUL
 \t-del *_n.$ccext *_n.h *_m.$ccext *_m.h 2>NUL
 \t-del *.vec *.sca 2>NUL
 \t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand clean && cd ..

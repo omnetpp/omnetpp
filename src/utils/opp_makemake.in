@@ -192,15 +192,20 @@ if [ $recursive = "y" ]; then
 fi
 
 extdirobjs=
+extdirtstamps=
 if [ "$linkwithobjects" = "y" ]; then
     for i in $includes; do
         dir=`echo $i | sed 's/^-I//'`
-        extdirobjs="$extdirobjs $dir/*.o"
+        if [ "$dir" != "." ]; then
+            extdirobjs="$extdirobjs $dir/*.o"
+            extdirtstamps="$extdirobjs $dir/.tstamp"
+        fi
     done
 fi
 
 for i in $linkdirs; do
     extdirobjs="$extdirobjs $i/*.o"
+    extdirtstamps="$extdirobjs $i/.tstamp"
 done
 
 if [ "$ignorened" = "y" ]; then
@@ -256,6 +261,9 @@ EXTRA_OBJS=$xobjs
 
 # object files from other directories to link with
 EXT_DIR_OBJS=$extdirobjs
+
+# time stamps of other directories (used as dependency)
+EXT_DIR_TSTAMPS=$extdirtstamps
 
 # Additional libraries (-L option -l option)
 LIBS=$libpath$libs
@@ -401,23 +409,35 @@ fi
 
 case "$type" in
 exe)
-    echo '$(TARGET): $(OBJS) $(EXTRA_OBJS)' $subdirs_target 'Makefile'
+    echo '$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS)' $subdirs_target 'Makefile'
     echo '	$(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)'
+    echo '	echo>.tstamp'
     ;;
 so)
-    echo '$(TARGET): $(OBJS) $(EXTRA_OBJS)' $subdirs_target 'Makefile'
+    echo '$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS)' $subdirs_target 'Makefile'
     echo '	$(SHLIB_LD) -o $(TARGET) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS)'
+    echo '	echo>.tstamp'
     ;;
 o)
     echo '$(TARGET): $(OBJS)' $subdirs_target 'Makefile'
+    echo '	echo>.tstamp'
     echo '	'
     ;;
 esac
 echo
-echo 'purify: $(OBJS) $(EXTRA_OBJS)' $subdirs_target 'Makefile'
+echo 'purify: $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS)' $subdirs_target 'Makefile'
 echo '	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure'
 echo
 
+if [ "$extdirtstamps" != "" ]; then
+    echo '$(EXT_DIR_TSTAMPS):'
+    echo '	@echo Error: $@ does not exist.'
+    echo '	@echo This means that at least the above dependency directory has not been built.'
+    echo '	@echo Maybe you need to do a top-level make?'
+    echo '	@echo.'
+    echo '	@exit 1'
+    echo
+fi
 
 # rules for recursive build
 echo ".PHONY: subdirs \$(SUBDIRS)"
@@ -490,7 +510,7 @@ cat <<EOT
 #	doxygen $doxyconf
 
 clean:
-	rm -f *.o *_n.cc *_n.h *_m.cc *_m.h \$(TARGET)\$(EXE_SUFFIX)
+	rm -f *.o *_n.cc *_n.h *_m.cc *_m.h \$(TARGET)\$(EXE_SUFFIX) .tstamp
 	rm -f *.vec *.sca
 	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) clean); done
 

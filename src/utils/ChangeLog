@@ -1,3 +1,17 @@
+2004-03-03  Andras Varga
+
+	* opp_makemake, opp_nmakemake: makefiles now generate a .tstamp
+	file on successful build. Useful with multi-directory models: 
+	with -w option, the generated makefile will depend on the timestamps
+	of included directories, so e.g. a simulation executable gets re-built 
+	automatically if its components in other directories have been changed
+	*and* built. 
+
+	ATTENTION: this doesn't guarantee that other directories are 
+	up-to date!!! Only that *when* they are re-built, executables that
+	use them will be re-built too. You still have to do a top-level make
+	if you want to ensure that included directories are up-to-date too.
+
 2004-02-22  Andras Varga
 
 	* opp_test: added -a, -N options. -N can be used to test dynamic
