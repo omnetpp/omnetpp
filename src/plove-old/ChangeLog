@@ -92,3 +92,4 @@ May 2, 2001
  - geometry management improved
 May 18,2001
  - fixed a bug in startup code
+ - Windows: added rc file with icon
