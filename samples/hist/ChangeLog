@@ -14,4 +14,4 @@ Mar 10, 2001
    directories with absolute paths (previously they were relative paths,
    like ..\..\lib). This means the samples will compile even when they're moved
    to another location in the file system.
-
+------ omnetpp-2.1 released ------

@@ -947,4 +947,4 @@ Mar 10, 2001
    equivalent Makefile.bc files (generated from the BC IDE), but they are
    completely unsupported at the moment. If there's interest, it's possible
    that later I'll add makefiles for the free command-line bc5.5 compiler.
-
+------ omnetpp-2.1 released ------

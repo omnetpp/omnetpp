@@ -1,4 +1,4 @@
 Mar 10, 2001
  - The include/ directory was created. (Header files were formerly in src/sim;
    if you're interested in earlier changes, refer to src/sim/ChangeLog.)
-
+------ omnetpp-2.1 released ------
