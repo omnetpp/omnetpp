@@ -20,12 +20,6 @@ rm -f $OUTDIR/*
 echo transforming to xml...
 nedtool -x -e -t -y -m -o $TMPFILE $* || exit 1
 
-echo applying xslt stylesheet...
-xsltproc  --stringparam outputdir $OUTDIR --stringparam figures $FIGURES $NEDDOC_XSL $TMPFILE || exit 1
-
-echo formatting comments...
-perl $NEDDOC_PL $OUTDIR/*.html || exit 1
-
 if [$FIGURES = 'yes']; then
     echo exporting screenshots using GNED...
     # FIXME it always exports to html/!!!
@@ -34,9 +28,17 @@ if [$FIGURES = 'yes']; then
        gif=`echo $i | sed 's/eps$/gif/'`
        convert -delay 1000 $i $gif
     done
+    imagesxml='html/images.xml'
 else
     echo exporting screenshots using GNED... skipped
+    imagesxml=
 fi
+
+echo applying xslt stylesheet...
+xsltproc  --stringparam outputdir "$OUTDIR" --stringparam imagesxml "" $NEDDOC_XSL $TMPFILE || exit 1
+
+echo formatting comments...
+perl $NEDDOC_PL $OUTDIR/*.html || exit 1
 
 echo documentation created in $OUTDIR/ -- start page is index.html
 cleanup
