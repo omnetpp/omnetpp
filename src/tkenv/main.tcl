@@ -456,8 +456,6 @@ proc load_bitmaps {path} {
 proc load_plugins {path} {
    global tcl_platform
 
-   puts "Loading plugins from $path:"
-
    # On Windows, we use ";" to separate directories in $path. Using ":" (the
    # Unix separator) would cause trouble with dirs containing drive letter
    # (like "c:\bitmaps"). Using a space is also not an option (think of
@@ -471,6 +469,8 @@ proc load_plugins {path} {
        set sep {;}
    }
 
+   puts "Plugin path: $path"
+
    set tclfiles 0
    set dllfiles 0
    foreach dir [split $path $sep] {
@@ -478,37 +478,36 @@ proc load_plugins {path} {
       # load tcl files
       set files [lsort [glob -nocomplain -- [file join $dir {*.tcl}]]]
       incr tclfiles [llength $files]
-      foreach file $files {
-         if [catch {source $file} errmsg] {
-             puts ""
-             puts "*** error sourcing $file: $errmsg"
-         } else {
-             set name [string tolower [file tail $file]]
-             puts -nonewline "$name "
-         }
+      if {[llength $files]!=0} {
+          puts -nonewline "Loading tcl files from $dir: "
+          foreach file $files {
+             if [catch {source $file} errmsg] {
+                 puts ""
+                 puts "*** error sourcing $file: $errmsg"
+             } else {
+                 set name [string tolower [file tail $file]]
+                 puts -nonewline "$name "
+             }
+          }
+         puts ""
       }
 
       # load dynamic libraries
       set files [lsort [glob -nocomplain -- [file join $dir $dllpattern]]]
       incr dllfiles [llength $files]
-      foreach file $files {
-         if [catch {opp_loadlib $file} errmsg] {
-             puts ""
-             puts "*** error loading shared library $file: $errmsg"
-         } else {
-             set name [string tolower [file tail $file]]
-             puts -nonewline "$name "
-         }
+      if {[llength $files]!=0} {
+          puts -nonewline "Loading so/dll files from $dir: "
+          foreach file $files {
+             if [catch {opp_loadlib $file} errmsg] {
+                 puts ""
+                 puts "*** error loading shared library $file: $errmsg"
+             } else {
+                 set name [string tolower [file tail $file]]
+                 puts -nonewline "$name "
+             }
+          }
+          puts ""
       }
-      if {$dllfiles!=0} {puts ""}
-   }
-   if {$tclfiles!=0 || $dllfiles!=0} {puts ""}
-
-   if {$tclfiles==0} {
-      puts "  no *.tcl file in $path"
-   }
-   if {$dllfiles==0} {
-      puts "  no $dllpattern file in $path"
    }
 }
 
@@ -529,11 +528,8 @@ proc startup_commands {} {
     set run [opp_getsimoption default-run]
     if {$run>0} {
         opp_newrun $run
-
         if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
             opp_inspect [opp_object_systemmodule] (default)
-            # tk_messageBox -title {OMNeT++} -message {[Run 1] set up.} \
-                            -type ok -icon info
         }
     } else {
         new_run
