@@ -64,7 +64,7 @@ cModule::cModule(const char *name, cModule *parentmod) :
  gatev("gates",0,2),
  paramv("parameters",0,2),
  machinev("machines",0,2),
- members("class-data-members")
+ members("class-members")
 {
     take( &gatev );
     take( &paramv );
