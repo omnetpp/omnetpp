@@ -12,6 +12,13 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
+set icons(newmod) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAHOECISE/8bGxs7OAP//EP//xv//////////////////
+    /////////////////yH5BAEAAAMALAAAAAAUABMAAARZcMhJJymhakvCDSCxURdm
+    BAWWDUDrul1xqJ4ECLhQFoZx/IbU6pYrClAzUI1lzAlPwmHTSBPZpkVVhYjVrSjc
+    LkATxo633dwZ3B3ZXnBW3L110Tetu36/iQAAOw==
+}]
+
 set icons(back) [image create photo -data {
     R0lGODlhFAATALMAAAAAAISEAMbGxp0XF74yMmgQEP//////////////////////
     /////////////////yH5BAEAAAIALAAAAAAUABMAAAQzUMhJq704UzKKttzQfVMo
@@ -102,9 +109,10 @@ set icons(del) [image create photo -data {
 }]
 
 set icons(draw) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISE/8bGxv//////////////////////////////////
-    /////////////////yH5BAEAAAIALAAAAAAUABMAAAQ6UMhJqwU4a32D/6AHdGE5
-    VkBpkup3UmnrsvI7xXJgS3hNtzvBZpixGI/B4yWp3CiFHN6yeLlRn9hsBAA7
+    R0lGODlhFAATALMAAAAAAISEhISE/8bGxv//////////////////////////////
+    /////////////////yH5BAEAAAMALAAAAAAUABMAAARDcMhJqwU4a32F/6AHdGE5
+    VkBpkup3UmnrsvI7xbJgS3hNt7vBZpgJWI6XgBHJxCiZE+VmWZFqngCqtUjlUbnQ
+    LpQZAQA7
 }]
 
 set icons(drawopts) [image create photo -data {

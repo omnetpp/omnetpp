@@ -155,6 +155,7 @@ proc redrawItemOnAnyCanvas {key} {
     global ned gned canvas
 
     set canv_id [canvasIdFromItemKey $key]
+    if {$canv_id==""} {return}
     redrawItem $key $canv_id
 }
 

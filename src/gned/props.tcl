@@ -157,7 +157,7 @@ proc validateAttrValue {key attr value} {
     }
 
     if {$attr=="isvector"} {
-        if {[string match "0*" $value] || [string match "n*" $value] || [string match "f*" $value]} {
+        if {$value=="" || [string match "0*" $value] || [string match "n*" $value] || [string match "f*" $value]} {
             set value 0
         } else {
             set value 1
@@ -167,6 +167,16 @@ proc validateAttrValue {key attr value} {
 
     if {$attr=="datatype"} {
         if {$value==""} {
+            set value "numeric"
+        } elseif {[string match "s*" $value]} {
+            set value "string"
+        } elseif {[string match "b*" $value]} {
+            set value "bool"
+        } elseif {[string match "a*" $value]} {
+            set value "anytype"
+        } elseif {[string match "*co*" $value]} {
+            set value "numeric const"
+        } else {
             set value "numeric"
         }
         return $value
@@ -262,13 +272,13 @@ proc showModuleDecl {w} {
     set key [itemKeyFromName $typename module]
     if {$key==""} {
        set key [itemKeyFromName $typename simple]
-    }   
+    }
     if {$key==""} {
         tk_messageBox -title "Error" -icon warning -type ok -parent [winfo toplevel $w] \
               -message "Module type \"$typename\" is unknown to GNED -- none of the open NED files contain its definition."
         return
     }
-    displayCodeForItem $key [winfo toplevel $w] 
+    displayCodeForItem $key [winfo toplevel $w]
     #set nedcode [generateNed $key]
     #tk_messageBox -title "$typename" -icon info -type ok -parent [winfo toplevel $w] -message $nedcode
 }

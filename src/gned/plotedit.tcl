@@ -852,58 +852,68 @@ proc drawEnd {c x y} {
 
           set destkey [itemKeyFromCid $destcid]
           if {$destkey!="" && ($ned($destkey,type)=="module" || $ned($destkey,type)=="submod")} {
-               set modkey $canvas($gned(canvas_id),module-key)
-               set connskey [getChildrenWithType $modkey conns]
-               if {[llength $connskey]==0} {
-                   set connskey [addItem conns $modkey]
-               } elseif {[llength $connskey]>1} {
-                   error "Internal error: more than one 'conns'"
-               }
-               set key [addItem conn $connskey]
 
-               set ned($key,src-ownerkey) $mouse(src-key)
-               set ned($key,dest-ownerkey) $destkey
+              if {$mouse(src-key)!=$destkey || [_confirmSelfConnection]} {
 
-               markCanvasDirty
+                   set modkey $canvas($gned(canvas_id),module-key)
+                   set connskey [getChildrenWithType $modkey conns]
+                   if {[llength $connskey]==0} {
+                       set connskey [addItem conns $modkey]
+                   } elseif {[llength $connskey]>1} {
+                       error "Internal error: more than one 'conns'"
+                   }
+                   set key [addItem conn $connskey]
 
-               set l_coords [$c coords $mouse(arrow)]
-               set s_coords [_getCoords $c $ned($mouse(src-key),rect-cid)]
-               set d_coords [_getCoords $c $destcid]
+                   set ned($key,src-ownerkey) $mouse(src-key)
+                   set ned($key,dest-ownerkey) $destkey
 
-               set an_sr_x [expr int(100*([lindex $l_coords 0]-[lindex $s_coords 0])/ \
-                                         ([lindex $s_coords 2]-[lindex $s_coords 0])+0.5)]
-               set an_sr_y [expr int(100*([lindex $l_coords 1]-[lindex $s_coords 1])/ \
-                                         ([lindex $s_coords 3]-[lindex $s_coords 1])+0.5)]
-               set an_dt_x [expr int(100*([lindex $l_coords 2]-[lindex $d_coords 0])/ \
-                                         ([lindex $d_coords 2]-[lindex $d_coords 0])+0.5)]
-               set an_dt_y [expr int(100*([lindex $l_coords 3]-[lindex $d_coords 1])/ \
-                                         ([lindex $d_coords 3]-[lindex $d_coords 1])+0.5)]
+                   markCanvasDirty
 
-               if {$ned($destkey,type)=="module"} {
-                  _snapAnchor an_dt_x 10
-                  _snapAnchor an_dt_y 10
-               }
-               if {$ned($mouse(src-key),type)=="module"} {
-                  _snapAnchor an_sr_x 10
-                  _snapAnchor an_sr_y 10
-               }
-               set ned($key,disp-src-anchor-x) $an_sr_x
-               set ned($key,disp-src-anchor-y) $an_sr_y
-               set ned($key,disp-dest-anchor-x) $an_dt_x
-               set ned($key,disp-dest-anchor-y) $an_dt_y
-               if {$config(connmodeauto)} {
-                  set ned($key,disp-drawmode) "a"
-               } else {
-                  set ned($key,disp-drawmode) "m"
-               }
+                   set l_coords [$c coords $mouse(arrow)]
+                   set s_coords [_getCoords $c $ned($mouse(src-key),rect-cid)]
+                   set d_coords [_getCoords $c $destcid]
 
-               drawItem $key
-               updateTreeManager
+                   set an_sr_x [expr int(100*([lindex $l_coords 0]-[lindex $s_coords 0])/ \
+                                             ([lindex $s_coords 2]-[lindex $s_coords 0])+0.5)]
+                   set an_sr_y [expr int(100*([lindex $l_coords 1]-[lindex $s_coords 1])/ \
+                                             ([lindex $s_coords 3]-[lindex $s_coords 1])+0.5)]
+                   set an_dt_x [expr int(100*([lindex $l_coords 2]-[lindex $d_coords 0])/ \
+                                             ([lindex $d_coords 2]-[lindex $d_coords 0])+0.5)]
+                   set an_dt_y [expr int(100*([lindex $l_coords 3]-[lindex $d_coords 1])/ \
+                                             ([lindex $d_coords 3]-[lindex $d_coords 1])+0.5)]
+
+                   if {$ned($destkey,type)=="module"} {
+                      _snapAnchor an_dt_x 10
+                      _snapAnchor an_dt_y 10
+                   }
+                   if {$ned($mouse(src-key),type)=="module"} {
+                      _snapAnchor an_sr_x 10
+                      _snapAnchor an_sr_y 10
+                   }
+                   set ned($key,disp-src-anchor-x) $an_sr_x
+                   set ned($key,disp-src-anchor-y) $an_sr_y
+                   set ned($key,disp-dest-anchor-x) $an_dt_x
+                   set ned($key,disp-dest-anchor-y) $an_dt_y
+                   if {$config(connmodeauto)} {
+                      set ned($key,disp-drawmode) "a"
+                   } else {
+                      set ned($key,disp-drawmode) "m"
+                   }
+
+                   drawItem $key
+                   updateTreeManager
+              }
           }
        }
        $c delete $mouse(arrow)
        set mouse(arrow) ""
     }
+}
+
+proc _confirmSelfConnection {} {
+    set ans [tk_messageBox -type yesno -icon warning -title "Confirm" \
+        -message "Do you really want to create a connection from the module to itself?"]
+    return [expr $ans=="yes"]
 }
 
 proc _cancelLabelEdit {c} {

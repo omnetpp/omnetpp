@@ -13,11 +13,16 @@
 #----------------------------------------------------------------#
 
 
-proc fileNewNedfile {} {
-   global gned
+proc fileNewNedfile {{fname ""}} {
+   global gned ned
 
    # create a new module in a new file
    set nedfilekey [addItem nedfile 0]
+   if {$fname!=""} {
+       set ned($nedfilekey,name) $fname
+       set ned($nedfilekey,filename) $fname
+       set ned($nedfilekey,aux-isdirty) 1
+   }
    set modkey [addItem module $nedfilekey]
    openModuleOnNewCanvas $modkey
 
@@ -278,6 +283,23 @@ proc fileExit {} {
    exit
 }
 
+proc newComponentMenuPopup {myicon} {
+    global gned
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+    foreach i {
+      {command -command "fileNewComponent imports" -label {Import} -underline 0}
+      {command -command "fileNewComponent channel" -label {Channel} -underline 0}
+      {command -command "fileNewComponent simple"  -label {Simple module}  -underline 0}
+      {command -command "fileNewComponent module"  -label {Compound module}  -underline 0}
+      {command -command "fileNewComponent network" -label {Network} -underline 0}
+    } {
+       eval .popup add $i
+    }
+    set w $gned(horiz-toolbar).$myicon
+    .popup post [winfo rootx $w] [expr [winfo rooty $w]+[winfo height $w]]
+}
+
 proc editFind {} {
    global gned canvas
 
@@ -313,7 +335,9 @@ proc editUndo {} {
    if [catch {text .tmp -undo true; destroy .tmp}] {
        tk_messageBox -title "GNED" -icon info -type ok -message "This version of Tcl/Tk doesn't support Undo/Redo in text widgets yet."
    }
-   catch {$canvas($canv_id,textedit) edit undo}
+   set w $canvas($canv_id,textedit)
+   catch {$w edit undo}
+   syntaxHighlight $w
 }
 
 proc editRedo {} {
@@ -327,7 +351,9 @@ proc editRedo {} {
    if [catch {text .tmp -undo true; destroy .tmp}] {
        tk_messageBox -title "GNED" -icon info -type ok -message "This version of Tcl/Tk doesn't support Undo/Redo in text widgets yet."
    }
-   catch {$canvas($canv_id,textedit) edit redo}
+   set w $canvas($canv_id,textedit)
+   catch {$w edit redo}
+   syntaxHighlight $w
 }
 
 proc editCut {} {

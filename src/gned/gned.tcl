@@ -97,16 +97,24 @@ proc start_gned {} {
        if {$arg == "--"} {
            # ignore
        } elseif {$arg == "-c"} {
-           # FIXME: gned has to be invoked like gned -- -c *.ned,
-           # otherwise Tcl tries to interpret the "-c" :-(
            incr i
            set convertandexit 1
            set psdir [lindex $argv $i]
            if {$psdir==""} {set psdir "html"}
        } else {
-           # on Windows, we have to expand wildcards manually
-           foreach fname [glob -nocomplain $arg] {
-               loadNED $fname
+           # expand wildcards (on Windows, the shell doesn't do it for us)
+           if [catch {
+               set files [glob $arg]
+           }] {
+               # if no match, probably it should be a new file, open it
+               if {!$convertandexit} {
+                   fileNewNedfile $arg
+               }
+           } else {
+               # open all filenames
+               foreach fname [glob -nocomplain $arg] {
+                   loadNED $fname
+               }
            }
        }
    }

@@ -135,7 +135,7 @@ proc editSubmoduleDrawOptions {key} {
         if {$gned(radio)=="rect"} {
            set ned($key,disp-icon) ""
         } else {
-           set ned($key,disp-icon) [.submopts.f.icon.b cget -image]
+           set ned($key,disp-icon) [.submopts.f.icon.e get]
         }
 
         # position and size
@@ -262,7 +262,7 @@ proc label-colorchooser {w label var {color ""}} {
     pack $w.f.radio.r2f -anchor w -expand 0 -side top
 
     radiobutton $w.f.radio.r2f.r2 -text "color:"   -value color   -variable gned($var)
-    button $w.f.radio.r2f.b -command [list _setColor $w.f.radio.r2f.b $var [winfo toplevel $w]] -width 6
+    button $w.f.radio.r2f.b -relief groove -command [list _setColor $w.f.radio.r2f.b $var [winfo toplevel $w]] -width 6
     pack $w.f.radio.r2f.r2 -anchor n -expand 0 -side left
     pack $w.f.radio.r2f.b -anchor c -expand 0 -fill none -side left
 
@@ -308,19 +308,30 @@ proc label-iconchooser {w label  {image ""}} {
 
     frame $w
     label $w.l -anchor w -width 16 -text $label
-    button $w.b -command [list _chooseIcon $image $w.b [winfo toplevel $w]]
+    combo $w.e $gned(icons) [list _setButtonImg $w.e $w.b]
+    button $w.b -relief groove -command [list _chooseIcon $image $w.e [winfo toplevel $w]]
 
-    if {$image == ""} {
-        $w.b config -text "-none-"
+    # next line sets button image as well
+    $w.e configure -value $image
+    grid $w.l $w.e -sticky ew
+    grid x    $w.b -sticky nw
+    grid columnconfigure $w 1 -weight 1
+}
+
+proc _setButtonImg {combo button} {
+    global icons gned
+    set img [$combo get]
+    if {$img == ""} {
+        set gned(radio) "rect"
+        $button config -text "    - n/a -    "
     } else {
+        set gned(radio) "icon"
         if [catch {
-            $w.b config -image $image
+            $button config -image $img
         }] {
-            $w.b config -image $icons(unknown)
+            $button config -image $icons(unknown)
         }
     }
-    pack $w.l -anchor n -expand 0 -side left
-    pack $w.b -anchor n -expand 0 -side left
 }
 
 proc _setColor {butt var pwin} {
@@ -401,11 +412,7 @@ proc _chooseIcon {oldicon win {pwin {}}} {
 
      if {[execOkCancelDialog $dlg] == 1} {
          set icon [$dlg.f.select.name cget -text]
-
-         if {$icon != ""} {
-             $win configure -image $icon
-             set gned(radio) "icon"
-         }
+         $win configure -value $icon
      }
      destroy $dlg
 }

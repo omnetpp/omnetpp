@@ -55,6 +55,12 @@ proc configureEditor {w} {
     bind $w <F3>        {editFindNext}
     bind $w <Control-n> {editFindNext;break}
     bind $w <Control-N> {editFindNext;break}
+
+    bind $w <<Cut>>     {after idle {syntaxHighlight %W 1.0 end}}
+    bind $w <<Paste>>   {after idle {syntaxHighlight %W 1.0 end}}
+    bind $w <<Undo>>    {after idle {syntaxHighlight %W 1.0 end}}
+    bind $w <<Redo>>    {after idle {syntaxHighlight %W 1.0 end}}
+
 }
 
 # syntaxHighlight --

@@ -204,10 +204,12 @@ proc createMainWindow {} {
     #  {sep5    -separator}
     foreach i {
       {sep0    -separator}
-      {new     -image $icons(new)   -command {fileNewComponent module}}
+      {new     -image $icons(new)   -command {fileNewNedfile}}
       {open    -image $icons(open)  -command {fileOpen}}
       {save    -image $icons(save)  -command {fileSave}}
       {sep2    -separator}
+      {newcomp -image $icons(newmod) -command {newComponentMenuPopup newcomp}}
+      {sep6    -separator}
       {back    -image $icons(back)  -command {goBack}}
       {forward -image $icons(forward) -command {goForward}}
       {sep1    -separator}
@@ -228,10 +230,11 @@ proc createMainWindow {} {
     set b [button $gned(horiz-toolbar).close -image $icons(close) -command fileCloseCanvas -relief flat]
     pack $b -anchor n -expand 0 -fill none -side right -padx 0 -pady 2
 
-    set help_tips($gned(horiz-toolbar).new)   {Create new module in current file}
+    set help_tips($gned(horiz-toolbar).new)   {New NED file}
     set help_tips($gned(horiz-toolbar).open)  {Open NED file}
     set help_tips($gned(horiz-toolbar).save)  {Save NED file of current canvas}
     #set help_tips($gned(horiz-toolbar).check) {Check module consistency}
+    set help_tips($gned(horiz-toolbar).newcomp) {Add new component to current NED file}
     set help_tips($gned(horiz-toolbar).cut)   {Cut to clipboard (ctrl-X)}
     set help_tips($gned(horiz-toolbar).copy)  {Copy to clipboard (ctrl-C)}
     set help_tips($gned(horiz-toolbar).paste) {Paste from clipbard (ctrl-V)}
@@ -284,8 +287,8 @@ proc createMainWindow {} {
 
     foreach i {
       {sep0     -separator}
-      {draw     -image $icons(draw)     -command {drawBindings $gned(canvas)}}
       {select   -image $icons(select)   -command {selectOrMoveBindings $gned(canvas)}}
+      {draw     -image $icons(draw)     -command {drawBindings $gned(canvas)}}
       {delete   -image $icons(del)      -command {deleteSelected}}
       {sep1     -separator}
       {opts     -image $icons(drawopts) -command {drawOptionsSelected $gned(canvas)}}

@@ -76,7 +76,7 @@ proc setupTkOptions {} {
    # we need the following lines:
    bind Entry <Control-v> {}
    bind Text <Control-v> {}
-      
+
    #
    # fonts() array elements:
    #  normal:  menus, labels etc
@@ -493,6 +493,17 @@ proc tableEdit {w numlines columnlist} {
            eval $wcmd
            grid $e -in $f -row $li -column $col -rowspan 1 -columnspan 1 -sticky news
 
+           # make sure edited entry is always visible
+           bind $e <Key> [list _focusTableEntry $f.li$li-$attr $w.c]
+
+           # key bindings: up, down
+           if {$li!=0} {
+               bind $e <Up> [list _focusTableEntry $f.li[expr $li-1]-$attr $w.c]
+           }
+           if {$li!=$numlines-1} {
+               bind $e <Down> [list _focusTableEntry $f.li[expr $li+1]-$attr $w.c]
+           }
+
            # next column
            incr col
        }
@@ -524,6 +535,22 @@ proc tableEdit {w numlines columnlist} {
 
 }
 
+#
+# internal to tableEdit: ensures current widget is always visible
+#
+proc _focusTableEntry {e c} {
+    focus $e
+    # are we below the visible canvas area?
+    set d [expr [winfo rooty $e]-[winfo rooty $c]-[winfo height $c]]
+    if {$d>-10} {
+        $c yview scroll [expr $d+10] units
+    }
+    # are we above the visible canvas area?
+    set d [expr [winfo rooty $c]-[winfo rooty $e]-[winfo height $e]]
+    if {$d>0} {
+        $c yview scroll [expr -$d+10] units
+    }
+}
 
 # center --
 #
@@ -585,8 +612,8 @@ proc createOkCancelDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    button $w.buttons.okbutton  -text {  OK  }
-    button $w.buttons.cancelbutton  -text {Cancel}
+    button $w.buttons.okbutton  -text {OK} -width 10
+    button $w.buttons.cancelbutton  -text {Cancel} -width 10
 
     pack $w.buttons -expand 0 -fill x -padx 5 -pady 5 -side bottom
     pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top
@@ -681,7 +708,7 @@ proc createCloseDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    button $w.buttons.closebutton  -text {Close}
+    button $w.buttons.closebutton  -text {Close} -width 10
 
     pack $w.buttons -expand 0 -fill x -padx 5 -pady 5 -side bottom
     pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top

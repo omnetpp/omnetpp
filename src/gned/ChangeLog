@@ -5,7 +5,8 @@ GNED not compatible with new Tkenv mode of using "i=" and "b=" together
 
 2003-11-24  Andras Varga
 
-	* added Back and Forward toolbar icons
+	* added Back and Forward toolbar icons; added "New component" toolbar
+	icon; improved icon selection dialog; etc.
 
 2003-10-24  Andras Varga
 
