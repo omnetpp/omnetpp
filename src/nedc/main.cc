@@ -321,7 +321,7 @@ bool processListFile(const char *listfilename)
     }
     in.close();
 
-    if (chdir(dir.c_str()))
+    if (chdir(olddir))
     {
         fprintf(stderr,"nedtool: cannot change back to directory `%s'\n", olddir);
         return false;
