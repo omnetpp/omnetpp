@@ -93,6 +93,8 @@
 /**
  * Register class. This defines a factory object which makes it possible
  * to create an object by the passing class name to the createOne() function.
+ * The class must be a subclass of cPolymorphic, otherwise a compile-time error
+ * will occur: <i>"cannot convert..."</i>
  *
  * @hideinitializer
  */
