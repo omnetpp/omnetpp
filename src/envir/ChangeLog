@@ -226,3 +226,5 @@ April 4, 2000
    and the chooseBestOmnetApp() function in envir.cc.
 April 6, 2000
  - changes to enable linking a Windows DLL from the library
+April 8, 2000
+ - added bool TOmnetApp::memoryIsLow()

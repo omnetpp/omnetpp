@@ -21,7 +21,8 @@ envir.lib : $(OBJS)
 	$(AR) /nologo /out:envir.lib $(OBJS)
 
 envir.ilib : $(OBJS) 
-	- $(SHLIB_LD) /nologo /implib:envir.ilib $(OBJS) 
+	rem How can one create only the import lib, without trying to link the DLL???
+	- $(SHLIB_LD) /nologo /implib:envir.ilib $(OBJS) >nul
 
 envir.dll : $(OBJS) $(LIBS)
 	$(SHLIB_LD) /nologo /out:envir.dll /implib:envir.ilib $(OBJS) $(LIBS)

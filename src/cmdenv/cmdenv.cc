@@ -33,13 +33,14 @@
 
 static char buffer[1024];
 
-// dummy function to help cope with Unix linkers...
-//void _dummy_for_env() {}
-
 //
 // Register the Cmdenv user interface
 //
 Register_OmnetApp(TCmdenvApp,false,10,"Cmdenv (command-line user interface)");
+
+
+// a function defined in heap.cc
+bool cmdenvMemoryIsLow();
 
 //==========================================================================
 // TCmdenvApp: command line user interface.
@@ -250,11 +251,13 @@ void TCmdenvApp::help()
         ev << "  " << i << ". " << ((cNetworkType *)iter())->name() << '\n';
 }
 
-//---------------------------------------------------------------------
-// input/output
-
 void TCmdenvApp::puts(const char *s)
 {
      if (opt_modulemsgs || simulation.contextModule()==NULL)
          TOmnetApp::puts( s );
+}
+
+bool TCmdenvApp::memoryIsLow()
+{
+     return cmdenvMemoryIsLow();
 }

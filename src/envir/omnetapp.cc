@@ -397,3 +397,10 @@ void TOmnetApp::foreignPuts(const char *hostname, const char *mod, const char *s
     puts(str);
 }
 
+bool TOmnetApp::memoryIsLow()
+{
+    // if the concrete user interface implementation has a memory manager,
+    // it should override this function
+    return false;
+}
+

@@ -243,3 +243,8 @@ unsigned cEnvir::extraStackForEnvir()
 {
     return app->extraStackForEnvir();
 }
+
+bool memoryIsLow()
+{
+    return ev.app->memoryIsLow();
+}

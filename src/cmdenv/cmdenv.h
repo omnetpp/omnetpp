@@ -64,6 +64,8 @@ class TCmdenvApp : public TOmnetApp
 
      virtual unsigned extraStackForEnvir() {return 8192;}
 
+     // cmdenv has an own memory manager (heap.cc)
+     virtual bool memoryIsLow();
 };
 
 #endif

@@ -29,11 +29,6 @@
 
 //=======================================================================
 
-bool memoryIsLow()
-{
-    return 0;
-}
-
 char *ptrToStr( void *ptr, char *buffer)
 {
     static char staticbuf[20];

@@ -124,6 +124,9 @@ class ENVIR_API TOmnetApp
      // extraStackForEnvir() is called from cSimpleModule; returns how much extra
      // stack space the user interface recommends for the simple modules
      virtual unsigned extraStackForEnvir() {return 0;}
+
+     // interface to memory manager
+     virtual bool memoryIsLow();
 };
 
 #endif

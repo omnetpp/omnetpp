@@ -113,3 +113,5 @@ April 4, 2000
    Register_OmnetApp() macro added to cmdenv.cc
 April 6, 2000
  - changes to enable linking a Windows DLL from the library
+April 8, 2000
+ - memoryIsLow() reorganized; cosmetic changes on heap.cc

@@ -42,6 +42,7 @@
 //  o  For running a tested simulation, you can turn them off.
 //
 //=================================================================
+
 //#define HEAPCHECK      /*check heap on new/delete*/
 //#define COUNTBLOCKS    /*count blocks on heap & dislay if none left*/
 //#define ALLOCTABLE     /*remember pointers & display heap LASTN times*/
@@ -84,46 +85,71 @@ void breakpoint()
   --VA
  *----------*/
 
-#define TRUE     1
-#define FALSE    0
+#define true     1
+#define false    0
 
 //==========================================================================
 // MemManager
 //  States:
 //   safetypool      lowmem
-//     NULL           FALSE     -> before construction or after destruction
-//   NOT NULL         FALSE     -> ok, size of safety pool = maxpoolsize
-//     NULL           TRUE      -> low memory, no safety pool
-//   NOT NULL         TRUE      -> never occurs
-
-class MemManager {
+//     NULL           false     -> before construction or after destruction
+//   NOT NULL         false     -> ok, size of safety pool = maxpoolsize
+//     NULL           true      -> low memory, no safety pool
+//   NOT NULL         true      -> never occurs
+//
+class MemManager
+{
    private:
-      static void *safetypool;
-      static int maxpoolsize;
+      void *safetypool;
+      int maxpoolsize;
+      bool lowmem;
    public:
-      static bool lowmem;
-   public:
-      MemManager(int mps=16384)
-         {lowmem=FALSE; maxpoolsize=mps; safetypool=malloc(maxpoolsize);}
-      ~MemManager()
-         {free(safetypool); safetypool=NULL; maxpoolsize=0;lowmem=FALSE;}
-      static void makeroom()
-         {lowmem = TRUE; free(safetypool); safetypool = NULL;}
-      static void restorepool()
-         {if (lowmem) { safetypool = malloc(maxpoolsize);
-                        if(safetypool) lowmem = FALSE; }
-         }
+      MemManager(int mps=16384);
+      ~MemManager();
+      void makeRoom();
+      void restorePool();
+      bool lowMemory() {return lowmem;}
 };
 
-void *MemManager::safetypool;
-int MemManager::maxpoolsize;
-bool MemManager::lowmem;
-
-static MemManager memmanager;
-
-bool memoryIsLow()
+MemManager::MemManager(int mps)
 {
-    return MemManager::lowmem;
+    maxpoolsize = mps;
+    safetypool = malloc(maxpoolsize);
+    lowmem = (safetypool!=NULL);
+}
+
+MemManager::~MemManager()
+{
+    free(safetypool);
+    safetypool = NULL;
+    maxpoolsize = 0;
+    lowmem = false;
+}
+
+void MemManager::makeRoom()
+{
+    lowmem = true;
+    free(safetypool);
+    safetypool = NULL;
+}
+
+void MemManager::restorePool()
+{
+    if (lowmem)
+    {
+        safetypool = malloc(maxpoolsize);
+        if(safetypool)
+            lowmem = false;
+    }
+}
+
+//==========================================================================
+// static instance of MemManager and a function accessible from outside
+static MemManager memManager;
+
+bool cmdenvMemoryIsLow()
+{
+    return memManager.lowMemory();
 }
 
 //==========================================================================
@@ -202,7 +228,7 @@ int checkheapnode(char *s,void *p)
             printf(" [HEAP.CC-debug:%s:ALREADY FREED]",s);
         return a==_USEDENTRY;
 #else
-        return TRUE;
+        return true;
 #endif
 }
 #endif
@@ -289,10 +315,10 @@ void *operator new(size_t m)
             printf(" [HEAP.CC-debug:NEW(%lu),alloctable full]", (long)m );
          else
             printf(" [HEAP.CC-debug:NEW#%lu (%lu),%u blocks%s]", last_id,
-                    (long)m, blocksintable, memoryIsLow() ? " LOWMEM!":"" );
+                    (long)m, blocksintable, memManager.lowMemory() ? " LOWMEM!":"" );
 #else
          printf(" [HEAP.CC-debug:NEW(%lu),%u blocks%s]",
-                    (long)m, blocksonheap, memoryIsLow() ? " LOWMEM!":"" );
+                    (long)m, blocksonheap, memManager.lowMemory() ? " LOWMEM!":"" );
 #endif
 #endif
 #ifdef BKPT
@@ -300,9 +326,9 @@ void *operator new(size_t m)
 #endif
          return p;
       }
-      else if (!memoryIsLow())
+      else if (!memManager.lowMemory())
       {        // first allocation failed,
-         MemManager::makeroom();       // try again after freeing pool
+         memManager.makeRoom();       // try again after freeing pool
          return (void *)new char[m];
       }
       else
@@ -314,10 +340,10 @@ void *operator new(size_t m)
                    (long)m );
          else
             printf("\n[HEAP.CC-debug: NEW#%lu (%lu) FAILED,%u blocks%s,continue? (y/n)]",
-                   last_id, (long)m, blocksintable, memoryIsLow() ? " LOWMEM!":"" );
+                   last_id, (long)m, blocksintable, memManager.lowMemory() ? " LOWMEM!":"" );
 #else
          printf("\n[HEAP.CC-debug:NEW (%lu) FAILED,%u blocks%s,continue? (y/n)]",
-                   (long)m, blocksonheap, memoryIsLow() ? " LOWMEM!":"" );
+                   (long)m, blocksonheap, memManager.lowMemory() ? " LOWMEM!":"" );
 #endif
          if(!askyesno()) abort();
 #endif
@@ -325,19 +351,6 @@ void *operator new(size_t m)
          return NULL;
     }
 }
-
-#ifdef __MSDOS__
-/* Borland C++ 3.1's uses operator new(unsigned long) to allocate space for
-   objects with constuctors. (This allocation is done in _vector_allocate()
-   whose call is generated internally by the compiler.) Unfortunately,
-   size_t is unsigned int, so it's not my operator new which will be called.
-   To correct this, we insert this second operator new():
-*/
-void *operator new(unsigned long m)
-{
-    return operator new( (size_t)m );
-}
-#endif
 
 void operator delete(void *p)
 {
@@ -349,12 +362,12 @@ void operator delete(void *p)
     if(!checkheapnode("DELETE",p)) return;
 #endif
 #ifdef COUNTBLOCKS
-    int heapempty=FALSE;
+    bool heapempty=false;
     if (blocksonheap==0)
            printf(" [HEAP.CC-debug:DELETE:DELETE AFTER HEAP EMPTY ???]");
     else {
            blocksonheap--;
-           if (blocksonheap==0)  heapempty=TRUE;
+           if (blocksonheap==0)  heapempty=true;
     }
 #endif
 #ifdef ALLOCTABLE
@@ -377,8 +390,8 @@ void operator delete(void *p)
     if(heapempty) printf(" [HEAP.CC-debug:DELETE:ALL BLOCKS FREED OK] ");
 #endif
     free(p);
-    if (memoryIsLow())
-           MemManager::restorepool();
+    if (memManager.lowMemory())
+           memManager.restorePool();
 #ifdef BKPT
     if(id==breakat) brk("DELETE");
 #endif
