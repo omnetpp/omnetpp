@@ -6,8 +6,8 @@ see example.msg to get an idea about the possibilities.
 
 samples/dyna2 demonstrates the use of message subclassing:
 - dynapacket.msg defines DynaPacket and DynaDataPacket;
-- dynapacket_m.h and dynapacket_m.cc are produced by opp_msgc from it, and 
-  contain the generated DynaPacket and DynaDataPacket C++ classes (plus code 
+- dynapacket_m.h and dynapacket_m.cc are produced by opp_msgc from it, and
+  contain the generated DynaPacket and DynaDataPacket C++ classes (plus code
   for Tkenv inspectors);
 - other model files (client.cc, server.cc, ...) use the generated message
   classes as any other C++ classes
@@ -100,8 +100,8 @@ much.
 To relieve the simulation programmer from having to write this extra code,
 messages are described in a higher-level syntax, and a compiler is used to
 generate the necessary C++ code with subclasses of cMessage and cPacket.
-The message compiler can add the necessary data members and their get/set 
-methods. It also generates the necessary reflection code which makes it 
+The message compiler can add the necessary data members and their get/set
+methods. It also generates the necessary reflection code which makes it
 possible to inspect message contents in Tkenv.
 
 The original idea is described in:
@@ -117,7 +117,7 @@ This is an experimental implementation of the message subclassing feature
 described above. "Experimental" means that:
  1. The message description syntax and features may change in the future,
     based on feedback from the community;
- 2. The compiler that translates message descriptions into C++ is a perl script 
+ 2. The compiler that translates message descriptions into C++ is a perl script
     (this is a temporary solution until nedtool becomes stable and tested)
 
 The task of the "message subclassing compiler" is to generate C++ classes
@@ -142,15 +142,37 @@ example.msg file instead!  What you find here however is very brief
 explanations of certain keywords or features you find in example.msg.
 
 1. cppinclude directive:
-Adds a C++ #include to the generated header file.
-Example:
-  cppinclude "myclasses.h"
 
+ cppinclude "mystuff.h"
+
+Adds a C++ #include to the generated header file.
+This is likely to change to something like this in the future:
+
+ cplusplus {
+ #include "mystuff.h"
+ }
 
 2. enums:
-An enum{..} generates a normal C++ enum, plus creates an object which stores
+An enum {..} generates a normal C++ enum, plus creates an object which stores
 textual representations of the constants. The object makes it possible to
 display symbolic names in Tkenv.
+An example:
+
+ // create an enum
+ enum ProtocolTypes
+ {
+    IP = 1;
+    TCP = 2;
+ };
+
+It is possible to "extend" an enum with new values.
+
+ // add new values to ProtocolTypes
+ enum MoreProtocolTypes updates ProtocolTypes
+ {
+    CLNP = 3;
+    TP4 = 4;
+ };
 
 
 3. class, message declarations:
@@ -200,7 +222,7 @@ Example:
 
 
 9. enum declarations for fields:
-It is possible to tell the message compiler if an integral field will take 
+It is possible to tell the message compiler if an integral field will take
 values from an enum.
 Example:
    int p enum(ProtocolTypes);
@@ -220,11 +242,6 @@ Example:
 // Feedback is welcome!
 //
 
-
-// necessary #includes for the
-cppinclude <stdio.h>
-cppinclude "mystuff.h"
-
 // announce types that come from included C++ code
 struct IPAddress;
 cobject BasicPacket;
@@ -234,19 +251,6 @@ noncobject mystringclass;
 // imports are not yet supported :-(
 import "othermsgs.msg";
 
-// create an enum
-enum ProtocolTypes
-{
-    IP = 1;
-    TCP = 2;
-};
-
-// add new values to ProtocolTypes
-enum MoreProtocolTypes updates ProtocolTypes
-{
-    CLNP = 3;
-    TP4 = 4;
-};
 
 // message object
 message FooPacket extends BasicPacket

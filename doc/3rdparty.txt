@@ -2,7 +2,10 @@ Third party software
 ====================
 
 The Win32 binary distribution of OMNeT++ contains software which are
-independent of OMNeT++, and are distributed under their own licenses:
+independent of OMNeT++, and are distributed under their own licenses.
+
+The same software packages are recommended if you want to build OMNeT++
+on Windows from source, using MSVC or the MinGW compiler.
 
 
 Tcl/Tk

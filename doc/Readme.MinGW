@@ -7,27 +7,27 @@ For the experienced and impatient, here's a short summary of the installation
 process. If you're not sure what the following steps mean, you should
 probably read the following long instructions.
 
-  1. Install required software: MSYS and MinGW; a Windows port of bison
-     and some other Unix tools (UnxUtils is fine); Tcl/Tk; Perl.
-     Optional packages: Expat; Akaroa; PVM or MPI. Make sure bison, flex,
-     and Tcl/Tk are in the PATH, and the following variables are set 
-     correctly: BISON_SIMPLE, TCL_LIBRARY.
-  2. Download OMNeT++ source package and unpack it (say into c:\omnetpp).
-  3. Add c:\omnetpp\bin your PATH.
-  4. Edit c:\omnetpp\configure.user according to your system. Use Windows-style
+  1. Install required software: MSYS and MinGW; Windows ports of bison and flex
+     (UnxUtils versions are fine); Tcl/Tk; Perl. Optional packages: Expat; 
+     Akaroa; PVM or MPI. 
+  2. Make sure bison, flex, and Tcl/Tk are in the PATH, and the following 
+     variables are set correctly: BISON_SIMPLE, TCL_LIBRARY.
+  3. Download OMNeT++ source package and unpack it (say into c:\omnetpp).
+  4. Add c:\omnetpp\bin your PATH.
+  5. Edit c:\omnetpp\configure.user according to your system. Use Windows-style
      path names with *forward* slashes (/). If a directory name contains space,
      use the short name (like C:/PROGRA~1).
-  5. Then fire up the MSYS shell and type the usual GNU stuff: ./configure, 
+  6. Then fire up the MSYS shell and type the usual GNU stuff: ./configure, 
      make. If make goes through, you made it!
-  6. Try that sample simulations, gned, nedc and opp_makemake work.
+  7. Try that sample simulations, gned, nedc and opp_makemake work.
 
 If you get stuck at some step, refer to the detailed instructions below.
 
 
 0. Introduction: About MinGW
 
-MinGW (http://www.mingw.org) is an alternative port of the GNU compiler
-toolset to Windows. It is distributed in two packages:
+MinGW (http://www.mingw.org) is a Win32 port of the GNU compiler toolset. 
+It is distributed in two packages:
 
   MinGW: A collection of freely available and freely distributable Windows
   specific header files and import libraries combined with GNU toolsets that
@@ -58,29 +58,29 @@ by OMNeT++.)
 2. Installing the compiler environment
 
 MSYS and MinGW must be installed before OMNeT++. The MinGW team provides
-detailed installation instructions which I won't replicate here.
+detailed instructions for that -- read them before installation.
 
-The installer will create an `MinGW' / `MSYS' entry in the Start menu
-and also a desktop icon called `MSYS'. In the following description
-I'll assume you installed MinGW into c:\MinGW and MSYS to c:\MinGW\MSYS.
+The installer will create an MinGW submenu in the Start menu, and also 
+a desktop icon called `MSYS'. In the following description I'll assume 
+you installed MinGW into c:\MinGW and MSYS to c:\MinGW\MSYS.
 
 If you should ever want to uninstall the tools, you may do so via the
-"Add/Remove Programs" control panel.
+"Add/Remove Programs" Control Panel.
 
 Starting MSYS will pop up a bash shell with all special environment
 variables set up for you. Within the bash shell, the MSYS directory
 (c:\MinGW\MSYS) will appear as "/". Your Windows drives will appear
-as /c/, /d/, etc., but MinGW understands the Windows notation too,
-only with slashes instead backslashes (c:/, d:/, etc.). Typing
-`pwd -W' always tells you the Windows name of the current directory.
+as /c/, /d/, etc., but MinGW understands the Windows notation too if you
+type it with *slashes* instead backslashes (c:/, d:/, etc.). Typing
+`pwd -W' will tell you the Windows name of the current directory.
 
 An editor will be required during the installation. For Unix diehards,
 MSYS contains vi, or you can download emacs. A good NT port of emacs
 is available from http://www.cs.washington.edu/homes/voelker/ntemacs.html.
 
 It is a good idea to create a .bash_profile. This should be stored
-in each users home directory (/home/you, that is, c:/mingw/msys/home/you;
-typing `cd' takes you there.) For example, my .bash_profile contains:
+in each users home directory (/home/you, which maps to c:/mingw/msys/home/you;
+typing `cd' takes you right there.) For example, my .bash_profile contains:
 
    export PS1='\w$ '
    export PATH=/c/omnetpp/bin:$PATH:/c/Unxutils/usr/local/wbin
@@ -105,7 +105,9 @@ IMPORTANT:
   correctly.
 ---
 
-For TCL_LIBRARY, use a Windows-style directory name. Example:
+Use a *Windows-style* directory name for TCL_LIBRARY, because it must be 
+understood by the Tcl/Tk libraries which know nothing about the MinGW magic.
+E.g. write 
    TCL_LIBRARY=c:/Tcl/lib
 and not
    TCL_LIBRARY=/c/Tcl/lib  # WRONG!
@@ -121,22 +123,21 @@ which works in a similar manner to the dos console window. The difference is
 that you use unix commands like ls, rm, mkdir, etc ...
 
 Copy the omnetpp archive to the directory where you want to install it
-(usually your home directory). Extract the archive using the command:
+(I'll assume c:/omnetpp here). Extract the archive using the command:
 
     tar zxvf omnetpp.tgz
 
 A sub-directory called omnetpp will be created which will contain the simulator
-files. You should now add the following lines to your startup file .bash_profile:
+files. You should now add the following line to your startup file .bash_profile:
 
-    export PATH=$PATH:~/omnetpp/bin
+    export PATH=$PATH:/c/omnetpp/bin
 
 For the variables to be included in the bash environment you will need to
 restart the bash shell before proceeding. All following commands in this
 section are entered on the bash command line.
 
-First you should check configure.user to make sure it contains the settings
-you need:
-    notepad configure.user
+First you should check the configure.user file to make sure it contains the 
+settings you need.
 
 ---
 IMPORTANT: 
@@ -160,6 +161,9 @@ example, the dyna example is started by entering the following commands:
 
 By default the samples will run using the Tcl/Tk environment. You should see
 nice gui windows and dialogs.
+
+Then cd to the /c/omnetpp/bin directory and check that the programs work
+correctly.
 
 
 5. Reconfiguring the libraries

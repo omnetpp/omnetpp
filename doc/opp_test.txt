@@ -1,5 +1,5 @@
-OMNeT++ Regression Test Tool
-============================
+OMNeT++ Regression Tests
+========================
 
 This file documents the opp_test tool. Reading it will help you understand
 .test files in the test/ directory and write new test cases for your simulation
@@ -12,7 +12,7 @@ embedded in the test case file. The advantages for this design are twofold:
  - test cases are self-contained (easy to share, etc)
  - enforces test cases that are compact and to the point
 
-How to run tests:
+How to run tests (steps 2-4 are automated with the test/runtest script):
 
 1. write the *.test files
 

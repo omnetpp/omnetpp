@@ -1,7 +1,5 @@
-                    GNED -- Graphical NED Editor
-                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-           Part of the OMNeT++ Discrete Event Simulator
-
+GNED -- the OMNeT++ Graphical Network Editor
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Requirements:
   at least 8.0p1 version of Tcl and Tk.
