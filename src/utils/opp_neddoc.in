@@ -82,9 +82,9 @@ if [ "$screenshots" = "yes" ]; then
         gned -- -c $outdir $nedfilesonly || exit 1
         echo 'converting Postscript to GIF using '$PS2GIF'...'
         for i in $outdir/*.eps; do
+           echo -n '#'
            gif=`echo $i | sed 's/eps$/gif/'`
            $PS2GIF $i $gif || exit 1
-           echo -n '#'
         done
         echo
         # hack: must convert $outdir to absolute path, otherwise xslt will take it
@@ -112,9 +112,11 @@ perl $NEDDOC_PL $outdir || exit 1
 if [ "$have_dot" = "yes" ]; then
     echo 'generating diagrams via '$DOT'...'
     for i in $outdir/*.dot; do
-       gif=`echo $i | sed 's/dot$/gif/'`
-       $DOT -Tgif <$i >$gif || exit 1
        echo -n '#'
+       gif=`echo $i | sed 's/dot$/gif/'`
+       map=`echo $i | sed 's/dot$/map/'`
+       $DOT -Tgif <$i >$gif || exit 1
+       $DOT -Tcmap <$i >$map || exit 1
     done
     echo
 fi

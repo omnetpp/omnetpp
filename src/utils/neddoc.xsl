@@ -206,13 +206,27 @@
             <h2 class="comptitle">Module Hierarchy</h2>
             <p>The following diagram shows what other modules compound modules are composed of.
             Unresolved module types are missing from the diagram.</p>
-            <img src="module-diagram.gif"/>
+            <img src="module-diagram.gif" ismap="yes" usemap="module-diagram.map"/>
          </xsl:with-param>
       </xsl:call-template>
 
       <xsl:document href="{$outputdir}/module-diagram.dot" method="text">
          <xsl:call-template name="create-module-diagram"/>
       </xsl:document>
+
+      <xsl:call-template name="write-html-page">
+         <xsl:with-param name="href" select="'class-inheritance-diagram.html'"/>
+         <xsl:with-param name="content">
+            <h2 class="comptitle">Class Inheritance Diagram</h2>
+            <p>The following diagram shows the class hierarchy.</p>
+            <img src="class-interitance-diagram.gif" ismap="yes" usemap="class-interitance-diagram.map"/>
+         </xsl:with-param>
+      </xsl:call-template>
+
+      <xsl:document href="{$outputdir}/class-inheritance-diagram.dot" method="text">
+         <xsl:call-template name="create-class-inheritance-diagram"/>
+      </xsl:document>
+
    </xsl:if>
    
    <xsl:document href="{$outputdir}/tags.xml" indent="yes">
@@ -1205,7 +1219,7 @@
 </xsl:template>
 
 <xsl:template name="create-module-diagram">
-   <!-- FIXME include channels, too! -->
+   <!-- FIXME include channels and networks, too! -->
    digraph opp {
       node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#fffcaf"];
       <xsl:for-each select="//simple-module|//compound-module">
@@ -1215,6 +1229,28 @@
          <xsl:for-each select="key('module',submodules/submodule/@type-name)">
             <xsl:value-of select="$modname"/> -> <xsl:value-of select="@name"/>; 
          </xsl:for-each>
+      </xsl:for-each>
+   }
+</xsl:template>
+
+<xsl:template name="create-class-inheritance-diagram">
+   digraph opp {
+      node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#fffcaf"];
+      edge [arrowhead=none,arrowtail=empty];
+      <xsl:for-each select="//class">
+         <xsl:if test="@extends-name">
+             <xsl:value-of select="@extends-name"/> -> <xsl:value-of select="@name"/>;
+         </xsl:if>
+      </xsl:for-each>
+      <xsl:for-each select="//message">
+         <xsl:choose>
+            <xsl:when test="@extends-name">
+                <xsl:value-of select="@extends-name"/> -> <xsl:value-of select="@name"/>;
+            </xsl:when>
+            <xsl:otherwise>
+                cMessage -> <xsl:value-of select="@name"/>;
+            </xsl:otherwise>
+         </xsl:choose>
       </xsl:for-each>
    }
 </xsl:template>
