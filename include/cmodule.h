@@ -1160,7 +1160,7 @@ class SIM_API cSimpleModule : public cModule
     virtual unsigned stackUsage() const;
     //@}
 
-    /** @name Heap allocation. */
+    /** @name Miscellaneous. */
     //@{
 
     /**
@@ -1174,22 +1174,22 @@ class SIM_API cSimpleModule : public cModule
      * and provide a proper destructor. Or, you can use container classes
      * (cArray, cQueue)!
      */
-    void *memAlloc(size_t m);          // allocate m bytes
+    void *memAlloc(size_t m);
 
     /**
      * Frees a memory block reserved with the malloc() described
      * above and NULLs the pointer.
      */
-    void memFree(void *&p);            // free block & NULL pointer
-    //@}
+    void memFree(void *&p);
 
     // INTERNAL: free module's local allocations
     void clearHeap();
 
     /**
-     * FIXME: Return module state.
+     * Returns module state.
      */
     int moduleState() const {return state;}
+    //@}
 };
 
 //==========================================================================
