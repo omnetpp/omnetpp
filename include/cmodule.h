@@ -822,7 +822,8 @@ class SIM_API cSimpleModule : public cModule
     virtual void scheduleStart(simtime_t t);
 
     /**
-     * Deletes a dynamically created module.
+     * Deletes a dynamically created module. A running module can also
+     * delete itself.
      */
     virtual void deleteModule();
     //@}
@@ -1101,12 +1102,20 @@ class SIM_API cSimpleModule : public cModule
 
     /**
      * Ends the run of the simple module. The simulation is not stopped
-     * (unless this is the last running module.)
+     * (unless this is the last running module.) The implementation simply
+     * throws a cEndModuleException. 
+     *
+     * Note that end() does NOT delete the module; its state is simply
+     * set to Ended and it won't take part in further simulation.
+     * If you also want to delete the module, use deleteModule(); however,
+     * this implies that the module's finish() method won't be called 
+     * at the end of the simulation.
      */
     void end();
 
     /**
-     * Causes the whole simulation to stop.
+     * Causes the whole simulation to stop. The implementation simply
+     * throws a cTerminationException.
      */
     void endSimulation();
 

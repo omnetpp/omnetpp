@@ -97,6 +97,7 @@ class SIM_API cSimulation : public cObject
     cSimpleModule *backtomod;  // used in cSimpleModule::wait/sendmsg
     cCoroutine runningmod_deleter; // used when a simple module deletes itself
     cException *exception;     // helper variable to get exceptions back from activity()
+    int exception_type;        // helper variable, also for getting exceptions back from activity()
 
   public:
     cMessageHeap msgQueue;     // future messages (FES)
@@ -309,6 +310,7 @@ class SIM_API cSimulation : public cObject
     /**
      * The scheduler function. Returns the module to which the
      * next event (lowest timestamp event in the FES) belongs.
+     * If the FES is empty, returns NULL.
      */
     cSimpleModule *selectNextModule();
 

@@ -13,6 +13,9 @@
 	Define_Network: subclass cNetworkType instead of using a naked
 	pointer to a network setup function.
 
+	* cexception.h: introduced cTerminationException, cEndModuleException;
+	added 2 new ctors to cException
+
 2002-10-16  Andras Varga
 
 	* csimul.h: cSimulation: methods warning(), setWarnings(bool), 
