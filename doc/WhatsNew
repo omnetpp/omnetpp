@@ -1,43 +1,57 @@
 What's New
 ==========
 
-2004 January Snapshot
----------------------
-NED documentation tool: opp_neddoc. It works both on Unix and Windows (only
-on Windows you have to install a lot of additional software).
+3.0 Preview, 2004 January
+-------------------------
+This is an intermediate code snapshot -- it was released to show you what
+features are planned for release 3.0, and possibly to get early feedback
+about them. It has not been fully tested.
+
+The model documentation tool opp_neddoc has been introduced. It generates
+fully hyperlinked documentation with diagrams from comments in .ned and .msg
+files. It can also link to Doxygen-generated C++ documentation. It works both
+on Unix and Windows.
 
 Several Tkenv network animation enhancements: next event marker; animation
-of sendDirect() and method calls between modules; message icons; auto-layouting;
-icon coloring; module "bubbles" (callouts); display of queue length next to
-module icon; display of a status string above module icon; optional modifier 
-icon on top of submodule icon; submodule icon optionally on top of a rect/oval;
-display of "transmission range"; color names in display strings are accepted 
-in HSB (hue-saturation-brightness) too.
+of sendDirect() and method calls between modules; message icons; auto-layouting
+of networks; icon coloring; module "bubbles" (callouts); display of queue
+length next to module icon; display of a status string above module icon;
+optional modifier icon on top of submodule icon; submodule icon optionally on
+top of a rect/oval; display of "transmission range"; color names in display
+strings are accepted in HSB (hue-saturation-brightness) too.
 
 Changing display strings was made more comfortable from simple modules.
 
-Other Tkenv enhancements: object search dialog; enhanced plugin support
-(see test/tkenv/plugin); better tabnotebook and multi-column listbox widgets
-via BLT. All Tkenv settings restored from .tkenvrc now.
+Other Tkenv enhancements: powerful object search dialog; enhanced plugin
+support (see test/tkenv/plugin); better tabnotebook and multi-column listbox
+widgets via BLT. All Tkenv settings restored from .tkenvrc now.
 
 New sample simulations: Tictoc (a step-by-step tutorial), Aloha, CQN (Closed
 Queueing Network), Queueing, Routing, RoutingDB, Point-to-Point Transmitter.
-Other changes are that Dyna and Dyna2, Fifo and Fifo2 was merged, Topo was 
-renamed to NEDDemo, Token renamed to TokenRing. The Nim example has finally 
+Other changes are that Dyna and Dyna2, Fifo and Fifo2 was merged, Topo was
+renamed to NEDDemo, Token renamed to TokenRing. The Nim example has finally
 retired. The new/revised sample simulations demonstrate new Tkenv features
-and also more simulation kernel features. They also mark a shift from 
+and also more simulation kernel features. They also mark a shift from
 activity() based modules towards handleMessage()-based ones.
 
-Simulation kernel: redesigned object ownership handling, etc.....
+Dynamic loading of NED files has been implemented, which means it is possible
+to use NED files directly, without nedc and C++ compilation. NED files
+containing compound modules and networks can be loaded dynamically.
+NED files can be loaded interactively (Tkenv "Load NED file" toolbar icon)
+or automatically (via omnetpp.ini, preload-ned-files= entry). (alpha!)
 
-Dynamic loading of NED files (i.e. without nedc and C++ compilation),
-via omnetpp.ini entry or Tkenv toolbar icon. (alpha!)
+Simulation kernel: internal object ownership handling, has been redesigned,
+which both reduced memory footprint (sizeof(cObject)) and increased speed.
+Another efficiency improvement is that for short object name strings,
+the string is now stored inside cObject (and not dynamically allocated via
+new char[...].)
 
 Distributed simulation support rewritten, currently experimental. (alpha!)
 
 Several new tests in test suite, also for testing opp_neddoc and Tkenv.
 
-The Manual is still to be updated at places. Further TODO items are the 
+TODO:
+The Manual is still to be updated at places. Further items are the
 introduction of new RNG architecture based on modern RNGs, and testing
 and completion of nedxml/nedtool (which will bring the retirement of nedc).
 
