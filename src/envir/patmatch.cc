@@ -293,9 +293,10 @@ bool cPatternMatcher::matches(const char *line)
     // shortcut: omnetpp.ini keys often begin with "*" or "**"
     // but end in a string literal. So it's usually a performance win to
     // to first check that the last string literal of the pattern matches
-    // the end of the string.
+    // the end of the string. (We do the shortcut only in the case-sensitive
+    // case. omnetpp.ini is case sensitive.)
 
-    if (pattern.size()>=2)
+    if (pattern.size()>=2 && iscasesensitive)
     {
         Elem& e = pattern[pattern.size()-2];
         if (e.type==LITERALSTRING)
@@ -315,6 +316,9 @@ bool cPatternMatcher::matches(const char *line)
 
 const char *cPatternMatcher::patternPrefixMatches(const char *line, int suffixoffset)
 {
+    if (!iscasesensitive)
+        throw new cException("cPatternMatcher: patternPrefixMatches() doesn't support case-insensitive match");
+
     // pattern must end in a literal string...
     assert(pattern[pattern.size()-1].type==END);
     if (pattern.size()<2)
