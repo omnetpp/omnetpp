@@ -10,6 +10,9 @@
 	module cannot be expanded further (because network is built and
 	connected top-down.)
 
+	* cppgenerator.cc, cppexprgenerator.cc: several bugfixes in the 
+	generated code
+
 2004-02-11  Andras Varga
 
 	* ned.y: didn't accept negative numbers and symbolic constants in

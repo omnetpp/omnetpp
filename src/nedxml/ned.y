@@ -1405,16 +1405,13 @@ loopconnection_old
         : FOR
                 {
                   ps.forloop = (ForLoopNode *)createNodeWithTag(NED_FOR_LOOP, ps.conns );
-                }
-          loopvarlist_old DO
-                {
                   ps.inLoop=1;
                 }
-          notloopconnections_old ENDFOR opt_semicolon
+          loopvarlist_old DO notloopconnections_old ENDFOR opt_semicolon
                 {
                   ps.inLoop=0;
                   setComments(ps.forloop,@1,@4);
-                  setTrailingComment(ps.forloop,@7);
+                  setTrailingComment(ps.forloop,@6);
                 }
         ;
 
@@ -1656,16 +1653,13 @@ loopconnection
         : FOR
                 {
                   ps.forloop = (ForLoopNode *)createNodeWithTag(NED_FOR_LOOP, ps.conns );
-                }
-          loopvarlist DO
-                {
                   ps.inLoop=1;
                 }
-          notloopconnections ENDFOR ';'
+          loopvarlist DO notloopconnections ENDFOR ';'
                 {
                   ps.inLoop=0;
                   setComments(ps.forloop,@1,@4);
-                  setTrailingComment(ps.forloop,@7);
+                  setTrailingComment(ps.forloop,@6);
                 }
         ;
 

@@ -313,12 +313,6 @@ void NEDCppGenerator::writeProlog(ostream& out)
            "#  pragma warn -wuse\n"
            "#endif\n\n";
 
-    out << "static void check_anc_param(cPar *ptr, const char *parname, const char *compoundmod) {\n";
-    out << "    if (!ptr)\n";
-    out << "        throw new cException(\"Unknown ancestor parameter named %s in compound module %s\", parname,compoundmod);\n";
-    out << "}\n";
-    out << "\n";
-
     out << "static cModuleType *_getModuleType(const char *modname)\n";
     out << "{\n";
     out << "    cModuleType *modtype = findModuleType(modname);\n";

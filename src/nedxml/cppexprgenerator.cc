@@ -96,6 +96,10 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr)
     if (tag==NED_IDENT || tag==NED_CONST)
         return false;
 
+    // also, non-ref bare parameter references never need expression classes
+    if (tag==NED_PARAM_REF && !((ParamRefNode *)node)->getIsRef())
+        return false;
+
     // special functions (INPUT, INDEX, SIZEOF) may also go without expression classes
     if (tag==NED_FUNCTION)
     {
@@ -361,9 +365,9 @@ void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, 
         const char *name = node->getName();
         if (!strcmp(name,"^"))
         {
-            out << "pow(";
+            out << "pow((double)";
             generateItem(op1,indent,mode);
-            out << ",";
+            out << ",(double)";
             generateItem(op2,indent,mode);
             out << ")";
         }
@@ -384,25 +388,25 @@ void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, 
             bool longcast = !strcmp(name,"%");
 
             // always put parens to force NED precedence (might be different from C++'s)
-            out << "(";
-            out << (boolcast ? "(bool)(" : ulongcast ? "(unsigned long)(" : longcast ? "(long)(" : "");
+            out << (boolcast ? "(bool)(" : ulongcast ? "(unsigned long)(" : longcast ? "(long)(" : "(double)(");
             generateItem(op1,indent,mode);
-            out << (boolcast || ulongcast || longcast ? ")" : "");
-            out << clangoperator;
-            out << (boolcast ? "(bool)(" : ulongcast ? "(unsigned long)(" : longcast ? "(long)(" : "");
-            generateItem(op2,indent,mode);
-            out << (boolcast || ulongcast || longcast ? ")" : "");
             out << ")";
+            //out << (boolcast || ulongcast || longcast ? ")" : "");
+            out << clangoperator;
+            out << (boolcast ? "(bool)(" : ulongcast ? "(unsigned long)(" : longcast ? "(long)(" : "(double)(");
+            generateItem(op2,indent,mode);
+            out << ")";
+            //out << (boolcast || ulongcast || longcast ? ")" : "");
         }
     }
     else
     {
         // tertiary can only be "?:"
-        out << "(";
+        out << "(bool)(";
         generateItem(op1,indent,mode);
-        out << " ? ";
+        out << ") ? (double)(";
         generateItem(op2,indent,mode);
-        out << " : ";
+        out << ") : (double)(";
         generateItem(op3,indent,mode);
         out << ")";
     }
@@ -526,32 +530,55 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
 {
     if (mode==MODE_EXPRESSION_CLASS)
     {
-        // arg holds pointer of current module
-        out << "(double)mod";
-        if (strnotnull(node->getModule())) {
-            out << "->submodule(\"" << node->getModule() << "\")";
-            // FIXME index here!
+        if (node->getIsAncestor())
+        {
+            // FIXME fill this in
         }
-        out << "->par(\"" << node->getParamName() << "\")";
+        else
+        {
+            // arg holds pointer of current module
+            out << "mod";
+            if (strnotnull(node->getModule()))
+            {
+                out << "->submodule(\"" << node->getModule() << "\")";
+                ExpressionNode *modindex = (ExpressionNode *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");
+                if (modindex)
+                {
+                    out << "[_checkModuleIndex(";
+                    generateExpressionUsage(modindex,indent);
+                    // FIXME modname_size will be undefined here........
+                    out << "," << node->getModule() << "_size,\"" << node->getModule() << "\")]";
+                }
+            }
+            out << "->par(\"" << node->getParamName() << "\")";
+            // FIXME this will always be by reference?
+        }
     }
     else // MODE_INLINE_EXPRESSION
     {
-        out << "(double)";
         if (node->getIsAncestor())
-            out << "ancestor "; // FIXME, use check_anc_param
-
-        if (node->getIsRef())
-            out << "ref "; // FIXME
-
-        if (strnotnull(node->getModule())) {
-            out << node->getModule() << "_p";
-            // FIXME index here!
-            out << "->";
-        } else {
-            out << "mod->";
+        {
+            out << "mod->ancestorPar(\"" << node->getParamName() << "\")";
         }
-
-        out << "par(\"" << node->getParamName() << "\")";
+        else
+        {
+            // FIXME handle node->getIsRef(), if ever needed with inline expressions(?)
+            if (strnotnull(node->getModule()))
+            {
+                out << node->getModule() << "_p";
+                ExpressionNode *modindex = (ExpressionNode *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");
+                if (modindex)
+                {
+                    out << "[_checkModuleIndex(";
+                    generateExpressionUsage(modindex,indent);
+                    out << "," << node->getModule() << "_size,\"" << node->getModule() << "\")]";
+                }
+                out << "->";
+            } else {
+                out << "mod->";
+            }
+            out << "par(\"" << node->getParamName() << "\")";
+        }
     }
 }
 
