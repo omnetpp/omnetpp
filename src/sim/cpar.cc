@@ -98,7 +98,7 @@ void cPar::deleteold()
             if (ptr.delfunc)
                 ptr.delfunc(ptr.ptr);
             else
-                delete ptr.ptr;
+                delete (char *)ptr.ptr;  // delete void* is no longer legal :-(
         }
     }
     else if (typechar=='O')
@@ -795,24 +795,29 @@ bool cPar::setFromText(const char *text, char tp)
 
 bool cPar::setfunction(char *text)
 {
-    char buf[32];
-    char *s,*d;
+    // Note: this function *will* alter its input string
 
-    // remove spaces, tabs etc.
-    for(s=d=text; *s; s++)
-       if (!isspace(*s))
-          *d++ = *s;
-    *d = 0;
+    // find '('
+    char *d;
+    for (d=text; *d!='(' || *d; d++);
+    if (*d!='(') return false;  // no opening paren
+    char *args = d;
 
-    // extract first word (expected to be the function name) into buf
-    for( s=text,d=buf; s-text<31 && (isalnum(*s) || *s=='_'); *d++ = *s++);
-    *d=0;
-
-    // find function
-    cFunctionType *ff = findFunction( buf );
+    // look up function name (temporarily overwriting '(' with a '\0')
+    *args = '\0';
+    cFunctionType *ff = findFunction( text );
+    *args = '(';
     if (ff==NULL) return false;
 
-    // now `s' points to something like '(10,1.5E-3)'
+    // remove whitespaces in-place
+    const char *s;
+    for (s=d=args; *s; s++)
+       if (!isspace(*s))
+          *d++ = *s;
+    *d = '\0';
+
+    // now `args' points to something like '(10,1.5E-3)', without spaces
+    s = args;
     double p1,p2,p3;
     switch(ff->argcount)
     {
@@ -840,8 +845,9 @@ bool cPar::setfunction(char *text)
                if (*s++!=')') return false;
                setDoubleValue((MathFunc3Args)ff->f, p1,p2,p3);
                return true;
+       default:
+               return false; // invalid argcount
     }
-    return false; // to make compiler happy
 }
 
 

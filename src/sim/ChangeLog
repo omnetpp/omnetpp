@@ -907,3 +907,6 @@ May 21, 2000
    function (without args): the default numInitStages() returns 1, and the
    default initialize(int stage) simply calls initialize().
 ------ omnetpp-2.0b4 released ------
+Jun 4, 2000
+ - fix: cPar::setfunction() improved and made const-correct (for gcc 2.95.2)
+
