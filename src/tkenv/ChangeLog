@@ -222,7 +222,7 @@
 
 2004-01-06  Andras Varga
 
-        * tkapp.h: added isGUI() (returns false)
+        * tkapp.h: added isGUI() (returns true)
 
 2004-01-01  Andras Varga
         * tkapp.cc/h: handle new cEnvir notifications: moduleCreated(),
