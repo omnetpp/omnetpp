@@ -31,7 +31,7 @@
  * const char *str = "34 42 13 46 72 41"; // input
  * std::vector<int> numbers;  // array to hold result
  *
- * StringTokenizer tokenizer(str);
+ * cStringTokenizer tokenizer(str);
  * const char *token;
  * while ((token = tokenizer.nextToken())!=NULL)
  *     numbers.push_back(atoi(token));
