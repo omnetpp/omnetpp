@@ -119,10 +119,10 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-#CFLAGS=$(CFLAGS_DEBUG)
-#LDFLAGS=$(LDFLAGS_DEBUG)
-CFLAGS=$(CFLAGS_RELEASE)
-LDFLAGS=$(LDFLAGS_RELEASE)
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
 
 
 #==============================================================================
@@ -218,13 +218,27 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 # Configuration
 #
 
-# Compiler switches
+# Compiler switches (see MSDN for more info)
+#   /EHsc: synchronous exception handling, assume extern "C" funcs don't throw exceptions
+#   /GR: enable RTTI
+#   /FD: generate file dependencies
+#   /Zm200: internal compiler memory allocation 200% (needed by some omnetpp lib sources)
+#   /ML: use single-threaded LIBC
+#   /MLd: use single-theaded debug LIBC
+#   /Od: disable optimizations (for debug code)
+#   /O2: optimize for speed
+#   /GZ: catch release-build errors in debug build
+#   /Zi: build program database (PDB file) which contains debug info
+#   /DNDEBUG: #defines NDEBUG (removes assert() from generated code)
+# Linker switches:
+#   /OPT:NOREF: keep functions and data that is never referenced -- this forces
+#        OMNeT++ simple modules in .lib files to be included in the .exe
+#
+CFLAGS_DEBUG=/nologo /EHsc /GR /FD /Zm200 /MLd /Od /GZ /Zi
+LDFLAGS_DEBUG=/nologo /subsystem:console /opt:noref /debug
 
-CFLAGS_DEBUG=/nologo /GX /GR /FD /Zm200 /MLd /Od /Gm /GZ /ZI
-LDFLAGS_DEBUG=/nologo /subsystem:console /debug
-
-CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm200 /ML /O2 /D "NDEBUG"
-LDFLAGS_RELEASE=/nologo /subsystem:console
+CFLAGS_RELEASE=/nologo /EHsc /GR /FD /Zm200 /ML /O2 /DNDEBUG
+LDFLAGS_RELEASE=/nologo /subsystem:console /opt:noref
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
