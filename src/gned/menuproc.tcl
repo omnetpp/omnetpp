@@ -131,6 +131,15 @@ proc fileSaveAs {{nedfilekey {}}} {
    }
 }
 
+proc fileSaveAll {} {
+   global ned
+
+   # save all ned files
+   foreach key $ned(0,childrenkeys) {
+       fileSave $key
+   }
+}
+
 proc fileCloseNedfile {{nedfilekey {}}} {
    global canvas gned ned
 
@@ -144,21 +153,23 @@ proc fileCloseNedfile {{nedfilekey {}}} {
    # offer saving it
    if [nedfileIsDirty $nedfilekey] {
        if {$ned($nedfilekey,aux-isunnamed)} {
-          set reply [tk_messageBox -title "Last chance" -icon warning -type yesno \
+          set reply [tk_messageBox -title "Last chance" -icon warning -type yesnocancel \
                 -message "Unnamed file not saved yet. Save it now?"]
           if {$reply=="yes"} fileSave
        } else {
           set fname $ned($nedfilekey,filename)
           set fname [file tail $fname]
-          set reply [tk_messageBox -title "Last chance" -icon warning -type yesno \
+          set reply [tk_messageBox -title "Last chance" -icon warning -type yesnocancel \
                 -message "File $fname contains unsaved changes. Save?"]
           if {$reply=="yes"} fileSave
        }
    }
 
-   # delete from memory
-   deleteNedfile $nedfilekey
-   updateTreeManager
+   if {$reply!="cancel"} {
+       # delete from memory
+       deleteNedfile $nedfilekey
+       updateTreeManager
+   }
 }
 
 proc fileCloseCanvas {} {
@@ -232,11 +243,15 @@ proc fileExit {} {
    foreach key $ned(0,childrenkeys) {
        if $ned($key,aux-isdirty) {
            fileCloseNedfile $key
+           if [info exist ned($key,type)] {
+                # don't exit if user cancelled closing a canvas
+                return
+           }
        }
    }
 
+   # ok, exit now
    saveConfig "~/.gnedrc"
-
    opp_exit
 }
 

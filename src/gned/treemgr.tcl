@@ -208,10 +208,10 @@ proc nedfilePopup {key} {
     menu .popup.newmenu -tearoff 0
     foreach i {
       {command -command "addItem imports $key; updateTreeManager" -label {imports} -underline 0}
-      {command -command "addItem channel $key; updateTreeManager" -label {channel} -underline 0}
-      {command -command "addItem simple $key;  updateTreeManager" -label {simple}  -underline 0}
-      {command -command "addItem module $key;  updateTreeManager" -label {module}  -underline 0}
-      {command -command "addItem network $key; updateTreeManager" -label {network} -underline 0}
+      {command -command "addItemWithUniqueName channel $key; updateTreeManager" -label {channel} -underline 0}
+      {command -command "addItemWithUniqueName simple $key;  updateTreeManager" -label {simple module}  -underline 0}
+      {command -command "addItemWithUniqueName module $key;  updateTreeManager" -label {compound module}  -underline 0}
+      {command -command "addItemWithUniqueName network $key; updateTreeManager" -label {network} -underline 0}
     } {
        eval .popup.newmenu add $i
     }

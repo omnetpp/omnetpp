@@ -61,6 +61,22 @@ proc addItem {type parentkey} {
 }
 
 
+# addItemWithUniqueName --
+#
+# create item with unique name among its siblings
+#
+proc addItemWithUniqueName {type parentkey} {
+    global ned
+    set key [addItem $type $parentkey]
+
+    # make name unique (if it has one)
+    if [info exist ned($key,name)] {
+        set ned($key,name) [makeUniqueName $key $ned($key,name)]
+    }
+    return $key
+}
+
+
 # insertItem --
 #
 # make item the child of another item

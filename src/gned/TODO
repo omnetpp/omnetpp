@@ -4,7 +4,8 @@ To be finished (top priority!):
 - finish "properties" dialogs
 
 Bugs:
-- module name mismatch in the submods and conns sections ==> sometimes "assert failed"
+- module name mismatch in the submods and conns sections ==> sometimes
+  "assert failed" *** FIXED ***
 - connection drawing doesn't work sometimes (can't reproduce...)
 - after an "import", generates an empty line into the code
 - should eliminate "staircase comment" effect, like:
@@ -16,7 +17,6 @@ Parse/Generate:
 - add default comments for newly created modules!
 
 Drawing:
-- SUBMOD DRAWING DOESN'T GENERATE UNIQUE NAMES!!!
 - random placement of submods should be the same as in Tkenv
 - should support ovals too (not only rects)
 - it's possible to fool the connection drawing: if, while dragging out
@@ -27,7 +27,7 @@ Drawing:
 
 Load/save:
 - command-line args: 'glob' doesn't handle filenames with "\" on Windows
-- SaveAll feature [from Niko]
+- SaveAll feature [from Niko] *** DONE ***
 - should refuse to load the same file twice
 - save: what should it do with canvases switched to text?
      - save the text version? (maybe try to backparse it before saving,

@@ -101,9 +101,10 @@ proc createMainWindow {} {
       {command -command fileOpen         -label {Open...} -underline 0}
       {command -command fileSave         -label {Save} -underline 0}
       {command -command fileSaveAs       -label {Save As...} -underline 5}
+      {command -command fileSaveAll      -label {Save All} -underline 6}
       {separator}
       {command -command fileCloseNedfile -label {Close NED file} -underline 0}
-      {command -command fileCloseCanvas  -label {Close component} -underline 1}
+      {command -command fileCloseCanvas  -label {Close component} -underline 4}
       {separator}
       {command -command fileImportXML    -label {Import XML...} -underline 2}
       {command -command fileExportXML    -label {Export XML...} -underline 2}

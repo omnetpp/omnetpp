@@ -784,7 +784,7 @@ proc drawEnd {c x y} {
           } elseif {[llength $submodskey]>1} {
               error "Internal error: more than one 'submods'"
           }
-          set key [addItem submod $submodskey]
+          set key [addItemWithUniqueName submod $submodskey]
 
           set cc [$c coords $mouse(rect)]
           set x1 [lindex $cc 0]
