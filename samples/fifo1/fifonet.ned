@@ -10,11 +10,11 @@ import
     "sink";
 
 
-// FifoNet --
+// FifoNet1 --
 //
 // generator + FIFO + sink
 //
-module FifoNet
+module FifoNet1
     submodules:
         gen: FF1Generator;
             parameters:
@@ -30,7 +30,7 @@ module FifoNet
         fifo.out --> sink.in;
 endmodule
 
-network fifonet : FifoNet
+network fifonet1 : FifoNet1
 endnetwork
 
 

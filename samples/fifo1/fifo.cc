@@ -7,7 +7,7 @@
 #include "fifo.h"
 
 
-void AbstractFifo::activity()
+void FF1AbstractFifo::activity()
 {
     msgServiced = NULL;
     endServiceMsg = new cMessage("end-service");
@@ -45,7 +45,7 @@ void AbstractFifo::activity()
     }
 }
 
-void AbstractFifo::finish()
+void FF1AbstractFifo::finish()
 {
     ev << "*** Module: " << fullPath() << "***" << endl;
     ev << "Stack allocated:      " << stackSize() << " bytes";
