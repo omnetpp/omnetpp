@@ -63,11 +63,21 @@ void TStructPanel::update()
        {
            switch(type)
            {
-               // FIXME: handle enumnames too!
                case cStructDescriptor::FT_BASIC:
-                   sd->getFieldAsString(fld, 0, val, 128); // FIXME: error handling!
-                   sprintf(s,"%s\t%s = \t%s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
-                   s+=strlen(s);
+                 sd->getFieldAsString(fld, 0, val, 128); // FIXME: error handling!
+                 if (sd->getFieldEnumName(fld))
+                 {
+                   // display enum value as int and as string
+                   cEnum* enm = findEnum(sd->getFieldEnumName(fld));
+                   if (enm)
+                     {
+                       int key = atol(val);
+                       sprintf(val, "%d (%s)", key, enm->stringFor(key));
+                     }
+                 }
+                 sprintf(s,"%s\t%s = \t%s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
+                 s+=strlen(s);
+                   
                    break;
                case cStructDescriptor::FT_SPECIAL:
                    sprintf(s,"%s\t%s = \t...\n", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
