@@ -1,5 +1,25 @@
 \begin{thebibliography}{MvMvdW95}
 
+\bibitem[AVE03]{ParsimCrit03}
+Y.~Ahmet~Sekercioglu Andr\'{a}s~Varga and Gregory~K. Egan.
+\newblock A practical efficiency criterion for the null message algorithm.
+\newblock In {\em Proceedings of the European Simulation Symposium (ESS 2003),
+  26-29 Oct, 2003, Delft, The Netherlands}. International Society for Computer
+  Simulation, 2003.
+
+\bibitem[BT00]{bagrodia00}
+R.~L. Bagrodia and M.~Takai.
+\newblock Performance evaluation of conservative algorithms in parallel
+  simulation languages.
+\newblock 11(4):395--414, 2000.
+
+\bibitem[CM79]{chandymisra79}
+M.~Chandy and J.~Misra.
+\newblock Distributed simulation: A case study in design and verication of
+  distributed programs.
+\newblock {\em IEEE Transactions on Software Engineering SE-5}, (5):440--452,
+  1979.
+
 \bibitem[EHW02]{Entacher02}
 K.~Entacher, B.~Hechenleitner, and S.~Wegenkittl.
 \newblock A simple {OMNeT++} queuing experiment using parallel streams.
@@ -52,6 +72,10 @@ Stig Kofoed.
 \newblock {\em Dr. Dobb's Journal}, November 1995.
 \newblock Download sorce from http://www.ddj.com/ftp/1995/1995.11/mtask.zip/.
 
+\bibitem[lam]{lammpi}
+{LAM-MPI} home page.
+\newblock http://www.lam-mpi.org/.
+
 \bibitem[Len94]{LGThesis}
 G\'{a}bor Lencse.
 \newblock Graphical network editor for {OMNeT++}.
@@ -75,11 +99,23 @@ M.~Matsumoto and T.~Nishimura.
 \newblock Source code can be downloaded from
   http://www.math.keio.ac.jp/~matumoto/emt.html.
 
+\bibitem[MPI94]{mpiforum94}
+{MPI}: A message-passing interface standard.
+\newblock 8(3/4):165--414, 1994.
+\newblock Message Passing Interface Forum.
+
 \bibitem[MvMvdW95]{OMNeTExamples}
 Andr\'{e} Maurits, George van Montfort, and Gerard van~de Weerd.
 \newblock {OMNeT++} extensions and examples.
 \newblock Technical report, Technical University of Budapest, Dept. of
   Telecommunications, 1995.
+
+\bibitem[OF00]{ongfarrell2000}
+Hong Ong and Paul~A. Farrell.
+\newblock Performance comparison of {LAM/MPI}, {MPICH} and {MVICH} on a {Linux}
+  cluster connected by a {Gigabit Ethernet} network.
+\newblock In {\em Proceedings of the 4th Annual Linux Showcase \& Conference,
+  Atlanta, October 10-14, 2000}. The USENIX Association, 2000.
 
 \bibitem[PFS86]{BFS86}
 Bratley P., B.~L. Fox, and L.~E. Schrage.
@@ -110,6 +146,10 @@ Gy\"{o}rgy Pongor.
 \newblock In {\em Proceedings of the European Simulation Symposium (ESS'93),
   Delft, The Netherlands, Oct. 25-28, 1993}. International Society for Computer
   Simulation, 1993.
+
+\bibitem[qua]{quadrics}
+Quadrics home page.
+\newblock http://www.quadrics.com/.
 
 \bibitem[Var92]{AVTDK}
 Andr\'{a}s Varga.
@@ -171,5 +211,12 @@ Andr\'{a}s Varga and Gy\"{o}rgy Pongor.
 Brent Welch.
 \newblock {\em Practical Programming in {Tcl} and {Tk}}.
 \newblock Prentice-Hall, 1995.
+
+\bibitem[YASE03]{OppParsim03}
+Andr\'{a}s~Varga Y.~Ahmet~Sekercioglu and Gregory~K. Egan.
+\newblock Parallel simulation made easy with omnet++.
+\newblock In {\em Proceedings of the European Simulation Symposium (ESS 2003),
+  26-29 Oct, 2003, Delft, The Netherlands}. International Society for Computer
+  Simulation, 2003.
 
 \end{thebibliography}
