@@ -1,10 +1,25 @@
+2004-12-22  Andras Varga
+
+	* csimplemodule.cc: "scheduleAt(): not owner of message" error message
+	(and similar messages from send() and sendDirect()) changed to
+	something hopefully more intuitive for users. One of the following
+	messages will be displayed:
+	- "scheduleAt(): message (class)msgname is currently scheduled,
+	  use cancelEvent() before rescheduling";
+	-  "scheduleAt(): cannot schedule message (class)msgname: it is
+	  currently scheduled as self-message for ANOTHER module";
+	- "scheduleAt(): cannot schedule message (class)msgname: it is
+	  "currently in scheduled-events, being underway between two modules";
+	- "scheduleAt(): cannot schedule message (class)msgname: it is
+	  currently contained/owned by (...)...".
+
 2004-12-19  Andras Varga
 
 	* cstruct.cc: added baseclassname, baseclassdesc
 
 2004-12-16  Andras Varga
 
-	* cgate.cc, cmodule.cc: removed ev.getDisplayString() and support 
+	* cgate.cc, cmodule.cc: removed ev.getDisplayString() and support
 	for display strings in omnetpp.ini (section [DisplayStrings])
 
 	* optimizations
@@ -19,11 +34,11 @@
 
 2004-11-27  Andras Varga
 
-	* nearly all .cc files: forEach() methods ported to cVisitor, see 
+	* nearly all .cc files: forEach() methods ported to cVisitor, see
 	include/ChangeLog
 
 2004-11-23  Andras Varga
-	
+
 	* cchannel.cc: parameter "disabled" of cSimpleChannel made to work
 
 	* cgate.cc: info() string improved
@@ -48,22 +63,22 @@
         rjwagner@writeme.com; code is under the BSD license.
         http://www-personal.engin.umich.edu/~wagnerr/MersenneTwister.html
 
-        * added cRNG implementations clcg32.cc/h (wraps old OMNeT++ RNG), 
+        * added cRNG implementations clcg32.cc/h (wraps old OMNeT++ RNG),
         cmersennetwister.cc/h (wraps Mersenne Twister, MersenneTwister.h)
- 
+
 	* ctype.cc: added call to ev.getRNGMappingFor(mod) in cModuleType's
 	create() method.
 
 2004-10-25  Andras Varga
-	
-	* all files: info() and fullPath() signature change (see 
+
+	* all files: info() and fullPath() signature change (see
 	include/ChangeLog)
 
 2004-10-10  Andras Varga
 
-	* csimul.cc: fix: added preliminary setting of simtime to end of 
+	* csimul.cc: fix: added preliminary setting of simtime to end of
 	doOneEvent() -- this fixes bug in Tkenv "run until sim.time" function,
-	and sim.time display when single-stepping (it used to display time of 
+	and sim.time display when single-stepping (it used to display time of
 	last event, should be time of next event)
 
 2004-10-04  ------ omnetpp-3.0a8 released ------
@@ -76,7 +91,7 @@
         include/ChangeLog.
 
         * cmodule.cc: support for zero-sized module gates. A gate vector
-        is zero size right after creation, and if there's no gatesize declared 
+        is zero size right after creation, and if there's no gatesize declared
         in NED (and there's no manual setGateSize() call) it'll remain zero
         size. A zero-sized gate vector is represented by a single gate object
         whose size() method returns zero, and cannot be connected.
@@ -99,8 +114,8 @@
 
 2004-07-05   Andras Varga
 
-        * csimplemodule.cc: recordScalar() functions for text and cStatistic 
-        data removed. A cStatistic object can be recorded into the scalar file 
+        * csimplemodule.cc: recordScalar() functions for text and cStatistic
+        data removed. A cStatistic object can be recorded into the scalar file
         by calling its recordScalar() method (below).
 
         * cstat.cc: added recordScalar() method.
@@ -123,7 +138,7 @@
 
 2004-04-13  Andras Varga
 
-        * cmessage.cc: implemented new cMessage methods setControlInfo(), 
+        * cmessage.cc: implemented new cMessage methods setControlInfo(),
         removeControlInfo(), controlInfo().
 
 2004-04-04  Andras Varga
@@ -149,45 +164,45 @@
         "gate++" NED feature (see nedxml/ChangeLog)
 
         * cpar.cc: turned type character into English type names in cPar error
-        messages, e.g. "Cannot cast from type `D' to `S'" became 
+        messages, e.g. "Cannot cast from type `D' to `S'" became
         "Cannot cast from type double (D) to string (S)'".
 
 2004-02-20  Andras Varga
 
-        * ctype.cc, cchannel.cc, cgate.cc: introduced cChannelType which 
+        * ctype.cc, cchannel.cc, cgate.cc: introduced cChannelType which
         replaces cLinkType. See include/ChangeLog for more info.
 
 2004-02-12  Andras Varga
 
-        * cmodule.cc, cgate.cc, cchannel.cc: gave a bool return value to 
+        * cmodule.cc, cgate.cc, cchannel.cc: gave a bool return value to
         deliver(), "false" meaning that message object should be deleted.
 
-2004-02-11  Andras Varga 
+2004-02-11  Andras Varga
 
         * csimul.cc, cscheduler.cc: semantic change of getNextEvent()'s and
         selectNextModule()'s return value (see include/ChangeLog)
 
-2004-02-10  Andras Varga 
+2004-02-10  Andras Varga
 
         * cexception.cc: added storage of module class name (NED type name)
 
-2004-02-09  Andras Varga 
+2004-02-09  Andras Varga
 
         * ctypes.cc: added methods to cModuleInterface so that it's possible
         to dynamically assemble it (needed by networkbuilder)
 
-2004-02-07  Andras Varga 
+2004-02-07  Andras Varga
 
         * ctypes.cc: added createOneIfClassIsKnown(const char *classname)
 
-        * cstruct.cc: fix createDescriptorFor() to prepare for missing 
+        * cstruct.cc: fix createDescriptorFor() to prepare for missing
         descriptor object
 
 2004-02-06  Andras Varga
 
         * cgate.cc: implemented cGate::disconnect(); revised cGate::connectTo()
 
-        * cchannel.cc: added setDelay(double), setError(double), 
+        * cchannel.cc: added setDelay(double), setError(double),
         setDatarate(double) to cSimpleChannel
 
 2004-02-04  ------ omnetpp-3.0pre1 released ------
@@ -203,7 +218,7 @@
 
         * cDisplayStringParser:
         - cDisplayStringParser renamed to cDisplayString
-        - backslash parsing improved (now recognizes backslash sequences 
+        - backslash parsing improved (now recognizes backslash sequences
           \t, \n, \r, \f, \b, \x0A with same meaning as in C/C++)
         - notify() and assemble() only if needed (there is some change)
 
