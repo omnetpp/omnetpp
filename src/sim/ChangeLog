@@ -599,8 +599,7 @@ Aug 2, 1999
     an argument] and split randseed(long seed=0) into 2 functions:
     randseed() and randseed(long seed).
   - fixed the bug in intrand(r) and genk_intrand(r) that caused division by
-    zero if called with r=0L; also, for r<0 it now returns a random number in
-    [r+1,0]
+    zero if called with r==0; now r<=0 values cause runtime error
   - INTRAND_MAX corrected to 2**31-2
 Aug 30, 1999
   - bool isScheduled() member added to cMessage: can be used to examine whether
