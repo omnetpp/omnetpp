@@ -76,6 +76,9 @@ class ENVIR_API cIniFile
     int error();    // true if there was an error
     bool warnings;  // enable/disable warnings
 
+    int getNumSections();
+    const char *getSectionName(int k);
+
     // get an entry from [section]
     bool exists(const char *section, const char *key);
     const char *getRaw(const char *section, const char *key, const char *defaultval=NULL); // with quotes (if any)

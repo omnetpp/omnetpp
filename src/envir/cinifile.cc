@@ -306,6 +306,18 @@ int cIniFile::error()
 
 //-----------
 
+int cIniFile::getNumSections()
+{
+    return num_sections;
+}
+
+const char *cIniFile::getSectionName(int k)
+{
+    if (k<0 || k>=num_sections)
+        return NULL;
+    return sections[k];
+}
+
 bool cIniFile::exists(const char *sect, const char *ent)
 {
     return _getValue(sect, ent, 1)!=NULL;
