@@ -60,44 +60,65 @@ typedef bool (*ForeachFunc)(cObject *,bool);
 /**
  * cObject is the base class for almost all classes in the OMNeT++ library.
  *
- * Containing 5 pointers and 2 flags as data and several virtual functions,
- * cObject is a relatively heavyweight class (about 24 bytes on a 32-bit
- * architecture). For small classes you may consider choosing cPolymorphic
- * as a base class.
+ * It is usually NOT a good idea to subclass your own classes
+ * (esp. data storage classes) from cObject,
+ * because it is a relatively heavyweight class (about 24 bytes on a 32-bit
+ * architecture) with many virtual functions that need to be redefined.
+ * You may consider choosing cPolymorphic instead as a base class.
  *
  * The two main areas covered by cObject are:
- *    -# name string via name() and setName()
+ *    -# storage of a name string via name() and setName()
  *    -# ownership management
- *
- * className() is inherited from cPolymorphic.
- *
- * cObject provides a <b>name</b> member (a dynamically allocated string).
  *
  * When subclassing cObject, some virtual member functions are expected to be
  * redefined: dup() are mandatory to be redefined, and often
- * you'll want to redefine info() and writeContents(), too.
+ * you'll want to redefine info() and writeContents() as well.
  *
- * OMNeT++ provides a fairly complex memory management via the object ownership
- * mechanism. It usually works well without you paying attention, but it
- * generally helps to understand how it works.
+ * <b>Ownership management</b> helps OMNeT++ catch common programming
+ * errors. As a definition, <i>ownership means the exclusive right and duty
+ * to delete owned objects.</i>
  *
- *FIXME change description!!!
- * <b>Ownership means exclusive right and duty to delete owned objects.</b>
- * The owner of any 'o' object is returned by o->owner(), and can be changed
- * with o->setOwner(). The destructor of cObject deletes (via delete ) all owned
- * objects, and so do all classes derived from cObject.
+ * cObjects hold a pointer to their owner objects; the owner() method returns
+ * this pointer. An example will help to understand how it is used:
  *
- * Ownership internally works via 4 pointers as cObject data members:
- * ownerp points to owner object; prevp/nextp points to previous/next object
- * in owner's owned objects list; firstchildp points to first owned object.
- * The setOwner() method works on the ownerp, prevp and nextp pointers.
+ *    - when you insert a cMessage into a cQueue, the cQueue will become
+ *      the owner of the message, and will set the message's owner to itself.
  *
- * The object ownership mechanism is competely independent of the way
- * containers (cArray, cQueue) hold contained objects. For example, a cQueue may
- * actually own all, some, or none of the object in the queue. (Container
- * classes use mechanisms independent of firstchildp to store contained objects;
- * e.g., cArray uses an array, while cQueue uses a separate list).
- * Exception is cHead, which displays owned objects as contents.
+ *    - a message object can be at one place only at any given time.
+ *      When you try to insert the same cMessage again into another (or the same)
+ *      cQueue, you'll get an error message that it's already in a cQueue --
+ *      sparing you a sure crash later.
+ *
+ *    - similarly, if you try to send the same message, you'll get an error
+ *      message that it cannot be sent because it's still enqueued --
+ *      another crash scenario eliminated. Like the previous one, this
+ *      test is done by checking the owner pointer in cMessage.
+ *
+ *    - even if you try to delete the message while it's in the queue,
+ *      you'll get an error message instead of just a crash. This is because
+ *      cObject destructor asks for the owner's blessing -- but cQueue will
+ *      protest by throwing an exception.
+ *
+ *    - when you remove the message from the cQueue, the cQueue will "release"
+ *      the object; the current module will become the message's "soft" owner,
+ *      changing the owner pointer in the message object.
+ *
+ *    - "soft" owner means that now you can send the message object or insert
+ *      it into another cQueue -- the module as a soft owner will let it go.
+ *
+ *    - the same mechanism can ensure that when a self-message is currently
+ *      scheduled (owner is the scheduled-events list) or sent to another module
+ *      (owner is the other module) you cannot send or schedule it, or
+ *      insert it into a queue. <i>In short: the ownership mechanism is good to your
+ *      health.</i>
+ *
+ *    - when the queue is deleted, it also deletes all objects it contains.
+ *      (The cQueue always owns all objects inserted into it -- no exception).
+ *
+ * The above ownership mechanisms are at work when any cObject-subclass object
+ * gets inserted into any cObject-subclass container (cQueue, cArray).
+ * Not only obviously container classes act as containers: e.g. cChannel also
+ * owns the channel parameters (cPar objects).
  *
  * @ingroup SimCore
  */
@@ -211,10 +232,10 @@ class SIM_API cObject : public cPolymorphic
     //@{
 
     /**
-     * throws a cException ("copying not supported") stating that assignment, copy constructor and dup()
-     * won't work for this object. This is a convenience function to be
-     * called from the operator=() method of cObject subclasses that do
-     * not wish to implement object copying.
+     * Convenience function: throws a cException ("copying not supported")
+     * stating that assignment, copy constructor and dup() won't work
+     * for this object. You can call this from operator=() if you don't want to
+     * implement object copying.
      */
     void copyNotSupported() const;
     //@}
@@ -246,12 +267,15 @@ class SIM_API cObject : public cPolymorphic
 
     /**
      * Destructor. It does the following:
+     *    -# tells the owner that this object is about to be deleted,
+     *       by calling its ownedObjectDeleted() method with the <tt>this</tt>
+     *       pointer. The owner object may protest by throwing an exception.
      *    -# notifies the environment by calling ev.objectDeleted(this) that
-     *       the object was deleted. This enables any open inspector windows
-     *       to be closed.
-     *    -# removes the object from the owner object's list (setOwner(NULL))
-     *    -# <b>deletes all owned objects</b> by calling delete
+     *       the object was deleted. This enables e.g. any open Tkenv inspector
+     *       windows to be closed.
      *    -# deallocates object name
+     *
+     * Subclasses should delete owned objects here.
      */
     virtual ~cObject();
 
@@ -322,7 +346,7 @@ class SIM_API cObject : public cPolymorphic
     virtual const char *fullPath(char *buffer, int buffersize) const;
     //@}
 
-    /** @name Object ownership. See object description for more info on ownership management. */
+    /** @name Object ownership */
     //@{
 
     /**
