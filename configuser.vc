@@ -85,14 +85,14 @@ GNED_IF_POSSIBLE=gned
 # This option is available at present for Tkenv, GNED and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=yes
+EMBED_TCL_CODE=no
 
 #
 # It is possible to compile GNED and Plove as Windows GUI apps (ie. not
 # console apps). Set the following variable to "yes" to enable compiling
 # GUI apps.
 #
-USE_WINMAIN=yes
+USE_WINMAIN=no
 
 #
 # Set to "yes" to enable simulation executables load NED files dynamically.
@@ -107,10 +107,10 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-#CFLAGS=$(CFLAGS_DEBUG)
-#LDFLAGS=$(LDFLAGS_DEBUG)
-CFLAGS=$(CFLAGS_RELEASE)
-LDFLAGS=$(LDFLAGS_RELEASE)
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
 
 
 #==============================================================================
@@ -185,8 +185,8 @@ RC=rc.exe
 MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
 
 # OMNeT++ tools
-NEDC=$(OMNETPP_BIN_DIR)/nedc
-#NEDC=$(OMNETPP_BIN_DIR)/nedtool
+#NEDC=$(OMNETPP_BIN_DIR)/nedc
+NEDC=$(OMNETPP_BIN_DIR)/nedtool
 MSGC=$(OMNETPP_BIN_DIR)/opp_msgc
 REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
 WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
@@ -217,3 +217,4 @@ CFLAGS=$(CFLAGS) /DWITH_PARSIM
 CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 !endif
 
+CFLAGS=$(CFLAGS) /DNO_CONST  /DUSE_CMDENV_HEAPDEBUG
