@@ -12,6 +12,9 @@
 	use them will be re-built too. You still have to do a top-level make
 	if you want to ensure that included directories are up-to-date too.
 
+       	* opp_makemake, opp_nmakemake: re-makemake target made recursive
+       	[suggested by Daniel Willkomm]
+
 2004-02-22  Andras Varga
 
 	* opp_test: added -a, -N options. -N can be used to test dynamic

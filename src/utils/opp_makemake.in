@@ -521,10 +521,13 @@ depend:
 	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) depend); done
 
 re-makemake:
-	opp_makemake -f $args1  #recreate Makefile
+	opp_makemake -f $args1
+	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) re-makemake); done
 
 re-makemake-m:
-	opp_makemake -f -m $args1  #recreate Makefile.in
+	#recreate Makefile.in
+	opp_makemake -f -m $args1
+	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) re-makemake-m); done
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

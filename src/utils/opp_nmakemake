@@ -580,7 +580,8 @@ depend:
 \t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand depend && cd ..
 
 re-makemake:
-\topp_nmakemake -f $args  #recreate Makefile
+\topp_nmakemake -f $args
+\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand re-makemake && cd ..
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
