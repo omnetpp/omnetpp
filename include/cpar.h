@@ -541,7 +541,7 @@ class SIM_API cPar : public cObject
     bool equalsTo(cPar *par);
     //@}
 
-    /** @name Convert to/from text representation.
+    /** @name Convert to/from text representation. */
     //@{
 
     /**
