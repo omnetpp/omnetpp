@@ -129,7 +129,7 @@ class ENVIR_API cEnvir : public std::ostream
 {
   public:
     TOmnetApp *app;  // the "simulation application" instance
-    int disable_tracing;
+    bool disable_tracing;
   private:
     evbuf ev_buf;
     bool isgui;
