@@ -26,12 +26,13 @@ EXRA_OBJS=
 # object files in subdirectories
 SUBDIR_OBJS=
 
-# Additional libraries (-l option)
+# Additional libraries (-L option -l option)
 LIBS=
 
 #------------------------------------------------------------------------------
 
 NEDC=@NEDC@
+MSGC=@MSGC@
 CXX=@CXX@
 CC=@CC@
 AR=@AR@
@@ -39,8 +40,8 @@ SHLIB_LD=@SHLIB_LD@
 MAKEDEPEND=@MAKEDEPEND@
 
 CFLAGS=@CFLAGS@
-LDFLAGS=@LDFLAGS@
 NEDCFLAGS=@NEDCFLAGS@
+LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
@@ -70,7 +71,7 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 #------------------------------------------------------------------------------
 
 # Object files from this directory to link
-OBJS= gensink_n.o hc_net_n.o hc_rte_n.o hcube_n.o gensink.o hc_rte.o
+OBJS= gensink_n.o hc_net_n.o hc_rte_n.o hcube_n.o hcpacket_m.o gensink.o hc_rte.o 
 
 $(TARGET): $(OBJS) $(EXRA_OBJS) Makefile 
 	$(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
@@ -102,19 +103,50 @@ hcube_n.o: hcube_n.cc
 hcube_n.cc: hcube.ned
 	$(NEDC) $(INCLUDE_PATH) hcube.ned
 
+hcpacket_m.o: hcpacket_m.cc
+	$(CXX) -c $(NEDCOPTS) hcpacket_m.cc
+
+hcpacket_m.cc: hcpacket.msg
+	$(MSGC) $(INCLUDE_PATH) hcpacket.msg
+
 gensink.o: gensink.cc
 	$(CXX) -c $(COPTS) gensink.cc
 
 hc_rte.o: hc_rte.cc
 	$(CXX) -c $(COPTS) hc_rte.cc
 
+
+doc: neddoc.html htmldocs
+
+neddoc.html:  gensink.ned hc_net.ned hc_rte.ned hcube.ned
+	@opp_neddoc  gensink.ned hc_net.ned hc_rte.ned hcube.ned > neddoc.html
+	@echo File neddoc.html generated.
+
+htmldocs:
+	@doxygen -g- | sed "s/^PROJECT_NAME.*/PROJECT_NAME = hcube/;\
+	s|^INPUT *=.*|INPUT = . |;\
+	s/^EXTRACT_ALL *=.*/EXTRACT_ALL = yes/;\
+	s/^EXTRACT_PRIVATE *=.*/EXTRACT_PRIVATE = yes/;\
+	s/^EXCLUDE_PATTERNS *=.*/EXCLUDE_PATTERNS = *_n.cc *_n.h/;\
+	s/^ALPHABETICAL_INDEX *=.*/ALPHABETICAL_INDEX = yes/;\
+	s/^HTML_OUTPUT *=.*/HTML_OUTPUT = htmldoc/;\
+	s/^GENERATE_LATEX *=.*/GENERATE_LATEX = no/;\
+	s/^GENERATE_TREEVIEW *=.*/GENERATE_TREEVIEW = yes/;\
+	s/^HIDE_UNDOC_RELATIONS *=.*/HIDE_UNDOC_RELATIONS = no/;\
+	s|^TAGFILES *=.*|TAGFILES = d:/home/omnetpp/doc/api/opptags.xml=d:/home/omnetpp/doc/api|;\
+	s|^GENERATE_TAGFILE *=.*|GENERATE_TAGFILE = htmldoc/tags.xml|;\
+	s/^QUIET *=.*/QUIET = yes/" > doxy.cfg
+	@doxygen doxy.cfg
+	@echo Code documentation generated. Now, point your web browser to ./htmldoc/index.html.
+
 clean:
-	rm -f *.o *_n.cc $(TARGET)$(EXE_SUFFIX)
+	rm -f *.o *_n.cc *_n.h $(TARGET)$(EXE_SUFFIX)
 	rm -f *.vec *.sca
+	rm -rf neddoc.html htmldoc
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -- *.cc
-	$(MAKEDEPEND) $(INCLUDE_PATH) -fMakefile.in -- *.cc
+	# $(MAKEDEPEND) $(INCLUDE_PATH) -fMakefile.in -- *.cc
 
 re-makemake:
 	opp_makemake -f    #recreate Makefile
@@ -122,8 +154,6 @@ re-makemake:
 re-makemake-m:
 	opp_makemake -f -m    #recreate Makefile.in
 
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-gensink.o: gensink.cc \
-  gensink.h
-hc_rte.o: hc_rte.cc \
-  hc_rte.h
+

@@ -1,22 +1,13 @@
+2002-12-16  Andras Varga
+
+	* Introduced the use of message subclassing. See hcpacket.msg and
+	the use of hcpacket_m.h in simple modules!
+
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-04-07  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* Makefile.in (NEDCFLAGS): fixed substitution
-
-2000-01-18  Andras Varga
-
-	* ------ omnetpp-2.0p1 released ------
-
-	* ------ omnetpp-2.0 released ------
-
-	* ------ omnetpp-2.0b5 released ------
-
-	* ------ omnetpp-2.0b4 released ------
-
-	* ------ omnetpp-2.0b3 released ------
-
-	* added explicit cast to math expressions with cPar...
 
 2001-03-10  Andras Varga
 
@@ -31,6 +22,19 @@
 	* Borland C++ project file (*.ide) removed, Makefile.bc added
 	(unsupported!)
 
+2000-01-18  Andras Varga
+
+	* ------ omnetpp-2.0p1 released ------
+
+	* ------ omnetpp-2.0 released ------
+
+	* ------ omnetpp-2.0b5 released ------
+
+	* ------ omnetpp-2.0b4 released ------
+
+	* ------ omnetpp-2.0b3 released ------
+
+	* added explicit cast to math expressions with cPar...
 
 1999-10-10  Andras Varga
 

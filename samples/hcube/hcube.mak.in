@@ -35,7 +35,7 @@ INTDIR=.\debug
 OutDir=.\.
 # End Custom Macros
 
-ALL : "$(OUTDIR)\hcube.exe"
+ALL : ".\hcpacket_m.h" ".\hcpacket_m.cpp" "$(OUTDIR)\hcube.exe"
 
 
 CLEAN :
@@ -44,12 +44,15 @@ CLEAN :
 	-@erase "$(INTDIR)\hc_net_n.obj"
 	-@erase "$(INTDIR)\hc_rte.obj"
 	-@erase "$(INTDIR)\hc_rte_n.obj"
+	-@erase "$(INTDIR)\hcpacket_m.obj"
 	-@erase "$(INTDIR)\hcube_n.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
 	-@erase "$(OUTDIR)\hcube.exe"
 	-@erase "$(OUTDIR)\hcube.ilk"
 	-@erase "$(OUTDIR)\hcube.pdb"
+	-@erase "hcpacket_m.cpp"
+	-@erase "hcpacket_m.h"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -103,6 +106,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\hc_net_n.obj" \
 	"$(INTDIR)\hc_rte.obj" \
 	"$(INTDIR)\hc_rte_n.obj" \
+	"$(INTDIR)\hcpacket_m.obj" \
 	"$(INTDIR)\hcube_n.obj"
 
 "$(OUTDIR)\hcube.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -118,7 +122,7 @@ INTDIR=.\debug
 OutDir=.\.
 # End Custom Macros
 
-ALL : "$(OUTDIR)\hcube.exe"
+ALL : ".\hcpacket_m.h" ".\hcpacket_m.cpp" "$(OUTDIR)\hcube.exe"
 
 
 CLEAN :
@@ -127,12 +131,15 @@ CLEAN :
 	-@erase "$(INTDIR)\hc_net_n.obj"
 	-@erase "$(INTDIR)\hc_rte.obj"
 	-@erase "$(INTDIR)\hc_rte_n.obj"
+	-@erase "$(INTDIR)\hcpacket_m.obj"
 	-@erase "$(INTDIR)\hcube_n.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
 	-@erase "$(OUTDIR)\hcube.exe"
 	-@erase "$(OUTDIR)\hcube.ilk"
 	-@erase "$(OUTDIR)\hcube.pdb"
+	-@erase "hcpacket_m.cpp"
+	-@erase "hcpacket_m.h"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -186,6 +193,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\hc_net_n.obj" \
 	"$(INTDIR)\hc_rte.obj" \
 	"$(INTDIR)\hc_rte_n.obj" \
+	"$(INTDIR)\hcpacket_m.obj" \
 	"$(INTDIR)\hcube_n.obj"
 
 "$(OUTDIR)\hcube.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -201,7 +209,7 @@ INTDIR=.\release
 OutDir=.\.
 # End Custom Macros
 
-ALL : "$(OUTDIR)\hcube.exe"
+ALL : ".\hcpacket_m.h" ".\hcpacket_m.cpp" "$(OUTDIR)\hcube.exe"
 
 
 CLEAN :
@@ -210,9 +218,12 @@ CLEAN :
 	-@erase "$(INTDIR)\hc_net_n.obj"
 	-@erase "$(INTDIR)\hc_rte.obj"
 	-@erase "$(INTDIR)\hc_rte_n.obj"
+	-@erase "$(INTDIR)\hcpacket_m.obj"
 	-@erase "$(INTDIR)\hcube_n.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\hcube.exe"
+	-@erase "hcpacket_m.cpp"
+	-@erase "hcpacket_m.h"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -266,6 +277,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\hc_net_n.obj" \
 	"$(INTDIR)\hc_rte.obj" \
 	"$(INTDIR)\hc_rte_n.obj" \
+	"$(INTDIR)\hcpacket_m.obj" \
 	"$(INTDIR)\hcube_n.obj"
 
 "$(OUTDIR)\hcube.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -281,7 +293,7 @@ INTDIR=.\release
 OutDir=.\.
 # End Custom Macros
 
-ALL : "$(OUTDIR)\hcube.exe"
+ALL : ".\hcpacket_m.h" ".\hcpacket_m.cpp" "$(OUTDIR)\hcube.exe"
 
 
 CLEAN :
@@ -290,9 +302,12 @@ CLEAN :
 	-@erase "$(INTDIR)\hc_net_n.obj"
 	-@erase "$(INTDIR)\hc_rte.obj"
 	-@erase "$(INTDIR)\hc_rte_n.obj"
+	-@erase "$(INTDIR)\hcpacket_m.obj"
 	-@erase "$(INTDIR)\hcube_n.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\hcube.exe"
+	-@erase "hcpacket_m.cpp"
+	-@erase "hcpacket_m.h"
 
 "$(OUTDIR)" :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
@@ -346,6 +361,7 @@ LINK32_OBJS= \
 	"$(INTDIR)\hc_net_n.obj" \
 	"$(INTDIR)\hc_rte.obj" \
 	"$(INTDIR)\hc_rte_n.obj" \
+	"$(INTDIR)\hcpacket_m.obj" \
 	"$(INTDIR)\hcube_n.obj"
 
 "$(OUTDIR)\hcube.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -545,6 +561,63 @@ InputName=hc_rte
 SOURCE=.\hc_rte_n.cpp
 
 "$(INTDIR)\hc_rte_n.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\hcpacket.msg
+
+!IF  "$(CFG)" == "hcube - Win32 Debug Tkenv"
+
+InputPath=.\hcpacket.msg
+InputName=hcpacket
+
+".\hcpacket_m.cpp"	".\hcpacket_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "hcube - Win32 Debug Cmdenv"
+
+InputPath=.\hcpacket.msg
+InputName=hcpacket
+
+".\hcpacket_m.cpp"	".\hcpacket_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "hcube - Win32 Release Tkenv"
+
+InputPath=.\hcpacket.msg
+InputName=hcpacket
+
+".\hcpacket_m.cpp"	".\hcpacket_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "hcube - Win32 Release Cmdenv"
+
+InputPath=.\hcpacket.msg
+InputName=hcpacket
+
+".\hcpacket_m.cpp"	".\hcpacket_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+<< 
+	
+
+!ENDIF 
+
+SOURCE=.\hcpacket_m.cpp
+
+"$(INTDIR)\hcpacket_m.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\hcube.ned

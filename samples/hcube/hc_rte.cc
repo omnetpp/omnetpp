@@ -7,8 +7,9 @@
 //-------------------------------------------------------------
 
 #include <stdio.h>
-#include "omnetpp.h"
+#include <omnetpp.h>
 #include "hc_rte.h"
+#include "hcpacket_m.h"
 
 #define TRACE_MSG
 
@@ -38,9 +39,9 @@ void HCRouter::activity()
       int i;
 
       // buffers for transit cells (rte) and for cells from local user (usr)
-      cMessage *rte_cell[32];
+      HCPacket *rte_cell[32];
       int num_rte = 0;
-      cMessage *usr_cell[32];
+      HCPacket *usr_cell[32];
       int num_usr = 0;
 
       // collect cells; user cells go into separate buffer
@@ -48,30 +49,31 @@ void HCRouter::activity()
       cMessage *msg;
       while ((msg=receive())!=endOfSlot)
       {
-         if (msg->arrivalGateId()!=fromUserGateId)
+         HCPacket *pkt = check_and_cast<HCPacket *>(msg);
+         if (pkt->arrivalGateId()!=fromUserGateId)
          {
-            if ((int)msg->par("dest")!=my_address)
-               rte_cell[num_rte++] = msg;
+            if (pkt->getDestAddress()!=my_address)
+               rte_cell[num_rte++] = pkt;
             else
-               send(msg,"to_sink");
+               send(pkt,"to_sink");
          }
          else
          {
             total_usr++;
             if (num_usr<32)
-               usr_cell[num_usr++] = msg;
+               usr_cell[num_usr++] = pkt;
             else
-               {discarded_usr++; delete msg;}
+               {discarded_usr++; delete pkt;}
          }
       }
 
       // prepare arrays used in routing
       int rte_dest[32], rte_port[32]; // destinations, output ports
       int usr_dest[32], usr_port[32];
-      for (i=0;i<num_rte;i++) rte_dest[i] = rte_cell[i]->par("dest");
-      for (i=0;i<num_usr;i++) usr_dest[i] = usr_cell[i]->par("dest");
+      for (i=0;i<num_rte;i++) rte_dest[i] = rte_cell[i]->getDestAddress();
+      for (i=0;i<num_usr;i++) usr_dest[i] = usr_cell[i]->getDestAddress();
 
-      // make routing decision (functions fills rte_port[] and usr_port[])
+      // make routing decision (function fills rte_port[] and usr_port[])
       deflectionRouting(my_address, dim,
                         rte_dest, num_rte, rte_port,
                         usr_dest, num_usr, usr_port);
@@ -79,7 +81,7 @@ void HCRouter::activity()
       // send out transit cells
       for (i=0; i<num_rte; i++)
       {
-         rte_cell[i]->par("hops") = (int)rte_cell[i]->par("hops") + 1;
+         rte_cell[i]->setHops(rte_cell[i]->getHops()+1);
          sendDelayed(rte_cell[i], PROPDEL, "out", rte_port[i]);
       }
 
@@ -93,12 +95,11 @@ void HCRouter::activity()
          }
          else
          {
-            usr_cell[i]->par("hops") = (int)usr_cell[i]->par("hops") + 1;
+            usr_cell[i]->setHops(usr_cell[i]->getHops()+1);
             sendDelayed(usr_cell[i], PROPDEL, "out", usr_port[i]);
          }
       }
-      ev.printf("rte[%d]: Discarded %ld out of %ld\n",
-                my_address, discarded_usr, total_usr);
+      ev.printf("rte[%d]: Discarded %ld out of %ld\n", my_address, discarded_usr, total_usr);
    }
 }
 

@@ -1,14 +1,13 @@
 //-------------------------------------------------------------
 // File: gensink.cc
 //
-// Implementation of simple module types
-//
-// Authors: Andras Varga (TU Budapest)
+// Author: Andras Varga
 //-------------------------------------------------------------
 
 #include <stdio.h>
-#include "omnetpp.h"
+#include <omnetpp.h>
 #include "gensink.h"
+#include "hcpacket_m.h"
 
 // Turn on code that prints debug messages
 #define TRACE_MSG
@@ -32,20 +31,20 @@ void HCGenerator::activity()
         int dest = intrand(num_stations-1);
         if (dest>=my_address) dest++;
 
-        // create message
-        char msgname[30];
-        sprintf(msgname, "%d-->%d", my_address,dest);
-        cMessage *msg = new cMessage(msgname);
-        msg->addPar("src") = my_address;
-        msg->addPar("dest") = dest;
-        msg->addPar("hops") = 0L;
-        msg->setTimestamp();
+        // create packet
+        char pktname[30];
+        sprintf(pktname, "%d-->%d", my_address,dest);
+        HCPacket *pkt = new HCPacket(pktname);
+        pkt->setSrcAddress(my_address);
+        pkt->setDestAddress(dest);
+        pkt->setHops(0L);
+        pkt->setTimestamp();
 
         // send out the message
 #ifdef TRACE_MSG
-        ev.printf("gen[%d]: Generated new msg: '%s'\n",my_address, msg->name());
+        ev.printf("gen[%d]: Generated new pkt: '%s'\n",my_address, pkt->name());
 #endif
-        send(msg, "out");
+        send(pkt, "out");
 
         // wait between messages
         //
@@ -61,7 +60,8 @@ int hammingDistance(unsigned long a, unsigned long b)
      unsigned long d = a^b;
      int k=0;
      for (; d; d=d>>1)
-         if (d&1) k++;
+         if (d&1)
+             k++;
      return k;
 }
 
@@ -75,26 +75,27 @@ void HCSink::activity()
 
     for(;;)
     {
-        // receive a message
+        // receive a message and cast it to HCPacket
         cMessage *msg = receive();
+        HCPacket *pkt = check_and_cast<HCPacket *>(msg);
 
         // calculate statistics and record in output vector file
-        simtime_t eed = msg->arrivalTime() - msg->timestamp();
-        int acthops = msg->par("hops");
-        int minhops = hammingDistance( msg->par("src"), msg->par("dest") );
+        simtime_t eed = pkt->arrivalTime() - pkt->timestamp();
+        int acthops = pkt->getHops();
+        int minhops = hammingDistance(pkt->getSrcAddress(), pkt->getDestAddress());
 
         eed_vec.record( eed );
         hops_vec.record( acthops );
         hopratio_vec.record( acthops/(double)minhops );
 
 #ifdef TRACE_MSG
-        ev.printf("sink[%d]: Message received: '%s'\n", my_address, msg->name());
+        ev.printf("sink[%d]: Message received: '%s'\n", my_address, pkt->name());
         ev.printf("sink[%d]:   - end-to-end delay=%g\n", my_address, eed);
         ev.printf("sink[%d]:   - distance=%d, actual hops=%d\n", my_address, minhops, acthops);
 #endif
 
         // message no longer needed
-        delete msg;
+        delete pkt;
     }
 }
 

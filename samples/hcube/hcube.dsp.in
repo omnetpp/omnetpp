@@ -314,6 +314,81 @@ SOURCE=.\hc_rte_n.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\hcpacket.msg
+
+!IF  "$(CFG)" == "hcube - Win32 Debug Tkenv"
+
+# Begin Custom Build - Processing $(InputPath) with opp_msgc
+InputPath=.\hcpacket.msg
+InputName=hcpacket
+
+BuildCmds= \
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "hcube - Win32 Debug Cmdenv"
+
+# Begin Custom Build - Processing $(InputPath) with opp_msgc
+InputPath=.\hcpacket.msg
+InputName=hcpacket
+
+BuildCmds= \
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "hcube - Win32 Release Tkenv"
+
+# Begin Custom Build - Processing $(InputPath) with opp_msgc
+InputPath=.\hcpacket.msg
+InputName=hcpacket
+
+BuildCmds= \
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "hcube - Win32 Release Cmdenv"
+
+# Begin Custom Build - Processing $(InputPath) with opp_msgc
+InputPath=.\hcpacket.msg
+InputName=hcpacket
+
+BuildCmds= \
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\hcpacket_m.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\hcube.ned
 
 !IF  "$(CFG)" == "hcube - Win32 Debug Tkenv"
