@@ -28,16 +28,15 @@ set keywords {include|import|network|module|simple|channel|delay|error|datarate|
 #
 proc configTextForSyntaxHightlight {w} {
 
-    puts "dbg: improve efficiency of syntax highlight!"
-    # should only update current and previous line
-    # "paste" should update the whole file
-    bind $w <Key> {after idle {syntaxHighlight %W 1.0 end}}
+puts "dbg: syntax highlight: <paste> should update the whole file"
+    bind $w <Key> {
+        after idle {syntaxHighlight %W {insert linestart - 1 lines} {insert lineend}}
+    }
 
     $w tag configure KEYWORD -foreground #a00000
+    $w tag configure STRING  -foreground #008000
     $w tag configure COMMENT -foreground #808080
-    $w tag configure STRING  -foreground #00ff00  ;# not yet used
 }
-
 
 # syntaxHightlight --
 #
@@ -47,10 +46,26 @@ proc configTextForSyntaxHightlight {w} {
 #
 proc syntaxHighlight {w startpos endpos} {
 
+    #
+    # BUG: if the end of a string constant falls into a comment,
+    # highlighting will be wrong...
+    #
     global keywords
 
     $w tag remove KEYWORD $startpos $endpos
     $w tag remove COMMENT $startpos $endpos
+    $w tag remove STRING  $startpos $endpos
+
+    # string constants...
+    set cur $startpos
+    while 1 {
+        set cur [$w search -count length -regexp {"[^"]*"} $cur $endpos]
+        if {$cur == ""} {
+            break
+        }
+        $w tag add STRING $cur "$cur + $length char"
+        set cur [$w index "$cur + $length char"]
+    }
 
     # keywords...
     set cur $startpos
