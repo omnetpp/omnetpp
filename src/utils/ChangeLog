@@ -1,7 +1,19 @@
+2004-05-15  Andras Varga
+
+	* opp_neddoc.in: prefer ImageMagick's convert to Ghostscript when
+	converting EPS to JPG. Many Ghostscript versions do not crop EPS files:
+	they ignore the -dEPSCrop flag and the %%BoundingBox line in the EPS
+	file. (One GS that I tested and works well is AFPL Ghostscript 8.11.)
+	ImageMagick also uses Ghostscript to do the conversion but works
+	around the problem: adds the line "120 45 translate" to the front of 
+	the EPS file (where the numbers	are -1 times the top-left corner of 
+	the %%BoundingBox) before invoking GS, then after GS it crops the
+	resulting raster image to the correct size.
+
 2004-04-14  Andras Varga
 
-	* neddoc.xsl: fixed bug which caused some interitance arrows to be 
-	drawn in reverse direction
+	* neddoc.xsl: fixed bug which caused some inheritance arrows to be 
+	drawn in wrong direction
 
 2004-03-22  ------ omnetpp-3.0a3 released ------
 

@@ -10,6 +10,7 @@ $NEDTOOL = "@NEDTOOL@";
 $XSLTPROC = "@XSLTPROC@";
 $GNED = "@GNED@";
 $GHOSTSCRIPT = "@GHOSTSCRIPT@";
+$CONVERT = "@CONVERT@";
 $GIFTRANS = "@GIFTRANS@";
 $DOT = "@DOT@";
 $PERL = "@PERL@";
@@ -126,7 +127,7 @@ if ($do_help)
     print "opp_neddoc - NED and MSG documentation tool, part of OMNeT++\n";
     print "(c) 2003 Andras Varga\n\n";
     print "Generates HTML model documentation from .ned and .msg files.\n\n";
-    if ($GHOSTSCRIPT eq "")
+    if ($GHOSTSCRIPT eq "" && $CONVERT eq "")
     {
         print "Note: cannot generate figures because Ghostscript is not installed.\n\n";
     }
@@ -178,6 +179,7 @@ $NEDTOOL = tobackslash($NEDTOOL);
 $XSLTPROC = tobackslash($XSLTPROC);
 $GNED = tobackslash($GNED);
 $GHOSTSCRIPT = tobackslash($GHOSTSCRIPT);
+$CONVERT = tobackslash($CONVERT);
 $GIFTRANS = tobackslash($GIFTRANS);
 $DOT = tobackslash($DOT);
 $PERL = tobackslash($PERL);
@@ -272,18 +274,23 @@ runprog("$NEDTOOL -x -e -t -y -m -o $outdir/inputfiles.xml \@$outdir/filelist.tx
 
 if ($screenshots)
 {
-    if ($GHOSTSCRIPT ne "")
+    if ($GHOSTSCRIPT ne "" || $CONVERT ne "")
     {
         print "exporting screenshots in Postscript using GNED...\n" if $verbose;
         if ($GNED eq "") {error("gned not configured");}
         runprog("$GNED -- -c $outdir -e jpg \@$outdir/filelist.txt >$nul")==0 || error("error invoking GNED");
-        print "converting Postscript to JPG with Ghostscript...\n" if $verbose;
+        print "converting Postscript to JPG...\n" if $verbose;
         foreach $i (glob("$outdir/*.eps"))
         {
            print "#" if (!$debug && $verbose);
            $jpg = $i;
            $jpg =~ s/eps$/jpg/;
-           runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >>$outdir/ghostscript.err")==0 || error("error invoking Ghostscript");
+           if ($CONVERT ne "") {
+              # we prefer ImageMagick because many Ghostscript versions are broken (ignore -dEPSCrop)
+              runprog("$CONVERT $i $jpg >>$outdir/ghostscript.err")==0 || error("error invoking ImageMagick convert");
+           } else {
+              runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >>$outdir/ghostscript.err")==0 || error("error invoking Ghostscript");
+           }
         }
         print "\n" if (!$debug && $verbose);
 
@@ -292,7 +299,7 @@ if ($screenshots)
            print "see Ghostscript warnings in $outdir/ghostscript.err\n" if $verbose;
         }
 
-        # hack: must convert $outdir to absolute path, otherwise xslt will take it
+        # must convert $outdir to absolute path, otherwise xslt will take it
         # as relative to the sylesheet (@#$#@$!!)
         $imagesxml = absolutepath("$outdir/images.xml");
     }
