@@ -333,6 +333,7 @@ class SIM_API cSimpleModule : public cModule
      * Removes the given message from the future events. The message
      * needs to have been sent using the scheduleAt() function.
      * This function can be used to cancel a timer implemented with scheduleAt().
+     * If the message is not currently scheduled, nothing happens.
      */
     cMessage *cancelEvent(cMessage *msg);
     //@}
