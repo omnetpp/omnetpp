@@ -27,6 +27,7 @@
 
 class cObject;
 class cMessage;
+class cGate;
 class cSimpleModule;
 
 class TOmnetApp;
@@ -153,8 +154,15 @@ class ENVIR_API cEnvir
      * extracted from the message object itself. The user interface
      * implementation may use the notification to animate the message on a
      * network diagram, to write a log entry, etc.
+     *
+     * The second argument is non-NULL only when sendDirect() was used, and
+     * identifies the target gate that was passed to the sendDirect() call.
+     * (This information is necessary for proper animation: the target gate 
+     * might belong to a compound module and be further connected, and then
+     * the message will additionally travel through a series of connections
+     * before it arrives in a simple module.)
      */
-    void messageSent(cMessage *msg);
+    void messageSent(cMessage *msg, cGate *directToGate=NULL);
 
     /**
      * Notifies the environment that a message was delivered to its destination
