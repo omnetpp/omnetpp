@@ -205,8 +205,8 @@ cdetect.obj: cdetect.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccor.h \
+  ../../include/coutvect.h \
   ../../include/cobject.h \
   ../../include/cstat.h
 cenum.obj: cenum.cc \
@@ -220,8 +220,8 @@ cenum.obj: cenum.cc \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
-  ../../include/ccor.h
+  ../../include/ccor.h \
+  ../../include/coutvect.h
 cfsm.obj: cfsm.cc \
   ../../include/macros.h \
   ../../include/cfsm.h \
@@ -337,8 +337,8 @@ cmsgheap.obj: cmsgheap.cc \
   ../../include/cpar.h \
   ../../include/csimul.h \
   ../../include/errmsg.h \
-  ../../include/coutvect.h \
-  ../../include/ccor.h
+  ../../include/ccor.h \
+  ../../include/coutvect.h
 cnetmod.obj: cnetmod.cc \
   ../../include/cpar.h \
   ../../include/cenvir.h \
@@ -366,8 +366,8 @@ cobject.obj: cobject.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccor.h \
+  ../../include/coutvect.h \
   ../../include/cpar.h \
   ../../include/ctypes.h
 coutvect.obj: coutvect.cc \
@@ -400,8 +400,8 @@ cpacket.obj: cpacket.cc \
   ../../include/csimul.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
-  ../../include/ccor.h
+  ../../include/ccor.h \
+  ../../include/coutvect.h
 cpar.obj: cpar.cc \
   ../../include/cpar.h \
   ../../include/cstat.h \
@@ -547,8 +547,8 @@ util.obj: util.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccor.h \
+  ../../include/coutvect.h \
   ../../include/cobject.h \
   ../../include/ctypes.h \
   ../../include/cmessage.h \
@@ -588,7 +588,10 @@ std/netpack.obj: std/netpack.cc \
   ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
-  ../../include/cenvir.h
+  ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h \
+  ../../include/envirext.h
 pvm/pvmmod.obj: pvm/pvmmod.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -598,6 +601,7 @@ pvm/pvmmod.obj: pvm/pvmmod.cc \
   ../../include/ctypes.h \
   ../../include/cenvir.h \
   ../../include/cpar.h \
+  pvm/pvmmod.h \
   ../../include/cobject.h \
   ../../include/carray.h \
   ../../include/defs.h \
@@ -608,9 +612,12 @@ pvm/pvmmod.obj: pvm/pvmmod.cc \
   ../../include/cgate.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
+  ../../include/coutvect.h \
+  ../../include/cnetmod.h \
+  pvm/pvmdefs.h
 pvm/pvmpack.obj: pvm/pvmpack.cc \
   ../../include/omnetpp.h \
+  pvm/pvmmod.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
@@ -643,7 +650,11 @@ pvm/pvmpack.obj: pvm/pvmpack.cc \
   ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
-  ../../include/cenvir.h
+  ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h \
+  ../../include/envirext.h \
+  pvm/pvmdefs.h
 mpi/mpimod.obj: mpi/mpimod.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
@@ -653,6 +664,8 @@ mpi/mpimod.obj: mpi/mpimod.cc \
   ../../include/ctypes.h \
   ../../include/cenvir.h \
   ../../include/cpar.h \
+  mpi/mpimod.h \
+  mpi/mpipack.h \
   ../../include/cobject.h \
   ../../include/carray.h \
   ../../include/defs.h \
@@ -663,9 +676,14 @@ mpi/mpimod.obj: mpi/mpimod.cc \
   ../../include/cgate.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
+  ../../include/coutvect.h \
+  ../../include/cnetmod.h \
+  mpi/mpidefs.h
 mpi/mpipack.obj: mpi/mpipack.cc \
+  mpi/mpipack.h \
   ../../include/omnetpp.h \
+  mpi/mpimod.h \
+  mpi/mpidefs.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
@@ -698,4 +716,7 @@ mpi/mpipack.obj: mpi/mpipack.cc \
   ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
-  ../../include/cenvir.h
+  ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h \
+  ../../include/envirext.h

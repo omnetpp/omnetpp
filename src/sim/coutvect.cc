@@ -21,200 +21,87 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <assert.h>
 #include <string.h>   // strlen
 #include "coutvect.h"
 #include "cmodule.h"
 #include "csimul.h"
 #include "cenvir.h"
 
-//==========================================================================
-// cOutFileMgr - see file OUTVECT.H for comments
-
-cOutFileMgr::cOutFileMgr(const char *s) : cObject(s)
-{
-   nextID = 0;
-   handle=NULL;
-}
-
-cOutFileMgr::~cOutFileMgr()
-{
-   if (handle)
-      fclose(handle);
-}
-
-void cOutFileMgr::setFileName(const char *s)
-{
-   // substitute run number into ##'s in file name
-   fname = s;
-   char *p=strstr(fname,"##");
-   if (p)
-   {
-       char runno[10];
-       sprintf(runno, "%.2d", simulation.runNumber());
-       for (int i=0; runno[i]!='\0'; i++)
-       {
-          if (p[i]=='#')
-              p[i]=runno[i];
-          else
-              {opp_error("Run number `%s' does not fit into filename `%s'",runno,s);break;}
-       }
-   }
-}
-
-const char *cOutFileMgr::fileName() const
-{
-   return fname;
-}
-
-void cOutFileMgr::openFile()
-{
-   handle = fopen(fname,"a");
-   if (handle==NULL)
-       opp_error("Cannot open output file `%s'",(const char *)fname);
-}
-
-void cOutFileMgr::closeFile()
-{
-   if (handle)
-   {
-       fclose(handle);
-       handle = NULL;
-   }
-}
-
-void cOutFileMgr::deleteFile()
-{
-   if (handle)
-       closeFile();
-   remove(fname);
-}
-
-long cOutFileMgr::getNewID()
-{
-   return nextID++;
-}
-
-FILE *cOutFileMgr::filePointer()
-{
-   if (handle==NULL)
-       openFile();
-   return handle;
-}
-
-//==========================================================================
-// cOutVector - see file OUTVECT.H for comments
 
 cOutVector::cOutVector(const char *name, int tupl) : cObject(name)
 {
-   tuple = tupl;
-   enabled = true;
-   initialised = false;
-   ID = simulation.outvectfilemgr.getNewID();
-   starttime = 0.0;
-   stoptime = 0.0;       // means 'no stop time'
+    enabled = true;
+    handle = NULL;
+    num_recorded = 0;
+    num_stored = 0;
+    record_in_inspector = NULL;
+    tuple = tupl;
 
-   record_in_inspector = NULL;
+    if (tuple!=1 && tuple!=2)
+    {
+        tuple = 0;
+        opp_error("(%s)%s: constructor: invalid value (%d) for tuple; supported values are 1 and 2", className(), fullPath(), tupl);
+        return;
+    }
 
-   ev.getOutVectorConfig(simulation.contextSimpleModule()->fullPath(),name,
-                         enabled,starttime,stoptime);
+    handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name, tuple);
 }
 
 cOutVector::~cOutVector()
 {
+    ev.deregisterOutputVector(handle);
 }
 
 void cOutVector::setName(const char *name)
 {
-   cObject::setName(name);
-
-   ev.getOutVectorConfig(simulation.contextSimpleModule()->fullPath(),name,
-                         enabled,starttime,stoptime);
+    opp_error("(%s)%s: setName(): changing name of an output vector after creation is not supported", className(), fullPath());
+    return;
 }
 
 void cOutVector::info(char *buf)
 {
-   cObject::info(buf);
-   strcpy( buf+strlen(buf), tuple==1 ? " (single)" :
-                            tuple==2 ? " (pair)" :
-                            " (?)" );
+    cObject::info(buf);
+    sprintf( buf+strlen(buf), " (received %ld values, stored %ld)", num_recorded, num_stored);
 }
 
-
-#define CHECK(fprintf)    if (fprintf<0) opp_error(eOUTVECT)
-
-void cOutVector::record(double value)
+bool cOutVector::record(double value)
 {
-   if (tuple!=1)
-      {opp_error(eNUMARGS,className(),name(),1);return;}
+    // check tuple
+    if (tuple!=1)
+        {opp_error(eNUMARGS,className(),fullPath(),1);return false;}
 
-   if (record_in_inspector)
-      record_in_inspector(data_for_inspector,value,0.0);
+    // pass data to inspector
+    if (record_in_inspector)
+        record_in_inspector(data_for_inspector,value,0.0);
 
-   if (!enabled) return;
+    if (!enabled)
+        return false;
 
-   simtime_t t = simulation.simTime();
-   if (t>=starttime && (stoptime==0.0 || t<=stoptime))
-   {
-      FILE *f = simulation.outvectfilemgr.filePointer();
-      if (f==NULL) return;
-
-      if (!initialised)
-      {
-          CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  1\n", ID,
-                  simulation.contextModule()->fullPath(), name()));
-          initialised=true;
-      }
-      CHECK(fprintf(f,"%ld\t%g\t%g\n",ID, t, value));
-   }
-
+    // pass data to envir for storage
+    num_recorded++;
+    bool stored = ev.recordInOutputVector(handle, simulation.simTime(), value);
+    if (stored) num_stored++;
+    return stored;
 }
 
-void cOutVector::record(double value1, double value2)
+bool cOutVector::record(double value1, double value2)
 {
-   if (tuple!=2)
-      {opp_error(eNUMARGS,className(),name(),2);return;}
+    // check tuple
+    if (tuple!=2)
+        {opp_error(eNUMARGS,className(),fullPath(),2);return false;}
 
-   if (record_in_inspector)
-      record_in_inspector(data_for_inspector,value1,value2);
+    // pass data to inspector
+    if (record_in_inspector)
+        record_in_inspector(data_for_inspector,value1,value2);
 
-   if (!enabled) return;
+    if (!enabled)
+        return false;
 
-   simtime_t t = simulation.simTime();
-   if (t>=starttime && (stoptime==0.0 || t<=stoptime))
-   {
-      FILE *f = simulation.outvectfilemgr.filePointer();
-      if (f==NULL) return;
-
-      if (!initialised)
-      {
-         CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  2\n", ID,
-                 simulation.contextModule()->fullPath(), name()));
-         initialised=true;
-      }
-
-      CHECK(fprintf(f,"%ld\t%g\t%g\t%g\n",ID, t, value1, value2));
-   }
-
-}
-#undef CHECK
-
-void cOutVector::enable()
-{
-   enabled=true;
-}
-
-void cOutVector::disable()
-{
-   enabled=false;
-}
-
-void cOutVector::setStartTime(simtime_t t)
-{
-   starttime=t;
-}
-
-void cOutVector::setStopTime(simtime_t t)
-{
-   stoptime=t;
+    // pass data to envir for storage
+    num_recorded++;
+    bool stored = ev.recordInOutputVector(handle, simulation.simTime(), value1, value2);
+    if (stored) num_stored++;
+    return stored;
 }
 

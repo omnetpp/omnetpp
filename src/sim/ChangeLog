@@ -1,3 +1,19 @@
+2002-03-03  Andras Varga
+
+       	* ctypes.cc: cClassRegister can now be used to create instances of
+       	non-cObject classes too; as part of this change, createOne() return
+       	value changed from cObject* to void*. (See also include/ChangeLog)
+
+	* csimul.cc, coutvect.cc: management of various output files
+        (output vector file, output scalar file, snapshot file) was moved
+        from cSimulation to the user interface library (behind the ev facade).
+        Implementation of cOutVector changed completely. The cOutFileMgr
+        class was removed altogether. (See also include/ChangeLog)
+
+       	* cpar.cc: valueChanges() renamed to beforeChange(); corresponding
+        afterChange() method added. Removed parameter change logging code.
+        (See also include/ChangeLog)
+
 2002-02-24  Andras Varga
 
 	* cmodule.cc: bugfix: pause() was allowed for handleMessage() modules
@@ -98,8 +114,8 @@
 	* mpi/* added, Makefile.in: Eric Wu's Tru64/MPI port
 
 2001-07-02 Andras Varga
-   
-        * cenum.cc,cstruct.cc: fixed, added to makefile.in and makefile.vc. 
+
+        * cenum.cc,cstruct.cc: fixed, added to makefile.in and makefile.vc.
         Dependencies to be updated in both makefiles! Code still untested.
 
 2001-06-28  Andras Varga
@@ -122,7 +138,7 @@
 		const cObject *cArray::get(const char *objname) const
 
 	* cgate.cc (): const patches
-	
+
 	* cmessage.cc (): const patches
 
 	* cmodule.cc (): const patches
@@ -175,7 +191,7 @@
 	* added OMNETPP_VERSION to defs.h (0x0200 for OMNeT++ 2.0)
 
 2001-01-15 Andras Varga
-	
+
 	* bugfix: cQueue::insertBefore() and cQueue::insertAfter() didn't
 	take the ownership of the inserted object [reported by Ulrich
 	Kaage]
@@ -209,7 +225,7 @@
 
 	* ------ omnetpp-2.0b4 released ------
 
-	
+
 	* added message sending functions which take cGate* pointers
 	[suggested by Mark Rahner]:
 	int send(cMessage *msg, cGate *outputgate);
@@ -936,7 +952,7 @@
 
 	* cPar: new type void* added ('P'), old 'P' type (cObject *) was
 	renamed to 'O'. Funcs: cObject *objectValue(), void
-	*pointerValue() Memory management of void*: configPointer(...) 
+	*pointerValue() Memory management of void*: configPointer(...)
 	func, similar to cLinkedList's method.
 
 
@@ -1195,7 +1211,7 @@
 
         * cleaned up & renamed several member functions and classes
 	Changed class names:
-	
+
 	 cObj             --> cObject
 	 cMod             --> cModule
 	 cSimpleMod       --> cSimpleModule
@@ -1232,7 +1248,7 @@
 
 
 1997-08-17  Andras Varga
-	
+
 	* cQueue interface changed:
 	  bool isenqueued(cObj *obj)
 	  void inserthead(cObj *obj)
@@ -1302,7 +1318,7 @@
 
 
 1997-08-06  Andras Varga
-	
+
 	* In defs.h, MAXTIME changed from 1eXXX to HUGE_VAL
 	  Changed cNetSimpleMod's base class from cSimpleMod to cMod
 	  Renamed: cNetSimpleMod --> cNetMod,  cPvmSimpleMod --> cPvmMod
@@ -1326,10 +1342,10 @@
 
 
 1997-08-04  Andras Varga
-	
+
 	* PVM stuff: all segments of a distributed simulation stops correctly now.
 	Affected files:
-	
+
 	  pvmmod.cc: cPVMSimpleMod's stopallsegments(), request_stopsimulation(),
 		     process_pvm_msg()
 	  csimul.cc: cSimulation's error(), printmsg(), warnings() functions
@@ -1588,7 +1604,7 @@
 
 
 1997-03-15  Andras Varga
-	
+
 	Module parameter logging bug fixed.
 	Histogram classes:
 
@@ -1769,7 +1785,7 @@
 1997-02-28  Andras Varga
 
         * cSimulation: cleaned up network setup/delete stuff
-	
+
 	   newnetwork() --renamed--> setupnetwork(cNetworkType n, int run_number)
 	   clear() --renamed--> deletenetwork()
 	   restart() --renamed--> startrun()

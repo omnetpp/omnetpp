@@ -239,8 +239,8 @@ cdetect.o: cdetect.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccor.h \
+  ../../include/coutvect.h \
   ../../include/cobject.h \
   ../../include/cstat.h
 cenum.o: cenum.cc \
@@ -254,8 +254,8 @@ cenum.o: cenum.cc \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
-  ../../include/ccor.h
+  ../../include/ccor.h \
+  ../../include/coutvect.h
 cfsm.o: cfsm.cc \
   ../../include/macros.h \
   ../../include/cfsm.h \
@@ -371,8 +371,8 @@ cmsgheap.o: cmsgheap.cc \
   ../../include/cpar.h \
   ../../include/csimul.h \
   ../../include/errmsg.h \
-  ../../include/coutvect.h \
-  ../../include/ccor.h
+  ../../include/ccor.h \
+  ../../include/coutvect.h
 cnetmod.o: cnetmod.cc \
   ../../include/cpar.h \
   ../../include/cenvir.h \
@@ -400,8 +400,8 @@ cobject.o: cobject.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccor.h \
+  ../../include/coutvect.h \
   ../../include/cpar.h \
   ../../include/ctypes.h
 coutvect.o: coutvect.cc \
@@ -434,8 +434,8 @@ cpacket.o: cpacket.cc \
   ../../include/csimul.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
-  ../../include/ccor.h
+  ../../include/ccor.h \
+  ../../include/coutvect.h
 cpar.o: cpar.cc \
   ../../include/cpar.h \
   ../../include/cstat.h \
@@ -581,14 +581,14 @@ util.o: util.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccor.h \
+  ../../include/coutvect.h \
   ../../include/cobject.h \
   ../../include/ctypes.h \
   ../../include/cmessage.h \
   ../../include/carray.h \
   ../../include/cpar.h
-netpack.o: std/netpack.cc \
+std/netpack.o: std/netpack.cc \
   ../../include/omnetpp.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -622,8 +622,11 @@ netpack.o: std/netpack.cc \
   ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
-  ../../include/cenvir.h
-pvmmod.o: pvm/pvmmod.cc \
+  ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h \
+  ../../include/envirext.h
+pvm/pvmmod.o: pvm/pvmmod.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
   ../../include/csimul.h \
@@ -632,6 +635,7 @@ pvmmod.o: pvm/pvmmod.cc \
   ../../include/ctypes.h \
   ../../include/cenvir.h \
   ../../include/cpar.h \
+  pvm/pvmmod.h \
   ../../include/cobject.h \
   ../../include/carray.h \
   ../../include/defs.h \
@@ -642,9 +646,12 @@ pvmmod.o: pvm/pvmmod.cc \
   ../../include/cgate.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
-pvmpack.o: pvm/pvmpack.cc \
+  ../../include/coutvect.h \
+  ../../include/cnetmod.h \
+  pvm/pvmdefs.h
+pvm/pvmpack.o: pvm/pvmpack.cc \
   ../../include/omnetpp.h \
+  pvm/pvmmod.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
@@ -677,8 +684,12 @@ pvmpack.o: pvm/pvmpack.cc \
   ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
-  ../../include/cenvir.h
-mpimod.o: mpi/mpimod.cc \
+  ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h \
+  ../../include/envirext.h \
+  pvm/pvmdefs.h
+mpi/mpimod.o: mpi/mpimod.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
   ../../include/csimul.h \
@@ -687,6 +698,8 @@ mpimod.o: mpi/mpimod.cc \
   ../../include/ctypes.h \
   ../../include/cenvir.h \
   ../../include/cpar.h \
+  mpi/mpimod.h \
+  mpi/mpipack.h \
   ../../include/cobject.h \
   ../../include/carray.h \
   ../../include/defs.h \
@@ -697,9 +710,14 @@ mpimod.o: mpi/mpimod.cc \
   ../../include/cgate.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
-mpipack.o: mpi/mpipack.cc \
+  ../../include/coutvect.h \
+  ../../include/cnetmod.h \
+  mpi/mpidefs.h
+mpi/mpipack.o: mpi/mpipack.cc \
+  mpi/mpipack.h \
   ../../include/omnetpp.h \
+  mpi/mpimod.h \
+  mpi/mpidefs.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
@@ -732,4 +750,7 @@ mpipack.o: mpi/mpipack.cc \
   ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
-  ../../include/cenvir.h
+  ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h \
+  ../../include/envirext.h

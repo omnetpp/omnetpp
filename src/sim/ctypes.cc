@@ -500,13 +500,15 @@ cFunctionType *findfunctionbyptr(MathFunc f)
 //=== creates an object of type passed in a string
 //    e.g: cObject *param = createOne( "cPar" );
 //    used when objects are restored from network data packet or file
-cObject *createOne(const char *classname)
+void *createOne(const char *classname)
 {
     cClassRegister *p = (cClassRegister *)classes.find( classname );
-    if (p!=NULL)
-        return p->createOne();
-    opp_error("Registration object for class \"%s\" not found", classname);
-    return NULL;
+    if (!p)
+    {
+        opp_error("Registration object for class \"%s\" not found", classname);
+        return NULL;
+    }
+    return p->createOne();
 }
 
 //=========================================================================

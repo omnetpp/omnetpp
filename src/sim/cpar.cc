@@ -74,7 +74,7 @@ cPar::cPar(const char *name, cPar& other) : cObject(name)
 
 cPar::~cPar()
 {
-    valueChanges();
+    beforeChange();
     if (isRedirected())
         cancelRedirection();
     deleteold();
@@ -220,8 +220,9 @@ void cPar::setPrompt(const char *s)
 {
      if (isRedirected())
          {ind.par->setPrompt(s);return;}
-     valueChanges();
+     beforeChange();
      promptstr = s;     // string's operator=() does delete+opp_strdup()
+     afterChange();
 }
 
 void cPar::setInput(bool ip)
@@ -230,8 +231,9 @@ void cPar::setInput(bool ip)
          {ind.par->setInput(ip);return;}
      if (inputflag!=ip)
      {
-         valueChanges();
+         beforeChange();
          inputflag = ip;
+         afterChange();
      }
 }
 
@@ -243,7 +245,7 @@ cPar& cPar::setStringValue(const char *s)
      if (isRedirected())
          return ind.par->setStringValue(s);
 
-     valueChanges();
+     beforeChange();
      deleteold();
      typechar = 'S';
      inputflag=false;
@@ -253,6 +255,7 @@ cPar& cPar::setStringValue(const char *s)
          opp_strcpy(ss.str, s);
      else
          ls.str = opp_strdup(s);
+     afterChange();
      return *this;
 }
 
@@ -261,11 +264,12 @@ cPar& cPar::setBoolValue(bool b)
     if (isRedirected())
         return ind.par->setBoolValue(b);
 
-    valueChanges();
+    beforeChange();
     deleteold();
     lng.val = b;
     typechar = 'B';
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -274,11 +278,12 @@ cPar& cPar::setLongValue(long l)
     if (isRedirected())
         return ind.par->setLongValue(l);
 
-    valueChanges();
+    beforeChange();
     deleteold();
     lng.val = l;
     typechar = 'L';
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -287,11 +292,12 @@ cPar& cPar::setDoubleValue(double d)
     if (isRedirected())
         return ind.par->setDoubleValue(d);
 
-    valueChanges();
+    beforeChange();
     deleteold();
     dbl.val = d;
     typechar = 'D';
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -300,12 +306,13 @@ cPar& cPar::setDoubleValue(MathFuncNoArg f)
     if (isRedirected())
         return ind.par->setDoubleValue(f);
 
-    valueChanges();
+    beforeChange();
     deleteold();
     func.f = (MathFunc)f;
     func.argc=0;
     typechar = 'F';
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -314,13 +321,14 @@ cPar& cPar::setDoubleValue(MathFunc1Arg f, double p1)
     if (isRedirected())
         return ind.par->setDoubleValue(f,p1);
 
-    valueChanges();
+    beforeChange();
     deleteold();
     func.f = (MathFunc)f;
     func.argc=1;
     func.p1 = p1;
     typechar = 'F';
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -329,7 +337,7 @@ cPar& cPar::setDoubleValue(MathFunc2Args f, double p1, double p2)
     if (isRedirected())
         return ind.par->setDoubleValue(f,p1,p2);
 
-    valueChanges();
+    beforeChange();
     deleteold();
     func.f = (MathFunc)f;
     func.argc=2;
@@ -337,6 +345,7 @@ cPar& cPar::setDoubleValue(MathFunc2Args f, double p1, double p2)
     func.p2 = p2;
     typechar = 'F';
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -345,7 +354,7 @@ cPar& cPar::setDoubleValue(MathFunc3Args f, double p1, double p2, double p3)
     if (isRedirected())
         return ind.par->setDoubleValue(f,p1,p2,p3);
 
-    valueChanges();
+    beforeChange();
     deleteold();
     func.f = (MathFunc)f;
     func.argc=3;
@@ -354,6 +363,7 @@ cPar& cPar::setDoubleValue(MathFunc3Args f, double p1, double p2, double p3)
     func.p3 = p3;
     typechar = 'F';
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -365,7 +375,7 @@ cPar& cPar::setDoubleValue(sXElem *x, int n)
     if (!x)
         {opp_error(eBADINIT,className(),name(), 'X');return *this;}
 
-    valueChanges();
+    beforeChange();
     deleteold();
     expr.n = n;
     expr.xelem = x;
@@ -393,6 +403,7 @@ cPar& cPar::setDoubleValue(sXElem *x, int n)
            }
        }
     }
+    afterChange();
     return *this;
 }
 
@@ -404,13 +415,14 @@ cPar& cPar::setDoubleValue(cStatistic *res)
     if (!res)
         {opp_error(eBADINIT,className(),name(), 'T');return *this;}
 
-    valueChanges();
+    beforeChange();
     deleteold();
     dtr.res = res;
     if (takeOwnership())
        take(res);
     typechar = 'T';
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -419,7 +431,7 @@ cPar& cPar::setPointerValue(void *_ptr)
     if (isRedirected())
         return ind.par->setPointerValue(_ptr);
 
-    valueChanges();
+    beforeChange();
     // if it was a 'P' before, keep previous configuration
     if (typechar!='P')
     {
@@ -431,6 +443,7 @@ cPar& cPar::setPointerValue(void *_ptr)
     }
     ptr.ptr = _ptr;
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -439,13 +452,14 @@ cPar& cPar::setObjectValue(cObject *_obj)
     if (isRedirected())
         return ind.par->setObjectValue(_obj);
 
-    valueChanges();
+    beforeChange();
     deleteold();
     obj.obj = _obj;
     if (takeOwnership())
         take( _obj );
     typechar = 'O';
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -467,11 +481,12 @@ cPar& cPar::setRedirection(cPar *par)
     }
 
     // set redirection
-    valueChanges();
+    beforeChange();
     deleteold();
     ind.par = par; // do NOT take ownership of passed cPar object
     typechar = 'I';
     inputflag=false;
+    afterChange();
     return *this;
 }
 
@@ -635,7 +650,11 @@ bool cPar::equalsTo(cPar *par)
 //------------------------------------------------------------------------
 // misc funcs
 
-void cPar::valueChanges()
+void cPar::beforeChange()
+{
+}
+
+void cPar::afterChange()
 {
     changedflag=true;
 }
@@ -1020,19 +1039,20 @@ double cPar::fromstat()
 
 cPar& cPar::operator=(const cPar& val)
 {
-    // This function is sort of tricky:
-    //   It copies the 'val' object (whether it is of type 'I' OR NOT)
-    //   into this object or the object this object refers to.
-    // If this cPar is of type 'I', and you want to overwrite
-    // this very object and not what it points to,
-    // use cancelRedirection() first!
+    //
+    // NOTE (duplicate of Doxygen comment in cpar.h):
+    //
+    // This function copies the 'val' object (whether it is of type 'I' or not)
+    // into this object, *or*, if this is redirected, into the object this object
+    // refers to.
+    //
 
     if (this==&val) return *this;
 
     if (isRedirected())
         return ind.par->operator=(val);
 
-    valueChanges();
+    beforeChange();
     deleteold();
 
     cObject::operator=( val );
@@ -1086,6 +1106,7 @@ cPar& cPar::operator=(const cPar& val)
     }
     // type 'I' does not use ownership so we can skip it.
 
+    afterChange();
     return *this;
 }
 
@@ -1114,9 +1135,6 @@ void cPar::convertToConst ()
 void cModulePar::_construct()
 {
     omodp=NULL;
-    log_initialised=false;
-    log_ID=0;
-    lastchange=simulation.simTime();
 }
 
 cModulePar::cModulePar(const cPar& other) : cPar(other)
@@ -1136,9 +1154,9 @@ cModulePar::cModulePar(const char *name, cPar& other) : cPar(name, other)
 
 cModulePar::~cModulePar()
 {
-    // valueChanges() is also called in cPar's destructor, but it cannot call
+    // beforeChange() is also called in cPar's destructor, but it cannot call
     // OUR virtual function any more. So we have to do it here.
-    valueChanges();
+    beforeChange();
 }
 
 // other member functions
@@ -1177,38 +1195,4 @@ cModulePar& cModulePar::operator=(const cModulePar& otherpar)
     cPar::operator=(otherpar);
     return *this;
 }
-
-#define CHECK(fprintf)    if (fprintf<0) opp_error(ePARCHF)
-void cModulePar::valueChanges()
-{
-    // this function is called BEFORE each value change
-
-    cPar::valueChanges();
-
-    if (simulation.logparchanges)
-    {
-        FILE *f = simulation.parchangefilemgr.filePointer();
-        if (f!=NULL)
-        {
-            if ( !log_initialised )
-            {
-                log_ID = simulation.parchangefilemgr.getNewID();
-                CHECK(fprintf(f,"parameter %ld  \"%s\"\n", log_ID, fullPath()));
-                log_initialised=true;
-            }
-
-            // module parameter logging:
-            //   since this function is called BEFORE each change,
-            //   we will write out what the value was SINCE the last change.
-            //   The value to which the object is now changing will be written
-            //   right before the NEXT value change. Last value change is written
-            //   by the destructor.
-            char value[128];
-            getAsText(value,127);
-            CHECK(fprintf(f,"%ld\t%g\t%s\n",log_ID, lastchange, value));
-        }
-        lastchange = simulation.simTime();
-    }
-}
-#undef CHECK
 

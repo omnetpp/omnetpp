@@ -100,7 +100,6 @@ cSimulation::cSimulation(const char *name, cHead *h) :
 
     netif_check_freq = 1000;    // frequency of processing msgs from other segments
     netif_check_cntr = 0;
-
 }
 
 cSimulation::~cSimulation()
@@ -120,7 +119,7 @@ static void runningmod_deleter_func(void *)
     }
 }
 
-void cSimulation::setup()
+void cSimulation::init()
 {
     runningmod_deleter.setup( runningmod_deleter_func, NULL, 16384 );
 }
@@ -166,9 +165,11 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     if (!object)
         {opp_error("snapshot(): object pointer is NULL");return false;}
 
-    filebuf file;
-    file.open( snapshotfilemgr.fileName(), ios::out|ios::app);
-    ostream os( &file );
+    ostream *osptr = ev.getStreamForSnapshot();
+    if (!osptr)
+        {opp_error("Could not create stream for snapshot"); return false;}
+
+    ostream& os = *osptr;
 
     bool w = warnings(); // temporarily disable warnings
     setWarnings( false );
@@ -196,11 +197,12 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     object->forEach( (ForeachFunc)_do_writesnapshot );   // do
 
     setWarnings( w );
-    file.close();
 
-    if (os.fail()) opp_error("Can't write snapshot file");
+    bool success = !os.fail();
+    ev.releaseStreamForSnapshot(&os);
 
-    return !os.fail(); // success
+    if (!success) opp_error("Could not write snapshot");
+    return success;
 }
 
 static void writemodule( ostream& os, cModule& m, int indent )
@@ -429,13 +431,6 @@ void cSimulation::startRun()
         simulation.msgQueue.insert( msg );
         netInterface()->after_modinit_msg = msg;
     }
-
-    // delete output files (except scalar output file)
-    outvectfilemgr.deleteFile();    // output vector file manager
-    parchangefilemgr.deleteFile();  // parameter change log file manager
-    snapshotfilemgr.deleteFile();   // snapshot file manager
-
-    scalarfile_header_written=false;
 }
 
 void cSimulation::callFinish()
@@ -449,11 +444,6 @@ void cSimulation::callFinish()
 
 void cSimulation::endRun()
 {
-    // close files
-    outvectfilemgr.closeFile();    // output vector file manager
-    scalarfilemgr.closeFile();     // output scalar file manager
-    parchangefilemgr.closeFile();  // parameter change log file manager
-    snapshotfilemgr.closeFile();   // snapshot file manager
 }
 
 void cSimulation::deleteNetwork()
@@ -692,7 +682,7 @@ void cSimulation::warning(int errc, const char *message)
 {
     // return if warnings are disabled (either globally or in the current module)
     if (!warnings() || (contextModule()!=NULL && !contextModule()->warnings()))
-        return;      
+        return;
 
     if (!contextModule())
     {
@@ -721,53 +711,6 @@ void cSimulation::warning(int errc, const char *message)
             transferToMain();
         }
     }
-}
-
-
-void cSimulation::recordScalar(const char *name, double value)
-{
-    FILE *f = simulation.scalarfilemgr.filePointer();
-    if (f==NULL) return;
-
-    if (!scalarfile_header_written)
-    {
-        scalarfile_header_written = true;
-        fprintf(f,"run %d \"%s\"\n", run_number, networktype->name());
-    }
-
-    fprintf(f,"scalar \"%s\" \t\"%s\" \t%g\n",
-              contextSimpleModule()->fullPath(), name, value);
-}
-
-void cSimulation::recordScalar(const char *name, const char *text)
-{
-    FILE *f = simulation.scalarfilemgr.filePointer();
-    if (f==NULL) return;
-
-    if (!scalarfile_header_written)
-    {
-        scalarfile_header_written = true;
-        fprintf(f,"run %d \"%s\"\n", run_number, networktype->name());
-    }
-
-    fprintf(f,"scalar \"%s\" \t\"%s\" \t\"%s\"\n",
-              contextSimpleModule()->fullPath(), name, text);
-}
-
-void cSimulation::recordStats(const char *name, cStatistic *stats)
-{
-    FILE *f = simulation.scalarfilemgr.filePointer();
-    if (f==NULL) return;
-
-    if (!scalarfile_header_written)
-    {
-        scalarfile_header_written = true;
-        fprintf(f,"run %d \"%s\"\n", run_number, networktype->name());
-    }
-
-    fprintf(f,"statistics \"%s\" \t\"%s\" \t\"%s\"\n",
-              contextSimpleModule()->fullPath(), name, stats->className());
-    stats->saveToFile( f );
 }
 
 bool cSimulation::normalTermination() const

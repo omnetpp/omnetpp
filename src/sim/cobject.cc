@@ -162,7 +162,7 @@ cObject& cObject::operator=(const cObject&)
     return *this;
 }
 
-void cObject::copyNotSupported()
+void cObject::copyNotSupported() const
 {
     opp_error(eCANTCOPY,className(),name());
 }
