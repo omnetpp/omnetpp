@@ -532,6 +532,9 @@
       <xsl:with-param name="content">
          <h2 class="comptitle">Message <i><xsl:value-of select="@name"/></i></h2>
          <xsl:call-template name="print-file"/>
+         <xsl:if test="$doxytagfile!=''">
+            <xsl:call-template name="print-link-to-doxygen"/>
+         </xsl:if>
          <xsl:call-template name="process-comment"/>
          <xsl:if test="$have-dot='yes'">
             <xsl:call-template name="print-inheritance-diagram"/>
@@ -551,6 +554,9 @@
       <xsl:with-param name="content">
          <h2 class="comptitle">Class <i><xsl:value-of select="@name"/></i></h2>
          <xsl:call-template name="print-file"/>
+         <xsl:if test="$doxytagfile!=''">
+            <xsl:call-template name="print-link-to-doxygen"/>
+         </xsl:if>
          <xsl:call-template name="process-comment"/>
          <xsl:if test="$have-dot='yes'">
             <xsl:call-template name="print-inheritance-diagram"/>
@@ -570,6 +576,9 @@
       <xsl:with-param name="content">
          <h2 class="comptitle">Struct <i><xsl:value-of select="@name"/></i></h2>
          <xsl:call-template name="print-file"/>
+         <xsl:if test="$doxytagfile!=''">
+            <xsl:call-template name="print-link-to-doxygen"/>
+         </xsl:if>
          <xsl:call-template name="process-comment"/>
          <xsl:if test="$have-dot='yes'">
             <xsl:call-template name="print-inheritance-diagram"/>
@@ -589,6 +598,9 @@
       <xsl:with-param name="content">
          <h2 class="comptitle">Enum <i><xsl:value-of select="@name"/></i></h2>
          <xsl:call-template name="print-file"/>
+         <xsl:if test="$doxytagfile!=''">
+            <xsl:call-template name="print-link-to-doxygen"/>
+         </xsl:if>
          <xsl:call-template name="process-comment"/>
          <xsl:call-template name="print-extends"/>
          <xsl:call-template name="print-properties"/>
