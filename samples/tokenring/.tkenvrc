@@ -1,5 +1,36 @@
-"token" "TokenRing" "2" "268x353+11+3"
-"token.comp[0]" "Computer" "2" "229x257+37+389"
-"token.comp[0].mac.class-members.Queueing time (sec)" "cOutVector" "2" "379x201+289+220"
-"token.comp[0].mac.class-members.sendQueue" "cQueue" "1" "379x186+289+5"
-"token.comp[4].sink.local-objects.End-to-End Delay histogram (K-split)" "cKSplit" "2" "309x210+289+450"
+# Tkenv configuration
+option updatefreq_fast	{10}
+option updatefreq_express	{1000}
+option stepdelay	{300 ms}
+option use_mainwindow	{1}
+option print_banners	{1}
+option animation_enabled	{1}
+option nexteventmarkers	{1}
+option senddirect_arrows	{1}
+option anim_methodcalls	{1}
+option methodcalls_delay	{200}
+option animation_msgnames	{1}
+option animation_msgcolors	{1}
+option penguin_mode	{0}
+option showlayouting	{0}
+option bubbles	{1}
+option animation_speed	{1}
+option bkpts_enabled	{1}
+config last-nedfile	{}
+config filtobjlist-category	{mqsgvo}
+config filtobjlist-maxcount	{100000}
+config editor-findstring	{}
+config editor-regexp	{0}
+config filtobjlist-class	{}
+config filtobjlist-name	{}
+config editor-backwards	{1}
+config display-treeview	{1}
+config editor-case-sensitive	{0}
+config editor-whole-words	{0}
+config filtobjlist-order	{Class}
+inspector "token" "TokenRing" "2" "268x353+11+3"
+inspector "token.comp[0]" "Computer" "2" "229x257+37+389"
+inspector "token.comp[4].sink.local-objects.End-to-End Delay histogram (K-split)" "cKSplit" "2" "309x210+289+450"
+inspector "token.comp[0].mac.class-members.Queueing time (sec)" "cOutVector" "2" "379x201+289+220"
+inspector "token.comp[0].mac.class-members.sendQueue" "cQueue" "1" "379x186+289+5"
+
