@@ -264,7 +264,7 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     if (ds.existsTag("i"))
     {
         const char *imgname = ds.getTagArg("i",0);
-        if (!imgname)
+        if (!imgname || !*imgname)
         {
             iconsx = UNKNOWNICON_WIDTH;
             iconsy = UNKNOWNICON_HEIGHT;
@@ -298,10 +298,10 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     if (y==-1) y = 0;
 
     const char *layout = ds.getTagArg("p",2); // matrix, row, column, ring, exact etc.
-    obeyslayout = (layout!=NULL);
+    obeyslayout = (layout && *layout);
 
     // modify x,y using predefined layouts
-    if (!layout)
+    if (!layout || !*layout)
     {
         // we're happy
     }
