@@ -1,26 +1,30 @@
-#
-# Makefile to produce pdf & html from the tex sources
-#
+# Makefile to translate tutorial document to ps, pdf.
 
-TARGET = tutorial
+SOURCE = tutorial
 
-all: pdf
+nothing:
 
-pdf: dvi
-	dvipdf $(TARGET).dvi
-	mv $(TARGET).pdf ..
+pdf: latex
+	pdflatex ./$(SOURCE).tex 
 
-dvi:
-	latex $(TARGET).tex
-	latex $(TARGET).tex
+ps: latex
+	dvips ./$(SOURCE).dvi -o ./$(SOURCE).ps
 
-html:
-	latex2html -split 1 $(TARGET).tex
-	mv $(TARGET) $(TARGET).html
-	mv $(TARGET).html ..
+html: latex
+	latex2html -split 1 $(SOURCE)
 
-clean:
-	- rm -f $(TARGET).aux
-	- rm -f $(TARGET).dvi
-	- rm -f $(TARGET).log
-	- rm -f $(TARGET).toc
+latex: 
+	latex ./$(SOURCE).tex
+	latex ./$(SOURCE).tex  # get labels right
+
+clean: 
+	rm -f $(SOURCE).aux
+	rm -f $(SOURCE).dvi
+	rm -f $(SOURCE).log
+	rm -f $(SOURCE).toc
+
+cleanall: clean
+	rm -r $(SOURCE).pdf
+	rm -r $(SOURCE).ps
+	rm -r $(SOURCE)
+
