@@ -1,5 +1,10 @@
 2004-12-22  Andras Varga
 
+	* chist.cc: cLongHistogram changes to enable num_cells set up 
+	adaptively. See class doc for more info.
+
+2004-12-22  Andras Varga
+
 	* csimplemodule.cc: "scheduleAt(): not owner of message" error message
 	(and similar messages from send() and sendDirect()) changed to
 	something hopefully more intuitive for users. One of the following

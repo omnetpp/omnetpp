@@ -117,12 +117,15 @@ void cHistogramBase::clearResult ()
 
 void cHistogramBase::transform()
 {
+    setupRange(); // this will set num_cells if it was unspecified (-1)
+
     int i;
     cellv = new unsigned [num_cells];
-    for (i=0; i<num_cells; i++) cellv[i]=0;
+    for (i=0; i<num_cells; i++)
+        cellv[i] = 0;
 
-    setupRange();
-    for (i=0; i<num_samples; i++) collectTransformed( firstvals[i] );
+    for (i=0; i<num_samples; i++)
+        collectTransformed(firstvals[i]);
     transfd = true;
 }
 
@@ -206,7 +209,11 @@ void cEqdHistogramBase::setupRange()
 {
     cHistogramBase::setupRange();
 
-    cellsize = (rangemax - rangemin) / num_cells;
+    //
+    // This method has to be redefined in subclasses, and:
+    // - num_cells (if unspecified) has to be set there
+    // - cellsize has to be calculated there, as (rangemax - rangemin) / num_cells
+    //
 }
 
 void cEqdHistogramBase::collectTransformed (double val)
@@ -297,8 +304,21 @@ void cLongHistogram::setupRange()
     rangemin = floor(rangemin)-0.5;
     rangemax = ceil(rangemax)+0.5;
 
-    cellsize = (rangemax-rangemin)/num_cells;
-    cellsize = ceil(cellsize);
+    if (num_cells==-1)
+    {
+        num_cells = rangemax - rangemin;
+        cellsize = 1;
+        if (num_cells > 10000)
+        {
+            cellsize = ceil((double)num_cells / 10000.0);
+            num_cells /= cellsize;
+        }
+    }
+    else
+    {
+        cellsize = (rangemax-rangemin)/num_cells;
+        cellsize = ceil(cellsize);
+    }
     double newrange = cellsize*num_cells;
     double rangediff = newrange - (rangemax-rangemin);
 
@@ -319,9 +339,11 @@ void cLongHistogram::setupRange()
 
 double cLongHistogram::random() const
 {
-    if( num_samples==0 )
+    if (num_samples==0)
+    {
         return 0L;
-    else if( num_samples<num_firstvals )
+    }
+    else if (num_samples<num_firstvals)
     {
         // randomly select a sample from the stored ones
         return firstvals[genk_intrand(genk,num_samples)];
@@ -355,11 +377,22 @@ cDoubleHistogram::~cDoubleHistogram()
 {
 }
 
+void cDoubleHistogram::setupRange()
+{
+    cHistogramBase::setupRange();
+
+    if (num_cells==-1)
+        num_cells = 50;
+    cellsize = (rangemax - rangemin) / num_cells;
+}
+
 double cDoubleHistogram::random() const
 {
-    if( num_samples==0 )
+    if (num_samples==0)
+    {
         return 0L;
-    else if( num_samples<num_firstvals )
+    }
+    else if (num_samples<num_firstvals)
     {
         // randomly select a sample from the stored ones
         return firstvals[genk_intrand(genk,num_samples)];
