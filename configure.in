@@ -379,22 +379,29 @@ chmod +x src/utils/makemake
 # write permission to $OMNETPP_BIN_DIR.
 #----------------------
 
-probefile=__tmp__
-echo '' >$OMNETPP_BIN_DIR/$probefile
-chmod +x  $OMNETPP_BIN_DIR/$probefile
-if $probefile >/dev/null 2>/dev/null; then
-  echo "Your PATH contains $OMNETPP_BIN_DIR. Good!"
+# first we need to expand the ${HOME} variable and make sure the dir exists..
+omnetpp_bin_dir=`eval echo $OMNETPP_BIN_DIR`
+if test ! -d $omnetpp_bin_dir; then
+   echo "PROBLEM: the $OMNETPP_BIN_DIR directory does not exist!"
 else
-  cat << EOT
+  # ...then we create a small tmp file to check if the dir is in the path
+  probefile=__tmp__
+  echo '' >$omnetpp_bin_dir/$probefile
+  chmod +x  $omnetpp_bin_dir/$probefile
+  if $probefile >/dev/null 2>/dev/null; then
+    echo "Your PATH contains $OMNETPP_BIN_DIR. Good!"
+  else
+    cat << EOT
 
-Your PATH doesn't contain $OMNETPP_BIN_DIR!
+PROBLEM: your PATH doesn't contain $OMNETPP_BIN_DIR!
 Add the following line to your startup file:
   export PATH=\$PATH:$OMNETPP_BIN_DIR  # .(bash_)profile if you use sh/bash
   setenv PATH \$PATH:$OMNETPP_BIN_DIR  # .cshrc if you use csh,tcsh etc.
 
 EOT
+  fi
+  rm $omnetpp_bin_dir/$probefile
 fi
-rm $OMNETPP_BIN_DIR/$probefile
 
 #----------------------
 # Check LD_LIBRARY path if we're building shared libs. This is not necessary
@@ -407,8 +414,8 @@ if test "$build_shared_libs" = yes -a "$cygwin" != yes; then
   else
     cat << EOT
 
-You selected shared libraries in configure.user but your LD_LIBRARY_PATH
-doesn't seem to contain $OMNETPP_LIB_DIR!
+PROBLEM: you selected shared libraries in configure.user, but your
+LD_LIBRARY_PATH doesn't seem to contain $OMNETPP_LIB_DIR!
 
 So that the dynamic linker can find the OMNeT++ shared libs, you either have
 to create symbolic links from /usr/lib to the OMNeT++ shared libraries
