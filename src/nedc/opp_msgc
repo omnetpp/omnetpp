@@ -664,7 +664,7 @@ sub prepareForCodeGeneration
     foreach $fieldname (@fieldlist)
     {
         if ($fisabstract{$fieldname} && !$gap) {
-            print STDERR "*** Error: abstract fields assume 'customize=true' property in '$msgname'\n"; $ret=1;
+            print STDERR "*** Error: abstract fields need 'customize=true' property in '$msgname'\n"; $ret=1;
         }
         if ($fval{$fieldname} ne '' && $classtype eq 'struct') {
             print STDERR "*** Error: default values not possible with structs (no constructor is generated!) in '$msgname'\n"; $ret=1;
@@ -1104,7 +1104,9 @@ sub generateClass
     #
     print CC "void $msgclass\:\:netPack(cCommBuffer *b)\n";
     print CC "{\n";
-    #FIXME todo: pack base class
+    if ($msgbaseclass ne "") {
+        print CC "    $msgbaseclass\:\:netPack(b);\n";
+    }
     foreach $fieldname (@fieldlist)
     {
         if ($fisabstract{$fieldname}) {
@@ -1124,7 +1126,9 @@ sub generateClass
 
     print CC "void $msgclass\:\:netUnpack(cCommBuffer *b)\n";
     print CC "{\n";
-    #FIXME todo: unpack base class
+    if ($msgbaseclass ne "") {
+        print CC "    $msgbaseclass\:\:netUnpack(b);\n";
+    }
     foreach $fieldname (@fieldlist)
     {
         if ($fisabstract{$fieldname}) {
@@ -1259,7 +1263,9 @@ sub generateStruct
 
     print CC "void doPacking(cCommBuffer *b, $msgclass& a)\n";
     print CC "{\n";
-    #FIXME todo: pack base class
+    if ($msgbaseclass ne "") {
+        print CC "    doPacking(b,($msgbaseclass&)a);\n";
+    }
     foreach $fieldname (@fieldlist)
     {
         if ($fisarray{$fieldname}) {
@@ -1272,7 +1278,9 @@ sub generateStruct
 
     print CC "void doUnpacking(cCommBuffer *b, $msgclass& a)\n";
     print CC "{\n";
-    #FIXME todo: unpack base class
+    if ($msgbaseclass ne "") {
+        print CC "    doUnpacking(b,($msgbaseclass&)a);\n";
+    }
     foreach $fieldname (@fieldlist)
     {
         if ($fisarray{$fieldname}) {
