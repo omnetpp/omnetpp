@@ -28,10 +28,12 @@ icons in their own directories.
 
 Smaller enhancements were made to the simulation library. Some of them are:
 dynamic simple modules can now be created and booted in one step by using
-cModuleType's createInitStart() function; callInitialize() and callFinish()
+cModuleType's createScheduleInit() function; callInitialize() and callFinish()
 was added to the module classes (for compound modules they work recursively);
-behavior of cancelEvent() slightly changed; cMessage now has an isScheduled()
-member function.
+behavior of cancelEvent() slightly changed. cMessage now has isScheduled()
+and isSelfMessage() member functions; a "context pointer" was also added to
+cMessage to facilitate writing modules which use a large number of self
+messages concurrently.
 
 See the ChangeLog in the directory of the individual components for details
 on what has been changed/fixed/improved. 
