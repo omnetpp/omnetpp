@@ -74,7 +74,7 @@ class MyClass
     fields:
         abstract char type='x';
         abstract short version=2;
-}
+};
 
 // class not derived from cObject
 class MyDerivedClass extends MyClass
@@ -82,7 +82,7 @@ class MyDerivedClass extends MyClass
     fields:
         char bla='x';
         short blabla=2;
-}
+};
 
 // class derived from cObject
 class MyCObjectClass extends cObject
@@ -91,7 +91,7 @@ class MyCObjectClass extends cObject
         char type='x';
         short version=2;
         mystringclass dunno;
-}
+};
 
 // plain C struct (public members, no getter/setter methods, etc)
 struct MyStruct
@@ -100,7 +100,7 @@ struct MyStruct
         char array[10];
         char vect[];
         short version;
-}
+};
 
 
 // inheritance with structs
@@ -110,6 +110,6 @@ struct MyDerivedStruct extends MyStruct
         char code;
         short prot enum(ProtocolTypes); 
         MyStruct substruct;  // also as embedded data member
-}
+};
 
 
