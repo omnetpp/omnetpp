@@ -2,6 +2,21 @@ OMNeT++ Installation on Windows 95/NT
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (last updated: August 12, 1998)
 
+
+Necessary additional software
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Tcl/Tk libraries
+
+Gnuplot
+
+awk, grep
+  are also used by Plove. sed (although not needed by any OMNeT++ component)
+  might also be useful.
+
+bison/flex
+....
+
+
 To install
 ~~~~~~~~~~
 1. create a directory, say C:\OMNETPP

@@ -1,7 +1,7 @@
 What's New
 ==========
 
-In the OMNeT++ 1.2 version (Aug 1999)
+In the OMNeT++ 2.0 version (Sep 1999)
 -------------------------------------
 
 License conditions have been alleviated: from this release on, one can elect
@@ -9,21 +9,31 @@ to use GPL for a particular copy of OMNeT++.
 
 The configure script has been replaced by GNU Autoconf. The makefiles have been 
 brushed up (more standard symbol names, autodepend, version number in lib names,
-etc). Cygwin is now fully supported. DOS+BC3.1 support has been removed.
-File names are no longer restricted to 8+3 all lowercase.
+etc). Cygwin is now fully supported. DOS+BC3.1 support has been removed for
+lack of interest. File names longer than 8+3 are now used within the package.
 
-GNED...
+Most of the effort since the last release was put into GNED. As a result,
+GNED can now directly read/write NED files, so you can use it to work on your
+existing NED sources. Moreover, GNED is now a fully two-way tool: you can edit
+compound modules in graphic or in NED source form, and switch to the other view
+any time. The GUI has been improved too: toolbar icons, tooltips, NED syntax
+highlight. GNED is still in beta and there's some missing functionality.
 
-UI beautifying in Tkenv: icons, tooltips
+Tkenv's user interface has also undergone some beautifying: toolbar icons,
+tooltips, etc.
 
-OMNETPP_BITMAP_PATH may now contain several directories; it includes . and
-./bitmaps by default so individual simulation models can have their own icons.
+OMNETPP_BITMAP_PATH may now contain a list of directories; it includes . and
+./bitmaps by default, so individual simulation models can have their own icon
+sets.
 
-Several bugfixes and smaller enhancements.
+Several bugfixes and smaller enhancements have been made; see the ChangeLog in
+the directory of the individual components for details.
 
-internally, CVS
+Contributions have been added. They include NED syntax highlight for Emacs,
+and recipes and sample code to use Octave with OMNeT++.
 
-contributed models...
+Which is less visible to you, the development has moved to use CVS.
+
 
 
 In version of Feb, 1999 (OMNeT++ 1.1)
