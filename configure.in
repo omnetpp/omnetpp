@@ -15,10 +15,10 @@ save_LIBS=$LIBS
 LIBS="-l$1 $6"
 for lib_path_swith in "" $3; do
   if test -n "$lib_path_swith"; then
-    AC_MSG_CHECKING(if -l$1 is in $lib_path_swith)
+    AC_MSG_CHECKING(whether -l$1 is in $lib_path_swith)
     lib_path_swith="-L$lib_path_swith"
   else
-    AC_MSG_CHECKING(if -l$1 is in linker path)
+    AC_MSG_CHECKING(whether -l$1 is in linker path)
   fi
   LDFLAGS="$save_LDFLAGS $lib_path_swith"
   AC_TRY_LINK([char $2();],$2(),
@@ -67,22 +67,22 @@ SYS_LIBS=""
 
 AC_CHECK_LIB(m, floor,
    SYS_LIBS="-lm $SYS_LIBS",
-   AC_MSG_WARN("math library (-lm) not found (maybe part of standard C lib?)")
+   AC_MSG_WARN(math library (-lm) not found (maybe part of standard C lib?))
    )
 
 AC_CHECK_LIB(dl, dlopen,
    HAVE_DLOPEN=1; SYS_LIBS="-ldl $SYS_LIBS",
-   HAVE_DLOPEN=0; AC_MSG_WARN("dynamic loading of libs not possible (no dlopen() syscall)")
+   HAVE_DLOPEN=0; AC_MSG_WARN(dynamic loading of libs not possible (no dlopen() syscall))
    )
 if test "$HAVE_DLOPEN" = "1"; then
    AC_CHECK_HEADER(dlfcn.h, ,
-      HAVE_DLOPEN=0; AC_MSG_WARN("dynamic loading of libs not possible (no dlfcn.h header)")
+      HAVE_DLOPEN=0; AC_MSG_WARN(dynamic loading of libs not possible (no dlfcn.h header))
    )
 fi
 
 AC_CHECK_LIB(stdc++, main,
    SYS_LIBS="-lstdc++ $SYS_LIBS",
-   AC_MSG_WARN("standard C++ library (-lstdc++) not found; linking problems are likely")
+   AC_MSG_WARN(standard C++ library (-lstdc++) not found; linking problems are likely)
    )
 
 #----------------------
@@ -94,10 +94,10 @@ PVM_CFLAGS="-I$PVM_ROOT/include"
 
 # test for -lpvm3 and -lgpvm3 at the same time
 OPP_CHECK_LIB_WITHPATH(pvm3, pvm_joingroup, $PVM_ROOT/lib/$PVM_ARCH,
-  PVM_LIBS="$lib_path_swith -lgpvm3 -lpvm3"
+  PVM_LIBS="$lib_path_swith -lgpvm3 -lpvm3",
   [PVM_LIBS=""
-   AC_MSG_WARN("if you do have PVM3, set PVM_ROOT and PVM_ARCH")
-   AC_MSG_WARN("  to their correct values and re-run configure")],
+   AC_MSG_WARN(if you do have PVM3 then set PVM_ROOT and PVM_ARCH)
+   AC_MSG_WARN(  to their correct values and re-run configure)],
   -lpvm3
   )
 
@@ -111,23 +111,25 @@ TK_LIBS=""
 
 # X Window
 AC_PATH_X
-if test ! -n "$x_includes"; then
-  TK_CFLAGS="$x_includes $TK_CFLAGS"
-fi
-if test ! -n "$x_libraries"; then
-  TK_LIBS="$x_libraries $TK_LIBS"
+if test "$no_x" != "yes"; then
+  if test -n "$x_includes"; then
+    TK_CFLAGS="-I$x_includes $TK_CFLAGS"
+  fi
+  if test -n "$x_libraries"; then
+    TK_LIBS="-L$x_libraries -lX11 $TK_LIBS"
+  fi
 fi
 
 # Tcl
-OPP_CHECK_LIB_WITHPATH(tcl, Tcl_Init, /opt/lib
+OPP_CHECK_LIB_WITHPATH(tcl, Tcl_Init, /opt/lib,
    TK_LIBS="$lib_path_switch -ltcl $TK_LIBS",
    :,
    $SYS_LIBS)
 
 # Tk
-OPP_CHECK_LIB_WITHPATH(tk, Tk_BindEvent, /opt/lib
+OPP_CHECK_LIB_WITHPATH(tk, Tk_BindEvent, /opt/lib,
    TK_LIBS="$lib_path_switch -ltk $TK_LIBS",
-   TK_LIBS=""; AC_MSG_WARN("Cannot link with Tcl/Tk -- Tkenv, GNED and Plove won't build/run"),
+   TK_LIBS=""; AC_MSG_WARN(Cannot link with Tcl/Tk -- Tkenv GNED and Plove will not build/run),
    $TK_LIBS $SYS_LIBS)
 
 #----------------------
@@ -137,9 +139,9 @@ OPP_CHECK_LIB_WITHPATH(tk, Tk_BindEvent, /opt/lib
 # FIXME:
 TV_CFLAGS="-I/usr/include/tvision"
 
-OPP_CHECK_LIB_WITHPATH(tv, main,
+OPP_CHECK_LIB_WITHPATH(tv, main, /opt/lib,
    TV_LIBS="$lib_path_swith -ltv",
-   TV_LIBS=""; AC_MSG_WARN("Cannot link with Turbo Vision -- TVenv won't build"),
+   TV_LIBS=""; AC_MSG_WARN(Cannot link with Turbo Vision -- TVenv will not build),
    $SYS_LIBS)
 
 #----------------------
@@ -171,7 +173,11 @@ AC_CHECK_FUNCS(select strdup strspn strstr)
 #----------------------
 
 OMNETPP_ROOT=`pwd`
-
+if test -n "$HOME"; then
+    if pwd | grep "^$HOME" >/dev/null; then
+        OMNETPP_ROOT=`pwd|sed "s|^$HOME|\\\${HOME}|"`
+    fi
+fi
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
 OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
@@ -200,23 +206,23 @@ CFLAGS='-g'
 #----------------------
 
 if test -n "$PVM_LIBS"; then
-   SIM_PVM_IF_POSSIBLE=missing-library
-else
    SIM_PVM_IF_POSSIBLE=sim_pvm
+else
+   SIM_PVM_IF_POSSIBLE=missing-library
 fi
 
 if test -n "$TK_LIBS"; then
-   TKENV_IF_POSSIBLE=missing-library
-   GNED_IF_POSSIBLE=missing-library
-else
    TKENV_IF_POSSIBLE=tkenv
    GNED_IF_POSSIBLE=gned
+else
+   TKENV_IF_POSSIBLE=missing-library
+   GNED_IF_POSSIBLE=missing-library
 fi
 
 if test -n "$TV_LIBS"; then
-   TVENV_IF_POSSIBLE=missing-library
-else
    TVENV_IF_POSSIBLE=tvenv
+else
+   TVENV_IF_POSSIBLE=missing-library
 fi
 
 #----------------------

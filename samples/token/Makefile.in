@@ -93,3 +93,6 @@ token.o: token.cc token.h $(OMNETPP_INCLUDES)
 
 clean:
 	rm -f *.o *_n.cc $(TARGET)
+# DO NOT DELETE
+
+token.o: token.h

@@ -127,7 +127,7 @@ clean:
 	for i in `echo $(OMNETPP_MODELS_DIR)/*`; do \
 	    (cd $$i; $(MAKE) clean); \
 	done
-	for i in `echo $(OMNETPP_SAMLES_DIR)/*`; do \
+	for i in `echo $(OMNETPP_SAMPLES_DIR)/*`; do \
 	    (cd $$i; $(MAKE) clean); \
 	done
 
@@ -138,7 +138,7 @@ depend:
 	for i in `echo $(OMNETPP_MODELS_DIR)/*`; do \
 	    (cd $$i; $(MAKE) depend); \
 	done
-	for i in `echo $(OMNETPP_SAMLES_DIR)/*`; do \
+	for i in `echo $(OMNETPP_SAMPLES_DIR)/*`; do \
 	    (cd $$i; $(MAKE) depend); \
 	done
 
