@@ -1,3 +1,5 @@
+2004-09-24  ------ omnetpp-3.0a7 released ------
+
 FIXME NED file, dynamic loading, par=false in NED causes "cannot convert D to ..."
 cnednetworkbuilder.cc#817
 
