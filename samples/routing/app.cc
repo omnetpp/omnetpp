@@ -95,7 +95,6 @@ void App::handleMessage(cMessage *msg)
 
         if (ev.isGUI())
         {
-            parentModule()->displayString().setTagArg("i",0,"ball_s");
             parentModule()->displayString().setTagArg("i",1,"green");
             parentModule()->bubble("Arrived!");
         }

@@ -57,10 +57,8 @@ void AHost::initialize()
     WATCH(pkCounter)
 
     if (ev.isGUI())
-    {
-        displayString().setTagArg("i",2,"100");
         displayString().setTagArg("t",2,"#808000");
-    }
+
     scheduleAt(iaTime->doubleValue(), endTxEvent);
 }
 
