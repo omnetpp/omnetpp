@@ -162,6 +162,7 @@ proc new_network {} {
     foreach net $networks {
         lappend netnames [opp_getobjectfullname $net]
     }
+    set netnames [lsort -dictionary $netnames]
 
     # pop up dialog, with current network as default
     set netname [opp_getnetworktype]
