@@ -26,9 +26,10 @@ echo 'Checking out samples...'
 
 # clean samples
 echo 'Cleaning...'
-rm -rf `find $DIR/samples -name CVS`
+rm -rf `find $DIR -name CVS`
 rm -rf $DIR/samples/demo
 rm -rf $DIR/samples/pvmex
+rm -f $DIR/samples/cc2cpp.bat
 rm -f $DIR/samples/*/*.dep
 rm -f $DIR/samples/*/*.dsw
 rm -f $DIR/samples/*/*.dsp
