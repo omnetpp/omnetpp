@@ -1,3 +1,12 @@
+2003-03-13  Andras Varga
+
+	* opp_test: changed #include "omnetpp.h" to <omnetpp.h> in generated
+	code
+
+2003-03-11  Andras Varga
+
+	* opp_test: couldn't run test program on Unix if "." was not in the PATH
+
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
 2003-02-08  Andras Varga 

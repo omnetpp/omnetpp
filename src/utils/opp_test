@@ -772,7 +772,7 @@ endnetwork
 ';
 
     $ActivityCPPTemplate = '
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 @GLOBAL@
 
@@ -791,13 +791,13 @@ void @TESTNAME@::activity()
 ';
 
     $ModuleCPPTemplate = '
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 @MODULE_SRC@
 ';
 
     $ModuleABCPPTemplate = '
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 @MODULE_A_SRC@
 
