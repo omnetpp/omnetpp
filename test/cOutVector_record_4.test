@@ -1,0 +1,10 @@
+%description:
+check that unnamed cOutVector doesn't core dump
+
+%activity:
+
+cOutVector vec;
+vec.record( 35);
+
+%exitcode: 1
+
