@@ -38,7 +38,7 @@ set g(spaces)   [format {%200s} { }]
 set g(tempfiles) ""
 
 # config
-set config(titlefmt)   "NAME in MODULE (FILENAME)"
+set config(titlefmt)   "\$NAME in \$MODULE (\$FILENAME)"
 set config(ofmt)       "%.10f"
 set config(rightarrow) "copy"  ;# button with right arrow: move or copy vector
 set config(grep)       "grep"

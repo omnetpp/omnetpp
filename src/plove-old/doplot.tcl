@@ -112,13 +112,15 @@ proc savePicture {} {
 
     # add entry fields and focus on first one
     frame .ize.f.f1 -relief groove -border 2
-    label-combo .ize.f.f1.term "set terminal:" $termlist $gp(picterm)
-    commentlabel .ize.f.f1.c "The above are only some of the possible Gnuplot outputs. Type 'set term', 'help postscript', 'help latex' or 'help gif', etc in Gnuplot to explore options available in your copy of Gnuplot."
+    label-combo .ize.f.f1.term "Output type:" $termlist $gp(picterm)
+    commentlabel .ize.f.f1.c "The above are only some of the possible Gnuplot outputs. Type 'set term' in Gnuplot for a list of output types, and 'help postscript', 'help latex' or 'help gif', etc for specific options available for different output types."
     commentlabel .ize.f.f1.c2 "On Windows, you may also use the clipboard instead of this dialog -- try the Options|Copy to Clipboard item in the system menu of the main Gnuplot window, then pasting it into Word."
 
     frame .ize.f.f2 -relief groove -border 2
     label-entry .ize.f.f2.fname "File name:" $gp(picfile)
     button .ize.f.f2.but -text "Browse..." -command {browsePicFile .ize.f.f2.fname.e}
+
+    combo-onchange .ize.f.f1.term.e "adjustFilename .ize.f.f1.term.e .ize.f.f2.fname.e"
 
     pack .ize.f.f1 .ize.f.f2 -anchor center -expand 1 -fill x -side top
     pack .ize.f.f1.term -anchor center -expand 1 -fill x -side top
@@ -135,6 +137,30 @@ proc savePicture {} {
         doPlot picture
     }
     destroy .ize
+}
+
+proc adjustFilename {termcombo fnameentry} {
+    set term [$termcombo get]
+    set fname [$fnameentry get]
+
+    set ext ""
+    if [regexp "postscript" $term] {
+        set ext ".ps"
+    } elseif [regexp "latex" $term] {
+        set ext ".tex"
+    } elseif [regexp "emtex" $term] {
+        set ext ".tex"
+    } elseif [regexp "gif" $term] {
+        set ext ".gif"
+    } elseif [regexp "png" $term] {
+        set ext ".png"
+    }
+    if {$ext!=""} {
+        regsub {\.[^.]*$} $fname $ext fname
+        $fnameentry delete 0 end
+        $fnameentry insert 0 $fname
+    }
+    return 1
 }
 
 proc saveScript {} {

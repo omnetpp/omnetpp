@@ -22,7 +22,7 @@ proc editGeneralOptions {} {
     label-entry .ize.f.f1.titlefmt "Default title format:" $config(titlefmt)
     .ize.f.f1.titlefmt.e config -width 30
     commentlabel .ize.f.f1.c "Setting doesn't affect already loaded vectors."
-    commentlabel .ize.f.f1.c2 "Following macros can be used:\nNAME,MODULE,ID,MULT,FILENAME,FILEPATH"
+    commentlabel .ize.f.f1.c2 "Following macros can be used:\n\$NAME,\$MODULE,\$ID,\$MULT,\$FILENAME,\$FILEPATH"
     label-entry .ize.f.f1.ofmt "Awk's OFMT:" $config(ofmt)
 
     pack .ize.f.f1 -expand 0 -fill x -side top
@@ -241,6 +241,11 @@ proc loadConfig {{fname {}}} {
        }
 
        busy
+
+       # if it has no '$' sign (old format), overwrite it
+       if ![regexp {\$} $config(titlefmt)] {
+          set config(titlefmt)   "\$NAME in \$MODULE (\$FILENAME)"
+       }
 
        set config(configfile) $fname
        set config(vectorfile) ""  ;# this we won't preserve

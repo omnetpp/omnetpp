@@ -123,12 +123,12 @@ proc makeTitle {id} {
     global vec config
 
     set tit $config(titlefmt)
-    regsub "FILENAME"  $tit [file tail $vec($id,fname)]  tit
-    regsub "FILEPATH"  $tit $vec($id,fname)  tit
-    regsub "ID"        $tit $vec($id,vecid)  tit
-    regsub "NAME"      $tit $vec($id,name)   tit
-    regsub "MODULE"    $tit $vec($id,module) tit
-    regsub "MULT"      $tit $vec($id,mult)   tit
+    regsub {\$FILENAME}  $tit [file tail $vec($id,fname)]  tit
+    regsub {\$FILEPATH}  $tit $vec($id,fname)  tit
+    regsub {\$ID}        $tit $vec($id,vecid)  tit
+    regsub {\$NAME}      $tit $vec($id,name)   tit
+    regsub {\$MODULE}    $tit $vec($id,module) tit
+    regsub {\$MULT}      $tit $vec($id,mult)   tit
 
     set vec($id,title)  $tit
 }

@@ -1,3 +1,10 @@
+2003-01-10  Andras Varga
+
+	* titlefmt: variables must begin with "$": $NAME, $FILENAME, $ID, etc.
+
+	* Save Picture dialog: adjust filename extension according to output
+	type.
+
 2002-12-07  Andras Varga
 
 	* UI redesign -- uses iconic toolbar, tooltips, all bells and whistles

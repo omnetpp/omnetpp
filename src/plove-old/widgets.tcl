@@ -59,6 +59,7 @@ proc combo {w list {cmd {}}} {
     }
     catch {$w configure -value [lindex $list 0]}
     $w configure -command "$cmd ;#"
+
     return $w
 }
 
@@ -74,6 +75,16 @@ proc comboconfig {w list {cmd {}}} {
     }
     $w configure -command "$cmd ;#"
     return $w
+}
+
+proc combo-onchange {w cmd} {
+    # Tk sucks: no event is triggered when entry content changes.
+    # entry -validate is no better than bind <Key>,
+    # vtrace is too error-prone.
+    bind $w.entry <1> $cmd
+    bind $w.entry <Key> $cmd
+    bind $w.entry <FocusIn> $cmd
+    bind $w.entry <FocusOut> $cmd
 }
 
 proc label-entry {w label {text {}}} {
