@@ -1,4 +1,4 @@
-for i in `find . -name 'Makefile*' -o -name '*.h' -o -name '*.cc' -o -name '*.c'`
+for i in `find . -name 'Makefile*' -o -name '*.h' -o -name '*.cc' -o -name '*.c' -o -name *.ned`
 do
     echo Removing ^M, $i
     cp $i $i.b
