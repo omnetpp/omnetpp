@@ -12,7 +12,7 @@ simple {Simple}
       p40, p41, p42, p43, p44, p45, p46, p47;
 endsimple
 
-network {net}: {Simple}
+network {network}: {Simple}
    parameters:
       p00 = -3,      // unary minus
       p01 = -5, // FIXME this should be -(4+1), but old nedc chokes on it
@@ -96,10 +96,6 @@ void {Simple}::activity()
     for (int i=0; i<params(); i++)
         ev << par(i).name() << "=" << (double)par(i) << endl;
 }
-
-%inifile: {}.ini
-[General]
-network={net}
 
 %contains-regex: stdout
 p00=-3

@@ -8,7 +8,7 @@ simple {Simple}
       p00;
 endsimple
 
-network {net}: {Simple}
+network {network}: {Simple}
    parameters:
       p00 = (192 << 24);
 endnetwork
@@ -31,10 +31,6 @@ void {Simple}::activity()
         ev << par(i).name() << "=" << std::hex << (unsigned long)par(i) << endl;
     ev << endl;
 }
-
-%inifile: {}.ini
-[General]
-network={net}
 
 %contains-regex: stdout
 p00=c0000000
