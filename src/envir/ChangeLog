@@ -1,3 +1,7 @@
+2004-02-22  Andras Varga
+
+	* added fsutils.cc/h
+
 2004-02-10  Andras Varga
 
 	* omnetapp.cc: error messages to display module class name (NED type)

@@ -24,6 +24,7 @@
 #include "omnetapp.h"
 #include "cinifile.h"
 #include "patmatch.h"
+#include "fsutils.h"
 
 #include "ctypes.h"
 #include "ccoroutine.h"
@@ -39,6 +40,7 @@
 #include "parsim/cparsimsynchr.h"
 #include "parsim/creceivedexception.h"
 #endif
+
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 
@@ -59,93 +61,20 @@
 #define MAX_OBJECTINFO      500
 
 
-// some platform dependency
-#if defined(_WIN32) && !defined(__CYGWIN32__)
-#include <process.h>
-#include <direct.h>
-#define getpid _getpid
-#define getcwd _getcwd
-#define chdir  _chdir
-#else
-#include <sys/types.h>
-#include <unistd.h>  // getpid(), getcwd(), etc
-#endif
-
-
 using std::ostream;
+
 
 // This variable could really be a local var inside the functions where it is
 // used; it was only made a static to reduce per-module stack size with activity().
 static char buffer[1024];
 
 
-// FIXME static_cast<> here?
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
      var = dynamic_cast<baseclass *>(var ## _tmp); \
      if (!var) \
          throw new cException("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
-
-/**
- * Utility file for temporary change of directory
- */
-class PushDir
-{
-  private:
-    opp_string olddir;
-  public:
-    PushDir(const char *changetodir);
-    ~PushDir();
-};
-
-PushDir::PushDir(const char *changetodir)
-{
-    // FIXME error handling
-    olddir.allocate(1024);
-    getcwd(olddir.buffer(),1024);
-    chdir(changetodir);
-}
-
-PushDir::~PushDir()
-{
-    // FIXME error handling
-    chdir((const char *)olddir);
-}
-
-/**
- * Utility function to split a file path into directory and file name parts.
-// FIXME put it somewhere else (a utils.cc?)
- */
-void splitFileName(const char *pathname, opp_string& dir, opp_string& fnameonly)
-{
-    if (!pathname || !*pathname)
-    {
-         dir = "";
-         fnameonly = "";
-         return;
-    }
-
-    dir = pathname;
-
-    // find last "/" or "\"
-    char *dirbeg = dir.buffer();
-    char *s = dirbeg + strlen(dirbeg) - 1;
-    while (s>=dirbeg && *s!='\\' && *s!='/') s--;
-
-    // split along that
-    if (s<dirbeg)
-    {
-        fnameonly = dirbeg;
-        dir = ".";
-    }
-    else
-    {
-        fnameonly = s+1;
-        *(s+1) = '\0';
-    }
-
-}
 
 //-------------------------------------------------------------
 
@@ -461,7 +390,7 @@ void TOmnetApp::processFileName(opp_string& fname)
             throw new cException("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
                                  "or COMPUTERNAME (Windows) environment variable",
                                  (const char *)fname);
-        int pid = getpid();
+        int pid = getProcessId();
 
         // add ".<hostname>.<pid>" to fname
         opp_string origfname = fname;
