@@ -1,3 +1,9 @@
+2002-03-04  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* util.h (class opp_string): use delete[] in functions
+	~opp_string, allocate and operator=
+
+
 2002-03-03  Andras Varga
 
         * protocol.h: added constants: PR_ICMP, PR_UDP_APP. [suggested by

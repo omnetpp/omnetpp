@@ -495,7 +495,7 @@ class SIM_API opp_string
     /**
      * Destructor.
      */
-    ~opp_string()              {delete str;}
+    ~opp_string()              {delete[] str;}
 
     /**
      * Returns pointer to the string.
@@ -513,20 +513,20 @@ class SIM_API opp_string
      * Allocates a buffer of the given size.
      */
     char *allocate(unsigned size)
-                               {delete str;str=new char[size];return str;}
+                               {delete[] str;str=new char[size];return str;}
 
     /**
      * Deletes the old value and opp_strdup()'s the new value
      * to create the object's own copy.
      */
     const char *operator=(const char *s)
-                               {delete str;str=opp_strdup(s);return str;}
+                               {delete[] str;str=opp_strdup(s);return str;}
 
     /**
      * Assignment.
      */
     opp_string& operator=(const opp_string& s)
-                               {delete str;str=opp_strdup(s.str);return *this;}
+                               {delete[] str;str=opp_strdup(s.str);return *this;}
 };
 
 //==========================================================================
