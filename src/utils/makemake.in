@@ -365,6 +365,8 @@ else
     fi
 fi
 
+args1=`echo " $args " | sed 's/	/ /g;s/ -f / /g;s/ -m / /g'`
+
 cat <<EOT
 clean:
 	rm -f *.o *_n.cc \$(TARGET)
@@ -374,11 +376,11 @@ depend:
 	makedepend -Y \$(INCLUDE_PATH) -- *.cc
 	makedepend -Y \$(INCLUDE_PATH) -fmakefile.in -- *.cc
 
-makefile:
-	makemake -f $args  #recreate makefile
+re-makemake:
+	makemake -f $args1  #recreate makefile
 
-makefile.in:
-	makemake -f -m $args
+re-makemake-m:
+	makemake -f -m $args1  #recreate makefile.in
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
