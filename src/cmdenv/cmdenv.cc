@@ -234,9 +234,10 @@ int TCmdenvApp::run()
 
             startRun();
             startrun_done = true;
+            ev.flushstream_ifneeded();
 
             // run the simulation
-            ::fprintf(fout, "Running simulation...\n");
+            ::fprintf(fout, "\nRunning simulation...\n");
             ::fflush(fout);
 
             // simulate() should only throw exception if error occurred and
@@ -246,6 +247,7 @@ int TCmdenvApp::run()
             ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", run_nr());
             ::fflush(fout);
             simulation.callFinish();
+            ev.flushstream_ifneeded();
         }
         catch (cException *e)
         {
@@ -255,7 +257,7 @@ int TCmdenvApp::run()
             delete e;
         }
 
-        // stop run on other partitions
+        // call endRun()
         if (startrun_done)
         {
             try
@@ -340,6 +342,9 @@ void TCmdenvApp::simulate()
 
                // execute event
                simulation.doOneEvent( mod );
+
+               // flush so that output from different modules don't get mixed
+               ev.flushstream_ifneeded();
 
                checkTimeLimits();
                if (sigint_received)

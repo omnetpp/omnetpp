@@ -388,6 +388,7 @@ void cEnvir::puts(const char *s)
 
 void cEnvir::sputn(const char *s, int n)
 {
+    // invoked from evbuf::sync() to flush stream buffer
     if (disable_tracing) return;
 
     if (app)
@@ -400,14 +401,7 @@ cEnvir& cEnvir::flush()
 {
     if (disable_tracing) return *this;
 
-#if !defined(_MSC_VER) || _MSC_VER>1200
-    std::ostream::flush();
-#else
-    // **HACK** Same MSVC bug as in cenvir.h: cannot call member of base class
-    // if it's in a different namespace. At least flush() is not virtual
-    // so we can work around it.
-    ((ostream *)(this))->flush();
-#endif
+    ev_buf.pubsync();
 
     if (app)
         app->flush();
