@@ -22,7 +22,7 @@ all : nedc.exe nedtool.exe
 nedtool : nedtool.exe
 
 nedtool.exe : main.obj
-	$(LINK) $(LDFLAGS) /nologo /out:nedtool.exe main.obj $(LIBS) ../nedxml/nedxml.lib $(EXPAT_LIBS)
+	$(LINK) $(LDFLAGS) /nologo /out:nedtool.exe main.obj $(LIBS) ../nedxml/nedxml.lib $(XML_LIBS)
 	copy nedtool.exe $(OMNETPP_BIN_DIR:/=\)
 
 main.obj : main.cc
