@@ -543,18 +543,19 @@ class SIM_API cMessage : public cObject
     simtime_t sendingTime()  const {return sent;}
 
     /**
-     * Returns time when the message has arrived or 0 if the message
+     * Returns time when the message arrived (or will arrive if it
+     * is currently scheduled or is underway), or 0 if the message
      * hasn't been sent/scheduled yet.
      */
     simtime_t arrivalTime()  const {return delivd;}
 
     /**
-     * Return true if the message has arrived through gate g.
+     * Return true if the message arrived through gate g.
      */
     bool arrivedOn(int g) const {return g==togate;}
 
     /**
-     * Return true if the message has arrived through the gate
+     * Return true if the message arrived through the gate
      * given with its name and index (if multiple gate).
      */
     bool arrivedOn(const char *s, int g=0);
