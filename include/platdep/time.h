@@ -76,7 +76,7 @@ inline timeval timeval_substract(const timeval& a, const timeval& b)
     timeval res;
     res.tv_sec = a.tv_sec - b.tv_sec;
     res.tv_usec = a.tv_usec - b.tv_usec;
-    if (res.tv_usec<1000000) {
+    if (res.tv_usec<0) {
         res.tv_sec--;
         res.tv_usec += 1000000;
     }
@@ -92,7 +92,7 @@ inline bool timeval_greater(const timeval& a, const timeval& b)
 }
 
 // On 32-bit architectures, good up to ~1200 hours
-inline unsigned long timeval_msec(const timeval& a) 
+inline unsigned long timeval_msec(const timeval& a)
 {
     return 1000*a.tv_sec + (a.tv_usec/1000);
 }
