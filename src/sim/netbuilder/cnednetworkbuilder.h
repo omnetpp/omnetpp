@@ -82,12 +82,6 @@ class cNEDNetworkBuilder
     virtual void setupNetwork(NetworkNode *networknode);
 
     /**
-     * Sets up gates and parameters of the module, based on the info in the
-     * passed NEDElement tree.
-     */
-    virtual void addParametersGatesTo(cModule *module, CompoundModuleNode *modulenode);
-
-    /**
      * Builds submodules and internal connections, based on the info in the
      * passed NEDElement tree.
      */

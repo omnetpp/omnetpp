@@ -66,38 +66,6 @@ void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
     networkp->buildInside();
 }
 
-void cNEDNetworkBuilder::addParametersGatesTo(cModule *modp, CompoundModuleNode *modulenode)
-{
-    // loop through parameters and add them
-    ParamsNode *params = modulenode->getFirstParamsChild();
-    if (params)
-    {
-        for (ParamNode *par=params->getFirstParamChild(); par; par=par->getNextParamNodeSibling())
-        {
-            const char *parname = par->getName();
-            const char *partype = par->getDataType();
-            modp->addPar(parname);
-            if (opp_strcmp(partype,"string")==0)
-            {
-                modp->par(parname) = "";
-                modp->par(parname).setInput(true);
-            }
-        }
-    }
-
-    // loop through gates and add them
-    GatesNode *gates = modulenode->getFirstGatesChild();
-    if (gates)
-    {
-        for (GateNode *gate=gates->getFirstGateChild(); gate; gate=gate->getNextGateNodeSibling())
-        {
-            const char *gatename = gate->getName();
-            int gatedir = gate->getDirection();
-            modp->addGate(gatename, gatedir==NED_GATEDIR_INPUT ? 'I' : 'O');
-        }
-    }
-}
-
 void cNEDNetworkBuilder::buildInside(cModule *modp, CompoundModuleNode *modulenode)
 {
     // loop through submods and add them
@@ -494,14 +462,23 @@ double cNEDNetworkBuilder::evalFunction(FunctionNode *node, cModule *parentmodp,
         const char *name = op1->getName();
 
         // find among local module gates
-        cGate *g = submodp->gate(name);
-        if (g)
-            return g->size();
+        if (submodp)
+        {
+            cGate *g = submodp->gate(name);
+            if (g)
+                return g->size();
+        }
 
         // if not found, find among submodules
         cModule *m = parentmodp->submodule(name);
         if (m)
             return m->size();
+
+        // if not found, find among gates of parent module
+        cGate *g = parentmodp->gate(name);
+        if (g)
+            return g->size();
+
         throw new cException("dynamic module builder: evaluate: sizeof(%s) failed -- no such gate or module", name);
     }
     else if (!strcmp(funcname,"input"))

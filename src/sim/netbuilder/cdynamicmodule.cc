@@ -31,7 +31,7 @@
 
 
 cDynamicModuleType::cDynamicModuleType(const char *name, CompoundModuleNode *moduleNode) :
-  cModuleType(name, NULL /*FIXME not good!!!*/, NULL /*FIXME not good!!!*/)
+  cModuleType(name, name, NULL)
 {
     modulenode = moduleNode;
 }
@@ -39,14 +39,6 @@ cDynamicModuleType::cDynamicModuleType(const char *name, CompoundModuleNode *mod
 cModule *cDynamicModuleType::createModuleObject(const char *modname, cModule *parentmod)
 {
     return new cDynamicCompoundModule(modname, parentmod);
-}
-
-void cDynamicModuleType::addParametersGatesTo(cModule *mod)
-{
-// FIXME this should go into a cModuleInterface->addParametersGatesTo()
-    // add parameters and gates to the new module, using builder
-    cNEDNetworkBuilder builder;
-    builder.addParametersGatesTo(mod, modulenode);
 }
 
 //FIXME this is deprecated or what....
@@ -59,12 +51,6 @@ void cDynamicModuleType::buildInside(cModule *mod)
 cDynamicModuleType::~cDynamicModuleType()
 {
     delete modulenode;
-}
-
-cModuleInterface *cDynamicModuleType::moduleInterface()
-{
-    // we create no interface description for a dynamically loaded module type...
-    return NULL;
 }
 
 //--------------

@@ -42,7 +42,6 @@ class cDynamicModuleType : public cModuleType
     CompoundModuleNode *modulenode;  // contains NEDElement tree
 
     virtual cModule *createModuleObject(const char *modname, cModule *parentmod);
-    virtual void addParametersGatesTo(cModule *mod);
 
   public:
     cDynamicModuleType(const char *name, CompoundModuleNode *moduleNode);
@@ -52,11 +51,6 @@ class cDynamicModuleType : public cModuleType
      * FIXME comment
      */
     virtual void buildInside(cModule *module);
-
-    /**
-     * Returns NULL. FIXME more comment
-     */
-    virtual cModuleInterface *moduleInterface();
 };
 
 
