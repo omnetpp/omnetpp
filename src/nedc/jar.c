@@ -33,7 +33,7 @@
 #include "jar_lib.h"
 
 #define NEDC_VERSION      "2.2pre1"
-#define NEDC_VERSION_HEX  "0x0202FF"
+#define NEDC_VERSION_HEX  "0x0201"
 
 #ifdef __MSDOS__
         #define SLASH "\\"
