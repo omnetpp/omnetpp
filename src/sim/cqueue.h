@@ -74,14 +74,14 @@ class SIM_API cQueue : public cObject
     virtual void insert(cObject *obj);                       // insert from head using cmpfunc
     virtual void insertBefore(cObject *where, cObject *obj); // insert at specific place
     virtual void insertAfter(cObject *where, cObject *obj);  // insert at specific place
-    virtual cObject *head()                                  // peek head item
-    virtual cObject *tail()                                  // peek tail item
+    virtual cObject *head();                                 // peek head item
+    virtual cObject *tail();                                 // peek tail item
     virtual cObject *remove(cObject *obj);                   // remove item from queue
     virtual cObject *pop();                                  // remove item at tail
 
-    virtual int length()                    // number of items
+    virtual int length();                   // number of items
     bool empty() {return length()==0;}      // check whether queue is empty
-    virtual bool contains(cObject *obj)     // check whether queue contains an object
+    virtual bool contains(cObject *obj);    // check whether queue contains an object
     // bool isEnqueued(cObject *obj)        -- obsolete, use contains() instead!
     virtual void clear();                   // delete whole contents
 };
