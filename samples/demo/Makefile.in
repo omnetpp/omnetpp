@@ -11,7 +11,6 @@ TARGET = demo
 # User interface (uncomment one) (-u option)
 # USERIF_LIBS=$(CMDENV_LIBS)
 USERIF_LIBS=$(TKENV_LIBS)
-# USERIF_LIBS=$(TVENV_LIBS)
 
 # Uncomment the second line for parallel execution (PVM3) support (-p option):
 KERNEL_LIBS=$(STD_KERNEL_LIBS)
@@ -51,7 +50,6 @@ SYS_LIBS=@SYS_LIBS@
 
 # User interface libs
 CMDENV_LIBS=-lenvir -lcmdenv
-TVENV_LIBS=-lenvir -ltvenv $(TV_LIBS)
 TKENV_LIBS=-lenvir -ltkenv $(TK_LIBS)
 
 # Simulation kernel

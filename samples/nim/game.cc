@@ -40,7 +40,7 @@ void Game::activity()
     int num_sticks = par("num_sticks");
     int player_to_move = par("first_move");
 
-    // make the variables visible from Tkenv/Tvenv
+    // make the variables visible from Tkenv
     WATCH(num_sticks);
     WATCH(player_to_move);
 
