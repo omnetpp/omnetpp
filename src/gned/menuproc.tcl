@@ -445,8 +445,8 @@ NO WARRANTY. See Help|Release notes and the 'license' file for details.
 }
 
 proc helpRelNotes {} {
-    global OMNETPP_GNED_DIR
-    createFileViewer [file join $OMNETPP_GNED_DIR "README"]
+    global OMNETPP_GNED_README
+    createFileViewer $OMNETPP_GNED_README
 }
 
 proc notImplemented {args} {

@@ -294,3 +294,5 @@ Apr 16, 2001
  - added gned.ico
 Apr 20, 2001
  - bugfix in new WinMain() startup code
+May 2, 2001
+ - fixed Help|README when using compiled-in Tcl code
