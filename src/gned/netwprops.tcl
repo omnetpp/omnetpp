@@ -38,33 +38,34 @@ proc editNetworkProps {key} {
 
     # create "General" page
     label-entry $nb.general.name "Name:"
-    radiobutton $nb.general.r1 -text "Type is fixed:" -value 0  -variable tmp(uselike) -command "NetworkProps:notUseLike $w"
-    label-combo2 $nb.general.type "  Type:" [getModuleNameList]
-    radiobutton $nb.general.r2 -text "Type is passed in a parameter:" -value 1  -variable tmp(uselike) -command "NetworkProps:useLike $w"
-    label-combo2 $nb.general.likepar "  Parameter name:" [getNameList $ned($ned($key,parentkey),parentkey) "params"]; #FIXME BAD!!!! REMOVE THE WHOLE "LIKE" THING FROM NETWORKS!
-    label-combo2 $nb.general.likemod "  Prototype module:" [getModuleNameList]
+    #radiobutton $nb.general.r1 -text "Type is fixed:" -value 0  -variable tmp(uselike) -command "NetworkProps:notUseLike $w"
+    label-combo2 $nb.general.type "Type:" [getModuleNameList]
+    #radiobutton $nb.general.r2 -text "Type is passed in a parameter:" -value 1  -variable tmp(uselike) -command "NetworkProps:useLike $w"
+    #label-combo2 $nb.general.likepar "  Parameter name:" [getNameList $ned($ned($key,parentkey),parentkey) "params"]; #FIXME BAD!!!! REMOVE THE WHOLE "LIKE" THING FROM NETWORKS!
+    #label-combo2 $nb.general.likemod "  Prototype module:" [getModuleNameList]
     label-text  $nb.general.comment "Comments:" 4
 
     pack $nb.general.name  -expand 0 -fill x -side top
-    pack $nb.general.r1  -expand 0 -fill none -side top -anchor w
+    #pack $nb.general.r1  -expand 0 -fill none -side top -anchor w
     pack $nb.general.type  -expand 0 -fill x -side top
-    pack $nb.general.r2  -expand 0 -fill none -side top -anchor w
-    pack $nb.general.likepar  -expand 0 -fill x -side top
-    pack $nb.general.likemod  -expand 0 -fill x -side top
+    #pack $nb.general.r2  -expand 0 -fill none -side top -anchor w
+    #pack $nb.general.likepar  -expand 0 -fill x -side top
+    #pack $nb.general.likemod  -expand 0 -fill x -side top
     pack $nb.general.comment -expand 0 -fill x -side top
 
     # fill "General" page with values
     $nb.general.name.e insert 0 $ned($key,name)
-    if {$ned($key,like-name)==""} {
-        set tmp(uselike) 0
-        $nb.general.type.e insert 0 $ned($key,type-name)
-        NetworkProps:notUseLike $w
-     } else {
-        set tmp(uselike) 1
-        $nb.general.likepar.e insert 0 $ned($key,type-name)
-        $nb.general.likemod.e insert 0 $ned($key,like-name)
-        NetworkProps:useLike $w
-    }
+    $nb.general.type.e insert 0 $ned($key,type-name)
+    #if {$ned($key,like-name)==""} {
+    #    set tmp(uselike) 0
+    #    $nb.general.type.e insert 0 $ned($key,type-name)
+    #    NetworkProps:notUseLike $w
+    #} else {
+    #    set tmp(uselike) 1
+    #    $nb.general.likepar.e insert 0 $ned($key,type-name)
+    #    $nb.general.likemod.e insert 0 $ned($key,like-name)
+    #    NetworkProps:useLike $w
+    #}
     $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
 
     # create "Parameters" page
@@ -101,13 +102,14 @@ proc editNetworkProps {key} {
 
         # process "General" page.
         set ned($key,name) [$nb.general.name.e get]
-        if {!$tmp(uselike)} {
-            set ned($key,type-name) [$nb.general.type.e get]
-            set ned($key,like-name) ""
-        } else {
-            set ned($key,type-name) [$nb.general.likepar.e get]
-            set ned($key,like-name) [$nb.general.likemod.e get]
-        }
+        set ned($key,type-name) [$nb.general.type.e get]
+        #if {!$tmp(uselike)} {
+        #    set ned($key,type-name) [$nb.general.type.e get]
+        #    set ned($key,like-name) ""
+        #} else {
+        #    set ned($key,type-name) [$nb.general.likepar.e get]
+        #    set ned($key,like-name) [$nb.general.likemod.e get]
+        #}
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
 
         # process "Parameters" page.
@@ -165,16 +167,19 @@ proc NetworkProps:validate {w} {
         assertEntryIsValidName $nb.general.name.e "network name"
         # FIXME assertUnique
 
-        if {!$tmp(uselike)} {
-            assertEntryFilledIn $nb.general.type.e "module type"
-            assertEntryIsValidName $nb.general.type.e "module type"
-        } else {
-            assertEntryFilledIn $nb.general.likepar.e "parameter name for module type"
-            assertEntryIsValidName $nb.general.likepar.e "parameter name for module type"
+        assertEntryFilledIn $nb.general.type.e "module type"
+        assertEntryIsValidName $nb.general.type.e "module type"
 
-            assertEntryFilledIn $nb.general.likemod.e "prototype module"
-            assertEntryIsValidName $nb.general.likemod.e "prototype module"
-        }
+        #if {!$tmp(uselike)} {
+        #    assertEntryFilledIn $nb.general.type.e "module type"
+        #    assertEntryIsValidName $nb.general.type.e "module type"
+        #} else {
+        #    assertEntryFilledIn $nb.general.likepar.e "parameter name for module type"
+        #    assertEntryIsValidName $nb.general.likepar.e "parameter name for module type"
+        #
+        #    assertEntryFilledIn $nb.general.likemod.e "prototype module"
+        #    assertEntryIsValidName $nb.general.likemod.e "prototype module"
+        #}
 
     } message] {
         tk_messageBox -parent $w -icon error -type ok -title "Error" -message $message
