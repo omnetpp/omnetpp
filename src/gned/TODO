@@ -9,7 +9,8 @@ Bugs:
 Parse/Generate:
 - comments around display strings, channel attributes are lost
 - add default comments for newly created modules!
-- display string parsing loses 'matrix' and 'row' modes
+- display string parsing loses all tags not used by GNED, e.g. submod vector
+  'matrix' and 'row' modes!
 - display string parsing -- rewrite!!!
 - error recovery in the grammar: TBD
 
@@ -26,6 +27,7 @@ Drawing:
   on the canvas
 - rename on canvas: with module vectors it's a catastrophe now...
 - UNDO feature (at least one step) [from Niko]
+- drag connections from one module to another (disconnect/reconnect) [from Niko]
 
 Load/save:
 - SaveAll feature [from Niko]
@@ -42,12 +44,11 @@ Load/save:
 Text editor:
 - "find next" missing
 - ctrl-H doesn't bring up Find/Replace dialog [from Niko]
-- <Enter> in the Find/Replace dialog causes error
+- <Enter> in the Find/Replace dialog causes error (at least in Windows)
 - pgup, ctrl-pgup doesn't work correctly
 - syntax highlighting not 100% OK: it can be fooled with string constants
   containing `//' or `\"' sequences; `in:' and `out:' are not highlighted
 - syntax highlight: <paste> should update the whole file
-
 
 General:
 - introduce ~/.gnedrc
@@ -60,6 +61,9 @@ General:
   on that toolbar: Find, Replace
 - scrollbar for the tabs below if there are too many windows open
 - speed up data structure, get rid of "foreach i [array names ned ...]" statements...
+- it's possible to exit GNED while editing canvas(es) in text mode which have
+  unsaved changes!!!
+- GNED should remember the directory of the last opened file
 
 Dialogs:
 - merge "Drawing options" dialogs into properties

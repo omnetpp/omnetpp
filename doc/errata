@@ -1,0 +1,4 @@
+To usman:
+
+).isBusy()  ===>  )->isBusy()
+).transmissionFinishes()  ===>  )->transmissionFinishes()

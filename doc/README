@@ -26,8 +26,7 @@ scheduling; they are implemented as coroutines).
 OMNeT++ is written in C++ and it is portable: it runs on any platform
 where there's a C++ compiler. It has a Tcl/Tk user interface which is
 supported on under Unix/X and Win32 platforms. There's also a platform-
-independent command-line user interface for batch execution, and a text-mode
-windowing user interface (Turbo Vision).
+independent command-line user interface for batch execution.
 
 OMNeT++ has a graphical topology editor called GNED and also a tool
 called Plove for analyzing and plotting simulation output. Both tools
@@ -127,6 +126,7 @@ Here's a list of the people who have or had anything to do with OMNeT++:
 
 Primary author and maintainer:
         Andras Varga            andras@metechnology.com
+                                http://www.hit.bme.hu/phd/vargaa
 
 Advisor:
         Gyorgy Pongor           BME-HIT, pongor@hit.bme.hu
