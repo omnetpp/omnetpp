@@ -663,6 +663,30 @@ with the Plove program.
 We also collect basic statistics (min, max, mean, std.dev.) and histogram
 about the hop count which we'll print out at the end of the simulation.
 
+@dontinclude txc11.cc
+@skip class Txc11
+@until public:
+
+When a message arrives at the destination node, we update the statistics
+before deleting the message object. The following code has been added to
+handleMessage():
+
+@skip // Message arrived
+@until delete ttmsg
+
+Output vectors are written to file automatically during the simulation, but
+other values have to be recorded at the end of the simulation.
+The place for doing this is the finish() function which is invoked on
+<i>successful</i> termination of the simulation (i.e. not when it's stopped
+with an error).
+
+@skip ::finish
+@until }
+
+<img src="step10a.gif">
+
+<img src="step10b.gif">
+
 Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
 */
 
