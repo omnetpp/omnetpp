@@ -70,6 +70,7 @@ sim_std : sim_std$(LIB_SUFFIX)
 sim_std.lib : $(CPPOBJS)
 	$(AR) /nologo /out:sim_std.lib $(CPPOBJS)
 	copy sim_std.lib $(OMNETPP_LIB_DIR:/=\)
+	- copy /b vc?0.pdb $(OMNETPP_LIB_DIR:/=\)\sim_std.pdb 2>nul
 
 sim_std.dll : $(CPPOBJS) $(LIBS)
 	$(SHLIB_LD) /nologo /out:sim_std.dll /implib:sim_std.ilib /subsystem:console /def:sim_std.def $(CPPOBJS) $(LIBS)

@@ -31,6 +31,7 @@ all: cmdenv$(LIB_SUFFIX)
 cmdenv.lib : $(OBJS)
 	$(AR) /nologo /out:cmdenv.lib $(OBJS)
 	copy cmdenv.lib $(OMNETPP_LIB_DIR:/=\)
+	- copy /b vc?0.pdb $(OMNETPP_LIB_DIR:/=\)\cmdenv.pdb 2>nul
 
 cmdenv.dll : $(OBJS) $(LIBS)
 	$(SHLIB_LD) /nologo /out:cmdenv.dll /implib:cmdenv.ilib /subsystem:console /def:cmdenv.def $(OBJS) $(LIBS)

@@ -36,6 +36,7 @@ all : envir$(LIB_SUFFIX)
 envir.lib : $(OBJS)
 	$(AR) /nologo /out:envir.lib $(OBJS)
 	copy envir.lib $(OMNETPP_LIB_DIR:/=\)
+	- copy /b vc?0.pdb $(OMNETPP_LIB_DIR:/=\)\envir.pdb 2>nul
 
 envir.ilib : $(OBJS)
 	@rem How can one create only the import lib, without trying to link the DLL?

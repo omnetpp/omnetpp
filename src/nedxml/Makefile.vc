@@ -24,7 +24,7 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
 .SUFFIXES : .cc
 
 .cc.obj:
-        $(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 
 #
@@ -33,35 +33,36 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
 all : nedxml.lib
 
 nedxml.lib : unistd.h $(OBJS)
-        $(AR) /nologo /out:nedxml.lib $(OBJS)
-        copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
+	$(AR) /nologo /out:nedxml.lib $(OBJS)
+	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
+	- copy /b vc?0.pdb $(OMNETPP_LIB_DIR:/=\)\nedxml.pdb 2>nul
 
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned.dtd
-        perl dtdclassgen.pl ned.dtd
+	perl dtdclassgen.pl ned.dtd
 
 ned.tab.h ned.tab.cc : ned.y
-        $(YACC:/=\) -p nedyy -b ned -d ned.y
-        copy ned.tab.c ned.tab.cc
-        del ned.tab.c
+	$(YACC:/=\) -p nedyy -b ned -d ned.y
+	copy ned.tab.c ned.tab.cc
+	del ned.tab.c
 
 lex.yy.cc: ned.lex
-        $(LEX:/=\) -Pnedyy ned.lex
-        copy lex.nedyy.c lex.yy.cc
-        del lex.nedyy.c
+	$(LEX:/=\) -Pnedyy ned.lex
+	copy lex.nedyy.c lex.yy.cc
+	del lex.nedyy.c
 
-unistd.h: 
-        echo. > unistd.h
+unistd.h:
+	echo. > unistd.h
 
 doc:
-        $(DOXYGEN:/=\) doxy.cfg
+	$(DOXYGEN:/=\) doxy.cfg
 
 depend:
-        $(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+	$(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
 
 clean:
-        - del unistd.h
-        - del *.obj neddata.lib 2> nul
-        - del *.ilk *.idb *.pdb 2> nul
+	- del unistd.h
+	- del *.obj neddata.lib 2> nul
+	- del *.ilk *.idb *.pdb 2> nul
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
