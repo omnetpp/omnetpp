@@ -1,5 +1,8 @@
 2002-12-02  Andras Varga
 
+        * added opp_neddocall: it documents all ned files in the current 
+        directory and subdirectories.
+
         * opp_makemake_vc.pl renamed to opp_nmakemake
 
 	* use runperl.bat (from ActivePerl distribution) to run opp_test,
