@@ -154,7 +154,7 @@ InputPath=.\fddi_mac.ned
 InputName=fddi_mac
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -165,7 +165,7 @@ InputPath=.\fddi_mac.ned
 InputName=fddi_mac
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -176,7 +176,7 @@ InputPath=.\fddi_mac.ned
 InputName=fddi_mac
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -187,7 +187,7 @@ InputPath=.\fddi_mac.ned
 InputName=fddi_mac
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -209,7 +209,7 @@ InputPath=.\fddi_nets.ned
 InputName=fddi_nets
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -220,7 +220,7 @@ InputPath=.\fddi_nets.ned
 InputName=fddi_nets
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -231,7 +231,7 @@ InputPath=.\fddi_nets.ned
 InputName=fddi_nets
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -242,7 +242,7 @@ InputPath=.\fddi_nets.ned
 InputName=fddi_nets
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -264,7 +264,7 @@ InputPath=.\fddi_nodes.ned
 InputName=fddi_nodes
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -275,7 +275,7 @@ InputPath=.\fddi_nodes.ned
 InputName=fddi_nodes
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -286,7 +286,7 @@ InputPath=.\fddi_nodes.ned
 InputName=fddi_nodes
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -297,7 +297,7 @@ InputPath=.\fddi_nodes.ned
 InputName=fddi_nodes
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -319,7 +319,7 @@ InputPath=.\fddi_rings.ned
 InputName=fddi_rings
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -330,7 +330,7 @@ InputPath=.\fddi_rings.ned
 InputName=fddi_rings
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -341,7 +341,7 @@ InputPath=.\fddi_rings.ned
 InputName=fddi_rings
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -352,7 +352,7 @@ InputPath=.\fddi_rings.ned
 InputName=fddi_rings
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -378,7 +378,7 @@ InputPath=.\othermod.ned
 InputName=othermod
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -389,7 +389,7 @@ InputPath=.\othermod.ned
 InputName=othermod
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -400,7 +400,7 @@ InputPath=.\othermod.ned
 InputName=othermod
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -411,7 +411,7 @@ InputPath=.\othermod.ned
 InputName=othermod
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -437,7 +437,7 @@ InputPath=.\ssm_ifs.ned
 InputName=ssm_ifs
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -448,7 +448,7 @@ InputPath=.\ssm_ifs.ned
 InputName=ssm_ifs
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -459,7 +459,7 @@ InputPath=.\ssm_ifs.ned
 InputName=ssm_ifs
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -470,7 +470,7 @@ InputPath=.\ssm_ifs.ned
 InputName=ssm_ifs
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 

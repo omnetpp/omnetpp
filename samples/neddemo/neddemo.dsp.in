@@ -150,7 +150,7 @@ InputPath=.\binarytree.ned
 InputName=binarytree
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -161,7 +161,7 @@ InputPath=.\binarytree.ned
 InputName=binarytree
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -172,7 +172,7 @@ InputPath=.\binarytree.ned
 InputName=binarytree
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -183,7 +183,7 @@ InputPath=.\binarytree.ned
 InputName=binarytree
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -205,7 +205,7 @@ InputPath=.\chain.ned
 InputName=chain
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -216,7 +216,7 @@ InputPath=.\chain.ned
 InputName=chain
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -227,7 +227,7 @@ InputPath=.\chain.ned
 InputName=chain
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -238,7 +238,7 @@ InputPath=.\chain.ned
 InputName=chain
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -260,7 +260,7 @@ InputPath=.\fullgraph.ned
 InputName=fullgraph
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -271,7 +271,7 @@ InputPath=.\fullgraph.ned
 InputName=fullgraph
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -282,7 +282,7 @@ InputPath=.\fullgraph.ned
 InputName=fullgraph
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -293,7 +293,7 @@ InputPath=.\fullgraph.ned
 InputName=fullgraph
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -315,7 +315,7 @@ InputPath=.\hexgrid.ned
 InputName=hexgrid
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -326,7 +326,7 @@ InputPath=.\hexgrid.ned
 InputName=hexgrid
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -337,7 +337,7 @@ InputPath=.\hexgrid.ned
 InputName=hexgrid
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -348,7 +348,7 @@ InputPath=.\hexgrid.ned
 InputName=hexgrid
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -370,7 +370,7 @@ InputPath=.\mesh.ned
 InputName=mesh
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -381,7 +381,7 @@ InputPath=.\mesh.ned
 InputName=mesh
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -392,7 +392,7 @@ InputPath=.\mesh.ned
 InputName=mesh
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -403,7 +403,7 @@ InputPath=.\mesh.ned
 InputName=mesh
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -429,7 +429,7 @@ InputPath=.\randomgraph.ned
 InputName=randomgraph
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -440,7 +440,7 @@ InputPath=.\randomgraph.ned
 InputName=randomgraph
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -451,7 +451,7 @@ InputPath=.\randomgraph.ned
 InputName=randomgraph
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -462,7 +462,7 @@ InputPath=.\randomgraph.ned
 InputName=randomgraph
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -484,7 +484,7 @@ InputPath=.\star.ned
 InputName=star
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -495,7 +495,7 @@ InputPath=.\star.ned
 InputName=star
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -506,7 +506,7 @@ InputPath=.\star.ned
 InputName=star
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -517,7 +517,7 @@ InputPath=.\star.ned
 InputName=star
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 

@@ -150,7 +150,7 @@ InputPath=.\tictoc1.ned
 InputName=tictoc1
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -161,7 +161,7 @@ InputPath=.\tictoc1.ned
 InputName=tictoc1
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -172,7 +172,7 @@ InputPath=.\tictoc1.ned
 InputName=tictoc1
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -183,7 +183,7 @@ InputPath=.\tictoc1.ned
 InputName=tictoc1
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -272,7 +272,7 @@ InputPath=.\tictoc10.ned
 InputName=tictoc10
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -283,7 +283,7 @@ InputPath=.\tictoc10.ned
 InputName=tictoc10
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -294,7 +294,7 @@ InputPath=.\tictoc10.ned
 InputName=tictoc10
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -305,7 +305,7 @@ InputPath=.\tictoc10.ned
 InputName=tictoc10
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -382,7 +382,7 @@ InputPath=.\tictoc11.ned
 InputName=tictoc11
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -393,7 +393,7 @@ InputPath=.\tictoc11.ned
 InputName=tictoc11
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -404,7 +404,7 @@ InputPath=.\tictoc11.ned
 InputName=tictoc11
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -415,7 +415,7 @@ InputPath=.\tictoc11.ned
 InputName=tictoc11
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -445,7 +445,7 @@ InputPath=.\tictoc2.ned
 InputName=tictoc2
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -456,7 +456,7 @@ InputPath=.\tictoc2.ned
 InputName=tictoc2
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -467,7 +467,7 @@ InputPath=.\tictoc2.ned
 InputName=tictoc2
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -478,7 +478,7 @@ InputPath=.\tictoc2.ned
 InputName=tictoc2
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -500,7 +500,7 @@ InputPath=.\tictoc3.ned
 InputName=tictoc3
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -511,7 +511,7 @@ InputPath=.\tictoc3.ned
 InputName=tictoc3
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -522,7 +522,7 @@ InputPath=.\tictoc3.ned
 InputName=tictoc3
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -533,7 +533,7 @@ InputPath=.\tictoc3.ned
 InputName=tictoc3
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -555,7 +555,7 @@ InputPath=.\tictoc4.ned
 InputName=tictoc4
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -566,7 +566,7 @@ InputPath=.\tictoc4.ned
 InputName=tictoc4
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -577,7 +577,7 @@ InputPath=.\tictoc4.ned
 InputName=tictoc4
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -588,7 +588,7 @@ InputPath=.\tictoc4.ned
 InputName=tictoc4
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -610,7 +610,7 @@ InputPath=.\tictoc5.ned
 InputName=tictoc5
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -621,7 +621,7 @@ InputPath=.\tictoc5.ned
 InputName=tictoc5
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -632,7 +632,7 @@ InputPath=.\tictoc5.ned
 InputName=tictoc5
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -643,7 +643,7 @@ InputPath=.\tictoc5.ned
 InputName=tictoc5
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -665,7 +665,7 @@ InputPath=.\tictoc6.ned
 InputName=tictoc6
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -676,7 +676,7 @@ InputPath=.\tictoc6.ned
 InputName=tictoc6
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -687,7 +687,7 @@ InputPath=.\tictoc6.ned
 InputName=tictoc6
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -698,7 +698,7 @@ InputPath=.\tictoc6.ned
 InputName=tictoc6
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -720,7 +720,7 @@ InputPath=.\tictoc7.ned
 InputName=tictoc7
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -731,7 +731,7 @@ InputPath=.\tictoc7.ned
 InputName=tictoc7
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -742,7 +742,7 @@ InputPath=.\tictoc7.ned
 InputName=tictoc7
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -753,7 +753,7 @@ InputPath=.\tictoc7.ned
 InputName=tictoc7
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -775,7 +775,7 @@ InputPath=.\tictoc8.ned
 InputName=tictoc8
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -786,7 +786,7 @@ InputPath=.\tictoc8.ned
 InputName=tictoc8
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -797,7 +797,7 @@ InputPath=.\tictoc8.ned
 InputName=tictoc8
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -808,7 +808,7 @@ InputPath=.\tictoc8.ned
 InputName=tictoc8
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -830,7 +830,7 @@ InputPath=.\tictoc9.ned
 InputName=tictoc9
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -841,7 +841,7 @@ InputPath=.\tictoc9.ned
 InputName=tictoc9
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -852,7 +852,7 @@ InputPath=.\tictoc9.ned
 InputName=tictoc9
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -863,7 +863,7 @@ InputPath=.\tictoc9.ned
 InputName=tictoc9
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 

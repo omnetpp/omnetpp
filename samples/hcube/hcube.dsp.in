@@ -154,7 +154,7 @@ InputPath=.\gensink.ned
 InputName=gensink
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -165,7 +165,7 @@ InputPath=.\gensink.ned
 InputName=gensink
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -176,7 +176,7 @@ InputPath=.\gensink.ned
 InputName=gensink
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -187,7 +187,7 @@ InputPath=.\gensink.ned
 InputName=gensink
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -209,7 +209,7 @@ InputPath=.\hc_net.ned
 InputName=hc_net
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -220,7 +220,7 @@ InputPath=.\hc_net.ned
 InputName=hc_net
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -231,7 +231,7 @@ InputPath=.\hc_net.ned
 InputName=hc_net
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -242,7 +242,7 @@ InputPath=.\hc_net.ned
 InputName=hc_net
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -268,7 +268,7 @@ InputPath=.\hc_rte.ned
 InputName=hc_rte
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -279,7 +279,7 @@ InputPath=.\hc_rte.ned
 InputName=hc_rte
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -290,7 +290,7 @@ InputPath=.\hc_rte.ned
 InputName=hc_rte
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -301,7 +301,7 @@ InputPath=.\hc_rte.ned
 InputName=hc_rte
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -398,7 +398,7 @@ InputPath=.\hcube.ned
 InputName=hcube
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -409,7 +409,7 @@ InputPath=.\hcube.ned
 InputName=hcube
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -420,7 +420,7 @@ InputPath=.\hcube.ned
 InputName=hcube
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
@@ -431,7 +431,7 @@ InputPath=.\hcube.ned
 InputName=hcube
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
 
 # End Custom Build
 
