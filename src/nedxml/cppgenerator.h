@@ -131,6 +131,7 @@ class NEDCppGenerator
     void doSubstmachine(SubstmachineNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doConnections(ConnectionsNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void resolveGate(const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex);
+    void resolveConnectionAttributes(ConnectionNode *node, const char *indent, int mode);
     void doConnection(ConnectionNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doConnattr(ConnAttrNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doForloop(ForLoopNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);

@@ -334,29 +334,6 @@ void NEDCppGenerator::writeProlog(ostream& out)
            "#  pragma warn -wuse\n"
            "#endif\n\n";
 
-#ifdef CHECKS_AS_MACROS
-    out << "#define check_module_count(num, mod, parentmod) \\\n"
-           "    {if ((int)num<0) throw new cException(\"Negative module vector size %s[%d] in compound module %s\", mod,(int)num,parentmod);}\n";
-    out << "#define check_gate_count(num, mod, gate, parentmod) \\\n"
-           "    {if ((int)num<0) throw new cException(\"Negative gate vector size %s.%s[%d] in compound module %s\", mod,gate,(int)num,parentmod);}\n";
-    out << "#define check_loop_bounds(lower, upper, parentmod) \\\n"
-                "    {if ((int)lower<0) \\\n"
-           "        throw new cException(\"Bad loop bounds (%d..%d) in compound module %s\", (int)lower,(int)upper,parentmod);}\n";
-    out << "#define check_module_index(index,modvar,modname,parentmod) \\\n"
-           "    {if (index<0 || index>=modvar[0]->size()) throw new cException(\"Bad submodule index %s[%d] in compound module %s\", modname,(int)index,parentmod);}\n";
-    out << "#define check_channel_params(delay, err, channel) \\\n"
-           "    {if ((double)delay<0.0) throw new cException(\"Negative delay value %lf in channel %s\",(double)delay,channel); \\\n"
-           "     if ((double)err<0.0 || (double)err>1.0) throw new cException(\"Incorrect error value %lf in channel %s\",(double)err,channel);}\n";
-    out << "#define check_modtype(modtype, modname) \\\n"
-           "    {if ((modtype)==NULL) throw new cException(\"Simple module type definition %s not found\", modname);}\n";
-    out << "#define check_gate(gateindex, modname, gatename) \\\n"
-           "    {if ((int)gateindex==-1) throw new cException(\"Gate %s.%s not found\",modname,gatename);}\n";
-    out << "#define check_anc_param(ptr,parname,compoundmod) \\\n"
-           "    {if ((ptr)==NULL) throw new cException(\"Unknown ancestor parameter named %s in compound module %s\", parname,compoundmod);}\n";
-    out << "#define check_param(modulep,parname) \\\n"
-           "    {if (!modulep->hasPar(parname)) throw new cException(\"Unknown parameter named %s\",parname);}\n";
-#else
-    // as functions
     out << "static void check_module_count(int num, const char *mod, const char *parentmod) {\n";
     out << "    if (num<0)\n";
     out << "        throw new cException(\"Negative module vector size %s[%d] in compound module %s\", mod,(int)num,parentmod);\n";
@@ -395,8 +372,6 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    if (!modulep->hasPar(parname))\n";
     out << "        throw new cException(\"Unknown parameter named %s\",parname);\n";
     out << "}\n";
-#endif
-
     out << "\n";
 
     out << "static void _readModuleParameters(cModule *mod)\n";
@@ -430,14 +405,34 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "static cChannel *_createSimpleChannel(double delay, double error, double datarate)\n";
     out << "{\n";
     out << "    cChannel *channel = new cSimpleChannel(\"channel\");\n";
-    out << "    cPar *par = new cPar(\"delay\");\n";
-    out << "    (*par) = delay;\n";
-    out << "    par = new cPar(\"error\");\n";
-    out << "    (*par) = error;\n";
-    out << "    channel->addPar(par);\n";
-    out << "    par = new cPar(\"datarate\");\n";
-    out << "    (*par) = datarate;\n";
-    out << "    channel->addPar(par);\n";
+    out << "    if (delay!=0)\n";
+    out << "    {\n";
+    out << "        cPar *par = new cPar(\"delay\");\n";
+    out << "        (*par) = delay;\n";
+    out << "        channel->addPar(par);\n";
+    out << "    }\n";
+    out << "    if (error!=0)\n";
+    out << "    {\n";
+    out << "        cPar *par = new cPar(\"error\");\n";
+    out << "        (*par) = error;\n";
+    out << "        channel->addPar(par);\n";
+    out << "    }\n";
+    out << "    if (datarate!=0)\n";
+    out << "    {\n";
+    out << "        cPar *par = new cPar(\"datarate\");\n";
+    out << "        (*par) = datarate;\n";
+    out << "        channel->addPar(par);\n";
+    out << "    }\n";
+    out << "    return channel;\n";
+    out << "}\n";
+    out << "\n";
+
+    out << "static cChannel *_createChannel(const char *name)\n";
+    out << "{\n";
+    out << "    cLinkType *link = findLink(name);\n";
+    out << "    if (!link)\n";
+    out << "        throw new cException(\"Channel type %s not found\", name);\n";
+    out << "    cChannel *channel = new cSimpleChannel(\"channel\",link);\n";
     out << "    return channel;\n";
     out << "}\n";
     out << "\n";
@@ -1021,6 +1016,58 @@ void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex,
    //      indent, mod_L, gate_L );
 }
 
+void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const char *indent, int mode)
+{
+    // emit code that creates channel and puts its ptr to "channel" variable
+
+    // channel?
+    ConnAttrNode *channelAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","channel");
+    ConstNode *channel = getConstantExpression(findExpression(channelAttr,"value"));
+    if (channel)
+    {
+        out << indent << "channel = _createChannel(\"" << channel->getValue() << "\");\n";
+        return;
+    }
+
+    // optimization: assess if simplified code can be generated
+    ConnAttrNode *delayAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","delay");
+    ConstNode *delay = getConstantExpression(findExpression(delayAttr,"value"));
+    bool isDelaySimple =  !delayAttr ? true : delay!=NULL;
+    ConnAttrNode *errorAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","error");
+    ConstNode *error = getConstantExpression(findExpression(errorAttr,"value"));
+    bool isErrorSimple =  !errorAttr ? true : error!=NULL;
+    ConnAttrNode *datarateAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","datarate");
+    ConstNode *datarate = getConstantExpression(findExpression(datarateAttr,"value"));
+    bool isDatarateSimple =  !datarateAttr ? true : datarate!=NULL;
+
+    if (isDelaySimple && isErrorSimple && isDatarateSimple)
+    {
+        // generate optimized code: delay, error, datarate with a specialized function
+        out << indent << "channel = _createSimpleChannel("
+            << (delay ? delay->getValue() : "0") << ", "
+            << (error ? error->getValue() : "0") << ", "
+            << (datarate ? datarate->getValue() : "0") << ");\n";
+
+        // add possible other attributes in the normal way
+        for (NEDElement *child=node->getFirstChildWithTag(NED_CONN_ATTR); child; child = child->getNextSiblingWithTag(NED_CONN_ATTR))
+        {
+            ConnAttrNode *connattr = (ConnAttrNode *)child;
+            if (strcmp(connattr->getName(),"delay")!=0 &&
+                strcmp(connattr->getName(),"error")!=0 &&
+                strcmp(connattr->getName(),"datarate")!=0)
+            {
+                generateItem(child, indent, mode);
+            }
+        }
+        return;
+    }
+
+    // fallback: general code
+    out << "\n" << indent << "// add channel\n";
+    out << indent << "channel = new cSimpleChannel(\"channel\");\n";
+    generateChildrenWithTags(node, "conn-attr", indent);
+}
+
 void NEDCppGenerator::doConnection(ConnectionNode *node, const char *indent, int mode, const char *arg)
 {
     // prolog
@@ -1047,49 +1094,8 @@ void NEDCppGenerator::doConnection(ConnectionNode *node, const char *indent, int
     }
     else
     {
-        // with channel:
-
-        // optimization: assess if simplified code can be generated
-        ConnAttrNode *delayAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","delay");
-        ConstNode *delay = getConstantExpression(findExpression(delayAttr,"value"));
-        bool isDelaySimple =  !delayAttr ? true : delay!=NULL;
-        ConnAttrNode *errorAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","error");
-        ConstNode *error = getConstantExpression(findExpression(errorAttr,"value"));
-        bool isErrorSimple =  !errorAttr ? true : error!=NULL;
-        ConnAttrNode *datarateAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","datarate");
-        ConstNode *datarate = getConstantExpression(findExpression(datarateAttr,"value"));
-        bool isDatarateSimple =  !datarateAttr ? true : datarate!=NULL;
-
-        if (isDelaySimple && isErrorSimple && isDatarateSimple)
-        {
-            // generate optimized code: delay, error, datarate with a specialized function
-            out << indent << "channel = _createSimpleChannel("
-                << (delay ? delay->getValue() : "0") << ", "
-                << (error ? error->getValue() : "0") << ", "
-                << (datarate ? datarate->getValue() : "0") << ");\n";
-
-            // add possible other attributes in the normal way
-            for (NEDElement *child=node->getFirstChildWithTag(NED_CONN_ATTR); child; child = child->getNextSiblingWithTag(NED_CONN_ATTR))
-            {
-                ConnAttrNode *connattr = (ConnAttrNode *)child;
-                if (strcmp(connattr->getName(),"delay")!=0 &&
-                    strcmp(connattr->getName(),"error")!=0 &&
-                    strcmp(connattr->getName(),"datarate")!=0)
-                {
-                    generateItem(child, indent, mode);
-                }
-            }
-        }
-        else
-        {
-            // fallback: general code
-            out << "\n" << indent << "// add channel\n";
-            out << indent << "channel = new cSimpleChannel(\"channel\");\n";
-            generateChildrenWithTags(node, "conn-attr", indent);
-            out << indent << "srcgate->setChannel(channel);\n";
-        }
-
-        // connect
+        // fill "channel" variable, then connect
+        resolveConnectionAttributes(node, indent, mode);
         out << indent << "srcgate->connectTo(destgate,channel);\n";
     }
 
