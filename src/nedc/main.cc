@@ -21,6 +21,7 @@
 #include <fstream.h>
 
 #include "nedparser.h"
+#include "nederror.h"
 #include "nedxmlparser.h"
 #include "neddtdvalidator.h"
 #include "nedbasicvalidator.h"
@@ -47,18 +48,27 @@ const char *findNextFile();
 //
 #include <io.h>
 long handle;
+char _ff_dir[1024];
+char _ff_fname[1024];
 struct _finddata_t fdata;
 const char *findFirstFile(const char *mask)
 {
+    strcpy(_ff_dir,mask);
+    char *s = strrchr(_ff_dir,'/');
+    if (s) *(s+1)='\0'; else _ff_dir[0]='\0';
     handle = _findfirst(mask, &fdata);
     if (handle<0) {_findclose(handle); return NULL;}
-    return fdata.name;
+    strcpy(_ff_fname,_ff_dir);
+    strcat(_ff_fname,fdata.name);
+    return _ff_fname;
 }
 const char *findNextFile()
 {
     int done=_findnext(handle, &fdata);
     if (done) {_findclose(handle); return NULL;}
-    return fdata.name;
+    strcpy(_ff_fname,_ff_dir);
+    strcat(_ff_fname,fdata.name);
+    return _ff_fname;
 }
 
 #else
@@ -138,6 +148,7 @@ void printUsage()
 }
 
 // FIXME todo: negate -e, -y for XML and NED output; --; - as filename
+// FIXME todo: remove output files on error
 
 bool processFile(const char *fname)
 {
@@ -157,6 +168,7 @@ bool processFile(const char *fname)
 
     // process input tree
     NEDElement *tree = 0;
+    clearErrors();
     if (ftype==XML)
     {
         tree = parseXML(fname);
@@ -167,15 +179,28 @@ bool processFile(const char *fname)
         parser.parseFile(fname,!opt_unparsedexpr);
         tree = parser.getTree();
     }
-
-    if (!tree)
+    if (errorsOccurred())
+    {
+        delete tree;
         return false;
+    }
 
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator;
     dtdvalidator.validate(tree);
+    if (errorsOccurred())
+    {
+        delete tree;
+        return false;
+    }
+
     NEDBasicValidator basicvalidator(!opt_unparsedexpr);
     basicvalidator.validate(tree);
+    if (errorsOccurred())
+    {
+        delete tree;
+        return false;
+    }
 
     // semantic validation (will load imports too)
     if (!opt_novalidation)
@@ -194,6 +219,11 @@ bool processFile(const char *fname)
             NEDSemanticValidator validator(!opt_unparsedexpr,&symboltable);
             validator.validate(tree);
         }
+    }
+    if (errorsOccurred())
+    {
+        delete tree;
+        return false;
     }
 
     if (opt_mergeoutput)
@@ -232,6 +262,9 @@ bool processFile(const char *fname)
         out.close();
 
         delete tree;
+
+        if (errorsOccurred())
+            return false;
     }
     return true;
 }
@@ -364,6 +397,12 @@ int main(int argc, char **argv)
 
     if (opt_mergeoutput)
     {
+        if (errorsOccurred())
+        {
+            delete outputtree;
+            return 1;
+        }
+
         const char *outfname;
 
         if (opt_outputfile)
@@ -386,6 +425,9 @@ int main(int argc, char **argv)
         out.close();
 
         delete outputtree;
+
+        if (errorsOccurred())
+            return 1;
     }
 
     return 0;
