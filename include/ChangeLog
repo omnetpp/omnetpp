@@ -3,6 +3,8 @@
 	* cmodule.h: cModule's addGate(), addPar() return type changed from
 	void to cGate*/cPar*.
 
+	* cobject.h: added bool cStaticFlag::isSet()
+
 2003-05-29  Andras Varga
 
 	* cfsm.h: FSM_Print(): improved output

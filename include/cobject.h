@@ -528,6 +528,7 @@ class cStaticFlag
   public:
     cStaticFlag()  {cObject::staticflag = 1;}
     ~cStaticFlag() {cObject::staticflag = 0;}
+    static bool isSet() {return cObject::staticflag;}
 };
 
 
