@@ -1,63 +1,49 @@
-Coding Conventions / Style Guide
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-last updated: Sept 17 1999
-
-Here's a bunch of advice on how to write OMNeT++ models. Some of them are
-"rules of thumb", saying if you program like that, you're likely to have less
-trouble; other conventions are aimed at making OMNeT++ models higher quality
-and more consistent.
+Coding Conventions and Style Guide
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+last updated: Nov 2004
 
 Source files
 
 1. Put the NED description, the C++ class declaration and the implementation
    of a simple module into three separate files. Don't put two or more modules'
-   code into the same file unless they are build upon one another - do not be
-   afraid of small files! Thus, for a simple module called Foobar, you should
-   have Foobar.ned, Foobar.h and Foobar.cc. This reduces coupling of module
-   sources and makes your code more reusable.
+   code into the same file unless they are build upon one another. Thus, 
+   for a simple module called Foobar, you would have Foobar.ned, Foobar.h and 
+   Foobar.cc.
 
 C++ coding style
 
-2. Write legible C++ code. Choose your favourite indentation style and keep
-   to it consistently. (I would prefer the style in which the OMNeT++ sources
-   are written.) Use // comments and never /* */ ones. Don't put more than one
-   statements on the same line. Avoid putting comments at the end of the line -
-   place them above the code on a separate line instead! Always use blank lines to
-   break the code into not-very-long logical blocks; above each block, put a
-   comment of few-words what that block does. Always put at least two blank lines
-   between two (member) functions. Remember: the structure of your code should be
-   obvious at the first glance!
+2. Choose your favourite indentation style and keep to it consistently. 
+   Prefer // comments to /* */ ones. Add Doxygen comments /** */ for 
+   classes and class methods. Don't put more than one statement on the same 
+   line. Avoid putting comments at the end of the line -- place them above 
+   the code on a separate line instead! Always use blank lines to
+   break the code into reasonably short logical blocks; above each block, 
+   put a comment in a few words what that block does. 
 
 3. Identifiers: Begin module type names with a capital letter, and capitalize
    the beginning of each word, like in TokenRingMAC. Do not use underscore `_` in
-   module names. Use the C++-style naming on member functions: beginning of each
-   word is capitalized (except for the first one) and no underscores:
-   sendUnnumberedFrame(). On parameter names, you may use C-style (window_size) or
-   C++-style (windowSize) naming, whichever you prefer.
+   module names. Use the C++-style naming on member functions: beginning of 
+   each word is capitalized (except for the first one) and no underscores:
+   sendUnnumberedFrame().
 
 Organizing simple modules
 
-4. Put state variables into the class declaration as data members instead of
-   local variables to activity(). This enables referencing them in finish() as
-   well as splitting up activity().
+4. Prefer handleMessage() to activity(). 
 
-5. Objects like cQueues, cOutVectors, cStdDevs also go into the class
+5. Objects like cQueues, cOutVectors, cStdDevs go into the class
    declaration. You can assign names to them with setName() and otherwise
-   initialize them at the top of the activity() function. This way you can avoid
-   having to write the simple module constructor explicitly.
+   initialize them in initialize().
 
 6. Avoid global variables (and what's the same, static class members). They
-   are not reset to their initial value (zero) when you run the simulation, stop
-   it and rebuild the network. This can cause several problems when you use Cmdenv
-   to execute several runs one after another, or in Tkenv when you rebuild the
-   network from the menu.
+   are not reset to their initial value (zero) when restart the network in 
+   Tkenv or perform several runs with Cmdenv.
 
 7. Query the values of parameters into state variables (-->class members) of
-   the same name at the top of the activity() function. If you know the value of a
-   parameter is a random value (like uniform 0..10) or it can change during
-   simulation, then to avoid having to look it up by name each time (like
-   d=par("delay")) you may query its pointer into a cPar* state variable with the
-   same name prepended with 'p' (like pDelay=&par("delay")).
+   the same name in initialize(). If you know the value of a parameter is 
+   a random value (like uniform 0..10) or it can change during simulation, 
+   then to avoid having to look it up by name each time (like d=par("delay")) 
+   you may query its pointer into a cPar* state variable with the same name 
+   prepended with 'p' (like pDelay=&par("delay")).
 
 Constructors, destructors, initialize() and finish()
 
@@ -68,11 +54,10 @@ Constructors, destructors, initialize() and finish()
    them automatically. However it cannot track non-OMNeT++ objects so they may
    need to be deleted manually from the destructor.
 
-9. You need to write the simple module constructor exlicitly if you have
+9. You need to write the simple module constructor explicitly if you have
    dynamic data structures in the class that need to be freed by the destructor.
    Even in this case, make the constructor as simple as possible (e.g. simply NULL
-   out the data structure pointers) and leave real work to the activity()
-   function.
+   out the data structure pointers) and leave real work to initialize().
 
 10.Especially, do not put simulation-related code into the simple module
    constructor. For example, modules often need to investigate their surroundings
@@ -83,12 +68,12 @@ Constructors, destructors, initialize() and finish()
 
 Make use of what C++ offers
 
-11.Do not hesitate to split up the activity() function to several member
-   functions, as this generally improves code readability. For example, if you're
-   implementing a state machine, you can put the general logic into activity() and
-   the code implementing the actual states into separate member functions. As a
-   rule of thumb, one member function shouldn't be more than one screen page
-   (about 25 lines) unless really necessary.
+11.Do not hesitate to split up handleMessage() into several member functions, 
+   as this generally improves code readability. For example, if you're
+   implementing a state machine, you can put the general logic into 
+   handleMessage() and the code implementing the actual states into separate 
+   member functions. As a rule of thumb, one member function shouldn't be 
+   more than one screen page long unless really necessary.
 
 12.Make the functions virtual. Maybe someone who reuses your code will need a
    different behavior than what you thought of.
@@ -102,27 +87,22 @@ Make use of what C++ offers
    others who might derive a different simple module class from your abstract
    class. Inheritance in NED is planned in later releases of OMNeT++.
 
+14.Define message classes in .msg files. Avoid hand-coded message classes and
+   attached cPar objects.
+
 For better performance
 
-14.Consider using subclassing cMessage to add parameters to it instead of using
-   cPar parameters. Simulations using message subclassing are reported to have
-   5..10 times (!) performance advantage to those using cPar message parameters.
-
-15.Reuse messages wherever possible, as this can result in a tremendous gain
-   in execution speed! For example, if you implement timers, you can create a
-   message once and then schedule the same message again and again each time the
-   timer is restarted. Look at the Fifo example about how to do it.
+15.Reuse messages wherever possible. For example, if you implement timers, 
+   you can create a message once and then schedule the same message again 
+   and again each time the timer is restarted. Look at the Fifo example 
+   about how to do it.
 
 Prepare for debugging
 
-16.Use ev.printf() and ev<<... generously to print out information on what the
-   module is doing. Doing so will pay out several times when it comes to
-   debugging. Use a parameter and a state variable called debug. Surround your
-   debugging output (ev<<... and ev.printf() calls) with if(debug). You may
-   introduce more specific debug switches (like debug_queuing etc.)
+16.Add ev<<... statements to the code to print out what the module is doing. 
+   It will pay out several times when it comes to debugging.
 
-17.Put a WATCH() on the state variables (including debug) at the top of the
-   activity function. They cause no run-time overhead, consume little memory and
-   can be invaluable during debugging.
+17.Put a WATCH() on the state variables into initialize(). This can be 
+   invaluable during debugging.
 
 
