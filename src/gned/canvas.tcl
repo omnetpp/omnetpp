@@ -261,14 +261,14 @@ proc setCanvasMode {mode} {
         pack forget $gned(graphics-toolbar)
 
         # enable/disable icons on common toolbar
-        foreach i {cut copy paste} {
-            $gned(horiz-toolbar).$i config -state active
-        }
-        if {$gned(supports-undo)==1} {
-            foreach i {undo redo} {
-                $gned(horiz-toolbar).$i config -state active
-            }
-        }
+        #foreach i {cut copy paste} {
+        #    $gned(horiz-toolbar).$i config -state active
+        #}
+        #if {$gned(supports-undo)==1} {
+        #    foreach i {undo redo} {
+        #        $gned(horiz-toolbar).$i config -state active
+        #    }
+        #}
 
     } elseif {$mode=="graphics"} {
         set c $canvas($canv_id,canvas)
@@ -281,9 +281,9 @@ proc setCanvasMode {mode} {
         pack $gned(graphics-toolbar) -side left -expand 0 -fill both
 
         # enable/disable icons on common toolbar
-        foreach i {cut copy paste undo redo} {
-            $gned(horiz-toolbar).$i config -state disabled
-        }
+        #foreach i {cut copy paste undo redo} {
+        #    $gned(horiz-toolbar).$i config -state disabled
+        #}
 
     } else {
         error "invalid mode $mode"

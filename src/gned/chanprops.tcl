@@ -34,7 +34,6 @@ proc editChannelProps {key} {
     pack $nb -expand 1 -fill both
     notebook_addpage $nb general "General"
     notebook_addpage $nb attrs "Channel attributes"
-    notebook_showpage $nb general
 
     # create "General" page
     label-entry $nb.general.name "Name:"
@@ -83,6 +82,8 @@ proc editChannelProps {key} {
     }
     # fillTableEditFromNed $nb.attrs.tbl $key
     # debug "editChannelProps: implement (Add standard attributes) button"
+
+    notebook_showpage $nb general
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog $w ChanProps:validate] == 1} {

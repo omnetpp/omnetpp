@@ -24,7 +24,7 @@ proc editNetworkProps {key} {
     # create dialog with OK and Cancel buttons
     set w .netprops
     createOkCancelDialog $w "Network Properties"
-    wm geometry $w "480x320"
+    wm geometry $w "490x320"
 
     set nb $w.f.nb
 
@@ -86,6 +86,7 @@ proc editNetworkProps {key} {
     #button $nb.on.xcheck -text "Consult module declaration"
     #pack $nb.on.xcheck -side top -anchor w -padx 4 -pady 4
 
+    notebook_showpage $nb general
     focus $nb.general.name.e
 
 

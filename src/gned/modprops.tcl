@@ -22,7 +22,7 @@ proc editModuleProps {key} {
     # create dialog with OK and Cancel buttons
     set w .modprops
     createOkCancelDialog $w "Module Properties"
-    wm geometry $w "480x300"
+    wm geometry $w "490x300"
 
     set nb $w.f.nb
 
@@ -75,6 +75,7 @@ proc editModuleProps {key} {
     #pack $nb.mach.l -side top -anchor w
     #pack $nb.mach.tbl -side top
 
+    notebook_showpage $nb general
     focus $nb.general.name.e
 
     # fill "General" page

@@ -26,7 +26,7 @@ proc editSubmoduleProps {key} {
     # create dialog with OK and Cancel buttons
     set w .submprops
     createOkCancelDialog $w "Submodule Properties"
-    wm geometry $w "480x330"
+    wm geometry $w "490x330"
 
     set nb $w.f.nb
 
@@ -105,6 +105,7 @@ proc editSubmoduleProps {key} {
     #button $nb.on.xcheck -text "Consult module declaration"
     #pack $nb.on.xcheck -side top -anchor w -padx 4 -pady 4
 
+    notebook_showpage $nb general
     focus $nb.general.name.e
 
 

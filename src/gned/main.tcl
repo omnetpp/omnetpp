@@ -219,13 +219,6 @@ proc createMainWindow {} {
       {sep6    -separator}
       {back    -image $icons(back)  -command {goBack}}
       {forward -image $icons(forward) -command {goForward}}
-      {sep1    -separator}
-      {cut     -image $icons(cut)   -command {editCut}}
-      {copy    -image $icons(copy)  -command {editCopy}}
-      {paste   -image $icons(paste) -command {editPaste}}
-      {sep3    -separator}
-      {undo    -image $icons(undo)  -command {editUndo}}
-      {redo    -image $icons(redo)  -command {editRedo}}
       {sep4    -separator}
       {sep5    -separator}
     } {
@@ -237,28 +230,14 @@ proc createMainWindow {} {
     set b [button $gned(horiz-toolbar).close -image $icons(close) -command fileCloseCanvas -relief flat]
     pack $b -anchor n -expand 0 -fill none -side right -padx 0 -pady 2
 
-    set help_tips($gned(horiz-toolbar).new)   {New NED file}
-    set help_tips($gned(horiz-toolbar).open)  {Open NED file}
-    set help_tips($gned(horiz-toolbar).save)  {Save NED file of current canvas}
+    set help_tips($gned(horiz-toolbar).new)     {New NED file}
+    set help_tips($gned(horiz-toolbar).open)    {Open NED file}
+    set help_tips($gned(horiz-toolbar).save)    {Save NED file of current canvas}
     #set help_tips($gned(horiz-toolbar).check) {Check module consistency}
     set help_tips($gned(horiz-toolbar).newcomp) {Add new component to current NED file}
-    set help_tips($gned(horiz-toolbar).cut)   {Cut to clipboard (ctrl-X)}
-    set help_tips($gned(horiz-toolbar).copy)  {Copy to clipboard (ctrl-C)}
-    set help_tips($gned(horiz-toolbar).paste) {Paste from clipbard (ctrl-V)}
-    set help_tips($gned(horiz-toolbar).undo)  {Undo editing (ctrl-Z)}
-    set help_tips($gned(horiz-toolbar).redo)  {Redo editing (ctrl-Y)}
-    set help_tips($gned(horiz-toolbar).back)  {Back to previous module}
-    set help_tips($gned(horiz-toolbar).forward)  {Forward}
-    set help_tips($gned(horiz-toolbar).close) {Close current canvas}
-
-    # check if undo works
-    set gned(supports-undo) 1
-    if [catch {text .tmp -undo true; destroy .tmp}] {
-        set gned(supports-undo) 0
-        set help_tips($gned(horiz-toolbar).undo)  {This version of Tk doesn't support Undo/Redo}
-        set help_tips($gned(horiz-toolbar).redo)  {This version of Tk doesn't support Undo/Redo}
-        puts "NOTE: This version of Tcl/Tk doesn't support Undo in text widgets yet."
-    }
+    set help_tips($gned(horiz-toolbar).back)    {Back to previous view}
+    set help_tips($gned(horiz-toolbar).forward) {Forward to next view}
+    set help_tips($gned(horiz-toolbar).close)   {Close current canvas}
 
 
     #################################
@@ -326,6 +305,13 @@ proc createMainWindow {} {
     set gned(textedit-toolbar) .toolbar.textedit
 
     foreach i {
+      {sep1    -separator}
+      {cut     -image $icons(cut)   -command {editCut}}
+      {copy    -image $icons(copy)  -command {editCopy}}
+      {paste   -image $icons(paste) -command {editPaste}}
+      {sep3    -separator}
+      {undo    -image $icons(undo)  -command {editUndo}}
+      {redo    -image $icons(redo)  -command {editRedo}}
       {sep0    -separator}
       {find    -image $icons(find)  -command {editFind}}
       {repl    -image $icons(findrepl) -command {editReplace}}
@@ -335,8 +321,22 @@ proc createMainWindow {} {
       pack $b -anchor w -expand 0 -fill y -side left -padx 0 -pady 2
     }
 
+    set help_tips($gned(textedit-toolbar).cut)   {Cut to clipboard (ctrl-X)}
+    set help_tips($gned(textedit-toolbar).copy)  {Copy to clipboard (ctrl-C)}
+    set help_tips($gned(textedit-toolbar).paste) {Paste from clipbard (ctrl-V)}
+    set help_tips($gned(textedit-toolbar).undo)  {Undo editing (ctrl-Z)}
+    set help_tips($gned(textedit-toolbar).redo)  {Redo editing (ctrl-Y)}
     set help_tips($gned(textedit-toolbar).find)  {Find text (ctrl-F)}
     set help_tips($gned(textedit-toolbar).repl)  {Replace text (ctrl-H)}
+
+    # check if undo works
+    set gned(supports-undo) 1
+    if [catch {text .tmp -undo true; destroy .tmp}] {
+        set gned(supports-undo) 0
+        set help_tips($gned(textedit-toolbar).undo)  {This version of Tk doesn't support Undo/Redo}
+        set help_tips($gned(textedit-toolbar).redo)  {This version of Tk doesn't support Undo/Redo}
+        puts "NOTE: This version of Tcl/Tk doesn't support Undo in text widgets yet."
+    }
 
 
     #################################
