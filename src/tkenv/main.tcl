@@ -279,13 +279,30 @@ proc create_omnetpp_window {} {
 #===================================================================
 
 proc load_bitmaps {path} {
-   puts ""
-   puts "Loading bitmaps:"
+   global tcl_platform
 
-   set files [concat [lsort [glob -nocomplain -- [file join $path {*.xbm}]]] \
-                     [lsort [glob -nocomplain -- [file join $path {*.xpm}]]] \
-                     [lsort [glob -nocomplain -- [file join $path {*.gif}]]]]
-   if {[llength $files] == 0} {puts "none found in $path!"; return}
+   puts "Loading bitmaps from $path:"
+
+   # On Windows, we use ";" to separate directories in $path. Using ":" (the 
+   # Unix separator) would cause trouble with dirs containing drive letter
+   # (like "c:\bitmaps"). Using a space is also not an option (think of
+   # "C:\Program Files\...").
+
+   if {$tcl_platform(platform) == "unix"} {
+       set sep {:;}
+   } else {
+       set sep {;}
+   }
+
+   set files {}
+   foreach dir [split $path $sep] {
+       set files [concat $files \
+                     [glob -nocomplain -- [file join $dir {*.gif}]] \
+                     [glob -nocomplain -- [file join $dir {*.xpm}]] \
+                     [glob -nocomplain -- [file join $dir {*.xbm}]]]
+   }
+   if {[llength $files] == 0} {puts "none found!"; return}
+
    foreach f $files {
 
       set type ""
@@ -298,12 +315,16 @@ proc load_bitmaps {path} {
 
       set name [string tolower [file tail [file rootname $f]]]
       if {$name=="proc"} {
-         puts -nonewline "(*** $name -- Tk dislikes this name, skipping ***) "   
+         puts -nonewline "(*** $name -- Tk dislikes this name, skipping ***) "
       } elseif [catch {image type $name}] {
-         puts -nonewline "$name "   
-         image create $type $name -file $f
+         if [catch {
+            image create $type $name -file $f
+            puts -nonewline "$name "
+         } err] {         
+            puts -nonewline "(*** $name is bad: $err ***) "
+         }
       } else {
-         puts -nonewline "(*** $name -- already exists, skipping ***) "   
+         puts -nonewline "($name is duplicate) "
       }
    }
    puts ""

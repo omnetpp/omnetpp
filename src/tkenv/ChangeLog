@@ -297,3 +297,6 @@ July 11-13, 1999
 July 17, 1999
   - modinsp2.tcl: fixed bug in animdelay calibration
   - fixed a bug with inspector type selection in Inspect|By pattern matching..
+Aug 2, 1999
+  - OMNETPP_BITMAP_PATH turned into real path (a list of directories). The
+    separator char is ";" on Windows, and ":" or ";" on Unix.
