@@ -25,21 +25,21 @@ class FF2AbstractFifo : public cSimpleModule
     virtual void endService(cMessage *msg) = 0;
 };
 
-// ACPFifo : single-server queue with given service time
-class ACPFifo : public FF2AbstractFifo
+// FF2PacketFifo : single-server queue with given service time
+class FF2PacketFifo : public FF2AbstractFifo
 {
   public:
-    Module_Class_Members(ACPFifo,FF2AbstractFifo,0);
+    Module_Class_Members(FF2PacketFifo,FF2AbstractFifo,0);
 
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);
 };
 
-// ACBFifo : single-server queue with service time based on message length
-class ACBFifo : public FF2AbstractFifo
+// FF2BitFifo : single-server queue with service time based on message length
+class FF2BitFifo : public FF2AbstractFifo
 {
   public:
-    Module_Class_Members(ACBFifo,FF2AbstractFifo,0);
+    Module_Class_Members(FF2BitFifo,FF2AbstractFifo,0);
 
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);

@@ -4,29 +4,29 @@
 //-------------------------------------------------------------
 
 
-// ACPFifo --
-// 
+// FF2PacketFifo --
+//
 // single-server queue
-// 
-simple ACPFifo 
-    parameters: 
-        service_time : numeric; 
-    gates: 
-        in: in; 
-        out: out; 
-endsimple 
+//
+simple FF2PacketFifo
+    parameters:
+        service_time : numeric;
+    gates:
+        in: in;
+        out: out;
+endsimple
 
 
-// ACPFifo --
-// 
+// FF2PacketFifo --
+//
 // single-server queues in another flavour
-// 
-simple ACBFifo 
-    parameters: 
-        bits_per_sec : numeric; 
-    gates: 
-        in: in; 
-        out: out; 
-endsimple 
+//
+simple FF2BitFifo
+    parameters:
+        bits_per_sec : numeric;
+    gates:
+        in: in;
+        out: out;
+endsimple
 
 

@@ -47,15 +47,15 @@ void FF2AbstractFifo::handleMessage(cMessage *msg)
 
 //------------------------------------------------
 
-Define_Module( ACPFifo )
+Define_Module( FF2PacketFifo );
 
-simtime_t ACPFifo::startService(cMessage *msg)
+simtime_t FF2PacketFifo::startService(cMessage *msg)
 {
     ev << "Starting service of " << msg->name() << endl;
     return par("service_time");
 }
 
-void ACPFifo::endService(cMessage *msg)
+void FF2PacketFifo::endService(cMessage *msg)
 {
     ev << "Completed service of " << msg->name() << endl;
     send( msg, "out" );
@@ -63,16 +63,17 @@ void ACPFifo::endService(cMessage *msg)
 
 //------------------------------------------------
 
-Define_Module( ACBFifo )
+Define_Module( FF2BitFifo );
 
-simtime_t ACBFifo::startService(cMessage *msg)
+simtime_t FF2BitFifo::startService(cMessage *msg)
 {
     ev << "Starting service of " << msg->name() << endl;
     return msg->length() / par("bits_per_sec");
 }
 
-void ACBFifo::endService(cMessage *msg)
+void FF2BitFifo::endService(cMessage *msg)
 {
     ev << "Completed service of " << msg->name() << endl;
     send( msg, "out" );
 }
+
