@@ -250,6 +250,7 @@ IdentNode *createIdent(const char *name);
 ConstNode *createConst(int type, const char *value, const char *text=NULL);
 ConstNode *createTimeConst(const char *text);
 NEDElement *createParamRefOrIdent(const char *name);
+NEDElement *unaryMinus(NEDElement *node);
 
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
@@ -552,58 +553,58 @@ static const short yyrhs[] = {   106,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   237,   241,   242,   246,   248,   250,   252,   254,   257,   259,
-   261,   263,   266,   267,   268,   269,   271,   273,   275,   277,
-   285,   290,   297,   298,   302,   314,   318,   327,   328,   332,
-   338,   347,   351,   361,   370,   380,   381,   385,   391,   403,
-   411,   421,   425,   435,   446,   459,   470,   480,   484,   494,
-   508,   521,   522,   526,   532,   537,   538,   542,   543,   547,
-   559,   560,   564,   570,   575,   576,   580,   581,   585,   597,
-   598,   602,   612,   613,   617,   627,   628,   632,   638,   643,
-   644,   648,   652,   662,   663,   667,   673,   678,   679,   683,
-   687,   698,   702,   706,   710,   714,   718,   722,   726,   730,
-   734,   738,   748,   749,   753,   759,   764,   765,   769,   770,
-   771,   772,   776,   777,   781,   786,   794,   795,   799,   804,
-   815,   816,   820,   826,   831,   832,   836,   837,   838,   839,
-   843,   844,   848,   853,   861,   862,   866,   871,   882,   883,
-   887,   893,   898,   899,   903,   904,   908,   914,   917,   924,
-   927,   933,   936,   943,   949,   958,   959,   963,   969,   974,
-   975,   979,   980,   984,   990,   993,  1000,  1003,  1009,  1012,
-  1019,  1025,  1034,  1035,  1039,  1040,  1044,  1050,  1052,  1059,
-  1064,  1065,  1069,  1070,  1074,  1085,  1086,  1090,  1091,  1095,
-  1101,  1103,  1110,  1115,  1116,  1120,  1121,  1125,  1136,  1137,
-  1141,  1142,  1146,  1152,  1154,  1161,  1167,  1168,  1172,  1173,
-  1177,  1189,  1190,  1194,  1195,  1199,  1205,  1207,  1214,  1220,
-  1221,  1225,  1226,  1230,  1242,  1243,  1247,  1253,  1255,  1262,
-  1267,  1268,  1272,  1273,  1277,  1284,  1295,  1296,  1300,  1306,
-  1308,  1315,  1320,  1321,  1325,  1326,  1330,  1337,  1348,  1352,
-  1359,  1363,  1370,  1371,  1375,  1382,  1384,  1391,  1396,  1397,
-  1401,  1402,  1406,  1407,  1411,  1416,  1425,  1426,  1430,  1440,
-  1444,  1448,  1452,  1456,  1457,  1461,  1466,  1471,  1477,  1486,
-  1487,  1491,  1497,  1505,  1510,  1514,  1522,  1529,  1535,  1545,
-  1546,  1550,  1555,  1562,  1567,  1571,  1579,  1584,  1588,  1597,
-  1602,  1607,  1618,  1619,  1623,  1630,  1632,  1639,  1644,  1645,
-  1649,  1650,  1654,  1655,  1659,  1664,  1673,  1674,  1678,  1688,
-  1692,  1696,  1700,  1704,  1705,  1709,  1714,  1719,  1725,  1734,
-  1735,  1739,  1745,  1753,  1758,  1762,  1770,  1777,  1783,  1793,
-  1794,  1798,  1803,  1810,  1815,  1819,  1827,  1832,  1836,  1845,
-  1850,  1855,  1866,  1873,  1882,  1893,  1904,  1917,  1922,  1927,
-  1931,  1942,  1944,  1946,  1948,  1953,  1955,  1960,  1961,  1964,
-  1966,  1968,  1970,  1972,  1974,  1977,  1981,  1983,  1985,  1987,
-  1989,  1991,  1994,  1996,  1998,  2001,  2005,  2007,  2009,  2012,
-  2015,  2017,  2019,  2022,  2024,  2026,  2028,  2030,  2035,  2036,
-  2037,  2038,  2039,  2043,  2048,  2053,  2059,  2065,  2073,  2077,
-  2079,  2084,  2088,  2090,  2092,  2097,  2102,  2104,  2106,  2112,
-  2113,  2114,  2115,  2123,  2132,  2141,  2148,  2158,  2167,  2174,
-  2178,  2186,  2193,  2194,  2198,  2199,  2203,  2209,  2219,  2225,
-  2229,  2236,  2243,  2249,  2253,  2260,  2267,  2273,  2277,  2284,
-  2291,  2297,  2297,  2301,  2302,  2306,  2307,  2311,  2321,  2322,
-  2323,  2324,  2325,  2326,  2330,  2336,  2336,  2340,  2341,  2345,
-  2346,  2350,  2356,  2360,  2367,  2374,  2375,  2377,  2378,  2379,
-  2380,  2382,  2383,  2384,  2385,  2387,  2388,  2389,  2394,  2399,
-  2404,  2408,  2412,  2416,  2420,  2424,  2428,  2429,  2430,  2431,
-  2432,  2433,  2434,  2435,  2436,  2437,  2441,  2442,  2443,  2446,
-  2446,  2448,  2448
+   238,   242,   243,   247,   249,   251,   253,   255,   258,   260,
+   262,   264,   267,   268,   269,   270,   272,   274,   276,   278,
+   286,   291,   298,   299,   303,   315,   319,   328,   329,   333,
+   339,   348,   352,   362,   371,   381,   382,   386,   392,   404,
+   412,   422,   426,   436,   447,   460,   471,   481,   485,   495,
+   509,   522,   523,   527,   533,   538,   539,   543,   544,   548,
+   560,   561,   565,   571,   576,   577,   581,   582,   586,   598,
+   599,   603,   613,   614,   618,   628,   629,   633,   639,   644,
+   645,   649,   653,   663,   664,   668,   674,   679,   680,   684,
+   688,   699,   703,   707,   711,   715,   719,   723,   727,   731,
+   735,   739,   749,   750,   754,   760,   765,   766,   770,   771,
+   772,   773,   777,   778,   782,   787,   795,   796,   800,   805,
+   816,   817,   821,   827,   832,   833,   837,   838,   839,   840,
+   844,   845,   849,   854,   862,   863,   867,   872,   883,   884,
+   888,   894,   899,   900,   904,   905,   909,   915,   918,   925,
+   928,   934,   937,   944,   950,   959,   960,   964,   970,   975,
+   976,   980,   981,   985,   991,   994,  1001,  1004,  1010,  1013,
+  1020,  1026,  1035,  1036,  1040,  1041,  1045,  1051,  1053,  1060,
+  1065,  1066,  1070,  1071,  1075,  1086,  1087,  1091,  1092,  1096,
+  1102,  1104,  1111,  1116,  1117,  1121,  1122,  1126,  1137,  1138,
+  1142,  1143,  1147,  1153,  1155,  1162,  1168,  1169,  1173,  1174,
+  1178,  1190,  1191,  1195,  1196,  1200,  1206,  1208,  1215,  1221,
+  1222,  1226,  1227,  1231,  1243,  1244,  1248,  1254,  1256,  1263,
+  1268,  1269,  1273,  1274,  1278,  1285,  1296,  1297,  1301,  1307,
+  1309,  1316,  1321,  1322,  1326,  1327,  1331,  1338,  1349,  1353,
+  1360,  1364,  1371,  1372,  1376,  1383,  1385,  1392,  1397,  1398,
+  1402,  1403,  1407,  1408,  1412,  1417,  1426,  1427,  1431,  1441,
+  1445,  1449,  1453,  1457,  1458,  1462,  1467,  1472,  1478,  1487,
+  1488,  1492,  1498,  1506,  1511,  1515,  1523,  1530,  1536,  1546,
+  1547,  1551,  1556,  1563,  1568,  1572,  1580,  1585,  1589,  1598,
+  1603,  1608,  1619,  1620,  1624,  1631,  1633,  1640,  1645,  1646,
+  1650,  1651,  1655,  1656,  1660,  1665,  1674,  1675,  1679,  1689,
+  1693,  1697,  1701,  1705,  1706,  1710,  1715,  1720,  1726,  1735,
+  1736,  1740,  1746,  1754,  1759,  1763,  1771,  1778,  1784,  1794,
+  1795,  1799,  1804,  1811,  1816,  1820,  1828,  1833,  1837,  1846,
+  1851,  1856,  1867,  1874,  1883,  1894,  1905,  1918,  1923,  1928,
+  1932,  1943,  1945,  1947,  1949,  1954,  1956,  1961,  1962,  1965,
+  1967,  1969,  1971,  1973,  1975,  1978,  1982,  1984,  1986,  1988,
+  1990,  1992,  1995,  1997,  1999,  2002,  2006,  2008,  2010,  2013,
+  2016,  2018,  2020,  2023,  2025,  2027,  2029,  2031,  2036,  2037,
+  2038,  2039,  2040,  2044,  2049,  2054,  2060,  2066,  2074,  2078,
+  2080,  2085,  2089,  2091,  2093,  2098,  2103,  2105,  2107,  2113,
+  2114,  2115,  2116,  2124,  2133,  2142,  2149,  2159,  2168,  2175,
+  2179,  2187,  2194,  2195,  2199,  2200,  2204,  2210,  2220,  2226,
+  2230,  2237,  2244,  2250,  2254,  2261,  2268,  2274,  2278,  2285,
+  2292,  2298,  2298,  2302,  2303,  2307,  2308,  2312,  2322,  2323,
+  2324,  2325,  2326,  2327,  2331,  2337,  2337,  2341,  2342,  2346,
+  2347,  2351,  2357,  2361,  2368,  2375,  2376,  2378,  2379,  2380,
+  2381,  2383,  2384,  2385,  2386,  2388,  2389,  2390,  2395,  2400,
+  2405,  2409,  2413,  2417,  2421,  2425,  2429,  2430,  2431,  2432,
+  2433,  2434,  2435,  2436,  2437,  2438,  2442,  2443,  2444,  2447,
+  2447,  2449,  2449
 };
 #endif
 
@@ -1768,68 +1769,68 @@ yyreduce:
   switch (yyn) {
 
 case 5:
-#line 249 "ned.y"
+#line 250 "ned.y"
 { if (ps.storeSourceCode) ps.channel->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 6:
-#line 251 "ned.y"
+#line 252 "ned.y"
 { if (ps.storeSourceCode) ((SimpleModuleNode *)ps.module)->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 7:
-#line 253 "ned.y"
+#line 254 "ned.y"
 { if (ps.storeSourceCode) ((CompoundModuleNode *)ps.module)->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 8:
-#line 255 "ned.y"
+#line 256 "ned.y"
 { if (ps.storeSourceCode) ps.network->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 9:
-#line 258 "ned.y"
+#line 259 "ned.y"
 { if (ps.storeSourceCode) ps.channel->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 10:
-#line 260 "ned.y"
+#line 261 "ned.y"
 { if (ps.storeSourceCode) ((SimpleModuleNode *)ps.module)->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 11:
-#line 262 "ned.y"
+#line 263 "ned.y"
 { if (ps.storeSourceCode) ((CompoundModuleNode *)ps.module)->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 12:
-#line 264 "ned.y"
+#line 265 "ned.y"
 { if (ps.storeSourceCode) ps.network->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 17:
-#line 272 "ned.y"
+#line 273 "ned.y"
 { if (ps.storeSourceCode) ps.enump->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 18:
-#line 274 "ned.y"
+#line 275 "ned.y"
 { if (ps.storeSourceCode) ps.messagep->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 19:
-#line 276 "ned.y"
+#line 277 "ned.y"
 { if (ps.storeSourceCode) ps.classp->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 20:
-#line 278 "ned.y"
+#line 279 "ned.y"
 { if (ps.storeSourceCode) ps.structp->setSourceCode(toString(yylsp[0])); ;
     break;}
 case 21:
-#line 286 "ned.y"
+#line 287 "ned.y"
 {
                   ps.imports = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile );
                   setComments(ps.imports,yylsp[0]);
                 ;
     break;}
 case 22:
-#line 291 "ned.y"
+#line 292 "ned.y"
 {
                   /* no setTrailingComment(ps.imports,@3); comment already stored with last filename */
                 ;
     break;}
 case 25:
-#line 303 "ned.y"
+#line 304 "ned.y"
 {
                   ps.import = (ImportedFileNode *)createNodeWithTag(NED_IMPORTED_FILE, ps.imports );
                   ps.import->setFilename(toString(trimQuotes(yylsp[0])));
@@ -1837,7 +1838,7 @@ case 25:
                 ;
     break;}
 case 27:
-#line 319 "ned.y"
+#line 320 "ned.y"
 {
                   ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile );
                   ps.channel->setName(toString(yylsp[0]));
@@ -1845,7 +1846,7 @@ case 27:
                 ;
     break;}
 case 30:
-#line 333 "ned.y"
+#line 334 "ned.y"
 {
                   ps.chanattr = addChanAttr(ps.channel,toString(yylsp[-2]));
                   addExpression(ps.chanattr, "value",yylsp[-1],yyvsp[-1]);
@@ -1853,7 +1854,7 @@ case 30:
                 ;
     break;}
 case 31:
-#line 339 "ned.y"
+#line 340 "ned.y"
 {
                   ps.chanattr = addChanAttr(ps.channel,toString(yylsp[-2]));
                   addExpression(ps.chanattr, "value",yylsp[-1],yyvsp[-1]);
@@ -1861,25 +1862,25 @@ case 31:
                 ;
     break;}
 case 32:
-#line 348 "ned.y"
+#line 349 "ned.y"
 {
                   setTrailingComment(ps.channel,yylsp[-1]);
                 ;
     break;}
 case 33:
-#line 352 "ned.y"
+#line 353 "ned.y"
 {
                   setTrailingComment(ps.channel,yylsp[-1]);
                 ;
     break;}
 case 34:
-#line 364 "ned.y"
+#line 365 "ned.y"
 {
                   setTrailingComment(ps.channel,yylsp[-1]);
                 ;
     break;}
 case 35:
-#line 371 "ned.y"
+#line 372 "ned.y"
 {
                   use_chanattrname_token = 0;
                   ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile );
@@ -1888,7 +1889,7 @@ case 35:
                 ;
     break;}
 case 38:
-#line 386 "ned.y"
+#line 387 "ned.y"
 {
                   ps.chanattr = addChanAttr(ps.channel,toString(yylsp[-3]));
                   addExpression(ps.chanattr, "value",yylsp[-1],yyvsp[-1]);
@@ -1896,7 +1897,7 @@ case 38:
                 ;
     break;}
 case 39:
-#line 392 "ned.y"
+#line 393 "ned.y"
 {
                   ps.chanattr = addChanAttr(ps.channel,toString(yylsp[-3]));
                   addExpression(ps.chanattr, "value",yylsp[-1],yyvsp[-1]);
@@ -1904,7 +1905,7 @@ case 39:
                 ;
     break;}
 case 41:
-#line 412 "ned.y"
+#line 413 "ned.y"
 {
                   use_chanattrname_token = 1;
                   ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
@@ -1913,25 +1914,25 @@ case 41:
                 ;
     break;}
 case 42:
-#line 422 "ned.y"
+#line 423 "ned.y"
 {
                   setTrailingComment(ps.module,yylsp[-1]);
                 ;
     break;}
 case 43:
-#line 426 "ned.y"
+#line 427 "ned.y"
 {
                   setTrailingComment(ps.module,yylsp[-1]);
                 ;
     break;}
 case 44:
-#line 440 "ned.y"
+#line 441 "ned.y"
 {
                   setTrailingComment(ps.module,yylsp[-1]);
                 ;
     break;}
 case 45:
-#line 447 "ned.y"
+#line 448 "ned.y"
 {
                   ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
                   ((SimpleModuleNode *)ps.module)->setName(toString(yylsp[0]));
@@ -1939,7 +1940,7 @@ case 45:
                 ;
     break;}
 case 47:
-#line 471 "ned.y"
+#line 472 "ned.y"
 {
                   use_chanattrname_token = 1;
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
@@ -1948,25 +1949,25 @@ case 47:
                 ;
     break;}
 case 48:
-#line 481 "ned.y"
+#line 482 "ned.y"
 {
                   setTrailingComment(ps.module,yylsp[-1]);
                 ;
     break;}
 case 49:
-#line 485 "ned.y"
+#line 486 "ned.y"
 {
                   setTrailingComment(ps.module,yylsp[-1]);
                 ;
     break;}
 case 50:
-#line 502 "ned.y"
+#line 503 "ned.y"
 {
                   setTrailingComment(ps.module,yylsp[-1]);
                 ;
     break;}
 case 51:
-#line 509 "ned.y"
+#line 510 "ned.y"
 {
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleNode *)ps.module)->setName(toString(yylsp[0]));
@@ -1974,19 +1975,19 @@ case 51:
                 ;
     break;}
 case 54:
-#line 527 "ned.y"
+#line 528 "ned.y"
 {
                   ps.machines = (MachinesNode *)createNodeWithTag(NED_MACHINES, ps.module );
                   setComments(ps.machines,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 55:
-#line 532 "ned.y"
+#line 533 "ned.y"
 {
                 ;
     break;}
 case 60:
-#line 548 "ned.y"
+#line 549 "ned.y"
 {
                   ps.machine = (MachineNode *)createNodeWithTag(NED_MACHINE, ps.machines );
                   ps.machine->setName(toString(yylsp[0]));
@@ -1994,19 +1995,19 @@ case 60:
                 ;
     break;}
 case 63:
-#line 565 "ned.y"
+#line 566 "ned.y"
 {
                   ps.machines = (MachinesNode *)createNodeWithTag(NED_MACHINES, ps.module );
                   setComments(ps.machines,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 64:
-#line 570 "ned.y"
+#line 571 "ned.y"
 {
                 ;
     break;}
 case 69:
-#line 586 "ned.y"
+#line 587 "ned.y"
 {
                   ps.machine = (MachineNode *)createNodeWithTag(NED_MACHINE, ps.machines );
                   ps.machine->setName(toString(yylsp[0]));
@@ -2014,231 +2015,231 @@ case 69:
                 ;
     break;}
 case 72:
-#line 603 "ned.y"
+#line 604 "ned.y"
 {
                   addDisplayString(ps.module,yylsp[-1]);
                 ;
     break;}
 case 75:
-#line 618 "ned.y"
+#line 619 "ned.y"
 {
                   addDisplayString(ps.module,yylsp[-1]);
                 ;
     break;}
 case 78:
-#line 633 "ned.y"
+#line 634 "ned.y"
 {
                   ps.params = (ParamsNode *)createNodeWithTag(NED_PARAMS, ps.module );
                   setComments(ps.params,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 79:
-#line 638 "ned.y"
+#line 639 "ned.y"
 {
                 ;
     break;}
 case 82:
-#line 649 "ned.y"
+#line 650 "ned.y"
 {
                   setComments(ps.param,yylsp[0]);
                 ;
     break;}
 case 83:
-#line 653 "ned.y"
+#line 654 "ned.y"
 {
                   setComments(ps.param,yylsp[0]);
                 ;
     break;}
 case 86:
-#line 668 "ned.y"
+#line 669 "ned.y"
 {
                   ps.params = (ParamsNode *)createNodeWithTag(NED_PARAMS, ps.module );
                   setComments(ps.params,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 87:
-#line 673 "ned.y"
+#line 674 "ned.y"
 {
                 ;
     break;}
 case 90:
-#line 684 "ned.y"
+#line 685 "ned.y"
 {
                   setComments(ps.param,yylsp[0]);
                 ;
     break;}
 case 91:
-#line 688 "ned.y"
+#line 689 "ned.y"
 {
                   setComments(ps.param,yylsp[0]);
                 ;
     break;}
 case 93:
-#line 703 "ned.y"
+#line 704 "ned.y"
 {
                   ps.param = addParameter(ps.params,yylsp[0],TYPE_NUMERIC);
                 ;
     break;}
 case 94:
-#line 707 "ned.y"
+#line 708 "ned.y"
 {
                   ps.param = addParameter(ps.params,yylsp[-2],TYPE_NUMERIC);
                 ;
     break;}
 case 95:
-#line 711 "ned.y"
+#line 712 "ned.y"
 {
                   ps.param = addParameter(ps.params,yylsp[0],TYPE_CONST_NUM);
                 ;
     break;}
 case 96:
-#line 715 "ned.y"
+#line 716 "ned.y"
 {
                   ps.param = addParameter(ps.params,yylsp[-2],TYPE_CONST_NUM);
                 ;
     break;}
 case 97:
-#line 719 "ned.y"
+#line 720 "ned.y"
 {
                   ps.param = addParameter(ps.params,yylsp[-3],TYPE_CONST_NUM);
                 ;
     break;}
 case 98:
-#line 723 "ned.y"
+#line 724 "ned.y"
 {
                   ps.param = addParameter(ps.params,yylsp[-3],TYPE_CONST_NUM);
                 ;
     break;}
 case 99:
-#line 727 "ned.y"
+#line 728 "ned.y"
 {
                   ps.param = addParameter(ps.params,yylsp[-2],TYPE_STRING);
                 ;
     break;}
 case 100:
-#line 731 "ned.y"
+#line 732 "ned.y"
 {
                   ps.param = addParameter(ps.params,yylsp[-2],TYPE_BOOL);
                 ;
     break;}
 case 101:
-#line 735 "ned.y"
+#line 736 "ned.y"
 {
                   ps.param = addParameter(ps.params,yylsp[-2],TYPE_XML);
                 ;
     break;}
 case 102:
-#line 739 "ned.y"
+#line 740 "ned.y"
 {
                   ps.param = addParameter(ps.params,yylsp[-2],TYPE_ANYTYPE);
                 ;
     break;}
 case 105:
-#line 754 "ned.y"
+#line 755 "ned.y"
 {
                   ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.module );
                   setComments(ps.gates,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 106:
-#line 759 "ned.y"
+#line 760 "ned.y"
 {
                 ;
     break;}
 case 115:
-#line 782 "ned.y"
+#line 783 "ned.y"
 {
                   ps.gate = addGate(ps.gates, yylsp[-2], 1, 1 );
                   setComments(ps.gate,yylsp[-2],yylsp[0]);
                 ;
     break;}
 case 116:
-#line 787 "ned.y"
+#line 788 "ned.y"
 {
                   ps.gate = addGate(ps.gates, yylsp[0], 1, 0 );
                   setComments(ps.gate,yylsp[0]);
                 ;
     break;}
 case 119:
-#line 800 "ned.y"
+#line 801 "ned.y"
 {
                   ps.gate = addGate(ps.gates, yylsp[-2], 0, 1 );
                   setComments(ps.gate,yylsp[-2],yylsp[0]);
                 ;
     break;}
 case 120:
-#line 805 "ned.y"
+#line 806 "ned.y"
 {
                   ps.gate = addGate(ps.gates, yylsp[0], 0, 0 );
                   setComments(ps.gate,yylsp[0]);
                 ;
     break;}
 case 123:
-#line 821 "ned.y"
+#line 822 "ned.y"
 {
                   ps.gates = (GatesNode *)createNodeWithTag(NED_GATES, ps.module );
                   setComments(ps.gates,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 124:
-#line 826 "ned.y"
+#line 827 "ned.y"
 {
                 ;
     break;}
 case 133:
-#line 849 "ned.y"
+#line 850 "ned.y"
 {
                   ps.gate = addGate(ps.gates, yylsp[-2], 1, 1 );
                   setComments(ps.gate,yylsp[-2],yylsp[0]);
                 ;
     break;}
 case 134:
-#line 854 "ned.y"
+#line 855 "ned.y"
 {
                   ps.gate = addGate(ps.gates, yylsp[0], 1, 0 );
                   setComments(ps.gate,yylsp[0]);
                 ;
     break;}
 case 137:
-#line 867 "ned.y"
+#line 868 "ned.y"
 {
                   ps.gate = addGate(ps.gates, yylsp[-2], 0, 1 );
                   setComments(ps.gate,yylsp[-2],yylsp[0]);
                 ;
     break;}
 case 138:
-#line 872 "ned.y"
+#line 873 "ned.y"
 {
                   ps.gate = addGate(ps.gates, yylsp[0], 0, 0 );
                   setComments(ps.gate,yylsp[0]);
                 ;
     break;}
 case 141:
-#line 888 "ned.y"
+#line 889 "ned.y"
 {
                   ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.module );
                   setComments(ps.submods,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 142:
-#line 893 "ned.y"
+#line 894 "ned.y"
 {
                 ;
     break;}
 case 147:
-#line 909 "ned.y"
+#line 910 "ned.y"
 {
                   ps.submod = addSubmodule(ps.submods, yylsp[-3], yylsp[-1], NULLPOS);
                   setComments(ps.submod,yylsp[-3],yylsp[0]);
                 ;
     break;}
 case 148:
-#line 915 "ned.y"
+#line 916 "ned.y"
 {
                 ;
     break;}
 case 149:
-#line 918 "ned.y"
+#line 919 "ned.y"
 {
                   ps.submod = addSubmodule(ps.submods, yylsp[-4], yylsp[-2], NULLPOS);
                   addVector(ps.submod, "vector-size",yylsp[-1],yyvsp[-1]);
@@ -2246,24 +2247,24 @@ case 149:
                 ;
     break;}
 case 150:
-#line 925 "ned.y"
+#line 926 "ned.y"
 {
                 ;
     break;}
 case 151:
-#line 928 "ned.y"
+#line 929 "ned.y"
 {
                   ps.submod = addSubmodule(ps.submods, yylsp[-5], yylsp[-1], yylsp[-3]);
                   setComments(ps.submod,yylsp[-5],yylsp[0]);
                 ;
     break;}
 case 152:
-#line 934 "ned.y"
+#line 935 "ned.y"
 {
                 ;
     break;}
 case 153:
-#line 937 "ned.y"
+#line 938 "ned.y"
 {
                   ps.submod = addSubmodule(ps.submods, yylsp[-6], yylsp[-1], yylsp[-4]);
                   addVector(ps.submod, "vector-size",yylsp[-3],yyvsp[-3]);
@@ -2271,36 +2272,36 @@ case 153:
                 ;
     break;}
 case 154:
-#line 944 "ned.y"
+#line 945 "ned.y"
 {
                 ;
     break;}
 case 158:
-#line 964 "ned.y"
+#line 965 "ned.y"
 {
                   ps.submods = (SubmodulesNode *)createNodeWithTag(NED_SUBMODULES, ps.module );
                   setComments(ps.submods,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 159:
-#line 969 "ned.y"
+#line 970 "ned.y"
 {
                 ;
     break;}
 case 164:
-#line 985 "ned.y"
+#line 986 "ned.y"
 {
                   ps.submod = addSubmodule(ps.submods, yylsp[-3], yylsp[-1], NULLPOS);
                   setComments(ps.submod,yylsp[-3],yylsp[0]);
                 ;
     break;}
 case 165:
-#line 991 "ned.y"
+#line 992 "ned.y"
 {
                 ;
     break;}
 case 166:
-#line 994 "ned.y"
+#line 995 "ned.y"
 {
                   ps.submod = addSubmodule(ps.submods, yylsp[-4], yylsp[-2], NULLPOS);
                   addVector(ps.submod, "vector-size",yylsp[-1],yyvsp[-1]);
@@ -2308,24 +2309,24 @@ case 166:
                 ;
     break;}
 case 167:
-#line 1001 "ned.y"
+#line 1002 "ned.y"
 {
                 ;
     break;}
 case 168:
-#line 1004 "ned.y"
+#line 1005 "ned.y"
 {
                   ps.submod = addSubmodule(ps.submods, yylsp[-5], yylsp[-1], yylsp[-3]);
                   setComments(ps.submod,yylsp[-5],yylsp[0]);
                 ;
     break;}
 case 169:
-#line 1010 "ned.y"
+#line 1011 "ned.y"
 {
                 ;
     break;}
 case 170:
-#line 1013 "ned.y"
+#line 1014 "ned.y"
 {
                   ps.submod = addSubmodule(ps.submods, yylsp[-6], yylsp[-1], yylsp[-4]);
                   addVector(ps.submod, "vector-size",yylsp[-3],yyvsp[-3]);
@@ -2333,24 +2334,24 @@ case 170:
                 ;
     break;}
 case 171:
-#line 1020 "ned.y"
+#line 1021 "ned.y"
 {
                 ;
     break;}
 case 177:
-#line 1045 "ned.y"
+#line 1046 "ned.y"
 {
                   ps.substmachines = (SubstmachinesNode *)createNodeWithTag(NED_SUBSTMACHINES, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
                   setComments(ps.substmachines,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 178:
-#line 1050 "ned.y"
+#line 1051 "ned.y"
 {
                 ;
     break;}
 case 179:
-#line 1053 "ned.y"
+#line 1054 "ned.y"
 {
                   ps.substmachines = (SubstmachinesNode *)createNodeWithTag(NED_SUBSTMACHINES, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
                   addExpression(ps.substmachines, "condition",yylsp[-1],yyvsp[-1]);
@@ -2358,31 +2359,31 @@ case 179:
                 ;
     break;}
 case 180:
-#line 1059 "ned.y"
+#line 1060 "ned.y"
 {
                 ;
     break;}
 case 185:
-#line 1075 "ned.y"
+#line 1076 "ned.y"
 {
                   ps.substmachine = addSubstmachine(ps.substmachines,yylsp[0]);
                   setComments(ps.substmachine,yylsp[0]);
                 ;
     break;}
 case 190:
-#line 1096 "ned.y"
+#line 1097 "ned.y"
 {
                   ps.substmachines = (SubstmachinesNode *)createNodeWithTag(NED_SUBSTMACHINES, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
                   setComments(ps.substmachines,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 191:
-#line 1101 "ned.y"
+#line 1102 "ned.y"
 {
                 ;
     break;}
 case 192:
-#line 1104 "ned.y"
+#line 1105 "ned.y"
 {
                   ps.substmachines = (SubstmachinesNode *)createNodeWithTag(NED_SUBSTMACHINES, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
                   addExpression(ps.substmachines, "condition",yylsp[-1],yyvsp[-1]);
@@ -2390,31 +2391,31 @@ case 192:
                 ;
     break;}
 case 193:
-#line 1110 "ned.y"
+#line 1111 "ned.y"
 {
                 ;
     break;}
 case 198:
-#line 1126 "ned.y"
+#line 1127 "ned.y"
 {
                   ps.substmachine = addSubstmachine(ps.substmachines,yylsp[0]);
                   setComments(ps.substmachine,yylsp[0]);
                 ;
     break;}
 case 203:
-#line 1147 "ned.y"
+#line 1148 "ned.y"
 {
                   ps.substparams = (SubstparamsNode *)createNodeWithTag(NED_SUBSTPARAMS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
                   setComments(ps.substparams,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 204:
-#line 1152 "ned.y"
+#line 1153 "ned.y"
 {
                 ;
     break;}
 case 205:
-#line 1155 "ned.y"
+#line 1156 "ned.y"
 {
                   ps.substparams = (SubstparamsNode *)createNodeWithTag(NED_SUBSTPARAMS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
                   addExpression(ps.substparams, "condition",yylsp[-1],yyvsp[-1]);
@@ -2422,12 +2423,12 @@ case 205:
                 ;
     break;}
 case 206:
-#line 1161 "ned.y"
+#line 1162 "ned.y"
 {
                 ;
     break;}
 case 211:
-#line 1178 "ned.y"
+#line 1179 "ned.y"
 {
                   ps.substparam = addSubstparam(ps.substparams,yylsp[-2]);
                   addExpression(ps.substparam, "value",yylsp[0],yyvsp[0]);
@@ -2435,19 +2436,19 @@ case 211:
                 ;
     break;}
 case 216:
-#line 1200 "ned.y"
+#line 1201 "ned.y"
 {
                   ps.substparams = (SubstparamsNode *)createNodeWithTag(NED_SUBSTPARAMS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
                   setComments(ps.substparams,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 217:
-#line 1205 "ned.y"
+#line 1206 "ned.y"
 {
                 ;
     break;}
 case 218:
-#line 1208 "ned.y"
+#line 1209 "ned.y"
 {
                   ps.substparams = (SubstparamsNode *)createNodeWithTag(NED_SUBSTPARAMS, ps.inNetwork ? (NEDElement *)ps.network : (NEDElement *)ps.submod );
                   addExpression(ps.substparams, "condition",yylsp[-1],yyvsp[-1]);
@@ -2455,12 +2456,12 @@ case 218:
                 ;
     break;}
 case 219:
-#line 1214 "ned.y"
+#line 1215 "ned.y"
 {
                 ;
     break;}
 case 224:
-#line 1231 "ned.y"
+#line 1232 "ned.y"
 {
                   ps.substparam = addSubstparam(ps.substparams,yylsp[-3]);
                   addExpression(ps.substparam, "value",yylsp[-1],yyvsp[-1]);
@@ -2468,19 +2469,19 @@ case 224:
                 ;
     break;}
 case 227:
-#line 1248 "ned.y"
+#line 1249 "ned.y"
 {
                   ps.gatesizes = (GatesizesNode *)createNodeWithTag(NED_GATESIZES, ps.submod );
                   setComments(ps.gatesizes,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 228:
-#line 1253 "ned.y"
+#line 1254 "ned.y"
 {
                 ;
     break;}
 case 229:
-#line 1256 "ned.y"
+#line 1257 "ned.y"
 {
                   ps.gatesizes = (GatesizesNode *)createNodeWithTag(NED_GATESIZES, ps.submod );
                   addExpression(ps.gatesizes, "condition",yylsp[-1],yyvsp[-1]);
@@ -2488,12 +2489,12 @@ case 229:
                 ;
     break;}
 case 230:
-#line 1262 "ned.y"
+#line 1263 "ned.y"
 {
                 ;
     break;}
 case 235:
-#line 1278 "ned.y"
+#line 1279 "ned.y"
 {
                   ps.gatesize = addGateSize(ps.gatesizes,yylsp[-1]);
                   addVector(ps.gatesize, "vector-size",yylsp[0],yyvsp[0]);
@@ -2502,26 +2503,26 @@ case 235:
                 ;
     break;}
 case 236:
-#line 1285 "ned.y"
+#line 1286 "ned.y"
 {
                   ps.gatesize = addGateSize(ps.gatesizes,yylsp[0]);
                   setComments(ps.gatesize,yylsp[0]);
                 ;
     break;}
 case 239:
-#line 1301 "ned.y"
+#line 1302 "ned.y"
 {
                   ps.gatesizes = (GatesizesNode *)createNodeWithTag(NED_GATESIZES, ps.submod );
                   setComments(ps.gatesizes,yylsp[-1],yylsp[0]);
                 ;
     break;}
 case 240:
-#line 1306 "ned.y"
+#line 1307 "ned.y"
 {
                 ;
     break;}
 case 241:
-#line 1309 "ned.y"
+#line 1310 "ned.y"
 {
                   ps.gatesizes = (GatesizesNode *)createNodeWithTag(NED_GATESIZES, ps.submod );
                   addExpression(ps.gatesizes, "condition",yylsp[-1],yyvsp[-1]);
@@ -2529,12 +2530,12 @@ case 241:
                 ;
     break;}
 case 242:
-#line 1315 "ned.y"
+#line 1316 "ned.y"
 {
                 ;
     break;}
 case 247:
-#line 1331 "ned.y"
+#line 1332 "ned.y"
 {
                   ps.gatesize = addGateSize(ps.gatesizes,yylsp[-1]);
                   addVector(ps.gatesize, "vector-size",yylsp[0],yyvsp[0]);
@@ -2543,26 +2544,26 @@ case 247:
                 ;
     break;}
 case 248:
-#line 1338 "ned.y"
+#line 1339 "ned.y"
 {
                   ps.gatesize = addGateSize(ps.gatesizes,yylsp[0]);
                   setComments(ps.gatesize,yylsp[0]);
                 ;
     break;}
 case 249:
-#line 1349 "ned.y"
+#line 1350 "ned.y"
 {
                   addDisplayString(ps.submod,yylsp[-1]);
                 ;
     break;}
 case 251:
-#line 1360 "ned.y"
+#line 1361 "ned.y"
 {
                   addDisplayString(ps.submod,yylsp[-1]);
                 ;
     break;}
 case 255:
-#line 1376 "ned.y"
+#line 1377 "ned.y"
 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setCheckUnconnected(false);
@@ -2570,12 +2571,12 @@ case 255:
                 ;
     break;}
 case 256:
-#line 1382 "ned.y"
+#line 1383 "ned.y"
 {
                 ;
     break;}
 case 257:
-#line 1385 "ned.y"
+#line 1386 "ned.y"
 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setCheckUnconnected(true);
@@ -2583,19 +2584,19 @@ case 257:
                 ;
     break;}
 case 258:
-#line 1391 "ned.y"
+#line 1392 "ned.y"
 {
                 ;
     break;}
 case 265:
-#line 1412 "ned.y"
+#line 1413 "ned.y"
 {
                   ps.forloop = (ForLoopNode *)createNodeWithTag(NED_FOR_LOOP, ps.conns );
                   ps.inLoop=1;
                 ;
     break;}
 case 266:
-#line 1417 "ned.y"
+#line 1418 "ned.y"
 {
                   ps.inLoop=0;
                   setComments(ps.forloop,yylsp[-6],yylsp[-3]);
@@ -2603,7 +2604,7 @@ case 266:
                 ;
     break;}
 case 269:
-#line 1431 "ned.y"
+#line 1432 "ned.y"
 {
                   ps.loopvar = addLoopVar(ps.forloop,yylsp[-4]);
                   addExpression(ps.loopvar, "from-value",yylsp[-2],yyvsp[-2]);
@@ -2612,33 +2613,33 @@ case 269:
                 ;
     break;}
 case 270:
-#line 1441 "ned.y"
+#line 1442 "ned.y"
 {
                   addExpression(ps.conn, "condition",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 272:
-#line 1449 "ned.y"
+#line 1450 "ned.y"
 {
                   addDisplayString(ps.conn,yylsp[0]);
                 ;
     break;}
 case 276:
-#line 1462 "ned.y"
+#line 1463 "ned.y"
 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,yylsp[-5],yylsp[-1]);
                 ;
     break;}
 case 277:
-#line 1467 "ned.y"
+#line 1468 "ned.y"
 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,yylsp[-7],yylsp[-1]);
                 ;
     break;}
 case 278:
-#line 1472 "ned.y"
+#line 1473 "ned.y"
 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
@@ -2646,7 +2647,7 @@ case 278:
                 ;
     break;}
 case 279:
-#line 1478 "ned.y"
+#line 1479 "ned.y"
 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
@@ -2654,7 +2655,7 @@ case 279:
                 ;
     break;}
 case 282:
-#line 1492 "ned.y"
+#line 1493 "ned.y"
 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(yylsp[-1]) );
@@ -2662,34 +2663,34 @@ case 282:
                 ;
     break;}
 case 283:
-#line 1498 "ned.y"
+#line 1499 "ned.y"
 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(yylsp[0]) );
                 ;
     break;}
 case 284:
-#line 1506 "ned.y"
+#line 1507 "ned.y"
 {
                   ps.conn->setSrcGate( toString( yylsp[-1]) );
                   addVector(ps.conn, "src-gate-index",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 285:
-#line 1511 "ned.y"
+#line 1512 "ned.y"
 {
                   ps.conn->setSrcGate( toString( yylsp[0]) );
                 ;
     break;}
 case 286:
-#line 1515 "ned.y"
+#line 1516 "ned.y"
 {
                   ps.conn->setSrcGate( toString( yylsp[-1]) );
                   ps.conn->setSrcGatePlusplus(true);
                 ;
     break;}
 case 287:
-#line 1523 "ned.y"
+#line 1524 "ned.y"
 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -2698,7 +2699,7 @@ case 287:
                 ;
     break;}
 case 288:
-#line 1530 "ned.y"
+#line 1531 "ned.y"
 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -2706,7 +2707,7 @@ case 288:
                 ;
     break;}
 case 289:
-#line 1536 "ned.y"
+#line 1537 "ned.y"
 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -2715,81 +2716,81 @@ case 289:
                 ;
     break;}
 case 292:
-#line 1551 "ned.y"
+#line 1552 "ned.y"
 {
                   ps.conn->setDestModule( toString(yylsp[-1]) );
                   addVector(ps.conn, "dest-module-index",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 293:
-#line 1556 "ned.y"
+#line 1557 "ned.y"
 {
                   ps.conn->setDestModule( toString(yylsp[0]) );
                 ;
     break;}
 case 294:
-#line 1563 "ned.y"
+#line 1564 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[-1]) );
                   addVector(ps.conn, "dest-gate-index",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 295:
-#line 1568 "ned.y"
+#line 1569 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[0]) );
                 ;
     break;}
 case 296:
-#line 1572 "ned.y"
+#line 1573 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[-1]) );
                   ps.conn->setDestGatePlusplus(true);
                 ;
     break;}
 case 297:
-#line 1580 "ned.y"
+#line 1581 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[-1]) );
                   addVector(ps.conn, "dest-gate-index",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 298:
-#line 1585 "ned.y"
+#line 1586 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[0]) );
                 ;
     break;}
 case 299:
-#line 1589 "ned.y"
+#line 1590 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[-1]) );
                   ps.conn->setDestGatePlusplus(true);
                 ;
     break;}
 case 300:
-#line 1598 "ned.y"
+#line 1599 "ned.y"
 {
                   ps.connattr = addConnAttr(ps.conn,"channel");
                   addExpression(ps.connattr, "value",yylsp[0],createExpression(createConst(NED_CONST_STRING, toString(yylsp[0]))));
                 ;
     break;}
 case 301:
-#line 1603 "ned.y"
+#line 1604 "ned.y"
 {
                   ps.connattr = addConnAttr(ps.conn,toString(yylsp[-1]));
                   addExpression(ps.connattr, "value",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 302:
-#line 1608 "ned.y"
+#line 1609 "ned.y"
 {
                   ps.connattr = addConnAttr(ps.conn,toString(yylsp[-1]));
                   addExpression(ps.connattr, "value",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 305:
-#line 1624 "ned.y"
+#line 1625 "ned.y"
 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setCheckUnconnected(false);
@@ -2797,12 +2798,12 @@ case 305:
                 ;
     break;}
 case 306:
-#line 1630 "ned.y"
+#line 1631 "ned.y"
 {
                 ;
     break;}
 case 307:
-#line 1633 "ned.y"
+#line 1634 "ned.y"
 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
                   ps.conns->setCheckUnconnected(true);
@@ -2810,19 +2811,19 @@ case 307:
                 ;
     break;}
 case 308:
-#line 1639 "ned.y"
+#line 1640 "ned.y"
 {
                 ;
     break;}
 case 315:
-#line 1660 "ned.y"
+#line 1661 "ned.y"
 {
                   ps.forloop = (ForLoopNode *)createNodeWithTag(NED_FOR_LOOP, ps.conns );
                   ps.inLoop=1;
                 ;
     break;}
 case 316:
-#line 1665 "ned.y"
+#line 1666 "ned.y"
 {
                   ps.inLoop=0;
                   setComments(ps.forloop,yylsp[-6],yylsp[-3]);
@@ -2830,7 +2831,7 @@ case 316:
                 ;
     break;}
 case 319:
-#line 1679 "ned.y"
+#line 1680 "ned.y"
 {
                   ps.loopvar = addLoopVar(ps.forloop,yylsp[-4]);
                   addExpression(ps.loopvar, "from-value",yylsp[-2],yyvsp[-2]);
@@ -2839,33 +2840,33 @@ case 319:
                 ;
     break;}
 case 320:
-#line 1689 "ned.y"
+#line 1690 "ned.y"
 {
                   addExpression(ps.conn, "condition",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 322:
-#line 1697 "ned.y"
+#line 1698 "ned.y"
 {
                   addDisplayString(ps.conn,yylsp[0]);
                 ;
     break;}
 case 326:
-#line 1710 "ned.y"
+#line 1711 "ned.y"
 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,yylsp[-5],yylsp[-1]);
                 ;
     break;}
 case 327:
-#line 1715 "ned.y"
+#line 1716 "ned.y"
 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,yylsp[-7],yylsp[-1]);
                 ;
     break;}
 case 328:
-#line 1720 "ned.y"
+#line 1721 "ned.y"
 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
@@ -2873,7 +2874,7 @@ case 328:
                 ;
     break;}
 case 329:
-#line 1726 "ned.y"
+#line 1727 "ned.y"
 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
@@ -2881,7 +2882,7 @@ case 329:
                 ;
     break;}
 case 332:
-#line 1740 "ned.y"
+#line 1741 "ned.y"
 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(yylsp[-1]) );
@@ -2889,34 +2890,34 @@ case 332:
                 ;
     break;}
 case 333:
-#line 1746 "ned.y"
+#line 1747 "ned.y"
 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule( toString(yylsp[0]) );
                 ;
     break;}
 case 334:
-#line 1754 "ned.y"
+#line 1755 "ned.y"
 {
                   ps.conn->setSrcGate( toString( yylsp[-1]) );
                   addVector(ps.conn, "src-gate-index",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 335:
-#line 1759 "ned.y"
+#line 1760 "ned.y"
 {
                   ps.conn->setSrcGate( toString( yylsp[0]) );
                 ;
     break;}
 case 336:
-#line 1763 "ned.y"
+#line 1764 "ned.y"
 {
                   ps.conn->setSrcGate( toString( yylsp[-1]) );
                   ps.conn->setSrcGatePlusplus(true);
                 ;
     break;}
 case 337:
-#line 1771 "ned.y"
+#line 1772 "ned.y"
 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -2925,7 +2926,7 @@ case 337:
                 ;
     break;}
 case 338:
-#line 1778 "ned.y"
+#line 1779 "ned.y"
 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -2933,7 +2934,7 @@ case 338:
                 ;
     break;}
 case 339:
-#line 1784 "ned.y"
+#line 1785 "ned.y"
 {
                   ps.conn = (ConnectionNode *)createNodeWithTag(NED_CONNECTION, ps.inLoop ? (NEDElement*)ps.forloop : (NEDElement*)ps.conns );
                   ps.conn->setSrcModule("");
@@ -2942,81 +2943,81 @@ case 339:
                 ;
     break;}
 case 342:
-#line 1799 "ned.y"
+#line 1800 "ned.y"
 {
                   ps.conn->setDestModule( toString(yylsp[-1]) );
                   addVector(ps.conn, "dest-module-index",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 343:
-#line 1804 "ned.y"
+#line 1805 "ned.y"
 {
                   ps.conn->setDestModule( toString(yylsp[0]) );
                 ;
     break;}
 case 344:
-#line 1811 "ned.y"
+#line 1812 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[-1]) );
                   addVector(ps.conn, "dest-gate-index",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 345:
-#line 1816 "ned.y"
+#line 1817 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[0]) );
                 ;
     break;}
 case 346:
-#line 1820 "ned.y"
+#line 1821 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[-1]) );
                   ps.conn->setDestGatePlusplus(true);
                 ;
     break;}
 case 347:
-#line 1828 "ned.y"
+#line 1829 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[-1]) );
                   addVector(ps.conn, "dest-gate-index",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 348:
-#line 1833 "ned.y"
+#line 1834 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[0]) );
                 ;
     break;}
 case 349:
-#line 1837 "ned.y"
+#line 1838 "ned.y"
 {
                   ps.conn->setDestGate( toString( yylsp[-1]) );
                   ps.conn->setDestGatePlusplus(true);
                 ;
     break;}
 case 350:
-#line 1846 "ned.y"
+#line 1847 "ned.y"
 {
                   ps.connattr = addConnAttr(ps.conn,"channel");
                   addExpression(ps.connattr, "value",yylsp[0],createExpression(createConst(NED_CONST_STRING, toString(yylsp[0]))));
                 ;
     break;}
 case 351:
-#line 1851 "ned.y"
+#line 1852 "ned.y"
 {
                   ps.connattr = addConnAttr(ps.conn,toString(yylsp[-1]));
                   addExpression(ps.connattr, "value",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 352:
-#line 1856 "ned.y"
+#line 1857 "ned.y"
 {
                   ps.connattr = addConnAttr(ps.conn,toString(yylsp[-1]));
                   addExpression(ps.connattr, "value",yylsp[0],yyvsp[0]);
                 ;
     break;}
 case 354:
-#line 1874 "ned.y"
+#line 1875 "ned.y"
 {
                   ps.network = addNetwork(ps.nedfile,yylsp[-3],yylsp[-1]);
                   setComments(ps.network,yylsp[-4],yylsp[0]);
@@ -3024,21 +3025,21 @@ case 354:
                 ;
     break;}
 case 355:
-#line 1883 "ned.y"
+#line 1884 "ned.y"
 {
                   setTrailingComment(ps.network,yylsp[-1]);
                   ps.inNetwork=0;
                 ;
     break;}
 case 356:
-#line 1897 "ned.y"
+#line 1898 "ned.y"
 {
                   setTrailingComment(ps.network,yylsp[-1]);
                   ps.inNetwork=0;
                 ;
     break;}
 case 357:
-#line 1905 "ned.y"
+#line 1906 "ned.y"
 {
                   ps.network = addNetwork(ps.nedfile,yylsp[-3],yylsp[-1]);
                   setComments(ps.network,yylsp[-4],yylsp[0]);
@@ -3046,187 +3047,187 @@ case 357:
                 ;
     break;}
 case 358:
-#line 1918 "ned.y"
+#line 1919 "ned.y"
 { yyval = yyvsp[-1]; ;
     break;}
 case 359:
-#line 1924 "ned.y"
+#line 1925 "ned.y"
 {
                   if (ps.parseExpressions) yyval = createExpression(yyvsp[0]);
                 ;
     break;}
 case 360:
-#line 1928 "ned.y"
+#line 1929 "ned.y"
 {
                   if (ps.parseExpressions) yyval = createExpression(yyvsp[0]);
                 ;
     break;}
 case 361:
-#line 1932 "ned.y"
+#line 1933 "ned.y"
 {
                   if (ps.parseExpressions) yyval = createExpression(yyvsp[0]);
                 ;
     break;}
 case 362:
-#line 1943 "ned.y"
+#line 1944 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction("input", yyvsp[-3], yyvsp[-1]); ;
     break;}
 case 363:
-#line 1945 "ned.y"
+#line 1946 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction("input", yyvsp[-1]); ;
     break;}
 case 364:
-#line 1947 "ned.y"
+#line 1948 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction("input"); ;
     break;}
 case 365:
-#line 1949 "ned.y"
+#line 1950 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction("input"); ;
     break;}
 case 366:
-#line 1954 "ned.y"
+#line 1955 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction("xmldoc", yyvsp[-3], yyvsp[-1]); ;
     break;}
 case 367:
-#line 1956 "ned.y"
+#line 1957 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction("xmldoc", yyvsp[-1]); ;
     break;}
 case 369:
-#line 1962 "ned.y"
+#line 1963 "ned.y"
 { yyval = yyvsp[-1]; ;
     break;}
 case 370:
-#line 1965 "ned.y"
+#line 1966 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("+", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 371:
-#line 1967 "ned.y"
+#line 1968 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("-", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 372:
-#line 1969 "ned.y"
+#line 1970 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("*", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 373:
-#line 1971 "ned.y"
+#line 1972 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("/", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 374:
-#line 1973 "ned.y"
+#line 1974 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("%", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 375:
-#line 1975 "ned.y"
+#line 1976 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("^", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 376:
-#line 1979 "ned.y"
-{ if (ps.parseExpressions) yyval = createOperator("-", yyvsp[0]); ;
+#line 1980 "ned.y"
+{ if (ps.parseExpressions) yyval = unaryMinus(yyvsp[0]); ;
     break;}
 case 377:
-#line 1982 "ned.y"
+#line 1983 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("==", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 378:
-#line 1984 "ned.y"
+#line 1985 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("!=", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 379:
-#line 1986 "ned.y"
+#line 1987 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator(">", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 380:
-#line 1988 "ned.y"
+#line 1989 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator(">=", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 381:
-#line 1990 "ned.y"
+#line 1991 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("<", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 382:
-#line 1992 "ned.y"
+#line 1993 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("<=", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 383:
-#line 1995 "ned.y"
+#line 1996 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("&&", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 384:
-#line 1997 "ned.y"
+#line 1998 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("||", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 385:
-#line 1999 "ned.y"
+#line 2000 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("##", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 386:
-#line 2003 "ned.y"
+#line 2004 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("!", yyvsp[0]); ;
     break;}
 case 387:
-#line 2006 "ned.y"
+#line 2007 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("&", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 388:
-#line 2008 "ned.y"
+#line 2009 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("|", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 389:
-#line 2010 "ned.y"
+#line 2011 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("#", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 390:
-#line 2014 "ned.y"
+#line 2015 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("~", yyvsp[0]); ;
     break;}
 case 391:
-#line 2016 "ned.y"
+#line 2017 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("<<", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 392:
-#line 2018 "ned.y"
+#line 2019 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator(">>", yyvsp[-2], yyvsp[0]); ;
     break;}
 case 393:
-#line 2020 "ned.y"
+#line 2021 "ned.y"
 { if (ps.parseExpressions) yyval = createOperator("?:", yyvsp[-4], yyvsp[-2], yyvsp[0]); ;
     break;}
 case 394:
-#line 2023 "ned.y"
+#line 2024 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction(toString(yylsp[-2])); ;
     break;}
 case 395:
-#line 2025 "ned.y"
+#line 2026 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction(toString(yylsp[-3]), yyvsp[-1]); ;
     break;}
 case 396:
-#line 2027 "ned.y"
+#line 2028 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction(toString(yylsp[-5]), yyvsp[-3], yyvsp[-1]); ;
     break;}
 case 397:
-#line 2029 "ned.y"
+#line 2030 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction(toString(yylsp[-7]), yyvsp[-5], yyvsp[-3], yyvsp[-1]); ;
     break;}
 case 398:
-#line 2031 "ned.y"
+#line 2032 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction(toString(yylsp[-9]), yyvsp[-7], yyvsp[-5], yyvsp[-3], yyvsp[-1]); ;
     break;}
 case 404:
-#line 2044 "ned.y"
+#line 2045 "ned.y"
 {
                   // if there's no modifier, might be a loop variable too
                   yyval = createParamRefOrIdent(toString(yylsp[0]));
                 ;
     break;}
 case 405:
-#line 2049 "ned.y"
+#line 2050 "ned.y"
 {
                   yyval = createParamRef(toString(yylsp[0]));
                   ((ParamRefNode *)yyval)->setIsRef(true);
                 ;
     break;}
 case 406:
-#line 2054 "ned.y"
+#line 2055 "ned.y"
 {
                   yyval = createParamRef(toString(yylsp[0]));
                   ((ParamRefNode *)yyval)->setIsRef(true);
@@ -3234,7 +3235,7 @@ case 406:
                 ;
     break;}
 case 407:
-#line 2060 "ned.y"
+#line 2061 "ned.y"
 {
                   yyval = createParamRef(toString(yylsp[0]));
                   ((ParamRefNode *)yyval)->setIsRef(true);
@@ -3242,50 +3243,50 @@ case 407:
                 ;
     break;}
 case 408:
-#line 2066 "ned.y"
+#line 2067 "ned.y"
 {
                   yyval = createParamRef(toString(yylsp[0]));
                   ((ParamRefNode *)yyval)->setIsAncestor(true);
                 ;
     break;}
 case 410:
-#line 2078 "ned.y"
+#line 2079 "ned.y"
 { yyval = createConst(NED_CONST_BOOL, "true"); ;
     break;}
 case 411:
-#line 2080 "ned.y"
+#line 2081 "ned.y"
 { yyval = createConst(NED_CONST_BOOL, "false"); ;
     break;}
 case 413:
-#line 2089 "ned.y"
+#line 2090 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction("index"); ;
     break;}
 case 414:
-#line 2091 "ned.y"
+#line 2092 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction("index"); ;
     break;}
 case 415:
-#line 2093 "ned.y"
+#line 2094 "ned.y"
 { if (ps.parseExpressions) yyval = createFunction("sizeof", createIdent(toString(yylsp[-1]))); ;
     break;}
 case 416:
-#line 2098 "ned.y"
+#line 2099 "ned.y"
 { yyval = createConst(NED_CONST_STRING, toString(trimQuotes(yylsp[0]))); ;
     break;}
 case 417:
-#line 2103 "ned.y"
+#line 2104 "ned.y"
 { yyval = createConst(NED_CONST_INT, toString(yylsp[0])); ;
     break;}
 case 418:
-#line 2105 "ned.y"
+#line 2106 "ned.y"
 { yyval = createConst(NED_CONST_REAL, toString(yylsp[0])); ;
     break;}
 case 419:
-#line 2107 "ned.y"
+#line 2108 "ned.y"
 { yyval = createTimeConst(toString(yylsp[0])); ;
     break;}
 case 424:
-#line 2124 "ned.y"
+#line 2125 "ned.y"
 {
                   ps.cplusplus = (CplusplusNode *)createNodeWithTag(NED_CPLUSPLUS, ps.nedfile );
                   ps.cplusplus->setBody(toString(trimDoubleBraces(yylsp[-1])));
@@ -3293,7 +3294,7 @@ case 424:
                 ;
     break;}
 case 425:
-#line 2133 "ned.y"
+#line 2134 "ned.y"
 {
                   ps.structdecl = (StructDeclNode *)createNodeWithTag(NED_STRUCT_DECL, ps.nedfile );
                   ps.structdecl->setName(toString(yylsp[-1]));
@@ -3301,7 +3302,7 @@ case 425:
                 ;
     break;}
 case 426:
-#line 2142 "ned.y"
+#line 2143 "ned.y"
 {
                   ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.nedfile );
                   ps.classdecl->setName(toString(yylsp[-1]));
@@ -3310,7 +3311,7 @@ case 426:
                 ;
     break;}
 case 427:
-#line 2149 "ned.y"
+#line 2150 "ned.y"
 {
                   ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.nedfile );
                   ps.classdecl->setIsCobject(false);
@@ -3319,7 +3320,7 @@ case 427:
                 ;
     break;}
 case 428:
-#line 2159 "ned.y"
+#line 2160 "ned.y"
 {
                   ps.enumdecl = (EnumDeclNode *)createNodeWithTag(NED_ENUM_DECL, ps.nedfile );
                   ps.enumdecl->setName(toString(yylsp[-1]));
@@ -3327,7 +3328,7 @@ case 428:
                 ;
     break;}
 case 429:
-#line 2168 "ned.y"
+#line 2169 "ned.y"
 {
                   ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.nedfile );
                   ps.enump->setName(toString(yylsp[-1]));
@@ -3336,13 +3337,13 @@ case 429:
                 ;
     break;}
 case 430:
-#line 2175 "ned.y"
+#line 2176 "ned.y"
 {
                   setTrailingComment(ps.enump,yylsp[-1]);
                 ;
     break;}
 case 431:
-#line 2179 "ned.y"
+#line 2180 "ned.y"
 {
                   ps.enump = (EnumNode *)createNodeWithTag(NED_ENUM, ps.nedfile );
                   ps.enump->setName(toString(yylsp[-3]));
@@ -3352,13 +3353,13 @@ case 431:
                 ;
     break;}
 case 432:
-#line 2187 "ned.y"
+#line 2188 "ned.y"
 {
                   setTrailingComment(ps.enump,yylsp[-1]);
                 ;
     break;}
 case 437:
-#line 2204 "ned.y"
+#line 2205 "ned.y"
 {
                   ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(yylsp[-1]));
@@ -3366,7 +3367,7 @@ case 437:
                 ;
     break;}
 case 438:
-#line 2210 "ned.y"
+#line 2211 "ned.y"
 {
                   ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(yylsp[-3]));
@@ -3375,7 +3376,7 @@ case 438:
                 ;
     break;}
 case 439:
-#line 2220 "ned.y"
+#line 2221 "ned.y"
 {
                   ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
                   ps.messagep->setName(toString(yylsp[-1]));
@@ -3383,13 +3384,13 @@ case 439:
                 ;
     break;}
 case 440:
-#line 2226 "ned.y"
+#line 2227 "ned.y"
 {
                   setTrailingComment(ps.messagep,yylsp[-1]);
                 ;
     break;}
 case 441:
-#line 2230 "ned.y"
+#line 2231 "ned.y"
 {
                   ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
                   ps.messagep->setName(toString(yylsp[-3]));
@@ -3398,13 +3399,13 @@ case 441:
                 ;
     break;}
 case 442:
-#line 2237 "ned.y"
+#line 2238 "ned.y"
 {
                   setTrailingComment(ps.messagep,yylsp[-1]);
                 ;
     break;}
 case 443:
-#line 2244 "ned.y"
+#line 2245 "ned.y"
 {
                   ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
                   ps.classp->setName(toString(yylsp[-1]));
@@ -3412,13 +3413,13 @@ case 443:
                 ;
     break;}
 case 444:
-#line 2250 "ned.y"
+#line 2251 "ned.y"
 {
                   setTrailingComment(ps.classp,yylsp[-1]);
                 ;
     break;}
 case 445:
-#line 2254 "ned.y"
+#line 2255 "ned.y"
 {
                   ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
                   ps.classp->setName(toString(yylsp[-3]));
@@ -3427,13 +3428,13 @@ case 445:
                 ;
     break;}
 case 446:
-#line 2261 "ned.y"
+#line 2262 "ned.y"
 {
                   setTrailingComment(ps.classp,yylsp[-1]);
                 ;
     break;}
 case 447:
-#line 2268 "ned.y"
+#line 2269 "ned.y"
 {
                   ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
                   ps.structp->setName(toString(yylsp[-1]));
@@ -3441,13 +3442,13 @@ case 447:
                 ;
     break;}
 case 448:
-#line 2274 "ned.y"
+#line 2275 "ned.y"
 {
                   setTrailingComment(ps.structp,yylsp[-1]);
                 ;
     break;}
 case 449:
-#line 2278 "ned.y"
+#line 2279 "ned.y"
 {
                   ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
                   ps.structp->setName(toString(yylsp[-3]));
@@ -3456,20 +3457,20 @@ case 449:
                 ;
     break;}
 case 450:
-#line 2285 "ned.y"
+#line 2286 "ned.y"
 {
                   setTrailingComment(ps.structp,yylsp[-1]);
                 ;
     break;}
 case 451:
-#line 2292 "ned.y"
+#line 2293 "ned.y"
 {
                   ps.properties = (PropertiesNode *)createNodeWithTag(NED_PROPERTIES, ps.msgclassorstruct);
                   setComments(ps.properties,yylsp[-1]);
                 ;
     break;}
 case 458:
-#line 2312 "ned.y"
+#line 2313 "ned.y"
 {
                   ps.property = (PropertyNode *)createNodeWithTag(NED_PROPERTY, ps.properties);
                   ps.property->setName(toString(yylsp[-3]));
@@ -3478,14 +3479,14 @@ case 458:
                 ;
     break;}
 case 465:
-#line 2331 "ned.y"
+#line 2332 "ned.y"
 {
                   ps.fields = (FieldsNode *)createNodeWithTag(NED_FIELDS, ps.msgclassorstruct);
                   setComments(ps.fields,yylsp[-1]);
                 ;
     break;}
 case 472:
-#line 2351 "ned.y"
+#line 2352 "ned.y"
 {
                   ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
                   ps.field->setName(toString(yylsp[0]));
@@ -3493,13 +3494,13 @@ case 472:
                 ;
     break;}
 case 473:
-#line 2357 "ned.y"
+#line 2358 "ned.y"
 {
                   setComments(ps.field,yylsp[-6],yylsp[-1]);
                 ;
     break;}
 case 474:
-#line 2361 "ned.y"
+#line 2362 "ned.y"
 {
                   ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
                   ps.field->setName(toString(yylsp[0]));
@@ -3508,39 +3509,39 @@ case 474:
                 ;
     break;}
 case 475:
-#line 2368 "ned.y"
+#line 2369 "ned.y"
 {
                   setComments(ps.field,yylsp[-7],yylsp[-1]);
                 ;
     break;}
 case 489:
-#line 2395 "ned.y"
+#line 2396 "ned.y"
 {
                   ps.field->setIsVector(true);
                   ps.field->setVectorSize(toString(yylsp[-1]));
                 ;
     break;}
 case 490:
-#line 2400 "ned.y"
+#line 2401 "ned.y"
 {
                   ps.field->setIsVector(true);
                   ps.field->setVectorSize(toString(yylsp[-1]));
                 ;
     break;}
 case 491:
-#line 2405 "ned.y"
+#line 2406 "ned.y"
 {
                   ps.field->setIsVector(true);
                 ;
     break;}
 case 493:
-#line 2413 "ned.y"
+#line 2414 "ned.y"
 {
                   ps.field->setEnumName(toString(yylsp[-1]));
                 ;
     break;}
 case 495:
-#line 2421 "ned.y"
+#line 2422 "ned.y"
 {
                   ps.field->setDefaultValue(toString(yylsp[0]));
                 ;
@@ -3767,7 +3768,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 2450 "ned.y"
+#line 2451 "ned.y"
 
 
 //----------------------------------------------------------------------
@@ -4148,3 +4149,29 @@ NEDElement *createParamRefOrIdent(const char *name)
     return isvar ? (NEDElement *)createIdent(name) : (NEDElement *)createParamRef(name);
 }
 
+NEDElement *unaryMinus(NEDElement *node)
+{
+    // if not a constant, must appy unary minus operator
+    if (node->getTagCode()!=NED_CONST)
+        return createOperator("-", node);
+
+    ConstNode *constNode = (ConstNode *)node;
+
+    // only int and real constants can be negative, string, bool, etc cannot
+    if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_REAL)
+    {
+       char msg[140];
+       sprintf(msg,"unary minus not accepted before '%.100s'",constNode->getValue());
+       np->error(msg, pos.li);
+       return node;
+    }
+
+    // prepend the constant with a '-'
+    char *buf = new char[strlen(constNode->getValue())+2];
+    buf[0] = '-';
+    strcpy(buf+1, constNode->getValue());
+    constNode->setValue(buf);
+    delete [] buf;
+
+    return node;
+}

@@ -222,6 +222,7 @@ IdentNode *createIdent(const char *name);
 ConstNode *createConst(int type, const char *value, const char *text=NULL);
 ConstNode *createTimeConst(const char *text);
 NEDElement *createParamRefOrIdent(const char *name);
+NEDElement *unaryMinus(NEDElement *node);
 
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
 void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
@@ -1976,7 +1977,7 @@ expr
 
         | '-' expr
                 %prec UMIN
-                { if (ps.parseExpressions) $$ = createOperator("-", $2); }
+                { if (ps.parseExpressions) $$ = unaryMinus($2); }
 
         | expr EQ expr
                 { if (ps.parseExpressions) $$ = createOperator("==", $1, $3); }
@@ -2827,3 +2828,29 @@ NEDElement *createParamRefOrIdent(const char *name)
     return isvar ? (NEDElement *)createIdent(name) : (NEDElement *)createParamRef(name);
 }
 
+NEDElement *unaryMinus(NEDElement *node)
+{
+    // if not a constant, must appy unary minus operator
+    if (node->getTagCode()!=NED_CONST)
+        return createOperator("-", node);
+
+    ConstNode *constNode = (ConstNode *)node;
+
+    // only int and real constants can be negative, string, bool, etc cannot
+    if (constNode->getType()!=NED_CONST_INT && constNode->getType()!=NED_CONST_REAL)
+    {
+       char msg[140];
+       sprintf(msg,"unary minus not accepted before '%.100s'",constNode->getValue());
+       np->error(msg, pos.li);
+       return node;
+    }
+
+    // prepend the constant with a '-'
+    char *buf = new char[strlen(constNode->getValue())+2];
+    buf[0] = '-';
+    strcpy(buf+1, constNode->getValue());
+    constNode->setValue(buf);
+    delete [] buf;
+
+    return node;
+}

@@ -1,3 +1,8 @@
+2004-12-06  Andras Varga
+
+	* ned.y: negative int or real constants were parsed as -1*x, which 
+	caused problems for input() with negative default values
+
 2004-11-29  Andras Varga
 
 	* ned.y: malloc.h changed to stdlib.h. Change needed for Mac OS/X 
