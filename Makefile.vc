@@ -212,8 +212,8 @@ clean:
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.dll
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.ilib
 	-for %%i in ( $(SAMPLES) ) do \
-	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && del *.obj *.exe
-	-cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && del *.obj *.exe
+	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && del /q /s *.exe debug release
+	-cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && del /q /s *.exe debug release
 
 depend:
 	for %%i in ( $(LIBS) $(PROGS) ) do \
