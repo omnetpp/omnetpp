@@ -31,7 +31,7 @@ Register_Class(cFileCommBuffer);
 #define STORE(FMT,d)    {sprintf(mBuffer+mMsgSize, FMT "\n", d); mMsgSize+=strlen(mBuffer+mMsgSize);}
 #define EXTRACT(FMT,d)  {sread(mBuffer, mPosition, FMT, &d);}
 
-// FIXME store/extract as ASCII not binary
+// TBD store/extract as ASCII not binary
 #define STOREARRAY(type,d,size)   {memcpy(mBuffer+mMsgSize,d,size*sizeof(type)); mMsgSize+=size*sizeof(type);}
 #define EXTRACTARRAY(type,d,size) {memcpy(d,mBuffer+mPosition,size*sizeof(type)); mPosition+=size*sizeof(type);}
 

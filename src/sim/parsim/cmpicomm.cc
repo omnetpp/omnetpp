@@ -121,7 +121,7 @@ void cMPICommunications::send(cCommBuffer *buffer, int tag, int destination)
 
 void cMPICommunications::broadcast(cCommBuffer *buffer, int tag)
 {
-    // FIXME this is lazy solution -- could make use of MPI call instead
+    // TBD make use of MPI call instead
     cParsimCommunications::broadcast(buffer, tag);
 }
 
