@@ -25,11 +25,12 @@ Simulation kernel:
 - New utility class: cStringTokenizer. It splits strings to "tokens" along
   given separator characters (by default spaces).
 
-- Changed the way scheduled events or pending messages for deleted or finished
-  modules are handled. Before, these messages were deleted by the cSimpleModule
-  destructor, but this made it very long to clean up large models.
-  Now, messages are not deleted in the destructor, but left in the FES -- they
-  will be discarded in cSimulation::selectNextModule() when they're met.
+- Changed the way scheduled events or pending messages are handled when their
+  destination module gets deleted during runtime. Before, these messages were
+  deleted by the cSimpleModule destructor, but this made it very long to clean
+  up large models. Now, messages are not deleted in the destructor, but left
+  in the FES -- they will be discarded in cSimulation::selectNextModule() when
+  they're met.
 
 - cDisplayString's getTagArg() method was modified to never return NULL; it
   returns "" instead when the requested tag is not in the display string.
