@@ -207,3 +207,5 @@ May 19,2000
 ------ omnetpp-2.0b5 released ------
 July 17, 2000
  - accepts NED files on the command line
+July 26, 2000
+ - minor fixes on Edit|Find

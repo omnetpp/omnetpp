@@ -50,6 +50,7 @@ proc create_omnetpp_window {} {
     # Create menus
     foreach i {
        {filemenu     -$label_opt File -underline 0}
+       {editmenu     -$label_opt Edit -underline 0}
        {simulatemenu -$label_opt Simulate -underline 0}
        {tracemenu    -$label_opt Trace -underline 0}
        {inspectmenu  -$label_opt Inspect -underline 0}
@@ -78,6 +79,13 @@ proc create_omnetpp_window {} {
       {command -command exit_omnetpp -label Exit -underline 1}
     } {
       eval .menubar.filemenu$m add $i
+    }
+
+    # Edit menu
+    foreach i {
+      {command -command edit_find -label {Find...} -accel {Ctrl-F} -underline 0}
+    } {
+      eval .menubar.editmenu$m add $i
     }
 
     # Simulate menu
@@ -184,7 +192,7 @@ proc create_omnetpp_window {} {
     # Pack menus on menubar
     if {$tcl_version < 8.0} {
         foreach i {
-          filemenu simulatemenu tracemenu inspectmenu viewmenu optionsmenu helpmenu
+          filemenu editmenu simulatemenu tracemenu inspectmenu viewmenu optionsmenu helpmenu
         } {
           pack .menubar.$i -anchor n -expand 0 -fill none -side left
         }
@@ -250,6 +258,7 @@ proc create_omnetpp_window {} {
     text .main.text -yscrollcommand ".main.sb set"
     scrollbar .main.sb -command ".main.text yview"
     .main.text tag configure event -foreground blue
+    .main.text tag configure SELECT -back #808080 -fore #ffffff
 
     pack .main.sb -anchor center -expand 0 -fill y  -side right
     pack .main.text -anchor center -expand 1 -fill both -side left
@@ -268,6 +277,15 @@ proc create_omnetpp_window {} {
     if {$tcl_platform(platform) == "windows"} {
         update
     }
+
+    ###############################
+    # Hotkeys
+    ###############################
+    bind .main.text <Key> {%W tag remove SELECT 0.0 end}
+
+    bind .main.text <Control-f> {edit_find}
+    bind .main.text <Control-F> {edit_find}
+
 }
 
 #===================================================================

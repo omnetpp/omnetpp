@@ -223,13 +223,13 @@ proc doFind {w findstring case words regexp} {
 
     # check if found
     if {$cur == ""} {
-        tk_messageBox  -title "Find" -icon warning -type ok -message "No more '$findstring'."
+        tk_messageBox  -title "Find" -icon warning -type ok -message "'$findstring' not found."
         return ""
     }
 
     # highlight it and return length
     $w tag add SELECT $cur "$cur + $length chars"
-    $w mark set insert "$cur + $length chars"
+    $w mark set insert "$cur + $length chars - 1 char"
     $w see insert
 
     return $length
@@ -308,13 +308,13 @@ proc doReplace {w findstring replstring case words regexp} {
 
         case $action in {
             yes {
-                $w delete "insert - $length char" insert
+                $w delete "insert - $length char + 1 char" "insert + 1 char"
                 $w insert insert $replstring
                 syntaxHighlight $w "insert linestart" "insert lineend"
             }
             all {
                 while 1 {
-                    $w delete "insert - $length char" insert
+                    $w delete "insert - $length char + 1 char" "insert + 1 char"
                     $w insert insert $replstring
                     set length [doFind $w $findstring $case $words $regexp]
                     if {$length == ""} {

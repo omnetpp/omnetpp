@@ -130,6 +130,11 @@ proc new_run {} {
     }
 }
 
+proc edit_find {} {
+   # implements Edit|Find
+   findDialog .main.text
+}
+
 proc one_step {} {
     # implements Simulate|One step
 
