@@ -245,7 +245,7 @@ const char *cModuleInterface::paramType(int k)
 
 bool cModuleInterface::isParamConst(int k)
 {
-    if (k<0 || k>=numparams) return NULL;
+    if (k<0 || k>=numparams) return false;
     return strchr(paramv[k].types, ParType_Const[0])!=NULL;
 }
 

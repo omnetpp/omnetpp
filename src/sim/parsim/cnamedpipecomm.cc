@@ -86,6 +86,7 @@ void cNamedPipeCommunications::init()
     ev.printf("cNamedPipeCommunications: started as process %d out of %d.\n", myProcId, numPartitions);
 
     // create and open pipes for read
+    int i;
     rpipes = new int[numPartitions];
     for (i=0; i<numPartitions; i++)
     {
