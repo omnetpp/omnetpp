@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "args.h"
+#include "distrib.h"
 #include "cinifile.h"
 #include "cenvir.h"
 #include "omnetapp.h"
@@ -60,7 +61,7 @@ void dummyDummy() {envirDummy();}
 // A dummy function to force UNIX linkers collect TSlaveApp, Speedometer
 // and cFileOutputVectorManager as linker symbols. Otherwise we'd get
 // "undefined symbol" messages...
-void tslave_dummy_function() {TSlaveApp x(0,NULL);Speedometer a;cFileOutputVectorManager o;}
+void tslave_dummy_function() {exponential(1.0);TSlaveApp x(0,NULL);Speedometer a;cFileOutputVectorManager o;}
 
 //========================================================================
 
