@@ -123,6 +123,11 @@
 #if YYDEBUG != 0
 #define YYERROR_VERBOSE     /* more detailed error messages */
 #include <string.h>         /* YYVERBOSE needs it */
+#ifdef CXX                  /* For TRU64 c++ compiler */
+#include <malloc.h>
+#include <stdlib.h>
+#include <alloca.h>
+#endif                      /* Required to compile ebnf.y derivatives */ 
 #endif
 
 

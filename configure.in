@@ -48,6 +48,8 @@ build_shared_libs=if-not-cygwin
 #build_shared_libs=yes
 #build_shared_libs=no
 
+MPI_CFLAGS=
+MPI_LIBS=
 PVM_CFLAGS=
 PVM_LIBS=
 TK_CFLAGS=
@@ -116,6 +118,15 @@ SHLIB_LD="$CXX -shared"
 NEDC="nedc"
 MAKEDEPEND="makedepend -Y"
 
+case "$CXX" in
+   "c++") # linux machine
+      CXXLIB=stdc++
+   ;;
+   "cxx") # Tru64 machine
+      CXXLIB=cxx
+   ;;
+esac
+
 if test "$cygwin" = yes; then
     MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
 else
@@ -136,6 +147,7 @@ if test "$cygwin" = yes; then
 else
     WISH=`which wish`
 fi
+
 if test "x$WISH" = "x"; then
     AC_MSG_WARN(cannot find wish -- you'll need to manually adjust the Plove script)
 fi
@@ -167,9 +179,18 @@ if test "$HAVE_DLOPEN" = "1"; then
    )
 fi
 
-AC_CHECK_LIB(stdc++, main,
-   SYS_LIBS="-lstdc++ $SYS_LIBS",
-   AC_MSG_WARN(standard C++ library (-lstdc++) not found; linking problems are likely)
+AC_CHECK_LIB($CXXLIB, main,
+   SYS_LIBS="-l$CXXLIB $SYS_LIBS",
+   AC_MSG_WARN(standard C++ library (-l$CXXLIB) not found; linking problems are likely)
+   )
+
+#----------------------
+# Check for MPI.
+#----------------------
+
+AC_CHECK_LIB(mpi, MPI_Init,
+   MPI_LIBS="-lmpi -lelan",
+   AC_MSG_WARN(MPI library not installed!)
    )
 
 #----------------------
@@ -309,10 +330,16 @@ fi
 # Conditional build of some components
 #----------------------
 
+if test -n "$MPI_LIBS"; then
+   SIM_MPI_IF_POSSIBLE=sim_mpi
+else
+   SIM_MPI_IF_POSSIBLE=missing-mpi-library
+fi
+
 if test -n "$PVM_LIBS"; then
    SIM_PVM_IF_POSSIBLE=sim_pvm
 else
-   SIM_PVM_IF_POSSIBLE=missing-library
+   SIM_PVM_IF_POSSIBLE=missing-pvm-library
 fi
 
 if test -n "$TK_LIBS"; then
@@ -383,12 +410,15 @@ AC_SUBST(EXE_SUFFIX)
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
+AC_SUBST(MPI_CFLAGS)
+AC_SUBST(MPI_LIBS)
 AC_SUBST(PVM_CFLAGS)
 AC_SUBST(PVM_LIBS)
 AC_SUBST(SYS_LIBS)
 
 AC_SUBST(TKENV_IF_POSSIBLE)
 AC_SUBST(SIM_PVM_IF_POSSIBLE)
+AC_SUBST(SIM_MPI_IF_POSSIBLE)
 AC_SUBST(GNED_IF_POSSIBLE)
 
 AC_SUBST(TKENV_EMBED_SUFFIX)

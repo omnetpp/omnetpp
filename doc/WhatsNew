@@ -1,8 +1,20 @@
 What's New
 ==========
 
-In the OMNeT++ 2.1 (May 2001)
------------------------------
+In the future OMNeT++ 2.2 beta1 (Sept 2001?)
+--------------------------------------------
+new ChangeLog format (Ulrich Kaage)
+const patches (Roland Bless)
+refman was replaced by generated API doc, using DOC++ (easier to search, always up-to-date)
+MPI support (Eric Wu)
+windows installer supports win95/98/me (TBD!!!)
+support for message subclassing (TBD!!!)
+bugfixes (TBD!!!)
+RPM (TBD!!!)
+
+
+In the OMNeT++ 2.1 release (May 2001)
+-------------------------------------
 This release is devoted to making OMNeT++ easier to install, easier
 to use and easier to learn. Most important, there is now a binary package
 for Windows. The install package comes with Tcl/Tk, Gnuplot and some

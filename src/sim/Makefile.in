@@ -14,6 +14,7 @@ OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 OMNETPP_VERSION=@OMNETPP_VERSION@
 
+MPI_CFLAGS=@MPI_CFLAGS@
 PVM_CFLAGS=@PVM_CFLAGS@
 
 # LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
@@ -33,6 +34,7 @@ CPPOBJS= ccor.o ctypes.o carray.o cgate.o cmodule.o csimul.o cobject.o cpar.o \
 	 cmsgheap.o cnetmod.o coutvect.o cqueue.o chead.o cwatch.o \
          cpacket.o cfsm.o cenum.o cstruct.o
 CPPOBJS_STD= std/netpack.o
+CPPOBJS_MPI= mpi/mpimod.o mpi/mpipack.o
 CPPOBJS_PVM= pvm/pvmmod.o pvm/pvmpack.o
 ASMOBJS=
 # ASMOBJS=stjpower.o swpower.o	   # uncomment this on RS/6000
@@ -40,9 +42,11 @@ ASMOBJS=
 #
 # Targets
 #
-default : sim_std @SIM_PVM_IF_POSSIBLE@
+default : sim_std @SIM_PVM_IF_POSSIBLE@ @SIM_MPI_IF_POSSIBLE@
 
 sim_std : libsim_std$(LIB_SUFFIX)
+
+sim_mpi : libsim_mpi$(LIB_SUFFIX)
 
 sim_pvm : libsim_pvm$(LIB_SUFFIX)
 
@@ -54,6 +58,15 @@ libsim_std$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 libsim_std$(SO_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 	$(SHLIB_LD) -o libsim_std$(SO_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 	../utils/install-lib libsim_std$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(SO_LIB_SUFFIX)
+
+libsim_mpi$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_MPI) $(ASMOBJS)
+	$(AR) libsim_mpi$(A_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_MPI) $(ASMOBJS)
+	$(RANLIB) libsim_mpi$(A_LIB_SUFFIX)
+	../utils/install-lib libsim_mpi$(A_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_mpi$(A_LIB_SUFFIX)
+
+libsim_mpi$(SO_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_MPI) $(ASMOBJS)
+	$(SHLIB_LD) -o libsim_mpi$(SO_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_MPI) $(ASMOBJS)
+	../utils/install-lib libsim_mpi$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_mpi$(SO_LIB_SUFFIX)
 
 libsim_pvm$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 	$(AR) libsim_pvm$(A_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
@@ -166,13 +179,22 @@ swpower.o : swpower.s
 std/netpack.o : std/netpack.cc
 	$(CXX) -c $(COPTS) std/netpack.cc -o std/netpack.o
 
+mpi/mpipack.o : mpi/mpipack.cc
+	$(CXX) -c $(COPTS) $(MPI_CFLAGS) mpi/mpipack.cc -o mpi/mpipack.o
+
+mpi/mpimod.o : mpi/mpimod.cc
+	$(CXX) -c $(COPTS) $(MPI_CFLAGS) mpi/mpimod.cc -o mpi/mpimod.o
+
 pvm/pvmpack.o : pvm/pvmpack.cc
 	$(CXX) -c $(COPTS) $(PVM_CFLAGS) pvm/pvmpack.cc -o pvm/pvmpack.o
 
 pvm/pvmmod.o : pvm/pvmmod.cc
 	$(CXX) -c $(COPTS) $(PVM_CFLAGS) pvm/pvmmod.cc -o pvm/pvmmod.o
 
-missing-library:
+missing-mpi-library:
+	@ echo '  *** No MPI installation found -- skipping sim_mpi'
+
+missing-pvm-library:
 	@ echo '  *** No PVM installation found -- skipping sim_pvm'
 
 depend:
@@ -183,6 +205,7 @@ clean:
 	rm -f *.o std/*.o pvm/*.o
 	rm -f libsim_std$(A_LIB_SUFFIX) libsim_std$(SO_LIB_SUFFIX)
 	rm -f libsim_pvm$(A_LIB_SUFFIX) libsim_pvm$(SO_LIB_SUFFIX)
+	rm -f libsim_mpi$(A_LIB_SUFFIX) libsim_mpi$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

@@ -58,10 +58,20 @@ nedfile.o: nedfile.cc
 	$(CXX) -c $(COPTS) nedfile.cc
 
 lex.yy.o: lex.yy.c
-	$(CXX) -c $(COPTS) lex.yy.c
+	# FIXME: true64's cxx insists on .cc suffix for C++ files -- any better solution than below?
+	if [ "$(CXX)" = "cxx" ]; then \
+		cp lex.yy.c lex.yy.cc && $(CXX) -c $(COPTS) lex.yy.cc; \
+	else \
+		$(CXX) -c $(COPTS) lex.yy.c; \
+	fi
 
 ebnf.tab.o: ebnf.tab.c
-	$(CXX) -c $(COPTS) ebnf.tab.c
+	# FIXME: true64's cxx insists on .cc suffix for C++ files -- any better solution than below?
+	if [ "$(CXX)" = "cxx" ]; then \
+		cp ebnf.tab.c ebnf.tab.cc && $(CXX) -c $(COPTS) -DCXX ebnf.tab.cc; \
+	else \
+		$(CXX) -c $(COPTS) ebnf.tab.c; \
+	fi
 
 ebnf.tab.h: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
@@ -84,6 +94,7 @@ depend:
 
 clean:
 	rm -f tclcode.cc *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned$(EXE_SUFFIX)
+	rm -f ebnf.tab.cc lex.yy.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

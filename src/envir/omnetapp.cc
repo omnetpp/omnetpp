@@ -98,20 +98,29 @@ void TOmnetApp::setup()
              opp_error("There was an error at startup, unable to run in parallel");
              return;
          }
+	 if (strcmp(opt_parallel_env.buffer(), "PVM")==0)
+	 {
+	   cNetMod *pvmmod = (cNetMod *)createOne( "cPvmMod");
 
-         cNetMod *pvmmod = (cNetMod *)createOne( "cPvmMod");
-         if (pvmmod==NULL)
+	   if (!simulation.ok())
          {
-             opp_error("No network interface class");
+             opp_error("Network interface did not initialize properly");
+	     delete pvmmod;
              return;
          }
+	   simulation.setNetInterface( pvmmod );
+	 }
+       	 else if (strcmp(opt_parallel_env.buffer(), "MPI")==0)
+	 {
+	   cNetMod *mpimod = (cNetMod *)createOne( "cMpiMod");
          if (!simulation.ok())
          {
              opp_error("Network interface did not initialize properly");
-             delete pvmmod;
+	     delete mpimod;
              return;
          }
-         simulation.setNetInterface( pvmmod );
+	   simulation.setNetInterface( mpimod );
+	 }
      }
 }
 
@@ -210,7 +219,8 @@ void TOmnetApp::readOptions()
 
     opt_total_stack_kb = ini_file->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB );
     opt_distributed = ini_file->getAsBool( "General", "distributed", false );
-
+    if(opt_distributed)
+      opt_parallel_env = ini_file->getAsString( "General", "parallel-system", "MPI" );
     opt_load_libs = ini_file->getAsString( "General", "load-libs", "" );
 
     // other options are read on per-run basis

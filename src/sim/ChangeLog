@@ -1,3 +1,7 @@
+2001-07-11 Andras Varga
+
+	* mpi/* added, Makefile.in: Eric Wu's Tru64/MPI port
+
 2001-07-02 Andras Varga
    
         * cenum.cc,cstruct.cc: fixed, added to makefile.in and makefile.vc. 

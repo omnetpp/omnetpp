@@ -1,0 +1,28 @@
+OMNeT++ 2.1 Patch (v0.1) for Tru64 Unix
+
+Authors:
+	Eric Wu,	Monash University, Australia
+	Johnny Lai,	Monash University, Australia
+Date:
+	27/06/2001
+
+-----------------------------------------------------
+Instructions:
+
+- remove Wno-unused in configure.user
+- uncomment build_shared_libs=no in configure.user
+
+=====================================================
+Changes:
+
+- changes to build Tru64 UNIX successfully
+- changes autoconf script to add MPI module
+
+-----------------------------------------------------
+Bugs:
+
+- cannot build shared library (.so)
+- MPI module still in development
+- plove not working on Tru64
+
+-----------------------------------------------------

@@ -1,3 +1,9 @@
+2001-07-11 Andras Varga
+
+	* omnetapp.cc omnetapp.h: Eric Wu's Tru64/MPI port.
+        Added new ini file option: [General]/parallel-system=. Its value
+        can be "PVM" or "MPI", defaults to "MPI".
+
 2001-02-27  Andras Varga
 
 	* ------ omnetpp-2.1 released ------

@@ -1,3 +1,8 @@
+2001-07-11 Andras Varga
+
+	* tkapp.cc: Eric Wu's Tru64/MPI port. Added a few const_cast<>s because
+        broken Tru64 compiler gave const errors with tcl.h.
+
 2001-03-27  Andras Varga
 
 	* ------ omnetpp-2.1 released ------

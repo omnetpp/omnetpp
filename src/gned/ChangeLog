@@ -1,3 +1,6 @@
+2001-07-11 Andras Varga
+
+	* ebnf.y: Eric Wu's Tru64/MPI port. Tru64 needs extra #includes.
 
 2001-05-18  Andras Varga
 

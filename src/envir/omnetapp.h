@@ -56,6 +56,7 @@ class ENVIR_API TOmnetApp
 
      bool opt_ini_warnings;
      bool opt_distributed; // NET
+     opp_string opt_parallel_env; // PVM, MPI or something else?
      opp_string opt_load_libs;
      opp_string opt_network_name;
      opp_string opt_snapshotfile_name;

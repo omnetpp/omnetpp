@@ -931,10 +931,10 @@ void TOmnetTkApp::puts(const char *str)
     // minimize heap usage: use local buffer whenever possible.
     int flags;
     char buf[128];
-    int quotedlen = Tcl_ScanElement(str, &flags);
+    int quotedlen = Tcl_ScanElement(const_cast<char *>(str), &flags);
     bool isshort = quotedlen<128;
     char *quotedstr = isshort ? buf : Tcl_Alloc(quotedlen+1);
-    Tcl_ConvertElement(str, quotedstr, flags);
+    Tcl_ConvertElement(const_cast<char *>(str), quotedstr, flags);
 
     // output string into main window
     cModule *module = simulation.contextModule();

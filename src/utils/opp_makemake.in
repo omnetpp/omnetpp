@@ -44,7 +44,8 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-n] [-s] [-u user-interface]
     -s, --make-so         Make shared library. Useful if you want to load the
                           model dynamically (Cmdenv/Tkenv -l so-file switch).
     -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv
-    -p, --pvm             Link executable with parallel execution support
+    -M, --mpi             Link executable with MPI
+    -p, --pvm             Link executable with PVM
     -Idir                 Additional NED and C++ include directory
     -llibrary             Additional library to link against
     -i, --includefragment Append file to near end of Makefile. The file makefrag
@@ -95,6 +96,10 @@ EOT
             exit
             ;;
         esac
+        ;;
+
+        -M | --mpi)
+        mpi=y
         ;;
 
         -p | --pvm)
@@ -194,9 +199,15 @@ case "$userif" in
     TKENV)
     c_cmd='# '; c_tk=''; ;;
 esac
-c_std=''; c_pvm='# '
+
+c_std=''; c_pvm='# '; c_mpi='# ';
+
 if [ "$pvm" = "y" ]; then
-    c_std='# '; c_pvm=''
+    c_std='# '; c_pvm=''; c_mpi='#';
+fi
+
+if [ "$mpi" = "y" ]; then
+    c_std='# '; c_pvm='#'; c_mpi='';
 fi
 
 cat <<EOT
@@ -208,9 +219,10 @@ TARGET = $outfile$suffix
 ${c_cmd}USERIF_LIBS=\$(CMDENV_LIBS)
 ${c_tk}USERIF_LIBS=\$(TKENV_LIBS)
 
-# Uncomment the second line for parallel execution (PVM3) support (-p option):
+# uncomment 1 of the 3 lines to support either serial or parallel operation
 ${c_std}KERNEL_LIBS=\$(STD_KERNEL_LIBS)
 ${c_pvm}KERNEL_LIBS=\$(PVM_KERNEL_LIBS)
+${c_mpi}KERNEL_LIBS=\$(MPI_KERNEL_LIBS)
 
 # .ned or .h include paths with -I
 INCLUDE_PATH=$includes
@@ -246,6 +258,7 @@ OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
 TK_LIBS=@TK_LIBS@
+MPI_LIBS=@MPI_LIBS@
 PVM_LIBS=@PVM_LIBS@
 SYS_LIBS=@SYS_LIBS@
 SYS_LIBS_PURE=-ldl -lsocket -lnsl -lm \$(shell \$(CXX) -print-file-name=libstdc++.a)
@@ -272,6 +285,7 @@ OMNETPP_INCL_DIR=@${null}OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@${null}OMNETPP_LIB_DIR@
 
 TK_LIBS=@${null}TK_LIBS@
+MPI_LIBS=@${null}MPI_LIBS@
 PVM_LIBS=@${null}PVM_LIBS@
 SYS_LIBS=@${null}SYS_LIBS@
 SYS_LIBS_PURE=-lm \$(shell \$(CXX) -print-file-name=libstdc++.a)
@@ -287,10 +301,11 @@ TKENV_LIBS=-lenvir -ltkenv \$(TK_LIBS)
 
 # Simulation kernel
 STD_KERNEL_LIBS=-lsim_std
+MPI_KERNEL_LIBS=-lsim_mpi \$(MPI_LIBS)
 PVM_KERNEL_LIBS=-lsim_pvm \$(PVM_LIBS)
 
 # Simulation kernel and user interface libraries
-OMNETPP_LIBS=-L\$(OMNETPP_LIB_DIR) \$(KERNEL_LIBS) \$(USERIF_LIBS) \$(SYS_LIBS)
+OMNETPP_LIBS=-L\$(OMNETPP_LIB_DIR) \$(USERIF_LIBS) \$(KERNEL_LIBS) \$(SYS_LIBS)
 
 COPTS=\$(CFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 
@@ -311,7 +326,7 @@ echo
 case "$type" in
 exe)
     echo '$(TARGET): $(OBJS) $(EXRA_OBJS) Makefile '$subdirsphony
-    echo '	$(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)'
+    echo '	$(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)'
     ;;
 so)
     echo '$(TARGET): $(OBJS) $(EXRA_OBJS) ' $subdirsphony ' Makefile'
@@ -324,7 +339,7 @@ o)
 esac
 echo
 echo 'purify: $(OBJS) $(EXRA_OBJS) ' $subdirsphony ' Makefile'
-echo '	purify $(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure'
+echo '	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure'
 echo
 
 if [ "$type" != "o" ]; then
