@@ -207,7 +207,6 @@ bool cPatternMatcher::isInSet(char c, const char *set)
 
 bool cPatternMatcher::match(const char *s, int k)
 {
-    //printf("DBG: "); dump(k); printf("   \t\"%s\"\n",s);
     while (true)
     {
         Elem& e = pattern[k];
@@ -228,7 +227,7 @@ bool cPatternMatcher::match(const char *s, int k)
                 s++;
                 break;
             case COMMONCHAR:
-                if (!*s || *s=='.' || *s=='[' || *s==']')
+                if (!*s || *s=='.')
                     return false;
                 s++;
                 break;
@@ -266,11 +265,11 @@ bool cPatternMatcher::match(const char *s, int k)
                 do {
                     if (match(s,k+1))
                         return true;
-                    if (!*s || *s=='.' || *s=='[' || *s==']')
+                    if (!*s || *s=='.')
                         break;
                     s++;
                 } while (*s);
-                break; // at EOS
+                break;
             case END:
                 return !*s;
             default:

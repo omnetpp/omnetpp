@@ -17,6 +17,10 @@
 #ifndef __OMNETPP_H
 #define __OMNETPP_H
 
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
 #include "defs.h"
 #include "util.h"
 #include "opp_string.h"

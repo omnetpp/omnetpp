@@ -29,8 +29,8 @@
  * One instance represents a pattern to match.
  *
  * Pattern syntax:
- *   - ? : matches any character except '.', '[' and ']'
- *   - * : matches zero or more characters except '.', '[' and ']'
+ *   - ? : matches any character except '.'
+ *   - * : matches zero or more characters except '.'
  *   - ** : matches zero or more character (any character)
  *   - {a-z} : matches a character in range a-z
  *   - {^a-z} : matches a character NOT in range a-z
@@ -38,15 +38,14 @@
  *   - [32..255] : any number in square brackets in range 32..255 (e.g. "[99]")
  *   - backslash \ : takes away the special meaning of the subsequent character
  *
- * The "except '.', '[' and ']'" phrases in the above rules apply
- * only in "dottedpath" mode (see below).
+ * The "except '.'" phrases in the above rules apply only in "dottedpath" mode (see below).
  *
  * There are three option switches (see setPattern() method):
  *   - dottedpath: dottedpath=yes is the mode used in omnetpp.ini for matching
  *     module parameters, like this: "**.mac[*].retries=9". In this mode
- *     mode, '*' cannot "eat" dot or square bracket, so it can only match
- *     one component (module name) in the path. '**' can be used to match more
- *     components. (This is similar to e.g. Java Ant's usage of the asterisk.)
+ *     mode, '*' cannot "eat" dot, so it can only match one component (module
+ *     name) in the path. '**' can be used to match more components.
+ *     (This is similar to e.g. Java Ant's usage of the asterisk.)
  *     In dottedpath=false mode, '*' will match anything.
  *   - fullstring: selects between full string and substring match. The pattern
  *     "ate" will match "whatever" in substring mode, but not in full string
@@ -77,19 +76,19 @@ class ENVIR_API cPatternMatcher
     enum ElemType {
       LITERALSTRING = 0,
       ANYCHAR,
-      COMMONCHAR, // any char except ".", "[", "]"
+      COMMONCHAR, // any char except "."
       SET,
       NEGSET,
       NUMRANGE,
       ANYSEQ,     // "**": sequence of any chars
-      COMMONSEQ,  // "*": seq of any chars except ".", "[", "]"
+      COMMONSEQ,  // "*": seq of any chars except "."
       END
     };
 
     struct Elem {
       ElemType type;
       std::string literalstring; // FIXME use one string -- maybe opp_string (std:: is too big)!
-      std::string setchars; // SET/NEGSET: char ranges are [0]-[1], [2]-[3], [4]-[5], etc.
+      std::string setchars; // SET/NEGSET: character pairs (0,1),(2,3) etc denote char ranges
       long fromnum, tonum; // NUMRANGE; -1 means "unset"
     };
 

@@ -79,10 +79,10 @@ match("?", "x", true);
 match("?", "\\", true);
 match("?", "7", true);
 match("?", "?", true);
-// doesn't match '.', '[', ']' in dottedpath mode
+match("?", "[", true);
+match("?", "]", true);
+// doesn't match '.' in dottedpath mode
 match("?", ".", false);
-match("?", "[", false);
-match("?", "]", false);
 // several ones
 match("??aa?b?", "!!aa!b!", true);
 match("??aa?b?", "!!aa!b", false);
@@ -90,7 +90,7 @@ match("??aa?b?", "!!aa!b", false);
 //
 // sets
 //
-// note: {} or {ace} would be replaced by opp_test, so write it as 
+// note: {} or {ace} would be replaced by opp_test, so write it as
 // ...{" "}... (exploiting C/C++ compile-time string concatenation)
 //
 match("{c-e}", "c", true);
@@ -128,7 +128,7 @@ match("{" "}ace}", "}", true);
 match("{" "}ace}", "a", true);
 match("{" "}ace}", "b", false);
 // special chars (backslash doesn't quote here)
-match("{-*\\?[]{" "}", "-", true); 
+match("{-*\\?[]{" "}", "-", true);
 match("{-*\\?[]{" "}", "*", true);
 match("{-*\\?[]{" "}", "\\", true);
 match("{-*\\?[]{" "}", "?", true);
@@ -192,11 +192,9 @@ match("{^-*\\?[]{" "}", "!", true);
 // in itself
 match("*", "", true);
 match("*", "$#%$%#$", true);
-match("*", "%^${12!\\", true);
-// doesn't match '.', '[', ']'
+match("*", "%^${[12]!\\", true);
+// doesn't match '.'
 match("*", ".", false);
-match("*", "[", false);
-match("*", "]", false);
 // mid-pattern
 match("al*ma", "alma", true);
 match("al*ma", "al!!!ma", true);
@@ -312,10 +310,17 @@ fullstring = false;
 casesensitive = true;
 
 // literal string
+match("whatever", "whatever", true);
 match("ate", "whatever", true);
+match("what", "whatever", true);
+match("ever", "whatever", true);
+match("", "whatever", true);
+match("what!ever", "whatever", false);
+match("!whatever", "whatever", false);
+match("whatever!", "whatever", false);
 
 //
-// dottedpath off ('*' and '?' matches any character)
+// dottedpath off ('*' and '?' match '.' too)
 //
 dottedpath = false;
 fullstring = true;
@@ -323,14 +328,8 @@ casesensitive = true;
 
 // test '*', '?' and '**'
 match("*", ".", true);
-match("*", "]", true);
-match("*", "[", true);
 match("?", ".", true);
-match("?", "]", true);
-match("?", "[", true);
 match("**", ".", true);
-match("**", "]", true);
-match("**", "[", true);
 
 %exitcode: 0
 

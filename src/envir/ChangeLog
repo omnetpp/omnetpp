@@ -14,12 +14,14 @@
 
 	* inifile.cc/h: cPatternMatcher used as the engine for wildcard 
 	resolution in ini files. The default mode is "dottedpath on",
-	where "*" does NOT match ".", "[" and "]", so e.g. "foo[*].param" 
-	will no	longer match "foo[1].bar[5].param". The new wildcard "**"
-	will match anything. One can switch back to the old mode (for 
-	compatibility) by adding the line 
+	where "*" does NOT match dot ".", so odditied like "foo[*].param" 
+	matching "foo[1].bar[5].param" will not occur any more. The new 
+	wildcard "**" will match anything. One can switch back to the old mode 
+	(for compatibility) by adding the line 
 	     #% old-wildcards
-	at the top of (every) ini file.
+	at the top of (every) ini file. "#% old-wildcards" is provided to
+	make it easier to migrate from OMNeT++ 2.3 to 3.0, and might be removed
+	in the future.
 
 2004-06-17   Andras Varga
 
