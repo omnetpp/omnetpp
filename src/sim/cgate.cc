@@ -214,9 +214,15 @@ void cGate::setIndex(int sn, int vs)
 
 void cGate::connectTo(cGate *g, cChannel *chan)
 {
+    // break old connection
+    g->fromgatep = NULL;
+
+    // build new connection
     togatep = g;
-    g->fromgatep = this;
-    if (chan)  setChannel(chan);
+    togatep->fromgatep = this;
+
+    // replace old channel (or delete it if chan==NULL)
+    setChannel(chan);
 }
 
 void cGate::setFrom(cGate *g)
@@ -242,13 +248,19 @@ void cGate::setLink(cLinkType *lnk)
 
 void cGate::setChannel(cChannel *ch)
 {
+    if (ch == channelp)
+        return;
+
     if (channelp && channelp->owner()==this)
         discard(channelp);
 
     channelp = ch;
-    channelp->setFromGate(this);
-    if (takeOwnership())
-        take(ch);
+    if (channelp)
+    {
+        channelp->setFromGate(this);
+        if (takeOwnership())
+            take(channelp);
+    }
 }
 
 void cGate::setDelay(cPar *p)
