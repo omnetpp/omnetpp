@@ -65,4 +65,6 @@ XML generator:
 C++ code generator:
     cppgenerator.cc
   * cppgenerator.h
+    cppexprgenerator.cc
+    cppexprgenerator.h
 

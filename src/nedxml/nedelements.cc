@@ -15,6 +15,7 @@
 // *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***
 
 #include <string.h>
+#include "nederror.h"
 #include "nedelements.h"
 
 static const char *io_vals[] = {"input", "output"};
@@ -2249,9 +2250,8 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='i' && !strcmp(tagname,"ident"))  return new IdentNode();
     if (tagname[0]=='c' && !strcmp(tagname,"const"))  return new ConstNode();
     if (tagname[0]=='u' && !strcmp(tagname,"unknown"))  return new UnknownNode();
-    UnknownNode *node = new UnknownNode();
-    node->setElement( tagname );
-    return node;
+    INTERNAL_ERROR1(NULL,"createNodeWithTag(): unknown tag '%s'", tagname);
+    return NULL;
 }
 
 NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
@@ -2293,7 +2293,7 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_IDENT: return new IdentNode();
         case NED_CONST: return new ConstNode();
         case NED_UNKNOWN: return new UnknownNode();
-        default: return new UnknownNode();
+        default: INTERNAL_ERROR1(NULL,"createNodeWithTag(): unknown tag code %d", tagcode); return NULL;
     }
 }
 

@@ -14,8 +14,8 @@ COPTS=$(CFLAGS) $(EXPAT_CFLAGS)
 OBJS=nedelements.obj nedelement.obj nedstring.obj nederror.obj \
      nedvalidator.obj neddtdvalidator.obj neddtdvalidator1.obj \
      nedbasicvalidator.obj nedsemanticvalidator.obj nedcompiler.obj \
-     cppgenerator.obj nedgenerator.obj nedfilebuffer.obj \
-     nedparser.obj ned.tab.obj lex.yy.obj \
+     cppgenerator.obj cppexprgenerator.obj nedgenerator.obj nedfilebuffer.obj \
+     nedparser.obj ned.tab.obj lex.yy.obj nedutil.obj \
      xmlgenerator.obj nedxmlparser.obj nedsaxhandler.obj saxparser.obj \
 
 
@@ -33,6 +33,9 @@ nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned
 
 cppgenerator.obj : cppgenerator.cc
         $(CXX) $(COPTS) /c /Tp cppgenerator.cc
+
+cppexprgenerator.obj : cppexprgenerator.cc
+        $(CXX) $(COPTS) /c /Tp cppexprgenerator.cc
 
 nedelements.obj : nedelements.cc
         $(CXX) $(COPTS) /c /Tp nedelements.cc
@@ -63,6 +66,9 @@ nedstring.obj : nedstring.cc
 
 nederror.obj : nederror.cc
 	$(CXX) $(COPTS) /c /Tp nederror.cc
+
+nedutil.obj : nedutil.cc
+	$(CXX) $(COPTS) /c /Tp nedutil.cc
 
 lex.yy.obj: lex.yy.c
         $(CXX) /I "." $(COPTS) /c /Tp lex.yy.c
@@ -110,11 +116,19 @@ clean:
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+cppexprgenerator.obj: cppexprgenerator.cc \
+  cppexprgenerator.h \
+  nederror.h \
+  nedelements.h \
+  nedelement.h \
+  nedstring.h
 cppgenerator.obj: cppgenerator.cc \
   nedelements.h \
   cppgenerator.h \
+  nederror.h \
   nedelement.h \
-  nedstring.h
+  nedstring.h \
+  cppexprgenerator.h
 nedbasicvalidator.obj: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \
@@ -135,11 +149,14 @@ nedcompiler.obj: nedcompiler.cc \
   nedgrammar.h \
   nedvalidator.h
 neddtdvalidator.obj: neddtdvalidator.cc \
+  nederror.h \
   neddtdvalidator.h \
   nedelements.h \
   nedvalidator.h \
   nedelement.h \
-  nedstring.h
+  nedstring.h \
+  nedelements.h \
+  nedvalidator.h
 neddtdvalidator1.obj: neddtdvalidator1.cc \
   nederror.h \
   neddtdvalidator.h \
@@ -151,6 +168,7 @@ nedelement.obj: nedelement.cc \
   nedelement.h \
   nedstring.h
 nedelements.obj: nedelements.cc \
+  nederror.h \
   nedelements.h \
   nedelement.h \
   nedstring.h
@@ -166,6 +184,7 @@ nedfilebuffer.obj: nedfilebuffer.cc \
   nedstring.h
 nedgenerator.obj: nedgenerator.cc \
   nedgenerator.h \
+  nederror.h \
   nedelements.h \
   nedelement.h \
   nedstring.h
@@ -193,14 +212,22 @@ nedsemanticvalidator.obj: nedsemanticvalidator.cc \
   nedelements.h
 nedstring.obj: nedstring.cc \
   nedstring.h
+nedutil.obj: nedutil.cc \
+  nederror.h \
+  nedutil.h \
+  nedelement.h \
+  nedstring.h
 nedvalidator.obj: nedvalidator.cc \
+  nederror.h \
   nedvalidator.h \
   nedelements.h \
   nedelement.h \
-  nedstring.h
+  nedstring.h \
+  nedelements.h
 nedxmlparser.obj: nedxmlparser.cc \
   saxparser.h \
   nedsaxhandler.h \
+  nederror.h \
   nedelement.h \
   nedstring.h
 saxparser.obj: saxparser.cc \

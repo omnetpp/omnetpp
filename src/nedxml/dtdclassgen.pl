@@ -207,6 +207,7 @@ print H "#include \"nedelement.h\"\n\n";
 print CC "$copyright\n";
 print CC "// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***\n\n";
 print CC "#include <string.h>\n";
+print CC "#include \"nederror.h\"\n";
 print CC "#include \"$hfile\"\n\n";
 
 # forward declarations
@@ -439,9 +440,8 @@ foreach $element (@elements)
     $startletter = $1;
     print CC "    if (tagname[0]=='$startletter' && !strcmp(tagname,\"$element\"))  return new $elementclass{$element}();\n";
 }
-print CC "    UnknownNode *node = new UnknownNode();\n";
-print CC "    node->setElement( tagname );\n";
-print CC "    return node;\n";
+print CC "    INTERNAL_ERROR1(NULL,\"createNodeWithTag(): unknown tag '%s'\", tagname);\n";
+print CC "    return NULL;\n";
 print CC "}\n\n";
 print CC "NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)\n";
 print CC "{\n";
@@ -452,7 +452,7 @@ foreach $element (@elements)
     $startletter = $1;
     print CC "        case $enumname{$element}: return new $elementclass{$element}();\n";
 }
-print CC "        default: return new UnknownNode();\n";
+print CC "        default: INTERNAL_ERROR1(NULL,\"createNodeWithTag(): unknown tag code %d\", tagcode); return NULL;\n";
 print CC "    }\n";
 print CC "}\n\n";
 
@@ -473,6 +473,7 @@ print VAL_H "#include \"nedelements.h\"\n\n";
 print VAL_CC "$copyright\n";
 print VAL_CC "// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***\n\n";
 print VAL_CC "#include <stdio.h>\n";
+print VAL_CC "#include \"nederror.h\"\n";
 print VAL_CC "#include \"$validatorhfile\"\n\n";
 
 print VAL_H "/**\n";
@@ -510,7 +511,7 @@ foreach $element (@elements)
     $startletter = $1;
     print VAL_CC "        case $enumname{$element}: validateElement(($elementclass{$element} *) node); break;\n";
 }
-print VAL_CC "        default: ; // FIXME internal error\n";
+print VAL_CC "        default: INTERNAL_ERROR1(node,\"validateElement(): unknown tag '%s'\", node->getTagName());\n";
 print VAL_CC "    }\n";
 print VAL_CC "}\n\n";
 
@@ -532,6 +533,7 @@ print DTDVAL_H "#include \"$validatorhfile\"\n\n";
 print DTDVAL_CC "$copyright\n";
 print DTDVAL_CC "// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***\n\n";
 print DTDVAL_CC "#include <stdio.h>\n";
+print DTDVAL_CC "#include \"nederror.h\"\n";
 print DTDVAL_CC "#include \"$dtdvalidatorhfile\"\n\n";
 
 print DTDVAL_H "/**\n";

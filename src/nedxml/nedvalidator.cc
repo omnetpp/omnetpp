@@ -15,6 +15,7 @@
 // *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***
 
 #include <stdio.h>
+#include "nederror.h"
 #include "nedvalidator.h"
 
 void  NEDValidatorBase::validate(NEDElement *node)
@@ -63,7 +64,7 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_IDENT: validateElement((IdentNode *) node); break;
         case NED_CONST: validateElement((ConstNode *) node); break;
         case NED_UNKNOWN: validateElement((UnknownNode *) node); break;
-        default: ; // FIXME internal error
+        default: INTERNAL_ERROR1(node,"validateElement(): unknown tag '%s'", node->getTagName());
     }
 }
 

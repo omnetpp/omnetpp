@@ -15,6 +15,7 @@
 // *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***
 
 #include <stdio.h>
+#include "nederror.h"
 #include "neddtdvalidator.h"
 
 void NEDDTDValidator::validateElement(NedFilesNode *node)

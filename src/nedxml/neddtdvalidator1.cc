@@ -35,7 +35,7 @@ void NEDDTDValidator::checkSequence(NEDElement *node, int tags[], char mult[], i
            break;
          case '+':
            if (!p || p->getTagCode()!=tags[i])
-               {NEDError(node, "DTD validation error: child element '%s' unexpected", (p?p->getTagName():"")); return;} // FIXME error!
+               {NEDError(node, "DTD validation error: child element '%s' unexpected", (p?p->getTagName():"")); return;}
            p = p->getNextSibling();
            while (p && p->getTagCode()==tags[i])
                p = p->getNextSibling();
@@ -47,7 +47,7 @@ void NEDDTDValidator::checkSequence(NEDElement *node, int tags[], char mult[], i
        }
     }
     if (p)
-        {NEDError(node, "DTD validation error: child element '%s' unexpected", p->getTagName()); return;} // FIXME error!
+        {NEDError(node, "DTD validation error: child element '%s' unexpected", p->getTagName()); return;}
 }
 
 void NEDDTDValidator::checkChoice(NEDElement *node, int tags[], int n, char mult)
@@ -57,12 +57,12 @@ void NEDDTDValidator::checkChoice(NEDElement *node, int tags[], int n, char mult
     if (mult=='1' || mult=='+')
     {
         if (!p)
-             {NEDError(node,"DTD validation error: child element '' unexpected\n"); return;} // FIXME error!
+             {NEDError(node,"DTD validation error: child element '' unexpected\n"); return;}
         for (i=0; i<n; i++)
              if (p->getTagCode()==tags[i])
                  break;
         if (i==n)
-             {NEDError(node,"DTD validation error: child element '%s' unexpected", p->getTagName()); return;} // FIXME error!
+             {NEDError(node,"DTD validation error: child element '%s' unexpected", p->getTagName()); return;}
         p = p->getNextSibling();
     }
     if (mult=='+' || mult=='*')
@@ -73,7 +73,7 @@ void NEDDTDValidator::checkChoice(NEDElement *node, int tags[], int n, char mult
                 if (p->getTagCode()==tags[i])
                    break;
             if (i==n)
-                {NEDError(node,"DTD validation error: child element '%s' unexpected", p->getTagName()); return;} // FIXME error!
+                {NEDError(node,"DTD validation error: child element '%s' unexpected", p->getTagName()); return;}
             p = p->getNextSibling();
         }
     }
@@ -82,7 +82,7 @@ void NEDDTDValidator::checkChoice(NEDElement *node, int tags[], int n, char mult
 void NEDDTDValidator::checkEmpty(NEDElement *node)
 {
     if (node->getFirstChild()) {
-        NEDError(node,"DTD validation error: EMPTY element has children\n"); // FIXME error!
+        NEDError(node,"DTD validation error: EMPTY element has children\n");
     }
 }
 
@@ -90,7 +90,7 @@ void NEDDTDValidator::checkRequiredAttribute(NEDElement *node, const char *attr)
 {
     const char *s = node->getAttribute(attr);
     if (!s)
-        {NEDError(node,"DTD validation error: required attribute %s is empty", attr); return;} // FIXME error!
+        {NEDError(node,"DTD validation error: required attribute %s is empty", attr); return;}
 }
 
 void NEDDTDValidator::checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n)
@@ -104,10 +104,10 @@ void NEDDTDValidator::checkNameAttribute(NEDElement *node, const char *attr)
     if (!s)
         return;
     if (!isalpha(*s) && *s!='_')
-        {NEDError(node,"DTD validation error: attribute %s='%s' starts with invalid character", attr, node->getAttribute(attr)); return;} // FIXME error!
+        {NEDError(node,"DTD validation error: attribute %s='%s' starts with invalid character", attr, node->getAttribute(attr)); return;}
     while (*++s)
         if (!isalpha(*s) && !isdigit(*s) && *s!='_')
-            {NEDError(node,"DTD validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;} // FIXME error!
+            {NEDError(node,"DTD validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
 }
 
 void NEDDTDValidator::checkCommentAttribute(NEDElement *node, const char *attr)
@@ -123,7 +123,7 @@ void NEDDTDValidator::checkCommentAttribute(NEDElement *node, const char *attr)
             if (*s=='/' && *(s+1)=='/')
                 {s++; incomment = true;}
             else if (*s!=' ' && *s!='\t' && *s!='\n' && *s!='\r')
-                {NEDError(node,"DTD validation error: attribute %s='%s' does not contain a valid NED comment", attr, node->getAttribute(attr)); return;} // FIXME error!
+                {NEDError(node,"DTD validation error: attribute %s='%s' does not contain a valid NED comment", attr, node->getAttribute(attr)); return;}
         }
         else if (incomment)
         {
@@ -140,7 +140,7 @@ void NEDDTDValidator::checkNMTokenAttribute(NEDElement *node, const char *attr)
         return;
     for (; *s; s++)
         if (!isalpha(*s) && !isdigit(*s) && !strchr("!#$%&()*+,-./:;<=>?@[\\]^_`{|}~",*s))  //FIXME check against XML spec!
-            {NEDError(node,"DTD validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;} // FIXME error!
+            {NEDError(node,"DTD validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
 }
 
 

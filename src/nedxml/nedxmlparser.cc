@@ -16,6 +16,7 @@
 
 #include "saxparser.h"
 #include "nedsaxhandler.h"
+#include "nederror.h"
 
 NEDElement *parseXML(const char *filename)
 {
@@ -23,7 +24,7 @@ NEDElement *parseXML(const char *filename)
     FILE *f = fopen(filename,"r");
     if (!f)
     {
-        fprintf(stderr, "cannot open %s", filename); // FIXME error handling
+        NEDError(NULL, "Cannot open file '%s'", filename);
         return 0;
     }
 

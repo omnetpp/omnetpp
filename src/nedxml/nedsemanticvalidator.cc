@@ -13,7 +13,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>
 #include "nederror.h"
 #include "nedsemanticvalidator.h"
 #include "nedcompiler.h" // for NEDSymbolTable
@@ -182,6 +181,8 @@ void NEDSemanticValidator::validateElement(ConnectionsNode *node)
 
 void NEDSemanticValidator::validateElement(ConnectionNode *node)
 {
+    // validate gate and module types (vector or single)
+    // FIXME
 }
 
 void NEDSemanticValidator::validateElement(ConnAttrNode *node)

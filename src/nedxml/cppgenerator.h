@@ -1,5 +1,5 @@
 //==========================================================================
-//   CPPGEN.H -
+//   CPPGENERATOR.H -
 //            part of OMNeT++
 //
 //==========================================================================
@@ -17,9 +17,11 @@
 #define __CPPGENERATOR_H
 
 #include <string>
+#include <map>
+#include <vector>
 #include "iostream.h"
 #include "nedelements.h"
-
+#include "cppexprgenerator.h"
 
 /**
  * Simple front-end to NEDCppGenerator.
@@ -28,9 +30,12 @@
  */
 void generateCpp(ostream& out, NEDElement *node);
 
+
 /**
  * Nedc functionality: generates C++ code from a NED object tree.
  * Assumes object tree has already passed all validation stages (DTD, basic, semantic).
+ *
+ * Uses CppExpressionGenerator.
  *
  * @ingroup CppGenerator
  */
@@ -47,6 +52,8 @@ class NEDCppGenerator
       MODE_NORMAL,
       MODE_CLEANUP,
     };
+
+    CppExpressionGenerator exprgen;
 
   public:
     NEDCppGenerator();
@@ -73,7 +80,7 @@ class NEDCppGenerator
     void doImports(ostream& out, ImportNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doImport(ostream& out, ImportedFileNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doChannel(ostream& out, ChannelNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doChanattr(ostream& out, ChannelAttrNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doChannelAttr(ostream& out, ChannelAttrNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doNetwork(ostream& out, NetworkNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doSimple(ostream& out, SimpleModuleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doModule(ostream& out, CompoundModuleNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
@@ -98,13 +105,7 @@ class NEDCppGenerator
     void doForloop(ostream& out, ForLoopNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doLoopvar(ostream& out, LoopVarNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doDisplayString(ostream& out, DisplayStringNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-
     void doExpression(ostream& out, ExpressionNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doOperator(ostream& out, OperatorNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doFunction(ostream& out, FunctionNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doParamref(ostream& out, ParamRefNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doIdent(ostream& out, IdentNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doConst(ostream& out, ConstNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
 
     ExpressionNode *findExpression(NEDElement *parent, const char *target);
     void resolveGate(ostream& out, const char *var, const char *indent, const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex);

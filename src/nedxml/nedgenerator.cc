@@ -1,5 +1,5 @@
 //==========================================================================
-//   NEDGEN.CC -
+//   NEDGENERATOR.CC -
 //            part of OMNeT++
 //
 //==========================================================================
@@ -15,8 +15,8 @@
 
 
 #include <string.h>
-#include <stdio.h>  // printf
 #include "nedgenerator.h"
+#include "nederror.h"
 
 
 void generateNed(ostream& out, NEDElement *node, bool newsyntax)
@@ -644,7 +644,7 @@ int NEDGenerator::getOperatorPriority(const char *op, int args)
         if (!strcmp(op,"!"))  return 9;
         if (!strcmp(op,"~"))  return 9;
     }
-    cout << "DBG: unknown operator: " << op << "\n"; // FIXME error handling
+    INTERNAL_ERROR1(NULL, "getOperatorPriority(): unknown operator '%s'", op);
     return -1;
 }
 
@@ -848,7 +848,7 @@ void NEDGenerator::generateNedItem(ostream& out, NEDElement *node, const char *i
         case NED_CONST:
             doConst(out, (ConstNode *)node, indent, islast, arg); break;
         default:
-            out << "DBG: generateNedItem: unknown tag: " << node->getTagName() << "\n"; // FIXME error handling
+            INTERNAL_ERROR1(node, "generateNedItem(): unknown tag '%s'", node->getTagName());
     }
 }
 

@@ -16,6 +16,12 @@
 #ifndef __NEDELEMENT_H
 #define __NEDELEMENT_H
 
+#ifdef _MSC_VER
+// disable tons of "identifier was truncated to '255' characters in the debug
+// information" warnings that comes as bonus with using STL
+#pragma warning(disable:4786)
+#endif
+
 #include "nedstring.h"
 
 /**
@@ -38,23 +44,68 @@ class NEDElement
     NEDElement *prevsibling;
     NEDElement *nextsibling;
     static long lastid;
+
   protected:
     static bool stringToBool(const char *s);
     static const char *boolToString(bool b);
     static int stringToEnum(const char *s, const char *vals[], int nums[], int n);
     static const char *enumToString(int b, const char *vals[], int nums[], int n);
+
   public:
+    /** @name Constructor, destructor */
+    //@{
+
+    /**
+     * Constructor
+     */
     NEDElement();
+
+    /**
+     * Constructor. Takes parent element.
+     */
     NEDElement(NEDElement *parent);
+
+    /**
+     * Destructor. Destroys children too.
+     */
     virtual ~NEDElement();
+    //@}
 
     /** @name Common properties */
     //@{
+
+    /**
+     * Overridden in subclasses to return the name of the XML element the class
+     * represents.
+     */
     virtual const char *getTagName() const = 0;
+
+    /**
+     * Overridden in subclasses to return the numeric code (NED_xxx) of the
+     * XML element the class represents.
+     */
     virtual int getTagCode() const = 0;
+
+    /**
+     * Returns a unique id, originally set by the contructor.
+     */
     virtual long getId() const;
+
+    /**
+     * Unique id assigned by the constructor can be overwritten here.
+     */
     virtual void setId(long id);
+
+    /**
+     * Returns a string containing a file/line position showing where this
+     * element originally came from.
+     */
     virtual const char *getSourceLocation() const;
+
+    /**
+     * Sets location string (a string containing a file/line position showing
+     * where this element originally came from). Called by the (NED/XML) parser.
+     */
     virtual void setSourceLocation(const char *loc);
     //@}
 

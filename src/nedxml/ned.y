@@ -104,6 +104,7 @@ void yyerror (char *s);
 #include "nedparser.h"
 #include "nedfilebuffer.h"
 #include "nedelements.h"
+#include "nedutil.h"
 
 static YYLTYPE NULLPOS={0,0,0,0,0,0};
 
@@ -181,6 +182,7 @@ FunctionNode *createFunction(const char *funcname, NEDElement *arg1=NULL, NEDEle
 ParamRefNode *createParamRef(const char *param, const char *paramindex=NULL, const char *module=NULL, const char *moduleindex=NULL);
 IdentNode *createIdent(const char *name);
 ConstNode *createConst(int type, const char *value, const char *text=NULL);
+ConstNode *createTimeConst(const char *text);
 NEDElement *createParamRefOrIdent(const char *name);
 
 void addVector(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDElement *expr);
@@ -1275,7 +1277,7 @@ numconst
         | REALCONSTANT
                 { $$ = createConst(NED_CONST_REAL, toString(@1)); }
         | timeconstant
-                { $$ = createConst(NED_CONST_TIME, toString(@1)); }
+                { $$ = createTimeConst(toString(@1)); }
         ;
 
 timeconstant
@@ -1555,10 +1557,9 @@ void swapExpressionChildren(NEDElement *node, const char *attr1, const char *att
    for (expr2=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr2; expr2=expr2->getNextExpressionNodeSibling())
       if (!strcmp(expr2->getTarget(),attr2))
           break;
-   if (!expr1 || !expr2) return;
 
-   expr1->setTarget(attr2);
-   expr2->setTarget(attr1);
+   if (expr1) expr1->setTarget(attr2);
+   if (expr2) expr2->setTarget(attr1);
 }
 
 OperatorNode *createOperator(const char *op, NEDElement *operand1, NEDElement *operand2, NEDElement *operand3)
@@ -1611,6 +1612,21 @@ ConstNode *createConst(int type, const char *value, const char *text)
    c->setType(type);
    if (value) c->setValue(value);
    if (text) c->setText(text);
+   return c;
+}
+
+ConstNode *createTimeConst(const char *text)
+{
+   ConstNode *c = (ConstNode *)createNodeWithTag(NED_CONST);
+   c->setType(NED_CONST_TIME);
+   if (text) c->setText(text);
+
+   double t = NEDStrToSimtime(text);
+   if (t<0) np->error("invalid time constant", pos.li);
+   char buf[32];
+   sprintf(buf,"%lg",t);
+   c->setValue(buf);
+
    return c;
 }
 

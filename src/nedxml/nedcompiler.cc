@@ -196,8 +196,11 @@ void NEDCompiler::doValidate(NEDElement *tree)
     // DTD validation and additional basic validation
     NEDDTDValidator dtdvalidator;
     dtdvalidator.validate(tree);
+    if (errorsOccurred()) return;
+
     NEDBasicValidator basicvalidator(true);
     basicvalidator.validate(tree);
+    if (errorsOccurred()) return;
 
     // import what's necessary and do semantic checks meanwhile
     for (NEDElement *node=tree->getFirstChild(); node; node=node->getNextSibling())
@@ -246,9 +249,10 @@ void NEDCompiler::doValidate(NEDElement *tree)
         }
         else
         {
-            // semantic validation
+            // semantic validation for this top-level element
             NEDSemanticValidator validator(true,symboltable);
             validator.validate(node);
+            // no return on errorsOccurred() -- keep on until end of this file
 
             // add to symbol table
             symboltable->add(node);

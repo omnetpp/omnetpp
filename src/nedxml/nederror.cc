@@ -2,7 +2,7 @@
 // nederror.cc  - part of the OMNeT++ Discrete System Simulation System
 //
 // Contents:
-//   nedError function
+//   NEDError, NEDInternalError functions
 //
 //==========================================================================
 
@@ -15,24 +15,59 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.h>
 #include "nederror.h"
 
-void NEDError(NEDElement *where, const char *format, ...)
+static bool err = false;
+
+void NEDError(NEDElement *context, const char *message, ...)
 {
     va_list va;
-    va_start(va, format);
-    char message[1024];
-    vsprintf(message,format,va);
+    va_start(va, message);
+    char messagebuf[1024];
+    vsprintf(messagebuf,message,va);
     va_end(va);
 
-    const char *loc = where ? where->getSourceLocation() : NULL;
+    const char *loc = context ? context->getSourceLocation() : NULL;
     if (loc)
-        fprintf(stderr, "%s: %s\n", loc, message);
-    else if (where)
-        fprintf(stderr, "<%s>: %s\n", where->getTagName(), message);
+        fprintf(stderr, "%s: %s\n", loc, messagebuf);
+    else if (context)
+        fprintf(stderr, "<%s>: %s\n", context->getTagName(), messagebuf);
     else
-        fprintf(stderr, "%s\n", message);
+        fprintf(stderr, "%s\n", messagebuf);
+
+    err = true;
 }
+
+bool errorsOccurred()
+{
+    return err;
+}
+
+void clearErrors()
+{
+    err = false;
+}
+
+
+void NEDInternalError(const char *file, int line, NEDElement *context, const char *message, ...)
+{
+    va_list va;
+    va_start(va, message);
+    char messagebuf[1024];
+    vsprintf(messagebuf,message,va);
+    va_end(va);
+
+    const char *loc = context ? context->getSourceLocation() : NULL;
+    if (loc)
+        fprintf(stderr, "INTERNAL ERROR: %s:%d: %s: %s\n", file, line, loc, messagebuf);
+    else if (context)
+        fprintf(stderr, "INTERNAL ERROR: %s:%d: <%s>: %s\n", file, line, context->getTagName(), messagebuf);
+    else
+        fprintf(stderr, "INTERNAL ERROR: %s:%d: %s\n", file, line, messagebuf);
+    exit(-1);
+}
+
 
 
 

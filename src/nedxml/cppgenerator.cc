@@ -1,5 +1,5 @@
 //==========================================================================
-//   CPPGEN.CC
+//   CPPGENERATOR.CC
 //            part of OMNeT++
 //
 //==========================================================================
@@ -21,10 +21,10 @@
 
 #include "nedelements.h"
 #include "cppgenerator.h"
+#include "nederror.h"
 
-
-#define NEDC_VERSION "????" //FIXME
-#define NEDC_VERSION_HEX "????" //FIXME
+#define NEDC_VERSION "2.90" //FIXME
+#define NEDC_VERSION_HEX "0x0290" //FIXME
 
 
 void generateCpp(ostream& out, NEDElement *node)
@@ -32,32 +32,6 @@ void generateCpp(ostream& out, NEDElement *node)
     NEDCppGenerator cppgen;
     cppgen.generate(out, node);
 }
-
-//-----------------------------------------------------------------------
-
-static struct { char *fname; int args; } known_funcs[] =
-{
-   /* <math.h> */
-   {"fabs", 1},    {"fmod", 2},
-   {"acos", 1},    {"asin", 1},    {"atan", 1},   {"atan2", 1},
-   {"sin", 1},     {"cos", 1},     {"tan", 1},    {"hypot", 2},
-   {"ceil", 1},    {"floor", 1},
-   {"exp", 1},     {"pow", 2},     {"sqrt", 1},
-   {"log",  1},    {"log10", 1},
-
-   /* OMNeT++ */
-   {"uniform", 2},      {"intuniform", 2},       {"exponential", 1},
-   {"normal", 2},       {"truncnormal", 2},
-   {"genk_uniform", 3}, {"genk_intuniform",  3}, {"genk_exponential", 2},
-   {"genk_normal", 3},  {"genk_truncnormal", 3},
-   {"min", 2},          {"max", 2},
-
-   /* OMNeT++, to support expressions */
-   {"bool_and",2}, {"bool_or",2}, {"bool_xor",2}, {"bool_not",1},
-   {"bin_and",2},  {"bin_or",2},  {"bin_xor",2},  {"bin_compl",1},
-   {"shift_left",2}, {"shift_right",2},
-   {NULL,0}
-};
 
 inline bool strnotnull(const char *s)
 {
@@ -127,7 +101,7 @@ void NEDCppGenerator::generateItem(ostream& out, NEDElement *node, const char *i
                 case NED_CHANNEL:
                     doChannel(out, (ChannelNode *)node, newindent, mode, arg); break;
                 case NED_CHANNEL_ATTR:
-                    doChanattr(out, (ChannelAttrNode *)node, newindent, mode, arg); break;
+                    doChannelAttr(out, (ChannelAttrNode *)node, newindent, mode, arg); break;
                 case NED_NETWORK:
                     doNetwork(out, (NetworkNode *)node, newindent, mode, arg); break;
                 case NED_SIMPLE_MODULE:
@@ -176,18 +150,8 @@ void NEDCppGenerator::generateItem(ostream& out, NEDElement *node, const char *i
                     doDisplayString(out, (DisplayStringNode *)node, newindent, mode, arg); break;
                 case NED_EXPRESSION:
                     doExpression(out, (ExpressionNode *)node, newindent, mode, arg); break;
-                case NED_OPERATOR:
-                    doOperator(out, (OperatorNode *)node, newindent, mode, arg); break;
-                case NED_FUNCTION:
-                    doFunction(out, (FunctionNode *)node, newindent, mode, arg); break;
-                case NED_PARAM_REF:
-                    doParamref(out, (ParamRefNode *)node, newindent, mode, arg); break;
-                case NED_IDENT:
-                    doIdent(out, (IdentNode *)node, newindent, mode, arg); break;
-                case NED_CONST:
-                    doConst(out, (ConstNode *)node, newindent, mode, arg); break;
                 default:
-                    fprintf(stderr,"INTERNAL ERROR:unrecognized tag: %s\n", node->getTagName()); // FIXME error!
+                    INTERNAL_ERROR1(node,"generateItem(): unrecognized tag: %s", node->getTagName());
             }
             break;
         case MODE_CLEANUP:
@@ -200,7 +164,7 @@ void NEDCppGenerator::generateItem(ostream& out, NEDElement *node, const char *i
             }
             break;
         default:
-            fprintf(stderr,"INTERNAL ERROR:unrecognized mode: %d\n", mode); // FIXME error!
+            INTERNAL_ERROR1(node,"generateItem(): unrecognized mode %d", mode);
     }
 }
 
@@ -236,13 +200,11 @@ void NEDCppGenerator::generateChildrenExceptTags(ostream& out, NEDElement *node,
 void NEDCppGenerator::printTemporaryVariables(ostream& out, const char *indent)
 {
         out << indent << "// temporary variables:\n";
-        out << indent << "cPar value, *par;\n";
-        out << indent << "MathFunc func;\n";
-        out << indent << "const char *type_name;\n";
-        out << indent << "char b1[64], b2[64];\n";
-        out << indent << "cArray machines;\n"; // --LG
-        out << indent << "bool islocal;\n";
-        out << indent << "int size;\n";
+        out << indent << "cPar tmpval;\n";  // for compiled expressions
+        out << indent << "const char *type_name;\n";   // for submodule creation
+        out << indent << "cArray machines;\n";  // for 'on:'
+        out << indent << "bool islocal;\n";  // for 'on:'
+        out << indent << "int size;\n";  // for gatesize
         out << "\n";
 }
 
@@ -344,15 +306,17 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "// Version check\n"
                 "#define NEDC_VERSION " NEDC_VERSION_HEX "\n"
                 "#if (NEDC_VERSION!=OMNETPP_VERSION)\n"
-                "#    error Version mismatch! Probably this file was generated by an earlier version of nedc: 'make clean' should help.\n"
-                "#endif\n";
+                "//#    error Version mismatch! Probably this file was generated by an earlier version of nedc: 'make clean' should help.\n"
+                "#endif\n"; // FIXME add back version check...
     out << "\n";
 
     out << "static void readModuleParameters(cModule *mod)\n";
     out << "{\n";
     out << "    int n = mod->params();\n";
-    out << "    for (int k=0; k<n; k++) {\n";
-    out << "        if (mod->par(k).isInput()) {\n";
+    out << "    for (int k=0; k<n; k++)\n";
+    out << "    {\n";
+    out << "        if (mod->par(k).isInput())\n";
+    out << "        {\n";
     out << "            mod->par(k).read();check_error();\n";
     out << "        }\n";
     out << "    }\n";
@@ -394,6 +358,10 @@ ChannelAttrNode *findChannelAttribute(ChannelNode *node, const char *attrname)
 
 void NEDCppGenerator::doChannel(ostream& out, ChannelNode *node, const char *indent, int mode, const char *)
 {
+    // generate expression shells
+    exprgen.collectExpressions(node);
+    exprgen.generateExpressionClasses(out);
+
     // generate channel attributes code
     generateChildren(out, node, increaseIndent(indent));
 
@@ -410,17 +378,19 @@ void NEDCppGenerator::doChannel(ostream& out, ChannelNode *node, const char *ind
     out << (datarate ? channelname:"NULL") << (datarate ? "__datarate":"") << ");\n\n";
 }
 
-void NEDCppGenerator::doChanattr(ostream& out, ChannelAttrNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doChannelAttr(ostream& out, ChannelAttrNode *node, const char *indent, int mode, const char *)
 {
     const char *channelname = ((ChannelNode *)(node->getParent()))->getName();  // channel name
     const char *attrname = node->getName();    // attribute name
 
     out << "static cPar *" << channelname << "__" << attrname << "()\n";
     out << "{\n";
-    printTemporaryVariables(out, indent);
-    //get_expression(namedatarate ? datarate : "0", yyout, value); // FIXME
+    out << "    cPar tmpval;\n";
     out << "    cPar *p = new cPar(\"" << channelname << "_datarate\");\n";
-    //out << "    *p = " << value << ";\n";  // FIXME
+    ExpressionNode *value = findExpression(node, "value");
+    out << "    *p = ";
+    generateItem(out, value, indent, mode);
+    out << ";\n";
     out << "    return p;\n";
     out << "}\n\n";
 }
@@ -509,8 +479,9 @@ void NEDCppGenerator::doModule(ostream& out, CompoundModuleNode *node, const cha
 
     out << "Define_Module( " << module_name.c_str() << " );\n\n";
 
-    // FIXME expression shells here!
-    // p, classname, {parameter list (pointers)}
+    // generate expression shells
+    exprgen.collectExpressions(node);
+    exprgen.generateExpressionClasses(out);
 
     // prolog
     out << "void " << module_name.c_str() << "::buildInside()\n";
@@ -825,8 +796,9 @@ void NEDCppGenerator::doConnections(ostream& out, ConnectionsNode *node, const c
     out << indent << "// connections:\n";
     out << indent << "//\n";
     out << indent << "cLinkType *link_p;\n";
+    out << indent << "cModule *tmpmod;\n";
     out << indent << "cPar *delay_p, *error_p, *datarate_p;\n";
-    out << indent << "cGate *srcgate, destgate;\n\n";
+    out << indent << "cGate *srcgate, *destgate;\n\n";
 
     // generate children
     generateChildren(out, node, indent, mode);
@@ -908,12 +880,12 @@ void NEDCppGenerator::resolveGate(ostream& out, const char *var, const char *ind
    if (modname)
    {
        modvar = "tmpmod";
-       out << indent << "tmpmod = " << modname;
+       out << indent << "tmpmod = " << modname << "_p";
        if (modindex)
        {
-            out << "[";
+            out << "[(long)("; // FIXME bounds check needed!
             generateItem(out, modindex, indent);
-            out << "]";
+            out << ")]";
        }
        out << ";\n";
    }
@@ -947,17 +919,14 @@ void NEDCppGenerator::doConnection(ostream& out, ConnectionNode *node, const cha
            node->getDestModule(), findExpression(node,"dest-module-index"),
            node->getDestGate(), findExpression(node,"dest-gate-index"));
 
-    // FIXME: make gate1.connect(gate2 [,channel])
-    out << indent << "connect ( srcgate,\n";
-    out << indent << "          " <<  "channel"  << ",\n";
-    out << indent << "          destgate);\n\n";
+    out << indent << "srcgate->connect(destgate);\n";  // FIXME channel!
 
     generateChildrenWithTags(out, node, "conn-attr", indent);
 
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
-        out << indent << "srcmod" << "->gate(srcgate)->setDisplayString(\"" <<  dispstr->getValue() << "\");\n";
+        out << indent << "srcgate->setDisplayString(\"" <<  dispstr->getValue() << "\");\n";
     }
     out << indent << "check_error(); check_memory();\n";
 
@@ -1031,133 +1000,6 @@ ExpressionNode *NEDCppGenerator::findExpression(NEDElement *parent, const char *
 
 void NEDCppGenerator::doExpression(ostream& out, ExpressionNode *node, const char *indent, int mode, const char *arg)
 {
-    generateChildren(out,node,indent,mode,arg);
+    exprgen.generateExpressionUsage(out, (ExpressionNode *)node,indent);
 }
-
-void NEDCppGenerator::doOperator(ostream& out, OperatorNode *node, const char *indent, int mode, const char *arg)
-{
-    NEDElement *op1 = node->getFirstChild();
-    NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-    NEDElement *op3 = op2 ? op2->getNextSibling() : NULL;
-
-    if (!op2)
-    {
-        // unary
-        out << node->getName();
-        generateItem(out,op1,indent,mode,arg);
-    }
-    else if (!op3)
-    {
-        // binary. Always put parens -- C++ operator precendence may be different
-        // from NED's, and anyway who cares in generated C++ code...
-        out << "(";
-        generateItem(out,op1,indent,mode,arg);
-        out << node->getName();
-        generateItem(out,op2,indent,mode,arg);
-        out << ")";
-    }
-    else
-    {
-        // tertiary can only be "?:"
-        out << "(";
-        generateItem(out,op1,indent,mode,arg);
-        out << " ? ";
-        generateItem(out,op2,indent,mode,arg);
-        out << " : ";
-        generateItem(out,op3,indent,mode,arg);
-        out << ")";
-    }
-}
-
-void NEDCppGenerator::doFunction(ostream& out, FunctionNode *node, const char *indent, int mode, const char *arg)
-{
-    const char *funcname = node->getName();
-    NEDElement *op1 = node->getFirstChild();
-    NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-    NEDElement *op3 = op2 ? op2->getNextSibling() : NULL;
-
-    // operators should be handled specially
-    if (!strcmp(funcname,"index"))
-    {
-        out << "submod_i";
-        return;
-    }
-    else if (!strcmp(funcname,"sizeof"))
-    {
-        // FIXME handle...
-        return;
-    }
-    else if (!strcmp(funcname,"input"))
-    {
-        // FIXME handle...
-        return;
-    }
-
-    // do we know this function?
-    int i;
-    for (i=0; known_funcs[i].fname!=NULL;i++)
-        if (!strcmp(funcname,known_funcs[i].fname))
-            break;
-    if (known_funcs[i].fname!=NULL) // found
-    {
-        out << funcname;
-    }
-    else // unknown
-    {
-        out << "(findFunction(\"" << funcname << "\")->f)";
-    }
-
-    out << "(";
-    if (op1) {
-        generateItem(out,op1,indent,mode,arg);
-    }
-    if (op2) {
-        out << ", ";
-        generateItem(out,op2,indent,mode,arg);
-    }
-    if (op3) {
-        out << ", ";
-        generateItem(out,op3,indent,mode,arg);
-    }
-    out << ")";
-}
-
-void NEDCppGenerator::doParamref(ostream& out, ParamRefNode *node, const char *indent, int mode, const char *)
-{
-    if (node->getIsAncestor())
-        out << "ancestor "; // FIXME
-
-    if (node->getIsRef())
-        out << "ref "; // FIXME
-
-    if (strnotnull(node->getModule())) {
-        out << node->getModule() << "_p";
-        // FIXME index here!
-        out << "->";
-    } else {
-        out << "mod->";
-    }
-
-    // FIXME index here!
-    out << "par(\"" << node->getParamName() << "\")";
-}
-
-void NEDCppGenerator::doIdent(ostream& out, IdentNode *node, const char *indent, int mode, const char *)
-{
-    out << node->getName() << "_var";
-}
-
-void NEDCppGenerator::doConst(ostream& out, ConstNode *node, const char *indent, int mode, const char *)
-{
-    bool isstring = (node->getType()==NED_CONST_STRING);
-
-    if (isstring) out << "\"";
-    if (strnotnull(node->getText())) {
-        out << node->getText();
-    } else {
-        out << node->getValue();
-    }
-    if (isstring) out << "\"";
-}
-
 

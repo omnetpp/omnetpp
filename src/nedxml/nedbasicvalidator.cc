@@ -43,6 +43,10 @@ static struct { char *fname; int args; } known_funcs[] =
    {NULL,0}
 };
 
+inline bool strnotnull(const char *s)
+{
+    return s && s[0];
+}
 
 void NEDBasicValidator::checkUniqueness(NEDElement *node, int childtype, const char *attr)
 {
@@ -73,14 +77,14 @@ void NEDBasicValidator::checkExpressionAttributes(NEDElement *node, const char *
                 if (!strcmp(target, attrs[i]))
                     break;
             if (i==n)
-                NEDError(child, "'expression' with invalid target attribute '%s'",target);
+                NEDError(child, "'expression' element with invalid target attribute '%s'",target);
         }
     }
     else
     {
         // check: should be no Expression children at all
         if (node->getFirstChildWithTag(NED_EXPRESSION))
-            NEDError(node, "'expression' child found while using non-parsed expressions\n");
+            NEDError(node, "'expression' element found while using non-parsed expressions\n");
     }
 
     // check mandatory expressions are there
@@ -91,7 +95,12 @@ void NEDBasicValidator::checkExpressionAttributes(NEDElement *node, const char *
            if (parsedExpressions)
            {
                // check: Expression element must be there
-               // FIXME complete!!!
+               ExpressionNode *expr;
+               for (expr=(ExpressionNode *)node->getFirstChildWithTag(NED_EXPRESSION); expr; expr=expr->getNextExpressionNodeSibling())
+                   if (strnotnull(expr->getTarget()) && !strcmp(expr->getTarget(),attrs[i]))
+                       break;
+               if (!expr)
+                   NEDError(node, "expression-valued attribute '%s' not present in parsed form (missing 'expression' element)", attrs[i]);
            }
            else
            {
@@ -244,8 +253,8 @@ void NEDBasicValidator::validateElement(ConnectionNode *node)
     bool opt[] = {true, true, true, true, true};
     checkExpressionAttributes(node, expr, opt, 5);
 
-    // make sure submodule and gate names are valid
-    //FIXME
+    // FIXME make sure submodule and gate names are valid
+    // FIXME gates & modules are really vector (or really not)
 }
 
 void NEDBasicValidator::validateElement(ConnAttrNode *node)

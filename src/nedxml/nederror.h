@@ -18,7 +18,16 @@
 
 #include "nedelement.h"
 
-void NEDError(NEDElement *where, const char *format, ...);
+void NEDError(NEDElement *context, const char *message, ...);
+bool errorsOccurred();
+void clearErrors();
+
+#define INTERNAL_ERROR0(context,msg) NEDInternalError(__FILE__,__LINE__,context,msg)
+#define INTERNAL_ERROR1(context,msg,arg1) NEDInternalError(__FILE__,__LINE__,context,msg,arg1)
+#define INTERNAL_ERROR2(context,msg,arg1,arg2)   NEDInternalError(__FILE__,__LINE__,context,msg,arg1,arg2)
+#define INTERNAL_ERROR3(context,msg,arg1,arg2,arg3) NEDInternalError(__FILE__,__LINE__,context,msg,arg1,arg2,arg3)
+
+void NEDInternalError(const char *file, int line, NEDElement *context, const char *message, ...);
 
 #endif
 
