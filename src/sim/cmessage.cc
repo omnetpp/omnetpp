@@ -73,7 +73,7 @@ cMessage::~cMessage()
 
 void cMessage::info(char *buf)
 {
-    cObject::info( buf );
+    cObject::info(buf);
 
     // find end of string and append a space
     char *b = buf;
@@ -82,15 +82,42 @@ void cMessage::info(char *buf)
 
     // append useful info
     if (tomod<0)
+    {
         sprintf(b,"(new msg)");
+    }
     else if (kind()==MK_STARTER)
-        sprintf(b,"starter for #%d T=%s",tomod,simtimeToStr(delivd));
+    {
+        sprintf(b,"starter T=%s for %s (#%d) ",
+                simtimeToStr(delivd),
+                simulation.module(tomod)->fullPath(),
+                tomod);
+    }
     else if (kind()==MK_TIMEOUT)
-        sprintf(b,"timeout for #%d T=%s",tomod,simtimeToStr(delivd));
+    {
+        sprintf(b,"timeout T=%s for %s (#%d) ",
+                simtimeToStr(delivd),
+                simulation.module(tomod)->fullPath(),
+                tomod);
+    }
     else if (frommod==tomod)
-        sprintf(b,"selfmsg for #%d T=%s",tomod,simtimeToStr(delivd));
+    {
+        sprintf(b,"selfmsg T=%s for %s (#%d) ",
+                simtimeToStr(delivd),
+                simulation.module(tomod)->fullPath(),
+                tomod);
+    }
     else
-        sprintf(b,"src=#%d dest=#%d T=%s", frommod,tomod,simtimeToStr(delivd));
+    {
+        // 2 sprintfs cannot be merged because of static buffer in fullPath()
+        sprintf(b,"T=%s src=%s (#%d), ",
+                simtimeToStr(delivd),
+                simulation.module(frommod)->fullPath(),
+                frommod);
+        while(*b) b++;
+        sprintf(b,"dest=%s (#%d) ",
+                simulation.module(tomod)->fullPath(),
+                tomod);
+    }
 }
 
 void cMessage::forEach( ForeachFunc do_fn )

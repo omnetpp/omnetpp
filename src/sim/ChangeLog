@@ -1,3 +1,8 @@
+2002-12-07  Andras Varga
+
+	* cmessage.cc: info() now includes names of src/dest modules too;
+	useful when displayed in Tkenv scheduled events or message window
+
 2002-12-02  Andras Varga
 
 	* cmessage.cc: par() methods to throw cException when object cannot
