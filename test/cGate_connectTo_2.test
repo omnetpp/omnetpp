@@ -1,0 +1,97 @@
+%description:
+Tests cGate::connectTo() and disconnect().
+
+%module_a: {Sender}
+
+class {Sender} : public cSimpleModule
+{
+    Module_Class_Members({Sender},cSimpleModule,16384)
+    cChannel *createChannel(double delay);
+    virtual void activity();
+};
+
+Define_Module({Sender});
+
+#define PRINT(g)   ev << #g << ":" << ((g) ? (g)->fullName() : "NULL") << endl
+
+cChannel *{Sender}::createChannel(double delay)
+{
+    cSimpleChannel *ch = new cSimpleChannel("chan");
+    ch->setDelay(delay);
+    return ch;
+}
+
+void {Sender}::activity()
+{
+   cGate *out = gate("out");
+   cGate *rcvin = gate("out")->toGate();
+   cChannel *ch;
+
+   // start clean
+   out->disconnect();
+
+   // connect, then check if OK
+   ch = createChannel(0.5);
+   out->connectTo(rcvin, ch);
+   PRINT(out->channel());
+
+   // even send message to verify
+   cMessage *msg = new cMessage("hello1");
+   send(msg, "out");
+   wait(1);
+
+   // disconnect, then check if OK
+   out->disconnect();
+   PRINT(out->channel());
+
+   // set channel, then reconnect
+   ch = createChannel(0.25);
+   out->setChannel(ch);
+   out->connectTo(rcvin);
+   PRINT(out->channel());
+
+   // send message to verify
+   cMessage *msg2 = new cMessage("hello2");
+   send(msg2, "out");
+   wait(1);
+
+   // remove channel
+   out->setChannel(NULL);
+   PRINT(out->channel());
+
+   ev << "done\n";
+}
+
+%module_b: {Receiver}
+
+class {Receiver} : public cSimpleModule
+{
+    Module_Class_Members({Receiver},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Receiver});
+
+void {Receiver}::activity()
+{
+    while (true)
+    {
+        cMessage *msg = receive();
+        ev << msg->name() << " arrived at " << simTime() << endl;
+    }
+}
+
+%exitcode: 1
+
+%contains-regex: stdout
+out->channel\(\):chan
+.*
+hello1 arrived at 0.5
+.*
+out->channel\(\):NULL
+out->channel\(\):chan
+.*
+hello2 arrived at 1.25
+.*
+out->channel\(\):NULL
+done
