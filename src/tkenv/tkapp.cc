@@ -241,9 +241,15 @@ void TOmnetTkApp::doOneStep()
         }
         state = S_READY;
     }
+    catch (cTerminationException *e)
+    {
+        state = S_TERMINATED;
+        displayError(e);
+        delete e;
+    }
     catch (cException *e)
     {
-        state = e->isNormalTermination() ? S_TERMINATED : S_ERROR;
+        state = S_ERROR;
         displayError(e);
         delete e;
     }
@@ -334,9 +340,15 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
         }
         state = S_READY;
     }
+    catch (cTerminationException *e)
+    {
+        state = S_TERMINATED;
+        displayError(e);
+        delete e;
+    }
     catch (cException *e)
     {
-        state = e->isNormalTermination() ? S_TERMINATED : S_ERROR;
+        state = S_ERROR;
         displayError(e);
         delete e;
     }
@@ -400,9 +412,15 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
              );
         state = S_READY;
     }
+    catch (cTerminationException *e)
+    {
+        state = S_TERMINATED;
+        displayError(e);
+        delete e;
+    }
     catch (cException *e)
     {
-        state = e->isNormalTermination() ? S_TERMINATED : S_ERROR;
+        state = S_ERROR;
         displayError(e);
         delete e;
     }

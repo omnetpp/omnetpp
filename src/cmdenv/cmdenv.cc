@@ -189,6 +189,7 @@ void TCmdenvApp::run()
             if (sigint_received)
                 ev.printfmsg("SIGINT or SIGTERM received, simulation stopped.\n");
 
+            ev.printf("\nCalling finish() at end of Run #%d...\n", run_nr());
             simulation.callFinish();
         }
         catch (cException *e)
@@ -304,13 +305,16 @@ void TCmdenvApp::simulate()
            }
         }
     }
+    catch (cTerminationException *e)
+    {
+        stopClock();
+        delete e;
+        return;
+    }
     catch (cException *e)
     {
         stopClock();
-        if (!e->isNormalTermination())
-            throw;
-        delete e;
-        return;
+        throw;
     }
     stopClock();
 }

@@ -504,8 +504,8 @@ void TOmnetApp::stopClock()
 void TOmnetApp::checkTimeLimits()
 {
     if (opt_simtimelimit!=0 && simulation.simTime()>=opt_simtimelimit)
-         throw new cException(eSIMTIME);
+         throw new cTerminationException(eSIMTIME);
     else if (opt_cputimelimit!=0 && elapsedtime+time(0)-laststarted>=opt_cputimelimit)
-         throw new cException(eREALTIME);
+         throw new cTerminationException(eREALTIME);
 }
 
