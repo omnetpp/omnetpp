@@ -19,8 +19,9 @@ The number of clients is configurable. Each client computer periodically
 connects to the server for data exchange. In each connection, the client
 sends a random number of "queries" then closes the connection.
 
-The server handles several incoming connections concurrently. Each connection
-is served by a separate process (i.e. a dynamically created simple module).
+The server handles several incoming connections concurrently. Each
+connection is served by a separate process (i.e. a dynamically created
+simple module).
 
 The module types are:
   Client:
