@@ -1,3 +1,8 @@
+2002-03-08  Andras Varga
+
+	* structinsp.cc (update()): keep buffer size low by periodically
+        flushing it to the text widget
+
 2002-03-05  Andras Varga
 
 	* modinsp.cc, modinsp2.tcl: Bugfix: each display string change had

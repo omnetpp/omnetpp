@@ -33,22 +33,36 @@ TStructPanel::TStructPanel(const char *widgetname, cObject *obj) :
 {
 }
 
+static void flush_if_needed(const char *buf, const char *&s, int limit, Tcl_Interp *interp, const char *widgetname)
+{
+    // if there are more than limit chars in the buffer
+    if (s-buf>=limit)
+    {
+        CHK(Tcl_VarEval(interp, widgetname, ".txt insert insert {", buf, "}", NULL));
+        s = buf; // reset buffer
+    }
+}
+
 void TStructPanel::update()
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
+
+   // delete display
+   CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));
 
    // get descriptor object
    cStructDescriptor *sd = cStructDescriptor::createDescriptorFor( object );
    if (!sd)
    {
-       CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));
        CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {No cStructDescriptor registered for this class!}", NULL));
    }
 
-   // print everything in a 5M (was 4k)  buffer, then display it in a text control.
+   // print everything in a buffer, and periodically display it as the buffer gets full.
    // this is a temporary solution, should be replaced by something more professional!
-   char buf[5000000]; // UPS! 4k was not enough for some special message classes
-                      // containing arrays.
+
+   const int bufsize = 2048;     // buffer size
+   const int flushlimit = bufsize-256; // one sprintf() should be less than 256 chars
+   char buf[bufsize];
 
    char val[128];
    char *s = buf;
@@ -64,32 +78,36 @@ void TStructPanel::update()
            switch(type)
            {
                case cStructDescriptor::FT_BASIC:
-                 sd->getFieldAsString(fld, 0, val, 128); // FIXME: error handling!
-                 if (sd->getFieldEnumName(fld))
-                 {
-                   // display enum value as int and as string
-                   cEnum* enm = findEnum(sd->getFieldEnumName(fld));
-                   if (enm)
-                     {
-                       int key = atol(val);
-                       sprintf(val, "%d (%s)", key, enm->stringFor(key));
-                     }
-                 }
-                 sprintf(s,"%s\t%s = \t%s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
-                 s+=strlen(s);
-                   
+                   sd->getFieldAsString(fld, 0, val, 128); // FIXME: error handling!
+                   if (sd->getFieldEnumName(fld))
+                   {
+                       // display enum value as int and as string
+                       cEnum* enm = findEnum(sd->getFieldEnumName(fld));
+                       if (enm)
+                       {
+                           int key = atol(val);
+                           sprintf(val, "%d (%s)", key, enm->stringFor(key));
+                       }
+                   }
+                   sprintf(s,"%s\t%s = \t%s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
+                   s+=strlen(s);
+                   flush_if_needed(buf, s, flushlimit, interp, widgetname);
+
                    break;
                case cStructDescriptor::FT_SPECIAL:
                    sprintf(s,"%s\t%s = \t...\n", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
                    s+=strlen(s);
+                   flush_if_needed(buf, s, flushlimit, interp, widgetname);
                    break;
                case cStructDescriptor::FT_STRUCT:
                    sprintf(s,"%s\t%s = \t{...}\n", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
                    s+=strlen(s);
+                   flush_if_needed(buf, s, flushlimit, interp, widgetname);
                    break;
                default:
                    sprintf(s,"%s\t%s = \t(unknown type)\n", sd->getFieldTypeString(fld), sd->getFieldName(fld));
                    s+=strlen(s);
+                   flush_if_needed(buf, s, flushlimit, interp, widgetname);
            }
        }
        else
@@ -102,29 +120,42 @@ void TStructPanel::update()
                    // FIXME: handle enumnames too!
                    case cStructDescriptor::FT_BASIC_ARRAY:
                        sd->getFieldAsString(fld, i, val, 128); // FIXME: error handling!
+                       if (sd->getFieldEnumName(fld))
+                       {
+                           // display enum value as int and as string
+                           cEnum* enm = findEnum(sd->getFieldEnumName(fld));
+                           if (enm)
+                           {
+                               int key = atol(val);
+                               sprintf(val, "%d (%s)", key, enm->stringFor(key));
+                           }
+                       }
                        sprintf(s,"%s\t%s[%d] = \t%s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, val);
                        s+=strlen(s);
+                       flush_if_needed(buf, s, flushlimit, interp, widgetname);
                        break;
                    case cStructDescriptor::FT_SPECIAL_ARRAY:
                        sprintf(s,"%s\t%s[%d] = \t...\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
                        s+=strlen(s);
+                       flush_if_needed(buf, s, flushlimit, interp, widgetname);
                        break;
                    case cStructDescriptor::FT_STRUCT_ARRAY:
                        sprintf(s,"%s\t%s[%d] = \t{...}\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
                        s+=strlen(s);
+                       flush_if_needed(buf, s, flushlimit, interp, widgetname);
                        break;
                    default:
                        sprintf(s,"%s\t%s[%d] = \t(unknown type)\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
                        s+=strlen(s);
+                       flush_if_needed(buf, s, flushlimit, interp, widgetname);
                }
            }
        }
    }
    delete sd;
 
-   CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));
-   CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {", buf, "}", NULL));
-
+   // flush the rest
+   flush_if_needed(buf, s, 0, interp, widgetname);
 }
 
 void TStructPanel::writeBack()
