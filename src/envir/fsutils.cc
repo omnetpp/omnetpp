@@ -196,7 +196,7 @@ Globber::Globber(const char *filenamepattern)
 
 Globber::~Globber()
 {
-    globfree(&globdata);
+    globfree(&data->globdata);
     delete data;
 }
 
