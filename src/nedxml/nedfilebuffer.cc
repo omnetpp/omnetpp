@@ -93,8 +93,8 @@ bool NEDFileBuffer::indexLines()
     }
 
     // terminate last line if necessary
-    if (*(d-1)!='\n') *d++ = '\n';
-    *d = '\0';
+    d--;  // now d points to terminating zero
+    if (*(d-1)!='\n') {*d++ = '\n'; *d = '\0';}
 
     // count lines
     numLines = 0;
@@ -114,7 +114,8 @@ bool NEDFileBuffer::indexLines()
             lineBeg[line++] = s+1;
 
     // last line plus one points to end of file (terminating zero)
-    lineBeg[numLines+1] = s;
+    assert(line==numLines+2);
+    assert(lineBeg[numLines+1]==s);
 
     return true;
 }
