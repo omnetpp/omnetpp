@@ -218,4 +218,6 @@ Aug 26, 2000
  - find/replace dialog contents is now preserved
  - open/save dialogs now remember the directory
 Aug 27, 2000
- - drag&drop creation of submodules now creates unique names
+ - drag&drop creation of submodules now creates unique names (changed addItem,
+   renameItem procs)
+ - deleteItem proc improved
