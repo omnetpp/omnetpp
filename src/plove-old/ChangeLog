@@ -68,7 +68,7 @@ Mar 24, 2001
  - now you can build a single Plove executable, with all Tcl code compiled in.
    This made it necessary to reorganize the makefiles too.
 Apr 3, 2001
- - fix: the ap window didn't acquire focus on startup (added deiconify command)
+ - fix: the app window didn't acquire focus on startup (added deiconify command)
 Apr 16, 2001
  - Plove can now be compiled as GUI application (not console app) on Windows,
    setting USE_WINMAIN=yes in configuser.vc.
@@ -87,3 +87,6 @@ Apr 20, 2001
  - bugfix in new WinMain() startup code
 Apr 28, 2001
  - bugfix in .ploverc handling
+May 2, 2001
+ - fixed Help|README when using compiled-in Tcl code
+

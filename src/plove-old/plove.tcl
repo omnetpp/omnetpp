@@ -30,8 +30,8 @@ if [info exist OMNETPP_PLOVE_DIR] {
    source [file join $dir widgets.tcl]
    source [file join $dir help.tcl]
    source [file join $dir main.tcl]
-   set OMNETPP_README [file join $OMNETPP_PLOVE_DIR README]
+   set OMNETPP_PLOVE_README [file join $OMNETPP_PLOVE_DIR README]
 } else {
-   set OMNETPP_README [file join [file dirname $argv0] .. doc Readme-Plove.txt]
+   set OMNETPP_PLOVE_README [file join [file dirname $argv0] .. doc Readme-Plove.txt]
 }
 

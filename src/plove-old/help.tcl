@@ -31,9 +31,9 @@ NO WARRANTY -- see license.\
 
 
 proc helpReadme {} {
-    global OMNETPP_README
+    global OMNETPP_PLOVE_README
 
-    set fname $OMNETPP_README
+    set fname $OMNETPP_PLOVE_README
     if [catch {
         set f [open $fname r]
         set contents [read $f]
