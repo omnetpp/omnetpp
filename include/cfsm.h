@@ -97,58 +97,11 @@
 
 
 //-----------------------------------------------------
-//
-// cFSM: class to store the state of an FSM
-//
 
 /**
- * FIXME: 
- * FSM Macros
- * 
- * 
- * FSM_MAXT:
- *  after this many transitions without reaching a steady state
- *  we assume the FSM is in an infinite loop
- * 
- * 
- * FSM_Switch():
- *   used like switch() in order to execute one state change of an FSM
- * 
- * operation:
- * - __i counts up (starting from 1) until the FSM reaches a steady state.
- * - at __i=1,3,5,7,etc, FSM_Exit code is executed
- * - at __i=2,4,6,8,etc, FSM_Enter code is executed
- * - FSM_Enter code must not contain state change (this is verified)
- * - state changes should be encoded in FSM_Exit code
- * - infinite loops (when control never reaches steady state) are detected (FSM_MAXT)
- * 
- * 
- * FSM_Transient/FSM_Steady:
- *   to be used in enum which declares states
- * 
- * 
- * FSM_Enter/FSM_Exit:
- *   to be used in "cases" within an FSM_Switch()
- * 
- * 
- * FSM_Goto:
- *   to be used in state exit code, to transition to another state.
- * 
- *   Uses stringize (#state), so it only works correctly if 'state'
- *   is the enum name itself and not some variable that contains the
- *   state code.
- * 
- * 
- * FSM_DEBUG:
- *   #define FSM_DEBUG before #including "omnetpp.h" to enable reporting
- *   all state changes to ev
- * 
- * this may also be useful as third line:
- *      << ((fsm).inTransientState() ? "transient state " : "steady state ")
- * 
- * 
- * cFSM: class to store the state of an FSM
- * 
+ * Store the state of an FSM. This class is used in conjunction with
+ * the FSM_Switch(), FSM_Transient(), FSM_Steady(), FSM_Enter(),
+ * FSM_Exit(), FSM_Goto() macros.
  */
 class SIM_API cFSM : public cObject
 {
@@ -164,17 +117,12 @@ class SIM_API cFSM : public cObject
   public:
 
     /**
-     * FIXME: 
-     * About state codes:
-     *  initial state is number 0
-     *  negative state codes are transient states
-     *  positive state codes are steady states
-     * 
+     * Constructor.
      */
     explicit cFSM(const char *name=NULL);
 
     /**
-     * MISSINGDOC: cFSM:cFSM(cFSM&)
+     * Copy constructor.
      */
     cFSM(cFSM& vs) {setName(vs.name());operator=(vs);}
 

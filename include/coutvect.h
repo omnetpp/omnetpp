@@ -16,49 +16,16 @@
 #include <stdio.h>
 #include "cobject.h"
 
-//==========================================================================
-// cOutFileMgr and cOutVector
-//    work together to allow the user save several "series" or
-//    "output vectors" (a series of numbers or number pairs
-//    which are produced during simulation as results) to a common file
-//    called "output vector file" or simply "output file".
-//    The output file is ASCII and can be read by a spreadsheet etc.
-//    There is only one instance of cOutFileMgr (in cSimulation), it
-//    stores the common file ptr and gives unique identifiers to cOutVector
-//    objects. There can be several cOutVectors, each one handles one
-//    output vector.
-//
-//    cOutFileMgr is also used to handle snapshot and parameter change files
-//
-//==========================================================================
 
 //==========================================================================
-// cOutFileMgr:
-//   This class is responsible for handling the output file for cOutVectors.
-//   cOutFileMgr is also used in module parameter change logging
-
 
 /**
- * FIXME: 
- * cOutFileMgr and cOutVector
- *    work together to allow the user save several "series" or
- *    "output vectors" (a series of numbers or number pairs
- *    which are produced during simulation as results) to a common file
- *    called "output vector file" or simply "output file".
- *    The output file is ASCII and can be read by a spreadsheet etc.
- *    There is only one instance of cOutFileMgr (in cSimulation), it
- *    stores the common file ptr and gives unique identifiers to cOutVector
- *    objects. There can be several cOutVectors, each one handles one
- *    output vector.
- * 
- *    cOutFileMgr is also used to handle snapshot and parameter change files
- * 
- * 
- * 
- * cOutFileMgr:
- *   This class is responsible for handling the output file for cOutVectors.
- *   cOutFileMgr is also used in module parameter change logging
- */
+ * Responsible for handling the output file for cOutVectors.
+ * Users don't need to use cOutFileMgr directly, only through
+ * cOutVector.
+ *
+ * cOutFileMgr is also used to handle snapshot and parameter change files.
+*/
 class SIM_API cOutFileMgr : public cObject
 {
     long nextID;       // holds next free ID for output vectors
@@ -117,7 +84,6 @@ class SIM_API cOutFileMgr : public cObject
      */
     FILE *filePointer(); // calls openFile() if necessary
 
-
     /**
      * Returns a unique ID for constructing a new cOutVector
      * object. The user should not explicitly call this function.
@@ -126,51 +92,25 @@ class SIM_API cOutFileMgr : public cObject
 };
 
 //==========================================================================
-// cOutVector
-// This class is responsible for writing one output vector to the file.
-//
-// A sample file:
-//   vector 5  "net.site[2].terminal[12]"  "response time"  1
-//   5 12.056  2355.66666666
-//   5 15.850  5656.67644455
-//
-// The first line is a "label" line, assigns a label ("response time") to an
-// id (5). The "net.site[2].terminal[12]" is the name of the module which
-// produces the data lines beginning with 5. The number 1 indicates that the
-// data lines (beginning with 5) will contain 1 data value after the time mark.
-// The second line is a data line, the 1st number is the id, the
-// second is the actual simulation time and the third is a simulation data
-// value.
-// If there was a number 2 in the "label" line instead of 1, the data lines
-// would contain 2 simulation data values. 3 or more are not allowed.
-//
 
 typedef void (*RecordFunc)(void *, double, double);
 
 class TOutVectorInspector;
 class TOutVectorWindow;
 
-
 /**
- * FIXME: 
- * cOutVector
- * This class is responsible for writing one output vector to the file.
- * 
- * A sample file:
- *   vector 5  "net.site[2].terminal[12]"  "response time"  1
- *   5 12.056  2355.66666666
- *   5 15.850  5656.67644455
- * 
- * The first line is a "label" line, assigns a label ("response time") to an
- * id (5). The "net.site[2].terminal[12]" is the name of the module which
- * produces the data lines beginning with 5. The number 1 indicates that the
- * data lines (beginning with 5) will contain 1 data value after the time mark.
- * The second line is a data line, the 1st number is the id, the
- * second is the actual simulation time and the third is a simulation data
- * value.
- * If there was a number 2 in the "label" line instead of 1, the data lines
- * would contain 2 simulation data values. 3 or more are not allowed.
- * 
+ * Responsible for writing simulation data (an output vector) to a file.
+ * A cOutVector object can write doubles or pair of doubles to the "statistical
+ * output file". The file consists of label lines and data lines.
+ *
+ * One can use UNIX tools like sed, awk or perl to extract a particular
+ * vector etc. from the file, or/and read it in spreadsheets like
+ * Excel.
+ *
+ * The cOutVector::record() member is used to output a value
+ * (or a value pair). This will generate a data line in the file,
+ * unless the output vector is disabled or the current simulation
+ * time is outside a specified interval (see member functions).
  */
 class SIM_API cOutVector : public cObject
 {

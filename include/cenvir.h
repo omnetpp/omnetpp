@@ -50,15 +50,11 @@ ENVIR_API bool memoryIsLow();
 ENVIR_API bool opp_loadlibrary(const char *libname);
 
 //==========================================================================
-// cEnvir
-
 
 /**
- * FIXME: //=== class declared:
- * the environment object global instance
- * return codes for runningMode()
- * 
- * cEnvir
+ * Interface to the enviroment (user interface) of the simulation. cEnvir
+ * is a common facade for the Cmdenv and Tkenv user interfaces (and any
+ * other future user interface).
  */
 class ENVIR_API cEnvir
 {
@@ -70,11 +66,14 @@ class ENVIR_API cEnvir
     char prmpt[81];    // prompt used by prompt() and operator >>
 
   public:
-
     /**
-     * The constructor and the destructor in most cases do nothing.
+     * Constructor.
      */
     cEnvir();
+
+    /**
+     * Destructor.
+     */
     ~cEnvir();
 
     // called from main()
@@ -276,7 +275,7 @@ inline cEnvir& operator* (cEnvir& ev, const signed char *s)
 inline cEnvir& operator* (cEnvir& ev, const unsigned char *s)
  {return ev.setPrompt((const char *)s);}
 
-// note: each >> operator reads a whole line!
+// NOTE: each >> operator reads a whole line!
 inline cEnvir& operator>> (cEnvir& ev, cPar& p)
  {char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); p.setFromText(buf,'?'); return ev;}
 inline cEnvir& operator>> (cEnvir& ev, char *s)

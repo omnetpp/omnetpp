@@ -79,26 +79,13 @@ void *operator new(size_t m,___nosuchclass *);
 typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
 
 //==========================================================================
-// cModule - common base for cSimpleModule and cCompoundModule
-//    type, its cModuleType, gates and parameters, error handling
-//  NOTE: 1. no instance of cModule can be created!
-//        2. dup() cannot be used! Use mod->moduleType()->create()/buildInside().
-
 
 /**
- * FIXME: //=== module state codes
- * //=== display string selector
- * //=== dynamic allocation in module functions
- * //=== classes mentioned/declared here:
- * //=== to connect two gates:
- * //=== operator new used by the NEW() macro:
- * Function to notify inspector about display string changes
- *  args: (sub)module which changed; immediate refresh wanted or not; inspector's data
- * 
- * cModule - common base for cSimpleModule and cCompoundModule
- *    type, its cModuleType, gates and parameters, error handling
- *  NOTE: 1. no instance of cModule can be created!
- *        2. dup() cannot be used! Use mod->moduleType()->create()/buildInside().
+ * Common base for cSimpleModule and cCompoundModule. Provides gates,
+ * parameters, error handling.
+ *
+ * NOTE: dup() cannot be use with modules. Use mod->moduleType()->create()/buildInside()
+ * instead.
  */
 class SIM_API cModule : public cObject
 {
@@ -173,17 +160,17 @@ class SIM_API cModule : public cObject
   public:
 
     /**
-     * MISSINGDOC: cModule:cModule(cModule&)
+     * Constructor.
      */
     cModule(cModule& mod);
 
     /**
-     * MISSINGDOC: cModule:cModule(char*,cModule*)
+     * Constructor.
      */
     cModule(const char *name, cModule *parentmod);
 
     /**
-     * MISSINGDOC: cModule:~cModule()
+     * Destructor.
      */
     virtual ~cModule() {}
 
@@ -518,12 +505,10 @@ class SIM_API cModule : public cObject
 };
 
 //==========================================================================
-// block on module function's heap
 
-/**
- * FIXME: 
- * block on module function's heap
- */
+//
+// internal struct: block on module function's heap
+//
 struct sBlock
 {
     sBlock *next;
@@ -532,14 +517,19 @@ struct sBlock
 };
 
 //--------------------------------------------------------------------------
-// cSimpleModule - represents a simple module in the simulation
-//     cSimpleModule is an abstract base class for user-written modules
-
 
 /**
- * FIXME: 
- * cSimpleModule - represents a simple module in the simulation
- *     cSimpleModule is an abstract base class for user-written modules
+ * cSimpleModule is a base class for all simple module classes.
+ * Most important, cSimpleModule has the virtual member functions
+ * activity() and handleMessage(), one of which has to be redefined in
+ * the user's simple modules.
+ *
+ * All basic functions associated with the simulation such as sending
+ * and receiving messages are implemented as cSimpleModule's member
+ * functions.
+ *
+ * The activity() functions run as coroutines during simulation.
+ * Coroutines are brought to cSimpleModule from the cCoroutine base class.
  */
 class SIM_API cSimpleModule : public cCoroutine, public cModule
 {
@@ -590,17 +580,17 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
   public:
 
     /**
-     * MISSINGDOC: cSimpleModule:cSimpleModule(cSimpleModule&)
+     * Copy constructor.
      */
     cSimpleModule(cSimpleModule& mod);
 
     /**
-     * MISSINGDOC: cSimpleModule:cSimpleModule(char*,cModule*,unsigned)
+     * Constructor.
      */
     cSimpleModule(const char *name, cModule *parentmod, unsigned stk);
 
     /**
-     * MISSINGDOC: cSimpleModule:~cSimpleModule()
+     * Destructor.
      */
     virtual ~cSimpleModule();
 
@@ -718,9 +708,9 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * output file; obj is the object whose inside is of interest.
      * By default, the whole simulation (all modules etc) will be written
      * out.
-     * 
+     *
      * Tkenv also supports making snapshots manually, from menu.
-     * 
+     *
      * See also class cWatch and the WATCH() macro.
      */
     bool snapshot(cObject *obj=&simulation, const char *label=NULL); // write snapshot file
@@ -902,7 +892,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * and index. All messages received meanwhile are inserted into the
      * put-aside queue. If the timeout expires and there is still no
      * such message in the queue, the function returns NULL.
-     * 
+     *
      * In order to process messages that may have been put in the put-aside
      * queue, the user is expected to call receive() or receiveOn(),
      * or to examine the put-aside queue directly sometime.
@@ -969,8 +959,8 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * Dynamic memory allocation. This function should be used instead
      * of the global ::malloc() from inside the module function
      * (activity()), if deallocation by the simple module constructor
-     * is not provided. 
-     * 
+     * is not provided.
+     *
      * Dynamic allocations are discouraged in general unless you put
      * the pointer into the class declaration of the simple module class
      * and provide a proper destructor. Or, you can use container classes
@@ -998,39 +988,35 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
 };
 
 //==========================================================================
-// cCompoundModule - represents a compound module in the simulation
-//   NOTE: dup() cannot be used. Use moduleType()->create() instead.
-
 
 /**
- * FIXME: 
- * cCompoundModule - represents a compound module in the simulation
- *   NOTE: dup() cannot be used. Use moduleType()->create() instead.
+ * Represents a compound module in the simulation.
+ *
+ * NOTE: dup() cannot be used. Use moduleType()->create() instead.
  */
 class SIM_API cCompoundModule : public cModule
 {
     friend class TCompoundModInspector;
-  protected:
 
+  protected:
     /**
      * MISSINGDOC: cCompoundModule:void arrived(cMessage*,int)
      */
     virtual void arrived(cMessage *msg,int n); //internal use
 
   public:
-
     /**
-     * MISSINGDOC: cCompoundModule:cCompoundModule(cCompoundModule&)
+     * Copy constructor.
      */
     cCompoundModule(cCompoundModule& mod);
 
     /**
-     * MISSINGDOC: cCompoundModule:cCompoundModule(char*,cModule*)
+     * Constructor.
      */
     cCompoundModule(const char *name, cModule *parentmod);
 
     /**
-     * MISSINGDOC: cCompoundModule:~cCompoundModule()
+     * Destructor.
      */
     virtual ~cCompoundModule();
 
@@ -1098,14 +1084,9 @@ class SIM_API cCompoundModule : public cModule
 };
 
 //==========================================================================
-//  cSubModIterator : iterates through submodules of a compound module
-//   NOTE: not a cObject descendant!
-
 
 /**
- * FIXME: 
- *  cSubModIterator : iterates through submodules of a compound module
- *   NOTE: not a cObject descendant!
+ * Iterates through submodules of a compound module.
  */
 class SIM_API cSubModIterator
 {
@@ -1115,7 +1096,7 @@ class SIM_API cSubModIterator
   public:
 
     /**
-     * MISSINGDOC: cSubModIterator:cSubModIterator(cModule&)
+     * Constructor.
      */
     cSubModIterator(cModule& p)  {parent=&p;i=0;operator++(0);}
 
@@ -1146,3 +1127,4 @@ class SIM_API cSubModIterator
 };
 
 #endif
+

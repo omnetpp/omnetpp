@@ -2,97 +2,24 @@
 
        	* cobject.h: cleaned up DOC++ comments
 
+        * Class comments fixed in all files. Comments for methods, functions,
+        and macros yet to be done.
+
 2001-06-22  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	* Some fixes to errors produced by opp_docify.pl:
-	
-	* include/cdensity.h (): missing #endif at bottom of file added
-	* include/cdetect.h (): missing #endif at bottom of file added
-	* include/chead.h (): missing #endif at bottom of file added
-	* include/cllist.h (): missing #endif at bottom of file added
-	* include/cmsgheap.h (): missing #endif at bottom of file added
-	* include/coutvect.h (): missing #endif at bottom of file added
-	* include/cstat.h (): missing #endif at bottom of file added
-	* include/cwatch.h (): missing #endif at bottom of file added
-	* include/defs.h (): missing #endif at bottom of file added
-	* include/errmsg.h (): missing #endif at bottom of file added
-	* include/omnetpp.h (): missing #endif at bottom of file added
-	* include/protocol.h (): missing #endif at bottom of file added
-	* include/util.h (): missing #endif at bottom of file added
-
-	* cstk.h (struct Stk): replaced /* */ statements inside comments with // //
-	* cenvir.h (cEnvir): replaced /* */ statements inside comments with // //
+	* Some fixes to errors produced by opp_docify.pl: missing #endif at
+        bottom of file added, replaced /* */ statements inside comments
+        with // //.
 
 	* Merged in documentation from refman.html into header files using
-	Andras' helper script opp_docify.pl:
-	
-	* unused.txt: contains doc entries extracted from opp_docify that did not
-	fit into the header files
-
-	* carray.h: merged in documentation from refman.html
-	* ccor.h: merged in documentation from refman.html
-	* cdensity.h: merged in documentation from refman.html
-	* cdetect.h: merged in documentation from refman.html
-	* cenvir.h: merged in documentation from refman.html
-	* cfsm.h: merged in documentation from refman.html
-	* cgate.h: merged in documentation from refman.html
-	* chead.h: merged in documentation from refman.html
-	* chist.h: merged in documentation from refman.html
-	* cksplit.h: merged in documentation from refman.html
-	* cllist.h: merged in documentation from refman.html
-	* cmessage.h: merged in documentation from refman.html
-	* cmodule.h: merged in documentation from refman.html
-	* cmsgheap.h: merged in documentation from refman.html
-	* cnetmod.h: merged in documentation from refman.html
-	* cobject.h: merged in documentation from refman.html
-	* coutvect.h: merged in documentation from refman.html
-	* cpacket.h: merged in documentation from refman.html
-	* cpar.h: merged in documentation from refman.html
-	* cpsquare.h: merged in documentation from refman.html
-	* cqueue.h: merged in documentation from refman.html
-	* csimul.h: merged in documentation from refman.html
-	* cstat.h: merged in documentation from refman.html
-	* cstk.h: merged in documentation from refman.html
-	* ctopo.h: merged in documentation from refman.html
-	* ctypes.h: merged in documentation from refman.html
-	* cvarhist.h: merged in documentation from refman.html
-	* cwatch.h: merged in documentation from refman.html
-	* defs.h: merged in documentation from refman.html
-	* errmsg.h: merged in documentation from refman.html
-	* macros.h: merged in documentation from refman.html
-	* omnetpp.h: merged in documentation from refman.html
-	* protocol.h: merged in documentation from refman.html
-	* util.h: merged in documentation from refman.html
+	Andras' helper script opp_docify.pl (affects all files).  unused.txt
+        contains doc entries extracted from opp_docify that did not fit into
+        the header files.
 
 
 2001-06-20  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	* carray.h (): const patches
-	* cdensity.h (): const patches
-	* cdetect.h (): const patches
-	* cfsm.h (): const patches
-	* cgate.h (): const patches
-	* chead.h (): const patches
-	* chist.h (): const patches
-	* cksplit.h (): const patches
-	* cllist.h (): const patches
-	* cmessage.h (): const patches
-	* cmodule.h (): const patches
-	* cmsgheap.h (): const patches
-	* cnetmod.h (): const patches
-	* cobject.h (): const patches
-	* coutvect.h (): const patches
-	* cpacket.h (): const patches
-	* cpar.h (): const patches
-	* cpsquare.h (): const patches
-	* cqueue.h (): const patches
-	* csimul.h (): const patches
-	* cstat.h (): const patches
-	* ctopo.h (): const patches
-	* ctypes.h (): const patches
-	* cvarhist.h (): const patches
-	* cwatch.h (): const patches
-	* macros.h (): const patches
+	* const patches applied (affects almost all files)
 
 
 2001-03-10 Andras Varga

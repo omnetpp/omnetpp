@@ -31,13 +31,12 @@ class  cMessage;
 class  cLinkType;
 
 //==========================================================================
-// cGate - represents a gate
-
 
 /**
- * FIXME: //=== classes mentioned here:
- * 
- * cGate - represents a gate
+ * Represents a module gate. cGate object are created and managed by modules;
+ * the user typically does not want to directly create or destroy cGate
+ * objects. However, they are important if a simple module algorithm
+ * needs to know about its surroundings.
  */
 class SIM_API cGate : public cObject
 {
@@ -71,17 +70,17 @@ class SIM_API cGate : public cObject
   public:
 
     /**
-     * MISSINGDOC: cGate:cGate(cGate&)
+     * Copy constructor.
      */
     cGate(cGate& gate);
 
     /**
-     * MISSINGDOC: cGate:cGate(char*,char)
+     * Constructor.
      */
     explicit cGate(const char *name, char tp);
 
     /**
-     * MISSINGDOC: cGate:~cGate()
+     * Destructor.
      */
     virtual ~cGate() {}
 

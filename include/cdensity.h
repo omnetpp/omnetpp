@@ -25,48 +25,47 @@
 #include "cstat.h"
 
 //==========================================================================
-// cDensityEstBase -  common base class for density estimation classes
-//
-// Contains:
-//    * contains ways to define range/number of cells etc
-//    * does precollection and range setup for histogram-type estimators
-//    * contains underflow/overflow counters
-//    * declares pure virtual functions for:
-//         getting the cells of historgram-type estimators
-//         calculating PDF/CDF
-//         generating random number from the distribution
-//
-// layout of the histogram:
-//
-//        underflow-cell   ordinary cells          overflow-cell
-//       ...----------|----|----|----|----|----|----|--------- ...
-//                    |                             |
-//                    |                             |
-//                rangemin                       rangemax
-//
-
 
 /**
- * FIXME: 
- * cDensityEstBase -  common base class for density estimation classes
- * 
- * Contains:
- *    * contains ways to define range/number of cells etc
- *    * does precollection and range setup for histogram-type estimators
- *    * contains underflow/overflow counters
- *    * declares pure virtual functions for:
- *         getting the cells of historgram-type estimators
- *         calculating PDF/CDF
- *         generating random number from the distribution
- * 
+ * Common base class for density estimation classes. Provides several
+ * pure virtual functions, so it is an abstract class, no instances
+ * can be created.
+ *
+ * For the histogram classes, you need to specify the number of cells
+ * and the range. Range can either be set explicitly or you can choose
+ * automatic range determination.
+ *
+ * Automatic range estimation works in the following way:
+ * <OL>
+ *   <LI>The first <I>num_firstvals<I> observations are stored.
+ *   <LI>After having collected a given number of samples, the actual
+ *   histogram is set up. The range (<I>min</I>, <I>max</I>) of the
+ *   initial values is expanded <I>range_ext_factor</I> times, and
+ *   the result will become the histogram's range (<I>rangemin</I>,
+ *   <I>rangemax</I>). Based on the range, the cells are layed out.
+ *   Then the initial values that have been stored up to this point
+ *   will be transferred into the new histogram structure and their
+ *   store is deleted -- this is done by the transform() function.
+ * </OL>
+ *
+ * You may also explicitly specify the lower or upper limit and have
+ * the other end of the range estimated automatically. The setRange...()
+ * member functions of cDensityEstBase deal with setting
+ * up the histogram range. It also provides pure virtual functions
+ * transform() etc.
+ *
+ * Subsequent observations are placed in the histogram structure.
+ * If an observation falls out of the histogram range, the <I>underflow</I>
+ * or the <I>overflow</I> <I>cell</I> is incremented.
+ *
  * layout of the histogram:
- * 
+ * <PRE><TT>
  *        underflow-cell   ordinary cells          overflow-cell
  *       ...----------|----|----|----|----|----|----|--------- ...
  *                    |                             |
  *                    |                             |
  *                rangemin                       rangemax
- * 
+ * </TT></PRE>
  */
 class SIM_API cDensityEstBase : public cStdDev
 {
@@ -96,36 +95,29 @@ class SIM_API cDensityEstBase : public cStdDev
 
   protected:
     static void plotline (ostream& os, char* pref, double xval,
-
-    /**
-     * FIXME: to range_mode:
-     * before transform() is performed.
-     * range_ext_factor times larger
-     */
-           double count, double a);
+                          double count, double a);
 
   public:
-
     /**
-     * Constructors, destructor, assignment.
+     * Copy constructor.
      */
     cDensityEstBase(cDensityEstBase& r) : cStdDev(r)
             {setName(r.name());firstvals=NULL;operator=(r);}
 
     /**
-     * Constructors, destructor, assignment.
+     * Constructor.
      */
     explicit cDensityEstBase(const char *name=NULL);    // name of collected data
 
     /**
-     * Constructors, destructor, assignment.
+     * Destructor.
      */
     virtual ~cDensityEstBase();
 
     // redefined functions
 
     /**
-     * 
+     *
      */
     virtual const char *className() const {return "cDensityEstBase";}
 
@@ -135,7 +127,7 @@ class SIM_API cDensityEstBase : public cStdDev
     cDensityEstBase& operator=(cDensityEstBase& res);
 
     /**
-     * 
+     *
      */
     virtual void writeContents(ostream& os);
 
@@ -158,10 +150,9 @@ class SIM_API cDensityEstBase : public cStdDev
     // redefined cStat functions & new ones
 
     /**
-     * 
+     *
      */
     virtual void clearResult();
-
 
     /**
      * Range setting.
@@ -188,13 +179,12 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual void setNumFirstVals(int num_firstvals);
 
-
     /**
-     * 
+     *
      */
     virtual void collect(double val);
-  protected:
 
+  protected:
     /**
      * MISSINGDOC: cDensityEstBase:void setupRange()
      */
@@ -218,7 +208,6 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual void transform() = 0; // must set transfd; probably needs to call setupRange()
 
-
     /**
      * MISSINGDOC: cDensityEstBase:int cells()
      */
@@ -239,12 +228,10 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual double cellPDF(int k);
 
-
     /**
      * MISSINGDOC: cDensityEstBase:double random()
      */
     virtual double random() = 0;
-
 
     /**
      * Density function and cumulated density function at a given <I>x</I>.
@@ -255,7 +242,6 @@ class SIM_API cDensityEstBase : public cStdDev
      * Density function and cumulated density function at a given <I>x</I>.
      */
     virtual double cdf(double x) = 0;
-
 
     /**
      * Returns number of observations that fall out of the histogram
@@ -269,16 +255,18 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual unsigned long overflowCell() {return cell_over;}
 
-
     /**
-     * 
+     *
      */
     virtual void saveToFile(FILE *);
 
     /**
-     * 
+     *
      */
     virtual void loadFromFile(FILE *);
 };
 
 #endif
+
+
+

@@ -69,21 +69,9 @@ extern "C"
 #endif
 
 //--------------------------------------------------------------------------
-// cCoroutine - low-level coroutine; used by cSimpleModule
-//   NOTE: Not a cObject-descendant
-
 
 /**
- * FIXME: The following define selects which coroutine-set to use.
- * The nonportable version (module stacks allocated on heap)
- * is selected for 16-bit MSDOS (otherwise the total of coroutine
- * stacks would be limited to 64K.)
- * Getting around the unwanted behaviour of longjmp() under AIX
- * //=== some defines
- * coroutine function pointer
- * 
- * cCoroutine - low-level coroutine; used by cSimpleModule
- *   NOTE: Not a cObject-descendant
+ * Low-level coroutine class, used by cSimpleModule.
  */
 class SIM_API cCoroutine
 {
@@ -121,7 +109,7 @@ class SIM_API cCoroutine
 
 
     /**
-     * MISSINGDOC: cCoroutine:cCoroutine()
+     * Constructor.
      */
     cCoroutine();
     ~cCoroutine();
@@ -191,3 +179,4 @@ inline bool cCoroutine::stackLow() {return sp<stklow;}
 #endif
 
 #endif
+

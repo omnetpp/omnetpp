@@ -33,13 +33,13 @@ class sTopoLinkIn;
 class sTopoLinkOut;
 
 
-
 /**
- * MISSINGDOC: sTopoNode
+ * Supporting class for cTopology.
  */
 class SIM_API sTopoNode
 {
     friend class cTopology;
+
   private:
     int module_id;
     double wgt;
@@ -56,7 +56,6 @@ class SIM_API sTopoNode
     sTopoLink *out_path;
 
   public:
-
     /**
      * FIXME: variables used by the shortest-path algorithms
      */
@@ -134,11 +133,12 @@ class SIM_API sTopoNode
 
 
 /**
- * MISSINGDOC: sTopoLink
+ * Supporting class for cTopology.
  */
 class SIM_API sTopoLink
 {
     friend class cTopology;
+
   protected:
     sTopoNode *src_node;
     int src_gate;
@@ -146,8 +146,8 @@ class SIM_API sTopoLink
     int dest_gate;
     double wgt;
     bool enabl;
-  public:
 
+  public:
     /**
      * MISSINGDOC: sTopoLink:double weight()
      */
@@ -174,16 +174,14 @@ class SIM_API sTopoLink
     void disable()              {enabl=false;}
 };
 
-// sTopoLinkIn, sTopoLinkOut: two different 'user interfaces' for sTopoLink
-
 
 /**
- * FIXME: sTopoLinkIn, sTopoLinkOut: two different 'user interfaces' for sTopoLink
+ * Supporting class for cTopology. sTopoLinkIn, sTopoLinkOut are two different
+ * 'user interfaces' for sTopoLink.
  */
 class SIM_API sTopoLinkIn : public sTopoLink
 {
   public:
-
     /**
      * MISSINGDOC: sTopoLinkIn:sTopoNode*remoteNode()
      */
@@ -212,12 +210,12 @@ class SIM_API sTopoLinkIn : public sTopoLink
 
 
 /**
- * MISSINGDOC: sTopoLinkOut
+ * Supporting class for cTopology. sTopoLinkIn, sTopoLinkOut are two different
+ * 'user interfaces' for sTopoLink.
  */
 class SIM_API sTopoLinkOut : public sTopoLink
 {
   public:
-
     /**
      * MISSINGDOC: sTopoLinkOut:sTopoNode*remoteNode()
      */
@@ -245,9 +243,23 @@ class SIM_API sTopoLinkOut : public sTopoLink
 };
 
 
-
 /**
- * MISSINGDOC: cTopology
+ * Routing support. The cTopology class was designed primarily to support
+ * routing in telecommunication or multiprocessor networks.
+ *
+ * A cTopology object stores an abstract representation of the network
+ * in graph form:
+ * <UL>
+ *   <LI> each cTopology node corresponds to a module (simple or compound), and
+ *   <LI> each cTopology edge corresponds to a link or series of connecting links.
+ * </UL>
+ *
+ * You can specify which modules (either simple or compound) you want to
+ * include in the graph. The graph will include all connections among the
+ * selected modules. In the graph, all nodes are at the same level, there's
+ * no submodule nesting. Connections which span across compound module
+ * boundaries are also represented as one graph edge. Graph edges are directed,
+ * just as module gates are.
  */
 class SIM_API cTopology : public cObject
 {
@@ -259,17 +271,17 @@ class SIM_API cTopology : public cObject
   public:
 
     /**
-     * MISSINGDOC: cTopology:cTopology(char*)
+     * Constructor.
      */
     explicit cTopology(const char *name=NULL);
 
     /**
-     * MISSINGDOC: cTopology:cTopology(cTopology&)
+     * Copy constructor.
      */
     cTopology(cTopology& topo);
 
     /**
-     * MISSINGDOC: cTopology:~cTopology()
+     * Destructor.
      */
     virtual ~cTopology();
 

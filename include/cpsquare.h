@@ -26,14 +26,10 @@
 #include "cdensity.h"
 
 //==========================================================================
-// cPSquare - calculates quantile values without storing the observations
-//
-
 
 /**
- * FIXME: 
- * cPSquare - calculates quantile values without storing the observations
- * 
+ * Implements the P<SUP>2</SUP> algorithm, which calculates quantile values
+ * without storing the observations.
  */
 class SIM_API cPSquare : public cDensityEstBase
 {
@@ -46,17 +42,17 @@ class SIM_API cPSquare : public cDensityEstBase
   public:
 
     /**
-     * MISSINGDOC: cPSquare:cPSquare(cPSquare&)
+     * Copy constructor.
      */
     cPSquare(cPSquare& r);
 
     /**
-     * MISSINGDOC: cPSquare:cPSquare(char*,int)
+     * Constructor.
      */
     explicit cPSquare(const char *name=NULL, int cells=10);
 
     /**
-     * MISSINGDOC: cPSquare:~cPSquare()
+     * Destructor.
      */
     virtual ~cPSquare();
 

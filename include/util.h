@@ -166,120 +166,38 @@ SIM_API void opp_terminate(int errcode,...);     // print message and set error 
 SIM_API void opp_terminate(const char *msg,...); // same w/ custom message
 
 
-//==========================================================================
-// Class opp_string.
-//   A value-added version of char*. Added value is automatic
-//   allocation/deallocation (through opp_strdup/delete.)
-//   (It has an own (opp_strdupped) copy of the string)
-//
-//   Recommended use: as class member, where otherwise the class members
-//   would have to call opp_strdup() and 'delete' for a 'char *' ptr.
-//
-//   Example usage:
-//      opp_string a, opp_string b("foo");
-//      a = "bar";
-//      a = b;
-//      const char *s = a;
-//      printf("string: `%s'\n", (const char *)a );
-//
-
 /**
- * FIXME: 
- * #defines provided for backwards compatibility.
- * They may be removed in a future release!
- * 
- * 
- * Conversion between simtime_t (=double) and strings like "1s 34ms"
- * 
- * strToSimtime():
- *  Returns -1 if the whole string cannot be interpreted as time.
- *  Empty string (or spaces+tabs) is also an error.
- *  E.g.  "3s 600ms x" --> returns -1.
- * 
- * 
- * strToSimtime0():
- *  Returns time and sets string ptr to terminating zero or to the first
- *  character which cannot be interpreted as part of the time string.
- *  Empty string is accepted as 0.0.
- *  E.g.  "3s 600ms x" --> returns 3.6 and str will point to 'x'.
- * 
- * 
- * simtimeToStr():
- *  Converts sim. time into a string like "0.0120000 (12ms)"
- *  If no dest ptr is given, uses a static buffer.
- * 
- * equal():
- *  Tests equality of two doubles, with the given precision.
- * 
- * 
- * random number generation (they use generator 0)
- * 
- * 
- * another set of random number functions (using generator gen_nr)
- * 
- * 
- * distributions
- * 
- * Argument types and return value must be `double' so that they can be used
- * in NED files, and cPar 'F' and 'X' types.
- * 
- * 
- * utility functions to support nedc-compiled expressions
- * 
- * 
- * Value-added string functions.
- * 
- *  They also accept NULL pointers (treat them as ptr to "") and use
- *  operator new instead of malloc().
- * 
- * Fast string manipulation functions.
- * fastconcat() returns a pointer to a static buffer of length 256
- * indexedname() creates a string like "component[35]" into buf, the first argument.
- * correct(): correct NULL pointer to "" (ptr to a null string)
- * opp_vsscanf(): a restricted vsscanf implementation used by cStatistic::freadvarsf()
- * 
- * Error handling
- * 
- * The functions call simulation.error()/warning(). These functions were
- * introduced so that not every class that wants to issue an error message
- * needs to include "csimul.h" and half the simulation kernel with it.
- * 
- * 
- * Class opp_string.
- *   A value-added version of char*. Added value is automatic
- *   allocation/deallocation (through opp_strdup/delete.)
- *   (It has an own (opp_strdupped) copy of the string)
- * 
- *   Recommended use: as class member, where otherwise the class members
- *   would have to call opp_strdup() and 'delete' for a 'char *' ptr.
- * 
- *   Example usage:
- *      opp_string a, opp_string b("foo");
- *      a = "bar";
- *      a = b;
- *      const char *s = a;
- *      printf("string: `%s'\n", (const char *)a );
- * 
+ * Very simple string class. opp_string has only one data member,
+ * a char* pointer. Allocation/deallocation of the contents takes place
+ * via opp_strdup() and operator delete
+ *
+ * Recommended use: as class member, where otherwise the class members
+ * would have to call opp_strdup() and delete for the char* member.
  */
 class SIM_API opp_string
 {
+  private:
     char *str;
-  public:
 
+  public:
     /**
-     * String creation, destruction.
+     * Constructor.
      */
     opp_string()               {str = 0;}
 
     /**
-     * String creation, destruction.
+     * Constructor.
      */
     opp_string(const char *s)  {str = opp_strdup(s);}
 
     /**
-     * MISSINGDOC: opp_string:opp_string(opp_string&)
+     * Copy constructor.
      */
     opp_string(opp_string& s)  {str = opp_strdup(s.str);}
+
+    /**
+     * Destructor.
+     */
     ~opp_string()              {delete str;}
 
     /**
@@ -300,7 +218,7 @@ class SIM_API opp_string
                                {delete str;str=opp_strdup(s);return str;}
 
     /**
-     * MISSINGDOC: opp_string:opp_string&operator=(opp_string&)
+     * Assignment.
      */
     opp_string& operator=(opp_string& s)
                                {delete str;str=opp_strdup(s.str);return *this;}

@@ -20,18 +20,10 @@
 #include "cdensity.h"
 
 //==========================================================================
-// cHistogramBase
-//
-//  adds a vector of counters to cDensityEstBase
-//
-
 
 /**
- * FIXME: 
- * cHistogramBase
- * 
- *  adds a vector of counters to cDensityEstBase
- * 
+ * Base class for histogram classes. It adds a vector of counters to
+ * cDensityEstBase.
  */
 class SIM_API cHistogramBase : public cDensityEstBase
 {
@@ -40,20 +32,19 @@ class SIM_API cHistogramBase : public cDensityEstBase
     unsigned *cellv;      // array of counters
 
   public:
-
     /**
-     * MISSINGDOC: cHistogramBase:cHistogramBase(cHistogramBase&)
+     * Copy constructor.
      */
     cHistogramBase(cHistogramBase& r) : cDensityEstBase(r)
         {setName(r.name());cellv=NULL;operator=(r);}
 
     /**
-     * MISSINGDOC: cHistogramBase:cHistogramBase(char*,int)
+     * Constructor.
      */
     cHistogramBase(const char *name, int numcells);
 
     /**
-     * MISSINGDOC: cHistogramBase:~cHistogramBase()
+     * Destructor.
      */
     virtual ~cHistogramBase();
 
@@ -98,7 +89,6 @@ class SIM_API cHistogramBase : public cDensityEstBase
      */
     virtual int cells();
 
-
     /**
      * MISSINGDOC: cHistogramBase:void saveToFile(FILE*)
      */
@@ -111,12 +101,9 @@ class SIM_API cHistogramBase : public cDensityEstBase
 };
 
 //==========================================================================
-// cEqdHistogramBase
-
 
 /**
- * FIXME: 
- * cEqdHistogramBase
+ * Base class for equal cell size histograms.
  */
 class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
 {
@@ -126,13 +113,13 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
   public:
 
     /**
-     * MISSINGDOC: cEqdHistogramBase:cEqdHistogramBase(cEqdHistogramBase&)
+     * Copy constructor.
      */
     cEqdHistogramBase(cEqdHistogramBase& r) : cHistogramBase(r)
         {setName(r.name());operator=(r);}
 
     /**
-     * MISSINGDOC: cEqdHistogramBase:cEqdHistogramBase(char*,int)
+     * Constructor.
      */
     explicit cEqdHistogramBase(const char *name=NULL, int numcells=10);
 
@@ -208,12 +195,23 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
 };
 
 //==========================================================================
-// cLongHistogram - long int distribution result
-
 
 /**
- * FIXME: 
- * cLongHistogram - long int distribution result
+ * Equidistant histogram for integers. cLongHistogram is derived from
+ * cEqdHistogramBase which contains most of the functionality.
+ *
+ * The histogram is set up in the following way:
+ * <UL>
+ *   <LI> the cell size is always integer: 1, 2, 3 etc.
+ *   <LI> <I>rangemin</I>, <I>rangemax</I> and the cell boundaries are
+ *        at halves. For example 1.5, 10.5. This is done so to prevent
+ *        misunderstandings.
+ *   <LI> the number of cells is exactly <I>num_cells</I>
+ *   <LI> the <I>range_ext_factor</I> is also kept. The actual histogram
+ *        range will be: (<I>min</I>, <I>max</I>) extended
+ *        <I>range_ext_factor</I> times and rounded up to the nearest integer
+ *        multiple of <I>num_cells</I>.
+ * </UL>
  */
 class SIM_API cLongHistogram : public cEqdHistogramBase
 {
@@ -226,7 +224,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
         {setName(r.name());operator=(r);}
 
     /**
-     * MISSINGDOC: cLongHistogram:cLongHistogram(char*,int)
+     * Constructor.
      */
     explicit cLongHistogram(const char *name=NULL, int numcells=10);
 
@@ -283,12 +281,10 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
 };
 
 //==========================================================================
-// cDoubleHistogram - double distribution result
-
 
 /**
- * FIXME: 
- * cDoubleHistogram - double distribution result
+ * Equidistant histogram for doubles. cDoubleHistogram is derived from
+ * cEqdHistogramBase which contains most of the functionality.
  */
 class SIM_API cDoubleHistogram : public cEqdHistogramBase
 {
@@ -301,7 +297,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
           {setName(r.name());operator=(r);}
 
     /**
-     * MISSINGDOC: cDoubleHistogram:cDoubleHistogram(char*,int)
+     * Constructor.
      */
     explicit cDoubleHistogram(const char *name=NULL, int numcells=10);
 
@@ -345,3 +341,4 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
 };
 
 #endif
+

@@ -56,22 +56,19 @@ enum {
 };
 
 //==========================================================================
-// cMessage: the message class
-
 
 /**
- * FIXME: //=== classes mentioned:
- * //=== classes declared here:
- * //=== predefined packet kind values
- * 
- * NOTE:
- * - zero and positive values can be freely used
- * - negative values are reserved for the OMNeT++ system and standard libs
- * 
- * internal
- * cPacket
- * 
- * cMessage: the message class
+ * The message class in OMNeT++. cMessage objects may represent events,
+ * messages, packets (frames, cells, etc) or other entities in a simulation.
+ * cMessage can be assigned a name (a property inherited from cObject)
+ * and it has other attributes, including message kind, length, priority,
+ * error flag and time stamp.
+ *
+ * After being sent through a channel, cMessage also remembers
+ * the sending and delivery times and its source module. cMessage
+ * holds a cArray which means that a cMessage can
+ * be attached any number of objects. These objects will typically
+ * be of cPar type, but other types are also possible.
  */
 class SIM_API cMessage : public cObject
 {
@@ -118,12 +115,12 @@ class SIM_API cMessage : public cObject
     cMessage(cMessage& msg);
 
     /**
-     * MISSINGDOC: cMessage:cMessage(char*,int,long,int,bool)
+     * Constructor.
      */
     explicit cMessage(const char *name=NULL, int k=0, long len=1, int pri=0, bool err=false);
 
     /**
-     * MISSINGDOC: cMessage:~cMessage()
+     * Destructor.
      */
     virtual ~cMessage();
 
@@ -453,3 +450,5 @@ class SIM_API cMessage : public cObject
 };
 
 #endif
+
+

@@ -46,15 +46,9 @@ double divfunc_const(cKSplit&, sGrid&, double, double *);
 double divfunc_babak(cKSplit&, sGrid&, double, double *);
 
 //==========================================================================
-// sGrid: struct used internally by cKSplit
 
 /**
- * FIXME: classes declared
- * K: the grid size of the algorithm
- * cell split criteria
- * cell division criteria
- * 
- * sGrid: struct used internally by cKSplit
+ * Supporting struct for cKSplit.
  */
 struct sGrid
 {
@@ -66,12 +60,10 @@ struct sGrid
 };
 
 //==========================================================================
-// cKSplit
-
 
 /**
- * FIXME: 
- * cKSplit
+ * Implements k-split, an adaptive histogram-like density estimation
+ * algorithm.
  */
 class SIM_API cKSplit : public cDensityEstBase
 {
@@ -143,17 +135,17 @@ class SIM_API cKSplit : public cDensityEstBase
 
 
     /**
-     * MISSINGDOC: cKSplit:cKSplit(cKSplit&)
+     * Copy constructor.
      */
     cKSplit(cKSplit& r);
 
     /**
-     * MISSINGDOC: cKSplit:cKSplit(char*)
+     * Constructor.
      */
     explicit cKSplit(const char *name=NULL);
 
     /**
-     * MISSINGDOC: cKSplit:~cKSplit()
+     * Destructor.
      */
     virtual ~cKSplit();
 
@@ -218,7 +210,6 @@ class SIM_API cKSplit : public cDensityEstBase
      */
     virtual double cell(int k);
 
-
     /**
      * MISSINGDOC: cKSplit:double pdf(double)
      */
@@ -229,12 +220,10 @@ class SIM_API cKSplit : public cDensityEstBase
      */
     virtual double cdf(double x);
 
-
     /**
      * MISSINGDOC: cKSplit:double random()
      */
     virtual double random();
-
 
     /**
      * MISSINGDOC: cKSplit:void saveToFile(FILE*)
@@ -274,7 +263,6 @@ class SIM_API cKSplit : public cDensityEstBase
      */
     int treeDepth(sGrid& grid);
 
-
     /**
      * MISSINGDOC: cKSplit:double realCellValue(sGrid&,int)
      */
@@ -284,7 +272,6 @@ class SIM_API cKSplit : public cDensityEstBase
      * MISSINGDOC: cKSplit:void printGrids()
      */
     void printGrids();
-
 
     /**
      * MISSINGDOC: cKSplit:sGrid&grid(int)
@@ -299,7 +286,7 @@ class SIM_API cKSplit : public cDensityEstBase
 
 
 /**
- * MISSINGDOC: cKSplitIterator
+ * Walks along cells of the distribution stored in a cKSplit object.
  */
 class SIM_API cKSplitIterator
 {
@@ -317,7 +304,7 @@ class SIM_API cKSplitIterator
   public:
 
     /**
-     * MISSINGDOC: cKSplitIterator:cKSplitIterator(cKSplit&,int)
+     * Constructor.
      */
     cKSplitIterator(cKSplit& _ks, int _beg=1);
 
@@ -368,3 +355,4 @@ class SIM_API cKSplitIterator
 };
 
 #endif
+

@@ -192,7 +192,7 @@ class SIM_API cObject
 
     /**@name Handling the name string.
      *
-     * Note: "" and NULL are treated liberally: "" is stored as NULL and
+     * NOTE: "" and NULL are treated liberally: "" is stored as NULL and
      * NULL is returned as "".
      */
     //@{
@@ -225,7 +225,7 @@ class SIM_API cObject
 
     /**
      * Returns the full path of the object in the object hieararchy,
-     * like "comp.modem[5].baud-rate". Note: the returned pointer points
+     * like "comp.modem[5].baud-rate". NOTE: the returned pointer points
      * into a static buffer, which is overwritten by subsequent calls!
      */
     virtual const char *fullPath() const;
@@ -446,16 +446,12 @@ class SIM_API cObject
 };
 
 
-/**
- * MISSINGDOC: cStaticFlag
- */
+//
+// Internal helper class for cObject.
+//
 class cStaticFlag
 {
   public:
-
-    /**
-     * MISSINGDOC: cStaticFlag:cStaticFlag()
-     */
     cStaticFlag()  {cObject::staticflag = 1;}
     ~cStaticFlag() {cObject::staticflag = 0;}
 };

@@ -21,14 +21,14 @@ class cTransientDetection;
 class cAccuracyDetection;
 
 //==========================================================================
-// cStatistic - base class of different statistic collecting classes
-//   NOTE: Provides no functionality, only defines virtual functions
-
 
 /**
- * FIXME: 
- * cStatistic - base class of different statistic collecting classes
- *   NOTE: Provides no functionality, only defines virtual functions
+ * Base class of different statistic collecting classes.
+ * cStatistic is the base class for all statistical data
+ * collection classes. cStatistic itself adds no data members
+ * or algorithms to cObject, it only defines virtual functions
+ * that will be redefined in descendants. No instance of cStatistic
+ * can be created.
  */
 class SIM_API cStatistic : public cObject
 {
@@ -242,12 +242,9 @@ class SIM_API cStatistic : public cObject
 };
 
 //==========================================================================
-// cStdDev - collects min, max, mean, standard deviation
-
 
 /**
- * FIXME: 
- * cStdDev - collects min, max, mean, standard deviation
+ * Statistics class to collect min, max, mean, standard deviation.
  */
 class SIM_API cStdDev : public cStatistic
 {
@@ -317,7 +314,6 @@ class SIM_API cStdDev : public cStatistic
      */
     virtual void collect(double val);
 
-
     /**
      * Redefined cStatistic functions.
      */
@@ -363,7 +359,6 @@ class SIM_API cStdDev : public cStatistic
      */
     virtual double variance();
 
-
     /**
      * Redefined cStatistic function. cStdDev's random
      * number generator returns numbers of normal distribution with the
@@ -371,12 +366,10 @@ class SIM_API cStdDev : public cStatistic
      */
     virtual double random();
 
-
     /**
      * Redefined cStatistic functions.
      */
     virtual void clearResult();
-
 
     /**
      * Redefined cStatistic functions.
@@ -391,12 +384,10 @@ class SIM_API cStdDev : public cStatistic
 };
 
 //==========================================================================
-// cWeightedStdDev - collects min, max, mean, std. dev. of weighted stats
-
 
 /**
- * FIXME: 
- * cWeightedStdDev - collects min, max, mean, std. dev. of weighted stats
+ * Statistics class to collect doubles and calculate weighted statistics
+ * of them.
  */
 class SIM_API cWeightedStdDev : public cStdDev
 {
@@ -459,12 +450,10 @@ class SIM_API cWeightedStdDev : public cStdDev
      */
     virtual void collect2(double val, double weight);
 
-
     /**
      * Redefined cStdDev functions.
      */
     virtual void clearResult();
-
 
     /**
      * MISSINGDOC: cWeightedStdDev:double weights()
@@ -481,7 +470,6 @@ class SIM_API cWeightedStdDev : public cStdDev
      */
     virtual double variance();
 
-
     /**
      * Redefined cStdDev functions.
      */
@@ -495,3 +483,4 @@ class SIM_API cWeightedStdDev : public cStdDev
 };
 
 #endif
+

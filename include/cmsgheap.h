@@ -26,14 +26,10 @@
 class cMessage;
 
 //==========================================================================
-// cMessageHeap: object to store future event set
-//    underlying data structure is heap; vector expands as needed
-
 
 /**
- * FIXME: 
- * cMessageHeap: object to store future event set
- *    underlying data structure is heap; vector expands as needed
+ * Stores future event set. The underlying data structure is heap;
+ * the array used to store the heap expands as needed.
  */
 class SIM_API cMessageHeap : public cObject
 {
@@ -53,17 +49,17 @@ class SIM_API cMessageHeap : public cObject
   public:
 
     /**
-     * MISSINGDOC: cMessageHeap:cMessageHeap(cMessageHeap&)
+     * Constructor.
      */
     cMessageHeap(cMessageHeap& msgq);
 
     /**
-     * MISSINGDOC: cMessageHeap:cMessageHeap(char*,int)
+     * Constructor.
      */
     cMessageHeap(const char *name=NULL, int size=128);
 
     /**
-     * MISSINGDOC: cMessageHeap:~cMessageHeap()
+     * Destructor.
      */
     virtual ~cMessageHeap();
 
@@ -145,16 +141,11 @@ class SIM_API cMessageHeap : public cObject
 };
 
 //==========================================================================
-//  cMessageHeapIterator : walks along a cMessageHeap
-//   Objects are not necessarily ordered by arrival time!
-//   Use msgheap->sort() if necessary before using the iterator.
-
 
 /**
- * FIXME: 
- *  cMessageHeapIterator : walks along a cMessageHeap
- *   Objects are not necessarily ordered by arrival time!
- *   Use msgheap->sort() if necessary before using the iterator.
+ * Walks along a cMessageHeap. Note that objects in cMessageHeap are not
+ * necessarily iterated ordered by arrival time. Use msgheap->sort()
+ * if necessary before using the iterator.
  */
 class SIM_API cMessageHeapIterator
 {
@@ -164,7 +155,7 @@ class SIM_API cMessageHeapIterator
   public:
 
     /**
-     * MISSINGDOC: cMessageHeapIterator:cMessageHeapIterator(cMessageHeap&)
+     * Constructor.
      */
     cMessageHeapIterator(cMessageHeap& mh)  {q=&mh;pos=1;}
 
@@ -190,3 +181,4 @@ class SIM_API cMessageHeapIterator
 };
 
 #endif
+

@@ -24,17 +24,10 @@
 #include "cmessage.h"
 
 //==========================================================================
-// cPacket: network packet class
-//  - adds protocol and PDU type to cMessage
-//  - message kind must be either MK_PACKET or MK_INFO for cPackets
-//
 
 /**
- * FIXME: 
- * cPacket: network packet class
- *  - adds protocol and PDU type to cMessage
- *  - message kind must be either MK_PACKET or MK_INFO for cPackets
- * 
+ * Network packet class. It adds protocol and PDU type to cMessage.
+ * The message kind must be either MK_PACKET or MK_INFO for cPackets.
  */
 class SIM_API cPacket : public cMessage
 {
@@ -44,17 +37,13 @@ class SIM_API cPacket : public cMessage
   public:
 
     /**
-     * MISSINGDOC: cPacket:cPacket(char*,short,short)
+     * Constructor.
      */
     explicit cPacket(const char *name=NULL, short protocol=0, short pdu=0) :
-
-    /**
-     * MISSINGDOC: cPacket:cMessage(,)
-     */
        cMessage(name,MK_PACKET) {_protocol=protocol;_pdu=pdu;}
 
     /**
-     * MISSINGDOC: cPacket:cPacket(cPacket&)
+     * Copy constructor.
      */
     cPacket (cPacket& m);
 
@@ -117,3 +106,5 @@ class SIM_API cPacket : public cMessage
 };
 
 #endif
+
+

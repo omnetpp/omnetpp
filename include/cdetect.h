@@ -44,14 +44,9 @@ typedef void (*PostTDFunc)(cTransientDetection *, void *);
 typedef void (*PostADFunc)(cAccuracyDetection *, void *);
 
 //===NL=====================================================================
-// cTransientDetection - virtual base class for transient detection
-
 
 /**
- * FIXME: //=== classes declared here:
- * //=== class mentioned here:
- * //===NL=====================================================================
- * cTransientDetection - virtual base class for transient detection
+ * Virtual base class for transient detection classes.
  */
 class SIM_API cTransientDetection : public cObject
 {
@@ -61,17 +56,17 @@ class SIM_API cTransientDetection : public cObject
   public:
 
     /**
-     * MISSINGDOC: cTransientDetection:cTransientDetection(cTransientDetection&)
+     * Copy constructor.
      */
     cTransientDetection(cTransientDetection& r) : cObject() {setName(r.name());operator=(r);}
 
     /**
-     * MISSINGDOC: cTransientDetection:cTransientDetection(char*)
+     * Constructor.
      */
     explicit cTransientDetection(const char *name=NULL) : cObject(name) {}
 
     /**
-     * MISSINGDOC: cTransientDetection:~cTransientDetection()
+     * Destructor.
      */
     virtual ~cTransientDetection()  {}
 
@@ -132,12 +127,9 @@ class SIM_API cTransientDetection : public cObject
 };
 
 //===NL=====================================================================
-// cAccuracyDetection - virtual base class for result accuracy detection
-
 
 /**
- * FIXME: //===NL=====================================================================
- * cAccuracyDetection - virtual base class for result accuracy detection
+ * Virtual base class for result accuracy detection classes.
  */
 class SIM_API cAccuracyDetection : public cObject
 {
@@ -147,17 +139,17 @@ class SIM_API cAccuracyDetection : public cObject
   public:
 
     /**
-     * MISSINGDOC: cAccuracyDetection:cAccuracyDetection(cAccuracyDetection&)
+     * Copy constructor.
      */
     cAccuracyDetection(cAccuracyDetection& r) : cObject() {setName(r.name());operator=(r);}
 
     /**
-     * MISSINGDOC: cAccuracyDetection:cAccuracyDetection(char*)
+     * Constructor.
      */
     explicit cAccuracyDetection(const char *name=NULL) : cObject(name)  {}
 
     /**
-     * MISSINGDOC: cAccuracyDetection:~cAccuracyDetection()
+     * Destructor.
      */
     virtual ~cAccuracyDetection()  {}
 
@@ -218,12 +210,11 @@ class SIM_API cAccuracyDetection : public cObject
 };
 
 //===NL======================================================================
-// cTDExpandingWindows - first algorithm for transient detection
-
 
 /**
- * FIXME: //===NL======================================================================
- * cTDExpandingWindows - first algorithm for transient detection
+ * A transient detection algorithm. Uses sliding window approach
+ * with two windows, and checks the difference of the two averages
+ * to see if the transient period is over.
  */
 class SIM_API cTDExpandingWindows : public cTransientDetection
 {
@@ -251,19 +242,19 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
   public:
 
     /**
-     * MISSINGDOC: cTDExpandingWindows:cTDExpandingWindows(cTDExpandingWindows&)
+     * Copy constructor.
      */
     cTDExpandingWindows(cTDExpandingWindows& r);
-    explicit cTDExpandingWindows(const char *name,
-                        int reps=3, int minw=4, double wind=1.3, double acc=0.3,
 
     /**
-     * MISSINGDOC: cTDExpandingWindows:cTDExpandingWindows(char*,int,int,double,double,PostTDFunc,void*)
+     * Constructor.
      */
+    explicit cTDExpandingWindows(const char *name,
+                        int reps=3, int minw=4, double wind=1.3, double acc=0.3,
                         PostTDFunc f=NULL,void *p=NULL);
 
     /**
-     * MISSINGDOC: cTDExpandingWindows:~cTDExpandingWindows()
+     * Destructor.
      */
     virtual ~cTDExpandingWindows();
 
@@ -310,22 +301,21 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
      * MISSINGDOC: cTDExpandingWindows:void start()
      */
     virtual void start()     {go = true;}
-    void setParameters(int reps=3, int minw=4,   // set/change the detection parameters
 
     /**
      * MISSINGDOC: cTDExpandingWindows:void setParameters(int,int,double,double)
      */
+    void setParameters(int reps=3, int minw=4,   // set/change the detection parameters
                        double wind=1.3, double acc=0.3);
 };
 
 
 //===NL======================================================================
-// cADByStddev - first algorithm for detecting result accuracy
-
 
 /**
- * FIXME: //===NL======================================================================
- * cADByStddev - first algorithm for detecting result accuracy
+ * An algorithm for result accuracy detection. The actual algorithm:
+ * divide the standard deviation by the square of the number of values
+ * and check if this is small enough.
  */
 class SIM_API cADByStddev : public cAccuracyDetection
 {
@@ -354,19 +344,19 @@ class SIM_API cADByStddev : public cAccuracyDetection
   public:
 
     /**
-     * MISSINGDOC: cADByStddev:cADByStddev(cADByStddev&)
+     * Copy constructor.
      */
     cADByStddev(cADByStddev& r);
     explicit cADByStddev(const char *name=NULL,
                          double acc=0.01, int reps=3,
 
     /**
-     * MISSINGDOC: cADByStddev:cADByStddev(char*,double,int,PostADFunc,void*)
+     * Constructor.
      */
                          PostADFunc f=NULL, void *p=NULL);
 
     /**
-     * MISSINGDOC: cADByStddev:~cADByStddev()
+     * Destructor.
      */
     virtual ~cADByStddev()  {}
 

@@ -29,13 +29,10 @@ class  cQueue;
 class  cQueueIterator;
 
 //==========================================================================
-// sQElem : used internally by cQueue and cQueueIterator
 
-/**
- * FIXME: //=== classes declared here
- * 
- * sQElem : used internally by cQueue and cQueueIterator
- */
+//
+// Used internally by cQueue and cQueueIterator.
+//
 struct sQElem
 {
     cObject *obj;
@@ -43,12 +40,24 @@ struct sQElem
 };
 
 //-------------------------------------------------------------------------
-// cQueue: a sorted queue of cObjs
-
 
 /**
- * FIXME: 
- * cQueue: a sorted queue of cObjs
+ * Queue class. cQueue is a container class that can hold objects derived
+ * from cObject. cQueue acts as a priority queue.
+ * The user must provide a function that can compare two objects.
+ * If no such function is given, cQueue implements a FIFO.
+ * Order (ascending or descending) can be specified.
+ *
+ * Ownership of contained objects (responsibility of deletion) can
+ * be specified per-object basis (see cObject::takeOwnership()).
+ * Default is that cQueue takes the ownership of each object
+ * inserted (that is, takeOwnership(true)).
+ *
+ * The sorting function should look like:
+ * int CompareFunc(cObject& a, cObject& b);
+ *
+ * They must return a negative value if a&lt;b, 0 if a==b and a positive value
+ * if a&gt;b.
  */
 class SIM_API cQueue : public cObject
 {
@@ -218,14 +227,11 @@ class SIM_API cQueue : public cObject
 };
 
 //==========================================================================
-//  cQueueIterator : walks along a cQueue
-//   NOTE: not a cObject descendant!
-
 
 /**
- * FIXME: 
- *  cQueueIterator : walks along a cQueue
- *   NOTE: not a cObject descendant!
+ * Walks along a cQueue.
+ *
+ * NOTE: not a cObject descendant.
  */
 class SIM_API cQueueIterator
 {

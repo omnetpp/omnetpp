@@ -38,42 +38,24 @@ class cMessage;
 SIM_API int is_started_as_master();
 
 //===========================================================================
-//  cNetMod:
-//           base class for the interface module for distributed simulation.
-//
-//      This is the abstract base class of the classes supporting
-//      distributed simulation in various environments.
-//      The class definition for a given environment may be inherited from
-//      this class. In the simulation, the global pointer of the network
-//      module (simulation.netmodp) is of type cNetMod. The advantage of this
-//      base class is that the network interface can be replaced transparently.
-//      The drawback is, that beside the general purpose functions, this
-//      class has to also declare all environment specific ones, of course
-//      all are virtual.
-//      The virtual functions will be redefined in the specific network
-//      interface.(e.g.:pvmmod.cc)
-//
-
 
 /**
- * FIXME: is_started_as_master:
- *   called from envir to determine whether this is a master or slave
- * 
- *  cNetMod:
- *           base class for the interface module for distributed simulation.
- * 
- *      This is the abstract base class of the classes supporting
- *      distributed simulation in various environments.
- *      The class definition for a given environment may be inherited from
- *      this class. In the simulation, the global pointer of the network
- *      module (simulation.netmodp) is of type cNetMod. The advantage of this
- *      base class is that the network interface can be replaced transparently.
- *      The drawback is, that beside the general purpose functions, this
- *      class has to also declare all environment specific ones, of course
- *      all are virtual.
- *      The virtual functions will be redefined in the specific network
- *      interface.(e.g.:pvmmod.cc)
- * 
+ * Base class for the interface module for distributed simulation.
+ *
+ * This is the abstract base class of the classes supporting
+ * distributed simulation in various environments.
+ *
+ * The class definition for a given environment may be inherited from
+ * this class. In the simulation, the global pointer of the network
+ * module (simulation.netmodp) is of type cNetMod. The advantage of this
+ * base class is that the network interface can be replaced transparently.
+ * The drawback is, that beside the general purpose functions, this
+ * class has to also declare all environment specific ones, of course
+ * all are virtual.
+ *
+ * The virtual functions will be redefined in the specific network
+ * interface.(e.g.:pvmmod.cc)
+ *
  */
 class SIM_API cNetMod : public cModule
 {
@@ -86,12 +68,12 @@ class SIM_API cNetMod : public cModule
   public:
 
     /**
-     * MISSINGDOC: cNetMod:cNetMod()
+     * Constructor.
      */
     cNetMod();
 
     /**
-     * MISSINGDOC: cNetMod:~cNetMod()
+     * Destructor.
      */
     virtual ~cNetMod() {}
 
@@ -283,3 +265,5 @@ class SIM_API cNetMod : public cModule
 };
 
 #endif
+
+

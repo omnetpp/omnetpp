@@ -29,13 +29,10 @@ class  cLinkedList;
 class  cLinkedListIterator;
 
 //==========================================================================
-// sLLElem : used internally by cLinkedList and cLinkedListIterator
 
-/**
- * FIXME: //=== classes declared here
- * 
- * sLLElem : used internally by cLinkedList and cLinkedListIterator
- */
+//
+// Used internally by cLinkedList and cLinkedListIterator.
+//
 struct sLLElem
 {
     void *item;
@@ -43,16 +40,19 @@ struct sLLElem
 };
 
 //-------------------------------------------------------------------------
-// cLinkedList: a double-linked list of items, with a cQueue-like interface
-
 
 /**
- * FIXME: 
- * cLinkedList: a double-linked list of items, with a cQueue-like interface
+ * A double-linked list of non cObject items. cLinkedList has a cQueue-like
+ * interface.
+ *
+ * Memory management of contained items is controlled by the configPointer()
+ * function. As default, pointers are treated as mere pointers, so
+ * items are never duplicated or deleted.
  */
 class SIM_API cLinkedList : public cObject
 {
     friend class cLinkedListIterator;
+
   private:
     sLLElem *headp, *tailp;   // inserting at head, removal at tail
     int n;                    // number of items in list
@@ -63,9 +63,7 @@ class SIM_API cLinkedList : public cObject
                               // if both dupfunc and itemsize are 0, we do
                               // no memory management (we treat pointers as
                               // mere pointers)
-
   protected:
-
     /**
      * FIXME: if both dupfunc and itemsize are 0, we do
      * no memory management (we treat pointers as
@@ -89,7 +87,6 @@ class SIM_API cLinkedList : public cObject
     void *remove_llelem(sLLElem *p);
 
   public:
-
     /**
      * Copy constructor. Contained items that are owned by the list will
      * be duplicated using the function passed in configPointer()
@@ -219,21 +216,23 @@ class SIM_API cLinkedList : public cObject
 };
 
 //==========================================================================
-//  cLinkedListIterator : walks along a cLinkedList
-//   NOTE: not a cObject descendant!
-
 
 /**
- * FIXME: 
- *  cLinkedListIterator : walks along a cLinkedList
- *   NOTE: not a cObject descendant!
+ * Walks along a cLinkedList object.
+ * To examine each element in the list, the cLinkedListIterator
+ * iterator class can be used. Once a cLinkedListIterator
+ * object is created for the list (the cLinkedList object),
+ * the ++ and -- operators can be used to step from one element of
+ * the list to the next/previous one.
+ *
+ * NOTE: not a cObject descendant!
  */
 class SIM_API cLinkedListIterator
 {
   private:
     sLLElem *p;
-  public:
 
+  public:
     /**
      * Constructor, cIterator will walk on the list passed as
      * argument. The current item will be the first (if a==1) or the

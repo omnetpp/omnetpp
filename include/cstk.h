@@ -42,9 +42,9 @@
 #else // if defined( USE_STK )
 
 
-/**
- * FIXME: //#  define USE_STK         // enables stack switching with iSTK,vSTK //
- */
+//
+// enables stack switching with iSTK,vSTK
+//
 struct Stk
 {
    static long _retval;

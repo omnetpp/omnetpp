@@ -29,15 +29,17 @@ class  cArray;
 class  cBag;
 
 //==========================================================================
-// cBag - container class to hold small non-class items (int, double etc.)
-//        cBag stores full copy of each item inserted and NOT the pointer
-
 
 /**
- * FIXME: //=== classes declared here
- * 
- * cBag - container class to hold small non-class items (int, double etc.)
- *        cBag stores full copy of each item inserted and NOT the pointer
+ * Container class to hold small non-class items (int, double, etc).
+ * cBag stores full copy of each item inserted and NOT the pointer.
+ *
+ * cBag is a container class which is designed to hold non-cObject
+ * items without constructors/destructors (ints, doubles,
+ * small structs etc.). cBag stores full, bit-by-bit copies
+ * of the items inserted (and not the pointers). cBag works
+ * as an array, but if it gets full, it grows automatically by a
+ * specified delta.
  */
 class SIM_API cBag : public cObject
 {
@@ -56,7 +58,7 @@ class SIM_API cBag : public cObject
     cBag(cBag& bag);
 
     /**
-     * MISSINGDOC: cBag:cBag(char*,int,int,int)
+     * Constructor.
      */
     explicit cBag(const char *name=NULL, int esiz=4,int siz=0,int delt=5);
 
@@ -178,16 +180,15 @@ class SIM_API cBag : public cObject
 };
 
 //==========================================================================
-// cArray: array of cObjects
-//    By default, cArray stores the pointers of the objects.
-//    If you want it to make an own copy, set takeOwnership().
-
 
 /**
- * FIXME: 
- * cArray: array of cObjects
- *    By default, cArray stores the pointers of the objects.
- *    If you want it to make an own copy, set takeOwnership().
+ * Container object that holds objects derived from cObject.
+ * cArray stores the pointers of the objects inserted instead of making copies.
+ * cArray works as an array, but if it gets full, it grows automatically by
+ * a specified delta. Ownership of contained objects (responsibility of deletion)
+ * can be specified per-object basis (see cObject::takeOwnership()).
+ * Default is that cArray takes the ownership of each object inserted
+ * (that is, takeOwnership() is set to true).
  */
 class SIM_API cArray : public cObject
 {
@@ -209,7 +210,7 @@ class SIM_API cArray : public cObject
     cArray(cArray& list);
 
     /**
-     * MISSINGDOC: cArray:cArray(char*,int,int)
+     * Constructor.
      */
     explicit cArray(const char *name=NULL, int siz=0, int dt=10);
 

@@ -47,51 +47,45 @@ class  cStatistic;
 //
 
 /**
- * FIXME: //=== classes declared here:
- * //=== class mentioned
- * 
- * sXElem: one component in a (reversed Polish) expression in a cPar
- *  NOTE: not a cObject descendant!
- *   Types:
- *      D  double constant
- *      P  pointer to "external" cPar (owned by someone else)
- *      R  "reference": the cPar will be dup()'ped and the copy kept
- *      0/1/2/3  function with 0/1/2/3 arguments
- *      @  math operator (+-* /%^=!<{>}?); see cPar::evaluate()
- * 
+ * sXElem: one component in a (reversed Polish) expression in a cPar.
+ *
+ * If the value of the cPar is of expression type, the expression
+ * must be converted to reversed Polish form. The reversed Polish
+ * form expression is stored in a vector of sXElem structures.
+ * sXElem is not a descendant of cObject.
+ *
+ * NOTE: not a cObject descendant!
  */
 struct sXElem
 {
-   char type;    // D/P/R/0/1/2/3/@
-   union {
-       double d;           // D
-       cPar *p;            // P/R
-       MathFuncNoArg f0;   // 0
-       MathFunc1Arg  f1;   // 1
-       MathFunc2Args f2;   // 2
-       MathFunc3Args f3;   // 3
-       char op;            // @, op = +-*/%^=!<{>}?
-   };
-
-   // A little help to create expressions:
+    char type;    // D/P/R/0/1/2/3/@
+    union {
+        double d;           // D
+        cPar *p;            // P/R
+        MathFuncNoArg f0;   // 0
+        MathFunc1Arg  f1;   // 1
+        MathFunc2Args f2;   // 2
+        MathFunc3Args f3;   // 3
+        char op;            // @, op = +-*/%^=!<{>}?
+    };
 
     /**
      * Effect during evaluation of the expression: pushes the given number
      * (which is converted to double) on the evaluation stack.
      */
-   void operator=(int _i)            {type='D'; d=_i;  }
+    void operator=(int _i)            {type='D'; d=_i;  }
 
     /**
      * Effect during evaluation of the expression: pushes the given number
      * (which is converted to double) on the evaluation stack.
      */
-   void operator=(long _l)           {type='D'; d=_l;  }
+    void operator=(long _l)           {type='D'; d=_l;  }
 
     /**
      * Effect during evaluation of the expression: pushes the given number
      * (which is converted to double) on the evaluation stack.
      */
-   void operator=(double _d)         {type='D'; d=_d;  }
+    void operator=(double _d)         {type='D'; d=_d;  }
 
     /**
      * Effect during evaluation of the expression: takes the value of
@@ -100,7 +94,7 @@ struct sXElem
      * one: its ownership does not change. This is how NED-language REF
      * parameters in expressions are handled.
      */
-   void operator=(cPar *_p)          {type='P'; p=_p;  }
+    void operator=(cPar *_p)          {type='P'; p=_p;  }
 
     /**
      * Effect during evaluation of the expression: takes the value of
@@ -108,7 +102,7 @@ struct sXElem
      * on the evaluation stack. The cPar which evaluates this
      * expression will copy the cPar for itself.
      */
-   void operator=(cPar& _r);         //{type='R'; p=(cPar *)_r.dup();} See after cPar!
+    void operator=(cPar& _r);         //{type='R'; p=(cPar *)_r.dup();} See after cPar!
 
     /**
      * The argument can be a pointer to a function that takes (0, 1,
@@ -118,11 +112,11 @@ struct sXElem
      * the given function is called with them as arguments, and the return
      * value is pushed back on the stack. See also the cFunctionType
      * class and the Define_Function() macro.
-     * 
+     *
      * The OMNeT++ functions generating random variables of different
      * distributions can also be used in sXElem expressions.
      */
-   void operator=(MathFuncNoArg _f)  {type='0'; f0=_f;}
+    void operator=(MathFuncNoArg _f)  {type='0'; f0=_f;}
 
     /**
      * The argument can be a pointer to a function that takes (0, 1,
@@ -132,11 +126,11 @@ struct sXElem
      * the given function is called with them as arguments, and the return
      * value is pushed back on the stack. See also the cFunctionType
      * class and the Define_Function() macro.
-     * 
+     *
      * The OMNeT++ functions generating random variables of different
      * distributions can also be used in sXElem expressions.
      */
-   void operator=(MathFunc1Arg  _f)  {type='1'; f1=_f;}
+    void operator=(MathFunc1Arg  _f)  {type='1'; f1=_f;}
 
     /**
      * The argument can be a pointer to a function that takes (0, 1,
@@ -146,11 +140,11 @@ struct sXElem
      * the given function is called with them as arguments, and the return
      * value is pushed back on the stack. See also the cFunctionType
      * class and the Define_Function() macro.
-     * 
+     *
      * The OMNeT++ functions generating random variables of different
      * distributions can also be used in sXElem expressions.
      */
-   void operator=(MathFunc2Args _f)  {type='2'; f2=_f;}
+    void operator=(MathFunc2Args _f)  {type='2'; f2=_f;}
 
     /**
      * The argument can be a pointer to a function that takes (0, 1,
@@ -160,63 +154,55 @@ struct sXElem
      * the given function is called with them as arguments, and the return
      * value is pushed back on the stack. See also the cFunctionType
      * class and the Define_Function() macro.
-     * 
+     *
      * The OMNeT++ functions generating random variables of different
      * distributions can also be used in sXElem expressions.
      */
-   void operator=(MathFunc3Args _f)  {type='3'; f3=_f;}
+    void operator=(MathFunc3Args _f)  {type='3'; f3=_f;}
 
     /**
-     * The argument can be:
-     * <TABLE BORDER=1>
-     * <TR><TD WIDTH=114><CENTER>+ - * /</CENTER></TD><TD WIDTH=330>add, subtract, multiply, divide
-     * </TD></TR>
-     * <TR><TD WIDTH=114><CENTER>% ^ </CENTER></TD><TD WIDTH=330>modulo, power of
-     * </TD></TR>
-     * <TR><TD WIDTH=114><CENTER>= ! </CENTER></TD><TD WIDTH=330>equal, not equal
-     * </TD></TR>
-     * <TR><TD WIDTH=114><CENTER>> }</CENTER></TD><TD WIDTH=330>greater, greater or equal
-     * </TD></TR>
-     * <TR><TD WIDTH=114><CENTER>< {</CENTER></TD><TD WIDTH=330>less, less or equal
-     * </TD></TR>
-     * <TR><TD WIDTH=114><CENTER>?</CENTER></TD><TD WIDTH=330>inline if (C language's (cond ? a : b)
-     * </TD></TR>
-     * </TABLE>
-     * 
-     * Effect during evaluation of the expression: two items (or three,
+     * Operation. During evaluation of the expression, two items (or three,
      * with '?') are popped out of the stack, the given operator
      * is applied to them and the result is pushed back on the stack.
+     *
+     * The operation can be:
+     * <UL>
+     *   <LI> + - * / add, subtract, multiply, divide
+     *   <LI> % ^  modulo, power of
+     *   <LI> = !  equal, not equal
+     *   <LI> > }  greater, greater or equal
+     *   <LI> < {  less, less or equal
+     *   <LI> ?  inline if (the C/C++ ?: operator)
+     * </UL>
      */
-   void operator=(char _op)          {type='@'; op=_op;}
+    void operator=(char _op)          {type='@'; op=_op;}
 };
 
 //==========================================================================
-// cPar: stores a general value (char/string/long/double/expr..)
-//  NOTE: forEach() ignores objects stored here such as cPars in eXpressions,
-//        cObject pointed to in 'P' type, cStatistic in disTribution type
-// Types and type characters:
-//   C char, S string, L long, D double,
-//   F math function (MathFuncNoArgs,MathFunc1Args,etc),
-//   X expression (table of sXElems),
-//   T distribution from a cStatistic,
-//   P pointer to cObject,
-//   I indirection (refers to another cPar)
-//
-
 
 /**
- * FIXME: 
- * cPar: stores a general value (char/string/long/double/expr..)
- *  NOTE: forEach() ignores objects stored here such as cPars in eXpressions,
- *        cObject pointed to in 'P' type, cStatistic in disTribution type
+ * Parameter class are designed to hold a value. Many types are
+ * available:
+ *
  * Types and type characters:
- *   C char, S string, L long, D double,
- *   F math function (MathFuncNoArgs,MathFunc1Args,etc),
- *   X expression (table of sXElems),
- *   T distribution from a cStatistic,
- *   P pointer to cObject,
- *   I indirection (refers to another cPar)
- * 
+ *
+ * <UL>
+ *   <LI> basic types: C char, S string, L long, D double
+ *   <LI> F math function (MathFuncNoArgs,MathFunc1Args,etc),
+ *   <LI> X expression (table of sXElems),
+ *   <LI> T distribution from a cStatistic,
+ *   <LI> P pointer to cObject,
+ *   <LI> I indirection (refers to another cPar)
+ * </UL>
+ *
+ * For all types, an input flag can be set. In this case,
+ * the user will be asked to enter the value when the object's value
+ * is first used. The prompt string can also be specified
+ * for cPar. If no prompt string is given, the object's
+ * name will be displayed as prompt text.
+ *
+ * NOTE: forEach() ignores objects stored here such as cPars in eXpressions,
+ * cObject pointed to in 'P' type, cStatistic in disTribution type
  */
 class SIM_API cPar : public cObject
 {
@@ -293,9 +279,8 @@ class SIM_API cPar : public cObject
      */
     explicit cPar(const char *name, cPar& other);
 
-
     /**
-     * MISSINGDOC: cPar:~cPar()
+     * Destructor.
      */
     virtual ~cPar();
 
@@ -713,21 +698,12 @@ class SIM_API cPar : public cObject
 inline void sXElem::operator=(cPar& _r)  {type='R'; p=(cPar *)_r.dup();}
 
 //==========================================================================
-// cModulePar - module parameter object
-//   essentially the same as cPar, but it is capable of logging
-//   parameter changes to file
-//
-//   NOTE: dup() creates only a cPar NOT a cModulePar!
-
 
 /**
- * FIXME: this function cannot be defined within sXElem because of declaration order
- * 
- * cModulePar - module parameter object
- *   essentially the same as cPar, but it is capable of logging
- *   parameter changes to file
- * 
- *   NOTE: dup() creates only a cPar NOT a cModulePar!
+ * Module parameter object. This is specialized version of cPar: it is capable
+ * of logging parameter changes to file
+ *
+ * NOTE: dup() creates only a cPar, NOT a cModulePar!
  */
 class SIM_API cModulePar : public cPar
 {
@@ -747,23 +723,22 @@ class SIM_API cModulePar : public cPar
   public:
 
     /**
-     * MISSINGDOC: cModulePar:cModulePar(cPar&)
+     * Constructor.
      */
     cModulePar(cPar& other);
 
     /**
-     * MISSINGDOC: cModulePar:cModulePar(char*)
+     * Constructor.
      */
     explicit cModulePar(const char *name=NULL);
 
     /**
-     * MISSINGDOC: cModulePar:cModulePar(char*,cPar&)
+     * Constructor.
      */
     explicit cModulePar(const char *name, cPar& other);
 
-
     /**
-     * MISSINGDOC: cModulePar:~cModulePar()
+     * Destructor.
      */
     virtual ~cModulePar();
 

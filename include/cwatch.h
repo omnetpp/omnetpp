@@ -32,42 +32,13 @@ class  cWatch;
 
 
 //==========================================================================
-// cWatch : shell for a char/int/long/double/char*/cObject* variable
-//   The snapshot() call outputs state of simulation into a text file,
-//   which is excellent for debugging. Unfortunately, ordinary variables
-//   (int, char etc) do not appear in the snapshot file.
-//   cWatch helps this. Use it like this:
-//       int count;
-//       cWatch dontcare( "count", count );
-//   or
-//       new cWatch( "count", count );
-//   Now, the cWatch object will make the count variable appear
-//   in the snapshot file.
-//   The above lines can be shortened using the WATCH/LWATCH macro:
-//       WATCH( count );
-//   or
-//       LWATCH( count );
-//
 
 /**
- * FIXME: //=== classes declared here
- * 
- * cWatch : shell for a char/int/long/double/char* /cObject* variable
- *   The snapshot() call outputs state of simulation into a text file,
- *   which is excellent for debugging. Unfortunately, ordinary variables
- *   (int, char etc) do not appear in the snapshot file.
- *   cWatch helps this. Use it like this:
- *       int count;
- *       cWatch dontcare( "count", count );
- *   or
- *       new cWatch( "count", count );
- *   Now, the cWatch object will make the count variable appear
- *   in the snapshot file.
- *   The above lines can be shortened using the WATCH/LWATCH macro:
- *       WATCH( count );
- *   or
- *       LWATCH( count );
- * 
+ * Shell for an ordinary char, int, long, double, char* or cObject* variable.
+ * Its purpose is to make variables visible in Tkenv.
+ *
+ * Users rarely need to create cWatch objects directly, they rather use
+ * the WATCH() and LWATCH() macros.
  */
 class SIM_API cWatch : public cObject
 {
@@ -77,7 +48,7 @@ class SIM_API cWatch : public cObject
   public:
 
     /**
-     * Initialize the shell to hold the given variable.
+     * Copy constructor.
      */
     cWatch(cWatch& vs);
 
@@ -159,8 +130,6 @@ class SIM_API cWatch : public cObject
      * MISSINGDOC: cWatch:void*pointer()
      */
     void *pointer() {return ptr;}
-    //virtual int netPack();
-    //virtual int netUnpack();
 };
 
 #endif

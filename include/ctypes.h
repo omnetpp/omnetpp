@@ -50,62 +50,10 @@ typedef cModule *(*ModuleCreateFunc)(const char *, cModule *);
 typedef cPar *(*ParCreateFunc)();
 
 //==========================================================================
-// cModuleInterface - represents a module interface: gate + parameter names
-//
-// cModuleInterfaces are the compiled form of NED declarations of simple
-// modules. They are created in the following way:
-//  1) stating point is the NED declarations of simple modules, e.g:
-//        simple Generator
-//          parameters: ia_rate;
-//          gates: out: out;
-//        endsimple
-//  2) the nedc compiler translates the NED declaration into a
-//     ModuleInterface...End macro and places it into the _n.cc file.
-//        ModuleInterface( Generator )
-//          Parameter ( "ia_rate", AnyType )
-//          Gate      ( "out",     Output  )
-//        End
-//     The macro translates into a static cModuleInterface object declaration
-//     (#define for macros in macros.h)
-//  3) When the program starts up, cModuleInterface constructor runs and
-//     places the object on the modinterfaces list.
-//  4) When a module is created, the appropriate cModuleInterface object
-//     is looked up from the list, and the module's gates and parameters
-//     are created according to the description in the cModuleInterface
-//     object.
-//
 
-/**
- * FIXME: 
- * //=== classes declared here
- * //=== class mentioned
- * //=== function types used by cModuleType & cLinkType
- * 
- * cModuleInterface - represents a module interface: gate + parameter names
- * 
- * cModuleInterfaces are the compiled form of NED declarations of simple
- * modules. They are created in the following way:
- *  1) stating point is the NED declarations of simple modules, e.g:
- *        simple Generator
- *          parameters: ia_rate;
- *          gates: out: out;
- *        endsimple
- *  2) the nedc compiler translates the NED declaration into a
- *     ModuleInterface...End macro and places it into the _n.cc file.
- *        ModuleInterface( Generator )
- *          Parameter ( "ia_rate", AnyType )
- *          Gate      ( "out",     Output  )
- *        End
- *     The macro translates into a static cModuleInterface object declaration
- *     (#define for macros in macros.h)
- *  3) When the program starts up, cModuleInterface constructor runs and
- *     places the object on the modinterfaces list.
- *  4) When a module is created, the appropriate cModuleInterface object
- *     is looked up from the list, and the module's gates and parameters
- *     are created according to the description in the cModuleInterface
- *     object.
- * 
- */
+//
+// Used internally by cModuleInterface
+//
 struct sDescrItem {
     char what;
     char *name;
@@ -113,9 +61,39 @@ struct sDescrItem {
     char type;
 };
 
-
 /**
- * MISSINGDOC: cModuleInterface
+ * Represents a module interface: gates and parameter names.
+ *
+ * cModuleInterfaces are the compiled form of NED declarations of simple
+ * modules. They are created in the following way:
+ *
+ *  1) starting point is the NED declarations of simple modules, e.g:
+ *     <PRE><TT>
+ *        simple Generator
+ *          parameters: ia_rate;
+ *          gates: out: out;
+ *        endsimple
+ *     </PRE></TT>
+ *
+ *  2) the nedc compiler translates the NED declaration into a
+ *     ModuleInterface...End macro and places it into the _n.cc file.
+ *     <PRE><TT>
+ *        ModuleInterface( Generator )
+ *          Parameter ( "ia_rate", AnyType )
+ *          Gate      ( "out",     Output  )
+ *        End
+ *     </PRE></TT>
+ *
+ *     The macro translates into a static cModuleInterface object declaration
+ *     (#define for macros in macros.h)
+ *
+ *  3) When the program starts up, cModuleInterface constructor runs and
+ *     places the object on the modinterfaces list.
+ *
+ *  4) When a module is created, the appropriate cModuleInterface object
+ *     is looked up from the list, and the module's gates and parameters
+ *     are created according to the description in the cModuleInterface
+ *     object.
  */
 class SIM_API cModuleInterface : public cObject
 {
@@ -163,17 +141,17 @@ class SIM_API cModuleInterface : public cObject
   public:
 
     /**
-     * MISSINGDOC: cModuleInterface:cModuleInterface(char*,sDescrItem*)
+     * Constructor.
      */
     cModuleInterface(const char *name, sDescrItem *descr_table );
 
     /**
-     * MISSINGDOC: cModuleInterface:cModuleInterface(cModuleInterface&)
+     * Copy constructor.
      */
     cModuleInterface(cModuleInterface& mi );
 
     /**
-     * MISSINGDOC: cModuleInterface:~cModuleInterface()
+     * Destructor.
      */
     virtual ~cModuleInterface();
 
@@ -208,36 +186,22 @@ class SIM_API cModuleInterface : public cObject
 };
 
 //==========================================================================
-// cModuleType - able to create a module
-//
-// A cModuleType object exist for each module type (simple or compound).
-// A cModuleType object 'knows' how to create a module of a given type,
-// thus a module can be created without having to include the .h file
-// with the C++ declaration of the module class ("class FddiMAC...").
-// A cModuleType object is created through a Define_Module macro. Thus,
-// each module type must have a Define_Module() macro like this:
-//   Define_Module( Generator, "Generator")
-// (The second argument defines the module interface, see cModuleInterface.)
-// Nedc automatically generates Define_Module for compound modules, but the
-// user is responsible for writing it for each simple module type.
-//
-
 
 /**
- * FIXME: 
- * cModuleType - able to create a module
- * 
+ * Class for creating a module of a specific type.
+ *
  * A cModuleType object exist for each module type (simple or compound).
  * A cModuleType object 'knows' how to create a module of a given type,
  * thus a module can be created without having to include the .h file
  * with the C++ declaration of the module class ("class FddiMAC...").
  * A cModuleType object is created through a Define_Module macro. Thus,
  * each module type must have a Define_Module() macro like this:
- *   Define_Module( Generator, "Generator")
+ *
+ * Define_Module( Generator, "Generator");
+ *
  * (The second argument defines the module interface, see cModuleInterface.)
  * Nedc automatically generates Define_Module for compound modules, but the
  * user is responsible for writing it for each simple module type.
- * 
  */
 class SIM_API cModuleType : public cObject
 {
@@ -249,17 +213,17 @@ class SIM_API cModuleType : public cObject
   public:
 
     /**
-     * MISSINGDOC: cModuleType:cModuleType(char*,char*,ModuleCreateFunc)
+     * Constructor.
      */
     cModuleType(const char *classname, const char *interf_name, ModuleCreateFunc cf);
 
     /**
-     * MISSINGDOC: cModuleType:cModuleType(cModuleType&)
+     * Copy constructor.
      */
     cModuleType(cModuleType& mi );
 
     /**
-     * MISSINGDOC: cModuleType:~cModuleType()
+     * Destructor.
      */
     virtual ~cModuleType();
 
@@ -301,12 +265,9 @@ class SIM_API cModuleType : public cObject
 
 
 //==========================================================================
-// cLinkType - holds a connection type: name, delay, bit error rate, data rate
-
 
 /**
- * FIXME: 
- * cLinkType - holds a connection type: name, delay, bit error rate, data rate
+ * Represents a connection type: name, delay, bit error rate, data rate.
  */
 class SIM_API cLinkType : public cObject
 {
@@ -329,17 +290,17 @@ class SIM_API cLinkType : public cObject
   public:
 
     /**
-     * MISSINGDOC: cLinkType:cLinkType(char*,cPar*(*)(),cPar*(*)(),cPar*(*)())
+     * Constructor.
      */
     cLinkType(const char *name, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)() );
 
     /**
-     * MISSINGDOC: cLinkType:cLinkType(cLinkType&)
+     * Copy constructor.
      */
     cLinkType(cLinkType& li );
 
     /**
-     * MISSINGDOC: cLinkType:~cLinkType()
+     * Destructor.
      */
     virtual ~cLinkType()    {}
 
@@ -379,14 +340,9 @@ class SIM_API cLinkType : public cObject
 };
 
 //==========================================================================
-// cNetworkType - Info to setup a network: name, no. of modules, setup function
-//  NOTE: CANNOT dup() itself!
-
 
 /**
- * FIXME: 
- * cNetworkType - Info to setup a network: name, no. of modules, setup function
- *  NOTE: CANNOT dup() itself!
+ * Contains information to setup a network. Data stored: name, setup function.
  */
 class SIM_API cNetworkType : public cObject
 {
@@ -396,20 +352,20 @@ class SIM_API cNetworkType : public cObject
      * MISSINGDOC: cNetworkType:void(*)()
      */
     void (*setupfunc)();
-  public:
 
+  public:
     /**
-     * MISSINGDOC: cNetworkType:cNetworkType(char*,void(*)())
+     * Constructor.
      */
     cNetworkType(const char *name, void (*f)()) :
 
     /**
-     * MISSINGDOC: cNetworkType:cObject(,(cObject*)&),setupfunc()
+     * Constructor.
      */
       cObject(name,(cObject *)&networks), setupfunc(f) {}
 
     /**
-     * MISSINGDOC: cNetworkType:~cNetworkType()
+     * Destructor.
      */
     virtual ~cNetworkType() {}
 
@@ -422,14 +378,9 @@ class SIM_API cNetworkType : public cObject
 };
 
 //==========================================================================
-// cFunctionType - Stores a function pointer (returning a double)
-//  NOTE: CANNOT dup() itself!
-
 
 /**
- * FIXME: 
- * cFunctionType - Stores a function pointer (returning a double)
- *  NOTE: CANNOT dup() itself!
+ * Stores a function pointer (returning a double).
  */
 class SIM_API cFunctionType : public cObject
 {
@@ -439,17 +390,17 @@ class SIM_API cFunctionType : public cObject
   public:
 
     /**
-     * MISSINGDOC: cFunctionType:cFunctionType(char*,MathFunc,int)
+     * Constructor.
      */
     cFunctionType(const char *name, MathFunc f0, int argc) :
 
     /**
-     * MISSINGDOC: cFunctionType:cObject(,(cObject*)&)
+     * Constructor.
      */
       cObject(name,(cObject *)&functions) {f=f0;argcount=argc;}
 
     /**
-     * MISSINGDOC: cFunctionType:~cFunctionType()
+     * Destructor.
      */
     virtual ~cFunctionType() {}
 
@@ -464,14 +415,11 @@ class SIM_API cFunctionType : public cObject
 cFunctionType *findfunctionbyptr(MathFunc f);
 
 //==========================================================================
-// cClassRegister - knows how to create an object of a specific type
-//  NOTE: CANNOT dup() itself!
-
 
 /**
- * FIXME: 
- * cClassRegister - knows how to create an object of a specific type
- *  NOTE: CANNOT dup() itself!
+ * Reflection support class. There is a cClassRegister object for most
+ * OMNeT++ classes. The cClassRegister objects know how to create an object
+ * of that type.
  */
 class SIM_API cClassRegister : public cObject
 {
@@ -483,17 +431,17 @@ class SIM_API cClassRegister : public cObject
   public:
 
     /**
-     * MISSINGDOC: cClassRegister:cClassRegister(char*,cObject*(*)())
+     * Constructor.
      */
     cClassRegister(const char *name, cObject *(*f)()) :
 
     /**
-     * MISSINGDOC: cClassRegister:cObject(,(cObject*)&),creatorfunc()
+     * Constructor.
      */
       cObject(name,(cObject *)&classes), creatorfunc(f) {}
 
     /**
-     * MISSINGDOC: cClassRegister:~cClassRegister()
+     * Destructor.
      */
     virtual ~cClassRegister() {}
 
@@ -515,31 +463,26 @@ class SIM_API cClassRegister : public cObject
 SIM_API cObject *createOne(const char *type);
 
 //==========================================================================
-// cInspectorFactory - base class for inspector factories of specific classes
-//  NOTE: CANNOT dup() itself!
-
 
 /**
- * FIXME: 
- * cInspectorFactory - base class for inspector factories of specific classes
- *  NOTE: CANNOT dup() itself!
+ * Internal class. Serves as a base class for inspector factories of
+ * specific classes.
  */
 class SIM_API cInspectorFactory : public cObject
 {
-
     /**
      * MISSINGDOC: cInspectorFactory:TInspector*(*)(cObject*,,void*)
      */
     TInspector *(*inspFactoryFunc)(cObject *,int,void *);
-  public:
 
+  public:
     /**
-     * MISSINGDOC: cInspectorFactory:cInspectorFactory(char*,TInspector*(*)(cObject*,,void*))
+     * Constructor.
      */
     cInspectorFactory(const char *name, TInspector *(*f)(cObject *,int,void *));
 
     /**
-     * MISSINGDOC: cInspectorFactory:~cInspectorFactory()
+     * Destructor.
      */
     virtual ~cInspectorFactory() {}
 
@@ -560,3 +503,5 @@ class SIM_API cInspectorFactory : public cObject
 
 
 #endif
+
+
