@@ -285,7 +285,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
             set tmp(linesmooth)  [$graph element cget $e -smooth]
         }
     }
-    set tmp(legendshow) [expr [$graph legend cget -hide]==0]
+    set tmp(legendshow) [expr [$graph legend cget -hide]==0 ? "yes" : "no"]
     set tmp(legendpos) [$graph legend cget -position]
     set tmp(legendanchor) [$graph legend cget -anchor]
     set tmp(legendrelief) [$graph legend cget -relief]
@@ -327,8 +327,8 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     label-combo $f.xrotate "Rotate X labels by" {0 30 45 60 90}
     label-combo $f.xdiv "X axis subdivisions" {1 2 4 5 10}
     label-combo $f.ydiv "Y axis subdivisions" {1 2 4 5 10}
-    #label-combo $f.display "Grid lines" {off {at major ticks} {at all ticks}}
     # FIXME axis min, max, logarithmic; x labels off (for bar charts); -invertxy
+    # also: label-combo $f.display "Grid lines" {off {at major ticks} {at all ticks}}
     $f.xlabel.e configure -textvariable tmp(axisxlabel)
     $f.ylabel.e configure -textvariable tmp(axisylabel)
     $f.titlefont.e configure -textvariable tmp(axistitlefont)
@@ -364,17 +364,17 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
 
     # Legend page
     set f $nb.legend
-    checkbutton $f.show -text "show legend" -variable tmp(legendshow)
+    label-combo $f.show "Display legend" {yes no}
     label-combo $f.pos "Position" {plotarea leftmargin rightmargin topmargin bottommargin}
     label-combo $f.anchor "Anchor" {n s e w ne nw se sw}
     label-combo $f.relief "Relief" {flat solid raised sunken}
     label-entry $f.font "Font"
+    $f.show.e configure -textvariable tmp(legendshow)
     $f.pos.e configure -textvariable tmp(legendpos)
     $f.anchor.e configure -textvariable tmp(legendanchor)
     $f.relief.e configure -textvariable tmp(legendrelief)
     $f.font.e configure -textvariable tmp(legendfont)
-    pack $f.show -side top -anchor w
-    pack $f.pos $f.anchor $f.relief $f.font -side top -anchor w -fill x
+    pack $f.show $f.pos $f.anchor $f.relief $f.font -side top -anchor w -fill x
 
     # execute dialog
     if {[execOkCancelDialog $w] == 1} {
@@ -408,7 +408,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
             }
         }
 
-        catch {$graph legend config -hide [expr !$tmp(legendshow)]}
+        catch {$graph legend config -hide [expr $tmp(legendshow)=="no"]}
         catch {$graph legend config -position $tmp(legendpos)}
         catch {$graph legend config -anchor $tmp(legendanchor)}
         catch {$graph legend config -relief $tmp(legendrelief)}
