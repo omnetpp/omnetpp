@@ -106,8 +106,9 @@ Here's a list of the people who have or had anything to do with OMNeT++:
 
 Primary author and maintainer:
         Andras Varga            vandras@sch.bme.hu,vargaa@hit.bme.hu
+
 Advisor:
-        Gyorgy Pongor   BME-HIT : pongor@hit.bme.hu
+        Gyorgy Pongor           BME-HIT, pongor@hit.bme.hu
 GNED contributions, 1998-99:
         Istvan Pataki           BME
         Gabor Vincze            BME
@@ -131,6 +132,10 @@ to making OMNeT++ better and more useful for the Internet community:
 Richard Lyon, Joel Sherrill, Nimrod Mesika, Ulrich Kaage, Dan Talayco, Y. Ahmet
 Sekercioglu, Brent Weech, Alan Kennington, Kontogiannis Theophanis, Dario
 Mariani.
+
+D. Richard Hipp for tree.tcl that served as a base for the tree widget in GNED.
+Victor Wagner for balloon.tcl.
+John Ousterhout for Tcl and Tk...
 
 
 Feedback requested
