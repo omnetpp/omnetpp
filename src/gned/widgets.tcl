@@ -10,7 +10,7 @@
 #  Stoczek u.2, H-1111 Budapest, Hungary.
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
-#  `terms' for details on this and other legal matters.
+#  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
 #------
@@ -226,8 +226,8 @@ proc createOkCancelDialog {w title} {
 
     pack $w.buttons -expand 0 -fill x -padx 5 -pady 5 -side bottom
     pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top
-    pack $w.buttons.cancelbutton  -anchor n -side right
-    pack $w.buttons.okbutton  -anchor n -side right
+    pack $w.buttons.cancelbutton  -anchor n -side right -padx 2
+    pack $w.buttons.okbutton  -anchor n -side right -padx 2
 
 }
 

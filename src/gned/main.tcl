@@ -396,15 +396,14 @@ proc checkVersion {} {
 
    global tk_version tk_patchLevel
 
-   catch {package require Unsafe} ; #for running in Netscape
    catch {package require Tk}     ; #for dynamic loading tk
-   if {$tk_version<8.0 || ($tk_version==8.0 && [string compare $tk_patchLevel "8.0p2"]<0)} {
+   if {$tk_version<8.0 || ($tk_version==8.0 && [string compare $tk_patchLevel "8.0p1"]<0)} {
       wm deiconify .
       wm title . "Bad news..."
       frame .f
       pack .f -expand 1 -fill both -padx 2 -pady 2
       label .f.l1 -text "Your version of Tcl/Tk is too old!"
-      label .f.l2 -text "Tcl8.0 patchlevel 2 or later required."
+      label .f.l2 -text "Tcl/Tk 8.0 patchlevel 1 or later required."
       button .f.b -text "OK" -command {exit}
       pack .f.l1 .f.l2 -side top -padx 5
       pack .f.b -side top -pady 5
