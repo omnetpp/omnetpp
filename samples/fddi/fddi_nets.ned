@@ -61,7 +61,7 @@ module TUB_wired
                 FDDI_Generator_type = FDDI_Generator_type,
                 RingID = 0,
                 TTRT = 5 ms,
-                LoadMultiplier = NRLoadMultiplier; // to be changed!!!
+                LoadMultiplier = NRLoadMultiplier;
             display: "i=device/pcs-ring_l";
         SRing: TUBSRing;
             parameters:
@@ -69,7 +69,7 @@ module TUB_wired
                 FDDI_Generator_type = FDDI_Generator_type,
                 RingID = 1,
                 TTRT = 5.017 ms,
-                LoadMultiplier = SRLoadMultiplier; // to be changed!!!
+                LoadMultiplier = SRLoadMultiplier;
             display: "i=device/pcs-ring_l";
     connections:
         NRing.out --> delay 0.05 us --> SRing.in;

@@ -53,7 +53,6 @@ module FDDI_SAC
             M_in[i] --> FDDI_SAC_inside_wire --> M_out[i+1];
         endfor;
         M_in[sizeof(M_in)-1] --> FDDI_SAC_inside_wire --> S_out;
-
 endmodule
 
 
@@ -70,11 +69,13 @@ module FDDIStation
             parameters:
                 no_comps = ancestor no_comps,
                 no_msg = ancestor no_msg;
+            display: "p=150,147;i=block/ifcard";
         gen: FDDI_Generator4Ring;
             parameters:
                 no_msg = ancestor no_msg,
                 no_comps = ancestor no_comps,
                 wait_time = ancestor wait_time;
+            display: "p=84,64;i=block/source";
     connections:
         in --> MAC.in;
         MAC.out --> out;
@@ -100,18 +101,19 @@ module FDDI_SAS
             parameters:
                 StationID = StationID,
                 address = address;
+            display: "p=123,152;i=block/ifcard";
         gen: FDDI_Generator_type like FDDI_Generator;
             parameters:
                 StationID = StationID,
                 address = address;
+            display: "p=75,64;i=block/source";
         sink: FDDI_Sink;
-
+            display: "p=187,64;i=block/sink";
     connections:
         in --> MAC.in;
         MAC.out --> out;
         MAC.to_LLC --> sink.in;
         gen.out --> MAC.from_LLC;
-
 endmodule
 
 
@@ -130,12 +132,14 @@ module FDDI_Sniffer
             parameters:
                 StationID = StationID,
                 address = address;
+            display: "p=122,152;i=block/ifcard";
         gen: FDDI_Generator4Sniffer;
             parameters:
                 StationID = StationID,
                 address = address;
+            display: "p=75,63;i=block/source";
         monitor: FDDI_Monitor;
-
+            display: "p=186,63;i=block/sink";
     connections:
         in --> MAC.in;
         MAC.out --> out;
@@ -164,18 +168,17 @@ module FDDI_Router_port
             parameters:
                 StationID = StationID,
                 address = address;
+            display: "p=171,129;i=block/ifcard";
         addr_gen: FDDI_Address_Generator;
             parameters:
                 StationID = StationID,
                 address = address;
-        // sink: FDDI_Sink;
-
+            display: "p=89,68;i=block/cogwheel";
     connections:
         in --> MAC.in;
         MAC.out --> out;
         MAC.to_LLC --> ring_out;
         ring_in --> addr_gen.in;
         addr_gen.out --> MAC.from_LLC;
-
 endmodule
 
