@@ -15,6 +15,7 @@
 #define __INSPECTOR_H
 
 #include <tk.h>
+#include "tkutil.h"
 #include "omnetapp.h"
 
 //=========================================================================
@@ -26,8 +27,10 @@ enum { INSP_DEFAULT,
        NUM_INSPECTORTYPES   // this must be the last one
 };
 
-const char *insptype_name_from_code( int code );
-int insptype_code_from_name(const char *namestr);
+const char *insptypeNameFromCode( int code );
+int insptypeCodeFromName(const char *namestr);
+
+void splitInspectorName(const char *namestr, cObject *&object, int& type);
 
 //=========================================================================
 

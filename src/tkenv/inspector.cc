@@ -17,6 +17,7 @@
 
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #include "omnetpp.h"
 #include "tkapp.h"
@@ -35,7 +36,7 @@ struct InspTypeName {int code; char *namestr;} insp_typenames[] =
      { -1,                     NULL           }
 };
 
-const char *insptype_name_from_code(int code)
+const char *insptypeNameFromCode(int code)
 {
    for (int i=0; insp_typenames[i].namestr!=NULL; i++)
       if (insp_typenames[i].code == code)
@@ -43,12 +44,33 @@ const char *insptype_name_from_code(int code)
    return NULL;
 }
 
-int insptype_code_from_name(const char *namestr)
+int insptypeCodeFromName(const char *namestr)
 {
    for (int i=0; insp_typenames[i].namestr!=NULL; i++)
       if (strcmp(insp_typenames[i].namestr, namestr)==0)
          return insp_typenames[i].code;
    return -1;
+}
+
+//=================================================================
+// a utility function:
+
+void splitInspectorName(const char *namestr, cObject *&object, int& type)
+{
+   // namestr is the window path name, sth like ".ptr80005a31-2"
+   // split it into pointer string ("ptr80005a31") and inspector type ("2")
+   assert(namestr!=0); // must exist
+   assert(namestr[0]=='.');  // must begin with a '.'
+
+   // find '-' and temporarily replace it with EOS
+   char *s;
+   for (s=const_cast<char *>(namestr); *s!='-' && *s!='\0'; s++);
+   assert(*s=='-');  // there must be a '-' in the string
+   *s = '\0';
+
+   object = (cObject *)strToPtr(namestr+1);
+   type = atoi(s+1);
+   *s = '-';  // restore '-'
 }
 
 //=======================================================================

@@ -32,281 +32,7 @@
 #include "inspector.h"
 #include "inspfactory.h"
 #include "patmatch.h"
-
-
-// FIXME temporary place for visitor stuff -- after it boils down, should be moved to sim/
-
-//-----------------------------------------------------------------------
-
-/**
- * cVisitor base class
- */
-class cVisitor
-{
-  public:
-    /**
-     * Virtual destructor.
-     */
-    virtual ~cVisitor() {}
-    /**
-     * Called on each immediate child object. Should be redefined by user.
-     */
-    virtual void visit(cObject *obj) = 0;
-
-    /**
-     * Emulate cObject::foreachChild() with the foreach() we have...
-     */
-    virtual void traverseChildrenOf(cObject *obj);
-};
-
-
-static bool do_foreach_child_call_visitor(cObject *obj, bool beg, cObject *_parent, cVisitor *_visitor)
-{
-    static cVisitor *visitor;
-    static cObject *parent;
-    if (!obj) {       // setup
-         visitor = _visitor;
-         parent = _parent;
-         return false;
-    }
-    if (beg && obj==parent)
-        return true;
-    if (beg && obj!=parent)
-        visitor->visit(obj);
-    return false;
-}
-
-void cVisitor::traverseChildrenOf(cObject *obj)
-{
-    do_foreach_child_call_visitor(0,false,obj,this);
-    obj->forEach((ForeachFunc)do_foreach_child_call_visitor);
-}
-
-//-----------------------------------------------------------------------
-/**
- * Sample code:
- *   cCollectObjectsVisitor v;
- *   v.visit(object);
- *   cObject **objs = v.getArray();
- */
-class cCollectObjectsVisitor : public cVisitor
-{
-  private:
-    cObject **arr;
-    int firstfree;
-    int size;
-  public:
-    cCollectObjectsVisitor();
-    ~cCollectObjectsVisitor();
-    virtual void visit(cObject *obj);
-    void addPointer(cObject *obj);
-    cObject **getArray()  {return arr;}
-    int getArraySize()  {return firstfree;}
-};
-
-cCollectObjectsVisitor::cCollectObjectsVisitor()
-{
-    size=16;
-    arr = new cObject *[size];
-    firstfree=0;
-}
-
-cCollectObjectsVisitor::~cCollectObjectsVisitor()
-{
-    delete arr;
-}
-
-void cCollectObjectsVisitor::addPointer(cObject *obj)
-{
-    // if array is full, reallocate
-    if (size==firstfree)
-    {
-        cObject **arr2 = new cObject *[2*size];
-        for (int i=0; i<firstfree; i++) arr2[i] = arr[i];
-        delete [] arr;
-        arr = arr2;
-        size = 2*size;
-    }
-
-    // add pointer to array
-    arr[firstfree++] = obj;
-}
-
-void cCollectObjectsVisitor::visit(cObject *obj)
-{
-    addPointer(obj);
-
-    // go to children
-    traverseChildrenOf(obj);
-}
-
-//-----------------------------------------------------------------------
-/**
- * Sample code:
- *   cFilteredCollectObjectsVisitor v;
- *   v.setFilterPars("c*Queue", "*.q");
- *   v.visit(object);
- *   cObject **objs = v.getArray();
- */
-class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
-{
-  private:
-    short *classnamepatterntf;
-    short *objfullpathpatterntf;
-  public:
-    cFilteredCollectObjectsVisitor();
-    ~cFilteredCollectObjectsVisitor();
-    bool setFilterPars(const char *classnamepattern, const char *objfullpathpattern);
-    virtual void visit(cObject *obj);
-};
-
-cFilteredCollectObjectsVisitor::cFilteredCollectObjectsVisitor()
-{
-    classnamepatterntf = NULL;
-    objfullpathpatterntf = NULL;
-}
-
-cFilteredCollectObjectsVisitor::~cFilteredCollectObjectsVisitor()
-{
-    delete classnamepatterntf;
-    delete objfullpathpatterntf;
-}
-
-bool cFilteredCollectObjectsVisitor::setFilterPars(const char *classnamepattern,
-                                                   const char *objfullpathpattern)
-{
-    if (classnamepattern && classnamepattern[0])
-    {
-        classnamepatterntf = new short[512]; // FIXME!
-        if (!transform_pattern(classnamepattern,classnamepatterntf))
-            return false; // bad pattern: unmatched '{'
-    }
-    if (objfullpathpattern && objfullpathpattern[0])
-    {
-        objfullpathpatterntf = new short[512]; // FIXME!
-        if (!transform_pattern(objfullpathpattern,objfullpathpatterntf))
-            return false; // bad pattern: unmatched '{'
-    }
-    return true;
-}
-
-void cFilteredCollectObjectsVisitor::visit(cObject *obj)
-{
-    const char *fullpath = obj->fullPath();
-    const char *classname = obj->className();
-    bool nameok = !objfullpathpatterntf || stringmatch(objfullpathpatterntf,fullpath);
-    bool classok = !classnamepatterntf || stringmatch(classnamepatterntf,classname);
-    if (nameok && classok)
-    {
-        addPointer(obj);
-    }
-
-    // go to children
-    traverseChildrenOf(obj);
-}
-
-//----------------------------------------------------------------
-
-class cCollectChildrenVisitor : public cCollectObjectsVisitor
-{
-  private:
-    cObject *parent;
-  public:
-    cCollectChildrenVisitor(cObject *_parent) {parent = _parent;}
-    virtual void visit(cObject *obj);
-};
-
-void cCollectChildrenVisitor::visit(cObject *obj)
-{
-    if (obj==parent)
-        traverseChildrenOf(obj);
-    else
-        addPointer(obj);
-}
-
-//----------------------------------------------------------------
-
-void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
-{
-   int n = visitor->getArraySize();
-   cObject **objs = visitor->getArray();
-   const int ptrsize = 21; // one ptr should be max 20 chars (good for even 64bit-ptrs)
-   char *buf = Tcl_Alloc(ptrsize*n);
-   char *s=buf;
-   for (int i=0; i<n; i++)
-   {
-       ptrToStr(objs[i],s);
-       s+=strlen(s);
-       assert(strlen(s)<=20);
-       *s++ = ' ';
-   }
-   *s='\0';
-   Tcl_SetResult(interp, buf, TCL_DYNAMIC);
-}
-
-//----------------------------------------------------------------
-
-class cCountChildrenVisitor : public cVisitor
-{
-  private:
-    cObject *parent;
-    int count;
-  public:
-    cCountChildrenVisitor(cObject *_parent) {parent = _parent; count=0;}
-    virtual void visit(cObject *obj);
-    int getCount() {return count;}
-};
-
-void cCountChildrenVisitor::visit(cObject *obj)
-{
-    if (obj==parent)
-        traverseChildrenOf(obj);
-    else
-        count++;
-}
-
-//----------------------------------------------------------------
-// utilities for sorting objects:
-
-#define OBJPTR(a) (*(cObject **)a)
-static int qsort_cmp_byname(const void *a, const void *b)
-{
-    return opp_strcmp(OBJPTR(a)->fullName(), OBJPTR(b)->fullName());
-}
-static int qsort_cmp_byfullpath(const void *a, const void *b)
-{
-    char buf1[MAX_OBJECTFULLPATH];
-    char buf2[MAX_OBJECTFULLPATH];
-    return opp_strcmp(OBJPTR(a)->fullPath(buf1,MAX_OBJECTFULLPATH), OBJPTR(b)->fullPath(buf2,MAX_OBJECTFULLPATH));
-}
-static int qsort_cmp_byclass(const void *a, const void *b)
-{
-    return opp_strcmp(OBJPTR(a)->className(), OBJPTR(b)->className());
-}
-#undef OBJPTR
-
-void sortObjectsByName(cObject **objs, int n)
-{
-    qsort(objs, n, sizeof(cObject*), qsort_cmp_byname);
-}
-
-void sortObjectsByFullPath(cObject **objs, int n)
-{
-    qsort(objs, n, sizeof(cObject*), qsort_cmp_byfullpath);
-}
-
-void sortObjectsByClassName(cObject **objs, int n)
-{
-    qsort(objs, n, sizeof(cObject*), qsort_cmp_byclass);
-}
-
-//----------------------------------------------------------------
-// helper
-static char *my_itol(long l, char *buf)
-{
-    sprintf(buf, "%ld", l);
-    return buf;
-}
+#include "visitor.h"
 
 
 //----------------------------------------------------------------
@@ -451,26 +177,6 @@ OmnetTclCommand tcl_commands[] = {
    { NULL, },
 };
 
-//=================================================================
-// a utility function:
-
-void splitInspectorName(const char *namestr, cObject *&object, int& type)
-{
-   // namestr is the window path name, sth like ".ptr80005a31-2"
-   // split it into pointer string ("ptr80005a31") and inspector type ("2")
-   assert(namestr!=0); // must exist
-   assert(namestr[0]=='.');  // must begin with a '.'
-
-   // find '-' and temporarily replace it with EOS
-   char *s;
-   for (s=const_cast<char *>(namestr); *s!='-' && *s!='\0'; s++);
-   assert(*s=='-');  // there must be a '-' in the string
-   *s = '\0';
-
-   object = (cObject *)strToPtr(namestr+1);
-   type = atoi(s+1);
-   *s = '-';  // restore '-'
-}
 
 //=================================================================
 
@@ -1263,7 +969,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    int type;
    if (argv[2][0]>='0' && argv[2][0]<='9')
         type = atoi( argv[2] );
-   else if ((type=insptype_code_from_name(argv[2])) < 0)
+   else if ((type=insptypeCodeFromName(argv[2])) < 0)
         {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
 
    void *dat = (argc==4) ? (void *)argv[3] : NULL;
@@ -1302,7 +1008,7 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    for (int j=0; j<n; j++)
    {
       strcat(buf, "{" );
-      strcat(buf, insptype_name_from_code(insp_types[j]) );
+      strcat(buf, insptypeNameFromCode(insp_types[j]) );
       strcat(buf, "} " );
    }
    Tcl_SetResult(interp, buf, TCL_DYNAMIC);
@@ -1320,7 +1026,7 @@ int inspectMatching_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    int type;
    if (argv[2][0]>='0' && argv[2][0]<='9')
         type = atoi( argv[2] );
-   else if ((type=insptype_code_from_name(argv[2])) < 0)
+   else if ((type=insptypeCodeFromName(argv[2])) < 0)
         {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
 
    bool countonly=false;
@@ -1350,7 +1056,7 @@ int inspectByName_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    int insptype;
    if (argv[3][0]>='0' && argv[3][0]<='9')
         insptype = atoi( argv[3] );
-   else if ((insptype=insptype_code_from_name(argv[3])) < 0)
+   else if ((insptype=insptypeCodeFromName(argv[3])) < 0)
         {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
 
    const char *geometry = (argc==5) ? argv[4] : NULL;
@@ -1431,7 +1137,7 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
         for (int i=0; i<NUM_INSPECTORTYPES; i++)
         {
             strcat(buf, "{");
-            strcat(buf, insptype_name_from_code(i));
+            strcat(buf, insptypeNameFromCode(i));
             strcat(buf, "} ");
         }
         Tcl_SetResult(interp, buf, TCL_DYNAMIC);
@@ -1439,14 +1145,14 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    else if (argv[1][0]>='0' && argv[1][0]<='9')
    {
         int type = atoi( argv[1] );
-        const char *namestr = insptype_name_from_code( type );
+        const char *namestr = insptypeNameFromCode( type );
         if (namestr==NULL)
            {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
         Tcl_SetResult(interp, const_cast<char *>(namestr), TCL_STATIC);
    }
    else
    {
-        int type = insptype_code_from_name( argv[1] );
+        int type = insptypeCodeFromName( argv[1] );
         if (type<0)
            {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
         char buf[20];

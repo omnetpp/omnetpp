@@ -141,7 +141,8 @@ TContainerInspector::TContainerInspector(cObject *obj,int typ,const char *geom,v
 
    infofunc = f;
    if (!infofunc)
-       infofunc = deep ? infofunc_typeandfullpath : infofunc_infotext;
+       // infofunc = deep ? infofunc_typeandfullpath : infofunc_infotext;
+       infofunc = infofunc_infotext;   // FIXME if deep, should display fullpath
 }
 
 void TContainerInspector::createWindow()

@@ -22,7 +22,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" $(TK_CFLAGS) /DBUILDING_TKENV
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
        inspfactory.obj objinsp.obj modinsp.obj statinsp.obj structinsp.obj \
-       arrow.obj
+       arrow.obj visitor.obj tkutil.obj
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib $(TK_LIB_DIR)/tcl82.lib $(TK_LIB_DIR)/tk82.lib
 
 #
