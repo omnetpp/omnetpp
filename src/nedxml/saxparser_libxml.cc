@@ -33,10 +33,12 @@ void SAXParser::setHandler(SAXHandler *sh)
     sh->setParser(this);
 }
 
-extern "C" void xmlDebugDumpDocument(FILE * output, xmlDocPtr doc);
+static int nodeLine;  // line number of current node
+static xmlParserCtxtPtr ctxt; // parser context
 
 static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
 {
+    nodeLine = node->line;
     switch (node->type)
     {
         case XML_ELEMENT_NODE: {
@@ -100,7 +102,6 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
     }
 }
 
-static xmlParserCtxtPtr ctxt;  //FIXME very ugly -- should be class member or something...
 
 bool SAXParser::parse(const char *filename)
 {
@@ -135,9 +136,6 @@ bool SAXParser::parse(const char *filename)
 	return false;
     }
 
-xmlSaveFile("-", doc);
-//__asm int 3;
-
     // traverse tree and generate SAX events
     xmlNode *root = xmlDocGetRootElement(doc);
     generateSAXEvents(root, saxhandler);
@@ -150,7 +148,7 @@ xmlSaveFile("-", doc);
 
 int SAXParser::getCurrentLineNumber()
 {
-    return ctxt->input->line;
+    return nodeLine;
 }
 
 
