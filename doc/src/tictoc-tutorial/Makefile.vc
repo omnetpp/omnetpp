@@ -7,5 +7,5 @@
 # Targets
 #
 all: 
-	$(DOXYGEN:/=\) doxy.cfg
+	$(DOXYGEN:/=\) doxyfile
 	copy tictoc.gif ..\..\tictoc-tutorial
