@@ -306,7 +306,7 @@ echo
 
 case "$type" in
 exe)
-    echo '$(TARGET): $(OBJS) $(EXRA_OBJS) ' $subdirsphony ' makefile'
+    echo '$(TARGET): $(OBJS) $(EXRA_OBJS) makefile '$subdirsphony
     echo '	$(CC) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)'
     ;;
 so)
@@ -374,10 +374,16 @@ depend:
 	makedepend -Y \$(INCLUDE_PATH) -- *.cc
 	makedepend -Y \$(INCLUDE_PATH) -fmakefile.in -- *.cc
 
+makefile:
+	makemake -f $args  #recreate makefile
+
+makefile.in:
+	makemake -f -m $args
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 EOT
 
 ) > $outputfile
 
-echo "$outputfile ready -- 'make depend' still needed"
+echo "$outputfile created -- still needs a 'make depend'"
