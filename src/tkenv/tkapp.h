@@ -16,6 +16,7 @@
 #ifndef __TKAPP_H
 #define __TKAPP_H
 
+#define WIN32_LEAN_AND_MEAN
 #include <tk.h>
 #include <vector>
 #include <list>

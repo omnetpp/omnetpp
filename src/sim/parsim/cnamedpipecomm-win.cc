@@ -36,7 +36,6 @@
 #include "cconfig.h"
 #include "parsimutil.h"
 
-#include <windows.h>
 
 Register_Class(cNamedPipeCommunications);
 

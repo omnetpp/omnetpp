@@ -31,7 +31,6 @@ extern "C" int Blt_Init(Tcl_Interp *interp);
 #ifdef USE_WINMAIN
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#undef WIN32_LEAN_AND_MEAN
 #endif
 
 #include "tklib.h"

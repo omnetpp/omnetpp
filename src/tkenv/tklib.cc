@@ -13,6 +13,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+// Work around an MSVC .NET bug: WinSCard.h causes compilation
+// error due to faulty LPCVOID declaration, so prevent it from
+// being pulled in (we don't need the SmartCard API here anyway ;-)
+#define _WINSCARD_H_
+
 #include <stdio.h>
 #include <string.h>
 #include <time.h>

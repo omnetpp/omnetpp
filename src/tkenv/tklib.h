@@ -16,6 +16,7 @@
 #ifndef __TKLIB_H
 #define __TKLIB_H
 
+#define WIN32_LEAN_AND_MEAN
 #include <tk.h>
 
 struct OmnetTclCommand {

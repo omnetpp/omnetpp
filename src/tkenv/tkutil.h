@@ -17,6 +17,7 @@
 #ifndef __TKUTIL_H
 #define __TKUTIL_H
 
+#define WIN32_LEAN_AND_MEAN
 #include <tk.h>
 
 //
