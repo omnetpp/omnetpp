@@ -1,0 +1,106 @@
+'------------------------------------------------------------------------------
+' OMNeT++ MSVC integration
+'------------------------------------------------------------------------------
+' $Id$
+
+'
+' Contains:
+'   addNedFileToProject
+'
+' Installation:
+'
+'   1. Select Tools|Macro... --> dialog opens.
+'   2. Type any macro name (say "x") and click Edit.
+'      --> an editor window opens
+'   3. Delete your new ("x") macro and paste the contents
+'      of this file in there instead
+'   4. Save & close.
+'   5. Add toolbar icons: Tools|Macro... --> Options>> -->
+'      Toolbars, then drag the macro name to the toolbar.
+'   6. That's it. Enjoy!
+'
+
+Sub addNEDfileToProject()
+'DESCRIPTION: Adds a NED file to the current project
+
+    ' Possible runtime errors:
+    '   - no project open
+    '   - nedfname or cppfname already exists in project
+
+    ' check if there's a project open
+    on error resume next
+    set dummy = application.activeProject
+    if err then
+        msgbox "A project must be open!"
+        exit sub
+    end if
+    on error goto 0
+
+    ' ask NED file name
+    nedfname = inputbox("Enter name of new NED file: ", _
+                        "New NED file","untitled.ned")
+    if nedfname="" then
+        exit sub
+    end if
+
+    ' ensure ned file name ends in .ned
+    if lcase(right(nedfname,4))<>".ned" then
+        nedfname = nedfname & ".ned"
+    end if
+
+    ' ned file name should not contain a path
+    if instr(nedfname,"\") > 0 then
+        msgbox "NED file name must be given without pathname!"
+        exit sub
+    end if
+
+    ' produce _n.cpp file name
+    basefname = left(nedfname,len(nedfname)-4)
+    cppfname = basefname & "_n.cpp"
+
+    ' add .ned and _n.cpp files to project
+    set proj = application.ActiveProject
+    on error resume next
+    proj.addFile cppfname
+    proj.addFile nedfname
+    for each cfg in proj.configurations
+        cfg.addCustomBuildStepToFile nedfname, _
+               "nedc -s _n.cpp $(InputPath)", _
+               "$(InputName)_n.cpp", _
+               "NED Compiling $(InputPath)"
+    next
+    if err then
+        msgbox "Couldn't add "&nedfname&" or "&cppfname& _
+               " to project. Maybe it has been added already?"
+        exit sub
+    end if
+    on error goto 0
+
+    ' get project directory
+    projfname = proj.fullname
+    lastsep = 0
+    do while instr(mid(projfname,lastsep+1),"\") > 0
+        lastsep = lastsep+instr(mid(projfname,lastsep+1),"\")
+    loop
+    projdirprefix = left(projfname,lastsep)
+
+    ' open or create NED file in editor
+    on error resume next
+    nedfileexists = 1
+    documents.Open projdirprefix & nedfname, "text"
+    if err then
+        nedfileexists = 0
+    end if
+    on error goto 0
+
+    if nedfileexists=0 then
+        documents.add "Text"
+        set doc = application.activeDocument
+        doc.selection = "//-------------------------------" & vbLF
+        doc.selection = "// File: " & nedfname & vbLF
+        doc.selection = "//-------------------------------" & vbLF
+        doc.selection = vbLF
+        doc.Save projdirprefix & nedfname
+    end if
+
+End Sub
