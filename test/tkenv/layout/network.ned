@@ -382,11 +382,13 @@ module Dyna
         numNodes: numeric;
     submodules:
         server: Node;
+            gatesizes: in[1], out[1];
             display: "i=server1,gold";
         switch: Node;
             gatesizes: in[numNodes+1], out[numNodes+1];
             display: "i=switch2,cyan";
         client: Node[numNodes];
+            gatesizes: in[1], out[1];
             display: "i=pc,green;p=,,m,10";
     connections nocheck:
         server.out[0] --> switch.in[0];
@@ -504,6 +506,7 @@ module Ring
         numNodes : numeric const;
     submodules:
         comp: Node[numNodes];
+            gatesizes: in[1], out[1];
             display: "i=pc,cyan";
     connections nocheck:
         comp[numNodes-1].out[0] --> comp[0].in[0];
@@ -522,6 +525,7 @@ module Chain
         numNodes : numeric const;
     submodules:
         comp: Node[numNodes];
+            gatesizes: in[1], out[1];
             display: "i=ball2";
     connections nocheck:
         for i=0..numNodes-2 do

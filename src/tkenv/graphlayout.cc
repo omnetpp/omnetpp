@@ -265,16 +265,16 @@ void BasicSpringEmbedderLayout::execute()
     // partition graph
     doColoring();
 
-    // now the real job -- stop if max moved distance is <0.5 at least 10 times in a row
+    // now the real job -- stop if max moved distance is <0.05 at least 20 times in a row
     clock_t beg = clock();
     int i, maxdcounter=0;
-    for (i=1; i<maxIterations && maxdcounter<10; i++)
+    for (i=1; i<maxIterations && maxdcounter<20; i++)
     {
         double maxd = relax();
 
         debugDraw(i);
 
-        if (maxd<0.1)
+        if (maxd<0.05)
             maxdcounter++;
         else
             maxdcounter=0;
@@ -391,6 +391,8 @@ double BasicSpringEmbedderLayout::relax()
     NodeList::iterator i,j;
     EdgeList::iterator k;
     AnchorList::iterator l;
+
+    double noiseLevel = 0; // noise doesn't seem to help
 
     // edge attraction: calculate if edges are longer or shorter than requested (tension),
     // and modify their (dx,dy) movement vector accordingly
@@ -545,6 +547,9 @@ double BasicSpringEmbedderLayout::relax()
             n.x += MAX(-50, MIN(50, n.dx)); // speed limit
             n.y += MAX(-50, MIN(50, n.dy));
 
+            n.x += noiseLevel*(privRand01()-0.5); // add noise to push nodes out of local minimums
+            n.y += noiseLevel*(privRand01()-0.5);
+
             n.x = MAX(minx, MIN(maxx, n.x));
             n.y = MAX(miny, MIN(maxy, n.y));
         }
@@ -581,6 +586,9 @@ double BasicSpringEmbedderLayout::relax()
         // double c = sqrt(n.anchor->refcount);
         a.x += MAX(-50, MIN(50, a.dx)); // speed limit
         a.y += MAX(-50, MIN(50, a.dy));
+
+        a.x += noiseLevel*(privRand01()-0.5); // add noise to push nodes out of local minimums
+        a.y += noiseLevel*(privRand01()-0.5);
 
         a.x = MAX(minx, MIN(maxx, a.y));
         a.y = MAX(miny, MIN(maxy, a.x));
