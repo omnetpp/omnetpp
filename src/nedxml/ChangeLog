@@ -1,2 +1,6 @@
+2002-06-08  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* Makefile.in: created from Makefile.vc
+
 2002-06-07  Andras Varga
 	* initial revision
