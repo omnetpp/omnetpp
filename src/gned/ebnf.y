@@ -141,6 +141,7 @@ void yyerror (char *s);
 //
 #ifdef DOING_NEDC
 #include "jar_func.h"
+#include "jar_lib.h"
 #endif
 
 
@@ -219,7 +220,7 @@ networkdescription
         ;
 
 somedefinitions
-        : definition somedefinitions
+        : somedefinitions definition
         | definition
         ;
 
@@ -235,14 +236,14 @@ import
         : INCLUDE
                 {GNED( IMPORTS_KEY = np->create("imports",NEDFILE_KEY);
                        setComments(IMPORTS_KEY,@1); )}
-          filenames
+          filenames ';'
                 {/* GNED( setTrailingComment(IMPORTS_KEY,@3); )
                   * comment already stored with last filename */}
         ;
 
 filenames
-        : filename ',' filenames
-        | filename ';'
+        : filenames ',' filename
+        | filename
         ;
 
 filename
@@ -294,7 +295,7 @@ channeldefinition
 
 channelheader
         : CHANNEL NAME
-                {NEDC( $$ = $2; )
+                {NEDC( $$ = $2; inside_nonvoid_function=1;)
                  GNED( CHANNEL_KEY = np->create("channel",NEDFILE_KEY);
                        np->set(CHANNEL_KEY,"name",@2);
                        setComments(CHANNEL_KEY,@1,@2); )}
@@ -303,8 +304,10 @@ channelheader
 
 endchannel
         : ENDCHANNEL NAME opt_semicolon
+                {NEDC( inside_nonvoid_function=0; )}
                 {GNED( setTrailingComment(CHANNEL_KEY,@2); )}
         | ENDCHANNEL opt_semicolon
+                {NEDC( inside_nonvoid_function=0; )}
                 {GNED( setTrailingComment(CHANNEL_KEY,@1); )}
         ;
 
@@ -403,13 +406,14 @@ machineblock
         ;
 
 opt_machinelist
-        : machinelist
+        : machinelist ';'
         |
         ;
 
 machinelist
-        : machine ',' machinelist
-        | machine ';'
+        : machinelist ',' machine
+        | machine
+        ;
 
 machine
         : NAME
@@ -434,15 +438,15 @@ paramblock
         ;
 
 opt_parameters
-        : parameters
+        : parameters ';'
         |
         ;
 
 parameters
-        : parameter ','
-                {GNED( setComments(PARAM_KEY,@1); )}
-          parameters
-        | parameter ';'
+        : parameters ',' parameter
+                {GNED( setComments(PARAM_KEY,@3); )}
+
+        | parameter
                 {GNED( setComments(PARAM_KEY,@1); )}
         ;
 
@@ -490,15 +494,15 @@ opt_gates
         ;
 
 gates
-        : IN  gatesI gates
-        | IN  gatesI
-        | OUT gatesO gates
-        | OUT gatesO
+        : gates IN gatesI ';'
+        | IN  gatesI ';'
+        | gates OUT gatesO ';'
+        | OUT gatesO ';'
         ;
 
 gatesI
-        : gateI ',' gatesI
-        | gateI ';'
+        : gatesI ',' gateI
+        | gateI
         ;
 
 gateI
@@ -513,8 +517,8 @@ gateI
         ;
 
 gatesO
-        : gateO ',' gatesO
-        | gateO ';'
+        : gatesO ',' gateO
+        | gateO
         ;
 
 gateO
@@ -542,7 +546,7 @@ opt_submodules
         ;
 
 submodules
-        : submodule submodules
+        : submodules submodule
         | submodule
         ;
 
@@ -592,7 +596,7 @@ opt_on_blocks
         ;
 
 on_blocks
-        : on_block on_blocks
+        : on_blocks on_block
         | on_block
         ;
 
@@ -612,14 +616,14 @@ on_block                            /* --LG */
         ;
 
 opt_on_list
-        : on_list
+        : on_list ';'
         |
             {NEDC( do_empty_onlist(); )}
         ;
 
 on_list
-        : on_mach ',' on_list
-        | on_mach ';'
+        : on_list ',' on_mach
+        | on_mach
         ;
 
 on_mach
@@ -635,7 +639,7 @@ opt_substparamblocks
         ;
 
 substparamblocks
-        : substparamblock substparamblocks
+        : substparamblocks substparamblock
         | substparamblock
         ;
 
@@ -652,15 +656,16 @@ substparamblock
                        setComments(SUBSTPARAMS_KEY,@1,@4); )}
           opt_substparameters
                 {NEDC( close_if(); )}
+        ;
 
 opt_substparameters
-        : substparameters
+        : substparameters ';'
         |
         ;
 
 substparameters
-        : substparameter ',' substparameters
-        | substparameter ';'
+        : substparameters ',' substparameter
+        | substparameter
         ;
 
 substparameter
@@ -688,15 +693,16 @@ gatesizeblock
                        setComments(GATESIZES_KEY,@1,@4); )}
           opt_gatesizes
                 {NEDC( close_if(); )}
+        ;
 
 opt_gatesizes
-        : gatesizes
+        : gatesizes ';'
         |
         ;
 
 gatesizes
-        : gatesize ',' gatesizes
-        | gatesize ';'
+        : gatesizes ',' gatesize
+        | gatesize
         ;
 
 gatesize
@@ -733,13 +739,13 @@ connblock
         ;
 
 opt_connections
-        : connections
+        : connections ';'
         |
         ;
 
 connections
-        : connection comma_or_semicolon connections
-        | connection ';'
+        : connections comma_or_semicolon connection
+        | connection
         ;
 
 connection
@@ -758,7 +764,7 @@ loopconnection
         ;
 
 loopvarlist
-        : loopvar ',' loopvarlist
+        : loopvarlist ',' loopvar
         | loopvar
         ;
 
@@ -786,8 +792,8 @@ opt_conn_displaystr
         ;
 
 notloopconnections /* it was "normalconnections" --LG*/
-        : notloopconnection comma_or_semicolon notloopconnections
-        | notloopconnection ';'
+        : notloopconnections notloopconnection comma_or_semicolon
+        | notloopconnection comma_or_semicolon
         ;
 
 notloopconnection
@@ -1084,16 +1090,26 @@ simple_expr
         ;
 
 parameter_expr
-        : REF NAME
-                {NEDC( $$ = do_parname ($2,0,0); )}
-        | NAME
-                {NEDC( $$ = do_parname ($1,0,1); )}
-        | REF ANCESTOR NAME
-                {NEDC( $$ = do_parname ($3,1,0); )}
-        | ANCESTOR REF NAME
-                {NEDC( $$ = do_parname ($3,1,0); )}
+        : NAME
+                {NEDC( $$ = do_parname (0,0,$1,0,1); )}
+        | REF NAME
+                {NEDC( $$ = do_parname (0,0,$2,0,0); )}
         | ANCESTOR NAME
-                {NEDC( $$ = do_parname ($2,1,1); )}
+                {NEDC( $$ = do_parname (0,0,$2,1,1); )}
+        | REF ANCESTOR NAME
+                {NEDC( $$ = do_parname (0,0,$3,1,0); )}
+        | ANCESTOR REF NAME
+                {NEDC( $$ = do_parname (0,0,$3,1,0); )}
+
+        | NAME '.' NAME
+                {NEDC( $$ = do_parname ($1,0,$3,0,1); )}
+        | REF NAME '.' NAME
+                {NEDC( $$ = do_parname ($2,0,$4,0,0); )}
+
+        | NAME vector '.' NAME
+                {NEDC( $$ = do_parname ($1,$2,$4,0,1); )}
+        | REF NAME vector '.' NAME
+                {NEDC( $$ = do_parname ($2,$3,$5,0,0); )}
         ;
 
 string_expr
