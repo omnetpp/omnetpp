@@ -1,3 +1,9 @@
+2002-02-22  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* cllist.cc (operator=): Same bugs as with cQueue (see items
+	2002-02-21 and 2001-10-25). Same bugfixes applied [reported by
+	#JIA KE# <P147125331@ntu.edu.sg>]
+
 2002-02-21  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* cqueue.cc (operator=): Bugfix: iteration order changed from
