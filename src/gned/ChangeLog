@@ -1,3 +1,7 @@
+2003-02-14  Andras Varga
+
+	* no limit on ned file line length
+
 2003-01-30  Andras Varga
 
 	* changed connection drawing: now default mode is "auto", then if user

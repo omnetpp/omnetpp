@@ -2355,7 +2355,6 @@ char yyfailure[250] = "";
 extern int yydebug; /* needed if compiled with yacc --VA */
 
 extern char textbuf[];
-extern char lasttextbuf[];
 
 int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, const char *sourcefname)
 {
@@ -2366,7 +2365,6 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, const char *sourcefna
     pos.li = 1;
     prevpos = pos;
 
-    strcpy (lasttextbuf, "");
     strcpy (yyfailure, "");
 
     if (yyin)

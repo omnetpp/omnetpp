@@ -1045,38 +1045,40 @@ expr
                 {NEDC( $$ = do_op( 2, '{', $1,$3,NULL); )}
 
         | expr AND expr
-                {NEDC( $$ = do_func(2,jar_strdup("bool_and"), $1,$3,NULL); )}
+                {NEDC( $$ = do_func(2,jar_strdup("bool_and"), $1,$3,NULL,NULL); )}
         | expr OR expr
-                {NEDC( $$ = do_func(2,jar_strdup("bool_or"), $1,$3,NULL); )}
+                {NEDC( $$ = do_func(2,jar_strdup("bool_or"), $1,$3,NULL,NULL); )}
         | expr XOR expr
-                {NEDC( $$ = do_func(2,jar_strdup("bool_xor"), $1,$3,NULL); )}
+                {NEDC( $$ = do_func(2,jar_strdup("bool_xor"), $1,$3,NULL,NULL); )}
         | NOT expr
                 %prec UMIN
-                {NEDC( $$ = do_func(1,jar_strdup("bool_not"), $2,NULL,NULL); )}
+                {NEDC( $$ = do_func(1,jar_strdup("bool_not"), $2,NULL,NULL,NULL); )}
 
         | expr BIN_AND expr
-                {NEDC( $$ = do_func(2,jar_strdup("bin_and"), $1,$3,NULL); )}
+                {NEDC( $$ = do_func(2,jar_strdup("bin_and"), $1,$3,NULL,NULL); )}
         | expr BIN_OR expr
-                {NEDC( $$ = do_func(2,jar_strdup("bin_or"), $1,$3,NULL); )}
+                {NEDC( $$ = do_func(2,jar_strdup("bin_or"), $1,$3,NULL,NULL); )}
         | expr BIN_XOR expr
-                {NEDC( $$ = do_func(2,jar_strdup("bin_xor"), $1,$3,NULL); )}
+                {NEDC( $$ = do_func(2,jar_strdup("bin_xor"), $1,$3,NULL,NULL); )}
         | BIN_COMPL expr
                 %prec UMIN
-                {NEDC( $$ = do_func(1,jar_strdup("bin_compl"), $2,NULL,NULL); )}
+                {NEDC( $$ = do_func(1,jar_strdup("bin_compl"), $2,NULL,NULL,NULL); )}
         | expr SHIFT_LEFT expr
-                {NEDC( $$ = do_func(2,jar_strdup("shift_left"), $1,$3,NULL); )}
+                {NEDC( $$ = do_func(2,jar_strdup("shift_left"), $1,$3,NULL,NULL); )}
         | expr SHIFT_RIGHT expr
-                {NEDC( $$ = do_func(2,jar_strdup("shift_right"), $1,$3,NULL); )}
+                {NEDC( $$ = do_func(2,jar_strdup("shift_right"), $1,$3,NULL,NULL); )}
         | expr '?' expr ':' expr
                 {NEDC( $$ = do_op( 3, '?', $1,$3,$5); )}
         | NAME '(' ')'
-                {NEDC( $$ = do_func(0,$1, NULL,NULL,NULL); )}
+                {NEDC( $$ = do_func(0,$1, NULL,NULL,NULL,NULL); )}
         | NAME '(' expr ')'
-                {NEDC( $$ = do_func(1,$1, $3,NULL,NULL); )}
+                {NEDC( $$ = do_func(1,$1, $3,NULL,NULL,NULL); )}
         | NAME '(' expr ',' expr ')'
-                {NEDC( $$ = do_func(2,$1, $3,$5,NULL); )}
+                {NEDC( $$ = do_func(2,$1, $3,$5,NULL,NULL); )}
         | NAME '(' expr ',' expr ',' expr ')'
-                {NEDC( $$ = do_func(3,$1, $3,$5,$7); )}
+                {NEDC( $$ = do_func(3,$1, $3,$5,$7,NULL); )}
+        | NAME '(' expr ',' expr ',' expr ',' expr ')'
+                {NEDC( $$ = do_func(3,$1, $3,$5,$7,$9); )}
         ;
 
 simple_expr
@@ -1165,7 +1167,6 @@ char yyfailure[250] = "";
 extern int yydebug; /* needed if compiled with yacc --VA */
 
 extern char textbuf[];
-extern char lasttextbuf[];
 
 int runparse ()
 {
@@ -1176,7 +1177,6 @@ int runparse ()
         pos.li = 1;
         prevpos = pos;
 
-        strcpy (lasttextbuf, "");
         strcpy (yyfailure, "");
 
         if (yyin)
@@ -1201,10 +1201,6 @@ void yyerror (char *s)
                         "Warning %s %d: %s",
                         current_fname, pos.li, yyfailure + 1);
         else
-                /*-- fprintf(stderr,
-                        "line %d: (E) %s----\t%s\n----\t%s\n\t%*s\n",
-                        pos.li, yyfailure, lasttextbuf, textbuf, pos.co, "^");
-                 -- shortened --VA*/
                 fprintf(stderr,
                         "Error %s %d: %s> %s\n  %*s\n",
                         current_fname, pos.li, yyfailure, textbuf, pos.co, "^");
