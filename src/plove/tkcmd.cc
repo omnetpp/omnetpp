@@ -358,7 +358,7 @@ int makeNamedPipe_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
 int checkmemory_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   // FIXME ArrayBuilders should stop after a few hundred thousand points
+   // TBD ArrayBuilders should stop after a few hundred thousand points
    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_checkmemory <numpoints>\"", TCL_STATIC); return TCL_ERROR;}
    int numpoints = atoi(argv[1]);
    // BLT seems to allocate a Point2D array (2x double) plus an int array for every "line".

@@ -288,7 +288,7 @@ bool processFile(const char *fname)
         createFileNameWithSuffix(outfname, fname, suffix);
         createFileNameWithSuffix(outhdrfname, fname, hdrsuffix);
 
-        // FIXME check output file for errors!
+        // TBD check output file for errors
         if (opt_genxml)
         {
             ofstream out(outfname);
@@ -305,7 +305,7 @@ bool processFile(const char *fname)
         {
             ofstream out(outfname);
             //ofstream outh(outhdrfname);
-            ofstream outh; // FIXME open if we process msg files
+            ofstream outh; // TBD open if we process msg files (not yet supported)
             generateCpp(out, outh, tree, &symboltable);
             out.close();
             outh.close();

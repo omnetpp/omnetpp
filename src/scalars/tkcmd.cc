@@ -268,7 +268,7 @@ int getListboxLine_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 
 
 // lots of helpers for groupByRunAndName_cmd and groupByModuleAndName_cmd follows
-// FIXME should probably go somewhere else (into engine/?)
+// TBD should probably go somewhere else (into engine/?)
 
 typedef std::vector<ScalarManager::IntVector> IntVectorVector;
 typedef bool (*GroupingFunc)(const ScalarManager::Datum&, const ScalarManager::Datum&);
