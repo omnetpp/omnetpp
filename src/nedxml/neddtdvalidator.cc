@@ -91,7 +91,6 @@ void NEDDTDValidator::validateElement(NetworkNode *node)
     checkNameAttribute(node, "name");
     checkRequiredAttribute(node, "type-name");
     checkNameAttribute(node, "type-name");
-    checkNameAttribute(node, "like-name");
     checkCommentAttribute(node, "banner-comment");
     checkCommentAttribute(node, "right-comment");
     checkCommentAttribute(node, "trailing-comment");
@@ -208,7 +207,7 @@ void NEDDTDValidator::validateElement(SubmoduleNode *node)
     checkNameAttribute(node, "name");
     checkRequiredAttribute(node, "type-name");
     checkNameAttribute(node, "type-name");
-    checkNameAttribute(node, "like-name");
+    checkNMTokenAttribute(node, "like-param");
     checkCommentAttribute(node, "banner-comment");
     checkCommentAttribute(node, "right-comment");
 }
@@ -343,7 +342,6 @@ void NEDDTDValidator::validateElement(DisplayStringNode *node)
 {
     checkEmpty(node);
 
-    checkRequiredAttribute(node, "value");
     checkCommentAttribute(node, "banner-comment");
     checkCommentAttribute(node, "right-comment");
 }
@@ -403,7 +401,6 @@ void NEDDTDValidator::validateElement(ConstNode *node)
     checkRequiredAttribute(node, "type");
     const char *vals0[] = {"bool","int","real","string","time"};
     checkEnumeratedAttribute(node, "type", vals0, sizeof(vals0)/sizeof(const char *));
-    checkRequiredAttribute(node, "value");
 }
 
 void NEDDTDValidator::validateElement(CplusplusNode *node)
@@ -558,7 +555,6 @@ void NEDDTDValidator::validateElement(PropertyNode *node)
 
     checkRequiredAttribute(node, "name");
     checkNameAttribute(node, "name");
-    checkRequiredAttribute(node, "value");
     checkCommentAttribute(node, "banner-comment");
     checkCommentAttribute(node, "right-comment");
 }

@@ -1,4 +1,13 @@
-2003-08-31  Andras Varga
+2003-08-30  Andras Varga
+
+	* ned.dtd: storing of "like" parameters changed (attribute @like-param
+	introduced)
+
+	* ned.dtd: const/@value made optional (because we cannot distinguish 
+	empty attribute ("") and missing attribute, and "" string constant 
+	caused validation error).
+
+2003-07-31  Andras Varga
 
 	* updated for current syntax of message declarations (dtd change)
 

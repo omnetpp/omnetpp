@@ -426,7 +426,7 @@ ExpressionNode *ChannelAttrNode::getFirstExpressionChild() const
 
 int NetworkNode::getNumAttributes() const
 {
-    return 7;
+    return 6;
 }
 
 const char *NetworkNode::getAttributeName(int k) const
@@ -434,11 +434,10 @@ const char *NetworkNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "type-name";
-        case 2: return "like-name";
-        case 3: return "source-code";
-        case 4: return "banner-comment";
-        case 5: return "right-comment";
-        case 6: return "trailing-comment";
+        case 2: return "source-code";
+        case 3: return "banner-comment";
+        case 4: return "right-comment";
+        case 5: return "trailing-comment";
         default: return 0;
     }
 }
@@ -448,11 +447,10 @@ const char *NetworkNode::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return typeName.c_str();
-        case 2: return likeName.c_str();
-        case 3: return sourceCode.c_str();
-        case 4: return bannerComment.c_str();
-        case 5: return rightComment.c_str();
-        case 6: return trailingComment.c_str();
+        case 2: return sourceCode.c_str();
+        case 3: return bannerComment.c_str();
+        case 4: return rightComment.c_str();
+        case 5: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -462,11 +460,10 @@ void NetworkNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: typeName = val; break;
-        case 2: likeName = val; break;
-        case 3: sourceCode = val; break;
-        case 4: bannerComment = val; break;
-        case 5: rightComment = val; break;
-        case 6: trailingComment = val; break;
+        case 2: sourceCode = val; break;
+        case 3: bannerComment = val; break;
+        case 4: rightComment = val; break;
+        case 5: trailingComment = val; break;
         default: ;
     }
 }
@@ -478,9 +475,8 @@ const char *NetworkNode::getAttributeDefault(int k) const
         case 1: return "";
         case 2: return "";
         case 3: return "";
-        case 4: return "";
+        case 4: return "\n";
         case 5: return "\n";
-        case 6: return "\n";
         default: return 0;
     }
 }
@@ -1042,7 +1038,7 @@ const char *SubmoduleNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "type-name";
-        case 2: return "like-name";
+        case 2: return "like-param";
         case 3: return "vector-size";
         case 4: return "banner-comment";
         case 5: return "right-comment";
@@ -1055,7 +1051,7 @@ const char *SubmoduleNode::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return typeName.c_str();
-        case 2: return likeName.c_str();
+        case 2: return likeParam.c_str();
         case 3: return vectorSize.c_str();
         case 4: return bannerComment.c_str();
         case 5: return rightComment.c_str();
@@ -1068,7 +1064,7 @@ void SubmoduleNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: typeName = val; break;
-        case 2: likeName = val; break;
+        case 2: likeParam = val; break;
         case 3: vectorSize = val; break;
         case 4: bannerComment = val; break;
         case 5: rightComment = val; break;

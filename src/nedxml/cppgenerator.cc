@@ -754,14 +754,14 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     out << indent << "//\n";
 
     // find module descriptor
-    if (!strnotnull(node->getLikeName()))
+    if (!strnotnull(node->getLikeParam()))
     {
         out << indent << "modtype = findModuleType( \"" << node->getTypeName() << "\" );\n";
         out << indent << "check_modtype( modtype, \"" << node->getTypeName() << "\" );\n";
     }
     else
     {
-        out << indent << "type_name = mod->par(\"" << node->getTypeName() << "\");\n";
+        out << indent << "type_name = mod->par(\"" << node->getLikeParam() << "\");\n";
         out << indent << "modtype = findModuleType( type_name );\n";
         out << indent << "check_modtype( modtype, type_name );\n";
     }

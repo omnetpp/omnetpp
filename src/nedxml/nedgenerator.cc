@@ -373,11 +373,17 @@ void NEDGenerator::doSubmodules(SubmodulesNode *node, const char *indent, bool i
 void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
-    out << indent << node->getName() << ": " << node->getTypeName();
-    printVector(node, "vector-size",indent);
-    if (strnotnull(node->getLikeName())) {
-        out << " like " << node->getLikeName();
+    out << indent << node->getName() << ": ";
+    if (strnotnull(node->getLikeParam())) {
+        out << node->getLikeParam();
+        printVector(node, "vector-size",indent);
+        out << " like " << node->getTypeName();
     }
+    else
+    {
+        out << node->getTypeName();
+        printVector(node, "vector-size",indent);
+    }    
     out << ";";
     appendRightComment(node->getRightComment(), indent);
 

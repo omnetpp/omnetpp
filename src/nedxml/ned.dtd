@@ -59,7 +59,6 @@
 <!ATTLIST network
      name                NMTOKEN   #REQUIRED
      type-name           NMTOKEN   #REQUIRED
-     like-name           NMTOKEN   #IMPLIED
      source-code         CDATA     #IMPLIED
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;"
@@ -128,7 +127,7 @@
 <!ATTLIST submodule
      name                NMTOKEN   #REQUIRED
      type-name           NMTOKEN   #REQUIRED
-     like-name           NMTOKEN   #IMPLIED
+     like-param          NMTOKEN   #IMPLIED
      vector-size         CDATA     #IMPLIED
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;" >
@@ -215,7 +214,7 @@
 <!-- FIXME: should become a property -->
 <!ELEMENT display-string EMPTY>
 <!ATTLIST display-string
-     value               CDATA     #REQUIRED
+     value               CDATA     #IMPLIED
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;" >
 
@@ -254,7 +253,7 @@
 <!ATTLIST const
      type  (bool|int|real|string|time)  #REQUIRED
      text                CDATA     #IMPLIED
-     value               CDATA     #REQUIRED >
+     value               CDATA     #IMPLIED>
 
 <!--
   **  NED-II: message subclassing part
@@ -360,7 +359,7 @@
 <!ELEMENT property EMPTY>
 <!ATTLIST property
      name                NMTOKEN   #REQUIRED
-     value               CDATA     #REQUIRED
+     value               CDATA     #IMPLIED
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;" >
 

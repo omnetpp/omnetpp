@@ -444,7 +444,6 @@ class ChannelAttrNode : public NEDElement
  * <!ATTLIST network
  *      name                NMTOKEN   #REQUIRED
  *      type-name           NMTOKEN   #REQUIRED
- *      like-name           NMTOKEN   #IMPLIED
  *      source-code         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
@@ -458,7 +457,6 @@ class NetworkNode : public NEDElement
   private:
     std::string name;
     std::string typeName;
-    std::string likeName;
     std::string sourceCode;
     std::string bannerComment;
     std::string rightComment;
@@ -484,8 +482,6 @@ class NetworkNode : public NEDElement
     void setName(const char * val)  {name = val;}
     const char * getTypeName() const  {return typeName.c_str();}
     void setTypeName(const char * val)  {typeName = val;}
-    const char * getLikeName() const  {return likeName.c_str();}
-    void setLikeName(const char * val)  {likeName = val;}
     const char * getSourceCode() const  {return sourceCode.c_str();}
     void setSourceCode(const char * val)  {sourceCode = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
@@ -960,7 +956,7 @@ class SubmodulesNode : public NEDElement
  * <!ATTLIST submodule
  *      name                NMTOKEN   #REQUIRED
  *      type-name           NMTOKEN   #REQUIRED
- *      like-name           NMTOKEN   #IMPLIED
+ *      like-param          NMTOKEN   #IMPLIED
  *      vector-size         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
@@ -973,7 +969,7 @@ class SubmoduleNode : public NEDElement
   private:
     std::string name;
     std::string typeName;
-    std::string likeName;
+    std::string likeParam;
     std::string vectorSize;
     std::string bannerComment;
     std::string rightComment;
@@ -998,8 +994,8 @@ class SubmoduleNode : public NEDElement
     void setName(const char * val)  {name = val;}
     const char * getTypeName() const  {return typeName.c_str();}
     void setTypeName(const char * val)  {typeName = val;}
-    const char * getLikeName() const  {return likeName.c_str();}
-    void setLikeName(const char * val)  {likeName = val;}
+    const char * getLikeParam() const  {return likeParam.c_str();}
+    void setLikeParam(const char * val)  {likeParam = val;}
     const char * getVectorSize() const  {return vectorSize.c_str();}
     void setVectorSize(const char * val)  {vectorSize = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
@@ -1608,7 +1604,7 @@ class LoopVarNode : public NEDElement
  * <pre>
  * <!ELEMENT display-string EMPTY>
  * <!ATTLIST display-string
- *      value               CDATA     #REQUIRED
+ *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
  * </pre>
@@ -1888,7 +1884,7 @@ class IdentNode : public NEDElement
  * <!ATTLIST const
  *      type  (bool|int|real|string|time)  #REQUIRED
  *      text                CDATA     #IMPLIED
- *      value               CDATA     #REQUIRED >
+ *      value               CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
@@ -2588,7 +2584,7 @@ class PropertiesNode : public NEDElement
  * <!ELEMENT property EMPTY>
  * <!ATTLIST property
  *      name                NMTOKEN   #REQUIRED
- *      value               CDATA     #REQUIRED
+ *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
  * </pre>

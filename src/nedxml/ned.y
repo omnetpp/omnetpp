@@ -194,13 +194,13 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 ChannelAttrNode *addChanAttr(NEDElement *channel, const char *attrname);
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos, int type);
 GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector );
-SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likepos);
+SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos);
 GatesizeNode *addGateSize(NEDElement *gatesizes, YYLTYPE namepos);
 SubstparamNode *addSubstparam(NEDElement *substparams, YYLTYPE namepos);
 SubstmachineNode *addSubstmachine(NEDElement *substmachines, YYLTYPE namepos);
 ConnAttrNode *addConnAttr(NEDElement *conn, const char *attrname);
 LoopVarNode *addLoopVar(NEDElement *forloop, YYLTYPE varnamepos);
-NetworkNode *addNetwork(NEDElement *nedfile, YYLTYPE namepos, YYLTYPE typepos, YYLTYPE likepos);
+NetworkNode *addNetwork(NEDElement *nedfile, YYLTYPE namepos, YYLTYPE typepos);
 DisplayStringNode *addDisplayString(NEDElement *parent, YYLTYPE dispstrpos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
@@ -920,7 +920,7 @@ submodule_old
                 }
         | NAME ':' NAME LIKE NAME opt_semicolon
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @3, @5);
+                  ps.submod = addSubmodule(ps.submods, @1, @5, @3);
                   setComments(ps.submod,@1,@6);
                 }
           opt_on_blocks_old
@@ -929,7 +929,7 @@ submodule_old
                 }
         | NAME ':' NAME vector LIKE NAME opt_semicolon
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @3, @6);
+                  ps.submod = addSubmodule(ps.submods, @1, @6, @3);
                   addVector(ps.submod, "vector-size",@4,$4);
                   setComments(ps.submod,@1,@7);
                 }
@@ -996,7 +996,7 @@ submodule
                 }
         | NAME ':' NAME LIKE NAME opt_semicolon
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @3, @5);
+                  ps.submod = addSubmodule(ps.submods, @1, @5, @3);
                   setComments(ps.submod,@1,@6);
                 }
           opt_on_blocks
@@ -1005,7 +1005,7 @@ submodule
                 }
         | NAME ':' NAME vector LIKE NAME opt_semicolon
                 {
-                  ps.submod = addSubmodule(ps.submods, @1, @3, @6);
+                  ps.submod = addSubmodule(ps.submods, @1, @6, @3);
                   addVector(ps.submod, "vector-size",@4,$4);
                   setComments(ps.submod,@1,@7);
                 }
@@ -1828,14 +1828,8 @@ networkdefinition_old
 networkheader_old
         : NETWORK NAME ':' NAME opt_semicolon
                 {
-                  ps.network = addNetwork(ps.nedfile,@2,@4,NULLPOS);
+                  ps.network = addNetwork(ps.nedfile,@2,@4);
                   setComments(ps.network,@1,@5);
-                  ps.inNetwork=1;
-                }
-        | NETWORK NAME ':' NAME LIKE NAME opt_semicolon
-                {
-                  ps.network = addNetwork(ps.nedfile,@2,@4,@6);
-                  setComments(ps.network,@1,@7);
                   ps.inNetwork=1;
                 }
         ;
@@ -1865,14 +1859,8 @@ networkdefinition
 networkheader
         : NETWORK NAME ':' NAME opt_semicolon
                 {
-                  ps.network = addNetwork(ps.nedfile,@2,@4,NULLPOS);
+                  ps.network = addNetwork(ps.nedfile,@2,@4);
                   setComments(ps.network,@1,@5);
-                  ps.inNetwork=1;
-                }
-        | NETWORK NAME ':' NAME LIKE NAME opt_semicolon
-                {
-                  ps.network = addNetwork(ps.nedfile,@2,@4,@6);
-                  setComments(ps.network,@1,@7);
                   ps.inNetwork=1;
                 }
         ;
@@ -2530,12 +2518,12 @@ GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector )
    return gate;
 }
 
-SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likepos)
+SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likeparampos)
 {
    SubmoduleNode *submod = (SubmoduleNode *)createNodeWithTag(NED_SUBMODULE,submods);
    submod->setName( toString( namepos) );
    submod->setTypeName( toString( typepos) );
-   submod->setLikeName( toString( likepos) );
+   submod->setLikeParam( toString( likeparampos) );
 
    return submod;
 }
@@ -2576,12 +2564,11 @@ ConnAttrNode *addConnAttr(NEDElement *conn, const char *attrname)
 }
 
 
-NetworkNode *addNetwork(NEDElement *nedfile, YYLTYPE namepos, YYLTYPE typepos, YYLTYPE likepos)
+NetworkNode *addNetwork(NEDElement *nedfile, YYLTYPE namepos, YYLTYPE typepos)
 {
    NetworkNode *network = (NetworkNode *)createNodeWithTag(NED_NETWORK,nedfile);
    network->setName( toString( namepos) );
    network->setTypeName( toString( typepos) );
-   network->setLikeName( toString( likepos) );
    return network;
 }
 

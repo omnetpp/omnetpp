@@ -75,7 +75,7 @@ void NEDSemanticValidator::validateElement(NetworkNode *node)
         NEDError(node, "redefinition of network with name '%s'",node->getName());
 
     // make sure module type exists
-    const char *type_name = strnotnull(node->getLikeName()) ? node->getLikeName() : node->getTypeName();
+    const char *type_name = node->getTypeName();
     moduletypedecl = symboltable->getModuleDeclaration(type_name);
     if (!moduletypedecl)
         NEDError(node, "unknown module type '%s'",type_name);
@@ -126,7 +126,7 @@ void NEDSemanticValidator::validateElement(SubmodulesNode *node)
 void NEDSemanticValidator::validateElement(SubmoduleNode *node)
 {
     // make sure module type exists
-    const char *type_name = strnotnull(node->getLikeName()) ? node->getLikeName() : node->getTypeName();
+    const char *type_name = node->getTypeName();
     moduletypedecl = symboltable->getModuleDeclaration(type_name);
     if (!moduletypedecl)
         NEDError(node, "unknown module type '%s'",type_name);
