@@ -22,7 +22,11 @@ CPPOBJS_PVM= pvm/pvmmod.o pvm/pvmpack.o
 ASMOBJS=
 # ASMOBJS=stjpower.o swpower.o	   # uncomment this on RS/6000
 
-all : libsim_std.$(LIB_SUFFIX) libsim_pvm.$(LIB_SUFFIX)
+all : sim_std sim_pvm
+
+sim_std : libsim_std.$(LIB_SUFFIX)
+
+sim_pvm : libsim_pvm.$(LIB_SUFFIX)
 
 libsim_std.a : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 	$(AR) libsim_std.a $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)

@@ -7,88 +7,10 @@
 #
 # Directories
 #
-
-#:OMNETPP_ROOT = @OMNETPP_ROOT@
-OMNETPP_ROOT =  //d/work/omnetpp
-
-OMNETPP_SRC_DIR = 	$(OMNETPP_ROOT)/src
-OMNETPP_MODELS_DIR =	$(OMNETPP_ROOT)/models
-OMNETPP_SAMPLES_DIR =   $(OMNETPP_ROOT)/samples
-OMNETPP_BITMAP_DIR=     $(OMNETPP_ROOT)/bitmaps
-
-OMNETPP_BIN_DIR =       $(OMNETPP_ROOT)/bin
-OMNETPP_LIB_DIR =       $(OMNETPP_ROOT)/lib
-
-OMNETPP_INCL_PATH= -I$(OMNETPP_OMNETPP_SRC_DIR)/sim
-OMNETPP_LIB_PATH = -L$(OMNETPP_ROOT)/lib
-OMNETPP_INCLUDES=
-
-
-#
-# Programs used during build
-#
-YACC=bison
-LEX=flex
-CCC=gcc $CFLAGS -c
-CC=gcc -I. -c -x c++
-NEDC=nedc
-AS=gcc -g -c
-AR=ar rs
-MAKE_SO=gcc -shared -o
-LD=gcc
-
-
-#
-# Include paths for libraries
-#
-TV_INCL_PATH=""
-TK_INCL_PATH="-I/usr/include -I/usr/include"
-PVM_INCL_PATH="-I/home/andras/pvm3/include"
-
-CFLAGS = -O
-CC_SWITCHES =  ${CFLAGS}
-
-
-#
-# a=static, so=shared libraries.
-# Selects whether OMNeT++ libraries should be made static or shared
-#  If you change this setting, remember to delete the other set of libraries
-#  (or at least the soft links from lib/).
-#
-# LIB_SUFFIX=so
-LIB_SUFFIX=a
-
-
-#
-# Enable/disable use of dlopen(), used by OMNeT++'s -l command line option
-# and [General]/load-libs= ini file option
-#
-USE_DLOPEN=1
-
-#
-# Compile options. Use -g for debugging, -O3... for speed.
-#
-# CFLAGS=-g
-CFLAGS=-O3 -DNDEBUG=1
-
-
-# TV_INCL_PATH=-I/usr/include/tvision
-# X_INCL_PATH=-I/usr/include/X11
-# TK_INCL_PATH=-I/usr/include/tcl7.5 -I/usr/include/tk4.1
-# PVM_INCL_PATH=-I$PVM_ROOT/include
-
-# TV_LIB_PATH=-L/usr/lib
-# X_LIB_PATH=-L/usr/X11/lib
-# TK_LIB_PATH=-L/usr/lib
-# PVM_LIB_PATH=-L$PVM_ROOT/lib/$PVM_ARCH
-
-TV_LIBS=-ltv
-X_LIBS=-lX11
-TK_LIBS=-ltk -ltcl -ldl
-PVM_LIBS=-lgpvm3 -lpvm3
-SYS_LIBS=-lm -lstdc++
-
-OMNETPP_INCLUDES=$OMNETPP_OMNETPP_SRC_DIR/sim/*.h
+OMNETPP_ROOT = 	        @OMNETPP_ROOT@
+OMNETPP_SRC_DIR =       @OMNETPP_SRC_DIR@
+OMNETPP_MODELS_DIR =    @OMNETPP_MODELS_DIR@
+OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 
 
 #=====================================================================
@@ -124,10 +46,10 @@ all_samples: dyna fddi fifo1 fifo2 hcube hist nim pvmex token
 #
 
 sim_std:
-	cd $(OMNETPP_SRC_DIR)/sim; $(MAKE)
+	cd $(OMNETPP_SRC_DIR)/sim; $(MAKE) sim_std
 
 sim_pvm:
-	cd $(OMNETPP_SRC_DIR)/sim; $(MAKE)
+	cd $(OMNETPP_SRC_DIR)/sim; $(MAKE) sim_pvm
 
 envir:
 	cd $(OMNETPP_SRC_DIR)/envir; $(MAKE)
@@ -204,8 +126,9 @@ token:
 #=====================================================================
 
 clean:
-	rm -f `find $(OMNETPP_ROOT) -name '*.o'`
-	rm -f `find $(OMNETPP_ROOT) -name '*_n.cc'`
+	rm -f `find $(OMNETPP_SRC_DIR) -name '*.o' -o -name '*_n.cc'`
+	rm -f `find $(OMNETPP_MODELS_DIR) -name '*.o' -o -name '*_n.cc'`
+	rm -f `find $(OMNETPP_SAMPLES_DIR) -name '*.o' -o -name '*_n.cc'`
 
 dist:
 	echo 'to be done'
