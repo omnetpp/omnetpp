@@ -31,7 +31,7 @@ COPTS=$(COPTS) /DHAVE_BLT
 TK_LIBS=$(TK_LIBS) blt24.lib
 !endif
 
-SCALARS_OBJS = scalars.obj \
+SCALARS_OBJS = scalars$(SCALARS_EMBED_SUFFIX).obj \
                tklib.obj \
                tkcmd.obj \
                tkutil.obj
@@ -53,14 +53,13 @@ OBJS = $(SCALARS_OBJS) $(ENGINE_OBJS)
 #
 # Targets
 #
-default : scalars
+default: $(SCALARS_IF_POSSIBLE)
 
 scalars : scalars.exe
 
 scalars.exe : $(OBJS) scalars.res
 	$(LINK) /out:"scalars.exe" scalars.res $(OBJS) $(LDFLAGS) $(TK_LIBS) $(SYS_LIBS)
 	copy scalars.exe $(OMNETPP_BIN_DIR:/=\)
-
 
 scalars.obj : scalars.cc
 	$(CXX) /DOMNETPP_SCALARS_DIR="\"$(OMNETPP_SCALARS_DIR)\"" $(COPTS) /c /Tp scalars.cc
@@ -73,6 +72,9 @@ tclcode.cc: *.tcl
 
 scalars.res: scalars.rc scalars.ico
 	rc -fo scalars.res -r scalars.rc
+
+missing-library:
+	@ echo *** No Tk installation found -- skipping Scalars
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc

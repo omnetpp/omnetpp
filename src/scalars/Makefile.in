@@ -20,12 +20,15 @@ SYS_LIBS=@SYS_LIBS@
 
 OMNETPP_SCALARS_DIR=@OMNETPP_SCALARS_DIR@
 
+# The following is either '-e' (embedded Tcl code) or '' (no embedding)
+SCALARS_EMBED_SUFFIX=@SCALARS_EMBED_SUFFIX@
+
 #
 # Local definitions
 #
 COPTS=$(CFLAGS) $(TK_CFLAGS)
 
-SCALARS_OBJS = scalars.o \
+SCALARS_OBJS = scalars$(SCALARS_EMBED_SUFFIX).o \
                tklib.o \
                tkcmd.o \
                tkutil.o
@@ -33,7 +36,6 @@ ENGINE_OBJS =  engine/scalarmanager.o \
                engine/filtering.o \
                engine/patmatch.o \
                engine/texception.o
-
 
 OBJS = $(SCALARS_OBJS) $(ENGINE_OBJS)
 
@@ -48,12 +50,17 @@ OBJS = $(SCALARS_OBJS) $(ENGINE_OBJS)
 #
 # Targets
 #
-all: scalars
-	rm -f $(OMNETPP_BIN_DIR)/scalars$(EXE_SUFFIX)
-	cp scalars$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
+default: @SCALARS_IF_POSSIBLE@
 
 scalars: $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o scalars
+	../utils/install-prog scalars $(OMNETPP_BIN_DIR)
+
+scalars.o : scalars.cc
+	$(CXX) -c $(COPTS) -DOMNETPP_SCALARS_DIR="\"$(OMNETPP_SCALARS_DIR)\"" -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" scalars.cc
+
+scalars-e.o : scalars.cc tclcode.cc
+	$(CXX) -c $(COPTS) -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" scalars.cc -o scalars-e.o
 
 tclcode.cc: *.tcl
 	../utils/tcl2c tclcode.cc *.tcl

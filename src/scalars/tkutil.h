@@ -22,6 +22,7 @@
 // in arg lists -- we have to cast away 'const char*' from args in our Tcl calls.
 //
 #define TCLCONST(x)   const_cast<char*>(x)
+#define TCLCONST2(x)  const_cast<char**>(x)
 
 //
 // Print error message on console if Tcl code returns error

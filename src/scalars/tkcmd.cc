@@ -113,7 +113,7 @@ int getFileAndRunList_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
             {
                 char buf[16];
                 std::string str = file.fileName + " #" + itoa(file.runNumbers[j],buf,10);
-                Tcl_Obj *strobj = Tcl_NewStringObj(str.c_str(), str.length());
+                Tcl_Obj *strobj = Tcl_NewStringObj(TCLCONST(str.c_str()), str.length());
                 Tcl_ListObjAppendElement(interp, vectorlist, strobj);
             }
         }
@@ -129,7 +129,7 @@ int getModuleList_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
     Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
     for (ScalarManager::StringRef i = scalarMgr.getModuleNames().begin(); i!=scalarMgr.getModuleNames().end(); ++i)
     {
-        Tcl_Obj *str = Tcl_NewStringObj(i->c_str(), i->length());
+        Tcl_Obj *str = Tcl_NewStringObj(TCLCONST(i->c_str()), i->length());
         Tcl_ListObjAppendElement(interp, vectorlist, str);
     }
     Tcl_SetObjResult(interp, vectorlist);
@@ -144,7 +144,7 @@ int getScalarNameList_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
     Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
     for (ScalarManager::StringRef i = scalarMgr.getScalarNames().begin(); i!=scalarMgr.getScalarNames().end(); ++i)
     {
-        Tcl_Obj *str = Tcl_NewStringObj(i->c_str(), i->length());
+        Tcl_Obj *str = Tcl_NewStringObj(TCLCONST(i->c_str()), i->length());
         Tcl_ListObjAppendElement(interp, vectorlist, str);
     }
     Tcl_SetObjResult(interp, vectorlist);
@@ -246,15 +246,15 @@ int getListboxLine_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
 
     Tcl_Obj *vectorlist = Tcl_NewListObj(0, NULL);
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("dir",-1));
-    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(d.fileRef->second.directory.c_str(),-1));
+    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(TCLCONST(d.fileRef->second.directory.c_str()),-1));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("file",-1));
-    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(d.fileRef->second.fileName.c_str(),-1));
+    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(TCLCONST(d.fileRef->second.fileName.c_str()),-1));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("run",3));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewIntObj(d.runNumber));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("module",7));
-    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(d.moduleNameRef->c_str(),-1));
+    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(TCLCONST(d.moduleNameRef->c_str()),-1));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("name",4));
-    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(d.scalarNameRef->c_str(),-1));
+    Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj(TCLCONST(d.scalarNameRef->c_str()),-1));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewStringObj("value",5));
     Tcl_ListObjAppendElement(interp, vectorlist, Tcl_NewDoubleObj(d.value));
     Tcl_SetObjResult(interp, vectorlist);
