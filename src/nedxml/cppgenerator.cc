@@ -337,10 +337,6 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    if (num<0)\n";
     out << "        throw new cException(\"Negative gate vector size %s.%s[%d] in compound module %s\", mod,gate,(int)num,parentmod);\n";
     out << "}\n";
-    out << "static void check_gate(int gateindex, const char *modname, const char *gatename) {\n";
-    out << "    if (gateindex==-1)\n";
-    out << "        throw new cException(\"Gate %s.%s not found\",modname,gatename);\n";
-    out << "}\n";
     out << "static void check_anc_param(cPar *ptr, const char *parname, const char *compoundmod) {\n";
     out << "    if (!ptr)\n";
     out << "        throw new cException(\"Unknown ancestor parameter named %s in compound module %s\", parname,compoundmod);\n";
@@ -420,6 +416,24 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    return index;\n";
     out << "}\n";
     out << "\n";
+
+    out << "static cGate *_checkGate(cModule *mod, const char *gatename)\n";
+    out << "{\n";
+    out << "    cGate *g = mod->gate(gatename);\n";
+    out << "    if (!g)\n";
+    out << "        throw new cException(\"%s has no gate named %s\",mod->fullPath(), gatename);\n";
+    out << "    return g;\n";
+    out << "}\n";
+    out << "\n";
+    out << "static cGate *_checkGate(cModule *mod, const char *gatename, int gateindex)\n";
+    out << "{\n";
+    out << "    cGate *g = mod->gate(gatename, gateindex);\n";
+    out << "    if (!g)\n";
+    out << "        throw new cException(\"%s has no gate %s[%d]\",mod->fullPath(), gatename, gateindex);\n";
+    out << "    return g;\n";
+    out << "}\n";
+    out << "\n";
+
 }
 
 // generators
@@ -883,6 +897,9 @@ void NEDCppGenerator::doConnections(ConnectionsNode *node, const char *indent, i
 
 void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex)
 {
+   // wrap
+   out << "_checkGate(";
+
    // module
    if (!strnotnull(modname))
    {
@@ -900,14 +917,13 @@ void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex,
    }
 
    // gate
-   out << "->gate(\"" << gatename << "\"";
+   out << ", \"" << gatename << "\"";
    if (gateindex)
    {
        out << ", ";
        generateItem(gateindex, "        ");
    }
    out << ")";
-// FIXME check_gate_index!!!!!!!!!!!!!!
 }
 
 void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const char *indent, int mode)
