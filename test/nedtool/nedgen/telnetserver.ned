@@ -13,7 +13,7 @@
 //
 simple TelnetServer
     parameters:
-        serviceTime : numeric;
+        serviceTime: numeric;
     gates:
         in: in;
         out: out;

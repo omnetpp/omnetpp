@@ -13,6 +13,6 @@
 //
 simple PPSink
     gates:
-      in: in;
+        in: in;
 endsimple
 

@@ -8,16 +8,15 @@
 //
 
 
-import
-    "fifo";
+import "fifo";
 
 //
 // This is a closed ring network.
 //
 module Ring
     parameters:
-        num_cells : numeric,
-        num_buffers : numeric;
+        num_cells: numeric,
+        num_buffers: numeric;
     submodules:
         fifo: Fifo[num_buffers];
             parameters:

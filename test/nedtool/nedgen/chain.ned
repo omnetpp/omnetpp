@@ -18,7 +18,7 @@ endsimple
 
 module Chain
     parameters:
-        n : numeric const;
+        n: numeric const;
     submodules:
         node: ChainNode[n];
             display: "i=place/circle_s";

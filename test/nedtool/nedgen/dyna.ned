@@ -14,10 +14,10 @@
 //
 simple Client
     parameters:
-        timeout : numeric const,
-        connIaTime : numeric,
-        queryIaTime : numeric,
-        numQuery : numeric;
+        timeout: numeric const,
+        connIaTime: numeric,
+        queryIaTime: numeric,
+        numQuery: numeric;
     gates:
         out: out;
         in: in;
@@ -32,8 +32,8 @@ endsimple
 //
 simple Switch
     parameters:
-        pkRate : numeric const,
-        queueMaxLen : numeric const;
+        pkRate: numeric const,
+        queueMaxLen: numeric const;
     gates:
         out: out[];
         in: in[];
@@ -47,7 +47,7 @@ endsimple
 //
 simple Server
     parameters:
-        processingTime : numeric const;
+        processingTime: numeric const;
     gates:
         out: out;
         in: in;
@@ -68,7 +68,7 @@ endsimple
 //
 module ClientServer
     parameters:
-        numClients : numeric const;
+        numClients: numeric const;
     submodules:
         server: Server;
             parameters:

@@ -13,8 +13,8 @@
 //
 simple Generator
     parameters:
-        num_messages : numeric,
-        ia_time : numeric;
+        num_messages: numeric,
+        ia_time: numeric;
     gates:
         out: out;
 endsimple

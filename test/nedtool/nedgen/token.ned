@@ -18,13 +18,13 @@
 simple TokenRingMAC
     parameters:
         // Token Ring data rate in bps. Standard values are 4 or 16 Mbps.
-        dataRate : numeric const,
+        dataRate: numeric const,
         // Token Holding Time, as defined in the protocol.
-        THT : numeric const,
+        THT: numeric const,
         // MAC address of this station, modeled with an integer.
-        address : numeric const,
+        address: numeric const,
         // Max queue size in packets.
-        queueMaxLen : numeric const;
+        queueMaxLen: numeric const;
     gates:
         in: phy_in;
         in: from_hl;
@@ -40,15 +40,15 @@ simple Generator
     parameters:
         // Number of stations. Destination MAC address will be a random
         // [0,numStatons-1] integer, omitting our own address.
-        numStations : numeric const,
+        numStations: numeric const,
         // MAC Address of this station.
-        address : numeric const,
+        address: numeric const,
         // Number of messages to generate.
-        numMessages : numeric const,
+        numMessages: numeric const,
         // Message length in bytes. It can be a random variate.
-        messageLength : numeric,
+        messageLength: numeric,
         // Time between two messages. It can be a random variate.
-        interArrivalTime : numeric;
+        interArrivalTime: numeric;
     gates:
         out: out;
 endsimple
@@ -68,10 +68,10 @@ endsimple
 //
 module Computer
     parameters:
-        address : numeric const, // MAC Address of this station.
-        dataRate : numeric const, // Token Ring data rate in bps.
-        THT : numeric const, // Token Holding Time, as defined in the protocol.
-        numStations : numeric const; // Number of stations. MAC addresses are
+        address: numeric const, // MAC Address of this station.
+        dataRate: numeric const, // Token Ring data rate in bps.
+        THT: numeric const, // Token Holding Time, as defined in the protocol.
+        numStations: numeric const; // Number of stations. MAC addresses are
                                      // [0,numStatons-1] integers.
     gates:
         in: in;
@@ -103,10 +103,10 @@ endmodule
 //
 module TokenRing
     parameters:
-        numStations : numeric const, // Number of stations in the ring.
-        THT : numeric const, // Token Holding Time, as defined in the protocol
-        dataRate : numeric const, // Token Ring data rate in bps
-        cableDelay : numeric const; // Delay of the cable connecting adjacent stations
+        numStations: numeric const, // Number of stations in the ring.
+        THT: numeric const, // Token Holding Time, as defined in the protocol
+        dataRate: numeric const, // Token Ring data rate in bps
+        cableDelay: numeric const; // Delay of the cable connecting adjacent stations
     submodules:
         comp: Computer[numStations];
             parameters:

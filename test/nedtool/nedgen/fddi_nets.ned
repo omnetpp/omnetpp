@@ -49,11 +49,11 @@ endnetwork
 //
 module TUB_wired
     parameters:
-        NRLoadControlFile : string,
-        SRLoadControlFile : string,
-        FDDI_Generator_type : string,
-        NRLoadMultiplier : numeric,
-        SRLoadMultiplier : numeric;
+        NRLoadControlFile: string,
+        SRLoadControlFile: string,
+        FDDI_Generator_type: string,
+        NRLoadMultiplier: numeric,
+        SRLoadMultiplier: numeric;
     submodules:
         NRing: TUBNRing;
             parameters:
@@ -84,15 +84,15 @@ endmodule
 //
 module TUB_SSM
     parameters:
-        NRLoadControlFile : string,
-        SRLoadControlFile : string,
-        FDDI_Generator_type : string,
-        NRLoadMultiplier : numeric,
-        SRLoadMultiplier : numeric,
-        SSM_OIF_type : string,
-        SSM_OIF_frequency : numeric const,
-        NROIFControlFile : string,
-        SROIFControlFile : string;
+        NRLoadControlFile: string,
+        SRLoadControlFile: string,
+        FDDI_Generator_type: string,
+        NRLoadMultiplier: numeric,
+        SRLoadMultiplier: numeric,
+        SSM_OIF_type: string,
+        SSM_OIF_frequency: numeric const,
+        NROIFControlFile: string,
+        SROIFControlFile: string;
     submodules:
         NRing: TUBNRing;
             parameters:

@@ -13,7 +13,7 @@
 //
 simple Cloud
     parameters:
-        propDelay : numeric const;
+        propDelay: numeric const;
     gates:
         in: in[];
         out: out[];

@@ -12,8 +12,8 @@ import "tandemqueue.ned";
 
 module ClosedQueueingNetB
     parameters:
-        numTandems : numeric const,
-        sDelay : numeric;
+        numTandems: numeric const,
+        sDelay: numeric;
     submodules:
         tandemQueue: TandemQueue[numTandems];
             parameters:

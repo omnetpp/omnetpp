@@ -13,11 +13,11 @@
 //
 simple HistogramDemo
     parameters:
-        num_obs : numeric,
-        num_cells : numeric,
-        fixed_range : numeric,
-        num_first : numeric,
-        range_ext : numeric;
+        num_obs: numeric,
+        num_cells: numeric,
+        fixed_range: numeric,
+        num_first: numeric,
+        range_ext: numeric;
 endsimple
 
 

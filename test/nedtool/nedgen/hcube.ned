@@ -14,8 +14,8 @@
 //
 simple HCNode
     parameters:
-        address : numeric,
-        dim : numeric;
+        address: numeric,
+        dim: numeric;
     gates:
         out: out[];
         in: in[];
@@ -35,8 +35,8 @@ endsimple
 //
 module Hypercube
     parameters:
-        dim : numeric const,
-        nodetype : string;
+        dim: numeric const,
+        nodetype: string;
     submodules:
         node: nodetype[2^dim] like HCNode;
             parameters:

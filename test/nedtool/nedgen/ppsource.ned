@@ -13,10 +13,10 @@
 //
 simple PPSource
     parameters:
-        sleepTime : numeric,
-        burstTime : numeric,
-        sendIaTime : numeric,
-        msgLength : numeric;
+        sleepTime: numeric,
+        burstTime: numeric,
+        sendIaTime: numeric,
+        msgLength: numeric;
     gates:
         out: out;
 endsimple

@@ -23,11 +23,11 @@ import
 //
 module FDDIRing
     parameters:
-        no_comps : numeric const,
-        no_msg : numeric,
-        wait_time : numeric,
-        RingID : numeric const,
-        TTRT : numeric const;
+        no_comps: numeric const,
+        no_msg: numeric,
+        wait_time: numeric,
+        RingID: numeric const,
+        TTRT: numeric const;
     submodules:
         comp: FDDIStation[no_comps];
             display: "p=83,73;i=device/pc2";
@@ -58,11 +58,11 @@ endmodule
 //
 module TUBNRing
     parameters:
-        LoadControlFile : string,
-        FDDI_Generator_type : string,
-        RingID : numeric const,
-        TTRT : numeric const,
-        LoadMultiplier : numeric;
+        LoadControlFile: string,
+        FDDI_Generator_type: string,
+        RingID: numeric const,
+        TTRT: numeric const,
+        LoadMultiplier: numeric;
     gates:
         in: in;
         out: out;
@@ -260,11 +260,11 @@ endmodule
 //
 module TUBSRing
     parameters:
-        LoadControlFile : string,
-        FDDI_Generator_type : string,
-        RingID : numeric const,
-        TTRT : numeric const,
-        LoadMultiplier : numeric;
+        LoadControlFile: string,
+        FDDI_Generator_type: string,
+        RingID: numeric const,
+        TTRT: numeric const,
+        LoadMultiplier: numeric;
     gates:
         in: in;
         out: out;

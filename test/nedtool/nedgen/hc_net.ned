@@ -20,8 +20,8 @@ import
 //
 module HypercubeNode
     parameters:
-        address : numeric,
-        dim : numeric;
+        address: numeric,
+        dim: numeric;
     gates:
         in: in[];
         out: out[];

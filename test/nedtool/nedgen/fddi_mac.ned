@@ -14,8 +14,8 @@
 //
 simple FDDI_MAC
     parameters:
-        StationID : numeric,
-        address : string;
+        StationID: numeric,
+        address: string;
     gates:
         in: in;
         in: from_LLC;
@@ -29,8 +29,8 @@ endsimple
 //
 simple FDDI_MAC4Ring
     parameters:
-        no_comps : numeric const,
-        no_msg : numeric;
+        no_comps: numeric const,
+        no_msg: numeric;
     gates:
         in: in;
         in: from_LLC;
@@ -44,8 +44,8 @@ endsimple
 //
 simple FDDI_MAC4Sniffer
     parameters:
-        StationID : numeric,
-        address : string;
+        StationID: numeric,
+        address: string;
     gates:
         in: in;
         in: from_LLC;

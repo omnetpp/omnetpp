@@ -13,7 +13,7 @@
 //
 simple Queue
     parameters:
-        serviceTime : numeric,
+        serviceTime: numeric,
         numInitialJobs: numeric const;
     gates:
         in: in[];

@@ -39,8 +39,8 @@ endchannel
 //
 module FDDI_SAC
     parameters:
-        StationID : numeric,
-        address : string;
+        StationID: numeric,
+        address: string;
     gates:
         in: S_in;
         in: M_in[];
@@ -90,9 +90,9 @@ endmodule
 //
 module FDDI_SAS
     parameters:
-        FDDI_Generator_type : string,
-        StationID : numeric,
-        address : string;
+        FDDI_Generator_type: string,
+        StationID: numeric,
+        address: string;
     gates:
         in: in;
         out: out;
@@ -122,8 +122,8 @@ endmodule
 //
 module FDDI_Sniffer
     parameters:
-        StationID : numeric,
-        address : string;
+        StationID: numeric,
+        address: string;
     gates:
         in: in;
         out: out;
@@ -156,8 +156,8 @@ endmodule
 //
 module FDDI_Router_port
     parameters:
-        StationID : numeric,
-        address : string;
+        StationID: numeric,
+        address: string;
     gates:
         in: in;
         in: ring_in;

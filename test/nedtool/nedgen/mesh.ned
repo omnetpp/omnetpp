@@ -10,8 +10,8 @@
 
 module Mesh
     parameters:
-        height : numeric const,
-        width : numeric const;
+        height: numeric const,
+        width: numeric const;
     submodules:
         node: Node[height*width];
             parameters:

@@ -13,8 +13,8 @@
 //
 simple Fifo
     parameters:
-        service_time : numeric,
-        num_cells : numeric,
+        service_time: numeric,
+        num_cells: numeric,
         num_init_jobs: numeric;
     gates:
         in: in;

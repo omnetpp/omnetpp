@@ -13,7 +13,7 @@
 //
 simple QSource
     parameters:
-        sendIATime : numeric;
+        sendIATime: numeric;
     gates:
         out: out;
 endsimple

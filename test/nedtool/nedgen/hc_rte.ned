@@ -13,8 +13,8 @@
 //
 simple HCRouter
     parameters:
-        address : numeric,
-        dim : numeric;
+        address: numeric,
+        dim: numeric;
     gates:
         in: in[];
         in: from_gen;

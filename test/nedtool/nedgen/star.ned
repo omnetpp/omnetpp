@@ -22,7 +22,7 @@ endsimple
 
 module Star
     parameters:
-        n : numeric const;
+        n: numeric const;
     submodules:
         node: StarNode[n];
             display: "p=50,50,ring,150,150;i=device/pc2_s";

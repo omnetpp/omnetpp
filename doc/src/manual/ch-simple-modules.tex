@@ -404,7 +404,7 @@ output gates also have packet queues where packets will be buffered until
 the channel is ready (available for transmission).
 
 {\opp} gates\index{gate} don't have associated queues. The place
-where sent but not yet received messages are buffered is the
+where sent but not yet received messages are buffered in the
 FES\index{FES}.  {\opp}'s approach is potentially faster
 than the solution mentioned above because it doesn't have the
 enqueue/dequeue overhead and also spares an event creation. The

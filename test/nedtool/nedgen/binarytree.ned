@@ -18,7 +18,7 @@ endsimple
 
 module BinaryTree1
     parameters:
-        height : numeric const;
+        height: numeric const;
     submodules:
         node: BinaryTreeNode[ 2^height-1 ];
             display: "i=place/circle_vs";
@@ -32,7 +32,7 @@ endmodule
 
 module BinaryTree2
     parameters:
-        height : numeric const;
+        height: numeric const;
     submodules:
         node: BinaryTreeNode[ 2^height-1 ];
             display: "i=place/circle_vs";

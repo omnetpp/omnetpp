@@ -20,7 +20,7 @@ import
 //
 module HTTPNet
     parameters:
-        numClients : numeric const;
+        numClients: numeric const;
     submodules:
         server: HTTPServer;
             display: "i=device/server;p=426,166";

@@ -14,8 +14,8 @@
 //
 simple FDDI_Generator
     parameters:
-        StationID : numeric,
-        address : string;
+        StationID: numeric,
+        address: string;
     gates:
         out: out;
 endsimple
@@ -26,8 +26,8 @@ endsimple
 //
 simple FDDI_Address_Generator
     parameters:
-        StationID : numeric,
-        address : string;
+        StationID: numeric,
+        address: string;
     gates:
         in: in;
         out: out;
@@ -39,9 +39,9 @@ endsimple
 //
 simple FDDI_Generator4Ring
     parameters:
-        no_msg : numeric,
-        no_comps : numeric const,
-        wait_time : numeric;
+        no_msg: numeric,
+        no_comps: numeric const,
+        wait_time: numeric;
     gates:
         out: out;
 endsimple
@@ -52,8 +52,8 @@ endsimple
 //
 simple FDDI_Generator4Sniffer
     parameters:
-        StationID : numeric,
-        address : string;
+        StationID: numeric,
+        address: string;
     gates:
         out: out;
 endsimple
@@ -64,7 +64,7 @@ endsimple
 //
 simple Stat
     parameters:
-        no_comps : numeric const;
+        no_comps: numeric const;
     gates:
         in: in[];
 endsimple
@@ -94,7 +94,7 @@ endsimple
 //
 simple LoadControl
     parameters:
-        LoadControlFile : string;
+        LoadControlFile: string;
 endsimple
 
 

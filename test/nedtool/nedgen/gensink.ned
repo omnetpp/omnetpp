@@ -13,9 +13,9 @@
 //
 simple HCGenerator
     parameters:
-        num_stations : numeric,
-        address : numeric,
-        ia_time : numeric;
+        num_stations: numeric,
+        address: numeric,
+        ia_time: numeric;
     gates:
         out: out;
 endsimple
@@ -26,7 +26,7 @@ endsimple
 //
 simple HCSink
     parameters:
-        address : numeric;
+        address: numeric;
     gates:
         in: in;
 endsimple

@@ -20,7 +20,7 @@ import
 //
 module TelnetNet
     parameters:
-        numClients : numeric const;
+        numClients: numeric const;
     submodules:
         server: TelnetServer;
             display: "i=device/server;p=426,166";

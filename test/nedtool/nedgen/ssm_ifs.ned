@@ -24,8 +24,8 @@ endsimple
 //
 simple SSM_OIF
     parameters:
-        OIFControlFile : string,
-        frequency : numeric;
+        OIFControlFile: string,
+        frequency: numeric;
     gates:
         in: in;
         out: out;

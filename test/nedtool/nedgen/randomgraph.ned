@@ -18,8 +18,8 @@ endsimple
 
 module RandomGraph
     parameters:
-        n : numeric const,
-        connectedness : numeric; // 0.0<x<1.0
+        n: numeric const,
+        connectedness: numeric; // 0.0<x<1.0
     submodules:
         node: RndNode[n];
             display: "i=place/circle_vs";

@@ -10,7 +10,7 @@
 
 simple App
     parameters:
-        destAddresses : string;
+        destAddresses: string;
     gates:
         in: in;
         out: out;
@@ -26,7 +26,7 @@ endsimple
 
 module Node
     parameters:
-        address : numeric;
+        address: numeric;
     gates:
         in: in[];
         out: out[];

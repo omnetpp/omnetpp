@@ -11,7 +11,7 @@ import "../node";
 
 module FullGraph
     parameters:
-        n : numeric const;
+        n: numeric const;
     submodules:
         node: Node[n];
             parameters:

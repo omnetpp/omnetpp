@@ -14,8 +14,8 @@ import "switch.ned";
 
 module TandemQueue
     parameters:
-        numQueues : numeric const,
-        ownIndex : numeric const,
+        numQueues: numeric const,
+        ownIndex: numeric const,
         sDelay: numeric,
         qDelay: numeric;
     gates:

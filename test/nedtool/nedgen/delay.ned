@@ -13,7 +13,7 @@
 //
 simple QDelay
     parameters:
-        delayBy : numeric;
+        delayBy: numeric;
     gates:
         out: out;
         in: in;

@@ -13,7 +13,7 @@
 //
 simple HTTPClient
     parameters:
-        sendIaTime : numeric,
+        sendIaTime: numeric,
         addr: numeric const,
         srvAddr: numeric const;
     gates:
