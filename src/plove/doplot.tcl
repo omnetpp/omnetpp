@@ -38,7 +38,7 @@ proc getVectorsToPlot {} {
 }
 
 
-proc doPlot {{idlist {}}} {
+proc createVectorPlot {{idlist {}}} {
     global config vec elemcounter
 
     if {$idlist==""} {
@@ -105,6 +105,95 @@ proc doPlot {{idlist {}}} {
         }
 
         idleCursor
+
+    } errmsg] {
+        idleCursor
+        tk_messageBox -icon warning -type ok -title "Error" -message "Error: $errmsg"
+    }
+}
+
+
+proc createVectorScatterPlot {{idlist {}}} {
+    global config vec elemcounter
+
+    if {$idlist==""} {
+        set idlist [getVectorsToPlot]
+        if {$idlist == ""} return
+    }
+
+    if {[llength $idlist]==1} {
+        tk_messageBox -icon info -type ok -title "Scatter Plot" \
+            -message "You need at least two vectors for scatter (x-y) plots: one for the X coordinate plus one or more for Y."
+        return
+    }
+
+    #FIXME ask which one should be the X axis
+    set xid [lindex $idlist 0]
+
+    if [catch {
+        # hourglass...
+        busyCursor "Processing..."
+
+        #puts "DBG: create"
+        set net [opp_createnetwork]
+
+        # collect distinct file names and create vector file readers
+        foreach id $idlist {
+            set vecfilenodes($vec($id,fname)) ""
+        }
+        foreach f [array names vecfilenodes] {
+            set vecfilenodes($f) [opp_createnode $net vectorfilereader -filename $f]
+        }
+
+        # create network
+        set xyplotnode [opp_createnode $net xyplot]
+        set i 0
+        foreach id $idlist {
+            # create filter
+            if {$id==$xid} {
+                set port "x"
+            } else {
+                set port "y$i"
+            }
+            if {$vec($id,filter)==""} {
+                opp_connect $vecfilenodes($vec($id,fname)) $vec($id,vecid) $xyplotnode $port
+            } else {
+                # create and connect filter, then arraybuilder
+                set filtername $vec($id,filter)
+                set filter [opp_createnode $net $filtername]
+                opp_connect $vecfilenodes($vec($id,fname)) $vec($id,vecid) $filter in
+                opp_connect $filter out $xyplotnode $port
+            }
+            if {$id!=$xid} {
+                set arraybuilder($id) [opp_createnode $net arraybuilder]
+                opp_connect $xyplotnode "out$i" $arraybuilder($id) in
+                incr i
+            }
+        }
+
+        # execute
+        #puts "DBG: exec"
+        opp_executenetwork $net
+
+        # create graph
+        busyCursor "Building graph..."
+        update idletasks
+
+        set graph [createBltGraph graph]
+
+        set i 0
+        foreach id $idlist {
+            set xvecname "vx$elemcounter"
+            set yvecname "vy$elemcounter"
+            incr elemcounter
+
+            opp_makebltvector $arraybuilder($id) $xvecname $yvecname
+            set color [getChartColor $i]
+            set symbol [getChartSymbol $i]
+            $graph element create line$id -x $xvecname -y $yvecname -color $color -label $vec($id,title)
+            $graph element config line$id -symbol $symbol -pixels 5
+            incr i
+        }
 
     } errmsg] {
         idleCursor

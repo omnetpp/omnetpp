@@ -20,11 +20,23 @@
 #include "xyplotnode.h"
 
 
-Port *XYPlotNode::addYPort()
+Port *XYPlotNode::portY(int k)
 {
-    Port a;
-    yin.push_back(a);
-    return &(yin.back());
+    if (k<0 || yin.size()<k)
+        throw new Exception("XYPlotNode::portY(k): k=%d out of range, size of yin[] is %d",k,yin.size());
+    if (yin.size()==k)
+    {
+        yin.push_back(Port(this));
+        out.push_back(Port(this));
+    }
+    return &yin[k];
+}
+
+Port *XYPlotNode::portOut(int k)
+{
+    if (k<0 || out.size()<=k)
+        throw new Exception("XYPlotNode::portOut(k): k=%d out of range, size of out[] is %d",k,out.size());
+    return &out[k];
 }
 
 bool XYPlotNode::isReady() const
@@ -48,35 +60,42 @@ void XYPlotNode::process()
     {
          // "x" at EOF, discard all "y" values
          ASSERT(xin()->eof()); // isReady() guarantees this
-         for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
-             (*it)()->flush();
-         if (finished())
-             out()->close();
+         for (int i=0; i<yin.size(); i++)
+         {
+             yin[i]()->flush();
+             if (yin[i]()->eof())
+                 out[i]()->close();
+         }
          return;
     }
 
     Datum xd;
     xin()->read(&xd,1);
 
-    for (PortVector::iterator it=yin.begin(); it!=yin.end(); it++)
+    for (int i=0; i<yin.size(); i++)
     {
-        Channel *ychan = (*it)();
-        const Datum *yp;
-        Datum d;
-        while ((yp=ychan->peek())!=NULL && yp->x < xd.x)
+        Channel *ychan = yin[i]();
+        if (ychan->eof())
         {
-            ychan->read(&d,1);
+            out[i]()->close();
         }
-        while ((yp=ychan->peek())!=NULL && yp->x == xd.x)
+        else
         {
-            ychan->read(&d,1);
-            d.x = xd.y;
-            out()->write(&d,1);
+            ASSERT(ychan->length()>0);
+            const Datum *yp;
+            Datum d;
+            while ((yp=ychan->peek())!=NULL && yp->x < xd.x)
+            {
+                ychan->read(&d,1);
+            }
+            while ((yp=ychan->peek())!=NULL && yp->x == xd.x)
+            {
+                ychan->read(&d,1);
+                d.x = xd.y;
+                out[i]()->write(&d,1);
+            }
         }
     }
-
-    if (finished())
-        out()->close();
 }
 
 bool XYPlotNode::finished() const
@@ -117,10 +136,10 @@ Port *XYPlotNodeType::getPort(Node *node, const char *portname) const
     XYPlotNode *node1 = dynamic_cast<XYPlotNode *>(node);
     if (!strcmp(portname,"x"))
         return &(node1->xin);
-    if (!strcmp(portname,"next-y"))
-        return node1->addYPort();
-    else if (!strcmp(portname,"out"))
-        return &(node1->out);
+    if (portname[0]=='y')
+        return node1->portY(atoi(portname+1));
+    else if (!strncmp(portname,"out",3))
+        return node1->portOut(atoi(portname+3));
     throw new Exception("no such port `%s'", portname);
 }
 

@@ -48,10 +48,9 @@ class Port
         Node *ownernode;
         Channel *chan;
     public:
-        Port() {}
-        Port(Node *ownerNode) {ownernode = ownerNode; chan = 0;}
+        Port(Node *ownerNode) {ownernode = ownernode; chan = 0;}
+        Port(const Port& p) {ownernode = p.ownernode; chan = p.chan;}
         ~Port() {}
-        void setNode(Node *ownerNode) {ownernode = ownerNode; chan = 0;}
         void setChannel(Channel *channel) {ASSERT(!chan); chan = channel;}
         Node *node() {return ownernode;}
         Channel *channel() const  {return chan;}

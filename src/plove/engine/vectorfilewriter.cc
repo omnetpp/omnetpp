@@ -32,9 +32,7 @@ VectorFileWriterNode::~VectorFileWriterNode()
 
 Port *VectorFileWriterNode::addVector(int vectorId)
 {
-    Pair a;
-    a.id = vectorId;
-    ports.push_back(a);
+    ports.push_back(Pair(vectorId, this));
     return &(ports.back().port);
 }
 

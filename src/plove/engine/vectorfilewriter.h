@@ -27,6 +27,7 @@ class VectorFileWriterNode : public Node
 {
     public:
         struct Pair {
+            Pair(int i, Node *owner) : id(i), port(owner) {}
             int id;
             Port port;
         };

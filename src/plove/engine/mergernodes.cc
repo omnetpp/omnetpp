@@ -22,8 +22,7 @@
 
 Port *MergerNode::addPort()
 {
-    Port a;
-    ports.push_back(a);
+    ports.push_back(Port(this));
     return &(ports.back());
 }
 

@@ -264,7 +264,7 @@ proc createMainArea {w} {
     # Pane 4
     #
     frame $w.f4.dum1
-    button $w.f4.plot -text {  PLOT!  } -command doPlot -height 2
+    button $w.f4.plot -text {  PLOT!  } -command createVectorPlot -height 2
     frame $w.f4.dum2
     frame $w.f4.dum3
 
@@ -295,7 +295,7 @@ proc createMainArea {w} {
 
     menu .right_popup -tearoff 0
     foreach i {
-      {command -command {doPlot} -label {Plot selected  ENTER} -underline 0}
+      {command -command {createVectorPlot} -label {Plot selected  ENTER} -underline 0}
       {separator}
       {command -command {vectorInfo 2} -label {Properties...  F3} -underline 0}
       {command -command {editVectorFilters 2} -label {Pre-plot filtering...  F4} -underline 0}
@@ -335,7 +335,7 @@ proc createMainArea {w} {
 
     bind $g(listbox2) <Any-Key>     {after 1 {status 2}}
     bind $g(listbox2) <Any-ButtonRelease>  {status 2}
-    bind $g(listbox2) <Return>      {doPlot}
+    bind $g(listbox2) <Return>      {createVectorPlot}
     bind $g(listbox2) <Tab>         {after 1 {focusToPanel 1}}
     bind $g(listbox2) <Delete>      {delVectors 2}
     bind $g(listbox2) *             {invertSelection 2}
@@ -348,7 +348,7 @@ proc createMainArea {w} {
     bind $g(listbox2) <F6>          {moveVectors 2 1}
     bind $g(listbox2) <F8>          {delVectors 2}
     bind $g(listbox2) <1>           {focusToPanel 2}
-    bind $g(listbox2) <Double-1>    {focusToPanel 2; doPlot}
+    bind $g(listbox2) <Double-1>    {focusToPanel 2; createVectorPlot}
     bind $g(listbox2) <3>           {focusToPanel 2; .right_popup post %X %Y}
 
     status 1
@@ -404,7 +404,9 @@ proc createMainWindow {{geom ""}} {
       {sep3  -separator}
       {config -image $icons(config)  -command filterListDialog}
       {sep4  -separator}
-      {plot  -image $icons(plot)     -command doPlot}
+      {plot  -image $icons(plot)     -command createVectorPlot}
+      {scat  -image $icons(xyplot)   -command createVectorScatterPlot}
+
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2

@@ -87,23 +87,13 @@ void DataflowManager::execute()
 
     // check all nodes have finished now
     for (int i=0; i<nodes.size(); i++)
-    {
         if (!nodes[i]->finished())
-        {
-            DBG(("execute: node %s not finished yet but also not ready\n", nodes[i]->nodeType()->name()));
-            ASSERT(0); // fixme: error -- all nodes have finished now.
-        }
-    }
+            throw new Exception("execute: node %s not finished but also not ready", nodes[i]->nodeType()->name());
 
     // check all channel buffers are empty
     for (int j=0; j<channels.size(); j++)
-    {
         if (channels[j]->length()>0 || !channels[j]->closing())
-        {
-            DBG(("execute: channel %d not closing() or still buffering data\n", j));
-            ASSERT(0); // fixme: error -- all nodes have finished now.
-        }
-    }
+            throw new Exception("execute: channel %d not closing() or still buffering data", j);
 }
 
 Node *DataflowManager::selectNode()

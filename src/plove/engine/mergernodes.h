@@ -32,7 +32,7 @@ class MergerNode : public Node
         Port out;
         PortVector ports;
     public:
-        MergerNode() {}
+        MergerNode() : out(this) {}
         virtual ~MergerNode() {}
 
         Port *addPort();

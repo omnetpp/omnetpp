@@ -100,10 +100,14 @@ tkcmd.obj: tkcmd.cc \
   engine/nodetyperegistry.h \
   engine/dataflowmanager.h \
   engine/arraybuilder.h \
-  engine/getvectors.h \
   engine/compoundfilter.h \
+  engine/getvectors.h \
+  engine/util.h \
   engine/exception.h \
   engine/channel.h \
   engine/commonnodes.h
 tklib.obj: tklib.cc \
-  tklib.h
+  tklib.h \
+  tkutil.h
+tkutil.obj: tkutil.cc \
+  tkutil.h

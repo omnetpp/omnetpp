@@ -36,12 +36,13 @@ class XYPlotNode : public Node
         typedef std::vector<Port> PortVector;
         Port xin;
         PortVector yin;
-        Port out;
+        PortVector out;
     public:
-        XYPlotNode() {}
+        XYPlotNode() : xin(this) {}
         virtual ~XYPlotNode() {}
 
-        Port *addYPort();
+        Port *portY(int k);
+        Port *portOut(int k);
 
         virtual bool isReady() const;
         virtual void process();

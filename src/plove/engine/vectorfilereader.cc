@@ -38,9 +38,8 @@ VectorFileReaderNode::~VectorFileReaderNode()
 Port *VectorFileReaderNode::addVector(int vectorId)
 {
     PortVector& portvec = ports[vectorId];
-    portvec.push_back(Port());
+    portvec.push_back(Port(this));
     Port& port = portvec.back();
-    port.setNode(this);
     return &port;
 }
 
