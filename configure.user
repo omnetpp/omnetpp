@@ -15,9 +15,9 @@
 # C++ exceptions (throw/catch) are used together)!
 #
 #CFLAGS='-g -Wno-unused'
-#CFLAGS='-g -Wall'
+CFLAGS='-g -Wall'
 #CFLAGS='-gstabs+3 -Wall'
-CFLAGS='-O3 -DNDEBUG=1'
+#CFLAGS='-O3 -DNDEBUG=1'
 
 # To suppress the 'unused variable' warnings in ned-generated _n.cc files
 # -Wno-unused is added to NEDCFLAGS
@@ -54,7 +54,7 @@ WITH_PARSIM=yes
 #
 # Compiler and linker options for Tcl/Tk
 #
-# You can explicitly tell 'configure' what compile switches (TK_CFLAGS)
+# You can explicitly tell 'configure' which compile switches (TK_CFLAGS)
 # and linker switches (TK_LIBS) are needed to build an application with Tcl/Tk.
 # Normally these settings are autodetected by 'configure', so you only need to
 # edit here if autodetection doesn't work.
@@ -88,7 +88,16 @@ WITH_PARSIM=yes
 #TK_LIBS=
 
 #
-# FIXME explanation...
+# Compiler and linker options for the BLT extension for Tcl/Tk.
+# BLT is needed by the Scalars, Plove and Tkenv components of OMNeT++.
+# BLT 2.4z is required.
+#
+# You can explicitly tell 'configure' which compile switches (BLT_CFLAGS)
+# and linker switches (BLT_LIBS) are needed to build an application that
+# links to BLT. Normally these settings are autodetected by 'configure', 
+# so you only need to edit here if autodetection doesn't work.
+#
+# If commented out, the configure script will try to autodetect it
 #
 BLT_CFLAGS=
 BLT_LIBS=-lBLT
