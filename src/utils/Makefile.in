@@ -16,6 +16,7 @@ OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 all: seedtool tcl2c
 	cp opp_makemake $(OMNETPP_BIN_DIR)
 	cp opp_test $(OMNETPP_BIN_DIR)
+	cp opp_makedep $(OMNETPP_BIN_DIR)
 	cp splitvec $(OMNETPP_BIN_DIR)
 	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
 	cd $(OMNETPP_BIN_DIR); ln -sf opp_makemake makemake
