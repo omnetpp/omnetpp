@@ -33,6 +33,12 @@ rm bin/makemake
 touch src/nedc/ebnf.tab.c src/nedc/ebnf.tab.h \
       src/gned/ebnf.tab.c src/gned/ebnf.tab.h
 
+# convert LF to CR/LF in MSVC project files
+for i in `find . -name '*.dsp'`; do
+	sed 's/$/
+/' $i > $i.new && mv $i.new $i
+done
+
 # cleanup
 rm _setperm
 rm _tag

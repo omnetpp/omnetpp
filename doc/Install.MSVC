@@ -124,7 +124,7 @@ Plove should work.
 
 A usual caveat is that Gnuplot expects forward slashes in filenames and Plove
 supplies backslashes or vica versa (there are multiple incompatible builds of
-Gnuplot on NT); it you suspect this might be the problem, reverse the
+Gnuplot on NT); if you suspect this might be the problem, reverse the
 slash/backslash setting in Options|External programs.
 
 
