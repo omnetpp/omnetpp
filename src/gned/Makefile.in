@@ -8,6 +8,7 @@ LEX=@LEX@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_BITMAP_PATH=@OMNETPP_BITMAP_PATH@
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
@@ -83,7 +84,7 @@ depend:
 	makedepend -Y -I. -fMakefile.in -- *.c *.cc
 
 clean:
-	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned
+	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned$(EXE_SUFFIX)
 
 install-local: default
 	../utils/install-prog gned $(OMNETPP_BIN_DIR)
