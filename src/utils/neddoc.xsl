@@ -66,6 +66,7 @@
       .indextitle { font-size=12pt; }
       .comptitle  { font-size=14pt; }
       .subtitle   { font-size=12pt; margin-bottom: 3px}
+      .footer     { font-size=8pt; margin-top=0px; text-align=center; color=#303030; }
       FIXME.paramtable { border=2px ridge; border-collapse=collapse;}
       img.screenshot { border=none }
       .src-keyword { font-weight=bold }
@@ -74,64 +75,86 @@
       .src-number  { color=#0000c0 }
    </xsl:document>
 
-   <xsl:document href="{$outputdir}/simplemodules.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <xsl:call-template name="create-simplemodule-index"/>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'simplemodules.html'"/>
+      <xsl:with-param name="content">
+        <xsl:call-template name="create-simplemodule-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
 
-   <xsl:document href="{$outputdir}/compoundmodules.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <xsl:call-template name="create-compoundmodule-index"/>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'compoundmodules.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-compoundmodule-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
 
-   <xsl:document href="{$outputdir}/modules.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <xsl:call-template name="create-module-index"/>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'modules.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-module-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
 
-   <xsl:document href="{$outputdir}/channels.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <xsl:call-template name="create-channel-index"/>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'channels.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-channel-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
 
-   <xsl:document href="{$outputdir}/networks.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <xsl:call-template name="create-network-index"/>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'networks.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-network-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
 
-   <xsl:document href="{$outputdir}/messages.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <xsl:call-template name="create-message-index"/>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'messages.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-message-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
 
-   <xsl:document href="{$outputdir}/classes.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <xsl:call-template name="create-class-index"/>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'classes.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-class-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
 
-   <xsl:document href="{$outputdir}/structs.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <xsl:call-template name="create-struct-index"/>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'structs.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-struct-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
 
-   <xsl:document href="{$outputdir}/enums.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <xsl:call-template name="create-enum-index"/>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'enums.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-enum-index"/>
+      </xsl:with-param>
+   </xsl:call-template>
 
-   <xsl:document href="{$outputdir}/files.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <xsl:call-template name="create-fileindex"/>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'files.html'"/>
+      <xsl:with-param name="content">
+         <xsl:call-template name="create-fileindex"/>
+      </xsl:with-param>
+   </xsl:call-template>
 
-   <xsl:document href="{$outputdir}/overview.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <center><h1>OMNeT++ Model Documentation</h1></center>
-      <center><i>Generated from NED files</i></center>
-      <p>This documentation has been generated from NED files. Use the links in
-      the left frames to navigate around.</p>
-      <p>Generated by opp_neddoc.</p>
-   </xsl:document>
+   <xsl:call-template name="write-html-page">
+      <xsl:with-param name="href" select="'overview.html'"/>
+      <xsl:with-param name="content">
+         <center><h1>OMNeT++ Model Documentation</h1></center>
+         <center><i>Generated from NED files</i></center>
+         <p>This documentation has been generated from NED files. Use the links in
+         the left frames to navigate around.</p>
+         <p>Generated by opp_neddoc.</p>
+      </xsl:with-param>
+   </xsl:call-template>
 
    <xsl:document href="{$outputdir}/tags.xml" indent="yes">
       <xsl:call-template name="create-tags"/>
@@ -295,7 +318,7 @@
 </xsl:template>
 
 <xsl:template name="create-fileindex">
-   <h3 class="indextitle">NED Files</h3>
+   <h3 class="indextitle">NED and MSG Files</h3>
    <ul>
       <xsl:for-each select="//ned-file">
          <xsl:sort select="@filename"/>
@@ -323,135 +346,182 @@
 <!-- COMPONENT PAGES -->
 
 <xsl:template match="channel">
-   <xsl:document href="{$outputdir}/{concat(@name,'-',generate-id(.))}.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <h2 class="comptitle">Channel <i><xsl:value-of select="@name"/></i></h2>
-      <xsl:call-template name="print-file"/>
-      <xsl:call-template name="process-comment"/>
-      <xsl:call-template name="print-attrs"/>
-      <xsl:call-template name="print-channel-used-in"/>
-      <xsl:call-template name="print-source"/>
-   </xsl:document>
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">Channel <i><xsl:value-of select="@name"/></i></h2>
+         <xsl:call-template name="print-file"/>
+         <xsl:call-template name="process-comment"/>
+         <xsl:call-template name="print-attrs"/>
+         <xsl:call-template name="print-channel-used-in"/>
+         <xsl:call-template name="print-source"/>
+      </xsl:with-param>
+   </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="simple-module">
-   <xsl:document href="{$outputdir}/{concat(@name,'-',generate-id(.))}.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <h2 class="comptitle">Simple Module <i><xsl:value-of select="@name"/></i></h2>
-      <xsl:call-template name="print-file"/>
-      <xsl:call-template name="process-comment"/>
-      <xsl:call-template name="print-params"/>
-      <xsl:call-template name="print-gates"/>
-      <xsl:call-template name="print-module-used-in"/>
-      <xsl:call-template name="print-source"/>
-   </xsl:document>
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">Simple Module <i><xsl:value-of select="@name"/></i></h2>
+         <xsl:call-template name="print-file"/>
+         <xsl:call-template name="process-comment"/>
+         <xsl:call-template name="print-params"/>
+         <xsl:call-template name="print-gates"/>
+         <xsl:call-template name="print-module-used-in"/>
+         <xsl:call-template name="print-source"/>
+      </xsl:with-param>
+   </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="compound-module">
-   <xsl:document href="{$outputdir}/{concat(@name,'-',generate-id(.))}.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <h2 class="comptitle">Compound Module <i><xsl:value-of select="@name"/></i></h2>
-      <xsl:call-template name="print-file"/>
-      <xsl:call-template name="process-comment"/>
-      <xsl:call-template name="print-screenshot"/>
-      <xsl:call-template name="print-params"/>
-      <xsl:call-template name="print-gates"/>
-      <xsl:call-template name="print-uses"/>
-      <xsl:call-template name="print-module-used-in"/>
-      <xsl:call-template name="print-source"/>
-   </xsl:document>
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">Compound Module <i><xsl:value-of select="@name"/></i></h2>
+         <xsl:call-template name="print-file"/>
+         <xsl:call-template name="process-comment"/>
+         <xsl:call-template name="print-screenshot"/>
+         <xsl:call-template name="print-params"/>
+         <xsl:call-template name="print-gates"/>
+         <xsl:call-template name="print-uses"/>
+         <xsl:call-template name="print-module-used-in"/>
+         <xsl:call-template name="print-source"/>
+      </xsl:with-param>
+   </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="network">
-   <xsl:document href="{$outputdir}/{concat(@name,'-',generate-id(.))}.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <h2 class="comptitle">Network <i><xsl:value-of select="@name"/></i></h2>
-      <xsl:call-template name="print-file"/>
-      <xsl:call-template name="process-comment"/>
-      <xsl:call-template name="print-type"/>
-      <xsl:call-template name="print-substparams"/>
-      <xsl:call-template name="print-source"/>
-   </xsl:document>
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">Network <i><xsl:value-of select="@name"/></i></h2>
+         <xsl:call-template name="print-file"/>
+         <xsl:call-template name="process-comment"/>
+         <xsl:call-template name="print-type"/>
+         <xsl:call-template name="print-substparams"/>
+         <xsl:call-template name="print-source"/>
+      </xsl:with-param>
+   </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="message">
-   <xsl:document href="{$outputdir}/{concat(@name,'-',generate-id(.))}.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <h2 class="comptitle">Message <i><xsl:value-of select="@name"/></i></h2>
-      <xsl:call-template name="print-file"/>
-      <xsl:call-template name="process-comment"/>
-      <xsl:call-template name="print-extends"/>
-      <xsl:call-template name="print-properties"/>
-      <xsl:call-template name="print-fields"/>
-      <xsl:call-template name="print-source"/>
-   </xsl:document>
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">Message <i><xsl:value-of select="@name"/></i></h2>
+         <xsl:call-template name="print-file"/>
+         <xsl:call-template name="process-comment"/>
+         <xsl:call-template name="print-extends"/>
+         <xsl:call-template name="print-properties"/>
+         <xsl:call-template name="print-fields"/>
+         <xsl:call-template name="print-source"/>
+      </xsl:with-param>
+   </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="class">
-   <xsl:document href="{$outputdir}/{concat(@name,'-',generate-id(.))}.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <h2 class="comptitle">Class <i><xsl:value-of select="@name"/></i></h2>
-      <xsl:call-template name="print-file"/>
-      <xsl:call-template name="process-comment"/>
-      <xsl:call-template name="print-extends"/>
-      <xsl:call-template name="print-properties"/>
-      <xsl:call-template name="print-fields"/>
-      <xsl:call-template name="print-source"/>
-   </xsl:document>
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">Class <i><xsl:value-of select="@name"/></i></h2>
+         <xsl:call-template name="print-file"/>
+         <xsl:call-template name="process-comment"/>
+         <xsl:call-template name="print-extends"/>
+         <xsl:call-template name="print-properties"/>
+         <xsl:call-template name="print-fields"/>
+         <xsl:call-template name="print-source"/>
+      </xsl:with-param>
+   </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="struct">
-   <xsl:document href="{$outputdir}/{concat(@name,'-',generate-id(.))}.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <h2 class="comptitle">Struct <i><xsl:value-of select="@name"/></i></h2>
-      <xsl:call-template name="print-file"/>
-      <xsl:call-template name="process-comment"/>
-      <xsl:call-template name="print-extends"/>
-      <xsl:call-template name="print-properties"/>
-      <xsl:call-template name="print-fields"/>
-      <xsl:call-template name="print-source"/>
-   </xsl:document>
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">Struct <i><xsl:value-of select="@name"/></i></h2>
+         <xsl:call-template name="print-file"/>
+         <xsl:call-template name="process-comment"/>
+         <xsl:call-template name="print-extends"/>
+         <xsl:call-template name="print-properties"/>
+         <xsl:call-template name="print-fields"/>
+         <xsl:call-template name="print-source"/>
+      </xsl:with-param>
+   </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="enum">
-   <xsl:document href="{$outputdir}/{concat(@name,'-',generate-id(.))}.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <h2 class="comptitle">Enum <i><xsl:value-of select="@name"/></i></h2>
-      <xsl:call-template name="print-file"/>
-      <xsl:call-template name="process-comment"/>
-      <xsl:call-template name="print-extends"/>
-      <xsl:call-template name="print-properties"/>
-      <xsl:call-template name="print-enumfields"/>
-      <xsl:call-template name="print-source"/>
-   </xsl:document>
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat(@name,'-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">Enum <i><xsl:value-of select="@name"/></i></h2>
+         <xsl:call-template name="print-file"/>
+         <xsl:call-template name="process-comment"/>
+         <xsl:call-template name="print-extends"/>
+         <xsl:call-template name="print-properties"/>
+         <xsl:call-template name="print-enumfields"/>
+         <xsl:call-template name="print-source"/>
+      </xsl:with-param>
+   </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="ned-file">
-   <xsl:document href="{$outputdir}/{concat('file-',generate-id(.))}.html" method="html">
-      <xsl:call-template name="print-html-header"/>
-      <h2 class="comptitle">File <i><xsl:value-of select="@filename"/></i></h2>
-      <xsl:call-template name="process-comment"/>
-      <h3 class="subtitle">Contains:</h3>
-      <ul>
-         <xsl:for-each select="simple-module|compound-module|channel|network">
-            <xsl:sort select="@name"/>
-            <li>
-               <a href="{concat(@name,'-',generate-id(.))}.html"><xsl:value-of select="@name"/></a>
-               <i> (<xsl:value-of select="local-name()"/>)</i>
-            </li>
-         </xsl:for-each>
-      </ul>
-   </xsl:document>
+   <xsl:call-template name="write-component-page">
+      <xsl:with-param name="href" select="concat('file-',generate-id(.),'.html')"/>
+      <xsl:with-param name="content">
+         <h2 class="comptitle">File <i><xsl:value-of select="@filename"/></i></h2>
+         <xsl:call-template name="process-comment"/>
+         <h3 class="subtitle">Contains:</h3>
+         <ul>
+            <xsl:for-each select="simple-module|compound-module|channel|network|message|class|struct|enum">
+               <xsl:sort select="@name"/>
+               <!--
+               <xsl:call-template name="print-componentref"/>
+               -->
+               <li>
+                  <a href="{concat(@name,'-',generate-id(.))}.html"><xsl:value-of select="@name"/></a>
+                  <i> (<xsl:value-of select="local-name()"/>)</i>
+               </li>
+            </xsl:for-each>
+         </ul>
+      </xsl:with-param>
+   </xsl:call-template>
    <xsl:apply-templates/>
 </xsl:template>
 
 
 <!-- HELPER TEMPLATES -->
 
-<xsl:template name="print-html-header">
-   <head>
-      <link rel="stylesheet" type="text/css" href="style.css" />
-   </head>
+<xsl:template name="write-html-page">
+   <xsl:param name="href"/>
+   <xsl:param name="content"/>
+   <xsl:document href="{$outputdir}/{$href}" method="html" indent="yes">
+      <html>
+         <head>
+            <link rel="stylesheet" type="text/css" href="style.css" />
+         </head>
+         <body>
+            <xsl:copy-of select="$content"/>
+         </body>
+      </html>
+   </xsl:document>
+</xsl:template>
+
+<xsl:template name="write-component-page">
+   <xsl:param name="href"/>
+   <xsl:param name="content"/>
+   <xsl:document href="{$outputdir}/{$href}" method="html" indent="yes">
+      <html>
+         <head>
+            <link rel="stylesheet" type="text/css" href="style.css" />
+         </head>
+         <body>
+            <!--TBD styling: <p style="color=red;font-weight=bold;">OMNeT++ model documentation</p> -->
+            <xsl:copy-of select="$content"/>
+            <!--TBD styling: <hr width="100%"/><p class="footer">Generated by opp_neddoc</p> -->
+         </body>
+      </html>
+   </xsl:document>
 </xsl:template>
 
 <xsl:template name="print-navbar">
@@ -530,7 +600,7 @@
 
 <xsl:template name="print-file">
    <xsl:if test="ancestor::ned-file/@filename">
-      <b>File: <a href="{concat('file-',generate-id(ancestor::ned-file))}.html"><xsl:value-of select="ancestor::ned-file/@filename"/></a></b>
+      <p><b>File: <a href="{concat('file-',generate-id(ancestor::ned-file))}.html"><xsl:value-of select="ancestor::ned-file/@filename"/></a></b></p>
    </xsl:if>
 </xsl:template>
 
@@ -827,7 +897,6 @@
    <xsl:param name="comment" select="@banner-comment|@right-comment"/>
    <xsl:choose>
       <xsl:when test="$comment">
-         <!-- <pre class="comment"><xsl:value-of select="$comment"/></pre> -->
          <span class="comment"><xsl:value-of select="$comment"/></span>
       </xsl:when>
       <xsl:otherwise> </xsl:otherwise>

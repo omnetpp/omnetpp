@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 #
-# part of opp_neddoc -- renders NED comments into HTML
+# part of opp_neddoc -- renders NED comments into HTML, does syntax highlight,
+# and exports images                      
 #
 
 $verbose = 0;
@@ -169,4 +170,35 @@ foreach $fnamepatt (@ARGV)
     }
 }
 
+# export_file('html/pccard.gif',
+# 'R0lGODlhOAAfALMAABAUGRYtT0xWZH2CipShsLW2usXCv9DT1ube2Orq6vHw8/v18/P3//z5
+# ...
+# XCSFlkYnzH6WOoYcFhf/oXzVe4qeajQCGLDcPAqNSBu7V2F9wHwLEQAAOw==');
+
+sub export_file ()
+{
+    my $fname = shift;
+    my $base64str = shift;
+    open FILE, ">$fname";
+    binmode FILE;
+    print FILE decode_base64($base64str);
+    close FILE;
+}
+
+sub decode_base64 ($)
+{
+    # Code taken from MIME-Base64-2.20 which contains the following copyright:
+    # "This library is free software; you can redistribute it and/or
+    # modify it under the same terms as Perl itself."
+
+    local($^W) = 0; # unpack("u",...) gives bogus warning in 5.00[123]
+    my $str = shift;
+    $str =~ tr|A-Za-z0-9+=/||cd;            # remove non-base64 chars
+    if (length($str) % 4) {die 'length of base64 data not a multiple of 4';}
+    $str =~ s/=+$//;                        # remove padding
+    $str =~ tr|A-Za-z0-9+/| -_|;            # convert to uuencoded format
+    return "" unless length $str;
+    return unpack("u", join('', map( chr(32 + length($_)*3/4) . $_,
+    			$str =~ /(.{1,60})/gs) ) );
+}
 
