@@ -31,7 +31,7 @@
 #endif
 
 
-class GlobPrivateData;
+struct GlobPrivateData;
 
 /**
  * Utility for resolving wildcards in file names. If the pattern doesn't contain
