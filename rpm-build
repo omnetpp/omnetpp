@@ -5,31 +5,28 @@
 
 # make sure we're in the right directory
 if [ ! -f configure ]; then
-    echo "$0: must be started in the omnetpp directory" 2>&1
+    echo "$0: must be started in the omnetpp directory" 1>&2
     exit 1
 fi
 
 # installation dir
-export OMNETPP_INSTALL_ROOT="/usr/local/`cat Version`"
+export OMNETPP_INSTALL_ROOT="/usr/local/omnetpp-2.0b5"
 
 # configure for build local & run in installation dir
-cp configure.user  configure.user.orig
 cp rpm-build-cfg configure.user
-if [ ! ./configure ]; then
-    echo "$0: error during configuring for make" 2>&1
+if ! ./configure; then
+    echo "$0: error during configuring for make" 1>&2
     exit 1
 fi
-if [ ! make ]; then
-    echo "$0: error during make" 2>&1
+if ! make; then
+    echo "$0: error during make" 1>&2
     exit 1
 fi
 
 # reconfigure for final location (installation dir)
 cp rpm-install-cfg configure.user
-if [ ! ./configure ]; then
-    echo "$0: error during configuring for make" 2>&1
+if ! ./configure; then
+    echo "$0: error during configuring" 1>&2
     exit 1
 fi
 
-# restore original configure.user
-cp configure.user.orig configure.user

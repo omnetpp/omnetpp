@@ -24,7 +24,8 @@ TK_LIBS=
 
 
 #
-# Directories:
+# Directories: the following 3 variables must be set to the install dir,
+#              because they are compiled into executables
 #
 OMNETPP_BITMAP_PATH=".;./bitmaps;$OMNETPP_INSTALL_ROOT/bitmaps"
 OMNETPP_GNED_DIR="$OMNETPP_INSTALL_ROOT/src/gned"
