@@ -152,10 +152,13 @@ int main(int argc, char *argv[])
     if (argc==1)
     {
          fprintf(stderr,
-                "seedtool - part of OMNeT++, (C) 1992-2004 Andras Varga\n"
-                "See the license for distribution terms and warranty disclaimer.\n"
-                "\n"
-                "A tool to help select good random number generator seed values.\n"
+               "seedtool - part of OMNeT++, (C) 1992-2004 Andras Varga\n"
+               "See the license for distribution terms and warranty disclaimer.\n"
+               "\n"
+               "Generates seeds for the LCG32 random number generator. This RNG has a\n"
+               "period length of 2^31-2, which makes about 2,147 million random numbers.\n"
+               "Note that Mersenne Twister is also available in OMNeT++, which has a\n"
+               "practically infinite period length (2^19937).\n\n"
                 "Usage:\n"
                 "  seedtool i seed         - index of 'seed' in cycle\n"
                 "  seedtool s index        - seed at index 'index' in cycle\n"
@@ -163,7 +166,7 @@ int main(int argc, char *argv[])
                 "  seedtool g seed0 dist   - generate seed 'dist' away from 'seed0'\n"
                 "  seedtool g seed0 dist n - generate 'n' seeds 'dist' apart, starting at 'seed0'\n"
                 "  seedtool t              - generate hashtable\n"
-                "  seedtool p              - print out hashtable\n"
+                "  seedtool p              - print hashtable\n"
                 );
          exit(0);
     }

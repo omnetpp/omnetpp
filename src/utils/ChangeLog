@@ -1,3 +1,7 @@
+2004-10-27  Andras Varga
+
+	* seedtool.cc: edited banner to clarify it generates seeds for LCG32.
+
 2004-10-15  Andras Varga
 
 	* opp_makemake.in: fixed "-L" bug introduced in 3.0a7 (2004-09-14)
