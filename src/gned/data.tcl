@@ -20,20 +20,9 @@
 
 #------------------------------------------------
 # Data structure is defined in datadict.tcl
+# Initialization of global vars (ned(0,*) and ned(nextkey)) is also
+# at the end of datadict.tcl
 #------------------------------------------------
-
-#
-# init global vars: add a root item with key 0
-#
-foreach i [array names ddict "common,*"] {
-   regsub -- "common," $i "" field
-   set ned(0,$field) $ddict($i)
-}
-foreach i [array names ddict "root,*"] {
-   regsub -- "root," $i "" field
-   set ned(0,$field) $ddict($i)
-}
-set ned(nextkey) 1
 
 
 # addItem --

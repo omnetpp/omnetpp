@@ -22,7 +22,6 @@
 # use_balloons to true or false
 #
 
-
 proc enable_balloon {name_to_bind {script {}}} {
     if ![llength $script] {
         bind $name_to_bind <Any-Enter> "+schedule_balloon %W %X %Y"

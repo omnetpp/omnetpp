@@ -16,7 +16,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-
 #------------------------------------------------
 # Data structure:
 #
@@ -406,5 +405,28 @@ set ddict(loopvar,right-comment)    {}
 set ddict(loopvar,name)          {}
 set ddict(loopvar,fromvalue)        {}
 set ddict(loopvar,tovalue)          {}
+
+#=====================================================================
+
+#
+# Init global vars: add a root item with key 0
+#
+# Note: This must be in the same file as the filling of the ddict() array,
+# because if Tcl embedding is used (e.g. Tcl code is linked into
+# the program as a large C string constant) we cannot control the order 
+# the Tcl files.
+#
+
+foreach i [array names ddict "common,*"] {
+   regsub -- "common," $i "" field
+   set ned(0,$field) $ddict($i)
+}
+
+foreach i [array names ddict "root,*"] {
+   regsub -- "root," $i "" field
+   set ned(0,$field) $ddict($i)
+}
+
+set ned(nextkey) 1
 
 
