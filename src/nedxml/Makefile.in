@@ -94,6 +94,7 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 cppexprgenerator.o: cppexprgenerator.cc \
+  nedcompiler.h \
   cppexprgenerator.h \
   nederror.h \
   nedelements.h \
@@ -115,14 +116,6 @@ cppmsggenerator.o: cppmsggenerator.cc \
 lex.yy.o: lex.yy.cc \
   nedgrammar.h \
   ned.tab.h
-ned.tab.o: ned.tab.cc \
-  nedgrammar.h \
-  nederror.h \
-  nedparser.h \
-  nedfilebuffer.h \
-  nedelements.h \
-  nedutil.h \
-  nedelement.h
 nedbasicvalidator.o: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \
@@ -140,13 +133,13 @@ nedcompiler.o: nedcompiler.cc \
   nedelements.h \
   nedgrammar.h \
   nedvalidator.h
-neddtdvalidator.o: neddtdvalidator.cc \
+neddtdvalidator1.o: neddtdvalidator1.cc \
   nederror.h \
   neddtdvalidator.h \
   nedelement.h \
   nedelements.h \
   nedvalidator.h
-neddtdvalidator1.o: neddtdvalidator1.cc \
+neddtdvalidator.o: neddtdvalidator.cc \
   nederror.h \
   neddtdvalidator.h \
   nedelement.h \
@@ -192,6 +185,14 @@ nedsemanticvalidator.o: nedsemanticvalidator.cc \
   nedelement.h \
   nedvalidator.h \
   nedelements.h
+ned.tab.o: ned.tab.cc \
+  nedgrammar.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedelement.h
 nedutil.o: nedutil.cc \
   nederror.h \
   nedutil.h \

@@ -60,10 +60,26 @@ clean:
 	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+akaroarng.o: akaroarng.cc \
+  ../../include/cenvir.h \
+  ../../include/util.h \
+  ../../include/cexception.h \
+  akaroarng.h \
+  ../../include/defs.h \
+  ../../include/opp_string.h \
+  ../../include/macros.h \
+  ../../include/crng.h \
+  ../../include/cconfig.h \
+  ../../include/onstartup.h \
+  ../../include/carray.h \
+  ../../include/ctypes.h \
+  ../../include/cobject.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
+  ../../include/globals.h
 akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cenvir.h \
   omnetapp.h \
-  cinifile.h \
   ../../include/csimul.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
@@ -76,9 +92,12 @@ akoutvectormgr.o: akoutvectormgr.cc \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/time.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
@@ -95,6 +114,7 @@ args.o: args.cc \
   envdefs.h \
   ../../include/defs.h
 cenvir.o: cenvir.cc \
+  ../../include/ctypes.h \
   args.h \
   ../../include/distrib.h \
   cinifile.h \
@@ -102,54 +122,80 @@ cenvir.o: cenvir.cc \
   omnetapp.h \
   appreg.h \
   ../../include/cmodule.h \
+  ../../include/platdep/loadlib.h \
   speedmtr.h \
   filemgrs.h \
-  envdefs.h \
+  akaroarng.h \
+  akoutvectormgr.h \
   ../../include/defs.h \
-  ../../include/random.h \
-  ../../include/carray.h \
   ../../include/globals.h \
-  ../../include/cexception.h \
-  ../../include/envirext.h \
   ../../include/cobject.h \
+  ../../include/onstartup.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
-  ../../include/onstartup.h \
+  ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
-  ../../include/ccoroutine.h \
-  ../../include/cqueue.h \
-  ../../include/cgate.h \
+  envdefs.h \
+  ../../include/random.h \
   ../../include/csimul.h \
-  ../../include/cdefaultlist.h \
+  ../../include/crng.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
+  ../../include/cconfig.h \
+  patmatch.h \
+  ../../include/carray.h \
+  ../../include/envirext.h \
+  ../../include/platdep/time.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
+  ../../include/platdep/misc.h \
+  ../../include/macros.h
 cinifile.o: cinifile.cc \
   ../../include/cenvir.h \
   ../../include/util.h \
   cinifile.h \
   patmatch.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
-  envdefs.h
+  envdefs.h \
+  ../../include/cconfig.h \
+  ../../include/opp_string.h \
+  ../../include/cpolymorphic.h
+cxmldoccache.o: cxmldoccache.cc \
+  ../../include/cpolymorphic.h \
+  cxmldoccache.h \
+  ../../include/cxmlelement.h \
+  ../../include/cexception.h \
+  ../nedxml/saxparser.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  envdefs.h \
+  ../../include/opp_string.h
 filemgrs.o: filemgrs.cc \
   ../../include/defs.h \
   ../../include/cenvir.h \
-  cinifile.h \
   omnetapp.h \
   ../../include/csimul.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/macros.h \
   filemgrs.h \
-  envdefs.h \
   ../../include/carray.h \
   ../../include/globals.h \
   ../../include/cexception.h \
   args.h \
+  envdefs.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/time.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
@@ -161,31 +207,24 @@ filemgrs.o: filemgrs.cc \
   ../../include/cdefaultlist.h \
   ../../include/ctypes.h
 fsutils.o: fsutils.cc \
-  ../../include/opp_string.h \
+  ../../include/platdep/misc.h \
   fsutils.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/opp_string.h \
+  ../../include/defs.h
 main.o: main.cc \
   ../../include/cobject.h \
-  ../../include/csimul.h \
-  ../../include/random.h \
   ../../include/cenvir.h \
-  ../../include/onstartup.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
-  ../../include/opp_string.h \
-  ../../include/errmsg.h \
-  ../../include/globals.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
-  ../../include/coutvect.h
+  ../../include/cvisitor.h \
+  ../../include/opp_string.h
 omnetapp.o: omnetapp.cc \
   args.h \
   omnetapp.h \
-  cinifile.h \
   patmatch.h \
   fsutils.h \
   ../../include/ctypes.h \
@@ -194,8 +233,15 @@ omnetapp.o: omnetapp.cc \
   ../../include/cscheduler.h \
   ../../include/cpar.h \
   ../../include/random.h \
+  ../../include/crng.h \
   ../../include/cmodule.h \
+  ../../include/cxmlelement.h \
+  cxmldoccache.h \
   ../../include/cparsimcomm.h \
+  ../../include/platdep/time.h \
+  ../../include/platdep/misc.h \
+  ../../include/platdep/fileglobber.h \
+  ../../include/platdep/fileglobber.c \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \
@@ -203,9 +249,11 @@ omnetapp.o: omnetapp.cc \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
@@ -216,30 +264,13 @@ omnetapp.o: omnetapp.cc \
   ../../include/cdefaultlist.h
 patmatch.o: patmatch.cc \
   patmatch.h \
-  ../../include/defs.h \
-  envdefs.h
-platdep.o: platdep.cc \
-  ../../include/defs.h \
-  ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/cenvir.h \
-  ../../include/opp_string.h
-seeds.o: seeds.cc \
-  omnetapp.h \
-  ../../include/carray.h \
-  ../../include/globals.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
-  args.h \
+  ../../include/defs.h \
   envdefs.h \
-  ../../include/envirext.h \
-  ../../include/cobject.h \
-  ../../include/defs.h \
-  ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/onstartup.h \
-  ../../include/opp_string.h
+  ../../include/opp_string.h \
+  ../../include/util.h
 speedmtr.o: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \
-  envdefs.h
+  envdefs.h \
+  ../../include/platdep/time.h

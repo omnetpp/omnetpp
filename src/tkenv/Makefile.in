@@ -131,12 +131,17 @@ inspector.o: inspector.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/cxmlelement.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
+  ../../include/crng.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
+  ../../include/platdep/time.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
@@ -189,12 +194,17 @@ inspfactory.o: inspfactory.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/cxmlelement.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
+  ../../include/crng.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
+  ../../include/platdep/time.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
@@ -227,6 +237,7 @@ modinsp.o: modinsp.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
@@ -237,6 +248,8 @@ modinsp.o: modinsp.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/time.h \
   ../../include/macros.h \
   ../../include/ctypes.h
 objinsp.o: objinsp.cc \
@@ -287,12 +300,17 @@ objinsp.o: objinsp.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/cxmlelement.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
+  ../../include/crng.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
+  ../../include/platdep/time.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
@@ -323,6 +341,7 @@ statinsp.o: statinsp.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
@@ -331,6 +350,8 @@ statinsp.o: statinsp.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/time.h \
   ../../include/macros.h \
   inspector.h \
   ../../include/ctypes.h \
@@ -348,6 +369,7 @@ structinsp.o: structinsp.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../envir/omnetapp.h \
   ../../include/carray.h \
@@ -355,6 +377,8 @@ structinsp.o: structinsp.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/time.h \
   ../../include/onstartup.h \
   ../../include/macros.h \
   inspector.h \
@@ -362,7 +386,6 @@ structinsp.o: structinsp.cc \
   tkutil.h
 tkapp.o: tkapp.cc \
   ../envir/appreg.h \
-  ../envir/cinifile.h \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
@@ -374,6 +397,7 @@ tkapp.o: tkapp.cc \
   inspector.h \
   inspfactory.h \
   modinsp.h \
+  ../../include/platdep/time.h \
   ../../include/globals.h \
   ../../include/onstartup.h \
   ../../include/cobject.h \
@@ -381,8 +405,8 @@ tkapp.o: tkapp.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
-  ../envir/envdefs.h \
   ../../include/cmodule.h \
   ../../include/ccoroutine.h \
   ../../include/carray.h \
@@ -394,9 +418,11 @@ tkapp.o: tkapp.cc \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
   ../../include/cpar.h \
+  ../envir/envdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
   tkutil.h \
   ../../include/macros.h
 tkcmd.o: tkcmd.cc \
@@ -411,18 +437,19 @@ tkcmd.o: tkcmd.cc \
   ../../include/ctypes.h \
   ../../include/cstruct.h \
   ../../include/cdispstr.h \
-  ../envir/cinifile.h \
   tkapp.h \
   tklib.h \
   inspector.h \
   inspfactory.h \
   ../envir/patmatch.h \
   visitor.h \
+  ../../include/platdep/loadlib.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/globals.h \
@@ -436,12 +463,15 @@ tkcmd.o: tkcmd.cc \
   ../../include/cdefaultlist.h \
   ../../include/cpar.h \
   ../../include/cenum.h \
-  ../envir/envdefs.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
+  ../envir/envdefs.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/time.h \
   tkutil.h \
-  ../../include/macros.h
+  ../../include/macros.h \
+  ../../include/platdep/misc.h
 tklib.o: tklib.cc \
   tklib.h \
   tkapp.h \
@@ -453,10 +483,13 @@ tklib.o: tklib.cc \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/time.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h
 tkutil.o: tkutil.cc \
@@ -472,6 +505,7 @@ tkutil.o: tkutil.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
@@ -486,7 +520,9 @@ tkutil.o: tkutil.cc \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h \
-  ../../include/envirext.h
+  ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/time.h
 visitor.o: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \
@@ -506,6 +542,7 @@ visitor.o: visitor.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
@@ -519,4 +556,6 @@ visitor.o: visitor.cc \
   tkapp.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
-  ../../include/envirext.h
+  ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/time.h

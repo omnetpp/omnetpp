@@ -78,9 +78,20 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 arrow.o: arrow.cc \
   arrow.h
+ebnf.tab.o: ebnf.tab.cc \
+  ebnf.h \
+  ebnfcfg.h \
+  parsened.h \
+  nedfile.h
 gned.o: gned.cc \
   tklib.h \
   arrow.h
+lex.yy.o: lex.yy.cc \
+  ./unistd.h \
+  ebnf.h \
+  ebnf.tab.h \
+  ebnfcfg.h \
+  parsened.h
 nedfile.o: nedfile.cc \
   nedfile.h \
   parsened.h \
