@@ -60,11 +60,15 @@ proc create_inspector_toplevel {w geom} {
     pack $w.infobar -anchor w -side top -fill x -expand 0
 
     set help_tips($w.infobar.color) {Different inspectors of the same object have the same color}
+    set help_tips($w.infobar.name)  {Right-click for copying to clipboard}
 
     # Keyboard bindings
     bind $w <Escape>     "catch {.popup unpost}"
     bind $w <Button-1>   "catch {.popup unpost}"
     bind $w <Key-Return> "opp_writebackinspector $w; opp_updateinspectors"
+
+    bind $w.infobar.name <Button-3> [list inspectorNamePopup $ptr %X %Y]
+    bind $w.infobar.color <Button-3> [list inspectorNamePopup $ptr %X %Y]
 
     bind_runcommands $w
 }
@@ -160,6 +164,29 @@ proc destroy_inspector_toplevel {w} {
     destroy $w
 }
 
+#
+# invoked on right-clicking object name inspectors
+#
+proc inspectorNamePopup {ptr x y} {
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+
+    regsub {^ptr} $ptr {0x} p
+
+    .popup add command -label "Copy pointer with cast" -command "setClipboard \"(([opp_getobjectclassname $ptr] *)$p)\""
+    .popup add command -label "Copy pointer" -command "setClipboard $p"
+    .popup add separator
+    .popup add command -label "Copy full path" -command "setClipboard [opp_getobjectfullpath $ptr]"
+    .popup add command -label "Copy name" -command "setClipboard [opp_getobjectfullname $ptr]"
+    .popup add command -label "Copy class name" -command "setClipboard [opp_getobjectclassname $ptr]"
+
+    .popup post $x $y
+}
+
+proc setClipboard {str} {
+    clipboard clear
+    clipboard append -- $str
+}
 
 #===================================================================
 #    UTILITY FUNCTIONS FOR INSPECTOR WINDOWS
