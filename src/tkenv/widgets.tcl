@@ -24,8 +24,13 @@
 proc iconbutton {w args} {
     global fonts
 
-    eval button $w -bd 1 $args
-    # old code: -fg red3 -activeforeground red3 -font $fonts(icon) $args
+    if {$args=="-separator"} {
+        # space between two buttons
+        canvas $w -height 1 -width 4
+    } {
+        # button
+        eval button $w -bd 1 $args
+    }
     return $w
 }
 

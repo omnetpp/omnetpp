@@ -300,3 +300,5 @@ July 17, 1999
 Aug 2, 1999
   - OMNETPP_BITMAP_PATH turned into real path (a list of directories). The
     separator char is ";" on Windows, and ":" or ";" on Unix.
+Aug 7, 1999
+  - "inspect network", "inspect FES" buttons added to main toolbar

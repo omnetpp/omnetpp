@@ -42,9 +42,13 @@ proc create_inspector_toplevel {w {geom ""}} {
     # add the "Inspect As.." icon at the top
 
     frame $w.toolbar -relief raised -borderwidth 1
-    iconbutton $w.toolbar.inspect -image $icons(as) -command "inspect_this_as $w"
-    pack $w.toolbar.inspect -anchor n -expand 0 -side left
     pack $w.toolbar -anchor w -side top -fill x -expand 0
+
+    iconbutton $w.toolbar.sep0 -separator
+    iconbutton $w.toolbar.inspect -image $icons(as) -command "inspect_this_as $w"
+    foreach i {sep0 inspect} {
+       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+    }
 
     set help_tips($w.toolbar.inspect) {Open another inspector for this object}
 

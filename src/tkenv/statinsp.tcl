@@ -43,7 +43,9 @@ proc create_histogramwindow {name} {
     bind $w <Configure> "opp_updateinspector $w"
 
     iconbutton $w.toolbar.obj -image $icons(asobject) -command "inspect_this $w {As Object}"
-    pack $w.toolbar.obj -anchor n -expand 0 -side left
+    foreach i {obj} {
+       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+    }
 
     set help_tips($w.toolbar.obj) {Inspect as object}
 
@@ -228,7 +230,9 @@ proc create_statisticinspector {name} {
     create_inspector_toplevel $w
 
     iconbutton $w.toolbar.graph -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
-    pack $w.toolbar.graph -anchor n -expand 0 -side left
+    foreach i {graph} {
+       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+    }
 
     set help_tips($w.toolbar.graph) {Inspect as histogram graphics}
 

@@ -105,3 +105,15 @@ set icons(redraw) [image create photo -data {
     sDT8rfNr2TjfqMNrCTMFDeDWqxWeyqbzmezkplSlqEOFbiWA7HcCKI/P6EsEADs=
 }]
 
+set icons(fes) [image create photo -data {
+    R0lGODlhFAATALMAAEAAAMbGxoAAAP////8AAAAAAMAAAP//////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAAQ4MMhJq7046827pwYhfBJhkkE4ooRVUK8qyXLx
+    2rZJ5Gah48CCyjYc4iSvjg0VSCKZTedHOqVCOREAOw==
+}]
+
+set icons(network) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAISE/8bGxgCAgP//////////////////////////////////////
+    /////////yH5BAEAAAIALAAAAAAUABMAAARCUMhJqxUg342z5pWXDcPkXSJAkin6rS1IxTL8
+    gWu51rtEbp4fRRgSXYgmUamCFAxSuSjzqYn+Tj5ZB6vd3rS0LjcCADs=
+}]
+

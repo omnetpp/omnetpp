@@ -24,9 +24,11 @@ proc create_compoundmodinspector {name} {
     create_inspector_toplevel $w
 
     iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+    iconbutton $w.toolbar.sep1 -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-    pack $w.toolbar.graph -anchor w -side left
-    pack $w.toolbar.parent -anchor w -side left
+    foreach i {graph sep1 parent} {
+       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+    }
 
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
@@ -60,11 +62,13 @@ proc create_simplemodinspector {name} {
     create_inspector_toplevel $w
 
     iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
+    iconbutton $w.toolbar.sep1 -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
+    iconbutton $w.toolbar.sep2 -separator
     iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
-    pack $w.toolbar.win -anchor w -side left
-    pack $w.toolbar.parent -anchor w -side left
-    pack $w.toolbar.step -anchor w -side left
+    foreach i {win sep1 parent sep2 step} {
+       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+    }
 
     set help_tips($w.toolbar.win)    {See module output}
     set help_tips($w.toolbar.parent) {Inspect parent module}
@@ -124,16 +128,18 @@ proc create_modulewindow {name} {
 
     # Add icons
     iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
+    iconbutton $w.toolbar.sep1 -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
+    iconbutton $w.toolbar.sep2 -separator
     iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
-    pack $w.toolbar.obj -anchor n -side left
-    pack $w.toolbar.parent -anchor n -side left
-    pack $w.toolbar.step -anchor n -side left
+    foreach i {obj sep1 parent sep2 step} {
+       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+    }
 
     set help_tips($w.toolbar.obj)    {Inspect as object}
     set help_tips($w.toolbar.parent) {Inspect parent module}
     set help_tips($w.toolbar.step)   {Execute until next event in this module}
-                                    
+
     frame $w.statusbar
     label $w.statusbar.name -relief groove -text {(unknown module)}
     label $w.statusbar.phase -justify left -relief groove -text {Phase: -}

@@ -201,22 +201,21 @@ proc create_omnetpp_window {} {
 
     frame $w.toolbar -relief raised -borderwidth 1
     foreach i {
-      {space 0}
+      {sep0     -separator}
       {step     -image $icons(step)    -command {one_step}}
-      {space 1}
+      {sep1     -separator}
       {run      -image $icons(run)     -command {run}}
       {fastrun  -image $icons(fast)    -command {run_fast}}
       {exprrun  -image $icons(express) -command {run_notracing}}
-      {space 2}
+      {sep2     -separator}
       {until    -image $icons(until)   -command {run_until}}
-      {space 3}
+      {sep3     -separator}
       {stop     -image $icons(stop)    -command {stop_simulation}}
+      {sep4     -separator}
+      {network  -image $icons(network) -command {inspect_systemmodule}}
+      {fes      -image $icons(fes)     -command {inspect_messagequeue}}
     } {
-      if {[lindex $i 0]=="space"} {
-         set b [canvas $w.toolbar.[lindex $i 1]  -height 1 -width 4]
-      } else {
-         set b [eval iconbutton $w.toolbar.$i -bd 1]
-      }
+      set b [eval iconbutton $w.toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
 
@@ -226,6 +225,8 @@ proc create_omnetpp_window {} {
     set help_tips($w.toolbar.exprrun) {Run at full speed: all tracing, animation and inspectors off}
     set help_tips($w.toolbar.until)   {Run until time or event number}
     set help_tips($w.toolbar.stop)    {Stop simulation (if running)}
+    set help_tips($w.toolbar.network) {Inspect network}
+    set help_tips($w.toolbar.fes)     {Inspect Future Event Set}
 
     #################################
     # Create status bar
