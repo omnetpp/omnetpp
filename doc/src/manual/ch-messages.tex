@@ -45,7 +45,7 @@ of the simulation programmer. A more-or-less complete list:
     message was enqueued or re-sent.}
   \item{Other attributes and data members make simulation programming
     easier, they will be discussed later: \textit{parameter list}, \textit{encapsulated
-      message}, \textit{context pointer}.}
+      message}, \textit{control info} and \textit{context pointer}.}
   \item{A number of read-only attributes store information about the
     message's (last) sending/scheduling: \textit{source/destination module
       and gate}, \textit{sending (scheduling) and arrival time}. They are
@@ -148,11 +148,163 @@ of the original, including message parameters (\cclass{cPar} or other
 object types) and encapsulated messages.
 
 
+\subsection{Self-messages}
+
+\subsubsection{Using a message as self-message}
+
+Messages are often used to represent events internal to a module,
+such as a periodically firing timer on expiry of a timeout.
+A message is termed \textit{self-message} when it is used
+in such a scenario -- otherwise self-messages are normal messages,
+of class \cclass{cMessage} or a class derived from it.
+
+When a message is delivered to a module by the simulation kernel,
+you can call the \fname{isSelfMessage()} method to determine if it's
+a self-message; it other words, if it was scheduled with
+\fname{scheduleAt()} or was sent with one of the
+\fname{send...()} methods. The \fname{isScheduled()} method
+returns true if the message is currently scheduled. A scheduled
+message can also be cancelled (\fname{cancelEvent()}).
+
+\begin{Verbatim}[commandchars=\\\{\}]
+bool \fname{isSelfMessage()};
+bool \fname{isScheduled()};
+\end{Verbatim}
+
+The following methods return the time of creating and scheduling the message
+as well as its arrival time. While the message is scheduled, arrival
+time is the time it will be delivered to the module.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+simtime_t \fname{creationTime()}
+simtime_t \fname{sendingTime()};
+simtime_t \fname{arrivalTime()};
+\end{Verbatim}
+
+\subsubsection{Context pointer}
+
+\cclass{cMessage} contains a \ttt{void*} pointer which is
+set/returned by the \fname{setContextPointer()} and
+\fname{contextPointer()} functions:
+
+\begin{verbatim}
+void *context =...;
+msg->setContextPointer( context );
+void *context2 = msg->contextPointer();
+\end{verbatim}
 
 
-\subsection{Message encapsulation}
+It can be used for any purpose by the simulation programmer.
+It is not used by the simulation kernel, and it is treated as
+a mere pointer (no memory management is done on it).
 
-\subsubsection{Encapsulating one message}
+Intended purpose: a module which schedules several self-messages
+(timers) will need to identify a self-message when it arrives back to
+the module, ie. the module will have to determine which timer went off
+and what to do then. The context pointer\index{context pointer} can be
+made to point at a data structure kept by the module which can carry
+enough ``context'' information about the event.
+
+
+
+\subsection{Modelling packets}
+
+The following methods can tell where the message came from and
+where it arrived (or will arrive if it is currently scheduled or under way.)
+
+\begin{Verbatim}[commandchars=\\\{\}]
+int \fname{senderModuleId()};
+int \fname{senderGateId()};
+int \fname{arrivalModuleId()};
+int \fname{arrivalGateId()};
+\end{Verbatim}
+
+The following two methods are just convenience functions that
+combine module id and gate id into a gate object pointer.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+cGate *\fname{senderGate()};
+cGate *\fname{arrivalGate()};
+\end{Verbatim}
+
+And there are further convenience functions to tell whether
+the message arrived on a specific gate given with id or
+name+index.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+bool \fname{arrivedOn}(int id);
+bool \fname{arrivedOn}(const char *gname, int gindex=0);
+\end{Verbatim}
+
+The following methods return message creation time and the last sending
+and arrival times.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+simtime_t \fname{creationTime()}
+simtime_t \fname{sendingTime()};
+simtime_t \fname{arrivalTime()};
+\end{Verbatim}
+
+\subsubsection{Control info}
+
+One of the main application areas of {\opp} is the simulation of
+telecommunication networks. Here, protocol layers are usually
+implemented as modules which exchange packets. Packets themselves
+are represented by messages subclassed from \cclass{cMessage}.
+
+However, communication between protocol layers requires sending
+additional information to be attached to packets. For example,
+a TCP implementation sending down a TCP packet to IP will want
+to specify the destination IP address and possibly
+other parameters. When IP passes up a packet to TCP after
+decapsulation from the IP header, it'll want to let TCP know
+at least the source IP address.
+
+This additional information is represented by \textit{control info}
+objects in {\opp}. Control info objects have to be subclassed from
+\cclass{cPolymorphic} (a small footprint base class with
+no data members), and attached to the messages representing
+packets. \cclass{cMessage} has the following methods for this
+purpose:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+void \fname{setControlInfo(cPolymorphic *controlInfo)};
+cPolymorphic *\fname{controlInfo()};
+cPolymorphic *\fname{removeControlInfo()};
+\end{Verbatim}
+
+When a "command" is associated with the message sending (such as
+TCP OPEN, SEND, CLOSE, etc), the message kind field (\ttt{kind()},
+\ttt{setKind()} methods of \ttt{cMessage}) should carry the command code.
+When the command doesn't involve a data packet (e.g.
+TCP CLOSE command), a dummy packet (empty \ttt{cMessage}) can be sent.
+
+
+
+\subsubsection{Identifying the protocol}
+
+In {\opp} protocol models, the protocol type is usually represented
+in the message subclass. For example, instances of class
+\ttt{IPv6Datagram} represent IPv6 datagrams and \ttt{EthernetFrame}
+represents Ethernet frames) and/or in the message kind value.
+The PDU type is usually represented as a field inside the message class.
+
+The C++ \ttt{dynamic\_cast} operator can be used to determine
+if a message object is of a specific protocol.
+
+\begin{verbatim}
+cMessage *msg = receive();
+if (dynamic_cast<IPv6Datagram *>(msg) != NULL)
+{
+    IPv6Datagram *datagram = (IPv6Datagram *)msg;
+    ...
+}
+\end{verbatim}
+
+
+\subsection{Encapsulation}
+
+\subsubsection{Encapsulating packets}
 
 It is often necessary to encapsulate a
 message\index{message!encapsulation} into another when you're modeling
@@ -195,7 +347,7 @@ The \fname{encapsulatedMsg()} function returns a pointer to the encapsulated
 message, or NULL if no message was encapsulated.
 
 
-\subsubsection{Encapsulating several messages \new}
+\subsubsection{Encapsulating several messages}
 
 The \cclass{cMessage} class doesn't directly support adding more than one
 messages to a message object, but you can subclass \cclass{cMessage}
@@ -236,129 +388,12 @@ about the things you need to take care of when deriving new classes.
 
 
 
-\subsection{Information about the last sending}
-
-There are several variables in \cclass{cMessage} that store
-information about the last time the message was sent or
-scheduled. These variables can only be read.
-
-\fname{isSelfMessage()} returns true if the message has been scheduled
-(\fname{scheduleAt()}) as opposed to being sent with one of the
-\fname{send...()} methods.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-bool \fname{isSelfMessage()}
-\end{Verbatim}
-
-The following methods can tell where the message came from and
-where it arrived (will arrive).
-
-\begin{Verbatim}[commandchars=\\\{\}]
-int \fname{senderModuleId()};
-int \fname{senderGateId()};
-int \fname{arrivalModuleId()};
-int \fname{arrivalGateId()};
-\end{Verbatim}
-
-The following two methods are just convenience functions that
-combine module id and gate id into a gate object pointer.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-cGate *\fname{senderGate()};
-cGate *\fname{arrivalGate()};
-\end{Verbatim}
-
-And there are further convenience functions to tell whether
-the message arrived on a specific gate given with id or
-name+index.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-bool \fname{arrivedOn}(int id);
-bool \fname{arrivedOn}(const char *gname, int gindex=0);
-\end{Verbatim}
-
-The following methods return message creation time and the last sending
-and arrival times.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-simtime_t \fname{creationTime()}
-simtime_t \fname{sendingTime()};
-simtime_t \fname{arrivalTime()};
-\end{Verbatim}
-
-
-
-
-\subsection{Context pointer}
-
-\cclass{cMessage} contains a void* pointer which is
-set/returned by the \fname{setContextPointer()} and
-\fname{contextPointer()} functions:
-
-\begin{verbatim}
-void *context =...;
-msg->setContextPointer( context );
-void *context2 = msg->contextPointer();
-\end{verbatim}
-
-
-It can be used for any purpose by the simulation programmer.
-It is not used by the simulation kernel, and it is treated as
-a mere pointer (no memory management is done on it).
-
-Intended purpose: a module which schedules several self-messages
-(timers) will need to identify a self-message when it arrives back to
-the module, ie. the module will have to determine which timer went off
-and what to do then. The context pointer\index{context pointer} can be
-made to point at a data structure kept by the module which can carry
-enough ``context'' information about the event.
-
-
-
-
-
-\subsection{Modeling packets and frames}
-
-The \cclass{cPacket} class is now deprecated. Please do not use it
-in new models.
-  \footnote{\cclass{cPacket} was a subclass of \cclass{cMessage}, and it
-  was originally intended as a base class for packets or frames
-  in a telecommunications network. \cclass{cPacket} added two data members:
-  \textit{protocol} and \textit{PDU} (\textit{Protocol Data Unit}, an OSI term).
-  It was envisioned that \textit{procotol} and \textit{PDU} would take
-  their values from globally maintained enums. As it turned out,
-  this was utopistic. In practice, usage of \textit{protocol} was inconsistent
-  (\textit{protocol} and \textit{message kind} played similar roles,
-  creating confusion), and models did not use \textit{PDU} at all.
-  Hence the deprecation of \cclass{cPacket}.}
-
-In future {\opp} models, the protocol should be represented
-in the message subclass (i.e. instances of class
-\texttt{IPv6Packet} represent IPv6 packets,
-and \texttt{EthernetFrame} represents Ethernet frames) and/or
-in the message kind value. PDU is usually represented
-as a field inside the message class (a protocol header field).
-
-If the former case, the C++ \ttt{dynamic\_cast} operator can be used
-to determine if a message object is of a specific protocol:
-
-\begin{verbatim}
-cMessage *msg = receive();
-if (dynamic_cast<IPv6Packet *>(msg) != NULL)
-{
-    IPv6Packet *ipv6packet = (IPv6Packet *)msg;
-    ...
-}
-\end{verbatim}
-
-
-
-
 \subsection{Attaching parameters and objects}
 
 If you want to add parameters or objects to a message, the preferred
 way to do that is via message definitions, described in chapter
 \ref{ch:messages:message-definitions}.
+
 
 \subsubsection{Attaching objects}
 
@@ -584,7 +619,7 @@ There are questions you might ask:
 
 \begin{itemize}
   \item{\textit{Why doesn't it support \ttt{std::vector} and other STL classes?}
-     Well, it does... Message definitions focus on the interface
+     Well, it does. Message definitions focus on the interface
      (getter/setter methods) of the classes, optionally leaving the implementation
      to you -- so you can implement fields (dynamic array fields)
      using \ttt{std::vector}.
@@ -961,8 +996,6 @@ Inheritance is supported for structs:
 But because a struct has no member functions, there are limitations:
 
 \begin{itemize}
-   \item field initialization is not supported (it would need constructor)
-   \item struct fields are not initialized to zero (it would need constructor)
    \item dynamic arrays are not supported (no place for the array allocation code)
    \item ``generation gap'' or abstract fields (see later) cannot be used,
       because they would build upon virtual functions.
