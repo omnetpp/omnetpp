@@ -173,3 +173,6 @@ Nov 20-21, 1999
   - several bugs fixed
 Nov 30, 1999
   - bugfix in drawItemRecursive
+Dec 2, 1999
+  - implemented Imports, Channel, Network Properties dialogs
+  - adjusted tree-view context menus

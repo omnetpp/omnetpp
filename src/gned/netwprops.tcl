@@ -18,105 +18,107 @@
 
 
 proc editNetworkProps {key} {
-    global gned ned canvas
+    global gned ned
 
-    tk_messageBox -icon warning -type ok -title GNED -message "Sorry! This dialog hasn't been implemented yet."
-    return
+    #
+    # Set up dialog.
+    #
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .netprops "Network Properties"
+    wm geometry .netprops "480x320"
+
+    set nb .netprops.f.nb
 
     # add notebook pages
-    notebook .netprops.f.nb
-    pack .netprops.f.nb -expand 1 -fill both
-    notebook_addpage .netprops.f.nb general "General"
-    notebook_addpage .netprops.f.nb parameters "Parameters"
+    notebook $nb
+    pack $nb -expand 1 -fill both
+    notebook_addpage $nb general "General"
+    notebook_addpage $nb pars "Parameters"
+    notebook_addpage $nb on "Machines"
 
-    label-entry .netprops.f.nb.general.name  "Name:"
-    label-entry .netprops.f.nb.general.type  "Type:"
-    label-entry .netprops.f.nb.general.like "Like:"
-    label-check .netprops.f.nb.general.link "Type link:"  "Define type if not exist" def
-    label-entry .netprops.f.nb.general.on    "On:"
-    label-text  .netprops.f.nb.general.comment "Comments:" 2
+    # create "General" page
+    label-entry $nb.general.name "Name:"
+    label-entry $nb.general.type "Type:"
+    label-entry $nb.general.like "Like:"
+    label-text  $nb.general.comment "Comments:" 4
 
-    label-text  .netprops.f.nb.parameters.params "Parameters:" 7
+    pack $nb.general.name  -expand 0 -fill x -side top
+    pack $nb.general.type  -expand 0 -fill x -side top
+    pack $nb.general.like  -expand 0 -fill x -side top
+    pack $nb.general.comment -expand 0 -fill x -side top
 
-    pack .netprops.f.nb.general.name  -expand 0 -fill x -side top
-    pack .netprops.f.nb.general.type  -expand 0 -fill x -side top
-    pack .netprops.f.nb.general.like  -expand 0 -fill x -side top
-    pack .netprops.f.nb.general.link  -expand 0 -fill x -side top
-    pack .netprops.f.nb.general.on  -expand 0 -fill x -side top
-    pack .netprops.f.nb.general.comment  -expand 0 -fill x -side top
+    # fill "General" page with values
+    $nb.general.name.e insert 0 $ned($key,name)
+    $nb.general.type.e insert 0 $ned($key,type-name)
+    $nb.general.like.e insert 0 $ned($key,like-name)
+    $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
 
-    pack .netprops.f.nb.parameters.params  -expand 0 -fill x -side top
-
-    set typename $ned($key,type-name)
-    if {$ned($key,like-name)!=""} {
-        if {[itemKeyFromName $ned($key,like-name) module]==""} {
-            set ned(def) 0
-        } else { set ned(def) 1}
-    } else {
-       if {$typename!="" && [itemKeyFromName $typename module]==""} {
-         set ned(def) 0
-       } else {set ned(def) 1}
+    # create "Parameters" page
+    createSectionsComboAndTables $nb.pars $key substparams parameters  {
+      {Name    name    {entry $e -textvariable $v -width 20 -bd 1}}
+      {Value   value   {entry $e -textvariable $v -width 20 -bd 1}}
+      {{End-line comment} right-comment {entry $e -textvariable $v -width 15 -bd 1}}
+      {{Doc. comment} banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
     }
+    button $nb.pars.xcheck -text "Consult module declaration"
+    pack $nb.pars.xcheck -side top -anchor w -padx 4 -pady 4
 
-    .netprops.f.nb.general.name.e  insert 0 $ned($key,name)
-    .netprops.f.nb.general.type.e  insert 0 $ned($key,type-name)
-    .netprops.f.nb.general.like.e  insert 0 $ned($key,like-name)
-    .netprops.f.nb.general.on.e    insert 0 $ned($key,on)
-    .netprops.f.nb.general.comment.t  insert 1.0 $ned($key,comment)
+    # create "Machines" page
+    createSectionsComboAndTables $nb.on $key substmachines on  {
+      {{On machine} value  {entry $e -textvariable $v -width 16 -bd 1}}
+      {{End-line comment} right-comment {entry $e -textvariable $v -width 24 -bd 1}}
+      {{Doc. comment} banner-comment {entry $e -textvariable $v -width 30 -bd 1}}
+    }
+    button $nb.on.xcheck -text "Consult module declaration"
+    pack $nb.on.xcheck -side top -anchor w -padx 4 -pady 4
 
-    .netprops.f.nb.parameters.params.t insert 1.0 $ned($key,parameters)
+    focus $nb.general.name.e
 
-    focus .netprops.f.nb.general.name.e
+
+    #
+    # Execute dialogs and extract results.
+    #
+
+    # set initial focus
+    focus $nb.general.name.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .netprops] == 1} {
-       set ned($key,name)       [.netprops.f.nb.general.name.e get]
-       set typename             [.netprops.f.nb.general.type.e get]
-       set likename             [.netprops.f.nb.general.like.e get]
-       set ned($key,on)         [.netprops.f.nb.general.on.e   get]
-       set ned($key,comment)    [.netprops.f.nb.general.comment.t get 1.0 end]
 
-       set ned($key,parameters) [.netprops.f.nb.parameters.params.t get 1.0 end]
+        # process "General" page.
+        set ned($key,name) [$nb.general.name.e get]
+        set ned($key,type-name) [$nb.general.type.e get]
+        set ned($key,like-name) [$nb.general.like.e get]
+        set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
 
-#       set ned($key,type-name) $typename
-#       if {$typename!="" && [itemKeyFromName $typename module]==""} {
-#            if {$ned(def) == 1} {
-#                set modk [addItem module]
-#                set ned($modk,name) $typename
-#                set ned($modk,parentkey) $ned($key,parentkey)
-#                openModuleOnNewCanvas $modk
-#            }
-#       }
+        # process "Parameters" page.
+        updateNedFromSectionTables $nb.pars $key substparams substparam name
 
-       if {$likename!=""} {
-           set ned($key,like-name) $likename
-           set ned($key,type-name) $typename
-           if {[itemKeyFromName $likename module]==""} {
-              if {$ned(def) == 1} {
-                  set modk [addItem module]
-                  set ned($modk,name) $likename
-                  set ned($modk,parentkey) $ned($key,parentkey)
-                  openModuleOnNewCanvas $modk
-              }
-           }
-       } else {
-           set ned($key,like-name) $likename
-           set ned($key,type-name) $typename
-           if {$typename!="" && [itemKeyFromName $typename module]==""} {
-               if {$ned(def) == 1} {
-                   set modk [addItem module]
-                   set ned($modk,name) $typename
-                   set ned($modk,parentkey) $ned($key,parentkey)
-                   openModuleOnNewCanvas $modk
-               }
-           }
-       }
+        # process "Machines" page.
+        updateNedFromSectionTables $nb.on $key substmachines substmachine value
+
+        # destroy dialog here
+        destroy .netprops
+
+        # check if module type specified already exists...
+        if {$ned($key,like-name)!=""} {
+            set typename $ned($key,like-name)
+        } else {
+            # FIXME: check it's non-empty
+            set typename $ned($key,type-name)
+        }
+        if {[itemKeyFromName $typename module]=="" && [itemKeyFromName $typename simple]==""} {
+            if {"yes"==[tk_messageBox -type yesno -title GNED -icon question \
+                -message "Module type '$typename' is unknown to GNED. Create it in this file?"]
+            } {
+                tk_messageBox -type ok -title GNED -icon error -message "Not implemented yet :-)"
+            }
+        }
+    } else {
+        destroy .netprops
     }
-    destroy .netprops
-    updateTreeManager
 }
+
 
 

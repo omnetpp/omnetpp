@@ -27,7 +27,7 @@ proc editSubmoduleProps {key} {
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .submprops "Submodule Properties"
-    wm geometry .submprops "480x300"
+    wm geometry .submprops "480x320"
 
     set nb .submprops.f.nb
 
@@ -66,6 +66,8 @@ proc editSubmoduleProps {key} {
       {{End-line comment} right-comment {entry $e -textvariable $v -width 15 -bd 1}}
       {{Doc. comment} banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
     }
+    button $nb.pars.xcheck -text "Consult module declaration"
+    pack $nb.pars.xcheck -side top -anchor w -padx 4 -pady 4
 
     # create "Gate sizes" page
     createSectionsComboAndTables $nb.gates $key gatesizes gatesizes  {
@@ -74,6 +76,8 @@ proc editSubmoduleProps {key} {
       {{End-line comment} right-comment {entry $e -textvariable $v -width 16 -bd 1}}
       {{Doc. comment} banner-comment {entry $e -textvariable $v -width 18 -bd 1}}
     }
+    button $nb.gates.xcheck -text "Consult module declaration"
+    pack $nb.gates.xcheck -side top -anchor w -padx 4 -pady 4
 
     # create "Machines" page
     createSectionsComboAndTables $nb.on $key substmachines on  {
@@ -81,6 +85,8 @@ proc editSubmoduleProps {key} {
       {{End-line comment} right-comment {entry $e -textvariable $v -width 24 -bd 1}}
       {{Doc. comment} banner-comment {entry $e -textvariable $v -width 30 -bd 1}}
     }
+    button $nb.on.xcheck -text "Consult module declaration"
+    pack $nb.on.xcheck -side top -anchor w -padx 4 -pady 4
 
     focus $nb.general.name.e
 

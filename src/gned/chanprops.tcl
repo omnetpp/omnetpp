@@ -20,44 +20,52 @@
 proc editChannelProps {key} {
     global gned ned canvas
 
-    tk_messageBox -icon warning -type ok -title GNED -message "Sorry! This dialog hasn't been implemented yet."
-    return
-
     # create dialog with OK and Cancel buttons
-    createOkCancelDialog .chanprops "Network Properties"
+    createOkCancelDialog .chanprops "Channel Properties"
+    wm geometry .chanprops "380x260"
 
     # add notebook pages
-    notebook .chanprops.f.nb
-    pack .chanprops.f.nb -expand 1 -fill both
-    notebook_addpage .chanprops.f.nb general "General"
+    set nb .chanprops.f.nb
+    notebook $nb
+    pack $nb -expand 1 -fill both
+    notebook_addpage $nb general "General"
+    notebook_addpage $nb attrs "Channel attributes"
+    notebook_showpage $nb attrs
 
-    label-entry .chanprops.f.nb.general.name     "Name:"
-    label-entry .chanprops.f.nb.general.delay    "Delay:"
-    label-entry .chanprops.f.nb.general.error    "Error:"
-    label-entry .chanprops.f.nb.general.datarate "Datarate:"
-    label-text  .chanprops.f.nb.general.comment  "Comments:" 3
+    # create "General" page
+    label-entry $nb.general.name "Name:"
+    label-text  $nb.general.comment "Doc. comments:" 6
+    label-text  $nb.general.rcomment "End-of-line comments:" 2
+    pack $nb.general.name -expand 0 -fill x -side top
+    pack $nb.general.comment -expand 0 -fill x -side top
+    pack $nb.general.rcomment -expand 0 -fill x -side top
 
-    pack .chanprops.f.nb.general.name     -expand 0 -fill x -side top
-    pack .chanprops.f.nb.general.delay    -expand 0 -fill x -side top
-    pack .chanprops.f.nb.general.error    -expand 0 -fill x -side top
-    pack .chanprops.f.nb.general.datarate -expand 0 -fill x -side top
-    pack .chanprops.f.nb.general.comment  -expand 0 -fill x -side top
+    # add "Attributes" page
+    label $nb.attrs.l -text  "Attributes:"
+    tableEdit $nb.attrs.tbl 10 {
+      {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
+      {Value              value          {entry $e -textvariable $v -width 20 -bd 1}}
+      {{End-line comment} right-comment  {entry $e -textvariable $v -width 15 -bd 1}}
+      {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
+    }
+    button $nb.attrs.def -text "Add standard atttributes"
+    pack $nb.attrs.l -side top -anchor w
+    pack $nb.attrs.tbl -side top
+    pack $nb.attrs.def -side top -anchor w -padx 4 -pady 4
 
-    .chanprops.f.nb.general.name.e     insert 0 $ned($key,name)
-    .chanprops.f.nb.general.delay.e    insert 0 $ned($key,delay)
-    .chanprops.f.nb.general.error.e    insert 0 $ned($key,error)
-    .chanprops.f.nb.general.datarate.e insert 0 $ned($key,datarate)
-    .chanprops.f.nb.general.comment.t  insert 1.0 $ned($key,comment)
-
-    focus .chanprops.f.nb.general.name.e
+    # fill page
+    $nb.general.name.e insert 0 $ned($key,name)
+    $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
+    $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
+    fillTableEditFromNed $nb.attrs.tbl $key
+puts "DBG: editChannelProps: implement (Add standard attributes) button"
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .chanprops] == 1} {
-       set ned($key,name)       [.chanprops.f.nb.general.name.e get]
-       set ned($key,delay)      [.chanprops.f.nb.general.delay.e get]
-       set ned($key,error)      [.chanprops.f.nb.general.error.e  get]
-       set ned($key,datarate)   [.chanprops.f.nb.general.datarate.e get]
-       set ned($key,comment)    [.chanprops.f.nb.general.comment.t get 1.0 end]
+        set ned($key,name) [$nb.general.name.e get]
+        set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
+        set ned($key,right-comment) [getCommentFromText $nb.general.rcomment.t]
+        updateNedFromTableEdit $nb.attrs.tbl $key chanattr name
     }
     destroy .chanprops
 }

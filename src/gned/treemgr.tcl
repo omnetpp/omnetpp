@@ -160,7 +160,12 @@ proc treemanagerDoubleClick {key} {
     if {$ned($key,type)=="nedfile"} {
         Tree:toggle $gned(manager).tree $key
     } elseif {$ned($ned($key,parentkey),type)=="nedfile"} {
-        openModuleOnCanvas $key
+        # top-level item
+        if {$ned($key,type)=="module"} {
+            openModuleOnCanvas $key
+        } else {
+            editProps $key
+        }
     } else {
         Tree:toggle $gned(manager).tree $key
     }
@@ -215,13 +220,16 @@ proc nedfilePopup {key} {
 proc toplevelComponentPopup {key} {
     global ned
 
+    .popup add command -command "editProps $key" -label {Properties...} -underline 0
+    if {$ned($key,type)=="module"} {
+      .popup add command -command "openModuleOnCanvas $key" -label {Open on canvas} -underline 0
+    }
+    .popup add command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0
     if {$ned($key,type)=="module" || $ned($key,type)=="simple"} {
-       .popup add command -command "createSubmoduleOnCanvas $key" -label {Drop an instance onto canvas} -underline 1
+       .popup add separator
+       .popup add command -command "createSubmoduleOnCanvas $key" -label {Drop an instance onto the canvas} -underline 1
     }
     foreach i {
-      {command -command "editProps $key" -label {Properties...} -underline 0}
-      {command -command "openModuleOnCanvas $key" -label {Open on canvas} -underline 0}
-      {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
       {separator}
       {command -command "moveUpItem $key; updateTreeManager" -label {Move up} -underline 5}
       {command -command "moveDownItem $key; updateTreeManager" -label {Move down} -underline 5}
@@ -321,7 +329,7 @@ proc displayCodeForItem {key} {
 
     frame $w.butt
     button $w.butt.close -text Close -command "destroy $w"
-    pack $w.butt.close -anchor n -expand 0
+    pack $w.butt.close -anchor n -side right -expand 0
 
     pack $w.butt -expand 0 -fill x -side bottom -padx 5 -pady 5
     pack $w.main -expand 1 -fill both -side top -padx 5 -pady 5
