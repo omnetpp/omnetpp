@@ -55,7 +55,7 @@ puts "DBG: saving nedfilekey $nedfilekey"
 #
 #
 proc loadNED {nedfile} {
-    global ned ddict
+    global ned ned_attr
     global tmp_ned tmp_errors
 
     # parse NED file and fill the tmp_ned() array
@@ -68,13 +68,13 @@ proc loadNED {nedfile} {
     incr tmp_ned(nextkey)
 
     # add fields
-    foreach i [array names ddict "common,*"] {
+    foreach i [array names ned_attr "common,*"] {
        regsub -- "common," $i "" field
-       set tmp_ned($filekey,$field) $ddict($i)
+       set tmp_ned($filekey,$field) $ned_attr($i)
     }
-    foreach i [array names ddict "nedfile,*"] {
+    foreach i [array names ned_attr "nedfile,*"] {
        regsub -- "nedfile," $i "" field
-       set tmp_ned($filekey,$field) $ddict($i)
+       set tmp_ned($filekey,$field) $ned_attr($i)
     }
 
     set tmp_ned($filekey,type) "nedfile"

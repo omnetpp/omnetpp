@@ -63,11 +63,11 @@ proc getCommentFromText {w} {
 # parentkey: key of the params,gates,substparams,gatesizes etc. item
 #
 proc fillTableEditFromNed {w parentkey} {
-    global ned ddfields tablePriv
+    global ned ned_attlist tablePriv
 
     set li 0
     foreach key [getChildren $parentkey] {
-        foreach attr $ddfields($ned($key,type)) {
+        foreach attr $ned_attlist($ned($key,type)) {
             set tablePriv($w,$li,$attr) $ned($key,$attr)
         }
         incr li
@@ -83,7 +83,7 @@ proc fillTableEditFromNed {w parentkey} {
 # keyattr:   if this attr!="", table line will be added to ned()
 #
 proc updateNedFromTableEdit {w parentkey itemtype keyattr} {
-    global ned ddfields tablePriv
+    global ned ned_attlist tablePriv
 
     # count lines in table
     set tblN 0
@@ -113,7 +113,7 @@ proc updateNedFromTableEdit {w parentkey itemtype keyattr} {
     for {set li 0} {[info exist tablePriv($w,$li,$keyattr)]} {incr li} {
         if {$tablePriv($w,$li,$keyattr)!=""} {
             set key [lindex $items $i]
-            foreach attr $ddfields($itemtype) {
+            foreach attr $ned_attlist($itemtype) {
                 # set attrs not in tablePriv() to ""
                 if [catch {
                    set ned($key,$attr) $tablePriv($w,$li,$attr)

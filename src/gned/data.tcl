@@ -30,27 +30,28 @@
 # create an item with the given type and add it to ned()
 #
 proc addItem {type parentkey} {
-   global ned ddict
+   global ned ned_attr ned_attlist
 
    # choose key
    set key $ned(nextkey)
    incr ned(nextkey)
 
-   # add ned() fields
-   foreach i [array names ddict "common,*"] {
-      regsub -- "common," $i "" field
-      set ned($key,$field) $ddict($i)
+   # add ned() attributes: (for 'common' and for $type)
+   foreach attr $ned_attlist(common) {
+      set ned($key,$attr) $ned_attr(common,$attr)
    }
-   foreach i [array names ddict "$type,*"] {
-      regsub -- "$type," $i "" field
-      set ned($key,$field) $ddict($i)
+   foreach attr $ned_attlist($type) {
+      set ned($key,$attr) $ned_attr($type,$attr)
    }
    set ned($key,type) $type
 
    # set parent  (everyone has one except root)
    set ned($key,parentkey) $parentkey
-   if {$type!="root"} {lappend ned($parentkey,childrenkeys) $key}
+   if {$type!="root"} {
+       lappend ned($parentkey,childrenkeys) $key
+   }
 
+if {0} {
    # generate a unique name if necessary
    if [info exist ned($key,name)] {
       set name $ned($key,name)
@@ -64,6 +65,7 @@ proc addItem {type parentkey} {
       set max [expr int($max+1)]
       set ned($key,name) "$name$max"
    }
+}
 
    # mark it "not selected" on canvas
    set ned($key,selected) 0
@@ -91,7 +93,7 @@ proc insertItem {key parentkey} {
 # delete an item; also delete it from canvas, with linked items
 #
 proc deleteItem {key} {
-    global ned canvas ddfields
+    global ned canvas ned_attlist
 
     puts "dbg: deleteItem $key entered"
 
@@ -134,10 +136,10 @@ proc deleteItem {key} {
 
     # delete from array
     set type $ned($key,type)
-    foreach field $ddfields($type) {
+    foreach field $ned_attlist($type) {
         unset ned($key,$field)
     }
-    foreach field $ddfields(common) {
+    foreach field $ned_attlist(common) {
         catch {unset ned($key,$field)}
     }
 }
@@ -394,9 +396,9 @@ proc pasteArrayIntoNed {tmp_ned_name} {
 # Check ned() array if it conforms to the data dictionary
 #
 proc checkArray {} {
-   global ned ddict
+   global ned ned_attr
 
-   # check that ned() contains only those attrs in ddict()
+   # check that ned() contains only those attrs in ned_attr()
    foreach i [array names ned] {
       if {$i=="nextkey"} continue
       regsub -- ",.*" $i "" key
@@ -406,16 +408,16 @@ proc checkArray {} {
          continue
       }
       set type $ned($key,type)
-      if {![info exist ddict($type,$attr)]} {
+      if {![info exist ned_attr($type,$attr)]} {
           puts "ned($key/$type): unwanted attribute '$attr'"
       }
    }
 
-   # check that ned() contains all elements in ddict()
+   # check that ned() contains all elements in ned_attr()
    foreach i [array names ned "*,type"] {
       regsub -- ",.*" $i "" key
       set type $ned($key,type)
-      foreach j [array names ddict "$type,*"] {
+      foreach j [array names ned_attr "$type,*"] {
          regsub -- "$type," $j "" attr
          if {![info exist ned($key,$attr)]} {
             puts "ned($key/$type): missing attribute '$attr'"
@@ -436,7 +438,7 @@ proc checkArray {} {
          puts "ned($key/$type): parent '$ownerkey' not in array"
       } else {
          set parenttype $ned($ownerkey,type)
-         set possibleparents $ddict($ned($key,type)-parents)
+         set possibleparents $ned_attr($ned($key,type)-parents)
          if {[lsearch $possibleparents $parenttype]==-1} {
             puts "ned($key/$type): parent type '$parenttype' not allowed"
             puts "   (allowed ones: $possibleparents)"
@@ -525,7 +527,7 @@ proc deleteNedfile {nedfilekey} {
 #     top-level items)
 #
 proc deleteModuleData {key} {
-    global ned ddfields
+    global ned ned_attlist
 
     # delete children recursively
     foreach childkey $ned($key,childrenkeys) {
@@ -539,10 +541,10 @@ proc deleteModuleData {key} {
 
     # delete from array
     set type $ned($key,type)
-    foreach field $ddfields($type) {
+    foreach field $ned_attlist($type) {
         unset ned($key,$field)
     }
-    foreach field $ddfields(common) {
+    foreach field $ned_attlist(common) {
         catch {unset ned($key,$field)}
     }
 }

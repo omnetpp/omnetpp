@@ -27,21 +27,21 @@ proc generateNed {key} {
 }
 
 proc generateNedItem {key indent islast} {
-    global ned ddesc
+    global ned ned_desc
 
     set type $ned($key,type)
 
     # if component type not recognized: "undefined proc"
-    return [generate_$type $key "$indent$ddesc($type,plusindent)" $islast]
+    return [generate_$type $key "$indent$ned_desc($type,plusindent)" $islast]
 }
 
 proc generateNedItemWithArg {key indent islast arg} {
-    global ned ddesc
+    global ned ned_desc
 
     set type $ned($key,type)
 
     # if component type not recognized: "undefined proc"
-    return [generate_$type $key "$indent$ddesc($type,plusindent)" $islast $arg]
+    return [generate_$type $key "$indent$ned_desc($type,plusindent)" $islast $arg]
 }
 
 proc generateChildren {key indent} {
@@ -208,8 +208,8 @@ proc generate_module {key indent islast} {
     set dispstr [makeModuleDispStr $key]
     if {$dispstr!=""} {
         # HACK: the "display:" line uses indent of "parameters:" line
-        global ddesc
-        append out "${indent}$ddesc(params,plusindent)display: \"$dispstr\";\n"
+        global ned_desc
+        append out "${indent}$ned_desc(params,plusindent)display: \"$dispstr\";\n"
     }
     append out "${indent}endmodule"
     appendTrailingComment out $ned($key,trailing-comment) ""
@@ -308,8 +308,8 @@ proc generate_submod {key indent islast} {
     set dispstr [makeSubmoduleDispStr $key]
     if {$dispstr!=""} {
         # HACK: the "display:" line uses indent of "parameters:" line
-        global ddesc
-        append out "${indent}$ddesc(substparams,plusindent)display: \"$dispstr\";\n"
+        global ned_desc
+        append out "${indent}$ned_desc(substparams,plusindent)display: \"$dispstr\";\n"
     }
     return $out
 }

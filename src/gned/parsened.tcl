@@ -27,7 +27,7 @@
 # This procedure is called from parsened.cc, NEDParser::create()
 #
 proc NedParser_createNedElement {nedarrayname type parentkey} {
-   global ddict ddfields
+   global ned_attr ned_attlist
    upvar #0 $nedarrayname nedarray
 
    # choose key
@@ -35,11 +35,11 @@ proc NedParser_createNedElement {nedarrayname type parentkey} {
    incr nedarray(nextkey)
 
    # add ned() fields
-   foreach field $ddfields(common) {
-      set nedarray($key,$field) $ddict(common,$field)
+   foreach field $ned_attlist(common) {
+      set nedarray($key,$field) $ned_attr(common,$field)
    }
-   foreach field $ddfields($type) {
-      set nedarray($key,$field) $ddict($type,$field)
+   foreach field $ned_attlist($type) {
+      set nedarray($key,$field) $ned_attr($type,$field)
    }
    set nedarray($key,type) $type
 

@@ -80,7 +80,7 @@ proc updateTreeManager {} {
 # nodes, everything else comes from this function.
 #
 proc getNodeInfo {w op {key {}}} {
-    global ned ddesc icons
+    global ned ned_desc icons
 
     switch $op {
 
@@ -120,10 +120,10 @@ proc getNodeInfo {w op {key {}}} {
 
       icon {
         set type $ned($key,type)
-        if [info exist ddesc($type,treeicon)] {
-          return $icons($ddesc($type,treeicon))
+        if [info exist ned_desc($type,treeicon)] {
+          return $icons($ned_desc($type,treeicon))
         } else {
-          return $icons($ddesc(root,treeicon))
+          return $icons($ned_desc(root,treeicon))
         }
       }
 
