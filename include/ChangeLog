@@ -1,3 +1,12 @@
+2005-04-04  Andras Varga
+
+	* cenvir.h: fixed compilation bug in gcc3.4. For some contorted 
+	reason, in template classes gcc 3.4 seems to insist on fully 
+	qualifying calls to methods from the base class. This seems to make
+	no sense at all, and indeed was not a problem with gcc<3.4, vc6.0 or
+	vc7.1, and even gcc3.4 is willing to compile the old code if run with 
+	the -fpermissive option. Oh well...
+
 2005-03-31  ------ omnetpp-3.1 released ------
 
 2005-03-22  Andras Varga
