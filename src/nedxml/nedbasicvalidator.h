@@ -48,6 +48,8 @@ class NEDBasicValidator : public NEDValidatorBase
      */
     virtual ~NEDBasicValidator() {}
 
+    /** @name Validator methods */
+    //@{
     virtual void validateElement(NedFilesNode *node);
     virtual void validateElement(NedFileNode *node);
     virtual void validateElement(ImportNode *node);
@@ -98,6 +100,7 @@ class NEDBasicValidator : public NEDValidatorBase
     virtual void validateElement(PropertiesNode *node);
     virtual void validateElement(PropertyNode *node);
     virtual void validateElement(UnknownNode *node);
+    //@}
 };
 
 #endif

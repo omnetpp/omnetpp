@@ -30,12 +30,19 @@
 class NEDValidatorBase
 {
   public:
+    /** @name Constructor, destructor */
+    //@{
     NEDValidatorBase() {}
     virtual ~NEDValidatorBase() {}
+    //@}
 
-    virtual void validate(NEDElement *node); // recursive
+    /** Validates the node recursively */
+    virtual void validate(NEDElement *node);
+    /** Dispatches to the corresponding overloaded validateElement() function */
     virtual void validateElement(NEDElement *node);
 
+    /** @name Validation functions, to be implemented in subclasses */
+    //@{
     virtual void validateElement(NedFilesNode *node) = 0;
     virtual void validateElement(NedFileNode *node) = 0;
     virtual void validateElement(ImportNode *node) = 0;
@@ -86,6 +93,7 @@ class NEDValidatorBase
     virtual void validateElement(PropertiesNode *node) = 0;
     virtual void validateElement(PropertyNode *node) = 0;
     virtual void validateElement(UnknownNode *node) = 0;
+    //@}
 };
 
 #endif

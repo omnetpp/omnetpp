@@ -31,6 +31,8 @@
 class NEDDTDValidator : public NEDValidatorBase
 {
   protected:
+    /** @name Utility functions */
+    //@{
     void checkSequence(NEDElement *node, int tags[], char mult[], int n);
     void checkChoice(NEDElement *node, int tags[], int n, char mult);
     void checkEmpty(NEDElement *node);
@@ -39,10 +41,13 @@ class NEDDTDValidator : public NEDValidatorBase
     void checkNameAttribute(NEDElement *node, const char *attr);
     void checkCommentAttribute(NEDElement *node, const char *attr);
     void checkNMTokenAttribute(NEDElement *node, const char *attr);
+    //@}
   public:
     NEDDTDValidator() {}
     virtual ~NEDDTDValidator() {}
 
+    /** @name Validation functions */
+    //@{
     virtual void validateElement(NedFilesNode *node);
     virtual void validateElement(NedFileNode *node);
     virtual void validateElement(ImportNode *node);
@@ -93,6 +98,7 @@ class NEDDTDValidator : public NEDValidatorBase
     virtual void validateElement(PropertiesNode *node);
     virtual void validateElement(PropertyNode *node);
     virtual void validateElement(UnknownNode *node);
+    //@}
 };
 
 #endif

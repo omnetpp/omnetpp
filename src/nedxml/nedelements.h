@@ -137,12 +137,12 @@ enum {NED_ARROWDIR_LEFT, NED_ARROWDIR_RIGHT};
 enum {NED_CONST_BOOL, NED_CONST_INT, NED_CONST_REAL, NED_CONST_STRING, NED_CONST_TIME};
 
 /**
- * GENERATED CLASS. Represents the <ned-files> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;ned-files&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT ned-files ((ned-files|ned-file)*)>
  * 
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -150,9 +150,13 @@ class NedFilesNode : public NEDElement
 {
   private:
   public:
+    /** @name Constructors, destructor */
+    //@{
     NedFilesNode() {applyDefaults();}
     NedFilesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~NedFilesNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "ned-files";}
@@ -174,9 +178,9 @@ class NedFilesNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <ned-file> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;ned-file&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT ned-file ((import|channel|simple-module|compound-module|network|
  *                      cplusplus|struct-decl|class-decl|enum-decl|
  *                      enum|message|class|struct)*)>
@@ -185,7 +189,7 @@ class NedFilesNode : public NEDElement
  *      source-code         CDATA     #IMPLIED
  *      preferred-indent    CDATA     "4"
  *      banner-comment      CDATA     #IMPLIED >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -197,9 +201,13 @@ class NedFileNode : public NEDElement
     std::string preferredIndent;
     std::string bannerComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     NedFileNode() {applyDefaults();}
     NedFileNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~NedFileNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "ned-file";}
@@ -240,15 +248,15 @@ class NedFileNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <import> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;import&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT import (imported-file*)>
  * <!ATTLIST import
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -259,9 +267,13 @@ class ImportNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ImportNode() {applyDefaults();}
     ImportNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ImportNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "import";}
@@ -288,15 +300,15 @@ class ImportNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <imported-file> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;imported-file&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT imported-file EMPTY>
  * <!ATTLIST imported-file
  *      filename            CDATA     #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -307,9 +319,13 @@ class ImportedFileNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ImportedFileNode() {applyDefaults();}
     ImportedFileNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ImportedFileNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "imported-file";}
@@ -335,9 +351,9 @@ class ImportedFileNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <channel> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;channel&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT channel (channel-attr*, display-string?)>
  * <!ATTLIST channel
  *      name                NMTOKEN   #REQUIRED
@@ -345,7 +361,7 @@ class ImportedFileNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -358,9 +374,13 @@ class ChannelNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ChannelNode() {applyDefaults();}
     ChannelNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ChannelNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "channel";}
@@ -392,16 +412,16 @@ class ChannelNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <channel-attr> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;channel-attr&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT channel-attr (expression?)>
  * <!ATTLIST channel-attr
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -413,9 +433,13 @@ class ChannelAttrNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ChannelAttrNode() {applyDefaults();}
     ChannelAttrNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ChannelAttrNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "channel-attr";}
@@ -444,9 +468,9 @@ class ChannelAttrNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <network> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;network&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT network (substmachines?,substparams?)>
  * <!ATTLIST network
  *      name                NMTOKEN   #REQUIRED
@@ -455,7 +479,7 @@ class ChannelAttrNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -469,9 +493,13 @@ class NetworkNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     NetworkNode() {applyDefaults();}
     NetworkNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~NetworkNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "network";}
@@ -505,9 +533,9 @@ class NetworkNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <simple-module> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;simple-module&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT simple-module (machines?, params?, gates?, display-string?)>
  * <!ATTLIST simple-module
  *      name                NMTOKEN   #REQUIRED
@@ -515,7 +543,7 @@ class NetworkNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -528,9 +556,13 @@ class SimpleModuleNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     SimpleModuleNode() {applyDefaults();}
     SimpleModuleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~SimpleModuleNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "simple-module";}
@@ -564,9 +596,9 @@ class SimpleModuleNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <compound-module> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;compound-module&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT compound-module (machines?, params?, gates?,
  *                   submodules?, connections?, display-string?)>
  * <!ATTLIST compound-module
@@ -575,7 +607,7 @@ class SimpleModuleNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -588,9 +620,13 @@ class CompoundModuleNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     CompoundModuleNode() {applyDefaults();}
     CompoundModuleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~CompoundModuleNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "compound-module";}
@@ -626,14 +662,14 @@ class CompoundModuleNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <params> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;params&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT params (param*)>
  * <!ATTLIST params
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -643,9 +679,13 @@ class ParamsNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ParamsNode() {applyDefaults();}
     ParamsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ParamsNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "params";}
@@ -670,16 +710,16 @@ class ParamsNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <param> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;param&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT param EMPTY>
  * <!ATTLIST param
  *      name                NMTOKEN   #REQUIRED
  *      data-type           CDATA     "numeric"
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -691,9 +731,13 @@ class ParamNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ParamNode() {applyDefaults();}
     ParamNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ParamNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "param";}
@@ -721,14 +765,14 @@ class ParamNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <gates> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;gates&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT gates (gate*)>
  * <!ATTLIST gates
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -738,9 +782,13 @@ class GatesNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     GatesNode() {applyDefaults();}
     GatesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~GatesNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "gates";}
@@ -765,9 +813,9 @@ class GatesNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <gate> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;gate&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT gate EMPTY>
  * <!ATTLIST gate
  *      name                NMTOKEN   #REQUIRED
@@ -775,7 +823,7 @@ class GatesNode : public NEDElement
  *      is-vector       (true|false)  "false"
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -788,9 +836,13 @@ class GateNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     GateNode() {applyDefaults();}
     GateNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~GateNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "gate";}
@@ -820,14 +872,14 @@ class GateNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <machines> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;machines&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT machines (machine*)>
  * <!ATTLIST machines
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -837,9 +889,13 @@ class MachinesNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     MachinesNode() {applyDefaults();}
     MachinesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~MachinesNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "machines";}
@@ -864,15 +920,15 @@ class MachinesNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <machine> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;machine&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT machine EMPTY>
  * <!ATTLIST machine
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -883,9 +939,13 @@ class MachineNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     MachineNode() {applyDefaults();}
     MachineNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~MachineNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "machine";}
@@ -911,14 +971,14 @@ class MachineNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <submodules> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;submodules&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT submodules (submodule*)>
  * <!ATTLIST submodules
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -928,9 +988,13 @@ class SubmodulesNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     SubmodulesNode() {applyDefaults();}
     SubmodulesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~SubmodulesNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "submodules";}
@@ -955,9 +1019,9 @@ class SubmodulesNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <submodule> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;submodule&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT submodule (expression?, substmachines*, substparams*,
  *                      gatesizes*, display-string?)>
  * <!ATTLIST submodule
@@ -967,7 +1031,7 @@ class SubmodulesNode : public NEDElement
  *      vector-size         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -981,9 +1045,13 @@ class SubmoduleNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     SubmoduleNode() {applyDefaults();}
     SubmoduleNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~SubmoduleNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "submodule";}
@@ -1020,15 +1088,15 @@ class SubmoduleNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <substparams> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;substparams&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT substparams (expression?, substparam*)>
  * <!ATTLIST substparams
  *      condition           CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1039,9 +1107,13 @@ class SubstparamsNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     SubstparamsNode() {applyDefaults();}
     SubstparamsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~SubstparamsNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "substparams";}
@@ -1069,16 +1141,16 @@ class SubstparamsNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <substparam> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;substparam&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT substparam (expression?)>
  * <!ATTLIST substparam
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1090,9 +1162,13 @@ class SubstparamNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     SubstparamNode() {applyDefaults();}
     SubstparamNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~SubstparamNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "substparam";}
@@ -1121,15 +1197,15 @@ class SubstparamNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <gatesizes> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;gatesizes&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT gatesizes (expression?, gatesize*)>
  * <!ATTLIST gatesizes
  *      condition           CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1140,9 +1216,13 @@ class GatesizesNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     GatesizesNode() {applyDefaults();}
     GatesizesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~GatesizesNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "gatesizes";}
@@ -1170,16 +1250,16 @@ class GatesizesNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <gatesize> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;gatesize&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT gatesize (expression?)>
  * <!ATTLIST gatesize
  *      name                NMTOKEN   #REQUIRED
  *      vector-size         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1191,9 +1271,13 @@ class GatesizeNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     GatesizeNode() {applyDefaults();}
     GatesizeNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~GatesizeNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "gatesize";}
@@ -1222,15 +1306,15 @@ class GatesizeNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <substmachines> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;substmachines&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT substmachines (expression?, substmachine*)>
  * <!ATTLIST substmachines
  *      condition           CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1241,9 +1325,13 @@ class SubstmachinesNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     SubstmachinesNode() {applyDefaults();}
     SubstmachinesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~SubstmachinesNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "substmachines";}
@@ -1271,15 +1359,15 @@ class SubstmachinesNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <substmachine> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;substmachine&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT substmachine EMPTY>
  * <!ATTLIST substmachine
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1290,9 +1378,13 @@ class SubstmachineNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     SubstmachineNode() {applyDefaults();}
     SubstmachineNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~SubstmachineNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "substmachine";}
@@ -1318,15 +1410,15 @@ class SubstmachineNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <connections> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;connections&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT connections ((connection|for-loop)*)>
  * <!ATTLIST connections
  *      check-unconnected (true|false) "true"
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1337,9 +1429,13 @@ class ConnectionsNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ConnectionsNode() {applyDefaults();}
     ConnectionsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ConnectionsNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "connections";}
@@ -1367,9 +1463,9 @@ class ConnectionsNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <connection> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;connection&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT connection ((expression|conn-attr|display-string)*)>
  * <!ATTLIST connection
  *      condition           CDATA     #IMPLIED
@@ -1386,7 +1482,7 @@ class ConnectionsNode : public NEDElement
  *      arrow-direction  (left|right) "right"
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1408,9 +1504,13 @@ class ConnectionNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ConnectionNode() {applyDefaults();}
     ConnectionNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ConnectionNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "connection";}
@@ -1461,15 +1561,15 @@ class ConnectionNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <conn-attr> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;conn-attr&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT conn-attr (expression*)>
  * <!ATTLIST conn-attr
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
  *      right-comment       CDATA     "" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1480,9 +1580,13 @@ class ConnAttrNode : public NEDElement
     std::string value;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ConnAttrNode() {applyDefaults();}
     ConnAttrNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ConnAttrNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "conn-attr";}
@@ -1509,15 +1613,15 @@ class ConnAttrNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <for-loop> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;for-loop&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT for-loop (loop-var+,connection*)>
  * <!ATTLIST for-loop
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1528,9 +1632,13 @@ class ForLoopNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ForLoopNode() {applyDefaults();}
     ForLoopNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ForLoopNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "for-loop";}
@@ -1558,9 +1666,9 @@ class ForLoopNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <loop-var> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;loop-var&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT loop-var (expression*)>
  * <!ATTLIST loop-var
  *      param-name          NMTOKEN   #REQUIRED
@@ -1568,7 +1676,7 @@ class ForLoopNode : public NEDElement
  *      to-value            CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1581,9 +1689,13 @@ class LoopVarNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     LoopVarNode() {applyDefaults();}
     LoopVarNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~LoopVarNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "loop-var";}
@@ -1614,15 +1726,15 @@ class LoopVarNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <display-string> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;display-string&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT display-string EMPTY>
  * <!ATTLIST display-string
  *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1633,9 +1745,13 @@ class DisplayStringNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     DisplayStringNode() {applyDefaults();}
     DisplayStringNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~DisplayStringNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "display-string";}
@@ -1661,13 +1777,13 @@ class DisplayStringNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <expression> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;expression&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT expression ((operator|function|param-ref|ident|const))>
  * <!ATTLIST expression
  *      target              NMTOKEN   #IMPLIED >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1676,9 +1792,13 @@ class ExpressionNode : public NEDElement
   private:
     std::string target;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ExpressionNode() {applyDefaults();}
     ExpressionNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ExpressionNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "expression";}
@@ -1705,13 +1825,13 @@ class ExpressionNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <operator> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;operator&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT operator ((operator|function|param-ref|ident|const)+)>
  * <!ATTLIST operator
  *      name                NMTOKEN   #REQUIRED >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1720,9 +1840,13 @@ class OperatorNode : public NEDElement
   private:
     std::string name;
   public:
+    /** @name Constructors, destructor */
+    //@{
     OperatorNode() {applyDefaults();}
     OperatorNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~OperatorNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "operator";}
@@ -1749,13 +1873,13 @@ class OperatorNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <function> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;function&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT function ((operator|function|param-ref|ident|const)*)>
  * <!ATTLIST function
  *      name                NMTOKEN   #REQUIRED >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1764,9 +1888,13 @@ class FunctionNode : public NEDElement
   private:
     std::string name;
   public:
+    /** @name Constructors, destructor */
+    //@{
     FunctionNode() {applyDefaults();}
     FunctionNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~FunctionNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "function";}
@@ -1793,9 +1921,9 @@ class FunctionNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <param-ref> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;param-ref&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT param-ref (expression*)>
  * <!ATTLIST param-ref
  *      module              CDATA     #IMPLIED
@@ -1804,7 +1932,7 @@ class FunctionNode : public NEDElement
  *      param-index         CDATA     #IMPLIED
  *      is-ref           (true|false) "false"
  *      is-ancestor      (true|false) "false" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1818,9 +1946,13 @@ class ParamRefNode : public NEDElement
     bool isRef;
     bool isAncestor;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ParamRefNode() {applyDefaults();}
     ParamRefNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ParamRefNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "param-ref";}
@@ -1853,13 +1985,13 @@ class ParamRefNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <ident> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;ident&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT ident EMPTY>
  * <!ATTLIST ident
  *      name                NMTOKEN   #REQUIRED >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1868,9 +2000,13 @@ class IdentNode : public NEDElement
   private:
     std::string name;
   public:
+    /** @name Constructors, destructor */
+    //@{
     IdentNode() {applyDefaults();}
     IdentNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~IdentNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "ident";}
@@ -1892,15 +2028,15 @@ class IdentNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <const> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;const&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT const EMPTY>
  * <!ATTLIST const
  *      type  (bool|int|real|string|time)  #REQUIRED
  *      text                CDATA     #IMPLIED
  *      value               CDATA     #IMPLIED>
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1911,9 +2047,13 @@ class ConstNode : public NEDElement
     std::string text;
     std::string value;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ConstNode() {applyDefaults();}
     ConstNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ConstNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "const";}
@@ -1939,16 +2079,16 @@ class ConstNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <cplusplus> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;cplusplus&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT cplusplus EMPTY>
  * <!ATTLIST cplusplus
  *      body                CDATA     #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -1960,9 +2100,13 @@ class CplusplusNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     CplusplusNode() {applyDefaults();}
     CplusplusNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~CplusplusNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "cplusplus";}
@@ -1990,16 +2134,16 @@ class CplusplusNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <struct-decl> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;struct-decl&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT struct-decl EMPTY>
  * <!ATTLIST struct-decl
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2011,9 +2155,13 @@ class StructDeclNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     StructDeclNode() {applyDefaults();}
     StructDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~StructDeclNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "struct-decl";}
@@ -2041,9 +2189,9 @@ class StructDeclNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <class-decl> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;class-decl&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT class-decl EMPTY>
  * <!ATTLIST class-decl
  *      name                NMTOKEN   #REQUIRED
@@ -2051,7 +2199,7 @@ class StructDeclNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2064,9 +2212,13 @@ class ClassDeclNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ClassDeclNode() {applyDefaults();}
     ClassDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ClassDeclNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "class-decl";}
@@ -2096,16 +2248,16 @@ class ClassDeclNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <enum-decl> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;enum-decl&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT enum-decl EMPTY>
  * <!ATTLIST enum-decl
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2117,9 +2269,13 @@ class EnumDeclNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     EnumDeclNode() {applyDefaults();}
     EnumDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~EnumDeclNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "enum-decl";}
@@ -2147,9 +2303,9 @@ class EnumDeclNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <enum> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;enum&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT enum (enum-fields?)>
  * <!ATTLIST enum
  *      name                NMTOKEN   #REQUIRED
@@ -2158,7 +2314,7 @@ class EnumDeclNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2172,9 +2328,13 @@ class EnumNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     EnumNode() {applyDefaults();}
     EnumNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~EnumNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "enum";}
@@ -2207,14 +2367,14 @@ class EnumNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <enum-fields> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;enum-fields&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT enum-fields (enum-field*)>
  * <!ATTLIST enum-fields
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2224,9 +2384,13 @@ class EnumFieldsNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     EnumFieldsNode() {applyDefaults();}
     EnumFieldsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~EnumFieldsNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "enum-fields";}
@@ -2251,16 +2415,16 @@ class EnumFieldsNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <enum-field> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;enum-field&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT enum-field EMPTY>
  * <!ATTLIST enum-field
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2272,9 +2436,13 @@ class EnumFieldNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     EnumFieldNode() {applyDefaults();}
     EnumFieldNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~EnumFieldNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "enum-field";}
@@ -2302,9 +2470,9 @@ class EnumFieldNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <message> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;message&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT message (properties?,fields?)>
  * <!ATTLIST message
  *      name                NMTOKEN   #REQUIRED
@@ -2313,7 +2481,7 @@ class EnumFieldNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2327,9 +2495,13 @@ class MessageNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     MessageNode() {applyDefaults();}
     MessageNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~MessageNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "message";}
@@ -2363,9 +2535,9 @@ class MessageNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <class> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;class&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT class (properties?,fields?)>
  * <!ATTLIST class
  *      name                NMTOKEN   #REQUIRED
@@ -2374,7 +2546,7 @@ class MessageNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2388,9 +2560,13 @@ class ClassNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     ClassNode() {applyDefaults();}
     ClassNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~ClassNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "class";}
@@ -2424,9 +2600,9 @@ class ClassNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <struct> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;struct&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT struct (properties?,fields?)>
  * <!ATTLIST struct
  *      name                NMTOKEN   #REQUIRED
@@ -2435,7 +2611,7 @@ class ClassNode : public NEDElement
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2449,9 +2625,13 @@ class StructNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     StructNode() {applyDefaults();}
     StructNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~StructNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "struct";}
@@ -2485,14 +2665,14 @@ class StructNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <fields> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;fields&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT fields (field*)>
  * <!ATTLIST fields
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2502,9 +2682,13 @@ class FieldsNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     FieldsNode() {applyDefaults();}
     FieldsNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~FieldsNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "fields";}
@@ -2529,9 +2713,9 @@ class FieldsNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <field> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;field&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT field EMPTY>
  * <!ATTLIST field
  *      name                NMTOKEN   #REQUIRED
@@ -2543,7 +2727,7 @@ class FieldsNode : public NEDElement
  *      default-value       CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2560,9 +2744,13 @@ class FieldNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     FieldNode() {applyDefaults();}
     FieldNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~FieldNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "field";}
@@ -2600,14 +2788,14 @@ class FieldNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <properties> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;properties&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT properties (property*)>
  * <!ATTLIST properties
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2617,9 +2805,13 @@ class PropertiesNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     PropertiesNode() {applyDefaults();}
     PropertiesNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~PropertiesNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "properties";}
@@ -2644,16 +2836,16 @@ class PropertiesNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <property> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;property&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT property EMPTY>
  * <!ATTLIST property
  *      name                NMTOKEN   #REQUIRED
  *      value               CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;" >
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2665,9 +2857,13 @@ class PropertyNode : public NEDElement
     std::string bannerComment;
     std::string rightComment;
   public:
+    /** @name Constructors, destructor */
+    //@{
     PropertyNode() {applyDefaults();}
     PropertyNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~PropertyNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "property";}
@@ -2695,13 +2891,13 @@ class PropertyNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <unknown> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the &lt;unknown&gt; XML element in memory. DTD declaration:
  * 
- * <pre>
+ * <code>
  * <!ELEMENT unknown        ANY>
  * <!ATTLIST unknown
  *      element             NMTOKEN   #REQUIRED>
- * </pre>
+ * </code>
  * 
  * @ingroup Data
  */
@@ -2710,9 +2906,13 @@ class UnknownNode : public NEDElement
   private:
     std::string element;
   public:
+    /** @name Constructors, destructor */
+    //@{
     UnknownNode() {applyDefaults();}
     UnknownNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
     virtual ~UnknownNode() {}
+    //@}
+
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
     virtual const char *getTagName() const {return "unknown";}
@@ -2743,8 +2943,11 @@ class NEDElementFactory
   protected:
     static NEDElementFactory *f;
   public:
+    /** Returns factory instance */
     static NEDElementFactory *getInstance();
+    /** Creates NEDElement subclass which corresponds to tagname */
     virtual NEDElement *createNodeWithTag(const char *tagname);
+    /** Creates NEDElement subclass which corresponds to tagcode */
     virtual NEDElement *createNodeWithTag(int tagcode);
 };
 

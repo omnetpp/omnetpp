@@ -285,11 +285,11 @@ foreach $element (@elements)
     $decl =~ s/^/ * /mg;
 
     print H "/**\n";
-    print H " * GENERATED CLASS. Represents the <$element> XML element in memory. DTD declaration:\n";
+    print H " * GENERATED CLASS. Represents the &lt;$element&gt; XML element in memory. DTD declaration:\n";
     print H " * \n";
-    print H " * <pre>\n";
+    print H " * <code>\n";
     print H $decl;
-    print H " * </pre>\n";
+    print H " * </code>\n";
     print H " * \n";
     print H " * \@ingroup Data\n";
     print H " */\n";
@@ -302,9 +302,13 @@ foreach $element (@elements)
         print H "    $vartype $varnames[$i];\n";
     }
     print H "  public:\n";
+    print H "    /** \@name Constructors, destructor */\n";
+    print H "    //\@{\n";
     print H "    $elementclass() {applyDefaults();}\n";
     print H "    $elementclass(NEDElement *parent) : NEDElement(parent) {applyDefaults();}\n";
     print H "    virtual ~$elementclass() {}\n";
+    print H "    //\@}\n";
+    print H "\n";
     print H "    /** \@name Redefined NEDElement methods, incl. generic access to attributes */\n";
     print H "    //\@{\n";
     print H "    virtual const char *getTagName() const {return \"$element\";}\n";
@@ -438,8 +442,11 @@ print H "{\n";
 print H "  protected:\n";
 print H "    static NEDElementFactory *f;\n";
 print H "  public:\n";
+print H "    /** Returns factory instance */\n";
 print H "    static NEDElementFactory *getInstance();\n";
+print H "    /** Creates NEDElement subclass which corresponds to tagname */\n";
 print H "    virtual NEDElement *createNodeWithTag(const char *tagname);\n";
+print H "    /** Creates NEDElement subclass which corresponds to tagcode */\n";
 print H "    virtual NEDElement *createNodeWithTag(int tagcode);\n";
 print H "};\n\n";
 print H "#endif\n\n";
@@ -500,14 +507,22 @@ print VAL_H " */\n";
 print VAL_H "class NEDValidatorBase\n";
 print VAL_H "{\n";
 print VAL_H "  public:\n";
+print VAL_H "    /** \@name Constructor, destructor */\n";
+print VAL_H "    //\@{\n";
 print VAL_H "    NEDValidatorBase() {}\n";
-print VAL_H "    virtual ~NEDValidatorBase() {}\n\n";
-print VAL_H "    virtual void validate(NEDElement *node); // recursive\n";
+print VAL_H "    virtual ~NEDValidatorBase() {}\n";
+print VAL_H "    //\@}\n\n";
+print VAL_H "    /** Validates the node recursively */\n";
+print VAL_H "    virtual void validate(NEDElement *node);\n";
+print VAL_H "    /** Dispatches to the corresponding overloaded validateElement() function */\n";
 print VAL_H "    virtual void validateElement(NEDElement *node);\n\n";
+print VAL_H "    /** \@name Validation functions, to be implemented in subclasses */\n";
+print VAL_H "    //\@{\n";
 foreach $element (@elements)
 {
     print VAL_H "    virtual void validateElement($elementclass{$element} *node) = 0;\n";
 }
+print VAL_H "    //\@}\n";
 print VAL_H "};\n\n";
 print VAL_H "#endif\n\n";
 
@@ -558,6 +573,8 @@ print DTDVAL_H " */\n";
 print DTDVAL_H "class NEDDTDValidator : public NEDValidatorBase\n";
 print DTDVAL_H "{\n";
 print DTDVAL_H "  protected:\n";
+print DTDVAL_H "    /** \@name Utility functions */\n";
+print DTDVAL_H "    //\@{\n";
 print DTDVAL_H "    void checkSequence(NEDElement *node, int tags[], char mult[], int n);\n";
 print DTDVAL_H "    void checkChoice(NEDElement *node, int tags[], int n, char mult);\n";
 print DTDVAL_H "    void checkEmpty(NEDElement *node);\n";
@@ -566,13 +583,17 @@ print DTDVAL_H "    void checkEnumeratedAttribute(NEDElement *node, const char *
 print DTDVAL_H "    void checkNameAttribute(NEDElement *node, const char *attr);\n";
 print DTDVAL_H "    void checkCommentAttribute(NEDElement *node, const char *attr);\n";
 print DTDVAL_H "    void checkNMTokenAttribute(NEDElement *node, const char *attr);\n";
+print DTDVAL_H "    //\@}\n";
 print DTDVAL_H "  public:\n";
 print DTDVAL_H "    NEDDTDValidator() {}\n";
 print DTDVAL_H "    virtual ~NEDDTDValidator() {}\n\n";
+print DTDVAL_H "    /** \@name Validation functions */\n";
+print DTDVAL_H "    //\@{\n";
 foreach $element (@elements)
 {
     print DTDVAL_H "    virtual void validateElement($elementclass{$element} *node);\n";
 }
+print DTDVAL_H "    //\@}\n";
 print DTDVAL_H "};\n\n";
 print DTDVAL_H "#endif\n\n";
 

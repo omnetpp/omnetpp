@@ -22,11 +22,11 @@
  * This documentation can be browsed in several views (see links
  * at top of this page):
  *
- *   - <B>Modules</B> -- the most important classes, organized by topic
- *   - <B>Class Hierarchy</B> -- inheritance tree of all classes
- *   - <B>Compound List</B> -- alphabetic list of classes
- *   - <B>File List</B> -- header file listings (hyperlinked)
- *   - <B>Compound Members</B> -- methods in alphabetic order
+ *   - <b>Modules</b> -- the most important classes, organized by topic
+ *   - <b>Class Hierarchy</b> -- inheritance tree of all classes
+ *   - <b>Compound List</b> -- alphabetic list of classes
+ *   - <b>File List</b> -- header file listings (hyperlinked)
+ *   - <b>Compound Members</b> -- methods in alphabetic order
  *
  * For a start, read the <a href="group__Overview.html">Modules/Overview</a> page.
  */
@@ -41,7 +41,7 @@
  * relatively poor readability.)
  *
  * As an example, let's see a short NED code fragment and its XML representation:
- * <pre>
+ * <code>
  * module FDDINode
  *     parameters:
  *         address : string;
@@ -55,11 +55,12 @@
  *                 promiscuous = false;
  *         ...
  * endmodule
- * </pre>
+ * </code>
  *
  * The XML version is a bit less readable but straightforward:
  *
- * <pre>
+ * <code>
+ * @verbatim
  * <?xml version="1.0" ?>
  * <nedfile filename="fddi.ned">
  *     <module name="FDDINode">
@@ -78,7 +79,9 @@
  *                 </substparams>
  *             </submodule>
  *             ...
- * </pre>
+ *
+ * @endverbatim
+ * </code>
  *
  * The above XML fragment should be quite self-explanatory for those familiar
  * with NED.

@@ -39,9 +39,14 @@ class NEDSemanticValidator : public NEDValidatorBase
     NEDElement *findChildWithTagAndAttribute(NEDElement *node, int tag, const char *attr, const char *value);
 
   public:
+    /** @name Constructor, destructor */
+    //@{
     NEDSemanticValidator(bool parsedExpr, NEDSymbolTable *symbtab);
     virtual ~NEDSemanticValidator();
+    //@}
 
+    /** @name Validator methods */
+    //@{
     virtual void validateElement(NedFilesNode *node);
     virtual void validateElement(NedFileNode *node);
     virtual void validateElement(ImportNode *node);
@@ -92,6 +97,7 @@ class NEDSemanticValidator : public NEDValidatorBase
     virtual void validateElement(PropertiesNode *node);
     virtual void validateElement(PropertyNode *node);
     virtual void validateElement(UnknownNode *node);
+    //@}
 };
 
 #endif
