@@ -384,10 +384,8 @@ const char *cGate::displayString() const
         return dispstr;
 
     // no hardcoded display string -- try to get it from Envir
+    // Note: connection display strings are stored in the connection's source gate
     char dispname[128];
-
-    // connection display strings are stored in the connection's "from" gate
-
     if (type()=='O')
     {
         cModule *parent = ownerModule()->parentModule();
@@ -402,13 +400,28 @@ const char *cGate::displayString() const
     return s ? s : "";
 }
 
-void cGate::setDisplayString(const char *s)
+void cGate::setDisplayString(const char *s, bool immediate)
 {
     dispstr = s;
-    if (notify_inspector) notify_inspector(data_for_inspector);
+
+    // notify this gate's inspector
+    if (notify_inspector)
+        notify_inspector(this,immediate,data_for_inspector);
+
+    // notify compound module where the connection (whose source is this gate) is displayed
+    if (!toGate())  return; // if not connected, nothing to worry
+
+    cModule *notifymodule = NULL;
+    if (type()=='O')
+        notifymodule = ownerModule()->parentModule();
+    else
+        notifymodule = ownerModule();
+
+    if (notifymodule && notifymodule->notify_inspector)
+        notifymodule->notify_inspector(notifymodule,immediate,notifymodule->data_for_inspector);
 }
 
-void cGate::setDisplayStringNotify(void (*notify_func)(void*), void *data)
+void cGate::setDisplayStringNotify(void (*notify_func)(cGate*,bool,void*), void *data)
 {
     notify_inspector = notify_func;
     data_for_inspector = data;

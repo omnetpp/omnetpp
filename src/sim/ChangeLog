@@ -1,3 +1,10 @@
+2002-03-05  Andras Varga
+
+	* cgate.cc (setDisplayString): connection display string changes now
+        take effect immediately. Implementation: notify parent module's 
+        inspector. (This is should not be the final solution though; it would
+        be better to add displayStringChanged() methods to cEnvir...)
+
 2002-03-04  Andras Varga
 
 	* cObject::free(cObject *) renamed to dealloc() throughout to avoid

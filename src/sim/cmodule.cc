@@ -494,7 +494,7 @@ void cModule::setDisplayString(const char *s, bool immediate)
 
     // notify the parent module's inspector
     cModule *p = parentModule();
-    if (p && p->notify_inspector) p->notify_inspector(this,immediate,p->data_for_inspector);
+    if (p && p->notify_inspector) p->notify_inspector(p,immediate,p->data_for_inspector);
 }
 
 const char *cModule::displayStringAsParent()
