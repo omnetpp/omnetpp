@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="include/omnetpp.h"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB DOXYGEN PERL XSLTPROC PS2GIF DOT GIFTRANS WISH CXXCPP OMNETPP_VERSION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TUTORIAL_DIR OMNETPP_TEST_DIR MYPWD NEDC MSGC NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX HAVE_DLOPEN TK_CFLAGS TK_LIBS MPI_CFLAGS MPI_LIBS PVM_CFLAGS PVM_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE PLOVE_IF_POSSIBLE SIM_PVM_IF_POSSIBLE SIM_MPI_IF_POSSIBLE TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX PLOVE_VARIANT OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_PLOVE_DIR LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB DOXYGEN PERL XSLTPROC GHOSTSCRIPT DOT GIFTRANS WISH CXXCPP OMNETPP_VERSION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TUTORIAL_DIR OMNETPP_TEST_DIR MYPWD NEDC MSGC NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX HAVE_DLOPEN TK_CFLAGS TK_LIBS HAVE_MPI MPI_CFLAGS MPI_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE PLOVE_IF_POSSIBLE TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX PLOVE_VARIANT OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_PLOVE_DIR WITH_NETBUILDER WITH_PARSIM LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -748,10 +748,10 @@ ac_env_XSLTPROC_set=${XSLTPROC+set}
 ac_env_XSLTPROC_value=$XSLTPROC
 ac_cv_env_XSLTPROC_set=${XSLTPROC+set}
 ac_cv_env_XSLTPROC_value=$XSLTPROC
-ac_env_PS2GIF_set=${PS2GIF+set}
-ac_env_PS2GIF_value=$PS2GIF
-ac_cv_env_PS2GIF_set=${PS2GIF+set}
-ac_cv_env_PS2GIF_value=$PS2GIF
+ac_env_GHOSTSCRIPT_set=${GHOSTSCRIPT+set}
+ac_env_GHOSTSCRIPT_value=$GHOSTSCRIPT
+ac_cv_env_GHOSTSCRIPT_set=${GHOSTSCRIPT+set}
+ac_cv_env_GHOSTSCRIPT_value=$GHOSTSCRIPT
 ac_env_DOT_set=${DOT+set}
 ac_env_DOT_value=$DOT
 ac_cv_env_DOT_set=${DOT+set}
@@ -856,7 +856,7 @@ Some influential environment variables:
   DOXYGEN     The Doxygen documentation tool
   PERL        The Perl interpreter
   XSLTPROC    A command line xslt processor
-  PS2GIF      Program to convert Postscript images to GIF
+  GHOSTSCRIPT Program to convert or rasterize Postscript files
   DOT         Graph drawing program from the Graphviz package
   GIFTRANS    Utility to make GIFs transparent
   CXXCPP      C++ preprocessor
@@ -2659,15 +2659,6 @@ TK_LIBS=
 MPI_CFLAGS=
 MPI_LIBS=
 
-# for PVM
-if test -n "$PVM_ROOT"; then
-   PVM_CFLAGS="-I$PVM_ROOT/include"
-   PVM_LIBS="-L$PVM_ROOT/$PVM_ARCH/lib -lgpvm3 -lpvm3"
-else
-   PVM_CFLAGS=
-   PVM_LIBS="-lgpvm3 -lpvm3"
-fi
-
 # for Expat
 EXPAT_CFLAGS=
 EXPAT_LIBS=-lexpat
@@ -3206,15 +3197,15 @@ fi
 
 # "convert" from ImageMagick
 
-# Extract the first word of "convert", so it can be a program name with args.
-set dummy convert; ac_word=$2
+# Extract the first word of "gs", so it can be a program name with args.
+set dummy gs; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_PS2GIF+set}" = set; then
+if test "${ac_cv_prog_GHOSTSCRIPT+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  if test -n "$PS2GIF"; then
-  ac_cv_prog_PS2GIF="$PS2GIF" # Let the user override the test.
+  if test -n "$GHOSTSCRIPT"; then
+  ac_cv_prog_GHOSTSCRIPT="$GHOSTSCRIPT" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
@@ -3223,7 +3214,7 @@ do
   test -z "$as_dir" && as_dir=.
   for ac_exec_ext in '' $ac_executable_extensions; do
   if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_PS2GIF="convert"
+    ac_cv_prog_GHOSTSCRIPT="gs"
     echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -3232,19 +3223,19 @@ done
 
 fi
 fi
-PS2GIF=$ac_cv_prog_PS2GIF
-if test -n "$PS2GIF"; then
-  echo "$as_me:$LINENO: result: $PS2GIF" >&5
-echo "${ECHO_T}$PS2GIF" >&6
+GHOSTSCRIPT=$ac_cv_prog_GHOSTSCRIPT
+if test -n "$GHOSTSCRIPT"; then
+  echo "$as_me:$LINENO: result: $GHOSTSCRIPT" >&5
+echo "${ECHO_T}$GHOSTSCRIPT" >&6
 else
   echo "$as_me:$LINENO: result: no" >&5
 echo "${ECHO_T}no" >&6
 fi
 
 
-if test "$PS2GIF" = ""; then
-   { echo "$as_me:$LINENO: WARNING: The convert program from ImageMagick is needed by opp_neddoc to convert Postscript images to GIF." >&5
-echo "$as_me: WARNING: The convert program from ImageMagick is needed by opp_neddoc to convert Postscript images to GIF." >&2;}
+if test "$GHOSTSCRIPT" = ""; then
+   { echo "$as_me:$LINENO: WARNING: Ghostscript is needed by opp_neddoc to create diagrams." >&5
+echo "$as_me: WARNING: Ghostscript is needed by opp_neddoc to create diagrams." >&2;}
 fi
 
 # "dot" from Graphviz
@@ -4822,70 +4813,9 @@ rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
    LIBS=$save_LIBS
 
 if test $mpi_ok = yes; then
-   SIM_MPI_IF_POSSIBLE=sim_mpi
+   HAVE_MPI=yes
 else
-   SIM_MPI_IF_POSSIBLE=missing-mpi-library
-fi
-
-#----------------------
-# Check for PVM.
-#----------------------
-
-   save_CXXFLAGS=$CXXFLAGS
-   save_LIBS=$LIBS
-
-   CXXFLAGS="$PVM_CFLAGS"
-   LIBS="$PVM_LIBS"
-
-   echo "$as_me:$LINENO: checking for PVM with CFLAGS=\"$PVM_CFLAGS\" LIBS=\"$PVM_LIBS\"" >&5
-echo $ECHO_N "checking for PVM with CFLAGS=\"$PVM_CFLAGS\" LIBS=\"$PVM_LIBS\"... $ECHO_C" >&6
-
-   cat >conftest.$ac_ext <<_ACEOF
-#line $LINENO "configure"
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-#include <pvm3.h>
-int
-main ()
-{
-pvm_joingroup("");
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
-  (eval $ac_link) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-         { ac_try='test -s conftest$ac_exeext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; pvm_ok=yes;
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; pvm_ok=no;
-fi
-rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
-
-   CXXFLAGS=$save_CXXFLAGS
-   LIBS=$save_LIBS
-
-if test $pvm_ok = yes; then
-   SIM_PVM_IF_POSSIBLE=sim_pvm
-else
-   SIM_PVM_IF_POSSIBLE=missing-pvm-library
+   HAVE_MPI=no
 fi
 
 #----------------------
@@ -5250,6 +5180,7 @@ fi
 #----------------------
 # Substitutions.
 #----------------------
+
 
 
 
@@ -6011,7 +5942,7 @@ s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@DOXYGEN@,$DOXYGEN,;t t
 s,@PERL@,$PERL,;t t
 s,@XSLTPROC@,$XSLTPROC,;t t
-s,@PS2GIF@,$PS2GIF,;t t
+s,@GHOSTSCRIPT@,$GHOSTSCRIPT,;t t
 s,@DOT@,$DOT,;t t
 s,@GIFTRANS@,$GIFTRANS,;t t
 s,@WISH@,$WISH,;t t
@@ -6042,10 +5973,9 @@ s,@EXE_SUFFIX@,$EXE_SUFFIX,;t t
 s,@HAVE_DLOPEN@,$HAVE_DLOPEN,;t t
 s,@TK_CFLAGS@,$TK_CFLAGS,;t t
 s,@TK_LIBS@,$TK_LIBS,;t t
+s,@HAVE_MPI@,$HAVE_MPI,;t t
 s,@MPI_CFLAGS@,$MPI_CFLAGS,;t t
 s,@MPI_LIBS@,$MPI_LIBS,;t t
-s,@PVM_CFLAGS@,$PVM_CFLAGS,;t t
-s,@PVM_LIBS@,$PVM_LIBS,;t t
 s,@SYS_LIBS@,$SYS_LIBS,;t t
 s,@XMLPARSER@,$XMLPARSER,;t t
 s,@XML_CFLAGS@,$XML_CFLAGS,;t t
@@ -6055,14 +5985,14 @@ s,@AKAROA_LIBS@,$AKAROA_LIBS,;t t
 s,@TKENV_IF_POSSIBLE@,$TKENV_IF_POSSIBLE,;t t
 s,@GNED_IF_POSSIBLE@,$GNED_IF_POSSIBLE,;t t
 s,@PLOVE_IF_POSSIBLE@,$PLOVE_IF_POSSIBLE,;t t
-s,@SIM_PVM_IF_POSSIBLE@,$SIM_PVM_IF_POSSIBLE,;t t
-s,@SIM_MPI_IF_POSSIBLE@,$SIM_MPI_IF_POSSIBLE,;t t
 s,@TKENV_EMBED_SUFFIX@,$TKENV_EMBED_SUFFIX,;t t
 s,@GNED_EMBED_SUFFIX@,$GNED_EMBED_SUFFIX,;t t
 s,@PLOVE_VARIANT@,$PLOVE_VARIANT,;t t
 s,@OMNETPP_TKENV_DIR@,$OMNETPP_TKENV_DIR,;t t
 s,@OMNETPP_GNED_DIR@,$OMNETPP_GNED_DIR,;t t
 s,@OMNETPP_PLOVE_DIR@,$OMNETPP_PLOVE_DIR,;t t
+s,@WITH_NETBUILDER@,$WITH_NETBUILDER,;t t
+s,@WITH_PARSIM@,$WITH_PARSIM,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
