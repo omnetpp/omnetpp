@@ -306,7 +306,7 @@ void TWatchInspector::update()
    void *p = watch->pointer();
    switch (watch->typeChar())
    {
-         case 'c':  sprintf(val, "int'%c' (%d,0x%x)",
+         case 'c':  sprintf(val, "'%c' (%d,0x%x)",
                                  *(char *)p, *(char *)p, *(char *)p );
                     type = "char ";
                     break;
@@ -327,6 +327,9 @@ void TWatchInspector::update()
                     else
                        sprintf(val, "\"%.120s\"", *(char **)p);
                     type = "char *";
+                    break;
+         case 'b':  sprintf(val, "%s", (*(bool *)p ? "true" : "false"));
+                    type = "bool ";
                     break;
          case 'o':  if (*(cObject **)p==NULL)
                        sprintf(val, "NULL");
@@ -356,8 +359,9 @@ void TWatchInspector::writeBack()
          case 'i':  sscanf(s,"%d", (int *)p); break;
          case 'l':  sscanf(s,"%ld",(long *)p); break;
          case 'd':  sscanf(s,"%lf",(double *)p); break;
+         case 'b':  *(bool *)p = (s[0]=='1' || s[0]=='t' || s[0]=='y' || s[0]=='T' || s[0]=='Y'); break;
          default:   CHK(Tcl_Eval(interp,"messagebox {Warning}"
-                  " {You can only change char, int, long or double watches} info ok"));
+                  " {You can only change char, int, bool, long or double watches} info ok"));
    }
    TInspector::writeBack();    // must be there after all changes
 }
