@@ -55,7 +55,7 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\nim.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
+CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\nim.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -93,7 +93,7 @@ BSC32_FLAGS=/o"$(OUTDIR)\nim.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\nim.pdb" /debug /machine:I386 /out:"$(OUTDIR)\nim.exe" /pdbtype:sept /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@"
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\nim.pdb" /debug /machine:I386 /out:"$(OUTDIR)\nim.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\nim_n.obj" \
@@ -134,7 +134,7 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\include" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\nim.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
+CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\nim.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -172,7 +172,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\nim.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\nim.pdb" /debug /machine:I386 /out:"$(OUTDIR)\nim.exe" /pdbtype:sept /libpath:"..\..\lib"
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\nim.pdb" /debug /machine:I386 /out:"$(OUTDIR)\nim.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@"
 LINK32_OBJS= \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\nim_n.obj" \
@@ -208,7 +208,7 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\nim.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
+CPP_PROJ=/nologo /ML /W3 /O2 /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\nim.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -246,7 +246,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\nim.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\nim.pdb" /machine:I386 /out:"$(OUTDIR)\nim.exe" /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@"
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\nim.pdb" /machine:I386 /out:"$(OUTDIR)\nim.exe" /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\nim_n.obj" \
@@ -282,7 +282,7 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\include" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\nim.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
+CPP_PROJ=/nologo /ML /W3 /O2 /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\nim.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
@@ -320,7 +320,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\nim.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\nim.pdb" /machine:I386 /out:"$(OUTDIR)\nim.exe" /libpath:"..\..\lib"
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\nim.pdb" /machine:I386 /out:"$(OUTDIR)\nim.exe" /libpath:"@OMNETPP_LIB_DIR@"
 LINK32_OBJS= \
 	"$(INTDIR)\game.obj" \
 	"$(INTDIR)\nim_n.obj" \
@@ -359,7 +359,7 @@ InputName=nim
 ".\nim_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
 <<
 
 
@@ -371,7 +371,7 @@ InputName=nim
 ".\nim_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
 <<
 
 
@@ -383,7 +383,7 @@ InputName=nim
 ".\nim_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
 <<
 
 
@@ -395,7 +395,7 @@ InputName=nim
 ".\nim_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
 <<
 
 
