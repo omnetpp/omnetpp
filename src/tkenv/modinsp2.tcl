@@ -235,18 +235,21 @@ proc draw_submod {c submodptr x y name dispstr} {
                set x [lindex $r 0]
                set y [lindex $r 1]
                set anch "ne"
+               set just "right"
            } elseif {$pos=="r"} {
                set x [lindex $r 2]
                set y [lindex $r 1]
                set anch "nw"
+               set just "left"
            } elseif {$pos=="t"} {
                set x [expr ([lindex $r 0]+[lindex $r 2])/2]
                set y [expr [lindex $r 1]+2]
                set anch "s"
+               set just "center"
            } else {
                error "wrong position in t= tag, should be `l', `r' or `t'"
            }
-           $c create text $x $y -text $txt -fill $color -anchor $anch -tags "dx"
+           $c create text $x $y -text $txt -fill $color -anchor $anch -justify $just -tags "dx"
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>

@@ -1,3 +1,7 @@
+2004-08-12  Andras Varga
+
+	* modinsp2.tcl: "t=" tag: center text by default
+
 2004-07-22  ------ omnetpp-3.0a6 released ------
 
 2004-07-17  Andras Varga
@@ -38,7 +42,7 @@ FIXME: container inspector listboxes: always prints "0 objects"
 FIXME: "r=" bug: if I also have "q=queue" or "t=some text" tags, the circle 
 is no longer centered around the icon
 TODO: page should also display className(), info() etc of control info object
-
+TODO: cgate inspector: display string should be editable
 
 2004-04-20  Andras Varga
 
