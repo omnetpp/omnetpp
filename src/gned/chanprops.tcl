@@ -33,7 +33,7 @@ proc editChannelProps {key} {
     pack $nb -expand 1 -fill both
     notebook_addpage $nb general "General"
     notebook_addpage $nb attrs "Channel attributes"
-    notebook_showpage $nb attrs
+    notebook_showpage $nb general
 
     # create "General" page
     label-entry $nb.general.name "Name:"
@@ -102,7 +102,7 @@ proc editChannelProps {key} {
 
         # updateNedFromTableEdit $nb.attrs.tbl $key chanattr name
 
-        markNedfileOfItemDirty $key
+        markNedFileOfItemDirty $key
         updateTreeManager
 
     }

@@ -59,7 +59,7 @@ proc editImportProps {key} {
         set ned($key,right-comment) [getCommentFromText $nb.general.rcomment.t]
         updateNedFromTableEdit $nb.imports.tbl $key import name
 
-        markNedfileOfItemDirty $key
+        markNedFileOfItemDirty $key
         updateTreeManager
     }
     destroy $w

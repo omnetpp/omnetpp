@@ -197,7 +197,7 @@ proc switchToGraphics {} {
     # graphics view
     setCanvasMode "graphics"
 
-    makeNedFileOfItemDirty $key
+    markNedFileOfItemDirty $key
     updateTreeManager
 
     #dbg: this not so good...

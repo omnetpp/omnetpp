@@ -1073,7 +1073,7 @@ proc markCanvasDirty {} {
     global canvas ned gned
 
     set modkey $canvas($gned(canvas_id),module-key)
-    if [markNedfileOfItemDirty $modkey] {updateTreeManager}
+    if [markNedFileOfItemDirty $modkey] {updateTreeManager}
 }
 
 

@@ -75,7 +75,7 @@ proc editModuleDrawOptions {key} {
 
         # redraw
         redrawItemOnAnyCanvas $key
-        markNedfileOfItemDirty $key
+        markNedFileOfItemDirty $key
         updateTreeManager
 
     }
@@ -165,7 +165,7 @@ proc editSubmoduleDrawOptions {key} {
         foreach key [connKeysOfItem $key] {
            _redrawArrow $c $key
         }
-        markNedfileOfItemDirty $key
+        markNedFileOfItemDirty $key
         updateTreeManager
     }
     destroy .submopts
@@ -232,7 +232,7 @@ proc editConnectionDrawOptions {key} {
         }
 
         redrawItemOnAnyCanvas $key
-        markNedfileOfItemDirty $key
+        markNedFileOfItemDirty $key
         updateTreeManager
     }
     destroy .connopts

@@ -1,4 +1,11 @@
+
+2003-08-12  Andras Varga
+	
+	* enhancement: in Submodule and Network Properties dialogs, choose 
+	module list from combobox
+
 TODO: save/restore size of dialogs
+FIXME!!! when submodule has random placement, strange thing happpens after OKing Props dialog
 
 2003-08-11  Andras Varga
 

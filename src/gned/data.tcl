@@ -304,6 +304,22 @@ proc getChildrenWithType {parentkey type} {
     return $keys
 }
 
+# getChildrenWithName --
+#
+# Find children within the given parent and with a given name
+#
+proc getChildrenWithName {parentkey value} {
+   global ned
+
+   set keys {}
+   foreach key $ned($parentkey,childrenkeys) {
+       if {[info exist ned($key,name)] && $ned($key,name)==$value} {
+          lappend keys $key
+       }
+   }
+   return $keys
+}
+
 
 # canvasIdFromItemKey --
 #
@@ -345,7 +361,6 @@ proc isItemPartOfItem {key anc_key} {
 #
 proc itemKeyFromName {name type} {
     global ned
-
     foreach i [array names ned "*,type"] {
         if {$ned($i)==$type} {
             regsub -- ",type" $i "" key
@@ -548,12 +563,12 @@ proc checkArray {} {
 }
 
 
-# markNedfileOfItemDirty --
+# markNedFileOfItemDirty --
 #
 # Returns 1 if the dirty bit was just set to true.
 # updateTreeManager must always be called after this!
 #
-proc markNedfileOfItemDirty {key} {
+proc markNedFileOfItemDirty {key} {
     global ned
 
     # seach up until nedfile item
@@ -655,6 +670,18 @@ proc deleteModuleData {key} {
     }
 }
 
+# getContainingModule --
+#
+# get module that contains item.
+#
+proc getContainingModule {key} {
+    global ned
+    while {$key!="" && $ned($key,type)!="module" && $ned($key,type)!="simple"}  {
+        set key $ned($key,parentkey)
+    }
+    return $key
+}
+
 
 # getModuleNameList --
 #
@@ -665,6 +692,24 @@ proc getModuleNameList {} {
     set list {}
     foreach i [array names ned "*,type"] {
         if {$ned($i)=="module" || $ned($i)=="simple"} {
+            regsub -- ",type" $i "" key
+            lappend list $ned($key,name)
+        }
+    }
+    return $list
+}
+
+# getChannelNameList --
+#
+# get a list of channel type names.
+#
+# Could be merged with getModuleNameList, it's almost the same.
+#
+proc getChannelNameList {} {
+    global ned
+    set list {}
+    foreach i [array names ned "*,type"] {
+        if {$ned($i)=="channel"} {
             regsub -- ",type" $i "" key
             lappend list $ned($key,name)
         }

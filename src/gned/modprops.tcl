@@ -100,7 +100,7 @@ proc editModuleProps {key} {
 
         # redraw because name might have changed
         redrawItemOnAnyCanvas $key
-        markNedfileOfItemDirty $key
+        markNedFileOfItemDirty $key
         updateTreeManager
         adjustWindowTitle
     }

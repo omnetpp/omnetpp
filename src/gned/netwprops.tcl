@@ -130,7 +130,7 @@ proc editNetworkProps {key} {
         #    }
         #}
 
-        markNedfileOfItemDirty $key
+        markNedFileOfItemDirty $key
         updateTreeManager
 
     }

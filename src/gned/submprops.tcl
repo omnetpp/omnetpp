@@ -157,7 +157,7 @@ proc editSubmoduleProps {key} {
 
         # redraw because name might have changed
         redrawItemOnAnyCanvas $key
-        markNedfileOfItemDirty $key
+        markNedFileOfItemDirty $key
         updateTreeManager
     }
     destroy $w

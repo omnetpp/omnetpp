@@ -18,8 +18,10 @@
 
 proc editConnectionProps {key} {
     global gned ned canvas
-
     global tmp
+
+    set modkey [getContainingModule $key]
+puts "dbg: modkey=$modkey"
 
     # create dialog with OK and Cancel buttons
     set w .connprops
@@ -64,7 +66,7 @@ proc editConnectionProps {key} {
 
     # create "Attributes" page
     radiobutton $nb.attrs.r1 -text "Predefined channel:" -value 1 -variable tmp(usechannel) -command "ConnProps:useChannel $w"
-    label-entry $nb.attrs.channel "  Channel name:"
+    label-combo2 $nb.attrs.channel "  Channel name:" [getChannelNameList]
     radiobutton $nb.attrs.r2 -text "Custom:" -value 0  -variable tmp(usechannel) -command "ConnProps:notUseChannel $w"
     label-entry $nb.attrs.delay "  Prop. delay:"
     label-entry $nb.attrs.datarate "  Data Rate:"
@@ -95,6 +97,8 @@ proc editConnectionProps {key} {
     # fill "Gates" page
     ConnProps:fillGateSpec $nb.gates.from $key src
     ConnProps:fillGateSpec $nb.gates.to $key dest
+    ConnProps:refreshGateCombo $nb.gates.from $modkey
+    ConnProps:refreshGateCombo $nb.gates.to $modkey
     $nb.gates.condition.e  insert 0 $ned($key,condition)
     set tmp(l2r) $ned($key,arrowdir-l2r)
 
@@ -162,7 +166,7 @@ proc editConnectionProps {key} {
 
         # well redraw is not explicitly needed now, but cannot hurt
         redrawItemOnAnyCanvas $key
-        markNedfileOfItemDirty $key
+        markNedFileOfItemDirty $key
         updateTreeManager
     }
     destroy $w
@@ -219,7 +223,7 @@ proc ConnProps:forLoopEdit {w} {
     debug "TODO: 'for' handling to be implemented!"
 
     frame $w
-    label $w.l -text "Handling of loop connections not implemented yet."
+    label $w.l -text "Managing \"for\"-loops around connections is not possible from this dialog."
     #combo $w.e $list
     #button $w.c -text "Edit..."
     pack $w.l -expand 0 -fill none -padx 2 -pady 2 -side left
@@ -240,7 +244,7 @@ proc ConnProps:gateSpec {w} {
     label $w.mod.l1 -text  "  Module:" -anchor w -width 8
     label $w.mod.name -width 20 -relief sunken -anchor w
     label $w.mod.lb -text  "  index \["
-    entry $w.mod.index -width 8
+    entry $w.mod.index -width 6
     label $w.mod.rb -text  "\]   "
     pack $w.mod.l1 -expand 0 -side left -padx 2 -pady 2
     pack $w.mod.name  -expand 1 -fill x -side left -padx 2 -pady 2
@@ -250,14 +254,15 @@ proc ConnProps:gateSpec {w} {
 
     # add "Gate ... index [...]" line
     label $w.gate.l1 -text  "  Gate:" -anchor w -width 8
-    entry $w.gate.name -width 14
-    button $w.gate.c -text "..." -width 3
+    #entry $w.gate.name -width 14
+    #button $w.gate.c -text "..." -width 3
+    combobox::combobox $w.gate.name -width 14
     label $w.gate.lb -text  "  index \["
-    entry $w.gate.index -width 8
+    entry $w.gate.index -width 6
     label $w.gate.rb -text  "\]   "
     pack $w.gate.l1 -expand 0 -side left -padx 2 -pady 2
     pack $w.gate.name  -expand 1 -fill x -side left -padx 2 -pady 2
-    pack [wsize $w.gate.c 20 20] -expand 0 -side left -padx 0 -pady 2
+    #pack [wsize $w.gate.c 20 20] -expand 0 -side left -padx 0 -pady 2
     pack $w.gate.lb -expand 0 -side left -padx 2 -pady 2
     pack $w.gate.index -expand 1 -fill x -side left -padx 2 -pady 2
     pack $w.gate.rb -expand 0 -side left -padx 2 -pady 2
@@ -271,21 +276,39 @@ proc ConnProps:fillGateSpec {w key srcdest} {
     $w.mod.index insert 0 $ned($key,${srcdest}-mod-index)
     $w.gate.name insert 0 $ned($key,${srcdest}gate)
     $w.gate.index insert 0 $ned($key,${srcdest}-gate-index)
-
-    $w.gate.c config -command "ConnProps:chooseGate $modkey $w.gate.name"
 }
 
-proc ConnProps:chooseGate {modkey w} {
-
-    notImplemented
-    return
-
-    set current [$w get]
-    set new [...]
-
-    if {$new!=""} {
-       $w delete 0 end
-       $w insert end $new
+proc ConnProps:refreshGateCombo {w modkey} {
+    global ned
+    #puts "dbg: modkey=$modkey"
+    set submodname [$w.mod.name cget -text]
+    if {$submodname==""} {
+        # gates of parent module
+        # FIXME this doesn't work because submodname is not "" but the type name of enclosing compound module
+        comboconfig $w.gate.name [getNameList $modkey gates]
+    } else {
+        set submodskey [getChildrenWithType $modkey submods]
+        #puts "dbg: submodskey=$submodskey"
+        if {$submodskey!=""} {
+            set submodkey [getChildrenWithName $submodskey $submodname]
+            #puts "dbg: submodkey=$submodkey"
+            if {[llength $submodkey]==1} {
+                if {$ned($submodkey,like-name)!=""} {
+                    set modtypename $ned($submodkey,like-name)
+                } else {
+                    set modtypename $ned($submodkey,type-name)
+                }
+                set modtypekey [concat [itemKeyFromName $modtypename module] \
+                                       [itemKeyFromName $modtypename simple]]
+                #puts "dbg: modtypekey=$modtypekey"
+                if {$modtypekey!=""} {
+                    # if there are multiple definitions of this type, just take the first one
+                    set modtypekey [lindex $modtypekey 0]
+                    #puts "dbg: modtypekey-2=$modtypekey"
+                    comboconfig $w.gate.name [getNameList $modtypekey gates]
+                }
+            }
+        }
     }
 }
 

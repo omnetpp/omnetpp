@@ -34,7 +34,7 @@ proc fileNewComponent {type} {
    set nedfilekey $ned($curmodkey,parentkey)
 
    set key [addItemWithUniqueName $type $nedfilekey]
-   markNedfileOfItemDirty $key
+   markNedFileOfItemDirty $key
 
    if {$type=="module"} {
        openModuleOnNewCanvas $key
@@ -267,6 +267,7 @@ proc fileExit {} {
            fileCloseNedfile $key
            if [info exist ned($key,type)] {
                 # don't exit if user cancelled closing a canvas
+                busy
                 return
            }
 #       }
