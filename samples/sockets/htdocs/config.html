@@ -11,6 +11,18 @@ following lines into <tt>omnetpp.ini</tt>:
 scheduler-class = "cSocketRTScheduler"
 </pre>
 
+<p>
+This selects the <tt>cSocketRTScheduler</tt> class as scheduler class.
+This class expects another configuration entry, <tt>socketrtscheduler-port=</tt>,
+which specifies the TCP port to listen on. The default port is 4242;
+you can change it to e.g. 6000 by adding the following line
+under <tt>[General]</tt>:
+
+<pre>
+socketrtscheduler-port=6000
+</pre>
+
+<p>
 <a href="index.html>Back</a>
 
 </body>
