@@ -293,22 +293,36 @@ if test $tcltk_ok = no; then
 fi
 if test $tcltk_ok = no -a "$cygwin" = yes; then
     # in Cygwin, we try 8.4, 8.3 and 8.0:
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84, tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84, 
+                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
     if test $tcltk_ok = no; then
-        OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk83 -lcygtcl83, tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk83 -lcygtcl83")
-    fi
-    if test $tcltk_ok = no; then
-        OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk80 -lcygtcl80, tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk80 -lcygtcl80")
+        OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk83 -lcygtcl83,
+                      tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk83 -lcygtcl83")
     fi
 fi
 if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84, tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
 fi
 if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk83 -ltcl83, tcltk_ok, TK_LIBS="$opp_x11lib -ltk83 -ltcl83")
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.4 -ltcl8.4,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4")
 fi
 if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk82 -ltcl82, tcltk_ok, TK_LIBS="$opp_x11lib -ltk82 -ltcl82")
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk83 -ltcl83,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk83 -ltcl83")
+fi
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.3 -ltcl8.3,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.3 -ltcl8.3")
+fi
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk82 -ltcl82,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk82 -ltcl82")
+fi
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.2 -ltcl8.2,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.2 -ltcl8.2")
 fi
 if test $tcltk_ok = yes; then
    TKENV_IF_POSSIBLE=tkenv
@@ -349,8 +363,13 @@ fi
 OPP_CHECK_LIB(Expat XML parser, expat.h, XML_ParserCreate(0), $EXPAT_CFLAGS, $EXPAT_LIBS, expat_ok)
 OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $LIBXML_CFLAGS, $LIBXML_LIBS, libxml_ok)
 if test $libxml_ok = no; then
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), $LIBXML_CFLAGS, -lxml2,
+                  libxml_ok, LIBXML_LIBS="-lxml2")
+fi
+if test $libxml_ok = no; then
     # for Cygwin:
-    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include/libxml2, $LIBXML_LIBS, libxml_ok, LIBXML_CFLAGS=-I/usr/include/libxml2)
+    OPP_CHECK_LIB(LibXML XML parser, libxml/parser.h, xmlInitParser(), -I/usr/include/libxml2, $LIBXML_LIBS,
+                  libxml_ok, LIBXML_CFLAGS="-I/usr/include/libxml2")
 fi
 
 if test $expat_ok = yes; then
