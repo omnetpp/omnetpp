@@ -43,7 +43,6 @@ proc split_dispstr {dispstr tagsarrayname} {
          set tags($key) $val
       }
    }
-puts "order: $tagorder"
    return $tagorder
 }
 
@@ -72,16 +71,17 @@ proc assemble_dispstr {tagsarrayname tagorder} {
            append dispstr ";"
        }
    }
-puts "dispstr: $dispstr"
+
+   # cut off trailing ';'
+   if {$dispstr!=""} {
+       set dispstr [string range $dispstr 0 [expr [string length $dispstr]-2]]
+   }
    return $dispstr
 }
 
 # private proc for assemble_dispstr
 proc _dispstr_ordertags {order t1 t2} {
-   puts "    cmp order: $order"
-   set x [expr [lsearch -exact $order $t1] - [lsearch -exact $order $t2]]
-   puts "    cmp $t1 <--> $t2  : $x"
-   return $x
+   return [expr [lsearch -exact $order $t1] - [lsearch -exact $order $t2]]
 }
 
 

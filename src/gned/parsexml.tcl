@@ -70,8 +70,6 @@ proc loadXML {xmlfile} {
     set filekey [lindex $tmp_ned($rootkey,childrenkeys) 0]
     unset tmp_ned($rootkey,childrenkeys)
 
-    parse_displaystrings $nedfilekey
-
     # debug code:
     # set showkeys [lsort [array names tmp_ned "*"]]
     # foreach i $showkeys {
@@ -119,8 +117,7 @@ proc loadXML {xmlfile} {
 proc doParseXML {xmlfile rootkey} {
     global tmp_ned tmp_errors tmp_idmap
 
-    puts "TBD: should use tmp_errors()..."
-    puts "TBD: display strings..."
+    puts "dbg: parsing XML file..."
 
     # handling of file errors left to the caller
     set fin [open $xmlfile r]
@@ -182,8 +179,6 @@ proc sax_elementstart {tag attlist} {
             error "invalid attr name '$att' in entity '$tag'"
         }
     }
-
-
     lappend stack $key
     return 0
 }

@@ -14,13 +14,9 @@ Bugs:
 Parse/Generate:
 - comments around display strings, channel attributes are lost
 - add default comments for newly created modules!
-- display string parsing loses all tags not used by GNED, e.g. submod vector
-  'matrix' and 'row' modes!
-- display string parsing -- rewrite!!!
 
 Data struct change:
 - "source-text" attribute to module?? should be added when one switches to text mode
-- turn display strings into independent objects?
 
 Drawing:
 - random placement of submods should be the same as in Tkenv

@@ -45,9 +45,9 @@ proc generateXML {key} {
     update_displaystrings $key
 
     set xml ""
-    append xml "<!-- XML file format for NED is currently ***EXPERIMENTAL*** -->"
-    append xml "<?xml version=\"1.0\" ?>"
-    append xml "<!doctype system=\"ned1.dtd\">"
+    append xml "<!-- XML file format for NED is currently ***EXPERIMENTAL*** -->\n"
+    append xml "<?xml version=\"1.0\" ?>\n"
+    append xml "<!doctype system=\"ned1.dtd\">\n\n"
 
     append xml [generateXMLElement $key ""]
     return $xml
