@@ -1,14 +1,16 @@
 What's New
 ==========
 
-In the OMNeT++ 2.0 beta 3 version
----------------------------------
+In the OMNeT++ 2.0 beta 3 version (Jan 2000)
+--------------------------------------------
 License change: you can now elect to use GPL for the whole OMNeT++ package.
 
-GNED
+GNED has been further enhanced: drag&drop, in-place editing, dialogs...
 
-Experimental support for MSVC. The simulation library was brushed up a bit...
- Makefile.vc files added. No DLL support or 
+Indentation of samples cleaned up. Renamed classes to allow link all samples
+into a single executable. Demo added....
+
+Experimental support for MSVC. Makefile.vc files added. No DLL support or 
 makemake equivalent yet.
 
 Some API changes to improve the clarity of the code...
@@ -179,7 +181,7 @@ Several bug fixes and minor improvements on Plove, GNED etc.
 
 Version of May, 1998
 --------------------
-Has not been publicly announced.
+Wasn't publicly announced.
 
 
 In version of March, 1998
