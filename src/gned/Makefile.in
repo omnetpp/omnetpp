@@ -57,30 +57,22 @@ parsened.o: parsened.cc
 nedfile.o: nedfile.cc
 	$(CXX) -c $(COPTS) nedfile.cc
 
-lex.yy.o: lex.yy.c
-	# FIXME: true64's cxx insists on .cc suffix for C++ files -- any better solution than below?
-	if [ "$(CXX)" = "cxx" ]; then \
-		cp lex.yy.c lex.yy.cc && $(CXX) -c $(COPTS) lex.yy.cc; \
-	else \
-		$(CXX) -c $(COPTS) lex.yy.c; \
-	fi
+lex.yy.o: lex.yy.cc
+	$(CXX) -c $(COPTS) lex.yy.cc
 
-ebnf.tab.o: ebnf.tab.c
-	# FIXME: true64's cxx insists on .cc suffix for C++ files -- any better solution than below?
-	if [ "$(CXX)" = "cxx" ]; then \
-		cp ebnf.tab.c ebnf.tab.cc && $(CXX) -c $(COPTS) -DCXX ebnf.tab.cc; \
-	else \
-		$(CXX) -c $(COPTS) ebnf.tab.c; \
-	fi
+ebnf.tab.o: ebnf.tab.cc
+	$(CXX) -c $(COPTS) ebnf.tab.cc
 
 ebnf.tab.h: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
 
-ebnf.tab.c: ebnf.y
+ebnf.tab.cc: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
+	mv ebnf.tab.c ebnf.tab.cc
 
-lex.yy.c: ebnf.lex
+lex.yy.cc: ebnf.lex
 	$(LEX) ebnf.lex
+	mv lex.yy.c lex.yy.cc
 
 tclcode.cc: *.tcl
 	../utils/tcl2c tclcode.cc *.tcl
@@ -93,8 +85,7 @@ depend:
 	$(MAKEDEPEND) -I. -fMakefile.in -- *.c *.cc
 
 clean:
-	rm -f tclcode.cc *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned$(EXE_SUFFIX)
-	rm -f ebnf.tab.cc lex.yy.cc
+	rm -f tclcode.cc *.o lex.yy.cc ebnf.tab.cc ebnf.tab.h gned$(EXE_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
