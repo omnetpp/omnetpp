@@ -1,5 +1,18 @@
 Queues
 ======
 
-The Queues sample was contributed by Nick Van Foreest.
-Based on the Fifo sample simulation.
+Queues is a queueing network tutorial and basic queueing library for OMNeT++,
+based on the Fifo sample simulation.
+
+Author: Nicky van Foreest (n.d.vanforeest@math.utwente.nl)
+License: GPL
+
+Features:
+   - Tutorial to running queueing simulations
+   - Start of a library with queueing functionality
+
+Usage:
+Read the included tutorial: doc/queueing-tutorial.pdf
+
+Note:
+You are invited to contribute functionality to the library.
