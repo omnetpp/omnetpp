@@ -1,3 +1,7 @@
 Oct 10, 1999
  - standardized indentation of source files
  - FF1 prefix added to Generator and Sink modules
+Oct 12, 1999
+ - ACPFifo and ACBFifo renamed to FF1PacketFifo and FF1BitFifo
+ - display strings moved to NED file
+ - num_messages value changed from 1000 to 50 (better for demonstration)
