@@ -64,34 +64,130 @@ speedmtr.obj : speedmtr.cc
 	$(CXX) $(COPTS) /c /Tp speedmtr.cc
 
 depend:
-	@ echo *** make depend not (yet) supported with MSVC
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
 
 clean:
 	del *.obj envir.lib envir.dll envir.ilib envir.exp 2> nul
 	del *.ilk *.idb *.pdb 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-args.obj: envdefs.h args.h
-cenvir.obj: envdefs.h args.h ../../include/cenvir.h ../../include/defs.h omnetapp.h ../../include/carray.h
-cenvir.obj: ../../include/cobject.h ../../include/util.h slaveapp.h ../../include/cmodule.h
-cenvir.obj: ../../include/ccor.h ../../include/chead.h ../../include/cqueue.h ../../include/cgate.h
-cenvir.obj: ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h
-cenvir.obj: ../../include/cnetmod.h
-cinifile.obj: envdefs.h ../../include/cenvir.h ../../include/defs.h ../../include/util.h cinifile.h patmatch.h
-main.obj: envdefs.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/csimul.h
-main.obj: ../../include/errmsg.h ../../include/chead.h ../../include/cmsgheap.h ../../include/coutvect.h
-main.obj: ../../include/ccor.h ../../include/cenvir.h
-omnetapp.obj: envdefs.h args.h omnetapp.h ../../include/carray.h ../../include/cobject.h ../../include/defs.h
-omnetapp.obj: ../../include/util.h ../../include/cenvir.h cinifile.h patmatch.h
-omnetapp.obj: ../../include/ctypes.h ../../include/chead.h ../../include/ccor.h ../../include/csimul.h
-omnetapp.obj: ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/cpar.h
-omnetapp.obj: ../../include/cnetmod.h ../../include/cmodule.h ../../include/cqueue.h ../../include/cgate.h
-patmatch.obj: envdefs.h patmatch.h ../../include/defs.h
-seeds.obj: envdefs.h omnetapp.h ../../include/carray.h ../../include/cobject.h ../../include/defs.h
-seeds.obj: ../../include/util.h ../../include/cenvir.h
-slaveapp.obj: envdefs.h slaveapp.h omnetapp.h ../../include/carray.h ../../include/cobject.h
-slaveapp.obj: ../../include/defs.h ../../include/util.h ../../include/cenvir.h cinifile.h
-slaveapp.obj: ../../include/csimul.h ../../include/errmsg.h ../../include/chead.h ../../include/cmsgheap.h
-slaveapp.obj: ../../include/coutvect.h ../../include/ccor.h ../../include/cnetmod.h ../../include/cmodule.h
-slaveapp.obj: ../../include/cqueue.h ../../include/cgate.h
+args.obj: args.cc \
+  args.h \
+  envdefs.h \
+  ../../include/defs.h
+cenvir.obj: cenvir.cc \
+  args.h \
+  cinifile.h \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  appreg.h \
+  ../../include/cmodule.h \
+  ../../include/cnetmod.h \
+  slaveapp.h \
+  speedmtr.h \
+  envdefs.h \
+  ../../include/defs.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/carray.h \
+  ../../include/chead.h \
+  ../../include/ccor.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/csimul.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
+cinifile.obj: cinifile.cc \
+  ../../include/cenvir.h \
+  ../../include/util.h \
+  cinifile.h \
+  patmatch.h \
+  ../../include/defs.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
+  envdefs.h
+main.obj: main.cc \
+  ../../include/cobject.h \
+  ../../include/csimul.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/chead.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ccor.h \
+  ../../include/cpar.h
+omnetapp.obj: omnetapp.cc \
+  args.h \
+  omnetapp.h \
+  cinifile.h \
+  patmatch.h \
+  ../../include/ctypes.h \
+  ../../include/ccor.h \
+  ../../include/csimul.h \
+  ../../include/cpar.h \
+  ../../include/cnetmod.h \
+  envdefs.h \
+  ../../include/defs.h \
+  ../../include/carray.h \
+  ../../include/chead.h \
+  ../../include/cenvir.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/cmodule.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h
+patmatch.obj: patmatch.cc \
+  patmatch.h \
+  ../../include/defs.h \
+  envdefs.h
+platdep.obj: platdep.cc \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cenvir.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h
+seeds.obj: seeds.cc \
+  omnetapp.h \
+  ../../include/carray.h \
+  ../../include/chead.h \
+  ../../include/cenvir.h \
+  args.h \
+  envdefs.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cpar.h
+slaveapp.obj: slaveapp.cc \
+  slaveapp.h \
+  cinifile.h \
+  ../../include/csimul.h \
+  ../../include/cnetmod.h \
+  appreg.h \
+  envdefs.h \
+  omnetapp.h \
+  ../../include/defs.h \
+  ../../include/carray.h \
+  ../../include/chead.h \
+  ../../include/cenvir.h \
+  args.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/cpar.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ccor.h \
+  ../../include/cmodule.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h
+speedmtr.obj: speedmtr.cc \
+  speedmtr.h \
+  ../../include/defs.h \
+  envdefs.h

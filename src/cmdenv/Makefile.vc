@@ -38,18 +38,32 @@ heap.obj : heap.cc
 	$(CXX) $(COPTS) /c /Tp heap.cc
 
 depend:
-	@ echo *** make depend not (yet) supported with MSVC
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
 
 clean:
 	-del *.obj cmdenv.lib cmdenv.dll cmdenv.ilib cmdenv.exp 2> nul
 	-del *.ilk *.idb *.pdb 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-cmdenv.obj: cmdenv.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h
-cmdenv.obj: ../../include/defs.h ../../include/util.h ../../include/csimul.h ../../include/errmsg.h
-cmdenv.obj: ../../include/cmsgheap.h ../../include/coutvect.h ../../include/ccor.h
-cmdenv.obj: ../envir/omnetapp.h ../../include/carray.h ../../include/cenvir.h enumstr.h
-cmdenv.obj: ../envir/slaveapp.h ../envir/cinifile.h ../../include/cmodule.h
-cmdenv.obj: ../../include/cqueue.h ../../include/cgate.h ../../include/cnetmod.h ../envir/args.h
-enumstr.obj: enumstr.h
+cmdenv.obj: cmdenv.cc \
+  cmddefs.h \
+  cmdenv.h \
+  enumstr.h \
+  ../../include/cmodule.h \
+  ../../include/cnetmod.h \
+  ../../include/defs.h \
+  ../../include/ctypes.h \
+  ../../include/csimul.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ccor.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h
+enumstr.obj: enumstr.cc \
+  enumstr.h
+heap.obj: heap.cc

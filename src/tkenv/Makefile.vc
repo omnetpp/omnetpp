@@ -73,61 +73,198 @@ missing-library:
 	@ echo '  *** No Tk installation found -- skipping Tkenv'
 
 depend:
-	@ echo *** make depend not (yet) supported with MSVC
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
 
 clean:
 	-del tclcode.cc *.obj tkenv.lib tkenv.dll tkenv.ilib tkenv.exp 2> nul
 	-del *.ilk *.idb *.pdb 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-arrow.obj: arrow.h
-inspect.obj: ../../include/omnetpp.h ../../include/defs.h ../../include/util.h ../../include/errmsg.h
-inspect.obj: ../../include/cobject.h ../../include/csimul.h ../../include/chead.h ../../include/cmsgheap.h
-inspect.obj: ../../include/coutvect.h ../../include/ccor.h ../../include/macros.h ../../include/ctypes.h
-inspect.obj: ../../include/carray.h ../../include/cqueue.h ../../include/cllist.h ../../include/cwatch.h
-inspect.obj: ../../include/cpar.h ../../include/cgate.h ../../include/cmessage.h ../../include/cpacket.h
-inspect.obj: ../../include/cstk.h ../../include/cmodule.h ../../include/cstat.h ../../include/cdensity.h
-inspect.obj: ../../include/chist.h ../../include/cvarhist.h ../../include/cpsquare.h
-inspect.obj: ../../include/cksplit.h ../../include/cdetect.h ../../include/ctopo.h ../../include/cnetmod.h
-inspect.obj: ../../include/cfsm.h ../../include/protocol.h ../../include/cenvir.h tkapp.h
-inspect.obj: ../envir/omnetapp.h tklib.h tkinsp.h
-modinsp.obj: ../../include/cmodule.h ../../include/cobject.h ../../include/defs.h ../../include/util.h
-modinsp.obj: ../../include/ccor.h ../../include/chead.h ../../include/carray.h ../../include/cqueue.h
-modinsp.obj: ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h
-modinsp.obj: ../../include/coutvect.h ../../include/cmessage.h ../../include/cpar.h ../../include/cnetmod.h
-modinsp.obj: ../../include/cstat.h ../../include/cdensity.h tkapp.h ../envir/omnetapp.h
-modinsp.obj: ../../include/cenvir.h tklib.h tkinsp.h arrow.h
-objinsp.obj: ../../include/omnetpp.h ../../include/defs.h ../../include/util.h ../../include/errmsg.h
-objinsp.obj: ../../include/cobject.h ../../include/csimul.h ../../include/chead.h ../../include/cmsgheap.h
-objinsp.obj: ../../include/coutvect.h ../../include/ccor.h ../../include/macros.h ../../include/ctypes.h
-objinsp.obj: ../../include/carray.h ../../include/cqueue.h ../../include/cllist.h ../../include/cwatch.h
-objinsp.obj: ../../include/cpar.h ../../include/cgate.h ../../include/cmessage.h ../../include/cpacket.h
-objinsp.obj: ../../include/cstk.h ../../include/cmodule.h ../../include/cstat.h ../../include/cdensity.h
-objinsp.obj: ../../include/chist.h ../../include/cvarhist.h ../../include/cpsquare.h
-objinsp.obj: ../../include/cksplit.h ../../include/cdetect.h ../../include/ctopo.h ../../include/cnetmod.h
-objinsp.obj: ../../include/cfsm.h ../../include/protocol.h ../../include/cenvir.h tkapp.h
-objinsp.obj: ../envir/omnetapp.h tklib.h tkinsp.h arrow.h
-statinsp.obj: ../../include/cmodule.h ../../include/cobject.h ../../include/defs.h ../../include/util.h
-statinsp.obj: ../../include/ccor.h ../../include/chead.h ../../include/carray.h ../../include/cqueue.h
-statinsp.obj: ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h
-statinsp.obj: ../../include/coutvect.h ../../include/cmessage.h ../../include/cpar.h
-statinsp.obj: ../../include/cnetmod.h ../../include/cstat.h ../../include/cdensity.h tkapp.h
-statinsp.obj: ../envir/omnetapp.h ../../include/cenvir.h tklib.h tkinsp.h arrow.h
-tkapp.obj: ../envir/slaveapp.h ../envir/omnetapp.h ../../include/carray.h
-tkapp.obj: ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cenvir.h
-tkapp.obj: ../envir/cinifile.h ../../include/cmodule.h ../../include/ccor.h ../../include/chead.h
-tkapp.obj: ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h
-tkapp.obj: ../../include/cmsgheap.h ../../include/coutvect.h ../../include/cmessage.h ../../include/cpar.h
-tkapp.obj: ../../include/cstk.h ../../include/ctypes.h ../../include/cnetmod.h tkapp.h tklib.h
-tkapp.obj: tkinsp.h
-tkcmd.obj: ../../include/cenvir.h ../../include/defs.h ../../include/carray.h ../../include/cobject.h
-tkcmd.obj: ../../include/util.h ../../include/csimul.h ../../include/errmsg.h ../../include/chead.h
-tkcmd.obj: ../../include/cmsgheap.h ../../include/coutvect.h ../../include/ccor.h ../../include/cmodule.h
-tkcmd.obj: ../../include/cqueue.h ../../include/cgate.h ../../include/ctypes.h tkapp.h
-tkcmd.obj: ../envir/omnetapp.h tklib.h tkinsp.h
-tklib.obj: ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cmodule.h
-tklib.obj: ../../include/ccor.h ../../include/chead.h ../../include/carray.h ../../include/cqueue.h
-tklib.obj: ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h
-tklib.obj: ../../include/coutvect.h tklib.h tkinsp.h ../envir/omnetapp.h
-tklib.obj: ../../include/cenvir.h tkapp.h
+arrow.obj: arrow.cc \
+  arrow.h
+inspect.obj: inspect.cc \
+  ../../include/omnetpp.h \
+  tkapp.h \
+  tklib.h \
+  tkinsp.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/csimul.h \
+  ../../include/macros.h \
+  ../../include/ctypes.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cllist.h \
+  ../../include/chead.h \
+  ../../include/cwatch.h \
+  ../../include/cpar.h \
+  ../../include/cgate.h \
+  ../../include/cmessage.h \
+  ../../include/cpacket.h \
+  ../../include/cmsgheap.h \
+  ../../include/cstk.h \
+  ../../include/ccor.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ../../include/cdensity.h \
+  ../../include/chist.h \
+  ../../include/cvarhist.h \
+  ../../include/cpsquare.h \
+  ../../include/cksplit.h \
+  ../../include/coutvect.h \
+  ../../include/cdetect.h \
+  ../../include/ctopo.h \
+  ../../include/cnetmod.h \
+  ../../include/cfsm.h \
+  ../../include/protocol.h \
+  ../../include/cenvir.h
+modinsp.obj: modinsp.cc \
+  ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/cpar.h \
+  ../../include/carray.h \
+  ../../include/cnetmod.h \
+  ../../include/coutvect.h \
+  ../../include/cstat.h \
+  ../../include/cdensity.h \
+  tkapp.h \
+  tklib.h \
+  tkinsp.h \
+  arrow.h \
+  ../../include/cobject.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/csimul.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h
+objinsp.obj: objinsp.cc \
+  ../../include/omnetpp.h \
+  tkapp.h \
+  tklib.h \
+  tkinsp.h \
+  arrow.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cobject.h \
+  ../../include/csimul.h \
+  ../../include/macros.h \
+  ../../include/ctypes.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cllist.h \
+  ../../include/chead.h \
+  ../../include/cwatch.h \
+  ../../include/cpar.h \
+  ../../include/cgate.h \
+  ../../include/cmessage.h \
+  ../../include/cpacket.h \
+  ../../include/cmsgheap.h \
+  ../../include/cstk.h \
+  ../../include/ccor.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ../../include/cdensity.h \
+  ../../include/chist.h \
+  ../../include/cvarhist.h \
+  ../../include/cpsquare.h \
+  ../../include/cksplit.h \
+  ../../include/coutvect.h \
+  ../../include/cdetect.h \
+  ../../include/ctopo.h \
+  ../../include/cnetmod.h \
+  ../../include/cfsm.h \
+  ../../include/protocol.h \
+  ../../include/cenvir.h
+statinsp.obj: statinsp.cc \
+  ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/cpar.h \
+  ../../include/carray.h \
+  ../../include/cnetmod.h \
+  ../../include/coutvect.h \
+  ../../include/cstat.h \
+  ../../include/cdensity.h \
+  tkapp.h \
+  tklib.h \
+  tkinsp.h \
+  arrow.h \
+  ../../include/cobject.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/csimul.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h
+tclcode.obj: tclcode.cc
+tkapp.obj: tkapp.cc \
+  ../../include/cenvir.h \
+  ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/cstk.h \
+  ../../include/ctypes.h \
+  ../../include/cnetmod.h \
+  tkdefs.h \
+  tkapp.h \
+  tklib.h \
+  tkinsp.h \
+  tclcode.cc \
+  ../../include/defs.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/csimul.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
+tkcmd.obj: tkcmd.cc \
+  ../../include/cenvir.h \
+  ../../include/carray.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/ctypes.h \
+  tkapp.h \
+  tklib.h \
+  tkinsp.h \
+  ../../include/defs.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/chead.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ccor.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h
+tklib.obj: tklib.cc \
+  ../../include/cobject.h \
+  ../../include/cmodule.h \
+  ../../include/csimul.h \
+  tklib.h \
+  tkinsp.h \
+  tkapp.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h

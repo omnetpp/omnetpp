@@ -208,61 +208,383 @@ clean:
 	rm -f libsim_mpi$(A_LIB_SUFFIX) libsim_mpi$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-carray.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/errmsg.h ../../include/carray.h
-ccor.o: ../../include/ccor.h ../../include/cobject.h ../../include/defs.h ../../include/util.h
-cdensity.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cdensity.h
-cdensity.o: ../../include/cstat.h
-cdetect.o: ../../include/csimul.h ../../include/defs.h ../../include/util.h ../../include/errmsg.h ../../include/chead.h ../../include/cobject.h ../../include/cmsgheap.h
-cdetect.o: ../../include/coutvect.h ../../include/ccor.h ../../include/cdetect.h ../../include/cstat.h
-cfsm.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cfsm.h
-cgate.o: ../../include/cmessage.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/carray.h ../../include/cpar.h ../../include/csimul.h ../../include/errmsg.h
-cgate.o: ../../include/chead.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/ccor.h ../../include/cmodule.h ../../include/cqueue.h ../../include/cgate.h
-cgate.o: ../../include/cenvir.h ../../include/macros.h ../../include/ctypes.h
-chead.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h
-chist.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cdetect.h ../../include/cstat.h
-chist.o: ../../include/chist.h ../../include/cdensity.h
-cksplit.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cenvir.h
-cksplit.o: ../../include/cksplit.h ../../include/cdensity.h ../../include/cstat.h
-cllist.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cllist.h
-cmessage.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cmodule.h
-cmessage.o: ../../include/ccor.h ../../include/carray.h ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h
-cmessage.o: ../../include/coutvect.h ../../include/cmessage.h ../../include/cpar.h
-cmodule.o: ../../include/cmodule.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/ccor.h ../../include/chead.h ../../include/carray.h ../../include/cqueue.h
-cmodule.o: ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/cmessage.h ../../include/cpar.h
-cmodule.o: ../../include/ctypes.h ../../include/cnetmod.h ../../include/cenvir.h
-cmsgheap.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cmessage.h
-cmsgheap.o: ../../include/carray.h ../../include/cpar.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/ccor.h
-cnetmod.o: ../../include/cpar.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cenvir.h ../../include/cnetmod.h ../../include/cmodule.h ../../include/ccor.h
-cnetmod.o: ../../include/chead.h ../../include/carray.h ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h
-cnetmod.o: ../../include/coutvect.h
-cobject.o: ../../include/csimul.h ../../include/defs.h ../../include/util.h ../../include/errmsg.h ../../include/chead.h ../../include/cobject.h ../../include/cmsgheap.h
-cobject.o: ../../include/coutvect.h ../../include/ccor.h ../../include/cenvir.h ../../include/macros.h ../../include/ctypes.h
-coutvect.o: ../../include/coutvect.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cmodule.h ../../include/ccor.h ../../include/chead.h
-coutvect.o: ../../include/carray.h ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/cenvir.h
-cpacket.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cpacket.h
-cpacket.o: ../../include/cmessage.h ../../include/carray.h ../../include/cpar.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h
-cpacket.o: ../../include/ccor.h
-cpar.o: ../../include/cpar.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cstat.h ../../include/macros.h ../../include/ctypes.h ../../include/chead.h
-cpar.o: ../../include/errmsg.h ../../include/cmodule.h ../../include/ccor.h ../../include/carray.h ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h
-cpar.o: ../../include/cmsgheap.h ../../include/coutvect.h ../../include/cenvir.h
-cpsquare.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cpsquare.h
-cpsquare.o: ../../include/cdensity.h ../../include/cstat.h
-cqueue.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cqueue.h
-csimul.o: ../../include/cmodule.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/ccor.h ../../include/chead.h ../../include/carray.h ../../include/cqueue.h
-csimul.o: ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/cmessage.h ../../include/cpar.h
-csimul.o: ../../include/cenvir.h ../../include/ctypes.h ../../include/cnetmod.h ../../include/cstat.h
-cstat.o: ../../include/cstat.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cdetect.h
-cstk.o: ../../include/cstk.h ../../include/ccor.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/errmsg.h
-ctopo.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cmodule.h ../../include/ccor.h
-ctopo.o: ../../include/carray.h ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h
-ctopo.o: ../../include/cpar.h ../../include/cllist.h ../../include/ctopo.h
-ctypes.o: ../../include/cpar.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cmodule.h ../../include/ccor.h ../../include/chead.h ../../include/carray.h
-ctypes.o: ../../include/cqueue.h ../../include/cgate.h ../../include/csimul.h ../../include/errmsg.h ../../include/cmsgheap.h ../../include/coutvect.h ../../include/macros.h
-ctypes.o: ../../include/ctypes.h
-cvarhist.o: ../../include/macros.h ../../include/ctypes.h ../../include/chead.h ../../include/cobject.h ../../include/defs.h ../../include/util.h ../../include/cvarhist.h
-cvarhist.o: ../../include/chist.h ../../include/cdensity.h ../../include/cstat.h
-cwatch.o: ../../include/cwatch.h ../../include/cobject.h ../../include/defs.h ../../include/util.h
-util.o: ../../include/util.h ../../include/defs.h ../../include/csimul.h ../../include/errmsg.h ../../include/chead.h ../../include/cobject.h ../../include/cmsgheap.h
-util.o: ../../include/coutvect.h ../../include/ccor.h ../../include/macros.h ../../include/ctypes.h ../../include/cwatch.h ../../include/cpacket.h ../../include/cmessage.h
-util.o: ../../include/carray.h ../../include/cpar.h
+carray.o: carray.cc \
+  ../../include/macros.h \
+  ../../include/errmsg.h \
+  ../../include/carray.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h
+ccor.o: ccor.cc \
+  ../../include/ccor.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h
+cdensity.o: cdensity.cc \
+  ../../include/macros.h \
+  ../../include/cdensity.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cstat.h
+cdetect.o: cdetect.cc \
+  ../../include/csimul.h \
+  ../../include/cdetect.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/chead.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ccor.h \
+  ../../include/cobject.h \
+  ../../include/cstat.h
+cenum.o: cenum.cc \
+  ../../include/macros.h \
+  ../../include/ctypes.h \
+  ../../include/csimul.h \
+  ../../include/cenum.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ccor.h
+cfsm.o: cfsm.cc \
+  ../../include/macros.h \
+  ../../include/cfsm.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h
+cgate.o: cgate.cc \
+  ../../include/cmessage.h \
+  ../../include/cmodule.h \
+  ../../include/carray.h \
+  ../../include/cpar.h \
+  ../../include/cenvir.h \
+  ../../include/csimul.h \
+  ../../include/macros.h \
+  ../../include/cgate.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/cqueue.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ctypes.h
+chead.o: chead.cc \
+  ../../include/macros.h \
+  ../../include/chead.h \
+  ../../include/ctypes.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h
+chist.o: chist.cc \
+  ../../include/macros.h \
+  ../../include/cdetect.h \
+  ../../include/chist.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cstat.h \
+  ../../include/cdensity.h
+cksplit.o: cksplit.cc \
+  ../../include/macros.h \
+  ../../include/cenvir.h \
+  ../../include/cksplit.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cpar.h \
+  ../../include/cdensity.h \
+  ../../include/cstat.h
+cllist.o: cllist.cc \
+  ../../include/macros.h \
+  ../../include/cllist.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h
+cmessage.o: cmessage.cc \
+  ../../include/macros.h \
+  ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/ccor.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/csimul.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/cpar.h
+cmodule.o: cmodule.cc \
+  ../../include/cmodule.h \
+  ../../include/cgate.h \
+  ../../include/cmessage.h \
+  ../../include/csimul.h \
+  ../../include/carray.h \
+  ../../include/ctypes.h \
+  ../../include/cpar.h \
+  ../../include/cnetmod.h \
+  ../../include/cenvir.h \
+  ../../include/cobject.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/cqueue.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
+cmsgheap.o: cmsgheap.cc \
+  ../../include/macros.h \
+  ../../include/cmessage.h \
+  ../../include/cmsgheap.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/carray.h \
+  ../../include/cpar.h \
+  ../../include/csimul.h \
+  ../../include/errmsg.h \
+  ../../include/coutvect.h \
+  ../../include/ccor.h
+cnetmod.o: cnetmod.cc \
+  ../../include/cpar.h \
+  ../../include/cenvir.h \
+  ../../include/cnetmod.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cmodule.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/csimul.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
+cobject.o: cobject.cc \
+  ../../include/csimul.h \
+  ../../include/cenvir.h \
+  ../../include/macros.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/chead.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ccor.h \
+  ../../include/cpar.h \
+  ../../include/ctypes.h
+coutvect.o: coutvect.cc \
+  ../../include/coutvect.h \
+  ../../include/cmodule.h \
+  ../../include/csimul.h \
+  ../../include/cenvir.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/cpar.h
+cpacket.o: cpacket.cc \
+  ../../include/macros.h \
+  ../../include/cpacket.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cmessage.h \
+  ../../include/carray.h \
+  ../../include/cpar.h \
+  ../../include/csimul.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ccor.h
+cpar.o: cpar.cc \
+  ../../include/cpar.h \
+  ../../include/cstat.h \
+  ../../include/macros.h \
+  ../../include/errmsg.h \
+  ../../include/cmodule.h \
+  ../../include/csimul.h \
+  ../../include/cenvir.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/ccor.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
+cpsquare.o: cpsquare.cc \
+  ../../include/macros.h \
+  ../../include/cpsquare.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/cdensity.h \
+  ../../include/cstat.h
+cqueue.o: cqueue.cc \
+  ../../include/macros.h \
+  ../../include/cqueue.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h
+csimul.o: csimul.cc \
+  ../../include/cmodule.h \
+  ../../include/cmessage.h \
+  ../../include/csimul.h \
+  ../../include/cenvir.h \
+  ../../include/ctypes.h \
+  ../../include/cpar.h \
+  ../../include/cnetmod.h \
+  ../../include/cstat.h \
+  ../../include/cobject.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
+cstat.o: cstat.cc \
+  ../../include/cstat.h \
+  ../../include/macros.h \
+  ../../include/cdetect.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h
+cstk.o: cstk.cc \
+  ../../include/cstk.h \
+  ../../include/errmsg.h \
+  ../../include/ccor.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h
+cstruct.o: cstruct.cc \
+  ../../include/cstruct.h \
+  ../../include/cenum.h \
+  ../../include/util.h \
+  ../../include/errmsg.h \
+  ../../include/ctypes.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/chead.h
+ctopo.o: ctopo.cc \
+  ../../include/macros.h \
+  ../../include/cmodule.h \
+  ../../include/cgate.h \
+  ../../include/cpar.h \
+  ../../include/cllist.h \
+  ../../include/ctopo.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/ccor.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/csimul.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
+ctypes.o: ctypes.cc \
+  ../../include/cpar.h \
+  ../../include/cmodule.h \
+  ../../include/macros.h \
+  ../../include/ctypes.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/ccor.h \
+  ../../include/chead.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/csimul.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
+cvarhist.o: cvarhist.cc \
+  ../../include/macros.h \
+  ../../include/cvarhist.h \
+  ../../include/ctypes.h \
+  ../../include/chead.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/chist.h \
+  ../../include/cdensity.h \
+  ../../include/cstat.h
+cwatch.o: cwatch.cc \
+  ../../include/cwatch.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h
+errmsg.o: errmsg.cc
+util.o: util.cc \
+  ../../include/util.h \
+  ../../include/csimul.h \
+  ../../include/macros.h \
+  ../../include/cwatch.h \
+  ../../include/cpacket.h \
+  ../../include/defs.h \
+  ../../include/errmsg.h \
+  ../../include/chead.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
+  ../../include/ccor.h \
+  ../../include/cobject.h \
+  ../../include/ctypes.h \
+  ../../include/cmessage.h \
+  ../../include/carray.h \
+  ../../include/cpar.h

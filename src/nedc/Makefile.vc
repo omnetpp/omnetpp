@@ -50,7 +50,7 @@ jar_mem.obj: jar_func.h jar_mem.c
 	$(CXX) $(COPTS) /c /Tp jar_mem.c
 
 depend:
-	@ echo *** make depend not (yet) supported with MSVC
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.c
 
 clean:
 	-del *.obj nedc.exe *_n.cc 2> nul
@@ -60,11 +60,27 @@ realclean: clean
 	-del lex.yy.c ebnf.tab.c ebnf.tab.h 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-ebnf.tab.obj: ebnfcfg.h jar_func.h
-jar.obj: jar_func.h jar_lib.h
-jar_expr.obj: jar_func.h jar_lib.h
-jar_lib.obj: jar_func.h jar_lib.h
-jar_mem.obj: jar_func.h
-jar_mod.obj: jar_func.h jar_lib.h
-lex.yy.obj: ebnf.tab.h
+ebnf.tab.obj: ebnf.tab.c \
+  ebnf.h \
+  ebnfcfg.h \
+  jar_func.h
+jar.obj: jar.c \
+  jar_func.h \
+  jar_lib.h
+jar_expr.obj: jar_expr.c \
+  jar_func.h \
+  jar_lib.h
+jar_lib.obj: jar_lib.c \
+  jar_func.h \
+  jar_lib.h
+jar_mem.obj: jar_mem.c \
+  jar_func.h
+jar_mod.obj: jar_mod.c \
+  jar_func.h \
+  jar_lib.h
+lex.yy.obj: lex.yy.c \
+  unistd.h \
+  ebnf.h \
+  ebnf.tab.h \
+  ebnfcfg.h \
+  jar_func.h

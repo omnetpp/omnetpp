@@ -81,7 +81,7 @@ missing-library:
 	@ echo *** No Tk installation found -- skipping GNED
 
 depend:
-	@ echo *** make depend not (yet) supported with MSVC
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
 
 clean:
 	-del tclcode.cc *.obj gned.exe 2> nul
@@ -91,12 +91,34 @@ realclean: clean
 	-del lex.yy.cc ebnf.tab.cc ebnf.tab.h
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-ebnf.tab.obj: ebnfcfg.h parsened.h nedfile.h
-lex.yy.obj: ebnf.tab.h ebnfcfg.h parsened.h
-arrow.obj: arrow.h
-gned.obj: arrow.h parsened.h tklib.h
-nedfile.obj: nedfile.h parsened.h
-parsened.obj: parsened.h nedfile.h tklib.h
-tklib.obj: tklib.h
-
+arrow.obj: arrow.cc \
+  arrow.h
+ebnf.tab.obj: ebnf.tab.cc \
+  ebnf.h \
+  ebnfcfg.h \
+  parsened.h \
+  nedfile.h
+gned.obj: gned.cc \
+  arrow.h \
+  parsened.h \
+  tklib.h \
+  tclcode.cc \
+  ebnf.h
+lex.yy.obj: lex.yy.cc \
+  unistd.h \
+  ebnf.h \
+  ebnf.tab.h \
+  ebnfcfg.h \
+  parsened.h
+nedfile.obj: nedfile.cc \
+  nedfile.h \
+  parsened.h \
+  ebnf.h
+parsened.obj: parsened.cc \
+  parsened.h \
+  nedfile.h \
+  tklib.h \
+  ebnf.h
+tclcode.obj: tclcode.cc
+tklib.obj: tklib.cc \
+  tklib.h
