@@ -83,3 +83,55 @@ cd ..\..
 :end
 __END__
 
+
+cat >$DIR/README.txt <<__END__
+OMNeT++ Demo Simulations
+========================
+
+This package contains a demo for the OMNeT++ Discrete Event Simulation System.
+
+Here you'll find the following demos:
+  Nim     a simple two-player game
+  FIFO1   single-server queue
+  FIFO2   another version of fifo, now with handleMessage() and FSM
+  Token   Token-Ring network
+  Hist    demo of the histogram classes
+  HCube   hypercube network with deflection routing
+  FDDI    an accurate FDDI MAC simulation
+  Dyna    dynamic module creation (client-server network)
+You can start them with the respective .bat files.
+
+What is OMNeT++?
+~~~~~~~~~~~~~~~~
+OMNeT++ is an object-oriented modular discrete event simulator.
+An OMNeT++ model consists of hierarchically nested modules which
+communicate though gates and connections. The user defines the
+module structure in the NED language.
+
+The modules on the lowest level (termed "simple modules") contain
+the algorithms. Those are written in C++ and use the simulation
+object library. Simple modules appear to execute as something like
+threads within a simulation. (In fact they use non-preemptive
+scheduling; they are implemented as coroutines).
+
+OMNeT++ is written in C++ and it is portable: it runs on any platform
+where there's a C++ compiler. It has a Tcl/Tk user interface which is
+supported on under Unix/X and Win32 platforms. There's also a platform-
+independent command-line user interface for batch execution.
+
+OMNeT++ has a graphical topology editor called GNED and also a tool
+called Plove for analyzing and plotting simulation output. Both tools
+are written using Tcl/Tk.
+
+We have extended OMNeT++ to execute in parallel using the popular
+PVM library (Parallel Virtual Machine), for studying different
+synchronisation methods.
+
+OMNeT++ Home Page: http://www.hit.bme.hu/phd/vargaa/omnetpp.htm
+
+
+Enjoy!
+
+Andras Varga
+andras@whale.hit.bme.hu
+__END__
