@@ -11,6 +11,7 @@ executables='
 	src/utils/install-prog
 	src/utils/cygpwd
         samples/demo/rundemo
+        configure        
 	_setperm
 	_makedist
 '
