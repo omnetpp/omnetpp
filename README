@@ -1,2 +1,7 @@
-See the doc/ subdir for the real README file, installation instructions,
-license, manuals in Word format, etc. Manuals in HTML are in the html/ subdir.
+Go to the doc/ subdirectory...
+  --> cd doc/
+
+What you'll find there: README, installation instructions, license,
+manuals in Word format, etc. (manuals in HTML are in the html/ subdir).
+
+
