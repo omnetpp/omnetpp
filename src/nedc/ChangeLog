@@ -1,3 +1,7 @@
+2002-06-09  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* Makefile.in (nedtool): use EXPAT_LIB when linking
+
 2002-06-08  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* Makefile.in: new targets nedtool, main.o
