@@ -4,7 +4,6 @@
 #                            OMNeT++
 #
 #   By Andras Varga
-#   Additions: Istvan Pataki, Gabor Vincze ({deity|vinczeg}@sch.bme.hu)
 #
 #==========================================================================
 
@@ -16,6 +15,7 @@
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
+
 
 proc editProps {key} {
     global ned

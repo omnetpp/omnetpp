@@ -21,6 +21,10 @@
 proc editSubmoduleProps {key} {
     global gned ned
 
+    #
+    # Set up dialog.
+    #
+
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .submprops "Submodule Properties"
 
@@ -50,9 +54,10 @@ proc editSubmoduleProps {key} {
     # create "Parameters" page
     label .submprops.f.nb.pars.l -text "Parameters:"
     spreadsheet .submprops.f.nb.pars.tbl 20 {
-      {Name    name    {entry $e -textvariable $v -width 16 -bd 1 -relief sunken}}
+      {Name    name    {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
       {Value   value   {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
-      {Comment comment {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
+      {{End-line comment} right-comment {entry $e -textvariable $v -width 15 -bd 1 -relief sunken}}
+      {{Doc. comment} banner-comment {entry $e -textvariable $v -width 15 -bd 1 -relief sunken}}
     }
     pack .submprops.f.nb.pars.l  -side top -anchor w
     pack .submprops.f.nb.pars.tbl -expand 1 -fill both
@@ -62,7 +67,8 @@ proc editSubmoduleProps {key} {
     spreadsheet .submprops.f.nb.gates.tbl 20 {
       {Gate   name       {entry $e -textvariable $v -width 16 -bd 1 -relief sunken}}
       {Size   vectorsize {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
-      {Comment comment   {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
+      {{End-line comment} right-comment {entry $e -textvariable $v -width 15 -bd 1 -relief sunken}}
+      {{Doc. comment} banner-comment {entry $e -textvariable $v -width 15 -bd 1 -relief sunken}}
     }
     pack .submprops.f.nb.gates.l  -side top -anchor w
     pack .submprops.f.nb.gates.tbl -expand 1 -fill both
@@ -71,7 +77,8 @@ proc editSubmoduleProps {key} {
     label .submprops.f.nb.on.l -text "On machines:"
     spreadsheet .submprops.f.nb.on.tbl 20 {
       {{On machine} mach    {entry $e -textvariable $v -width 16 -bd 1 -relief sunken}}
-      {Comment      comment {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
+      {{End-line comment} right-comment {entry $e -textvariable $v -width 15 -bd 1 -relief sunken}}
+      {{Doc. comment} banner-comment {entry $e -textvariable $v -width 15 -bd 1 -relief sunken}}
     }
     pack .submprops.f.nb.on.l  -side top -anchor w
     pack .submprops.f.nb.on.tbl -expand 1 -fill both
@@ -94,27 +101,35 @@ proc editSubmoduleProps {key} {
        }
     }
 
+    # fill "General" page with values
     .submprops.f.nb.general.name.e insert 0 $ned($key,name)
     .submprops.f.nb.general.type.e insert 0 $ned($key,type-name)
     .submprops.f.nb.general.like.e insert 0 $ned($key,like-name)
     .submprops.f.nb.general.vs.e insert 0 $ned($key,vectorsize)
     .submprops.f.nb.general.comment.t insert 1.0 $ned($key,banner-comment)
 
+    # fill "Paramters" page with values
     fillSpreadsheetFromNed .submprops.f.nb.pars.tbl [getChildrenWithType $key substparams]
 
+
+    #
+    # Execute dialogs and extract results.
+    #
+
+    # set initial focus
     focus .submprops.f.nb.general.name.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .submprops] == 1} {
+
+        # process "General" page.
         set ned($key,name) [.submprops.f.nb.general.name.e get]
         set typename [.submprops.f.nb.general.type.e get]
         set likename [.submprops.f.nb.general.like.e get]
         set ned($key,vectorsize) [.submprops.f.nb.general.vs.e get]
-        # set ned($key,on) [.submprops.f.nb.general.on.e get]
         set ned($key,banner-comment) [getCommentFromText .submprops.f.nb.general.comment.t]
-        # set ned($key,parameters) [.submprops.f.nb.pars.pars.t get 1.0 end]
-        # set ned($key,gatesizes) [.submprops.f.nb.gates.gsiz.t get 1.0 end]
 
+        # process "Parameters" page.
         updateNedFromSpreadsheet .submprops.f.nb.pars.tbl [getChildrenWithType $key substparams] substparam name
         $gned(canvas) itemconfigure $ned($key,label-cid) -text $ned($key,name)
 
