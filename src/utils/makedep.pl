@@ -287,7 +287,7 @@ sub print_dep {
        $target = $filename;
    } else {
        $filename =~ /([^\/]*)$/;
-       $target = $2;
+       $target = $1;
    }
    $target =~ s/\.[^.]*$/$ObjSuffix/ ;
 
