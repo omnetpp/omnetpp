@@ -528,7 +528,7 @@ proc selectOrMoveStart {c x y ctrl} {
            set mouse(tweaked-items) {}
            set mouse(conns-to-redraw) {}
            foreach i [selectedItems] {
-               if {$ned($i,type)=="submod" || $ned($i,type)=="module"} {
+               if {$ned($i,type)=="submod"} {
                    lappend mouse(tweaked-items) $i
                    set mouse(conns-to-redraw) [concat $mouse(conns-to-redraw) [connKeysOfItem $i]]
                }
