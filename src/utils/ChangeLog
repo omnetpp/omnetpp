@@ -1,3 +1,10 @@
+2002-12-08  Andras Varga
+
+	* opp_makemake, opp_nmakemake: handling of .ned files that use the 
+	'experimental message subclassing' feature has changed. These files 
+	should have .msg suffix, and they will be compiled by opp_msgc into 
+	_m.h and _m.cc files. The '//--subclassing--' line is no longer needed.
+
 2002-12-06  Andras Varga
 
         * added opp_neddocall: it documents all ned files in the current 

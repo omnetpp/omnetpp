@@ -2,7 +2,7 @@
 # opp_makemake (formerly jar_mkmk)
 #
 #  Creates a makefile for a given OMNeT++ model.
-#  Assumes that .ned, .cc and .h files are in one directory.
+#  Assumes that .ned, .msg, .cc and .h files are in one directory.
 #  The name of the program defaults to the name of the directory ('myproject').
 #
 #  Original script written by Jan Heijmans et al.
@@ -27,6 +27,7 @@ fragments=""
 makefilein=n
 doxyconf=doxy.cfg
 nedfiles=""
+msgfiles=""
 
 while [ ! $# = 0 ] ; do
     case "$1" in
@@ -62,7 +63,7 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-n] [-s] [-u user-interface]
 With the -n and -s options, -u, -p and -l have no effect.
 If you have a source tree instead of a single directory, run opp_makemake -n
 in the subdirs and then opp_makemake dir1 dir2 etc. in your top-level directory.
-The -i option is useful if a source file (.ned or .cc) is to be generated
+The -i option is useful if a source file (.ned, .msg or .cc) is to be generated
 from other files.
 EOT
         exit
@@ -161,6 +162,21 @@ if [ -f $outputfile ]; then
     fi
 fi
 
+# warning for obsolete subclassing syntax
+for i in *.ned; do
+    if [ "$i" = "*.ned" ]; then break; fi;
+    grep '^//--subclassing--' $i >/dev/null
+    if [ "$?" = "0" ]; then
+        imsg=`echo $i | sed 's/\.ned$/.msg/'`
+        echo "Warning: $i contains experimental message subclassing header line:"
+        echo "       //--subclassing--"
+        echo "   Handling of msg files has changed: these files should have .msg suffix,"
+        echo "   and they will be compiled by opp_msgc into _m.h and _m.cc files."
+        echo "   Rename $i to $imsg and re-run opp_makemake;"
+        echo "   the '//--subclassing--' line will no longer be needed."
+    fi
+done
+
 sobjs=""
 
 for i in $dirs; do
@@ -173,25 +189,23 @@ for i in $dirs; do
             sobjs="$sobjs $o"
         fi
 
-	# collect ned files of subdirectory for target neddoc.html.
-	# Use only those that don't contain experimental
-	# message subclassing
-	nedf=`echo $i/*.ned`
-	if [ ! "$nedf" = "$i/*.ned" ]; then
-	  for i in $nedf; do
-	    grep '^//--subclassing--' $i >/dev/null
-	    if [ "$?" != "0" ]; then 
-		nedfiles="$nedfiles $i"
-	    fi
-	  done
-	fi
+        # collect ned files of subdirectory for target neddoc.html.
+        nedf=`echo $i/*.ned`
+        if [ ! "$nedf" = "$i/*.ned" ]; then
+            nedfiles="$nedfiles $nedf"
+        fi
+        ## collect msg files of subdirectory for target neddoc.html.
+        #msgf=`echo $i/*.msg`
+        #if [ ! "$msgf" = "$i/*.msg" ]; then
+        #    msgfiles="$msgfiles $msgf"
+        #fi
     else
         echo "opp_makemake: make in $i failed, exiting" 1>&2
         exit
     fi
 done
 
-objs=`echo *.ned *.cc | sed 's/\*[^ ]*//g; s/[^ ]*_n\.cc//g; s/\.ned/_n.o/g; s/\.cc/.o/g'`
+objs=`echo *.ned *.msg *.cc | sed 's/\*[^ ]*//g; s/[^ ]*_n\.cc//g; s/[^ ]*_m\.cc//g; s/\.ned/_n.o/g; s/\.msg/_m.o/g; s/\.cc/.o/g'`
 
 #
 # now the Makefile creation
@@ -266,6 +280,7 @@ if [ $makefilein = "n" ]; then
 cat <<EOT
 
 NEDC=@NEDC@
+MSGC=@MSGC@
 CXX=@CXX@
 CC=@CC@
 AR=@AR@
@@ -294,6 +309,7 @@ null=
 cat <<EOT
 
 NEDC=@${null}NEDC@
+MSGC=@${null}MSGC@
 CXX=@${null}CXX@
 CC=@${null}CC@
 AR=@${null}AR@
@@ -382,34 +398,48 @@ for i in *.ned
 do
         if [ "$i" = "*.ned" ]; then break; fi;
 
-	# extend list for target neddoc.html
-	# Use only those NED files that don't contain
-	# experimental message subclassing
-	grep '^//--subclassing--' $i >/dev/null
-	if [ "$?" != "0" ]; then 
-	  nedfiles="$nedfiles $i"
-	fi
-	
-	obj=`echo $i | sed 's/\.ned/_n.o/g'`
-	c=`echo $i | sed 's/\.ned/_n.cc/g'`
+        # extend list for target neddoc.html
+        nedfiles="$nedfiles $i"
 
-	echo "$obj: $c"
-	echo '	$(CXX) -c $(NEDCOPTS) '$c
-	echo
+        obj=`echo $i | sed 's/\.ned/_n.o/g'`
+        c=`echo $i | sed 's/\.ned/_n.cc/g'`
 
-	echo "$c: $i"
-	echo '	$(NEDC) $(INCLUDE_PATH) '$i
-	echo
+        echo "$obj: $c"
+        echo '	$(CXX) -c $(NEDCOPTS) '$c
+        echo
+
+        echo "$c: $i"
+        echo '	$(NEDC) $(INCLUDE_PATH) '$i
+        echo
 done
 
-for i in `echo *.cc | sed 's/[^ ]*_n\.cc//g'`
+for i in *.msg
+do
+        if [ "$i" = "*.msg" ]; then break; fi;
+
+        ## extend list for target neddoc.html
+        #msgfiles="$msgfiles $i"
+
+        obj=`echo $i | sed 's/\.msg/_m.o/g'`
+        c=`echo $i | sed 's/\.msg/_m.cc/g'`
+
+        echo "$obj: $c"
+        echo '	$(CXX) -c $(NEDCOPTS) '$c
+        echo
+
+        echo "$c: $i"
+        echo '	$(MSGC) $(INCLUDE_PATH) '$i
+        echo
+done
+
+for i in `echo *.cc | sed 's/[^ ]*_n\.cc//g; s/[^ ]*_m\.cc//g'`
 do
         if [ "$i" = "*.cc" ]; then break; fi;
 
-	obj=`echo $i | sed 's/\.cc/.o/g'`
-	echo "$obj: $i"
-	echo '	$(CXX) -c $(COPTS) '$i
-	echo
+        obj=`echo $i | sed 's/\.cc/.o/g'`
+        echo "$obj: $i"
+        echo '	$(CXX) -c $(COPTS) '$i
+        echo
 done
 
 if [ ! "$fragments" = "" ]; then

@@ -4,23 +4,16 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 #!perl
 #line 6
 #
-# opp_makemake_vc
+# opp_nmakemake
 #
 #  Creates an MSVC makefile for a given OMNeT++ model.
-#  Assumes that .ned, .cc and .h files are in one directory.
+#  Assumes that .ned, .msg, .cc and .h files are in one directory.
 #  The name of the program defaults to the name of the directory ('myproject').
 #
 #  --VA
 #
 
-
-# Note: use of perl modules (e.g. cwd.pm) is avoided, because we don't want
-# to install a full-blown perl on windows, only a perl.exe
-sub cwd {
-   my $d=`pwd` || die "error running `pwd' program: cannot determine name of current directory, exiting";
-   chomp($d);
-   $d;
-}
+use Cwd;
 
 #
 # process command line args
@@ -42,6 +35,7 @@ $sobjs = "";
 @fragments = ();
 $doxyconf = "doxy.cfg";
 @nedfiles = ();
+#@msgfiles = ();
 $ccext = "cpp";
 $cfgdir="../..";
 
@@ -90,7 +84,7 @@ Default output is Makefile.vc which you can run by typing nmake -f Makefile.vc.
 With the -n and -s options, -u, -p and -l have no effect.
 If you have a source tree instead of a single directory, run opp_makemake -n
 in the subdirs and then opp_makemake dir1 dir2 etc. in your top-level directory.
-The -i option is useful if a source file (.ned or .cc) is to be generated
+The -i option is useful if a source file (.ned, .msg or .cc) is to be generated
 from other files.
 ';
         exit(1);
@@ -201,6 +195,10 @@ foreach $i (@dirs)
         # collect ned files of subdirectory for target neddoc.html.
         @nedf = glob("$i/*.ned");
         push(@nedfiles, @nedf);
+
+        ## collect ned files of subdirectory for target neddoc.html.
+        #@msgf = glob("$i/*.msg");
+        #push(@msgfiles, @msgf);
     }
     else
     {
@@ -209,13 +207,15 @@ foreach $i (@dirs)
     }
 }
 
-@objs = glob("*.ned *.$ccext");
+@objs = glob("*.ned *.msg *.$ccext");
 foreach $i (@objs)
 {
 
     $i =~ s/\*[^ ]*//g;
     $i =~ s/[^ ]*_n\.$ccext//g;
+    $i =~ s/[^ ]*_m\.$ccext//g;
     $i =~ s/\.ned/_n.obj/g;
+    $i =~ s/\.msg/_m.obj/g;
     $i =~ s/\.$ccext/.obj/g;
 }
 
@@ -395,10 +395,30 @@ foreach $i (glob("*.ned"))
     print OUT "\n";
 }
 
-# rules for non-NED C++ files
+# rules for MSG files
+foreach $i (glob("*.msg"))
+{
+    ## extend list for target neddoc.html
+    #push(@msgfiles, $i);
+
+    $obj = $i;
+    $obj =~ s/\.msg/_m.obj/g;
+    $c = $i;
+    $c =~ s/\.msg/_m.$ccext/g;
+
+    print OUT "$obj: $c\n";
+    print OUT "\t\$(CXX) -c \$(NEDCOPTS) /Tp $c\n";
+    print OUT "\n";
+
+    print OUT "$c: $i\n";
+    print OUT "\t\$(MSGC:/=\\) -s _m.$ccext \$(INCLUDE_PATH) $i\n";
+    print OUT "\n";
+}
+
+# rules for normal (not generated) C++ files
 foreach $i (glob("*.$ccext"))
 {
-    if ($i =~ /_n\.$ccext/)
+    if ($i =~ /_n\.$ccext/ || $i =~ /_m\.$ccext/)
     {
         next;
     }
