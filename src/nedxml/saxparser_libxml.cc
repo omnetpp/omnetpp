@@ -235,6 +235,7 @@ static void libxmlCommentHandler(void *userData, const xmlChar *data)
 }
 
 
+/*
 static void libxmlStartCdataSectionHandler(void *userData)
 {
     SAXHandler *sh = (SAXHandler *)userData;
@@ -246,6 +247,7 @@ static void libxmlEndCdataSectionHandler(void *userData)
     SAXHandler *sh = (SAXHandler *)userData;
     sh->endCdataSection();
 }
+*/
 
 static void libxmlWarningHandler(void *userData, const char *msg, ...) {
   va_list args;
@@ -330,7 +332,7 @@ bool SAXParser::parse(const char *filename)
 
     int n;
     char Buffer[512];
-    while (n=fread(Buffer,  sizeof(char), 512,  f))
+    while (0 != (n=fread(Buffer,  sizeof(char), 512,  f)))
     {
         xmlParseChunk(ctxt, Buffer, n, 0);
     }

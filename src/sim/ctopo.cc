@@ -162,7 +162,7 @@ void cTopology::extractByModuleType(const char **types)
 void cTopology::extractByModuleType(const std::vector<std::string> v)
 {
     const char **types = new const char *[v.size()+1];
-    for (int i=0; i<v.size(); i++)
+    for (unsigned int i=0; i<v.size(); i++)
         types[i] = v[i].c_str();
     types[v.size()] = NULL;
     extractFromNetwork(selectByModuleType, (void *)types);
