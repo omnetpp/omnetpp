@@ -377,7 +377,7 @@ chmod +x src/utils/makemake
 # Env. vars
 #----------------------
 
-if echo $PATH | grep -q `eval echo $OMNETPP_BIN_DIR`; then
+if echo $PATH | grep `eval echo $OMNETPP_BIN_DIR` >/dev/null; then
   echo "Your PATH contains $OMNETPP_BIN_DIR. Good."
 else
   cat << EOT
@@ -391,7 +391,7 @@ EOT
 fi
 
 if test "$build_shared_libs" = yes; then
-  if echo $LD_LIBRARY_PATH | grep -q `eval echo $OMNETPP_LIB_DIR`; then
+  if echo $LD_LIBRARY_PATH | grep `eval echo $OMNETPP_LIB_DIR` >/dev/null; then
     echo "Your LD_LIBRARY_PATH is set. Good."
   else
     cat << EOT
