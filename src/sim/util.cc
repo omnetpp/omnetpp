@@ -581,12 +581,12 @@ void opp_terminate(char *msgformat...)
 
 
 //==========================================================================
-// dummy function to force stupid unix linkers to include these symbols
+// dummy function to force stupid Unix linkers to include these symbols
 // in the library
 
 #include "cwatch.h"
 #include "cpacket.h"
-void _dummy_for_tkenv_inspect();
+void _dummy_for_env();
 void _dummy_func_()
 {
       cPacket x;
@@ -594,5 +594,5 @@ void _dummy_func_()
       x.info(NULL);
       cWatch w(NULL,*(int*)NULL);
       w.pointer(); w.typeChar();
-      _dummy_for_tkenv_inspect();
+      _dummy_for_env();
 }

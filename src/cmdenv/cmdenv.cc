@@ -33,6 +33,8 @@
 
 static char buffer[1024];
 
+// dummy function to help cope with Unix linkers...
+void _dummy_for_env() {}
 
 //==========================================================================
 // TCmdenvApp: command line user interface.

@@ -222,7 +222,7 @@ proc create_omnetpp_window {} {
     set help_tips($w.toolbar.step)    {Execute one event}
     set help_tips($w.toolbar.run)     {Run with full animation}
     set help_tips($w.toolbar.fastrun) {Run faster: no animation and rare inspector updates}
-    set help_tips($w.toolbar.exprrun) {Run at full speed: all tracing, animation and inspectors off}
+    set help_tips($w.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates}
     set help_tips($w.toolbar.until)   {Run until time or event number}
     set help_tips($w.toolbar.stop)    {Stop simulation (if running)}
     set help_tips($w.toolbar.network) {Inspect network}
