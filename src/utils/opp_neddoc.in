@@ -245,6 +245,7 @@ else
             } else {
                 open FL,">>$outdir/filelist.txt";
                 print FL join("\n",@files);
+                print FL "\n";
                 close FL;
             }
         }
