@@ -74,7 +74,6 @@ class SIM_API cNetMod : public cModule
     virtual bool isSimple() {return false;}
     virtual void scheduleStart(simtime_t t) {}
     virtual void deleteModule() {}
-    virtual void callInitialize();
     virtual bool callInitialize(int stage);
     virtual void callFinish();
 
