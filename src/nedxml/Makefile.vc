@@ -50,7 +50,7 @@ lex.yy.cc: ned.lex
         del lex.yy.c
 
 unistd.h: 
-	echo > unistd.h
+	echo. > unistd.h
 
 saxparser_expat.obj : saxparser_expat.cc
         $(CXX) $(COPTS) /I $(EXPAT_INCL_DIR) /c /Tp saxparser_expat.cc
@@ -65,6 +65,7 @@ depend:
         $(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
 
 clean:
+        - del unistd.h
         - del *.obj neddata.lib 2> nul
         - del *.ilk *.idb *.pdb 2> nul
 
