@@ -8,6 +8,7 @@ LEX=@LEX@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 
@@ -59,7 +60,7 @@ depend:
 	makedepend -Y -I. -fMakefile.in -- *.c
 
 clean:
-	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc *_n.cc
+	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc$(EXE_SUFFIX) *_n.cc
 
 install-local: nedc
 	../utils/install-prog nedc $(OMNETPP_BIN_DIR)
