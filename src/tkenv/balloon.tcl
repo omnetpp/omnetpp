@@ -1,11 +1,12 @@
-#==========================================================================
-#  BALLOON.TCL -
-#            part of the GNED, the Tcl/Tk graphical topology editor of
-#                            OMNeT++
+#=================================================================
+#  BALLOON.TCL - part of
+#
+#                     OMNeT++/OMNEST
+#            Discrete System Simulation in C++
 #
 #  Based on balloon.tcl, Copyright (c) by Victor Wagner, 1997
 #
-#==========================================================================
+#=================================================================
 
 #
 # Tcl Library to provide balloon help.

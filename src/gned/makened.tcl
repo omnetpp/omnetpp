@@ -1,12 +1,10 @@
-#==========================================================================
-#  MAKENED.TCL -
-#            part of the GNED, the Tcl/Tk graphical topology editor of
-#                            OMNeT++
+#=================================================================
+#  MAKENED.TCL - part of
 #
-#   By Andras Varga
-#   Parts: Istvan Pataki, Gabor Vincze ({deity|vinczeg}@sch.bme.hu)
+#                     OMNeT++/OMNEST
+#            Discrete System Simulation in C++
 #
-#==========================================================================
+#=================================================================
 
 #----------------------------------------------------------------#
 #  Copyright (C) 1992-2004 Andras Varga

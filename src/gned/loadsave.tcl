@@ -1,12 +1,12 @@
-#==========================================================================
-#  LOADSAVE.TCL -
-#            part of the GNED, the Tcl/Tk graphical topology editor of
-#                            OMNeT++
+#=================================================================
+#  LOADSAVE.TCL - part of
 #
-#   By Andras Varga
-#   Parts: Istvan Pataki, Gabor Vincze ({deity|vinczeg}@sch.bme.hu)
+#                     OMNeT++/OMNEST
+#            Discrete System Simulation in C++
 #
-#==========================================================================
+#  Parts by: Istvan Pataki, Gabor Vincze ({deity|vinczeg}@sch.bme.hu)
+#
+#=================================================================
 
 #----------------------------------------------------------------#
 #  Copyright (C) 1992-2004 Andras Varga

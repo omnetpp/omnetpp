@@ -1,8 +1,8 @@
-#==========================================================================
-#  TREE.TCL -
-#            part of the GNED, the Tcl/Tk graphical topology editor of
-#                            OMNeT++
-#   By Andras Varga
+#=================================================================
+#  TREE.TCL - part of
+#
+#                     OMNeT++/OMNEST
+#            Discrete System Simulation in C++
 #
 #   Loosely based on:
 #      tree.tcl, Copyright (C) 1997,1998 D. Richard Hipp
@@ -11,7 +11,7 @@
 #        http://www.hwaci.com/drh/
 #      tree.tcl falls under the GNU Library General Public License
 #
-#==========================================================================
+#=================================================================
 
 #----------------------------------------------------------------#
 #  Copyright (C) 1992-2004 Andras Varga
