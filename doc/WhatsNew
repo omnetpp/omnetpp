@@ -1,32 +1,97 @@
 What's New
 ==========
 
-In the future OMNeT++ 2.2 beta1 (Dec 2001?)
---------------------------------------------
-This release adds a beautiful, up-to-date, fully hyperlinked, detailed,
-HTML-based API Reference, which documents the simulation kernel in detail.
-It is generated from header files using Doxygen (great tool!). At the same
-time, the Reference chapter in the manual ceased to exist.
+In the future OMNeT++ 2.2 beta 1 (March 2002)
+---------------------------------------------
+It's almost a year since the last (2.1) release, that's why this change list
+tends to be a bit lengthy. Sorry about that.
 
-The whole simulation kernel was revised to add 'const' modifiers wherever
-possible. This may affect portability of older code, especially where one
-didn't use the Module_Class_Members() macro to define module classes. Changes
-include patches from Roland Bless.
+For this release I got many more bugfixes, bug reports and suggestions than
+for any previous one. Thanks to everybody who helped! Huge credit goes to
+Ulrich Kaage in Karlsruhe who built up a server infrastructure (CVS,
+bugtracker, Wiki, etc.) and also contributed to the development.
 
-Parallel simulation now might use the MPI library (code by Eric Wu).
+The simulation kernel was made const-correct; because of this, older code
+may need changes (especially where one didn't use the Module_Class_Members()
+macro to define module classes.) Other changes make the simulaton kernel
+cleaner.
+
+A JavaDoc-style on-line API reference has been created for the simulation
+kernel. It is generated from special comments in the header files, which
+guarantees it will always be up-to-date. (We're using Doxygen.) The seriously
+out-of-sync Reference chapter in the manual was removed.
+
+ChangeLogs got turned upside down: most recent entries are now at the top.
+
+Distributed simulation can now use the MPI library which is more readily
+available nowadays than PVM. (Code contributed by Eric Wu).
+
+Foundations of a simulation kernel regression test suite have been laid
+down. The test/ subdirectory contains the test tool and a few initial test
+cases. The test tool can be very well used to build model tests, too.
+Also, as tests tend to be compact and easy to write, the test tool is also
+excellent for experimenting with OMNeT++ library classes.
 
 Implementation of the feature known as 'message subclassing' has begun.
-There is an experimental Perl-base message subclassing compiler.
+(The feature means C++ message classes can be generated from NED code,
+replacing the practice of dynamically adding cPar objects to messages;
+fields added via the subclassing mechanism are inspectable in Tkenv.) The
+new NED syntax is experimental; the compiler extensions have been temporarily
+implemented in Perl. The new Dyna2 sample simulation demonstrates this feature.
 
-A number of other changes:
-The opp_nextrand(long& seed) function was added to the simulation kernel.
-cModule's display string methods were reorganized.
-The ini file reader can now digest files of any size (no more built-in limits,
-only for line size [must be < 1K]).
-Fixed Plove's problems with tabs/spaces in vector files and slashes/backslashes on Windows.
-In GNED, regexp find/replace now understands the \1,\2,... notation in replace strings.
-ChangeLog files were turned upside down: most recent entry is now at the top.
-The makefiles now use a new Perl-based dependency generator which works on all platforms.
+The Envir library has been extended with a plugin mechanism: one can now
+explicitly plug in code that actually handles recording output vectors
+(e.g. one can write them to database instead of files, apply filtering before
+writing them out, or send them to a simulation controller app) without having
+to modify the user interface library, the simulation kernel or existing models.
+Similar mechanisms exist for output scalars and snapshots. The new
+include/envirext.h header contains the interfaces that the plugins have to
+conform to: cOutputVectorManager, cOutputScalarManager, cSnapshotManager.
+
+Improved Tkenv's plugin handling: plugins are searched in the directories
+in OMNETPP_PLUGIN_PATH (set to ./plugins by default). DLL file names that are
+looked for now correctly depend on the platform (*.dll on windows, .so* on
+Unix).
+
+For the default output vector mechanism (vec files), number precision was
+increased to 9 digits (fprintf format changed).
+
+The module parameter change logging feature is no longer supported.
+
+In NED, an expression may now refer to a submodule parameter with the
+submod.par or submod[index].par syntax (index might not be an expression
+itself though).
+
+cGate::setDisplayString() was fixed: changes are now immediately reflected
+in the Tkenv graphics as they should. cModule's display string methods were
+reorganized: the displayString(int type) method was split into displayString()
+and displayStringAsParent(), eliminating the type parameter. Similar change
+was made to the set...() methods. (Old methods remained but were made
+deprecated.)  All setDisplayString() methods are now compatible with
+auto-layouted modules using random placement.
+
+New methods: opp_nextrand(long& seed); opp_strlen(..); opp_strprettytrunc(..);
+opp_mkindexedname(..) (was called indexedname()). fullName() no longer uses
+static buffer; with fullPath(), it is possible to avoid static buffers
+(added fullPath(buffer,buflen) methods).
+
+Size limitations on omnetpp.ini were removed (only max line length=1024
+remained).
+
+Exit codes of simulation programs were made more natural: 0 if the simulation
+terminated normally, 1 otherwise. Also, SIGTERM and SIGINT signals are now
+handled more gracefully: they call finish() before terminating the simulation
+(Unix only).
+
+In GNED, regexp find/replace now understands the \1,\2,... notation in replace
+strings. Backwards search was implemented in the Find/Replace dialogs of GNED
+and Tkenv. Fixed Plove's problems with tabs/spaces in vector files and
+slashes/backslashes on Windows, and also GNED's problems with command-line
+arguments.
+
+The makefiles now use a new Perl-based dependency generator which works on all
+platforms. opp_makemake: added -L option; removed Makefile.in from the depend
+target.
 
 RPM (TBD!!!)
 windows installer supports win95/98/me (TBD!!!)

@@ -1,75 +1,53 @@
-Further plans...
-~~~~~~~~~~~~~~~~
-Aug 25 1998, somewhat updated in Aug 1999, Jan 2000, Feb 2001
-
-
-COMPREHENSIVE TEST SUITE
-~~~~~~~~~~~~~~~~~~~~~~~~
-would be really useful to test the integrity of the sim. library after
-code changes!!!
-
-
-documentation
+Further plans
 ~~~~~~~~~~~~~
-to be documented:
- - send() functions with cGate* arg
- - multi-stage initialization
-fill TBD's
-general polishing
+Updated: March 2002
 
 
-better MSVC support
-~~~~~~~~~~~~~~~~~~~
-replace the coroutine library with Win32 fibers
-wizard interface to create OMNeT++ projects and add .ned files to projects
-maybe makemake should support creating MSVC makefiles? (someone needs this?)
+regression tests
+~~~~~~~~~~~~~~~~
+test cases should cover the whole sim kernel and nedc
 
-
-distribute binaries for NT
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-demo executable with all samples and Tkenv (with InstallShield)
-libraries & utils compiled with MSVC (with InstallShield)
+NED II
+~~~~~~
+finalize and implement NED II (draft on web site)
+refine support for message subclassing
 
 
 improve the simulation core
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-direct support for message subclassing (1st priority but takes time)
-use "generation gap" oo design pattern for the generated code (modules,
-  channels etc).
+on win32, use the fibers api
+more cleanup
+realtime scheduler (for hw-in-the-loop simulation)
 proper connection objects
 more flexible connections
+multi-thread simple modules
 --
 bidirectional gates (?)
-propagate state info over connections ("statistic wires")
-multi-thread simple modules
+propagate state info over connections ("statistic wires") (?)
 
 
 develop GNED
 ~~~~~~~~~~~~
-see GNED's TODO file...
-
-
-NED II
-~~~~~~
-See NED II draft on web site...
-- OO extensions to NED, message/packet types, more flexible channels etc
-- XML binding for NED
+see GNED's TODO file
 
 
 foundations towards a consistent model library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-conventions for development of protocol models so that
-models models from different people can directly work together:
-message passing conventions, conventions on message parameter names,
-module gate names etc.
+package structure
 
 make a library of abstract models: abstract queue, bus, router,
 application packet dispatcher, transport protocol abstraction etc.
 They could serve as skeletons for development (one could use them
 by deriving new simple module classes from them).
 
+conventions for development of protocol models so that
+models models from different people can directly work together:
+message passing conventions, conventions on message parameter names,
+module gate names etc.
+
+
 add more simulation models
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
-contact people who showed interest in OMNeT++ & ask them if they'
+ask people to contribute models
 maintain a repository for contributed models/utilities
-CVS server for models (Karlsruhe?)
+
