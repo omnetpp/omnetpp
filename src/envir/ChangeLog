@@ -1,3 +1,8 @@
+2002-10-07  Andras Varga
+
+	* main.cc: added call to ExecuteOnStartup::executeAll().
+	See new EXECUTE_ON_STARTUP() macro in include/ChangeLog.
+
 2002-10-04  Andras Varga
 
 	* error handling changed from simulation.ok() to exceptions.

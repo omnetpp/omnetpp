@@ -20,6 +20,7 @@
 #include "cobject.h"     // cStaticFlag
 #include "csimul.h"
 #include "cenvir.h"
+#include "onstartup.h"
 
 
 //
@@ -32,12 +33,12 @@ ENVIR_API int main(int argc, char *argv[])
     printf("OMNeT++ Discrete Event Simulation  (c) 1992-2001 Andras Varga, TU Budapest\n");
     printf("See the license for distribution terms and warranty disclaimer\n");
 
-    // FIXME this won't work now with exceptions...
-    //if (!simulation.ok())
-    //{
-    //      printf("\nThere was an error during system setup, exiting.\n\n");
-    //      return simulation.errorCode();
-    //}
+    bool ok = ExecuteOnStartup::executeAll();
+    if (!ok)
+    {
+          printf("\nThere was an error during system setup, exiting.\n\n");
+          return 1;
+    }
 
     if (testrand()==0)
     {

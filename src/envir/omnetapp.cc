@@ -169,6 +169,7 @@ void TOmnetApp::shutdown()
 
 void TOmnetApp::startRun()
 {
+    resetClock();
     outvectmgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();

@@ -22,6 +22,7 @@
 #define __APPREG_H
 
 #include "chead.h"
+#include "onstartup.h"
 
 //
 // Register_OmnetApp() macro, omnetapps list, cOmnetAppRegistration class.
@@ -42,7 +43,7 @@
 // the macro
 #define Register_OmnetApp(UINAME,CLASSNAME,ISSLAVE,SCORE,DESCR) \
   TOmnetApp *CLASSNAME##__create(ArgList *args, cIniFile *inifile) {return new CLASSNAME(args, inifile);} \
-  cOmnetAppRegistration CLASSNAME##__reg(UINAME,ISSLAVE,SCORE,DESCR,CLASSNAME##__create);
+  EXECUTE_ON_STARTUP(__##CLASSNAME##_ui, (new cOmnetAppRegistration(UINAME,ISSLAVE,SCORE,DESCR,CLASSNAME##__create))->setOwner(&omnetapps);)
 
 class TOmnetApp;
 class ArgList;
@@ -61,7 +62,7 @@ class ENVIR_API cOmnetAppRegistration : public cObject
   public:
     cOmnetAppRegistration(const char *name, bool isSlave, int score,
                           const char *description, AppCreatorFunc f) :
-      cObject(name, (cObject *)&omnetapps),
+      cObject(name),
       creatorfunc(f), desc(description), scor(score), isslave(isSlave) {}
     virtual ~cOmnetAppRegistration()  {}
 

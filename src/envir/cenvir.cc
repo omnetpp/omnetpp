@@ -38,7 +38,7 @@
 cEnvir ev;
 
 // the global list for the registration objects
-cHead omnetapps( "user-interfaces", &superhead );
+cHead omnetapps("user-interfaces");
 
 // output buffer
 static char buffer[1024];
