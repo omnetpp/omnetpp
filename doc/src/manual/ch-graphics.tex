@@ -404,14 +404,14 @@ The \ttt{"i="} display string tag allows for colorization of icons.
 It accepts a target color and a percentage as the degree of colorization.
 Percentage has no effect if the target color is missing.
 Brightness of icon is also affected -- to keep the original brightness,
-specify a color with about 50% brightness (e.g. #808080 mid-grey,
-#008000 mid-green).
+specify a color with about 50% brightness (e.g. \#808080 mid-grey,
+\#008000 mid-green).
 
 Examples:
 
 \begin{itemize}
   \item \ttt{"i=device/server,gold"} creates a gold server icon
-  \item \ttt{"i=place/globe,#808080,100"} makes the icon grayscale
+  \item \ttt{"i=place/globe,\#808080,100"} makes the icon grayscale
   \item \ttt{"i=block/queue,white,100"} yields a "burnt-in" black-and-white icon
 \end{itemize}
 
@@ -446,7 +446,7 @@ specific: in Unix, if you're using the bash shell, adding a line
 export OMNETPP_BITMAP_PATH="/home/you/bitmaps;./bitmaps"
 \end{verbatim}
 
-to \ttt{~/.bashrc} or \ttt{~/.bash_profile} will do; on Windows, environment variables
+to \ttt{~/.bashrc} or \ttt{~/.bash\_profile} will do; on Windows, environment variables
 can be set via the \textit{My Computer --> Properties} dialog.
 
 You can also add to the bitmap path from \ttt{omnetpp.ini}, with
@@ -491,7 +491,7 @@ If you create new or custom icons, you can put
 
 Icons come in various sizes: normal, large, small, very small. Sizes are
 encoded into the icon name's suffix: \ttt{\_l}, \ttt{\_s}, \ttt{\_vs}.
-In display strings, one can either use the suffix (\ttt{"i=device/router_l"}),
+In display strings, one can either use the suffix (\ttt{"i=device/router\_l"}),
 or the \ttt{"is}" (\textit{icon size}) display string tag ("i=device/router;is=l").
 
 

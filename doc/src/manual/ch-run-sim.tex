@@ -230,8 +230,8 @@ The most important options of the \texttt{[General]} section are the
 following.
 \begin{itemize}
   \item{The \fpar{ini-warnings} option can be used for ``debugging'' ini
-    files: if enabled, it lists which options were searched for but
-    not found.}
+    files: when enabled, {\opp} lists the names of ini file entries which
+    were searched for but not found.}
   \item{The \fpar{network} option selects the model to be set up and run.}
   \item{The length of the simulation can be set with the
     \fpar{sim-time-limit} and the \fpar{cpu-time-limit} options (the
@@ -251,9 +251,10 @@ have priority over globally set ones.
 \tbf{Name and default value} & \tbf{Description}\\\hline
 \multicolumn{2}{|c|}{\tbf{[General]}} \\\hline
 %%
-\fpar{ini-warnings} = yes & Helps debugging of the ini file. If turned
-on, {\opp} prints out the name of the entries it that it wanted to
-read but they were not in the ini file.\\\hline
+\fpar{ini-warnings} = yes & Helps debugging of the ini file.
+When enabled, {\opp} lists the names of ini file entries which
+were searched for but not found.
+\\\hline
 %%
 \fpar{network} = & The name of the network to be simulated. \\\hline
 %%

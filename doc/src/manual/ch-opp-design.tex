@@ -379,12 +379,12 @@ dynamically allocated simulation application object (derived from
 
 \cclass{cEnvir} member functions perform the following groups of tasks:
 \begin{itemize}
-  \item{I/O for module activities; the actual implementation is different
+  \item I/O for module activities; the actual implementation is different
     for each user interface (e.g. stdin/stdout for Cmdenv, windowing
-    in Tkenv)}
-  \item{cEnvir provides methods for the simulation kernel to
-    access configuration information (for example, module parameter settings)}
-  \item{cEnvir also provides methods that are called by simulation kernel to
+    in Tkenv)
+  \item cEnvir provides methods for the simulation kernel to
+    access configuration information (for example, module parameter settings)
+  \item cEnvir also provides methods that are called by simulation kernel to
     notify the user interface of certain events (an object was deleted;
     a module was created or deleted; a message was sent or delivered, etc.)
 \end{itemize}

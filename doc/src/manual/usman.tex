@@ -52,9 +52,9 @@
   \usepackage[plainpages=false,linktocpage,bookmarksnumbered=true,pdftex]{hyperref}   %% automatic hyperlinking
   \pdfcompresslevel=9
   \pdfinfo{/Author (Andras Varga)
-    /Title (OMNeT++ User Manual)
+    /Title (OMNeT++/OMNEST Manual)
     /Subject ()
-    /Keywords (OMNeT++ manual)}
+    /Keywords (OMNeT++/OMNEST manual)}
 \else
   \usepackage{graphicx}
   \usepackage[plainpages=false]{hyperref}   %% automatic hyperlinking
@@ -69,9 +69,13 @@
 %% OMNeT++ logo, use as {\opp}
 %%
 \makeatletter
-\DeclareRobustCommand{\opp}{OM\-NeT\kern-.18em++\@}
+\DeclareRobustCommand{\omnetpp}{OM\-NeT\kern-.18em++\@}
 \makeatother
 
+\newcommand{\omnest}{OMNEST}
+
+%\newcommand{\opp}{\omnest}
+\newcommand{\opp}{\omnetpp}
 
 %%
 %% Heading and Footer
