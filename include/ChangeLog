@@ -1,3 +1,7 @@
+2003-06-16  Andras Varga
+
+	* cpacket.h: deprecated cPacket class.
+
 2003-06-14  Andras Varga
 
 	* cmodule.h: cModule's addGate(), addPar() return type changed from

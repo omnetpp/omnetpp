@@ -24,6 +24,9 @@
 //==========================================================================
 
 /**
+ * DEPRECATED CLASS. See User Manual for replacement, and reasons of 
+ * deprecation.
+ *
  * Network packet class. It adds protocol and PDU type to cMessage.
  * The message kind must be either MK_PACKET or MK_INFO for cPackets.
  *

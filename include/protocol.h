@@ -4,7 +4,7 @@
 //            Discrete System Simulation in C++
 //
 //
-//  Protocol and PDU type enums for cPacket
+//  Protocol constants
 //
 //  Author: Andras Varga
 //
@@ -22,30 +22,12 @@
 
 
 //
-// The cPacket class is intended to be the base class for models of
-// network packets/frames. cPacket has a protocol() and a pdu() field.
-//
-// This file is an initial try to collect protocols and frame/packet
-// types and assign ids to them, for use with cPacket. The aim is
-// to standardize on protocol models.
-//
-// Hopefully these enum lists will grow as people develop models and
-// send in new protocol codes.
-//
-//
-// THE cPacket CLASS AS WELL AS THIS FILE IS EXPERIMENTAL.
-// PLEASE GIVE SOME FEEDBACK.
+// THIS FILE IS EXPERIMENTAL. PLEASE GIVE FEEDBACK.
 //
 
 
 //
 // protocols
-//
-// Protocol codes are now grouped by the OSI seven layers. I know OSI is
-// kind of obsolete, but does anyone know a better scheme?
-// Or better, a whole complete list of protocols with assigned numbers
-// (like the list protocol codes that identify the embedded protocol
-// in an ethernet frame). Write if you have an idea!
 //
 enum {
 
@@ -97,14 +79,7 @@ enum {
 //
 // PDU (frame,packet,etc) types
 //
-// The enum names should reflect the PURPOSE of the frame/packet type and
-// not the specific name in one protocol. For example, I prefer
-// PDU_CONNECT_REQUEST to PDU_LAPB_SABME or PDU_TP4_CR.
-//
-// Using generic PDU type names will make it easier to write more general
-// and easier-to-reuse protocol models.
-//
-// Additions, corrections welcome!
+// DEPRECATED -- do not use.
 //
 enum {
 
