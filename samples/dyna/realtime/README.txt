@@ -33,8 +33,8 @@ won't be able to keep up with real time. You can check on the performance
 gauge bar at the top of the simulation main window how well the real-time
 scheduler is doing: the Simsec/sec (middle) gauge should stay around 1.0.
 Switching to Fast Run will result in more accurate synchronization (the
-gauge staying between 0.999 and 1.001), because less time will be spent on 
-updating the graphical user interface.
+gauge usually staying between 0.998 and 1.002), because less time will be 
+spent on updating the graphical user interface.
 
 The real time is calculated as relative to the time when the simulation
 was initialized, so at first you'll observe that the simulation runs as

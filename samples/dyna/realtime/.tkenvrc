@@ -1,5 +1,5 @@
 # Tkenv configuration
-option updatefreq_fast	{50}
+option updatefreq_fast	{10}
 option updatefreq_express	{10000}
 option stepdelay	{300 ms}
 option use_mainwindow	{1}
@@ -35,5 +35,5 @@ config display-treeview	{1}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "dyna" "ClientServer" "2" "405x417+377+217"
+inspector "dyna" "ClientServer" "2" "405x417+146+239"
 
