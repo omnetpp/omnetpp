@@ -1,1 +1,1 @@
-bash gif2tcl > icons.tcl
+bash gif2tcl gned.lst > icons.tcl

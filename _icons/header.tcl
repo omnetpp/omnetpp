@@ -1,7 +1,7 @@
 #==========================================================================
 #  ICONS.TCL -
-#            part of the GNED, the Tcl/Tk graphical topology editor of
-#                            OMNeT++
+#            part of the OMNeT++ Discrete Event Simulation System
+#
 #   By Andras Varga
 #==========================================================================
 
