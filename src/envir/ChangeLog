@@ -1,3 +1,5 @@
+2004-03-03  ------ omnetpp-3.0a2 released ------
+
 2004-02-23  Andras Varga
 
 	* omnetpp.cc/h, cenvir.cc: added moduleReparented() cEnvir method
