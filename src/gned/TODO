@@ -35,8 +35,7 @@ Text editor:
 General:
 - on Windows, Ctrl-F4 causes runtime error if the current canvas is in text mode
 - display string: numeric parameters must be checked!!!
-- cut,copy,paste should work everywhere (menu,toolbar,keys),
-  for both text and graphics
+- cut,copy,paste should work everywhere (menu,toolbar,keys), for both text and graphics
 - ctrl-mousemove should copy the items on canvas
 - different vertical toolbar when changing from graphics to NED view;
   on that toolbar: Find, Replace
@@ -45,7 +44,6 @@ General:
   --> introduce "ownedkeys" attr and rewrite deleteItem, connKeysOfItem, etc.
 
 Dialogs:
-- merge "Drawing options" dialogs into properties
 - remove "doc comments" from tables, and replace with "..." button
 - replace param type, gate dir, etc entries with combo boxes
 - check data entered in dialogs (nonempty, legal chars, unique etc.)

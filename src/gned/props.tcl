@@ -46,9 +46,10 @@ proc editProps {key} {
 
 proc getCommentFromText {w} {
     set comment [$w get 1.0 end]
-    if {$comment=="\n"} {
-        set comment {}
-    }
+
+    # text widgets seem to add an extra newline -- remove it
+    regsub -all "\n$" $comment "" comment
+
     # kill lines with single '-' (would mean a blank line in comment)
     regsub -all "\n-\n" $comment "\n\n" comment
     regsub -all "^-\n" $comment "\n" comment

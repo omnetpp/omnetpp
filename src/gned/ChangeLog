@@ -255,4 +255,6 @@ Dec 17, 2000
 Dec 18, 2000
  - implemented Channel Properties dialog
  - old display string classes (disp.cc) removed
+ - small bugfix on comment handling in Properties dialogs (no longer adds extra
+   blank lines)
 
