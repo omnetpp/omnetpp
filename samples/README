@@ -1,5 +1,5 @@
-This directory contains a dozen simulation models to demonstrate using the 
-simulation framework. These simulations are intentionally kept simple to 
+This directory contains a dozen simulation models to demonstrate the features
+of the simulation framework. These simulations are intentionally kept simple to 
 facilitate understanding, even at the cost of sacrificing some realistic 
 details.
 
