@@ -23,18 +23,28 @@ remove(cObject *) added to cArray. Also, three functions were added to cModule
 to facilitate navigating the module hierarchy: int findSubmodule(...),
 cModule *submodule(...) and cModule *moduleByRelativePath(...).
 
-New feature in Envir: you may link more than one user interfaces into a
-simulation executable, and you can select the appropriate one at runtime
-with the [General]/user-interface=Tkenv (or =Cmdenv) ini file option or the
--u Tkenv (or -u Cmdenv) command-line argument to the simulation executable.
+New Cmdenv/Tkenv features: you may link more than one user interfaces into the
+simulation executable, and you can select one at runtime with the
+[General]/user-interface=Tkenv (or =Cmdenv) ini file option or the -u Tkenv
+(or -u Cmdenv) command-line argument to the simulation executable.
+The per-module extra stack size needed by the user interface libraries 
+can now be configured from the ini file: [Cmdenv]/extra-stack= and
+[Tkenv]/extra-stack= options.
+
+The setDisplayString() sim.library functions are now properly handled by Tkenv,
+so you can change the network graphics at runtime. Module parameters in display
+strings (e.g. in "p=$xpos,$ypos;i=router") are also implemented finally.
 
 In NEDC (and GNED), fixed the ?: operator and changed its precedence to bind
 looser than || and &&. Changed nedc-generated code to suppress warnings about
 unused variables (which are normal anyway in machine-generated code); this
-could only be done for MSVC and Borland C++, because gcc lacks pragmas.
+could only be done for MSVC and Borland C++ because gcc seems to lack such a
+pragma.
 
-In Tkenv, setDisplayString() and module parameters in display strings are
-finally implemented.
+Unfortunately I didn't get a chance to further refine GNED; it would be nice
+to have contributors to GNED development. (Basically only Tcl/Tk programming
+is required [no need to touch the C++ part], and I could give any support
+needed.)
 
 Makefiles change: the 'install-local' target was eliminated: the new-built
 libraries and programs are immediately copied to the lib/ and bin/ subdirs.
