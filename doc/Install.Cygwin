@@ -10,6 +10,14 @@ NOTE!
       This description is based on an earlier (beta 20.1) release,
       so it might be out-of-date at points.
 
+      Some observations I made with Cygwin1.1:
+      - OMNeT++ must be installed in a binary-mounted directory
+        (e.g. mount -b c:/omnetpp /home/omnetpp; see mount --help or man mount
+        for more info)
+      - the Tcl/Tk libs seem to have problems with mounts. For TCL_LIBRARY,
+        one must use Win32-style directory name instead of a mounted dir
+        (e.g. rather c:/cygwin11/usr/share/tcl8.0 than /usr/share/tcl8.0).
+
 1. Introduction
 
 CYGNUS Solutions produce a development environment for Microsoft Windows
@@ -30,7 +38,7 @@ may be found on the web at
 
     http://sourceware.cygnus.com/cygwin/top.html
 
-OMNeT++ (from the 2.0 release on) is fully supported under Cygwin.
+OMNeT++ (from the 2.0b1 release on) is fully supported under Cygwin.
 
 Given that CYGWIN is still in beta, there are bugs in the product. This
 document explains how to work around these problems to complete the
