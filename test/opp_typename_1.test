@@ -1,0 +1,22 @@
+%description:
+Test opp_typename (which is currently an internal function).
+
+%activity:
+
+ev << opp_typename(typeid(cObject)) << endl;
+
+// FIXME the ones below won't work properly...
+
+//ev << opp_typename(typeid(cObject&)) << endl;
+//ev << opp_typename(typeid(const cObject&)) << endl;
+//ev << opp_typename(typeid(cObject *)) << endl;
+//ev << opp_typename(typeid(const cObject *)) << endl;
+
+//ev << opp_typename(typeid(int)) << endl;
+//ev << opp_typename(typeid(char)) << endl;
+//ev << opp_typename(typeid(double)) << endl;
+//ev << opp_typename(typeid(unsigned int)) << endl;
+
+%contains: stdout
+cObject
+

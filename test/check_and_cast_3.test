@@ -1,0 +1,19 @@
+%description:
+Test the check_and_cast<T>() function.
+
+%activity:
+
+// create a cMessage
+cMessage *msg = new cMessage("msg");
+
+// we shouldn't be able to cast it to a derived type which it is actually not
+check_and_cast<cPacket *>(msg);
+ev << "fell through\n" << endl;
+
+%exitcode: 1
+
+%contains: stdout
+cannot cast
+
+%not-contains: stdout
+fell through
