@@ -87,7 +87,7 @@ class cLinkedList : public cObject
 
         int length() {return n;}        // number of items;
         bool empty() {return n==0;}     // see if queue is empty or not
-        bool isInList(void *item)   {return find_llelem(item)!=NULL;}
+        bool contains(void *item)  {return find_llelem(item)!=NULL;}
 
         void clear();                   // delete whole contents
 };

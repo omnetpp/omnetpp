@@ -122,6 +122,8 @@ class cMessage : public cObject
         simtime_t timestamp() {return tstamp;}  // get time stamp
         unsigned long insertOrder() {return insertordr;} // used by cMessageHeap
 
+        bool isScheduled() {return heapindex!=-1;} // tell if message is among future events
+
         // parameter list
         cArray& parList()
             {if(parlistp==NULL) _createparlist(); return *parlistp;}

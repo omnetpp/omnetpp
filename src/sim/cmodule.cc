@@ -754,12 +754,20 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
 
 cMessage *cSimpleModule::cancelEvent(cMessage *msg)
 {
-        // Always return msg. This allows the user write code like
-        //   delete cancelEvent(someMsg);
-        // without having to make sure someMsg is really scheduled
-        // at the moment.
-
+        // make sure we really have the message and it is scheduled
         if (msg==NULL) return NULL;
+            {opp_error("cancelEvent(): message pointer is NULL");return NO(cMessage);}
+        if (!msg->isScheduled())
+        {
+            if (putAsideQueue->contains(msg))
+                {opp_error("cancelEvent(): message `%s' is in the put-aside queue",
+                 msg->name());return NULL;}
+            else
+                {opp_error("cancelEvent(): message `%s' is currently not scheduled,"
+                 " owner is `%s'", msg->name(),msg->owner()->fullPath());return NULL;}
+        }
+
+        // now remove it from future events and return pointer
         simulation.msgQueue.get( msg );
         return msg;
 }

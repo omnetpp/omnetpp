@@ -82,7 +82,8 @@ class cQueue : public cObject
 
         int length() {return n;}        // number of items;
         bool empty() {return n==0;}     // see if queue is empty or not
-        bool isEnqueued(cObject *obj)   {return find_qelem(obj)!=NULL;}
+        // bool isEnqueued(cObject *obj) -- obsolete, use contains() instead!
+        bool contains(cObject *obj)   {return find_qelem(obj)!=NULL;}
 
         void clear();                   // delete whole contents
 };

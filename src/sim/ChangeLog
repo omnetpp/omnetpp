@@ -602,8 +602,20 @@ Aug 2, 1999
     zero if called with r=0L; also, for r<0 it now returns a random number in
     [r+1,0]
   - INTRAND_MAX corrected to 2**31-2
-
-  random number generator must be tested!!!!
+Aug 30, 1999
+  - bool isScheduled() member added to cMessage: checks if message is in the
+    Future Event Set
+  - cancelEvent() behaviour changed: now it causes an error if the message
+    is not in the Future Event Set. One should write code like this:
+         if (msg->isScheduled())
+             delete cancelEvent(msg);
+    Or rather:
+         if (msg->isScheduled())
+             delete cancelEvent(msg);
+         else if (putAsideQueue.contains(msg))
+             delete putAsideQueue.get(msg);
+  - cQueue::isEnqueued(cObject *) renamed to cQueue::contains(cObject *)
+  - cLinkedList::isInList(void *) renamed to cLinkedList::contains(void *)
 
   KNOWN BUGS:
      cModule::initialize() doesn't get called with dynamic modules
