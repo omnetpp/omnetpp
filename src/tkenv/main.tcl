@@ -256,6 +256,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
     set help_tips(.toolbar.fes)     {Inspect scheduled events (Future Event Set)}
+    set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
     set help_tips(.toolbar.find)    {Find string in main window}
 
