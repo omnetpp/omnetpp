@@ -1,0 +1,42 @@
+%description:
+Test random module parameters
+
+%file: {}.ned
+
+simple {Simple}
+   parameters:
+      p0, p1, c0:const, c1:const;
+endsimple
+
+network {network}: {Simple}
+   parameters:
+      p0 = truncnormal(10,3),
+      p1 = 1+truncnormal(10,3),
+      c0 = exponential(1),
+      c1 = 1+exponential(1);
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    for (int i=0; i<params(); i++)
+        ev << par(i).name() << ":" << par(i).doubleValue() << "," << par(i).doubleValue() << endl;
+}
+
+%contains: stdout
+p0:D
+p1:D
+p2:D
+p3:D
+
