@@ -16,10 +16,13 @@ CFLAGS='-O3 -DNDEBUG=1'
 
 #
 # Select here whether you want to build static or shared libraries.
-# On CYGWIN, only static libraries can be used.
+# If you change this setting, remember to delete the other set of libraries
+# (or at least the soft links from lib/).
+# On CYGWIN, only static libraries can be used. The default setting is 
+# `if-not-cygwin'.
 #
 #build_shared_libs=yes
-build_shared_libs=no
+#build_shared_libs=no
 
 #
 # It is possible to have the Tcl files embedded into the compiled OMNeT++
@@ -49,8 +52,9 @@ GNED_EMBED_TCL=no
 PVM_CFLAGS=
 PVM_LIBS=
 
-TK_CFLAGS='-IC:/Cygnus/Cygwin-b20/include -fwritable-strings'
-TK_LIBS='-ltk80 -ltcl80'
+#TK_LIBS='-ltk80 -ltcl80'
+TK_CFLAGS=
+TK_LIBS=
 
 TV_CFLAGS=
 TV_LIBS=

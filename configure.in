@@ -8,6 +8,13 @@ AC_INIT(src/sim/omnetpp.h)
 OMNETPP_VERSION="1.2"
 
 #
+# Detect platform...
+#
+if uname | grep "CYGWIN" >/dev/null; then
+    cygwin=yes
+fi
+
+#
 # Location of various components. Can be overridden in configure.user.
 #
 OMNETPP_ROOT=`pwd`
@@ -16,7 +23,7 @@ if test -n "$HOME"; then
         OMNETPP_ROOT=`pwd|sed "s|^$HOME|\\\${HOME}|"`
     fi
 fi
-if uname | grep "CYGWIN" >/dev/null; then
+if test "$cygwin" = yes; then
     OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
 fi
 
@@ -32,7 +39,8 @@ OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 #
 # Default values for other variables that come from configure.user.
 #
-build_shared_libs=yes
+build_shared_libs=if-not-cygwin
+#build_shared_libs=yes
 #build_shared_libs=no
 
 PVM_CFLAGS=
@@ -104,7 +112,7 @@ AS="as"
 AR="ar cr"
 SHLIB_LD="gcc -shared"
 NEDC=nedc
-if uname | grep "CYGWIN" >/dev/null; then
+if test "$cygwin" = yes; then
     MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
 else
     MYPWD=pwd
@@ -169,6 +177,13 @@ if test ! -n "$TK_CFLAGS"; then
 fi
 
 if test ! -n "$TK_LIBS"; then
+    # on cygwin, library names include version (e.g. cygtk80.a)
+    if test "$cygwin" = yes; then
+        ver=80
+    else
+        ver=
+    fi
+
     # X Window
     AC_PATH_X
     if test "$no_x" != "yes"; then
@@ -181,14 +196,14 @@ if test ! -n "$TK_LIBS"; then
     fi
 
     # Tcl
-    OPP_CHECK_LIB_WITHPATH(tcl, Tcl_Init, /opt/lib,
-      TK_LIBS="$lib_path_switch -ltcl $TK_LIBS",
+    OPP_CHECK_LIB_WITHPATH(tcl$ver, Tcl_Init, /opt/lib,
+      TK_LIBS="$lib_path_switch -ltcl$ver $TK_LIBS",
       :,
       $SYS_LIBS)
 
     # Tk
-    OPP_CHECK_LIB_WITHPATH(tk, Tk_BindEvent, /opt/lib,
-      TK_LIBS="$lib_path_switch -ltk $TK_LIBS",
+    OPP_CHECK_LIB_WITHPATH(tk$ver, Tk_BindEvent, /opt/lib,
+      TK_LIBS="$lib_path_switch -ltk$ver $TK_LIBS",
       TK_LIBS=""; AC_MSG_WARN(Cannot link with Tcl/Tk -- Tkenv GNED and Plove will not build/run),
       $TK_LIBS $SYS_LIBS)
 fi
@@ -238,7 +253,7 @@ AC_CHECK_FUNCS(select strdup strspn strstr)
 #----------------------
 
 # on NT, set total stack size
-if uname | grep "CYGWIN" >/dev/null; then
+if test "$cygwin" = yes; then
   LDFLAGS="$LDFLAGS -s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
 fi
 
@@ -247,6 +262,13 @@ fi
 #----------------------
 # If you change this setting, remember to delete the other set of libraries
 # (or at least the soft links from lib/).
+if test "$build_shared_libs" = if-not-cygwin; then
+    if test "$cygwin" = yes; then
+        build_shared_libs=no
+    else
+        build_shared_libs=yes
+    fi
+fi
 if test "$build_shared_libs" = yes; then
     LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 else
