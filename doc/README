@@ -63,7 +63,7 @@ The simulation system itself:
 
 omnetpp/              OMNeT++ root directory
    bin/               OMNeT++ executables (GNED, nedc, etc.)
-   include/           header files for simulation models
+   include/           simulation kernel header files for models
    lib/               library files
    bitmaps/           icons that can be used in network graphics
    doc/               manual (PDF), readme, license, etc.
@@ -81,6 +81,7 @@ omnetpp/              OMNeT++ root directory
        gned/          graphical NED editor
        plove/         output vector analyzer and plotting tool
        utils/         makefile-autocreator etc
+   test/              regression tests for the simulation kernel
 
 There is a tutorial, contributed by Nick van Foreest:
 
@@ -103,6 +104,7 @@ omnetpp/
        fddi/          an accurate FDDI MAC simulation
        hist/          demo of the histogram classes
        dyna/          dynamic module creation (client-server network)
+       dyna2/         variant of Dyna, using the experimental message subclassing
        pvmex/         demonstrates distributed execution
        fifo1/         single-server queue
        fifo2/         another version of fifo, now with handleMessage() and FSM
@@ -140,8 +142,8 @@ Installation
 If you're installing from a source distribution, please read one of the
 following files for instructions, depending on your OS and compiler:
    Readme.Unix    -- generic Unix/Linux
-   Readme.Cygwin  -- Cygwin on NT/W95 (www.cygnus.com)
-   Readme.MSVC    -- Microsoft Visual C++ 6.0 on NT/W95
+   Readme.Cygwin  -- Cygwin on Windows
+   Readme.MSVC    -- Microsoft Visual C++ 6.0 on NT (or W2K or XP)
 For the first two, the process is not much different from the normal GNU build
 and install procedure, except that you may need to edit the configure.user file
 manually.
@@ -175,7 +177,7 @@ New feaures, testing, new examples; fall 1995:
         Maurits Andre           TU Delft, M.J.A.Andre@twi.tudelft.nl
         George van Montfort     TU Delft, G.P.R.vanMontfort@twi.tudelft.nl
         Gerard van de Weerd     TU Delft, G.vandeweerd@twi.tudelft.nl
-JAR support for distributed execution; also current user:
+JAR support for distributed execution:
         Gabor Lencse            BME-HIT
 Initial revision of PVM support (as final project), spring 1996:
         Zoltan Vass             BME-HIT

@@ -1,6 +1,6 @@
 Begin3
 Title:          OMNeT++
-Version:        2.2b1
+Version:        2.2
 Entered-date:   05JUN98
 Description:    OMNeT++ is a C++-based discrete event simulator. Graphical
                 model editor, powerful textual model topology description
@@ -18,7 +18,7 @@ Keywords:       discrete event simulation environment
 Author:         Andras Varga <andras@whale.hit.bme.hu>
 Maintained-by:  Andras Varga <andras@whale.hit.bme.hu>
 Primary-site:   http:whale.hit.bme.hu /omnetpp/release
-                1500kB omnetpp-2.2b1.tgz
+                1500kB omnetpp-2.2.tgz
 Alternate-site:
 Platforms:      C++ compiler, Tcl/Tk>=8.0, bison, gnuplot, pvm (optional)
 Copying-policy: Free for non-profit use; GPL electable
