@@ -79,8 +79,6 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
                           ries have be handled in high Makefiles (see -r
                           option).
     -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv
-    -M, --mpi             Link executable with MPI
-    -p, --pvm             Link executable with PVM
     -Idir                 Additional NED and C++ include directory
     -Ldir                 Add a directory to the library path
     -llibrary             Additional library to link against
@@ -340,26 +338,6 @@ elsif ($userif eq 'TKENV')
     $c_tk = '';
 }
 
-
-$c_std = '';
-$c_pvm = '# ';
-$c_mpi = '# ';
-
-if ($pvm eq "y")
-{
-    $c_std = '# ';
-    $c_pvm = '';
-    $c_mpi = '#';
-}
-
-if ($mpi eq "y")
-{
-    $c_std = '# ';
-    $c_pvm = '#';
-    $c_mpi = '';
-}
-
-
 $sobjs = join( " \\\n            ", @sobj_list);
 $xobjs = join( " \\\n            ", @xobjs);
 $extdirobjs = join( " \\\n            ", @extdirobjs);
@@ -372,11 +350,6 @@ TARGET = $outfile$suffix
 # User interface (uncomment one) (-u option)
 ${c_cmd}USERIF_LIBS=\$(CMDENV_LIBS)
 ${c_tk}USERIF_LIBS=\$(TKENV_LIBS)
-
-# uncomment 1 of the 3 lines to support either serial or parallel operation
-${c_std}KERNEL_LIBS=\$(STD_KERNEL_LIBS)
-${c_pvm}KERNEL_LIBS=\$(PVM_KERNEL_LIBS)
-${c_mpi}KERNEL_LIBS=\$(MPI_KERNEL_LIBS)
 
 # .ned or .h include paths with -I
 INCLUDE_PATH=$includes
@@ -403,9 +376,15 @@ CMDENV_LIBS=envir.lib cmdenv.lib
 TKENV_LIBS=envir.lib tkenv.lib \$(TK_LIBS)
 
 # Simulation kernel
-STD_KERNEL_LIBS=sim_std.lib
-MPI_KERNEL_LIBS=sim_mpi.lib \$(MPI_LIBS)
-PVM_KERNEL_LIBS=sim_pvm.lib \$(PVM_LIBS)
+KERNEL_LIBS=sim_std.lib
+
+!if \"\$(WITH_NETBUILDER)\"==\"yes\"
+KERNEL_LIBS= \$(KERNEL_LIBS) -lnedxml \$(XML_LIBS)
+!endif
+
+!if \"\$(WITH_PARSIM)\"==\"yes\"
+KERNEL_LIBS= \$(KERNEL_LIBS) \$(MPI_LIBS)
+!endif
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=/libpath:\$(OMNETPP_LIB_DIR) \$(USERIF_LIBS) \$(KERNEL_LIBS) \$(SYS_LIBS)

@@ -37,21 +37,21 @@ while [ ! $# = 0 ] ; do
 
         -h | --help)
         cat <<EOT
-opp_makemake: generate OMNeT++ Makefile based on contents of current directory 
+opp_makemake: generate OMNeT++ Makefile based on contents of current directory
 
 opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
-        [-c configfile] [-p] [-Idir] [-Llibrary-path] [-llibrary] 
+        [-c configfile] [-p] [-Idir] [-Llibrary-path] [-llibrary]
         [-i makefile-fragment-file] [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
     -m, --makefile-in     Create Makefile.in instead of Makefile
-    -c, --configfile      Omit variable definitions from generated Makefile, 
+    -c, --configfile      Omit variable definitions from generated Makefile,
                           and let the Makefile include the given config file
                           instead.
     -o, --outputfile      Name of simulation executable/library
-    -r, --recurse         Call make recursively in all subdirectories. If you 
+    -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
-                          cies in the makefrag file. 
+                          cies in the makefrag file.
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several dirs.
     -s, --make-so         Make shared library. Useful if you want to load the
@@ -59,11 +59,9 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
     -w, --withobjects     Link with all object files found in -I directories,
                           or include them if library is created. Ignored when
                           -n option is present. Dependencies between directo-
-                          ries have be handled in high Makefiles (see -r 
+                          ries have be handled in high Makefiles (see -r
                           option).
     -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv.
-    -M, --mpi             Link executable with MPI
-    -p, --pvm             Link executable with PVM
     -Idir                 Additional NED and C++ include directory
     -Llibrary-path        Additional library path
     -llibrary             Additional library to link against
@@ -74,7 +72,7 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
                           -w option.
     library or object     Link with that file
 
-With the -n and -s options, -u, -p and -l have no effect. makefrag (and the 
+With the -n and -s options, -u, -p and -l have no effect. makefrag (and the
 -i option) is useful when a source file (.ned, .msg or .cc) is to be generated
 from other files, or when you want to add extra dependencies that opp_makemake
 could not figure out.
@@ -252,11 +250,6 @@ TARGET = $outfile$suffix
 ${c_cmd}USERIF_LIBS=\$(CMDENV_LIBS)
 ${c_tk}USERIF_LIBS=\$(TKENV_LIBS)
 
-# uncomment 1 of the 3 lines to support either serial or parallel operation
-${c_std}KERNEL_LIBS=\$(STD_KERNEL_LIBS)
-${c_pvm}KERNEL_LIBS=\$(PVM_KERNEL_LIBS)
-${c_mpi}KERNEL_LIBS=\$(MPI_KERNEL_LIBS)
-
 # .ned or .h include paths with -I
 INCLUDE_PATH=$includes
 
@@ -292,18 +285,20 @@ AR=@AR@
 SHLIB_LD=@SHLIB_LD@
 MAKEDEPEND=@MAKEDEPEND@
 
-WITH_PARSIM=@WITH_PARSIM@
 CFLAGS=@CFLAGS@
 NEDCFLAGS=@NEDCFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
+
+WITH_PARSIM=@WITH_PARSIM@
+WITH_NETBUILDER=@WITH_NETBUILDER@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
 TK_LIBS=@TK_LIBS@
 MPI_LIBS=@MPI_LIBS@
-PVM_LIBS=@PVM_LIBS@
+XML_LIBS=@XML_LIBS@
 SYS_LIBS=@SYS_LIBS@
 SYS_LIBS_PURE=-ldl -lsocket -lnsl -lm \$(shell \$(CXX) -print-file-name=libstdc++.a)
 EOT
@@ -322,18 +317,20 @@ AR=@${null}AR@
 SHLIB_LD=@${null}SHLIB_LD@
 MAKEDEPEND=@${null}MAKEDEPEND@
 
-WITH_PARSIM=@${null}WITH_PARSIM@
 CFLAGS=@${null}CFLAGS@
 NEDCFLAGS=@${null}NEDCFLAGS@
 LDFLAGS=@${null}LDFLAGS@
 EXE_SUFFIX=@${null}EXE_SUFFIX@
+
+WITH_PARSIM=@${null}WITH_PARSIM@
+WITH_NETBUILDER=@${null}WITH_NETBUILDER@
 
 OMNETPP_INCL_DIR=@${null}OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@${null}OMNETPP_LIB_DIR@
 
 TK_LIBS=@${null}TK_LIBS@
 MPI_LIBS=@${null}MPI_LIBS@
-PVM_LIBS=@${null}PVM_LIBS@
+XML_LIBS=@${null}XML_LIBS@
 SYS_LIBS=@${null}SYS_LIBS@
 SYS_LIBS_PURE=-lm \$(shell \$(CXX) -print-file-name=libstdc++.a)
 EOT
@@ -348,9 +345,15 @@ CMDENV_LIBS=-lenvir -lcmdenv
 TKENV_LIBS=-lenvir -ltkenv \$(TK_LIBS)
 
 # Simulation kernel
-STD_KERNEL_LIBS=-lsim_std
-MPI_KERNEL_LIBS=-lsim_mpi \$(MPI_LIBS)
-PVM_KERNEL_LIBS=-lsim_pvm \$(PVM_LIBS)
+KERNEL_LIBS=-lsim_std
+
+ifeq ($(WITH_NETBUILDER),yes)
+KERNEL_LIBS += -lnedxml $(XML_LIBS)
+endif
+
+ifeq ($(WITH_PARSIM),yes)
+KERNEL_LIBS += $(MPI_LIBS)
+endif
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=-L\$(OMNETPP_LIB_DIR) \$(USERIF_LIBS) \$(KERNEL_LIBS) \$(SYS_LIBS)
@@ -358,9 +361,6 @@ OMNETPP_LIBS=-L\$(OMNETPP_LIB_DIR) \$(USERIF_LIBS) \$(KERNEL_LIBS) \$(SYS_LIBS)
 COPTS=\$(CFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 NEDCOPTS=\$(CFLAGS) \$(NEDCFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 
-ifeq ($(WITH_NETBUILDER),yes)
-COPTS += -DWITH_PARSIM
-endif
 EOT
 fi
 
@@ -422,14 +422,14 @@ echo
 
 
 # rules for recursive build
-echo ".PHONY: subdirs \$(SUBDIRS)" 
+echo ".PHONY: subdirs \$(SUBDIRS)"
 echo
-echo 'subdirs: $(SUBDIRS)' 
+echo 'subdirs: $(SUBDIRS)'
 echo
 for i in $subdirs; do
      echo "$i:"
      echo '	cd' $i '&& $(MAKE)'
-     echo 
+     echo
 done
 
 # rules for ned files
@@ -492,7 +492,7 @@ cat <<EOT
 clean:
 	rm -f *.o *_n.cc *_n.h *_m.cc *_m.h \$(TARGET)\$(EXE_SUFFIX)
 	rm -f *.vec *.sca
-	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) clean); done 
+	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) clean); done
 
 depend:
 	\$(MAKEDEPEND) \$(INCLUDE_PATH) -- *.cc
