@@ -1,3 +1,7 @@
+2002-02-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* Makefile.in (nedc): use CXX instead of CC for linking (gcc-3 patch)
+
 2002-01-23  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* msgc.pl (generateClass): Calls to setOwner() for cObjects and
