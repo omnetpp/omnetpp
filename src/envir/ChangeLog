@@ -1,3 +1,9 @@
+2004-07-06   Andras Varga
+
+	* speedmtr.cc/h: fix: use wall clock time (ftime() call) instead of 
+	time consumed by the process (clock()) for the ev/sec, simsec/sec 
+	calculations. 
+
 2004-07-05   Andras Varga
 
 	* cenvir.cc,omnetapp.cc/h,filemgrs.cc/h: recordScalar() functions for

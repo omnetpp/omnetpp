@@ -15,6 +15,7 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include <assert.h>
 #include "speedmtr.h"
 
 
@@ -23,37 +24,48 @@ Speedometer::Speedometer()
     started = false;
 }
 
+void Speedometer::start(simtime_t t)
+{
+    // begin 1st interval
+    events = 0;
+    ftime(&intvstart_walltime);
+    intvstart_simtime = t;
+
+    last_eventspersec = 0;
+    last_eventspersimsec = 0;
+    last_simsecpersec = 0;
+
+    started = true;
+}
+
 void Speedometer::addEvent(simtime_t t)
 {
-    if (!started)
-    {
-        // begin 1st interval
-        events = 0;
-        intvstart_clock = clock();
-        intvstart_simtime = t;
-
-        last_eventspersec = 0;
-        last_eventspersimsec = 0;
-        last_simsecpersec = 0;
-
-        started = true;
-    }
+    // start() mush have been called already
+    assert(started);
 
     events++;
     current_simtime = t;
 }
 
-double Speedometer::secondsInThisInterval()
+unsigned long Speedometer::millisecsInThisInterval()
 {
-    long elapsed_clocks = clock() - intvstart_clock;
-    return (double)elapsed_clocks / CLOCKS_PER_SEC;
+    // start() mush have been called already
+    assert(started);
+
+    struct timeb now;
+    ftime(&now);
+    return opp_difftimebmillis(now, intvstart_walltime);
 }
 
 void Speedometer::beginNewInterval()
 {
-    clock_t now = clock();  // FIXME we should use gettimeofday() here!
-    long elapsed_clocks = now - intvstart_clock;
-    if (elapsed_clocks<10 || events<10)
+    // start() mush have been called already
+    assert(started);
+
+    struct timeb now;
+    ftime(&now);
+    unsigned long elapsed_msecs = opp_difftimebmillis(now, intvstart_walltime);
+    if (elapsed_msecs<10 || events==0)
     {
         // if we're called too often, refuse to give readings as probably
         // they'd be very misleading
@@ -63,7 +75,7 @@ void Speedometer::beginNewInterval()
     }
     else
     {
-        double elapsed_sec = (double)elapsed_clocks / CLOCKS_PER_SEC;
+        double elapsed_sec = (double)elapsed_msecs/1000.0;
         simtime_t elapsed_simsec = current_simtime-intvstart_simtime;
 
         last_eventspersec = events / elapsed_sec;
@@ -71,7 +83,7 @@ void Speedometer::beginNewInterval()
         last_eventspersimsec = (elapsed_simsec==0) ? 0 : (events / elapsed_simsec);
     }
     events = 0;
-    intvstart_clock = now;
+    intvstart_walltime = now;
     intvstart_simtime = current_simtime;
 }
 

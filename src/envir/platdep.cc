@@ -17,7 +17,7 @@
 
 
 #include "defs.h"   // __WIN32__
-#include "util.h"
+#include "platdep.h"
 #include "cexception.h"
 #include "cenvir.h"
 
@@ -32,7 +32,7 @@
 
 bool opp_loadlibrary(const char *libname)
 {
-// TBD add extension: .so or .dll
+// FIXME TBD add extension: .so or .dll
 #if HAVE_DLOPEN
      if (!dlopen(libname,RTLD_NOW))
          throw new cException("Cannot load library '%s': %s",libname,dlerror());
@@ -60,6 +60,13 @@ bool opp_loadlibrary(const char *libname)
 #else
      throw new cException("Cannot load '%s': dlopen() syscall not available", libname);
 #endif
+}
+
+
+unsigned long opp_difftimebmillis(const struct timeb& t, const struct timeb& t0)
+{
+    // with 32-bit longs it only overflows after 49.7 DAYs
+    return (t.time - t0.time)*1000 + (t.millitm - t0.millitm);
 }
 
 

@@ -21,6 +21,7 @@
 
 #include <time.h>
 #include "defs.h"
+#include "platdep.h"
 #include "envdefs.h"
 
 
@@ -29,19 +30,20 @@
 //
 class ENVIR_API Speedometer
 {
+  private:
     bool started;
     long events;
     simtime_t current_simtime;
     simtime_t intvstart_simtime;
-    clock_t intvstart_clock;
+    struct timeb intvstart_walltime;
     double last_eventspersec;
     double last_eventspersimsec;
     double last_simsecpersec;
-
   public:
     Speedometer();
+    void start(simtime_t t);
     void addEvent(simtime_t t);
-    double secondsInThisInterval();
+    unsigned long millisecsInThisInterval();
     void beginNewInterval();
     double eventsPerSec();
     double eventsPerSimSec();
