@@ -28,7 +28,7 @@ void print(const char *what, {MyMessage}& x)
    ev << what << ":";
    ev << x.getA() << ":" << x.getB(0) << "," << x.getB(1) << ":";
    for(int i=0; i<x.getCArraySize(); i++)
-       ev << (i==0 ? "" : ",") << x.getC(i);
+       ev << (i==0 ? "" : ",") << (int)x.getC(i);
    ev << ":" << x.getS1() << ":" << x.getS2(0) << "," << x.getS2(1) << ":";
    for(int j=0; j<x.getS3ArraySize(); j++)
        ev << (j==0 ? "" : ",") << x.getS3(j);
@@ -91,11 +91,11 @@ print("x1",x1); // should stay the same
 
 %contains: stdout
 x:39:14,23:17,35:one:two,three:four,five.
-xx:7:0,0:11,0,0,0,44:one:(null),(null):six,(null),(null),(null),seven.
+xx:7:0,0:11,0,0,0,44:one:,:six,,,,seven.
 x1(x):39:14,23:17,35:one:two,three:four,five.
 x2=x:39:14,23:17,35:one:two,three:four,five.
-x1=xx:7:0,0:11,0,0,0,44:one:(null),(null):six,(null),(null),(null),seven.
+x1=xx:7:0,0:11,0,0,0,44:one:,:six,,,,seven.
 x1=x:39:14,23:17,35:one:two,three:four,five.
-x:39:14,23:17,35,0:one:aaa,bbb:ccc,ddd,(null).
+x:39:14,23:17,35,0:one:aaa,bbb:ccc,ddd,.
 x1:39:14,23:17,35:one:two,three:four,five.
 
