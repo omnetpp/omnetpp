@@ -3,18 +3,14 @@ Parse/Generate:
 - comments around display strings, channel attributes are lost
 - display string parsing -- rewrite!!!
 - comments -- choose different approach? (do not cut of "// ")
-- ebnf.y changed (gate_mod_L --> mod_L etc.) -- update and test NEDC!!!
 - error recovery in the grammar: TBD
 
 Data struct change:
 - "source-text" attribute to module?? should be added when one switches to text mode
-- add something like ddesc(*,user-may-reorder-children)??
 - turn display strings into independent objects?
 
 Drawing:
 - random placement of submods should avoid overlaps if possible
-- arrow.cc was modified!!! update in Tkenv!!!
-- if canvas is scrolled, mouse selection works with wrong positions
 - should support ovals too (not only rects)
 
 Load/save:
@@ -41,9 +37,6 @@ General:
 - ctrl-mousemove should copy the items on canvas
 - different vertical toolbar when changing from graphics to NED view
 - add default comments for newly created modules?
-
-Manager:
-- local menu on components: Close canvas, Properties
 
 Dialogs:
 - TBD

@@ -128,3 +128,5 @@
   - version.log renamed to ChangeLog
 July 11, 1999
   - small fixes and enhancements
+July 17, 1999
+  - fixed the bug with scrolled canvas

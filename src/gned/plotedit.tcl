@@ -268,6 +268,10 @@ proc resetModuleBounds {} {
 proc selectOrMoveStart {c x y ctrl} {
     global mouse canvas gned ned
 
+    # take scrolling into account
+    set x [expr int([$c canvasx $x])]
+    set y [expr int([$c canvasy $y])]
+
     catch {destroy .popup}
 
     if {$gned(snaptogrid)} {
@@ -457,6 +461,10 @@ proc selectOrMoveStart {c x y ctrl} {
 proc selectOrMoveDrag {c x y} {
     global mouse canvas gned ned
 
+    # take scrolling into account
+    set x [expr int([$c canvasx $x])]
+    set y [expr int([$c canvasy $y])]
+
     if {$gned(snaptogrid)} {
        if {$mouse(mode)!="reanchor" && $mouse(mode)!="endp-reanchor"} {
           set gridsize 8
@@ -565,6 +573,10 @@ proc selectOrMoveDrag {c x y} {
 proc selectOrMoveEnd {c x y} {
     global mouse gned ned
 
+    # take scrolling into account
+    set x [expr int([$c canvasx $x])]
+    set y [expr int([$c canvasy $y])]
+
     if {$gned(snaptogrid)} {
        set gridsize 8
        incr x [expr $gridsize/2]
@@ -625,6 +637,10 @@ proc selectOrMoveEnd {c x y} {
 proc drawStart {c x y} {
     global mouse gned ned
 
+    # take scrolling into account
+    set x [expr int([$c canvasx $x])]
+    set y [expr int([$c canvasy $y])]
+
     catch {destroy .popup}
 
     if {$gned(snaptogrid)} {
@@ -668,6 +684,10 @@ proc drawStart {c x y} {
 proc drawDrag {c x y} {
     global mouse gned
 
+    # take scrolling into account
+    set x [expr int([$c canvasx $x])]
+    set y [expr int([$c canvasy $y])]
+
     if {$gned(snaptogrid)} {
        set gridsize 8
        incr x [expr $gridsize/2]
@@ -689,6 +709,10 @@ proc drawDrag {c x y} {
 #
 proc drawEnd {c x y} {
     global mouse gned canvas ned
+
+    # take scrolling into account
+    set x [expr int([$c canvasx $x])]
+    set y [expr int([$c canvasy $y])]
 
     if {$gned(snaptogrid)} {
        set gridsize 8
