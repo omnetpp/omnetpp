@@ -111,7 +111,7 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                        flushIfNeeded(FLUSHLIMIT);
                        displayStruct(sd1,level+1);
                        delete sd1;
-                       sprintf(writeptr,"}\n");
+                       sprintf(writeptr,"%*s}\n", indent, "");
                        flushIfNeeded(FLUSHLIMIT);
                    }
                    break;
