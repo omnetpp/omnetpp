@@ -21,7 +21,12 @@ Real-time/hybrid simulation:
 
 - In relation to the above: new methods got added to the cScheduler interface.
 
-Simulation kernel:
+For Windows:
+- Debug info (*.pdb) files have been included in the installer, so one can now
+  single-step into the simulation kernel and user interface library sources
+  while debugging.
+
+Simulation library:
 - New utility class: cStringTokenizer. It splits strings to "tokens" along
   given separator characters (by default spaces).
 
