@@ -159,7 +159,7 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         int vectorsize = evaluate(modp, vectorsizeexpr);
         for (int i=0; i<vectorsize; i++)
         {
-            cModule *submodp = modtype->create(modname, modp, i, vectorsize);
+            cModule *submodp = modtype->create(modname, modp, vectorsize, i);
             setDisplayString(submodp, submod);
             assignSubmoduleParams(submodp, submod->getFirstSubstparamsChild());
             setupGateVectors(submodp, submod->getFirstGatesizesChild());
@@ -310,11 +310,11 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     {
         // FIXME include module name in error message
         if (!gateindexp)
-            throw new cException("dynamic module builder: gate `%s' in (%s)%s not found",
-                                 gatename, parentmodp->className(), parentmodp->fullPath());
+            throw new cException("dynamic module builder: module (%s)%s has no gate `%s'",
+                                 modp->className(), modp->fullPath(), gatename);
         else
-            throw new cException("dynamic module builder: gate `%s[%d]' in (%s)%s not found",
-                                 gatename, gateindex, parentmodp->className(), parentmodp->fullPath());
+            throw new cException("dynamic module builder: module (%s)%s has no gate `%s[%d]'",
+                                 modp->className(), modp->fullPath(), gatename, gateindex);
     }
 
     return gatep;
