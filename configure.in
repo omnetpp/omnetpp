@@ -47,8 +47,6 @@ PVM_CFLAGS=
 PVM_LIBS=
 TK_CFLAGS=
 TK_LIBS=
-TV_CFLAGS=
-TV_LIBS=
 
 CFLAGS='-g'
 #CFLAGS='-g -Wall'
@@ -217,22 +215,6 @@ if test ! -n "$TK_LIBS"; then
 fi
 
 #----------------------
-# Check for Turbo Vision.
-#----------------------
-
-if test ! -n "$TV_LIBS"; then
-    # FIXME:
-    TV_CFLAGS="-I/usr/include/tvision"
-fi
-
-if test ! -n "$TV_LIBS"; then
-    OPP_CHECK_LIB_WITHPATH(tv, main, /opt/lib,
-      TV_LIBS="$lib_path_swith -ltv",
-      TV_LIBS=""; AC_MSG_WARN(Cannot link with Turbo Vision -- Tvenv will not build),
-      $SYS_LIBS)
-fi
-
-#----------------------
 # Checks for header files.
 #----------------------
 
@@ -301,12 +283,6 @@ else
    GNED_IF_POSSIBLE=missing-library
 fi
 
-if test -n "$TV_LIBS"; then
-   TVENV_IF_POSSIBLE=tvenv
-else
-   TVENV_IF_POSSIBLE=missing-library
-fi
-
 #----------------------
 # Tcl code embedding.
 #----------------------
@@ -355,8 +331,6 @@ AC_SUBST(LIB_SUFFIX)
 AC_SUBST(EXE_SUFFIX)
 
 AC_SUBST(HAVE_DLOPEN)
-AC_SUBST(TV_CFLAGS)
-AC_SUBST(TV_LIBS)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
 AC_SUBST(PVM_INCL_DIR)
@@ -364,7 +338,6 @@ AC_SUBST(PVM_LIBS)
 AC_SUBST(SYS_LIBS)
 
 AC_SUBST(TKENV_IF_POSSIBLE)
-AC_SUBST(TVENV_IF_POSSIBLE)
 AC_SUBST(SIM_PVM_IF_POSSIBLE)
 AC_SUBST(GNED_IF_POSSIBLE)
 
@@ -384,7 +357,6 @@ AC_OUTPUT(
   src/plove/Makefile
   src/sim/Makefile
   src/tkenv/Makefile
-  src/tvenv/Makefile
   src/utils/Makefile
   src/utils/makemake
   samples/dyna/Makefile
