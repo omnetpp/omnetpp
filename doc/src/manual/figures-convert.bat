@@ -7,7 +7,12 @@ cd figures
 : for %%I in (*.wmf) do echo %%I to %%~nI.gif && "%IM6%"\convert -density 300 -trim %%I %%~nI.gif
 
 : *** trim GIFs ***
-for %%I in (*.gif) do echo crop %%I && "%IM6%"\convert -trim %%I %%I
+: IM6's -trim conversion sucks: geometry meta information gets screwed up. 
+: So we're forced to do it via BMP (which surely doesn't contain any meta tags 
+: at all)
+for %%I in (*.gif) do echo crop %%I && "%IM6%"\convert -trim %%I %%~nI.bmp
+for %%I in (*.bmp) do "%IM6%"\convert %%I %%~nI.gif
+del *.bmp
 
 : *** PDF conversion follows (commented out because rasterized PDFs look very bad) ***
 : convert to png because the gifs still contain some garbage meta-tag which screws up pdf
