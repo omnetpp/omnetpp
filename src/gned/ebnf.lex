@@ -18,10 +18,23 @@ E                       [Ee][+-]?{D}+
 /*                                                 */
 /***************************************************/
 
+/*--------------------------------------------------------------*
+  Copyright (C) 1992,99 Andras Varga
+  Technical University of Budapest, Dept. of Telecommunications,
+  Stoczek u.2, H-1111 Budapest, Hungary.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+/*
+ * IMPORTANT: This file is shared between NEDC and GNED.
+ * The two copies must be kept identical!
+ */
+
+
 #if defined(__BORLANDC__) && !defined(__cplusplus)
 #error Compile as C++ source!
-/*-- You'll also need to remove the stupid '#include <osfcn.h>' line from
-     the generated lexyy.c --VA */
 #endif
 
 #include <string.h>
@@ -31,12 +44,13 @@ E                       [Ee][+-]?{D}+
 #pragma warn -rch  /*turn off tons of 'Unreachable code' warnings --VA */
 #endif
 
-/* define YYSTYPE to 'char *'; must be consistent in ebnf.lex/ebnf.y --VA */
-#define YYSTYPE   char *
+#ifdef _MSC_VER
+#include <io.h>
+#define isatty _isatty
+#endif
 
-// #include "ebnf_tab.h"
+#include "ebnf.h"
 #include "ebnf.tab.h"
-
 #include "ebnfcfg.h"  /* for NEDC() or GNED() */
 
 #ifdef DOING_NEDC
@@ -57,9 +71,6 @@ void count (void);
         sprintf (yyfailure, "! %s", m); \
         yyerror (""); \
         yyfailure [0] = 0;
-
-/* beware: this typedef is replicated in ebnf.y */
-typedef struct {int li; int co;} LineColumn;
 
 /* Vars updated by count(): */
 LineColumn pos,prevpos;

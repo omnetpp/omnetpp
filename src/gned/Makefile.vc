@@ -15,8 +15,10 @@ OBJS = gned$(GNED_EMBED_SUFFIX).obj tklib.obj arrow.obj ebnf.tab.obj lex.yy.obj 
 #
 default: $(GNED_IF_POSSIBLE)
 
+gned : gned.exe
+
 gned.exe : $(OBJS)
-	$(CC) /Fo"gned.exe" $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS)
+	$(LINK) /out:"gned.exe" $(OBJS) $(LDFLAGS) $(TK_LIBS) $(SYS_LIBS)
 
 gned.obj : gned.cc
 	$(CXX) /DOMNETPP_GNED_DIR="\"$(OMNETPP_GNED_DIR)\"" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp  gned.cc
@@ -40,7 +42,7 @@ disp.obj: disp.cc
 	$(CXX) $(COPTS) /c /Tp disp.cc
 
 lex.yy.obj: lex.yy.c
-	$(CXX) $(COPTS) /c /Tp lex.yy.c
+	$(CXX) /I "." $(COPTS) /c /Tp lex.yy.c
 
 ebnf.tab.obj: ebnf.tab.c
 	$(CXX) $(COPTS) /c /Tp ebnf.tab.c

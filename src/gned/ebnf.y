@@ -27,6 +27,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+/*
+ * IMPORTANT: This file is shared between NEDC and GNED.
+ * The two copies must be kept identical!
+ */
+
 %token INCLUDE SIMPLE
 %token CHANNEL DELAY ERROR DATARATE
 %token MODULE PARAMETERS GATES GATESIZES SUBMODULES CONNECTIONS DISPLAY
@@ -107,6 +112,7 @@
 
 #include <stdio.h>
 #include <malloc.h>         /* for alloca() */
+#include "ebnf.h"           /* selects between NEDC and GNED */
 #include "ebnfcfg.h"        /* selects between NEDC and GNED */
 
 #define YYDEBUG 1           /* allow debugging */
@@ -117,14 +123,6 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-
-/* define YYSTYPE to 'char *'; must be consistent in ebnf.lex/ebnf.y --VA */
-#define YYSTYPE   char *
-
-/* beware: this typedef is replicated in ebnf.lex */
-typedef struct {int li; int co;} LineColumn;
-
-extern LineColumn pos,prevpos;
 
 int yylex (void);
 void yyrestart(FILE *);
