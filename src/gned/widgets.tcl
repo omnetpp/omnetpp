@@ -71,7 +71,12 @@ proc setupTkOptions {} {
        event add <<Redo>> <Control-Key-y>
        event add <<Redo>> <Control-Key-Y>
    }
-   
+
+   # for some reason, Ctrl-v (Paste) doesn't work out-of-the box with Tk 8.3/8.4 on Unix,
+   # we need the following lines:
+   bind Entry <Control-v> {}
+   bind Text <Control-v> {}
+      
    #
    # fonts() array elements:
    #  normal:  menus, labels etc
