@@ -1,0 +1,11 @@
+#
+# Definitions to be customized by 'configure'
+#
+DOXYGEN=@DOXYGEN@
+
+#
+# Targets
+#
+all:
+	$(DOXYGEN) doxyfile
+	cp *.gif ../../tictoc-tutorial

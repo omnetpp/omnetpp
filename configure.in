@@ -550,6 +550,7 @@ AC_CONFIG_FILES(
   samples/tictoc/Makefile
   samples/tokenring/Makefile
   doc/src/Makefile
+  doc/src/tictoc-tutorial/Makefile
   test/Makefile
 )
 
