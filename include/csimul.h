@@ -178,7 +178,7 @@ class SIM_API cSimulation : public cObject
 
     /**
      * Finds a module by its path. Inclusion of the name of the toplevel module
-     * in the path is optional.
+     * in the path is optional. Returns NULL if not found.
      */
     cModule *moduleByPath(const char *modulepath) const;
 
