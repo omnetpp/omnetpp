@@ -322,6 +322,7 @@ proc destroyCanvas {canv_id} {
     }
 
     # adjust scrolling of tabs area
+    update idletasks
     .main.f.tabs.c config -scrollregion "0 0 [winfo width .main.f.tabs.c.f] 0"
     .main.f.tabs.c xview moveto 1.0
 }
