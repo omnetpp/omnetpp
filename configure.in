@@ -101,7 +101,7 @@ fi
 
 AC_PROG_YACC
 if test "$YACC" = "yacc"; then
-   AC_MSG_WARN(Neither bison nor byacc is found...)
+   AC_MSG_WARN(neither bison nor byacc is found...)
 fi
 
 AC_PROG_LEX
@@ -113,8 +113,8 @@ AC_PROG_RANLIB
 AS="as"
 AR="ar cr"
 SHLIB_LD="$CXX -shared"
-NEDC=nedc
-MAKEDEPEND=makedepend -Y
+NEDC="nedc"
+MAKEDEPEND="makedepend -Y"
 
 if test "$cygwin" = yes; then
     MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
@@ -137,7 +137,7 @@ else
     WISH=`which wish`
 fi
 if test "x$WISH" = "x"; then
-    AC_MSG_WARN(Cannot find wish -- you'll need to manually adjust the Plove script)
+    AC_MSG_WARN(cannot find wish -- you'll need to manually adjust the Plove script)
 fi
 
 #----------------------
@@ -178,8 +178,8 @@ AC_CHECK_LIB(stdc++, main,
 
 if test ! -n "$PVM_CFLAGS"; then
     if test ! -n "$PVM_ROOT"; then
-        AC_MSG_WARN(No PVM_CFLAGS set in configure.user, and no PVM_ROOT environment variable!)
-        AC_MSG_WARN(May run into problems building SIM_PVM!)
+        AC_MSG_WARN(no PVM_CFLAGS set in configure.user, and no PVM_ROOT environment variable!)
+        AC_MSG_WARN(may run into problems building SIM_PVM!)
     else
         PVM_CFLAGS="-I$PVM_ROOT/include"
     fi
@@ -190,8 +190,8 @@ if test ! -n "$PVM_LIBS"; then
     OPP_CHECK_LIB_WITHPATH(gpvm3, pvm_joingroup, $PVM_ROOT/lib/$PVM_ARCH,
       PVM_LIBS="$lib_path_switch -lgpvm3 -lpvm3",
       [PVM_LIBS=""
-       AC_MSG_WARN(if you do have PVM3 then set PVM_ROOT and PVM_ARCH...)
-       AC_MSG_WARN(...to their correct values and re-run configure)],
+       AC_MSG_WARN(if you *do* have PVM3 then set PVM_ROOT and PVM_ARCH...)
+       AC_MSG_WARN(...and re-run configure!)],
        -lpvm3
     )
 fi
@@ -223,17 +223,32 @@ if test ! -n "$TK_LIBS"; then
 
     # try to find Tcl/Tk libraries in different versions (80 is for cygwin)
     tcltk_found=
-    for ver in '' 80 8.4 8.3 8.2 8.1 8.0; do
-      # here we check for Tk only (and assume Tcl is also there in the same version)
-    OPP_CHECK_LIB_WITHPATH(tk$ver, Tk_BindEvent, /opt/lib,
+    for ver in '' 8.4 8.3 8.2 8.1 8.0 80; do
+      # here we check for Tcl only, Tk we'll see later
+      OPP_CHECK_LIB_WITHPATH(tcl$ver, Tcl_Main, /opt/lib,
                         TK_LIBS="$lib_path_switch -ltk$ver -ltcl$ver $TK_LIBS"
                         tcltk_found=yes,
                         :,
-      $TK_LIBS $SYS_LIBS)
+                        $TK_LIBS $SYS_LIBS)
       if test -n "$tcltk_found"; then
         break
       fi
     done
+
+    # now we verify that we have a matching Tk; if not, clear the tcltk_found flag
+    if test "$tcltk_found" = "yes"; then
+      OPP_CHECK_LIB_WITHPATH(tk$ver, Tk_BindEvent,,
+                        :,
+                        tcltk_found=,
+                        $TK_LIBS $SYS_LIBS)
+    fi
+
+    if test "$tcltk_found" != "yes"; then
+       AC_MSG_WARN([no Tcl/Tk libraries found, needed for GNED,Tkenv and Plove!])
+       AC_MSG_WARN([if you *do* have Tcl/Tk then edit TK_CFLAGS and TK_LIBS...])
+       AC_MSG_WARN([...in configure.user and re-run configure!])
+       TK_LIBS="-ltk -ltcl $TK_LIBS"
+    fi
 fi
 
 #----------------------
