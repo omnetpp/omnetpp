@@ -30,7 +30,7 @@ module HypercubeNode
             parameters:
                 num_stations = 2^dim,
                 address = address,
-                ia_time = input;
+                ia_time = input(exponential(1));
             display: "p=82,82;i=block/source";
         sink: HCSink;
             parameters:
