@@ -366,8 +366,44 @@ Examples:
 
 %FIXME displayString().setTagArg(), bubble() etc here!
 
+\section{Colors}
+\label{sec:ch-graphics:colors}
+
+\subsection{Color names}
+
+Any valid Tk color specification is accepted: English color names
+(blue, lightgray, wheat) or \textit{\#rgb}, \textit{\#rrggbb} format
+(where \textit{r},\textit{g},\textit{b} are hex digits).
+
+It is also possible to specify colors in HSB (hue-saturation-brightness) as
+\textit{@hhssbb} (with \textit{h}, \textit{s}, \textit{b} being hex digits).
+HSB makes it easier to scale colors e.g. from white to bright red.
+
+A hypen (\textit{"-"}) specified as color means transparent.
+
+
+\subsection{Icon colorization}
+
+The \ttt{"i="} display string tag allows for colorization of icons.
+It accepts a target color and a percentage as the degree of colorization.
+Percentage has no effect if the target color is missing.
+Brightness of icon is also affected -- to keep original brightness,
+specify a color with about 50% brightness (e.g. #808080 mid-grey,
+#008000 mid-green).
+
+Examples:
+
+\begin{itemize}
+  \item \ttt{"i=device/server,gold"} creates a gold server icon
+  \item \ttt{"i=place/globe,#808080,100"} makes icon grayscale
+  \item \ttt{"i=block/queue,white,100"} yields a "burnt-in" black-and-white icon
+\end{itemize}
+
+Colorization works with both submodule and message icons.
+
+
 \section{The icons}
-\label{sec:ch-graphics:icon library}
+\label{sec:ch-graphics:icon-library}
 
 \subsection{The bitmap path}
 
