@@ -19,6 +19,24 @@ Legend:
 (i)  	information
 
 
+OMNeT++ 2.3 (June 16, 2003)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Simulation library:
+(-)	deprecated cPacket. Please do not use it in new models.
+	Protocol should be represented in the message subclass (i.e. instances
+	of class IPv6Packet represent IPv6 packets, and/or in the message kind 
+	value. PDU is usually represented as a field inside the message class 
+	(a protocol header field). See rationale in User Manual.
+
+(-)	deprecated setOwner(). In constructors of new classes, use take(obj)
+	to take ownership of a member/contained object. Other than that,
+	there should be no reason to use setOwner()! setOwner() will probably
+	be removed as early as the next release of OMNeT++.
+
+(+)	message subclassing: generated message classes now accept message kind 
+	in the constructor.
+
+
 OMNeT++ 2.3b1 (Jan 13, 2003)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Simulation library:
