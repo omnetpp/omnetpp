@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define INTRAND_MAX  0x7fffffffL  /* = 2**31-1 */
+#define INTRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
 
 #define TABLESIZE   4096
 struct hashelem {long index; long seed;};
@@ -43,7 +43,7 @@ long nextrand(long seed)
 {
      const long int a=16807, q=127773, r=2836;
      seed=a*(seed%q) - r*(seed/q);
-     if (seed<=0) seed+=INTRAND_MAX;
+     if (seed<=0) seed+=INTRAND_MAX+1;
      return seed;
 }
 
@@ -110,7 +110,7 @@ void printtable()
 long indexofseed(long seed)
 {
     // check seed passed
-    if (seed<=0 || seed==INTRAND_MAX)
+    if (seed<=0 || seed>INTRAND_MAX)
     {
 	 fprintf(stderr,"Invalid seed %ld\n",seed);
 	 exit(1);
