@@ -21,8 +21,6 @@ foreach i {label-cid icon-cid rect-cid rect2-cid arrow-cid background-cid dirty 
    set ned_internal($i) 1
 }
 
-
-
 proc saveXML {nedfilekey fname} {
    global ned
 
