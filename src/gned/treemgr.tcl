@@ -190,9 +190,9 @@ proc nedfilePopup {key} {
     foreach i {
       {cascade -menu .popup.newmenu -label {New} -underline 0}
       {separator}
-      {command -command "saveNED $key" -label {Save} -underline 0}
-      {command -command "puts {Not implemented}" -label {Save As...} -underline 1}
-      {command -command "puts {Not implemented}" -label {Close} -underline 0}
+      {command -command "fileSave $key" -label {Save} -underline 0}
+      {command -command "fileSaveAs $key" -label {Save As...} -underline 1}
+      {command -command "fileCloseNedfile $key" -label {Close} -underline 0}
       {separator}
       {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
       {separator}

@@ -58,10 +58,7 @@ proc fileOpen {{fname ""}} {
 
       set type [file extension $fname]
       if {$type==".ned"} {
-catch {
          loadNED $fname
-} err
-puts "$err"
       } else {
          tk_messageBox -icon warning -type ok \
                        -message "Don't know how to open $type files."
@@ -69,14 +66,17 @@ puts "$err"
    }
 }
 
-proc fileSave {} {
+proc fileSave {{nedfilekey {}}} {
    global ned gned canvas
 
-   set canv_id $gned(canvas_id)
-   set modkey $canvas($canv_id,module-key)
-   set nedfilekey $ned($modkey,parentkey)
+   if {$nedfilekey==""} {
+      # default: current canvas
+      set canv_id $gned(canvas_id)
+      set modkey $canvas($canv_id,module-key)
+      set nedfilekey $ned($modkey,parentkey)
 
-   if {$ned($nedfilekey,type)!="nedfile"} {error "internal error in fileSave"}
+      if {$ned($nedfilekey,type)!="nedfile"} {error "internal error in fileSave"}
+   }
 
    if {!$ned($nedfilekey,unnamed)} {
       saveNED $nedfilekey
@@ -86,17 +86,22 @@ proc fileSave {} {
    }
 }
 
-proc fileSaveAs {} {
+proc fileSaveAs {{nedfilekey {}}} {
    global gned canvas ned env
 
-   set canv_id $gned(canvas_id)
-   set modkey $canvas($canv_id,module-key)
-   set nedfilekey $ned($modkey,parentkey)
+   if {$nedfilekey==""} {
+      # default: current canvas
+      set canv_id $gned(canvas_id)
+      set modkey $canvas($canv_id,module-key)
+      set nedfilekey $ned($modkey,parentkey)
+   }
 
    if {$ned($nedfilekey,filename)!=""} {
       set fname $ned($nedfilekey,filename)
-   } else {
+   } elseif [info exist modkey] {
       set fname "$ned($modkey,name).ned"
+   } else {
+      set fname "unnamed.ned"
    }
 
    catch {cd [file dirname $fname]}
@@ -118,22 +123,24 @@ proc fileSaveAs {} {
    }
 }
 
-proc fileCloseNedfile {} {
+proc fileCloseNedfile {{nedfilekey {}}} {
    global canvas gned ned
 
-   set canv_id $gned(canvas_id)
-   set modkey $canvas($canv_id,module-key)
-   set fkey $ned($modkey,parentkey)
-   set fname $ned($fkey,name)
+   if {$nedfilekey==""} {
+      # default: current canvas
+      set canv_id $gned(canvas_id)
+      set modkey $canvas($canv_id,module-key)
+      set nedfilekey $ned($modkey,parentkey)
+   }
 
    # offer saving it
-   if [nedfileIsDirty $fkey] {
-       if {$ned($fkey,unnamed)} {
+   if [nedfileIsDirty $nedfilekey] {
+       if {$ned($nedfilekey,unnamed)} {
           set reply [tk_messageBox -title "Last chance" -icon warning -type yesno \
                 -message "File not saved yet. Save it now?"]
           if {$reply=="yes"} fileSave
        } else {
-          set fname $ned($fkey,filename)
+          set fname $ned($nedfilekey,filename)
           set fname [file tail $fname]
           set reply [tk_messageBox -title "Last chance" -icon warning -type yesno \
                 -message "File $fname contains unsaved changes. Save?"]
@@ -142,7 +149,7 @@ proc fileCloseNedfile {} {
    }
 
    # delete from memory
-   deleteItem $fkey
+   deleteItem $nedfilekey
    updateTreeManager
 }
 
