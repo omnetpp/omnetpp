@@ -135,11 +135,11 @@ print CC "\n";
 print CC "// Another default rule (prevents compiler from choosing base class' doPacking())\n";
 print CC "template<typename T>\n";
 print CC "void doPacking(cCommBuffer *, T& t) {\n";
-print CC "    throw new cException(\"parallel simulation error: no doPacking() function for type %s\",opp_typename(typeid(t)));\n";
+print CC "    throw new cException(\"Parsim error: no doPacking() function for type %s (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
 print CC "}\n";
 print CC "template<typename T>\n";
 print CC "void doUnpacking(cCommBuffer *, T& t) {\n";
-print CC "    throw new cException(\"parallel simulation error: no doUnpacking() function for type %s\",opp_typename(typeid(t)));\n";
+print CC "    throw new cException(\"Parsim error: no doUnpacking() function for type %s (check .msg and _m.cc/h files!)\",opp_typename(typeid(t)));\n";
 print CC "}\n";
 print CC "\n";
 print CC "// Automatically supply array (un)packing functions\n";
@@ -951,14 +951,9 @@ sub generateClass
         print CC "Register_Class($msgclass);\n\n";
     }
 
-    if ($classtype eq "cobject") {
-        if (!$gap) {
-            print H "inline void doPacking(cCommBuffer *b, $realmsgclass& obj) {obj.netPack(b);}\n";
-            print H "inline void doUnpacking(cCommBuffer *b, $realmsgclass& obj) {obj.netUnpack(b);}\n\n";
-        }
-    } else {
-        print H "void doPacking(cCommBuffer *b, $realmsgclass& obj);\n";
-        print H "void doUnpacking(cCommBuffer *b, $realmsgclass& obj);\n\n";
+    if (!$gap) {
+        print H "inline void doPacking(cCommBuffer *b, $realmsgclass& obj) {obj.netPack(b);}\n";
+        print H "inline void doUnpacking(cCommBuffer *b, $realmsgclass& obj) {obj.netUnpack(b);}\n\n";
     }
 
     if ($classtype eq "cobject") {
@@ -1101,54 +1096,56 @@ sub generateClass
     print CC "    return *this;\n";
     print CC "}\n\n";
 
-    if ($classtype eq "cobject") {
-        print CC "void $msgclass\:\:netPack(cCommBuffer *b)\n";
-        print CC "{\n";
-        #FIXME todo: pack base class
-        #FIXME todo: doPacking() for structs/noncobjects
-        foreach $fieldname (@fieldlist)
-        {
-            if ($fisabstract{$fieldname}) {
-                print CC "    // field $fieldname is abstract -- please do packing in customized class\n";
+    #
+    # Note: This class may not be derived from cObject, and then this netPack()/
+    # netUnpack() is NOT that of cObject. However it's still needed because a
+    # "friend" doPacking() function could not access protected members otherwise.
+    #
+    print CC "void $msgclass\:\:netPack(cCommBuffer *b)\n";
+    print CC "{\n";
+    #FIXME todo: pack base class
+    foreach $fieldname (@fieldlist)
+    {
+        if ($fisabstract{$fieldname}) {
+            print CC "    // field $fieldname is abstract -- please do packing in customized class\n";
+        } else {
+            if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+                print CC "    doPacking(b,this->$var{$fieldname},$farraysize{$fieldname});\n";
+            } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+                print CC "    b->pack($varsize{$fieldname});\n";
+                print CC "    doPacking(b,this->$var{$fieldname},$varsize{$fieldname});\n";
             } else {
-                if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                    print CC "    doPacking(b,this->$var{$fieldname},$farraysize{$fieldname});\n";
-                } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                    print CC "    b->pack($varsize{$fieldname});\n";
-                    print CC "    doPacking(b,this->$var{$fieldname},$varsize{$fieldname});\n";
-                } else {
-                    print CC "    doPacking(b,this->$var{$fieldname});\n";
-                }
+                print CC "    doPacking(b,this->$var{$fieldname});\n";
             }
         }
-        print CC "}\n\n";
-        print CC "void $msgclass\:\:netUnpack(cCommBuffer *b)\n";
-        print CC "{\n";
-        #FIXME todo: unpack base class
-        #FIXME todo: doUnpacking() for structs/noncobjects
-        foreach $fieldname (@fieldlist)
-        {
-            if ($fisabstract{$fieldname}) {
-                print CC "    // field $fieldname is abstract -- please do unpacking in customized class\n";
-            } else {
-                if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                    print CC "    doUnpacking(b,this->$var{$fieldname},$farraysize{$fieldname});\n";
-                } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                    print CC "    delete [] this->$var{$fieldname};\n";
-                    print CC "    b->unpack($varsize{$fieldname});\n";
-                    print CC "    if ($varsize{$fieldname}==0) {\n";
-                    print CC "        this->$var{$fieldname} = 0;\n";
-                    print CC "    } else {\n";
-                    print CC "        this->$var{$fieldname} = new $datatype{$fieldname}\[$varsize{$fieldname}\];\n";
-                    print CC "        doUnpacking(b,this->$var{$fieldname},$varsize{$fieldname});\n";
-                    print CC "    }\n";
-                } else {
-                    print CC "    doUnpacking(b,this->$var{$fieldname});\n";
-                }
-            }
-        }
-        print CC "}\n\n";
     }
+    print CC "}\n\n";
+
+    print CC "void $msgclass\:\:netUnpack(cCommBuffer *b)\n";
+    print CC "{\n";
+    #FIXME todo: unpack base class
+    foreach $fieldname (@fieldlist)
+    {
+        if ($fisabstract{$fieldname}) {
+            print CC "    // field $fieldname is abstract -- please do unpacking in customized class\n";
+        } else {
+            if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+                print CC "    doUnpacking(b,this->$var{$fieldname},$farraysize{$fieldname});\n";
+            } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+                print CC "    delete [] this->$var{$fieldname};\n";
+                print CC "    b->unpack($varsize{$fieldname});\n";
+                print CC "    if ($varsize{$fieldname}==0) {\n";
+                print CC "        this->$var{$fieldname} = 0;\n";
+                print CC "    } else {\n";
+                print CC "        this->$var{$fieldname} = new $datatype{$fieldname}\[$varsize{$fieldname}\];\n";
+                print CC "        doUnpacking(b,this->$var{$fieldname},$varsize{$fieldname});\n";
+                print CC "    }\n";
+            } else {
+                print CC "    doUnpacking(b,this->$var{$fieldname});\n";
+            }
+        }
+    }
+    print CC "}\n\n";
 
     foreach $fieldname (@fieldlist)
     {
@@ -1236,15 +1233,10 @@ sub generateStruct
     print H "{\n";
     foreach $fieldname (@fieldlist)
     {
-        if (!$fisabstract{$fieldname}) {
-            if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                print H "    $datatype{$fieldname} $var{$fieldname}\[$farraysize{$fieldname}\];\n";
-            } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                print H "    $datatype{$fieldname} *$var{$fieldname}; // array ptr\n";
-                print H "    unsigned int $varsize{$fieldname};\n";
-            } else {
-                print H "    $datatype{$fieldname} $var{$fieldname};\n";
-            }
+        if ($fisarray{$fieldname}) {
+            print H "    $datatype{$fieldname} $var{$fieldname}\[$farraysize{$fieldname}\];\n";
+        } else {
+            print H "    $datatype{$fieldname} $var{$fieldname};\n";
         }
     }
     print H "};\n\n";
@@ -1260,6 +1252,35 @@ sub generateStruct
         print H "* };\n";
         print H "*/\n\n";
     }
+
+    print H "void doPacking(cCommBuffer *b, $msgclass& a);\n";
+    print H "void doUnpacking(cCommBuffer *b, $msgclass& a);\n\n";
+
+    print CC "void doPacking(cCommBuffer *b, $msgclass& a)\n";
+    print CC "{\n";
+    #FIXME todo: pack base class
+    foreach $fieldname (@fieldlist)
+    {
+        if ($fisarray{$fieldname}) {
+            print CC "    doPacking(b,a.$var{$fieldname},$farraysize{$fieldname});\n";
+        } else {
+            print CC "    doPacking(b,a.$var{$fieldname});\n";
+        }
+    }
+    print CC "}\n\n";
+
+    print CC "void doUnpacking(cCommBuffer *b, $msgclass& a)\n";
+    print CC "{\n";
+    #FIXME todo: unpack base class
+    foreach $fieldname (@fieldlist)
+    {
+        if ($fisarray{$fieldname}) {
+            print CC "    doUnpacking(b,a.$var{$fieldname},$farraysize{$fieldname});\n";
+        } else {
+            print CC "    doUnpacking(b,a.$var{$fieldname});\n";
+        }
+    }
+    print CC "}\n\n";
 }
 
 
