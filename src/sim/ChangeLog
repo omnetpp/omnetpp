@@ -1,3 +1,9 @@
+2003-02-10  Andras Varga
+
+	* chist.cc: cEqdHistogramBase: collectTransformed() and pdf() made 
+	safer (floating-point rounding errors could cause addressing out
+	of cellv[] array)
+
 2003-01-30  Andras Varga
 
 	* added handling of new MathFunc4Args where needed

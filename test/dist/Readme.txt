@@ -15,15 +15,15 @@ Continuous:
 - CHIDIST(x,degrees_freedom)
 - TDIST(x,degrees_freedom,tails)
    Student-t. Tails specifies the number of distribution tails to return. If tails = 1, TDIST returns the one-tailed distribution. If tails = 2, TDIST returns the two-tailed distribution.
-- [no Cauchy]
-- [no triangular],
-- LOGNORMDIST(x,mean,standard_dev)
+- no Cauchy distr in Excel
+- no triangular distr in Excel
+- no pdf for lognormal in Excel, LOGNORMDIST(x,mean,standard_dev) is the cummulative one
 - WEIBULL(x,alpha,beta,cumulative)
-- [no Pareto]
+- no Pareto in Excel
 
 Discrete:
 - BINOMDIST(number_s,trials,probability_s,cumulative
-- [no gometric]
+- geometric is negbinomial's special case
 - NEGBINOMDIST(number_f,number_s,probability_s)
 - HYPGEOMDIST(sample_s,number_sample,population_s,number_population)
 - POISSON(x,mean,cumulative)
@@ -34,6 +34,8 @@ To test:
 3. select columns 1-2-3
 4. select Insert|Chart... --> XY Scatter --> Finish
 5. the two plots should visually match
+
+If you want to run specific tests only, type "dist -r 40" or "dist -r 40-44"
 
 --Andras
 

@@ -7,6 +7,7 @@ simple Dist
         variate : numeric,
         excel: string,
         n : numeric,
+        discrete: bool,
         numcells: numeric,
         firstvals : numeric,
         file: string;

@@ -114,6 +114,16 @@ class SIM_API cHistogramBase : public cDensityEstBase
      */
     virtual void loadFromFile(FILE *);  //--LG
     //@}
+
+    /** @name New member functions. */
+    //@{
+
+    /**
+     * Sets the number of cells. Cannot be called when the cells have been
+     * set up already.
+     */
+    virtual void setNumCells(int numcells);
+    //@}
 };
 
 //==========================================================================

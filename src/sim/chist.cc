@@ -123,6 +123,13 @@ void cHistogramBase::loadFromFile(FILE *f)
     }
 }
 
+void cHistogramBase::setNumCells(int numcells)
+{
+    if (cellv)
+        throw new cException(this,"setNumCells(): too late, cells already set up");
+    num_cells = numcells;
+}
+
 
 //=========================================================================
 // cEqdHistogramBase - member functions
@@ -151,12 +158,13 @@ void cEqdHistogramBase::setupRange()
 
 void cEqdHistogramBase::collectTransformed (double val)
 {
-    if (val>=rangemax)  // sample falls out of [rangemin, rangemax]: overflow
-        cell_over++;
-    else if (val<rangemin) // sample falls out of [rangemin, rangemax]: underflow
+    int k = (val-rangemin)/cellsize;
+    if (k<0 || val<rangemin)
         cell_under++;
+    else if (k>=num_cells || val>=rangemax)
+        cell_over++;
     else
-        cellv[unsigned((val-rangemin)/cellsize)]++;
+        cellv[k]++;
 }
 
 double cEqdHistogramBase::pdf(double x) const
@@ -164,10 +172,11 @@ double cEqdHistogramBase::pdf(double x) const
     if (!transformed())
         throw new cException(this,"pdf(x) cannot be called before histogram is transformed");
 
-    if (x<rangemin || x>rangemax)
+    int k = (x-rangemin)/cellsize;
+    if (k<0 || x<rangemin || k>=num_cells || x>=rangemax)
         return 0.0;
 
-    return cellv[(unsigned)((x-rangemin)/cellsize)]/cellsize/num_samples;
+    return cellv[k] / cellsize / num_samples;
 }
 
 double cEqdHistogramBase::cdf(double) const
@@ -182,22 +191,20 @@ double cEqdHistogramBase::basepoint(int k) const
     //   k=1,2,...     : rangemin + k*cellsize
     //   k=num_cells   : rangemax
 
-    if (k==0)
-        return rangemin;
-    else if (k<num_cells)
-        return rangemin + k*cellsize;
-    else if (k==num_cells)
+    if (k<0 || k>num_cells)
+        throw new cException(this,"invalid basepoint index %u",k);
+
+    if (k==num_cells)
         return rangemax;
     else
-        throw new cException(this,"invalid basepoint index %u",k);
+        return rangemin + k*cellsize;
 }
 
 double cEqdHistogramBase::cell(int k) const
 {
-    if (k<num_cells)
-        return cellv[k];
-    else
+    if (k<0 || k>num_cells)
         throw new cException(this,"invalid cell index %u",k);
+    return cellv[k];
 }
 
 void cEqdHistogramBase::saveToFile(FILE *f) const

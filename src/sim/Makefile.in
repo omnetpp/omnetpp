@@ -715,14 +715,15 @@ task.o: task.cc \
   task.h
 util.o: util.cc \
   ../../include/util.h \
+  ../../include/distrib.h \
   ../../include/cenvir.h \
   ../../include/cmodule.h \
-  ../../include/csimul.h \
   ../../include/macros.h \
   ../../include/cexception.h \
   ../../include/cwatch.h \
   ../../include/cpacket.h \
   ../../include/defs.h \
+  ../../include/random.h \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
@@ -730,6 +731,7 @@ util.o: util.cc \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/csimul.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \

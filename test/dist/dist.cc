@@ -4,6 +4,8 @@
 // Author: Andras Varga
 //-------------------------------------------------------------
 
+#include <ctype.h>
+#include <string.h>
 #include <omnetpp.h>
 
 class Dist : public cSimpleModule
@@ -19,6 +21,7 @@ void Dist::activity()
 {
     cPar& variate = par("variate");
     long n = par("n");
+    bool discrete = par("discrete");
     int numcells = par("numcells");
     long firstvals = par("firstvals");
     const char *excel = par("excel");
@@ -26,29 +29,50 @@ void Dist::activity()
 
     char distname[50];
     variate.getAsText(distname,50);
-    ev << "running:" << distname << endl;
+    ev << "running: " << distname << endl;
 
-    cDoubleHistogram h;
-    h.setNumCells(numcells);
-    h.setRangeAuto(firstvals,1);
+    // generate histogram
+    cHistogramBase *h;
+    if (discrete)
+        h = new cLongHistogram;
+    else
+        h = new cDoubleHistogram;
+    h->setNumCells(numcells);
+    h->setRangeAuto(firstvals,1);
 
     for (long i=0; i<n; i++)
     {
         double d = variate.doubleValue();
-        h.collect(d);
+        h->collect(d);
     }
 
-    ev << "done, writing file" << endl;
+    // automatic filename
+    char buf[500];
+    if (filename[0]=='\0')
+    {
+        strcpy(buf, distname);
+        for (char *s=buf; *s; s++)
+           if (!isalnum(*s) && *s!='(' && *s!=')' && *s!=',' && *s!='-' && *s!='+')
+               *s='_';
+        strcat(buf, ".csv");
+        filename = buf;
+    }
 
+    ev << "writing file: " << filename << endl;
+
+    // write file
     FILE *f = fopen(filename, "w");
     fprintf(f,"\"x\",\"theoretical %s pdf\",\"measured %s\" pdf\n",distname, distname);
 
-    for (int k=0; k<h.cells(); k++)
+    for (int k=0; k<h->cells(); k++)
     {
-        fprintf(f,"%lg,\"=",(h.basepoint(k)+h.basepoint(k+1))/2);
-        fprintf(f,excel,k+2);
-        fprintf(f,"\",%lg\n",h.cellPDF(k));
+        fprintf(f,"%lg,\"=",(h->basepoint(k)+h->basepoint(k+1))/2);
+        fprintf(f,excel,k+2,k+2,k+2,k+2,k+2,k+2,k+2,k+2,k+2,k+2);
+        fprintf(f,"\",%lg\n",h->cellPDF(k));
     }
     fclose(f);
+    delete h;
 }
+
+
 
