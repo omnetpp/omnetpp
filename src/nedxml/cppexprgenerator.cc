@@ -300,7 +300,7 @@ const char *CppExpressionGenerator::getTypeForArg(NEDElement *node)
     else if (isIndexOp(node))
         return "long";
     else if (isSizeofOp(node))
-        return "long"; // FIXME cModule* or cGate* ?
+        return "long";
     else if (node->getTagCode()==NED_FUNCTION)
     {
         const char *types[] = {"MathFuncNoArg", "MathFunc1Arg", "MathFunc2Args",
@@ -317,7 +317,7 @@ const char *CppExpressionGenerator::getNameForArg(NEDElement *node)
     if (node->getTagCode()==NED_IDENT)
         return ((IdentNode *)node)->getName();
     else if (node->getTagCode()==NED_FUNCTION)
-        return ((FunctionNode *)node)->getName(); //FIXME!!!
+        return ((FunctionNode *)node)->getName();
     else
         {INTERNAL_ERROR1(node, "getNameForArg(): unexpected tag '%s'", node->getTagName());return NULL;}
 }
