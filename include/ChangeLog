@@ -1,44 +1,38 @@
-MERGED CHANGES FROM PARSIM, see below:
-FIXME make more compact!
-2003-05-21  Andras Varga
+2003-11-13  Andras Varga
 
+	* Checked in parallel simulation code that was developed March-May 2003,
+	during my stay at Monash University. Changes:
+
+	2003-05-21  Andras Varga
 	* cobject.h: introduced cPolymorphic base class for cObject,
 	with the purpose of strengthening type safety by using cPolymorphic
-	at places where normally void * pointers would have been used. 
-	className() moved from cObject to cPolymorphic. cPolymorphic has 
-	no data members and ctor/dtor doesn't do anything, so subclassing 
+	at places where normally void * pointers would have been used.
+	className() moved from cObject to cPolymorphic. cPolymorphic has
+	no data members and ctor/dtor doesn't do anything, so subclassing
 	from it comes for free.
 
-2003-04-18  Andras Varga
-
-	* cenvir.h: removed foreignPuts() method, no longer used by parallel 
+	2003-04-18  Andras Varga
+	* cenvir.h: removed foreignPuts() method, no longer used by parallel
 	simulation.
 
-2003-04-09  Andras Varga
-
+	2003-04-09  Andras Varga
 	* csimul.h: added guessNextModule() method, to be used from Tkenv
 	in "next module" gauge.
 
-2003-04-01  Andras Varga
-
-	* cenvir.h: runningMode() removed (because of reorganization of 
+	2003-04-01  Andras Varga
+	* cenvir.h: runningMode() removed (because of reorganization of
 	parallel simulation support)
 
-2003-03-31  Andras Varga
-
-	* omnetpp.h, csimul.h; removed cnetmod.h: cNetMod and all references 
-	to it are removed -- parallel simulation is represented in cSimulation 
+	2003-03-31  Andras Varga
+	* omnetpp.h, csimul.h; removed cnetmod.h: cNetMod and all references
+	to it are removed -- parallel simulation is represented in cSimulation
 	via cParsimSegment.
-
 	* csimplemodule.h: syncpoint calls removed.
 
-2003-03-25  Andras Varga
-
+	2003-03-25  Andras Varga
 	* cmodule.h, csimplemodule.h: method isSimple() moved to base class
 	cModule where it uses dynamic_cast.
-
-	* cenvir.h: getLocalMachineFor() has been replaced by isModuleLocal() 
-
+	* cenvir.h: getLocalMachineFor() has been replaced by isModuleLocal()
 	* ctypes.h: cModuleType::create(): last arg "bool local" removed
 	(it is now determined inside, by calling new method ev.isModuleLocal());
 	also added overloaded create() method which takes module index and
@@ -56,15 +50,15 @@ FIXME make more compact!
 
 	* split cmodule.h: cSimpleModule put into new file csimplemodule.h
 
-	* cobject.h: cObject::namestr private member changed from char* to 
+	* cobject.h: cObject::namestr private member changed from char* to
 	opp_string
 
 	* added cscheduler.h, changed csimul.h: cSimulation::nextModule()
-	now relies on a scheduler object, subclassed from cScheduler. 
-	Normally (with sequential execution) the scheduler is 
+	now relies on a scheduler object, subclassed from cScheduler.
+	Normally (with sequential execution) the scheduler is
 	cSequentialScheduler which just returns msgQueue.peekFirst();
-	With parallel and/or real-time simulation, the scheduler is a 
-	specialized class which also does synchronization with real time 
+	With parallel and/or real-time simulation, the scheduler is a
+	specialized class which also does synchronization with real time
 	and/or with other segments.
 
 2003-03-20  Andras Varga
@@ -103,12 +97,12 @@ END PARSIM
 
 2003-09-22  Andras Varga
 
-	* cenvir.h: messageSent() signature modified, in order to be able to 
+	* cenvir.h: messageSent() signature modified, in order to be able to
 	animate	sendDirect().
 
         * cmodule.h: refined the rules for sendDirect(), and documented it.
-	Namely, fromGate()==NULL must hold for the destination gate, that is, 
-	modules MUST have dedicated gates for receiving via sendDirect(). 
+	Namely, fromGate()==NULL must hold for the destination gate, that is,
+	modules MUST have dedicated gates for receiving via sendDirect().
 	You cannot have a gate which receives messages via both a connection
 	and sendDirect().
 
@@ -118,12 +112,12 @@ END PARSIM
 
         Soundly written existing models will not be affected.
 
-	* cmessage.h: new fields added: 
+	* cmessage.h: new fields added:
 	    unsigned refcount : 7;     // reference count for encapsulated message (max 63)
 	    unsigned char srcprocid;   // reserved for use by parallel exec.
     	Also made existing `bool error' a 1-bit bitfield (1 length).
     	The total size of cMessage didn't grow as probably earlier the compiler
-    	used some padding to align fields after the "error" field to a 2-byte 
+    	used some padding to align fields after the "error" field to a 2-byte
     	boundary (at least), and we just filled up this space with useful data.
 
 2003-06-16  ------ omnetpp-2.3 released ------
@@ -158,7 +152,7 @@ END PARSIM
 
 2003-01-30  Andras Varga
 
-	* defs.h: added MathFunc4Args (it was needed by triang() and other 
+	* defs.h: added MathFunc4Args (it was needed by triang() and other
 	distributions); also added its handling where needed
 
 2003-01-29  Andras Varga
@@ -167,7 +161,7 @@ END PARSIM
 
 2003-01-22  Andras Varga
 
-	* ctypes.h, macros.h: increased type safety of Register_Function() and 
+	* ctypes.h, macros.h: increased type safety of Register_Function() and
 	cFunctionType
 
 2003-01-20  Andras Varga
@@ -176,15 +170,15 @@ END PARSIM
 
 2003-01-19  Andras Varga
 
-	* distrib.h (new): contains function declarations for distributions 
+	* distrib.h (new): contains function declarations for distributions
 	contributed by Werner Sandmann (TU Bonn): continuous distributions
-        gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(), 
+        gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(),
         triang(),lognormal(), weibull(), pareto_shifted(), and discrete
         distributions bernoulli(), binomial(), geometric(), negbinomial(),
         hypergeometric(), poisson()
-	
-	* random.h (new), distrib.h; utils.h: From util.h, existing 
-	distributions (uniform, normal,	exponential, etc) were moved to 
+
+	* random.h (new), distrib.h; utils.h: From util.h, existing
+	distributions (uniform, normal,	exponential, etc) were moved to
 	distrib.h, and random number generator functions were moved to new file
 	random.h.
 
@@ -199,20 +193,20 @@ END PARSIM
 
 	* cmodule.h: new method waitAndEnqueue() added to cSimpleModule.
 
-	* cmodule.h: putAsideQueue was DEPRECATED. putAsideQueue is currently 
+	* cmodule.h: putAsideQueue was DEPRECATED. putAsideQueue is currently
 	used implicitly by the methods wait(), receiveOn() and receiveNewOn()
-	to insert messages that arrive during the wait period or not on the 
-	specified gate. The receive() functions look first on the 
+	to insert messages that arrive during the wait period or not on the
+	specified gate. The receive() functions look first on the
 	putAsideQueue and only then at the future events.
 
 	As practice has shown, the purpose of the putAsideQueue was very
 	often misunderstood, and its implicit use by wait() and the message
 	receiving functions was highly error-prone. On the other hand,
-	it is easy to emulate with waitAndEnqueue(), or a loop with receive(). 
-	putAsideQueue will be removed at some point in the future. 
-	Be prepared: use wait() and receiveOn()	if you do not expect other 
-	messages to arrive at the module; use waitAndEnqueue() where you 
-	mean it; do not use the receiveNew..() functions as they will be made 
+	it is easy to emulate with waitAndEnqueue(), or a loop with receive().
+	putAsideQueue will be removed at some point in the future.
+	Be prepared: use wait() and receiveOn()	if you do not expect other
+	messages to arrive at the module; use waitAndEnqueue() where you
+	mean it; do not use the receiveNew..() functions as they will be made
 	redundant when putAsideQueue goes away.
 
 2003-01-07  Andras Varga
