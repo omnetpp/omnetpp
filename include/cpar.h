@@ -418,7 +418,7 @@ class SIM_API cPar : public cObject
      *
      * <TABLE BORDER=1>
      *   <TR>
-     *     <TH>delete func.</TH><TH>dupl.func.</TH><TH>itemsize</TH><TH>behaviour</TH>
+     *     <TH>delete func.</TH><TH>dupl.func.</TH><TH>itemsize</TH><TH>behavior</TH>
      *   </TR>
      *   <TR>
      *     <TD>NULL</TD><TD>NULL</TD><TD>0</TD><TD>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.</TD>

@@ -287,7 +287,7 @@ class SIM_API cSimulation : public cObject
      * Used with distributed simulation, sets the frequency of checking
      * messages arriving from other segments. This setting is mostly
      * useful for performance tuning. The meaning of the value is:
-     * "check the network interface after every every f local events."
+     * "check the network interface after every f local events."
      */
     void setNetIfCheckFreq(int f)     {netif_check_freq=f;}
     //@}
@@ -418,7 +418,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Writes a snapshot of the given object and its children to the
      * textual snapshot file.
-     * This method is called internlly from cSimpleModule's snapshot().
+     * This method is called internally from cSimpleModule's snapshot().
      */
     bool snapshot(cObject *obj, const char *label);
 
@@ -467,7 +467,7 @@ class SIM_API cSimulation : public cObject
     void warning(int errcode,const char *message);
 
     /**
-     * Returns true if no errors happened (ie. error code is zero, eOK).
+     * Returns true if no errors happened (i.e. error code is zero, eOK).
      */
     bool ok() _CONST        {return err==eOK;}
 

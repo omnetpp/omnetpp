@@ -23,14 +23,14 @@
 #include "cobject.h"  // bool (for old C++)
 
 // The following define selects which coroutine-set to use.
-// The nonportable version (module stacks allocated on heap)
+// The non-portable version (module stacks allocated on heap)
 // is selected for 16-bit MSDOS (otherwise the total of coroutine
 // stacks would be limited to 64K.)
 #if !defined(__BORLANDC__) || defined(__FLAT__) || defined(__DPMI16__)
 #  define PORTABLE_COROUTINES
 #endif
 
-// Getting around the unwanted behaviour of longjmp() under AIX
+// Getting around the unwanted behavior of longjmp() under AIX
 #if defined(_AIX)
    typedef struct {char regblk[240];} my_jmp_buf[1];
    extern "C" {

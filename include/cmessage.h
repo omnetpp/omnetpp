@@ -84,7 +84,7 @@ class SIM_API cMessage : public cObject
     int msgkind;            // message kind -- meaning is user-defined
     int prior;              // priority -- used for scheduling msgs with equal times
     long len;               // length of message -- used for bit errors and transm.delay
-    bool error;             // bit error occured during transmission
+    bool error;             // bit error occurred during transmission
     simtime_t tstamp;       // time stamp -- user-defined meaning
     cArray *parlistp;       // ptr to list of parameters
     cMessage *encapmsg;     // ptr to encapsulated msg
@@ -299,7 +299,7 @@ class SIM_API cMessage : public cObject
     cPar& addPar(cPar& p)  {parList().add(&p); return p;}
 
     /**
-     * Returns the indexth object in the message's parameter list,
+     * Returns the nth object in the message's parameter list,
      * converting it to a cPar. Convenience function.
      */
     cPar& par(int n);

@@ -157,7 +157,7 @@ class SIM_API cPSquare : public cDensityEstBase
     virtual int cells() _CONST;
 
     /**
-     * Returns the kth cell boundary. Note that because of the P2 algoritm,
+     * Returns the kth cell boundary. Note that because of the P2 algorithm,
      * cell boundaries are shifting during data collection, thus cell() and
      * other methods based on cell() and basepoint() return approximate values.
      */

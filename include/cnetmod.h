@@ -194,7 +194,7 @@ class SIM_API cNetMod : public cModule
 
     /** @name Sending output to the console.
      *
-     * These functions are called on backgound (non-console) segments
+     * These functions are called on background (non-console) segments
      * by the simulation application (i.e. the cEnvir implementation),
      * to send output to the console.
      */

@@ -178,14 +178,14 @@ class SIM_API cGate : public cObject
     /**
      * Redirect gates. This method is mostly used internally during
      * network setup to create the connections. It can also be used
-     * to manually create connections for for dynamically created modules.
+     * to manually create connections for dynamically created modules.
      */
     void setFrom(cGate *g);
 
     /**
      * Redirect gates. This method is mostly used internally during
      * network setup to create the connections. It can also be used
-     * to manually create connections for for dynamically created modules.
+     * to manually create connections for dynamically created modules.
      */
     void setTo(cGate *g);
     //@}
@@ -291,7 +291,7 @@ class SIM_API cGate : public cObject
 
     /**
      * Returns the simulation time the gate is expected to finish transmitting.
-     * Note that additonal messages send on the gate may prolong the time the gate
+     * Note that additional messages send on the gate may prolong the time the gate
      * will actually finish.
      */
     simtime_t transmissionFinishes() _CONST {return transm_finishes;}

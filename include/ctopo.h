@@ -244,7 +244,7 @@ class SIM_API sTopoLinkIn : public sTopoLink
  * While navigating the graph stored in a cTopology, sTopoNode's methods return
  * sTopoLinkIn and sTopoLinkOut objects, which are 'aliases' to sTopoLink objects.
  * sTopoLinkIn and sTopoLinkOut provide convenience functions that return the
- * 'local' and 'renote' end of the connection when traversing the topology.
+ * 'local' and 'remote' end of the connection when traversing the topology.
  */
 class SIM_API sTopoLinkOut : public sTopoLink
 {

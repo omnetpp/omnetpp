@@ -1,4 +1,4 @@
-//==NL=====================================================================
+//=========================================================================
 //
 //  CDETECT.H - part of
 //                          OMNeT++
@@ -43,7 +43,7 @@ class cStatistic;
 typedef void (*PostTDFunc)(cTransientDetection *, void *);
 typedef void (*PostADFunc)(cAccuracyDetection *, void *);
 
-//===NL=====================================================================
+//==========================================================================
 
 /**
  * Virtual base class for transient detection classes.
@@ -113,7 +113,7 @@ class SIM_API cTransientDetection : public cObject
     virtual bool detected()=0;
 
     /**
-     * Should be redefined to reset detection algoritm.
+     * Should be redefined to reset detection algorithm.
      */
     virtual void reset()=0;
 
@@ -125,7 +125,7 @@ class SIM_API cTransientDetection : public cObject
 
     /**
      * Should be redefined to start detection (further calls to collect()
-     * should update the detection algoritm.)
+     * should update the detection algorithm.)
      */
     virtual void start()=0;
     //@}
@@ -146,7 +146,7 @@ class SIM_API cTransientDetection : public cObject
     //@}
 };
 
-//===NL=====================================================================
+//==========================================================================
 
 /**
  * Virtual base class for result accuracy detection classes.
@@ -216,7 +216,7 @@ class SIM_API cAccuracyDetection : public cObject
     virtual bool detected()=0;
 
     /**
-     * Should be redefined to reset detection algoritm.
+     * Should be redefined to reset detection algorithm.
      */
     virtual void reset()=0;
 
@@ -228,7 +228,7 @@ class SIM_API cAccuracyDetection : public cObject
 
     /**
      * Should be redefined to start detection (further calls to collect()
-     * will update the detection algoritm).
+     * will update the detection algorithm).
      */
     virtual void start()=0;
     //@}
@@ -249,7 +249,7 @@ class SIM_API cAccuracyDetection : public cObject
     //@}
 };
 
-//===NL======================================================================
+//===========================================================================
 
 /**
  * A transient detection algorithm. Uses sliding window approach
@@ -329,7 +329,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     virtual bool detected() _CONST {return transval;}
 
     /**
-     * Resets detection algoritm.
+     * Resets detection algorithm.
      */
     virtual void reset();
 
@@ -340,7 +340,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
 
     /**
      * Start detection; further calls to collect() will update the
-     * detection algoritm.
+     * detection algorithm.
      */
     virtual void start()     {go = true;}
     //@}
@@ -364,7 +364,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
 };
 
 
-//===NL======================================================================
+//===========================================================================
 
 /**
  * An algorithm for result accuracy detection. The actual algorithm:
@@ -443,7 +443,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     virtual bool detected() _CONST {return resaccval;}
 
     /**
-     * Resets detection algoritm.
+     * Resets detection algorithm.
      */
     virtual void reset();
 
@@ -454,7 +454,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
 
     /**
      * Start detection; further calls to collect() will update the
-     * detection algoritm.
+     * detection algorithm.
      */
     virtual void start()  {go=true;}
     //@}

@@ -84,7 +84,7 @@ SIM_API char *simtimeToStr(simtime_t t, char *dest=NULL);
 /**
  * @name Random number generation.
  *
- * OMNeT++ has a built-in pseudorandom number generator that gives long int
+ * OMNeT++ has a built-in pseudo random number generator that gives long int
  * (32-bit) values in the range 1...2^31-2, with a period length of 2^31-2.
  *
  * The generator is a linear congruential generator (LCG), and uses the method
@@ -376,7 +376,7 @@ SIM_API bool opp_strmatch(const char *, const char *);
 //@{
 
 /**
- * Concatentates up to four strings. Returns a pointer to a static buffer of length 256.
+ * Concatenates up to four strings. Returns a pointer to a static buffer of length 256.
  */
 SIM_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
 

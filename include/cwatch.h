@@ -146,7 +146,7 @@ class SIM_API cWatch : public cObject
     virtual cObject *dup() _CONST   {return new cWatch(*this);}
 
     /**
-     * Produces a one-line information abou the object.
+     * Produces a one-line information about the object.
      * Output is like this: "int samples = 12 (12U, 0xC)"
      */
     virtual void info(char *buf);

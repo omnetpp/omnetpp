@@ -99,8 +99,8 @@
  * automatic detection of the end of a transient, and automatic detection
  * of accuracy of collected statistics.
  *
- * The two main abstact base classes are cStatistic and cDensityEstBase.
- * Most other classes are mostly polimorphic on these two, which means
+ * The two main abstract base classes are cStatistic and cDensityEstBase.
+ * Most other classes are mostly polymorphic on these two, which means
  * most functionality in subclasses is available via virtual functions
  * defined in cStatistic and cDensityEstBase.
  * The transient detection and result accuracy classes are derived from

@@ -57,7 +57,7 @@ ENVIR_API bool opp_loadlibrary(const char *libname);
 //==========================================================================
 
 /**
- * Interface to the enviroment (user interface) of the simulation. cEnvir
+ * Interface to the environment (user interface) of the simulation. cEnvir
  * is a common facade for the Cmdenv and Tkenv user interfaces (and any
  * other future user interface).
  *
@@ -199,7 +199,7 @@ class ENVIR_API cEnvir
     bool gets(const char *prompt, char *buf, int len=255);
 
     /**
-     * Pops up a dialog, displays the message given in 'profmt' and following
+     * Pops up a dialog, displays the message given in 'promptfmt' and following
      * arguments in printf() format and reads a line (maximum
      * len characters) from the user into the buffer 'buf'.
      * Returns true if the user pressed the Cancel button.
@@ -224,7 +224,7 @@ class ENVIR_API cEnvir
     const char *prompt() _CONST  {return prmpt;}
 
     /**
-     * Used with parallel execution. It is called internaly by the simulation
+     * Used with parallel execution. It is called internally by the simulation
      * kernel when something was written to ev by another segment.
      */
     void foreignPuts(const char *hostname, const char *mod, const char *str);

@@ -83,7 +83,7 @@ class SIM_API cDensityEstBase : public cStdDev
 
   protected:
     double rangemin,rangemax;   // range for distribution density collection
-    long num_firstvals;         // number of "precollected" samples
+    long num_firstvals;         // number of "pre-collected" samples
                                 // before transform() is performed.
     unsigned long cell_under,
                   cell_over;    // counting samples fall out of range
@@ -93,7 +93,7 @@ class SIM_API cDensityEstBase : public cStdDev
     int range_mode;             // one of RANGE_xxx constants
 
     bool transfd;
-    double *firstvals;         // pointer to array of "precollected" samples
+    double *firstvals;         // pointer to array of "pre-collected" samples
 
   protected:
     static void plotline (ostream& os, char* pref, double xval,
@@ -167,8 +167,8 @@ class SIM_API cDensityEstBase : public cStdDev
 
     /**
      * Collects one value. Before the histogram was transformed, this method
-     * simply adds the value to the table of precollected values.
-     * When the number of precollected samples reaches a limit, the transform()
+     * simply adds the value to the table of pre-collected values.
+     * When the number of pre-collected samples reaches a limit, the transform()
      * method is called. After transformation, it calls collectTransformed()
      * to update the stored statistics with this value.
      */
@@ -209,20 +209,20 @@ class SIM_API cDensityEstBase : public cStdDev
 
     /**
      * Selects a histogram range setup method where the range will be determined
-     * entirely from a set of precollected values.
+     * entirely from a set of pre-collected values.
      *
      * When called, the histogram range will be determined from the first
      * num_firstvals values, extending their range symmetrically by
      * range_ext_fact. For example, after a call to setRangeAuto(100, 1.3),
-     * the histogram will be set up after precollecting 100 values, the range
-     * being the range of the 100 precollected values extended 1.3 times
+     * the histogram will be set up after pre-collecting 100 values, the range
+     * being the range of the 100 pre-collected values extended 1.3 times
      * symmetrically.
      */
     virtual void setRangeAuto(int num_firstvals, double range_ext_fact);
 
     /**
      * Selects a histogram range setup method where the upper bound of the range
-     * is fixed and the lower bound is determined from a set of precollected values.
+     * is fixed and the lower bound is determined from a set of pre-collected values.
      *
      * FIXME: details!
      */
@@ -230,14 +230,14 @@ class SIM_API cDensityEstBase : public cStdDev
 
     /**
      * Selects a histogram range setup method where the lower bound of the range
-     * is fixed and the upper bound is determined from a set of precollected values.
+     * is fixed and the upper bound is determined from a set of pre-collected values.
      *
      * FIXME: details!
      */
     virtual void setRangeAutoUpper(double lower, int num_firstvals, double range_ext_fact);
 
     /**
-     * Sets the number of values to be precollected before transformation takes
+     * Sets the number of values to be pre-collected before transformation takes
      * place. See transform().
      */
     virtual void setNumFirstVals(int num_firstvals);
@@ -246,7 +246,7 @@ class SIM_API cDensityEstBase : public cStdDev
   protected:
     /**
      * Called internally by transform(), this method should determine and set up
-     * the histogram range, based on the precollected data and the range setup
+     * the histogram range, based on the pre-collected data and the range setup
      * method selected by calls to the setRange(), setRangeAuto(), setRangeAutoLower(),
      * setRangeAutoUpper() methods.
      */
@@ -271,7 +271,7 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual bool transformed() _CONST   {return transfd;}
 
     /**
-     * Transforms the table of precollected values into an internal
+     * Transforms the table of pre-collected values into an internal
      * histogram structure. This is a pure virtual function. Implementations
      * of transform() are expected to call setupRange(), and set the
      * transfd flag when transformation was successfully done.

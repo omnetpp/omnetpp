@@ -148,7 +148,7 @@ class SIM_API cStatistic : public cObject
     virtual double sum() _CONST = 0;
 
     /**
-     * Returns the the squared sum of the collected data.
+     * Returns the squared sum of the collected data.
      * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double sqrSum() _CONST = 0;
@@ -348,7 +348,7 @@ class SIM_API cStdDev : public cStatistic
     virtual double sum() _CONST     {return sum_samples;}
 
     /**
-     * Returns the the squared sum of the collected data.
+     * Returns the squared sum of the collected data.
      */
     virtual double sqrSum() _CONST  {return sqrsum_samples;}
 

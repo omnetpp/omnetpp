@@ -162,7 +162,7 @@ class SIM_API cLinkedList : public cObject
      *
      * <TABLE BORDER=1>
      * <TR><TD WIDTH=96><B>delete func.</B></TD><TD WIDTH=89><B>dupl.func.</B>
-     * </TD><TD WIDTH=92><B>itemsize</B></TD><TD WIDTH=317><B>behaviour</B>
+     * </TD><TD WIDTH=92><B>itemsize</B></TD><TD WIDTH=317><B>behavior</B>
      * </TD></TR>
      * <TR><TD WIDTH=96>NULL</TD><TD WIDTH=89>NULL
      * </TD><TD WIDTH=92>0</TD><TD WIDTH=317>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.

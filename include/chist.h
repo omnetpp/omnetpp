@@ -92,7 +92,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     virtual void clearResult();
 
     /**
-     * Transforms the table of precollected values into an internal
+     * Transforms the table of pre-collected values into an internal
      * histogram structure.
      */
     virtual void transform();

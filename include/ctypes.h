@@ -276,7 +276,7 @@ class SIM_API cModuleType : public cObject
      * First, the module is created using create() and buildInside(), then
      * starter messages are created (using mod->scheduleStart(simulation.simTime())),
      * then initialize() is called (mod->callInitialize()). It is important that
-     * scheduleStart() be called before initialize(), because because initialize()
+     * scheduleStart() be called before initialize(), because initialize()
      * functions might contain scheduleAt() calls which could otherwise insert
      * a message BEFORE the starter messages for module.
      *

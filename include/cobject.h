@@ -54,7 +54,7 @@ typedef bool (*ForeachFunc)(cObject *,bool);
  *
  * cObject provides a name member (a dynamically allocated string) and
  * a number of virtual functions. These functions either provide a default
- * behaviour (mostly good for all derived classes), or they are expected
+ * behavior (mostly good for all derived classes), or they are expected
  * to be redefined in all derived classes.
  *
  * Some of the features provided by cObject:
@@ -341,7 +341,7 @@ class SIM_API cObject
      * Packs/unpacks object from/to PVM or MPI send buffer.
      * These functions are used by the simulation kernel for parallel execution.
      * These functions should be redefined in all derived classes whose instances
-     * are exprected to trave across segments in a parallel distrubution run.
+     * are expected to travel across segments in a parallel distribution run.
      */
     //@{
 
@@ -440,12 +440,12 @@ class SIM_API cObject
 
     /**
      * Finds the object with the given name. This function is useful when called
-     * on cObject subclasses that are containes. This method
+     * on cObject subclasses that are containers. This method
      * finds the object with the given name in a container object and
      * returns a pointer to it or NULL if the object hasn't
      * been found. If deep is false, only objects directly
      * contained will be searched, otherwise the function searches the
-     * whole subtree for the object. It uses the forEach() meachanism.
+     * whole subtree for the object. It uses the forEach() mechanism.
      */
     cObject *findObject(const char *name, bool deep=true);
 

@@ -626,7 +626,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     cQueue putAsideQueue;   // put-aside queue
 
   protected:
-    /** @name Hooks for defining module behaviour.
+    /** @name Hooks for defining module behavior.
      *
      * Exactly one of activity() and handleMessage() must be redefined
      * by the user to add functionality to the simple module. See the

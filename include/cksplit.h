@@ -187,7 +187,7 @@ class SIM_API cKSplit : public cDensityEstBase
     //@{
 
     /**
-     * Transforms the table of precollected values into the k-split data structure.
+     * Transforms the table of pre-collected values into the k-split data structure.
      */
     virtual void transform();
 
@@ -232,7 +232,7 @@ class SIM_API cKSplit : public cDensityEstBase
     virtual void loadFromFile(FILE *);
     //@}
 
-    /** @name Configuring the k-split algoritm. */
+    /** @name Configuring the k-split algorithm. */
     //@{
 
     /**
