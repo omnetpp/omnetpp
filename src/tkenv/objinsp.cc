@@ -368,6 +368,7 @@ void TMessageInspector::update()
 
    cMessage *msg = (cMessage *)object;
 
+   setEntry(".nb.info.class.e", msg->className());
    setEntry(".nb.info.name.e", msg->name() );
    setEntry(".nb.info.kind.e", (long)msg->kind() );
    setEntry(".nb.info.length.e", (long)msg->length() );

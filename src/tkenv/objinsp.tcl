@@ -243,6 +243,7 @@ proc create_messageinspector {name} {
     notebook_addpage $nb params   {Params}
 
     # page 1: info
+    label-entry $nb.info.class Class:
     label-entry $nb.info.name Name:
     label-entry $nb.info.kind Kind:
     label-entry $nb.info.length Length:
@@ -250,6 +251,7 @@ proc create_messageinspector {name} {
     label-entry $nb.info.error BitErrors:
     button $nb.info.encapmsg -font $fonts(normal) -width 30
 
+    pack $nb.info.class -expand 1 -fill x -side top
     pack $nb.info.name -expand 1 -fill x -side top
     pack $nb.info.kind -expand 1 -fill x -side top
     pack $nb.info.length -expand 1 -fill x -side top

@@ -1,5 +1,10 @@
 2002-02-06  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
+	* objinsp.cc (update): fill in class info field with message's
+	classname
+
+	* objinsp.tcl (create_messageinspector): add class info
+
 	* structinsp.cc (update): display value and name of enums
 
 2002-01-23  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
