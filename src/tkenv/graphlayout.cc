@@ -518,19 +518,19 @@ double BasicSpringEmbedderLayout::relax()
             double& anchorx = n.anchor->x;
             double& anchory = n.anchor->y;
 
-            anchorx += MAX(-50, MIN(50, n.dx)); // speed limit
-            anchory += MAX(-50, MIN(50, n.dy));
+            anchorx += MAX(-50, MIN(10, n.dx)); // speed limit
+            anchory += MAX(-50, MIN(10, n.dy));
 
-            //anchorx = MAX(minx, MIN(maxx, anchorx)); // ignore if (n.x,n.y) goes outside the range
-            //anchory = MAX(miny, MIN(maxy, anchory));
+            anchorx = MAX(minx, MIN(maxx, anchorx)); // ignore if (n.x,n.y) goes outside the range
+            anchory = MAX(miny, MIN(maxy, anchory));
         }
         else // movable
         {
-            n.x += MAX(-50, MIN(50, n.dx)); // speed limit
-            n.y += MAX(-50, MIN(50, n.dy));
+            n.x += MAX(-50, MIN(10, n.dx)); // speed limit
+            n.y += MAX(-50, MIN(10, n.dy));
 
-            //n.x = MAX(minx, MIN(maxx, n.x));
-            //n.y = MAX(miny, MIN(maxy, n.y));
+            n.x = MAX(minx, MIN(maxx, n.x));
+            n.y = MAX(miny, MIN(maxy, n.y));
 
         }
 
