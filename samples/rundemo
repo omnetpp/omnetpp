@@ -38,8 +38,8 @@ foreach line {
    {"Fifo"             "fifo"             "./fifo"      "fifo.exe"}
    {"Queues"           "queues"           "./queues"    "queues.exe"}
    {"CQN"              "cqn"              "./cqn"       "cqn.exe"}
-   {"Queueing"         "queueing"         "./queueing"  "queueing.exe"}
    {"Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
+   {"Queueing"         "queueing"         "./queueing"  "queueing.exe"}
    {"Hist"             "hist"             "./hist"      "hist.exe"}
    {"P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
    {"Aloha"            "aloha"            "./aloha"     "aloha.exe"}

@@ -2,7 +2,7 @@ TicToc
 ======
 
 NOTE:
-   This example simulation accompanies is the TICTOC TUTORIAL
+   This example simulation is accompanied by the TICTOC TUTORIAL
    which can be found among the documentation.
 
 TicToc contains a series of simulation models numbered 1 through 12. The
