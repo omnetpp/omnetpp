@@ -25,7 +25,19 @@
  * code from it (a la nedc), or -- possibly after modifying it -- convert
  * it back to the original NED/MSG format.
  *
- * For a start, read the @ref Overview.
+ * For a start, read the @ref Overview, or you can go to one of the more
+ * specific topics:
+ *
+ * - @ref DTD
+ * - @ref Data
+ * - @ref NEDParser
+ * - @ref XMLParser
+ * - @ref XMLGenerator
+ * - @ref Validation
+ * - @ref NEDCompiler
+ * - @ref NEDGenerator
+ * - @ref CppGenerator
+ *
  */
 
 /**
