@@ -17,10 +17,9 @@ simulations provided.
 Also: since OMNeT++/OMNEST 3.0 and up supports dynamic NED loading, there's
 usually little point in translating NED files to C++ (_m.cpp files) and
 compiling them into the executable. As a result, you probably WON'T NEED
-THE ADDNEDFILETOPROJECT MACRO AT ALL (which would add the custom translation
-step and the _m.cpp file to the project). You can still add the NED files
+THE ADDNEDFILETOPROJECT MACRO AT ALL. You can still add the NED files
 to the project though as a resource that requires no processing, via the
-normal ways e.g. drag&drop. To enable dynamic loading, add the
+normal ways, e.g. drag&drop from Explorer. To enable dynamic loading, add the
       preload-ned-files = *.ned
 line under the [General] section of your omnetpp.ini.
 
@@ -32,7 +31,8 @@ Installation of the macros:
 
 2. Activate the macro file within the MSVC IDE:
    Tools|Customize --> select Add-ins and Macro Files tab --> in the listbox,
-   tick 'omnetpp' item. This should also be done by the OMNeT++/OMNEST installer.
+   tick the 'omnetpp' item. This should also be done by the OMNeT++/OMNEST 
+   installer.
 
 3. Add icons to the MSVC toolbar:
    Tools|Customize --> select Commands tab --> from the Category combo,
