@@ -128,7 +128,7 @@ void printUsage()
     fprintf(stderr,
        "nedtool -- part of OMNeT++, (C) 2002-2003 Andras Varga\n"
        "Syntax: nedtool [options] <file1> <file2> ...\n"
-       "    or: nedtool [options] @<filelist>\n"
+       "    or: nedtool [options] @<filelist-file>\n"
        "  -c: generate C++ (default)\n"
        "  -x: generate XML\n"
        "  -n: generate NED\n"
@@ -145,9 +145,8 @@ void printUsage()
        "  -z: skip processing imports\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
        "  -V: verbose\n"
-       "Note: this program represents work in progress: parts of it are incomplete, and\n"
-       "some functionality is completely missing.\n"
-       "\n"
+       "NOTE: nedtool/nedxml is still in ALPHA state: C++ code generation, message\n"
+       "descriptions, and the new NED-2 syntax is still experimental and/or incomplete.\n"
     );
 }
 
@@ -322,13 +321,13 @@ bool processListFile(const char *listfilename)
             return false;
         }
     }
-    in.close();
 
-    if (in.fail())
+    if (in.bad())
     {
-        fprintf(stderr,"nedtool: cannot read list file '%s'\n",listfilename);
+        fprintf(stderr,"nedtool: error reading list file '%s'\n",listfilename);
         return false;
     }
+    in.close();
 
     return true;
 }
