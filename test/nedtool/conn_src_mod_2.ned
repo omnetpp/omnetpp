@@ -1,4 +1,4 @@
-//ERROR: no submodule named 'a'
+//ERROR: submodule 'a' is a vector submodule
 simple Node
 endsimple
 
