@@ -96,8 +96,8 @@ PVM_CFLAGS="-I$PVM_ROOT/include"
 OPP_CHECK_LIB_WITHPATH(pvm3, pvm_joingroup, $PVM_ROOT/lib/$PVM_ARCH,
   PVM_LIBS="$lib_path_swith -lgpvm3 -lpvm3",
   [PVM_LIBS=""
-   AC_MSG_WARN(if you do have PVM3 then set PVM_ROOT and PVM_ARCH)
-   AC_MSG_WARN(  to their correct values and re-run configure)],
+   AC_MSG_WARN(if you do have PVM3 then set PVM_ROOT and PVM_ARCH..)
+   AC_MSG_WARN(..to their correct values and re-run configure)],
   -lpvm3
   )
 
