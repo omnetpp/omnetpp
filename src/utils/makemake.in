@@ -238,22 +238,25 @@ LIBS = $libs
 
 #------------------------------------------------------------------------------
 
-OMNETPP_ROOT = $OMNETPP_ROOT
-OMNETPP_SRC_DIR = $OMNETPP_SRC_DIR
+OMNETPP_ROOT=@OMNETPP_ROOT@
+OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 
-CC = $CC
-NEDC = $NEDC
-LD = $LD
-AR = $AR
-MAKE_SO = $MAKE_SO
+CXX=     @CXX@
+NEDC=    @NEDC@
+LD=      @LD@
+AR=      @AR@
+MAKE_SO= @MAKE_SO@
 
-OMNETPP_INCL_PATH=$OMNETPP_INCL_PATH
-OMNETPP_LIB_PATH=$OMNETPP_LIB_PATH
+OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
+OMNETPP_LIB_PATH=@OMNETPP_LIB_PATH@
 
-TV_LIBS=$TV_LIBS
-TK_LIBS=$TK_LIBS
-PVM_LIBS=$PVM_LIBS
-SYS_LIBS=$SYS_LIBS
+OMNETPP_INCLUDES="@OMNETPP_INCLUDES@"
+
+TV_LIBS=  @TV_LIBS@
+TK_LIBS=  @TK_LIBS@
+PVM_LIBS= @PVM_LIBS@
+SYS_LIBS= @SYS_LIBS@
+
 
 # User interface libs
 CMDENV_LIBS = -lenvir -lcmdenv
@@ -266,8 +269,6 @@ PVM_KERNEL_LIBS = -lsim_pvm \$(PVM_LIBS)
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = \$(OMNETPP_LIB_PATH) \$(KERNEL_LIBS) \$(USERIF_LIBS) \$(SYS_LIBS)
-
-OMNETPP_INCLUDES = $OMNETPP_INCLUDES
 
 #------------------------------------------------------------------------------
 
@@ -324,7 +325,7 @@ do
 		echo -n $h' '
 	fi
 	echo $c '$(OMNETPP_INCLUDES)'
-	echo '	$(CC) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) '$c
+	echo '	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) '$c
 	echo
 
 	echo $c':' $i
@@ -340,7 +341,7 @@ do
 	obj=`echo $i | sed 's/\.cc/.o/g'`
 	h=`echo $i | sed 's/\.cc/.h/g'`
 	echo $obj':' $i $headers '$(OMNETPP_INCLUDES)'
-	echo '	$(CC) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) '$i
+	echo '	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) '$i
 	echo
 done
 
