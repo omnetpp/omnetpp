@@ -56,7 +56,7 @@ It is also defined as a module type of which one instance is
 created, the system module.
 
 Modules have input and output gates\index{gate} (the tiny boxes
-labeled \texttt{in}, \texttt{out}, \texttt{from\_player1}, etc. in the
+labeled \texttt{in}, \texttt{out}, \texttt{fromPlayer1}, etc. in the
 figure). An input and an output gate can be connected: connections (or
 links) are shown as in the figure as arrows.  During the simulation,
 modules communicate by sending messages through the connections.
@@ -82,16 +82,16 @@ The first file (NED keywords are typed in boldface):
 
 \textbf{simple} Game
     \textbf{parameters}:
-         num_sticks, // initial number of sticks
-         first_move; // 1=Player1, 2=Player2
+         numSticks, // initial number of sticks
+         firstMove; // 1=Player1, 2=Player2
 
     \textbf{gates}:
         \textbf{in}:
-             from_player1, // input and output gates
-             from_player2; // for connecting to Player1/Player2
+             fromPlayer1, // input and output gates
+             fromPlayer2; // for connecting to Player1/Player2
         \textbf{out}:
-             to_player1,
-             to_player2;
+             toPlayer1,
+             toPlayer2;
 \textbf{endsimple}
 
 
@@ -127,15 +127,15 @@ The second file:
     \textbf{submodules}:
         game: Game
             \textbf{parameters}:
-                num\_sticks = intuniform(21, 31),
-                first\_move = intuniform(1, 2);
+                numSticks = intuniform(21, 31),
+                firstMove = intuniform(1, 2);
         player1: SmartPlayer;
         player2: SimplePlayer;
     \textbf{connections}:
-        player1.out --\texttt{>} game.from\_player1,
-        player1.in \texttt{<}-- game.to\_player1,
-        player2.out --\texttt{>} game.from\_player2,
-        player2.in \texttt{<}-- game.to\_player2;
+        player1.out --> game.fromPlayer1,
+        player1.in <-- game.toPlayer1,
+        player2.out --> game.fromPlayer2,
+        player2.in <-- game.toPlayer2;
 \textbf{endmodule}
 
 // system module creation
@@ -208,18 +208,18 @@ void SmartPlayer::activity()
     {
         // messages have several fields; here, we'll use the message
         // kind member to store the number of sticks
-        cMessage *msgin = receive(); // receive message from Game
-        int num_sticks = msgin->kind(); // extract message kind (an int)
+        cMessage *msgin = receive();    // receive message from Game
+        int numSticks = msgin->kind();  // extract message kind (an int)
                                         // it hold the number of sticks
                                         // still on the stack
         delete msgin;                   // dispose of the message
 
-        move = (num_sticks + 4) % 5; // calculate move
+        move = (numSticks + 4) % 5;     // calculate move
         if (move == 0)                  // we cannot take zero
             move = 1;                   // seems like we going to lose
 
         ev << "Taking " << move         // some debug output. The ev
-           << " out of " << num\_sticks // object represents the user
+           << " out of " << numSticks   // object represents the user
            << " sticks.\n";             // interface of the simulator
 
         cMessage *msgout = new cMessage;// create empty message
@@ -232,7 +232,7 @@ void SmartPlayer::activity()
 
 The \texttt{Game} module first waits for a message from both players
 and extracts the message names that are also the players' names.  Then
-it enters a loop, with the \texttt{player\_to\_move} variable
+it enters a loop, with the \texttt{playerToMove} variable
 alternating between 1 and 2. With each iteration, it sends out a
 message with the current number of sticks to the corresponding player
 and gets back the number of sticks taken by that player. When the
@@ -274,14 +274,14 @@ void Game::activity()
     char player[3][32];
 
     // read parameter values
-    int num_sticks = par("num_sticks");
-    int player_to_move = par("first_move");
+    int numSticks = par("numSticks");
+    int playerToMove = par("firstMove");
 
     // waiting for players to tell their names
     for (int i=0; i<2; i++)
     {
         cMessage *msg = receive();
-        if (msg->arrivedOn("from_player1"))
+        if (msg->arrivedOn("fromPlayer1"))
             strcpy( player[1], msg->name());
         else
             strcpy( player[2], msg->name());
@@ -295,34 +295,34 @@ void Game::activity()
 
     do
     {
-        ev << "Sticks left: " << num_sticks << "\n";
-        ev << "Player " << player_to_move << " ("
-           << player[player_to_move] << ") to move.\n";
+        ev << "Sticks left: " << numSticks << "\n";
+        ev << "Player " << playerToMove << " ("
+           << player[playerToMove] << ") to move.\n";
 
-        cMessage *msg = new cMessage("", num_sticks);
-                        // num\_sticks will be the msg kind
+        cMessage *msg = new cMessage("", numSticks);
+                        // numSticks will be the msg kind
 
-        if (player_to_move == 1)
-            send(msg, "to_player1");
+        if (playerToMove == 1)
+            send(msg, "toPlayer1");
         else
-            send(msg, "to_player2");
+            send(msg, "toPlayer2");
 
         msg = receive();
-        int sticks_taken = msg->kind();
+        int sticksTaken = msg->kind();
         delete msg;
 
-        num_sticks -= sticks_taken;
+        numSticks -= sticksTaken;
 
-        ev << "Player " << player_to_move << " ("
-           << player[player_to_move] << ") took "
-           << sticks_taken << " stick(s).\n";
+        ev << "Player " << playerToMove << " ("
+           << player[playerToMove] << ") took "
+           << sticksTaken << " stick(s).\n";
 
-        player_to_move = 3 - player_to_move;
+        playerToMove = 3 - playerToMove;
     }
-    while (num_sticks>0);
+    while (numSticks>0);
 
-    ev << "\nPlayer " << player_to_move << " ("
-       << player[player_to_move] << ") won!\n";
+    ev << "\nPlayer " << playerToMove << " ("
+       << player[playerToMove] << ") won!\n";
 
     endSimulation();
 }
