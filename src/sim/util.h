@@ -60,8 +60,8 @@ inline bool equal(double a, double b, double epsilon);
 //
 #define myrandomize opp_randomize
 void opp_randomize();         // init random number gen. with a random value
-long randseed(long seed);     // sets rndseed and returns old one
 long randseed();              // returns current seed
+long randseed(long seed);     // sets rndseed and returns old one
 int testrand();               // returns 1 if OK; keeps seed intact
 long intrand();               // in range 1..INTRAND_MAX
 long intrand(long r);         // in range 0..r-1  (OK if r<<INTRAND_MAX)
@@ -72,7 +72,8 @@ inline double dblrand();      // in range 0.0..1.0
 //
 #define genk_myrandomize genk_opp_randomize
 void genk_opp_randomize(int gen_nr);
-long genk_randseed(int gen_nr, long seed=0);
+long genk_randseed(int gen_nr);
+long genk_randseed(int gen_nr, long seed);
 long genk_intrand(int gen_nr);
 long genk_intrand(int gen_nr,long r);
 inline double genk_dblrand(int gen_nr);
