@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" /DBUILDING_CMDENV
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" /DBUILDING_CMDENV /Fd"cmdenv.pdb"
 OBJS = cmdenv.obj enumstr.obj heap.obj
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib
 
@@ -29,12 +29,12 @@ LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib
 all: cmdenv$(LIB_SUFFIX)
 
 cmdenv.lib : $(OBJS)
-	$(AR) /nologo /out:cmdenv.lib $(OBJS)
+	$(AR) /out:cmdenv.lib $(OBJS)
 	copy cmdenv.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b vc?0.pdb $(OMNETPP_LIB_DIR:/=\)\cmdenv.pdb 2>nul
+	- copy /b cmdenv.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
 cmdenv.dll : $(OBJS) $(LIBS)
-	$(SHLIB_LD) /nologo /out:cmdenv.dll /implib:cmdenv.ilib /subsystem:console /def:cmdenv.def $(OBJS) $(LIBS)
+	$(SHLIB_LD) /out:cmdenv.dll /implib:cmdenv.ilib /subsystem:console /def:cmdenv.def $(OBJS) $(LIBS)
 	copy cmdenv.dll $(OMNETPP_LIB_DIR:/=\)
 	copy cmdenv.ilib $(OMNETPP_LIB_DIR:/=\)
 

@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS) /I.
+COPTS=$(CFLAGS) $(XML_CFLAGS) /I. /Fd"nedxml.pdb"
 OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedvalidator.obj neddtdvalidator.obj neddtdvalidator1.obj \
       nedbasicvalidator.obj nedsemanticvalidator.obj nedcompiler.obj \
@@ -33,9 +33,9 @@ OBJS= nedelements.obj nedelement.obj nederror.obj \
 all : nedxml.lib
 
 nedxml.lib : unistd.h $(OBJS)
-	$(AR) /nologo /out:nedxml.lib $(OBJS)
+	$(AR) /out:nedxml.lib $(OBJS)
 	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b vc?0.pdb $(OMNETPP_LIB_DIR:/=\)\nedxml.pdb 2>nul
+	- copy /b nedxml.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned.dtd
 	perl dtdclassgen.pl ned.dtd

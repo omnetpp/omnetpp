@@ -196,11 +196,11 @@ SYS_LIBS=
 #
 
 # MSVC programs
-CXX=cl.exe
-LINK=link.exe
-AS=cl.exe
-AR=link.exe /lib
-SHLIB_LD=link.exe /dll
+CXX=cl.exe /nologo
+LINK=link.exe /nologo
+AS=cl.exe /nologo
+AR=lib.exe /nologo
+SHLIB_LD=link.exe /nologo /dll
 RC=rc.exe
 
 # dependency generator (needs Perl!)
@@ -234,11 +234,11 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 #   /OPT:NOREF: keep functions and data that is never referenced -- this forces
 #        OMNeT++ simple modules in .lib files to be included in the .exe
 #
-CFLAGS_DEBUG=/nologo /EHsc /GR /FD /Zm200 /MLd /Od /GZ /Zi
-LDFLAGS_DEBUG=/nologo /subsystem:console /opt:noref /debug
+CFLAGS_DEBUG=/EHsc /GR /FD /Zm200 /MLd /Od /GZ /Zi
+LDFLAGS_DEBUG=/subsystem:console /opt:noref /debug
 
-CFLAGS_RELEASE=/nologo /EHsc /GR /FD /Zm200 /ML /O2 /DNDEBUG
-LDFLAGS_RELEASE=/nologo /subsystem:console /opt:noref
+CFLAGS_RELEASE=/EHsc /GR /FD /Zm200 /ML /O2 /DNDEBUG
+LDFLAGS_RELEASE=/subsystem:console /opt:noref
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib

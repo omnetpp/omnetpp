@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I. /DBUILDING_SIM
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I. /DBUILDING_SIM /Fd"sim_std.pdb"
 
 CPPOBJS_STD= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj \
          cmodule.obj csimplemodule.obj csimul.obj cobject.obj cvisitor.obj cpar.obj \
@@ -68,12 +68,12 @@ default : sim_std
 sim_std : sim_std$(LIB_SUFFIX)
 
 sim_std.lib : $(CPPOBJS)
-	$(AR) /nologo /out:sim_std.lib $(CPPOBJS)
+	$(AR) /out:sim_std.lib $(CPPOBJS)
 	copy sim_std.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b vc?0.pdb $(OMNETPP_LIB_DIR:/=\)\sim_std.pdb 2>nul
+	- copy /b sim_std.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
 sim_std.dll : $(CPPOBJS) $(LIBS)
-	$(SHLIB_LD) /nologo /out:sim_std.dll /implib:sim_std.ilib /subsystem:console /def:sim_std.def $(CPPOBJS) $(LIBS)
+	$(SHLIB_LD) /out:sim_std.dll /implib:sim_std.ilib /subsystem:console /def:sim_std.def $(CPPOBJS) $(LIBS)
 	copy sim_std.dll $(OMNETPP_LIB_DIR:/=\)
 	copy sim_std.ilib $(OMNETPP_LIB_DIR:/=\)
 

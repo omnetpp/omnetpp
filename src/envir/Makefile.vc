@@ -14,7 +14,7 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../sim" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN)
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../sim" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN) /Fd"envir.pdb"
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
      patmatch.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj \
      akaroarng.obj cxmldoccache.obj
@@ -34,17 +34,17 @@ LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 all : envir$(LIB_SUFFIX)
 
 envir.lib : $(OBJS)
-	$(AR) /nologo /out:envir.lib $(OBJS)
+	$(AR) /out:envir.lib $(OBJS)
 	copy envir.lib $(OMNETPP_LIB_DIR:/=\)
-	- copy /b vc?0.pdb $(OMNETPP_LIB_DIR:/=\)\envir.pdb 2>nul
+	- copy /b envir.pdb $(OMNETPP_LIB_DIR:/=\) 2>nul
 
 envir.ilib : $(OBJS)
 	@rem How can one create only the import lib, without trying to link the DLL?
-        @rem With this command, we need the '>nul' to hide the 'undefine symbol' errors
-	- $(SHLIB_LD) /nologo /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) >nul
+        @rem With this command, we need the '>nul' to hide the 'undefined symbol' errors
+	- $(SHLIB_LD) /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) >nul
 
 envir.dll : $(OBJS) $(LIBS)
-	$(SHLIB_LD) /nologo /out:envir.dll /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) $(LIBS)
+	$(SHLIB_LD) /out:envir.dll /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) $(LIBS)
 	copy envir.dll $(OMNETPP_LIB_DIR:/=\)
 	copy envir.ilib $(OMNETPP_LIB_DIR:/=\)
 
