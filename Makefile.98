@@ -3,15 +3,17 @@
 # Toplevel makefile for OMNeT++ libraries and programs
 #
 # platform: Windows 95/98/ME
+# compiler: MSVC 6.0
 #
 #=====================================================================
 
 #
 # Under Win98 one should run vcvars32.bat before executing an nmake command.
-# If you getting "out of enviroment space" errors, include this line in your Config.sys.
-# COMSPEC=C:\WINDOWS\COMMAND.COM /E=2048
-# And into your autoexec.bat.
-# Call VCVARS32.BAT
+# If you getting "out of enviroment space" errors, include this line in 
+# your Config.sys:
+#   COMSPEC=C:\WINDOWS\COMMAND.COM /E=2048
+# And into your autoexec.bat:
+#   Call VCVARS32.BAT
 #
 
 

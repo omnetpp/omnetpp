@@ -1,6 +1,9 @@
 #=====================================================================
 #
-# toplevel makefile for OMNeT++ libraries and programs
+# Toplevel makefile for OMNeT++ libraries and programs
+#
+# platform: Windows NT, Windows 2000
+# compiler: MSVC 6.0
 #
 #=====================================================================
 
@@ -149,6 +152,7 @@ demo:
 
 check-env:
 	@echo ===== Checking environment =====
+        @if not .%OS%.==.Windows_NT. echo ERROR: This makefile can ONLY be used on NT4.0 or Windows 2000! For Win95/98/ME, use Makefile.98!
 	@echo  Checking if $(CXX) works...
 	@$(CXX) /? /nologo <nul > nul || echo ERROR: Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1
         @echo Checking if OMNETPP_ROOT is correctly set...

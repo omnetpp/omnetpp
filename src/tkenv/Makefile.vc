@@ -76,8 +76,8 @@ depend:
 	@ echo *** make depend not (yet) supported with MSVC
 
 clean:
-	del tclcode.cc *.obj tkenv.lib tkenv.dll tkenv.ilib tkenv.exp 2> nul
-	del *.ilk *.idb *.pdb 2> nul
+	-del tclcode.cc *.obj tkenv.lib tkenv.dll tkenv.ilib tkenv.exp 2> nul
+	-del *.ilk *.idb *.pdb 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
