@@ -10,8 +10,26 @@ COPTS=$(CFLAGS)
 
 OBJS=ebnf.tab.obj lex.yy.obj jar.obj jar_lib.obj jar_mod.obj jar_expr.obj jar_mem.obj
 
+
 #
 # Targets
+#
+all : nedc.exe nedtool.exe
+
+#
+# nedtool
+#
+nedtool : nedtool.exe
+
+nedtool.exe : main.obj
+	$(LINK) $(LDFLAGS) /nologo /out:nedtool.exe main.obj $(LIBS) ../nedxml/nedxml.lib $(EXPAT_LIBS)
+	copy nedtool.exe $(OMNETPP_BIN_DIR:/=\)
+
+main.obj : main.cc
+	$(CXX) $(COPTS) /I ../nedxml /c /Tp main.cc
+
+#
+# nedc
 #
 nedc : nedc.exe
 

@@ -1,3 +1,8 @@
+2002-07-07  Andras Varga
+
+	* added main.cc and nedtool target to MSVC makefile; unix makefile
+	to be done
+
 2002-05-16  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* jar_mod.c (do_simp_or_comp): fixed declaration of className()
