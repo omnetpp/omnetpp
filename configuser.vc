@@ -43,7 +43,7 @@ WISH=$(TK_LIB_DIR)/../bin/wish82.exe
 CFLAGS=/nologo /MLd /W3 /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /GZ
 LDFLAGS=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 
-# LIB_SUFFIX is either .lib or .dll (at this point, only .lib is supported)
+# LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.dll
 
 HAVE_DLOPEN=0
