@@ -166,7 +166,6 @@ proc wsize {w width height} {
 #    PROCEDURES FOR CREATING NEW 'WIDGET TYPES'
 #===================================================================
 
-
 proc iconbutton {w args} {
     global fonts
 
@@ -329,8 +328,6 @@ proc label-button {w label {text {}}} {
 
 proc label-check {w label first var} {
     # utility function: create a frame with a label+radiobutton for choose
-    global gned
-
     frame $w
     label $w.l -anchor w -width 16 -text $label
     frame $w.f
@@ -339,6 +336,44 @@ proc label-check {w label first var} {
     pack $w.l -anchor w -expand 0 -fill none -side left
     pack $w.f -anchor w -expand 0 -side left -fill x
     pack $w.f.r1 -anchor w -expand 0 -side left
+}
+
+# label-colorchooser --
+#
+# utility function: create a frame with a label and a color chooser button
+#
+proc label-colorchooser {w label {color ""}} {
+    global gned
+
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    frame $w.f
+    pack $w.l -anchor nw -expand 0 -fill none -side left -padx 2 -pady 2
+    pack $w.f -anchor n -expand 1 -fill x -side left
+
+    entry $w.f.e
+    pack $w.f.e -anchor center -expand 1 -fill x -side left -padx 2 -pady 2
+
+    button $w.f.b -relief groove -command [list colorchooser:setColor $w.f.b $w.f.e [winfo toplevel $w]] -width 6
+    pack $w.f.b -anchor c -expand 0 -fill none -side left -padx 2 -pady 2
+
+    $w.f.e insert 0 $color
+    set dispcolor [resolveDispStrColor $color ""]
+    if {$dispcolor!=""} {
+       $w.f.b config -background $dispcolor -activebackground $dispcolor
+    }
+}
+
+proc colorchooser:setColor {b e pwin} {
+    global gned
+
+    set color [tk_chooseColor -parent $pwin]
+    if {$color!=""} {
+        $b config -background $color -activebackground $color
+        $e delete 0 end
+        $e insert 0 $color
+        $e selection range 0 end
+    }
 }
 
 proc commentlabel {w text} {
@@ -388,7 +423,7 @@ proc notebook_addpage {w name label} {
         set page $w.$name
         frame $page
         $w insert end $name -text $label -window $page -fill both
-        $w invoke [$w index -name $name]
+        $w select [$w index -name $name]
     } else {
         # poor man's tabnotebook
         set tab $w.tabs.$name
@@ -410,7 +445,7 @@ proc notebook_showpage {w name} {
     global HAVE_BLT
 
     if {$HAVE_BLT} {
-        $w invoke [$w index -name $name]
+        $w select [$w index -name $name]
     } else {
         # poor man's tabnotebook
         global nb
@@ -772,8 +807,11 @@ proc multicolumnlistbox_getrownames {w} {
     global HAVE_BLT
     if {$HAVE_BLT} {
         set rownamelist {}
-        foreach id [$w find view.top view.bottom] {
-            lappend rownamelist [$w get -full $id]
+        catch {
+            # if the listbox is empty, $w find... will throw an error !?!@$!!
+            foreach id [$w find view.top view.bottom] {
+                lappend rownamelist [$w get -full $id]
+            }
         }
         return $rownamelist
     } else {
@@ -1033,4 +1071,39 @@ proc aboutDialog {title contents} {
     destroy .about
 }
 
+
+#
+# Show a hint once; state is saved into config(dontshow)
+#
+set config(dontshow) {}
+proc showTextOnceDialog {parent key text} {
+    global config tmp_once
+
+    if {[lsearch -exact $config(dontshow) $key]!=-1} {
+        # already shown
+        return
+    }
+
+    # create dialog with OK button
+    if {$parent=="."} {set w .once} else {set w $parent.once}
+    createOkCancelDialog $w "Hint"
+    destroy $w.buttons.cancelbutton
+    wm geometry $w "340x160"
+
+    text $w.f.text -relief solid -bd 1
+    $w.f.text insert 1.0 $text
+    $w.f.text config -state disabled
+    checkbutton $w.f.x -text {do not show this hint again} -variable tmp_once
+    pack $w.f.x -expand 0 -fill x -side bottom
+    pack $w.f.text -expand 1 -fill both -side top -padx 5 -pady 5
+
+    set tmp_once 0
+
+    # exec the dialog
+    execOkCancelDialog $w
+    if {$tmp_once} {
+        lappend config(dontshow) $key
+    }
+    destroy $w
+}
 

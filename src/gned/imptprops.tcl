@@ -28,7 +28,6 @@ proc editImportProps {key} {
     pack $nb -expand 1 -fill both
     notebook_addpage $nb general "General"
     notebook_addpage $nb imports "Imports"
-    notebook_showpage $nb imports
 
     # create "General" page
     label-text  $nb.general.comment "Doc. comments:" 6
@@ -39,7 +38,7 @@ proc editImportProps {key} {
     # create "Imports" page
     label $nb.imports.l -text  "Imported files:"
     tableEdit $nb.imports.tbl 15 {
-      {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
+      {{Name (without .ned)} name        {entry $e -textvariable $v -width 20 -bd 1}}
       {{End-line comment} right-comment  {entry $e -textvariable $v -width 15 -bd 1}}
       {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
     }
@@ -51,6 +50,8 @@ proc editImportProps {key} {
     $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
     fillTableEditFromNed $nb.imports.tbl $key
     debug "editImportProps: strip/add quotes!"
+
+    notebook_showpage $nb imports
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog $w ImportProps:validate] == 1} {

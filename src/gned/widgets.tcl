@@ -266,6 +266,16 @@ proc label-sunkenlabel {w label {text {}}} {
     $w.e config -text $text
 }
 
+proc label-message {w label {text {}}} {
+    # utility function: create a frame with a label+"readonly entry"
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    message $w.e -relief groove -justify left -anchor w -aspect 10000
+    pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
+    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
+    $w.e config -text $text
+}
+
 proc label-combo {w label list {text {}} {cmd {}}} {
     # utility function: create a frame with a label+combo
     frame $w
@@ -318,8 +328,6 @@ proc label-button {w label {text {}}} {
 
 proc label-check {w label first var} {
     # utility function: create a frame with a label+radiobutton for choose
-    global gned
-
     frame $w
     label $w.l -anchor w -width 16 -text $label
     frame $w.f
@@ -415,7 +423,7 @@ proc notebook_addpage {w name label} {
         set page $w.$name
         frame $page
         $w insert end $name -text $label -window $page -fill both
-        $w invoke [$w index -name $name]
+        $w select [$w index -name $name]
     } else {
         # poor man's tabnotebook
         set tab $w.tabs.$name
@@ -437,7 +445,7 @@ proc notebook_showpage {w name} {
     global HAVE_BLT
 
     if {$HAVE_BLT} {
-        $w invoke [$w index -name $name]
+        $w select [$w index -name $name]
     } else {
         # poor man's tabnotebook
         global nb
@@ -799,8 +807,11 @@ proc multicolumnlistbox_getrownames {w} {
     global HAVE_BLT
     if {$HAVE_BLT} {
         set rownamelist {}
-        foreach id [$w find view.top view.bottom] {
-            lappend rownamelist [$w get -full $id]
+        catch {
+            # if the listbox is empty, $w find... will throw an error !?!@$!!
+            foreach id [$w find view.top view.bottom] {
+                lappend rownamelist [$w get -full $id]
+            }
         }
         return $rownamelist
     } else {
@@ -1060,4 +1071,39 @@ proc aboutDialog {title contents} {
     destroy .about
 }
 
+
+#
+# Show a hint once; state is saved into config(dontshow)
+#
+set config(dontshow) {}
+proc showTextOnceDialog {parent key text} {
+    global config tmp_once
+
+    if {[lsearch -exact $config(dontshow) $key]!=-1} {
+        # already shown
+        return
+    }
+
+    # create dialog with OK button
+    if {$parent=="."} {set w .once} else {set w $parent.once}
+    createOkCancelDialog $w "Hint"
+    destroy $w.buttons.cancelbutton
+    wm geometry $w "340x160"
+
+    text $w.f.text -relief solid -bd 1
+    $w.f.text insert 1.0 $text
+    $w.f.text config -state disabled
+    checkbutton $w.f.x -text {do not show this hint again} -variable tmp_once
+    pack $w.f.x -expand 0 -fill x -side bottom
+    pack $w.f.text -expand 1 -fill both -side top -padx 5 -pady 5
+
+    set tmp_once 0
+
+    # exec the dialog
+    execOkCancelDialog $w
+    if {$tmp_once} {
+        lappend config(dontshow) $key
+    }
+    destroy $w
+}
 
