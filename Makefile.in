@@ -36,7 +36,7 @@ components: libs progs samples tutorials
 
 LIBS=sim envir cmdenv tkenv
 PROGS=utils nedc gned plove
-SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo
+SAMPLES=@OMNETPP_SAMPLES@
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs
@@ -109,6 +109,9 @@ pvmex:
 
 token:
 	cd $(OMNETPP_SAMPLES_DIR)/token && $(MAKE)
+
+dyna2:
+	cd $(OMNETPP_SAMPLES_DIR)/dyna2 && $(MAKE)
 
 demo:
 	cd $(OMNETPP_SAMPLES_DIR)/demo && $(MAKE)
