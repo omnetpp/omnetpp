@@ -6,7 +6,7 @@
 #
 # Targets
 #
-all: seedtool.exe tcl2c.exe opp_replace.exe
+all: seedtool.exe tcl2c.exe opp_replace.exe opp_neddoc
 	copy opp_nmakemake.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_nmakemake $(OMNETPP_BIN_DIR:/=\)
 	copy opp_makedep.cmd $(OMNETPP_BIN_DIR:/=\)
@@ -16,7 +16,7 @@ all: seedtool.exe tcl2c.exe opp_replace.exe
 	copy opp_test.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_test $(OMNETPP_BIN_DIR:/=\)
 	copy opp_neddoc.cmd $(OMNETPP_BIN_DIR:/=\)
-	copy opp_neddocall.cmd $(OMNETPP_BIN_DIR:/=\)
+	copy opp_neddoc $(OMNETPP_BIN_DIR:/=\)
 	copy neddoc.xsl $(OMNETPP_BIN_DIR:/=\)
 	copy neddocproc.pl $(OMNETPP_BIN_DIR:/=\)
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
@@ -30,6 +30,17 @@ tcl2c.exe: tcl2c.c
 
 opp_replace.exe: opp_replace.c
 	$(CC) $(CFLAGS) opp_replace.c
+
+opp_neddoc: opp_neddoc.in
+	copy opp_neddoc.in opp_neddoc
+	$(PERL) -i.bak -pe "s|\@NEDTOOL\@|$(OMNETPP_BIN_DIR)/nedtool.exe|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@GNED\@|$(OMNETPP_BIN_DIR)/gned.exe|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@XSLTPROC\@|$(XSLTPROC)|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@GHOSTSCRIPT\@|$(GHOSTSCRIPT)|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@GIFTRANS\@|$(GIFTRANS)|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@DOT\@|$(DOT)|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@PERL\@|$(PERL)|" opp_neddoc
+	del opp_neddoc.bak
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc *.c

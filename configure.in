@@ -221,11 +221,11 @@ if test "$XSLTPROC" = "not found"; then
 fi
 
 # "convert" from ImageMagick
-AC_ARG_VAR(PS2GIF, Program to convert Postscript images to GIF)
-AC_CHECK_PROG(PS2GIF, convert, convert,)
+AC_ARG_VAR(GHOSTSCRIPT, Program to convert or rasterize Postscript files)
+AC_CHECK_PROG(GHOSTSCRIPT, gs, gs,)
 
-if test "$PS2GIF" = ""; then
-   AC_MSG_WARN(The convert program from ImageMagick is needed by opp_neddoc to convert Postscript images to GIF.)
+if test "$GHOSTSCRIPT" = ""; then
+   AC_MSG_WARN(Ghostscript is needed by opp_neddoc to create diagrams.)
 fi
 
 # "dot" from Graphviz
@@ -241,7 +241,7 @@ AC_ARG_VAR(GIFTRANS, Utility to make GIFs transparent)
 AC_CHECK_PROG(GIFTRANS, giftrans, giftrans,)
 
 if test "$GIFTRANS" = ""; then
-   AC_MSG_WARN(giftrans is used by opp_neddoc, to make the background of dot-generated diagrams transparent.)
+   AC_MSG_WARN(giftrans is used by opp_neddoc, to make the background of diagrams transparent.)
 fi
 
 #----------------------
@@ -536,7 +536,8 @@ AC_SUBST(RANLIB)
 AC_SUBST(SHLIB_LD)
 AC_SUBST(WISH)
 AC_SUBST(MAKEDEPEND)
-AC_SUBST(PS2GIF)
+AC_SUBST(XSLTPROC)
+AC_SUBST(GHOSTSCRIPT)
 AC_SUBST(GIFTRANS)
 AC_SUBST(DOT)
 
