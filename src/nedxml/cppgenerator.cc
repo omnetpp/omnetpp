@@ -830,22 +830,6 @@ void NEDCppGenerator::doSubstparams(SubstparamsNode *node, const char *indent, i
 
 void NEDCppGenerator::doSubstparam(SubstparamNode *node, const char *indent, int mode, const char *)
 {
-    // FIXME check type mismatch:
-
-    //  // bool will also be treated as numeric
-    //  if (decl_type==TYPE_CONST_NUM || decl_type==TYPE_BOOL)
-    //      decl_type = TYPE_NUMERIC;
-    //  if (expr_type==TYPE_CONST_NUM || expr_type==TYPE_BOOL)
-    //      expr_type = TYPE_NUMERIC;
-    //
-    //  if (decl_type!=expr_type &&
-    //      decl_type!=TYPE_ANYTYPE &&
-    //      expr_type!=TYPE_ANYTYPE)
-    //  {
-    //      sprintf (errstr,"Type mismatch for parameter \"%s\"\n",pname);
-    //      adderr;
-    //  }
-
     // set parameter value
     out << indent << submodule_var.c_str() << "->par(\"" << node->getName() << "\") = ";
     ExpressionNode *paramvalue = findExpression(node, "value");

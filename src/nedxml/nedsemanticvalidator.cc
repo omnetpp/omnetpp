@@ -144,7 +144,7 @@ void NEDSemanticValidator::validateElement(SubstparamNode *node)
     if (!params || params->getFirstChildWithAttribute(NED_PARAM, "name", paramName)==NULL)
         {NEDError(node, "module type '%s' has no parameter named '%s'", moduletypedecl->getAttribute("name"), paramName);return;}
 
-    // TBD check type matches
+    // TBD compile-time check for type mismatch
 }
 
 void NEDSemanticValidator::validateElement(GatesizesNode *node)
