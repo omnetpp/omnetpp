@@ -14,7 +14,7 @@
 
 
 /**
- * Simple model of a Telnet client.
+ * Model of a web browser.
  */
 class ExtHTTPClient : public cSimpleModule
 {
