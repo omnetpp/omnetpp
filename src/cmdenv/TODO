@@ -1,2 +1,3 @@
 configurable event banner
 ini flag to display result of finish() even if module output is disabled
+add display of speedometer stuff
