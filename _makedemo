@@ -9,32 +9,71 @@ if [ ! -f configure.in ]; then
     exit
 fi
 
-if [ -d $DIR]; then
+if [ -d $DIR ]; then
     echo Target directory $DIR already exists - delete it or move it away!!!
     exit
 fi
 
 # copy stuff
+echo 'Copying binaries...'
 mkdir $DIR
 cp bin/gned.exe $DIR
-cp samples/demo.exe $DIR/opp_demo.exe
+cp samples/demo/demo.exe $DIR/opp_demo.exe
 cp -r bitmaps $DIR
-cp -r samples $DIR
+
+echo 'Checking out samples...'
+(cd $DIR; cvs co samples > /dev/null)
 
 # clean samples
+echo 'Cleaning...'
 rm -rf `find $DIR/samples -name CVS`
 rm -rf $DIR/samples/demo
 rm -rf $DIR/samples/pvmex
-rm -f $DIR/samples/*.dep
-rm -f $DIR/samples/*.dsw
-rm -f $DIR/samples/*.dsp
-rm -f $DIR/samples/*.exe
-rm -f $DIR/samples/*.ide
-rm -f $DIR/samples/*.ilk
-rm -f $DIR/samples/*.mak
-rm -f $DIR/samples/*.in
-rm -f $DIR/samples/*.pdb
-rm -f $DIR/samples/*.vc
+rm -f $DIR/samples/*/*.dep
+rm -f $DIR/samples/*/*.dsw
+rm -f $DIR/samples/*/*.dsp
+rm -f $DIR/samples/*/*.mak
+rm -f $DIR/samples/*/*.in
+rm -f $DIR/samples/*/*.vc
+rm -f $DIR/samples/*/*.ide
+rm -f $DIR/samples/*/*.exe
+rm -f $DIR/samples/*/*.pdb
+rm -f $DIR/samples/*/*.ilk
+
+# produce individual bat files
+echo 'Generating batch files...'
+for i in Nim Token FDDI FIFO1 FIFO2 Hist HCube Dyna; do
+   ii=`echo $i | tr 'A-Z' 'a-z'`
+   echo "@call rundemo.bat $i" > $DIR/$ii.bat
+done
+
+# produce rundemo.bat
+cat >rundemo.bat <<__END__
+@echo off
+if not "x%1"=="x" goto okay
+echo Usage: %0 demoname
+echo where demoname is one of: Nim, Token, FDDI, FIFO1, FIFO2, Hist, HCube, Dyna
+goto end
+
+:okay
+echo.
+echo ***************************************************************************
+echo %1 -- an OMNeT++ demo simulation
+echo.
+echo Note: all source and data files that belong to the simulation are in the
+echo       samples/%1 directory. This is also the place for the output files.
+echo       The actual code of the simulation is linked into opp_demo.exe.
+echo.
+echo Running the simulation...
+echo ***************************************************************************
+echo.
+set OMNETPP_BITMAP_PATH=..\..\bitmaps
+cd samples\%1
+..\..\opp_demo
+cd ..\..
+
+:end
+__END__
 
 
 
