@@ -480,7 +480,7 @@ void cPvmMod::puts_onconsole(char * strmsg)
         err=err||pack_str(my_host);
         err=err||pack_str(strmsg);
         cModule *mod = simulation.contextModule();
-        err=err||pack_str( mod?mod->fullPath():"" );
+        err=err||pack_str( mod?mod->fullPath():(CONST_HACK)"" );
         err=err||pvm_send(parent_tid, MSG_PUTS_ONCONSOLE);
         if (err) opp_error(ePVM, "puts_onconsole()");
 }

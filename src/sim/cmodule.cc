@@ -436,7 +436,7 @@ char *cModule::displayString(int type)
         sprintf(dispname, "%s",isA());
     }
     char *s = ev.getDisplayString(simulation.runNumber(),dispname);
-    return s ? s : "";
+    return s ? s : (CONST_HACK)"";
 }
 
 void cModule::setDisplayStringNotify(void (*notify_func)(int,void*), void *data)

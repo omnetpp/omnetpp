@@ -126,7 +126,7 @@ class cFSM : public cObject
 
         // new functions
         int state()  {return _state;}
-        char *stateName()  {return _statename?_statename:"";}
+        char *stateName()  {return _statename?_statename:(CONST_HACK)"";}
         int inTransientState()  {return _state<0;}
         void setState(int state, char *stn=NULL)  {_state=state;_statename=stn;}
 };

@@ -687,3 +687,7 @@ Oct 6, 1999
     information about the event.
 Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.
 ------ omnetpp-2.0b2 released ------
+Nov 9,1999
+  - iso c++ compatibility hack: in expressions like return s?s:"" the "" needs
+    a cast to char* (to cast away constness). Added a (CONST_HACK) macro until
+    the source is made fully const-correct, hopefully in the near future.
