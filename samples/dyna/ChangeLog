@@ -1,3 +1,8 @@
+2004-02-01  Andras Varga
+
+	* display strings moved from omnetpp.ini to NED files (opp_neddoc 
+	doesn't find them in omnetpp.ini)
+
 2003-11-04  Andras Varga
 
 	* ned and msg files: comments reformatted to make them opp_neddoc friendly.

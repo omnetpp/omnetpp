@@ -41,7 +41,7 @@ endsimple
 
 
 //
-// Server which accepts connections from the client computers.
+// Accepts connections from the client computers.
 // It serves multiple connections at a time; each connection is handled
 // by a ServerProcess module created on demand.
 //
@@ -73,6 +73,7 @@ module ClientServer
         server: Server;
             parameters:
                 processingTime = input(0.2s,"Query processing time:");
+            display: "i=pc;p=160,60";
         switch: Switch;
             parameters:
                 // switchPkRate should be >= numClients, otherwise switch will
@@ -83,12 +84,14 @@ module ClientServer
             gatesizes:
                 in[numClients+1],
                 out[numClients+1];
+            display: "i=switch2;q=queue;p=160,140";
         client: Client[numClients];
             parameters:
                 timeout = 5s,
                 connIaTime = input(10s,"Connection interarrival time:"),
                 queryIaTime = input(2s,"Query interarrival time:"),
                 numQuery = input(5,"Number of queries per conn:");
+            display: "i=comp;p=50,220,m,10";
     connections:
         for i=0..numClients-1 do
             client[i].out --> delay 10ms --> switch.in[i];
