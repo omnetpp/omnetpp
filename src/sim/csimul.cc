@@ -77,7 +77,7 @@ cSimulation::cSimulation(const cSimulation& r) :
 cSimulation::cSimulation(const char *name) :
  cObject(name),
  locals("simulation-locals"),
- msgQueue( "message-queue" )
+ msgQueue( "scheduled-events" )
 {
     take( &locals );
     take( &msgQueue );
