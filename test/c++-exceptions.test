@@ -1,0 +1,12 @@
+%description:
+Test if exception handling works.
+
+%activity:
+try {
+    throw 42;
+  } catch (int i) {
+    ev << "caught " << i << "!!!\n";
+  }
+
+%contains: stdout
+caught 42!!!
