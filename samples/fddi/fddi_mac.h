@@ -32,7 +32,7 @@ class CountDownCounter // implements counter that counts downwards
       {
       StartTime = simulation.simTime();
       InitValue = InitVal;
-      enabled = TRUE;
+      enabled = true;
       }
     operator double()
       {
@@ -40,12 +40,12 @@ class CountDownCounter // implements counter that counts downwards
       }
     void disable()
       {
-      enabled = FALSE;
+      enabled = false;
       }
     void enable()
       {
       StartTime = simulation.simTime();
-      enabled = TRUE;
+      enabled = true;
       }
   };
 

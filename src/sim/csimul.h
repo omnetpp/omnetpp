@@ -70,7 +70,7 @@ class SIM_API cSimulation : public cObject
                                //      (network interface) module
 
      int err;                  // error code, 0 (== eOK) if no error
-     bool warn;                // if TRUE, overrides individual warn flags
+     bool warn;                // if true, overrides individual warn flags
 
      simtime_t sim_time;       // simulation time (time of current event)
      long event_num;           // sequence number of current event
@@ -209,7 +209,7 @@ class SIM_API cSimulation : public cObject
      void terminate(int errcode,const char *message); // print message + set error num
      void error(int errcode,const char *message);     // general error handler
      void warning(int errcode,const char *message);   // message + question:continue/abort?
-     bool ok()         {return err==eOK;}       // TRUE if sim. can go on
+     bool ok()         {return err==eOK;}       // true if sim. can go on
      int errorCode()   {return err;}            // error code
      void setErrorCode(int e) {err=e;}          // set error code without giving error message
      bool normalTermination();                  // examines error code

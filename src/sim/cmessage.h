@@ -89,7 +89,7 @@ class SIM_API cMessage : public cObject
 
   public:
     cMessage(cMessage& msg);
-    explicit cMessage(const char *name=NULL, int k=0, long len=1, int pri=0, bool err=FALSE);
+    explicit cMessage(const char *name=NULL, int k=0, long len=1, int pri=0, bool err=false);
     virtual ~cMessage() {}     // parlistp is deleted by ~cObject()
 
     // redefined functions

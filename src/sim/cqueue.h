@@ -46,7 +46,7 @@ class SIM_API cQueue : public cObject
     sQElem *headp, *tailp;          // inserting at head, removal at tail
     int n;                          // number of items in queue
     CompareFunc compare;            // compare function
-    bool asc;                       // order: TRUE=ascending
+    bool asc;                       // order: true=ascending
   protected:
     sQElem *find_qelem(cObject *obj);
     void insbefore_qelem(sQElem *p, cObject *obj);
@@ -55,7 +55,7 @@ class SIM_API cQueue : public cObject
 
   public:
     cQueue(cQueue& queue);
-    explicit cQueue(const char *name=NULL, CompareFunc cmp=NULL, bool a=FALSE);
+    explicit cQueue(const char *name=NULL, CompareFunc cmp=NULL, bool a=false);
     virtual ~cQueue();
 
     // redefined functions
@@ -69,7 +69,7 @@ class SIM_API cQueue : public cObject
     cQueue& operator=(cQueue& queue);
 
     // new functions
-    void setup(CompareFunc cmp=NULL, bool a=FALSE); //reconfig but not reorder!
+    void setup(CompareFunc cmp=NULL, bool a=false); //reconfig but not reorder!
 
     void insert(cObject *obj);                       // insert from head using cmpfunc
     void insertBefore(cObject *where, cObject *obj); // insert at specific place

@@ -52,8 +52,8 @@ bool cmdenvMemoryIsLow();
 
 TCmdenvApp::TCmdenvApp(ArgList *args, cIniFile *inifile) : TOmnetApp(args, inifile)
 {
-     opt_modulemsgs = TRUE;
-     opt_verbose = TRUE;
+     opt_modulemsgs = true;
+     opt_verbose = true;
 }
 
 TCmdenvApp::~TCmdenvApp()
@@ -75,8 +75,8 @@ void TCmdenvApp::readPerRunOptions( int run_nr )
      sprintf(section,"Run %d",run_nr);
      ini_file->error(); // clear error flag
 
-     opt_modulemsgs = ini_file->getAsBool2( section,"Cmdenv", "module-messages", TRUE );
-     opt_verbose = ini_file->getAsBool2( section,"Cmdenv", "verbose-simulation", TRUE );
+     opt_modulemsgs = ini_file->getAsBool2( section,"Cmdenv", "module-messages", true );
+     opt_verbose = ini_file->getAsBool2( section,"Cmdenv", "verbose-simulation", true );
      opt_displayinterval = ini_file->getAsTime2( section,"Cmdenv", "display-update", 10.0 );
 }
 
@@ -219,7 +219,7 @@ void TCmdenvApp::simulate()
      }
      else
      {
-        ev.disable_tracing = TRUE;
+        ev.disable_tracing = true;
         simtime_t next_update = 0.0 + opt_displayinterval;
         while(1)
         {
@@ -240,7 +240,7 @@ void TCmdenvApp::simulate()
             simulation.incEventNumber();
             if (!simulation.ok()) break;
         }
-        ev.disable_tracing = FALSE;
+        ev.disable_tracing = false;
      }
      simulation.stopClock();
 }

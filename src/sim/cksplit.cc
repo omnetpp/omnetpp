@@ -87,7 +87,7 @@ cKSplit::cKSplit(const char *name) : cDensityEstBase(name)
     critdata = critdata_default;
     divfunc = divfunc_const;
     divdata = divdata_default;
-    rangeext_enabled = TRUE;
+    rangeext_enabled = true;
 
     gridv = NULL;
     gridv_size = 0;
@@ -193,9 +193,9 @@ void cKSplit::transform()
     resetGrids( rootgrid );
 
     for (i=0; i<num_samples; i++)
-         insertIntoGrids( firstvals[i], FALSE );
+         insertIntoGrids( firstvals[i], false );
 
-    transfd = TRUE;
+    transfd = true;
 }
 
 void cKSplit::createRootGrid()
@@ -219,7 +219,7 @@ void cKSplit::collectTransformed(double x)
 {
    // see if x fits into current range and act accordingly
    if (x>=rangemin && x<rangemax)
-      insertIntoGrids( x, TRUE );
+      insertIntoGrids( x, true );
    else if (rangeext_enabled)
       newRootGrids( x );
    else if (x<rangemin)

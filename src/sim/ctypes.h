@@ -159,7 +159,7 @@ class SIM_API cModuleType : public cObject
     virtual cObject *dup()     {return new cModuleType(*this);}
     cModuleType& operator=(cModuleType& mi);
 
-    cModule *create(char *name, cModule *parentmod, bool local=TRUE);
+    cModule *create(char *name, cModule *parentmod, bool local=true);
     void buildInside(cModule *mod);
 
     // convenience function: create()+buildInside()+scheduleStart(now)+callInitialize()

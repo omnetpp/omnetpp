@@ -240,7 +240,7 @@ class SIM_API cModulePar : public cPar
     friend class cModule;
   private:
     cModule *omodp;        // owner module
-    bool log_initialised;  // logging: TRUE if the "label" line already written out
+    bool log_initialised;  // logging: true if the "label" line already written out
     long log_ID;           // logging: ID of the data lines
     simtime_t lastchange;  // logging: time of last value change
   private:

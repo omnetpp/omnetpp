@@ -204,7 +204,7 @@ class SIM_API cObject
     void destructChildren();
 
     // find an object by name through recursive forEach() calls
-    cObject *findObject(const char *name, bool deep=TRUE);
+    cObject *findObject(const char *name, bool deep=true);
 
     // sorting function for cQueue
     static int cmpbyname(cObject *one, cObject *other);

@@ -77,7 +77,7 @@ class SIM_API cCoroutine
   private:
 #ifdef PORTABLE_COROUTINES
     _Task *task;
-    bool started;           // TRUE after 1st stack switch
+    bool started;           // true after 1st stack switch
 #else  /* nonportable coroutines */
     CoroutineFnp fnp;       // pointer to task function
     void *arg;              // argument to task function
@@ -87,7 +87,7 @@ class SIM_API cCoroutine
     int *stklow;            // stkbeg + safety area
     int *sp;                // stack ptr (not used in task switches)
     JMP_BUF jmpbuf;         // task state (incl. stack ptr)
-    bool started;           // TRUE after 1st stack switch
+    bool started;           // true after 1st stack switch
 #endif
   public:
     static void init( unsigned total_stack, unsigned main_stack);
@@ -113,7 +113,7 @@ class SIM_API cCoroutine
 
 #ifdef PORTABLE_COROUTINES
 inline int cCoroutine::stackLeft() {return 0;}
-inline bool cCoroutine::stackLow() {return FALSE;}
+inline bool cCoroutine::stackLow() {return false;}
 //inline int *cCoroutine::getSP()    {return NULL;}
 #else /* nonportable coroutines */
 inline int cCoroutine::stackLeft() {return (char *)sp - (char *)stkbeg;}

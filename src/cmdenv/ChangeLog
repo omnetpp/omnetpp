@@ -118,3 +118,4 @@ April 6-10, 2000
  - added cmdenvDummy()/envirDummy(): functions which can/should be called from
    Envir in order to force the linker to include the Cmdenv library into the
    executable. (These functions do absolutely nothing.)
+ - TRUE/FALSE (defines) replaced by true/false (C++ keywords)

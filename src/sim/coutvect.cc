@@ -107,8 +107,8 @@ FILE *cOutFileMgr::filePointer()
 cOutVector::cOutVector(const char *name, int tupl) : cObject(name)
 {
    tuple = tupl;
-   enabled = TRUE;
-   initialised = FALSE;
+   enabled = true;
+   initialised = false;
    ID = simulation.outvectfilemgr.getNewID();
    starttime = 0.0;
    stoptime = 0.0;       // means 'no stop time'
@@ -162,7 +162,7 @@ void cOutVector::record(double value)
       {
           CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  1\n", ID,
                   simulation.contextModule()->fullPath(), name()));
-          initialised=TRUE;
+          initialised=true;
       }
       CHECK(fprintf(f,"%ld\t%lg\t%lg\n",ID, t, value));
    }
@@ -189,7 +189,7 @@ void cOutVector::record(double value1, double value2)
       {
          CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  2\n", ID,
                  simulation.contextModule()->fullPath(), name()));
-         initialised=TRUE;
+         initialised=true;
       }
 
       CHECK(fprintf(f,"%ld\t%lg\t%lg\t%lg\n",ID, t, value1, value2));
@@ -200,12 +200,12 @@ void cOutVector::record(double value1, double value2)
 
 void cOutVector::enable()
 {
-   enabled=TRUE;
+   enabled=true;
 }
 
 void cOutVector::disable()
 {
-   enabled=FALSE;
+   enabled=false;
 }
 
 void cOutVector::setStartTime(simtime_t t)

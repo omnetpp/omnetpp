@@ -343,3 +343,5 @@ April 4-10, 2000
  - added tkenvDummy()/envirDummy(): functions which can/should be called from
    Envir in order to force the linker to include the Tkenv library into the
    executable. (These functions do absolutely nothing.)
+Apr 10, 2000
+ - TRUE/FALSE (defines) replaced by true/false (C++ keywords)

@@ -351,7 +351,7 @@ void TMessageInspector::update()
    setButtonText(".nb.send.dest", buf);
 
    deleteInspectorListbox( ".nb.params" );
-   fillInspectorListbox(".nb.params", &msg->parList(), infofunc_infotext, FALSE);
+   fillInspectorListbox(".nb.params", &msg->parList(), infofunc_infotext, false);
 }
 
 void TMessageInspector::writeBack()

@@ -67,18 +67,18 @@ cGate::cGate(const char *s, char tp) : cObject(s)
     notify_inspector = NULL;
     data_for_inspector = NULL;
 
-    takeOwnership( FALSE );
+    takeOwnership( false );
 }
 
 void cGate::forEach(ForeachFunc do_fn)
 {
-    if (do_fn(this,TRUE))
+    if (do_fn(this,true))
     {
        if (delayp)    delayp->forEach( do_fn );
        if (errorp)    errorp->forEach( do_fn );
        if (dataratep) dataratep->forEach( do_fn );
     }
-    do_fn(this,FALSE);
+    do_fn(this,false);
 }
 
 cGate& cGate::operator=(cGate& gate)
@@ -240,7 +240,7 @@ void cGate::setOwnerModule(cModule *m, int gid)
 void cGate::setLink(cLinkType *lnk)
 {
       linkp = lnk;
-      bool tk = takeOwnership(); takeOwnership(TRUE);
+      bool tk = takeOwnership(); takeOwnership(true);
       setDelay( linkp ? linkp->createDelay() : NO(cPar) );
       setError( linkp ? linkp->createError() : NO(cPar) );
       setDataRate( linkp ? linkp->createDataRate() : NO(cPar) );
@@ -295,7 +295,7 @@ void cGate::deliver(cMessage *msg)
         // Bit error rate modelling
         if (errorp)
             if( dblrand() < 1.0 - pow(1.0-(double)(*errorp), msg->length()) )
-                msg->error=TRUE;
+                msg->error=true;
 
         // Transmission delay modelling
         double datarate;

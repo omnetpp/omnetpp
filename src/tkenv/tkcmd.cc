@@ -190,7 +190,7 @@ int slowExec_cmd(ClientData, Tcl_Interp *, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   app->runSimulation(0, 0, TRUE, FALSE);
+   app->runSimulation(0, 0, true, false);
    return TCL_OK;
 }
 
@@ -236,7 +236,7 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *, int argc, char **argv)
    splitInspectorName( argv[1], object, type);
 
    // fast run until we get to that module
-   app->runSimulation( 0, 0, FALSE, FALSE, (cSimpleModule *)object );
+   app->runSimulation( 0, 0, false, false, (cSimpleModule *)object );
 
    return TCL_OK;
 }
@@ -340,9 +340,9 @@ int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    // argv[2]: "objects" or "modules"
    bool modulelist;
    if (strcmp(argv[2],"modules")==0)
-       modulelist=TRUE;
+       modulelist=true;
    else if (strcmp(argv[2],"objects")==0)
-       modulelist=FALSE;
+       modulelist=false;
    else
        return TCL_ERROR;
 
@@ -351,18 +351,18 @@ int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 
    // set defaults & process options
    InfoFunc f = modulelist ? infofunc_module : infofunc_infotext;
-   bool deep = FALSE;
-   bool simpleonly = FALSE;
+   bool deep = false;
+   bool simpleonly = false;
    for(int i=4; i<argc; i++)
    {
      if (0==strcmp(argv[i],"deep"))
-        deep = TRUE;
+        deep = true;
      else if (0==strcmp(argv[i],"notdeep"))
-        deep = FALSE;
+        deep = false;
      else if (0==strcmp(argv[i],"allmodules"))
-        simpleonly = FALSE;
+        simpleonly = false;
      else if (0==strcmp(argv[i],"simpleonly"))
-        simpleonly = TRUE;
+        simpleonly = true;
      else if (0==strcmp(argv[i],"nameonly"))
         f = infofunc_nameonly;
      else if (0==strcmp(argv[i],"infotext"))
@@ -387,7 +387,7 @@ int stopSimulation_cmd(ClientData, Tcl_Interp *, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   app->stop_simulation = TRUE;
+   app->stop_simulation = true;
    return TCL_OK;
 }
 
@@ -512,11 +512,11 @@ int inspectMatching_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    else if ((type=insptype_code_from_name(argv[2])) < 0)
         {interp->result="unrecognized inspector type";return TCL_ERROR;}
 
-   bool countonly=FALSE;
+   bool countonly=false;
    if (argc==4)
    {
       if (strcmp(argv[3],"countonly")==0)
-         countonly=TRUE;
+         countonly=true;
       else
          return TCL_ERROR;
    }

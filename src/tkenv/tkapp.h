@@ -43,9 +43,9 @@ class TOmnetTkApp : public TOmnetApp
 
       int   run_nr;            // number of current simulation run
       bool  animation_ok;      // while execution, do message animation or not
-      bool  bkpt_hit;          // TRUE when must stop sim. due to breakpoint
-      bool  stop_simulation;   // TRUE when must stop simulation
-      bool  is_running;        // TRUE while simulation is running
+      bool  bkpt_hit;          // true when must stop sim. due to breakpoint
+      bool  stop_simulation;   // true when must stop simulation
+      bool  is_running;        // true while simulation is running
 
       cHead inspectors;        // list of inspector objects
    public:

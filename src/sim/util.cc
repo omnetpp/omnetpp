@@ -428,7 +428,7 @@ bool opp_strmatch(const char *s1, const char *s2)
     // case-sensitive comparison until
     // the length of the shorter string
     if (!s1 || !s2) {
-         return TRUE;
+         return true;
     } else {
          int l = Min(strlen(s1), strlen(s2));
          return strncmp( s1, s1, l)==0;

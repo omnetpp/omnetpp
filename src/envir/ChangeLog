@@ -242,4 +242,6 @@ April 6-10, 2000
        mysim  -l ../../lib/tkenv.so  -u Tkenv
    To allow all the above, the setup procedure (cEnvir::setup()) and
    the constructor and the setup() function of TOmnetApp was reorganized.
+Apr 10, 2000
+ - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
 

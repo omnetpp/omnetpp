@@ -33,9 +33,9 @@
 //
 cIniFile::cIniFile(const char *filename)
 {
-    warnings=FALSE;
+    warnings=false;
     num_sections = num_entries = 0;
-    _error = FALSE;
+    _error = false;
     fname = opp_strdup(filename);
 
     readFile( filename );
@@ -47,7 +47,7 @@ cIniFile::~cIniFile()
 }
 
 #define SYNTAX_ERROR(txt) \
-          { _error=TRUE;\
+          { _error=true;\
             ev.printfmsg("Error reading `%s', line %d: %s",fname,line,txt);\
             return; }
 
@@ -63,13 +63,13 @@ void cIniFile::_readFile(const char *fname, const char *sect)
     int line=0;
     int i;
 
-    _error = FALSE;
+    _error = false;
     buf[MAX_LINE-2] = '\0'; // 'line too long' guard
 
     file = fopen(fname,"r");
     if (file==NULL)
     {
-        _error=TRUE;
+        _error=true;
         ev.printfmsg("Cannot open `%s'.",fname);
         return;
     }
@@ -204,7 +204,7 @@ void cIniFile::_readFile(const char *fname, const char *sect)
         }
         if (num_entries>=MAX_INI_ENTRIES || num_sections>=MAX_INI_SECTIONS)
         {
-           _error=TRUE;               // file is too big
+           _error=true;               // file is too big
            ev.printfmsg("Ini file reader: Table full, change src/envir/cinifile.h");
            break;
         }
@@ -232,7 +232,7 @@ void cIniFile::clearContents()
 
 const char *cIniFile::_getValue(const char *sect, const char *ent, int raw)
 {
-    _error=FALSE;  // clear error flag
+    _error=false;  // clear error flag
     int i;
 
     // search for section
@@ -268,14 +268,14 @@ const char *cIniFile::_getValue(const char *sect, const char *ent, int raw)
        }
     }
     // not found
-    _error=TRUE;
+    _error=true;
     return NULL;
 }
 
 int cIniFile::error()
 {
     int e = _error;
-    _error = FALSE;
+    _error = false;
     return e;
 }
 
@@ -391,7 +391,7 @@ double cIniFile::getAsTime(const char *sect, const char *ent, double defaultval)
 
 const char *cIniFile::getRaw2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
 {
-    bool w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = false;
     const char *a = getRaw(sect1,key,defaultval);
     if (_error)
          a = getRaw(sect2,key,defaultval);
@@ -404,7 +404,7 @@ const char *cIniFile::getRaw2(const char *sect1, const char *sect2, const char *
 
 bool cIniFile::getAsBool2(const char *sect1, const char *sect2, const char *key, bool defaultval)
 {
-    bool w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = false;
     bool a = getAsBool(sect1,key,defaultval);
     if (_error)
          a = getAsBool(sect2,key,defaultval);
@@ -417,7 +417,7 @@ bool cIniFile::getAsBool2(const char *sect1, const char *sect2, const char *key,
 
 long cIniFile::getAsInt2(const char *sect1, const char *sect2, const char *key, long defaultval)
 {
-    bool w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = false;
     long a = getAsInt(sect1,key,defaultval);
     if (_error)
          a = getAsInt(sect2,key,defaultval);
@@ -430,7 +430,7 @@ long cIniFile::getAsInt2(const char *sect1, const char *sect2, const char *key, 
 
 double cIniFile::getAsDouble2(const char *sect1, const char *sect2, const char *key, double defaultval)
 {
-    bool w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = false;
     double a = getAsDouble(sect1,key,defaultval);
     if (_error)
          a = getAsDouble(sect2,key,defaultval);
@@ -443,7 +443,7 @@ double cIniFile::getAsDouble2(const char *sect1, const char *sect2, const char *
 
 const char *cIniFile::getAsString2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
 {
-    bool w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = false;
     const char *a = getAsString(sect1,key,defaultval);
     if (_error)
          a = getAsString(sect2,key,defaultval);
@@ -456,7 +456,7 @@ const char *cIniFile::getAsString2(const char *sect1, const char *sect2, const c
 
 double cIniFile::getAsTime2(const char *sect1, const char *sect2, const char *key, double defaultval)
 {
-    bool w = warnings; warnings = FALSE;
+    bool w = warnings; warnings = false;
     double a = getAsTime(sect1,key,defaultval);
     if (_error)
          a = getAsTime(sect2,key,defaultval);

@@ -54,7 +54,7 @@ cTDExpandingWindows::cTDExpandingWindows(const char *name,
     pdf = f; pdfdata = p;
     setParameters(reps, minw, wind, acc);
     func = NULL; size = 0;
-    go = TRUE;
+    go = true;
 }
 
 cTDExpandingWindows::~cTDExpandingWindows()
@@ -105,7 +105,7 @@ cTDExpandingWindows& cTDExpandingWindows::operator=(cTDExpandingWindows& res)
 void cTDExpandingWindows::reset()
 {
     detreps = repeats;
-    transval = FALSE;
+    transval = false;
 
     while (func)
     {
@@ -219,7 +219,7 @@ void cTDExpandingWindows::detectTransient()
 
 cADByStddev::cADByStddev(cADByStddev& r) : cAccuracyDetection()
 {
-    go=resaccval=FALSE;
+    go=resaccval=false;
     detreps=sctr=0;
     ssum=sqrsum=0.0;
 
@@ -234,7 +234,7 @@ cADByStddev::cADByStddev(const char *name,
    pdf = f; pdfdata = p;
    accuracy = acc;
    repeats=detreps=reps;
-   go=resaccval=FALSE;
+   go=resaccval=false;
    sctr=0;
    ssum=sqrsum=0.0;
 }
@@ -268,7 +268,7 @@ double cADByStddev::stddev()
 void cADByStddev::reset()
 {
    ssum = sqrsum = 0.0; sctr = 0;
-   resaccval = FALSE;
+   resaccval = false;
 }
 
 // collect a value

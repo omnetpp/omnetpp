@@ -68,7 +68,7 @@ class SIM_API cBag : public cObject
     void *operator[](int m)          // act as a vector
           {return get(m);}
     bool isUsed(int m);              // see if item m exists or not
-    void *remove(int m);             // get item; returns TRUE if existed
+    void *remove(int m);             // get item; returns true if existed
 };
 
 //==========================================================================

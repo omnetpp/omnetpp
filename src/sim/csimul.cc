@@ -48,7 +48,7 @@ cSimulation simulation( "simulation", &superhead );
 //==========================================================================
 
 // auxiliary flag, used only locally (a dirty solution...)
-static bool currentmod_was_deleted = FALSE;
+static bool currentmod_was_deleted = false;
 
 // writing date and time on a stream - used in cSimulation::writeresult(..)
 
@@ -115,7 +115,7 @@ static void runningmod_deleter_func(void *)
      for(;;)
      {
          simulation.del( simulation.runningModule()->id() );
-         currentmod_was_deleted = TRUE;  // checked & reset at cSimulation::doOneEvent()
+         currentmod_was_deleted = true;  // checked & reset at cSimulation::doOneEvent()
          simulation.transferToMain();
      }
 }
@@ -127,22 +127,22 @@ void cSimulation::setup()
 
 void cSimulation::forEach( ForeachFunc do_fn )
 {
-     if (do_fn(this,TRUE))
+     if (do_fn(this,true))
      {
          if (systemmodp!=NULL)
              systemmodp->forEach( do_fn );
          msgQueue.forEach( do_fn );
      }
-     do_fn(this,FALSE);
+     do_fn(this,false);
 }
 
 static bool _do_writesnapshot(cObject *obj, bool beg, ostream& s)
 {
       static ostream *os;
 
-      if (!obj) {os = &s;return FALSE;} //setup call
+      if (!obj) {os = &s;return false;} //setup call
 
-      if (os->fail()) return FALSE;   // there was an error, quit
+      if (os->fail()) return false;   // there was an error, quit
       if (beg) obj->writeTo( *os );
       return !os->fail();      // check stream status
 }
@@ -150,14 +150,14 @@ static bool _do_writesnapshot(cObject *obj, bool beg, ostream& s)
 bool cSimulation::snapshot(cObject *object, const char *label)
 {
      if (!object)
-         {opp_error("snapshot(): object pointer is NULL");return FALSE;}
+         {opp_error("snapshot(): object pointer is NULL");return false;}
 
      filebuf file;
      file.open( snapshotfilemgr.fileName(), ios::out|ios::app);
      ostream os( &file );
 
      bool w = warnings(); // temporarily disable warnings
-     setWarnings( FALSE );
+     setWarnings( false );
 
      os << "================================================" << "\n";
      os << "||               SNAPSHOT                     ||" << "\n";
@@ -179,7 +179,7 @@ bool cSimulation::snapshot(cObject *object, const char *label)
         os << "| Initiated by:  user\n";
      os << "================================================" << "\n\n";
 
-     _do_writesnapshot( NULL,FALSE, os );         // setup
+     _do_writesnapshot( NULL,false, os );         // setup
      object->forEach( (ForeachFunc)_do_writesnapshot );   // do
 
      setWarnings( w );
@@ -272,8 +272,8 @@ bool cSimulation::isUnique(const char *s)
      for (int i=1, k=-1; i<size; i++)
         if (vect[i] && vect[i]->isName(s) && (!vect[i]->isVector() || vect[i]->index()==0))
            if (k==-1) k=i;
-           else return FALSE;
-     return TRUE;
+           else return false;
+     return true;
 }
 
 int cSimulation::find(const char *s, int n, int pt)
@@ -359,7 +359,7 @@ bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
       {
           // bad network
           opp_error(eSETUP);
-          return FALSE;
+          return false;
       }
 
       // set run number
@@ -369,7 +369,7 @@ bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
       networktype = network;
 
       // call NEDC-generated network setup function (with warnings turned off)
-      bool w=warnings();setWarnings(FALSE);// temporarily turn off warnings
+      bool w=warnings();setWarnings(false);// temporarily turn off warnings
       networktype->setupfunc();
       setWarnings( w );
       if (!ok()) goto error;
@@ -409,18 +409,18 @@ bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
       }
 
       // network set up correctly
-      return TRUE;
+      return true;
 
       // if failed, clean up the whole stuff
       error:
       deleteNetwork();
-      return FALSE;
+      return false;
 }
 
 void cSimulation::startRun()
 {
      // temporarily disable warnings
-     bool w = warnings(); setWarnings(FALSE);
+     bool w = warnings(); setWarnings(false);
 
      err = eOK;
      msgQueue.clear();
@@ -458,7 +458,7 @@ void cSimulation::startRun()
      parchangefilemgr.deleteFile();  // parameter change log file manager
      snapshotfilemgr.deleteFile();   // snapshot file manager
 
-     scalarfile_header_written=FALSE;
+     scalarfile_header_written=false;
 
      setWarnings(w);
 }
@@ -642,7 +642,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         // check stack overflow, but only if this module still exists
         //   (note: currentmod_was_deleted is set by runningmod_deleter)
         if (currentmod_was_deleted)
-           currentmod_was_deleted = FALSE;
+           currentmod_was_deleted = false;
         else
            if (mod->stackOverflow())
               opp_error("Stack violation (%s stack too small?) in module `%s'",
@@ -725,7 +725,7 @@ void cSimulation::warning(int errc, const char *message)
     else
     {
         if(ev.askYesNo( "Module %s: %s. Continue?",
-                         contextModule()->fullPath(), message) == FALSE)
+                         contextModule()->fullPath(), message) == false)
         {
             err = errc;
 
@@ -746,7 +746,7 @@ void cSimulation::recordScalar(const char *name, double value)
 
     if (!scalarfile_header_written)
     {
-        scalarfile_header_written = TRUE;
+        scalarfile_header_written = true;
         fprintf(f,"run %d \"%s\"\n", run_number, networktype->name());
     }
 
@@ -761,7 +761,7 @@ void cSimulation::recordScalar(const char *name, const char *text)
 
     if (!scalarfile_header_written)
     {
-        scalarfile_header_written = TRUE;
+        scalarfile_header_written = true;
         fprintf(f,"run %d \"%s\"\n", run_number, networktype->name());
     }
 
@@ -776,7 +776,7 @@ void cSimulation::recordStats(const char *name, cStatistic *stats)
 
     if (!scalarfile_header_written)
     {
-        scalarfile_header_written = TRUE;
+        scalarfile_header_written = true;
         fprintf(f,"run %d \"%s\"\n", run_number, networktype->name());
     }
 

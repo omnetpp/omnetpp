@@ -44,7 +44,7 @@ cPSquare::cPSquare(cPSquare& r) : cDensityEstBase()
 
 cPSquare::cPSquare (const char *name, int b) : cDensityEstBase(name)
 {
-    transfd = TRUE;
+    transfd = true;
 
     numcells=b;
     numobs=0;

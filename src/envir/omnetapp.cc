@@ -152,7 +152,7 @@ void TOmnetApp::getOutVectorConfig(const char *modname,const char *vecname, /*in
 
     // get 'module.vector.disabled=' entry
     strcpy(end,"enabled");
-    enabled = ini_file->getAsBool2(section,"OutVectors",buffer,TRUE);
+    enabled = ini_file->getAsBool2(section,"OutVectors",buffer,true);
 
     // get 'module.vector.interval=' entry
     strcpy(end,"interval");
@@ -202,11 +202,11 @@ void TOmnetApp::readOptions()
     ini_file->error(); // clear error flag
 
     // this must be the very first:
-    opt_ini_warnings = ini_file->getAsBool( "General", "ini-warnings", FALSE );
+    opt_ini_warnings = ini_file->getAsBool( "General", "ini-warnings", false );
     ini_file->warnings = opt_ini_warnings;
 
     opt_total_stack_kb = ini_file->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB );
-    opt_distributed = ini_file->getAsBool( "General", "distributed", FALSE );
+    opt_distributed = ini_file->getAsBool( "General", "distributed", false );
 
     opt_load_libs = ini_file->getAsString( "General", "load-libs", "" );
 
@@ -223,16 +223,16 @@ void TOmnetApp::readPerRunOptions(int run_nr)
     opt_snapshotfile_name = ini_file->getAsString2( section, "General", "snapshot-file", "omnetpp.sna" );
     opt_outvectfile_name = ini_file->getAsString2( section, "General", "output-vector-file", "omnetpp.vec" );
     opt_scalarfile_name = ini_file->getAsString2( section, "General", "output-scalar-file", "omnetpp.sca" );
-    opt_logparchanges = ini_file->getAsBool2( section, "General", "log-parchanges", FALSE );
+    opt_logparchanges = ini_file->getAsBool2( section, "General", "log-parchanges", false );
     opt_parchangefile_name = ini_file->getAsString2( section, "General", "parchange-file", "omnetpp.pch" );
-    opt_pause_in_sendmsg = ini_file->getAsBool2( section, "General", "pause-in-sendmsg", FALSE );
-    opt_warnings = ini_file->getAsBool2( section, "General", "warnings", TRUE );
+    opt_pause_in_sendmsg = ini_file->getAsBool2( section, "General", "pause-in-sendmsg", false );
+    opt_warnings = ini_file->getAsBool2( section, "General", "warnings", true );
     opt_simtimelimit = ini_file->getAsTime2( section, "General", "sim-time-limit", 0.0 );
     opt_cputimelimit = (long)ini_file->getAsTime2( section, "General", "cpu-time-limit", 0.0 );
     opt_netifcheckfreq = ini_file->getAsInt2( section, "General", "netif-check-freq", 1);
 
     // temporarily disable warnings
-    bool w = ini_file->warnings; ini_file->warnings = FALSE;
+    bool w = ini_file->warnings; ini_file->warnings = false;
     int fromtable = 0;
     // seeds for random number generators
     opt_genk_randomseed[0] = ini_file->getAsInt2( section, "General", "random-seed",
@@ -309,12 +309,12 @@ bool TOmnetApp::gets(const char *promptstr, char *buf, int len)
     buffer[strlen(buffer)-1] = '\0'; // chop LF
 
     if( buffer[0]=='\x1b' ) // ESC?
-       return TRUE;
+       return true;
     else
     {
        if( buffer[0] )
           strncpy(buf, buffer, len);
-       return FALSE;
+       return false;
     }
 }
 

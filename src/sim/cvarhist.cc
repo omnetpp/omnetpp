@@ -273,7 +273,7 @@ void cVarHistogram::transform() //--LG
       for (i=0; i<num_samples; i++)
          collectTransformed( firstvals[i] );
    }
-   transfd = TRUE;
+   transfd = true;
 }
 
 void cVarHistogram::collectTransformed(double val)

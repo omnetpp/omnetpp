@@ -204,7 +204,7 @@ void cModuleInterface::addParametersGatesTo( cModule *module)
         if (opp_strcmp(paramv[i].types,"S")==0)
         {
            module->par( paramv[i].name ) = "";
-           module->par( paramv[i].name ).setInput(TRUE);
+           module->par( paramv[i].name ).setInput(true);
         }
      }
 }

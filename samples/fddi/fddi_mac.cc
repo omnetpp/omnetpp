@@ -23,7 +23,7 @@
 #define TRACE_MSG // turn on output messages
 // #define STATE_CHK // turn on E-FSM state checking
 
-static bool accelerated = FALSE;
+static bool accelerated = false;
 
 Define_Module( FDDI_MAC )
 Define_Module( FDDI_MAC4Ring )
@@ -188,7 +188,7 @@ void FDDI_MAC::TokenCaptureEnd(cMessage *msg)
     }
   else
     LateCounter=0;
-  SyncFinished=FALSE;
+  SyncFinished=false;
   UsedSyncBandwidth=0;
   delete msg;
   }
@@ -373,14 +373,14 @@ void FDDI_MAC::PlayTTRP() // Play the Timed Token Ring Protocol
   // the function didn't return => no more sync could be transmitted
   if ( !SyncFinished )
     {
-    SyncFinished=TRUE;
+    SyncFinished=true;
     if ( EarlyToken )
       {
       THT.enable();
       priority_i=7;
       }
     }
-  // here SyncFinished is TRUE
+  // here SyncFinished is true
   if ( EarlyToken && !async_buf.empty() &&
        (!RestrictedToken || IAmRestrictedOwner) && ((double)THT)>0 )
     { // the 1st packet can be transmitted
@@ -427,8 +427,8 @@ FDDI_MAC::FDDI_MAC(char *namestr, cModule *parentmod) :
   UsedSyncBandwidth=0; // Used Synchronous Bandwidth (in bytes)
   RingID=-1; // To cause error, if not set later
   IdleTimes=0; // # of tokens arrived since packet was transmitted for the last time
-  IAmRestrictedOwner=FALSE;	// This station is a/the ResrictedToken owner
-  SyncFinished=FALSE;	 // transm. of sync. packets is already finished
+  IAmRestrictedOwner=false;	// This station is a/the ResrictedToken owner
+  SyncFinished=false;	 // transm. of sync. packets is already finished
   }
 
 FDDI_MAC4Ring::FDDI_MAC4Ring(char *namestr, cModule *parentmod) :
@@ -444,7 +444,7 @@ void FDDI_MAC::activity()
     my_station_id = parentModule()->index(); // RO: use only in a ring made by indexing ...
   else
     my_station_id = par("StationID");
-  IAmRestrictedOwner=FALSE;
+  IAmRestrictedOwner=false;
   TRT=T_Opr; // it is auto enabled
   TRTExpire = new cMessage("TRT_EXPIRED",TRT_EXPIRED,0);
   scheduleAt(simTime()+T_Opr,TRTExpire);
@@ -453,7 +453,7 @@ void FDDI_MAC::activity()
     // Issue a token:
     cMessage *tok = new cMessage("FDDI_TOKEN", FDDI_TOKEN);
     tok->setLength(TokenLength);
-    tok->addPar("restricted") = FALSE;
+    tok->addPar("restricted") = false;
     send( tok, "out");
     }
   for(;;)

@@ -84,7 +84,7 @@ cModule::cModule(const char *name, cModule *parentmod) :
         take( &machinev );
         take( &members );
 
-        warn = TRUE;
+        warn = true;
         parentmodp = parentmod;
         idx=0; vectsize=-1;
 
@@ -108,7 +108,7 @@ cModule& cModule::operator=(cModule&)
 
 void cModule::forEach(ForeachFunc do_fn )
 {
-       if (do_fn(this,TRUE))
+       if (do_fn(this,true))
        {
           paramv.forEach( do_fn );
           gatev.forEach( do_fn );
@@ -116,7 +116,7 @@ void cModule::forEach(ForeachFunc do_fn )
           for (cSubModIterator submod(*this); !submod.end(); submod++)
              submod()->forEach( do_fn );
        }
-       do_fn(this,FALSE);
+       do_fn(this,false);
 }
 
 void cModule::setId( int n )
@@ -229,7 +229,7 @@ void cModule::addPar(const char *pname)
           i = paramv.add( new cModulePar(pname) );
           cModulePar *p = (cModulePar *) &par(i);
           p->setOwnerModule( this );
-          p->setInput( TRUE );
+          p->setInput( true );
       }
 }
 
@@ -248,7 +248,7 @@ bool cModule::checkInternalConnections()
            )
         {
              opp_error("Gate `%s' is not connected", g->fullPath());
-             return FALSE;
+             return false;
         }
      }
 
@@ -262,11 +262,11 @@ bool cModule::checkInternalConnections()
            if (g && !g->isConnected())
            {
               opp_error("Gate `%s' is not connected", g->fullPath());
-              return FALSE;
+              return false;
            }
         }
      }
-     return TRUE;
+     return true;
 }
 
 void cModule::addMachinePar(const char *pname)
@@ -294,7 +294,7 @@ cModule *cModule::parentModule()
 int cModule::findGate(const char *s, int sn)
 {
     bool w = simulation.warnings();
-    simulation.setWarnings( FALSE );
+    simulation.setWarnings( false );
 
     cGate *g = 0; // initialize g to prevent compiler warnings
     int i = 0, n = gates();
@@ -470,7 +470,7 @@ cSimpleModule::cSimpleModule(cSimpleModule& mod ) :
   cCoroutine(),
   cModule( mod.name(), mod.parentmodp ),
   locals( NULL, NULL),
-  putAsideQueue( NULL, NULL, FALSE )
+  putAsideQueue( NULL, NULL, false )
 {
         take( &locals );
         take( &putAsideQueue );
@@ -485,7 +485,7 @@ cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stks
   cCoroutine(),
   cModule( name, parentmod ),
   locals( "local-objects", NULL),
-  putAsideQueue( "putaside-queue", cMessage::cmpbydelivtime, FALSE )
+  putAsideQueue( "putaside-queue", cMessage::cmpbydelivtime, false )
 {
         state = sREADY;
         heap = NULL;
@@ -545,7 +545,7 @@ void cSimpleModule::info(char *buf)
 
 void cSimpleModule::forEach( ForeachFunc do_fn )
 {
-       if (do_fn(this,TRUE))
+       if (do_fn(this,true))
        {
           paramv.forEach( do_fn );
           gatev.forEach( do_fn );
@@ -555,7 +555,7 @@ void cSimpleModule::forEach( ForeachFunc do_fn )
           for (cSubModIterator submod(*this); !submod.end(); submod++)
              submod()->forEach( do_fn );
        }
-       do_fn(this,FALSE);
+       do_fn(this,false);
 }
 
 void cSimpleModule::setId( int n )
@@ -659,7 +659,7 @@ void cSimpleModule::deleteModule()
         }
 
         // adjust gates that were directed here
-        bool w=simulation.warnings(); simulation.setWarnings(FALSE);
+        bool w=simulation.warnings(); simulation.setWarnings(false);
         for (int i=0; i<gates(); i++)
         {
             cGate *g = gate(i);
@@ -1288,7 +1288,7 @@ void cCompoundModule::deleteModule()
     }
 
     // adjust gates that were directed here
-    bool w=simulation.warnings(); simulation.setWarnings(FALSE);
+    bool w=simulation.warnings(); simulation.setWarnings(false);
     for (int i=0; i<gates(); i++)
     {
             cGate *g = gate(i);

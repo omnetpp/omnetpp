@@ -97,7 +97,7 @@ void TGraphicalModWindow::createWindow()
 
 int TGraphicalModWindow::redraw(Tcl_Interp *interp, int, char **)
 {
-   bool w = simulation.warnings(); simulation.setWarnings(FALSE);
+   bool w = simulation.warnings(); simulation.setWarnings(false);
 
    // loop through all submodules and draw them
    for (cSubModIterator submod(*(cModule *)object); !submod.end(); submod++)
@@ -328,13 +328,13 @@ void TCompoundModInspector::update()
    setLabel(".nb.info.id.e", id);
 
    deleteInspectorListbox( ".nb.submods" );
-   fillModuleListbox(".nb.submods", mod, infofunc_module, FALSE, FALSE);
+   fillModuleListbox(".nb.submods", mod, infofunc_module, false, false);
 
    deleteInspectorListbox( ".nb.params" );
-   fillInspectorListbox(".nb.params", &mod->paramv, infofunc_infotext, FALSE);
+   fillInspectorListbox(".nb.params", &mod->paramv, infofunc_infotext, false);
 
    deleteInspectorListbox( ".nb.gates" );
-   fillInspectorListbox(".nb.gates", &mod->gatev, infofunc_infotext, FALSE);
+   fillInspectorListbox(".nb.gates", &mod->gatev, infofunc_infotext, false);
 
 }
 
@@ -385,20 +385,20 @@ void TSimpleModInspector::update()
    }
 
    deleteInspectorListbox( ".nb.params" );
-   fillInspectorListbox(".nb.params", &mod->paramv, infofunc_infotext, FALSE);
+   fillInspectorListbox(".nb.params", &mod->paramv, infofunc_infotext, false);
 
    deleteInspectorListbox( ".nb.gates" );
-   fillInspectorListbox(".nb.gates", &mod->gatev, infofunc_infotext, FALSE);
+   fillInspectorListbox(".nb.gates", &mod->gatev, infofunc_infotext, false);
 
    deleteInspectorListbox( ".nb.vars" );
-   fillInspectorListbox(".nb.vars", &mod->members, infofunc_infotext, FALSE);
-   fillInspectorListbox(".nb.vars", &mod->locals, infofunc_infotext, FALSE);
+   fillInspectorListbox(".nb.vars", &mod->members, infofunc_infotext, false);
+   fillInspectorListbox(".nb.vars", &mod->locals, infofunc_infotext, false);
 
    deleteInspectorListbox( ".nb.paq" );
-   fillInspectorListbox(".nb.paq", &mod->putAsideQueue, infofunc_infotext, FALSE);
+   fillInspectorListbox(".nb.paq", &mod->putAsideQueue, infofunc_infotext, false);
 
    deleteInspectorListbox( ".nb.submods" );
-   fillModuleListbox(".nb.submods", mod, infofunc_module, FALSE, FALSE);
+   fillModuleListbox(".nb.submods", mod, infofunc_module, false, false);
 }
 
 //=======================================================================
@@ -436,7 +436,7 @@ void TGateInspector::update()
    if (g->datarate()) setLabel(".main.datarate.e", (double)(*g->datarate()) );
               else setLabel(".main.datarate.e", "none" );
 
-   bool w = simulation.warnings(); simulation.setWarnings(FALSE);
+   bool w = simulation.warnings(); simulation.setWarnings(false);
    setLabel(".main.trfinish.e", g->transmissionFinishes() );
 
    cGate *gate;

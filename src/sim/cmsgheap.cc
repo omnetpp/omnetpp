@@ -104,10 +104,10 @@ void cMessageHeap::forEach( ForeachFunc do_fn )
 {
      sort();
 
-     if (do_fn(this,TRUE))
+     if (do_fn(this,true))
          for (int i=1; i<=n; i++)
              if (h[i]) h[i]->forEach( do_fn );
-     do_fn(this,FALSE);
+     do_fn(this,false);
 }
 
 void cMessageHeap::clear()

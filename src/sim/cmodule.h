@@ -89,7 +89,7 @@ class SIM_API cModule : public cObject
     friend class cSimulation;
 
   public:
-    static bool pause_in_sendmsg; // if TRUE, split send() with transferToMain()
+    static bool pause_in_sendmsg; // if true, split send() with transferToMain()
 
   protected:
     cModuleType *mod_type;  // type of this module
@@ -174,7 +174,7 @@ class SIM_API cModule : public cObject
     int findGate(const char *gatename, int sn=-1);  // id of a gate
     bool hasGate(const char *gatename, int sn=-1) {return findGate(gatename,sn)>=0;} // check if gate exists
 
-    bool checkInternalConnections();      // TRUE means OK; called from NEDC code
+    bool checkInternalConnections();      // true means OK; called from NEDC code
 
     // module parameters
     int params() {return paramv.items();}    // no. of pars
@@ -266,7 +266,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
 
     // redefined cModule functions:
     virtual void setId(int n);
-    virtual bool isSimple() {return TRUE;}
+    virtual bool isSimple() {return true;}
 
   public:
     // return event handling scheme
@@ -373,7 +373,7 @@ class SIM_API cCompoundModule : public cModule
     cCompoundModule& operator=(cCompoundModule& mod);
 
     // redefined cModule functions
-    virtual bool isSimple() {return FALSE;}
+    virtual bool isSimple() {return false;}
 
     // interface for calling initialize() and finish() from outside
     virtual void callInitialize();   // first for this module, then for submods

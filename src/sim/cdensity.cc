@@ -87,7 +87,7 @@ void cDensityEstBase::clearResult ()
    cell_under = cell_over = 0;
    delete [] firstvals;
    firstvals=NULL;
-   transfd = FALSE;
+   transfd = false;
 }
 
 void cDensityEstBase::setRange(double lower, double upper)

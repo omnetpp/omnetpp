@@ -45,7 +45,7 @@ Register_OmnetApp("SlaveEnv",TSlaveApp,true,10,"default slave interface, for dis
 TSlaveApp::TSlaveApp(ArgList *args, cIniFile *inifile) : TOmnetApp(args, inifile)
 {
      // these are default values and will be overwritten by ini file settings
-     opt_write_slavelog = TRUE;
+     opt_write_slavelog = true;
      opt_slavelogfile_name = "slave.log";
 }
 
@@ -111,12 +111,12 @@ void TSlaveApp::readOptions()
 {
      TOmnetApp::readOptions();
 
-     opt_write_slavelog = ini_file->getAsBool("Slaves", "write-slavelog", TRUE );
+     opt_write_slavelog = ini_file->getAsBool("Slaves", "write-slavelog", true );
      opt_slavelogfile_name = ini_file->getAsString("Slaves", "slavelog-file", "slave.log" );
-     opt_module_msgs = ini_file->getAsBool("Slaves", "module-messages", TRUE );
-     opt_errmsgs2cons = ini_file->getAsBool("Slaves", "errmsgs-to-console", TRUE );
-     opt_infomsgs2cons = ini_file->getAsBool("Slaves", "infomsgs-to-console", FALSE );
-     opt_modmsgs2cons = ini_file->getAsBool("Slaves", "modmsgs-to-console", FALSE );
+     opt_module_msgs = ini_file->getAsBool("Slaves", "module-messages", true );
+     opt_errmsgs2cons = ini_file->getAsBool("Slaves", "errmsgs-to-console", true );
+     opt_infomsgs2cons = ini_file->getAsBool("Slaves", "infomsgs-to-console", false );
+     opt_modmsgs2cons = ini_file->getAsBool("Slaves", "modmsgs-to-console", false );
 }
 
 
@@ -162,7 +162,7 @@ bool TSlaveApp::gets(const char *promptstr, char *buf, int len)
      if (simulation.netInterface())
         return simulation.netInterface()->gets_onconsole(promptstr,buf,len);
      else
-        return FALSE;
+        return false;
 }
 
 int TSlaveApp::askYesNo(const char *question)

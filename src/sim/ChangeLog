@@ -809,3 +809,5 @@ April 6-10, 2000
    libs (they are treated more like a collection of object files), and the
    dynamic loader acts practically as a linker and collects the symbols at
    runtime from the different .so files.
+Apr 10, 2000
+ - TRUE/FALSE (defines) replaced by true/false (C++ keywords)

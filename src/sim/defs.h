@@ -69,6 +69,7 @@
 
 //=== other common defines
 
+// for backwards compatibility:
 #ifndef TRUE
 #define TRUE      true
 #define FALSE     false

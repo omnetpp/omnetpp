@@ -70,9 +70,9 @@ static bool _do_list(cObject *obj, bool beg, ostream& s);
       the enclosing object should own them.
    What container objects derived from cObject should do:
       - they use the functions: take(obj), drop(obj), free(obj)
-      - when an object is inserted, if takeOwnership() is TRUE, should
+      - when an object is inserted, if takeOwnership() is true, should
         take ownership of object by calling take(obj).
-        TAKEOWNERSHIP() DEFAULTS TO TRUE.
+        TAKEOWNERSHIP() DEFAULTS TO true.
       - when an object is removed, they should call drop(obj) for it if
         they were the owner.
       - copy constructor copies should dup() and take ownership of objects
@@ -91,7 +91,7 @@ static bool _do_list(cObject *obj, bool beg, ostream& s);
 cObject::cObject(cObject& obj)
 {
     DETERMINE_STORAGE();
-    tkownership = TRUE;
+    tkownership = true;
     namestr = opp_strdup( obj.namestr );
 
     ownerp = NULL;
@@ -104,7 +104,7 @@ cObject::cObject(cObject& obj)
 cObject::cObject()
 {
     DETERMINE_STORAGE();
-    tkownership = TRUE;
+    tkownership = true;
     namestr = NULL;
 
     ownerp = NULL;
@@ -116,7 +116,7 @@ cObject::cObject()
 cObject::cObject(const char *name)
 {
     DETERMINE_STORAGE();
-    tkownership = TRUE;
+    tkownership = true;
     namestr = opp_strdup( name );
 
     ownerp = NULL;
@@ -129,7 +129,7 @@ cObject::cObject(const char *name, cObject *ownerobj)
 {
     DETERMINE_STORAGE();
     namestr = opp_strdup( name );
-    tkownership = TRUE;
+    tkownership = true;
 
     ownerp = NULL;
     setOwner( ownerobj );
@@ -202,13 +202,13 @@ void cObject::deleteChildren()
 {
      bool nothing;                           // a bit difficult, because
      do {                                    // deleting a container object
-          nothing = TRUE;                    // may add new items
+          nothing = true;                    // may add new items
           cObject *t, *p = firstchildp;
           while (p)
           {
               t=p; p=p->nextp;
               if (t->storage()=='D')
-                 {delete t; nothing = FALSE;}
+                 {delete t; nothing = false;}
           }
      } while (!nothing);
 }
@@ -257,14 +257,14 @@ const char *cObject::fullPath()
      necessary information. (Yes, this limits their recursive use :-( ).
   o  forEach() takes a function do_fn (of DoItFunc type) with 2 arguments:
      a (cObject *) and a (bool). First, forEach() should call do_fn with
-     (this,TRUE) to inform it about entering the object. Then, if this call
-     returned TRUE, it must call forEach(do_fn) for every contained object.
-     Finally, it must call do_fn with (this,FALSE) to let do_fn know that
+     (this,true) to inform it about entering the object. Then, if this call
+     returned true, it must call forEach(do_fn) for every contained object.
+     Finally, it must call do_fn with (this,false) to let do_fn know that
      there's no more contained object.
   o  Functions using forEach() work in the following way: they call do_fn
-     with (NULL,FALSE,<additional args>) to initialize the static variables
+     with (NULL,false,<additional args>) to initialize the static variables
      inside the function. Then they call forEach( (DoItFunc)do_fn ) for the
-     given object. Finally, read the results by calling do_fn(NULL, FALSE,
+     given object. Finally, read the results by calling do_fn(NULL, false,
      <additional args>). DoItFuncs mustn't call themselves recursively!
   --VA
      ( yeah, I know this all is kind of weird, but changing it would take
@@ -273,8 +273,8 @@ const char *cObject::fullPath()
 
 void cObject::forEach( ForeachFunc do_fn )
 {
-        do_fn(this,TRUE);
-        do_fn(this,FALSE);
+        do_fn(this,true);
+        do_fn(this,false);
 }
 
 void cObject::writeTo(ostream& os)
@@ -287,16 +287,16 @@ void cObject::writeTo(ostream& os)
 void cObject::writeContents(ostream& os)
 {
       //os << "  objects:\n";
-      _do_list( NULL, FALSE, os );                    // prepare do_list
+      _do_list( NULL, false, os );                    // prepare do_list
       forEach( (ForeachFunc)_do_list );
 }
 
 cObject *cObject::findObject(const char *objname, bool deep)
 {
       cObject *p;
-      _do_find( NULL, FALSE, objname, p, deep ); // give 'objname' and 'deep' to do_find
+      _do_find( NULL, false, objname, p, deep ); // give 'objname' and 'deep' to do_find
       forEach( (ForeachFunc)_do_find );          // perform search
-      _do_find( NULL, FALSE, objname, p, deep ); // get result into p
+      _do_find( NULL, false, objname, p, deep ); // get result into p
       return p;
 }
 
@@ -330,7 +330,7 @@ static bool _do_find(cObject *obj, bool beg, const char *objname, cObject *&p, b
           r = NULL;
           deepf = deep;
           ctr = 0;
-          return TRUE;
+          return true;
       }
       if (beg && obj->isName(name_str)) r=obj;
       return deepf || ctr==0;
@@ -345,7 +345,7 @@ static bool _do_list(cObject *obj, bool beg, ostream& s)
       {        // setup call
            ctr = 0;
            os = &s;
-           return TRUE;
+           return true;
       }
 
       if (beg)
@@ -359,6 +359,6 @@ static bool _do_list(cObject *obj, bool beg, ostream& s)
            return ctr++ == 0;       // only one level!
       }
       else
-           return TRUE;
+           return true;
 }
 

@@ -139,8 +139,8 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     virtual void collect(double val);
     virtual bool detected() {return transval;}
     virtual void reset();
-    virtual void stop()      {go = FALSE;}
-    virtual void start()     {go = TRUE;}
+    virtual void stop()      {go = false;}
+    virtual void start()     {go = true;}
     void setParameters(int reps=3, int minw=4,   // set/change the detection parameters
                        double wind=1.3, double acc=0.3);
 };
@@ -181,8 +181,8 @@ class SIM_API cADByStddev : public cAccuracyDetection
     virtual void collect(double val);
     virtual bool detected() {return resaccval;}
     virtual void reset();
-    virtual void stop()   {go=FALSE;}
-    virtual void start()  {go=TRUE;}
+    virtual void stop()   {go=false;}
+    virtual void start()  {go=true;}
     void setParameters(double acc=0.1, int reps=3)  //set the detection parameters
         {accuracy=acc; repeats=detreps=reps;}
 };

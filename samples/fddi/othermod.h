@@ -44,8 +44,8 @@ class FDDI_Generator : public cSimpleModule
   protected:
   virtual void InitStatistics() = 0;
   virtual bool RetrieveDestLength(cMessage *, int &, int &)=0;
-  // ^ returns FALSE at the end of trace file, (if load is taken directly from
-  // there. Otherwise it must return TRUE !!!
+  // ^ returns false at the end of trace file, (if load is taken directly from
+  // there. Otherwise it must return true !!!
   virtual char * FileNameEnding() = 0;
   };
 

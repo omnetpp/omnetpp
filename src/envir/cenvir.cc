@@ -67,7 +67,7 @@ cEnvir::cEnvir()
 {
     running_mode = NONPARALLEL_MODE;
     prmpt[0] = '\0';
-    disable_tracing = FALSE;
+    disable_tracing = false;
 
     app = NULL;
 }

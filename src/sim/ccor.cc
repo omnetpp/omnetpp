@@ -102,7 +102,7 @@ static void eat( _Task *p, unsigned size, _Task *prevbeef )
     /* make t a free block and link into task list */
     t.size = p->size - d;                 // set sizes
     p->size = d;
-    t.used = FALSE;
+    t.used = false;
     t.next = p->next;                     // insert into list after p
     p->next = &t;
 
@@ -126,7 +126,7 @@ static void eat( _Task *p, unsigned size, _Task *prevbeef )
               eat( &t, t.stack_size, NULL ); // make free block
             }
         }
-        t.used = TRUE;                     // mark as used
+        t.used = true;                     // mark as used
 
         /* wait for next longjmp to us (that'll be to run task) */
         if( SETJMP( t.jmpb ) == 0 )        // wait
@@ -160,7 +160,7 @@ static void task_init( unsigned total_stack, unsigned main_stack )
                                           //   first free task block
     }
     main_task = tmp;                      // copy to global variable
-    main_task.used = TRUE;
+    main_task.used = true;
     current_task = &main_task;
 }
 
@@ -198,7 +198,7 @@ static void task_switchto( _Task *p )
 
 static void task_free( _Task *t )
 {
-    t->used = FALSE;                     // mark as free
+    t->used = false;                     // mark as free
     if( t->next != NULL && !t->next->used )
     {
         t->size += t->next->size;        // merge with following block
@@ -231,7 +231,7 @@ static void task_restart( _Task *p )
 static bool task_testoverflow( _Task *t )
 {
     if (!t->used || !t->next)
-       return FALSE;
+       return false;
     return t->next->guardbeef1!=DEADBEEF || t->next->guardbeef2!=DEADBEEF;
 }
 
@@ -308,7 +308,7 @@ void cCoroutine::restart()
 
 bool cCoroutine::stackOverflow()
 {
-    return task==NULL ? FALSE : task_testoverflow( task );
+    return task==NULL ? false : task_testoverflow( task );
 }
 
 unsigned cCoroutine::stackSize()
@@ -344,7 +344,7 @@ static cCoroutine *current_task = NULL;
 
 void cCoroutine::init( unsigned, unsigned)
 {
-        main_task.started = TRUE;
+        main_task.started = true;
         current_task = &main_task;
 }
 
@@ -354,7 +354,7 @@ void cCoroutine::switchTo( cCoroutine *cor )
         {
              if(SETJMP(current_task->jmpbuf)==0)
              {
-                cor->started = TRUE;
+                cor->started = true;
                 current_task->sp = get_sp_reg();
                 current_task = cor;
 
@@ -401,7 +401,7 @@ bool cCoroutine::setup( CoroutineFnp _fnp, void *_arg, unsigned _stack_size )
         {           // 80x87 not present, emulator used
                     // it has its working memory at _SS:0000
             stack = (int *)new char[stack_size+EMUWSP+16];
-            if (stack==NULL) return FALSE;
+            if (stack==NULL) return false;
             stkbeg = (int *)((char *)stack+EMUWSP+16);
         }
 #else
@@ -410,7 +410,7 @@ bool cCoroutine::setup( CoroutineFnp _fnp, void *_arg, unsigned _stack_size )
         stklow = (int *)((char *)stkbeg + SAFETY_AREA);
 
         restart();
-        return TRUE;
+        return true;
 
 }
 
@@ -435,7 +435,7 @@ cCoroutine& cCoroutine::operator=(cCoroutine& cor)
 
 void cCoroutine::restart()
 {
-        started = FALSE;
+        started = false;
         sp = (int *) ((char *)stkbeg+stack_size);
 
 #ifdef __MSDOS__
@@ -450,7 +450,7 @@ void cCoroutine::restart()
 
 bool cCoroutine::stackOverflow()
 {
-    return FALSE;  // test only implemented for portable coroutines
+    return false;  // test only implemented for portable coroutines
 }
 
 unsigned cCoroutine::stackSize()

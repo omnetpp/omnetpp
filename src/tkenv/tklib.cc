@@ -87,10 +87,10 @@ static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, char *ls
 	 infofunc = f;
 	 deep = dp;
 	 ctr  = 0;
-	 return FALSE;
+	 return false;
     }
-    if( !beg ) return FALSE;
-    if( (deep || ctr>0) && !memoryIsLow() ) // if deep=FALSE, exclude owner object
+    if( !beg ) return false;
+    if( (deep || ctr>0) && !memoryIsLow() ) // if deep=false, exclude owner object
     {
 	 CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(obj),"}",NULL));
     }
@@ -101,7 +101,7 @@ void collection( cObject *object, Tcl_Interp *interp, char *listbox, InfoFunc in
 {
     // feeds all children of 'object' into the listbox
     // CHK(Tcl_VarEval(interp, listbox, " delete 0 end", NULL ));
-    do_fill_listbox(NULL,FALSE, interp, listbox, infofunc, deep);
+    do_fill_listbox(NULL,false, interp, listbox, infofunc, deep);
     object->forEach( (ForeachFunc)do_fill_listbox );
 }
 
@@ -208,13 +208,13 @@ static bool do_inspect_matching( cObject *obj, bool beg, short *patt, int typ, b
     if (!obj) {       // setup
 	 pattern = patt;
 	 type = typ;
-	 deep = TRUE;
+	 deep = true;
 	 countonly=co;
 	 ctr  = 0;
-	 return FALSE;
+	 return false;
     }
-    if( !beg ) return FALSE;
-    if( (deep || ctr>0) && !memoryIsLow() ) // if deep=FALSE, exclude owner object
+    if( !beg ) return false;
+    if( (deep || ctr>0) && !memoryIsLow() ) // if deep=false, exclude owner object
     {
 	 const char *fullpath = obj->fullPath();
 	 if (stringmatch(pattern,fullpath))
@@ -231,10 +231,10 @@ int inspect_matching(cObject *object, Tcl_Interp *, char *pattern, int type, boo
 {
     // open inspectors for children of 'object' whose fullpath matches pattern
     short trf_pattern[512];
-    if (transform_pattern(pattern, trf_pattern)==FALSE)
+    if (transform_pattern(pattern, trf_pattern)==false)
        return 0; // bad pattern: unmatched '{'
     inspmatch_ctr=0;
-    do_inspect_matching(NULL,FALSE, trf_pattern, type, countonly);
+    do_inspect_matching(NULL,false, trf_pattern, type, countonly);
     object->forEach( (ForeachFunc)do_inspect_matching );
     return inspmatch_ctr;
 }

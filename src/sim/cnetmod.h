@@ -71,7 +71,7 @@ class SIM_API cNetMod : public cModule
     virtual const char *inspectorFactoryName() {return "cNetModIFC";}
 
     // redefined cModule functions
-    virtual bool isSimple() {return FALSE;}
+    virtual bool isSimple() {return false;}
     virtual void scheduleStart(simtime_t t) {}
     virtual void deleteModule() {}
     virtual void callInitialize() {initialize();}

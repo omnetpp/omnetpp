@@ -47,15 +47,15 @@ char *cPar::possibletypes = "SBLDFIXTP";
 // constructors
 cPar::cPar(const char *name) : cObject( name )
 {
-    takeOwnership( FALSE );         // doesn't take the objects!
-    changedflag = inputflag = FALSE;
+    takeOwnership( false );         // doesn't take the objects!
+    changedflag = inputflag = false;
     typechar = 'L'; lng.val = 0L;
 }
 
 cPar::cPar(cPar& par) : cObject()
 {
-    takeOwnership( FALSE );         // doesn't take the objects!
-    changedflag = inputflag = FALSE;
+    takeOwnership( false );         // doesn't take the objects!
+    changedflag = inputflag = false;
     typechar = 'L'; lng.val = 0L;
 
     setName( par.name() );
@@ -64,8 +64,8 @@ cPar::cPar(cPar& par) : cObject()
 
 cPar::cPar(const char *name, cPar& other) : cObject(name)
 {
-    takeOwnership( FALSE );         // doesn't take the objects!
-    changedflag = inputflag = FALSE;
+    takeOwnership( false );         // doesn't take the objects!
+    changedflag = inputflag = false;
     typechar = 'L'; lng.val = 0L;
 
     setName(name);
@@ -163,7 +163,7 @@ void cPar::info( char *buf )
                   case 3: sprintf(b,"%s(%lg,%lg,%lg) (F)",fn,func.p1,func.p2,func.p3); break;
                   };
                   break;
-        case 'B': sprintf(b,"%s (B)", lng.val?"TRUE":"FALSE"); break;
+        case 'B': sprintf(b,"%s (B)", lng.val?"true":"false"); break;
         default : strcat(b, "? (unknown type)"); break;
     }
 }
@@ -212,7 +212,7 @@ bool cPar::changed()
      if (isRedirected())
          return ind.par->changed();
      bool ch = changedflag;
-     changedflag=FALSE;
+     changedflag=false;
      return ch;
 }
 
@@ -246,7 +246,7 @@ cPar& cPar::setStringValue(const char *s)
      valueChanges();
      deleteold();
      typechar = 'S';
-     inputflag=FALSE;
+     inputflag=false;
      if (!s)
          {ls.sht=true; *ss.str='\0';}
      else if ((ls.sht=(strlen(s)<=SHORTSTR))!=0)
@@ -265,7 +265,7 @@ cPar& cPar::setBoolValue(bool b)
     deleteold();
     lng.val = b;
     typechar = 'B';
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -278,7 +278,7 @@ cPar& cPar::setLongValue(long l)
     deleteold();
     lng.val = l;
     typechar = 'L';
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -291,7 +291,7 @@ cPar& cPar::setDoubleValue(double d)
     deleteold();
     dbl.val = d;
     typechar = 'D';
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -305,7 +305,7 @@ cPar& cPar::setDoubleValue(MathFuncNoArg f)
     func.f = (MathFunc)f;
     func.argc=0;
     typechar = 'F';
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -320,7 +320,7 @@ cPar& cPar::setDoubleValue(MathFunc1Arg f, double p1)
     func.argc=1;
     func.p1 = p1;
     typechar = 'F';
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -336,7 +336,7 @@ cPar& cPar::setDoubleValue(MathFunc2Args f, double p1, double p2)
     func.p1 = p1;
     func.p2 = p2;
     typechar = 'F';
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -353,7 +353,7 @@ cPar& cPar::setDoubleValue(MathFunc3Args f, double p1, double p2, double p3)
     func.p2 = p2;
     func.p3 = p3;
     typechar = 'F';
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -370,7 +370,7 @@ cPar& cPar::setDoubleValue(sXElem *x, int n)
     expr.n = n;
     expr.xelem = x;
     typechar = 'X';
-    inputflag=FALSE;
+    inputflag=false;
 
     // ownership game: take objects given to us in the x[] array
     for(int i=0; i<expr.n; i++)
@@ -410,7 +410,7 @@ cPar& cPar::setDoubleValue(cStatistic *res)
     if (takeOwnership())
        take(res);
     typechar = 'T';
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -430,7 +430,7 @@ cPar& cPar::setPointerValue(void *_ptr)
         typechar = 'P';
     }
     ptr.ptr = _ptr;
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -445,7 +445,7 @@ cPar& cPar::setObjectValue(cObject *_obj)
     if (takeOwnership())
         take( _obj );
     typechar = 'O';
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -471,7 +471,7 @@ cPar& cPar::setRedirection(cPar *par)
     deleteold();
     ind.par = par; // do NOT take ownership of passed cPar object
     typechar = 'I';
-    inputflag=FALSE;
+    inputflag=false;
     return *this;
 }
 
@@ -528,7 +528,7 @@ bool cPar::boolValue()
     else if (isNumeric())
         return doubleValue()!=0;
     else
-        {opp_error(eBADCAST,className(),name(),typechar,'B');return FALSE;}
+        {opp_error(eBADCAST,className(),name(),typechar,'B');return false;}
 }
 
 long cPar::longValue()
@@ -610,7 +610,7 @@ bool cPar::isNumeric()
 bool cPar::equalsTo(cPar *par)
 {
     if (typechar != par->typechar)
-        return FALSE;
+        return false;
 
     switch (typechar) {
         case 'S': return strcmp(stringValue(),par->stringValue())==0;
@@ -637,7 +637,7 @@ bool cPar::equalsTo(cPar *par)
 
 void cPar::valueChanges()
 {
-    changedflag=TRUE;
+    changedflag=true;
 }
 
 cPar *cPar::redirection()
@@ -680,7 +680,7 @@ void cPar::getAsText(char *buf, int maxlen)
                  else
                    sprintf(bb,"\"%.110s...\" [truncated]", s);
                  break;
-       case 'B': strcpy(bb,lng.val?"TRUE":"FALSE"); break;
+       case 'B': strcpy(bb,lng.val?"true":"false"); break;
        case 'L': sprintf( bb,"%ld",lng.val); break;
        case 'D': sprintf( bb,"%lg",dbl.val); break;
        case 'F': ff = findfunctionbyptr(func.f);
@@ -704,8 +704,8 @@ void cPar::getAsText(char *buf, int maxlen)
 /*-------------------------------
  setFromText() - (for internal use only) Tries to interpret text as
  a 'tp' typed value. tp=='?' means that even type is to be determined.
- On success, cPar is updated and TRUE is returned, otherwise
- it returns FALSE. No error message is ever generated.
+ On success, cPar is updated and true is returned, otherwise
+ it returns false. No error message is ever generated.
 ----------------------------*/
 
 bool cPar::setFromText(const char *text, char tp)
@@ -713,32 +713,32 @@ bool cPar::setFromText(const char *text, char tp)
     tp = (char) toupper(tp);
 
     // create a working copy and cut whitespaces (from both sides)
-    if (!text) return FALSE;  // error: no string
+    if (!text) return false;  // error: no string
     while (*text==' ' || *text=='\t') text++;
-    if (*text=='\0') return FALSE; // error: empty string (or only whitespace)
+    if (*text=='\0') return false; // error: empty string (or only whitespace)
     char *tmp = opp_strdup(text);
     char *s = tmp+strlen(tmp)-1;
     while (s>=tmp && (*s==' ' || *s=='\t')) *s--='\0';
 
     double d;
 
-    if (strcmp(tmp,"TRUE")==0 || strcmp(tmp,"true")==0 || strcmp(tmp,"True")==0) // bool?
+    if (strcmp(tmp,"true")==0 || strcmp(tmp,"TRUE")==0 || strcmp(tmp,"True")==0) // bool?
     {
         if (!strchr("?B",tp)) goto error;
-        setBoolValue(TRUE);
+        setBoolValue(true);
     }
-    else if (strcmp(tmp,"FALSE")==0 || strcmp(tmp,"false")==0 || strcmp(tmp,"False")==0) // bool?
+    else if (strcmp(tmp,"false")==0 || strcmp(tmp,"FALSE")==0 || strcmp(tmp,"False")==0) // bool?
     {
         if (!strchr("?B",tp)) goto error;
-        setBoolValue(FALSE);
+        setBoolValue(false);
     }
     else if (strcmp(tmp,"1")==0 && tp=='B') // bool?
     {
-        setBoolValue(TRUE);
+        setBoolValue(true);
     }
     else if (strcmp(tmp,"0")==0 && tp=='B') // bool?
     {
-        setBoolValue(FALSE);
+        setBoolValue(false);
     }
     else if (tmp[0]=='\'' && tmp[1] && tmp[2]=='\''&& !tmp[3]) // char? (->long)
     {
@@ -786,11 +786,11 @@ bool cPar::setFromText(const char *text, char tp)
     }
 
     delete tmp;
-    return TRUE;
+    return true;
 
     error:
     delete tmp;
-    return FALSE;
+    return false;
 }
 
 bool cPar::setfunction(char *text)
@@ -810,38 +810,38 @@ bool cPar::setfunction(char *text)
 
     // find function
     cFunctionType *ff = findFunction( buf );
-    if (ff==NULL) return FALSE;
+    if (ff==NULL) return false;
 
     // now `s' points to something like '(10,1.5E-3)'
     double p1,p2,p3;
     switch(ff->argcount)
     {
-       case 0: if (strcmp(s,"()")!=0) return FALSE;
+       case 0: if (strcmp(s,"()")!=0) return false;
                setDoubleValue((MathFuncNoArg)ff->f);
-               return TRUE;
-       case 1: if (*s++!='(') return FALSE;
+               return true;
+       case 1: if (*s++!='(') return false;
                p1 = strToSimtime0(s);
-               if (*s++!=')') return FALSE;
+               if (*s++!=')') return false;
                setDoubleValue((MathFunc1Arg)ff->f, p1);
-               return TRUE;
-       case 2: if (*s++!='(') return FALSE;
+               return true;
+       case 2: if (*s++!='(') return false;
                p1 = strToSimtime0(s);
-               if (*s++!=',') return FALSE;
+               if (*s++!=',') return false;
                p2 = strToSimtime0(s);
-               if (*s++!=')') return FALSE;
+               if (*s++!=')') return false;
                setDoubleValue((MathFunc2Args)ff->f, p1,p2);
-               return TRUE;
-       case 3: if (*s++!='(') return FALSE;
+               return true;
+       case 3: if (*s++!='(') return false;
                p1 = strToSimtime0(s);
-               if (*s++!=',') return FALSE;
+               if (*s++!=',') return false;
                p2 = strToSimtime0(s);
-               if (*s++!=',') return FALSE;
+               if (*s++!=',') return false;
                p3 = strToSimtime0(s);
-               if (*s++!=')') return FALSE;
+               if (*s++!=')') return false;
                setDoubleValue((MathFunc3Args)ff->f, p1,p2,p3);
-               return TRUE;
+               return true;
     }
-    return FALSE; // to make compiler happy
+    return false; // to make compiler happy
 }
 
 
@@ -1105,7 +1105,7 @@ void cPar::convertToConst ()
 void cModulePar::_construct()
 {
     omodp=NULL;
-    log_initialised=FALSE;
+    log_initialised=false;
     log_ID=0;
     lastchange=simulation.simTime();
 }
@@ -1166,7 +1166,7 @@ void cModulePar::valueChanges()
             {
                 log_ID = simulation.parchangefilemgr.getNewID();
                 CHECK(fprintf(f,"parameter %ld  \"%s\"\n", log_ID, fullPath()));
-                log_initialised=TRUE;
+                log_initialised=true;
             }
 
             // module parameter logging:

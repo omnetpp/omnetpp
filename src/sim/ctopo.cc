@@ -142,7 +142,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 {
     clear();
 
-    bool w = simulation.warnings(); simulation.setWarnings(FALSE);
+    bool w = simulation.warnings(); simulation.setWarnings(false);
     int mod_id, gate_id;
 
     sTopoNode *temp_nodev = new sTopoNode[simulation.lastModuleIndex()];
@@ -158,7 +158,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
             // ith module is OK, insert into nodev[]
             temp_nodev[k].module_id = mod_id;
             temp_nodev[k].wgt = 0;
-            temp_nodev[k].enabl = TRUE;
+            temp_nodev[k].enabl = true;
 
             // init auxiliary variables
             temp_nodev[k].known = 0;
@@ -207,7 +207,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
                 temp_out_links[n_out].dest_node = nodeFor(gate->ownerModule());
                 temp_out_links[n_out].dest_gate = gate->id();
                 temp_out_links[n_out].wgt = 1.0;
-                temp_out_links[n_out].enabl = TRUE;
+                temp_out_links[n_out].enabl = true;
                 n_out++;
             }
         }
@@ -271,7 +271,7 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
 
     for (int i=0; i<num_nodes; i++)
     {
-       nodev[i].known = FALSE;   // not really needed for unweighted
+       nodev[i].known = false;   // not really needed for unweighted
        nodev[i].dist = INFINITY;
        nodev[i].out_path = NO(sTopoLink);
     }
@@ -326,7 +326,7 @@ void cTopology::weightedSingleShortestPathsTo(sTopoNode *_target)
                                              // priority q = pl. binary heap
        if (v == NO_VERTEX) break;
 
-       t[v].known = TRUE;                    // delete_min()
+       t[v].known = true;                    // delete_min()
        for (each w adjacent to v)
        {
            if (!t[v].known  &&  t[v].dist+C(w,v) < t[w].dist)

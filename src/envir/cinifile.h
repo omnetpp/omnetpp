@@ -70,12 +70,12 @@ class ENVIR_API cIniFile
 
     const char *filename() {return fname;}
 
-    int error();    // TRUE if there was an error
+    int error();    // true if there was an error
     bool warnings;  // enable/disable warnings
 
     // get an entry from [section]
     const char *getRaw(const char *section, const char *key, const char *defaultval=NULL); // with quotes (if any)
-    bool getAsBool(const char *section, const char *key, bool defaultval=FALSE);
+    bool getAsBool(const char *section, const char *key, bool defaultval=false);
     long getAsInt(const char *section, const char *key, long defaultval=0);
     double getAsDouble(const char *section, const char *key, double defaultval=0.0);
     const char *getAsString(const char *section, const char *key, const char *defaultval=""); // quotes stripped (if any)
@@ -83,7 +83,7 @@ class ENVIR_API cIniFile
 
     // get an entry from [sect1] or if it isn't there, from [sect2]
     const char *getRaw2(const char *sect1, const char *sect2, const char *key, const char *defaultval=NULL);
-    bool getAsBool2(const char *sect1, const char *sect2, const char *key, bool defaultval=FALSE);
+    bool getAsBool2(const char *sect1, const char *sect2, const char *key, bool defaultval=false);
     long getAsInt2(const char *sect1, const char *sect2, const char *key, long defaultval=0);
     double getAsDouble2(const char *sect1, const char *sect2, const char *key, double defaultval=0.0);
     const char *getAsString2(const char *sect1, const char *sect2, const char *key, const char *defaultval="");

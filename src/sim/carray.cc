@@ -84,7 +84,7 @@ void cBag::setup(int esiz, int siz, int delt)
    delta = Max(1,delt);
    size = Max(siz,0);
    vect = new char[ size*BLK ];
-   for (int i=0; i<size; i++) USED(i)=FALSE;
+   for (int i=0; i<size; i++) USED(i)=false;
 }
 
 void cBag::clear()
@@ -99,7 +99,7 @@ int cBag::add(void *obj)
 {
    int retval;
    if (firstfree < size) {
-      USED(firstfree) = TRUE;
+      USED(firstfree) = true;
       memcpy( ELEM(firstfree), obj, elemsize);
       retval = firstfree;
       lastused = Max(lastused,firstfree);
@@ -111,8 +111,8 @@ int cBag::add(void *obj)
       memcpy(v, vect, size*BLK );
       delete vect;
       vect = v;
-      for( int i=size; i<size+delta; i++ ) USED(i)=FALSE;
-      USED(size) = TRUE;
+      for( int i=size; i<size+delta; i++ ) USED(i)=false;
+      USED(size) = true;
       memcpy( ELEM(size), obj, elemsize);
       retval = size;
       lastused = size;
@@ -125,7 +125,7 @@ int cBag::add(void *obj)
 int cBag::addAt(int m, void *obj) // --LG
 {
    if (m < size) {
-      USED(m) = TRUE;
+      USED(m) = true;
       memcpy( ELEM(m), obj, elemsize);
       lastused = Max(lastused,m);
       if (m==firstfree)
@@ -138,8 +138,8 @@ int cBag::addAt(int m, void *obj) // --LG
       memcpy(v, vect, size*BLK );
       delete vect;
       vect = v;
-      for( int i=size; i<newsize; i++ ) USED(i)=FALSE;
-      USED(m) = TRUE;
+      for( int i=size; i<newsize; i++ ) USED(i)=false;
+      USED(m) = true;
       memcpy( ELEM(m), obj, elemsize);
       lastused = m;
       if (m==firstfree)
@@ -180,7 +180,7 @@ bool cBag::isUsed(int m)
      if( m>=0 && m<=lastused )
          return USED(m);
      else
-         return FALSE;
+         return false;
 }
 
 void *cBag::remove(int m)
@@ -188,7 +188,7 @@ void *cBag::remove(int m)
      if( m<0 || m>lastused || !USED(m) ) {
           return NULL;
      } else {
-          USED(m)=FALSE;
+          USED(m)=false;
           firstfree = Min(firstfree, m);
           if (m==lastused)
               do {
@@ -264,13 +264,13 @@ void cArray::info(char *buf)
 
 void cArray::forEach( ForeachFunc do_fn )
 {
-     if (do_fn(this,TRUE))
+     if (do_fn(this,true))
          for (int i=0; i<=last; i++)
          {
              cObject *p = vect[i];
              if (p) p->forEach( do_fn );
          }
-     do_fn(this,FALSE);
+     do_fn(this,false);
 }
 
 void cArray::clear()

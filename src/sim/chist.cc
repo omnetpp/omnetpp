@@ -89,7 +89,7 @@ void cHistogramBase::transform()
 
    setupRange();
    for (i=0; i<num_samples; i++) collectTransformed( firstvals[i] );
-   transfd = TRUE;
+   transfd = true;
 }
 
 int cHistogramBase::cells()

@@ -90,7 +90,7 @@ class SIM_API cOutVector : public cObject
 {
   protected:
     bool enabled;        // write to the output file can be enabled/disabled
-    bool initialised;    // TRUE if the "label" line is already written out
+    bool initialised;    // true if the "label" line is already written out
     long ID;             // ID of the data lines
     int tuple;           // 1 or 2 : the number of data values
     simtime_t starttime; // write to file begins at starttime

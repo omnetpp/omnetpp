@@ -63,7 +63,7 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cIniFile *inifile) :
   inspectors("inspectors", NULL)
 {
     interp = 0;  // Tcl/Tk not set up yet
-    is_running = FALSE;
+    is_running = false;
 
     // The opt_* vars will be set by readOptions()
 }
@@ -192,10 +192,10 @@ void TOmnetTkApp::doOneStep()
     clearNextModuleDisplay();
     updateSimtimeDisplay();
 
-    bkpt_hit = FALSE;
-    animation_ok = TRUE;
+    bkpt_hit = false;
+    animation_ok = true;
 
-    is_running = TRUE;
+    is_running = true;
     simulation.startClock();
     cSimpleModule *mod = simulation.selectNextModule();
     if (mod != NULL)
@@ -211,7 +211,7 @@ void TOmnetTkApp::doOneStep()
        updateInspectors();
     }
     simulation.stopClock();
-    is_running = FALSE;
+    is_running = false;
 
     if (!simulation.ok())
     {
@@ -226,15 +226,15 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
                                  bool slowexec, bool fast,
                                  cSimpleModule *stopinmod )
 {
-    bkpt_hit = FALSE;
-    stop_simulation = FALSE;
+    bkpt_hit = false;
+    stop_simulation = false;
     animation_ok = !fast;
 
     clearNextModuleDisplay();
     updateSimtimeDisplay();
     Tcl_Eval(interp, "update");
 
-    is_running = TRUE;
+    is_running = true;
     simulation.startClock();
     while(1)
     {
@@ -282,7 +282,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
         }
     }
     simulation.stopClock();
-    is_running = FALSE;
+    is_running = false;
 
     if (!simulation.ok())
     {
@@ -301,16 +301,16 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
 {
     // implements 'express run'
 
-    ev.disable_tracing = TRUE;
-    bkpt_hit = FALSE;
-    stop_simulation = FALSE;
-    animation_ok = FALSE;
+    ev.disable_tracing = true;
+    bkpt_hit = false;
+    stop_simulation = false;
+    animation_ok = false;
 
     clearNextModuleDisplay();
     updateSimtimeDisplay();
     Tcl_Eval(interp, "update");
 
-    is_running = TRUE;
+    is_running = true;
     simulation.startClock();
     do {
          cSimpleModule *mod = simulation.selectNextModule();
@@ -329,7 +329,7 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
               (until_event<=0 || simulation.eventNumber()<until_event)
            );
     simulation.stopClock();
-    is_running = FALSE;
+    is_running = false;
 
     if (!simulation.ok())
     {
@@ -339,7 +339,7 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
           simulation.endRun();
     }
 
-    ev.disable_tracing = FALSE;
+    ev.disable_tracing = false;
 
     updateSimtimeDisplay();
     updateNextModuleDisplay();
@@ -451,12 +451,12 @@ bool TOmnetTkApp::isBreakpointActive(const char *, cSimpleModule *)
 
     if (opt_bkpts_enabled)
     {
-         return TRUE;    // To be implemented!
+         return true;    // To be implemented!
                          // Should be able to stop depending on
                          // all/selected labels, all/selected modules.
     }
     else
-         return FALSE;
+         return false;
 }
 
 void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
@@ -467,7 +467,7 @@ void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
     sprintf(buf, "Breakpoint \"%s\" hit in module %s (#%d)!",
                  label, mod->fullPath(), mod->id() );
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",buf,"} info ok",NULL));
-    bkpt_hit = TRUE;
+    bkpt_hit = true;
 
     mod->pause();
 }
@@ -684,15 +684,15 @@ void TOmnetTkApp::readOptions()
     opt_stepdelay = long(1000*ini_file->getAsTime( "Tkenv", "slowexec-delay", 0.3 )+.5);
     opt_updatefreq_fast = ini_file->getAsInt( "Tkenv", "update-freq-fast", 10 );
     opt_updatefreq_express = ini_file->getAsInt( "Tkenv", "update-freq-express", 500 );
-    opt_bkpts_enabled = ini_file->getAsBool( "Tkenv", "breakpoints-enabled", TRUE );
-    opt_animation_enabled = ini_file->getAsBool( "Tkenv", "animation-enabled", TRUE );
-    opt_animation_msgnames = ini_file->getAsBool( "Tkenv", "animation-msgnames", TRUE );
-    opt_animation_msgcolors = ini_file->getAsBool( "Tkenv", "animation-msgcolors", TRUE );
+    opt_bkpts_enabled = ini_file->getAsBool( "Tkenv", "breakpoints-enabled", true );
+    opt_animation_enabled = ini_file->getAsBool( "Tkenv", "animation-enabled", true );
+    opt_animation_msgnames = ini_file->getAsBool( "Tkenv", "animation-msgnames", true );
+    opt_animation_msgcolors = ini_file->getAsBool( "Tkenv", "animation-msgcolors", true );
     opt_animation_speed = ini_file->getAsDouble( "Tkenv", "animation-speed", 1);
     if (opt_animation_speed<0) opt_animation_speed=0;
     if (opt_animation_speed>2) opt_animation_speed=3;
-    opt_print_banners = ini_file->getAsBool( "Tkenv", "print-banners", TRUE );
-    opt_use_mainwindow = ini_file->getAsBool( "Tkenv", "use-mainwindow", TRUE );
+    opt_print_banners = ini_file->getAsBool( "Tkenv", "print-banners", true );
+    opt_use_mainwindow = ini_file->getAsBool( "Tkenv", "use-mainwindow", true );
 }
 
 void TOmnetTkApp::readPerRunOptions(int run_nr)
@@ -733,7 +733,7 @@ void TOmnetTkApp::messageSent( cMessage *msg )
     if (animation_ok && opt_animation_enabled)
     {
         // find suitable inspectors and do animate the message...
-        bool w = simulation.warnings(); simulation.setWarnings( FALSE );
+        bool w = simulation.warnings(); simulation.setWarnings( false );
         char msgptr[32], msgkind[16];
         ptrToStr(msg,msgptr);
         sprintf(msgkind,"%d",msg->kind());
@@ -779,7 +779,7 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
     if (animation_ok && opt_animation_enabled)
     {
         // find suitable inspectors and do animate the message...
-        bool w = simulation.warnings(); simulation.setWarnings( FALSE );
+        bool w = simulation.warnings(); simulation.setWarnings( false );
         char msgptr[32], msgkind[16];
         ptrToStr(msg,msgptr);
         sprintf(msgkind,"%d",msg->kind());
@@ -868,13 +868,13 @@ bool TOmnetTkApp::gets(const char *promptstr, char *buf, int len)
     CHK(Tcl_VarEval(interp,"inputbox {",title,"} {",promptstr,"} opp(result)",NULL));
 
     if (interp->result[0]=='0')   // cancel
-        return TRUE;
+        return true;
     else    // ok
     {
         char *result = Tcl_GetVar2(interp, "opp", "result", TCL_GLOBAL_ONLY);
         strncpy(buf, result, len-1);
         buf[len-1]='\0';
-        return FALSE;
+        return false;
     }
 }
 

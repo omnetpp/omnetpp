@@ -489,7 +489,7 @@ void TOutVectorWindow::getConfig( char *buf )
 void TOutVectorWindow::setConfig( double timefac, double min_y, double max_y, char *mode )
 {
    // store new parameters
-   autoscale = FALSE;
+   autoscale = false;
    time_factor = timefac;
    miny = min_y;
    maxy = max_y;

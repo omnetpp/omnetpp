@@ -213,7 +213,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
         if (ev.runningMode()!=MASTER_MODE)
         {
            opp_error("start_segments() can only be called on the console");
-           return FALSE;
+           return false;
         }
 
 #ifndef SINGLE_HOST
@@ -232,7 +232,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
             if (j==host_cnt)
             {
                opp_error("PVM: Host `%s' not in virtual machine",act_host);
-               return FALSE;
+               return false;
             }
         }
 #endif /*SINGLE_HOST*/
@@ -310,7 +310,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
                    opp_error("PVM: Could not start segment");
                    for (j=0; j<segments; j++)
                        pvm_kill(all_tids[j]);
-                   return FALSE;
+                   return false;
                }
                else
                {
@@ -329,7 +329,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
         pvm_pkint( &segments,1,1 );
         pvm_pkint( all_tids, segments, 1);
         pvm_mcast( all_tids, segments, MSG_BROADCAST_TIDS );
-        return TRUE;
+        return true;
 }
 
 //-------------------------------------------------------------------------
@@ -542,14 +542,14 @@ bool cPvmMod::gets_onconsole(const char *promptstr, char *buffer,int len)
         err=err||pvm_pkint(&len,1,1);
         err=err||pvm_pkint(&my_tid,1,1);
         err=err||pvm_send(parent_tid,MSG_GETS_ONCONSOLE);
-        if (err) {opp_error(ePVM, "gets_onconsole()/send");return FALSE;}
+        if (err) {opp_error(ePVM, "gets_onconsole()/send");return false;}
 
         pvm_recv(parent_tid,MSG_GETS_ONCONSOLE);
         err=0;
         buff=upack_str(err);
         if (buff) strcpy(buffer,buff);
         err=err||pvm_upkbyte(&a,1,1);
-        if (err) {opp_error(ePVM, "gets_onconsole()/recv");return FALSE;};
+        if (err) {opp_error(ePVM, "gets_onconsole()/recv");return false;};
         return a!=0;
 }
 
@@ -565,13 +565,13 @@ bool cPvmMod::askyesno_onconsole(const char *question)
         err=err||pack_str(question);
         err=err||pvm_pkint(&my_tid,1,1);
         err=err||pvm_send(parent_tid,MSG_ASKYESNO_ONCONSOLE);
-        if (err) {opp_error(ePVM, "askyesno_onconsole()/send");return FALSE;}
+        if (err) {opp_error(ePVM, "askyesno_onconsole()/send");return false;}
 
         err=0;
         pvm_recv(parent_tid,MSG_ASKYESNO_ONCONSOLE);
         char a;
         err=err||pvm_upkbyte(&a,1,1);
-        if (err) {opp_error(ePVM, "askyesno_onconsole()/recv");return FALSE;}
+        if (err) {opp_error(ePVM, "askyesno_onconsole()/recv");return false;}
         return a!=0;
 }
 
@@ -837,8 +837,8 @@ void cPvmMod::send_cancelsyncpoint( simtime_t t, int ongate)
 //==========================================================================
 // block_on_syncpoint()
 //  blocks on next syncpoint if necessary
-//  returns TRUE if actually blocked
-//          FALSE if nothing happened
+//  returns true if actually blocked
+//          false if nothing happened
 //==========================================================================
 
 bool cPvmMod::block_on_syncpoint( simtime_t nextlocalevent)
@@ -859,9 +859,9 @@ bool cPvmMod::block_on_syncpoint( simtime_t nextlocalevent)
 #ifdef PVM_DEBUG
            ev.printf("Continuing after SYNCPOINT\n");
 #endif
-           return TRUE;
+           return true;
         }
-        return FALSE;
+        return false;
 }
 
 //==========================================================================

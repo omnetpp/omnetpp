@@ -509,7 +509,7 @@ char *do_inputvalue (char *val_expr, char *promptstr)
 
     sprintf( temp_res+strlen(temp_res),
                        "%svalue.setPrompt( %s );\n"
-                       "%svalue.setInput( TRUE );\n",
+                       "%svalue.setInput( true );\n",
                        indent, promptstr?EXPR_STR(promptstr):"NULL", indent );
     jar_free (val_expr);
     jar_free (promptstr);

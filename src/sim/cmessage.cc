@@ -79,9 +79,9 @@ void cMessage::info(char *buf)
 
 void cMessage::forEach( ForeachFunc do_fn )
 {
-        if (do_fn(this,TRUE))
+        if (do_fn(this,true))
             if (parlistp) parlistp->forEach( do_fn );
-        do_fn(this,FALSE);
+        do_fn(this,false);
 }
 
 void cMessage::writeContents(ostream& os)
@@ -92,7 +92,7 @@ void cMessage::writeContents(ostream& os)
         os << "  length:    " << length() << '\n';
         os << "  kind:      " << kind() << '\n';
         os << "  priority:  " << priority() << '\n';
-        os << "  error:     " << (hasBitError() ? "TRUE" : "FALSE") << '\n';
+        os << "  error:     " << (hasBitError() ? "true" : "false") << '\n';
         os << "  time stamp:" << simtimeToStr(timestamp()) << '\n';
         if (parlistp) {
            os << "  parameter list:\n";

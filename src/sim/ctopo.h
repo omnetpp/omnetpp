@@ -58,8 +58,8 @@ class SIM_API sTopoNode
     double weight()             {return wgt;}
     void setWeight(double d)    {wgt=d;}
     bool enabled()              {return enabl;}
-    void enable()               {enabl=TRUE;}
-    void disable()              {enabl=FALSE;}
+    void enable()               {enabl=true;}
+    void disable()              {enabl=false;}
 
     int inLinks()               {return num_in_links;}
     sTopoLinkIn *in(int i);
@@ -86,8 +86,8 @@ class SIM_API sTopoLink
     double weight()             {return wgt;}
     void setWeight(double d)    {wgt=d;}
     bool enabled()              {return enabl;}
-    void enable()               {enabl=TRUE;}
-    void disable()              {enabl=FALSE;}
+    void enable()               {enabl=true;}
+    void disable()              {enabl=false;}
 };
 
 // sTopoLinkIn, sTopoLinkOut: two different 'user interfaces' for sTopoLink

@@ -103,8 +103,8 @@ void SSM_OIF_by_time::activity()
     // "#" or ";" as a beginning character means: this line is a comment
     if ( line[0]=='#' || line[0]==';' )
       continue;
-    // if the word "delete" occurs, then isdelelete:=TRUE, otherwise it is set
-    // to FALSE and send is assumed
+    // if the word "delete" occurs, then isdelelete:=true, otherwise it is set
+    // to false and send is assumed
     int isdelete = strstr(line,"delete") != NULL;
     // both "delete" and "send" may be followed by one of the next 3 constructs
         // every <time>

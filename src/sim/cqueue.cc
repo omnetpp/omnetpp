@@ -71,11 +71,11 @@ void cQueue::info(char *buf)
 
 void cQueue::forEach( ForeachFunc do_fn )
 {
-     if (do_fn(this,TRUE))
+     if (do_fn(this,true))
         // loop through elements in reverse order
         for( sQElem *p=tailp; p!=NULL; p=p->prev )
             p->obj->forEach( do_fn );
-     do_fn(this,FALSE);
+     do_fn(this,false);
 }
 
 void cQueue::clear()
@@ -104,9 +104,9 @@ cQueue& cQueue::operator=(cQueue& queue)
       for( cQueueIterator iter(queue); iter.end(); iter++)
       {
          if (iter()->owner()==&queue)
-             {takeOwnership(TRUE); insert( iter()->dup() );}
+             {takeOwnership(true); insert( iter()->dup() );}
          else
-             {takeOwnership(FALSE); insert( iter() );}
+             {takeOwnership(false); insert( iter() );}
       }
       takeOwnership( old_tk );
       return *this;
