@@ -2,6 +2,8 @@
 
 	* cenvir.h: added ev.flush()
 
+	* cmodule.h: deprecated phase() (nobody really used it)
+
 2003-01-05  Andras Varga
 
 	* macros.h: added macro Define_Function2

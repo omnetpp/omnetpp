@@ -831,15 +831,14 @@ class SIM_API cSimpleModule : public cModule
     //@{
 
     /**
-     * Sets the phase string.
-     * The string can be displayed in user interfaces which support tracing
-     * / debugging (currently only Tkenv) and the string can contain
-     * information that tells the user what the module is currently doing.
+     * DEPRECATED.
+     * Sets the phase string which can be displayed as some kind of status. 
      * The module creates its own copy of the string.
      */
     void setPhase(const char *phase)  {phasestr=phase;}
 
     /**
+     * DEPRECATED.
      * Returns pointer to the current phase string.
      */
     const char *phase() const  {return correct(phasestr);}
