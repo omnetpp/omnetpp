@@ -57,6 +57,7 @@ cmdenv.obj: cmdenv.cc \
   ../../include/globals.h \
   ../../include/cobject.h \
   ../../include/onstartup.h \
+  ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \

@@ -122,6 +122,8 @@ inspector.obj: inspector.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
+  ../../include/cparsimcomm.h \
+  ../../include/ccommbuffer.h \
   ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   tkutil.h
@@ -175,6 +177,8 @@ inspfactory.obj: inspfactory.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
+  ../../include/cparsimcomm.h \
+  ../../include/ccommbuffer.h \
   ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   tkutil.h
@@ -202,6 +206,7 @@ modinsp.obj: modinsp.cc \
   ../../include/cgate.h \
   ../../include/csimul.h \
   ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
@@ -263,6 +268,8 @@ objinsp.obj: objinsp.cc \
   ../../include/envirext.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
+  ../../include/cparsimcomm.h \
+  ../../include/ccommbuffer.h \
   ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   inspector.h \
@@ -288,6 +295,7 @@ statinsp.obj: statinsp.cc \
   ../../include/cgate.h \
   ../../include/csimul.h \
   ../../include/cdefaultlist.h \
+  ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
@@ -307,6 +315,7 @@ structinsp.obj: structinsp.cc \
   structinsp.h \
   ../../include/cobject.h \
   ../../include/cenum.h \
+  ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -331,13 +340,8 @@ tkapp.obj: tkapp.cc \
   inspfactory.h \
   modinsp.h \
   ../../include/defs.h \
-  ../../include/cpar.h \
-  ../../include/cobject.h \
-  ../../include/util.h \
-  ../../include/cpolymorphic.h \
-  ../../include/cexception.h \
-  ../../include/opp_string.h \
   ../../include/cmodule.h \
+  ../../include/cobject.h \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
   ../../include/carray.h \
@@ -345,10 +349,15 @@ tkapp.obj: tkapp.cc \
   ../../include/cgate.h \
   ../../include/csimul.h \
   ../../include/cdefaultlist.h \
+  ../../include/util.h \
+  ../../include/cpolymorphic.h \
+  ../../include/cexception.h \
+  ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
+  ../../include/cpar.h \
   tkutil.h \
   ../../include/macros.h
 tkcmd.obj: tkcmd.cc \
@@ -369,7 +378,6 @@ tkcmd.obj: tkcmd.cc \
   inspfactory.h \
   visitor.h \
   ../../include/defs.h \
-  ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -385,6 +393,7 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
+  ../../include/cpar.h \
   ../../include/cenum.h \
   tkutil.h \
   ../../include/macros.h
@@ -398,6 +407,7 @@ tkutil.obj: tkutil.cc \
   tkapp.h \
   visitor.h \
   tkutil.h \
+  ../../include/cenvir.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -412,9 +422,7 @@ tkutil.obj: tkutil.cc \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
-  ../../include/cenvir.h \
-  ../../include/cpar.h
+  ../../include/coutvect.h
 visitor.obj: visitor.cc \
   ../../include/cenvir.h \
   ../../include/cobject.h \
