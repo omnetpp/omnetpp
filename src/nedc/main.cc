@@ -156,6 +156,8 @@ void printUsage()
 // FIXME todo: negate -e, -y for XML and NED output; --; - as filename
 // FIXME todo: remove output files on error
 
+// FIXME todo: use fsutils.cc/h and list file processing from Envir
+
 void createFileNameWithSuffix(char *outfname, const char *infname, const char *suffix)
 {
     strcpy(outfname, infname);
