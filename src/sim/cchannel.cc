@@ -393,12 +393,19 @@ bool cSimpleChannel::deliver(cMessage *msg, simtime_t t)
 
     // propagation delay modelling
     if (delayp)
-        t += (simtime_t) (*delayp);
+    {
+        simtime_t delay = (*delayp);
+        if (delay<0)
+            throw new cException(this,"negative delay %g",delay);
+        t += delay;
+    }
 
     // bit error rate modelling
     if (errorp)
+    {
         if( dblrand() < 1.0 - pow(1.0-(double)(*errorp), msg->length()) )
             msg->setBitError(true);
+    }
 
     // hand over msg to next gate
     return fromGate()->toGate()->deliver(msg, t);
