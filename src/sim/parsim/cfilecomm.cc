@@ -28,6 +28,7 @@
 #include "cfilecommbuffer.h"
 #include "macros.h"
 #include "cenvir.h"
+#include "cconfig.h"
 #include "parsimutil.h"
 
 Register_Class(cFileCommunications);
@@ -98,9 +99,10 @@ void findCleanup()
 
 cFileCommunications::cFileCommunications()
 {
-    commDirPrefix = "comm/"; //FIXME 3 config options!!!
-    preserveReadFiles = false;
-    readDirPrefix = "comm/read/";
+    commDirPrefix = ev.config()->getAsString("General", "parsim-filecommunications-prefix", "comm/");
+    readDirPrefix = ev.config()->getAsString("General", "parsim-filecommunications-read-prefix", "comm/read/");
+    preserveReadFiles = ev.config()->getAsBool("General", "parsim-filecommunications-preserve-read", false);
+
     seqNum = 0;
 }
 

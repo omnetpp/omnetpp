@@ -17,6 +17,21 @@
 	   Unix: default value is "comm/", which means that the named pipes
 	   will be created with the name "comm/pipe-xx-yy". The "comm/"
 	   subdirectory must already exist when the simulation is launched.
+	parsim-filecommunications-prefix = <string>
+	   default: "comm/"
+	parsim-filecommunications-preserve-read = <true/false>
+	   default: false
+	parsim-filecommunications-read-prefix = <string>
+	   default: "comm/read/"
+	   The above 3 options control the cFileCommunicatinos class.
+	   By default, it deletes files that were read. By enabling the
+	   "preserve-read" setting, you can make it move read files to
+	   another directory instead ("comm/read/" by default).
+	   BEWARE: for mysterious reasons, it appears that there cannot be more
+	   than about 19800 files in a directory. When that point is reached,
+	   an exception is thrown somewhere inside the standard C library, which
+	   materializes itself in OMNeT++ as an "Error: (null)" message...
+	   Strangely, this can be reproduced in both Linux and Windows.
 	parsim-nullmessageprotocol-lookahead-class = <class name string>
 	   default: "cLinkDelayLookahead"
 	   Selects the lookahead class for the Null Message Algorithm; the
