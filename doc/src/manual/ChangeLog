@@ -1,6 +1,10 @@
+2003-08-21  Andras Varga
+
+	* Makefile: added usman.html target [thanks Johnny]
+
 2003-08-07  Andras Varga
 
-	* ch-neddoc.tex: added. TBD to be finished and added to the manual!
+	* ch-neddoc.tex: added. TBD to be finished
 
 2003-06-16  ------ omnetpp-2.3 released ------
 
