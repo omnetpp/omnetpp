@@ -831,223 +831,13 @@ rnd2.setDoubleValue(hist);
 \end{verbatim}
 
 
-
-
-\subsection{Storing object and non-object pointers in cPar}
-
-\cclass{cPar} can store pointers to {\opp} objects. You can use both
-assignment and the \fname{setObjectValue()} member function:
-
-\begin{verbatim}
-cQueue *queue = new cQueue("queue"); // just an example
-cPar par1, par2;
-par1 = (cObject *) queue;
-par2.setObjectValue( queue );
-\end{verbatim}
-
-To get the store pointer back, you can use typecast or the \fname{objectValue()}
-member function:
-
-\begin{verbatim}
-cQueue *q1 = (cQueue *)(cObject *)par1;
-cQueue *q2 = (cQueue *)par2.objectValue();
-\end{verbatim}
-
-
-Whether the \cclass{cPar} object will own the other object or not is
-controlled by the \fname{takeOwnership()}\index{ownership} member
-function, just as with container classes. This is documented in detail
-in the class library reference.  By default, \cclass{cPar} will own
-the object.
-
-\cclass{cPar} can be used to store non-object
-pointers\index{non-object pointers} (for example C structs) or
-non-{\opp} object types in the parameter object.  It works very
-similarly to the above mechanism. An example:
-
-\begin{verbatim}
-double *mem = new double[15];
-cPar par1, par2;
-par1 = (void *) mem;
-par2.setPointerValue( (void *)mem );
-...
-double *m1 = (double *)(void *)par1;
-double *m2 = (double *)par2.pointerValue();
-\end{verbatim}
-
-
-Memory management\index{cPar memory management} can be specified by
-\cclass{cPar}'s \fname{configPointer()} member function. It takes
-three arguments: a pointer to a user-supplied deallocation
-function, a pointer to a user-supplied duplication function and
-an item size. If all three are 0 (\ttt{NULL}), no memory management is done,
-that is, the pointer is treated as a mere pointer. This is the default
-behaviour. If you supply only the item size (and both function
-pointers are \ttt{NULL}), \cclass{cPar} will use the delete operator to
-deallocate the memory area when the \cclass{cPar} object is
-destructed, and it will use new char[size] followed by a
-\fname{memcpy()} to duplicate the memory area whenever the
-\cclass{cPar} object is duplicated. If you need more sophisticated
-memory management, you can supply your own deallocation and
-duplication functions.
-
-An example for simple memory management:
-
-\begin{verbatim}
-double *mem = new double[15];
-cPar par;
-par.setPointerValue((void *) mem);
-par.configPointer(NULL, NULL, 15*sizeof(double));
-// -> now if par goes out of scope, it will delete the 15-double array.
-\end{verbatim}
-
-The \fname{configPointer()} setting only affects what happens when the
-\cclass{cPar} is deleted, duplicated or copied, but does \textit{not}
-apply to assigning new pointers. That is, if \textit{you} assign a new
-void* to the \cclass{cPar}, you simply overwrite the pointer -- the
-block denoted by the old pointer is \textit{not} deleted. This fact
-can be used to extract some dynamically allocated block out of the
-\cclass{cPar}: carrying on the previous example, you would extract the
-array of 15 doubles from the \cclass{cPar} like this:
-
-\begin{verbatim}
-double *mem2 = (double *)par.pointerValue();
-par.setValue( (void *)0 );
-// -> now par has nothing to do with the double[15] array
-\end{verbatim}
-
-
-
-However, if you assign some non-pointer value\index{non-pointer value}
-to the \cclass{cPar}, beware: this \textit{will} activate the memory
-management for the block. If you temporarily use the same
-\cclass{cPar} object to store other than void* ('P') values, the
-\fname{configPointer()} setting is lost.
-
-
-
-\subsection{Reverse Polish expressions}
-
-This feature is rarely needed by the user, it is more used internally.
-A \cclass{cPar} object can also store
-expressions\index{cPar!expressions}. In this case, the expression must
-be given in reversed Polish form\index{reversed polish notation}. An
-example:
-
-\begin{verbatim}
-cPar::XElem *expression = new cPar::XElem[5];
-expression[0] = &par("count"); // pointer to
-module parameter
-expression[1] = 1;
-expression[2] = '+';
-expression[3] = 2;
-expression[4] = '/';
-
-cPar expr("expr");
-expr.setDoubleValue(expression,5);
-\end{verbatim}
-
-
-The \cclass{cPar} object created above contains the $(count+1)/2$
-expression where \textit{count} is a module parameter. Each time the
-\cclass{cPar} is evaluated, it recalculates the expression, using the
-current value of count. Note the \& sign in front of
-\texttt{par(''count'')} expression: if it was not there, the parameter
-would be taken by value\index{parameter!by value}, evaluated once and
-then the resulting constant would be used.
-
-Another example is a distribution\index{distribution} with mean and
-standard deviation given by module parameters:
-
-\begin{verbatim}
-cPar::XElem *expression = new cPar::XElem[3];
-expression[0] = &par("mean");
-expression[1] = &par("stddev");
-expression[2] = normal; // pointer to the normal(double,double) func.
-
-cPar expr("expr");
-expr.setDoubleValue(expression,3);
-\end{verbatim}
-
-
-For more information, see the reference and the code the NED compiler
-generates for parameter expressions\index{parameter!expressions}.
-
-
-
-\subsection{Using redirection}
-
-A \cclass{cPar} object can be set to stand for a value actually stored
-in another \cclass{cPar} object. This is called \textit{indirect} or
-\textit{redirected} value. When using redirection\index{redirection},
-every operation on the value (i.e.  reading or changing it) will be
-actually done to the other \cclass{cPar} object:
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includegraphics[width=3.608in, height=1.908in]{figures/usmanFig11}
-    \caption{cPar redirection}
-    \label{fig:ch-sim-lib:cpar-redirection}
-  \end{center}
-\end{figure}
-
-Redirection is how module parameters taken by
-reference\index{module!parameters!by reference} are implemented.  The
-redirection does not include name strings. That is, if you say
-A-\texttt{>}setName(''newname'') in the above example, A's name will
-be changed as the name member is not redirected. (This is natural if
-you consider parameters taken by reference: a parameter should/can
-have different name than the value it refers to.)
-
-
-You create a redirection with the \fname{setRedirection()} function:
-
-\begin{verbatim}
-cPar *bb = new cPar("bb"); // background value
-bb = 10L;
-cPar a("a"); // we'll redirect this object
-
-a.setRedirection(bb); // create redirection
-\end{verbatim}
-
-
-Now every operation you do on a's value will be done to bb:
-
-\begin{verbatim}
-long x = a; // returns bb's value, 10L
-a = 5;      // bb's value changes to 5
-\end{verbatim}
-
-
-The only way to determine whether a is really holding the value or it
-is redirected to another \cclass{cPar} is to use the
-\fname{isRedirected()} member function which returns a bool, or
-\fname{redirection()} which returns the pointer to the background
-object, or \ttt{NULL} if there's no redirection:
-
-\begin{verbatim}
-cPar *redir = a.redirection(); // returns bb's pointer
-if (redir != NULL)
-  ev << "a is redirected to " << redir->name() << endl;
-\end{verbatim}
-
-
-To break the link between the two objects, use the
-\fname{cancelRedirection()} member function. (No other method will
-work, including assigning a the value of another \cclass{cPar}
-object.) The \fname{cancelRedirection()} function gives the \texttt{(long)0}
-value to the redirected object (the other will be unaffected). If you
-want to cancel the indirection but keep the old value, you can do
-something like this:
-
-\begin{verbatim}
-cPar *value = a.redirection();  // bb's pointer
-a.cancelRedirection();          // break the link; value of a is now 0
-a = *value;                     // copy the contents of bb into a
-\end{verbatim}
-
-
-
+%
+% \subsection{Storing object and non-object pointers in cPar}
+% \subsection{Reverse Polish expressions}
+% \subsection{Using redirection}
+%
+% These section got dumped in 3.0, they can be digged out from the CVS if needed.
+%
 
 \subsection{Type characters}
 
@@ -1066,7 +856,6 @@ section below.
 The \fname{isNumeric()} function tells whether the object
 stores one of the numeric types, so that e.g. \fname{asDoubleValue()}
 can be invoked on it.
-
 
 
 
@@ -1138,7 +927,7 @@ and returns random variable of a certain distribution.\\\hline
 %% ROW 7
 X & expr. &
 \ttt{setDoubleValue( \linebreak
-\hspace*{0.3cm} cPar::XElem*,int); \linebreak
+\hspace*{0.3cm} cPar::ExprElem*,int); \linebreak
 double \fname{doubleValue()}; \linebreak
 op \fname{double()};}
 &
@@ -1146,7 +935,7 @@ Reverse Polish expression. Expression can contain constants,
 \cclass{cPar} objects, refer to other \cclass{cPars} (e.g. module parameters),
 can use many math operators (+-*/{\textasciicircum}\% etc), function calls
 (function must take 0,1,2 or 3 doubles and return a double).
-The expression must be given is in an cPar::XElem array (see later).\\\hline
+The expression must be given is in an cPar::ExprElem array (see later).\\\hline
 %% ROW 8
 T & distrib. &
 \ttt{setDoubleValue( \linebreak
@@ -2468,14 +2257,14 @@ calls are simply ignored.
 % issue warnings but you know the code is correct. This is done in the
 % following way:
 %
-% \begin{verbatim}
+% \ begin{verbatim}
 % bool w = simulation.warnings();
 % simulation.setWarnings( false );
 % ...
 % ... // critical code
 % ...
 % simulation.setWarnings( w );
-% \end{verbatim}
+% \ end{verbatim}
 
 
 
