@@ -21,6 +21,7 @@
                      enum|message|class|struct)*)>
 <!ATTLIST ned-file
      filename            CDATA     #IMPLIED
+     source-code         CDATA     #IMPLIED
      preferred-indent    CDATA     "4"
      banner-comment      CDATA     #IMPLIED >
 

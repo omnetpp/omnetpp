@@ -84,15 +84,16 @@ NedFileNode *NedFilesNode::getFirstNedFileChild() const
 
 int NedFileNode::getNumAttributes() const
 {
-    return 3;
+    return 4;
 }
 
 const char *NedFileNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "filename";
-        case 1: return "preferred-indent";
-        case 2: return "banner-comment";
+        case 1: return "source-code";
+        case 2: return "preferred-indent";
+        case 3: return "banner-comment";
         default: return 0;
     }
 }
@@ -101,8 +102,9 @@ const char *NedFileNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return filename.c_str();
-        case 1: return preferredIndent.c_str();
-        case 2: return bannerComment.c_str();
+        case 1: return sourceCode.c_str();
+        case 2: return preferredIndent.c_str();
+        case 3: return bannerComment.c_str();
         default: return 0;
     }
 }
@@ -111,8 +113,9 @@ void NedFileNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: filename = val; break;
-        case 1: preferredIndent = val; break;
-        case 2: bannerComment = val; break;
+        case 1: sourceCode = val; break;
+        case 2: preferredIndent = val; break;
+        case 3: bannerComment = val; break;
         default: ;
     }
 }
@@ -121,8 +124,9 @@ const char *NedFileNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "4";
-        case 2: return "";
+        case 1: return "";
+        case 2: return "4";
+        case 3: return "";
         default: return 0;
     }
 }

@@ -1,4 +1,9 @@
-2004-06-24
+2004-07-20  Andras Varga
+
+	* ned.dtd, ned.y: added source-code attribute to ned-file element,
+	and code to fill it when parsing NED source
+
+2004-06-24  Andras Varga
 
 	* several files: added support for "xml" NED parameter type
 

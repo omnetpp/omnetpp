@@ -99,6 +99,11 @@ class NEDFileBuffer
      * Returns trailing comment below text range passed in pos. Uses get()!
      */
     const char *getTrailingComment(YYLTYPE pos);
+
+    /**
+     * Returns pointer to the full source code. Uses get()!
+     */
+    const char *getFullText();
 };
 
 #endif

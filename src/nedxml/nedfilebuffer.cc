@@ -307,6 +307,16 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
     return stripComment(get(comment));
 }
 
+const char *NEDFileBuffer::getFullText()
+{
+    YYLTYPE pos;
+    pos.first_line = 1;
+    pos.first_column = 0;
+    pos.last_line = numLines+1;
+    pos.last_column = 0;
+    return get(pos);
+}
+
 // stripComment()
 //  return a "stripped" version of a multi-line comment --
 //  all non-comment elements (comma, etc) are deleted

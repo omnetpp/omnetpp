@@ -182,6 +182,7 @@ class NedFilesNode : public NEDElement
  *                      enum|message|class|struct)*)>
  * <!ATTLIST ned-file
  *      filename            CDATA     #IMPLIED
+ *      source-code         CDATA     #IMPLIED
  *      preferred-indent    CDATA     "4"
  *      banner-comment      CDATA     #IMPLIED >
  * </pre>
@@ -192,6 +193,7 @@ class NedFileNode : public NEDElement
 {
   private:
     std::string filename;
+    std::string sourceCode;
     std::string preferredIndent;
     std::string bannerComment;
   public:
@@ -213,6 +215,8 @@ class NedFileNode : public NEDElement
     //@{
     const char * getFilename() const  {return filename.c_str();}
     void setFilename(const char * val)  {filename = val;}
+    const char * getSourceCode() const  {return sourceCode.c_str();}
+    void setSourceCode(const char * val)  {sourceCode = val;}
     const char * getPreferredIndent() const  {return preferredIndent.c_str();}
     void setPreferredIndent(const char * val)  {preferredIndent = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
