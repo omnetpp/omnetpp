@@ -3,19 +3,60 @@ EXPERIMENTAL MESSAGE SUBCLASSING SUPPORT
 
 Motivation
 ==========
+Formerly, cPars were the only way to add data to message objects. cPars are
+fairly complex objects themselves so they add both execution and memory
+overhead, and they were also error-prone because cPar objects have to be
+added dynamically and individually to each message object.
+
+The solution is to define new C++ message classes with the necessary parameters
+as instance variables instead of using cPar objects. The simulation library
+is based on C++, and it is very easy to subclass cMessage:
+
+        class RadioMsg : public cMessage {
+                public:
+                        int freq;
+                        double power;
+                ...
+        }
+
+Now it is possible to write code like this:
+
+        RadioMsg *m = new RadioMsg;
+        m->freq = 1;
+        m->power = 10.0;
+        ...
+
+In one test (slotted Aloha simulation with 10 nodes), the simulation was
+8 times faster when using this technique. Of course, if your simulation
+doesn't create and destroy many messages (compared to other activities),
+you may not benefit this much.
+
+However, since instance variables in the message objects are invisible
+to Tkenv, extra code is necessary if one wants to inspect message contents.
+
+To relieve the simulation programmer from having to write this extra code,
+message descriptions are moved into NED, and nedc will do the task of
+generating the necessary C++ code with subclasses of cMessage and cPacket.
+nedc can add the necessary data members and their get/set methods. nedc
+also generates the necessary reflection code which makes it possible
+to inspect message contents in Tkenv.
+
 The original idea is described in:
   http://www.hit.bme.hu/phd/vargaa/omnetpp/subclass.htm
-
-The solution described here is aimed at making the process easier by
-adding direct support for the messsage subclassing concept to the NED
-language. The idea is that the NED compiler should generate the message
-classes instead of having to write them by hand.
 
 See also the NED II draft at:
   http://www.hit.bme.hu/phd/vargaa/omnetpp/neddraft.htm
 
-*** WARNING: The syntax and features described here are all experimental!!!
-    They may change as this thing evolves.
+
+Experimental message subclassing
+================================
+This is an experimental implementation of the message subclassing feature
+described above. "Experimental" means that:
+ 1. The NED message description syntax and features may change in the future,
+    based on feedback from the community;
+ 2. The nedc extension that translates message descriptions into C++ is
+    implemented as a perl script (prototype implementation).
+
 
 Files
 =====
@@ -39,13 +80,16 @@ ned files should be:
   //--subclassing--
 You'll immediately see why.
 
-As the next step, generate a makefile with opp_makemake, then (this is
-important!) replace the NEDC=nedc line in it with:
+To enable this feature, you have to re-run configure with the
+   --enable-nedc-subcl
+command-line argument. This will replace the NEDC=nedc line in the makefiles
+and in opp_makemake with:
   NEDC=$(HOME)/omnetpp/src/nedc/nedcwrapper.sh
+
 nedcwrapper.sh is a small script that peeks into the ned file looking
-for the '//--subclassing--' line, an depending whether it's there or not,
-invokes msgc.pl or nedc to process it. nedcwrapper.sh as well as the msgc.pl
-script are an intermediate solution until the new extended nedc becomes
+for the '//--subclassing--' line, an depending on its presence, it invokes
+either msgc.pl or nedc to process it. nedcwrapper.sh as well as the msgc.pl
+script are a temporary solution until the new extended nedc becomes
 available.
 
 The task of the "message subclassing compiler" is to generate C++ classes
