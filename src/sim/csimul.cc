@@ -628,4 +628,7 @@ cSimpleModule *cSimulation::contextSimpleModule() const
     return (cSimpleModule *)contextmodp;
 }
 
-
+unsigned long cSimulation::getUniqueNumber()
+{
+    return ev.getUniqueNumber();
+}
