@@ -1,0 +1,6 @@
+cp rpm-build-cfg configure.user
+./configure
+make
+cp rpm-install-cfg configure.user
+./configure
+
