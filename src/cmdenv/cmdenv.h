@@ -34,7 +34,6 @@ class TCmdenvApp : public TOmnetApp
 {
    protected:
      // new simulation options:
-     int opt_helponly;
      opp_string opt_runstoexec;
      unsigned opt_extrastack_kb;
      opp_string opt_outputfile;
@@ -63,6 +62,7 @@ class TCmdenvApp : public TOmnetApp
      virtual void setup();
      virtual int run();
      virtual void shutdown();
+     virtual void printUISpecificHelp();
 
      virtual void moduleCreated(cModule *newmodule);
      virtual void messageSent(cMessage *msg, cGate *directToGate);

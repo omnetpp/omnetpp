@@ -119,10 +119,7 @@ TOmnetApp::~TOmnetApp()
     delete snapshotmgr;
 
     for (int i = 0; i < num_rngs; i++)
-    {
          delete rngs[i];
-    }
-
     delete [] rngs;
 
     delete scheduler;
@@ -135,6 +132,13 @@ TOmnetApp::~TOmnetApp()
 
 void TOmnetApp::setup()
 {
+     // handle -h command-line option
+     if (args->argGiven('h'))
+     {
+         printHelp();
+         return;  // don't set initialized to true
+     }
+
      try
      {
          // set opt_* variables from ini file(s)
@@ -212,6 +216,46 @@ void TOmnetApp::setup()
          return;  // don't set initialized to true
      }
      initialized = true;
+}
+
+void TOmnetApp::printHelp()
+{
+    ev << "\n";
+    ev << "Command line options:\n";
+    ev << "  -h            Print this help and exit.\n";
+    ev << "  -f <inifile>  Use the given ini file instead of omnetpp.ini. Multiple\n";
+    ev << "                -f options are accepted to load several ini files.\n";
+    ev << "  -u <ui>       Selects the user interface. Standard choices are Cmdenv\n";
+    ev << "                and Tkenv. The executable must have been built to contain\n";
+    ev << "                the appropriate user interface library, or it must be loaded\n";
+    ev << "                via the -l option.\n";
+    ev << "  -l <library>  Load the specified shared library (.so or .dll) on startup.\n";
+    ev << "                The file name should be given without the .so or .dll suffix\n";
+    ev << "                (it will be appended automatically.) The loaded module may\n";
+    ev << "                contain simple modules, plugins, etc. Multiple -l options\n";
+    ev << "                can be present.\n";
+    ev << "\n";
+    printUISpecificHelp();
+
+    ev << "The following components are available:\n";
+
+    ev << "networks:\n";
+    cArray::Iterator iter(*networks.instance());
+    for (; iter(); iter++)
+        ev << "  " << iter()->name() << '\n';
+    ev << "\n";
+
+    ev << "modules types:\n";
+    cArray::Iterator iter2(*modtypes.instance());
+    for (; iter2(); iter2++)
+        ev << "  " << iter2()->name() << '\n';
+    ev << "\n";
+
+    ev << "channel types:\n";
+    cArray::Iterator iter3(*channeltypes.instance());
+    for (; iter3(); iter3++)
+        ev << "  " << iter3()->name() << '\n';
+    ev << "\n";
 }
 
 const char *TOmnetApp::getRunSectionName(int runnumber)
@@ -519,10 +563,14 @@ void TOmnetApp::readPerRunOptions(int run_no)
     delete rng;
 
     // set up RNGs
+    int i;
+    for (i = 0; i < num_rngs; i++)
+         delete rngs[i];
     delete [] rngs;
+
     num_rngs = opt_num_rngs;
     rngs = new cRNG *[num_rngs];
-    for (int i=0; i<num_rngs; i++)
+    for (i = 0; i < num_rngs; i++)
     {
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");

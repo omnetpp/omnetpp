@@ -121,6 +121,7 @@ class TOmnetTkApp : public TOmnetApp
       virtual void setup();
       virtual int run();
       virtual void shutdown();
+      virtual void printUISpecificHelp();
 
       virtual void objectDeleted(cObject *object); // notify environment
       virtual void messageSent(cMessage *msg, cGate *directToGate);

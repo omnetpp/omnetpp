@@ -148,6 +148,17 @@ class ENVIR_API TOmnetApp
     /** @name Internal methods */
     //@{
     /**
+     * Prints help text.
+     */
+    void printHelp();
+
+    /**
+     * To be redefined to print Cmdenv or Tkenv-specific help on available
+     * command-line options. Invoked from printHelp().
+     */
+    virtual void printUISpecificHelp() = 0;
+
+    /**
      * Provides access to the configuration
      */
     virtual cConfiguration *getConfig();

@@ -6,6 +6,8 @@
 	now modify the file name in it to make it relative to the 
 	position of the ini file the setting was read from.
 
+	* omnetapp.cc/h: handling of -h option moved into TOmnetApp base class.
+
 2005-03-21  Andras Varga
 
 	* omnetapp.cc: fixed memory leak in shutdown code: RNG objects 

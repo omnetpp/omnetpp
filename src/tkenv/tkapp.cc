@@ -215,6 +215,14 @@ void TOmnetTkApp::shutdown()
     TOmnetApp::shutdown();
 }
 
+void TOmnetTkApp::printUISpecificHelp()
+{
+    ev << "Tkenv-specific options:\n";
+    ev << "  -r <run>      Set up the given run, specified in a [Run n] section of\n";
+    ev << "                the ini file.\n";
+    ev << "\n";
+}
+
 void TOmnetTkApp::rebuildSim()
 {
     if (simulation.runNumber()>0)

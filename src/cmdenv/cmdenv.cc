@@ -133,10 +133,6 @@ void TCmdenvApp::setup()
     if (!initialized)
         return;
 
-    // '-h' (help) flag
-    opt_helponly = args->argGiven( 'h' );
-    if (opt_helponly) return;  // only give a command line help
-
     // '-r' option: specifies runs to execute; overrides ini file setting
     char *r = args->argValue( 'r' );
     if (r)
@@ -187,12 +183,6 @@ int TCmdenvApp::run()
         return 1;
 
     setupSignals();
-
-    if (opt_helponly)
-    {
-        help();
-        return 0;
-    }
 
     EnumStringIterator run_nr( opt_runstoexec.c_str() );
     if (run_nr.error())
@@ -517,35 +507,12 @@ void TCmdenvApp::messageDelivered(cMessage *msg)
     }
 }
 
-void TCmdenvApp::help()
+void TCmdenvApp::printUISpecificHelp()
 {
-    ev << "\n";
-    ev << "Command line switches:\n";
-    ev << "  -h            print this help and exit.\n";
-    ev << "  -f <inifile>  use the given ini file instead of omnetpp.ini.\n";
-    ev << "  -r <runs>     execute the specified runs in the ini file.\n";
+    ev << "Cmdenv-specific options:\n";
+    ev << "  -r <runs>     Execute the specified runs in the ini file.\n";
     ev << "                <runs> is a comma-separated list of run numbers or\n";
     ev << "                run number ranges, for example 1,2,5-10.\n" ;
-    ev << "  -l <library>  load the specified shared library on startup.\n";
-    ev << "                The library can contain modules, networks, etc.\n";
-    ev << "\n";
-
-    ev << "Available networks:\n";
-    cArray::Iterator iter(*networks.instance());
-    for (; iter(); iter++)
-        ev << "  " << iter()->name() << '\n';
-    ev << "\n";
-
-    ev << "Available modules types:\n";
-    cArray::Iterator iter2(*modtypes.instance());
-    for (; iter2(); iter2++)
-        ev << "  " << iter2()->name() << '\n';
-    ev << "\n";
-
-    ev << "Available channel types:\n";
-    cArray::Iterator iter3(*channeltypes.instance());
-    for (; iter3(); iter3++)
-        ev << "  " << iter3()->name() << '\n';
     ev << "\n";
 }
 
