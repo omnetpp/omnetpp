@@ -335,6 +335,12 @@ void TCmdenvApp::help()
     for (; iter2(); iter2++)
         ev << "  " << ((cModuleType *)iter2())->name() << '\n';
     ev << "\n";
+
+    ev << "Available channels:\n";
+    cIterator iter3(linktypes);
+    for (; iter3(); iter3++)
+        ev << "  " << ((cLinkType *)iter3())->name() << '\n';
+    ev << "\n";
 }
 
 void TCmdenvApp::puts(const char *s)
