@@ -32,7 +32,7 @@ The EBNF description of the language can be found in Appendix
 \subsection{Components of a NED description}
 
 \index{ned!components}
-A NED description can contain the following components, in arbitrary 
+A NED description can contain the following components, in arbitrary
 number or order:
 \begin{itemize}
   \item{import statements\index{import statements}}
@@ -51,8 +51,8 @@ The rest of this chapter discusses each of these types in detail.
 
 \index{ned!keywords}
 
-The writer of the network description has to take care that no 
-reserved words are used for names. The reserved words of the 
+The writer of the network description has to take care that no
+reserved words are used for names. The reserved words of the
 NED language are:
 \begin{verbatim}
   import include channel endchannel simple endsimple module endmodule
@@ -80,7 +80,9 @@ The network description and all identifiers in it are case sensitive.
 Example:
 
 
-\tbf{import} ''tkn\_mod'', ''tkn2\_mod'';
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{import} "tkn_mod", "tkn2_mod";
+\end{Verbatim}
 
 
 The \fpar[ned!keywords!import]{import} statement (the
@@ -115,8 +117,8 @@ imported files reside.
 \index{channel!error}
 \index{channel!datarate}
 
-A channel definition specifies a connection type of given characteristics. 
-The channel name can be used later in the NED description to 
+A channel definition specifies a connection type of given characteristics.
+The channel name can be used later in the NED description to
 create connections with these parameters.
 
 
@@ -166,10 +168,10 @@ Example:
 
 \index{module!simple!parameters}
 
-Parameters are variables that belong to a module. Simple module 
-parameters can be queried and used by simple module algorithms. 
-For example, a parameter called \ttt{num\_of\_messages} can be used 
-by a module called \ttt{MsgSource} to determine how many messages it 
+Parameters are variables that belong to a module. Simple module
+parameters can be queried and used by simple module algorithms.
+For example, a parameter called \ttt{num\_of\_messages} can be used
+by a module called \ttt{MsgSource} to determine how many messages it
 has to generate.
 
 
@@ -187,7 +189,7 @@ Example:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{simple} MsgSource
     \tbf{parameters}:
-        interarrival_time, 
+        interarrival_time,
         num_of_messages : \tbf{const,}
         address : \tbf{string};
     \tbf{gates}: //...
@@ -225,13 +227,13 @@ other modules and cause errors that are difficult to discover.
 \index{gate}
 \index{module!simple!gates}
 
-Gates are the connection points of modules. The starting and 
-ending points of the connections between modules are gates. OMNeT++ 
-supports simplex (one-directional) connections, so there are 
-two kinds of gates: input and output. Messages are sent through 
-output gates and received through input gates. 
+Gates are the connection points of modules. The starting and
+ending points of the connections between modules are gates. OMNeT++
+supports simplex (one-directional) connections, so there are
+two kinds of gates: input and output. Messages are sent through
+output gates and received through input gates.
 
-Gates are identified with their names. Gate vectors are supported: 
+Gates are identified with their names. Gate vectors are supported:
 a gate vector\index{gate!vector} contains a number of single gates.
 
 Gates are declared by listing their names in the
@@ -296,7 +298,7 @@ Example:
 \tbf{endmodule}
 \end{Verbatim}
 
-Any of the above sections (parameters, gates, submodules, connections) 
+Any of the above sections (parameters, gates, submodules, connections)
 is optional.
 
 
@@ -331,7 +333,7 @@ Compound module parameters can be used in two ways:
 \item{used in defining the internal topology of the network}
 \end{itemize}
 
-For example, a parameter called \ttt{num\_of\_ports} can be used to 
+For example, a parameter called \ttt{num\_of\_ports} can be used to
 construct a router module with the number of ports as a parameter.
 
 
@@ -382,7 +384,7 @@ Example:
     \tbf{gates}: //...
     \tbf{submodules}:
         SubModuleName: TypeOfSubModule
-            \tbf{parameters}: 
+            \tbf{parameters}:
                 //...
             \tbf{gatesizes}:
                 //...
@@ -459,12 +461,12 @@ parameters and gates exist and are used correctly. The
 somewhere higher in the module hierarchy so that the actual module
 type can be specified in the ini file or entered interactively.
 
-The GeneralNode module type does not need to be implemented in 
-C++, because no instance of it is created; it is merely used 
-to check the correctness of the NED file. 
+The GeneralNode module type does not need to be implemented in
+C++, because no instance of it is created; it is merely used
+to check the correctness of the NED file.
 
-On the other hand, the actual module type that will be substituted 
-(i.e. SwitchingNode in our case) does not need to be declared 
+On the other hand, the actual module type that will be substituted
+(i.e. SwitchingNode in our case) does not need to be declared
 in the NED files.
 
 The \fpar[ned!keywords!like]{like} phrase enables the user to
@@ -478,7 +480,7 @@ This scheme directly parallels with the concept of
 
 \index{module!submodule!parameters}
 
-Right after the declaration, the values for the parameters of 
+Right after the declaration, the values for the parameters of
 the declared submodules can be specified.
 
 Example:
@@ -605,19 +607,19 @@ conditions\index{gate!conditional}.
 For example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} Serial:
-    \tbf{parameters}: count: \tbf{const}; 
-    \tbf{submodules}: 
+\tbf{module} Serial
+    \tbf{parameters}: count: \tbf{const};
+    \tbf{submodules}:
         node : Node [count]
             \tbf{parameters}:
                 position = "middle";
             \tbf{parameters} \tbf{if} index==0:
-                position = "beginning"; 
-            \tbf{parameters} \tbf{if} index==count-1: 
+                position = "beginning";
+            \tbf{parameters} \tbf{if} index==count-1:
                 position = "end";
             \tbf{gatesizes}:
-                in[2], out[2]; 
-            \tbf{gatesizes} \tbf{if} index==0 {\textbar}{\textbar} index==count-1: 
+                in[2], out[2];
+            \tbf{gatesizes} \tbf{if} index==0 {\textbar}{\textbar} index==count-1:
                 in[1], in[1];
     \tbf{connections}:
         //...
@@ -625,9 +627,9 @@ For example:
 \end{Verbatim}
 
 
-If the conditions are not disjunct and a parameter value or a 
-gate size is defined twice, the last definition will take effect, 
-overwriting the former ones. Thus, values intended as defaults 
+If the conditions are not disjoint and a parameter value or a
+gate size is defined twice, the last definition will take effect,
+overwriting the former ones. Thus, values intended as defaults
 should appear in the first sections.
 
 
@@ -637,19 +639,18 @@ should appear in the first sections.
 \subsection{Connections}
 
 
-
-In a compound module definition, the gates of the compound module and
-its immediate submodules are connected\index{connection}. In other
-words, the NED language does not support connections that would cross
-''the walls'' of a compound module without using gates of that module.
+The compound module definition specifies how the gates of the compound
+module and its immediate sub-modules are connected\index{connection}.
+The NED language does not permit connections that cross the boundaries
+of a compound module without using the gates of that module.
 Only point-to-point connections are supported.
 
 
 In summary:
 \begin{enumerate}
-  \item{The gate of a submodule or enclosing module gate can be connected 
+  \item{The gate of a submodule or enclosing module gate can be connected
     to another submodule or enclosing module gate}
-  \item{Gate direction must be observed (e.g. you cannot connect two 
+  \item{Gate direction must be observed (e.g. you cannot connect two
     submodule output gates)}
 \end{enumerate}
 
@@ -662,7 +663,7 @@ Example:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} SomeCompound:
+\tbf{module} SomeCompound
     \tbf{parameters}: //...
     \tbf{gates}: //...
     \tbf{submodules}: //...
@@ -677,8 +678,8 @@ Example:
 
 Each connection can be:
 \begin{itemize}
-  \item{direct (that is, no delay, bit error rate or data rate), can 
-    use a named channel, or a channel given with delay, error and 
+  \item{direct (that is, no delay, bit error rate or data rate), can
+    use a named channel, or a channel given with delay, error and
     data rate values;}
 \item{single or multiple (loop) connection;}
 \item{conditional or non-conditional.}
@@ -692,42 +693,42 @@ These connection types are described in the following sections.
 \index{ned!connections}
 \index{connection}
 
-The source gate can be an output gate of a submodule or an input 
-gate of the compound module, and the destination gate can be 
-an input gate of a submodule or an output gate of the compound 
+The source gate can be an output gate of a submodule or an input
+gate of the compound module, and the destination gate can be
+an input gate of a submodule or an output gate of the compound
 module.
 
 
-If the user does not specify a channel\index{channel}, the connection will have 
+If the user does not specify a channel\index{channel}, the connection will have
 no propagation delay, no transmission delay and no bit errors:
-\begin{Verbatim}
+\begin{verbatim}
     Sender.outgate --> Receiver.ingate;
-\end{Verbatim}
+\end{verbatim}
 
 The arrow can point either left-to-right or right-to-left.
 
 The user can also specify a channel by its name\index{channel!name}:
-\begin{Verbatim}
+\begin{verbatim}
     Sender.outgate --> Dialup14400 --> Receiver.ingate;
-\end{Verbatim}
+\end{verbatim}
 
-In this case, the NED sources must contain the definition of 
+In this case, the NED sources must contain the definition of
 the channel.
 
 One can also specify the channel parameters directly\index{channel!parameters}:
-\begin{Verbatim}
+\begin{verbatim}
     Sender.outgate --> error 1e-5 delay 0.001 --> Receiver.ingate;
-\end{Verbatim}
+\end{verbatim}
 
-Either of the parameters can be omitted and they can be in any 
+Either of the parameters can be omitted and they can be in any
 order.
 
 
 \tbf{Loop connections}
 
 
-If submodule or gate vectors are used, it is possible to create 
-more than one connection with one statement. This is termed a \textit{multiple} 
+If submodule or gate vectors are used, it is possible to create
+more than one connection with one statement. This is termed a \textit{multiple}
 or \textit{loop connection}\index{connection!loop}.
 
 A multiple connection is created with the \fpar[ned!keywords!for]{for}
@@ -736,12 +737,12 @@ statement:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{for} i=0..4 \tbf{do}
     Sender.outgate[i] --> Receiver[i].ingate
-\tbf{endfor}
+\tbf{endfor};
 \end{Verbatim}
 
 
 
-The result of the above loop connection can be illustrated as 
+The result of the above loop connection can be illustrated as
 depicted in Fig. \ref{fig:ch-ned-lang:loop-connection}.
 
 \begin{figure}[htbp]
@@ -765,38 +766,38 @@ the outermost and the rightmost index being the innermost loop.
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{for} i=0..4, j=0..4 \tbf{do}
     //...
-\tbf{endfor}
+\tbf{endfor};
 \end{Verbatim}
 
-One can also use an index in the lower and upper bound expressions 
+One can also use an index in the lower and upper bound expressions
 of the subsequent indices:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{for} i=0..3, j=i+1..4 \tbf{do}
     //...
-\tbf{endfor}
+\tbf{endfor};
 \end{Verbatim}
 
 
-In the above example, the following \textit{(i,j)} pairs will be used 
+In the above example, the following \textit{(i,j)} pairs will be used
 for the connections inside the for statement:
 
 \tab \textit{(0,1)\tab (0,2)\tab (0,3)\tab (0,4)\tab (1,2)\tab (1,3)\tab (1,4)\tab (2,3)\tab (2,4)\tab (3,4)}
 
-A gate cannot be used in more than one connection and one connection 
+A gate cannot be used in more than one connection and one connection
 cannot be made more than once. Consider the following bogus statement:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{for} i = 0..2, j = 0..2 \tbf{do}
     module1.out [i] --> module2.in [\tbf{\textit{i}}];
-\tbf{endfor}
+\tbf{endfor};
 \end{Verbatim}
 
 
-It will cause a runtime error: each connection is made twice, 
-as the index variable \textit{j} is not used in the connection. In 
-general, every connection inside a loop should use all the index 
+It will cause a runtime error: each connection is made twice,
+as the index variable \textit{j} is not used in the connection. In
+general, every connection inside a loop should use all the index
 variables at both sides of the connection.
 
 
@@ -811,7 +812,7 @@ Connections can be conditional. This is a conditional connection:
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{for} i=0..n \tbf{do}
     Sender.outgate[i] --\ttt{>} Receiver[i].ingate \tbf{if} i\%2==0;
-\tbf{endfor}
+\tbf{endfor};
 \end{Verbatim}
 
 
@@ -833,7 +834,7 @@ This example generates a random subgraph of a full graph:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} Stochastic:
+\tbf{module} Stochastic
     \tbf{parameters}: //..
     \tbf{gates}: //..
     \tbf{submodules}: //..
@@ -841,12 +842,12 @@ This example generates a random subgraph of a full graph:
         \tbf{for} i=0..9 \tbf{do}
             Sender.outgate[i] --> Receiver[i].ingate
                                 \tbf{if} uniform(0,1)<0.3;
-        \tbf{endfor}
+        \tbf{endfor};
 \tbf{endmodule}
 \end{Verbatim}
 
 
-When using \fpar[ned!keywords!nocheck]{nocheck}, it is the simple modules' responsibility 
+When using \fpar[ned!keywords!nocheck]{nocheck}, it is the simple modules' responsibility
 not to send messages on gates that are not connected.
 
 
@@ -857,7 +858,7 @@ not to send messages on gates that are not connected.
 
 \index{module!compound}
 
-With the help of conditional parameter and gatesize blocks and 
+With the help of conditional parameter and gatesize blocks and
 conditional connections\index{connection!conditional}, one can create complex topologies.
 
 
@@ -876,7 +877,7 @@ their definition is in a separate NED file which we will import.
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{import} "modules";
-\tbf{module} Router:
+\tbf{module} Router
     \tbf{parameters}:
         rte_processing_delay, rte\_buffersize,
         num_of_ports: \tbf{const};
@@ -898,11 +899,11 @@ their definition is in a separate NED file which we will import.
                 window_size = 2;
     \tbf{connections}:
         \tbf{for} i=0..num_of_ports-1 \tbf{do}
-            routing.output[i] --> port\_if[i].from_higher_layer;
+            routing.output[i] --> port_if[i].from_higher_layer;
             routing.input[i] <-- port_if[i].to_higher_layer;
             port_if[i].to_port --> output_ports[i];
             port_if[i].from_port <-- input_ports[i];
-        \tbf{endfor;}
+        \tbf{endfor};
         routing.output[num_of_ports] --> local_user.input;
         routing.input[num_of_ports] <-- local_user.output;
 \tbf{endmodule}
@@ -916,7 +917,7 @@ For example, one can create a chain\index{chain} of modules like this:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} Serial:
+\tbf{module} Serial
     \tbf{parameters}: count: \tbf{const};
     \tbf{submodules}:
         node : Node [count]
@@ -928,7 +929,7 @@ For example, one can create a chain\index{chain} of modules like this:
         \tbf{for} i = 0..count-2 \tbf{do}
             node[i].out[i!=0 ? 1 : 0] --> node[i+1].in[0];
             node[i].in[i!=0 ? 1 : 0] <-- node[i+1].out[0];
-        \tbf{endfor}
+        \tbf{endfor};
 \tbf{endmodule}
 \end{Verbatim}
 
@@ -936,56 +937,57 @@ For example, one can create a chain\index{chain} of modules like this:
 \tbf{Example 3: Binary Tree}
 
 
-Building a binary tree\index{binary tree} is a good example of using conditional 
-connections:
-
+One can use conditional connections to build a binary tree\index{binary tree}.
+The following NED code loops through all possible node pairs, and
+creates the connections needed for a binary tree.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} BinaryTreeNode: 
-    \tbf{gates}: 
-        \tbf{in}: from_up, from_downleft, from_downright; 
-        \tbf{out}: upward, downleft, downright;
+\tbf{simple} BinaryTreeNode
+    \tbf{gates}:
+        \tbf{in}: fromupper;
+        \tbf{out}: downleft;
+        \tbf{out}: downright;
 \tbf{endsimple}
 
-\tbf{module} BinaryTree:
-    \tbf{parameters}: height: \tbf{const}; 
-    \tbf{submodules}: node: BinaryTreeNode [ 2^height-1 ]; 
-        //....
-    \tbf{connections}:
-        \tbf{for} i = 0..2^height-2, j = 0..2^height-2 \tbf{do} 
-            node[i].upward --> node[j].from_downleft \tbf{if} leftchild(i,j); 
-            node[i].from_up <-- node[j].downleft \tbf{if} leftchild(i,j); 
-            node[i].upward --> node[j].from_downright \tbf{if} rightchild(i,j); 
-            node[i].from_up <-- node[j].downright \tbf{if} rightchild(i,j); 
-        \tbf{endfor} 
-        //....
+\tbf{module} BinaryTree
+    \tbf{parameters}:
+        height: \tbf{const};
+    \tbf{submodules}:
+        node: BinaryTreeNode [ 2^height-1 ];
+    \tbf{connections} \tbf{nocheck}:
+        \tbf{for} i = 0..2^height-2, j = 0..2^height-2 \tbf{do}
+            node[i].downleft --> node[j].fromupper \tbf{if} j==2*i+1;
+            node[i].downright --> node[j].fromupper \tbf{if} j==2*i+2;
+        \tbf{endfor};
 \tbf{endmodule}
 \end{Verbatim}
 
+Note that not each gate of the modules will be connected. By default,
+an unconnected gate produces a run-time error message when the
+simulation is started, but this error message is turned off here with
+the \fpar[ned!keywords!nocheck]{nocheck} modifier.  Consequently, it
+is the simple modules' responsibility not to send on a gate which is
+not leading anywhere.
 
+An alert reader might notice that there is a better alternative
+to the above code. Each node except the ones at the lowest level
+of the tree has to be connected to exactly two nodes,
+so we can use a single loop to create the connections.
 
-The dotted lines should be replaced by modules that close the tree at
-its root and the lower edge. The $leftchild(i,j)$ and
-$rightchild(i,j)$ functions are:
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{module} BinaryTree2
+    \tbf{parameters}:
+        height: \tbf{const};
+    \tbf{submodules}:
+        node: BinaryTreeNode [ 2^height-1 ];
+    \tbf{connections} \tbf{nocheck}:
+        \tbf{for} i=0..2^(height-1)-2 \tbf{do}
+            node[i].downleft --> node[2*i+1].fromupper;
+            node[i].downright --> node[2*i+2].fromupper;
+        \tbf{endfor};
+\tbf{endmodule}
+\end{Verbatim}
 
-\begin{eqnarray*}
-leftchild(i,j)  & = & \left\{
-    \begin{array}{r@{\quad:\quad}l}
-      1 & i=2j+1\\
-      0 & \mbox{otherwise}
-    \end{array}
-    \right.\\
-rightchild(i,j) & = & \left\{
-    \begin{array}{r@{\quad:\quad}l}
-      1 & i=2j+2\\
-      0 & \mbox{otherwise}
-    \end{array}
-    \right.
-\end{eqnarray*}
-
-These formulas can be directly substituted in the NED description, 
-or alternatively, written in C and linked into the simulation 
-executable.
 
 
 \tbf{Example 4: Random graph}
@@ -996,31 +998,24 @@ random subgraph of a full graph:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} RandomGraph:
+\tbf{module} RandomGraph
     \tbf{parameters}:
         count: \tbf{const},
         connectedness; // 0.0<x<1.0
     \tbf{submodules}:
-        node: Node [count]
+        node: Node [count];
             \tbf{gatesizes}: \tbf{in}[count], \tbf{out}[count];
     \tbf{connections} \tbf{nocheck}:
         \tbf{for} i=0..count-1, j=0..count-1 \tbf{do}
             node[i].out[j] --> node[j].in[i]
-                \tbf{if} i!=j and uniform(0,1)<connectedness;
-        \tbf{endfor}
+                \tbf{if} i!=j && uniform(0,1)<connectedness;
+        \tbf{endfor};
 \tbf{endmodule}
 \end{Verbatim}
 
-
-Note that not each gate of the modules will be connected. By default,
-an unconnected gate produces a run-time error message when the
-simulation is started, but this error message is turned off here with
-the \fpar[ned!keywords!nocheck]{nocheck} modifier.  Consequently, it
-is the simple modules' responsibility not to send on a gate which is
-not leading anywhere.
-
-
-
+Note the use of the \fpar[ned!keywords!nocheck]{nocheck} modifier
+here too, to turn off error messages given by the network setup code
+for unconnected gates.
 
 
 \subsection{Using const with parameterized topologies}
@@ -1066,12 +1061,12 @@ significant role. Consider the following example:
 
 
 If parameter num\_of\_mods wasn't const, the following would happen:\\
-normal(5,2) would be substituted for the num\_of\_mods. There 
-are three places where an evaluation of num\_of\_mods (that is, normal 
-(5,2)) is done (they are typed in italics in the example). It 
-is likely that these evaluations would not result in the same 
-value, and consequently, the gate vector sizes would not match 
-each other and the end value of the for statement. Thus, the 
+normal(5,2) would be substituted for the num\_of\_mods. There
+are three places where an evaluation of num\_of\_mods (that is, normal
+(5,2)) is done (they are typed in italics in the example). It
+is likely that these evaluations would not result in the same
+value, and consequently, the gate vector sizes would not match
+each other and the end value of the for statement. Thus, the
 loop connection would not be created properly.
 
 Using \fpar[ned!keywords!const]{const} for the parameter num\_of\_mods
@@ -1088,9 +1083,9 @@ created.
 \index{module!compound!patterns}
 \index{topology!patterns}
 
-Several approaches can be used when you want to create complex 
-topologies which have a regular structure; three of them are 
-described below. 
+Several approaches can be used when you want to create complex
+topologies which have a regular structure; three of them are
+described below.
 
 
 \tbf{'Subgraph of a Full Graph' }
@@ -1102,9 +1097,9 @@ the full graph:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-for i=0..N-1, j=0..N-1 do 
+for i=0..N-1, j=0..N-1 do
     node[i].out[...] --> node[j].in[...] if condition(i,j);
-endfor
+endfor;
 \end{Verbatim}
 
 
@@ -1131,9 +1126,9 @@ connections for each one. It can be generalized like this:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-for i=0..Nnodes, j=0..Nconns(i)-1 do 
+for i=0..Nnodes, j=0..Nconns(i)-1 do
     node[i].out[j] --> node[rightNodeIndex(i,j)].in[j];
-endfor
+endfor;
 \end{Verbatim}
 
 
@@ -1143,35 +1138,35 @@ presented later) is a clear example of this approach. BinaryTree can
 also be regarded as an example of this pattern where the inner j loop
 is unrolled.
 
-The applicability of this pattern depends on how easily the \textit{rightNodeIndex(i,j)} 
-function can be formulated. 
+The applicability of this pattern depends on how easily the \textit{rightNodeIndex(i,j)}
+function can be formulated.
 
 
 \tbf{'Enumerate All Connections' }
 
 
-A third pattern is to list all connections within a loop: 
+A third pattern is to list all connections within a loop:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-for i=0..Nconnections-1 do 
+for i=0..Nconnections-1 do
     node[leftNodeIndex(i)].out[...] --> node[rightNodeIndex(i)].in[...];
-endfor
+endfor;
 \end{Verbatim}
 
 
 
-The pattern can be used if \textit{leftNodeIndex(i)} and \textit{rightNodeIndex(i)} 
+The pattern can be used if \textit{leftNodeIndex(i)} and \textit{rightNodeIndex(i)}
 mapping functions can be sufficiently formulated.
 
-The Serial module is an example of this approach where the mapping 
-functions are extremely simple: \textit{leftNodeIndex(i)=i} and \textit{rightNodeIndex(i)=i+1}. 
-The pattern can also be used to create a random subset of a full 
+The Serial module is an example of this approach where the mapping
+functions are extremely simple: \textit{leftNodeIndex(i)=i} and \textit{rightNodeIndex(i)=i+1}.
+The pattern can also be used to create a random subset of a full
 graph with a fixed number of connections.
 
-In the case of irregular structures where none of the above patterns 
-can be employed, the user can resort to specifying constant submodule/gate 
-vector sizes and explicitly listing all connections, like he/she 
+In the case of irregular structures where none of the above patterns
+can be employed, the user can resort to specifying constant submodule/gate
+vector sizes and explicitly listing all connections, like he/she
 would do it in most existing simulators.
 
 
@@ -1202,11 +1197,11 @@ templates\index{topology!templates}, you can reuse
 \tbf{An example: hypercube}
 
 
-The concept is demonstrated on a network with hypercube interconnection. 
-When building an N-dimension hypercube, we can exploit the fact 
-that each node is connected to N others which differ from it 
-only in one bit of the binary representations of the node indices 
-(see Fig. \ref{fig:ch-ned-lang:hypercube-topology}). 
+The concept is demonstrated on a network with hypercube interconnection.
+When building an N-dimension hypercube, we can exploit the fact
+that each node is connected to N others which differ from it
+only in one bit of the binary representations of the node indices
+(see Fig. \ref{fig:ch-ned-lang:hypercube-topology}).
 
 \begin{figure}[htbp]
   \begin{center}
@@ -1222,42 +1217,42 @@ following (it can be placed into a separate file, e.g hypercube.ned):
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-simple Node 
+simple Node
     gates: out: out[]; in: in[];
 endsimple
 
-\tbf{module Hypercube}
+\tbf{module} Hypercube
     parameters:
-        dim, nodetype; 
+        dim, nodetype;
     submodules:
         node: nodetype[2{\textasciicircum}dim] like Node
     gatesizes:
         out[dim], in[dim];
     connections:
         for i=0..2^dim-1, j=0..dim-1 do
-            node[i].out[j] --> node[i # 2^j].in[j]; // # is bitwise XOR 
-        endfor
+            node[i].out[j] --> node[i # 2^j].in[j]; // # is bitwise XOR
+        endfor;
 endmodule
 \end{Verbatim}
 
 
 
-When you create an actual hypercube, you substitute the name 
-of an existing module type (e.g. Hypercube\_PE) for the nodetype 
-parameter. The module type implements the algorithm the user 
-wants to simulate and it must have the same gates that the Node 
-type has. The topology template code can be used through importing 
-the file: 
+When you create an actual hypercube, you substitute the name
+of an existing module type (e.g. Hypercube\_PE) for the nodetype
+parameter. The module type implements the algorithm the user
+wants to simulate and it must have the same gates that the Node
+type has. The topology template code can be used through importing
+the file:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
 import "hypercube.ned"
-  
+
 simple Hypercube_PE
     gates: out: out[]; in: in[];
 endsimple
 
-network hypercube: Hypercube 
+network hypercube: Hypercube
     parameters:
         dim = 4,
         nodetype = "Hypercube_PE";
@@ -1281,8 +1276,8 @@ different values to nodetype, such as ''WormholeRoutingNode'',
 
 \index{ned!network definition}
 
-A \textit{network} \textit{definition} (or \textit{system module
-  definition}) specifies the system module. In its syntax, it is very
+A \textit{network definition} (or \textit{system module
+  definition}) specifies the system module. Its syntax is very
 similar to a submodule declaration. The system definition starts with
 keyword \fpar[ned!keywords!network]{network} and ends with
 \fpar[ned!keywords!endnetwork]{endnetwork}.
@@ -1303,9 +1298,9 @@ An example:
 Here, SomeModule is the name of a compound or a simple module type.
 
 
-There can be several system definitions in a network description, 
-each one defines a different network. The simulation program 
-built with such a network description is able to run any of them; 
+There can be several system definitions in a network description,
+each one defines a different network. The simulation program
+built with such a network description is able to run any of them;
 the desired one can be specified in the config file (see later).
 
 
@@ -1322,8 +1317,8 @@ simple module: one simple
 module always executes on a single processor.
 
 
-Parallel execution is also supported by NED: the language provides 
-an elegant way of specifying execution hosts for different modules. 
+Parallel execution is also supported by NED: the language provides
+an elegant way of specifying execution hosts for different modules.
 We'll discuss this feature in the following sections.
 
 
@@ -1342,7 +1337,7 @@ Example:
     \tbf{machines}: host1, host2, host3, host4;
     \tbf{parameters}: //...
     \tbf{gates}: //...
-    \tbf{submodules}: 
+    \tbf{submodules}:
         submodule1 : submodtype1
             \tbf{on:} host1;
         submodule2 : submodtype2
@@ -1378,7 +1373,7 @@ machine parameters at all.
     \tbf{machines}: host1, host2;
     \tbf{parameters}: //...
     \tbf{gates}: //...
-    \tbf{submodules}: 
+    \tbf{submodules}:
         submodule1 : submodtype1
             \tbf{on:} host1, host1, host1;
         //...
@@ -1387,7 +1382,7 @@ machine parameters at all.
 \end{Verbatim}
 
 
-Host names propagate up to network definition level. Extension 
+Host names propagate up to network definition level. Extension
 to the network definition:
 
 
@@ -1422,7 +1417,7 @@ Example:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} DistVector:
+\tbf{module} DistVector
     \tbf{machines}: host1, host2, host3;
     \tbf{submodules}:
         node : Node [count]
@@ -1460,17 +1455,20 @@ values etc.
 
 
 
-\subsection{Using parameters in expressions (ref and ancestor)}
+\subsection{Referencing other parameters}
 
-Expressions can use the parameters of the compound module being built.
+Expressions can use the parameters of the enclosing compound module
+(the one being defined) and of submodules defined earlier in NED file.
+The syntax for the latter is \ttt{submod.param} or \ttt{submod[index].param}.
+
 A parameter can be taken by value\index{ned!parameters!by value} or by
 reference\index{ned!parameters!by reference}. The default is by value;
 to select by-reference passing for a parameter, you have to use the
 \fpar[ned!keywords!ref]{ref} modifier. Parameters passed by
 reference can be used by a module to propagate values (status info
-etc.)  to other modules.
+etc.) to other modules.
 
-The ancestor modifier allows one to access parameters from higher 
+The ancestor modifier allows one to access parameters from higher
 in the module hierarchy.
 
 
@@ -1486,9 +1484,6 @@ in the module hierarchy.
 \end{Verbatim}
 
 
-
-
-
 \subsection{Operators}
 
 The following operators\index{ned!expressions!operators} can be used
@@ -1501,35 +1496,39 @@ in expressions, in order of precedence:
 \tbf{Operator} & \tbf{Meaning}\\\hline
 -, !, \ensuremath{\sim} & unary minus, negation, bitwise complement \\
 {\textasciicircum}        & power of \\
- & \\
+\hline
+%% & \\
 $*$, /, \%                & multiply, divide, modulus \\
- & \\
+\hline
+%% & \\
 +, -                    & add, subtract \\
- & \\
+\hline
+%% & \\
 \ttt{<}\ttt{<}, \ttt{>}\ttt{>}      & bitwise shifting \\
- & \\
+\hline
+%% & \\
 \&, |, \#        & bitwise and, or, xor
                          \textit{({\textasciicircum} is reserved for power)} \\
- & \\
+\hline
+%% & \\
 ==                      & equal \\
 !=                      & not equal \\
 \ttt{>}, \ttt{>=}       & greater, greater or equal \\
 \ttt{<}, \ttt{<=}       & less, less or equal \\
- & \\
+\hline
+%% & \\
 \&\&, ||, \#\# & logical operators and, or, xor \\
- & \\
+\hline
+%% & \\
 ?:                      & the C/C++ ``inline if'' \\\hline
 \end{longtable}
 
 
 
+\subsection{The \fname{sizeof()} and \fname{index} operators}
 
-
-
-\subsection{The sizeof() and index operators}
-
-A useful operator is sizeof()\index{ned!sizeof()}, which gives the
-size of a vector gate\index{gate!vector}. The index
+A useful operator is \fname{sizeof()}\index{ned!sizeof()}, which gives the
+size of a vector gate\index{gate!vector}. The \fname{index}
 operator\index{ned!index operator} gives the index of the current
 submodule in its module vector.
 
@@ -1544,16 +1543,44 @@ An example for both:
     \tbf{connections}:
         \tbf{for} i = 0.. \tbf{sizeof}(fromgens)-1 \tbf{do}
             in[i] --> proc[i].input;
-        \tbf{endfor}
+        \tbf{endfor};
 \tbf{endmodule}
 \end{Verbatim}
 
 
-Here, we create as many processors as there are input gates for 
-this compound module in the network. The address parameters of 
+Here, we create as many processors as there are input gates for
+this compound module in the network. The address parameters of
 the processors are 10, 20, 30 etc.
 
 
+
+\subsection{Prompt text and default value}
+
+When a parameter does not receive a value inside NED files or in \ttt{omnetpp.ini},
+the user will be prompted to enter its value at the beginning of the simulation.
+
+For such cases, it is possible to specify a prompt text and a default value.
+The syntax is the following:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+    \textit{<paramname>} = \tbf{input}(\textit{<default-value>}, \textit{<prompt>})
+    \textit{<paramname>} = \tbf{input}(\textit{<default-value>})
+    \textit{<paramname>} = \tbf{input}
+\end{Verbatim}
+
+You can use the third version to make it explicit that you do not want to
+assign a value from within the NED file; otherwise it is equivalent to
+simply and quietly leaving out the parameter from the list of assignments.
+
+Examples:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+   ...
+   parameters:
+      numProc = \tbf{input}(10,"Number of processors:"),
+      processingTime = \tbf{input}(10ms),
+      ...
+\end{Verbatim}
 
 
 
@@ -1565,11 +1592,11 @@ time in units like milliseconds, minutes or hours:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-    ... 
+    ...
     \tbf{parameters}:
         propagation_delay = 560ms, // 0.560s
         connection\_timeout = 6m 30s 500ms, // 390.5s
-        lunchtime = 0.5h; // 30 min
+        recovery\_intvl = 0.5h; // 30 min
 \end{Verbatim}
 
 
@@ -1583,80 +1610,8 @@ ms & milliseconds & $*10^{-3}$ \\\hline
 s  & seconds & $*1$ \\\hline
 m  & minutes & $*60$ \\\hline
 h  & hours & $*3600$ \\\hline
-d  & days & $*60*3600$ \\\hline
+d  & days & $*24*3600$ \\\hline
 \end{longtable}
-
-
-
-
-
-
-
-\subsection{Random values}
-
-{\opp} has the following predefined distributions\index{distribution!predefined}:
-\begin{itemize}
-  \item{uniform\index{distribution!uniform}, uniform integer}
-  \item{exponential\index{distribution!exponential}}
-  \item{normal\index{distribution!normal}, truncated normal\index{distribution!truncated normal}}
-\end{itemize}
-
-Each distribution has one or more parameters.
-
-Examples:
-
-\begin{Verbatim}
-uniform(0,1)       // uniform in [0,1)
-intuniform(-2,2)   // uniform int, limits included: -2,-1,0,1,or 2
-exponential(5)     // exponential with mean=5 (thus parameter=0.2)
-normal(100,5)      // mean 100, variance 5
-truncnormal(5,3)   // normal distr, truncated to nonnegative values
-\end{Verbatim}
-
-The functions all use the random number generator 0. By using the
-genk\_-prefixed\index{distribution!genk\_-prefixed} versions of the
-above functions, you can specify which generator should be used. The
-index of the generator comes as the first argument.
-
-
-Example:
-
-\begin{Verbatim}
-genk_normal(2,100,5) // as normal(100,5), using generator 2
-\end{Verbatim}
-
-
-The above distributions are implemented with C functions (see later in
-the Functions section). This also means that you can easily add
-further ones by writing their code in C++ and using the
-\fmac{Register\_Function()} macro. Your distributions will be treated
-in the same way as the built-in ones.
-
-
-
-
-
-\subsection{Input value}
-
-The syntax is:
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-    \tbf{input}( 10, "Number of processors:" )
-\end{Verbatim}
-
-
-Or you can omit the prompt text:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-    \tbf{input}( 10ms )
-\end{Verbatim}
-
-
-Value for input parameters\index{input parameters} can be given in the
-config file. If they are not there, the user will be offered a prompt
-to enter the value.
-
 
 
 
@@ -1664,7 +1619,7 @@ to enter the value.
 \subsection{Functions}
 \index{ned!functions}
 
-In NED expressions, you can use mathematical functions:
+In NED expressions, you can use the following mathematical functions:
 \begin{itemize}
   \item{many of the C language's \ttt{<math.h>} library functions:
     \ttt{exp()}, \ttt{log()}, \ttt{sin()}, \ttt{cos()}, \ttt{floor()},
@@ -1672,14 +1627,78 @@ In NED expressions, you can use mathematical functions:
   \item{functions that generate random variables: \ttt{uniform},
     \ttt{exponential}, \ttt{normal} and others were already
     discussed.}
-  \item{user defined functions that can implement new functions or
-    yield random variables of distributions that are originally not
-    built in.}
 \end{itemize}
 
+It is possible to add new ones, see \ref{sec:ch-ned-lang:defining-functions}.
+
+\subsection{Random values}
+
+Expressions may contain random variates from different distributions.
+This has the effect that unless the parameter was declared \ttt{const},
+it returns a different value each time it is evaluated.
+
+If the parameter \textit{was} declared \ttt{const}, it is only evaluated
+once at the beginning of the simulation, and subsequent queries
+on the parameter will always return the same value.
+
+Random variate functions use one of the random number generators (RNGs)
+provided by \opp. By default this is generator 0, but you can specify
+which one.
+
+{\opp} has the following predefined distributions\index{distribution!predefined}:
+
+\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
+\hline
+\tbf{Function} & \tbf{Description}\\\hline
+\multicolumn{2}{|c|}{\tbf{Continuous distributions}}\\\hline
+\fname{uniform(a, b, \textit{rng=0})} & uniform distribution in the range [a,b) \\\hline
+\fname{exponential(mean, \textit{rng=0})} & exponential distribution with the given mean \\\hline
+\fname{normal(mean, stddev, \textit{rng=0})} & normal distribution with the given mean and standard deviation \\\hline
+\fname{truncnormal(mean, stddev, \textit{rng=0})} & normal distribution truncated to nonnegative values \\\hline
+\fname{gamma\_d(alpha, beta, \textit{rng=0})} & gamma distribution with parameters alpha>0, beta>0 \\\hline
+\fname{beta(alpha1, alpha2, \textit{rng=0})} & beta distribution with parameters alpha1>0, alpha2>0 \\\hline
+\fname{erlang\_k(k, mean, \textit{rng=0})} & Erlang distribution with k>0 phases and the given mean \\\hline
+\fname{chi\_square(k, \textit{rng=0})} & chi-square distribution with k>0 degrees of freedom \\\hline
+\fname{student\_t(i, \textit{rng=0})} & student-t distribution with i>0 degrees of freedom \\\hline
+\fname{cauchy(a, b, \textit{rng=0})} & Cauchy distribution with parameters a,b where b>0 \\\hline
+\fname{triang(a, b, c, \textit{rng=0})} & triangular distribution with parameters a<=b<=c, a!=c \\\hline
+\fname{lognormal(m, s, rng=0)} & lognormal distribution with mean m and variance s>0 \\\hline
+\fname{weibull(a, b, \textit{rng=0})} & Weibull distribution with parameters a>0, b>0 \\\hline
+\fname{pareto\_shifted(a, b, c, \textit{rng=0})} & generalized Pareto distribution with parameters a, b and shift c \\\hline
+\multicolumn{2}{|c|}{\tbf{Discrete distributions}} \\\hline
+\fname{intuniform(a, b, \textit{rng=0})} & uniform integer from a..b \\\hline
+\fname{bernoulli(p, \textit{rng=0})} & result of a Bernoulli trial with probability 0<=p<=1 (1 with probability p and 0 with probability (1-p)) \\\hline
+\fname{binomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>=0 and 0<=p<=1 \\\hline
+\fname{geometric(p, \textit{rng=0})} & geometric distribution with parameter 0<=p<=1 \\\hline
+\fname{negbinomial(n, p, \textit{rng=0})} & binomial distribution with parameters n>0 and 0<=p<=1\\\hline
+\fname{hypergeometric(a, b, n, \textit{rng=0})} & hypergeometric distribution with parameters a>0,b>0 and 0<=n<=a+b.\\\hline
+\fname{poisson(lambda, \textit{rng=0})} & Poisson distribution with parameter lambda \\\hline
+
+\end{longtable}
+
+If you do not specify the optional \fpar{rng} argument, the functions will
+use random number generator 0.
+
+Examples:
+
+\begin{verbatim}
+intuniform(0,10)/10  // one of: 0, 0.1, 0.2, ..., 0.9, 1
+exponential(5)       // exponential with mean=5 (thus parameter=0.2)
+2+truncnormal(5,3)   // normal distr with mean 7 truncated to >=2 values
+\end{verbatim}
+
+The above distributions are implemented with C functions, and you can easily
+add new ones (see section \ref{sec:ch-ned-lang:defining-functions}).
+Your distributions will be treated in the same way as the built-in ones.
+
+
+
+\subsection{Defining new functions}
+\index{ned!functions}
+\label{sec:ch-ned-lang:defining-functions}
 
 To use user-defined functions\index{functions!user-defined}, one has
-to code the function in C++.  The C++ function must take 0, 1, 2, or 3
+to code the function in C++.  The C++ function must take 0, 1, 2, 3, or 4
 arguments of type double and return a double. The function must be
 registered in one of the C++ files with the \fmac{Define\_Function()}
 macro.
@@ -1688,7 +1707,7 @@ An example function (the following code must appear in one of the C++
 sources):
 
 
-\begin{Verbatim}
+\begin{verbatim}
 #include <omnetpp.h>
 
 double average(double a, double b)
@@ -1697,7 +1716,7 @@ double average(double a, double b)
 }
 
 Define_Function(average, 2);
-\end{Verbatim}
+\end{verbatim}
 
 
 The number 2 means that the \fname{average()} function has 2
@@ -1715,14 +1734,32 @@ NED files:
 \end{Verbatim}
 
 
-An important application of this concept is to extend {\opp} 
-with new distributions.
+If your function takes parameters that are \ttt{int} or \ttt{long} or
+some other type which is not \ttt{double}, you can create wrapper function
+that takes all doubles and does the conversion. In this case you have
+to register the wrapper function with the \fname{Define\_Function2()} macro
+which allows a function to be registered with a name different from the
+name of the function that implements it. You can do the same
+if the return value differs from \ttt{double}.
+
+\begin{verbatim}
+#include <omnetpp.h>
+
+long factorial(int k)
+{
+  ...
+}
+
+static double _wrap_factorial(double k)
+{
+  return factorial((int)k);
+}
+
+Define_Function2(factorial, _wrap_factorial, 1);
+\end{verbatim}
 
 
-
-
-
-\subsection{Display strings}
+\section{Display strings}
 \label{sec:ch-ned-lang:display-strings}
 
 Display strings\index{display strings} specify the arrangement and
@@ -1732,26 +1769,26 @@ submodules and connections) are displayed. Display strings occur in
 NED description's \fpar[ned!keywords!display]{display:}
 phrases.
 
-The display string format is a semicolon-separated list of tags. 
-Each tag consists of a key (usually one letter), an equal sign 
+The display string format is a semicolon-separated list of tags.
+Each tag consists of a key (usually one letter), an equal sign
 and a comma-separated list of parameters, like:
 
-\begin{Verbatim}
+\begin{verbatim}
   "p=100,100;b=60,10,rect;o=blue,black,2"
-\end{Verbatim}  
+\end{verbatim}
 
-Parameters may be omitted also at the end and also inside the 
+Parameters may be omitted also at the end and also inside the
 parameter list, like:
 
-\begin{Verbatim}
+\begin{verbatim}
   "p=100,100;b=,,rect;o=blue,black"
-\end{Verbatim}
+\end{verbatim}
 
 Module/submodule parameters can be included with the \ttt{\$name} notation:
 
-\begin{Verbatim}
+\begin{verbatim}
   "p=$xpos,$ypos;b=rect,60,10;o=$fillcolor,black,2"
-\end{Verbatim}
+\end{verbatim}
 %%$
 
 Objects that may have display strings are:
@@ -1773,71 +1810,90 @@ Objects that may have display strings are:
 % ROW 2
 \tbf{p=}\textit{xpos},\textit{ypos}
 &
-{\raggedright Place submodule at (\textit{xpos},\textit{ypos}) pixel position, with the origin being the top-left corner of the enclosing module.\\
- Defaults: an appropriate automatic layout is where submodules 
-do not overlap.\\
-If applied to a submodule vector, \textit{ring} or \textit{row} layout is 
+{\raggedright Place submodule at (\textit{xpos},\textit{ypos}) pixel position,
+with the origin being the top-left corner of the enclosing module.
+
+Defaults: an appropriate automatic layout is where submodules do not overlap.
+
+If applied to a submodule vector, \textit{ring} or \textit{row} layout is
 selected automatically.}\\\hline
 % ROW 3
 \tbf{p=}\textit{xpos},\textit{ypos},\tbf{row},\textit{deltax} &
-{\raggedright Used for module vectors. Arranges submodules in a row starting 
-at (\textit{xpos},\textit{ypos}), keeping \textit{deltax} distances. \\
-Defaults: \textit{deltax} is chosen so that submodules do not overlap. \\
+{\raggedright Used for module vectors. Arranges submodules in a row starting
+at (\textit{xpos},\textit{ypos}), keeping \textit{deltax} distances.
+
+Defaults: \textit{deltax} is chosen so that submodules do not overlap.
+
 \tbf{row} may be abbreviated as \tbf{r}.}\\\hline
 % ROW 4
 \tbf{p=}\textit{xpos},\textit{ypos},\tbf{column},\textit{deltay}
 &
-{\raggedright Used for module vectors. Arranges submodules in a column starting 
-at (\textit{xpos},\textit{ypos}), keeping \textit{deltay} distances. \\
-Defaults: \textit{deltay} is chosen so that submodules do not overlap. \\
+{\raggedright Used for module vectors. Arranges submodules in a column starting
+at (\textit{xpos},\textit{ypos}), keeping \textit{deltay} distances.
+
+Defaults: \textit{deltay} is chosen so that submodules do not overlap.
+
 \tbf{column} may be abbreviated as \tbf{col} or \tbf{c}.}\\\hline
 % ROW 5
 \tbf{p=}\textit{xpos},\textit{ypos},\tbf{matrix},
 \textit{itemsperrow},\textit{deltax},\textit{deltay}
-& 
-{\raggedright Used for module vectors. Arranges submodules in a matrix starting 
-at (\textit{xpos},\textit{ypos}), at most \textit{itemsperrow} submodules in 
-a row, keeping \textit{deltax} and \textit{deltay} distances. \\
-Defaults: \textit{itemsperrow}=5, \textit{deltax,deltay} are chosen so that 
-submodules do not overlap. \\
+&
+{\raggedright Used for module vectors. Arranges submodules in a matrix starting
+at (\textit{xpos},\textit{ypos}), at most \textit{itemsperrow} submodules in
+a row, keeping \textit{deltax} and \textit{deltay} distances.
+
+Defaults: \textit{itemsperrow}=5, \textit{deltax,deltay} are chosen so that
+submodules do not overlap.
+
 \tbf{matrix} may be abbreviated as \tbf{m}.}\\\hline
 % ROW 6
 \tbf{p=}\textit{xpos},\textit{ypos},\tbf{ring},\textit{width,height}
-& 
-{\raggedright Used for module vectors. Arranges submodules in an ellipse, 
-with the top-left corner of its bounding boxes at (\textit{xpos},\textit{ypos}), 
-with the \textit{width} and \textit{height}. \\
-Defaults: \textit{width}=40, \textit{height}=24 \\
+&
+{\raggedright Used for module vectors. Arranges submodules in an ellipse,
+with the top-left corner of its bounding boxes at (\textit{xpos},\textit{ypos}),
+with the \textit{width} and \textit{height}.
+
+Defaults: \textit{width}=40, \textit{height}=24
+
 \tbf{ring} may be abbreviated as \tbf{ri}.}\\\hline
 % ROW 7
 \tbf{p=}\textit{xpos},\textit{ypos},\tbf{exact},\textit{deltax},\textit{deltay}
-& 
-{\raggedright Used for module vectors. Each submodule is placed at \textit{(xpos+deltax}, \textit{ypos+deltay)}. 
-This is useful if \textit{deltax} and \textit{deltay} are parameters (e.g.:\textit{''p=100,100,exact,\$x,\$y''}) 
-which take different values for each module in the vector. \\
-Defaults: \textit{none} \\
+&
+{\raggedright Used for module vectors. Each submodule is placed at
+\textit{(xpos+deltax}, \textit{ypos+deltay)}.
+This is useful if \textit{deltax} and \textit{deltay} are parameters
+ (e.g.:\textit{''p=100,100,exact,\$x,\$y''})
+which take different values for each module in the vector.
+
+Defaults: \textit{none}
+
 \tbf{exact} may be abbreviated as \tbf{e} or \tbf{x}.}\\\hline
 % ROW 8
 \tbf{b=}\textit{width},\textit{height},\tbf{rect}
-& 
-{\raggedright Rectangle with the given \textit{height} and \textit{width}.\\
+&
+{\raggedright Rectangle with the given \textit{height} and \textit{width}.
+
 Defaults: \textit{width}=40, \textit{height}=24}\\\hline
 % ROW 9
 \tbf{b=}\textit{width},\textit{height},\tbf{oval}
-& 
-{\raggedright Ellipse with the given \textit{height} and \textit{width}.\\
+&
+{\raggedright Ellipse with the given \textit{height} and \textit{width}.
+
 Defaults: \textit{width}=40, \textit{height}=24}\\\hline
 % ROW 10
 \tbf{o=}\textit{fillcolor},\textit{outlinecolor},\textit{borderwidth}
-& 
-{\raggedright Specifies options for the rectangle or oval. Any valid Tk color 
-specification is accepted: English color names or \textit{\#rgb}, \textit{\#rrggbb} 
-format (where \textit{r},\textit{g},\textit{b} are hex digits). \\
-Defaults: \textit{fillcolor}=\#8080ff (a lightblue), \textit{outlinecolor}=black, \textit{borderwidth}=2}\\\hline
+&
+{\raggedright Specifies options for the rectangle or oval. Any valid Tk color
+specification is accepted: English color names or \textit{\#rgb}, \textit{\#rrggbb}
+format (where \textit{r},\textit{g},\textit{b} are hex digits).
+
+Defaults: \textit{fillcolor}=\#8080ff (a lightblue), \textit{outlinecolor}=black,
+\textit{borderwidth}=2}\\\hline
 % ROW 11
 \tbf{i=}\textit{iconname}
 &
-{\raggedright Use the named icon. \\
+{\raggedright Use the named icon.
+
 No default. If no icon name is present, \textit{box} is used.}\\\hline
 \end{longtable}
 
@@ -1845,10 +1901,10 @@ No default. If no icon name is present, \textit{box} is used.}\\\hline
 
 Examples:
 
-\begin{Verbatim}
+\begin{verbatim}
   "p=100,60;i=workstation"
   "p=100,60;b=30,30,rect;o=4"
-\end{Verbatim}
+\end{verbatim}
 
 
 \tbf{Tags used in enclosing module display strings:}
@@ -1861,27 +1917,32 @@ Examples:
 \tbf{Tag} & \tbf{Meaning}\\
 \hline
 % ROW 2
-\tbf{p=}\textit{xpos},\textit{ypos} & Place enclosing module at (\textit{xpos},\textit{ypos}) pixel position, with (0,0) being the top-left corner of the window.\\
-\hline
+\tbf{p=}\textit{xpos},\textit{ypos} & Place enclosing module at
+(\textit{xpos},\textit{ypos}) pixel position, with (0,0) being
+the top-left corner of the window.\\\hline
 % ROW 3
 \tbf{b=}\textit{width},\textit{height},\tbf{rect}
-& 
-{\raggedright Display enclosing module as a rectangle with the given \textit{height} 
-and \textit{width}.\\
+&
+{\raggedright Display enclosing module as a rectangle with the given \textit{height}
+and \textit{width}.
+
 Defaults: \textit{width,} \textit{height} are chosen automatically}\\\hline
 % ROW 4
 \tbf{b=}\textit{width},\textit{height},\tbf{oval}
-& 
-{\raggedright Display enclosing module as an ellipse with the given \textit{height} 
-and \textit{width}.\\
+&
+{\raggedright Display enclosing module as an ellipse with the given \textit{height}
+and \textit{width}.
+
 Defaults: \textit{width,} \textit{height} are chosen automatically}\\\hline
 % ROW 5
 \tbf{o=}\textit{fillcolor},\textit{outlinecolor},\textit{borderwidth}
-& 
-{\raggedright Specifies options for the rectangle or oval. Any valid Tk color 
-specification is accepted: English color names or \textit{\#rgb}, \textit{\#rrggbb} 
-format (where \textit{r},\textit{g},\textit{b} are hex digits).\\
-Defaults: \textit{fillcolor}=\#8080ff (a lightblue), \textit{outlinecolor}=black, \textit{borderwidth}=2}\\\hline
+&
+{\raggedright Specifies options for the rectangle or oval. Any valid Tk color
+specification is accepted: English color names or \textit{\#rgb}, \textit{\#rrggbb}
+format (where \textit{r},\textit{g},\textit{b} are hex digits).
+
+Defaults: \textit{fillcolor}=\#8080ff (a lightblue), \textit{outlinecolor}=black,
+\textit{borderwidth}=2}\\\hline
 \end{longtable}
 
 
@@ -1892,45 +1953,44 @@ Defaults: \textit{fillcolor}=\#8080ff (a lightblue), \textit{outlinecolor}=black
 \hline
 % ROW 1
 \tabheadcol
-\tbf{Tag} & \tbf{Meaning}\\
-\hline
+\tbf{Tag} & \tbf{Meaning}\\\hline
 % ROW 2
-{\raggedright \tbf{m=auto}\\
-\tbf{m=north}\\
-\tbf{m=west}\\
-\tbf{m=east}\\
-\tbf{m=south}}
-& 
-Drawing mode. Specifies the exact placement of the connection 
+\tbf{m=auto} \linebreak
+\tbf{m=north} \linebreak
+\tbf{m=west} \linebreak
+\tbf{m=east} \linebreak
+\tbf{m=south}
+&
+Drawing mode. Specifies the exact placement of the connection
 arrow. The arguments can be abbreviated as a,e,w,n,s.\\\hline
 % ROW 3
-{\raggedright \tbf{m=manual},\textit{srcpx},\textit{srcpy},\\
-  \textit{destpx},\textit{destpy}}
-& 
-{\raggedright The manual mode takes four parameters that explicitly specify 
-anchoring of the ends of the arrow: \textit{srcpx}, \textit{srcpy}, \textit{destpx}, \textit{destpy}. 
-Each value is a percentage of the width/height of the source/destination 
-module's enclosing rectangle, with the upper-left corner being 
+{\raggedright \tbf{m=manual},\textit{srcpx},\textit{srcpy},\textit{destpx},\textit{destpy}}
+&
+{\raggedright The manual mode takes four parameters that explicitly specify
+anchoring of the ends of the arrow: \textit{srcpx}, \textit{srcpy},
+\textit{destpx}, \textit{destpy}.
+Each value is a percentage of the width/height of the source/destination
+module's enclosing rectangle, with the upper-left corner being
 the origin. Thus,
-\begin{Verbatim}
+\begin{verbatim}
 m=m,50,50,50,50
-\end{Verbatim}
+\end{verbatim}
 would connect the centers of the two module rectangles.}\\\hline
 % ROW 4
-\tbf{o=}\textit{color},\textit{width} & 
-Specifies the appearance of the arrow. Any valid Tk color specification 
-is accepted: English color names or \#rgb, \#rrggbb specification 
-(where r,g,b are hex digits). \linebreak
-Defaults: \textit{color}=black, \textit{width}=2\\
-\hline
+\tbf{o=}\textit{color},\textit{width} &
+Specifies the appearance of the arrow. Any valid Tk color specification
+is accepted: English color names or \#rgb, \#rrggbb specification
+(where r,g,b are hex digits).
+
+Defaults: \textit{color}=black, \textit{width}=2\\\hline
 \end{longtable}
 
 
 
 Examples:
-\begin{Verbatim}
+\begin{verbatim}
   "m=a;o=blue,3"
-\end{Verbatim}
+\end{verbatim}
 
 
 
@@ -1949,57 +2009,57 @@ survive the operation. GNED puts all graphics-related data into
 display strings.
 
 
-GNED works by parsing your NED file into an internal data structure, 
-and regenerating the NED text when you save the file. One consequence 
-of this is that indentation will be ''canonized'' 
--- hopefully you consider this fact as a plus and not as a minus. 
-Comments in the original NED are preserved -- the parser associates 
-them with the NED elements they belong to, so comments won't 
-be messed up even if you edit the graphical representation to 
-death by removing/adding submodules, gates, parameters, connections, 
+GNED works by parsing your NED file into an internal data structure,
+and regenerating the NED text when you save the file. One consequence
+of this is that indentation will be ''canonized''
+-- hopefully you consider this fact as a plus and not as a minus.
+Comments in the original NED are preserved -- the parser associates
+them with the NED elements they belong to, so comments won't
+be messed up even if you edit the graphical representation to
+death by removing/adding submodules, gates, parameters, connections,
 etc.
 
-GNED is now a fully two-way visual tool. While editing the graphics, 
-you can always switch to NED source view, edit in there and switch 
-back to graphics. Your changes in the NED source will be immediately 
-backparsed to graphics; in fact, the graphics will be totally 
-reconstructed from the NED source and the display strings in 
+GNED is now a fully two-way visual tool. While editing the graphics,
+you can always switch to NED source view, edit in there and switch
+back to graphics. Your changes in the NED source will be immediately
+backparsed to graphics; in fact, the graphics will be totally
+reconstructed from the NED source and the display strings in
 it.
 
-GNED is still under development. There are some missing functions 
-and bugs, but overall it should be fairly reliable. See the TODO 
+GNED is still under development. There are some missing functions
+and bugs, but overall it should be fairly reliable. See the TODO
 file in the GNED source directory for problems and missing features.
 
 
 \tbf{Comment parsing:}
 
 
-It is useful to know how exactly GNED identifies the comments 
-in the NED file. The following (maybe a bit long) NED code should 
+It is useful to know how exactly GNED identifies the comments
+in the NED file. The following (maybe a bit long) NED code should
 explain it:
 
-\begin{Verbatim}
+\begin{verbatim}
 // ---------------------------------------------------------------
 // File: sample.ned
 //
-// This is a file comment. File comments reach from the top of 
+// This is a file comment. File comments reach from the top of
 // the file till the last blank line above the first code line.
 // ---------------------------------------------------------------
 //
 
-// The file comment can also contain blank lines, so this is 
+// The file comment can also contain blank lines, so this is
 // still part of the above file comment.
 //
 // Module1 --
 //
 // This is a banner comment for the Module1 declaration below.
-// Banner comments can be multi-line, but they are not supposed 
-// to contain blank lines. (Otherwise the lines above the blank 
+// Banner comments can be multi-line, but they are not supposed
+// to contain blank lines. (Otherwise the lines above the blank
 // one will be taken as part of a file comment or trailing comment.)
 //
 module Module1
     submodules: // and this is right-comment
-// This is another banner comment, for the submodule
+        // This is another banner comment, for the submodule
         submod1: Module;
             display: ''p=120,108;b=96,72,rect'';
             connections:
@@ -2008,7 +2068,7 @@ module Module1
 endmodule
 
 // Finally, this is a trailing comment, belonging to the above
-// module. It may contain blank lines. Trailing comments are 
+// module. It may contain blank lines. Trailing comments are
 // mostly used to put separator lines into the file, like this:
 // --------------------------------------------------------------
 // Module2 --
@@ -2017,14 +2077,14 @@ endmodule
 //
 module Module2
 endmodule
-\end{Verbatim}
+\end{verbatim}
 
 
 \tbf{Key/mouse bindings:}
 
 \index{gned!mouse bindings}
 
-In graphics view, there are two editing modes: draw and select/mode. 
+In graphics view, there are two editing modes: draw and select/mode.
 The mouse bindings are the following:
 
 
@@ -2032,10 +2092,8 @@ The mouse bindings are the following:
 \hline
 % ROW 1
 \tabheadcol
-\tbf{Mouse} & \tbf{Effect}\\
-\hline
-% ROW 2
-\multicolumn{2}{|c|}{\tbf{In} \tbf{\textit{draw}} \tbf{mode:}} \\
+\tbf{Mouse} & \tbf{Effect}\\\hline
+\multicolumn{2}{|c|}{\tbf{In \textit{draw} mode:}} \\
 \hline
 % ROW 3
 Drag out a rectangle in empty area: &  create new submodule \\\hline
@@ -2043,8 +2101,7 @@ Drag out a rectangle in empty area: &  create new submodule \\\hline
 Drag from one submodule to another: &  create new connection \\\hline
 % ROW 5
 Click in empty area: & switch to select/move mode \\\hline
-% ROW 6
-\multicolumn{2}{|c|}{\tbf{In} \tbf{\textit{select/move}} \tbf{mode:}} \\\hline
+\multicolumn{2}{|c|}{\tbf{In \textit{select/move} mode:}} \\\hline
 % ROW 7
 Click submodule/connection: & select it\\\hline
 % ROW 8
@@ -2063,7 +2120,6 @@ Drag corner of (sub)module: & resize module\\\hline
 Drag starting in empty area: & select enclosed submodules/connections \\\hline
 % ROW 15
 \textit{Del} key & delete selected objects \\\hline
-% ROW 16
 \multicolumn{2}{|c|}{\tbf{Both editing modes:}} \\\hline
 % ROW 17
 Right-click on module/submodule/con\-nec\-tion: & popup menu \\\hline
@@ -2072,13 +2128,13 @@ Double-click on submodule: & go into submodule \\\hline
 % ROW 19
 Click name label & edit name \\\hline
 % ROW 20
-Drag\&drop module type from the tree view to the canvas & 
+Drag\&drop module type from the tree view to the canvas &
 create a submodule of that type \\\hline
 \end{longtable}
 
 
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
-%%% End: 
+%%% End:
