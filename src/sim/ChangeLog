@@ -666,5 +666,7 @@ Sept 20, 1999
     with val instead of weight*val.
   - bug fixed with misplaced ev.messageDelivered() calls in the receiveNewOn()
     function
+  - cOutVector::record() corrected: it should update the inspector even
+    if it doesn't write to file
 
 Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.

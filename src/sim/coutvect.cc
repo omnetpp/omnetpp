@@ -144,10 +144,13 @@ void cOutVector::info(char *buf)
 
 void cOutVector::record(double value)
 {
-   if (!enabled) return;
-
    if (tuple!=1)
       {opp_error(eNUMARGS,isA(),name(),1);return;}
+
+   if (record_in_inspector)
+      record_in_inspector(data_for_inspector,value,0.0);
+
+   if (!enabled) return;
 
    simtime_t t = simulation.simTime();
    if (t>=starttime && (stoptime==0.0 || t<=stoptime))
@@ -164,16 +167,17 @@ void cOutVector::record(double value)
       CHECK(fprintf(f,"%ld\t%lg\t%lg\n",ID, t, value));
    }
 
-   if (record_in_inspector)
-      record_in_inspector(data_for_inspector,value,0.0);
 }
 
 void cOutVector::record(double value1, double value2)
 {
-   if (!enabled) return;
-
    if (tuple!=2)
       {opp_error(eNUMARGS,isA(),name(),2);return;}
+
+   if (record_in_inspector)
+      record_in_inspector(data_for_inspector,value1,value2);
+
+   if (!enabled) return;
 
    simtime_t t = simulation.simTime();
    if (t>=starttime && (stoptime==0.0 || t<=stoptime))
@@ -191,8 +195,6 @@ void cOutVector::record(double value1, double value2)
       CHECK(fprintf(f,"%ld\t%lg\t%lg\t%lg\n",ID, t, value1, value2));
    }
 
-   if (record_in_inspector)
-      record_in_inspector(data_for_inspector,value1,value2);
 }
 #undef CHECK
 
