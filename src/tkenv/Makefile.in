@@ -44,7 +44,7 @@ TKAPP=tkapp
 #
 default: @TKENV_IF_POSSIBLE@
 
-all : libtkenv$(LIB_SUFFIX)
+tkenv : libtkenv$(LIB_SUFFIX)
 
 libtkenv$(A_LIB_SUFFIX) : $(OBJS)
 	$(AR) libtkenv$(A_LIB_SUFFIX) $(OBJS)

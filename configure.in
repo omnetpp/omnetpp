@@ -80,11 +80,11 @@ AC_CHECK_LIB(gpvm3, pvm_joingroup,
 OPP_CHECK_LIB_WITHPATH(X11, XDrawLine, /usr/X11/lib,
   X_LIBS="$MINUS_L -lX11",
   X_LIBS="")
-AC_CHECK_LIB(tcl, Tcl_Init, TCL_LIBS="-ltcl")
+AC_CHECK_LIB(tcl, Tcl_Init, TCL_LIBS="-ltcl",,-ldl)
 AC_CHECK_LIB(tk, Tk_BindEvent,
    TK_LIBS="$MINUS_L -ltk $TCL_LIBS $X_LIBS",
    TK_LIBS="",
-   $TCL_LIBS $X_LIBS)
+   $TCL_LIBS $X_LIBS -ldl)
 
 #---TV_LIBS---
 AC_CHECK_LIB(tv, some_cpp_func_in_TV,
