@@ -107,6 +107,9 @@
  *
  * Banks: J. Banks: Handbook of Simulation, Wiley, 1998.
  *
+ * I have also found the web site 
+ * <a href="http://www.xycoon.com">http://www.xycoon.com</a> extremely useful.
+ *
  * <b>Random number generator</b>
  *
  * OMNeT++ currently has a 31-bit built-in pseudo random number generator (RNG)

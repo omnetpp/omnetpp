@@ -193,18 +193,19 @@ SIM_API double cauchy(double a, double b, int rng=0);
 SIM_API double triang(double a, double b, double c, int rng=0);
 
 /**
- * Returns a random variate from the lognormal distribution with mean m
- * and variance s>0.
+ * Returns a random variate from the lognormal distribution with "scale"
+ * parameter m and "shape" parameter w. m and w correspond to the parameters
+ * of the underlying normal distribution (m: mean, w: standard deviation.)
  *
  * Generation is using relationship to normal distribution.
  *
- * @param m  mean
- * @param s  variance, s>0
+ * @param m  "scale" parameter, m>0
+ * @param w  "shape" parameter, w>0
  * @param rng the underlying random number generator
  */
-inline double lognormal(double m, double s, int rng=0)
+inline double lognormal(double m, double w, int rng=0)
 {
-    return exp(normal(m, s, rng));
+    return exp(normal(m, w, rng));
 }
 
 /**

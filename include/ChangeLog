@@ -1,3 +1,9 @@
+2003-12-09  Andras Varga
+
+	* distrib.h: fixed description of lognormal distribution -- the m,s
+	parameters referred to the underlying normal distribution, not 
+	lognormal itself. [reported by Ian Grivell]
+
 2003-11-23  Andras Varga
 
 	* cdispstr.h: insertTag() return value changed from bool to int.
