@@ -234,14 +234,14 @@ void TInspector::setInspectButton(const char *button, cObject *object, bool disp
    {
       char buf[16];
       sprintf(buf, "%d", inspectortype);
-      const char *text = displayfullpath ? object->fullPath() : object->name();
+      const char *text = displayfullpath ? object->fullPath() : object->fullName();
       char text2[30] = "";
       if (dynamic_cast<cModule *>(object))
       {
           sprintf(text2, " (id=%d)", static_cast<cModule *>(object)->id());
       }
       CHK(Tcl_VarEval(interp, windowname, button,".e config -state normal ",
-                              "-text {", text, text2, "} ",
+                              "-text {(", object->className(), ") ", text, text2, "} ",
                               "-command {opp_inspect ",ptrToStr(object)," ",buf,"}",
                               NULL));
    }

@@ -1,3 +1,8 @@
+2004-09-27  Andras Varga
+
+        * inspector.cc: display class name too on "inspect" buttons 
+        (e.g. "encapsulated message" button in cMessage inspector)
+
 2004-09-26  Andras Varga
 
         * modinsp2.tcl: graphical module windows: adjust window size to fit 
