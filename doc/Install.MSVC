@@ -67,6 +67,11 @@ If you need to modify the names of the Tcl/Tk libs (because you installed
 a Tcl/Tk version other than 8.2), see Project|Settings --> 'Link' tab -->
 choose 'Input' from combo --> Libraries.
 
+The Tcl/Tk install program normally sets the TCL_LIBRARY environment variable
+needed by Tcl applications. However, if you see the "can't find a usable
+init.tcl..." error message when you start a simulation program (or Gned or
+Plove), then that didn't happen and you have to set the variable yourself.
+
 
 4. Creating project files for your simulations
 
@@ -87,8 +92,7 @@ Some hint how to do it:
  6. Note: for Tkenv, link with sim_std.lib, envir.lib, tkenv.lib and the
     Tcl/Tk libraries (link as Win32 Console app...). For Cmdenv, you need
     to link with sim_std.lib, envir.lib, and cmdenv.lib.
-Maybe some time in the future there will be wizards to ease some of these
-steps...
+It is planned to create wizards in the future to ease some of these steps.
 
 
 5. Reconfiguring the libraries
