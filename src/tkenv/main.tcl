@@ -590,6 +590,20 @@ proc font_bindings {} {
        option add *Listbox.font     $fonts(fixed)
        option add *Text.font        $fonts(fixed)
        option add *Button.font      $fonts(bold)
+
+       # make menus look more contemporary
+       menu .tmp
+       set activebg [.tmp cget -activebackground]
+       set activefg [.tmp cget -activeforeground]
+       destroy .tmp
+       option add *Menu.activeBorderWidth 0
+       option add *Menu.relief raised
+       option add *Menu.activeBackground #800000
+       option add *Menu.activeForeground white
+       option add *menubar.borderWidth 1
+       option add *menubar.activeBorderWidth 1
+       option add *menubar.activeBackground $activebg
+       option add *menubar.activeForeground $activefg
    }
 }
 

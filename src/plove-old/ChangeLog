@@ -1,9 +1,12 @@
-2003-01-10  Andras Varga
+2003-01-11  Andras Varga
 
 	* titlefmt: variables must begin with "$": $NAME, $FILENAME, $ID, etc.
 
 	* Save Picture dialog: adjust filename extension according to output
 	type.
+
+	* main.tcl: appearance of menus on Unix made more contemporary 
+	(via option add's)
 
 2002-12-07  Andras Varga
 

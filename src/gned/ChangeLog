@@ -1,3 +1,8 @@
+2003-01-11  Andras Varga
+
+	* main.tcl: appearance of menus on Unix made more contemporary 
+	(via option add's)
+
 2003-01-04  Andras Varga
 
 	* props.tcl: Module/Submodule/etc Properties dialogs now validate 
