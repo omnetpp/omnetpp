@@ -98,107 +98,118 @@ cEnvir::~cEnvir()
 
 void cEnvir::setup(int argc, char *argv[])
 {
-    ArgList *args = new ArgList(argc,argv);
-
-    //
-    // First, load the ini file. It might contain the name of the user interface
-    // to instantiate.
-    //
-    const char *fname = args->argValue('f',0);  // 1st '-f filename' option
-    if (!fname) fname="omnetpp.ini";   // or default filename
-
-    cIniFile *ini_file = new cIniFile( fname );
-    if (ini_file->error())
-        throw new cException("Processing of ini file '%s' failed", fname);
-
-    // process additional '-f filename' options if there are any
-    int k;
-    for (k=1; (fname=args->argValue('f',k))!=NULL; k++)
+    try
     {
-        ini_file->readFile( fname );
+        // construct global lists
+        ExecuteOnStartup::executeAll();
+
+        // args
+        ArgList *args = new ArgList(argc,argv);
+
+        //
+        // First, load the ini file. It might contain the name of the user interface
+        // to instantiate.
+        //
+        const char *fname = args->argValue('f',0);  // 1st '-f filename' option
+        if (!fname) fname="omnetpp.ini";   // or default filename
+
+        cIniFile *ini_file = new cIniFile( fname );
         if (ini_file->error())
-            throw new cException("Processing of additional ini file '%s' failed", fname);
-    }
+            throw new cException("Processing of ini file '%s' failed", fname);
 
-    //
-    // Load all libraries specified on the command line or in the ini file.
-    // (The user interface library also might be among them.)
-    //
-
-    // load shared libraries given with '-l' option(s)
-    const char *libname;
-    for (k=0; (libname=args->argValue('l',k))!=NULL; k++)
-       opp_loadlibrary(libname);
-
-    // load shared libs given in [General]/load-libs=
-    const char *libs = ini_file->getAsString( "General", "load-libs", NULL);
-    if (libs && libs[0])
-    {
-        // 'libs' contains several file names separated by whitespaces
-        char *buf = opp_strdup(libs);
-        char *lib, *s = buf;
-        while (isspace(*s)) s++;
-        while (*s)
+        // process additional '-f filename' options if there are any
+        int k;
+        for (k=1; (fname=args->argValue('f',k))!=NULL; k++)
         {
-            lib = s;
-            while (*s && !isspace(*s)) s++;
-            if (*s) *s++ = 0;
-            opp_loadlibrary(lib);
+            ini_file->readFile( fname );
+            if (ini_file->error())
+                throw new cException("Processing of additional ini file '%s' failed", fname);
         }
-        delete buf;
-    }
 
-    //
-    // Determine if this is a distributed simulation, and if so, whether we run
-    // as master (=console) or slave. This also affects which user interface
-    // to set up.
-    // ==> MASTER_MODE, SLAVE_MODE, NONPARALLEL_MODE or STARTUPERROR_MODE
-    //
-    running_mode = is_started_as_master();
+        //
+        // Load all libraries specified on the command line or in the ini file.
+        // (The user interface library also might be among them.)
+        //
 
-    //
-    // Choose and set up user interface (TOmnetApp subclass). Everything else
-    // will be done by the user interface class.
-    //
+        // load shared libraries given with '-l' option(s)
+        const char *libname;
+        for (k=0; (libname=args->argValue('l',k))!=NULL; k++)
+            opp_loadlibrary(libname);
 
-    // was it specified explicitly which one to use?
-    const char *appname = args->argValue('u',0);  // 1st '-u name' option
-    if (!appname)
-        appname = ini_file->getAsString( "General", "user-interface", NULL);
-
-    cOmnetAppRegistration *appreg = NULL;
-    if (appname && appname[0])
-    {
-        // try to look up specified user interface; if we don't have it already,
-        // try to load dynamically...
-        appreg = (cOmnetAppRegistration *) omnetapps.find(appname);
-        if (!appreg)
+        // load shared libs given in [General]/load-libs=
+        const char *libs = ini_file->getAsString( "General", "load-libs", NULL);
+        if (libs && libs[0])
         {
-            // try to load it dynamically
-            // TBD add extension: .so or .dll
-            if (opp_loadlibrary(appname))
+            // 'libs' contains several file names separated by whitespaces
+            char *buf = opp_strdup(libs);
+            char *lib, *s = buf;
+            while (isspace(*s)) s++;
+            while (*s)
             {
-                appreg = (cOmnetAppRegistration *) omnetapps.find(appname);
+                lib = s;
+                while (*s && !isspace(*s)) s++;
+                if (*s) *s++ = 0;
+                opp_loadlibrary(lib);
             }
+            delete buf;
         }
-        if (!appreg)
-            throw new cException("Could not start user interface '%s'",appname);
-    }
-    else
-    {
-        // user interface not explicitly selected: pick one from what we have
-        bool slave = (running_mode==SLAVE_MODE); // slave or normal app?
-        appreg = chooseBestOmnetApp(slave);
-        if (!appreg)
-            throw new cException("No appropriate user interface (Cmdenv,Tkenv,etc.) found");
-    }
 
-    //
-    // Finally, set up user interface object. All the rest will be done there.
-    //
-    ::printf("Setting up %s...\n", appreg->description());
-    app = appreg->createOne(args, ini_file);
-    app->setup();
+        //
+        // Determine if this is a distributed simulation, and if so, whether we run
+        // as master (=console) or slave. This also affects which user interface
+        // to set up.
+        // ==> MASTER_MODE, SLAVE_MODE, NONPARALLEL_MODE or STARTUPERROR_MODE
+        //
+        running_mode = is_started_as_master();
+
+        //
+        // Choose and set up user interface (TOmnetApp subclass). Everything else
+        // will be done by the user interface class.
+        //
+
+        // was it specified explicitly which one to use?
+        const char *appname = args->argValue('u',0);  // 1st '-u name' option
+        if (!appname)
+            appname = ini_file->getAsString( "General", "user-interface", NULL);
+
+        cOmnetAppRegistration *appreg = NULL;
+        if (appname && appname[0])
+        {
+            // try to look up specified user interface; if we don't have it already,
+            // try to load dynamically...
+            appreg = (cOmnetAppRegistration *) omnetapps.find(appname);
+            if (!appreg)
+            {
+                // try to load it dynamically
+                // TBD add extension: .so or .dll
+                if (opp_loadlibrary(appname))
+                {
+                    appreg = (cOmnetAppRegistration *) omnetapps.find(appname);
+                }
+            }
+            if (!appreg)
+                throw new cException("Could not start user interface '%s'",appname);
+        }
+        else
+        {
+            // user interface not explicitly selected: pick one from what we have
+            bool slave = (running_mode==SLAVE_MODE); // slave or normal app?
+            appreg = chooseBestOmnetApp(slave);
+            if (!appreg)
+                throw new cException("No appropriate user interface (Cmdenv,Tkenv,etc.) found");
+        }
+
+        //
+        // Finally, set up user interface object. All the rest will be done there.
+        //
+        ::printf("Setting up %s...\n", appreg->description());
+        app = appreg->createOne(args, ini_file);
+        app->setup();
+    }
+    catch (cException *e)
+    {
+        printfmsg("Error during startup: %s", e->message());
+    }
 }
 
 void cEnvir::run()
