@@ -19,7 +19,7 @@
 # default config settings
 set config(configfile) "~/.gnedrc"
 set config(snaptogrid) 1
-set config(connmodeauto) 0
+set config(connmodeauto) 1
 set config(autocheck) 0
 set config(editor-findstring)     ""
 set config(editor-replacestring)  ""

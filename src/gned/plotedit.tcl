@@ -548,6 +548,12 @@ proc selectOrMoveDrag {c x y} {
        set mouse(hasmoved) 1
 
        foreach key $mouse(tweaked-items) {
+
+          #!!!!!!!!!!
+          if {$ned($key,disp-drawmode) == "a"} {
+              set ned($key,disp-drawmode) "m"
+          }
+
           _moveAnchoring $c $ned($key,src-ownerkey) \
                          ned($key,disp-src-anchor-x) ned($key,disp-src-anchor-y) $byX $byY
           _moveAnchoring $c $ned($key,dest-ownerkey) \
@@ -564,6 +570,12 @@ proc selectOrMoveDrag {c x y} {
        set mouse(hasmoved) 1
 
        foreach key $mouse(tweaked-items) {
+
+          #!!!!!!!!!!
+          if {$ned($key,disp-drawmode) == "a"} {
+              set ned($key,disp-drawmode) "m"
+          }
+
           if $mouse(reanchor-src) {
              _moveAnchoring $c $ned($key,src-ownerkey) \
                          ned($key,disp-src-anchor-x) ned($key,disp-src-anchor-y) $byX $byY

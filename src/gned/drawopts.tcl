@@ -80,7 +80,7 @@ proc editModuleDrawOptions {key} {
 }
 
 proc editSubmoduleDrawOptions {key} {
-    global canvas ned gned
+    global canvas ned gned config
 
     set canv_id [canvasIdFromItemKey $key]
     set c $canvas($canv_id,canvas)
@@ -212,9 +212,9 @@ proc editConnectionDrawOptions {key} {
         # draw mode: one of m,n,e,w,s. auto is the default
         set dm [.connopts.f.drawmode.e cget -value]
         if {$dm=="auto"} {
-           set ned($key,disp-drawmode)  ""
+           set ned($key,disp-drawmode)  "a"
         } else {
-           if {[lsearch -exact {auto manual north east south west} $dm]==-1} {set dm auto}
+           if {[lsearch -exact {manual north east south west} $dm]==-1} {set dm manual}
            set ned($key,disp-drawmode)  [string index $dm 0]
            debug "drawmode=$ned($key,disp-drawmode)"
         }

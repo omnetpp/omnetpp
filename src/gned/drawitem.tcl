@@ -270,14 +270,14 @@ proc draw_module {c key} {
     set bb [$c bbox submod]
     if {$sx==""} {
         if {$bb==""} {
-            set sx 300
+            set sx 380
         } else {
             set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$x1]
         }
     }
     if {$sy==""} {
         if {$bb==""} {
-            set sy 200
+            set sy 300
         } else {
             set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$y1]
         }
@@ -391,7 +391,7 @@ proc draw_submod {c key} {
 proc draw_connection {c key} {
     global ned
 
-    set mode  [_getPar {} "$key,disp-drawmode" "auto"]
+    set mode  [_getPar {} "$key,disp-drawmode" "a"]
 
     set src_x [_getPar {} "$key,disp-src-anchor-x" 50]
     set src_y [_getPar {} "$key,disp-src-anchor-y" 50]

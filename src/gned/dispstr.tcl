@@ -148,7 +148,12 @@ proc parse_conn_dispstr {key} {
 
    # GNED currently only handles only few values from a dispstr...
    if [info exist tags(m)] {
-      set ned($key,disp-drawmode) [lindex $tags(m) 0]
+      set mode [lindex $tags(m) 0]
+      if {$mode=""} {
+         set ned($key,disp-drawmode) "a"
+      } else {
+         set ned($key,disp-drawmode) $mode
+      }
       set ned($key,disp-src-anchor-x) [lindex $tags(m) 1]
       set ned($key,disp-src-anchor-y) [lindex $tags(m) 2]
       set ned($key,disp-dest-anchor-x) [lindex $tags(m) 3]
@@ -240,12 +245,16 @@ proc update_conn_dispstr {key} {
 
    set order [split_dispstr $ned($key,displaystring) tags]
 
-   if ![info exist tags(m)] {set tags(m) {}}
-   _setlistitem tags(m) 0 $ned($key,disp-drawmode)
-   _setlistitem tags(m) 1 $ned($key,disp-src-anchor-x)
-   _setlistitem tags(m) 2 $ned($key,disp-src-anchor-y)
-   _setlistitem tags(m) 3 $ned($key,disp-dest-anchor-x)
-   _setlistitem tags(m) 4 $ned($key,disp-dest-anchor-y)
+   if {$ned($key,disp-drawmode)=="a"} {
+       set tags(m) {}
+   } else {
+       if {![info exist tags(m)]} {set tags(m) {}}
+       _setlistitem tags(m) 0 $ned($key,disp-drawmode)
+       _setlistitem tags(m) 1 $ned($key,disp-src-anchor-x)
+       _setlistitem tags(m) 2 $ned($key,disp-src-anchor-y)
+       _setlistitem tags(m) 3 $ned($key,disp-dest-anchor-x)
+       _setlistitem tags(m) 4 $ned($key,disp-dest-anchor-y)
+   }
 
    if ![info exist tags(o)] {set tags(o) {}}
    _setlistitem tags(o) 0 $ned($key,disp-fillcolor)

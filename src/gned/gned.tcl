@@ -86,6 +86,7 @@ proc start_gned {} {
 
    if [file readable $config(configfile)] {
        loadConfig $config(configfile)
+       set config(connmodeauto) 1  ;# FIXME deliberately change this setting; this line may be removed in the future
    }
    reflectConfigInGUI
 

@@ -1,3 +1,14 @@
+2003-01-30  Andras Varga
+
+	* changed connection drawing: now default mode is "auto", then if user
+	insists on exact placement by dragging the arrow, it changes to 
+	"manual" mode. 
+	
+	* fixed bug that it always created display strings for connections
+	[hint from Steffen Sroka].
+
+	* increased default size of compound module
+
 2003-01-19  Andras Varga
 
 	* Cygwin fixes; put checkTckTkVersion and setupTkOptions (was generic_-
