@@ -37,9 +37,11 @@ proc editModuleProps {key} {
 
     # create "General" page
     label-entry $nb.general.name "Name:"
-    label-text  $nb.general.comment "Comments:" 5
+    label-text  $nb.general.comment "Doc. comments:" 4
+    label-text  $nb.general.rcomment "End-line comments:" 2
     pack $nb.general.name  -expand 0 -fill x -side top
     pack $nb.general.comment -expand 1 -fill both -side top
+    pack $nb.general.rcomment -expand 0 -fill x -side top
 
     # create "Parameters" page
     label $nb.pars.l -text  "Parameters:"
@@ -79,6 +81,7 @@ proc editModuleProps {key} {
     # fill "General" page
     $nb.general.name.e insert 0 $ned($key,name)
     $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
+    $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
 
     # fill tables
     ModProps:fillTableEditFromNed $nb.pars.tbl  $key params
@@ -90,6 +93,7 @@ proc editModuleProps {key} {
 
         set ned($key,name) [$nb.general.name.e get]
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
+        set ned($key,right-comment) [getCommentFromText $nb.general.rcomment.t]
 
         ModProps:updateNedFromTableEdit $nb.pars.tbl  $key params   param   name
         ModProps:updateNedFromTableEdit $nb.gates.tbl $key gates    gate    name
