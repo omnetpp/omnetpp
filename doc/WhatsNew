@@ -1,8 +1,122 @@
 What's New
 ==========
 
-3.0 Preview, 2004 January
--------------------------
+OMNeT++ 3.0 alpha 8 (Oct 2004)
+--------------------------------
+- in .msg files, struct fields can have initializers (a constructor gets
+  generated)
+- Tkenv: minor improvements
+- configure script refinements
+
+
+OMNeT++ 3.0 alpha 7 (Sept 2004)
+-------------------------------
+Several improvements and bug fixes since 3.0a6. Detailed list of changes:
+
+- loading XML config files via "xml"-type NED parameters or
+  ev.getXMLDocument(): If the document has an attached DTD (DOCTYPE
+  declaration), the document will be validated, and attribute default values
+  will be completed from the DTD.
+
+- Scalars tool: enhanced Copy to clipboard functionality: different
+  variables can be put on different columns. This makes it easier to use
+  Excel's PivotTable or OpenOffice's DataPilot) functionality to analyze
+  data.
+
+- NED: gate vectors, if there's no "gatesizes:", will be created with zero
+  size. (Previously they were created with size one -- this is a potential
+  incompatibility.)  A zero-sized gate vector is internally represented by a
+  single gate object whose size() method returns zero, and cannot be
+  connected.
+
+- Tkenv: bitmap path can now be specified in omnetpp.ini, using the
+  [Tkenv]/bitmap-path= entry. Value should be "quoted", and directories
+  should be separated by ";". The contents of the OMNETPP_BITMAP_PATH
+  environment variable (or if that's not set, the compilation-time bitmap
+  path) gets concatenated to this one.
+
+  IMPORTANT: if you forget the quotes, ONLY THE FIRST DIRECTORY will be
+  used with the rest ignored, because ";" is the comment mark in omnetpp.ini!
+
+- opp_makemake, opp_nmakemake: facilitated creating makefiles which only
+  have relative paths in them. The -b <basedir> option was added. <basedir>
+  is supposed to be the toplevel directory of large multi-directory
+  simulation model (such as IPSuite or MF). The -b option will cause all path
+  names (passed with -I, -L, etc.) to be converted from absolute to relative.
+  This means that makefiles will not need to be re-generated or edited when
+  the project is compiled in a different directory.
+
+- opp_neddoc: backslashing can be used to prevent intentional hyperlinking
+  of a word which is also a component (e.g. module) name. That is, if you
+  write "\IP", "IP" won't get hyper-linked in the HTML output, even if
+  there's a module type called IP. Single backslashes will be removed from
+  the HTML output -- double them if you want them to appear.
+
+- opp_neddoc: on Windows, listing directories on the command line which had
+  no .ned or .msg files in them caused opp_neddoc to stop with "file not
+  found" error.
+
+
+OMNeT++ 3.0 alpha 6 (Aug 2004)
+------------------------------
+POTENTIAL INCOMPATIBILITY: because the resolution of "*" has changed (it no
+longer matches "."), you may need to revise your existing omnetpp.ini files.
+
+New features introduced in this release, in nutshell: enhanced wildcard
+resolution in omnetpp.ini; direct support for XML config files via the "xml"
+NED parameter type; Cmdenv now lets you choose which modules' ev output you
+want to print; plugin interface for using configuration data sources other
+than omnetpp.ini. Several improvements in opp_neddoc and opp_makemake, and
+some bugfixes.
+
+For more details, see article
+  http://www.omnetpp.org/article.php?story=20040722133521209
+
+
+OMNeT++ 3.0 alpha 5 (June 2004)
+-------------------------------
+Plove has been completely rewritten under the skin. It is no longer a wrapper
+around grep, awk and gnuplot -- it boasts a powerful internal extensible
+data-flow engine (for filtering and processing output vectors before plotting),
+and a BLT-based plotting window (which allows a multiple plots via tabbed
+window, and these plots are a bit easier to customize than gnuplot-based ones
+were -- oh yes and they allow arbitrary zooming on the fly). The new Plove
+can also do scatter plot. Calculating histograms and cumulative distribution
+functions and various other refinements will come soon.
+
+What else? opp_msgc now generates the pack/unpack operations so parallel
+simulation has become a lot more transparent. Plus a couple of bugfixes of
+course. The test suite (test/core) is supposed to pass completely, except
+for one little known bug in ev<< w/ Cmdenv.
+
+
+OMNeT++ 3.0 alpha 4 (May 2004)
+------------------------------
+This alpha release introduces a new tool, Scalars for analysing output scalar
+(.sca) files. Scalars requires BLT. Another novelty is the new "control info"
+field in cMessage which provides a better way to implement communication
+between protocol layers than the traditional "interface packet" approach
+used in older IPSuite versions. (IPSuite has also been switched over to employ
+the control info approach.)
+
+
+OMNeT++ 3.0 alpha 3 (March 2004)
+--------------------------------
+Bugfixes.
+
+
+OMNeT++ 3.0 alpha 2 (March 2004)
+--------------------------------
+Improvements on opp_(n)makemake, Plove, Tkenv, parallel simulation; bugfixes.
+
+
+OMNeT++ 3.0 alpha 1 (Jan 2004)
+------------------------------
+Sames as 3.0 Preview
+
+
+OMNeT++ 3.0 Preview, 2004 January
+---------------------------------
 This is an intermediate code snapshot -- it was released to show you what
 features are planned for release 3.0, and possibly to get early feedback
 about them. It has not been fully tested.
