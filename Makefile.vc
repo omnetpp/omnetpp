@@ -261,8 +261,10 @@ depend:
 	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) $(MAKEFILE) depend
 
 makefiles:
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
 	for %%i in ( $(SAMPLES) ) do \
 	    cd /d $(OMNETPP_SAMPLES_DIR:/=\)\%%i && call opp_nmakemake -f
+	-cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && ren *.cc *.cpp 2>nul
 	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && call opp_nmakemake -f
 
 reminder:
