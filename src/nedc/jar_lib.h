@@ -41,6 +41,7 @@ extern expr_type submodule_nr;
 
 extern int hassimple;
 extern int is_system;
+extern int inside_nonvoid_function;
 
 extern char indent[100];
 

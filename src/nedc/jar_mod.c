@@ -50,6 +50,7 @@ expr_type gate_nr_R = "";
 
 int hassimple = 0;
 int is_system = 0;
+int inside_nonvoid_function = 0;
 
 int isref = 0;
 
@@ -342,6 +343,9 @@ void do_sub_or_sys1 (char *smname, char *smcount, int issys, char *smtype, char 
         }
         else
         {
+                fprintf (tmp, "\tpar = &mod->par(\"%s\");\n", smtype);
+                fprintf (tmp, "\tcheck_param(par,\"%s\");\n", smtype);
+                fprintf (tmp, "\ttype_name = (const char *)par;\n");
                 fprintf (tmp, "\ttype_name = mod->par(\"%s\");\n", smtype);
                 fprintf (tmp, "\tmodtype = findModuleType( type_name );\n");
                 fprintf (tmp, "\tcheck_modtype( modtype, type_name );\n");

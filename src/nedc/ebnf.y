@@ -136,6 +136,7 @@ void yyerror (char *s);
 //
 #ifdef DOING_NEDC
 #include "jar_func.h"
+#include "jar_lib.h"
 #endif
 
 
@@ -290,7 +291,7 @@ channeldefinition
 
 channelheader
         : CHANNEL NAME
-                {NEDC( $$ = $2; )
+                {NEDC( $$ = $2; inside_nonvoid_function=1;)
                  GNED( CHANNEL_KEY = np->create("channel",NEDFILE_KEY);
                        np->set(CHANNEL_KEY,"name",@2);
                        setComments(CHANNEL_KEY,@1,@2); )}
@@ -299,8 +300,10 @@ channelheader
 
 endchannel
         : ENDCHANNEL NAME opt_semicolon
+                {NEDC( inside_nonvoid_function=0; )}
                 {GNED( setTrailingComment(CHANNEL_KEY,@2); )}
         | ENDCHANNEL opt_semicolon
+                {NEDC( inside_nonvoid_function=0; )}
                 {GNED( setTrailingComment(CHANNEL_KEY,@1); )}
         ;
 

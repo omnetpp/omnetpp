@@ -1,3 +1,11 @@
+2002-03-07  Andras Varga
+
+	* bugfix (id 0004 in the bugtracker): nedc-generated code crashed if
+	parameter specified in a 'like' clause didn't exist
+
+	* bugfix: generated code didn't compile if a user-defined function
+	(see Define_Function() macro) was used inside a channel definition
+
 2002-02-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* Makefile.in (nedc): use CXX instead of CC for linking (gcc-3 patch)
@@ -29,7 +37,7 @@
 
 	* ebnf.y, jar_expr.c, jar_lib.c, jar_func.h, jar_lib.h: implemented
         that an expression may refer to a submodule parameter. Syntax:
-        submod.par or submod[index].par. Limitations: index may not be 
+        submod.par or submod[index].par. Limitations: index may not be
         an expression itself (must be constant, for-variable or (submodule)
         parameter); the generated expression is of 'anytype' (no type-check).
 

@@ -110,6 +110,9 @@ void print_header (FILE *f)
         fprintf (f, "#define check_function(funcptr, funcname) \\\n"
                     "    {if ((funcptr)==NULL) {opp_error(\"Function %%s not found\", \\\n"
                     "                                     funcname);return;}}\n");
+        fprintf (f, "#define check_function_retnull(funcptr, funcname) \\\n"
+                    "    {if ((funcptr)==NULL) {opp_error(\"Function %%s not found\", \\\n"
+                    "                                     funcname);return NULL;}}\n");
         fprintf (f, "#define check_gate(gateindex, modname, gatename) \\\n"
                     "    {if ((int)gateindex==-1) {opp_error(\"Gate %%s.%%s not found\",modname,gatename);return;}}\n");
         fprintf (f, "#define check_anc_param(ptr,parname,compoundmod) \\\n"
