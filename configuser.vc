@@ -234,10 +234,10 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 #   /OPT:NOREF: keep functions and data that is never referenced -- this forces
 #        OMNeT++ simple modules in .lib files to be included in the .exe
 #
-CFLAGS_DEBUG=/EHsc /GR /FD /Zm200 /MLd /Od /GZ /Zi
+CFLAGS_DEBUG=/EHsc /GR /FD /Zm250 /MLd /Od /GZ /Zi
 LDFLAGS_DEBUG=/subsystem:console /opt:noref /debug
 
-CFLAGS_RELEASE=/EHsc /GR /FD /Zm200 /ML /O2 /DNDEBUG
+CFLAGS_RELEASE=/EHsc /GR /FD /Zm250 /ML /O2 /DNDEBUG
 LDFLAGS_RELEASE=/subsystem:console /opt:noref
 
 # LIB_SUFFIX is either .lib or .dll

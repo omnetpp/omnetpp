@@ -16,6 +16,11 @@
 #ifndef __CNETWORKBUILDER_H
 #define __CNETWORKBUILDER_H
 
+#ifdef _MSC_VER
+// disable "identifier was truncated to '255' characters in the debug information" warnings
+#pragma warning(disable:4786)
+#endif
+
 #include <string>
 #include <map>
 #include <vector>
