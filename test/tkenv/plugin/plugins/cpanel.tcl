@@ -82,7 +82,7 @@ proc cpanel_createControls {} {
 
     # create "speed" slider
     cpanel_slider $w.animspeed "Animation speed"
-    $w.animspeed.e config -from 0.5 -to 3 -resolution 0.01 -variable param(animspeed)
+    $w.animspeed.e config -from 0.5 -to 3 -resolution 0.01 -variable priv(animspeed)
     pack $w.animspeed -expand 0 -fill x
 
     # arrange the paramChanged function to be called whenever sliders change
@@ -99,8 +99,8 @@ proc cpanel_createControls {} {
     trace variable param(serviceRate1) w cpanel_paramChanged
     trace variable param(serviceRate2) w cpanel_paramChanged
 
-    # following line uses undocumented tkenv internals and will break next time
-    trace variable priv(animspeed)    w cpanel_paramChanged
+    # following line uses undocumented Tkenv internals and will break next time Tkenv changes
+    trace variable priv(animspeed) w animSpeedChanged
 
     # this button brings back main window (if it was withdrawn originally)
     set img_more [image create photo -file "plugins/more.gif"]
@@ -133,7 +133,7 @@ proc cpanel_readParams {} {
 # Update parameter values when sliders change
 #
 proc cpanel_paramChanged {arr name op} {
-    if {$op!="write"} return
+    if {$op!="write" && $op!="w"} return
 
     if [catch {
         global param
