@@ -1,3 +1,10 @@
+2002-01-13  Andras Varga
+
+	* Graceful handling of SIGTERM and SIGINT signals: calls finish()
+        for current simulation and exits. Works on Unix only (Win32 doesn't
+        support SIGTERM and SIGINT, among others). Based on suggestion and
+        patch from Michele Baresi.
+
 2000-06-06  Andras Varga
 
 	* ------ omnetpp-2.1 released ------

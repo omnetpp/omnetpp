@@ -24,6 +24,7 @@
 #include "ctypes.h"
 #include "csimul.h"
 #include "omnetapp.h"
+#include <signal.h>
 
 
 #define CMDENV_EXTRASTACK  8192
@@ -42,6 +43,9 @@ class TCmdenvApp : public TOmnetApp
      int opt_modulemsgs;
      int opt_verbose;
      simtime_t opt_displayinterval;
+
+     // set to true on SIGINT/SIGTERM signals
+     static bool sigint_recv;
 
    public:
      TCmdenvApp(ArgList *args, cIniFile *inifile);
@@ -70,6 +74,10 @@ class TCmdenvApp : public TOmnetApp
 
      // cmdenv has an own memory manager (heap.cc)
      virtual bool memoryIsLow();
+
+     // SIG_USR1 handling
+     void setupSignals();	
+     static void signalHandler(int signum);
 };
 
 #endif

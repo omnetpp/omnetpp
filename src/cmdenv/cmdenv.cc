@@ -47,6 +47,8 @@ CMDENV_API void envirDummy() {}
 // a function defined in heap.cc
 bool cmdenvMemoryIsLow();
 
+bool TCmdenvApp::sigint_recv;
+
 //==========================================================================
 // TCmdenvApp: command line user interface.
 
@@ -115,9 +117,25 @@ void TCmdenvApp::setup()
      }
 }
 
+void TCmdenvApp::signalHandler(int signum)
+{
+     // Only for Unix. WIN32 doesn't support either SIGINT or SIGTERM :(
+     if (signum == SIGINT || signum == SIGTERM) {
+         sigint_recv = true;
+     }
+}
+
+void TCmdenvApp::setupSignals()
+{
+     signal(SIGINT, signalHandler);
+     signal(SIGTERM, signalHandler);
+}
+
 void TCmdenvApp::run()
 {
      if (!simulation.ok()) return;
+
+     setupSignals();
 
      if (opt_helponly)
      {
@@ -162,13 +180,16 @@ void TCmdenvApp::run()
                    ev.printf("Running simulation...\n");
                    simulate();
                }
-               if (simulation.normalTermination()) simulation.callFinish();
+               if (simulation.normalTermination() || sigint_recv) simulation.callFinish();
                simulation.endRun();
             }
          }
 
          // end of run: delete network (this also forces slaves to exit)
          simulation.deleteNetwork();
+
+         if (sigint_recv)
+            break;
      }
 }
 
@@ -181,9 +202,10 @@ void TCmdenvApp::makeOptionsEffective()
 void TCmdenvApp::simulate()
 {
      simulation.startClock();
+     sigint_recv = false;
      if (opt_verbose || opt_modulemsgs)
      {
-        while(1)
+        while(!sigint_recv)
         {
             cSimpleModule *mod = simulation.selectNextModule();
             if (mod==NULL || !simulation.ok()) break;
@@ -222,7 +244,7 @@ void TCmdenvApp::simulate()
      {
         ev.disable_tracing = true;
         simtime_t next_update = 0.0 + opt_displayinterval;
-        while(1)
+        while(!sigint_recv)
         {
             cSimpleModule *mod = simulation.selectNextModule();
             if (mod==NULL || !simulation.ok()) break;
@@ -244,6 +266,11 @@ void TCmdenvApp::simulate()
         ev.disable_tracing = false;
      }
      simulation.stopClock();
+
+     if (sigint_recv)
+     {
+        ev.printfmsg("SIGINT or SIGTERM received, stopping simulation.\n");
+     }
 }
 
 void TCmdenvApp::help()
