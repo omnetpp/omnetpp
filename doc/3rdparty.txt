@@ -1,0 +1,56 @@
+Third party software
+====================
+
+The Win32 binary distribution of OMNeT++ contains software which are
+independent of OMNeT++, and are distributed under their own licenses:
+
+
+Tcl/Tk
+------
+OMNeT++ GUIs are based on Tcl/Tk, an open-source script language and GUI
+toolkit, written by James Ousterhout and many others. Tcl/Tk currently
+maintained at sourceforge.net; it is available from
+http://tcltk.sourceforge.net, and it is distributed under a BSD-like license.
+
+Expat
+-----
+nedtool is linked with Expat, an open-source XML parser originally written
+by James Clark, and now maintained a sourceforge.net. Expat is available
+from http://expat.sourceforge.net, and it is distributed under a BSD-like
+license.
+
+Perl
+----
+Some of the tools are written in Perl, an open-source script language written
+by Larry Wall. The source is available from http://www.perl.com.
+OMNeT++ is bundled with files from the ActiveState Perl distribution
+(http://www.activestate.com). Perl is distributed under its own Artistic License.
+
+LibXML/LibXSLT
+--------------
+LibXML and LibXSLT are an open-source XML parser and XSLT processor, written
+by Daniel Veillard for the GNOME project. The source is available from
+http://www.xmlsoft.org. OMNeT++ is bundled with Win32 binaries maintained
+by Igor Zlatkovic, and currently available from
+http://www.fh-frankfurt.de/~igor/projects/libxml/index.html.
+LibXML, LibXSLT and LibICONV (also a needed component) are distributed
+under the GNU Lesser General Public License (LGPL).
+
+Gnuplot
+-------
+Plove creates plots by invoking Gnuplot, an open-source function plotting
+program written by Thomas Williams and Colin Kelley. The Gnuplot homepage
+is at http://www.gnuplot.info, sources and binaries are available
+from several mirror sites. Gnuplot is distributed under its own BSD-like
+license.
+
+UnxUtils
+--------
+Several utilities and also Plove use some of the GNU Unix tools: grep, gawk,
+pwd, sed, gzip, gunzip, zcat. These programs fall under the GNU General
+Public License, and the source is available from http://www.gnu.org.
+OMNeT++ is bundled with binaries from UnxUtils, a package which contains
+Win32 binary ports of these tools. UnxUtils is maintained at sourceforge.org,
+and available from http://unxutils.sourceforge.net.
+
+
