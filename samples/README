@@ -81,7 +81,3 @@ D: dynamic module creation
    star topology with the number of modules as parameters 
 
 
-PVMEX
-=====
-T: distributed execution
-D: how to assign processors to modules

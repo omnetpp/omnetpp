@@ -28,7 +28,6 @@ foreach i {
    {hcube ../hcube HCube}
    {hist ../hist Hist}
    {nim ../nim Nim}
-   {pvmex ../pvmex PVMEx}
    {token ../token Token}
 } {
    set sample [lindex $i 0]
