@@ -785,28 +785,35 @@ void TOmnetTkApp::updateSimtimeDisplay()
 
 void TOmnetTkApp::updateNextModuleDisplay()
 {
-    char subsc[16];
-    const char *modulename;
-    cSimpleModule *mod;
+    cSimpleModule *mod = NULL;
 
-    if (simstate!=SIM_NEW && simstate!=SIM_READY && simstate!=SIM_RUNNING)
+    if (simstate==SIM_NEW || simstate==SIM_READY || simstate==SIM_RUNNING)
     {
-        modulename = "n/a";
-        subsc[0]=0;
+        try
+        {
+            mod = simulation.selectNextModule();
+        }
+        catch (cException *e)
+        {
+            // simply ignore the exception -- selectNextModule should be idempotent,
+            // so we'll display it another time.
+            delete e;
+        }
     }
-    else if ((mod=simulation.selectNextModule())==NULL)
+
+    char id[16];
+    const char *modname;
+    if (mod)
     {
-        modulename = "n/a";
-        subsc[0]=0;
+        modname = mod->fullPath();
+        sprintf(id,"#%u ", mod->id());
     }
     else
     {
-        modulename = mod->fullPath();
-        sprintf(subsc,"#%u ", mod->id());
+        modname = "n/a";
+        id[0]=0;
     }
-    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {"
-                        "Next: ", subsc, modulename,
-                        "}", NULL ));
+    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {Next: ", id, modname,"}",NULL));
 }
 
 void TOmnetTkApp::clearNextModuleDisplay()
