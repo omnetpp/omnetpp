@@ -18,9 +18,11 @@ MAKEFILE=/F Makefile.vc
 #=====================================================================
 
 
-all: check-env components
+#all: check-env components
+all: components
 
-components: libs progs install-local samples
+#components: libs progs install-local samples
+components: libs progs install-local 
 
 
 #=====================================================================
@@ -115,8 +117,8 @@ demo:
 #=====================================================================
 
 
-check-env:
-	@ echo *** TBD check-env
+#check-env:
+#	@ echo *** TBD check-env
 
 clean:
 	-for %%i in ( $(LIBS) $(PROGS) ) do \
