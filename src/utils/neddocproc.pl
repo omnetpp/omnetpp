@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 #
 # part of opp_neddoc -- renders NED comments into HTML, does syntax highlight,
-# and exports images                      
+# and exports images
 #
 
 $verbose = 0;
@@ -150,6 +150,9 @@ foreach $fnamepatt (@ARGV)
 
               # put back comments, syntax-highlighted
               $src =~ s|\<comment(\d+)\>|'<span class="src-comment">'.$comments{$1}.'</span>'|gse;
+
+              # put back strings in comments
+              $src =~ s|\<string(\d+)\>|$strings{$1}|gse;
 
               # restore " from &quot; (important for attrs of html tags, see below)
               $src =~ s|&quot;|"|gsi;
