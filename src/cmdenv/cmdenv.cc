@@ -86,7 +86,7 @@ void TCmdenvApp::readOptions()
     cConfiguration *cfg = getConfig();
 
     opt_runstoexec = cfg->getAsString("Cmdenv", "runs-to-execute", "");
-    opt_extrastack = cfg->getAsInt("Cmdenv", "extra-stack", CMDENV_EXTRASTACK);
+    opt_extrastack_kb = cfg->getAsInt("Cmdenv", "extra-stack-kb", CMDENV_EXTRASTACK_KB);
     opt_outputfile = cfg->getAsString("Cmdenv", "output-file", "");
 
     if (!opt_outputfile.empty())
@@ -555,7 +555,7 @@ void TCmdenvApp::help()
 
 unsigned TCmdenvApp::extraStackForEnvir()
 {
-    return opt_extrastack;
+    return 1024*opt_extrastack_kb;
 }
 
 bool TCmdenvApp::memoryIsLow()

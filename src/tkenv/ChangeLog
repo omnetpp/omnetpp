@@ -1,3 +1,8 @@
+2004-12-15  Andras Varga
+
+	* extra-stack= option replaced with extra-stack-kb. Default raised to
+	48K (37K stack usage was observed on SUSE 9.1)
+
 2004-12-10  Andras Varga
 
 	* default background color changed from #c0c0c0 to #d0d0d0 

@@ -975,7 +975,7 @@ void TOmnetTkApp::readOptions()
 
     cConfiguration *cfg = getConfig();
 
-    opt_extrastack = cfg->getAsInt("Tkenv", "extra-stack", TKENV_EXTRASTACK);
+    opt_extrastack_kb = cfg->getAsInt("Tkenv", "extra-stack-kb", TKENV_EXTRASTACK_KB);
     opt_default_run = cfg->getAsInt( "Tkenv", "default-run", 0);
 
     // Note: most entries below should be obsoleted (with .tkenvrc taking over)
@@ -1656,7 +1656,7 @@ int TOmnetTkApp::askYesNo(const char *question)
 
 unsigned TOmnetTkApp::extraStackForEnvir()
 {
-     return opt_extrastack;
+     return 1024*opt_extrastack_kb;
 }
 
 //======================================================================

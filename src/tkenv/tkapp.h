@@ -22,11 +22,7 @@
 
 #include "omnetapp.h"
 
-#ifdef SUNSPARC
-#define TKENV_EXTRASTACK   24576
-#else
-#define TKENV_EXTRASTACK   16384
-#endif
+#define TKENV_EXTRASTACK_KB   48
 
 class Speedometer;
 class TInspector;
@@ -89,7 +85,7 @@ class TOmnetTkApp : public TOmnetApp
       long opt_stepdelay;          // Delay between steps in ms
       int  opt_updatefreq_fast;    // FastRun updates display every N events
       int  opt_updatefreq_express; // RunExpress updates display every N events
-      unsigned opt_extrastack;     // per-module extra stack
+      unsigned opt_extrastack_kb;  // per-module extra stack for activity() modules
       bool opt_expressmode_autoupdate;// update inspectors at every display refresh in EXPRESS mode or not
       opp_string opt_bitmap_path;  // directory of module icon files
 
@@ -153,7 +149,7 @@ class TOmnetTkApp : public TOmnetApp
 
       virtual bool idle();
 
-      // if using Tkenv, modules should have ~16K extra stack
+      // if using Tkenv, activity() modules need extra stack
       virtual unsigned extraStackForEnvir();
 
       // New functions:
