@@ -315,26 +315,26 @@ AC_SUBST(GNED_IF_POSSIBLE)
 
 AC_OUTPUT(
   Makefile
-  src/cmdenv/makefile
-  src/envir/makefile
-  src/gned/makefile
-  src/nedc/makefile
-  src/plove/makefile
-  src/sim/makefile
-  src/tkenv/makefile
-  src/tvenv/makefile
-  src/utils/makefile
+  src/cmdenv/Makefile
+  src/envir/Makefile
+  src/gned/Makefile
+  src/nedc/Makefile
+  src/plove/Makefile
+  src/sim/Makefile
+  src/tkenv/Makefile
+  src/tvenv/Makefile
+  src/utils/Makefile
   src/utils/makemake
-  models/support/makefile
-  samples/dyna/makefile
-  samples/fddi/makefile
-  samples/fifo1/makefile
-  samples/fifo2/makefile
-  samples/hcube/makefile
-  samples/hist/makefile
-  samples/nim/makefile
-  samples/pvmex/makefile
-  samples/token/makefile
+  models/support/Makefile
+  samples/dyna/Makefile
+  samples/fddi/Makefile
+  samples/fifo1/Makefile
+  samples/fifo2/Makefile
+  samples/hcube/Makefile
+  samples/hist/Makefile
+  samples/nim/Makefile
+  samples/pvmex/Makefile
+  samples/token/Makefile
 )
 
 chmod +x src/utils/makemake

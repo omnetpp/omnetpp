@@ -1,11 +1,9 @@
 Installing omnet++ on windows NT
 ================================
 
+--OUT OF DATE--
+
 From Richard Lyon (rlyon01@ozemail.com.au)
-
-I removed parts from this text which referred to OMNeT++ bugs that
-have been fixed since the writing of this document. --Andras
-
 
 1. Introduction
 
@@ -132,92 +130,9 @@ For these variables to be included in the bash environment you will need to
 restart the bash shell before proceeding. All following commands in this
 section are entered on the bash command line.
 
-The omnetpp configure file now needs to be modified. Assuming you installed
-omnetpp in your home directory, the configure file is found at
-~/omnetpp/src/utils. For my particular installation I found it necessary
-to make the following modifications to the configuration file:
-
-    Line  50: SEARCH_DIRS="/usr* /opt /local $HOME"
-    Line  74: CFLAGS='-g'
-    Line  75: # CFLAGS='-O4 -DNDEBUG=1 -fomit-frame-pointer'
-    Line 114: X_LIBS='-lX11'
-    Line 115: TK_LIBS='-ltk -ltcl -ldl'
-    Line 124: SYS_LIBS="-ldl $SYS_LIBS"
-    Line 269: TK_LIBS="$TK_LIBS -ldl"
-
-are changed to
-
-    Line  50: SEARCH_DIRS="/cygnus"
-    Line  74: #CFLAGS='-g'
-    Line  75: CFLAGS='-O3 -DNDEBUG=1'
-    Line 114: X_LIBS=
-    Line 115: TK_LIBS='-ltk -ltcl'
-    Line 124: SYS_LIBS="$SYS_LIBS"
-    Line 269: TK_LIBS="$TK_LIBS"
-
-Save the new configuration file and switch to the omnetpp directory using
-cd ~/omnetpp. If you list this directory, note that CYGWIN has correctly
-installed the file links, just like in unix.
-
-Start the configuration process by running configure. This requires the
-following command to be entered:
-
+Then the usual GNU-like stuff:
     ./configure
-
-The following text is displayed on the screen during the configuration process:
-
-----------
-Your PATH contains /usr/rlyon01/omnetpp/bin. Good.
-
-Searching (/cygnus) for Tcl/Tk, X, PVM etc. include and lib files
-
-Turbo Vision include files not found
-Turbo Vision library not found
-X11 library not found
-Pvm3 include files not found
-Pvm3 library not found
-
-Configuring all makefiles plus scripts in src/utils/
-----------
-
-This output indicates that turbo vision, X11 and pvm were not found. We
-are restricted to using the command line and tcl/tk omnetpp environments.
-
-The next step is to compile the source code. This process creates the basic
-simulation libraries, simulation tools and sets up a number of symbolic links.
-In addition, a number of samples are also compiled. To start the compilation
-enter the command:
-
-    ./makeall
-
-It takes a few minutes to complete all the compiling and linking (well on
-my machine anyway). The following output is displayed in the bash shell
-window:
-
-----------
-System components:
- building nedc... OK
- building sim_std... OK
- skipping sim_pvm  (no PVM installation found by configure)
- building envir... OK
- building cmdenv... OK
- building tkenv... OK
- skipping tvenv  (no Turbo Vision installation found by configure)
- building gned... OK
- building utils... OK
-Updating soft links into /usr/rlyon01/omnetpp/lib...
-Models:
- building support... OK
-Sample simulations:
- building dyna... OK
- building fddi... OK
- building fifo... OK
- building hcube... OK
- building hist... OK
- building nim... OK
- building pvmex... OK
- building token... OK
-----------
+    make
 
 You should now test all samples and check they run correctly. As an
 example, the dyna example is started by entering the following commands:

@@ -131,9 +131,9 @@ EOT
 done
 
 if [ $makefilein = "y" ]; then
-    outputfile="makefile.in"
+    outputfile="Makefile.in"
 else
-    outputfile="makefile"
+    outputfile="Makefile"
 fi
 
 if [ -f $outputfile ]; then
