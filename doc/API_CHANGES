@@ -7,7 +7,6 @@ There were some incompatible changes in the simulation library.
 See src/sim/ChangeLog for more info about them (rationale, details...)
 Read on to learn what you should do to upgrade your code...
 
-
 Find/replace (case sensitive, whole words only):
   isA --> className  (cObject method)
   isbad --> hasBitError  (cMessage method)
@@ -23,7 +22,8 @@ cQueue::getHead() was removed, you must rewrite the code manually:
   q.getHead() --> q.remove(q.head())
 
 If you used cPar::setValue():
-  You must manually change them to setStringValue(..), setLongValue(..),
+  You must manually remove the first argument (the type char), and 
+  change the function name to setStringValue(..), setLongValue(..), 
   setBoolValue(..), etc.
 
 If you used cPar's indirection functions:
@@ -34,30 +34,30 @@ If you used cPar's indirection functions:
 You might rewrite your code to use the new convenience functions:
   cMessage::hasPar(char*), cModule::hasPar(char*), cModule::hasGate(char*,int)
 
-If you used cPar constructors which assign an initial value:
+If you used cPar constructors which assigned an initial value:
   These constructors were removed. Rewrite the code to use setXXXValue() or
   assignment. For example:
           cPar address("address") = "152.66.77.88";
-  But not like this (see next item):
-          cPar address = "152.66.77.88";  // WRONG!
   Existing client code like
           msg->addPar( *new cPar("dest", 'L', dest );
-  can be rewritten like
+  can be rewritten as:
           msg->addPar( *new cPar("dest") = dest );
-  or better like
+  or better as:
            msg->addPar("dest") = dest;
 
 Math expressions using cPar now need explicit casts:
   Expressions like
      msg->par("count")+1
   which used to compile now cause error ("too many possible conversions")
-  and must be disabiguated by adding explicit casts like this:
+  and must be disambiguated by adding explicit casts like this:
      (int)msg->par("count")+1.
+
+cArray functions now take and return cObject _pointers_ instead of references.
 
 Remember to re-generate the *_n.cc files from the .ned files!
   Type make clean; make ...
 
 
-HOPEFULLY THE API CHANGES DON'T CAUSE TOO MUCH INCONVENIENCE...
+Apologies for the API changes...
 
 --Andras
