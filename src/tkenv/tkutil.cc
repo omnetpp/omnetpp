@@ -85,8 +85,8 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
    for (int i=0; i<n; i++)
    {
        ptrToStr(objs[i],s);
-       s+=strlen(s);
        assert(strlen(s)<=20);
+       s+=strlen(s);
        *s++ = ' ';
    }
    *s='\0';
