@@ -567,7 +567,7 @@ void env_dummy_function() {
 #ifdef WITH_AKAROA
     cAkOutputVectorManager ao;
     cAkaroaRNG ar;
-    printf("%p%p",&ap,&ar); // eliminate 'unused var' warning
+    printf("%p%p",&ao,&ar); // eliminate 'unused var' warning
 #endif
 }
 
