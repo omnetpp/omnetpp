@@ -244,7 +244,35 @@ It is not recommended that you use \fname{printf()} or \fname{cout}
 to print messages -- \ttt{ev} output can be controlled much better
 from \ttt{omnetpp.ini} and it is more convenient to view, using Tkenv.
 
-%FIXME add #define EV trick, tale about debug channels etc.
+One can save CPU cycles by making logging statements conditional
+on whether the output actually gets displayed or recorded anywhere.
+The \ttt{ev.disabled()} call returns true when \ttt{ev<<} output is disabled,
+such as in Tkenv or Cmdenv ``express'' mode. Thus, one can write code like
+this:
+
+\begin{verbatim}
+if (!ev.disabled())
+    ev << "Packet " << msg->name() << " received\n";
+\end{verbatim}
+
+A more sophisticated implementation of the same idea is to define
+an \ttt{EV} macro which can be used in logging statements instead of
+\ttt{ev}. The definition:
+
+\begin{verbatim}
+#define EV  ev.disabled()?std::cout:ev
+\end{verbatim}
+
+And after that, one would simply write \ttt{EV<<} instead of \ttt{ev<<}.
+
+\begin{verbatim}
+EV << "Packet " << msg->name() << " received\n";
+\end{verbatim}
+
+The slightly tricky definition of \ttt{EV} makes use of the fact
+that the \ttt{<<} operator binds looser than \ttt{?:}.
+
+%FIXME add tale about debug channels etc.
 
 
 \section{Simulation time conversion}
