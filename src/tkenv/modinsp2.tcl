@@ -59,13 +59,20 @@ proc get_parsed_display_string {str array w modptr parent} {
 #
 # helper function
 #
-proc dispstr_getimage {tags_i} {
+proc dispstr_getimage {tags_i tags_is} {
     global icons bitmaps imagecache
 
+    set imgsize [lindex $tags_is 0]
+    if {$imgsize==""} {
+        set imgsize "n"
+    }
     set imgname [lindex $tags_i 0]
     if {$imgname==""} {
         set img $icons(unknown)
-    } elseif {[catch {set img $bitmaps($imgname)}] && [catch {set img $bitmaps(old/$imgname)}]} {
+    } elseif {[catch {set img $bitmaps($imgname,$imgsize)}] && \
+              [catch {set img $bitmaps($imgname)}] && \
+              [catch {set img $bitmaps(old/$imgname,$imgsize)}] && \
+              [catch {set img $bitmaps(old/$imgname)}]} {
         set img $icons(unknown)
     }
 
@@ -143,8 +150,11 @@ proc draw_submod {c submodptr x y name dispstr} {
        set isy 0
        set bsx 0
        set bsy 0
+       if ![info exists tags(is)] {
+           set tags(is) {}
+       }
        if [info exists tags(i)] {
-           set img [dispstr_getimage $tags(i)]
+           set img [dispstr_getimage $tags(i) $tags(is)]
            set isx [image width $img]
            set isy [image height $img]
        }
@@ -210,10 +220,13 @@ proc draw_submod {c submodptr x y name dispstr} {
 
        # modifier icon (i2 tag)
        if {[info exists tags(i2)]} {
+           if ![info exists tags(is2)] {
+               set tags(is2) {}
+           }
            set r [get_submod_coords $c $submodptr]
            set x [expr [lindex $r 2]+2]
            set y [expr [lindex $r 1]-2]
-           set img2 [dispstr_getimage $tags(i2)]
+           set img2 [dispstr_getimage $tags(i2) $tags(is2)]
            $c create image $x $y -image $img2 -anchor ne -tags "dx tooltip submod $submodptr"
        }
 
@@ -441,8 +454,11 @@ proc draw_message {c msgptr x y} {
         get_parsed_display_string $dispstr tags [winfo toplevel $c] {} 1
 
         # set sx and sy
+        if ![info exists tags(is)] {
+            set tags(is) {}
+        }
         if [info exists tags(i)] {
-            set img [dispstr_getimage $tags(i)]
+            set img [dispstr_getimage $tags(i) $tags(is)]
             set sx [image width $img]
             set sy [image height $img]
         } elseif [info exists tags(b)] {

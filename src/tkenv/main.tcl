@@ -449,7 +449,9 @@ proc do_load_bitmaps {dir prefix} {
       set img "i[incr bitmap_ctr]$name"
       if [catch {
          image create photo $img -file $f
-         do_add_bitmap $img $prefix $name ""
+         set size "n" ;#default
+         regexp -- {^(.*)_(l|n|s|vs|xs)$} $name dummy name size
+         do_add_bitmap $img $prefix $name $size
          incr n
       } err] {
          puts -nonewline "(*** cannot load $f: $err ***) "
@@ -470,8 +472,15 @@ proc do_load_bitmaps {dir prefix} {
 proc do_add_bitmap {img prefix name size} {
    global bitmaps
 
-   set imgname "$prefix$name"
-   set bitmaps($imgname) $img
+   # access via the s= display string option
+   set bitmaps($prefix$name,$size) $img
+
+   # access by the legacy way
+   if {$size=="n"} {
+       set bitmaps($prefix$name) $img
+   } else {
+       set bitmaps($prefix${name}_$size) $img
+   }
 }
 
 

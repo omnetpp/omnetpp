@@ -1,3 +1,10 @@
+2004-11-01  Andras Varga
+
+	* main.tcl, modinsp2.tcl: created display string tag for icon size:
+	"is=" (can be "vl", "l", "n", "s", "vs" for very large, large, normal, 
+	small, very small). Similarly, tag "is2=" sets size of auxiliary icon
+	("i2=" tag). The underscore notation ("i=penguin_s") also still exists.
+
 2004-10-27  Andras Varga
 
 	* tkapp.cc: fix: readPerRunOptions() was not protected by try/catch
