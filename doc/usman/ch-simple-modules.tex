@@ -2955,8 +2955,8 @@ running in one step.
 mod = modtype->createScheduleInit("name",this);
 \end{verbatim}
 
-It does \fname{create()} + \fname{buildInside()} + \fname{callInitialize()} +
-\fname[scheduleStart()]{scheduleStart(now)}.
+It does \fname{create()} + \fname{buildInside()} + 
+\fname[scheduleStart()]{scheduleStart(now)} + \fname{callInitialize()}.
 
 This method can be used for both simple and compound modules.
 However, its applicability is somewhat limited:
