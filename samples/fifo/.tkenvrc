@@ -15,7 +15,7 @@ option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{0}
 option bubbles	{1}
-option animation_speed	{1}
+option animation_speed	{1.62}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
 config rununtil-event	{}
@@ -34,8 +34,7 @@ config display-treeview	{1}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "fifonet2" "FifoNet2" "2" "407x292+265+139"
-inspector "fifonet" "FifoNet" "2" "349x232+8+6"
-inspector "fifonet.fifo.queue" "cQueue" "1" "351x164+8+268"
-inspector "fifonet.sink.queueing time vector" "cOutVector" "2" "353x177+9+467"
+inspector "fifonet" "FifoNet" "2" "443x277+370+366"
+inspector "fifonet.sink.queueing time vector" "cOutVector" "2" "353x197+9+467"
+inspector "fifonet.fifo.queue" "cQueue" "1" "351x230+11+203"
 

@@ -17,7 +17,7 @@ import
 //
 // Simple queueing network: generator + FIFO + sink.
 //
-module FifoNet2
+module FifoNet
     submodules:
         gen: FFGenerator;
             display: "p=89,100;i=block/source";
@@ -31,6 +31,6 @@ module FifoNet2
 endmodule
 
 
-network fifonet2 : FifoNet2
+network fifonet : FifoNet
 endnetwork
 
