@@ -288,7 +288,7 @@ We have left out the counter, to keep the source code small.
 Sources: @ref tictoc5.ned, @ref txc5.cc, @ref omnetpp.ini
 
 
-@subsection s6 Step 6
+@subsection s6 Step 6: Random numbers; putting parameters in omnetpp.ini
 
 In this step we'll introduce random numbers. We change the delay from 1s
 to a random value which can be set from the NED file or from omnetpp.ini.
