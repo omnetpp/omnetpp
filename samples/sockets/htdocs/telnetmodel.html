@@ -1,0 +1,31 @@
+<http>
+<body>
+<h3>The Telnet model</h3>
+
+<p>
+TelnetNet is similar to HTTPNet, but clients maintain telnet sessions
+to the server. The server echoes every character (in uppercase, to make it
+more interesting, and prints control characters in a readable form).
+Telnet clients are simulated except one, which is a proxy for a real-life
+client. By telnetting to localhost, port 4242 you can send your own
+keypresses over the simulated network to the simulated server.
+
+<p>
+To try:
+
+<ul>
+  <li> start the simulation with the "Run" button on the toolbar
+  <li> on Windows: open a command prompt (Start->Run->cmd.exe), and type
+       "telnet localhost 4242"
+  <li> on Linux/Unix: type "telnet localhost 4242" on the shell prompt, then
+       put your telnet into character mode (otherwise it'll send your keypresses
+       only when you hit Enter.) On my telnet this was done by pressing Ctrl+],
+       then typing "mode character" followed by Enter.
+  <li> then type into the telnet program, and watch how your keypresses get
+       into the simulated network.
+</ul>
+
+<a href="index.html>Back</a>
+
+</body>
+</http>
