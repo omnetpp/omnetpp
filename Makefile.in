@@ -10,6 +10,7 @@
 OMNETPP_BIN_DIR =       @OMNETPP_BIN_DIR@
 OMNETPP_LIB_DIR =       @OMNETPP_LIB_DIR@
 OMNETPP_SRC_DIR =       @OMNETPP_SRC_DIR@
+OMNETPP_INCL_DIR =      @OMNETPP_INCL_DIR@
 OMNETPP_DOC_DIR =       @OMNETPP_DOC_DIR@
 OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 OMNETPP_TUTORIAL_DIR =  @OMNETPP_TUTORIAL_DIR@
@@ -119,14 +120,14 @@ tutorials:
 # Documentation
 #
 docs:
-	cd $(OMNETPP_DOC_DIR)/api && $(MAKE)
+	cd $(OMNETPP_INCL_DIR) && $(MAKE)
 
 #
 # Test
 #
 test:
 	cd $(OMNETPP_TEST_DIR) && $(MAKE)
-        
+
 #=====================================================================
 #
 # Utilities
