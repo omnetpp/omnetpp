@@ -1,4 +1,4 @@
-:@echo off
+@echo off
 rem
 rem Renaming all .cpp files back to .cc
 rem

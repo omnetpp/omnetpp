@@ -1,4 +1,4 @@
-:@echo off
+@echo off
 rem
 rem Renaming all .cc files to .cpp for building the samples from the MSVC IDE.
 rem

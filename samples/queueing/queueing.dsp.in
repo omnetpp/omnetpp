@@ -149,9 +149,36 @@ SOURCE=.\classifier.ned
 
 !IF  "$(CFG)" == "queueing - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\classifier.ned
+InputName=classifier
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\classifier.ned
+InputName=classifier
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\classifier.ned
+InputName=classifier
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Cmdenv"
 
@@ -181,9 +208,36 @@ SOURCE=.\delay.ned
 
 !IF  "$(CFG)" == "queueing - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\delay.ned
+InputName=delay
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\delay.ned
+InputName=delay
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\delay.ned
+InputName=delay
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Cmdenv"
 
@@ -213,9 +267,36 @@ SOURCE=.\pqueue.ned
 
 !IF  "$(CFG)" == "queueing - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\pqueue.ned
+InputName=pqueue
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\pqueue.ned
+InputName=pqueue
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\pqueue.ned
+InputName=pqueue
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Cmdenv"
 
@@ -241,9 +322,36 @@ SOURCE=.\qnet.ned
 
 !IF  "$(CFG)" == "queueing - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\qnet.ned
+InputName=qnet
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\qnet.ned
+InputName=qnet
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\qnet.ned
+InputName=qnet
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Cmdenv"
 
@@ -273,9 +381,36 @@ SOURCE=.\server.ned
 
 !IF  "$(CFG)" == "queueing - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\server.ned
+InputName=server
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\server.ned
+InputName=server
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\server.ned
+InputName=server
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Cmdenv"
 
@@ -305,9 +440,36 @@ SOURCE=.\sink.ned
 
 !IF  "$(CFG)" == "queueing - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\sink.ned
+InputName=sink
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\sink.ned
+InputName=sink
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\sink.ned
+InputName=sink
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Cmdenv"
 
@@ -337,9 +499,36 @@ SOURCE=.\source.ned
 
 !IF  "$(CFG)" == "queueing - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\source.ned
+InputName=source
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\source.ned
+InputName=source
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Tkenv"
+
+# Begin Custom Build - NED compiling $(InputPath)
+InputPath=.\source.ned
+InputName=source
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "queueing - Win32 Release Cmdenv"
 

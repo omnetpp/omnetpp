@@ -259,9 +259,51 @@ SOURCE=.\packet.msg
 
 !IF  "$(CFG)" == "routing - Win32 Debug Tkenv"
 
+# Begin Custom Build - Processing $(InputPath) with opp_msgc (needs Perl!)
+InputPath=.\packet.msg
+InputName=packet
+
+BuildCmds= \
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "routing - Win32 Debug Cmdenv"
 
+# Begin Custom Build - Processing $(InputPath) with opp_msgc (needs Perl!)
+InputPath=.\packet.msg
+InputName=packet
+
+BuildCmds= \
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "routing - Win32 Release Tkenv"
+
+# Begin Custom Build - Processing $(InputPath) with opp_msgc (needs Perl!)
+InputPath=.\packet.msg
+InputName=packet
+
+BuildCmds= \
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
+
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "routing - Win32 Release Cmdenv"
 
@@ -269,9 +311,14 @@ SOURCE=.\packet.msg
 InputPath=.\packet.msg
 InputName=packet
 
-"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+BuildCmds= \
 	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
 
+"$(InputName)_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
+
+"$(InputName)_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+   $(BuildCmds)
 # End Custom Build
 
 !ENDIF 
