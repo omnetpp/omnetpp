@@ -349,8 +349,6 @@ void do_sub_or_sys1 (char *smname, char *smcount, int issys, char *smtype, char 
 
 void do_sub_or_sys2 (char *smname, char *smcount, int issys, char *smtype, char *smlike )
 {
-        mod_def_elem *me;
-
         if (firstpass)
         {
                 jar_free (smname);
