@@ -3,87 +3,40 @@ What's New
 
 In the OMNeT++ 2.0 final version (January 2001)
 -----------------------------------------------
-There are a number of enhancements on the GUI parts, GNED and Tkenv, but the
-simulation API remains fully compatible. Bugs reported since 2.0b5 have been
-fixed.
+There are a number of enhancements mainly on the GUI parts, GNED and Tkenv,
+but the simulation API remains fully compatible. Bugs that were reported
+since the 2.0b5 release have largely been fixed. All those who cared to
+report bugs and suggested features -- thanks!
 
-The OMNETPP_VERSION symbol was added to the sim header files, it's currently
-#defined to be 0x0200. In cQueue, a number of methods made virtual to enable
-customizing the class (e.g. adding statistics for maintaining average queue
-length, etc.), and also in cQueue, a bug associated with object ownership
-management was fixed.
+In cQueue, a number of methods were made virtual to enable customizing the
+class (e.g. adding statistics for maintaining average queue length, etc.),
+and also in cQueue, a bug associated with object ownership management was
+fixed. I also added the OMNETPP_VERSION symbol to the sim header files
+(currently #defined as 0x0200). 
 
-Tkenv underwent a number of bugfixes and enhancements. Enhancements in
-display string handling:
- - the 'p' display string tag's 3rd arg (layout) can now be abbreviated:
-   r=row, c=col=column, m=matrix, i=ri=ring
- - added new layout to 'p' tag: exact (abbreviation: e or x); this lets
-   one position modules in a module vector one by one
- - submodule display strings may use the parent module's parameters too
+Tkenv was enhanced quite a bit. Now you can now open module output windows for
+all modules (not only for simple modules), and the window will accumulate
+ev<< output from that module and all submodules. (This feature is especially
+useful for tracing dynamically created modules). Now you can search for text
+in all module windows (^F Find, F3/^N Find next). Hotkeys were assigned to the
+run commands too (F4 Step, F5 Run, F6 Fast, F7 Express, F8 Stop), and the
+behaviour of the "step within module" command (^F4) was refined. I added a
+Performance status bar for the sake of the impatient (it displays events/sec,
+simulated sec/sec, events/simulated sec readings). Another toolbar shows (among
+others) the number of message objects currently in existence -- this feature
+may help you discover the most common kind of memory leaks. Display string
+handling was improved: modules in a module vector may now be positioned
+individually, and submodule display strings may use the parent module's
+parameters, too. See src/tkenv/ChangeLog for details.
 
-Find... Hotkeys... Performance status bar... Compound module output window....
-
-
-Jan 3, 2001
- - added 2nd status bar (containing: number of messages in the FES, total
-   number of messages created, number of currently existing message objects)
-Jan 13, 2001
- - added performance status bar (simsec/sec, events/sec, events/simsec gauges)
-Jan 15, 2001
- - new feature: debug output window (for ev<< messages) can now be opened
-   for compound modules too: it accumulates messages from all submodules.
-   [suggested by Ulrich Kaage]
- - single-stepping within a module is now possible for compound modules too
- - revised single-stepping within a module: now execution stops both
-   *before* and *after* events in that module, and events in that module are
-   done with "normal execution" (animation, etc), while intervening events are
-   done with "fast execution" (rare inspector updates, animation disabled)
-Jan 16, 2001
- - fix: added Tcl_FindExecutable(argv[0]) to Tcl initialization code (needed by
-   Cygwin 1.1)
-Jan 21, 2001
- - "find" and "find next" functionality improved and now it works for all
-   module output windows. Hotkeys: Ctrl-F Find, F3 or Ctrl-N Find next.
- - added hotkeys for step, run, etc commands:
-     F4 Step, F5 Run, F6 Fast Run, F7 Express Run, F8 Stop, Ctrl-F5 Step within
-     module
-
-GNED now accepts NED files as command line arguments. .gnedrc added....
-XML support....!!! Implemented further dialogs... Small enhancements
-like more graceful questions on exiting...
-
- - added .gnedrc
- - find/replace operation improved
- - implemented "find next"
- - find/replace dialog contents is now preserved
- - open/save dialogs now remember the directory
-
-Nov 14-19, 2000
- - display string handling rewritten. Now GNED won't delete from the
-   display strings the tags it doesn't understand. New file: dispstr.tcl.
- - XML support (experimental): GNED can now export and import XML files.
-   (File|Import XML...,Export XML... menu items)
-   New files in GNED: genxml.tcl, parsexml.tcl.
- - IMPORTANT! XML SUPPORT REQUIRES THE TclXML PACKAGE, at least version 1.2.
-   (The contents of TclXML-1.2.tgz should be extracted under the tcl/lib/ dir.)
-   BUG in the TclXML-1.2 parser: it silently discards attributes which contain
-   '&' or '<' characters!!!!
-Nov 20, 2000
- - improvement: File|Close and File|Exit made more graceful -- the "Not saved,
-   save?" dialog now has a Cancel button
- - improvement: implemented File|Save all
- - bugfix: new submodules, modules, channels etc. now always get unique names
-Dec 17, 2000
- - improvement: switching from text mode to graphics made faster: now GNED
-   won't parse the ned source if it hasn't been edited
- - improvement: GNED will refuse to exit or close a NED file if there are text mode
-   canvases with edits. You'll have to switch those canvases to graphics
-   to get the NED source backparsed.
- - Connection Properties dialog implemented. (Cannot handle 'for' loops yet.)
-
-
-
-
+The most important addition to GNED is its new, experimental XML support (needs
+the TclXML-1.2 package). XML will play a much more significant role in future
+releases of OMNeT++, as a universal data exchange format. Other enhancements:
+GNED now accepts NED file names as command line arguments. The .gnedrc file
+was introduced to store settings between runs. Further Properties dialogs
+(Channels, Connections) were implemented, and GNED is more careful now when
+you want to exit the program. File|Save all was also implemented. A number of
+other fixes improved the robustness and reliability of the code.
 
 
 In the OMNeT++ 2.0 beta 5 version (June 2000)
