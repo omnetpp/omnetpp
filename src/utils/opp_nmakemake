@@ -175,15 +175,22 @@ if (! -f $cfgfile) {
     print STDERR "opp_nmakemake: warning: config file $cfgfile not found -- try -c option\n";
 }
 
-@sobjs = ();
+@sobj_list = ();
 
-$makecommand = 'nmake -f Makefile.vc';
+$makecommand = 'nmake /nologo /f Makefile.vc';
 
+$curdir = cwd;
 foreach $i (@dirs)
 {
     print "*** Running make in $i to see object and ned file names\n";
     if (chdir($i) && system($makecommand)==0)
     {
+        chdir($curdir);
+        if (cwd ne $curdir) {
+            print STDERR "opp_nmakemake: cannot cd back from $i to $curdir, exiting\n";
+            exit(1);
+        }
+
         @o = glob("$i/*.obj");
         if (@o == ())
         {
@@ -191,7 +198,7 @@ foreach $i (@dirs)
         }
         else
         {
-            push(@sobjs, @o);
+            push(@sobj_list, @o);
         }
 
         # collect ned files of subdirectory for target neddoc.html.
@@ -276,6 +283,10 @@ if ($mpi eq "y")
     $c_mpi = '';
 }
 
+
+$sobjs = join( " \\\n            ", @sobj_list);
+
+
 print OUT "
 
 # Name of target to be created (-o option)
@@ -342,6 +353,31 @@ $objs = join(" ", @objs);
 print OUT "# Object files from this directory to link\n";
 print OUT "OBJS= $objs\n";
 print OUT "\n";
+
+# include external Makefile fragments at top, so that they can
+# override the default target if they want
+if (@fragments != ())
+{
+    foreach $frag (@fragments)
+    {
+        print OUT "# inserted from file '$frag':\n";
+        open(FRAG,$frag);
+        while(<FRAG>)  {print OUT;}
+        close FRAG;
+        print OUT "\n";
+    }
+}
+else
+{
+    if (-f "makefrag.vc")
+    {
+        print OUT "# inserted from file 'makefrag.vc':\n";
+        open(FRAG,"makefrag.vc");
+        while(<FRAG>)  {print OUT;}
+        close FRAG;
+        print OUT "\n";
+    }
+}
 
 if ($type eq 'exe')
 {
@@ -458,36 +494,12 @@ htmldocs:
 \t\@echo Code documentation generated. Now, point your web browser to ./htmldoc/index.html.
 ";
 
-# include external Makefile fragments
-if (@fragments != ())
-{
-    foreach $frag (@fragments)
-    {
-        print OUT "# inserted from file '$frag':\n";
-        open(FRAG,$frag);
-        while(<FRAG>)  {print OUT;}
-        close FRAG;
-        print OUT "\n";
-    }
-}
-else
-{
-    if (-f "makefrag.vc")
-    {
-        print OUT "# inserted from file 'makefrag.vc':\n";
-        open(FRAG,"makefrag.vc");
-        while(<FRAG>)  {print OUT;}
-        close FRAG;
-        print OUT "\n";
-    }
-}
-
 # rule for 'clean'
 print OUT "
 clean:
-\trm -f *.obj *_n.$ccext *_n.h *_m.$ccext *_m.h \$(TARGET)\$(EXE_SUFFIX)
-\trm -f *.vec *.sca
-\trm -rf neddoc.html htmldoc
+\t-del *.obj *_n.$ccext *_n.h *_m.$ccext *_m.h \$(TARGET)\$(EXE_SUFFIX) 2>NUL
+\t-del *.vec *.sca 2>NUL
+\t-del /S neddoc.html htmldoc 2>NUL
 ";
 
 # makedepend, re-makemake
@@ -502,7 +514,7 @@ $args1 = join(" ",@args1);
 
 print OUT "
 depend:
-\t\$(MAKEDEPEND) \$(INCLUDE_PATH) -- *.$ccext
+\t\$(MAKEDEPEND) \$(INCLUDE_PATH) -f $makefile -- *.$ccext
 
 re-makemake:
 \topp_nmakemake_vc -f $args1  #recreate Makefile
@@ -513,16 +525,8 @@ re-makemake:
 
 close OUT;
 
-print "$makefile created, adding dependencies...\n";
-
-$cmd = "opp_makedep $includes -f$makefile -- *.$ccext";
-$status = system ("$cmd");
-if ($status != 0) {
-    print "Error: command `$cmd' returned nonzero exit code ".($status/256);
-}
-else {
-    print "Done.\n";
-}
+print "$makefile created.\n";
+print "Please type `nmake -f $makefile depend' NOW to add dependencies!\n";
 
 
 

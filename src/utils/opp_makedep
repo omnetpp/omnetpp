@@ -144,14 +144,18 @@ while (@ARGV)
     {
         $UseStdout = 1;
     }
+    elsif ($arg eq "--makefile")
+    {
+        $Makefile = shift @ARGV;
+    }
+    elsif ($arg eq "-f")
+    {
+        $Makefile = shift @ARGV;
+    }
     elsif ($arg =~ /^-f/)
     {
         $arg =~ s/^-f//;
         $Makefile = $arg;
-    }
-    elsif ($arg eq "--makefile")
-    {
-        $Makefile = shift @ARGV;
     }
     elsif ($arg eq "--objsuffix")
     {
@@ -290,7 +294,7 @@ sub scan {
             }
             else
             {
-               print STDERR "opp_makedep: file not in include path: $included\n";
+               print STDERR "opp_makedep: file not in include path: $included (use -Y to ignore this error)\n";
                exit(1);
             }
          }
