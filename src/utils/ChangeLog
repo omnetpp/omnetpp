@@ -1,3 +1,8 @@
+2003-12-06  Andras Varga
+
+	* opp_nmakemake now will make some effort to find configuser.vc 
+	by itself when no -c option is given
+
 2003-12-05  Andras Varga
 
 	* opp_neddoc and parts polished and brought to work on Windows.

@@ -35,7 +35,7 @@ $xobjs = "";
 @fragments = ();
 $doxyconf = "doxy.cfg";
 $ccext = "";  # we'll try to autodetect it
-$cfgfile="../../configuser.vc";
+$cfgfile="";
 $linkwithobjects="n";
 
 $force="n";
@@ -66,9 +66,9 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
                           By default, this is decided by looking at existing
                           files in the directory.
     -o, --outputfile      Name of simulation executable/library
-    -r, --recurse         Call make recursively in all subdirectories. If you 
+    -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
-                          cies in the makefrag file. 
+                          cies in the makefrag file.
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several
                           directories. With this option, -u, -p and -l have
@@ -76,7 +76,7 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
     -w, --withobjects     Link with all object files found in -I directories,
                           or include them if library is created. Ignored when
                           -n option is present. Dependencies between directo-
-                          ries have be handled in high Makefiles (see -r 
+                          ries have be handled in high Makefiles (see -r
                           option).
     -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv
     -M, --mpi             Link executable with MPI
@@ -98,7 +98,7 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
 
 Default output is Makefile.vc, which you can invoke by typing
   nmake -f Makefile.vc
-With the -n and -s options, -u, -p and -l have no effect. makefrag.vc (and the 
+With the -n and -s options, -u, -p and -l have no effect. makefrag.vc (and the
 -i option) is useful when a source file (.ned, .msg or .cc) is to be generated
 from other files, or when you want to add extra dependencies that opp_makemake
 could not figure out.
@@ -200,8 +200,36 @@ if (-f $makefile && $force ne "y")
     exit(1);
 }
 
-if (! -f $cfgfile) {
-    print STDERR "opp_nmakemake: warning: config file $cfgfile not found -- try -c option\n";
+if ($cfgfile eq "")
+{
+    # try to find it
+    $progdir = $0;
+    $progdir =~ s|\\|/|g;
+    $progdir =~ s|/?[^/:]*$||g;
+    $progdir = "." if ($progdir eq "");
+    $progparentdir = $progdir;
+    $progparentdir =~ s|/?[^/:]*/?$||;
+    foreach $f ("configuser.vc", "../configuser.vc", "../../configuser.vc",
+                "../../../configuser.vc", "../../../../configuser.vc",
+                "../../../../../configuser.vc", "$progparentdir/configuser.vc",
+                "$progdir/configuser.vc")
+    {
+        if (-f $f) {
+             $cfgfile = $f;
+             last;
+        }
+    }
+    if ($cfgfile eq "") {
+        print STDERR "opp_nmakemake: warning: configuser.vc file not found -- try -c option or edit generated makefile\n";
+    }
+
+}
+else
+{
+    if (! -f $cfgfile) {
+        print STDERR "opp_nmakemake: error: file $cfgfile not found\n";
+        exit(1);
+    }
 }
 
 # try to determine if .cc or .cpp files are used
@@ -229,15 +257,11 @@ if ($ccext eq '')
 }
 else
 {
-    if (glob("*.$ccext")==()) {
-        if (@ccfiles!=()) {
-            print STDERR "opp_nmakemake: info: ignoring existing .cc files ".
-                         "because of -e $ccext option on command-line\n";
-        }
-        if (@cppfiles!=()) {
-            print STDERR "opp_nmakemake: info: ignoring existing .cpp files ".
-                         "because of -e $ccext option on command-line\n";
-        }
+    if ($ccext eq "cc" && @ccfiles==() && @cppfiles!=()) {
+        print STDERR "opp_nmakemake: warning: you specified -e cc but you have only .cpp files in this directory!\n";
+    }
+    if ($ccext eq "cpp" && @cppfiles==() && @ccfiles!=()) {
+        print STDERR "opp_nmakemake: warning: you specified -e cpp but you have only .cc files in this directory!\n";
     }
 }
 
@@ -251,7 +275,7 @@ foreach $i (glob("*"))
 }
 
 @extdirobjs = ();
-if ($linkwithobjects eq 'y') 
+if ($linkwithobjects eq 'y')
 {
     foreach $i (split(' ',$includes))
     {
@@ -433,12 +457,12 @@ else
 if ($recursive eq 'y')
 {
     $subdirs_target='subdirs';
-} 
+}
 else
 {
     $subdirs_target='';
 }
-    
+
 if ($type eq 'exe')
 {
     print OUT "\$(TARGET): \$(OBJS) \$(EXTRA_OBJS) $subdirs_target $makefile\n";
@@ -462,8 +486,8 @@ print OUT "\n";
 
 # rules for recursive build
 # simplified because @#$!? microsoft doesn't know about phony targets
-print OUT "subdirs: \$(SUBDIRS)"; 
-print OUT "\n\n"; 
+print OUT "subdirs: \$(SUBDIRS)";
+print OUT "\n\n";
 foreach $i (@subdirs)
 {
    print OUT "${i}_dir:\n";
