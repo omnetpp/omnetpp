@@ -1,5 +1,7 @@
 #! /bin/sh
+OUTDIR=html
 NEDDOC_XSL=`dirname $0`/neddoc.xsl
+NEDDOC_PL=`dirname $0`/neddocproc.pl
 TMPFILE=/tmp/opp_neddoc.tmp.$$
 
 cleanup()
@@ -9,7 +11,8 @@ cleanup()
 
 trap cleanup HUP INT QUIT TERM
 
-nedtool -x -e -y -m -o $TMPFILE $*
-xsltproc $NEDDOC_XSL $TMPFILE
+nedtool -x -e -t -y -m -o $TMPFILE $* || exit 1
+xsltproc  --stringparam outputdir $OUTDIR $NEDDOC_XSL $TMPFILE || exit 1
+perl $NEDDOC_PL $OUTDIR/*.html || exit 1
 cleanup
 
