@@ -351,7 +351,7 @@ void opp_error(const char *msgformat...)
     vsprintf(message,msgformat,va);
     va_end(va);
 
-    throw new cException(message);
+    throw new cException(eUSER,message);
 }
 
 void opp_warning(int errc...)
