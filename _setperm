@@ -1,0 +1,21 @@
+#! /bin/sh
+executables='
+	bitmaps/showpics
+	src/plove/plove
+	src/nedc/jar
+	src/utils/all2unix 
+	src/utils/dos2unix 
+	src/utils/makeall 
+	src/utils/makemake 
+	src/utils/jar_mkmk 
+	src/utils/makedist 
+	src/utils/splitvec 
+	src/utils/configur 
+	src/utils/convert 
+	src/utils/mklinks 
+	src/utils/prephtml
+'
+chmod -R g-w .
+chmod -x `find . -type f`
+chmod +x $executables
+
