@@ -1,4 +1,5 @@
 FIXME: cStdDev: info() should print mean(), stdDev() too!
+FIXME: setTagArg("t",0,"erwrw,rtt") --> "invalid position"!!! arg cannot contain comma?
 
 2004-04-16  Andras Varga
 
