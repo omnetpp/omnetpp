@@ -120,10 +120,13 @@ inspector.obj: inspector.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/cxmlelement.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
+  ../../include/crng.h \
   ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   tkutil.h
@@ -175,10 +178,13 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/cxmlelement.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
+  ../../include/crng.h \
   ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   tkutil.h
@@ -266,10 +272,13 @@ objinsp.obj: objinsp.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
+  ../../include/cconfig.h \
+  ../../include/cxmlelement.h \
   ../../include/cscheduler.h \
   ../../include/compat.h \
   ../../include/cparsimcomm.h \
   ../../include/ccommbuffer.h \
+  ../../include/crng.h \
   ../../include/cpolymorphic.h \
   ../../include/ccoroutine.h \
   inspector.h \

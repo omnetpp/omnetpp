@@ -1,3 +1,15 @@
+2004-10-27  Andras Varga
+
+        * checked in MersenneTwister.h v1.0 (15 May 2003) from Richard J.Wagner
+        rjwagner@writeme.com; code is under the BSD license.
+        http://www-personal.engin.umich.edu/~wagnerr/MersenneTwister.html
+
+        * added cRNG implementations clcg32.cc/h (wraps old OMNeT++ RNG), 
+        cmersennetwister.cc/h (wraps Mersenne Twister, MersenneTwister.h)
+ 
+	* ctype.cc: added call to ev.getRNGMappingFor(mod) in cModuleType's
+	create() method.
+
 2004-10-25  Andras Varga
 	
 	* all files: info() and fullPath() signature change (see 

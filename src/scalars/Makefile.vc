@@ -93,3 +93,16 @@ tklib.obj: tklib.cc \
   tkutil.h
 tkutil.obj: tkutil.cc \
   tkutil.h
+engine/filtering.obj: engine/filtering.cc \
+  engine/patmatch.h \
+  engine/filtering.h \
+  engine/scalarmanager.h \
+  engine/texception.h
+engine/patmatch.obj: engine/patmatch.cc \
+  engine/patmatch.h
+engine/scalarmanager.obj: engine/scalarmanager.cc \
+  engine/patmatch.h \
+  engine/scalarmanager.h \
+  engine/texception.h
+engine/texception.obj: engine/texception.cc \
+  engine/texception.h

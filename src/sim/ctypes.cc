@@ -402,6 +402,9 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     int id = simulation.registerModule(mod);
     mod->setId(id);
 
+    // set up RNG mapping
+    ev.getRNGMappingFor(mod);
+
     // add parameters and gates to the new module
     cModuleInterface *iface = moduleInterface();
     iface->addParametersGatesTo(mod);
