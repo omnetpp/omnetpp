@@ -56,6 +56,9 @@ void cWatch::printTo(char *buf)
          case 'c':  sprintf(buf, "char %s = '%c' (%d,0x%x)", name(),
                                  *(char *)ptr, *(char *)ptr, *(char *)ptr );
                     break;
+         case 'b':  sprintf(buf, "bool %s = %s", name(),
+                                 (*(bool *)ptr ? "true" : "false"));
+                    break;
          case 'i':  sprintf(buf, "int %s = %d (%uU, 0x%x)", name(),
                                  *(int *)ptr, *(int *)ptr, *(int *)ptr );
                     break;
@@ -79,6 +82,7 @@ void cWatch::printTo(char *buf)
                        sprintf(buf, "cObject *%s = %p (may or may not be a valid object pointer)",
                                name(), *(cObject **)ptr );
                     break;
+         default:   sprintf(buf, "unknown %s (type '%c')", name(), type);
       }
 }
 

@@ -128,7 +128,12 @@ void cMessage::info(char *buf)
 void cMessage::forEach( ForeachFunc do_fn )
 {
     if (do_fn(this,true))
-        if (parlistp) parlistp->forEach( do_fn );
+    {
+        if (parlistp)
+            parlistp->forEach( do_fn );
+        if (encapmsg)
+            encapmsg->forEach( do_fn );
+    }
     do_fn(this,false);
 }
 

@@ -1,3 +1,9 @@
+2003-01-14  Andras Varga
+
+	* cwatch.cc: added support for 'bool'
+
+	* cmessage.cc: foreach(): include encapsulated msg in traversal
+
 2002-12-21  Andras Varga
 
 	* cwatch.cc: for 'char *' and 'cObject *' types, cWatch::info() 
@@ -7,7 +13,7 @@
 
 	* always use <iostream> instead of <iostream.h>
 
-	* module id notation in info() strings changed from #nnn to id=nnn
+	* module id notation in info() strings changed from '#nnn' to 'id=nnn'
 
 2002-12-07  Andras Varga
 
