@@ -241,7 +241,7 @@ Sources: @ref tictoc2.ned, @ref txc2.cc, @ref omnetpp.ini
 In this step we add a counter to the module, and delete the message
 after ten exchanges.
 
-We add the the counter as a class member:
+We add the counter as a class member:
 
 @dontinclude txc3.cc
 @skip class Txc3
