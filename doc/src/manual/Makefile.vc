@@ -23,12 +23,10 @@ HTM_FILES = history.htm \
 .bbl.htm:
 	copy $< $(<:.bbl=.tex)
 	$(PERL) ltoh.pl $(<:.bbl=.tex)
-	move $@l $@
 	del $(<:.bbl=.tex)
 
 .tex.htm:
 	$(PERL) ltoh.pl $<
-	move $@l $@
 
 usman.html : $(HTM_FILES)
 	@echo. > usman.tmp
