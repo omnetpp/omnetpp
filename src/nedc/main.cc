@@ -390,6 +390,10 @@ int main(int argc, char **argv)
             }
             importresolver.addImportPath(argv[i]);
         }
+        else if (argv[i][0]=='-' && argv[i][1]=='I')
+        {
+            importresolver.addImportPath(argv[i]+2);
+        }
         else if (!strcmp(argv[i],"-X"))
         {
             i++;

@@ -1,3 +1,8 @@
+2004-02-24  Andras Varga
+
+	* main.cc: didn't understand -I without space [reported by Andreas 
+	Koepke]
+
 2004-02-09  Andras Varga
 
 	* main.cc: improved list file handling
