@@ -402,7 +402,7 @@ int do_secondpass (char *root_fname)
         name_type ned_fname, cc_fname;
 
 #ifdef JOHNNY
-        char path[256];
+        char path[1024];
         if (here)
           if (getcwd(path, sizeof(path)) != NULL)
           {
