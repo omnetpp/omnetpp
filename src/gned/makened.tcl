@@ -414,8 +414,12 @@ proc generate_conn {key indent islast} {
     set dest_index ""
     set src_gate_index ""
     set dest_gate_index ""
-    if {$ned($key,src-mod-index)!=""}       {set src_index "\[$ned($key,src-mod-index)\]"}
-    if {$ned($key,dest-mod-index)!=""}      {set dest_index "\[$ned($key,dest-mod-index)\]"}
+    if {$ned($key,src-mod-index)!=""}   {set src_index "\[$ned($key,src-mod-index)\]"}
+    if {$ned($key,dest-mod-index)!=""}  {set dest_index "\[$ned($key,dest-mod-index)\]"}
+
+    if {$ned($key,src-gate-plusplus)}   {set src_gate_index "++"}   ;# HACK!
+    if {$ned($key,dest-gate-plusplus)}  {set dest_gate_index "++"}  ;# HACK!
+
     if {$ned($key,src-gate-index)!=""}  {set src_gate_index "\[$ned($key,src-gate-index)\]"}
     if {$ned($key,dest-gate-index)!=""} {set dest_gate_index "\[$ned($key,dest-gate-index)\]"}
 

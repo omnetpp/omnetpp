@@ -50,15 +50,15 @@ gned-e.obj : gned.cc tclcode.cc
 	$(CXX) /Fo"gned-e.obj" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp gned.cc
 
 ebnf.tab.h: ebnf.y
-	$(YACC) -b ebnf -d ebnf.y
+	$(YACC:/=\) -b ebnf -d ebnf.y
 
 ebnf.tab.cc: ebnf.y
-	$(YACC) -b ebnf -d ebnf.y
+	$(YACC:/=\) -b ebnf -d ebnf.y
 	copy ebnf.tab.c ebnf.tab.cc
 	del ebnf.tab.c
 
 lex.yy.cc: ebnf.lex
-	$(LEX) ebnf.lex
+	$(LEX:/=\) ebnf.lex
 	copy lex.yy.c lex.yy.cc
 	del lex.yy.c
 

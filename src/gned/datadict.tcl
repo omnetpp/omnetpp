@@ -355,6 +355,8 @@ set ned_attr(conn,srcgate)         {out}
 set ned_attr(conn,destgate)        {in}
 set ned_attr(conn,src-gate-index)  {}
 set ned_attr(conn,dest-gate-index) {}
+set ned_attr(conn,src-gate-plusplus) {0}
+set ned_attr(conn,dest-gate-plusplus) {0}
 set ned_attr(conn,condition)       {}
 set ned_attr(conn,arrowdir-l2r)    {1}
 set ned_attr(conn,displaystring)   {}

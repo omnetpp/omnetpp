@@ -5,6 +5,11 @@ new Tkenv display string tags not supported yet
 internally, images must be named with "img:" prefix (otherwise exit.gif, 
 proc.gif etc will overwrite the exit, proc Tcl commands!)
 
+2004-02-22  Andras Varga
+
+	* ebnf.lex,ebnf.y,makened.tcl,datadict.tcl: support for new "gate++"
+	NED construct (temporary, until gned gets ported to nedxml)
+
 2004-02-11  Andras Varga
 
 	* fixed bug that caused Tk error when a display string contains

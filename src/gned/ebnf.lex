@@ -159,6 +159,8 @@ char textbuf[TEXTBUF_LEN];
                                 GNED(yylval = 0;)
                                 return (STRING); }
 
+"++"                    { count(); return PLUSPLUS; }
+
 ";"                     { count(); return (';'); }
 ","                     { count(); return (','); }
 ":"                     { count(); return (':'); }

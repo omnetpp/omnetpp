@@ -50,7 +50,7 @@
 %token NED_CONST NUMERICTYPE STRINGTYPE BOOLTYPE ANYTYPE
 
 %token PLUS MIN MUL DIV MOD EXP
-%token SIZEOF SUBMODINDEX
+%token SIZEOF SUBMODINDEX PLUSPLUS
 %token EQ NE GT GE LS LE
 %token AND OR XOR NOT
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
@@ -836,6 +836,10 @@ gate_L
         | NAME
                 {NEDC( do_gate_L ($1, NULL); )
                  GNED( np->set(CONN_KEY, "srcgate", @1); )}
+        | NAME PLUSPLUS
+                {NEDC( do_gate_L ($1, NULL); )
+                 GNED( np->set(CONN_KEY, "srcgate", @1);
+                       np->set(CONN_KEY, "src-gate-plusplus", "1"); )}
         ;
 
 parentgate_L
@@ -850,6 +854,12 @@ parentgate_L
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "srcgate", @1); )}
+        | NAME PLUSPLUS
+                {NEDC( do_mod_L (NULL, NULL); do_gate_L ($1, NULL); )
+                 GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
+                       np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
+                       np->set(CONN_KEY, "srcgate", @1);
+                       np->set(CONN_KEY, "src-gate-plusplus", "1");  )}
         ;
 
 gate_spec_R
@@ -875,6 +885,10 @@ gate_R
         | NAME
                 {NEDC( do_gate_R ($1, NULL); )
                  GNED( np->set(CONN_KEY, "destgate", @1); )}
+        | NAME PLUSPLUS
+                {NEDC( do_gate_R ($1, NULL); )
+                 GNED( np->set(CONN_KEY, "destgate", @1);
+                       np->set(CONN_KEY, "dest-gate-plusplus", "1"); )}
         ;
 
 parentgate_R
@@ -887,6 +901,11 @@ parentgate_R
                 {NEDC( do_mod_R (NULL, NULL); do_gate_R ($1, NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "destgate", @1); )}
+        | NAME PLUSPLUS
+                {NEDC( do_mod_R (NULL, NULL); do_gate_R ($1, NULL); )
+                 GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
+                       np->set(CONN_KEY, "destgate", @1);
+                       np->set(CONN_KEY, "dest-gate-plusplus", "1"); )}
         ;
 
 
