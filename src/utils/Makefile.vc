@@ -9,7 +9,7 @@
 all: seedtool.exe tcl2c.exe
 
 seedtool.exe : seedtool.cc
-	$(CXX) seedtool.cc 
+	$(CXX) /Tp seedtool.cc 
 
 tcl2c.exe: tcl2c.c
 	$(CC) tcl2c.c
