@@ -5,7 +5,7 @@ AC_INIT(src/sim/omnetpp.h)
 #
 # OMNeT++ version number
 #
-OMNETPP_VERSION="2.0b"
+OMNETPP_VERSION="2.0b2"
 
 #
 # Detect platform...
