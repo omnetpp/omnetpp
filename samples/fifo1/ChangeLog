@@ -15,3 +15,4 @@ Jan 18, 2000
 ------ omnetpp-2.0b5 released ------
 Jul 1, 2000
  - calls to obsolete cQueue functions upgraded to new functions (insert(),pop())
+------ omnetpp-2.0 released ------

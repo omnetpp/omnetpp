@@ -135,3 +135,4 @@ June 6, 2000
    with the coroutine library's setjmp/longjmp magic, so OMNeT++ doesn't use
    exceptions at all.)
 HEAP.CC TO BE TESTED!!!
+------ omnetpp-2.0 released ------

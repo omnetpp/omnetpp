@@ -273,3 +273,4 @@ Feb 13, 2001
  - fixed bug which caused the "Drawing options" dialog to go behind the main
    app window after closing the color selection dialog
  - fixed handling of comments in all "Properties" dialogs (messed up newlines)
+------ omnetpp-2.0 released ------

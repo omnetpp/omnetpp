@@ -16,10 +16,10 @@ OMNETPP_VERSION=omnetpp-2.0
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=e:/home/omnetpp
-TK_DIR=e:/tcl
-TK_VER=8.2
-PVM_DIR=d:/work/pvm3
+OMNETPP_ROOT=c:/omnetpp
+TK_DIR=c:/tcl
+TK_VER=8.3
+PVM_DIR=c:/pvm3
 
 #
 # other directories & files based on the base dirs
