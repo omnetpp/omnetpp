@@ -2,7 +2,7 @@ EXPERIMENTAL MESSAGE SUBCLASSING SUPPORT
 ========================================
 
 The message subclassing compiler is opp_msgc (bin/). It processes .msg files;
-see test.msg for an example file.
+see example.msg to get an idea about the possibilities.
 
 samples/dyna2 demonstrates the use of message subclassing:
 - dynapacket.msg defines DynaPacket and DynaDataPacket;
@@ -138,8 +138,8 @@ You're strongly advised to experiment with the source and always check out
 the generated code!!!
 
 For lack of time, syntax is not described here -- you should study the
-test.msg file instead!  What you find here however is very brief
-explanations of certain keywords or features you find in test.msg
+example.msg file instead!  What you find here however is very brief
+explanations of certain keywords or features you find in example.msg.
 
 1. cppinclude directive:
 Adds a C++ #include to the generated header file.
@@ -210,11 +210,11 @@ Example:
 -----------------------------
 //
 // An example to the experimental message subclassing support. This file has
-// to be processed by msgc.pl which generates C++ classes you can use from
-// your models as well as "reflection" classes that allow Tkenv to inspect
+// to be processed by opp_msgc which generates C++ classes you can use from
+// your models, as well as "reflection" classes that allow Tkenv to inspect
 // these data stuctures.
 //
-// Check msgsubclassing.txt for some more information.
+// Check doc/msgsubclassing.txt for more information.
 //
 // The syntax and features shown in this file are all experimental.
 // Feedback is welcome!
@@ -321,6 +321,5 @@ struct MyDerivedStruct extends MyStruct
         short prot enum(ProtocolTypes);
         MyStruct substruct;  // also as embedded data member
 }
-
 
 
