@@ -1,0 +1,80 @@
+%description:
+Test NED index operator in:
+ - submodule parameters
+ - module vector sizes
+
+%file: {}.ned
+
+module {Foo}
+endmodule
+
+simple {Simple}
+    parameters:
+        p0, p1, c0:const, c1:const;
+    gates:
+        in: in1[], in2[];
+endsimple
+
+module {Compound}
+    parameters:
+        a: numeric;
+    submodules:
+        sub : {Simple}[3];
+            parameters:
+                p0 = index,
+                p1 = a+index,
+                c0 = index,
+                c1 = a+index;
+            gatesizes:
+                in1[index],
+                in2[a+index];
+endmodule
+
+network {network}: {Compound}
+    parameters:
+        a=100;
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    for (int i=0; i<params(); i++)
+        ev << fullName() << "." << par(i).name() << "=" << (double)par(i) << endl;
+    ev << fullName() << ".in1[] size=" << gate("in1")->size() << endl;
+    ev << fullName() << ".in2[] size=" << gate("in2")->size() << endl;
+}
+
+%contains: stdout
+sub[0].p0=0
+sub[0].p1=100
+sub[0].c0=0
+sub[0].c1=100
+sub[0].in1[] size=0
+sub[0].in2[] size=100
+
+%contains: stdout
+sub[1].p0=1
+sub[1].p1=101
+sub[1].c0=1
+sub[1].c1=101
+sub[1].in1[] size=1
+sub[1].in2[] size=101
+
+%contains: stdout
+sub[2].p0=2
+sub[2].p1=102
+sub[2].c0=2
+sub[2].c1=102
+sub[2].in1[] size=2
+sub[2].in2[] size=102
