@@ -145,14 +145,14 @@ if (! -d $workingdir) {
 # produce name of test program
 if ($testprogram eq '') {
 
+    $workingdir =~ /([^\/\\]*)$/;
+    $tmp = $1;
     if ($isWindows) {
-      $exesuffix='.exe';
+      $testprogram = $tmp.'.exe';
     } else {
-      $exesuffix='';
+      $testprogram = './'.$tmp;
     }
 
-    $workingdir =~ /([^\/\\]*)$/;
-    $testprogram = $1.$exesuffix;
 }
 
 #
