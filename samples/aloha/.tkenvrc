@@ -28,7 +28,7 @@ config display-treeview	{1}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "alohaNet.server.collision multiplicity" "cOutVector" "2" "386x326+397+379"
+inspector "alohaNet.server.collision multiplicity" "cOutVector" "2" "386x326+396+380"
 inspector "alohaNet.server.collision length" "cOutVector" "2" "386x326+3+378"
-inspector "alohaNet" "ALOHAnet" "2" "401x340+88+116"
+inspector "alohaNet.server.channel utilization" "cOutVector" "2" "386x326+3+19"
 
