@@ -84,9 +84,9 @@ Text formatting works like in Javadoc or Doxygen -- you can break up the
 text into paragraphs and create bulleted/numbered lists without
 special commands, and use HTML for more fancy formatting.
 
-Paragraphs are separated by empty lines, like in Latex. Lines beginning with `\ttt{-}'
-will be turned into bulleted lists, and lines beginning with
-`\ttt{-\#}' into numbered lists.
+Paragraphs are separated by empty lines, like in LaTeX or Doxygen. 
+Lines beginning with `\ttt{-}' will be turned into bulleted lists, 
+and lines beginning with `\ttt{-\#}' into numbered lists.
 
 Example:
 
@@ -341,12 +341,42 @@ Example:
 //
 \end{verbatim}
 
+
+\subsection{Incorporating externally created pages}
+
+You may want to create pages outside the documentation tool 
+(e.g. using a HTML editor) and include them in the documentation. 
+This is possible, all you have to do is declare such pages with 
+the \ttt{@externalpage} directive in any of the NED files, and 
+they will be added to the page index. The pages can then be linked to
+from other pages using the HTML \ttt{<a href="...">...</a>} tag. 
+
+The \ttt{@externalpage} directive is similar in syntax
+\ttt{@page}:  
+
+\begin{verbatim}
+// @externalpage filename.html, Title of the Page
+\end{verbatim}
+
+The documentation tool does not check if the page exists 
+or not. It is your responsibility to copy them manually into 
+the directory of the generated documentation and then to make
+sure the hyperlinks work. 
+
+
+
 \section{Generating HTML}
 
 \ttt{opp\_neddoc} generates HTML documentation from NED and MSG files.
-It accepts the following options:
 
--a: all files
+Usage: opp_neddoc [-o <dir>] [-n] [-a] file1 file2 ...
+
+It accepts the following options:
+ -o <dir>      output directory, defaults to ./html
+ -n, --nofig   do not generate screenshots
+ -a, --all     process all *.ned and *.msg files recursively
+ -h, --help    this help text
+
 
 
 \subsection{Multiple projects}
