@@ -1,3 +1,7 @@
+2002-02-24  Andras Varga
+
+	* tkapp.cc: improvement on breakpoint handling.
+
 2002-02-06  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* objinsp.cc (update): fill in class info field with message's

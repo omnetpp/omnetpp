@@ -516,13 +516,23 @@ void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
 {
     updateSimtimeDisplay();
 
+    // pop up a dialog
     char buf[256];
-    sprintf(buf, "Breakpoint \"%s\" hit in module %s (#%d)!",
-                 label, mod->fullPath(), mod->id() );
+    sprintf(buf, (mod->usesActivity() ?
+                    "Breakpoint \"%s\" hit in module %s (#%d)." :
+                    "Breakpoint \"%s\" hit in module %s (#%d). "
+                    "Break will occur after completing current event, "
+                    "ie. after module's handleMessage() returns."),
+            label, mod->fullPath(), mod->id() );
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",buf,"} info ok",NULL));
+
+    // bkpt_hit will cause event loop to exit in runSimulation...()
     bkpt_hit = true;
 
-    mod->pause();
+    if (mod->usesActivity())
+    {
+        mod->pause();
+    }
 }
 
 TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat)
