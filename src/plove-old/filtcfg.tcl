@@ -16,8 +16,8 @@ proc filtCfgDel {lb} {
     set name [lindex [$lb get active] end]
     if {$name == ""} return
 
-    set ans [tk_messageBox -message "Remove filter \"$name\"?" -title "Confirm" -icon question -type okcancel -parent [winfo parent $lb]]
-    if {$ans == "cancel"} {return}
+    set ans [tk_messageBox -message "Remove filter \"$name\"?" -title "Confirm" -icon question -type yesno -parent [winfo parent $lb]]
+    if {$ans == "no"} {return}
 
     set pos [lsearch $filt(names) $name]
     if {$pos == -1} return
