@@ -229,6 +229,14 @@ if test "$XSLTPROC" = "not found"; then
    AC_MSG_WARN(You can get it from http://xmlsoft.org/XSLT/)
 fi
 
+# "convert" from ImageMagick
+AC_ARG_VAR(PS2GIF, Program to convert Postscript images to GIF)
+AC_CHECK_PROG(PS2GIF, convert, convert, not found)
+
+if test "$PS2GIF" = "not found"; then
+   AC_MSG_WARN(The convert program from ImageMagick is needed by opp_neddoc to convert Postscript images to GIF.)
+fi
+
 #----------------------
 # Checks for standard libraries.
 #----------------------
@@ -528,6 +536,7 @@ AC_SUBST(RANLIB)
 AC_SUBST(SHLIB_LD)
 AC_SUBST(WISH)
 AC_SUBST(MAKEDEPEND)
+AC_SUBST(PS2GIF)
 
 AC_SUBST(DOXYGEN)
 
