@@ -8,4 +8,4 @@
 #
 all: 
 	$(DOXYGEN:/=\) doxyfile
-	copy tictoc.gif ..\..\tictoc-tutorial
+	copy *.gif ..\..\tictoc-tutorial

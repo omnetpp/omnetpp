@@ -19,12 +19,8 @@ endsimple
 module Tictoc6
     submodules:
         tic: Txc6;
-            parameters:
-               delayTime = exponential(3.0);  // mean=3.0
             display: "i=proc1,cyan";
         toc: Txc6;
-            // for `toc', we leave the delayTime parameter unassigned here and put
-            // the value into omnetpp.ini instead, to make it easier to change.
             display: "i=proc1,gold";
     connections:
         tic.out --> delay 100ms --> toc.in;

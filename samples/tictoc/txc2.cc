@@ -13,7 +13,7 @@
 
 
 /**
- * In this class we add some debug messages to Txc1. When you run the 
+ * In this class we add some debug messages to Txc1. When you run the
  * simulation in the OMNeT++ GUI Tkenv, the output will appear in
  * the main text window, and you can also open separate output windows
  * for `tic' and `toc'.
@@ -34,15 +34,15 @@ void Txc2::initialize()
     {
         // The `ev' object works like `cout' in C++.
         ev << "Sending initial message\n";
-        cMessage *msg = new cMessage("tic");
+        cMessage *msg = new cMessage("tictocMsg");
         send(msg, "out");
     }
 }
 
 void Txc2::handleMessage(cMessage *msg)
 {
-    // msg->name() is name of the msg object, here it will be "tic".
-    ev << "Received message `" << msg->name() << "', send it out again\n";
+    // msg->name() is name of the msg object, here it will be "tictocMsg".
+    ev << "Received message `" << msg->name() << "', sending it out again\n";
     send(msg, "out");
 }
 

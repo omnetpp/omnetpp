@@ -19,7 +19,6 @@ module Tictoc5
         tic: Txc5;
             display: "i=proc1,cyan";
         toc: Txc5;
-            parameters:
             display: "i=proc1,gold";
     connections:
         tic.out --> delay 100ms --> toc.in;

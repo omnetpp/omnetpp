@@ -11,7 +11,7 @@ OMNeT++ installation, so you can try out immediately how
 the examples work. However, you'll find the tutorial much more useful
 if you actually carry out at least the first steps described here.
 
-@attention We assume here that you have a working OMNeT++ installation.
+@note We assume here that you have a working OMNeT++ installation.
 We also assume that you have a good C++ knowledge, and you are in general
 familiar with C/C++ development (editing source files, compiling, debugging etc.)
 on your operating system. (The latter two are out of our scope here --
@@ -159,20 +159,28 @@ and hopefully you should now get the OMNeT++ simulation window.
 8. Press the Run button on the toolbar to start the simulation. What you should
 see is that tic and toc are exchanging messages with each other.
 
-<img src="tictoc.gif">
+<img src="step1.gif">
 
 The main window toolbar displays the simulated time. This is virtual time, it
 has nothing to do with the actual (or wall-clock) time that the program takes to
 execute. Actually, how many seconds you can simulate in one real-world second
 depends highly on the speed of your hardware and even more on the nature and
-complexity of the simulation model itself. (The toolbar contains
-a simsec/sec gauge which displays you this value.)
+complexity of the simulation model itself.
 
 Note that it takes zero simulation time for a node to process the message.
 The only thing that makes the simulation time pass in this model is
 the propagation delay on the connections.
 
-9. You can exit the simulation program by clicking its Close icon or choosing File|Exit.
+9. You can play with slowing down the animation or making it faster with
+the slider at the top of the graphics window. You can stop the simulation
+by hitting F8 (equivalent to the STOP button on the toolbar), single-step
+through it (F4), run it with (F5) or without (F6) animation.
+F7 (express mode) completely turns off tracing features for maximum speed.
+Note the event/sec and simsec/sec gauges on the status bar of the
+main window.
+
+10. You can exit the simulation program by clicking its Close icon or
+choosing File|Exit.
 
 NEXT: @ref part2
 */
@@ -195,6 +203,10 @@ NED file. The <tt>i=</tt> tag in the display string specifies the icon.
 @skip submodules
 @until connections
 
+You can see the result here:
+
+<img src="step2a.gif">
+
 We also modify the C++ file to add some debug messages to Txc1 by
 writing to the OMNeT++ <tt>ev</tt> object like this:
 
@@ -208,30 +220,46 @@ and
 When you run the simulation in the OMNeT++ GUI Tkenv, the following output
 will appear in the main text window:
 
-\code
-* Sending initial message
-* ** Event #0.  T=0.1000000000 (100ms).  Module #3 `tictoc2.toc'
-* Received message `tic', send it out again
-* ** Event #1.  T=0.2000000000 (200ms).  Module #2 `tictoc2.tic'
-* Received message `tic', send it out again
-* ** Event #2.  T=0.3000000000 (300ms).  Module #3 `tictoc2.toc'
-* Received message `tic', send it out again
-\endcode
+<img src="step2b.gif">
 
-You can also open separate output windows for tic and toc. This feature
-will be useful when you have a large model and you experience the
-"fast scrolling logs syndrome".
+You can also open separate output windows for tic and toc by right-clicking
+on their icons and choosing Module output from the menu. This feature
+will be useful when you have a large model ("fast scrolling logs syndrome")
+and you're interested only in the log messages of specific module.
+
+<img src="step2c.gif">
 
 Sources: @ref tictoc2.ned, @ref txc2.cc, @ref omnetpp.ini
 
 
 @section s3 Step 3: Adding state variables
 
-In this step we add a counter (<tt>int counter</tt>) to the class,
-and delete the message after ten exchanges. We set the variable to
-10 in initialize(), and decrement it with every message arrival,
-in handleMessage(). After it reaches zero, the simulation will
-run out of events and terminate.
+In this step we add a counter to the module, and delete the message
+after ten exchanges.
+
+We add the the counter as a class member:
+
+@dontinclude txc3.cc
+@skip class Txc3
+@until public:
+
+We set the variable to 10 in initialize() and decrement in handleMessage(),
+that is, on every message arrival . After it reaches zero, the simulation
+will run out of events and terminate.
+
+Note the
+
+@dontinclude txc3.cc
+@skipline WATCH(c
+
+line in the source: this makes it possible to see the counter value
+in Tkenv. Double-click on tic's icon, then choose the Contents page
+from the inspector window that pops up.
+
+<img src="step3.gif">
+
+As you continue running the simulation, you can follow as the counter
+keeps decrementing until it reaches zero.
 
 Sources: @ref tictoc3.ned, @ref txc3.cc, @ref omnetpp.ini
 

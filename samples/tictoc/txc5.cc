@@ -53,7 +53,7 @@ void Txc5::initialize()
         // (a "self-message") -- we'll do the first sending when it arrives
         // back to us, at t=5.0s simulated time.
         ev << "Scheduling first send to t=5.0s\n";
-        tictocMsg = new cMessage("tic");
+        tictocMsg = new cMessage("tictocMsg");
         scheduleAt(5.0, event);
     }
 }

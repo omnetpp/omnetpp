@@ -39,9 +39,9 @@ void Txc1::initialize()
     // Am I Tic or Toc?
     if (strcmp("tic", name()) == 0)
     {
-        // create and send first message on gate "out". "tic" is an arbitrary
-        // message name.
-        cMessage *msg = new cMessage("tic");
+        // create and send first message on gate "out". "tictocMsg" is an
+        // arbitrary string which will be the name of the message object.
+        cMessage *msg = new cMessage("tictocMsg");
         send(msg, "out");
     }
 }

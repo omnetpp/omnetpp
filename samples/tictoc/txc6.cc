@@ -41,7 +41,7 @@ void Txc6::initialize()
     {
         ev << "Scheduling first send to t=5.0s\n";
         scheduleAt(5.0, event);
-        tictocMsg = new cMessage("tic");
+        tictocMsg = new cMessage("tictocMsg");
     }
 }
 

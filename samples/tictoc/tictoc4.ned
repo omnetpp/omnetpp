@@ -17,7 +17,7 @@ simple Txc4
 endsimple
 
 //
-// Adding parameters.
+// Adding module parameters.
 //
 module Tictoc4
     submodules:
@@ -26,9 +26,7 @@ module Tictoc4
                 limit = 8;  // tic's limit is 8
             display: "i=proc1,cyan";
         toc: Txc4;
-            parameters:
-                limit = 6;  // toc's limit is 6 (so toc'll stop the simulation
-                            // before tic would)
+            // note that we leave toc's limit unbound here
             display: "i=proc1,gold";
     connections:
         tic.out --> delay 100ms --> toc.in;

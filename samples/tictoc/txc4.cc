@@ -39,7 +39,7 @@ void Txc4::initialize()
     if (strcmp("tic", name()) == 0)
     {
         ev << "Sending initial message\n";
-        cMessage *msg = new cMessage("tic");
+        cMessage *msg = new cMessage("tictocMsg");
         send(msg, "out");
     }
 }
