@@ -34,7 +34,6 @@ Token
 T: Token Ring network
 D: ring topology with the number of nodes as parameter
    using cQueue 
-   wait() and the putaside-queue 
    output vectors 
 
 
@@ -44,7 +43,7 @@ T: single-server queue
 D: simple module inheritance
    decomposing activity() into several functions 
    using simple statistics and output vectors
-   printing stack usage info to help optimize memory consumption
+   printing stack usage info
    using finish() 
 
 
@@ -80,7 +79,7 @@ D: dynamic module creation
    using WATCH() 
    star topology with the number of modules as parameters 
 
-Topology
-========
+Topo
+====
 T: NED
 D: demonstrates topologies
