@@ -131,3 +131,6 @@ July 11, 1999
 July 17, 1999
   - fixed the bug with scrolled canvas
   - resizeBar implemented in widgets.tcl -- should be updated in Tkenv and Plove too!
+Aug 2, 1999
+  - OMNETPP_BITMAP_PATH turned into real path (a list of directories). The
+    separator char is ";" on Windows, and ":" or ";" on Unix.
