@@ -285,6 +285,7 @@ void TOmnetTkApp::rebuildSim()
 void TOmnetTkApp::doOneStep()
 {
     clearNextModuleDisplay();
+    clearPerformanceDisplay();
     updateSimtimeDisplay();
 
     bkpt_hit = false;
@@ -326,11 +327,13 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
     animation_ok = !fast;
 
     clearNextModuleDisplay();
+    clearPerformanceDisplay();
     updateSimtimeDisplay();
     Tcl_Eval(interp, "update");
 
     is_running = true;
     simulation.startClock();
+    Speedometer speedometer;
 
     while(1)
     {
@@ -342,6 +345,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
         if (opt_print_banners)  printEventBanner(mod);
         simulation.doOneEvent( mod );
         simulation.incEventNumber();
+        speedometer.addEvent(simulation.simTime());
 
         // exit conditions:
         if (stopinmod && mod==stopinmod) break;
@@ -355,6 +359,8 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
             if (simulation.eventNumber()%opt_updatefreq_fast==0)
             {
                 updateSimtimeDisplay();
+                speedometer.beginNewInterval();
+                updatePerformanceDisplay(speedometer);
                 updateInspectors();
                 Tcl_Eval(interp, "update");
             }
@@ -364,6 +370,8 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
             if (!fast || simulation.eventNumber()%opt_updatefreq_fast==0)
             {
                 updateSimtimeDisplay();
+                speedometer.beginNewInterval();
+                updatePerformanceDisplay(speedometer);
                 if (!stopinmod) updateInspectors();
                 Tcl_Eval(interp, "update");
             }
@@ -382,13 +390,14 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 
     if (!simulation.ok())
     {
-       if (simulation.normalTermination())
-          callFinish();  // includes endRun()
-       else
-          simulation.endRun();
+        if (simulation.normalTermination())
+            callFinish();  // includes endRun()
+        else
+            simulation.endRun();
     }
 
     updateNextModuleDisplay();
+    clearPerformanceDisplay();
     if (fast || stopinmod) updateSimtimeDisplay();
     if (fast || stopinmod) updateInspectors();
 }
@@ -403,6 +412,7 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
     animation_ok = false;
 
     clearNextModuleDisplay();
+    clearPerformanceDisplay();
     updateSimtimeDisplay();
     Tcl_Eval(interp, "update");
 
@@ -410,19 +420,19 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
     simulation.startClock();
     Speedometer speedometer;
     do {
-         cSimpleModule *mod = simulation.selectNextModule();
-         if (mod==NULL) break;
-         simulation.doOneEvent( mod );
-         simulation.incEventNumber();
-         speedometer.addEvent(simulation.simTime());
+        cSimpleModule *mod = simulation.selectNextModule();
+        if (mod==NULL) break;
+        simulation.doOneEvent( mod );
+        simulation.incEventNumber();
+        speedometer.addEvent(simulation.simTime());
 
-         if (simulation.eventNumber()%opt_updatefreq_express==0)
-         {
+        if (simulation.eventNumber()%opt_updatefreq_express==0)
+        {
             updateSimtimeDisplay();
             speedometer.beginNewInterval();
             updatePerformanceDisplay(speedometer);
             Tcl_Eval(interp, "update");
-         }
+        }
 
     } while(  simulation.ok() && !bkpt_hit && !stop_simulation &&
               (until_time<=0 || simulation.simTime()<until_time) &&
@@ -434,14 +444,15 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
 
     if (!simulation.ok())
     {
-       if (simulation.normalTermination())
-          callFinish();  // includes endRun()
-       else
-          simulation.endRun();
+        if (simulation.normalTermination())
+            callFinish();  // includes endRun()
+        else
+            simulation.endRun();
     }
 
     updateSimtimeDisplay();
     updateNextModuleDisplay();
+    clearPerformanceDisplay();
     updateInspectors();
 }
 
