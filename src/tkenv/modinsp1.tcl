@@ -157,6 +157,7 @@ proc _create_modulewindow {name iscompound} {
         bind $w <Control-F5> "one_step_in_module $w"
 
         set help_tips($w.toolbar.obj)    {Inspect as object}
+        set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.parent) {Inspect parent module}
         set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F5)}
     } else {

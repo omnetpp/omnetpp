@@ -26,9 +26,8 @@ proc create_messagewindow {name} {
     if {[winfo exists $w]} {
         wm deiconify $w; return
     }
-    ###################
-    # CREATING WIDGETS
-    ###################
+
+    # creating widgets
     toplevel $w -class Toplevel
     wm focusmodel $w passive
     wm maxsize $w 1009 738
@@ -45,15 +44,17 @@ proc create_messagewindow {name} {
     scrollbar $w.main.sb -command "$w.main.text yview"
     $w.main.text tag configure event -foreground blue
 
-    ###################
-    # SETTING GEOMETRY
-    ###################
+    # setting geometry
     pack $w.statusbar  -anchor center -expand 0 -fill x -side top
     pack $w.statusbar.frommodule -anchor n -expand 1 -fill x -side left
     pack $w.statusbar.tomodule -anchor n -expand 1 -fill x -side left
     pack $w.main -anchor center -expand 1 -fill both -side top
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
     pack $w.main.text -anchor center -expand 1 -fill both -side left
+
+    # keyboard bindings
+    bind_runcommands $w
+
 }
 
 #===================================================================

@@ -5,7 +5,6 @@ General:
  - display strings to configure animated message objects
  - arrow drawing not always consistent with GNED (?)
  - outvect inspector options dialog, new checkbox: [ ] automatic settings
- - reload omnetpp.ini between runs
  - 1 messagebox is enough when simulation stops
  - inspector list should save window positions
  - automatic loading of inspector lists (use "placeholder" windows for
