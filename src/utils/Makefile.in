@@ -24,7 +24,8 @@ all: seedtool tcl2c
 	cp neddoc.xsl $(OMNETPP_BIN_DIR)
 	cp neddocproc.pl $(OMNETPP_BIN_DIR)
 	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
-	if test "$(WISH)" != "wish"; then echo $(WISH) > $(HOME)/.wishname; fi
+	# next line is for samples/rundemo
+	echo $(WISH) >$(HOME)/.wishname
 
 seedtool : seedtool.cc
 	$(CXX) seedtool.cc -o seedtool
