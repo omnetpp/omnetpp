@@ -112,6 +112,7 @@ void cIniFile::_readFile(char *fname, char *sect)
 
             _readFile( s, sect );    // process included inifile
         }
+
         // process section heading '[new section]'
         else if (*s=='[')
         {
@@ -131,6 +132,7 @@ void cIniFile::_readFile(char *fname, char *sect)
            else
                sect = section[i];
         }
+
         // process 'key = value' line
         else
         {
@@ -141,13 +143,13 @@ void cIniFile::_readFile(char *fname, char *sect)
            // find '=' sign
            char *e, *e1;
            e = strchr(s,'=');
-           if (!e) SYNTAX_ERROR("no '=' sign");
+           if (!e) SYNTAX_ERROR("line must have the form key=value");
 
            // chop trailing spaces from key
            char *s2 = e-1;
            while (s2>=s && (*s2==' ' || *s2=='\t')) s2--;
            *(s2+1) = 0;
-           if (s2<s) SYNTAX_ERROR("line begins with '='");
+           if (s2<s) SYNTAX_ERROR("line must have the form key=value");
 
            // skip '=' and spaces after it
            e++;
