@@ -21,6 +21,9 @@
 #include "defs.h"
 #include "cpolymorphic.h"
 
+class cConfiguration;
+
+
 /**
  * Interface for random number generator classes
  */

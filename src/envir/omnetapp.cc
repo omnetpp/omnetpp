@@ -454,6 +454,13 @@ void TOmnetApp::readPerRunOptions(int run_nr)
     opt_simtimelimit = cfg->getAsTime2( section, "General", "sim-time-limit", 0.0 );
     opt_cputimelimit = (long)cfg->getAsTime2( section, "General", "cpu-time-limit", 0.0 );
     opt_netifcheckfreq = cfg->getAsInt2( section, "General", "netif-check-freq", 1);
+}
+
+void TOmnetApp::makeOptionsEffective()
+{
+int run_nr=1; // FIXME get run_nr from somewhere!!!!!!!!!!!!!!!!!!!
+
+    cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
 
     // set up RNGs
     delete [] rngs;
@@ -464,13 +471,8 @@ void TOmnetApp::readPerRunOptions(int run_nr)
         cRNG *rng;
         CREATE_BY_CLASSNAME(rng, opt_rng_class.c_str(), cRNG, "random number generator");
         rngs[i] = rng;
-        rngs[i]->initialize(run_nr, i, num_rngs, cfg);
+        rngs[i]->initialize(run_nr, i, num_rngs, getConfig());
     }
-}
-
-void TOmnetApp::makeOptionsEffective()
-{
-    cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
 }
 
 void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)

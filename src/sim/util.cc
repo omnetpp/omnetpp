@@ -472,6 +472,8 @@ void cContextSwitcher::methodCall(const char *fmt,...)
 
 #include "cwatch.h"
 #include "cpacket.h"
+#include "clcg32.h"
+#include "cmersennetwister.h"
 //void _dummy_for_env();
 void _sim_dummy_func()
 {
@@ -483,6 +485,10 @@ void _sim_dummy_func()
       exponential(1.0);
       cSequentialScheduler sch;
       sch.setSimulation(NULL);
+      cLCG32 lcg;
+      lcg.intRand();
+      cMersenneTwister mt;
+      mt.intRand();
       //_dummy_for_env();
 }
 

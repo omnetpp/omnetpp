@@ -323,6 +323,16 @@ cksplit.obj: cksplit.cc \
   ../../include/cdensity.h \
   ../../include/cstat.h \
   ../../include/opp_string.h
+clcg32.obj: clcg32.cc \
+  clcg32.h \
+  ../../include/util.h \
+  ../../include/cenvir.h \
+  ../../include/cexception.h \
+  ../../include/defs.h \
+  ../../include/crng.h \
+  ../../include/cconfig.h \
+  ../../include/cpolymorphic.h \
+  ../../include/opp_string.h
 cllist.obj: cllist.cc \
   ../../include/macros.h \
   ../../include/cllist.h \
@@ -338,6 +348,17 @@ cllist.obj: cllist.cc \
   ../../include/cpolymorphic.h \
   ../../include/globals.h \
   ../../include/opp_string.h
+cmersennetwister.obj: cmersennetwister.cc \
+  ../../include/cenvir.h \
+  ../../include/util.h \
+  ../../include/cexception.h \
+  cmersennetwister.h \
+  ../../include/defs.h \
+  ../../include/opp_string.h \
+  ../../include/crng.h \
+  ../../include/cconfig.h \
+  mersennetwister.h \
+  ../../include/cpolymorphic.h
 cmessage.obj: cmessage.cc \
   ../../include/macros.h \
   ../../include/cmodule.h \
@@ -481,6 +502,7 @@ cpar.obj: cpar.cc \
   ../../include/errmsg.h \
   ../../include/cmodule.h \
   ../../include/csimul.h \
+  ../../include/cxmlelement.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/ccommbuffer.h \
@@ -543,11 +565,11 @@ cscheduler.obj: cscheduler.cc \
   ../../include/macros.h \
   ../../include/cpolymorphic.h \
   ../../include/defs.h \
+  ../../include/util.h \
   ../../include/cobject.h \
   ../../include/carray.h \
   ../../include/cpar.h \
   ../../include/cenvir.h \
-  ../../include/util.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
@@ -614,6 +636,7 @@ cstat.obj: cstat.cc \
   ../../include/distrib.h \
   ../../include/macros.h \
   ../../include/cdetect.h \
+  ../../include/csimplemodule.h \
   ../../include/cexception.h \
   ../../include/cenvir.h \
   ../../include/errmsg.h \
@@ -626,6 +649,14 @@ cstat.obj: cstat.cc \
   ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/globals.h \
+  ../../include/cmodule.h \
+  ../../include/ccoroutine.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h \
   ../../include/opp_string.h
 cstruct.obj: cstruct.cc \
   ../../include/cstruct.h \
@@ -724,6 +755,13 @@ cwatch.obj: cwatch.cc \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
   ../../include/opp_string.h
+cxmlelement.obj: cxmlelement.cc \
+  ../../include/cxmlelement.h \
+  ../../include/cexception.h \
+  ../../include/cenvir.h \
+  ../../include/defs.h \
+  ../../include/opp_string.h \
+  ../../include/util.h
 distrib.obj: distrib.cc \
   ../../include/distrib.h \
   ../../include/macros.h \
@@ -785,6 +823,8 @@ util.obj: util.cc \
   ../../include/cexception.h \
   ../../include/cwatch.h \
   ../../include/cpacket.h \
+  clcg32.h \
+  cmersennetwister.h \
   ../../include/defs.h \
   ../../include/random.h \
   ../../include/cpolymorphic.h \
@@ -803,7 +843,10 @@ util.obj: util.cc \
   ../../include/ctypes.h \
   ../../include/opp_string.h \
   ../../include/cmessage.h \
-  ../../include/cpar.h
+  ../../include/cpar.h \
+  ../../include/crng.h \
+  ../../include/cconfig.h \
+  mersennetwister.h
 netbuilder/cdynamicchannel.obj: netbuilder/cdynamicchannel.cc \
   netbuilder/cdynamicchannel.h \
   netbuilder/cnednetworkbuilder.h \
@@ -973,8 +1016,8 @@ parsim/ccommbufferbase.obj: parsim/ccommbufferbase.cc \
   ../../include/ccommbuffer.h \
   ../../include/cpolymorphic.h \
   ../../include/defs.h \
-  ../../include/opp_string.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/opp_string.h
 parsim/cfilecomm.obj: parsim/cfilecomm.cc \
   ../../include/cexception.h \
   parsim/cfilecomm.h \
@@ -1055,12 +1098,12 @@ parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   ../../include/cscheduler.h \
   ../../include/cpolymorphic.h \
   ../../include/defs.h \
+  ../../include/util.h \
   ../../include/cobject.h \
   ../../include/carray.h \
   ../../include/cpar.h \
   ../../include/csimul.h \
   ../../include/cenvir.h \
-  ../../include/util.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
@@ -1132,13 +1175,13 @@ parsim/cmpicomm.obj: parsim/cmpicomm.cc \
   ../../include/cparsimcomm.h \
   ../../include/cpolymorphic.h \
   ../../include/defs.h \
+  ../../include/util.h \
   parsim/ccommbufferbase.h \
   ../../include/ccommbuffer.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/cobject.h \
-  ../../include/util.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/globals.h
@@ -1149,12 +1192,12 @@ parsim/cmpicommbuffer.obj: parsim/cmpicommbuffer.cc \
   ../../include/ccommbuffer.h \
   ../../include/cpolymorphic.h \
   ../../include/defs.h \
+  ../../include/util.h \
   ../../include/onstartup.h \
   ../../include/carray.h \
   ../../include/ctypes.h \
   ../../include/cobject.h \
   ../../include/cenvir.h \
-  ../../include/util.h \
   ../../include/cexception.h \
   ../../include/opp_string.h \
   ../../include/globals.h
@@ -1271,8 +1314,8 @@ parsim/cparsimcomm.obj: parsim/cparsimcomm.cc \
   ../../include/cexception.h \
   ../../include/cpolymorphic.h \
   ../../include/defs.h \
-  ../../include/opp_string.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/opp_string.h
 parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/cmessage.h \
   ../../include/errmsg.h \
