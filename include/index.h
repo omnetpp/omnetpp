@@ -69,7 +69,6 @@
  * @defgroup SimSupport  Simulation supporting classes
  *
  * Classes that make it easier to write simulation models:
- *    - cPacket is a subclass of cMessage, it is used to represent packets, frames, etc. transmitted in a communication network
  *    - cTopology supports routing in telecommunication or multiprocessor networks.
  *    - cFSM is used to build Final State Machines
  *    - cWatch makes variables visible (inspectable) in Tkenv

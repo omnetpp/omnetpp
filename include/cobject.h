@@ -120,26 +120,18 @@ typedef bool (*ForeachFunc)(cObject *,bool);
  * Not only obviously container classes act as containers: e.g. cChannel also
  * owns the channel parameters (cPar objects).
  *
+ * Some more details, in case you're writing a class that acts as a container:
+ *
+ *    - you should use use the functions take(obj), drop(obj) on insert/remove
+ *    - you should delete theowned objects in the destructor
+ *    - the copy constructor of a container should dup() and owned objects
+ *      and take() the copies
+ *    - if you want to have a class which contains cObject-subclasses as
+ *      data members: your class (the enclosing object) should own them --
+ *      call take() from the constructor and drop() from the destructor.
+ *
  * @ingroup SimCore
  */
-
-/* comment to integrate:
-   What cObject does:
-      - owner of a new object can be explicitly given, if omitted,
-        defaultOwner() will will be used.
-      - an object created thru the copy constructor:
-          - will have the same owner as original;
-          - does not dup() or take objects owned by the original.
-      - destructor calls delete for owned objects (see later)
-   Objects contained as data members:
-      the enclosing object should own them.
-   What container objects derived from cObject should do:
-      - they use the functions: take(obj), drop(obj), delete obj
-      - when an object is removed, they should call drop(obj) for it if
-        they were the owner.
-      - copy constructor copies should dup() and take ownership of objects
-        that were owned by the original.
-*/
 class SIM_API cObject : public cPolymorphic
 {
   private:
