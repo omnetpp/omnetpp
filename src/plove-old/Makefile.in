@@ -5,6 +5,7 @@ CXX=@CXX@
 CC=@CC@
 YACC=@YACC@
 LEX=@LEX@
+WISH=@WISH@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
@@ -16,6 +17,8 @@ TK_CFLAGS=@TK_CFLAGS@
 TK_LIBS=@TK_LIBS@
 SYS_LIBS=@SYS_LIBS@
 
+OMNETPP_PLOVE_DIR=@OMNETPP_PLOVE_DIR@
+
 # The following is either 'plove-exe' (embedded Tcl code) or 'plove-sh' (no embedding)
 PLOVE_VARIANT=@PLOVE_VARIANT@
 
@@ -26,12 +29,19 @@ COPTS=$(CFLAGS) $(TK_CFLAGS)
 OBJS=plove.o
 
 all: plove
-	../utils/install-prog plove $(OMNETPP_BIN_DIR)
+	rm -f $(OMNETPP_BIN_DIR)/plove $(OMNETPP_BIN_DIR)/plove.exe $(OMNETPP_BIN_DIR)/plove.bat
+	- cp plove $(OMNETPP_BIN_DIR)
+	- cp plove.bat $(OMNETPP_BIN_DIR)
+	- cp plove.exe $(OMNETPP_BIN_DIR)
 
 plove: $(PLOVE_VARIANT)
 
-plove-sh: plove.sh
-	cp plove.sh plove
+plove-sh:
+	echo "@$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh \$*" > plove
+	chmod +x plove
+
+plove-bat:
+	echo "@$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh %%1 %%2 %%3 %%4 %%5 %%6 %%7 %%8 %%9" > plove.bat
 
 plove-exe: $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o plove

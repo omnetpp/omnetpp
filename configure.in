@@ -38,6 +38,7 @@ OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 
 OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
 OMNETPP_GNED_DIR="$OMNETPP_SRC_DIR/gned"
+OMNETPP_PLOVE_DIR="$OMNETPP_SRC_DIR/plove"
 
 #
 # Default values for other variables that come from configure.user.
@@ -123,6 +124,11 @@ else
     EXE_SUFFIX=""
 fi
 
+if test "$cygwin" = yes; then
+    WISH="cygwish80.exe"
+else
+    WISH=`which wish`
+fi
 
 #----------------------
 # Read in user settings (and allow override the above settings)
@@ -311,6 +317,8 @@ fi
 
 if test "$PLOVE_EMBED_TCL" = yes; then
    PLOVE_VARIANT=plove-exe
+elif test "$cygwin" = yes; then
+   PLOVE_VARIANT=plove-bat
 else
    PLOVE_VARIANT=plove-sh
 fi
@@ -340,6 +348,7 @@ AC_SUBST(AS)
 AC_SUBST(AR)
 AC_SUBST(RANLIB)
 AC_SUBST(SHLIB_LD)
+AC_SUBST(WISH)
 
 AC_SUBST(A_LIB_SUFFIX)
 AC_SUBST(SO_LIB_SUFFIX)
@@ -363,6 +372,7 @@ AC_SUBST(PLOVE_VARIANT)
 
 AC_SUBST(OMNETPP_TKENV_DIR)
 AC_SUBST(OMNETPP_GNED_DIR)
+AC_SUBST(OMNETPP_PLOVE_DIR)
 
 #----------------------
 # Generate files.
