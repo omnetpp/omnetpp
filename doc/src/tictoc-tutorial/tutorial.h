@@ -6,24 +6,48 @@ This short tutorial to OMNeT++ guides you through an example
 of modeling and simulation, showing you along the way some
 of the commonly used OMNeT++ features.
 
-Here are the steps you take to implement your first simulation:
+The tutorial is based on the Tictoc example simulation, which you
+can find in the <tt>samples/tictoc</tt> directory of your
+OMNeT++ installation, so you can try out immediately how
+the examples work. However, you'll find the tutorial much more useful
+if you actually carry out at least the first steps described here.
+
+This document and the TicToc model are an expanded version of
+the original TicToc tutorial from Ahmet Sekercioglu (Monash University).
+
+@section firststeps Creating your first simulation model
+
+The purpose of this tutorial is to introduce you to the simulation
+of telecommunications networks with OMNeT++. For a start, let us begin
+with a "network" that consists of two nodes. The nodes will do something
+simple: one the nodes will create a packet, and the two nodes
+will keep passing the same packet back and forth. We'll call the nodes
+"tic" and "toc".
+
+Here are the steps you take to implement your first simulation from scratch:
 
 1. Create a working directory called tictoc, and cd to this directory.
 
 2. Describe your example network by creating a topology file. A topology file is a
-text file that identifies the network's nodes and the links between them. Let's call
-this file tictoc.ned:
+text file that identifies the network's nodes and the links between them.
+Let's call this file tictoc.ned:
 
 tictoc1.ned: @include tictoc1.ned
 
-In this file, we define a network called tictoc, which consists of a compound
-module Tictoc. The compound module, in turn, consists of submodules tic and toc.
-tic and toc are instances of the same simple module type called Txc 1 . Txc has one
-input gate (named in), and one output gate (named out). We connect tic's output
-gate to toc's input gate, and vice versa.
+The file is best read from the bottom up. Here's what it says:
 
-We now need to implement the functionality of the simple module Txc. This is
-achieved by writing two C++ files: txc.h and txc.cc:
+   - we define a network called tictoc, which is an instance the
+     module type Tictoc (<tt>network..endnetwork</tt>);
+   - Tictoc is a compound module, which is assembled from two submodules,
+     tic and toc. tic and toc are instances of the same module type
+     called Txc1. We connect tic's output gate (named out) to toc's input
+     gate (named in), and vice versa (<tt>module..endmodule</tt>);
+   - Txc1 is a simple module (which means it is atomic on NED level, and
+     will be implemented in C++). Txc1 has one input gate named in,
+     and one output gate named out (<tt>simple..endsimple</tt>).
+
+We now need to implement the functionality of the simple module Txc1. This is
+achieved by writing a C++ file txc1.cc:
 
 txc1.cc: @include txc1.cc
 
@@ -73,7 +97,7 @@ Note that the toolbar also contains a simsec/sec gauge which displays you this
 value.
 
 
-@section steps Adding more
+@section steps Adding more functionality
 
 @subsection s2 Step 2: adding icons and debug output
 
