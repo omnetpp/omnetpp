@@ -46,6 +46,14 @@ CFLAGS='-g'
 #CFLAGS='-g -Wall'
 #CFLAGS='-O3 -DNDEBUG=1'
 
+# on NT, set total stack size to 128MB
+CYGWIN_STACKSIZE= 134217728
+if uname | grep "CYGWIN" >/dev/null; then
+  LDFLAGS="-s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
+else
+  LDFLAGS=
+fi
+
 #----------------------
 # Read in user settings
 #----------------------
