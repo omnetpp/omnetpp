@@ -10,6 +10,7 @@
 OMNETPP_BIN_DIR =       @OMNETPP_BIN_DIR@
 OMNETPP_LIB_DIR =       @OMNETPP_LIB_DIR@
 OMNETPP_SRC_DIR =       @OMNETPP_SRC_DIR@
+OMNETPP_DOC_DIR =       @OMNETPP_DOC_DIR@
 OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 OMNETPP_TUTORIAL_DIR =  @OMNETPP_TUTORIAL_DIR@
 
@@ -112,6 +113,12 @@ demo:
 
 tutorials:
 	cd $(OMNETPP_TUTORIAL_DIR)/queues && $(MAKE)
+
+#
+# Documentation
+#
+docs:
+	cd $(OMNETPP_DOC_DIR)/api && $(MAKE)
 
 #=====================================================================
 #
