@@ -48,14 +48,16 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  * Features: only readonly (getter) methods; represents only elements
  * and text (entities, processing instructions, comments are ignored);
  * attributes are presented as part of an element node (not as separate
- * attribute nodes as in DOM); an element body cannot mix child elements
- * with text (must either contain further elements or just text);
+ * attribute nodes as in DOM); mixed content model not supported 
+ * (element body cannot mix text with further elements);
  * text is represented as a property of its enclosing element (and not
  * as separate node as in DOM); CDATA sections are also represented as
  * text (with the above restrictions); strings are presented in UTF-8 format
  * (which is normal ASCII string if only characters 0x01-0x7F are used;
  * encoding of the XML file itself may use arbitrary encoding provided it's
  * supported by the underlying XML parser); no namespace support.
+ *
+ * Supports XPath-like addressing via the getElementByPath() member function.
  *
  * File inclusion via limited support of the XInclude 1.0 spec.
  * An element <xi:include href="doc.xml"/> gets replaced with
