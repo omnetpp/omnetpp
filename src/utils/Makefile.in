@@ -24,7 +24,7 @@ depend:
 	makedepend -Y -I. -fMakefile.in -- *.cc
 
 clean:
-	rm -f *.o seedtool
+	rm -f *.o seedtool tcl2c
 
 install-local: seedtool
 	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
