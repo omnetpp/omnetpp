@@ -1,6 +1,8 @@
 eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $argv:q'
   if 0;
 
+#!perl
+#line 6
 #
 # opp_test.pl: simple testing tool for OMNeT++ regression tests
 #
@@ -127,7 +129,7 @@ $isWindows = ($ENV{'OS'} =~ /windows/i) ? 1 : 0;
 
 # test existence of working directory
 if (! -d $workingdir) {
-    print stderr "$arg0: error: working directory `$workingdir' does not exist\n";
+    print STDERR "$arg0: error: working directory `$workingdir' does not exist\n";
     exit(1);
 }
 
@@ -171,7 +173,7 @@ if ($mode eq 'run')
 
     if (! -x "$workingdir/$testprogram")
     {
-        print stderr "$arg0: error: test program '$workingdir/$testprogram' not found\n"; exit(1);
+        print STDERR "$arg0: error: test program '$workingdir/$testprogram' not found\n"; exit(1);
     }
 
     foreach $testfilename (@filenames)
@@ -209,7 +211,7 @@ sub parse_testfile
 
     # read test file
     if (!open(IN,$testfilename)) {
-        print stderr "$arg0: error: cannot open test file `$testfilename'\n"; exit(1);
+        print STDERR "$arg0: error: cannot open test file `$testfilename'\n"; exit(1);
     }
 
     $body='';
@@ -226,8 +228,8 @@ sub parse_testfile
             /^%([^:]*):?(.*?)$/;
             $key = $1;
             $value =$2;
-            $key =~ s/^\s*(.*?)\s*$/\1/;
-            $value =~ s/^\s*(.*?)\s*$/\1/;
+            $key =~ s/^\s*(.*?)\s*$/$1/;
+            $value =~ s/^\s*(.*?)\s*$/$1/;
 
             $count{$key}++;
             $key_index = $key.'('.$count{$key}.')';
@@ -247,19 +249,19 @@ sub parse_testfile
         $index = $2;
         $desc = $Entries{$key};
         if ($desc eq '') {
-            print stderr "$arg0: error in test file `$testfilename': invalid entry `%$key'\n"; exit(1);
+            print STDERR "$arg0: error in test file `$testfilename': invalid entry `%$key'\n"; exit(1);
         }
         if ($desc =~ /1/ && $index>1) {
-            print stderr "$arg0: error in test file `$testfilename': entry `%$key' should occur only once.\n"; exit(1);
+            print STDERR "$arg0: error in test file `$testfilename': entry `%$key' should occur only once.\n"; exit(1);
         }
         if ($desc =~ /v/ && $values{$key_index} =~ /^\s*$/) {
-            print stderr "$arg0: error in test file `$testfilename': entry `%$key' expects value after ':'\n"; exit(1);
+            print STDERR "$arg0: error in test file `$testfilename': entry `%$key' expects value after ':'\n"; exit(1);
         }
         if (!$desc =~ /v/ && !$values{$key_index} =~ /\s*/) {
-            print stderr "$arg0: error in test file `$testfilename': entry `%$key' expects nothing after ':'\n"; exit(1);
+            print STDERR "$arg0: error in test file `$testfilename': entry `%$key' expects nothing after ':'\n"; exit(1);
         }
         if (!$desc =~ /b/ && !$bodies{$key_index} =~ /\s*/) {
-            print stderr "$arg0: error in test file `$testfilename': entry `%$key' expects no body\n"; exit(1);
+            print STDERR "$arg0: error in test file `$testfilename': entry `%$key' expects no body\n"; exit(1);
         }
     }
 
@@ -267,20 +269,20 @@ sub parse_testfile
     if (defined($bodies{'activity(1)'}) && (defined($bodies{'module(1)'}) ||
         defined($bodies{'module_a(1)'}) || defined($bodies{'module_b(1)'})))
     {
-        print stderr "$arg0: error in test file `$testfilename': %activity excludes %module... entries\n"; exit(1);
+        print STDERR "$arg0: error in test file `$testfilename': %activity excludes %module... entries\n"; exit(1);
     }
     if (defined($bodies{'module(1)'}) &&
         (defined($bodies{'module_a(1)'}) || defined($bodies{'module_b(1)'})))
     {
-        print stderr "$arg0: error in test file `$testfilename': %module excludes %module_[a|b] entries\n"; exit(1);
+        print STDERR "$arg0: error in test file `$testfilename': %module excludes %module_[a|b] entries\n"; exit(1);
     }
     if (defined($bodies{'module_a(1)'}) && !defined($bodies{'module_b(1)'}))
     {
-        print stderr "$arg0: error in test file `$testfilename': %module_a without %module_b\n"; exit(1);
+        print STDERR "$arg0: error in test file `$testfilename': %module_a without %module_b\n"; exit(1);
     }
     if (defined($bodies{'module_b(1)'}) && !defined($bodies{'module_a(1)'}))
     {
-        print stderr "$arg0: error in test file `$testfilename': %module_b without %module_a\n"; exit(1);
+        print STDERR "$arg0: error in test file `$testfilename': %module_b without %module_a\n"; exit(1);
     }
 
     # substitute TESTNAME and other macros, kill comments
@@ -291,8 +293,8 @@ sub parse_testfile
         $values{$key} =~ s/\@TESTNAME\@/$testname/g;
         $bodies{$key} =~ s/\@TESTNAME\@/$testname/g;
 
-        $values{$key} =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
-        $bodies{$key} =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
+        $values{$key} =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
+        $bodies{$key} =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
 
         $values{$key} =~ s/{}/${testname}/g;
         $bodies{$key} =~ s/{}/${testname}/g;
@@ -328,7 +330,7 @@ sub testcase_generatesources
         $ned = $ModuleNEDTemplate;
         $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$testname/g;
-        $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
+        $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
         $nedfname = $workingdir."/".$testname.'.ned';
         writefile($nedfname, $ned);
 
@@ -337,7 +339,7 @@ sub testcase_generatesources
         $cpp =~ s/\@TESTNAME\@/$testname/g;
         $cpp =~ s/\@ACTIVITY\@/$activity/g;
         $cpp =~ s/\@GLOBAL\@/$globalcode/g;
-        $cpp =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
+        $cpp =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
         $cppfname = $workingdir."/".$testname.'.cc';
         writefile($cppfname, $cpp);
     }
@@ -402,7 +404,7 @@ sub testcase_generatesources
     {
         $inifile = $INITemplate;
         $inifile =~ s/\@TESTNAME\@/$testname/g;
-        $inifile =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
+        $inifile =~ s/{([a-zA-Z0-9_]+)}/${testname}_$1/g;
     }
     writefile($inifname, $inifile);
 }
@@ -502,7 +504,7 @@ sub testcase_run()
 
             # get pattern
             $pattern = $bodies{$key};
-            $pattern =~ s/^\s*(.*?)\s*$/\1/s; # trim pattern
+            $pattern =~ s/^\s*(.*?)\s*$/$1/s; # trim pattern
 
             # check contains or not-contains
             if ($key =~ /^contains\b/) {
@@ -602,7 +604,7 @@ sub writefile()
     my $skipwrite = 0;
     if (-r $fname) {
         if (!open(IN,$fname)) {
-            print stderr "$arg0: error: cannot read file `$fname'\n";
+            print STDERR "$arg0: error: cannot read file `$fname'\n";
             exit(1);
         }
         my $oldcontent = '';
@@ -623,7 +625,7 @@ sub writefile()
     } else {
         print "  writing `$fname'\n" if ($debug);
         if (!open(OUT,">$fname")) {
-            print stderr "$arg0: error: cannot write file `$fname'\n";
+            print STDERR "$arg0: error: cannot write file `$fname'\n";
             exit(1);
         }
         print OUT $content;

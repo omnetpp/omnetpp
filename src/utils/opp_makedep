@@ -1,6 +1,8 @@
 eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $argv:q'
   if 0;
 
+#!perl -w
+#line 6
 #
 # opp_makedep
 #
@@ -218,7 +220,6 @@ sub scan {
    local( $included, $found, $_ );
    local( @list ) = ();
    local($IncludeDir);
-   local($IncludePathName);
 
    if (!open( INPUT, $filename ))
    {

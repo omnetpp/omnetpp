@@ -1,3 +1,10 @@
+2002-12-02  Andras Varga
+
+        * opp_makemake_vc.pl renamed to opp_nmakemake
+
+	* use runperl.bat (from ActivePerl distribution) to run opp_test,
+	opp_makedep, opp_nmakemake from Windows command prompt
+
 2002-11-14  Andras Varga
 
 	* opp_test: changes for Windows

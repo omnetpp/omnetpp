@@ -1,6 +1,8 @@
 eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $argv:q'
   if 0;
 
+#!perl
+#line 6
 #
 # opp_makemake_vc
 #
@@ -28,11 +30,18 @@ $libpath = "";
 $libs = "";
 $dirs = "";
 $xobjs = "";
+$sobjs = "";
 @fragments = ();
 $doxyconf = "doxy.cfg";
 @nedfiles = ();
 $ccext = "cpp";
 $cfgdir="../..";
+
+$force="n";
+$pvm="n";
+$mpi="n";
+
+$args = join(' ',@ARGV);
 
 # process arg vector
 while (@ARGV)
@@ -41,9 +50,10 @@ while (@ARGV)
     if ($arg eq '-h' || $arg eq '--help')
     {
         print '
-opp_makemake: write OMNeT++ Makefile for MSVC, based on source files in current directory
+opp_nmakemake: create MSVC makefile for an OMNeT++ model, based on source files
+in current directory
 
-opp_makemake [-h] [-f] [-e ext] [-o make-target] [-n] [-s] [-u user-interface]
+opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-s] [-u user-interface]
          [-p] [-Idir] [-Llibrary-path] [-llibrary] [-c configdir] [-i makefile-fragment-file]
          [directories, library and object files]...
     -h, --help            This help text
@@ -52,8 +62,8 @@ opp_makemake [-h] [-f] [-e ext] [-o make-target] [-n] [-s] [-u user-interface]
     -o, --outputfile      Name of simulation executable/library
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several dirs.
-    -s, --make-so         Make shared library. Useful if you want to load the
-                          model dynamically (Cmdenv/Tkenv -l so-file switch).
+    -s, --make-so         Make DLL. Useful if you want to load the model
+                          dynamically (Cmdenv/Tkenv -l so-file switch).
     -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv
     -M, --mpi             Link executable with MPI
     -p, --pvm             Link executable with PVM
@@ -68,6 +78,7 @@ opp_makemake [-h] [-f] [-e ext] [-o make-target] [-n] [-s] [-u user-interface]
                           include in the Makefile.
     library or object     Link with that file
 
+Default output is Makefile.vc which you can run by typing nmake -f Makefile.vc.
 With the -n and -s options, -u, -p and -l have no effect.
 If you have a source tree instead of a single directory, run opp_makemake -n
 in the subdirs and then opp_makemake dir1 dir2 etc. in your top-level directory.
@@ -156,7 +167,7 @@ $makefile = "Makefile.vc";
 
 if (-f $makefile && $force ne "y")
 {
-    print stderr "opp_makemake: use -f to force overwriting existing $makefile\n";
+    print STDERR "opp_makemake: use -f to force overwriting existing $makefile\n";
     exit;
 }
 

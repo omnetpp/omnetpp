@@ -7,7 +7,14 @@
 # Targets
 #
 all: seedtool.exe tcl2c.exe opp_replace.exe
-	copy opp_makemake_vc $(OMNETPP_BIN_DIR:/=\)
+	copy opp_nmakemake.bat $(OMNETPP_BIN_DIR:/=\)
+	copy opp_makedep.bat $(OMNETPP_BIN_DIR:/=\)
+	copy opp_test.bat $(OMNETPP_BIN_DIR:/=\)
+	copy opp_nmakemake $(OMNETPP_BIN_DIR:/=\)
+	copy opp_makedep $(OMNETPP_BIN_DIR:/=\)
+	copy opp_test $(OMNETPP_BIN_DIR:/=\)
+	copy opp_neddoc.cmd $(OMNETPP_BIN_DIR:/=\)
+	copy neddoc.xsl $(OMNETPP_BIN_DIR:/=\)
 
 seedtool.exe : seedtool.cc
 	$(CXX) /Tp seedtool.cc
