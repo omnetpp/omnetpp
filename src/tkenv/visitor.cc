@@ -82,7 +82,7 @@ cCollectObjectsVisitor::cCollectObjectsVisitor()
 
 cCollectObjectsVisitor::~cCollectObjectsVisitor()
 {
-    delete arr;
+    delete [] arr;
 }
 
 void cCollectObjectsVisitor::setSizeLimit(int limit)
