@@ -289,14 +289,14 @@ of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
 \end{center}
 \end{figure}
 
-The above model may not be suitable to model all protocols. In Token Ring 
-and FDDI, stations start to repeat bits before the whole frame arrives; 
+The above model may not be suitable to model all protocols. In Token Ring
+and FDDI, stations start to repeat bits before the whole frame arrives;
 in other words, frames ``flow through'' the stations, being delayed only a few bits.
 In such cases, the data rate modeling feature of {\opp} cannot be used.
 
 If a message travels along a route, passing through successive links and
 compound modules, the model behaves as if each module waited until the
-last bit of the message arrives and only started its transmission 
+last bit of the message arrives and only started its transmission
 afterwards.
 (Fig. \ref{fig:ch-overview:msg-multiple-ch}).
 
@@ -319,7 +319,7 @@ route.
 
 If a data rate\index{data rate} is specified for a connection, a message
 will have a certain nonzero transmission time\index{transmission
-  time}, depending on the length of the connection. This implies that 
+  time}, depending on the length of the connection. This implies that
 a message that is passsing through an output gate, ``reserves'' the gate
 for a given period (``it is being transmitted'').
 
@@ -402,10 +402,10 @@ properties, you can chose one of two paths:
 
 Note that some simulators (e.g. OPNET) assign \textit{packet queues}
 to input gates (ports), and messages sent are buffered at the
-destination module (or the remote end of the link) until they are 
-received by the destination module. With that approach, events and 
-messages are separate entities, that is, a \textit{send} operation 
-includes placing the message in the packet queue \textit{and} scheduling 
+destination module (or the remote end of the link) until they are
+received by the destination module. With that approach, events and
+messages are separate entities, that is, a \textit{send} operation
+includes placing the message in the packet queue \textit{and} scheduling
 an event, which signals the arrival of the packet. In some implementations,
 output gates also have packet queues where packets will be buffered until
 the channel is ready (available for transmission).
@@ -416,7 +416,7 @@ FES\index{FES}.  {\opp}'s approach is potentially faster
 than the solution mentioned above because it doesn't have the
 enqueue/dequeue overhead and also spares an event creation. The
 drawback is, that changes to channel parameters do not take effect
-immediately.                       
+immediately.
 
 In {\opp} one can implement \textit{point-to-point transmitter} modules
 with packet queues if needed. For example, the INET Framework
@@ -687,7 +687,7 @@ and \fname{finish()}.
 \subsubsection{Function called for each event}
 
 
-The idea is that at each event\index{event} (message arrival) we 
+The idea is that at each event\index{event} (message arrival) we
 simply call a user-defined function. This function,
 \fname[handleMessage()]{handleMessage(cMessage *msg)} is a
 virtual member function of \cclass{cSimpleModule} which does
@@ -1155,7 +1155,7 @@ Coroutines\index{coroutine} are at the heart of {\opp}, and the
 simulation programmer doesn't ever need to call \fname{transferTo()}
 or other functions in the coroutine library, nor does he need to care
 about the coroutine library implementation. It is important to
-understand, however, how the event loop found in discrete event simulators 
+understand, however, how the event loop found in discrete event simulators
 works with coroutines.
 
 
@@ -1243,17 +1243,15 @@ functions are called.
 \subsubsection{Coroutine stack size}
 
 
-All the simulation programmer needs to care about coroutines is to
-choose the processor stack size\index{coroutine!stack size} for them.
-This cannot be automated.
+The simulation programmer needs to define the processor stack size\index{coroutine!stack size}
+for coroutines. This cannot be automated.
 
 16 or 32 kbytes is usually a good choice, but you may need more if the
-module uses recursive functions or has local variables which occupy a
-lot of stack space. {\opp} has a built-mechanism that will usually
-detect if the module stack is too small and
-overflows\index{stack!overflow}. {\opp} can also tell you how much
-stack space a module actually uses\index{stack!usage}, so you can find
-it out if you overestimated the stack needs.
+module uses recursive functions or has local variables, which occupy a
+lot of stack space. {\opp} has a built-in mechanism that will usually
+detect if the module stack is too small and overflows\index{stack!overflow}.
+{\opp} can also tell you how much stack space a module actually uses\index{stack!usage},
+so you can find out if you overestimated the stack needs.
 
 
 \subsubsection{initialize() and finish() with activity()}
@@ -1266,15 +1264,15 @@ etc.) in them. Local variables can be initialized at the top of the
 \fname{initialize()}.
 
 
-However, you need \fname{finish()} if you want to write statistics at
-the end of the simulation. And because \fname{finish()} cannot access
+You do need \fname{finish()}, however, if you want to write statistics at
+the end of the simulation. Because \fname{finish()} cannot access
 the local variables of \fname{activity()}, you have to put the variables
-and objects that contain the statistics into the module class.
+and objects containing the statistics into the module class.
 You still don't need \fname{initialize()} because class members can also
 be initialized at the top of \fname{activity()}.
 
 
-Thus, a typical setup looks like this pseudocode:
+Thus, a typical setup looks like this in pseudocode:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -1307,14 +1305,14 @@ MySimpleModule::finish()
 \subsubsection{Pros and Cons of using \fname{activity()}}
 
 
-Pro:
+Pros:
 \begin{itemize}
    \item{\fname{initialize()} not needed, state can be stored in local
        variables of \fname{activity()}}
    \item{process-style description is a natural programming model in some cases}
 \end{itemize}
 
-Con:
+Cons:
 \begin{itemize}
    \item{limited scalability: coroutine stacks can unacceptably increase the
        memory requirements of the simulation program if you have several
@@ -1334,14 +1332,14 @@ In most cases, cons outweigh pros and it is a better idea to use
 
 Coroutines are used by a number of other simulation packages:
 \begin{itemize}
-\item{All simulation software which inherit from SIMULA (e.g. C++SIM)
-    are based on coroutines, although all in all the programming
+\item{All simulation software which inherits from SIMULA (e.g. C++SIM)
+    is based on coroutines, although all in all the programming
     model is quite different.}
 \item{The simulation/parallel programming language Maisie and its successor
     PARSEC (from UCLA) also use coroutines (although implemented
-    on with ``normal'' preemptive threads). The philosophy
+    with ``normal'' preemptive threads). The philosophy
     is quite similar to {\opp}. PARSEC, being ``just''
-    a programming language, has a more elegant syntax but much less
+    a programming language, it has a more elegant syntax but far fewer
     features than {\opp}.}
 \item{Many Java-based simulation libraries are based on Java
     threads.}
@@ -1371,23 +1369,21 @@ placed into the FES by the simulation kernel.
 
 
 Both simple and compound modules have \fname{initialize()} functions.
-A compound module has its \fname{initialize()} function called
-\textit{before} all its submodules have.
+A compound module's \fname{initialize()} function runs
+\textit{before} that of its submodules.
 
 
 The \fname{finish()} functions are called when the event
 loop\index{event loop} has terminated, and only if it terminated
 normally (i.e. not with a runtime error).  The calling order is the
-reverse as with \fname{initialize()}: first submodules, then the
-containing compound module. (The bottom line is that at the moment
-there's no ``official'' possibility to redefine \fname{initialize()}
+reverse of the order of \fname{initialize()}: first submodules, then the
+encompassing compound module. (The bottom line is that at the moment
+there is no ``official'' possibility to redefine \fname{initialize()}
 and \fname{finish()} for compound modules; the unofficial way is to
 write into the nedtool-generated C++ code. Future versions of {\opp} will
 support adding these functions to compound modules.)
 
-This is summarized in the following pseudocode (although you
-won't find this code ``as is'' in the simulation
-kernel sources):
+This is summarized in the following pseudocode:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -1441,7 +1437,7 @@ deleted. \fname{finish()} is only a good place for writing statistics,
 result post-processing and other operations  which are supposed to run only on
 successful completion.
 
-Cleanup code should go into the destructor\index{module!destructor}. 
+Cleanup code should go into the destructor\index{module!destructor}.
 Actually, you rarely need to write a destructor yourself, because {\opp}
 keeps track of objects you create and disposes of them automatically
 (a sort of automatic garbage collection). It cannot track
@@ -1491,8 +1487,8 @@ stage)} simply calls \fname{initialize()}.
 
 
 The task of \fname{finish()} is solved in several simulators
-by introducing a special \textit{end-of-simulation}\index{end-of-simulation} event. 
-This is not a very good practice because the simulation programmer has to 
+by introducing a special \textit{end-of-simulation}\index{end-of-simulation} event.
+This is not a very good practice because the simulation programmer has to
 code the models (often represented as FSMs) so that they can \textit{always}
 properly respond to end-of-simulation events, in whichever state they are. This
 often makes program code unnecessarily complicated.
@@ -1880,8 +1876,8 @@ while(true)
 \subsubsection{Modeling packet transmissions}
 
 If you're sending messages over a link that has (nonzero) data rate,
-it is modeled in the way that has been described earlier in this
-manual, in section \ref{ch:simple-modules:packet-transmission}.
+it is modeled as described earlier in this manual, in
+section \ref{ch:simple-modules:packet-transmission}.
 
 If you want to have full control over the transmission process,
 you'll probably need the \fname{isBusy()} and \fname{transmissionFinishes()}
@@ -1940,8 +1936,8 @@ to the same message object and send it again and again -- you'd get
 the \textit{not owner of message} error on the first resend.
 
 Instead, whenever it comes to (re)transmission, you should create and
-send copies of message, and retain the original.
-When you're sure there won't be any more retransmission,
+send copies of the message, and retain the original.
+When you are sure there will not be any more retransmission,
 you can delete the original message.
 
 Creating and sending a copy:
@@ -1967,7 +1963,7 @@ no longer belongs to the module: it is taken over by the simulation kernel,
 and will eventually be delivered to the destination module.
 The sender module should not even refer to its pointer any more.
 Once the message arrived in the destination module, that module
-will has full authority over it -- it can send it further,
+will have full authority over it -- it can send it on,
 destroy it immediately, or store it for further handling.
 The same applies to messages that have been scheduled -- they
 belong to the simulation kernel until they are delivered back to
@@ -2003,9 +1999,9 @@ Section \ref{sec:ch-simple-modules:self-messages}, ``Self-messages'', would
 need to be employed.
 
 
-However, there is a more straightforward method than the above two,
-and this is delayed sending\index{delayed sending}. Delayed sending
-can be done with one of these functions:
+There is also a more straightforward method than those mentioned above:
+delayed sending\index{delayed sending}. Delayed sending can be achieved
+by using one of these functions:
 
 \begin{verbatim}
 sendDelayed(cMessage *msg, double delay, const char *gateName, int index);
@@ -2018,7 +2014,7 @@ parameter. The effect of the function is the same as if the module
 had kept the message for the delay interval and sent it afterwards.
 That is, the sending time of the message will be the current
 simulation time (time at the \fname{sendDelayed()} call) plus the delay.
-The delay value must be nonnegative.
+The delay value must be non-negative.
 
 Example:
 
@@ -2160,7 +2156,7 @@ when the job finishes processing, so that it can begin processing
 the next job.
 
 In {\opp} you solve such tasks by letting the simple module
-sending a message to itself; the message would be delivered
+send a message to itself; the message would be delivered
 to the simple module at a later point of time. Messages used
 this way are called self-messages\index{self-message}.
 Self-messages are used to model events which occur within the module.
@@ -2184,6 +2180,14 @@ message to determine if it is a self-message.
 As an example, here's how you could implement your own \fname{wait()}
 function in an \fname{activity()} simple module, if the simulation kernel
 didn't provide it already:
+
+%
+%TBD
+%This looks like a pointless thing to do... Is there no better example?
+%The kernel DOES after all, have a Wait() function built in...
+%Of course, this is low priority.
+%Gabor
+%
 
 \begin{verbatim}
 cMessage *msg = new cMessage();
@@ -2266,7 +2270,7 @@ You can finish the simulation with the \fname{endSimulation()} function:
 \fname{endSimulation()};
 
 
-However, typically you don't need \fname{endSimulation()} because you
+Typically you don't need \fname{endSimulation()} because you
 can specify simulation time and CPU time limits\index{simulation time
   limits} in the ini file (see later).
 
@@ -2274,9 +2278,9 @@ can specify simulation time and CPU time limits\index{simulation time
 \subsubsection{Stopping on errors}
 
 
-If your simulation detects an error condition and wants to stop
-the simulation, you can do it with the \fname{error()} member function
-of \cclass{cModule}. It is used like \fname{printf()}:
+If you want your simulation to stop if it detects an error condition,
+you can call the \fname{error()} member function of \cclass{cModule}.
+It is used like \fname{printf()}:
 
 \begin{verbatim}
 if (windowSize<1)
@@ -2295,7 +2299,7 @@ or exclamation mark) in the error text, as it will be added by {\opp}.
 \label{ch:simple-modules:parameters}
 
 Module parameters can be accessed\index{module!accessing parameters}
-with the \fname{par()} member function of \cclass{cModule}:
+by calling the \fname{par()} member function of \cclass{cModule}:
 
 \begin{verbatim}
 cPar& delayPar = par("delay");
@@ -2351,7 +2355,6 @@ The \cclass{cPar} class is discussed in more detail in section
 \ref{sec:ch-sim-lib:cpar}.
 
 
-
 \section{Accessing gates and connections}
 \label{ch:simple-modules:gates}
 
@@ -2359,12 +2362,12 @@ The \cclass{cPar} class is discussed in more detail in section
 
 
 Module gates\index{gate} are \cclass{cGate} objects. Gate objects
-know whether and to which gate they are connected, and they can be
-asked about the parameters of the link (delay, data rate, etc.)
+know whether, and to which gate they are connected. They can also be
+queried on the parameters of the link (delay, data rate, etc.)
 
 The \fname{gate()} member function of \cclass{cModule} returns a
 pointer to a \cclass{cGate} object, and an overloaded form of the
-function lets you to access elements of a vector gate:
+function lets you access elements of a vector gate:
 
 \begin{verbatim}
 cGate *outgate = gate("out");
@@ -2412,8 +2415,8 @@ member function:
 int id = outgate->id();
 \end{verbatim}
 
-For a module with input gates fromApp and in[3] and output gates
-of toApp and status, the array may look like this:
+For a module with input gates \ttt{fromApp} and \ttt{in[3]} and output gates
+of \ttt{toApp} and \ttt{status}, the array may look like this:
 
 \begin{longtable}{|c|c|c|}
 \hline
@@ -2495,7 +2498,7 @@ transmitting. (If the gate in not currently transmitting,
 \fname{transmissionFinishes()} returns the simulation time
 when it finished its last transmission.)
 
-The semantics has been described in section
+The semantics have been described in section
 \ref{ch:simple-modules:packet-transmission}.
 
 An example:
@@ -2511,10 +2514,11 @@ if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
 send( packet, "TxGate");
 \end{verbatim}
 
-If the connection with a data rate is not immediately the one
-connected to the simple module's output gate but
-the second one in the route, you have to check the second gate's busy
-condition.  You would use the following code:
+If the connection with a data rate is not directly connected
+to the simple module's output gate but is the second
+one in the route, you have to check the second gate's busy
+condition\index{gate!busy condition}. You could use the following
+code:
 
 \begin{verbatim}
 if (gate("mygate")->toGate()->isBusy())
@@ -2843,10 +2847,10 @@ It does \fname{create()} + \fname{buildInside()} +
 \fname[scheduleStart()]{scheduleStart(now)} + \fname{callInitialize()}.
 
 This method can be used for both simple and compound modules.
-However, its applicability is somewhat limited:
-because it does everything in one step,
-you do not have the chance to set parameters or gate sizes,
-and to connect gates before \fname{initialize()} is called.
+Its applicability is somewhat limited, however:
+because it does everything in one step, you do not have the chance to
+set parameters or gate sizes, and to connect gates before
+\fname{initialize()} is called.
 (\fname{initialize()} expects all parameters and gates to
 be in place and the network fully built when it is called.)
 Because of the above limitation, this function is mainly useful
@@ -2971,12 +2975,19 @@ srcGate->connectTo(destGate);
 \end{verbatim}
 
 The \textit{source} and \textit{destination} words correspond
-to the direction of the arrow in NED files and which is the same,
-the direction of messages. That is,
-you connect an output gate \textit{to} another submodule's input gate;
-you connect a submodule's output gate \textit{to} the output gate
-of its parent module; and an input gate of a compound module
+to the direction of the arrow in NED files and messages also travel in
+the same direction. That is, you connect an output gate \textit{to}
+another submodule's input gate; you connect a submodule's output gate \textit{to} the
+output gate of its parent module; and an input gate of a compound module
 \textit{to} the input gate of its submodule.
+
+%
+%TBD
+%Unless you find a better way of writing this, it will remain very hard to
+%understand...
+%I have edited it, but it is still too complex to be intuitive...
+%Gabor
+%
 
 As an example, we create two modules and connect them in both directions:
 
