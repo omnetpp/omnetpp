@@ -1,7 +1,18 @@
-2004-03-22  ------ omnetpp-3.0a3 released ------
-
 FIXME todo: create parsim/ (and nedxml/?) subdirectories here
 std::string for info() and fullPath()
+
+2004-04-13   Andras Varga
+
+	* cenvir.h: added method bool cEnvir::disabled(); returns true when
+	ev<< output is disabled (e.g. Express mode) so executing ev<< is
+	a waste of CPU cycles. To save CPU cycles, one can write code like:
+	   if (!ev.disabled())  
+	       ev << "Packet " << msg->name() << " received\n";
+	or (not that ?: binds looser than <<!!!):
+	   #define EV  ev.disabled()?ev:ev
+	   EV << "Packet " << msg->name() << " received\n";
+
+2004-03-22  ------ omnetpp-3.0a3 released ------
 
 2004-03-20   Andras Varga
 

@@ -320,6 +320,24 @@ class ENVIR_API cEnvir : public std::ostream
     bool isGUI()  {return isgui;}
 
     /**
+     * Returns true if the simulation is running in an Express or Express-like mode
+     * where output from <tt>ev&lt;&lt;</tt> and <tt>ev.printf()</tt> statement is
+     * not printed or logged anywhere but discarded. Model code may make <tt>ev&lt;&lt;</tt>
+     * statements conditional on this flag to save CPU cycles. For example:
+     * <pre>
+     *     if (!ev.disabled())  ev << "Packet " << msg->name() << " received";
+     * </pre>
+     *
+     * The following version may also be useful (it makes use of the fact that <<
+     * binds stronger than ?:)
+     * <pre>
+     *     #define EV  ev.disabled()?ev:ev
+     *     EV << "Packet " << msg->name() << " received";
+     * </pre>
+     */
+    bool disabled() {return disable_tracing;}
+
+    /**
      * In Tkenv it pops up a "bubble" over the module icon.
      */
     void bubble(cModule *mod, const char *text);
