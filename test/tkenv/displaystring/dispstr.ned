@@ -1,6 +1,7 @@
 import "colors";
 import "icons";
 import "textandtooltip";
+import "conntextandtooltip";
 
 module DisplayStringTest
     submodules:
@@ -8,6 +9,7 @@ module DisplayStringTest
         icons: Icons;
         active: Active;
         textAndTooltip: TextAndTooltip;
+        connTextAndTooltip: ConnTextAndTooltip;
 endmodule
 
 network displayStringTest : DisplayStringTest
