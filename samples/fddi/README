@@ -55,30 +55,34 @@ the two segments.
 
 Setting up for distributed execution (with PVM)
 -----------------------------------------------
-One issue is with PVM is that FDDI wants to read config files when it starts,
-and it expects to find them in its working directory. The slave FDDI
-processes are launched by PVM, so PVM must be configured in a way that FDDI
-can find the files it expects. There are two ways to do this.
+You'll want to make sure that
+ 1) PVM will find the FDDI executable when it wants to fire up the slaves, and
+ 2) the slave FDDI processes will find the files they need
 
-The first is to set the WD= parameter in the pvmhosts file to the FDDI
-directory ($HOME/omnetpp/samples/fddi). You won't like this solution
-however if you have other PVM apps which want a different WD= setting.
+As for 1), you may to create a soft link in ${PVM_ROOT}/bin/${PVM_ARCH} which
+points to the FDDI executable.
+  cd  ${PVM_ROOT}/bin/${PVM_ARCH}
+  ln -s ~/omnetpp/samples/fddi/fddi fddi 
+
+As for 2), FDDI expects to find the config files (omnetpp.ini, nr_lctrl etc.)
+in its working directory. You have two choices to arrange this. The first is
+to set the WD= parameter in the pvmhosts file to the FDDI directory
+($HOME/omnetpp/samples/fddi). You won't like this solution if you have other
+PVM apps which want a different WD= setting...
 
 The second (equally dirty) way is to create soft links in your home directory
 (the default working directory if you have no WD= setting) which point to the
 actual FDDI files. The commands to create the soft links are:
-% cd
-% ln -s omnetpp/samples/fddi/load/       load
-% ln -s omnetpp/samples/fddi/nr_lctrl    nr_lctrl
-% ln -s omnetpp/samples/fddi/nroifct     nroifct 
-% ln -s omnetpp/samples/fddi/omnetpp.ini omnetpp.ini
-% ln -s omnetpp/samples/fddi/sr_lctrl    sr_lctrl
-% ln -s omnetpp/samples/fddi/sroifct     sroifct
+  cd
+  ln -s omnetpp/samples/fddi/load/       load
+  ln -s omnetpp/samples/fddi/nr_lctrl    nr_lctrl
+  ln -s omnetpp/samples/fddi/nroifct     nroifct 
+  ln -s omnetpp/samples/fddi/omnetpp.ini omnetpp.ini
+  ln -s omnetpp/samples/fddi/sr_lctrl    sr_lctrl
+  ln -s omnetpp/samples/fddi/sroifct     sroifct
 
-You also have to create a soft link in ${PVM_ROOT}/bin/${PVM_ARCH} which
-points to the FDDI executable:
-% cd  ${PVM_ROOT}/bin/${PVM_ARCH}
-% ln -s ~/omnetpp/samples/fddi/fddi fddi 
+If something goes wrong, check the slave.log file. If you don't find it, maybe
+PVM couldn't even start the slaves...
 
 Have fun...
 
