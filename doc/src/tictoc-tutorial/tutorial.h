@@ -631,7 +631,18 @@ on the Contents page.
 
 Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
 
+
 @section s11 Step 11: Displaying the number of packets sent/received
+
+You can use the Filtered objects dialog to learn how many packets were
+sent or received by the various nodes:
+
+<img src="step11a.gif">
+
+But it can be also arranged that this info appears above the module
+icons. The <tt>t=</tt> display string tag specifies the text;
+we only need to modify the displays string during runtime.
+The following code does the trick:
 
 @dontinclude txc11.cc
 @skip isGUI
@@ -639,6 +650,8 @@ Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
 
 @skip ::updateDisplay
 @until }
+
+<img src="step11b.gif">
 
 <i>Exercise: In this model, there is only one message underway at any
 given moment: nodes only generate a message when another message arrives
