@@ -64,7 +64,9 @@ proc get_submod_coords {c tag} {
 
    set id [$c find withtag $tag]
    if {$id==""} {error "$tag not found"}
+   return [$c bbox $id]
 
+   # original code was as below, but bbox seems to work OK, too
    if {[$c type $id]=="image"} {
        set pos [$c coords $id]
        set x [lindex $pos 0]
@@ -229,6 +231,13 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
 
        }
 
+       if {[info exists tags(q)]} {
+           set r [get_submod_coords $c $submodptr]
+           set x [expr [lindex $r 2]+1]
+           set y [lindex $r 1]
+           $c create text $x $y -text "?" -anchor nw -tags "qlen qlen-$submodptr"
+       }
+
        # r=<radius>,<fillcolor>,<color>,<width>
        if {[info exists tags(r)]} {
            set radius [lindex $tags(r) 0]
@@ -364,7 +373,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 
        eval $c create line $arrow_coords -arrow last \
            -fill $fill -width $width -tags "\"tooltip conn $gateptr\""
-
+       
     } errmsg] {
        tk_messageBox -type ok -title Error -icon error \
                      -message "Error in display string of a connection: $errmsg"
@@ -521,6 +530,7 @@ proc create_graphicalmodwindow {name geom} {
     $c bind conn <Double-1> "graphmodwin_dblclick $c"
     $c bind msg <Double-1> "graphmodwin_dblclick $c"
     $c bind msgname <Double-1> "graphmodwin_dblclick $c"
+    $c bind qlen <Double-1> "graphmodwin_qlen_dblclick $c"
 
     $c bind submod <3> "graphmodwin_rightclick $c %X %Y"
     $c bind conn <3> "graphmodwin_rightclick $c %X %Y"
@@ -528,6 +538,7 @@ proc create_graphicalmodwindow {name geom} {
     $c bind msgname <3> "graphmodwin_rightclick $c %X %Y"
     $c bind mod <3> "graphmodwin_rightclick $c %X %Y"
     $c bind modname <3> "graphmodwin_rightclick $c %X %Y"
+    $c bind qlen <3> "graphmodwin_qlen_rightclick $c %X %Y"
 
     graphmodwin_redraw $w
 }
@@ -568,7 +579,7 @@ proc graphmodwin_dblclick c {
    }
 
    if {$ptr!=""} {
-      opp_inspect $ptr (default)
+      opp_inspect $ptr "(default)"
    }
 }
 
@@ -832,12 +843,19 @@ proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr msgname msgkind {mode thru}}
     }
 }
 
+#
+# This function is invoked from the module inspector C++ code.
+#
 proc graphmodwin_animate_senddirect_cleanup {win} {
     set c $win.c
     $c delete senddirect
 }
 
 
+# graphmodwin_animate_methodcall_ascent --
+#
+# This function is invoked from the module inspector C++ code.
+#
 proc graphmodwin_animate_methodcall_ascent {win parentmodptr modptr methodlabel} {
     set c $win.c
     set src  [get_submod_coords $c $modptr]
@@ -849,6 +867,10 @@ proc graphmodwin_animate_methodcall_ascent {win parentmodptr modptr methodlabel}
     graphmodwin_do_draw_methodcall $win $x1 $y1 $x2 $y2 $methodlabel
 }
 
+# graphmodwin_animate_methodcall_descent --
+#
+# This function is invoked from the module inspector C++ code.
+#
 proc graphmodwin_animate_methodcall_descent {win parentmodptr modptr methodlabel} {
     set c $win.c
     set dest [get_submod_coords $c $modptr]
@@ -860,6 +882,10 @@ proc graphmodwin_animate_methodcall_descent {win parentmodptr modptr methodlabel
     graphmodwin_do_draw_methodcall $win $x1 $y1 $x2 $y2 $methodlabel
 }
 
+# graphmodwin_animate_methodcall_horiz --
+#
+# This function is invoked from the module inspector C++ code.
+#
 proc graphmodwin_animate_methodcall_horiz {win fromptr toptr methodlabel} {
     set c $win.c
     set src  [get_submod_coords $c $fromptr]
@@ -872,6 +898,10 @@ proc graphmodwin_animate_methodcall_horiz {win fromptr toptr methodlabel} {
     graphmodwin_do_draw_methodcall $win $x1 $y1 $x2 $y2 $methodlabel
 }
 
+# graphmodwin_do_draw_methodcall --
+#
+# Helper.
+#
 proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
     global animdelay
 
@@ -896,6 +926,10 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
     }
 }
 
+# graphmodwin_animate_methodcall_wait --
+#
+# This function is invoked from the module inspector C++ code.
+#
 proc graphmodwin_animate_methodcall_wait {} {
     global animdelay
 
@@ -905,11 +939,19 @@ proc graphmodwin_animate_methodcall_wait {} {
     after $ad
 }    
 
+# graphmodwin_animate_methodcall_cleanup --
+#
+# This function is invoked from the module inspector C++ code.
+#
 proc graphmodwin_animate_methodcall_cleanup {win} {
     set c $win.c
     $c delete methodcall
 }
 
+# graphmodwin_draw_nexteventmarker --
+#
+# This function is invoked from the module inspector C++ code.
+#
 proc graphmodwin_draw_nexteventmarker {c modptr type} {
     set src  [get_submod_coords $c $modptr]
     set x1 [expr [lindex $src 0]-2]
@@ -922,6 +964,60 @@ proc graphmodwin_draw_nexteventmarker {c modptr type} {
     } else {
         $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red 
     }    
+}
+
+# graphmodwin_update_submod --
+#
+# This function is invoked from the module inspector C++ code.
+#
+proc graphmodwin_update_submod {c modptr} {
+    # currently the only thing to be updated if the number of elements in queue
+    set win [winfo toplevel $c]
+    set dispstr [opp_getobjectfield $modptr displayString] 
+    set qname [opp_displaystring $dispstr getTagArg "q" 0]
+    if {$qname!=""} {
+        #set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
+        #set qlen [opp_getobjectfield $qptr length]
+        set qlen [opp_inspectorcommand $win getsubmodqlen $modptr $qname]
+        $c itemconfig "qlen-$modptr" -text $qlen
+    }    
+}           
+
+#
+# Helper proc.
+#
+proc graphmodwin_qlen_getqptr c {
+   set item [$c find withtag current]
+   set tags [$c gettags $item]
+
+   set modptr ""
+   if {[lsearch $tags "qlen-ptr*"] != -1} {
+       regexp "ptr.*" $tags modptr
+   }
+   if {$modptr==""} {return}
+
+   set win [winfo toplevel $c]
+   set dispstr [opp_getobjectfield $modptr displayString] 
+   set qname [opp_displaystring $dispstr getTagArg "q" 0]
+   if {$qname!=""} {
+       set qptr [opp_inspectorcommand $win getsubmodq $modptr $qname]
+       return $qptr
+   }
+   return ""
+}
+
+proc graphmodwin_qlen_dblclick c {
+   set qptr [graphmodwin_qlen_getqptr $c]
+   if {$qptr!="" && $qptr!=[opp_object_nullpointer]} {
+       opp_inspect $qptr "(default)"
+   }    
+}
+
+proc graphmodwin_qlen_rightclick {c X Y} {
+   set qptr [graphmodwin_qlen_getqptr $c]
+   if {$qptr!="" && $qptr!=[opp_object_nullpointer]} {
+       popup_insp_menu $qptr $X $Y
+   }    
 }
 
 proc calibrate_animdelay {} {

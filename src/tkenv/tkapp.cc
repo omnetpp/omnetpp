@@ -149,7 +149,7 @@ void TOmnetTkApp::setup()
         fprintf(stderr, "\n<!> Error starting Tkenv: %s. "
                         "Is the OMNETPP_TKENV_DIR environment variable set correctly? "
                         "When not set, it defaults to " OMNETPP_TKENV_DIR ".\n",
-                        interp->result);
+                        Tcl_GetStringResult(interp));
         interp = 0;
         initialized = false; // signal failed setup
         return;

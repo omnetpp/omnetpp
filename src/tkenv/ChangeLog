@@ -1,3 +1,9 @@
+2003-10-06  Andras Varga
+
+	* modinsp2.tcl, modinsp.h/cc: new feature: queue size can be displayed
+	next to submodule icon. Add "q=<queue-name>" to the display string,
+	where queue-name is the name of the cQueue object, e.g. "q=sendQueue".
+
 2003-10-02  Andras Varga
 
 	* tkapp.cc/h, modinsp.cc/h, modinsp2.tcl: new features:

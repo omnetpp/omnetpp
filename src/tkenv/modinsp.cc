@@ -162,6 +162,7 @@ void TGraphicalModWindow::update()
    {
        redrawNextEventMarker();
        redrawMessages();
+       updateSubmodules();
    }
 }
 
@@ -285,9 +286,11 @@ int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int ac, const char **
       }
    }
 
-   // display messages and next event marker (red frame)
+   // display messages, next event marker (red frame), etc.
    redrawNextEventMarker();
    redrawMessages();
+   updateSubmodules();
+   
    return TCL_OK;
 }
 
@@ -371,6 +374,20 @@ void TGraphicalModWindow::redrawNextEventMarker()
    }    
 }
 
+void TGraphicalModWindow::updateSubmodules()
+{
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+   for (cSubModIterator submod(*(cModule *)object); !submod.end(); submod++)
+   {
+       CHK(Tcl_VarEval(interp, "graphmodwin_update_submod ",
+                       canvas, " ",
+                       ptrToStr(submod()),
+                       NULL));
+   }                   
+}
+
+
+
 void TGraphicalModWindow::displayStringChange(cModule *, bool immediate)
 {
    if (immediate)
@@ -406,6 +423,14 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
    else if (strcmp(argv[0],"submodulecount")==0)
    {
       return getSubmoduleCount(interp,argc,argv);
+   }
+   else if (strcmp(argv[0],"getsubmodq")==0)
+   {
+      return getSubmodQ(interp,argc,argv);
+   }
+   else if (strcmp(argv[0],"getsubmodqlen")==0)
+   {
+      return getSubmodQLen(interp,argc,argv);
    }
    return TCL_ERROR;
 }
@@ -467,6 +492,38 @@ int TGraphicalModWindow::getSubmoduleCount(Tcl_Interp *interp, int argc, const c
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
+
+
+int TGraphicalModWindow::getSubmodQ(Tcl_Interp *interp, int argc, const char **argv)
+{
+   // args: <module ptr> <qname>
+   if (argc!=3) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
+
+   cModule *mod = (cModule *)strToPtr( argv[1] );
+   const char *qname = argv[2];
+   cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname));
+   char buf[21];
+   ptrToStr(q,buf);
+   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   return TCL_OK;
+}   
+
+int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv)
+{
+   // args: <module ptr> <qname>
+   if (argc!=3) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
+
+   cModule *mod = (cModule *)strToPtr( argv[1] );
+   const char *qname = argv[2];
+   cQueue *q = dynamic_cast<cQueue *>(mod->findObject(qname));
+   if (!q) {Tcl_SetResult(interp, "", TCL_STATIC); return TCL_OK;}
+
+   char buf[20];
+   sprintf(buf, "%d", q->length());
+   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   return TCL_OK;
+}   
+
 
 //=======================================================================
 

@@ -46,10 +46,15 @@ class TGraphicalModWindow : public TInspector
 
       // implementations of inspector commands:
       virtual int redrawModules(Tcl_Interp *interp, int argc, const char **argv);
-      virtual void redrawMessages();
-      virtual void redrawNextEventMarker();
       virtual int getDisplayStringPar(Tcl_Interp *interp, int argc, const char **argv);
       virtual int getSubmoduleCount(Tcl_Interp *interp, int argc, const char **argv);
+      virtual int getSubmodQ(Tcl_Interp *interp, int argc, const char **argv);
+      virtual int getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv);
+
+      // helper methods:
+      virtual void redrawMessages();
+      virtual void redrawNextEventMarker();
+      virtual void updateSubmodules();
       virtual void displayStringChange(cModule *, bool immediate);
 };
 

@@ -26,6 +26,7 @@
 #include "ctypes.h"
 #include "cstruct.h"
 #include "cinifile.h"
+#include "cdispstr.h"
 #include "tkapp.h"
 #include "tklib.h"
 #include "inspector.h"
@@ -337,6 +338,7 @@ int stopSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getStringHashCode_cmd(ClientData, Tcl_Interp *, int, const char **);
+int displayString_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -400,6 +402,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getsimoption",     getSimOption_cmd     }, // args: <option-namestr>
    { "opp_setsimoption",     setSimOption_cmd     }, // args: <option-namestr> <value>
    { "opp_getstringhashcode",getStringHashCode_cmd}, // args: <string> ret: numeric hash code
+   { "opp_displaystring",    displayString_cmd    }, // args: <displaystring> <command> <args>
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
@@ -722,6 +725,18 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
        } else {    
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
+   } else if (!strcmp(field,"length")) {
+       if (dynamic_cast<cMessage *>(object)) {
+           char buf[20];
+           sprintf(buf,"%ld", dynamic_cast<cMessage *>(object)->length());
+           Tcl_SetResult(interp, buf, TCL_VOLATILE);
+       } else if (dynamic_cast<cQueue *>(object)) {
+           char buf[20];
+           sprintf(buf,"%d", dynamic_cast<cQueue *>(object)->length());
+           Tcl_SetResult(interp, buf, TCL_VOLATILE);
+       } else {    
+           Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
+       }
    } else {
        Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
    }    
@@ -1037,6 +1052,29 @@ int getStringHashCode_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    char buf[32];
    sprintf(buf, "%ld", hash);
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+
+   const char *dispstr = argv[1];
+   if (0==strcmp(argv[2], "getTagArg"))
+   {
+       // gettag <tag> <k> -- get kth component of given tag 
+       if (argc!=5) {Tcl_SetResult(interp, "wrong argcount for getTagArg", TCL_STATIC); return TCL_ERROR;}
+       const char *tag = argv[3];
+       int k = atoi(argv[4]);
+       cDisplayStringParser dp(dispstr);
+       const char *val = dp.getTagArg(tag,k); 
+       Tcl_SetResult(interp, const_cast<char *>(val), TCL_VOLATILE);
+   } 
+   else   
+   {
+       Tcl_SetResult(interp, "bad command", TCL_STATIC); return TCL_ERROR;
+   }
    return TCL_OK;
 }
 //--------------
