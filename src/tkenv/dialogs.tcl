@@ -568,23 +568,26 @@ proc filteredobjectlist_dialog {} {
     set lb $w.f.main.list
 
     set type "(default)"
-    button $w.buttons.inspect -text "Open inspector" -command "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
-    pack $w.buttons.inspect -side top -anchor e -padx 2
+    #button $w.buttons.inspect -text "Open inspector" -command "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
+    #pack $w.buttons.inspect -side top -anchor e -padx 2
 
     # leave listbox empty -- filling it with all objects might take too long
 
     # Configure dialog
-    bind $wfiltpars.class.entry <Return> "filteredobjectlist_refresh $w"
-    bind $wfiltpars.name.entry <Return> "filteredobjectlist_refresh $w"
-    bind $wfiltpars.order.entry <Return> "filteredobjectlist_refresh $w"
-    bind $lb <Double-Button-1> "$w.buttons.inspect invoke"
-    bind $lb <Key-Return> "$w.buttons.inspect invoke"
+    bind $wfiltpars.class.entry <Return> "$w.f.filter.buttons.refresh invoke"
+    bind $wfiltpars.name.entry <Return> "$w.f.filter.buttons.refresh invoke"
+    bind $wfiltpars.order.entry <Return> "$w.f.filter.buttons.refresh invoke"
+    bind $lb <Double-Button-1> "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
+    bind $lb <Key-Return> "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
+
+    # FIXME popup menu doesn't work for some weird reason -- menu doesn't get input focus!!!
+    #bind $lb <Button-3> "filteredobjectlist_popup $w \[lindex \[$lb get @%x,%y\] 0\] %X %Y"
 
     focus $wfiltpars.name.entry
 
     ## potentially useful stuff:
-    # set type [listboxSelectionDialog {Choose Type...} {Select inspector type.} [opp_inspectortype all]]
-    # if {$type == ""} return
+    #set type [listboxSelectionDialog {Choose Type...} {Select inspector type.} [opp_inspectortype all]]
+    #if {$type == ""} return
 
     execCloseDialog $w
     destroy $w
@@ -621,5 +624,23 @@ proc filteredobjectlist_refresh {w} {
         $lb insert end "$ptr ($classname)  $fullpath    $infostr"
     }
     $lb selection set 0
+}
+
+# filteredobjectlist_popup --
+#
+# helper procedure for filteredobjectlist_dialog -- creates popup menu
+#
+proc filteredobjectlist_popup {w ptr X Y} {
+    if {$ptr==""} return
+    set insptypes [opp_supported_insp_types $ptr]
+
+    set lb $w.f.main.list
+
+    catch {destroy .popup}
+    menu .popup -tearoff 0
+    foreach type $insptypes {
+       .popup add command -label "$type..." -command "opp_inspect $ptr \{$type\}; after 500 \{raise $w; focus $lb\}"
+    }
+    .popup post $X $Y
 }
 
