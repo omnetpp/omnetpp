@@ -382,7 +382,7 @@ subdirs=
 if [ $recursive = "y" ]; then
     for i in *; do
         if [ -d "$i" -a "$i" != "CVS" -a "$i" != "backups" -a "$i" != "." -a "$i" != ".." ]; then
-            if grep "$i" "$exceptdirs" >/dev/null; then :; else
+            if echo $exceptdirs | grep "$i" >/dev/null; then :; else
                 subdirs="$subdirs $i"
             fi
         fi
