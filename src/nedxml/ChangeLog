@@ -1,4 +1,10 @@
-2002-06-09  Ulrich Kaage <kaage@int.uni-karlsruhe.de>  <kaage@int.etec.uni-karlsruhe.de>
+2002-11-30  Andras Varga
+
+	* development of NEDXML is under way. Until the code reaches a stable
+	state, I use a local CVS repository on my home PC for convenience, 
+	and periodically update the main OMNeT++ CVS from the local CVS.
+
+2002-06-09  Ulrich Kaage <kaage@int.uni-karlsruhe.de>
 
 	* ned.y (swapAttributes): compile fix for gcc 3.x: Ambiguous
 	implicit conversion for NEDString::NEDString(NEDString)

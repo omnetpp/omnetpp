@@ -52,16 +52,35 @@ class NEDParser
     int num_errors;        // number of errors so far
 
   public:
+    /**
+     * Constructor.
+     */
     NEDParser();
+
+    /**
+     * Destructor.
+     */
     ~NEDParser();
 
-    // entry points:
+    /**
+     * Parse the given file. Bool argument specifies if expressions
+     * should be parsed or not. Result can be obtained from getTree().
+     */
     bool parseFile(const char *fname,bool parseexpr);
+
+    /**
+     * Parse the given NED text. Bool argument specifies if expressions
+     * should be parsed or not. Result can be obtained from getTree().
+     */
     bool parseText(const char *nedtext,bool parseexpr);
 
+    /**
+     * Returns the object tree which is the result of the parsing.
+     * Further calls to getTree() result in NULL pointer to be returned.
+     */
     NEDElement *getTree();
 
-    // error and debug handling
+    // INTERNAL: error and debug handling, called from grammar file
     void error(const char *msg, int line);
     void dbg(YYLTYPE lc, const char *what);
 };

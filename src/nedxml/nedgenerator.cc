@@ -241,9 +241,9 @@ void NEDGenerator::doImport(ImportedFileNode *node, const char *indent, bool isl
 void NEDGenerator::doChannel(ChannelNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "channel " << node->getName() << "\n";
-    if (newsyntax) out << indent << "{";
+    out << indent << "channel " << node->getName();
     appendRightComment(node->getRightComment(), indent);
+    if (newsyntax) out << indent << "{";
     generateChildren(node, increaseIndent(indent));
     out << indent << (newsyntax?"}":"endchannel");
     appendTrailingComment(node->getTrailingComment(), "");
@@ -261,9 +261,9 @@ void NEDGenerator::doChanattr(ChannelAttrNode *node, const char *indent, bool is
 void NEDGenerator::doNetwork(NetworkNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "network " << node->getName() << " : " << node->getTypeName() << "\n";
-    if (newsyntax) out << indent << "{";
+    out << indent << "network " << node->getName() << " : " << node->getTypeName();
     appendRightComment(node->getRightComment(), indent);
+    if (newsyntax) out << indent << "{";
 
     generateChildrenWithType(node, NED_SUBSTMACHINES, increaseIndent(indent));
     generateChildrenWithType(node, NED_SUBSTPARAMS, increaseIndent(indent));
@@ -275,9 +275,9 @@ void NEDGenerator::doNetwork(NetworkNode *node, const char *indent, bool islast,
 void NEDGenerator::doSimple(SimpleModuleNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "simple " << node->getName() << "\n";
-    if (newsyntax) out << indent << "{";
+    out << indent << "simple " << node->getName();
     appendRightComment(node->getRightComment(), indent);
+    if (newsyntax) out << indent << "{";
 
     generateChildrenWithType(node, NED_MACHINES, increaseIndent(indent));
     generateChildrenWithType(node, NED_PARAMS, increaseIndent(indent));
@@ -290,9 +290,9 @@ void NEDGenerator::doSimple(SimpleModuleNode *node, const char *indent, bool isl
 void NEDGenerator::doModule(CompoundModuleNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "module " << node->getName() << "\n";
-    if (newsyntax) out << indent << "{";
+    out << indent << "module " << node->getName();
     appendRightComment(node->getRightComment(), indent);
+    if (newsyntax) out << indent << "{";
 
     generateChildrenWithType(node, NED_MACHINES, increaseIndent(indent));
     generateChildrenWithType(node, NED_PARAMS, increaseIndent(indent));
@@ -541,8 +541,19 @@ void NEDGenerator::doConnection(ConnectionNode *node, const char *indent, bool i
 void NEDGenerator::doConnattr(ConnAttrNode *node, const char *indent, bool islast, const char *arrow)
 {
     if (!strcmp(node->getName(),"channel")) {
-        //  sorry for the special case :-(
-        printExpression(node, "value",indent);
+        // must look like this:
+        //     <conn-attr name="channel" value="mychanneltype">
+        // or like this:
+        //     <conn-attr name="channel">
+        //         <expression target="value">
+        //             <const type="string" value="mychanneltype"/>
+        //         </expression>
+        //     </conn-attr>
+        NEDElement *expr=node->getFirstChildWithTag(NED_EXPRESSION);
+        ConstNode *aconst = (ConstNode *)(expr ? expr->getFirstChildWithTag(NED_CONST) : NULL);
+        bool exprOk = aconst && aconst->getType()==NED_CONST_STRING;
+        const char *channelname = exprOk ? aconst->getValue() : node->getValue();
+        out << " " << channelname << " ";
     } else {
         out << " " << node->getName() << " ";
         printExpression(node, "value",indent);

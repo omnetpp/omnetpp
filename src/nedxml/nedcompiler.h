@@ -142,9 +142,19 @@ class NEDCompiler
     void doValidate(NEDElement *tree);
 
   public:
+    /**
+     * Constructor.
+     */
     NEDCompiler(NEDFileCache *fcache, NEDSymbolTable *symtab, NEDImportResolver *importres);
+
+    /**
+     * Destructor
+     */
     virtual ~NEDCompiler();
 
+    /**
+     * MISSINGDOC
+     */
     void validate(NEDElement *tree);
 };
 

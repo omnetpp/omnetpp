@@ -77,9 +77,15 @@
 
 /*
  * Note:
- * This file contains 2 shift-reduce conflicts around 'timeconstant'.
- * 4 more at opt_semicolon's after module/submodule types.
- * Plus 3 more to track down.
+ * This file contains about 3 shift-reduce conflicts around 'expression'.
+ * The rest (7-8 shift-reduce conflicts) are because for some reason
+ * (without reason, actually) the grammar has difficulty recognizing
+ * submodule boundaries. You can verify this by temporarily allowing only
+ * one submodule (in rule for 'opt_submodules', replace 'submodules' with
+ * 'submodule'). I couldn't figure out how to solve this yet.
+ *
+ * Plus one (real) ambiguity exists between submodule display string
+ * and compound module display string if no connections are present.
  *
  * bison's "%expect nn" option cannot be used to suppress the
  * warning message because %expect is not recognized by yacc
@@ -214,14 +220,16 @@ void addExpression(NEDElement *elem, const char *attrname, YYLTYPE exprpos, NEDE
 
 %%
 
+/*
+ * Toplevel components (no shift-reduce conflict here)
+ */
 networkdescription
         : somedefinitions
-        |
         ;
 
 somedefinitions
-        : definition somedefinitions
-        | definition
+        : somedefinitions definition
+        |
         ;
 
 definition
@@ -246,21 +254,24 @@ definition
         | struct
         ;
 
+/*
+ * Import stuff (no shift-reduce conflict here)
+ */
 import
         : INCLUDE
                 {
                   ps.imports = (ImportNode *)createNodeWithTag(NED_IMPORT, ps.nedfile );
                   setComments(ps.imports,@1);
                 }
-          filenames
+          filenames ';'
                 {
                   /* no setTrailingComment(ps.imports,@3); comment already stored with last filename */
                 }
         ;
 
 filenames
-        : filename ',' filenames
-        | filename ';'
+        : filenames ',' filename
+        | filename
         ;
 
 filename
@@ -272,7 +283,9 @@ filename
                 }
         ;
 
-
+/*
+ * Channel stuff (no shift-reduce conflict here)
+ */
 channeldefinition_old
         : channelheader opt_channelattrblock_old endchannel
         ;
@@ -296,16 +309,16 @@ channelheader
         ;
 
 opt_channelattrblock
-        :
-        | channelattrblock
+        : channelattrblock
+        |
         ;
 
 channelattrblock
-        : NAME '=' expression ';' channelattrblock
+        : channelattrblock NAME '=' expression ';'
                 {
-                  ps.chanattr = addChanAttr(ps.channel,toString(@1));
-                  addExpression(ps.chanattr, "value",@3,$3);
-                  setComments(ps.channel,@1,@3);
+                  ps.chanattr = addChanAttr(ps.channel,toString(@2));
+                  addExpression(ps.chanattr, "value",@4,$4);
+                  setComments(ps.channel,@2,@4);
                 }
         | NAME '=' expression ';'
                 {
@@ -321,11 +334,11 @@ opt_channelattrblock_old
         ;
 
 channelattrblock_old
-        : NAME expression ';' channelattrblock_old
+        : channelattrblock_old NAME expression ';'
                 {
-                  ps.chanattr = addChanAttr(ps.channel,toString(@1));
-                  addExpression(ps.chanattr, "value",@2,$2);
-                  setComments(ps.channel,@1,@2);
+                  ps.chanattr = addChanAttr(ps.channel,toString(@2));
+                  addExpression(ps.chanattr, "value",@3,$3);
+                  setComments(ps.channel,@2,@3);
                 }
         | NAME expression ';'
                 {
@@ -366,11 +379,11 @@ simpledefinition
         ;
 
 simpleheader
-        : SIMPLE NAME opt_semicolon
+        : SIMPLE NAME
                 {
                   ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
                   ((SimpleModuleNode *)ps.module)->setName(toString(@2));
-                  setComments(ps.module,@1,@3);
+                  setComments(ps.module,@1,@2);
                 }
         ;
 
@@ -411,11 +424,11 @@ moduledefinition
         ;
 
 moduleheader
-        : MODULE NAME opt_semicolon
+        : MODULE NAME
                 {
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleNode *)ps.module)->setName(toString(@2));
-                  setComments(ps.module,@1,@3);
+                  setComments(ps.module,@1,@2);
                 }
         ;
 
@@ -435,12 +448,6 @@ opt_machineblock
         |
         ;
 
-opt_displayblock : displayblock | ;
-opt_paramblock   : paramblock   | ;
-opt_gateblock    : gateblock    | ;
-opt_submodblock  : submodblock  | ;
-opt_connblock    : connblock    | ;
-
 machineblock
         : MACHINES ':'
                 {
@@ -453,13 +460,13 @@ machineblock
         ;
 
 opt_machinelist
-        : machinelist
+        : machinelist ';'
         |
         ;
 
 machinelist
-        : machine ',' machinelist
-        | machine ';'
+        : machinelist ',' machine
+        | machine
         ;
 
 machine
@@ -471,11 +478,21 @@ machine
                 }
         ;
 
+opt_displayblock
+        : displayblock
+        |
+        ;
+
 displayblock
         : DISPLAY ':' STRINGCONSTANT ';'
                 {
                   addDisplayString(ps.module,@3);
                 }
+        ;
+
+opt_paramblock
+        : paramblock
+        |
         ;
 
 paramblock
@@ -490,22 +507,20 @@ paramblock
         ;
 
 opt_parameters
-        : parameters
+        : parameters ';'
         |
         ;
 
 parameters
-        : parameter ','
+        : parameters ';' parameter
                 {
-                  setComments(ps.param,@1);
+                  setComments(ps.param,@2);
                 }
-          parameters
-        | parameter ';'
+        | parameters ',' parameter
                 {
-                  setComments(ps.param,@1);
+                  setComments(ps.param,@2);
                 }
-          parameters
-        | parameter ';'
+        | parameter
                 {
                   setComments(ps.param,@1);
                 }
@@ -550,6 +565,11 @@ parameter
                 }
         ;
 
+opt_gateblock
+        : gateblock
+        |
+        ;
+
 gateblock
         : GATES ':'
                 {
@@ -567,15 +587,15 @@ opt_gates
         ;
 
 gates
-        : IN  gatesI gates
-        | IN  gatesI
-        | OUT gatesO gates
-        | OUT gatesO
+        : gates IN gatesI ';'
+        | IN  gatesI ';'
+        | gates OUT gatesO ';'
+        | OUT gatesO ';'
         ;
 
 gatesI
-        : gateI ',' gatesI
-        | gateI ';'
+        : gatesI ',' gateI
+        | gateI
         ;
 
 gateI
@@ -592,8 +612,8 @@ gateI
         ;
 
 gatesO
-        : gateO ',' gatesO
-        | gateO ';'
+        : gatesO ',' gateO
+        | gateO
         ;
 
 gateO
@@ -607,6 +627,11 @@ gateO
                   ps.gate = addGate(ps.gates, @1, 0, 0 );
                   setComments(ps.gate,@1);
                 }
+        ;
+
+opt_submodblock
+        : submodblock
+        |
         ;
 
 submodblock
@@ -626,7 +651,7 @@ opt_submodules
         ;
 
 submodules
-        : submodule submodules
+        : submodules submodule
         | submodule
         ;
 
@@ -683,7 +708,7 @@ opt_on_blocks
         ;
 
 on_blocks
-        : on_block on_blocks
+        : on_blocks on_block
         | on_block
         ;
 
@@ -708,13 +733,13 @@ on_block                            /* --LG */
         ;
 
 opt_on_list
-        : on_list
+        : on_list ';'
         |
         ;
 
 on_list
-        : on_mach ',' on_list
-        | on_mach ';'
+        : on_list ',' on_mach
+        | on_mach
         ;
 
 on_mach
@@ -731,7 +756,7 @@ opt_substparamblocks
         ;
 
 substparamblocks
-        : substparamblock substparamblocks
+        : substparamblocks substparamblock
         | substparamblock
         ;
 
@@ -762,15 +787,12 @@ opt_substparameters
         ;
 
 substparameters
-        : substparameter ',' substparameters
-/*FIXME shift-reduce:
-        | substparameter ';' substparameters
-*/
-        | substparameter ';'
+        : substparameters substparameter
+        | substparameter
         ;
 
 substparameter
-        : NAME '=' expression
+        : NAME '=' expression ';'
                 {
                   ps.substparam = addSubstparam(ps.substparams,@1);
                   addExpression(ps.substparam, "value",@3,$3);
@@ -779,7 +801,7 @@ substparameter
         ;
 
 opt_gatesizeblocks
-        : gatesizeblock opt_gatesizeblocks
+        : opt_gatesizeblocks gatesizeblock
         |
         ;
 
@@ -804,13 +826,13 @@ gatesizeblock
         ;
 
 opt_gatesizes
-        : gatesizes
+        : gatesizes ';'
         |
         ;
 
 gatesizes
-        : gatesize ',' gatesizes
-        | gatesize ';'
+        : gatesizes ',' gatesize
+        | gatesize
         ;
 
 gatesize
@@ -836,6 +858,11 @@ opt_submod_displayblock
         |
         ;
 
+opt_connblock
+        : connblock
+        |
+        ;
+
 connblock
         : CONNECTIONS NOCHECK ':'
                 {
@@ -857,14 +884,17 @@ connblock
                 }
         ;
 
+/*
+ * Connections: around 7 shift/reduce conflict
+ */
 opt_connections
         : connections
         |
         ;
 
 connections
-        : connection comma_or_semicolon connections
-        | connection ';'
+        : connections connection
+        | connection
         ;
 
 connection
@@ -881,7 +911,7 @@ loopconnection
                 {
                   ps.inLoop=1;
                 }
-          notloopconnections ENDFOR
+          notloopconnections ENDFOR ';'
                 {
                   ps.inLoop=0;
                   setComments(ps.forloop,@1,@4);
@@ -921,28 +951,28 @@ opt_conn_displaystr
         ;
 
 notloopconnections
-        : notloopconnection comma_or_semicolon notloopconnections
-        | notloopconnection ';'
+        : notloopconnections notloopconnection
+        | notloopconnection
         ;
 
 notloopconnection
-        : gate_spec_L RIGHT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr
+        : gate_spec_L RIGHT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr ';'
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@5);
                 }
-        | gate_spec_L RIGHT_ARROW channeldescr RIGHT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr
+        | gate_spec_L RIGHT_ARROW channeldescr RIGHT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr ';'
                 {
                   ps.conn->setArrowDirection(NED_ARROWDIR_RIGHT);
                   setComments(ps.conn,@1,@7);
                 }
-        | gate_spec_L LEFT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr
+        | gate_spec_L LEFT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr ';'
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
                   setComments(ps.conn,@1,@5);
                 }
-        | gate_spec_L LEFT_ARROW channeldescr LEFT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr
+        | gate_spec_L LEFT_ARROW channeldescr LEFT_ARROW gate_spec_R opt_conn_condition opt_conn_displaystr ';'
                 {
                   swapConnection(ps.conn);
                   ps.conn->setArrowDirection(NED_ARROWDIR_LEFT);
@@ -1050,10 +1080,10 @@ channeldescr
                   ps.connattr = addConnAttr(ps.conn,toString(@1));
                   addExpression(ps.connattr, "value",@2,$2);
                 }
-        | NAME expression channeldescr
+        | channeldescr NAME expression
                 {
-                  ps.connattr = addConnAttr(ps.conn,toString(@1));
-                  addExpression(ps.connattr, "value",@2,$2);
+                  ps.connattr = addConnAttr(ps.conn,toString(@2));
+                  addExpression(ps.connattr, "value",@3,$3);
                 }
         ;
 
@@ -1116,11 +1146,11 @@ expression
         ;
 
 /*
- * Expressions
+ * Expressions (3 shift-reduce conflicts here)
  */
 
 inputvalue
-        : INPUT_ '(' expr ',' expr ')'  /* input(defaultvalue, promptstring) */
+        : INPUT_ '(' expr ',' expr ')'
                 { if (ps.parseExpressions) $$ = createFunction("input", $3, $5); }
         | INPUT_ '(' expr ')'
                 { if (ps.parseExpressions) $$ = createFunction("input", $3); }
@@ -1273,17 +1303,18 @@ numconst
                 { $$ = createConst(NED_CONST_REAL, toString(@1)); }
         | timeconstant
                 { $$ = createTimeConst(toString(@1)); }
+
         ;
 
 timeconstant
-        : INTCONSTANT NAME timeconstant
-        | REALCONSTANT NAME timeconstant
+        : timeconstant INTCONSTANT NAME
+        | timeconstant REALCONSTANT NAME
         | INTCONSTANT NAME
         | REALCONSTANT NAME
         ;
 
 /*
- * NED-2: Message subclassing
+ * NED-2: Message subclassing (no shift-reduce conflict here)
  */
 
 cppinclude
@@ -1360,7 +1391,7 @@ opt_enumfields
         ;
 
 enumfields
-        : enumfield enumfields
+        : enumfields enumfield
         | enumfield
         ;
 
@@ -1466,7 +1497,7 @@ opt_properties
         ;
 
 properties
-        : property properties
+        : properties property
         | property
         ;
 
@@ -1505,7 +1536,7 @@ opt_fields
         ;
 
 fields
-        : field fields
+        : fields field
         | field
         ;
 
@@ -1585,7 +1616,6 @@ fieldvalue
         ;
 
 opt_semicolon : ';' | ;
-comma_or_semicolon : ',' | ';' | ;
 
 %%
 

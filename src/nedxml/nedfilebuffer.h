@@ -54,16 +54,52 @@ class NEDFileBuffer
     char *stripComment(const char *s, int numlines);
 
   public:
+    /**
+     * Constructor.
+     */
     NEDFileBuffer();
+
+    /**
+     * Destructor.
+     */
     ~NEDFileBuffer();
 
+    /**
+     * Reads NED file given with its filename.
+     *
+     * @see setData()
+     */
     bool readFile(const char *filename);
+
+    /**
+     * Uses literal NED text.
+     *
+     * @see readFile()
+     */
     bool setData(const char *data);
 
+    /**
+     * Returns pointer to a text region defined by (beg-line, beg-col) and
+     * (end-line, end-col). The text is NOT copied, only a null character
+     * is written temporarily into the stored string at (end-line, end-col) --
+     * this also means you should NOT keep more than one pointer returned by
+     * get()!
+     */
     const char *get(YYLTYPE pos);
 
+    /**
+     * Returns comment at top of file. Uses get()!
+     */
     const char *getFileComment();
+
+    /**
+     * Returns banner comment above text range passed in pos. Uses get()!
+     */
     const char *getBannerComment(YYLTYPE pos);
+
+    /**
+     * Returns trailing comment below text range passed in pos. Uses get()!
+     */
     const char *getTrailingComment(YYLTYPE pos);
 };
 

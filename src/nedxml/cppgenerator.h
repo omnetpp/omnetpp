@@ -62,9 +62,27 @@ class NEDCppGenerator
     NEDSymbolTable *symboltable;
 
   public:
+    /**
+     * Constructor. It expects two streams on which it will write the generated code
+     * (stream for the C++ source code and stream for the C++ header),
+     * and the symbol table.
+     */
     NEDCppGenerator(ostream& out, ostream& outh, NEDSymbolTable *symtab);
+
+    /**
+     * Destructor.
+     */
     ~NEDCppGenerator();
+
+    /**
+     * Set indentation in generated C++ source. Default is 4 spaces.
+     */
     void setIndentSize(int indentsize);
+
+    /**
+     * Generate C++ source code. Code will be written to the streams given
+     * to the constructor.
+     */
     void generate(NEDElement *node);
 
   protected:
@@ -75,7 +93,12 @@ class NEDCppGenerator
     void generateChildren(NEDElement *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void generateChildrenWithTags(NEDElement *node, const char *tags, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void generateChildrenExceptTags(NEDElement *node, const char *tags, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    /// Find given expression node in parent.
     ExpressionNode *findExpression(NEDElement *parent, const char *target);
+    /// If expression consists of a constant, return its pointer, NULL otherwise.
+    ConstNode *getConstantExpression(ExpressionNode *node);
+    /// Find first child in node which has given attribute with given value.
+    NEDElement *findFirstChildWithAttribute(NEDElement *node, int tagcode, const char *attr, const char *attrvalue);
 
     void writeProlog(ostream& out);
     void printTemporaryVariables(const char *indent);
@@ -107,7 +130,7 @@ class NEDCppGenerator
     void doSubstmachines(SubstmachinesNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doSubstmachine(SubstmachineNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doConnections(ConnectionsNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void resolveGate(const char *var, const char *indent, const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex);
+    void resolveGate(const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex);
     void doConnection(ConnectionNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doConnattr(ConnAttrNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doForloop(ForLoopNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);

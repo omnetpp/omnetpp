@@ -35,7 +35,16 @@ class NEDBasicValidator : public NEDValidatorBase
     void checkExpressionAttributes(NEDElement *node, const char *attrs[], bool optional[], int n);
 
   public:
+    /**
+     * Constructor. Bool argument specifies if the validator should expect
+     * parsed or unparsed expressions in the tree (This affects the validation
+     * process.)
+     */
     NEDBasicValidator(bool parsedExpr) {parsedExpressions=parsedExpr;}
+
+    /**
+     * Destructor.
+     */
     virtual ~NEDBasicValidator() {}
 
     virtual void validateElement(NedFilesNode *node);

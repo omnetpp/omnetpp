@@ -40,10 +40,31 @@ class NEDGenerator
     ostream& out;
 
   public:
+    /**
+     * Constructor. Takes an output stream where the generated NED code
+     * will be written.
+     */
     NEDGenerator(ostream& out);
+
+    /**
+     * Destructor.
+     */
     ~NEDGenerator();
+
+    /**
+     * Sets the indent size in the generated NED code. Default is 4 spaces.
+     */
     void setIndentSize(int indentsize);
+
+    /**
+     * Sets if new NED syntax (e.g. using curly braces like module { ... }
+     * instead of module ... endmodule) should be used. Default is true.
+     */
     void setNewSyntax(bool value);
+
+    /**
+     * Generates NED code. Takes object tree and base indentation.
+     */
     void generate(NEDElement *node, const char *indent);
 
   protected:

@@ -386,7 +386,12 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     }
     else if (!strcmp(funcname,"sizeof"))
     {
-        // FIXME handle...
+        //ASSERT( op1 && op1->getTagCode()==NED_IDENT);
+        const char *name = ((IdentNode *)op1)->getName();
+
+        // find among local module gates
+        // if not found, find among submodules
+
         return;
     }
     else if (!strcmp(funcname,"input"))
@@ -434,7 +439,7 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     }
     else // unknown
     {
-        out << "(findFunction(\"" << funcname << "\")->f)";
+        out << "_getFunction(\"" << funcname << "\")";
     }
 
     out << "(";

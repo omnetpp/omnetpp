@@ -111,28 +111,170 @@ class NEDElement
 
     /** @name Generic access to attributes (Methods have to be redefined in subclasses!) */
     //@{
+
+    /**
+     * Sets every attribute to its default value (as returned by getAttributeDefault()).
+     * Attributes without a default value are not affected.
+     *
+     * This method is called from the constructors of derived classes.
+     */
     virtual void applyDefaults();
+
+    /**
+     * Pure virtual method, it should be redefined in subclasses to return
+     * the number of attributes defined in the DTD.
+     */
     virtual int getNumAttributes() const = 0;
+
+    /**
+     * Pure virtual method, it should be redefined in subclasses to return
+     * the name of the kth attribute as defined in the DTD.
+     *
+     * It should return NULL if k is out of range (i.e. negative or greater than
+     * getNumAttributes()).
+     */
     virtual const char *getAttributeName(int k) const = 0;
+
+    /**
+     * Returns the index of the given attribute. It returns -1 if the attribute
+     * is not found. Relies on getNumAttributes() and getAttributeName().
+     */
     virtual int lookupAttribute(const char *attr) const;
+
+    /**
+     * Pure virtual method, it should be redefined in subclasses to return
+     * the value of the kth attribute (i.e. the attribute with the name
+     * getAttributeName(k)).
+     *
+     * It should return NULL if k is out of range (i.e. negative or greater than
+     * getNumAttributes()).
+     */
     virtual const char *getAttribute(int k) const = 0;
+
+    /**
+     * Returns the value of the attribute with the given name.
+     * Relies on lookupAttribute() and getAttribute().
+     *
+     * It returns NULL if the given attribute is not found.
+     */
     virtual const char *getAttribute(const char *attr) const;
+
+    /**
+     * Pure virtual method, it should be redefined in subclasses to set
+     * the value of the kth attribute (i.e. the attribute with the name
+     * getAttributeName(k)).
+     *
+     * If k is out of range (i.e. negative or greater than getNumAttributes()),
+     * the call should be ignored.
+     */
     virtual void setAttribute(int k, const char *value) = 0;
+
+    /**
+     * Sets the value of the attribute with the given name.
+     * Relies on lookupAttribute() and setAttribute().
+     *
+     * If the given attribute is not found, the call has no effect.
+     */
     virtual void setAttribute(const char *attr, const char *value);
+
+    /**
+     * Pure virtual method, it should be redefined in subclasses to return
+     * the default value of the kth attribute, as defined in the DTD.
+     *
+     * It should return NULL if k is out of range (i.e. negative or greater than
+     * getNumAttributes()).
+     */
     virtual const char *getAttributeDefault(int k) const = 0;
+
+    /**
+     * Returns the default value of the given attribute, as defined in the DTD.
+     * Relies on lookupAttribute() and getAttributeDefault().
+     *
+     * It returns NULL if the given attribute is not found.
+     */
     virtual const char *getAttributeDefault(const char *attr) const;
     //@}
 
     /** @name Generic access to children and siblings */
     //@{
+
+    /**
+     * Returns the parent element, or NULL if this element has no parent.
+     */
     virtual NEDElement *getParent() const;
+
+    /**
+     * Returns pointer to the first child element, or NULL if this element
+     * has no children.
+     */
     virtual NEDElement *getFirstChild() const;
+
+    /**
+     * Returns pointer to the last child element, or NULL if this element
+     * has no children.
+     */
     virtual NEDElement *getLastChild() const;
+
+    /**
+     * Returns pointer to the next sibling of this element (i.e. the next child
+     * in the parent element). Return NULL if there're no subsequent elements.
+     *
+     * getFirstChild() and getNextSibling() can be used to loop through
+     * the child list:
+     *
+     * <pre>
+     * for (NEDElement *child=node->getFirstChild(); child; child = child->getNextSibling())
+     * {
+     *    ...
+     * }
+     * </pre>
+     *
+     */
     virtual NEDElement *getNextSibling() const;
+
+    /**
+     * Appends the given element at the end of the child element list.
+     *
+     * The node pointer passed should not be NULL.
+     */
     virtual void appendChild(NEDElement *node);
+
+    /**
+     * Inserts the given element just before the specified child element
+     * in the child element list.
+     *
+     * The where element must be a child of this element.
+     * The node pointer passed should not be NULL.
+     */
     virtual void insertChildBefore(NEDElement *where, NEDElement *newnode);
+
+    /**
+     * Removes the given element from the child element list.
+     *
+     * The pointer passed should be a child of this element.
+     */
     virtual NEDElement *removeChild(NEDElement *node);
+
+    /**
+     * Returns pointer to the first child element with the given tag code,
+     * or NULL if this element has no such children.
+     */
     virtual NEDElement *getFirstChildWithTag(int tagcode) const;
+
+    /**
+     * Returns pointer to the next sibling of this element with the given
+     * tag code. Return NULL if there're no such subsequent elements.
+     *
+     * getFirstChildWithTag() and getNextSiblingWithTag() are a convient way
+     * to loop through elements with a certain tag code in the child list:
+     *
+     * <pre>
+     * for (NEDElement *child=node->getFirstChildWithTag(tagcode); child; child = child->getNextSiblingWithTag(tagcode))
+     * {
+     *     ...
+     * }
+     * </pre>
+     */
     virtual NEDElement *getNextSiblingWithTag(int tagcode) const;
     //@}
 };
