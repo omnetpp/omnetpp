@@ -1,0 +1,466 @@
+# Microsoft Developer Studio Generated NMAKE File, Based on token.dsp
+!IF "$(CFG)" == ""
+CFG=token - Win32 Debug Tkenv
+!MESSAGE No configuration specified. Defaulting to token - Win32 Debug Tkenv.
+!ENDIF 
+
+!IF "$(CFG)" != "token - Win32 Debug Tkenv" && "$(CFG)" != "token - Win32 Debug Cmdenv" && "$(CFG)" != "token - Win32 Release Tkenv" && "$(CFG)" != "token - Win32 Release Cmdenv"
+!MESSAGE Invalid configuration "$(CFG)" specified.
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "token.mak" CFG="token - Win32 Debug Tkenv"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "token - Win32 Debug Tkenv" (based on "Win32 (x86) Console Application")
+!MESSAGE "token - Win32 Debug Cmdenv" (based on "Win32 (x86) Console Application")
+!MESSAGE "token - Win32 Release Tkenv" (based on "Win32 (x86) Console Application")
+!MESSAGE "token - Win32 Release Cmdenv" (based on "Win32 (x86) Console Application")
+!MESSAGE 
+!ERROR An invalid configuration is specified.
+!ENDIF 
+
+!IF "$(OS)" == "Windows_NT"
+NULL=
+!ELSE 
+NULL=nul
+!ENDIF 
+
+!IF  "$(CFG)" == "token - Win32 Debug Tkenv"
+
+OUTDIR=.\.
+INTDIR=.\debug
+# Begin Custom Macros
+OutDir=.\.
+# End Custom Macros
+
+ALL : "$(OUTDIR)\token.exe"
+
+
+CLEAN :
+	-@erase "$(INTDIR)\tknmods_n.obj"
+	-@erase "$(INTDIR)\tknring_n.obj"
+	-@erase "$(INTDIR)\token.obj"
+	-@erase "$(INTDIR)\vc60.idb"
+	-@erase "$(INTDIR)\vc60.pdb"
+	-@erase "$(OUTDIR)\token.exe"
+	-@erase "$(OUTDIR)\token.ilk"
+	-@erase "$(OUTDIR)\token.pdb"
+
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+CPP=cl.exe
+CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\src\sim" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\token.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+
+.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.c{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+RSC=rc.exe
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\token.bsc" 
+BSC32_SBRS= \
+	
+LINK32=link.exe
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\token.pdb" /debug /machine:I386 /out:"$(OUTDIR)\token.exe" /pdbtype:sept /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@" 
+LINK32_OBJS= \
+	"$(INTDIR)\tknmods_n.obj" \
+	"$(INTDIR)\tknring_n.obj" \
+	"$(INTDIR)\token.obj"
+
+"$(OUTDIR)\token.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) @<<
+  $(LINK32_FLAGS) $(LINK32_OBJS)
+<<
+
+!ELSEIF  "$(CFG)" == "token - Win32 Debug Cmdenv"
+
+OUTDIR=.\.
+INTDIR=.\debug
+# Begin Custom Macros
+OutDir=.\.
+# End Custom Macros
+
+ALL : "$(OUTDIR)\token.exe"
+
+
+CLEAN :
+	-@erase "$(INTDIR)\tknmods_n.obj"
+	-@erase "$(INTDIR)\tknring_n.obj"
+	-@erase "$(INTDIR)\token.obj"
+	-@erase "$(INTDIR)\vc60.idb"
+	-@erase "$(INTDIR)\vc60.pdb"
+	-@erase "$(OUTDIR)\token.exe"
+	-@erase "$(OUTDIR)\token.ilk"
+	-@erase "$(OUTDIR)\token.pdb"
+
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+CPP=cl.exe
+CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\src\sim" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\token.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+
+.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.c{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+RSC=rc.exe
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\token.bsc" 
+BSC32_SBRS= \
+	
+LINK32=link.exe
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\token.pdb" /debug /machine:I386 /out:"$(OUTDIR)\token.exe" /pdbtype:sept /libpath:"..\..\lib" 
+LINK32_OBJS= \
+	"$(INTDIR)\tknmods_n.obj" \
+	"$(INTDIR)\tknring_n.obj" \
+	"$(INTDIR)\token.obj"
+
+"$(OUTDIR)\token.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) @<<
+  $(LINK32_FLAGS) $(LINK32_OBJS)
+<<
+
+!ELSEIF  "$(CFG)" == "token - Win32 Release Tkenv"
+
+OUTDIR=.\.
+INTDIR=.\release
+# Begin Custom Macros
+OutDir=.\.
+# End Custom Macros
+
+ALL : "$(OUTDIR)\token.exe"
+
+
+CLEAN :
+	-@erase "$(INTDIR)\tknmods_n.obj"
+	-@erase "$(INTDIR)\tknring_n.obj"
+	-@erase "$(INTDIR)\token.obj"
+	-@erase "$(INTDIR)\vc60.idb"
+	-@erase "$(OUTDIR)\token.exe"
+
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+CPP=cl.exe
+CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\src\sim" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\token.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+
+.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.c{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+RSC=rc.exe
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\token.bsc" 
+BSC32_SBRS= \
+	
+LINK32=link.exe
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\token.pdb" /machine:I386 /out:"$(OUTDIR)\token.exe" /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@" 
+LINK32_OBJS= \
+	"$(INTDIR)\tknmods_n.obj" \
+	"$(INTDIR)\tknring_n.obj" \
+	"$(INTDIR)\token.obj"
+
+"$(OUTDIR)\token.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) @<<
+  $(LINK32_FLAGS) $(LINK32_OBJS)
+<<
+
+!ELSEIF  "$(CFG)" == "token - Win32 Release Cmdenv"
+
+OUTDIR=.\.
+INTDIR=.\release
+# Begin Custom Macros
+OutDir=.\.
+# End Custom Macros
+
+ALL : "$(OUTDIR)\token.exe"
+
+
+CLEAN :
+	-@erase "$(INTDIR)\tknmods_n.obj"
+	-@erase "$(INTDIR)\tknring_n.obj"
+	-@erase "$(INTDIR)\token.obj"
+	-@erase "$(INTDIR)\vc60.idb"
+	-@erase "$(OUTDIR)\token.exe"
+
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+CPP=cl.exe
+CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\src\sim" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\token.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+
+.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.c{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+RSC=rc.exe
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\token.bsc" 
+BSC32_SBRS= \
+	
+LINK32=link.exe
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\token.pdb" /machine:I386 /out:"$(OUTDIR)\token.exe" /libpath:"..\..\lib" 
+LINK32_OBJS= \
+	"$(INTDIR)\tknmods_n.obj" \
+	"$(INTDIR)\tknring_n.obj" \
+	"$(INTDIR)\token.obj"
+
+"$(OUTDIR)\token.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) @<<
+  $(LINK32_FLAGS) $(LINK32_OBJS)
+<<
+
+!ENDIF 
+
+
+!IF "$(NO_EXTERNAL_DEPS)" != "1"
+!IF EXISTS("token.dep")
+!INCLUDE "token.dep"
+!ELSE 
+!MESSAGE Warning: cannot find "token.dep"
+!ENDIF 
+!ENDIF 
+
+
+!IF "$(CFG)" == "token - Win32 Debug Tkenv" || "$(CFG)" == "token - Win32 Debug Cmdenv" || "$(CFG)" == "token - Win32 Release Tkenv" || "$(CFG)" == "token - Win32 Release Cmdenv"
+SOURCE=.\tknmods.ned
+
+!IF  "$(CFG)" == "token - Win32 Debug Tkenv"
+
+InputPath=.\tknmods.ned
+InputName=tknmods
+
+".\tknmods_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "token - Win32 Debug Cmdenv"
+
+InputPath=.\tknmods.ned
+InputName=tknmods
+
+".\tknmods_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "token - Win32 Release Tkenv"
+
+InputPath=.\tknmods.ned
+InputName=tknmods
+
+".\tknmods_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "token - Win32 Release Cmdenv"
+
+InputPath=.\tknmods.ned
+InputName=tknmods
+
+".\tknmods_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ENDIF 
+
+SOURCE=.\tknmods_n.cpp
+
+"$(INTDIR)\tknmods_n.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\tknring.ned
+
+!IF  "$(CFG)" == "token - Win32 Debug Tkenv"
+
+InputPath=.\tknring.ned
+InputName=tknring
+
+".\tknring_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "token - Win32 Debug Cmdenv"
+
+InputPath=.\tknring.ned
+InputName=tknring
+
+".\tknring_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "token - Win32 Release Tkenv"
+
+InputPath=.\tknring.ned
+InputName=tknring
+
+".\tknring_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "token - Win32 Release Cmdenv"
+
+InputPath=.\tknring.ned
+InputName=tknring
+
+".\tknring_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ENDIF 
+
+SOURCE=.\tknring_n.cpp
+
+"$(INTDIR)\tknring_n.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\token.cpp
+
+"$(INTDIR)\token.obj" : $(SOURCE) "$(INTDIR)"
+
+
+
+!ENDIF 
+

@@ -1,0 +1,622 @@
+# Microsoft Developer Studio Generated NMAKE File, Based on fifo1.dsp
+!IF "$(CFG)" == ""
+CFG=fifo1 - Win32 Debug Tkenv
+!MESSAGE No configuration specified. Defaulting to fifo1 - Win32 Debug Tkenv.
+!ENDIF 
+
+!IF "$(CFG)" != "fifo1 - Win32 Debug Tkenv" && "$(CFG)" != "fifo1 - Win32 Debug Cmdenv" && "$(CFG)" != "fifo1 - Win32 Release Tkenv" && "$(CFG)" != "fifo1 - Win32 Release Cmdenv"
+!MESSAGE Invalid configuration "$(CFG)" specified.
+!MESSAGE You can specify a configuration when running NMAKE
+!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE 
+!MESSAGE NMAKE /f "fifo1.mak" CFG="fifo1 - Win32 Debug Tkenv"
+!MESSAGE 
+!MESSAGE Possible choices for configuration are:
+!MESSAGE 
+!MESSAGE "fifo1 - Win32 Debug Tkenv" (based on "Win32 (x86) Console Application")
+!MESSAGE "fifo1 - Win32 Debug Cmdenv" (based on "Win32 (x86) Console Application")
+!MESSAGE "fifo1 - Win32 Release Tkenv" (based on "Win32 (x86) Console Application")
+!MESSAGE "fifo1 - Win32 Release Cmdenv" (based on "Win32 (x86) Console Application")
+!MESSAGE 
+!ERROR An invalid configuration is specified.
+!ENDIF 
+
+!IF "$(OS)" == "Windows_NT"
+NULL=
+!ELSE 
+NULL=nul
+!ENDIF 
+
+!IF  "$(CFG)" == "fifo1 - Win32 Debug Tkenv"
+
+OUTDIR=.\.
+INTDIR=.\debug
+# Begin Custom Macros
+OutDir=.\.
+# End Custom Macros
+
+ALL : "$(OUTDIR)\fifo1.exe"
+
+
+CLEAN :
+	-@erase "$(INTDIR)\fifo1.obj"
+	-@erase "$(INTDIR)\fifo1_n.obj"
+	-@erase "$(INTDIR)\fifonet1_n.obj"
+	-@erase "$(INTDIR)\gen1.obj"
+	-@erase "$(INTDIR)\gen1_n.obj"
+	-@erase "$(INTDIR)\sink1.obj"
+	-@erase "$(INTDIR)\sink1_n.obj"
+	-@erase "$(INTDIR)\vc60.idb"
+	-@erase "$(INTDIR)\vc60.pdb"
+	-@erase "$(OUTDIR)\fifo1.exe"
+	-@erase "$(OUTDIR)\fifo1.ilk"
+	-@erase "$(OUTDIR)\fifo1.pdb"
+
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+CPP=cl.exe
+CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\src\sim" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fifo1.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+
+.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.c{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+RSC=rc.exe
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\fifo1.bsc" 
+BSC32_SBRS= \
+	
+LINK32=link.exe
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\fifo1.pdb" /debug /machine:I386 /out:"$(OUTDIR)\fifo1.exe" /pdbtype:sept /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@" 
+LINK32_OBJS= \
+	"$(INTDIR)\fifo1.obj" \
+	"$(INTDIR)\fifo1_n.obj" \
+	"$(INTDIR)\fifonet1_n.obj" \
+	"$(INTDIR)\gen1.obj" \
+	"$(INTDIR)\gen1_n.obj" \
+	"$(INTDIR)\sink1.obj" \
+	"$(INTDIR)\sink1_n.obj"
+
+"$(OUTDIR)\fifo1.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) @<<
+  $(LINK32_FLAGS) $(LINK32_OBJS)
+<<
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Debug Cmdenv"
+
+OUTDIR=.\.
+INTDIR=.\debug
+# Begin Custom Macros
+OutDir=.\.
+# End Custom Macros
+
+ALL : "$(OUTDIR)\fifo1.exe"
+
+
+CLEAN :
+	-@erase "$(INTDIR)\fifo1.obj"
+	-@erase "$(INTDIR)\fifo1_n.obj"
+	-@erase "$(INTDIR)\fifonet1_n.obj"
+	-@erase "$(INTDIR)\gen1.obj"
+	-@erase "$(INTDIR)\gen1_n.obj"
+	-@erase "$(INTDIR)\sink1.obj"
+	-@erase "$(INTDIR)\sink1_n.obj"
+	-@erase "$(INTDIR)\vc60.idb"
+	-@erase "$(INTDIR)\vc60.pdb"
+	-@erase "$(OUTDIR)\fifo1.exe"
+	-@erase "$(OUTDIR)\fifo1.ilk"
+	-@erase "$(OUTDIR)\fifo1.pdb"
+
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+CPP=cl.exe
+CPP_PROJ=/nologo /MLd /W3 /Gm /ZI /Od /I "..\..\src\sim" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fifo1.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+
+.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.c{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+RSC=rc.exe
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\fifo1.bsc" 
+BSC32_SBRS= \
+	
+LINK32=link.exe
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\fifo1.pdb" /debug /machine:I386 /out:"$(OUTDIR)\fifo1.exe" /pdbtype:sept /libpath:"..\..\lib" 
+LINK32_OBJS= \
+	"$(INTDIR)\fifo1.obj" \
+	"$(INTDIR)\fifo1_n.obj" \
+	"$(INTDIR)\fifonet1_n.obj" \
+	"$(INTDIR)\gen1.obj" \
+	"$(INTDIR)\gen1_n.obj" \
+	"$(INTDIR)\sink1.obj" \
+	"$(INTDIR)\sink1_n.obj"
+
+"$(OUTDIR)\fifo1.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) @<<
+  $(LINK32_FLAGS) $(LINK32_OBJS)
+<<
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Release Tkenv"
+
+OUTDIR=.\.
+INTDIR=.\release
+# Begin Custom Macros
+OutDir=.\.
+# End Custom Macros
+
+ALL : "$(OUTDIR)\fifo1.exe"
+
+
+CLEAN :
+	-@erase "$(INTDIR)\fifo1.obj"
+	-@erase "$(INTDIR)\fifo1_n.obj"
+	-@erase "$(INTDIR)\fifonet1_n.obj"
+	-@erase "$(INTDIR)\gen1.obj"
+	-@erase "$(INTDIR)\gen1_n.obj"
+	-@erase "$(INTDIR)\sink1.obj"
+	-@erase "$(INTDIR)\sink1_n.obj"
+	-@erase "$(INTDIR)\vc60.idb"
+	-@erase "$(OUTDIR)\fifo1.exe"
+
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+CPP=cl.exe
+CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\src\sim" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fifo1.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+
+.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.c{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+RSC=rc.exe
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\fifo1.bsc" 
+BSC32_SBRS= \
+	
+LINK32=link.exe
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\fifo1.pdb" /machine:I386 /out:"$(OUTDIR)\fifo1.exe" /libpath:"..\..\lib" /libpath:"@TK_LIB_PATH@" 
+LINK32_OBJS= \
+	"$(INTDIR)\fifo1.obj" \
+	"$(INTDIR)\fifo1_n.obj" \
+	"$(INTDIR)\fifonet1_n.obj" \
+	"$(INTDIR)\gen1.obj" \
+	"$(INTDIR)\gen1_n.obj" \
+	"$(INTDIR)\sink1.obj" \
+	"$(INTDIR)\sink1_n.obj"
+
+"$(OUTDIR)\fifo1.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) @<<
+  $(LINK32_FLAGS) $(LINK32_OBJS)
+<<
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Release Cmdenv"
+
+OUTDIR=.\.
+INTDIR=.\release
+# Begin Custom Macros
+OutDir=.\.
+# End Custom Macros
+
+ALL : "$(OUTDIR)\fifo1.exe"
+
+
+CLEAN :
+	-@erase "$(INTDIR)\fifo1.obj"
+	-@erase "$(INTDIR)\fifo1_n.obj"
+	-@erase "$(INTDIR)\fifonet1_n.obj"
+	-@erase "$(INTDIR)\gen1.obj"
+	-@erase "$(INTDIR)\gen1_n.obj"
+	-@erase "$(INTDIR)\sink1.obj"
+	-@erase "$(INTDIR)\sink1_n.obj"
+	-@erase "$(INTDIR)\vc60.idb"
+	-@erase "$(OUTDIR)\fifo1.exe"
+
+"$(OUTDIR)" :
+    if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
+
+"$(INTDIR)" :
+    if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
+
+CPP=cl.exe
+CPP_PROJ=/nologo /ML /W3 /O2 /I "..\..\src\sim" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\fifo1.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+
+.c{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.obj::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.c{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cpp{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+.cxx{$(INTDIR)}.sbr::
+   $(CPP) @<<
+   $(CPP_PROJ) $< 
+<<
+
+RSC=rc.exe
+BSC32=bscmake.exe
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\fifo1.bsc" 
+BSC32_SBRS= \
+	
+LINK32=link.exe
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /pdb:"$(OUTDIR)\fifo1.pdb" /machine:I386 /out:"$(OUTDIR)\fifo1.exe" /libpath:"..\..\lib" 
+LINK32_OBJS= \
+	"$(INTDIR)\fifo1.obj" \
+	"$(INTDIR)\fifo1_n.obj" \
+	"$(INTDIR)\fifonet1_n.obj" \
+	"$(INTDIR)\gen1.obj" \
+	"$(INTDIR)\gen1_n.obj" \
+	"$(INTDIR)\sink1.obj" \
+	"$(INTDIR)\sink1_n.obj"
+
+"$(OUTDIR)\fifo1.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
+    $(LINK32) @<<
+  $(LINK32_FLAGS) $(LINK32_OBJS)
+<<
+
+!ENDIF 
+
+
+!IF "$(NO_EXTERNAL_DEPS)" != "1"
+!IF EXISTS("fifo1.dep")
+!INCLUDE "fifo1.dep"
+!ELSE 
+!MESSAGE Warning: cannot find "fifo1.dep"
+!ENDIF 
+!ENDIF 
+
+
+!IF "$(CFG)" == "fifo1 - Win32 Debug Tkenv" || "$(CFG)" == "fifo1 - Win32 Debug Cmdenv" || "$(CFG)" == "fifo1 - Win32 Release Tkenv" || "$(CFG)" == "fifo1 - Win32 Release Cmdenv"
+SOURCE=.\fifo1.cpp
+
+"$(INTDIR)\fifo1.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\fifo1.ned
+
+!IF  "$(CFG)" == "fifo1 - Win32 Debug Tkenv"
+
+InputPath=.\fifo1.ned
+InputName=fifo1
+
+".\fifo1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Debug Cmdenv"
+
+InputPath=.\fifo1.ned
+InputName=fifo1
+
+".\fifo1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Release Tkenv"
+
+InputPath=.\fifo1.ned
+InputName=fifo1
+
+".\fifo1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Release Cmdenv"
+
+InputPath=.\fifo1.ned
+InputName=fifo1
+
+".\fifo1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ENDIF 
+
+SOURCE=.\fifo1_n.cpp
+
+"$(INTDIR)\fifo1_n.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\fifonet1.ned
+
+!IF  "$(CFG)" == "fifo1 - Win32 Debug Tkenv"
+
+InputPath=.\fifonet1.ned
+InputName=fifonet1
+
+".\fifonet1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Debug Cmdenv"
+
+InputPath=.\fifonet1.ned
+InputName=fifonet1
+
+".\fifonet1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Release Tkenv"
+
+InputPath=.\fifonet1.ned
+InputName=fifonet1
+
+".\fifonet1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Release Cmdenv"
+
+InputPath=.\fifonet1.ned
+InputName=fifonet1
+
+".\fifonet1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ENDIF 
+
+SOURCE=.\fifonet1_n.cpp
+
+"$(INTDIR)\fifonet1_n.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\gen1.cpp
+
+"$(INTDIR)\gen1.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\gen1.ned
+
+!IF  "$(CFG)" == "fifo1 - Win32 Debug Tkenv"
+
+InputPath=.\gen1.ned
+InputName=gen1
+
+".\gen1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Debug Cmdenv"
+
+InputPath=.\gen1.ned
+InputName=gen1
+
+".\gen1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Release Tkenv"
+
+InputPath=.\gen1.ned
+InputName=gen1
+
+".\gen1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Release Cmdenv"
+
+InputPath=.\gen1.ned
+InputName=gen1
+
+".\gen1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ENDIF 
+
+SOURCE=.\gen1_n.cpp
+
+"$(INTDIR)\gen1_n.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\sink1.cpp
+
+"$(INTDIR)\sink1.obj" : $(SOURCE) "$(INTDIR)"
+
+
+SOURCE=.\sink1.ned
+
+!IF  "$(CFG)" == "fifo1 - Win32 Debug Tkenv"
+
+InputPath=.\sink1.ned
+InputName=sink1
+
+".\sink1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Debug Cmdenv"
+
+InputPath=.\sink1.ned
+InputName=sink1
+
+".\sink1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Release Tkenv"
+
+InputPath=.\sink1.ned
+InputName=sink1
+
+".\sink1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ELSEIF  "$(CFG)" == "fifo1 - Win32 Release Cmdenv"
+
+InputPath=.\sink1.ned
+InputName=sink1
+
+".\sink1_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	<<tempfile.bat 
+	@echo off 
+	..\..\bin\nedc.exe -s _n.cpp $(InputName).ned
+<< 
+	
+
+!ENDIF 
+
+SOURCE=.\sink1_n.cpp
+
+"$(INTDIR)\sink1_n.obj" : $(SOURCE) "$(INTDIR)"
+
+
+
+!ENDIF 
+
