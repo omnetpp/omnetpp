@@ -1,7 +1,34 @@
-"methodAnimTest.boxedSink" "BoxedSink" "2" "180x185+319+52"
-"methodAnimTest" "MethodAnimTest" "2" "288x263+16+-1"
-"methodAnimTest.boxedGen" "BoxedGen" "2" "293x205+11+292"
-"methodAnimTest.boxedGen.boxedSink" "BoxedSink" "2" "202x185+318+272"
-"methodAnimTest.boxedSink" "boxedSink" "2" "294x185+375+63"
-"methodAnimTest.boxedGen" "boxedGen" "2" "293x205+8+271"
-"methodAnimTest.boxedGen.boxedSink" "boxedSink" "2" "345x185+309+292"
+# Tkenv configuration
+option updatefreq_fast	{50}
+option updatefreq_express	{10000}
+option stepdelay	{300 ms}
+option use_mainwindow	{1}
+option print_banners	{1}
+option animation_enabled	{1}
+option nexteventmarkers	{1}
+option senddirect_arrows	{1}
+option anim_methodcalls	{1}
+option animation_msgnames	{1}
+option animation_msgcolors	{1}
+option penguin_mode	{0}
+option animation_speed	{1}
+option bkpts_enabled	{1}
+config filtobjlist-name	{}
+config editor-findstring	{}
+config filtobjlist-class	{}
+config display-treeview	{1}
+config editor-backwards	{1}
+config filtobjlist-order	{Class}
+config editor-regexp	{0}
+config editor-whole-words	{0}
+config editor-case-sensitive	{0}
+inspector "methodAnimTest.boxedTarget" "BoxedTarget" "2" "337x185+465+146"
+inspector "methodAnimTest.boxedMod" "BoxedMod" "2" "318x205+72+375"
+inspector "methodAnimTest" "MethodAnimTest" "2" "328x306+16+-1"
+inspector "methodAnimTest.boxedSink" "BoxedSink" "2" "180x185+319+52"
+inspector "methodAnimTest.boxedSink" "boxedSink" "2" "294x185+375+63"
+inspector "methodAnimTest.boxedGen.boxedSink" "BoxedSink" "2" "202x185+318+272"
+inspector "methodAnimTest.boxedGen" "boxedGen" "2" "293x205+8+271"
+inspector "methodAnimTest.boxedGen.boxedSink" "boxedSink" "2" "345x185+309+292"
+inspector "methodAnimTest.boxedGen" "BoxedGen" "2" "297x237+13+347"
+

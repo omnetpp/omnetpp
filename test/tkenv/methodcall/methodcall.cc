@@ -1,60 +1,60 @@
 #include <omnetpp.h>
 
-class Sink : public cSimpleModule
+class Target : public cSimpleModule
 {
-    Module_Class_Members(Sink,cSimpleModule,0)
+    Module_Class_Members(Target,cSimpleModule,0)
     virtual void handleMessage(cMessage *msg);
   public:  
-    virtual void printX(int x);
+    virtual void doWhatever(int x);
 };
 
-void Sink::handleMessage(cMessage *msg)
+void Target::handleMessage(cMessage *msg)
 {
     delete msg;
 }
 
-void Sink::printX(int x)
+void Target::doWhatever(int x)
 {
-    Enter_Method("printX(%d)",x);
+    Enter_Method("doWhatever(%d)",x);
     ev << "x = " << x << endl;
 }
 
-Define_Module(Sink);
+Define_Module(Target);
 
-class Gen : public cSimpleModule
+class Mod : public cSimpleModule
 {
     int ctr;
-    Module_Class_Members(Gen,cSimpleModule,16384)
+    Module_Class_Members(Mod,cSimpleModule,16384)
     virtual void activity();
     void callPrintX(const char *modname);
 };
 
-Define_Module(Gen);
+Define_Module(Mod);
 
-void Gen::activity()
+void Mod::activity()
 {
     ctr = 0;
 
     // the following cases (hopefully) cover all equivalence classes for animation
-    callPrintX("boxedGen.sink");
-    callPrintX("boxedGen.boxedSink.sink");
+    callPrintX("boxedMod.target");
+    callPrintX("boxedMod.boxedTarget.target");
 
-    callPrintX("sink");
-    callPrintX("boxedSink.sink");
+    callPrintX("target");
+    callPrintX("boxedTarget.target");
 
-    for(;;) {new cMessage("heyho"); wait(1);}
+    //for(;;) {new cMessage("heyho"); wait(1);}
 }
 
-void Gen::callPrintX(const char *modname)
+void Mod::callPrintX(const char *modname)
 {
-    ev << "Calling printX() of module " << modname << endl;
-    Sink *target = dynamic_cast<Sink *>(simulation.moduleByPath(modname));
+    ev << "Calling doWhatever() of module " << modname << endl;
+    Target *target = dynamic_cast<Target *>(simulation.moduleByPath(modname));
     if (!target) error("target module not found");
 
     wait(0);
 
     ev << "Calling now:\n";
-    target->printX(ctr++);
+    target->doWhatever(ctr++);
     ev << "Back again in caller\n";
 
     wait(1);
