@@ -6,25 +6,41 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 
 #-----------
 # to be configured:
-$NEDTOOL = "d:\\home\\omnetpp\\bin\\nedtool.exe";
-$XSLTPROC = "d:\\home\\tools\\libxslt-1.0.27.win32\\util\\xsltproc.exe";
-$GNED = "d:\\home\\omnetpp\\bin\\gned.exe";
-$GHOSTSCRIPT = "d:\\home\\tools\\gs\\gs8.11\\bin\\gswin32c.exe";
+$NEDTOOL = "d:/home/omnetpp/bin/nedtool.exe";
+$XSLTPROC = "d:/home/tools/libxslt-1.0.27.win32/util/xsltproc.exe";
+$GNED = "d:/home/omnetpp/bin/gned.exe";
+$GHOSTSCRIPT = "d:/home/tools/gs/gs8.11/bin/gswin32c.exe";
 $GIFTRANS = "";
-$DOT = "d:\\home\\tools\\Graphviz\\bin\\dot.exe";
+$DOT = "d:/home/tools/Graphviz/bin/dot.exe";
 $PERL = "perl";
 #-----------
 
+# OS check
+use Config;
+
+#if ($Config{'archname'} =~ /cygwin/i || $ENV{TERM} =~ /cygwin/i)
+if ($Config{'archname'} =~ /cygwin/i)
+{
+    # forget cygwin: its /cygdrive/c/.. style paths are not understood by any normal program...
+    error("the Cygwin environment and Cygwin's perl are not supported, please\n".
+          "run this program from the Windows command prompt, or install MinGW instead of\n".
+          "Cygwin!");
+}
+
+$isWindows = ($ENV{OS} =~ /windows/i) ? 1 : 0;
+
+if ($isWindows && $ENV{OS} ne "Windows_NT")
+{
+    error("this program can only be used on Windows NT/2000/XP, but your OS environment variable says '$ENV{OS}'\n");
+}
+
 use Cwd;
 
-$progdir = $0;
-$progdir =~ s|/|\\|g;
-$progdir =~ s|[^\\:]*$|\\|g;
-$progdir = "." if ($progdir eq "");
+$progdir = directoryof($0);
 
 # assume the stylesheet and the postprocessor are in the same directory as we
-$NEDDOC_XSL = "$progdir\\neddoc.xsl";
-$NEDDOC_PL = "$progdir\\neddocproc.pl";
+$NEDDOC_XSL = "$progdir/neddoc.xsl";
+$NEDDOC_PL = "$progdir/neddocproc.pl";
 
 # process command-line options
 $outdir = "html";
@@ -38,7 +54,7 @@ $debug = 0;
 
 if ($DOT ne "")
 {
-    $have_dot = "y";
+    $have_dot = 1;
 }
 
 # process arg vector
@@ -48,8 +64,7 @@ while (@ARGV)
     if ($arg eq '-o')
     {
        shift @ARGV;
-       $outdir = $ARGV[0];
-       $outdir =~ s|/|\\|g;
+       $outdir = tobackslash($ARGV[0]);
     }
     elsif ($arg eq '-a' || $arg eq '--all')
     {
@@ -58,14 +73,12 @@ while (@ARGV)
     elsif ($arg eq '-d' || $arg eq '--doxyhtmldir')
     {
        shift @ARGV;
-       $doxyhtmldir = $ARGV[0];
-       $doxyhtmldir =~ s|/|\\|g;
+       $doxyhtmldir = tobackslash($ARGV[0]);
     }
     elsif ($arg eq '-t' || $arg eq '--doxytagfile')
     {
        shift @ARGV;
-       $doxytagfile = $ARGV[0];
-       $doxytagfile =~ s|/|\\|g;
+       $doxytagfile = tobackslash($ARGV[0]);
     }
     elsif ($arg eq '-n' || $arg eq '--no-figures')
     {
@@ -79,7 +92,7 @@ while (@ARGV)
     {
        $have_dot = 1;
     }
-    elsif ($arg eq '-D' || $arg eq '--debug')
+    elsif ($arg eq '-g' || $arg eq '--debug')
     {
        $debug = 1;
     }
@@ -120,7 +133,7 @@ if ($do_help)
     }
     print "Usage: opp_neddoc [-o <dir>] [-n] [-a] files-or-directories ...\n";
     print " -s, --silent do not print what it is doing\n";
-    print " -D, --debug  print invocations of external programs and other info\n";
+    print " -g, --debug  print invocations of external programs and other info\n";
     print " -a, --all    process all *.ned and *.msg files recursively\n";
     print "              ('opp_neddoc -a' is equivalent to 'opp_neddoc .')\n";
     print " -o <dir>     output directory, defaults to ./html\n";
@@ -144,24 +157,22 @@ if ($do_help)
     exit(0);
 }
 
+# print platform
+print (($isWindows ? "windows" : "unix"), " environment detected\n") if $debug;
+
 # we need backslashes in file names
-$NEDTOOL =~ s|/|\\|g;
-$XSLTPROC =~ s|/|\\|g;
-$GNED =~ s|/|\\|g;
-$GHOSTSCRIPT =~ s|/|\\|g;
-$GIFTRANS =~ s|/|\\|g;
-$DOT =~ s|/|\\|g;
-$PERL =~ s|/|\\|g;
-$NEDDOC_XSL =~ s|/|\\|g;
-$NEDDOC_PL =~ s|/|\\|g;
+$NEDTOOL = tobackslash($NEDTOOL);
+$XSLTPROC = tobackslash($XSLTPROC);
+$GNED = tobackslash($GNED);
+$GHOSTSCRIPT = tobackslash($GHOSTSCRIPT);
+$GIFTRANS = tobackslash($GIFTRANS);
+$DOT = tobackslash($DOT);
+$PERL = tobackslash($PERL);
+$NEDDOC_XSL = tobackslash($NEDDOC_XSL);
+$NEDDOC_PL = tobackslash($NEDDOC_PL);
 
 
-# OS check
-if ($ENV{"OS"} ne "Windows_NT")
-{
-    error("this program can only be used on Windows NT/2000/XP, but your OS environment variable says '$ENV{OS}'\n");
-}
-
+# purge output directory
 if (! -d $outdir)
 {
     print "creating directory $outdir\n" if $debug;
@@ -169,12 +180,13 @@ if (! -d $outdir)
 }
 else
 {
-   runprog("del /s /q $outdir\\* >nul")==0 || error("cannot clean output directory '$outdir' from old files");
+    delete_recursive($outdir)==0 || error("cannot clean output directory '$outdir' from old files");
 }
+
 print "collecting files...\n" if $verbose;
 if ($all_files eq "")
 {
-    runprog("dir /s /b *.ned *.msg >$outdir\\filelist.txt")==0 || error("error creating the file list");
+    collect_files(".", "$outdir/filelist.txt")==0 || error("error creating the file list");
 }
 else
 {
@@ -186,15 +198,14 @@ else
 
     while (@ARGV)
     {
-        $arg = shift @ARGV;
-        $arg =~ s|/|\\|g;
+        $arg = tobackslash(shift @ARGV);
         if (-d "$arg")
         {
-            runprog("dir /s /b $arg\\*.ned $arg\\*.msg >>$outdir\\filelist.txt")==0 || error("error creating the file list");
+            collect_files($arg, "$outdir/filelist.txt")==0 || error("error creating the file list");
         }
         else
         {
-            runprog("echo $arg >>$outdir\\filelist.txt")==0 || error("error creating the file list");
+            runprog("echo $arg >>".tobackslash("$outdir/filelist.txt"))==0 || error("error creating the file list");
         }
         shift;
     }
@@ -202,57 +213,55 @@ else
 
 # make file names in filelist.txt relative to current directory; also weed out
 # file names not ending in .ned or .msg (i.e. backup files ending in .ned~0)
-$currentdir = cwd();
-$currentdir =~ s|/|\\|g;
-rename("$outdir\\filelist.txt", "$outdir\\filelist.tmp");
-open FLIN, "$outdir\\filelist.tmp";
-open FLOUT, ">$outdir\\filelist.txt";
+$currentdir = tobackslash(cwd());
+rename("$outdir/filelist.txt", "$outdir/filelist.tmp");
+open FLIN, "$outdir/filelist.tmp";
+open FLOUT, ">$outdir/filelist.txt";
 while (<FLIN>)
 {
+    s/[\r\n]*$//;  # for Cygwin, chomp is not enough
     next if (!/.ned$/ && !/.msg$/);
-    s|^\Q$currentdir\E\\*||;
-    print FLOUT;
+    s|^\Q$currentdir\E[\\/]*||;
+    print FLOUT $_, "\n";
 }
 close FLOUT;
 close FLIN;
-unlink("$outdir\\filelist.tmp");
+unlink("$outdir/filelist.tmp") if (!debug);
 
 #
 # now start the real job
 #
 print "transforming to xml...\n" if $verbose;
-runprog("$NEDTOOL -x -e -t -y -m -o $outdir\\inputfiles.xml \@$outdir\\filelist.txt")==0 || error("error");
+runprog("$NEDTOOL -x -e -t -y -m -o $outdir/inputfiles.xml \@$outdir/filelist.txt")==0 || error("error");
 
 if ($screenshots)
 {
     if ($GHOSTSCRIPT ne "")
     {
-        print "exporting screenshots in Postscript using GNED...\n";
-        $nedfilesonly = `type $outdir\\filelist.txt`;
-        #runprog("$GNED >nul -- -c $outdir -e jpg $nedfilesonly")==0 || error("error invoking GNED");
-        runprog("$GNED -- -c $outdir -e jpg \@$outdir\\filelist.txt >nul")==0 || error("error invoking GNED");
-        print "converting Postscript to JPG with Ghostscript...\n";
+        print "exporting screenshots in Postscript using GNED...\n" if $verbose;
+        runprog("$GNED -- -c $outdir -e jpg \@$outdir/filelist.txt >nul")==0 || error("error invoking GNED");
+        print "converting Postscript to JPG with Ghostscript...\n" if $verbose;
         foreach $i (glob("$outdir/*.eps"))
         {
-           print "#";
+           print "#" if (!$debug && $verbose);
            $jpg = $i;
            $jpg =~ s/eps$/jpg/;
-           runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >>$outdir\\gs.err")==0 || error("error invoking Ghostscript");
+           runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >>$outdir/gs.err")==0 || error("error invoking Ghostscript");
         }
-        print "\n";
+        print "\n" if (!$debug && $verbose);
 
-        if (-s "$outdir\\gs.err")
+        if (-s "$outdir/gs.err")
         {
-           print "see Ghostscript warnings in $outdir\\gs.err\n";
+           print "see Ghostscript warnings in $outdir/gs.err\n" if $verbose;
         }
 
         # hack: must convert $outdir to absolute path, otherwise xslt will take it
         # as relative to the sylesheet (@#$#@$!!)
-        $imagesxml = absolutepath("$outdir\\images.xml");
+        $imagesxml = absolutepath("$outdir/images.xml");
     }
     else
     {
-        print "skipping diagram exporting (no Postscript-to-JPG converter configured)";
+        print "skipping diagram exporting (no Postscript-to-JPG converter configured)" if $verbose;
         $imagesxml = "";
     }
 }
@@ -267,24 +276,24 @@ print "applying XSLT stylesheet...\n" if $verbose;
 $xsltcommand = "$XSLTPROC".
                " --stringparam outputdir \"".toslash($outdir)."\"".
                " --stringparam imagesxml \"".toslash($imagesxml)."\"".
-               " --stringparam document-unassigned-params \"$unassignedpars\"".
-               " --stringparam have_dot \"$have_dot\"".
+               " --stringparam document-unassigned-params \"".($unassignedpars?"y":"n")."\"".
+               " --stringparam have_dot \"".($have_dot?"y":"n")."\"".
                " --stringparam doxytagfile \"".toslash($doxytagfile)."\"".
                " --stringparam doxyhtmldir \"".toslash($doxyhtmldir)."\"".
                " --output nul".
-               " $NEDDOC_XSL $outdir\\inputfiles.xml";
+               " $NEDDOC_XSL $outdir/inputfiles.xml";
 runprog($xsltcommand)==0 || error("error invoking xsltproc");
 
 if ($have_dot)
 {
-    print "generating diagrams via DOT...\n";
+    print "generating diagrams via DOT...\n" if $verbose;
     foreach $i (glob("$outdir/*.dot"))
     {
-       print "#";
+       print "#" if (!$debug && $verbose);
        $gif = $i; $gif =~ s/dot$/gif/;
        $map = $i; $map =~ s/dot$/map/;
-       runprog("$DOT -Tgif  <$i >$gif 2>>$outdir\\dot.err")==0 || error("error invoking DOT");
-       runprog("$DOT -Tcmap <$i >$map 2>>$outdir\\dot.err")==0 || error("error invoking DOT");
+       runprog("$DOT -Tgif  <$i >$gif 2>>$outdir/dot.err")==0 || error("error invoking DOT");
+       runprog("$DOT -Tcmap <$i >$map 2>>$outdir/dot.err")==0 || error("error invoking DOT");
        if ($GIFTRANS ne "")
        {
            rename($gif, "$gif.tmp");
@@ -292,10 +301,10 @@ if ($have_dot)
            unlink("$gif.tmp");
        }
     }
-    print "\n";
-    if (-s "$outdir\\dot.err")
+    print "\n" if (!$debug && $verbose);
+    if (-s "$outdir/dot.err")
     {
-       print "see warnings from $DOT in $outdir\\dot.err\n";
+       print "see warnings from $DOT in $outdir/dot.err\n" if $verbose;
     }
 }
 
@@ -313,7 +322,7 @@ if (!$debug)
 }
 else
 {
-    print "debug mode -- leaving intermediate files in $outdir/\n";
+    print "intermediate files left in $outdir/ (debug mode doesn't delete them)\n";
 }
 
 print "documentation created in $outdir/ -- start page is index.html\n" if $verbose;
@@ -328,10 +337,17 @@ sub runprog
 
 sub absolutepath
 {
-    my $filename = shift;
-    $absfilename = `dir /s /b $filename`;
-    chomp($absfilename);
-    if ($absfilename eq "") {error("'$filename' does not exist");}
+    my $filename = tobackslash(shift);
+    if ($isWindows) {
+        # COMSPEC is necessary to prevent getting other "dir" programs in the path
+        $absfilename = `$ENV{COMSPEC} /c dir /s /b $filename`;
+        if ($?) {error("'$filename' does not exist")}
+        chomp($absfilename);
+    } else {
+        $absfilename = $filename;
+        $absfilename = cwd()."/".$filename if (!($filename =~ /^\//));
+        if (! -f $absfilename) {error("'$filename' does not exist");}
+    }
     $absfilename;
 }
 
@@ -345,7 +361,7 @@ sub error
 sub tobackslash
 {
     my $f = shift;
-    $f =~ s|/|\\|g;
+    $f =~ s|/|\\|g if $isWindows;
     $f;
 }
 
@@ -354,5 +370,37 @@ sub toslash
     my $f = shift;
     $f =~ s|\\|/|g;
     $f;
+}
+
+sub directoryof
+{
+    my $dir = shift;
+    $dir =~ s|[^/\\:]*$||g;
+    $dir = "." if ($dir eq "");
+    $dir;
+}
+
+sub delete_recursive
+{
+    my $dir = tobackslash(shift);
+    if ($isWindows) {
+        # COMSPEC is necessary to prevent getting other "del" programs in the path
+        runprog("$ENV{COMSPEC} /c del /s /q $dir\\* >nul");
+    } else {
+        runprog("rm -rf $dir/*");
+    }
+
+}
+
+sub collect_files
+{
+    my $dir = tobackslash(shift);
+    my $listfile = tobackslash(shift);
+    if ($isWindows) {
+        # COMSPEC is necessary to prevent getting other "dir" programs in the path
+        runprog("$ENV{COMSPEC} /c dir /s /b $dir\\*.ned $dir\\*.msg >>$listfile");
+    } else {
+        runprog("find $dir -name '*.ned' -o -name '*.msg' >>$listfile");
+    }
 }
 
