@@ -173,10 +173,12 @@ sub readfile()
     if (!open(IN,"$fname")) {
         return '';
     }
+    # convert files to Unix style (with LF), discard trailing blank lines and spaces at end of lines
     $txt = '';
     while (<IN>)
     {
         s/[\r\n]*$//;
+        s/ +$//;
         $txt.= $_."\n";
     }
     close IN;
