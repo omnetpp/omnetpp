@@ -126,4 +126,5 @@
   - all sources checked in under CVS
   - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
   - version.log renamed to ChangeLog
-
+July 11, 1999
+  - small fixes and enhancements
