@@ -380,7 +380,7 @@ cObject *cObject::findObject(const char *objname, bool deep)
     {
         // recursively
         cRecursiveObjectFinderVisitor v(objname);
-        v.process(this);
+        forEachChild(&v);
         return v.getResult();
     }
     else
