@@ -1683,31 +1683,31 @@ Most of the above tools support tracking down memory leaks as well as
 detecting double deletion, writing past the end of an allocated block, etc.
 
 
-\subsubsection{Poor man's memory leak debugger}
-
-However, if you don't have such tools, you can use the basic
-heap debugging code in Cmdenv. It is disabled by default;
-to turn it on, you have to uncomment the \ttt{\#defines}
-in \ttt{src/envir/cmdenv/heap.cc}:
-
-\begin{longtable}{l@{\qquad}p{10cm}}
-\fmac{HEAPCHECK} & checks heap on new/delete\\
-\fmac{COUNTBLOCKS} & counts blocks on heap and tells it if none left\\
-\fmac{ALLOCTABLE} & remembers pointers and reports heap contents if only LASTN
-blocks remained\\
-\fmac{DISPLAYALL} & reports every new/delete\\
-\fmac{DISPSTRAYS} & reports deleting of pointers that were not registered
-by operator new or that were deleted since then\\
-\fmac{BKPT} &  calls a function at a specified new/delete; you can set a
-breakpoint to that function\\
-\end{longtable}
-
-
-If \fmac{COUNTBLOCKS} is turned on, you should see the
-\texttt{[heap.cc-DEBUG:ALL BLOCKS FREED OK]} message at the end of the
-simulation. If you do not see it, it means that some blocks have not
-been freed up properly, that is, your simulation program is likely to
-have memory leaks\index{memory leaks}.
+% \subsubsection{Poor man's memory leak debugger}
+%
+% However, if you don't have such tools, you can use the basic
+% heap debugging code in Cmdenv. It is disabled by default;
+% to turn it on, you have to uncomment the \ttt{\#defines}
+% in \ttt{src/envir/cmdenv/heap.cc}:
+%
+% \begin{longtable}{l@{\qquad}p{10cm}}
+% \fmac{HEAPCHECK} & checks heap on new/delete\\
+% \fmac{COUNTBLOCKS} & counts blocks on heap and tells it if none left\\
+% \fmac{ALLOCTABLE} & remembers pointers and reports heap contents if only LASTN
+% blocks remained\\
+% \fmac{DISPLAYALL} & reports every new/delete\\
+% \fmac{DISPSTRAYS} & reports deleting of pointers that were not registered
+% by operator new or that were deleted since then\\
+% \fmac{BKPT} &  calls a function at a specified new/delete; you can set a
+% breakpoint to that function\\
+% \end{longtable}
+%
+%
+% If \fmac{COUNTBLOCKS} is turned on, you should see the
+% \texttt{[heap.cc-DEBUG:ALL BLOCKS FREED OK]} message at the end of the
+% simulation. If you do not see it, it means that some blocks have not
+% been freed up properly, that is, your simulation program is likely to
+% have memory leaks\index{memory leaks}.
 
 
 

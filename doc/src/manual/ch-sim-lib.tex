@@ -2526,29 +2526,29 @@ calls are simply ignored.
 
 
 
-\subsection{Disabling warnings}
-
-Some container classes and functions suspend the simulation and issue
-warning messages in potentially bogus/dangerous situations, for
-example when an object is not found and NULL pointer/reference is
-about to be returned. Very often this is useful, but sometimes it is
-more trouble. You can turn warnings on/off from the ini file
-(warnings=yes/no)\index{ini file!warnings}.
-
-
-It is a good practice to leave warnings\index{warnings} enabled, and
-temporarily disable warnings in places where {\opp} would normally
-issue warnings but you know the code is correct. This is done in the
-following way:
-
-\begin{verbatim}
-bool w = simulation.warnings();
-simulation.setWarnings( false );
-...
-... // critical code
-...
-simulation.setWarnings( w );
-\end{verbatim}
+% \subsection{Disabling warnings}
+%
+% Some container classes and functions suspend the simulation and issue
+% warning messages in potentially bogus/dangerous situations, for
+% example when an object is not found and NULL pointer/reference is
+% about to be returned. Very often this is useful, but sometimes it is
+% more trouble. You can turn warnings on/off from the ini file
+% (warnings=yes/no)\index{ini file!warnings}.
+%
+%
+% It is a good practice to leave warnings\index{warnings} enabled, and
+% temporarily disable warnings in places where {\opp} would normally
+% issue warnings but you know the code is correct. This is done in the
+% following way:
+%
+% \begin{verbatim}
+% bool w = simulation.warnings();
+% simulation.setWarnings( false );
+% ...
+% ... // critical code
+% ...
+% simulation.setWarnings( w );
+% \end{verbatim}
 
 
 

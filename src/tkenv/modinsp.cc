@@ -327,7 +327,7 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     {
         // perhaps we should use the size of the 1st element in the vector?
         int rx = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, (sx+sy)*submod->size()/4);
-        int ry = resolveNumericDispStrArg(ds.getTagArg("p",3), submod, rx);
+        int ry = resolveNumericDispStrArg(ds.getTagArg("p",4), submod, rx);
 
         x += (int) floor(rx - rx*sin(submod->index()*2*PI/submod->size()));
         y += (int) floor(ry - ry*cos(submod->index()*2*PI/submod->size()));
