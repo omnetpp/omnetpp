@@ -222,23 +222,36 @@ void cGate::setIndex(int sn, int vs)
 
 void cGate::connectTo(cGate *g, cChannel *chan)
 {
-    // if it was connected before, notify envir that old conn gets removed
-    if (togatep) ev.connectionRemoved(this);   // FIXME combine ev.Removed() and Created() into one???
-
-    // break old connection
-    // FIXME not good (what about g->fromgatep->togatep???) should raise error
-    // if g is already connected!!! RETHINK full connection business!
-    g->fromgatep = NULL;
+    if (togatep)
+        throw new cException(this, "connectTo(): gate already connected");
+    if (!g)
+        throw new cException(this, "connectTo(): destination gate cannot be NULL pointer");
+    if (g->fromgatep)
+        throw new cException(this, "connectTo(): destination gate already connected");
 
     // build new connection
     togatep = g;
     togatep->fromgatep = this;
+    if (chan)
+        setChannel(chan);
 
-    // replace old channel (or delete it if chan==NULL)
-    setChannel(chan);
+    ev.connectionCreated(this);
+}
 
-    // TBD introduce disconnect?
-    if (g) ev.connectionCreated(this);
+void cGate::disconnect()
+{
+    if (!togatep) return;
+
+    // notify envir that old conn gets removed
+    ev.connectionRemoved(this);
+
+    // remove connection
+    togatep->fromgatep = NULL;
+    togatep = NULL;
+
+    // and channel object
+    dropAndDelete(channelp);
+    channelp = NULL;
 }
 
 void cGate::setFrom(cGate *g)
