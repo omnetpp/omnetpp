@@ -71,7 +71,7 @@ class SIM_API cTransientDetection : public cObject
     /**
      * Copy constructor.
      */
-    cTransientDetection(_CONST cTransientDetection& r) : cObject() {setName(r.name());operator=(r);}
+    cTransientDetection(const cTransientDetection& r) : cObject() {setName(r.name());operator=(r);}
 
     /**
      * Constructor.
@@ -151,7 +151,7 @@ class SIM_API cTransientDetection : public cObject
     /**
      * Returns a pointer to the host object.
      */
-    virtual cStatistic *hostObject() _CONST  {return back;}
+    virtual cStatistic *hostObject() const  {return back;}
     //@}
 };
 
@@ -174,7 +174,7 @@ class SIM_API cAccuracyDetection : public cObject
     /**
      * Copy constructor.
      */
-    cAccuracyDetection(_CONST cAccuracyDetection& r) : cObject() {setName(r.name());operator=(r);}
+    cAccuracyDetection(const cAccuracyDetection& r) : cObject() {setName(r.name());operator=(r);}
 
     /**
      * Constructor.
@@ -254,7 +254,7 @@ class SIM_API cAccuracyDetection : public cObject
     /**
      * Returns a pointer to the host object.
      */
-    virtual cStatistic *hostObject() _CONST  {return back;}
+    virtual cStatistic *hostObject() const  {return back;}
     //@}
 };
 
@@ -294,7 +294,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     /**
      * Copy constructor.
      */
-    cTDExpandingWindows(_CONST cTDExpandingWindows& r);
+    cTDExpandingWindows(const cTDExpandingWindows& r);
 
     /**
      * Constructor.
@@ -312,7 +312,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
      * Assignment operator. The name member doesn't get copied; see cObject's
      * operator=() for more details.
      */
-    cTDExpandingWindows& operator=(_CONST cTDExpandingWindows& res);
+    cTDExpandingWindows& operator=(const cTDExpandingWindows& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -335,7 +335,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     /**
      * Returns true if end of transient has been detected.
      */
-    virtual bool detected() _CONST {return transval;}
+    virtual bool detected() const {return transval;}
 
     /**
      * Resets detection algorithm.
@@ -408,7 +408,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     /**
      * Copy constructor.
      */
-    cADByStddev(_CONST cADByStddev& r);
+    cADByStddev(const cADByStddev& r);
 
     /**
      * Constructor.
@@ -426,7 +426,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cADByStddev& operator=(_CONST cADByStddev& res);
+    cADByStddev& operator=(const cADByStddev& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -449,7 +449,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     /**
      * Returns true if required accuracy has been reached.
      */
-    virtual bool detected() _CONST {return resaccval;}
+    virtual bool detected() const {return resaccval;}
 
     /**
      * Resets detection algorithm.

@@ -35,7 +35,7 @@ Register_Class( cPSquare )
 
 //=========================================================================
 //
-cPSquare::cPSquare(_CONST cPSquare& r) : cDensityEstBase()
+cPSquare::cPSquare(const cPSquare& r) : cDensityEstBase()
 {
     setName( r.name() );
     operator=(r);
@@ -64,7 +64,7 @@ cPSquare::~cPSquare()
     delete[] n;
 }
 
-cPSquare& cPSquare::operator=(_CONST cPSquare& res)
+cPSquare& cPSquare::operator=(const cPSquare& res)
 {
     if (this==&res) return *this;
 
@@ -243,7 +243,7 @@ void cPSquare::collectTransformed(double val)
 }
 #endif
 
-double cPSquare::random() _CONST
+double cPSquare::random() const
 {
     double s;
     int k, l;
@@ -279,7 +279,7 @@ double cPSquare::random() _CONST
     return dblrand()*(q[k]-q[l])+q[l];
 }
 
-int cPSquare::cells() _CONST
+int cPSquare::cells() const
 {
     if (numobs<2)
        return 0;
@@ -289,12 +289,12 @@ int cPSquare::cells() _CONST
        return numcells;
 }
 
-double cPSquare::basepoint(int k) _CONST
+double cPSquare::basepoint(int k) const
 {
     return q[k+1];
 }
 
-double cPSquare::cell(int k) _CONST
+double cPSquare::cell(int k) const
 {
     return n[k+2] - n[k+1] + (k==0);
 }
@@ -312,7 +312,7 @@ void cPSquare::writeContents(ostream& os)
 
 }
 
-double cPSquare::cdf(double x) _CONST
+double cPSquare::cdf(double x) const
 {
    // returns 0..1; uses linear approximation between two markers
    for (int i=1; i<numcells+2 ; i++)
@@ -321,7 +321,7 @@ double cPSquare::cdf(double x) _CONST
    return 1.0;
 }
 
-double cPSquare::pdf(double x) _CONST
+double cPSquare::pdf(double x) const
 {
    // returns 0..1; assumes constant PDF within a cell
    for (int i=1 ; i<numcells+2 ; i++)
@@ -330,7 +330,7 @@ double cPSquare::pdf(double x) _CONST
    return 0;
 }
 
-void cPSquare::saveToFile(FILE *f) _CONST
+void cPSquare::saveToFile(FILE *f) const
 {
    cDensityEstBase::saveToFile(f);
 

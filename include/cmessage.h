@@ -113,7 +113,7 @@ class SIM_API cMessage : public cObject
     /**
      * Copy constructor, creates an exact copy of the argument msg.
      */
-    cMessage(_CONST cMessage& msg);
+    cMessage(const cMessage& msg);
 
     /**
      * Constructor.
@@ -129,7 +129,7 @@ class SIM_API cMessage : public cObject
      * Assignment operator. Duplication and the assignment operator work all right with cMessage.
      * The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cMessage& operator=(_CONST cMessage& msg);
+    cMessage& operator=(const cMessage& msg);
     //@}
 
     /** @name Redefined cObject functions. */
@@ -144,7 +144,7 @@ class SIM_API cMessage : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST  {return new cMessage(*this);}
+    virtual cObject *dup() const  {return new cMessage(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -238,37 +238,37 @@ class SIM_API cMessage : public cObject
     /**
      * Returns message kind.
      */
-    int  kind() _CONST     {return msgkind;}
+    int  kind() const     {return msgkind;}
 
     /**
      * Returns message priority.
      */
-    int  priority() _CONST {return prior;}
+    int  priority() const {return prior;}
 
     /**
      * Returns message length.
      */
-    long length() _CONST   {return len;}
+    long length() const   {return len;}
 
     /**
      * Returns true if bit error flag is set, false otherwise.
      */
-    bool hasBitError() _CONST {return error;}
+    bool hasBitError() const {return error;}
 
     /**
      * Returns the message's time stamp.
      */
-    simtime_t timestamp() _CONST {return tstamp;}
+    simtime_t timestamp() const {return tstamp;}
 
     /**
      * FIXME: INTERNAL: Used by cMessageHeap.
      */
-    unsigned long insertOrder() _CONST {return insertordr;}
+    unsigned long insertOrder() const {return insertordr;}
 
     /**
      * Returns the context pointer.
      */
-    void *contextPointer() _CONST {return contextptr;}
+    void *contextPointer() const {return contextptr;}
     //@}
 
     /** @name Parameter list. */
@@ -319,7 +319,7 @@ class SIM_API cMessage : public cObject
     /**
      * Check if a parameter exists.
      */
-    bool hasPar(const char *s) _CONST {return findPar(s)>=0;}
+    bool hasPar(const char *s) const {return findPar(s)>=0;}
     //@}
 
     /** @name Message encapsulation. */
@@ -341,7 +341,7 @@ class SIM_API cMessage : public cObject
     /**
      * Returns a pointer to the encapsulated message, or NULL.
      */
-    cMessage *encapsulatedMsg() _CONST {return encapmsg;}
+    cMessage *encapsulatedMsg() const {return encapmsg;}
     //@}
 
     /** @name Sending/arrival information. */
@@ -350,12 +350,12 @@ class SIM_API cMessage : public cObject
     /**
      * Return true if message was posted by scheduleAt().
      */
-    bool isSelfMessage() _CONST {return togate==-1;}
+    bool isSelfMessage() const {return togate==-1;}
 
     /**
      * Return true if message is among future events.
      */
-    bool isScheduled() _CONST {return heapindex!=-1;}
+    bool isScheduled() const {return heapindex!=-1;}
 
     /**
      * Returns pointers to the gate from which the message was sent and
@@ -434,7 +434,7 @@ class SIM_API cMessage : public cObject
      * affects message appearance in Tkenv.
      * This default implementation returns "".
      */
-    virtual const char *displayString() _CONST;
+    virtual const char *displayString() const;
 
     /**
      * Static function that compares two messages by their delivery times,

@@ -53,7 +53,7 @@ class SIM_API cEnum : public cObject
     /**
      * Copy constructor.
      */
-    cEnum(_CONST cEnum& cenum);
+    cEnum(const cEnum& cenum);
 
     /**
      * Constructor.
@@ -69,7 +69,7 @@ class SIM_API cEnum : public cObject
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cEnum& operator=(_CONST cEnum& list);
+    cEnum& operator=(const cEnum& list);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -84,7 +84,7 @@ class SIM_API cEnum : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST  {return new cEnum(*this);}
+    virtual cObject *dup() const  {return new cEnum(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

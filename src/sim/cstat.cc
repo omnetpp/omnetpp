@@ -41,7 +41,7 @@ Register_Class( cWeightedStdDev )
 //=========================================================================
 // cStatistic - almost all functions are inline
 
-cStatistic::cStatistic(_CONST cStatistic& r) : cObject()
+cStatistic::cStatistic(const cStatistic& r) : cObject()
 {
     setName(r.name());
     td=NULL;
@@ -57,7 +57,7 @@ cStatistic::cStatistic(const char *name) :
     genk=0;
 }
 
-cStatistic& cStatistic::operator=(_CONST cStatistic& res)   //--VA
+cStatistic& cStatistic::operator=(const cStatistic& res)   //--VA
 {
     if (this==&res) return *this;
 
@@ -66,10 +66,10 @@ cStatistic& cStatistic::operator=(_CONST cStatistic& res)   //--VA
     if (td && td->owner()==this)  free(td);
     if (ra && ra->owner()==this)  free(ra);
     td = res.td;
-    if (td && td->owner()==CONSTCAST(cStatistic*,&res))
+    if (td && td->owner()==const_cast<cStatistic*>(&res))
         take( td = (cTransientDetection *)td->dup() );
     ra = res.ra;
-    if (ra && ra->owner()==CONSTCAST(cStatistic*,&res))
+    if (ra && ra->owner()==const_cast<cStatistic*>(&res))
         take( ra = (cAccuracyDetection *)ra->dup() );
     return *this;
 }
@@ -136,7 +136,7 @@ void cStdDev::info(char *buf)
     sprintf( buf+strlen(buf), " (n=%ld)", num_samples);
 }
 
-cStdDev& cStdDev::operator=(_CONST cStdDev& res)
+cStdDev& cStdDev::operator=(const cStdDev& res)
 {
     if (this==&res) return *this;
 
@@ -173,7 +173,7 @@ void cStdDev::collect(double val)
     if (accuracyDetectionObject()) ra->collect(val);   //NL
 }
 
-double cStdDev::variance() _CONST
+double cStdDev::variance() const
 {
     if (num_samples<=1)
         return 0.0;
@@ -187,7 +187,7 @@ double cStdDev::variance() _CONST
     }
 }
 
-double cStdDev::stddev() _CONST
+double cStdDev::stddev() const
 {
     return sqrt( variance() );
 }
@@ -212,7 +212,7 @@ void cStdDev::clearResult()
     sum_samples=sqrsum_samples=min_samples=max_samples=0;
 }
 
-double cStdDev::random() _CONST
+double cStdDev::random() const
 {
     switch( num_samples )
     {
@@ -222,7 +222,7 @@ double cStdDev::random() _CONST
     }
 }
 
-void cStdDev::saveToFile(FILE *f) _CONST
+void cStdDev::saveToFile(FILE *f) const
 {
     fprintf(f,"\n#\n# (%s) %s\n#\n", className(), fullPath());
     fprintf(f,"%ld\t #= num_samples\n",num_samples);
@@ -243,7 +243,7 @@ void cStdDev::loadFromFile(FILE *f)
 //==========================================================================
 // cWeightedStdDev - member functions
 
-cWeightedStdDev& cWeightedStdDev::operator=(_CONST cWeightedStdDev& res)
+cWeightedStdDev& cWeightedStdDev::operator=(const cWeightedStdDev& res)
 {
     if (this==&res) return *this;
 
@@ -264,7 +264,7 @@ void cWeightedStdDev::clearResult()
     sum_weights=0.0;
 }
 
-double cWeightedStdDev::variance() _CONST
+double cWeightedStdDev::variance() const
 {
     opp_error("(%s)%s: variance()/stddev() not implemented",
                       className(), fullName());
@@ -283,7 +283,7 @@ double cWeightedStdDev::variance() _CONST
     //}
 }
 
-void cWeightedStdDev::saveToFile(FILE *f) _CONST
+void cWeightedStdDev::saveToFile(FILE *f) const
 {
     cStdDev::saveToFile(f);
     fprintf(f,"%g\t #= sum_weights\n",sum_weights);

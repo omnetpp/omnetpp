@@ -53,7 +53,7 @@ class SIM_API cMessageHeap : public cObject
     /**
      * Copy constructor.
      */
-    cMessageHeap(_CONST cMessageHeap& msgq);
+    cMessageHeap(const cMessageHeap& msgq);
 
     /**
      * Constructor.
@@ -69,7 +69,7 @@ class SIM_API cMessageHeap : public cObject
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cMessageHeap& operator=(_CONST cMessageHeap& msgqueue);
+    cMessageHeap& operator=(const cMessageHeap& msgqueue);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -84,7 +84,7 @@ class SIM_API cMessageHeap : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST  {return new cMessageHeap(*this);}
+    virtual cObject *dup() const  {return new cMessageHeap(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -118,7 +118,7 @@ class SIM_API cMessageHeap : public cObject
     /**
      * Peek the first message in the heap (the one with the smallest timestamp.)
      */
-    cMessage *peekFirst() _CONST;
+    cMessage *peekFirst() const;
 
     /**
      * Remove and return the first message in the heap (the one
@@ -145,12 +145,12 @@ class SIM_API cMessageHeap : public cObject
     /**
      * Returns the number of messages in the heap.
      */
-    int length() _CONST {return n;}
+    int length() const {return n;}
 
     /**
      * Returns true if the heap is empty.
      */
-    bool empty() _CONST {return n==0;}
+    bool empty() const {return n==0;}
     //@}
 };
 
@@ -171,12 +171,12 @@ class SIM_API cMessageHeapIterator
     /**
      * Constructor.
      */
-    cMessageHeapIterator(_CONST cMessageHeap& mh)  {q=CONSTCAST(cMessageHeap*,&mh);pos=1;} //FIXME: not correct?
+    cMessageHeapIterator(const cMessageHeap& mh)  {q=const_cast<cMessageHeap*>(&mh);pos=1;} //FIXME: not correct?
 
     /**
      * Reinitializes the iterator object.
      */
-    void init(_CONST cMessageHeap& mh) {q=CONSTCAST(cMessageHeap*,&mh);pos=1;}
+    void init(const cMessageHeap& mh) {q=const_cast<cMessageHeap*>(&mh);pos=1;}
 
     /**
      * Returns the current object.
@@ -192,7 +192,7 @@ class SIM_API cMessageHeapIterator
     /**
      * Returns true if the iterator has reached the end of the list.
      */
-    bool end() _CONST                  {return (bool)(pos>q->n);}
+    bool end() const                  {return (bool)(pos>q->n);}
 };
 
 #endif

@@ -158,7 +158,7 @@ class SIM_API cObject
      * Copy constructor. In derived classes, it is usually implemented
      * as <tt>{operator=(obj);</tt>
      */
-    cObject(_CONST cObject& obj);
+    cObject(const cObject& obj);
 
     /**
      * Create object with no name and default owner.
@@ -189,7 +189,7 @@ class SIM_API cObject
      * In derived classes, it is usually implemented as
      * <tt>return new cObject(*this)</tt>.
      */
-    virtual cObject *dup() _CONST    {return new cObject(*this);}
+    virtual cObject *dup() const    {return new cObject(*this);}
 
     /**
      * Direct call to the virtual destructor. This function is used
@@ -206,7 +206,7 @@ class SIM_API cObject
      * If you want to copy the name string, you can do it by hand:
      * <tt>setName(o.name()</tt>).
      */
-    cObject& operator=(_CONST cObject& o);
+    cObject& operator=(const cObject& o);
     //@}
 
     /** @name Handling the name string.
@@ -271,7 +271,7 @@ class SIM_API cObject
      * This function is used by the setOwner() and drop() member functions.
      * drop() is used in container classes derived from cObject.
      */
-    virtual cObject *defaultOwner() _CONST;
+    virtual cObject *defaultOwner() const;
     //@}
 
     /** @name Ownership control flag.
@@ -294,7 +294,7 @@ class SIM_API cObject
      * should automatically take ownership of the objects that are inserted
      * into it.
      */
-    bool takeOwnership() _CONST   {return tkownership;}
+    bool takeOwnership() const   {return tkownership;}
     //@}
 
     /** @name Reflection, support for debugging and snapshots. */
@@ -418,7 +418,7 @@ class SIM_API cObject
      * respectively. (The storage class is determined by the constructor,
      * with some help from cObject's operator new().)
      */
-    char storage() _CONST         {return stor;}
+    char storage() const         {return stor;}
 
     /**
      * cObject's operator new does more than the global new().

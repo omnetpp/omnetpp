@@ -363,7 +363,7 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, char 
    }
 
    if (par->type()=='S')
-     interp->result = CONST_CAST(par->stringValue());
+     interp->result = const_cast<char*>(par->stringValue());
    else
      sprintf(interp->result, "%g", par->doubleValue());
 

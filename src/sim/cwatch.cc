@@ -30,7 +30,7 @@
 //==========================================================================
 //=== cWatch - member functions
 
-cWatch::cWatch(_CONST cWatch& vs) : cObject()
+cWatch::cWatch(const cWatch& vs) : cObject()
 {
       setName(vs.name());
       operator=(vs);

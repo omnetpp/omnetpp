@@ -48,7 +48,7 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cPSquare(_CONST cPSquare& r);
+    cPSquare(const cPSquare& r);
 
     /**
      * Constructor.
@@ -63,7 +63,7 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cPSquare& operator=(_CONST cPSquare& res);
+    cPSquare& operator=(const cPSquare& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -78,7 +78,7 @@ class SIM_API cPSquare : public cDensityEstBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST   {return new cPSquare(*this);}
+    virtual cObject *dup() const   {return new cPSquare(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -154,39 +154,39 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * Returns the number of cells used.
      */
-    virtual int cells() _CONST;
+    virtual int cells() const;
 
     /**
      * Returns the kth cell boundary. Note that because of the P2 algorithm,
      * cell boundaries are shifting during data collection, thus cell() and
      * other methods based on cell() and basepoint() return approximate values.
      */
-    virtual double basepoint(int k) _CONST;
+    virtual double basepoint(int k) const;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k) _CONST;
+    virtual double cell(int k) const;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x) _CONST;
+    virtual double cdf(double x) const;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x) _CONST;
+    virtual double pdf(double x) const;
 
     /**
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      */
-    virtual double random() _CONST;
+    virtual double random() const;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) _CONST;
+    virtual void saveToFile(FILE *) const;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().

@@ -93,7 +93,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     /**
      * Copy constructor.
      */
-    cVarHistogram(_CONST cVarHistogram& r) : cHistogramBase(r)
+    cVarHistogram(const cVarHistogram& r) : cHistogramBase(r)
        {setName(r.name());bin_bounds=NULL;operator=(r);}
 
     /**
@@ -112,7 +112,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cVarHistogram& operator=(_CONST cVarHistogram& res);
+    cVarHistogram& operator=(const cVarHistogram& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -127,7 +127,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST    {return new cVarHistogram(*this);}
+    virtual cObject *dup() const    {return new cVarHistogram(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -167,32 +167,32 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     /**
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      */
-    virtual double random() _CONST;
+    virtual double random() const;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x) _CONST; // --LG
+    virtual double pdf(double x) const; // --LG
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x) _CONST; // --LG
+    virtual double cdf(double x) const; // --LG
 
     /**
      * Returns the kth cell boundary.
      */
-    virtual double basepoint(int k) _CONST; // --LG
+    virtual double basepoint(int k) const; // --LG
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k) _CONST;
+    virtual double cell(int k) const;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) _CONST; //--LG
+    virtual void saveToFile(FILE *) const; //--LG
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().

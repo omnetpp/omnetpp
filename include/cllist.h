@@ -69,7 +69,7 @@ class SIM_API cLinkedList : public cObject
     // internal use.
     // if both dupfunc and itemsize are 0, we do no memory management
     // (we treat pointers as mere pointers)
-    sLLElem *find_llelem(void *item) _CONST;
+    sLLElem *find_llelem(void *item) const;
 
     // internal use
     void insbefore_llelem(sLLElem *p, void *item);
@@ -90,7 +90,7 @@ class SIM_API cLinkedList : public cObject
      * so that the new list will have its own copy of them. By default,
      * there's no duplication function so only the pointers are copied.
      */
-    cLinkedList(_CONST cLinkedList& llist);
+    cLinkedList(const cLinkedList& llist);
 
     /**
      * Constructor. It accepts the object name.
@@ -109,7 +109,7 @@ class SIM_API cLinkedList : public cObject
      * Contained items are treated as configured with configPointer().
      * By default, only pointers are copied.
      */
-    cLinkedList& operator=(_CONST cLinkedList& queue);
+    cLinkedList& operator=(const cLinkedList& queue);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -125,7 +125,7 @@ class SIM_API cLinkedList : public cObject
      * Contained items are treated as configured with configPointer().
      * By default, only pointers are copied.
      */
-    virtual cObject *dup() _CONST  {return new cLinkedList(*this);}
+    virtual cObject *dup() const  {return new cLinkedList(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -198,13 +198,13 @@ class SIM_API cLinkedList : public cObject
      * Returns the first item in the list or NULL pointer if the list
      * is empty.
      */
-    void *head() _CONST  {return n!=0 ? headp->item : NULL;}
+    void *head() const  {return n!=0 ? headp->item : NULL;}
 
     /**
      * Returns the last item in the list or NULL pointer if the list
      * is empty.
      */
-    void *tail() _CONST  {return n!=0 ? tailp->item : NULL;}
+    void *tail() const  {return n!=0 ? tailp->item : NULL;}
 
     /**
      * Unlinks and returns the given item. If the item is not in the list,
@@ -221,17 +221,17 @@ class SIM_API cLinkedList : public cObject
     /**
      * Returns the number of items contained in the list.
      */
-    int length() _CONST {return n;}
+    int length() const {return n;}
 
     /**
      * Returns true if the list is empty.
      */
-    bool empty() _CONST {return n==0;}
+    bool empty() const {return n==0;}
 
     /**
      * Returns true if the list contains the given pointer.
      */
-    bool contains(void *item) _CONST  {return find_llelem(item)!=NULL;}
+    bool contains(void *item) const  {return find_llelem(item)!=NULL;}
 
     /**
      * As a result, the container will be empty. Contained items will
@@ -264,25 +264,25 @@ class SIM_API cLinkedListIterator
      * The current item will be the first (if athead==1, default) or the last
      * (if athead==0) item in the list.
      */
-    cLinkedListIterator(_CONST cLinkedList& q, int athead=1)  //FIXME: make bool!
+    cLinkedListIterator(const cLinkedList& q, int athead=1)  //FIXME: make bool!
             {p=&q ? (athead ? q.headp : q.tailp) : NO(sLLElem);}
 
     /**
      * Reinitializes the iterator object.
      */
-    void init(_CONST cLinkedList& q, int athead=1)
+    void init(const cLinkedList& q, int athead=1)
             {p=&q ? (athead ? q.headp : q.tailp) : NO(sLLElem);}
 
     /**
      * Returns the current item.
      */
-    void *operator()() _CONST        {return p->item;}
+    void *operator()() const        {return p->item;}
 
     /**
      * Returns true if we have reached the end (with operator++) or the beginning
      * (with operator--) of the list.
      */
-    bool end() _CONST                {return (bool)(p==NULL);}
+    bool end() const                {return (bool)(p==NULL);}
 
     /**
      * Returns the current item and steps to the next one.

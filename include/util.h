@@ -485,14 +485,14 @@ class SIM_API opp_string
     /**
      * Returns pointer to the string.
      */
-    operator const char *() _CONST    {return str;}
+    operator const char *() const    {return str;}
 
     /**
      * Returns pointer to the internal buffer where the string is stored.
      * It is allowed to write into the string via this pointer, but the
      * length of the string should not be exceeded.
      */
-    char *buffer() _CONST        {return str;}
+    char *buffer() const        {return str;}
 
     /**
      * Deletes the old value and opp_strdup()'s the new value
@@ -504,7 +504,7 @@ class SIM_API opp_string
     /**
      * Assignment.
      */
-    opp_string& operator=(_CONST opp_string& s)
+    opp_string& operator=(const opp_string& s)
                                {delete str;str=opp_strdup(s.str);return *this;}
 };
 

@@ -62,18 +62,18 @@ class SIM_API sTopoNode
     /**
      * Returns the ID of the network module to which this node corresponds.
      */
-    int moduleId() _CONST         {return module_id;}
+    int moduleId() const         {return module_id;}
 
     /**
      * Returns the pointer to the network module to which this node corresponds.
      */
-    cModule *module() _CONST           {return &simulation[module_id];}
+    cModule *module() const           {return &simulation[module_id];}
 
     /**
      * Returns the weight of this node. Weight is used with the
      * weighted shortest path finder methods of cTopology.
      */
-    double weight() _CONST        {return wgt;}
+    double weight() const        {return wgt;}
 
     /**
      * Sets the weight of this node. Weight is used with the
@@ -85,7 +85,7 @@ class SIM_API sTopoNode
      * Returns true of this node is enabled. This has significance
      * with the shortest path finder methods of cTopology.
      */
-    bool enabled() _CONST         {return enabl;}
+    bool enabled() const         {return enabl;}
 
     /**
      * Enable this node. This has significance with the shortest path
@@ -106,7 +106,7 @@ class SIM_API sTopoNode
     /**
      * Returns the number of incoming links to this graph node.
      */
-    int inLinks() _CONST          {return num_in_links;}
+    int inLinks() const          {return num_in_links;}
 
     /**
      * Returns ith incoming link of graph node.
@@ -116,7 +116,7 @@ class SIM_API sTopoNode
     /**
      * Returns the number of outgoing links from this graph node.
      */
-    int outLinks() _CONST         {return num_out_links;}
+    int outLinks() const         {return num_out_links;}
 
     /**
      * Returns ith outgoing link of graph node.
@@ -130,20 +130,20 @@ class SIM_API sTopoNode
     /**
      * Returns the distance of this node to the target node.
      */
-    double distanceToTarget() _CONST   {return dist;}
+    double distanceToTarget() const   {return dist;}
 
     /**
      * Returns the number of shortest paths towards the target node.
      * (There might be several paths with the same lengths.)
      */
-    int paths() _CONST                 {return out_path?1:0;}
+    int paths() const                 {return out_path?1:0;}
 
     /**
      * Returns the next link in the ith shortest paths towards the
      * target node. (There might be several paths with the same
      * lengths.)
      */
-    sTopoLinkOut *path(int) _CONST     {return (sTopoLinkOut *)out_path;}
+    sTopoLinkOut *path(int) const     {return (sTopoLinkOut *)out_path;}
     //@}
 };
 
@@ -168,7 +168,7 @@ class SIM_API sTopoLink
      * Returns the weight of this link. Weight is used with the
      * weighted shortest path finder methods of cTopology.
      */
-    double weight() _CONST        {return wgt;}
+    double weight() const        {return wgt;}
 
     /**
      * Sets the weight of this link. Weight is used with the
@@ -180,7 +180,7 @@ class SIM_API sTopoLink
      * Returns true of this link is enabled. This has significance
      * with the shortest path finder methods of cTopology.
      */
-    bool enabled() _CONST         {return enabl;}
+    bool enabled() const         {return enabl;}
 
     /**
      * Enables this link. This has significance with the shortest path
@@ -214,27 +214,27 @@ class SIM_API sTopoLinkIn : public sTopoLink
      * this connection is the sTopoNode object whose method returned
      * this sTopoLinkIn object.
      */
-    sTopoNode *remoteNode() _CONST  {return src_node;}
+    sTopoNode *remoteNode() const  {return src_node;}
 
     /**
      * Returns the gate ID at the remote end of this connection.
      */
-    int remoteGateId() _CONST  {return src_gate;}
+    int remoteGateId() const  {return src_gate;}
 
     /**
      * Returns the gate ID at the local end of this connection.
      */
-    int localGateId() _CONST   {return dest_gate;}
+    int localGateId() const   {return dest_gate;}
 
     /**
      * Returns the gate at the remote end of this connection.
      */
-    cGate *remoteGate() _CONST      {return src_node->module()->gate(src_gate);}
+    cGate *remoteGate() const      {return src_node->module()->gate(src_gate);}
 
     /**
      * Returns the gate at the local end of this connection.
      */
-    cGate *localGate() _CONST       {return dest_node->module()->gate(dest_gate);}
+    cGate *localGate() const       {return dest_node->module()->gate(dest_gate);}
 };
 
 
@@ -256,27 +256,27 @@ class SIM_API sTopoLinkOut : public sTopoLink
      * this connection is the sTopoNode object whose method returned
      * this sTopoLinkIn object.
      */
-    sTopoNode *remoteNode() _CONST  {return dest_node;}
+    sTopoNode *remoteNode() const  {return dest_node;}
 
     /**
      * Returns the gate ID at the remote end of this connection.
      */
-    int remoteGateId() _CONST  {return dest_gate;}
+    int remoteGateId() const  {return dest_gate;}
 
     /**
      * Returns the gate ID at the local end of this connection.
      */
-    int localGateId() _CONST   {return src_gate;}
+    int localGateId() const   {return src_gate;}
 
     /**
      * Returns the gate at the remote end of this connection.
      */
-    cGate *remoteGate() _CONST      {return dest_node->module()->gate(dest_gate);}
+    cGate *remoteGate() const      {return dest_node->module()->gate(dest_gate);}
 
     /**
      * Returns the gate at the local end of this connection.
      */
-    cGate *localGate() _CONST       {return src_node->module()->gate(src_gate);}
+    cGate *localGate() const       {return src_node->module()->gate(src_gate);}
 };
 
 
@@ -320,7 +320,7 @@ class SIM_API cTopology : public cObject
     /**
      * Copy constructor.
      */
-    cTopology(_CONST cTopology& topo);
+    cTopology(const cTopology& topo);
 
     /**
      * Destructor.
@@ -330,7 +330,7 @@ class SIM_API cTopology : public cObject
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cTopology& operator=(_CONST cTopology& topo);
+    cTopology& operator=(const cTopology& topo);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -345,7 +345,7 @@ class SIM_API cTopology : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST     {return new cTopology(*this);}
+    virtual cObject *dup() const     {return new cTopology(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -419,7 +419,7 @@ class SIM_API cTopology : public cObject
     /**
      * Returns the number of nodes in the graph.
      */
-    int nodes() _CONST  {return num_nodes;}
+    int nodes() const  {return num_nodes;}
 
     /**
      * Returns pointer to the ith node in the graph. sTopoNode's methods
@@ -456,7 +456,7 @@ class SIM_API cTopology : public cObject
      * Returns the node that was passed to the most recently called
      * shortest path finding function.
      */
-    sTopoNode *targetNode() _CONST {return target;}
+    sTopoNode *targetNode() const {return target;}
     //@}
 };
 

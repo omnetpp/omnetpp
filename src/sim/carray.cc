@@ -40,7 +40,7 @@ Register_Class( cArray )
 #define USED(m)  (*(bool *)((char *)vect + (m)*(BOOL+elemsize)))
 #define BLK      (BOOL+elemsize)
 
-cBag::cBag(_CONST cBag& bag) : cObject()
+cBag::cBag(const cBag& bag) : cObject()
 {
    vect = NULL;
    setName( bag.name() );
@@ -63,7 +63,7 @@ void cBag::info(char *buf)
         sprintf( buf+strlen(buf), " (size=%d) ", lastused+1);
 }
 
-cBag& cBag::operator=(_CONST cBag& bag)
+cBag& cBag::operator=(const cBag& bag)
 {
     if (this==&bag) return *this;
 
@@ -199,7 +199,7 @@ const void *cBag::get(int m) const
 }
 
 
-bool cBag::isUsed(int m) _CONST
+bool cBag::isUsed(int m) const
 {
     if (m>=0 && m<=lastused)
         return USED(m);
@@ -231,7 +231,7 @@ void *cBag::remove(int m)
 //==========================================================================
 //=== cArray - member functions
 
-cArray::cArray(_CONST cArray& list) : cObject()
+cArray::cArray(const cArray& list) : cObject()
 {
     vect=NULL;
     last=-1;
@@ -256,7 +256,7 @@ cArray::~cArray()
     delete vect;
 }
 
-cArray& cArray::operator=(_CONST cArray& list)
+cArray& cArray::operator=(const cArray& list)
 {
     if (this==&list) return *this;
 
@@ -273,7 +273,7 @@ cArray& cArray::operator=(_CONST cArray& list)
     if (vect) memcpy( vect, list.vect, size * sizeof(cObject *) );
 
     for (int i=0; i<=last; i++)
-        if (vect[i] && vect[i]->owner()==CONSTCAST(cArray*,&list))
+        if (vect[i] && vect[i]->owner()==const_cast<cArray*>(&list))
             take( vect[i] = vect[i]->dup() );
     return *this;
 }

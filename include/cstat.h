@@ -51,7 +51,7 @@ class SIM_API cStatistic : public cObject
     /**
      * Copy constructor.
      */
-    cStatistic(_CONST cStatistic& r);
+    cStatistic(const cStatistic& r);
 
     /**
      * Constructor, creates an object with the given name
@@ -67,7 +67,7 @@ class SIM_API cStatistic : public cObject
      * Assignment operator. It is present since descendants may refer to it.
      * The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cStatistic& operator=(_CONST cStatistic& res);
+    cStatistic& operator=(const cStatistic& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -133,55 +133,55 @@ class SIM_API cStatistic : public cObject
      * Returns the number of samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual long samples() _CONST = 0;
+    virtual long samples() const = 0;
 
     /**
      * Returns the sum of weights of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double weights() _CONST = 0;
+    virtual double weights() const = 0;
 
     /**
      * Returns the sum of samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double sum() _CONST = 0;
+    virtual double sum() const = 0;
 
     /**
      * Returns the squared sum of the collected data.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double sqrSum() _CONST = 0;
+    virtual double sqrSum() const = 0;
 
     /**
      * Returns the minimum of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double min() _CONST = 0;
+    virtual double min() const = 0;
 
     /**
      * Returns the maximum of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double max() _CONST = 0;
+    virtual double max() const = 0;
 
     /**
      * Returns the mean of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double mean() _CONST = 0;
+    virtual double mean() const = 0;
 
     /**
      * Returns the standard deviation of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double stddev() _CONST = 0;
+    virtual double stddev() const = 0;
 
     /**
      * Returns the variance of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double variance() _CONST = 0;
+    virtual double variance() const = 0;
     //@}
 
     /** @name Transient and result accuracy detection. */
@@ -202,12 +202,12 @@ class SIM_API cStatistic : public cObject
     /**
      * Returns the assigned transient and accuracy detection objects.
      */
-    cTransientDetection *transientDetectionObject() _CONST  {return td;}
+    cTransientDetection *transientDetectionObject() const  {return td;}
 
     /**
      * Returns the assigned transient and accuracy detection objects.
      */
-    cAccuracyDetection  *accuracyDetectionObject() _CONST   {return ra;}
+    cAccuracyDetection  *accuracyDetectionObject() const   {return ra;}
     //@}
 
     /** @name Generating random numbers based on the collected data */
@@ -224,7 +224,7 @@ class SIM_API cStatistic : public cObject
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double random() _CONST = 0;
+    virtual double random() const = 0;
     //@}
 
     /** @name Writing to text file, reading from text file. */
@@ -234,7 +234,7 @@ class SIM_API cStatistic : public cObject
      * Writes the contents of the object into a text file.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual void saveToFile(FILE *) _CONST = 0;
+    virtual void saveToFile(FILE *) const = 0;
 
     /**
      * Reads the object data from a file written out by saveToFile().
@@ -265,7 +265,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Copy constructor.
      */
-    cStdDev(_CONST cStdDev& r) : cStatistic(r) {setName(r.name());operator=(r);}
+    cStdDev(const cStdDev& r) : cStatistic(r) {setName(r.name());operator=(r);}
 
     /**
      * Constructor.
@@ -280,7 +280,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cStdDev& operator=(_CONST cStdDev& res);
+    cStdDev& operator=(const cStdDev& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -295,7 +295,7 @@ class SIM_API cStdDev : public cStatistic
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST {return new cStdDev(*this);}
+    virtual cObject *dup() const {return new cStdDev(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -335,53 +335,53 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Returns the number of samples collected.
      */
-    virtual long samples() _CONST   {return num_samples;}
+    virtual long samples() const   {return num_samples;}
 
     /**
      * Returns the sum of weights of the samples collected.
      */
-    virtual double weights() _CONST {return num_samples;}
+    virtual double weights() const {return num_samples;}
 
     /**
      * Returns the sum of samples collected.
      */
-    virtual double sum() _CONST     {return sum_samples;}
+    virtual double sum() const     {return sum_samples;}
 
     /**
      * Returns the squared sum of the collected data.
      */
-    virtual double sqrSum() _CONST  {return sqrsum_samples;}
+    virtual double sqrSum() const  {return sqrsum_samples;}
 
     /**
      * Returns the minimum of the samples collected.
      */
-    virtual double min() _CONST     {return min_samples;}
+    virtual double min() const     {return min_samples;}
 
     /**
      * Returns the maximum of the samples collected.
      */
-    virtual double max() _CONST     {return max_samples;}
+    virtual double max() const     {return max_samples;}
 
     /**
      * Returns the mean of the samples collected.
      */
-    virtual double mean() _CONST    {return num_samples ? sum_samples/num_samples : 0.0;}
+    virtual double mean() const    {return num_samples ? sum_samples/num_samples : 0.0;}
 
     /**
      * Returns the standard deviation of the samples collected.
      */
-    virtual double stddev() _CONST;
+    virtual double stddev() const;
 
     /**
      * Returns the variance of the samples collected.
      */
-    virtual double variance() _CONST;
+    virtual double variance() const;
 
     /**
      * Returns numbers from a normal distribution with the current mean and
      * standard deviation.
      */
-    virtual double random() _CONST;
+    virtual double random() const;
 
     /**
      * Clears the results collected so far.
@@ -391,7 +391,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) _CONST;
+    virtual void saveToFile(FILE *) const;
 
     /**
      * Reads the object data from a file written out by saveToFile()
@@ -421,7 +421,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Constructors, destructor, duplication and assignment.
      */
-    cWeightedStdDev(_CONST cWeightedStdDev& r) : cStdDev(r) {setName(r.name());operator=(r);}
+    cWeightedStdDev(const cWeightedStdDev& r) : cStdDev(r) {setName(r.name());operator=(r);}
 
     /**
      * Constructors, destructor, duplication and assignment.
@@ -436,7 +436,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cWeightedStdDev& operator=(_CONST cWeightedStdDev& res);
+    cWeightedStdDev& operator=(const cWeightedStdDev& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -451,7 +451,7 @@ class SIM_API cWeightedStdDev : public cStdDev
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST {return new cWeightedStdDev(*this);}
+    virtual cObject *dup() const {return new cWeightedStdDev(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -489,22 +489,22 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Returns the sum of weights of the samples collected.
      */
-    virtual double weights() _CONST {return sum_weights;}
+    virtual double weights() const {return sum_weights;}
 
     /**
      * Returns the mean of the samples collected.
      */
-    virtual double mean() _CONST    {return sum_weights!=0 ? sum_samples/sum_weights : 0.0;}
+    virtual double mean() const    {return sum_weights!=0 ? sum_samples/sum_weights : 0.0;}
 
     /**
      * Returns the variance of the samples collected.
      */
-    virtual double variance() _CONST;
+    virtual double variance() const;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) _CONST;
+    virtual void saveToFile(FILE *) const;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().

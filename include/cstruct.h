@@ -82,7 +82,7 @@ class SIM_API cStructDescriptor : public cObject
     /**
      * Copy constructor.
      */
-    cStructDescriptor(_CONST cStructDescriptor& cs);
+    cStructDescriptor(const cStructDescriptor& cs);
 
     /**
      * Destructor.
@@ -93,7 +93,7 @@ class SIM_API cStructDescriptor : public cObject
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cStructDescriptor& operator=(_CONST cStructDescriptor& cs);
+    cStructDescriptor& operator=(const cStructDescriptor& cs);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -108,7 +108,7 @@ class SIM_API cStructDescriptor : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST;
+    virtual cObject *dup() const;
     //@}
 
     /** @name Getting descriptor for an object or a struct. */
@@ -140,7 +140,7 @@ class SIM_API cStructDescriptor : public cObject
     /**
      * Returns client object.
      */
-    void *getStruct() _CONST  {return p;}
+    void *getStruct() const  {return p;}
     //@}
 
     /** @name Querying and setting fields of the client object. */

@@ -73,7 +73,7 @@ cMessageHeap::cMessageHeap(const char *name, int siz) : cObject(name)
     h = new cMessage *[size+1];    // +1 is necessary because h[0] is not used
 }
 
-cMessageHeap::cMessageHeap(_CONST cMessageHeap& heap) : cObject()
+cMessageHeap::cMessageHeap(const cMessageHeap& heap) : cObject()
 {
     h=NULL; n=0;
     setName( heap.name() );
@@ -118,7 +118,7 @@ void cMessageHeap::clear()
     n=0;
 }
 
-cMessageHeap& cMessageHeap::operator=(_CONST cMessageHeap& heap)
+cMessageHeap& cMessageHeap::operator=(const cMessageHeap& heap)
 {
     if (this==&heap) return *this;
 
@@ -133,7 +133,7 @@ cMessageHeap& cMessageHeap::operator=(_CONST cMessageHeap& heap)
 
     for (int i=1; i<=n; i++)
     {
-        if (heap.h[i]->owner()==CONSTCAST(cMessageHeap*,&heap))
+        if (heap.h[i]->owner()==const_cast<cMessageHeap*>(&heap))
             take( h[i]=(cMessage *)heap.h[i]->dup() );
         else
             h[i]=heap.h[i];
@@ -199,7 +199,7 @@ void cMessageHeap::shiftup(int from)
     }
 }
 
-cMessage *cMessageHeap::peekFirst() _CONST
+cMessage *cMessageHeap::peekFirst() const
 {
     return n==0 ? NO(cMessage) : h[1];
 }

@@ -121,12 +121,12 @@ class SIM_API cHead : public cObject
      * Searches the list for an object with the given name and returns
      * its pointer. If no such object was found, NULL is returned.
      */
-    cObject *find(const char *objname) _CONST;
+    cObject *find(const char *objname) const;
 
     /**
      * Returns the number of objects in the list.
      */
-    int count() _CONST;
+    int count() const;
     //@}
 };
 
@@ -146,7 +146,7 @@ class SIM_API cIterator
     /**
      * Constructor.
      */
-    cIterator(_CONST cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
+    cIterator(const cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
 
     /**
      * Reinitialize the iterator.
@@ -156,12 +156,12 @@ class SIM_API cIterator
     /**
      * Returns a pointer to the current object.
      */
-    cObject *operator()() _CONST    {return p;}
+    cObject *operator()() const    {return p;}
 
     /**
      * Returns true if the iterator reached the end of the list.
      */
-    bool end() _CONST               {return (bool)(p==NULL);}
+    bool end() const               {return (bool)(p==NULL);}
 
     /**
      * Returns the current item, then moves the iterator to the next one.

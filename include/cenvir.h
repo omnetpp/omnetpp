@@ -221,7 +221,7 @@ class ENVIR_API cEnvir
     /**
      * Returns the prompt string.
      */
-    const char *prompt() _CONST  {return prmpt;}
+    const char *prompt() const  {return prmpt;}
 
     /**
      * Used with parallel execution. It is called internally by the simulation
@@ -243,7 +243,7 @@ class ENVIR_API cEnvir
      * Returns whether the simulation is distributed, and if yes,
      * if this process is master or slave.
      */
-    int runningMode() _CONST     {return running_mode;}
+    int runningMode() const     {return running_mode;}
 
     /**
      * Access to original command-line arguments.

@@ -40,7 +40,7 @@ cNetMod::cNetMod() : cModule("network-interface",NULL)
 // isLocalMachineIn()
 //    Finds out whether the local host is among the machine names passed
 //    (which is the list of hosts it was mapped to be run on).
-int cNetMod::isLocalMachineIn(_CONST cArray& list)
+int cNetMod::isLocalMachineIn(const cArray& list)
 {
     for (int i=0; i<list.items(); i++)
         if (list[i]!=NULL && !opp_strcmp( localhost(), ((cPar *)list[i])->stringValue()))
@@ -48,7 +48,7 @@ int cNetMod::isLocalMachineIn(_CONST cArray& list)
     return false;
 }
 
-cNetMod& cNetMod::operator=(_CONST cNetMod& other)
+cNetMod& cNetMod::operator=(const cNetMod& other)
 {
     if (this==&other) return *this;
 

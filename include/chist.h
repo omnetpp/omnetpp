@@ -40,7 +40,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cHistogramBase(_CONST cHistogramBase& r) : cDensityEstBase(r)
+    cHistogramBase(const cHistogramBase& r) : cDensityEstBase(r)
         {setName(r.name());cellv=NULL;operator=(r);}
 
     /**
@@ -56,7 +56,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cHistogramBase& operator=(_CONST cHistogramBase& res);
+    cHistogramBase& operator=(const cHistogramBase& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -100,12 +100,12 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Returns the number of histogram cells used.
      */
-    virtual int cells() _CONST;
+    virtual int cells() const;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) _CONST; //--LG
+    virtual void saveToFile(FILE *) const; //--LG
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
@@ -133,7 +133,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     /**
      * Copy constructor.
      */
-    cEqdHistogramBase(_CONST cEqdHistogramBase& r) : cHistogramBase(r)
+    cEqdHistogramBase(const cEqdHistogramBase& r) : cHistogramBase(r)
         {setName(r.name());operator=(r);}
 
     /**
@@ -144,7 +144,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cEqdHistogramBase& operator=(_CONST cEqdHistogramBase& res);
+    cEqdHistogramBase& operator=(const cEqdHistogramBase& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -190,27 +190,27 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     /**
      * Returns the kth cell boundary.
      */
-    virtual double basepoint(int k) _CONST;
+    virtual double basepoint(int k) const;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k) _CONST;
+    virtual double cell(int k) const;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x) _CONST; // --LG
+    virtual double pdf(double x) const; // --LG
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x) _CONST; // --LG
+    virtual double cdf(double x) const; // --LG
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) _CONST; //--LG
+    virtual void saveToFile(FILE *) const; //--LG
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
@@ -249,7 +249,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     /**
      * Copy constructor.
      */
-    cLongHistogram(_CONST cLongHistogram& r) : cEqdHistogramBase(r)
+    cLongHistogram(const cLongHistogram& r) : cEqdHistogramBase(r)
         {setName(r.name());operator=(r);}
 
     /**
@@ -277,7 +277,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST    {return new cLongHistogram(*this);}
+    virtual cObject *dup() const    {return new cLongHistogram(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -316,7 +316,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      * phase, it returns one of the stored observations; after the histogram
      * has been set up, a random integer is returned.
      */
-    virtual double random() _CONST;
+    virtual double random() const;
     //@}
 };
 
@@ -337,7 +337,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     /**
      * Copy constructor
      */
-    cDoubleHistogram(_CONST cDoubleHistogram& r) : cEqdHistogramBase(r)
+    cDoubleHistogram(const cDoubleHistogram& r) : cEqdHistogramBase(r)
           {setName(r.name());operator=(r);}
 
     /**
@@ -366,7 +366,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST  {return new cDoubleHistogram(*this);}
+    virtual cObject *dup() const  {return new cDoubleHistogram(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -392,7 +392,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      * phase, it returns one of the stored observations; after the histogram
      * has been set up, a random integer is returned.
      */
-    virtual double random() _CONST;
+    virtual double random() const;
     //@}
 };
 

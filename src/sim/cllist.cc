@@ -31,7 +31,7 @@ Register_Class( cLinkedList )
 //=========================================================================
 //=== cLinkedList - member functions
 
-cLinkedList::cLinkedList(_CONST cLinkedList& llist) : cObject()
+cLinkedList::cLinkedList(const cLinkedList& llist) : cObject()
 {
     headp = tailp = NULL; n = 0;
     setName( llist.name() );
@@ -91,7 +91,7 @@ void cLinkedList::clear()
     n = 0;
 }
 
-cLinkedList& cLinkedList::operator=(_CONST cLinkedList& llist)
+cLinkedList& cLinkedList::operator=(const cLinkedList& llist)
 {
     if (this==&llist) return *this;
 
@@ -117,7 +117,7 @@ cLinkedList& cLinkedList::operator=(_CONST cLinkedList& llist)
 //==  'headp' and 'tailp' point to the ends of the list (NULL if it is empty).
 //==  The list is double-linked, but 'headp->prev' and 'tailp->next' are NULL.
 
-sLLElem *cLinkedList::find_llelem(void *item) _CONST
+sLLElem *cLinkedList::find_llelem(void *item) const
 {
     sLLElem *p = headp;
     while( p && p->item!=item )

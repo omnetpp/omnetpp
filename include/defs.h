@@ -99,15 +99,6 @@
 #define ASSERT(expr)  ((void)0)
 #endif
 
-#define CONST_CAST(x)  (char *)(x)
-
-//=== experimental 'const' -- can be enabled from the makefile, with -D_CONST=const in CCFLAGS
-#ifndef _CONST
-#define _CONST
-#define CONSTCAST(T,x) x
-#else
-#define CONSTCAST(T,x) const_cast<T>(x)
-#endif
 
 //=== model time
 typedef double       simtime_t;

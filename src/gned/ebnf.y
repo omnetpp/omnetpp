@@ -127,11 +127,10 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <alloca.h>
-#endif                      /* Required to compile ebnf.y derivatives */ 
+#endif                      /* Required to compile ebnf.y derivatives */
 #endif
 
-#define CONST_CAST(x) (char *)(x)
-  
+
 int yylex (void);
 void yyrestart(FILE *);
 void yyerror (char *s);
@@ -1292,8 +1291,8 @@ int addGate(int gates_key, YYLTYPE namepos, int is_in, int is_vector )
 {
    int gate_key = np->create("gate", gates_key);
    np->set(gate_key, "name", namepos);
-   np->set(gate_key, "gatetype", CONST_CAST (is_in ? "in" : "out"));
-   np->set(gate_key, "isvector", CONST_CAST (is_vector ? "1" : "0"));
+   np->set(gate_key, "gatetype", const_cast<char*> (is_in ? "in" : "out"));
+   np->set(gate_key, "isvector", const_cast<char*> (is_vector ? "1" : "0"));
    return gate_key;
 }
 

@@ -73,7 +73,7 @@ class SIM_API cQueue : public cObject
 
   protected:
     // internal functions
-    sQElem *find_qelem(cObject *obj) _CONST;
+    sQElem *find_qelem(cObject *obj) const;
     void insbefore_qelem(sQElem *p, cObject *obj);
     void insafter_qelem(sQElem *p, cObject *obj);
     cObject *remove_qelem(sQElem *p);
@@ -87,7 +87,7 @@ class SIM_API cQueue : public cObject
      * will be duplicated so that the new queue will have its own copy
      * of them.
      */
-    cQueue(_CONST cQueue& queue);
+    cQueue(const cQueue& queue);
 
     /**
      * Constructor. It accepts the object name, the address of the comparing
@@ -107,7 +107,7 @@ class SIM_API cQueue : public cObject
      *
      * The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cQueue& operator=(_CONST cQueue& queue);
+    cQueue& operator=(const cQueue& queue);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -123,7 +123,7 @@ class SIM_API cQueue : public cObject
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      */
-    virtual cObject *dup() _CONST  {return new cQueue(*this);}
+    virtual cObject *dup() const  {return new cQueue(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -213,28 +213,28 @@ class SIM_API cQueue : public cObject
      * Returns pointer to the object at the head of the queue.
      * Returns NULL if the queue is empty.
      */
-    virtual cObject *head() _CONST;
+    virtual cObject *head() const;
 
     /**
      * Returns pointer to the last (tail) object in the queue.
      * Returns NULL if the queue is empty.
      */
-    virtual cObject *tail() _CONST;
+    virtual cObject *tail() const;
 
     /**
      * Returns the number of objects contained in the queue.
      */
-    virtual int length() _CONST;
+    virtual int length() const;
 
     /**
      * Returns true if the queue is empty.
      */
-    bool empty() _CONST {return length()==0;}
+    bool empty() const {return length()==0;}
 
     /**
      * Returns true if the queue contains the passed object.
      */
-    virtual bool contains(cObject *obj) _CONST;
+    virtual bool contains(cObject *obj) const;
     //@}
 };
 
@@ -256,13 +256,13 @@ class SIM_API cQueueIterator
      * as argument. The current object will be the first (if a==1) or
      * the last (a==0) object in the queue.
      */
-    cQueueIterator(_CONST cQueue& q, int athead=1)  //FIXME: make bool!
+    cQueueIterator(const cQueue& q, int athead=1)  //FIXME: make bool!
             {p=&q ? (athead ? q.headp : q.tailp) : NO(sQElem);}
 
     /**
      * Reinitializes the iterator object.
      */
-    void init(_CONST cQueue& q, int athead=1)
+    void init(const cQueue& q, int athead=1)
             {p=&q ? (athead ? q.headp : q.tailp) : NO(sQElem);}
 
     /**
@@ -278,7 +278,7 @@ class SIM_API cQueueIterator
     /**
      * Returns true if the iterator has reached either end of the queue.
      */
-    bool end() _CONST                {return (bool)(p==NULL);}
+    bool end() const                {return (bool)(p==NULL);}
 
     /**
      * Returns the current object, then moves the iterator to the next item.

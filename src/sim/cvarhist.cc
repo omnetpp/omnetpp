@@ -88,7 +88,7 @@ void cVarHistogram::addBinBound(double x) //--LG
     num_cells++;
 }
 
-cVarHistogram& cVarHistogram::operator=(_CONST cVarHistogram& res) //--LG
+cVarHistogram& cVarHistogram::operator=(const cVarHistogram& res) //--LG
 {
     if (this==&res) return *this;
 
@@ -322,7 +322,7 @@ void cVarHistogram::clearResult() //--LG
 }
 
 // return kth basepoint
-double cVarHistogram::basepoint(int k) _CONST
+double cVarHistogram::basepoint(int k) const
 {
     if (k<num_cells+1)
         return bin_bounds[k];
@@ -330,7 +330,7 @@ double cVarHistogram::basepoint(int k) _CONST
         {opp_error("(%s)%s: invalid basepoint index %u",className(),fullName(),k);return 0;}
 }
 
-double cVarHistogram::cell(int k) _CONST
+double cVarHistogram::cell(int k) const
 {
     if (k<num_cells)
         return cellv[k];
@@ -338,7 +338,7 @@ double cVarHistogram::cell(int k) _CONST
         {opp_error("(%s)%s: invalid cell index %u",className(),fullName(),k);return 0;}
 }
 
-double cVarHistogram::random() _CONST //--LG
+double cVarHistogram::random() const //--LG
 {
     if (num_samples==0) return 0L;
 
@@ -367,7 +367,7 @@ double cVarHistogram::random() _CONST //--LG
     }
 }
 
-double cVarHistogram::pdf(double x) _CONST // --LG
+double cVarHistogram::pdf(double x) const // --LG
 {
     if (!num_samples)
         return 0.0;
@@ -402,13 +402,13 @@ double cVarHistogram::pdf(double x) _CONST // --LG
     return cellv[lower_index]/(bin_bounds[lower_index+1]-bin_bounds[lower_index])/num_samples;
 }
 
-double cVarHistogram::cdf(double) _CONST
+double cVarHistogram::cdf(double) const
 {
     opp_error("(%s)%s: cdf(x) not implemented", className(),name());
     return 0.0;
 }
 
-void cVarHistogram::saveToFile(FILE *f) _CONST //--LG
+void cVarHistogram::saveToFile(FILE *f) const //--LG
 {
     cHistogramBase::saveToFile(f);
 

@@ -63,14 +63,14 @@ void cHead::forEach(ForeachFunc do_fn)
       do_fn(this,false);
 }
 
-cObject *cHead::find(const char *objname) _CONST    // faster than findObject(s,false)
+cObject *cHead::find(const char *objname) const    // faster than findObject(s,false)
 {
       cObject *p = firstchildp;
       while (p && !p->isName(objname)) p=p->nextp;
       return p;
 }
 
-int cHead::count() _CONST
+int cHead::count() const
 {
       int i=0;
       for (cObject *p = firstchildp; p!=NULL; p=p->nextp, i++);

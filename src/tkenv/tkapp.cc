@@ -135,7 +135,7 @@ void TOmnetTkApp::setup()
     // add OMNeT++'s commands to Tcl
     createTkCommands( interp, tcl_commands );
 
-    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", CONST_CAST((const char *)bitmap_dir), TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", const_cast<char*>((const char *)bitmap_dir), TCL_GLOBAL_ONLY);
 
     // eval Tcl sources: either from .tcl files or from compiler-in string
     // literal (tclcode.cc)...
@@ -144,7 +144,7 @@ void TOmnetTkApp::setup()
     //
     // Case A: TCL code in separate .tcl files
     //
-    Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  CONST_CAST((const char *)tkenv_dir), TCL_GLOBAL_ONLY);
+    Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  const_cast<char*>((const char *)tkenv_dir), TCL_GLOBAL_ONLY);
     if (Tcl_EvalFile(interp,fastconcat(tkenv_dir,"/tkenv.tcl"))==TCL_ERROR)
     {
         fprintf(stderr, "\n<!> Error starting Tkenv: %s. "

@@ -123,7 +123,7 @@ long cStructDescriptor::string2enum(const char *s, const char *enumname)
 
 //-----------------------------------------------------------
 
-cStructDescriptor::cStructDescriptor(_CONST cStructDescriptor& cs)
+cStructDescriptor::cStructDescriptor(const cStructDescriptor& cs)
 {
     opp_error("Cannot copy itself"); //FIXME better msg
 }
@@ -133,13 +133,13 @@ cStructDescriptor::~cStructDescriptor()
 {
 }
 
-cObject *cStructDescriptor::dup() _CONST
+cObject *cStructDescriptor::dup() const
 {
     opp_error(eCANTDUP);
     return NULL;
 }
 
-cStructDescriptor& cStructDescriptor::operator=(_CONST cStructDescriptor& cs)
+cStructDescriptor& cStructDescriptor::operator=(const cStructDescriptor& cs)
 {
     opp_error("Assignment not supported");  //FIXME better msg
     return *this;

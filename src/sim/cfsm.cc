@@ -36,7 +36,7 @@ cFSM::cFSM(const char *name) :
   _statename="INIT";
 }
 
-cFSM& cFSM::operator=(_CONST cFSM& vs)
+cFSM& cFSM::operator=(const cFSM& vs)
 {
     if (this==&vs) return *this;
 

@@ -208,13 +208,13 @@ class SIM_API cFSM : public cObject
     /**
      * Copy constructor.
      */
-    cFSM(_CONST cFSM& vs) {setName(vs.name());operator=(vs);}
+    cFSM(const cFSM& vs) {setName(vs.name());operator=(vs);}
 
     /**
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cFSM& operator=(_CONST cFSM& vs);
+    cFSM& operator=(const cFSM& vs);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -229,7 +229,7 @@ class SIM_API cFSM : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST   {return new cFSM(*this);}
+    virtual cObject *dup() const   {return new cFSM(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -270,17 +270,17 @@ class SIM_API cFSM : public cObject
     /**
      * Returns the state the FSM is currently in.
      */
-    int state() _CONST  {return _state;}
+    int state() const  {return _state;}
 
     /**
      * Returns the name of the state the FSM is currently in.
      */
-    const char *stateName() _CONST {return _statename?_statename:"";}
+    const char *stateName() const {return _statename?_statename:"";}
 
     /**
      * Returns true if the FSM is currently in a transient state.
      */
-    int inTransientState() _CONST  {return _state<0;}
+    int inTransientState() const  {return _state<0;}
 
     /**
      * Sets the state of the FSM. This method is usually invoked through

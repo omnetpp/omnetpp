@@ -52,7 +52,7 @@ cDensityEstBase::~cDensityEstBase()
     delete [] firstvals;
 }
 
-cDensityEstBase& cDensityEstBase::operator=(_CONST cDensityEstBase& res)
+cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
 {
     if (this==&res) return *this;
 
@@ -200,7 +200,7 @@ void cDensityEstBase::collect(double val)
     }
 }
 
-double cDensityEstBase::cellPDF(int k) _CONST
+double cDensityEstBase::cellPDF(int k) const
 {
     if (num_samples==0) return 0.0;
     double cellsize = basepoint(k+1) - basepoint(k);
@@ -261,7 +261,7 @@ void cDensityEstBase::writeContents(ostream& os)
     }
 }
 
-void cDensityEstBase::saveToFile(FILE *f) _CONST
+void cDensityEstBase::saveToFile(FILE *f) const
 {
     cStdDev::saveToFile(f);
 

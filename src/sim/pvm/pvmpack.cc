@@ -55,7 +55,7 @@ int pack_str(const char *str)
         int err=0,len=0;
         if (str) len=strlen(str);
         err=pvm_pkint(&len,1,1);
-        if (len) err=err||pvm_pkstr(CONST_CAST(str));
+        if (len) err=err||pvm_pkstr(const_cast<char*>(str));
         return err;
 }
 

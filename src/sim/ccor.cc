@@ -283,7 +283,7 @@ cCoroutine::~cCoroutine()
     if (task) task_free( task );
 }
 
-cCoroutine& cCoroutine::operator=(_CONST cCoroutine& cor)
+cCoroutine& cCoroutine::operator=(const cCoroutine& cor)
 {
     if (this==&cor) return *this;
 
@@ -308,17 +308,17 @@ void cCoroutine::restart()
     task_restart( task );
 }
 
-bool cCoroutine::stackOverflow() _CONST
+bool cCoroutine::stackOverflow() const
 {
     return task==NULL ? false : task_testoverflow( task );
 }
 
-unsigned cCoroutine::stackSize() _CONST
+unsigned cCoroutine::stackSize() const
 {
     return task==NULL ? 0 : task->size;
 }
 
-unsigned cCoroutine::stackUsage() _CONST
+unsigned cCoroutine::stackUsage() const
 {
     return task==NULL ? 0 : task_stackusage( task );
 }
@@ -428,7 +428,7 @@ void cCoroutine::free()
     stack_size = 0;
 }
 
-cCoroutine& cCoroutine::operator=(_CONST cCoroutine& cor)
+cCoroutine& cCoroutine::operator=(const cCoroutine& cor)
 {
     if (this==&cor) return *this;
 
@@ -452,17 +452,17 @@ void cCoroutine::restart()
 #endif
 }
 
-bool cCoroutine::stackOverflow() _CONST
+bool cCoroutine::stackOverflow() const
 {
     return false;  // test only implemented for portable coroutines
 }
 
-unsigned cCoroutine::stackSize() _CONST
+unsigned cCoroutine::stackSize() const
 {
     return stack_size;
 }
 
-unsigned cCoroutine::stackUsage() _CONST
+unsigned cCoroutine::stackUsage() const
 {
     return stack_size; // stackUsage() only implemented for portable coroutines
 }

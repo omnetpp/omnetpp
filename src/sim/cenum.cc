@@ -33,7 +33,7 @@ Register_Class( cEnum );
 //==========================================================================
 //=== cEnum - member functions
 
-cEnum::cEnum(_CONST cEnum& list) : cObject("", &enums)
+cEnum::cEnum(const cEnum& list) : cObject("", &enums)
 {
      vect=NULL;
      size=0;
@@ -57,7 +57,7 @@ cEnum::~cEnum()
     delete vect;
 }
 
-cEnum& cEnum::operator=(_CONST cEnum& list)
+cEnum& cEnum::operator=(const cEnum& list)
 {
     int i;
     for (i=0; i<size; i++)

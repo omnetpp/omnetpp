@@ -73,7 +73,7 @@ class SIM_API cOutFileMgr : public cObject
     /**
      * Returns the file name.
      */
-    const char *fileName() _CONST;
+    const char *fileName() const;
 
     /**
      * Opens the output file with the currently set fileName.
@@ -161,7 +161,7 @@ class SIM_API cOutVector : public cObject
     /**
      * Copy constructor.
      */
-    cOutVector(_CONST cOutVector& r) : cObject(r) {setName(r.name());operator=(r);}
+    cOutVector(const cOutVector& r) : cObject(r) {setName(r.name());operator=(r);}
 
     /**
      * Constructor. Accepts the object name and the multiplicity of the
@@ -196,7 +196,7 @@ class SIM_API cOutVector : public cObject
      * Dupping is not implemented for cOutVector. This function
      * gives an error when called.
      */
-    virtual cObject *dup() _CONST    {return new cOutVector(*this);}
+    virtual cObject *dup() const    {return new cOutVector(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

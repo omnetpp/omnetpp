@@ -255,7 +255,7 @@ void cSimulation::del(int id)
     vect[id] = NULL;
 }
 
-cModule *cSimulation::moduleByPath(const char *path) _CONST
+cModule *cSimulation::moduleByPath(const char *path) const
 {
     // start tokenizing the path (path format: "SysModule.DemandGen[2].Source")
     opp_string pathbuf = path;
@@ -641,7 +641,7 @@ void cSimulation::setContextModule(cModule *p)
     locallistp = p->isSimple() ? &(((cSimpleModule *)p)->locals) :  &locals;
 }
 
-cSimpleModule *cSimulation::contextSimpleModule() _CONST
+cSimpleModule *cSimulation::contextSimpleModule() const
 {
     // cannot go inline (upward cast would require including cmodule.h in csimul.h)
     return (cSimpleModule *)contextmodp;
@@ -751,7 +751,7 @@ void cSimulation::recordStats(const char *name, cStatistic *stats)
     stats->saveToFile( f );
 }
 
-bool cSimulation::normalTermination() _CONST
+bool cSimulation::normalTermination() const
 {
     return err==eSTOPSIMRCVD // stopped by another PVM segment
         || err==eENDEDOK     // no more events

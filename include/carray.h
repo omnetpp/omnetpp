@@ -60,7 +60,7 @@ class SIM_API cBag : public cObject
     /**
      * Copy constructor.
      */
-    cBag(_CONST cBag& bag);
+    cBag(const cBag& bag);
 
     /**
      * Constructor. Parameters are: name, the size of elements in bytes,
@@ -78,7 +78,7 @@ class SIM_API cBag : public cObject
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      * Duplication and assignment work all right with cBag.
      */
-    cBag& operator=(_CONST cBag& bag);
+    cBag& operator=(const cBag& bag);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -93,7 +93,7 @@ class SIM_API cBag : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST  {return new cBag(*this);}
+    virtual cObject *dup() const  {return new cBag(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -192,7 +192,7 @@ class SIM_API cBag : public cObject
      * Returns true if the mth position exists and
      * an item was inserted there.
      */
-    bool isUsed(int m) _CONST;
+    bool isUsed(int m) const;
 
     /**
      * FIXME: Remove item at position m and return its pointer. (???)
@@ -233,7 +233,7 @@ class SIM_API cArray : public cObject
      * be duplicated so that the new cArray will have its own
      * copy of them.
      */
-    cArray(_CONST cArray& list);
+    cArray(const cArray& list);
 
     /**
      * Constructor. The initial size of the container and the delta
@@ -254,7 +254,7 @@ class SIM_API cArray : public cObject
      * Contained objects that are owned by cArray will be duplicated
      * so that the new cArray will have its own copy of them.
      */
-    cArray& operator=(_CONST cArray& list);
+    cArray& operator=(const cArray& list);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -270,7 +270,7 @@ class SIM_API cArray : public cObject
      * Contained objects that are owned by cArray will be duplicated
      * so that the new cArray will have its own copy of them.
      */
-    virtual cObject *dup() _CONST  {return new cArray(*this);}
+    virtual cObject *dup() const  {return new cArray(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -403,14 +403,14 @@ class SIM_API cArray : public cObject
     /**
      * Returns true if position m is used in the array, otherwise false.
      */
-    bool exist(int m) _CONST
+    bool exist(int m) const
       {return m>=0 && m<=last && vect[m]!=NULL;}
 
     /**
      * Returns true if the array contains an object with the given name,
      * otherwise false.
      */
-    bool exist(const char *objname) _CONST
+    bool exist(const char *objname) const
       {return find(objname)!=-1;}
 
     /**

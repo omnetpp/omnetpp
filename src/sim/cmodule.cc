@@ -46,7 +46,7 @@ bool cModule::pause_in_sendmsg;
 //=========================================================================
 //=== cModule - member functions
 
-cModule::cModule(_CONST cModule& mod) : cObject(),
+cModule::cModule(const cModule& mod) : cObject(),
  gatev(NULL, 0,2),
  paramv(NULL, 0,2),
  machinev(NULL,0,2),
@@ -82,13 +82,13 @@ cModule::cModule(const char *name, cModule *parentmod) :
     /* cModuleType::create() call will create gates, params and machines */
 }
 
-cObject *cModule::dup() _CONST
+cObject *cModule::dup() const
 {
     opp_error(eCANTDUP);
     return NO(cObject);
 }
 
-cModule& cModule::operator=(_CONST cModule&)
+cModule& cModule::operator=(const cModule&)
 {
     opp_error(eCANTDUP);
     return *NO(cModule);
@@ -221,7 +221,7 @@ void cModule::addPar(const char *pname)
     }
 }
 
-bool cModule::checkInternalConnections() _CONST
+bool cModule::checkInternalConnections() const
 {
     int j;
     // Note: This routine only checks if all gates are connected or not.
@@ -230,7 +230,7 @@ bool cModule::checkInternalConnections() _CONST
     /* check this module compound module if its inside is connected ok */
     for(j=0; j<gates(); j++)
     {
-       _CONST cGate *g = gate(j);
+       const cGate *g = gate(j);
        if (g && ((g->type()=='I' && g->toGate()==NULL) ||
                  (g->type()=='O' && g->fromGate()==NULL))
           )
@@ -382,7 +382,7 @@ const cGate *cModule::gate(const char *s, int sn) const
     return gate(i);
 }
 
-int cModule::findPar(const char *s) _CONST
+int cModule::findPar(const char *s) const
 {
     return paramv.find(s);
 }
@@ -433,7 +433,7 @@ const char *cModule::machinePar(const char *pname)
          return ((cPar *)machinev[i])->stringValue();
 }
 
-bool cModule::isOnLocalMachine() _CONST
+bool cModule::isOnLocalMachine() const
 {
     return simulation.netInterface()==NULL || simulation.netInterface()->isLocalMachineIn( machinev );
 }
@@ -539,7 +539,7 @@ void cSimpleModule::activate(void *p)
     smod->end();
 }
 
-cSimpleModule::cSimpleModule(_CONST cSimpleModule& mod) :
+cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
   cCoroutine(),
   cModule( mod.name(), mod.parentmodp ),
   locals( NULL, NULL),
@@ -591,7 +591,7 @@ cSimpleModule::~cSimpleModule()
     clearHeap();
 }
 
-cSimpleModule& cSimpleModule::operator=(_CONST cSimpleModule& other)
+cSimpleModule& cSimpleModule::operator=(const cSimpleModule& other)
 {
     if (this==&other) return *this;
 
@@ -1019,7 +1019,7 @@ void cSimpleModule::wait(simtime_t t)
 
 //-------------
 
-bool cSimpleModule::isThereMessage() _CONST
+bool cSimpleModule::isThereMessage() const
 {
     cMessage *msg = simulation.msgQueue.peekFirst();
     return msg!=NULL &&
@@ -1237,7 +1237,7 @@ void cSimpleModule::pause(const char *phase)
 //    }
 //}
 
-simtime_t cSimpleModule::simTime() _CONST
+simtime_t cSimpleModule::simTime() const
 {
     return simulation.simTime();
 }
@@ -1275,7 +1275,7 @@ void cSimpleModule::recordStats(const char *name, cStatistic *stats)
 //==========================================================================
 //=== cCompoundModule - member functions
 
-cCompoundModule::cCompoundModule(_CONST cCompoundModule& mod) :
+cCompoundModule::cCompoundModule(const cCompoundModule& mod) :
   cModule( mod.name(), mod.parentmodp )
 {
     setName(mod.name());
@@ -1296,7 +1296,7 @@ void cCompoundModule::info( char *buf )
     sprintf(buf,"%-15.15s (%s,#%d)", fullName(), className(), id() );
 }
 
-cCompoundModule& cCompoundModule::operator=(_CONST cCompoundModule& mod)
+cCompoundModule& cCompoundModule::operator=(const cCompoundModule& mod)
 {
     if (this==&mod) return *this;
 

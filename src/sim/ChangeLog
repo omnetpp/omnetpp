@@ -1,3 +1,10 @@
+2001-09-01 Andras Varga
+
+	* _CONST patches made permanent: _CONST --> const, CONSTCAST() -->
+        const_cast<>() replacements
+
+        * Makefile.bc: cenum.cc, cstruct.cc added
+
 2001-08-30 Andras Varga
 
 	* MPI targets added to Makefile.vc too

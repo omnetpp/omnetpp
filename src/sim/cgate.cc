@@ -35,7 +35,7 @@
 //=========================================================================
 //=== cGate -- member functions
 
-cGate::cGate(_CONST cGate& gate) : cObject()
+cGate::cGate(const cGate& gate) : cObject()
 {
     linkp = NULL;
     delayp = errorp = dataratep = NULL;
@@ -81,7 +81,7 @@ void cGate::forEach(ForeachFunc do_fn)
     do_fn(this,false);
 }
 
-cGate& cGate::operator=(_CONST cGate& gate)
+cGate& cGate::operator=(const cGate& gate)
 {
    if (this==&gate) return *this;
 
@@ -98,11 +98,11 @@ cGate& cGate::operator=(_CONST cGate& gate)
 
    linkp = gate.linkp;  // gates never own link objects, just point to them
    delayp = gate.delayp;
-   if (delayp->owner()==CONSTCAST(cGate*,&gate)) delayp = (cPar *)delayp->dup();
+   if (delayp->owner()==const_cast<cGate*>(&gate)) delayp = (cPar *)delayp->dup();
    errorp = gate.errorp;
-   if (errorp->owner()==CONSTCAST(cGate*,&gate)) errorp = (cPar *)errorp->dup();
+   if (errorp->owner()==const_cast<cGate*>(&gate)) errorp = (cPar *)errorp->dup();
    dataratep = gate.dataratep;
-   if (dataratep->owner()==CONSTCAST(cGate*,&gate)) dataratep= (cPar *)dataratep->dup();
+   if (dataratep->owner()==const_cast<cGate*>(&gate)) dataratep= (cPar *)dataratep->dup();
 
    setDisplayString( gate.displayString() );
 
@@ -270,18 +270,18 @@ void cGate::setDataRate(cPar *p)
       if (dataratep && takeOwnership()) take( dataratep );
 }
 
-cGate *cGate::sourceGate() _CONST
+cGate *cGate::sourceGate() const
 {
-    _CONST cGate *g;
+    const cGate *g;
     for (g=this; g->fromgatep!=NULL; g=g->fromgatep);
-    return CONSTCAST(cGate *,g);
+    return const_cast<cGate *>(g);
 }
 
-cGate *cGate::destinationGate() _CONST
+cGate *cGate::destinationGate() const
 {
-    _CONST cGate *g;
+    const cGate *g;
     for (g=this; g->togatep!=NULL; g=g->togatep);
-    return CONSTCAST(cGate *,g);
+    return const_cast<cGate *>(g);
 }
 
 void cGate::deliver(cMessage *msg)
@@ -317,7 +317,7 @@ void cGate::deliver(cMessage *msg)
     }
 }
 
-bool cGate::isBusy() _CONST
+bool cGate::isBusy() const
 {
     return simulation.simTime()<transm_finishes;
 }
@@ -345,13 +345,13 @@ bool cGate::isConnected() const
         return togatep!=NULL;
 }
 
-bool cGate::isRouteOK() _CONST
+bool cGate::isRouteOK() const
 {
     return sourceGate()->ownerModule()->isSimple() &&
            destinationGate()->ownerModule()->isSimple();
 }
 
-const char *cGate::displayString() _CONST
+const char *cGate::displayString() const
 {
     if ((const char *)dispstr != NULL)
         return dispstr;

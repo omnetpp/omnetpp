@@ -184,23 +184,23 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns highest used module ID.
      */
-    int lastModuleIndex() _CONST    {return last_id;}
+    int lastModuleIndex() const    {return last_id;}
 
     /**
      * Finds a module by its path.
      */
-    cModule *moduleByPath(const char *modulepath) _CONST;
+    cModule *moduleByPath(const char *modulepath) const;
 
     /**
      * Looks up a module by ID.
      */
-    cModule *module(int id) _CONST
+    cModule *module(int id) const
          {return id>=0 && id<size ? vect[id] : NO(cModule);}
 
     /**
      * Same as module(int), only this returns reference instead of pointer.
      */
-    cModule& operator[](int id) _CONST
+    cModule& operator[](int id) const
          {return id>=0 && id<size ? *vect[id] : *NO(cModule);}
 
     /**
@@ -212,7 +212,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns pointer to the system module.
      */
-    cModule *systemModule() _CONST
+    cModule *systemModule() const
          {return systemmodp;}
     //@}
 
@@ -227,7 +227,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns network interface module.
      */
-    cNetMod *netInterface() _CONST     {return netmodp;}
+    cNetMod *netInterface() const     {return netmodp;}
 
     /**
      * Resets the clock measuring the elapsed (real) time spent in this
@@ -299,34 +299,34 @@ class SIM_API cSimulation : public cObject
      * Returns the cNetworkType object that was used to set up
      * the current simulation model.
      */
-    cNetworkType *networkType() _CONST     {return networktype;}
+    cNetworkType *networkType() const     {return networktype;}
 
     /**
      * Returns the current run number. A run is the execution of a
      * model with a given set of parameter settings. Runs can be defined
      * in omnetpp.ini.
      */
-    int  runNumber() _CONST           {return run_number;}
+    int  runNumber() const           {return run_number;}
 
     /**
      * Returns CPU time limit for the current simulation run.
      */
-    long timeLimit() _CONST                {return (long)tmlimit;}
+    long timeLimit() const                {return (long)tmlimit;}
 
     /**
      * Returns simulation time limit for the current simulation run.
      */
-    simtime_t simTimeLimit() _CONST   {return simtmlimit;}
+    simtime_t simTimeLimit() const   {return simtmlimit;}
 
     /**
      * Returns current simulation time.
      */
-    simtime_t simTime() _CONST       {return sim_time;}
+    simtime_t simTime() const       {return sim_time;}
 
     /**
      * Returns sequence number of current event.
      */
-    long eventNumber() _CONST         {return event_num;}
+    long eventNumber() const         {return event_num;}
     //@}
 
     /** @name Scheduling and context switching during simulation. */
@@ -387,12 +387,12 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns the currently executing simple module.
      */
-    cSimpleModule *runningModule() _CONST {return runningmodp;}
+    cSimpleModule *runningModule() const {return runningmodp;}
 
     /**
      * Returns the module currently in context.
      */
-    cModule *contextModule() _CONST {return contextmodp;}
+    cModule *contextModule() const {return contextmodp;}
 
     /**
      * Returns the module currently in context as a simple module.
@@ -400,7 +400,7 @@ class SIM_API cSimulation : public cObject
      * This is a convenience function which simply calls contextModule().
      */
      // FIXME: implementation should check isSimple() and return NULL if not OK!!!
-    cSimpleModule *contextSimpleModule() _CONST; // cannot make inline! would require cmodule.h because of dynamic cast
+    cSimpleModule *contextSimpleModule() const; // cannot make inline! would require cmodule.h because of dynamic cast
 
     /**
      * Returns the currently active 'locals' object. This object is usually the
@@ -444,7 +444,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Return true if warnings are globally enabled.
      */
-    bool warnings() _CONST  {return warn;}
+    bool warnings() const  {return warn;}
 
     /**
      * Globally disable/enable warnings.
@@ -469,12 +469,12 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns true if no errors happened (i.e. error code is zero, eOK).
      */
-    bool ok() _CONST        {return err==eOK;}
+    bool ok() const        {return err==eOK;}
 
     /**
      * Returns current error code.
      */
-    int errorCode() _CONST  {return err;}
+    int errorCode() const  {return err;}
 
     /**
      * Sets error code without giving error message.
@@ -484,7 +484,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Examines error code and returns true if simulation terminated normally.
      */
-    bool normalTermination() _CONST;
+    bool normalTermination() const;
 
     /**
      * Reset error code.

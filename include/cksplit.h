@@ -39,21 +39,21 @@ class cKSplitIterator;
  * Prototype for cell split criterion functions used by cKSplit objects.
  * @ingroup EnumsTypes
  */
-typedef int (*KSplitCritFunc)(_CONST cKSplit&, sGrid&, int, double *);
+typedef int (*KSplitCritFunc)(const cKSplit&, sGrid&, int, double *);
 
 /**
  * Prototype for cell division criterion functions used by cKSplit objects.
  * @ingroup EnumsTypes
  */
-typedef double (*KSplitDivFunc)(_CONST cKSplit&, sGrid&, double, double *);
+typedef double (*KSplitDivFunc)(const cKSplit&, sGrid&, double, double *);
 
 // cell split criteria
-int critfunc_const(_CONST cKSplit&, sGrid&, int, double *);
-int critfunc_depth(_CONST cKSplit&, sGrid&, int, double *);
+int critfunc_const(const cKSplit&, sGrid&, int, double *);
+int critfunc_depth(const cKSplit&, sGrid&, int, double *);
 
 // cell division criteria
-double divfunc_const(_CONST cKSplit&, sGrid&, double, double *);
-double divfunc_babak(_CONST cKSplit&, sGrid&, double, double *);
+double divfunc_const(const cKSplit&, sGrid&, double, double *);
+double divfunc_babak(const cKSplit&, sGrid&, double, double *);
 
 //==========================================================================
 
@@ -123,7 +123,7 @@ class SIM_API cKSplit : public cDensityEstBase
     void expandGridVector();
 
     // internal: helper for basepoint(), cell()
-    void iteratorToCell(int cell_nr) _CONST;
+    void iteratorToCell(int cell_nr) const;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -132,7 +132,7 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cKSplit(_CONST cKSplit& r);
+    cKSplit(const cKSplit& r);
 
     /**
      * Constructor.
@@ -147,7 +147,7 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cKSplit& operator=(_CONST cKSplit& res);
+    cKSplit& operator=(const cKSplit& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -162,7 +162,7 @@ class SIM_API cKSplit : public cDensityEstBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST   {return new cKSplit (*this);}
+    virtual cObject *dup() const   {return new cKSplit (*this);}
 
     /**
      * Writes textual information about this object to the stream.
@@ -204,37 +204,37 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Returns the number of histogram cells used.
      */
-    virtual int cells() _CONST;
+    virtual int cells() const;
 
     /**
      * Returns the kth cell boundary.
      */
-    virtual double basepoint(int k) _CONST;
+    virtual double basepoint(int k) const;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k) _CONST;
+    virtual double cell(int k) const;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x) _CONST;
+    virtual double pdf(double x) const;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x) _CONST;
+    virtual double cdf(double x) const;
 
     /**
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      */
-    virtual double random() _CONST;
+    virtual double random() const;
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) _CONST;
+    virtual void saveToFile(FILE *) const;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
@@ -274,33 +274,33 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Returns the depth of the k-split tree.
      */
-    int treeDepth() _CONST;
+    int treeDepth() const;
 
     /**
      * Returns the depth of the k-split tree measured from the specified grid.
      */
-    int treeDepth(sGrid& grid) _CONST;
+    int treeDepth(sGrid& grid) const;
 
     /**
      * Returns the actual amount of observations in cell 'cell' of 'grid'.
      * This is not necessarily an integer value because of previous cell splits.
      */
-    double realCellValue(sGrid& grid, int cell) _CONST;
+    double realCellValue(sGrid& grid, int cell) const;
 
     /**
      * Dumps the contents of the k-split data structure to ev.
      */
-    void printGrids() _CONST;
+    void printGrids() const;
 
     /**
      * Returns the kth grid in the k-split data structure.
      */
-    sGrid& grid(int k) _CONST {return gridv[k];}
+    sGrid& grid(int k) const {return gridv[k];}
 
     /**
      * Returns the root grid of the k-split data structure.
      */
-    sGrid& rootGrid() _CONST {return gridv[rootgrid];}
+    sGrid& rootGrid() const {return gridv[rootgrid];}
     //@}
 };
 
@@ -324,12 +324,12 @@ class SIM_API cKSplitIterator
     /**
      * Constructor.
      */
-    cKSplitIterator(_CONST cKSplit& _ks, int _beg=1);
+    cKSplitIterator(const cKSplit& _ks, int _beg=1);
 
     /**
      * Reinitializes the iterator.
      */
-    void init(_CONST cKSplit& _ks, int _beg=1);
+    void init(const cKSplit& _ks, int _beg=1);
 
     /**
      * Moves the iterator to the next cell.
@@ -344,33 +344,33 @@ class SIM_API cKSplitIterator
     /**
      * Returns true if the iterator has reached either end of the cell sequence.
      */
-    bool end() _CONST           {return grid==0;}
+    bool end() const           {return grid==0;}
 
     /**
      * Returns the index of the current cell.
      */
-    int cellNumber() _CONST     {return cellnum;}
+    int cellNumber() const     {return cellnum;}
 
     /**
      * Returns the upper lower of the current cell.
      */
-    double cellMin() _CONST     {return gridmin+cell*cellsize;}
+    double cellMin() const     {return gridmin+cell*cellsize;}
 
     /**
      * Returns the upper bound of the current cell.
      */
-    double cellMax() _CONST     {return gridmin+(cell+1)*cellsize;}
+    double cellMax() const     {return gridmin+(cell+1)*cellsize;}
 
     /**
      * Returns the size of the current cell.
      */
-    double cellSize() _CONST    {return cellsize;}
+    double cellSize() const    {return cellsize;}
 
     /**
      * Returns the actual amount of observations in current cell.
      * This is not necessarily an integer value because of previous cell splits.
      */
-    double cellValue() _CONST;
+    double cellValue() const;
 };
 
 #endif

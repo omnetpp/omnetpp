@@ -50,13 +50,13 @@ class SIM_API cPacket : public cMessage
     /**
      * Copy constructor.
      */
-    cPacket(_CONST cPacket& m);
+    cPacket(const cPacket& m);
 
     /**
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cPacket& operator=(_CONST cPacket& m);
+    cPacket& operator=(const cPacket& m);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -66,7 +66,7 @@ class SIM_API cPacket : public cMessage
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST {return new cPacket(*this);}
+    virtual cObject *dup() const {return new cPacket(*this);}
 
     /**
      * Returns pointer to a string containing the class name, "cPacket".
@@ -106,12 +106,12 @@ class SIM_API cPacket : public cMessage
     /**
      * Returns the protocol ID.
      */
-    short protocol() _CONST     {return _protocol;}
+    short protocol() const     {return _protocol;}
 
     /**
      * Returns the PDU type.
      */
-    short pdu() _CONST          {return _pdu;}
+    short pdu() const          {return _pdu;}
 
     /**
      * Sets the protocol ID.

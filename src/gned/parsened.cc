@@ -27,8 +27,6 @@
 #include "nedfile.h"
 #include "tklib.h"  // for CHK()
 
-#define CONST_CAST(x) (char *)(x)
-
 //--------
 
 NEDParser::NEDParser()
@@ -219,7 +217,7 @@ void NEDParser::error(char type, char *msg, int line, int col)
 
     char buf[32];
     _setVar(interp, tmp_errors, num_errors, "type",
-                CONST_CAST(type=='E' ? "Error" : type=='W' ? "Warning" : "?" ));
+                const_cast<char*>(type=='E' ? "Error" : type=='W' ? "Warning" : "?" ));
     sprintf(buf,"%d", line);
     _setVar(interp, tmp_errors, num_errors, "line",  buf);
     sprintf(buf,"%d", col);

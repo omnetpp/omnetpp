@@ -58,7 +58,7 @@ cHistogramBase::~cHistogramBase()
     delete [] cellv;
 }
 
-cHistogramBase& cHistogramBase::operator=(_CONST cHistogramBase& res)
+cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
 {
     if (this==&res) return *this;
 
@@ -94,14 +94,14 @@ void cHistogramBase::transform()
     transfd = true;
 }
 
-int cHistogramBase::cells() _CONST
+int cHistogramBase::cells() const
 {
     if (!transformed()) return 0;
 
     return num_cells;
 }
 
-void cHistogramBase::saveToFile(FILE *f) _CONST
+void cHistogramBase::saveToFile(FILE *f) const
 {
     cDensityEstBase::saveToFile(f);
     fprintf(f,"%d\t #= num_cells\n", num_cells);
@@ -134,7 +134,7 @@ cHistogramBase(name,numcells)
     cellsize=0;
 }
 
-cEqdHistogramBase& cEqdHistogramBase::operator=(_CONST cEqdHistogramBase& res)
+cEqdHistogramBase& cEqdHistogramBase::operator=(const cEqdHistogramBase& res)
 {
     if (this==&res) return *this;
 
@@ -160,7 +160,7 @@ void cEqdHistogramBase::collectTransformed (double val)
         cellv[unsigned((val-rangemin)/cellsize)]++;
 }
 
-double cEqdHistogramBase::pdf(double x) _CONST
+double cEqdHistogramBase::pdf(double x) const
 {
     if (!transformed())
     {
@@ -174,14 +174,14 @@ double cEqdHistogramBase::pdf(double x) _CONST
     return cellv[(unsigned)((x-rangemin)/cellsize)]/cellsize/num_samples;
 }
 
-double cEqdHistogramBase::cdf(double) _CONST
+double cEqdHistogramBase::cdf(double) const
 {
     opp_error("(%s)%s: cdf() not implemented",className(), name());
     return 0.0;
 }
 
 // return kth basepoint
-double cEqdHistogramBase::basepoint(int k) _CONST
+double cEqdHistogramBase::basepoint(int k) const
 {
     //   k=0           : rangemin
     //   k=1,2,...     : rangemin + k*cellsize
@@ -197,7 +197,7 @@ double cEqdHistogramBase::basepoint(int k) _CONST
         {opp_error("(%s)%s: invalid basepoint index %u",className(),name(),k);return 0;}
 }
 
-double cEqdHistogramBase::cell(int k) _CONST
+double cEqdHistogramBase::cell(int k) const
 {
     if (k<num_cells)
         return cellv[k];
@@ -205,7 +205,7 @@ double cEqdHistogramBase::cell(int k) _CONST
         {opp_error("(%s)%s: invalid cell index %u",className(),name(),k);return 0;}
 }
 
-void cEqdHistogramBase::saveToFile(FILE *f) _CONST
+void cEqdHistogramBase::saveToFile(FILE *f) const
 {
     cHistogramBase::saveToFile(f);
     fprintf(f,"%g\t #= cellsize\n", cellsize);
@@ -262,7 +262,7 @@ void cLongHistogram::setupRange()
     }
 }
 
-double cLongHistogram::random() _CONST
+double cLongHistogram::random() const
 {
     if( num_samples==0 )
         return 0L;
@@ -300,7 +300,7 @@ cDoubleHistogram::~cDoubleHistogram()
 {
 }
 
-double cDoubleHistogram::random() _CONST
+double cDoubleHistogram::random() const
 {
     if( num_samples==0 )
         return 0L;

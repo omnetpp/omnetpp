@@ -31,7 +31,7 @@ Register_Class( cQueue )
 //=========================================================================
 //=== cQueue - member functions
 
-cQueue::cQueue(_CONST cQueue& queue) : cObject()
+cQueue::cQueue(const cQueue& queue) : cObject()
 {
     headp = tailp = NULL; n = 0;
     setName( queue.name() );
@@ -92,7 +92,7 @@ void cQueue::clear()
     n = 0;
 }
 
-cQueue& cQueue::operator=(_CONST cQueue& queue)
+cQueue& cQueue::operator=(const cQueue& queue)
 {
     if (this==&queue) return *this;
 
@@ -105,7 +105,7 @@ cQueue& cQueue::operator=(_CONST cQueue& queue)
     bool old_tk = takeOwnership();
     for( cQueueIterator iter(queue); iter.end(); iter++)
     {
-        if (iter()->owner()==CONSTCAST(cQueue*,&queue))
+        if (iter()->owner()==const_cast<cQueue*>(&queue))
             {takeOwnership(true); insert( iter()->dup() );}
         else
             {takeOwnership(false); insert( iter() );}
@@ -127,7 +127,7 @@ void cQueue::setup(CompareFunc cmp, bool a)
 //==  'headp' and 'tailp' point to the ends of the list (NULL if it is empty).
 //==  The list is double-linked, but 'headp->prev' and 'tailp->next' are NULL.
 
-sQElem *cQueue::find_qelem(cObject *obj) _CONST
+sQElem *cQueue::find_qelem(cObject *obj) const
 {
     sQElem *p = headp;
     while( p && p->obj!=obj )
@@ -253,12 +253,12 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
     insafter_qelem(p,obj);
 }
 
-cObject *cQueue::head() _CONST
+cObject *cQueue::head() const
 {
     return n!=0 ? headp->obj : NO(cObject);
 }
 
-cObject *cQueue::tail() _CONST
+cObject *cQueue::tail() const
 {
     return n!=0 ? tailp->obj : NO(cObject);
 }
@@ -285,12 +285,12 @@ cObject *cQueue::pop()
     return remove_qelem( tailp );
 }
 
-int cQueue::length() _CONST
+int cQueue::length() const
 {
     return n;
 }
 
-bool cQueue::contains(cObject *obj) _CONST
+bool cQueue::contains(cObject *obj) const
 {
    return find_qelem(obj)!=NULL;
 }

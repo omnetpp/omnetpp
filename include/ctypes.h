@@ -158,7 +158,7 @@ class SIM_API cModuleInterface : public cObject
     /**
      * Copy constructor.
      */
-    cModuleInterface(_CONST cModuleInterface& mi);
+    cModuleInterface(const cModuleInterface& mi);
 
     /**
      * Destructor.
@@ -168,7 +168,7 @@ class SIM_API cModuleInterface : public cObject
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cModuleInterface& operator=(_CONST cModuleInterface& mi);
+    cModuleInterface& operator=(const cModuleInterface& mi);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -183,7 +183,7 @@ class SIM_API cModuleInterface : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST  {return new cModuleInterface(*this);}
+    virtual cObject *dup() const  {return new cModuleInterface(*this);}
     //@}
 
     /** @name Applying the interface to modules. */
@@ -242,7 +242,7 @@ class SIM_API cModuleType : public cObject
     /**
      * Copy constructor.
      */
-    cModuleType(_CONST cModuleType& mi);
+    cModuleType(const cModuleType& mi);
 
     /**
      * Destructor.
@@ -252,7 +252,7 @@ class SIM_API cModuleType : public cObject
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cModuleType& operator=(_CONST cModuleType& mi);
+    cModuleType& operator=(const cModuleType& mi);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -267,7 +267,7 @@ class SIM_API cModuleType : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST     {return new cModuleType(*this);}
+    virtual cObject *dup() const     {return new cModuleType(*this);}
     //@}
 
     /** @name FIXME */
@@ -339,7 +339,7 @@ class SIM_API cLinkType : public cObject
     /**
      * Copy constructor.
      */
-    cLinkType(_CONST cLinkType& li);
+    cLinkType(const cLinkType& li);
 
     /**
      * Destructor.
@@ -349,7 +349,7 @@ class SIM_API cLinkType : public cObject
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cLinkType& operator=(_CONST cLinkType& o);
+    cLinkType& operator=(const cLinkType& o);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -364,7 +364,7 @@ class SIM_API cLinkType : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST     {return new cLinkType(*this);}
+    virtual cObject *dup() const     {return new cLinkType(*this);}
     //@}
 
     /** @name Channel properties. */
@@ -374,19 +374,19 @@ class SIM_API cLinkType : public cObject
      * Creates a cPar object, representing the delay of this channel.
      * Returns NULL if the channel has no associated delay.
      */
-    cPar *createDelay() _CONST;
+    cPar *createDelay() const;
 
     /**
      * Creates a cPar object, representing the bit error rate of this channel.
      * Returns NULL if the channel has no associated bit error rate.
      */
-    cPar *createError() _CONST;
+    cPar *createError() const;
 
     /**
      * Creates a cPar object, representing the data rate of this channel.
      * Returns NULL if the channel has no associated data rate.
      */
-    cPar *createDataRate() _CONST;
+    cPar *createDataRate() const;
     //@}
 };
 
@@ -523,7 +523,7 @@ class SIM_API cClassRegister : public cObject
      * Creates an instance of a particular class by calling the creator
      * function.
      */
-    cObject *createOne() _CONST  {return creatorfunc();}
+    cObject *createOne() const  {return creatorfunc();}
     //@}
 };
 

@@ -141,7 +141,7 @@ class SIM_API cCoroutine
     /**
      * Assignment is not implemented for coroutines.
      */
-    cCoroutine& operator=(_CONST cCoroutine& cor);
+    cCoroutine& operator=(const cCoroutine& cor);
 
     /**
      * Sets up a coroutine. The arguments are the function that should be
@@ -170,30 +170,30 @@ class SIM_API cCoroutine
      * middle of such a local variable, it may be preserved intact and
      * stack violation is not detected.
      */
-    bool stackOverflow() _CONST;
+    bool stackOverflow() const;
 
     /**
      * Returns the stack size of the coroutine. This is the same number
      * as the one passed to setup().
      */
-    unsigned stackSize() _CONST;
+    unsigned stackSize() const;
 
     /**
      * Returns the amount of stack actually used by the coroutine.
      * It works by checking the intactness of predefined byte patterns
      * (0xdeadbeef) placed in the stack.
      */
-    unsigned stackUsage() _CONST;
+    unsigned stackUsage() const;
 
     /**
      * Obsolete.
      */
-    int stackLeft() _CONST;
+    int stackLeft() const;
 
     /**
      * Obsolete.
      */
-    bool stackLow() _CONST;
+    bool stackLow() const;
 
     /**
      * Obsolete.
@@ -202,13 +202,13 @@ class SIM_API cCoroutine
 };
 
 #ifdef PORTABLE_COROUTINES
-inline int cCoroutine::stackLeft() _CONST {return 0;}
-inline bool cCoroutine::stackLow() _CONST {return false;}
-//inline int *cCoroutine::getSP() _CONST    {return NULL;}
+inline int cCoroutine::stackLeft() const {return 0;}
+inline bool cCoroutine::stackLow() const {return false;}
+//inline int *cCoroutine::getSP() const    {return NULL;}
 #else /* nonportable coroutines */
-inline int cCoroutine::stackLeft() _CONST {return (char *)sp - (char *)stkbeg;}
-inline bool cCoroutine::stackLow() _CONST {return sp<stklow;}
-//inline int *cCoroutine::getSP() _CONST    {return sp;}
+inline int cCoroutine::stackLeft() const {return (char *)sp - (char *)stkbeg;}
+inline bool cCoroutine::stackLow() const {return sp<stklow;}
+//inline int *cCoroutine::getSP() const    {return sp;}
 #endif
 
 #endif

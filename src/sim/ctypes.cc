@@ -143,7 +143,7 @@ void cModuleInterface::setup( sDescrItem *descr_tab )
     if (m==0) machinev[m].name = opp_strdup( "default" ); // add "default"
 }
 
-cModuleInterface::cModuleInterface(_CONST cModuleInterface& mi) :
+cModuleInterface::cModuleInterface(const cModuleInterface& mi) :
   cObject( NULL, &modtypes),
   gatev(NULL),
   paramv(NULL),
@@ -164,7 +164,7 @@ cModuleInterface::~cModuleInterface()
     delete[] machinev;
 }
 
-cModuleInterface& cModuleInterface::operator=(_CONST cModuleInterface&)
+cModuleInterface& cModuleInterface::operator=(const cModuleInterface&)
 {
     opp_error("cModuleInterface cannot copy itself!");
     return *this;
@@ -205,7 +205,7 @@ void cModuleInterface::addParametersGatesTo( cModule *module)
 
 void cModuleInterface::checkParametersOf( cModule *mod )
 {
-    // check parameter types and convert _CONST parameters to constant
+    // check parameter types and convert const parameters to constant
     for (int i=0;i<nparam;i++)
     {
         cPar *par = &(mod->par( paramv[i].name ));
@@ -315,7 +315,7 @@ cModuleType::cModuleType(const char *classname,
 }
 
 
-cModuleType::cModuleType(_CONST cModuleType& mi) :
+cModuleType::cModuleType(const cModuleType& mi) :
   cObject( NULL, &modtypes)
 {
     setName(mi.name());
@@ -327,7 +327,7 @@ cModuleType::~cModuleType()
     delete interface_name;
 }
 
-cModuleType& cModuleType::operator=(_CONST cModuleType& mt)
+cModuleType& cModuleType::operator=(const cModuleType& mt)
 {
     if (this==&mt) return *this;
 
@@ -444,14 +444,14 @@ cLinkType::cLinkType(const char *name, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)()
     dataratefunc = dr;
 }
 
-cLinkType::cLinkType(_CONST cLinkType& li) :
+cLinkType::cLinkType(const cLinkType& li) :
   cObject( NULL, &linktypes)
 {
     setName(li.name());
     operator=( li );
 }
 
-cLinkType& cLinkType::operator=(_CONST cLinkType& li)
+cLinkType& cLinkType::operator=(const cLinkType& li)
 {
     if (this==&li) return *this;
 
@@ -462,17 +462,17 @@ cLinkType& cLinkType::operator=(_CONST cLinkType& li)
     return *this;
 }
 
-cPar *cLinkType::createDelay() _CONST
+cPar *cLinkType::createDelay() const
 {
     return delayfunc==NULL ? NO(cPar) : delayfunc();
 }
 
-cPar *cLinkType::createError() _CONST
+cPar *cLinkType::createError() const
 {
     return errorfunc==NULL ? NO(cPar) : errorfunc();
 }
 
-cPar *cLinkType::createDataRate() _CONST
+cPar *cLinkType::createDataRate() const
 {
     return dataratefunc==NULL ? NO(cPar) : dataratefunc();
 }

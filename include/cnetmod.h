@@ -85,7 +85,7 @@ class SIM_API cNetMod : public cModule
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    virtual cNetMod& operator=(_CONST cNetMod& other);
+    virtual cNetMod& operator=(const cNetMod& other);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -110,7 +110,7 @@ class SIM_API cNetMod : public cModule
     /**
      * Returns false.
      */
-    virtual bool isSimple() _CONST {return false;}
+    virtual bool isSimple() const {return false;}
 
     /**
      * Not used, implemented because it could not remain pure virtual.
@@ -150,7 +150,7 @@ class SIM_API cNetMod : public cModule
      * array passed as argument. The array should contain
      * string-valued cPar objects.
      */
-    int isLocalMachineIn(_CONST cArray& m);
+    int isLocalMachineIn(const cArray& m);
     //@}
 
     /** @name Gates. */

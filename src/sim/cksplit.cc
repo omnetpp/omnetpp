@@ -45,12 +45,12 @@ Register_Class( cKSplit )
 
 double critdata_default[] = {20, 4, 2};
 
-int critfunc_const(_CONST cKSplit&, sGrid& g, int i, double *c)
+int critfunc_const(const cKSplit&, sGrid& g, int i, double *c)
 {
      return g.cells[i] >= c[0];
 }
 
-int critfunc_depth(_CONST cKSplit& ks, sGrid& g, int i, double *c)
+int critfunc_depth(const cKSplit& ks, sGrid& g, int i, double *c)
 {
      int depth = g.reldepth - ks.rootGrid().reldepth;
      return g.cells[i] >= c[1]*pow(c[2],depth);
@@ -58,12 +58,12 @@ int critfunc_depth(_CONST cKSplit& ks, sGrid& g, int i, double *c)
 
 double divdata_default[] = {0.5};
 
-double divfunc_const(_CONST cKSplit&, sGrid&, double, double *d)
+double divfunc_const(const cKSplit&, sGrid&, double, double *d)
 {
      return d[0]; // lambda=constant
 }
 
-double divfunc_babak(_CONST cKSplit&, sGrid& g, double mother, double *d)
+double divfunc_babak(const cKSplit&, sGrid& g, double mother, double *d)
 {
      int newobs = g.total-g.mother;
      double lambda = newobs / (d[1]*mother);
@@ -72,7 +72,7 @@ double divfunc_babak(_CONST cKSplit&, sGrid& g, double mother, double *d)
 
 //==========================================================================
 
-cKSplit::cKSplit(_CONST cKSplit& r) : cDensityEstBase()
+cKSplit::cKSplit(const cKSplit& r) : cDensityEstBase()
 {
     setName( r.name() );
     gridv=NULL; iter=NULL;
@@ -101,7 +101,7 @@ cKSplit::~cKSplit()
     delete iter;
 }
 
-cKSplit& cKSplit::operator=(_CONST cKSplit& res)
+cKSplit& cKSplit::operator=(const cKSplit& res)
 {
     if (this==&res) return *this;
 
@@ -409,7 +409,7 @@ void cKSplit::expandGridVector()
    gridv = newgridv;
 }
 
-double cKSplit::realCellValue (sGrid& grid, int i) _CONST
+double cKSplit::realCellValue (sGrid& grid, int i) const
 {
    // returns the actual amount of observations in cell 'i' of 'grid'
 
@@ -448,12 +448,12 @@ double cKSplit::realCellValue (sGrid& grid, int i) _CONST
    return cell_mot + (1-lambda)*even + lambda*prop;
 }
 
-int cKSplit::treeDepth() _CONST
+int cKSplit::treeDepth() const
 {
    return treeDepth( gridv[rootgrid] );
 }
 
-int cKSplit::treeDepth(sGrid& grid) _CONST
+int cKSplit::treeDepth(sGrid& grid) const
 {
    int d, maxd=0;
    double c;
@@ -469,7 +469,7 @@ int cKSplit::treeDepth(sGrid& grid) _CONST
    return maxd+1;
 }
 
-void cKSplit::printGrids() _CONST
+void cKSplit::printGrids() const
 {
    if (!transformed())
    {
@@ -493,7 +493,7 @@ void cKSplit::printGrids() _CONST
    }
 }
 
-void cKSplit::iteratorToCell(int cell_nr) _CONST
+void cKSplit::iteratorToCell(int cell_nr) const
 {
    // create iterator or reinit if it is stale
    iter=0;
@@ -511,13 +511,13 @@ void cKSplit::iteratorToCell(int cell_nr) _CONST
          (*iter)--;
 }
 
-int cKSplit::cells() _CONST
+int cKSplit::cells() const
 {
    if (!transformed()) return 0;
    return num_cells;
 }
 
-double cKSplit::cell(int nr) _CONST
+double cKSplit::cell(int nr) const
 {
   if (nr>=num_cells) return 0.0;
 
@@ -525,7 +525,7 @@ double cKSplit::cell(int nr) _CONST
   return iter->cellValue();
 }
 
-double cKSplit::basepoint (int nr) _CONST
+double cKSplit::basepoint (int nr) const
 {
   if (nr>=num_cells) return rangemax;
 
@@ -545,7 +545,7 @@ double cKSplit::basepoint (int nr) _CONST
 //  CODE NOT CLEANED UP BY VA YET!
 /////////////////////////////////////////////////////////////////
 
-double cKSplit::random() _CONST
+double cKSplit::random() const
 {
    int i;
    //int dp = treeDepth();
@@ -620,7 +620,7 @@ double cKSplit::random() _CONST
 //  CODE NOT CLEANED UP BY VA YET!
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-double cKSplit::pdf (double x) _CONST
+double cKSplit::pdf (double x) const
 {
    if (!transformed())
      return 0;
@@ -659,13 +659,13 @@ double cKSplit::pdf (double x) _CONST
    return realCellValue(lp,i) / pow (K, dpth - cdpth);
 }
 
-double cKSplit::cdf (double) _CONST
+double cKSplit::cdf (double) const
 {
    opp_error("(%s)%s: cdf() not implemented",className(), fullName());
    return 0;
 }
 
-void cKSplit::saveToFile(FILE *f) _CONST
+void cKSplit::saveToFile(FILE *f) const
 {
    cDensityEstBase::saveToFile(f);
 
@@ -728,14 +728,14 @@ void cKSplit::loadFromFile(FILE *f)
 
 //========================================================================
 
-cKSplitIterator::cKSplitIterator(_CONST cKSplit& _ks, int _beg)
+cKSplitIterator::cKSplitIterator(const cKSplit& _ks, int _beg)
 {
    init(_ks,_beg);
 }
 
-void cKSplitIterator::init(_CONST cKSplit& _ks, int _beg)
+void cKSplitIterator::init(const cKSplit& _ks, int _beg)
 {
-   ks = CONSTCAST(cKSplit*,&_ks);
+   ks = const_cast<cKSplit*>(&_ks);
    grid = ks->rootgrid;
    cellnum = _beg ? 0 : ks->num_cells-1;
    cell = _beg ? 0 : K-1;
@@ -814,7 +814,7 @@ void cKSplitIterator::operator--(int)
    dive(K-1);
 }
 
-double cKSplitIterator::cellValue() _CONST
+double cKSplitIterator::cellValue() const
 {
    sGrid& g = ks->gridv[grid];
    return ks->realCellValue(g,cell);

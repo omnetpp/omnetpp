@@ -299,7 +299,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
            // start up the slave program
 #ifndef SINGLE_HOST
            // NORMAL: on act_host
-           err=pvm_spawn(argv[0],argv2,PvmTaskHost,CONST_CAST(act_host),1,all_tids+segments);
+           err=pvm_spawn(argv[0],argv2,PvmTaskHost,const_cast<char*>(act_host),1,all_tids+segments);
 #else
            // SINGLE_HOST: on my_host
            err=pvm_spawn(argv[0],argv2,PvmTaskHost,my_host,1,all_tids+segments);

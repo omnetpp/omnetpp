@@ -73,7 +73,7 @@ class SIM_API cGate : public cObject
     /**
      * Copy constructor.
      */
-    cGate(_CONST cGate& gate);
+    cGate(const cGate& gate);
 
     /**
      * Constructor.
@@ -89,7 +89,7 @@ class SIM_API cGate : public cObject
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cGate& operator=(_CONST cGate& gate);
+    cGate& operator=(const cGate& gate);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -104,7 +104,7 @@ class SIM_API cGate : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST  {return new cGate(*this);}
+    virtual cObject *dup() const  {return new cGate(*this);}
 
     /**
      * Returns the name of the inspector factory class associated with this class.
@@ -220,28 +220,28 @@ class SIM_API cGate : public cObject
     /**
      * Returns the link type of the gate, if it has one.
      */
-    cLinkType *link() _CONST {return linkp;}
+    cLinkType *link() const {return linkp;}
 
     /**
      * Return pointers to the delay, bit error rate and datarate parameters
      * of the link. Links are one-directional; these parameters are only
      * stored at their starting side.
      */
-    cPar *delay() _CONST     {return delayp;}
+    cPar *delay() const     {return delayp;}
 
     /**
      * Return pointers to the delay, bit error rate and datarate parameters
      * of the link. Links are one-directional; these parameters are only
      * stored at their starting side.
      */
-    cPar *error() _CONST     {return errorp;}
+    cPar *error() const     {return errorp;}
 
     /**
      * Return pointers to the delay, bit error rate and datarate parameters
      * of the link. Links are one-directional; these parameters are only
      * stored at their starting side.
      */
-    cPar *datarate() _CONST  {return dataratep;}
+    cPar *datarate() const  {return dataratep;}
     //@}
 
     /** @name Information about the gate. */
@@ -287,14 +287,14 @@ class SIM_API cGate : public cObject
     /**
      * Returns whether the gate is currently transmitting.
      */
-    bool isBusy() _CONST;
+    bool isBusy() const;
 
     /**
      * Returns the simulation time the gate is expected to finish transmitting.
      * Note that additional messages send on the gate may prolong the time the gate
      * will actually finish.
      */
-    simtime_t transmissionFinishes() _CONST {return transm_finishes;}
+    simtime_t transmissionFinishes() const {return transm_finishes;}
     //@}
 
     /** @name Gate connectivity. */
@@ -318,13 +318,13 @@ class SIM_API cGate : public cObject
      * Return the ultimate source and destination of the series of connections
      * (the route) that contains this gate.
      */
-    cGate *sourceGate() _CONST;
+    cGate *sourceGate() const;
 
     /**
      * Return the ultimate source and destination of the series of connections
      * (the route) that contains this gate.
      */
-    cGate *destinationGate() _CONST;
+    cGate *destinationGate() const;
 
     /**
      * Determines if a given module is in the route containing this gate.
@@ -344,7 +344,7 @@ class SIM_API cGate : public cObject
      * Returns true if the route that this gate is in is complete, that is,
      * if it starts and arrives at a simple module.
      */
-    bool isRouteOK() _CONST;
+    bool isRouteOK() const;
     //@}
 
     /** @name Display string. */
@@ -358,7 +358,7 @@ class SIM_API cGate : public cObject
     /**
      * Returns the display string for the gate.
      */
-    const char *displayString() _CONST;
+    const char *displayString() const;
 
     /**
      * Sets up a notification function which is called every time the display

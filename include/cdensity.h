@@ -106,7 +106,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Copy constructor.
      */
-    cDensityEstBase(_CONST cDensityEstBase& r) : cStdDev(r)
+    cDensityEstBase(const cDensityEstBase& r) : cStdDev(r)
             {setName(r.name());firstvals=NULL;operator=(r);}
 
     /**
@@ -122,7 +122,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cDensityEstBase& operator=(_CONST cDensityEstBase& res);
+    cDensityEstBase& operator=(const cDensityEstBase& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -185,12 +185,12 @@ class SIM_API cDensityEstBase : public cStdDev
      *
      * This is a pure virtual function; it must be redefined in subclasses.
      */
-    virtual double random() _CONST = 0;  // FIXME: redundant!!!
+    virtual double random() const = 0;  // FIXME: redundant!!!
 
     /**
      * Writes the contents of the object into a text file.
      */
-    virtual void saveToFile(FILE *) _CONST;
+    virtual void saveToFile(FILE *) const;
 
     /**
      * Reads the object data from a file, in the format written out by saveToFile().
@@ -268,7 +268,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Returns whether the object is transformed. See transform().
      */
-    virtual bool transformed() _CONST   {return transfd;}
+    virtual bool transformed() const   {return transfd;}
 
     /**
      * Transforms the table of pre-collected values into an internal
@@ -286,7 +286,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * Returns the number of histogram cells used.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual int cells() _CONST = 0;
+    virtual int cells() const = 0;
 
     /**
      * Returns the kth cell boundary. Legal values for k are 0 through cells(),
@@ -295,14 +295,14 @@ class SIM_API cDensityEstBase : public cStdDev
      * returns the high end of the last histogram cell.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double basepoint(int k) _CONST = 0;
+    virtual double basepoint(int k) const = 0;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      * Before transformation, this method may return zero. See transform().
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double cell(int k) _CONST = 0;
+    virtual double cell(int k) const = 0;
 
     /**
      * Returns the estimated value of the Probability Density Function
@@ -311,19 +311,19 @@ class SIM_API cDensityEstBase : public cStdDev
      * Note that before transformation, cell() and also this method may return zero.
      * See transform().
      */
-    virtual double cellPDF(int k) _CONST;
+    virtual double cellPDF(int k) const;
 
     /**
      * Returns number of observations that, being too small, fell out of the histogram
      * range.
      */
-    virtual unsigned long underflowCell() _CONST {return cell_under;}
+    virtual unsigned long underflowCell() const {return cell_under;}
 
     /**
      * Returns number of observations that, being too large, fell out of the histogram
      * range.
      */
-    virtual unsigned long overflowCell() _CONST {return cell_over;}
+    virtual unsigned long overflowCell() const {return cell_over;}
     //@}
 
     /** @name Density and cumulated density approximation functions. */
@@ -334,14 +334,14 @@ class SIM_API cDensityEstBase : public cStdDev
      * This is a pure virtual function, implementation is provided
      * in subclasses implementing concrete histogram types.
      */
-    virtual double pdf(double x) _CONST = 0;
+    virtual double pdf(double x) const = 0;
 
     /**
      * Returns the estimated value of the Cumulated Density Function at a given x.
      * This is a pure virtual function, implementation is provided
      * in subclasses implementing concrete histogram types.
      */
-    virtual double cdf(double x) _CONST = 0;
+    virtual double cdf(double x) const = 0;
     //@}
 };
 

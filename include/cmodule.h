@@ -179,7 +179,7 @@ class SIM_API cModule : public cObject
      * number of initialization stages required. This default implementation
      * does single-stage init, that is, returns 1.
      */
-    virtual int  numInitStages() _CONST  {return 1;}
+    virtual int  numInitStages() const  {return 1;}
 
     /**
      * Single-stage initialization hook. This default implementation
@@ -201,7 +201,7 @@ class SIM_API cModule : public cObject
     /**
      * Copy constructor.
      */
-    cModule(_CONST cModule& mod);
+    cModule(const cModule& mod);
 
     /**
      * Constructor.
@@ -217,7 +217,7 @@ class SIM_API cModule : public cObject
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cModule& operator=(_CONST cModule& mod);
+    cModule& operator=(const cModule& mod);
     //@}
 
     /** @name Redefined cObject functions. */
@@ -232,7 +232,7 @@ class SIM_API cModule : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST;
+    virtual cObject *dup() const;
 
     /**
      * Call the passed function for each contained object.
@@ -323,12 +323,12 @@ class SIM_API cModule : public cObject
      * redefined in <tt>cSimpleModule</tt> to return true and in <tt>cCompoundModule</tt>
      * to return false.
      */
-    virtual bool isSimple() _CONST = 0;
+    virtual bool isSimple() const = 0;
 
     /**
      * Returns the cModuleType object associated with this module type.
      */
-    cModuleType *moduleType() _CONST  {return mod_type;}
+    cModuleType *moduleType() const  {return mod_type;}
 
     /**
      * Returns the module ID. It is actually the index of the module
@@ -337,19 +337,19 @@ class SIM_API cModule : public cObject
      * (that is, IDs of deleted modules are not given out to newly created
      * modules).
      */
-    int id() _CONST               {return mod_id;}
+    int id() const               {return mod_id;}
 
     /**
      * Returns the module's parent module. For the system module, it returns
      * <tt>NULL</tt>.
      */
-    cModule *parentModule() _CONST     {return parentmodp;}
+    cModule *parentModule() const     {return parentmodp;}
 
     /**
      * Used with parallel execution: determines if the module is on the
      * local machine. See the user manual for more info.
      */
-    bool isOnLocalMachine() _CONST;
+    bool isOnLocalMachine() const;
 
     /**
      * Returns true if this module is in a module vector.
@@ -440,7 +440,7 @@ class SIM_API cModule : public cObject
      * modules, it returns <tt>true</tt>. This function is usually called from
      * from NEDC-generated code.
      */
-    bool checkInternalConnections() _CONST;
+    bool checkInternalConnections() const;
     //@}
 
     /** @name Parameters. */
@@ -449,7 +449,7 @@ class SIM_API cModule : public cObject
     /**
      * Returns total number of the module's parameters.
      */
-    int params() _CONST {return paramv.items();}
+    int params() const {return paramv.items();}
 
     /**
      * Returns reference to the module parameter identified with its
@@ -467,7 +467,7 @@ class SIM_API cModule : public cObject
      * Returns index of the module parameter specified with its name.
      * Returns -1 if the object doesn't exist.
      */
-    int findPar(const char *parname) _CONST;
+    int findPar(const char *parname) const;
 
     /**
      * Searches for the parameter in the parent modules, up to the system
@@ -478,7 +478,7 @@ class SIM_API cModule : public cObject
     /**
      * Check if a parameter exists.
      */
-    bool hasPar(const char *s) _CONST {return findPar(s)>=0;}
+    bool hasPar(const char *s) const {return findPar(s)>=0;}
     //@}
 
     /** @name Machine parameters (used by parallel execution). */
@@ -487,7 +487,7 @@ class SIM_API cModule : public cObject
     /**
      * Returns the number of machine parameters.
      */
-    int machinePars() _CONST  {return machinev.items();}    // NET
+    int machinePars() const  {return machinev.items();}    // NET
 
     /**
      * Returns the value of the ith machine parameter.
@@ -551,7 +551,7 @@ class SIM_API cModule : public cObject
      * module. This function returns the warning status for this module:
      * <tt>true</tt>=enabled, <tt>false</tt>=disabled.
      */
-    bool warnings() _CONST       {return warn;}
+    bool warnings() const       {return warn;}
 
     /**
      * Enables or disables warnings for this module: <tt>true</tt>=enable, <tt>false</tt>=disable.
@@ -673,7 +673,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * Copy constructor.
      */
-    cSimpleModule(_CONST cSimpleModule& mod);
+    cSimpleModule(const cSimpleModule& mod);
 
     /**
      * Constructor.
@@ -688,7 +688,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cSimpleModule& operator=(_CONST cSimpleModule& mod);
+    cSimpleModule& operator=(const cSimpleModule& mod);
     //@}
 
     /** @name Redefined cObject functions. */
@@ -703,7 +703,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST  {return new cSimpleModule(*this);}
+    virtual cObject *dup() const  {return new cSimpleModule(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -735,7 +735,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * Returns true.
      */
-    virtual bool isSimple() _CONST {return true;}
+    virtual bool isSimple() const {return true;}
 
     /**
      * Calls initialize(int stage) in the context of this module.
@@ -766,7 +766,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * Returns event handling scheme.
      */
-    bool usesActivity() _CONST  {return usesactivity;}
+    bool usesActivity() const  {return usesactivity;}
     //@}
 
     /** @name Simulation time. */
@@ -776,7 +776,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * Returns the current simulation time (that is, the arrival time
      * of the last message returned by a receiveNew() call).
      */
-    simtime_t simTime() _CONST;   // cannot make inline because of declaration order!
+    simtime_t simTime() const;   // cannot make inline because of declaration order!
     //@}
 
     /** @name Debugging aids. */
@@ -794,7 +794,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * Returns pointer to the current phase string.
      */
-    const char *phase() _CONST  {return correct(phasestr);}
+    const char *phase() const  {return correct(phasestr);}
 
     /**
      * To be called from module functions. Outputs textual information
@@ -946,7 +946,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * and has the same arrival time. (Returns true only if
      * two or more messages arrived to the module at the same time.)
      */
-    bool isThereMessage() _CONST;
+    bool isThereMessage() const;
 
     /**
      * Receive a message from the put-aside queue or the FES.
@@ -1099,7 +1099,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * FIXME: Return module state.
      */
-    int moduleState() _CONST {return state;}
+    int moduleState() const {return state;}
 };
 
 //==========================================================================
@@ -1126,7 +1126,7 @@ class SIM_API cCompoundModule : public cModule
     /**
      * Copy constructor.
      */
-    cCompoundModule(_CONST cCompoundModule& mod);
+    cCompoundModule(const cCompoundModule& mod);
 
     /**
      * Constructor.
@@ -1141,7 +1141,7 @@ class SIM_API cCompoundModule : public cModule
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cCompoundModule& operator=(_CONST cCompoundModule& mod);
+    cCompoundModule& operator=(const cCompoundModule& mod);
     //@}
 
     /** @name Redefined cObject functions. */
@@ -1156,7 +1156,7 @@ class SIM_API cCompoundModule : public cModule
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST   {return new cCompoundModule(*this);}
+    virtual cObject *dup() const   {return new cCompoundModule(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -1177,7 +1177,7 @@ class SIM_API cCompoundModule : public cModule
     /**
      * Redefined cModule method. Returns false.
      */
-    virtual bool isSimple() _CONST  {return false;}
+    virtual bool isSimple() const  {return false;}
 
     /**
      * Redefined cModule method.
@@ -1214,19 +1214,19 @@ class SIM_API cCompoundModule : public cModule
 class SIM_API cSubModIterator
 {
   private:
-    _CONST cModule *parent;
+    const cModule *parent;
     int i;
 
   public:
     /**
      * Constructor. It takes the parent module.
      */
-    cSubModIterator(_CONST cModule& p)  {parent=&p;i=0;operator++(0);}
+    cSubModIterator(const cModule& p)  {parent=&p;i=0;operator++(0);}
 
     /**
      * Reinitializes the iterator.
      */
-    void init(_CONST cModule& p)        {parent=&p;i=0;operator++(0);}
+    void init(const cModule& p)        {parent=&p;i=0;operator++(0);}
 
     /**
      * Obsolete.
@@ -1245,7 +1245,7 @@ class SIM_API cSubModIterator
     /**
      * Returns true of the iterator has reached the end of the list.
      */
-    bool end() _CONST                   {return (i==-1);}
+    bool end() const                   {return (i==-1);}
 
     /**
      * Returns the current module, then moves the iterator to the

@@ -258,7 +258,7 @@ class SIM_API cPar : public cObject
     /**
      * Copy constructor, creates an exact copy of the argument.
      */
-    cPar(_CONST cPar& other);
+    cPar(const cPar& other);
 
     /**
      * Constructor, creates a cPar with the given name and long
@@ -281,7 +281,7 @@ class SIM_API cPar : public cObject
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      * The assignment operator works with cPar objects.
      */
-    cPar& operator=(_CONST cPar& otherpar);
+    cPar& operator=(const cPar& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -296,7 +296,7 @@ class SIM_API cPar : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST   {return new cPar(*this);}
+    virtual cObject *dup() const   {return new cPar(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -487,7 +487,7 @@ class SIM_API cPar : public cObject
     /**
      * Returns true if this object is redirected to another cPar.
      */
-    bool isRedirected() _CONST {return typechar=='I';}
+    bool isRedirected() const {return typechar=='I';}
 
     /**
      * Returns NULL if the cPar's value is not redirected to another cPar;
@@ -512,12 +512,12 @@ class SIM_API cPar : public cObject
      * it returns the type of the object it is redirected to (for example,
      * 'D', 'L', etc.)
      */
-    char type() _CONST;
+    char type() const;
 
     /**
      * Returns true if the stored value is of a numeric type.
      */
-    bool isNumeric() _CONST;
+    bool isNumeric() const;
 
     /**
      * Returns the prompt text or NULL.
@@ -538,7 +538,7 @@ class SIM_API cPar : public cObject
      * Returns true if the parameter is of input type (the input
      * flag is set).
      */
-    bool isInput() _CONST;
+    bool isInput() const;
 
     /**
      * Returns true if the value has changed since the last changed() call.
@@ -757,7 +757,7 @@ class SIM_API cModulePar : public cPar
     /**
      * Constructor.
      */
-    cModulePar(_CONST cPar& other);
+    cModulePar(const cPar& other);
 
     /**
      * Constructor.
@@ -778,7 +778,7 @@ class SIM_API cModulePar : public cPar
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cModulePar& operator=(_CONST cModulePar& otherpar);
+    cModulePar& operator=(const cModulePar& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -793,7 +793,7 @@ class SIM_API cModulePar : public cPar
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() _CONST  {return new cPar(*this);}
+    virtual cObject *dup() const  {return new cPar(*this);}
 
     /**
      * Returns the name of the inspector factory class associated with this class.
@@ -830,7 +830,7 @@ class SIM_API cModulePar : public cPar
     /**
      * Returns a pointer to the module which has this cPar as module parameter.
      */
-    cModule *ownerModule() _CONST        {return omodp;}
+    cModule *ownerModule() const        {return omodp;}
     //@}
 };
 

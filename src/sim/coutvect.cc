@@ -61,7 +61,7 @@ void cOutFileMgr::setFileName(const char *s)
    }
 }
 
-const char *cOutFileMgr::fileName() _CONST
+const char *cOutFileMgr::fileName() const
 {
    return fname;
 }

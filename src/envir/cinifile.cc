@@ -172,7 +172,7 @@ void cIniFile::_readFile(const char *fname, const char *sect)
            }
 
            // fill in the entry
-           entry[num_entries].section = CONST_CAST(sect);
+           entry[num_entries].section = const_cast<char*>(sect);
            entry[num_entries].key = opp_strdup(s);
            if (*e=='"') {
               entry[num_entries].rawvalue = opp_strdup(e);

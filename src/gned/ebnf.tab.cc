@@ -123,6 +123,7 @@
 #include <malloc.h>         /* for alloca() */
 #include "ebnf.h"           /* selects between NEDC and GNED */
 #include "ebnfcfg.h"        /* selects between NEDC and GNED */
+
 #define YYDEBUG 1           /* allow debugging */
 #define YYDEBUGGING_ON 0    /* turn on/off debugging */
 
@@ -133,11 +134,10 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <alloca.h>
-#endif                      /* Required to compile ebnf.y derivatives */ 
+#endif                      /* Required to compile ebnf.y derivatives */
 #endif
 
-#define CONST_CAST(x) (char *)(x)
-  
+
 int yylex (void);
 void yyrestart(FILE *);
 void yyerror (char *s);
@@ -832,7 +832,7 @@ static const short yycheck[] = {    23,
    322,   433,   358,   403
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/tools/gnu/share/bison.simple"
+#line 3 "/usr/share/bison.simple"
 /* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
@@ -1046,7 +1046,7 @@ __yy_memcpy (char *to, char *from, unsigned int count)
 #endif
 #endif
 
-#line 217 "/tools/gnu/share/bison.simple"
+#line 217 "/usr/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -2253,7 +2253,7 @@ case 288:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 543 "/tools/gnu/share/bison.simple"
+#line 543 "/usr/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2624,8 +2624,8 @@ int addGate(int gates_key, YYLTYPE namepos, int is_in, int is_vector )
 {
    int gate_key = np->create("gate", gates_key);
    np->set(gate_key, "name", namepos);
-   np->set(gate_key, "gatetype", CONST_CAST (is_in ? "in" : "out"));
-   np->set(gate_key, "isvector", CONST_CAST (is_vector ? "1" : "0"));
+   np->set(gate_key, "gatetype", const_cast<char*> (is_in ? "in" : "out"));
+   np->set(gate_key, "isvector", const_cast<char*> (is_vector ? "1" : "0"));
    return gate_key;
 }
 

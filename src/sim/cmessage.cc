@@ -38,7 +38,7 @@ unsigned long cMessage::live_msgs;
 //=========================================================================
 //=== cMessage - member functions
 
-cMessage::cMessage(_CONST cMessage& msg) : cObject()
+cMessage::cMessage(const cMessage& msg) : cObject()
 {
     parlistp = NULL;
     encapmsg = NULL;
@@ -118,7 +118,7 @@ void cMessage::writeContents(ostream& os)
     }
 }
 
-cMessage& cMessage::operator=(_CONST cMessage& msg)
+cMessage& cMessage::operator=(const cMessage& msg)
 {
     if (this==&msg) return *this;
 
@@ -134,14 +134,14 @@ cMessage& cMessage::operator=(_CONST cMessage& msg)
 
     if (parlistp)
         delete parlistp;
-    if (msg.parlistp && msg.parlistp->owner()==CONSTCAST(cMessage*,&msg))
+    if (msg.parlistp && msg.parlistp->owner()==const_cast<cMessage*>(&msg))
         take( parlistp = (cArray *)msg.parlistp->dup() );
     else
         parlistp = msg.parlistp;
 
     if (encapmsg && encapmsg->owner()==this)
         free( encapmsg );
-    if (msg.encapmsg && msg.encapmsg->owner()==CONSTCAST(cMessage*,&msg))
+    if (msg.encapmsg && msg.encapmsg->owner()==const_cast<cMessage*>(&msg))
         take( encapmsg = (cMessage *)msg.encapmsg->dup() );
     else
         encapmsg = msg.encapmsg;
@@ -267,7 +267,7 @@ bool cMessage::arrivedOn(const char *s, int g)
     return togate==simulation.contextModule()->findGate(s,g);
 }
 
-const char *cMessage::displayString() _CONST
+const char *cMessage::displayString() const
 {
     // redefine to get messages with custom appearance
     return "";

@@ -26,8 +26,6 @@
 #include "tklib.h"
 #include "tkinsp.h"
 
-/* CONST_CAST */
-#include "defs.h"
 
 // Command functions:
 int newNetwork_cmd(ClientData, Tcl_Interp *, int, char **);
@@ -284,7 +282,7 @@ int getNetworkType_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    cNetworkType *n = simulation.networkType();
-   interp->result = CONST_CAST(!n ? "" : n->name());
+   interp->result = const_cast<char*>(!n ? "" : n->name());
    return TCL_OK;
 }
 
@@ -294,13 +292,13 @@ int getFileName_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
 
    if (0==strcmp(argv[1],"ini"))
-        interp->result = CONST_CAST(app->getIniFileName());
+        interp->result = const_cast<char*>(app->getIniFileName());
    else if (0==strcmp(argv[1],"snapshot"))
-        interp->result = CONST_CAST(app->getSnapshotFileName());
+        interp->result = const_cast<char*>(app->getSnapshotFileName());
    else if (0==strcmp(argv[1],"outvector"))
-        interp->result = CONST_CAST(app->getOutVectorFileName());
+        interp->result = const_cast<char*>(app->getOutVectorFileName());
    else if (0==strcmp(argv[1],"parchanges"))
-        interp->result = CONST_CAST(app->getParChangeFileName());
+        interp->result = const_cast<char*>(app->getParChangeFileName());
    else
         return TCL_ERROR;
    return TCL_OK;
@@ -310,14 +308,14 @@ int getObjectFullpath_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 {
    if (argc!=2) return TCL_ERROR;
    cObject *object = (cObject *)strToPtr( argv[1] );
-   interp->result = CONST_CAST(object->fullPath());
+   interp->result = const_cast<char*>(object->fullPath());
    return TCL_OK;
 }
 
 int simulationOk_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
-   interp->result = CONST_CAST (simulation.ok() ? "1" : "0");
+   interp->result = const_cast<char*>(simulation.ok() ? "1" : "0");
    return TCL_OK;
 }
 
@@ -325,7 +323,7 @@ int isRunning_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   interp->result = CONST_CAST(app->is_running ? "1" : "0");
+   interp->result = const_cast<char*>(app->is_running ? "1" : "0");
    return TCL_OK;
 }
 
@@ -481,7 +479,7 @@ int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 
    void *dat = (argc==4) ? (void *)argv[3] : NULL;
    TInspector *insp = app->inspect( object, type, dat );
-   interp->result = insp ? insp->windowname : CONST_CAST("");
+   interp->result = insp ? insp->windowname : const_cast<char*>("");
    return TCL_OK;
 }
 
