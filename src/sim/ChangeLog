@@ -1,3 +1,7 @@
+2002-12-19  Andras Varga
+
+	* always use <iostream> instead of <iostream.h>
+
 2002-12-07  Andras Varga
 
 	* cmessage.cc: info() now includes names of src/dest modules too;
