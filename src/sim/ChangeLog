@@ -1,3 +1,8 @@
+2004-02-12  Andras Varga
+
+	* cmodule.cc, cgate.cc, cchannel.cc: gave a bool return value to 
+	deliver(), "false" meaning that message object should be deleted.
+
 2004-02-11  Andras Varga 
 
 	* csimul.cc, cscheduler.cc: semantic change of getNextEvent()'s and

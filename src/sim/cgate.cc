@@ -352,18 +352,19 @@ cGate *cGate::destinationGate() const
     return const_cast<cGate *>(g);
 }
 
-void cGate::deliver(cMessage *msg, simtime_t t)
+bool cGate::deliver(cMessage *msg, simtime_t t)
 {
     if (togatep==NULL)
     {
         ownerModule()->arrived(msg, id(), t);
+        return true;
     }
     else
     {
         if (channelp)
-            channelp->deliver(msg, t);
+            return channelp->deliver(msg, t);
         else
-            togatep->deliver(msg, t);
+            return togatep->deliver(msg, t);
     }
 }
 

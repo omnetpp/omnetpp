@@ -333,8 +333,10 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
     // set message parameters and send it
     msg->setSentFrom(this, outgate->id(), simTime()+delay);
 
-    outgate->deliver(msg, simTime()+delay);
+    bool keepit = outgate->deliver(msg, simTime()+delay);
     ev.messageSent( msg );
+    if (!keepit)
+        delete msg;
     return 0;
 }
 
@@ -368,7 +370,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
         throw new cException("sendDirect(): destination gate pointer is NULL");
     if (togate->fromGate())
         throw new cException("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
-                             " (``from'' side of dest. gate `%s' should NOT be connected)",togate->fullPath());
+                             " (\"from\" side of dest. gate `%s' should NOT be connected)",togate->fullPath());
 
     if (msg==NULL)
         throw new cException("sendDirect(): message pointer is NULL");
@@ -387,8 +389,10 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
 
     // set message parameters and send it
     msg->setSentFrom(this, -1, simTime());
-    togate->deliver( msg, simTime()+propdelay);
+    bool keepit = togate->deliver( msg, simTime()+propdelay);
     ev.messageSent(msg, togate);
+    if (!keepit)
+        delete msg;
     return 0;
 }
 

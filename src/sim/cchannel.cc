@@ -170,10 +170,10 @@ int cChannel::findPar(const char *s) const
     return parlistp->find( s );
 }
 
-void cChannel::deliver(cMessage *msg, simtime_t t)
+bool cChannel::deliver(cMessage *msg, simtime_t t)
 {
     // hand over msg to next gate
-    fromGate()->toGate()->deliver(msg, t);
+    return fromGate()->toGate()->deliver(msg, t);
 }
 
 //=========================================================
@@ -383,7 +383,7 @@ bool cSimpleChannel::isBusy() const
     return simulation.simTime()<transm_finishes;
 }
 
-void cSimpleChannel::deliver(cMessage *msg, simtime_t t)
+bool cSimpleChannel::deliver(cMessage *msg, simtime_t t)
 {
 
 /*
@@ -418,6 +418,6 @@ void cSimpleChannel::deliver(cMessage *msg, simtime_t t)
             msg->setBitError(true);
 
     // hand over msg to next gate
-    fromGate()->toGate()->deliver(msg, t);
+    return fromGate()->toGate()->deliver(msg, t);
 }
 
