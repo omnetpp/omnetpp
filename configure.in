@@ -72,6 +72,9 @@ case $host in
     ;;
 esac
 
+# We'll collect in this variable the components we've detected problems with
+OPP_PROBLEM_PACKAGES=
+
 #
 # Location of various components. Can be overridden in configure.user.
 #
@@ -216,7 +219,8 @@ AC_ARG_VAR(DOXYGEN, The Doxygen documentation tool)
 AC_CHECK_PROG(DOXYGEN, doxygen, doxygen, not found)
 
 if test "$DOXYGEN" = "not found"; then
-   AC_MSG_WARN(doxygen is needed to create the OMNeT++ API reference.)
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES doxygen"
+   AC_MSG_WARN(doxygen not found -- it is needed to create the OMNeT++ API reference and also useful with opp_neddoc.)
    AC_MSG_WARN(It is available from http://www.doxygen.org/)
 fi
 
@@ -229,25 +233,28 @@ AC_ARG_VAR(XSLTPROC, A command line xslt processor)
 AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, not found)
 
 if test "$XSLTPROC" = "not found"; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES xsltproc"
    AC_MSG_WARN(xsltproc from the libxml/libxslt packages not found -- it is needed by opp_neddoc.)
    AC_MSG_WARN(You can get it from http://xmlsoft.org/XSLT/)
 fi
 
-
-# "convert" from ImageMagick
-AC_ARG_VAR(CONVERT, convert (ImageMagick) is used for EPS-JPG conversion by opp_neddoc)
-AC_CHECK_PROG(CONVERT, convert, convert,)
 
 # Ghostscript
 AC_ARG_VAR(GHOSTSCRIPT, Ghostscript is used for EPS-JPG conversion by opp_neddoc)
 AC_CHECK_PROG(GHOSTSCRIPT, gs, gs,)
 
 if test "$GHOSTSCRIPT" = ""; then
-   AC_MSG_WARN(Ghostscript is needed by opp_neddoc to create diagrams.)
-else
-   if test "$CONVERT" = ""; then
-      AC_MSG_WARN(ImageMagick not found -- opp_neddoc may export broken network diagrams due to a Ghostscript problem.)
-   fi
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES Ghostscript"
+   AC_MSG_WARN(Ghostscript not found -- it is needed by opp_neddoc to create diagrams.)
+fi
+
+# "convert" from ImageMagick
+AC_ARG_VAR(CONVERT, convert (ImageMagick) is used for EPS-JPG conversion by opp_neddoc)
+AC_CHECK_PROG(CONVERT, convert, convert,)
+
+if test "$CONVERT" = ""; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES ImageMagick"
+   AC_MSG_WARN(convert program from the ImageMagick package not found -- opp_neddoc may export broken network diagrams due to a Ghostscript problem.)
 fi
 
 # "dot" from Graphviz
@@ -255,7 +262,8 @@ AC_ARG_VAR(DOT, Graph drawing program from the Graphviz package)
 AC_CHECK_PROG(DOT, dot, dot,)
 
 if test "$DOT" = ""; then
-   AC_MSG_WARN(The dot program from Graphviz is needed by opp_neddoc to generate diagrams.)
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES Graphviz"
+   AC_MSG_WARN(dot program from Graphviz not found -- it is needed by opp_neddoc to generate diagrams.)
 fi
 
 # giftrans
@@ -263,7 +271,8 @@ AC_ARG_VAR(GIFTRANS, Utility to make GIFs transparent)
 AC_CHECK_PROG(GIFTRANS, giftrans, giftrans,)
 
 if test "$GIFTRANS" = ""; then
-   AC_MSG_WARN(giftrans is used by opp_neddoc, to make the background of diagrams transparent.)
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES giftrans"
+   AC_MSG_WARN(giftrans not found -- opp_neddoc needs it to make the background of diagrams transparent.)
 fi
 
 #----------------------
@@ -310,6 +319,7 @@ fi
 #----------------------
 AC_CHECK_PROGS(WISH, $WISH wish wish84 cygwish cygwish84, nope)
 if test "$WISH" = nope -a ! "$EMBED_TCL_CODE" = yes; then
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES wish"
    AC_MSG_WARN([cannot find wish, part of Tcl/Tk - Plove will not work])
 fi
 
@@ -387,10 +397,12 @@ OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $BLT_LIBS $TK_LIB
 if test $blt_ok = yes; then
     HAVE_BLT=yes
     if echo 'catch {package require BLT 2.4; puts OK}; exit' | tclsh | grep OK >/dev/null; then :; else
+        OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES BLT"
         AC_MSG_WARN([Tcl cannot load BLT, probably BLT not installed correctly.])
         AC_MSG_WARN([Check your installation and try typing "package require BLT 2.4" on the wish prompt to verify!])
     fi
 else
+    OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES BLT"
     AC_MSG_WARN([no BLT: Plove and Scalars will not build or work])
     HAVE_BLT=no
 fi
@@ -432,6 +444,7 @@ elif test $expat_ok = yes; then
    XML_LIBS=$EXPAT_LIBS
 else
    XMLPARSER=none
+   OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES (no XML parser)"
    AC_MSG_WARN([No suitable XML parser found: no support for XML input])
 fi
 
@@ -634,6 +647,26 @@ chmod +x src/utils/opp_makemake
 chmod +x src/utils/opp_test
 chmod +x src/utils/opp_makedep
 chmod +x src/utils/opp_neddoc
+
+
+#----------------------
+# Check $OPP_PROBLEM_PACKAGES
+#----------------------
+
+if test "$OPP_PROBLEM_PACKAGES" != ""; then
+      cat 1>&2 << EOT
+
+WARNING: The configuration script found problems with the following packages:
+
+  $OPP_PROBLEM_PACKAGES
+
+Scroll up to see the warning messages (use shift+PgUp key). While you can
+still use OMNeT++ in the current configuration, be aware that certain
+functionality may be degraded or unavailable.
+
+EOT
+fi
+
 
 #----------------------
 # Check if the path contains omnetpp/bin (it should)
