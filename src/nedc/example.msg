@@ -1,19 +1,13 @@
-//--subclassing--
-// note: the above line is necessary for nedcwrapper.sh to work!
-
 //
 // An example to the experimental message subclassing support. This file has
 // to be processed by opp_msgc which generates C++ classes you can use from
 // your models, as well as "reflection" classes that allow Tkenv to inspect
 // these data stuctures.
 //
-// Check msgdoc.txt for some more information.
+// Check doc/msgsubclassing.txt for more information.
 //
 // The syntax and features shown in this file are all experimental.
 // Feedback is welcome!
-//
-// opp_msgc is an intermediate solution until the new extended nedc
-// becomes available.
 //
 
 
@@ -21,14 +15,14 @@
 cppinclude <stdio.h>
 cppinclude "mystuff.h"
 
-// announce C++ types to nedc
+// announce types that come from included C++ code
 struct IPAddress;
 cobject BasicPacket;
 cobject PayloadPacket;
 noncobject mystringclass;
 
 // imports are not yet supported :-(
-import "othermsgs.ned";
+import "othermsgs.msg";
 
 // create an enum
 enum ProtocolTypes
