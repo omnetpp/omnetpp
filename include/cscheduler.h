@@ -30,6 +30,19 @@ class cMessage;
  * Abstract class to encapsulate event scheduling. See description
  * of getNextEvent() for more info.
  *
+ * To switch to your own scheduler class (reasons you'd like to do that
+ * include real-time simulation, hardware-in-the-loop simulation, 
+ * distributed (federated) simulation, parallel distributed simulation),
+ * subclass cScheduler, register your new class with 
+ * the Register_Class() macro, then add the following to 
+ * <tt>omnetpp.ini</tt>:
+ *
+ * <pre>
+ * [General]
+ * scheduler-class="MyClass"
+ * </pre>
+ *
+ * @ingroup EnvirExtensions
  * @ingroup Internals
  */
 class cScheduler : public cPolymorphic

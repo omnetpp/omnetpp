@@ -40,8 +40,7 @@
  *
  * To switch to your own configuration storage (e.g. database or XML files) 
  * from omnetpp.ini, subclass cConfiguration, register your new class with 
- * the Register_Class() macro, then create the following to 
- * <tt>omnetpp.ini</tt>:
+ * the Register_Class() macro, then create the following <tt>omnetpp.ini</tt>:
  *
  * <pre>
  * [General]

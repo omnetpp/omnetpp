@@ -58,6 +58,9 @@ cObject *unpackObject(cCommBuffer *buffer);
  * For example, the MPI implementation, cMPICommBuffer encapsulates
  * MPI_Pack() and MPI_Unpack().
  *
+ * @see cObject::netPack(), cObject::netUnpack()
+ *
+ * @ingroup ParsimBrief
  * @ingroup Parsim
  */
 class cCommBuffer : public cPolymorphic

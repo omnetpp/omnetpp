@@ -36,6 +36,7 @@ class cCommBuffer;
  * This is an interface: functionality is added by specific subclasses
  * for MPI, PVM, etc.
  *
+ * @ingroup ParsimBrief
  * @ingroup Parsim
  */
 class cParsimCommunications : public cPolymorphic

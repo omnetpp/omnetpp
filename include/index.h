@@ -36,6 +36,7 @@
  * - @ref Macros
  * - @ref Internals
  * - @ref EnvirExtensions
+ * - @ref ParsimBrief
  *
  * If you have used OMNeT++ before:
  * - @ref APIChanges
@@ -260,3 +261,11 @@
  * etc. config entries.
  */
 
+/**
+ * @defgroup ParsimBrief  Parallel simulation extension
+ *
+ * These classes are used with the parallel simulation feature.
+ * For more information, please see the separate Parallel Simulation API
+ * which is generated from the source files in <tt>src/sim/parsim</tt> 
+ * directory.
+ */
