@@ -1,6 +1,36 @@
+2003-01-23  Andras Varga
+
+	* NOTE about Fibers, the Win32 API used to implement activity()
+	on Windows. The number of fibers (that is, the number of modules
+	using activity() in a network) is limited by the available memory
+	and the available address space according to the following.
+	Each fiber has its own stack, by default 1MB (this is the "reserved"
+	stack space -- i.e. reserved in the address space, but not the full
+	1MB is actually "committed", i.e. has physical memory assigned to it).
+	This means that a 2GB address space will run out after 2048 fibers,
+	which is way too few. (In practice, you won't even be able to create
+	this many fibers, because physical memory is also a limiting factor).
+	Therefore, the 1MB reserved stack size (RSS) must be set to a smaller
+	value: the coroutine stack size requested for the module, plus
+	extra-stack-for-envir, the sum of the two typically around 32K.
+	Unfortunately, the CreateFiber() Win32 API doesn't allow the RSS to be
+	specified. The more advanced CreateFiberEx() API which accepts RSS as
+	parameter is only available from Windows XP!!!! The alternative is
+	the stacksize parameter stored in the EXE header, which can be set
+	via the STACKSIZE .def file parameter, via the /stack linker option,
+	or on an existing execuable using the editbin /stack utility.
+	This parameter specifies a common RSS for the main program stack,
+	fiber and thread stacks. 64K should be enough. This is the way
+	simulation executable should be created: linked with the /stack:65536
+	option, or the /stack:65536 parameter applied using editbin later.
+	For example, after applying the editbin /stacksize:65536 command to
+	dyna.exe, I was able to successfully run the Dyna sample with 8000
+	Client modules on my Win2K PC with 256M RAM (that means about 12000
+	modules at runtime, inluding about 4000 dynamically created modules.)
+
 2003-01-22  Andras Varga
 
-	* ctypes.cc: increased type safety of Register_Function() and 
+	* ctypes.cc: increased type safety of Register_Function() and
 	cFunctionType.
 
 2003-01-20  Andras Varga
@@ -9,16 +39,16 @@
 
 2003-01-19  Andras Varga
 
-	* distrib.cc (new): contains implementations of distributions 
+	* distrib.cc (new): contains implementations of distributions
 	contributed by Werner Sandmann (TU Bonn): continuous distributions
-        gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(), 
+        gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(),
         triang(),lognormal(), weibull(), pareto_shifted(), and discrete
         distributions bernoulli(), binomial(), geometric(), negbinomial(),
         hypergeometric(), poisson()
-	
-	* random.cc (new), distrib.cc, util.cc: From util.cc, existing 
-	distributions (uniform, normal,	exponential, etc) were moved to 
-	distrib.cc, and random number generator functions were moved to 
+
+	* random.cc (new), distrib.cc, util.cc: From util.cc, existing
+	distributions (uniform, normal,	exponential, etc) were moved to
+	distrib.cc, and random number generator functions were moved to
 	new file random.cc.
 
 2003-01-14  Andras Varga
@@ -32,7 +62,7 @@
 
 2002-12-21  Andras Varga
 
-	* cwatch.cc: for 'char *' and 'cObject *' types, cWatch::info() 
+	* cwatch.cc: for 'char *' and 'cObject *' types, cWatch::info()
 	displays pointer value
 
 2002-12-19  Andras Varga
@@ -95,8 +125,8 @@
 
 	I only saw this on Cygwin: MSVC and gcc on Linux are OK. Web search
 	told me that exception handling in Cygwin isn't thread-safe, hence
-	the crash. According to some, recompiling *GCC* with --disable-shared 
-	and --enable-threads should cure this. I didn't test, converted to 
+	the crash. According to some, recompiling *GCC* with --disable-shared
+	and --enable-threads should cure this. I didn't test, converted to
 	MinGW instead.
 
 2002-10-20  Andras Varga

@@ -638,7 +638,7 @@ cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stks
        // setup coroutine, allocate stack for it
        coroutine = new cCoroutine;
        if (!coroutine->setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
-           throw new cException("Cannot allocate %d+%d bytes of stack for module `%s' (increase total stack size!)",
+           throw new cException("Cannot create coroutine with %d+%d bytes of stack space for module `%s'",
                              stksize,ev.extraStackForEnvir(),fullPath());
     }
 }
