@@ -1,0 +1,29 @@
+#
+# Definitions to be customized by 'configure'
+#
+DOXYGEN=@DOXYGEN@
+
+#
+# Targets
+#
+all: api nedxml-api parsim-api do-tictoc-tutorial do-queues-tutorial do-manual
+
+apis: api nedxml-api parsim-api do-tictoc-tutorial
+
+api:
+	$(DOXYGEN) api.doxyfile
+
+nedxml-api:
+	$(DOXYGEN) nedxml.doxyfile
+
+parsim-api:
+	$(DOXYGEN) parsim.doxyfile
+
+do-manual:
+	cd manual && $(MAKE)
+
+do-tictoc-tutorial:
+	cd tictoc-tutorial && $(MAKE)
+
+do-queues-tutorial:
+	cd queues-tutorial && $(MAKE)

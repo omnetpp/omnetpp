@@ -549,7 +549,7 @@ AC_CONFIG_FILES(
   samples/queues/Makefile
   samples/tictoc/Makefile
   samples/tokenring/Makefile
-  include/Makefile
+  doc/src/Makefile
   test/Makefile
 )
 

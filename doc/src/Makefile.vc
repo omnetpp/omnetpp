@@ -8,6 +8,8 @@
 #
 all: api nedxml-api parsim-api do-tictoc-tutorial do-queues-tutorial do-manual
 
+apis: api nedxml-api parsim-api do-tictoc-tutorial
+
 api:
 	$(DOXYGEN:/=\) api.doxyfile
 

@@ -5606,14 +5606,13 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-                                                                                                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/scalars/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fddi/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile include/Makefile test/Makefile"
+                                                                                                                                                                                                                                                                                                  ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/scalars/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fddi/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile doc/src/Makefile test/Makefile"
 
 
 
 #----------------------
 # Substitutions.
 #----------------------
-
 
 
 
@@ -6275,7 +6274,7 @@ do
   "samples/queues/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/queues/Makefile" ;;
   "samples/tictoc/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/tictoc/Makefile" ;;
   "samples/tokenring/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/tokenring/Makefile" ;;
-  "include/Makefile" ) CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
+  "doc/src/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/src/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}

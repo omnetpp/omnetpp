@@ -134,10 +134,10 @@ tokenring:
 # Documentation
 #
 apis:
-	cd $(OMNETPP_DOC_DIR) && $(MAKE) apis
+	cd $(OMNETPP_DOC_DIR)/src && $(MAKE) apis
 
 docu:
-	cd $(OMNETPP_DOC_DIR) && $(MAKE)
+	cd $(OMNETPP_DOC_DIR)/src && $(MAKE)
 
 #
 # Test
