@@ -139,42 +139,42 @@ puts "dbg: parsing and checking..."
     # OK! In the next lines we'll transfer the new stuff into ned()
     #
 
-    # preserve the position of the orig. module in the ned file:
+puts "dbg: deleting old stuff..."
+
+    # delete old stuff from ned() and add new stuff
     set origmodkey $canvas($canv_id,module-key)
-    set tmp_ned($modkey,order) $ned($origmodkey,order)
+    deleteModuleData $origmodkey
+
+puts "dbg: pasting into ned..."
 
     # we're not supposed to overwrite the nedfile's properties in ned():
     foreach i [array names tmp_ned "$filekey,*"] {
         unset tmp_ned($i)
     }
-
-puts "dbg: deleting old stuff..."
-
-    # delete old stuff from ned() and add new stuff
-    deleteModuleData $origmodkey
-
-puts "dbg: pasting into ned..."
-
+    # pasting
     foreach i [array names tmp_ned] {
         set ned($i) $tmp_ned($i)
     }
-    insertItem $modkey $filekey
+    # replace $origmodkey with $modkey in nedfile
+    set pos [lsearch -exact $ned($filekey,childrenkeys) $origmodkey]
+    set ned($filekey,childrenkeys) [lreplace $ned($filekey,childrenkeys) $pos $pos $modkey]
 
     set ned(nextkey) $tmp_ned(nextkey)
     unset tmp_ned
 
 puts "dbg: drawing..."
 
+    # update canvas
     set canvas($canv_id,module-key) $modkey
-    $canvas($canv_id,canvas) delete all  # should not be necessary
-
-    # show module on canvas
+    $canvas($canv_id,canvas) delete all
     drawItemRecursive $modkey
 
     # graphics view
     setCanvasMode "graphics"
 
-    # maybe the module name has changed
+    # markNedfileOfItemDirty $modkey wouldn't be good: it doesn't
+    # always call updateTreeManager
+    set ned($filekey,dirty) 1
     updateTreeManager
 
 }
@@ -209,24 +209,9 @@ proc okToLoseChanges {msg} {
 proc deleteModuleData {key} {
    global ned
 
-   # unlink from parent
-   set parentkey $ned($key,parentkey)
-   set pos [lsearch -exact $ned($parentkey,childrenkeys) $key]
-   set ned($parentkey,childrenkeys) [lreplace $ned($parentkey,childrenkeys) $pos $pos]
-
-   deleteModuleDataProc $key
-}
-
-# deleteModuleDataProc --
-#
-# private proc for deleteModuleData
-#
-proc deleteModuleDataProc {key} {
-   global ned
-
    # delete children recursively
    foreach childkey $ned($key,childrenkeys) {
-      deleteModuleDataProc $childkey
+      deleteModuleData $childkey
    }
 
    # - deleting non-child linked objects omitted

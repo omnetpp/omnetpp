@@ -49,7 +49,6 @@ proc generateChildren {key indent} {
 
     # pick children and sort them
     set childkeys $ned($key,childrenkeys)
-    set childkeys [lsort -command _compareNedElements $childkeys]
 
     # generate them
     set out ""
@@ -75,7 +74,6 @@ proc generateChildrenWithType {key type indent} {
             lappend childkeys $i
         }
     }
-    set childkeys [lsort -command _compareNedElements $childkeys]
 
     # generate them
     set out ""
@@ -96,7 +94,6 @@ proc generateChildrenWithArg {key indent arg} {
 
     # pick children and sort them
     set childkeys $ned($key,childrenkeys)
-    set childkeys [lsort -command _compareNedElements $childkeys]
 
     # generate them
     set out ""
@@ -110,14 +107,6 @@ proc generateChildrenWithArg {key indent arg} {
         }
     }
     return $out
-}
-
-# _compareNedElements --  private procedure for generateNedItem
-proc _compareNedElements {key1 key2} {
-   global ned
-
-   # if order is equal, should use something else (name etc)
-   return [expr $ned($key1,order) - $ned($key2,order)]
 }
 
 #--------------------------------------

@@ -21,7 +21,7 @@ module Module1
     submodules: // and this is right-comment
         // This is another banner comment, for the submodule
         submod1: Module; 
-            display: "p=120,116;b=96,72,rect";
+            display: "p=128,156;b=96,72,rect";
     connections: 
         out --> submod1.in; // Right-comments can also be 
                             // multi-line.
@@ -32,12 +32,20 @@ endmodule
 // separator lines into the file, like this:
 // -----------------------------------------------------------------------
 
+
+
+
+simple Simple1 
+endsimple 
+
 // Module2 --
 // 
 // an empty module
 // 
 module Module2 
 endmodule 
+
+
 
 
 

@@ -47,14 +47,12 @@ proc openUnnamedCanvas {} {
     # (if it doesn't already have one) and open it on a new canvas.
     global ned
 
-puts "dbg: openUnnamedCanvas: FIXME! should not find the currently open canvas!"
-
     set nedfilekey ""
     set modkey ""
 
     # find file
     foreach key $ned(0,childrenkeys) {
-        if {$ned($key,unnamed) && !$ned($key,dirty)} {
+        if {![info exist ned($key,being-deleted)] && $ned($key,unnamed) && !$ned($key,dirty)} {
             set nedfilekey $key
         }
     }
@@ -62,7 +60,7 @@ puts "dbg: openUnnamedCanvas: FIXME! should not find the currently open canvas!"
     # now get a module
     if {$nedfilekey!=""} {
         foreach key $ned($nedfilekey,childrenkeys) {
-            if {$ned($key,type)=="module"} {
+            if {$ned($key,type)=="module" && ![info exist ned($key,being-deleted)]} {
                 set modkey $key
             }
         }
@@ -90,6 +88,14 @@ puts "dbg: openUnnamedCanvas: file $nedfilekey, module $modkey"
 proc openModuleOnNewCanvas {modkey} {
     global gned ned canvas fonts
     set w .omnetpp
+
+    # check type of item
+    set type $ned($modkey,type)
+    if {$type!="module"} {
+        tk_messageBox -icon warning -type ok \
+                      -message "Opening a '$type' on canvas is not implemented."
+        return
+    }
 
     # allocate ID for new canvas
     incr gned(canvas_lastid)
@@ -281,7 +287,9 @@ puts "dbg: destroyCanvas $canv_id"
         switchToCanvas $newid
     }
 
-    if {$canv_id==$newid} {error "internal error in destroyCanvas"}
+    if {$canv_id==$newid} {
+        return
+    }
 
     # destroy widgets and variables associated with old canvas
     destroy $canvas($canv_id,canvas)

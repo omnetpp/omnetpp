@@ -126,36 +126,4 @@ proc loadNED {nedfile} {
 }
 
 
-# _compareDefinitions --  private procedure for generateNed
-proc _compareDefinitions {key1 key2} {
-   global ned
-   if {$ned($key1,type)!="import"} {
-      return -1
-   } elseif {$ned($key2,type)!="import"} {
-      return 1
-   } elseif {$ned($key1,order)!="" && $ned($key2,order)!=""} {
-     if {$ned($key1,order) < $ned($key2,order)} {
-        return -1
-     } elseif {$ned($key1,order) > $ned($key2,order)} {
-        return 1
-     }
-   }
-
-   if {$ned($key1,type)!="channel"} {
-      return -1
-   } elseif {$ned($key2,type)!="channel"} {
-      return 1;
-   } elseif {$ned($key1,type)!="network"} {
-      return 1;
-   } elseif {$ned($key2,type)!="network"} {
-      return -1;
-   } else {
-     # both are module
-     return -1;
-   }
-
-   return [string compare $ned($key1,name) $ned($key2,name)]
-}
-
-
 

@@ -929,15 +929,6 @@ proc _getCenterAndSize {c key} {
 proc markCanvasDirty {} {
     global canvas ned gned
 
-    # find ned file key
-    set canv_id $gned(canvas_id)
-    set modkey $canvas($canv_id,module-key)
-    set fkey $ned($modkey,parentkey)
-
-    if {$ned($fkey,type)!="nedfile"} {error "internal error in markCanvasDirty"}
-
-    if {$ned($fkey,dirty)==0} {
-       set ned($fkey,dirty) 1
-       updateTreeManager
-    }
+    set modkey $canvas($gned(canvas_id),module-key)
+    markNedfileOfItemDirty $modkey
 }

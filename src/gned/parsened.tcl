@@ -48,8 +48,6 @@ proc NedParser_createNedElement {nedarrayname type parentkey} {
    set nedarray($key,parentkey) $parentkey
    lappend nedarray($parentkey,childrenkeys) $key
 
-   # order is creation order
-   set nedarray($key,order) $key
    return $key
 }
 

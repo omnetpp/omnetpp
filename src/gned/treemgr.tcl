@@ -28,13 +28,6 @@ foreach f $files {
 }
 puts ""
 
-proc dispsel {} {
-    global ned
-#FIXME: debug proc
-    foreach i [array names ned "*,selected"] {
-       puts "dbg: ned($i)=$ned($i)"
-    }
-}
 #-----------------------------------------------
 
 # initTreeManager --
@@ -100,16 +93,79 @@ proc updateTreeManager {} {
     Tree:build $gned(manager).tree
 }
 
-proc treemanagerDoubleClick {key} {
-    global ned
+# getNodeInfo --
+#
+# This user-supplied function gets called by the tree widget to get info about
+# tree nodes. The widget itself only stores the state (open/closed) of the
+# nodes, everything else comes from this function.
+#
+proc getNodeInfo {w op {key {}}} {
+    global ned ddesc
 
-    set type $ned($key,type)
-    if {$type=="module"} {
-        openModuleOnCanvas $key
-    } else {
-        tk_messageBox -icon warning -type ok \
-            -message "Opening a '$type' on canvas is not implemented yet."
+    switch $op {
+
+      root {
+        return 0
+      }
+
+      text {
+        if [info exist ned($key,name)] {
+          return "$key:$ned($key,type) $ned($key,name)"
+          # return "$ned($key,type) $ned($key,name)"
+        } else {
+          return "$key:$ned($key,type)"
+          # return "$ned($key,type)"
+        }
+      }
+
+      options {
+        if [info exist ned($key,dirty)] {
+          if {$ned($key,dirty)} {
+             return "-fill #ff0000"
+          } else {
+             return ""
+          }
+        }
+      }
+
+      icon {
+        set type $ned($key,type)
+        if [info exist ddesc($type,treeicon)] {
+          return $ddesc($type,treeicon)
+        } else {
+          return $ddesc(root,treeicon)
+        }
+      }
+
+      parent {
+        return $ned($key,parentkey)
+      }
+
+      children {
+        return $ned($key,childrenkeys)
+      }
+
+      haschildren {
+        return [expr [llength $ned($key,childrenkeys)]!=0]
+
+        ## OLD CODE: only allow top-level components (modules, channels etc.) to be displayed
+        # set type $ned($key,type)
+        # if {$type=="root" || $type=="nedfile"} {
+        #   return [expr [llength $ned($key,childrenkeys)]!=0]
+        # } else {
+        #   return 0
+        #}
+      }
     }
+}
+
+
+#------------------------------
+# Bindings for the tree manager
+#------------------------------
+
+proc treemanagerDoubleClick {key} {
+    openModuleOnCanvas $key
 }
 
 proc treemanagerPopup {key x y} {
@@ -117,10 +173,13 @@ proc treemanagerPopup {key x y} {
 
     catch {destroy .popup}
     menu .popup -tearoff 0
-    switch $ned($key,type) {
-        nedfile {nedfilePopup $key}
-        module  {modulePopup $key}
-        default {defaultPopup $key}
+
+    if {$ned($key,type)=="nedfile"} {
+        nedfilePopup $key
+    } elseif {$ned($ned($key,parentkey),type)=="nedfile"} {
+        toplevelComponentPopup $key
+    } else {
+        defaultPopup $key
     }
     .popup post $x $y
 }
@@ -137,7 +196,10 @@ proc nedfilePopup {key} {
       {separator}
       {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
       {separator}
-      {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
+      {command -command "moveUpItem $key; updateTreeManager" -label {Move up} -underline 5}
+      {command -command "moveDownItem $key; updateTreeManager" -label {Move down} -underline 5}
+      {separator}
+      {command -command "deleteItem $key; updateTreeManager" -label {Delete}}
     } {
        eval .popup add $i
     }
@@ -154,14 +216,17 @@ proc nedfilePopup {key} {
     }
 }
 
-proc modulePopup {key} {
+proc toplevelComponentPopup {key} {
     global ned
     # FIXME:
     foreach i {
       {command -command "openModuleOnCanvas $key" -label {Open on canvas} -underline 0}
       {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
       {separator}
-      {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
+      {command -command "moveUpItem $key; updateTreeManager" -label {Move up} -underline 5}
+      {command -command "moveDownItem $key; updateTreeManager" -label {Move down} -underline 5}
+      {separator}
+      {command -command "deleteItem $key; updateTreeManager" -label {Delete}}
     } {
        eval .popup add $i
     }
@@ -169,17 +234,58 @@ proc modulePopup {key} {
 
 proc defaultPopup {key} {
     global ned
-    # FIXME:
+
     foreach i {
       {command -command "displayCodeForItem $key" -label {Show NED fragment...} -underline 0}
       {separator}
-      {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
+      {command -command "deleteItem $key; updateTreeManager" -label {Delete}}
     } {
        eval .popup add $i
     }
 }
 
-#--------------------------------------
+proc moveUpItem {key} {
+    global ned
+
+    set parentkey $ned($key,parentkey)
+    set l $ned($parentkey,childrenkeys)
+
+    set pos [lsearch -exact $l $key]
+    if {$pos>0} {
+        # swap with prev item
+        set prevpos [expr $pos-1]
+        set prevkey [lindex $l $prevpos]
+        set ned($parentkey,childrenkeys) \
+            [lreplace $l $prevpos $pos $key $prevkey]
+
+        # nedfile changed
+        if {$parentkey!=0} {
+            markNedfileOfItemDirty $parentkey
+        }
+    }
+}
+
+proc moveDownItem {key} {
+    global ned
+
+    set parentkey $ned($key,parentkey)
+    set l $ned($parentkey,childrenkeys)
+
+    set pos [lsearch -exact $l $key]
+    if {$pos<[expr [llength $l]-1]} {
+        # swap with next item
+        set nextpos [expr $pos+1]
+        set nextkey [lindex $l $nextpos]
+        set ned($parentkey,childrenkeys) \
+            [lreplace $l $pos $nextpos $nextkey $key]
+
+        # nedfile changed
+        if {$parentkey!=0} {
+            markNedfileOfItemDirty $parentkey
+        }
+    }
+}
+
 proc displayCodeForItem {key} {
     global ned fonts
 
@@ -220,76 +326,6 @@ proc displayCodeForItem {key} {
     # produce ned code and put it into text widget
     set nedcode [generateNed $key]
     $w.main.text insert end $nedcode
-}
-
-
-# getNodeInfo --
-#
-# This user-supplied function gets called by the tree widget to get info about
-# tree nodes. The widget itself only stores the state (open/closed) of the
-# nodes, everything else comes from this function.
-#
-proc getNodeInfo {w op {key {}}} {
-    global ned ddesc
-
-    switch $op {
-
-      root {
-        return 0
-      }
-
-      text {
-        #DBG:
-        set k "$key:"
-        #set k ""
-
-        if [info exist ned($key,name)] {
-          return "$k$ned($key,type) $ned($key,name)"
-        } else {
-          return "$k$ned($key,type)"
-        }
-      }
-
-      options {
-        if [info exist ned($key,dirty)] {
-          if {$ned($key,dirty)} {
-             return "-fill #ff0000"
-          } else {
-             return ""
-          }
-        }
-      }
-
-      icon {
-        set type $ned($key,type)
-        if [info exist ddesc($type,treeicon)] {
-          return $ddesc($type,treeicon)
-        } else {
-          return $ddesc(root,treeicon)
-        }
-      }
-
-      parent {
-        return $ned($key,parentkey)
-      }
-
-      children {
-        # FIXME: ordering!
-        return $ned($key,childrenkeys)
-      }
-
-      haschildren {
-        return [expr [llength $ned($key,childrenkeys)]!=0]
-
-        ## OLD CODE: only allow top-level components (modules, channels etc.) to be displayed
-        # set type $ned($key,type)
-        # if {$type=="root" || $type=="nedfile"} {
-        #   return [expr [llength $ned($key,childrenkeys)]!=0]
-        # } else {
-        #   return 0
-        #}
-      }
-    }
 }
 
 

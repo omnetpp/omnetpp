@@ -61,9 +61,6 @@ proc addItem {type parentkey} {
    set ned($key,parentkey) $parentkey
    if {$type!="root"} {lappend ned($parentkey,childrenkeys) $key}
 
-   # order is creation order
-   set ned($key,order) $key
-
    # generate a unique name if necessary
    if [info exist ned($key,name)] {
       set name $ned($key,name)
@@ -107,6 +104,9 @@ proc deleteItem {key} {
    global ned canvas
 
 puts "dbg: deleteItem $key entered"
+
+   # prevent race conditions...
+   set ned($key,being-deleted) 1
 
    # delete children recursively
    foreach childkey $ned($key,childrenkeys) {
@@ -418,6 +418,21 @@ proc checkArray {} {
          }
       }
    }
+}
+
+proc markNedfileOfItemDirty {key} {
+    global ned
+
+    # seach up until nedfile item
+    while {$ned($key,type)!="nedfile"} {
+       set key $ned($key,parentkey)
+    }
+
+    # mark nedfile dirty
+    if {$ned($key,dirty)==0} {
+       set ned($key,dirty) 1
+       updateTreeManager
+    }
 }
 
 proc nedfileIsDirty {key} {

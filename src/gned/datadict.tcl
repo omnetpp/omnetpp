@@ -65,7 +65,6 @@ set ddict(common,type)            {}
 set ddict(common,parentkey)       {}
 set ddict(common,childrenkeys)    {}
 set ddict(common,ownedkeys)       {}
-set ddict(common,order)           {}
 
 #
 # root
