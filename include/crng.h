@@ -29,8 +29,11 @@ class cConfiguration;
  */
 class SIM_API cRNG : public cPolymorphic
 {
+  protected:
+    unsigned long numDrawn;
+
   public:
-    cRNG() {}
+    cRNG() {numDrawn=0;}
     virtual ~cRNG() {}
 
     /**
@@ -46,6 +49,12 @@ class SIM_API cRNG : public cPolymorphic
      * It is invoked only once, when the simulation program starts up.
      */
     virtual void selfTest() = 0;
+
+    /**
+     * Returns how many random numbers have been drawn from this RNG.
+     * Subclasses should increment numDrawn in the intRand(), etc. methods.
+     */
+    virtual unsigned long numbersDrawn() {return numDrawn;}
 
     /**
      * Random integer in the range [0,intRandMax()]
