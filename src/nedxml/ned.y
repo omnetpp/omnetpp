@@ -618,7 +618,7 @@ opt_parameters_old
 parameters_old
         : parameters_old ',' parameter_old  /* comma as separator */
                 {
-                  setComments(ps.param,@2);
+                  setComments(ps.param,@3);
                 }
         | parameter_old
                 {
@@ -653,7 +653,7 @@ opt_parameters
 parameters
         : parameters ';' parameter   /* semicolon as separator */
                 {
-                  setComments(ps.param,@2);
+                  setComments(ps.param,@3);
                 }
         | parameter
                 {

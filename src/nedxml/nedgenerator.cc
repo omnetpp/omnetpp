@@ -728,6 +728,11 @@ void NEDGenerator::doFunction(FunctionNode *node, const char *indent, bool islas
     NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
     NEDElement *op3 = op2 ? op2->getNextSibling() : NULL;
 
+    if (!strcmp(node->getName(), "index")) {
+        out << node->getName();  // 'index' doesn't need parentheses
+        return;
+    }
+
     out << node->getName() << "(";
     if (op1) {
         generateNedItem(op1,indent,false,NULL);
