@@ -60,7 +60,7 @@ proc selectOrMoveBindings c {
     # <Double-1> is tricky: must include what <ButtonRelease-1> does!
     bind $c <Delete>           "deleteSelected"
     bind $c <Escape>           "catch {destroy .popup}"
-    bind $c <Double-1>         "selectOrMoveEnd $c %x %y; openSubmodule $c"
+    bind $c <Double-1>         "catch {selectOrMoveEnd $c %x %y}; openSubmodule $c"
     bind $c <Button-3>         "popupMenu $c %X %Y"
     bind $c <Button-1>         "selectOrMoveStart $c %x %y 0"
     bind $c <Control-Button-1> "selectOrMoveStart $c %x %y 1"
@@ -998,9 +998,8 @@ proc _getCenterAndSize {c key} {
 
     if {[info exist ned($key,icon-cid)] && $ned($key,icon-cid)!=""} {
        set cid $ned($key,icon-cid)
-       if [catch {set img [$c itemcget $cid -image]}] {return {}} ;# mysterious bug
+       set img [$c itemcget $cid -image]
        return [concat [$c coords $cid] [image width $img] [image height $img]]
-
     } elseif {$ned($key,rect-cid)!=""} {
        set cc [$c coords $ned($key,rect-cid)]
        set x1 [lindex $cc 0]
