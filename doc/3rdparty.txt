@@ -23,20 +23,6 @@ OMNeT++ uses BLT mainly for its chart, graph and table (multi-column listbox)
 widgets. BLT is available from http://blt.sourceforge.net, and it is 
 distributed under a BSD-like license.
 
-Expat
------
-nedtool is linked with Expat, an open-source XML parser originally written
-by James Clark, and now maintained a sourceforge.net. Expat is available
-from http://expat.sourceforge.net, and it is distributed under a BSD-like
-license.
-
-Perl
-----
-Some of the tools are written in Perl, an open-source script language written
-by Larry Wall. The source is available from http://www.perl.com.
-OMNeT++ is bundled with files from the ActiveState Perl distribution
-(http://www.activestate.com). Perl is distributed under its own Artistic License.
-
 LibXML/LibXSLT
 --------------
 LibXML and LibXSLT are an open-source XML parser and XSLT processor, written
@@ -47,21 +33,19 @@ http://www.zlatkovic.com/libxml.en.html
 LibXML, LibXSLT and LibICONV (also a needed component) are distributed
 under the GNU Lesser General Public License (LGPL).
 
-Gnuplot
--------
-Plove creates plots by invoking Gnuplot, an open-source function plotting
-program written by Thomas Williams and Colin Kelley. The Gnuplot homepage
-is at http://www.gnuplot.info, sources and binaries are available
-from several mirror sites. Gnuplot is distributed under its own BSD-like
-license.
+Perl
+----
+Some of the tools are written in Perl, an open-source script language written
+by Larry Wall. The source is available from http://www.perl.com.
+OMNeT++ is bundled with files from the ActiveState Perl distribution
+(http://www.activestate.com). Perl is distributed under its own Artistic License.
 
 UnxUtils
 --------
-Several utilities and also Plove use some of the GNU Unix tools: grep, gawk,
-pwd, sed, gzip, gunzip, zcat. These programs fall under the GNU General
-Public License, and the source is available from http://www.gnu.org.
-OMNeT++ is bundled with binaries from UnxUtils, a package which contains
-Win32 binary ports of these tools. UnxUtils is maintained at sourceforge.net,
-and available from http://unxutils.sourceforge.net.
+Several GNU Unix tools have been included: grep, gawk, pwd, sed, gzip, gunzip,
+zcat. These programs fall under the GNU General Public License, and the 
+source is available from http://www.gnu.org. OMNeT++ is bundled with binaries
+from UnxUtils, a package which contains Win32 binary ports of these tools.
+UnxUtils is hosted at sourceforge.net: http://unxutils.sourceforge.net.
 
 
