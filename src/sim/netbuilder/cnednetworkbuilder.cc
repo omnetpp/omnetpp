@@ -93,7 +93,12 @@ void cNEDNetworkBuilder::buildInside(cModule *modp, CompoundModuleNode *moduleno
         }
     }
 
-    // FIXME move buildinside here!!!!!
+    // recursively build the submodules too (top-down)
+    for (cSubModIterator submod(*modp); !submod.end(); submod++)
+    {
+       cModule *m = submod();
+       m->buildInside();
+    }
 }
 
 cChannel *cNEDNetworkBuilder::createChannel(const char *name, ChannelNode *channelnode)
@@ -140,8 +145,6 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         assignSubmoduleParams(submodp, submod);
         readInputParams(submodp);
         setupGateVectors(submodp, submod);
-
-        submodp->buildInside();
     }
     else
     {
@@ -153,10 +156,11 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
             assignSubmoduleParams(submodp, submod);
             readInputParams(submodp);
             setupGateVectors(submodp, submod);
-
-            submodp->buildInside();
         }
     }
+
+    // Note: buildInside() will be called when connections have been built out
+    // on this level too.
 }
 
 void cNEDNetworkBuilder::setDisplayString(cModule *submodp, SubmoduleNode *submod)
