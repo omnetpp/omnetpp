@@ -1,0 +1,14 @@
+\begin{thebibliography}{Ros93}
+
+\bibitem[Knu97]{Knuth97}
+D.E. Knuth.
+\newblock {\em The art of computer programming}, volume 2, Seminumerical
+  algorithms.
+\newblock 3 edition, 1997.
+
+\bibitem[Ros93]{Ross93}
+S.M. Ross.
+\newblock {\em Introduction to Probability Models}.
+\newblock Academic Press, 5th edition, 1993.
+
+\end{thebibliography}
