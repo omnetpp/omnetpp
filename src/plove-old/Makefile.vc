@@ -3,12 +3,16 @@
 #
 !include ..\..\configuser.vc
 
+all: plove.bat
+
+plove.bat:
+	@ echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove > plove.bat
+
 depend:
 
 clean:
 
-install-local: plove
-	rem (dir=`pwd`; cd $(OMNETPP_BIN_DIR); rm -f plove; ln -s $$dir/plove .)
-        @ echo *** Plove installation: TBD
+install-local: plove.bat
+        @ copy plove.bat $(OMNETPP_BIN_DIR:/=\)\plove.bat
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
