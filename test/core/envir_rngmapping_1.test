@@ -1,0 +1,57 @@
+%description:
+check that rng mapping in omnetpp.ini works properly
+
+%file: {}.ned
+
+simple {Simple}
+endsimple
+
+module {Net}
+    submodules:
+        a: {Simple}[5];
+endmodule
+
+network {net}: {Net}
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+    virtual int getRngId(cRNG *rng);
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    for (int i=0; i<=2; i++)
+        ev << fullName() << ".rng-" << i << " --> ev.rng-" << getRngId(rng(i)) << "\n";
+}
+
+int {Simple}::getRngId(cRNG *rng)
+{
+    for (int i=0; i<ev.numRNGs(); i++)
+        if (ev.rng(i)==rng)
+            return i;
+    error("getRngId(): RNG not found");
+}
+
+%inifile: {}.ini
+[General]
+network={net}
+num-rngs=3
+
+*.a[0].rng-0 = 1
+*.a[*].rng-0 = 2
+
+*.a[*].rng-1 = 0
+*.a[2].rng-1 = 1
+
+%contains: stdout
+ddfsfsfdsfdsfdsfdsfdsfsdfds
+
