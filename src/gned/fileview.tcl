@@ -79,7 +79,9 @@ proc createFileViewer {filename} {
     frame $w.main
     scrollbar $w.main.sb -borderwidth 1 -command "$w.main.text yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
-    text $w.main.text -undo true -maxundo 1000 -yscrollcommand "$w.main.sb set"
+    text $w.main.text -yscrollcommand "$w.main.sb set"
+    catch {$w.main.text config -undo true}
+
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     frame $w.butt -relief sunken
@@ -117,7 +119,8 @@ proc textView {w title text} {
     frame $w.main
     scrollbar $w.main.sb -borderwidth 1 -command "$w.main.text yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
-    text $w.main.text -undo true -maxundo 1000  -yscrollcommand "$w.main.sb set"
+    text $w.main.text -yscrollcommand "$w.main.sb set"
+    catch {$w.main.text config -undo true}
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     frame $w.butt

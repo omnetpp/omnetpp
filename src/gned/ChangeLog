@@ -2,7 +2,7 @@
 2003-09-01  Andras Varga
 
 	* canvas.tcl, widgets.tcl: turned on Undo/Redo feature in editor
-	(also added to Edit menu)
+	also added to Edit menu and toolbar. Requires fairly recent Tcl/Tk.
 
 2003-08-12  Andras Varga
 

@@ -108,7 +108,8 @@ proc openModuleOnNewCanvas {modkey} {
 
     # create editor
     canvas $canv -background #a0e0a0  -relief ridge -border 2
-    text   $txt  -background wheat2   -relief ridge -border 2  -undo true -maxundo 1000 -wrap none -font $fonts(fixed)
+    text   $txt  -background wheat2   -relief ridge -border 2  -wrap none -font $fonts(fixed)
+    catch {$txt config -undo true}
     configureEditor $txt
 
     # create tab
