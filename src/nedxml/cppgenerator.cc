@@ -1165,7 +1165,7 @@ void NEDCppGenerator::doLoopvar(LoopVarNode *node, const char *indent, int mode,
     generateItem(tovalue, indent, mode);
     out << ";\n";
     out << indent << "long " << node->getParamName() << "_var;\n";
-    out << indent << "for (" << node->getParamName() << "_var=start; " << node->getParamName() << "_var<end; " << node->getParamName() << "_var++)\n";
+    out << indent << "for (" << node->getParamName() << "_var=start; " << node->getParamName() << "_var<=end; " << node->getParamName() << "_var++)\n";
 }
 
 void NEDCppGenerator::doDisplayString(DisplayStringNode *node, const char *indent, int mode, const char *)
