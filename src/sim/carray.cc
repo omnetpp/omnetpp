@@ -304,10 +304,8 @@ void cArray::clear()
 
 int cArray::add(cObject *obj)
 {
-    if (!obj) {
+    if (!obj)
         throw new cException("(%s)%s: cannot insert NULL pointer",className(),fullName());
-        return -1;
-    }
 
     int retval;
     if (takeOwnership()) take( obj );
@@ -337,32 +335,22 @@ int cArray::add(cObject *obj)
 
 int cArray::addAt(int m, cObject *obj)
 {
-    if (!obj) {
+    if (!obj)
         throw new cException("(%s)%s: cannot insert NULL pointer",className(),fullName());
-        return -1;
-    }
 
     if (m<size)  // fits in current vector
     {
         if (m<0)
-        {
-           throw new cException("(%s)%s: addAt(): negative position %d",
-                            className(),fullPath(),m);
-           return -1;
-        }
+            throw new cException("(%s)%s: addAt(): negative position %d", className(),fullPath(),m);
         if (vect[m]!=NULL)
-        {
-           throw new cException("(%s)%s: addAt(): position %d already used",
-                            className(),fullPath(),m);
-           return -1;
-        }
+            throw new cException("(%s)%s: addAt(): position %d already used", className(),fullPath(),m);
         vect[m] = obj;
         if (takeOwnership()) take(obj);
         last = Max(m,last);
         if (firstfree==m)
-           do {
-              firstfree++;
-           } while (firstfree<=last && vect[firstfree]!=NULL);
+            do {
+                firstfree++;
+            } while (firstfree<=last && vect[firstfree]!=NULL);
     }
     else // must allocate bigger vector
     {
@@ -376,9 +364,28 @@ int cArray::addAt(int m, cObject *obj)
         size = m+delta;
         last = m;
         if (firstfree==m)
-           firstfree++;
+            firstfree++;
     }
     return m;
+}
+
+int cArray::set(cObject *obj)
+{
+    if (!obj)
+        throw new cException("(%s)%s: cannot insert NULL pointer",className(),fullName());
+
+    int i = find(obj->name());
+    if (i<0)
+    {
+        return add(obj);
+    }
+    else
+    {
+        if (vect[i]->owner()==this) dealloc(vect[i]);
+        vect[i] = obj;
+        if (takeOwnership()) take(obj);
+        return i;
+    }
 }
 
 int cArray::find(cObject *obj) const
@@ -441,7 +448,7 @@ cObject *cArray::remove(const char *objname)
 {
     int m = find( objname );
     if (m==-1) {
-        opp_warning("(%s)%s: remove(): no object called `%s'",className(),fullName(),objname);
+        //opp_warning("(%s)%s: remove(): no object called `%s'",className(),fullName(),objname);
         return NO(cObject);
     }
     return remove(m);
@@ -453,7 +460,7 @@ cObject *cArray::remove(cObject *obj)
 
     int m = find( obj );
     if (m==-1) {
-        opp_warning("(%s)%s: remove(): object `%s' not in array",className(),fullName(),obj->fullName());
+        //opp_warning("(%s)%s: remove(): object `%s' not in array",className(),fullName(),obj->fullName());
         return NO(cObject);
     }
     return remove(m);
@@ -462,7 +469,7 @@ cObject *cArray::remove(cObject *obj)
 cObject *cArray::remove(int m)
 {
     if (m<0 || m>last || vect[m]==NULL) {
-        opp_warning(eNULLPTR,className(),fullName(),m);
+        //opp_warning(eNULLPTR,className(),fullName(),m);
         return NO(cObject);
     }
 

@@ -266,10 +266,7 @@ int cSimulation::add(cModule *mod)
 void cSimulation::del(int id)
 {
     if (id<0 || id>last_id)
-    {
         throw new cException("cSimulation::del(): module id %d out of range",id);
-        return;
-    }
 
     delete vect[id];
     vect[id] = NULL;
@@ -295,10 +292,8 @@ cModule *cSimulation::moduleByPath(const char *path) const
             modp = modp->submodule(s);  // no index given
         else
         {
-            if (s[strlen(s)-1]!=']') {
+            if (s[strlen(s)-1]!=']')
                 throw new cException("moduleByPath(): syntax error in path `%s'", path);
-                return NULL;
-            }
             *b='\0';
             modp = modp->submodule(s,atoi(b+1));
         }
@@ -429,7 +424,7 @@ void cSimulation::startRun()
     if (netInterface()!=NULL)
     {
         cMessage *msg = new cMessage;
-        msg->sent = msg->delivd = 0;
+        msg->setArrivalTime(0.0);
         simulation.msgQueue.insert( msg );
         netInterface()->after_modinit_msg = msg;
     }
@@ -451,15 +446,10 @@ void cSimulation::endRun()
 void cSimulation::deleteNetwork()
 {
     if (networktype==NULL)
-    {
         return;  // network already deleted
-    }
 
     if (runningmodp!=NULL)
-    {
         throw new cException("Attempt to delete network during simulation");
-        return;
-    }
 
     if (netInterface()!=NULL)
     {
@@ -559,24 +549,19 @@ cSimpleModule *cSimulation::selectNextModule()
     }
 
     // check if dest module exists and still running
-    cSimpleModule *modp = (cSimpleModule *)vect[msg->tomod];
+    cSimpleModule *modp = (cSimpleModule *)vect[msg->arrivalModuleId()];
     if (modp==NULL)
-    {
         throw new cException("Message's destination module no longer exists");
-        return NULL;
-    }
     if (modp->moduleState()==sENDED)
     {
-        if (msg->togate==-1)  // self-message is OK, ignore it
+        if (msg->arrivalGateId()==-1)  // self-message is OK, ignore it
         {
             delete msgQueue.getFirst();
             return selectNextModule();
         }
         else
         {
-            throw new cException("Message's destination module `%s' already terminated",
-                            modp->fullPath());
-            return NULL;
+            throw new cException("Message's destination module `%s' already terminated", modp->fullPath());
         }
     }
 

@@ -1,3 +1,10 @@
+2002-09-07 Andras Varga
+
+	* added cchannel.cc, modified carray.cc, cgate.cc, cmessage.cc, 
+	cmodule.cc, csimul.cc, mpimod.cc, mpipack.cc, netpack.cc, pvmmod.cc,
+        pvmpack.cc: introduced channel objects -- see include/ChangeLog for
+        more details
+
 2002-07-08  Andras Varga
 
 	* coutvect.cc (cOutVector methods): register vector as early as 

@@ -146,7 +146,7 @@ class SIM_API cModule : public cObject
 
   protected:
     // internal use
-    virtual void arrived(cMessage *msg,int n) = 0;
+    virtual void arrived(cMessage *msg,int n,simtime_t t) = 0;
 
   protected:
     /** @name Initialization and finish hooks.
@@ -687,7 +687,7 @@ class SIM_API cSimpleModule : public cModule
 
   protected:
     // internal use
-    virtual void arrived(cMessage *msg,int n);
+    virtual void arrived(cMessage *msg,int n,simtime_t t);
 
   public:
     cHead locals;           // list of local variables of module function
@@ -1200,7 +1200,7 @@ class SIM_API cCompoundModule : public cModule
 
   protected:
     // internal use
-    virtual void arrived(cMessage *msg,int n);
+    virtual void arrived(cMessage *msg,int n,simtime_t t);
 
   public:
     /** @name Constructors, destructor, assignment. */

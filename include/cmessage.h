@@ -30,6 +30,7 @@
 //=== classes mentioned:
 class cPar;
 class cGate;
+class cChannel;
 class cModule;
 class cSimpleModule;
 class cCompoundModule;
@@ -73,11 +74,6 @@ enum eMessageKind {
  */
 class SIM_API cMessage : public cObject
 {
-    friend class cGate;
-    friend class cModule;
-    friend class cSimpleModule;
-    friend class cCompoundModule;
-    friend class cSimulation;
     friend class cMessageHeap;
 
   private:
@@ -395,7 +391,6 @@ class SIM_API cMessage : public cObject
      */
     int arrivalGateId() const  {return togate;}
 
-
     /**
      * Returns time when the message was created.
      */
@@ -413,7 +408,6 @@ class SIM_API cMessage : public cObject
      */
     simtime_t arrivalTime()  const {return delivd;}
 
-
     /**
      * Return true if the message has arrived through gate g.
      */
@@ -426,12 +420,44 @@ class SIM_API cMessage : public cObject
     bool arrivedOn(const char *s, int g=0);
     //@}
 
+    /** @name Internally used methods. */
+    //@{
+
+    /**
+     * Called internally by the simulation kernel as part of the send(),
+     * scheduleAt() calls to set the parameters returned by the
+     * senderModuleId(), senderGate(), sendingTime() methods.
+     */
+    virtual void setSentFrom(cModule *module, int gate, simtime_t t);
+
+    /**
+     * Called internally by the simulation kernel as part of processing
+     * the send(), scheduleAt() calls to set the parameters returned
+     * by the arrivalModuleId(), arrivalGate() methods.
+     */
+    virtual void setArrival(cModule *module, int gate);
+
+    /**
+     * Called internally by the simulation kernel as part of processing
+     * the send(), scheduleAt() calls to set the parameters returned
+     * by the arrivalModuleId(), arrivalGate(), arrivalTime() methods.
+     */
+    virtual void setArrival(cModule *module, int gate, simtime_t t);
+
+    /**
+     * Called internally by the simulation kernel to set the parameters
+     * returned by the arrivalTime() method.
+     */
+    virtual void setArrivalTime(simtime_t t);
+    //@}
+
     /** @name Miscellaneous. */
     //@{
 
     /**
      * Override to define a display string for the message. Display string
      * affects message appearance in Tkenv.
+     *
      * This default implementation returns "".
      */
     virtual const char *displayString() const;

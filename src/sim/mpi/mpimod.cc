@@ -353,8 +353,9 @@ void cMpiMod::sync_after_modinits()
 //   Overrides the virtual function in cSimpleModule. The message will
 //   be sent out immediately to the other MPI module.
 
-void cMpiMod::arrived(cMessage *msg,int ongate)
+void cMpiMod::arrived(cMessage *msg,int ongate, simtime_t at)
 {
+    msg->setArrival(this,ongate,at);
     net_sendmsg( msg, ongate);
 }
 

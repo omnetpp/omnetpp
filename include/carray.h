@@ -322,21 +322,31 @@ class SIM_API cArray : public cObject
     void clear();
 
     /**
-     * Inserts a new object into the array. Only the pointer of the object
+     * Inserts the object into the array. Only the pointer of the object
      * will be stored. The return value is the object's index in the
      * array.
      */
     int add(cObject *obj);
 
     /**
-     * Inserts a new object into the array, at the given position. If
-     * the position is occupied, the function generates an error message.
+     * Inserts the object into the array at the given position. If
+     * the position is occupied, the function throws an error.
+     * The return value is the object's index in the array.
      */
     int addAt(int m,cObject *obj);
 
     /**
+     * Inserts the object into the array. If the array already contains
+     * an object with the same name, it will be replaced (hashtable-like
+     * behavior.) The replaced object, if it was owned by the container,
+     * is deleted using dealloc().
+     * The return value is the object's index in the array.
+     */
+    int set(cObject *obj);
+
+    /**
      * Searches the array for the pointer of the object passed and returns
-     * the index of the first match. If the object wasn't found, -1 is
+     * the index of the first match. If the object was not found, -1 is
      * returned.
      */
     int find(cObject *obj) const;

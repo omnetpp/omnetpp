@@ -95,7 +95,7 @@ class cPvmMod : public cNetMod
     virtual void send_syncpoint( simtime_t t, int gate);
     virtual void send_cancelsyncpoint( simtime_t t, int gate);
     virtual bool block_on_syncpoint( simtime_t t);
-    virtual void arrived(cMessage *msg,int ongate); // sends cMessage over PVM
+    virtual void arrived(cMessage *msg,int ongate, simtime_t at); // sends cMessage over PVM
 
     // redefined cNetMod virtual functions
     // (to be called from environment classes (TOmnetApp descendants))

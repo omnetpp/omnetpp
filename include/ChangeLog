@@ -1,3 +1,29 @@
+2002-09-07 Andras Varga
+
+	* added cchannel.h: cChannel, cSimpleChannel introduced
+
+	* cGate: added setChannel(), channel()
+	
+	* cGate: DEPRECATED setDelay(), setError(), setDatarate(), setLink()
+	methods. Channel objects should be used instead.
+
+	* cGate: added connectTo() method; DEPRECATED setFrom() and setTo()
+
+	* cMessage: refactoring: added setSentFrom() and setArrival() methods 
+	instead of letting friend classes manipulate private data members 
+	of cMessage, and reduced friend class list.
+
+	* cModule, cGate: deliver(cMessage*) changed to 
+	deliver(cMessage*, simtime_t); arrived() method signature changed
+	similarly
+
+	* cArray: created set(cObject*) method to add optional hashtable-like 
+	behaviour to cArray: this method replaces the object with the same 
+	name in the array with the object passed.
+
+	* cArray: commened out opp_warning() calls from all remove() methods.
+	TBD: opp_warning() to be eliminated from EVERY class!!!
+
 2002-07-04  Andras Varga
 
 	* cdispstr.h added: utility class cDisplayString

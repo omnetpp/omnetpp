@@ -31,6 +31,7 @@
 #include "csimul.h"
 #include "macros.h"
 #include "cgate.h"
+#include "cchannel.h"
 
 //=========================================================================
 //=== cGate -- member functions
@@ -39,10 +40,7 @@ cGate::cGate(const cGate& gate) : cObject()
 {
     fullname = NULL;
 
-    linkp = NULL;
-    delayp = errorp = dataratep = NULL;
-
-    transm_finishes = 0.0;
+    channelp = NULL;
 
     notify_inspector = NULL;
     data_for_inspector = NULL;
@@ -63,10 +61,7 @@ cGate::cGate(const char *s, char tp) : cObject(s)
 
     omodp = NULL; gateid = -1; // to be set later
 
-    linkp = NULL;
-    delayp = errorp = dataratep = NULL;
-
-    transm_finishes = 0.0;
+    channelp = NULL;
 
     notify_inspector = NULL;
     data_for_inspector = NULL;
@@ -83,39 +78,35 @@ void cGate::forEach(ForeachFunc do_fn)
 {
     if (do_fn(this,true))
     {
-       if (delayp)    delayp->forEach( do_fn );
-       if (errorp)    errorp->forEach( do_fn );
-       if (dataratep) dataratep->forEach( do_fn );
+       if (channelp)  channelp->forEach( do_fn );
     }
     do_fn(this,false);
 }
 
 cGate& cGate::operator=(const cGate& gate)
 {
-   if (this==&gate) return *this;
+    if (this==&gate) return *this;
 
-   cObject::operator=(gate);
+    cObject::operator=(gate);
 
-   omodp = NULL; gateid = -1;        // to be set later
+    omodp = NULL; gateid = -1;        // to be set later
 
-   fromgatep = gate.fromgatep;
-   togatep = gate.togatep;
+    fromgatep = gate.fromgatep;
+    togatep = gate.togatep;
 
-   typ = gate.typ;
-   serno = gate.serno;
-   vectsize = gate.vectsize;
+    typ = gate.typ;
+    serno = gate.serno;
+    vectsize = gate.vectsize;
 
-   linkp = gate.linkp;  // gates never own link objects, just point to them
-   delayp = gate.delayp;
-   if (delayp->owner()==const_cast<cGate*>(&gate)) delayp = (cPar *)delayp->dup();
-   errorp = gate.errorp;
-   if (errorp->owner()==const_cast<cGate*>(&gate)) errorp = (cPar *)errorp->dup();
-   dataratep = gate.dataratep;
-   if (dataratep->owner()==const_cast<cGate*>(&gate)) dataratep= (cPar *)dataratep->dup();
+    if (channelp && channelp->owner()==const_cast<cGate*>(&gate))
+        dealloc(channelp);
+    channelp = gate.channelp;
+    if (channelp->owner()==const_cast<cGate*>(&gate))
+        channelp = (cChannel *)channelp->dup();
 
-   setDisplayString( gate.displayString() );
+    setDisplayString( gate.displayString() );
 
-   return *this;
+    return *this;
 }
 
 const char *cGate::fullName() const
@@ -139,162 +130,174 @@ const char *cGate::fullPath() const
 
 const char *cGate::fullPath(char *buffer, int bufsize) const
 {
-     // check we got a decent buffer
-     if (!buffer || bufsize<4)
-     {
-         if (buffer) buffer[0]='\0';
-         return "(fullPath(): no or too small buffer)";
-     }
+    // check we got a decent buffer
+    if (!buffer || bufsize<4)
+    {
+        if (buffer) buffer[0]='\0';
+        return "(fullPath(): no or too small buffer)";
+    }
 
-     // hide gate vector: skip directly to owner module
-     // append parent path + "."
-     char *buf = buffer;
-     if (omodp!=NULL)
-     {
+    // hide gate vector: skip directly to owner module
+    // append parent path + "."
+    char *buf = buffer;
+    if (omodp!=NULL)
+    {
         omodp->fullPath(buf,bufsize);
         int len = strlen(buf);
         buf+=len;
         bufsize-=len;
         *buf++ = '.';
         bufsize--;
-     }
+    }
 
-     // append our own name
-     opp_strprettytrunc(buf, fullName(), bufsize-1);
-     return buffer;
+    // append our own name
+    opp_strprettytrunc(buf, fullName(), bufsize-1);
+    return buffer;
 }
 
 void cGate::writeContents(ostream& os)
 {
-      char buf[81];
-
-      os << "  type:  " <<  (typ=='I' ? "input" : "output") << '\n';
-      cGate *inside = (typ=='I') ? togatep : fromgatep;
-      cGate *outside = (typ=='I') ? fromgatep : togatep;
-      os << "  inside connection:  " << (inside?inside->fullPath():"(not connected)") << '\n';
-      os << "  outside connection: " << (outside?outside->fullPath():"(not connected)") << '\n';
-
-      os << "  delay: ";
-      if (delayp)
-          {delayp->info(buf); os << buf << '\n';}
-      else
-          os << "-\n";
-
-      os << "  error: ";
-      if (errorp)
-          {errorp->info(buf); os << buf << '\n';}
-      else
-          os << "-\n";
-
-      os << "  data rate: ";
-      if (dataratep)
-          {dataratep->info(buf); os << buf << '\n';}
-      else
-          os << "-\n";
-
-      if (dataratep)
-      {
-          os << "  transmission state: " << (isBusy() ? "busy" : "free") << '\n';
-          if (isBusy())
-              os << "  transmission finishes: " << simtimeToStr(transm_finishes) << '\n';
-      }
+    os << "  type:  " <<  (typ=='I' ? "input" : "output") << '\n';
+    cGate *inside = (typ=='I') ? togatep : fromgatep;
+    cGate *outside = (typ=='I') ? fromgatep : togatep;
+    os << "  inside connection:  " << (inside?inside->fullPath():"(not connected)") << '\n';
+    os << "  outside connection: " << (outside?outside->fullPath():"(not connected)") << '\n';
 }
 
 void cGate::info(char *buf)
 {
-      // info() string will be like:
-      //    "(cGate) outgate  --> <parent>.outgate  DE" (DER:DelayErrorDatarate)
-      cObject::info( buf );
+    // info() string will be like:
+    //    "(cGate) outgate  --> <parent>.outgate  DE" (DER:DelayErrorDatarate)
+    cObject::info( buf );
 
-      // find end of string
-      char *b = buf;
-      while(*b) b++;
+    // find end of string
+    char *b = buf;
+    while(*b) b++;
 
-      char channel[5], *arrow, *s;
-      cGate *g, *conng;
+    char channel[5], *arrow, *s;
+    cGate *g, *conng;
 
-      if (typ=='O')
-         {arrow = "--> "; g = togatep; conng = this;}
-      else
-         {arrow = "<-- "; g = fromgatep; conng = fromgatep;}
+    if (typ=='O')
+        {arrow = "--> "; g = togatep; conng = this;}
+    else
+        {arrow = "<-- "; g = fromgatep; conng = fromgatep;}
 
-      s = channel;
-      if (conng && conng->delayp) *s++='D';
-      if (conng && conng->errorp) *s++='E';
-      if (conng && conng->dataratep) *s++='R';
-      *s++ = ' ';
-      *s = '\0';
+    s = channel;
+    if (conng && conng->delay()) *s++='D';
+    if (conng && conng->error()) *s++='E';
+    if (conng && conng->datarate()) *s++='R';
+    *s++ = ' ';
+    *s = '\0';
 
-      // append useful info to buf
-      if (!g) {
-         strcpy(b,"  "); b+=2;
-         strcpy(b,arrow); b+=4;
-         strcpy(b," (not connected)");
-      }
-      else
-      {
-         strcpy(b,"  "); b+=2;
-         strcpy(b,arrow); b+=4;
-         if (channel[0]!=' ')
-            {strcpy(b,channel);strcat(b,arrow);while(*b) b++;}
-         strcpy(b, g->ownerModule()==ownerModule()->parentModule() ?
-                   "<parent>" : g->ownerModule()->fullName() );
-         while(*b) b++; *b++ = '.';
-         strcpy(b, g->fullName() );
-      }
+    // append useful info to buf
+    if (!g) {
+        strcpy(b,"  "); b+=2;
+        strcpy(b,arrow); b+=4;
+        strcpy(b," (not connected)");
+    }
+    else
+    {
+        strcpy(b,"  "); b+=2;
+        strcpy(b,arrow); b+=4;
+        if (channel[0]!=' ')
+           {strcpy(b,channel);strcat(b,arrow);while(*b) b++;}
+        strcpy(b, g->ownerModule()==ownerModule()->parentModule() ?
+                  "<parent>" : g->ownerModule()->fullName() );
+        while(*b) b++; *b++ = '.';
+        strcpy(b, g->fullName() );
+    }
 }
 
 void cGate::setIndex(int sn, int vs)
 {
-      serno = sn;
-      vectsize = vs;
+    serno = sn;
+    vectsize = vs;
+}
+
+void cGate::connectTo(cGate *g, cChannel *chan)
+{
+    togatep = g;
+    g->fromgatep = this;
+    if (chan)  setChannel(chan);
 }
 
 void cGate::setFrom(cGate *g)
 {
-      fromgatep = g;
+    fromgatep = g;
 }
 
 void cGate::setTo(cGate *g)
 {
-      togatep = g;
+    togatep = g;
 }
 
 void cGate::setOwnerModule(cModule *m, int gid)
 {
-      omodp = m;
-      gateid = gid;
+    omodp = m;
+    gateid = gid;
 }
 
 void cGate::setLink(cLinkType *lnk)
 {
-      linkp = lnk;
-      bool tk = takeOwnership(); takeOwnership(true);
-      setDelay( linkp ? linkp->createDelay() : NO(cPar) );
-      setError( linkp ? linkp->createError() : NO(cPar) );
-      setDataRate( linkp ? linkp->createDataRate() : NO(cPar) );
-      takeOwnership(tk);
+    setChannel(new cSimpleChannel("channel",lnk));
+}
+
+void cGate::setChannel(cChannel *ch)
+{
+    if (channelp && channelp->owner()==this)
+        dealloc(channelp);
+
+    channelp = ch;
+    channelp->setFromGate(this);
+    if (takeOwnership())
+        take(ch);
 }
 
 void cGate::setDelay(cPar *p)
 {
-      if (delayp && delayp->owner()==this)  dealloc( delayp );
-      delayp = p;
-      if (delayp && takeOwnership()) take( delayp );
+    if (!channelp)
+        setChannel(new cSimpleChannel("channel"));
+    // FIXME: check that channelp really points to a cSimpleChannel!
+    ((cSimpleChannel *)channelp)->setDelay(p);
 }
 
 void cGate::setError(cPar *p)
 {
-      if (errorp && errorp->owner()==this)  dealloc( errorp );
-      errorp = p;
-      if (errorp && takeOwnership()) take( errorp );
+    if (!channelp)
+        setChannel(new cSimpleChannel("channel"));
+    // FIXME: check that channelp really points to a cSimpleChannel!
+    ((cSimpleChannel *)channelp)->setError(p);
 }
 
 void cGate::setDataRate(cPar *p)
 {
-      if (dataratep && dataratep->owner()==this)  dealloc( dataratep );
-      dataratep = p;
-      if (dataratep && takeOwnership()) take( dataratep );
+    if (!channelp)
+        setChannel(new cSimpleChannel("channel"));
+    // FIXME: check that channelp really points to a cSimpleChannel!
+    ((cSimpleChannel *)channelp)->setDatarate(p);
+}
+
+cLinkType *cGate::link() const
+{
+    return channelp ? channelp->link() : NULL;
+}
+
+cPar *cGate::delay() const
+{
+    // FIXME: check that channelp really points to a cSimpleChannel!
+    return channelp ? ((cSimpleChannel *)channelp)->delay() : NULL;
+}
+
+cPar *cGate::error() const
+{
+    // FIXME: check that channelp really points to a cSimpleChannel!
+    return channelp ? ((cSimpleChannel *)channelp)->error() : NULL;
+}
+
+cPar *cGate::datarate() const
+{
+    // FIXME: check that channelp really points to a cSimpleChannel!
+    return channelp ? ((cSimpleChannel *)channelp)->datarate() : NULL;
 }
 
 cGate *cGate::sourceGate() const
@@ -311,42 +314,31 @@ cGate *cGate::destinationGate() const
     return const_cast<cGate *>(g);
 }
 
-void cGate::deliver(cMessage *msg)
+void cGate::deliver(cMessage *msg, simtime_t t)
 {
     if (togatep==NULL)
     {
-        ownerModule()->arrived( msg, id() );
+        ownerModule()->arrived(msg, id(), t);
     }
     else
     {
-        // NOTE: prop. delay calculation should be _after_ transm. delay modeling
-
-        // Transmission delay modelling
-        double datarate;
-        if (dataratep && (datarate = (double)(*dataratep))!=0.0)
-        {
-            if (msg->delivd < transm_finishes)     // must wait until previous
-                   msg->delivd = transm_finishes;  //   transmissions end
-            msg->delivd += (simtime_t) (msg->length() / datarate);
-            transm_finishes = msg->delivd;
-        }
-
-        // Propagation delay modelling
-        if (delayp)
-            msg->delivd += (simtime_t) (*delayp);
-
-        // Bit error rate modelling
-        if (errorp)
-            if( dblrand() < 1.0 - pow(1.0-(double)(*errorp), msg->length()) )
-                msg->error=true;
-
-        togatep->deliver( msg );
+        if (channelp)
+            channelp->deliver(msg, t);
+        else
+            togatep->deliver(msg, t);
     }
 }
 
 bool cGate::isBusy() const
 {
-    return simulation.simTime()<transm_finishes;
+    // FIXME: check that channelp really points to a cSimpleChannel!
+    return channelp ? ((cSimpleChannel *)channelp)->isBusy() : false;
+}
+
+simtime_t cGate::transmissionFinishes() const
+{
+    // FIXME: check that channelp really points to a cSimpleChannel!
+    return channelp ? ((cSimpleChannel *)channelp)->transmissionFinishes() : simulation.simTime();
 }
 
 int cGate::routeContains( cModule *mod, int gate )

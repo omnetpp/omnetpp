@@ -136,7 +136,7 @@ cPvmMod::cPvmMod()
     {
 #ifdef SINGLE_HOST
         // pretend to be running on host specified in first command-line arg
-        my_host = ev.argv[1];
+        my_host = ev.argVector()[1];
 #endif
         // Receive the tids of the other segments, sent by
         //   start_segments() on the console
@@ -449,8 +449,9 @@ void cPvmMod::sync_after_modinits()
 //   Overrides the virtual function in cSimpleModule. The message will
 //   be sent out immediately to the other PVM module.
 
-void cPvmMod::arrived(cMessage *msg,int ongate)
+void cPvmMod::arrived(cMessage *msg,int ongate, simtime_t at)
 {
+    msg->setArrival(this,ongate,at);
     net_sendmsg( msg, ongate);
 }
 

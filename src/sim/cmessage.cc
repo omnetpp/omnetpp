@@ -267,6 +267,32 @@ const char *cMessage::displayString() const
     return "";
 }
 
+
+void cMessage::setSentFrom(cModule *module, int gate, simtime_t t)
+{
+    frommod = module ? module->id() : -1;
+    fromgate = gate;
+    sent = t;
+}
+
+void cMessage::setArrival(cModule *module, int gate, simtime_t t)
+{
+    tomod = module ? module->id() : -1;
+    togate = gate;
+    delivd = t;
+}
+
+void cMessage::setArrival(cModule *module, int gate)
+{
+    tomod = module ? module->id() : -1;
+    togate = gate;
+}
+
+void cMessage::setArrivalTime(simtime_t t)
+{
+    delivd = t;
+}
+
 int cMessage::cmpbydelivtime(cObject *one, cObject *other)
 {
     // compare by delivery time and priority

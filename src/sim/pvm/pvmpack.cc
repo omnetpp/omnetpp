@@ -688,3 +688,27 @@ int cFSM::netUnpack()
         return 0;
 }
 
+int cChannel::netPack()
+{
+        opp_error("(%s)%s: netPack() not implemented",className(), fullName());
+        return 0;
+}
+
+int cChannel::netUnpack()
+{
+        opp_error("(%s)%s: netUnpack() not implemented",className(),fullName());
+        return 0;
+}
+
+int cSimpleChannel::netPack()
+{
+        opp_error("(%s)%s: netPack() not implemented",className(), fullName());
+        return 0;
+}
+
+int cSimpleChannel::netUnpack()
+{
+        opp_error("(%s)%s: netUnpack() not implemented",className(),fullName());
+        return 0;
+}
+

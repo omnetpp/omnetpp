@@ -684,7 +684,7 @@ void cSimpleModule::info(char *buf)
     sprintf(buf,"%-20.20s (%s,#%d)", fullName(), className(), id() );
 }
 
-void cSimpleModule::forEach( ForeachFunc do_fn )
+void cSimpleModule::forEach(ForeachFunc do_fn)
 {
    if (do_fn(this,true))
    {
@@ -699,12 +699,12 @@ void cSimpleModule::forEach( ForeachFunc do_fn )
    do_fn(this,false);
 }
 
-void cSimpleModule::setId( int n )
+void cSimpleModule::setId(int n)
 {
     cModule::setId( n );
 
     if (timeoutmsg)
-        timeoutmsg->tomod = n;
+        timeoutmsg->setArrival(this,n);
 }
 
 void cSimpleModule::end()
@@ -789,11 +789,8 @@ void cSimpleModule::scheduleStart(simtime_t t)
     take( timeoutmsg );
 
     // initialize message fields
-    timeoutmsg->frommod = -1;
-    timeoutmsg->tomod = id();
-    timeoutmsg->fromgate = timeoutmsg->togate = -1;
-    timeoutmsg->sent = 0.0;
-    timeoutmsg->delivd = t;
+    timeoutmsg->setSentFrom(NULL,-1, 0);
+    timeoutmsg->setArrival(this,-1, t);
 
     // use timeoutmsg as the activation message; insert it into the FES
     simulation.msgQueue.insert( timeoutmsg );
@@ -805,7 +802,7 @@ void cSimpleModule::deleteModule()
     for (cMessageHeapIterator iter(simulation.msgQueue); !iter.end(); iter++)
     {
         cMessage *msg = iter();
-        if (msg->tomod == id())
+        if (msg->arrivalModuleId() == id())
               delete simulation.msgQueue.get( msg );
     }
 
@@ -895,12 +892,9 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
     }
 
     // set message parameters and send it
-    msg->frommod = id();
-    msg->fromgate = outgate->id();
-    msg->sent   = simTime()+delay;
-    msg->delivd = simTime()+delay;   // then it will grow
+    msg->setSentFrom(this, outgate->id(), simTime()+delay);
 
-    outgate->deliver( msg );
+    outgate->deliver(msg, simTime()+delay);
     ev.messageSent( msg );
     return 0;
 }
@@ -911,7 +905,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cModule *mod, int
     if (togate==NULL)
         throw new cException("sendDirect(): module `%s' has no gate #%d",mod->fullPath(),g);
 
-    return sendDirect( msg, propdelay, togate );
+    return sendDirect(msg, propdelay, togate);
 }
 
 int cSimpleModule::sendDirect(cMessage *msg, double propdelay,
@@ -926,7 +920,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay,
                          mod->fullPath(),gatename,sn);
         return 0;
     }
-    return sendDirect( msg, propdelay, togate );
+    return sendDirect(msg, propdelay, togate);
 }
 
 int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
@@ -948,12 +942,10 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
         simulation.transferToMain();  // before all other modules
         simulation.backtomod = NULL;
     }
-    msg->frommod = id();
-    msg->fromgate = -1;
-    msg->sent   = simTime();
-    msg->delivd = simTime() + propdelay;
 
-    togate->deliver( msg );
+    // set message parameters and send it
+    msg->setSentFrom(this, -1, simTime());
+    togate->deliver( msg, simTime()+propdelay);
     ev.messageSent( msg );
     return 0;
 }
@@ -974,11 +966,10 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
         simulation.transferToMain();  //   select us before all other modules
         simulation.backtomod = NULL;
     }
-    msg->frommod = msg->tomod = id();
-    msg->fromgate = msg->togate = -1;
-    msg->sent = simTime();
-    msg->delivd = t;
 
+    // set message parameters and schedule it
+    msg->setSentFrom(this, -1, simTime());
+    msg->setArrival(this, -1, t);
     ev.messageSent( msg );
     simulation.msgQueue.insert( msg );
     return 0;
@@ -1059,12 +1050,10 @@ int cSimpleModule::cancelSyncpoint(simtime_t t, const char *gatename, int sn)
     return cancelSyncpoint( t, g );
 }
 
-void cSimpleModule::arrived( cMessage *msg, int ongate )
+void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
 {
     if (state==sENDED) throw new cException(eMODFIN,fullPath());
-    msg->tomod = id();
-    msg->togate = ongate;
-
+    msg->setArrival(this, ongate, t);
     simulation.msgQueue.insert( msg );
 }
 
@@ -1073,7 +1062,7 @@ void cSimpleModule::wait(simtime_t t)
     if (!usesactivity) throw new cException(eNORECV);
     if (t<0) throw new cException(eNEGTIME);
 
-    timeoutmsg->delivd = simTime()+t;
+    timeoutmsg->setArrivalTime(simTime()+t);
     simulation.msgQueue.insert( timeoutmsg );
 
     for(;;)
@@ -1119,7 +1108,7 @@ cMessage *cSimpleModule::receiveNew(simtime_t t)
     if (!usesactivity)  throw new cException(eNORECV);
     if (t<0)  throw new cException(eNEGTOUT);
 
-    timeoutmsg->delivd = simTime()+t;
+    timeoutmsg->setArrivalTime(simTime()+t);
     simulation.msgQueue.insert( timeoutmsg );
 
     simulation.transferToMain();
@@ -1148,7 +1137,7 @@ cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
 
     if (t!=MAXTIME)
     {
-        timeoutmsg->delivd = simTime()+t;
+        timeoutmsg->setArrivalTime(simTime()+t);
         simulation.msgQueue.insert( timeoutmsg );
         for(;;)
         {
@@ -1396,7 +1385,7 @@ cCompoundModule& cCompoundModule::operator=(const cCompoundModule& mod)
     return *this;
 }
 
-void cCompoundModule::arrived( cMessage *, int )
+void cCompoundModule::arrived( cMessage *, int, simtime_t)
 {
     throw new cException("Message arrived at COMPOUND module `%s'", fullPath());
 }

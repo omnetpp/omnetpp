@@ -29,6 +29,7 @@ class  cModule;
 class  cPar;
 class  cMessage;
 class  cLinkType;
+class  cChannel;
 
 //==========================================================================
 
@@ -49,10 +50,7 @@ class SIM_API cGate : public cObject
     int  vectsize;      // gate vector size (-1 if not vector)
     char typ;           // type of gate: 'I' or 'O'
 
-    cLinkType *linkp;   // link prototype or NULL
-    cPar *delayp;       // propagation delay or NULL
-    cPar *errorp;       // bit error rate or NULL
-    cPar *dataratep;    // data rate or NULL
+    cChannel *channelp; // channel object (if exists)
 
     cModule *omodp;     // owner module
     int gateid;         // gate number within the module
@@ -60,9 +58,7 @@ class SIM_API cGate : public cObject
     cGate *fromgatep;   // previous and next gate
     cGate *togatep;     //   in the route
 
-    simtime_t transm_finishes; // end of transmission; used if dataratep!=NULL
-
-    opp_string dispstr;      // the display string
+    opp_string dispstr; // the display string
 
     void (*notify_inspector)(cGate*,bool,void*); // to notify inspector about display string changes
     void *data_for_inspector;
@@ -155,7 +151,7 @@ class SIM_API cGate : public cObject
      * to deliver the message to its destination.
      */
     // FIXME: why public?
-    void deliver(cMessage *msg);
+    void deliver(cMessage *msg, simtime_t at);
 
     /** @name Setting up the gate. */
     //@{
@@ -179,72 +175,41 @@ class SIM_API cGate : public cObject
     //@{
 
     /**
+     * Connect the a gate to another gate, optionally using the given
+     * channel object. This methods can e.g. be used to manually create
+     * connections for dynamically created modules.
+     */
+    void connectTo(cGate *g, cChannel *chan=NULL);
+
+    /**
+     * DEPRECATED - use connectTo() instead!
+     *
      * Redirect gates. This method is mostly used internally during
-     * network setup to create the connections. It can also be used
-     * to manually create connections for dynamically created modules.
+     * network setup to create the connections.
      */
     void setFrom(cGate *g);
 
     /**
+     * DEPRECATED - use connectTo() instead!
+     *
      * Redirect gates. This method is mostly used internally during
-     * network setup to create the connections. It can also be used
-     * to manually create connections for dynamically created modules.
+     * network setup to create the connections.
      */
     void setTo(cGate *g);
     //@}
 
-    /** @name Setting and getting link attributes. */
+    /** @name Accessing the channel object. */
     //@{
 
     /**
-     * Sets the parameters of the link to those specified by the link
-     * type.
+     * Assigns the given channel to this gate.
      */
-    void setLink(cLinkType *l);
+    void cGate::setChannel(cChannel *ch);
 
     /**
-     * Set the parameters of the link. Ownership of cPar objects
-     * are handled according to the ownership flag (that is set by takeOwnership()).
+     * Returns the channel object attached to this gate, or NULL if there's no channel.
      */
-    void setDelay(cPar *p);
-
-    /**
-     * Set the parameters of the link. Ownership of cPar objects
-     * are handled according to the ownership flag (that is set by takeOwnership()).
-     */
-    void setError(cPar *p);
-
-    /**
-     * Set the parameters of the link. Ownership of cPar objects
-     * are handled according to the ownership flag (that is set by takeOwnership()).
-     */
-    void setDataRate(cPar *p);
-
-    /**
-     * Returns the link type of the gate, if it has one.
-     */
-    cLinkType *link() const {return linkp;}
-
-    /**
-     * Return pointers to the delay, bit error rate and datarate parameters
-     * of the link. Links are one-directional; these parameters are only
-     * stored at their starting side.
-     */
-    cPar *delay() const     {return delayp;}
-
-    /**
-     * Return pointers to the delay, bit error rate and datarate parameters
-     * of the link. Links are one-directional; these parameters are only
-     * stored at their starting side.
-     */
-    cPar *error() const     {return errorp;}
-
-    /**
-     * Return pointers to the delay, bit error rate and datarate parameters
-     * of the link. Links are one-directional; these parameters are only
-     * stored at their starting side.
-     */
-    cPar *datarate() const  {return dataratep;}
+    cChannel *channel() const {return channelp;}
     //@}
 
     /** @name Information about the gate. */
@@ -284,20 +249,99 @@ class SIM_API cGate : public cObject
     int size()  const      {return vectsize<0?1:vectsize;}
     //@}
 
-    /** @name Transmission state. */
+    /** @name Setting and getting link attributes. DEPRECATED methods. */
     //@{
 
     /**
-     * Returns whether the gate is currently transmitting.
+     * DEPRECATED! Use cChannel and setChannel() instead.
+     *
+     * Sets the parameters of the link to those specified by the link
+     * type.
+     */
+    void setLink(cLinkType *l);
+
+    /**
+     * DEPRECATED! Use cChannel and setChannel() instead.
+     *
+     * Creates a channel (of class cSimpleChannel) if the gate does not have
+     * one, and calls setDelay() on it. If the gate already has a channel, it must
+     * be of class cSimpleChannel or one subclassed from it.
+     */
+    void setDelay(cPar *p);
+
+    /**
+     * DEPRECATED! Use cChannel and setChannel() instead.
+     *
+     * Creates a channel (of class cSimpleChannel) if the gate does not have
+     * one, and calls setError() on it. If the gate already has a channel, it must
+     * be of class cSimpleChannel or one subclassed from it.
+     */
+    void setError(cPar *p);
+
+    /**
+     * DEPRECATED! Use cChannel and setChannel() instead.
+     *
+     * Creates a channel (of class cSimpleChannel) if the gate does not have
+     * one, and calls setDataRate() on it. If the gate already has a channel, it must
+     * be of class cSimpleChannel or one subclassed from it.
+     */
+    void setDataRate(cPar *p);
+
+    /**
+     * DEPRECATED! Use cChannel and channel() instead.
+     *
+     * Returns the link type of the gate, if it has one.
+     */
+    cLinkType *link() const;
+
+    /**
+     * DEPRECATED! Use cChannel and channel() instead.
+     *
+     * If the gate has a channel, calls delay() on it. The channel must
+     * be of class cSimpleChannel or one subclassed from it. If the gate
+     * has no channel, the method returns NULL.
+     */
+    cPar *delay() const;
+
+    /**
+     * DEPRECATED! Use cChannel and channel() instead.
+     *
+     * If the gate has a channel, calls error() on it. The channel must
+     * be of class cSimpleChannel or one subclassed from it. If the gate
+     * has no channel, the method returns NULL.
+     */
+    cPar *error() const;
+
+    /**
+     * DEPRECATED! Use cChannel and channel() instead.
+     *
+     * If the gate has a channel, calls datarate() on it. The channel must
+     * be of class cSimpleChannel or one subclassed from it. If the gate
+     * has no channel, the method returns NULL.
+     */
+    cPar *datarate() const;
+    //@}
+
+    /** @name Transmission state. DEPRECATED methods. */
+    //@{
+
+    /**
+     * DEPRECATED! Use channel() and cChannel methods instead.
+     *
+     * If the gate has a channel, calls isBusy() on it. The channel must
+     * be of class cSimpleChannel or one subclassed from it. If the gate
+     * has no channel, the method returns false.
      */
     bool isBusy() const;
 
     /**
-     * Returns the simulation time the gate is expected to finish transmitting.
-     * Note that additional messages send on the gate may prolong the time the gate
-     * will actually finish.
+     * DEPRECATED! Use channel() and cChannel methods instead.
+     *
+     * If the gate has a channel, calls transmissionFinishes() on it. The channel
+     * must be of class cSimpleChannel or one subclassed from it. If the gate has
+     * no channel, the method returns the current simulation time.
      */
-    simtime_t transmissionFinishes() const {return transm_finishes;}
+    simtime_t transmissionFinishes() const;
     //@}
 
     /** @name Gate connectivity. */
