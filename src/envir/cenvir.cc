@@ -26,10 +26,11 @@
 #include "cinifile.h"
 #include "cenvir.h"
 #include "omnetapp.h"
-#include "slaveapp.h"   // dummy_func()
 #include "appreg.h"
 #include "cmodule.h"
 #include "cnetmod.h"
+#include "slaveapp.h"   // tslave_dummy_function()
+#include "speedmtr.h"   // tslave_dummy_function()
 
 
 //=== Global objects:
@@ -58,8 +59,9 @@ void dummyDummy() {envirDummy();}
 //#endif
 
 // A dummy function to force UNIX linkers collect TSlaveApp's constructor
-// as a linker symbol. Otherwise we get "undefined symbol" for it.
-void tslave_dummy_function() {TSlaveApp x(0,NULL);}
+// and Speedometer as linker symbols. Otherwise we'd get "undefined symbol"
+// for them...
+void tslave_dummy_function() {TSlaveApp x(0,NULL);Speedometer a;}
 
 //========================================================================
 

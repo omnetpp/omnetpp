@@ -258,3 +258,5 @@ Jan 16, 2001
 Feb 6, 2001
  - added dllexport to Speedometer
 ------ omnetpp-2.0 released ------
+Feb 27, 2001
+ - patch to prevent Unix linkers (falsely) report Speedometer as missing symbol
