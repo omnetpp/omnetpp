@@ -74,6 +74,13 @@
 #ifndef TRUE
 #define TRUE      true
 #define FALSE     false
+#else
+#ifdef CXX
+#undef TRUE
+#undef FALSE
+#define TRUE true
+#define FALSE false
+#endif 
 #endif
 
 //// old compilers which don't know bool are no longer supported
