@@ -284,7 +284,13 @@ void BasicSpringEmbedderLayout::execute()
            (end-beg)/(double)CLOCKS_PER_SEC, i, (end-beg)/(double)CLOCKS_PER_SEC/i);
 
     // clean up canvas after the drawing
-    if (interp && canvas) Tcl_VarEval(interp, canvas, " delete all", NULL);
+    if (interp && canvas)
+    {
+        Tcl_VarEval(interp, canvas," delete all\n",
+                            canvas," config -scrollregion {0 0 1 1}\n",
+                            canvas," xview moveto 0\n",
+                            canvas," yview moveto 0\n", NULL);
+    }
 
     // scale back if too big -- BUT only if we don't have any fixed (or anchored) nodes,
     // because we don't want to change explicitly given coordinates (or distances

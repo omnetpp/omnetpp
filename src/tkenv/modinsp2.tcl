@@ -218,7 +218,7 @@ proc draw_submod {c submodptr x y name dispstr} {
            set pos [lindex $tags(t) 1]
            if {$pos == ""} {set pos "t"}
            set color [lindex $tags(t) 2]
-           if {$color == ""} {set color "black"}
+           if {$color == ""} {set color "#0000ff"}
            if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
 
            set r [get_submod_coords $c $submodptr]
@@ -915,7 +915,8 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
     set x [expr ($x1+$x2)/2]
     set y [expr ($y1+$y2)/2]
     set txtid  [$c create text $x $y -tags {methodcall} -text " $methodlabel " -anchor c]
-    set color #F0F0D0
+    set color #F0F0F0
+    #set color #F0F0D0
     #catch {set color [$c itemcget mod -fill]}
     set rectid [$c create rect [$c bbox $txtid] -tags {methodcall} -outline "" -fill $color]
     $c lower $rectid $txtid
