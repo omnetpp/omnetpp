@@ -1,3 +1,15 @@
+2003-01-07  Andras Varga
+
+	* new ini file options: 
+	  autoflush=yes/no (default: no)
+	    call fflush(stdout) after each event banner or status update;
+	    affects both express and normal mode.
+	  message-trace=yes/no (default: no)
+	    log message sending (by send(),scheduleAt(), etc) and delivery
+	    on standard output; effective only in normal mode
+
+	* format of event banner slightly changed
+
 2002-11-03  Andras Varga
 
 	* cmdenv.cc: improved status display 

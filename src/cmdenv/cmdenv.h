@@ -39,8 +39,10 @@ class TCmdenvApp : public TOmnetApp
      unsigned opt_extrastack;
 
      bool opt_expressmode;
+     bool opt_autoflush; // all modes
      bool opt_modulemsgs;  // if normal mode
      bool opt_eventbanners; // if normal mode
+     bool opt_messagetrace; // if normal mode
      int opt_status_frequency_ev; // if express mode
      // double opt_status_frequency_sec; -- not yet implemented
      bool opt_perfdisplay; // if express mode
@@ -56,6 +58,9 @@ class TCmdenvApp : public TOmnetApp
      virtual void setup();
      virtual int run();
      //virtual void shutdown();
+
+     virtual void messageSent(cMessage *msg);
+     virtual void messageDelivered(cMessage *msg);
 
      virtual void readOptions();
      virtual void readPerRunOptions( int run_nr );

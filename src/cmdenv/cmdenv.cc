@@ -95,8 +95,10 @@ void TCmdenvApp::readPerRunOptions( int run_nr )
     ini_file->error(); // clear error flag
 
     opt_expressmode = ini_file->getAsBool2( section,"Cmdenv", "express-mode", false);
+    opt_autoflush = ini_file->getAsBool2( section,"Cmdenv", "autoflush", false);
     opt_modulemsgs = ini_file->getAsBool2( section,"Cmdenv", "module-messages", true );
     opt_eventbanners = ini_file->getAsBool2( section,"Cmdenv", "event-banners", true );
+    opt_messagetrace = ini_file->getAsBool2( section,"Cmdenv", "message-trace", false );
     opt_status_frequency_ev = ini_file->getAsInt2( section,"Cmdenv", "status-frequency", 100000 );
     //opt_status_frequency_sec = ini_file->getAsTime2( section,"Cmdenv", "status-frequency-interval", 5.0 );
     opt_perfdisplay = ini_file->getAsBool2( section,"Cmdenv", "performance-display", false );
@@ -188,7 +190,8 @@ int TCmdenvApp::run()
         bool startrun_done = false;
         try
         {
-            ev.printf("\nPreparing for Run #%d...\n", run_nr());
+            printf("\nPreparing for Run #%d...\n", run_nr());
+            fflush(stdout);
 
             readPerRunOptions(run_nr());
 
@@ -198,14 +201,17 @@ int TCmdenvApp::run()
                 throw new cException("Network `%s' not found, check .ini and .ned files", (const char *)opt_network_name);
 
             // set up network
-            ev.printf("Setting up network `%s'...\n", (const char *)opt_network_name);
+            printf("Setting up network `%s'...\n", (const char *)opt_network_name);
+            fflush(stdout);
+
             simulation.setupNetwork(network, run_nr());
             setupnetwork_done = true;
 
             makeOptionsEffective();
 
             // run the simulation
-            ev.printf("Running simulation...\n");
+            printf("Running simulation...\n");
+            fflush(stdout);
 
             // start execution on other segments too
             startRun();
@@ -215,7 +221,8 @@ int TCmdenvApp::run()
             // finish() should not be called.
             simulate();
 
-            ev.printf("\nCalling finish() at end of Run #%d...\n", run_nr());
+            printf("\nCalling finish() at end of Run #%d...\n", run_nr());
+            fflush(stdout);
             simulation.callFinish();
         }
         catch (cException *e)
@@ -291,26 +298,19 @@ void TCmdenvApp::simulate()
                // print event banner if neccessary
                if (opt_eventbanners)
                {
-                   if (mod->phase()[0]==0)
-                   {
-                       printf( "** Event #%ld  T=%s.  Module #%d `%s'\n",
-                               simulation.eventNumber(),
-                               simtimeToStr( simulation.simTime() ),
-                               mod->id(),
-                               mod->fullPath()
-                             );
-                   }
-                   else
-                   {
-                       printf( "** Event #%ld  T=%s.  Module #%d `%s' in phase `%s'\n",
-                               simulation.eventNumber(),
-                               simtimeToStr( simulation.simTime() ),
-                               mod->id(),
-                               mod->fullPath(),
-                               mod->phase()
-                             );
-                   }
+                   printf( "** Event #%ld  T=%s.  (%s) %s (id=%d)\n",
+                           simulation.eventNumber(),
+                           simtimeToStr( simulation.simTime() ),
+                           mod->className(),
+                           mod->fullPath(),
+                           mod->id()
+                         );
                }
+
+               // flush *between* printing event banner and event processing, so that
+               // if event processing crashes, it can be seen which event it was
+               if (opt_autoflush)
+                   fflush(stdout);
 
                // execute event
                simulation.doOneEvent( mod );
@@ -358,6 +358,9 @@ void TCmdenvApp::simulate()
                                speedometer.eventsPerSec());
                    }
                    speedometer.beginNewInterval();
+
+                   if (opt_autoflush)
+                       fflush(stdout);
                }
 
                // execute event
@@ -387,6 +390,32 @@ void TCmdenvApp::simulate()
     }
     ev.disable_tracing = false;
     stopClock();
+}
+
+void TCmdenvApp::messageSent(cMessage *msg)
+{
+    if (!opt_expressmode && opt_messagetrace)
+    {
+        static char buf[1000];
+        msg->info( buf );
+        printf("SENT:   %s\n", buf);
+
+        if (opt_autoflush)
+            fflush(stdout);
+    }
+}
+
+void TCmdenvApp::messageDelivered(cMessage *msg)
+{
+    if (!opt_expressmode && opt_messagetrace)
+    {
+        static char buf[1000];
+        msg->info( buf );
+        printf("DELIVD: %s\n", buf);
+
+        if (opt_autoflush)
+            fflush(stdout);
+    }
 }
 
 void TCmdenvApp::help()
