@@ -288,7 +288,7 @@ class SIM_API cPar : public cObject
                 VoidDupFunc dupfunc;
                 size_t itemsize;                } ptr;  // P:void* pointer
        struct { cObject *obj;                   } obj;  // O:object pointer
-       struct { cXMLElement *node;              } xml;  // M:XML element pointer
+       struct { cXMLElement *node;              } xmlp; // M:XML element pointer
     };
 
   private:
