@@ -1,5 +1,3 @@
-FIXME: auto position depends on size -- this shouldn't be so! (?)
-
 2003-11-07  Andras Varga
 
 	* started working on a Tkenv plugin API. It's still in embryonal state. 
