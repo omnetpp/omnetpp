@@ -1,3 +1,10 @@
+2004-11-29  Andras Varga
+
+  	* opp_makemake.in: avoid generating $(wildcard ..) without args.
+  	Change needed for Mac OS/X [patch from Michael Tuexen]
+
+	* opp_test: similar change as to opp_neddoc.in below, on 2004-11-21
+
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
 2004-11-21  Andras Varga
@@ -55,7 +62,7 @@
 2004-08-09  Andras Varga
 
         * opp_neddoc.in: on Windows, listing directories which have no .ned 
-        or *.msg on the command line caused opp_neddoc stop with "file not 
+        or .msg on the command line caused opp_neddoc stop with "file not 
         found" error
 
 2004-07-22  ------ omnetpp-3.0a6 released ------
