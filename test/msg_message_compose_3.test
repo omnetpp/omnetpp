@@ -1,0 +1,42 @@
+%description:
+Check external non-cObject class as message member
+
+%file: {}.msg
+
+cplusplus {{
+
+  class {A} {
+    private:
+      int a;
+    public:
+      int getA() {return a;}
+      void setA(int newa) {a=newa;}
+  };
+
+}}
+
+class noncobject {A};
+
+message {MyMessage}
+{
+    fields:
+        {A} b;
+        char c;
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+{MyMessage} x;
+
+x.getB().setA(11); PRINT(x.getB().getA());
+x.setC('x'); PRINT(x.getC());
+
+%contains: stdout
+x.getB().getA():11
+x.getC():x
+

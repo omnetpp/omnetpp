@@ -1,0 +1,58 @@
+%description:
+Check static arrays in messages
+
+FIXME TBD: test6 should be index out of bounds with static arrays
+FIXME TBD: test7 should be dynamic arrays
+FIXME TBD: test8 should be index out of bounds with dynamic arrays
+FIXME TBD: op= should be tested for all cases
+
+%file: {}.msg
+
+message {MyMessage}
+{
+    fields:
+        bool bb[10];
+        char cc[20];
+        short ss[30];
+        unsigned short uss[31];
+        int ii[40];
+        unsigned int uii[41];
+        long ll[50];
+        unsigned long ull[51];
+        double dd[60];
+        string str[60];
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+// 0th element we set explicitly, 1st element must stay zero from initialization
+#define PRINTA(X) ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
+
+{MyMessage} x;
+
+x.setBb(0,true); PRINTA(x.getBb);
+x.setCc(0,'a');  PRINTA(x.getCc);
+x.setSs(0,10);   PRINTA(x.getSs);
+x.setUss(0,10);  PRINTA(x.getUss);
+x.setIi(0,-10);  PRINTA(x.getIi);
+x.setUii(0,10);  PRINTA(x.getUii);
+x.setLl(0,-10);  PRINTA(x.getLl);
+x.setUll(0,10);  PRINTA(x.getUll);
+x.setDd(0,3.14); PRINTA(x.getDd);
+x.setStr(0,"test"); PRINTA(x.getStr);
+
+%contains: stdout
+x.getBb:1:0:10
+x.getCc:a::20
+x.getSs:10:0:30
+x.getUss:10:0:31
+x.getIi:-10:0:40
+x.getUii:10:0:41
+x.getLl:-10:0:50
+x.getUll:10:0:51
+x.getDd:3.14:0:60
+x.getStr:test:(null):60
+

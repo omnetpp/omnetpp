@@ -1,0 +1,39 @@
+%description:
+Check "inheritance" with enums
+
+%file: {}.msg
+
+enum {Base}
+{
+    CSIGA = 10;
+    BIGE = 12;
+};
+
+enum {MyEnum} extends {Base}
+{
+    ECC = 1;
+    PECC = 2;
+    KIMEHECC = 5;
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+PRINT(CSIGA);
+PRINT(BIGE);
+
+PRINT(ECC);
+PRINT(PECC);
+PRINT(KIMEHECC);
+
+%contains: stdout
+CSIGA:10
+BIGE:12
+ECC:1
+PECC:2
+KIMEHECC:5
+

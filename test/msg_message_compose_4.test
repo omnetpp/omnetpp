@@ -1,0 +1,34 @@
+%description:
+Check cObject-based class as message member
+
+%file: {}.msg
+
+class cQueue;
+
+message {MyMessage}
+{
+    fields:
+        cQueue b;
+        char c;
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+{MyMessage} x;
+
+cQueue& q = x.getB();
+q.setName("queue");
+ev << q.className() << ":" << q.name() << endl;
+ev << (q.owner()==&x ? "owned" : "not owned") << endl;
+x.setC('x'); PRINT(x.getC());
+
+%contains: stdout
+cQueue:queue
+owned
+x.getC():x
+

@@ -1,9 +1,9 @@
 %description:
-Check primitive scalar field types in messages
+Check primitive scalar field types in non-cObject-rooted classes
 
 %file: {}.msg
 
-message {MyMessage}
+class {MyClass}
 {
     fields:
         bool b;
@@ -24,24 +24,10 @@ message {MyMessage}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyMessage} x("msg");
+{MyClass} x;
 
-// test it's really subclassed from cMessage
-(void)(cMessage *)&x;
-ev << (dynamic_cast<cMessage *>(&x)!=0 ? "cMessage" : "generic") << endl;
-ev << x.className() << ":" << x.name() << endl;
-
-// fields must initialize to zero
-PRINT(x.getB());
-PRINT(x.getC());
-PRINT(x.getS());
-PRINT(x.getUs());
-PRINT(x.getI());
-PRINT(x.getUi());
-PRINT(x.getL());
-PRINT(x.getUl());
-PRINT(x.getD());
-ev << "--\n";
+// test it's really not subclassed from cObject
+ev << (dynamic_cast<cObject *>(&x)!=0 ? "cObject" : "generic") << endl;
 
 // scalar fields
 x.setB(true); PRINT(x.getB());
@@ -67,18 +53,7 @@ x.setUl(-10);  PRINT((x.getUl()>0));
 x.setD(3.1415); PRINT(x.getD());
 
 %contains: stdout
-cMessage
-{MyMessage}:msg
-x.getB():0
-x.getC():
-x.getS():0
-x.getUs():0
-x.getI():0
-x.getUi():0
-x.getL():0
-x.getUl():0
-x.getD():0
---
+generic
 x.getB():1
 x.getB():0
 x.getC():a

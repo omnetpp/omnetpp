@@ -1,0 +1,70 @@
+%description:
+Check static arrays in structs
+
+%file: {}.msg
+
+struct {MyStruct}
+{
+    fields:
+        bool bb[10];
+        char cc[20];
+        short ss[30];
+        unsigned short uss[31];
+        int ii[40];
+        unsigned int uii[41];
+        long ll[50];
+        unsigned long ull[51];
+        double dd[60];
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+#define PRINTA(X) ev << #X << ":" << X[0] << ":" << sizeof(X)/sizeof(X[0]) << endl;
+
+{MyStruct} x;
+
+// arrays
+x.bb[0] = true; PRINTA(x.bb);
+x.bb[0] = false; PRINTA(x.bb);
+
+x.cc[0] = 'a'; PRINTA(x.cc);
+
+x.ss[0] = 10;  PRINTA(x.ss);
+x.ss[0] = -10;  PRINTA(x.ss);
+x.uss[0] = 10;  PRINTA(x.uss);
+x.uss[0] = -10;  PRINT((x.uss[0]>0));
+
+x.ii[0] = 10;  PRINTA(x.ii);
+x.ii[0] = -10;  PRINTA(x.ii);
+x.uii[0] = 10;  PRINTA(x.uii);
+x.uii[0] = -10;  PRINT((x.uii[0]>0));
+
+x.ll[0] = 10;  PRINTA(x.ll);
+x.ll[0] = -10;  PRINTA(x.ll);
+x.ull[0] = 10;  PRINTA(x.ull);
+x.ull[0] = -10;  PRINT((x.ull[0]>0));
+
+x.dd[0] = 3.1415; PRINTA(x.dd);
+
+%contains: stdout
+x.bb:1:10
+x.bb:0:10
+x.cc:a:20
+x.ss:10:30
+x.ss:-10:30
+x.uss:10:31
+(x.uss[0]>0):1
+x.ii:10:40
+x.ii:-10:40
+x.uii:10:41
+(x.uii[0]>0):1
+x.ll:10:50
+x.ll:-10:50
+x.ull:10:51
+(x.ull[0]>0):1
+x.dd:3.1415:60
+

@@ -1,0 +1,32 @@
+%description:
+Check string fields in non-cObject-rooted classes
+
+%file: {}.msg
+
+class {MyClass}
+{
+    fields:
+        string s1;
+        string s2 = "test";
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+{MyClass} x;
+ev << "s1:" << (x.getS1() ? x.getS1() : "(null)") << endl;
+ev << "s2:" << (x.getS2() ? x.getS2() : "(null)") << endl;
+
+char *p = "alice";
+x.setS1(p);
+x.setS2(p);
+ev << "s1:" << x.getS1() << ":" << (x.getS1()==p ? "shallow" : "deep") << endl;
+ev << "s2:" << x.getS2() << ":" << (x.getS2()==p ? "shallow" : "deep") << endl;
+
+%contains: stdout
+s1:(null)
+s2:test
+s1:alice:deep
+s2:alice:deep

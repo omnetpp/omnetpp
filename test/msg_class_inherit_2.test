@@ -1,15 +1,15 @@
 %description:
-Check inheritance for messages
+Check inheriting from a non-cObject-rooted class
 
 %file: {}.msg
 
-message {Base}
+class {Base}
 {
     fields:
         int b;
 }
 
-message {MyMessage} extends {Base}
+class {MyClass} extends {Base}
 {
     fields:
         char c;
@@ -22,14 +22,13 @@ message {MyMessage} extends {Base}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyMessage} x("msg");
-
-ev << x.className() << ":" << x.name() << endl;
+{MyClass} x;
+ev << (dynamic_cast<cObject *>(&x)!=0 ? "cObject" : "generic") << endl;
 x.setB(11); PRINT(x.getB());
 x.setC('x'); PRINT(x.getC());
 
 %contains: stdout
-{MyMessage}:msg
+generic
 x.getB():11
 x.getC():x
 

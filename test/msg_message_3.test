@@ -1,0 +1,60 @@
+%description:
+Check field initializers in messages
+
+%file: {}.msg
+
+message {MyMessage}
+{
+    fields:
+        bool b1 = true;
+        bool b2 = false;
+        char c1 = 'a';
+        char c2 = 64;
+        short s = 5;
+        unsigned short us = 6;
+        int i = 7;
+        unsigned int ui = 8;
+        long l = 9;
+        unsigned long ul = 10;
+        double d = 3.1415;
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+{MyMessage} x;
+
+// scalar fields
+PRINT(x.getB1());
+PRINT(x.getB2());
+
+PRINT(x.getC1());
+PRINT(x.getC2());
+
+PRINT(x.getS());
+PRINT(x.getUs());
+
+PRINT(x.getI());
+PRINT(x.getUi());
+
+PRINT(x.getL());
+PRINT(x.getUl());
+
+PRINT(x.getD());
+
+%contains: stdout
+x.getB1():1
+x.getB2():0
+x.getC1():a
+x.getC2():@
+x.getS():5
+x.getUs():6
+x.getI():7
+x.getUi():8
+x.getL():9
+x.getUl():10
+x.getD():3.1415

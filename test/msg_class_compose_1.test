@@ -1,17 +1,19 @@
 %description:
-Check inheritance for messages
+Check struct as class member
 
 %file: {}.msg
 
-message {Base}
+struct {MyStruct}
 {
     fields:
-        int b;
+        int bb;
 }
 
-message {MyMessage} extends {Base}
+
+class {MyClass} extends cObject
 {
     fields:
+        {MyStruct} b;
         char c;
 };
 
@@ -22,14 +24,12 @@ message {MyMessage} extends {Base}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyMessage} x("msg");
+{MyClass} x;
 
-ev << x.className() << ":" << x.name() << endl;
-x.setB(11); PRINT(x.getB());
+x.getB().bb=11; PRINT(x.getB().bb);
 x.setC('x'); PRINT(x.getC());
 
 %contains: stdout
-{MyMessage}:msg
-x.getB():11
+x.getB().bb:11
 x.getC():x
 

@@ -1,0 +1,30 @@
+%description:
+"like" keyword: check what if given module doesn't exist
+
+%file: {}.ned
+
+module {GenMod}
+endmodule
+
+module {Net}
+  parameters:
+    mod_type : string;
+  submodules:
+    specMod: mod_type like {GenMod};
+endmodule
+
+network {net} : {Net}
+endnetwork
+
+%inifile: {}.ini
+[General]
+network={net}
+warnings=yes
+[Parameters]
+*.mod_type = "@$#@!??"
+
+%exitcode: 1
+
+%contains: stdout
+Simple module type definition @$#@!?? not found
+

@@ -1,8 +1,5 @@
 %description:
-simulation crashes while starting if module type is set as parameter
-see bug id 4 at http://cvs-int.etec.uni-karlsruhe.de/bugtracker
-for more details.
-
+check that "like" keyword works
 
 %file: {}.ned
 
@@ -11,7 +8,7 @@ endsimple
 
 module {Net}
   parameters:
-//    mod_type : string;
+    mod_type : string;
   submodules:
     specMod: mod_type like {GenMod};
 endmodule
@@ -19,14 +16,30 @@ endmodule
 network {net} : {Net}
 endnetwork
 
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {GenMod} : public cSimpleModule
+{
+    Module_Class_Members({GenMod},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({GenMod});
+
+void {GenMod}::activity()
+{
+   ev << "Here!" << endl;
+}
+
 %inifile: {}.ini
 [General]
 network={net}
 warnings=yes
 [Parameters]
-#*.mod_type = "GenMod"
-
-%exitcode: 1
+*.mod_type = "{GenMod}"
 
 %contains-regex: stdout
-Error in module .*mod_type
+Here!
+

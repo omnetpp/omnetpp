@@ -1,0 +1,28 @@
+%description:
+Check enums
+
+%file: {}.msg
+
+enum {MyEnum}
+{
+    ECC = 1;
+    PECC = 2;
+    KIMEHECC = 5;
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+PRINT(ECC);
+PRINT(PECC);
+PRINT(KIMEHECC);
+
+%contains: stdout
+ECC:1
+PECC:2
+KIMEHECC:5
+
