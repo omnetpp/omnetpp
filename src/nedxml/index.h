@@ -9,9 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
-  Technical University of Budapest, Dept. of Telecommunications,
-  Stoczek u.2, H-1111 Budapest, Hungary.
+  Copyright (C) 2002-2003 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -36,18 +34,18 @@
 /**
  * @defgroup Overview  Overview
  *
- * XML is ideal as an alternative representation of NED. By supporting XML, 
- * NED becomes more interoperable with other systems, and it is be possible 
+ * XML is ideal as an alternative representation of NED. By supporting XML,
+ * NED becomes more interoperable with other systems, and it is be possible
  * to process it with standard tools. (Note that XML is unsuitable
  * though as the <i>only</i> representation of NED information because of its
- * relatively poor readability.) 
+ * relatively poor readability.)
  *
  * As an example, let's see a short NED code fragment and its XML representation:
  * <pre>
  * module FDDINode
  *     parameters:
  *         address : string;
- *     gates: 
+ *     gates:
  *         in: net_in;
  *         out: net_out;
  *     submodules:

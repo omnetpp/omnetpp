@@ -1,13 +1,12 @@
 //==========================================================================
-//   MAIN.CC -
-//            part of OMNeT++
+// MAIN.CC - part of OMNeT++
+//
+// Contains: main() for nedtool
 //
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
-  Technical University of Budapest, Dept. of Telecommunications,
-  Stoczek u.2, H-1111 Budapest, Hungary.
+  Copyright (C) 2002-2003 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.

@@ -24,16 +24,21 @@ $dtdvalidatorccfile = "neddtdvalidator.cc";
 $copyright = '//==========================================================================
 // Part of the OMNeT++ Discrete System Simulation System
 //
-// GENERATED FILE -- DO NOT EDIT!
+// Generated from ned.dtd by dtdclassgen.pl
 //
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002 Andras Varga
+  Copyright (C) 2002-2003 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license\' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+//
+// THIS IS A GENERATED FILE, DO NOT EDIT!
+//
+
 ';
 
 $elements = ();
@@ -199,13 +204,11 @@ open(H,">$hfile") || die "*** cannot open output file $hfile";
 open(CC,">$ccfile") || die "*** cannot open output file $ccfile";
 
 print H "$copyright\n";
-print H "// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***\n\n";
 print H "#ifndef __NEDELEMENTS_H\n";
 print H "#define __NEDELEMENTS_H\n\n";
 print H "#include \"nedelement.h\"\n\n";
 
 print CC "$copyright\n";
-print CC "// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***\n\n";
 print CC "#include <string.h>\n";
 print CC "#include \"nederror.h\"\n";
 print CC "#include \"$hfile\"\n\n";
@@ -469,13 +472,11 @@ open(VAL_H,">$validatorhfile") || die "*** cannot open output file $validatorhfi
 open(VAL_CC,">$validatorccfile") || die "*** cannot open output file $validatorccfile";
 
 print VAL_H "$copyright\n";
-print VAL_H "// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***\n\n";
 print VAL_H "#ifndef __NEDVALIDATOR_H\n";
 print VAL_H "#define __NEDVALIDATOR_H\n\n";
 print VAL_H "#include \"nedelements.h\"\n\n";
 
 print VAL_CC "$copyright\n";
-print VAL_CC "// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***\n\n";
 print VAL_CC "#include <stdio.h>\n";
 print VAL_CC "#include \"nederror.h\"\n";
 print VAL_CC "#include \"$validatorhfile\"\n\n";
@@ -528,14 +529,12 @@ open(DTDVAL_H,">$dtdvalidatorhfile") || die "*** cannot open output file $dtdval
 open(DTDVAL_CC,">$dtdvalidatorccfile") || die "*** cannot open output file $dtdvalidatorccfile";
 
 print DTDVAL_H "$copyright\n";
-print DTDVAL_H "// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***\n\n";
 print DTDVAL_H "#ifndef __DTDVALIDATOR_H\n";
 print DTDVAL_H "#define __DTDVALIDATOR_H\n\n";
 print DTDVAL_H "#include \"nedelements.h\"\n";
 print DTDVAL_H "#include \"$validatorhfile\"\n\n";
 
 print DTDVAL_CC "$copyright\n";
-print DTDVAL_CC "// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***\n\n";
 print DTDVAL_CC "#include <stdio.h>\n";
 print DTDVAL_CC "#include \"nederror.h\"\n";
 print DTDVAL_CC "#include \"$dtdvalidatorhfile\"\n\n";

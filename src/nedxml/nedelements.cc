@@ -1,18 +1,20 @@
 //==========================================================================
 // Part of the OMNeT++ Discrete System Simulation System
 //
-// GENERATED FILE -- DO NOT EDIT!
+// GENERATED FILE.
 //
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002 Andras Varga
+  Copyright (C) 2002-2003 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***
+//
+// THIS IS A GENERATED FILE, DO NOT EDIT!
+//
 
 #include <string.h>
 #include "nederror.h"
