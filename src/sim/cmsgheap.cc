@@ -213,7 +213,7 @@ cMessage *cMessageHeap::get(cMessage *event)
         return NULL;
 
     // sanity check:
-    // if (h[event->heapindex]!=event)  error!!!!
+    // assert(h[event->heapindex]==event);
 
     // last element will be used to fill the hole
     int father, out = event->heapindex;
