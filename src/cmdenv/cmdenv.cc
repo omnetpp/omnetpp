@@ -50,17 +50,17 @@ bool TCmdenvApp::sigint_received;
 
 
 // utility function for printing elapsed time
-char *timeToStr(time_t t, char *buf=NULL)
+char *timeToStr(struct timeb t, char *buf=NULL)
 {
-   static char buf2[48];
+   static char buf2[64];
    char *b = buf ? buf : buf2;
 
-   if (t<3600)
-       sprintf(b,"%lds (%dm %02ds)", (long)(t), int(t/60L), int(t%60L));
-   else if (t<86400)
-       sprintf(b,"%lds (%dh %02dm)", (long)(t), int(t/3600L), int((t%3600L)/60L));
+   if (t.time<3600)
+       sprintf(b,"%ld.%.3ds (%dm %02ds)", (long)t.time, (int)t.millitm, int(t.time/60L), int(t.time%60L));
+   else if (t.time<86400)
+       sprintf(b,"%ld.%.3ds (%dh %02dm)", (long)t.time, (int)t.millitm, int(t.time/3600L), int((t.time%3600L)/60L));
    else
-       sprintf(b,"%lds (%dd %02dh)", (long)(t), int(t/86400L), int((t%86400L)/3600L));
+       sprintf(b,"%ld.%.3ds (%dd %02dh)", (long)t.time, (int)t.millitm, int(t.time/86400L), int((t.time%86400L)/3600L));
 
    return b;
 }
@@ -311,7 +311,6 @@ void TCmdenvApp::makeOptionsEffective()
 void TCmdenvApp::simulate()
 {
     startClock();
-    clock_t clock_start = clock();  // FIXME should use gettimeofday() instead of time() and clock()!
     sigint_received = false;
     try
     {
@@ -336,9 +335,8 @@ void TCmdenvApp::simulate()
                          );
                    if (opt_eventbanner_details)
                    {
-                       ::fprintf(fout, "   Elapsed: %s   Clock: %lu   Messages: created: %ld  present: %ld  in FES: %d\n",
+                       ::fprintf(fout, "   Elapsed: %s   Messages: created: %ld  present: %ld  in FES: %d\n",
                                timeToStr(totalElapsed()),
-                               (unsigned long)(clock()-clock_start),
                                cMessage::totalMessageCount(),
                                cMessage::liveMessageCount(),
                                simulation.msgQueue.length());
