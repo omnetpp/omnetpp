@@ -633,7 +633,7 @@ Sept 1, 1999
   - cModuleType now caches the cModuleInterface pointer. (Before it looked
     up the interface each time, based on the interface name.)
 Sept 5, 1999
-  - cSimpleModule's initialize(), activity(), handleEvent(), finish() made
+  - cSimpleModule's initialize(), activity(), handleMessage(), finish() made
     protected members so that they cannot be called directly by user code.
   - callInitialize() was added to cSimpleModule to enable calling initialize()
     from user code; callInitialize() was also added for cModule and
@@ -685,7 +685,7 @@ Oct 6, 1999
     went off and what to do then. The context pointer can be made to point
     at a data structure kept by the module which can carry enough "context"
     information about the event.
-Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.
+  - Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.
 ------ omnetpp-2.0b2 released ------
 Nov 9,1999
   - iso c++ compatibility hack: in expressions like return s?s:"" the "" needs
@@ -781,7 +781,7 @@ Jan 25, 2000
    This affects add(), addAt(), remove(), get() and op[].
 ------ omnetpp-2.0b3 released ------
 Feb 3, 2000
- - pvm files fixed.
+ - some pvm-related bugs fixed.
 Mar 12, 2000
  - pvm files really fixed. Debugging done by Gabor Lencse.
  - sum() and sqrSum() members added to statistics classes (cStdDev & subclasses)
@@ -809,6 +809,14 @@ April 6-10, 2000
    libs (they are treated more like a collection of object files), and the
    dynamic loader acts practically as a linker and collects the symbols at
    runtime from the different .so files.
+ - Remaining problem on Win32: user interface DLL cannot be loaded dynamically
+   (e.g. with [General]/load-libs= ini file setting); the LoadLibrary() call
+   returns error code. The problem is [probably] with the static objects
+   in the DLL whose constructors are called [probably] during LoadLibrary()
+   from DllMain(); these constructors want to write a global variable located
+   outside the DLL. This was no problem on Unix but seems like Windows doesn't
+   like it. To be verified that the error is really caused by this and not
+   something else!!!
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
  - operator=(cXXX& other) functions now include this line:
