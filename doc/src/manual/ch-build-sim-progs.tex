@@ -19,7 +19,7 @@ the following parts:
 
 
 To build an executable simulation program,
-first you need to translate the NED files\index{ned!files}
+you first need to translate the NED files\index{ned!files}
 and the message files into C++, using the NED compiler\index{ned!compiler}
 (\ttt{nedc}) and the message compiler (\ttt{opp\_msgc}).
 After this step, the process is the same as building any C/C++
@@ -32,8 +32,8 @@ an executable.
 %%  of NED files, so that you do not have to recompile.}
 
 File names for libraries differ for Unix/Linux and for Windows,
-and it's also different for static and shared libraries.
-Suppose you have a library called Tkenv.
+and also different for static and shared libraries.
+Let us suppose you have a library called Tkenv.
 On a Unix/Linux system, the file name for the static library
 would be something like \ttt{libtkenv.a} (or \ttt{libtkenv.a.}\textit{<version>}),
 and the shared library would be called \ttt{libtkenv.so}
@@ -151,7 +151,7 @@ re-makemake-m & Similar to \fprog[make]{make re-makemake}, but it regenerates th
 \end{longtable}
 
 If you already had a \texttt{Makefile} in that directory, \fprog{opp\_makemake}
-will refuse overwriting it. You can force overwriting the old \texttt{Makefile}
+will refuse to overwrite it. You can force overwriting the old \texttt{Makefile}
 with the -f option:
 
 \begin{verbatim}
@@ -186,7 +186,7 @@ option (the default is the name of the directory):
 \end{verbatim}
 
 If some of your source files are generated from other files (for
-example, you use machine-generated NED files), write your make rules
+example, you use generated NED files), write your make rules
 into a file called \ttt{makefrag}. When you run \fprog{opp\_makemake}, it
 will automatically insert \ttt{makefrag} into the resulting \texttt{makefile}.
 With the -i option, you can also name other files to be included into
@@ -241,8 +241,7 @@ in the \ttt{app/} directory, and vice versa.
 
 If you're willing to play with shared and run-time loaded libraries,
 several \fprog{opp\_makemake} options and the
-\texttt{[General]/load-libs=} ini file option leave you enough room to
-do so.
+\texttt{[General]/load-libs=} ini file option allow you to do so.
 
 
 

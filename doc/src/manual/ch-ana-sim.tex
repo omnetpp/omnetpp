@@ -7,7 +7,7 @@
 Output vectors are time series data: values with timestamps.
 You can use output vectors to record end-to-end delays or
 round trip times of packets, queue lengths, queueing times,
-link utilization, the number of dopped packets, etc. --
+link utilization, the number of dropped packets, etc. --
 anything that's useful to get a full picture of what happened
 in the model during the simulation run.
 
@@ -30,16 +30,16 @@ Typically, you'll get output vector files as a result of a simulation.
 Data written to \cclass{cOutVector} objects from
 simple modules go to output vector
 files\index{output!vector file}. Normally, you use Plove to look
-into output vector files and plot vectors in it.
+into output vector files and plot vectors from them.
 
 Plove\index{Plove} is a handy tool for plotting {\opp} output vectors.
 It uses Gnuplot\index{Gnuplot} to do the actual work. You can specify
-the drawing style (lines, dots etc) for each vector as well as set the
+the line type (lines, dots etc) for each vector as well as set the
 most frequent drawing options like axis bounds, scaling, titles and
 labels etc. You can save the gnuplot graphs to files (postscript,
 latex, pbm etc) with a click. Plove can also generate standalone shell
-scripts that plot output vectors in much the same way Plove does
-itself. These scripts can be used for batch processing or to debug
+scripts that plot output vectors in much the same way Plove does. 
+These scripts can be used for batch processing or to debug
 filters (see later). Plove does not take away any of gnuplot's
 flexibility -- you can embed your own gnuplot commands to customize
 the output.
@@ -52,11 +52,11 @@ calculating histograms\index{histogram} etc. Some filters are built
 in, and you can easily create new filters or modify the existing ones.
 Filters can be incorporated in one of three ways: as \fprog{awk} expressions,
 as \fprog{awk} programs and as external filter programs. Filters can be
-parameterized. Multiple filters for the same vector is not currently
+parameterized. Using multiple filters for the same vector is currently not
 supported; also, you cannot currently feed several vectors into a
 single filter.
 
-Plove does not create temporary files, so you don't need to worry
+Plove creates no temporary files, so you don't need to worry
 about disk space: if the output vector is there, Plove can plot
 it for you. Moreover, it can also work with gzipped vector files
 without extracting them -- just make sure you have zcat.
@@ -81,7 +81,7 @@ The large PLOT button will plot the \textit{selected} vectors in the
 right pane. Selection works as in Windows: dragging and shift+left
 click selects a range, and ctrl+left click selects/deselects
 individual items. To adjust drawing style, change vector title or add
-filter, push the Options... button. This works for several selected
+a filter, click the Options... button. This works for several selected
 vectors too. Plove accepts nc/mc-like keystrokes: F3, F4, F5, F6, F8,
 grey '+' and grey '*'.
 
@@ -315,7 +315,7 @@ the graph.
 As of June 2003, Grace 1.5.12 can export graphics to (E)PS, PDF, MIF, SVG,
 PNM, JPEG and PNG formats. It has many useful features like built-in statistics
 and analysis functions (e.g. correlation, histogram), fitting, splines, etc.,
-and it also sports a built-in programming language.
+and it also sports its own built-in programming language.
 
 
 \subsection{ROOT}
@@ -324,14 +324,14 @@ and it also sports a built-in programming language.
 with strong support for plotting and graphics in general.
 ROOT has been developed at CERN, and it is distributed under a BSD-like license.
 
-An interesting thing is ROOT is based on \textit{CINT}, a ``C/C++ interpreter''
+An interesting thing is that ROOT is based on \textit{CINT}, a ``C/C++ interpreter''
 aimed at processing C/C++ scripts. It is probably harder to get started
 using ROOT than with either Gnuplot or Grace, but if you are serious
 about analysing simulation results, you will find that ROOT gives you
-as much power and flexibility that is unthinkable in the other two programs.
+power and flexibility that would be unthinkable in the other two programs.
 
 Curt Brune's page at Stanford (http://www.slac.stanford.edu/~curt/omnet++/)
-shows examples what you can achieve using using ROOT with OMNeT++.
+shows examples what you can achieve using ROOT with OMNeT++.
 
 
 \subsection{Using Gnuplot}
@@ -354,10 +354,9 @@ replot
 
 There are several commands to adjust ranges, plotting style, labels,
 scaling etc. Gnuplot\index{Gnuplot} can also plot 3D graphs. Gnuplot
-is also available for Windows and other platforms. Gnuplot also
-has a simple graphical interactive user interface called PlotMTV.
-However, we recommend that you use {\opp}'s Plove tool, described in
-an earlier section.
+is available for Windows and other platforms. Gnuplot has a simple, interactive
+graphical user interface called PlotMTV, however, we recommend that you use
+{\opp}'s Plove tool, described in an earlier section.
 
 
 

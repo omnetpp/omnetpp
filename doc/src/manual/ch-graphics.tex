@@ -118,7 +118,7 @@ submodules do not overlap.
 \tbf{p=}\textit{xpos},\textit{ypos},\tbf{ring},\textit{width,height}
 &
 {\raggedright Used for module vectors. Arranges submodules in an ellipse,
-with the top-left corner of its bounding box at (\textit{xpos},\textit{ypos}),
+with the top-left corner of the ellipse's bounding box at (\textit{xpos},\textit{ypos}),
 with the \textit{width} and \textit{height}.
 
 Defaults: \textit{width,height} are chosen so that submodules do not overlap.
@@ -303,9 +303,8 @@ and regenerating the NED text when you save the file. One consequence
 of this is that indentation will be ``canonized''.
 Comments in the original NED are preserved -- the parser associates
 them with the NED elements they belong to, so comments won't
-be messed up even if you edit the graphical representation to
-death by removing/adding submodules, gates, parameters, connections,
-etc.
+be messed up even if you edit the graphical representation extensively
+by removing/adding submodules, gates, parameters, connections, etc.
 
 GNED is a fully two-way visual tool. While editing the graphics,
 you can always switch to NED source view, edit in there and switch
