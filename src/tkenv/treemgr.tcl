@@ -92,9 +92,10 @@ proc updateTreeManager {} {
 #
 # We use the object pointer as tree element key.
 #
-proc getNodeInfo {w op {ptr {}}} {
+proc getNodeInfo {w op {key {}}} {
     global icons treeicons
 
+    set ptr $key
     switch $op {
 
       text {
@@ -108,7 +109,7 @@ proc getNodeInfo {w op {ptr {}}} {
       }
 
       icon {
-        set class [opp_getobjectbaseclass $key]
+        set class [opp_getobjectbaseclass $ptr]
         if [info exists treeicons($class)] {
            return $icons($treeicons($class))
         } else {

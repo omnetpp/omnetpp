@@ -5,7 +5,17 @@
 
 	* Graphical module inspector: if there're too many submodules, drawing
 	may take very long, so the user is prompted if he/she really wants
-	to proceed with drawing. Limits is currently 100 submods.
+	see the graphics. Limit is currently 1000 submodules. 
+	The object tree view is also usable until ~1000 objects displayed in 
+	the tree.
+
+	* Note: ad-hoc load tests: with Dyna, a 8000-client network could be set 
+	up and run (~12500 modules, including ServerProcs) on Win2K, 256M RAM.
+	A modified version of Fifo2 (n independent Fifo networks, each with 
+	3 modules using handleMessage()) could be set up with n=33300, that is,
+	~100,000 modules. Process size was 280M, so it couldn't be run (too 
+	less physical RAM). Both auto-inspectors (.tkenvrc) and displaying the 
+	object tree view were very slow over a few thousand modules.
 
 2003-01-19  Andras Varga
 

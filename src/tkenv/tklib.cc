@@ -247,9 +247,11 @@ static bool do_inspect_by_name( cObject *obj, bool beg, const char *_fullpath, c
 
     const char *objpath = obj->fullPath();
 
-    // however, a module's name cannot be hidden, so if this obj is a module
-    // and its name doesn't match the beginning of fullpath, we're at a wrong place.
-    if (dynamic_cast<cModule *>(obj) && strncmp(objpath, fullpath, strlen(objpath))!=0)
+    // however, a module's name and the future event set's name is not hidden,
+    // so if this obj is a module (or cMessageHeap) and its name doesn't match 
+    // the beginning of fullpath, we can cut the search here.
+    if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cMessageHeap *>(obj))
+        && strncmp(objpath, fullpath, strlen(objpath))!=0)
     {
         // skip (do not search) this subtree
         return false;
