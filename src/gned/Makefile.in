@@ -83,10 +83,8 @@ ebnf.tab.o: ebnf.tab.cc \
   parsened.h \
   nedfile.h
 gned.o: gned.cc \
-  arrow.h \
-  parsened.h \
   tklib.h \
-  ebnf.h
+  arrow.h
 lex.yy.o: lex.yy.cc \
   ./unistd.h \
   ebnf.h \
@@ -101,6 +99,11 @@ parsened.o: parsened.cc \
   parsened.h \
   nedfile.h \
   tklib.h \
+  ebnf.h
+tkcmd.o: tkcmd.cc \
+  tklib.h \
+  arrow.h \
+  parsened.h \
   ebnf.h
 tklib.o: tklib.cc \
   tklib.h

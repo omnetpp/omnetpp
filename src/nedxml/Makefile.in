@@ -193,12 +193,6 @@ nedxmlparser.o: nedxmlparser.cc \
   nedsaxhandler.h \
   nederror.h \
   nedelement.h
-networkbuilder.o: networkbuilder.cc \
-  nedelements.h \
-  networkbuilder.h \
-  nederror.h \
-  nedelement.h \
-  nedcompiler.h
 saxparser_expat.o: saxparser_expat.cc \
   saxparser.h
 saxparser_libxml.o: saxparser_libxml.cc \

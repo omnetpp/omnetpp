@@ -62,17 +62,17 @@ cmdenv.o: cmdenv.cc \
   enumstr.h \
   ../envir/appreg.h \
   ../envir/cinifile.h \
-  ../../include/cmodule.h \
+  ../../include/csimplemodule.h \
   ../../include/cmessage.h \
-  ../../include/cnetmod.h \
   ../envir/args.h \
   ../envir/speedmtr.h \
   ../../include/defs.h \
   ../../include/ctypes.h \
   ../../include/csimul.h \
   ../envir/omnetapp.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cobject.h \
+  ../../include/onstartup.h \
   ../../include/util.h \
   ../../include/cexception.h \
   ../../include/errmsg.h \
@@ -84,9 +84,10 @@ cmdenv.o: cmdenv.cc \
   ../envir/envdefs.h \
   ../../include/envirext.h \
   ../../include/cpar.h \
-  ../../include/onstartup.h \
+  ../../include/cmodule.h \
   ../../include/cqueue.h \
-  ../../include/cgate.h
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h
 enumstr.o: enumstr.cc \
   enumstr.h
 heap.o: heap.cc
