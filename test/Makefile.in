@@ -1,14 +1,8 @@
 
-TESTFILES=*.test
-TFLAGS=-v
+all: test_core
 
-all: test
-
-test:
-	if ! [ -d work ];  then mkdir work; fi
-	opp_test -g $(TFLAGS) $(TESTFILES)
-	cd work; opp_makemake -f -u cmdenv; make
-	opp_test -r $(TFLAGS) $(TESTFILES)
+test_core:
+	cd core && ./runtest
 
 clean:
-	rm -rf work
+	rm -rf core/work

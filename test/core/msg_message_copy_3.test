@@ -63,7 +63,7 @@ void {print}(const char *what, {MyMessage}& x)
 %activity:
 
 // set up tester classes
-{MyMessage} x;
+{MyMessage} x("x");
 x.getMs(0).bb=10;
 x.getMs(1).bb=11;
 x.getMc(0).setBb(20);
@@ -87,7 +87,7 @@ x.getQ2(1).setName("q2(1)"); x.getQ2(1).insert(new cMessage);
 {print}("x1(x)",x1);
 
 // assigment
-{MyMessage} x2;
+{MyMessage} x2("x2");
 x2 = x;
 {print}("x2=x",x2);
 
