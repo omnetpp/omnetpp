@@ -91,22 +91,23 @@ proc start_gned {} {
    reflectConfigInGUI
 
    set convertandexit 0
-   foreach arg $argv {
+   #foreach arg $argv ..
+   for {set i 0} {$i<[llength $argv]} {incr i} {
+       set arg [lindex $argv $i]
        if {$arg == "--"} {
-           continue
-       }
-       if {$arg == "-c"} {
-           # FIXME: gned has to be invoked like gned -- -c *.ned, 
+           # ignore
+       } elseif {$arg == "-c"} {
+           # FIXME: gned has to be invoked like gned -- -c *.ned,
            # otherwise Tcl tries to interpret the "-c" :-(
+           incr i
            set convertandexit 1
-           # FIXME as option!
-           set psdir "html"
-           continue
-       }
-
-       # on Windows, we have to expand wildcards manually
-       foreach fname [glob -nocomplain $arg] {
-           loadNED $fname
+           set psdir [lindex $argv $i]
+           if {$psdir==""} {set psdir "html"}
+       } else {
+           # on Windows, we have to expand wildcards manually
+           foreach fname [glob -nocomplain $arg] {
+               loadNED $fname
+           }
        }
    }
 
