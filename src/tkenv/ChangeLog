@@ -376,3 +376,8 @@ Jun 2, 2000
 ------ omnetpp-2.0b5 released ------
 July 17, 2000
  - fixed bug in splitInspectorName()  [reported by Ulrich Kaage]
+July 26, 2000
+ - fixed a bug which caused Tcl error when using ev<< or ev.printf() with
+   a string than contained curly braces [reported by Nick van Foreest]
+
+
