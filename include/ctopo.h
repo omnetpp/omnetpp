@@ -390,7 +390,13 @@ class SIM_API cTopology : public cObject
     /**
      * Extracts model topology by module type (classnames). Includes into
      * the graph all modules whose className() is one of the strings
-     * listed as arguments. The argument list must be terminated by NULL.
+     * listed as arguments. The argument list must be terminated by a NULL
+     * pointer. Example:
+     *
+     * <pre>
+     * cTopology topo;
+     * topo.extractByModuleType("Host", "Router", NULL);
+     * </pre>
      */
     void extractByModuleType(const char *type1,...);
 
