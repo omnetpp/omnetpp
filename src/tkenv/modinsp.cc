@@ -56,7 +56,10 @@ void TModuleWindow::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "create_modulewindow ", windowname, NULL ));
+   cModule *mod = (cSimpleModule *)object;
+   const char *createcommand = mod->isSimple() ?
+            "create_simplemodulewindow " : "create_compoundmodulewindow ";
+   CHK(Tcl_VarEval(interp, createcommand, windowname, NULL ));
 }
 
 void TModuleWindow::update()

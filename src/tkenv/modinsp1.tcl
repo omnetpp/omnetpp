@@ -24,14 +24,19 @@ proc create_compoundmodinspector {name} {
     create_inspector_toplevel $w
 
     iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
-    iconbutton $w.toolbar.sep1 -separator
+    iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
+    iconbutton $w.toolbar.sep1   -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-    foreach i {graph sep1 parent} {
+    iconbutton $w.toolbar.sep2   -separator
+    iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
+    foreach i {graph win sep1 parent sep2 step} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
 
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}
+    set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
+    set help_tips($w.toolbar.step)    {Execute until next event in this module}
 
     set nb $w.nb
     notebook $nb
@@ -62,9 +67,9 @@ proc create_simplemodinspector {name} {
     create_inspector_toplevel $w
 
     iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
-    iconbutton $w.toolbar.sep1 -separator
+    iconbutton $w.toolbar.sep1   -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-    iconbutton $w.toolbar.sep2 -separator
+    iconbutton $w.toolbar.sep2   -separator
     iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
     foreach i {win sep1 parent sep2 step} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
@@ -120,7 +125,7 @@ proc one_step_in_module {w} {
     }
 }
 
-proc create_modulewindow {name} {
+proc create_simplemodulewindow {name} {
     global icons help_tips
 
     set w $name
@@ -128,12 +133,44 @@ proc create_modulewindow {name} {
 
     # Add icons
     iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
-    iconbutton $w.toolbar.sep1 -separator
+    iconbutton $w.toolbar.sep1   -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-    iconbutton $w.toolbar.sep2 -separator
+    iconbutton $w.toolbar.sep2   -separator
     iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
 
     foreach i {obj sep1 parent sep2 step} {
+       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+    }
+
+    set help_tips($w.toolbar.obj)    {Inspect as object}
+    set help_tips($w.toolbar.parent) {Inspect parent module}
+    set help_tips($w.toolbar.step)   {Execute until next event in this module}
+
+    frame $w.main
+    text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15
+    scrollbar $w.main.sb -command "$w.main.text yview"
+    $w.main.text tag configure event -foreground blue
+
+    pack $w.main -anchor center -expand 1 -fill both -side top
+    pack $w.main.sb -anchor center -expand 0 -fill y -side right
+    pack $w.main.text -anchor center -expand 1 -fill both -side left
+}
+
+proc create_compoundmodulewindow {name} {
+    global icons help_tips
+
+    set w $name
+    create_inspector_toplevel $w
+
+    # Add icons
+    iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
+    iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+    iconbutton $w.toolbar.sep1   -separator
+    iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
+    iconbutton $w.toolbar.sep2   -separator
+    iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
+
+    foreach i {obj graph sep1 parent sep2 step} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
 

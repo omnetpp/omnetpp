@@ -25,7 +25,7 @@ proc create_gateinspector {name} {
     create_inspector_toplevel $w
 
     iconbutton $w.toolbar.sep1 -separator
-    iconbutton $w.toolbar.mod -image $icons(parent) ;#command assigned from C++
+    iconbutton $w.toolbar.mod  -image $icons(parent) ;#command assigned from C++
     foreach i {sep1 mod} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
@@ -68,9 +68,9 @@ proc create_graphicalgatewindow {name} {
 
     # create toolbar
     iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"
-    iconbutton $w.toolbar.sep1 -separator
+    iconbutton $w.toolbar.sep1   -separator
     iconbutton $w.toolbar.module -image $icons(parent) ;#command assigned from C++
-    iconbutton $w.toolbar.sep2 -separator
+    iconbutton $w.toolbar.sep2   -separator
     iconbutton $w.toolbar.redraw -image $icons(redraw) -command "graphgatewin_redraw $w"
     foreach i {ascont sep1 module sep2 redraw} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2

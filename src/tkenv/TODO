@@ -11,3 +11,4 @@ General:
  - automatic loading of inspector lists (use "placeholder" windows for
    not-yet-existing objects)
  - Edit/Find doesn't remember prev string; no 'find next'
+ - Edit/Find for module debug windows too, not only for main window
