@@ -400,9 +400,21 @@ proc checkVersion {} {
    }
 }
 
+proc checkDirNoSpaces {} {
+   set pwd [pwd]
+   if {[string first " " $pwd]!=-1} {
+      wm withdraw . 
+      tk_messageBox -title "OMNeT++/OMNEST Demo" -type ok -icon error \
+        -message "The current working directory is \"$pwd\", which contains a space. Please reinstall OMNeT++/OMNEST into a directory whose name doesn't contain space!"
+      exit 1
+   }
+}
+
+
 set tk_strictMotif 1
 cd [file dirname [info script]]
 checkVersion
+checkDirNoSpaces
 generic_bindings
 font_bindings
 createWindow
