@@ -44,6 +44,7 @@ OBJS = \
   ../hcube/debug/hc_net_n.obj \
   ../hcube/debug/hc_rte.obj \
   ../hcube/debug/hc_rte_n.obj \
+  ../hcube/debug/hcpacket_m.obj \
   ../hist/debug/hist.obj \
   ../hist/debug/hist_n.obj \
   ../nim/debug/game.obj \
