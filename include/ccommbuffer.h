@@ -60,6 +60,7 @@ cObject *unpackObject(cCommBuffer *buffer);
  *
  * @ingroup Parsim
  */
+//FIXME misses pack/unpack for std::string (needed for opp_msg string type)
 class cCommBuffer : public cPolymorphic
 {
   public:
