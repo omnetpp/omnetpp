@@ -221,6 +221,7 @@ cPar& cMessage::par(char *s)
 
 int cMessage::findPar(char *s)
 {
+    if (!parlistp) return -1;
     return parList().find( s );
 }
 
