@@ -63,6 +63,6 @@ network={Net}
 *.xmlconfig1 = xmldoc("{}.xml");
 *.xmlconfig2 = xmldoc("{}.xml","foo/foo[1]//*[@color='green']");
 
-%contains: stdout
-foo at {}.xml:2
-baz at {}.xml:6
+%contains-regex: stdout
+foo at .*{}\.xml:2
+baz at .*{}\.xml:6

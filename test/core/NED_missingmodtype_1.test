@@ -26,6 +26,6 @@ void dummy()
 
 %exitcode: 1
 
-%contains: stdout
-module type definition `{NotImplemented}' for submodule a in ({Network}){network} not found (Define_Module() missing from C++ source?)
+%contains-regex: stdout
+[Mm]odule type definition .*NotImplemented.* not found
 

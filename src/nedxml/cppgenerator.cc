@@ -652,6 +652,14 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
 
     // generate connections
     generateChildrenWithTags(node, "connections", indent);
+    
+    // check if there are unconnected gates left
+    ConnectionsNode *conns = (ConnectionsNode *)node->getFirstChildWithTag(NED_CONNECTIONS);
+    if (!conns || conns->getCheckUnconnected())
+    {
+       out << indent << "// check all gates are connected:\n";
+       out << indent << "mod->checkInternalConnections();\n\n";
+    }
 
     // generate buildInside() calls for submodules and to free up arrays of module pointers
     out << "\n";
@@ -886,13 +894,7 @@ void NEDCppGenerator::doConnections(ConnectionsNode *node, const char *indent, i
     // generate children
     generateChildren(node, indent, mode);
 
-    // epilog
-    if (node->getCheckUnconnected())
-    {
-       // check connections
-       out << indent << "// check all gates are connected:\n";
-       out << indent << "mod->checkInternalConnections();\n\n";
-    }
+    // epilog: checkInternalConnections() is invoked from doModule(), because it also has to take place if there's no "connections:" at all
 }
 
 void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex, bool isplusplus)
