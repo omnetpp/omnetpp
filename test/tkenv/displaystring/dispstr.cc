@@ -144,7 +144,7 @@ void Gen::brightness()
 
 void Gen::show()
 {
-    ev << "display string: \"" << displayString() << "\"" << endl;
+    ev << "display string: \"" << displayString().getString() << "\"" << endl;
     wait(0);
 }
 
