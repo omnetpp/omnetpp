@@ -77,7 +77,7 @@ depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc netbuilder/*.cc parsim/*.cc
 
 clean:
-	-del *.obj netbuilder\*.obj parsim\*.obj mpi\*.obj
+	-del *.obj netbuilder\*.obj parsim\*.obj
 	-del sim_std.lib sim_std.dll sim_std.ilib sim_std.exp 2> nul
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
@@ -331,6 +331,13 @@ cmsgheap.obj: cmsgheap.cc \
   ../../include/errmsg.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h
+cnetmod.obj: cnetmod.cc \
+  ../../include/cpar.h \
+  ../../include/cenvir.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/cexception.h \
+  ../../include/defs.h
 cobject.obj: cobject.cc \
   ../../include/csimul.h \
   ../../include/cenvir.h \

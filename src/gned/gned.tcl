@@ -74,7 +74,7 @@ if [info exist OMNETPP_GNED_DIR] {
 # Exec startup code
 #
 proc startGNED {argv} {
-   global config OMNETPP_BITMAP_PATH
+   global config OMNETPP_BITMAP_PATH HAVE_BLT
 
    wm withdraw .
    checkTclTkVersion
@@ -83,6 +83,10 @@ proc startGNED {argv} {
    createMainWindow
    loadBitmaps $OMNETPP_BITMAP_PATH
    fileNewNedfile
+
+   if {!$HAVE_BLT} {
+      puts "\n*** BLT NOT FOUND. Please install this Tcl/Tk extension to get an improved GUI!"
+   }
 
    if [file readable $config(configfile)] {
        loadConfig $config(configfile)

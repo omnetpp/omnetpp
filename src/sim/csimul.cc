@@ -4,9 +4,6 @@
 //                          OMNeT++
 //           Discrete System Simulation in C++
 //
-//   Text tables:
-//    modstate:  module states
-//
 //   Definition of global object:
 //    simulation
 //
@@ -287,7 +284,7 @@ cModule *cSimulation::moduleByPath(const char *path) const
         s = strtok(NULL,".");
 
     // match components of the path
-    while (s && modp) 
+    while (s && modp)
     {
         char *b;
         if ((b=strchr(s,'['))==NULL)

@@ -73,7 +73,9 @@ depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.c
 
 clean:
-	-del *.obj nedc.exe *_n.cc 2> nul
+	-del *.obj 2> nul
+	-del nedc.exe nedtool.exe 2> nul
+	-del *_n.cc 2> nul
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 realclean: clean

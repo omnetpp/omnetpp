@@ -48,6 +48,7 @@ set OMNETPP_PLUGIN_PATH "./plugins"
 proc start_tkenv {} {
   global OMNETPP_BITMAP_PATH
   global OMNETPP_PLUGIN_PATH
+  global HAVE_BLT
 
   wm withdraw .
   checkTclTkVersion
@@ -61,9 +62,13 @@ proc start_tkenv {} {
   load_tkenvrc
   calibrate_animdelay
 
+  if {!$HAVE_BLT} {
+      puts "\n*** BLT NOT FOUND. Please install this Tcl/Tk extension to get an improved GUI!"
+  }
+
   global tcl_platform
   if {$tcl_platform(platform) == "windows"} {
-      # without "update", the main window comes up on top of all others, it also 
+      # without "update", the main window comes up on top of all others, it also
       # obscures any dialog box (e.g. param prompt) that might appear at startup!
       update
   }

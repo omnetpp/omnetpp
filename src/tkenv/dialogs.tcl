@@ -552,8 +552,8 @@ proc filteredobjectlist_dialog {} {
     pack $w.f.filter.pars -anchor center -expand 0 -fill x -side top
     set fp $w.f.filter.pars
 
-    label $fp.classlabel -text "Class:" -justify left
-    label $fp.namelabel -text "Object full path (e.g. '*foo*'):" -justify left
+    label $fp.classlabel -text "Class:" -justify left -anchor w
+    label $fp.namelabel -text "Object full path (e.g. '*foo*'):" -justify left -anchor w
 
     combo $fp.classentry [concat {{}} [getClassNames]]
     $fp.classentry.entry config -textvariable tmp(class)
@@ -642,7 +642,7 @@ proc filteredobjectlist_dialog {} {
     bind $fp.nameentry <Return> "$w.f.filter.buttons.refresh invoke"
     bind $lb <Double-Button-1> "inspect_item_in $lb; after 500 \{raise $w; focus $lb\}"
     bind $lb <Key-Return> "inspect_item_in $lb; after 500 \{raise $w; focus $lb\}"
-    bind $lb <Button-3> "filteredobjectlist_popup \[lindex \[multicolumnlistbox_curselection $lb\] 0\] %X %Y"
+    bind $lb <Button-3> "filteredobjectlist_popup %X %Y %W"
 
     focus $fp.nameentry
 
@@ -734,7 +734,8 @@ proc filteredobjectlist_refresh {w} {
 #
 # helper procedure for filteredobjectlist_dialog -- creates popup menu
 #
-proc filteredobjectlist_popup {w ptr X Y} {
+proc filteredobjectlist_popup {w X Y w} {
+    set ptr [lindex [multicolumnlistbox_curselection $w] 0]
     if {$ptr==""} return
     set insptypes [opp_supported_insp_types $ptr]
 

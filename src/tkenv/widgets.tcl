@@ -620,14 +620,31 @@ proc multicolumnlistbox {w columnlist args} {
             if {$width!=""} {
                 $w column config $name -width $width
             }
-            
         }
         # eliminate "last column quirk" by adding a very wide dummy column:
         $w column insert end "dummy" -text "" -edit no -width 1000
         bind $w <3> {%W selection clearall; %W select set [%W nearest %x %y]}
         #bind $w <Motion> {puts "[%W nearest %x %y] of [%W index view.top]..[%W index view.bottom] -- [%W find view.top view.bottom]"}
     } else {
-        error "no multicolumnlistbox without BLT!"
+        # emulate it with listbox widget
+        global mclistbox
+        listbox $w
+        if {$args!=""} {
+             eval $w config $args
+        }
+        # unlike blt::tree, listbox counts in chars
+        if {[$w cget -width]>100} {
+             $w config -width [expr [$w cget -width]/8]
+        }
+        if {[$w cget -height]>100} {
+             $w config -height [expr [$w cget -height]/12]
+        }
+        # store column names -- we'll need them later
+        set cols {}
+        foreach i $columnlist {
+            lappend cols [lindex $i 0]
+        }
+        set mclistbox($w,columns) $cols
     }
 }
 
@@ -635,13 +652,13 @@ proc multicolumnlistbox {w columnlist args} {
 # private procedure for multicolumnlistbox
 #
 proc multicolumnlistbox_blt_sortcolumn {w column} {
-    set old [$w sort cget -column] 
+    set old [$w sort cget -column]
     set decreasing 0
     if {$old==$column} {
         set decreasing [$w sort cget -decreasing]
         set decreasing [expr !$decreasing]
     }
-    $w sort configure -decreasing $decreasing -column $column 
+    $w sort configure -decreasing $decreasing -column $column
     $w configure -flat yes
     $w sort auto yes
     blt::busy hold $w
@@ -660,7 +677,16 @@ proc multicolumnlistbox_insert {w rowname data} {
     if {$HAVE_BLT} {
         $w insert end $rowname -data $data
     } else {
-        error "no multicolumnlistbox without BLT!"
+        global mclistbox
+        array set ary $data
+        set row ""
+        foreach col $mclistbox($w,columns) {
+            # catch because it might be missing from the array
+            catch {append row "$ary($col)   "}
+        }
+        append row [string repeat " " 160]
+        append row $rowname
+        $w insert end $row
     }
 }
 
@@ -674,7 +700,7 @@ proc multicolumnlistbox_modify {w rowname data} {
         if {$id==""} {error "row $rowname not found"}
         $w entry config $id -data $data
     } else {
-        error "no multicolumnlistbox without BLT!"
+        error "multicolumnlistbox_modify not supported without BLT!"
     }
 }
 
@@ -688,7 +714,7 @@ proc multicolumnlistbox_getrow {w rowname} {
         if {$id==""} {error "row $rowname not found"}
         return [$w entry cget $id -data]
     } else {
-        error "no multicolumnlistbox without BLT!"
+        error "multicolumnlistbox_getrow not supported without BLT!"
     }
 }
 
@@ -701,7 +727,7 @@ proc multicolumnlistbox_hasrow {w rowname} {
         set id [$w find -full $rowname]
         if {$id!=""} {return 1} else {return 0}
     } else {
-        error "no multicolumnlistbox without BLT!"
+        error "multicolumnlistbox_hasrow not supported without BLT!"
     }
 }
 
@@ -719,7 +745,15 @@ proc multicolumnlistbox_curselection {w} {
         }
         return $rownamelist
     } else {
-        error "no multicolumnlistbox without BLT!"
+        set sel [$w curselection]
+        if {$sel == ""} {return ""}
+        set rownames {}
+        foreach i $sel {
+            set row [$w get $i]
+            # catch because there might be a parse error when interpreting it as a list
+            catch {lappend rownames [lindex $row end]}
+        }
+        return $rownames
     }
 }
 
@@ -737,7 +771,7 @@ proc multicolumnlistbox_getrownames {w} {
         }
         return $rownamelist
     } else {
-        error "no multicolumnlistbox without BLT!"
+        error "multicolumnlistbox_getrownames not supported without BLT!"
     }
 }
 
@@ -753,7 +787,7 @@ proc multicolumnlistbox_delete {w rownames} {
             $w delete $id
         }
     } else {
-        error "no multicolumnlistbox without BLT!"
+        error "multicolumnlistbox_delete not supported without BLT!"
     }
 }
 
@@ -765,7 +799,7 @@ proc multicolumnlistbox_deleteall {w} {
     if {$HAVE_BLT} {
         $w delete all
     } else {
-        $w delete all
+        $w delete 0 end
     }
 }
 

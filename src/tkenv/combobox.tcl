@@ -311,8 +311,9 @@ proc ::combobox::handleEvent {w event} {
 	}
 
 	"<FocusOut>" {
-	    $widgets(entry) delete 0 end
-	    $widgets(entry) insert 0 $oldValue
+	    ## I don't quite understand the following, but it's VERY unpleasant! --Andras
+            #$widgets(entry) delete 0 end
+	    #$widgets(entry) insert 0 $oldValue
 	}
 
 	"<1>" {
