@@ -24,27 +24,27 @@ libenvir.so : $(OBJS)
 	$(MAKE_SO) libenvir.so $(OBJS)
 
 args.o : args.cc args.h
-	$(CXX) $(OMNETPP_INCL_PATH) args.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) args.cc
 
 
 cenvir.o : cenvir.cc $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) cenvir.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) cenvir.cc
 
 cinifile.o : cinifile.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) cinifile.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) cinifile.cc
 
 main.o : main.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) main.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) main.cc
 
 omnetapp.o : omnetapp.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) -DDYNAMIC_LINKAGE=$(DYNAMIC_LINKAGE) omnetapp.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) -DDYNAMIC_LINKAGE=$(DYNAMIC_LINKAGE) omnetapp.cc
 
 slaveapp.o : slaveapp.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) slaveapp.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) slaveapp.cc
 
 seeds.o : seeds.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) seeds.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) seeds.cc
 
 patmatch.o : patmatch.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) patmatch.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) patmatch.cc
 

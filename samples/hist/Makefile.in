@@ -77,13 +77,13 @@ $(TARGET): $(OBJS) $(EXRA_OBJS) makefile
 	$(LD) $(OBJS) $(EXRA_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
 
 hist_n.o: hist_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) hist_n.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) hist_n.cc
 
 hist_n.cc: hist.ned
 	$(NEDC) $(INCLUDE_PATH) hist.ned
 
 hist.o: hist.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) hist.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) hist.cc
 
 clean:
 	rm -f *.o *_n.cc $(TARGET)

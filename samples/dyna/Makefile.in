@@ -77,22 +77,22 @@ $(TARGET): $(OBJS) $(EXRA_OBJS) makefile
 	$(LD) $(OBJS) $(EXRA_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
 
 dyna_n.o: dyna.h dyna_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) dyna_n.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) dyna_n.cc
 
 dyna_n.cc: dyna.ned
 	$(NEDC) $(INCLUDE_PATH) dyna.ned
 
 client.o: client.cc dyna.h $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) client.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) client.cc
 
 server.o: server.cc dyna.h $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) server.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) server.cc
 
 servproc.o: servproc.cc dyna.h $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) servproc.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) servproc.cc
 
 switch.o: switch.cc dyna.h $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) switch.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) switch.cc
 
 clean:
 	rm -f *.o *_n.cc $(TARGET)

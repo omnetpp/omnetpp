@@ -80,37 +80,37 @@ $(TARGET): $(OBJS) $(EXRA_OBJS)   makefile
 	$(LD) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
 
 fifo_n.o: fifo.h fifo_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) fifo_n.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) fifo_n.cc
 
 fifo_n.cc: fifo.ned
 	$(NEDC) $(INCLUDE_PATH) fifo.ned
 
 fifonet_n.o: fifonet_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) fifonet_n.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) fifonet_n.cc
 
 fifonet_n.cc: fifonet.ned
 	$(NEDC) $(INCLUDE_PATH) fifonet.ned
 
 gen_n.o: gen_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) gen_n.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) gen_n.cc
 
 gen_n.cc: gen.ned
 	$(NEDC) $(INCLUDE_PATH) gen.ned
 
 sink_n.o: sink_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) sink_n.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) sink_n.cc
 
 sink_n.cc: sink.ned
 	$(NEDC) $(INCLUDE_PATH) sink.ned
 
 fifo.o: fifo.cc fifo.h $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) fifo.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) fifo.cc
 
 gen.o: gen.cc fifo.h $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) gen.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) gen.cc
 
 sink.o: sink.cc fifo.h $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) sink.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) sink.cc
 
 clean:
 	rm -f *.o *_n.cc $(TARGET)

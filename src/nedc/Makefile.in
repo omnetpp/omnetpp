@@ -1,61 +1,53 @@
 #*************************************************#
-#	   OMNET++ JAR				  #
+#	   OMNET++ NEDC				  #
 #						  #
-#    Makefile to build NEDC (formerly JAR)	  #
-#						  #
-#    By: Jan Heijmans				  #
+#    Originally by:                               #
+#	 Jan Heijmans 				  #
 #	 Alex Paalvast				  #
 #	 Robert van der Leij			  #
-#    Edited: Andras Varga 1996-98		  #
+#    Maintained by: Andras Varga 1996-99	  #
 #*************************************************#
 
 # Definitions to be customized by configure
-CC=@CC@
+CXX=@CXX@
 LD=@LD@
 YACC=@YACC@
 LEX=@LEX@
 
-# Local definitions
+CFLAGS=@CFLAGS@
 
-# Platform-dependent filenames, adjust if necessary.
-#   UNIX, Win95/NT (Cygnus gcc):  ebnf.tab.*, lex.yy.*
-#   MS-DOS (Djgpp):		  ebnf_tab.*, lexyy.*
+COPTS=$(CFLAGS)
 
-# ebnf_tab=ebnf_tab
-# lexyy=lexyy
-ebnf_tab=@ebnf_tab@
-lexyy=@lexyy@
+nedc: ebnf.tab.o lex.yy.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o
+	$(LD) lex.yy.o ebnf.tab.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o -o nedc
 
-nedc: $(ebnf_tab).o $(lexyy).o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o
-	$(LD) $(lexyy).o $(ebnf_tab).o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o -o nedc
+lex.yy.o: jar_func.h lex.yy.c
+	$(CXX) -c $(COPTS) lex.yy.c
 
-$(lexyy).o: jar_func.h $(lexyy).c
-	$(CC) $(lexyy).c
+ebnf.tab.o: jar_func.h ebnf.tab.h ebnf.tab.c
+	$(CXX) -c $(COPTS) ebnf.tab.c
 
-$(ebnf_tab).o: jar_func.h $(ebnf_tab).h $(ebnf_tab).c
-	$(CC) $(ebnf_tab).c
-
-$(ebnf_tab).h: ebnf.y
+ebnf.tab.h: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
 
-$(ebnf_tab).c: ebnf.y
+ebnf.tab.c: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
 
-$(lexyy).c: ebnf.lex
+lex.yy.c: ebnf.lex
 	$(LEX) ebnf.lex
 
 jar.o: jar_lib.h jar_func.h jar.c
-	$(CC) jar.c
+	$(CXX) -c $(COPTS) jar.c
 
 jar_lib.o: jar_lib.h jar_func.h jar_lib.c
-	$(CC) jar_lib.c
+	$(CXX) -c $(COPTS) jar_lib.c
 
 jar_mod.o: jar_lib.h jar_func.h jar_mod.c
-	$(CC) jar_mod.c
+	$(CXX) -c $(COPTS) jar_mod.c
 
 jar_expr.o: jar_lib.h jar_func.h jar_expr.c
-	$(CC) jar_expr.c
+	$(CXX) -c $(COPTS) jar_expr.c
 
 jar_mem.o: jar_func.h jar_mem.c
-	$(CC) jar_mem.c
+	$(CXX) -c $(COPTS) jar_mem.c
 

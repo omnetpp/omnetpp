@@ -77,16 +77,16 @@ $(TARGET): $(OBJS) $(EXRA_OBJS) makefile
 	$(LD) $(OBJS) $(EXRA_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
 
 nim_n.o: nim_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) nim_n.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) nim_n.cc
 
 nim_n.cc: nim.ned
 	$(NEDC) $(INCLUDE_PATH) nim.ned
 
 game.o: game.cc players.h $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) game.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) game.cc
 
 players.o: players.cc players.h $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) players.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) players.cc
 
 clean:
 	rm -f *.o *_n.cc $(TARGET)

@@ -11,23 +11,28 @@ CXX=@CXX@
 AS=@AS@
 AR=@AR@
 MAKE_SO=@MAKE_SO@
+
+CFLAGS=@CFLAGS@
+
 OMNETPP_ROOT=@OMNETPP_ROOT@
 OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
 OMNETPP_INCLUDES=@OMNETPP_INCLUDES@
 OMNETPP_BITMAP_PATH=@OMNETPP_BITMAP_PATH@
+
 TK_INCL_PATH=@TK_INCL_PATH@
-LIB_SUFFIX=a
+
+LIB_SUFFIX=@LIB_SUFFIX@
 
 # Local definitions
-ENVIR_INCLUDES=../args.h ../cinifile.h ../omnetapp.h ../slaveapp.h
+ENVIR_INCLUDES=../envir/args.h ../envir/cinifile.h ../envir/omnetapp.h ../envir/slaveapp.h
 TKENV_INCLUDES=tkapp.h tkinsp.h tklib.h arrow.h
-INCL_PATH=-I..
+INCL_PATH=-I../envir
 
 INCLUDES=$(OMNETPP_INCLUDES) $(ENVIR_INCLUDES) $(TKENV_INCLUDES)
-CC_OPTS=-fwritable-strings $(OMNETPP_INCL_PATH) $(INCL_PATH) $(TK_INCL_PATH)
+COPTS=-fwritable-strings $(CFLAGS) $(OMNETPP_INCL_PATH) $(INCL_PATH) $(TK_INCL_PATH)
 
-OMNETPP_TKENV_DIR=$(OMNETPP_SRC_DIR)/envir/tkenv
+OMNETPP_TKENV_DIR=$(OMNETPP_SRC_DIR)/tkenv
 
 OBJS = $(TKAPP).o tkcmd.o tklib.o objinsp.o modinsp.o statinsp.o inspect.o arrow.o
 
@@ -40,34 +45,36 @@ libtkenv.so : $(OBJS)
 	$(MAKE_SO) libtkenv.so $(OBJS)
 
 tkapp.o : tkapp.cc $(INCLUDES)
-	$(CXX) $(CC_OPTS) -DOMNETPP_TKENV_DIR=\"$(OMNETPP_TKENV_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc
+	$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR=\"$(OMNETPP_TKENV_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc
 
 tkapp-rt.o : tkapp.cc $(INCLUDES) tclcode.cc
-	$(CXX) $(CC_OPTS) -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc -o tkapp-rt.o
+	$(CXX) -c $(COPTS) -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc -o tkapp-rt.o
 
 tkcmd.o : tkcmd.cc $(INCLUDES)
-	$(CXX) $(CC_OPTS) tkcmd.cc
+	$(CXX) -c $(COPTS) tkcmd.cc
 
 tklib.o : tklib.cc $(INCLUDES)
-	$(CXX) $(CC_OPTS) tklib.cc
+	$(CXX) -c $(COPTS) tklib.cc
 
 objinsp.o: objinsp.cc $(INCLUDES)
-	$(CXX) $(CC_OPTS) objinsp.cc
+	$(CXX) -c $(COPTS) objinsp.cc
 
 modinsp.o: modinsp.cc $(INCLUDES)
-	$(CXX) $(CC_OPTS) modinsp.cc
+	$(CXX) -c $(COPTS) modinsp.cc
 
 statinsp.o: statinsp.cc $(INCLUDES)
-	$(CXX) $(CC_OPTS) statinsp.cc
+	$(CXX) -c $(COPTS) statinsp.cc
 
 inspect.o: inspect.cc $(INCLUDES)
-	$(CXX) $(CC_OPTS) inspect.cc
+	$(CXX) -c $(COPTS) inspect.cc
 
 arrow.o: arrow.cc arrow.h
-	$(CXX) $(CC_OPTS) arrow.cc
+	$(CXX) -c $(COPTS) arrow.cc
 
 tclcode.cc: *.tcl tcl2c
 	./tcl2c tclcode.cc *.tcl
 
 tcl2c: tcl2c.c
 	$(CC) tcl2c.c -o tcl2c
+
+

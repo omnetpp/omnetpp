@@ -73,13 +73,13 @@ $(PROGRAM): $(OBJS) $(OTHERSIMPLES) makefile
 	$(LD) $(OBJS) $(OTHERSIMPLES) $(OMNETPP_LIBS) -o $(PROGRAM)
 
 pvmex_n.o: pvmex_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) pvmex_n.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) pvmex_n.cc
 
 pvmex_n.cc: pvmex.ned
 	$(NEDC) $(NED_INCL_PATH) pvmex.ned
 
 simples.o: simples.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) simples.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) simples.cc
 
 clean:
 	rm -f *.o *_n.cc $(PROGRAM)

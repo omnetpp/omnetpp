@@ -74,37 +74,37 @@ $(PROGRAM): $(OBJS) $(OTHERSIMPLES) makefile
 	$(LD) $(OBJS) $(OTHERSIMPLES) $(OMNETPP_LIBS) -o $(PROGRAM)
 
 fddi_mac_n.o: fddi_mac.h fddi_mac_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) fddi_mac_n.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) fddi_mac_n.cc
 
 fddi_mac_n.cc: fddi_mac.ned
 	$(NEDC) $(NED_INCL_PATH) fddi_mac.ned
 
 fddi_net_n.o: fddi_net_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) fddi_net_n.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) fddi_net_n.cc
 
 fddi_net_n.cc: fddi_net.ned
 	$(NEDC) $(NED_INCL_PATH) fddi_net.ned
 
 othermod_n.o: othermod.h othermod_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) othermod_n.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) othermod_n.cc
 
 othermod_n.cc: othermod.ned
 	$(NEDC) $(NED_INCL_PATH) othermod.ned
 
 ssm_ifs_n.o: ssm_ifs.h ssm_ifs_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) ssm_ifs_n.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) ssm_ifs_n.cc
 
 ssm_ifs_n.cc: ssm_ifs.ned
 	$(NEDC) $(NED_INCL_PATH) ssm_ifs.ned
 
 fddi_mac.o: fddi_mac.cc fddi_def.h fddi_mac.h otherdef.h othermod.h ssm_ifs.h ssmifdef.h $(OMNETPP_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) fddi_mac.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) fddi_mac.cc
 
 othermod.o: othermod.cc fddi_def.h fddi_mac.h otherdef.h othermod.h ssm_ifs.h ssmifdef.h $(OMNETPP_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) othermod.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) othermod.cc
 
 ssm_ifs.o: ssm_ifs.cc fddi_def.h fddi_mac.h otherdef.h othermod.h ssm_ifs.h ssmifdef.h $(OMNETPP_INCLUDES)
-	$(CXX) $(OMNETPP_INCL_PATH) ssm_ifs.cc
+	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) ssm_ifs.cc
 
 clean:
 	rm -f *.o *_n.cc $(PROGRAM)

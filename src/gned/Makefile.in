@@ -1,9 +1,10 @@
 # Definitions to be customized by 'configure'
-CC=@CC@
-CC=@CC@
+CXX=@CXX@
 LD=@LD@
 YACC=@YACC@
 LEX=@LEX@
+
+CFLAGS=@CFLAGS@
 
 OMNETPP_ROOT=@OMNETPP_ROOT@
 OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
@@ -13,57 +14,47 @@ TK_INCL_PATH=@TK_INCL_PATH@
 TK_LIBS=@TK_LIBS@
 SYS_LIBS=@SYS_LIBS@
 
-
-# Local definitions
-# ebnf_tab=ebnf_tab
-# lexyy=lexyy
-ebnf_tab=@ebnf_tab@
-lexyy=lex.yy
-
 GNED_INCLUDES=arrow.h parsened.h tklib.h
 
-CC_OPTS=-fwritable-strings $(TK_INCL_PATH)
+COPTS=-fwritable-strings $(CFLAGS) $(TK_INCL_PATH)
 
 OMNETPP_GNED_DIR=$(OMNETPP_SRC_DIR)/gned
 
-OBJS = gned.o tklib.o arrow.o $(ebnf_tab).o $(lexyy).o parsened.o disp.o nedfile.o
-
-all : gned
+OBJS = gned.o tklib.o arrow.o ebnf.tab.o lex.yy.o parsened.o disp.o nedfile.o
 
 gned : $(OBJS)
 	$(LD) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
 
-
 gned.o : gned.cc $(INCLUDES)
-	$(CXX) $(CC_OPTS) -DOMNETPP_GNED_DIR=\"$(OMNETPP_GNED_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" gned.cc
+	$(CXX) -c $(COPTS) -DOMNETPP_GNED_DIR=\"$(OMNETPP_GNED_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" gned.cc
 
 tklib.o : tklib.cc $(INCLUDES)
-	$(CXX) $(CC_OPTS) tklib.cc
+	$(CXX) -c $(COPTS) tklib.cc
 
 arrow.o: arrow.cc arrow.h
-	$(CXX) $(CC_OPTS) arrow.cc
+	$(CXX) -c $(COPTS) arrow.cc
 
 parsened.o: parsened.cc parsened.h disp.h
-	$(CXX) $(CC_OPTS) parsened.cc
+	$(CXX) -c $(COPTS) parsened.cc
 
 nedfile.o: nedfile.cc nedfile.h
-	$(CXX) $(CC_OPTS) nedfile.cc
+	$(CXX) -c $(COPTS) nedfile.cc
 
 disp.o: disp.h disp.cc
-	$(CXX) $(CC_OPTS) disp.cc
+	$(CXX) -c $(COPTS) disp.cc
 
-$(lexyy).o: parsened.h $(lexyy).c
-	$(CXX) $(lexyy).c
+lex.yy.o: parsened.h lex.yy.c
+	$(CXX) -c $(COPTS) lex.yy.c
 
-$(ebnf_tab).o: parsened.h $(ebnf_tab).h $(ebnf_tab).c
-	$(CXX) $(ebnf_tab).c
+ebnf.tab.o: parsened.h ebnf.tab.h ebnf.tab.c
+	$(CXX) -c $(COPTS) ebnf.tab.c
 
-$(ebnf_tab).h: ebnf.y
+ebnf.tab.h: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
 
-$(ebnf_tab).c: ebnf.y
+ebnf.tab.c: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
 
-$(lexyy).c: ebnf.lex
+lex.yy.c: ebnf.lex
 	$(LEX) ebnf.lex
 

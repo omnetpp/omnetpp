@@ -77,19 +77,19 @@ $(TARGET): $(OBJS) $(EXRA_OBJS) makefile
 	$(LD) $(OBJS) $(EXRA_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
 
 tknmods_n.o: tknmods_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) tknmods_n.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) tknmods_n.cc
 
 tknmods_n.cc: tknmods.ned
 	$(NEDC) $(INCLUDE_PATH) tknmods.ned
 
 tknring_n.o: tknring_n.cc $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) tknring_n.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) tknring_n.cc
 
 tknring_n.cc: tknring.ned
 	$(NEDC) $(INCLUDE_PATH) tknring.ned
 
 token.o: token.cc token.h $(OMNETPP_INCLUDES)
-	$(CXX) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) token.cc
+	$(CXX) -c $(COPTS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH) token.cc
 
 clean:
 	rm -f *.o *_n.cc $(TARGET)
