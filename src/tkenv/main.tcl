@@ -197,7 +197,7 @@ proc create_omnetpp_window {} {
 
     # Help menu
     foreach i {
-      {command -command about -label {About OMNeT++} -underline 0}
+      {command -command about -label {About OMNeT++/Tkenv} -underline 0}
     } {
       eval .menubar.helpmenu$m add $i
     }

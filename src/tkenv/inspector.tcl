@@ -133,7 +133,7 @@ proc ask_inspectortype {ptr} {
 
     set type ""
     if [execOkCancelDialog $w] {
-        set type [$w.f.type.e cget -text]
+        set type [$w.f.type.e cget -value]
     }
     destroy $w
     return $type

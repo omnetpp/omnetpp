@@ -13,13 +13,28 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-#------
-# Parts of this file were created using Stewart Allen's Visual Tcl (vtcl)
-#------
+
+# wsize --
+#
+# Utility to set a widget's size to exactly width x height pixels.
+# Usage example:
+#    button .b1 -text "OK"
+#    pack [wsize .b1 40 40] -side top -expand 1 -fill both
+#
+proc wsize {w width height} {
+  set f ${w}_f
+  frame $f -width $width -height $height
+  place $w -in $f -x 0 -y 0 -width $width -height $height
+  raise $w
+  return $f
+}
+
 
 #===================================================================
 #    PROCEDURES FOR CREATING NEW 'WIDGET TYPES'
 #===================================================================
+
+package require combobox 1.0
 
 proc iconbutton {w args} {
     global fonts
@@ -40,25 +55,26 @@ proc combo {w list {cmd {}}} {
 
     global fonts
 
-    menubutton $w -menu $w.m -font $fonts(bold) -relief raised -width 14 -indicatoron 1
-    menu $w.m -tearoff 0
+    combobox::combobox $w
     foreach i $list {
-        $w.m add command -label $i -command "$w configure -text \{$i\}; $cmd"
+        $w list insert end $i
     }
-    catch {$w config -text [lindex $list 0]}
+    catch {$w configure -value [lindex $list 0]}
+    $w configure -command "$cmd ;#"
     return $w
 }
 
 proc comboconfig {w list {cmd {}}} {
     # reconfigures a combo box widget
 
-    $w.m delete 0 end
+    $w list delete 0 end
     foreach i $list {
-       $w.m add command -label $i -command "$w configure -text \{$i\}; $cmd"
+        $w list insert end $i
     }
-    if {[lsearch $list [$w cget -text]] == -1} {
-        $w.m invoke 0
+    if {[lsearch $list [$w cget -value]] == -1} {
+        catch {$w configure -value [lindex $list 0]}
     }
+    $w configure -command "$cmd ;#"
     return $w
 }
 
@@ -72,13 +88,37 @@ proc label-entry {w label {text {}}} {
     $w.e insert 0 $text
 }
 
+proc label-entry-chooser {w label text chooserproc} {
+    # utility function: create a frame with a label+entry+button
+    # the button is expected to call a dialog where the user can select
+    # a value for the entry
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    entry $w.e -highlightthickness 0
+    button $w.c -text " ... " -command [list chooser:choose $w.e $chooserproc]
+    pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
+    pack [wsize $w.c 20 20] -anchor center -expand 0 -fill none -padx 2 -pady 2 -side right
+    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side left
+    $w.e insert 0 $text
+}
+
+# private proc for label-entry-chooser
+proc chooser:choose {w chooserproc} {
+    set current [$w get]
+    set new [eval $chooserproc \"$current\"]
+    if {$new!=""} {
+       $w delete 0 end
+       $w insert end $new
+    }
+}
+
 proc label-sunkenlabel {w label {text {}}} {
     # utility function: create a frame with a label+"readonly entry"
     frame $w
     label $w.l -anchor w -width 16 -text $label
-    label $w.e -relief groove -justify left -anchor w
+    label $w.e -relief groove -justify left
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
-    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side left
+    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
     $w.e config -text $text
 }
 
@@ -90,9 +130,9 @@ proc label-combo {w label list {text {}} {cmd {}}} {
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
     if {$text != ""} {
-         $w.e config -text $text
+         $w.e configure -value $text
     } else {
-         $w.e config -text [lindex $list 0]
+         $w.e configure -value [lindex $list 0]
     }
 }
 
@@ -162,19 +202,154 @@ proc notebook_showpage {w name} {
     set nb($w) $name
 }
 
-proc label-check {w label first var } {
+proc label-check {w label first var} {
     # utility function: create a frame with a label+radiobutton for choose
     global gned
 
     frame $w
     label $w.l -anchor w -width 16 -text $label
     frame $w.f
-    checkbutton $w.f.r1 -text $first -variable ned($var)
+    checkbutton $w.f.r1 -text $first -variable $var
 
     pack $w.l -anchor w -expand 0 -fill none -side left
     pack $w.f -anchor w -expand 0 -side left -fill x
     pack $w.f.r1 -anchor w -expand 0 -side left
 }
+
+proc vertResizeBar {w wToBeResized} {
+    # create widget
+    frame $w -width 5 -relief raised -borderwidth 1
+    if [catch {$w config -cursor size_we}] {
+      if [catch {$w config -cursor sb_h_double_arrow}] {
+        catch {$w config -cursor sizing}
+      }
+    }
+
+    # create bindings
+    bind $w <Button-1> "vertResizeBar:buttonDown $w %X"
+    bind $w <B1-Motion> "vertResizeBar:buttonMove %X"
+    bind $w <ButtonRelease-1> "vertResizeBar:buttonRelease %X $wToBeResized"
+    bind $w <Button-2> "catch {destroy .resizeBar}"
+    bind $w <Button-3> "catch {destroy .resizeBar}"
+}
+
+proc vertResizeBar:buttonDown {w x} {
+    global mouse
+    set mouse(origx) $x
+
+    catch {destroy .resizeBar}
+    toplevel .resizeBar -relief flat -bg #606060
+    wm overrideredirect .resizeBar true
+    wm positionfrom .resizeBar program
+    set geom "[winfo width $w]x[winfo height $w]+[winfo rootx $w]+[winfo rooty $w]"
+    wm geometry .resizeBar $geom
+}
+
+proc vertResizeBar:buttonMove {x} {
+    catch {wm geometry .resizeBar "+$x+[winfo rooty .resizeBar]"}
+}
+
+proc vertResizeBar:buttonRelease {x wToBeResized} {
+    global mouse
+    set dx [expr $x-$mouse(origx)]
+
+    set width [$wToBeResized cget -width]
+    set width [expr $width+$dx]
+    $wToBeResized config -width $width
+
+    catch {destroy .resizeBar}
+}
+
+# tableEdit --
+#
+# Create a "tableEdit" widget
+#
+# one $columnlist entry:
+#   {title column-name command-to-create-widget-in-cell}
+#
+#  the command should use two variables:
+#    $e - widget must be created with name stored in $e
+#    $v - widget must be bound to variable whose name is in $v
+#
+# Example:
+# tableEdit .t 20 {
+#   {Name    name    {entry $e -textvariable $v -width 8 -bd 1 -relief sunken}}
+#   {Value   value   {entry $e -textvariable $v -width 12 -bd 1 -relief sunken}}
+#   {Comment comment {entry $e -textvariable $v -width 20 -bd 1 -relief sunken}}
+# }
+# pack .t -expand 1 -fill both
+#
+proc tableEdit {w numlines columnlist} {
+
+    # clean up variables from earlier table instances with same name $w
+    global tablePriv
+    foreach i [array names tablePriv "$w,*"] {
+        unset tablePriv($i)
+    }
+
+    # create widgets
+    frame $w; # -bg green
+    frame $w.tb -height 16
+    canvas $w.c -yscrollcommand "$w.vsb set" -height 150 -bd 0
+    scrollbar $w.vsb -command "$w.c yview"
+
+    grid rowconfig $w 1 -weight 1 -minsize 0
+
+    grid $w.tb -in $w -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $w.c   -in $w -row 1 -column 0 -rowspan 1 -columnspan 1 -sticky news
+    grid $w.vsb -in $w -row 1 -column 1 -rowspan 1 -columnspan 1 -sticky news
+
+    frame $w.c.f -bd 0
+    $w.c create window 0 0 -anchor nw -window $w.c.f
+
+    set tb $w.tb
+    set f $w.c.f
+
+    for {set li 0} {$li<$numlines} {incr li} {
+       set col 0
+       foreach entry $columnlist {
+           # get fields from entry
+           set title   [lindex $entry 0]
+           set attr    [lindex $entry 1]
+           set wcmd    [lindex $entry 2]
+
+           # add table entry
+           set e $f.li$li-$attr
+           set v tablePriv($w,$li,$attr)
+           eval $wcmd
+           grid $e -in $f -row $li -column $col -rowspan 1 -columnspan 1 -sticky news
+
+           # next column
+           incr col
+       }
+    }
+
+    update idletasks
+
+    # create title labels
+    set dx 2
+    foreach entry $columnlist {
+        # get fields from entry
+        set title   [lindex $entry 0]
+        set attr    [lindex $entry 1]
+
+        set e $f.li0-$attr
+        label $tb.$attr -bd 1 -relief raised -text $title
+
+        # add title bar
+        set width [expr [winfo width $e]]
+        place $tb.$attr -in $tb -x $dx -y 0 -width $width -height [winfo height $tb]
+        set dx [expr $dx + $width]
+    }
+
+    # adjust canvas width to frame width
+    $w.c config -width [winfo width $f]
+    $w.c config -scrollregion "0 0 0 [winfo height $f]"
+
+    #focus $w.l0c0
+
+}
+
 
 # notebook .x bottom
 # notebook_addpage .x p1 Egy
@@ -184,22 +359,27 @@ proc label-check {w label first var } {
 # label .x.p1.e -text "One"
 # pack .x.p1.e
 
-proc center {name} {
+proc center {w} {
     # utility function: centers a dialog on the screen
+
+    global tcl_platform
+
+    # preliminary placement...
+    if {[winfo reqwidth $w]!=0} {
+       set pre_x [expr ([winfo screenwidth $w]-[winfo reqwidth $w])/2-[winfo vrootx [winfo parent $w]]]
+       set pre_y [expr ([winfo screenheight $w]-[winfo reqheight $w])/2-[winfo vrooty [winfo parent $w]]]
+       wm geom $w +$pre_x+$pre_y
+    }
 
     # withdraw the window, then update all the geometry information
     # so we know how big it wants to be, then center the window in the
     # display and de-iconify it.
-
-    global tcl_platform
-
-    set w $name
     if {$tcl_platform(platform) != "windows"} {
         wm withdraw $w
     }
     update idletasks
-    set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2  - [winfo vrootx [winfo parent $w]]]
-    set y [expr [winfo screenheight $w]/2 - [winfo reqheight $w]/2  - [winfo vrooty [winfo parent $w]]]
+    set x [expr [winfo screenwidth $w]/2 - [winfo width $w]/2  - [winfo vrootx [winfo parent $w]]]
+    set y [expr [winfo screenheight $w]/2 - [winfo height $w]/2  - [winfo vrooty [winfo parent $w]]]
     wm geom $w +$x+$y
     if {$tcl_platform(platform) != "windows"} {
         wm deiconify $w
@@ -210,11 +390,13 @@ proc center {name} {
 proc createOkCancelDialog {w title} {
     # creates dialog with OK and Cancel buttons
     # user's widgets can go into frame $w.f
+    global tk_version tcl_platform
 
     catch {destroy $w}
-
     toplevel $w -class Toplevel
-    wm transient $w [winfo toplevel [winfo parent $w]]
+    if {$tk_version<8.2 || $tcl_platform(platform)!="windows"} {
+        wm transient $w [winfo toplevel [winfo parent $w]]
+    }
     wm title $w $title
     wm iconname $w Dialog
     wm focusmodel $w passive
@@ -222,6 +404,11 @@ proc createOkCancelDialog {w title} {
     wm resizable $w 1 1
     wm deiconify $w
     wm protocol $w WM_DELETE_WINDOW { }
+
+    # preliminary placement (assumes 350x250 dialog)...
+    set pre_x [expr ([winfo screenwidth $w]-350)/2-[winfo vrootx [winfo parent $w]]]
+    set pre_y [expr ([winfo screenheight $w]-250)/2-[winfo vrooty [winfo parent $w]]]
+    wm geom $w +$pre_x+$pre_y
 
     frame $w.f
     frame $w.buttons
@@ -232,7 +419,6 @@ proc createOkCancelDialog {w title} {
     pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top
     pack $w.buttons.cancelbutton  -anchor n -side right -padx 2
     pack $w.buttons.okbutton  -anchor n -side right -padx 2
-
 }
 
 proc execOkCancelDialog w {
@@ -242,7 +428,7 @@ proc execOkCancelDialog w {
     global opp
 
     $w.buttons.okbutton configure -command "set opp($w) 1"
-    $w.buttons.cancelbutton configure -command "set opp($w) 0"
+    catch {$w.buttons.cancelbutton configure -command "set opp($w) 0"}
 
     bind $w <Return> "if {\[winfo class \[focus\]\]!=\"Text\"} {set opp($w) 1}"
     bind $w <Escape> "set opp($w) 0"
@@ -273,4 +459,14 @@ proc execOkCancelDialog w {
         }
     }
     return $opp($w)
+}
+
+proc aboutDialog {title contents} {
+    catch {destroy .about}
+    createOkCancelDialog .about $title
+    label .about.f.l -text $contents
+    pack .about.f.l -expand 1 -fill both
+    destroy .about.buttons.cancelbutton
+    execOkCancelDialog .about
+    destroy .about
 }

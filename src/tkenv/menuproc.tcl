@@ -72,15 +72,13 @@ proc is_simulation_ok {} {
 proc about {} {
     # implements Help|About
 
-    messagebox {About OMNeT++}  {\
-Tkenv 2.2
-OMNeT++ Discrete Event Simulation System
+    aboutDialog "About OMNeT++/Tkenv" {\
+OMNeT++/Tkenv
 
-(c) Andras Varga, 1992-2001
-Technical University of Budapest
-Dept. of Telecommunications
-}\
-    info ok
+(c) Andras Varga, 1992-2002
+
+NO WARRANTY -- see license for details.
+}
 }
 
 proc exit_omnetpp {} {

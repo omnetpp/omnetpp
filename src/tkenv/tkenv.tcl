@@ -20,6 +20,7 @@ if [info exist OMNETPP_TKENV_DIR] {
 
    set dir $OMNETPP_TKENV_DIR
 
+   source [file join $dir combobox.tcl]
    source [file join $dir icons.tcl]
    source [file join $dir widgets.tcl]
    source [file join $dir balloon.tcl]

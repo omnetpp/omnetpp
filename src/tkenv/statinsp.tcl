@@ -74,7 +74,7 @@ proc outvectorwindow_opt_update {w win} {
                          [$w.time.e get] \
                          [$w.ymin.e get] \
                          [$w.ymax.e get] \
-                         [$w.combo.e cget -text]
+                         [$w.combo.e cget -value]
         opp_updateinspector $win
 }
 
@@ -132,7 +132,7 @@ proc outvectorwindow_options {win} {
     $w.time.e insert 0 [lindex $settings 0]
     $w.ymin.e insert 0 [lindex $settings 1]
     $w.ymax.e insert 0 [lindex $settings 2]
-    $w.combo.e config -text [lindex $settings 3]
+    $w.combo.e configure -value [lindex $settings 3]
 
     # 4. Set a grab and claim the focus too.
     set oldFocus [focus]

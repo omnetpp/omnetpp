@@ -616,16 +616,17 @@ void TOutVectorWindow::setConfig( double timefac, double min_y, double max_y, co
    if (miny>maxy) maxy=miny;
    if (miny==maxy)
    {
-           if (miny!=0) {miny-=fabs(miny/3); maxy+=fabs(maxy/3);}
-           else  {miny=-0.5; maxy=0.5;}
+       if (miny!=0) {miny-=fabs(miny/3); maxy+=fabs(maxy/3);}
+       else  {miny=-0.5; maxy=0.5;}
    }
 
    // identify drawing style
    int i;
    for (i=0; i<NUM_DRAWINGMODES; i++)
-     if (0==strcmp(mode,drawingmodes[i]))
-        break;
-   drawing_mode = i;
+       if (0==strcmp(mode,drawingmodes[i]))
+           break;
+   if (i!=NUM_DRAWINGMODES) 
+       drawing_mode = i;
 }
 
 int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)

@@ -286,8 +286,8 @@ proc rununtil_dialog {time_var event_var mode_var} {
                  {{Normal} {Fast (rare updates)} {Express (tracing off)}}
 
     foreach i {time event mode} {
-       $w.f.$i.l config -width 24
-       $w.f.$i.e config -width 18
+       $w.f.$i.l configure -width 24
+       $w.f.$i.e configure -width 18
        pack $w.f.$i -anchor w
     }
 
@@ -298,7 +298,7 @@ proc rununtil_dialog {time_var event_var mode_var} {
     if [execOkCancelDialog $w] {
         set time_var0  [$w.f.time.e get]
         set event_var0 [$w.f.event.e get]
-        set mode_var0  [lindex [$w.f.mode.e cget -text] 0]
+        set mode_var0  [lindex [$w.f.mode.e cget -value] 0]
         destroy $w
         return 1
     }
