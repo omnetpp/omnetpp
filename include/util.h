@@ -113,8 +113,8 @@ SIM_API int testrand();
 
 /**
  * Calculates the next random number with the given seed, and also updates
- * the seed. This function is useful if the user wants to manage his/her own
- * random number generators, independent of OMNeT++'s.
+ * the seed. This function makes it possible to use random number streams
+ * independent of the seeds built into OMNeT++.
  */
 SIM_API long opp_nextrand(long& seed);
 

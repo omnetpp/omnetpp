@@ -351,12 +351,17 @@ class SIM_API cGate : public cObject
     //@{
 
     /**
-     * Sets the display string for the gate.
+     * Sets the display string for the gate, which in practice affects the
+     * apprearance of the connection for which this gate is the source.
+     *
+     * FIXME: should take a second, <tt>bool immediate</tt> arg. See cModule's
+     * similar methods.
      */
     void setDisplayString(const char *dispstr);
 
     /**
-     * Returns the display string for the gate.
+     * Returns the display string for the gate, which in practice affects the
+     * apprearance of the connection for which this gate is the source.
      */
     const char *displayString() const;
 

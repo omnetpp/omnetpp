@@ -317,7 +317,7 @@ class SIM_API cModule : public cObject
 
     /**
      * Returns this is a simple or compound module. Pure virtual function,
-     * redefined in <tt>cSimpleModule</tt> to return true and in <tt>cCompoundModule</tt>
+     * redefined in cSimpleModule to return true and in cCompoundModule
      * to return false.
      */
     virtual bool isSimple() const = 0;
@@ -497,26 +497,26 @@ class SIM_API cModule : public cObject
     const char *machinePar(const char *machinename); // NET
     //@}
 
-    /** @name Interface for calling <tt>initialize()</tt>/<tt>finish()</tt>.
+    /** @name Interface for calling initialize()/finish().
      * Those functions may not be called directly, only via
-     * <tt>callInitialize()</tt> and <tt>callFinish()</tt> provided here.
+     * callInitialize() and callFinish() provided here.
      */
     //@{
 
     /**
-     * Interface for calling <tt>initialize()</tt> from outside.
+     * Interface for calling initialize() from outside.
      * Implements full multi-stage init for this module and its submodules.
      */
     virtual void callInitialize();
 
     /**
-     * Interface for calling <tt>initialize()</tt> from outside. It does a single stage
+     * Interface for calling initialize() from outside. It does a single stage
      * of initialization, and returns <tt>true</tt> if more stages are required.
      */
     virtual bool callInitialize(int stage) = 0;
 
     /**
-     * Interface for calling <tt>finish()</tt> from outside.
+     * Interface for calling finish() from outside.
      */
     virtual void callFinish() = 0;
     //@}
@@ -525,8 +525,8 @@ class SIM_API cModule : public cObject
     //@{
 
     /**
-     * Pure virtual function; it is redefined in both <tt>cCompoundModule</tt>
-     * and <tt>cSimpleModule</tt>. It creates starting message for dynamically
+     * Pure virtual function; it is redefined in both cCompoundModule
+     * and cSimpleModule. It creates starting message for dynamically
      * created module (or recursively for its submodules). See the user
      * manual for explanation how to use dynamically created modules.
      */
@@ -534,8 +534,8 @@ class SIM_API cModule : public cObject
 
     /**
      * Deletes a dynamically created module and recursively all its submodules.
-     * This is a pure virtual function; it is redefined in both <tt>cCompoundModule</tt>
-     * and <tt>cSimpleModule</tt>.
+     * This is a pure virtual function; it is redefined in both cCompoundModule
+     * and cSimpleModule.
      */
     virtual void deleteModule() = 0;
     //@}
@@ -573,6 +573,13 @@ class SIM_API cModule : public cObject
      *
      * The immediate flag selects whether the change should become effective
      * right now or later (after finishing the current event).
+     *
+     * If several display string changes are going to be done within one event,
+     * then immediate=false is useful because it reduces the number of necessary
+     * redraws. Immediate=false also uses less stack. But its drawback is that
+     * a setDisplayString() followed by a send() would actually be displayed
+     * in reverse order (message animation first), because message animations
+     * are performed immediately (actually within the send() call).
      */
     void setDisplayString(const char *dispstr, bool immediate=true);
 
@@ -590,16 +597,25 @@ class SIM_API cModule : public cObject
      *
      * The immediate flag selects whether the change should become effective
      * right now or later (after finishing the current event).
+     *
+     * If several display string changes are going to be done within one event,
+     * then immediate=false is useful because it reduces the number of necessary
+     * redraws. Immediate=false also uses less stack. But its drawback is that
+     * a setDisplayString() followed by a send() would actually be displayed
+     * in reverse order (message animation first), because message animations
+     * are performed immediately (actually within the send() call).
      */
     void setDisplayStringAsParent(const char *dispstr, bool immediate=true);
 
     /**
-     * DEPRECATED.
+     * DEPRECATED. Use displayString() (without argument) or
+     * displayStringAsLocal() instead.
      */
     const char *displayString(int type);
 
     /**
-     * DEPRECATED.
+     * DEPRECATED. Use setDisplayString(dispstr,immediate) (without the type
+     * argument) or displayStringAsLocal(dispstr,immediate) instead.
      */
     void setDisplayString(int type, const char *dispstr, bool immediate=true);
 
@@ -628,17 +644,17 @@ struct sBlock
 //--------------------------------------------------------------------------
 
 /**
- * <tt>cSimpleModule</tt> is a base class for all simple module classes.
- * Most important, <tt>cSimpleModule</tt> has the virtual member functions
- * <tt>activity()</tt> and <tt>handleMessage()</tt>, one of which has to be redefined in
+ * cSimpleModule is a base class for all simple module classes.
+ * Most important, cSimpleModule has the virtual member functions
+ * activity() and handleMessage(), one of which has to be redefined in
  * the user's simple modules.
  *
  * All basic functions associated with the simulation such as sending
- * and receiving messages are implemented as <tt>cSimpleModule</tt>'s member
+ * and receiving messages are implemented as cSimpleModule's member
  * functions.
  *
- * The <tt>activity()</tt> functions run as coroutines during simulation.
- * Coroutines are brought to <tt>cSimpleModule</tt> from the <tt>cCoroutine</tt> base class.
+ * The activity() functions run as coroutines during simulation.
+ * Coroutines are brought to cSimpleModule from the cCoroutine base class.
  *
  * @ingroup SimCore
  */
