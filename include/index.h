@@ -142,6 +142,18 @@
  */
 
 /**
+ * @defgroup EnumsTypes  Enums, types, function typedefs
+ */
+
+/**
+ * @defgroup Functions  Functions
+ */
+
+/**
+ * @defgroup Macros  Macros
+ */
+
+/**
  * @defgroup Internals  Internal classes
  *
  * The classes described here are used internally by the simulation kernel.
@@ -194,14 +206,10 @@
  */
 
 /**
- * @defgroup EnumsTypes  Enums, types, function typedefs
- */
-
-/**
- * @defgroup Functions  Functions
- */
-
-/**
- * @defgroup Macros  Macros
+ * @defgroup EnvirExtensions  Extension interface to Envir
+ *
+ * Classes in this group provide a plugin mechanism that can be used to
+ * customize the functionality of the Envir user interface library
+ * (and also Cmdenv and Tkenv, because they build on Envir). 
  */
 

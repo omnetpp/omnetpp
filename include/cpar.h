@@ -245,11 +245,23 @@ class SIM_API cPar : public cObject
     bool setfunction(char *w);
 
   protected:
+    /** @name Event hooks */
+    //@{
+
     /**
-     * Hook function, called each time just before the value of this object changes.
+     * Called each time before the value of this object changes.
+     * It can be used for tracking parameter changes.
      * This default implementation does nothing.
      */
-    virtual void valueChanges();
+    virtual void beforeChange();
+
+    /**
+     * Called each time after the value of this object changed.
+     * It can be used for tracking parameter changes.
+     * This default implementation does nothing.
+     */
+    virtual void afterChange();
+    //@}
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -278,8 +290,15 @@ class SIM_API cPar : public cObject
     virtual ~cPar();
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
-     * The assignment operator works with cPar objects.
+     * Assignment operator. The name member doesn't get copied; see cObject's
+     * operator=() for more details.
+     *
+     * The behavior with redirected cPar objects is the following. This function
+     * copies the contents of the other object (whether it is redirected or not)
+     * into this object, <b>or,</b> if this object is redirected, into the object
+     * this object refers to. This means that if you want to overwrite this
+     * very object (and not the one it points to), you have to use
+     * cancelRedirection() first.
      */
     cPar& operator=(const cPar& otherpar);
     //@}
@@ -741,10 +760,7 @@ class SIM_API cModulePar : public cPar
 {
     friend class cModule;
   private:
-    cModule *omodp;        // owner module
-    bool log_initialised;  // logging: true if the "label" line already written out
-    long log_ID;           // logging: ID of the data lines
-    simtime_t lastchange;  // logging: time of last value change
+    cModule *omodp;              // owner module
 
   private:
     // helper function
@@ -806,15 +822,6 @@ class SIM_API cModulePar : public cPar
      * internal array (a cArray) used to store the parameter objects.
      */
     virtual const char *fullPath2(char *buffer, int bufsize) const;
-    //@}
-
-    /** @name Redefined cPar functions. */
-    //@{
-
-    /**
-     * Redefined to add parameter logging.
-     */
-    virtual void valueChanges();
     //@}
 
     /** @name Set/get owner module. */

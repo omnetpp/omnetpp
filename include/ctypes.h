@@ -511,11 +511,13 @@ cFunctionType *findfunctionbyptr(MathFunc f);
  * Each instance is a factory for a particular class: it knows how to create
  * an object of that class.
  *
+ * @see ::createOne() function
+ * @see Register_Class() macro
  * @ingroup Internals
  */
 class SIM_API cClassRegister : public cObject
 {
-    cObject *(*creatorfunc)();
+    void *(*creatorfunc)();
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -529,7 +531,7 @@ class SIM_API cClassRegister : public cObject
     /**
      * Constructor.
      */
-    cClassRegister(const char *name, cObject *(*f)()) :
+    cClassRegister(const char *name, void *(*f)()) :
       cObject(name,(cObject *)&classes), creatorfunc(f) {}
 
     /**
@@ -563,13 +565,29 @@ class SIM_API cClassRegister : public cObject
 
     /**
      * Creates an instance of a particular class by calling the creator
-     * function.
+     * function. The result has to be cast to the appropriate type by hand.
      */
-    cObject *createOne() const  {return creatorfunc();}
+    void *createOne() const  {return creatorfunc();}
     //@}
 };
 
-SIM_API cObject *createOne(const char *type);
+/**
+ * @name Miscellaneous functions.
+ * @ingroup Functions
+ */
+//@{
+
+/**
+ * Creates an instance of a particular class; the result has to be cast
+ * to the appropriate type by hand. The class must have been registered
+ * previously with the Register_Class() macro. This function internally
+ * relies on the cClassRegister class.
+ *
+ * @see Register_Class() macro
+ * @see cClassRegister class
+ */
+SIM_API void *createOne(const char *classname);
+//@}
 
 //==========================================================================
 

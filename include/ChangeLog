@@ -1,3 +1,37 @@
+2002-03-03  Andras Varga
+
+       	* cpar.h: valueChanges() renamed to beforeChange(); corresponding
+        afterChange() method added
+
+       	* macros.h, ctypes.h: Register_Class(), cClassRegister can now be used
+        to create instances of non-cObject classes too; as part of this change,
+        createOne() return value changed from cObject* to void*.
+
+	* csimul.h: management of various output files (output vector file,
+	output scalar file, snapshot file) was moved from cSimulation to the
+	user interface library (behind the ev facade); new methods were added
+	to cEnvir to support this. (See also following items.)
+
+	* cenvir.h: added new methods to cEnvir: registerOutputVector(),
+	deregisterOutputVector(), overloaded recordInOutputVector() methods,
+	overloaded recordScalar() methods, getStreamForSnapshot(),
+	releaseStreamForSnapshot().
+
+        * coutvect.h: management of output vector file including start time
+        and stop time of vectors was completely moved to the user interface
+        library; startTime()/stopTime() methods were removed from cOutVector.
+        The cOutFileMgr class was removed altogether.
+
+        * envirext.h added: contains abstract classes that can be used to extend
+        the functionality of the standard user interface library (src/envir)
+        via a plugin mechanism: cOutputVectorManager, cOutputScalarManager,
+        cSnapshotManager.
+
+        * index.h: EnvirExtensions doc group added (contains classes in envirext.h)
+
+        * cpar.cc: module parameter change logging feature removed for various
+        reasons. (If you miss it, let me know!)
+
 2002-02-22  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* cllist.h (cLinkedList): Doc-fix for cLinkedList::insert()
@@ -10,9 +44,10 @@
 
 2001-10-28 Andras Varga
 
-	* util.h: opp_string::allocate(), opp_strprettytrunc() added; 
+	* util.h: opp_string::allocate(), opp_strprettytrunc() added;
         indexedname() renamed to opp_mkindexedname() (old name still exists
         as macro)
+
         * cobject.h, cmodule.h, csimul.h, cgate.h, cpar.h: added
         fullPath2(buffer,buflen) which produces the result in an external
         buffer; cObject::fullPath() now relies on fullPath2().
@@ -25,10 +60,12 @@
 2001-09-14 Andras Varga
 
 	* utils.h: added opp_nextrand(long& seed)
+
         * cmodule.cc: cModule's display string methods were reorganized:
         displayString(type) method split into displayString() and
         displayStringAsParent(), eliminating the type parameter. Similar change
         to the set...() methods. Old methods remained but were made deprecated.
+
         * cwatch.h: added unsigned int/long, signed/unsigned char, etc.
         constructors to cWatch.
 
@@ -36,13 +73,14 @@
 
 	* cleanup around object copying: every class has now a copy constructor,
         an assignment operator, and every non-abstract class has dup().
-        All dup()s call the copy constructor, and all copy constructors 
+        All dup()s call the copy constructor, and all copy constructors
         call the assignment operator. In some classes the assignment operator
         calls copyNotSupported().
 
 2001-08-23 Andras Varga
 
 	* index.h: wrote doc comment about internal classes
+
         * generated API doc for earlier 2.1 release (undoing API changes
         introduced since 2.1 release on a local copy of the headers)
 
@@ -95,7 +133,7 @@
         a lot of classes with @ingroup directives.
 
        	* cdensity.h chist.h cksplit.h cpsquare.h cqueue.h cstat.h ctopo.h
-        cvarhist.h chead.h ctypes.h cwatch.h: added/cleaned up DOC++ comments 
+        cvarhist.h chead.h ctypes.h cwatch.h: added/cleaned up DOC++ comments
 
 2001-07-15 Andras Varga
 
@@ -107,23 +145,23 @@
 	* switched to DoxyGen for generating documentation: doxy.cfg added
 
        	* cmsgheap.h coutvect.h cpacket.h ctopo.h: added/cleaned up DOC++
-        comments 
+        comments
 
 2001-07-11 Andras Varga
 
 	* carray.h cgate.h cllist.h cpar.h cqueue.h csimul.h: added/cleaned up
-        DOC++ comments 
+        DOC++ comments
 
 2001-07-07 Andras Varga
 
-        * cmessage.h,cmodule.h,util.h: added/cleaned up DOC++ comments 
+        * cmessage.h,cmodule.h,util.h: added/cleaned up DOC++ comments
 
 2001-07-02 Andras Varga
 
         * cenum.h,cstruct.h: DOC++ comments added (not yet complete)
 
 2001-06-28  Andras Varga
-        
+
 	* utils.h: added DOC++ comments (not yet complete!).
 
 	* cstruct.h added: classes to support self-describing data structures,

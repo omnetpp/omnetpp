@@ -61,12 +61,38 @@ ENVIR_API bool opp_loadlibrary(const char *libname);
  * is a common facade for the Cmdenv and Tkenv user interfaces (and any
  * other future user interface).
  *
+ * cEnvir has only one instance, the ev global variable.
+ *
+ * cEnvir member functions can be rougly divided into two groups:
+ * <UL>
+ *   <LI> I/O for module activities; actual implementation is different for each
+ *        user interface (e.g. stdin/stdout for Cmdenv, windowing in Tkenv)
+ *   <LI> functions for exchanging information between the simulation and the
+ *        environment.
+ * </UL>
+
+ * The implementation of cEnvir is <b>not</b> part of the simulation kernel,
+ * it's in a separate library (the Envir library; see src/envir). This means that
+ * customizers are free to replace the environment of the simulation as
+ * they like, by simply linking the executable with a different library.
+ *
+ * The default (Envir library) implementation of cEnvir delegates its task to an
+ * internal "simulation application" object. Cmdenv and Tkenv inherit from the
+ * default simulation application class.
+ *
+ * The default (src/envir) implementation of cEnvir can be customized without
+ * changing the via classes
+ * declared in the envirext.h header (e.g. cOutputVectorManager, cOutputScalarManager).
+ *
+ * @see cOutputVectorManager class
+ * @see cOutputScalarManager class
  * @ingroup Envir
  */
 class ENVIR_API cEnvir
 {
   public:
-    TOmnetApp *app;  // user interface application
+    TOmnetApp *app;  // the "simulation application" instance
+  public:
     int disable_tracing;
   private:
     int running_mode; // MASTER_MODE / SLAVE_MODE / NONPARALLEL_MODE / STARTUPERROR_MODE
@@ -90,26 +116,28 @@ class ENVIR_API cEnvir
     ~cEnvir();
     //@}
 
-    /** @name Methods to be called from main(). */
+    /** @name Methods called from main(). */
     //@{
 
     /**
-     * FIXME: called from main()
+     * This function is called by main() at the beginning of the program.
+     * It receives the command-line arguments as parameters.
      */
     void setup(int ac, char *av[]);
 
     /**
-     * MISSINGDOC: cEnvir:void run()
+     * Called from main(). This function should encapsulate the whole functionality
+     * of running the application.
      */
     void run();
 
     /**
-     * MISSINGDOC: cEnvir:void shutdown()
+     * Called from main() before exiting.
      */
     void shutdown();
     //@}
 
-    /** @name Methods to be called by the sim.kernel to notify the environment about events. */
+    /** @name Methods to be called by the simulation kernel to notify the environment about events. */
     //@{
 
     /**
@@ -148,26 +176,21 @@ class ENVIR_API cEnvir
     //@{
 
     /**
-     * FIXME: called by the sim.kernel to get info
+     * Called by the simulation kernel (cModulePar) to obtain value for an input
+     * module parameter.
      */
     const char *getParameter(int run_no, const char *parname);
 
     /**
-     * MISSINGDOC: cEnvir:char*getPhysicalMachineFor(char*)
+     * User by distributed execution. Returns physical name for a logical
+     * machine name.
      */
     const char *getPhysicalMachineFor(const char *logical_mach);
 
     /**
-     * MISSINGDOC: cEnvir:void getOutVectorConfig(char*,char*,//input// bool&,//output// double&,double&)
+     * Returns display string for an object given with its full name.
      */
-    void getOutVectorConfig(const char *modname,const char *vecname, /*input*/
-                            bool& enabled, /*output*/
-                            double& starttime, double& stoptime);
-
-    /**
-     * MISSINGDOC: cEnvir:char*getDisplayString(int,char*)
-     */
-    const char *getDisplayString(int run_no,const char *name);
+    const char *getDisplayString(int run_no, const char *name);
     //@}
 
     /** @name Input/output methods called from simple modules or the simulation kernel. */
@@ -228,6 +251,90 @@ class ENVIR_API cEnvir
      * kernel when something was written to ev by another segment.
      */
     void foreignPuts(const char *hostname, const char *mod, const char *str);
+    //@}
+
+    /** @name Methods for recording data from output vectors.
+     *
+     * These are functions cOutVector internally relies on.
+     *
+     * The behavior of these functions can be changed by plugging in a different
+     * cOutputVectorManager object into the user interface library. (Or alternatively,
+     * by reimplementing the whole cEnvir of course).
+     */
+    //@{
+
+    /**
+     * This method is intended to be called by cOutVector objects to register
+     * themselves. The return value is a handle of type void*;
+     * this handle has to be passed to record() to identify the vector
+     * each time a value is written.
+     */
+    void *registerOutputVector(const char *modulename, const char *vectorname, int tuple);
+
+    /**
+     * cOutVector objects must deregister themselves when they are no longer needed.
+     */
+    void deregisterOutputVector(void *vechandle);
+
+    /**
+     * This method is intended to be called by cOutVector objects to write
+     * a value into the output vector. The return value is true if the data was
+     * actually recorded, and false if it was not recorded (because of filtering, etc.)
+     */
+    bool recordInOutputVector(void *vechandle, simtime_t t, double value);
+
+    /**
+     * This method is intended to be called by cOutVector objects to write
+     * a value pair into the output vector. The return value is true if the data was
+     * actually recorded, and false if it was not recorded (because of filtering, etc.)
+     */
+    bool recordInOutputVector(void *vechandle, simtime_t t, double value1, double value2);
+    //@}
+
+    /** @name Scalar statistics.
+     *
+     * These are the functions the cSimpleModule::recordScalar() functions internally
+     * rely on.
+     *
+     * The behavior of these functions can be changed by plugging in a different
+     * cOutputScalarManager object into the user interface library. (Or alternatively,
+     * by reimplementing the whole cEnvir of course).
+     */
+    //@{
+
+    /**
+     * Records a double scalar result, in a default configuration into the scalar result file.
+     */
+    void recordScalar(cModule *module, const char *name, double value);
+
+    /**
+     * Records a string result, in a default configuration into the scalar result file.
+     */
+    void recordScalar(cModule *module, const char *name, const char *text);
+
+    /**
+     * Records a statistics object, in a default configuration into the scalar result file.
+     */
+    void recordScalar(cModule *module, const char *name, cStatistic *stats);
+    //@}
+
+    /** @name Management of streams where snapshots can be written.
+     *
+     * The behavior of these functions can be changed by plugging in a different
+     * cSnapshotManager object into the user interface library. (Or alternatively,
+     * by reimplementing the whole cEnvir of course).
+     */
+    //@{
+
+    /**
+     * Returns a stream where a snapshot can be written. Called from cSimulation::snapshot().
+     */
+    ostream *getStreamForSnapshot();
+
+    /**
+     * Releases a stream after a snapshot was written.
+     */
+    void releaseStreamForSnapshot(ostream *os);
     //@}
 
     /** @name Miscellaneous functions. */

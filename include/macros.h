@@ -78,7 +78,7 @@
  * @hideinitializer
  */
 #define Register_Class(CLASSNAME) \
-  cObject *CLASSNAME##__create() {return new CLASSNAME;} \
+  void *CLASSNAME##__create() {return new CLASSNAME;} \
   cClassRegister CLASSNAME##__reg(#CLASSNAME,CLASSNAME##__create);
 
 /**

@@ -398,12 +398,12 @@ class SIM_API cModule : public cObject
      * unused elements, the number of actual gates used might be less.
      */
     int gates() const {return gatev.items();}
-    
+
     /**
      * Return a gate by its ID. Issues a warning if gate does not exist.
      */
     cGate *gate(int g) {return (cGate*)gatev[g];}
-    
+
     /**
      * Return a gate by its ID. Issues a warning if gate does not exist.
      */
@@ -926,7 +926,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     int sendDirect(cMessage *msg, double delay, cModule *mod, const char *inputgatename, int sn=-1);
 
     /**
-     * Send a message directly to another module (to an input gate).
+     * Sends a message directly to another module (to an input gate).
      */
     int sendDirect(cMessage *msg, double delay, cGate *inputgate);
     //@}
@@ -935,7 +935,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     //@{
 
     /**
-     * Schedule a self-message. Receive() will return the message at
+     * Schedules a self-message. Receive() will return the message at
      * t simulation time.
      */
     int scheduleAt(simtime_t t, cMessage *msg);
@@ -991,7 +991,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     bool isThereMessage() const;
 
     /**
-     * Receive a message from the put-aside queue or the FES.
+     * Receives a message from the put-aside queue or the FES.
      */
     cMessage *receive();
 
@@ -1063,7 +1063,8 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     //@{
 
     /**
-     * Wait for the given interval. This function can only be used with
+     * Waits for the given interval. (Some other simulators call this
+     * functionality hold()). This function can only be used with
      * activity(), but not with handleMessage(). The messages received
      * meanwhile are inserted into the put-aside queue.
      */
@@ -1097,17 +1098,17 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     //@{
 
     /**
-     * Record a double into the scalar result file.
+     * Records a double into the scalar result file.
      */
     void recordScalar(const char *name, double value);
 
     /**
-     * Record a string into the scalar result file.
+     * Records a string into the scalar result file.
      */
     void recordScalar(const char *name, const char *text);
 
     /**
-     * Record a statistics object into the scalar result file.
+     * Records a statistics object into the scalar result file.
      */
     void recordStats(const char *name, cStatistic *stats);
     //@}

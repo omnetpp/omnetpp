@@ -54,5 +54,6 @@
 #include "cenvir.h"
 #include "cenum.h"
 #include "cstruct.h"
+#include "envirext.h"
 
 #endif

@@ -27,8 +27,8 @@
 #include "errmsg.h"
 #include "chead.h"
 #include "cmsgheap.h"
-#include "coutvect.h"
 #include "ccor.h"
+#include "coutvect.h" //FIXME
 
 //=== classes mentioned:
 class  cMessage;
@@ -107,21 +107,14 @@ class SIM_API cSimulation : public cObject
     cCoroutine runningmod_deleter; // used when a simple module deletes itself
 
   public:
-    cMessageHeap msgQueue;        // future messages (FES)
-
-    cOutFileMgr outvectfilemgr;   // output vector file manager
-    cOutFileMgr scalarfilemgr;    // output scalar file manager
-    cOutFileMgr parchangefilemgr; // parameter change log file manager
-    cOutFileMgr snapshotfilemgr;  // snapshot file manager
-    bool logparchanges;           // module parameter change logging on/off
-    bool scalarfile_header_written;
-
+    cMessageHeap msgQueue;     // future messages (FES)
   public:
     /** @name Constructor, destructor. */
     //@{
 
     /**
-     * Copy constructor.
+     * Copy constructor is not supported:  This function
+     * gives an error via operator= when called.
      */
     cSimulation(const cSimulation& r) : cObject(r)
             {setName(r.name());vect=NULL;operator=(r);}
@@ -147,7 +140,7 @@ class SIM_API cSimulation : public cObject
 
     /**
      * Dupping is not implemented for this class. This function
-     * gives an error when called.
+     * gives an error via operator= when called.
      */
     virtual cObject *dup() const  {return new cSimulation(*this);}
 
@@ -182,7 +175,7 @@ class SIM_API cSimulation : public cObject
 
     // Internal: things that cannot be done from the constructor
     // (because it is called before main()).
-    void setup();
+    void init();
 
     /** @name Accessing modules. */
     //@{
@@ -322,6 +315,7 @@ class SIM_API cSimulation : public cObject
      * model with a given set of parameter settings. Runs can be defined
      * in omnetpp.ini.
      */
+    // FIXME: does run number really belong to the simulation kernel??? why not in Envir?
     int  runNumber() const           {return run_number;}
 
     /**
@@ -428,7 +422,7 @@ class SIM_API cSimulation : public cObject
     cHead *localList() {return locallistp==NULL?(&locals):locallistp;}
     //@}
 
-    /** @name Statistics, snapshots. */
+    /** @name Snapshots. */
     //@{
 
     /**
@@ -437,21 +431,6 @@ class SIM_API cSimulation : public cObject
      * This method is called internally from cSimpleModule's snapshot().
      */
     bool snapshot(cObject *obj, const char *label);
-
-    /**
-     * Records a double value into the scalar result file.
-     */
-    void recordScalar(const char *name, double value);
-
-    /**
-     * Records a string value into the scalar result file.
-     */
-    void recordScalar(const char *name, const char *text);
-
-    /**
-     * Records a statistics object into the scalar result file.
-     */
-    void recordStats(const char *name, cStatistic *stats);
     //@}
 
     /** @name Errors and warnings. */
@@ -515,3 +494,4 @@ class ___nosuchclass;
 void *operator new(size_t m,___nosuchclass *);
 
 #endif
+

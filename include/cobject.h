@@ -162,7 +162,7 @@ class SIM_API cObject
      * called from the operator=() method of cObject subclasses that do
      * not wish to implement object copying.
      */
-    void copyNotSupported();
+    void copyNotSupported() const;
     //@}
 
   public:
