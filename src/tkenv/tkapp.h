@@ -20,8 +20,11 @@
 
 #include "omnetapp.h"
 
+#ifdef SUNSPARC
+#define TKENV_EXTRASTACK   24576
+#else
 #define TKENV_EXTRASTACK   16384
-
+#endif
 
 class Speedometer;
 

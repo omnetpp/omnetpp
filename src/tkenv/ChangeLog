@@ -1,3 +1,9 @@
+2002-03-14  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* tkapp.h: define TKENV_EXTRASTACK dependent on the system
+	architecture. Currently SUNSPARC is known to need more stack space
+	with TCL/TK 8.3
+
 2002-03-08  Ulrich Kaage <kaage@int.uni-karlsruhe.de>
 
 	* structinsp.cc (flush_if_needed): Compile Fix for gcc versions
