@@ -151,8 +151,11 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                            sprintf(writeptr,"%*s    (no descriptor for %s)\n", indent, "", sd->getFieldTypeString(fld));
                            flushIfNeeded(FLUSHLIMIT);
                        }
-                       displayStruct(sd1,level+1);
-                       delete sd1;
+                       else
+                       {
+                           displayStruct(sd1,level+1);
+                           delete sd1;
+                       }
 
                        sprintf(writeptr,"}\n");
                        flushIfNeeded(FLUSHLIMIT);
