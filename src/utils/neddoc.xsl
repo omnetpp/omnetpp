@@ -206,7 +206,7 @@
             <h2 class="comptitle">Module Hierarchy</h2>
             <p>The following diagram shows what other modules compound modules are composed of.
             Unresolved module types are missing from the diagram.</p>
-            <img href="module-diagram.gif"/>
+            <img src="module-diagram.gif"/>
          </xsl:with-param>
       </xsl:call-template>
 

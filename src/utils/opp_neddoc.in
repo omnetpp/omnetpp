@@ -113,7 +113,7 @@ if [ "$have_dot" = "yes" ]; then
     echo 'generating diagrams via '$DOT'...'
     for i in $outdir/*.dot; do
        gif=`echo $i | sed 's/dot$/gif/'`
-       $DOT $i $gif || exit 1
+       $DOT -Tgif <$i >$gif || exit 1
        echo -n '#'
     done
     echo
