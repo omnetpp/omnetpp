@@ -3,10 +3,29 @@
 
 \section{Overview}
 
-Like Javadoc and Doxygen... opp\_neddoc
+{\opp} provides a tool which can generate HTML documentation from NED files
+and message definitions. Like Javadoc and Doxygen, \fprog{opp\_neddoc}
+makes use of source code comments. \fprog{opp\_neddoc}-generated
+documentation lists simple and compound modules, and presents their details
+including description, gates, parameters, unassigned submodule parameters
+and syntax-highlighted source code.
+The documentation also includes clickable network diagrams (exported via the GNED
+graphical editor) and module usage diagrams as well as inheritance diagrams
+for messages.
+
+\fprog{opp\_neddoc} works well with Doxygen, which means that it can hyperlink
+simple modules and message classes to their C++ implementation classes in
+the Doxygen documentation. If you also generate the C++ documentation with some
+Doxygen features turned on (such as \textit{inline-sources} and
+\textit{referenced-by-relation}, combined with
+\textit{extract-all}, \textit{extract-private} and \textit{extract-static}),
+the result is an easily browsable and very informative presentation of the
+source code. Of course, one still has to write documentation comments
+in the code.
 
 
-\section{Writing the documentation}
+
+\section{Authoring the documentation}
 
 
 \subsection{Documentation comments}
