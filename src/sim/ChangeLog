@@ -1,3 +1,7 @@
+2005-03-17  Andras Varga
+
+	* cscheduler.cc: implemented executionResumed() in cRealtimeScheduler
+
 2005-03-15  Andras Varga
 
 	* cexception.cc: implemented cRuntimeError.

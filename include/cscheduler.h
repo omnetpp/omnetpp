@@ -78,6 +78,14 @@ class SIM_API cScheduler : public cPolymorphic
     virtual void endRun() = 0;
 
     /**
+     * Called every time the user hits the Run button in Tkenv.
+     * Real-time schedulers (e.g. cRealTimeScheduler) may make use
+     * this callback to pin current simulation time to current
+     * wall clock time.
+     */
+    virtual void executionResumed()  {}
+
+    /**
      * The scheduler function -- it should return the next event
      * to be processed. Normally (with sequential execution) it just
      * returns msgQueue.peekFirst(). With parallel and/or real-time
@@ -146,7 +154,7 @@ class SIM_API cRealTimeScheduler : public cScheduler
 {
   protected:
     // configuration:
-    bool scaling;
+    bool doScaling;
     double factor;
 
     // state:
@@ -174,6 +182,11 @@ class SIM_API cRealTimeScheduler : public cScheduler
      * Called at the end of a simulation run.
      */
     virtual void endRun();
+
+    /**
+     * Recalculates "base time" from current wall clock time.
+     */
+    virtual void executionResumed();
 
     /**
      * Scheduler function -- it comes from cScheduler interface.

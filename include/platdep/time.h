@@ -83,6 +83,20 @@ inline timeval timeval_substract(const timeval& a, const timeval& b)
     return res;
 }
 
+inline timeval timeval_substract(const timeval& a, double b)
+{
+    double bInt;
+    double bFrac = modf(b, &bInt);
+    timeval res;
+    res.tv_sec = a.tv_sec - (long)bInt;
+    res.tv_usec = a.tv_usec - (long)floor(1000000.0*bFrac);
+    if (res.tv_usec<0) {
+        res.tv_sec--;
+        res.tv_usec += 1000000;
+    }
+    return res;
+}
+
 inline bool timeval_greater(const timeval& a, const timeval& b)
 {
     if (a.tv_sec==b.tv_sec)

@@ -62,13 +62,19 @@ void cRealTimeScheduler::startRun()
     factor = ev.config()->getAsDouble("General", "realtimescheduler-scaling", 0);
     if (factor!=0)
         factor = 1/factor;
-    scaling = (factor!=0);
+    doScaling = (factor!=0);
 
     gettimeofday(&baseTime, NULL);
 }
 
 void cRealTimeScheduler::endRun()
 {
+}
+
+void cRealTimeScheduler::executionResumed()
+{
+    gettimeofday(&baseTime, NULL);
+    baseTime = timeval_substract(baseTime, factor*sim->simTime());
 }
 
 bool cRealTimeScheduler::waitUntil(const timeval& targetTime)
@@ -101,7 +107,7 @@ cMessage *cRealTimeScheduler::getNextEvent()
 
     // calculate target time
     simtime_t eventSimtime = msg->arrivalTime();
-    timeval targetTime = timeval_add(baseTime, scaling ? factor*eventSimtime : eventSimtime);
+    timeval targetTime = timeval_add(baseTime, doScaling ? factor*eventSimtime : eventSimtime);
 
     // if needed, wait until that time arrives
     timeval curTime;

@@ -28,6 +28,7 @@
 #include "cmessage.h"
 #include "ctypes.h"
 #include "speedmtr.h"
+#include "cscheduler.h"
 
 #include "tkdefs.h"
 #include "tkapp.h"
@@ -241,6 +242,7 @@ void TOmnetTkApp::doOneStep()
 
     simstate = SIM_RUNNING;
     startClock();
+    scheduler->executionResumed();
     try
     {
         cSimpleModule *mod = simulation.selectNextModule();
@@ -298,6 +300,7 @@ void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event
 
     simstate = SIM_RUNNING;
     startClock();
+    scheduler->executionResumed();
     try
     {
         // funky while loop to handle switching to and from EXPRESS mode....

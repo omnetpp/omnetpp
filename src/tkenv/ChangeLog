@@ -1,3 +1,7 @@
+2005-03-17  Andras Varga
+
+	* tkapp.cc: added calls to new scheduler->executionResumed()
+
 2005-03-07  Andras Varga
 
 	* tkapp.cc: added support for -r <run-number> command-line option, 

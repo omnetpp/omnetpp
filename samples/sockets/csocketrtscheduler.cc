@@ -75,6 +75,12 @@ void cSocketRTScheduler::endRun()
 {
 }
 
+void cSocketRTScheduler::executionResumed()
+{
+    gettimeofday(&baseTime, NULL);
+    baseTime = timeval_substract(baseTime, sim->simTime());
+}
+
 void cSocketRTScheduler::setInterfaceModule(cModule *mod, cMessage *notifMsg, char *buf, int bufSize, int *nBytesPtr)
 {
     if (module)

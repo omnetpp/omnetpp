@@ -94,6 +94,11 @@ class cSocketRTScheduler : public cScheduler
     virtual void endRun();
 
     /**
+     * Recalculates "base time" from current wall clock time.
+     */
+    virtual void executionResumed();
+
+    /**
      * To be called from the module which wishes to receive data from the
      * socket. The method must be called from the module's initialize()
      * function.
