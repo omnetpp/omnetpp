@@ -92,7 +92,7 @@ bool TInspector::windowExists()
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, "winfo exists ", windowname, NULL ));
-   return interp->result[0]=='1';
+   return Tcl_GetStringResult(interp)[0]=='1';
 }
 
 void TInspector::showWindow()
@@ -193,7 +193,7 @@ const char *TInspector::getEntry( const char *entry )
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    CHK(Tcl_VarEval(interp, windowname,entry," get",NULL));
-   return interp->result;
+   return Tcl_GetStringResult(interp);
 }
 
 void TInspector::setInspectButton(const char *button, cObject *object, bool displayfullpath, int inspectortype)
@@ -239,7 +239,7 @@ void TInspector::setToolbarInspectButton(const char *button, cObject *object, in
 void TInspector::deleteInspectorListbox( const char *listbox)
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-   CHK(Tcl_VarEval(interp,windowname,listbox,".main.list delete 0 end",NULL));
+   CHK(Tcl_VarEval(interp, "multicolumnlistbox_deleteall ", windowname,listbox,".main.list",NULL));
 }
 
 void TInspector::fillInspectorListbox(const char *listbox, cObject *object,
@@ -248,12 +248,11 @@ void TInspector::fillInspectorListbox(const char *listbox, cObject *object,
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char w[256], buf[256];
    sprintf(w, "%s%s.main.list", windowname,listbox);
-   fillListboxWithChildObjects( object, interp, w, infofunc, deep);
+   int n = fillListboxWithChildObjects(object, interp, w, infofunc, deep);
 
    // set "number of items" display
-   CHK(Tcl_VarEval(interp,w," index end",NULL));
    sprintf(w, "%s.label", listbox);
-   sprintf(buf,"%s objects", interp->result);
+   sprintf(buf,"%d objects", n);
    setLabel(w, buf);
 }
 
@@ -263,12 +262,11 @@ void TInspector::fillModuleListbox(const char *listbox, cModule *parent,
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char w[256], buf[256];
    sprintf(w, "%s%s.main.list", windowname,listbox);
-   fillListboxWithChildModules( parent, interp, w, infofunc, simpleonly, deep);
+   int n = fillListboxWithChildModules(parent, interp, w, infofunc, simpleonly, deep);
 
    // set "number of items" display
-   CHK(Tcl_VarEval(interp,w," index end",NULL));
    sprintf(w, "%s.label", listbox);
-   sprintf(buf,"%s modules", interp->result);
+   sprintf(buf,"%d modules", n);
    setLabel(w, buf);
 }
 

@@ -712,7 +712,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-   const char *field = argv[2]; 
+   const char *field = argv[2];
 
    static char buf[MAX_OBJECTINFO];
    if (!strcmp(field,"fullName")) {
@@ -729,13 +729,13 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
            Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cModule *>(object)->displayString()), TCL_VOLATILE);
        } else if (dynamic_cast<cMessage *>(object)) {
            Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cMessage *>(object)->displayString()), TCL_VOLATILE);
-       } else {    
+       } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
    } else if (!strcmp(field,"displayStringAsParent")) {
        if (dynamic_cast<cModule *>(object)) {
            Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cModule *>(object)->displayStringAsParent()), TCL_VOLATILE);
-       } else {    
+       } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
    } else if (!strcmp(field,"kind")) {
@@ -743,7 +743,7 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
            char buf[20];
            sprintf(buf,"%d", dynamic_cast<cMessage *>(object)->kind());
            Tcl_SetResult(interp, buf, TCL_VOLATILE);
-       } else {    
+       } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
    } else if (!strcmp(field,"length")) {
@@ -755,12 +755,12 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
            char buf[20];
            sprintf(buf,"%d", dynamic_cast<cQueue *>(object)->length());
            Tcl_SetResult(interp, buf, TCL_VOLATILE);
-       } else {    
+       } else {
            Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
        }
    } else {
        Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
-   }    
+   }
    return TCL_OK;
 }
 
@@ -953,14 +953,8 @@ int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         simpleonly = false;
      else if (0==strcmp(argv[i],"simpleonly"))
         simpleonly = true;
-     else if (0==strcmp(argv[i],"nameonly"))
-        f = infofunc_nameonly;
      else if (0==strcmp(argv[i],"infotext"))
         f = infofunc_infotext;
-     else if (0==strcmp(argv[i],"fullpath"))
-        f = infofunc_fullpath;
-     else if (0==strcmp(argv[i],"typeandfullpath"))
-        f = infofunc_typeandfullpath;
      else
         {Tcl_SetResult(interp, "unrecognized option", TCL_STATIC);return TCL_ERROR;}
    }
@@ -1088,15 +1082,15 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    const char *dispstr = argv[1];
    if (0==strcmp(argv[2], "getTagArg"))
    {
-       // gettag <tag> <k> -- get kth component of given tag 
+       // gettag <tag> <k> -- get kth component of given tag
        if (argc!=5) {Tcl_SetResult(interp, "wrong argcount for getTagArg", TCL_STATIC); return TCL_ERROR;}
        const char *tag = argv[3];
        int k = atoi(argv[4]);
        cDisplayStringParser dp(dispstr);
-       const char *val = dp.getTagArg(tag,k); 
+       const char *val = dp.getTagArg(tag,k);
        Tcl_SetResult(interp, const_cast<char *>(val), TCL_VOLATILE);
-   } 
-   else   
+   }
+   else
    {
        Tcl_SetResult(interp, "bad command", TCL_STATIC); return TCL_ERROR;
    }

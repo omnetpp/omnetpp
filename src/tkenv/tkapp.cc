@@ -164,7 +164,7 @@ void TOmnetTkApp::setup()
 #   include "tclcode.cc"
     if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR)
     {
-        fprintf(stderr, "\n<!> Error starting Tkenv: %s\n", interp->result);
+        fprintf(stderr, "\n<!> Error starting Tkenv: %s\n", Tcl_GetStringResult(interp));
         interp = 0;
         initialized = false; // signal failed setup
         return;
@@ -174,7 +174,7 @@ void TOmnetTkApp::setup()
     // evaluate main script and build user interface
     if (Tcl_Eval(interp,"start_tkenv")==TCL_ERROR)
     {
-        fprintf(stderr, "\n<!> Error starting Tkenv: %s\n", interp->result);
+        fprintf(stderr, "\n<!> Error starting Tkenv: %s\n", Tcl_GetStringResult(interp));
         interp = 0;
         initialized = false; // signal failed setup
         return;
@@ -1008,7 +1008,7 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
     if (animating && opt_animation_enabled)
     {
         cGate *arrivalGate = msg->arrivalGate();
-        if (!arrivalGate) 
+        if (!arrivalGate)
             return;
 
         // if arrivalgate is connected, msg arrived on a connection, otherwise via sendDirect()
@@ -1025,9 +1025,9 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
 
 void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *method)
 {
-    if (!animating || !opt_anim_methodcalls) 
+    if (!animating || !opt_anim_methodcalls)
         return;
-        
+
     // find modules along the way
     PathVec pathvec;
     findDirectPath(from, to, pathvec);
@@ -1057,14 +1057,14 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
                                         " {",method,"} ",
                                         NULL));
             }
-        } 
+        }
         else if (i->from==NULL)
         {
             // animate descent towards destmod
             cModule *mod = i->to;
             cModule *enclosingmod = mod->parentModule();
-            //ev << "DBG: animate descent in " << enclosingmod->fullPath() << 
-            //   " to " << mod->fullPath() << endl; 
+            //ev << "DBG: animate descent in " << enclosingmod->fullPath() <<
+            //   " to " << mod->fullPath() << endl;
 
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
@@ -1080,7 +1080,7 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
                                         " {",method,"} ",
                                         NULL));
             }
-        } 
+        }
         else
         {
             cModule *enclosingmod = i->from->parentModule();
@@ -1099,7 +1099,7 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
                                         NULL));
             }
         }
-    }    
+    }
 
     if (numinsp>0)
     {
@@ -1118,7 +1118,7 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
                                         insp->windowName(),
                                         NULL));
             }
-        }        
+        }
     }
 }
 
@@ -1156,7 +1156,7 @@ void TOmnetTkApp::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
 // helper for animateSendDirect() functions
 static cModule *findSubmoduleTowards(cModule *parentmod, cModule *towardsgrandchild)
 {
-    if (parentmod==towardsgrandchild) 
+    if (parentmod==towardsgrandchild)
        return NULL; // shortcut -- we don't have to go up to the top to see we missed
 
     // search upwards from 'towardsgrandchild'
@@ -1190,11 +1190,11 @@ void TOmnetTkApp::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pat
 
     // commonparent should exist, worst case it's the system module,
     // but let's have the following "if" anyway...
-    if (!commonparent) 
+    if (!commonparent)
         return;
 
     // animate the ascent of the message until commonparent (excluding).
-    // The second condition, destmod==commonparent covers case when we're sending 
+    // The second condition, destmod==commonparent covers case when we're sending
     // to an output gate of the parent (grandparent, etc) gate.
     cModule *mod = srcmod;
     while (mod!=commonparent && (mod->parentModule()!=commonparent || destmod==commonparent))
@@ -1213,7 +1213,7 @@ void TOmnetTkApp::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pat
 
     // descend from commonparent to destmod
     mod = findSubmoduleTowards(commonparent, destmod);
-    if (mod && srcmod!=commonparent) 
+    if (mod && srcmod!=commonparent)
         mod = findSubmoduleTowards(mod, destmod);
     while (mod)
     {
@@ -1234,7 +1234,7 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
     findDirectPath(frommodule, togate->ownerModule(), pathvec);
 
     cModule *arrivalmod = msg->arrivalGate()->ownerModule();
-    
+
     PathVec::iterator i;
     for (i=pathvec.begin(); i!=pathvec.end(); i++)
     {
@@ -1259,7 +1259,7 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
                                         "thru", // cannot be "beg" (msg ball cannot stay on encl.module rect)
                                         NULL));
             }
-        } 
+        }
         else if (i->from==NULL)
         {
             // animate descent towards destmod
@@ -1281,7 +1281,7 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
                                         (mod==arrivalmod?"beg":"thru"),
                                         NULL));
             }
-        } 
+        }
         else
         {
             cModule *enclosingmod = i->from->parentModule();
@@ -1316,7 +1316,7 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
                                     insp->windowName(),
                                     NULL));
         }
-    }        
+    }
 }
 
 
@@ -1456,7 +1456,7 @@ bool TOmnetTkApp::gets(const char *promptstr, char *buf, int len)
     Tcl_SetVar2(interp,"opp", "result", buf, TCL_GLOBAL_ONLY);
     CHK(Tcl_VarEval(interp,"inputbox {",title,"} {",promptstr,"} opp(result)",NULL));
 
-    if (interp->result[0]=='0')   // cancel
+    if (Tcl_GetStringResult(interp)[0]=='0')   // cancel
         return true;
 
     // ok
@@ -1471,7 +1471,7 @@ int TOmnetTkApp::askYesNo(const char *question)
     // should return -1 when CANCEL is pressed
     CHK(Tcl_VarEval(interp,"messagebox {Warning} {",question,"}"
                            " question yesno", NULL));
-    return interp->result[0]=='y';
+    return Tcl_GetStringResult(interp)[0]=='y';
 }
 
 unsigned TOmnetTkApp::extraStackForEnvir()

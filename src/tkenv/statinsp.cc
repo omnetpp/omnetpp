@@ -154,9 +154,9 @@ void THistogramWindow::update()
 
    // get canvas size
    CHK(Tcl_VarEval(interp, "winfo width ",canvas, NULL));
-   int canvaswidth = atoi( interp->result );
+   int canvaswidth = atoi( Tcl_GetStringResult(interp) );
    CHK(Tcl_VarEval(interp, "winfo height ", canvas, NULL));
-   int canvasheight = atoi( interp->result );
+   int canvasheight = atoi( Tcl_GetStringResult(interp) );
 
    // temporarily define X() and Y() coordinate translation macros
 #define X(x)   (int)(10+((x)-xmin)*((long)canvaswidth-20)/xrange)
@@ -331,10 +331,10 @@ void TOutVectorWindow::update()
 
    // get canvas size
    CHK(Tcl_VarEval(interp, "winfo width ",canvas, NULL));
-   int canvaswidth = atoi( interp->result );
+   int canvaswidth = atoi( Tcl_GetStringResult(interp) );
    if (!canvaswidth)  canvaswidth=1;
    CHK(Tcl_VarEval(interp, "winfo height ", canvas, NULL));
-   int canvasheight = atoi( interp->result );
+   int canvasheight = atoi( Tcl_GetStringResult(interp) );
    if (!canvasheight) canvasheight=1;
 
    simtime_t tbase = simulation.simTime();

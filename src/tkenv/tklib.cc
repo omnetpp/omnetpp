@@ -52,6 +52,19 @@ void *strToPtr(const char *s)
 
 //-----------------------------------------------------------------------
 
+static void insert_into_inspectorlistbox(Tcl_Interp *interp, const char *listbox, cObject *obj)
+{
+    const char *ptr = ptrToStr(obj);
+    static char buf[MAX_OBJECTINFO];
+    obj->info(buf);
+    CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
+                            "ptr {",ptr,"} "
+                            "name {",obj->fullName(),"} "
+                            "class {",obj->className(),"} "
+                            "info {",buf,"}"
+                            "}",NULL));
+}
+
 static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, const char *lstbox, InfoFunc f, bool dp)
 {
     static const char *listbox;
@@ -70,17 +83,18 @@ static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, const ch
     if( !beg ) return false;
     if( (deep || ctr>0) && !memoryIsLow() ) // if deep=false, exclude owner object
     {
-         CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(obj),"}",NULL));
+        insert_into_inspectorlistbox(interp, listbox, obj);
     }
     return deep || ctr++ == 0;
 }
 
-void fillListboxWithChildObjects( cObject *object, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool deep)
+int fillListboxWithChildObjects( cObject *object, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool deep)
 {
     // feeds all children of 'object' into the listbox
     // CHK(Tcl_VarEval(interp, listbox, " delete 0 end", NULL ));
     do_fill_listbox(NULL,false, interp, listbox, infofunc, deep);
     object->forEach( (ForeachFunc)do_fill_listbox );
+    return 0; //FIXME!!!!!!!!!
 }
 
 static void do_fill_module_listbox(cModule *parent, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
@@ -92,7 +106,7 @@ static void do_fill_module_listbox(cModule *parent, Tcl_Interp *interp, const ch
         if (mod && mod!=simulation.systemModule() && mod->parentModule()==parent)
         {
            if (!simpleonly || mod->isSimple())
-              CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(mod),"}",NULL));
+              insert_into_inspectorlistbox(interp, listbox, mod);
 
            // handle 'deep' option using recursivity
            if (deep)
@@ -101,15 +115,16 @@ static void do_fill_module_listbox(cModule *parent, Tcl_Interp *interp, const ch
     }
 }
 
-void fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
+int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
 {
     // CHK(Tcl_VarEval(interp, listbox, " delete 0 end", NULL ));
     if (deep)
     {
-         if (!simpleonly || parent->isSimple())
-            CHK(Tcl_VarEval(interp, listbox," insert end {",infofunc(parent),"}",NULL));
+        if (!simpleonly || parent->isSimple())
+            insert_into_inspectorlistbox(interp, listbox, parent);
     }
     do_fill_module_listbox(parent,interp,listbox,infofunc,simpleonly,deep);
+    return 0; //FIXME!!!!!!!!!
 }
 
 //-----------------------------------------------------------------------
@@ -124,40 +139,11 @@ char *printptr(cObject *object, char *buf)
     return s+2;
 }
 
-char *infofunc_nameonly( cObject *object)
-{
-    static char buf[128];
-    char *d = printptr(object,buf);
-    const char *s = object->fullName();
-    strcpy(d, (s && s[0]) ? s : "<noname>" );
-    return buf;
-}
-
 char *infofunc_infotext( cObject *object)
 {
     static char buf[MAX_OBJECTINFO];
     char *d = printptr(object,buf);
     object->info( d );
-    return buf;
-}
-
-char *infofunc_fullpath( cObject *object)
-{
-    static char buf[MAX_OBJECTFULLPATH];
-    char *d = printptr(object,buf);
-    const char *s = object->fullPath();
-    strcpy(d, (s && s[0]) ? s : "<noname>" );
-    return buf;
-}
-
-char *infofunc_typeandfullpath( cObject *object)
-{
-    static char buf[128];
-    char *d = printptr(object,buf);
-    const char *clname = object->className();
-    const char *path = object->fullPath();
-    int padding = 16-strlen(clname); if (padding<1) padding=1;
-    sprintf(d, "(%s)%*s %.80s", clname, padding,"", path );
     return buf;
 }
 
@@ -248,7 +234,7 @@ static bool do_inspect_by_name( cObject *obj, bool beg, const char *_fullpath, c
     const char *objpath = obj->fullPath();
 
     // however, a module's name and the future event set's name is not hidden,
-    // so if this obj is a module (or cMessageHeap) and its name doesn't match 
+    // so if this obj is a module (or cMessageHeap) and its name doesn't match
     // the beginning of fullpath, we can cut the search here.
     if ((dynamic_cast<cModule *>(obj) || dynamic_cast<cMessageHeap *>(obj))
         && strncmp(objpath, fullpath, strlen(objpath))!=0)
@@ -327,19 +313,19 @@ Tcl_Interp *initTk(int argc, char **argv)
     // Tcl/Tk args interfere with OMNeT++'s own command-line args
     //if (Tk_ParseArgv(interp, (Tk_Window)NULL, &argc, argv, argTable, 0)!=TCL_OK)
     //{
-    //    fprintf(stderr, "%s\n", interp->result);
+    //    fprintf(stderr, "%s\n", Tcl_GetStringResult(interp));
     //    return TCL_ERROR;
     //}
 
     if (Tcl_Init(interp) != TCL_OK)
     {
-        fprintf(stderr, "Tcl_Init failed: %s\n", interp->result);
+        fprintf(stderr, "Tcl_Init failed: %s\n", Tcl_GetStringResult(interp));
         return 0;
     }
 
     if (Tk_Init(interp) != TCL_OK)
     {
-        fprintf(stderr, "Tk_Init failed: %s\n", interp->result);
+        fprintf(stderr, "Tk_Init failed: %s\n", Tcl_GetStringResult(interp));
         return 0;
     }
 

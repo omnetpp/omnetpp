@@ -620,7 +620,10 @@ proc multicolumnlistbox {w columnlist args} {
                  $w column config $name -width $width
             }
         }
+        # eliminate "last column quirk" by adding a very wide dummy column:
+        $w column insert end "dummy" -text "" -edit no -width 5000
         bind $w <3> {%W selection clearall; %W select set [%W nearest %x %y]}
+        #bind $w <Motion> {puts "[%W nearest %x %y] of [%W index view.top]..[%W index view.bottom] -- [%W find view.top view.bottom]"}
     } else {
         error "no multicolumnlistbox without BLT!"
     }
@@ -643,9 +646,21 @@ proc multicolumnlistbox_insert {w rowname data} {
 }
 
 #
-# Returns data from the given row.
+# Updates a given row.
 #
-# FIXME split to: getrowname, getrowdata (both should take index)
+proc multicolumnlistbox_modify {w rowname data} {
+    global HAVE_BLT
+    if {$HAVE_BLT} {
+        set id [$w find -full $rowname]
+        if {$id==""} {error "row $rowname not found"}
+        $w entry config $id -data $data
+    } else {
+        error "no multicolumnlistbox without BLT!"
+    }
+}
+
+#
+# Returns data from the given row.
 #
 proc multicolumnlistbox_getrow {w rowname} {
     global HAVE_BLT
@@ -659,11 +674,22 @@ proc multicolumnlistbox_getrow {w rowname} {
 }
 
 #
+# Returns true if the given row exists.
+#
+proc multicolumnlistbox_hasrow {w rowname} {
+    global HAVE_BLT
+    if {$HAVE_BLT} {
+        set id [$w find -full $rowname]
+        if {$id!=""} {return 1} else {return 0}
+    } else {
+        error "no multicolumnlistbox without BLT!"
+    }
+}
+
+#
 # Returns a list containing the rownames of all of the entries
 # that are currently selected. If there are no entries selected,
 # then the empty string is returned.
-#
-# FIXME change back to work with index
 #
 proc multicolumnlistbox_curselection {w} {
     global HAVE_BLT
@@ -676,12 +702,28 @@ proc multicolumnlistbox_curselection {w} {
     } else {
         error "no multicolumnlistbox without BLT!"
     }
+}
+
+#
+# Returns a list containing the rownames of all of the entries
+# that are currently selected. If there are no entries selected,
+# then the empty string is returned.
+#
+proc multicolumnlistbox_getrownames {w} {
+    global HAVE_BLT
+    if {$HAVE_BLT} {
+        set rownamelist {}
+        foreach id [$w find view.top view.bottom] {
+            lappend rownamelist [$w get -full $id]
+        }
+        return $rownamelist
+    } else {
+        error "no multicolumnlistbox without BLT!"
     }
+}
 
 #
 # Delete the given rows.
-#
-# FIXME change back to work with index
 #
 proc multicolumnlistbox_delete {w rownames} {
     global HAVE_BLT
@@ -695,6 +737,19 @@ proc multicolumnlistbox_delete {w rownames} {
         error "no multicolumnlistbox without BLT!"
     }
 }
+
+#
+# Delete all rows.
+#
+proc multicolumnlistbox_deleteall {w} {
+    global HAVE_BLT
+    if {$HAVE_BLT} {
+        $w delete all
+    } else {
+        $w delete all
+    }
+}
+
 
 # center --
 #

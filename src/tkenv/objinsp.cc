@@ -455,7 +455,7 @@ void TParInspector::writeBack()
       {
          CHK(Tcl_Eval(interp,"messagebox {Warning}"
                 " {Incorrect setting. Try auto type selection?} question yesno"));
-         if (interp->result[0]=='y')
+         if (Tcl_GetStringResult(interp)[0]=='y')
          {
             if( p->setFromText( getEntry(".main.value.e"), '?' ))
                 setEntry(".main.newtype.e", "" );

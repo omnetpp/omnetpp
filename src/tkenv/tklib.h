@@ -29,13 +29,10 @@ void *strToPtr(const char *s );
 class cObject;
 typedef char *(*InfoFunc)(cObject *);
 
-void fillListboxWithChildObjects( cObject *object, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool deep);
-void fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool simpleonly, bool deep );
+int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool deep);
+int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool simpleonly, bool deep);
 
-char *infofunc_nameonly(cObject *object);
 char *infofunc_infotext(cObject *object);
-char *infofunc_fullpath(cObject *object);
-char *infofunc_typeandfullpath( cObject *object);
 char *infofunc_module(cObject *object);
 
 int inspectMatchingObjects(cObject *object, Tcl_Interp *interp, char *pattern, int type, bool countonly);

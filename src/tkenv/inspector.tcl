@@ -200,13 +200,19 @@ proc create_inspector_listbox {w} {
 
     frame $w.main
     pack $w.main -expand 1 -fill both -side top
-    listbox $w.main.list  -width 60 -yscrollcommand "$w.main.sb set"
+
+    multicolumnlistbox $w.main.list {
+       {ptr    Pointer}
+       {class  Class}
+       {name   Name}
+       {info   Info}
+    } -width 400 -yscrollcommand "$w.main.sb set"
     scrollbar $w.main.sb  -command "$w.main.list yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -side right
     pack $w.main.list -expand 1 -fill both  -side left
 
     bind $w.main.list <Double-Button-1> "inspect_item_in $w.main.list"
-    bind $w.main.list <Button-3> "popup_insp_menu \[lindex \[$w.main.list get @%x,%y\] 0\] %X %Y"
+    bind $w.main.list <Button-3> "popup_insp_menu \[lindex \[multicolumnlistbox_curselection $w.main.list\] 0\] %X %Y"
     bind $w.main.list <Key-Return> "inspect_item_in $w.main.list"
 
     focus $w.main.list
@@ -267,9 +273,8 @@ proc inspect_item_in {lb} {
     # called on double-clicking in a container inspector;
     # inspect the current item in the listbox of an inspector listwindow
 
-    set sel [$lb curselection]
-    if {$sel != ""} {
-        set ptr [lindex [$lb get $sel] 0]
+    set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
+    if {$ptr != ""} {
         opp_inspect $ptr {(default)}
     }
 }
@@ -278,9 +283,8 @@ proc inspectas_item_in {lb} {
     # called on double-clicking in a container inspector;
     # inspect the current item in the listbox of an inspector listwindow
 
-    set sel [$lb curselection]
+    set ptr [lindex [multicolumnlistbox_curselection $lb] 0]
     if {$sel != ""} {
-        set ptr [lindex [$lb get $sel] 0]
         set type [ask_inspectortype $ptr [winfo toplevel $lb]]
         if {$type != ""} {
             opp_inspect $ptr $type
