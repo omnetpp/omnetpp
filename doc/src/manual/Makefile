@@ -18,7 +18,7 @@ default: usman.pdf
 
 usman.dvi: $(TEXSRC) $(PSPICS)
 	latex usman.tex $(LOGFILTER)
-	bibtex usman
+	bibtex usman usman-bibl
 	makeindex usman
 	latex usman.tex $(LOGFILTER)
 	latex usman.tex $(LOGFILTER)
