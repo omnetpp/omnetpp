@@ -123,6 +123,7 @@ class SIM_API cModule : public cDefaultList
     // (e.g. the system module which is owned by the global object 'simulation').
     cModule *prevp, *nextp; // pointers to sibling submodules
     cModule *firstsubmodp;  // pointer to first submodule
+    cModule *lastsubmodp;   // pointer to last submodule (needed for efficient append operation)
 
   public:
     // The following members are only made public for use by the inspector
