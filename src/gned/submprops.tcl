@@ -47,7 +47,7 @@ proc editSubmoduleProps {key} {
     radiobutton $nb.general.r2 -text "Type is passed in a parameter:" -value 1  -variable tmp(uselike)
     label-entry-chooser $nb.general.likepar "  Parameter name:" "" puts
     label-entry-chooser $nb.general.likemod "  Prototype module:" "" chooseModuleType
-    label-text  $nb.general.comment "Doc. comments:" 4
+    label-text  $nb.general.comment "Doc. comments:" 3
     label-text  $nb.general.rcomment "End-line comments:" 2
 
     pack $nb.general.name  -expand 0 -fill x -side top

@@ -50,10 +50,19 @@ proc getCommentFromText {w} {
     # text widgets seem to add an extra newline -- remove it
     regsub -all "\n$" $comment "" comment
 
+    return [processCommentAfterEdit $comment]
+}
+
+
+proc processCommentAfterEdit {comment} {
+
     # kill lines with single '-' (would mean a blank line in comment)
     regsub -all "\n-\n" $comment "\n\n" comment
     regsub -all "^-\n" $comment "\n" comment
     regsub -all "\n-$" $comment "\n\n" comment
+
+    # make sure there's a newline at the end
+    regsub -all "\(\[^\n\]\)$" $comment "\\1\n" comment
     return $comment
 }
 
@@ -69,7 +78,11 @@ proc fillTableEditFromNed {w parentkey} {
     set li 0
     foreach key [getChildren $parentkey] {
         foreach attr $ned_attlist($ned($key,type)) {
-            set tablePriv($w,$li,$attr) $ned($key,$attr)
+            set value $ned($key,$attr)
+            if [string match "*-comment" $attr] {
+                regsub "\n$" $value "" value
+            }
+            set tablePriv($w,$li,$attr) $value
         }
         incr li
     }
@@ -117,10 +130,14 @@ proc updateNedFromTableEdit {w parentkey itemtype keyattr} {
             foreach attr $ned_attlist($itemtype) {
                 # set attrs not in tablePriv() to ""
                 if [catch {
-                   set ned($key,$attr) $tablePriv($w,$li,$attr)
+                   set value $tablePriv($w,$li,$attr)
                 }] {
-                   set ned($key,$attr) ""
+                   set value ""
                 }
+                if [string match "*-comment" $attr] {
+                   set value [processCommentAfterEdit $value]
+                }
+                set ned($key,$attr) $value
             }
             incr i
         }
