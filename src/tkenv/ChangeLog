@@ -1,3 +1,17 @@
+2004-01-17  Andras Varga
+
+	* modinsp2.tcl: added two experimental submodule display string tags: 
+	- "i2=" tag (with similar syntax to "i=") displays a small "modifier"
+	icon on top of the original one. Suggested icons are x_check, x_down,
+	x_up, x_exclamation, x_question, etc. 
+FIXME name implies "i3", "i4" etc might be introduced sometime. if not, change
+name to "mi"?
+	- "t=" tag displays a status string. t=<text>,<pos>,<color>. 
+	<pos> is "l", "r" or "t" for left, right and top.
+FIXME bold text? make it more flexible with position? 
+FIXME add "t2", "t3" etc too?
+FIXME doesn't interpret "\n"!
+
 2004-01-09  Andras Varga
 
 	* modinsp.cc/h/tcl,tkapp.cc/h: implemented bubble() -- submodules

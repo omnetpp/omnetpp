@@ -1,5 +1,5 @@
 #==========================================================================
-#  MODINSP.TCL -
+#  MODINSP2.TCL -
 #            part of the Tcl/Tk windowing environment of
 #                            OMNeT++
 #==========================================================================
@@ -201,6 +201,43 @@ proc draw_submod {c submodptr x y name dispstr} {
            set x [expr [lindex $r 2]+1]
            set y [lindex $r 1]
            $c create text $x $y -text "q:?" -anchor nw -tags "dx qlen qlen-$submodptr"
+       }
+
+       # modifier icon (i2 tag)
+       if {[info exists tags(i2)]} {
+           set r [get_submod_coords $c $submodptr]
+           set x [expr [lindex $r 2]+2]
+           set y [expr [lindex $r 1]-2]
+           set img2 [dispstr_getimage $tags(i2)]
+           $c create image $x $y -image $img2 -anchor ne -tags "dx tooltip submod $submodptr"
+       }
+
+       # text (t tag); FIXME refine feature!
+       if {[info exists tags(t)]} {
+           set txt [lindex $tags(t) 0]
+           set pos [lindex $tags(t) 1]
+           if {$pos == ""} {set pos "t"}
+           set color [lindex $tags(t) 2]
+           if {$color == ""} {set color "black"}
+           if {[string index $color 0]== "@"} {set color [opp_hsb_to_rgb $color]}
+
+           set r [get_submod_coords $c $submodptr]
+           if {$pos=="l"} {
+               set x [lindex $r 0]
+               set y [lindex $r 1]
+               set anch "ne"
+           } elseif {$pos=="r"} {
+               set x [lindex $r 2]
+               set y [lindex $r 1]
+               set anch "nw"
+           } elseif {$pos=="t"} {
+               set x [expr ([lindex $r 0]+[lindex $r 2])/2]
+               set y [expr [lindex $r 1]+2]
+               set anch "s"
+           } else {
+               error "wrong position in t= tag, should be `l', `r' or `t'"
+           }
+           $c create text $x $y -text $txt -fill $color -anchor $anch -tags "dx"
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>
