@@ -4,7 +4,7 @@
 #
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-2.2
+OMNETPP_VERSION=omnetpp-2.3
 
 #
 # base directories
@@ -143,8 +143,8 @@ GNED_IF_POSSIBLE=gned
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
 TKENV_EMBED_TCL=no
-GNED_EMBED_TCL=yes
-PLOVE_EMBED_TCL=yes
+GNED_EMBED_TCL=no
+PLOVE_EMBED_TCL=no
 
 #
 # It is possible to compile GNED and Plove as Windows GUI apps (ie. not
