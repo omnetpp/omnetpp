@@ -550,6 +550,9 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     // generate children (except expressions)
     generateChildrenWithTags(node, "substmachines,substparams,gatesizes", indent, mode);
 
+    // force all parameters to pick up a value before doing buildInside()
+    out << indent << "_readModuleParameters(" << submodule_var.c_str() << ");\n";
+
     // add display string
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
@@ -766,6 +769,9 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     // generate children (except expressions)
     generateChildrenWithTags(node, "substmachines,substparams,gatesizes", indent, mode);
 
+    // force all parameters to pick up a value before building connections and esp. calling buildInside()
+    out << indent << "_readModuleParameters(" << submodule_var.c_str() << ");\n";
+
     // add display string
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
@@ -807,9 +813,6 @@ void NEDCppGenerator::doSubstparams(SubstparamsNode *node, const char *indent, i
 
     // generate children
     generateChildrenExceptTags(node, "expression", indent, mode);
-
-    // epilog: read all parameters
-    out << indent << "_readModuleParameters(" << submodule_var.c_str() << ");\n";
 
     endConditionalBlock(node, indent, mode, arg);
     out << "\n";
