@@ -48,46 +48,6 @@ static bool _do_list(cObject *obj, bool beg, ostream& s);
 
 char cObject::fullpathbuf[FULLPATHBUF_SIZE];
 
-
-/*--------------------------------------------------------------*\
-
-   Object ownership/contains relationships:
-   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   Ownership:
-      Exclusive right and duty to delete the child objects.
-      Ownership works thru ownerp/prevp/nextp and firstchildp pointers.
-   'contains' relationship:
-      Only for container classes, e.g. cArray or cQueue. Keeping track
-      of contained objects works with another mechanism, NOT the previously
-      mentioned ptrs. (E.g., cArray uses a vector, cQueue uses a separate
-      list).
-   The two mechanisms are INDEPENDENT.
-   What cObject does:
-      - owner of a new object can be explicitly given, if omitted,
-        defaultOwner() will will be used.
-      - an object created thru the copy constructor:
-          - will have the same owner as original;
-          - does not dup() or take objects owned by the original.
-      - destructor calls discard() for owned objects (see later).
-   Objects contained as data members:
-      the enclosing object should own them.
-   What container objects derived from cObject should do:
-      - they use the functions: take(obj), drop(obj), discard(obj)
-      - when an object is inserted, if takeOwnership() is true, should
-        take ownership of object by calling take(obj).
-        TAKEOWNERSHIP() DEFAULTS TO true.
-      - when an object is removed, they should call drop(obj) for it if
-        they were the owner.
-      - copy constructor copies should dup() and take ownership of objects
-        that were owned by the original.
-      - destructor doesn't need not call discard() for objects: this will be
-        done in cObject's destructor.
-   cHead:
-      special case: behaves as a container, displaying objects it owns as
-      contents.
-   --VA
-\*-------------------------------------------------------------------*/
-
 #define DETERMINE_STORAGE()  stor = heapflag   ? (heapflag=0, 'D') : \
                                     staticflag ? 'A' : 'S' ;
 
@@ -96,10 +56,10 @@ cObject::cObject(const cObject& obj)
     DETERMINE_STORAGE();
     tkownership = true;
     namestr = opp_strdup( obj.namestr );
+    firstchildp = NULL;
 
     ownerp = NULL;
-    setOwner( obj.owner() );
-    firstchildp = NULL;
+    setOwner(obj.owner());
 
     operator=( obj );
 }
@@ -123,18 +83,21 @@ cObject::cObject(const char *name)
     firstchildp = NULL;
 
     ownerp = NULL;
-    setOwner( defaultOwner() );
+    setOwner(defaultOwner());
 }
 
 cObject::~cObject()
 {
-    delete [] namestr;
-    setOwner( NULL );
+    // notify environment
+    ev.objectDeleted( this );
 
-    /* delete owned objects */
+    // remove ourselves from owner's list, and delete owned objects
+    setOwner(NULL);
     while (firstchildp!=NULL)
         discard( firstchildp );
-    ev.objectDeleted( this );
+
+    // finally, deallocate object name
+    delete [] namestr;
 }
 
 void *cObject::operator new(size_t m)

@@ -56,8 +56,8 @@ class ExecuteOnStartup
      public:
          ExecuteOnStartup(void (*code_to_exec)());
          ~ExecuteOnStartup();
-         bool execute();
-         static bool executeAll();
+         void execute();
+         static void executeAll();
 };
 
 #endif

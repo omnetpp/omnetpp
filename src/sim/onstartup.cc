@@ -40,31 +40,19 @@ ExecuteOnStartup::~ExecuteOnStartup()
 }
 
 
-bool ExecuteOnStartup::execute()
+void ExecuteOnStartup::execute()
 {
-    try
-    {
-        code_to_exec();
-        return true;
-    }
-    catch (cException *e)
-    {
-        // FIXME: print exception
-        delete e;
-        return false;
-    }
+    code_to_exec();
 }
 
-bool ExecuteOnStartup::executeAll()
+void ExecuteOnStartup::executeAll()
 {
     ExecuteOnStartup *p = ExecuteOnStartup::head;
     while (p)
     {
-        bool ok = p->execute();
-        if (!ok) return false;
+        p->execute();
         p = p->next;
     }
-    return true;
 }
 
 
