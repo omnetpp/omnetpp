@@ -104,17 +104,26 @@ proc findNext {w} {
 
 # doFind --
 #
-# Finds the given string, positions the cursor after its last char,
-# and returns the length. Returns empty string and shows a dialog
-# if not found.
 #
 proc doFind {w findstring case words regexp} {
+    if {[_doFind $w $findstring $case $words $regexp] == ""} {
+        tk_messageBox  -title "Find" -icon warning -type ok -message "'$findstring' not found."
+    }
+}
+
+# _doFind --
+#
+# Internal proc for doFind and doReplace.
+#
+# Finds the given string, positions the cursor after its last char,
+# and returns the length. Returns empty string if not found.
+#
+proc _doFind {w findstring case words regexp} {
 
     # remove previous highlights
     $w tag remove SELECT 0.0 end
 
     # find the string
-    #   start at insert+1 so that "find next" can advance
     set cur "insert"
     while 1 {
         if {$case && $regexp} {
@@ -141,7 +150,6 @@ proc doFind {w findstring case words regexp} {
 
     # check if found
     if {$cur == ""} {
-        tk_messageBox  -title "Find" -icon warning -type ok -message "'$findstring' not found."
         return ""
     }
 
@@ -216,8 +224,9 @@ proc doReplace {w findstring replstring case words regexp} {
 
     while 1 {
         # find occurrence
-        set length [doFind $w $findstring $case $words $regexp]
+        set length [_doFind $w $findstring $case $words $regexp]
         if {$length == ""} {
+            tk_messageBox  -title "Find/Replace" -icon warning -type ok -message "'$findstring' not found."
             return
         }
 
@@ -231,15 +240,17 @@ proc doReplace {w findstring replstring case words regexp} {
                 syntaxHighlight $w "insert linestart" "insert lineend"
             }
             all {
-                while 1 {
+                set count 0
+                while {$length != ""} {
                     $w delete "insert - $length char" "insert"
                     $w insert insert $replstring
-                    set length [doFind $w $findstring $case $words $regexp]
-                    if {$length == ""} {
-                        syntaxHighlight $w 1.0 end ;# for multi-line replaces...
-                        return
-                    }
+                    incr count
+                    set length [_doFind $w $findstring $case $words $regexp]
                 }
+                syntaxHighlight $w 1.0 end ;# for multi-line replaces...
+                tk_messageBox  -title "Find/Replace" -icon info -type ok -message "$count occurrences of '$findstring' replaced."
+
+                return
             }
             no {
             }

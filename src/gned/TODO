@@ -42,7 +42,7 @@ Load/save:
 - load: if there's a parse error, load the whole stuff into a "scratch" text-mode canvas?
 
 Text editor:
-- "find next" missing
+- "find next" missing ***DONE***
 - ctrl-H doesn't bring up Find/Replace dialog [from Niko]  ***FIXED***
 - <Enter> in the Find/Replace dialog causes error (at least in Windows)
 - pgup, ctrl-pgup doesn't work correctly
@@ -51,7 +51,7 @@ Text editor:
 - syntax highlight: <paste> should update the whole file
 
 General:
-- introduce ~/.gnedrc
+- introduce ~/.gnedrc  ***DONE***
 - switching back from text to graphics should check if text really changed or not
 - display string: numeric parameters must be checked!!!
 - cut,copy,paste should work everywhere (menu,toolbar,keys),

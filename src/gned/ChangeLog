@@ -213,5 +213,6 @@ Aug 7, 2000
  - makefile changes for RPM support
 Aug 26, 2000
  - added .gnedrc
- - find/replace settings are preserved in .gnedrc
- - implemented "Find next"
+ - find/replace operation improved
+ - implemented "find next"
+ - find/replace dialog contents is now preserved

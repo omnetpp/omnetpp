@@ -6,7 +6,7 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992,98 Andras Varga
+#  Copyright (C) 1992,99 Andras Varga
 #  Technical University of Budapest, Dept. of Telecommunications,
 #  Stoczek u.2, H-1111 Budapest, Hungary.
 #
@@ -24,10 +24,11 @@ set keywords {include|import|network|module|simple|channel|delay|error|datarate|
 
 # configureEditor --
 #
-# Create tags and bondings for NED editor text widget.
+# Create tags and bindings for NED editor text widget.
 #
 proc configureEditor {w} {
 
+    # bindings for syntax highlight and status bar update
     $w tag configure SELECT -back #808080 -fore #ffffff
 
     bind $w <Key> {
@@ -43,9 +44,13 @@ proc configureEditor {w} {
             updateTextStatusbar %W
         }
     }
-    bind $w <Control-f> {editFind}
-    bind $w <Control-F> {editFind}
-    # 'break' is needed below because ^H is originally bound to Backspace ('Text' tag)
+
+    # bindings for find/replace
+    #   'break' is needed below because
+    #      ^H is originally bound to Backspace ('Text' tag), and
+    #      ^F is originally bound to 1 char right
+    bind $w <Control-f> {editFind;break}
+    bind $w <Control-F> {editFind;break}
     bind $w <Control-h> {editReplace;break}
     bind $w <Control-H> {editReplace;break}
     bind $w <F3>        {editFindNext}
