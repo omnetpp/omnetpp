@@ -1,10 +1,9 @@
-for i in `find . -name Makefile* -o -name *.h -o -name *.cc -o -name *.c`
+for i in `find . -name 'Makefile*' -o -name '*.h' -o -name '*.cc' -o -name '*.c'`
 do
     echo Removing ^M, $i
     cp $i $i.b
     sed 's/[[:cntrl:]]$//g' $i.b > $i
     rm $i.b
-    shift
 done
 
 # while [ "$1" != "" ]

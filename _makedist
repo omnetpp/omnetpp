@@ -56,6 +56,7 @@ done
 rm _setperm
 rm _tag
 rm _makedist
+rm _tounix
 rm -rf _icons
 rm config.*
 rm -rf src/gned/icons
