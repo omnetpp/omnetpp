@@ -21,6 +21,8 @@ void {Module}::finish()
     throw new cException("test exception");
 }
 
+%exitcode: 1
+
 %contains: stdout
 Error in module .*: test exception
 

@@ -274,8 +274,7 @@ void do_system (char *stname )
              stname, stname, stname, stname);
         fprintf (yyout,
              "    virtual void setupNetwork();\n"
-             "};\n\n",
-             stname);
+             "};\n\n");
 
         fprintf (yyout, "Define_Network( %s );\n\n", stname);
 

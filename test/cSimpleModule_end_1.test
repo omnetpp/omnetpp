@@ -1,6 +1,8 @@
 %description:
 tests that end() works from activity(), and finish() gets called
 
+TODO: should also test that simulation of other modules goes on
+
 %module: {Module}
 
 class {Module} : public cSimpleModule

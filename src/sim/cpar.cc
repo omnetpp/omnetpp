@@ -44,7 +44,7 @@ Register_Class(cPar);
 
 void cDoubleExpression::getAsText(char *buf, int maxlen)
 {
-    sprintf(buf, "%d", evaluate());
+    sprintf(buf, "%g", evaluate());
 }
 
 bool cDoubleExpression::parseText(const char *text)

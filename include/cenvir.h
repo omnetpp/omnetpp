@@ -128,9 +128,10 @@ class ENVIR_API cEnvir
 
     /**
      * Called from main(). This function should encapsulate the whole functionality
-     * of running the application.
+     * of running the application. The return value may be used as exit code
+     * for the simulation program.
      */
-    void run();
+    int run();
 
     /**
      * Called from main() before exiting.

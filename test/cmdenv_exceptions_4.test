@@ -29,6 +29,8 @@ void {Module}::finish()
     ev << "finish called\n";
 }
 
+%exitcode: 1
+
 %contains: stdout
 Error in module .*: test exception
 

@@ -53,7 +53,7 @@ class TCmdenvApp : public TOmnetApp
 
      // redefined virtual funcs:
      virtual void setup();
-     virtual void run();
+     virtual int run();
      //virtual void shutdown();
 
      virtual void readOptions();

@@ -80,7 +80,7 @@ class TOmnetTkApp : public TOmnetApp
 
       // redefined virtual functions from TOmnetApp
       virtual void setup();
-      virtual void run();
+      virtual int run();
       virtual void shutdown();
 
       virtual void objectDeleted(cObject *object); // notify environment

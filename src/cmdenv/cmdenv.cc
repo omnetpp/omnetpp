@@ -133,17 +133,17 @@ void TCmdenvApp::setupSignals()
     signal(SIGTERM, signalHandler);
 }
 
-void TCmdenvApp::run()
+int TCmdenvApp::run()
 {
     if (!initialized)
-        return;
+        return 1;
 
     setupSignals();
 
     if (opt_helponly)
     {
         help();
-        return;
+        return 0;
     }
 
     EnumStringIterator run_nr( (const char *)opt_runstoexec );
@@ -151,8 +151,11 @@ void TCmdenvApp::run()
     {
         ev.printfmsg("Error parsing list of runs to execute: `%s'",
                      (const char *)opt_runstoexec );
-        return;
+        return 1;
     }
+
+    // we'll return nonzero exitcode if any run was terminated with error
+    bool had_error = false; 
 
     for (; run_nr()!=-1; run_nr++)
     {
@@ -194,6 +197,7 @@ void TCmdenvApp::run()
         }
         catch (cException *e)
         {
+            had_error = true;
             displayError(e);
             delete e;
         }
@@ -207,6 +211,7 @@ void TCmdenvApp::run()
             }
             catch (cException *e)
             {
+                had_error = true;
                 displayError(e);
                 delete e;
             }
@@ -221,6 +226,7 @@ void TCmdenvApp::run()
             }
             catch (cException *e)
             {
+                had_error = true;
                 displayError(e);
                 delete e;
             }
@@ -230,6 +236,13 @@ void TCmdenvApp::run()
         if (sigint_received)
             break;
     }
+
+    if (had_error)
+        return 1;
+    else if (sigint_received)
+        return 2;
+    else
+        return 0;
 }
 
 void TCmdenvApp::makeOptionsEffective()

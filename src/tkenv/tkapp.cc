@@ -184,13 +184,15 @@ void TOmnetTkApp::setup()
 
 }
 
-void TOmnetTkApp::run()
+int TOmnetTkApp::run()
 {
     if (!initialized)
-        return;
+        return 1;
 
     CHK(Tcl_Eval(interp,"startup_commands"));
     runTk( interp );
+
+    return 0;
 }
 
 void TOmnetTkApp::shutdown()

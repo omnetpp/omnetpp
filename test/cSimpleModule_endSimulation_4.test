@@ -1,5 +1,5 @@
 %description:
-perverse case: endSimulation() from initialize(), and finish() gets called
+endSimulation() from finish() is an error
 
 %module: {Module}
 
@@ -23,6 +23,8 @@ void {Module}::finish()
     endSimulation();
     ev << "after endSimulation\n";
 }
+
+%exitcode: 1
 
 %contains: stdout
 finish called

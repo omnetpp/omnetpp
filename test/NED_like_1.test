@@ -29,4 +29,4 @@ warnings=yes
 %exitcode: 1
 
 %contains: stdout
-Error in module {}_net: Unknown parameter named mod_type
+Error in module .*mod_type
