@@ -19,6 +19,7 @@
 #define __CLCG32_H
 
 #include "defs.h"
+#include "macros.h"
 #include "crng.h"
 #include "cconfig.h"
 
