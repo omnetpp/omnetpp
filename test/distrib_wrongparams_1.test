@@ -1,0 +1,24 @@
+%description:
+Tests if wrong (illegal) parameter values are detected by the distributions.
+
+%activity:
+
+#define TEST_ERROR(f) \
+ try {ev << #f << ": "; f; ev << "no error\n";} catch (cException *e) {ev << e->message() << endl; delete e;}
+
+TEST_ERROR(weibull(1,1));
+TEST_ERROR(weibull(0,1));
+TEST_ERROR(weibull(1,0));
+
+TEST_ERROR(gamma_d(0,1));
+TEST_ERROR(gamma_d(1,0));
+
+// FIXME: rest TBD
+
+%contains: stdout
+weibull(1,1): no error
+weibull(0,1): weibull(): a,b parameters must be positive (a=0, b=1)
+weibull(1,0): weibull(): a,b parameters must be positive (a=1, b=0)
+gamma_d(0,1): gamma(): alpha and beta params must be positive (alpha=0, beta=1)
+gamma_d(1,0): gamma(): alpha and beta params must be positive (alpha=1, beta=0)
+

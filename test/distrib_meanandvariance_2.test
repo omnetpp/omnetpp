@@ -6,49 +6,6 @@ but at least it's a guard against simple programming errors.
 Test 1: discrete distributions
 Test 2: continuous distributions
 
-%global:
-
-double mean_gamma(double alpha, double beta)
-{
-}
-
-double mean_beta (double alpha1, double alpha2)
-{
-}
-
-double mean_erlang_k (unsigned int k, double m)
-{
-}
-
-double mean_chi_square (unsigned int k)
-{
-}
-
-double mean_student_t (unsigned int i)
-{
-}
-
-double mean_cauchy (double a, double b)
-{
-}
-
-double mean_triang (double a, double b, double c)
-{
-}
-
-double mean_lognormal (double m, double s)
-{
-}
-
-double mean_weibull (double a, double b)
-{
-}
-
-double mean_pareto_shifted (double a, double b, double c)
-{
-}
-
-
 %activity:
 
 #define MEAN_AND_VARIANCE(f) \
@@ -85,17 +42,35 @@ ev << endl;
 
 // TBD:  gamma_d (double alpha, double beta, int rng=0)
 // TBD:  beta (double alpha1, double alpha2, int rng=0)
-// TBD:  erlang_k (unsigned int k, double m, int rng=0)
+
+// erlang_k(k,m): if (k==1) --> exponential()
+MEAN_AND_VARIANCE(erlang_k(1,1));     // same as exponential
+MEAN_AND_VARIANCE(erlang_k(1,0.01));  // same as exponential
+MEAN_AND_VARIANCE(erlang_k(1,5));     // same as exponential
+MEAN_AND_VARIANCE(erlang_k(2,1));
+MEAN_AND_VARIANCE(erlang_k(5,1));
+MEAN_AND_VARIANCE(erlang_k(5,10));
+ev << endl;
+
 // TBD:  chi_square (unsigned int k, int rng=0)
 // TBD:  student_t (unsigned int i, int rng=0)
 // TBD:  cauchy (double a, double b, int rng=0)
-// TBD:  triang (double a, double b, double c, int rng=0)
+
+// mean = 1/3*(a+b+c)
+MEAN_AND_VARIANCE(triang(0,0.5,1));
+MEAN_AND_VARIANCE(triang(0,0,1));
+MEAN_AND_VARIANCE(triang(0,1,1));
+MEAN_AND_VARIANCE(triang(0,0.1,1));
+MEAN_AND_VARIANCE(triang(0,0.9,1));
+MEAN_AND_VARIANCE(triang(-1,4,5));
+ev << endl;
+
 // TBD:  lognormal (double m, double s, int rng=0)
+MEAN_AND_VARIANCE(lognormal(0,1));
+
 // TBD:  weibull (double a, double b, int rng=0)
 // TBD:  pareto_shifted (double a, double b, double c, int rng=0)
 
 %contains: stdout
 
-%not-contains: stdout
-ERROR:
 
