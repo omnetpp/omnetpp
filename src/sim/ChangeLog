@@ -1,3 +1,8 @@
+2005-01-02  Andras Varga
+
+	* cstruct.cc: fix: cStructDescriptor ctor crashed if NULL pointer was
+	passed to it
+
 2004-12-29  ------ omnetpp-3.0 released ------
 
 2004-12-27  Andras Varga

@@ -136,7 +136,7 @@ void cStructDescriptor::string2oppstring(const char *s, opp_string& str)
 cStructDescriptor::cStructDescriptor(const char *_baseclassname)
 {
     p = NULL;
-    baseclassname = _baseclassname;
+    baseclassname = _baseclassname ? _baseclassname : ""; 
     baseclassdesc = _baseclassname ? createDescriptorFor(_baseclassname, NULL) : NULL;
 }
 
