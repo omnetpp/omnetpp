@@ -1,0 +1,15 @@
+
+INSTALLATION INSTRUCTIONS
+
+Please see the Readme.<your-platform> file in the doc/ subdirectory for 
+installation instructions:
+
+  Linux users:                   see doc/Readme.Unix
+  MSVC users on Windows:         see doc/Readme.MSVC
+  Cygwin/MinGW users (Windows):  see doc/Readme.Cygwin and Readme.MinGW
+
+If you find an error or missing information in these documents, please help us
+improve them by letting us know about it.
+
+Andras
+
