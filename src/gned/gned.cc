@@ -271,7 +271,6 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCm
     setargv(&argc, &argv);
 
     // enter Tk event loop
-    // pass 1 as argc, otherwise Tk would try to interpret args as Tcl scripts to source
     Tk_Main(argc, argv, Tcl_AppInit);
     return 1;
 }

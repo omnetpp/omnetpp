@@ -82,3 +82,5 @@ Apr 16, 2001
  - window title
 Apr 19, 2001
  - defaultconfigfile added
+Apr 20, 2001
+ - bugfix in new WinMain() startup code
