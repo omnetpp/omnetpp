@@ -87,10 +87,14 @@ class SIM_API cMessage : public cObject
 
     void _createparlist();
 
+    // global variables for statistics
+    static unsigned long total_msgs;
+    static unsigned long live_msgs;
+
   public:
     cMessage(cMessage& msg);
     explicit cMessage(const char *name=NULL, int k=0, long len=1, int pri=0, bool err=false);
-    virtual ~cMessage() {}     // parlistp is deleted by ~cObject()
+    virtual ~cMessage();
 
     // redefined functions
     virtual const char *className()  {return "cMessage";}
@@ -162,6 +166,11 @@ class SIM_API cMessage : public cObject
 
     static int cmpbydelivtime(cObject *one, cObject *other); // compare delivery times
     static int cmpbypriority(cObject *one, cObject *other);  // compare priorities
+
+    // statistics
+    static unsigned long totalMessageCount() {return total_msgs;}
+    static unsigned long liveMessageCount()  {return live_msgs;}
+    static void resetMessageCounters()  {total_msgs=live_msgs=0L;}
 };
 
 #endif

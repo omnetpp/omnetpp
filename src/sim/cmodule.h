@@ -353,6 +353,9 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     void endSimulation();             // finish the whole simulation
     void error(const char *fmt,...);  // user error message
 
+    //// access putaside-queue -- soon!
+    //virtual cQueue& putAsideQueue();
+
     // record into scalar result file
     void recordScalar(const char *name, double value);
     void recordScalar(const char *name, const char *text);

@@ -911,3 +911,11 @@ Jun 4, 2000
  - fix: cPar::setfunction() improved and made const-correct (for gcc 2.95.2)
  - warnings eliminated from cllist.cc & coutvect.cc
 ------ omnetpp-2.0b5 released ------
+Jan 3, 2000
+ - number of cQueue methods made virtual to enable customizing cQueue
+   (e.g. adding statistics for maintaining average queue length, etc.)
+   [suggested by Holger Karl]
+ - added static counters to the cMessage class (total_msgs, live_msgs);
+   these variables are incremented/decremented by the cMessage constructor
+   and destructor, and displayed in Tkenv. They can be very handy at
+   checking for memory leaks.

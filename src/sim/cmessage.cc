@@ -31,6 +31,10 @@
 //=== registration
 Register_Class( cMessage )
 
+// static members of cMessage
+unsigned long cMessage::total_msgs;
+unsigned long cMessage::live_msgs;
+
 //=========================================================================
 //=== cMessage - member functions
 
@@ -40,6 +44,9 @@ cMessage::cMessage(cMessage& msg) : cObject()
     encapmsg = NULL;
     setName( msg.name() );
     operator=( msg );
+
+    total_msgs++;
+    live_msgs++;
 }
 
 cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObject( name )
@@ -53,6 +60,15 @@ cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObjec
     created=simulation.simTime();
     sent=delivd=tstamp=0;
     heapindex=-1;
+
+    total_msgs++;
+    live_msgs++;
+}
+
+cMessage::~cMessage()
+{
+    // parlistp is deleted by ~cObject()
+    live_msgs--;
 }
 
 void cMessage::info(char *buf)
@@ -269,4 +285,5 @@ int cMessage::cmpbypriority(cObject *one, cObject *other)
     int x = ((cMessage*)one)->prior - ((cMessage*)other)->prior;
     return sgn(x);
 }
+
 

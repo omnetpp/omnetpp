@@ -247,6 +247,16 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
                   className(),fullName(),where->name());
 }
 
+cObject *cQueue::head()
+{
+    return n!=0 ? headp->obj : NO(cObject);
+}
+
+cObject *cQueue::tail()
+{
+    return n!=0 ? tailp->obj : NO(cObject);
+}
+
 cObject *cQueue::remove(cObject *obj)
 {
     if(!obj) return NO(cObject);
@@ -267,6 +277,16 @@ cObject *cQueue::pop()
         return NO(cObject);
     }
     return remove_qelem( tailp );
+}
+
+int cQueue::length()
+{
+    return n;
+}
+
+bool cQueue::contains(cObject *obj)
+{
+   return find_qelem(obj)!=NULL;
 }
 
 

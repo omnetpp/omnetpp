@@ -393,6 +393,9 @@ void cSimulation::startRun()
     backtomod = NULL;
     netif_check_cntr = 0;
 
+    // reset message counters
+    cMessage::resetMessageCounters();
+
     // prepare simple modules for simulation run:
     //    1. create starter message for all modules,
     //    2. then call initialize() for them (recursively)

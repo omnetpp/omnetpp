@@ -69,22 +69,21 @@ class SIM_API cQueue : public cObject
     cQueue& operator=(cQueue& queue);
 
     // new functions
-    void setup(CompareFunc cmp=NULL, bool a=false); //reconfig but not reorder!
+    virtual void setup(CompareFunc cmp=NULL, bool a=false);  // reconfig (without reordering!)
 
-    void insert(cObject *obj);                       // insert from head using cmpfunc
-    void insertBefore(cObject *where, cObject *obj); // insert at specific place
-    void insertAfter(cObject *where, cObject *obj);  // insert at specific place
-    cObject *head()  {return n!=0 ? headp->obj : NO(cObject);}  // peek head item
-    cObject *tail()  {return n!=0 ? tailp->obj : NO(cObject);}  // peek tail item
-    cObject *remove(cObject *obj);                   // remove item from queue
-    cObject *pop();                                  // remove item at tail
+    virtual void insert(cObject *obj);                       // insert from head using cmpfunc
+    virtual void insertBefore(cObject *where, cObject *obj); // insert at specific place
+    virtual void insertAfter(cObject *where, cObject *obj);  // insert at specific place
+    virtual cObject *head()                                  // peek head item
+    virtual cObject *tail()                                  // peek tail item
+    virtual cObject *remove(cObject *obj);                   // remove item from queue
+    virtual cObject *pop();                                  // remove item at tail
 
-    int length() {return n;}        // number of items;
-    bool empty() {return n==0;}     // see if queue is empty or not
-    // bool isEnqueued(cObject *obj) -- obsolete, use contains() instead!
-    bool contains(cObject *obj)   {return find_qelem(obj)!=NULL;}
-
-    void clear();                   // delete whole contents
+    virtual int length()                    // number of items
+    bool empty() {return length()==0;}      // check whether queue is empty
+    virtual bool contains(cObject *obj)     // check whether queue contains an object
+    // bool isEnqueued(cObject *obj)        -- obsolete, use contains() instead!
+    virtual void clear();                   // delete whole contents
 };
 
 //==========================================================================
@@ -108,3 +107,4 @@ class SIM_API cQueueIterator
 };
 
 #endif
+
