@@ -10,7 +10,6 @@ MAKEDEPEND=@MAKEDEPEND@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
-DEPFLAGS=@DEPFLAGS@
 
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 
@@ -59,8 +58,8 @@ jar_mem.o: jar_func.h jar_mem.c
 	$(CXX) -c $(COPTS) jar_mem.c
 
 depend:
-	$(MAKEDEPEND) $(DEPFLAGS) -I. -- *.c
-	$(MAKEDEPEND) $(DEPFLAGS) -I. -fMakefile.in -- *.c
+	$(MAKEDEPEND) -I. -- *.c
+	$(MAKEDEPEND) -I. -fMakefile.in -- *.c
 
 clean:
 	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc$(EXE_SUFFIX) *_n.cc

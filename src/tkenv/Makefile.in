@@ -8,7 +8,6 @@ RANLIB=@RANLIB@
 MAKEDEPEND=@MAKEDEPEND@
 
 CFLAGS=@CFLAGS@
-DEPFLAGS=@DEPFLAGS@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_BITMAP_PATH=@OMNETPP_BITMAP_PATH@
@@ -85,8 +84,8 @@ missing-library:
 	@ echo '  *** No Tk installation found -- skipping Tkenv'
 
 depend:
-	$(MAKEDEPEND) $(DEPFLAGS) -I. -I../envir -I../../include -- *.cc
-	$(MAKEDEPEND) $(DEPFLAGS) -I. -I../envir -I../../include -fMakefile.in -- *.cc
+	$(MAKEDEPEND) -I. -I../envir -I../../include -- *.cc
+	$(MAKEDEPEND) -I. -I../envir -I../../include -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o tclcode.cc libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX)

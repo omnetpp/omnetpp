@@ -40,7 +40,6 @@ MAKEDEPEND=@MAKEDEPEND@
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
-DEPFLAGS=@DEPFLAGS@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
@@ -121,8 +120,8 @@ clean:
 	rm -f *.vec *.sca
 
 depend:
-	$(MAKEDEPEND) $(DEPFLAGS) $(INCLUDE_PATH) -- *.cc
-	$(MAKEDEPEND) $(DEPFLAGS) $(INCLUDE_PATH) -fMakefile.in -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -- *.cc
+	$(MAKEDEPEND) $(INCLUDE_PATH) -fMakefile.in -- *.cc
 
 re-makemake:
 	opp_makemake -f    #recreate Makefile

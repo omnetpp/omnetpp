@@ -9,7 +9,6 @@ SHLIB_LD=@SHLIB_LD@
 MAKEDEPEND=@MAKEDEPEND@
 
 CFLAGS=@CFLAGS@
-DEPFLAGS=@DEPFLAGS@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
@@ -171,8 +170,8 @@ missing-library:
 	@ echo '  *** No PVM installation found -- skipping sim_pvm'
 
 depend:
-	$(MAKEDEPEND) $(DEPFLAGS) -I. -- *.cc
-	$(MAKEDEPEND) $(DEPFLAGS) -I. -fMakefile.in -- *.cc
+	$(MAKEDEPEND) -I. -- *.cc
+	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o std/*.o pvm/*.o
