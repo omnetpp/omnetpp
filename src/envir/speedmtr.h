@@ -23,12 +23,13 @@
 
 #include <time.h>
 #include "defs.h"
+#include "envdefs.h"
 
 
 //
 // Speedometer: utility class to measure simulation speed
 //
-class Speedometer
+class ENVIR_API Speedometer
 {
     bool started;
     long events;

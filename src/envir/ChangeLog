@@ -255,3 +255,5 @@ June 19, 2000
    being passed to sprintf() as a "%s" argument) [reported by Ulrich Kaage]
 Jan 16, 2001
  - added Speedometer class
+Feb 6, 2001
+ - added dllexport to Speedometer 

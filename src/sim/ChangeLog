@@ -936,3 +936,5 @@ Jan 24, 2001
 Feb 5, 2001
  - ev<< and ev>> now supports cPar objects too [from Nicky van Foreest]
  - old BC3.1 support removed from cenvir.h
+Feb 6, 2001
+ - fix: Makefile.vc: 'clean' target didn't delete object files in std/ and pvm/

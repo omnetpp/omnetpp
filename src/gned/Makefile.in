@@ -82,7 +82,7 @@ depend:
 	makedepend -Y -I. -fMakefile.in -- *.c *.cc
 
 clean:
-	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned$(EXE_SUFFIX)
+	rm -f tclcode.cc *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned$(EXE_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

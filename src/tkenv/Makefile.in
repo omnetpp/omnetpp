@@ -87,7 +87,7 @@ depend:
 	makedepend -Y -I. -I../envir -I../sim -fMakefile.in -- *.cc
 
 clean:
-	rm -f *.o libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX)
+	rm -f *.o tclcode.cc libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

@@ -413,4 +413,5 @@ Jan 21, 2001
  - added hotkeys for step, run, etc commands:
      F4 Step, F5 Run, F6 Fast Run, F7 Express Run, F8 Stop, Ctrl-F4 Step within
      module
-        
+Feb 6, 2001
+ - make clean didn't delete tclcode.cc        
