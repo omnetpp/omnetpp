@@ -394,15 +394,16 @@ class SIM_API cModule : public cObject
     //@{
 
     /**
-     * Returns total number of module gates.
+     * Returns the total size of the gate array. Since the array may contain
+     * unused elements, the number of actual gates used might be less.
      */
     int gates() const {return gatev.items();}
-
+    
     /**
      * Return a gate by its ID. Issues a warning if gate does not exist.
      */
     cGate *gate(int g) {return (cGate*)gatev[g];}
-
+    
     /**
      * Return a gate by its ID. Issues a warning if gate does not exist.
      */
