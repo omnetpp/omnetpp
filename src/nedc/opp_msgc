@@ -112,7 +112,7 @@ close(IN);
 open(H,">$hfile") || die "*** Error: cannot open output file $hfile";
 open(CC,">$ccfile") || die "*** Error: cannot open output file $ccfile";
 
-print H "//\n// Generated file, do not edit! Created by opp_msgc.\n//\n\n";
+print H "//\n// Generated file, do not edit! Created by opp_msgc from $filename.\n//\n\n";
 print H "#ifndef $hdef\n";
 print H "#define $hdef\n\n";
 print H "#include <omnetpp.h>\n";
@@ -332,6 +332,9 @@ while ($msg =~ s/enum\s+([A-Za-z0-9_ \t]+?)\s*{(.*?)};?//s)
     }
     push(@enums, $enumname);
 
+    print H "/**\n";
+    print H " * Enum generated from $filename by opp_msgc.\n";
+    print H " */\n";
     print H "enum $enumname {\n";
     foreach $fieldname (@fieldlist)
     {
@@ -834,6 +837,46 @@ sub prepareForCodeGeneration
 #
 sub generateClass
 {
+    print H "/**\n";
+    print H " * Class generated from $filename by opp_msgc.\n";
+    if ($gap)
+    {
+        print H " *\n";
+        print H " * $msgclass is only useful if it gets subclassed, and $realmsgclass is derived from it.\n";
+        print H " * The minimum code to be written for $realmsgclass is the following:\n";
+        print H " *\n";
+        print H " * <pre>\n";
+        print H " * class $realmsgclass : public $msgclass\n";
+        print H " * {\n";
+        print H " *   public:\n";
+        if ($classtype eq "cobject") {
+            if ($keyword eq "message") {
+                print H " *     $realmsgclass(const char *name=NULL, int kind=0) : $msgclass(name,kind) {}\n";
+            } else {
+                print H " *     $realmsgclass(const char *name=NULL) : $msgclass(name) {}\n";
+            }
+            print H " *     $realmsgclass(const $realmsgclass& other) : $msgclass(other.name()) {operator=(other);}\n";
+        } else {
+            print H " *     $realmsgclass() : $msgclass() {}\n";
+            print H " *     $realmsgclass(const $realmsgclass& other) : $msgclass() {operator=(other);}\n";
+        }
+        print H " *     $realmsgclass& operator=(const $realmsgclass& other) {$msgclass\:\:operator=(other); return *this;}\n";
+        if ($classtype eq "cobject") {
+            print H " *     virtual cObject *dup() {return new $realmsgclass(*this);}\n";
+        }
+        print H " *     // ADD CODE HERE to redefine and implement pure virtual functions from $msgclass\n";
+        print H " * };\n";
+        print H " * </pre>\n";
+        if ($classtype eq "cobject") {
+            print H " *\n";
+            print H " * The following should go into a .cc (.cpp) file:\n";
+            print H " *\n";
+            print H " * <pre>\n";
+            print H " * Register_Class($realmsgclass);\n";
+            print H " * </pre>\n";
+        }
+    }
+    print H " */\n";
     if ($msgbaseclass eq "") {
         print H "class $msgclass\n";
     } else {
@@ -916,37 +959,6 @@ sub generateClass
         }
     }
     print H "};\n\n";
-
-    if ($gap)
-    {
-        print H "/*\n";
-        print H "* The minimum code to be written for $realmsgclass:\n";
-        print H "* (methods that cannot be inherited from $msgclass)\n";
-        print H "*\n";
-        print H "* class $realmsgclass : public $msgclass\n";
-        print H "* {\n";
-        print H "*   public:\n";
-        if ($classtype eq "cobject") {
-            if ($keyword eq "message") {
-                print H "*     $realmsgclass(const char *name=NULL, int kind=0) : $msgclass(name,kind) {}\n";
-            } else {
-                print H "*     $realmsgclass(const char *name=NULL) : $msgclass(name) {}\n";
-            }
-            print H "*     $realmsgclass(const $realmsgclass& other) : $msgclass(other.name()) {operator=(other);}\n";
-        } else {
-            print H "*     $realmsgclass() : $msgclass() {}\n";
-            print H "*     $realmsgclass(const $realmsgclass& other) : $msgclass() {operator=(other);}\n";
-        }
-        print H "*     $realmsgclass& operator=(const $realmsgclass& other) {$msgclass\:\:operator=(other); return *this;}\n";
-        if ($classtype eq "cobject") {
-            print H "*     virtual cObject *dup() {return new $realmsgclass(*this);}\n";
-        }
-        print H "* };\n";
-        if ($classtype eq "cobject") {
-            print H "* Register_Class($realmsgclass);\n";
-        }
-        print H "*/\n\n";
-    }
 
     if ($classtype eq "cobject" && !$gap) {
         # we only register cObject subclasses. If something is at least cPolymorphic,
@@ -1240,6 +1252,9 @@ sub generateClass
 #
 sub generateStruct
 {
+    print H "/**\n";
+    print H " * Struct generated from $filename by opp_msgc.\n";
+    print H " */\n";
     if ($msgbaseclass eq "") {
         print H "struct $msgclass\n";
     } else {
@@ -1255,18 +1270,6 @@ sub generateStruct
         }
     }
     print H "};\n\n";
-
-    if ($gap)
-    {
-        print H "/*\n";
-        print H "* You need to subclass $msgclass to produce $realmsgclass:\n";
-        print H "*\n";
-        print H "* struct $realmsgclass : public $msgclass\n";
-        print H "* {\n";
-        print H "*     // ...\n";
-        print H "* };\n";
-        print H "*/\n\n";
-    }
 
     print H "void doPacking(cCommBuffer *b, $msgclass& a);\n";
     print H "void doUnpacking(cCommBuffer *b, $msgclass& a);\n\n";
