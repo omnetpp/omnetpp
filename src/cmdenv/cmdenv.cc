@@ -422,9 +422,13 @@ void TCmdenvApp::help()
 {
     ev << "\n";
     ev << "Command line switches:\n";
-    ev << "  -h               this help\n";
-    ev << "  -fsomething.ini  specifies ini file to use (instead of omnetpp.ini)\n";
-    ev << "  -r1,2,5-10       specifies runs to be executed\n";
+    ev << "  -h            print this help and exit.\n";
+    ev << "  -f <inifile>  use the given ini file instead of omnetpp.ini.\n";
+    ev << "  -r <runs>     execute the specified runs in the ini file.\n";
+    ev << "                <runs> is a comma-separated list of run numbers or\n";
+    ev << "                run number ranges, for example 1,2,5-10.\n" ;
+    ev << "  -l <library>  load the specified shared library on startup.\n";
+    ev << "                The library can contain modules, networks, etc.\n";
     ev << "\n";
 
     ev << "Available networks:\n";
