@@ -545,7 +545,7 @@ sends out message on that gate.
 @skip ::forwardMessage
 @until }
 
-If the message arrives at tic[3], handleMessage() will delete the message.
+When the message arrives at tic[3], its handleMessage() will delete the message.
 
 See the full code in @ref txc9.cc.
 
@@ -560,20 +560,53 @@ a self-message, then arrivalGate() returns NULL.
 Sources: @ref tictoc9.ned, @ref txc9.cc, @ref omnetpp.ini
 
 
-@section s10 Step 10
+@section s10 Step 10: Defining message classes
 
-In this step the destination address is no longer node 2 -- we draw a
+In this step the destination address is no longer hardcoded tic[3] -- we draw a
 random destination, and we'll add the destination address to the message.
 
 The best way is to subclass cMessage and add destination as a data member.
-Hand-coding the message class is usually tiresome because it contains
+Hand-coding the message class is usually tedious because it contains
 a lot of boilerplate code, so we let OMNeT++ generate the class for us.
-The message class specification is in tictoc10.msg -- tictoc10_m.h
-and .cc will be generated from this file automatically.
+The message class specification is in tictoc10.msg:
+
+@dontinclude tictoc10.msg
+@skip message TicTocMsg10
+@until }
+
+The makefile is set up so that the message compiler, opp_msgc is invoked
+and it generates tictoc10_m.h and tictoc10_m.cc from the message declaration.
+They will contain a generated TicTocMsg10 class subclassed from cMessage;
+the class will have getter and setter methods for every field.
+
+We'll include tictoc10_m.h into our C++ code, and we can use TicTocMsg10 as
+any other class.
+
+@dontinclude txc10.cc
+@skipline tictoc10_m.h
+
+For example, we use the following lines in generateMessage() to create the
+message and fill its fields.
+
+@skip ::generateMessage(
+@skip TicTocMsg10 *msg
+@until return msg
+
+Then, handleMessage() begins like this:
+
+@skip ::handleMessage(
+@until getDestination
+
+In the argument to handleMessage(), we get the message as a cMessage * pointer.
+However, we can only access its fields defined in TicTocMsg10 if we cast
+msg to TicTocMsg10 *. Plain C-style cast (<code>(TicTocMsg10 *)msg</code>)
+is not safe because
 
 To make the model execute longer, after a message arrives to its destination
 the destination node will generate another message with a random destination
 address, and so forth.
+
+See the full code in @ref txc10.cc.
 
 Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
 
