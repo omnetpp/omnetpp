@@ -19,14 +19,38 @@ OMNETPP_ROOT=d:/home/omnetpp
 OMNETPP_VERSION=omnetpp-2.3
 
 #
-# Location of Tcl/Tk, MPI, Expat, etc.
+# Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
+# Leave BLT_VER empty if you don't have BLT.
 #
 TK_DIR=d:/home/tools/Tcl-8.4.2
 TK_VER=8.4
+BLT_VER=2.4
+
+#
+# MPI directory. MPI is only needed for parallel distributed execution.
+# Leave empty if you don't have MPI.
+#
 MPI_DIR=
 #MPI_DIR=d:/home/tools/mpi
+
+#
+# Location of Expat.
+#
 EXPAT_DIR=d:/home/tools/expat-1.95.6
+
+#
+# Directory of various tools
+#
+
+# Doxygen is needed for generating HTML documentation from C++
 DOXYGEN_DIR=d:/home/tools/doxygen
+
+# Perl: needed for makedep, experimental msg subclassing compiler (msgc), test tool (opp_test)
+PERL=perl.exe
+
+# flex/bison: only needed it you want to modify NEDC or GNED
+YACC=D:/home/tools/UnxUtils/usr/local/wbin/bison.exe
+LEX=D:/home/tools/UnxUtils/usr/local/wbin/flex.exe
 
 #
 # Choice of XML parser. Possible choices: expat or none (perhaps libxml in the
@@ -34,106 +58,6 @@ DOXYGEN_DIR=d:/home/tools/doxygen
 #
 XMLPARSER=expat
 #XMLPARSER=none
-
-#
-# other directories & files based on the base dirs
-#
-OMNETPP_SRC_DIR=$(OMNETPP_ROOT)/src
-OMNETPP_SAMPLES_DIR=$(OMNETPP_ROOT)/samples
-OMNETPP_TUTORIAL_DIR=$(OMNETPP_ROOT)/tutorial
-OMNETPP_TEST_DIR=$(OMNETPP_ROOT)/test
-OMNETPP_DOC_DIR=$(OMNETPP_ROOT)/doc
-
-OMNETPP_BIN_DIR=$(OMNETPP_ROOT)/bin
-OMNETPP_INCL_DIR=$(OMNETPP_ROOT)/include
-OMNETPP_LIB_DIR=$(OMNETPP_ROOT)/lib
-
-TK_INCL_DIR=$(TK_DIR)/include
-TK_LIB_DIR=$(TK_DIR)/lib
-TCL_LIB=tcl$(TK_VER:.=).lib
-TK_LIB=tk$(TK_VER:.=).lib
-_TCL_LIBRARY=$(TK_DIR)/lib/tcl$(TK_VER)
-
-!if "$(MPI_DIR)"!=""
-HAVE_MPI=yes
-!endif
-MPI_INCL_DIR=$(MPI_DIR)/include
-
-EXPAT_INCL_DIR=$(EXPAT_DIR)/source/lib
-EXPAT_LIB_DIR=$(EXPAT_DIR)/libs
-EXPAT_LIB=libexpat.lib
-
-#
-# tools
-#
-
-# MSVC programs
-CXX=cl.exe
-LINK=link.exe
-AS=cl.exe
-AR=link.exe /lib
-SHLIB_LD=link.exe /dll
-RC=rc.exe
-
-# Perl: needed for makedep, experimental msg subclassing compiler (msgc), test tool (opp_test)
-PERL=perl.exe
-
-# dependency generator (needs Perl!)
-MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
-
-# OMNeT++ tools
-NEDC=$(OMNETPP_BIN_DIR)/nedc
-#NEDC=$(OMNETPP_BIN_DIR)/nedtool
-MSGC=$(OMNETPP_BIN_DIR)/opp_msgc
-REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
-
-# the Tcl/Tk interpreter, used by Plove
-WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
-
-# flex/bison: only needed it you want to modify NEDC or GNED
-YACC=D:/home/tools/UnxUtils/usr/local/wbin/bison.exe
-LEX=D:/home/tools/UnxUtils/usr/local/wbin/flex.exe
-
-# for documentation generation
-DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
-
-#
-# configuration
-#
-
-# Compiler switches
-
-CFLAGS_DEBUG=/nologo /GX /GR /FD /Zm180 /MLd /Od /Gm /GZ /ZI
-LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
-
-CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm180 /ML /O2 /D "NDEBUG"
-LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
-
-CFLAGS=$(CFLAGS_DEBUG)
-LDFLAGS=$(LDFLAGS_DEBUG)
-#CFLAGS=$(CFLAGS_RELEASE)
-#LDFLAGS=$(LDFLAGS_RELEASE)
-
-# LIB_SUFFIX is either .lib or .dll
-LIB_SUFFIX=.lib
-
-HAVE_DLOPEN=0
-
-OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
-OMNETPP_GNED_DIR=$(OMNETPP_ROOT)/src/gned
-OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
-
-#
-# Compile switches (e.g. -Ixxx) and linker switches
-# necessary to build an app with MPI or Tcl/Tk.
-#
-TK_CFLAGS=/I "$(TK_INCL_DIR)"
-TK_LIBS=$(TCL_LIB) $(TK_LIB) /libpath:"$(TK_LIB_DIR)"
-MPI_CFLAGS=/I "$(MPI_INCL_DIR)"
-MPI_LIBS=
-XML_CFLAGS=/I "$(EXPAT_INCL_DIR)"
-XML_LIBS=$(EXPAT_LIB) /libpath:"$(EXPAT_LIB_DIR)"
-SYS_LIBS=
 
 #
 # If you don't want to build some of the components below, substitute
@@ -151,16 +75,14 @@ GNED_IF_POSSIBLE=gned
 # This option is available at present for Tkenv, GNED and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-TKENV_EMBED_TCL=no
-GNED_EMBED_TCL=yes
-PLOVE_EMBED_TCL=no
+EMBED_TCL_CODE=no
 
 #
 # It is possible to compile GNED and Plove as Windows GUI apps (ie. not
 # console apps). Set the following variable to "yes" to enable compiling
 # GUI apps.
 #
-USE_WINMAIN=yes
+USE_WINMAIN=no
 
 #
 # Set to "yes" to enable simulation executables load NED files dynamically.
@@ -172,9 +94,111 @@ WITH_NETBUILDER=no
 #
 WITH_PARSIM=yes
 
+#
+# Choose between debug and release libraries here
+#
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
 
-# not user serviceable
-!if "$(WITH_PARSIM)"=="yes"
-CFLAGS= $(CFLAGS) /DWITH_PARSIM
+#
+#========= You probably won't need to change anything below this line ========
+#
+
+#
+# Other directories & files based on the base dirs
+#
+OMNETPP_SRC_DIR=$(OMNETPP_ROOT)/src
+OMNETPP_SAMPLES_DIR=$(OMNETPP_ROOT)/samples
+OMNETPP_TUTORIAL_DIR=$(OMNETPP_ROOT)/tutorial
+OMNETPP_TEST_DIR=$(OMNETPP_ROOT)/test
+OMNETPP_DOC_DIR=$(OMNETPP_ROOT)/doc
+
+OMNETPP_BIN_DIR=$(OMNETPP_ROOT)/bin
+OMNETPP_INCL_DIR=$(OMNETPP_ROOT)/include
+OMNETPP_LIB_DIR=$(OMNETPP_ROOT)/lib
+
+OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
+OMNETPP_GNED_DIR=$(OMNETPP_ROOT)/src/gned
+OMNETPP_PLOVE_DIR=$(OMNETPP_ROOT)/src/plove
+OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
+
+#
+# Libraries
+#
+
+TK_INCL_DIR=$(TK_DIR)/include
+TK_LIB_DIR=$(TK_DIR)/lib
+TCL_LIB=tcl$(TK_VER:.=).lib
+TK_LIB=tk$(TK_VER:.=).lib
+_TCL_LIBRARY=$(TK_DIR)/lib/tcl$(TK_VER)
+
+!if "$(BLT_VER)"!=""
+HAVE_BLT=yes
+BLT_LIB=blt$(BLT_VER:.=).lib
 !endif
+
+!if "$(MPI_DIR)"!=""
+HAVE_MPI=yes
+!endif
+MPI_INCL_DIR=$(MPI_DIR)/include
+
+EXPAT_INCL_DIR=$(EXPAT_DIR)/source/lib
+EXPAT_LIB_DIR=$(EXPAT_DIR)/libs
+EXPAT_LIB=libexpat.lib
+
+# compiler and linker switches necessary to build an app with Tcl/Tk, MPI, expat, etc.
+TK_CFLAGS=/I "$(TK_INCL_DIR)"
+TK_LIBS=$(TCL_LIB) $(TK_LIB) $(BLT_LIB) /libpath:"$(TK_LIB_DIR)"
+MPI_CFLAGS=/I "$(MPI_INCL_DIR)"
+MPI_LIBS=
+XML_CFLAGS=/I "$(EXPAT_INCL_DIR)"
+XML_LIBS=$(EXPAT_LIB) /libpath:"$(EXPAT_LIB_DIR)"
+SYS_LIBS=
+
+#
+# Tools
+#
+
+# MSVC programs
+CXX=cl.exe
+LINK=link.exe
+AS=cl.exe
+AR=link.exe /lib
+SHLIB_LD=link.exe /dll
+RC=rc.exe
+
+# dependency generator (needs Perl!)
+MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
+
+# OMNeT++ tools
+NEDC=$(OMNETPP_BIN_DIR)/nedc
+#NEDC=$(OMNETPP_BIN_DIR)/nedtool
+MSGC=$(OMNETPP_BIN_DIR)/opp_msgc
+REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
+WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
+DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
+
+#
+# Configuration
+#
+
+# Compiler switches
+
+CFLAGS_DEBUG=/nologo /GX /GR /FD /Zm200 /MLd /Od /Gm /GZ /ZI
+LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
+
+CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm180 /ML /O2 /D "NDEBUG"
+LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
+
+# LIB_SUFFIX is either .lib or .dll
+LIB_SUFFIX=.lib
+
+HAVE_DLOPEN=0
+
+!if "$(WITH_PARSIM)"=="yes"
+CFLAGS=$(CFLAGS) /DWITH_PARSIM
+!endif
+
 
