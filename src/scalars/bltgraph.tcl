@@ -425,4 +425,26 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     destroy $w
 }
 
+#
+# Utility for creating charts and plots
+#
+proc getChartColor {i} {
+    set graphcolors {
+        red blue green cyan yellow black orange purple gray magenta
+        turquoise lightgray violet wheat maroon tan darkgray
+        red4 green4 blue4
+    }
+    set color [lindex $graphcolors [expr $i % [llength $graphcolors]]]
+    return $color
+}
 
+#
+# Utility for creating charts and plots
+#
+proc getChartSymbol {i} {
+    set list {
+        square circle diamond plus cross splus scross triangle
+    }
+    set sel [lindex $list [expr $i % [llength $list]]]
+    return $sel
+}
