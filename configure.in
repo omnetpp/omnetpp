@@ -90,7 +90,6 @@ OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
 OMNETPP_UTILS_DIR="$OMNETPP_SRC_DIR/utils"
 OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
-OMNETPP_TUTORIAL_DIR="$OMNETPP_ROOT/tutorial"
 # OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
 OMNETPP_TEST_DIR="$OMNETPP_ROOT/test"
 OMNETPP_BITMAP_PATH="./bitmaps;$OMNETPP_ROOT/bitmaps"
@@ -550,7 +549,6 @@ AC_CONFIG_FILES(
   samples/queues/Makefile
   samples/tictoc/Makefile
   samples/tokenring/Makefile
-  tutorial/queues/Makefile
   include/Makefile
   test/Makefile
 )

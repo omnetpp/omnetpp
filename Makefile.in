@@ -25,7 +25,7 @@ OMNETPP_TEST_DIR =      @OMNETPP_TEST_DIR@
 
 all: check-env components
 
-components: libs progs samples tutorials
+components: libs progs samples
 
 
 #=====================================================================
@@ -130,9 +130,6 @@ tictoc:
 
 tokenring:
 	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
-
-tutorials:
-	cd $(OMNETPP_TUTORIAL_DIR)/queues && $(MAKE)
 
 #
 # Documentation

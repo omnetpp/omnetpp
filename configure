@@ -2726,7 +2726,6 @@ OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
 OMNETPP_UTILS_DIR="$OMNETPP_SRC_DIR/utils"
 OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
-OMNETPP_TUTORIAL_DIR="$OMNETPP_ROOT/tutorial"
 # OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
 OMNETPP_TEST_DIR="$OMNETPP_ROOT/test"
 OMNETPP_BITMAP_PATH="./bitmaps;$OMNETPP_ROOT/bitmaps"
@@ -5607,7 +5606,7 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-                                                                                                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/scalars/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fddi/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
+                                                                                                                                                                                                                                                                                                            ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/scalars/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/aloha/Makefile samples/cqn/Makefile samples/dyna/Makefile samples/fddi/Makefile samples/fifo/Makefile samples/hcube/Makefile samples/hist/Makefile samples/neddemo/Makefile samples/p-to-p/Makefile samples/queueing/Makefile samples/routing/Makefile samples/queues/Makefile samples/tictoc/Makefile samples/tokenring/Makefile include/Makefile test/Makefile"
 
 
 
@@ -6276,7 +6275,6 @@ do
   "samples/queues/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/queues/Makefile" ;;
   "samples/tictoc/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/tictoc/Makefile" ;;
   "samples/tokenring/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/tokenring/Makefile" ;;
-  "tutorial/queues/Makefile" ) CONFIG_FILES="$CONFIG_FILES tutorial/queues/Makefile" ;;
   "include/Makefile" ) CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5

@@ -37,7 +37,7 @@ ENVIR_ILIB=
 
 all: check-env components reminder
 
-components: libs progs configsamples samples configtutorial thetutorial
+components: libs progs configsamples samples
 
 
 #=====================================================================
@@ -175,10 +175,6 @@ tokenring:
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
-thetutorial:
-	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) $(MAKEFILE)
-
 
 #
 # Documentation
@@ -223,20 +219,6 @@ configsamples:
 	    $(REPLACE:/=\) -          - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
 	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
 	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIB@"      "$(TK_LIB)"
-
-configtutorial:
-	@echo ===== Configuring .dsp files for tutorial/queues =====
-	-cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && ren *.cc *.cpp 2>nul
-	cd /d $(OMNETPP_TUTORIAL_DIR:/=\)\queues && \
-	$(REPLACE:/=\) queues.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
-	$(REPLACE:/=\) -             - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
-	$(REPLACE:/=\) -             - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
-	$(REPLACE:/=\) -          - "@EXPAT_LIB@" "$(EXPAT_LIB)" | \
-	$(REPLACE:/=\) -          - "@EXPAT_LIB_PATH@" "$(EXPAT_LIB_DIR)" | \
-	$(REPLACE:/=\) -             - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
-	$(REPLACE:/=\) -             - "@TCL_LIB@"     "$(TCL_LIB)"    | \
-	$(REPLACE:/=\) -    queues.dsp "@TK_LIB@"      "$(TK_LIB)"
-
 
 clean:
 	-for %%i in ( $(LIBS) $(PROGS) ) do \

@@ -11,7 +11,7 @@ such software packages.
 
 Important
 ~~~~~~~~~
-If you use OMNeT++ for your research and happen to publish the results in some 
+If you use OMNeT++ for your research and happen to publish the results in some
 form, please include a reference to OMNeT++ and let me know.
 
 In any case, if you find OMNeT++ useful for your work, I'd be more than happy
@@ -48,13 +48,6 @@ omnetpp/              OMNeT++ root directory
        plove/         output vector analyzer and plotting tool
        utils/         makefile-autocreator etc
    test/              regression tests for the simulation kernel
-
-There is a tutorial, contributed by Nick van Foreest:
-
-omnetpp/
-   tutorial/          the tutorial document
-       queues/        sample simulation that supports the tutorial
-       doc_src/       the Latex sources for the tutorial doc
 
 Sample simulations are within the samples directory.
 Each of the sample directories contain a network description

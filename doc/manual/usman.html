@@ -334,7 +334,7 @@ font-weight: bold;
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.5.4."></A><A HREF="#sec379">13.5.4. Implementation of the user interface: simulation applications</A><BR>
 <BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_14."></A><A HREF="#sec380">14. NED Language Grammar</A></B></FONT><BR>
 <BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_15."></A><A HREF="#sec381">15. References</A></B></FONT><BR>
- 
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
@@ -1232,14 +1232,6 @@ here's a list what you can find in the different directories.
       <b>utils/</b>       makefile-autocreator etc
     <b>test/</b>          regression test suite
       <b>distrib/</b>     regression test suite for built-in distributions
-</pre>
-
-<p>There is a tutorial, contributed by Nick van Foreest
-
-<p><pre>
-    <b>tutorial/</b>    the tutorial document
-      <b>queues/</b>    sample simulation that supports the tutorial
-      <b>doc_src/</b>   the Latex sources for the tutorial doc
 </pre>
 
 <p>Sample simulations are within the <SAMP>samples</SAMP> directory. Each of the
@@ -2148,7 +2140,7 @@ There are two additional sections, <SAMP>submodules</SAMP> and
 
 <p><H3><A NAME="sec140"/>4.5.1. Compound module parameters and gates</H3>
 
-<p>Parameters and gates 
+<p>Parameters and gates
 for compound modules are declared and work in the same way
 as with simple modules, described in sections
 <a href="#sec:ch-ned-lang:simple-module-param">[click]</a>
@@ -2985,7 +2977,7 @@ which one to be used.
 <TR> <TD align=left> <tt>geometric(p, <EM>rng=0</tt>)</EM> </TD> <TD align=left> geometric distribution with parameter 0&lt;=p&lt;=1 </TD></TR>
 <TR> <TD align=left> <tt>negbinomial(n, p, <EM>rng=0</tt>)</EM> </TD> <TD align=left> binomial distribution with parameters n&gt;0 and 0&lt;=p&lt;=1</TD></TR>
 <TR> <TD align=left> <tt>poisson(lambda, <EM>rng=0</tt>)</EM> </TD> <TD align=left> Poisson distribution with parameter lambda </TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
 </table>
 
 
@@ -7001,7 +6993,7 @@ b-&gt;gate("out")-&gt;connectTo(a-&gt;gate("in"));
 additional, optional argument. Channels are subclassed from
 <tt>cChannel</tt>. Almost always you'll want use an instance of
 <tt>cSimpleChannel</tt> as channel - this is the one that supports
-delay, bit error rate 
+delay, bit error rate
 and data rate. The channel object will
 be owned by the source gate of the connection, and you cannot
 reuse the same channel object with several connections.
@@ -8414,7 +8406,7 @@ this is not written out in the following table):
     </TD> <TD align=left>
 <b>Generated code</b>
 </TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
 primitive types
 <pre>
 double field;
@@ -8425,7 +8417,7 @@ double getField();
 void setField(double d);
 </pre>
 </TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
 string type
 <pre>
 string field;
@@ -8436,7 +8428,7 @@ const char *getField();
 void setField(const char *);
 </pre>
 </TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
 fixed-size arrays
 <pre>
 double field[4];
@@ -8449,7 +8441,7 @@ unsigned getFieldArraySize();
 </pre>
 
 <p></TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
 dynamic arrays
 <pre>
 double field[];
@@ -8462,7 +8454,7 @@ double getField(unsigned k);
 void setField(unsigned k, double d);
 </pre>
 </TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
 customized class
 <pre>
 class Foo {
@@ -8480,7 +8472,7 @@ class Foo : public Foo_Base {
 };
 </pre>
 </TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
 abstract fields
 <pre>
 abstract double field;
@@ -8491,7 +8483,7 @@ double getField() = 0;
 void setField(double d) = 0;
 </pre>
 </TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
 </table>
 
 <p>
@@ -8983,7 +8975,7 @@ It has the following properties:
    <li><strong></strong>Range: ... 2^31-2$
    <li><strong></strong>Period length: ^31-2$
    <li><strong></strong>Method: $x := (x * 7^5) mod (2^31-1)$
-   <li><strong>Verification: if $x[0]</strong> = 1$ then $x[10000] = 1,043,618,065$ 
+   <li><strong>Verification: if $x[0]</strong> = 1$ then $x[10000] = 1,043,618,065$
    <li><strong></strong>Required hardware: exactly 32-bit integer arithmetics
 </UL>
 
@@ -9122,7 +9114,7 @@ which one to be used.
 <TR> <TD align=left> <tt>geometric(p, <EM>rng=0</tt>)</EM> </TD> <TD align=left> geometric distribution with parameter 0&lt;=p&lt;=1 </TD></TR>
 <TR> <TD align=left> <tt>negbinomial(n, p, <EM>rng=0</tt>)</EM> </TD> <TD align=left> binomial distribution with parameters n&gt;0 and 0&lt;=p&lt;=1</TD></TR>
 <TR> <TD align=left> <tt>poisson(lambda, <EM>rng=0</tt>)</EM> </TD> <TD align=left> Poisson distribution with parameter lambda </TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
 </table>
 
 <p>
@@ -12564,13 +12556,13 @@ Unnamed Web page
 <H3><A NAME="sec304"/>9.2.1. Documentation comments</H3>
 
 <p>Documentation is embedded in normal comments. All <SAMP>//</SAMP> comments
-that are in the ``right place'' (from the documentation tool's 
+that are in the ``right place'' (from the documentation tool's
 point of view) will be included in the generated documentation.
-  <br><ul><font size=-1>[In contrast, Javadoc and Doxygen use special comments (those 
-     beginning with <SAMP>/**</SAMP>, <SAMP>///</SAMP>, <SAMP>//&lt;</SAMP> or a similar 
-     marker) to distinguish documentation from ``normal'' comments in the 
-     source code. In OMNeT++ there's no need for that: NED and the message 
-     syntax so compact that practically all comments one would want to write 
+  <br><ul><font size=-1>[In contrast, Javadoc and Doxygen use special comments (those
+     beginning with <SAMP>/**</SAMP>, <SAMP>///</SAMP>, <SAMP>//&lt;</SAMP> or a similar
+     marker) to distinguish documentation from ``normal'' comments in the
+     source code. In OMNeT++ there's no need for that: NED and the message
+     syntax so compact that practically all comments one would want to write
      in them can serve documentation purposes. Still, there is a way to write
      comments that <EM>don't</EM> make it into the documentation - by starting
      them with <SAMP>//#</SAMP>.]</font></ul>
@@ -12639,8 +12631,8 @@ Text formatting works like in Javadoc or Doxygen - you can break up the
 text into paragraphs and create bulleted/numbered lists without
 special commands, and use HTML for more fancy formatting.
 
-<p>Paragraphs are separated by empty lines, like in LaTeX or Doxygen. 
-Lines beginning with `<tt>-</tt>' will be turned into bulleted lists, 
+<p>Paragraphs are separated by empty lines, like in LaTeX or Doxygen.
+Lines beginning with `<tt>-</tt>' will be turned into bulleted lists,
 and lines beginning with `<tt>-#</tt>' into numbered lists.
 
 <p>Example:
@@ -12811,27 +12803,27 @@ will be awkward.
 <p>
 <H3><A NAME="sec309"/>9.2.6. Customizing the title page</H3>
 
-<p>The title page is the one that appears in the main frame after 
+<p>The title page is the one that appears in the main frame after
 opening the documentation in the browser. By default it contains
 a boilerplate text with the generic title <EM>``OMNeT++ Model Documentation''</EM>.
 You probably want to customize that, and at least change the title
 to the name of the documented simulation model.
- 
+
 <p>You can supply your own version of the title page adding a <tt>@titlepage</tt>
 directive to a file-level comment (a comment that appears at the top of
-a NED file, but is separated from the first <tt>import</tt>, <tt>channel</tt>, 
+a NED file, but is separated from the first <tt>import</tt>, <tt>channel</tt>,
 <tt>module</tt>, etc. definition by at least one blank line).
-In theory you can place your title page definition into 
+In theory you can place your title page definition into
 any NED or MSG file, but it is probably a good idea to create
-a separate <tt>index.ned</tt> file for it.   
+a separate <tt>index.ned</tt> file for it.
 
-<p>The lines you write after the <tt>@titlepage</tt> line up to the next 
-<tt>@page</tt> line (see later) or the end of the comment will be used 
+<p>The lines you write after the <tt>@titlepage</tt> line up to the next
+<tt>@page</tt> line (see later) or the end of the comment will be used
 as the title page.
 You probably want to begin with a title because the documentation
 tool doesn't add one (it lets you have full control over the
-page contents). You can use the <tt>&lt;h1&gt;..&lt;/h1&gt;</tt> HTML tag 
-to define a title. 
+page contents). You can use the <tt>&lt;h1&gt;..&lt;/h1&gt;</tt> HTML tag
+to define a title.
 
 <p>Example:
 
@@ -12849,7 +12841,7 @@ to define a title.
 <p><H3><A NAME="sec310"/>9.2.7. Adding extra pages</H3>
 
 <p>You can add new pages to the documentation in a similar way as customizing
-the title page. The directive to be used is <tt>@page</tt>, and it can 
+the title page. The directive to be used is <tt>@page</tt>, and it can
 appear in any file-level comment (see above).
 
 <p>The syntax of the <tt>@page</tt> directive is the following:
@@ -12857,9 +12849,9 @@ appear in any file-level comment (see above).
 <pre>
 // @page filename.html, Title of the Page
 </pre>
-<p>  
+<p>
 Please choose a file name that doesn't collide with the files generated
-by the documentation tool (such as <tt>index.html</tt>). 
+by the documentation tool (such as <tt>index.html</tt>).
 The page title you supply will appear on the top of the page as well as
 in the page index.
 
@@ -12873,7 +12865,7 @@ automatically adds one.
 //
 // @page structure.html, Directory Structure
 //
-// The model core model files and the examples have been placed 
+// The model core model files and the examples have been placed
 // into different directories. The &lt;tt&gt;examples/&lt;/tt&gt; directory...
 //
 //
@@ -12883,8 +12875,8 @@ automatically adds one.
 </pre>
 
 <p>You can create links to the generated pages in the normal HTML way,
-using the <tt>&lt;a href="..."&gt;...&lt;/a&gt;</tt> tag. All HTML files are 
-placed in a single directory, so you don't have to worry about 
+using the <tt>&lt;a href="..."&gt;...&lt;/a&gt;</tt> tag. All HTML files are
+placed in a single directory, so you don't have to worry about
 specifying directories.
 
 <p>Example:
@@ -12899,24 +12891,24 @@ specifying directories.
 <p>
 <H3><A NAME="sec311"/>9.2.8. Incorporating externally created pages</H3>
 
-<p>You may want to create pages outside the documentation tool 
-(e.g. using a HTML editor) and include them in the documentation. 
-This is possible, all you have to do is declare such pages with 
-the <tt>@externalpage</tt> directive in any of the NED files, and 
+<p>You may want to create pages outside the documentation tool
+(e.g. using a HTML editor) and include them in the documentation.
+This is possible, all you have to do is declare such pages with
+the <tt>@externalpage</tt> directive in any of the NED files, and
 they will be added to the page index. The pages can then be linked to
-from other pages using the HTML <tt>&lt;a href="..."&gt;...&lt;/a&gt;</tt> tag. 
+from other pages using the HTML <tt>&lt;a href="..."&gt;...&lt;/a&gt;</tt> tag.
 
 <p>The <tt>@externalpage</tt> directive is similar in syntax
-<tt>@page</tt>:  
+<tt>@page</tt>:
 
 <pre>
 // @externalpage filename.html, Title of the Page
 </pre>
 <p>
-The documentation tool does not check if the page exists 
-or not. It is your responsibility to copy them manually into 
+The documentation tool does not check if the page exists
+or not. It is your responsibility to copy them manually into
 the directory of the generated documentation and then to make
-sure the hyperlinks work. 
+sure the hyperlinks work.
 
 <p>
 
@@ -13298,7 +13290,7 @@ Part of the Envir plugin mechanism: defines the name of the class to
 handle streams to which <tt>snapshot()</tt> writes its output.  The
 class has to implement the <tt>cSnapshotManager</tt> interface defined
 in <tt>envirext.h</tt>.</TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
 </table>
 
 <p><hr><H2><A NAME="sec324"/>10.3. Cmdenv: the command-line interface</H2>
@@ -13322,7 +13314,7 @@ switches:
   </TD> <TD align=left>
   The program prints a short help message and the networks
   contained in the executable, then exits.</TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
   <tt>-f</tt> <SAMP>&lt;</SAMP><EM>fileName<SAMP>&gt;</SAMP></EM>
   </TD> <TD align=left>
   Specify the name of the configuration file.
@@ -13331,7 +13323,7 @@ switches:
   configuration file.  For example, one file can contain your general
   settings, another one most of the module parameters, another one the
   module parameters you change often.</TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
   <tt>-l</tt> <SAMP>&lt;</SAMP><EM>fileName<SAMP>&gt;</SAMP></EM>
   </TD> <TD align=left>
   Load a shared object (<SAMP>.so</SAMP> file on Unix).
@@ -13341,7 +13333,7 @@ switches:
   on Unix) you can even eliminate the need to re-link the simulation
   program after each change in a source file.  (Shared objects can be
   created with <SAMP>gcc -shared...</SAMP>)</TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
   <tt>-r</tt> <SAMP>&lt;</SAMP><EM>runs<SAMP>&gt;</SAMP></EM>
   </TD> <TD align=left>
   It specifies which runs should be executed (e.g. <tt>-r 2,4,6-8</tt>).
@@ -13579,7 +13571,7 @@ switches:
   </TD> <TD align=left>
   The program prints a short help message and the networks
   contained in the executable, then exits.</TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
   <tt>-f </tt><EM>&lt;fileName&gt;</EM>
   </TD> <TD align=left>
   Specify the name of the configuration file.
@@ -13588,7 +13580,7 @@ switches:
   configuration file.  For example, one file can contain your general
   settings, another one most of the module parameters, another one the
   module parameters you change often.</TD></TR>
-<TR> <TD align=left> 
+<TR> <TD align=left>
   <tt>-l </tt><EM>&lt;fileName&gt;</EM>
   </TD> <TD align=left>
   Load a shared object (<SAMP>.so</SAMP> file on Unix).
@@ -15143,7 +15135,7 @@ The rectangles in the picture represent functional blocks:
     your simulation program with.
        <br><ul><font size=-1>[Use of dynamic (shared) libraries is also possible, but
        for simplicity we'll use the word <EM>linking</EM> here.]</font></ul>
-    
+
   <li><strong></strong><STRONG>Envir</STRONG> is another library which contains all code
     that is common for all user interfaces. <tt>main()</tt> is also in Envir.
     Envir provides services like ini file handling for specific user interface
@@ -15550,7 +15542,7 @@ Specific user interfaces such as <tt>TCmdenv</tt>,
 <UL>
   <li><strong></strong>add new configuration options
   <li><strong></strong>provide a <tt>run()</tt> function
-  
+
 <p>  <li><strong></strong>implement functions left empty in <tt>TOmnetApp</tt> (like
     <tt>breakpointHit()</tt>, <tt>objectDeleted()</tt>).
 </UL>
