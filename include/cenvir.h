@@ -84,7 +84,20 @@ typedef basic_evbuf<char> evbuf;
 
 
 /**
- * The environment object global instance.
+ * Represents the "environment" or user interface of the simulation.
+ *
+ * Most common usage from model code (simple modules) is to write log
+ * messages, e.g.:
+ *
+ * <pre>
+ * ev << "Received packet " << msg->name() << ", length " << msg->length()/8 << " bytes\n";
+ * ev << "Sending up to higher layer\n";
+ * </pre>
+ *
+ * Other useful methods are cEnvir::isGUI() and cEnvir::disabled().
+ *
+ * The rest of cEnvir methods are used internally for communication between
+ * the simulation kernel and the environment.
  *
  * @ingroup Envir
  */
