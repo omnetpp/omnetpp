@@ -126,3 +126,4 @@ May 10, 2000
  - [Cmdenv]/extra-stack= option added, it specifies (in bytes) how much extra
    stack each activity() module needs when executing under Cmdenv.
    This used to be hardcoded (8192), now users can fine-tune it.
+------ omnetpp-2_0b4 released ------

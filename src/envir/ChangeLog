@@ -247,4 +247,4 @@ Apr 10, 2000
  - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
 May 7, 2000
  - Makefile.vc improvements from Balazs Kelemen
-
+------ omnetpp-2_0b4 released ------
