@@ -14,8 +14,8 @@
 # nedc-generated _n.cc files)
 #
 #CFLAGS='-g -Wno-unused'
-CFLAGS='-gstabs+ -fpermissive -pipe -Wall -Wno-unused'
-#CFLAGS='-O3 -DNDEBUG=1 -Wno-unused'
+#CFLAGS='-g -Wall -Wno-unused'
+CFLAGS='-O3 -DNDEBUG=1 -Wno-unused'
 
 #
 # Select here whether you want to build static or shared libraries.
@@ -68,14 +68,14 @@ PLOVE_EMBED_TCL=no
 # (Sometimes you need to explicitly link with the X11 libraries too, in that
 # case add -lX11 to TK_LIBS).
 #
-TK_CFLAGS='-I/tools/gnu/include'
-TK_LIBS='-L/tools/gnu/lib -ltcl8.3 -ltk8.3'
+TK_CFLAGS=
+TK_LIBS=
 
 #
 # Similar settings for PVM.
 #
-PVM_CFLAGS='-I/tools/misc/pvm3/include'
-PVM_LIBS='-L/tools/misc/pvm3/lib/SUN4SOL2 -lpvm3'
+PVM_CFLAGS=
+PVM_LIBS=
 
 #
 # You may override the settings below. This is only useful if you have moved
