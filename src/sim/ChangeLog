@@ -640,8 +640,14 @@ Sept 5, 1999
   - callInitialize() was added to cSimpleModule to enable calling initialize()
     from user code; callInitialize() was also added for cModule and
     cCompoundModule so that it can be used polimorphically.
-  - added cModuleType::createAndInit(char *name, cModule *parent) convenience
-    function (includes create(), buildInside(), and callInitialize()).
+  - added cModuleType::createInitStart(char *namestr, cModule *parentmod)
+    convenience function to get a module up and running in one step.
+    Does create()+buildInside()+callInitialize()+scheduleStart(now).
+    Should work for both simple and compound modules.
+    Not applicable if the module:
+      - has parameters to be set
+      - gate vector sizes to be set
+      - gates to be connected before initialize()
     Now a simple module can be created on the fly by simply saying:
        mod = modtype->createAndInit("name",this);
        mod->scheduleStart( simTime() );
