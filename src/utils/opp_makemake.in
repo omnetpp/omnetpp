@@ -347,12 +347,12 @@ TKENV_LIBS=-lenvir -ltkenv \$(TK_LIBS)
 # Simulation kernel
 KERNEL_LIBS=-lsim_std
 
-ifeq ($(WITH_NETBUILDER),yes)
-KERNEL_LIBS += -lnedxml $(XML_LIBS)
+ifeq (\$(WITH_NETBUILDER),yes)
+KERNEL_LIBS += -lnedxml \$(XML_LIBS)
 endif
 
-ifeq ($(WITH_PARSIM),yes)
-KERNEL_LIBS += $(MPI_LIBS)
+ifeq (\$(WITH_PARSIM),yes)
+KERNEL_LIBS += \$(MPI_LIBS)
 endif
 
 # Simulation kernel and user interface libraries
