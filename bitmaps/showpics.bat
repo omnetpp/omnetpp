@@ -1,2 +1,1 @@
-@echo off
-c:\tk80\win\wish80.exe -f showpics
+@e:\tcl\bin\wish82.exe -f d:/work/omnetpp/bitmaps/showpics 

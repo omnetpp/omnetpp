@@ -19,6 +19,7 @@ ENVIR_ILIB=envir_ilib
 ENVIR_ILIB=
 !endif
 
+
 #=====================================================================
 #
 # Main targets
@@ -28,8 +29,7 @@ ENVIR_ILIB=
 
 all: check-env components reminder
 
-#components: libs progs samples
-components: libs progs
+components: libs progs samples
 
 
 #=====================================================================
@@ -93,7 +93,7 @@ plove:
 
 utils:
 	@echo ===== Compiling $@ ====
-	echo @$(WISH:/=\) -f $(OMNETPP_DIR)/bitmaps/showpics > $(OMNETPP_DIR:/=\)\bitmaps\showpics.bat
+	echo @$(WISH:/=\) -f $(OMNETPP_ROOT)/bitmaps/showpics > $(OMNETPP_ROOT:/=\)\bitmaps\showpics.bat
 	cd /d $(OMNETPP_SRC_DIR:/=\)\utils &&  $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
@@ -150,15 +150,11 @@ demo:
 check-env:
 	@echo ===== Checking environment =====
 	@echo  Checking if $(CXX) works...
-	@( $(CXX) /? /nologo <nul > nul || echo Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1 )
-#preprocessed
-!IF ! EXIST($(OMNETPP_ROOT))
-!ERROR Directory defined in configuser.vc as OMNETPP_ROOT does not exist
-!ENDIF
-# TBD !IF ! EXIST($(TK_DIR))
-# TBD !ERROR Directory defined in configuser.vc as TK_DIR does not exist
-# TBD !ENDIF
-	@echo = Done =
+	@$(CXX) /? /nologo <nul > nul || echo ERROR: Could not run $(CXX). Probably PATH does not contain its BIN or DLL directory. && exit 1
+        @echo Checking if OMNETPP_ROOT is correctly set...
+       	@cd /d $(OMNETPP_ROOT:/=\) || echo ERROR: The directory defined in configuser.vc as OMNETPP_ROOT does not exist. && exit 1
+        @echo Checking if TCL_LIB/TCL_VER is correctly set...
+	@cd /d $(_TCL_LIBRARY:/=\) || echo ERROR: The directory $(_TCL_LIBRARY) does not exist. TK_DIR or TK_VER defined in configuser.vc might be wrong. && exit 1
 
 clean:
 	-for %%i in ( $(LIBS) $(PROGS) ) do \
@@ -182,6 +178,6 @@ reminder:
 !IF "$(TCL_LIBRARY)" == ""
 	@echo ###
 	@echo ### Don't forget to set the TCL_LIBRARY environment variable!
-        @rem TBD echo ### TCL_LIBRARY=$(TK_LIB_DIR)/TCL$(TK_VER_DOTS)
+        @echo ### TCL_LIBRARY=$(_TCL_LIBRARY)
 	@echo ###
 !ENDIF

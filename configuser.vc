@@ -34,6 +34,7 @@ TK_INCL_DIR=$(TK_DIR)/include
 TK_LIB_DIR=$(TK_DIR)/lib
 TCL_LIB=tcl$(TK_VER:.=).lib
 TK_LIB=tk$(TK_VER:.=).lib
+_TCL_LIBRARY=$(TK_DIR)/lib/tcl$(TK_VER)
 
 #
 # tools
