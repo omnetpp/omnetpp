@@ -89,7 +89,7 @@ EOT
 
         -u | --userinterface)
         shift
-        userif=`echo $1 | tr a-z A-Z`
+        userif=`echo $1 | tr [a-z] [A-Z]`
         case "$userif" in
             CMDENV | TKENV)
             ;;
