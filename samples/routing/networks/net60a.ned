@@ -8,6 +8,8 @@
 //
 
 
+import "../node";
+
 //
 // This network adds one extra connection to the net60 model (net60.ned):
 // a simplex link from node[55] to node[0]. (See end of NED code.)
