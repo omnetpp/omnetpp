@@ -76,7 +76,6 @@ int NEDParser::parseFile(Tcl_Interp *intrp, char *fname, int nedfilekey,
     if (!yyin)
 	{interp->result = "unable to open file";return TCL_ERROR;}
     int perr = runparse();
-    assert(!perr == !num_errors);
     fclose(yyin);
 
     // return value: number of errors
@@ -111,7 +110,6 @@ int NEDParser::parseText(Tcl_Interp *intrp, char *nedtext, int nedfilekey,
     if (!handle)
 	{interp->result = "unable to allocate work memory";return TCL_ERROR;}
     int perr = runparse();
-    assert(!perr == !num_errors);
     yy_delete_buffer(handle);
 
     // return value: number of errors
