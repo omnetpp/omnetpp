@@ -1,9 +1,5 @@
 //==========================================================================
-// neddtdvalidator.cc
-//
-//                     OMNeT++/OMNEST
-//            Discrete System Simulation in C++
-//
+// Part of the OMNeT++ Discrete System Simulation System
 //
 // Generated from ned.dtd by dtdclassgen.pl
 //
@@ -406,7 +402,6 @@ void NEDDTDValidator::validateElement(ConstNode *node)
     checkRequiredAttribute(node, "type");
     const char *vals0[] = {"bool","int","real","string","time"};
     checkEnumeratedAttribute(node, "type", vals0, sizeof(vals0)/sizeof(const char *));
-    checkRequiredAttribute(node, "value");
 }
 
 void NEDDTDValidator::validateElement(CplusplusNode *node)

@@ -2031,7 +2031,7 @@ class IdentNode : public NEDElement
  * <!ATTLIST const
  *      type  (bool|int|real|string|time)  #REQUIRED
  *      text                CDATA     #IMPLIED
- *      value               CDATA     #REQUIRED>
+ *      value               CDATA     #IMPLIED>
  * </pre>
  * 
  * @ingroup Data
