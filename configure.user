@@ -13,9 +13,9 @@
 # (Note: For maximum debugging info use switch -ggdb or -gstabs+3 when using gcc and gdb)
 #
 #CFLAGS='-g -Wno-unused'
-CFLAGS='-g -Wall'
-#CFLAGS='-gstabs+3 -Wall'
-#CFLAGS='-O3 -DNDEBUG=1'
+#CFLAGS='-ggdb3 -pipe -Wall -Wno-unused -D_CONST=const'
+CFLAGS='-gstabs+3 -pipe -Wall'
+#CFLAGS='-O3 -DNDEBUG=1 -Wno-unused'
 
 # To suppress the 'unused variable' warnings in ned-generated _n.cc files
 # -Wno-unused is added to NEDCFLAGS
@@ -28,7 +28,7 @@ NEDCFLAGS='-Wno-unused'
 # On CYGWIN, only static libraries can be used. The default setting is
 # `if-not-cygwin'.
 #
-#build_shared_libs=yes
+build_shared_libs=yes
 #build_shared_libs=no
 
 #
@@ -72,14 +72,14 @@ PLOVE_EMBED_TCL=no
 # (Sometimes you need to explicitly link with the X11 libraries too, in that
 # case add -lX11 to TK_LIBS).
 #
-TK_CFLAGS=
-TK_LIBS=
+TK_CFLAGS='-I/tools/gnu/include'
+TK_LIBS='-L/tools/gnu/lib -ltcl8.3 -ltk8.3'
 
 #
 # Similar settings for PVM
 #
-PVM_CFLAGS=
-PVM_LIBS=
+PVM_CFLAGS='-I/tools/misc/pvm3/include'
+PVM_LIBS='-L/tools/misc/pvm3/lib/SUN4SOL2 -lpvm3'
 
 #
 # and for MPI

@@ -459,6 +459,9 @@ Warning: You have enabled nedc subclassing which is experimental.
          At least you should read the message subclassing documentation
          ${OMNETPP_NEDC_DIR}/msgdoc.txt
 
+	 Have a look at ${OMNETPP_SAMPLES_DIR}/dyna2 as a sample
+	 simulation using nedc subclassing
+
 EOT
 
   NEDC="${OMNETPP_NEDC_DIR}/nedcwrapper.sh"
