@@ -491,7 +491,7 @@ inline cEnvir& operator<< (cEnvir& ev, unsigned long l)
 inline cEnvir& operator<< (cEnvir& ev, double d)
   {ev.printf("%g", d); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, long double d)
-  {ev.printf("%lg", d); return ev;}
+  {ev.printf("%Lg", d); return ev;}
 
 inline cEnvir& operator<< (cEnvir& ev, cObject *p)
   {if (!p) ev.puts("NULL"); else {ev.printf("(%s)",p->className()); ev.puts(p->fullName());} return ev;}
