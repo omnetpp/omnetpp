@@ -47,7 +47,7 @@ foreach line {
    {"FDDI"             "fddi"             "./fddi"      "fddi.exe"}
    {"HCube"            "hcube"            "./hcube"     "hcube.exe"}
    {"Routing"          "routing"          "./routing"   "routing.exe"}
-   {"Routing/Networks" "routing/networks" "../routing"  "..\\\\routing.exe"}
+   {"Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
    {"TokenRing"        "tokenring"        "./tokenring" "tokenring.exe"}
    {"NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
 } {
@@ -261,11 +261,12 @@ proc runSample {sample} {
       set prog $db($sample,uprog)
    } else {
       set prog $db($sample,wprog)
+      regsub -- {\\} $prog {\\\\} prog
    }
 
    set pwd [pwd]
    if [catch {
-       cd $db($sample,dir)
+      cd $db($sample,dir)
       #exec $prog &
       #exec [lindex $prog 0] [lindex $prog 1] [lrange $prog 2 end] &
       eval exec $prog &
