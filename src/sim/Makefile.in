@@ -173,7 +173,9 @@ depend:
 	makedepend -Y -I. -fMakefile.in -- *.cc
 
 clean:
-	rm -f *.o libsim_std$(A_LIB_SUFFIX) libsim_std$(SO_LIB_SUFFIX) libsim_pvm$(A_LIB_SUFFIX) libsim_pvm$(SO_LIB_SUFFIX)
+	rm -f *.o std/*.o pvm/*.o
+	rm -f libsim_std$(A_LIB_SUFFIX) libsim_std$(SO_LIB_SUFFIX)
+	rm -f libsim_pvm$(A_LIB_SUFFIX) libsim_pvm$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
