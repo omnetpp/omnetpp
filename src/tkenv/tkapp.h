@@ -92,6 +92,7 @@ class TOmnetTkApp : public TOmnetApp
 
       virtual void putmsg(const char *s);
       virtual void puts(const char *s);
+      virtual void flush();
       virtual bool gets(const char *promptstr, char *buf, int len=255);
       virtual int  askYesNo(const char *question);
 

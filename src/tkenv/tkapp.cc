@@ -1112,6 +1112,11 @@ void TOmnetTkApp::puts(const char *str)
         Tcl_Free(quotedstr);
 }
 
+void TOmnetTkApp::flush()
+{
+    // Tk doesn't need flush(), it displays everything ASAP anyway
+}
+
 bool TOmnetTkApp::gets(const char *promptstr, char *buf, int len)
 {
     char title[70];
