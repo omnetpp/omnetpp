@@ -67,8 +67,7 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
             // recursive processing of children
             xmlNode *child;
             for (child = node->children; child; child = child->next)
-                if (child->type == XML_ELEMENT_NODE)
-                    generateSAXEvents(child, sh);
+                generateSAXEvents(child, sh);
 
             // invoke endElement()
             sh->endElement((const char *)node->name);
