@@ -1,3 +1,5 @@
+2003-06-16  ------ omnetpp-2.3 released ------
+
 2003-06-16  Andras Varga
 
 	* opp_msgc: messages (cMessage subclasses) now accept message kind

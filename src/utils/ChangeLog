@@ -1,3 +1,5 @@
+2003-06-16  ------ omnetpp-2.3 released ------
+
 2003-05-24  Andras Varga
 
 	* opp_nmakemake: changed handling of -e option -- now, if no -e	option
