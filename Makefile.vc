@@ -43,8 +43,7 @@ PROGS=utils nedc gned plove
 SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo
 
 #
-# Group targets. Note that utils has to be built BEFORE other libs and progs
-# because tcl2c might be needed to build tkenv or gned.
+# Group targets. Note that utils has to be built BEFORE other libs and progs.
 #
 libs: utils $(LIBS)
 progs: $(PROGS)
@@ -138,6 +137,7 @@ token:
 
 demo:
 	@echo ===== Compiling $@ ====
+	echo @$(WISH:/=\) -f $(OMNETPP_SAMPLES_DIR)/demo/rundemo > $(OMNETPP_SAMPLES_DIR:/=\)\demo\rundemo.bat
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\demo && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #=====================================================================
@@ -184,12 +184,12 @@ clean:
 depend:
 	for %%i in ( $(LIBS) $(PROGS) ) do \
 	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
-	@echo ### Dependencies for samples must be done by exporting makefiles from the IDE!
+	@echo *** dependencies for samples must be done by exporting makefiles from the IDE!
 
 reminder:
 !IF "$(TCL_LIBRARY)" == ""
-	@echo ###
-	@echo ### Don't forget to set the TCL_LIBRARY environment variable!
-        @echo ### TCL_LIBRARY=$(_TCL_LIBRARY)
-	@echo ###
+	@echo ***
+	@echo *** Don't forget to set the TCL_LIBRARY environment variable!
+        @echo *** TCL_LIBRARY=$(_TCL_LIBRARY)
+	@echo ***
 !ENDIF
