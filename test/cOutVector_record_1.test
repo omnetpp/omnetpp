@@ -1,0 +1,21 @@
+%description:
+check that cOutVector::record() works OK.
+
+%activity:
+
+cOutVector vec("vec");
+
+vec.record( 35 );
+wait(3);
+vec.record( -24 );
+wait(2);
+vec.record( 0 );
+wait(5);
+vec.record( 38 );
+
+%contains: {}.vec
+vector 0  "cOutVector_record_1_network"  "vec"  1
+0	0	35
+0	3	-24
+0	5	0
+0	10	38

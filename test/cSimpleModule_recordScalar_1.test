@@ -1,0 +1,13 @@
+%description:
+check that recordScalar() methods work OK.
+
+%activity:
+
+recordScalar("one", 24.2);
+recordScalar("two", "some text");
+
+%contains: {}.sca
+run 1 "cSimpleModule_recordScalar_1_network"
+scalar "cSimpleModule_recordScalar_1_network" 	"one" 	24.2
+scalar "cSimpleModule_recordScalar_1_network" 	"two" 	"some text"
+

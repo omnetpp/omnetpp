@@ -26,7 +26,6 @@ PRINT_CLASSNAME( cLinkedList )
 PRINT_CLASSNAME( cMessage )
 PRINT_CLASSNAME( cMessageHeap )
 PRINT_CLASSNAME( cObject )
-PRINT_CLASSNAME( cOutFileMgr )
 PRINT_CLASSNAME( cOutVector )
 PRINT_CLASSNAME( cPacket )
 PRINT_CLASSNAME( cPar )
@@ -52,7 +51,6 @@ cLinkedList: cLinkedList
 cMessage: cMessage
 cMessageHeap: cMessageHeap
 cObject: cObject
-cOutFileMgr: cOutFileMgr
 cOutVector: cOutVector
 cPacket: cPacket
 cPar: cPar
