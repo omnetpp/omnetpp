@@ -13,4 +13,4 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 
 doc:
-	$(DOXYGEN) doxy.cfg
+	$(DOXYGEN:/=\) doxy.cfg

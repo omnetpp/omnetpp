@@ -113,7 +113,7 @@ saxparser_none.obj : saxparser_none.cc
         $(CXX) $(COPTS) /c /Tp saxparser_none.cc
 
 doc:
-	$(DOXYGEN) doxy.cfg
+	$(DOXYGEN:/=\) doxy.cfg
 
 depend:
         $(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
