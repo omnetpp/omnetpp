@@ -34,8 +34,8 @@
 #include <unistd.h> //getcwd
 #endif
 
-#define NEDC_VERSION      "2.3b1"
-#define NEDC_VERSION_HEX  "0x0202"
+#define NEDC_VERSION      "2.3b2"
+#define NEDC_VERSION_HEX  "0x0203"
 
 #ifdef __MSDOS__
         #define SLASH "\\"
