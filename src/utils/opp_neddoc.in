@@ -84,7 +84,7 @@ if [ -n "$PS2GIF" ]; then
       *) imagesxml=`pwd`/$imagesxml ;;
     esac
 else
-    echo 'exporting screenshots using GNED... skipped'
+    echo 'skipping diagram exporting (no Postscript-to-GIF converter configured)'
     imagesxml=
 fi
 
