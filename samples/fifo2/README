@@ -1,0 +1,14 @@
+FIFO-2
+~~~~~~
+Another flavour of FIFO, implemented with handleMessage() instead
+of activity(). gen.cc uses FSM.
+
+Demonstrates:
+  - using handleMessage()
+  - decomposing handleMessage() into several functions
+  - the FSM macros (used to implement BurstyGenerator)
+  - simple module inheritance
+  - using simple statistics and output vectors
+  - using finish()
+
+

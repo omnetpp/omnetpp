@@ -1,0 +1,40 @@
+HIST
+====
+
+A demo for the density estimation/histogram classes.
+
+Demonstrates:
+ - collecting observations into statistics objects
+ - saving statistics objects to file and restoring them
+ - using the inspect.lst file in Tkenv
+
+The network consists of a single module; it creates four density
+estimation objects and goes into a loop to insert random numbers
+into the objects. You have some control over how the density
+estimation is done.
+
+Link the simulation with Tkenv, and try the following:
+ 1. Do one step to make sure the objects are created. Click the Step icon
+    on the toolbar.
+ 2. Open inspectors for the histogram objects. Select Inspect|Module local
+    variables... from the menu and double-click 'Histograms' in the window.
+    The objects in the activity() function of the module are popped up in
+    a list window, with the histogram objects among them. Double-click them;
+    a graphical window will pop up for each of them.
+         - or -
+    Instead of this all, select Options|Load inspector list. This will open
+    inspector windows for the objects listed in the inspect.lst file,
+    that is, in this case, for the histogram objects.
+ 3. Run the simulation. The histograms will be continuously updated as the
+    simulation executes. Basically, that's it!
+
+If you work on DOS:
+Borland C++ 3.1 will link the simulation with Tvenv by default. In Tvenv,
+you can do similar things as in Tkenv.
+To change to Cmdenv, start bc, go to the project window, then:
+    press ^O on TVENV.LIB --> check '[ ] exclude from link' --> OK
+    press ^O on CMDENV.LIB --> clear '[ ] exclude from link' --> OK
+Then re-link the executable. (Be careful not to link with _both_ Cmdenv and
+Tvenv, or the program will hang!)
+
+

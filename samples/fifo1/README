@@ -1,0 +1,22 @@
+Fifo 1
+~~~~~~
+Single-server queue model.
+
+Demonstrates:
+  - simple module inheritance
+  - decomposing activity() into several functions
+  - using simple statistics and output vectors
+  - printing stack usage info to help optimize memory consumption
+  - using finish()
+
+AbstractFifo can be used as a base class for modules implementing
+more sophisticated tasks. You can derive your simple module
+class from AbstractFifo and redefine the following member functions:
+    void arrival(cMessage *msg)
+    simtime_t startService(cMessage *msg)
+    void endService(cMessage *msg)
+These functions are called whenever a message arrives, begins service etc.
+StartService() should return the service time for the message.
+
+ACBFifo and ACPFifo demostrate how to do this.
+
