@@ -85,14 +85,14 @@ GNED_IF_POSSIBLE=gned
 # This option is available at present for Tkenv, GNED and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=no
+EMBED_TCL_CODE=yes
 
 #
 # It is possible to compile GNED and Plove as Windows GUI apps (ie. not
 # console apps). Set the following variable to "yes" to enable compiling
 # GUI apps.
 #
-USE_WINMAIN=no
+USE_WINMAIN=yes
 
 #
 # Set to "yes" to enable simulation executables load NED files dynamically.
@@ -107,10 +107,10 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-CFLAGS=$(CFLAGS_DEBUG)
-LDFLAGS=$(LDFLAGS_DEBUG)
-#CFLAGS=$(CFLAGS_RELEASE)
-#LDFLAGS=$(LDFLAGS_RELEASE)
+#CFLAGS=$(CFLAGS_DEBUG)
+#LDFLAGS=$(LDFLAGS_DEBUG)
+CFLAGS=$(CFLAGS_RELEASE)
+LDFLAGS=$(LDFLAGS_RELEASE)
 
 
 #==============================================================================
@@ -201,7 +201,7 @@ DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
 CFLAGS_DEBUG=/nologo /GX /GR /FD /Zm200 /MLd /Od /Gm /GZ /ZI
 LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
 
-CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm180 /ML /O2 /D "NDEBUG"
+CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm200 /ML /O2 /D "NDEBUG"
 LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
 
 # LIB_SUFFIX is either .lib or .dll
