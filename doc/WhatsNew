@@ -11,7 +11,7 @@ OMNeT++ 3.1 (Mar 2005)
 - Examples of real-time and hybrid (hardware-in-the-loop) simulation; also
   cScheduler interface refined, cRealTimeScheduler added
 - New class cStringTokenizer
-- cRuntimeError + ini option
+- cRuntimeError + [General] / debug-on-errors= ini option
 - opp_makemake, opp_nmakemake: implemented -X (ignore subdirectory during
   recursive build) option
 - handling of included ini files, NED files loaded via preload-ned-files
