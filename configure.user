@@ -15,9 +15,9 @@
 # C++ exceptions (throw/catch) are used together)!
 #
 #CFLAGS='-g -Wno-unused'
-CFLAGS='-g -Wall'
+#CFLAGS='-g -Wall'
 #CFLAGS='-gstabs+3 -Wall'
-#CFLAGS='-O3 -DNDEBUG=1'
+CFLAGS='-O3 -DNDEBUG=1'
 
 # To suppress the 'unused variable' warnings in ned-generated _n.cc files
 # -Wno-unused is added to NEDCFLAGS
