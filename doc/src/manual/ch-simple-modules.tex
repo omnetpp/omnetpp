@@ -653,101 +653,74 @@ functions issue error messages telling you what is the problem.
 
 
 
+%
+% \subsection{Decomposing activity()/handleMessage()}
+%
+% It is usually a good idea to decompose a \fname{activity()} or
+% \fname{handleMessage()} function when it grows too large. ``Too
+% large'' is a matter of taste of course, but you should definitely
+% consider splitting up the function if it is more that a few screens
+% (say 50-100 lines) long. This will have a couple of advantages:
+% \begin{itemize}
+% \item{will help future readers of the code understand your program;}
+% \item{will help \textit{you} understand what it is you're really programming
+% and bring some structure into it;}
+% \item{will enable you to customize the class by inheriting from it and
+%     overwriting member functions}
+% \end{itemize}
+%
+% If you have variables which you want to access from all member
+% functions (typically state variables are like that), you'll need to
+% add those variables to the class as data members\index{class data
+% members}.
+%
+% Let's see an example:
+%
+% \begin{verbatim}
+% class TransportProtocol : public cSimpleModule
+% {
+%   public:
+%     Module_Class_Members(TransportProtocol, cSimpleModule, 0)
+%     int windowSize;
+%     int n_s; // N(s)
+%     int n_r; // N(r)
+%     cOutVector eedVector;
+%     cStdDev eedStats;
+%     //...
+%
+%     virtual void handleMessage(cMessage *msg);
+%     virtual void recalculateTimeout();
+%     virtual void insertPacketIntoBuffer(cMessage *packet);
+%     virtual void resendPacket(cMessage *packet);
+%     //...
+% };
+%
+% Define_Module( TransportProtocol );
+%
+% void TransportProtocol::handleMessage(cMessage *msg)
+% {
+%    ...
+% }
+%
+% //...
+% \end{verbatim}
+%
+% \begin{sloppypar}
+% Note that you may have to use the expanded form of the
+% constructor\index{module!constructor} (instead of
+% \fmac{Module\_Class\_Members()}) to pass arguments to the constructors
+% of member objects like eedVector and eedStats. But most often you
+% don't need to go as far as that; for example, you can set parameters
+% later from \fname{activity()}, as shown in the example above.
+% \end{sloppypar}
+%
+%
 
-\subsection{Decomposing activity()/handleMessage()}
-
-It is usually a good idea to decompose a \fname{activity()} or
-\fname{handleMessage()} function when it grows too large. ``Too
-large'' is a matter of taste of course, but you should definitely
-consider splitting up the function if it is more that a few screens
-(say 50-100 lines) long. This will have a couple of advantages:
-\begin{itemize}
-\item{will help future readers of the code understand your program;}
-\item{will help \textit{you} understand what it is you're really programming
-and bring some structure into it;}
-\item{will enable you to customize the class by inheriting from it and
-    overwriting member functions}
-\end{itemize}
-
-If you have variables which you want to access from all member
-functions (typically state variables are like that), you'll need to
-add those variables to the class as data members\index{class data
-members}.
-
-Let's see an example:
-
-\begin{verbatim}
-class TransportProtocol : public cSimpleModule
-{
-  public:
-    Module_Class_Members(TransportProtocol, cSimpleModule, 0)
-    int windowSize;
-    int n_s; // N(s)
-    int n_r; // N(r)
-    cOutVector eedVector;
-    cStdDev eedStats;
-    //...
-
-    virtual void handleMessage(cMessage *msg);
-    virtual void recalculateTimeout();
-    virtual void insertPacketIntoBuffer(cMessage *packet);
-    virtual void resendPacket(cMessage *packet);
-    //...
-};
-
-Define_Module( TransportProtocol );
-
-void TransportProtocol::handleMessage(cMessage *msg)
-{
-   ...
-}
-
-//...
-\end{verbatim}
-
-\begin{sloppypar}
-Note that you may have to use the expanded form of the
-constructor\index{module!constructor} (instead of
-\fmac{Module\_Class\_Members()}) to pass arguments to the constructors
-of member objects like eedVector and eedStats. But most often you
-don't need to go as far as that; for example, you can set parameters
-later from \fname{activity()}, as shown in the example above.
-\end{sloppypar}
-
-
-
-\subsection{Using inheritance}
-
-It is often needed to have several variants of a simple module.
-A good design strategy is to create a simple module class with
-the common functionality, then subclass from it to create the
-specific simple module types.
-
-An example:
-
-\begin{verbatim}
-class ModifiedTransportProtocol : public TransportProtocol
-{
-  public:
-    Module_Class_Members(ModifiedTransportProtocol, TransportProtocol,0)
-    virtual void recalculateTimeout();
-};
-
-Define_Module( ModifiedTransportProtocol );
-
-void ModifiedTransportProtocol::recalculateTimeout()
-{
-    //...
-}
-\end{verbatim}
-
-
-\subsection{Global variables}
+\subsection{Using global variables}
 \index{global variables}
 
-If possible, avoid them. Do not use global variables, including
+If possible, avoid them global variables, including
 static class members. There are several problems with them.
-
 First, they are not reset to their initial values (to zero)
 when you rebuild the simulation in Tkenv, or start another run
 in Cmdenv. This may produce surprising results.
@@ -760,13 +733,297 @@ global variables. This is usually not what you want.
 
 
 
-
 \section{Adding functionality to cSimpleModule}
 
 This section discusses \cclass{cSimpleModule}'s four previously
 mentioned member functions, intended to be redefined by the user:
 \fname{initialize()}, \fname{handleMessage()}, \fname{activity()}
 and \fname{finish()}.
+
+
+
+
+\subsection{handleMessage()}
+
+\subsubsection{Function called for each event}
+
+
+The idea is that at each event\index{event} arrival we simply call a
+user-defined function. This function,
+\fname[handleMessage()]{handleMessage(cMessage *msg)} is a
+virtual member function of \cclass{cSimpleModule} which does
+nothing by default -- the user has to redefine it in subclasses
+and add the message processing code.
+
+The \fname{handleMessage()} function will be called for every message
+that arrives at the module. The function should process the message
+and return immediately after that. The simulation time is potentially
+different in each call. No simulation time elapses within a call
+to \fname{handleMessage()}.
+
+The event loop inside the simulator handles both \fname{activity()}
+and \fname{handleMessage()} simple modules, and it corresponds
+to the following pseudocode:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\textit{while (FES not empty and simulation not yet complete)}
+\{
+    retrieve first event from FES
+    t:= timestamp of this event
+    m:= module containing this event
+    if (m works with handleMessage())
+        \textbf{m->handleMessage( event )}
+    else // m works with activity()
+        transferTo( m )
+\}
+\end{Verbatim}
+
+Modules with \fname{handleMessage()} are NOT started automatically:
+the simulation kernel creates starter messages\index{starter messages}
+only for modules with \fname{activity()}. This means that you have to
+schedule self-messages\index{self-message} from the
+\fname{initialize()} function if you want a \fname{handleMessage()}
+simple module to start working ``by itself'', without first receiving
+a message from other modules.
+
+
+\subsubsection{Programming with handleMessage()}
+
+
+To use the \fname{handleMessage()} mechanism in a
+simple module, you must specify \textit{zero
+  stack size}\index{zero stack size} for the module. This is
+important, because this tells {\opp} that you want to use
+\fname{handleMessage()} and not \fname{activity()}.
+
+Message/event related functions you can use in \fname{handleMessage()}:
+
+\begin{itemize}
+  \item{\fname{send()} family of functions -- to send messages to other modules}
+  \item{\fname{scheduleAt()} -- to schedule an event (the module ``sends a message to itself'')}
+  \item{\fname{cancelEvent()} -- to delete an event scheduled with \fname{scheduleAt()}}
+\end{itemize}
+
+You cannot use the \fname{receive()} family and
+\fname{wait()} functions in \fname{handleMessage()}, because they are
+coroutine-based by nature, as explained in the section about
+\fname{activity()}.
+
+You have to add data members to the module class for every piece
+of information you want to preserve. This information cannot
+be stored in local variables of \fname{handleMessage()} because they
+are destroyed when the function returns. Also, they cannot be
+stored in static variables in the function (or the class), because
+they would be shared between all instances of the class.
+
+
+Data members to be added to the module class will typically include
+things like:
+
+\begin{itemize}
+  \item{state (e.g. IDLE/BUSY, CONN\_DOWN/CONN\_ALIVE/...)}
+  \item{other variables which belong to the state of the module: retry
+    counts, packet queues, etc.}
+  \item{values retrieved/computed once and then stored: values of module
+    parameters, gate indices, routing information, etc.}
+  \item{pointers of message objects created once and then reused for
+    timers, timeouts, etc.}
+  \item{variables/objects for statistics collection}
+\end{itemize}
+
+You can initialize these variables from the \fname{initialize()}
+function.  The constructor\index{module!constructor} is not a very good place
+for this purpose, because it is called in the network setup phase when
+the model is still under construction, so a lot of information you may
+want to use is not yet available then.
+
+Another task you have to do in \fname{initialize()} is to schedule
+initial event(s)\index{events!initial} which trigger the first call(s)
+to \fname{handleMessage()}.  After the first call,
+\fname{handleMessage()} must take care to schedule further events for
+itself so that the ``chain'' is not broken. Scheduling events is not
+necessary if your module only has to react to messages coming from
+other modules.
+
+\fname{finish()} is used in the normal way: to record statistics information
+accumulated in data members of the class at the end of the simulation.
+
+
+\subsubsection{Application area}
+
+
+\fname{handleMessage()} is in most cases a better choice than \fname{activity()}:
+
+\begin{enumerate}
+  \item{When you expect the module to be used in large simulations,
+      involving several thousand modules. In such cases, the module stacks
+      required by \fname{activity()} would simply consume too much memory.}
+  \item{For modules which maintain little or no state information,
+      such as packet sinks, \fname{handleMessage()} is more convenient to program.}
+  \item{Other good candidates are modules with a large state space and
+      many arbitrary state transition possibilities (i.e. where there
+      are many possible subsequent states for any state). Such algorithms
+      are difficult to program with \fname{activity()}, or the result is code
+      which is better suited for \fname{handleMessage()} (see rule of thumb
+      below). Most communication protocols are like this.}
+\end{enumerate}
+
+
+
+\subsubsection{Example 1: Simple traffic generators and sinks}
+
+
+The code for simple packet generators and sinks programmed with \fname{handleMessage()} might
+be as simple as this:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+PacketGenerator::handleMessage(m)
+\{
+    create and send out packet
+    schedule m again to trigger next call to handleMessage
+      // (self-message)
+\}
+PacketSink::handleMessage(m)
+\{
+    delete m
+\}
+\end{Verbatim}
+
+
+
+Note that \textit{PacketGenerator} will need to redefine \fname{initialize()}
+to create \textit{m} and schedule the first event.
+
+The following simple module generates packets with exponential
+inter-arrival time. (Some details in the source haven't been
+discussed yet, but the code is probably understandable nevertheless.)
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+class Generator : public cSimpleModule
+\{
+    Module_Class_Members(Generator,cSimpleModule,0)
+    // note zero stack size!
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+\};
+
+Define_Module( Generator );
+
+void Generator::initialize()
+\{
+    // schedule first sending
+    scheduleAt(simTime(), new cMessage);
+\}
+
+void Generator::handleMessage(cMessage *msg)
+\{
+    // generate & send packet
+    cMessage *pkt = new cMessage;
+    send(pkt, "out");
+    // schedule next call
+    scheduleAt(simTime()+exponential(1.0), msg);
+\}
+\end{Verbatim}
+
+
+
+\subsubsection{Example 2: Bursty traffic generator}
+
+
+A bit more realistic example is to rewrite our Generator to create
+packet bursts, each consisting of \ttt{burstLength} packets.
+
+
+We add some data members to the class:
+\begin{itemize}
+\item{\ttt{burstLength} will store the parameter that specifies how many
+    packets a burst must contain,}
+\item{\ttt{burstCounter} will count in how many packets are left to be sent
+    in the current burst.}
+\end{itemize}
+
+The code:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+class BurstyGenerator : public cSimpleModule
+\{
+    Module_Class_Members(Generator,cSimpleModule,0)
+    // note the zero stack size!
+    int burstLength;
+    int burstCounter;
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+\};
+
+Define_Module( BurstyGenerator );
+void BurstyGenerator::initialize()
+\{
+    // init parameters and state variables
+    burstLength = par("burstLength");
+    burstCounter = burstLength;
+    // schedule first packet of first burst
+    scheduleAt(simTime(), new cMessage);
+\}
+
+void BurstyGenerator::handleMessage(cMessage *msg)
+\{
+    // generate & send packet
+    cMessage *pkt = new cMessage;
+    send(pkt, "out");
+    // if this was the last packet of the burst
+    if (--burstCounter == 0)
+    \{
+        // schedule next burst
+        burstCounter = burstLength;
+        scheduleAt(simTime()+exponential(5.0), msg);
+    \}
+    else
+    \{
+        // schedule next sending within burst
+        scheduleAt(simTime()+exponential(1.0), msg);
+    \}
+\}
+\end{Verbatim}
+
+
+
+\subsubsection{Pros and Cons of using \fname{handleMessage()}}
+
+
+Pros:
+\begin{itemize}
+  \item{consumes less memory: no separate stack needed for simple modules}
+  \item{fast: function call is faster than switching between coroutines\index{coroutine}}
+\end{itemize}
+
+Cons:
+\begin{itemize}
+  \item{local variables cannot be used to store state information}
+  \item{need to redefine \fname{initialize()}}
+\end{itemize}
+
+Usually, \fname{handleMessage()} should be preferred to \fname{activity()}.
+
+
+\subsubsection{Other simulators}
+
+
+Many simulation packages use a similar approach, often topped with
+something like a state machine\index{finite state machine}
+(FSM\index{FSM}) which hides the underlying function calls. Such
+systems are:
+\begin{itemize}
+  \item{OPNET$^TM$ which uses FSM's designed using a graphical editor;}
+  \item{NetSim++ clones OPNET's approach;}
+  \item{SMURPH (University of Alberta) defines a (somewhat eclectic)
+      language to describe FSMs, and uses a precompiler to turn it
+      into C++ code;}
+  \item{Ptolemy (UC Berkeley) uses a similar method.}
+\end{itemize}
+
+{\opp}'s FSM\index{FSM} support is described in the next section.
+
 
 
 \subsection{activity()}
@@ -805,9 +1062,13 @@ with at least a \fname{wait()} or \fname{receive()} call in its body.
 
 \subsubsection{Application area}
 
+Generally you should prefer \ttt{handleMessage()} to \ttt{activity()}.
+The main problem with \ttt{activity()} is that it doesn't scale because
+every module needs a separate coroutine stack. It has also been observed
+that \ttt{activity()} does not encourage a good programming style.
 
-One area where the process-style description\index{process-style
-  description} is especially convenient is when the process has many
+However, there is one scenario where \ttt{activity()}'s process-style
+description is convenient: when the process has many
 states but transitions are very limited, ie. from any state the
 process can only go to one or two other states.  For example, this is
 the case when programming a network application which uses a single
@@ -852,12 +1113,41 @@ a transport layer protocol might look like this:
 \}
 \end{Verbatim}
 
+If you have to handle several connections simultaneously, you may
+dynamically create as instances of the simple module above.
+Dynamic module creation will be discussed later.
 
+There are situations when you certainly \textit{do not want} to use \fname{activity()}.
+If your \fname{activity()} function contains no \fname{wait()} and it has
+only one \fname{receive()} call at the top of an infinite loop,
+there's no point in using \ttt{activity()} and the code should be written
+with \ttt{handleMessage()}.
+The body of the infinite loop would then become the body to \fname{handleMessage()},
+state variables inside \fname{activity()} would become data members in
+the module class, and you'd initialize them in \fname{initialize()}.
 
-If you want to handle several connections simultaneously, you may
-dynamically create as instances of the simple
-module above as needed. Dynamic module creation will be discussed
-later.
+Example:
+
+\begin{verbatim}
+void Sink::activity()
+{
+    while(true)
+    {
+        msg = receive();
+        delete msg;
+    }
+}
+\end{verbatim}
+
+should rather be programmed as:
+
+\begin{verbatim}
+void Sink::handleMessage(cMessage *msg)
+{
+    delete msg;
+}
+\end{verbatim}
+
 
 
 \subsubsection{Activity() is run as a coroutine}
@@ -1035,25 +1325,29 @@ MySimpleModule::finish()
 \end{Verbatim}
 
 
+\subsubsection{Pros and Cons of using \fname{activity()}}
 
-\subsubsection{Advantages and drawbacks of \fname{activity()} vs \fname{handleMessage()}}
 
-Advantages:
+Pro:
 \begin{itemize}
-\item{\fname{initialize()} not needed, state can be stored in local
-    variables of \fname{activity()}}
-\item{process-style description is a natural programming model in many
-    cases}
+   \item{\fname{initialize()} not needed, state can be stored in local
+       variables of \fname{activity()}}
+   \item{process-style description is a natural programming model in some cases}
 \end{itemize}
 
-Drawbacks:
+Con:
 \begin{itemize}
-\item{memory overhead: stack allocation may unacceptably increase the
-    memory requirements of the simulation program if you have several
-    thousands or ten thousands of simple modules;}
-\item{run-time overhead: switching between coroutines is somewhat slower
-    than a simple function call}
+   \item{limited scalability: coroutine stacks can unacceptably increase the
+       memory requirements of the simulation program if you have several
+       thousands or ten thousands of simple modules;}
+   \item{run-time overhead: switching between coroutines is somewhat slower
+       than a simple function call}
+   \item{does not enforce a good programming style: using \ttt{activity()}
+       tends to lead to unreliable, spaghetti code}
 \end{itemize}
+
+In most cases, cons outweigh pros and it is a better idea to use
+\ttt{handleMessage()} instead.
 
 
 \subsubsection{Other simulators}
@@ -1074,329 +1368,6 @@ Coroutines are used by a number of other simulation packages:
     threads.}
 \end{itemize}
 
-
-
-\subsection{handleMessage()}
-
-\subsubsection{Function called for each event}
-
-
-The idea is that at each event\index{event} we simply call a
-user-defined function instead of switching to a coroutine that has
-\fname{activity()} running in it. The ``user-defined function'' is the
-\fname[handleMessage()]{handleMessage(cMessage *msg)} virtual member
-function of \cclass{cSimpleModule}; the user has to redefine the
-function to make it do useful work.  Calls to \fname{handleMessage()}
-occur in the main stack of the program -- no coroutine stack is needed
-and no context switch is done.
-
-
-The \fname{handleMessage()} function will be called for every message
-that arrives at the module. The function should process the message
-and return immediately after that. The simulation time is potentially
-different in each call. No simulation time elapses within a call
-to \fname{handleMessage()}.
-
-The pseudocode of the event loop which is able to handle both \fname{activity()}
-and \fname{handleMessage()} simple modules:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\textit{while (FES not empty and simulation not yet complete)}
-\{
-    retrieve first event from FES
-    t:= timestamp of this event
-    m:= module containing this event
-    if (m works with handleMessage())
-        \textbf{m->handleMessage( event )}
-    else // m works with activity()
-        transferTo( m )
-\}
-\end{Verbatim}
-
-Modules with \fname{handleMessage()} are NOT started automatically:
-the simulation kernel creates starter messages\index{starter messages}
-only for modules with \fname{activity()}. This means that you have to
-schedule self-messages\index{self-message} from the
-\fname{initialize()} function if you want a \fname{handleMessage()}
-simple module to start working ``by itself'', without first receiving
-a message from other modules.
-
-
-\subsubsection{Programming with handleMessage()}
-
-
-To use the \fname{handleMessage()} mechanism in a
-simple module, you must specify \textit{zero
-  stack size}\index{zero stack size} for the module. This is
-important, because this tells {\opp} that you want to use
-\fname{handleMessage()} and not \fname{activity()}.
-
-Message/event related functions you can use in \fname{handleMessage()}:
-
-\begin{itemize}
-  \item{\fname{send()} family of functions -- to send messages to other modules}
-  \item{\fname{scheduleAt()} -- to schedule an event (the module ``sends a message to itself'')}
-  \item{\fname{cancelEvent()} -- to delete an event scheduled with \fname{scheduleAt()}}
-\end{itemize}
-
-You cannot use the \fname{receive()} family and
-\fname{wait()} functions in \fname{handleMessage()}, because they are
-coroutine-based by nature, as explained in the section about
-\fname{activity()}.
-
-You have to add data members to the module class for every piece
-of information you want to preserve. This information cannot
-be stored in local variables of \fname{handleMessage()} because they
-are destroyed when the function returns. Also, they cannot be
-stored in static variables in the function (or the class), because
-they would be shared between all instances of the class.
-
-
-Data members to be added to the module class will typically include
-things like:
-
-\begin{itemize}
-  \item{state (e.g. IDLE/BUSY, CONN\_DOWN/CONN\_ALIVE/...)}
-  \item{other variables which belong to the state of the module: retry
-    counts, packet queues, etc.}
-  \item{values retrieved/computed once and then stored: values of module
-    parameters, gate indices, routing information, etc.}
-  \item{pointers of message objects created once and then reused for
-    timers, timeouts, etc.}
-  \item{variables/objects for statistics collection}
-\end{itemize}
-
-You can initialize these variables from the \fname{initialize()}
-function.  The constructor\index{module!constructor} is not a very good place
-for this purpose, because it is called in the network setup phase when
-the model is still under construction, so a lot of information you may
-want to use is not yet available then.
-
-Another task you have to do in \fname{initialize()} is to schedule
-initial event(s)\index{events!initial} which trigger the first call(s)
-to \fname{handleMessage()}.  After the first call,
-\fname{handleMessage()} must take care to schedule further events for
-itself so that the ``chain'' is not broken. Scheduling events is not
-necessary if your module only has to react to messages coming from
-other modules.
-
-\fname{finish()} is used in the normal way: to record statistics information
-accumulated in data members of the class at the end of the simulation.
-
-
-\subsubsection{Application area}
-
-
-\fname{handleMessage()} is definately a better choice than \fname{activity()}
-in many cases:
-
-\begin{enumerate}
-  \item{When you expect the module to be used in large simulations,
-      involving several thousand modules. In such cases, the module stacks
-      required by \fname{activity()} would simply consume too much memory.}
-  \item{For modules which maintain little or no state information,
-      such as packet sinks, \fname{handleMessage()} is more convenient to program.}
-  \item{Other good candidates are modules with a large state space and
-      many arbitrary state transition possibilities (i.e. where there
-      are many possible subsequent states for any state). Such algorithms
-      are difficult to program with \fname{activity()}, or the result is code
-      which is better suited for \fname{handleMessage()} (see rule of thumb
-      below). Most communication protocols are like this.}
-\end{enumerate}
-
-In general, if your \fname{activity()} function contains no
-\fname{wait()} and it has only one \fname{receive()} call
-at the top of an infinite loop (\ttt{while(true)} or \ttt{for(;;)}),
-you can trivially convert it to \fname{handleMessage()}.
-The body of the infinite loop becomes the body to \fname{handleMessage()},
-state variables inside \fname{activity()} become data members in
-the module class, and you initialize them in \fname{initialize()}.
-
-That is, the following code:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\textit{activity()}
-\{
-    initialization code
-    while(true)
-    \{
-        msg = receive();
-        // code which doesn't contain
-        // receive() or wait() calls
-    \}
-\}
-\end{Verbatim}
-
-becomes like this:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\textit{initialize()}
-\{
-    initialization code
-\}
-
-handleMessage( msg )
-\{
-    // code which doesn't contain
-    // receive() or wait() calls
-\}
-\end{Verbatim}
-
-
-
-\subsubsection{Example 1: Simple traffic generators and sinks}
-
-
-The code for simple packet generators and sinks programmed with \fname{handleMessage()} might
-be as simple as this:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-PacketGenerator::handleMessage(m)
-\{
-    create and send out packet
-    schedule m again to trigger next call to handleMessage
-      // (self-message)
-\}
-PacketSink::handleMessage(m)
-\{
-    delete m
-\}
-\end{Verbatim}
-
-
-
-Note that \textit{PacketGenerator} will need to redefine \fname{initialize()}
-to create \textit{m} and schedule the first event.
-
-The following simple module generates packets with exponential
-inter-arrival time. (Some details in the source haven't been
-discussed yet, but the code is probably understandable nevertheless.)
-
-
-\begin{Verbatim}[commandchars=\\\{\}]
-class Generator : public cSimpleModule
-\{
-    Module_Class_Members(Generator,cSimpleModule,0)
-    // note zero stack size!
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-\};
-
-Define_Module( Generator );
-
-void Generator::initialize()
-\{
-    // schedule first sending
-    scheduleAt(simTime(), new cMessage);
-\}
-
-void Generator::handleMessage(cMessage *msg)
-\{
-    // generate & send packet
-    cMessage *pkt = new cMessage;
-    send(pkt, "out");
-    // schedule next call
-    scheduleAt(simTime()+exponential(1.0), msg);
-\}
-\end{Verbatim}
-
-
-
-\subsubsection{Example 2: Bursty traffic generator}
-
-
-A bit more realistic example is to rewrite our Generator to create
-packet bursts, each consisting of \ttt{burstLength} packets.
-
-
-We add some data members to the class:
-\begin{itemize}
-\item{\ttt{burstLength} will store the parameter that specifies how many
-    packets a burst must contain,}
-\item{\ttt{burstCounter} will count in how many packets are left to be sent
-    in the current burst.}
-\end{itemize}
-
-The code:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-class BurstyGenerator : public cSimpleModule
-\{
-    Module_Class_Members(Generator,cSimpleModule,0)
-    // note the zero stack size!
-    int burstLength;
-    int burstCounter;
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-\};
-
-Define_Module( BurstyGenerator );
-void BurstyGenerator::initialize()
-\{
-    // init parameters and state variables
-    burstLength = par("burstLength");
-    burstCounter = burstLength;
-    // schedule first packet of first burst
-    scheduleAt(simTime(), new cMessage);
-\}
-
-void BurstyGenerator::handleMessage(cMessage *msg)
-\{
-    // generate & send packet
-    cMessage *pkt = new cMessage;
-    send(pkt, "out");
-    // if this was the last packet of the burst
-    if (--burstCounter == 0)
-    \{
-        // schedule next burst
-        burstCounter = burstLength;
-        scheduleAt(simTime()+exponential(5.0), msg);
-    \}
-    else
-    \{
-        // schedule next sending within burst
-        scheduleAt(simTime()+exponential(1.0), msg);
-    \}
-\}
-\end{Verbatim}
-
-
-
-\subsubsection{Advantages and drawbacks of \fname{handleMessage()} vs \fname{activity()}}
-
-
-Advantages:
-\begin{itemize}
-\item{consumes less memory: no separate stack\index{stack} needed for
-    simple modules}
-\item{fast: function call is faster than switching between coroutines\index{coroutine}}
-\end{itemize}
-
-
-Drawbacks:
-\begin{itemize}
-\item{local variables cannot be used to store state information}
-\item{need to redefine \fname{initialize()}}
-\item{programming model is inconvenient in some cases}
-\end{itemize}
-
-\subsubsection{Other simulators}
-
-
-Many simulation packages use a similar approach, often topped with
-something like a state machine\index{finite state machine}
-(FSM\index{FSM}) which hides the underlying function calls. Such
-systems are:
-\begin{itemize}
-  \item{OPNET$^TM$ which uses FSM's designed using a graphical editor;}
-  \item{NetSim++ clones OPNET's approach;}
-  \item{SMURPH (University of Alberta) defines a (somewhat eclectic)
-      language to describe FSMs, and uses a precompiler to turn it
-      into C++ code;}
-  \item{Ptolemy (UC Berkeley) uses a similar method.}
-\end{itemize}
-
-{\opp}'s FSM\index{FSM} support is described in the next section.
 
 
 
@@ -1558,6 +1529,32 @@ end-of-simulation events were dropped in favour of \fname{finish()}
 
 
 
+\subsection{Reusing module code via subclassing}
+
+It is often needed to have several variants of a simple module.
+A good design strategy is to create a simple module class with
+the common functionality, then subclass from it to create the
+specific simple module types.
+
+% FIXME use QueueBase example!
+
+An example:
+
+\begin{verbatim}
+class ModifiedTransportProtocol : public TransportProtocol
+{
+  public:
+    Module_Class_Members(ModifiedTransportProtocol, TransportProtocol,0)
+    virtual void recalculateTimeout();
+};
+
+Define_Module( ModifiedTransportProtocol );
+
+void ModifiedTransportProtocol::recalculateTimeout()
+{
+    //...
+}
+\end{verbatim}
 
 
 \section{Finite State Machines in {\opp}}
