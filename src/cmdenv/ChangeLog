@@ -128,3 +128,10 @@ May 10, 2000
    This used to be hardcoded (8192), now users can fine-tune it.
 ------ omnetpp-2.0b4 released ------
 ------ omnetpp-2.0b5 released ------
+June 6, 2000
+ - heap.cc, operator new fixed: when out of memory, it doesn't return NULL
+   but calls exit(1). (According to the ISO standard, op new should throw an
+   exception when out of memory. Unfortunately, exceptions are incompatible
+   with the coroutine library's setjmp/longjmp magic, so OMNeT++ doesn't use
+   exceptions at all.)
+HEAP.CC TO BE TESTED!!!

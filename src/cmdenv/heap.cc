@@ -300,7 +300,8 @@ void *operator new(size_t m)
 #endif
       if (m==0) return NULL;
       void *p;
-      if ((p=malloc(m)) != NULL) {       // allocation successful
+      if ((p=malloc(m)) != NULL)   // allocation successful
+      {
 #ifdef COUNTBLOCKS
          blocksonheap++;
 #endif
@@ -320,34 +321,37 @@ void *operator new(size_t m)
 #endif
 #endif
 #ifdef BKPT
-         if(last_id==breakat) brk("NEW");
+         if (last_id==breakat)
+            brk("NEW");
 #endif
          return p;
       }
-      else if (!memManager.lowMemory())
-      {        // first allocation failed,
-         memManager.makeRoom();       // try again after freeing pool
-         return (void *)new char[m];
+      else if (!memManager.lowMemory())   // still we have the safety pool
+      {
+         // try allocation again after freeing pool
+         memManager.makeRoom();
+         return (void *)new char[m];  // recursive call
       }
-      else
-      {                          // really no more memory
+      else   // really no more memory, must call exit()
+      {
 #ifdef COUNTBLOCKS
 #ifdef ALLOCTABLE
          if (table_off)
-            printf("\n[HEAP.CC-debug:NEW(%lu) FAILED,alloctable full,continue? (y/n)]",
+            printf("\n[HEAP.CC-debug:NEW(%lu) FAILED,alloctable full,about to exit!]",
                    (long)m );
          else
-            printf("\n[HEAP.CC-debug: NEW#%lu (%lu) FAILED,%u blocks%s,continue? (y/n)]",
+            printf("\n[HEAP.CC-debug: NEW#%lu (%lu) FAILED,%u blocks%s,about to exit!]",
                    last_id, (long)m, blocksintable, memManager.lowMemory() ? " LOWMEM!":"" );
+         dispheap();
 #else
-         printf("\n[HEAP.CC-debug:NEW (%lu) FAILED,%u blocks%s,continue? (y/n)]",
-                   (long)m, blocksonheap, memManager.lowMemory() ? " LOWMEM!":"" );
+         printf("\n[HEAP.CC-debug:NEW (%lu) FAILED,%u blocks%s,exiting!]",
+                 (long)m, blocksonheap, memManager.lowMemory() ? " LOWMEM!":"" );
 #endif
-         if(!askyesno()) abort();
 #endif
-         printf("\n[NEW (%lu) FAILED, exiting!]\n", (long)m );abort();
-         return NULL;
-    }
+         printf("\n[NEW (%lu) FAILED,exiting!]\n", (long)m );
+         exit(1);
+         return p;   // to suppress compiler warning
+      }
 }
 
 void operator delete(void *p)

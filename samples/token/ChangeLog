@@ -3,3 +3,5 @@ Oct 10, 1999
 ------ omnetpp-2.0b3 released ------
 ------ omnetpp-2.0b4 released ------
 ------ omnetpp-2.0b5 released ------
+Jun 6, 2000
+ - [General]/total-stack-kb= increased to 4Mb
