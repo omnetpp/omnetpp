@@ -24,9 +24,8 @@
 proc iconbutton {w args} {
     global fonts
 
-    eval button $w -fg red3 -activeforeground red3 \
-                   -relief raised -font $fonts(icon) \
-                   $args
+    eval button $w -bd 1 $args
+    # old code: -fg red3 -activeforeground red3 -font $fonts(icon) $args
     return $w
 }
 

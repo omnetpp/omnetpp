@@ -33,6 +33,8 @@ proc histogramwindow_mouse {w x y on} {
 }
 
 proc create_histogramwindow {name} {
+    global icons help_tips
+
     # create histogram inspector
     set w $name
     create_inspector_toplevel $w
@@ -40,8 +42,10 @@ proc create_histogramwindow {name} {
     # make the window respond to resize events
     bind $w <Configure> "opp_updateinspector $w"
 
-    iconbutton $w.toolbar.obj -text "As Object" -command "inspect_this $w {As Object}"
+    iconbutton $w.toolbar.obj -image $icons(asobject) -command "inspect_this $w {As Object}"
     pack $w.toolbar.obj -anchor n -expand 0 -side left
+
+    set help_tips($w.toolbar.obj) {Inspect as object}
 
     frame $w.main
     frame $w.bot
@@ -218,11 +222,15 @@ proc create_outvectorwindow {name} {
 }
 
 proc create_statisticinspector {name} {
+    global icons help_tips
+
     set w $name
     create_inspector_toplevel $w
 
-    iconbutton $w.toolbar.graph -text "As Graphics" -command "inspect_this $w {As Graphics}"
+    iconbutton $w.toolbar.graph -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
     pack $w.toolbar.graph -anchor n -expand 0 -side left
+
+    set help_tips($w.toolbar.graph) {Inspect as histogram graphics}
 
     frame $w.main
     pack $w.main -anchor center -expand 0 -fill both -side top

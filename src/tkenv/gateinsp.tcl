@@ -19,15 +19,15 @@
 #-----------------------------------------------------------------
 
 proc create_gateinspector {name} {
-    global fonts icons
+    global fonts icons help_tips
 
     set w $name
     create_inspector_toplevel $w
 
-    iconbutton $w.toolbar.mod -image $icons(parent)
-    #FIXME -text {Module}
-
+    iconbutton $w.toolbar.mod -image $icons(parent) ;#command assigned from C++
     pack $w.toolbar.mod -anchor n -side left
+
+    set help_tips($w.toolbar.mod) {Inspect owner module}
 
     frame $w.main
     pack $w.main -anchor center -expand 0 -fill both -side top
@@ -57,18 +57,22 @@ proc create_gateinspector {name} {
 #-----------------------------------------------------------------
 
 proc create_graphicalgatewindow {name} {
+    global icons help_tips
+
     set w $name
     create_inspector_toplevel $w
 
     # create toolbar
-    iconbutton $w.toolbar.ascont -text "As Object" \
-           -command "inspect_this $w {As Object}"
-    iconbutton $w.toolbar.module -text {Module}
-    iconbutton $w.toolbar.redraw -text {Redraw} \
-           -command "graphgatewin_redraw $w"
+    iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"
+    iconbutton $w.toolbar.module -image $icons(parent) ;#command assigned from C++
+    iconbutton $w.toolbar.redraw -image $icons(redraw) -command "graphgatewin_redraw $w"
     foreach i {ascont module redraw} {
        pack $w.toolbar.$i -anchor n -side left
     }
+
+    set help_tips($w.toolbar.ascont) {Inspect as object}
+    set help_tips($w.toolbar.module) {Inspect owner module}
+    set help_tips($w.toolbar.redraw) {Redraw}
 
     # create canvas
     set c $w.c

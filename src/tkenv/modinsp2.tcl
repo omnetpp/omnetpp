@@ -309,13 +309,11 @@ proc create_graphicalmodwindow {name} {
     create_inspector_toplevel $w
 
     # create toolbar
-    iconbutton $w.toolbar.ascont -image $icons(asobject) \
-           -command "inspect_this $w {As Object}"
-    iconbutton $w.toolbar.parent -image $icons(parent)
-    iconbutton $w.toolbar.params -image $icons(params)
-    iconbutton $w.toolbar.gates  -image $icons(gates)
-    iconbutton $w.toolbar.redraw -image $icons(redraw) \
-           -command "graphmodwin_redraw $w"
+    iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"
+    iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
+    iconbutton $w.toolbar.params -image $icons(params) ;#command assigned from C++
+    iconbutton $w.toolbar.gates  -image $icons(gates)  ;#command assigned from C++
+    iconbutton $w.toolbar.redraw -image $icons(redraw) -command "graphmodwin_redraw $w"
     foreach i {ascont parent params gates redraw} {
        pack $w.toolbar.$i -anchor n -side left
     }

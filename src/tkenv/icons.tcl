@@ -56,52 +56,52 @@ set icons(stop) [image create photo -data {
 }]
 
 set icons(as) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxgAA/wAAwACA////////////////////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAAQiMMhJq7046827/xQAToDYlWh5pirYBm1skqEp
-    j3iu73wfRAA7
+    R0lGODlhFAATALMAAAAAAMbGxgAA/0AAAIAAAICAgP//////////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAAQzMMhJq7046817J15FgN9okttpDtzgDiMbFEAx
+    17c9EXIA/D7gD0Dp5Y40XWjJbDqfUE4EADs=
 }]
 
 set icons(asgraphics) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxgAA/wAAwACA/wAA/+zNhP8AAP//AMDAwP//////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARJMMhJq7046y1BMJIBfhognqBYiseBupXXsS0N
-    T4BsGvVZ58BcwFQwFEXHYVBIRBpVMd2RdorhprxeZve6Ybgo6He55JjP6PQmAgA7
+    R0lGODlhFAATALMAAAAAAMbGxgAA/0AAAIAAAAAA/+HXjv8AAP//AMDAwP//////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAAROMMhJq7046z2N/2AGjh9FdN5xgKthnsGntrNB
+    3PjpCSq75riBQeApfIyegXJwGwSIRwPSY3LGRr3SxHr1tVwXkiELtohHonOZw26735gIADs=
 }]
 
 set icons(asobject) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxgAA/wAAwACA/////25ubp6env//////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARIMMhJq704683z+WAIXodgnqhgUIBUpuk6Ae1R
-    3HheGHRP2z7ATbgL/nRImYQWAPaGRGWg1UTqpBObFYeVGL7gMLhDLpvP6EsEADs=
+    R0lGODlhFAATALMAAAAAAMbGxkZJuQAAwACA/42NjW5ubp6enkAAAIAAAP//////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARPMMhJq7046226/59lCGRpkgaVBOPpplOSGEVt
+    37Uh73IN/D8foKDjyRC4pAHBRByFwQKQqELQkjiYBMGCAqfayRVrC0tAaM9mzW6733BJBAA7
 }]
 
 set icons(asoutput) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxgAA/wAAwHFx/////25ubp6env//////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARfMMhJq704h2O6/93FaRhXCAKhokUrGidKpKwF
-    bHCr7+4EACaAAXgQ/g7Fn1JYQP6GzuFSmePxKEdYEQk1FbC4gnEs/Va81p3FNGsT1GtY6jsT
-    9OJql45knvRJgIEUEQAAOw==
+    R0lGODlhFAATALMAAAAAAMbGxgAA/wAAwHFx/////25ubp6enoAAAEAAAP//////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARoMMhJq704h2O6/93FaRhXCAKhokVbIZtxokTK
+    Wghitnzf5sCcDGAAHA5EgPEQBCYKR2UxWkxYE7mEzMelIBIm5HG6oyRihaS6CChYdtzeW1ar
+    E+Tz0z1QE7hEWy6CfxluFIYkiYoVEQAAOw==
 }]
 
 set icons(gates) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxv//AACA////////////////////////////////////////
+    R0lGODlhFAATALMAAAAAAMbGxv//AEqAtf//////////////////////////////////////
     /////////yH5BAEAAAEALAAAAAAUABMAAAQ+MMhJq60g63zr+OAAdFS4caQprMJIBiDAtq/0
     yayb3rPexada6FaDATe7WO+lyiV5zl9z5fOYgs9Y7YQseiMAOw==
 }]
 
 set icons(params) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxv+GAACA//+1Uf//////////////////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARTMMhJq5Ug630nGGAoDt03npd5imlIEOA7vC9A
-    mXSe23dMALWgpjcwZYofHg+zCnUCKtRTJaPNCIEfUcfVenxAHXDJRJqRUDK06Wyx27eNnPOs
-    TyIAOw==
+    R0lGODlhFAATALMAAAAAAMbGxv+GAEqAtf//AP//////////////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARXMMhJq5Ug630nGGAoDt03npd5jpZJECHxvaDs
+    1QD86vN7D69ZDigk/GSgjzI5APxUKxAFGpVOa7Ss9krk4YhcmQ5GBNowoUzTxM78qqEKNdra
+    2DmdfCUCADs=
 }]
 
 set icons(parent) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxgAA/wAAwACA////////////////////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAAQyMMhJq72BEMyJ+JzlfWAojWTZpezKCkM8mChs
-    TvV8Z6l+5zseyUfrBYG7kSzIbDqflwgAOw==
+    R0lGODlhFAATALMAAAAAAMbGxoAAAEAAAMAAAP//////////////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAAQ3MMhJq704WyL05ULnTWAoeqV5YqkwvMMYgLEs
+    0fYd1nLJb4RgUPWrqI5F43G3ssCeyZx0Sp1GAAA7
 }]
 
 set icons(redraw) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxtIAAGdnZ/+1Uf//////////////////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARFMMhJq70U4B3AEAHITZ5gCoDJlWdqahf7tpiM
-    0vHX4pbtorXO7lUraFI/WK/APPKWTKNQGYs2O6OOVZrVXrsSgBhMLl8iADs=
+    R0lGODlhFAATALMAAAAAAMbGxsAAAGdnZ4AAAP//////////////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARIMMhJq70U4B3AEAJXeSAIECJZngShXarZulgs
+    sDT8rfNr2TjfqMNrCTMFDeDWqxWeyqbzmezkplSlqEOFbiWA7HcCKI/P6EsEADs=
 }]
 

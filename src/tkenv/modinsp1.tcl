@@ -18,13 +18,18 @@
 #
 
 proc create_compoundmodinspector {name} {
+    global icons help_tips
+
     set w $name
     create_inspector_toplevel $w
 
-    iconbutton $w.toolbar.graph   -text "As Graphics" -command "inspect_this $w {As Graphics}"
-    iconbutton $w.toolbar.parent -text {Parent}
+    iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+    iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
     pack $w.toolbar.graph -anchor w -side left
     pack $w.toolbar.parent -anchor w -side left
+
+    set help_tips($w.toolbar.graph)   {Inspect as network graphics}
+    set help_tips($w.toolbar.parent)  {Inspect parent module}
 
     set nb $w.nb
     notebook $nb
@@ -49,15 +54,21 @@ proc create_compoundmodinspector {name} {
 }
 
 proc create_simplemodinspector {name} {
+    global icons help_tips
+
     set w $name
     create_inspector_toplevel $w
 
-    iconbutton $w.toolbar.win   -text "Module output" -command "inspect_this $w {Module output}"
-    iconbutton $w.toolbar.parent -text {Parent}
-    iconbutton $w.toolbar.step -text "Step" -command "one_step_in_module $w"
+    iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
+    iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
+    iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
     pack $w.toolbar.win -anchor w -side left
     pack $w.toolbar.parent -anchor w -side left
     pack $w.toolbar.step -anchor w -side left
+
+    set help_tips($w.toolbar.win)    {See module output}
+    set help_tips($w.toolbar.parent) {Inspect parent module}
+    set help_tips($w.toolbar.step)   {Execute until next event in this module}
 
     set nb $w.nb
     notebook $nb
@@ -106,17 +117,23 @@ proc one_step_in_module {w} {
 }
 
 proc create_modulewindow {name} {
+    global icons help_tips
+
     set w $name
     create_inspector_toplevel $w
 
     # Add icons
-    iconbutton $w.toolbar.obj  -text "As Object" -command "inspect_this $w {As Object}"
-    iconbutton $w.toolbar.parent -text {Parent}
-    iconbutton $w.toolbar.step -text "Step" -command "one_step_in_module $w"
+    iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
+    iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
+    iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
     pack $w.toolbar.obj -anchor n -side left
     pack $w.toolbar.parent -anchor n -side left
     pack $w.toolbar.step -anchor n -side left
 
+    set help_tips($w.toolbar.obj)    {Inspect as object}
+    set help_tips($w.toolbar.parent) {Inspect parent module}
+    set help_tips($w.toolbar.step)   {Execute until next event in this module}
+                                    
     frame $w.statusbar
     label $w.statusbar.name -relief groove -text {(unknown module)}
     label $w.statusbar.phase -justify left -relief groove -text {Phase: -}
