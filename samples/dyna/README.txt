@@ -10,11 +10,7 @@ Demonstrates:
  - star topology (with the number of modules passed as parameters)
 
 Dyna is a model of a simple client-server network. The network contains
-several clients and one server, connected in star topology:
-
-   client  <--->
-   client  <--->  switch  <--->  server
-   client  <--->
+several clients and one server interconnected via a switch.
 
 The number of clients is configurable. Each client computer periodically
 connects to the server for data exchange. In each connection, the client
@@ -27,6 +23,11 @@ be seen when you open an inspector for the "server" module (right click
 on the icon --> Inspect as object) and click on the "Submods" tab.
 They can also be seen in the object tree in the main window -- just
 open the "server" node in the tree.
+
+Note that the modelled protocol (CONN_REQ, CONN_ACK, etc) is rather a "metaphor"
+of a transport-level protocol than a model of any existing protocol. (For one 
+thing, it doesn't contain three-way handshake, a proper retransmission scheme
+etc.) It serves only demonstation purposes. 
 
 The module types are:
   Client:
