@@ -1377,11 +1377,14 @@ of using it.
 
 \subsubsection{Configuring {\opp} for Akaroa}
 
-The {\opp} simulation must be configured so that it passes
-the observations to Akaroa. The simulation model itself does
-not need to be changed at all -- it should normally write
+First of all, you have to compile {\opp} with Akaroa support enabled.
+
+The {\opp} simulation must be configured in \ttt{omnetpp.ini}
+so that it passes the observations to Akaroa. The simulation model itself does
+not need to be changed (except for RNGs, see later) -- it continues to write
 the observations into output vectors (\cclass{cOutVector} objects,
-see chapter \ref{cha:the-simulation-library}).
+see chapter \ref{cha:the-simulation-library}). You can place some of
+the output vectors under Akaroa control.
 
 You need to add the following to \ttt{omnetpp.ini}:
 
@@ -1415,7 +1418,7 @@ you can use the following ``trick'':
 
 \subsubsection{Using shared file systems}
 
-It is usually practical if the same directory is mounted (e.g. via NFS or Samba)
+It is usually practical to have the same physical disk mounted (e.g. via NFS or Samba)
 on all computers in the cluster. However, because all {\opp} simulation
 processes run with the same settings, they would overwrite each other's
 output files. Your can prevent this from happening using the
