@@ -108,7 +108,7 @@ void TOmnetTkApp::setup()
 {
     // initialize base class
     TOmnetApp::setup();  // includes readOptions()
-    if (!simulation.ok())
+    if (!initialized)
         return;
 
     // path for the Tcl user interface files
@@ -127,8 +127,7 @@ void TOmnetTkApp::setup()
     interp = initTk( args->argCount(), args->argVector() );
     if (!interp)
     {
-        interp = 0;
-        simulation.setErrorCode(eUISTARTUP);
+        initialized = false; // signal failed setup
         return;
     }
 
@@ -152,7 +151,7 @@ void TOmnetTkApp::setup()
                         "When not set, it defaults to " OMNETPP_TKENV_DIR ".\n",
                         interp->result);
         interp = 0;
-        simulation.setErrorCode(eUISTARTUP);
+        initialized = false; // signal failed setup
         return;
     }
 #else
@@ -169,7 +168,7 @@ void TOmnetTkApp::setup()
     {
         fprintf(stderr, "\n<!> Error starting Tkenv: %s\n", interp->result);
         interp = 0;
-        simulation.setErrorCode(eUISTARTUP);
+        initialized = false; // signal failed setup
         return;
     }
 #endif
@@ -179,7 +178,7 @@ void TOmnetTkApp::setup()
     {
         fprintf(stderr, "\n<!> Error starting Tkenv: %s\n", interp->result);
         interp = 0;
-        simulation.setErrorCode(eUISTARTUP);
+        initialized = false; // signal failed setup
         return;
     }
 
@@ -187,6 +186,9 @@ void TOmnetTkApp::setup()
 
 void TOmnetTkApp::run()
 {
+    if (!initialized)
+        return;
+
     CHK(Tcl_Eval(interp,"startup_commands"));
     runTk( interp );
 }
@@ -199,7 +201,8 @@ void TOmnetTkApp::shutdown()
 void TOmnetTkApp::rebuildSim()
 {
     // finish previous run if we haven't done so yet
-    if (simulation.ok()) simulation.endRun();
+    if (!sim_error)
+         simulation.endRun();
 
     if (simulation.runNumber()>0)
          newRun( simulation.runNumber() );
@@ -210,18 +213,7 @@ void TOmnetTkApp::rebuildSim()
                                 "Choose File|New Network or File|New Run.",
                                 "} info ok",NULL));
     if (simulation.systemModule())
-         inspect( simulation.systemModule(),INSP_DEFAULT,NULL );
-
-    // Old code: try to really restart simulation
-    //           (cannot be done decently because object members of
-    //            simple modules cannot be restarted)
-    //
-    //makeOptionsEffective();
-    //startRun();
-
-    //updateSimtimeDisplay();
-    //updateNextModuleDisplay();
-    //updateInspectors();
+         inspect( simulation.systemModule(),INSP_DEFAULT,NULL);
 }
 
 void TOmnetTkApp::doOneStep()
@@ -234,24 +226,32 @@ void TOmnetTkApp::doOneStep()
     animation_ok = true;
 
     is_running = true;
-    simulation.startClock();
+    startClock();
     cSimpleModule *mod = simulation.selectNextModule();
-    if (mod != NULL)
+    if (mod!=NULL)
     {
        if (opt_print_banners)
           printEventBanner(mod);
 
-       simulation.doOneEvent( mod );
-       simulation.incEventNumber();
+       try
+       {
+           simulation.doOneEvent( mod );
+       }
+       catch (cException *e)   // FIXME this + all sim_error occurrences!
+       {
+           sim_error = true;
+           displayError(e);
+           delete e;
+       }
 
        updateSimtimeDisplay();
        updateNextModuleDisplay();
        updateInspectors();
     }
-    simulation.stopClock();
+    stopClock();
     is_running = false;
 
-    if (!simulation.ok())
+    if (sim_error)
     {
        if (simulation.normalTermination())
           callFinish();  // includes endRun()
@@ -274,7 +274,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
     Tcl_Eval(interp, "update");
 
     is_running = true;
-    simulation.startClock();
+    startClock();
     Speedometer speedometer;
 
     bool firstevent = true;
@@ -282,7 +282,8 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
     {
         // query which module will execute the next event
         cSimpleModule *mod = simulation.selectNextModule();
-        if (mod==NULL) break;
+        if (!mod)
+            break;
 
         // if stepping locally in module, we stop both immediately
         // *before* and *after* executing the event in that module,
@@ -296,14 +297,23 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
         firstevent = false;
 
         // do a simulation step
-        if (opt_print_banners)  printEventBanner(mod);
-        simulation.doOneEvent( mod );
-        simulation.incEventNumber();
+        if (opt_print_banners)
+            printEventBanner(mod);
+
+        try
+        {
+            simulation.doOneEvent( mod );
+        }
+        catch (cException *e)
+        {
+            // FIXME handle exception
+        }
+
         speedometer.addEvent(simulation.simTime());
 
         // exit conditions
         if (stepwithinmodule_reached) break;
-        if (!simulation.ok() || bkpt_hit || stop_simulation) break;
+        if (sim_error || bkpt_hit || stop_simulation) break;
         if (until_time>0 && simulation.simTime()>=until_time) break;
         if (until_event>0 && simulation.eventNumber()>=until_event) break;
 
@@ -329,11 +339,13 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
             while (clock()-start<dclk && !stop_simulation)
                 Tcl_Eval(interp, "update");
         }
+
+        checkTimeLimits();
     }
-    simulation.stopClock();
+    stopClock();
     is_running = false;
 
-    if (!simulation.ok())
+    if (sim_error)
     {
         if (simulation.normalTermination())
             callFinish();  // includes endRun()
@@ -362,13 +374,22 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
     Tcl_Eval(interp, "update");
 
     is_running = true;
-    simulation.startClock();
+    startClock();
     Speedometer speedometer;
-    do {
+    do
+    {
         cSimpleModule *mod = simulation.selectNextModule();
-        if (mod==NULL) break;
-        simulation.doOneEvent( mod );
-        simulation.incEventNumber();
+        if (!mod)
+            break;
+
+        try
+        {
+            simulation.doOneEvent( mod );
+        }
+        catch (cException *e)
+        {
+            // FIXME handle exception
+        }
         speedometer.addEvent(simulation.simTime());
 
         if (simulation.eventNumber()%opt_updatefreq_express==0)
@@ -381,16 +402,17 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
             }
             Tcl_Eval(interp, "update");
         }
-
-    } while(  simulation.ok() && !bkpt_hit && !stop_simulation &&
-              (until_time<=0 || simulation.simTime()<until_time) &&
-              (until_event<=0 || simulation.eventNumber()<until_event)
-           );
-    simulation.stopClock();
+        checkTimeLimits();
+    }
+    while(  !sim_error && !bkpt_hit && !stop_simulation &&
+            (until_time<=0 || simulation.simTime()<until_time) &&
+            (until_event<=0 || simulation.eventNumber()<until_event)
+         );
+    stopClock();
     is_running = false;
     ev.disable_tracing = false;
 
-    if (!simulation.ok())
+    if (sim_error)
     {
         if (simulation.normalTermination())
             callFinish();  // includes endRun()
@@ -406,7 +428,7 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
 
 void TOmnetTkApp::startAll()
 {
-    opp_error("Not implemented");
+    throw new cException("Not implemented");
 }
 
 void TOmnetTkApp::callFinish()
@@ -430,91 +452,92 @@ void TOmnetTkApp::callFinish()
     updateInspectors();
 }
 
-void TOmnetTkApp::newNetwork( const char *network_name )
+void TOmnetTkApp::newNetwork(const char *network_name)
 {
     cNetworkType *network = findNetwork( network_name );
-
-    if( network )
+    if (!network)
     {
-       // finish previous run if we haven't done so yet
-       if (simulation.ok()) simulation.endRun();
-       simulation.deleteNetwork();
+        // FIXME error: network not found
+        return;
+    }
 
-       // the rest of the code will set up and start this run
+    try
+    {
+        // finish & cleanup previous run if we haven't done so yet
+        if (!sim_error)
+            simulation.endRun();
+        simulation.deleteNetwork();
 
-       // run number will be 0 which means that only the [All runs]
-       // section of the ini file will be searched for parameter values
-       readPerRunOptions( 0 );
-       opt_network_name = network->name();
+        // set up new network
+        sim_error = false;
+        readPerRunOptions(0);
+        makeOptionsEffective();
+        opt_network_name = network->name();
+        // pass run number 0 to setupNetwork(): this means that only the [All runs]
+        // section of the ini file will be searched for parameter values
+        simulation.setupNetwork(network, 0);
+        startRun();
 
-       simulation.setupNetwork( network, 0 );
-       if (!simulation.ok())
-           simulation.deleteNetwork();
-       else
-       {
-           makeOptionsEffective();
-           if (simulation.ok())
-           {
-               startRun();
-               if (!simulation.ok())
-                   simulation.deleteNetwork();
-           }
-       }
-       updateNetworkRunDisplay();
-       updateNextModuleDisplay();
-       updateSimtimeDisplay();
-       updateInspectors();
+        updateNetworkRunDisplay();
+        updateNextModuleDisplay();
+        updateSimtimeDisplay();
+        updateInspectors();
+    }
+    catch (cException *e)
+    {
+        displayError(e);
+        delete e;
+        sim_error = true;
     }
 }
 
-void TOmnetTkApp::newRun( int run )
+void TOmnetTkApp::newRun(int run)
 {
     run_nr = run;
-
-    // finish previous run if we haven't done so yet
-    if (simulation.ok()) simulation.endRun();
-    simulation.deleteNetwork();
-
-    readPerRunOptions( run_nr );
-
+    // FIXME this is completely wrong: opt_network_name should be filled by run_nr
     cNetworkType *network = findNetwork( opt_network_name );
-    if (network==NULL)
+    if (!network)
     {
-         opp_error("Network `%s' not found",(const char *)opt_network_name);
-         return;
+        // FIXME error: network not found
+        return;
     }
 
-    simulation.setupNetwork( network, run_nr );
-    if (!simulation.ok())
-        simulation.deleteNetwork();
-    else
+    try
     {
+        // finish & cleanup previous run if we haven't done so yet
+        if (!sim_error)
+            simulation.endRun();
+        simulation.deleteNetwork();
+
+        // set up new network
+        sim_error = false;
+        readPerRunOptions( run_nr );
         makeOptionsEffective();
-        if (simulation.ok())
-        {
-           startRun();
-           if (!simulation.ok())
-             simulation.deleteNetwork();
-        }
+        simulation.setupNetwork(network, run_nr);
+        startRun();
+
+        // update GUI
+        updateNetworkRunDisplay();
+        updateNextModuleDisplay();
+        updateSimtimeDisplay();
+        updateInspectors();
     }
-    updateNetworkRunDisplay();
-    updateNextModuleDisplay();
-    updateSimtimeDisplay();
-    updateInspectors();
+    catch (cException *e)
+    {
+        displayError(e);
+        delete e;
+        sim_error = true;
+    }
 }
 
 bool TOmnetTkApp::isBreakpointActive(const char *, cSimpleModule *)
 {
     // args: label, module
-
-    if (opt_bkpts_enabled)
-    {
-         return true;    // To be implemented!
-                         // Should be able to stop depending on
-                         // all/selected labels, all/selected modules.
-    }
-    else
+    if (!opt_bkpts_enabled)
          return false;
+
+    // To be implemented! Should be able to stop depending on all/selected labels, all/selected modules, etc.
+    return true;
 }
 
 void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
@@ -600,9 +623,9 @@ TInspector *TOmnetTkApp::findInspector(cObject *obj, int type)
 {
     for (cIterator i(inspectors); !i.end(); i++)
     {
-         TInspector *insp = (TInspector *) i();
-         if (insp->object==obj && insp->type==type)
-             return insp;
+        TInspector *insp = (TInspector *) i();
+        if (insp->object==obj && insp->type==type)
+            return insp;
     }
     return NULL;
 }
@@ -612,8 +635,8 @@ void TOmnetTkApp::updateInspectors()
     // update inspectors
     for (cIterator i(inspectors); !i.end(); i++)
     {
-         TInspector *insp = (TInspector *) i();
-         insp->update();
+        TInspector *insp = (TInspector *) i();
+        insp->update();
     }
 }
 
@@ -628,14 +651,14 @@ void TOmnetTkApp::updateNetworkRunDisplay()
     const char *networkname;
 
     if (simulation.runNumber()<=0)
-         sprintf(runnr, "?");
+        sprintf(runnr, "?");
     else
-         sprintf(runnr, "%d",simulation.runNumber());
+        sprintf(runnr, "%d",simulation.runNumber());
 
     if (simulation.networkType()==NULL)
-         networkname = "(no network)";
+        networkname = "(no network)";
     else
-         networkname = simulation.networkType()->name();
+        networkname = simulation.networkType()->name();
 
     CHK(Tcl_VarEval(interp, NETWORK_LABEL " config -text {",
                         "Run #",runnr,": ",networkname,
@@ -677,7 +700,7 @@ void TOmnetTkApp::updateNextModuleDisplay()
     const char *modulename;
     cSimpleModule *mod;
 
-    if (!simulation.ok())
+    if (sim_error)
     {
       modulename = "n/a";
       subsc[0]=0;
@@ -686,7 +709,9 @@ void TOmnetTkApp::updateNextModuleDisplay()
     {
       modulename = "n/a";
       subsc[0]=0;
-    } else {
+    }
+    else
+    {
       modulename = mod->fullPath();
       sprintf(subsc,"#%u ", mod->id());
     }

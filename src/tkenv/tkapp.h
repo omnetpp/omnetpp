@@ -52,14 +52,15 @@ class TOmnetTkApp : public TOmnetApp
       opp_string bitmap_dir;   // directory of icon files
 
       int   run_nr;            // number of current simulation run
+      bool  sim_error;         // true if current simulation was stopped with error and can't be continued
       bool  animation_ok;      // while execution, do message animation or not
       bool  bkpt_hit;          // true when must stop sim. due to breakpoint
       bool  stop_simulation;   // true when must stop simulation
       bool  is_running;        // true while simulation is running
 
       cHead inspectors;        // list of inspector objects
-   public:
 
+   public:
       TOmnetTkApp(ArgList *args, cIniFile *inifile);
       ~TOmnetTkApp();
 

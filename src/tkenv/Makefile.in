@@ -103,6 +103,7 @@ inspect.o: inspect.cc \
   tkinsp.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/csimul.h \
@@ -167,6 +168,7 @@ modinsp.o: modinsp.cc \
   ../../include/cmsgheap.h \
   ../envir/omnetapp.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h
@@ -178,6 +180,7 @@ objinsp.o: objinsp.cc \
   arrow.h \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/errmsg.h \
   ../../include/cobject.h \
   ../../include/csimul.h \
@@ -242,6 +245,7 @@ statinsp.o: statinsp.cc \
   ../../include/cmsgheap.h \
   ../envir/omnetapp.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h
@@ -258,6 +262,7 @@ structinsp.o: structinsp.cc \
   ../../include/carray.h \
   ../../include/chead.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \
@@ -291,6 +296,7 @@ tkapp.o: tkapp.cc \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
   ../envir/omnetapp.h \
+  ../../include/cexception.h \
   ../envir/args.h \
   ../../include/envirext.h
 tkcmd.o: tkcmd.cc \
@@ -316,6 +322,7 @@ tkcmd.o: tkcmd.cc \
   ../../include/cgate.h \
   ../../include/cenum.h \
   ../envir/omnetapp.h \
+  ../../include/cexception.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h
@@ -339,6 +346,7 @@ tklib.o: tklib.cc \
   ../../include/coutvect.h \
   ../envir/omnetapp.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   ../envir/args.h \
   ../envir/envdefs.h \
   ../../include/envirext.h \

@@ -320,7 +320,8 @@ int getObjectFullpath_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 int simulationOk_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
-   interp->result = const_cast<char*>(simulation.ok() ? "1" : "0");
+   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
+   interp->result = const_cast<char*>(app->sim_error ? "0" : "1");
    return TCL_OK;
 }
 
