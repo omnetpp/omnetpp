@@ -54,6 +54,8 @@ $filename =~ /./ || die "*** no file name given\n";
 $filename =~ /\.[^\/]*$/ || die "*** file name must contain a dot\n";
 $hfile = $filename;
 $hfile =~ s/\.[^.]*$/$hsuffix/;
+$hdef =  $hfile;
+$hdef =~ s/\.[^.]*$/_H_/;
 $ccfile = $filename;
 $ccfile =~ s/\.[^.]*$/$ccsuffix/;
 
@@ -72,6 +74,8 @@ open(H,">$hfile") || die "*** cannot open output file $hfile";
 open(CC,">$ccfile") || die "*** cannot open output file $ccfile";
 
 print H "//\n// TBD: add copyright stuff, includes here\n//\n\n";
+print H "#ifndef $hdef\n";
+print H "#define $hdef\n\n";
 print H "#include <omnetpp.h>\n";
 print CC "//\n// TBD: add copyright stuff, includes here\n//\n\n";
 print CC "#include \"$hfile\"\n\n";
@@ -81,6 +85,7 @@ print CC "#include \"$hfile\"\n\n";
 foreach $class (@classes) {
     $classtype{$class} = 'cobject';
     $hasdescriptor{$class} = 0;
+
 }
 
 @enums = ();
@@ -373,6 +378,9 @@ if ($crap =~ /[^\s]/s)
     print STDERR "*** following parts of input file were not understood:\n"; $ret=1;
     print STDERR "'$crap'\n";
 }
+
+print H "#endif // $hdef\n";
+
 
 close(H);
 close(CC);

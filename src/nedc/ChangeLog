@@ -1,3 +1,9 @@
+2002-01-17  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* msgc.pl: added surrounding #ifndef/#define/#endif construct to
+	_n.h file generation to avoid multiple inclusion. Therefore
+	introduced new variable $hdef that holds the macro string
+
 2002-01-16  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* nedcwrapper.sh: strip all command line arguments except the last
