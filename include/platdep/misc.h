@@ -77,6 +77,8 @@ inline std::string opp_getWindowsError(DWORD errorCode)
 //
 #ifdef _MSC_VER
 
+#define SHELL_DOES_NOT_EXPAND_WILDCARDS 1
+
 #include <io.h>
 #include <direct.h>
 static long _handle;
@@ -88,9 +90,8 @@ inline const char *findFirstFile(const char *mask)
     _handle = _findfirst(mask, &_fdata);
     if (_handle<0) {_findclose(_handle); return NULL;}
     strcpy(_dir,mask);
-    char *s = _dir + strlen(_dir);
-    while (--s>=_dir)
-        if (*s=='/' || *s=='\\')
+    for (char *s = _dir+strlen(_dir)-1; true; s--)
+        if (s<_dir || *s=='/' || *s=='\\')
             {*(s+1)='\0'; break;}
     strcpy(_tmpfname,_dir);
     strcat(_tmpfname,_fdata.name);
