@@ -1,1 +1,4 @@
-nice icons: load, sel, repl, delete, info, options, dup, <==, ==>
+Misc:
+- with Tcl-embedding, cannot display README file
+- nice icons: load, sel, repl, delete, info, options, dup, <==, ==>
+

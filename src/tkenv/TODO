@@ -1,4 +1,5 @@
 General:
+ - with Tcl-embedding, cannot display README file
  - .tkenvrc to store options
  - reload omnetpp.ini before new run
  - rearrange modules with mouse (problem: where to save positions? .tkenvrc?)
