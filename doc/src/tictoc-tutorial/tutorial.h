@@ -631,18 +631,41 @@ on the Contents page.
 
 Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
 
+<i>Exercise: In this model, there is only one message underway at any
+given moment: nodes only generate a message when another message arrives
+at them. We did it this way to make it easier to follow the simulation.
+Change the module class so that instead, it generates messages periodically.
+The interval between messages should be a module parameter, returning
+exponentially distributed random numbers.
+</i>
+
 
 @section s11 Step 11: Displaying the number of packets sent/received
 
-You can use the Filtered objects dialog to learn how many packets were
-sent or received by the various nodes:
+To get an overview at runtime how many messages each node sent or
+received, we've added two counters to the module class: numSent and numReceived.
+
+@dontinclude txc11.cc
+@skip class Txc11
+@until public:
+
+They are set to zero and WATCH'ed in the initialize() method. Now we
+can use the Find/inspect objects dialog (Inspect menu; it is also on
+the toolbar) to learn how many packets were sent or received by the
+various nodes.
 
 <img src="step11a.gif">
 
-But it can be also arranged that this info appears above the module
+It's true that in this concrete simulation model the numbers will be
+roughly the same, so you can only learn from them that intuniform()
+works properly. But in real-life simulations it can be very useful that
+you can quicky get an overview about the state of various nodes in the
+model.
+
+It can be also arranged that this info appears above the module
 icons. The <tt>t=</tt> display string tag specifies the text;
 we only need to modify the displays string during runtime.
-The following code does the trick:
+The following code does the job:
 
 @dontinclude txc11.cc
 @skip isGUI
@@ -651,15 +674,9 @@ The following code does the trick:
 @skip ::updateDisplay
 @until }
 
-<img src="step11b.gif">
+And the result looks like this:
 
-<i>Exercise: In this model, there is only one message underway at any
-given moment: nodes only generate a message when another message arrives
-at them. We did it this way to make it easier to follow the simulation.
-Change the module class so that instead, it generates messages periodically.
-The interval between messages should be a module parameter, returning
-exponentially distributed random numbers.
-</i>
+<img src="step11b.gif">
 
 Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
 
