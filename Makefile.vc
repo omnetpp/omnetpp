@@ -183,14 +183,8 @@ thetutorial:
 #
 # Documentation
 #
-api:
-	cd /d $(OMNETPP_INCL_DIR:/=\) && $(MAKE) $(MOPTS) $(MAKEFILE) doc
-
-nedxml-api:
-	cd /d $(OMNETPP_SRC_DIR:/=\)\nedxml && $(MAKE) $(MOPTS) $(MAKEFILE) doc
-
-manual:
-	cd /d $(OMNETPP_DOC_DIR:/=\)\usman && $(MAKE) $(MOPTS) $(MAKEFILE)
+docu:
+	cd /d $(OMNETPP_DOC_DIR:/=\) && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
 # Tests
