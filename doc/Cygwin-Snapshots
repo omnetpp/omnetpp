@@ -1,0 +1,93 @@
+To: OMNeT++ Mailing List <omnetpp-l@venus.it.swin.edu.au> 
+Subject: Running OMNeT++ on Win98 SE Using Cygwin Developer Snapshots 
+From: Mark Rahner <mark_rahner@Sparta.Com> 
+Date: Fri, 31 Mar 2000 13:21:23 -0500 
+Content-Transfer-Encoding: 7bit 
+Content-Type: text/html; charset=us-ascii 
+Sender: owner-omnetpp-l@venus.it.swin.edu.au 
+
+
+Hi OMNeT++ users, 
+
+In my experience, OMNeT++ 2.0b3 works pretty well with the very old Cygwin B20.1. 
+Unfortunately, Cygwin B20.1 has a variety of problems that have nothing to do with
+OMNeT++ which required me to upgrade to one of the many Cygwin developer snapshots.  In
+the past, I've complained in this forum about the hassles associated with administering Cygwin
+developer snapshots for the purposes of running OMNeT++.  Recently, I've struck upon a
+combination of software that is working pretty well for me.  So that other's may benefit from my
+experience, this message attempts to document how I have Cygwin installed on Windows 98
+Second Edition.  Please be advised:  THIS WORKS FOR ME.  YOUR MILEAGE MAY
+VARY.  I HAVE NO ABILITY TO SUPPORT ANY OF THIS. 
+
+First, I created a directory named C:\Cygnus and populated it with the files that are required by
+the procedure described below.  All of these files were available through links on the Cygwin
+home page, http://sourceware.cygnus.com/cygwin. 
+
+Next, I installed the binary release of Cygwin B20.1 by running full.exe, accepting all defaults. 
+Then, I launched a non-login bash shell in an MS-DOS command window using Start ->
+Programs -> Cygnus Solutions -> Cygwin B20.  Then, I typed: 
+BASH.EXE-2.02$ export PS1="$(echo \$PWD)> " 
+/Cygnus/cygwin-b20> mkdir -p /tmp 
+/Cygnus/cygwin-b20> mkdir -p /bin 
+/Cygnus/cygwin-b20> cd H*/bin 
+/Cygnus/cygwin-b20/H-i586-cygwin32/bin> cp -p sh.exe bash.exe /bin 
+
+Next, I installed Mumit Kahn's gcc 2.95.2 compiler upgrade with the additional package
+required for compatibility with Cygwin developer snapshots using: 
+/Cygnus/cygwin-b20/H-i586-cygwin32/bin> cd ../.. 
+/Cygnus/cygwin-b20> tar xzf ../gcc-2_95_2-cygb20.tar.gz 
+/Cygnus/cygwin-b20> tar xzf ../gcc-2_95_2-dev-ss.tar.gz 
+
+This compiler represents a very significant improvement over the one that comes with Cygwin
+B20.1.  I'm pretty sure that this is the compiler currently being used by almost all of the Cygwin
+developers. 
+
+Then, I installed the March 25 2000 Cygwin developer snapshot using: 
+/Cygnus/cygwin-b20> cd H* 
+/Cygnus/cygwin-b20/H-i586-cygwin32> mkdir new 
+/Cygnus/cygwin-b20/H-i586-cygwin32> cd new 
+/Cygnus/cygwin-b20/H-i586-cygwin32/new> tar xzf ../../../cygwin-inst-20000325.tar.gz 
+/Cygnus/cygwin-b20/H-i586-cygwin32/new> mv i686-pc-cygwin i586-cygwin32 
+/Cygnus/cygwin-b20/H-i586-cygwin32/new> tar cf ../update.tar * 
+/Cygnus/cygwin-b20/H-i586-cygwin32/new> cd .. 
+/Cygnus/cygwin-b20/H-i586-cygwin32> rm -rf new 
+/Cygnus/cygwin-b20/H-i586-cygwin32> # tar xf update.tar -> permission denied, couldn't
+overwrite bin/cygwin1.dll 
+Exited Cygnus. 
+Used WinZip to unbundle update.tar. 
+Used Explorer to delete update.tar. 
+Doublechecked that /bin/bash.exe and /bin/sh.exe were the same as those in
+/Cygnus/cygwin-b20/H-i586-cygwin32/bin.  They were. 
+
+Please be advised that all Cygwin developer snapshots are not created equal.  I've had serious
+problems with many earlier snapshots. 
+
+Then I created /usr and /usr/local and unbundled the OMNeT++ 2.0b3 bundle using: 
+/usr/local> tar xzf /Downloads/OMNeT++/opp20b3.tgz  # your download directory probably
+differs 
+
+In order to compile OMNeT++, I had to modify 5 of the source modules to make them more
+const correct.  I'm pretty sure I didn't break anything.  I'd love to see these changes find their
+way into the next release.  (Hi Andras!)  The file names and corresponding diffs follow: 
+
+[list clipped, because I put these changes into 2.0beta4 --Andras]
+
+Then, I built OMNeT++ using: 
+/usr/local/omnetpp-2.0b3> export PATH="$PATH:C:/usr/local/omnetpp-2.0b3/bin" 
+/usr/local/omnetpp-2.0b3> export MAKE_MODE=UNIX  # to avoid very strange Cygwin
+default 
+/usr/local/omnetpp-2.0b3> ./configure 
+/usr/local/omnetpp-2.0b3> make 
+Warnings about lack of shared library support are OK. 
+Some other compile time warnings remained that I did not pursue. 
+I did not attempt to build the PVM stuff. 
+
+Before running GUI-based simulations, I also had to: 
+/usr/local/omnetpp-2.0b3> export TCL_LIBRARY="/cygnus/cygwin-b20/share/tcl8.0" 
+
+For what it's worth, I've also found the non-X version of the rxvt terminal emulator, which is
+also available from the Cygwin website, to be quite useful in this environment. 
+
+Hope you find this useful, 
+Mark 
+  
