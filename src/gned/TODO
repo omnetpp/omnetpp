@@ -39,6 +39,7 @@ Text editor:
 - add find/replace dialog
 - pgup, ctrl-pgup doesn't work correctly
 - make status line: line number etc.
+- syntax highlighting not 100% OK
 
 General:
 - introduce ~/.gnedrc
