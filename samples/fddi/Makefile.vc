@@ -138,11 +138,17 @@ re-makemake:
 fddi_mac.obj: fddi_mac.cpp \
   fddi_def.h \
   fddi_mac.h
+fddi_mac_n.obj: fddi_mac_n.cpp
+fddi_nets_n.obj: fddi_nets_n.cpp
+fddi_nodes_n.obj: fddi_nodes_n.cpp
+fddi_rings_n.obj: fddi_rings_n.cpp
 othermod.obj: othermod.cpp \
   otherdef.h \
   fddi_def.h \
   othermod.h
+othermod_n.obj: othermod_n.cpp
 ssm_ifs.obj: ssm_ifs.cpp \
   ssmifdef.h \
   fddi_def.h \
   ssm_ifs.h
+ssm_ifs_n.obj: ssm_ifs_n.cpp

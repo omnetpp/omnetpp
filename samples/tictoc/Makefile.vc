@@ -234,4 +234,36 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+tictoc10_m.obj: tictoc10_m.cpp \
+  tictoc10_m.h
+tictoc10_n.obj: tictoc10_n.cpp
+tictoc11_m.obj: tictoc11_m.cpp \
+  tictoc11_m.h
+tictoc11_n.obj: tictoc11_n.cpp
+tictoc12_m.obj: tictoc12_m.cpp \
+  tictoc12_m.h
+tictoc12_n.obj: tictoc12_n.cpp
+tictoc1_n.obj: tictoc1_n.cpp
+tictoc2_n.obj: tictoc2_n.cpp
+tictoc3_n.obj: tictoc3_n.cpp
+tictoc4_n.obj: tictoc4_n.cpp
+tictoc5_n.obj: tictoc5_n.cpp
+tictoc6_n.obj: tictoc6_n.cpp
+tictoc7_n.obj: tictoc7_n.cpp
+tictoc8_n.obj: tictoc8_n.cpp
+tictoc9_n.obj: tictoc9_n.cpp
+txc1.obj: txc1.cpp
+txc10.obj: txc10.cpp \
+  tictoc10_m.h
+txc11.obj: txc11.cpp \
+  tictoc11_m.h
+txc12.obj: txc12.cpp \
+  tictoc12_m.h
+txc2.obj: txc2.cpp
+txc3.obj: txc3.cpp
+txc4.obj: txc4.cpp
+txc5.obj: txc5.cpp
+txc6.obj: txc6.cpp
+txc7.obj: txc7.cpp
+txc8.obj: txc8.cpp
+txc9.obj: txc9.cpp

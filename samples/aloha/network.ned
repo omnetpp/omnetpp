@@ -43,12 +43,12 @@ module ALOHAnet
         server: AServer;
             parameters:
                 txRate = txRate;
-            display: "i=server1";
+            display: "i=device/server";
         host: AHost[numHosts];
             parameters:
                 txRate = txRate,
                 slotTime = slotTime;
-            display: "i=ball_s";
+            display: "i=place/circle_vs";
 endmodule
 
 network alohaNet : ALOHAnet

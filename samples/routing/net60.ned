@@ -14,7 +14,7 @@ module Net60
         rte: Node[57];
             parameters:
                 address = index;
-            display: "i=ball_vs,gold,100";
+            display: "i=place/circle_vs,gold,100";
     connections nocheck:
         rte[0].out++ --> rte[1].in++;
         rte[0].in++ <-- rte[1].out++;

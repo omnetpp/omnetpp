@@ -23,9 +23,9 @@ endsimple
 module Tictoc2
     submodules:
         tic: Txc2;
-            display: "i=proc1,cyan"; // Note "i=<icon>,<color>"
+            display: "i=block/process,cyan"; // Note "i=<icon>,<color>"
         toc: Txc2;
-            display: "i=proc1,gold"; // Here too
+            display: "i=block/process,gold"; // Here too
     connections:
         tic.out --> delay 100ms --> toc.in;
         tic.in <-- delay 100ms <-- toc.out;

@@ -127,6 +127,14 @@ re-makemake:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 gensink.obj: gensink.cpp \
-  gensink.h
+  gensink.h \
+  hcpacket_m.h
+gensink_n.obj: gensink_n.cpp
+hc_net_n.obj: hc_net_n.cpp
 hc_rte.obj: hc_rte.cpp \
-  hc_rte.h
+  hc_rte.h \
+  hcpacket_m.h
+hc_rte_n.obj: hc_rte_n.cpp
+hcpacket_m.obj: hcpacket_m.cpp \
+  hcpacket_m.h
+hcube_n.obj: hcube_n.cpp

@@ -135,4 +135,11 @@ re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+binarytree_n.obj: binarytree_n.cpp
+chain_n.obj: chain_n.cpp
+fullgraph_n.obj: fullgraph_n.cpp
+hexgrid_n.obj: hexgrid_n.cpp
+mesh_n.obj: mesh_n.cpp
 node.obj: node.cpp
+randomgraph_n.obj: randomgraph_n.cpp
+star_n.obj: star_n.cpp

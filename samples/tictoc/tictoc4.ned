@@ -24,10 +24,10 @@ module Tictoc4
         tic: Txc4;
             parameters:
                 limit = 8;  // tic's limit is 8
-            display: "i=proc1,cyan";
+            display: "i=block/process,cyan";
         toc: Txc4;
             // note that we leave toc's limit unbound here
-            display: "i=proc1,gold";
+            display: "i=block/process,gold";
     connections:
         tic.out --> delay 100ms --> toc.in;
         tic.in <-- delay 100ms <-- toc.out;

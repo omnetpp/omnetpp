@@ -100,3 +100,4 @@ re-makemake:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 hist.obj: hist.cpp
+hist_n.obj: hist_n.cpp

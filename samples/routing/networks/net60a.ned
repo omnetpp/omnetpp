@@ -22,7 +22,7 @@ module Net60a
             gatesizes:
                 in[6],
                 out[6];
-            display: "i=ball_vs,gold,100";
+            display: "i=place/circle_vs,gold,100";
     connections nocheck:
         rte[0].out[0] --> rte[1].in[0];
         rte[0].in[0] <-- rte[1].out[0];

@@ -25,15 +25,15 @@ module FifoNet
             parameters:
                 num_messages = input,
                 ia_time = input;
-            display: "p=35,152;i=gen";
+            display: "p=35,152;i=block/source";
         fifo: Fifo[num_buffers];
             parameters:
                 num_cells = num_cells,
                 service_time = input,
                 num_init_jobs = input;
-            display: "p=125,152,m;i=queue";
+            display: "p=125,152,m;i=block/queue";
         sink: Sink;
-            display: "p=;i=sink";
+            display: "p=;i=block/sink";
     connections:
         gen.out --> fifo[0].in;
         for i=0..num_buffers-2 do

@@ -114,7 +114,14 @@ re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-client.obj: client.cpp
-server.obj: server.cpp
-servproc.obj: servproc.cpp
-switch.obj: switch.cpp
+client.obj: client.cpp \
+  dynapacket_m.h
+dyna_n.obj: dyna_n.cpp
+dynapacket_m.obj: dynapacket_m.cpp \
+  dynapacket_m.h
+server.obj: server.cpp \
+  dynapacket_m.h
+servproc.obj: servproc.cpp \
+  dynapacket_m.h
+switch.obj: switch.cpp \
+  dynapacket_m.h

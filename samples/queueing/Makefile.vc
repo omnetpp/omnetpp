@@ -151,12 +151,19 @@ re-makemake:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 classifier.obj: classifier.cpp
+classifier_n.obj: classifier_n.cpp
 delay.obj: delay.cpp
+delay_n.obj: delay_n.cpp
 pqueue.obj: pqueue.cpp \
   pqueue.h \
   server.h
+pqueue_n.obj: pqueue_n.cpp
+qnet_n.obj: qnet_n.cpp
 server.obj: server.cpp \
   server.h \
   pqueue.h
+server_n.obj: server_n.cpp
 sink.obj: sink.cpp
+sink_n.obj: sink_n.cpp
 source.obj: source.cpp
+source_n.obj: source_n.cpp

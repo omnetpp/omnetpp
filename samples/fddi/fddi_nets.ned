@@ -62,7 +62,7 @@ module TUB_wired
                 RingID = 0,
                 TTRT = 5 ms,
                 LoadMultiplier = NRLoadMultiplier; // to be changed!!!
-            display: "i=ring";
+            display: "i=device/pcs-ring_l";
         SRing: TUBSRing;
             parameters:
                 LoadControlFile = SRLoadControlFile,
@@ -70,7 +70,7 @@ module TUB_wired
                 RingID = 1,
                 TTRT = 5.017 ms,
                 LoadMultiplier = SRLoadMultiplier; // to be changed!!!
-            display: "i=ring";
+            display: "i=device/pcs-ring_l";
     connections:
         NRing.out --> delay 0.05 us --> SRing.in;
         SRing.out --> delay 0.05 us --> NRing.in;
@@ -101,7 +101,7 @@ module TUB_SSM
                 RingID = 0,
                 TTRT = 5 ms,
                 LoadMultiplier = ref NRLoadMultiplier;
-            display: "p=150,50;i=ring";
+            display: "p=150,50;i=device/pcs-ring_l";
         SRing: TUBSRing;
             parameters:
                 LoadControlFile = SRLoadControlFile,
@@ -109,7 +109,7 @@ module TUB_SSM
                 RingID = 1,
                 TTRT = 5.017 ms,
                 LoadMultiplier = ref SRLoadMultiplier;
-            display: "p=150,250;i=ring";
+            display: "p=150,250;i=device/pcs-ring_l";
         NRing_oif: SSM_OIF_type like SSM_OIF;
             parameters:
                 frequency = SSM_OIF_frequency,

@@ -21,13 +21,13 @@ module FifoNet2
     submodules:
         gen: FFGenerator;
             parameters:
-            display: "p=76,68;i=gen";
+            display: "p=76,68;i=block/source";
         fifo: FFBitFifo;
             parameters:
                 bitsPerSec = input;
-            display: "p=164,68;i=queue;q=queue";
+            display: "p=164,68;i=block/queue;q=queue";
         sink: FFSink;
-            display: "p=252,68;i=sink";
+            display: "p=252,68;i=block/sink";
     connections:
         gen.out --> fifo.in;
         fifo.out --> sink.in;

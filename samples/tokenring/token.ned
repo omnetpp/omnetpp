@@ -82,14 +82,14 @@ module Computer
                 address = address,
                 dataRate = dataRate,
                 THT = THT;
-            display: "p=105,126;i=queue;q=sendQueue";
+            display: "p=105,126;i=block/queue;q=sendQueue";
         gen: Generator;
             parameters:
                 numStations = numStations,
                 address = address;
-            display: "p=79,60;i=gen";
+            display: "p=79,60;i=block/source";
         sink: Sink;
-            display: "p=132,60;i=sink";
+            display: "p=132,60;i=block/sink";
     connections:
         in --> mac.phy_in;
         mac.phy_out --> out;
@@ -114,7 +114,7 @@ module TokenRing
                 THT = THT,
                 dataRate = dataRate,
                 numStations = numStations;
-            display: "i=pc;q=sendQueue;p=,,ring";
+            display: "i=device/pc2;q=sendQueue;p=,,ring";
     connections:
         comp[numStations - 1].out --> delay cableDelay --> comp[0].in;
 

@@ -19,7 +19,7 @@ module Mesh
             gatesizes:
                 in[4],
                 out[4];
-            display: "p=,,m,$width,40,40;i=ball_s";
+            display: "p=,,m,$width,40,40;i=place/circle_vs";
     connections nocheck:
         for i=0..height-1, j=0..width-1 do
             node[i*width+j].out[0] --> node[(i+1)*width+j].in[1] if i!=height-1;

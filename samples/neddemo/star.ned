@@ -29,7 +29,7 @@ module Star
         hub: HubNode;
             gatesizes:
                 out[n];
-            display: "p=200,200;i=switch2";
+            display: "p=200,200;i=device/switch";
     connections nocheck:
         for i=0..n-1 do
             hub.out[i] --> node[i].in;

@@ -22,7 +22,7 @@ module ClosedQueueingNetB
             gatesizes:
                 in[numTandems],
                 out[numTandems];
-            display: "i=cloud";
+            display: "i=place/cloud2";
     connections nocheck:
         for i=0..numTandems-1, j=0..numTandems-1 do
             tandemQueue[i].out[j] --> delay sDelay --> tandemQueue[j].in[i] if i!=j;

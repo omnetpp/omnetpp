@@ -124,5 +124,9 @@ re-makemake:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 ppif.obj: ppif.cpp
+ppif_n.obj: ppif_n.cpp
+ppnet_n.obj: ppnet_n.cpp
 ppsink.obj: ppsink.cpp
+ppsink_n.obj: ppsink_n.cpp
 ppsource.obj: ppsource.cpp
+ppsource_n.obj: ppsource_n.cpp

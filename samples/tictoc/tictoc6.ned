@@ -19,9 +19,9 @@ endsimple
 module Tictoc6
     submodules:
         tic: Txc6;
-            display: "i=proc1,cyan";
+            display: "i=block/process,cyan";
         toc: Txc6;
-            display: "i=proc1,gold";
+            display: "i=block/process,gold";
     connections:
         tic.out --> delay 100ms --> toc.in;
         tic.in <-- delay 100ms <-- toc.out;

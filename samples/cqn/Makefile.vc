@@ -126,5 +126,10 @@ re-makemake:
 	opp_nmakemake -f -f  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+cqna_n.obj: cqna_n.cpp
+cqnb_n.obj: cqnb_n.cpp
 queue.obj: queue.cpp
+queue_n.obj: queue_n.cpp
 switch.obj: switch.cpp
+switch_n.obj: switch_n.cpp
+tandemqueue_n.obj: tandemqueue_n.cpp

@@ -32,12 +32,12 @@ module Node
         out: out[];
     submodules:
         app: App;
-            display: "p=90,56;i=browser";
+            display: "p=90,56;i=block/browser";
         routing: Routing;
             gatesizes:
                 in[sizeof(in)],
                 out[sizeof(out)];
-            display: "p=90,132;i=xconn";
+            display: "p=90,132;i=block/switch";
     connections:
         routing.localOut --> app.in;
         routing.localIn <-- app.out;

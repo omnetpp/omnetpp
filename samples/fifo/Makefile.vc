@@ -125,5 +125,9 @@ re-makemake:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 fifo.obj: fifo.cpp \
   fifo.h
+fifo_n.obj: fifo_n.cpp
+fifonet_n.obj: fifonet_n.cpp
 gen.obj: gen.cpp
+gen_n.obj: gen_n.cpp
 sink.obj: sink.cpp
+sink_n.obj: sink_n.cpp

@@ -22,13 +22,13 @@ import
 module PointToPointNet
     submodules:
         burstySrc: PPSource;
-            display: "p=50,100;i=gen";
+            display: "p=50,100;i=block/source";
         ppIF1: PointToPointIF;
-            display: "p=130,100;i=queue;q=queue";
+            display: "p=130,100;i=block/queue;q=queue";
         ppIF2: PointToPointIF;
-            display: "p=280,100;i=queue;q=queue";
+            display: "p=280,100;i=block/queue;q=queue";
         sink: PPSink;
-            display: "p=350,100;i=sink";
+            display: "p=350,100;i=block/sink";
     connections nocheck:
         burstySrc.out --> ppIF1.in;
         ppIF1.lineOut --> datarate 1000000 --> ppIF2.lineIn display "o=,3";
