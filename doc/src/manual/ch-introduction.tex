@@ -57,8 +57,15 @@ The simulator as well as user interfaces and tools are portable:
 they are known to work on Windows and on several Unix flavours,
 using various C++ compilers.
 
-{\opp} also supports parallel simulation (as of {\opp} 2.3,
-currently this feature is currently being redesigned.)
+{\opp} also supports parallel distributed simulation. {\opp} can
+use several mechanisms for communication between partitions of
+a parallel distributed simulation, for example MPI or named pipes.
+The parallel simulation algorithm can easily be extended or new
+ones plugged in. Models do not need any special instrumentation
+to be run in parallel -- it is just a matter of configuration.
+{\opp} can even be used for classroom presentation of parallel
+simulation algorithms, because simulations can be run in parallel
+even under the GUI which provides detailed feedback what's going on.
 
 
 
@@ -76,8 +83,7 @@ of references to network simulation tools where the reader can
 get a more complete list.) In the commercial category, OPNET
 is widely held to be the state of the art in network simulation.
 {\opp} is targeted at roughly the same segment of network simulation
-as OPNET.{\nobreakspace}
-
+as OPNET.
 
 Seven issues are examined to get an overview about the network
 simulation tools:
@@ -94,10 +100,14 @@ and CLASS (for ATM) also rather fall into this category.
 
 
 \textbf{Available Models.} \textit{What protocol models are readily available
-for the simulation tool?} On this point, non-commercial simulation
-tools cannot compete with some commercial ones (especially OPNET)
-which have a large selection of ready-made protocol models. {\opp}
-is no exception.
+for the simulation tool?} As of end 2004, there are three large
+protocol modelling frameworks available for {\opp}:
+the Mobility Framework for modelling mobile, wireless and ad-hoc networks;
+the INET Framework with TCP, IP, MPLS and other Internet-related protocols;
+and IPv6Suite which provides detailed models for IPv6, Mobile IPv6, 802.11
+and other protocols. Several other simulation models (such as AntNet routing)
+have also been published -- the list is ever growing, and model frameworks
+are constantly maturing and converging.
 
 
 \textbf{Defining Network Topology}. \textit{How does the simulation
@@ -192,14 +202,6 @@ In conclusion, it can be said that {\opp} has enough features
 to make it a good alternative to most network simulation tools,
 and it has a strong potential to become one of the most widely
 used network simulation packages in academic and research environments.
-The most serious shortcoming is the lack of available protocol
-models, but since this is mostly due to the fact that it is a
-relatively new simulation tool, with the help of the {\opp}
-user community the situation is likely to become much better
-in the future.
-
-
-
 
 
 \section{Organization of this manual}
@@ -230,7 +232,7 @@ The manual is organized around the following topics:
 %    \ref{cha:parsec-and-omnet}, contain a comparison of {\opp} and
 %    two other important and well-known simulation tools, OPNET and
 %    PARSEC.}
-  \item{Appendice \ref{cha:ned-language-grammar} provides a reference
+  \item{Appendix \ref{cha:ned-language-grammar} provides a reference
     of the NED language\index{ned!language}.}
 \end{itemize}
 
@@ -284,8 +286,6 @@ Vass as diploma work
 
 1997 Dec: added GNED
 
-FIXME
-
 \tbf{Regular open-source releases: 1997-2003}
 
 Until 1997, some people occasionally contributed to {\opp}.
@@ -294,7 +294,7 @@ independent of the University since 1998. (He leaves
 the University in 1998, and is no longer affiliated with it
 since then.)
 
-1997 Sept: web site set up, first public release
+1997 Sept: web site set up (www.hit.bme.hu/phd/vargaa/omnetpp), first public release
 
 1997 Feb-1998 Sept: simulation projects for a small company in
 Hungary. We used a version of {\opp}.
@@ -309,15 +309,35 @@ Hungary. We used a version of {\opp}.
 
 2000 Sept: contributed model repository set up
 
-2000: IP-suite created in Karlsruhe
+2000: IPSuite created in Karlsruhe
 
-2001 June: the CVS is hosted in Karlsruhe
+2001 May: {\opp} 2.1 release
 
-FIXME
+2001 June: the CVS gets hosted in Karlsruhe
 
-\tbf{}
+2002 May: {\opp} 2.2 release
 
-FIXME
+2003 Jan: Omnest Global Inc. was founded
+
+2003 Feb-Oct: Andras's stay at CTIE, Monash University, Melbourne, Australia
+with Ahmet Sekercioglu's group; development of {\opp}'s parallel simulation
+framework, doing parallel simulation experiments
+
+2003 June: first public release of IPv6Suite (CTIE, Monash University)
+
+2003 July: launch of www.omnetpp.org
+
+2003 July: release of RSVP/TE models at UTS Sydney
+
+2003 Aug: Andras takes over IPSuite maintenance
+
+2003 Sept: Ethernet model made available
+
+2003 Nov: {\opp} 2.3p1 release
+
+2004 July: Mobility Framework first official release (TKN, TU Berlin)
+
+2004 Oct: IPSuite renamed to INET Framework
 
 \dots
 
@@ -329,7 +349,7 @@ FIXME
 
 {\opp} has been created and developed by Andr\'{a}s Varga.
 
-\tab Andr\'{a}s Varga\tab \tab Omnest Global Inc, andras.varga@omnest.com
+\tab Andr\'{a}s Varga\tab \tab andras.varga@omnest.com, andras@omnetpp.org
 
 In the early history of {\opp} (1992-1996), several people have
 contributed some amount of code to {\opp}.
@@ -337,10 +357,8 @@ Credit for organizing goes to Dr. Gy\"{o}rgy Pongor (BME-HIT,
 \href{mailto:pongor@hit.bme.hu}{pongor@hit.bme.hu}),
 my advisor at the University. Below is a more-or-less complete list of people.
 
-As of today, hardly any code written by these people
-is actually part of the current codebase -- 98% percent of the
-code has been discarded because of quality problems or complete
-redesign, and replaced by Andr\'{a}s's code.
+As of today, practically all contributed code has been replaced
+or rewritten by Andr\'{a}s Varga.
 
 Since 1997, development is entirely done by Andr\'{a}as. He is
 not associated with the Technical University of Budapest.

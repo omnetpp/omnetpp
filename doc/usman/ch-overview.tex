@@ -150,17 +150,16 @@ of {\opp} cannot be used.
 \index{module!parameters}
 \index{parameters|see{module parameters}}
 
-Modules can have parameters. Parameters are used for three purposes:
+Modules can have parameters. Parameters can be used:
 \begin{enumerate}
-  \item{to parameterize module topology}
+  \item{for parameterizing module topology}
   \item{to customize simple module behaviour}
-  \item{for module communication, as shared variables}
 \end{enumerate}
 
-Parameters can take string, numeric or pointer values; numeric
-values include expressions using other parameters and calling
-C functions, random variables from different distributions, and
-values input interactively by the user.
+Parameters can take string, numeric or boolean values, or can
+contain XML data trees. Numeric values include expressions using
+other parameters and calling C functions, random variables from
+different distributions, and values input interactively by the user.
 
 
 Numeric-valued parameters can be used to construct topologies in a
@@ -175,8 +174,8 @@ by reference.
 
 During simulation execution, if a module changes the value of
 a parameter taken by reference, the changed value propagates
-to other modules. This effect can be used to tune the model or
-as a second means of module communication.
+to other modules. This effect may sometimes be used for
+tuning model parameters during execution.
 
 
 \subsection{Topology description method}
@@ -193,13 +192,15 @@ The full flexibility and power of the programming language can
 be used, supported by the {\opp} simulation class library.
 
 
-{\opp} supports a process-style\index{module!process-style} description method for describing
-activities. During simulation execution, simple\index{module!simple} module functions
-appear to run in parallel, because they are implemented as coroutines\index{module!coroutine}
-(also termed lightweight processes). Coroutines were chosen because
-they allow an intuitive description of the algorithm and they
-can also serve as a good basis for implementing other description
-methods like state-transition diagrams\index{state-transition diagram|see{finite state machine}} or Petri nets\index{petri nets}.
+{\opp} supports a process-style\index{module!process-style} description
+method for describing activities. During simulation execution,
+simple\index{module!simple} module functions appear to run in parallel,
+because they are implemented as coroutines\index{module!coroutine} (also
+termed lightweight processes). Coroutines were chosen because they allow an
+intuitive description of the algorithm and they can also serve as a good
+basis for implementing other description methods like state-transition
+diagrams\index{state-transition diagram|see{finite state machine}} or Petri
+nets\index{petri nets}.
 
 {\opp} has a consistent object-oriented design. One can freely
 use OOP concepts (inheritance, polymorphism etc) to extend the
