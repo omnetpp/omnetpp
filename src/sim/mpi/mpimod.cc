@@ -69,7 +69,7 @@ int is_started_as_master()
 //=========================================================================
 
 // The copy constructor.
-cNetGate::cNetGate(cNetGate& gate) : cGate(NULL,0)
+cNetGate::cNetGate(const cNetGate& gate) : cGate(NULL,0)
 {
     operator=(gate);
 }

@@ -71,7 +71,7 @@ int is_started_as_master()
 //=========================================================================
 
 // The copy constructor.
-cNetGate::cNetGate(cNetGate& gate) : cGate(NULL,0)
+cNetGate::cNetGate(const cNetGate& gate) : cGate(NULL,0)
 {
     operator=(gate);
 }
@@ -84,7 +84,7 @@ cNetGate::cNetGate(const char *name, int type) : cGate(name,type)
 }
 
 // The copy operator (though unnecessary in the case of a network gate)
-cNetGate& cNetGate::operator=(cNetGate& gate)
+cNetGate& cNetGate::operator=(const cNetGate& gate)
 {
    if (this==&gate) return *this;
 

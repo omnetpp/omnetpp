@@ -32,11 +32,11 @@ class cNetGate : public cGate
     int target_Proc;
     int target_Gate;
   public:
-    cNetGate(cNetGate& gate);
+    cNetGate(const cNetGate& gate);
     cNetGate(const char *name, int tp);
     virtual ~cNetGate()    {}
-    virtual cObject *dup()    {return new cNetGate(*this);}
-    cNetGate& operator=(cNetGate& gate);
+    virtual cObject *dup() const   {return new cNetGate(*this);}
+    cNetGate& operator=(const cNetGate& gate);
 
     void settarget(int proc, int gate_n)   {target_Proc=proc;target_Gate=gate_n;}
     int t_proc()   {return target_Proc;}
