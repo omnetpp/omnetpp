@@ -33,14 +33,14 @@
 void cStructDescriptor::long2string(long l, char *buf, int bufsize)
 {
     assert(bufsize>=10);
-    sprintf("%ld", buf, l);
+    sprintf(buf, "%ld", l);
 }
 
 void cStructDescriptor::ulong2string(unsigned long l, char *buf, int bufsize)
 {
     assert(bufsize>=10);
-    sprintf("%lu", buf, l);
-}
+    sprintf(buf, "%lu", l);
+}           
 
 
 long cStructDescriptor::string2long(const char *s)
@@ -71,7 +71,7 @@ bool cStructDescriptor::string2bool(const char *s)
 void cStructDescriptor::double2string(double d, char *buf, int bufsize)
 {
     assert(bufsize>=20);
-    sprintf("%f", buf, d);
+    sprintf(buf, "%f", d);
 }
 
 
@@ -120,6 +120,18 @@ long cStructDescriptor::string2enum(const char *s, const char *enumname)
     // FIXME: should strip possible spaces, parens etc.
     return enump->lookup(s,0);
 }
+
+void cStructDescriptor::oppstring2string(const opp_string& str, char *buf, int buflen)
+{
+    strncpy(buf, str, buflen);
+    buf[buflen-1] = '\0';
+}
+
+void cStructDescriptor::string2oppstring(const char *s, opp_string& str)
+{
+    str = s;
+}
+
 
 //-----------------------------------------------------------
 
