@@ -12,19 +12,14 @@ TARGET = dyna
 # USERIF_LIBS=$(CMDENV_LIBS)
 USERIF_LIBS=$(TKENV_LIBS)
 
-# uncomment 1 of the 3 lines to support either serial or parallel operation
-KERNEL_LIBS=$(STD_KERNEL_LIBS)
-# KERNEL_LIBS=$(PVM_KERNEL_LIBS)
-# KERNEL_LIBS=$(MPI_KERNEL_LIBS)
-
 # .ned or .h include paths with -I
 INCLUDE_PATH=
 
 # misc additional object and library files to link
-EXRA_OBJS=
+EXTRA_OBJS=
 
-# object files in subdirectories
-SUBDIR_OBJS=
+# object files from other directories to link with
+EXT_DIR_OBJS=
 
 # Additional libraries (-L option -l option)
 LIBS=
@@ -44,12 +39,15 @@ NEDCFLAGS=@NEDCFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
 
+WITH_PARSIM=@WITH_PARSIM@
+WITH_NETBUILDER=@WITH_NETBUILDER@
+
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
 TK_LIBS=@TK_LIBS@
 MPI_LIBS=@MPI_LIBS@
-PVM_LIBS=@PVM_LIBS@
+XML_LIBS=@XML_LIBS@
 SYS_LIBS=@SYS_LIBS@
 SYS_LIBS_PURE=-lm $(shell $(CXX) -print-file-name=libstdc++.a)
 
@@ -58,9 +56,15 @@ CMDENV_LIBS=-lenvir -lcmdenv
 TKENV_LIBS=-lenvir -ltkenv $(TK_LIBS)
 
 # Simulation kernel
-STD_KERNEL_LIBS=-lsim_std
-MPI_KERNEL_LIBS=-lsim_mpi $(MPI_LIBS)
-PVM_KERNEL_LIBS=-lsim_pvm $(PVM_LIBS)
+KERNEL_LIBS=-lsim_std
+
+ifeq ($(WITH_NETBUILDER),yes)
+KERNEL_LIBS += -lnedxml $(XML_LIBS)
+endif
+
+ifeq ($(WITH_PARSIM),yes)
+KERNEL_LIBS += $(MPI_LIBS)
+endif
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=-L$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
@@ -70,14 +74,23 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 
-# Object files from this directory to link
+# subdirectories to recurse into
+SUBDIRS= 
+
+# object files in this directory
 OBJS= dyna_n.o dynapacket_m.o client.o server.o servproc.o switch.o
 
-$(TARGET): $(OBJS) $(EXRA_OBJS) Makefile
-	$(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
+#------------------------------------------------------------------------------
 
-purify: $(OBJS) $(EXRA_OBJS)   Makefile
-	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
+$(TARGET): $(OBJS) $(EXTRA_OBJS) Makefile
+	$(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
+
+purify: $(OBJS) $(EXTRA_OBJS) Makefile
+	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
+
+.PHONY: subdirs $(SUBDIRS)
+
+subdirs: $(SUBDIRS)
 
 dyna_n.o: dyna_n.cc
 	$(CXX) -c $(NEDCOPTS) dyna_n.cc
@@ -88,7 +101,7 @@ dyna_n.cc: dyna.ned
 dynapacket_m.o: dynapacket_m.cc
 	$(CXX) -c $(NEDCOPTS) dynapacket_m.cc
 
-dynapacket_m.cc: dynapacket.msg
+dynapacket_m.cc dynapacket_m.h: dynapacket.msg
 	$(MSGC) $(INCLUDE_PATH) dynapacket.msg
 
 client.o: client.cc
@@ -104,33 +117,18 @@ switch.o: switch.cc
 	$(CXX) -c $(COPTS) switch.cc
 
 
-doc: neddoc.html htmldocs
+#doc: neddoc doxy
 
-neddoc.html:  dyna.ned
-	@opp_neddoc  dyna.ned > neddoc.html
-	@echo File neddoc.html generated.
+#neddoc:
+#	opp_neddoc -a
 
-htmldocs:
-	@doxygen -g- | sed "s/^PROJECT_NAME.*/PROJECT_NAME = dyna/;\
-	s|^INPUT *=.*|INPUT = . |;\
-	s/^EXTRACT_ALL *=.*/EXTRACT_ALL = yes/;\
-	s/^EXTRACT_PRIVATE *=.*/EXTRACT_PRIVATE = yes/;\
-	s/^EXCLUDE_PATTERNS *=.*/EXCLUDE_PATTERNS = *_n.cc *_n.h/;\
-	s/^ALPHABETICAL_INDEX *=.*/ALPHABETICAL_INDEX = yes/;\
-	s/^HTML_OUTPUT *=.*/HTML_OUTPUT = htmldoc/;\
-	s/^GENERATE_LATEX *=.*/GENERATE_LATEX = no/;\
-	s/^GENERATE_TREEVIEW *=.*/GENERATE_TREEVIEW = yes/;\
-	s/^HIDE_UNDOC_RELATIONS *=.*/HIDE_UNDOC_RELATIONS = no/;\
-	s|^TAGFILES *=.*|TAGFILES = d:/home/omnetpp/doc/api/opptags.xml=d:/home/omnetpp/doc/api|;\
-	s|^GENERATE_TAGFILE *=.*|GENERATE_TAGFILE = htmldoc/tags.xml|;\
-	s/^QUIET *=.*/QUIET = yes/" > doxy.cfg
-	@doxygen doxy.cfg
-	@echo Code documentation generated. Now, point your web browser to ./htmldoc/index.html.
+#doxy: doxy.cfg
+#	doxygen doxy.cfg
 
 clean:
-	rm -f *.o *_n.cc *_n.h $(TARGET)$(EXE_SUFFIX)
+	rm -f *.o *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX)
 	rm -f *.vec *.sca
-	rm -rf neddoc.html htmldoc
+	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -- *.cc
@@ -144,4 +142,7 @@ re-makemake-m:
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+client.o: client.cc
+server.o: server.cc
+servproc.o: servproc.cc
+switch.o: switch.cc
