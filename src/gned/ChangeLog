@@ -254,7 +254,5 @@ Dec 17, 2000
  - Connection Properties dialog implemented. (Cannot handle 'for' loops yet.)
 Dec 18, 2000
  - implemented Channel Properties dialog
-TODO:
-  delete disp str class from source
-
+ - old display string classes (disp.cc) removed
 

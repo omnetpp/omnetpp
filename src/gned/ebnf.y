@@ -146,7 +146,6 @@ void yyerror (char *s);
 
 #include "parsened.h"
 #include "nedfile.h"
-#include "disp.h"
 
 static YYLTYPE NULLPOS={0,0,0,0,0,0};
 static int in_loop;

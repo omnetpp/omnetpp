@@ -25,7 +25,6 @@
 
 #include "parsened.h"
 #include "nedfile.h"
-#include "disp.h"
 #include "tklib.h"  // for CHK()
 
 

@@ -8,7 +8,7 @@
 #
 COPTS=$(CFLAGS) $(TK_CFLAGS)
 
-OBJS = gned$(GNED_EMBED_SUFFIX).obj tklib.obj arrow.obj ebnf.tab.obj lex.yy.obj parsened.obj disp.obj nedfile.obj
+OBJS = gned$(GNED_EMBED_SUFFIX).obj tklib.obj arrow.obj ebnf.tab.obj lex.yy.obj parsened.obj nedfile.obj
 
 #
 # Targets
@@ -38,9 +38,6 @@ parsened.obj: parsened.cc
 
 nedfile.obj: nedfile.cc
 	$(CXX) $(COPTS) /c /Tp nedfile.cc
-
-disp.obj: disp.cc
-	$(CXX) $(COPTS) /c /Tp disp.cc
 
 lex.yy.obj: lex.yy.c
 	$(CXX) /I "." $(COPTS) /c /Tp lex.yy.c
@@ -74,12 +71,11 @@ realclean: clean
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-ebnf.tab.obj: ebnfcfg.h parsened.h nedfile.h disp.h
+ebnf.tab.obj: ebnfcfg.h parsened.h nedfile.h 
 lex.yy.obj: ebnf.tab.h ebnfcfg.h parsened.h
 arrow.obj: arrow.h
-disp.obj: disp.h
 gned.obj: arrow.h parsened.h tklib.h
 nedfile.obj: nedfile.h parsened.h
-parsened.obj: parsened.h nedfile.h disp.h tklib.h
+parsened.obj: parsened.h nedfile.h tklib.h
 tklib.obj: tklib.h
 
