@@ -46,115 +46,115 @@ definition    ::=
     | networkdefinition
 
 include ::=
-    \textbf{INCLUDE} \{ fileName ,,, \} ;
+    \textbf{include} \{ fileName ,,, \} ;
 
 channeldefinition ::=
-    \textbf{CHANNEL} \textit{channeltype}
-     [ \textbf{DELAY} numericvalue ]
-     [ \textbf{ERROR} numericvalue ]
-     [ \textbf{DATARATE} numericvalue ] $^{******}$
-    \textbf{ENDCHANNEL}
+    \textbf{channel} \textit{channeltype}
+     [ \textbf{delay} numericvalue ]
+     [ \textbf{error} numericvalue ]
+     [ \textbf{datarate} numericvalue ] $^{******}$
+    \textbf{endchannel}
 
 simpledefinition ::=
-    \textbf{SIMPLE} \textit{simplemoduletype}\index{module!simple}
+    \textbf{simple} \textit{simplemoduletype}\index{module!simple}
      [ machineblock ]
      [ paramblock ]
      [ gateblock ]
-    \textbf{ENDSIMPLE} [ \textit{simplemoduletype} ]
+    \textbf{endsimple} [ \textit{simplemoduletype} ]
 
 moduledefinition ::=
-    \textbf{MODULE} \textit{compoundmoduletype}\index{module!compound}
+    \textbf{module} \textit{compoundmoduletype}\index{module!compound}
      [ machineblock$^{*}$ ]
      [ paramblock ]
      [ gateblock ]
      [ submodblock ]
      [ connblock ]
-    \textbf{ENDMODULE} [ \textit{compoundmoduletype} ]
+    \textbf{endmodule} [ \textit{compoundmoduletype} ]
 
 moduletype ::=
     \textit{simplemoduletype} | \textit{compoundmoduletype}
 
 machineblock ::=
-    \textbf{MACHINES:} \{ \textit{machine} ,,, \} ;
+    \textbf{machines:} \{ \textit{machine} ,,, \} ;
 
 paramblock ::=
-    \textbf{PARAMETERS:} \{ parameter ,,, \} ;
+    \textbf{parameters:} \{ parameter ,,, \} ;
 
 parameter ::=
     \textit{parametername}
-    | \textit{parametername} : \textbf{CONST} [ \textbf{NUMERIC} ]
-    | \textit{parametername} \textbf{: STRING}
-    | \textit{parametername} \textbf{: BOOL}
-    | \textit{parametername} \textbf{: CHAR}
-    | \textit{parametername} \textbf{: ANYTYPE}
+    | \textit{parametername} : \textbf{const} [ \textbf{numeric} ]
+    | \textit{parametername} \textbf{: string}
+    | \textit{parametername} \textbf{: bool}
+    | \textit{parametername} \textbf{: char}
+    | \textit{parametername} \textbf{: anytype}
 
 gateblock ::=
-    \textbf{GATES:}
-     [ \textbf{IN:} \{ gate ,,, \} ; ]
-     [ \textbf{OUT:} \{ gate ,,, \} ; ]
+    \textbf{gates:}
+     [ \textbf{in:} \{ gate ,,, \} ; ]
+     [ \textbf{out:} \{ gate ,,, \} ; ]
 gate ::=
     \textit{gatename} [ '[]' ]
 
 submodblock ::=
-    \textbf{SUBMODULES:} \{ submodule... \}
+    \textbf{submodules:} \{ submodule... \}
 
 submodule ::=
     \{ \textit{submodulename} : \textit{moduletype} [ vector ]
      [ on\_block$^{*}$... ]
      [ substparamblock... ]
      [ gatesizeblock... ] \}
-  | \{ \textit{submodulename} : \textit{parametername} [ vector ] \textbf{LIKE} \textit{moduletype}
+  | \{ \textit{submodulename} : \textit{parametername} [ vector ] \textbf{like} \textit{moduletype}
      [ on\_block$^{*}$... ]
      [ substparamblock... ]
      [ gatesizeblock... ] \}
 
 on\_block$^{*}$ ::=
-    \textbf{ON} [ \textbf{IF} expression ]\textbf{:} \{ \textit{on\_machine} ,,, \} ;
+    \textbf{on} [ \textbf{if} expression ]\textbf{:} \{ \textit{on\_machine} ,,, \} ;
 
 substparamblock    ::=
-    \textbf{PARAMETERS} [ \textbf{IF} expression ]\textbf{:}
+    \textbf{parameters} [ \textbf{if} expression ]\textbf{:}
       \{ \textit{substparamname} = substparamvalue,,, \} ;
 
 substparamvalue ::=
-    ( [ \textbf{ANCESTOR} ] [ \textbf{REF} ] \textit{name} )
+    ( [ \textbf{ancestor} ] [ \textbf{ref} ] \textit{name} )
     | parexpression
 
 gatesizeblock ::=
-    \textbf{GATESIZES} [ \textbf{IF} expression ]\textbf{:}
+    \textbf{gatesizes} [ \textbf{if} expression ]\textbf{:}
       \{ \textit{gatename} vector ,,, \} ;
 
 connblock ::=
-    \textbf{CONNECTIONS} [ \textbf{NOCHECK} ]\textbf{:} \{ connection ,,, \} ;
+    \textbf{connections} [ \textbf{nocheck} ]\textbf{:} \{ connection ,,, \} ;
 
 connection ::=
      normalconnection | loopconnection
 
 loopconnection ::=
-    \textbf{FOR} \{ index... \} \textbf{DO}
+    \textbf{for} \{ index... \} \textbf{do}
       \{ normalconnection ,,, \} ;
-    \textbf{ENDFOR}
+    \textbf{endfor}
 
 index ::=
     \textit{indexvariable} '=' expression ``...'' expression
 
 normalconnection ::=
-     \{ gate \{ --> | <-- \} gate [ \textbf{IF} expression ]\}
-   | \{gate --> channel --> gate [ \textbf{IF} expression ]\}
-   | \{gate <-- channel <-- gate [ \textbf{IF} expression ]\}
+     \{ gate \{ --> | <-- \} gate [ \textbf{if} expression ]\}
+   | \{gate --> channel --> gate [ \textbf{if} expression ]\}
+   | \{gate <-- channel <-- gate [ \textbf{if} expression ]\}
 
 channel ::=
      \textit{channeltype}
-    | [ \textbf{DELAY} expression ] [ \textbf{ERROR} expression ] [ \textbf{DATARATE} expression ]
+    | [ \textbf{delay} expression ] [ \textbf{error} expression ] [ \textbf{datarate} expression ]
         $^{******}$
 
 gate ::=
     [ \textit{modulename} [vector]. ] \textit{gatename} [vector]
 
 networkdefinition ::=
-    \textbf{NETWORK} \textit{networkname} : \textit{moduletype}
+    \textbf{network} \textit{networkname} : \textit{moduletype}
      [ on\_block ]
      [ substparamblock ]
-    \textbf{ENDNETWORK}
+    \textbf{endnetwork}
 
 vector ::=    '[' expression ']'
 
@@ -175,17 +175,17 @@ expression    ::=
     | expression \texttt{>} expression
     | expression \texttt{>}= expression
     | expression ? expression : expression
-    | expression \textbf{AND} expression
-    | expression \textbf{OR} expression
-    | \textbf{NOT} expression
+    | expression \textbf{and} expression
+    | expression \textbf{or} expression
+    | \textbf{not} expression
     | '(' expression ')'
     | \textit{functionname} '(' [ expression ,,, ] ')' $^{***}$
     | - expression
     | numconstvalue
     | inputvalue
-    | [ \textbf{ANCESTOR} ] [ \textbf{REF} ] \textit{parametername}
-    | \textbf{SIZEOF}$^{****}$ '(' \textit{gatename} ')'
-    | \textbf{INDEX}$^{*****}$
+    | [ \textbf{ancestor} ] [ \textbf{ref} ] \textit{parametername}
+    | \textbf{sizeof}$^{****}$ '(' \textit{gatename} ')'
+    | \textbf{index}$^{*****}$
 
 numconstvalue ::=
     \textit{integerconstant} | \textit{realconstant} | \textit{timeconstant}
@@ -193,11 +193,11 @@ numconstvalue ::=
 otherconstvalue ::=
       '\textit{characterconstant'}
     | "\textit{stringconstant}"
-    | \textbf{TRUE}
-    | \textbf{FALSE}
+    | \textbf{true}
+    | \textbf{false}
 
 inputvalue ::=
-    \textbf{INPUT} '(' default , "\textit{prompt-string}" ')'
+    \textbf{input} '(' default , "\textit{prompt-string}" ')'
 
 default ::=
     expression | otherconstvalue

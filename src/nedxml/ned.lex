@@ -66,7 +66,6 @@ char textbuf[TEXTBUF_LEN];
 "//"                    { comment(); }
 "--"                    { comment(); }
 
-"include"               { count(); use_chanattrname_token = 0; return INCLUDE; }
 "import"                { count(); use_chanattrname_token = 0; return INCLUDE; }
 "network"               { count(); use_chanattrname_token = 0; return NETWORK; }
 "module"                { count(); use_chanattrname_token = 0; return MODULE; }
@@ -96,7 +95,6 @@ char textbuf[TEXTBUF_LEN];
 "display"               { count(); return DISPLAY; }
 "on"                    { count(); return ON; }
 "like"                  { count(); return LIKE; }
-"machines"              { count(); return MACHINES; }
 "-->"                   { count(); return RIGHT_ARROW; }
 "<--"                   { count(); return LEFT_ARROW; }
 ".."                    { count(); return TO; }
