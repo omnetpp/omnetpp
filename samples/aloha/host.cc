@@ -10,7 +10,7 @@
 
 #include <omnetpp.h>
 
-class Host : public cSimpleModule
+class AHost : public cSimpleModule
 {
   protected:
     // parameters
@@ -28,14 +28,14 @@ class Host : public cSimpleModule
     int pkCounter;
 
   public:
-    Module_Class_Members(Host,cSimpleModule,0);
+    Module_Class_Members(AHost,cSimpleModule,0);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module(Host);
+Define_Module(AHost);
 
-void Host::initialize()
+void AHost::initialize()
 {
     server = simulation.moduleByPath("server");
     if (!server) error("server not found");
@@ -64,7 +64,7 @@ void Host::initialize()
     scheduleAt(iaTime->doubleValue(), endTxEvent);
 }
 
-void Host::handleMessage(cMessage *msg)
+void AHost::handleMessage(cMessage *msg)
 {
     ASSERT(msg==endTxEvent);
 

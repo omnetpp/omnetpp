@@ -9,9 +9,9 @@
 
 
 //
-// Host
+// A computer in the ALOHAnet network.
 //
-simple Host
+simple AHost
     parameters:
         txRate: numeric const,  // transmission rate
         radioDelay: numeric const,  // propagation delay of radio link
@@ -21,9 +21,9 @@ simple Host
 endsimple
 
 //
-// This is the central computer in the ALOHAnet network.
+// The central computer in the ALOHAnet network.
 //
-simple Server
+simple AServer
     parameters:
         txRate: numeric const; // transmission rate (needed to calculate lengths of packet receptions)
     gates:
@@ -40,11 +40,11 @@ module ALOHAnet
         txRate: numeric,  // transmission rate
         slotTime: numeric const;  // zero means no slots (pure Aloha)
     submodules:
-        server: Server;
+        server: AServer;
             parameters:
                 txRate = txRate;
             display: "i=server1";
-        host: Host[numHosts];
+        host: AHost[numHosts];
             parameters:
                 txRate = txRate,
                 slotTime = slotTime;

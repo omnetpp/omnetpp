@@ -10,7 +10,7 @@
 
 #include <omnetpp.h>
 
-class Server : public cSimpleModule
+class AServer : public cSimpleModule
 {
   protected:
     // state variables, event pointers
@@ -33,15 +33,15 @@ class Server : public cSimpleModule
     cOutVector channelUtilizationVector;
 
   public:
-    Module_Class_Members(Server,cSimpleModule,0);
+    Module_Class_Members(AServer,cSimpleModule,0);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
     virtual void finish();
 };
 
-Define_Module(Server);
+Define_Module(AServer);
 
-void Server::initialize()
+void AServer::initialize()
 {
     txRate = par("txRate");
     endRxEvent = new cMessage("end-reception");
@@ -68,7 +68,7 @@ void Server::initialize()
     if (ev.isGUI()) displayString().setTagArg("i2",0,"x_off");
 }
 
-void Server::handleMessage(cMessage *msg)
+void AServer::handleMessage(cMessage *msg)
 {
     if (msg==endRxEvent)
     {
@@ -148,7 +148,7 @@ void Server::handleMessage(cMessage *msg)
     }
 }
 
-void Server::finish()
+void AServer::finish()
 {
     ev << "duration: " << simTime() << endl;
     ev << "total frames: " << totalFrames << endl;
