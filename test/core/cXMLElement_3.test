@@ -1,0 +1,53 @@
+%description:
+Check cXMLElement::getElementById()
+
+%file: {}.xml
+
+<foo id="1">
+    <foo id="2" color="red">one</foo>
+    <bar id="3" color="red">
+        <foo id="4">two</foo>
+        <bar id="5">three</bar>
+    </bar>
+    <foo id="6">
+        <bar id="7" color="red">four</bar>
+        <bar id="8">five</bar>
+        <bar id="9" color="yellow">
+            <baz id="10" color="green" weight="heavy">six</baz>
+        </bar>
+    </foo>
+    <bar id="11" color="green">
+        <foo id="12">seven</foo>
+        <bar id="13">eight</bar>
+        <bar id="14">nine</bar>
+    </bar>
+    <bar id="15">ten</bar>
+</foo>
+
+%global:
+
+static void getElement(const char *id)
+{
+    cXMLElement *rootelement = ev.getXMLDocument("{}.xml", NULL);
+    cXMLElement *node = rootelement->getElementById(id);
+
+    ev << id << ": " << (!node ? "null" : node->getAttribute("id")) << "\n";
+}
+
+%activity:
+
+getElement("1");
+getElement("12");
+getElement("10");
+getElement("999");
+getElement("4!");
+getElement("");
+
+%contains: stdout
+1: 1
+12: 12
+10: 10
+999: null
+4!: null
+: null
+
