@@ -124,7 +124,7 @@ void end_module (char *mname);
 void end_simple (char *mname);
 
 /*--- expressions ---*/
-void get_expression( char *expr, FILE *f, char *destbuf ); /* call this to use an expression! */
+void get_expression(const char *expr, FILE *f, char *destbuf ); /* call this to use an expression! */
 
 char *do_op(int args, char op, char *p1,char *p2,char *p3);
 char *do_func(int args,char *fname, char *p1,char *p2,char *p3);

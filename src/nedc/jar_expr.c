@@ -516,7 +516,7 @@ char *do_inputvalue (char *val_expr, char *promptstr)
     return jar_strdup(temp_res);
 }
 
-void get_expression( char *expr, FILE *f, char *destbuf)
+void get_expression(const char *expr, FILE *f, char *destbuf)
 {
     assert(EXPR_USE(expr)!=USE_TABLE);
 

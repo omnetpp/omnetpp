@@ -1,0 +1,175 @@
+# Microsoft Developer Studio Generated Dependency File, included by fddi.mak
+
+.\fddi_mac.cpp : \
+	"..\..\src\sim\carray.h"\
+	"..\..\src\sim\ccor.h"\
+	"..\..\src\sim\cdensity.h"\
+	"..\..\src\sim\cdetect.h"\
+	"..\..\src\sim\cenvir.h"\
+	"..\..\src\sim\cfsm.h"\
+	"..\..\src\sim\cgate.h"\
+	"..\..\src\sim\chead.h"\
+	"..\..\src\sim\chist.h"\
+	"..\..\src\sim\cksplit.h"\
+	"..\..\src\sim\cllist.h"\
+	"..\..\src\sim\cmessage.h"\
+	"..\..\src\sim\cmodule.h"\
+	"..\..\src\sim\cmsgheap.h"\
+	"..\..\src\sim\cnetmod.h"\
+	"..\..\src\sim\cobject.h"\
+	"..\..\src\sim\coutvect.h"\
+	"..\..\src\sim\cpacket.h"\
+	"..\..\src\sim\cpar.h"\
+	"..\..\src\sim\cpsquare.h"\
+	"..\..\src\sim\cqueue.h"\
+	"..\..\src\sim\csimul.h"\
+	"..\..\src\sim\cstat.h"\
+	"..\..\src\sim\cstk.h"\
+	"..\..\src\sim\ctopo.h"\
+	"..\..\src\sim\ctypes.h"\
+	"..\..\src\sim\cvarhist.h"\
+	"..\..\src\sim\cwatch.h"\
+	"..\..\src\sim\defs.h"\
+	"..\..\src\sim\errmsg.h"\
+	"..\..\src\sim\macros.h"\
+	"..\..\src\sim\omnetpp.h"\
+	".\fddi_def.h"\
+	".\fddi_mac.h"\
+	
+
+!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
+
+!ENDIF 
+
+.\othermod.cpp : \
+	"..\..\src\sim\carray.h"\
+	"..\..\src\sim\ccor.h"\
+	"..\..\src\sim\cdensity.h"\
+	"..\..\src\sim\cdetect.h"\
+	"..\..\src\sim\cenvir.h"\
+	"..\..\src\sim\cfsm.h"\
+	"..\..\src\sim\cgate.h"\
+	"..\..\src\sim\chead.h"\
+	"..\..\src\sim\chist.h"\
+	"..\..\src\sim\cksplit.h"\
+	"..\..\src\sim\cllist.h"\
+	"..\..\src\sim\cmessage.h"\
+	"..\..\src\sim\cmodule.h"\
+	"..\..\src\sim\cmsgheap.h"\
+	"..\..\src\sim\cnetmod.h"\
+	"..\..\src\sim\cobject.h"\
+	"..\..\src\sim\coutvect.h"\
+	"..\..\src\sim\cpacket.h"\
+	"..\..\src\sim\cpar.h"\
+	"..\..\src\sim\cpsquare.h"\
+	"..\..\src\sim\cqueue.h"\
+	"..\..\src\sim\csimul.h"\
+	"..\..\src\sim\cstat.h"\
+	"..\..\src\sim\cstk.h"\
+	"..\..\src\sim\ctopo.h"\
+	"..\..\src\sim\ctypes.h"\
+	"..\..\src\sim\cvarhist.h"\
+	"..\..\src\sim\cwatch.h"\
+	"..\..\src\sim\defs.h"\
+	"..\..\src\sim\errmsg.h"\
+	"..\..\src\sim\macros.h"\
+	"..\..\src\sim\omnetpp.h"\
+	".\fddi_def.h"\
+	".\otherdef.h"\
+	".\othermod.h"\
+	
+
+!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
+
+!ENDIF 
+
+.\ssm_ifs.cpp : \
+	"..\..\src\sim\carray.h"\
+	"..\..\src\sim\ccor.h"\
+	"..\..\src\sim\cdensity.h"\
+	"..\..\src\sim\cdetect.h"\
+	"..\..\src\sim\cenvir.h"\
+	"..\..\src\sim\cfsm.h"\
+	"..\..\src\sim\cgate.h"\
+	"..\..\src\sim\chead.h"\
+	"..\..\src\sim\chist.h"\
+	"..\..\src\sim\cksplit.h"\
+	"..\..\src\sim\cllist.h"\
+	"..\..\src\sim\cmessage.h"\
+	"..\..\src\sim\cmodule.h"\
+	"..\..\src\sim\cmsgheap.h"\
+	"..\..\src\sim\cnetmod.h"\
+	"..\..\src\sim\cobject.h"\
+	"..\..\src\sim\coutvect.h"\
+	"..\..\src\sim\cpacket.h"\
+	"..\..\src\sim\cpar.h"\
+	"..\..\src\sim\cpsquare.h"\
+	"..\..\src\sim\cqueue.h"\
+	"..\..\src\sim\csimul.h"\
+	"..\..\src\sim\cstat.h"\
+	"..\..\src\sim\cstk.h"\
+	"..\..\src\sim\ctopo.h"\
+	"..\..\src\sim\ctypes.h"\
+	"..\..\src\sim\cvarhist.h"\
+	"..\..\src\sim\cwatch.h"\
+	"..\..\src\sim\defs.h"\
+	"..\..\src\sim\errmsg.h"\
+	"..\..\src\sim\macros.h"\
+	"..\..\src\sim\omnetpp.h"\
+	".\fddi_def.h"\
+	".\ssm_ifs.h"\
+	".\ssmifdef.h"\
+	
+
+!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
+
+!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
+
+!ENDIF 
+

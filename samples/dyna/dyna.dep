@@ -1,0 +1,155 @@
+# Microsoft Developer Studio Generated Dependency File, included by dyna.mak
+
+.\client.cpp : \
+	"..\..\src\sim\carray.h"\
+	"..\..\src\sim\ccor.h"\
+	"..\..\src\sim\cdensity.h"\
+	"..\..\src\sim\cdetect.h"\
+	"..\..\src\sim\cenvir.h"\
+	"..\..\src\sim\cfsm.h"\
+	"..\..\src\sim\cgate.h"\
+	"..\..\src\sim\chead.h"\
+	"..\..\src\sim\chist.h"\
+	"..\..\src\sim\cksplit.h"\
+	"..\..\src\sim\cllist.h"\
+	"..\..\src\sim\cmessage.h"\
+	"..\..\src\sim\cmodule.h"\
+	"..\..\src\sim\cmsgheap.h"\
+	"..\..\src\sim\cnetmod.h"\
+	"..\..\src\sim\cobject.h"\
+	"..\..\src\sim\coutvect.h"\
+	"..\..\src\sim\cpacket.h"\
+	"..\..\src\sim\cpar.h"\
+	"..\..\src\sim\cpsquare.h"\
+	"..\..\src\sim\cqueue.h"\
+	"..\..\src\sim\csimul.h"\
+	"..\..\src\sim\cstat.h"\
+	"..\..\src\sim\cstk.h"\
+	"..\..\src\sim\ctopo.h"\
+	"..\..\src\sim\ctypes.h"\
+	"..\..\src\sim\cvarhist.h"\
+	"..\..\src\sim\cwatch.h"\
+	"..\..\src\sim\defs.h"\
+	"..\..\src\sim\errmsg.h"\
+	"..\..\src\sim\macros.h"\
+	"..\..\src\sim\omnetpp.h"\
+	".\dyna.h"\
+	
+
+!IF  "$(CFG)" == "dyna - Win32 Debug Tkenv"
+
+!ELSEIF  "$(CFG)" == "dyna - Win32 Debug Cmdenv"
+
+!ELSEIF  "$(CFG)" == "dyna - Win32 Release Tkenv"
+
+!ELSEIF  "$(CFG)" == "dyna - Win32 Release Cmdenv"
+
+!ENDIF 
+
+.\server.cpp : \
+	"..\..\src\sim\carray.h"\
+	"..\..\src\sim\ccor.h"\
+	"..\..\src\sim\cdensity.h"\
+	"..\..\src\sim\cdetect.h"\
+	"..\..\src\sim\cenvir.h"\
+	"..\..\src\sim\cfsm.h"\
+	"..\..\src\sim\cgate.h"\
+	"..\..\src\sim\chead.h"\
+	"..\..\src\sim\chist.h"\
+	"..\..\src\sim\cksplit.h"\
+	"..\..\src\sim\cllist.h"\
+	"..\..\src\sim\cmessage.h"\
+	"..\..\src\sim\cmodule.h"\
+	"..\..\src\sim\cmsgheap.h"\
+	"..\..\src\sim\cnetmod.h"\
+	"..\..\src\sim\cobject.h"\
+	"..\..\src\sim\coutvect.h"\
+	"..\..\src\sim\cpacket.h"\
+	"..\..\src\sim\cpar.h"\
+	"..\..\src\sim\cpsquare.h"\
+	"..\..\src\sim\cqueue.h"\
+	"..\..\src\sim\csimul.h"\
+	"..\..\src\sim\cstat.h"\
+	"..\..\src\sim\cstk.h"\
+	"..\..\src\sim\ctopo.h"\
+	"..\..\src\sim\ctypes.h"\
+	"..\..\src\sim\cvarhist.h"\
+	"..\..\src\sim\cwatch.h"\
+	"..\..\src\sim\defs.h"\
+	"..\..\src\sim\errmsg.h"\
+	"..\..\src\sim\macros.h"\
+	"..\..\src\sim\omnetpp.h"\
+	".\dyna.h"\
+	
+
+.\servproc.cpp : \
+	"..\..\src\sim\carray.h"\
+	"..\..\src\sim\ccor.h"\
+	"..\..\src\sim\cdensity.h"\
+	"..\..\src\sim\cdetect.h"\
+	"..\..\src\sim\cenvir.h"\
+	"..\..\src\sim\cfsm.h"\
+	"..\..\src\sim\cgate.h"\
+	"..\..\src\sim\chead.h"\
+	"..\..\src\sim\chist.h"\
+	"..\..\src\sim\cksplit.h"\
+	"..\..\src\sim\cllist.h"\
+	"..\..\src\sim\cmessage.h"\
+	"..\..\src\sim\cmodule.h"\
+	"..\..\src\sim\cmsgheap.h"\
+	"..\..\src\sim\cnetmod.h"\
+	"..\..\src\sim\cobject.h"\
+	"..\..\src\sim\coutvect.h"\
+	"..\..\src\sim\cpacket.h"\
+	"..\..\src\sim\cpar.h"\
+	"..\..\src\sim\cpsquare.h"\
+	"..\..\src\sim\cqueue.h"\
+	"..\..\src\sim\csimul.h"\
+	"..\..\src\sim\cstat.h"\
+	"..\..\src\sim\cstk.h"\
+	"..\..\src\sim\ctopo.h"\
+	"..\..\src\sim\ctypes.h"\
+	"..\..\src\sim\cvarhist.h"\
+	"..\..\src\sim\cwatch.h"\
+	"..\..\src\sim\defs.h"\
+	"..\..\src\sim\errmsg.h"\
+	"..\..\src\sim\macros.h"\
+	"..\..\src\sim\omnetpp.h"\
+	".\dyna.h"\
+	
+
+.\switch.cpp : \
+	"..\..\src\sim\carray.h"\
+	"..\..\src\sim\ccor.h"\
+	"..\..\src\sim\cdensity.h"\
+	"..\..\src\sim\cdetect.h"\
+	"..\..\src\sim\cenvir.h"\
+	"..\..\src\sim\cfsm.h"\
+	"..\..\src\sim\cgate.h"\
+	"..\..\src\sim\chead.h"\
+	"..\..\src\sim\chist.h"\
+	"..\..\src\sim\cksplit.h"\
+	"..\..\src\sim\cllist.h"\
+	"..\..\src\sim\cmessage.h"\
+	"..\..\src\sim\cmodule.h"\
+	"..\..\src\sim\cmsgheap.h"\
+	"..\..\src\sim\cnetmod.h"\
+	"..\..\src\sim\cobject.h"\
+	"..\..\src\sim\coutvect.h"\
+	"..\..\src\sim\cpacket.h"\
+	"..\..\src\sim\cpar.h"\
+	"..\..\src\sim\cpsquare.h"\
+	"..\..\src\sim\cqueue.h"\
+	"..\..\src\sim\csimul.h"\
+	"..\..\src\sim\cstat.h"\
+	"..\..\src\sim\cstk.h"\
+	"..\..\src\sim\ctopo.h"\
+	"..\..\src\sim\ctypes.h"\
+	"..\..\src\sim\cvarhist.h"\
+	"..\..\src\sim\cwatch.h"\
+	"..\..\src\sim\defs.h"\
+	"..\..\src\sim\errmsg.h"\
+	"..\..\src\sim\macros.h"\
+	"..\..\src\sim\omnetpp.h"\
+	".\dyna.h"\
+	
