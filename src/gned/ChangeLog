@@ -1,3 +1,5 @@
+2002-05-04  ------ omnetpp-2.2 released ------
+
 2002-04-06  Andras Varga
 
 	* main.tcl: Fix for Cygwin: checkVersion complained about tk_patchLevel

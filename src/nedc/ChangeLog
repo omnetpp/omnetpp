@@ -1,3 +1,5 @@
+2002-05-04  ------ omnetpp-2.2 released ------
+
 2002-04-06  Andras Varga
 
         * jar.c: made text of "version mismatch" #error in generated code

@@ -1,3 +1,5 @@
+2002-05-04  ------ omnetpp-2.2 released ------
+
 2002-04-06  Andras Varga
 
 	* opp_test added (moved here from test/); makefile installs it into bin/

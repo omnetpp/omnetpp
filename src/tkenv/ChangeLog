@@ -1,3 +1,5 @@
+2002-05-04  ------ omnetpp-2.2 released ------
+
 2002-03-14  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* tkapp.h: define TKENV_EXTRASTACK dependent on the system
