@@ -2,6 +2,8 @@
 Tests that ev<< output gets printed in Cmdenv, even unterminated lines.
 ev buffer should be flushed before each "context switch" (event, finish, etc)
 
+*** KNOWN TO FAIL IN 3.0 ***
+
 %module: {Module}
 
 class {Module} : public cSimpleModule
