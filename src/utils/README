@@ -6,5 +6,5 @@ All kinds of scripts:
  dos2unix     - convert Windows text files to Unix format
  seedtool.cc  - generates seeds for random number generators
  tcl2c.c      - utility for embedding Tcl source into an executable
- replace.c    - MSVC: substitute @something@ variables into makefiles, .bat files
+ replace.c    - MSVC: substitute @something@ variables in makefiles, .bat files
 

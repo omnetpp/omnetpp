@@ -175,8 +175,13 @@
             <xsl:otherwise>   
                <center><h1>OMNeT++ Model Documentation</h1></center>
                <center><i>Generated from NED and MSG files</i></center>
-               <p>This documentation has been generated from NED and MSG files. 
-               Use the links in the left frames to navigate around.</p>
+               <p>This documentation has been generated from NED and MSG files.</p> 
+               <p>Try the <a href="full-usage-diagram.html">Usage Diagram</a> 
+               as starting point, or use the links in the left frame to navigate 
+               around.</p>
+               <p>Hint: if as developer you don't like this page, try creating 
+               an <tt>index.ned</tt> file with the <tt>@titlepage</tt> directive
+               embedded in a comment.</p>
             </xsl:otherwise>   
          </xsl:choose>
          <hr/>
@@ -251,9 +256,9 @@
 
 <xsl:template name="create-page-index">
    <xsl:call-template name="print-navbar">
-      <xsl:with-param name="where" select="'pages'"/>
+      <xsl:with-param name="where" select="'selected topics'"/>
    </xsl:call-template>
-   <h3 class="indextitle">Pages</h3>
+   <h3 class="indextitle">Topics</h3>
    <ul>
       <li><a href="overview.html" target="mainframe">HOME</a></li>
       <xsl:if test="$have-dot='yes'">
@@ -671,7 +676,7 @@
    <xsl:param name="where"/>
    <p class="navbar">
       <xsl:call-template name="print-navbarlink">
-          <xsl:with-param name="label" select="'pages'"/>
+          <xsl:with-param name="label" select="'selected topics'"/>
           <xsl:with-param name="link" select="'pages.html'"/>
           <xsl:with-param name="where" select="$where"/>
       </xsl:call-template>
@@ -925,6 +930,7 @@
 <xsl:template name="print-uses">
    <xsl:if test="key('module',.//submodule/@type-name)">
       <h3 class="subtitle">Contains the following modules:</h3>
+      <p>If a module type shows up more than once, that means it has been defined in more than one NED file.</p>
       <table>
         <xsl:for-each select="key('module',.//submodule/@type-name)">
            <xsl:sort select="@name"/>
@@ -953,6 +959,7 @@
    <xsl:variable name="name" select="@name"/>
    <xsl:if test="//compound-module[.//submodule[@type-name=$name]]">
       <h3 class="subtitle">Used in compound modules:</h3>
+      <p>If a module type shows up more than once, that means it has been defined in more than one NED file.</p>
       <table>
          <xsl:for-each select="//compound-module[.//submodule[@type-name=$name]]">
             <xsl:call-template name="print-componentref"/>
@@ -973,6 +980,7 @@
    <xsl:variable name="name" select="@name"/>
    <xsl:if test="//compound-module[.//conn-attr[@name='channel' and @value=$name]]">
       <h3 class="subtitle">Used in compound modules:</h3>
+      <p>If a module type shows up more than once, that means it has been defined in more than one NED file.</p>
       <table>
          <xsl:for-each select="//compound-module[.//conn-attr[@name='channel' and @value=$name]]">
             <xsl:call-template name="print-componentref"/>
@@ -984,6 +992,7 @@
 <xsl:template name="print-type">
    <xsl:if test="key('module',@type-name)">
       <h3 class="subtitle">Instantiates the following module:</h3>
+      <p>If the module type shows up more than once, that means it has been defined in more than one NED file.</p>
       <table>
          <xsl:for-each select="key('module',@type-name)">
             <xsl:sort select="@name"/>
@@ -1061,18 +1070,12 @@
                <xsl:for-each select="area">
                   <xsl:variable name="coords" select="@coords"/>
                   <xsl:variable name="submodname" select="@name"/>
-                  <xsl:variable name="submodtype1" select="$context/submodules/submodule[@name=$submodname]/@type-name"/>
-                  <xsl:variable name="submodtype2" select="$context/submodules/submodule[@name=$submodname]/@like-name"/>
-                  <xsl:variable name="submodtype">
-                     <xsl:choose>
-                        <xsl:when test="$submodtype2"><xsl:value-of select="$submodtype2"/></xsl:when>
-                        <xsl:otherwise><xsl:value-of select="$submodtype1"/></xsl:otherwise>
-                     </xsl:choose>
-                  </xsl:variable>
+                  <xsl:variable name="submodtype" select="$context/submodules/submodule[@name=$submodname]/@type-name"/>
+                  <xsl:variable name="submodlikeparam" select="$context/submodules/submodule[@name=$submodname]/@like-param"/>
                   <xsl:variable name="alt">
                      <xsl:choose>
-                        <xsl:when test="$submodtype2"><xsl:value-of select="concat($submodname,': ',$submodtype1,' like ',$submodtype2)"/></xsl:when>
-                        <xsl:otherwise><xsl:value-of select="concat($submodname,': ',$submodtype1)"/></xsl:otherwise>
+                        <xsl:when test="$submodlikeparam"><xsl:value-of select="concat($submodname,': ',$submodlikeparam,' like ',$submodtype)"/></xsl:when>
+                        <xsl:otherwise><xsl:value-of select="concat($submodname,': ',$submodtype)"/></xsl:otherwise>
                      </xsl:choose>
                   </xsl:variable>
 

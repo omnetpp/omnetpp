@@ -183,8 +183,8 @@ sub load_file ()
 {
     my $fname = shift;
     my $content;
-    open FILE, "$dir/$fname";
-    read(FILE, $content, 1000000) || die "cannot read $dir/$fname";
+    open FILE, "$dir/$fname" || die "cannot open $dir/$fname";
+    read(FILE, $content, 1000000);
     close FILE;
     $content;
 }
