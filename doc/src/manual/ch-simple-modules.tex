@@ -6,8 +6,8 @@
 \textit{Simple modules} are the active components in the model.
 Simple modules are programmed in C++, using the {\opp} class
 library. The following sections contain a short introduction
-to discrete event simulation in general, explains how its concepts are
-implemented in {\opp}, and gives an overview and practical advice
+to discrete event simulation in general, explain how its concepts are
+implemented in {\opp}, and give an overview and practical advice
 on how to design and code simple modules.
 
 
@@ -20,13 +20,17 @@ when explaining {\opp} concepts\index{simulation!concepts} and
 implementation. If you're familiar with DES\index{DES}, you can skip
 the next few sections.
 
-
+%
+%FIXME
+%ANDRAS Please Provide exact jump point, else the reader will not know how far they can skip ahead...
+%Gabor
+%
 
 
 \subsection{Discrete Event Simulation}
 
 A \textit{Discrete Event System} is a system where state changes
-(events\index{events}) happen at discrete points of time, and events take zero time
+(events\index{events}) happen at discrete instances in time, and events take zero time
 to happen. It is assumed that nothing (i.e. nothing interesting)
 happens between two consecutive events, that is, no state change takes
 place in the system between the events (in contrast to
@@ -70,7 +74,7 @@ how much CPU time it has consumed.
 
 \subsection{The event loop}
 
-Discrete event simulations maintain the set of future
+Discrete event simulation maintains the set of future
 events\index{future events} in a data structure often called
 FES\index{FES} (Future Event Set) or FEL\index{FEL} (Future Event List).
 Such simulators usually work according to the following pseudocode:
@@ -94,7 +98,7 @@ The first, initialization step usually builds the data structures
 representing the simulation model, calls any user-defined
 initialization code, and inserts initial events\index{initial events}
 into the FES to ensure that the simulation can start. Initialization
-strategy can be quite different from one simulator to another.
+strategy can differ considerably from one simulator to another.
 
 
 The subsequent loop consumes events from the FES and processes
@@ -107,9 +111,9 @@ using the computer network simulation example, processing a ``timeout
 expired'' event may consist of re-sending a copy of the network
 packet, updating the retry count, scheduling another ``timeout''
 event, and so on. The user code may also remove events from the FES\index{FES},
-for example when cancelling timeouts.
+for example when canceling timeouts.
 
-Simulation stops when there are no more events left (this happens
+The simulation stops when there are no more events left (this happens
 rarely in practice), or when it isn't necessary for the simulation
 to run further because the model time or the CPU time has reached
 a given limit, or because the statistics have reached the desired
@@ -122,8 +126,8 @@ files.
 \subsection{Simple modules in {\opp}}
 
 In {\opp}, events occur inside simple modules\index{module!simple}.
-Simple modules encapsulate C++ code that generate and react to events,
-in other words, implement the behaviour of the model.
+Simple modules encapsulate C++ code that generates events and reacts to events,
+in other words, implements the behaviour of the model.
 
 The user creates simple module types by subclassing the \cclass{cSimpleModule}
 class, which is part of the {\opp} class library.
@@ -183,7 +187,7 @@ event class. Messages are sent from one module to another -- this
 means that the place where the ``event will occur'' is the
 \textit{message's destination module}, and the model time when the
 event occurs is the \textit{arrival time}\index{arrival time} of the
-message. Events like ``timeout expired'' are implemented with the
+message. Events like ``timeout expired'' are implemented by the
 module sending a message to itself.
 
 Simulation time in {\opp} is stored in the C++ type
@@ -231,7 +235,7 @@ algorithm we know, although exotic data structures like
 \textit{skiplist}\index{skiplist} may perform better than heap in some
 cases. In case you're interested, the FES implementation is in the
 \cclass{cMessageHeap} class, but as a simulation programmer you won't
-ever need to care about it.
+ever need to care about that.
 
 
 
@@ -242,7 +246,7 @@ ever need to care about it.
 
 \subsection{Delay, bit error rate, data rate}
 
-Connections can be assigned three parameters which facilitate
+Connections can be assigned three parameters, which facilitate
 the modeling of communication networks, but can be useful for
 other models too:
 \begin{itemize}
@@ -285,16 +289,15 @@ of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
 \end{center}
 \end{figure}
 
-The above model is not applicable for modeling some protocols like
-Token Ring and FDDI where the stations repeat the bits of a frame that
-arrives on the ring immediately, without waiting for the whole frame
-to arrive; in other words, frames ``flow through'' the stations, being
-delayed only a few bits. If you want to model such networks, the data
-rate modeling feature of {\opp} cannot be used.
+The above model may not be suitable to model all protocols. In Token Ring 
+and FDDI, stations start to repeat bits before the whole frame arrives; 
+in other words, frames ``flow through'' the stations, being delayed only a few bits.
+In such cases, the data rate modeling feature of {\opp} cannot be used.
 
-If a message travels along a route, through successive links and
+If a message travels along a route, passing through successive links and
 compound modules, the model behaves as if each module waited until the
-last bit of the message arrives and only start its transmission then
+last bit of the message arrives and only started its transmission 
+afterwards.
 (Fig. \ref{fig:ch-overview:msg-multiple-ch}).
 
 \begin{figure}[htbp]
@@ -314,11 +317,11 @@ route.
 \subsection{Multiple transmissions on links}
 
 
-If data rate\index{data rate} is specified for a connection, a message
+If a data rate\index{data rate} is specified for a connection, a message
 will have a certain nonzero transmission time\index{transmission
-  time}, depending on its length.  This means that when a message is
-sent out through an output gate, the message ``reserves'' the gate for
-a given period (``it is being transmitted'').
+  time}, depending on the length of the connection. This implies that 
+a message that is passsing through an output gate, ``reserves'' the gate
+for a given period (``it is being transmitted'').
 
 \begin{figure}[htbp]
   \begin{center}
@@ -329,17 +332,17 @@ a given period (``it is being transmitted'').
 \end{figure}
 
 While a message is under transmission, other messages have to wait
-until the transmission finishes. You can still send messages
-while the gate is busy, but the beginning of the modelled
-message transmission will be delayed, just like the gate had
+until the transmission is completed. You can still send messages
+while the gate is busy, but the beginning of the modeled
+message transmission will be delayed, just as if the gate had
 an internal queue for the messages waiting to be transmitted.
 
-The {\opp} class library provides you with functions to check
+The {\opp} class library provides functions to check
 whether a certain output gate is transmitting or to learn when
 it finishes transmission.
 
-If the connection with a data rate is not the immediate one connected
-to the simple module's output gate but the second
+If the connection with a data rate is not directly connected
+to the simple module's output gate but is the second
 one in the route, you have to check the second gate's busy
 condition\index{gate!busy condition}.
 
@@ -347,11 +350,11 @@ condition\index{gate!busy condition}.
 \subsubsection{Implementation of message sending}
 
 
-Message sending is implemented in the following way: the arrival
+Message sending is implemented like this: the arrival
 time\index{arrival time} and the bit error\index{bit error} flag of a
-message are calculated at once, when the \fname{send()} (or similar)
+message are calculated immediately after the \fname{send()} (or a similar)
 function is invoked. That is, if the message travels through several
-links until it reaches its destination, it is \textit{not} scheduled
+links before it reaches its destination, it is \textit{not} scheduled
 individually for each link, but rather, every calculation is done
 once, within the \fname{send()} call. This implementation was chosen
 because of its run-time efficiency.
@@ -385,10 +388,10 @@ the change will affect only the messages that are \textit{sent} after
 the change.
 
 If it is important to model gates and channels with changing
-properties, you can go two ways:
+properties, you can chose one of two paths:
 \begin{itemize}
-  \item{write sender module such that they schedule events for when the
-    gate finishes its current transmission and send then;}
+  \item{write a sender module such that it schedules events for when the
+    gate finishes its current transmission and sends then;}
   \item{alternatively, you can implement channels with
     simple modules (``active channels'').}
 \end{itemize}
@@ -399,21 +402,21 @@ properties, you can go two ways:
 
 Note that some simulators (e.g. OPNET) assign \textit{packet queues}
 to input gates (ports), and messages sent are buffered at the
-destination module (or the remote end of the link) until received by
-the destination module. With that approach, events and messages are
-separate entities, that is, a \textit{send} operation includes placing
-the message in the packet queue \textit{and} scheduling an event which
-will signal the arrival of the packet. In some implementations, also
-output gates have packet queues where packets wait until the channel
-becomes free (available for transmission).
+destination module (or the remote end of the link) until they are 
+received by the destination module. With that approach, events and 
+messages are separate entities, that is, a \textit{send} operation 
+includes placing the message in the packet queue \textit{and} scheduling 
+an event, which signals the arrival of the packet. In some implementations,
+output gates also have packet queues where packets will be buffered until
+the channel is ready (available for transmission).
 
 {\opp} gates\index{gate} don't have associated queues. The place
-where the sent but not yet received messages are buffered is the
+where sent but not yet received messages are buffered is the
 FES\index{FES}.  {\opp}'s approach is potentially faster
-than the above mentioned solution because it doesn't have the
+than the solution mentioned above because it doesn't have the
 enqueue/dequeue overhead and also spares an event creation. The
-drawback is, as mentioned above, that changes to channel parameters do
-not take effect immediately.
+drawback is, that changes to channel parameters do not take effect
+immediately.                       
 
 In {\opp} one can implement \textit{point-to-point transmitter} modules
 with packet queues if needed. For example, the INET Framework
@@ -607,7 +610,7 @@ constructor, you cannot use the \ttt{Module\_Class\_Members()} macro.
 Then you have to write the constructor yourself.
 
 The constructor\index{module!constructor} should take the following
-arguments (which you also have to pass further to the base class):
+arguments (which also have to be passed further to the base class):
 
 \begin{itemize}
   \item{\ttt{const char *name}, which is the name of the module}
@@ -648,15 +651,15 @@ TokenRingMAC(const char *name, cModule *parent, unsigned stacksize) :
 If you make a mistake (e.g. you forget to set zero stack size
 \index{zero stack size} for a \fname{handleMessage()}
 simple module): the default versions of the
-functions issue error messages telling you what is the problem.
+functions issue error messages telling you what the problem is.
 
 
 
 \subsection{Using global variables}
 \index{global variables}
 
-If possible, avoid them global variables, including
-static class members. There are several problems with them.
+If possible, avoid using global variables, including
+static class members. They are prone to cause several problems.
 First, they are not reset to their initial values (to zero)
 when you rebuild the simulation in Tkenv, or start another run
 in Cmdenv. This may produce surprising results.
@@ -684,8 +687,8 @@ and \fname{finish()}.
 \subsubsection{Function called for each event}
 
 
-The idea is that at each event\index{event} arrival we simply call a
-user-defined function. This function,
+The idea is that at each event\index{event} (message arrival) we 
+simply call a user-defined function. This function,
 \fname[handleMessage()]{handleMessage(cMessage *msg)} is a
 virtual member function of \cclass{cSimpleModule} which does
 nothing by default -- the user has to redefine it in subclasses
@@ -771,7 +774,7 @@ You can initialize these variables from the \fname{initialize()}
 function.  The constructor\index{module!constructor} is not a very good place
 for this purpose, because it is called in the network setup phase when
 the model is still under construction, so a lot of information you may
-want to use is not yet available then.
+want to use is not yet available.
 
 Another task you have to do in \fname{initialize()} is to schedule
 initial event(s)\index{events!initial} which trigger the first call(s)
@@ -781,7 +784,7 @@ itself so that the ``chain'' is not broken. Scheduling events is not
 necessary if your module only has to react to messages coming from
 other modules.
 
-\fname{finish()} is used in the normal way: to record statistics information
+\fname{finish()} is normally used to record statistics information
 accumulated in data members of the class at the end of the simulation.
 
 
@@ -1044,11 +1047,11 @@ The main problem with \ttt{activity()} is that it doesn't scale because
 every module needs a separate coroutine stack. It has also been observed
 that \ttt{activity()} does not encourage a good programming style.
 
-However, there is one scenario where \ttt{activity()}'s process-style
+There is one scenario where \ttt{activity()}'s process-style
 description is convenient: when the process has many
 states but transitions are very limited, ie. from any state the
 process can only go to one or two other states.  For example, this is
-the case when programming a network application which uses a single
+the case when programming a network application, which uses a single
 network connection.  The pseudocode of the application which talks to
 a transport layer protocol might look like this:
 
@@ -1091,7 +1094,7 @@ a transport layer protocol might look like this:
 \end{Verbatim}
 
 If you have to handle several connections simultaneously, you may
-dynamically create as instances of the simple module above.
+dynamically create them as instances of the simple module above.
 Dynamic module creation will be discussed later.
 
 There are situations when you certainly \textit{do not want} to use \fname{activity()}.
@@ -1131,7 +1134,7 @@ void Sink::handleMessage(cMessage *msg)
 
 
 \fname[activity()]{Activity()} is run in a coroutine\index{coroutine}.
-Coroutines are a sort of threads\index{threads} which are scheduled
+Coroutines are a sort of threads which are scheduled
 non-preemptively (this is also called cooperative
 multitasking\index{multitasking!cooperative}). From one coroutine you
 can switch to another coroutine by a
@@ -1142,8 +1145,8 @@ when \textit{otherCoroutine} does a
 the first coroutine will resume from the point of the
 \fname[transferTo()]{transferTo(otherCoroutine)} call.  The full state
 of the coroutine, including local variables are preserved while the
-thread of execution is in another coroutines.  This implies that each
-coroutine must have an own processor stack\index{stack}, and
+thread of execution is in other coroutines.  This implies that each
+coroutine must have its own processor stack\index{stack}, and
 \fname{transferTo()} involves a switch from one processor stack to
 another.
 
@@ -1151,9 +1154,9 @@ another.
 Coroutines\index{coroutine} are at the heart of {\opp}, and the
 simulation programmer doesn't ever need to call \fname{transferTo()}
 or other functions in the coroutine library, nor does he need to care
-about the coroutine library implementation. But it is important to
-understand how the event loop found in discrete event simulators works
-with coroutines.
+about the coroutine library implementation. It is important to
+understand, however, how the event loop found in discrete event simulators 
+works with coroutines.
 
 
 When using coroutines, the event loop\index{event loop} looks like
