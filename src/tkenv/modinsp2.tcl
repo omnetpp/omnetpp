@@ -679,10 +679,10 @@ proc graphmodwin_animate_senddirect_delivery {win modptr msgptr msgname msgkind}
     for {set i 0} {$i<3} {incr i} {
        $c itemconfig $msgptr -state hidden
        update idletasks
-       for {set j 0} {$j<2*$ad} {incr j} {}
+       for {set j 0} {$j<3*$ad} {incr j} {}
        $c itemconfig $msgptr -state normal
        update idletasks
-       for {set j 0} {$j<2*$ad} {incr j} {}
+       for {set j 0} {$j<3*$ad} {incr j} {}
     }
 
     $c delete $msgptr
