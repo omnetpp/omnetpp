@@ -90,12 +90,14 @@ proc createChartWithModulesOnXAxis {graph idlist} {
                 lappend data [opp_getValueOf $id]
             }
         }
+
         foreach id $idlist {if {$id!=-1} break}
-        if {$id!=-1} {
-            set serieslabel "[opp_getFileNameOf $id]#[opp_getRunNoOf $id] - [opp_getNameOf $id]"
-        } else {
-            set serieslabel "?"
+        if {$id==-1} {
+            # no data points for this series, skip it
+            continue
         }
+
+        set serieslabel "[opp_getFileNameOf $id]#[opp_getRunNoOf $id] - [opp_getNameOf $id]"
         blt::vector X
         X seq 0 [expr [llength $idlist]-1]
         $graph element create data$seriesnum -x $X(:) -y $data -label $serieslabel -fg [getChartColor $seriesnum]
@@ -153,12 +155,14 @@ proc createChartWithRunsOnXAxis {graph idlist} {
                 lappend data [opp_getValueOf $id]
             }
         }
+
         foreach id $idlist {if {$id!=-1} break}
-        if {$id!=-1} {
-            set serieslabel "[opp_getModuleOf $id] - [opp_getNameOf $id]"
-        } else {
-            set serieslabel "?"
+        if {$id==-1} {
+            # no data points for this series, skip it
+            continue
         }
+
+        set serieslabel "[opp_getModuleOf $id] - [opp_getNameOf $id]"
         blt::vector X
         X seq 0 [expr [llength $idlist]-1]
         $graph element create data$seriesnum -x $X(:) -y $data -label $serieslabel -fg [getChartColor $seriesnum]
@@ -238,15 +242,14 @@ proc createScatterPlot {graph idlist modulename scalarname} {
         }
 
         foreach id $idlist {if {$id!=-1} break}
-        if {$id!=-1} {
-            set serieslabel "[opp_getModuleOf $id] - [opp_getNameOf $id]"
-        } else {
-            set serieslabel "?"
+        if {$id==-1} {
+            # no data points for this series, skip it
+            continue
         }
 
-        $graph element create line$seriesnum -x $xdata1 -y $ydata -label $serieslabel
-        $graph element config line$seriesnum -color [getChartColor $seriesnum] \
-                                             -symbol [getChartSymbol $seriesnum] -pixels 5
+        set serieslabel "[opp_getModuleOf $id] - [opp_getNameOf $id]"
+        $graph element create line$seriesnum -x $xdata1 -y $ydata -label $serieslabel \
+            -color [getChartColor $seriesnum] -symbol [getChartSymbol $seriesnum] -pixels 5
         incr seriesnum
     }
 
