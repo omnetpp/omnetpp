@@ -10,7 +10,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -107,7 +107,7 @@ class SIM_API cSimulation : public cObject
 
     /**
      * Copy constructor is not supported:  This function
-     * gives an error via operator= when called.
+     * gives an error (throws cException) via operator= when called.
      */
     cSimulation(const cSimulation& r);
 
@@ -132,7 +132,7 @@ class SIM_API cSimulation : public cObject
 
     /**
      * Dupping is not implemented for this class. This function
-     * gives an error via operator= when called.
+     * gives an error (throws cException) via operator= when called.
      */
     virtual cObject *dup() const  {return new cSimulation(*this);}
 
@@ -165,7 +165,7 @@ class SIM_API cSimulation : public cObject
     virtual const char *fullPath(char *buffer, int bufsize) const;
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cSimulation& operator=(const cSimulation&)  {copyNotSupported();return *this;}
     //@}
@@ -204,7 +204,7 @@ class SIM_API cSimulation : public cObject
 
     /**
      * DEPRECATED because it might return null reference; use module(int) instead.
-     * 
+     *
      * Same as module(int), only this returns reference instead of pointer.
      */
     cModule& operator[](int id) const {return id>=0 && id<size ? *vect[id] : *(cModule *)NULL;}
@@ -362,8 +362,7 @@ class SIM_API cSimulation : public cObject
      * If the module in context is not a simple module, returns NULL.
      * This is a convenience function which simply calls contextModule().
      */
-     // FIXME: implementation should check isSimple() and return NULL if not OK!!!
-    cSimpleModule *contextSimpleModule() const; // cannot make inline! would require cmodule.h because of dynamic cast
+    cSimpleModule *contextSimpleModule() const;
 
     /**
      * Returns the currently active 'locals' object. This object is usually the

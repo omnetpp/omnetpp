@@ -14,7 +14,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -45,9 +45,8 @@
  *
  * @hideinitializer
  */
-#define Define_Network(NAME,SETUPFUNC) \
-  void SETUPFUNC(); \
-  EXECUTE_ON_STARTUP(NAME##__net, (new cNetworkType(#NAME,SETUPFUNC))->setOwner(&networks);)
+#define Define_Network(NAME) \
+  EXECUTE_ON_STARTUP(NAME##__net, (new NAME(#NAME))->setOwner(&networks);)
 
 /**
  * Link type definition. The macro expands to the definition of a cLinkType object;

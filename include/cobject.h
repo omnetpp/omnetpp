@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -214,7 +214,7 @@ class SIM_API cObject
     //@{
 
     /**
-     * Raises an error stating that assignment, copy constructor and dup()
+     * throws a cException ("copying not supported") stating that assignment, copy constructor and dup()
      * won't work for this object. This is a convenience function to be
      * called from the operator=() method of cObject subclasses that do
      * not wish to implement object copying.

@@ -13,6 +13,15 @@
 //
 //==========================================================================
 
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2002 Andras Varga
+  Technical University of Budapest, Dept. of Telecommunications,
+  Stoczek u.2, H-1111 Budapest, Hungary.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 #ifndef __CHIST_H
 #define __CHIST_H
 
@@ -265,7 +274,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     virtual ~cLongHistogram();
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cLongHistogram& operator=(const cLongHistogram&)  {copyNotSupported();return *this;}
     //@}
@@ -356,7 +365,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     virtual ~cDoubleHistogram();
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cDoubleHistogram& operator=(const cDoubleHistogram&)  {copyNotSupported();return *this;}
     //@}

@@ -11,7 +11,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -184,13 +184,13 @@ class SIM_API cLinkedList : public cObject
 
     /**
      * Inserts exactly before the given item. If the item to be inserted before
-     * is not in the list, an error occurs.
+     * is not in the list, cException is thrown.
      */
     void insertBefore(void *where, void *item);
 
     /**
      * Inserts exactly after the given item. If the item to be inserted after
-     * is not in the list, an error occurs.
+     * is not in the list, cException is thrown.
      */
     void insertAfter(void *where, void *item);
 
@@ -208,13 +208,13 @@ class SIM_API cLinkedList : public cObject
 
     /**
      * Unlinks and returns the given item. If the item is not in the list,
-     * an error occurs.
+     * cException is thrown.
      */
     void *remove(void *item);
 
     /**
      * Unlinks and returns the last item in the list. If the list is empty,
-     * an error occurs.
+     * cException is thrown.
      */
     void *pop();
 

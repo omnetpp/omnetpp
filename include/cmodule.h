@@ -12,7 +12,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -507,7 +507,7 @@ class SIM_API cModule : public cObject
 
     /**
      * Searches for the parameter in the parent modules, up to the system
-     * module. It the parameter is not found, an error message is generated.
+     * module. It the parameter is not found, throws cException.
      */
     cPar& ancestorPar(const char *parname);
 
@@ -721,13 +721,13 @@ class SIM_API cSimpleModule : public cModule
 
     /**
      * Should be redefined to contain the module activity function.
-     * This default implementation issues an error message.
+     * This default implementation issues an error message (throws cException).
      */
     virtual void activity();
 
     /**
      * Should be redefined to contain the module's message handling function.
-     * This default implementation issues an error message.
+     * This default implementation issues an error message (throws cException).
      */
     virtual void handleMessage(cMessage *msg);
     //@}

@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -27,7 +27,7 @@
  * Allows code fragments to be collected in global scope which will
  * then be executed from main() right after program startup. This is
  * used by in OMNeT++ for building global registration lists of
- * module types, network types, etc. Registration lists in fact 
+ * module types, network types, etc. Registration lists in fact
  * are a simple substitute for Java's Class.forName() method...
  *
  * @hideinitializer

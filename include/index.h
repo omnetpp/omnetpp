@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -210,6 +210,6 @@
  *
  * Classes in this group provide a plugin mechanism that can be used to
  * customize the functionality of the Envir user interface library
- * (and also Cmdenv and Tkenv, because they build on Envir). 
+ * (and also Cmdenv and Tkenv, because they build on Envir).
  */
 

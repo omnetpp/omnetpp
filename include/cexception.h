@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -65,7 +65,7 @@ class SIM_API cException
 
     /**
      * Returns the ID of the module where the exception occurred,
-     * or -1 if it was not inside a module. The module may not exist 
+     * or -1 if it was not inside a module. The module may not exist
      * any more when the exception is caught (ie. if the exception occurs
      * during network setup, the network is cleaned up immediately).
      */

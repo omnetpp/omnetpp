@@ -17,7 +17,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -84,7 +84,7 @@ class SIM_API cTransientDetection : public cObject
     virtual ~cTransientDetection()  {}
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cTransientDetection& operator=(const cTransientDetection&)  {copyNotSupported();return *this;}
     //@}
@@ -193,7 +193,7 @@ class SIM_API cAccuracyDetection : public cObject
     virtual ~cAccuracyDetection()  {}
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cAccuracyDetection& operator=(const cAccuracyDetection&)  {copyNotSupported();return *this;}
     //@}
@@ -337,7 +337,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
 
     /**
      * Dupping is not implemented for this class. This function
-     * gives an error when called.
+     * gives an error (throws cException) when called.
      */
     virtual cObject *dup() const  {return new cTDExpandingWindows(*this);}
     //@}
@@ -457,7 +457,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
 
     /**
      * Dupping is not implemented for this class. This function
-     * gives an error when called.
+     * gives an error (throws cException) when called.
      */
     virtual cObject *dup() const  {return new cADByStddev(*this);}
     //@}

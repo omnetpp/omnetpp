@@ -11,7 +11,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -169,21 +169,21 @@ class SIM_API cQueue : public cObject
 
     /**
      * Inserts the given object into the queue, maintaining the sorting
-     * order. Trying to insert a NULL pointer is an error.
+     * order. Trying to insert a NULL pointer is an error (throws cException).
      */
     virtual void insert(cObject *obj);
 
     /**
      * Inserts exactly before the given object. If the given position
-     * does not exist, an error is raised. Trying to insert a NULL pointer
-     * is also an error.
+     * does not exist or if you try to insert a NULL pointer,
+     * cException is thrown.
      */
     virtual void insertBefore(cObject *where, cObject *obj);
 
     /**
-     * Inserts exactly after the given object.  If the given position
-     * does not exist, an error is raised. Trying to insert a NULL pointer
-     * is also an error.
+     * Inserts exactly after the given object. If the given position
+     * does not exist or if you try to insert a NULL pointer,
+     * cException is thrown.
      */
     virtual void insertAfter(cObject *where, cObject *obj);
 
@@ -195,7 +195,7 @@ class SIM_API cQueue : public cObject
 
     /**
      * Unlinks and returns the last (tail) object in the queue. If the queue
-     * was empty, an error is raised.
+     * was empty, cException is thrown.
      */
     virtual cObject *pop();
 

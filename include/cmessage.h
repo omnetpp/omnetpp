@@ -10,7 +10,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -205,11 +205,13 @@ class SIM_API cMessage : public cObject
     void setLength(long l);
 
     /**
-     * Change message length by the given value. The value may be negative, but
-     * a negative resulting message length is an error. Useful for modeling
+     * Changes message length by the given value. This is useful for modeling
      * encapsulation/decapsulation. (See also encapsulate() and decapsulate().)
+     *
+     * The value may be negative (message length may be decreased too).
+     * If the resulting length would be negative, the method throws cException.
      */
-    void addLength(long l);
+    void addLength(long delta);
 
     /**
      * Set bit error flag.
@@ -330,7 +332,7 @@ class SIM_API cMessage : public cObject
     /**
      * Decapsulates a message from the message object. The length of
      * the message will be decreased accordingly, except if it was zero.
-     * If the length would become negative, an error occurs.
+     * If the length would become negative, cException is thrown.
      */
     cMessage *decapsulate();
 

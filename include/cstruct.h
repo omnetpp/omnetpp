@@ -10,7 +10,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -33,7 +33,7 @@ class sFieldWrapper;
  * FIXME: explain client object, fieldwrapper, etc.
  *
  * The copy constructor, dup() and the assignment operator are redefined
- * to raise an error, since they would be of no use in subclasses.
+ * to raise an error (throw cException), since they would be of no use in subclasses.
  *
  * @ingroup Internals
  * @see sFieldWrapper
@@ -90,7 +90,7 @@ class SIM_API cStructDescriptor : public cObject
     virtual ~cStructDescriptor();
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cStructDescriptor& operator=(const cStructDescriptor&)  {copyNotSupported();return *this;}
     //@}

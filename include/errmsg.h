@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -56,7 +56,7 @@ enum {
         eNEGTOUT     = 28,
         eNODEL       = 29,
         eCANCEL      = 30,
-        eSETUP       = 31,
+        eNONET       = 31,
         eBADEXP      = 32,
         eFINISH      = 33,
         eENDSIM      = 34,

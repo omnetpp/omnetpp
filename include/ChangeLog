@@ -9,6 +9,10 @@
 	should be redefined in subclasses, and also nedc generates now
 	doBuildInside() code.
 
+	* ctypes.h, macros.h: refactoring around cNetworkType and 
+	Define_Network: subclass cNetworkType instead of using a naked
+	pointer to a network setup function.
+
 2002-10-16  Andras Varga
 
 	* csimul.h: cSimulation: methods warning(), setWarnings(bool), 

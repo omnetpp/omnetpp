@@ -11,7 +11,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -330,7 +330,7 @@ class SIM_API cArray : public cObject
 
     /**
      * Inserts the object into the array at the given position. If
-     * the position is occupied, the function throws an error.
+     * the position is occupied, the function throws cException.
      * The return value is the object's index in the array.
      */
     int addAt(int m,cObject *obj);

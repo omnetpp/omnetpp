@@ -11,7 +11,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -91,7 +91,7 @@ class SIM_API cHead : public cObject
     virtual ~cHead()  {}
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cHead& operator=(const cHead&)  {copyNotSupported();return *this;}
     //@}
@@ -106,7 +106,7 @@ class SIM_API cHead : public cObject
 
     /**
      * Dupping is not implemented for this class. This function
-     * gives an error when called.
+     * gives an error (throws cException) when called.
      */
     virtual cObject *dup() const  {return new cHead(*this);}
 

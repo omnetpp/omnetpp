@@ -17,7 +17,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2001 Andras Varga
+  Copyright (C) 1992-2002 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
@@ -403,17 +403,18 @@ class SIM_API cLinkType : public cObject
 //==========================================================================
 
 /**
- * Registration class. An instance knows how to build a network of specific type.
+ * Abstract base class for network types. cNetworkType has to be subclassed
+ * and the setupNetwork() method redefined, and the subclass to be registered
+ * via the Define_Network(). The result will be factory object which can
+ * set up a concrete network.
  *
- * Objects of this class are usually created via the Define_Network() macro.
+ * All this is usually taken care of by the NED compiler, so normal users
+ * should not need to know about cNetworkType.
  *
  * @ingroup Internals
  */
 class SIM_API cNetworkType : public cObject
 {
-  public:  //FIXME: ????
-    void (*setupfunc)();
-
   public:
     /** @name Constructors, destructor, assignment */
     //@{
@@ -426,7 +427,7 @@ class SIM_API cNetworkType : public cObject
     /**
      * Constructor. It takes pointer to a function that can build up a network.
      */
-    cNetworkType(const char *name, void (*f)());
+    cNetworkType(const char *name=NULL) : cObject(name) {}
 
     /**
      * Destructor.
@@ -434,7 +435,7 @@ class SIM_API cNetworkType : public cObject
     virtual ~cNetworkType() {}
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cNetworkType& operator=(const cNetworkType&)  {copyNotSupported();return *this;}
     //@}
@@ -446,13 +447,13 @@ class SIM_API cNetworkType : public cObject
      * Returns pointer to a string containing the class name, "cNetworkType".
      */
     virtual const char *className() const {return "cNetworkType";}
+    //@}
 
     /**
-     * Creates and returns an exact copy of this object.
-     * See cObject for more details.
+     * Network setup function. This is redefined in subclasses.
      */
-    virtual cObject *dup() const     {return new cNetworkType(*this);}
-    //@}
+    virtual void setupNetwork() = 0;
+
 };
 
 //==========================================================================
@@ -489,7 +490,7 @@ class SIM_API cFunctionType : public cObject
     virtual ~cFunctionType() {}
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cFunctionType& operator=(const cFunctionType&)  {copyNotSupported();return *this;}
     //@}
@@ -547,7 +548,7 @@ class SIM_API cClassRegister : public cObject
     virtual ~cClassRegister() {}
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cClassRegister& operator=(const cClassRegister&)  {copyNotSupported();return *this;}
     //@}
@@ -637,7 +638,7 @@ class SIM_API cInspectorFactory : public cObject
     virtual ~cInspectorFactory() {}
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cInspectorFactory& operator=(const cInspectorFactory&)  {copyNotSupported();return *this;}
     //@}

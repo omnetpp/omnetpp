@@ -10,6 +10,15 @@
 //
 //==========================================================================
 
+/*--------------------------------------------------------------*
+  Copyright (C) 1992-2002 Andras Varga
+  Technical University of Budapest, Dept. of Telecommunications,
+  Stoczek u.2, H-1111 Budapest, Hungary.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 #ifndef __COUTVECT_H
 #define __COUTVECT_H
 
@@ -70,7 +79,7 @@ class SIM_API cOutVector : public cObject
     virtual ~cOutVector();
 
     /**
-     * Assignment is not supported for this class. This function raises an error when called.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
     cOutVector& operator=(const cOutVector&)  {copyNotSupported();return *this;}
     //@}
@@ -91,7 +100,7 @@ class SIM_API cOutVector : public cObject
 
     /**
      * Dupping is not implemented for cOutVector. This function
-     * gives an error when called.
+     * gives an error (throws cException) when called.
      */
     virtual cObject *dup() const    {return new cOutVector(*this);}
 
@@ -114,7 +123,7 @@ class SIM_API cOutVector : public cObject
     /**
      * Records the value with the current simulation time as timestamp.
      * It can be used only in the case if the instance of cOutVector was created with tuple=1,
-     * otherwise it gives an error message.
+     * otherwise it throws cException.
      *
      * The return value is true if the data was actually recorded, and false if it
      * was not recorded (because of filtering, etc.)
@@ -124,7 +133,7 @@ class SIM_API cOutVector : public cObject
     /**
      * Records two values with the current simulation time as timestamp.
      * It can be used only in the case if the instance of cOutVector was created with tuple=2,
-     * otherwise it gives an error message.
+     * otherwise it throws cException.
      *
      * The return value is true if the data was actually recorded, and false if it
      * was not recorded (because of filtering, etc.)
