@@ -13,14 +13,14 @@ AC_DEFUN(OPP_CHECK_LIB_WITHPATH,[
 save_LDFLAGS=$LDFLAGS
 save_LIBS=$LIBS
 LIBS="-l$1 $6"
-for MINUS_L in "" $3; do
-  if test -n "$MINUS_L"; then
-    AC_MSG_CHECKING(if -l$1 is in $MINUS_L)
-    MINUS_L="-L$MINUS_L"
+for lib_path_swith in "" $3; do
+  if test -n "$lib_path_swith"; then
+    AC_MSG_CHECKING(if -l$1 is in $lib_path_swith)
+    lib_path_swith="-L$lib_path_swith"
   else
     AC_MSG_CHECKING(if -l$1 is in linker path)
   fi
-  LDFLAGS="$save_LDFLAGS $MINUS_L"
+  LDFLAGS="$save_LDFLAGS $lib_path_swith"
   AC_TRY_LINK([char $2();],$2(),
               [AC_MSG_RESULT(yes);succ=yes;break],
               [AC_MSG_RESULT(no);succ=no])
@@ -35,83 +35,132 @@ fi
 ])
 
 #----------------------
+# Version info.
+#----------------------
+
+VERSION="1.2"
+
+#----------------------
 # Checks for programs.
 #----------------------
+
 AC_PROG_YACC
 AC_PROG_LEX
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
+
+# FIXME: the following lines will need some check
 AS="as"
 AR="ar cr"
 SHLIB_LD="gcc -shared"
 NEDC=nedc
 
-A_LIB_SUFFIX='.a'
-SO_LIB_SUFFIX='.so'
+A_LIB_SUFFIX=".a.$VERSION"
+SO_LIB_SUFFIX=".so.$VERSION"
 
 #----------------------
-# Checks for libraries.
+# Checks for standard libraries.
 #----------------------
-AC_CHECK_LIB(m, floor)
-AC_CHECK_LIB(stdc++, some_func_in_stdCPP)
 
-dnl HACK:
-SYS_LIBS="-lstdc++ -lm"
+SYS_LIBS=""
 
-# Enable/disable use of dlopen(), used by OMNeT++'s -l command line option
-# and [General]/load-libs= ini file option
+AC_CHECK_LIB(m, floor,
+   SYS_LIBS="-lm $SYS_LIBS",
+   AC_MSG_WARN("math library (-lm) not found (maybe part of standard C lib?)")
+   )
+
 AC_CHECK_LIB(dl, dlopen,
-   USE_DLOPEN=1 SYS_LIBS="$SYS_LIBS -ldl",
-   USE_DLOPEN=0)
+   HAVE_DLOPEN=1; SYS_LIBS="-ldl $SYS_LIBS",
+   HAVE_DLOPEN=0; AC_MSG_WARN("dynamic loading of libs not possible (no dlopen() syscall)")
+   )
+if test "$HAVE_DLOPEN" = "1"; then
+   AC_CHECK_HEADER(dlfcn.h, ,
+      HAVE_DLOPEN=0; AC_MSG_WARN("dynamic loading of libs not possible (no dlfcn.h header)")
+   )
+fi
 
-#---PVM_LIBS---
-# PVM_INCL_DIR='$PVM_ROOT/include'
-# PVM_LIB_DIR='$PVM_ROOT/lib/$PVM_ARCH'
-AC_CHECK_LIB(pvm3, pvm_recv,
-  PVM_LIBS="$MINUS_L -lpvm3",
-  PVM_LIBS="")
-AC_CHECK_LIB(gpvm3, pvm_joingroup,
-  PVM_LIBS="$MINUS_L -lpvm3 $PVM_LIBS",
-  PVM_LIBS="",
-  $PVM_LIBS)
+AC_CHECK_LIB(stdc++, main,
+   SYS_LIBS="-lstdc++ $SYS_LIBS",
+   AC_MSG_WARN("standard C++ library (-lstdc++) not found; linking problems are likely")
+   )
 
-#---TK_LIBS---
+#----------------------
+# Check for PVM.
+#----------------------
+
+# FIXME:
+PVM_CFLAGS="-I$PVM_ROOT/include"
+
+# test for -lpvm3 and -lgpvm3 at the same time
+OPP_CHECK_LIB_WITHPATH(pvm3, pvm_joingroup, $PVM_ROOT/lib/$PVM_ARCH,
+  PVM_LIBS="$lib_path_swith -lgpvm3 -lpvm3"
+  [PVM_LIBS=""
+   AC_MSG_WARN("if you do have PVM3, set PVM_ROOT and PVM_ARCH")
+   AC_MSG_WARN("  to their correct values and re-run configure")],
+  -lpvm3
+  )
+
+#----------------------
+# Check for Tk.
+#----------------------
+
+# FIXME: non-gcc compilers probably need different flag
 TK_CFLAGS="-fwritable-strings"
-OPP_CHECK_LIB_WITHPATH(X11, XDrawLine, /usr/X11/lib,
-  X_LIBS="$MINUS_L -lX11",
-  X_LIBS="")
-AC_CHECK_LIB(tcl, Tcl_Init, TCL_LIBS="-ltcl",,-ldl)
-AC_CHECK_LIB(tk, Tk_BindEvent,
-   TK_LIBS="$MINUS_L -ltk $TCL_LIBS $X_LIBS",
-   TK_LIBS="",
-   $TCL_LIBS $X_LIBS -ldl)
+TK_LIBS=""
 
-#---TV_LIBS---
+# X Window
+AC_PATH_X
+if test ! -n "$x_includes"; then
+  TK_CFLAGS="$x_includes $TK_CFLAGS"
+fi
+if test ! -n "$x_libraries"; then
+  TK_LIBS="$x_libraries $TK_LIBS"
+fi
+
+# Tcl
+OPP_CHECK_LIB_WITHPATH(tcl, Tcl_Init, /opt/lib
+   TK_LIBS="$lib_path_switch -ltcl $TK_LIBS",
+   :,
+   $SYS_LIBS)
+
+# Tk
+OPP_CHECK_LIB_WITHPATH(tk, Tk_BindEvent, /opt/lib
+   TK_LIBS="$lib_path_switch -ltk $TK_LIBS",
+   TK_LIBS=""; AC_MSG_WARN("Cannot link with Tcl/Tk -- Tkenv, GNED and Plove won't build/run"),
+   $TK_LIBS $SYS_LIBS)
+
+#----------------------
+# Check for Turbo Vision.
+#----------------------
+
+# FIXME:
 TV_CFLAGS="-I/usr/include/tvision"
-AC_CHECK_LIB(tv, some_cpp_func_in_TV,
-   TV_LIBS="$MINUS_L -ltv",
-   TV_LIBS="")
+
+OPP_CHECK_LIB_WITHPATH(tv, main,
+   TV_LIBS="$lib_path_swith -ltv",
+   TV_LIBS=""; AC_MSG_WARN("Cannot link with Turbo Vision -- TVenv won't build"),
+   $SYS_LIBS)
 
 #----------------------
 # Checks for header files.
 #----------------------
-AC_HEADER_STDC
-AC_CHECK_HEADERS(malloc.h unistd.h)
-AC_CHECK_HEADERS(pvm3.h)
-AC_CHECK_HEADERS(tcl.h)
-AC_CHECK_HEADERS(tv.h)
+
+# FIXME:
+#AC_HEADER_STDC
+#AC_CHECK_HEADERS(malloc.h unistd.h)
 
 
 # Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_C_INLINE
-AC_TYPE_SIZE_T
-AC_STRUCT_TM
+#AC_C_CONST
+#AC_C_INLINE
+#AC_TYPE_SIZE_T
+#AC_STRUCT_TM
 
 #----------------------
 # Checks for library functions.
 #----------------------
+
 AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
@@ -120,6 +169,7 @@ AC_CHECK_FUNCS(select strdup strspn strstr)
 #----------------------
 # OMNETPP components.
 #----------------------
+
 OMNETPP_ROOT=`pwd`
 
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
@@ -140,6 +190,7 @@ LIB_SUFFIX='$(A_LIB_SUFFIX)'
 #----------------------
 # Compile options. Use -g for debugging, -O3... for speed.
 #----------------------
+
 CFLAGS='-g'
 #CFLAGS='-g -Wall'
 #CFLAGS='-O3 -DNDEBUG=1'
@@ -147,13 +198,14 @@ CFLAGS='-g'
 #----------------------
 # Conditional build of some components
 #----------------------
-if test "X$PVM_LIBS" = "X"; then
+
+if test -n "$PVM_LIBS"; then
    SIM_PVM_IF_POSSIBLE=missing-library
 else
    SIM_PVM_IF_POSSIBLE=sim_pvm
 fi
 
-if test "X$TK_LIBS" = "X"; then
+if test -n "$TK_LIBS"; then
    TKENV_IF_POSSIBLE=missing-library
    GNED_IF_POSSIBLE=missing-library
 else
@@ -161,7 +213,7 @@ else
    GNED_IF_POSSIBLE=gned
 fi
 
-if test "X$TV_LIBS" = "X"; then
+if test -n "$TV_LIBS"; then
    TVENV_IF_POSSIBLE=missing-library
 else
    TVENV_IF_POSSIBLE=tvenv
@@ -170,6 +222,7 @@ fi
 #----------------------
 # Subtitutions.
 #----------------------
+
 AC_SUBST(YACC)
 AC_SUBST(LEX)
 AC_SUBST(CC)
@@ -184,7 +237,7 @@ AC_SUBST(A_LIB_SUFFIX)
 AC_SUBST(SO_LIB_SUFFIX)
 AC_SUBST(LIB_SUFFIX)
 
-AC_SUBST(USE_DLOPEN)
+AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TV_CFLAGS)
 AC_SUBST(TV_LIBS)
 AC_SUBST(TK_CFLAGS)
@@ -210,6 +263,7 @@ AC_SUBST(GNED_IF_POSSIBLE)
 #----------------------
 # Generate files.
 #----------------------
+
 AC_OUTPUT(
   Makefile
   src/cmdenv/makefile
@@ -238,6 +292,7 @@ chmod +x src/utils/makemake
 #----------------------
 # Env. vars
 #----------------------
+
 if echo $PATH | grep -q $OMNETPP_ROOT/bin; then
   echo "Your PATH contains $OMNETPP_ROOT/bin. Good."
 else
@@ -267,7 +322,7 @@ variable. Add the corresponding line to your startup file:
   setenv LD_LIBRARY_PATH \$LD_LIBRARY_PATH:\$HOME/omnetpp/lib
          # into .cshrc if you use tcsh or other csh-like shell
 If you prefer static libraries, change LIB_SUFFIX='so' to
-LIB_SUFFIX='a' in the configure script, then re-run configure and makeall.
+LIB_SUFFIX='a' in the configure script, then re-run configure and make.
 EOT
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/omnetpp/lib
   fi
