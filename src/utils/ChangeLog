@@ -1,3 +1,5 @@
+2004-11-03  ------ omnetpp-3.0a9 released ------
+
 2004-11-03  Andras Varga
 
 	* opp_test: fixed bug which caused %not-contains tests not to take 

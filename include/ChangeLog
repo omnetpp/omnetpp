@@ -1,3 +1,5 @@
+2004-11-03  ------ omnetpp-3.0a9 released ------
+
 FIXME todo: create parsim/ (and nedxml/?) subdirectories here
 cMessage: change prio() from int to short (2 bytes less)
 add deleteGate()
