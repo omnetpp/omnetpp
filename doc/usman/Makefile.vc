@@ -1,5 +1,5 @@
 
-PERL=c:\perl\bin\perl.exe
+PERL=d:\perl\bin\perl.exe
 
 HTM_FILES = history.htm \
             ch-introduction.htm \

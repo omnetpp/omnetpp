@@ -147,6 +147,8 @@ object types) and encapsulated messages.
 
 \subsection{Message encapsulation}
 
+\subsubsection{Encapsulating one message}
+
 It is often necessary to encapsulate a
 message\index{message!encapsulation} into another when you're modeling
 layered protocols of computer networks. Although you can encapsulate
@@ -169,7 +171,6 @@ tcpseg->encapsulate(userdata);
 ev << tcpseg->length() << endl; // --> 8*2024 = 16192
 \end{verbatim}
 
-
 A message can only hold one encapsulated message at a time. The
 second \fname{encapsulate()} call will result in an error. It is also
 an error if the message to be encapsulated isn't owned by the
@@ -185,11 +186,48 @@ cMessage *userdata = tcpseg->decapsulate();
 except if it was zero. If the length would become negative, an
 error occurs.
 
-
 The \fname{encapsulatedMsg()} function returns a pointer to the encapsulated
 message, or NULL if no message was encapsulated.
 
 
+\subsubsection{Encapsulating several messages \new}
+
+The \cclass{cMessage} class doesn't directly support adding more than one
+messages to a message object, but you can subclass \cclass{cMessage}
+and add the necessary functionality. (It is recommended that you
+use the message definition syntax \ref{ch:messages:message-definitions}
+and customized messages \ref{sec:ch-messages:customizing-generated-class}
+to be described later on in this chapter -- it can spare you some work.)
+
+You can store the messages in a fixed-size or a dynamically allocated
+array, or you can use STL classes like \ttt{std::vector} or \ttt{std::list}.
+There is one additional ``trick'' that you might not expect: your message
+class has to \textbf{take ownership} of the inserted messages, and
+\textbf{release} them when they are removed from the message. These are
+done via the \fname{take()} and \fname{drop()} methods. Let us see
+an example which assumes you have added to the class an \ttt{std::list} member
+called \ttt{messages} that stores message pointers:
+
+\begin{verbatim}
+void MessageBundleMessage::insertMessage(cMessage *msg)
+{
+    take(msg);  // take ownership
+    messages.push_back(msg);  // store pointer
+}
+
+void MessageBundleMessage::removeMessage(cMessage *msg)
+{
+    messages.remove(msg);  // remove pointer
+    drop(msg);  // release ownership
+}
+\end{verbatim}
+
+You will also have to provide an \fname{operator=()} method to
+make sure your message objects can be copied and duplicated
+properly -- this is something often needed in simulations
+(think of broadcasts and retransmissions!). Section
+\ref{sec:ch-sim-lib:deriving-new-classes} contains more info
+about the things you need to take care of when deriving new classes.
 
 
 
@@ -1028,6 +1066,7 @@ error in the generated header file.
 
 
 \subsection{Customizing the generated class}
+\label{sec:ch-messages:customizing-generated-class}
 
 
 \subsubsection{The Generation Gap pattern}
@@ -1129,7 +1168,7 @@ class FooPacket : public FooPacket_Base
 Register_Class(FooPacket);
 \end{verbatim}
 
-Note that it is important that you redefine \fname{dup()} and 
+Note that it is important that you redefine \fname{dup()} and
 provide an assignment operator (\fname{operator=()}).
 
 So, returning to our original example about payload length
