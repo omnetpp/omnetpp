@@ -19,13 +19,13 @@ void {Module}::activity()
    for(int i=1; i<100; i++)
    {
       wait(0.1);
-      ev << "time: " << simTime() << endl;
+      ev << "time: " << simTime() << "s\n";
    }
 }
 
 void {Module}::finish()
 {
-   ev << "finish() at " << simTime() << endl;
+   ev << "finish() at " << simTime() << "s\n";
 }
 
 %inifile: {}.ini
@@ -33,8 +33,13 @@ void {Module}::finish()
 network={}_network
 sim-time-limit=5s
 
-%contains-regex: stdout
-time: 5.1
-.*finish\(\) at 5.1
+%not-contains: stdout
+time: 5.
+
+%contains: stdout
+time: 5s
+
+%contains: stdout
+finish() at 5.1s
 
 

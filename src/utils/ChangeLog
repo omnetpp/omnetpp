@@ -1,3 +1,8 @@
+2004-11-03  Andras Varga
+
+	* opp_test: fixed bug which caused %not-contains tests not to take 
+	place.
+
 2004-10-27  Andras Varga
 
 	* seedtool.cc: edited banner to clarify it generates seeds for LCG32.

@@ -512,7 +512,7 @@ sub testcase_run()
     # check output files
     foreach $key (keys(%values))
     {
-        if ($key =~ /^contains/)  # any form of "contains-..."
+        if ($key =~ /contains/)  # any form of "...contains..."
         {
             # read file
             if ($values{$key} eq 'stdout') {
