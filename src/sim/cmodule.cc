@@ -46,6 +46,18 @@ bool cModule::pause_in_sendmsg;
 //=========================================================================
 //=== cModule - member functions
 
+void cModule::initialize()
+{
+    // Called before simulation starts (or usually after dynamic module was created).
+    // Should be redefined by user.
+}
+
+void cModule::finish()
+{
+    // Called after end of simulation (and usually before destroying a dynamic module).
+    // Should be redefined by user.
+}
+
 cModule::cModule(cModule& mod) : cObject(),
  gatev(NULL, 0,2),
  paramv(NULL, 0,2),
@@ -1060,11 +1072,6 @@ cMessage *cSimpleModule::receiveOn(char *s, int sn, simtime_t t)
 
 //-------------
 
-void cSimpleModule::initialize()
-{
-    // called before simulation starts
-}
-
 void cSimpleModule::activity()
 {
     // default thread function
@@ -1079,11 +1086,6 @@ void cSimpleModule::handleMessage(cMessage *)
     opp_error("You should redefine handleMessage() if you specify zero stack size");
 }
 
-void cSimpleModule::finish()
-{
-    // called after end of simulation
-}
-
 //-------------
 
 void cSimpleModule::callInitialize()
@@ -1095,6 +1097,22 @@ void cSimpleModule::callInitialize()
     simulation.setContextModule( this );
 
     initialize();
+
+    if (oldcontext)
+        simulation.setContextModule( oldcontext );
+    else
+        simulation.setGlobalContext();
+}
+
+void cSimpleModule::callFinish()
+{
+    // This is the interface for calling finish().
+    // We switch to the module's context for the duration of the call.
+
+    cModule *oldcontext = simulation.contextModule();
+    simulation.setContextModule( this );
+
+    finish();
 
     if (oldcontext)
         simulation.setContextModule( oldcontext );
@@ -1206,10 +1224,46 @@ void cCompoundModule::scheduleStart(simtime_t t)
 
 void cCompoundModule::callInitialize()
 {
+    // This is the interface for calling initialize().
+
+    // first call it for this module...
+    cModule *oldcontext = simulation.contextModule();
+    simulation.setContextModule( this );
+
+    initialize();
+
+    if (oldcontext)
+        simulation.setContextModule( oldcontext );
+    else
+        simulation.setGlobalContext();
+
+    // ...then for submods
     for (cSubModIterator submod(*this); !submod.end(); submod++)
     {
         submod()->callInitialize();
     }
+}
+
+void cCompoundModule::callFinish()
+{
+    // This is the interface for calling finish().
+
+    // first call it for submods...
+    for (cSubModIterator submod(*this); !submod.end(); submod++)
+    {
+        submod()->callFinish();
+    }
+
+    // ...then for this module.
+    cModule *oldcontext = simulation.contextModule();
+    simulation.setContextModule( this );
+
+    finish();
+
+    if (oldcontext)
+        simulation.setContextModule( oldcontext );
+    else
+        simulation.setGlobalContext();
 }
 
 void cCompoundModule::deleteModule()

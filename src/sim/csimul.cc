@@ -5,7 +5,6 @@
 //           Discrete System Simulation in C++
 //
 //   Text tables:
-//    emsg:      error messages
 //    modstate:  module states
 //
 //   Definition of global object:
@@ -438,29 +437,12 @@ void cSimulation::startRun()
      backtomod = NULL;
      netif_check_cntr = 0;
 
-     // initialize modules
-     for (int i=1; i<size; i++)
+     // call initialize() and create starter message for all modules, recursively
+     if (systemmodp)
      {
-        if( vect[i] && vect[i]->isSimple() )
-        {
-            cSimpleModule *sm = (cSimpleModule *)vect[i];
-
-            // create starter message for activity()
-            //
-            // (if the module uses handleMessage() and it needs some starter
-            // message, initialize() should schedule it)
-            //
-            if (sm->usesActivity())
-                sm->scheduleStart(0.0);
-
-            // call user-defined init function in the module's own context
-            //
-            setContextModule( sm );
-            sm->initialize();
-        }
+         systemmodp->callInitialize();
+         systemmodp->scheduleStart(0.0);
      }
-     // restore global context
-     setGlobalContext();
 
      // distributed execution:
      //  create a msg that will notify the network interface that all
@@ -485,17 +467,11 @@ void cSimulation::startRun()
 
 void cSimulation::callFinish()
 {
-     // call user-defined finish() functions of simple modules
-     for (int i=1; i<size; i++)
+     // call user-defined finish() functions for all modules recursively
+     if (systemmodp)
      {
-        if (vect[i] && vect[i]->isSimple())
-        {
-            cSimpleModule *sm = (cSimpleModule *)vect[i];
-            setContextModule( sm );
-            sm->finish();         // user-defined function
-        }
+         systemmodp->callFinish();
      }
-     setGlobalContext();
 }
 
 void cSimulation::endRun()

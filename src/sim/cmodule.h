@@ -122,6 +122,13 @@ class cModule : public cObject
       protected:
         virtual void arrived(cMessage *msg,int n) = 0; // internal use
 
+      protected:
+        // The following functions are expected to be redefined in concrete
+        // module types. They are made protected because they are supposed
+        // to be called only via callInitialize() and callFinish().
+        virtual void initialize();     // called before simulation starts
+        virtual void finish();         // called after end of simulation
+
       public:
         cModule(cModule& mod);
         cModule(char *namestr, cModule *parentmod);
@@ -182,8 +189,11 @@ class cModule : public cObject
         char *machinePar(int i);         // NET
         char *machinePar(char *pname);   // NET
 
-        // dynamic module creation
+        // interface for calling initialize() and finish() from outside
         virtual void callInitialize() = 0;           // calls initialize()
+        virtual void callFinish() = 0;               // calls finish()
+
+        // dynamic module creation
         virtual void scheduleStart(simtime_t t) = 0; // creates starting msg
         virtual void deleteModule() = 0;             // deletes module
 
@@ -234,6 +244,13 @@ class cSimpleModule : public cCoroutine, public cModule
         cHead locals;           // list of local variables of module function
         cQueue putAsideQueue;   // put-aside queue
 
+      protected:
+        // The following functions are expected to be redefined in concrete
+        // simple module types. They are made protected because they shouldn't
+        // be called directly from outside.
+        virtual void activity();                   // coroutine function
+        virtual void handleMessage(cMessage *msg); // alternative to activity()
+
       public:
         cSimpleModule(cSimpleModule& mod);
         cSimpleModule(char *namestr, cModule *parentmod, unsigned stk);
@@ -251,21 +268,17 @@ class cSimpleModule : public cCoroutine, public cModule
         virtual void setId(int n);
         virtual bool isSimple() {return TRUE;}
 
-      protected:
-        // The following functions are expected to be redefined in concrete
-        // simple module types. They are made protected because they shouldn't
-        // be called directly by user code.
-        virtual void initialize();     // called before simulation starts
-        virtual void activity();       // coroutine function
-        virtual void handleMessage(cMessage *msg); // alternative to activity()
-        virtual void finish();         // called after end of simulation
-
       public:
         // return event handling scheme
         bool usesActivity()  {return usesactivity;}
 
-        // interface for calling initialize() from "outside" (does context switch)
+        // interface for calling initialize() and finish() from outside
         virtual void callInitialize();
+        virtual void callFinish();
+
+        // dynamic module creation
+        virtual void scheduleStart(simtime_t t); // creates starting msg
+        virtual void deleteModule();             // deletes module
 
         // module time
         simtime_t simTime(); // (cannot make inline because of declaration order)
@@ -323,10 +336,6 @@ class cSimpleModule : public cCoroutine, public cModule
         void endSimulation();           // finish the whole simulation
         void error(char *fmt,...);      // user error message
 
-        // dynamic module creation
-        virtual void scheduleStart(simtime_t t); // creates starting msg
-        virtual void deleteModule();             // deletes module
-
         // record into scalar result file
         void recordScalar(char *name, double value);
         void recordScalar(char *name, char *text);
@@ -365,7 +374,12 @@ class cCompoundModule : public cModule
 
         // redefined cModule functions
         virtual bool isSimple() {return FALSE;}
-        virtual void callInitialize();           // calls callInitialize() for submodules
+
+        // interface for calling initialize() and finish() from outside
+        virtual void callInitialize();   // first for this module, then for submods
+        virtual void callFinish();       // first for submods, then for itself
+
+        // dynamic module creation
         virtual void scheduleStart(simtime_t t); // starting msg for submodules
         virtual void deleteModule();             // deletes module & submodules
 };
@@ -381,11 +395,11 @@ class cSubModIterator
       int i;
    public:
       cSubModIterator(cModule& p)  {parent=&p;i=0;operator++(0);}
-      void init(cModule& p)    {parent=&p;i=0;operator++(0);}
-      cModule& operator[](int) {return simulation[i];} //OBSOLETE
-      cModule *operator()()    {return &simulation[i];}
-      bool end()            {return (i==-1);}
-      cModule *operator++(int); // sets i to -1 if end was reached
+      void init(cModule& p)        {parent=&p;i=0;operator++(0);}
+      cModule& operator[](int)     {return simulation[i];} //OBSOLETE
+      cModule *operator()()        {return &simulation[i];}
+      bool end()                   {return (i==-1);}
+      cModule *operator++(int);    // sets i to -1 if end was reached
 };
 
 #endif

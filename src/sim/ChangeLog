@@ -653,4 +653,12 @@ Sept 5, 1999
 Sept 6, 1999
   - a couple of unsigned<-->signed changes (mostly in the statistics classes)
     to reduce the number of "gcc -Wall" warnings
+Sept 7, 1999
+  - initialize() and finish() moved to cModule, so you can define them also for
+    compound modules
+  - callInitialize() and callFinish() are also in cModule; they are defined
+    in compound modules to recursively call themselves for submodules.
+    callInitialize() for the compound module is called _before_, callFinish()
+    is called _after_ the call on submodules.
 
+Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.
