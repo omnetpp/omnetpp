@@ -32,6 +32,10 @@
 #include "jar_func.h"
 #include "jar_lib.h"
 
+#if defined __GNUC__ || defined CXX
+#include <unistd.h> //getcwd
+#endif
+
 #define NEDC_VERSION      "2.2"
 #define NEDC_VERSION_HEX  "0x0202"
 
@@ -56,6 +60,7 @@ int compilefile (char *root_fname);
 
 int firstpass;
 int verbose;
+int here;
 char fname[256];
 
 char current_fname[256];
@@ -378,6 +383,38 @@ int do_secondpass (char *root_fname)
         int perr;
         name_type ned_fname, cc_fname;
 
+#if defined __GNUC__ || defined CXX
+        char path[256];
+        if (here)
+          if (getcwd(path, sizeof(path)) != NULL)
+          {
+            for (int i = jar_strlen(root_fname); i != 0; i--)
+            {
+              if (root_fname[i] == SLASH[0])
+                if (jar_strlen(path) - (jar_strlen(root_fname) - i) < (int)sizeof(path)  )
+                {
+                  strncpy(&path[jar_strlen(path)],&root_fname[i],
+                          jar_strlen(root_fname) - i + 1 );
+                  //printf("\"path=%s\"\n\"rootfname=%s\"\n", path, root_fname);
+                  strncpy(root_fname, path, jar_strlen(path));
+                  root_fname[strlen(path)] = '\0';
+                  break;
+                }
+                else
+                {
+                  fprintf(stderr, "Current working directory path exceeds %d when forming new new filename\n", sizeof(path));
+                  return 1;
+	
+                }	
+            }
+          }
+          else
+          {
+            fprintf(stderr, "Current working directory path exceeds %d\n", sizeof(path));
+            return 1;
+          }
+#endif
+        
         /* create output file name */
         sprintf (cc_fname, "%s%s", root_fname, suffix);
         if (verbose) printf("target file: %s\n", cc_fname);
@@ -506,6 +543,7 @@ int main (int argc, char *argv [])
                         "  -v          verbose\n"
                         "  -I <dir>    add directory to include path\n"
                         "  -s <suffix> output file suffix (defaults to: _n.cc)\n"
+                        "  -h          output in current directory\n"
                         "\n"
                       );
         }
@@ -516,11 +554,16 @@ int main (int argc, char *argv [])
                 *   call compilefile() for ned file args
                 */
                 verbose = 0;
+                here = 0;
                 for (i = 1; i < argc; i++)
                 {
                         if (jar_strcmp (argv [i], "-v") == 0)
                         {
                                 verbose = 1;
+                        }
+                        else if (jar_strcmp (argv[i], "-h") == 0)
+                        {
+                          here = 1;
                         }
                         else if (jar_strcmp (argv [i], "-I") == 0)
                         {
