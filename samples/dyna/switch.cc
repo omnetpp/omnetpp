@@ -15,7 +15,7 @@ Define_Module( Switch );
 
 void Switch::activity()
 {
-    double pk_delay = 1.0 / par( "pk_rate" );
+    double pk_delay = 1 / (double)par("pk_rate");
     for(;;)
     {
         // receive msg (implicit queueing!)

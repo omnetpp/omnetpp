@@ -75,7 +75,7 @@ Define_Module( FF1BitFifo );
 simtime_t FF1BitFifo::startService(cMessage *msg)
 {
     ev << "Starting service of " << msg->name() << endl;
-    return msg->length() / par("bits_per_sec");
+    return msg->length() / (double)par("bits_per_sec");
 }
 
 void FF1BitFifo::endService(cMessage *msg)

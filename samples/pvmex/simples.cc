@@ -16,7 +16,7 @@ void smSender::activity()
         int i;
 
         ev << "Sender module started.\n";
-        for (i = 0; i <  par("no_msg"); i++)
+        for (i = 0; i < (int)par("no_msg"); i++)
         {
             syncpoint( simTime()+2.0, "outgate" );
 

@@ -79,7 +79,7 @@ void HCRouter::activity()
       // send out transit cells
       for (i=0; i<num_rte; i++)
       {
-         rte_cell[i]->par("hops") = rte_cell[i]->par("hops") + 1;
+         rte_cell[i]->par("hops") = (int)rte_cell[i]->par("hops") + 1;
          sendDelayed(rte_cell[i], PROPDEL, "out", rte_port[i]);
       }
 
@@ -93,7 +93,7 @@ void HCRouter::activity()
          }
          else
          {
-            usr_cell[i]->par("hops") = usr_cell[i]->par("hops") + 1;
+            usr_cell[i]->par("hops") = (int)usr_cell[i]->par("hops") + 1;
             sendDelayed(usr_cell[i], PROPDEL, "out", usr_port[i]);
          }
       }
