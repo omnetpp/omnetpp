@@ -46,16 +46,18 @@ class cIniFile
         char *section;          //  name of section it belongs to
         char *key;              //  the parameter
         char *value;            //  its value
-        char *rawvalue;         //  if original was quoted, strdupped version of it, otherwise 0
+        char *rawvalue;         //  if original was quoted, this is the
+                                //        strdupped version of it, otherwise 0
         int accessed;           //  has it been accessed?
     };
     int num_sections;           //total number of sections
     char *section[MAX_INI_SECTIONS]; //array of sectionnames
     int num_entries;                 //total number of entries
     sEntry entry[MAX_INI_ENTRIES];   //array of entries
+    int _error;   //OK=0, ERROR=1
 
     char *_getValue(char *section, char *key,int raw);
-    int _error;   //OK=0, ERROR=1
+    void _readFile(char *fname, char *sectionptr);
   public:
 
     cIniFile(char *fname);

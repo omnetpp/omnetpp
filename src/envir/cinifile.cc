@@ -52,9 +52,13 @@ cIniFile::~cIniFile()
 
 void cIniFile::readFile(char *fname)
 {
+    _readFile(fname,0);
+}
+
+void cIniFile::_readFile(char *fname, char *sect)
+{
     FILE *file;
     char buf[MAX_LINE];
-    char *sect = 0;
     int line=0;
     int i;
 
@@ -128,7 +132,7 @@ void cIniFile::readFile(char *fname)
         // process 'key = value' line
         else
         {
-           if (!sect) SYNTAX_ERROR("no section header ([Something]) seen yet");
+           if (!sect) SYNTAX_ERROR("no section header (like [Foo]) seen yet");
 
            // s --> key, e --> value, e1 --> last char of value
 

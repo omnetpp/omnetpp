@@ -189,4 +189,10 @@
   - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
   - version.log renamed to ChangeLog
   - removed support for DOS with BC3.1
+Aug 13, 1999
+  - cIniFile::readFile()'s include file handling modified. Now the included
+    file doesn't need to start with a section header line: entries will use
+    the current section header in the including file.
+    BUT: section headers in the included file are not propagated back to the
+    including file because it could lead to nasty behaviour.
 
