@@ -230,6 +230,7 @@ void cPar::info( char *buf )
                      case 3: sprintf(b,"%s(%lg,%lg,%lg) (F)",fn,func.p1,func.p2,func.p3); break;
                      };
                      break;
+           case 'B': sprintf(b,"%s (B)", lng.val?"TRUE":"FALSE"); break;
            default : strcat(b, "? (unknown type)"); break;
         }
 }

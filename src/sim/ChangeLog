@@ -585,9 +585,12 @@
  - some cleanup
 #174 Feb 7, 1999
  - stable version
-#175 June 21, 1999
+#175 Jun 21, 1999
   - all sources checked in under CVS
   - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
   - version.log renamed to ChangeLog
   - removed support for DOS with BC3.1
-
+Jul 10, 1999
+  - fixed bug in cQueue and cLinkedList (didn't always increment item count
+    on insertion)
+  - fixed bug in cPar::info(): didn't handle boolean (B) type

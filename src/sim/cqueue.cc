@@ -72,8 +72,7 @@ void cQueue::info(char *buf)
 void cQueue::forEach( ForeachFunc do_fn )
 {
      if (do_fn(this,TRUE))
-        //for( sQElem *p=head; p!=NULL; p=p->next )
-        // --order changed because in Tkenv, event queue was displayed upside down
+        // loop through elements in reverse order
         for( sQElem *p=tail; p!=NULL; p=p->prev )
             p->obj->forEach( do_fn );
      do_fn(this,FALSE);
@@ -142,6 +141,7 @@ void cQueue::insbefore_qelem(sQElem *p, cObject *obj)
            e->prev->next = e;
       else
            head = e;
+      n++;
 }
 
 void cQueue::insafter_qelem(sQElem *p, cObject *obj)
@@ -156,6 +156,7 @@ void cQueue::insafter_qelem(sQElem *p, cObject *obj)
            e->next->prev = e;
       else
            tail = e;
+      n++;
 }
 
 cObject *cQueue::get_qelem(sQElem *p)
@@ -208,8 +209,8 @@ void cQueue::insertHead(cObject *obj)
           e->obj = obj;
           head = tail = e;
           e->prev = e->next = NULL;
+          n++;
       }
-      n++;
 }
 
 void cQueue::insertBefore(cObject *where, cObject *obj)

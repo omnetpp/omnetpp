@@ -132,6 +132,7 @@ void cLinkedList::insbefore_llelem(sLLElem *p, void *item)
            e->prev->next = e;
       else
            head = e;
+      n++;
 }
 
 void cLinkedList::insafter_llelem(sLLElem *p, void *item)
@@ -146,6 +147,7 @@ void cLinkedList::insafter_llelem(sLLElem *p, void *item)
            e->next->prev = e;
       else
            tail = e;
+      n++;
 }
 
 void *cLinkedList::get_llelem(sLLElem *p)
@@ -181,8 +183,8 @@ void cLinkedList::insertHead(void *item)
           e->item = item;
           head = tail = e;
           e->prev = e->next = NULL;
+          n++;
       }
-      n++;
 }
 
 void cLinkedList::insertBefore(void *where, void *item)
