@@ -33,14 +33,6 @@ NEDSemanticValidator::~NEDSemanticValidator()
 {
 }
 
-NEDElement *NEDSemanticValidator::findChildWithTagAndAttribute(NEDElement *node, int tag, const char *attr, const char *value)
-{
-    for (NEDElement *child=node->getFirstChildWithTag(tag); child; child = child->getNextSiblingWithTag(tag))
-        if (!strcmp(child->getAttribute(attr), value))
-            return child;
-    return NULL;
-}
-
 void NEDSemanticValidator::validateElement(NedFilesNode *node)
 {
 }
@@ -149,7 +141,7 @@ void NEDSemanticValidator::validateElement(SubstparamNode *node)
         NEDError(node, "module type does not have parameters");
         return;
     }
-    ParamNode *paramdecl = (ParamNode *)findChildWithTagAndAttribute(paramsdecl, NED_PARAM, "name", paramname);
+    ParamNode *paramdecl = (ParamNode *)paramsdecl->getFirstChildWithAttribute(NED_PARAM, "name", paramname);
     if (!paramdecl)
     {
         NEDError(node, "module type does not have a parameter named '%s'",paramname);
@@ -177,7 +169,7 @@ void NEDSemanticValidator::validateElement(GatesizeNode *node)
         NEDError(node, "module type does not have gates");
         return;
     }
-    GateNode *gatedecl = (GateNode *)findChildWithTagAndAttribute(gatesdecl, NED_GATE, "name", gatename);
+    GateNode *gatedecl = (GateNode *)gatesdecl->getFirstChildWithAttribute(NED_GATE, "name", gatename);
     if (!gatedecl)
     {
         NEDError(node, "module type does not have a gate named '%s'",gatename);
@@ -204,9 +196,9 @@ void NEDSemanticValidator::validateElement(SubstmachinesNode *node)
 
     int count = 0;
     if (!machinesdecl)
-	    count = 1;
-	else
-	    for (child=machinesdecl->getFirstChildWithTag(NED_MACHINE); child; child = child->getNextSiblingWithTag(NED_MACHINE))
+        count = 1;
+    else
+        for (child=machinesdecl->getFirstChildWithTag(NED_MACHINE); child; child = child->getNextSiblingWithTag(NED_MACHINE))
             count++;
 
     if (count<substcount)
@@ -223,12 +215,75 @@ void NEDSemanticValidator::validateElement(ConnectionsNode *node)
 {
 }
 
+void NEDSemanticValidator::checkGate(GateNode *gate, bool hasGateIndex, bool isInput, NEDElement *conn)
+{
+    // check gate direction, check if vector
+    if (hasGateIndex && !gate->isVector())
+        NEDError(conn, "gate '%s' is not a vector gate", gate->getName());
+    else if (!hasGateIndex && gate->isVector())
+        NEDError(conn, "gate '%s' is a vector gate", gate->getName()); //FIXME also submod name in error message! or maybe "source" or "destination"?
+
+    // check gate direction, check if vector
+    if (isInput && gate->getDirection()==NED_GATEDIR_OUTPUT)
+        NEDError(conn, "gate '%s' is an output gate", gate->getName());
+    else if (!isInput && gate->getDirection()==NED_GATEDIR_INPUT)
+        NEDError(conn, "gate '%s' is an input gate", gate->getName());
+}
+
+void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubmodIndex,
+                                            const char *gateName, bool hasGateIndex,
+                                            NEDElement *parent, NEDElement *conn, bool isSrc)
+{
+    if (!submodName)
+    {
+        // connected to parent module: check such gate is declared
+        NEDElement *gates = parent->getFirstChildWithTag(NED_GATES);
+        if (!gates || (gate=gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
+            NEDError(conn, "compound module has no gate named '%s'", gateName);
+        else
+            checkGate(gate, hasGateIndex, isSrc, conn);
+    }
+    else
+    {
+        // check such submodule is declared
+        NEDElement *submods = parent->getFirstChildWithTag(NED_SUBMODULES);
+        SubmoduleNode *submod = NULL;
+        if (!submods || (submod=(SubmoduleNode*)submods->getFirstChildWithAttribute(NED_SUBMODULE, "name", submodName))==NULL)
+            NEDError(conn, "no submodule named '%s'", submodName);
+        bool isSubmodVector = ...;
+        if (hasSubmodIndex && !isSubmodVector)
+            NEDError(conn, "submodule '%s' is not a vector submodule", submodName);
+        else if (!hasSubmodIndex && isSubmodVector)
+            NEDError(conn, "submodule '%s' is a vector submodule", submodName);
+
+        // check gate
+        NEDElement *submodType = symboltable->findModuleType(submod->getTypeName());
+        if (!submodType)
+            return; // we gave error earlier if submod type is not present
+        NEDElement *gates = submodType->getFirstChildWithTag(NED_GATES);
+        if (!gates || (gate=gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
+            NEDError(conn, "submodule '%s' has no gate named '%s'", submodName, gateName);
+        else
+            checkGate(gate, hasGateIndex, isSrc, conn);
+    }
+}
+
 void NEDSemanticValidator::validateElement(ConnectionNode *node)
 {
-    // validate gate and module types (vector or single)
-    // FIXME
+    // make sure submodule and gate names are valid, gate direction is OK
+    // and that gates & modules are really vector (or really not)
+    NEDElement *parent = node;
+    while (parent && parent->getTagCode()!=NED_COMPOUND_MODULE)
+        parent = parent->getParent();
+    if (!parent)
+        INTERNAL_ERROR0(node,"occurs outside a compound-module");
 
-//    for (SubmodulesNode *submods=node->getFirstChildWithTag(NED_SUBSTMACHINE); child; child = child->getNextSiblingWithTag(NED_SUBSTMACHINE))
+    bool srcModIx =   node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-module-index")!=NULL;
+    bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=NULL;
+    bool destModIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-module-index")!=NULL;
+    bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=NULL;
+    validateConnGate(node->getSrcModule(), srcModIx, node->getSrcGate(), srcGateIx, parent, node, true);
+    validateConnGate(node->getDestModule(), destModIx, node->getDestGate(), destGateIx, parent, node, false);
 }
 
 void NEDSemanticValidator::validateElement(ConnAttrNode *node)

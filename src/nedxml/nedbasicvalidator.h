@@ -22,7 +22,7 @@
 
 /**
  * Performs structural validation of components. Assumes the tree already
- * passed DTD validation. Each compound module and other component is
+ * passed DTD validation. Every compound module and other component is
  * viewed in isolation: basic validation does NOT process imports or
  * examines validity of references to other module types, channel types, etc.
  *

@@ -292,8 +292,7 @@ void NEDBasicValidator::validateElement(SubstmachineNode *node)
 
 void NEDBasicValidator::validateElement(ConnectionsNode *node)
 {
-    // if check=true, make sure all gates are connected
-    //FIXME
+    // TBD if check=true, make sure all gates are connected
 }
 
 void NEDBasicValidator::validateElement(ConnectionNode *node)
@@ -302,9 +301,8 @@ void NEDBasicValidator::validateElement(ConnectionNode *node)
     bool opt[] = {true, true, true, true, true};
     checkExpressionAttributes(node, expr, opt, 5);
 
-    // FIXME make sure submodule and gate names are valid
-    // FIXME gates & modules are really vector (or really not)
-    // FIXME plusplus and gate index expression cannot be both there
+    // TBD plusplus and gate index expression cannot be both there
+    XXXXXXXXXXXXXXXXXXXX
 }
 
 void NEDBasicValidator::validateElement(ConnAttrNode *node)
