@@ -1,7 +1,12 @@
 2004-02-18  Andras Varga 
 
+        * tkapp.cc/h, menuproc.tcl: on-the-fly switching from one runmode to
+        another (run,normal,express)
+
 	* menuproc.tcl,dialogs.tcl: added [x] Confirm exit checkbox to 
 	Simulation options dialog
+
+	* dialogs.tcl: Find dialog improved
 
 2004-02-11  Andras Varga 
 

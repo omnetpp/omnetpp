@@ -14,4 +14,4 @@ General:
  - with Tcl-embedding, cannot display README file
  - graphical FES inspector
  - CDF display for histogram classes
- - plugins should be loaded from a path
+MANDATE Tcl 8.4!!

@@ -113,7 +113,7 @@ proc create_omnetpp_window {} {
     #  {separator}
     foreach i {
       {command -command one_step -label {One step} -accel {F4} -underline 4}
-      {command -command slow_exec -label {Slow execution} -underline 1}
+      {command -command run_slow -label {Slow execution} -underline 1}
       {separator}
       {command -command run -label {Run}  -accel {F5} -underline 0}
       {command -command run_fast -label {Fast run (rare display updates)} -accel {F6} -underline 0}

@@ -169,6 +169,9 @@ proc display_stopdialog {mode} {
 
     # 1. Create and configure dialog
     set w .stopdialog
+
+    if {[winfo exists $w]} return
+
     toplevel $w
     wm title $w {Running...}
     wm transient $w [winfo toplevel [winfo parent $w]]
@@ -209,6 +212,8 @@ proc remove_stopdialog {} {
 
     global opp
     set w .stopdialog
+
+    if {![winfo exists $w]} return
 
     # Restore the focus before deleting the window, since otherwise the
     # window manager may take the focus away so we can't redirect it.

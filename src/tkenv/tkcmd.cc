@@ -44,9 +44,8 @@ int getIniSectionNames_cmd(ClientData, Tcl_Interp *, int, const char **);
 int createSnapshot_cmd(ClientData, Tcl_Interp *, int, const char **);
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, const char **);
 int oneStep_cmd(ClientData, Tcl_Interp *, int, const char **);
-int slowExec_cmd(ClientData, Tcl_Interp *, int, const char **);
 int run_cmd(ClientData, Tcl_Interp *, int, const char **);
-int runExpress_cmd(ClientData, Tcl_Interp *, int, const char **);
+int setRunMode_cmd(ClientData, Tcl_Interp *, int, const char **);
 int oneStepInModule_cmd(ClientData, Tcl_Interp *, int, const char **);
 int rebuild_cmd(ClientData, Tcl_Interp *, int, const char **);
 int startAll_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -113,9 +112,8 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_createsnapshot",   createSnapshot_cmd }, // args: <label>
    { "opp_exitomnetpp",      exitOmnetpp_cmd    }, // args: -
    { "opp_onestep",          oneStep_cmd        }, // args: -
-   { "opp_slowexec",         slowExec_cmd       }, // args: -
    { "opp_run",              run_cmd            }, // args: ?fast? ?timelimit?
-   { "opp_run_express",      runExpress_cmd     }, // args: ?timelimit?
+   { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|slow
    { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <window>
    { "opp_rebuild",          rebuild_cmd        }, // args: -
    { "opp_start_all",        startAll_cmd       }, // args: -
@@ -240,12 +238,19 @@ int oneStep_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
    return TCL_OK;
 }
 
-int slowExec_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
+
+static int resolveRunMode(const char *mode)
 {
-   if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = getTkApplication();
-   app->runSimulation(0, 0, true, false);
-   return TCL_OK;
+   if (!strcmp(mode,"slow"))
+       return TOmnetTkApp::RUNMODE_SLOW;
+   else if (!strcmp(mode,"normal"))
+       return TOmnetTkApp::RUNMODE_NORMAL;
+   else if (!strcmp(mode,"fast"))
+       return TOmnetTkApp::RUNMODE_FAST;
+   else if (!strcmp(mode,"express"))
+       return TOmnetTkApp::RUNMODE_EXPRESS;
+   else
+       return -1;
 }
 
 int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
@@ -253,7 +258,6 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (argc!=2 && argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   bool fast = (strcmp(argv[1],"fast")==0);
    simtime_t until_time=0;
    long until_event=0;
    if (argc==4)
@@ -261,23 +265,23 @@ int run_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
        until_time = strToSimtime(argv[2]);
        sscanf(argv[3],"%ld",&until_event);
    }
-   app->runSimulation( until_time, until_event, 0, fast);
+
+   int mode = resolveRunMode(argv[1]);
+   if (mode==-1) {Tcl_SetResult(interp, "wrong mode argument, should be slow, normal, fast or express", TCL_STATIC);return TCL_ERROR;}
+
+   app->runSimulation(until_time, until_event, mode);
    return TCL_OK;
 }
 
-int runExpress_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+int setRunMode_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc>3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    TOmnetTkApp *app = getTkApplication();
 
-   simtime_t until_time=0;
-   long until_event=0;
-   if (argc==3)
-   {
-      until_time = strToSimtime(argv[1]);
-      sscanf(argv[2],"%ld",&until_event);
-   }
-   app->runSimulationExpress( until_time, until_event );
+   int mode = resolveRunMode(argv[1]);
+   if (mode==-1) {Tcl_SetResult(interp, "wrong mode argument, should be slow, normal, fast or express", TCL_STATIC);return TCL_ERROR;}
+
+   app->setSimulationRunMode(mode);
    return TCL_OK;
 }
 
@@ -290,10 +294,10 @@ int oneStepInModule_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    splitInspectorName( argv[1], object, type);
    if (!object) {Tcl_SetResult(interp, "wrong inspectorname string", TCL_STATIC); return TCL_ERROR;}
 
-   bool fast = (argc==3 && strcmp(argv[2],"fast")==0);
+   int runmode = (argc==3 && !strcmp(argv[2],"fast")) ? TOmnetTkApp::RUNMODE_FAST : TOmnetTkApp::RUNMODE_NORMAL;
 
    // fast run until we get to that module
-   app->runSimulation( 0, 0, false, fast, static_cast<cSimpleModule *>(object));
+   app->runSimulation(0, 0, runmode, static_cast<cSimpleModule *>(object));
 
    return TCL_OK;
 }

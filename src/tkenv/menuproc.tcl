@@ -19,19 +19,6 @@
 #    HELPER/GUI PROCEDURES
 #===================================================================
 
-proc check_running {} {
-    if {[opp_getsimulationstate] == "SIM_RUNNING"} {
-       messagebox {Warning} {Sorry, you cannot do this while the simulation\
-                             is running. Please stop it first.} info ok
-       return 1
-    }
-    if {[opp_getsimulationstate] == "SIM_BUSY"} {
-       messagebox {Warning} {The simulation is waiting for external synchronization -- press STOP to interrupt it.} info ok
-       return 1
-    }
-    return 0
-}
-
 proc network_present {} {
     if {[opp_object_systemmodule] == [opp_object_nullpointer]} {
        messagebox {Error} {No network has been set up yet.} info ok
@@ -57,7 +44,6 @@ proc network_ready {} {
 }
 
 proc is_simulation_ok {} {
-
     set state [opp_getsimulationstate]
     if {$state == "SIM_NEW" || $state == "SIM_RUNNING" || $state == "SIM_READY"} {
         return 1
@@ -66,6 +52,27 @@ proc is_simulation_ok {} {
     }
 }
 
+proc is_running {} {
+    set state [opp_getsimulationstate]
+    if {$state == "SIM_RUNNING" || $state == "SIM_BUSY"} {
+        return 1
+    } else {
+        return 0
+    }
+}
+
+proc check_running {} {
+    if {[opp_getsimulationstate] == "SIM_RUNNING"} {
+       messagebox {Warning} {Sorry, you cannot do this while the simulation\
+                             is running. Please stop it first.} info ok
+       return 1
+    }
+    if {[opp_getsimulationstate] == "SIM_BUSY"} {
+       messagebox {Warning} {The simulation is waiting for external synchronization -- press STOP to interrupt it.} info ok
+       return 1
+    }
+    return 0
+}
 
 #===================================================================
 #    MENU PROCEDURES
@@ -86,10 +93,7 @@ NO WARRANTY -- see license for details.
 proc exit_omnetpp {} {
     global config
 
-    set isrunning 0
-    if {[opp_getsimulationstate]=="SIM_RUNNING" || [opp_getsimulationstate]=="SIM_BUSY"} {
-        set isrunning 1
-    }
+    set isrunning [is_running]
 
     if {$config(confirm-exit)} {
         if {[opp_object_systemmodule]!=[opp_object_nullpointer]} {
@@ -269,69 +273,115 @@ proc toggle_treeview {} {
    }
 }
 
+proc set_gui_for_runmode {mode {untilmode ""}} {
+    .toolbar.step config -relief raised
+    .toolbar.run config -relief raised
+    .toolbar.fastrun config -relief raised
+    .toolbar.exprrun config -relief raised
+    remove_stopdialog
+
+    if {$mode=="step"} {
+        .toolbar.step config -relief sunken
+    } elseif {$mode=="slow"} {
+        .toolbar.run config -relief sunken
+    } elseif {$mode=="normal"} {
+        .toolbar.run config -relief sunken
+    } elseif {$mode=="fast"} {
+        .toolbar.fastrun config -relief sunken
+    } elseif {$mode=="express"} {
+        .toolbar.exprrun config -relief sunken
+        display_stopdialog with_update
+    } elseif {$mode!="notrunning"} {
+        error "wrong mode parameter $mode"
+    }
+
+    if {$untilmode=="until_on"} {
+        .toolbar.until config -relief sunken
+    } elseif {$untilmode=="until_off"} {
+        .toolbar.until config -relief raised
+    } elseif {$untilmode!=""} {
+        error "wrong untilmode parameter $mode"
+    }
+
+}
 
 proc one_step {} {
     # implements Simulate|One step
 
-    if [check_running] return
-
-    if {[network_ready] == 1} {
-       opp_onestep
+    if [is_running] {
+        set_gui_for_runmode step
+        opp_stopsimulation
+    } else {
+        if {![network_ready]} {return}
+        set_gui_for_runmode step
+        opp_onestep
+        set_gui_for_runmode notrunning
     }
 }
 
-proc slow_exec {} {
+proc run_slow {} {
     # implements Simulate|Slow execution
 
-    if [check_running] return
-
-    if {[network_ready] == 1} {
-        #display_stopdialog normal
-        opp_slowexec
-        #remove_stopdialog
+    if [is_running] {
+        set_gui_for_runmode slow
+        opp_set_run_mode slow
+    } else {
+        if {![network_ready]} {return}
+        set_gui_for_runmode slow
+        opp_run slow
+        set_gui_for_runmode notrunning
     }
 }
 
 proc run {} {
     # implements Simulate|Run
 
-    if [check_running] return
-
-    if {[network_ready] == 1} {
-        #display_stopdialog normal
+    if [is_running] {
+        set_gui_for_runmode normal
+        opp_set_run_mode normal
+    } else {
+        if {![network_ready]} {return}
+        set_gui_for_runmode normal
         opp_run normal
-        #remove_stopdialog
+        set_gui_for_runmode notrunning
     }
 }
 
 proc run_fast {} {
     # implements Simulate|Fast Run
 
-    if [check_running] return
-
-    if {[network_ready] == 1} {
-        #display_stopdialog normal
+    if [is_running] {
+        set_gui_for_runmode fast
+        opp_set_run_mode fast
+    } else {
+        if {![network_ready]} {return}
+        set_gui_for_runmode fast
         opp_run fast
-        #remove_stopdialog
+        set_gui_for_runmode notrunning
     }
 }
 
 proc run_express {} {
     # implements Simulate|Express Run
 
-    if [check_running] return
-
-    if {[network_ready] == 1} {
-        display_stopdialog with_update
-        opp_run_express
-        remove_stopdialog
+    if [is_running] {
+        set_gui_for_runmode express
+        opp_set_run_mode express
+    } else {
+        if {![network_ready]} {return}
+        set_gui_for_runmode express
+        opp_run express
+        set_gui_for_runmode notrunning
     }
 }
 
 proc run_until {} {
     # implements Simulate|Run until...
 
-    if [check_running] return
+    if [is_running] {
+        messagebox {Warning} {Please stop the simulation first to set or adjust the "Run until" limit.} info ok
+        return
+    }
 
     if {[network_ready] == 0} {
        return
@@ -344,19 +394,19 @@ proc run_until {} {
     if {$ok==0} return
 
     if {$mode=="Normal"} {
-       #display_stopdialog normal
-       opp_run normal $time $event
-       #remove_stopdialog
+        set_gui_for_runmode normal until_on
+        opp_run normal $time $event
+        set_gui_for_runmode notrunning until_off
     }
     if {$mode=="Fast"} {
-       #display_stopdialog normal
-       opp_run fast $time $event
-       #remove_stopdialog
+        set_gui_for_runmode fast until_on
+        opp_run fast $time $event
+        set_gui_for_runmode notrunning until_off
     }
     if {$mode=="Express"} {
-       display_stopdialog with_update
-       opp_run_express $time $event
-       remove_stopdialog
+        set_gui_for_runmode express until_on
+        opp_run express $time $event
+        set_gui_for_runmode notrunning until_off
     }
 }
 
@@ -416,6 +466,9 @@ proc stop_simulation {} {
     # implements Simulate|Stop
 
     if {[opp_getsimulationstate] == "SIM_RUNNING" || [opp_getsimulationstate] == "SIM_BUSY"} {
+       # "opp_stopsimulation" just *asks* the simulation to stop, causing it to return
+       # from the "opp_run" command.
+       # "set_gui_for_runmode notrunning" will be called after "opp_run" has returned.
        opp_stopsimulation
     }
 }

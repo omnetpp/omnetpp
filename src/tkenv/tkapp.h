@@ -57,6 +57,13 @@ class TOmnetTkApp : public TOmnetApp
           SIM_BUSY = 7  // busy doing active wait
       };
 
+      enum eRunMode {
+          RUNMODE_SLOW = 0,
+          RUNMODE_NORMAL = 1,
+          RUNMODE_FAST = 2,
+          RUNMODE_EXPRESS = 3,
+      };
+
       struct sPathEntry {
          cModule *from; // NULL if descent
          cModule *to;   // NULL if ascent
@@ -87,22 +94,24 @@ class TOmnetTkApp : public TOmnetApp
       unsigned opt_extrastack;     // per-module extra stack
 
       // state variables
-      bool  animating;             // while execution, do message animation or not
-      opp_string windowtitleprefix;// contains "procId=.." when using parsim
+      bool animating;              // while execution, do message animation or not
 
    protected:
-      Tcl_Interp *interp;      // Tcl interpreter
+      Tcl_Interp *interp;          // Tcl interpreter
 
-      opp_string tkenv_dir;    // directory of Tkenv's *.tcl files
-      opp_string bitmap_dir;   // directory of icon files
+      opp_string tkenv_dir;        // directory of Tkenv's *.tcl files
+      opp_string bitmap_dir;       // directory of module icon files
 
-      eState simstate;         // state of the simulation run
-      int   run_nr;            // number of current simulation run
-      bool  bkpt_hit;          // flag to signal that a breakpoint was hit and sim. must be stopped
-      bool  stop_simulation;   // flag to signal that simulation must be stopped (STOP button pressed in the UI)
+      eState simstate;             // state of the simulation run
+      int runmode;                 // the current mode the simulation is executing under
+      int run_nr;                  // number of current simulation run
+      bool  breakpointhit_flag;    // flag to signal that a breakpoint was hit and sim. must be stopped
+      bool  stopsimulation_flag;   // flag to signal that simulation must be stopped (STOP button pressed in the UI)
 
       typedef std::list<TInspector*> TInspectorList;
       TInspectorList inspectors;   // list of inspector objects
+
+      opp_string windowtitleprefix;// contains "procId=.." when using parsim
 
    public:
       TOmnetTkApp(ArgList *args, cIniFile *inifile);
@@ -144,16 +153,17 @@ class TOmnetTkApp : public TOmnetApp
       virtual unsigned extraStackForEnvir();
 
       // New functions:
-      void newNetwork( const char *networkname );
-      void newRun( int run_no );
+      void newNetwork(const char *networkname);
+      void newRun(int run_no);
       void createSnapshot(const char *label);
 
       void rebuildSim();
       void doOneStep();
-      void runSimulation(simtime_t until_time, long until_event,
-                         bool slowexec, bool fast,
-                         cSimpleModule *stopinmod=NULL);
-      void runSimulationExpress( simtime_t until_time, long until_event );
+      void runSimulation(simtime_t until_time, long until_event, int runmode, cSimpleModule *stepwithinmodule=NULL);
+      void setSimulationRunMode(int runmode);
+      bool doRunSimulation(simtime_t until_time, long until_event, cSimpleModule *stepwithinmodule=NULL);
+      bool doRunSimulationExpress(simtime_t until_time, long until_event);
+
       void startAll();
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
 
@@ -168,7 +178,7 @@ class TOmnetTkApp : public TOmnetApp
       void deleteInspector(TInspector *insp);
 
       int getSimulationState() {return simstate;}
-      void setStopSimulationFlag() {stop_simulation = true;}
+      void setStopSimulationFlag() {stopsimulation_flag = true;}
       Tcl_Interp *getInterp() {return interp;}
 
       void updateGraphicalInspectorsBeforeAnimation();

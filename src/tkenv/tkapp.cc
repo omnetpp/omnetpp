@@ -95,7 +95,7 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cIniFile *inifile) :
 {
     interp = 0;  // Tcl/Tk not set up yet
     simstate = SIM_NONET;
-    stop_simulation = false;
+    stopsimulation_flag = false;
 
     // The opt_* vars will be set by readOptions()
 }
@@ -241,7 +241,7 @@ void TOmnetTkApp::doOneStep()
     clearPerformanceDisplay();
     updateSimtimeDisplay();
 
-    bkpt_hit = false;
+    breakpointhit_flag = false;
     animating = true;
 
     simstate = SIM_RUNNING;
@@ -283,15 +283,14 @@ void TOmnetTkApp::doOneStep()
     }
 }
 
-void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
-                                 bool slowexec, bool fastexec,
-                                 cSimpleModule *stepwithinmodule)
+void TOmnetTkApp::runSimulation(simtime_t until_time, long until_event, int mode,
+                                cSimpleModule *stepwithinmodule)
 {
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
-    bkpt_hit = false;
-    stop_simulation = false;
-    animating = !fastexec;
+    runmode = mode;
+    breakpointhit_flag = false;
+    stopsimulation_flag = false;
 
     clearNextModuleDisplay();
     clearPerformanceDisplay();
@@ -300,66 +299,17 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 
     simstate = SIM_RUNNING;
     startClock();
-    Speedometer speedometer;
-
     try
     {
-        bool firstevent = true;
-        while(1)
+        // funky while loop to handle switching to and from EXPRESS mode....
+        bool cont = true;
+        while (cont)
         {
-            // query which module will execute the next event
-            cSimpleModule *mod = simulation.selectNextModule();
-            if (!mod) break; // selectNextModule() interrupted (parsim)
-
-            // if stepping locally in module, we stop both immediately
-            // *before* and *after* executing the event in that module,
-            // but we always execute at least one event
-            bool stepwithinmodule_reached = stepwithinmodule && moduleContains(stepwithinmodule,mod);
-            if (stepwithinmodule_reached)
-            {
-                if (!firstevent) break;
-                animating = true;
-            }
-            firstevent = false;
-
-            // do a simulation step
-            if (opt_print_banners)
-                printEventBanner(mod);
-
-            simulation.doOneEvent( mod );
-
-            speedometer.addEvent(simulation.simTime());
-
-            // exit conditions
-            if (stepwithinmodule_reached) break;
-            if (bkpt_hit || stop_simulation) break;
-            if (until_time>0 && simulation.simTime()>=until_time) break;
-            if (until_event>0 && simulation.eventNumber()>=until_event) break;
-
-            // display update
-            bool frequent_updates = !fastexec;
-            if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
-            {
-                updateSimtimeDisplay();
-                if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
-                {
-                    speedometer.beginNewInterval();
-                    updatePerformanceDisplay(speedometer);
-                }
-                updateInspectors();
-                Tcl_Eval(interp, "update");
-            }
-
-            // delay loop for slow simulation
-            if (slowexec)
-            {
-                clock_t start = clock();
-                double dclk = opt_stepdelay / 1000.0 * CLOCKS_PER_SEC;
-                while (clock()-start<dclk && !stop_simulation)
-                    Tcl_Eval(interp, "update");
-            }
-
-            checkTimeLimits();
+            // note: stepwithinmodule not supported with RUNMODE_EXPRESS
+            if (runmode==RUNMODE_EXPRESS)
+                cont = doRunSimulationExpress(until_time, until_event);
+            else
+                cont = doRunSimulation(until_time, until_event, stepwithinmodule);
         }
         simstate = SIM_READY;
     }
@@ -378,7 +328,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
         delete e;
     }
     stopClock();
-    stop_simulation = false;
+    stopsimulation_flag = false;
 
     if (simstate==SIM_TERMINATED)
     {
@@ -387,6 +337,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
     }
 
     animating = true;
+    ev.disable_tracing = false;
 
     updateNextModuleDisplay();
     clearPerformanceDisplay();
@@ -394,84 +345,110 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
     updateInspectors();
 }
 
-void TOmnetTkApp::runSimulationExpress(simtime_t until_time,long until_event)
+void TOmnetTkApp::setSimulationRunMode(int mode)
 {
-    // implements 'express run'
-    ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
+    runmode = mode;
+}
 
+bool TOmnetTkApp::doRunSimulation(simtime_t until_time, long until_event, cSimpleModule *stepwithinmodule)
+{
+    Speedometer speedometer;
+    ev.disable_tracing = false;
+    bool firstevent = true;
+    while(1)
+    {
+        if (runmode==RUNMODE_EXPRESS)
+            return true;  // should continue, but in a different mode
+        animating = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW);
+        bool frequent_updates = (runmode==RUNMODE_NORMAL) || (runmode==RUNMODE_SLOW);
+
+        // query which module will execute the next event
+        cSimpleModule *mod = simulation.selectNextModule();
+        if (!mod) break; // selectNextModule() interrupted (parsim)
+
+        // if stepping locally in module, we stop both immediately
+        // *before* and *after* executing the event in that module,
+        // but we always execute at least one event
+        bool stepwithinmodule_reached = stepwithinmodule && moduleContains(stepwithinmodule,mod);
+        if (stepwithinmodule_reached && !firstevent)
+            break;
+        firstevent = false;
+
+        // do a simulation step
+        if (opt_print_banners)
+            printEventBanner(mod);
+
+        simulation.doOneEvent( mod );
+
+        speedometer.addEvent(simulation.simTime());
+
+        // exit conditions
+        if (stepwithinmodule_reached) break;
+        if (breakpointhit_flag || stopsimulation_flag) break;
+        if (until_time>0 && simulation.simTime()>=until_time) break;
+        if (until_event>0 && simulation.eventNumber()>=until_event) break;
+
+        // display update
+        if (frequent_updates || simulation.eventNumber()%opt_updatefreq_fast==0)
+        {
+            updateSimtimeDisplay();
+            if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
+            {
+                speedometer.beginNewInterval();
+                updatePerformanceDisplay(speedometer);
+            }
+            updateInspectors();
+            Tcl_Eval(interp, "update");
+        }
+
+        // delay loop for slow simulation
+        if (runmode==RUNMODE_SLOW)
+        {
+            clock_t start = clock();
+            double dclk = opt_stepdelay / 1000.0 * CLOCKS_PER_SEC;
+            while (clock()-start<dclk && !stopsimulation_flag)
+                Tcl_Eval(interp, "update");
+        }
+
+        checkTimeLimits();
+    }
+    return false;
+}
+
+bool TOmnetTkApp::doRunSimulationExpress(simtime_t until_time, long until_event)
+{
+    Speedometer speedometer;
     ev.disable_tracing = true;
-    bkpt_hit = false;
-    stop_simulation = false;
     animating = false;
 
-    clearNextModuleDisplay();
-    clearPerformanceDisplay();
-    updateSimtimeDisplay();
-    Tcl_Eval(interp, "update");
-
-    simstate = SIM_RUNNING;
-    startClock();
-    Speedometer speedometer;
-
-    try
+    do
     {
-        do
+        cSimpleModule *mod = simulation.selectNextModule();
+        if (!mod) break; // selectNextModule() interrupted (parsim)
+
+        simulation.doOneEvent( mod );
+
+        speedometer.addEvent(simulation.simTime());
+
+        if (simulation.eventNumber()%opt_updatefreq_express==0)
         {
-            cSimpleModule *mod = simulation.selectNextModule();
-            if (!mod) break; // selectNextModule() interrupted (parsim)
-
-            simulation.doOneEvent( mod );
-
-            speedometer.addEvent(simulation.simTime());
-
-            if (simulation.eventNumber()%opt_updatefreq_express==0)
+            updateSimtimeDisplay();
+            if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
             {
-                updateSimtimeDisplay();
-                if (speedometer.secondsInThisInterval() > SPEEDOMETER_UPDATESECS)
-                {
-                    speedometer.beginNewInterval();
-                    updatePerformanceDisplay(speedometer);
-                }
-                Tcl_Eval(interp, "update");
+                speedometer.beginNewInterval();
+                updatePerformanceDisplay(speedometer);
             }
-            checkTimeLimits();
+            Tcl_Eval(interp, "update");
+            if (runmode!=RUNMODE_EXPRESS)
+                return true;  // should continue, but in a different mode
         }
-        while(  !bkpt_hit && !stop_simulation &&
-                (until_time<=0 || simulation.simTime()<until_time) &&
-                (until_event<=0 || simulation.eventNumber()<until_event)
-             );
-        simstate = SIM_READY;
+        checkTimeLimits();
     }
-    catch (cTerminationException *e)
-    {
-        simstate = SIM_TERMINATED;
-        stoppedWithTerminationException(e);
-        displayMessage(e);
-        delete e;
-    }
-    catch (cException *e)
-    {
-        simstate = SIM_ERROR;
-        stoppedWithException(e);
-        displayError(e);
-        delete e;
-    }
-    stopClock();
-    stop_simulation = false;
-    ev.disable_tracing = false;
-
-    if (simstate==SIM_TERMINATED)
-    {
-        // call wrapper around simulation.callFinish() and simulation.endRun()
-        finishSimulation();
-    }
-
-    animating = true;
-
-    updateSimtimeDisplay();
-    updateNextModuleDisplay();
-    clearPerformanceDisplay();
-    updateInspectors();
+    while(  !breakpointhit_flag && !stopsimulation_flag &&
+            (until_time<=0 || simulation.simTime()<until_time) &&
+            (until_event<=0 || simulation.eventNumber()<until_event)
+         );
+    return false;
 }
 
 void TOmnetTkApp::startAll()
@@ -658,8 +635,8 @@ void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
             label, mod->fullPath(), mod->id() );
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",buf,"} info ok",NULL));
 
-    // bkpt_hit will cause event loop to exit in runSimulation...()
-    bkpt_hit = true;
+    // breakpointhit_flag will cause event loop to exit in runSimulation...()
+    breakpointhit_flag = true;
 
     if (mod->usesActivity())
     {
@@ -965,8 +942,8 @@ bool TOmnetTkApp::idle()
     Tcl_Eval(interp, "update");
     simstate = origsimstate;
 
-    bool stop = stop_simulation;
-    stop_simulation = false;
+    bool stop = stopsimulation_flag;
+    stopsimulation_flag = false;
     return stop;
 }
 
