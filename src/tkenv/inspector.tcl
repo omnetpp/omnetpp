@@ -173,12 +173,12 @@ proc inspectorNamePopup {ptr x y} {
 
     regsub {^ptr} $ptr {0x} p
 
-    .popup add command -label "Copy pointer with cast (for debugger)" -command "setClipboard \"(([opp_getobjectclassname $ptr] *)$p)\""
-    .popup add command -label "Copy pointer value (for debugger)" -command "setClipboard $p"
+    .popup add command -label "Copy pointer with cast (for debugger)" -command [list setClipboard "(([opp_getobjectclassname $ptr] *)$p)"]
+    .popup add command -label "Copy pointer value (for debugger)" -command [list setClipboard $p]
     .popup add separator
-    .popup add command -label "Copy full path" -command "setClipboard [opp_getobjectfullpath $ptr]"
-    .popup add command -label "Copy name" -command "setClipboard [opp_getobjectfullname $ptr]"
-    .popup add command -label "Copy class name" -command "setClipboard [opp_getobjectclassname $ptr]"
+    .popup add command -label "Copy full path" -command [list setClipboard [opp_getobjectfullpath $ptr]]
+    .popup add command -label "Copy name" -command [list setClipboard [opp_getobjectfullname $ptr]]
+    .popup add command -label "Copy class name" -command [list setClipboard [opp_getobjectclassname $ptr]]
 
     .popup post $x $y
 }
