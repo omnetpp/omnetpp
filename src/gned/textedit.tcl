@@ -264,7 +264,7 @@ proc askReplaceYesNo {w} {
     bind .dlg <A> {.dlg.f.all invoke}
     bind .dlg <c> {.dlg.f.close invoke}
     bind .dlg <C> {.dlg.f.close invoke}
-    bind .dlg <Enter> {.dlg.f.yes invoke}
+    bind .dlg <Return> {.dlg.f.yes invoke}
     bind .dlg <Escape> {.dlg.f.close invoke}
     focus .dlg.f.yes
 
