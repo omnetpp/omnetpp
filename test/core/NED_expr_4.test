@@ -45,6 +45,7 @@ endmodule
 module {Wrapper}
     submodules:
         c: {Compound};
+            parameters: a=100;
             gatesizes: in[8];
     connections nocheck:
 endmodule

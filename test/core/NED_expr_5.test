@@ -1,5 +1,7 @@
 %description:
-Test NED index and sizeof() operators in submodule const parameters
+Test NED index and sizeof() operators in:
+ - submodule const (!) parameters
+ - module vector sizes
 
 %file: {}.ned
 
@@ -8,22 +10,34 @@ endmodule
 
 simple {Simple}
    parameters:
-      p00:const, p01:const, p02:const, p03:const, p04:const, p05:const;
+      p0:const, p1:const, p2:const, p3:const, p4:const, p5:const, p6:const, p7:const, p8:const, p9:const;
 endsimple
 
 module {Compound}
+    parameters:
+        a: numeric;
     gates:
         in: in[];
     submodules:
         foo : {Foo}[5];
-        sub1 : {Simple}[3];
+        dum1 : {Foo}[sizeof(foo)];
+        dum2 : {Foo}[sizeof(in)];
+        dum3 : {Foo}[a+sizeof(foo)];
+        dum4 : {Foo}[a+sizeof(in)];
+
+        sub : {Simple}[3];
             parameters:
-                p00 = index,
-                p01 = sizeof(foo),
-                p02 = sizeof(in),
-                p03 = 1+index,
-                p04 = 1+sizeof(foo),
-                p05 = 1+sizeof(in);
+                p0 = index,
+                p1 = sizeof(foo),
+                p2 = sizeof(in),
+                p3 = a+index,
+                p4 = a+sizeof(foo),
+                p5 = a+sizeof(in),
+                // print out sizeof dum1/dum2/dum3/dum4:
+                p6 = sizeof(dum1),
+                p7 = sizeof(dum2),
+                p8 = sizeof(dum3),
+                p9 = sizeof(dum4);
 endmodule
 
 // we need this only because the top-level module cannot
@@ -31,6 +45,7 @@ endmodule
 module {Wrapper}
     submodules:
         c: {Compound};
+            parameters: a=100;
             gatesizes: in[8];
     connections nocheck:
 endmodule
