@@ -90,6 +90,11 @@ static struct { char *fname; int args; } known_funcs[] =
    {NULL,0}
 };
 
+inline bool strnull(const char *s)
+{
+    return !s || !s[0];
+}
+
 inline bool strnotnull(const char *s)
 {
     return s && s[0];
@@ -301,13 +306,19 @@ void NEDBasicValidator::validateElement(ConnectionNode *node)
     bool opt[] = {true, true, true, true, true};
     checkExpressionAttributes(node, expr, opt, 5);
 
+    // parent gate plusplus not allowed
+    if (strnull(node->getSrcModule()) && node->getSrcGatePlusplus())
+        NEDError(node, "wrong source gate: '++' cannot be used on parent module's gates");
+    if (strnull(node->getDestModule()) && node->getDestGatePlusplus())
+        NEDError(node, "wrong destination gate: '++' cannot be used on parent module's gates");
+
     // plusplus and gate index expression cannot be both there
     bool srcGateIx =  node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "src-gate-index")!=NULL;
     bool destGateIx = node->getFirstChildWithAttribute(NED_EXPRESSION, "target", "dest-gate-index")!=NULL;
     if (srcGateIx && node->getSrcGatePlusplus())
-        NEDError(node, "source gate '%s' cannot have both gate index and '++' operator specified",node->getSrcGate());
+        NEDError(node, "wrong source gate: cannot have both gate index and '++' operator specified");
     if (destGateIx && node->getDestGatePlusplus())
-        NEDError(node, "destination gate '%s' cannot have both gate index and '++' operator specified",node->getDestGate());
+        NEDError(node, "wrong destination gate: cannot have both gate index and '++' operator specified");
 }
 
 void NEDBasicValidator::validateElement(ConnAttrNode *node)
