@@ -155,10 +155,6 @@ void printUsage()
     );
 }
 
-// TBD: support --; support - as filename
-// TBD: remove output files on error
-// TBD: use fsutils.cc/h and list file processing from Envir
-
 void createFileNameWithSuffix(char *outfname, const char *infname, const char *suffix)
 {
     if (opt_here)
