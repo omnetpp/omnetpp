@@ -2,12 +2,11 @@
 \label{cha:the-simulation-library}
 
 {\opp} has an extensive C++ class library which you can use when implementing
-simple modules. Some areas of class librar have already been covered in the
+simple modules. Parts of the class library have already been covered in the
 previous chapters:
 
 \begin{itemize}
-  \item{events, messages, network packets: the \cclass{cMessage} and
-    \cclass{cPacket} classes (chapter \ref{cha:messages})}
+  \item{the message class \cclass{cMessage} (chapter \ref{cha:messages})}
   \item{sending and receiving messages, scheduling and cancelling
     events, terminating the module or the simulation
     (section \ref{ch:simple-modules:sending-and-receiving})}
@@ -23,13 +22,10 @@ This chapter discusses the rest of the simulation library:
   \item{random number generation: \fname{normal()},
     \fname{exponential()}, etc.}
   \item{module parameters: \cclass{cPar} class}
-  \item{storing data in containers: \cclass{cArray},
-    \cclass{cQueue}, \cclass{cBag} and
-    \cclass{cLinkedList} classes}
+  \item{storing data in containers: the \cclass{cArray} and \cclass{cQueue} classes}
   \item{routing support and discovery of network topology: \cclass{cTopology} class}
   \item{recording statistics into file: \cclass{cOutVector} class}
-  \item{collecting simple statistics: \cclass{cStdDev} and
-    \cclass{cWeightedStddev} classes}
+  \item{collecting simple statistics: \cclass{cStdDev} and \cclass{cWeightedStddev} classes}
   \item{distribution estimation: \cclass{cLongHistogram},
     \cclass{cDoubleHistogram}, \cclass{cVarHistogram}, \cclass{cPSquare},
     \cclass{cKSplit} classes}
@@ -45,7 +41,7 @@ This chapter discusses the rest of the simulation library:
 
 \section{Class library conventions}
 
-\subsubsection{Base class}
+\subsection{Base class}
 \label{sec:ch-sim-lib:cobject}
 
 
@@ -70,13 +66,13 @@ in the following we'll discuss some of the practically important
 ones.
 
 
-\subsubsection{Setting and getting attributes}
+\subsection{Setting and getting attributes}
 
 
 Member functions that set and query object attributes follow
-consistent naming. The setter member function has the form setSomething(...)
-and its getter counterpart is named something(), i.e. the ``get''
-verb found in Java and some other libraries is omitted for brevity.
+consistent naming. The setter member function has the form \ttt{setFoo(...)}
+and its getter counterpart is named \ttt{foo()}. (The \textit{get} verb found in Java
+and some other libraries is omitted for brevity.)
 For example, the \textit{length} attribute of the \cclass{cMessage} class can
 be set and read like this:
 
@@ -86,7 +82,7 @@ length = msg->length();
 \end{verbatim}
 
 
-\subsubsection{className()}
+\subsection{className()}
 
 
 For each class, the \fname{className()} member function returns the class
@@ -96,101 +92,82 @@ name as a string:
 const char *classname = msg->className(); // returns "cMessage"
 \end{verbatim}
 
-\subsubsection{Name attribute}
 
+\subsection{Name attribute}
 
-An object can be assigned a name (a character string). The name
+An object can be assigned a \textit{name} (a character string). The name
 string is the first argument to the constructor of every class,
-and it defaults to NULL (no name string). If you supply a name
-string, the object will make its own copy (\fname{strdup()}). As an example,
-you can create a message object like this:
+and it defaults to \ttt{NULL} (no name string). An example:
 
 \begin{verbatim}
-cMessage *mymsg = new cMessage("mymsg");
+cMessage *timeoutMsg = new cMessage("timeout");
 \end{verbatim}
-
 
 You can also set the name after the object has been created:
 
 \begin{verbatim}
-mymsg->setName("mymsg");
+timeoutMsg->setName("timeout");
 \end{verbatim}
 
 You can get a pointer to the internally stored copy of the name
 string like this:
 
 \begin{verbatim}
-const char *name = mymsg->name(); // --> returns ptr to internal copy
-                                  // of "mymsg"
+const char *name = timeoutMsg->name(); // --> "timeout"
 \end{verbatim}
 
-
-For convenience and efficiency reasons, the empty string ``''
-and NULL are treated as equivalent by library objects: ``''
-is stored as NULL (so that it does not consume heap), but it
-is returned as ``'' (so that it is easier to print
-out etc). Thus, if you create a message object with either NULL
-or ``'' as name, it will be stored as NULL and \fname{name()}
-will return a pointer to ``'', a static string:
+For convenience and efficiency reasons, the empty string \ttt{""}
+and \ttt{NULL} are treated as equivalent by library objects.
+That is, \ttt{""} is stored as \ttt{NULL} but returned as \ttt{""}.
+If you create a message object with either \ttt{NULL}
+or \ttt{""} as name string, it will be stored as \ttt{NULL}
+and \fname{name()} will return a pointer to a static \ttt{""}.
 
 \begin{verbatim}
 cMessage *msg = new cMessage(NULL, <additional args>);
-const char *str = msg->name(); // --> returns ptr to  ""
+const char *str = msg->name(); // --> returns ""
 \end{verbatim}
 
 
-\subsubsection{fullName() and fullPath()}
+\subsection{fullName() and fullPath()}
 
 
-Objects have two more member functions which return other sort
-of names based on the name attribute: \fname{fullName()} and \fname{fullPath()}.
+Objects have two more member functions which return strings
+based on object names: \fname{fullName()} and \fname{fullPath()}.
+For gates and modules which are part of gate or module vectors,
+\fname{fullName()} returns the name with the index in brackets.
+That is, for a module \ttt{node[3]} in the submodule vector \ttt{node[10]}
+\fname{name()} returns \ttt{"node"}, and \fname{fullName()} returns \ttt{"node[3]"}.
+For other objects, \fname{fullName()} is the same as \fname{name()}.
 
-Suppose we have a module in the network universityLan, compound
-module fddiRing, simple module station[10]. If you call the functions
-on the simple module object (\cclass{cSimpleModule} inherits from
-\cclass{cObject}, too), the functions will return these values:
+\fname{fullPath()} returns \fname{fullName()}, prepended with the
+parent or owner object's \fname{fullPath()} and separated by a dot.
+That is, if the \ttt{node[3]} module above is in the compound module
+\ttt{"net.subnet1"}, its \fname{fullPath()} method will return
+\ttt{"net.subnet1.node[3]"}.
 
 \begin{verbatim}
-ev << module->name(); // --> "station"
-ev << module->fullName(); // --> "station[10]"
-ev << module->fullPath(); // --> "universityLan.fddiRing.station[10]"
+ev << this->name();     // --> "node"
+ev << this->fullName(); // --> "node[3]"
+ev << this->fullPath(); // --> "net.subnet1.node[3]"
 \end{verbatim}
 
+\fname{className()}, \fname{fullName()} and \fname{fullPath()}
+are extensively used on the graphical runtime environment Tkenv,
+and also appear in error messages.
 
-
-These functions work for any object. For example, a local object
-inside the module would produce results like this:
-
+\fname{name()} and \fname{fullName()} return \ttt{const char *} pointers,
+and \fname{fullPath()} returns \ttt{std::string}. This makes no difference
+with \ttt{ev<<}, but when \fname{fullPath()} is used as a \ttt{"\%s"} argument
+to \fname{sprintf()} you have to write \ttt{fullPath().c_str()}.
 
 \begin{verbatim}
-void FDDIStation::activity()
-{
-    cQueue buffer("buffer");
-    ev << buffer->fullPath(); // --> "universityLan.fddiRing.
-                              // station[10].buffer"
-}
+char buf[100];
+sprintf("msg is '%80s'", msg->fullPath().c_str()); // note c_str()
 \end{verbatim}
 
 
-
-\fname{fullName()} and \fname{fullPath()}, together with
-\fname{className()} can be used for example to generate informative
-error messages.
-
-Be aware that \fname{fullName()} and \fname{fullPath()} return
-pointers to static buffers. Each call will overwrite the previous
-content of the buffer, so for example you shouldn't put two calls in a
-single \fname{printf()} statement:
-
-\begin{verbatim}
-ev.printf("object1 is '%s', object2 is '%s'\n",
-          object1->fullPath(),
-          object2->fullPath()
-         ); // WRONG! Same string is printed twice!!!
-\end{verbatim}
-
-
-\subsubsection{Copying and duplicating objects}
+\subsection{Copying and duplicating objects}
 
 
 The \fname{dup()} member function creates an exact copy of the
@@ -213,7 +190,7 @@ various reasons, \fname{operator=()} does not copy the name string;
 the copy constructor\index{copy constructor} does it.
 
 
-\subsubsection{Iterators}
+\subsection{Iterators}
 
 
 There are several container classes in the library (\cclass{cQueue},
@@ -234,7 +211,7 @@ for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++)
 \end{verbatim}
 
 
-\subsubsection{Ownership control}
+\subsection{Ownership control}
 
 
 By default, if a container object is destroyed, it destroys the
@@ -255,7 +232,7 @@ The ownership mechanism is discussed in detail in section
 
 \section{Utilities}
 
-\subsubsection{Tracing}
+\subsection{Tracing}
 
 
 The tracing feature will be used extensively in the code examples,
@@ -277,7 +254,7 @@ An alternative solution is \fname{ev.printf()}:
 ev.printf("packet received, sequence number is %d\n", seqNum);
 \end{verbatim}
 
-\subsubsection{Simulation time conversion}
+\subsection{Simulation time conversion}
 
 
 There are utility functions which convert simulation
@@ -288,7 +265,7 @@ time\index{simulation time} (\cclass{simtime\_t}) to a printable string
 The \fname{simtimeToStr()} function converts a \cclass{simtime\_t}
 (passed in the first arg) to textual form. The result is placed into
 the buffer pointed to by the second arg. If the second arg is omitted
-or it is NULL, \fname{simtimeToStr()} will place the result into a
+or it is \ttt{NULL}, \fname{simtimeToStr()} will place the result into a
 static buffer which is overwritten with each call:
 
 \begin{verbatim}
@@ -319,12 +296,12 @@ const char *s = "30s 152ms and some rubbish";
 simtime_t t = strToSimtime0(s); // now s points to "and some rubbish"
 \end{verbatim}
 
-\subsubsection{Utility \texttt{<string.h>} functions}
+\subsection{Utility \texttt{<string.h>} functions}
 
 \begin{sloppypar}
 The \fname{opp\_strdup()}, \fname{opp\_strcpy()}, \fname{opp\_strcmp()}
 functions are the same as their \texttt{<string.h>} equivalents,
-except that they treat NULL and the empty string (\ttt{""}) as identical,
+except that they treat \ttt{NULL} and the empty string (\ttt{""}) as identical,
 and \fname{opp\_str\-dup()} uses operator new instead of \fname{malloc()}.
 \end{sloppypar}
 
@@ -950,10 +927,10 @@ Memory management\index{cPar memory management} can be specified by
 \cclass{cPar}'s \fname{configPointer()} member function. It takes
 three arguments: a pointer to a user-supplied deallocation
 function, a pointer to a user-supplied duplication function and
-an item size. If all three are 0 (NULL), no memory management is done,
+an item size. If all three are 0 (\ttt{NULL}), no memory management is done,
 that is, the pointer is treated as a mere pointer. This is the default
 behaviour. If you supply only the item size (and both function
-pointers are NULL), \cclass{cPar} will use the delete operator to
+pointers are \ttt{NULL}), \cclass{cPar} will use the delete operator to
 deallocate the memory area when the \cclass{cPar} object is
 destructed, and it will use new char[size] followed by a
 \fname{memcpy()} to duplicate the memory area whenever the
@@ -1093,7 +1070,7 @@ The only way to determine whether a is really holding the value or it
 is redirected to another \cclass{cPar} is to use the
 \fname{isRedirected()} member function which returns a bool, or
 \fname{redirection()} which returns the pointer to the background
-object, or NULL if there's no redirection:
+object, or \ttt{NULL} if there's no redirection:
 
 \begin{verbatim}
 cPar *redir = a.redirection(); // returns bb's pointer
@@ -1323,7 +1300,7 @@ topo.extractByModuleType( "Router", "User", NULL );
 
 
 Any number of module types (up to 32) can be supplied; the list
-must be terminated by NULL.
+must be terminated by \ttt{NULL}.
 
 Second, you can extract all modules which have a certain parameter:
 
@@ -1402,7 +1379,7 @@ cModule *module = node->module();
 
 The \fname{nodeFor()} member function returns a pointer to the graph
 node for a given module. (If the module is not in the graph, it
-returns NULL). \fname{nodeFor()} uses binary search within the
+returns \ttt{NULL}). \fname{nodeFor()} uses binary search within the
 \cclass{cTopology} object so it is fast enough.
 
 
@@ -2074,8 +2051,7 @@ is implemented, i.e.  there's one class derived from
 square of the number of values and check if this is small enough.
 
 \begin{verbatim}
-void setParameters(double acc=0.1,
-                   int reps=3);
+void setParameters(double acc=0.1, int reps=3);
 \end{verbatim}
 
 
@@ -2528,7 +2504,7 @@ calls are simply ignored.
 %
 % Some container classes and functions suspend the simulation and issue
 % warning messages in potentially bogus/dangerous situations, for
-% example when an object is not found and NULL pointer/reference is
+% example when an object is not found and \ttt{NULL} pointer/reference is
 % about to be returned. Very often this is useful, but sometimes it is
 % more trouble. You can turn warnings on/off from the ini file
 % (warnings=yes/no)\index{ini file!warnings}.
@@ -3511,7 +3487,7 @@ is implemented as \fname{new cArray(*this)}).
 %TBD
 %
 %It is also possible to set the owner of an object explicitly to
-%NULL and thus hide it from the ownership mechanism (and thus probably
+%\ttt{NULL} and thus hide it from the ownership mechanism (and thus probably
 %also from Tkenv), but this is very rarely needed.
 %
 
