@@ -96,7 +96,7 @@ void CEditComp::OnOK()
 void CEditComp::OnCancel() 
 {
 	// TODO: Add extra cleanup here
-	
+
 	CDialog::OnCancel();
 }
 
@@ -113,5 +113,5 @@ void CEditComp::OnSimpleHandlemessage()
 	// TODO: Add your control notification handler code here
 	isActivity = false;
 	m_SimpleStacksize.SetReadOnly(TRUE);
-	
+
 }

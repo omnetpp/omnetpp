@@ -28,7 +28,7 @@ DllMain(HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
 	if (dwReason == DLL_PROCESS_ATTACH)
 	{
 		TRACE0("OMNETPPWIZARD.AWX Initializing!\n");
-		
+	
 		// Extension DLL one-time initialization
 		AfxInitExtensionModule(OmnetppWizardDLL, hInstance);
 

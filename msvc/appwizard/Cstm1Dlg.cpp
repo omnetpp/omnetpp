@@ -48,7 +48,7 @@ BOOL CCustom1Dlg::OnDismiss()
 	int i,j,k;
 	char nameStr[COMP_NAME_L+4];
 	char tmp[PROJ_DESC_L+1];
-	
+
 	/* Get project descriotion */
 	m_Description.GetWindowText(tmp, PROJ_DESC_L);
 	for(i=0,j=0; j<PROJ_DESC_L; i++)
@@ -159,7 +159,7 @@ void CCustom1Dlg::OnEdit()
 
 	dlg.DoModal();
 	Refresh();
-	
+
 }
 
 

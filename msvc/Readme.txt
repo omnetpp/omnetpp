@@ -1,5 +1,10 @@
 OMNeT++ Integration Macros (AddNedFile)
 =======================================
+
+Requirements: MSVC 6.0. You're recommended to install MSVC Service Packs too,
+   otherwise AddNedFile may crash the IDE due to bugs in the Visual Studio
+   scripting engine.
+
 Installation:
 1. The macro file (omnetpp.dsm) should be copied into the following directory:
    C:\Program Files\Microsoft Visual Studio\Common\MSDev98\Macros
@@ -11,7 +16,7 @@ Installation:
    select Macros --> addNEDfileToProject should appear in the listbox -->
    drag it to a toolbar --> select icon for it --> close dialog
  
-(Steps 1 and 2 should be done by the OMNet++ install program.)
+(Steps 1 and 2 are normally done by the OMNeT++ install program.)
 
 AddNedFile macro:
 -----------------
