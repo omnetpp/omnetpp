@@ -16,6 +16,10 @@ exec wish "$0" "$@"
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
+# use the 'demo' executable from this directory (1), or the individual simulation
+# executables from the other subdirs (0) ?
+set use_single_executable 0
+
 foreach i {
    {dyna ../dyna Dyna}
    {fddi ../fddi FDDI}
@@ -124,15 +128,21 @@ Dept. of Telecommunications
 }
 
 proc showDemo {sample} {
-   global samples dir name colors
+   global samples dir name colors use_single_executable
 
    foreach i $samples {
         .sel.$i config -relief raised -bg $colors(unselbutton)
    }
    .sel.$sample config -relief sunken -bg $colors(selbutton)
 
+   if {$use_single_executable} {
+      set cmd "demo -f $dir($sample)/omnetpp.ini"
+   } else {
+      set cmd "cd $dir($sample); $sample &"
+   }
+
    .main.up.banner config -text "$name($sample) README"
-   .main.lo.start config -text "Launch $name($sample)  (command: demo -f $dir($sample)/omnetpp.ini)"
+   .main.lo.start config -text "Launch $name($sample)  (command: $cmd)"
    .main.lo.start config -command "runSample $sample"
 
    loadFile .main.mid.text "$dir($sample)/README"
@@ -154,11 +164,18 @@ proc loadFile {t filename} {
 }
 
 proc runSample {sample} {
-   global samples dir name
+   global samples dir name use_single_executable
 
-   if [catch {exec ./demo -f "$dir($sample)/omnetpp.ini" &}] {
-      tk_messageBox -title {OMNeT++ Demo} -type ok -icon error \
-                    -message {Error running demo executable. Has it been built?}
+   if {$use_single_executable} {
+      if [catch {exec ./demo -f "$dir($sample)/omnetpp.ini" &}] {
+         tk_messageBox -title {OMNeT++ Demo} -type ok -icon error \
+                       -message {Error running compound 'demo' executable. Has it been built?}
+      }
+   } else {
+      if [catch {cd $dir($sample); exec $sample &}] {
+         tk_messageBox -title {OMNeT++ Demo} -type ok -icon error \
+                       -message {Error running the simulation program.}
+      }
    }
 }
 

@@ -20,8 +20,6 @@ simple Game
     parameters: 
         num_sticks : numeric, // starting number of sticks
         first_move : numeric, // 1=Player1, 2=Player2
-        x_pos : numeric, 
-        y_pos : numeric; 
     gates: 
         in: from_player1; // input and output gates
         in: from_player2; // for connecting to Player1/Player2
