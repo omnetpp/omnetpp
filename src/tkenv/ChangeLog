@@ -275,5 +275,8 @@
   - fixed minor bug with anim speed settings
 #78 Feb 7, 1999
   - stable version
-
---- CVS begin ---
+#79 June 21, 1999
+  - all sources checked in under CVS
+  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
+  - version.log renamed to ChangeLog
+  - tcl2c.c moved to util/

@@ -78,5 +78,10 @@
   - 'convert' script removed
 #51 Jan 25, 1999
   - minor changes
+#52 June 21, 1999
+  - all sources checked in under CVS
+  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
+  - version.log renamed to ChangeLog
+  - cleanup: removed a number of old scripts
+  - tcl2c.c moved here
 
---- CVS begin ---
