@@ -37,6 +37,7 @@ if test "$cygwin" = yes; then
 fi
 
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
+OMNETPP_UTILS_DIR="$OMNETPP_SRC_DIR/utils"
 OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
 OMNETPP_TUTORIAL_DIR="$OMNETPP_ROOT/tutorial"
@@ -129,11 +130,25 @@ AC_PROG_RANLIB
 
 # doxygen is used for generation of api doc
 AC_ARG_VAR(DOXYGEN, The Doxygen documentation tool)
-AC_PATH_PROG(DOXYGEN, doxygen, doxygen)
+AC_CHECK_PROG(DOXYGEN, doxygen, doxygen, not found)
+
+if test "$DOXYGEN" = "not found"; then
+   AC_MSG_WARN(doxygen is needed to create the OMNeT++ reference manual.
+   It is available from http://www.doxygen.org/)
+fi
 
 # perl is needed for experimental nedc message subclassing (see feature nedc-subcl)
 AC_ARG_VAR(PERL, The Perl interpreter)
-AC_PATH_PROG(PERL, perl)
+AC_CHECK_PROG(PERL, perl, perl, not found)
+
+# xsltproc
+AC_ARG_VAR(XSLTPROC, A command line xslt processor)
+AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, not found)
+
+if test "$XSLTPROC" = "not found"; then
+   AC_MSG_WARN(xsltproc is needed for opp_neddoc
+   You can get the sources from http://xmlsoft.org/XSLT/)
+fi
 
 # FIXME: the following lines will need some check
 AS="as"
@@ -490,6 +505,7 @@ AC_CONFIG_FILES(
   src/tkenv/Makefile
   src/utils/Makefile
   src/utils/opp_makemake
+  src/utils/opp_neddoc
   samples/dyna/Makefile
   samples/fddi/Makefile
   samples/fifo1/Makefile
@@ -518,6 +534,7 @@ AC_SUBST(OMNETPP_LIB_DIR)
 AC_SUBST(OMNETPP_BITMAP_PATH)
 
 AC_SUBST(OMNETPP_SRC_DIR)
+AC_SUBST(OMNETPP_UTILS_DIR)
 AC_SUBST(OMNETPP_DOC_DIR)
 AC_SUBST(OMNETPP_SAMPLES_DIR)
 AC_SUBST(OMNETPP_TUTORIAL_DIR)
@@ -579,6 +596,9 @@ AC_SUBST(OMNETPP_PLOVE_DIR)
 AC_OUTPUT()
 
 chmod +x src/utils/opp_makemake
+chmod +x src/utils/opp_test
+chmod +x src/utils/opp_makedep
+chmod +x src/utils/opp_neddoc
 
 #----------------------
 # Check if the path contains omnetpp/bin (it should)
