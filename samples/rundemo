@@ -14,13 +14,14 @@ exec wish "$0" "$@"
 #  `license' for details on this and other legal matters.
 #--------------------------------------------------------------
 
-# columns below: name directory unix-command windows-command
+# columns below: <name> <directory> <unix-command> <windows-command>
 set i 0
 foreach line {
    {"Tictoc"           "tictoc"           "./tictoc"    "tictoc.exe"}
    {"Fifo"             "fifo"             "./fifo"      "fifo.exe"}
    {"Queueing"         "queueing"         "./queueing"  "queueing.exe"}
    {"CQN"              "cqn"              "./cqn"       "cqn.exe"}
+   {"Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
    {"Hist"             "hist"             "./hist"      "hist.exe"}
    {"P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
    {"Aloha"            "aloha"            "./aloha"     "aloha.exe"}
