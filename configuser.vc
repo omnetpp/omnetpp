@@ -16,7 +16,7 @@ OMNETPP_VERSION=omnetpp-2.0b5
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=d:/work/omnetpp
+OMNETPP_ROOT=e:/home/omnetpp
 TK_DIR=e:/tcl
 TK_VER=8.2
 
@@ -62,9 +62,18 @@ LEX=flex.exe
 # configuration
 #
 
-# Compiler switches (currently set up for debugging)
-CFLAGS=/nologo /MLd /Od /GZ /Zi
-LDFLAGS=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
+# Compiler switches
+
+CFLAGS_DEBUG=/nologo /MLd /Od /GZ /Zi /Gm /FD
+CFLAGS_RELEASE=/nologo /ML /O2 /D "NDEBUG" /F
+
+LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
+LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
+
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+# CFLAGS=$(CFLAGS_RELEASE)
+# LDFLAGS=$(LDFLAGS_RELEASE)
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
