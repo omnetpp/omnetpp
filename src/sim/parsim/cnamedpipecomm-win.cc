@@ -217,11 +217,16 @@ void cNamedPipeCommunications::broadcast(cCommBuffer *buffer, int tag)
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
 {
+    return doReceive(buffer, receivedTag, sourceProcId, blocking);
+    // FIXME implement tag filtering (copy from unix version)...
+}
+
+bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
+{
     cMemCommBuffer *b = (cMemCommBuffer *)buffer;
     b->reset();
 
     // FIXME handle "blocking"
-    // FIXME handle "filtTag" -- problem: where to put buffers with wrong tag? use a deque?
 
     // select pipe to read
     int i, k;

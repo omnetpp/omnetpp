@@ -18,12 +18,20 @@
 *--------------------------------------------------------------*/
 
 
-#include "stdio.h"
-#include "util.h"
-#include "parsim/cparsimcomm.h"
-
 #ifndef __CNAMEDPIPECOMM_H__
 #define __CNAMEDPIPECOMM_H__
+
+
+#include <stdio.h>
+
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
+
+#include <deque>
+
+#include "util.h"
+#include "parsim/cparsimcomm.h"
 
 
 // decide platform
@@ -52,15 +60,20 @@ class cNamedPipeCommunications : public cParsimCommunications
     int numPartitions;
     int myProcId;
 
+    // pipes
     opp_string prefix;
     PIPE *rpipes;
     PIPE *wpipes;
     int maxFdPlus1;
     int rrBase;
 
+    // reordering buffer needed because of tag filtering support (filtTag)
+    std::deque<cCommBuffer*> storedBuffers;
+
   protected:
     // common impl. for receiveBlocking() and receiveNonblocking()
     bool receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking);
+    bool doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking);
 
   public:
     /**

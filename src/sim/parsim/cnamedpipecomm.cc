@@ -198,10 +198,29 @@ void cNamedPipeCommunications::broadcast(cCommBuffer *buffer, int tag)
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
 {
+    return doReceive(buffer, receivedTag, sourceProcId, blocking);
+
+    // FIXME implement tag filtering...
+#ifdef 0
+    if (filtTag==PARSIM_ANY_TAG)
+    {
+        if (storedBuffers.empty())
+        {
+            return doReceive(buffer, receivedTag, sourceProcId, blocking);
+        }
+        else
+        {
+            storedBuffers.pop();
+            ...
+        }
+    }
+#endif
+}
+
+bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
+{
     cMemCommBuffer *b = (cMemCommBuffer *)buffer;
     b->reset();
-
-    // FIXME handle "filtTag" -- problem: where to put buffers with wrong tag? use a deque?
 
     // create file descriptor set for select() call
     int i;
