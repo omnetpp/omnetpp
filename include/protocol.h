@@ -63,6 +63,7 @@ enum {
 
    // network
    PR_IP = 3000,
+   PR_ICMP,
    PR_IPV6,
    PR_CLNP,
    PR_X25,
@@ -83,8 +84,9 @@ enum {
    PR_HTTP,
    PR_SMTP,
    PR_POP3,
+   PR_UDP_APP
    PR_NFS,
-   PR_XWINDOW,
+   PR_XWINDOW
 
    // ATM
    // starting at 8000
@@ -113,7 +115,7 @@ enum {
    PDU_EXPEDITED_DATA,
    PDU_ACK,
    PDU_DISCONNECT_REQUEST,
-   PDU_DISCONNECT_CONFIRM,
+   PDU_DISCONNECT_CONFIRM
    //...
 };
 

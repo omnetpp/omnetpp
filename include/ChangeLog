@@ -1,5 +1,10 @@
 2002-03-03  Andras Varga
 
+        * protocol.h: added constants: PR_ICMP, PR_UDP_APP. [suggested by
+        Johnny Lai]
+
+2002-03-03  Andras Varga
+
        	* cpar.h: valueChanges() renamed to beforeChange(); corresponding
         afterChange() method added
 
