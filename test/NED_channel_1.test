@@ -1,0 +1,127 @@
+%description:
+Tests that NED predefined channels really affect connection properties.
+
+%file: {}.ned
+
+channel {Conn0}
+endchannel
+
+channel {Conn1}
+    delay 0.004;
+endchannel
+
+channel {Conn2}
+    error 0.001;
+endchannel
+
+channel {Conn3}
+    datarate 64000;
+endchannel
+
+channel {Conn4}
+    delay 0.004;
+    error 0.001;
+endchannel
+
+channel {Conn5}
+    delay 0.004;
+    datarate 64000;
+endchannel
+
+channel {Conn6}
+    error 0.001;
+    datarate 64000;
+endchannel
+
+channel {Conn7}
+    delay 0.004;
+    error 0.001;
+    datarate 64000;
+endchannel
+
+simple {Gen}
+    gates:
+        out: out[];
+endsimple
+
+simple {Sink}
+    gates:
+        in: in[];
+endsimple
+
+module {MyNet}
+    submodules:
+        gen: {Gen};
+           gatesizes: out[8];
+        sink: {Sink};
+           gatesizes: in[8];
+    connections:
+        gen.out[0] --> {Conn0} --> sink.in[0];
+        gen.out[1] --> {Conn1} --> sink.in[1];
+        gen.out[2] --> {Conn2} --> sink.in[2];
+        gen.out[3] --> {Conn3} --> sink.in[3];
+        gen.out[4] --> {Conn4} --> sink.in[4];
+        gen.out[5] --> {Conn5} --> sink.in[5];
+        gen.out[6] --> {Conn6} --> sink.in[6];
+        gen.out[7] --> {Conn7} --> sink.in[7];
+endmodule
+
+network
+     {myNet}: {MyNet};
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Gen} : public cSimpleModule
+{
+    Module_Class_Members({Gen},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Gen});
+
+void {Gen}::activity()
+{
+    for (int i=0; i<gate("out")->size(); i++)
+    {
+        cGate *g = gate("out",i);
+        cChannel *ch = g->channel();
+        cSimpleChannel *sch = check_and_cast<cSimpleChannel *>(ch);
+
+        ev << i << ":";
+        if (sch->delay())  ev << "delay=" << *(sch->delay()) << ":";
+        if (sch->error())  ev << "error=" << *(sch->error()) << ":";
+        if (sch->datarate())  ev << "datarate=" << *(sch->datarate()) << ":";
+        ev << endl;
+    }
+}
+
+class {Sink} : public cSimpleModule
+{
+    Module_Class_Members({Sink},cSimpleModule,0)
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module({Sink});
+
+void {Sink}::handleMessage(cMessage *msg)
+{
+    delete msg;
+}
+
+%inifile: {}.ini
+[General]
+network={myNet}
+
+%contains: stdout
+0:
+1:delay=0.004:
+2:error=0.001:
+3:datarate=64000:
+4:delay=0.004:error=0.001:
+5:delay=0.004:datarate=64000:
+6:error=0.001:datarate=64000:
+7:delay=0.004:error=0.001:datarate=64000:
+
