@@ -5,6 +5,10 @@ OMNeT++ is Copyright (C) 1992-99 Andras Varga, Technical University
 of Budapest, Dept. of Telecommunications, Stoczek u.2, H-1111 Budapest,
 Hungary.
 
+This License contains the terms governing the use of OMNeT++.
+You may as a special exception elect to use the GNU General Public License
+(see the "GPLElect" file).
+
 OMNeT++ (the "Software") is distributed in the hope that it will be
 useful. You may copy and distribute verbatim copies of the Software
 as you receive it, in any medium, provided that you conspicuously and
