@@ -85,11 +85,11 @@ and handleMessage(). They are invoked from the simulation kernel:
 the first one only once, and the second one whenever a message arrives at the module.
 
 In initialize() we create a message object (cMessage), and send it out
-on gate <tt>out</tt>. Since this gate in connected to the other module's
+on gate <tt>out</tt>. Since this gate is connected to the other module's
 input gate, the simulation kernel will deliver this message to the other module
 in the argument to handleMessage() -- after a 100ms propagation delay
 assigned to the link in the NED file. The other module just sends it back
-(another 100ms delay), so it will result in a contiuous ping-pong.
+(another 100ms delay), so it will result in a continuous ping-pong.
 
 Messages (packets, frames, jobs, etc) and events (timers, timeouts) are
 all represented by cMessage objects (or its subclasses) in OMNeT++.
