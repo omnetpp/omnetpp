@@ -4,7 +4,7 @@
 
 #
 # Borland C++ IDE generated makefile
-# Generated 3/11/01 at 11:02:16 AM 
+# Generated 3/11/01 at 11:02:16 AM
 #
 .AUTODEPEND
 
@@ -13,7 +13,7 @@
 # Borland C++ tools
 #
 IMPLIB  = Implib
-BCC32   = Bcc32 +BccW32.cfg 
+BCC32   = Bcc32 +BccW32.cfg
 TLINK32 = TLink32
 TLIB    = TLib
 BRC32   = Brc32
@@ -28,7 +28,7 @@ TASM32  = Tasm32
 #
 IDE_LinkFLAGS32 =  -LC:\BC5\LIB
 LinkerLocalOptsAtC32_sim_stddlib =  -Tpe -ap -c
-ResLocalOptsAtC32_sim_stddlib = 
+ResLocalOptsAtC32_sim_stddlib =
 BLocalOptsAtC32_sim_stddlib =  /P32
 CompInheritOptsAt_sim_stddlib = -IC:\BC5\INCLUDE -D_RTLDLL;
 LinkerInheritOptsAt_sim_stddlib = -x
@@ -75,6 +75,8 @@ Dep_sim_stddlib = \
    cdensity.obj\
    ccor.obj\
    util.obj\
+   cenum.obj\
+   cstruct.obj\
    netpack.obj
 
 sim_std.lib : $(Dep_sim_stddlib)
@@ -108,6 +110,8 @@ sim_std.lib : $(Dep_sim_stddlib)
 -+cdensity.obj &
 -+ccor.obj &
 -+util.obj &
+-+cenum.obj &
+-+cstruct.obj &
 -+netpack.obj
 |
 
@@ -256,13 +260,23 @@ util.obj :  util.cc
  $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ util.cc
 |
 
+cenum.obj :  cenum.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cenum.cc
+|
+
+cstruct.obj :  cstruct.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cstruct.cc
+|
+
 netpack.obj :  std\netpack.cc
   $(BCC32) -c @&&|
  $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ std\netpack.cc
 |
 
 # Compiler configuration file
-BccW32.cfg : 
+BccW32.cfg :
    Copy &&|
 -w
 -R
