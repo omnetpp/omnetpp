@@ -20,8 +20,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <blt.h>
-#include <bltVector.h>
+//#include <blt.h>
+//#include <bltVector.h>
 
 #include "tklib.h"
 #include "tkutil.h"

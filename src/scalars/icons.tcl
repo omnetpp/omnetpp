@@ -26,6 +26,13 @@ set icons(copy) [image create photo -data {
     3GpMLptLEQA7
 }]
 
+set icons(copyspec) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAAhMbGxv//////////////////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAARHUMhJq73Ygs1zBUM4bN4E
+    iiBQCmkavDB2ioE4vFe71fSt2bcRCBb4CHfAUJEyUx43PiYHGVpRairrpMZkeTE4
+    kzerLZvP5wgAOw==
+}]
+
 set icons(close) [image create photo -data {
     R0lGODlhFAASALMAAAAAAISEhMbGxv////8AAP//////////////////////////
     /////////////////yH5BAEAAAQALAAAAAAUABIAAAROkMhJqw04641nGGAojoM3
@@ -101,5 +108,12 @@ set icons(xyplot) [image create photo -data {
     hs+lpdClpeHWjcbFxSH5BAEAAA8ALAAAAAAUABMAAARV8MlJq70Yu837lkMweeQW
     BsNYJodyptRKEAXqVADg5DtwzATEp1JSFGiKYcwTCCgQSaWK09zoOJZO1drJbrYl
     L5iLJY7JUsk5XAmUduUMTk6vWwCXCAA7
+}]
+
+set icons(hist) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAMbGxgAA/0AAAIAAAAAA/+HXjv8AAP//AMDAwAGFAf//
+    /////////////////yH5BAEAAAEALAAAAAAUABMAAARAMMhJq70Ym837vl7IWaEg
+    hORmGuv6VVx7ukbKzvhYyXf/UrygwCLsmYg5IdKYHE4A0Kh0GqWIRKCrLsPter+X
+    CAA7
 }]
 
