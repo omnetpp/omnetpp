@@ -89,7 +89,8 @@ typedef
 #define	BIN_COMPL	326
 #define	SHIFT_LEFT	327
 #define	SHIFT_RIGHT	328
-#define	UMIN	329
+#define	INVALID_CHAR	329
+#define	UMIN	330
 
 
 extern YYSTYPE yylval;
