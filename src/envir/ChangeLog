@@ -1,3 +1,8 @@
+2004-03-26  Andras Varga
+
+	* filemgrs.h: (patch from Johnny Lai  <johnny.lai@eng.monash.edu.au>):
+	made sVectorData protected (it was private)
+
 2004-03-22  ------ omnetpp-3.0a3 released ------
 
 2004-03-10  Andras Varga

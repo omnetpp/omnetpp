@@ -35,6 +35,7 @@
  */
 class cFileOutputVectorManager : public cOutputVectorManager
 {
+  protected:
     struct sVectorData {
        int tuple;           // 1 or 2
        long id;             // vector ID
@@ -46,7 +47,6 @@ class cFileOutputVectorManager : public cOutputVectorManager
        simtime_t stoptime;  // write stops at stoptime
     };
 
-  protected:
     long nextid;       // holds next free ID for output vectors
     opp_string fname;  // output file name
     FILE *f;           // file ptr of output file
