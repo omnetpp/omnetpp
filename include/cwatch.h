@@ -48,32 +48,118 @@ class  cWatch;
 //   or
 //       LWATCH( count );
 //
+
+/**
+ * FIXME: //=== classes declared here
+ * 
+ * cWatch : shell for a char/int/long/double/char* /cObject* variable
+ *   The snapshot() call outputs state of simulation into a text file,
+ *   which is excellent for debugging. Unfortunately, ordinary variables
+ *   (int, char etc) do not appear in the snapshot file.
+ *   cWatch helps this. Use it like this:
+ *       int count;
+ *       cWatch dontcare( "count", count );
+ *   or
+ *       new cWatch( "count", count );
+ *   Now, the cWatch object will make the count variable appear
+ *   in the snapshot file.
+ *   The above lines can be shortened using the WATCH/LWATCH macro:
+ *       WATCH( count );
+ *   or
+ *       LWATCH( count );
+ * 
+ */
 class SIM_API cWatch : public cObject
 {
   private:
     void *ptr;
     char type;
   public:
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
     cWatch(cWatch& vs);
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
     cWatch(const char *name, char& c)  : cObject(name) {ptr=&c; type='c';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
     cWatch(const char *name, int&  i)  : cObject(name) {ptr=&i; type='i';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
     cWatch(const char *name, long& l)  : cObject(name) {ptr=&l; type='l';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
     cWatch(const char *name, double& d): cObject(name) {ptr=&d; type='d';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
     cWatch(const char *name, char* &s) : cObject(name) {ptr=&s; type='s';}
+
+    /**
+     * Initialize the shell to hold the given variable.
+     */
     cWatch(const char *name, cObject* &o) : cObject(name) {ptr=&o; type='o';}
+
+    /**
+     * All usual virtual functions redefined.
+     */
     virtual const char *className() const {return "cWatch";}
+
+    /**
+     * All usual virtual functions redefined.
+     */
     virtual cObject *dup()   {return new cWatch(*this);}
+
+    /**
+     * These functions are redefined to display the value of the variable.
+     * Output is like this: "int samples = 12 (12U, 0xC)"
+     */
     virtual void info(char *buf);
+
+    /**
+     * MISSINGDOC: cWatch:char*inspectorFactoryName()
+     */
     virtual const char *inspectorFactoryName() const {return "cWatchIFC";}
+
+    /**
+     * MISSINGDOC: cWatch:cWatch&operator=(cWatch&)
+     */
     cWatch& operator=(cWatch& vs)
           {ptr=vs.ptr;type=vs.type;return *this;}
+
+    /**
+     * These functions are redefined to display the value of the variable.
+     * Output is like this: "int samples = 12 (12U, 0xC)"
+     */
     virtual void writeContents(ostream& os);
 
+
+    /**
+     * Does actual work for info() and writeContents().
+     */
     virtual void printTo(char *s);
+
+    /**
+     * MISSINGDOC: cWatch:char typeChar()
+     */
     char typeChar() {return type;}
+
+    /**
+     * MISSINGDOC: cWatch:void*pointer()
+     */
     void *pointer() {return ptr;}
     //virtual int netPack();
     //virtual int netUnpack();
 };
 
-#endif

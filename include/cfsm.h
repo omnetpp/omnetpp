@@ -100,6 +100,56 @@
 //
 // cFSM: class to store the state of an FSM
 //
+
+/**
+ * FIXME: 
+ * FSM Macros
+ * 
+ * 
+ * FSM_MAXT:
+ *  after this many transitions without reaching a steady state
+ *  we assume the FSM is in an infinite loop
+ * 
+ * 
+ * FSM_Switch():
+ *   used like switch() in order to execute one state change of an FSM
+ * 
+ * operation:
+ * - __i counts up (starting from 1) until the FSM reaches a steady state.
+ * - at __i=1,3,5,7,etc, FSM_Exit code is executed
+ * - at __i=2,4,6,8,etc, FSM_Enter code is executed
+ * - FSM_Enter code must not contain state change (this is verified)
+ * - state changes should be encoded in FSM_Exit code
+ * - infinite loops (when control never reaches steady state) are detected (FSM_MAXT)
+ * 
+ * 
+ * FSM_Transient/FSM_Steady:
+ *   to be used in enum which declares states
+ * 
+ * 
+ * FSM_Enter/FSM_Exit:
+ *   to be used in "cases" within an FSM_Switch()
+ * 
+ * 
+ * FSM_Goto:
+ *   to be used in state exit code, to transition to another state.
+ * 
+ *   Uses stringize (#state), so it only works correctly if 'state'
+ *   is the enum name itself and not some variable that contains the
+ *   state code.
+ * 
+ * 
+ * FSM_DEBUG:
+ *   #define FSM_DEBUG before #including "omnetpp.h" to enable reporting
+ *   all state changes to ev
+ * 
+ * this may also be useful as third line:
+ *      << ((fsm).inTransientState() ? "transient state " : "steady state ")
+ * 
+ * 
+ * cFSM: class to store the state of an FSM
+ * 
+ */
 class SIM_API cFSM : public cObject
 {
   private:
@@ -112,24 +162,84 @@ class SIM_API cFSM : public cObject
     int _state;
     const char *_statename;   // just a ptr to an external string
   public:
+
+    /**
+     * FIXME: 
+     * About state codes:
+     *  initial state is number 0
+     *  negative state codes are transient states
+     *  positive state codes are steady states
+     * 
+     */
     explicit cFSM(const char *name=NULL);
+
+    /**
+     * MISSINGDOC: cFSM:cFSM(cFSM&)
+     */
     cFSM(cFSM& vs) {setName(vs.name());operator=(vs);}
+
+    /**
+     * MISSINGDOC: cFSM:char*className()
+     */
     virtual const char *className() const {return "cFSM";}
+
+    /**
+     * MISSINGDOC: cFSM:cObject*dup()
+     */
     virtual cObject *dup()   {return new cFSM(*this);}
+
+    /**
+     * MISSINGDOC: cFSM:void info(char*)
+     */
     virtual void info(char *buf);
 
+
+    /**
+     * MISSINGDOC: cFSM:char*inspectorFactoryName()
+     */
     virtual const char *inspectorFactoryName() const {return "cFSMIFC";}
+
+    /**
+     * MISSINGDOC: cFSM:cFSM&operator=(cFSM&)
+     */
     cFSM& operator=(cFSM& vs);
+
+    /**
+     * MISSINGDOC: cFSM:void writeContents(ostream&)
+     */
     virtual void writeContents(ostream& os);
+
+    /**
+     * MISSINGDOC: cFSM:int netPack()
+     */
     virtual int netPack();
+
+    /**
+     * MISSINGDOC: cFSM:int netUnpack()
+     */
     virtual int netUnpack();
 
     // new functions
+
+    /**
+     * FIXME: new functions
+     */
     int state()  {return _state;}
+
+    /**
+     * MISSINGDOC: cFSM:char*stateName()
+     */
     const char *stateName() {return _statename?_statename:"";}
+
+    /**
+     * MISSINGDOC: cFSM:int inTransientState()
+     */
     int inTransientState()  {return _state<0;}
+
+    /**
+     * MISSINGDOC: cFSM:void setState(int,char*)
+     */
     void setState(int state, const char *stn=NULL)  {_state=state;_statename=stn;}
 };
 
 #endif
-

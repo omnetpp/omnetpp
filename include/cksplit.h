@@ -47,6 +47,15 @@ double divfunc_babak(cKSplit&, sGrid&, double, double *);
 
 //==========================================================================
 // sGrid: struct used internally by cKSplit
+
+/**
+ * FIXME: classes declared
+ * K: the grid size of the algorithm
+ * cell split criteria
+ * cell division criteria
+ * 
+ * sGrid: struct used internally by cKSplit
+ */
 struct sGrid
 {
   int parent;      // index of parent grid
@@ -59,6 +68,11 @@ struct sGrid
 //==========================================================================
 // cKSplit
 
+
+/**
+ * FIXME: 
+ * cKSplit
+ */
 class SIM_API cKSplit : public cDensityEstBase
 {
     friend class cKSplitIterator;
@@ -82,63 +96,211 @@ class SIM_API cKSplit : public cDensityEstBase
 
   protected:
     // operations during inserting an observation
+
+    /**
+     * FIXME: operations during inserting an observation
+     */
     void resetGrids(int grid);
+
+    /**
+     * MISSINGDOC: cKSplit:void createRootGrid()
+     */
     void createRootGrid();
+
+    /**
+     * MISSINGDOC: cKSplit:void newRootGrids(double)
+     */
     void newRootGrids(double x);
+
+    /**
+     * MISSINGDOC: cKSplit:void insertIntoGrids(double,int)
+     */
     void insertIntoGrids(double x, int enable_splits);
+
+    /**
+     * MISSINGDOC: cKSplit:void splitCell(int,int)
+     */
     void splitCell(int grid, int cell);
+
+    /**
+     * MISSINGDOC: cKSplit:void distributeMotherObservations(int)
+     */
     void distributeMotherObservations(int grid);
+
+    /**
+     * MISSINGDOC: cKSplit:void expandGridVector()
+     */
     void expandGridVector();
 
     // helper for basepoint(), cell():
+
+    /**
+     * FIXME: helper for basepoint(), cell():
+     */
     void iteratorToCell(int cell_nr);
 
   public:
 
+
+    /**
+     * MISSINGDOC: cKSplit:cKSplit(cKSplit&)
+     */
     cKSplit(cKSplit& r);
+
+    /**
+     * MISSINGDOC: cKSplit:cKSplit(char*)
+     */
     explicit cKSplit(const char *name=NULL);
+
+    /**
+     * MISSINGDOC: cKSplit:~cKSplit()
+     */
     virtual ~cKSplit();
 
     // redefined functions
+
+    /**
+     * FIXME: redefined functions
+     */
     virtual const char *className() const {return "cKSplit";}
+
+    /**
+     * MISSINGDOC: cKSplit:cObject*dup()
+     */
     virtual cObject *dup()   {return new cKSplit (*this);}
+
+    /**
+     * MISSINGDOC: cKSplit:cKSplit&operator=(cKSplit&)
+     */
     cKSplit& operator=(cKSplit& res);
+
+    /**
+     * MISSINGDOC: cKSplit:void writeContents(ostream&)
+     */
     virtual void writeContents(ostream& os);
+
+    /**
+     * MISSINGDOC: cKSplit:int netPack()
+     */
     virtual int netPack();
+
+    /**
+     * MISSINGDOC: cKSplit:int netUnpack()
+     */
     virtual int netUnpack();
 
     // redefined cDensityEstBase functions
+
+    /**
+     * FIXME: redefined cDensityEstBase functions
+     */
     virtual void transform();
   protected:
+
+    /**
+     * MISSINGDOC: cKSplit:void collectTransformed(double)
+     */
     virtual void collectTransformed(double val);
   public:
+
+    /**
+     * MISSINGDOC: cKSplit:int cells()
+     */
     virtual int cells();
+
+    /**
+     * MISSINGDOC: cKSplit:double basepoint(int)
+     */
     virtual double basepoint(int k);
+
+    /**
+     * MISSINGDOC: cKSplit:double cell(int)
+     */
     virtual double cell(int k);
 
+
+    /**
+     * MISSINGDOC: cKSplit:double pdf(double)
+     */
     virtual double pdf(double x);
+
+    /**
+     * MISSINGDOC: cKSplit:double cdf(double)
+     */
     virtual double cdf(double x);
 
+
+    /**
+     * MISSINGDOC: cKSplit:double random()
+     */
     virtual double random();
 
+
+    /**
+     * MISSINGDOC: cKSplit:void saveToFile(FILE*)
+     */
     virtual void saveToFile(FILE *);
+
+    /**
+     * MISSINGDOC: cKSplit:void loadFromFile(FILE*)
+     */
     virtual void loadFromFile(FILE *);
 
     // new functions
+
+    /**
+     * FIXME: new functions
+     */
     void setCritFunc(KSplitCritFunc _critfunc, double *_critdata);
+
+    /**
+     * MISSINGDOC: cKSplit:void setDivFunc(KSplitDivFunc,double*)
+     */
     void setDivFunc(KSplitDivFunc _divfunc, double *_divdata);
+
+    /**
+     * MISSINGDOC: cKSplit:void rangeExtension(bool)
+     */
     void rangeExtension( bool enabled );
 
+
+    /**
+     * MISSINGDOC: cKSplit:int treeDepth()
+     */
     int treeDepth();
+
+    /**
+     * MISSINGDOC: cKSplit:int treeDepth(sGrid&)
+     */
     int treeDepth(sGrid& grid);
 
+
+    /**
+     * MISSINGDOC: cKSplit:double realCellValue(sGrid&,int)
+     */
     double realCellValue(sGrid& grid, int cell);
+
+    /**
+     * MISSINGDOC: cKSplit:void printGrids()
+     */
     void printGrids();
 
+
+    /**
+     * MISSINGDOC: cKSplit:sGrid&grid(int)
+     */
     sGrid& grid(int k) {return gridv[k];}
+
+    /**
+     * MISSINGDOC: cKSplit:sGrid&rootGrid()
+     */
     sGrid& rootGrid()  {return gridv[rootgrid];}
 };
 
+
+/**
+ * MISSINGDOC: cKSplitIterator
+ */
 class SIM_API cKSplitIterator
 {
   private:
@@ -147,19 +309,62 @@ class SIM_API cKSplitIterator
     int grid, cell;          // root index in gridv[], cell index in grid.cell[]
     double gridmin;          // left edge of current grid
     double cellsize;         // cell width on current grid
+
+    /**
+     * MISSINGDOC: cKSplitIterator:void dive(int)
+     */
     void dive(int where);
   public:
+
+    /**
+     * MISSINGDOC: cKSplitIterator:cKSplitIterator(cKSplit&,int)
+     */
     cKSplitIterator(cKSplit& _ks, int _beg=1);
+
+    /**
+     * MISSINGDOC: cKSplitIterator:void init(cKSplit&,int)
+     */
     void init(cKSplit& _ks, int _beg=1);
+
+    /**
+     * MISSINGDOC: cKSplitIterator:void operator++()
+     */
     void operator++(int);
+
+    /**
+     * MISSINGDOC: cKSplitIterator:void operator--()
+     */
     void operator--(int);
+
+    /**
+     * MISSINGDOC: cKSplitIterator:bool end()
+     */
     bool end()           {return grid==0;}
+
+    /**
+     * MISSINGDOC: cKSplitIterator:int cellNumber()
+     */
     int cellNumber()     {return cellnum;}
+
+    /**
+     * MISSINGDOC: cKSplitIterator:double cellMin()
+     */
     double cellMin()     {return gridmin+cell*cellsize;}
+
+    /**
+     * MISSINGDOC: cKSplitIterator:double cellMax()
+     */
     double cellMax()     {return gridmin+(cell+1)*cellsize;}
+
+    /**
+     * MISSINGDOC: cKSplitIterator:double cellSize()
+     */
     double cellSize()    {return cellsize;}
+
+    /**
+     * MISSINGDOC: cKSplitIterator:double cellValue()
+     */
     double cellValue();
 };
 
 #endif
-

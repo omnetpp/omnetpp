@@ -126,4 +126,3 @@ typedef double (*MathFunc1Arg)(double);
 typedef double (*MathFunc2Args)(double,double);
 typedef double (*MathFunc3Args)(double,double,double);
 
-#endif

@@ -49,6 +49,13 @@ SIM_API extern cSimulation simulation;
 //==========================================================================
 // cSimulation  : simulation management class; only one instance
 
+
+/**
+ * FIXME: //=== classes mentioned:
+ * //=== global vector of modules:
+ * 
+ * cSimulation  : simulation management class; only one instance
+ */
 class SIM_API cSimulation : public cObject
 {
      friend class cSimpleModule;
@@ -102,111 +109,365 @@ class SIM_API cSimulation : public cObject
      bool scalarfile_header_written;
 
    public:
+
+    /**
+     * FIXME: variables of the module vector
+     * simulation global vars
+     *      (network interface) module
+     */
      explicit cSimulation(const char *name, cHead *h=NULL);
+
+    /**
+     * MISSINGDOC: cSimulation:~cSimulation()
+     */
      virtual ~cSimulation();
 
      // redefined functions
+
+    /**
+     * FIXME: redefined functions
+     */
      virtual const char *className() const {return "cSimulation";}
+
+    /**
+     * MISSINGDOC: cSimulation:char*inspectorFactoryName()
+     */
      virtual const char *inspectorFactoryName() const {return "cSimulationIFC";}
+
+    /**
+     * MISSINGDOC: cSimulation:void forEach(ForeachFunc)
+     */
      virtual void forEach(ForeachFunc f);
+
+    /**
+     * MISSINGDOC: cSimulation:void writeContents(ostream&)
+     */
      virtual void writeContents(ostream& os);
+
+    /**
+     * MISSINGDOC: cSimulation:char*fullPath()
+     */
      virtual const char *fullPath() const {return name();}
 
      // new functions
+
+    /**
+     * FIXME: new functions
+     */
      void setup();                      // things that cannot be done
                                         // from the constructor (which is
                                         // called before main())
 
      // module vector management
+
+    /**
+     * FIXME: from the constructor (which is
+     * called before main())
+     * module vector management
+     */
      int add(cModule *mod);             // add a new cModule; returns id
+
+    /**
+     * MISSINGDOC: cSimulation:void del(int)
+     */
      void del(int id);                  // delete (& destroy) a module
+
+    /**
+     * MISSINGDOC: cSimulation:int lastModuleIndex()
+     */
      int lastModuleIndex()              // last module
          {return last_id;}
 
      // find modules by path
+
+    /**
+     * FIXME: find modules by path
+     */
      cModule *moduleByPath(const char *modulepath);
 
      // look up modules by id
+
+    /**
+     * FIXME: look up modules by id
+     */
      cModule *module(int id)                  // get module by ID
          {return id>=0 && id<size ? vect[id] : NO(cModule);}
+
+    /**
+     * MISSINGDOC: cSimulation:cModule&operator[](int)
+     */
      cModule& operator[](int id)              // act as a vector
          {return id>=0 && id<size ? *vect[id] : *NO(cModule);}
 
      // set/get system module
+
+    /**
+     * FIXME: set/get system module
+     */
      void setSystemModule(cModule *p)
          {systemmodp = p;}
+
+    /**
+     * MISSINGDOC: cSimulation:cModule*systemModule()
+     */
      cModule *systemModule()
          {return systemmodp;}
 
      // parallel execution support: network interface
+
+    /**
+     * FIXME: parallel execution support: network interface
+     */
      cNetMod *netInterface()
          {return netmodp;}
+
+    /**
+     * MISSINGDOC: cSimulation:void setNetInterface(cNetMod*)
+     */
      void setNetInterface(cNetMod *netif);
 
      // simulation / physical time
+
+    /**
+     * FIXME: simulation / physical time
+     */
      simtime_t simTime()  // simulation time
          {return sim_time;}
+
+    /**
+     * MISSINGDOC: cSimulation:void resetClock()
+     */
      void resetClock();          //
+
+    /**
+     * MISSINGDOC: cSimulation:void startClock()
+     */
      void startClock();          //  physical clock
+
+    /**
+     * MISSINGDOC: cSimulation:void stopClock()
+     */
      void stopClock();           //
+
+    /**
+     * MISSINGDOC: cSimulation:void checkTimes()
+     */
      void checkTimes();          //  check time limits (phys. AND simul.)
 
      // starting / stopping simulations
+
+    /**
+     * FIXME: starting / stopping simulations
+     */
      bool setupNetwork(cNetworkType *net,int run_num); // build new network
+
+    /**
+     * MISSINGDOC: cSimulation:void startRun()
+     */
      void startRun();            // initialize network
+
+    /**
+     * MISSINGDOC: cSimulation:void callFinish()
+     */
      void callFinish();          // call finish() funcs of simple modules
+
+    /**
+     * MISSINGDOC: cSimulation:void endRun()
+     */
      void endRun();              // close open files etc.
+
+    /**
+     * MISSINGDOC: cSimulation:void deleteNetwork()
+     */
      void deleteNetwork();       // delete modules, msg queue etc.
 
      // set...
+
+    /**
+     * FIXME: set...
+     */
      void setTimeLimit(long t)         {tmlimit=(time_t)t;}
+
+    /**
+     * MISSINGDOC: cSimulation:void setSimTimeLimit(simtime_t)
+     */
      void setSimTimeLimit(simtime_t t) {simtmlimit=t;}
+
+    /**
+     * MISSINGDOC: cSimulation:void incEventNumber()
+     */
      void incEventNumber()             {event_num++;}
+
+    /**
+     * MISSINGDOC: cSimulation:void setNetIfCheckFreq(int)
+     */
      void setNetIfCheckFreq(int f)     {netif_check_freq=f;}
 
      // get...
+
+    /**
+     * FIXME: get...
+     */
      cNetworkType *networkType()     {return networktype;}
+
+    /**
+     * MISSINGDOC: cSimulation:int runNumber()
+     */
      int  runNumber()                {return run_number;}
+
+    /**
+     * MISSINGDOC: cSimulation:long timeLimit()
+     */
      long timeLimit()                {return (long)tmlimit;}
+
+    /**
+     * MISSINGDOC: cSimulation:simtime_t simTimeLimit()
+     */
      simtime_t simTimeLimit()        {return simtmlimit;}
+
+    /**
+     * MISSINGDOC: cSimulation:long eventNumber()
+     */
      long eventNumber()              {return event_num;}
 
      // central simulation functions:
+
+    /**
+     * FIXME: central simulation functions:
+     */
      cSimpleModule *selectNextModule();  // the scheduler function
+
+    /**
+     * MISSINGDOC: cSimulation:void doOneEvent(cSimpleModule*)
+     */
      void doOneEvent(cSimpleModule *m);  // execute one event
 
      // coroutine/context management
+
+    /**
+     * FIXME: coroutine/context management
+     */
      int transferTo(cSimpleModule *p);   // switch to simple module's coroutine
+
+    /**
+     * MISSINGDOC: cSimulation:int transferToMain()
+     */
      int transferToMain();               // switch to main coroutine
+
+    /**
+     * MISSINGDOC: cSimulation:void setContextModule(cModule*)
+     */
      void setContextModule(cModule *p);  // set contextmodp and locallistp
+
+    /**
+     * MISSINGDOC: cSimulation:void setGlobalContext()
+     */
      void setGlobalContext()             {contextmodp=NULL;locallistp=&locals;}
 
+
+    /**
+     * MISSINGDOC: cSimulation:void setLocalList(cHead*)
+     */
      void setLocalList(cHead *p)         {locallistp=p;}
+
+    /**
+     * MISSINGDOC: cSimulation:cSimpleModule*runningModule()
+     */
      cSimpleModule *runningModule()      {return runningmodp;}
+
+    /**
+     * MISSINGDOC: cSimulation:cModule*contextModule()
+     */
      cModule       *contextModule()      {return contextmodp;}
+
+    /**
+     * MISSINGDOC: cSimulation:cSimpleModule*contextSimpleModule()
+     */
      cSimpleModule *contextSimpleModule(); // cannot make inline! would require cmodule.h because of dynamic cast
+
+    /**
+     * MISSINGDOC: cSimulation:cHead*localList()
+     */
      cHead *localList()                  {return locallistp==NULL?(&locals):locallistp;}
 
      // snapshot(): to be called from cSimpleModule::snapshot()
+
+    /**
+     * FIXME: snapshot(): to be called from cSimpleModule::snapshot()
+     */
      bool snapshot(cObject *obj, const char *label);
 
      // record into scalar result file
+
+    /**
+     * FIXME: record into scalar result file
+     */
      void recordScalar(const char *name, double value);
+
+    /**
+     * MISSINGDOC: cSimulation:void recordScalar(char*,char*)
+     */
      void recordScalar(const char *name, const char *text);
+
+    /**
+     * MISSINGDOC: cSimulation:void recordStats(char*,cStatistic*)
+     */
      void recordStats(const char *name, cStatistic *stats);
 
      // errors / warnings / messages
      // Note: error() and warning() are supposed to be called through the
      //   opp_error() and opp_warning() global utility functions.
+
+    /**
+     * FIXME: errors / warnings / messages
+     * Note: error() and warning() are supposed to be called through the
+     *   opp_error() and opp_warning() global utility functions.
+     */
      bool warnings()          {return warn;}
+
+    /**
+     * MISSINGDOC: cSimulation:void setWarnings(bool)
+     */
      void setWarnings(bool w) {warn=w;}
+
+    /**
+     * MISSINGDOC: cSimulation:void terminate(int,char*)
+     */
      void terminate(int errcode,const char *message); // print message + set error num
+
+    /**
+     * MISSINGDOC: cSimulation:void error(int,char*)
+     */
      void error(int errcode,const char *message);     // general error handler
+
+    /**
+     * MISSINGDOC: cSimulation:void warning(int,char*)
+     */
      void warning(int errcode,const char *message);   // message + question:continue/abort?
+
+    /**
+     * MISSINGDOC: cSimulation:bool ok()
+     */
      bool ok()         {return err==eOK;}       // true if sim. can go on
+
+    /**
+     * MISSINGDOC: cSimulation:int errorCode()
+     */
      int errorCode()   {return err;}            // error code
+
+    /**
+     * MISSINGDOC: cSimulation:void setErrorCode(int)
+     */
      void setErrorCode(int e) {err=e;}          // set error code without giving error message
+
+    /**
+     * MISSINGDOC: cSimulation:bool normalTermination()
+     */
      bool normalTermination();                  // examines error code
+
+    /**
+     * MISSINGDOC: cSimulation:void resetError()
+     */
      void resetError() {err=eOK;}               // reset error code
 
 };
@@ -217,4 +478,3 @@ class ___nosuchclass;
 void *operator new(size_t m,___nosuchclass *);
 
 #endif
-

@@ -72,6 +72,19 @@ extern "C"
 // cCoroutine - low-level coroutine; used by cSimpleModule
 //   NOTE: Not a cObject-descendant
 
+
+/**
+ * FIXME: The following define selects which coroutine-set to use.
+ * The nonportable version (module stacks allocated on heap)
+ * is selected for 16-bit MSDOS (otherwise the total of coroutine
+ * stacks would be limited to 64K.)
+ * Getting around the unwanted behaviour of longjmp() under AIX
+ * //=== some defines
+ * coroutine function pointer
+ * 
+ * cCoroutine - low-level coroutine; used by cSimpleModule
+ *   NOTE: Not a cObject-descendant
+ */
 class SIM_API cCoroutine
 {
   private:
@@ -90,24 +103,80 @@ class SIM_API cCoroutine
     bool started;           // true after 1st stack switch
 #endif
   public:
+
+    /**
+     * MISSINGDOC: cCoroutine:static void init(unsigned,unsigned)
+     */
     static void init( unsigned total_stack, unsigned main_stack);
+
+    /**
+     * MISSINGDOC: cCoroutine:static void switchTo(cCoroutine*)
+     */
     static void switchTo( cCoroutine *cor );
+
+    /**
+     * MISSINGDOC: cCoroutine:static void switchtoMain()
+     */
     static void switchtoMain();
 
+
+    /**
+     * MISSINGDOC: cCoroutine:cCoroutine()
+     */
     cCoroutine();
     ~cCoroutine();
+
+    /**
+     * MISSINGDOC: cCoroutine:cCoroutine&operator=(cCoroutine&)
+     */
     cCoroutine& operator=(cCoroutine& cor);
 
+
+    /**
+     * MISSINGDOC: cCoroutine:bool setup(CoroutineFnp,void*,unsigned)
+     */
     bool setup( CoroutineFnp fnp, void *arg, unsigned stack_size );
+
+    /**
+     * MISSINGDOC: cCoroutine:void free()
+     */
     void free();
+
+    /**
+     * MISSINGDOC: cCoroutine:void restart()
+     */
     void restart();
 
+
+    /**
+     * MISSINGDOC: cCoroutine:bool stackOverflow()
+     */
     bool stackOverflow();
+
+    /**
+     * MISSINGDOC: cCoroutine:unsigned stackSize()
+     */
     unsigned stackSize();
+
+    /**
+     * MISSINGDOC: cCoroutine:unsigned stackUsage()
+     */
     unsigned stackUsage();
 
+
+    /**
+     * MISSINGDOC: cCoroutine:int stackLeft()
+     */
     int stackLeft(); // obsolete
+
+    /**
+     * MISSINGDOC: cCoroutine:bool stackLow()
+     */
     bool stackLow(); // obsolete
+
+    /**
+     * MISSINGDOC: cCoroutine:static int*getMainSP()
+     */
     static int *getMainSP(); // obsolete
 };
 
@@ -122,4 +191,3 @@ inline bool cCoroutine::stackLow() {return sp<stklow;}
 #endif
 
 #endif
-

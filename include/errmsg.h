@@ -86,4 +86,3 @@ enum {
 
 extern char *emsg[];
 
-#endif

@@ -51,6 +51,36 @@ enum {
 //   2: collect samples and transform() makes the boundaries
 //
 
+
+/**
+ * FIXME: 
+ *  transform types for cVarHistogram
+ * 
+ * HIST_TR_NO_TRANSFORM: no transformation; uses bin boundaries
+ *                       previously defined by addBinBound()/appendBinBound()
+ * HIST_TR_AUTO_EPC_DBL: automatically creates equiprobable cells
+ * HIST_TR_AUTO_EPC_INT: like the above, but uses a different hack :-)
+ * 
+ * cVarHistogram
+ * 
+ * layout of the variable bin width histogram:
+ * 
+ *        underflow-cell   ordinary cells . . .             overflow-cell
+ *        ...---------|-----------|- ... -|-----------------|---------...
+ *                    | ^cellv[0] |      cellv[num_cells-1]^|
+ *                  n |           |                         |
+ *                rangemin        |                      rangemax
+ *                    |    bin_bounds[1]                    |
+ *              bin_bounds[0]                       bin_bounds[numcells]
+ * 
+ * Rangemin and rangemax is chosen after collecting the num_firstvals initial
+ * observations
+ * Cannot add cell boundaries when histogram is already transformed!
+ * Now we do support the following 2 uses of cVarHistogram:
+ *   1: add all the boundaries (manually) before collecting samples
+ *   2: collect samples and transform() makes the boundaries
+ * 
+ */
 class SIM_API cVarHistogram : public cHistogramBase //--LG
 {
   protected:
@@ -63,43 +93,127 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     // consequence: sizeof(binbounds)=sizeof(cellv)+1
 
   protected:
+
+    /**
+     * FIXME: the boundaries of the ordinary cells/bins are:
+     * rangemin=bin_bounds[0], bin_bounds[1], ... bin_bounds[num_cells]=rangemax
+     * consequence: sizeof(binbounds)=sizeof(cellv)+1
+     */
     void createEquiProbableCells();
 
   public:
+
+    /**
+     * MISSINGDOC: cVarHistogram:cVarHistogram(cVarHistogram&)
+     */
     cVarHistogram(cVarHistogram& r) : cHistogramBase(r)
        {setName(r.name());bin_bounds=NULL;operator=(r);}
     explicit cVarHistogram(const char *name=NULL,
                            int numcells=11,
+
+    /**
+     * The third argument can be one of HIST_TR_NO_TRANSFORM,
+     * HIST_TR_AUTO_EPC_DBL, HIST_TR_AUTO_EPC_INT.
+     */
                            int transformtype=HIST_TR_AUTO_EPC_DBL);
+
+    /**
+     * MISSINGDOC: cVarHistogram:~cVarHistogram()
+     */
     virtual ~cVarHistogram();
 
     // redefined functions
+
+    /**
+     * FIXME: redefined functions
+     */
     virtual const char *className() const {return "cVarHistogram";}
+
+    /**
+     * MISSINGDOC: cVarHistogram:cObject*dup()
+     */
     virtual cObject *dup()    {return new cVarHistogram(*this);}
+
+    /**
+     * MISSINGDOC: cVarHistogram:cVarHistogram&operator=(cVarHistogram&)
+     */
     cVarHistogram& operator=(cVarHistogram& res);
+
+    /**
+     * MISSINGDOC: cVarHistogram:int netPack()
+     */
     virtual int netPack();
+
+    /**
+     * MISSINGDOC: cVarHistogram:int netUnpack()
+     */
     virtual int netUnpack();
 
     // new functions:
+
+    /**
+     * If HIST_TR_NO_TRANSFORM was passed in the constructor
+     * call, you may specify cell (bin) bounds manually before collection
+     * starts.
+     */
     virtual void addBinBound(double x); // adds a new bin boundary (keeping the right order)
 
     // redefined cHistogramBase functions
+
+    /**
+     * FIXME: redefined cHistogramBase functions
+     */
     virtual void clearResult();
 
+
+    /**
+     * MISSINGDOC: cVarHistogram:void transform()
+     */
     virtual void transform();
+
+    /**
+     * MISSINGDOC: cVarHistogram:void collectTransformed(double)
+     */
     virtual void collectTransformed(double val);
 
+
+    /**
+     * MISSINGDOC: cVarHistogram:double random()
+     */
     virtual double random();
+
+    /**
+     * MISSINGDOC: cVarHistogram:double pdf(double)
+     */
     virtual double pdf(double x); // --LG
+
+    /**
+     * MISSINGDOC: cVarHistogram:double cdf(double)
+     */
     virtual double cdf(double x); // --LG
 
+
+    /**
+     * MISSINGDOC: cVarHistogram:double basepoint(int)
+     */
     virtual double basepoint(int k); // --LG
+
+    /**
+     * MISSINGDOC: cVarHistogram:double cell(int)
+     */
     virtual double cell(int k);
 
+
+    /**
+     * MISSINGDOC: cVarHistogram:void saveToFile(FILE*)
+     */
     virtual void saveToFile(FILE *); //--LG
+
+    /**
+     * MISSINGDOC: cVarHistogram:void loadFromFile(FILE*)
+     */
     virtual void loadFromFile(FILE *);  //--LG
 
 };
 
 #endif
-

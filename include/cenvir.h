@@ -52,6 +52,14 @@ ENVIR_API bool opp_loadlibrary(const char *libname);
 //==========================================================================
 // cEnvir
 
+
+/**
+ * FIXME: //=== class declared:
+ * the environment object global instance
+ * return codes for runningMode()
+ * 
+ * cEnvir
+ */
 class ENVIR_API cEnvir
 {
   public:
@@ -62,51 +70,166 @@ class ENVIR_API cEnvir
     char prmpt[81];    // prompt used by prompt() and operator >>
 
   public:
+
+    /**
+     * The constructor and the destructor in most cases do nothing.
+     */
     cEnvir();
     ~cEnvir();
 
     // called from main()
+
+    /**
+     * FIXME: called from main()
+     */
     void setup(int ac, char *av[]);
+
+    /**
+     * MISSINGDOC: cEnvir:void run()
+     */
     void run();
+
+    /**
+     * MISSINGDOC: cEnvir:void shutdown()
+     */
     void shutdown();
 
     // called by the sim.kernel to notify environment about events
+
+    /**
+     * Notifies the environment that the object no longer exists. The
+     * user interface should close all inspector windows for the object
+     * and remove it from object lists currently displayed. cObject's
+     * destructor automatically calls this function.
+     */
     void objectDeleted(cObject *object);
+
+    /**
+     * MISSINGDOC: cEnvir:void messageSent(cMessage*)
+     */
     void messageSent(cMessage *msg);
+
+    /**
+     * MISSINGDOC: cEnvir:void messageDelivered(cMessage*)
+     */
     void messageDelivered(cMessage *msg);
+
+    /**
+     * MISSINGDOC: cEnvir:void breakpointHit(char*,cSimpleModule*)
+     */
     void breakpointHit(const char *lbl, cSimpleModule *mod);
 
     // called by the sim.kernel to get info
+
+    /**
+     * FIXME: called by the sim.kernel to get info
+     */
     const char *getParameter(int run_no, const char *parname);
+
+    /**
+     * MISSINGDOC: cEnvir:char*getPhysicalMachineFor(char*)
+     */
     const char *getPhysicalMachineFor(const char *logical_mach);
     void getOutVectorConfig(const char *modname,const char *vecname, /*input*/
                             bool& enabled, /*output*/
+
+    /**
+     * MISSINGDOC: cEnvir:void getOutVectorConfig(char*,char*,/*input*/ bool&,/*output*/ double&,double&)
+     */
                             double& starttime, double& stoptime);
+
+    /**
+     * MISSINGDOC: cEnvir:char*getDisplayString(int,char*)
+     */
     const char *getDisplayString(int run_no,const char *name);
 
     // called from simple modules or the sim.kernel for I/O
+
+    /**
+     * Displays a message in dialog box. This function should not be
+     * used too much by simple modules, if ever.
+     */
     void printfmsg(const char *fmt,...);
+
+    /**
+     * Simple modules can output text into their own window through this
+     * function. The text  is expected in printf() format (format
+     * string + arguments).
+     */
     void printf(const char *fmt="\n",...);
+
+    /**
+     * Similar to cEnvir::printf(), but just writes out its
+     * argument string with no formatting.
+     */
     void puts(const char *s);
+
+    /**
+     * Similar to cEnvir::askf(), but just writes out the prompt
+     * message string with no formatting.
+     */
     bool gets(const char *prompt, char *buf, int len=255);
+
+    /**
+     * Pops up a dialog, displays the message given in 'profmt' and following
+     * arguments in printf() format and reads a line (maximum
+     * len characters) from the user into the buffer 'buf'.
+     * Returns true if the user pressed the Cancel button.
+     */
     bool askf(char *buf, int len, const char *promptfmt,...);
+
+    /**
+     * Puts a yes/no question to the user. The question itself  is expected
+     * in the printf() format (format string + arguments). The
+     * true return value means yes, false means no.
+     */
     bool askYesNo(const char *msgfmt,...);
 
+
+    /**
+     * MISSINGDOC: cEnvir:void foreignPuts(char*,char*,char*)
+     */
     void foreignPuts(const char *hostname, const char *mod, const char *str);
 
+
+    /**
+     * MISSINGDOC: cEnvir:cEnvir&setPrompt(char*)
+     */
     cEnvir& setPrompt(const char *s);      // set prompt for >> operators
+
+    /**
+     * Returns the prompt string.
+     */
     const char *prompt()  {return prmpt;}  // return prompt string
 
     // runningMode() returns whether the simulation is distributed,
     // and if yes, this process is master or slave
+
+    /**
+     * FIXME: runningMode() returns whether the simulation is distributed,
+     * and if yes, this process is master or slave
+     */
     int runningMode()     {return running_mode;}
 
     // extraStackForEnvir() is called from cSimpleModule; returns how much extra
     // stack space the user interface recommends for the simple modules
+
+    /**
+     * FIXME: extraStackForEnvir() is called from cSimpleModule; returns how much extra
+     * stack space the user interface recommends for the simple modules
+     */
     unsigned extraStackForEnvir();
 
     // access to original command-line arguments
+
+    /**
+     * FIXME: access to original command-line arguments
+     */
     int argCount();
+
+    /**
+     * MISSINGDOC: cEnvir:char**argVector()
+     */
     char **argVector();
 };
 
@@ -189,4 +312,3 @@ inline cEnvir& endl(cEnvir& ev) {ev.puts("\n"); return ev;}
 inline cEnvir& operator<<(cEnvir& ev, cEnvir& (*f)(cEnvir&)) {return (*f)(ev);}
 
 #endif
-
