@@ -1,3 +1,9 @@
+2005-02-07  Andras Varga
+
+	* enhancement: in omnetpp.ini, description="some text" entries can be 
+	added under the [Run 1], [Run 2] etc sections. These descriptions will
+	appear in the Tkenv run selection dialog.
+
 2005-02-06  Andras Varga
 
 	* gateinsp.tcl, modinsp.cc: fixed cGate inspector error introduced 

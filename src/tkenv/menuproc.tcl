@@ -228,11 +228,16 @@ proc new_run {} {
     set runlist {General}
     foreach section $sectionlist {
        if {[regexp -nocase -- {^(Run *)?([0-9]+) *$} $section dummy dummy1 runno]} {
-           lappend runlist "Run $runno"
+           set descr [opp_getinientryasstring $section "description"]
+           if {$descr != ""}  {
+               lappend runlist "Run $runno -- $descr"
+           } else {
+               lappend runlist "Run $runno"
+           }
        }
     }
 
-    # determine detault run to be offered
+    # determine default run to be offered
     set run "Run [opp_getrunnumber]"
     if {$run=="Run 0"} {
         if {[llength $runlist]>1} {
@@ -247,7 +252,7 @@ proc new_run {} {
     if {$ok == 1} {
        if {$run == "General"} {
            set runno "-1"
-       } elseif {[regexp -nocase -- {^(Run *)?([0-9]+) *$} $run dummy dummy1 runno]} {
+       } elseif {[regexp -nocase -- {^(Run *)?([0-9]+) *(--.*)?$} $run dummy dummy1 runno]} {
            # OK -- regexp matched
        } else {
            messagebox "Error" "Which run do you mean by '$run'?" info ok

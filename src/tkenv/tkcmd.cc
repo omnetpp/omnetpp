@@ -45,6 +45,7 @@ using std::string;
 int newNetwork_cmd(ClientData, Tcl_Interp *, int, const char **);
 int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getIniSectionNames_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getIniEntryAsString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int createSnapshot_cmd(ClientData, Tcl_Interp *, int, const char **);
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, const char **);
 
@@ -134,6 +135,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getrunnumber",     getRunNumber_cmd         }, // args: -  ret: current run
    { "opp_getnetworktype",   getNetworkType_cmd       }, // args: -  ret: type of current network
    { "opp_getinisectionnames",getIniSectionNames_cmd  }, // args: -
+   { "opp_getinientryasstring",getIniEntryAsString_cmd}, // args: <section> <key>  ret: value
    { "opp_getfilename",      getFileName_cmd          }, // args: <filetype>  ret: filename
    { "opp_getobjectfullname",getObjectFullName_cmd    }, // args: <pointer>  ret: fullName()
    { "opp_getobjectfullpath",getObjectFullPath_cmd    }, // args: <pointer>  ret: fullPath()
@@ -231,6 +233,19 @@ int getIniSectionNames_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    char *buf = Tcl_Merge(n,const_cast<char **>(sections));
    delete [] sections;
    Tcl_SetResult(interp, buf, TCL_DYNAMIC);
+   return TCL_OK;
+}
+
+int getIniEntryAsString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   TOmnetTkApp *app = getTkApplication();
+   const char *section = argv[1];
+   const char *key = argv[2];
+
+   cConfiguration *cfg = app->getConfig();
+   const char *value = cfg->getAsString(section, key, "");
+   Tcl_SetResult(interp, TCLCONST(value), TCL_VOLATILE);
    return TCL_OK;
 }
 
