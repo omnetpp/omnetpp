@@ -833,6 +833,8 @@ sub generateClass
         } else {
             print H "    virtual cObject *dup() const {return new $msgclass(*this);}\n";
         }
+        print H "    virtual void netPack(cCommBuffer *buffer);\n";
+        print H "    virtual void netUnpack(cCommBuffer *buffer);\n";
     }
     print H "\n";
     print H "    // field getter/setter methods\n";
@@ -1040,6 +1042,18 @@ sub generateClass
     }
     print CC "    return *this;\n";
     print CC "}\n\n";
+
+    if ($classtype eq "cobject") {
+        print CC "void $msgclass\:\:netPack(cCommBuffer *buffer)\n";
+        print CC "{\n";
+        print CC "    // for parallel simulation: set customize=true in the msg file, and redefine netPack() like e.g. in src/sim/cmessage.cc\n";
+        print CC "    throw new cException(this, \"Cannot serialize object -- please customize class $msgclass and write a netPack() method for it\");\n";
+        print CC "}\n\n";
+        print CC "void $msgclass\:\:netUnpack(cCommBuffer *buffer)\n";
+        print CC "{\n";
+        print CC "    throw new cException(this, \"Cannot deserialize object -- please customize class $msgclass and write a netUnpack() method for it\");\n";
+        print CC "}\n\n";
+    }
 
     foreach $fieldname (@fieldlist)
     {

@@ -3,6 +3,9 @@
 	* opp_msgc: prohibit using cObject fields in structs and non-cObject
 	classes (ownership issues)
 
+	* opp_msgc: generate dummy netPack() and netUnpack() that throw
+	exceptions telling the user to redefine them.
+
 2004-05-16  Andras Varga
 
 	* opp_msgc: fixed two bugs introduced since 2.3p1
