@@ -496,17 +496,20 @@ AC_CONFIG_FILES(
   src/utils/Makefile
   src/utils/opp_makemake
   src/utils/opp_neddoc
+  samples/aloha/Makefile
+  samples/cqn/Makefile
   samples/dyna/Makefile
-  samples/dyna2/Makefile
   samples/fddi/Makefile
-  samples/fifo1/Makefile
-  samples/fifo2/Makefile
+  samples/fifo/Makefile
   samples/hcube/Makefile
   samples/hist/Makefile
-  samples/nim/Makefile
-  samples/token/Makefile
-  samples/topo/Makefile
-  samples/demo/Makefile
+  samples/neddemo/Makefile
+  samples/p-to-p/Makefile
+  samples/queueing/Makefile
+  samples/routing/Makefile
+  samples/routingdb/Makefile
+  samples/tictoc/Makefile
+  samples/tokenring/Makefile
   tutorial/queues/Makefile
   include/Makefile
   test/Makefile

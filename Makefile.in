@@ -36,7 +36,7 @@ components: libs progs samples tutorials
 
 LIBS=sim nedxml envir cmdenv tkenv
 PROGS=utils nedc gned plove
-SAMPLES=dyna dyna2 fddi fifo1 fifo2 hcube hist nim token topo demo
+SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing routingdb tictoc tokenring
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs
@@ -86,38 +86,47 @@ utils:
 # Sample programs
 #
 
+aloha:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
+
+cqn:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
+
 dyna:
-	cd $(OMNETPP_SAMPLES_DIR)/dyna && $(MAKE)
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
 fddi:
-	cd $(OMNETPP_SAMPLES_DIR)/fddi && $(MAKE)
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
-fifo1:
-	cd $(OMNETPP_SAMPLES_DIR)/fifo1 && $(MAKE)
-
-fifo2:
-	cd $(OMNETPP_SAMPLES_DIR)/fifo2 && $(MAKE)
+fifo:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
 hcube:
-	cd $(OMNETPP_SAMPLES_DIR)/hcube && $(MAKE)
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
 hist:
-	cd $(OMNETPP_SAMPLES_DIR)/hist && $(MAKE)
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
-nim:
-	cd $(OMNETPP_SAMPLES_DIR)/nim && $(MAKE)
+neddemo:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
-token:
-	cd $(OMNETPP_SAMPLES_DIR)/token && $(MAKE)
+p-to-p:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
-dyna2:
-	cd $(OMNETPP_SAMPLES_DIR)/dyna2 && $(MAKE)
+queueing:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
-topo:
-	cd $(OMNETPP_SAMPLES_DIR)/topo && $(MAKE)
+routing:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
-demo:
-	cd $(OMNETPP_SAMPLES_DIR)/demo && $(MAKE)
+routingdb:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
+
+tictoc:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
+
+tokenring:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
 tutorials:
 	cd $(OMNETPP_TUTORIAL_DIR)/queues && $(MAKE)
@@ -182,4 +191,10 @@ depend: utils
 	for i in $(SAMPLES); do \
 	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) depend); \
 	done
+
+makefiles:
+	for i in $(SAMPLES); do \
+	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && opp_makemake -f); \
+	done
+	cd $(OMNETPP_TUTORIAL_DIR)/queues && opp_makemake -f
 
