@@ -100,3 +100,5 @@ Apr 10, 2000
 Apr 16, 2000
  - prephtml script enhanced: now it splits up the manual to several HTML files
    (usman.html, toc.html plus chapN.html files); it also adds heading numbering.
+Apr 19, 2000
+ - added some Purify support to makemake [from Ulrich Kaage]

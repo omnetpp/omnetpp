@@ -251,6 +251,7 @@ TV_LIBS=@TV_LIBS@
 TK_LIBS=@TK_LIBS@
 PVM_LIBS=@PVM_LIBS@
 SYS_LIBS=@SYS_LIBS@
+SYS_LIBS_PURE=-ldl -lsocket -lnsl -lm $(shell $(CXX) -print-file-name=libstdc++.a)
 EOT
 
 else
@@ -276,6 +277,7 @@ TV_LIBS=@${null}TV_LIBS@
 TK_LIBS=@${null}TK_LIBS@
 PVM_LIBS=@${null}PVM_LIBS@
 SYS_LIBS=@${null}SYS_LIBS@
+SYS_LIBS_PURE=-lm $(shell $(CXX) -print-file-name=libstdc++.a)
 EOT
 
 fi
@@ -324,6 +326,9 @@ o)
     echo '	'
     ;;
 esac
+echo
+echo 'purify: $(OBJS) $(EXRA_OBJS) ' $subdirsphony ' Makefile'
+echo '	purify gcc $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure'
 echo
 
 if [ "$type" != "o" ]; then
