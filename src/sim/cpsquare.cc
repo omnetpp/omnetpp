@@ -60,8 +60,8 @@ cPSquare::cPSquare (const char *name, int b) : cDensityEstBase(name)
 
 cPSquare::~cPSquare()
 {
-    delete[] q;
-    delete[] n;
+    delete [] q;
+    delete [] n;
 }
 
 cPSquare& cPSquare::operator=(const cPSquare& res)
@@ -72,8 +72,8 @@ cPSquare& cPSquare::operator=(const cPSquare& res)
 
     numobs=res.numobs;
     numcells=res.numcells;
-    delete[] n;
-    delete[] q;
+    delete [] n;
+    delete [] q;
     n=new int[numcells+2];
     q=new double[numcells+2];
     for (int i=0; i<=numcells+1; i++)

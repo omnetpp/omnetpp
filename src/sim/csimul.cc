@@ -249,7 +249,7 @@ int cSimulation::add(cModule *mod)
         cModule **v = new cModule *[size+delta];
         memcpy(v, vect, sizeof(cModule*)*size );
         for (int i=size; i<size+delta; i++) v[i]=NULL;
-        delete vect;
+        delete [] vect;
         vect = v;
         size += delta;
     }
@@ -483,7 +483,7 @@ void cSimulation::deleteNetwork()
         systemmodp = NULL;
     }
 
-    delete vect;
+    delete [] vect;
     vect = NULL;
     size = 0;
     last_id = 0;

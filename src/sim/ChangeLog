@@ -1,5 +1,10 @@
 2002-03-03  Andras Varga
 
+	* several delete operators replaced with delete []. [suggestion by
+        Johnny Lai]
+
+2002-03-03  Andras Varga
+
        	* ctypes.cc: cClassRegister can now be used to create instances of
        	non-cObject classes too; as part of this change, createOne() return
        	value changed from cObject* to void*. (See also include/ChangeLog)

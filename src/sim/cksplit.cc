@@ -97,7 +97,7 @@ cKSplit::cKSplit(const char *name) : cDensityEstBase(name)
 
 cKSplit::~cKSplit()
 {
-    delete[] gridv;
+    delete [] gridv;
     delete iter;
 }
 
@@ -113,7 +113,7 @@ cKSplit& cKSplit::operator=(const cKSplit& res)
     lastgrid = res.lastgrid;
     gridv_size = res.gridv_size;
 
-    delete[] gridv;
+    delete [] gridv;
     if (!res.gridv)
        gridv = NULL;
     else
@@ -405,7 +405,7 @@ void cKSplit::expandGridVector()
    for (int i=1; i<=lastgrid; i++)
       newgridv[i] = gridv[i];
 
-   delete[] gridv;
+   delete [] gridv;
    gridv = newgridv;
 }
 

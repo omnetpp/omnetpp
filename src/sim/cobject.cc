@@ -139,7 +139,7 @@ cObject::cObject(const char *name, cObject *ownerobj)
 
 cObject::~cObject()
 {
-    delete namestr;
+    delete [] namestr;
     setOwner( NULL );
 
     /* delete owned objects */

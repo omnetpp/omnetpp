@@ -176,7 +176,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 
     nodev = new sTopoNode[num_nodes];
     memcpy(nodev,temp_nodev,num_nodes*sizeof(sTopoNode));
-    delete temp_nodev;
+    delete [] temp_nodev;
 
     // Discover out neighbors too.
     for (k=0; k<num_nodes; k++)
@@ -215,7 +215,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 
         nodev[k].out_links = new sTopoLink[n_out];
         memcpy(nodev[k].out_links,temp_out_links,n_out*sizeof(sTopoLink));
-        delete temp_out_links;
+        delete [] temp_out_links;
     }
 
     // fill in_links[] arrays

@@ -73,7 +73,7 @@ cBag& cBag::operator=(const cBag& bag)
     delta = bag.delta;
     lastused = bag.lastused;
     firstfree = bag.firstfree;
-    delete vect;
+    delete [] vect;
     vect = new char[ size*BLK ];
     if( vect )  memcpy( vect, bag.vect, size*BLK );
     return *this;
@@ -91,7 +91,7 @@ void cBag::setup(int esiz, int siz, int delt)
 
 void cBag::clear()
 {
-   delete vect;
+   delete [] vect;
    vect = NULL;
    size = firstfree = 0;
    lastused = -1;
@@ -115,7 +115,7 @@ int cBag::add(void *obj)
    {
       char *v = new char[ (size+delta)*BLK ];
       memcpy(v, vect, size*BLK );
-      delete vect;
+      delete [] vect;
       vect = v;
       for (int i=size; i<size+delta; i++) USED(i)=false;
       USED(size) = true;
@@ -146,7 +146,7 @@ int cBag::addAt(int m, void *obj) // --LG
       int newsize = Max(size+delta,m+1);
       char *v = new char[ newsize*BLK ];
       memcpy(v, vect, size*BLK );
-      delete vect;
+      delete [] vect;
       vect = v;
       for (int i=size; i<newsize; i++) USED(i)=false;
       USED(m) = true;
@@ -241,7 +241,7 @@ cObject( name )
 cArray::~cArray()
 {
     // no clear()!
-    delete vect;
+    delete [] vect;
 }
 
 cArray& cArray::operator=(const cArray& list)
@@ -256,7 +256,7 @@ cArray& cArray::operator=(const cArray& list)
     delta = list.delta;
     firstfree = list.firstfree;
     last = list.last;
-    delete vect;
+    delete [] vect;
     vect = new cObject *[size];
     if (vect) memcpy( vect, list.vect, size * sizeof(cObject *) );
 
@@ -324,7 +324,7 @@ int cArray::add(cObject *obj)
         cObject **v = new cObject *[size+delta];
         memcpy(v, vect, sizeof(cObject*)*size );
         memset(v+size, 0, sizeof(cObject*)*delta);
-        delete vect;
+        delete [] vect;
         vect = v;
         vect[size] = obj;
         retval = last = size;
@@ -368,7 +368,7 @@ int cArray::addAt(int m, cObject *obj)
         cObject **v = new cObject *[m+delta];
         memcpy(v, vect, sizeof(cObject*)*size);
         memset(v+size, 0, sizeof(cObject*)*(m+delta-size));
-        delete vect;
+        delete [] vect;
         vect = v;
         vect[m] = obj;
         if (takeOwnership()) take(obj);

@@ -159,9 +159,9 @@ cModuleInterface::~cModuleInterface()
     for (i=0; i<ngate; i++)    {delete gatev[i].name;}
     for (i=0; i<nparam; i++)   {delete paramv[i].name;delete paramv[i].types;}
     for (i=0; i<nmachine; i++) {delete machinev[i].name;}
-    delete[] gatev;
-    delete[] paramv;
-    delete[] machinev;
+    delete [] gatev;
+    delete [] paramv;
+    delete [] machinev;
 }
 
 cModuleInterface& cModuleInterface::operator=(const cModuleInterface&)

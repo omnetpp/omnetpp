@@ -53,16 +53,16 @@ cEnum::cEnum(const char *name, int siz) : cObject(name, &enums)
 cEnum::~cEnum()
 {
     for (int i=0; i<size; i++)
-	delete vect[i].string;
-    delete vect;
+	delete [] vect[i].string;
+    delete [] vect;
 }
 
 cEnum& cEnum::operator=(const cEnum& list)
 {
     int i;
     for (i=0; i<size; i++)
-	delete vect[i].string;
-    delete vect;
+	delete [] vect[i].string;
+    delete [] vect;
 
     cObject::operator=( list );
 
@@ -119,7 +119,7 @@ void cEnum::insert(int key, const char *str)
 	    vect[k].key = key;
 	    vect[k].string = oldvect[i].string;
 	}
-	delete oldvect;
+	delete [] oldvect;
     }
 
     // find a slot...

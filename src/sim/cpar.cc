@@ -84,7 +84,7 @@ void cPar::deleteold()
 {
     if (typechar=='S' && !ls.sht)
     {
-        delete ls.str;
+        delete [] ls.str;
     }
     else if (typechar=='T')
     {
@@ -98,7 +98,7 @@ void cPar::deleteold()
             if (ptr.delfunc)
                 ptr.delfunc(ptr.ptr);
             else
-                delete (char *)ptr.ptr;  // delete void* is no longer legal :-(
+                delete [] (char *)ptr.ptr;  // delete void* is no longer legal :-(
         }
     }
     else if (typechar=='O')
@@ -111,7 +111,7 @@ void cPar::deleteold()
         for(int i=0; i<expr.n; i++)
             if (expr.xelem[i].type=='R')  // should be ours
                 free( expr.xelem[i].p );
-        delete expr.xelem;
+        delete [] expr.xelem;
     }
     typechar = 'L';
 }
@@ -804,11 +804,11 @@ bool cPar::setFromText(const char *text, char tp)
         if (!setfunction(tmp)) goto error;
     }
 
-    delete tmp;
+    delete [] tmp;
     return true;
 
     error:
-    delete tmp;
+    delete [] tmp;
     return false;
 }
 
