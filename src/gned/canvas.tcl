@@ -490,12 +490,21 @@ proc exportCanvasesToPostscript {dir imgxmlfile imgsuffix} {
         update idletasks
         doExportCanvasToEPS $canvas($i) $psfile
 
+        set c $canvas($i)
+        set bbox [$c bbox all]
+        set bbx1 [lindex $bbox 0]
+        set bby1 [lindex $bbox 1]
+        set bbx2 [lindex $bbox 2]
+        set bby2 [lindex $bbox 3]
+        set width [expr $bbx2-$bbx1]
+        set height [expr $bby2-$bby1]
+
         # create imagemap
         set submodskey [getChildrenWithType $modkey submods]
         append imgxml "  <image name=\"$modname\" nedfilename=\"$nedfilename\" imgfilename=\"$imgfile\" height=\"$height\" width=\"$width\">\n"
         if {$submodskey!=""} {
             foreach submodkey [getChildren $submodskey] {
-                set bbox [$canv bbox $ned($submodkey,rect-cid)]
+                set bbox [$c bbox $ned($submodkey,rect-cid)]
                 set submodname $ned($submodkey,name)
                 set x1 [expr [lindex $bbox 0] - $bbx1]
                 set y1 [expr [lindex $bbox 1] - $bby1]
