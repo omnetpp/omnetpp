@@ -51,7 +51,8 @@ Simulation library:
 	internally stored cDisplayString objects which can now be manipulated
 	directly (no need for setDisplayString(const char *)).
 
-(+)	ev.isGUI() added. Returns true if simulation runs under Tkenv.
+(+)	ev.isGUI() added. Returns true if simulation runs under Tkenv. Display
+	string updates and bubble() calls can be made conditional on this.
 
 (+)	cModule::bubble() added. It displays a transient "bubble" over the
 	module icon in Tkenv, does nothing in Cmdenv.
