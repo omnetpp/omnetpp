@@ -1,10 +1,10 @@
 //-------------------------------------------------------------
-// file: gen.cc
+// file: gen2.cc
 //        (part of Fifo2 - an OMNeT++ demo simulation)
 //-------------------------------------------------------------
 
 #define FSM_DEBUG
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 
 class FF2BurstyGenerator : public cSimpleModule

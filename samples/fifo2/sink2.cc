@@ -1,9 +1,9 @@
 //-------------------------------------------------------------
-// file: sink.cc
+// file: sink2.cc
 //        (part of Fifo2 - an OMNeT++ demo simulation)
 //-------------------------------------------------------------
 
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 
 class FF2Sink : public cSimpleModule

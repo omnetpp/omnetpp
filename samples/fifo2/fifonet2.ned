@@ -5,9 +5,9 @@
 
 
 import  
-    "gen", 
-    "fifo", 
-    "sink"; 
+    "gen2", 
+    "fifo2", 
+    "sink2"; 
 
 
 // FifoNet2 --

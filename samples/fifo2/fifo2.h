@@ -1,10 +1,12 @@
 //-------------------------------------------------------------
-// file: fifo.h
+// file: fifo2.h
 //        (part of Fifo2 - an OMNeT++ demo simulation)
 //-------------------------------------------------------------
 
-#ifndef __FIFO_H
-#define __FIFO_H
+#ifndef __FIFO2_H
+#define __FIFO2_H
+
+#include <omnetpp.h>
 
 // FF2AbstractFifo : abstract base class for single-server queues
 class FF2AbstractFifo : public cSimpleModule

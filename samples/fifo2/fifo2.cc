@@ -1,10 +1,10 @@
 //-------------------------------------------------------------
-// file: fifo.cc
+// file: fifo2.cc
 //        (part of Fifo2 - an OMNeT++ demo simulation)
 //-------------------------------------------------------------
 
-#include "omnetpp.h"
-#include "fifo.h"
+#include <omnetpp.h>
+#include "fifo2.h"
 
 
 void FF2AbstractFifo::initialize()
