@@ -297,7 +297,7 @@ proc label-colorchooser-old {w label var {color ""}} {
 #
 proc label-iconchooser {w label  {image ""}} {
     # utility function: create a frame with a label+entry
-    global gned
+    global gned icons
 
     frame $w
     label $w.l -anchor w -width 16 -text $label
@@ -309,7 +309,7 @@ proc label-iconchooser {w label  {image ""}} {
         if [catch {
             $w.b config -image $image
         }] {
-            $w.b config -image "defaulticon"
+            $w.b config -image $icons(unknown)
         }
     }
     pack $w.l -anchor n -expand 0 -side left
