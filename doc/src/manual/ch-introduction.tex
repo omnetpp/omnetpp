@@ -58,7 +58,10 @@ to be run in parallel -- it is just a matter of configuration.
 simulation algorithms, because simulations can be run in parallel
 even under the GUI which provides detailed feedback on what's going on.
 
-
+{\omnest} is the commercially supported version of {\omnetpp}.
+{\omnetpp} is only free for academic and non-profit use --
+for commercial purposes one needs to obtain {\omnest} licenses
+from Omnest Global, Inc.
 
 
 % \section{Where does {\opp} stand in the world of simulation tools?}
@@ -242,9 +245,9 @@ The manual is organized the following way:
 %
 % \tbf{The early days: 1992-1997}
 %
-% {\opp} has its distant roots in OMNeT, a simulator written
+% {\omnetpp} has its distant roots in OMNeT, a simulator written
 % in Object Pascal by dr. Gy\"{o}rgy Pongor.
-% The development of {\opp} started as a semester's programming
+% The development of {\omnetpp} started as a semester's programming
 % assignment at the Technical University of Budapest (BME) in 1992.
 % The assignment (``creation of an object-oriented discrete event
 % simulation system in C++'') was handed out by Prof. Dr Gy\"{o}rgy
@@ -258,11 +261,11 @@ The manual is organized the following way:
 % We used Turbo Vision (Borland's then successful character-based
 % GUI) for the first `graphical' user interface.
 %
-% In 1992, we submitted a paper about {\opp} to the
+% In 1992, we submitted a paper about {\omnetpp} to the
 % student's annual university conference
 % (named ``TDK'') and won first prize in the ``Software'' section.
 % Later we also won 1st prize in the national ``TDK''. Then the
-% idea came to port {\opp} to Unix (first for AIX on an RS/6000
+% idea came to port {\omnetpp} to Unix (first for AIX on an RS/6000
 % with only 16MB RAM, later Linux), until all development was done
 % in Linux and BC3.1 could no longer be supported.
 %
@@ -273,7 +276,7 @@ The manual is organized the following way:
 % was written as diploma work
 %
 % 1994: used OPNET for several simulation projects. OPNET features
-% (and flaws) gave lots of ideas how to continue with {\opp}.
+% (and flaws) gave lots of ideas how to continue with {\omnetpp}.
 %
 % 1995: initial version of nedc was written by a group of exchange
 % students from Delft
@@ -287,7 +290,7 @@ The manual is organized the following way:
 %
 % \tbf{Regular open-source releases: 1997-2003}
 %
-% Until 1997, some people occasionally contributed to {\opp}.
+% Until 1997, some people occasionally contributed to {\omnetpp}.
 % Since 1997, all development is done entirely by Andras;
 % independent of the University since 1998. (He leaves
 % the University in 1998, and is no longer affiliated with it
@@ -296,7 +299,7 @@ The manual is organized the following way:
 % 1997 Sept: web site set up (www.hit.bme.hu/phd/vargaa/omnetpp), first public release
 %
 % 1997 Feb-1998 Sept: simulation projects for a small company in
-% Hungary. We used a version of {\opp}.
+% Hungary. We used a version of {\omnetpp}.
 %
 % 1998 March: added Plove
 %
@@ -310,16 +313,16 @@ The manual is organized the following way:
 %
 % 2000: IPSuite created in Karlsruhe
 %
-% 2001 May: {\opp} 2.1 release
+% 2001 May: {\omnetpp} 2.1 release
 %
 % 2001 June: the CVS gets hosted in Karlsruhe
 %
-% 2002 May: {\opp} 2.2 release
+% 2002 May: {\omnetpp} 2.2 release
 %
 % 2003 Jan: Omnest Global Inc. was founded
 %
 % 2003 Feb-Oct: Andras's stay at CTIE, Monash University, Melbourne, Australia
-% with Ahmet Sekercioglu's group; development of {\opp}'s parallel simulation
+% with Ahmet Sekercioglu's group; development of {\omnetpp}'s parallel simulation
 % framework, doing parallel simulation experiments
 %
 % 2003 June: first public release of IPv6Suite (CTIE, Monash University)
@@ -332,7 +335,7 @@ The manual is organized the following way:
 %
 % 2003 Sept: Ethernet model made available
 %
-% 2003 Nov: {\opp} 2.3p1 release
+% 2003 Nov: {\omnetpp} 2.3p1 release
 %
 % 2004 July: Mobility Framework first official release (TKN, TU Berlin)
 %
@@ -344,14 +347,15 @@ The manual is organized the following way:
 
 \section{Credits}
 
-{\opp} has been developed by Andr\'{a}s Varga (andras@omnetpp.org, andras.varga@omnest.com).
+{\omnetpp} has been developed by Andr\'{a}s Varga (andras@omnetpp.org,
+andras.varga@omnest.com).
 
 In the early stage of the project, several people have contributed
-to {\opp}. Although most contributed code is no longer part of
-the {\opp}, nevertheless I'd like to acknowledge the work of the
+to {\omnetpp}. Although most contributed code is no longer part of
+the {\omnetpp}, nevertheless I'd like to acknowledge the work of the
 following people. First of all, I'd like thank Dr Gy\"{o}rgy Pongor
 (pongor@hit.bme.hu), my advisor at the Technical University of Budapest
-who initiated the {\opp} as a student project.
+who initiated the {\omnetpp} as a student project.
 
 My fellow student \'{A}kos Kun started to program the first NED parser
 in 1992-93, but it was abandoned after a few months.
@@ -359,34 +363,34 @@ The first version of nedc was finally developed in summer 1995,
 by three exchange students from TU Delft: Jan Heijmans, Alex Paalvast
 and Robert van der Leij. nedc was first called JAR after their initials
 until it got renamed to nedc. nedc was further developed and refactored
-several times until it finally retired and got replaced by nedtool in {\opp} 3.0.
+several times until it finally retired and got replaced by nedtool in {\omnetpp} 3.0.
 The second group of Delft exchange students (Maurits Andr\'{e},
 George van Montfort, Gerard van de Weerd) arrived in fall 1995.
 They performed some testing of the simulation library, and
-wrote some example simulations, for example the original version
-of Token Ring, and simulation of the NIM game which survived until {\opp} 3.0.
+wrote some example simulations, for example the original version of Token Ring,
+and simulation of the NIM game which survived until {\omnetpp} 3.0.
 These student exchanges were organized by Dr. Leon Rothkranz
 at TU Delft, and Gy\"{o}rgy Pongor at TU Budapest.
 
 The diploma thesis of Zolt\'{a}n Vass (spring 1996) was to prepare
-{\opp} for parallel execution over PVM to {\opp}. This code has been
-replaced with the new Parallel Simulation Architecture in {\opp} 3.0.
+{\omnetpp} for parallel execution over PVM to {\omnetpp}. This code has been
+replaced with the new Parallel Simulation Architecture in {\omnetpp} 3.0.
 G\'{a}bor Lencse (lencse@hit.bme.hu) was also interested in parallel
 simulation, namely a method called Statistical Synchronization (SSM).
 He implemented the FDDI model (practically unchanged until now), and added
 some extensions into NED for SSM. These extensions have been removed
-since then ({\opp} 3.0 does parallel execution on different principles).
+since then ({\omnetpp} 3.0 does parallel execution on different principles).
 
 The $P^{2}$ algorithm and the original implementation of the k-split algorithm
 was programmed in fall 1996 by Babak Fakhamzadeh from TU Delft.
 k-split was later reimplemented by Andr\'{a}s.
 
 Several bugfixes and valuable suggestions for improvements came
-from the user community of {\opp}. It would be impossible to
+from the user community of {\omnetpp}. It would be impossible to
 mention everyone here, and the list is constantly growing --
 instead, the README and ChangeLog files contain acknowledgements.
 
-Between summer 2001 and fall 2004, the {\opp} CVS was hosted
+Between summer 2001 and fall 2004, the {\omnetpp} CVS was hosted
 at the University of Karlsruhe. Credit for setting
 up and maintaining the CVS server goes to Ulrich Kaage.
 Ulrich can also be credited with converting the User Manual from

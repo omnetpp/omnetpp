@@ -93,6 +93,13 @@ htmlfile_spec := $BASE.htm
 # End specifications for standard Latex command
 #
 
+#:comm   :\opp:OMNEST::
+:comm   :\opp:OMNeT++::
+
+:comm   :\omnetpp:OMNeT++::
+:comm   :\omnest:OMNEST::
+:comm   :\new:[New!]::
+:comm   :\changed:[Changed!]::
 :{}     :\ttt:<tt>:</tt>:
 :{}     :\tbf:<b>:</b>:
 :{}     :\mathit:<i>:</i>:
@@ -103,8 +110,6 @@ htmlfile_spec := $BASE.htm
 :{2}    :\href#1#2:<a href="#1">#2</a>::
 :{1}    :\cite#1:[<a href="#bib-#1">#1</a>]::
 @{}     @\caption@<center><i>Figure: @</i></center>@
-#:comm   :\opp:OMNEST::
-:comm   :\opp:OMNeT++::
 :comm   :\textbar:|::
 :comm   :\textasciicircum:^::
 :comm   :\textbackslash:\::
@@ -117,8 +122,6 @@ htmlfile_spec := $BASE.htm
 :comm   :\linebreak:<br>::
 :comm   :\newline:<br>::
 :comm   :\tab: ::
-:comm   :\new:[New!]::
-:comm   :\changed:[Changed!]::
 :comm   :\sloppy:::
 :comm   :\bibitem(\[(.*?)\])?{(.*?)}:<a name="bib-$3"></a>[$2]&nbsp;&nbsp;::
 :comm   :\newblock:::
