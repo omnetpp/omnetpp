@@ -80,7 +80,7 @@ proc createMainWindow {} {
 
     # toplevel . -class Toplevel
     wm focusmodel . passive
-    wm geometry . 640x450
+    wm geometry . 780x580
     wm minsize . 1 1
     wm overrideredirect . 0
     wm resizable . 1 1

@@ -349,14 +349,14 @@ proc draw_module {c key} {
     set bb [$c bbox submod]
     if {$sx==""} {
         if {$bb==""} {
-            set sx 380
+            set sx 540
         } else {
             set sx [expr [lindex $bb 2]+[lindex $bb 0]-2*$x1]
         }
     }
     if {$sy==""} {
         if {$bb==""} {
-            set sy 300
+            set sy 420
         } else {
             set sy [expr [lindex $bb 3]+[lindex $bb 1]-2*$y1]
         }
