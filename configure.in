@@ -379,7 +379,7 @@ else
 fi
 
 # Check for wish.
-AC_CHECK_PROGS(WISH, $WISH wish wish85 wish84 cygwish cygwish85 cygwish84, nope)
+AC_CHECK_PROGS(WISH, $WISH wish wish85 wish8.5 wish84 wish8.4 cygwish cygwish85 cygwish84, nope)
 if test "$WISH" = nope; then
    AC_MSG_ERROR([cannot find wish, part of Tcl/Tk -- maybe it is not in the PATH or has some exotic name (tested names were: wish wish85 wish84 cygwish cygwish85 cygwish84)])
 fi
