@@ -12,6 +12,8 @@ $num_pass=0;
 
 $verbose=1;
 
+$isWindows = ($ENV{OS} =~ /windows/i) ? 1 : 0;
+
 @filenames = @ARGV;
 if (@filenames==()) {
    @filenames = glob("*.ned");
@@ -23,9 +25,9 @@ foreach $testfile (@filenames)
 
     $errfile = $testfile.".err";
     unlink($errfile);
-    $status = system ("$nedtool $testfile 2>$errfile");
+    $status = runprog ($nedtool, $testfile, "2>$errfile");
     if ($status eq '0') {
-        fail($testfile, "nedtool failed to detect detect error in NED file (exit code 0)");
+        fail($testfile, "nedtool failed to detect error in NED file (exit code 0)");
         next;
     }
     if (!open(IN,"$errfile")) {
@@ -79,6 +81,17 @@ if ($num_fail>0 && $verbose) {
 }
 if ($num_unresolved>0 && $verbose) {
     print "UNRESOLVED tests: ".join(' ', @unresolved_tests)."\n";
+}
+
+sub runprog()
+{
+    my @prog = @_;
+    print "running: ".join(' ',@prog)."\n" if $debug;
+    if ($isWindows) {
+        system($ENV{COMSPEC}, "/c", @prog);
+    } else {
+        system(@prog);
+    }
 }
 
 sub unresolved()
