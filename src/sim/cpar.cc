@@ -199,6 +199,23 @@ void cPar::writeContents(ostream& os)
     }
 }
 
+void cPar::forEach(ForeachFunc do_fn)
+{
+    if (do_fn(this,true))
+    {
+        if (typechar=='T')
+        {
+            dtr.res->forEach( do_fn );
+        }
+        else if (typechar=='O')
+        {
+            if (obj.obj)
+                obj.obj->forEach( do_fn );
+        }
+    }
+    do_fn(this,false);
+}
+
 //-------------------------------------------------------------------------
 // set/get flags
 
