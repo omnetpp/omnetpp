@@ -31,8 +31,6 @@ void cLCG32::initialize(int runNumber, int id, int numRngs, cConfiguration *cfg)
     sprintf(entry, "seed-%d-lcg32", id);
 
     seed = cfg->getAsInt2(section, "General", entry);
-    if (seed==0)
-        throw new cException("cLCG32: zero is not allowed as seed in %s config file entry", entry);
     if (cfg->notFound())
     {
         int autoSeedIndex = runNumber*numRngs + id;
@@ -42,6 +40,10 @@ void cLCG32::initialize(int runNumber, int id, int numRngs, cConfiguration *cfg)
                   "or use a different RNG class like Mersenne Twister\n";
         autoSeedIndex = autoSeedIndex % 256;
         seed = autoSeeds[autoSeedIndex];
+    }
+    else if (seed==0)
+    {
+        throw new cException("cLCG32: zero is not allowed as seed in %s config file entry", entry);
     }
 }
 
