@@ -99,6 +99,8 @@ proc create_omnetpp_window {} {
 
     # Edit menu
     foreach i {
+      {command -command edit_copy -label {Copy} -accel {Ctrl-C} -underline 0}
+      {separator}
       {command -command edit_find -label {Find...} -accel {Ctrl-F} -underline 0}
       {command -command edit_findnext -label {Find next} -accel {Ctrl-N,F3} -underline 5}
     } {
@@ -225,12 +227,14 @@ proc create_omnetpp_window {} {
       {sep5     -separator}
       {network  -image $icons(network) -command {inspect_systemmodule}}
       {fes      -image $icons(fes)     -command {inspect_messagequeue}}
-      {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
       {sep6     -separator}
-      {tree     -image $icons(tree)    -command {toggle_treeview}}
-      {options  -image $icons(config)  -command {simulation_options}}
-      {sep7     -separator}
       {find     -image $icons(find)    -command {edit_find}}
+      {sep7     -separator}
+      {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
+      {sep8     -separator}
+      {tree     -image $icons(tree)    -command {toggle_treeview}}
+      {sep9     -separator}
+      {options  -image $icons(config)  -command {simulation_options}}
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2

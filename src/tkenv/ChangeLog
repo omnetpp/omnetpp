@@ -1,3 +1,7 @@
+2004-01-20  Andras Varga
+
+	* added Edit|Copy to menu
+
 2004-01-17  Andras Varga
 
 	* modinsp2.tcl: added two experimental submodule display string tags: 

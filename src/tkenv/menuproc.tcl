@@ -225,6 +225,11 @@ proc new_run {} {
     }
 }
 
+proc edit_copy {} {
+   # implements Edit|Copy
+   tk_textCopy .main.text
+}
+
 proc edit_find {} {
    # implements Edit|Find...
    findDialog .main.text
