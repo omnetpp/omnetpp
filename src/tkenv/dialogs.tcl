@@ -118,7 +118,7 @@ proc inspectfromlistbox {title text type fillistbox_args} {
     $lb selection set 0
 
     button $w.buttons.inspect -text "Select" -command "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
-    pack $w.buttons.inspect -side top -anchor e
+    pack $w.buttons.inspect -side top -anchor e -padx 2
 
     # Configure dialog
     bind $lb <Double-Button-1> "$w.buttons.inspect invoke"

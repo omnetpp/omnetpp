@@ -46,7 +46,7 @@ proc start_tkenv {} {
   global OMNETPP_PLUGIN_PATH
 
   wm withdraw .
-  check_tcl_version
+  checkVersion
   generic_bindings
   font_bindings
   create_omnetpp_window

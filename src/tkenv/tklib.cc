@@ -150,8 +150,7 @@ char *printptr(cObject *object, char *buf)
     // produces string like: "ptr80004e1f  ".
     // returns a pointer to terminating '\0' char
     ptrToStr(object, buf);
-    char *s;
-    for(s=buf+3+2*sizeof(void *); *s; s++); // find end of string
+    char *s = buf+strlen(buf);
     s[0]=' '; s[1]=' '; s[2]='\0'; // append two spaces
     return s+2;
 }

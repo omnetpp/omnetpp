@@ -280,3 +280,9 @@
   - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
   - version.log renamed to ChangeLog
   - tcl2c.c moved to util/
+July 10, 1999
+  - arrow.cc updated from GNED (enhancement: default value of anchors are now 50%)
+  - widgets.tcl updated from GNED
+  - modinsp2.tcl: removed potential sources of division by zero
+  - fixed a problem in printptr() [tklib.cc] which caused a crash on Sun
+  - now demands at least Tcl/Tk 8.0 patchlevel 1

@@ -132,8 +132,9 @@ proc draw_submod {c ptr name dispstr i n default_layout} {
                set y [expr $y + $i*$spc]
            }
            matrix {
+               # perrow: how many submodules we want in a row
                set perrow [lindex $tags(p) 3]
-               if {$perrow==""} {set perrow 5}
+               if {$perrow=="" || $perrow==0} {set perrow 5}
                set dx [lindex $tags(p) 4]
                if {$dx==""} {set dx [expr 2*$sx]}
                set dy [lindex $tags(p) 5]
@@ -410,6 +411,7 @@ proc draw_message {c gateptr msgptr msgname {msgkind {}}} {
     set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
 
     set steps [expr int($len/2)]
+    if {$steps==0} {set steps 1}
 
     set dx [expr ($x2-$x1)/$steps]
     set dy [expr ($y2-$y1)/$steps]
@@ -449,6 +451,7 @@ proc calibrate_animdelay {} {
    for {set i 0} {$i<$ad} {incr i} {}
    set t1 [clock clicks]
    set loopticks [expr $t1-$t0]
+   if {$loopticks==0} {set loopticks 1}
 
    # calc animdelay
    set animdelay [expr 100*$ms100/$loopticks]
@@ -475,6 +478,7 @@ proc graphmodwin_animate {win gateptr msgptr msgname msgkind {mode {}}} {
     set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
 
     set steps [expr int($len/2)]
+    if {$steps==0} {set steps 1}
 
     set dx [expr ($x2-$x1)/$steps]
     set dy [expr ($y2-$y1)/$steps]
@@ -534,6 +538,7 @@ proc animate2 {c tag} {
     set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
 
     set steps [expr int($len/5)]
+    if {$steps==0} {set steps 1}
 
     set dx [expr ($x2-$x1)/$steps]
     set dy [expr ($y2-$y1)/$steps]

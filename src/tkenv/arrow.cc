@@ -17,6 +17,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+//
+// NOTE: This file is shared between GNED and TKENV. The two copies need to be
+//       kept in sync.
+//
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -127,14 +132,14 @@ int arrowcoords(Tcl_Interp *interp, int argc, char **argv)
       int    dest_i = atoi(argv[11]),
              dest_n = atoi(argv[12]);
 
-      // arg 13: mode: a(uto), m(anual), n, e, w, s 
-      int    mode = argv[13][0];
+      // arg 13: mode: a(uto), m(anual), n, e, w, s (default is 'a')
+      int    mode = argv[13][0]=='-' ? 'a' : argv[13][0];
 
-      // args 14..17: destination anchoring
-      double src_anch_dx = atof(argv[14]),
-             src_anch_dy = atof(argv[15]);
-      double dest_anch_dx = atof(argv[16]),
-             dest_anch_dy = atof(argv[17]);
+      // args 14..17: destination anchoring (default value 50%)
+      double src_anch_dx =  argv[14][0]=='-' ? 50 : atof(argv[14]),
+             src_anch_dy =  argv[15][0]=='-' ? 50 : atof(argv[15]);
+      double dest_anch_dx = argv[16][0]=='-' ? 50 : atof(argv[16]),
+             dest_anch_dy = argv[17][0]=='-' ? 50 : atof(argv[17]);
 
       double src_x, src_y, dest_x, dest_y;
 
