@@ -1345,8 +1345,8 @@ class STLMessage : public STLMessage_Base
     // bar methods
     virtual void setBarArraySize(unsigned int size) {}
     virtual unsigned int getBarArraySize() const {return bar.size();}
-    virtual Item& getBar(unsigned int k) {throw new cException("sorry");}
-    virtual void setBar(unsigned int k, const Item& bar) {throw new cException("sorry");}
+    virtual Item& getBar(unsigned int k) {throw new cRuntimeException("sorry");}
+    virtual void setBar(unsigned int k, const Item& bar) {throw new cRuntimeException("sorry");}
     virtual void barPush(const Item& abar) {bar.push(abar);}
     virtual void barPop() {bar.pop();}
     virtual Item& barTop() {return bar.top();}

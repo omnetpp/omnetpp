@@ -214,6 +214,38 @@ for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++)
 \end{verbatim}
 
 
+
+\subsection{Error handling {\new}}
+
+
+When library objects detect an error condition, they throw a C++ exception.
+%% NOTE we don't want to expose the actual C++ exception type, because
+%% then people would start writing try-catch statements that'd make everything messy.
+This exception is then caught by the simulation environment which pops up
+an error dialog or displays the error message.
+
+At times it can be useful to be able stop the simulation at the place of the error
+(just before the exception is thrown) and use a C++ debugger to look
+at the stack trace and examine variables. Enabling the \ttt{debug-on-errors}
+ini file entry lets you do that -- check it in section
+\ref{sec:ch-run-sim:general-section}.
+
+If you detect an error condition in your code, you can stop the
+simulation with an error message using the \fname{opp_error()} function.
+\ttt{opp_error()}'s argument list works like \ttt{printf()}: the
+first argument is a format string which can contain \ttt{"%s"}, \ttt{"%d"} etc,
+filled in using subsequent arguments.
+
+An example:
+
+\begin{verbatim}
+if (msg->controlInfo()==NULL)
+    opp_error("message (%s)%s has no control info attached",
+              msg->className(), msg->name());
+\end{verbatim}
+
+
+
 \section{Logging from modules}
 
 The logging feature will be used extensively in the code examples,
@@ -3080,12 +3112,12 @@ is implemented as \fname{new cArray(*this)}).
 % void cMessage::encapsulate(cMessage *msg)
 % {
 %     if (encapmsg)
-%        throw new cException(this,"encapsulate(): another message already encapsulated");
+%        throw new cRuntimeException(this,"encapsulate(): another message already encapsulated");
 %
 %    if (msg)
 %    {
 %        if (msg->owner()!=&(simulation.contextSimpleModule()->locals))
-%            throw new cException(this,"encapsulate(): not owner of message");
+%            throw new cRuntimeException(this,"encapsulate(): not owner of message");
 %        take( encapmsg = msg );
 %        len += encapmsg->len;
 %    }

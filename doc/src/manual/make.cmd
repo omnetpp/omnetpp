@@ -1,2 +1,2 @@
-call ..\..\..\vcvars32.bat
+call ..\..\..\setenv-vc71.bat
 nmake -f makefile.vc %* && start ..\..\manual\usman.html

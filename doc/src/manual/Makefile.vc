@@ -22,8 +22,8 @@ HTM_FILES = history.htm \
 
 all: usman.html
 
-usman-bibl.bbl : usman.bbl
-	copy usman.bbl usman-bibl.bbl
+#usman-bibl.bbl : usman.bbl
+#	copy usman.bbl usman-bibl.bbl
 
 .bbl.htm:
 	copy $< $(<:.bbl=.tex)

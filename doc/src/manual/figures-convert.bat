@@ -9,7 +9,7 @@ cd figures
 : *** trim GIFs ***
 : IM6's -trim conversion sucks: geometry meta information gets screwed up. 
 : So we're forced to do it via BMP (which surely doesn't contain any meta tags 
-: at all)
+: at all) (use +repage option?)
 for %%I in (*.gif) do echo crop %%I && "%IM6%"\convert -trim %%I %%~nI.bmp
 for %%I in (*.bmp) do "%IM6%"\convert %%I %%~nI.gif
 del *.bmp

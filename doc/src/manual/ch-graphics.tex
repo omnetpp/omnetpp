@@ -201,14 +201,22 @@ as well.}\\\hline
 %%
 \tbf{t=}\textit{text},\textit{pos},\textit{color}
 &
-{\raggedright Displays a short text by the icon. The text is meant to convey status information
+{\raggedright Displays a short text above or next to the icon.
+The text is meant to convey status information
 (\textit{"up"}, \textit{"down"}, \textit{"5Kb in buffer"}) or statistics
 (\textit{"4 pks received"}). \textit{pos} can be \ttt{"l"}, \ttt{"r"} or \ttt{"t"}
 for left, right and top.
 
 %FIXME todo insert: The string may contain \t, \n, \r, \f, \b, \x0A with same meaning as in C/C++
 
-Defaults: \textit{radius}=100, \textit{pos}="t", \textit{color}=blue}\\\hline
+Defaults: \textit{pos}="t", \textit{color}=blue}\\\hline
+%%
+\tbf{tt=}\textit{tooltip-text}
+&
+{\raggedright Displays the given text in a tooltip when the user moves
+the mouse over the icon. This complements the \ttt{t=} tag, and
+lets you display more information that otherwise would not fit on the
+screen.}\\\hline
 
 \end{longtable}
 
@@ -229,29 +237,29 @@ the following tags:
 
 \begin{longtable}{|p{6cm}|p{8cm}|}
 \hline
-% ROW 1
+%%
 \tabheadcol
 \tbf{Tag} & \tbf{Meaning}\\
 \hline
-% ROW 2
+%%
 \tbf{p=}\textit{xpos},\textit{ypos} & Place enclosing module at
 (\textit{xpos},\textit{ypos}) pixel position, with (0,0) being
 the top-left corner of the window.\\\hline
-% ROW 3
+%%
 \tbf{b=}\textit{width},\textit{height},\tbf{rect}
 &
 {\raggedright Display enclosing module as a rectangle with the given \textit{height}
 and \textit{width}.
 
 Defaults: \textit{width,} \textit{height} are chosen automatically}\\\hline
-% ROW 4
+%%
 \tbf{b=}\textit{width},\textit{height},\tbf{oval}
 &
 {\raggedright Display enclosing module as an ellipse with the given \textit{height}
 and \textit{width}.
 
 Defaults: \textit{width,} \textit{height} are chosen automatically}\\\hline
-% ROW 5
+%%
 \tbf{o=}\textit{fillcolor},\textit{outlinecolor},\textit{borderwidth}
 &
 {\raggedright Specifies options for the rectangle or oval.
@@ -259,6 +267,11 @@ For color notation, see section \ref{sec:ch-graphics:colors}.
 
 Defaults: \textit{fillcolor}=\#8080ff (a lightblue), \textit{outlinecolor}=black,
 \textit{borderwidth}=2}\\\hline
+%%
+\tbf{tt=}\textit{tooltip-text}
+&
+{\raggedright Displays the given text in a tooltip when the user moves
+the mouse over the module name in the top-left corner.}\\\hline
 \end{longtable}
 
 
@@ -299,6 +312,23 @@ Specifies the appearance of the arrow.
 For color notation, see section \ref{sec:ch-graphics:colors}.
 
 Defaults: \textit{color}=black, \textit{width}=2\\\hline
+%%
+\tbf{t=}\textit{text},\textit{color}
+&
+{\raggedright Displays a short text near the connection arrow.
+The text may convey status information or connection properties
+(\textit{"down"}, \textit{"10Mb"}) or statistics.
+
+%FIXME todo insert: The string may contain \t, \n, \r, \f, \b, \x0A with same meaning as in C/C++
+
+Defaults: \textit{color}=#005030}\\\hline
+%%
+\tbf{tt=}\textit{tooltip-text}
+&
+{\raggedright Displays the given text in a tooltip when the user moves
+the mouse over the connection arrow. This complements the \ttt{t=} tag, and
+lets you display more information that otherwise would not fit on the
+screen.}\\\hline
 \end{longtable}
 
 
@@ -365,6 +395,11 @@ a message kind dependent colors is used (like default behaviour).
 Defaults: \textit{iconname}: no default -- if no icon name is present, a small
 red solid circle will be used;
 \textit{color}: no coloring; \textit{percentage}: 30\%}\\\hline
+%%
+\tbf{tt=}\textit{tooltip-text}
+&
+{\raggedright Displays the given text in a tooltip when the user moves
+the mouse over the message icon.}\\\hline
 
 \end{longtable}
 

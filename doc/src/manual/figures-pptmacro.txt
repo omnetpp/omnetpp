@@ -1,36 +1,33 @@
 '
 ' Add the following macro into PowerPoint.
-' Source: http://www.rdpslides.com/pptfaq/FAQ00481.htm
-' 2 lines added by Andras Varga
+' Based on: http://www.rdpslides.com/pptfaq/FAQ00481.htm
 '
-Sub ExportNotesText()
+Sub ExportImages()
 
     Dim oSlides As Slides
     Dim oSl As Slide
     Dim oSh As Shape
-    Dim strNotesText As String
-    Dim strFileName As String
-    Dim intFileNum As Integer
-    Dim lngReturn As Long
+    Dim notesText As String
+    Dim fromFile, toFile As String
+    Dim slideNumber As Integer
 
     ' Get a filename to store the collected text
-    strFileName = InputBox("Enter the full path and name of file to extract notes text to", "Output file?")
-
+    strDir = ActivePresentation.Path
+    strDir = InputBox("Export images into 'figures' subdirectory of:", "Output directory", strDir)
+    
     ' did user cancel?
-    If strFileName = "" Then
+    If strDir = "" Then
         Exit Sub
     End If
 
-    ' is the path valid?  crude but effective test:  try to create the file.
-    intFileNum = FreeFile()
-    On Error Resume Next
-    Open strFileName For Output As intFileNum
+    ' save gifs
+    ActivePresentation.SaveAs FileName:=strDir & "\figures.gif", FileFormat:=ppSaveAsGIF, EmbedTrueTypeFonts:=msoFalse
     If Err.Number <> 0 Then     ' we have a problem
-        MsgBox "Couldn't create the file: " & strFileName & vbCrLf _
-            & "Please try again."
+        MsgBox "Error during exporting. Wrong directory name?"
         Exit Sub
     End If
-    Close #intFileNum  ' temporarily
+
+    Set fs = CreateObject("Scripting.FileSystemObject")
 
     ' Get the notes text
     Set oSlides = ActivePresentation.Slides
@@ -39,25 +36,23 @@ Sub ExportNotesText()
         If oSh.PlaceholderFormat.Type = ppPlaceholderBody Then
             If oSh.HasTextFrame Then
                 If oSh.TextFrame.HasText Then
-
                     ' 2 lines added by Andras Varga
-                    strNotesText = strNotesText & "# rename Slide" & CStr(oSl.SlideNumber) & ".* " _
-                    & oSh.TextFrame.TextRange.Text & ".*" & vbCrLf
-
-                    strNotesText = strNotesText & "Slide: " & CStr(oSl.SlideNumber) & vbCrLf _
-                    & oSh.TextFrame.TextRange.Text & vbCrLf & vbCrLf
+                    slideNumber = oSl.slideNumber
+                    notesText = oSh.TextFrame.TextRange.Text
+                    fromFile = strDir & "\figures\Slide" & CStr(slideNumber) & ".gif"
+                    toFile = strDir & "\figures\" & notesText & ".gif"
+                    
+                    On Error Resume Next
+                    fs.DeleteFile toFile
+                    On Error GoTo 0
+                    
+                    fs.MoveFile fromFile, toFile
+                    ' strNotesText = strNotesText & "Slide: " & CStr(oSl.SlideNumber) & vbCrLf _
+                    ' & oSh.TextFrame.TextRange.Text & vbCrLf & vbCrLf
                 End If
             End If
         End If
         Next oSh
     Next oSl
-
-    ' now write the text to file
-    Open strFileName For Output As intFileNum
-    Print #intFileNum, strNotesText
-    Close #intFileNum
-
-    ' show what we've done
-    lngReturn = Shell("NOTEPAD.EXE " & strFileName, vbNormalFocus)
 
 End Sub

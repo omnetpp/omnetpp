@@ -203,8 +203,8 @@ several directories. You have to decide whether you want to use static
 linking\index{static linking}, shared or run-time loaded (shared)
 libraries\index{shared libraries}. Here we discuss static linking.
 
-
-In each subdirectory (say \ttt{app/} and \ttt{routing/}), run
+In every subdirectory which contains source files, (say \ttt{app/} and
+\ttt{routing/}), run
 
 \begin{verbatim}
 opp_makemake -n
@@ -213,16 +213,16 @@ opp_makemake -n
 The -n option means no linking is necessary, only compiling has
 to be done.
 
-In your toplevel source directory, run
+In non-leaf directories, run
 
 \begin{verbatim}
-opp_makemake app/ routing/
+opp_makemake -r -n
 \end{verbatim}
 
-This results in recursive makefiles: when you build the simulation, make
-will descend into \ttt{app/} and \ttt{routing/}, run make in both, then
-it will link an executable with the object files in the two directories.
-
+The -r option enables recursive make: when you build the simulation, make
+will descend into the subdirectories and runs make in them too.
+By default, -r decends into all subdirectories; the -X directory option
+can be used to make it ignore certain subdirectories.
 
 You may need to use the -I option if you include files from other
 directories. The -I option is for both C++ and NED
@@ -234,11 +234,19 @@ opp_makemake -n -I../routing
 
 in the \ttt{app/} directory, and vice versa.
 
-If you're willing to play with shared and run-time loaded libraries,
-several \fprog{opp\_makemake} options and the
-\texttt{[General]/load-libs=} ini file option allow you to do so.
+To build an executable, the -w option can be used; it causes a simulation
+executable to be built using all object files from the include (-I) directories:
 
+\begin{verbatim}
+opp_makemake -w -I../routing -I../app
+\end{verbatim}
 
+You can affect build order by adding dependencies among subdirectories
+into the \ttt{makefrag} (\ttt{makefrag.vc}) file.
+
+For a complex example of using opp\_makemake, check the Makefiles
+of the INET Framework, or rather, the makemake script (and makemake.bat file)
+which contain the commands to generate the makefiles.
 
 
 

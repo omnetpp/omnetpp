@@ -314,11 +314,14 @@ The simulation system provides the following components:
 \end{itemize}
 
 
-Simulation programs are built from the above components. First, the
-NED files\index{ned!files} are compiled into C++ source code, using
-the NEDC\index{ned!compiler} compiler which is part of {\opp}. Then
-all C++ sources are compiled and linked with the simulation kernel and
-a user interface to form a simulation executable.
+Simulation programs are built from the above components. First,
+\ttt{.msg} files are translated into C++ code using the \ttt{opp\_msgc}.
+program. Then all C++ sources are compiled, and linked with the simulation
+kernel and a user interface library to form a simulation executable.
+NED files\index{ned!files} can either be also translated into C++
+(using \ttt{nedtool}) and linked in, or loaded dynamically in their original
+text forms when the simulation program starts.
+
 
 
 \subsubsection{Running the simulation and analyzing the results}
@@ -328,7 +331,7 @@ thus it can be run on other machines without {\opp} or the model files
 being present. When the program is started, it reads a configuration
 file\index{simulation!configuration file} (usually called
 \texttt{omnetpp.ini}\index{omnetpp.ini}). This file contains settings that
-control how the simulation is executed, values of model parameters, etc.
+control how the simulation is executed, values for model parameters, etc.
 The configuration file can also prescribe several simulation runs; in
 the simplest case, they will be executed by the simulation program one
 after another.
@@ -416,7 +419,7 @@ The simulation system itself:
       \tbf{nedxml-api/}  API reference for the NEDXML library
       \tbf{src/}         sources of the documentation
     \tbf{src/}           {\opp} sources
-      \tbf{nedc/}        NED compiler, message compiler
+      \tbf{nedc/}        nedtool, message compiler
       \tbf{sim/}         simulation kernel
         \tbf{parsim/}    files for distributed execution
         \tbf{netbuilder/}files for dynamically reading NED files

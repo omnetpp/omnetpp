@@ -656,12 +656,18 @@ static class members. They are prone to cause several problems.
 First, they are not reset to their initial values (to zero)
 when you rebuild the simulation in Tkenv, or start another run
 in Cmdenv. This may produce surprising results.
-
 Second, they prevent you from running your simulation in parallel.
 When using parallel simulation, each partition of your model
 (may) run in a separate process, having its own copy of the
 global variables. This is usually not what you want.
 
+The solution is to encapsulate the variables into simple modules
+as private or protected data members, and expose them via public methods.
+Other modules can then call these public methods to get or set the values.
+Calling methods of other modules will be discussed in section
+\ref{ch:simple-modules:direct-method-calls}.
+Examples of such modules are the \ttt{Blackboard} in the \textit{Mobility Framework},
+and \ttt{InterfaceTable} and \ttt{RoutingTable} in the \textit{INET Framework}.
 
 
 
@@ -2348,6 +2354,48 @@ waitTime = 0.12;
 
 The \cclass{cPar} class is discussed in more detail in section
 \ref{sec:ch-sim-lib:cpar}.
+
+
+\subsection{Emulating parameter arrays}
+
+As of version 3.1, {\opp} does not support parameter arrays,
+but in practice they can be emulated using string parameters.
+One can assign the parameter a string which contains all values
+in a textual form (for example, \ttt{"0 1.234 3.95 5.467"}), then
+parse this string in the simple module.
+
+The \cclass{cStringTokenizer} class can be quite helpful for this
+purpose. The constructor accepts a string, which it regards as
+a sequence of tokens (words) separated by delimiter characters
+(by default, spaces). Then, calling the \fname{nextToken()} method
+several times will return the tokens one by one. After the
+last token, it returns \ttt{NULL}.
+
+For example, you can parse a string containing a sequence of integers
+into a vector using the following code:
+
+\begin{verbatim}
+const char *str = "34 42 13 46 72 41"; // input
+std::vector<int> numbers;  // array to hold the result
+
+cStringTokenizer tokenizer(str);
+const char *token;
+while ((token = tokenizer.nextToken())!=NULL)
+    numbers.push_back(atoi(token));   // convert and store
+\end{verbatim}
+
+For converting \ttt{long}s and \ttt{double}s, replace \ttt{atoi()}
+with \ttt{atol()} and \ttt{atof()}, respectively.
+
+For storing the tokens in a string vector, the \cclass{cStringTokenizer}
+class has a convenience function named \fname{asVector()}, so conversion
+can be done in just one line of code:
+
+\begin{verbatim}
+const char *str = "34 42 13 46 72 41";
+std::vector<std::string> strVec = cStringTokenizer(str).asVector();
+\end{verbatim}
+
 
 
 \section{Accessing gates and connections}

@@ -183,6 +183,15 @@ include per-run-pars.ini
 ...
 \end{verbatim}
 
+You can also include files from other directories. If the included ini file
+further includes others, their path names will be understood as relative
+to the location of the file which contains the reference,
+rather than relative to the current working directory of the simulation.
+This rule also applies to other file names occurring in ini files
+(such as the \ttt{preload-ned-files=}, \ttt{load-libs=},
+\ttt{bitmap-path=}, \ttt{output-vector-file=}, \ttt{output-scalar-file=} etc
+entries, and \ttt{xmldoc()} module parameter values.)
+
 
 \subsection{Sections}
 
@@ -272,7 +281,7 @@ If enabled, {\opp} will split \fname{send()} calls to two steps.\\\hline
 %%
 \fpar{cpu-time-limit} = & Duration of the simulation in real time.\\\hline
 %%
-\fpar{num-rngs} = 1 & Number of random number generators\\\hline
+\fpar{num-rngs} = 1 & Number of random number generators.\\\hline
 %%
 \fpar{rng-class} = \ttt{"cMersenneTwister"} & The RNG class to be used. It can be
 \ttt{"cMersenneTwister"}, \ttt{"cLCG32"}, or \ttt{"cAkaroaRNG"},
@@ -286,6 +295,11 @@ default is auto seed selection. This obsoletes the \textit{random-seed=} and
 \fpar{total-stack-kb} = & Specifies the total stack size (sum of all coroutine stacks)
 in kilobytes. You need to increase this value if you get the
 ``Cannot allocate coroutine stack...'' error.\\\hline
+%%
+\fpar{debug-on-errors} = false & When set to \ttt{true}, runtime errors will
+cause the simulation program to break into the C++ debugger (if the simulation
+is running under one, or just-in-time debugging is activated).
+Once in the debugger, you can view the stack trace or examine variables. {\new}\\\hline
 %%
 \fpar{load-libs} = & {\raggedright List of shared libraries (separated by
 spaces) to load in the initialization phase. {\opp} appends a platform-specific
@@ -598,7 +612,7 @@ from {\opp} 2.3 to 3.0, it will be removed in some future version.
 \subsection{Applying the defaults}
 
 It is also possible to utilize the default values specifified with
-\ttt{input(}\textit{default-value}\ttt{)} in the NED files.{\new}
+\ttt{input(}\textit{default-value}\ttt{)} in the NED files.
 The \textit{<parameter-name>}\ttt{.use-default=yes} setting assigns
 the default value to the parameter, or 0, false or empty string if
 there was no default value in the NED file.
@@ -923,35 +937,36 @@ All other options are read from the configuration file.
 An example of running an {\opp} executable with the -h flag:
 
 \begin{verbatim}
-
 % ./fddi -h
 
-OMNeT++ Discrete Event Simulation  (C) 1992-2003 Andras Varga
+OMNeT++/OMNEST Discrete Event Simulation  (C) 1992-2005 Andras Varga
 See the license for distribution terms and warranty disclaimer
-Setting up Cmdenv (command-line user interface)...
+Setting up Tkenv...
 
-Command line switches:
-  -h            print this help and exit.
-  -f <inifile>  use the given ini file instead of omnetpp.ini.
-  -r <runs>     execute the specified runs in the ini file.
-                <runs> is a comma-separated list of run numbers or
-                run number ranges, for example 1,2,5-10.
-  -l <library>  load the specified shared library on startup.
-                The library can contain modules, networks, etc.
+Command line options:
+  -h            Print this help and exit.
+  -f <inifile>  Use the given ini file instead of omnetpp.ini. Multiple
+                -f options are accepted to load several ini files.
+  -u <ui>       Selects the user interface. Standard choices are Cmdenv
+                and Tkenv. To make a user interface available, you need
+                to link the simulation executable with the cmdenv/tkenv
+                library, or load it as shared library via the -l option.
+  -l <library>  Load the specified shared library (.so or .dll) on startup.
+                The file name should be given without the .so or .dll suffix
+                (it will be appended automatically.) The loaded module may
+                contain simple modules, plugins, etc. Multiple -l options
+                can be present.
 
-Available networks:
-  FDDI1
-  NRing
-  TUBw
-  TUBs
+Tkenv-specific options:
+  -r <run>      Set up the given run, specified in a [Run n] section of
+                the ini file.
 
-Available modules:
-  FDDI_MAC
-  FDDI_MAC4Ring
-  ...
-
-Available channels:
-
+The following components are available:
+  module types:
+    FDDI_Monitor
+    FDDI_Generator4Sniffer
+    FDDI_Generator4Ring
+    ...
 
 End run of OMNeT++
 \end{verbatim}
@@ -1176,6 +1191,12 @@ switches\index{command line switches}:
   on Unix) you can even eliminate the need to re-link the simulation
   program after each change in a source file.  (Shared objects can be
   created with \texttt{gcc -shared...})\\
+
+  \ttt{-r }\textit{<run-number>}
+  &
+  It has the same effect as (but takes priority over) the \ttt{[Tkenv]/default-run=}
+  ini file entry.
+
 \end{longtable}
 
 \subsection{Tkenv ini file settings}
