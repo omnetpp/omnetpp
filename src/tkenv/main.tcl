@@ -242,7 +242,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.until)   {Run until time or event number}
     set help_tips(.toolbar.stop)    {Stop simulation if running (F8)}
     set help_tips(.toolbar.network) {Inspect network}
-    set help_tips(.toolbar.fes)     {Inspect Future Event Set}
+    set help_tips(.toolbar.fes)     {Inspect scheduled events (Future Event Set)}
 
     #################################
     # Create status bars
@@ -262,11 +262,11 @@ proc create_omnetpp_window {} {
         -relief groove -text {Next:} -width 23 -anchor w
 
     label .statusbar2.feslength \
-        -relief groove -text {Msgs in FES: 0} -width 20 -anchor w
+        -relief groove -text {Msgs scheduled: 0} -width 20 -anchor w
     label .statusbar2.totalmsgs \
-        -relief groove -text {Total msgs: 0} -width 20 -anchor w
+        -relief groove -text {Msgs created: 0} -width 20 -anchor w
     label .statusbar2.livemsgs \
-        -relief groove -text {Live msgs: 0} -width 20 -anchor w
+        -relief groove -text {Msgs present: 0} -width 20 -anchor w
 
     label .statusbar3.eventspersec \
         -relief groove -text {Ev/sec: n/a} -width 15 -anchor w
@@ -287,6 +287,19 @@ proc create_omnetpp_window {} {
     pack .statusbar3.eventspersec -anchor n -expand 1 -fill x -side left
     pack .statusbar3.simsecpersec -anchor n -expand 1 -fill x -side left
     pack .statusbar3.eventspersimsec -anchor n -expand 1 -fill x -side left
+
+    set help_tips(.statusbar.networklabel)  {Network currently set up for execution}
+    set help_tips(.statusbar.eventlabel)    {Current event number}
+    set help_tips(.statusbar.timelabel)     {Current simulation time}
+    set help_tips(.statusbar.nextlabel)     {Module where next event will occur}
+
+    set help_tips(.statusbar2.feslength)    {Number of events (messages) currently scheduled}
+    set help_tips(.statusbar2.totalmsgs)    {Number of message created since start of the simulation}
+    set help_tips(.statusbar2.livemsgs)     {Number of existing message objects, including scheduled ones}
+
+    set help_tips(.statusbar3.eventspersec)    {Performance: events processed per second}
+    set help_tips(.statusbar3.simsecpersec)    {Relative speed: simulated seconds processed per second}
+    set help_tips(.statusbar3.eventspersimsec) {Event density: events per simulated second}
 
 
     #################################

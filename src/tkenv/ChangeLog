@@ -1,3 +1,7 @@
+2002-12-06  Andras Varga
+
+	* main.tcl: added tooltips for gauges on toolbar
+
 2002-11-24 Andras Varga
 
 	* modinsp.tcl: with "ring" layout, changed order of modules

@@ -770,7 +770,7 @@ void TOmnetTkApp::updateSimtimeDisplay()
     // statistics
     sprintf(buf, "%u", simulation.msgQueue.length());
     CHK(Tcl_VarEval(interp, FESLENGTH_LABEL " config -text {"
-                        "Msgs in FES: ", buf,
+                        "Msgs scheduled: ", buf,
                         "}", NULL ));
     sprintf(buf, "%lu", cMessage::totalMessageCount());
     CHK(Tcl_VarEval(interp, TOTALMSGS_LABEL " config -text {"

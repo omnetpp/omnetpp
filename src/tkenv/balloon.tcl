@@ -82,6 +82,7 @@ proc init_balloons {args} {
     set use_balloons 1
     enable_balloon Button
     enable_balloon Menubutton
+    enable_balloon Label
     enable_balloon Menu "%W index active"
 }
 
