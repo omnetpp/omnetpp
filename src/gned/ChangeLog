@@ -134,3 +134,6 @@ July 17, 1999
 Aug 2, 1999
   - OMNETPP_BITMAP_PATH turned into real path (a list of directories). The
     separator char is ";" on Windows, and ":" or ";" on Unix.
+
+    BUG: nedfile.cc lines 86,91,92: contain "==" instead of "=". Correcting it
+         causes segfault --> investigate!
