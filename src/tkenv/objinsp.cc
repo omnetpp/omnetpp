@@ -82,7 +82,7 @@ TInspector::~TInspector()
    if (windowname[0])
    {
       Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-      CHK(Tcl_VarEval(interp, "destroy ", windowname, NULL ));
+      CHK(Tcl_VarEval(interp, "destroy_inspector_toplevel ", windowname, NULL ));
    }
 }
 

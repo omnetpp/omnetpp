@@ -46,6 +46,7 @@ int loadLib_cmd(ClientData, Tcl_Interp *, int, char **);
 int getNetworkType_cmd(ClientData, Tcl_Interp *, int, char **);
 int getFileName_cmd(ClientData, Tcl_Interp *, int, char **);
 int getObjectFullpath_cmd(ClientData, Tcl_Interp *, int, char **);
+int getObjectClassName_cmd(ClientData, Tcl_Interp *, int, char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, char **);
 int fillListbox_cmd(ClientData, Tcl_Interp *, int, char **);
 int stopSimulation_cmd(ClientData, Tcl_Interp *, int, char **);
@@ -95,6 +96,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getnetworktype",   getNetworkType_cmd   }, // args: -  ret: type of current network
    { "opp_getfilename",      getFileName_cmd      }, // args: <filetype>  ret: filename
    { "opp_getobjectfullpath",getObjectFullpath_cmd}, // args: <pointer>  ret: fullPath()
+   { "opp_getobjectclassname",getObjectClassName_cmd}, // args: <pointer>  ret: className()
    { "opp_getsimulationstate", getSimulationState_cmd }, // args: -  ret: NONET,READY,RUNNING,ERROR,TERMINATED,etc.
    { "opp_fill_listbox",     fillListbox_cmd    }, // args: <listbox> <ptr> <options>
    { "opp_stopsimulation",   stopSimulation_cmd }, // args: -
@@ -312,6 +314,14 @@ int getObjectFullpath_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
    if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
    interp->result = const_cast<char*>(object->fullPath());
+   return TCL_OK;
+}
+
+int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+{
+   if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
+   cObject *object = (cObject *)strToPtr( argv[1] );
+   interp->result = const_cast<char*>(object->className());
    return TCL_OK;
 }
 
