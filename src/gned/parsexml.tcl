@@ -70,6 +70,8 @@ proc loadXML {xmlfile} {
     set filekey [lindex $tmp_ned($rootkey,childrenkeys) 0]
     unset tmp_ned($rootkey,childrenkeys)
 
+    parse_displaystrings $nedfilekey
+
     # debug code:
     # set showkeys [lsort [array names tmp_ned "*"]]
     # foreach i $showkeys {
@@ -93,6 +95,9 @@ proc loadXML {xmlfile} {
 
     # insert under "root" (item 0)
     insertItem $filekey 0
+
+    # parse display strings
+    parse_displaystrings $filekey
 
     # debug code
     #puts "dbg: checkArray says:"
@@ -163,8 +168,6 @@ proc sax_elementstart {tag attlist} {
         if {$att=="id"} {
             # fill XML-id to tmp_ned-key map
             set tmp_idmap($val) $key
-        } elseif {$att=="display"} {
-            # spec handling
         } elseif {$att=="src-ownerkey" || $att=="dest-ownerkey"} {
             # these attributes refer to previous submod elements
             if [info exist tmp_idmap($val)] {
@@ -179,6 +182,8 @@ proc sax_elementstart {tag attlist} {
             error "invalid attr name '$att' in entity '$tag'"
         }
     }
+
+
     lappend stack $key
     return 0
 }

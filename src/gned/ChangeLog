@@ -227,7 +227,11 @@ Aug 29, 2000
 Sep 30, 2000
  - improvement just for Cygwin: lexer now explicitly ignores '\r' (=CR) chars
 Nov 14-17, 2000
- - experimental XML support:
-    o  can export XML files (genxml.tcl)
-    o  almost can import XML files (parsexml.tcl)
+ - display string handling rewritten. Now GNED won't delete from the
+   display strings the tags it doesn't understand. New file: dispstr.tcl.
+ - experimental XML support: can export and import XML files. Requires the
+   TclXML package, at least version 1.2. (The contents of TclXML-1.2.tgz should
+   be extracted under the tcl/lib/Tcl8.x directory.) New files: genxml.tcl,
+   parsexml.tcl.
+
 

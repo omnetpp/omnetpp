@@ -30,10 +30,7 @@ proc saveXML {nedfilekey fname} {
    if [catch {
        busy "Saving $fname..."
        set fout [open $fname w]
-       puts $fout "<!-- XML file format for NED is currently ***EXPERIMENTAL*** -->"
-       puts $fout "<?xml version=\"1.0\" ?>"
-       puts $fout "<!doctype system=\"ned1.dtd\">"
-       puts $fout [generateXML $nedfilekey ""]
+       puts $fout [generateXML $nedfilekey]
        close $fout
        busy
    } errmsg] {
@@ -43,7 +40,21 @@ proc saveXML {nedfilekey fname} {
    }
 }
 
-proc generateXML {key indent} {
+
+proc generateXML {key} {
+    update_displaystrings $key
+
+    set xml ""
+    append xml "<!-- XML file format for NED is currently ***EXPERIMENTAL*** -->"
+    append xml "<?xml version=\"1.0\" ?>"
+    append xml "<!doctype system=\"ned1.dtd\">"
+
+    append xml [generateXMLElement $key ""]
+    return $xml
+}
+
+
+proc generateXMLElement {key indent} {
     global ned ned_attlist ned_internal
 
     # TclXML parser doesn't understand <tag .. /> syntax
@@ -61,17 +72,6 @@ proc generateXML {key indent} {
             append out "$indent  $field=\"$val\"\n"
         }
     }
-    set dispstr ""
-    if {$type=="module"} {
-        set dispstr [makeModuleDispStr $key]
-    } elseif {$type=="submod"} {
-        set dispstr [makeSubmoduleDispStr $key]
-    } elseif {$type=="conn"} {
-        set dispstr [makeConnectionDispStr $key]
-    }
-    if {$dispstr!=""} {
-        append out "$indent  display=\"$dispstr\"\n"
-    }
 
     # generate children if there are any
     set childkeys $ned($key,childrenkeys)
@@ -82,7 +82,7 @@ proc generateXML {key indent} {
 
         set indent2 "$indent    "
         foreach i $childkeys {
-            append out [generateXML $i $indent2]
+            append out [generateXMLElement $i $indent2]
         }
         append out "$indent</$type>\n"
     }

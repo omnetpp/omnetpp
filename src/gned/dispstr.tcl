@@ -81,7 +81,7 @@ proc _dispstr_ordertags {order t1 t2} {
 #
 # update a 'module' ned element with values from its display string
 #
-proc parse_module_dispstr {key) {
+proc parse_module_dispstr {key} {
    global ned
 
    split_dispstr $ned($key,displaystring) tags
@@ -107,7 +107,7 @@ proc parse_module_dispstr {key) {
 #
 # update a 'submod' ned element with values from its display string
 #
-proc parse_submod_dispstr {key) {
+proc parse_submod_dispstr {key} {
    global ned
 
    split_dispstr $ned($key,displaystring) tags
@@ -135,7 +135,7 @@ proc parse_submod_dispstr {key) {
 #
 # update a 'conn' ned element with values from its display string
 #
-proc parse_conn_dispstr {key) {
+proc parse_conn_dispstr {key} {
    global ned
 
    split_dispstr $ned($key,displaystring) tags
@@ -175,7 +175,7 @@ proc _setlistitem {listvar index value} {
 #
 # update display string of a 'module' ned element
 #
-proc update_module_dispstr {key) {
+proc update_module_dispstr {key} {
    global ned
 
    set order [split_dispstr $ned($key,displaystring) tags]
@@ -200,7 +200,7 @@ proc update_module_dispstr {key) {
 #
 # update display string of a 'submod' ned element
 #
-proc update_submod_dispstr {key) {
+proc update_submod_dispstr {key} {
    global ned
 
    set order [split_dispstr $ned($key,displaystring) tags]
@@ -222,5 +222,53 @@ proc update_submod_dispstr {key) {
    _setlistitem tags(i) 0 $ned($key,icon)
 
    set ned($key,displaystring) [assemble_dispstr tags $order]
+}
+
+
+# parse_displaystrings --
+#
+# parse display strings in a whole NED tree
+#
+proc parse_displaystrings {key} {
+   global ned
+
+   # update displaystrings
+   set type $ned($key,type)
+   if {$type=="module"} {
+       parse_module_dispstr $key
+   } elseif {$type=="submod"} {
+       parse_submod_dispstr $key
+   } elseif {$type=="conn"} {
+       parse_conn_dispstr $key
+   }
+
+   # process children
+   foreach childkey $ned($key,childrenkeys) {
+       parse_displaystrings $childkey
+   }
+}
+
+
+# update_displaystrings --
+#
+# update display strings in a whole NED tree
+#
+proc update_displaystrings {key} {
+   global ned
+
+   # update displaystrings
+   set type $ned($key,type)
+   if {$type=="module"} {
+       update_module_dispstr $key
+   } elseif {$type=="submod"} {
+       update_submod_dispstr $key
+   } elseif {$type=="conn"} {
+       update_conn_dispstr $key
+   }
+
+   # process children
+   foreach childkey $ned($key,childrenkeys) {
+       update_displaystrings $childkey
+   }
 }
 

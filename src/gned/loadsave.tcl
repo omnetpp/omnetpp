@@ -114,7 +114,7 @@ proc loadNED {nedfile} {
         return
     }
 
-    # debug code:
+    ## debug code:
     #set showkeys [lsort [array names tmp_ned "*"]]
     #foreach i $showkeys {
     #    puts "DBG: tmp_ned($i)=\"$tmp_ned($i)\""
@@ -137,6 +137,9 @@ proc loadNED {nedfile} {
 
     # insert under "root" (item 0)
     insertItem $filekey 0
+
+    # parse display strings
+    parse_displaystrings $filekey
 
     # debug code
     #puts "dbg: checkArray says:"

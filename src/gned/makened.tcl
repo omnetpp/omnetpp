@@ -23,6 +23,7 @@
 # Entry point of NED code generation: return the code as a single big string
 #
 proc generateNed {key} {
+    update_displaystrings $key
     return [generateNedItem $key {} 0]
 }
 
@@ -205,7 +206,7 @@ proc generate_module {key indent islast} {
     append out [generateChildrenWithType $key submods $indent]
     append out [generateChildrenWithType $key conns $indent]
 
-    set dispstr [makeModuleDispStr $key]
+    set dispstr $ned($key,displaystring)
     if {$dispstr!=""} {
         # HACK: the "display:" line uses indent of "parameters:" line
         global ned_desc
@@ -305,7 +306,7 @@ proc generate_submod {key indent islast} {
     append out [generateChildrenWithType $key substparams $indent]
     append out [generateChildrenWithType $key gatesizes $indent]
 
-    set dispstr [makeSubmoduleDispStr $key]
+    set dispstr $ned($key,displaystring)
     if {$dispstr!=""} {
         # HACK: the "display:" line uses indent of "parameters:" line
         global ned_desc
@@ -445,7 +446,7 @@ proc generate_conn {key indent islast} {
     if {$ned($key,condition)!=""} {
        append out " if $ned($key,condition)"
     }
-    set dispstr [makeConnectionDispStr $key]
+    set dispstr $ned($key,displaystring)
     if {$dispstr!=""} {
         append out " display \"$dispstr\""
     }
@@ -492,67 +493,6 @@ proc generate_loopvar {key indent islast} {
     if {!$islast} {append out ", "}
     appendInlineRightComment out $ned($key,right-comment) ""
     return $out
-}
-
-#---------------------------------------------------
-
-proc makeModuleDispStr {key} {
-    global ned
-
-    set pos [format "p=%s,%s;" $ned($key,x-pos) $ned($key,y-pos)]
-    set siz [format "b=%s,%s,rect;" $ned($key,x-size) $ned($key,y-size)]
-    set opts [format "o=%s,%s,%s;" $ned($key,fill-color) $ned($key,outline-color) $ned($key,linethickness)]
-    if {$pos=="p=,;"}      {set pos ""}
-    if {$siz=="b=,,rect;"} {set siz ""}
-    if {$opts=="o=,,;"}    {set opts ""}
-
-    set dispstr "$pos$siz$opts"
-    regsub -- ";$" $dispstr "" dispstr
-
-    return $dispstr
-}
-
-proc makeSubmoduleDispStr {key} {
-    global ned
-
-    if {$ned($key,icon)!=""} {
-       set pos [format "p=%s,%s;" $ned($key,x-pos) $ned($key,y-pos)]
-       set icon [format "i=%s;" $ned($key,icon)]
-       if {$pos=="p=,;"} {set pos ""}
-       set dispstr "$pos$icon"
-    } else {
-       set pos [format "p=%s,%s;" $ned($key,x-pos) $ned($key,y-pos)]
-       set siz [format "b=%s,%s,rect;" $ned($key,x-size) $ned($key,y-size)]
-       set opts [format "o=%s,%s,%s;" $ned($key,fill-color) $ned($key,outline-color) $ned($key,linethickness)]
-       if {$pos=="p=,;"}      {set pos ""}
-       if {$siz=="b=,,rect;"} {set siz ""}
-       if {$opts=="o=,,;"}    {set opts ""}
-       set dispstr "$pos$siz$opts"
-    }
-    regsub -- ";$" $dispstr "" dispstr
-    return $dispstr
-}
-
-proc makeConnectionDispStr {key} {
-    global ned
-
-    if {$ned($key,drawmode)=="a" || $ned($key,drawmode)==""} {
-        set mode ""
-    } elseif {$ned($key,drawmode)=="m"} {
-        set mode [format "m=m,%s,%s,%s,%s;" \
-                           $ned($key,an_src_x)  $ned($key,an_src_y) \
-                           $ned($key,an_dest_x) $ned($key,an_dest_y)]
-       if {$mode=="m=m,,,,;"}  {set mode ""}
-    } else {
-        set mode "m=$ned($key,drawmode);"
-    }
-
-    set opts [format "o=%s,%s;" $ned($key,fill-color) $ned($key,linethickness)]
-    if {$opts=="o=,;"}  {set opts ""}
-
-    set dispstr "$mode$opts"
-    regsub -- ";$" $dispstr "" dispstr
-    return $dispstr
 }
 
 #-----------------------------------------------------------------

@@ -158,6 +158,7 @@ set ned_attr(module,name)             {Module}
 set ned_attr(module,banner-comment)   {}
 set ned_attr(module,right-comment)    {}
 set ned_attr(module,trailing-comment) {}
+set ned_attr(module,displaystring)    {}
 set ned_attr(module,rect-cid)         {}
 set ned_attr(module,rect2-cid)        {}
 set ned_attr(module,label-cid)        {}
@@ -244,6 +245,7 @@ set ned_attr(submod,right-comment)    {}
 set ned_attr(submod,type-name)        {Module}
 set ned_attr(submod,vectorsize)       {}
 set ned_attr(submod,like-name)        {}
+set ned_attr(submod,displaystring)    {}
 set ned_attr(submod,rect-cid)         {}
 set ned_attr(submod,icon-cid)         {}
 set ned_attr(submod,label-cid)        {}
@@ -339,6 +341,7 @@ set ned_attr(conn,src_gate_index)  {}
 set ned_attr(conn,dest_gate_index) {}
 set ned_attr(conn,condition)       {}
 set ned_attr(conn,arrowdir-l2r)    {1}
+set ned_attr(conn,displaystring)   {}
 set ned_attr(conn,arrow-cid)       {}
 set ned_attr(conn,fill-color)      {}
 set ned_attr(conn,linethickness)   {}
