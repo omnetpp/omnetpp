@@ -101,6 +101,7 @@ proc createBltGraph {graphtype {graphtitle ""}} {
     $graph legend configure -anchor ne
     $graph legend configure -relief solid
     $graph legend configure -borderwidth 1
+    $graph legend configure -background ""
     $graph legend configure -font [$graph axis cget x -tickfont]
     option add *Element.borderWidth 1
 
