@@ -25,6 +25,8 @@ dirs=""
 xobjs=""
 fragments=""
 makefilein=n
+doxyconf=doxy.cfg
+nedfiles=""
 
 while [ ! $# = 0 ] ; do
     case "$1" in
@@ -160,8 +162,9 @@ if [ -f $outputfile ]; then
 fi
 
 sobjs=""
+
 for i in $dirs; do
-    echo "*** Running make in $i to see object file names"
+    echo "*** Running make in $i to see object and ned file names"
     if (cd $i && make); then
         o=`echo $i/*.o`
         if [ "$o" = "$i/*.o" ]; then
@@ -169,6 +172,19 @@ for i in $dirs; do
         else
             sobjs="$sobjs $o"
         fi
+
+	# collect ned files of subdirectory for target neddoc.html.
+	# Use only those that don't contain experimental
+	# message subclassing
+	nedf=`echo $i/*.ned`
+	if [ ! "$nedf" = "$ned/*.ned" ]; then
+	  for i in $nedf; do
+	    grep '^//--subclassing--' $i >/dev/null
+	    if [ "$?" != "0" ]; then 
+		nedfiles="$nedfiles $i"
+	    fi
+	  done
+	fi
     else
         echo "opp_makemake: make in $i failed, exiting" 1>&2
         exit
@@ -366,6 +382,14 @@ for i in *.ned
 do
         if [ "$i" = "*.ned" ]; then break; fi;
 
+	# extend list for target neddoc.html
+	# Use only those NED files that don't contain
+	# experimental message subclassing
+	grep '^//--subclassing--' $i >/dev/null
+	if [ "$?" != "0" ]; then 
+	  nedfiles="$nedfiles $i"
+	fi
+	
 	obj=`echo $i | sed 's/\.ned/_n.o/g'`
 	c=`echo $i | sed 's/\.ned/_n.cc/g'`
 
@@ -412,6 +436,21 @@ re-makemake:
 
 re-makemake-m:
 	opp_makemake -f -m $args1  #recreate Makefile.in
+
+doc: neddoc.html htmldoc
+
+neddoc.html: $nedfiles
+	opp_neddoc $nedfiles > neddoc.html
+
+htmldoc:
+	doxygen -g - | sed "s/^PROJECT_NAME.*/PROJECT_NAME = $outfile/;\\
+	s/^INPUT *=.*/INPUT = . $dirs/;\\
+	s/^EXTRACT_ALL *=.*/EXTRACT_ALL = yes/;\\
+	s/^EXTRACT_PRIVATE *=.*/EXTRACT_PRIVATE = yes/;\\
+	s/^ALPHABETICAL_INDEX *=.*/ALPHABETICAL_INDEX = yes/;\\
+	s/^GENERATE_TREEVIEW *=.*/GENERATE_TREEVIEW = yes/;\\
+	s/^QUIET *=.*/QUIET = yes/" > $doxyconf
+	doxygen $doxyconf
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
