@@ -782,7 +782,7 @@ proc drawEnd {c x y} {
        set mouse(rect) ""
 
     } elseif { $mouse(mode) == "conn" } {
-       if {abs($x-$mouse(startingX))<5 || abs($y-$mouse(startingY))<5} {
+       if {abs($x-$mouse(startingX))<5 && abs($y-$mouse(startingY))<5} {
           #
           # just a click: ignore it
           #

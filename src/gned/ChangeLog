@@ -1,4 +1,12 @@
-2002-11-28 Andras Varga
+2002-12-03  Andras Varga
+
+	* plotedit.tcl: bugfix: it was not possible to raw exacly horizontal or
+	vertial connection arrows
+
+	* drawopts.tcl: bugfix: Tcl error when icon in loaded NED file was not 
+	found
+
+2002-11-28  Andras Varga
 
 	* drawopts.tcl: icon selection dialog improved
 

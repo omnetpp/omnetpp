@@ -308,7 +308,11 @@ proc label-iconchooser {w label  {image ""}} {
     if {$image == ""} {
         $w.b config -text "-none-"
     } else {
-        $w.b config -image $image
+        if [catch {
+            $w.b config -image $image
+        }] {
+            $w.b config -image "defaulticon"
+        }
     }
     pack $w.l -anchor n -expand 0 -side left
     pack $w.b -anchor n -expand 0 -side left
@@ -404,7 +408,7 @@ proc _chooseIcon {oldicon win {pwin {}}} {
 proc _iconSelected {select imgname frame} {
 
      if {[ $select cget -text ] != "" } {
-         $frame.[$select cget -text] config -relief flat
+         catch {$frame.[$select cget -text] config -relief flat}
      }
      $frame.$imgname config -relief solid
 
