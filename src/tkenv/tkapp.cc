@@ -48,6 +48,16 @@ TKENV_API void tkenvDummy() {}
 TKENV_API void envirDummy() {}
 
 
+#define NETWORK_LABEL   ".statusbar.networklabel"
+#define EVENT_LABEL     ".statusbar.eventlabel"
+#define TIME_LABEL      ".statusbar.timelabel"
+#define NEXT_LABEL      ".statusbar.nextlabel"
+
+#define FESLENGTH_LABEL ".statusbar2.feslength"
+#define TOTALMSGS_LABEL ".statusbar2.totalmsgs"
+#define LIVEMSGS_LABEL  ".statusbar2.livemsgs"
+
+
 //=========================================================================
 // TOmnetTkApp
 //        is the application class that runs the Tcl/Tk environment
@@ -568,7 +578,7 @@ void TOmnetTkApp::updateNetworkRunDisplay()
     else
          networkname = simulation.networkType()->name();
 
-    CHK(Tcl_VarEval(interp, ".statusbar.networklabel config -text {",
+    CHK(Tcl_VarEval(interp, NETWORK_LABEL " config -text {",
                         "Run #",runnr,": ",networkname,
                         "}", NULL ));
     CHK(Tcl_VarEval(interp, "wm title . {OMNeT++/Tkenv - ",networkname,"}",NULL));
@@ -576,14 +586,30 @@ void TOmnetTkApp::updateNetworkRunDisplay()
 
 void TOmnetTkApp::updateSimtimeDisplay()
 {
+    // event and time display
     char buf[16];
     sprintf(buf, "%lu", simulation.eventNumber());
-    CHK(Tcl_VarEval(interp, ".statusbar.eventlabel config -text {"
+    CHK(Tcl_VarEval(interp, EVENT_LABEL " config -text {"
                         "Event #", buf,
                         "}", NULL ));
-    CHK(Tcl_VarEval(interp, ".statusbar.timelabel config -text {"
+    CHK(Tcl_VarEval(interp, TIME_LABEL " config -text {"
                         "T=", simtimeToStr( simulation.simTime() ),
                         "}", NULL ));
+
+    // statistics
+    sprintf(buf, "%lu", simulation.msgQueue.length());
+    CHK(Tcl_VarEval(interp, FESLENGTH_LABEL " config -text {"
+                        "Msgs in FES: ", buf,
+                        "}", NULL ));
+    sprintf(buf, "%lu", cMessage::totalMessageCount());
+    CHK(Tcl_VarEval(interp, TOTALMSGS_LABEL " config -text {"
+                        "Total msgs: ", buf,
+                        "}", NULL ));
+    sprintf(buf, "%lu", cMessage::liveMessageCount());
+    CHK(Tcl_VarEval(interp, LIVEMSGS_LABEL " config -text {"
+                        "Live msgs: ", buf,
+                        "}", NULL ));
+
 }
 
 void TOmnetTkApp::updateNextModuleDisplay()
@@ -605,14 +631,14 @@ void TOmnetTkApp::updateNextModuleDisplay()
       modulename = mod->fullPath();
       sprintf(subsc,"#%u ", mod->id());
     }
-    CHK(Tcl_VarEval(interp, ".statusbar.nextlabel config -text {"
+    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {"
                         "Next: ", subsc, modulename,
                         "}", NULL ));
 }
 
 void TOmnetTkApp::clearNextModuleDisplay()
 {
-    CHK(Tcl_VarEval(interp, ".statusbar.nextlabel config -text {"
+    CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {"
                         "Running..."
                         "}", NULL ));
 }

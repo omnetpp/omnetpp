@@ -389,5 +389,7 @@ Sep 29, 2000
    row: r, col: c or column, matrix: m, ring: ri
  - added new layout to 'p' tag: exact (abbreviation: e or x); this lets
    one position modules in a module vector one by one
-
  - submodule display strings may use the parent module's parameters too
+Jan 3, 2000
+ - added 2nd status bar (containing: number of messages in the FES, total
+   number of messages created, number of currently existing message objects)

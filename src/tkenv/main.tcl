@@ -232,12 +232,14 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.fes)     {Inspect Future Event Set}
 
     #################################
-    # Create status bar
+    # Create status bars
     #################################
 
     frame .statusbar
+    frame .statusbar2
+
     label .statusbar.networklabel \
-        -relief groove -text {(no network set up)} -width 19
+        -relief groove -text {(no network set up)} -width 18
     label .statusbar.eventlabel \
         -justify left -relief groove -text {Event #0} -width 12
     label .statusbar.timelabel \
@@ -245,10 +247,22 @@ proc create_omnetpp_window {} {
     label .statusbar.nextlabel \
         -justify left -relief groove -text Next: -width 26
 
+    label .statusbar2.feslength \
+        -relief groove -text {Msgs in FES: 0} -width 20
+    label .statusbar2.totalmsgs \
+        -relief groove -text {Total msgs: 0} -width 20
+    label .statusbar2.livemsgs \
+        -relief groove -text {Live msgs: 0} -width 20
+
     pack .statusbar.networklabel -anchor n -expand 1 -fill x -side left
-    pack .statusbar.eventlabel -anchor n -expand 1 -fill x -side left
+    pack .statusbar.eventlabel -anchor n -expand 0 -fill x -side left
     pack .statusbar.timelabel -anchor n -expand 1 -fill x -side left
     pack .statusbar.nextlabel -anchor n -expand 1 -fill x -side right
+
+    pack .statusbar2.feslength -anchor n -expand 0 -fill x -side left
+    pack .statusbar2.totalmsgs -anchor n -expand 0 -fill x -side left
+    pack .statusbar2.livemsgs -anchor n -expand 0 -fill x -side left
+
 
     #################################
     # Create main display area
@@ -269,9 +283,10 @@ proc create_omnetpp_window {} {
     if {$tcl_version < 8.0} {
         pack .menubar   -anchor center -expand 0 -fill x -side top
     }
-    pack .toolbar   -anchor center -expand 0 -fill x -side top
-    pack .statusbar -anchor center -expand 0 -fill x -side top
-    pack .main      -anchor center -expand 1 -fill both -side top
+    pack .toolbar    -anchor center -expand 0 -fill x -side top
+    pack .statusbar  -anchor center -expand 0 -fill x -side top
+    pack .statusbar2 -anchor center -expand 0 -fill x -side top
+    pack .main       -anchor center -expand 1 -fill both -side top
 
     global tcl_platform
     if {$tcl_platform(platform) == "windows"} {
