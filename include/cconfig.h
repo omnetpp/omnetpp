@@ -51,6 +51,8 @@
  * OMNeT++ will get the rest of the configuration from your configuration
  * class.
  *
+ * See also: cEnvir::config()
+ *
  * @ingroup EnvirExtensions
  */
 class ENVIR_API cConfiguration : public cPolymorphic
