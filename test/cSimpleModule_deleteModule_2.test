@@ -1,5 +1,6 @@
 %description:
-tests that deleteModule() works from handleMessage(), and finish() gets called
+Tests that deleteModule() works from handleMessage(), and finish() gets called.
+Moreover, we test by deleting the system module.
 
 %module: {Module}
 

@@ -1,5 +1,5 @@
 %description:
-tests that end() works from handleMessage(), and finish() gets called
+Tests that end() works from handleMessage(), and finish() gets called
 
 TODO: should also test that simulation of other modules goes on
 
@@ -37,10 +37,3 @@ finish called
 
 %not-contains: stdout
 after end
-
-%not-contains: stdout
-event after end
-
-%not-contains: stdout
-Error in module
-

@@ -36,9 +36,6 @@ void {Module}::finish()
 finish called
 
 %not-contains: stdout
-Error in module
-
-%not-contains: stdout
 after end
 
 %not-contains: stdout

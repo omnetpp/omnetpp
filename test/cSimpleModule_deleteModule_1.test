@@ -1,5 +1,6 @@
 %description:
-tests that deleteModule() works from activity()
+Tests that deleteModule() works from activity().
+Moreover, we test by deleting the system module.
 
 TODO:
 - test that simulation of other modules goes on

@@ -15,24 +15,26 @@ class Noisy : public cObject
     ~Noisy() {ev << "noisy died\n";}
 };
 
-class X : public cObject
+class X2 : public cObject
 {
   public:
     Noisy y;
 
-    X() : cObject() {
+    X2() : cObject() {
         take(&y);  // try to comment this out and watch what happens
     }
 
-    ~X() { }
+    ~X2() { }
 };
 
 %activity:
 
-X *x = new X();
+X2 *x = new X2();
 x->y.setName("yname");
 
-%exitcode: 0
+%contains: stdout
+noisy born.*
+noisy died
 
 %not-contains: stdout
 noisy died.*
