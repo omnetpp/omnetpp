@@ -759,16 +759,20 @@ Jan 15,2000
  - minor change: cSimulation::setErrorCode() added (was needed in Tkenv's
    startup code)
 Jan 17,2000
- - the +,-,*,/,... operators taking cPar plus a numeric type (long/double)
-   were removed from cpar.h.  These operators were rendered useless by the
-   new ANSI C++ overload resolution rules. For example, a cPar+long is now
-   ambiguous simply because cPar has operator long(), double(), etc., and an
-   operator+(cPar&,long) function only makes it even more ambiguous.
-   This issue turned up with the MSVC 6.0 port of OMNeT++ (see MSVC error
-   C2666).
-   Existing code is also affected: expressions like msg->par("count")+1
-   which previously compiled now cause error and must be disabiguated by
-   adding explicit cast like this: (int)msg->par("count")+1. Blame the ANSI
-   committee.
-   Assigments still work fine (like: cPar p = 1; int i=p;).
-
+ - The +,-,*,/,... operators which take cPar plus a numeric type (long/double)
+   were removed from cpar.h. This affects some existing code: expressions like
+   msg->par("count")+1 which used to compile now cause error ("too many possible
+   conversions") and must be disabiguated by adding explicit casts like this:
+   (int)msg->par("count")+1.
+   Assigments (like: cPar p = 1; int i=p;) still work fine and don't need to be
+   changed.
+   The reason is that the ANSI C++ overload resolution rules have changed a few
+   years ago, and now that compilers begin to be more compliant, it is
+   difficult (~impossible) to write operator*/+-() functions with which code
+   will compile well under both the old and the new resolution rules (which are
+   likely to coexist for a few years to come). Ambiguity comes because cPar
+   supports many conversions (double, int, long, unsigned int, unsigned long,
+   char * [char* + int is also legal!], void *, etc.)  I feel that it is better
+   (results in cleaner code) to use explicit type casts in expressions with
+   cPar.
+   This issue came up while porting to MSVC 6.0, see MSVC error C2666.

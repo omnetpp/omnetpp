@@ -267,13 +267,11 @@ class cModulePar : public cPar
      cModule *ownerModule()             {return omodp;}
 };
 
-//=== operators dealing with cPars - OBSOLETE
-//!
-//! These operators were commented out because the new ANSI C++ overload
-//! resolution rules made them useless. For example, a cPar+int is ambiguous
-//! simply because cPar has operator int(), double(), etc., and inline functions
-//! like the ones below only make them even more ambiguous.
-//!
+
+//=== operators dealing with cPars
+//
+// These operators were removed -- see ChangeLog, Jan 17 2000 entry.
+//
 
 //#ifndef NO_CPAR_OPERATIONS
 //#ifdef  LONG_CPAR_OPERATIONS
