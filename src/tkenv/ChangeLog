@@ -367,3 +367,4 @@ May 10, 2000
  - [Tkenv]/extra-stack= option added, it specifies (in bytes) how much extra
    stack each activity() module needs when executing under Tkenv.
    This used to be hardcoded (16384), now users can fine-tune it.
+Know bug: 'load inspector list' doesn't work
