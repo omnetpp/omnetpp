@@ -18,9 +18,9 @@ OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 #=====================================================================
 
 
-all: components
+all: check-env components
 
-components: check-env all-libs all-progs install-local all-models all-samples
+components: all-libs all-progs install-local all-models all-samples
 
 
 #=====================================================================

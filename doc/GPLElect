@@ -25,9 +25,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 -----end-----
 
-You must change license.txt to say that an election has been made to use
-this copy under the GPL. If you redistribute OMNeT++, you should also include
-a copy of the GPL.
+You must change the "README" and "License" files to say that an election
+has been made to use this copy under the GPL. If you redistribute OMNeT++,
+you should also include a copy of the GPL.
 
 Note that I will probably not accept patches under terms that allow
 me to distribute them only under the GPL.
