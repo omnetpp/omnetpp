@@ -35,7 +35,7 @@
  *
  * initialize() is called after \opp created the module.
  *
- * One has to redefine either handleMessage() to contain
+ * One has to redefine handleMessage() to contain
  * the internal logic of the module. handleMessage() is called
  * by the simulation kernel when the module receives a message.
  * (An alternative to handleMessage() is activity(), but activity()
