@@ -171,6 +171,8 @@ proc validateAttrValue {key attr value} {
             set value "string"
         } elseif {[string match "b*" $value]} {
             set value "bool"
+        } elseif {[string match "x*" $value]} {
+            set value "xml"
         } elseif {[string match "a*" $value]} {
             set value "anytype"
         } elseif {[string match "*co*" $value]} {

@@ -18,7 +18,7 @@
 # Problematic keywords: "in:" and "out:" (contain special chars)
 # This is all one line, cannot be broken into several lines!
 #
-set keywords {include|import|network|module|simple|channel|delay|error|datarate|for|do|true|false|ref|ancestor|input|const|sizeof|endsimple|endmodule|endchannel|endnetwork|endfor|parameters|gatesizes|gates|in:|out:|submodules|connections|display|on|like|machines|to|if|index|nocheck|numeric|string|bool|anytype}
+set keywords {include|import|network|module|simple|channel|delay|error|datarate|for|do|true|false|ref|ancestor|input|const|sizeof|endsimple|endmodule|endchannel|endnetwork|endfor|parameters|gatesizes|gates|in:|out:|submodules|connections|display|on|like|machines|to|if|index|nocheck|numeric|xml|xmldoc|string|bool|anytype}
 
 
 # configureEditor --

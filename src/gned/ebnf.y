@@ -47,7 +47,7 @@
 %token _TRUE _FALSE
 %token INPUT
 %token REF ANCESTOR
-%token NED_CONST NUMERICTYPE STRINGTYPE BOOLTYPE ANYTYPE
+%token NED_CONST NUMERICTYPE STRINGTYPE BOOLTYPE XMLTYPE ANYTYPE
 
 %token PLUS MIN MUL DIV MOD EXP
 %token SIZEOF SUBMODINDEX PLUSPLUS
@@ -468,6 +468,9 @@ parameter
         | NAME ':' BOOLTYPE
                 {NEDC( do_parameter ($1, TYPE_BOOL); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_BOOL); )}
+        | NAME ':' XMLTYPE
+                {NEDC( do_parameter ($1, TYPE_XML); )
+                 GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_XML); )}
         | NAME ':' ANYTYPE
                 {NEDC( do_parameter ($1, TYPE_ANYTYPE); )
                  GNED( PARAM_KEY=addParameter(PARAMS_KEY,@1,TYPE_ANYTYPE); )}
@@ -1301,6 +1304,7 @@ int addParameter(int params_key, YYLTYPE namepos, int type)
        case TYPE_CONST_NUM: s = "numeric const"; break;
        case TYPE_STRING:    s = "string"; break;
        case TYPE_BOOL:      s = "bool"; break;
+       case TYPE_XML:       s = "xml"; break;
        case TYPE_ANYTYPE:   s = "anytype"; break;
        default: s="?";
    }

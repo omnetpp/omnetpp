@@ -42,6 +42,7 @@ extern NEDParser *np;
 #define TYPE_CONST_NUM 'C'
 #define TYPE_STRING    'S'
 #define TYPE_BOOL      'B'
+#define TYPE_XML       'X'
 #define TYPE_ANYTYPE   'A'
 
 //

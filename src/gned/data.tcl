@@ -186,7 +186,7 @@ proc isNameLegal {name} {
                   for do true false ref ancestor input const sizeof endsimple endmodule
                   endchannel endnetwork endfor parameters gatesizes gates
                   submodules connections display on like machines to if index nocheck
-                  numeric string bool anytype cplusplus class message struct enum
+                  numeric string bool xml xmldoc anytype cplusplus class message struct enum
                   fields properties extends int long char unsigned}
     if {[lsearch $keywords $name]!=-1} {
         # reserved word
@@ -256,7 +256,7 @@ proc makeUniqueName {key name} {
                   for do true false ref ancestor input const sizeof endsimple endmodule
                   endchannel endnetwork endfor parameters gatesizes gates
                   submodules connections display on like machines to if index nocheck
-                  numeric string bool anytype cplusplus class message struct enum
+                  numeric string bool xml xmldoc anytype cplusplus class message struct enum
                   fields properties extends int long char unsigned}
     set suffixneeded ""
     if {[lsearch $keywords $name]!=-1} {

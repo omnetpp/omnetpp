@@ -134,6 +134,7 @@ char textbuf[TEXTBUF_LEN];
 "numeric"               { count(); return (NUMERICTYPE); } /* --VA */
 "string"                { count(); return (STRINGTYPE); } /* --VA */
 "bool"                  { count(); return (BOOLTYPE); } /* --VA */
+"xml"                   { count(); return (XMLTYPE); }
 "anytype"               { count(); return (ANYTYPE); } /* --VA */
 
 
