@@ -21,13 +21,16 @@ $template = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 </HEAD>
 
 <style type="text/css">
-BODY,H1,H2,H3,H4,H5,H6,P,CENTER,TD,TH,UL,DL,DIV {
+body,h1,h2,h3,h4,h5,h6,p,center,td,th,ul,dl,div {
    #font-family: Geneva, Arial, Helvetica, sans-serif;
 }
 
-H1 {color: #006f00;}
-H2 {color: #006f00;}
-H3 {color: #006f00;}
+h1 {color: #006f00;}
+h2 {color: #006f00;}
+h3 {color: #006f00;}
+pre { margin-left:8pt; font-size:8pt; background:#fffff4; padding:5pt; border:1px solid; border-color:#a0a0a0 }
+table {background:#fffff4; margin-left:8pt; border-collapse:collapse; border: 2px solid}
+td,th {text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000}
 .subheading {color: black; font-weight: bold;}
 
 </style>
