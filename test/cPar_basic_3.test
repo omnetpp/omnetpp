@@ -1,0 +1,39 @@
+%description:
+Tests cPar's operator=() methods for basic data types (string,bool,long,double).
+
+%activity:
+cPar p;
+
+#define PRINT(X)  ev << p.type() << ":" << p.isNumeric() << ":" << X << endl
+
+p = false; PRINT(p.boolValue());
+p = true; PRINT(p.boolValue());
+
+p = 0; PRINT(p.longValue());
+p = -1; PRINT(p.longValue());
+p = 1; PRINT(p.longValue());
+
+p = 0.0; PRINT(p.doubleValue());
+p = 3.1415; PRINT(p.doubleValue());
+p = -1.234; PRINT(p.doubleValue());
+
+char buf[100];
+strcpy(buf,"abcd"); // short string
+p = buf; buf[0]='\0'; PRINT(p.stringValue());
+strcpy(buf,"12345678901234567890123456789012345678901234567890"); // long string
+p = buf; buf[0]='\0'; PRINT(p.stringValue());
+
+ev << "." << endl;
+
+%contains: stdout
+B:1:0
+B:1:1
+L:1:0
+L:1:-1
+L:1:1
+D:1:0
+D:1:3.1415
+D:1:-1.234
+S:0:abcd
+S:0:12345678901234567890123456789012345678901234567890
+.

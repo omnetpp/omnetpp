@@ -1,0 +1,74 @@
+%description:
+Test that cPar properly deallocates cDoubleExpression objects.
+
+%module: {Test}
+
+class {Test} : public cSimpleModule
+{
+    Module_Class_Members({Test}, cSimpleModule, 16384);
+    virtual void activity();
+};
+
+Define_Module({Test});
+
+class {TestExpr} : public cDoubleExpression
+{
+  private:
+    int a;
+  public:
+    {TestExpr}(int a0) {a = a0; ev << "ctor" << a << "\n";}
+    virtual ~{TestExpr}() {ev << "dtor" << a << "\n";}
+    cExpression *dup() {ev << "dup" << a << "\n"; return new {TestExpr}(a);}
+    virtual double evaluate() {return 3*a;}
+};
+
+void {Test}::activity()
+{
+    cPar p,q;
+
+    #define PRINT(X)  ev << p.type() << ":" << p.isNumeric() << ":" << X << endl
+
+    {TestExpr} *expr1 = new {TestExpr}(1);
+    p.setDoubleValue(expr1); PRINT(p.doubleValue());
+    p = -1; PRINT(p.doubleValue());
+
+    {TestExpr} *expr2 = new {TestExpr}(2);
+    p.setDoubleValue(expr2); PRINT(p.doubleValue());
+    {TestExpr} *expr3 = new {TestExpr}(3);
+    p.setDoubleValue(expr3); PRINT(p.doubleValue());
+
+    {TestExpr} *expr4 = new {TestExpr}(4);
+    p.setDoubleValue(expr4);
+    q = -1;
+    p = q; PRINT(p.doubleValue());
+
+    p = 0;
+    {TestExpr} *expr5 = new {TestExpr}(5);
+    q.setDoubleValue(expr5);
+    p = q; PRINT(p.doubleValue());
+
+    ev << "." << endl;
+}
+
+%contains: stdout
+ctor1
+C:1:3
+dtor1
+L:1:-1
+ctor2
+C:1:6
+ctor3
+dtor2
+C:1:9
+ctor4
+dtor3
+dtor4
+L:1:-1
+ctor5
+dup5
+ctor5
+C:1:15
+.
+dtor5
+dtor5
+

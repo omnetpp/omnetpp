@@ -1,0 +1,39 @@
+%description:
+Tests cPar's conversions to basic types (operator long(), operator double(), etc).
+
+%activity:
+cPar p;
+
+#define PRINT(X)  ev << p.type() << ":" << p.isNumeric() << ":" << X << endl
+
+p.setBoolValue(false); PRINT((bool)p);
+p.setBoolValue(true); PRINT((bool)p);
+
+p.setLongValue(0); PRINT((long)p);
+p.setLongValue(-1); PRINT((long)p);
+p.setLongValue(1); PRINT((long)p);
+
+p.setDoubleValue(0.0); PRINT((double)p);
+p.setDoubleValue(3.1415); PRINT((double)p);
+p.setDoubleValue(-1.234); PRINT((double)p);
+
+char buf[100];
+strcpy(buf,"abcd"); // short string
+p.setStringValue(buf); buf[0]='\0'; PRINT((const char *)p);
+strcpy(buf,"12345678901234567890123456789012345678901234567890"); // long string
+p.setStringValue(buf); buf[0]='\0'; PRINT((const char *)p);
+
+ev << "." << endl;
+
+%contains: stdout
+B:1:0
+B:1:1
+L:1:0
+L:1:-1
+L:1:1
+D:1:0
+D:1:3.1415
+D:1:-1.234
+S:0:abcd
+S:0:12345678901234567890123456789012345678901234567890
+.

@@ -1,0 +1,39 @@
+%description:
+Tests assignment operator (copying a cPar to another cPar) for basic data types (string,bool,long,double).
+
+%activity:
+cPar p, q;
+
+#define PRINT(X)  ev << q.type() << ":" << q.isNumeric() << ":" << X << endl
+
+p = false; q = p; PRINT(q.boolValue());
+p = true; q = p; PRINT(q.boolValue());
+
+p = 0; q = p; PRINT(q.longValue());
+p = -1; q = p; PRINT(q.longValue());
+p = 1; q = p; PRINT(q.longValue());
+
+p = 0.0; q = p; PRINT(q.doubleValue());
+p = 3.1415; q = p; PRINT(q.doubleValue());
+p = -1.234; q = p; PRINT(q.doubleValue());
+
+char buf[100];
+strcpy(buf,"abcd"); // short string
+p = buf; buf[0]='\0'; q = p; PRINT(q.stringValue());
+strcpy(buf,"12345678901234567890123456789012345678901234567890"); // long string
+p = buf; buf[0]='\0'; q = p; PRINT(q.stringValue());
+
+ev << "." << endl;
+
+%contains: stdout
+B:1:0
+B:1:1
+L:1:0
+L:1:-1
+L:1:1
+D:1:0
+D:1:3.1415
+D:1:-1.234
+S:0:abcd
+S:0:12345678901234567890123456789012345678901234567890
+.

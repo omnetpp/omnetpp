@@ -1,0 +1,38 @@
+%description:
+Tests cPar's compiled expression support (use of cDoubleExpression).
+
+%module: {Test}
+
+class {Test} : public cSimpleModule
+{
+    Module_Class_Members({Test}, cSimpleModule, 16384);
+    virtual void activity();
+};
+
+Define_Module({Test});
+
+class {TestExpr} : public cDoubleExpression
+{
+  private:
+    int a;
+  public:
+    {TestExpr}(int a0) {a = a0;}
+    cExpression *dup() {return new {TestExpr}(a);}
+    virtual double evaluate() {return 3*a;}
+};
+
+void {Test}::activity()
+{
+    cPar p;
+
+    #define PRINT(X)  ev << p.type() << ":" << p.isNumeric() << ":" << X << endl
+
+    {TestExpr} *expr = new {TestExpr}(4);
+    p.setDoubleValue(expr); PRINT(p.doubleValue());
+
+    ev << "." << endl;
+}
+
+%contains: stdout
+C:1:12
+.
