@@ -18,6 +18,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <assert.h>
+#include <fstream>
 
 #include "args.h"
 #include "omnetapp.h"
@@ -190,8 +191,16 @@ void TOmnetApp::setup()
              char *fname = strtok(buf, " ");
              while (fname!=NULL)
              {
-                 ev.printf("Loading NED file: %s\n", fname);
-                 simulation.loadNedFile(fname);
+                 if (fname[0]=='@')
+                 {
+                     ev.printf("Processing list file: %s\n", fname+1);
+                     processListFile(fname+1);
+                 }
+                 else
+                 {
+                     ev.printf("Loading NED file: %s\n", fname);
+                     simulation.loadNedFile(fname);
+                 }
                  fname = strtok(NULL, " ");
              }
              delete [] buf;
@@ -472,6 +481,46 @@ void TOmnetApp::makeOptionsEffective()
 
      for(int i=0;i<NUM_RANDOM_GENERATORS;i++)
          genk_randseed( i, opt_genk_randomseed[i] );
+}
+
+void TOmnetApp::processListFile(const char *listfilename)
+{
+    const int maxline=1024;
+    char line[maxline];
+
+    // FIXME try cd into this directory (files should be relative to list file)
+    // FIXME error handling is really poor here
+
+    std::ifstream in(listfilename, std::ios::in);
+    if (in.fail())
+    {
+        ev.printfmsg("cannot open list file '%s'",listfilename);
+        return;
+    }
+
+    while (in.getline(line, maxline))
+    {
+        int len = in.gcount();
+        if (line[len-1]=='\n')
+            line[len-1] = '\0';
+        const char *fname = line;
+        if (fname[0]=='@')
+        {
+            ev.printf("Processing sub-listfile: %s\n", fname+1);
+            processListFile(fname+1);
+        }
+        else if (fname[0] && fname[0]!='#')
+        {
+            ev.printf("Loading NED file: %s\n", fname);
+            simulation.loadNedFile(fname);
+        }
+    }
+
+    if (in.bad())
+    {
+        ev.printfmsg("error reading list file '%s'",listfilename);
+    }
+    in.close();
 }
 
 //-------------------------------------------------------------

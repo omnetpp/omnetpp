@@ -40,13 +40,12 @@ class cParsimSynchronizer;
 #define NUM_STARTINGSEEDS  256
 extern long starting_seeds[NUM_STARTINGSEEDS];  // they are in seeds.cc
 
-//==========================================================================
-// TOmnetApp: abstract base class for the user interface.
-//      Concrete user interface implementations (Cmdenv, Tvenv,
-//      Tkenv's app classes) should be derived from this class, and
-//      the create() static function must be written to create an object
-//      of the desired type (ie.TOmnetCmdApp, TOmnetWindowsApp etc.)
-//
+/**
+ * Abstract base class for the user interface.
+ *
+ * Concrete user interface implementations (Cmdenv, Tvenv,
+ * Tkenv's app classes) should be derived from this class.
+ */
 class ENVIR_API TOmnetApp
 {
   protected:
@@ -124,6 +123,23 @@ class ENVIR_API TOmnetApp
     virtual void startRun();
     virtual void endRun();
 
+    /**
+     * Called by cPar::read() to get param value from the ini file
+     */
+    virtual const char *getParameter(int run_nr, const char *parname);
+
+    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
+
+    virtual void getOutVectorConfig(int run_no, const char *modname, /*input*/
+                                    const char *vecname,
+                                    bool& enabled, /*output*/
+                                    double& starttime, double& stoptime);
+
+    virtual const char *getDisplayString(int run_no,const char *name);
+    //@}
+
+    /** @name Internal methods */
+    //@{
     virtual cIniFile *getIniFile();
 
     /**
@@ -138,28 +154,18 @@ class ENVIR_API TOmnetApp
     virtual void processFileName(opp_string& fname);
 
     /**
-     * Used internally to make options effective in cSimulation
-     * and other places
+     * Used internally to make options effective in cSimulation and other places
      */
     virtual void makeOptionsEffective();
 
     /**
-     * Called by cPar::read() to get param value from the ini file
+     * Utility function: handles list files with dynamic NED loading
      */
-    virtual const char *getParameter(int run_nr, const char *parname);
-
-    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
-
-    virtual void getOutVectorConfig(int run_no, const char *modname, /*input*/
-                                    const char *vecname,
-                                    bool& enabled, /*output*/
-                                    double& starttime, double& stoptime);
-    virtual const char *getDisplayString(int run_no,const char *name);
+    virtual void processListFile(const char *listfilename);
     //@}
 
     /** @name Functions called from the objects of the simulation kernel
-     *  to notify the application about certain events.
-     *
+     * to notify the application about certain events.
      * For documentation see corresponding methods in cEnvir.
      */
     //@{
