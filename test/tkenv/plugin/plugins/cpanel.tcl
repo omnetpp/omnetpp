@@ -45,19 +45,19 @@ proc cpanel_createControls {} {
 
     # create sliders
     cpanel_slider $w.arrivalRate1 "Source 1 arrival rate"
-    $w.arrivalRate1.e config -from 1 -to 1000 -resolution 1 -variable param(arrivalRate1)
+    $w.arrivalRate1.e config -from 100 -to 1000 -resolution 1 -variable param(arrivalRate1)
     pack $w.arrivalRate1 -expand 0 -fill x
 
     cpanel_slider $w.arrivalRate2 "Source 2 arrival rate"
-    $w.arrivalRate2.e config -from 1 -to 1000 -resolution 1 -variable param(arrivalRate2)
+    $w.arrivalRate2.e config -from 100 -to 1000 -resolution 1 -variable param(arrivalRate2)
     pack $w.arrivalRate2 -expand 0 -fill x
 
     cpanel_slider $w.serviceRate1 "Queue 1 service rate"
-    $w.serviceRate1.e config -from 1 -to 1000 -resolution 1 -variable param(serviceRate1)
+    $w.serviceRate1.e config -from 100 -to 1000 -resolution 1 -variable param(serviceRate1)
     pack $w.serviceRate1 -expand 0 -fill x
 
     cpanel_slider $w.serviceRate2 "Queue 2 service rate"
-    $w.serviceRate2.e config -from 1 -to 1000 -resolution 1 -variable param(serviceRate2)
+    $w.serviceRate2.e config -from 100 -to 1000 -resolution 1 -variable param(serviceRate2)
     pack $w.serviceRate2 -expand 0 -fill x
 
     # create play/stop buttons
@@ -65,19 +65,24 @@ proc cpanel_createControls {} {
     set img_stop [image create photo -file "plugins/stop.gif"]
     frame $w.f
     pack $w.f -expand 1 -fill both
-    button $w.f.run -image $img_play -command "run_normal"
-    button $w.f.stop -image $img_stop -command "stop_simulation"
-    pack $w.f.run $w.f.stop -side left -expand 1 -fill both
+    button $w.f.run -image $img_play -command "run_normal" -relief flat
+    button $w.f.stop -image $img_stop -command "stop_simulation" -relief flat
 
     # animation on/off button
     set img_anim [image create photo -file "plugins/anim.gif"]
     set img_noanim [image create photo -file "plugins/noanim.gif"]
-    button $w.anim -relief flat -image $img_anim -command "toggleAnimation $w.anim $img_anim $img_noanim"
-    pack $w.anim -expand 0 -fill x
+    button $w.f.anim -relief flat -image $img_anim -command "toggleAnimation $w.f.anim $img_anim $img_noanim"
+
+    frame $w.f.dummy1
+    frame $w.f.dummy2
+    pack $w.f.dummy1 -side left -expand 1
+    pack $w.f.run $w.f.stop -side left
+    pack $w.f.dummy2 -side left -expand 1
+    pack $w.f.anim -side left -anchor s
 
     # create "speed" slider
     cpanel_slider $w.animspeed "Animation speed"
-    $w.animspeed.e config -from 0 -to 3 -resolution 0.01 -variable param(animspeed)
+    $w.animspeed.e config -from 0.5 -to 3 -resolution 0.01 -variable param(animspeed)
     pack $w.animspeed -expand 0 -fill x
 
     # arrange the paramChanged function to be called whenever sliders change
