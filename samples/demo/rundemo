@@ -37,6 +37,7 @@ foreach i {
    set name($sample) [lindex $i 2]
 }
 
+
 proc createWindow {} {
     global samples dir name fonts colors
 
@@ -128,7 +129,7 @@ Dept. of Telecommunications
 }
 
 proc showDemo {sample} {
-   global samples dir name colors use_single_executable
+   global samples dir name colors use_single_executable tcl_platform
 
    foreach i $samples {
         .sel.$i config -relief raised -bg $colors(unselbutton)
@@ -138,7 +139,12 @@ proc showDemo {sample} {
    if {$use_single_executable} {
       set cmd "demo -f $dir($sample)/omnetpp.ini"
    } else {
-      set cmd "cd $dir($sample); $sample &"
+      if {$tcl_platform(platform) == "unix"} {
+        set runprog "./$sample &"
+      } else {
+        set runprog "start $sample" 
+      }
+      set cmd "cd $dir($sample); $runprog"
    }
 
    .main.up.banner config -text "$name($sample) README"
@@ -172,7 +178,7 @@ proc runSample {sample} {
                        -message {Error running compound 'demo' executable. Has it been built?}
       }
    } else {
-      if [catch {cd $dir($sample); exec $sample &}] {
+      if [catch {cd $dir($sample); exec ./$sample &}] {
          tk_messageBox -title {OMNeT++ Demo} -type ok -icon error \
                        -message {Error running the simulation program.}
       }
