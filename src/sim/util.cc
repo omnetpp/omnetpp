@@ -434,7 +434,7 @@ const char *opp_typename(const std::type_info& t)
 #include "cwatch.h"
 #include "cpacket.h"
 //void _dummy_for_env();
-static void _dummy_func()
+void _sim_dummy_func()
 {
       cPacket x;
       cPacket y(x);
