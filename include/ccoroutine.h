@@ -30,7 +30,7 @@
 
 #ifdef USE_WIN32_FIBERS
 // Fiber API is not accessible in MSVC6.0 without a hack (next 3 lines):
-#if _MSC_VER==1200
+#if _MSC_VER>=1200
 #define _WIN32_WINNT 0x0400 
 #endif 
 #include <windows.h>
