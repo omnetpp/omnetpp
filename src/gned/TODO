@@ -1,7 +1,7 @@
 To be finished (top priority!):
-- deleteItem
 - reduce number of "array names ned ..." lines -- they're SLOW!
-- "properties" dialogs
+  --> introduce "ownedkeys" attr and rewrite deleteItem, connKeysOfItem, etc.
+- finish "properties" dialogs
 
 Bugs:
 - module name mismatch in the submods and conns sections ==> sometimes "assert failed"
@@ -29,11 +29,12 @@ Drawing:
   a connection, you click the righ mouse button and release both mouse buttons
   over the menu that popped up, the half-cooked connection arrow will stay
   on the canvas
-- rename on canvas: with module vectors it's a catastrophe now...
+- drag&drop doesn't obey "snap to grid" setting
+- rename: cannot delete "1" from "Module1" if there's a "Module2"
 
 Load/save:
 - SaveAll feature [from Niko]
-- refuse to load the same file twice
+- should refuse to load the same file twice
 - save: what should it do with canvases switched to text?
      - save the text version? (maybe try to backparse it before saving,
        and warn user if there's a parse error and she won't be able to
