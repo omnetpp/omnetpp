@@ -11,6 +11,7 @@ OMNETPP_BIN_DIR =       @OMNETPP_BIN_DIR@
 OMNETPP_LIB_DIR =       @OMNETPP_LIB_DIR@
 OMNETPP_SRC_DIR =       @OMNETPP_SRC_DIR@
 OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
+OMNETPP_TUTORIAL_DIR =  @OMNETPP_TUTORIAL_DIR@
 
 #=====================================================================
 #
