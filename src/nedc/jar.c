@@ -39,8 +39,8 @@
 #include <stdlib.h> //mkstemp
 #endif
 
-#define NEDC_VERSION      "2.3"
-#define NEDC_VERSION_HEX  "0x0203"
+#define NEDC_VERSION      "3.0pre1"
+#define NEDC_VERSION_HEX  "0x02F1"
 
 #ifdef __MSDOS__
         #define SLASH "\\"
@@ -437,7 +437,7 @@ int do_secondpass (char *root_fname)
         sprintf (cc_fname, "%s%s", root_fname, suffix);
         if (verbose) printf("target file: %s\n", cc_fname);
 
-#if ((defined __GNUC__ || defined CXX) && !defined _WIN32) || (defined __INTEL_COMPILER && defined __linux__)
+#ifdef JOHNNY
         const char name_template[7] = "XXXXXX";
         name_type oldfname;
         strncpy(oldfname, cc_fname, strlen(cc_fname) + 1);

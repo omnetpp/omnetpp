@@ -22,7 +22,7 @@
 #include <math.h>     // HUGE_VAL
 
 // OMNeT++ version -- must match NEDC_VERSION in nedc source!
-#define OMNETPP_VERSION 0x0203
+#define OMNETPP_VERSION 0x02F1
 
 //=== Windows DLL IMPORT/EXPORT stuff
 #ifndef __WIN32__
