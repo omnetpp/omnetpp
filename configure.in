@@ -161,8 +161,12 @@ AC_CHECK_LIB(stdc++, main,
 #----------------------
 
 if test ! -n "$PVM_CFLAGS"; then
-    # FIXME:
-    PVM_CFLAGS="-I$PVM_ROOT/include"
+    if test ! -n "$PVM_ROOT"; then
+        AC_MSG_WARN(No PVM_CFLAGS set in configure.user, and no PVM_ROOT environment variable!)
+        AC_MSG_WARN(May run into problems building SIM_PVM!)
+    else
+        PVM_CFLAGS="-I$PVM_ROOT/include"
+    fi
 fi
 
 if test ! -n "$PVM_LIBS"; then
@@ -339,7 +343,7 @@ AC_SUBST(EXE_SUFFIX)
 AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
-AC_SUBST(PVM_INCL_DIR)
+AC_SUBST(PVM_CFLAGS)
 AC_SUBST(PVM_LIBS)
 AC_SUBST(SYS_LIBS)
 

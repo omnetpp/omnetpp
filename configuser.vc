@@ -19,6 +19,7 @@ OMNETPP_VERSION=omnetpp-2.0
 OMNETPP_ROOT=e:/home/omnetpp
 TK_DIR=e:/tcl
 TK_VER=8.2
+PVM_DIR=d:/work/pvm3
 
 #
 # other directories & files based on the base dirs
@@ -35,6 +36,8 @@ TK_LIB_DIR=$(TK_DIR)/lib
 TCL_LIB=tcl$(TK_VER:.=).lib
 TK_LIB=tk$(TK_VER:.=).lib
 _TCL_LIBRARY=$(TK_DIR)/lib/tcl$(TK_VER)
+
+PVM_INCL_DIR=$(PVM_DIR)/include
 
 #
 # tools
@@ -90,7 +93,7 @@ OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
 #
 TK_CFLAGS=/I "$(TK_INCL_DIR)"
 TK_LIBS=$(TCL_LIB) $(TK_LIB) /libpath:"$(TK_LIB_DIR)"
-PVM_INCL_DIR=d:/work/pvm3/include
+PVM_CFLAGS=/I "$(PVM_INCL_DIR)"
 PVM_LIBS=
 SYS_LIBS=
 
