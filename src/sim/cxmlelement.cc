@@ -29,6 +29,15 @@
 
 using std::ostream;
 
+#ifdef _MSC_VER
+/* MSVC does have stricmp() */
+#else
+#define stricmp my_stricmp
+static int my_stricmp(const char *a, const char *b)
+{
+    return strcasecmp(a,b); //FIXME this is Linux-specific!
+}
+#endif
 
 cXMLElement::cXMLElement(const char *tagname, const char *srclocation, cXMLElement *parent)
 {
@@ -387,7 +396,7 @@ static cXMLElement *matchPathExpression(cXMLElement *node, const char *pathexpr)
         }
         return NULL;
     }
-    else if (parseTagName(tagname, stepexpr, steplen) && steplen==tagname.length())
+    else if (parseTagName(tagname, stepexpr, steplen) && steplen==(int)tagname.length())
     {
         for (cXMLElement *child=getNthSibling(node->getFirstChild(), tagname.c_str(), 0);
              child;

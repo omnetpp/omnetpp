@@ -21,6 +21,15 @@
 #include "patmatch.h"
 #include "cexception.h"
 
+#ifdef _MSC_VER
+/* MSVC does have strnicmp() */
+#else
+#define strnicmp my_strnicmp
+static int my_strnicmp(const char *a, const char *b, size_t len)
+{
+    return strncasecmp(a,b,len); //FIXME this is Linux-specific!
+}
+#endif
 
 cPatternMatcher::cPatternMatcher()
 {
@@ -167,7 +176,7 @@ bool cPatternMatcher::parseNumRange(const char *&str, char closingchar, long& lo
 
 void cPatternMatcher::dump(int from)
 {
-    for (int k=from; k<pattern.size(); k++)
+    for (int k=from; k<(int)pattern.size(); k++)
     {
         Elem& e = pattern[k];
         switch (e.type)
@@ -213,7 +222,7 @@ bool cPatternMatcher::match(const char *s, int k)
             case LITERALSTRING:
                 if (iscasesensitive ?
                     strncmp(s, e.literalstring.c_str(), e.literalstring.length()) :
-                    strnicmp(s, e.literalstring.c_str(), e.literalstring.length()) // FIXME NOT POSIX!
+                    strnicmp(s, e.literalstring.c_str(), e.literalstring.length())
                    )
                     return false;
                 s += e.literalstring.length();
@@ -273,7 +282,7 @@ bool cPatternMatcher::match(const char *s, int k)
                 assert(0);
         }
         k++;
-        assert(k<pattern.size());
+        assert(k<(int)pattern.size());
     }
 }
 
