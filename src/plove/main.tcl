@@ -45,9 +45,7 @@ if [catch {set config(tmp) $env(TMP)}] {
 }
 
 set config(vectorfile)       ""
-set config(scriptfile)       "plove.sh"
 set config(configfile)       "~/.ploverc"
-set config(vectorconfigfile) "plove.cfg"
 
 
 proc createMenubar {w} {

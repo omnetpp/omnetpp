@@ -159,9 +159,13 @@ proc saveConfig {{fname {}}} {
            set fout [open $fname w]
 
            # save config
-           puts $fout "# general config"
+           puts $fout "version 3.0"
+
+           puts $fout "\n# general config"
            foreach i [lsort [array names config]] {
-               puts $fout [escape [list "config" $i $config($i)]]
+               if {$i!="configfile" && $i!="tmp"} {
+                   puts $fout [escape [list "config" $i $config($i)]]
+               }
            }
 
            # save custom filters
@@ -210,6 +214,7 @@ proc loadConfig {{fname {}}} {
            set fin [open $fname r]
 
            set lineno 1
+           set fversion ""
            while {[gets $fin line]>=0} {
                if {$line == ""} {incr lineno; continue}
                if [string match {#*} $line] {incr lineno; continue}
@@ -219,21 +224,24 @@ proc loadConfig {{fname {}}} {
                    set line "[string range $line 0 end-1]\n[string range $linecont 2 end]"
                    incr lineno
                }
-               #puts "DBG: >>>$line<<<"
-               if [catch {
-                   set cat [lindex $line 0]
-                   if {$cat == "config"} {
-                       set key [lindex $line 1]
-                       set value [lindex $line 2]
-                       set config($key) $value
-                   } elseif {$cat == "customfilter"} {
-                       deserializeFilter $line
-                   } else {
-                       # unrecognized
-                       error "unrecognised keyword at beginning of line -- old .ploverc format?"
+               set cat [lindex $line 0]
+               if {$cat == "version"} {
+                   set fversion [lindex $line 1]
+                   if {$fversion!="3.0"} {
+                       error "unrecognized file version $fversion"
                    }
-               } errmsg] {
-                   tk_messageBox -icon warning -type ok -title {Error reading .ploverc} -message "$fname line $lineno is invalid, ignoring ($errmsg)"
+               }
+               if {$fversion==""} {
+                   break ;# missing version info: old .ploverc -- fail silently
+               }
+               if {$cat == "config"} {
+                   set key [lindex $line 1]
+                   set value [lindex $line 2]
+                   set config($key) $value
+               } elseif {$cat == "customfilter"} {
+                   deserializeFilter $line
+               } elseif {$cat != "version"} {
+                   error "unrecognized keyword at beginning of line"
                }
                incr lineno
            }
@@ -244,11 +252,15 @@ proc loadConfig {{fname {}}} {
        } errmsg] {
            # handle errors
            idleCursor
-           tk_messageBox -icon warning -type ok -message "Error: $errmsg"
+
+           if [info exist lineno] {
+               tk_messageBox -icon warning -type ok -title {Error reading .ploverc} -message "Error at $fname line $lineno: $errmsg"
+           } else {
+               tk_messageBox -icon warning -type ok -title {Error reading .ploverc} -message "Error reading $fname: $errmsg"
+           }
        }
 
        set config(configfile) $fname
-       set config(vectorfile) ""  ;# this we won't preserve
     }
 
 }
