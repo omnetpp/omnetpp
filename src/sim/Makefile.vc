@@ -170,7 +170,7 @@ clean:
 	-del *.obj
 	-del sim_std.lib sim_std.dll sim_std.ilib sim_std.exp std\*.obj 2> nul
 	-del sim_pvm.lib sim_pvm.dll sim_pvm.ilib sim_pvm.exp pvm\*.obj 2> nul
-	-del *.ilk *.idb *.pdb 2> nul
+	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

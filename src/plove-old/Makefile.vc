@@ -59,7 +59,7 @@ depend:
 
 clean:
 	-del tclcode.cc *.obj plove.exe 2> nul
-	-del *.ilk *.idb *.pdb 2> nul
+	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 plove.obj: plove.cc \

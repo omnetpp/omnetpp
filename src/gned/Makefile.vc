@@ -85,7 +85,7 @@ depend:
 
 clean:
 	-del tclcode.cc *.obj gned.exe 2> nul
-	-del *.ilk *.idb *.pdb 2> nul
+	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 realclean: clean
 	-del lex.yy.cc ebnf.tab.cc ebnf.tab.h

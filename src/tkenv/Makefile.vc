@@ -80,7 +80,7 @@ depend:
 
 clean:
 	-del tclcode.cc *.obj tkenv.lib tkenv.dll tkenv.ilib tkenv.exp 2> nul
-	-del *.ilk *.idb *.pdb 2> nul
+	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 arrow.obj: arrow.cc \
