@@ -1,0 +1,1 @@
+sh gif2tcl > icons.tcl
