@@ -3,6 +3,11 @@
 	* msgc.pl was renamed opp_msgc, and now it gets copied to the bin/ 
 	directory; an opp_msgc.cmd was also added for Windows' sake
 
+	* files for opp_msgc should now have .msg suffix -- nedcwrapper.sh 
+	removed
+
+	* msgtest.ned renamed to example.msg
+
 2002-11-23  Andras Varga
 
 	* jar_expr.c: fixed bug which caused generated code to crash if
