@@ -1560,16 +1560,16 @@ void TOmnetTkApp::putmsg(const char *str)
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",str,"} info ok",NULL));
 }
 
-void TOmnetTkApp::puts(const char *str)
+void TOmnetTkApp::sputn(const char *s, int n)
 {
     if (!interp)
     {
-        ::printf("%s", str); // fallback in case Tkenv didn't fire up correctly
+        ::fwrite(s,1,n,stdout); // fallback in case Tkenv didn't fire up correctly
         return;
     }
 
-    // we have to quote the string for Tcl in case it contains { or }.
-    TclQuotedString quotedstr(str);
+    // Quote Tcl special characters: {}[]$ etc
+    TclQuotedString quotedstr(s,n);
 
     // output string into main window
     cModule *module = simulation.contextModule();

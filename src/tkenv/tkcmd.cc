@@ -35,6 +35,8 @@
 #include "patmatch.h"
 #include "visitor.h"
 
+using std::string;
+
 
 //----------------------------------------------------------------
 // Command functions:
@@ -964,12 +966,13 @@ int getModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
    if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cModule *mod = (cModule *)strToPtr( argv[1] );
    if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+
    const char *parname = argv[2];
-   static char buf[2000]; // FIXME constant!
+   string result;
 
-   TRY( mod->par(parname).getAsText(buf,2000) );
+   TRY( result = mod->par(parname).getAsText() );
 
-   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(result.c_str()), TCL_VOLATILE);
    return TCL_OK;
 }
 

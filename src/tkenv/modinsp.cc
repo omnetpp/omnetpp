@@ -1067,19 +1067,19 @@ int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, const char **)
         if (g->datarate())
         {
             strcat(chan,"datarate ");
-            g->datarate()->getAsText(chan+strlen(chan),32);
+            strcat(chan, g->datarate()->getAsText().c_str());
             strcat(chan,"bps  ");
         }
         if (g->delay())
         {
             strcat(chan,"delay ");
-            g->delay()->getAsText(chan+strlen(chan),32);
+            strcat(chan, g->delay()->getAsText().c_str());
             strcat(chan,"s  ");
         }
         if (g->error())
         {
             strcat(chan,"error ");
-            g->error()->getAsText(chan+strlen(chan),32);
+            strcat(chan, g->error()->getAsText().c_str());
             strcat(chan,"  ");
         }
         char srcgateptr[32], destgateptr[32];

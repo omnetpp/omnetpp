@@ -146,7 +146,7 @@ void TCmdenvApp::setup()
     // must do one run.
     if (opt_runstoexec.empty())
     {
-       buffer[0]='\0'; 
+       buffer[0]='\0';
        for (cIniFileSectionIterator sect(ini_file); !sect.end(); sect++)
        {
           if (strncmp(sect.section(),"Run ",4)==0)
@@ -436,16 +436,15 @@ void TCmdenvApp::putmsg(const char *s)
     ::fflush(fout);
 }
 
-void TCmdenvApp::puts(const char *s)
+void TCmdenvApp::sputn(const char *s, int n)
 {
     if (opt_modulemsgs || simulation.contextModule()==NULL)
     {
-        ::fprintf(fout, "%s", s);
+        ::fwrite(s,1,n,fout);
         if (opt_autoflush)
             ::fflush(fout);
     }
 }
-
 
 void TCmdenvApp::flush()
 {

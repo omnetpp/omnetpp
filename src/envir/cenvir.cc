@@ -30,6 +30,7 @@
 #include "speedmtr.h"   // env_dummy_function()
 #include "filemgrs.h"   // env_dummy_function()
 
+
 using std::ostream;
 
 //=== Global objects:
@@ -88,12 +89,13 @@ cOmnetAppRegistration *chooseBestOmnetApp()
 
 //========================================================================
 
-cEnvir::cEnvir()
-{
-    running_mode = NONPARALLEL_MODE;
-    prmpt[0] = '\0';
-    disable_tracing = false;
+#ifdef _MSC_VER
+#pragma warning(disable:4355)
+#endif
 
+cEnvir::cEnvir() : ostream(&ev_buf), ev_buf(this)
+{
+    disable_tracing = false;
     app = NULL;
 }
 
@@ -248,13 +250,6 @@ const char *cEnvir::getDisplayString(int run_no,const char *name)
 
 //-----------------------------------------------------------------
 
-cEnvir& cEnvir::setPrompt(const char *s)
-{
-    strncpy(prmpt,s,80);
-    prmpt[80] = '\0';
-    return *this;
-}
-
 void cEnvir::messageSent( cMessage *msg, cGate *directToGate)
 {
     if (disable_tracing) return;
@@ -354,52 +349,67 @@ void cEnvir::printf(const char *fmt,...)
     vsprintf(buffer, fmt, va);
     va_end(va);
 
-    if (app)
-        app->puts( buffer );
-    else
-        ::printf("%s", buffer);
+    // has to go through ostream (and so sputn() too) to preserve ordering
+    *this << buffer;
 }
 
-void cEnvir::puts(const char *str)
+void cEnvir::puts(const char *s)
+{
+    if (disable_tracing) return;
+
+    // has to go through ostream (and so sputn() too) to preserve ordering
+    *this << s;
+}
+
+void cEnvir::sputn(const char *s, int n)
 {
     if (disable_tracing) return;
 
     if (app)
-        app->puts( str );
+        app->sputn(s,n);
     else
-        ::printf("%s", buffer);
+        ::fwrite(s,1,n,stdout);
 }
 
-void cEnvir::flush()
+cEnvir& cEnvir::flush()
 {
-    if (disable_tracing) return;
+    if (disable_tracing) return *this;
+
+#if !defined(_MSC_VER) || _MSC_VER>1200
+    std::ostream::flush();
+#else
+    // **HACK** Same MSVC bug as in cenvir.h: cannot call member of base class
+    // if it's in a different namespace. At least flush() is not virtual
+    // so we can work around it.
+    ((ostream *)(this))->flush();
+#endif
 
     if (app)
         app->flush();
     else
         ::fflush(stdout);
+
+    return *this;
 }
 
-bool cEnvir::gets(const char *promptstr, char *buf, int len)
+bool cEnvir::gets(const char *prompt, char *buf, int len)
 {
-    bool esc = app->gets( promptstr, buf, len );
+    bool esc = app->gets(prompt, buf, len);
     if (esc)
         throw new cException(eCANCEL);
-    return (bool)esc;
+    return true;
 }
 
-bool cEnvir::askf(char *buf, int len, const char *promptfmt,...)
+std::string cEnvir::gets(const char *prompt, const char *defaultreply)
 {
-    va_list va;
-    va_start(va, promptfmt);
-    vsprintf(buffer, promptfmt, va);
-    va_end(va);
-
-    bool esc = app->gets( buffer, buf, len );
+    buffer[0] = '\0';
+    if (defaultreply) strncpy(buffer,defaultreply,ENVIR_TEXTBUF_LEN-1);
+    buffer[ENVIR_TEXTBUF_LEN]='\0';
+    bool esc = app->gets(prompt, buffer, ENVIR_TEXTBUF_LEN-1);
     if (esc)
         throw new cException(eCANCEL);
-    return (bool)esc;
- }
+    return std::string(buffer);
+}
 
 bool cEnvir::askYesNo(const char *msgfmt,...)
 {
@@ -408,7 +418,7 @@ bool cEnvir::askYesNo(const char *msgfmt,...)
     vsprintf(buffer, msgfmt, va);
     va_end(va);
 
-    int ret = app->askYesNo( buffer );
+    int ret = app->askYesNo(buffer);
     if (ret<0)
         throw new cException(eCANCEL);
     return ret!=0;
@@ -490,92 +500,5 @@ bool cEnvir::idle()
 bool memoryIsLow()
 {
     return ev.app->memoryIsLow();
-}
-
-//---------------------------------------------------------
-
-//
-// overloaded operators
-//
-
-cEnvir& operator<< (cEnvir& ev, cPar& p)
-{
-    p.getAsText(buffer,ENVIR_TEXTBUF_LEN);
-    ev.puts(buffer);
-    return ev;
-}
-
-cEnvir& operator* (cEnvir& ev, char *s)
-{
-    return ev.setPrompt((char *)s);
-}
-cEnvir& operator* (cEnvir& ev, const signed char *s)
-{
-    return ev.setPrompt((const char *)s);
-}
-cEnvir& operator* (cEnvir& ev, const unsigned char *s)
-{
-    return ev.setPrompt((const char *)s);
-}
-
-cEnvir& operator>> (cEnvir& ev, cPar& p)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); p.setFromText(buf,'?'); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, char *s)
-{
-    ev.gets(ev.prompt(),(char *)s, 80); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, signed char *s)
-{
-    ev.gets(ev.prompt(),(char *)s, 80); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, unsigned char *s)
-{
-    ev.gets(ev.prompt(),(char *)s, 80); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, char& c)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;
-}
-cEnvir& operator>> (cEnvir& ev, signed char& c)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;
-}
-cEnvir& operator>> (cEnvir& ev, unsigned char& c)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); c=buf[0]; return ev;
-}
-cEnvir& operator>> (cEnvir& ev, short& i)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(short)atol(buf); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, int& i)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(int)atol(buf); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, long& l)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); l=atol(buf); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, unsigned short& i)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(unsigned short)atol(buf); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, unsigned int& i)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); i=(unsigned int)atol(buf); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, unsigned long& l)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); l=(unsigned long)atol(buf); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, double& d)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); d=atof(buf); return ev;
-}
-cEnvir& operator>> (cEnvir& ev, long double& d)
-{
-    char buf[80];buf[0]=0; ev.gets(ev.prompt(), buf, 80); d=atof(buf); return ev;
 }
 

@@ -78,7 +78,7 @@ class TCmdenvApp : public TOmnetApp
      // redefined I/O functions:
      virtual bool isGUI() {return false;}
      virtual void putmsg(const char *s);
-     virtual void puts(const char *s);
+     virtual void sputn(const char *s, int n);
      virtual void flush();
      virtual bool gets(const char *promptstr, char *buf, int len=255);
      virtual int  askYesNo(const char *question);

@@ -207,7 +207,7 @@ class ENVIR_API TOmnetApp
     virtual void bubble(cModule *mod, const char *text) {}
 
     virtual void putmsg(const char *s) = 0;
-    virtual void puts(const char *s) = 0;
+    virtual void sputn(const char *s, int n) = 0;
     virtual void flush() = 0;
     virtual bool gets(const char *promptstr, char *buf, int len=255) = 0;  // 0==OK 1==CANCEL
     virtual int  askYesNo(const char *question) = 0; //0==NO 1==YES -1==CANCEL

@@ -27,12 +27,20 @@
 
 
 
-TclQuotedString::TclQuotedString(const char *str)
+TclQuotedString::TclQuotedString(const char *s)
 {
     int flags;
-    int quotedlen = Tcl_ScanElement(TCLCONST(str), &flags);
+    int quotedlen = Tcl_ScanElement(TCLCONST(s), &flags);
     quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
-    Tcl_ConvertElement(TCLCONST(str), quotedstr, flags);
+    Tcl_ConvertElement(TCLCONST(s), quotedstr, flags);
+}
+
+TclQuotedString::TclQuotedString(const char *s, int n)
+{
+    int flags;
+    int quotedlen = Tcl_ScanCountedElement(TCLCONST(s), n, &flags);
+    quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
+    Tcl_ConvertCountedElement(TCLCONST(s), n, quotedstr, flags);
 }
 
 TclQuotedString::~TclQuotedString()

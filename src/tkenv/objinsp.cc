@@ -401,11 +401,8 @@ void TParInspector::update()
 {
    TInspector::update();
 
-   char buf[129];
    cPar *p = static_cast<cPar *>(object);
-
-   p->getAsText(buf,128);
-   setEntry(".main.value.e", buf );
+   setEntry(".main.value.e", p->getAsText().c_str());
 
    char *t;
    switch (p->type())

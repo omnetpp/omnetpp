@@ -55,7 +55,8 @@ class TclQuotedString
     char buf[80];
     char *quotedstr;
   public:
-    TclQuotedString(const char *str);
+    TclQuotedString(const char *s);
+    TclQuotedString(const char *s, int n);
     ~TclQuotedString();
     const char *get() {return quotedstr;}
     operator const char *() {return quotedstr;}
