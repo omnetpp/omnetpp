@@ -118,59 +118,61 @@ described above. "Experimental" means that:
  1. The message description syntax and features may change in the future,
     based on feedback from the community;
  2. The compiler that translates message descriptions into C++ is a perl script
-    (this is a temporary solution until nedtool becomes stable and tested)
+    (this is a temporary solution until nedtool is finished)
 
 Let us begin with a simple example. Suppose that you need message objects to
 carry source and destination addresses as well as a hop count. You could write
 a mypacket.msg file with the following contents:
 
-message MyPacket
-{
-    fields:
-       int srcAddress;
-       int destAddress;
-       int hops = 0;
-};
-
-If you process this file with "message subclassing compiler", it will
-create the following files for you: mypacket_m.h and mypacket_m.cc.
-mypacket_m.h is supposed to be included into your C++ sources
-where you want to use ...
-
+ message MyPacket
+ {
+     fields:
+        int srcAddress;
+        int destAddress;
+        int hops = 0;
+ };
 
 The task of the "message subclassing compiler" is to generate C++ classes
 you can use from your models as well as "reflection" classes that allow
-Tkenv to inspect these data stuctures. From a file called foo.msg,
-the compiler will generate the foo_m.h and foo_m.cc files. You'll need to
-#include foo_m.h into your C++ sources to be able to use the generated
-classes. The foo_m.cc file contains implementation of the generated classes
-as well as "reflection" code that (at some point in the future) will allow
-you to inspect these data stuctures from the Tkenv GUI. The foo_m.cc file
-should be compiled and linked into you simulation (the generated makefile
-will take care of this).
+Tkenv to inspect these data stuctures.
+
+If you process mypacket.msg with "message subclassing compiler", it will
+create the following files for you: mypacket_m.h and mypacket_m.cc.
+mypacket_m.h contains the declaration of the MyPacket C++ class, and
+it should be included into your C++ sources where you need to handle
+MyPacket objects.
+
+The MyPacket class declaration in mypacket_m.h will look like this:
+
+ class MyPacket : public cMessage {
+     ...
+     virtual int getSrcAddress() const;
+     virtual void setSrcAddress(int srcAddress);
+     ...
+ };
+
+So in your C++ file, you could use it like this:
+
+ #include "mypacket_m.h"
+
+ ...
+ MyPacket *pkt = new MyPacket("pkt");
+ pkt->setSrcAddress( localAddr );
+ ...
+
+The mypacket_m.cc file contains implementation of the generated MyPacket
+class, as well as "reflection" code that allows you to inspect these data
+stuctures in the Tkenv GUI. The mypacket_m.cc file should be compiled and
+linked into your simulation (the generated makefile will take care of this).
 
 
-Features in nutshell
-====================
-You're strongly advised to experiment with the source and always check out
-the generated code!!!
+Features
+========
+The following sections describe the message syntax and features in detail.
 
-For lack of time, syntax is not described here -- you should study the
-example.msg file instead!  What you find here however is very brief
-explanations of certain keywords or features you find in example.msg.
 
-1. cppinclude directive:
-
- cppinclude "mystuff.h"
-
-Adds a C++ #include to the generated header file.
-This is likely to change to something like this in the future:
-
- cplusplus {
- #include "mystuff.h"
- }
-
-2. enums:
+0. Declaring enums
+------------------
 An enum {..} generates a normal C++ enum, plus creates an object which stores
 textual representations of the constants. The object makes it possible to
 display symbolic names in Tkenv.
@@ -194,15 +196,389 @@ It is possible to "extend" an enum with new values.
 
 What is generated from this???
 
-3. class, message declarations:
+
+1. Message declarations
+-----------------------
+
+1.1. Basic use
+---------------
+
+You can describe messages with the following syntax:
+
+ message FooPacket
+ {
+     fields:
+         int sourceAddress;
+         int destAddress;
+         bool hasPayload;
+ };
+
+Processing this description with the message compiler will produce
+a C++ header file with a generated class, FooPacket. FooPacket will be
+a subclass of cMessage.
+
+For each field in the above description, the generated class will have
+a protected data member, a getter and a setter method. The names of the
+methods will begin with 'get' and 'set', followed by the field name with
+its first letter converted to uppercase. Thus, FooPacket will contain the
+following methods:
+
+ virtual int getSourceAddress() const;
+ virtual void setSourceAddress(int sourceAddress);
+
+ virtual int getDestAddress() const;
+ virtual void setDestAddress(int destAddress);
+
+ virtual bool getHasPayload() const;
+ virtual void setHasPayload(bool hasPayload);
+
+Note that the methods are declared virtual to give you the possibility
+to override them in subclasses.
+
+Two constructors will be generated: one that optionally accepts an object name,
+and a copy constructor:
+
+ FooPacket(const char *name=NULL);
+ FooPacket(const FooPacket& other);
+
+An appropriate assignment operator (operator=()) and dup() functions will
+also be generated.
+
+Data types for fields are not limited to int and bool, you can use the
+following primitive types (i.e. primitive types as defined in the C++ language):
+bool, char, short, int, long, unsigned short, unsigned int, unsigned long, double.
+
+Fields are initialized to zero.
+
+
+1.2 Initial values
+------------------
+You can initialize field values with the following syntax:
+
+ message FooPacket
+ {
+     fields:
+         int sourceAddress = 0;
+         int destAddress = 0;
+         bool hasPayload = false;
+ };
+
+Initialization code will be placed in the constructor of the generated class.
+
+
+1.3 Enum declarations
+---------------------
+You can specify if an int (or other integral type) field takes values from an
+enum. The message compiler can than generate code that allows Tkenv display
+the symbolic value of the field.
+
+The Example:
+
+ message FooPacket
+ {
+   fields:
+       int payloadType enum(PayloadTypes);
+ };
+
+The enum has to be declared separately in the message file.
+
+
+1.4 Fixed-size arrays
+---------------------
+You can specify fixed size arrays:
+
+ message FooPacket
+ {
+     fields:
+         long route[4];
+ };
+
+The generated getter and setter methods will have an extra k argument,
+the array index:
+
+ virtual long getRoute(unsigned k) const;
+ virtual void setRoute(unsigned k, long route);
+
+If you call the methods with an index that is out of bounds, an exception
+will be thrown.
+
+
+1.5 Dynamic arrays
+------------------
+If the array size is not known in advance, you can declare the field
+to be a dynamic array:
+
+ message FooPacket
+ {
+    fields:
+        long route[];
+ };
+
+In this case, the generated class will have two extra methods in addition
+to the getter and setter methods: one for setting the array size, and another
+one for returning the current array size.
+
+ virtual long getRoute(unsigned k) const;
+ virtual void setRoute(unsigned k, long route);
+ virtual unsigned getRouteArraySize() const;
+ virtual void setRouteArraySize(unsigned n);
+
+The set..ArraySize() method internally allocates a new array. Existing
+values in the array will be preserved (copied over to the new array.)
+
+The default array size is zero. This means that you need to call the
+set...ArraySize() before you can start filling array elements.
+
+
+1.6 String members
+------------------
+You can declare string-valued fields with the following syntax:
+
+ message FooPacket
+ {
+    fields:
+        string hostName;
+ };
+
+The generated getter and setter methods will return and accept const char*
+pointers:
+
+ virtual const char *getHostName() const;
+ virtual void setHostName(const char *hostName);
+
+The generated object will have its own copy of the string.
+
+NOTE: a string member is different from a character array,
+which is treated as an array of any other type. For example,
+
+ message FooPacket
+ {
+    fields:
+        char chars[10];
+ };
+
+will generate the following methods:
+
+ virtual char getChars(unsigned k);
+ virtual void setChars(unsigned k, char a);
+
+
+2. Other field types, inheritance
+---------------------------------
+So far we have discussed how to add fields of primitive types
+(int, double, char, ...) to cMessage. This is only the beginning:
+
+It is possible to use something else than cMessage as the base class
+(e.g. one of the message classes defined earlier).
+
+It is possible to use structs and classes to define fields. Structs
+and classes may come from existing C++ headers, or may be defined
+in message files and generated by the message compiler.
+
+
+2.1 Inheritance among message classes
+-------------------------------------
+By default, messages are subclassed from cMessage. However, you can
+explicitly specify the base class using the extends keyword:
+
+ message FooPacket extends FooBase
+ {
+     fields:
+         ...
+ };
+
+For the above example, the generated C++ code will look like:
+
+ class FooPacket : public FooBase { ... };
+
+Inheritance also works for structs and classes (see next sections
+for details).
+
+
+2.2 Defining plain C structs
+----------------------------
+You can define C-style structs to be used as fields in message classes,
+"C-style" meaning "with no methods at all". (Because otherwise in the C++
+language a struct can have methods, and in general it can do anything
+a class can.)
+
+The syntax is similar to that of defining messages:
+
+ struct MyStruct
+ {
+     fields:
+         char array[10];
+         short version;
+ };
+
+However, the generated code is different. The generated struct has
+no getter or setter methods, instead the fields are represented
+by public data members. For the above definition, the
+following code is generated:
+
+ struct MyStruct
+ {
+     char array[10];
+     short version;
+ };
+
+Generated structs will have no virtual methods, therefore also no vtable.
+
+Field initialization is not supported, because no constructor is generated
+either.
+
+A struct can have primitive types or other structs are fields. It cannot
+have string or class as field.       // FIXME implement!!!!!!!!!!!!!!!!!!!!!
+
+Dynamic arrays are not supported (no place to put array allocation code). // FIXME implement!!!!!!!!!!!!!!!!!!!!!
+
+Inheritance _is_ supported for structs, but "generation gap" or abstract fields
+(see later) are not, because they would build upon virtual functions.
+
+
+2.3 Defining non-message classes
+--------------------------------
+Until now we have used the message keyword to define classes, which
+implies that the base class is cMessage (either directly or indirectly).
+Two other keywords are possible: class and struct.
+
+- class: class (default base class: none [NOT cObject!!!])
+- struct: public data members instead of set/get methods
+
 Different flavours of the same thing -- generated data classes with associated
 descriptor objects which make them inspectable in Tkenv.
 - class: class (default base class: none [NOT cObject!!!])
 - message: class (default base class: cMessage)
 - struct: public data members instead of set/get methods
+
 Slightly different code is generated for classes that are rooted in cObject
-than for those that are not. (For the latter, no className() or dup() method
+than for those which are not. (For the latter, no className() or dup() method
 is generated, and the constructor doesn't have the 'name' argument.)
+
+
+2.4 Using structs and classes as fields
+---------------------------------------
+In addition to primitive types, you can also use other structs or objects
+as a field. For example, if you have a struct named IPAddress, you can
+write the following:
+
+ message FooPacket
+ {
+    fields:
+        IPAddress src;
+ }
+
+The IPAddress structure must be known in advance to the message compiler;
+that is, it must either be a struct or class defined earlier in the message
+description file, or it must be a C++ type with its header file
+included via cplusplus {...} and its type announced (see Announcing C++ types).
+
+The generated class will contain an IPAddress data member (that is, NOT a
+pointer to an IPAddress). The following getter and setter methods will be
+generated:
+
+ virtual const IPAddress& getSrc() const;
+ virtual void setSrc(const IPAddress& src);
+
+
+2.5 Pointers
+------------
+Not supported yet.
+
+
+3. Using existing C++ types
+---------------------------
+
+3.1 Announcing C++ types
+-------------------------
+If you want to use one of your own types (a class, struct or typedef,
+declared in a C++ header) in a message definition, you have to
+announce those types to the message compiler. You also have to make sure
+that your header file gets included into the generated _m.h file so that
+the C++ compiler can compile it.
+
+Suppose you have an IPAddress structure, defined in an ipaddress.h
+file:
+
+ // ipaddress.h
+ struct IPAddress {
+     int byte0, byte1, byte2, byte3;
+ };
+
+To be able to use IPAddress in a message definition, the message
+file (say foopacket.msg) should contain the following lines:
+
+ cplusplus {                      FIXME IMPLEMENT THIS!!!!!!!!!!!
+ #include "ipaddress.h"
+ };
+
+ struct IPAddress;
+
+The effect of the first three lines is simply that the #include
+statement will be incorporated in the generated foopacket_m.h
+file, so that the C++ compiler will know what IPAddress is
+(the message compiler itself will not attempt to interpret the
+text inside the cplusplus { ... } directive).
+
+The next line ('struct IPAddress;') tells the message compiler that
+IPAddress is a C++ struct. This information is necessary for correct
+parsing and it will also affect the generated code.
+
+Classes can be announced using the class keyword.
+
+ class cSubQueue;               // FIXME IMPLEMENT!!!!!!!!!
+
+The above syntax assumes that the class is derived from cObject
+either directly or indirectly. If it is not, the noncobject
+keyword should be used:
+
+ class noncobject IPAddress;   // FIXME IMPLEMENT!!!!!!!!!
+
+The distinction between classes derived and not derived from cObject
+is important because the generated code differs at places.
+
+
+4. Customizing the generated class
+----------------------------------
+
+4.1 Generation gap pattern
+--------------------------
+'customize' property (true/false):
+When set, the 'generation gap' pattern is used which allows the programmer
+to customize the generated class by redefining virtual member functions.
+
+Fields, properties sections within the class/message/struct declarations:
+fields section: data members to be generated.
+properties section: contains meta info that affects how generated code will
+look like.
+
+
+4.2 'abstract' fields
+---------------------
+No data member is generated, and generated getter/setter methods are pure
+virtual. Purpose is to allow the programmer to store the value of this field
+in whatever way he/she wants. Assumes that the class has the 'customize'
+property set.
+
+Example:
+   abstract int a;
+
+
+//////////////////////////////////////////////////////////////
+
+
+
+
+1. cppinclude directive:
+
+ cppinclude "mystuff.h"
+
+Adds a C++ #include to the generated header file.
+This is likely to change to something like this in the future:
+
+ cplusplus {
+ #include "mystuff.h"
+ }
 
 
 4. struct declarations:
@@ -359,8 +735,47 @@ struct MyDerivedStruct extends MyStruct
 {
     fields:
         char code;
-        short prot enum(ProtocolTypes); 
+        short prot enum(ProtocolTypes);
         MyStruct substruct;  // also as embedded data member
 };
+
+---------------------------------------------------------------
+
+Summary of data types
+---------------------
+The following data types are supported for fields:
+   - primitive types: bool, short, int, long, unsigned short, unsigned int,
+     unsigned long, double
+   - fixed-size arrays of the above primitive types
+   - variable-sized arrays of the above primitive types (stored as a ptr to a
+     dynamically allocated array plus an int for array size; generated
+     class will have an allocate function for each variable-sized array)
+   - char
+   - fixed size arrays of chars (handled as a single string)
+   - a dynamically allocated string (stored as char*)
+   - struct/class (?); fixed and variable-sized arrays of them (?)
+     (--> how to declare them to NED? what about cObject ownership stuff?)
+Enums can be assigned to variables of integral types.
+
+Summary
+-------
+
+Field declaration            Generated code
+-----------------            --------------
+primitive types
+double field;                double getField();
+                             void setField(double d);
+
+fixed-size arrays
+double field[4];             double getField(unsigned k);
+                             void setField(unsigned k, double d);
+
+dynamic arrays
+double field[];              void setFieldArraySize(unsigned n);
+                             unsigned getFieldArraySize();
+                             double getField(unsigned k);
+                             void setField(unsigned k, double d);
+
+string type
 
 
