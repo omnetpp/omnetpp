@@ -1,3 +1,10 @@
+2003-01-04  Andras Varga
+
+	* props.tcl: Module/Submodule/etc Properties dialogs now validate 
+	values entered in the Parameters, Gates, Machines etc. tables, 
+	so that invalid values no longer cause errors. (new proc validate-
+	AttrValue)
+
 2002-12-03  Andras Varga
 
 	* plotedit.tcl: bugfix: it was not possible to draw exactly horizontal 

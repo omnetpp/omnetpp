@@ -132,10 +132,7 @@ proc updateNedFromTableEdit {w parentkey itemtype keyattr} {
                 }] {
                    set value ""
                 }
-                if [string match "*-comment" $attr] {
-                   set value [processCommentAfterEdit $value]
-                }
-                set ned($key,$attr) $value
+                set ned($key,$attr) [validateAttrValue $key $attr $value]
             }
             incr i
         }
@@ -145,5 +142,64 @@ proc updateNedFromTableEdit {w parentkey itemtype keyattr} {
     return [expr $tblN==0]
 }
 
+
+# validateAttrValue --
+#
+# Validates and if wrong, corrects an attribute value in ned()
+#
+proc validateAttrValue {key attr value} {
+    global ned ned_attlist
+
+    # check, depending on attribute name
+    if [string match "*-comment" $attr] {
+        set value [processCommentAfterEdit $value]
+        return $value
+    }
+
+    if {$attr=="isvector"} {
+        if {[string match "0*" $value] || [string match "n*" $value] || [string match "f*" $value]} {
+            set value 0
+        } else {
+            set value 1
+        }
+        return $value
+    }
+
+    if {$attr=="datatype"} {
+        if {$value==""} {
+            set value "numeric"
+        }
+        return $value
+    }
+
+    if {$attr=="gatetype"} {
+        if [string match "i*" $value] {
+            set value "input"
+        } else {
+            set value "output"
+        }
+        return $value
+    }
+
+    if {$attr=="value"} {
+        if {$value==""} {
+            set value 0
+        }
+        return $value
+    }
+
+    if {$attr=="name"} {
+        if {$value==""} {
+            set value "unnamed"
+        }
+
+        # remove illegal chars
+        regsub -all {[^a-zA-Z0-9_]} $value "" value
+        regsub {^[0-9]} $value "_&" value
+        return $value
+    }
+
+    return $value
+}
 
 
