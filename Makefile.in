@@ -30,9 +30,13 @@ components: check-env all-libs all-progs install-local all-models all-samples
 #=====================================================================
 
 
-all-libs: sim envir cmdenv tkenv tvenv
+#
+# Group targets. Note that utils has to be built before libs and progs
+# because tcl2c might be needed to build tkenv or gned.
+#
+all-libs: utils sim envir cmdenv tkenv tvenv
 
-all-progs: nedc gned plove utils
+all-progs: utils nedc gned plove
 
 all-models: support
 
