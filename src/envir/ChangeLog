@@ -249,3 +249,7 @@ May 7, 2000
  - Makefile.vc improvements from Balazs Kelemen
 ------ omnetpp-2.0b4 released ------
 ------ omnetpp-2.0b5 released ------
+June 19, 2000
+ - bugfix: TOmnetApp::getOutVectorConfig() crashed when it was called with
+   vecname being NULL (on Solaris; other systems seem to tolerate NULL
+   being passed to sprintf() as a "%s" argument) [reported by Ulrich Kaage]

@@ -44,6 +44,9 @@
 
 #endif
 
+
+// This variable could really be a local var inside the functions where it is
+// used; it was only made a static to reduce per-module stack size with activity().
 static char buffer[1024];
 
 
@@ -147,7 +150,7 @@ void TOmnetApp::getOutVectorConfig(const char *modname,const char *vecname, /*in
     char section[16];
     sprintf(section,"Run %d",simulation.runNumber());
 
-    sprintf(buffer, "%s.%s.", modname,vecname);
+    sprintf(buffer, "%s.%s.", modname?modname:"", vecname?vecname:"");
     char *end = buffer+strlen(buffer);
 
     // get 'module.vector.disabled=' entry
