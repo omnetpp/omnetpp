@@ -1,0 +1,114 @@
+%description:
+Test channel data rate
+
+%file: {}.ned
+
+channel {MyConn}
+    datarate 1e5;
+    delay 0.1;
+endchannel
+
+simple {Node1}
+    gates:
+        out: out;
+endsimple
+
+simple {Node2}
+    gates:
+        in: in;
+endsimple
+
+module {MyNet}
+    submodules:
+        node1: {Node1};
+        node2: {Node2};
+    connections:
+        node1.out --> {MyConn} --> node2.in;
+endmodule
+
+network
+     {myNet}: {MyNet};
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Node1} : public cSimpleModule
+{
+    Module_Class_Members({Node1},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Node1});
+
+#define PRINTGATESTATE()  ev << "t=" << simTime() << ": busy:" << g->isBusy() << ", finishes:" << g->transmissionFinishes() << endl;
+
+void {Node1}::activity()
+{
+    cMessage *msg;
+    cGate *g = gate("out");
+
+    PRINTGATESTATE();
+
+    msg = new cMessage("msg1");
+    msg->setLength(500);
+    send(msg, g);
+
+    PRINTGATESTATE();
+
+    wait(1.0);
+    PRINTGATESTATE();
+
+    msg = new cMessage("msg2");
+    msg->setLength(300);
+    send(msg, g);
+
+    msg = new cMessage("msg3");
+    msg->setLength(200);
+    send(msg, g);
+
+    PRINTGATESTATE();
+
+    wait(1.0);
+    PRINTGATESTATE();
+}
+
+class {Node2} : public cSimpleModule
+{
+    Module_Class_Members({Node2},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Node2});
+
+
+void {Node2}::activity()
+{
+    for (;;)
+    {
+        cMessage *msg = receive();
+        ev << "t=" << simTime() << ": " << msg->name() << " arrived" << endl;
+        delete msg;
+    }
+}
+
+
+%inifile: {}.ini
+[General]
+network={myNet}
+
+[Cmdenv]
+express-mode=false
+event-banners=false
+
+%contains: stdout
+t=0: busy:0, finishes:-6.27744e+066
+t=0: busy:1, finishes:0.005
+t=0.105: msg1 arrived
+t=1: busy:0, finishes:0.005
+t=1: busy:1, finishes:1.005
+t=1.103: msg2 arrived
+t=1.105: msg3 arrived
+t=2: busy:0, finishes:1.005
+
