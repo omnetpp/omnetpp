@@ -411,6 +411,6 @@ Jan 21, 2001
  - "find" and "find next" functionality improved and now it works for all
    module output windows. Hotkeys: Ctrl-F Find, F3 or Ctrl-N Find next.
  - added hotkeys for step, run, etc commands:
-     F4 Step, F5 Run, F6 Fast Run, F7 Express Run, F8 Stop, Ctrl-F5 Step within
+     F4 Step, F5 Run, F6 Fast Run, F7 Express Run, F8 Stop, Ctrl-F4 Step within
      module
-    
+        

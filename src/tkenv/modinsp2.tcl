@@ -378,12 +378,12 @@ proc create_graphicalmodwindow {name} {
     foreach i {ascont win sep1 parent sep2 step sep3 params gates sep4 redraw} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
-    bind $w <Control-F5> "one_step_in_module $w"
+    bind $w <Control-F4> "one_step_in_module $w"
 
     set help_tips($w.toolbar.ascont)  {Inspect as object}
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
-    set help_tips($w.toolbar.step)    {Stop at events in this module (Ctrl-F5)}
+    set help_tips($w.toolbar.step)    {Stop at events in this module (Ctrl-F4)}
     set help_tips($w.toolbar.params)  {Inspect parameters}
     set help_tips($w.toolbar.gates)   {Inspect gates}
     set help_tips($w.toolbar.redraw)  {Rearrange randomly placed submodules}

@@ -52,11 +52,13 @@ TModuleWindow::TModuleWindow(cObject *obj,int typ,void *dat) :
 void TModuleWindow::createWindow()
 {
    TInspector::createWindow(); // create window name etc.
+   strcpy(modulename,windowname); strcat(modulename,".statusbar.name");
+   strcpy(phase,windowname); strcat(phase,".statusbar.phase");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   cModule *mod = (cSimpleModule *)object;
+   cModule *mod = (cModule *)object;
    const char *createcommand = mod->isSimple() ?
             "create_simplemodulewindow " : "create_compoundmodulewindow ";
    CHK(Tcl_VarEval(interp, createcommand, windowname, NULL ));
@@ -67,9 +69,19 @@ void TModuleWindow::update()
    TInspector::update();
 
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   cModule *mod = (cSimpleModule *)object;
+   cModule *mod = (cModule *)object;
 
    setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
+
+   char subsc[32];
+   sprintf(subsc,"#%d ",mod->id());
+   CHK(Tcl_VarEval(interp, modulename, " config -text {Module ",
+                           subsc,mod->fullPath(),"}", NULL));
+   if (mod->isSimple())
+   {
+       CHK(Tcl_VarEval(interp, phase, " config -text {Phase: ",
+                            ((cSimpleModule *)mod)->phase(),"}", NULL));
+   }
 }
 
 //=======================================================================
@@ -653,3 +665,4 @@ int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **
    interp->result="invalid arg: must be 'redraw'";
    return TCL_ERROR;
 }
+

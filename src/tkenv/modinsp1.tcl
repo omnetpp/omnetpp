@@ -32,12 +32,12 @@ proc create_compoundmodinspector {name} {
     foreach i {graph win sep1 parent sep2 step} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
-    bind $w <Control-F5> "one_step_in_module $w"
+    bind $w <Control-F4> "one_step_in_module $w"
 
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
-    set help_tips($w.toolbar.step)    {Stop at events in this module (Ctrl-F5)}
+    set help_tips($w.toolbar.step)    {Stop at events in this module (Ctrl-F4)}
 
     set nb $w.nb
     notebook $nb
@@ -75,11 +75,11 @@ proc create_simplemodinspector {name} {
     foreach i {win sep1 parent sep2 step} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
-    bind $w <Control-F5> "one_step_in_module $w"
+    bind $w <Control-F4> "one_step_in_module $w"
 
     set help_tips($w.toolbar.win)    {See module output}
     set help_tips($w.toolbar.parent) {Inspect parent module}
-    set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F5)}
+    set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F4)}
 
     set nb $w.nb
     notebook $nb
@@ -154,12 +154,12 @@ proc _create_modulewindow {name iscompound} {
         foreach i {obj graph sep1 parent sep2 step} {
            pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
         }
-        bind $w <Control-F5> "one_step_in_module $w"
+        bind $w <Control-F4> "one_step_in_module $w"
 
         set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.parent) {Inspect parent module}
-        set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F5)}
+        set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F4)}
     } else {
         # for simple module
         iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
@@ -170,12 +170,16 @@ proc _create_modulewindow {name iscompound} {
         foreach i {obj sep1 parent sep2 step} {
            pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
         }
-        bind $w <Control-F5> "one_step_in_module $w"
+        bind $w <Control-F4> "one_step_in_module $w"
 
         set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.parent) {Inspect parent module}
-        set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F5)}
+        set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F4)}
     }
+
+    frame $w.statusbar
+    label $w.statusbar.name -anchor w -relief groove -text {(unknown module)}
+    label $w.statusbar.phase -anchor w -relief groove -text {Phase: -}
 
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15
@@ -183,6 +187,9 @@ proc _create_modulewindow {name iscompound} {
     $w.main.text tag configure event -foreground blue
     $w.main.text tag configure SELECT -back #808080 -fore #ffffff
 
+    pack $w.statusbar -anchor center -expand 0 -fill x -side top
+    pack $w.statusbar.name -anchor n -expand 1 -fill x -side left
+    pack $w.statusbar.phase   -anchor n -expand 1 -fill x -side right
     pack $w.main -anchor center -expand 1 -fill both -side top
     pack $w.main.sb -anchor center -expand 0 -fill y -side right
     pack $w.main.text -anchor center -expand 1 -fill both -side left
