@@ -1,0 +1,124 @@
+#1  Nov 26, 1997
+   - project founded
+#8  Nov 27, 1997
+   - load/save works ok
+#9  Nov 29, 1997
+   - drawing,selecting,moving done OK, only 2 modes: draw and move!
+   - shift+click extends selection
+   - right click: properties
+   - to do: add title etc to submods + 1000 things
+#12 Dec 2, 1997
+   - to do: file open dialogs
+#14 Dec 3, 1997
+   - to do:
+       some consistency check (arrows should start/end in the right modules)
+       multiple canvases...
+#15 Dec 4, 1997
+  - snap to grid added
+  - to do: parent module code generation
+#16 Dec 4, 1997
+  - still to do:
+      excusing text in about box...
+      some consistency check (arrows should start/end in the right modules)
+      parent module code generation
+      good statusbar
+#17 Dec 5 1997
+  - still to do: all the above plus:
+      file|close
+      ask to save before exit
+      right click on "name" tag should bring up Properties dialog
+      one module == one file
+#19 Dec 5 1997
+ - file names ok
+ - to do (cummulated):
+      right click on "name" tag should bring up Properties dialog
+      don't load same file several times
+      bug: after double-click a dot remains
+      better auto naming of submods
+#20 Dec 6 1997
+ - done:
+      parent module code generation
+      added "Comments" entry to props dialogs
+      improved dialogs
+      improved generated code (indentation etc.)
+      remove 'Print' toolbutton
+#21 Dec 6 1997
+ put back 'Snap to grid'
+ fixed: resizing parent doesn't move connection arrows
+ file|close
+ ask to save before exit
+#22 Dec 6 1997
+ improvements on editor
+ good statusbar
+ generate: use $want_info, $want_data, $want_drawing variables in saved file
+#23-24 Dec 6 1997
+ - done:
+      excusing text in about box...
+      added 'view generated NED' option
+      added 'load background'
+ - still to do:
+      don't load same file several times
+      bug: after double-click a dot remains
+      better auto naming of submods
+      + ones in readme file
+#25 Dec 7 1997
+ right click on "name" tag brings up Properties dialog
+ file extension: .gnd
+ improved on generated code
+ gndview, gndinfo, gnd2ned added
+#26 Dec 7 1997
+ misc improvements
+ added demo files
+#27 Dec 9 1997
+ double-click bug fixed
+ check for Tcl/Tk version added
+#28 Dec 14 1997
+ invalid file name bug on Windows fixed
+#29 Dec 14 1997
+ improved file viewer; improved output NED quality
+#30 March 10 1998
+ some improvements on appearance
+ Tk8.0-style menu (native widgets)
+ fixed bug which prevented gned from starting from outside its dir.
+#31 April 26 1998
+ dummy makefile added
+#32a May 1, 1998
+ cc files added; GNED could now use the opp_arrowcoords command.
+#32b May 4, 1998
+ grammar files and opp_parsened command added; not finished yet!
+ grammar files are now shared with NEDC!
+#32c May 11, 1998
+ bugfixes on unfinished code...
+#33  July 20, 1998
+ intermediate version
+#34  July 24, 1998
+ Pataki I. and Vincze G.' stuff
+#34a-#38
+ TOTAL REWRITE!!!
+ internal data structure redesigned
+ .gnd file format change (incompatible!)
+ redesigned user interface
+ arrow.cc rewritten
+ display string format change:"p=m,50,50,50,50"
+ ported to Windows (Borland C++ 5.0 project file included)
+#39  Aug 28, 1998
+ - first beta version. Still badly misses the capability of loading
+   NED files directly!
+#40  Aug 30, 1998
+ - Second beta
+#41  Dec 30, 1998
+ - makefile renamed to makefile.in
+ - bug with delete ('X') toolbar icon fixed
+ - changes in the About box
+#42  Sept 1998 - March 1999
+ DEVELOPMENT VERSIONS:
+ - Pataki Istvan and Vincze Gabor -- added the parser and a manager, .gnd files
+   thrown out
+#43-45b  March 1999 - April 1999
+ DEVELOPMENT VERSIONS
+ - parser and code generation rewritten
+ - data structures redesigned
+ - made two-way tool
+ - user interface redesigned: place manager at left, toolbar icons, tooltips etc.
+#46  May 1 1999
+ GNED 1.2 ALPHA 1 released

@@ -1,0 +1,45 @@
+Parse/Generate:
+- comments around display strings are lost
+- display string parsing -- rewrite!!!
+- default comments for modules
+- comments -- choose different approach?
+- ebnf.y changed (gate_mod_L --> mod_L etc.) -- update and test NEDC!!!
+- error recovery: TBD
+
+Data struct change:
+- "source-text" attribute to module?? should be added when one switches to text mode
+- nedfile: name/filename is not good! maybe filename/filenamevalid?
+- nedfile: add "dirty" attribute?
+- turn display strings into independent objects?
+
+Drawing:
+- arrow.cc was modified!!! update in Tkenv!!!
+- if canvas is scrolled, mouse selection works with wrong positions
+- shift+click leaves a dot on canvas
+- paste does not work between canvases
+
+Load/save:
+- fileClose does not work
+- save: for canvases switched to text, it should save the text version
+- load: if there's a parse error, load the whole stuff into a "scratch" text-mode canvas?
+
+Text editor:
+- find/replace
+- pgup, ctrl-pgup doesn't work correctly
+- make status line: line number etc.
+
+General:
+- solve "what to do when there's no open canvas" problem
+- display string: numeric parameters must be checked!!!
+- cut,copy,paste should work everywhere (menu,toolbar,keys),
+  for both text and graphics
+- ctrl-mousemove should copy the items on canvas
+- different vertical toolbar when changing from graphics to NED view
+
+Manager:
+- add tree view!!! maybe use -tags feaure of Tree?
+- local menu on nedfile: Expand/Collapse, Save, Save As, Close; 
+- local menu on components: Open on canvas, Close canvas, Properties
+
+Dialogs:
+- TBD

@@ -1,0 +1,8 @@
+#! /bin/sh
+for i in *.gif; do
+  name=`echo $i|sed 's/^.*\///;s/\.gif$//'`
+  echo "set icons($name) [image create photo -data {"
+  mimencode $i | sed 's/^/    /'
+  echo "}]"
+  echo 
+done
