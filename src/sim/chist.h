@@ -40,7 +40,6 @@ class SIM_API cHistogramBase : public cDensityEstBase
     // redefined functions
     virtual const char *className()  {return "cHistogramBase";}
     cHistogramBase& operator=(cHistogramBase& res);
-    virtual void writeContents(ostream& os);
     virtual int netPack();
     virtual int netUnpack();
     // dup() and inspector(..) not needed

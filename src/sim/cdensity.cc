@@ -39,63 +39,63 @@
 
 cDensityEstBase::cDensityEstBase(const char *name ) : cStdDev(name)
 {
-   range_mode = RANGE_INVALID;
-   num_firstvals = 0;
-   cell_under = cell_over = 0;
+    range_mode = RANGE_INVALID;
+    num_firstvals = 0;
+    cell_under = cell_over = 0;
 
-   transfd = 0;
-   firstvals = NULL;
+    transfd = 0;
+    firstvals = NULL;
 }
 
 cDensityEstBase::~cDensityEstBase()
 {
-   delete [] firstvals;
+    delete [] firstvals;
 }
 
 cDensityEstBase& cDensityEstBase::operator=(cDensityEstBase& res)
 {
-   if (this==&res) return *this;
+    if (this==&res) return *this;
 
-   cStdDev::operator=(res);
+    cStdDev::operator=(res);
 
-   rangemin = res.rangemin;
-   rangemax = res.rangemax;
-   num_firstvals = res.num_firstvals;
-   cell_under = res.cell_under;
-   cell_over = res.cell_over;
+    rangemin = res.rangemin;
+    rangemax = res.rangemax;
+    num_firstvals = res.num_firstvals;
+    cell_under = res.cell_under;
+    cell_over = res.cell_over;
 
-   range_ext_factor = res.range_ext_factor;
-   range_mode = res.range_mode;
+    range_ext_factor = res.range_ext_factor;
+    range_mode = res.range_mode;
 
-   transfd = res.transfd;
+    transfd = res.transfd;
 
-   delete [] firstvals;
-   firstvals = NULL;
-   if (res.firstvals)
-   {
-      firstvals = new double[ num_firstvals ];
-      memcpy(firstvals, res.firstvals, num_firstvals*sizeof(double));
-   }
-   return *this;
+    delete [] firstvals;
+    firstvals = NULL;
+    if (res.firstvals)
+    {
+        firstvals = new double[ num_firstvals ];
+        memcpy(firstvals, res.firstvals, num_firstvals*sizeof(double));
+    }
+    return *this;
 }
 
 // clear results
 void cDensityEstBase::clearResult ()
 {
-   cStdDev::clearResult();
+    cStdDev::clearResult();
 
-   range_mode = RANGE_INVALID;
-   num_firstvals = 0;
-   cell_under = cell_over = 0;
-   delete [] firstvals;
-   firstvals=NULL;
-   transfd = false;
+    range_mode = RANGE_INVALID;
+    num_firstvals = 0;
+    cell_under = cell_over = 0;
+    delete [] firstvals;
+    firstvals=NULL;
+    transfd = false;
 }
 
 void cDensityEstBase::setRange(double lower, double upper)
 {
     if (num_samples>0 || transformed())
-       {opp_error("(%s)%s: setRange() can only be called before collecting any values", className(), fullName());return;}
+        {opp_error("(%s)%s: setRange() can only be called before collecting any values", className(), fullName());return;}
 
     range_mode = RANGE_FIXED;
     rangemin = lower;
@@ -105,7 +105,7 @@ void cDensityEstBase::setRange(double lower, double upper)
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-       {opp_error("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());return;}
+        {opp_error("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());return;}
 
     range_mode = RANGE_AUTO;
     num_firstvals = num_fstvals;
@@ -116,7 +116,7 @@ void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-       {opp_error("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());return;}
+        {opp_error("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());return;}
 
     range_mode = RANGE_AUTOLOWER;
     num_firstvals = num_fstvals;
@@ -128,7 +128,7 @@ void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double ra
 void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-       {opp_error("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());return;}
+        {opp_error("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());return;}
 
     range_mode = RANGE_AUTOUPPER;
     num_firstvals = num_fstvals;
@@ -140,7 +140,7 @@ void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double ra
 void cDensityEstBase::setNumFirstVals(int num_fstvals)
 {
     if (num_samples>0 || transformed())
-       {opp_error("(%s)%s: setNumFirstVals() can only be called before collecting any values", className(), fullName());return;}
+        {opp_error("(%s)%s: setNumFirstVals() can only be called before collecting any values", className(), fullName());return;}
 
     num_firstvals = num_fstvals;
     delete [] firstvals;
@@ -176,124 +176,127 @@ void cDensityEstBase::setupRange()
 
 void cDensityEstBase::collect(double val)
 {
-   if (range_mode == RANGE_INVALID && !transformed())
-      {opp_error("(%s)%s: must call setRange..() before collecting",className(),fullName());return;}
+    if (range_mode == RANGE_INVALID && !transformed())
+        {opp_error("(%s)%s: must call setRange..() before collecting",className(),fullName());return;}
 
-   if (firstvals==0 && !transformed()) transform();
+    if (firstvals==0 && !transformed()) transform();
 
-   cStdDev::collect(val); // this also increments num_samples
+    cStdDev::collect(val); // this also increments num_samples
 
-   if (!transformed())
-   {
-      firstvals[num_samples-1] = val;
+    if (!transformed())
+    {
+        firstvals[num_samples-1] = val;
 
-      if (num_samples==num_firstvals)
-      {
-         transform();  // must set transfd and call setupRange()
-         delete [] firstvals;
-         firstvals = NULL;
-      }
-   }
-   else
-   {
-      collectTransformed( val );  // must maintain underflow/overflow cells
-   }
+        if (num_samples==num_firstvals)
+        {
+            transform();  // must set transfd and call setupRange()
+            delete [] firstvals;
+            firstvals = NULL;
+        }
+    }
+    else
+    {
+        collectTransformed( val );  // must maintain underflow/overflow cells
+    }
 }
 
 double cDensityEstBase::cellPDF(int k)
 {
-     if (num_samples==0) return 0.0;
-     double cellsize = basepoint(k+1) - basepoint(k);
-     return cellsize==0 ? 0.0 : cell(k)/cellsize/samples();
+    if (num_samples==0) return 0.0;
+    double cellsize = basepoint(k+1) - basepoint(k);
+    return cellsize==0 ? 0.0 : cell(k)/cellsize/samples();
 }
 
 // plot one line
 void cDensityEstBase::plotline(ostream& os, char *pref, double xval,
                                double count, double a )
 {
-   const int picwidth=54;           // width of picture
-   char buf[101], *s;
-   int x,m,k;
-   sprintf(buf, "   %s%12f %5g :", pref, xval, count);
-   s = buf+strlen(buf);
-   x = (int) floor(a*count+.5);
-   if (x<=picwidth)  k=x;  else k=picwidth;
-   for (m=1;  m<=k;  m++)  *s++ = '-';
-   if (x<=picwidth) strcpy(s,"*\n");  else strcpy(s,">\n");
-   os << buf;
+    const int picwidth=54;           // width of picture
+    char buf[101], *s;
+    int x,m,k;
+    sprintf(buf, "   %s%12f %5g :", pref, xval, count);
+    s = buf+strlen(buf);
+    x = (int) floor(a*count+.5);
+    if (x<=picwidth)  k=x;  else k=picwidth;
+    for (m=1;  m<=k;  m++)  *s++ = '-';
+    if (x<=picwidth) strcpy(s,"*\n");  else strcpy(s,">\n");
+    os << buf;
 }
 
 // write to stream
 void cDensityEstBase::writeContents(ostream& os)
 {
-   if (!transformed())
-   {
-       // if the histogram is not transformed, we create a temporary copy,
-       // transform it and call its writeContents() function to do the job.
-       cDensityEstBase *temp = (cDensityEstBase *)dup();
-       temp->transform();
-       temp->writeContents( os );
-       delete temp;
-       return;
-   }
+    if (!transformed())
+    {
+        // if the histogram is not transformed, we create a temporary copy,
+        // transform it and call its writeContents() function to do the job.
+        cDensityEstBase *temp = (cDensityEstBase *)dup();
+        temp->transform();
+        temp->writeContents( os );
+        delete temp;
+        return;
+    }
 
-   // Now the histogram is surely transformed.
+    // Now the histogram is surely transformed.
 
-   cStdDev::writeContents( os );         // write statistics
+    cStdDev::writeContents( os );         // write statistics
 
-   if (num_samples>1)
-   {
-      const int picwidth=55;        // width of picture
-      double most=0;                // biggest cell value
-      int nc = cells();        // number of cells
-      int k;
-      double d;
-      for (k=0; k<nc; k++)
-         if ((d=cell(k))>most)
-            most = d;
-      double a=(double)picwidth/most;
+    if (num_samples>1)
+    {
+        const int picwidth=55;   // width of picture
+        double most=0;           // biggest cell value
+        int nc = cells();        // number of cells
+        int k;
+        double d;
+        for (k=0; k<nc; k++)
+            if ((d=cell(k))>most)
+               most = d;
+        double a=(double)picwidth/most;
 
-      os << "\n  Distribution density function:\n";
-      for (k=0; k<nc; k++)
-        plotline(os,"< ", basepoint(k), cell(k), a);
-      plotline(os,">=",basepoint(nc),0,a);
-      os << "\n";
-
-   }
+        os << "\n  Distribution density function:\n";
+        for (k=0; k<nc; k++)
+            plotline(os,"< ", basepoint(k), cell(k), a);
+        plotline(os,">=",basepoint(nc),0,a);
+        os << "\n";
+    }
 }
 
 void cDensityEstBase::saveToFile(FILE *f)
 {
-   cStdDev::saveToFile(f);
+    cStdDev::saveToFile(f);
 
-   fprintf(f,"%d\t #= transformed\n",transfd);
-   fprintf(f,"%d\t #= range_mode\n",range_mode);
-   fprintf(f,"%g\t #= range_ext_factor\n",range_ext_factor);
-   fprintf(f,"%g %g\t #= range\n",rangemin,rangemax);
-   fprintf(f,"%lu %lu\t #= cell_under, cell_over\n",cell_under,cell_over);
-   fprintf(f,"%ld\t #= num_firstvals\n",num_firstvals);
+    fprintf(f,"%d\t #= transformed\n",transfd);
+    fprintf(f,"%d\t #= range_mode\n",range_mode);
+    fprintf(f,"%g\t #= range_ext_factor\n",range_ext_factor);
+    fprintf(f,"%g %g\t #= range\n",rangemin,rangemax);
+    fprintf(f,"%lu %lu\t #= cell_under, cell_over\n",cell_under,cell_over);
+    fprintf(f,"%ld\t #= num_firstvals\n",num_firstvals);
 
-   fprintf(f,"%d\t #= firstvals[] exists\n",firstvals!=NULL);
-   if (firstvals) for (int i=0; i<num_firstvals; i++) fprintf(f," %g\n",firstvals[i]);
+    fprintf(f,"%d\t #= firstvals[] exists\n",firstvals!=NULL);
+    if (firstvals)
+        for (int i=0; i<num_firstvals; i++)
+            fprintf(f," %g\n",firstvals[i]);
 }
 
 void cDensityEstBase::loadFromFile(FILE *f)
 {
-   cStdDev::loadFromFile(f);
+    cStdDev::loadFromFile(f);
 
-   freadvarsf(f,"%d\t #= transformed",&transfd);
-   freadvarsf(f,"%d\t #= range_mode",&range_mode);
-   freadvarsf(f,"%g\t #= range_ext_factor",&range_ext_factor);
-   freadvarsf(f,"%g %g\t #= range",&rangemin,&rangemax);
-   freadvarsf(f,"%lu %lu\t #= cell_under, cell_over",&cell_under,&cell_over);
-   freadvarsf(f,"%ld\t #= num_firstvals",&num_firstvals);
+    freadvarsf(f,"%d\t #= transformed",&transfd);
+    freadvarsf(f,"%d\t #= range_mode",&range_mode);
+    freadvarsf(f,"%g\t #= range_ext_factor",&range_ext_factor);
+    freadvarsf(f,"%g %g\t #= range",&rangemin,&rangemax);
+    freadvarsf(f,"%lu %lu\t #= cell_under, cell_over",&cell_under,&cell_over);
+    freadvarsf(f,"%ld\t #= num_firstvals",&num_firstvals);
 
-   int firstvals_exists;
-   freadvarsf(f,"%d\t #= firstvals[] exists", &firstvals_exists);
-   delete [] firstvals; firstvals = NULL;
-   if (firstvals_exists)
-   {
-      firstvals = new double[ num_firstvals ];
-      for (int i=0; i<num_firstvals; i++) freadvarsf(f," %g",firstvals+i);
-   }
+    int firstvals_exists;
+    freadvarsf(f,"%d\t #= firstvals[] exists", &firstvals_exists);
+    delete [] firstvals; firstvals = NULL;
+    if (firstvals_exists)
+    {
+        firstvals = new double[ num_firstvals ];
+        for (int i=0; i<num_firstvals; i++)
+            freadvarsf(f," %g",firstvals+i);
+    }
 }
+

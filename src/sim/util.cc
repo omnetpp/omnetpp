@@ -495,6 +495,11 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
                 k+=sscanf(s,"%lg%n",va_arg(va,double*),&n);
                 s+=n; fmt+=3;
             }
+            else if (fmt[1]=='g')
+            {
+                k+=sscanf(s,"%lg%n",va_arg(va,double*),&n);
+                s+=n; fmt+=2;
+            }
             else
             {
                 opp_error("opp_vsscanf: unsupported format '%s'",fmt);
