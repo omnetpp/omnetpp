@@ -307,7 +307,7 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
 
     // find out if this module is (or has any submodules that are) on this partition
     char section[16];
-    sprintf(section,"Run %d",1 /*run_no*/); // FIXME get run_no from somewhere!!!
+    sprintf(section,"Run %d", simulation.runNumber());
 
     char parname[MAX_OBJECTFULLPATH];
     if (index<0)
@@ -320,8 +320,9 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
     if (procId>=parsimcomm->getNumPartitions())
         throw new cException("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
                              procId,parname,parsimcomm->getNumPartitions());
-    // FIXME this solution isn't good!!! has to check if myProcId is CONTAINED
-    // in the set of procIds defined for the children of this module
+    // FIXME This solution is not entirely correct. Rather, we'd have to check if
+    // myProcId is CONTAINED in the set of procIds defined for the children of this
+    // module.
     int myProcId = parsimcomm->getProcId();
     return procId==myProcId;
 #else
