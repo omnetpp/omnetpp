@@ -45,7 +45,7 @@ First download the following packages:
  - Perl (used by some tools)
  - libxml, libxslt
 
-3rdparty.txt lists additional optional packages that can be useful, and sites 
+3rdparty.txt lists additional optional packages that can be useful, and sites
 where these packages can be downloaded from.
 
 To unpack .tgz or .tar.gz (gzipped, tar packed) files you can use gzip and tar,
@@ -278,30 +278,51 @@ subdirectories.
 8. Using DLLs
 ~~~~~~~~~~~~~
 
-Currently it's possible to build DLLs from the OMNeT++ libraries and
-link a simulation program which uses them. However, because of some
-obscure technical problems associated with loading the DLLs, the resulting
-simulation program will not run :-(
+It is possible to load a simulation model from a DLL. Suppose you have a DLL
+called queueing.dll, which contains all modules from the "queueing" sample
+simulation. Then you can load it into an appropriate sim.exe with the
+following command-line:
 
-(Well in case you're interested why: A DLL, while initializing, cannot write
-outside its address space. OMNeT++, however, would rely on this mechanism
-to build global registration lists ("modules", "networks", etc). Each item
-in a registration list is an object whose constructor would add the object
-to the global list (an object outside the DLL), and it seems like constructors
-of global objects run as part of the DLL initialisation code (DLLMain())).
+    sim.exe -l queueing
 
-To build the DLLs anyway, set the desired library suffix to ".dll" in
-configuser.vc:
-  LIB_SUFFIX=.dll
-After re-building OMNeT++, the DLLs should appear in the lib/ directory,
-together with the respective import libraries which have the .ilib suffix.
-(You may want to rename them manually to .lib.)
+This will cause sim.exe to load queueing.dll on startup, so you may now
+use queueing simple modules in your simulations. The .dll filename extension
+is added automatically (this allows for some degree of platform independence --
+on Unix, .so is added.)  If you don't want to add the -l command-line option
+every time, then adding
 
-There's one trick when using the DLLs: when you compile your model sources,
-you must have the WIN32_DLL symbol #defined! It is best to pass them
-to the compiler from your makefile (or if you use the IDE, add it to
-Settings --> C/C++ --> Preprocessor --> Preprocessor definitions). If you
-fail to do so, you'll get undefined linker symbols!
+    [General]
+    load-libs = "queueing"
+
+to omnetpp.ini will also do the job. Multiple DLLs can also be loaded (use
+multiple -l options, or load-libs="lib1 lib2 lib3 ..." in omnetpp.ini).
+
+To build the DLL:
+
+Create a file named makefrag.vc in the directory of the simple module sources
+with the following content:
+
+    # makefrag.vc -- settings for creating a dll
+    EXPORTLIB= sim.lib
+
+    TARGET= $(TARGET:.exe=.dll)
+    LDFLAGS= $(LDFLAGS) /dll
+    OMNETPP_LIBS= $(EXPORTLIB)
+    COPTS= $(COPTS) /DWIN32_DLL
+    NEDCOPTS= $(NEDCOPTS) /DWIN32_DLL
+
+Adjust the EXPORTLIB= setting at the top: it should point to the export
+library of the program you'll load the DLL into. (An export library is
+automatically generated every time you build az OMNeT++ simulation executable,
+with name <programname>.lib). The rest of the settings don't need to be
+changed.
+
+Then generate a Makefile.vc with the appropriate opp_nmakemake command
+(makefrag.vc be inserted into the generated file.) Then if you just normally
+build (nmake -f Makefile.vc), you should get a DLL as a result.
+
+Note: the resulting DLL can only be loaded into the sim.exe whose export
+library was used for building the DLL.
 
 
 9. Misc notes
@@ -328,7 +349,7 @@ Tcl/Tk variables:
  TCL_LIBRARY=C:\PROGRA~1\Tcl\lib\tcl8.4
 
 Bison variables:
- BISON_SIMPLE=d:/home/tools/UnxUtils/usr/local/share/bison.simple 
+ BISON_SIMPLE=d:/home/tools/UnxUtils/usr/local/share/bison.simple
 
 Note:
 - Visual C++: As we use command line compilation, the BIN
