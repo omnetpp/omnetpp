@@ -51,23 +51,6 @@ proc initTreeManager {} {
             treemanagerPopup $key %X %Y
         }
     }
-
-    #
-    # bindings for the resize bar
-    #
-    bind $gned(manager).resize <Button-1> {
-        global mouse
-        set mouse(x) %x
-    }
-
-    bind $gned(manager).resize <ButtonRelease-1> {
-        global mouse
-        set dx [expr %x-$mouse(x)]
-
-        set width [$gned(manager).tree cget -width]
-        set width [expr $width+$dx]
-        $gned(manager).tree config -width $width
-    }
 }
 
 # updateTreeManager --

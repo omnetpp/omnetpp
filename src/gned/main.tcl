@@ -227,12 +227,8 @@ proc create_omnetpp_window {} {
     #################################
     frame $w.main.mgr -relief flat -borderwidth 1
 
-    frame $w.main.mgr.resize -width 5 -relief raised -borderwidth 1
-    if [catch {$w.main.mgr.resize config -cursor size_we}] {
-      if [catch {$w.main.mgr.resize config -cursor sb_h_double_arrow}] {
-        catch {$w.main.mgr.resize config -cursor sizing}
-      }
-    }
+    vertResizeBar $w.main.mgr.resize $w.main.mgr.tree
+
     canvas $w.main.mgr.tree -width 140 -bg #ffffe0 -relief groove \
                             -yscrollcommand "$w.main.mgr.sb set"
     scrollbar $w.main.mgr.sb -command "$w.main.mgr.tree yview"

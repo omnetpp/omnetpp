@@ -24,9 +24,8 @@
 proc iconbutton {w args} {
     global fonts
 
-    eval button $w -fg red3 -activeforeground red3 \
-                   -relief raised -font $fonts(icon) \
-                   $args
+    eval button $w -bd 1 $args
+    # old code: -fg red3 -activeforeground red3 -font $fonts(icon) $args
     return $w
 }
 
@@ -170,6 +169,47 @@ proc label-check {w label first var } {
     pack $w.l -anchor w -expand 0 -fill none -side left
     pack $w.f -anchor w -expand 0 -side left -fill x
     pack $w.f.r1 -anchor w -expand 0 -side left
+}
+
+proc vertResizeBar {w wToBeResized} {
+    # create widget
+    frame $w -width 5 -relief raised -borderwidth 1
+    if [catch {$w config -cursor size_we}] {
+      if [catch {$w config -cursor sb_h_double_arrow}] {
+        catch {$w config -cursor sizing}
+      }
+    }
+
+    # create bindings
+    bind $w <Button-1> "vertResizeBar:buttonDown $w %X"
+    bind $w <B1-Motion> "vertResizeBar:buttonMove %X"
+    bind $w <ButtonRelease-1> "vertResizeBar:buttonRelease %X $wToBeResized"
+}
+
+proc vertResizeBar:buttonDown {w x} {
+    global mouse
+    set mouse(origx) $x
+
+    toplevel .resizeBar -relief flat -bg #606060
+    wm overrideredirect .resizeBar true
+    wm positionfrom .resizeBar program
+    set geom "[winfo width $w]x[winfo height $w]+[winfo rootx $w]+[winfo rooty $w]"
+    wm geometry .resizeBar $geom
+}
+
+proc vertResizeBar:buttonMove {x} {
+    wm geometry .resizeBar "+$x+[winfo rooty .resizeBar]"
+}
+
+proc vertResizeBar:buttonRelease {x wToBeResized} {
+    global mouse
+    set dx [expr $x-$mouse(origx)]
+
+    set width [$wToBeResized cget -width]
+    set width [expr $width+$dx]
+    $wToBeResized config -width $width
+
+    destroy .resizeBar
 }
 
 # notebook .x bottom

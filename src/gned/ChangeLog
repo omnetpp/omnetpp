@@ -130,3 +130,4 @@ July 11, 1999
   - small fixes and enhancements
 July 17, 1999
   - fixed the bug with scrolled canvas
+  - resizeBar implemented in widgets.tcl -- should be updated in Tkenv and Plove too!
