@@ -433,6 +433,12 @@ class ENVIR_API cEnvir : public std::ostream
      * Returns pointer to "physical" RNG k (0 <= k < numRNGs()).
      */
     cRNG *rng(int k);
+
+    /**
+     * Sets up RNG mapping (which maps module-local RNG numbers to "physical"
+     * RNGs) for the given module.
+     */
+    void getRNGMappingFor(cModule *mod);
     //@}
 
     /** @name Methods for recording data from output vectors.

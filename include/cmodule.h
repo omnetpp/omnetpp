@@ -137,6 +137,9 @@ class SIM_API cModule : public cDefaultList
 
     bool ev_enabled;        // in Cmdenv this tells if ev<< output if printed for this module
 
+    short rngmapsize;       // size of rngmap array (RNGs>=rngmapsize are mapped one-to-one to physical RNGs)
+    int *rngmap;            // maps local RNG numbers (may be NULL if rngmapsize==0)
+
   public:
     // internal: used from Tkenv: find out if cGate has a display string.
     // displayString() would create the object immediately which we want to avoid.
@@ -146,6 +149,9 @@ class SIM_API cModule : public cDefaultList
     // internal: currently used by Cmdenv
     void setEvEnabled(bool e)  {ev_enabled = e;}
     bool isEvEnabled() {return ev_enabled;}
+
+    // internal: invoked from within cEnvir::getRNGMappingFor(mod)
+    void setRNGMap(short size, int *map) {rngmapsize=size; rngmap=map;}
 
   protected:
     // internal: called when a message arrives at a gate which is no further
@@ -375,7 +381,7 @@ class SIM_API cModule : public cDefaultList
      * (that is, IDs of deleted modules are not given out to newly created
      * modules).
      */
-    int id() const               {return mod_id;}
+    int id() const  {return mod_id;}
 
     /**
      * Returns the module's parent module. For the system module, it returns
@@ -386,18 +392,25 @@ class SIM_API cModule : public cDefaultList
     /**
      * Returns true if this module is in a module vector.
      */
-    bool isVector() const       {return vectsize>=0;}
+    bool isVector() const  {return vectsize>=0;}
 
     /**
      * Returns the index of the module if it is in a module vector, otherwise 0.
      */
-    int index() const           {return idx;}
+    int index() const  {return idx;}
 
     /**
      * Returns the size of the module vector the module is in. For non-vector
      * gates it returns 1.
      */
-    int size() const            {return vectsize<0?1:vectsize;}
+    int size() const  {return vectsize<0?1:vectsize;}
+
+    /**
+     * Returns the RNG mapped to module local RNG number k. For large k
+     * (RNGs above the map size) are mapped one-to-one to physical RNGs,
+     * that is, rng(100) returns ev.rng(100) (provided it exists).
+     */
+    cRNG *rng(int k) const  {return ev.rng((unsigned)k<rngmapsize ? rngmap[(unsigned)k] : k);}
     //@}
 
     /** @name Submodule access. */

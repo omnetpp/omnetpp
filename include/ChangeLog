@@ -6,7 +6,7 @@ add deleteGate()
 
 	* added crng.h
 
-	* cenvir: added methods int numRNGs() and cRNG *rng(int k), which 
+	* cenvir.h: added methods int numRNGs() and cRNG *rng(int k), which 
 	allow access to the RNGs. The concept is that there are a number
 	of RNGs available for the simulation, numbered globaly 0..N. 
 	Every module uses one or more RNGs identified with "module-local RNG 
@@ -14,6 +14,13 @@ add deleteGate()
 	can specify the mapping. Thus e.g. several module types can all work
 	with RNG 0 (local RNG number), and you map some modules to physical
 	RNG 0, others to physical RNG 1, and so on.
+
+	* cenvir.h: added getRNGMappingFor(cModule *) which sets up the mapping
+	in the given module
+
+	* cmodule.h: added cRNG *rng(int k) which returns the RNG of the given
+	local RNG number. This function maps k to a physical RNG number and 
+	calls ev.rng(k) with it.
 
 2004-10-25  Andras Varga
 
