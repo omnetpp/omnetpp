@@ -931,8 +931,9 @@ void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex,
     {
         out << ", (int)(";
         generateItem(gateindex, "        ");
+        out << ")";
     }
-    out << "))";
+    out << ")";
 }
 
 void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const char *indent, int mode)

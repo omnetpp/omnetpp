@@ -24,7 +24,7 @@ module Tictoc11
         tic: Txc11[n];
             gatesizes:
                 in[n], out[n];
-            display: "i=proc1;p=,,ring;q=queue";
+            display: "i=proc1;p=,,ring";
     connections nocheck:
         for i=0..n-2, j=i+1..n-1 do
             tic[i].out[j] --> delay 110ms --> tic[j].in[i];
