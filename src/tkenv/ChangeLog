@@ -296,3 +296,4 @@ July 11-13, 1999
   - widgets.tcl edited --> copy it to other subdirs
 July 17, 1999
   - modinsp2.tcl: fixed bug in animdelay calibration
+  - fixed a bug with inspector type selection in Inspect|By pattern matching..

@@ -592,8 +592,9 @@ int inspectorType_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
         *interp->result = '\0';
         for (int i=0; i<NUM_INSPECTORTYPES; i++)
         {
+            strcat( interp->result, "{" );
             strcat( interp->result, insptype_name_from_code(i) );
-            strcat( interp->result, " " );
+            strcat( interp->result, "} " );
         }
    }
    else if (argv[1][0]>='0' && argv[1][0]<='9')
