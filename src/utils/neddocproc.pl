@@ -129,8 +129,10 @@ foreach $fname (glob($fnamepatt))
               # restore " from &quot; (important for attrs of html tags, see below)
               $comment =~ s|&quot;|"|gsi;
 
-              # extract <nohtml> sections to prevent substituting inside them
-              $comment =~ s|&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gse;
+              # extract <nohtml> sections to prevent substituting inside them;
+              # also backslashed words to prevent putting hyperlinks on them
+              $comment =~ s|&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gsei;
+              $comment =~ s|(\\[a-z_]+)|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gsei;
 
               # decode certain HTML tags: <i>,<b>,<br>,...
               $tags="a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|font|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|small|span|strong|sub|sup|table|td|th|tr|tt|kbd|u|ul|var";
@@ -141,8 +143,11 @@ foreach $fname (glob($fnamepatt))
               $names = join('|',@components);
               $comment =~ s!\b($names)\b!'<a href="'.$htmlfile{$1}.'">'.$1.'</a>'!gse unless($names eq '');
 
-              # put back <nohtml> sections
+              # put back <nohtml> sections and backslashed words
               $comment =~ s|\<nohtml(\d+)\>|$nohtml{$1}|gse;
+
+              # remove backslashes; double backslashes become single ones
+              $comment =~ s|\\(.)|$1|gs;
 
               # finished with this comment, put it back into original html file
               $html =~ s/\@bingo\@/$comment/s;
