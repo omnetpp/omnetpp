@@ -351,7 +351,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     # only if {[winfo class $graph]=="Graph"} ?
     set f $nb.lines
     label-combo $f.showsym "Display symbols" {yes no}
-    label-combo $f.symsize "Symbol size" {3 5 7 9 11}
+    label-combo $f.symsize "Symbol size" {1 3 5 7 9 11}
     label-combo $f.showlin "Connect points" {yes no}
     label-combo $f.smooth "Line type" {linear step natural}
     pack $f.showsym $f.symsize $f.showlin $f.smooth -side top -expand 0 -fill x
