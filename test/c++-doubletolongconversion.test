@@ -17,13 +17,12 @@ PRINT(3.99)
 PRINT(-3.01)
 PRINT(-3.99)
 
-PRINT(1e100)
-PRINT(-1e100)
+/// overflows seemingly produce inconsistent results on linux/gcc and msvc :(
+// PRINT(1e100)
+// PRINT(-1e100)
 
 %contains: stdout
 d=3.01, l=3, ul=3
 d=3.99, l=3, ul=3
 d=-3.01, l=-3, ul=4294967293
 d=-3.99, l=-3, ul=4294967293
-d=1e+100, l=0, ul=0
-d=-1e+100, l=0, ul=0
