@@ -331,7 +331,6 @@ cModule *cSimulation::moduleByPath(const char *path) const
     return modp;  // NULL if not found
 }
 
-// FIXME change according to doc comment...
 void cSimulation::setupNetwork(cNetworkType *network, int run_num)
 {
 #ifdef DEVELOPER_DEBUG
@@ -357,28 +356,28 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
     }
     catch (cException *)
     {
-        // we could clean up the whole stuff before passing the exception back,
-        // but it is dangerous. Module destructors may try to delete
-        // uninitialized pointers and crash. (Often ptrs get initialized in
-        // initialize() not in the constructor.)
+        // we could clean up the whole stuff with deleteNetwork()
+        // before passing the exception back, but it is dangerous.
+        // Module destructors may try to delete uninitialized pointers
+        // and crash. (Often ptrs incorrectly get initialized in initialize()
+        // and not in the constructor.)
         //deleteNetwork();
         throw;
     }
     catch (std::exception e)
     {
-        // no deleteNetwork() -- see above note
+        // omit deleteNetwork() -- see note above
         //deleteNetwork();
         throw new cException("standard C++ exception %s: %s",
                              opp_typename(typeid(e)), e.what());
     }
-    //catch (...) -- this is probably not a good idea because it makes debugging difficult
+    //catch (...) -- this is probably not a good idea because it makes debugging more difficult
     //{
     //    deleteNetwork();
     //    throw new cException("unknown exception occurred");
     //}
 }
 
-// FIXME change according to doc comment...
 void cSimulation::startRun()
 {
     sim_time = 0;
@@ -414,12 +413,10 @@ void cSimulation::callFinish()
     }
 }
 
-// FIXME change according to doc comment...
 void cSimulation::endRun()
 {
 }
 
-// FIXME change according to doc comment...
 void cSimulation::deleteNetwork()
 {
     if (!systemmodp)
@@ -508,7 +505,7 @@ cSimpleModule *cSimulation::guessNextModule()
     if (!msg)
         return NULL;
 
-    // FIXME if this event is "not good" (no module or module ended),
+    // TBD if this event is "not good" (no module or module ended),
     // we might look for another event, but this is not done right now...
 
     // check if dest module exists and still running
@@ -545,7 +542,7 @@ void cSimulation::transferTo(cSimpleModule *modp)
         else if (simulation.exception_type==2)
             throw (cEndModuleException *)simulation.exception;
         else
-            throw new cException("some exception occurred"); //FIXME
+            throw new cException("some exception occurred");
     }
 
     if (modp->stackOverflow())
@@ -583,7 +580,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     catch (cEndModuleException *e)
     {
         // handle locally
-        // FIXME make separate cDeleteModuleException!
+        // TBD make separate cDeleteModuleException!
         setGlobalContext();
         if (e->moduleToBeDeleted())
             delete mod;

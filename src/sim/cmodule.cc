@@ -134,7 +134,7 @@ cModule::~cModule()
     if (parentModule())
         parentModule()->removeSubmodule(this);
 
-    //drop(&gatev); FIXME
+    //drop(&gatev);
     //drop(&paramv);
 
     delete [] rngmap;
@@ -142,7 +142,6 @@ cModule::~cModule()
     delete [] fullname;
     delete dispstr;
     delete bgdispstr;
-
 }
 
 cModule& cModule::operator=(const cModule&)

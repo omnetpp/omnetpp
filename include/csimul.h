@@ -225,16 +225,15 @@ class SIM_API cSimulation : public cObject
      */
     void loadNedFile(const char *nedfile);
 
-
     /**
-     * Builds a new network and initializes it. With distributed simulation,
-     * also sets up network on other partitions.
+     * Builds a new network. Relies on cNetworkType::setupNetwork().
      */
     void setupNetwork(cNetworkType *net,int run_num);
 
     /**
-     * Should be called after setupNetwork(), just before the first doOneEvent() call.
-     * The initialize() methods of modules are called here.
+     * Should be called after setupNetwork(), but before the first
+     * doOneEvent() call. Includes initialization of the modules,
+     * that is, invokes callInitialize() on the system module.
      */
     void startRun();
 
@@ -250,8 +249,8 @@ class SIM_API cSimulation : public cObject
     void endRun();
 
     /**
-     * Cleans up the network currently set up. With distributed simulation,
-     * also notifies other partitions that they should clean up their networks.
+     * Cleans up the network currently set up. This involves deleting
+     * all modules and deleting the messages in the scheduled-event list.
      */
     void deleteNetwork();
     //@}

@@ -84,7 +84,7 @@ char *simtimeToStr(simtime_t t, char *buf)
    // Note that in the following line, a small constant is added to t
    // in order to eliminate truncation errors (like: "1.0000000e-6 (0us)")
 
-   // FIXME change int(...) to int(...+0.5) and remove +=1e-16; test a lot
+   // TBD change int(...) to int(...+0.5) and remove +=1e-16; test a lot
    // with different values, e.g. 0.1 increments!
    else if (t+=1e-16, t<1e-9)
        sprintf(b,"%8.8e ( <1ns)", t);

@@ -307,34 +307,6 @@ const char *cObject::fullPath(char *buffer, int bufsize) const
     return buffer;
 }
 
-
-/*------------------------------------------------------------------------*
-FIXME
- The forEach() mechanism
- ~~~~~~~~~~~~~~~~~~~~~~~
-  o  The forEach() mechanism implemented in OMNeT++ is very special and
-     slightly odd. The passed function is called for each object twice:
-     once on entering and once on leaving the object. In addition, after
-     the first ('entering') call to the function, it signals with its return
-     value whether it wants to go deeper in the contained objects or not.
-     Functions passed to forEach() will use static variables to store other
-     necessary information. (Yes, this limits their recursive use :-( ).
-  o  forEach() takes a function do_fn (of DoItFunc type) with 2 arguments:
-     a (cObject *) and a (bool). First, forEach() should call do_fn with
-     (this,true) to inform it about entering the object. Then, if this call
-     returned true, it must call forEach(do_fn) for every contained object.
-     Finally, it must call do_fn with (this,false) to let do_fn know that
-     there's no more contained object.
-  o  Functions using forEach() work in the following way: they call do_fn
-     with (NULL,false,<additional args>) to initialize the static variables
-     inside the function. Then they call forEach( (DoItFunc)do_fn ) for the
-     given object. Finally, read the results by calling do_fn(NULL, false,
-     <additional args>). DoItFuncs mustn't call themselves recursively!
-  --VA
-     ( yeah, I know this all is kind of weird, but changing it would take
-       quite some work --VA )
- *------------------------------------------------------------------------*/
-
 void cObject::forEach( ForeachFunc do_fn )
 {
     do_fn(this,true);

@@ -162,7 +162,6 @@ void cMessage::netPack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cException(this,eNOPARSIM);
 #else
-// FIXME what about refcount?
     cObject::netPack(buffer);
 
     if (contextptr || ctrlp)
@@ -197,7 +196,6 @@ void cMessage::netUnpack(cCommBuffer *buffer)
 #ifndef WITH_PARSIM
     throw new cException(this,eNOPARSIM);
 #else
-// FIXME what about refcount?
     cObject::netUnpack(buffer);
 
     buffer->unpack(msgkind);
