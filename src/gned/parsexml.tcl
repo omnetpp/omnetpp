@@ -154,6 +154,8 @@ proc sax_elementstart {tag attlist} {
     }
     set type $tag
 
+if {$type=="nedfile"} {puts "DBG: nedfile attributes: ($attlist)"}
+
     # create NED element
     set parentkey [lindex $stack end]
     set key [NedParser_createNedElement tmp_ned $type $parentkey]

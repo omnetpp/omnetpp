@@ -2,7 +2,7 @@
 // FDDI_NET.NED  -  Network Description file for
 //                  Discrete System Simulation in OMNeT++
 // 
-// Simulated system: TUB Northen&Southen FDDI Rings
+// Simulated system: TUB Northen and Southern FDDI Rings
 // 
 // Author: Gabor.Lencse@hit.bme.hu
 //==========================================================================
