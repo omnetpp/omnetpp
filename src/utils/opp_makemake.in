@@ -449,6 +449,8 @@ htmldoc:
 	s/^EXTRACT_PRIVATE *=.*/EXTRACT_PRIVATE = yes/;\\
 	s/^ALPHABETICAL_INDEX *=.*/ALPHABETICAL_INDEX = yes/;\\
 	s/^GENERATE_TREEVIEW *=.*/GENERATE_TREEVIEW = yes/;\\
+	s/^HIDE_UNDOC_RELATIONS *=.*/HIDE_UNDOC_RELATIONS = no/;\\
+	s|^TAGFILES *=.*|TAGFILES = @OMNETPP_DOC_DIR@/api/tags|;\\
 	s/^QUIET *=.*/QUIET = yes/" > $doxyconf
 	doxygen $doxyconf
 
