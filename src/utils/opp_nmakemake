@@ -42,6 +42,7 @@ $ignorened="n";
 $force="n";
 $tstamp="y";
 @tstampdirs = ();
+@exceptdirs = ();
 
 $makecommand = 'nmake /nologo /f Makefile.vc';
 
@@ -74,6 +75,8 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
     -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
                           cies in the makefrag.vc file.
+    -X directory, --except directory
+                          With -r (recurse) option: ignore the given directory
     -b directory, --basedir directory
                           Project base (root) directory; all absolute paths
                           (-I, -L, object file names, etc.) which point into
@@ -139,6 +142,11 @@ could not figure out.
     elsif ($arg eq '-r' || $arg eq '--recurse')
     {
         $recursive = "y";
+    }
+    elsif ($arg eq '-X' || $arg eq '--except')
+    {
+        $dir = shift @ARGV;
+        push(@exceptdirs, $dir);
     }
     elsif ($arg eq '-b' || $arg eq '--basedir')
     {
@@ -307,7 +315,7 @@ if ($recursive eq 'y')
 {
     foreach $i (glob("*"))
     {
-        if (-d $i && $i ne "CVS" && $i ne "backups" && $i ne "." && $i ne "..")
+        if (-d $i && $i ne "CVS" && $i ne "backups" && $i ne "." && $i ne ".." && !grep(/$i/,@exceptdirs))
         {
             push(@subdirs, $i);
         }
