@@ -942,3 +942,8 @@ Feb 6, 2001
 Feb 27, 2001
  - fixed bug which prevented compiling with PVM
 ------ omnetpp-2.0p1 released ------
+ - Borland C++ support removed: I deleted the project files (*.ide). I added
+   equivalent Makefile.bc files (generated from the BC IDE), but they are
+   completely unsupported at the moment. If there's interest, it's possible
+   that later I'll add makefiles for the free command-line bc5.5 compiler.
+

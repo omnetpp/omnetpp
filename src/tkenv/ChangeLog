@@ -420,3 +420,8 @@ Feb 6, 2001
 Mar 10, 2001
  - bugfix: setDisplayString() crashed Tkenv after the network graphics window
    was closed [reported by Stefan Geisler]
+ - Borland C++ support removed: I deleted the project files (*.ide). I added
+   equivalent Makefile.bc files (generated from the BC IDE), but they are
+   completely unsupported at the moment. If there's interest, it's possible
+   that later I'll add makefiles for the free command-line bc5.5 compiler.
+
