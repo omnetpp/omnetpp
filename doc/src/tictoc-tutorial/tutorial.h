@@ -199,7 +199,7 @@ PREV: @ref part1 UP: @ref contents
 @section s2 Step 2: Refining the graphics, and adding debugging output
 
 Here we make the model look a bit prettier in the GUI. We assign
-the "proc1" icon (the file <tt>bitmaps/proc1.gif</tt>), and paint it cyan for tic
+the "block/process" icon (the file <tt>bitmaps/block/process.gif</tt>), and paint it cyan for tic
 and yellow for toc. This is achieved by adding display strings to the
 NED file. The <tt>i=</tt> tag in the display string specifies the icon.
 
