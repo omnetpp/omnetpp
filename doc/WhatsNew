@@ -39,7 +39,7 @@ Simulation kernel refactoring:
   use dynamic_cast<> in your code, and you don't need to redefine className()
   in your own classes because we can figure it out in the base class, cObject.
 
-- eliminated gcc 3.0.x warnings
+- eliminated gcc 3.0.x warnings --------------------------------------------to be done!!!!
 
 - several smaller auxiliary classes were made inner classes to their 'main'
   classes. (Examples: cQueueIterator --> cQueue::Iterator, sTopoNode -->
@@ -128,88 +128,56 @@ Build:
 
 - ported to Tk8.4 (several 'char *' to 'const char *' changes)
 
+GNED:
+- added about 120 new full color icons  --------------------------------------- to be done!
+- icon selector window improved; now you can also select icons by category
 
 Cmdenv:
-- Akaroa support fixed (though this is actuall in Envir, so applies to Tkenv too)
-
-	* cmdenv.cc: improved status display
-
-	* cmdenv.cc: revised omnetpp.ini entries understood by Cmdenv.
-	A new entry was introduced to make it easier to switch between
-	typical uses of Cmdenv.
-	  express-mode=yes/no (default: no)
-	Normal (non-express) mode is for debugging: detailed information
-	will be written	to the standard output (event banners, module output,
-	etc). Express mode can be used for long simulation runs: only
-	periodical status update is displayed about the progress of the
-	simulation.
-	When in normal (non-express) mode, the following ini file entries
-	are taken into account:
-	  module-messages=yes/no (default: yes)
-	     - printing module ev<< output on/off (as before)
-	  event-banners=yes/no (default: yes)
-	     - printing event banners on/off; replaces verbose-simulation=
-	When in express mode, these entries are used:
-	  status-frequency=<integer> (default: 50000)
-	     - print status update every n events (on today's computers, and
-	     for a typical model, this will produce an update every few seconds,
-	     perhaps a few times per second)
-	  performance-display=yes/no (default: yes)
-	     - print detailed performance status
-	Obsoleted entries: display-update=, verbose-simulation=.
-
-	* cmdenv.cc: -h command-line option now lists linked-in modules too
+- the -h command-line switch now lists linked-in networks and modules
+- Cmdenv can now display event/sec, event/simsec, simsec/sev, no. of message
+  objects, etc. during execution, and omnetpp.ini entries that control how
+  much info Cmdenv prints when running were made easier to use.
+- introduced express-mode=yes/no (default: no) switch, with meaning similar
+  to Tkenv (non-express mode: detailed information printed; express mode:
+  only periodic status updates)
+- in normal mode (express-mode=no), the following ini file entries are
+  taken into account:
+  * module-messages=yes/no (default: yes)
+       printing module ev<< output on/off (as before)
+  * event-banners=yes/no (default: yes)
+       printing event banners on/off; replaces verbose-simulation=
+- in express mode, following entries are used:
+  * status-frequency=<integer> (default: 50000)         ------------------ FIXME: MAKE 100000!
+        print status update every n events (on today's computers, and
+        for a typical model, this will produce an update perhaps a few times
+        per second)
+  * performance-display=yes/no (default: yes)
+        print detailed (2-line) performance status
+- obsoleted omnetpp.ini entries: display-update=, verbose-simulation=.
 
 Tkenv:
-	* modinsp.tcl: with "ring" layout, changed order of modules
-	from clockwise to the more natural counter-clockwise
-
-	* tkapp.cc: clear main window when simulation is restarted
-
+- inspector windows are now restored from a ./.tkenvrc file if you restart the
+  simulation (as soons as inspected object gets created in the simulation, its
+  window pops up - objects must have unique names for this to work properly!)
+- outvector inspectors: added basic labeling to axes
+- with "ring" layout, changed display order of modules from clockwise to the
+  more natural counter-clockwise
+- clear main window when simulation is restarted
 - extensive internal refactoring (inspector registration and creation
   rewritten; code split to several more source files; method renamings, etc)
-
-	* outvector inspectors: added basic labeling to axes
-
-	* implemented that inspector windows are restored if you restart
-	the simulation, and even if you quit/restart Tkenv. List of open
-	inspectors is saved in ./tkenvrc which is automatically loaded
-	on startup and written on exit.
-
-	In .tkenvrc, inspectors are identified by object name (obj->fullPath())
-	and class name (obj->className()), so make sure to use locally unique
-	names for variables you want to inspect.
-
-	Inspector windows usually cannot be opened immediately when .tkenvrc
-	is loaded (the corresponding objects don't exist yet), so Tkenv keeps
-	a "pending inspectors list" for the inspectors to be opened.
-	At each display update, Tkenv tries to find the corresponding objects
-	in the network and open inspectors for them. Be aware that this
-	object search is relatively expensive operation, so Tkenv performance
-	may degrade if there are too many pending inspectors. If the network
-	you're running under Tkenv changes often, it's a good idea to
-	delete .tkenvrc manually sometimes to clean it from garbage (i.e. from
-	obsolete entries).
-
-	* modinsp2.tcl (graphmodwin_animate): set upper limit to animation
-	steps (100) so that animation of a message sending finishes in
-	tolerable time period even on very long connections.
-
-	* main.tcl (create_omnetpp_window): increased event number status
-	bar field width by 3 digits - it was limited in size to 1.000.000
-	events.
+- on very long connection arrows, message animation could take forever; now
+  an upper bound is set
+- increased event number status bar field width by 3 digits - it was limited
+  in size to 1.000.000 events.
 
 Envir:
-	* filemgrs.cc, akoutvectormgr.cc: applied Steffen Sroka's patches
-	(thanks Steffen!). AKAROA_CFLAGS added to Makefile.in.
-
-	* filemgrs.cc: added fname-append-host=true/false ini file setting.
-	When turned on, appends the host name to the names of the output
-	files (output vector, output scalar, snapshot files). This is
-	useful when the simulation is run on multiple machines concurrently
-	(parallel independent runs (Akaroa) or parallel/distributed simulation),
-	and all running instances write to the same directory (e.g. shared
-	via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
+- filemgrs.cc: added fname-append-host=true/false ini file setting.
+  When turned on, appends the host name to the names of the output
+  files (output vector, output scalar, snapshot files). This is
+  useful when the simulation is run on multiple machines concurrently
+  (parallel independent runs (Akaroa) or parallel/distributed simulation),
+  and all running instances write to the same directory (e.g. shared
+  via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
 
 	* added akoutvectormgr.h/cc: integrated Steffen Sroka's Akaroa
 	extension that supports multiple independent replicated simulation runs.
@@ -221,17 +189,17 @@ Envir:
 	to make Akaroa ignore specific vectors.
 	For more info see the Akaroa home page and the OMNeT++ documentation.
 
-	* filemgrs.cc: 2 bugfixes: (1) output scalar file did not get opened
-	sometimes; (2) output scalar file got removed between runs
+- 2 bugfixes: (1) output scalar file did not get opened sometimes; (2) output
+  scalar file got removed between runs
 
 New NED compiler architecture:
+- added nedxml library to src/
+- added nedtool to nedc
 
 Other:
-- use combobox in Plove, Tkenv, GNED;
-- 19-rol 52-re nott a tesztek szama; foleg ahol volt valtozas, arra irodtak
-  tesztek; persze ennel is sokkal tobb kellene
-
-
+- use combobox widget of Bryan Oakley in Plove, Tkenv, GNED ----------------------- to be done!!!
+- test suite: number of test cases grew from 19 to 52 since omnetpp-2.2;
+  covers most of the core functionality (modules, messages, queues) now
 
 Sample simulations:
 - PVMEx removed. It didn't really fulfill its purpose of meaningfully
@@ -241,7 +209,7 @@ Sample simulations:
   ring, star, random graph, binary tree, hexagonal grid, etc.)
 
 Manual:
-- various fixes and clarifications (thanks to Phillip F... for his numerous
+- various fixes and clarifications (thanks to Phillip Feldman for his numerous
   comments!)
 
 
