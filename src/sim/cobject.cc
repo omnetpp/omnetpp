@@ -346,7 +346,7 @@ void cObject::writeContents(ostream& os)
 {
     //os << "  objects:\n";
     opp_string details;
-    os << detailedInfo(details) << endl;
+    os << detailedInfo(details) << std::endl;
     _do_list( NULL, false, os );   // prepare do_list
     forEach( (ForeachFunc)_do_list );
 }
