@@ -308,7 +308,6 @@ cGate *cNEDNetworkBuilder::resolveGate(cModule *parentmodp,
     cGate *gatep = modp->gate(gatename, gateindex);
     if (!gatep)
     {
-        // FIXME include module name in error message
         if (!gateindexp)
             throw new cException("dynamic module builder: module (%s)%s has no gate `%s'",
                                  modp->className(), modp->fullPath(), gatename);
@@ -330,7 +329,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionNode *conn)
     {
         // create channel
 	cLinkType *linkp = findLink(connattr->getValue());
-        throw new cException("channels not supported");
+        throw new cException("channel support not implemented yet"); // FIXME
     }
 
     // connection attributes
