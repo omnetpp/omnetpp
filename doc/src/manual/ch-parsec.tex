@@ -14,7 +14,7 @@ a number of simulation projects, for example in simulation of mobile
 radio networks in a military environment.
 
 
-It is best to quote the PARSEC User Manual, Release 1.1 (August 
+It is best to quote the PARSEC User Manual, Release 1.1 (August
 1998):
 
 
@@ -26,17 +26,17 @@ It is best to quote the PARSEC User Manual, Release 1.1 (August
 thread -- roughly equivalent to an {\opp} simple\index{module!simple} module
 --Andras]\textit{. Interactions among physical processes (events) are
   modeled by timestamped message exchanges among the corresponding
-  logical  processes.\\  
+  logical  processes.\\
   One of the important distinguishing features of PARSEC is its
   ability to execute a discrete-event simulation model using several
   different asynchronous parallel simulation protocols on a variety of
   parallel architectures. [...] Thus, with few modifications, a PARSEC
   program may be executed using the traditional sequential (Global
   Event List) simulation protocol or one of many parallel
-  [...] protocols.\\  
+  [...] protocols.\\
   In addition, PARSEC provides powerful message receiving constructs
   that result in shorter and more natural simulation programs.
-  [...]\\  
+  [...]\\
   The PARSEC language has been derived from the Maisie language, but
   with several improvements, both in the syntax of the language
   and in its execution environment.}
@@ -44,7 +44,7 @@ thread -- roughly equivalent to an {\opp} simple\index{module!simple} module
 The PARSEC web site is at \href{http://pcl.cs.ucla.edu/}{http://pcl.cs.ucla.edu/}.
 
 
-PARSEC is \textbf{\textit{not}} open source. It seems that the source code 
+PARSEC is \textbf{\textit{not}} open source. It seems that the source code
 is only available to research collaborators.
 
 
@@ -53,7 +53,7 @@ is only available to research collaborators.
 
 \section{What is inside the PARSEC package?}
 
-When you download and install the PARSEC distribution, basically 
+When you download and install the PARSEC distribution, basically
 you find:
 \begin{itemize}
 \item{pcc (the PARSEC compiler), and}
@@ -61,18 +61,18 @@ you find:
 \end{itemize}
 
 
-This shows that PARSEC is strictly a simulation (and parallel 
-programming) language which is restricted to the area of entities, 
-messages, and the tasks centered around message sending and receiving. 
-It is difficult to compare to {\opp} which is more of a complete 
-simulation environment. (The {\opp} simulation library alone 
+This shows that PARSEC is strictly a simulation (and parallel
+programming) language which is restricted to the area of entities,
+messages, and the tasks centered around message sending and receiving.
+It is difficult to compare to {\opp} which is more of a complete
+simulation environment. (The {\opp} simulation library alone
 covers a much wider range of functionality than PARSEC as a whole.)
 
 
-The primary strength of PARSEC is its parallel simulation support. 
-The manual only describes conservative PDES, but optimistic algorithms 
-are also supported. However, the distribution of Parallel PARSEC 
-is limited to research collaborators (personal communication 
+The primary strength of PARSEC is its parallel simulation support.
+The manual only describes conservative PDES, but optimistic algorithms
+are also supported. However, the distribution of Parallel PARSEC
+is limited to research collaborators (personal communication
 from Richard A. Meyer, Nov. 2001).
 
 
@@ -81,33 +81,33 @@ from Richard A. Meyer, Nov. 2001).
 
 \section{PARSEC vs. the {\opp} simulation kernel}
 
-This section gives a brief overview of PARSEC, with special attention 
+This section gives a brief overview of PARSEC, with special attention
 to the differences compared to {\opp}.
 
-PARSEC is compared against the core functionality of the {\opp} 
-simulation kernel, that is, message sending/receiving and the 
-coroutines (\fname{activity()}). Other parts of the {\opp} simulation 
-kernel (e.g. statistics classes) and other parts of the {\opp} 
+PARSEC is compared against the core functionality of the {\opp}
+simulation kernel, that is, message sending/receiving and the
+coroutines (\fname{activity()}). Other parts of the {\opp} simulation
+kernel (e.g. statistics classes) and other parts of the {\opp}
 package have no equivalent in PARSEC.
 
 
 \textbf{Sample PARSEC code}
 
 
-The PARSEC is a programming language based on C (\textit{not} C++!). 
-PARSEC programs, in addition to normal C code, contain special 
-syntactic constructs, so they do not compile as C. One has to 
-invoke the PARSEC compiler (\ttt{pcc}) on the source code in order 
+The PARSEC is a programming language based on C (\textit{not} C++!).
+PARSEC programs, in addition to normal C code, contain special
+syntactic constructs, so they do not compile as C. One has to
+invoke the PARSEC compiler (\ttt{pcc}) on the source code in order
 to translate it into C code that uses the PARSEC runtime library.
 
 
-The main advantage of this solution is that the PARSEC language 
+The main advantage of this solution is that the PARSEC language
 is clean and really elegant.
 
 
 Let us see a bit of PARSEC code:
 
-\begin{Verbatim}
+\begin{verbatim}
 #include <stdio.h>
 ...
 
@@ -117,23 +117,23 @@ message job {
 };
 
 message add_to_your_sorc {
-   ename id;\\
+   ename id;
 };
 ...
 
 entity driver(int argc, char **argv) {
 ...
 }
-\end{Verbatim}
+\end{verbatim}
 
 \textbf{Entities and messages}
 
 
-In the above PARSEC code fragment, two constructs stand out at 
+In the above PARSEC code fragment, two constructs stand out at
 once: \ttt{message} and \ttt{entity}.
 
-The \ttt{message} constructs define message types, and they are translated 
-to C structs by pcc. 
+The \ttt{message} constructs define message types, and they are translated
+to C structs by pcc.
 
 
 Entities correspond to {\opp}'s simple\index{module!simple} modules.
@@ -152,44 +152,44 @@ simple\index{module!simple} modules.)
 \textbf{Problems with splitting up the entity body}
 
 
-During programming, the code of an entity may become so large 
-that it is no longer feasible to keep it within a single function 
-body. In {\opp} you can solve the problem by distributing the 
-simple\index{module!simple} module class's \fname{activity()} code into new member functions 
-which are called from \fname{activity()}, and moving the some local variables 
-of \fname{activity()} into the module class so that they can also be 
+During programming, the code of an entity may become so large
+that it is no longer feasible to keep it within a single function
+body. In {\opp} you can solve the problem by distributing the
+simple\index{module!simple} module class's \fname{activity()} code into new member functions
+which are called from \fname{activity()}, and moving the some local variables
+of \fname{activity()} into the module class so that they can also be
 accessed by the new member functions.
 
-The above approach doesn't work in PARSEC, because PARSEC is 
-C-based and entities are not C++ classes. Of course one may call 
-ordinary C functions from the entity body, but the necessary 
-parameters must be passed in the argument list (or as pointers 
+The above approach doesn't work in PARSEC, because PARSEC is
+C-based and entities are not C++ classes. Of course one may call
+ordinary C functions from the entity body, but the necessary
+parameters must be passed in the argument list (or as pointers
 to data structures).
 
-Another solution in PARSEC is to use a construct called \textit{friend} \textit{functions} 
-(not to be confused with C++ friend functions). PARSEC's friend 
-functions may access the local variables of the entity (quite 
-strange in C, but much like an inner procedure in Pascal...). 
-However, the PARSEC documentation does not recommend using friend 
-functions (they are slow); it says they are provided for Maisie 
+Another solution in PARSEC is to use a construct called \textit{friend} \textit{functions}
+(not to be confused with C++ friend functions). PARSEC's friend
+functions may access the local variables of the entity (quite
+strange in C, but much like an inner procedure in Pascal...).
+However, the PARSEC documentation does not recommend using friend
+functions (they are slow); it says they are provided for Maisie
 compatibility.
 
 
 \textbf{The driver entity}
 
 
-The driver entity is special; in a way it is similar to the C \fname{main()} 
-function. PARSEC starts the simulation by creating and running 
-a driver entity. The main task of the driver is to create all 
-other entities in the simulation and provide them with information 
-they need (parameter values, etc). The latter is done by sending 
-out messages with the necessary parameters to all entities that 
+The driver entity is special; in a way it is similar to the C \fname{main()}
+function. PARSEC starts the simulation by creating and running
+a driver entity. The main task of the driver is to create all
+other entities in the simulation and provide them with information
+they need (parameter values, etc). The latter is done by sending
+out messages with the necessary parameters to all entities that
 need it.
 
 
-PARSEC does not have a high-level topology description language 
-like NED in {\opp}; instead, the driver entity is hand-coded 
-most of the time. (There was no mention of tools that could generate 
+PARSEC does not have a high-level topology description language
+like NED in {\opp}; instead, the driver entity is hand-coded
+most of the time. (There was no mention of tools that could generate
 the driver entity based on some higher-level description.).
 
 
@@ -197,15 +197,15 @@ the driver entity based on some higher-level description.).
 at the same level, there's no way to express hierarchy.
 
 
-PARSEC has no notion of module gates, and there are no connections 
-(in the {\opp} sense) among the entities. This means that when 
-sending messages, the receiving entity must be explicitly named. 
-Since the program contains no explicit topology information, 
-an entity initially has no information about its communication 
-partners (it knows no enames except its own). The usual practice 
-is that the driver entity sends the necessary enames in an initialization 
-message to each entity. (For illustration, see the add\_to\_your\_sorc 
-message type from the above code fragment. The message name itself 
+PARSEC has no notion of module gates, and there are no connections
+(in the {\opp} sense) among the entities. This means that when
+sending messages, the receiving entity must be explicitly named.
+Since the program contains no explicit topology information,
+an entity initially has no information about its communication
+partners (it knows no enames except its own). The usual practice
+is that the driver entity sends the necessary enames in an initialization
+message to each entity. (For illustration, see the add\_to\_your\_sorc
+message type from the above code fragment. The message name itself
 is quite descriptive.)
 
 The consequence of the lack of compound modules and module gates is
@@ -218,13 +218,13 @@ simulation components without well-defined interfaces and structuring
 \textbf{C++ syntax not allowed}
 
 
-It is not possible to use \textit{any} C++ constructs in PARSEC programs. 
-This means it is also impossible to use any C++ class libraries 
+It is not possible to use \textit{any} C++ constructs in PARSEC programs.
+This means it is also impossible to use any C++ class libraries
 in PARSEC programs; only C libraries can be used.
 
-This limitation comes from pcc itself: the parser inside pcc 
-is written for C, and as such, it cannot parse C++ syntax. It 
-is irrelevant whether you use a C or C++ compiler to compile 
+This limitation comes from pcc itself: the parser inside pcc
+is written for C, and as such, it cannot parse C++ syntax. It
+is irrelevant whether you use a C or C++ compiler to compile
 pcc's output. One exception is that pcc accepts //-style comments.
 
 
@@ -237,26 +237,26 @@ Messages can be sent to other entities with the \textit{send} construct:
 \textbf{send} \textit{message} \textbf{to} \textit{dest-entity} \textbf{after} \textit{delay};
 \end{Verbatim}
 
-For example, creating a new message of type Request with the 
-parameters 10 and self (the current entity) and sending it to entity2 
+For example, creating a new message of type Request with the
+parameters 10 and self (the current entity) and sending it to entity2
 entity after a delay looks like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \textbf{send} Request\{10,\textbf{self}\} \textbf{to} entity2 \textbf{after} 5;
 \end{Verbatim}
 
-This PARSEC construct is totally equivalent in functionality 
-to {\opp}'s sendDirect( \textit{message}, \textit{delay}, \textit{dest}-\textit{module} [,\textit{dest}-\textit{gate}]) 
-call. Since PARSEC has no equivalent of {\opp} gates, {\opp}'s 
-other \fname{send()} functions which send messages through a gate are 
+This PARSEC construct is totally equivalent in functionality
+to {\opp}'s sendDirect( \textit{message}, \textit{delay}, \textit{dest}-\textit{module} [,\textit{dest}-\textit{gate}])
+call. Since PARSEC has no equivalent of {\opp} gates, {\opp}'s
+other \fname{send()} functions which send messages through a gate are
 not present in PARSEC.
 
 
 \textbf{Message receiving constructs }
 
 
-PARSEC entities accept messages with the \textit{receive} construct. \textit{Receive} 
-has many forms: the elegance and power of the PARSEC language 
+PARSEC entities accept messages with the \textit{receive} construct. \textit{Receive}
+has many forms: the elegance and power of the PARSEC language
 stems from the \textit{receive} construct. Some illustrative examples:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -281,22 +281,22 @@ It is possible to add guards to the receive branches:
 \end{Verbatim}
 
 
-These constructs have to be explicitly programmed in {\opp} 
-using while loops with \fname{receive()} calls and if/switch statements 
-in its body. The reason {\opp} doesn't have this sort of syntax 
-and functionality is that it is impossible to express with plain 
-C/C++: one cannot avoid the need for a special precompiler. Having 
-to use a precompiler, however, causes some inconvenience during 
-program development, and in practice, there isn't as much need 
-for this sort of complex receive constructs that would justify 
+These constructs have to be explicitly programmed in {\opp}
+using while loops with \fname{receive()} calls and if/switch statements
+in its body. The reason {\opp} doesn't have this sort of syntax
+and functionality is that it is impossible to express with plain
+C/C++: one cannot avoid the need for a special precompiler. Having
+to use a precompiler, however, causes some inconvenience during
+program development, and in practice, there isn't as much need
+for this sort of complex receive constructs that would justify
 making it mandatory to use a precompiler for every source file.
 
 
-One may wonder what happens to the messages which have arrived 
-already but have not been accepted by the entity yet because 
-they had no matching \textit{receive} branch. PARSEC stores those 
-messages in what it calls the \textit{message buffer} of the entity. 
-PARSEC's message buffer is practically the same as the put-aside 
+One may wonder what happens to the messages which have arrived
+already but have not been accepted by the entity yet because
+they had no matching \textit{receive} branch. PARSEC stores those
+messages in what it calls the \textit{message buffer} of the entity.
+PARSEC's message buffer is practically the same as the put-aside
 queue in {\opp}.
 
 \begin{sloppypar}
@@ -308,10 +308,10 @@ messages in the message buffer. The programmer perceives as if each
 message type had a separate message buffer:
 \end{sloppypar}
 
-\begin{Verbatim}
+\begin{verbatim}
 receive (Request req) when (qhead(Request).units<=units);
 receive (Request req) when (qempty(Release) && req.units<=units);
-\end{Verbatim}
+\end{verbatim}
 
 
 Note that the \fname{qhead()}, \fname{qempty()} and \fname{qlength()}
@@ -319,107 +319,107 @@ operations seem to be all you can do with the message buffer, while in
 {\opp} you have free access to the put-aside queue through the
 \cclass{cQueue} member functions.
 
-PARSEC also has a \textit{hold} statement which is functionally equivalent 
+PARSEC also has a \textit{hold} statement which is functionally equivalent
 to {\opp}'s \fname{wait()}:
 
-\begin{Verbatim}
+\begin{verbatim}
 hold(5);
-\end{Verbatim}
+\end{verbatim}
 
 \textbf{Cancelling messages}
 
 
-PARSEC has no support for cancelling messages, that is, there 
-is no equivalent to {\opp}'s \fname{cancelEvent()} method. The reason 
-is probably that message cancellation is difficult to handle 
-in certain parallel simulation algorithms. However, this doesn't 
-relieve the pain that such functionality would often be needed 
+PARSEC has no support for cancelling messages, that is, there
+is no equivalent to {\opp}'s \fname{cancelEvent()} method. The reason
+is probably that message cancellation is difficult to handle
+in certain parallel simulation algorithms. However, this doesn't
+relieve the pain that such functionality would often be needed
 in practice (e.g. when implementing timeouts).
 
 
-The PARSEC team recommends various workarounds like keeping a 
-list of valid (or cancelled) timers and checking messages against 
+The PARSEC team recommends various workarounds like keeping a
+list of valid (or cancelled) timers and checking messages against
 that.
 
 
 \textbf{Simulation clock}
 
 
-The PARSEC simulation clock is of integer type: optionally, unsigned 
-int or long long (long long is \textit{not} a standard ANSI C/C++ type). 
-The time unit is not specified by PARSEC: 1 may mean 1 nanosecond, 
-1 second or 1 hour. {\opp} uses double, with the time value 
+The PARSEC simulation clock is of integer type: optionally, unsigned
+int or long long (long long is \textit{not} a standard ANSI C/C++ type).
+The time unit is not specified by PARSEC: 1 may mean 1 nanosecond,
+1 second or 1 hour. {\opp} uses double, with the time value
 to be interpreted as seconds.
 
-It is probably application-specific which is the better choice, 
-but in the case of a large simulation model put together from 
-components written with different time granularity in mind, double 
-seems a better choice because it is relatively insensitive to 
+It is probably application-specific which is the better choice,
+but in the case of a large simulation model put together from
+components written with different time granularity in mind, double
+seems a better choice because it is relatively insensitive to
 the choice of the time unit.
 
 
 \textbf{Random number generation}
 
 
-PARSEC provides platform-independent random number generators 
+PARSEC provides platform-independent random number generators
 via the \ttt{pc\_erand()}, \ttt{pc\_nrand()}, etc. library functions.
 
 
 \textbf{Thread/coroutine handling}
 
 
-Symbol names in the PARSEC runtime library give the impression 
-that the thread/coroutine implementation is quite similar in 
-{\opp} and the single-processor implementation of PARSEC. Both 
-simulators use a setjmp/longjmp-based coroutine library. (Although 
-it's possible that future versions of {\opp} will use the Fibers 
+Symbol names in the PARSEC runtime library give the impression
+that the thread/coroutine implementation is quite similar in
+{\opp} and the single-processor implementation of PARSEC. Both
+simulators use a setjmp/longjmp-based coroutine library. (Although
+it's possible that future versions of {\opp} will use the Fibers
 API on Win32 platforms.)
 
 
-The worst problem with coroutines/threads is that if you create 
-too many of them, you'll need a lot of memory. With the current 
-engineering workstations, it is practically impossible to create 
-more than a few times ten thousand entities in PARSEC (this is 
+The worst problem with coroutines/threads is that if you create
+too many of them, you'll need a lot of memory. With the current
+engineering workstations, it is practically impossible to create
+more than a few times ten thousand entities in PARSEC (this is
 requires a few hundred megabytes of memory).
 
-It is possible to specify coroutine stack sizes in both PARSEC 
-and {\opp}. One advantage of {\opp} is that it can measure 
-how much stack space a module actually uses during its operation 
-(\fname{stackUsage()} function), so it is relatively easy to find the 
-optimal stack size. In PARSEC, this can only be done by trial 
-and error (if the program crashes, a stack size was too small). 
+It is possible to specify coroutine stack sizes in both PARSEC
+and {\opp}. One advantage of {\opp} is that it can measure
+how much stack space a module actually uses during its operation
+(\fname{stackUsage()} function), so it is relatively easy to find the
+optimal stack size. In PARSEC, this can only be done by trial
+and error (if the program crashes, a stack size was too small).
 
-If memory requirements would grow too high due to the large number 
-of coroutines, in {\opp} it is possible to rewrite modules to 
-use \fname{handleMessage()}, thus eliminating the need for a separate 
-coroutine stack. PARSEC has no equivalent of \fname{handleMessage()}, 
+If memory requirements would grow too high due to the large number
+of coroutines, in {\opp} it is possible to rewrite modules to
+use \fname{handleMessage()}, thus eliminating the need for a separate
+coroutine stack. PARSEC has no equivalent of \fname{handleMessage()},
 so coroutine stacks cannot be eliminated.
 
 
 \textbf{Comparison of PARSEC and {\opp} as parallel simulation tools}
 
 
-PARSEC was created to be a parallel simulation (and parallel 
-programming) language. It provides strong support for a wide 
+PARSEC was created to be a parallel simulation (and parallel
+programming) language. It provides strong support for a wide
 range of conservative and optimistic PDES algorithms.
 
 
-In contrast, {\opp} was created to be a generic simulation package, 
-and as such, it offers \textit{some} support for conservative PDES 
+In contrast, {\opp} was created to be a generic simulation package,
+and as such, it offers \textit{some} support for conservative PDES
 and Statistical Synchronization.
 
 
-PARSEC runs on both shared memory multiprocessors and distributed 
-memory systems. On a multiprocessor, NT native threads are used 
-on Win32 platforms and the pthread library on Unix systems. MPI 
-is used for communication between nodes on a distributed memory 
+PARSEC runs on both shared memory multiprocessors and distributed
+memory systems. On a multiprocessor, NT native threads are used
+on Win32 platforms and the pthread library on Unix systems. MPI
+is used for communication between nodes on a distributed memory
 system.
 
 
-{\opp} only supports distributed memory systems, using PVM or 
+{\opp} only supports distributed memory systems, using PVM or
 MPI for communication.
 
-Only the sequential version of PARSEC is available for the public; 
+Only the sequential version of PARSEC is available for the public;
 the distribution of Parallel PARSEC is limited to research collaborators.
 
 
@@ -516,16 +516,16 @@ message & message (\cclass{cMessage}, \cclass{cPacket},...)\\\hline
 %% ROW 4
 message buffer of the entity & put-aside queue\\\hline
 %% ROW 5
-send \textit{message} to \textit{entity} after \textit{delay} & 
+send \textit{message} to \textit{entity} after \textit{delay} &
 \ttt{sendDirect( \textit{message}, \textit{delay}, \textit{module} [,\textit{destgate}])}\\\hline
 %% ROW 6
 send \textit{message} to self after \textit{delay}
-& 
+&
 \ttt{scheduleAt( \textit{message}, simTime()+\textit{delay})}\\\hline
 %% ROW 7
 \mbox{n/a} \linebreak
 (PARSEC has no equivalent of {\opp} gates)
-& 
+&
 \ttt{send(\textit{message},\textit{gate})} \linebreak
 \ttt{sendDelayed(\textit{message},\textit{gate},\textit{delay})}\\\hline
 %% ROW 8
@@ -535,7 +535,7 @@ receive (\textit{msgtype} \textit{msg}) \{... \} & \ttt{\textit{msg} = receive()
 %% ROW 10
 {\raggedright receive (\textit{msgtype} \textit{msg}) \{... \}\\
 or timeout after (\textit{delay}) \{... \}}
-& 
+&
 \ttt{\textit{msg =} receive( \textit{delay} )}\\\hline
 %% ROW 11
 more complex \textit{receive} constructs & \ttt{while \{ \textit{msg=}receive()\textit{;} if (...)... \}}\\\hline
@@ -543,7 +543,7 @@ more complex \textit{receive} constructs & \ttt{while \{ \textit{msg=}receive()\
 
 
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
-%%% End: 
+%%% End:

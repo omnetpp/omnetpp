@@ -24,7 +24,7 @@ simulation time in the receiving segment has already passed the
 timestamp (arrival time) of the message. This would break
 causality\index{event!causality} of events in the receiving segment.
 
-There are mainly three different methods used for synchronizing 
+There are mainly three different methods used for synchronizing
 segments:
 \begin{enumerate}
   \item{\textbf{Conservative synchronization}\index{conservative
@@ -40,7 +40,7 @@ segments:
     (slowed down by communication between segments) if there's not
     enough parallelism in the model, or parallelism is not exploited
     by sending enough 'null' messages.}
-  
+
   \item{\textbf{Optimistic synchronization}\index{optimistic
       synchronization} allows incausalities to occur, but detects and
     repairs them. Repairing involves rollbacks to a previous state,
@@ -53,7 +53,7 @@ segments:
     writing significantly more complex simple\index{module!simple}
     module code from the user.  Optimistic synchronization may be slow
     in cases of excessive rollbacks.}
-  
+
   \item{\textbf{Statistical synchronization}\index{statistical
       synchronization} is a compromise where segments do not exchange
     individual messages but distributions of the traffic flow
@@ -89,14 +89,14 @@ synchronization mechanism (\textit{syncpoints}, available through the
 sending messages between segments. Syncpoints correspond to
 \textit{null messages} found in the literature.
 
-Message sending and syncpoints enable one to implement conservative 
-PDES and also Statistical Synchronization. The simulation class 
-library contains objects that explicitly support the implementation 
+Message sending and syncpoints enable one to implement conservative
+PDES and also Statistical Synchronization. The simulation class
+library contains objects that explicitly support the implementation
 of models using Statistical Synchronization.
 
 
-High level debugging is supported by saving the textual output 
-from remote segments to a log file and/or relaying them to a 
+High level debugging is supported by saving the textual output
+from remote segments to a log file and/or relaying them to a
 single console.
 
 {\opp} supports flexible partitioning of the
@@ -124,14 +124,14 @@ find MPI and PVM readings in the Reference.
 \textbf{Overview}
 
 
-When running a simulation in parallel, different segments of 
-the model execute as independent UNIX processes, typically on 
-separate hosts. Since the hosts can be of different speed and 
-the simulated model segments can be of different complexity, 
-at a given moment the model times of different segments will 
-differ: some segments are ahead of the others and some lag behind. 
-Suppose that a message is sent from segment A to segment B which 
-is ahead of A in model time. If B processed the message, causality 
+When running a simulation in parallel, different segments of
+the model execute as independent UNIX processes, typically on
+separate hosts. Since the hosts can be of different speed and
+the simulated model segments can be of different complexity,
+at a given moment the model times of different segments will
+differ: some segments are ahead of the others and some lag behind.
+Suppose that a message is sent from segment A to segment B which
+is ahead of A in model time. If B processed the message, causality
 would break. This should never happen.
 
 
@@ -161,9 +161,9 @@ segment. The second argument is a gate given with its number or its
 name. The gate implicitly specifies the destination segment to
 synchronize with.
 
-\begin{Verbatim}
+\begin{verbatim}
 syncpoint(t, "outgate");
-\end{Verbatim}
+\end{verbatim}
 
 
 \textbf{Details of the syncpoint implementation}
@@ -211,7 +211,7 @@ care that deadlocks do not occur.
 \subsubsection{Choosing between MPI and PVM}
 
 
-You have let {\opp} know if you want to use MPI\index{MPI} or
+You must let {\opp} know if you want to use MPI\index{MPI} or
 PVM\index{PVM}. This can be configured in the \texttt{[General]}
 section of the ini file, via te
 \fpar[parallel-system]{parallel-system=} entry. Its value can be
@@ -226,6 +226,7 @@ parallel-system = MPI
 
 
 \subsubsection{Mapping logical machines to physical ones}
+\label{sec:ch-parallel-exec:machine-mapping}
 
 The \fpar[ned!keywords!on]{on:} phrases in the NED descriptions
 specify the logical machine(s) on which the module is run. The machine
@@ -292,23 +293,23 @@ links or explicitly name directories in the {\opp} ini files.
 Each line in the \texttt{pvmhosts} file describes one host. An example
 line (this all should be a \textit{single line}!):
 
-\begin{Verbatim}
+\begin{verbatim}
 whale ip=whale.hit.bme.hu lo=andras
    dx=/home/andras/pvm/pvm
    ep=/home/andras/omnetpp/projects/fddi
    wd=/home/andras/omnetpp/projects/fddi
-\end{Verbatim}
+\end{verbatim}
 
 To start PVM with this configuration:
 
-\begin{Verbatim}
+\begin{verbatim}
 cd ~/omnetpp/projects/fddi
 pvm pvmhosts
-\end{Verbatim}
+\end{verbatim}
 
 \subsubsection{Configuration and running}
 
-The user must have PVM installed on the hosts he is going to 
+The user must have PVM installed on the hosts he is going to
 run segments on.
 
 
@@ -330,20 +331,20 @@ To set up a simulation for distributed execution, the user must:
   hosts too and do the simulation.}
 \end{enumerate}
 
-The first machine is called ''console'' or ``master'', the 
+The first machine is called ''console'' or ``master'', the
 others are called ``slaves''.
 
 
 \subsubsection{If there are problems...}
 
 
-PVM programs in general are more difficult to get running than 
-ordinary programs. Wrong settings in the PVM configuration files 
-can cause various problems, for example. Also, parallel programs 
+PVM programs in general are more difficult to get running than
+ordinary programs. Wrong settings in the PVM configuration files
+can cause various problems, for example. Also, parallel programs
 are a lot harder to test and debug.
 
 
-What can you do if your distributed {\opp} simulation won't 
+What can you do if your distributed {\opp} simulation won't
 work?
 \begin{itemize}
   \item{First of all, check the \ttt{pvmhosts} file to see if PVM
@@ -370,7 +371,7 @@ work?
 
 \subsection{Setting up MPI}
 
-TBD\dots \\
+TBD
 
 
 
@@ -449,7 +450,7 @@ interface\index{statistical interface} with the following classes:
 \cclass{cLongHistogram}, \cclass{cDoubleHistogram}, \cclass{cPSquare}, \cclass{cPar}.
 
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
-%%% End: 
+%%% End:

@@ -1,5 +1,5 @@
 \chapter{Analyzing Simulation Results}
-\label{cha:analyszing-simulation-results}
+\label{cha:analyzing-simulation-results}
 
 
 
@@ -37,9 +37,9 @@ parameterized. Multiple filters for the same vector is not currently
 supported; also, you cannot currently feed several vectors into a
 single filter.
 
-Plove does not create temporary files, so you don't need to worry 
-about disk space: if the output vector is there, Plove can plot 
-it for you. Moreover, it can also work with gzipped vector files 
+Plove does not create temporary files, so you don't need to worry
+about disk space: if the output vector is there, Plove can plot
+it for you. Moreover, it can also work with gzipped vector files
 without extracting them -- just make sure you have zcat.
 
 
@@ -72,13 +72,13 @@ vectors too. Plove accepts nc/mc-like keystrokes: F3, F4, F5, F6, F8,
 grey '+' and grey '*'.
 
 
-The left pane works as a general storage for vectors you're working 
-with. You can load several vector files, delete vectors you don't 
-want to deal with, rename them etc. All this will not affect 
-the vector files on disk. In the right pane, you can duplicate 
-vectors if you want to filter the vector and also keep the original. 
-If you set the right options for a vector but temporarily do 
-not want it to hang around in the right pane, you can put it 
+The left pane works as a general storage for vectors you're working
+with. You can load several vector files, delete vectors you don't
+want to deal with, rename them etc. All this will not affect
+the vector files on disk. In the right pane, you can duplicate
+vectors if you want to filter the vector and also keep the original.
+If you set the right options for a vector but temporarily do
+not want it to hang around in the right pane, you can put it
 back into the left pane for storage.
 
 
@@ -87,9 +87,9 @@ back into the left pane for storage.
 
 \subsection{Writing filters}
 
-Filters get an output vector on their standard input (as plain 
-text, with the timestamp being the second and the value being 
-the third field on each line), do some processing to it and write 
+Filters get an output vector on their standard input (as plain
+text, with the timestamp being the second and the value being
+the third field on each line), do some processing to it and write
 the result to the standard output.
 
 
@@ -114,43 +114,48 @@ The third type of filters is used like this:
 cat foobar.vec | \textit{<program> <parameters>} | ...
 \end{Verbatim}
 
-Before the filter pipeline is launched, the following substitutions 
+Before the filter pipeline is launched, the following substitutions
 are performed on the \fprog{awk} scripts:
 
-\begin{Verbatim}
-t --> $2
-x --> $3
-\end{Verbatim}
+\begin{itemize}
+  \item \tbf{t} gets substituted to \$2, which is the simulation time
+  (the second column in the output vector file)
+  \item \tbf{x} gets substituted to \$3, the actual value (the third column)
+\end{itemize}
 
-
-The parameters of the form \ttt{\$(paramname)} are also replaced with 
+The parameters of the form \ttt{\$(paramname)} are also replaced with
 their actual value.
 
-Thus, if you want to add 1 to all value, you can use the \fprog{awk}
-expression filter x+1. It will turn into:
+For example, if you want to add 1 to all values, you can use the \fprog{awk}
+expression filter \ttt{x+1}. It will turn into the following awk script:
 
-\begin{Verbatim}
-awk '{$3 = $3+1}; print'.
-\end{Verbatim}  
+\begin{verbatim}
+awk '{$3 = $3+1}; print'
+\end{verbatim}
 
 
-When you want to shift the vector by a used-defined DT time, 
-you can create the following \fprog{awk} program filter: 
+When you want to shift the vector by a used-defined DT time,
+you can create the following \fprog{awk} program filter:
 
-\begin{Verbatim}
+\begin{verbatim}
 {t += $(DT); print}
-\end{Verbatim}
-%% $
+\end{verbatim}
 
-Do not forget the print statement, or your filter will not output 
+To plot the mean on \textit{(0,t)}, you'd write
+
+\begin{verbatim}
+{sum+=x; x=sum/++n; print}
+\end{verbatim}
+
+Do not forget the print statement, or your filter will not output
 anything and the gnuplot graph will be empty.
 
 Filters are automatically saved into and loaded from the \ttt{$\tilde{~}$/.ploverc}
 file.
 
-
-TBD add example scripts
-
+%%
+%% TBD add example scripts
+%%
 
 
 
@@ -179,7 +184,7 @@ A vector line introduces a new vector. Its columns are: vector ID,
 module of creation, name of \cclass{cOutVector} object, multiplicity
 of data (single numbers or pairs will be written).
 
-Lines beginning with numbers are data lines. The columns: vector 
+Lines beginning with numbers are data lines. The columns: vector
 ID, current simulation time, and one or two double values.
 
 
@@ -195,28 +200,28 @@ from the file. As the first step, you must find out the ID of the
 vector. You can find the appropriate vector line with a text editor or
 you can use \fprog{grep} for this purpose:
 
-\begin{Verbatim}
+\begin{verbatim}
 % grep "queuelen+queuingtime" vector.vec
-\end{Verbatim}
+\end{verbatim}
 
 Or, you can get the list of all vectors in the file by typing:
 
-\begin{Verbatim}
+\begin{verbatim}
 % grep ^vector vector.vec
-\end{Verbatim}
+\end{verbatim}
 
 This will output the appropriate vector line:
 
-\begin{Verbatim}
+\begin{verbatim}
 vector 6  "subnet[4].srvr"  "queuelen+queuingtime"  2
-\end{Verbatim}
+\end{verbatim}
 
-Pick the vector ID, which is 6 in this case, and grep the file 
+Pick the vector ID, which is 6 in this case, and grep the file
 for the vector's data lines:
 
-\begin{Verbatim}
+\begin{verbatim}
 grep ^6 vector.vec > vector6.vec
-\end{Verbatim}
+\end{verbatim}
 
 
 Now, \texttt{vector6.vec} contains the appropriate vector. The only
@@ -234,9 +239,9 @@ eliminated by the {\opp} \fprog{splitvec} utility (written in
 The \fprog{splitvec} script (part of {\opp}) breaks the vector file
 into several files which contain one vector each:
 
-\begin{Verbatim}
+\begin{verbatim}
 % splitvec mysim.vec
-\end{Verbatim}
+\end{verbatim}
 
 
 creates several files: mysim1.vec, mysim2.vec etc.
@@ -257,9 +262,9 @@ creates several files: mysim1.vec, mysim2.vec etc.
 
 As you can see, the vector ID is gone.
 
-The files can be further processed with math packages, or read 
-by analysis or spreadsheet programs which provide numerous ways 
-to display data as diagrams, do calculations on them etc. One 
+The files can be further processed with math packages, or read
+by analysis or spreadsheet programs which provide numerous ways
+to display data as diagrams, do calculations on them etc. One
 could use for example Gnuplot, Matlab, Excel, etc.
 
 
@@ -268,9 +273,9 @@ could use for example Gnuplot, Matlab, Excel, etc.
 
 \subsection{Visualization under Unix}
 
-Two programs are in common use: Gnuplot and Xmgr. Both are free 
-and both have their good and bad sides; we'll briefly discuss 
-them. There are innumerable tutorials and documentation about 
+Two programs are in common use: Gnuplot and Xmgr. Both are free
+and both have their good and bad sides; we'll briefly discuss
+them. There are innumerable tutorials and documentation about
 them on the Web; some of them you will find among the References.
 
 
@@ -286,21 +291,21 @@ Gnuplot has an interactive command interface. To get the vectors in
 \texttt{mysim1.vec} and \texttt{mysim4.vec} plotted in the same graph,
 you can type:
 
-\begin{Verbatim}
+\begin{verbatim}
 plot "mysim1.vec" with lines, "mysim4.vec" with lines
-\end{Verbatim}
+\end{verbatim}
 
 To adjust the $y$ range, you would type:
 
-\begin{Verbatim}
+\begin{verbatim}
 set yrange [0:1.2]
 replot
-\end{Verbatim}
+\end{verbatim}
 
 
 There are several commands to adjust ranges, plotting style, labels,
 scaling etc. Gnuplot\index{Gnuplot} can also plot 3D graphs. Gnuplot
-is also available for DOS, Windows and other platforms. Gnuplot also
+is also available for Windows and other platforms. Gnuplot also
 has a simple graphical interactive user interface called PlotMTV.
 However, we recommend that you use {\opp}'s Plove tool, described in
 an earlier section.
@@ -316,7 +321,7 @@ use it from scripts too.
 
 
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
-%%% End: 
+%%% End:

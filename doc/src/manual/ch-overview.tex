@@ -4,7 +4,7 @@
 
 \section{Modeling concepts}
 
-{\opp} provides efficient tools for the user to describe the 
+{\opp} provides efficient tools for the user to describe the
 structure of the actual system. Some of the main features are:
 \begin{itemize}
 \item{hierarchically nested modules}
@@ -64,9 +64,9 @@ single simple module, without affecting existing users of the module
 type.
 
 
-Module types can be stored in files separately from the place 
-of their actual usage. This means that the user can group existing 
-module types and create \textit{component libraries}\index{module!libraries}. This feature 
+Module types can be stored in files separately from the place
+of their actual usage. This means that the user can group existing
+module types and create \textit{component libraries}\index{module!libraries}. This feature
 will be discussed later, in Chapter \ref{cha:running-the-simulation}.
 
 
@@ -82,9 +82,9 @@ modules can send messages either directly to their destination or
 along a predefined path, through gates and connections.
 
 
-The ``local simulation time'' of a module advances when the module 
-receives a message. The message can arrive from another module 
-or from the same module (\textit{self-messages} are used to implement 
+The ``local simulation time'' of a module advances when the module
+receives a message. The message can arrive from another module
+or from the same module (\textit{self-messages} are used to implement
 timers).
 
 
@@ -117,8 +117,8 @@ between their inside and their outside world.
 
 \subsection{Link characteristics}
 
-Connections can be assigned three parameters which facilitate 
-the modeling of communication networks, but can be useful for 
+Connections can be assigned three parameters which facilitate
+the modeling of communication networks, but can be useful for
 other models too:
 \begin{itemize}
   \item{propagation delay (sec)\index{channel!propagation delay}}
@@ -127,18 +127,18 @@ other models too:
 \end{itemize}
 
 
-Each of these parameters is optional. One can specify link parameters 
-individually for each connection, or define link types (also 
-called \textit{channel} \textit{types}) once and use them throughout the 
+Each of these parameters is optional. One can specify link parameters
+individually for each connection, or define link types (also
+called \textit{channel} \textit{types}) once and use them throughout the
 whole model.
 
-The \textit{propagation delay} is the amount of time the arrival of 
-the message is delayed by when it travels through the channel. 
+The \textit{propagation delay} is the amount of time the arrival of
+the message is delayed by when it travels through the channel.
 Propagation delay is specified in seconds.
 
-The \textit{bit error rate} has influence on the transmission of messages 
-through the channel. The bit error rate is the probability that 
-a bit is incorrectly transmitted. Thus, the probability that 
+The \textit{bit error rate} has influence on the transmission of messages
+through the channel. The bit error rate is the probability that
+a bit is incorrectly transmitted. Thus, the probability that
 a message of \textit{n} bits length is transferred correctly is:\\
 
 
@@ -146,13 +146,13 @@ $P( \textit{sent message received properly} ) = (1 - \textit{ber})^{\mathit{n}}$
 where \textit{ber} = bit error rate and \textit{n} = number of bits in message.\\
 
 
-The message has an error flag which is set in case of transmission 
+The message has an error flag which is set in case of transmission
 errors.
 
-The \textit{data rate} is specified in bits/second, and it is used 
-for transmission delay calculation. The sending time of the message 
-normally corresponds to the transmission of the first bit, and 
-the arrival time of the message corresponds to the reception 
+The \textit{data rate} is specified in bits/second, and it is used
+for transmission delay calculation. The sending time of the message
+normally corresponds to the transmission of the first bit, and
+the arrival time of the message corresponds to the reception
 of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
 
 \begin{figure}[htbp]
@@ -183,8 +183,8 @@ last bit of the message arrives and only start its transmission then
 \end{center}
 \end{figure}
 
-Since the above effect is usually not the desired one, typically 
-you will want to assign data rate to only one connection in the 
+Since the above effect is usually not the desired one, typically
+you will want to assign data rate to only one connection in the
 route.
 
 
@@ -192,16 +192,16 @@ route.
 \index{module!parameters}
 \index{parameters|see{module parameters}}
 
-Modules can have parameters. Parameters are used for three purposes: 
+Modules can have parameters. Parameters are used for three purposes:
 \begin{enumerate}
   \item{to parameterize module topology}
   \item{to customize simple module behaviour}
   \item{for module communication, as shared variables}
 \end{enumerate}
 
-Parameters can take string, numeric or pointer values; numeric 
-values include expressions using other parameters and calling 
-C functions, random variables from different distributions, and 
+Parameters can take string, numeric or pointer values; numeric
+values include expressions using other parameters and calling
+C functions, random variables from different distributions, and
 values input interactively by the user.
 
 
@@ -211,45 +211,45 @@ number of submodules, number of gates, and the way the internal
 connections are made.
 
 
-Compound modules can pass parameters or expressions of parameters 
-to their submodules. Parameter passing can be done by value or 
+Compound modules can pass parameters or expressions of parameters
+to their submodules. Parameter passing can be done by value or
 by reference.
 
-During simulation execution, if a module changes the value of 
-a parameter taken by reference, the changed value propagates 
-to other modules. This effect can be used to tune the model or 
-as a second means of module communication. Pointer-valued parameters 
+During simulation execution, if a module changes the value of
+a parameter taken by reference, the changed value propagates
+to other modules. This effect can be used to tune the model or
+as a second means of module communication. Pointer-valued parameters
 can be used to implement shared memory.
 
 
 \subsection{Topology description method}
 \index{topology!description}
-The user defines the structure of the model in NED language descriptions 
-(Network Description).The NED language will be discussed in detail 
+The user defines the structure of the model in NED language descriptions
+(Network Description).The NED language will be discussed in detail
 in Chapter \ref{cha:the-ned-language}.
 
 
 \section{Programming the algorithms}
 
-The simple\index{module!simple} modules of a model contain the algorithms as C++ functions. 
-The full flexibility and power of the programming language can 
+The simple\index{module!simple} modules of a model contain the algorithms as C++ functions.
+The full flexibility and power of the programming language can
 be used, supported by the {\opp} simulation class library.
 
 
-{\opp} supports a process-style\index{module!process-style} description method for describing 
-activities. During simulation execution, simple\index{module!simple} module functions 
-appear to run in parallel, because they are implemented as coroutines\index{module!coroutine} 
-(also termed lightweight processes). Coroutines were chosen because 
-they allow an intuitive description of the algorithm and they 
-can also serve as a good basis for implementing other description 
+{\opp} supports a process-style\index{module!process-style} description method for describing
+activities. During simulation execution, simple\index{module!simple} module functions
+appear to run in parallel, because they are implemented as coroutines\index{module!coroutine}
+(also termed lightweight processes). Coroutines were chosen because
+they allow an intuitive description of the algorithm and they
+can also serve as a good basis for implementing other description
 methods like state-transition diagrams\index{state-transition diagram|see{finite state machine}} or Petri nets\index{petri nets}.
 
-{\opp} has a consistent object-oriented design. One can freely 
-use OOP concepts (inheritance, polymorphism etc) to extend the 
+{\opp} has a consistent object-oriented design. One can freely
+use OOP concepts (inheritance, polymorphism etc) to extend the
 functionality of the simulator.
 
-Elements of the simulation (messages, modules, queues etc.) are 
-represented as objects. These classes are part of the simulation 
+Elements of the simulation (messages, modules, queues etc.) are
+represented as objects. These classes are part of the simulation
 class library:
 \begin{itemize}
 \item{modules, gates, connections etc.}
@@ -257,30 +257,30 @@ class library:
 \item{messages}
 \item{container classes (e.g. queue, array)}
 \item{data collection classes}
-\item{statistic and distribution estimation classes (histograms, $P^{2}$ 
+\item{statistic and distribution estimation classes (histograms, $P^{2}$
 algorithm for calculating quantiles etc.)}
 \item{transient detection and result accuracy detection classes}
 \end{itemize}
 
-The objects are designed so that they can efficiently work together, 
+The objects are designed so that they can efficiently work together,
 creating a powerful framework for simulation programming.
 
 
 \subsection{Creating simple modules}
 \index{module!simple!creation}
 
-Each simple\index{module!simple} module type is implemented with a C++ class. Simple 
-module classes are derived from a simple module base class, by 
-redefining the virtual function that contains the algorithm. 
-The user can add other member functions to the class to split 
-up a complex algorithm; he can also add data members to the class. 
+Each simple\index{module!simple} module type is implemented with a C++ class. Simple
+module classes are derived from a simple module base class, by
+redefining the virtual function that contains the algorithm.
+The user can add other member functions to the class to split
+up a complex algorithm; he can also add data members to the class.
 
-It is also possible to derive new simple\index{module!simple} module classes from 
-existing ones. For example, if one wants to experiment with retransmission 
-timeout schemes in a transport protocol, he can implement the 
-protocol in one class, create a virtual function for the retransmission 
-algorithm and then derive a family of classes that implement 
-concrete schemes. This concept is further supported by the fact 
+It is also possible to derive new simple\index{module!simple} module classes from
+existing ones. For example, if one wants to experiment with retransmission
+timeout schemes in a transport protocol, he can implement the
+protocol in one class, create a virtual function for the retransmission
+algorithm and then derive a family of classes that implement
+concrete schemes. This concept is further supported by the fact
 that in the network description, actual module types can be parameters.
 
 
@@ -310,22 +310,22 @@ mechanism; see later.)
 
 \subsection{Derive new classes}
 
-It most cases, the functionality offered by the {\opp} classes 
-is enough for the user. But if it is needed, one can derive new 
-classes from the existing ones or create entirely new classes. 
-For flexibility, several member functions are declared virtual. 
-When the user creates new classes, certain rules need to be kept 
+It most cases, the functionality offered by the {\opp} classes
+is enough for the user. But if it is needed, one can derive new
+classes from the existing ones or create entirely new classes.
+For flexibility, several member functions are declared virtual.
+When the user creates new classes, certain rules need to be kept
 so that the object can fully work together with other objects.
 
 
 \subsection{Self-describing objects to ease debugging}
 \index{debugging}
 
-The class library is designed so that objects can give textual 
-information about themselves. This makes it possible to peek 
-into a running simulation program: through an appropriate user 
-interface, one can examine (and modify) the internal data structures 
-of a running simulation. This feature helps the user to get some 
+The class library is designed so that objects can give textual
+information about themselves. This makes it possible to peek
+into a running simulation program: through an appropriate user
+interface, one can examine (and modify) the internal data structures
+of a running simulation. This feature helps the user to get some
 insight what is happening inside the model and get hands-on experience.
 
 
@@ -346,8 +346,8 @@ from the user interface.
 \index{simulation!building}
 \index{simulation!running}
 
-This section gives some idea how to work with {\opp} in practice: 
-issues like model files, compiling and running simulations are 
+This section gives some idea how to work with {\opp} in practice:
+issues like model files, compiling and running simulations are
 discussed.
 
 An {\opp} model consists of the following parts:
@@ -412,106 +412,115 @@ some data plotting programs and how to use them with {\opp}.
 \textbf{User interfaces}
 \index{simulation!user interface}
 
-The primary purpose of user interfaces is to make the inside 
-of the model visible to the user, to start/stop simulation execution, 
-and possibly allow the user intervene by changing variables/objects 
-inside the model. This is very important in the development/debugging 
-phase of the simulation project. Just as important, a hands-on 
-experience allows the user to get a 'feel' about the model's 
-behaviour. A nice graphical user interface can also be used to 
+The primary purpose of user interfaces is to make the inside
+of the model visible to the user, to start/stop simulation execution,
+and possibly allow the user intervene by changing variables/objects
+inside the model. This is very important in the development/debugging
+phase of the simulation project. Just as important, a hands-on
+experience allows the user to get a 'feel' about the model's
+behaviour. A nice graphical user interface can also be used to
 demonstrate how the model works internally.
 
 
-The same simulation model can be executed with different user 
-interfaces, without any change in the model files themselves. 
-The user would test and debug the simulation with a powerful 
-graphical user interface, and finally run it with a simple and 
+The same simulation model can be executed with different user
+interfaces, without any change in the model files themselves.
+The user would test and debug the simulation with a powerful
+graphical user interface, and finally run it with a simple and
 fast user interface that supports batch execution.
 
 
 \textbf{Component libraries}
 \index{module!libraries}
 
-Module types can be stored in files separately from the place 
-of their actual usage. This means that the user can group existing 
+Module types can be stored in files separately from the place
+of their actual usage. This means that the user can group existing
 module types and create component libraries.
 
 
 \textbf{Universal standalone simulation programs}
 
 
-A simulation executable can store several independent models 
-that use the same set of simple modules. The user can specify 
-in the configuration file which model he/she wants to run. This 
-allows one to build one large executable that contains several 
-simulation models, and distribute it as a standalone simulation 
-tool. The flexibility of the topology description language also 
+A simulation executable can store several independent models
+that use the same set of simple modules. The user can specify
+in the configuration file which model he/she wants to run. This
+allows one to build one large executable that contains several
+simulation models, and distribute it as a standalone simulation
+tool. The flexibility of the topology description language also
 supports this approach.
 
 
 \subsection{What is what in the directories}
 
-To help you navigate among files in the {\opp} distribution, 
+To help you navigate among files in the {\opp} distribution,
 here's a list what you can find in the different directories.
 
 The \texttt{omnetpp} directory contains the following subdirectories.
 
+The simulation system itself:
 
-%%\setlength\LTleft\parindent
-\begin{longtable}{l@{\extracolsep{1cm}}p{8cm}}
-  \multicolumn{2}{p{\textwidth}}{The simulation system itself:}\\
-  \textbf{omnetpp/} & {\opp} root directory\\
-  \tab\textbf{bin/} & {\opp} executables (GNED, nedc, etc.) \\
-  \tab\textbf{include/} & header files for simulation models\\
-  \tab\textbf{lib/} & library files\\
-  \tab\textbf{bitmaps/} & icons that can be used in network graphics\\
-  \tab\textbf{doc/} & manual (PDF), readme, license, etc. \\
-  \tab\tab\textbf{html/} & manual in HTML\\
-  \tab\tab \textbf{api/} & API reference in HTML\\
-  \tab\textbf{src/} & {\opp} sources \\
-  \tab\tab\textbf{nedc/} & NED compiler\index{ned!compiler} \\
-  \tab\tab\textbf{sim/} & simulation kernel \\
-  \tab\tab\tab\textbf{std/} & files for non-distributed execution \\
-  \tab\tab\tab\textbf{pvm/} & files for distributed execution over PVM \\
-  \tab\tab\tab\textbf{mpi/} & files for distributed execution using MPI \\
-  \tab\tab\textbf{envir/} & common code for user interfaces \\
-  \tab\tab\textbf{cmdenv/} & command-line user interface \\
-  \tab\tab\textbf{tkenv/} & Tcl/Tk-based user interface \\
-  \tab\tab\textbf{gned/} & graphical NED editor\index{ned!graphical interface} \\
-  \tab\tab\textbf{plove/} & output vector analyzer and plotting tool \\
-  \tab\tab\textbf{utils/} & makefile-autocreator etc\\
-   & \\
-  \multicolumn{2}{p{\textwidth}}{There is a tutorial, contributed by Nick van Foreest}\\
-  \tab\textbf{tutorial/} & the tutorial document \\
-  \tab\tab\textbf{queues/} & sample simulation that supports the tutorial\\
-  \tab\tab\textbf{doc\_src/} & the Latex sources for the tutorial doc\\
-   & \\
-  \multicolumn{2}{p{\textwidth}}{Sample simulations are within the \texttt{samples}
-  directory. Each of the sample directories contain a network
-  description (.ned file) and corresponding simple module code (\texttt{.h},
-  \texttt{.cc} files). Makefiles are included.}\\
-  \tab\textbf{samples/} & directories for sample simulations\\
-  \tab\tab\textbf{nim/} & a simple two-player game \\
-  \tab\tab\textbf{hcube/} & hypercube network with deflection routing \\
-  \tab\tab\textbf{token/} & Token-Ring network \\
-  \tab\tab\textbf{fddi/} & an accurate FDDI MAC simulation \\
-  \tab\tab\textbf{hist/} & demo of the histogram classes \\
-  \tab\tab\textbf{dyna/} & dynamic module creation (client-server network) \\
-  \tab\tab\textbf{fifo1/} & single-server queue \\
-  \tab\tab\textbf{fifo2/} & another implementation of a single-server queue \\
-  \tab\tab\textbf{demo/} & several sim. models in a single executable \\
-   & \\
-  \multicolumn{2}{p{\textwidth}}{The \texttt{contrib} directory contains material from the {\opp} community}\\
-  \tab\textbf{contrib/} & directory for contributed material \\
-  \tab\textbf{octave/} & Octave scripts for result processing\\
-  \tab\textbf{emacs/} & NED syntax highlight for Emacs
-\end{longtable}
+\begin{Verbatim}[commandchars=\\\{\}]
+  \tbf{omnetpp/}       {\opp} root directory
+    \tbf{bin/}         {\opp} executables (GNED, nedc, etc.)
+    \tbf{include/}     header files for simulation models
+    \tbf{lib/}         library files
+    \tbf{bitmaps/}     icons that can be used in network graphics
+    \tbf{doc/}         manual (PDF), readme, license, etc.
+      \tbf{html/}      manual in HTML
+       \tbf{api/}      API reference in HTML
+    \tbf{src/}         {\opp} sources
+      \tbf{nedc/}      NED compiler\index{ned!compiler}
+      \tbf{sim/}       simulation kernel
+        \tbf{std/}     files for non-distributed execution
+        \tbf{pvm/}     files for distributed execution over PVM
+        \tbf{mpi/}     files for distributed execution using MPI
+      \tbf{envir/}     common code for user interfaces
+      \tbf{cmdenv/}    command-line user interface
+      \tbf{tkenv/}     Tcl/Tk-based user interface
+      \tbf{gned/}      graphical NED editor\index{ned!graphical interface}
+      \tbf{plove/}     output vector analyzer and plotting tool
+      \tbf{utils/}     makefile-autocreator etc
+\end{Verbatim}
 
-You may also find additional directories like \texttt{msvc/}, which contains 
-integration components for Microsoft Visual C++, etc.\\
+There is a tutorial, contributed by Nick van Foreest
+
+\begin{Verbatim}[commandchars=\\\{\}]
+    \tbf{tutorial/}    the tutorial document
+      \tbf{queues/}    sample simulation that supports the tutorial
+      \tbf{doc\_src/}  the Latex sources for the tutorial doc
+\end{Verbatim}
+
+Sample simulations are within the \texttt{samples} directory. Each of the
+sample directories contain a network description (.ned file) and
+corresponding simple module code (\texttt{.h}, \texttt{.cc} files).
+Makefiles are included.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+    \tbf{samples/}     directories for sample simulations
+      \tbf{nim/}       a simple two-player game
+      \tbf{hcube/}     hypercube network with deflection routing
+      \tbf{token/}     Token-Ring network
+      \tbf{fddi/}      an accurate FDDI MAC simulation
+      \tbf{hist/}      demo of the histogram classes
+      \tbf{dyna/}      dynamic module creation (client-server network)
+      \tbf{fifo1/}     single-server queue
+      \tbf{fifo2/}     another implementation of a single-server queue
+      \tbf{demo/}      several sim. models in a single executable
+\end{Verbatim}
 
 
-%%% Local Variables: 
+The \texttt{contrib} directory contains material from the {\opp} community.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+    \tbf{contrib/}     directory for contributed material
+      \tbf{octave/}    Octave scripts for result processing
+      \tbf{emacs/}     NED syntax highlight for Emacs
+\end{Verbatim}
+
+You may also find additional directories like \texttt{msvc/}, which contains
+integration components for Microsoft Visual C++, etc.
+
+
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
-%%% End: 
+%%% End:

@@ -54,17 +54,17 @@
 %%
 %% Heading and Footer
 %%
+
 \pagestyle{fancy}
 \fancyhf{}
 \renewcommand{\footrulewidth}{0.5pt}
 \renewcommand{\chaptermark}[1]{\markboth{#1}{}}
-\lhead{{\opp} Manual \leftmark}
-\rhead{\thepage}
-\lfoot{Budapest University of Technology and Economics, Dept. of Telecommunications}
-\fancypagestyle{plain}{%
-  \lhead{{\opp} Manual}
-  \rhead{\thepage}
-  \lfoot{Budapest University of Technology and Economics, Dept. of Telecommunications}
+\lhead{{\opp} Manual -- \leftmark}
+\rfoot{\thepage}
+
+%% this is used for chapter start pages
+\fancypagestyle{plain}{
+    \rfoot{\thepage}
 }
 
 
@@ -82,7 +82,7 @@
 
 \newcommand{\tab}{\hspace*{5mm}} %% tabulator settings
 
-%% Colordefinition for table header rows (requires package colortbl) 
+%% Colordefinition for table header rows (requires package colortbl)
 \newcommand{\tabheadcol}{\rowcolor[gray]{0.8}}
 
 %%
@@ -167,6 +167,9 @@
 \include{ch-sim-lib}
 \cleardoublepage
 
+\include{ch-msg-subcl}
+\cleardoublepage
+
 \include{ch-build-sim-progs}
 \cleardoublepage
 
@@ -188,7 +191,7 @@
 
   \include{ch-opnet}
   \cleardoublepage
-  
+
   \include{ch-parsec}
   \cleardoublepage
 
@@ -206,7 +209,7 @@
 
 \end{document}
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: t
-%%% End: 
+%%% End:
