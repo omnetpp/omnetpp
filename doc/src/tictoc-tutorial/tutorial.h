@@ -46,9 +46,9 @@ Here are the steps you take to implement your first simulation from scratch:
 2. Describe your example network by creating a topology file. A topology file is a
 text file that identifies the network's nodes and the links between them.
 You can create it with your favourite text editor.
-Let's call it tictoc.ned:
+Let's call it tictoc1.ned:
 
-tictoc1.ned: @include tictoc1.ned
+@include tictoc1.ned
 
 The file is best read from the bottom up. Here's what it says:
 
@@ -66,19 +66,31 @@ The file is best read from the bottom up. Here's what it says:
 3. We now need to implement the functionality of the simple module Txc1. This is
 achieved by writing a C++ file txc1.cc:
 
-txc1.cc: @include txc1.cc
+@include txc1.cc
 
 4. We now create the Makefile which will help us to compile and link our program
 to create the executable tictoc:
 
+\code
 opp_makemake
+\endcode
 
 This command should have now created a Makefile in the working directory
 tictoc.
 
+@note Windows+MSVC users: the command is opp_<i>n</i>makemake,
+and it will create Makefile.vc.
+
 5. Let's now compile and link our very first simulation by issuing the make command:
 
+\code
 make
+\endcode
+
+@note Windows+MSVC: type nmake -f Makefile.vc. If you get <i>'nmake' is not recognized
+as an internal or external command...</i>, find vcvars32.bat somewhere in the
+MSVC directories, and run it first thing in every command window in which you
+want to compile.
 
 If there are compilation errors, you need to rectify those and repeat the make until
 you get an error-free compilation and linking.
@@ -98,7 +110,7 @@ network = tictoc1
 
 tictoc2 and further steps will all share the following omnetpp.ini:
 
-omnetpp.ini: @include omnetpp.ini
+@include omnetpp.ini
 
 which even doesn't specify the network (the simulation program ask it
 in a dialog when it starts).
@@ -106,15 +118,18 @@ in a dialog when it starts).
 7. Once you complete the above steps, you launch the simulation by issuing this
 command:
 
+\code
 ./tictoc
+\endcode
 
-and, hopefully you should now get the OMNeT++ simulation window similar to
-the one shown in the following figure.
+and hopefully you should now get the OMNeT++ simulation window.
 
-<img src="tictoc.gif">
+@note Windows: the command is just tictoc.
 
 8. Press the Run button on the toolbar to start the simulation. What you should
 see is that tic and toc are exchanging messages with each other.
+
+<img src="tictoc.gif">
 
 The main window toolbar displays the simulated time. This is virtual time, it
 has nothing to do with the actual (or wall-clock) time that the program takes to
