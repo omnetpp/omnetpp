@@ -199,8 +199,8 @@ proc setCanvasMode {mode} {
     # make new mapping
     if {$mode=="textedit"} {
         set c $canvas($canv_id,textedit)
-        .main.f.switcher.graphics config -relief flat
-        .main.f.switcher.textedit config -relief raised
+        $gned(switchtographics-button) config -relief flat
+        $gned(switchtotextedit-button) config -relief raised
 
         # swap toolbars
         pack $gned(textedit-toolbar) -side left -expand 0 -fill both
@@ -219,8 +219,8 @@ proc setCanvasMode {mode} {
     } elseif {$mode=="graphics"} {
         set c $canvas($canv_id,canvas)
         adjustCanvasScrolling $c
-        .main.f.switcher.graphics config -relief raised
-        .main.f.switcher.textedit config -relief flat
+        $gned(switchtographics-button) config -relief raised
+        $gned(switchtotextedit-button) config -relief flat
 
         # swap toolbars
         pack forget $gned(textedit-toolbar)

@@ -195,9 +195,9 @@ proc propertiesSelected {c} {
     set keys [selectedItems]
 
     if {[llength $keys]==0} {
-       tk_messageBox -icon warning -type ok -title Error -message "Select an item first."
+       tk_messageBox -icon info -type ok -title Info -message "Select an item first."
     } elseif {[llength $keys]>1} {
-       tk_messageBox -icon warning -type ok -title Error -message "You can set only one item's properties at a time. Sorry."
+       tk_messageBox -icon info -type ok -title Info -message "You can set only one item's properties at a time. Sorry."
     } else {
        editProps $keys
     }
@@ -214,9 +214,9 @@ proc drawOptionsSelected {c} {
     set keys [selectedItems]
 
     if {[llength $keys]==0} {
-       tk_messageBox -icon warning -type ok -title Error -message "Select an item first."
+       tk_messageBox -icon info -type ok -title Info -message "Select an item first."
     } elseif {[llength $keys]>1} {
-       tk_messageBox -icon warning -type ok -title Error -message "You can set only one item's drawing options at a time. Sorry."
+       tk_messageBox -icon info -type ok -title Info -message "You can set only one item's drawing options at a time. Sorry."
     } else {
        editDrawOptions $keys
     }

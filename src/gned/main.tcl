@@ -166,7 +166,7 @@ proc createMainWindow {} {
       {command -command {drawBindings $gned(canvas)} -label {Submodule/connection drawing mode}}
       {command -command {selectOrMoveBindings $gned(canvas)} -label {Select/resize mode}}
       {separator}
-      {command -command {resetModuleBounds}  -label {"Natural" parent module size} -underline 1}
+      {command -command {resetModuleBounds}  -label {Fit parent module size} -underline 1}
       {separator}
       {command -command {propertiesSelected $gned(canvas)} -label {Properties of selected item...}}
       {command -command {drawOptionsSelected $gned(canvas)} -label {Appearance of selected item...}}
@@ -178,7 +178,6 @@ proc createMainWindow {} {
     foreach i {
       {check -command {toggleGrid 0} -variable config(snaptogrid) -label {Snap to grid} -underline 0}
       {check -variable config(connmodeauto) -label {Default conn. drawing mode is auto} -underline 0}
-      {check -variable config(autocheck) -label {Auto check module consistency} -underline 0}
       {separator}
       {command -command optionsViewFile -label {View/edit file...} -underline 0}
     } {
@@ -199,9 +198,8 @@ proc createMainWindow {} {
 
     set gned(horiz-toolbar) .toolbar
     frame $gned(horiz-toolbar) -relief raised -borderwidth 1
-    #  {sep2    -separator}
-    #  {graph   -image $icons(graph) -command {switchToGraphics}}
-    #  {ned     -image $icons(ned)   -command {switchToNED}}
+    #  {check   -image $icons(check) -command {editCheck}}
+    #  {sep5    -separator}
     foreach i {
       {sep0    -separator}
       {new     -image $icons(new)   -command {fileNewComponent module}}
@@ -215,8 +213,6 @@ proc createMainWindow {} {
       {undo    -image $icons(undo)  -command {editUndo}}
       {redo    -image $icons(redo)  -command {editRedo}}
       {sep2    -separator}
-      {check   -image $icons(check) -command {editCheck}}
-      {sep5    -separator}
       {sep6    -separator}
     } {
       set b [eval iconbutton $gned(horiz-toolbar).$i]
@@ -230,7 +226,7 @@ proc createMainWindow {} {
     set help_tips($gned(horiz-toolbar).new)   {Create new module in current file}
     set help_tips($gned(horiz-toolbar).open)  {Open NED file}
     set help_tips($gned(horiz-toolbar).save)  {Save NED file of current canvas}
-    set help_tips($gned(horiz-toolbar).check) {Check module consistency}
+    #set help_tips($gned(horiz-toolbar).check) {Check module consistency}
     set help_tips($gned(horiz-toolbar).cut)   {Cut to clipboard (ctrl-X)}
     set help_tips($gned(horiz-toolbar).copy)  {Copy to clipboard (ctrl-C)}
     set help_tips($gned(horiz-toolbar).paste) {Paste from clipbard (ctrl-V)}
@@ -242,8 +238,8 @@ proc createMainWindow {} {
     set gned(supports-undo) 1
     if [catch {text .tmp -undo true; destroy .tmp}] {
         set gned(supports-undo) 0
-        #$gned(horiz-toolbar).undo config -state disabled
-        #$gned(horiz-toolbar).redo config -state disabled
+        set help_tips($gned(horiz-toolbar).undo)  {This version of Tk doesn't support Undo/Redo}
+        set help_tips($gned(horiz-toolbar).redo)  {This version of Tk doesn't support Undo/Redo}
         puts "NOTE: This version of Tcl/Tk doesn't support Undo in text widgets yet."
     }
 
@@ -345,14 +341,16 @@ proc createMainWindow {} {
 
     frame .main.f.switcher
     pack .main.f.switcher -expand 0 -fill x -side top -ipadx 0 -ipady 0 -padx 0 -pady 0
-    button .main.f.switcher.graphics -text {Graphics} -command {switchToGraphics} \
+    set gned(switchtographics-button) .main.f.switcher.graphics
+    set gned(switchtotextedit-button) .main.f.switcher.textedit
+    button $gned(switchtographics-button) -text {Graphics} -command {switchToGraphics} \
            -relief flat -highlightthickness 0 -pady 1
-    button .main.f.switcher.textedit -text {NED source} -command {switchToNED} \
+    button $gned(switchtotextedit-button) -text {NED source} -command {switchToNED} \
            -relief flat -highlightthickness 0 -pady 1
-    pack .main.f.switcher.graphics .main.f.switcher.textedit -expand 0 -fill none -side left  
+    pack $gned(switchtographics-button) $gned(switchtotextedit-button) -expand 0 -fill none -side left  
 
-    set help_tips(.main.f.switcher.graphics) {Edit in graphics view}
-    set help_tips(.main.f.switcher.textedit) {Edit in NED source view}
+    set help_tips($gned(switchtographics-button)) {Edit in graphics view}
+    set help_tips($gned(switchtotextedit-button)) {Edit in NED source view}
 
 
     # create scrollbar to scroll buttons if there are too many windows open
