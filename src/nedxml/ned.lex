@@ -1,5 +1,6 @@
 D  [0-9]
 L  [a-zA-Z_]
+X  [0-9a-fA-F]
 E  [Ee][+-]?{D}+
 S  [ \t\v\n\r\f]
 
@@ -134,6 +135,7 @@ char textbuf[TEXTBUF_LEN];
 
 {L}({L}|{D})*           { count(); return NAME; }
 {D}+                    { count(); return INTCONSTANT; }
+0[xX]{X}+               { count(); return INTCONSTANT; }
 {D}+{E}                 { count(); return REALCONSTANT; }
 {D}*"."{D}+({E})?       { count(); return REALCONSTANT; }
 

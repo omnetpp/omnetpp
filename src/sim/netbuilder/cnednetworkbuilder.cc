@@ -687,7 +687,7 @@ double cNEDNetworkBuilder::evalConst(ConstNode *node, cModule *, cModule *)
     {
         case NED_CONST_BOOL:
             return !strcmp(val,"true");
-        case NED_CONST_INT:
+        case NED_CONST_INT: //FIXME recognize hex numbers too!!!
             return atoi(node->getValue());
         case NED_CONST_REAL:
             return atof(node->getValue());
@@ -1065,7 +1065,7 @@ void cNEDNetworkBuilder::addXElemsConst(ConstNode *node, cPar::ExprElem *xelems,
     switch (node->getType())
     {
         case NED_CONST_BOOL: xelems[pos++] = !strcmp(val,"true"); break;
-        case NED_CONST_INT:  xelems[pos++] = atoi(node->getValue()); break;
+        case NED_CONST_INT:  xelems[pos++] = atoi(node->getValue()); break; // FIXME recognize hex numbers too!
         case NED_CONST_REAL: xelems[pos++] = atof(node->getValue()); break;
         case NED_CONST_TIME: xelems[pos++] = strToSimtime(node->getValue()); break;
         case NED_CONST_STRING: throw new cException("dynamic module builder: evaluate: string literals not supported here");
