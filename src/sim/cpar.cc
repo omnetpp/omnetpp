@@ -815,6 +815,16 @@ bool cPar::boolValue()
         throw new cException(this,eBADCAST,typeName(typechar),typeName('B'));
 }
 
+inline long _double_to_long(double d)
+{
+    // gcc 3.3 "feature": if double d=0xc0000000, (long)d yields 0x80000000!!!
+    // This causes trouble if we in fact want to cast this long to unsigned long, see NED_expr_2.test.
+    // Workaround follows. Note: even the ul variable is needed: when inlining it, gcc will do the wrong cast!
+    long l = (long)d;
+    unsigned long ul = (unsigned long)d;
+    return d<0 ? l : ul;
+}
+
 long cPar::longValue()
 {
     if (isRedirected())
@@ -824,7 +834,7 @@ long cPar::longValue()
     if (typechar=='L' || typechar=='B')
         return lng.val;
     else if (isNumeric())
-        return (long)doubleValue();
+        return _double_to_long(doubleValue());
     else
         throw new cException(this,eBADCAST,typeName(typechar),typeName('L'));
 }
