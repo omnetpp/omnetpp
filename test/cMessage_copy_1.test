@@ -1,0 +1,52 @@
+%description:
+Tests copying of cMessage by op=, dup(), copy ctor().
+
+TODO: check copying of param array too
+
+%activity:
+
+#define CHECK(cond)  if (!(cond)) {throw new cException("BUG at line %d, failed condition %s", __LINE__, #cond);}
+
+cMessage *msg = new cMessage("msg");
+int dummy;
+
+msg->setKind(10);
+msg->setPriority(3);
+msg->setLength(456);
+msg->setBitError(true);
+msg->setTimestamp(2.434);
+msg->setContextPointer(&dummy);
+
+cMessage *copies[3];
+copies[0] = new cMessage(*msg);
+
+copies[1] = (cMessage *) msg->dup();
+
+copies[2] = new cMessage();
+copies[2]->setName(msg->name()); // op= doesn't copy name string
+*copies[2] = *msg;
+
+for (int i=0; i<3; i++)
+{
+    ev << i << endl;
+    cMessage *cc = copies[i];
+
+    CHECK(!strcmp(cc->name(), msg->name()));
+    CHECK(cc->kind()==msg->kind());
+    CHECK(cc->priority()==msg->priority());
+    CHECK(cc->length()==msg->length());
+    CHECK(cc->hasBitError()==msg->hasBitError());
+    CHECK(cc->timestamp()==msg->timestamp());
+    CHECK(cc->contextPointer()==msg->contextPointer());
+
+    delete cc;
+}
+
+ev << "OK!\n";
+
+%contains: stdout
+OK!
+
+%not-contains: stdout
+BUG
+

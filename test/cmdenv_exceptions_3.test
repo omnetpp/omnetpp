@@ -1,0 +1,27 @@
+%description:
+Tests that errors in finish() are properly caught and displayed in Cmdenv.
+
+%module: {Module}
+
+class {Module} : public cSimpleModule
+{
+    Module_Class_Members({Module},cSimpleModule,32768)
+    virtual void activity();
+    virtual void finish();
+};
+
+Define_Module({Module});
+
+void {Module}::activity()
+{
+}
+
+void {Module}::finish()
+{
+    throw new cException("test exception");
+}
+
+%contains: stdout
+Error in module .*: test exception
+
+

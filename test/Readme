@@ -118,9 +118,10 @@ There are three other ways to proceed:
 - %file lets you take full control of the source and explicitly spell out
   all NED and C++ code (and also additional data files if you need them).
 
-Note that since all source is combined into a single test executable,
+Note that since all sources are compiled into a single test executable,
 actions have to be taken to prevent accidental name clashes among test
-cases. One has two choices to achieve this:
+cases. One has currently two choices to achieve this (yes, namespaces will be 
+used for this purpose soon):
  - the string @TESTNAME@ will be replaced with the test case name everywhere
    in the sources, so if you use names like @TESTNAME@_Module, they will be
    unique;
@@ -144,6 +145,9 @@ Generic entries:
 Test case components:
    %activity:
    <body-of-activity()>
+
+   %global:
+   <global-code-pasted-before-activity>
 
    %module: <modulename>
    <simple-module-C++-definition>

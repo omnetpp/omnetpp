@@ -1,0 +1,91 @@
+%description:
+basic positive check for cArray's add(cObject *), get(...), operator[](...),
+exist(...), ownership mgmt, items(), remove(...)
+
+not tested here: 'holes' in array, clear(), addAt(..), set(..), remove-add-remove cycles
+
+%activity:
+
+#define CHECK(cond)  if (!(cond)) {throw new cException("BUG at line %d, failed condition %s", __LINE__, #cond);}
+
+cArray a("a");
+
+// add 100 messages to cArray
+cMessage *msgs[100];
+int pos[100];
+for (int i=0; i<100; i++)
+{
+    if (i==50)
+        a.takeOwnership(false);
+    char name[20];
+    sprintf(name,"msg-%d", i);
+    msgs[i] = new cMessage(name);
+    pos[i] = a.add(msgs[i]);
+}
+
+// test if they were added correctly
+CHECK(a.items()==100);
+for (int i=0; i<100; i++)
+{
+    cMessage *msg = msgs[i];
+    int k = pos[i];
+
+    CHECK(a.find(msg)==k);
+    CHECK(a.find(msg->name())==k);
+    CHECK(a.get(k)==msg);
+    CHECK(a[k]==msg);
+
+    CHECK(a.get(msg->name())==msg);
+    CHECK(a[msg->name()]==msg);
+
+    CHECK(a.exist(k));
+    CHECK(a.exist(msg->name()));
+
+    if (i<50) {
+        CHECK(msg->owner()==&a);
+    }
+    else {
+        CHECK(msg->owner()!=&a);
+    }
+}
+
+// remove them
+for (int i=0; i<100; i++)
+{
+    cMessage *msg = msgs[i];
+    int k = pos[i];
+
+    // remove in 3 different ways
+    if (i%3==0) {
+        CHECK(a.remove(k)==msg);
+    }
+    if (i%3==1) {
+        CHECK(a.remove(msg->name())==msg);
+    }
+    if (i%3==2) {
+        CHECK(a.remove(msg)==msg);
+    }
+
+    // check it's no longer in there
+    CHECK(a.find(msg)<0);
+    CHECK(a.find(msg->name())<0);
+    CHECK(!a.exist(k));
+    CHECK(!a.exist(msg->name()));
+    CHECK(a.get(k)==NULL);
+    CHECK(a[k]==NULL);
+    CHECK(a.get(msg->name())==NULL);
+    CHECK(a[msg->name()]==NULL);
+    CHECK(msg->owner()!=&a);
+    CHECK(a.remove(k)==NULL);
+    CHECK(a.remove(msg->name())==NULL);
+    CHECK(a.remove(msg)==NULL);
+}
+
+ev << "OK!";
+
+%contains: stdout
+OK!
+
+%not-contains: stdout
+BUG
+

@@ -1,0 +1,23 @@
+%description:
+test ASSERT() macro.
+
+NOTE: this test should be run with DEBUG flags! otherwise ASSERT()s are not
+in effect (macro is defined to be empty).
+
+%activity:
+
+ASSERT(true); // should pass
+ASSERT(1); // should pass
+ev << "checkpoint\n";
+
+ASSERT(false); // should fail
+ev << "fell through\n";
+ev << "NOTE: debug must be ON for this test to pass!\n";
+
+%contains: stdout
+checkpoint
+
+%not-contains: stdout
+fell through
+
+

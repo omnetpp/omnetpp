@@ -1,0 +1,51 @@
+%description:
+test cQueueIterator with empty queue
+test iter++, iter-- and iter() behaves good after reaching end()
+
+%activity:
+
+#define CHECK(cond)  if (!(cond)) {throw new cException("BUG at line %d, failed condition %s", __LINE__, #cond);}
+
+cQueue q("queue");
+
+cQueueIterator iter(q);
+CHECK(iter.end());
+CHECK(iter()==NULL);
+
+iter++;
+CHECK(iter.end());
+CHECK(iter()==NULL);
+
+iter++;
+CHECK(iter.end());
+CHECK(iter()==NULL);
+
+iter--;
+CHECK(iter.end());
+CHECK(iter()==NULL);
+
+iter--;
+CHECK(iter.end());
+CHECK(iter()==NULL);
+
+// now with athead==false
+cQueueIterator iter2(q,false);
+CHECK(iter2.end());
+CHECK(iter2()==NULL);
+
+iter2++;
+CHECK(iter2.end());
+CHECK(iter2()==NULL);
+
+iter2--;
+CHECK(iter2.end());
+CHECK(iter2()==NULL);
+
+ev << "OK!\n";
+
+%contains: stdout
+OK!
+
+%not-contains: stdout
+BUG
+
