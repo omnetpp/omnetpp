@@ -94,16 +94,27 @@ proc exit_omnetpp {} {
     global config
 
     set isrunning [is_running]
+    set state [opp_getsimulationstate]
 
     if {$config(confirm-exit)} {
         if {[opp_object_systemmodule]!=[opp_object_nullpointer]} {
             if {$isrunning} {
                 set ans [messagebox {Warning} {The simulation is currently running. Do you really want to quit?} warning yesno]
+                if {$ans == "no"} {
+                    return
+                }
+            } elseif {$state == "SIM_READY"} {
+                set ans [messagebox {Warning} {Do you want to call finish() before exiting?} warning yesnocancel]
+                if {$ans == "yes"} {
+                    # no catch{}: exceptions are handled inside
+                    opp_finish_simulation
+                } elseif {$ans == "no"} {
+                    # nothing to do
+                } elseif {$ans == "cancel"} {
+                    return
+                }
             } else {
-                set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
-            }
-            if {$ans == "no"} {
-                return
+                #set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
             }
         }
     }

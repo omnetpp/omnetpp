@@ -1,3 +1,8 @@
+2004-11-18  Andras Varga
+
+	* menuproc.tc: added exit confirmation question "Do you want to call 
+	finish() before exiting? Yes No Cancel"
+
 2004-11-03  ------ omnetpp-3.0a9 released ------
 
 2004-11-01  Andras Varga
