@@ -193,7 +193,7 @@ void cObject::setOwner(cObject *newowner)
      }
 }
 
-cObject *cObject::defaultOwner()
+cObject *cObject::defaultOwner() _CONST
 {
      return simulation.localList();
 }

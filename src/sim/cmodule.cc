@@ -221,7 +221,7 @@ void cModule::addPar(const char *pname)
     }
 }
 
-bool cModule::checkInternalConnections()
+bool cModule::checkInternalConnections() _CONST
 {
     int j;
     // Note: This routine only checks if all gates are connected or not.
@@ -230,7 +230,7 @@ bool cModule::checkInternalConnections()
     /* check this module compound module if its inside is connected ok */
     for(j=0; j<gates(); j++)
     {
-       cGate *g = gate(j);
+       _CONST cGate *g = gate(j);
        if (g && ((g->type()=='I' && g->toGate()==NULL) ||
                  (g->type()=='O' && g->fromGate()==NULL))
           )
@@ -433,7 +433,7 @@ const char *cModule::machinePar(const char *pname)
          return ((cPar *)machinev[i])->stringValue();
 }
 
-bool cModule::isOnLocalMachine()                                   //NET
+bool cModule::isOnLocalMachine() _CONST
 {
     return simulation.netInterface()==NULL || simulation.netInterface()->isLocalMachineIn( machinev );
 }
@@ -1019,7 +1019,7 @@ void cSimpleModule::wait(simtime_t t)
 
 //-------------
 
-bool cSimpleModule::isThereMessage()
+bool cSimpleModule::isThereMessage() _CONST
 {
     cMessage *msg = simulation.msgQueue.peekFirst();
     return msg!=NULL &&
@@ -1237,7 +1237,7 @@ void cSimpleModule::pause(const char *phase)
 //    }
 //}
 
-simtime_t cSimpleModule::simTime()
+simtime_t cSimpleModule::simTime() _CONST
 {
     return simulation.simTime();
 }

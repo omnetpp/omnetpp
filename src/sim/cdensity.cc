@@ -261,7 +261,7 @@ void cDensityEstBase::writeContents(ostream& os)
     }
 }
 
-void cDensityEstBase::saveToFile(FILE *f)
+void cDensityEstBase::saveToFile(FILE *f) _CONST
 {
     cStdDev::saveToFile(f);
 

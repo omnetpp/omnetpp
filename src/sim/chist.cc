@@ -101,7 +101,7 @@ int cHistogramBase::cells() _CONST
     return num_cells;
 }
 
-void cHistogramBase::saveToFile(FILE *f)
+void cHistogramBase::saveToFile(FILE *f) _CONST
 {
     cDensityEstBase::saveToFile(f);
     fprintf(f,"%d\t #= num_cells\n", num_cells);
@@ -205,7 +205,7 @@ double cEqdHistogramBase::cell(int k) _CONST
         {opp_error("(%s)%s: invalid cell index %u",className(),name(),k);return 0;}
 }
 
-void cEqdHistogramBase::saveToFile(FILE *f)
+void cEqdHistogramBase::saveToFile(FILE *f) _CONST
 {
     cHistogramBase::saveToFile(f);
     fprintf(f,"%g\t #= cellsize\n", cellsize);
@@ -262,7 +262,7 @@ void cLongHistogram::setupRange()
     }
 }
 
-double cLongHistogram::random()
+double cLongHistogram::random() _CONST
 {
     if( num_samples==0 )
         return 0L;
@@ -300,7 +300,7 @@ cDoubleHistogram::~cDoubleHistogram()
 {
 }
 
-double cDoubleHistogram::random()
+double cDoubleHistogram::random() _CONST
 {
     if( num_samples==0 )
         return 0L;

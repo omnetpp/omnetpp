@@ -208,7 +208,7 @@ void cStdDev::clearResult()
     sum_samples=sqrsum_samples=min_samples=max_samples=0;
 }
 
-double cStdDev::random()
+double cStdDev::random() _CONST
 {
     switch( num_samples )
     {
@@ -218,7 +218,7 @@ double cStdDev::random()
     }
 }
 
-void cStdDev::saveToFile(FILE *f)
+void cStdDev::saveToFile(FILE *f) _CONST
 {
     fprintf(f,"\n#\n# (%s) %s\n#\n", className(), fullPath());
     fprintf(f,"%ld\t #= num_samples\n",num_samples);
@@ -279,7 +279,7 @@ double cWeightedStdDev::variance() _CONST
     //}
 }
 
-void cWeightedStdDev::saveToFile(FILE *f)
+void cWeightedStdDev::saveToFile(FILE *f) _CONST
 {
     cStdDev::saveToFile(f);
     fprintf(f,"%g\t #= sum_weights\n",sum_weights);

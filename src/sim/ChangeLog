@@ -1,3 +1,7 @@
+2001-08-05 Andras Varga
+
+	* added a few dozen new _CONSTs; affects nearly all files
+
 2001-07-29 Andras Varga
 
 	* added a bunch of _CONSTs (see changelog entry in include/)

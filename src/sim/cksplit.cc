@@ -545,7 +545,7 @@ double cKSplit::basepoint (int nr) _CONST
 //  CODE NOT CLEANED UP BY VA YET!
 /////////////////////////////////////////////////////////////////
 
-double cKSplit::random()
+double cKSplit::random() _CONST
 {
    int i;
    //int dp = treeDepth();
@@ -665,7 +665,7 @@ double cKSplit::cdf (double) _CONST
    return 0;
 }
 
-void cKSplit::saveToFile(FILE *f)
+void cKSplit::saveToFile(FILE *f) _CONST
 {
    cDensityEstBase::saveToFile(f);
 
@@ -814,7 +814,7 @@ void cKSplitIterator::operator--(int)
    dive(K-1);
 }
 
-double cKSplitIterator::cellValue()
+double cKSplitIterator::cellValue() _CONST
 {
    sGrid& g = ks->gridv[grid];
    return ks->realCellValue(g,cell);

@@ -186,7 +186,7 @@ void cPar::writeContents(ostream& os)
 //-------------------------------------------------------------------------
 // set/get flags
 
-char cPar::type()
+char cPar::type() _CONST
 {
      if (isRedirected())
          return ind.par->type();
@@ -200,7 +200,7 @@ const char *cPar::prompt()
      return promptstr;
 }
 
-bool cPar::isInput()
+bool cPar::isInput() _CONST
 {
      if (isRedirected())
          return ind.par->isInput();

@@ -270,18 +270,18 @@ void cGate::setDataRate(cPar *p)
       if (dataratep && takeOwnership()) take( dataratep );
 }
 
-cGate *cGate::sourceGate()
+cGate *cGate::sourceGate() _CONST
 {
-    cGate *g;
+    _CONST cGate *g;
     for (g=this; g->fromgatep!=NULL; g=g->fromgatep);
-    return g;
+    return CONSTCAST(cGate *,g);
 }
 
-cGate *cGate::destinationGate()
+cGate *cGate::destinationGate() _CONST
 {
-    cGate *g;
+    _CONST cGate *g;
     for (g=this; g->togatep!=NULL; g=g->togatep);
-    return g;
+    return CONSTCAST(cGate *,g);
 }
 
 void cGate::deliver(cMessage *msg)
@@ -317,7 +317,7 @@ void cGate::deliver(cMessage *msg)
     }
 }
 
-bool cGate::isBusy()
+bool cGate::isBusy() _CONST
 {
     return simulation.simTime()<transm_finishes;
 }
@@ -345,13 +345,13 @@ bool cGate::isConnected() const
         return togatep!=NULL;
 }
 
-bool cGate::isRouteOK()
+bool cGate::isRouteOK() _CONST
 {
     return sourceGate()->ownerModule()->isSimple() &&
            destinationGate()->ownerModule()->isSimple();
 }
 
-const char *cGate::displayString()
+const char *cGate::displayString() _CONST
 {
     if ((const char *)dispstr != NULL)
         return dispstr;

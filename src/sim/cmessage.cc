@@ -267,7 +267,7 @@ bool cMessage::arrivedOn(const char *s, int g)
     return togate==simulation.contextModule()->findGate(s,g);
 }
 
-const char *cMessage::displayString()
+const char *cMessage::displayString() _CONST
 {
     // redefine to get messages with custom appearance
     return "";

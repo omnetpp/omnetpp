@@ -462,17 +462,17 @@ cLinkType& cLinkType::operator=(cLinkType& li)
     return *this;
 }
 
-cPar *cLinkType::createDelay()
+cPar *cLinkType::createDelay() _CONST
 {
     return delayfunc==NULL ? NO(cPar) : delayfunc();
 }
 
-cPar *cLinkType::createError()
+cPar *cLinkType::createError() _CONST
 {
     return errorfunc==NULL ? NO(cPar) : errorfunc();
 }
 
-cPar *cLinkType::createDataRate()
+cPar *cLinkType::createDataRate() _CONST
 {
     return dataratefunc==NULL ? NO(cPar) : dataratefunc();
 }

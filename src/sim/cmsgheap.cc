@@ -199,7 +199,7 @@ void cMessageHeap::shiftup(int from)
     }
 }
 
-cMessage *cMessageHeap::peekFirst()
+cMessage *cMessageHeap::peekFirst() _CONST
 {
     return n==0 ? NO(cMessage) : h[1];
 }

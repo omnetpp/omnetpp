@@ -243,7 +243,7 @@ void cPSquare::collectTransformed(double val)
 }
 #endif
 
-double cPSquare::random()
+double cPSquare::random() _CONST
 {
     double s;
     int k, l;
@@ -330,7 +330,7 @@ double cPSquare::pdf(double x) _CONST
    return 0;
 }
 
-void cPSquare::saveToFile(FILE *f)
+void cPSquare::saveToFile(FILE *f) _CONST
 {
    cDensityEstBase::saveToFile(f);
 

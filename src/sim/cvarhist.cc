@@ -338,7 +338,7 @@ double cVarHistogram::cell(int k) _CONST
         {opp_error("(%s)%s: invalid cell index %u",className(),fullName(),k);return 0;}
 }
 
-double cVarHistogram::random() //--LG
+double cVarHistogram::random() _CONST //--LG
 {
     if (num_samples==0) return 0L;
 
@@ -408,7 +408,7 @@ double cVarHistogram::cdf(double) _CONST
     return 0.0;
 }
 
-void cVarHistogram::saveToFile(FILE *f) //--LG
+void cVarHistogram::saveToFile(FILE *f) _CONST //--LG
 {
     cHistogramBase::saveToFile(f);
 
