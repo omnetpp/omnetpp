@@ -557,7 +557,8 @@ print OUT "
 # rule for 'clean'
 print OUT "
 clean:
-\t-del *.obj *_n.$ccext *_n.h *_m.$ccext *_m.h \$(TARGET)\$(EXE_SUFFIX) 2>NUL
+\t-del *.obj *.idb *.pdb \$(TARGET)\$(EXE_SUFFIX) 2>NUL
+\t-del *_n.$ccext *_n.h *_m.$ccext *_m.h 2>NUL
 \t-del *.vec *.sca 2>NUL
 \t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand clean && cd ..
 ";
