@@ -109,7 +109,9 @@ command:
 ./tictoc
 
 and, hopefully you should now get the OMNeT++ simulation window similar to
-the one shown in Figure 1.
+the one shown in the following figure.
+
+<img src="tictoc.gif">
 
 8. Press the Run button on the toolbar to start the simulation. What you should
 see is that tic and toc are exchanging messages with each other.
