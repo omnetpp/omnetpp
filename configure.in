@@ -28,6 +28,7 @@ if test "$cygwin" = yes; then
 fi
 
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
+OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
 OMNETPP_TUTORIAL_DIR="$OMNETPP_ROOT/tutorial"
 # OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
@@ -112,6 +113,10 @@ AC_PROG_LEX
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
+
+# doxygen is used for generation of api doc
+AC_ARG_VAR(DOXYGEN, The doxygen documentation tool)
+AC_PATH_PROG(DOXYGEN, doxygen)
 
 # perl is needed for experimental nedc message subclassing (see feature nedc-subcl)
 AC_ARG_VAR(PERL, The Perl interpreter)
@@ -439,6 +444,7 @@ AC_SUBST(OMNETPP_LIB_DIR)
 AC_SUBST(OMNETPP_BITMAP_PATH)
 
 AC_SUBST(OMNETPP_SRC_DIR)
+AC_SUBST(OMNETPP_DOC_DIR)
 AC_SUBST(OMNETPP_SAMPLES_DIR)
 AC_SUBST(OMNETPP_TUTORIAL_DIR)
 dnl AC_SUBST(OMNETPP_MODELS_DIR)
@@ -456,6 +462,8 @@ AC_SUBST(RANLIB)
 AC_SUBST(SHLIB_LD)
 AC_SUBST(WISH)
 AC_SUBST(MAKEDEPEND)
+
+AC_SUBST(DOXYGEN)
 
 AC_SUBST(A_LIB_SUFFIX)
 AC_SUBST(SO_LIB_SUFFIX)
@@ -511,6 +519,7 @@ AC_OUTPUT(
   samples/demo/Makefile
   samples/demo/Makefile
   tutorial/queues/Makefile
+  doc/api/Makefile
 )
 
 chmod +x src/utils/opp_makemake
