@@ -1,2 +1,0 @@
-//ERROR: parse error
-blablabla
