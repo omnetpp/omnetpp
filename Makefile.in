@@ -129,6 +129,9 @@ tictoc:
 tokenring:
 	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
+sockets:
+	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
+
 #
 # Documentation
 #

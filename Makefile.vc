@@ -175,6 +175,9 @@ tokenring:
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
+sockets:
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\$@ && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
 # Documentation
