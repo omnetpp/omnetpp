@@ -1,29 +1,30 @@
 %description:
-check basic cOutVector functionality with tuple==1.
+check basic cOutVector functionality with tuple==2
 
 %activity:
+
 // create object; also test that name change before record() takes effect
-cOutVector vec("dummy");
+cOutVector vec("dummy",2);
 vec.setName("vec");
 
 // record some data
-vec.record( 35 );
+vec.record( 35, 43 );
 wait(3);
-vec.record( -24 );
+vec.record( -24, 34 );
 
 // values written in disabled state should be ignored
 vec.disable();
-vec.record( 23.21 );
+vec.record( 23.21, 86 );
 wait(1);
-vec.record( 34.47 );
-vec.record( -123 );
+vec.record( 34.47, 24 );
+vec.record( -123, 53 );
 vec.enable();
 
 // record further data
 wait(1);
-vec.record( 0 );
+vec.record( 0, 0 );
 wait(5);
-vec.record( 38 );
+vec.record( 38, -5 );
 
 // test statistics
 ev << "received: " << vec.valuesReceived() << endl;
@@ -31,11 +32,11 @@ ev << "stored: " << vec.valuesStored() << endl;
 
 
 %contains: {}.vec
-vector 0  "{}_network"  "vec"  1
-0	0	35
-0	3	-24
-0	5	0
-0	10	38
+vector 0  "{}_network"  "vec"  2
+0	0	35	43
+0	3	-24	34
+0	5	0	0
+0	10	38	-5
 
 %contains: stdout
 received: 7

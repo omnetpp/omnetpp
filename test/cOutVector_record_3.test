@@ -1,0 +1,13 @@
+%description:
+check that changing name after record() is not possible
+
+%activity:
+
+cOutVector vec("dummy");
+vec.record( 35);
+vec.setName("vec");
+
+%exitcode: 1
+
+%contains: stdout
+changing name of an output vector after record\(\) calls is not allowed.
