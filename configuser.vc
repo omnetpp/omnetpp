@@ -1,0 +1,85 @@
+#
+# This file is included by all Makefile.vc's. It contains flags and settings
+# for compiling with MSVC. You are free to edit the settings in here.
+#
+
+# Version. Should come from the 'Version' file.
+OMNETPP_VERSION=omnetpp-2.0b2
+
+#
+# directories
+#
+OMNETPP_ROOT=d:\work\omnetpp
+
+OMNETPP_SRC_DIR=$(OMNETPP_ROOT)\src
+OMNETPP_SAMPLES_DIR=$(OMNETPP_ROOT)\samples
+# OMNETPP_MODELS_DIR=$(OMNETPP_ROOT)\models
+OMNETPP_BITMAP_PATH=.;.\bitmaps;$(OMNETPP_ROOT)\bitmaps"
+
+OMNETPP_BIN_DIR=$(OMNETPP_ROOT)\bin
+OMNETPP_INCL_DIR=$(OMNETPP_SRC_DIR)/sim
+OMNETPP_LIB_DIR=$(OMNETPP_ROOT)\lib
+
+
+#
+# tools
+#
+YACC=
+LEX=
+CXX=cl.exe
+AS=cl.exe
+AR=link.exe -lib
+SHLIB_LD=...
+NEDC=nedc.exe
+
+#
+# configuration
+#
+
+# Compiler optimization switches. First one is for debug, second one for release
+CFLAGS=/nologo /MLd /W3 /GX /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /GZ
+
+# LIB_SUFFIX is either .lib or .dll
+LIB_SUFFIX=.lib
+
+HAVE_DLOPEN=0
+
+# use double backslashes here:
+OMNETPP_TKENV_DIR=d:\\work\\omnetpp\\src\\gned
+
+#
+# Here you may help 'configure' to determine which compile switches (e.g. -Ixxx)
+# and which linker switches (e.g. -Lxxx -ltk80 -ltcl80 -lX11) are needed
+# to build an app with PVM, Tcl/Tk or Turbo Vision.
+#
+# Normally these settings are autodetected by 'configure', so you only need to
+# edit here if autodetection doesn't work.
+#
+# If you set TK_CFLAGS here, remember to include -fwritable-strings (or the
+# equivalent switch for your compiler).
+#
+TK_CFLAGS=/I "d:\tcl\tcl8.2.1\generic" /I "d:\tcl\tk8.2.1\generic" /I "d:\tcl\tk8.2.1\xlib"
+TK_LIBS=
+PVM_INCL_DIR=
+PVM_LIBS=
+SYS_LIBS=
+
+TKENV_IF_POSSIBLE=tkenv
+TVENV_IF_POSSIBLE=missing-library
+SIM_PVM_IF_POSSIBLE=missing-library
+GNED_IF_POSSIBLE=gned
+
+#
+# It is possible to have the Tcl files embedded into the compiled OMNeT++
+# libraries and executables. This can be useful if you want to ship
+# self-contained standalone executables which do not rely on external
+# Tcl scripts.
+#
+# This option is available at present for Tkenv and GNED.
+#
+# empty: no embedding
+# -e: embed
+#
+TKENV_EMBED_SUFFIX=
+GNED_EMBED_SUFFIX=
+
