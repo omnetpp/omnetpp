@@ -2,8 +2,6 @@ General:
  - hotkeys for Step,Run,...
  - .tkenvrc to store options
  - reload omnetpp.ini before new run
- - Edit/Find doesn't remember prev string; no 'find next'
- - Edit/Find for module debug windows too, not only for main window
  - rearrange modules with mouse (problem: where to save positions? .tkenvrc?)
  - display strings to configure animated message objects
  - arrow drawing not always consistent with GNED (?)
