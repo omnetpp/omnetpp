@@ -45,7 +45,7 @@ $html =~ s/^(.*?)\<H1\>/<H1>/s;
 $html =~ s/\<\/BODY\>.*$//s;
 
 #
-# add horiz bar before each H1 heading 
+# add horiz bar before each H1 heading
 #
 $html =~ s/\<H1\>/<HR><H1>/g;
 
@@ -59,7 +59,7 @@ $html =~ s/\"IMG([0-9]*)\.GIF\"/\"img$1.gif\"/g;
 #
 $scrap = $html;
 $i = 0;
-while ($scrap =~ s/\<H([0-9])\>(.*?)\<\/H[0-9]\>//s) 
+while ($scrap =~ s/\<H([0-9])\>(.*?)\<\/H[0-9]\>//s)
 {
       $level[$i] = $1;
       $2 =~ m/\<A NAME\=\"(.*?)\"\>(.*)\<\/A\>/s;
@@ -70,15 +70,49 @@ while ($scrap =~ s/\<H([0-9])\>(.*?)\<\/H[0-9]\>//s)
 $n = $i;
 
 #
+# add heading numbering
+#
+
+# skip 'User Manual', 'Topics' and 'Contents'
+$headingstart=3;
+
+# do numbering
+for ($l=1; $l<10; $l++) {$hnum[$l]=0;}
+for ($i=$headingstart; $i<$n; $i++)
+{
+      # advance numbering
+      $hnum[$level[$i]]++;
+      for ($j=$level[$i]+1; $j<10; $j++) {
+         $hnum[$j] = 0;
+      }
+
+      # assemble current heading number, e.g. "1.4.2."
+      $number[$i] = '';
+      for ($j=1; $j<=$level[$i]; $j++) {
+         $number[$i] .= $hnum[$j].'.';
+      }
+}
+
+#
+# insert numbers into manual body
+#
+for ($i=0; $i<$n; $i++)
+{
+      # search replace phrases like this: <A NAME="_Toc473901724">Expressions</A>
+      $html =~ s/(\<A NAME=\"$label[$i]\">)(.*?\<\/A\>)/\1$number[$i] \2/g;
+}
+
+
+#
 # create 'topics' table
 #
 $topics = "<H1>Topics</H1>\n";
-for ($i=0; $i<$n; $i++) 
+for ($i=0; $i<$n; $i++)
 {
-      if ($level[$i]==1) 
+      if ($level[$i]==1)
       {
            # $entry = "<B><A HREF=\"#$label[$i]\">$title[$i]</A></B><BR>";
-           $entry = "<B><A HREF=\"#TOC_$i\">$title[$i]</A></B><BR>";
+           $entry = "<B><A HREF=\"#TOC_$i\">$number[$i] $title[$i]</A></B><BR>";
            $topics = "$topics$entry\n";
       }
 }
@@ -87,9 +121,9 @@ for ($i=0; $i<$n; $i++)
 # create table of contents
 #
 $toc = "<H1>Detailed Table of Contents</H1>\n";
-for ($i=0; $i<$n; $i++) 
+for ($i=0; $i<$n; $i++)
 {
-      $entry = "<A NAME=\"TOC_$i\"></A><A HREF=\"#$label[$i]\">$title[$i]</A>";
+      $entry = "<A NAME=\"TOC_$i\"></A><A HREF=\"#$label[$i]\">$number[$i] $title[$i]</A>";
       for ($j=0; $j<$level[$i]; $j++) {$entry = "&nbsp;&nbsp;$entry";}
       if ($level[$i]==1)    {$entry = "<BR><FONT SIZE=+1><B>$entry</B></FONT>";}
       elsif ($level[$i]==2) {$entry = "<B>$entry</B>";}
@@ -97,7 +131,7 @@ for ($i=0; $i<$n; $i++)
 }
 
 #
-# put together HTML page 
+# put together HTML page
 #
 $new_html = $template;
 $new_html =~ s/__BODY__/<H1><B>User Manual<\/B><\/H1>$topics<HR>$toc$html/;
