@@ -231,9 +231,9 @@ fi
 
 # "convert" from ImageMagick
 AC_ARG_VAR(PS2GIF, Program to convert Postscript images to GIF)
-AC_CHECK_PROG(PS2GIF, convert, convert, not found)
+AC_CHECK_PROG(PS2GIF, convert, convert,)
 
-if test "$PS2GIF" = "not found"; then
+if test "$PS2GIF" = ""; then
    AC_MSG_WARN(The convert program from ImageMagick is needed by opp_neddoc to convert Postscript images to GIF.)
 fi
 

@@ -3220,7 +3220,6 @@ do
 done
 done
 
-  test -z "$ac_cv_prog_PS2GIF" && ac_cv_prog_PS2GIF="not found"
 fi
 fi
 PS2GIF=$ac_cv_prog_PS2GIF
@@ -3233,7 +3232,7 @@ echo "${ECHO_T}no" >&6
 fi
 
 
-if test "$PS2GIF" = "not found"; then
+if test "$PS2GIF" = ""; then
    { echo "$as_me:$LINENO: WARNING: The convert program from ImageMagick is needed by opp_neddoc to convert Postscript images to GIF." >&5
 echo "$as_me: WARNING: The convert program from ImageMagick is needed by opp_neddoc to convert Postscript images to GIF." >&2;}
 fi
