@@ -349,16 +349,20 @@ void TCmdenvApp::simulate()
     }
     catch (cTerminationException *e)
     {
+        ev.disable_tracing = false;
         stopClock();
+
         displayMessage(e);
         delete e;
         return;
     }
     catch (cException *e)
     {
+        ev.disable_tracing = false;
         stopClock();
         throw;
     }
+    ev.disable_tracing = false;
     stopClock();
 }
 
