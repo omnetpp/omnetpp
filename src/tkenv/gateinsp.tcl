@@ -73,7 +73,7 @@ proc create_graphicalgatewindow {name} {
     iconbutton $w.toolbar.sep2 -separator
     iconbutton $w.toolbar.redraw -image $icons(redraw) -command "graphgatewin_redraw $w"
     foreach i {ascont sep1 module sep2 redraw} {
-       pack $w.toolbar.$i -anchor n -side left
+       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
 
     set help_tips($w.toolbar.ascont) {Inspect as object}
