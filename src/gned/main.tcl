@@ -73,7 +73,7 @@ proc createMainWindow {} {
     wm focusmodel . passive
     wm geometry . 640x450
 
-    wm maxsize . 1009 738
+    #wm maxsize . 1009 738
     wm minsize . 1 1
     wm overrideredirect . 0
     wm resizable . 1 1

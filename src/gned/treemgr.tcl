@@ -312,7 +312,7 @@ proc displayCodeForItem {key} {
     # create widgets
     toplevel $w -class Toplevel
     wm focusmodel $w passive
-    wm maxsize $w 1009 738
+    #wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
     wm resizable $w 1 1

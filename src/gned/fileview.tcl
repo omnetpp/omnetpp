@@ -70,7 +70,7 @@ proc createFileViewer {filename} {
     toplevel $w -class Toplevel
     wm focusmodel $w passive
     wm geometry $w 512x275
-    wm maxsize $w 1009 738
+    #wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
     wm resizable $w 1 1
@@ -108,7 +108,7 @@ proc textView {w title text} {
     toplevel $w -class Toplevel
     wm focusmodel $w passive
     wm geometry $w 512x275
-    wm maxsize $w 1009 738
+    #wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
     wm resizable $w 1 1
