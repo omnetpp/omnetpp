@@ -13,7 +13,7 @@
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=d:/home/omnetpp
+OMNETPP_ROOT=d:/home/omnetpp-work
 
 # Version. Should ideally come from the 'Version' file...
 OMNETPP_VERSION=omnetpp-2.3b1
@@ -106,10 +106,10 @@ LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /inc
 CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm180 /ML /O2 /D "NDEBUG"
 LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
 
-#CFLAGS=$(CFLAGS_DEBUG)
-#LDFLAGS=$(LDFLAGS_DEBUG)
-CFLAGS=$(CFLAGS_RELEASE)
-LDFLAGS=$(LDFLAGS_RELEASE)
+CFLAGS=$(CFLAGS_DEBUG)
+LDFLAGS=$(LDFLAGS_DEBUG)
+#CFLAGS=$(CFLAGS_RELEASE)
+#LDFLAGS=$(LDFLAGS_RELEASE)
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
@@ -152,9 +152,9 @@ GNED_IF_POSSIBLE=gned
 # This option is available at present for Tkenv, GNED and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-TKENV_EMBED_TCL=yes
-GNED_EMBED_TCL=yes
-PLOVE_EMBED_TCL=yes
+TKENV_EMBED_TCL=no
+GNED_EMBED_TCL=no
+PLOVE_EMBED_TCL=no
 
 #
 # It is possible to compile GNED and Plove as Windows GUI apps (ie. not
