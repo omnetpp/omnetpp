@@ -44,8 +44,8 @@ Register_OmnetApp("Tkenv",TOmnetTkApp,false,20,"Tkenv (Tk-based graphical user i
 
 // some functions that can/should be called from Envir in order to force the
 // linker to include the Tkenv library into the executable:
-void tkenvDummy() {}
-void envirDummy() {}
+TKENV_API void tkenvDummy() {}
+TKENV_API void envirDummy() {}
 
 
 //=========================================================================

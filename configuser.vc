@@ -44,7 +44,7 @@ CFLAGS=/nologo /MLd /Od /GZ /Zi
 LDFLAGS=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
 
 # LIB_SUFFIX is either .lib or .dll
-LIB_SUFFIX=.dll
+LIB_SUFFIX=.lib
 
 HAVE_DLOPEN=0
 

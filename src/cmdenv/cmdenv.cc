@@ -41,8 +41,8 @@ Register_OmnetApp("Cmdenv",TCmdenvApp,false,10,"Cmdenv (command-line user interf
 
 // some functions that can/should be called from Envir in order to force the
 // linker to include the Tkenv library into the executable:
-void cmdenvDummy() {}
-void envirDummy() {}
+CMDENV_API void cmdenvDummy() {}
+CMDENV_API void envirDummy() {}
 
 // a function defined in heap.cc
 bool cmdenvMemoryIsLow();

@@ -3,8 +3,8 @@
 #
 !include ..\..\configuser.vc
 
-!if "$(LIB_SUFFIX)"==".lib"
-CFLAGS=$(CFLAGS) /DSTATIC_LIBRARY
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) /DWIN32_DLL
 !endif
 
 #

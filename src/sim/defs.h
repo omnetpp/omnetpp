@@ -31,21 +31,16 @@
 #  endif
 #endif
 
-#ifdef __WIN32__
-#  if !defined(STATIC_LIBRARY) && !defined(__GNUC__)  /*Cygwin b20.1 doesn't like dllexport stuff*/
-#    define OPP_DLLIMPORT  __declspec(dllimport)
-#    define OPP_DLLEXPORT  __declspec(dllexport)
-#  else
-#    define OPP_DLLIMPORT
-#    define OPP_DLLEXPORT
-#  endif
+// OPP_DLLIMPORT/EXPORT are empty if not needed
+#if defined(__WIN32__) && defined(WIN32_DLL)
+#  define OPP_DLLIMPORT  __declspec(dllimport)
+#  define OPP_DLLEXPORT  __declspec(dllexport)
 #else
 #  define OPP_DLLIMPORT
 #  define OPP_DLLEXPORT
 #endif
 
-
-// OPP_DLLIMPORT/EXPORT are empty if non-Windows, non-dll, etc.
+// SIM_API, ENVIR_API etc are also empty if not needed
 #ifdef BUILDING_SIM
 #  define SIM_API  OPP_DLLEXPORT
 #else

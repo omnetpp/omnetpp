@@ -261,6 +261,9 @@ if test "$build_shared_libs" = if-not-cygwin; then
 fi
 if test "$build_shared_libs" = yes; then
     LIB_SUFFIX='$(SO_LIB_SUFFIX)'
+    if test "$cygwin" = yes; then
+        CFLAGS="$CFLAGS -DWIN32_DLL"
+    fi
 else
     LIB_SUFFIX='$(A_LIB_SUFFIX)'
 fi

@@ -43,16 +43,19 @@ static char buffer[1024];
 
 
 //=== The DUMMY SECTION -- a tribute to smart linkers
-
 // force the linker to include the user interface library into the executable.
 // dummyDummy() can't be static or very smart linkers will leave it out...
+#ifndef WIN32_DLL
 void envirDummy();
 void dummyDummy() {envirDummy();}
+#endif
 
 // another dummy variant in case you want to have both Cmdenv and Tkenv in
-//void cmdenvDummy();
-//void tkenvDummy();
+//#ifndef WIN32_DLL
+//OPP_DLLIMPORT void cmdenvDummy();
+//OPP_DLLIMPORT void tkenvDummy();
 //void dummyDummy() {cmdenvDummy();tkenvDummy();}
+//#endif
 
 // A dummy function to force UNIX linkers collect TSlaveApp's constructor
 // as a linker symbol. Otherwise we get "undefined symbol" for it.

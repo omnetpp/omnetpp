@@ -21,7 +21,7 @@
 
 #include "defs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
 
-// OPP_DLLIMPORT/EXPORT are empty if non-Windows, non-dll, etc.
+// OPP_DLLIMPORT/EXPORT are empty if not needed
 #ifdef BUILDING_CMDENV
 #  define CMDENV_API  OPP_DLLEXPORT
 #else
