@@ -17,6 +17,8 @@ class Server : public cSimpleModule
     cMessage *endRxEvent;
     double txRate;
 
+    long currentCollisionNumFrames;
+
     long totalFrames;
     long collidedFrames;
 
@@ -24,17 +26,96 @@ class Server : public cSimpleModule
     Module_Class_Members(Server,cSimpleModule,0);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
-
-    // called from Hosts:
-    virtual bool isChannelBusy();
 };
+
+//FIXME add channel statistics and verify it!!!!
+
+Define_Module(Server);
+
+void Server::initialize()
+{
+    txRate = par("txRate");
+    endRxEvent = new cMessage("end-reception");
+    channelBusy = false;
+
+    currentCollisionNumFrames = 0;
+    totalFrames = 0;
+    collidedFrames = 0;
+    WATCH(currentCollisionNumFrames);
+    WATCH(totalFrames);
+    WATCH(collidedFrames);
+
+    if (ev.isGUI()) displayString().setTagArg("i2",0,"x_off");
+}
+
+void Server::handleMessage(cMessage *msg)
+{
+    if (msg==endRxEvent)
+    {
+        ev << "reception finished\n";
+        channelBusy = false;
+        currentCollisionNumFrames = 0;
+        if (ev.isGUI())
+        {
+            displayString().setTagArg("i2",0,"x_off");
+            displayString().setTagArg("t",0,"");
+        }
+    }
+    else
+    {
+        totalFrames++;
+        double endReception = simTime() + msg->length() / txRate;
+        if (!channelBusy)
+        {
+            ev << "started receiving\n";
+            channelBusy = true;
+            scheduleAt(endReception, endRxEvent);
+            if (ev.isGUI())
+            {
+                displayString().setTagArg("i2",0,"x_yellow");
+                displayString().setTagArg("t",0,"RECEIVING");
+                displayString().setTagArg("t",2,"#808000");
+            }
+        }
+        else
+        {
+            ev << "another frame arrived while receiving -- collision!\n";
+
+            collidedFrames++;
+            if (currentCollisionNumFrames==0)
+                currentCollisionNumFrames = 2;
+            else
+                currentCollisionNumFrames++;
+
+            if (endReception > endRxEvent->arrivalTime())
+            {
+                cancelEvent(endRxEvent);
+                scheduleAt(endReception, endRxEvent);
+            }
+
+            if (ev.isGUI())
+            {
+                displayString().setTagArg("i2",0,"x_red");
+                displayString().setTagArg("t",0,"COLLISION");
+                displayString().setTagArg("t",2,"#800000");
+                char buf[32];
+                sprintf(buf, "Collision! (%d frames)", currentCollisionNumFrames);
+                bubble(buf);
+            }
+        }
+        channelBusy = true;
+        delete msg;
+    }
+}
+
+//--------------------
 
 class Host : public cSimpleModule
 {
   protected:
-    Server *server;
+    cModule *server;
     cMessage *endTxEvent;
-    enum {IDLE=0, DEFER=1, TRANSMIT=2} state;
+    enum {IDLE=0, TRANSMIT=2} state;
     int pkCounter;
     double radioDelay;
     double txRate;
@@ -47,70 +128,13 @@ class Host : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-//--------------------
-
-//FIXME add channel statistics and verify it!!!!
-
-Define_Module(Server);
-
-void Server::initialize()
-{
-    txRate = par("txRate");
-    endRxEvent = new cMessage("end-reception");
-    channelBusy = false;
-
-    totalFrames = 0;
-    collidedFrames = 0;
-    WATCH(totalFrames);
-    WATCH(collidedFrames);
-}
-
-void Server::handleMessage(cMessage *msg)
-{
-    if (msg==endRxEvent)
-    {
-        channelBusy = false;
-        if (ev.isGUI()) displayString().setTagArg("i",1,"");
-    }
-    else
-    {
-        totalFrames++;
-        double endReception = simTime() + msg->length() / txRate;
-        if (!channelBusy)
-        {
-            channelBusy = true;
-            scheduleAt(endReception, endRxEvent);
-            if (ev.isGUI()) displayString().setTagArg("i",1,"green");
-        }
-        else
-        {
-            collidedFrames++;
-            if (endReception > endRxEvent->arrivalTime())
-            {
-                cancelEvent(endRxEvent);
-                scheduleAt(endReception, endRxEvent);
-            }
-            if (ev.isGUI()) displayString().setTagArg("i",1,"red");
-            if (ev.isGUI()) bubble("Collision");
-        }
-        channelBusy = true;
-        delete msg;
-    }
-}
-
-bool Server::isChannelBusy()
-{
-    Enter_Method("isChannelBusy()?");
-    return channelBusy;
-}
-
-//--------------------
-
 Define_Module(Host);
 
 void Host::initialize()
 {
-    server = check_and_cast<Server *>(simulation.moduleByPath("server"));
+    server = simulation.moduleByPath("server");
+    if (!server) error("server not found");
+
     endTxEvent = new cMessage("endTxEvent");
     state = IDLE;
     pkCounter = 0;
@@ -119,8 +143,11 @@ void Host::initialize()
     iaTime = &par("iaTime");
     pkLenBits = &par("pkLenBits");
 
-    if (ev.isGUI()) displayString().setTagArg("i",2,"100");
-
+    if (ev.isGUI())
+    {
+        displayString().setTagArg("i",2,"100");
+        displayString().setTagArg("t",2,"#808000");
+    }
     scheduleAt(iaTime->doubleValue(), endTxEvent);
 }
 
@@ -128,44 +155,27 @@ void Host::handleMessage(cMessage *msg)
 {
     ASSERT(msg==endTxEvent);
 
-    if (state==IDLE || state==DEFER)
+    if (state==IDLE)
     {
-        if (server->isChannelBusy())
+        // generate packet and schedule timer when it ends
+        char pkname[40];
+        sprintf(pkname,"pk-%d-#%d", id(), pkCounter++);
+        ev << "generating packet " << pkname << endl;
+
+        state = TRANSMIT;
+
+        if (ev.isGUI())
         {
-            // defer sending
-            state = DEFER;
-            scheduleAt(simTime()+iaTime->doubleValue(), endTxEvent);
-
-            if (ev.isGUI())
-            {
-                displayString().setTagArg("t",0,"DEFER");
-                displayString().setTagArg("t",2,"#808000");
-                displayString().setTagArg("i",1,"orange");
-            }
+            displayString().setTagArg("i",1,"yellow");
+            displayString().setTagArg("t",0,"TRANSMIT");
         }
-        else
-        {
-            // generate packet and schedule timer when it ends
-            char pkname[40];
-            sprintf(pkname,"pk-%d-#%d", id(), pkCounter++);
-            ev << "generating packet " << pkname << endl;
 
-            state = TRANSMIT;
+        cMessage *pk = new cMessage(pkname);
+        pk->setLength(pkLenBits->longValue());
+        double txtime = pk->length() / txRate;
+        sendDirect(pk, radioDelay, server->gate("in"));
 
-            if (ev.isGUI())
-            {
-                displayString().setTagArg("i",1,"red");
-                displayString().setTagArg("t",2,"#800000");
-                displayString().setTagArg("t",0,"TRANSMIT");
-            }
-
-            cMessage *pk = new cMessage(pkname);
-            pk->setLength(pkLenBits->longValue());
-            double txtime = pk->length() / txRate;
-            sendDirect(pk, radioDelay, server->gate("in"));
-
-            scheduleAt(simTime()+txtime, endTxEvent);
-        }
+        scheduleAt(simTime()+txtime, endTxEvent);
     }
     else if (state==TRANSMIT)
     {
