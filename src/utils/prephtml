@@ -6,7 +6,7 @@
 
 $fname = $ARGV[0];
 $quiet = 0;
-$singlePage = 0;
+$singlePage = 1;
 $ext = "htm";
 $opp_version = "2.0";
 
@@ -106,7 +106,7 @@ for ($i=0; $i<$nheadings; $i++)
 for ($i=0; $i<$nheadings; $i++)
 {
       # search replace phrases like this: <A NAME="_Toc473901724">Expressions</A>
-      $html =~ s/(\<A NAME=\"$label[$i]\">)(.*?\<\/A\>)/\1$number[$i] \2/g;
+      $html =~ s/(\<A NAME=\"$label[$i]\">)(.*?\<\/A\>)/\1$number[$i] \2/sg;
 }
 
 #
