@@ -29,7 +29,7 @@ TKENV_EMBED_SUFFIX=@TKENV_EMBED_SUFFIX@
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I../envir $(TK_CFLAGS) -DBUILDING_TKENV
 
-OMNETPP_TKENV_DIR=`@MYPWD@`
+OMNETPP_TKENV_DIR=@OMNETPP_TKENV_DIR@
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o objinsp.o modinsp.o statinsp.o inspect.o arrow.o
 

@@ -209,3 +209,5 @@ July 17, 2000
  - accepts NED files on the command line
 July 26, 2000
  - minor fixes on Edit|Find
+Aug 7, 2000
+ - makefile changes for RPM support

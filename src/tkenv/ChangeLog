@@ -380,4 +380,6 @@ July 26, 2000
  - fixed a bug which caused Tcl error when using ev<< or ev.printf() with
    a string than contained curly braces [reported by Nick van Foreest]
  - added Edit|Find... to main menu.
+Aug 7, 2000
+ - makefile changes for RPM support
 
