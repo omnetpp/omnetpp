@@ -1,10 +1,14 @@
 Bugs:
-- module name mismatch in the submods and conns sections ==> "assert failed"
+- module name mismatch in the submods and conns sections ==> sometimes "assert failed"
 - resize-bar: right-click while resizing leaves the bar on screen
+- resizing the parent module is difficult: you must hit the _inner_
+  (invisible) border
+- connection drawing doesn't work sometimes (reproduce!)
 
 Parse/Generate:
 - sometimes generates empty lines into the code
 - comments around display strings, channel attributes are lost
+- add default comments for newly created modules!
 - display string parsing -- rewrite!!!
 - comments -- choose different approach? (do not cut of "// ")
 - error recovery in the grammar: TBD
@@ -16,6 +20,11 @@ Data struct change:
 Drawing:
 - random placement of submods should avoid overlaps if possible
 - should support ovals too (not only rects)
+- it's possible to fool the connection drawing: if, while dragging out
+  a connection, you click the righ mouse button and release both mouse buttons
+  over the menu that popped up, the half-cooked connection arrow will stay
+  on the canvas
+- Tkenv uses 2-pixel-wide arrows by default, GNED uses 1 pixel. Modify Tkenv?
 
 Load/save:
 - refuse to load the same file twice
@@ -28,7 +37,7 @@ Load/save:
 - load: if there's a parse error, load the whole stuff into a "scratch" text-mode canvas?
 
 Text editor:
-- find/replace
+- add find/replace dialog
 - pgup, ctrl-pgup doesn't work correctly
 - make status line: line number etc.
 
@@ -40,7 +49,6 @@ General:
   for both text and graphics
 - ctrl-mousemove should copy the items on canvas
 - different vertical toolbar when changing from graphics to NED view
-- add default comments for newly created modules?
 
 Dialogs:
 - TBD
