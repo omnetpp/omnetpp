@@ -48,7 +48,7 @@ class SIM_API cMersenneTwister : public cRNG
     /**
      * Sets up the RNG.
      */
-    virtual void initialize(int runnumber, int id, cConfiguration *cfg);
+    virtual void initialize(int runNumber, int id, int numRngs, cConfiguration *cfg);
 
     /** Random integer in the range [0,intRandMax()] */
     virtual unsigned long intRand();
@@ -72,9 +72,20 @@ class SIM_API cMersenneTwister : public cRNG
 Register_Class(cMersenneTwister);
 
 
-void cMersenneTwister::initialize(int runnumber, int id, cConfiguration *cfg)
+void cMersenneTwister::initialize(int runNumber, int id, int numRngs, cConfiguration *cfg)
 {
-    unsigned int seed = 0; //FIXME
+    char section[16], entry[32];
+    sprintf(section, "Run %d", runNumber);
+    sprintf(entry, "seed-%d-mt", id);
+
+    unsigned long seed = cfg->getAsInt2(section, "General", entry);
+    if (cfg->notFound())
+    {
+        // use the following number as seed, and hope that all seed values
+        // are well apart in the 2^19937-long sequence (it should hold if
+        // someone did the work of testing the initialization routine).
+        seed = runNumber*numRngs + id;
+    }
     rng.seed(seed);
 }
 

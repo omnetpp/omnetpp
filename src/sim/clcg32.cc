@@ -41,7 +41,13 @@ class SIM_API cLCG32 : public cRNG
 {
   protected:
     long seed;
+
+    // 256 pre-generated seeds, spaced 8,388,608 values in the sequence.
+    // This covers the whole RNG period. Enough for 128 runs with 2 RNGs
+    // each, or 64 runs with 4 RNGs each -- assuming one run never uses
+    // more than 8 million random numbers per RNG.
     static long autoSeeds[256];
+
   public:
     cLCG32() {}
     virtual ~cLCG32() {}
@@ -49,7 +55,7 @@ class SIM_API cLCG32 : public cRNG
     /**
      * Sets up the RNG.
      */
-    virtual void initialize(int runnumber, int id, cConfiguration *cfg);
+    virtual void initialize(int runNumber, int id, int numRngs, cConfiguration *cfg);
 
     /** Random integer in the range [0,intRandMax()] */
     virtual unsigned long intRand();
@@ -72,12 +78,25 @@ class SIM_API cLCG32 : public cRNG
 
 Register_Class(cLCG32);
 
-void cLCG32::initialize(int runnumber, int id, cConfiguration *cfg)
+void cLCG32::initialize(int runNumber, int id, int numRngs, cConfiguration *cfg)
 {
     char section[16], entry[32];
-    sprintf(section, "Run %d", runnumber);
+    sprintf(section, "Run %d", runNumber);
     sprintf(entry, "seed-%d-lcg32", id);
-    seed = cfg->getAsInt2(section, "General", entry, 0);
+
+    seed = cfg->getAsInt2(section, "General", entry);
+    if (seed==0)
+        throw new cException("cLCG32: zero is not allowed as seed in %s config file entry", entry);
+    if (cfg->notFound())
+    {
+        int autoSeedIndex = runNumber*numRngs + id;
+        if (autoSeedIndex>=256)
+            ev << "Warning: LCG32: out of the 256 auto seed values, wrapping around "
+                  "-- decrease num-rngs=" << numRngs << " value or run numbers, "
+                  "or use a different RNG class like Mersenne Twister\n";
+        autoSeedIndex = autoSeedIndex % 256;
+        seed = autoSeeds[autoSeedIndex];
+    }
 }
 
 unsigned long cLCG32::intRand()
