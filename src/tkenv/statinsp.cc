@@ -76,7 +76,7 @@ void TStatisticInspector::update()
 
    cStatistic *stat = (cStatistic *)object;
 
-   setLabel(".main.count.e", stat->samples() );
+   setLabel(".main.count.e", (double) stat->samples() );
    setLabel(".main.mean.e", stat->mean() );
    setLabel(".main.stddev.e", stat->stddev() );
    setLabel(".main.min.e", stat->min() );

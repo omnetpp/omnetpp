@@ -31,6 +31,7 @@
 #include "macros.h"
 #include "cdetect.h"  //NL
 #include "cexception.h"
+#include "cenvir.h"
 
 //=========================================================================
 //=== Registration
@@ -126,7 +127,7 @@ cStdDev::cStdDev(const char *s) : cStatistic(s)
 void cStdDev::info(char *buf)
 {
     cStatistic::info( buf );
-    sprintf( buf+strlen(buf), " (n=%ld)", num_samples);
+    sprintf(buf+strlen(buf), " (n=%ul)", num_samples);
 }
 
 cStdDev& cStdDev::operator=(const cStdDev& res)
@@ -146,7 +147,11 @@ cStdDev& cStdDev::operator=(const cStdDev& res)
 // collect one value
 void cStdDev::collect(double val)
 {
-    num_samples++;
+    if (++num_samples == 0)
+    {
+        // FIXME: num_samples overflow: issue warning and must stop collecting!
+        ev.printf("\a\nWARNING: (%s)%s: observation count overflow!\n\n",className(),fullPath());
+    }
     sum_samples+=val;
     sqrsum_samples+=val*val;
 
@@ -207,7 +212,7 @@ void cStdDev::clearResult()
 
 double cStdDev::random() const
 {
-    switch( num_samples )
+    switch (num_samples)
     {
         case 0:  return 0.0;
         case 1:  return min_samples;
@@ -218,7 +223,7 @@ double cStdDev::random() const
 void cStdDev::saveToFile(FILE *f) const
 {
     fprintf(f,"\n#\n# (%s) %s\n#\n", className(), fullPath());
-    fprintf(f,"%ld\t #= num_samples\n",num_samples);
+    fprintf(f,"%ul\t #= num_samples\n",num_samples);
     fprintf(f,"%g %g\t #= min, max\n", min_samples, max_samples);
     fprintf(f,"%g\t #= sum\n", sum_samples);
     fprintf(f,"%g\t #= square sum\n", sqrsum_samples );
@@ -227,7 +232,7 @@ void cStdDev::saveToFile(FILE *f) const
 void cStdDev::loadFromFile(FILE *f)
 {
     freadvarsf(f,"");  freadvarsf(f,""); freadvarsf(f,""); freadvarsf(f,"");
-    freadvarsf(f,"%ld\t #= num_samples",&num_samples);
+    freadvarsf(f,"%ul\t #= num_samples",&num_samples);
     freadvarsf(f,"%g %g\t #= min, max", &min_samples, &max_samples);
     freadvarsf(f,"%g\t #= sum", &sum_samples);
     freadvarsf(f,"%g\t #= square sum", &sqrsum_samples);

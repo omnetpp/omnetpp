@@ -1,3 +1,12 @@
+2003-02-15  Andras Varga
+
+	* cstat.cc, chist.cc,..: observation count and histogram cell value 
+	made unsigned long. TBD: when observation count would overflow,
+	issue a warning and stop collecting. This is not done yet. 
+	Also TBD: check for integer overflows in cKSplit and cPSquare.
+
+	* chist.h: fix: clearResult() now doesn't reset num_cells.
+
 2003-02-14  Andras Varga
 
 	* cpar.cc: getAsText(): better handling of long string values
