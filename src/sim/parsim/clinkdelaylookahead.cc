@@ -58,7 +58,7 @@ void cLinkDelayLookahead::startRun()
     // temporarily initialize everything to zero.
     int i;
     for (i=0; i<numSeg; i++)
-        segInfo[i].minDelay = 0;
+        segInfo[i].minDelay = -1;
 
     // fill in minDelays
     ev << "  calculating minimum link delays..." << endl;
@@ -77,20 +77,26 @@ void cLinkDelayLookahead::startRun()
                 {
                     // check we have a delay on this link (it gives us lookahead)
                     cGate *fromg  = pg->fromGate();
-                    cChannel *chan = fromg ? fromg->channel() : NULL;
+                    cChannel *chan = fromg->channel();
                     cSimpleChannel *simplechan = dynamic_cast<cSimpleChannel *>(chan);
-                    double linkDelay = simplechan->delay();
+                    double linkDelay = simplechan ? simplechan->delay() : 0.0;
                     if (linkDelay<=0.0)
                         throw new cException("cLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->fullPath());
 
                     // store
                     int procId = pg->getRemoteProcId();
-                    if (segInfo[procId].minDelay==0 || segInfo[procId].minDelay<linkDelay)
+                    if (segInfo[procId].minDelay==-1 || segInfo[procId].minDelay<linkDelay)
                         segInfo[procId].minDelay = linkDelay;
                 }
             }
         }
     }
+
+    // FIXME what to do if 2 procIds are not connected (minDelay=-1)?
+    // set mindelay to INFINITY?
+    //for (i=0; i<numSeg; i++)
+    //    if (i!=myProcId && segInfo[procId].minDelay==-1)
+    //        ev << "    not connected\n";//????????????
 
     for (i=0; i<numSeg; i++)
         if (i!=myProcId)
