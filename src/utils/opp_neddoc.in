@@ -1,0 +1,7 @@
+#! /bin/sh
+NEDDOC_XSL=@OMNETPP_UTILS_DIR@/neddoc.xsl
+
+nedtool -x -e -y -m -o /tmp/xxx $*
+xsltproc $NEDDOC_XSL /tmp/xxx
+rm -f /tmp/xxx
+
