@@ -1,3 +1,10 @@
+2002-06-10  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* Makefile.in (all): copy opp_neddoc to bin dir.
+
+	* opp_neddoc.in (NEDDOC_XSL): use OMNETPP_UTILS_DIR as path to
+	neddoc.xsl
+
 2002-07-07  Andras Varga
 
 	* added NED documentation tool (neddoc.xsl, opp_neddoc, 
