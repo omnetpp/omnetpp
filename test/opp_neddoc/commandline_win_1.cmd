@@ -14,48 +14,55 @@ mkdir work
 :#
 :# directory, with relative and absolute paths, fwd and backslashes
 :#
-%opp_neddoc% -o %work%/cl1_dir_1 .
-%opp_neddoc% -o %work%/cl1_dir_2 %dir1%
-%opp_neddoc% -o %work%/cl1_dir_3 %dir2%
+%opp_neddoc% -o %work%/cl1_dir_1 cl_files
+%opp_neddoc% -o %work%/cl1_dir_2 %dir1%\cl_files
+%opp_neddoc% -o %work%/cl1_dir_3 %dir2%/cl_files
 
 :#
 :# files, with relative and absolute paths, fwd and backslashes
 :#
-%opp_neddoc% -o %work%/cl1_files_1 formatting_1.ned
-%opp_neddoc% -o %work%/cl1_files_2 formatting_1.ned syntaxhighlight_1.ned
-%opp_neddoc% -o %work%/cl1_files_3 ./formatting_1.ned ./syntaxhighlight_1.ned
-%opp_neddoc% -o %work%/cl1_files_4 .\formatting_1.ned .\syntaxhighlight_1.ned
-%opp_neddoc% -o %work%/cl1_files_5 %dir1%\formatting_1.ned %dir1%\syntaxhighlight_1.ned
-%opp_neddoc% -o %work%/cl1_files_6 %dir2%/formatting_1.ned %dir2%/syntaxhighlight_1.ned
+%opp_neddoc% -o %work%/cl1_files_1 cl_files\one.ned
+%opp_neddoc% -o %work%/cl1_files_2 cl_files/one.ned
+%opp_neddoc% -o %work%/cl1_files_3 cl_files\one.ned cl_files\two.ned
+%opp_neddoc% -o %work%/cl1_files_4 cl_files/one.ned cl_files/two.ned
+%opp_neddoc% -o %work%/cl1_files_5 %dir1%\cl_files\one.ned %dir1%\cl_files\two.ned
+%opp_neddoc% -o %work%/cl1_files_6 %dir2%/cl_files/one.ned %dir2%/cl_files/two.ned
 
 :#
-:# wildcards. NOTE: directory+wildcard (e.g. dir/*.ned) is not supported!!
+:# wildcards. NOTE that wildcards don't work recursively (ie. you cannot say
+:# "all .mymsg files from all subdirs")
 :#
-%opp_neddoc% -o %work%/cl1_wildcard_1 *.ned
-%opp_neddoc% -o %work%/cl1_wildcard_2 *.msg
+%opp_neddoc% -o %work%/cl1_wildcard_1 cl_files\*.msg
+%opp_neddoc% -o %work%/cl1_wildcard_2 cl_files/*.msg
 
 :#
-:# nonexistent directory
+:# nonexistent directory: error
 :#
 %opp_neddoc% -o %work%/cl1_nonexdir_1 c:\no\such\directory
 %opp_neddoc% -o %work%/cl1_nonexdir_2 c:\no/such/directory
 
 :#
-:# nonexistent file
+:# nonexistent file: error
 :#
 %opp_neddoc% -o %work%/cl1_nonexfile_1 no-such-file.ned
-%opp_neddoc% -o %work%/cl1_nonexfile_2 .\no-such-file.ned
-%opp_neddoc% -o %work%/cl1_nonexfile_3 ./no-such-file.ned
-%opp_neddoc% -o %work%/cl1_nonexfile_2 %dir1%\no-such-file.ned
-%opp_neddoc% -o %work%/cl1_nonexfile_3 %dir2%/no-such-file.ned
+%opp_neddoc% -o %work%/cl1_nonexfile_2 cl_files\no-such-file.ned
+%opp_neddoc% -o %work%/cl1_nonexfile_3 cl_files/no-such-file.ned
+%opp_neddoc% -o %work%/cl1_nonexfile_4 %dir1%\cl_files\no-such-file.ned
+%opp_neddoc% -o %work%/cl1_nonexfile_5 %dir2%/cl_files/no-such-file.ned
+
+:#
+:# pattern that doesn't match anything: warning
+:#
+%opp_neddoc% -o %work%/cl1_nonpatt_1 cl_files\*.bla
+%opp_neddoc% -o %work%/cl1_nonpatt_2 cl_files/*.bla
 
 :#
 :# duplicate files
 :#
-%opp_neddoc% -o %work%/cl1_dupl_1 formatting_1.ned formatting_1.ned formatting_1.ned
+%opp_neddoc% -o %work%/cl1_dupl_1 cl_files/one.ned cl_files/one.ned
 
 :#
-:# upper-case file names
+:# wrong file name case
 :#
 %opp_neddoc% -o %work%/cl1_case_1 FormatTing_1.Ned SyntaxHIGHlight_1.NED
 

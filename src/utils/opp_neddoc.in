@@ -57,6 +57,11 @@ if ($DOT ne "")
     $have_dot = 1;
 }
 
+if (@ARGV==())
+{
+       $do_help = 1;
+}
+
 # process arg vector
 while (@ARGV)
 {
@@ -149,8 +154,16 @@ if ($do_help)
     print " -s, --silent suppress informational messages\n";
     print " -g, --debug  print invocations of external programs and other info\n";
     print " -h, --help   displays this help text\n";
-    print "Files specified as arguments are parsed and documented. If directories\n";
-    print "are specified, all *.ned and *.msg files in them are documented.\n";
+    print "\n";
+    print "Files specified as arguments are parsed and documented. For directories as\n";
+    print "arguments, all .ned and .msg files under them (in that directory subtree) are\n";
+    print "documented. Wildcards are accepted and they are NOT recursive, e.g.\n";
+    print "foo/*.ned does NOT process files in foo/bar/ or any other subdirectory.\n";
+    print "\n";
+    print "Bugs:  (1) handles only files with .ned and .msg extensions, other files ";
+    print "are \nsilently ignored; (2) does not filter out duplicate files (they will show up ";
+    print "\nmultiple times in the documentation); (3) on Windows, file names are handled ";
+    print "\ncase sensitively.\n";
     print "\n";
     exit(0);
 }
@@ -197,7 +210,12 @@ else
     while (@ARGV)
     {
         $arg = tobackslash(shift @ARGV);
-        if (-d $arg)
+        if ($arg =~ /^@(.*)/)
+        {
+            $f = $1;
+            error("list files not yet supported");
+        }
+        elsif (-d $arg)
         {
             collect_files($arg, "$outdir/filelist.txt")==0 || error("error creating the file list");
         }
@@ -261,13 +279,13 @@ if ($screenshots)
            print "#" if (!$debug && $verbose);
            $jpg = $i;
            $jpg =~ s/eps$/jpg/;
-           runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >>$outdir/gs.err")==0 || error("error invoking Ghostscript");
+           runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >>$outdir/ghostscript.err")==0 || error("error invoking Ghostscript");
         }
         print "\n" if (!$debug && $verbose);
 
-        if (-s "$outdir/gs.err")
+        if (-s "$outdir/ghostscript.err")
         {
-           print "see Ghostscript warnings in $outdir/gs.err\n" if $verbose;
+           print "see Ghostscript warnings in $outdir/ghostscript.err\n" if $verbose;
         }
 
         # hack: must convert $outdir to absolute path, otherwise xslt will take it
