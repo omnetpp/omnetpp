@@ -32,13 +32,10 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir statinsp.tcl]
    source [file join $dir menuproc.tcl]
    source [file join $dir main.tcl]
-
-   # this is a temporary solution: hardcoded plugin directory
-   set OMNETPP_PLUGIN_PATH "$OMNETPP_TKENV_DIR/plugins"
-
-} else {
-   set OMNETPP_PLUGIN_PATH "./plugins"
 }
+
+# hardcoded plugin path for now
+set OMNETPP_PLUGIN_PATH "./plugins"
 
 #
 # Execute startup code

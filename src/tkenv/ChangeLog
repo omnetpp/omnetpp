@@ -1,3 +1,11 @@
+2001-09-11  Andras Varga
+
+	* improved plugin handling: reads plugins from OMNETPP_PLUGIN_PATH
+        which can be a list of directories (not just a single directory name).
+        OMNETPP_PLUGIN_PATH is currently set to ./plugins (hardcoded).
+        DLL file names that are looked for now correctly depend on the
+        platform (*.dll on windows, .so* on *nix).
+
 2001-09-01 Andras Varga
 
 	* CONST_CAST() replaced by const_cast<>()

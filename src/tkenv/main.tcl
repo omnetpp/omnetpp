@@ -374,7 +374,10 @@ proc load_bitmaps {path} {
                      [glob -nocomplain -- [file join $dir {*.xpm}]] \
                      [glob -nocomplain -- [file join $dir {*.xbm}]]]
    }
-   if {[llength $files] == 0} {puts "none found!"; return}
+   if {[llength $files] == 0} {
+       puts "*** no bitmaps (gif,xpm,xbm) in $path"
+       return
+   }
 
    foreach f $files {
 
@@ -401,6 +404,7 @@ proc load_bitmaps {path} {
       }
    }
    puts ""
+   puts ""
 }
 
 
@@ -409,43 +413,62 @@ proc load_bitmaps {path} {
 #===================================================================
 
 proc load_plugins {path} {
-   puts ""
-   puts "Loading plugins:"
+   global tcl_platform
 
-   # load tcl files
-   set files [lsort [glob -nocomplain -- [file join $path {*.tcl}]]]
-   if {[llength $files] == 0} {
-      puts "no .tcl file in $path"
+   puts "Loading plugins from $path:"
+
+   # On Windows, we use ";" to separate directories in $path. Using ":" (the
+   # Unix separator) would cause trouble with dirs containing drive letter
+   # (like "c:\bitmaps"). Using a space is also not an option (think of
+   # "C:\Program Files\...").
+
+   if {$tcl_platform(platform) == "unix"} {
+       set dllpattern "*.so*"
+       set sep {:;}
    } else {
+       set dllpattern "*.dll"
+       set sep {;}
+   }
+
+   set tclfiles 0
+   set dllfiles 0
+   foreach dir [split $path $sep] {
+
+      # load tcl files
+      set files [lsort [glob -nocomplain -- [file join $dir {*.tcl}]]]
+      incr tclfiles [llength $files]
       foreach file $files {
          if [catch {source $file} errmsg] {
              puts ""
-             puts "error in sourcing $file: $errmsg"
+             puts "*** error sourcing $file: $errmsg"
          } else {
-             set name [string tolower [file tail [file rootname $file]]]
+             set name [string tolower [file tail $file]]
              puts -nonewline "$name "
          }
       }
-      puts ""
-   }
 
-   # load dynamic libraries
-   set files [lsort [glob -nocomplain -- [file join $path {*.so*}]]]
-   if {[llength $files] == 0} {
-      puts "no .so file in $path"
-   } else {
+      # load dynamic libraries
+      set files [lsort [glob -nocomplain -- [file join $dir $dllpattern]]]
+      incr dllfiles [llength $files]
       foreach file $files {
          if [catch {opp_loadlib $file} errmsg] {
              puts ""
-             puts "error in loading shared library $file: $errmsg"
+             puts "*** error loading shared library $file: $errmsg"
          } else {
-             set name [string tolower [file tail [file rootname $file]]]
+             set name [string tolower [file tail $file]]
              puts -nonewline "$name "
          }
       }
-      puts ""
    }
-
+   if {$tclfiles==0} {
+      puts ""
+      puts "*** no *.tcl file in $path"
+   }
+   if {$dllfiles==0} {
+      puts ""
+      puts "*** no $dllpattern file in $path"
+   }
+   puts ""
 }
 
 #===================================================================
