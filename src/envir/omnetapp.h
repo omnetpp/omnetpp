@@ -105,6 +105,10 @@ class ENVIR_API TOmnetApp
     struct timeb elapsedtime; // time spent simulating
     simtime_t simulatedtime;  // sim. time after finishing simulation
 
+  protected:
+    // internal
+    const char *getRunSectionName(int runnumber);
+
   public:
     /**
      * Constructor takes command-line args and ini file instance.

@@ -24,20 +24,6 @@
 #include <assert.h>
 #include <fstream>
 
-#ifdef __APPLE__
-#include <sys/time.h>
-static int ftime(struct timeb *tp)
-{
-    struct timeval tv;
-
-    gettimeofday(&tv, NULL);
-    tp->time = tv.tv_sec;
-    tp->millitm = tv.tv_usec / 1000;
-    tp->timezone = 0;
-    tp->dstflag = 0;
-}
-#endif
-
 #include "args.h"
 #include "omnetapp.h"
 #include "patmatch.h"
@@ -74,6 +60,20 @@ static int ftime(struct timeb *tp)
 
 #endif
 
+
+#ifdef __APPLE__
+#include <sys/time.h>
+static int ftime(struct timeb *tp)
+{
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+    tp->time = tv.tv_sec;
+    tp->millitm = tv.tv_usec / 1000;
+    tp->timezone = 0;
+    tp->dstflag = 0;
+}
+#endif
 
 using std::ostream;
 
@@ -217,6 +217,19 @@ void TOmnetApp::setup()
      initialized = true;
 }
 
+const char *TOmnetApp::getRunSectionName(int runnumber)
+{
+    static int lastrunnumber = -1;
+    static char section[16];
+
+    if (runnumber!=lastrunnumber)
+    {
+        sprintf(section, "Run %d", runnumber);
+        lastrunnumber = runnumber;
+    }
+    return section;
+}
+
 int TOmnetApp::getParsimProcId()
 {
 #ifdef WITH_PARSIM
@@ -292,19 +305,14 @@ void TOmnetApp::endRun()
 
 const char *TOmnetApp::getParameter(int run_no, const char *parname)
 {
-    char section[16];
-    sprintf(section,"Run %d",run_no);
-
-    return getConfig()->getAsCustom2(section,"Parameters",parname,NULL);
+    return getConfig()->getAsCustom2(getRunSectionName(run_no),"Parameters",parname,NULL);
 }
 
 bool TOmnetApp::getParameterUseDefault(int run_no, const char *parname)
 {
-    char section[16];
-    sprintf(section,"Run %d",run_no);
     std::string entry = parname;
     entry += ".use-default";
-    return getConfig()->getAsBool2(section, "Parameters", entry.c_str(), false);
+    return getConfig()->getAsBool2(getRunSectionName(run_no), "Parameters", entry.c_str(), false);
 }
 
 bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index)
@@ -318,15 +326,12 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
        return true;
 
     // find out if this module is (or has any submodules that are) on this partition
-    char section[16];
-    sprintf(section,"Run %d", simulation.runNumber());
-
     char parname[MAX_OBJECTFULLPATH];
     if (index<0)
         sprintf(parname,"%s.%s.partition-id", parentmod->fullPath().c_str(), modname);
     else
         sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath().c_str(), modname, index);
-    int procId = getConfig()->getAsInt2(section,"Partitioning",parname,-1);
+    int procId = getConfig()->getAsInt2(getRunSectionName(simulation.runNumber()),"Partitioning",parname,-1);
     if (procId<0)
         throw new cException("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);
     if (procId>=parsimcomm->getNumPartitions())
@@ -346,19 +351,16 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
                                    bool& enabled, double& starttime, double& stoptime /*output*/ )
 {
     // prepare section name and entry name
-    char section[16];
-    sprintf(section,"Run %d", run_no);
-
     sprintf(buffer, "%s.%s.", modname?modname:"", vecname?vecname:"");
     char *end = buffer+strlen(buffer);
 
     // get 'module.vector.disabled=' entry
     strcpy(end,"enabled");
-    enabled = getConfig()->getAsBool2(section,"OutVectors",buffer,true);
+    enabled = getConfig()->getAsBool2(getRunSectionName(run_no),"OutVectors",buffer,true);
 
     // get 'module.vector.interval=' entry
     strcpy(end,"interval");
-    const char *s = getConfig()->getAsString2(section,"OutVectors",buffer,NULL);
+    const char *s = getConfig()->getAsString2(getRunSectionName(run_no),"OutVectors",buffer,NULL);
     if (!s)
     {
        starttime = 0;
@@ -382,10 +384,7 @@ void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *v
 
 const char *TOmnetApp::getDisplayString(int run_no, const char *name)
 {
-    char section[16];
-    sprintf(section,"Run %d",run_no);
-
-    return getConfig()->getAsString2(section,"DisplayStrings",name,NULL);
+    return getConfig()->getAsString2(getRunSectionName(run_no),"DisplayStrings",name,NULL);
 }
 
 cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)
@@ -480,20 +479,18 @@ void TOmnetApp::readOptions()
     // other options are read on per-run basis
 }
 
-void TOmnetApp::readPerRunOptions(int run_nr)
+void TOmnetApp::readPerRunOptions(int run_no)
 {
     cConfiguration *cfg = getConfig();
-
-    char section[16];
-    sprintf(section,"Run %d",run_nr);
+    const char *section = getRunSectionName(run_no);
 
     // get options from ini file
-    opt_network_name = cfg->getAsString2( section, "General", "network", "default" );
-    opt_pause_in_sendmsg = cfg->getAsBool2( section, "General", "pause-in-sendmsg", false );
-    opt_warnings = cfg->getAsBool2( section, "General", "warnings", true );
-    opt_simtimelimit = cfg->getAsTime2( section, "General", "sim-time-limit", 0.0 );
-    opt_cputimelimit = (long)cfg->getAsTime2( section, "General", "cpu-time-limit", 0.0 );
-    opt_netifcheckfreq = cfg->getAsInt2( section, "General", "netif-check-freq", 1);
+    opt_network_name = cfg->getAsString2(section, "General", "network", "default");
+    opt_pause_in_sendmsg = cfg->getAsBool2(section, "General", "pause-in-sendmsg", false);
+    opt_warnings = cfg->getAsBool2(section, "General", "warnings", true);
+    opt_simtimelimit = cfg->getAsTime2(section, "General", "sim-time-limit", 0.0);
+    opt_cputimelimit = (long)cfg->getAsTime2(section, "General", "cpu-time-limit", 0.0);
+    opt_netifcheckfreq = cfg->getAsInt2(section, "General", "netif-check-freq", 1);
 }
 
 void TOmnetApp::makeOptionsEffective()
