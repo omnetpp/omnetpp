@@ -1,0 +1,15 @@
+%description:
+CDATA sections are merged with normal text nodes.
+
+%file: {}.xml
+<?xml version="1.0" ?>
+<foo>
+    <bar>text with <![CDATA[cdata section]]> and normal text</bar>
+</foo>
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("{}.xml");
+node->debugDump();
+
+%contains: stdout
+<bar>text with cdata section and normal text</bar>
