@@ -65,11 +65,13 @@ class cDisplayString
        int numargs;
        char *args[MAXARGS];
     };
-    mutable char *dispstr; // copy of display string (assemble() changes it)
     char *buffer;       // holds pieces of display string (sliced with zeroes)
     char *bufferend;    // points to last byte of buffer allocated
     Tag *tags;          // table of tags
     int numtags;        // number of tags
+
+    mutable char *dispstr; // cached copy of assembled display string
+    mutable bool needsassemble; // if dispstr is up-to-date 
 
     // needed to notify Envir
     cObject *object;     // a cModule or cGate pointer

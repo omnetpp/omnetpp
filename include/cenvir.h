@@ -95,6 +95,7 @@ class ENVIR_API cEnvir
   public:
     int disable_tracing;
   private:
+    bool isgui;
     int running_mode; // MASTER_MODE / SLAVE_MODE / NONPARALLEL_MODE / STARTUPERROR_MODE
     char prmpt[81];    // prompt used by prompt() and operator >>
 
@@ -263,6 +264,13 @@ class ENVIR_API cEnvir
 
     /** @name Input/output methods called from simple modules or the simulation kernel. */
     //@{
+
+    /**
+     * Tells if the current environment is graphical or not. (For Tkenv it returns true,
+     * and with Cmdenv it returns false.) Simple modules can examine this flag
+     * to decide whether or not they need to bother updating display strings.
+     */
+    bool isGUI()  {return isgui;}
 
     /**
      * Displays a message in dialog box. This function should not be

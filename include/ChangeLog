@@ -1,3 +1,7 @@
+2004-01-06  Andras Varga
+
+	* cenvir.h: added isGUI()
+
 	* display string manipulation made a lot easier: displayString() now
 	returns a cDisplayString which can be changed with its own member
 	functions: insertTag(), setTagArg(), removeTag(), etc.
