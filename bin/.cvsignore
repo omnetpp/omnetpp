@@ -3,6 +3,7 @@ nedc
 nedtool
 opp_makedep
 opp_makemake
+opp_neddoc
 opp_test
 plove
 seedtool
