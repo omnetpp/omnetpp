@@ -1,3 +1,5 @@
+2004-12-29  ------ omnetpp-3.0 released ------
+
 2004-12-27  Andras Varga
 
 	* csimplemodule.cc: fix: in Windows, creation of activity() simple 

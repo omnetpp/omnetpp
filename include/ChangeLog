@@ -1,3 +1,5 @@
+2004-12-29  ------ omnetpp-3.0 released ------
+
 2004-12-22  Andras Varga
 	
 	* chist.h: cLongHistogram: if number of cells is not specified,

@@ -1,3 +1,5 @@
+2004-12-29  ------ omnetpp-3.0 released ------
+
 2004-12-15  Andras Varga
 
 	* extra-stack= option replaced with extra-stack-kb. Default raised to

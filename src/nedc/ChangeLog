@@ -1,3 +1,5 @@
+2004-12-29  ------ omnetpp-3.0 released ------
+
 2004-12-22  Andras Varga
 
 	* opp_msgc: fix: in generated setArraySize(), avoid calling "new [0]"
