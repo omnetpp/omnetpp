@@ -248,7 +248,7 @@ have priority over globally set ones.
 \begin{longtable}{|p{6.5cm}|p{7.5cm}|}
 \hline
 \tabheadcol
-\tbf{Entry and default value} & \tbf{Description}\\\hline
+\tbf{Name and default value} & \tbf{Description}\\\hline
 \multicolumn{2}{|c|}{\tbf{[General]}} \\\hline
 %%
 \fpar{ini-warnings} = yes & Helps debugging of the ini file. If turned
@@ -271,12 +271,16 @@ If enabled, {\opp} will split \fname{send()} calls to two steps.\\\hline
 %%
 \fpar{cpu-time-limit} = & Duration of the simulation in real time.\\\hline
 %%
-\fpar{random-seed} = & Random number seed for generator 0. Should be nonzero.\\\hline
+\fpar{num-rngs} = 1 & Number of random number generators\\\hline
 %%
-\mbox{\fpar{gen0-seed} = } \linebreak
-\mbox{\fpar{gen1-seed} = } \linebreak
-\mbox{...} & Seeds for the given random number generator. They should be
-nonzero. \ttt{gen0-seed} is equivalent to \ttt{random-seed}.\\\hline
+\fpar{rng-class} = \ttt{"cMersenneTwister"} & The RNG class to be used. It can be
+\ttt{"cMersenneTwister"}, \ttt{"cLCG32"}, or \ttt{"cAkaroaRNG"},
+or you can use your own RNG class (it must be subclassed from \cclass{cRNG}).\\\hline
+%%
+\fpar{seed-N-mt} =, \fpar{seed-N-lcg32} = & Specifies seeds for the
+cMersenneTwister and the cLCG32 RNGs (substitute N with the RNG number: 0, 1, 2...);
+default is auto seed selection. This obsoletes the \textit{random-seed=} and
+\textit{gen0-seed=}, \textit{gen1-seed=}, etc. entries which are no longer in use.\\\hline
 %%
 \fpar{total-stack-kb} = & Specifies the total stack size (sum of all coroutine stacks)
 in kilobytes. You need to increase this value if you get the
@@ -325,13 +329,23 @@ in \ttt{envirext.h}.\\\hline
 \label{sec:ch-run-sim:parameter-settings}
 \index{module!parameters}
 
+Simulations get input via module parameters, which can be assigned a
+value in NED files or in omnetpp.ini -- in this order. Since parameters
+assigned in NED files cannot be overridden in omnetpp.ini, one can
+think about them as being ``hardcoded''. In contrast, it is easier
+and more flexible to maintain module parameter settings in omnetpp.ini.
+
+In omnetpp.ini, module parameters are referred to by their full paths
+or hiearchical names. This name consists of the dot-separated list of
+the module names (from the top-level module down to the module containg
+the parameter), plus the parameter name
+(see section \ref{sec:sim-lib:fullname-and-fullpath}).
+
 \subsection{Run-specific and general sections}
 
-Values for module parameters go into the \texttt{[Parameters]} or the
-\texttt{[Run 1]}, \texttt{[Run 2]} etc. sections of the ini file. The
-run-specific settings take precedence over the overall settings.
-Parameters that were assigned a (non-input) value in the NED file are
-not influenced by ini file settings.
+Values for module parameters can be placed into the \texttt{[Parameters]}
+or the \texttt{[Run 1]}, \texttt{[Run 2]} etc. sections of the ini file.
+The run-specific settings take precedence over the overall settings.
 
 \subsection{Wildcards}
 
@@ -376,7 +390,7 @@ there was no default value in the NED file.
 
 The following example sets \ttt{ttl} (time-to-live) of \ttt{hostA}'s
 \ttt{ip} module to 5, while all other nodes in the network
-will use the default specified with \ttt{input()} in the NED files.
+will get the default specified with \ttt{input()} in the NED files.
 
 \begin{Verbatim}[commandchars=\\\{\}]
 # omnetpp.ini
