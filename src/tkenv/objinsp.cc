@@ -42,6 +42,7 @@ struct InspTypeName {int code; char *namestr;} insp_typenames[] =
      { INSP_PARAMETERS,       "Parameters"    },
      { INSP_GATES,            "Gates"         },
      { INSP_SUBMODS,          "Submodules"    },
+     { INSP_STRUCT,           "NED struct"    },
      { -1,                     NULL           }
 };
 

@@ -32,7 +32,7 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I../envir $(TK_CFLAGS) -DBUILDING_TKENV
 
 OMNETPP_TKENV_DIR=@OMNETPP_TKENV_DIR@
 
-OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o objinsp.o modinsp.o statinsp.o inspect.o arrow.o
+OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o objinsp.o modinsp.o statinsp.o structinsp.o inspect.o arrow.o
 
 #
 # Targets
@@ -70,6 +70,9 @@ modinsp.o: modinsp.cc
 
 statinsp.o: statinsp.cc
 	$(CXX) -c $(COPTS) statinsp.cc
+
+structinsp.o: structinsp.cc
+	$(CXX) -c $(COPTS) structinsp.cc
 
 inspect.o: inspect.cc
 	$(CXX) -c $(COPTS) inspect.cc

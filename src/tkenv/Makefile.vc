@@ -20,7 +20,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" $(TK_CFLAGS) /DBUILDING_TKENV
-OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj objinsp.obj modinsp.obj statinsp.obj inspect.obj arrow.obj
+OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj objinsp.obj modinsp.obj statinsp.obj inspect.obj arrow.obj structinsp.obj
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib $(TK_LIB_DIR)/tcl82.lib $(TK_LIB_DIR)/tk82.lib
 
 #
@@ -59,6 +59,9 @@ modinsp.obj: modinsp.cc
 
 statinsp.obj: statinsp.cc
 	$(CXX) $(COPTS) /c /Tp statinsp.cc
+
+structinsp.obj: structinsp.cc
+	$(CXX) $(COPTS) /c /Tp structinsp.cc
 
 inspect.obj: inspect.cc
 	$(CXX) $(COPTS) /c /Tp inspect.cc
@@ -119,7 +122,9 @@ inspect.obj: inspect.cc \
   ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
-  ../../include/cenvir.h
+  ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h
 modinsp.obj: modinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -181,7 +186,9 @@ objinsp.obj: objinsp.cc \
   ../../include/cnetmod.h \
   ../../include/cfsm.h \
   ../../include/protocol.h \
-  ../../include/cenvir.h
+  ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h
 statinsp.obj: statinsp.cc \
   ../../include/cmodule.h \
   ../../include/cmessage.h \
@@ -205,6 +212,14 @@ statinsp.obj: statinsp.cc \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h
+structinsp.obj: structinsp.cc \
+  ../../include/cstruct.h \
+  tkapp.h \
+  tklib.h \
+  tkinsp.h \
+  ../../include/cobject.h \
+  ../../include/defs.h \
+  ../../include/util.h
 tclcode.obj: tclcode.cc
 tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \

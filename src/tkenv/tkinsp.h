@@ -32,6 +32,7 @@ enum { INSP_GETTYPES=-1,
        INSP_PARAMETERS,
        INSP_GATES,
        INSP_SUBMODS,
+       INSP_STRUCT,         // cStructDescriptor-based one
        NUM_INSPECTORTYPES   // this must be the last one
 };
 
@@ -278,5 +279,16 @@ class TPacketInspector: public TMessageInspector
       virtual void update();
       virtual void writeBack();
 };
+
+class TStructInspector: public TInspector
+{
+   public:
+      TStructInspector(cObject *obj,int typ,void *dat=NULL);
+      virtual void createWindow();
+      virtual void update();
+      virtual void writeBack();
+      virtual int inspectorCommand(Tcl_Interp *, int, char **);
+};
+
 
 #endif
