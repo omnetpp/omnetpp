@@ -166,8 +166,28 @@ proc fileCloseCanvas {} {
    updateTreeManager
 }
 
+proc fileImportXML {{fname ""}} {
+   global gned env canvas ned config
 
-proc exportXML {{nedfilekey {}}} {
+   if {[string compare [file tail $fname] $fname]==0} {
+       set dir $config(default-dir)
+   } else {
+       set dir [file dirname $fname]
+   }
+
+   set fname [file tail $fname]
+   set fname [tk_getOpenFile -defaultextension ".xml" \
+              -initialdir $dir -initialfile $fname \
+              -filetypes {{{XML files} {*.xml}} {{All files} {*}}}]
+
+   if {$fname!=""} {
+      set config(default-dir) [file dirname $fname]
+      # regsub "^$env(HOME)/" $fname "~/" fname
+      loadXML $fname
+   }
+}
+
+proc fileExportXML {{nedfilekey {}}} {
    global gned canvas ned env config
 
    if {$nedfilekey==""} {
@@ -204,9 +224,6 @@ proc exportXML {{nedfilekey {}}} {
       saveXML $nedfilekey $fname
    }
 }
-
-
-
 
 proc fileExit {} {
    global ned

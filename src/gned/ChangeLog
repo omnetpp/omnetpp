@@ -226,6 +226,8 @@ Aug 29, 2000
  - command-line arg handling improved
 Sep 30, 2000
  - improvement just for Cygwin: lexer now explicitly ignores '\r' (=CR) chars
-Nov 14-16, 2000
- - experimental XML support: GNED can export XML files (genxml.tcl)
- - parsexml.tcl added
+Nov 14-17, 2000
+ - experimental XML support:
+    o  can export XML files (genxml.tcl)
+    o  almost can import XML files (parsexml.tcl)
+
