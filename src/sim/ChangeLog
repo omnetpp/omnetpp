@@ -1,3 +1,7 @@
+2003-02-14  Andras Varga
+
+	* cpar.cc: getAsText(): better handling of long string values
+
 2003-02-11  Andras Varga
 
 	* distrib.cc: bugfix in beta()

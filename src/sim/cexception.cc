@@ -25,6 +25,10 @@
 #include "errmsg.h"
 
 
+#define BUFLEN 1024
+static char buffer[BUFLEN];
+static char buffer2[BUFLEN];
+
 cException::cException()
 {
     errorcode = eCUSTOM;
@@ -82,9 +86,6 @@ void cException::init(const cObject *where, int errc, const char *fmt, va_list v
     // store error code
     errorcode = errc;
 
-    // assemble message text
-    char message[256] = "\0";
-
     // print "(%s)%s:" conditionally:
     //  - if object is the module itself: skip
     //  - if object is local in module: use fullName()
@@ -92,14 +93,13 @@ void cException::init(const cObject *where, int errc, const char *fmt, va_list v
     if (where && where!=simulation.contextModule())
     {
         // try: if module's fullpath is same as module fullpath + object fullname, no need to print path
-        char tmp[256];
-        sprintf(tmp,"%s.%s",(simulation.contextModule()?simulation.contextModule()->fullPath():""), where->fullName());
-        bool needpath = strcmp(tmp,where->fullPath())!=0;
-        sprintf(message, "(%s)%s: ", where->className(), needpath ? where->fullPath() : where->fullName());
+        sprintf(buffer2,"%s.%s",(simulation.contextModule()?simulation.contextModule()->fullPath():""), where->fullName());
+        bool needpath = strcmp(buffer2,where->fullPath())!=0;
+        sprintf(buffer, "(%s)%s: ", where->className(), needpath ? where->fullPath() : where->fullName());
     }
 
-    vsprintf(message+strlen(message),fmt,va);
-    msg = message;
+    vsprintf(buffer+strlen(buffer),fmt,va);
+    msg = buffer;
 
     // store context
     storeCtx();

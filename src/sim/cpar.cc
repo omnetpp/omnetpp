@@ -752,7 +752,7 @@ void cPar::cancelRedirection()
 void cPar::getAsText(char *buf, int maxlen)
 {
     if (isRedirected()) {
-        ind.par->getAsText(buf, maxlen );
+        ind.par->getAsText(buf, maxlen);
         return;
     }
 
@@ -764,14 +764,14 @@ void cPar::getAsText(char *buf, int maxlen)
     cFunctionType *ff;
     const char *fn;
     char *s;
-    switch (typechar) {
+
+    switch (typechar)
+    {
        case 'S': s = ls.sht ? ss.str:ls.str;
-                 if (!s) s = "";
-                 if (strlen(s)<=125)
-                   sprintf(bb,"\"%s\"", s);
-                 else
-                   sprintf(bb,"\"%.110s...\" [truncated]", s);
-                 break;
+                 buf[0]='\"';
+                 opp_strprettytrunc(buf+1,s,maxlen-3);
+                 strcat(buf,"\"");
+                 return;
        case 'B': strcpy(bb,lng.val?"true":"false"); break;
        case 'L': sprintf( bb,"%ld",lng.val); break;
        case 'D': sprintf( bb,"%g",dbl.val); break;
@@ -786,14 +786,14 @@ void cPar::getAsText(char *buf, int maxlen)
                  default: sprintf(bb,"%s() with %d args",fn,func.argc); break;
                  };
                  break;
-       case 'T': sprintf(bb,"distribution %.99s", dtr.res ? dtr.res->fullPath():"nil"); break;
+       case 'T': sprintf(bb,"distribution '%.99s'", dtr.res ? dtr.res->fullPath():""); break;
        case 'P': sprintf(bb,"pointer %p", ptr.ptr); break;
-       case 'O': sprintf(bb,"object %.99s", obj.obj ? obj.obj->fullPath():"nil"); break;
+       case 'O': sprintf(bb,"object '%.99s'", obj.obj ? obj.obj->fullPath():""); break;
        case 'C': sprintf(bb,"compiled expression"); break;
        case 'X': sprintf(bb,"reverse Polish expression"); break;
        default : bb[0]='?'; bb[1]=0; break;
     }
-    strncpy( buf, bb, maxlen<128 ? maxlen : 128);
+    opp_strprettytrunc(buf,bb,maxlen-1);
 }
 
 /*-------------------------------
@@ -971,20 +971,18 @@ bool cPar::setfunction(char *text)
 
 cPar& cPar::read()
 {
-    char buf[256];
-
     // get it from ini file
     const char *s = ev.getParameter(simulation.runNumber(), fullPath());
     if (s!=NULL)
     {
-       strcpy(buf,s);
-       bool success = setFromText(buf,'?');
+       bool success = setFromText(s,'?');
        if (!success)
-             throw new cException( "Wrong value `%s' for parameter `%s'",buf, fullPath() );
+             throw new cException("Wrong value `%s' for parameter `%s'",s, fullPath());
        return *this;
     }
 
-    // ask the user
+    // ask the user. FIXME: line length is limited to 255 here
+    char buf[256];
     bool success;
     do {
         bool esc;
