@@ -455,7 +455,7 @@ proc loadBitmaps {path} {
        }
    }
 
-   set gned(icons) [lsort [array names bitmaps]]
+   set gned(icons) [lsort $gned(icons)]
 
    if {$bitmap_ctr==0} {
        puts "*** no bitmaps (gif) in $path"
@@ -498,7 +498,7 @@ proc do_load_bitmaps {dir prefix} {
 
 # register loaded image
 proc do_add_bitmap {img prefix name size} {
-   global bitmaps
+   global bitmaps gned
 
    # access via the s= display string option
    set bitmaps($prefix$name,$size) $img
@@ -506,8 +506,10 @@ proc do_add_bitmap {img prefix name size} {
    # access by the legacy way
    if {$size=="n"} {
        set bitmaps($prefix$name) $img
+       lappend gned(icons) "$prefix$name"
    } else {
        set bitmaps($prefix${name}_$size) $img
+       lappend gned(icons) "$prefix${name}_$size"
    }
 }
 

@@ -22,8 +22,7 @@ See the license for distribution terms and warranty disclaimer.
 GNED uses human-readable NED as the ONLY file format. It is a fully
 two-way tool: you can edit the modules in graphics or in NED source form,
 and switch to the other view any time.
-
-See TODO for known bugs and missing features.}
+}
 
 #
 # Load library files

@@ -280,6 +280,13 @@ proc _chooseIcon {oldicon win {pwin {}}} {
      set dlg $pwin.iconbox
      createOkCancelDialog $dlg "Icon selection"
 
+#     set prefixes {block others place old}
+#     set sizes {vl l n s vs}
+#     label-combo $dlg.f.prefix "Category:" $prefixes ;#[list _fillCanvasWithIcons $dlg "old/*,n"]
+#     label-combo $dlg.f.sizes "Size:" $sizes ;#[list _fillCanvasWithIcons $dlg "old/*,n"]
+#     pack   $dlg.f.prefix -side top -anchor w
+#     pack   $dlg.f.sizes -side top -anchor w
+
      frame  $dlg.f.select
      pack   $dlg.f.select -side top -expand 0 -fill x
      label  $dlg.f.select.label -text "Icon selected:"
@@ -302,12 +309,27 @@ proc _chooseIcon {oldicon win {pwin {}}} {
      frame $w.c.f -bd 0
      $w.c create window 0 0 -anchor nw -window $w.c.f
 
-     set tb $w.tb
+     _fillCanvasWithIcons $dlg "block/*,n"
+
+     wm resizable $dlg 0 1
+
+     if {[execOkCancelDialog $dlg] == 1} {
+         set icon [$dlg.f.select.name cget -text]
+         $win configure -value $icon
+     }
+     destroy $dlg
+}
+
+proc _fillCanvasWithIcons {dlg filter} {
+     global gned bitmaps
+
+     set w $dlg.f.icons
+     set c $w.c
      set f $w.c.f
 
      set li 0
      set col 0
-     foreach imgName $gned(icons) {
+     foreach imgName [lsort [array names bitmaps $filter]] {
          set e $f.$imgName
 
          frame $e -relief flat -borderwidth 2
@@ -333,14 +355,6 @@ proc _chooseIcon {oldicon win {pwin {}}} {
      # adjust canvas width to frame width
      $w.c config -width [winfo width $f]
      $w.c config -scrollregion "0 0 0 [winfo height $f]"
-
-     wm resizable $dlg 0 1
-
-     if {[execOkCancelDialog $dlg] == 1} {
-         set icon [$dlg.f.select.name cget -text]
-         $win configure -value $icon
-     }
-     destroy $dlg
 }
 
 proc _iconSelected {select imgname frame} {
