@@ -831,7 +831,7 @@ void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule
         int n = 0;
         addXElems(expr->getFirstChild(), xelemsBuf, n, submodp);
         cPar::ExprElem *xelems = new cPar::ExprElem[n];
-        for (int i=0; i<n; ++n)
+        for (int i=0; i<n; i++)
             xelems[i] = xelemsBuf[i];
         p.setDoubleValue(xelems, n);
 
