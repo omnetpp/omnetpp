@@ -103,7 +103,7 @@ cQueue& cQueue::operator=(const cQueue& queue)
     asc = queue.asc;
 
     bool old_tk = takeOwnership();
-    for( cQueueIterator iter(queue); iter.end(); iter++)
+    for( cQueueIterator iter(queue); !iter.end(); iter++)
     {
         if (iter()->owner()==const_cast<cQueue*>(&queue))
             {takeOwnership(true); insert( iter()->dup() );}
