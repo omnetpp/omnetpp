@@ -81,7 +81,7 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
 void cNamedPipeCommunications::init()
 {
     // get numPartitions and myProcId from "-p" command-line option
-    // TBD this is the same as in cFileCommunications -- should go into common base class?
+    // TBD this is the same code as in cFileCommunications and the Windows version -- should go into common base class?
     int argc = ev.argCount();
     char **argv = ev.argVector();
     int i;

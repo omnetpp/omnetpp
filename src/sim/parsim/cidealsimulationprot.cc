@@ -95,7 +95,7 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
     // if we aren't at the next external even yet --> nothing special to do
     if (t<nextExternalEvent.t)
     {
-        // ASSERT(!isExternalMessage(msg)); -- FIXME is this the perf bottleneck???
+        // ASSERT(!isExternalMessage(msg)); -- TBD check: this might be the perf bottleneck?!
         return msg;
     }
 
