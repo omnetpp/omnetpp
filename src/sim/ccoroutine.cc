@@ -31,7 +31,7 @@ void cCoroutine::init(unsigned total_stack, unsigned main_stack)
     lpMainFiber = ConvertThreadToFiber(0);
 }
 
-void cCoroutine::switchTo(cCoroutine *cor )
+void cCoroutine::switchTo(cCoroutine *cor)
 {
     SwitchToFiber(cor->lpFiber);
 }
@@ -48,7 +48,8 @@ cCoroutine::cCoroutine()
 
 cCoroutine::~cCoroutine()
 {
-    DeleteFiber(lpFiber);
+    if (lpFiber!=0)
+        DeleteFiber(lpFiber);
 }
 
 bool cCoroutine::setup(CoroutineFnp fnp, void *arg, unsigned stack_size )

@@ -3,6 +3,9 @@
 	* util.h: added implementation of cContextSwitcher internal class, 
 	needed by the new Enter_Method() and Enter_Method_Silent() macros.
 
+	* ccoroutine.cc: bugfix: DeleteFiber(lpFiber) crashes if lpFiber==0
+	on Win2003 Server (maybe elsewhere too). [reported by Donald Von]
+
 2003-09-22  Andras Varga
 
 	* cmodule.cc: sendDirect() rules slightly modified, see header file.
