@@ -1,3 +1,12 @@
+2004-05-31  Andras Varga
+
+	* These sources are neither maintained nor included into the toplevel
+	makefile any more. They were moved from src/plove into this directory 
+	(src/plove-old) when new incarnation of plove became available. 
+	This directory was kept so that if someone desperately wants the old
+	gnuplot-based Plove for some obscure reason, s/he can have it.
+
+
 2004-05-15  ------ omnetpp-3.0a4 released ------
 
 2004-03-22  ------ omnetpp-3.0a3 released ------
