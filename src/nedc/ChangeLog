@@ -1,3 +1,10 @@
+2003-01-04  Andras Varga
+
+	* opp_msgc: added support for cplusplus { ... }; syntax
+
+	* opp_msgc: 'cobject <classname>' syntax changed to 'class <classname>',
+	'noncobject <classname>' changed to 'class noncobject <classname>'.
+
 2002-12-22  Andras Varga
 
 	* jar.c: zero module vector size crashed network setup code. Temprarily,

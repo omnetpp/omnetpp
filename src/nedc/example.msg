@@ -11,15 +11,18 @@
 //
 
 
-// necessary #includes for the
-cppinclude <stdio.h>
-cppinclude "mystuff.h"
+// includes necessary to compile the generated C++ header file
+cplusplus {
+#include "basicpacket.h"
+#include "payloadpacket.h"
+#include "mystring.h"
+};
 
 // announce types that come from included C++ code
 struct IPAddress;
-cobject BasicPacket;
-cobject PayloadPacket;
-noncobject mystringclass;
+class BasicPacket;
+class PayloadPacket;
+class noncobject mystring;
 
 // imports are not yet supported :-(
 import "othermsgs.msg";
@@ -90,7 +93,7 @@ class MyCObjectClass extends cObject
     fields:
         char type='x';
         short version=2;
-        mystringclass dunno;
+        mystring vendor;
 };
 
 // plain C struct (public members, no getter/setter methods, etc)
@@ -98,7 +101,6 @@ struct MyStruct
 {
     fields:
         char array[10];
-        char vect[];
         short version;
 };
 

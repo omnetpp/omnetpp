@@ -108,7 +108,12 @@ foreach $class (@classes) {
 # parse cppincludes
 while ($msg =~ s/cppinclude\s+(["\<].*?["\>])//s)
 {
+    print STDERR "*** warning: cppinclude is deprecated, use cplusplus { ... }; syntax instead\n";
     print H "#include $1\n";
+}
+while ($msg =~ s/cplusplus\s+{(.*?)};//s)
+{
+    print H "$1\n";
 }
 print H "\n";
 
@@ -119,10 +124,27 @@ while ($msg =~ s/import\s+(".*?");//s)
 }
 
 # parse type announcements in ned text
-while ($msg =~ s/(struct|cobject|noncobject)\s+([^\s]*)\s*;//s)
+while ($msg =~ s/(struct|cobject|noncobject|class|class\s+noncobject)\s+([^\s]*)\s*;//s)
 {
     $class = $2;
-    $type = $1; # 'struct' or 'cobject' or 'noncobject'
+    $type0 = $1;
+
+    if ($type0 eq 'struct') {
+        $type = 'struct';
+    } elsif ($type0 eq 'cobject') {
+        print STDERR "*** warning: 'cobject' keyword is deprecated, write 'class' instead\n";
+        $type = 'cobject';
+    } elsif ($type0 eq 'noncobject') {
+        print STDERR "*** warning: 'noncobject' is deprecated, write 'class noncobject' instead\n";
+        $type = 'noncobject';
+    } elsif ($type0 eq 'class') {
+        $type = 'cobject';
+    } elsif ($type0 =~ /class\s+noncobject/) {
+        $type = 'noncobject';
+    } else {
+        die 'invalid type';
+    }
+
     if (grep(/^\Q$class\E$/,@classes)) {
         if ($classtype{$class} ne $type) {
             print STDERR "*** different declarations for '$class' are inconsistent\n"; $ret=1;
@@ -310,6 +332,9 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
             # abstract
             if ($field =~ s/^\s*abstract\s+//s) {
                 $isabstract = 1;
+                if ($keyword eq 'struct') {
+                    print STDERR "*** a struct cannot have abstract fields in '$msgname'\n"; $ret=1;
+                }
             } else {
                 $isabstract = 0;
             }
@@ -334,6 +359,9 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
                 $arraysize = $1;
                 if ($arraysize !~ /^[0-9]*$/) {
                     print STDERR "*** array size must be numeric (not '$arraysize') in '$msgname'\n"; $ret=1;
+                }
+                if ($arraysize eq '' && $keyword eq 'struct') {
+                    print STDERR "*** a struct cannot have dynamic array fields in '$msgname'\n"; $ret=1;
                 }
             } else {
                 $isarray = 0;
@@ -767,22 +795,22 @@ sub generateClass
                     print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
                     print CC "        $var{$fieldname}\[i\] = 0;\n";
                 }
-		if ($classtype{$ftype{$fieldname}} eq 'cobject') {
-		  print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
-		  print CC "        $var{$fieldname}\[i\].setOwner(this);\n";
-		}
+                if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+                  print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
+                  print CC "        $var{$fieldname}\[i\].setOwner(this);\n";
+                }
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "    $varsize{$fieldname} = 0;\n";
                 print CC "    $var{$fieldname} = 0;\n";
             } else {
                 if ($fval{$fieldname} ne '') {
-		  print CC "    $var{$fieldname} = $fval{$fieldname};\n";
+                  print CC "    $var{$fieldname} = $fval{$fieldname};\n";
                 }
-		if ($classtype{$ftype{$fieldname}} eq 'cobject') {
-		  print CC "    $var{$fieldname}.setOwner(this);\n";
-		}
-	      }
-	  }
+                if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+                  print CC "    $var{$fieldname}.setOwner(this);\n";
+                }
+              }
+          }
       }
     print CC "}\n\n";
     if ($msgbaseclass eq "") {
@@ -797,17 +825,17 @@ sub generateClass
     foreach $fieldname (@fieldlist)
     {
       if (!$fisabstract{$fieldname}) {
-	if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-	  if ($classtype{$ftype{$fieldname}} eq 'cobject') {
-	    print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
-	    print CC "        $var{$fieldname}\[i\].setOwner(this);\n";
-	  }
-	} elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-	  print CC "    $varsize{$fieldname} = 0;\n";
-	  print CC "    $var{$fieldname} = 0;\n";
-	} elsif (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cobject') {
-	  print CC "    $var{$fieldname}.setOwner(this);\n";
-	}
+        if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+          if ($classtype{$ftype{$fieldname}} eq 'cobject') {
+            print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
+            print CC "        $var{$fieldname}\[i\].setOwner(this);\n";
+          }
+        } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+          print CC "    $varsize{$fieldname} = 0;\n";
+          print CC "    $var{$fieldname} = 0;\n";
+        } elsif (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cobject') {
+          print CC "    $var{$fieldname}.setOwner(this);\n";
+        }
       }
     }
     print CC "    operator=(other);\n";
