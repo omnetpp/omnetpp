@@ -1,0 +1,4 @@
+General:
+ - rearrange modules with the mouse (problem: where/how to save positions..?)
+ - display strings to configure animated message objects
+ - add events/sec, simsec/sec display to status bar

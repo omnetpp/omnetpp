@@ -24,8 +24,10 @@ Drawing:
   over the menu that popped up, the half-cooked connection arrow will stay
   on the canvas
 - rename on canvas: with module vectors it's a catastrophe now...
+- UNDO feature (at least one step) [from Niko]
 
 Load/save:
+- SaveAll feature [from Niko]
 - refuse to load the same file twice
 - save: what should it do with canvases switched to text?
      - save the text version? (maybe try to backparse it before saving,
@@ -37,10 +39,12 @@ Load/save:
 
 Text editor:
 - "find next" missing
+- ctrl-H doesn't bring up Find/Replace dialog [from Niko]
 - pgup, ctrl-pgup doesn't work correctly
 - syntax highlighting not 100% OK: it can be fooled with string constants
   containing `//' or `\"' sequences; `in:' and `out:' are not highlighted
 - syntax highlight: <paste> should update the whole file
+
 
 General:
 - introduce ~/.gnedrc
