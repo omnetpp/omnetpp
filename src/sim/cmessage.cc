@@ -78,6 +78,8 @@ void cMessage::info(char *buf)
     while(*b) b++;
     *b++ = ' '; *b='\0';
 
+    const char *deletedstr = "<deleted module>";
+
     // append useful info
     if (tomod<0)
     {
@@ -85,35 +87,40 @@ void cMessage::info(char *buf)
     }
     else if (kind()==MK_STARTER)
     {
+        cModule *tomodp = simulation.module(tomod);
         sprintf(b,"starter T=%s for %s (id=%d) ",
                 simtimeToStr(delivd),
-                simulation.module(tomod)->fullPath(),
+                tomodp ? tomodp->fullPath() : deletedstr,
                 tomod);
     }
     else if (kind()==MK_TIMEOUT)
     {
+        cModule *tomodp = simulation.module(tomod);
         sprintf(b,"timeout T=%s for %s (id=%d) ",
                 simtimeToStr(delivd),
-                simulation.module(tomod)->fullPath(),
+                tomodp ? tomodp->fullPath() : deletedstr,
                 tomod);
     }
     else if (frommod==tomod)
     {
+        cModule *tomodp = simulation.module(tomod);
         sprintf(b,"selfmsg T=%s for %s (id=%d) ",
                 simtimeToStr(delivd),
-                simulation.module(tomod)->fullPath(),
+                tomodp ? tomodp->fullPath() : deletedstr,
                 tomod);
     }
     else
     {
         // 2 sprintfs cannot be merged because of static buffer in fullPath()
+        cModule *frommodp = simulation.module(frommod);
+        cModule *tomodp = simulation.module(tomod);
         sprintf(b,"T=%s src=%s (id=%d), ",
                 simtimeToStr(delivd),
-                simulation.module(frommod)->fullPath(),
+                frommodp ? frommodp->fullPath() : deletedstr,
                 frommod);
         while(*b) b++;
         sprintf(b,"dest=%s (id=%d) ",
-                simulation.module(tomod)->fullPath(),
+                tomodp ? tomodp->fullPath() : deletedstr,
                 tomod);
     }
 }
