@@ -29,6 +29,7 @@ class cGate;
 class cModule;
 class cSimpleModule;
 class cStatistic;
+class cRNG;
 class cConfiguration;
 class cXMLElement;
 class TOmnetApp;
