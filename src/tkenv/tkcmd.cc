@@ -506,7 +506,12 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv
    cObject *obj = (cObject *)strToPtr( argv[1] );
 
    int insp_types[32];
-   obj->inspector(INSP_GETTYPES, insp_types);
+   //obj->inspector(INSP_GETTYPES, insp_types);
+
+   cInspectorFactory *p = findInspectorFactory(obj->inspectorFactoryName());
+   if (!p)  {interp->result="no inspector factory found"; return TCL_ERROR;}
+   // FIXME: sort of weird now...
+   p->createInspectorFor(obj,INSP_GETTYPES,(void *)insp_types);
 
    interp->result[0] = 0;
    for (int i=0; insp_types[i]>=0; i++)

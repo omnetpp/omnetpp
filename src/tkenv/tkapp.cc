@@ -640,8 +640,16 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat, const char *
     }
 
     // create inspector
-//FIXME: we discard the "dat" pointer and use geometry instead. This is a hack.
-    TInspector *insp = obj->inspector(type,(void *)geometry);
+    cInspectorFactory *p = findInspectorFactory(obj->inspectorFactoryName());
+    if (!p)
+    {
+        CHK(Tcl_VarEval(interp,"messagebox {Confirm}"
+                        " {Class `",obj->className(),"' has no associated inspectors.} info ok",NULL));
+        return NULL;
+    }
+
+    //FIXME: we discard the "dat" pointer and use geometry instead. This is a hack.
+    TInspector *insp = p->createInspectorFor(obj,type,(void *)geometry);
     if (!insp)
     {
         // message: object has no such inspector

@@ -27,6 +27,7 @@
 #endif
 
 class Speedometer;
+class TInspector;
 
 //=========================================================================
 // TOmnetTkApp: Tcl/Tk-based user interface.

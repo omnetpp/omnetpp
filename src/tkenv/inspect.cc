@@ -22,6 +22,23 @@
 #include "tklib.h"
 #include "tkinsp.h"
 
+cHead inspectorfactories("inspector-factories");
+
+//=== cInspectorFactory - all functions inline
+
+cInspectorFactory::cInspectorFactory(const char *name, TInspector *(*f)(cObject *,int,void *)) : cObject(name)
+{
+    inspFactoryFunc = f;
+}
+
+TInspector *cInspectorFactory::createInspectorFor(cObject *object,int type,void *data)
+{
+    if (!inspFactoryFunc)
+        throw new cException(this,"factory function not set");
+
+    return (*inspFactoryFunc)(object,type,data);
+}
+
 // force the linker to include this file
 void _dummy_for_inspectors() {}
 
@@ -49,6 +66,14 @@ Register_InspectorFactory( cTopologyIFC,       createCTopologyInspector);
 Register_InspectorFactory( cWatchIFC,          createCWatchInspector);
 Register_InspectorFactory( cFSMIFC,            createCFSMInspector);
 
+TInspector *createInspectorFor(cObject *obj, int type, void *data)
+{
+    cInspectorFactory *p = findInspectorFactory(obj->inspectorFactoryName());
+    if (!p)
+        return NULL;
+
+    return p->createInspectorFor(obj,type,data);
+}
 
 TInspector *createCObjectInspector(cObject *object, int type, void *data)
 {
@@ -173,7 +198,7 @@ TInspector *createCMessageInspector(cObject *object, int type, void *data)
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TMessageInspector( object, INSP_OBJECT, data );
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
-     case INSP_PARAMETERS:return ((cPacket *)object)->parList().inspector(INSP_DEFAULT, NULL);
+     case INSP_PARAMETERS:return createInspectorFor(&((cPacket *)object)->parList(),INSP_DEFAULT, NULL);
      default:             return NULL;
    }
 }
@@ -222,10 +247,10 @@ TInspector *createCSimpleModuleInspector(cObject *object, int type, void *data)
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TSimpleModInspector( object, INSP_OBJECT, data );
      case INSP_MODULEOUTPUT: return new TModuleWindow( object, INSP_MODULEOUTPUT, data);
-     case INSP_GATES:     return mod->gatev.inspector(INSP_DEFAULT, NULL);
-     case INSP_PARAMETERS:return mod->paramv.inspector(INSP_DEFAULT, NULL);
-     case INSP_LOCALVARS: return mod->locals.inspector(INSP_DEFAULT, NULL);
-     case INSP_CLASSMEMBERS:return mod->members.inspector(INSP_DEFAULT, NULL);
+     case INSP_GATES:     return createInspectorFor(&mod->gatev,INSP_DEFAULT, NULL);
+     case INSP_PARAMETERS:return createInspectorFor(&mod->paramv,INSP_DEFAULT, NULL);
+     case INSP_LOCALVARS: return createInspectorFor(&mod->locals,INSP_DEFAULT, NULL);
+     case INSP_CLASSMEMBERS:return createInspectorFor(&mod->members,INSP_DEFAULT, NULL);
      default:             return NULL;
    }
 }
@@ -241,8 +266,8 @@ TInspector *createCCompoundModuleInspector(cObject *object, int type, void *data
      case INSP_GRAPHICAL: return new TGraphicalModWindow( object, INSP_GRAPHICAL, data );
      case INSP_OBJECT:    return new TCompoundModInspector( object, INSP_OBJECT, data );
      case INSP_MODULEOUTPUT: return new TModuleWindow( object, INSP_MODULEOUTPUT, data);
-     case INSP_GATES:     return mod->gatev.inspector(INSP_DEFAULT, NULL);
-     case INSP_PARAMETERS:return mod->paramv.inspector(INSP_DEFAULT, NULL);
+     case INSP_GATES:     return createInspectorFor(&mod->gatev,INSP_DEFAULT, NULL);
+     case INSP_PARAMETERS:return createInspectorFor(&mod->paramv,INSP_DEFAULT, NULL);
      default:             return NULL;
    }
 }
@@ -255,7 +280,7 @@ TInspector *createCNetModInspector(cObject *object, int type, void *data)
                           return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
-     case INSP_GATES:     return mod->gatev.inspector(INSP_DEFAULT, NULL);
+     case INSP_GATES:     return createInspectorFor(&mod->gatev,INSP_DEFAULT, NULL);
      default:             return NULL;
    }
 }
@@ -319,7 +344,7 @@ TInspector *createCPacketInspector(cObject *object, int type, void *data)
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TPacketInspector( object, INSP_OBJECT, data );
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
-     case INSP_PARAMETERS:return ((cPacket *)object)->parList().inspector(INSP_DEFAULT, NULL);
+     case INSP_PARAMETERS:return createInspectorFor(&((cPacket *)object)->parList(),INSP_DEFAULT, NULL);
      default:             return NULL;
    }
 }

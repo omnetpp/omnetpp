@@ -20,6 +20,75 @@
 
 #include "omnetapp.h"
 
+class TInspector;
+
+/**
+ * Serves as a base class for inspector factories of specific classes.
+ */
+class cInspectorFactory : public cObject
+{
+    TInspector *(*inspFactoryFunc)(cObject *,int,void *);
+
+  public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
+
+    /**
+     * Copy constructor.
+     */
+    cInspectorFactory(const cInspectorFactory& ifc)  {setName(ifc.name());operator=(ifc);}
+
+    /**
+     * Constructor.
+     */
+    cInspectorFactory(const char *name, TInspector *(*f)(cObject *,int,void *));
+
+    /**
+     * Destructor.
+     */
+    virtual ~cInspectorFactory() {}
+
+    /**
+     * Assignment is not supported by this class: this method throws a cException when called.
+     */
+    cInspectorFactory& operator=(const cInspectorFactory&)  {copyNotSupported();return *this;}
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
+
+    /**
+     * Returns pointer to a string containing the class name, "cInspectorFactory".
+     */
+    virtual const char *className() const {return "cInspectorFactory";}
+
+    /**
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
+     */
+    virtual cObject *dup() const  {return new cInspectorFactory(*this);}
+    //@}
+
+    /** @name Inspector creation. */
+    //@{
+
+    /**
+     * Creates an inspector for the object passed. The type and data
+     * arguments influence the type of inspector created. These parameters
+     * as well as the created inspector object only make sense in the
+     * context of the user interface library (e.g.Tkenv)
+     */
+    TInspector *createInspectorFor(cObject *object,int type,void *data);
+    //@}
+};
+
+extern cHead inspectorfactories;  ///< List of cInspectorFactory objects.
+
+/** Find a cInspectorFactory. */
+inline cInspectorFactory *findInspectorFactory(const char *s)
+  {return (cInspectorFactory *)inspectorfactories.find(s);}
+
+
 // Inspector types (1st arg to cXXXX::inspector(int,void *) functions)
 enum { INSP_GETTYPES=-1,
        INSP_DEFAULT,

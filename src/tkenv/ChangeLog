@@ -1,3 +1,8 @@
+2002-10-27  Andras Varga
+
+	* inspect.cc, tkapp.cc,..: inspectorfactory registration moved here 
+	from sim/
+
 2002-10-26  Andras Varga
 
 	* outvector inspectors: added basic labeling to axes
