@@ -31,11 +31,11 @@
 
 class cIniFile;
 class cScheduler;
-#ifdef WITH_PARSIM
+// WITH_PARSIM:
 class cParsimCommunications;
 class cParsimPartition;
 class cParsimSynchronizer;
-#endif
+// endif
 
 #define NUM_STARTINGSEEDS  256
 extern long starting_seeds[NUM_STARTINGSEEDS];  // they are in seeds.cc
@@ -62,10 +62,10 @@ class ENVIR_API TOmnetApp
     bool opt_ini_warnings;
     opp_string opt_scheduler_class;
     bool opt_parsim;
-#ifdef WITH_PARSIM
+// WITH_PARSIM (note: no #ifdef to preserve class layout!)
     opp_string opt_parsimcomm_class; // if opt_parsim: cParsimCommunications class to use
     opp_string opt_parsimsynch_class; // if opt_parsim: cParsimSynchronizer class to use
-#endif
+// end
     opp_string opt_load_libs;
     opp_string opt_network_name;
     opp_string opt_outputvectormanager_class;
@@ -85,11 +85,11 @@ class ENVIR_API TOmnetApp
 
     int next_startingseed;  // index of next seed to use
 
-#ifdef WITH_PARSIM
+// WITH_PARSIM (note: no #ifdef to preserve class layout!)
     cParsimCommunications *parsimcomm;
     cParsimPartition *parsimpartition;
     cParsimSynchronizer *parsimsynchronizer;
-#endif
+// end
 
     cScheduler *scheduler;
 

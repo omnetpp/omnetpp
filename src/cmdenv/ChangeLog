@@ -1,14 +1,17 @@
-FIXME PARSIM-----------------------
-003-04-18  Andras Varga
+2003-11-13  Andras Varga
 
-	* new ini file option: 
+	* Checked in parallel simulation code that was developed March-May 2003,
+	during my stay at Monash University. Changes:
+
+	2003-04-18  Andras Varga
+	* new ini file option:
 	  output-file=<filename>
-	If present, output will be redirected to the given file. If the 
+	If present, output will be redirected to the given file. If the
 	[General]/fname-append-host setting is turned on, the the host
 	name and pid (process id) will be appended to the file name.
-	Particularly useful when a parallel simulation is run from a shared 
+	Particularly useful when a parallel simulation is run from a shared
 	directory.
-------------------------------~^^^^^^^^^^^
+
 2003-10-02  Andras Varga
 
 	* cmdenv.cc/h: added new method cEnvir::moduleMethodCalled()
@@ -25,7 +28,7 @@ FIXME PARSIM-----------------------
 
 2003-01-07  Andras Varga
 
-	* new ini file options: 
+	* new ini file options:
 	  autoflush=yes/no (default: no)
 	    call fflush(stdout) after each event banner or status update;
 	    affects both express and normal mode.
@@ -37,7 +40,7 @@ FIXME PARSIM-----------------------
 
 2002-11-03  Andras Varga
 
-	* cmdenv.cc: improved status display 
+	* cmdenv.cc: improved status display
 
 2002-10-20  Andras Varga
 
@@ -45,12 +48,12 @@ FIXME PARSIM-----------------------
 	A new entry was introduced to make it easier to switch between
 	typical uses of Cmdenv.
 	  express-mode=yes/no (default: no)
-	Normal (non-express) mode is for debugging: detailed information 
-	will be written	to the standard output (event banners, module output, 
-	etc). Express mode can be used for long simulation runs: only 
-	periodical status update is displayed about the progress of the 
+	Normal (non-express) mode is for debugging: detailed information
+	will be written	to the standard output (event banners, module output,
+	etc). Express mode can be used for long simulation runs: only
+	periodical status update is displayed about the progress of the
 	simulation.
-	When in normal (non-express) mode, the following ini file entries 
+	When in normal (non-express) mode, the following ini file entries
 	are taken into account:
 	  module-messages=yes/no (default: yes)
 	     - printing module ev<< output on/off (as before)

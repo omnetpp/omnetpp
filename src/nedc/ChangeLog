@@ -1,31 +1,34 @@
-FIXME PARSIM: 
-2003-03-25  Andras Varga
+2003-11-13  Andras Varga
 
-	* jar_mod.c: removed "islocal" stuff from module creation -- parallel
-	simulation is being reorganized
-	removed all machines stuff!!!!!!!!!!!!!!!1
-------------------------------------------
+	* Checked in parallel simulation code that was developed March-May 2003,
+	during my stay at Monash University. Changes:
+
+	2003-03-25  Andras Varga
+	* jar_mod.c: removed "islocal" stuff from module creation
+
+	2003-11-11  Andras Varga
+	* removed "machines" and "on" sections from NED grammar
 
 2003-10-07  Andras Varga
 
-	* ebnf.y: fixed nedc bug, it didn't handle user-defined functions 
+	* ebnf.y: fixed nedc bug, it didn't handle user-defined functions
 	with 4 parameters properly. [Reported by Andreas Koepke]
 
-2003-10-07  Johnny Lai  
+2003-10-07  Johnny Lai
 
 	* jar.c : nedc added -h support for intel compiler on Linux
 	(__INTEL_COMPILER && __linux__)
 
 2003-09-30  Andras Varga
 
-	* opp_msgc: with customize=true, adds a default dup() function to the 
+	* opp_msgc: with customize=true, adds a default dup() function to the
 	generated _Base class that throws an exception and warns the user.
 	Also made assignment operator protected, to force the user overwrite
 	it with a fresh one in the customized class.
 
 2003-08-12  Andras Varga
 
-	* opp_msgc: implemented -h option, meaning identical to nedc 
+	* opp_msgc: implemented -h option, meaning identical to nedc
 	[patch by Johnny Lai]
 
 2003-07-27  Andras Varga
@@ -35,7 +38,7 @@ FIXME PARSIM:
 
 2003-06-18  Andras Varga
 
-	* TODO: should not generate set...ArraySize() methods for abstract 
+	* TODO: should not generate set...ArraySize() methods for abstract
 	arrays. Tkenv doesn't really need them and seems like
 	they're in the way.
 
@@ -50,13 +53,13 @@ FIXME PARSIM:
 
 2003-05-01  Andras Varga
 
-	* opp_msgc fix: perl in RedHat 9 (rpm 5.8.0-88) is broken, it doesn't 
+	* opp_msgc fix: perl in RedHat 9 (rpm 5.8.0-88) is broken, it doesn't
 	recognize the [^\s] construct in regexps. Workaround: replaced [^\s]
 	with [^ \t\r\n].
 
 2003-03-19  Andras Varga
 
-	* opp_msgc: accept, but (since imports are not yet supported) ignore 
+	* opp_msgc: accept, but (since imports are not yet supported) ignore
 	the -I flag
 
 2003-03-15  ------ omnetpp-2.3b2 released ------
@@ -90,10 +93,10 @@ FIXME PARSIM:
 
 2002-12-07  Andras Varga
 
-	* msgc.pl was renamed opp_msgc, and now it gets copied to the bin/ 
+	* msgc.pl was renamed opp_msgc, and now it gets copied to the bin/
 	directory; an opp_msgc.cmd was also added for Windows' sake
 
-	* files for opp_msgc should now have .msg suffix -- nedcwrapper.sh 
+	* files for opp_msgc should now have .msg suffix -- nedcwrapper.sh
 	removed
 
 	* msgtest.ned renamed to example.msg
@@ -101,8 +104,8 @@ FIXME PARSIM:
 2002-11-23  Andras Varga
 
 	* jar_expr.c: fixed bug which caused generated code to crash if
-	user-supplied math function (i.e. its cFunctionType object) 
-	was not found 
+	user-supplied math function (i.e. its cFunctionType object)
+	was not found
 
 2002-11-04  Andras Varga
 
@@ -118,7 +121,7 @@ FIXME PARSIM:
 	* jar_mod.c: changed Interface macro names to ModuleInterface (see also
 	include/ChangeLog)
 
-2002-10-04  Andras Varga 
+2002-10-04  Andras Varga
 
 	* nedc: changed opp_error() calls in generated code to throw new cException
 

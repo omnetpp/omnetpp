@@ -31,6 +31,14 @@ OMNETPP_GNED_DIR=@OMNETPP_GNED_DIR@
 OBJS = gned$(GNED_EMBED_SUFFIX).o tklib.o arrow.o ebnf.tab.o lex.yy.o parsened.o nedfile.o
 
 #
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.o:
+	$(CXX) -c $(COPTS) -o $@ $<
+
+#
 # Targets
 #
 default: @GNED_IF_POSSIBLE@
@@ -45,32 +53,11 @@ gned.o : gned.cc
 gned-e.o : gned.cc tclcode.cc
 	$(CXX) -c $(COPTS) -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" gned.cc -o gned-e.o
 
-tklib.o : tklib.cc
-	$(CXX) -c $(COPTS) tklib.cc
-
-arrow.o: arrow.cc
-	$(CXX) -c $(COPTS) arrow.cc
-
-parsened.o: parsened.cc
-	$(CXX) -c $(COPTS) parsened.cc
-
-nedfile.o: nedfile.cc
-	$(CXX) -c $(COPTS) nedfile.cc
-
-lex.yy.o: lex.yy.cc
-	$(CXX) -c $(COPTS) lex.yy.cc
-
-ebnf.tab.o: ebnf.tab.cc
-	$(CXX) -c $(COPTS) ebnf.tab.cc
-
-ebnf.tab.h: ebnf.y
-	$(YACC) -b ebnf -d ebnf.y
-
-ebnf.tab.cc: ebnf.y
+ebnf.tab.cc ebnf.tab.h : ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
 	mv ebnf.tab.c ebnf.tab.cc
 
-lex.yy.cc: ebnf.lex
+lex.yy.cc : ebnf.lex
 	$(LEX) ebnf.lex
 	mv lex.yy.c lex.yy.cc
 

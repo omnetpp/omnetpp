@@ -10,13 +10,21 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) $(XML_CFLAGS)
+COPTS=$(CFLAGS) $(XML_CFLAGS) /I.
 OBJS= nedelements.obj nedelement.obj nederror.obj \
       nedvalidator.obj neddtdvalidator.obj neddtdvalidator1.obj \
       nedbasicvalidator.obj nedsemanticvalidator.obj nedcompiler.obj \
       cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj nedgenerator.obj \
       nedfilebuffer.obj nedparser.obj ned.tab.obj lex.yy.obj nedutil.obj \
       xmlgenerator.obj nedxmlparser.obj nedsaxhandler.obj saxparser_$(XMLPARSER).obj \
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 
 #
@@ -31,86 +39,21 @@ nedxml.lib : $(OBJS)
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned.dtd
         perl dtdclassgen.pl ned.dtd
 
-cppgenerator.obj : cppgenerator.cc
-        $(CXX) $(COPTS) /c /Tp cppgenerator.cc
-
-cppmsggenerator.obj : cppmsggenerator.cc
-        $(CXX) $(COPTS) /c /Tp cppmsggenerator.cc
-
-cppexprgenerator.obj : cppexprgenerator.cc
-        $(CXX) $(COPTS) /c /Tp cppexprgenerator.cc
-
-nedelements.obj : nedelements.cc
-        $(CXX) $(COPTS) /c /Tp nedelements.cc
-
-nedelement.obj : nedelement.cc
-        $(CXX) $(COPTS) /c /Tp nedelement.cc
-
-nedvalidator.obj : nedvalidator.cc
-        $(CXX) $(COPTS) /c /Tp nedvalidator.cc
-
-neddtdvalidator.obj : neddtdvalidator.cc
-        $(CXX) $(COPTS) /c /Tp neddtdvalidator.cc
-
-neddtdvalidator1.obj : neddtdvalidator1.cc
-        $(CXX) $(COPTS) /c /Tp neddtdvalidator1.cc
-
-nedcompiler.obj : nedcompiler.cc
-        $(CXX) $(COPTS) /c /Tp nedcompiler.cc
-
-nedbasicvalidator.obj : nedbasicvalidator.cc
-        $(CXX) $(COPTS) /c /Tp nedbasicvalidator.cc
-
-nedsemanticvalidator.obj : nedsemanticvalidator.cc
-        $(CXX) $(COPTS) /c /Tp nedsemanticvalidator.cc
-
-nederror.obj : nederror.cc
-	$(CXX) $(COPTS) /c /Tp nederror.cc
-
-nedutil.obj : nedutil.cc
-	$(CXX) $(COPTS) /c /Tp nedutil.cc
-
-lex.yy.obj: lex.yy.c
-        $(CXX) /I "." $(COPTS) /c /Tp lex.yy.c
-
-ned.tab.obj: ned.tab.h ned.tab.c
-        $(CXX) $(COPTS) /c /Tp ned.tab.c
-
-ned.tab.h: ned.y
+ned.tab.h ned.tab.cc : ned.y
         $(YACC:/=\) -b ned -d ned.y
+        copy ned.tab.c ned.tab.cc
+        del ned.tab.c
 
-ned.tab.c: ned.y
-        $(YACC:/=\) -b ned -d ned.y
-
-lex.yy.c: ned.lex
+lex.yy.cc: ned.lex
         $(LEX:/=\) ned.lex
-
-nedgenerator.obj : nedgenerator.cc
-        $(CXX) $(COPTS) /c /Tp nedgenerator.cc
-
-nedfilebuffer.obj : nedfilebuffer.cc
-        $(CXX) $(COPTS) /c /Tp nedfilebuffer.cc
-
-nedparser.obj : nedparser.cc
-        $(CXX) $(COPTS) /c /Tp nedparser.cc
-
-xmlgenerator.obj : xmlgenerator.cc
-        $(CXX) $(COPTS) /c /Tp xmlgenerator.cc
-
-nedxmlparser.obj : nedxmlparser.cc
-        $(CXX) $(COPTS) /c /Tp nedxmlparser.cc
-
-nedsaxhandler.obj : nedsaxhandler.cc
-        $(CXX) $(COPTS) /c /Tp nedsaxhandler.cc
+        copy lex.yy.c lex.yy.cc
+        del lex.yy.c
 
 saxparser_expat.obj : saxparser_expat.cc
         $(CXX) $(COPTS) /I $(EXPAT_INCL_DIR) /c /Tp saxparser_expat.cc
 
 saxparser_libxml.obj : saxparser_libxml.cc
         $(CXX) $(COPTS) /I $(LIBXML_INCL_DIR) /c /Tp saxparser_libxml.cc
-
-saxparser_none.obj : saxparser_none.cc
-        $(CXX) $(COPTS) /c /Tp saxparser_none.cc
 
 doc:
 	$(DOXYGEN:/=\) doxy.cfg

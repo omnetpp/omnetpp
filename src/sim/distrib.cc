@@ -334,7 +334,7 @@ int poisson(double lambda, int rng)
             X = (int)floor(Y + 0.5);
             V = genk_dblrand(rng);
         }
-        while (a - b * Y + log(V / 1.0 + pow(exp(a - b * Y), 2.0)) > d + X * log(lambda) - log(X));
+        while (a - b * Y + log(V / 1.0 + pow(exp(a - b * Y), 2.0)) > d + X * log(lambda) - log(double(X)));
     }
     else
     {

@@ -22,8 +22,16 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../envir" $(TK_CFLAGS) /DBUILDING_TKENV
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj inspector.obj \
        inspfactory.obj objinsp.obj modinsp.obj statinsp.obj structinsp.obj \
-       arrow.obj 
+       arrow.obj
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib $(TK_LIB_DIR)/tcl82.lib $(TK_LIB_DIR)/tk82.lib
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 #
 # Targets
@@ -47,34 +55,7 @@ tkapp.obj : tkapp.cc
 tkapp-e.obj : tkapp.cc  tclcode.cc
 	$(CXX) /Fo"tkapp-e.obj" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp tkapp.cc
 
-tkcmd.obj : tkcmd.cc
-	$(CXX) $(COPTS) /c /Tp tkcmd.cc
-
-tklib.obj : tklib.cc
-	$(CXX) $(COPTS) /c /Tp tklib.cc
-
-inspector.obj: inspector.cc
-	$(CXX) $(COPTS) /c /Tp inspector.cc
-
-inspfactory.obj: inspfactory.cc
-	$(CXX) $(COPTS) /c /Tp inspfactory.cc
-
-objinsp.obj: objinsp.cc
-	$(CXX) $(COPTS) /c /Tp objinsp.cc
-
-modinsp.obj: modinsp.cc
-	$(CXX) $(COPTS) /c /Tp modinsp.cc
-
-statinsp.obj: statinsp.cc
-	$(CXX) $(COPTS) /c /Tp statinsp.cc
-
-structinsp.obj: structinsp.cc
-	$(CXX) $(COPTS) /c /Tp structinsp.cc
-
-arrow.obj: arrow.cc arrow.h
-	$(CXX) $(COPTS) /c /Tp arrow.cc
-
-tclcode.cc: *.tcl
+tclcode.cc : *.tcl
 	..\utils\tcl2c tclcode.cc *.tcl
 
 missing-library:

@@ -10,14 +10,18 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN)
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../sim" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN)
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj \
      seeds.obj patmatch.obj platdep.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
-!if "$(WITH_PARSIM)"=="yes"
-COPTS= $(COPTS) /I "../sim" /DWITH_PARSIM
-!endif
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
 
 #
 # Targets
@@ -37,39 +41,6 @@ envir.dll : $(OBJS) $(LIBS)
 	$(SHLIB_LD) /nologo /out:envir.dll /implib:envir.ilib /subsystem:console /def:envir.def $(OBJS) $(LIBS)
 	copy envir.dll $(OMNETPP_LIB_DIR:/=\)
 	copy envir.ilib $(OMNETPP_LIB_DIR:/=\)
-
-args.obj : args.cc args.h
-	$(CXX) $(COPTS) /c /Tp args.cc
-
-cenvir.obj : cenvir.cc
-	$(CXX) $(COPTS) /c /Tp cenvir.cc
-
-cinifile.obj : cinifile.cc
-	$(CXX) $(COPTS) /c /Tp cinifile.cc
-
-main.obj : main.cc
-	$(CXX) $(COPTS) /c /Tp main.cc
-
-omnetapp.obj : omnetapp.cc
-	$(CXX) $(COPTS) /c /Tp omnetapp.cc
-
-seeds.obj : seeds.cc
-	$(CXX) $(COPTS) /c /Tp seeds.cc
-
-patmatch.obj : patmatch.cc
-	$(CXX) $(COPTS) /c /Tp patmatch.cc
-
-platdep.obj : platdep.cc
-	$(CXX) $(COPTS) /c /Tp platdep.cc
-
-speedmtr.obj : speedmtr.cc
-	$(CXX) $(COPTS) /c /Tp speedmtr.cc
-
-filemgrs.obj : filemgrs.cc
-	$(CXX) $(COPTS) /c /Tp filemgrs.cc
-
-akoutvectormgr.obj : akoutvectormgr.cc
-	$(CXX) $(COPTS) /c /Tp akoutvectormgr.cc
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc

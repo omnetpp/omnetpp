@@ -15,6 +15,15 @@ OBJS = cmdenv.obj enumstr.obj heap.obj
 LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib
 
 #
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+
+#
 # Targets
 #
 all: cmdenv$(LIB_SUFFIX)
@@ -27,15 +36,6 @@ cmdenv.dll : $(OBJS) $(LIBS)
 	$(SHLIB_LD) /nologo /out:cmdenv.dll /implib:cmdenv.ilib /subsystem:console /def:cmdenv.def $(OBJS) $(LIBS)
 	copy cmdenv.dll $(OMNETPP_LIB_DIR:/=\)
 	copy cmdenv.ilib $(OMNETPP_LIB_DIR:/=\)
-
-cmdenv.obj : cmdenv.cc
-	$(CXX) $(COPTS) /c /Tp cmdenv.cc
-
-enumstr.obj : enumstr.cc
-	$(CXX) $(COPTS) /c /Tp enumstr.cc
-
-heap.obj : heap.cc
-	$(CXX) $(COPTS) /c /Tp heap.cc
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc

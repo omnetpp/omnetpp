@@ -31,6 +31,14 @@ OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o \
      patmatch.o platdep.o speedmtr.o filemgrs.o akoutvectormgr.o
 
 #
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.o:
+	$(CXX) -c $(COPTS) -o $@ $<
+
+#
 # Targets
 #
 all : libenvir$(LIB_SUFFIX)
@@ -43,42 +51,6 @@ libenvir$(A_LIB_SUFFIX) : $(OBJS)
 libenvir$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libenvir$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib libenvir$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(SO_LIB_SUFFIX)
-
-args.o : args.cc args.h
-	$(CXX) -c $(COPTS) args.cc
-
-cenvir.o : cenvir.cc
-	$(CXX) -c $(COPTS) cenvir.cc
-
-cinifile.o : cinifile.cc
-	$(CXX) -c $(COPTS) cinifile.cc
-
-main.o : main.cc
-	$(CXX) -c $(COPTS) main.cc
-
-omnetapp.o : omnetapp.cc
-	$(CXX) -c $(COPTS) omnetapp.cc
-
-slaveapp.o : slaveapp.cc
-	$(CXX) -c $(COPTS) slaveapp.cc
-
-seeds.o : seeds.cc
-	$(CXX) -c $(COPTS) seeds.cc
-
-patmatch.o : patmatch.cc
-	$(CXX) -c $(COPTS) patmatch.cc
-
-platdep.o : platdep.cc
-	$(CXX) -c $(COPTS) platdep.cc
-
-speedmtr.o : speedmtr.cc
-	$(CXX) -c $(COPTS) speedmtr.cc
-
-filemgrs.o : filemgrs.cc
-	$(CXX) -c $(COPTS) filemgrs.cc
-
-akoutvectormgr.o : akoutvectormgr.cc
-	$(CXX) -c $(COPTS) akoutvectormgr.cc
 
 depend:
 	$(MAKEDEPEND) -I. -I../../include -- *.cc

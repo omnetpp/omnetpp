@@ -268,8 +268,11 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
     else
         sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath(), modname, index);
     int procId = ini_file->getAsInt2(section,"Partitioning",parname,-1);
-    if (procId<0 || procId>=parsimcomm->getNumPartitions())
-        throw new cException("incomplete partitioning: missing or invalid value for '%s'",parname);
+    if (procId<0)
+        throw new cException("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);
+    if (procId>=parsimcomm->getNumPartitions())
+        throw new cException("wrong partitioning: value %d too large for '%s' (total partitions=%d)",
+                             procId,parname,parsimcomm->getNumPartitions());
     // FIXME this solution isn't good!!! has to check if myProcId is CONTAINED
     // in the set of procIds defined for the children of this module
     int myProcId = parsimcomm->getProcId();

@@ -34,8 +34,15 @@ OMNETPP_TKENV_DIR=@OMNETPP_TKENV_DIR@
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o inspector.o \
        inspfactory.o objinsp.o modinsp.o statinsp.o structinsp.o \
-       arrow.o 
+       arrow.o
 
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.o:
+	$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
@@ -58,33 +65,6 @@ tkapp.o : tkapp.cc
 
 tkapp-e.o : tkapp.cc  tclcode.cc
 	$(CXX) -c $(COPTS) -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" tkapp.cc -o tkapp-e.o
-
-tkcmd.o : tkcmd.cc
-	$(CXX) -c $(COPTS) tkcmd.cc
-
-tklib.o : tklib.cc
-	$(CXX) -c $(COPTS) tklib.cc
-
-inspector.o: inspector.cc
-	$(CXX) -c $(COPTS) inspector.cc
-
-inspfactory.o: inspfactory.cc
-	$(CXX) -c $(COPTS) inspfactory.cc
-
-objinsp.o: objinsp.cc
-	$(CXX) -c $(COPTS) objinsp.cc
-
-modinsp.o: modinsp.cc
-	$(CXX) -c $(COPTS) modinsp.cc
-
-statinsp.o: statinsp.cc
-	$(CXX) -c $(COPTS) statinsp.cc
-
-structinsp.o: structinsp.cc
-	$(CXX) -c $(COPTS) structinsp.cc
-
-arrow.o: arrow.cc arrow.h
-	$(CXX) -c $(COPTS) arrow.cc
 
 tclcode.cc: *.tcl
 	../utils/tcl2c tclcode.cc *.tcl

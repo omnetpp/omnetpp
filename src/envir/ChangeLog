@@ -1,17 +1,18 @@
-FIXME PARSIM stuff:---------------------------
-2003-05-12  Andras Varga
+2003-11-13  Andras Varga
 
+	* Checked in parallel simulation code that was developed March-May 2003,
+	during my stay at Monash University. Changes:
+
+	2003-05-12  Andras Varga
 	* speedmtr.cc: changed so that if measurement interval (clocks) or
-	number of events are small, it refuses to give results (ie. returns 
+	number of events are small, it refuses to give results (ie. returns
 	all zeroes). I had some weird readings other before that...
 
-2003-04-18  Andras Varga
-
+	2003-04-18  Andras Varga
 	* omnetapp.cc: fname-append-host setting now also appends pid (process
 	id) to the file names
 
-2003-03-31  Andras Varga
-
+	2003-03-31  Andras Varga
 	* omnetapp.cc/h: parallel simulation ini file options changed.
 	New options, with their default values:
           [General]
@@ -24,11 +25,9 @@ FIXME PARSIM stuff:---------------------------
 	  distributed=...
 	  parallel-system=...
 
-2003-03-23  Andras Varga
-
+	2003-03-23  Andras Varga
 	* omnetapp.cc: install scheduler into 'simulation' object on startup --
 	see comments in include/ChangeLog about cScheduler
--------------------------------------------------------
 
 2003-11-09  Andras Varga
 
@@ -39,7 +38,7 @@ FIXME PARSIM stuff:---------------------------
 
 2003-10-02  Andras Varga
 
-	* cenvir.cc, omnetapp.h: added new method cEnvir::moduleMethodCalled(), 
+	* cenvir.cc, omnetapp.h: added new method cEnvir::moduleMethodCalled(),
 	needed for animation of method calls between modules
 
 2003-09-22  Andras Varga
@@ -58,7 +57,7 @@ FIXME PARSIM stuff:---------------------------
 2003-03-04  Andras Varga
 
 	* cinifile.cc/h: made it faster to process large ini files (added
-	haswildcard field) 
+	haswildcard field)
 
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
@@ -85,25 +84,25 @@ FIXME PARSIM stuff:---------------------------
 
 2002-09-21  Andras Varga
 
-	* filemgrs.cc, akoutvectormgr.cc: applied Steffen Sroka's patches 
+	* filemgrs.cc, akoutvectormgr.cc: applied Steffen Sroka's patches
 	(thanks Steffen!). AKAROA_CFLAGS added to Makefile.in.
 
 2002-07-08  Andras Varga
 
 	* filemgrs.cc: added fname-append-host=true/false ini file setting.
 	When turned on, appends the host name to the names of the output
-	files (output vector, output scalar, snapshot files). This is 
+	files (output vector, output scalar, snapshot files). This is
 	useful when the simulation is run on multiple machines concurrently
 	(parallel independent runs (Akaroa) or parallel/distributed simulation),
 	and all running instances write to the same directory (e.g. shared
 	via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
 
-	* added akoutvectormgr.h/cc: integrated Steffen Sroka's Akaroa 
+	* added akoutvectormgr.h/cc: integrated Steffen Sroka's Akaroa
 	extension that supports multiple independent replicated simulation runs.
 	Akaroa can be activated by specifying
 	  [General]
 	  outputvectormanager-class=cAkOutputVectorManager
-	in the ini file. By default, all output vectors are under Akaroa 
+	in the ini file. By default, all output vectors are under Akaroa
 	control; the <modulename>.<vectorname>.akaroa=false setting can be used
 	to make Akaroa ignore specific vectors.
 	For more info see the Akaroa home page and the OMNeT++ documentation.

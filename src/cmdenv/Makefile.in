@@ -27,6 +27,14 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I../envir -DBUILDING_CMDENV
 OBJS = cmdenv.o enumstr.o heap.o
 
 #
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.o:
+	$(CXX) -c $(COPTS) -o $@ $<
+
+#
 # Targets
 #
 all: libcmdenv$(LIB_SUFFIX)
@@ -39,15 +47,6 @@ libcmdenv$(A_LIB_SUFFIX) : $(OBJS)
 libcmdenv$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libcmdenv$(SO_LIB_SUFFIX) $(OBJS)
 	../utils/install-lib libcmdenv$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcmdenv$(SO_LIB_SUFFIX)
-
-cmdenv.o : cmdenv.cc
-	$(CXX) -c $(COPTS) cmdenv.cc
-
-enumstr.o : enumstr.cc
-	$(CXX) -c $(COPTS) enumstr.cc
-
-heap.o : heap.cc
-	$(CXX) -c $(COPTS) heap.cc
 
 depend:
 	$(MAKEDEPEND) -I. -I../envir -I../../include -- *.cc

@@ -17,6 +17,9 @@ OMNETPP_VERSION=@OMNETPP_VERSION@
 HAVE_MPI=@HAVE_MPI@
 MPI_CFLAGS=@MPI_CFLAGS@
 
+WITH_NETBUILDER=@WITH_NETBUILDER@
+WITH_PARSIM=@WITH_PARSIM@
+
 # LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
 LIB_SUFFIX=@LIB_SUFFIX@
 
@@ -35,6 +38,8 @@ CPPOBJS_STD = task.o ccoroutine.o ctypes.o carray.o cgate.o \
          cmsgheap.o coutvect.o cqueue.o chead.o cwatch.o \
          cpacket.o cfsm.o cstruct.o cchannel.o cenum.o cexception.o cdispstr.o \
          cscheduler.o onstartup.o random.o distrib.o
+CPPOBJS_NETBUILDER= netbuilder/cdynamicmodule.o netbuilder/cdynamicnetwork.o \
+                    netbuilder/cnednetworkbuilder.o netbuilder/loadnedfile.o
 CPPOBJS_PARSIM = parsim/ccommbuffer.o parsim/cmemcommbuffer.o \
          parsim/cparsimsegment.o parsim/cplaceholdermod.o parsim/cproxygate.o \
          parsim/cparsimprotocolbase.o parsim/cnosynchronization.o \
@@ -45,11 +50,28 @@ CPPOBJS_PARSIM = parsim/ccommbuffer.o parsim/cmemcommbuffer.o \
          parsim/cnamedpipecomm.o parsim/creceivedexception.o
 CPPOBJS_MPI = parsim/cmpicomm.o parsim/cmpicommbuffer.o
 
-CPPOBJS = $(CPPOBJS_STD) $(CPPOBJS_PARSIM)
+CPPOBJS= $(CPPOBJS_STD)
 
+ifeq ($(WITH_NETBUILDER),yes)
+CPPOBJS += $(CPPOBJS_NETBUILDER)
+COPTS += /DWITH_NETBUILDER /I "$(OMNETPP_SRC_DIR)/nedxml"
+endif
+
+ifeq ($(WITH_PARSIM),yes)
+CPPOBJS += $(CPPOBJS_PARSIM)
 ifeq ($(HAVE_MPI),yes)
 CPPOBJS += $(CPPOBJS_MPI)
+COPTS += $(MPI_CFLAGS)
 endif
+endif
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.o:
+	$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
@@ -66,15 +88,6 @@ libsim_std$(A_LIB_SUFFIX) : $(CPPOBJS)
 libsim_std$(SO_LIB_SUFFIX) : $(CPPOBJS)
 	$(SHLIB_LD) -o libsim_std$(SO_LIB_SUFFIX) $(CPPOBJS)
 	../utils/install-lib libsim_std$(SO_LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(SO_LIB_SUFFIX)
-
-
-#
-# Automatic rules
-#
-.SUFFIXES : .cc
-
-.cc.o:
-	$(CXX) -c $(COPTS) -o $@ $<
 
 depend:
 	$(MAKEDEPEND) -I../../include -- *.cc parsim/*.cc

@@ -350,7 +350,7 @@ void TOutVectorWindow::update()
           double opt_tf = dt/canvaswidth;
 
           // some rounding: keep 2 significant digits
-          double order = pow(10,floor(log10(opt_tf)));
+          double order = pow(10,(int)floor(log10(opt_tf)));
           opt_tf = floor(opt_tf/order+.5)*order;
 
           // adjust only if it differs >=20% from its optimal value

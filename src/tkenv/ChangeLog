@@ -1,10 +1,11 @@
-FIXME PARSIM---------------
-2003-04-09  Andras Varga
+2003-11-13  Andras Varga
 
+	* Checked in parallel simulation code that was developed March-May 2003,
+	during my stay at Monash University. Changes:
+
+	2003-04-09  Andras Varga
 	* tkapp.cc: use new cSimulation method guessNextEvent() for updating
 	"Next module" display.
-----------------------------------
-
 
 2003-11-09  Andras Varga
 
@@ -14,37 +15,37 @@ FIXME PARSIM---------------
 
 2003-11-07  Andras Varga
 
-	* started working on a Tkenv plugin API. It's still in embryonal state. 
+	* started working on a Tkenv plugin API. It's still in embryonal state.
 	Plugins are any .tcl file found in directories of the plugin path
 	(OMNETPP_PLUGIN_PATH env.var, "./plugins" be default), and they are
 	loaded automatically when Tkenv starts. They may define Tcl procs,
 	create windows, widgets, meu items, etc.
 	   The plugin may invoke the registerPlugin <pluginname> Tcl function,
-	which arranges certain plugin functions to be called on different 
-	Tkenv events. As of now, the only such function is 
+	which arranges certain plugin functions to be called on different
+	Tkenv events. As of now, the only such function is
 	<pluginname>:newNetwork, called after a network got set up.
-	   As of now, plugins authors need to look at the Tkenv code to see 
+	   As of now, plugins authors need to look at the Tkenv code to see
 	what they can do and how they can do it from within a plugin. This is
 	not very good since it makes plugins dependent on Tkenv internals.
-	Some time in the future a well-defined Tkenv API will have to be 
-	created. Also, the plugin mechanism will probably be changed to 
+	Some time in the future a well-defined Tkenv API will have to be
+	created. Also, the plugin mechanism will probably be changed to
 	make use of the namespace and package mechanisms of Tcl.
 	   An example plugin can be found in test/tkenv/plugin.
 
-	* tkcmd.cc: implemented opp_modulebypath, opp_getmodulepar, 
+	* tkcmd.cc: implemented opp_modulebypath, opp_getmodulepar,
 	opp_setmodulepar commands (needed by Tkenv plugins)
 
 2003-10-19  Andras Varga
 
-        * slight change in submodule display strings: if both "b=" (box) and 
+        * slight change in submodule display strings: if both "b=" (box) and
         "i=" (icon) occurs in the display string, *both* are displayed
-        (the icon on top of the box; prevoiusly, the icon took precedence). 
-        This facilitates visualizing the state of a module: state can be coded 
+        (the icon on top of the box; prevoiusly, the icon took precedence).
+        This facilitates visualizing the state of a module: state can be coded
         in the color (or size) of the underlying box or oval (or frame/circle,
         because transparency is also supported, see below)
 
 	* enhancement in display strings: special color "-" means transparent;
-	@hhssbb (with h,s,b as hex digits) stands for a color given with 
+	@hhssbb (with h,s,b as hex digits) stands for a color given with
 	(hue,saturation,brightness) values -- this makes it easier to scale
 	colors e.g. from white to bright red
 
@@ -60,17 +61,17 @@ FIXME PARSIM---------------
 	next to submodule icon. Add "q=<queue-name>" to the display string,
 	where queue-name is the name of the cQueue object, e.g. "q=sendQueue".
 
-	* tkenvrc now saves all options. Entries in the [Tkenv] section of 
-	omnetpp.ini will be obsoleted -- anyway they only take effect if 
+	* tkenvrc now saves all options. Entries in the [Tkenv] section of
+	omnetpp.ini will be obsoleted -- anyway they only take effect if
 	there's no .tkenvrc!
 
 2003-10-02  Andras Varga
 
 	* tkapp.cc/h, modinsp.cc/h, modinsp2.tcl: new features:
-	(1) animation of method calls across modules (for that to work, 
+	(1) animation of method calls across modules (for that to work,
 	    module methods need the Enter_Method() macro to be added manually),
 	    and
-	(2) displaying the location of the next event by putting a red frame 
+	(2) displaying the location of the next event by putting a red frame
 	    around the module icon.
 	Both features can be disabled from the Simulation Options dialog,
 	see checkboxes "Show next event markers" and "Animate method calls".
@@ -81,16 +82,16 @@ FIXME PARSIM---------------
 2003-09-25  Andras Varga
 
 	* modinsp2.tcl: added support for "r" submodule display string tag.
-	It draws a circle (or a disc) around the submodule with the given 
-	radius, and it can be used to visualize transmission range of 
+	It draws a circle (or a disc) around the submodule with the given
+	radius, and it can be used to visualize transmission range of
 	wireless nodes. Syntax: "r=<radius>,<fillcolor>,<color>,<width>",
 	the default is unfilled black circle with radius=100.
 
         * modinsp2.tcl: implemented message display strings. You can redefine
         the displayString() method of cMessage, and make it return a display
-        string. Supported tags are: "b","i" and "o" tags which work just as 
+        string. Supported tags are: "b","i" and "o" tags which work just as
         with submodules, with two exceptions:
-        - if color name is "kind", a message kind dependent colors is used 
+        - if color name is "kind", a message kind dependent colors is used
           (like default behaviour)
         - defaults are different: small red ball with size of 10 points
         Try "i=penguin" or "b=15,15,rect;o=white,kind,5"
@@ -107,12 +108,12 @@ FIXME PARSIM---------------
 
 2003-07-24  Andras Varga
 
-	* implemented Inspect|Find/Inspect objects dialog, a filtered-ordered 
+	* implemented Inspect|Find/Inspect objects dialog, a filtered-ordered
 	dialog of all objects.
 
 2003-07-22  Andras Varga
 
-	* structinsp.cc/h: "Fields" tab in message inspector now recursively 
+	* structinsp.cc/h: "Fields" tab in message inspector now recursively
 	displays embedded structs (so far it only displayed "{...}")
 
 2003-06-16  ------ omnetpp-2.3 released ------
@@ -123,7 +124,7 @@ FIXME PARSIM---------------
 
 2003-04-17  Andras Varga
 
-	* objinsp.tcl: fixed bug which prevented cPackets (or objects 
+	* objinsp.tcl: fixed bug which prevented cPackets (or objects
 	subclassed from it) from being inspected (Tcl error)
 
 2003-03-15  ------ omnetpp-2.3b2 released ------
@@ -147,21 +148,21 @@ FIXME PARSIM---------------
 
 2003-01-23  Andras Varga
 
-	* "Step" button in module inspectors replaced with 3 buttons ("Run 
+	* "Step" button in module inspectors replaced with 3 buttons ("Run
 	until next local event", "Fast run until next local event", "Stop")
 
 	* Graphical module inspector: if there're too many submodules, drawing
 	may take very long, so the user is prompted if he/she really wants
-	see the graphics. Limit is currently 1000 submodules. 
-	The object tree view is also usable until ~1000 objects displayed in 
+	see the graphics. Limit is currently 1000 submodules.
+	The object tree view is also usable until ~1000 objects displayed in
 	the tree.
 
-	* Note: ad-hoc load tests: with Dyna, a 8000-client network could be set 
+	* Note: ad-hoc load tests: with Dyna, a 8000-client network could be set
 	up and run (~12500 modules, including ServerProcs) on Win2K, 256M RAM.
-	A modified version of Fifo2 (n independent Fifo networks, each with 
+	A modified version of Fifo2 (n independent Fifo networks, each with
 	3 modules using handleMessage()) could be set up with n=33300, that is,
-	~100,000 modules. Process size was 280M, so it couldn't be run (too 
-	less physical RAM). Both auto-inspectors (.tkenvrc) and displaying the 
+	~100,000 modules. Process size was 280M, so it couldn't be run (too
+	less physical RAM). Both auto-inspectors (.tkenvrc) and displaying the
 	object tree view were very slow over a few thousand modules.
 
 2003-01-19  Andras Varga
@@ -171,14 +172,14 @@ FIXME PARSIM---------------
 
 2003-01-16  Andras Varga
 
-	* enhancement: inspectors: made buttons that open inspectors for other 
-	objects (e.g. encapsulated message in message inspector) look like 
+	* enhancement: inspectors: made buttons that open inspectors for other
+	objects (e.g. encapsulated message in message inspector) look like
 	other inspector fields (i.e. label+button).
 
 2003-01-14  Andras Varga
 
-	* enhancement: graphical module inspector: don't bug the user with 
-	error dialogs if icon for a module is not found; just only display 
+	* enhancement: graphical module inspector: don't bug the user with
+	error dialogs if icon for a module is not found; just only display
 	the 'unknown' icon.
 
 2003-01-12  Andras Varga
@@ -187,12 +188,12 @@ FIXME PARSIM---------------
 
 2003-01-11  Andras Varga
 
-	* enhancement: main.tcl: appearance of menus on Unix made more 
+	* enhancement: main.tcl: appearance of menus on Unix made more
 	contemporary (via option add's)
 
 2003-01-10  Andras Varga
 
-	* enhancement: implemented object tree view on left of main Tkenv 
+	* enhancement: implemented object tree view on left of main Tkenv
 	window
 
 2003-01-06  Andras Varga
@@ -200,10 +201,10 @@ FIXME PARSIM---------------
 	* misc enhancements: display string added to module inspectors
 	(editable); inspector toolbar improved; rest of Tcl_SetResult() fixed;
 	submodule drawing (interpretation of display strings) made entirely
-	consistent with GNED; subtle bug fixed which sometimes caused display 
+	consistent with GNED; subtle bug fixed which sometimes caused display
 	string updates not take effect.
 
-	* layout handling rules slightly changed: "p=x,y" now ALWAYS means 
+	* layout handling rules slightly changed: "p=x,y" now ALWAYS means
 	"p=x,y,exact", even if the submodule is part of a vector for which
 	a "row" or "ring" autolayout is chosen automatically. (Before, "p=x,y"
 	meant "p=x,y,row" or "p=x,y,ring" if the submod was in a vector,
@@ -225,8 +226,8 @@ FIXME PARSIM---------------
         * File|Create snapshot now offers to open the snapshot file in a viewer
         window.
 
-	* added tooltips to graphical inspectors. I.e. if you position the 
-	mouse over a module icon, its name, type and id will appear in a 
+	* added tooltips to graphical inspectors. I.e. if you position the
+	mouse over a module icon, its name, type and id will appear in a
 	tooltip.
 
 	* added 'Simulation options' toolbar button; removed Tcl console from
@@ -237,7 +238,7 @@ FIXME PARSIM---------------
 	* File|New network and File|New run dialogs now correctly offer choices
 	of all available networks and all available run numbers
 
-	* tkcmd.cc and other files: most direct assignments to interp->result 
+	* tkcmd.cc and other files: most direct assignments to interp->result
 	changed to Tcl_SetResult(); the ones left are tagged with FIXME comments
 
 2002-12-06  Andras Varga
@@ -263,7 +264,7 @@ FIXME PARSIM---------------
 
 2002-10-27  Andras Varga
 
-	* inspect.cc, tkapp.cc,..: inspectorfactory registration moved here 
+	* inspect.cc, tkapp.cc,..: inspectorfactory registration moved here
 	from sim/
 
 	* reorganized source files (split large .cc and .h files)
@@ -277,31 +278,31 @@ FIXME PARSIM---------------
 	* implemented that inspector windows are restored if you restart
 	the simulation, and even if you quit/restart Tkenv. List of open
 	inspectors is saved in ./tkenvrc which is automatically loaded
-	on startup and written on exit. 
-	
-	In .tkenvrc, inspectors are identified by object name (obj->fullPath()) 
+	on startup and written on exit.
+
+	In .tkenvrc, inspectors are identified by object name (obj->fullPath())
 	and class name (obj->className()), so make sure to use locally unique
 	names for variables you want to inspect.
 
-	Inspector windows usually cannot be opened immediately when .tkenvrc 
-	is loaded (the corresponding objects don't exist yet), so Tkenv keeps 
+	Inspector windows usually cannot be opened immediately when .tkenvrc
+	is loaded (the corresponding objects don't exist yet), so Tkenv keeps
 	a "pending inspectors list" for the inspectors to be opened.
-	At each display update, Tkenv tries to find the corresponding objects 
+	At each display update, Tkenv tries to find the corresponding objects
 	in the network and open inspectors for them. Be aware that this
 	object search is relatively expensive operation, so Tkenv performance
 	may degrade if there are too many pending inspectors. If the network
-	you're running under Tkenv changes often, it's a good idea to 
-	delete .tkenvrc manually sometimes to clean it from garbage (i.e. from 
+	you're running under Tkenv changes often, it's a good idea to
+	delete .tkenvrc manually sometimes to clean it from garbage (i.e. from
 	obsolete entries).
-	 
+
 2002-10-04  Andras Varga
 
 	* error handling changed from simulation.ok() to exceptions.
 
 2002-07-03  Andras Varga
 
-	* modinsp2.tcl (graphmodwin_animate): set upper limit to animation 
-	steps (100) so that animation of a message sending finishes in 
+	* modinsp2.tcl (graphmodwin_animate): set upper limit to animation
+	steps (100) so that animation of a message sending finishes in
 	tolerable time period even on very long connections.
 
 2002-05-27  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>

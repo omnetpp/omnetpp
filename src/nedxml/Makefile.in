@@ -38,6 +38,13 @@ OBJS= nedelements.o nedelement.o nederror.o \
       nedfilebuffer.o nedparser.o ned.tab.o lex.yy.o nedutil.o \
       xmlgenerator.o nedxmlparser.o nedsaxhandler.o saxparser_$(XMLPARSER).o
 
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.o:
+	$(CXX) -c $(COPTS) -o $@ $<
 
 #
 # Targets
@@ -58,86 +65,17 @@ libnedxml$(SO_LIB_SUFFIX) : $(OBJS)
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned.dtd
 	perl dtdclassgen.pl ned.dtd
 
-cppgenerator.o : cppgenerator.cc
-	$(CXX) -c $(COPTS) cppgenerator.cc
-
-cppmsggenerator.o : cppmsggenerator.cc
-	$(CXX) -c $(COPTS) cppmsggenerator.cc
-
-cppexprgenerator.o : cppexprgenerator.cc
-	$(CXX) -c $(COPTS) cppexprgenerator.cc
-
-nedelements.o : nedelements.cc
-	$(CXX) -c $(COPTS) nedelements.cc
-
-nedelement.o : nedelement.cc
-	$(CXX) -c $(COPTS) nedelement.cc
-
-nedvalidator.o : nedvalidator.cc
-	$(CXX) -c $(COPTS) nedvalidator.cc
-
-neddtdvalidator.o : neddtdvalidator.cc
-	$(CXX) -c $(COPTS) neddtdvalidator.cc
-
-neddtdvalidator1.o : neddtdvalidator1.cc
-	$(CXX) -c $(COPTS) neddtdvalidator1.cc
-
-nedcompiler.o : nedcompiler.cc
-	$(CXX) -c $(COPTS) nedcompiler.cc
-
-nedbasicvalidator.o : nedbasicvalidator.cc
-	$(CXX) -c $(COPTS) nedbasicvalidator.cc
-
-nedsemanticvalidator.o : nedsemanticvalidator.cc
-	$(CXX) -c $(COPTS) nedsemanticvalidator.cc
-
-nederror.o : nederror.cc
-	$(CXX) -c $(COPTS) nederror.cc
-
 lex.yy.o: lex.yy.c
 	$(CXX) -c $(COPTS) lex.yy.c
 
 ned.tab.o: ned.tab.h ned.tab.c
 	$(CXX) -c $(COPTS) ned.tab.c
 
-ned.tab.h: ned.y
-	$(YACC) -b ned -d ned.y
-
-ned.tab.c: ned.y
+ned.tab.c ned.tab.h: ned.y
 	$(YACC) -b ned -d ned.y
 
 lex.yy.c: ned.lex
 	$(LEX) ned.lex
-
-nedgenerator.o : nedgenerator.cc
-	$(CXX) -c $(COPTS) nedgenerator.cc
-
-nedfilebuffer.o : nedfilebuffer.cc
-	$(CXX) -c $(COPTS) nedfilebuffer.cc
-
-nedparser.o : nedparser.cc
-	$(CXX) -c $(COPTS) nedparser.cc
-
-xmlgenerator.o : xmlgenerator.cc
-	$(CXX) -c $(COPTS) xmlgenerator.cc
-
-nedxmlparser.o : nedxmlparser.cc
-	$(CXX) -c $(COPTS) nedxmlparser.cc
-
-nedsaxhandler.o : nedsaxhandler.cc
-	$(CXX) -c $(COPTS) nedsaxhandler.cc
-
-saxparser_expat.o : saxparser_expat.cc
-	$(CXX) -c $(COPTS) saxparser_expat.cc
-
-saxparser_libxml.o : saxparser_libxml.cc
-	$(CXX) -c $(COPTS) saxparser_libxml.cc
-
-saxparser_none.o : saxparser_none.cc
-	$(CXX) -c $(COPTS) saxparser_none.cc
-
-nedutil.o : nedutil.cc
-	$(CXX) -c $(COPTS) nedutil.cc
 
 depend:
 	$(MAKEDEPEND) -I../../include -- *.cc
