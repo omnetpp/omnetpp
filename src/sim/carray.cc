@@ -449,19 +449,19 @@ cObject *cArray::remove(const char *objname)
     int m = find( objname );
     if (m==-1) {
         //opp_warning("(%s)%s: remove(): no object called `%s'",className(),fullName(),objname);
-        return NO(cObject);
+        return NULL;
     }
     return remove(m);
 }
 
 cObject *cArray::remove(cObject *obj)
 {
-    if (!obj) return NO(cObject);
+    if (!obj) return NULL;
 
     int m = find( obj );
     if (m==-1) {
         //opp_warning("(%s)%s: remove(): object `%s' not in array",className(),fullName(),obj->fullName());
-        return NO(cObject);
+        return NULL;
     }
     return remove(m);
 }
@@ -470,7 +470,7 @@ cObject *cArray::remove(int m)
 {
     if (m<0 || m>last || vect[m]==NULL) {
         //opp_warning(eNULLPTR,className(),fullName(),m);
-        return NO(cObject);
+        return NULL;
     }
 
     cObject *obj = vect[m]; vect[m] = NULL;

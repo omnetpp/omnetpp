@@ -359,7 +359,7 @@ cGate *cModule::gate(const char *s, int sn)
         opp_warning(sn<0 ? "(%s)%s: Gate `%s' not found"
                          : "(%s)%s: Gate `%s[%d]' not found",
                     className(),fullName(), s, sn );
-        return NO(cGate);
+        return NULL;
     }
     else
         return gate(i);
@@ -373,7 +373,7 @@ const cGate *cModule::gate(const char *s, int sn) const
       opp_warning(sn<0 ? "(%s)%s: Gate `%s' not found"
                   : "(%s)%s: Gate `%s[%d]' not found",
                   className(),fullName(), s, sn );
-      return NO(cGate);
+      return NULL;
     }
   else
     return gate(i);
@@ -395,7 +395,7 @@ cPar& cModule::par(const char *s)
     if (pn!=-1)
         return par(pn);
     else
-        {opp_warning(eNOPARAM,s);return *NO(cPar);}
+        {opp_warning(eNOPARAM,s);return *(cPar *)NULL;}
 }
 
 cPar& cModule::ancestorPar(const char *name)
@@ -411,7 +411,7 @@ cPar& cModule::ancestorPar(const char *name)
     {
          opp_warning("Ancestor parameter `%s' not found for module `%s'",
                      name, fullPath() );
-         return *NO(cPar);
+         return *(cPar *)NULL;
     }
 }
 
@@ -814,9 +814,9 @@ void cSimpleModule::deleteModule()
     {
         cGate *g = gate(i);
         if (g && g->toGate() && g->toGate()->fromGate()==g)
-           g->toGate()->setFrom( NO(cGate) );
+           g->toGate()->setFrom( NULL );
         if (g && g->fromGate() && g->fromGate()->toGate()==g)
-           g->fromGate()->setTo( NO(cGate) );
+           g->fromGate()->setTo( NULL );
     }
     simulation.setWarnings(w);
 
@@ -832,7 +832,7 @@ void cSimpleModule::deleteModule()
     if (simulation.runningModule()==this && usesActivity())
        cCoroutine::switchTo( &simulation.runningmod_deleter );
     else
-       simulation.del( id() );
+       simulation.deleteModule(id());
 }
 
 int cSimpleModule::send(cMessage *msg, int g)
@@ -1114,7 +1114,7 @@ cMessage *cSimpleModule::receiveNew(simtime_t t)
     if (newmsg==timeoutmsg)  // timeout expired
     {
         take(timeoutmsg);
-        return NO(cMessage);
+        return NULL;
     }
     else  // message received OK
     {
@@ -1145,7 +1145,7 @@ cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
             simulation.transferToMain();
             cMessage *newmsg = simulation.msgQueue.getFirst();
             if (newmsg==timeoutmsg)  // timeout expired
-               {take(timeoutmsg); return NO(cMessage);}
+               {take(timeoutmsg); return NULL;}
             else
             {
                ev.messageDelivered( newmsg );
@@ -1481,14 +1481,14 @@ void cCompoundModule::deleteModule()
     {
             cGate *g = gate(i);
             if (g && g->toGate() && g->toGate()->fromGate()==g)
-               g->toGate()->setFrom( NO(cGate) );
+               g->toGate()->setFrom( NULL );
             if (g && g->fromGate() && g->fromGate()->toGate()==g)
-               g->fromGate()->setTo( NO(cGate) );
+               g->fromGate()->setTo( NULL );
     }
     simulation.setWarnings(w);
 
     // delete module
-    simulation.del( id() );
+    simulation.deleteModule( id() );
 }
 
 //==========================================================================
@@ -1496,7 +1496,7 @@ void cCompoundModule::deleteModule()
 
 cModule *cSubModIterator::operator++(int)
 {
-    if (end()) return NO(cModule);
+    if (end()) return NULL;
     int last = simulation.lastModuleIndex();
     do {
        i++;
@@ -1505,7 +1505,7 @@ cModule *cSubModIterator::operator++(int)
            return mod;
     } while( i<=last);
     i=-1; // at end
-    return NO(cModule);
+    return NULL;
 }
 
 //==========================================================================

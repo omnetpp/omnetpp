@@ -39,19 +39,15 @@ Register_Class(cTopology);
 
 sTopoLinkIn *sTopoNode::in(int i)
 {
-    if (i<0 || i>=num_in_links) {
+    if (i<0 || i>=num_in_links)
         throw new cException("sTopoNode: invalid in() index %d",i);
-        return NO(sTopoLinkIn);
-    }
     return (sTopoLinkIn *)in_links[i];
 }
 
 sTopoLinkOut *sTopoNode::out(int i)
 {
-    if (i<0 || i>=num_out_links) {
+    if (i<0 || i>=num_out_links)
         throw new cException("sTopoNode: invalid out() index %d",i);
-        return NO(sTopoLinkOut);
-    }
     return (sTopoLinkOut *)(out_links+i);
 }
 
@@ -85,7 +81,6 @@ void cTopology::info(char *buf)
 cTopology& cTopology::operator=(const cTopology&)
 {
     throw new cException("(%s)%s: operator= not implemented yet",className(),fullName());
-    return *this;
 }
 
 void cTopology::clear()
@@ -233,10 +228,8 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 
 sTopoNode *cTopology::node(int i)
 {
-    if (i<0 || i>=num_nodes) {
+    if (i<0 || i>=num_nodes)
         throw new cException("(%s)%s: invalid node index %d",className(),fullName(),i);
-        return NO(sTopoNode);
-    }
     return nodev+i;
 }
 
@@ -255,7 +248,7 @@ sTopoNode *cTopology::nodeFor(cModule *mod)
           else
              lo = index;
     }
-    return (mod->id() == nodev[index].module_id) ? nodev+index : NO(sTopoNode);
+    return (mod->id() == nodev[index].module_id) ? nodev+index : NULL;
 }
 
 void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
@@ -263,18 +256,14 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
     // multiple paths not supported :-(
 
     if (!_target)
-    {
-        throw new cException("(%s)%s: ..ShortestPathTo(): target node is NULL",
-                          className(),name());
-        return;
-    }
+        throw new cException("(%s)%s: ..ShortestPathTo(): target node is NULL",className(),name());
     target = _target;
 
     for (int i=0; i<num_nodes; i++)
     {
        nodev[i].known = false;   // not really needed for unweighted
        nodev[i].dist = INFINITY;
-       nodev[i].out_path = NO(sTopoLink);
+       nodev[i].out_path = NULL;
     }
     target->dist = 0;
 
@@ -309,11 +298,8 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
 void cTopology::weightedSingleShortestPathsTo(sTopoNode *_target)
 {
     if (!_target)
-    {
-        throw new cException("(%s)%s: ..ShortestPathTo(): target node is NULL",
-                          className(),name());
-        return;
-    }
+        throw new cException("(%s)%s: ..ShortestPathTo(): target node is NULL",className(),name());
+
     target = _target;
 
     void Dijstra( Table t)

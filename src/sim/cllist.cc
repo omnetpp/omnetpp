@@ -227,10 +227,8 @@ void *cLinkedList::remove(void *item)
 
 void *cLinkedList::pop()
 {
-    if (!tailp) {
+    if (!tailp)
          throw new cException("(%s)%s: pop(): list empty",className(),fullName());
-         return NULL;
-    }
     return remove_llelem( tailp );
 }
 

@@ -247,11 +247,8 @@ TInspector *cObject::inspector(int type, void *data)
 {
     cInspectorFactory *p = findInspectorFactory(inspectorFactoryName());
     if (!p)
-    {
         throw new cException("Inspector factory object '%s' for class '%s' not found",
                          inspectorFactoryName(), className());
-        return NO(TInspector);
-    }
     return p->createInspectorFor(this,type,data);
 }
 

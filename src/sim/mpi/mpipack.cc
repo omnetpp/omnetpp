@@ -362,7 +362,7 @@ cObject *upack_object(int& err)
   cMpiPack* pack = cMpiPack::instance();
   char* clname;
   err=pack->unpack_data((void**)&clname, MPI_CHAR);
-  if (err) {delete clname; return NO(cObject);}
+  if (err) {delete clname; return NULL;}
   cObject *obj = createOne(clname);
   obj->netUnpack();
   delete clname;

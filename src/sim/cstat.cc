@@ -106,12 +106,9 @@ void cStatistic::freadvarsf (FILE *f,  const char *fmt, ...)
     char *fmt_comment = strstr(fmt,"#=");
     char *line_comment = strstr(line,"#=");
     if (fmt_comment && line_comment && strcmp(fmt_comment,line_comment)!=0)
-    {
         throw new cException("(%s)%s: bad file format in loadFromFile(): "
                          "expected `%s' and got `%s'",
                          className(), fullName(),fmt,line);
-        return;
-    }
 
     // actual read
     va_list args;
@@ -267,8 +264,6 @@ double cWeightedStdDev::variance() const
 {
     throw new cException("(%s)%s: variance()/stddev() not implemented",
                       className(), fullName());
-    return 0.0;
-
 
     // if (sum_weights==0)
     //   return 0.0;

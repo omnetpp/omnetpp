@@ -50,7 +50,6 @@ void cDoubleExpression::getAsText(char *buf, int maxlen)
 bool cDoubleExpression::parseText(const char *text)
 {
     throw new cException("cDoubleExpression: parseText() does not work with compiled expressions");
-    return false;
 }
 
 //==========================================================================
@@ -513,7 +512,7 @@ cPar& cPar::setRedirection(cPar *par)
     {
         if (p==this)
             throw new cException(eCIRCREF,className(),name());
-        p = p->isRedirected() ? p->ind.par : NO(cPar);
+        p = p->isRedirected() ? p->ind.par : NULL;
     }
 
     // set redirection
@@ -1060,7 +1059,6 @@ double cPar::evaluate()
              break;
            default:
              throw new cException(eBADEXP,className(),name());
-             return 0.0;
        }
     }
     if(tos==0)

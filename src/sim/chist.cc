@@ -162,10 +162,7 @@ void cEqdHistogramBase::collectTransformed (double val)
 double cEqdHistogramBase::pdf(double x) const
 {
     if (!transformed())
-    {
         throw new cException("(%s)%s: pdf(x) cannot be called before histogram is transformed", className(),name());
-        return 0;
-    }
 
     if (x<rangemin || x>rangemax)
         return 0.0;
@@ -176,7 +173,6 @@ double cEqdHistogramBase::pdf(double x) const
 double cEqdHistogramBase::cdf(double) const
 {
     throw new cException("(%s)%s: cdf() not implemented",className(), name());
-    return 0.0;
 }
 
 // return kth basepoint

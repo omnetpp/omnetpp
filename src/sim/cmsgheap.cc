@@ -201,7 +201,7 @@ void cMessageHeap::shiftup(int from)
 
 cMessage *cMessageHeap::peekFirst() const
 {
-    return n==0 ? NO(cMessage) : h[1];
+    return n==0 ? NULL : h[1];
 }
 
 cMessage *cMessageHeap::getFirst()
@@ -216,14 +216,14 @@ cMessage *cMessageHeap::getFirst()
         event->heapindex=-1;
         return event;
     }
-    return NO(cMessage);
+    return NULL;
 }
 
 cMessage *cMessageHeap::get(cMessage *event)
 {
     // make sure it is really on the heap
     if (event->heapindex==-1)
-        return NO(cMessage);
+        return NULL;
 
     // sanity check:
     // if (h[event->heapindex]!=event)  error!!!!

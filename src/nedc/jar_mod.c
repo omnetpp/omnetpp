@@ -930,9 +930,9 @@ char *do_channeldescr(char *link_name, char *delay_expr, char *error_expr, char 
         }
 
         sprintf(buf, "%s, %s, %s",
-                  (delay_expr!=NULL) ?    "delay_p" :    "NO(cPar)",
-                  (error_expr!=NULL) ?    "error_p" :    "NO(cPar)",
-                  (datarate_expr!=NULL) ? "datarate_p" : "NO(cPar)"
+                  (delay_expr!=NULL) ?    "delay_p" :    "NULL",
+                  (error_expr!=NULL) ?    "error_p" :    "NULL",
+                  (datarate_expr!=NULL) ? "datarate_p" : "NULL"
                );
 
         /*jar_free (link_name);*/
@@ -953,7 +953,7 @@ void end_connection (char *channel, char dir, char *dispstr)
         do_con_gate_R( dir );
 
         if (channel==NULL)
-            channel = jar_strdup( "NO(cLinkType)");
+            channel = jar_strdup( "NULL");
 
         if (dir=='R')   /* right arrow --> */
         {

@@ -118,7 +118,7 @@ static void runningmod_deleter_func(void *)
     // function to help dynamically created modules delete themselves
     for(;;)
     {
-        simulation.del( simulation.runningModule()->id() );
+        simulation.deleteModule( simulation.runningModule()->id() );
         currentmod_was_deleted = true;  // checked & reset at cSimulation::doOneEvent()
         simulation.transferToMain();
     }
@@ -245,7 +245,7 @@ void cSimulation::setNetInterface(cNetMod *netif)
     take( netif );
 }
 
-int cSimulation::add(cModule *mod)
+int cSimulation::addModule(cModule *mod)
 {
     // Insert module into the vector.
     // The module will get (last_id+1) as ID. We do not reuse "holes"
@@ -270,10 +270,10 @@ int cSimulation::add(cModule *mod)
     return last_id;
 }
 
-void cSimulation::del(int id)
+void cSimulation::deleteModule(int id)
 {
     if (id<0 || id>last_id)
-        throw new cException("cSimulation::del(): module id %d out of range",id);
+        throw new cException("cSimulation::deleteModule(): module id %d out of range",id);
 
     delete vect[id];
     vect[id] = NULL;

@@ -1,3 +1,7 @@
+2002-10-09  Andras Varga
+
+	* refactoring (see include/ChangeLog), cosmetics
+
 2002-10-07  Andras Varga
 
 	* cobject.cc, ctypes.cc, added onstartup.cc: refactoring: global 

@@ -105,6 +105,7 @@ bool opt_validateonly = false;     // -v
 int opt_nextfiletype = NOTHING;    // -X
 bool opt_newsyntax = false;        // -N
 const char *opt_suffix = NULL;     // -s
+const char *opt_hdrsuffix = NULL;  // -S
 bool opt_unparsedexpr = false;     // -e
 bool opt_novalidation = false;     // -y
 bool opt_noimports = false;        // -z
@@ -136,12 +137,13 @@ void printUsage()
        "  -X xml/ned/off: following files are XML/NED up to '-X off'\n"
        "  -N: with -n: use new NED syntax (e.g. module Foo {...})\n"
        "  -s <suffix>: suffix for generated files\n"
+       "  -S <suffix>: when generating C++, suffix for generated header files\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
        "  -y: skip semantic validation (also skip processing imports)\n"
        "  -z: skip processing imports\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
        "  -V: verbose\n"
-       "Note: this program represents work in progress, parts of it are incomplete, and\n"
+       "Note: this program represents work in progress: parts of it are incomplete, and\n"
        "some functionality is completely missing.\n"
        "\n"
     );
@@ -149,6 +151,15 @@ void printUsage()
 
 // FIXME todo: negate -e, -y for XML and NED output; --; - as filename
 // FIXME todo: remove output files on error
+
+void createFileNameWithSuffix(char *outfname, const char *infname, const char *suffix)
+{
+    strcpy(outfname, infname);
+    char *s = outfname+strlen(outfname);
+    while (s>outfname && *s!='/' && *s!='\\' && *s!='.') s--;
+    if (*s!='.') s=outfname+strlen(outfname);
+    strcpy(s,suffix);
+}
 
 bool processFile(const char *fname)
 {
@@ -202,20 +213,21 @@ bool processFile(const char *fname)
         return false;
     }
 
+    // symbol table is needed for further validation and C++ code generation
+    NEDSymbolTable symboltable;
+
     // semantic validation (will load imports too)
     if (!opt_novalidation)
     {
         if (!opt_noimports)
         {
             // invoke NEDCompiler (will process imports and do semantic validation)
-            NEDSymbolTable symboltable;
             NEDCompiler nedc(&filecache, &symboltable, &importresolver);
             nedc.validate(tree);
         }
         else
         {
             // simple semantic validation (without imports)
-            NEDSymbolTable symboltable;
             NEDSemanticValidator validator(!opt_unparsedexpr,&symboltable);
             validator.validate(tree);
         }
@@ -233,12 +245,8 @@ bool processFile(const char *fname)
     else if (!opt_validateonly)
     {
         // generate output file name
-        char outfname[1024];
-        strcpy(outfname,fname);
-        char *s = outfname+strlen(outfname);
-        while (s>outfname && *s!='/' && *s!='\\' && *s!='.') s--;
-        if (*s!='.') s=outfname+strlen(outfname);
         const char *suffix = opt_suffix;
+        const char *hdrsuffix = opt_hdrsuffix;
         if (!suffix)
         {
             if (opt_genxml)
@@ -248,18 +256,37 @@ bool processFile(const char *fname)
             else
                 suffix = "_n.cc";
         }
-        strcpy(s,suffix);
+        if (!hdrsuffix)
+        {
+            hdrsuffix = "_n.h";
+        }
 
-        // output file. FIXME checks here, after..
-        ofstream out(outfname);
+        char outfname[1024];
+        char outhdrfname[1024];
+        createFileNameWithSuffix(outfname, fname, suffix);
+        createFileNameWithSuffix(outhdrfname, fname, hdrsuffix);
 
+        // FIXME check output file for errors!
         if (opt_genxml)
+        {
+            ofstream out(outfname);
             generateXML(out, tree, opt_srcloc);
+            out.close();
+        }
         else if (opt_genned)
+        {
+            ofstream out(outfname);
             generateNed(out, tree, opt_newsyntax);
+            out.close();
+        }
         else
-            generateCpp(out, cout, tree); // FIXME cout must go!!!
-        out.close();
+        {
+            ofstream out(outfname);
+            ofstream outh(outhdrfname); // FIXME only if needed...
+            generateCpp(out, outh, tree, &symboltable);
+            out.close();
+            outh.close(); // FIXME only if needed...
+        }
 
         delete tree;
 
@@ -337,6 +364,15 @@ int main(int argc, char **argv)
             }
             opt_suffix = argv[i];
         }
+        else if (!strcmp(argv[i],"-S"))
+        {
+            i++;
+            if (i==argc) {
+                fprintf(stderr,"unexpected end of arguments after -S\n");
+                return 1;
+            }
+            opt_hdrsuffix = argv[i];
+        }
         else if (!strcmp(argv[i],"-e"))
         {
             opt_unparsedexpr = true;
@@ -378,6 +414,11 @@ int main(int argc, char **argv)
         }
         else
         {
+            if (opt_mergeoutput && !opt_genxml && !opt_genned)
+            {
+                fprintf(stderr,"option -m not supported with C++ output\n");
+                return 1;
+            }
 #ifdef MUST_EXPAND_WILDCARDS
             const char *fname = findFirstFile(argv[i]);
             if (!fname) {
@@ -421,7 +462,8 @@ int main(int argc, char **argv)
         else if (opt_genned)
             generateNed(out, outputtree, opt_newsyntax);
         else
-            generateCpp(out, cout, outputtree); // FIXME cout must go!!!
+            return 1; // mergeoutput with C++ output not supported
+            // generateCpp(out, cout, outputtree);
         out.close();
 
         delete outputtree;

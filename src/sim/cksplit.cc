@@ -667,7 +667,6 @@ double cKSplit::pdf (double x) const
 double cKSplit::cdf (double) const
 {
    throw new cException("(%s)%s: cdf() not implemented",className(), fullName());
-   return 0;
 }
 
 void cKSplit::saveToFile(FILE *f) const

@@ -654,7 +654,7 @@ int hasDescriptor_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 int objectNullPointer_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
-   interp->result = ptrToStr( NO(cObject) );
+   interp->result = ptrToStr( NULL );
    return TCL_OK;
 }
 

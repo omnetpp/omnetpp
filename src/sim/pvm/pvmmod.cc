@@ -1000,7 +1000,7 @@ cGate *cPvmMod::ingate(const char *s)
 {
     int i=gatev.find(s);
     if (i==-1)
-       {opp_warning(eNULLREF,className(),fullPath()); return NO(cNetGate);}
+       {opp_warning(eNULLREF,className(),fullPath()); return NULL;}
     else
        return (cNetGate *)gatev.get(i);
 }
@@ -1020,7 +1020,7 @@ cGate *cPvmMod::outgate(const char *s)
 {
     int i=out_gatev.find(s);
     if (i==-1)
-       {opp_warning(eNULLREF,className(),fullPath()); return NO(cNetGate);}
+       {opp_warning(eNULLREF,className(),fullPath()); return NULL;}
     else
        return (cNetGate *)out_gatev[i];
 }

@@ -181,19 +181,19 @@ cObject *cQueue::remove_qelem(sQElem *p)
     cObject *retobj = p->obj;
     delete p;
     n--;
-    if (retobj->owner()==this) drop( retobj );
+    if (retobj->owner()==this) 
+        drop( retobj );
     return retobj;
 }
 
 
 void cQueue::insert(cObject *obj)
 {
-    if (!obj) {
+    if (!obj)
         throw new cException("(%s)%s: cannot insert NULL pointer in queue",className(),fullName());
-        return;
-    }
 
-    if (takeOwnership()) take(obj);
+    if (takeOwnership()) 
+        take(obj);
 
     sQElem *p = headp;
     if (compare)           // seek insertion place if necessary
@@ -223,51 +223,47 @@ void cQueue::insert(cObject *obj)
 
 void cQueue::insertBefore(cObject *where, cObject *obj)
 {
-    if (!obj) {
+    if (!obj)
         throw new cException("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
-        return;
-    }
+
     sQElem *p = find_qelem(where);
-    if (!p) {
+    if (!p) 
         throw new cException("(%s)%s: insertBefore(w,o): object w=`%s' not in queue",
                   className(),fullName(),where->name());
-        return;
-    }
 
-    if (takeOwnership()) take(obj);
+    if (takeOwnership()) 
+        take(obj);
     insbefore_qelem(p,obj);
 }
 
 void cQueue::insertAfter(cObject *where, cObject *obj)
 {
-    if (!obj) {
+    if (!obj)
         throw new cException("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
-        return;
-    }
+
     sQElem *p = find_qelem(where);
-    if (!p) {
+    if (!p) 
         throw new cException("(%s)%s: insertAfter(w,o): object w=`%s' not in queue",
                   className(),fullName(),where->name());
-        return;
-    }
 
-    if (takeOwnership()) take(obj);
+    if (takeOwnership()) 
+        take(obj);
     insafter_qelem(p,obj);
 }
 
 cObject *cQueue::head() const
 {
-    return n!=0 ? headp->obj : NO(cObject);
+    return n!=0 ? headp->obj : NULL;
 }
 
 cObject *cQueue::tail() const
 {
-    return n!=0 ? tailp->obj : NO(cObject);
+    return n!=0 ? tailp->obj : NULL;
 }
 
 cObject *cQueue::remove(cObject *obj)
 {
-    if(!obj) return NO(cObject);
+    if(!obj) return NULL;
 
     sQElem *p = find_qelem(obj);
     if(!p) {
@@ -280,10 +276,9 @@ cObject *cQueue::remove(cObject *obj)
 
 cObject *cQueue::pop()
 {
-    if(!tailp) {
+    if(!tailp)
         throw new cException("(%s)%s: pop(): queue empty",className(),fullName());
-        return NO(cObject);
-    }
+
     return remove_qelem( tailp );
 }
 
@@ -294,7 +289,7 @@ int cQueue::length() const
 
 bool cQueue::contains(cObject *obj) const
 {
-   return find_qelem(obj)!=NULL;
+    return find_qelem(obj)!=NULL;
 }
 
 

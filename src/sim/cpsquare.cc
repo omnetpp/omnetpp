@@ -253,10 +253,7 @@ double cPSquare::random() const
 
     //if (num_obs==0)   // newer, from PUPPIS
     if (numobs<numcells+1)
-    {
         throw new cException("(%s)%s: must collect at least num_cells values before random() can be used", className(),fullPath());
-        return 0.0;
-    }
 
     s = numobs * genk_dblrand(genk);
 

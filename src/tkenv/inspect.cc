@@ -54,11 +54,11 @@ TInspector *createCObjectInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,INSP_CONTAINER,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -66,11 +66,11 @@ TInspector *createCHeadInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_CONTAINER,INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
      case INSP_DEFAULT:
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -78,10 +78,10 @@ TInspector *createCBagInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -89,10 +89,10 @@ TInspector *createCLinkedListInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -100,11 +100,11 @@ TInspector *createCArrayInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_CONTAINER,INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
      case INSP_DEFAULT:
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -112,11 +112,11 @@ TInspector *createCQueueInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_CONTAINER,INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
      case INSP_DEFAULT:
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -124,11 +124,11 @@ TInspector *createCMessageHeapInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_CONTAINER,INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
      case INSP_DEFAULT:
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -136,10 +136,10 @@ TInspector *createCWatchInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TWatchInspector( object, INSP_OBJECT, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -147,10 +147,10 @@ TInspector *createCParInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TParInspector( object, INSP_OBJECT, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -158,10 +158,10 @@ TInspector *createCModuleParInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TParInspector( object, INSP_OBJECT, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -169,12 +169,12 @@ TInspector *createCMessageInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,INSP_CONTAINER,INSP_PARAMETERS,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TMessageInspector( object, INSP_OBJECT, data );
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
      case INSP_PARAMETERS:return ((cPacket *)object)->parList().inspector(INSP_DEFAULT, NULL);
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -182,11 +182,11 @@ TInspector *createCSimulationInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_CONTAINER,INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
      case INSP_DEFAULT:
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -194,11 +194,11 @@ TInspector *createCGateInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_GRAPHICAL,INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_GRAPHICAL: return new TGraphicalGateWindow( object, INSP_GRAPHICAL, data );
      case INSP_OBJECT:    return new TGateInspector( object, INSP_OBJECT, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -206,8 +206,8 @@ TInspector *createCModuleInspector(cObject *, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, -1);
-                          return NO(TInspector);
-     default:             return NO(TInspector);
+                          return NULL;
+     default:             return NULL;
    }
 }
 
@@ -218,7 +218,7 @@ TInspector *createCSimpleModuleInspector(cObject *object, int type, void *data)
      case INSP_GETTYPES:  setTypes(data, INSP_MODULEOUTPUT, INSP_OBJECT,
                                          INSP_PARAMETERS,INSP_GATES,
                                          INSP_LOCALVARS,INSP_CLASSMEMBERS,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TSimpleModInspector( object, INSP_OBJECT, data );
      case INSP_MODULEOUTPUT: return new TModuleWindow( object, INSP_MODULEOUTPUT, data);
@@ -226,7 +226,7 @@ TInspector *createCSimpleModuleInspector(cObject *object, int type, void *data)
      case INSP_PARAMETERS:return mod->paramv.inspector(INSP_DEFAULT, NULL);
      case INSP_LOCALVARS: return mod->locals.inspector(INSP_DEFAULT, NULL);
      case INSP_CLASSMEMBERS:return mod->members.inspector(INSP_DEFAULT, NULL);
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -236,14 +236,14 @@ TInspector *createCCompoundModuleInspector(cObject *object, int type, void *data
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_GRAPHICAL,INSP_OBJECT,INSP_MODULEOUTPUT,
                                          INSP_PARAMETERS,INSP_GATES,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_GRAPHICAL: return new TGraphicalModWindow( object, INSP_GRAPHICAL, data );
      case INSP_OBJECT:    return new TCompoundModInspector( object, INSP_OBJECT, data );
      case INSP_MODULEOUTPUT: return new TModuleWindow( object, INSP_MODULEOUTPUT, data);
      case INSP_GATES:     return mod->gatev.inspector(INSP_DEFAULT, NULL);
      case INSP_PARAMETERS:return mod->paramv.inspector(INSP_DEFAULT, NULL);
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -252,11 +252,11 @@ TInspector *createCNetModInspector(cObject *object, int type, void *data)
    cNetMod *mod = (cNetMod *)object;
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,INSP_CONTAINER,INSP_GATES,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
      case INSP_GATES:     return mod->gatev.inspector(INSP_DEFAULT, NULL);
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -264,11 +264,11 @@ TInspector *createCOutVectorInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_GRAPHICAL,INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
      case INSP_DEFAULT:
      case INSP_GRAPHICAL: return new TOutVectorWindow( object, INSP_GRAPHICAL, data, 2048 );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -276,10 +276,10 @@ TInspector *createCStatisticInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TStatisticInspector( object, INSP_OBJECT, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -287,11 +287,11 @@ TInspector *createCDensityEstBaseInspector(cObject *object, int type, void *data
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_GRAPHICAL,INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_OBJECT:    return new TStatisticInspector( object, INSP_OBJECT, data );
      case INSP_DEFAULT:
      case INSP_GRAPHICAL: return new THistogramWindow( object, INSP_GRAPHICAL, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -299,10 +299,10 @@ TInspector *createCTopologyInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TObjInspector( object, INSP_OBJECT, data );
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }
 
@@ -315,11 +315,11 @@ TInspector *createCPacketInspector(cObject *object, int type, void *data)
 {
    switch (type) {
      case INSP_GETTYPES:  setTypes(data, INSP_OBJECT,INSP_CONTAINER,INSP_PARAMETERS,-1);
-                          return NO(TInspector);
+                          return NULL;
      case INSP_DEFAULT:
      case INSP_OBJECT:    return new TPacketInspector( object, INSP_OBJECT, data );
      case INSP_CONTAINER: return new TContainerInspector( object, INSP_CONTAINER, data );
      case INSP_PARAMETERS:return ((cPacket *)object)->parList().inspector(INSP_DEFAULT, NULL);
-     default:             return NO(TInspector);
+     default:             return NULL;
    }
 }

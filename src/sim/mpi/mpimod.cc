@@ -906,7 +906,7 @@ cGate* cMpiMod::ingate(const char *s)
 {
   int i=gatev.find(s);
   if (i==-1)
-    {opp_warning(eNULLREF,className(),fullPath()); return NO(cNetGate);}
+    {opp_warning(eNULLREF,className(),fullPath()); return NULL;}
   else
     return (cNetGate *)gatev.get(i);
 }
@@ -926,7 +926,7 @@ cGate* cMpiMod::outgate(const char *s)
 {
   int i=mOutgates.find(s);
   if (i==-1)
-    {opp_warning(eNULLREF,className(),fullPath()); return NO(cNetGate);}
+    {opp_warning(eNULLREF,className(),fullPath()); return NULL;}
   else
     return (cNetGate *)mOutgates[i];
 }

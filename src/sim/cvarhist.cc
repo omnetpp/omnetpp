@@ -256,7 +256,7 @@ void cVarHistogram::transform() //--LG
         if (range_mode != RANGE_NOTSET)
         {
             if (rangemin>bin_bounds[0] || rangemax<bin_bounds[num_cells])
-               throw new cException("(%s)%s: some bin bounds out of preset range",className(),fullName());
+                throw new cException("(%s)%s: some bin bounds out of preset range",className(),fullName());
 
             if (rangemin<bin_bounds[0]) addBinBound(rangemin);
             if (rangemax>bin_bounds[num_cells]) addBinBound(rangemax);
@@ -368,10 +368,7 @@ double cVarHistogram::pdf(double x) const // --LG
         return 0.0;
 
     if (!transformed())
-    {
         throw new cException("(%s)%s: pdf(x) cannot be called before histogram is transformed", className(),name());
-        return 0.0;
-    }
 
     if (x<rangemin || x>=rangemax)
         return 0.0;
@@ -400,7 +397,6 @@ double cVarHistogram::pdf(double x) const // --LG
 double cVarHistogram::cdf(double) const
 {
     throw new cException("(%s)%s: cdf(x) not implemented", className(),name());
-    return 0.0;
 }
 
 void cVarHistogram::saveToFile(FILE *f) const //--LG

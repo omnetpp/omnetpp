@@ -215,7 +215,7 @@ cPar& cMessage::par(int n)
     else
     {
         opp_warning("(%s)%s: par(): no parameter #%d",className(),fullName(),n);
-        return *NO(cPar);
+        return *(cPar *)NULL;
     }
 }
 
@@ -228,7 +228,7 @@ cPar& cMessage::par(const char *s)
     else
     {
         opp_warning("(%s)%s: par(): no parameter called `%s'",className(),fullName(),s);
-        return *NO(cPar);
+        return *(cPar *)NULL;
     }
 }
 

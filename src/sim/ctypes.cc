@@ -167,7 +167,6 @@ cModuleInterface::~cModuleInterface()
 cModuleInterface& cModuleInterface::operator=(const cModuleInterface&)
 {
     throw new cException("cModuleInterface cannot copy itself!");
-    return *this;
 }
 
 void cModuleInterface::allocate( int ngte, int npram, int nmach )
@@ -277,13 +276,11 @@ void cModuleInterface::check_consistency()
     throw new cException("Inconsistent module interfaces (Interface..End) for `%s':"
                      " %s does not match",
                      name(), what);
-    return;
 
     error2:
     throw new cException("Inconsistent module interfaces (Interface..End) for `%s':"
                      " %s `%s' (#%d) do not match",
                      name(), what, which, id);
-    return;
 }
 
 //=========================================================================
@@ -361,16 +358,20 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, bool local
     // put the object members of the new module to their place, mod->members
     cObject *p;
     cIterator i(classmembers);
-    while ((p=i())!=NULL)  {i++; p->setOwner( &(mod->members) );}
+    while ((p=i())!=NULL)
+    {
+        i++;
+        p->setOwner( &(mod->members) );
+    }
     simulation.setLocalList( oldl );
 
     mod->setModuleType( this );
 
-    simulation.add( mod );
+    simulation.addModule(mod);
 
     if (parentmod!=NULL)
     {
-         mod->setOwner( parentmod );
+        mod->setOwner( parentmod );
     }
     else
     {
@@ -461,17 +462,17 @@ cLinkType& cLinkType::operator=(const cLinkType& li)
 
 cPar *cLinkType::createDelay() const
 {
-    return delayfunc==NULL ? NO(cPar) : delayfunc();
+    return delayfunc==NULL ? NULL : delayfunc();
 }
 
 cPar *cLinkType::createError() const
 {
-    return errorfunc==NULL ? NO(cPar) : errorfunc();
+    return errorfunc==NULL ? NULL : errorfunc();
 }
 
 cPar *cLinkType::createDataRate() const
 {
-    return dataratefunc==NULL ? NO(cPar) : dataratefunc();
+    return dataratefunc==NULL ? NULL : dataratefunc();
 }
 
 //=========================================================================
@@ -482,7 +483,7 @@ cNetworkType::cNetworkType(const char *name, void (*f)()) : cObject(name)
 
 //=========================================================================
 //=== cFunctionType - all functions inline
-cFunctionType::cFunctionType(const char *name, MathFunc f0, int argc) : cObject(name) 
+cFunctionType::cFunctionType(const char *name, MathFunc f0, int argc) : cObject(name)
 {
     f=f0;
     argcount=argc;
@@ -497,7 +498,7 @@ cFunctionType *findfunctionbyptr(MathFunc f)
         if (ff->f == f)
             return ff;
     }
-    return NO(cFunctionType);
+    return NULL;
 }
 
 //=========================================================================
@@ -507,17 +508,12 @@ cClassRegister::cClassRegister(const char *name, void *(*f)()) : cObject(name)
     creatorfunc = f;
 }
 
-//=== creates an object of type passed in a string
-//    e.g: cObject *param = createOne( "cPar" );
-//    used when objects are restored from network data packet or file
 void *createOne(const char *classname)
 {
     cClassRegister *p = (cClassRegister *)classes.find( classname );
     if (!p)
-    {
         throw new cException("Registration object for class \"%s\" not found", classname);
-        return NULL;
-    }
+
     return p->createOne();
 }
 
@@ -532,9 +528,7 @@ cInspectorFactory::cInspectorFactory(const char *name, TInspector *(*f)(cObject 
 TInspector *cInspectorFactory::createInspectorFor(cObject *object,int type,void *data)
 {
     if (!inspFactoryFunc)
-    {
         throw new cException("(%s)%s: factory function not set",className(),fullName());
-        return 0;
-    }
+
     return (*inspFactoryFunc)(object,type,data);
 }
