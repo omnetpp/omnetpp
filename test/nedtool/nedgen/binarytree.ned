@@ -21,7 +21,7 @@ module BinaryTree1
         height: numeric const;
     submodules:
         node: BinaryTreeNode[ 2^height-1 ];
-            display: "i=place/circle_vs";
+            display: "i=misc/node_vs";
     connections nocheck:
         for i=0..2^height-2, j=0..2^height-2 do
             node[i].downleft --> node[j].fromupper if j==2*i+1;
@@ -35,7 +35,7 @@ module BinaryTree2
         height: numeric const;
     submodules:
         node: BinaryTreeNode[ 2^height-1 ];
-            display: "i=place/circle_vs";
+            display: "i=misc/node_vs";
     connections nocheck:
         for i=0..2^(height-1)-2 do
             node[i].downleft --> node[2*i+1].fromupper;

@@ -21,7 +21,7 @@ module Chain
         n: numeric const;
     submodules:
         node: ChainNode[n];
-            display: "i=place/circle_s";
+            display: "i=misc/node_s";
     connections nocheck:
         for i=0..n-2 do
             node[i].right --> node[i+1].left;

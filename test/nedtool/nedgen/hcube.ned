@@ -45,7 +45,7 @@ module Hypercube
             gatesizes:
                 out[dim],
                 in[dim];
-            display: "i=place/circle2_vs";
+            display: "i=misc/node2_vs";
     connections:
         for i=0..2^dim-1, j=0..dim-1 do
             node[i].out[j] --> node[i # (1<<j)].in[j]; // # is bitwise xor

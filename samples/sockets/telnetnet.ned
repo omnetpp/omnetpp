@@ -28,7 +28,7 @@ module TelnetNet
             gatesizes:
                 in[numClients+2],
                 out[numClients+2];
-            display: "i=place/cloud;p=274,170";
+            display: "i=misc/cloud;p=274,170";
         extClient: ExtTelnetClient;
             parameters:
                 addr = 1,

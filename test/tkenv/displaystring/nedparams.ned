@@ -32,7 +32,7 @@ module NedParams
             parameters:
                 nodeX = uniform(50,450),
                 nodeY = uniform(50,300),
-                icon = "place/circle_s",
+                icon = "misc/node_s",
                 color = "green2",
                 perc = uniform(0,60);
 endmodule

@@ -48,7 +48,7 @@ module ALOHAnet
             parameters:
                 txRate = txRate,
                 slotTime = slotTime;
-            display: "i=place/circle_vs";
+            display: "i=misc/node_vs";
     connections nocheck:
 endmodule
 

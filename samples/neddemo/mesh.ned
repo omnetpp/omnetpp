@@ -21,7 +21,7 @@ module Mesh
         width : numeric const;
     submodules:
         node: MeshNode[height*width];
-            display: "p=,,m,$width;i=place/square_s";
+            display: "p=,,m,$width;i=misc/node_s";
     connections nocheck:
         for i=0..height-1, j=0..width-1 do
             node[i*width+j].down --> node[(i+1)*width+j].up if i!=height-1;

@@ -23,7 +23,7 @@ module FullGraph
             gatesizes:
                 in[n],
                 out[n];
-            display: "i=place/circle_vs;p=,,ring";
+            display: "i=misc/node_vs;p=,,ring";
     connections nocheck:
         for i=0..n-1, j=0..n-1 do
             node[i].out[j] --> node[j].in[i] if i!=j;

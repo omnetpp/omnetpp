@@ -22,7 +22,7 @@ module HexGrid
     submodules:
         node  : HexGridNode[ rows * cols ];
             display:
-                "i=place/circle_vs";
+                "i=misc/node_vs";
     connections nocheck:
         for i = 0 .. rows*cols-1 do
             node[i].n <-- node[i-2*cols].s if i+1>2*cols;
