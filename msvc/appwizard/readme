@@ -7,3 +7,14 @@ Todo:
 - add pictures
 - make separate src file group for ned files
 - add info: "The warning when 1st loading the project can be ignored"
+
+Installation:
+
+$COMMON={
+  [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\6.0\Setup]
+  "VsCommonDir"="E:\\Program Files\\Microsoft Visual Studio\\Common"
+}
+
+cp omnetppwizard.awx $COMMON\msdev98\template
+cp omnetppwizard.hlp $COMMON\msdev98\template
+
