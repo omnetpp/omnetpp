@@ -3,7 +3,7 @@
 //        (part of DYNA - an OMNeT++ demo simulation)
 //-------------------------------------------------------------
 
-#include "dynapk_m.h"
+#include "dynapacket_m.h"
 
 class Server : public cSimpleModule
 {

@@ -1,22 +1,22 @@
 # Microsoft Developer Studio Generated NMAKE File, Based on dyna2.dsp
 !IF "$(CFG)" == ""
-CFG=dyna - Win32 Debug Tkenv
-!MESSAGE No configuration specified. Defaulting to dyna - Win32 Debug Tkenv.
+CFG=dyna2 - Win32 Debug Tkenv
+!MESSAGE No configuration specified. Defaulting to dyna2 - Win32 Debug Tkenv.
 !ENDIF
 
-!IF "$(CFG)" != "dyna - Win32 Debug Tkenv" && "$(CFG)" != "dyna - Win32 Debug Cmdenv" && "$(CFG)" != "dyna - Win32 Release Tkenv" && "$(CFG)" != "dyna - Win32 Release Cmdenv"
+!IF "$(CFG)" != "dyna2 - Win32 Debug Tkenv" && "$(CFG)" != "dyna2 - Win32 Debug Cmdenv" && "$(CFG)" != "dyna2 - Win32 Release Tkenv" && "$(CFG)" != "dyna2 - Win32 Release Cmdenv"
 !MESSAGE Invalid configuration "$(CFG)" specified.
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE
-!MESSAGE NMAKE /f "dyna2.mak" CFG="dyna - Win32 Debug Tkenv"
+!MESSAGE NMAKE /f "dyna2.mak" CFG="dyna2 - Win32 Debug Tkenv"
 !MESSAGE
 !MESSAGE Possible choices for configuration are:
 !MESSAGE
-!MESSAGE "dyna - Win32 Debug Tkenv" (based on "Win32 (x86) Console Application")
-!MESSAGE "dyna - Win32 Debug Cmdenv" (based on "Win32 (x86) Console Application")
-!MESSAGE "dyna - Win32 Release Tkenv" (based on "Win32 (x86) Console Application")
-!MESSAGE "dyna - Win32 Release Cmdenv" (based on "Win32 (x86) Console Application")
+!MESSAGE "dyna2 - Win32 Debug Tkenv" (based on "Win32 (x86) Console Application")
+!MESSAGE "dyna2 - Win32 Debug Cmdenv" (based on "Win32 (x86) Console Application")
+!MESSAGE "dyna2 - Win32 Release Tkenv" (based on "Win32 (x86) Console Application")
+!MESSAGE "dyna2 - Win32 Release Cmdenv" (based on "Win32 (x86) Console Application")
 !MESSAGE
 !ERROR An invalid configuration is specified.
 !ENDIF
@@ -27,7 +27,7 @@ NULL=
 NULL=nul
 !ENDIF
 
-!IF  "$(CFG)" == "dyna - Win32 Debug Tkenv"
+!IF  "$(CFG)" == "dyna2 - Win32 Debug Tkenv"
 
 OUTDIR=.\.
 INTDIR=.\debug
@@ -41,7 +41,7 @@ ALL : "$(OUTDIR)\dyna2.exe"
 CLEAN :
 	-@erase "$(INTDIR)\client.obj"
 	-@erase "$(INTDIR)\dyna_n.obj"
-	-@erase "$(INTDIR)\dynapk_m.obj"
+	-@erase "$(INTDIR)\dynapacket_m.obj"
 	-@erase "$(INTDIR)\server.obj"
 	-@erase "$(INTDIR)\servproc.obj"
 	-@erase "$(INTDIR)\switch.obj"
@@ -100,7 +100,7 @@ LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib use
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
-	"$(INTDIR)\dynapk_m.obj" \
+	"$(INTDIR)\dynapacket_m.obj" \
 	"$(INTDIR)\server.obj" \
 	"$(INTDIR)\servproc.obj" \
 	"$(INTDIR)\switch.obj"
@@ -110,7 +110,7 @@ LINK32_OBJS= \
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-!ELSEIF  "$(CFG)" == "dyna - Win32 Debug Cmdenv"
+!ELSEIF  "$(CFG)" == "dyna2 - Win32 Debug Cmdenv"
 
 OUTDIR=.\.
 INTDIR=.\debug
@@ -124,7 +124,7 @@ ALL : "$(OUTDIR)\dyna2.exe"
 CLEAN :
 	-@erase "$(INTDIR)\client.obj"
 	-@erase "$(INTDIR)\dyna_n.obj"
-	-@erase "$(INTDIR)\dynapk_m.obj"
+	-@erase "$(INTDIR)\dynapacket_m.obj"
 	-@erase "$(INTDIR)\server.obj"
 	-@erase "$(INTDIR)\servproc.obj"
 	-@erase "$(INTDIR)\switch.obj"
@@ -183,7 +183,7 @@ LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib 
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
-	"$(INTDIR)\dynapk_m.obj" \
+	"$(INTDIR)\dynapacket_m.obj" \
 	"$(INTDIR)\server.obj" \
 	"$(INTDIR)\servproc.obj" \
 	"$(INTDIR)\switch.obj"
@@ -193,7 +193,7 @@ LINK32_OBJS= \
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-!ELSEIF  "$(CFG)" == "dyna - Win32 Release Tkenv"
+!ELSEIF  "$(CFG)" == "dyna2 - Win32 Release Tkenv"
 
 OUTDIR=.\.
 INTDIR=.\release
@@ -207,7 +207,7 @@ ALL : "$(OUTDIR)\dyna2.exe"
 CLEAN :
 	-@erase "$(INTDIR)\client.obj"
 	-@erase "$(INTDIR)\dyna_n.obj"
-	-@erase "$(INTDIR)\dynapk_m.obj"
+	-@erase "$(INTDIR)\dynapacket_m.obj"
 	-@erase "$(INTDIR)\server.obj"
 	-@erase "$(INTDIR)\servproc.obj"
 	-@erase "$(INTDIR)\switch.obj"
@@ -263,7 +263,7 @@ LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib use
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
-	"$(INTDIR)\dynapk_m.obj" \
+	"$(INTDIR)\dynapacket_m.obj" \
 	"$(INTDIR)\server.obj" \
 	"$(INTDIR)\servproc.obj" \
 	"$(INTDIR)\switch.obj"
@@ -273,7 +273,7 @@ LINK32_OBJS= \
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-!ELSEIF  "$(CFG)" == "dyna - Win32 Release Cmdenv"
+!ELSEIF  "$(CFG)" == "dyna2 - Win32 Release Cmdenv"
 
 OUTDIR=.\.
 INTDIR=.\release
@@ -287,7 +287,7 @@ ALL : "$(OUTDIR)\dyna2.exe"
 CLEAN :
 	-@erase "$(INTDIR)\client.obj"
 	-@erase "$(INTDIR)\dyna_n.obj"
-	-@erase "$(INTDIR)\dynapk_m.obj"
+	-@erase "$(INTDIR)\dynapacket_m.obj"
 	-@erase "$(INTDIR)\server.obj"
 	-@erase "$(INTDIR)\servproc.obj"
 	-@erase "$(INTDIR)\switch.obj"
@@ -343,7 +343,7 @@ LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib 
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
-	"$(INTDIR)\dynapk_m.obj" \
+	"$(INTDIR)\dynapacket_m.obj" \
 	"$(INTDIR)\server.obj" \
 	"$(INTDIR)\servproc.obj" \
 	"$(INTDIR)\switch.obj"
@@ -365,7 +365,7 @@ LINK32_OBJS= \
 !ENDIF
 
 
-!IF "$(CFG)" == "dyna - Win32 Debug Tkenv" || "$(CFG)" == "dyna - Win32 Debug Cmdenv" || "$(CFG)" == "dyna - Win32 Release Tkenv" || "$(CFG)" == "dyna - Win32 Release Cmdenv"
+!IF "$(CFG)" == "dyna2 - Win32 Debug Tkenv" || "$(CFG)" == "dyna2 - Win32 Debug Cmdenv" || "$(CFG)" == "dyna2 - Win32 Release Tkenv" || "$(CFG)" == "dyna2 - Win32 Release Cmdenv"
 SOURCE=.\client.cpp
 
 "$(INTDIR)\client.obj" : $(SOURCE) "$(INTDIR)"
@@ -373,7 +373,7 @@ SOURCE=.\client.cpp
 
 SOURCE=.\dyna.ned
 
-!IF  "$(CFG)" == "dyna - Win32 Debug Tkenv"
+!IF  "$(CFG)" == "dyna2 - Win32 Debug Tkenv"
 
 InputPath=.\dyna.ned
 InputName=dyna
@@ -385,7 +385,7 @@ InputName=dyna
 <<
 
 
-!ELSEIF  "$(CFG)" == "dyna - Win32 Debug Cmdenv"
+!ELSEIF  "$(CFG)" == "dyna2 - Win32 Debug Cmdenv"
 
 InputPath=.\dyna.ned
 InputName=dyna
@@ -397,7 +397,7 @@ InputName=dyna
 <<
 
 
-!ELSEIF  "$(CFG)" == "dyna - Win32 Release Tkenv"
+!ELSEIF  "$(CFG)" == "dyna2 - Win32 Release Tkenv"
 
 InputPath=.\dyna.ned
 InputName=dyna
@@ -409,7 +409,7 @@ InputName=dyna
 <<
 
 
-!ELSEIF  "$(CFG)" == "dyna - Win32 Release Cmdenv"
+!ELSEIF  "$(CFG)" == "dyna2 - Win32 Release Cmdenv"
 
 InputPath=.\dyna.ned
 InputName=dyna
@@ -428,57 +428,57 @@ SOURCE=.\dyna_n.cpp
 "$(INTDIR)\dyna_n.obj" : $(SOURCE) "$(INTDIR)"
 
 
-SOURCE=.\dynapk.ned
+SOURCE=.\dynapacket.msg
 
-!IF  "$(CFG)" == "dyna - Win32 Debug Tkenv"
+!IF  "$(CFG)" == "dyna2 - Win32 Debug Tkenv"
 
-InputPath=.\dynapk.ned
+InputPath=.\dynapacket.msg
 
-".\dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\dynapacket_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	perl @OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp dynapk.ned
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp dynapacket.msg
 <<
 
 
-!ELSEIF  "$(CFG)" == "dyna - Win32 Debug Cmdenv"
+!ELSEIF  "$(CFG)" == "dyna2 - Win32 Debug Cmdenv"
 
-InputPath=.\dynapk.ned
+InputPath=.\dynapacket.msg
 
-".\dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\dynapacket_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	perl @OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp dynapk.ned
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp dynapacket.msg
 <<
 
 
-!ELSEIF  "$(CFG)" == "dyna - Win32 Release Tkenv"
+!ELSEIF  "$(CFG)" == "dyna2 - Win32 Release Tkenv"
 
-InputPath=.\dynapk.ned
+InputPath=.\dynapacket.msg
 
-".\dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\dynapacket_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	perl @OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp dynapk.ned
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp dynapacket.msg
 <<
 
 
-!ELSEIF  "$(CFG)" == "dyna - Win32 Release Cmdenv"
+!ELSEIF  "$(CFG)" == "dyna2 - Win32 Release Cmdenv"
 
-InputPath=.\dynapk.ned
+InputPath=.\dynapacket.msg
 
-".\dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\dynapacket_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	perl @OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp dynapk.ned
+	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp dynapacket.msg
 <<
 
 
 !ENDIF
 
-SOURCE=.\dynapk_m.cpp
+SOURCE=.\dynapacket_m.cpp
 
-"$(INTDIR)\dynapk_m.obj" : $(SOURCE) "$(INTDIR)"
+"$(INTDIR)\dynapacket_m.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\server.cpp

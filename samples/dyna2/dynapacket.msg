@@ -1,4 +1,3 @@
-//--subclassing--
 
 enum DynaPacketType
 {
