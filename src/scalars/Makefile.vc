@@ -3,10 +3,6 @@
 #
 !include ..\..\configuser.vc
 
-#FIXME remove next lines!
-OMNETPP_SCALARS_DIR=.
-HAVE_BLT=yes
-
 #
 # Local setup
 #
