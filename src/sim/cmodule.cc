@@ -123,7 +123,7 @@ void cModule::setModuleType(cModuleType *mtype)
     mod_type = mtype;
 }
 
-const char *cModule::fullName()
+const char *cModule::fullName() const
 {
     static char buf[256];
     if (!isVector())
@@ -135,7 +135,7 @@ const char *cModule::fullName()
     }
 }
 
-const char *cModule::fullPath()
+const char *cModule::fullPath() const
 {
     // follows module hierarchy instead of ownership hierarchy
     static char buf[512]; // should be big enough because there's no check!!
@@ -322,12 +322,12 @@ cModule *cModule::moduleByRelativePath(const char *path)
     return modp;  // NULL if not found
 }
 
-int cModule::findGate(const char *s, int sn)
+int cModule::findGate(const char *s, int sn) const
 {
     bool w = simulation.warnings();
     simulation.setWarnings( false );
 
-    cGate *g = 0; // initialize g to prevent compiler warnings
+    const cGate *g = 0; // initialize g to prevent compiler warnings
     int i = 0, n = gates();
     while (i<n)
     {
@@ -366,6 +366,20 @@ cGate *cModule::gate(const char *s, int sn)
     }
     else
         return gate(i);
+}
+
+const cGate *cModule::gate(const char *s, int sn) const
+{
+  int i = findGate(s,sn);
+  if (i==-1)
+    {
+      opp_warning(sn<0 ? "(%s)%s: Gate `%s' not found"
+                  : "(%s)%s: Gate `%s[%d]' not found",
+                  className(),fullName(), s, sn );
+      return NO(cGate);
+    }
+  else
+    return gate(i);
 }
 
 int cModule::findPar(const char *s)
@@ -621,7 +635,7 @@ void cSimpleModule::end()
     simulation.transferToMain();
 }
 
-void cSimpleModule::error(const char *fmt...)
+void cSimpleModule::error(const char *fmt...) const
 {
     va_list va;
     va_start(va, fmt);
