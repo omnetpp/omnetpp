@@ -26,9 +26,9 @@ COPTS=$(CFLAGS) $(TK_CFLAGS)
 OBJS=plove.o
 
 all: plove
+	../utils/install-prog plove $(OMNETPP_BIN_DIR)
 
 plove: $(PLOVE_VARIANT)
-	../utils/install-prog plove $(OMNETPP_BIN_DIR)
 
 plove-sh: plove.sh
 	cp plove.sh plove

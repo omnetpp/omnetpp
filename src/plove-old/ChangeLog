@@ -67,4 +67,4 @@ Aug 29, 2000
 March 24, 2001
  - prepared executable wrapper around Plove, with compiled-in Tcl code (optional)
 
-TBD: Makefile.in!!!
+TBD: Makefile.in: cygwin, no embedding, install-prog wants to copy plove.exe...
