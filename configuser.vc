@@ -20,6 +20,7 @@ OMNETPP_VERSION=omnetpp-3.0pre1
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
+# Tcl/Tk 8.4 (minimum 8.4.0) and BLT 2.4 required.
 # Leave BLT_VER empty if you don't have BLT.
 #
 TK_DIR=d:/home/tools/Tcl-8.4.2
