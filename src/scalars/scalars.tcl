@@ -37,9 +37,14 @@ if [info exist OMNETPP_SCALARS_DIR] {
    set OMNETPP_SCALARS_README [file join $OMNETPP_SCALARS_DIR .. doc Readme-Scalars.txt]
 }
 
-set HAVE_BLT 1
 if [catch {package require BLT} err] {
-    puts "Cannot load BLT, exiting."
+    puts "*** Cannot load the BLT Tcl extension (version 2.4z required). Sorry..."
     exit
 }
+if {$blt_patchLevel!="2.4z"} {
+    puts "*** BLT version 2.4z required, yours is $blt_patchLevel. Sorry..."
+    exit
+}
+
+
 
