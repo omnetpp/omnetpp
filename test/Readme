@@ -1,10 +1,12 @@
 Testing before release
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Test one at least the following platforms:
+Test one at least the following platforms/configurations:
 
    - NT, Visual C++ 6.0
+   - NT, Visual C++ 6.0 with USE_WINMAIN
    - NT, Visual C++ 6.0 with Tcl embedding
+   - NT, Visual C++ 6.0 with Tcl embedding and USE_WINMAIN
    - NT, Visual C++ 6.0 with PVM (compile only)
 
    - NT, Cygwin 1.1, static libs

@@ -117,3 +117,10 @@ GNED_IF_POSSIBLE=gned
 TKENV_EMBED_TCL=no
 GNED_EMBED_TCL=no
 PLOVE_EMBED_TCL=no
+
+#
+# It is possible to compile GNED and Plove as Windows GUI apps (ie. not
+# console apps). Set the following variable to "yes" to enable compiling
+# GUI apps.
+#
+USE_WINMAIN=no

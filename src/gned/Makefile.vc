@@ -12,6 +12,11 @@ GNED_EMBED_SUFFIX=-e
 GNED_EMBED_SUFFIX=
 !endif
 
+!if "$(USE_WINMAIN)"=="yes"
+CFLAGS=$(CFLAGS) /DUSE_WINMAIN
+LDFLAGS=$(LDFLAGS) /SUBSYSTEM:WINDOWS
+!endif
+
 #
 # Local definitions
 #

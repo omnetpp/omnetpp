@@ -275,7 +275,7 @@ proc fileExit {} {
 
    # ok, exit now
    saveConfig "~/.gnedrc"
-   opp_exit
+   exit
 }
 
 proc editFind {} {

@@ -282,4 +282,12 @@ Mar 10, 2001
    that later I'll add makefiles for the free command-line bc5.5 compiler.
 Mar 27, 2001
  - Makefile.vc change: replaced $(GNED_EMBED_SUFFIX) with $(GNED_EMBED_TCL).
-
+Apr 16, 2001
+ - GNED can now be compiled as GUI application (not console app) on Windows,
+   setting USE_WINMAIN=yes in configuser.vc.
+   NOTE: main() and WinMain() use completely different startup sequences.
+   The reason: main()'s startup code with WinMain would result in an "unknown
+   channel stdout" error in the Tcl code (and it's not so easy to create a
+   dummy channel named stdout), while WinMain()'s startup sequence with main()
+   would result in a working command prompt in the console window (!!!).
+   Pretty weird.

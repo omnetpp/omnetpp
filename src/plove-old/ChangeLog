@@ -69,3 +69,5 @@ Mar 24, 2001
    This made it necessary to reorganize the makefiles too.
 Apr 3, 2001
  - fix: the ap window didn't acquire focus on startup (added deiconify command)
+Apr 16, 2001
+ - added plove.ico
