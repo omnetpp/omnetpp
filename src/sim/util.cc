@@ -295,23 +295,23 @@ char *simtimeToStr(simtime_t t, char *buf)
    // Note that in the following line, a small constant is added to t
    // in order to eliminate truncation errors (like: "1.0000000e-6 (0us)")
    else if (t+=1e-16, t<1e-9)
-       sprintf(b,"%8.8le ( <1ns)", t);
+       sprintf(b,"%8.8e ( <1ns)", t);
    else if (t<1e-6)
-       sprintf(b,"%8.8le (%3dns)", t,int(t*1e9));
+       sprintf(b,"%8.8e (%3dns)", t,int(t*1e9));
    else if (t<1e-3)
-       sprintf(b,"%8.8le (%3dus)", t,int(t*1e6));
+       sprintf(b,"%8.8e (%3dus)", t,int(t*1e6));
    else if (t<1.0)
-       sprintf(b,"%.10lf (%3dms)", t,int(t*1e3));
+       sprintf(b,"%.10f (%3dms)", t,int(t*1e3));
    else if (t<60.0)
-       sprintf(b,"%8.8lg  (%2d.%2.2ds)", t,int(t*100)/100,int(t*100)%100);
+       sprintf(b,"%8.8g  (%2d.%2.2ds)", t,int(t*100)/100,int(t*100)%100);
    else if (t<3600.0)
-       sprintf(b,"%8.8lg (%2dm %2ds)", t,int(t)/60, int(t)%60);
+       sprintf(b,"%8.8g (%2dm %2ds)", t,int(t)/60, int(t)%60);
    else if (t<86400.0)
-       sprintf(b,"%8.8lg (%2dh %2dm)", t,int(long(t)/3600L), int((long(t)%3600L)/60L));
+       sprintf(b,"%8.8g (%2dh %2dm)", t,int(long(t)/3600L), int((long(t)%3600L)/60L));
    else if (t<8640000.0)
-       sprintf(b,"%8.8lg (%2dd %2dh)", t,int(t/86400L), int((long(t)%86400L)/3600L));
+       sprintf(b,"%8.8g (%2dd %2dh)", t,int(t/86400L), int((long(t)%86400L)/3600L));
    else
-       sprintf(b,"%8.8le (%2lgd)", t,floor(t/86400L));
+       sprintf(b,"%8.8e (%2gd)", t,floor(t/86400L));
 
    return b;
 }
@@ -374,7 +374,7 @@ simtime_t strToSimtime0(const char *&str)
           double num;
           int len;
           while (*str==' ' || *str=='\t') str++;
-          if (0==sscanf(str, "%f%n", &num, &len)) break; // break if error
+          if (0==sscanf(str, "%lf%n", &num, &len)) break; // break if error
           str+=len;
 
           // process time unit: d,h,m,s,ms,us,ns
@@ -492,7 +492,7 @@ int opp_vsscanf(const char *s, const char *fmt, va_list va)
             }
             else if (fmt[1]=='l' && fmt[2]=='g')
             {
-                k+=sscanf(s,"%g%n",va_arg(va,double*),&n);
+                k+=sscanf(s,"%lg%n",va_arg(va,double*),&n);
                 s+=n; fmt+=3;
             }
             else

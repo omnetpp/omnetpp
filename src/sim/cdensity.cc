@@ -214,7 +214,7 @@ void cDensityEstBase::plotline(ostream& os, char *pref, double xval,
    const int picwidth=54;           // width of picture
    char buf[101], *s;
    int x,m,k;
-   sprintf(buf, "   %s%12lf %5lg :", pref, xval, count);
+   sprintf(buf, "   %s%12f %5g :", pref, xval, count);
    s = buf+strlen(buf);
    x = (int) floor(a*count+.5);
    if (x<=picwidth)  k=x;  else k=picwidth;

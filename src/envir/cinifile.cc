@@ -355,7 +355,7 @@ double cIniFile::getAsDouble(const char *sect, const char *ent, double defaultva
     }
 
     double val;
-    sscanf(s,"%f",&val);
+    sscanf(s,"%lf",&val);
     return val;
 }
 

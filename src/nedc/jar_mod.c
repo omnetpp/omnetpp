@@ -109,7 +109,7 @@ void do_simp_or_comp (char *mname, int is_simple)
                   "};\n\n",
                   mname);
 
-             fprintf (tmp, "Define_Module( %s );\n\n", mname, mname);
+             fprintf (tmp, "Define_Module( %s );\n\n", mname);
 
              fprintf (tmp, "void %s::buildInside()\n", mname);
              fprintf (tmp, "{\n");
@@ -172,17 +172,17 @@ void end_simple (char *mname)
                         "Register_Interface( %s )\n\n",cmd.namestr);
         fprintf (yyout, "// class %s : public cSimpleModule\n"
                         "// {\n"
-                        "// \tModule_Class_Members(%s,cSimpleModule,8192)\n"
-                        "// \tvirtual void activity();\n"
-                        "// \t/* Add you own member functions here! */\n"
+                        "//     Module_Class_Members(%s,cSimpleModule,8192)\n"
+                        "//     virtual void activity();\n"
+                        "//     // Add you own member functions here!\n"
                         "// };\n"
                         "//\n"
                         "// Define_Module( %s )\n"
                         "//\n",
-                        cmd.namestr, cmd.namestr, cmd.namestr, cmd.namestr );
+                        cmd.namestr, cmd.namestr, cmd.namestr );
         fprintf (yyout, "// void %s::activity()\n"
                         "// {\n"
-                        "// \t/* Put code for simple module activity here! */\n"
+                        "//     // Put code for simple module activity here!\n"
                         "// }\n"
                         "//\n\n",
                         cmd.namestr );

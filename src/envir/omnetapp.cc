@@ -338,9 +338,9 @@ int TOmnetApp::askYesNo(const char *question )
 void TOmnetApp::foreignPuts(const char *hostname, const char *mod, const char *str)
 {
     if (!mod || !*mod)
-        sprintf(buffer,"<%s:>", hostname, str);
+        sprintf(buffer,"<host %s:>", hostname);
     else
-        sprintf(buffer,"<%s on %s:>", mod, hostname, str);
+        sprintf(buffer,"<%s on host %s:>", mod, hostname);
     puts(buffer);
     puts(str);
 }

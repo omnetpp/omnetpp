@@ -129,14 +129,14 @@ OmnetTclCommand tcl_commands[] = {
 
 void splitInspectorName(char *namestr, cObject *&object,int& type)
 {
-   // namestr is the window path namestr, sth like ".ptr80005a31-2"
+   // namestr is the window path name, sth like ".ptr80005a31-2"
    // split it into pointer string ("ptr80005a31") and inspector type ("2")
    char ptrbuf[20];
    char *p,*s;
    for (s=namestr+1,p=ptrbuf; *s!='-'; s++,p++)
       *p = *s;
    *p = '\0';
-   *s++;
+   s++;
 
    object = (cObject *)strToPtr( ptrbuf );
    type = atoi( s );
@@ -268,7 +268,6 @@ int callFinish_cmd(ClientData, Tcl_Interp *, int argc, char **)
 int loadLib_cmd(ClientData, Tcl_Interp *, int argc, char **argv)
 {
    if (argc!=2) return TCL_ERROR;
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
    return opp_loadlibrary(argv[1]) ? TCL_OK : TCL_ERROR;
 }
 
@@ -440,7 +439,7 @@ int setSimOption_cmd(ClientData, Tcl_Interp *, int argc, char **argv)
       app->opt_animation_msgcolors = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_speed"))
    {
-      sscanf(argv[2],"%g",&app->opt_animation_speed);
+      sscanf(argv[2],"%lg",&app->opt_animation_speed);
       if (app->opt_animation_speed<0) app->opt_animation_speed=0;
       if (app->opt_animation_speed>3) app->opt_animation_speed=3;
    }

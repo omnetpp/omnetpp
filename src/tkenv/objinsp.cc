@@ -403,7 +403,7 @@ void TWatchInspector::update()
                                  *(int *)p, *(int *)p, *(int *)p );
                     type = "int ";
                     break;
-         case 'l':  sprintf(val, "%dL (%uLU, 0x%x)",
+         case 'l':  sprintf(val, "%ldL (%luLU, 0x%lx)",
                                  *(long *)p, *(long *)p, *(long *)p );
                     type = "long ";
                     break;
@@ -442,9 +442,9 @@ void TWatchInspector::writeBack()
    switch (watch->typeChar())
    {
          case 'c':  *(char *)p = s[1]; break;
-         case 'i':  sscanf(s,"%d",p); break;
-         case 'l':  sscanf(s,"%ld",p); break;
-         case 'd':  sscanf(s,"%f",p); break;
+         case 'i':  sscanf(s,"%d", (int *)p); break;
+         case 'l':  sscanf(s,"%ld",(long *)p); break;
+         case 'd':  sscanf(s,"%lf",(double *)p); break;
          default:   CHK(Tcl_Eval(interp,"messagebox {Warning}"
                   " {You can only change char, int, long or double watches} info ok"));
    }

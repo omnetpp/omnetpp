@@ -604,7 +604,7 @@ void TOmnetTkApp::updateNextModuleDisplay()
       subsc[0]=0;
     } else {
       modulename = mod->fullPath();
-      sprintf(subsc,"#%lu ",mod->id());
+      sprintf(subsc,"#%u ", mod->id());
     }
     CHK(Tcl_VarEval(interp, ".statusbar.nextlabel config -text {"
                         "Next: ", subsc, modulename,
@@ -623,7 +623,7 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *mod)
     char banner[256];
     if (mod->phase()[0]==0)
     {
-        sprintf(banner,"** Event #%ld.  T=%s.  Module #%d `%s'\n",
+        sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
                 simulation.eventNumber(),
                 simtimeToStr( simulation.simTime() ),
                 mod->id(),
@@ -632,7 +632,7 @@ void TOmnetTkApp::printEventBanner(cSimpleModule *mod)
     }
     else
     {
-        sprintf(banner,"** Event #%ld.  T=%s.  Module #%d `%s' phase `%s'.\n",
+        sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s' phase `%s'.\n",
                 simulation.eventNumber(),
                 simtimeToStr( simulation.simTime() ),
                 mod->id(),

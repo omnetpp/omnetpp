@@ -71,7 +71,7 @@ void TModuleWindow::update()
    setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 
    char subsc[32];
-   sprintf(subsc,"#%ld ",mod->id());
+   sprintf(subsc,"#%d ",mod->id());
    CHK(Tcl_VarEval(interp, modulename, " config -text {Module ",
                            subsc,mod->fullPath(),"}", NULL));
    CHK(Tcl_VarEval(interp, phase, " config -text {Phase: ",mod->phase(),"}", NULL));

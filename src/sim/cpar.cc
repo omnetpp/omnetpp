@@ -770,7 +770,7 @@ bool cPar::setFromText(const char *text, char tp)
     {
         double num;
         unsigned len;
-        if (0==sscanf(tmp,"%f%n",&num,&len)) goto error;
+        if (0==sscanf(tmp,"%lf%n",&num,&len)) goto error;
         if (len<strlen(tmp) || !strchr("?D",tp)) goto error;
         setDoubleValue(num);
     }
