@@ -242,3 +242,5 @@ Jan 4, 2000
     '*new cPar() = (char *)something', because in the first case, the
     cPar(char *) constructor was called (wrongly) instead of cPar() and
     operator=(char *).
+Jan 13, 2000
+  - "-s" option (output file suffix) was added

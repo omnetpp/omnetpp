@@ -1,0 +1,64 @@
+API Changes from 2.0b2 to 2.0b3
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  - renamed isA() to className() in cObject and derived classes.
+    A compatibility #define was temporarily added to defs.h to ease migration.
+
+  - in cMessage, isbad() renamed to hasBitError(), isgood() removed, and
+    setError() renamed to setBitError()
+
+ -  cPar interface cleaned up:
+    o  overloaded setValue(..) functions were renamed to setStringValue(..),
+       setLongValue(..), setBoolValue(..), etc., and the type character was
+       deleted from their arg list. This was done to be consistent with the 
+       getter functions which already had the names stringValue(), longValue()
+       etc., and to make client code more readable by eliminating "magic
+       constants" (the type characters). This shouldn't affect much existing
+       code, most users prefer assignment operator to these functions.
+    o  redirection handling functions were changed to: setRedirection(cPar*),
+       isRedirected(), cPar* redirection(), cancelRedirection(). This results
+       in more readable client code. These functions are hardly used in any
+       user code.
+    o  the number of constructors was reduced to 3 by deleting the ones which
+       set an initial long,string,etc. value. Prior to this cPar had
+       16 constructors which made subclassing very cumbersome. Functionality
+       is not lost because the user can write code like
+          cPar par("par") = 5L;
+       Existing client code like
+          msg->addPar( *new cPar("dest", 'L', dest );
+       can be rewritten like
+          msg->addPar( *new cPar("dest") = dest );
+       or better like
+           msg->addPar("dest") = dest;
+       Note that the two new and better forms have been available for a long
+       time, so the change should not affect much existing code.
+    o  conversons to/from bool were not fully supported
+
+ - convenience function hasPar(char*) added to cMessage
+
+ - convenience functions hasPar(char*) and hasGate(char*,int) added to cModule
+
+ - cQueue and cLinkedList interfaces changed:
+     insertHead(a) --> insert(a)  (the name was misleading: cQueue can act as
+       priority queue and inserted elements aren't necessarily put at the head)
+     peekTail()    --> tail()
+     peekHead()    --> head()     (shorter names are preferred)
+     get(a)        --> remove(a)  (the "get" word was misleading as it didn't
+       imply that the element is actually removed from the queue)
+     getTail()     --> pop()      ("get was misleading, see above;
+       "pop" is used in other libs such as STL or Java for this operation)
+     getHead() removed            (it can be expressed as q.remove(q.head()))
+   Compatibility #defines added to defs.h for insertHead(a), peekTail(),
+   peekHead(), getTail().
+
+ - cPar caveat discovered: beware of constructs like
+      cPar p = "foo";
+   It does NOT compile as you would expect!!! It doesn't compile to
+   cPar p;p="foo";, but rather to cPar p("foo")! That is, "foo" becomes the
+   object's NAME instead of its value. This is one of the quirks of C++...
+   The solution it to use explicit parens to denote the constructor call:
+      cPar p() = "foo";
+   This is a hint that it might be ALWAYS a good idea to write empty parens
+   in constructor calls (like 'new cMessage()' instead of 'new cMessage') to
+   avoid such surprises. Java does that too.
+

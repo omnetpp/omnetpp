@@ -21,7 +21,6 @@ void ServerProcess::activity()
     WATCH(client_addr); WATCH(own_addr);
 
     cMessage *msg;
-    int type;
 
     ev << "Started, waiting for CONN_REQ\n";
     msg = receive();

@@ -10,6 +10,7 @@ executables='
 	src/utils/install-lib
 	src/utils/install-prog
 	src/utils/cygpwd
+        samples/demo/rundemo
 	_setperm
 	_makedist
 '
