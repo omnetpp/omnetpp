@@ -257,6 +257,8 @@ set ned_attr(submod,rect-cid)         {}
 set ned_attr(submod,icon-cid)         {}
 set ned_attr(submod,label-cid)        {}
 set ned_attr(submod,disp-icon)            {}
+set ned_attr(submod,disp-iconcolor)       {}
+set ned_attr(submod,disp-iconcolorpc)     {}
 set ned_attr(submod,disp-xpos)            {}
 set ned_attr(submod,disp-ypos)            {}
 set ned_attr(submod,disp-layout)          {}

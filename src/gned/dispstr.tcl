@@ -134,6 +134,8 @@ proc parse_submod_dispstr {key} {
    }
    if [info exist tags(i)] {
       set ned($key,disp-icon) [lindex $tags(i) 0]
+      set ned($key,disp-iconcolor) [lindex $tags(i) 1]
+      set ned($key,disp-iconcolorpc) [lindex $tags(i) 2]
    }
    if [info exist tags(o)] {
       set ned($key,disp-fillcolor) [lindex $tags(o) 0]
@@ -243,6 +245,8 @@ proc update_submod_dispstr {key} {
 
    if ![info exist tags(i)] {set tags(i) {}}
    _setlistitem tags(i) 0 $ned($key,disp-icon)
+   _setlistitem tags(i) 1 $ned($key,disp-iconcolor)
+   _setlistitem tags(i) 2 $ned($key,disp-iconcolorpc)
 
    if {$ned($key,disp-icon)!=""} {set tags(b) {}}
 

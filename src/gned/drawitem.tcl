@@ -407,13 +407,14 @@ proc draw_submod {c key} {
 
     # determine $icon, $sx and $sy
     set icon  [resolveDispStrArg $ned($key,disp-icon) ""]
+    set iconcolor  [resolveDispStrArg $ned($key,disp-iconcolor) ""]
+    set iconcolorpc  [resolveDispStrArg $ned($key,disp-iconcolorpc) "20"]
     if {$icon==""} {
         set sx [resolveDispStrArg $ned($key,disp-xsize) 40]
         set sy [resolveDispStrArg $ned($key,disp-ysize) 24]
     } else {
         # check if icon exists
-        #FIXME TBD colorization
-        set img [resolveDispStrIcon $icon "" ""]
+        set img [resolveDispStrIcon $icon $iconcolor $iconcolorpc]
         set sx [expr [image width $img]+4]
         set sy [expr [image height $img]+4]
     }
