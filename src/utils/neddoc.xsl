@@ -182,7 +182,7 @@
                <p>Try the <a href="full-usage-diagram.html">Usage Diagram</a>
                as starting point, or use the links in the left frame to navigate
                around.</p>
-               <p>Hint: if (as a developer) you don't like this page, try creating
+               <p>Hint for model developers: if you don't like this page, try creating
                an <tt>index.ned</tt> file with the <tt>@titlepage</tt> directive
                embedded in a comment.</p>
             </xsl:otherwise>
