@@ -134,6 +134,7 @@ void printUsage()
        "  -c: generate C++ (default)\n"
        "  -x: generate XML (you may need -y, -e and -p as well)\n"
        "  -n: generate NED (you may need -y and -e as well)\n"
+       "      HINT: NED-to-NED conversion performs pretty-printing.\n"
        "  -v: no output (only validate input)\n"
        "  -m: output is a single file (out_n.* by default)\n"
        "  -o <filename>: with -m: output file name\n"
