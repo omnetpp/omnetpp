@@ -1,4 +1,10 @@
-2003-09-22 Andras Varga
+2003-09-25  Andras Varga
+
+	* cmessage.h: support for message display strings. You have to
+	redefine cMessage's displayString() to return a valid display string
+	(by default it returns ""). See Tkenv for valid options.
+
+2003-09-22  Andras Varga
 
 	* cenvir.h: messageSent() signature modified, in order to be able to 
 	animate	sendDirect().
