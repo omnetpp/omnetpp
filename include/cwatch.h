@@ -136,17 +136,17 @@ class SIM_API cWatch : public cObject
     /**
      * Initialize the shell to hold the given variable.
      */
-    cWatch(const char *name, char* &s) : cObject(name) {ptr=&s; type='s';}
+    cWatch(const char *name, const char* &s) : cObject(name) {ptr=&s; type='s';}
 
     /**
      * Initialize the shell to hold the given variable.
      */
-    cWatch(const char *name, signed char* &s) : cObject(name) {ptr=&s; type='s';}
+    cWatch(const char *name, const signed char* &s) : cObject(name) {ptr=&s; type='s';}
 
     /**
      * Initialize the shell to hold the given variable.
      */
-    cWatch(const char *name, unsigned char* &s) : cObject(name) {ptr=&s; type='s';}
+    cWatch(const char *name, const unsigned char* &s) : cObject(name) {ptr=&s; type='s';}
 
     /**
      * Initialize the shell to hold the given variable.
