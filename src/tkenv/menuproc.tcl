@@ -498,36 +498,25 @@ proc simulation_options {} {
     opp_updateinspectors
 }
 
-proc save_inspectorlist {} {
-    set filename "inspect.lst"
-    set filename [tk_getSaveFile -title {Save inspector list} \
-                  -defaultextension "lst" -initialfile $filename \
-                  -filetypes {{{Inspector list files} {*.lst}} {{All files} {*}}}]
+proc save_tkenv_config {} {
+    set filename "tkenv.cfg"
+    set filename [tk_getSaveFile -title {Save Tkenv configuration} \
+                  -defaultextension "cfg" -initialfile $filename \
+                  -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
 
     if {$filename!=""} {
-       if [catch {open $filename w} f] {
-          messagebox {Error} "Error: $f" info ok
-          return
-       }
-       inspectorlist_save $f
-       close $f
+       save_tkenvrc $filename
     }
 }
 
-proc load_inspectorlist {} {
-    set filename "inspect.lst"
-    set filename [tk_getOpenFile -title {Load inspector list} \
-                  -defaultextension "lst" -initialfile $filename \
-                  -filetypes {{{Inspector list files} {*.lst}} {{All files} {*}}}]
+proc load_tkenv_config {} {
+    set filename "tkenv.cfg"
+    set filename [tk_getOpenFile -title {Load Tkenv configuration} \
+                  -defaultextension "cfg" -initialfile $filename \
+                  -filetypes {{{Configuration files} {*.cfg}} {{All files} {*}}}]
 
     if {$filename!=""} {
-       # open file
-       if [catch {open $filename r} f] {
-          messagebox {Error} "Error: $f" info ok
-          return
-       }
-       inspectorlist_load $f
-       close $f
+       load_tkenvrc $filename
     }
 }
 
@@ -606,28 +595,4 @@ proc view_file {filename} {
     }
 }
 
-proc load_tkenvrc {} {
-  if [catch {
-      if [catch {open ".tkenvrc" r} f] {
-      } else {
-          puts "Loading .tkenvrc"
-          inspectorlist_load $f
-          close $f
-      }
-  } err] {
-      messagebox {Error} "Error: $err" error ok
-      return
-  }
-}
-
-proc save_tkenvrc {} {
-  if [catch {
-      set f [open ".tkenvrc" w]
-      inspectorlist_save $f
-      close $f
-  } err] {
-      messagebox {Error} "Error: $err" error ok
-      return
-  }
-}
 

@@ -172,8 +172,8 @@ proc create_omnetpp_window {} {
       {command -command simulation_options -label {Simulation options...} -underline 0}
       {command -command toggle_treeview -label {Show/hide object tree} -underline 1}
       {separator}
-      {command -label {Load inspector list...} -underline 0 -command load_inspectorlist}
-      {command -label {Save open inspectors list...} -underline 1 -command save_inspectorlist}
+      {command -label {Load config...} -underline 0 -command load_tkenv_config}
+      {command -label {Save config...} -underline 1 -command save_tkenv_config}
     } {
       eval .menubar.optionsmenu$m add $i
     }

@@ -35,6 +35,7 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir main.tcl]
    source [file join $dir tree.tcl]
    source [file join $dir treemgr.tcl]
+   source [file join $dir tkenvrc.tcl]
 
 }
 

@@ -906,6 +906,8 @@ void TOmnetTkApp::readOptions()
 
     opt_extrastack = ini_file->getAsInt("Tkenv", "extra-stack", TKENV_EXTRASTACK);
     opt_default_run = ini_file->getAsInt( "Tkenv", "default-run", 0);
+
+    // FIXME: most entries below should be obsoleted (with .tkenvrc taking over)
     opt_stepdelay = long(1000*ini_file->getAsTime( "Tkenv", "slowexec-delay", 0.3 )+.5);
     opt_updatefreq_fast = ini_file->getAsInt( "Tkenv", "update-freq-fast", 50);
     opt_updatefreq_express = ini_file->getAsInt( "Tkenv", "update-freq-express", 10000 );

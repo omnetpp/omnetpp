@@ -4,6 +4,10 @@
 	next to submodule icon. Add "q=<queue-name>" to the display string,
 	where queue-name is the name of the cQueue object, e.g. "q=sendQueue".
 
+	* tkenvrc now saves all options. Entries in the [Tkenv] section of 
+	omnetpp.ini will be obsoleted -- anyway they only take effect if 
+	there's no .tkenvrc!
+
 2003-10-02  Andras Varga
 
 	* tkapp.cc/h, modinsp.cc/h, modinsp2.tcl: new features:

@@ -46,7 +46,13 @@ proc inspectorlist_openinspectors {} {
         # on the list (ie. both w/ type=0 and type!=0), opening it removes both elements...
         if [info exists pil_name($key)] {
             #DBG: puts [list opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)]
-            opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)
+            if [catch {opp_inspectbyname $pil_name($key) $pil_class($key) $pil_type($key) $pil_geom($key)}] {
+                tk_messageBox -title Error -message "Error opening inspector for ($pil_class($key))$pil_name($key), ignoring."
+                unset pil_name($key)
+                unset pil_class($key)
+                unset pil_type($key)
+                unset pil_geom($key)
+            }
         }
     }
 }
@@ -116,31 +122,29 @@ proc inspectorlist_remove {w} {
     }
 }
 
-#
-# save inspector list to given stream
-#
-proc inspectorlist_save {f} {
+proc inspectorlist_tkenvrc_get_contents {} {
     global pil_name pil_class pil_type pil_geom
 
+    set res ""
     foreach win [winfo children .] {
        if [regexp {\.(ptr.*)-([0-9]+)} $win match object type] {
            set objname [opp_getobjectfullpath $object]
            set class [opp_getobjectclassname $object]
            set geom [wm geometry $win]
 
-           puts $f "\"$objname\" \"$class\" \"$type\" \"$geom\""
+           append res "inspector \"$objname\" \"$class\" \"$type\" \"$geom\"\n"
        }
     }
 
     foreach key [array names pil_name] {
-       puts $f "\"$pil_name($key)\" \"$pil_class($key)\" \"$pil_type($key)\" \"$pil_geom($key)\""
+       append res "inspector \"$pil_name($key)\" \"$pil_class($key)\" \"$pil_type($key)\" \"$pil_geom($key)\"\n"
     }
+
+    return $res
 }
 
-#
-# load inspector list from a given stream; contents add to current inspector list
-#
-proc inspectorlist_load {f} {
+
+proc inspectorlist_tkenvrc_reset {} {
     global pil_name pil_class pil_type pil_geom
 
     # delete old array
@@ -150,32 +154,24 @@ proc inspectorlist_load {f} {
        unset pil_type
        unset pil_geom
     }
+}
 
-    # read file line by line
-    set lineno 1
-    while {[gets $f line] >= 0} {
-      if {$line == ""} {incr lineno; continue}
-      if [string match {#*} $line] {incr lineno; continue}
-      if [catch {
-          set objname [lindex $line 0];
-          set class [lindex $line 1];
-          set type [lindex $line 2]
-          set geom [lindex $line 3]
-      }] {
-          messagebox {Open Inspectors in File} "`$filename' line $lineno is invalid." info ok
-          incr lineno; continue
-      }
 
-      set key "$objname:$class:$type"
+proc inspectorlist_tkenvrc_process_line {line} {
+    global pil_name pil_class pil_type pil_geom
 
-      set pil_name($key)   $objname
-      set pil_class($key)  $class
-      set pil_type($key)   $type
-      set pil_geom($key)   $geom
+    if {[llength $line]!=5} {error "wrong number of columns"}
+     
+    set objname [lindex $line 1]
+    set class [lindex $line 2]
+    set type [lindex $line 3]
+    set geom [lindex $line 4]
 
-      incr lineno
-    }
+    set key "$objname:$class:$type"
 
-    inspectorlist_openinspectors
+    set pil_name($key)   $objname
+    set pil_class($key)  $class
+    set pil_type($key)   $type
+    set pil_geom($key)   $geom
 }
 
