@@ -66,6 +66,7 @@ proc selectOrMoveBindings c {
     bind $c <Button-3>         "popupMenu $c %X %Y"
     bind $c <Button-1>         "selectOrMoveStart $c %x %y 0"
     bind $c <Control-Button-1> "selectOrMoveStart $c %x %y 1"
+    bind $c <Shift-Button-1>   "selectOrMoveStart $c %x %y 1"
     bind $c <B1-Motion>        "selectOrMoveDrag $c %x %y"
     bind $c <ButtonRelease-1>  "selectOrMoveEnd $c %x %y"
     #bind $c <Insert>           "printNed $c"
@@ -94,6 +95,7 @@ proc drawBindings c {
     bind $c <Button-3>         "popupMenu $c %X %Y"
     bind $c <Double-1>         "drawEnd $c %x %y; openSubmodule $c"
     bind $c <Button-1>         "drawStart $c %x %y"
+    bind $c <Control-Button-1> "drawStart $c %x %y"
     bind $c <Shift-Button-1>   "drawStart $c %x %y"
     bind $c <B1-Motion>        "drawDrag $c %x %y"
     bind $c <ButtonRelease-1>  "drawEnd $c %x %y"
@@ -738,7 +740,7 @@ proc drawEnd {c x y} {
           }
 
           set destkey [itemKeyFromCid $destcid]
-          if {$destkey!=""} {
+          if {$destkey!="" && ($ned($destkey,type)=="module" || $ned($destkey,type)=="submod")} {
                set modkey $canvas($gned(canvas_id),module-key)
                set connskey [getChildrenWithType $modkey conns]
                if {[llength $connskey]==0} {

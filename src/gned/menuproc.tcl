@@ -115,7 +115,9 @@ proc fileSaveAs {{nedfilekey {}}} {
       # regsub "^$env(HOME)/" $fname "~/" fname
 
       set ned($nedfilekey,unnamed) 0
+      set ned($nedfilekey,name) [makeFancyName $fname]
       set ned($nedfilekey,filename) $fname
+
       adjustWindowTitle
       updateTreeManager
 

@@ -1,4 +1,5 @@
 Parse/Generate:
+- sometimes generates empty lines into the code
 - comments around display strings, channel attributes are lost
 - display string parsing -- rewrite!!!
 - comments -- choose different approach? (do not cut of "// ")
@@ -13,9 +14,8 @@ Data struct change:
 Drawing:
 - arrow.cc was modified!!! update in Tkenv!!!
 - if canvas is scrolled, mouse selection works with wrong positions
-- shift+click leaves a dot on canvas
 - paste does not work between canvases
-- should support ovals
+- should support ovals too (not only rects)
 
 Load/save:
 - refuse to load the same file twice
