@@ -1,0 +1,9 @@
+2005-01-10  Andras Varga
+
+	* created platdep/ subdirectory, and factored out most platform 
+	dependencies and related utility functions from all parts of 
+	OMNeT++/OMNEST to header files in here. Notable exceptions are 
+	coroutines (in src/sim) and named pipes	(in src/sim/parsim), where 
+	platform differences could not be levelled out by just a few #ifdefs, 
+	#defines and inline functions.
+
