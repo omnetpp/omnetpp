@@ -1,0 +1,4 @@
+2002-06-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* Makefile (default usman.dvi usman.pdf clean): new targets
+
