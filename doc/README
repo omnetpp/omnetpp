@@ -5,7 +5,9 @@ Copyright (c) 1998-2004 Andras Varga.
 
 OMNeT++ is subject to the license described in the "License" file.
 
-OMNeT++ Home Page: www.omnetpp.org
+OMNeT++ software distribution may contain bundled 3rd party software packages
+which are subject to their own respective licenses. 3rdparty.txt lists
+such software packages.
 
 Important
 ~~~~~~~~~
