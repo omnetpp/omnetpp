@@ -1,3 +1,8 @@
+2002-09-21  Andras Varga
+
+	* filemgrs.cc, akoutvectormgr.cc: applied Steffen Sroka's patches 
+	(thanks Steffen!). AKAROA_CFLAGS added to Makefile.in.
+
 2002-07-08  Andras Varga
 
 	* filemgrs.cc: added fname-append-host=true/false ini file setting.

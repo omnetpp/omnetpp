@@ -94,10 +94,16 @@ EXPAT_CFLAGS="-I ../expat-1.95.2/Source/lib"
 EXPAT_LIBS=
 
 #
-# and for LIBXML
+# for LIBXML
 #
 LIBXML_CFLAGS="-I /usr/include/libxml2"
 LIBXML_LIBS=
+
+#
+# for Akaroa
+#
+AKAROA_CFLAGS="-I /usr/include/akaroa"
+AKAROA_LIBS=
 
 #
 # You may override the settings below. This is only useful if you have moved

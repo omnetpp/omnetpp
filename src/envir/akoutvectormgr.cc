@@ -32,7 +32,7 @@
 #include "cmodule.h"
 #include "cstat.h"
 #include "macros.h"
-#include "akfilemgrs.h"
+#include "akoutvectormgr.h"
 #include <akaroa.H>
 #include <akaroa/ak_message.H>
 
@@ -56,6 +56,10 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
     sAkVectorData *vp = (sAkVectorData *)cFileOutputVectorManager::registerVector(modulename,vectorname, tuple);
 
     // see if this vector needs Akaroa control
+    // section stands for RUN[]
+     char section[16];
+     sprintf(section,"Run %d", simulation.runNumber() );
+
     opp_string inientry;
     inientry.allocate(opp_strlen(modulename)+1+opp_strlen(vectorname)+sizeof(".akaroa")+1);
     sprintf(inientry.buffer(),"%s.%s.akaroa", modulename, vectorname);
@@ -64,7 +68,7 @@ void *cAkOutputVectorManager::registerVector(const char *modulename, const char 
     if (vp->ak_controlled)
     {
         // register vector with Akaroa
-        if (ak_registered)
+        if (ak_declared)
             opp_error("cAkOutputVectorManager: With Akaroa, cannot create new vector after first data have been recorded");
 
         if (tuple > 1)
@@ -100,7 +104,7 @@ bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double valu
     }
 
     // 3. write the vector file too
-    return cFileOutputManager::record(vectorhandle, t, value);
+    return cFileOutputVectorManager::record(vectorhandle, t, value);
 }
 
 bool cAkOutputVectorManager::record(void *vectorhandle, simtime_t t, double value1, double value2)

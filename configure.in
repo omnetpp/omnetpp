@@ -395,6 +395,30 @@ else
 fi
 
 #----------------------
+# Check for Akaroa header and lib
+#----------------------
+
+if test ! -n "$AKAROA_LIBS"; then
+   AKAROA_LIBS=-lakaroa
+fi
+
+opp_save_CFLAGS=$CFLAGS
+CFLAGS="$AKAROA_CFLAGS $CFLAGS"
+AC_CHECK_HEADER(akaroa.H, ,
+   NO_AKAROA=1; AC_MSG_WARN(Akaroa header not found.
+   If you *do* have Akaroa installed then add the include path to AKAROA_CFLAGS.), )
+CFLAGS=$opp_save_CFLAGS
+
+# FIXME this ignores the AKAROA_LIBS variable
+AC_CHECK_LIB(akaroa, AkDeclareParameters, ,
+   NO_AKAROA=1; AC_MSG_WARN(Akaroa library not found.), )
+
+if test "x$NO_AKAROA" != "x1"; then
+   CFLAGS="$CFLAGS -DWITH_AKAROA"
+   SYS_LIBS="$SYS_LIBS $AKAROA_LIBS"
+fi
+
+#----------------------
 # Checks for header files.
 #----------------------
 
@@ -621,6 +645,9 @@ AC_SUBST(SYS_LIBS)
 AC_SUBST(XMLPARSER)
 AC_SUBST(XML_CFLAGS)
 AC_SUBST(XML_LIBS)
+
+AC_SUBST(AKAROA_CFLAGS)
+AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(TKENV_IF_POSSIBLE)
 AC_SUBST(SIM_PVM_IF_POSSIBLE)

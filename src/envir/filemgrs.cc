@@ -69,7 +69,7 @@ static void createFileName(opp_string& fname, cIniFile *inifile, int run_no, con
 
         // add ".<hostname>" to fname
         fname.allocate(strlen(basefname)+1+strlen(hostname)+1);
-        sprintf(fname.buffer(),"%s.%s", (const char *)fname, hostname);
+        sprintf(fname.buffer(),"%s.%s", (const char *)basefname, hostname);
     }
 }
 
