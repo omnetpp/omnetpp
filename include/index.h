@@ -95,7 +95,7 @@
  * There are several functions which generate random variates
  * from different distributions: uniform, exponential, normal,
  * truncated normal, gamma, beta, Erlang, Weibull, Bernoulli,
- * binomial, geometric, poisson, and several more.
+ * binomial, geometric, Poisson, and several more.
  *
  * The functions rely on the random number generator described below.
  *
