@@ -160,7 +160,9 @@ cStructDescriptor *cStructDescriptor::createDescriptorFor(const char *classname,
     strcat(sdclass,"Descriptor");
 
     // create and initialize a structure descriptor object
-    cStructDescriptor *sd = (cStructDescriptor *) createOne(sdclass);
+    cStructDescriptor *sd = (cStructDescriptor *) createOneIfClassIsKnown(sdclass);
+    if (!sd)
+        return NULL;
     sd->setStruct(p);
     return sd;
 }

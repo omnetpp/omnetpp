@@ -629,18 +629,33 @@ class SIM_API cClassRegister : public cObject
  * previously with the Register_Class() macro. This function internally
  * relies on the cClassRegister class.
  *
+ * If the class is not registered, this function throws an exception.
+ * If you'd prefer having NULL pointer retured instead, use the
+ * createOneIfClassIsKnown() function.
+ *
  * Example:
  *
  * <code>cObject *param = createOne( "cPar" );</code>
  *
  * createOne() is used e.g. in parallel simulation when an object is received
- * from another partition and it has to be demashalled.
+ * from another partition and it has to be demarshalled.
  *
+ * @see createOneIfClassIsKnown()
  * @see Register_Class() macro
  * @see cClassRegister class
  */
 // FIXME into some class, as static member!!!
 SIM_API void *createOne(const char *classname);
+
+/**
+ * A variant of the createOne() function; this function doesn't throw an
+ * exception if the class is not registered, but returns a NULL pointer
+ * instead.
+ *
+ * @see createOne()
+ */
+// FIXME into some class, as static member!!!
+SIM_API void *createOneIfClassIsKnown(const char *classname);
 //@}
 
 //==========================================================================

@@ -1,3 +1,8 @@
+2004-02-07  Andras Varga 
+
+	* ctypes.h: added createOneIfClassIsKnown(const char *classname) 
+	function
+
 2004-02-06  Andras Varga
 
 	* cgate.h: added cGate::disconnect(); revised cGate::connectTo()

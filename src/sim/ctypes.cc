@@ -576,8 +576,14 @@ void *createOne(const char *classname)
     cClassRegister *p = (cClassRegister *)classes.instance()->get(classname);
     if (!p)
         throw new cException("Class \"%s\" not found -- perhaps its code was not linked in, or the class wasn't registered via Register_Class()", classname);
-
     return p->createOne();
 }
 
-//=========================================================================
+void *createOneIfClassIsKnown(const char *classname)
+{
+    cClassRegister *p = (cClassRegister *)classes.instance()->get(classname);
+    if (!p)
+        return NULL;
+    return p->createOne();
+}
+
