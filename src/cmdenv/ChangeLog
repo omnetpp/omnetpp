@@ -1,144 +1,273 @@
-#23
-  - integrating VZ's stuff. Won't compile
-#71
-  - improved alloctable[]
-  - better heap debugging messages
-#72
-  - upgraded for sim102's
-  - added periodic display update
-#74
-  - heap.cc's alloctable[] made dynamic
-#75
-  - bugfixes
-#76  Feb 28, 1997
-  - adopted to sim105 & 'multiple runs' bug fixed
-#77  Feb 28, 1997
-  - adopted to envir81 and sim109
-#78  Mar 15, 1997
-  - adopted to sim120c
-#80  Mar 24, 1997
-  - opt_networkname now explicitly casted from string to char* in printf()
-#81  Apr 11, 1997
-  - opt_helponly moved from envir package to cmdenv
-#82  Apr 22, 1997
-  - cSimulation's geteventnumber() and inc_eventnumber() introduced
-    instead of own event counting (compatible with sim130 and up)
-#83  Jul 1, 1997
-  - small changes
-#84  Jul 2, 1997
-  - opt_verbose bug fixed
-  - usage of cEnvir::disable_tracing added
-#85 Jul 10, 1997
-  - makefile hacked upon to make it edible for Cygnus gcc
-#86 Jul 20, 1997
-  - removed TCmdenv::foreignputs()
-#87 Jul 31, 1997
-  - [General]/number-of-runs= ini file option was replaced by
-    [Cmdenv]/runs-to-execute=.
-    Now it's possible to say things like:
-       [Cmdenv]
-       runs-to-execute = 1,2, 5-8
-    There is a command-line equivalent: -r1,2,5-8
-    If the list of runs is not given explicitly, executes all runs
-    that have an ini file section; if no runs are given in the ini file,
-    does one run.
-  - compatibility: envir97 or newer
-#88 Aug 7, 1997
-  - cNetSimpleMod corrected to cNetMod
-  - [Cmdenv]/runs-to-execute default value changed: NULL-->""
-  - compatibility: sim144a or up
-#89 Aug 17, 1997
-  - updated for sim146a
-#90 Aug 17, 1997
-  - "Network not found" msg improved
-#91 Oct 2, 1997
-  - cleaned up & renamed several member functions; compatible with sim147
-#92 Oct 6, 1997
-  - further renaming; compatible with sim148
-#93 Dec 13, 1997
-  - brought up-to-date with sim151
-#94 Feb 15, 1998
-  - makefile changed; cmdenv.a-->libcmdenv.a
-#95 April 26, 1998
-  - makefile can now create shared object (libcmdenv.so)
-#96 May 12, 1998
-  - makefile updated
-#97 May 18, 1998
-  - inspectors made compatible with sim160
-#98 May 18, 1998
-  - inspectors made compatible with sim162
-#99 June 24, 1998
-  - callFinish() added
-#100 July 15, 1998
-  - small fixes
-  - callFinish() added
-#101 August 12, 1998
-  - Borland C++ 5.0 project file added
-  - small fixes
-#102 August 14, 1998
-  - makefile fix
-#103 Dec 27, 1998
-  - updated for sim170
-  - extraStackForEnvir() raised to 8K (was zero)
-  - some bugs fixed in heap.cc
-  - makefile renamed to makefile.in
-  - runningModule() corrected to contextModule()
-#104 Jan 25, 1999
-  - updated for sim172d
-#105 Feb 7, 1999
-  - small fixes
-#106 June 21, 1999
-  - all sources checked in under CVS
-  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
-  - version.log renamed to ChangeLog
-  - removed support for DOS with BC3.1
-Aug 13, 1999
-  - _dummy_for_tkenv_inspect() bug fixed
------- omnetpp-2.0b released ------
-Sept 20, 1999
- - typo fixed in Makefile.in: $(CLFAGS) --> $(CFLAGS)
------- omnetpp-2.0b2 released ------
-Dec 4,1999
-  - compiled with MSVC. cmdenv.dsp added. NOTE: one has to rename all .cc files
-    to .cpp for compiling (ren *.cc *.cpp)!
-  - To Do: check heap.cc
-Dec 5,1999
-  - Makefile.vc added
------- omnetpp-2.0b3 released ------
-Mar 26, 2000
- - 'char *' pointers made const-correct (lots of 'char *' --> 'const char *'
-   replacements throughout the code)
-April 4, 2000
- - dynamic registration of user interface (TOmnetApp) classes introduced:
-   Register_OmnetApp() macro added to cmdenv.cc
-April 6-10, 2000
- - changes to enable linking a Windows DLL from the library
- - memoryIsLow() reorganized; cosmetic changes on heap.cc
- - adjustments because of TOmnetApp constructor changes
- - added cmdenvDummy()/envirDummy(): functions which can/should be called from
-   Envir in order to force the linker to include the Cmdenv library into the
-   executable. (These functions do absolutely nothing.)
- - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
- - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
-May 7, 2000
- - Makefile.vc improvements from Balazs Kelemen
-May 10, 2000
- - [Cmdenv]/extra-stack= option added, it specifies (in bytes) how much extra
-   stack each activity() module needs when executing under Cmdenv.
-   This used to be hardcoded (8192), now users can fine-tune it.
------- omnetpp-2.0b4 released ------
------- omnetpp-2.0b5 released ------
-June 6, 2000
- - heap.cc, operator new fixed: when out of memory, it doesn't return NULL
-   but calls exit(1). (According to the ISO standard, op new should throw an
-   exception when out of memory. Unfortunately, exceptions are incompatible
-   with the coroutine library's setjmp/longjmp magic, so OMNeT++ doesn't use
-   exceptions at all.)
-HEAP.CC TO BE TESTED!!!
------- omnetpp-2.0 released ------
------- omnetpp-2.0p1 released ------
- - Borland C++ support removed: I deleted the project files (*.ide). I added
-   equivalent Makefile.bc files (generated from the BC IDE), but they are
-   completely unsupported at the moment. If there's interest, it's possible
-   that later I'll add makefiles for the free command-line bc5.5 compiler.
------- omnetpp-2.1 released ------
+2000-06-06  Andras Varga
+
+	* ------ omnetpp-2.1 released ------
+
+	* Borland C++ support removed: I deleted the project files
+	(*.ide). I added equivalent Makefile.bc files (generated from the
+	BC IDE), but they are completely unsupported at the moment. If
+	there's interest, it's possible that later I'll add makefiles for
+	the free command-line bc5.5 compiler.
+
+	
+	* ------ omnetpp-2.0p1 released ------
+
+	* ------ omnetpp-2.0 released ------
+
+	* heap.cc, operator new fixed: when out of memory, it doesn't
+	return NULL but calls exit(1). (According to the ISO standard, op
+	new should throw an exception when out of memory. Unfortunately,
+	exceptions are incompatible with the coroutine library's
+	setjmp/longjmp magic, so OMNeT++ doesn't use exceptions at all.)
+
+	HEAP.CC TO BE TESTED!!!
+
+2000-05-10  Andras Varga
+
+	* ------ omnetpp-2.0b5 released ------
+
+	* ------ omnetpp-2.0b4 released ------
+	
+	* [Cmdenv]/extra-stack= option added, it specifies (in bytes) how
+	much extra stack each activity() module needs when executing under
+	Cmdenv.  This used to be hardcoded (8192), now users can fine-tune
+	it.
+
+2000-05-07  Andras Varga
+
+       * Makefile.vc improvements from Balazs Kelemen
+
+2000-04-10  Andrea Varga
+
+	* changes to enable linking a Windows DLL from the library
+
+	* memoryIsLow() reorganized; cosmetic changes on heap.cc
+
+	* adjustments because of TOmnetApp constructor changes
+
+	* added cmdenvDummy()/envirDummy(): functions which can/should be
+	called from Envir in order to force the linker to include the
+	Cmdenv library into the executable. (These functions do absolutely
+	nothing.)
+
+	* TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+
+	* in printf() statements, all "%lf","%lg","%le" was replaced by
+	"%f","%g","%e"
+
+2000-04-04  Andras Varga
+
+	* dynamic registration of user interface (TOmnetApp) classes
+	introduced: Register_OmnetApp() macro added to cmdenv.cc
+
+2000-03-26  Andras Varga
+
+	* 'char *' pointers made const-correct (lots of 'char *' -->
+	'const char *' replacements throughout the code)
+
+1999-12-05  Andras Varga
+
+	* ------ omnetpp-2.0b3 released ------
+
+        * Makefile.vc added
+
+1999-12-04  Andras Varga
+
+        * compiled with MSVC. cmdenv.dsp added. NOTE: one has to rename
+	all .cc files to .cpp for compiling (ren *.cc *.cpp)!
+
+        * To Do: check heap.cc
+
+1999-09-20  Andras Varga
+
+	* ------ omnetpp-2.0b2 released ------
+	
+	* typo fixed in Makefile.in: $(CLFAGS) --> $(CFLAGS)
+
+1999-08-13  Andras Varga
+
+	* ------ omnetpp-2.0b released ------
+	
+        * _dummy_for_tkenv_inspect() bug fixed
+
+1999-06-21  Andras Varga
+
+        * all sources checked in under CVS
+
+        * makefile.in modified for use with GNU Autoconf; also renamed to
+	Makefile.in
+
+        * version.log renamed to ChangeLog
+
+        * removed support for DOS with BC3.1
+
+1999-02-07  Andras Varga
+
+        * small fixes
+
+1999-01-25  Andras Varga
+
+        * updated for sim172d
+
+1998-12-27  Andras Varga
+
+        * updated for sim170
+
+        * extraStackForEnvir() raised to 8K (was zero)
+
+        * some bugs fixed in heap.cc
+
+        * makefile renamed to makefile.in
+
+        * runningModule() corrected to contextModule()
+
+1998-08-14  Andras Varga
+
+        * makefile fix
+
+1998-08-12  Andras Varga
+
+        * Borland C++ 5.0 project file added
+
+        * small fixes
+
+1998-07-15  Andras Varga
+
+        * small fixes
+
+        * callFinish() added
+
+1998-06-24  Andras Varga
+
+        * callFinish() added
+
+1998-05-18  Andras Varga
+
+        * inspectors made compatible with sim162
+
+1998-05-18  Andras Varga
+
+        * inspectors made compatible with sim160
+
+1998-05-12  Andras Varga
+
+        * makefile updated
+
+1998-04-26  Andras Varga
+
+        * makefile can now create shared object (libcmdenv.so)
+
+1998-02-15  Andras Varga
+
+        * makefile changed; cmdenv.a-->libcmdenv.a
+
+1997-12-13  Andras Varga
+
+        * brought up-to-date with sim151
+
+1997-10-06  Andras Varga
+
+        * further renaming; compatible with sim148
+
+1997-10-02  Andras Varga
+
+        * cleaned up & renamed several member functions; compatible with
+	sim147
+
+1997-08-17  Andras Varga
+
+        * "Network not found" msg improved
+
+1997-08-17  Andras Varga
+
+        * updated for sim146a
+
+1997-08-07  Andras Varga
+
+        * cNetSimpleMod corrected to cNetMod
+
+        * [Cmdenv]/runs-to-execute default value changed: NULL-->""
+
+        * compatibility: sim144a or up
+
+1997-07-31  Andras Varga
+
+        * [General]/number-of-runs= ini file option was replaced by
+	
+	  [Cmdenv]/runs-to-execute=.
+	  Now it's possible to say things like:
+	     [Cmdenv]
+	     runs-to-execute = 1,2, 5-8
+	  There is a command-line equivalent: -r1,2,5-8
+	  If the list of runs is not given explicitly, executes all runs
+	  that have an ini file section; if no runs are given in the ini file,
+	  does one run.
+
+        * compatibility: envir97 or newer
+
+1997-07-20  Andras Varga
+
+        * removed TCmdenv::foreignputs()
+
+1997-07-10  Andras Varga
+
+        * makefile hacked upon to make it edible for Cygnus gcc
+
+1997-07-02  Andras Varga
+
+        * opt_verbose bug fixed
+
+        * usage of cEnvir::disable_tracing added
+
+1997-07-01  Andras Varga
+
+        * small changes
+
+1997-04-22  Andras Varga
+
+        * cSimulation's geteventnumber() and inc_eventnumber() introduced
+	instead of own event counting (compatible with sim130 and up)
+
+1997-04-11  Andras Varga
+
+        * opt_helponly moved from envir package to cmdenv
+
+1997-03-24  Andras Varga
+
+        * opt_networkname now explicitly casted from string to char* in
+	printf()
+
+1997-03-15  Andras Varga
+
+        * adopted to sim120c
+
+1997-02-28  Andras Varga
+
+        * adopted to envir81 and sim109
+
+1997-02-28  Andras Varga
+
+        * adopted to sim105 & 'multiple runs' bug fixed
+
+	#75
+
+        * bugfixes
+
+	#74
+
+        * heap.cc's alloctable[] made dynamic
+
+	#72
+
+        * upgraded for sim102's
+
+        * added periodic display update
+
+	#71
+
+        * improved alloctable[]
+
+        * better heap debugging messages
+
+	#23
+
+        * integrating VZ's stuff. Won't compile

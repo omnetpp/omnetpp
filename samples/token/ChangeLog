@@ -1,16 +1,31 @@
-Oct 10, 1999
- - standardized indentation of source files
------- omnetpp-2.0b3 released ------
------- omnetpp-2.0b4 released ------
------- omnetpp-2.0b5 released ------
-Jun 6, 2000
- - [General]/total-stack-kb= increased to 4Mb
------- omnetpp-2.0 released ------
------- omnetpp-2.0p1 released ------
-Mar 10, 2001
- - Borland C++ project file (*.ide) removed, Makefile.bc added (unsupported!)
- - MSVC makefiles and project files now contain the OMNeT++ include and lib
-   directories with absolute paths (previously they were relative paths,
-   like ..\..\lib). This means the samples will compile even when they're moved
-   to another location in the file system.
------- omnetpp-2.1 released ------
+
+2001-03-10  Andras Varga
+
+	* ------ omnetpp-2.1 released ------
+
+	* MSVC makefiles and project files now contain the OMNeT++ include
+	and lib directories with absolute paths (previously they were
+	relative paths, like ..\..\lib). This means the samples will
+	compile even when they're moved to another location in the file
+	system.
+
+	* Borland C++ project file (*.ide) removed, Makefile.bc added (unsupported!)
+
+
+2000-06-06  Andras Varga
+
+	* ------ omnetpp-2.0p1 released ------
+
+	* ------ omnetpp-2.0 released ------
+
+	* [General]/total-stack-kb= increased to 4Mb
+
+1999-10-10  Andras Varga
+
+	* ------ omnetpp-2.0b5 released ------
+
+	* ------ omnetpp-2.0b4 released ------
+
+	* ------ omnetpp-2.0b3 released ------
+
+	* standardized indentation of source files

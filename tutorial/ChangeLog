@@ -1,15 +1,29 @@
-May 6, 2001 (AV)
- - takeover from Queues-0.1:
-     - checked in sources, tutorial.tex and *.el files
-     - cosmetics on sources (tabs to spaces, indentation, file headings, etc.)
- - renamed 'some' script to 'run' (also in tutorial.tex)
- - removed the 'rm queues' line from the 'run' script, and removed the
-   corresponding sentence from tutorial.tex, too.
- - in tutorial.tex, replaced all occurrences of 'makemake' with 'opp_makemake'
- - added makefile for creating pdf from the latex sources
- - added MSVC makefile, updated unix makefile
-May 8, 2001 (Nicky)
- - corrected typos in tutorial.tex
- - improved doc_src makefile
- - other smaller fixes
------- omnetpp-2.1 released ------
+2001-05-08  Nicky
+
+	* ------ omnetpp-2.1 released ------
+
+	* corrected typos in tutorial.tex
+
+	* improved doc_src makefile
+
+	* other smaller fixes
+
+2001-05-06  Andras Varga
+
+	* takeover from Queues-0.1:
+
+	  checked in sources, tutorial.tex and *.el files
+
+	  cosmetics on sources (tabs to spaces, indentation, file headings, etc.)
+
+	* renamed 'some' script to 'run' (also in tutorial.tex)
+
+	* removed the 'rm queues' line from the 'run' script, and removed
+	the corresponding sentence from tutorial.tex, too.
+
+	* in tutorial.tex, replaced all occurrences of 'makemake' with
+	'opp_makemake'
+
+	* added makefile for creating pdf from the latex sources
+
+	* added MSVC makefile, updated unix makefile

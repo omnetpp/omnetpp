@@ -1,290 +1,524 @@
-Modifications to the JAR/NEDC compiler
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+2001-03-10  Andras Varga
+
+	* ------ omnetpp-2.1 released ------
+
+	* Borland C++ support removed: I deleted the project files
+	(*.ide). I added equivalent Makefile.bc files (generated from the
+	BC IDE), but they are completely unsupported at the moment. If
+	there's interest, it's possible that later I'll add makefiles for
+	the free command-line bc5.5 compiler.
+
+
+2001-01-16  Andras Varga
+
+	* ------ omnetpp-2.0p1 released ------
+
+	* ------ omnetpp-2.0 released ------
+
+	* disabled heapcheck in jar_mem.c (this makes nedc a lot faster if
+	compiled with Borland C++)
+
+	* added version mismatch check to generated _n.cc files
+
+2000-11-19  Andras Varga
+
+	* ebnf.y updated from GNED (no effect on nedc)
+
+2000-09-30  Andras Varga
+
+	* improvement just for Cygwin: lexer now explicitly ignores '\r'
+	(=CR) chars
+
+2000-05-22  Andras Varga
+
+	* ------ omnetpp-2.0b5 released ------
+
+	* ------ omnetpp-2.0b4 released ------
+
+	* const-correctness fix on get_expression() arg list [reported by
+	Frank Paehlke]
+
+2000-05-07  Andras Varga
+
+	* Makefile.vc improvements [from Balazs Kelemen]
+
+2000-04-13  Andras Varga
+
+	* Changed operator precedence to bind ||,&& thighter than ?:
+	[suggested by Niko]
+
+2000-04-10  Andras Varga
+
+	* TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+
+	* in printf() statements, all "%lf","%lg","%le" was replaced by
+	"%f","%g","%e"
+
+2000-04-05  Andras Varga
+
+	* bugfix: nedc hung if last line was a comment and it was
+	incomplete (without LF) [reported by Roland Bless]
+
+2000-03-27  Andras Varga
+
+	* bugfix: conditional (?:) operator caused parse error [reported
+	by Niko]
+
+2000-03-26  Andras Varga
+
+	* 'char *' --> 'const char *' changes in generated code
+
+2000-03-12  Andras Varga
+
+        * added lines to generated code to disable compiler warnings about
+	unused vars under MSVC and Borland C++. I have no solution for gcc
+	(gcc doesn't seem to have #pragma or any other mechanism to
+	disable warnings from the source).
+
+2000-03-07  Andras Varga
+
+        * bugfix for distributed execution: corrected handling of machine
+	parameters at network level
+
+        * changed test12.ned and test13.ned
+
+2000-01-13  Andras Varga
+
+	* ------ omnetpp-2.0b3 released ------
+
+        * "-s" option (output file suffix) was added
+
+2000-01-04  Andras Varga
+
+        * corrected '*new cPar = (char *)something' lines in the generated
+	code to '*new cPar() = (char *)something', because in the first
+	case, the cPar(char *) constructor was called (wrongly) instead of
+	cPar() and operator=(char *).
+
+1999-12-19  Andras Varga
+
+        * changes in generated code due to cPar interface change (see
+	sim/ChangeLog)
+
+1999-12-18  Andras Varga
+
+        * changed isA() to className() in generated code (see
+	sim/ChangeLog)
+
+        * macro names in module interface declarations (Interface...End)
+	changed to reduce chance of name clashes
+
+1999-12-05  Andras Varga
+
+        * Makefile.vc added
+
+1999-12-05  Andras Varga
+
+        * compiled with MSVC. enbf.h added.
+
+        * added generated files enbf.tab.c and lex.yy.c to CVS to make it
+	possible to build GNED where flex/bison is not available
+
+1999-08-15  Andras Varga
+
+	* ------ omnetpp-2.0b2 released ------
+
+        * bugfix: with "like", simulation crashed if the actual module
+	type didn't have all parameters. (Brent's bug)
+
+1999-07-17  Andras Varga
+
+        * help text changed
+
+1999-07-10  Andras Varga
+
+        * ebnf.y fixed, nedc works fine again.
+
+1999-06-30  Andras Varga
+
+        * ebnf.y ported back from GNED
+
+        * added nedc.ide and b.bat
+
+        * doesn't work yet!
+
+1999-06-21  Andras Varga
+
+        * all sources checked in under CVS
+
+        * makefile.in modified for use with GNU Autoconf; also renamed to
+	Makefile.in
+
+        * version.log renamed to ChangeLog
+
+        * removed support for DOS with BC3.1
+
+        * portability change: ebnf.y now includes malloc.h
+
+1999-02-07  Andras Varga
+
+        * updated for sim174
+
+1999-01-25  Andras Varga
+
+        * updated for sim172b: simulation.error() --> simError()
+
+1998-12-27  Andras Varga
+
+        * #include <malloc.h> changed to <stdlib.h>
+
+        * makefile renamed to makefile.in
+
+1998-08-17  Andras Varga
+
+        * in the generated code, added check_error() to the 'if (isInput)
+	read' lines
+
+1998-08-15  Andras Varga
+
+        * error message format changed to Borland-like for easy
+	integration into the BC IDE ($CAP MSG(BORL2MSG) transfer macro can
+	be used)
+
+1998-07-15  Andras Varga
+
+        * small fixes
+
+1998-07-02  Andras Varga
+
+        * some error messages made more clear
+
+1998-06-09  Andras Varga
+
+        * upgraded for sim162
+
+1998-06-05  Andras Varga
+
+        * minor bug (with display strings) fixed
+
+1998-05-11  Andras Varga
+
+        * shared ebnf.y/ebnf.lex files updated from GNED package
+
+        * minor grammar change: made a bit more tolerant with semicolons
+
+        * new: synonyme for `include' keyword: `import'.  I feel that
+	'importing' is closer to what really happens (thanks Geza!)
+
+1998-05-04  Andras Varga
+
+        * ebnfcfg.h added, ebnf.lex/ebnf.y modified so that grammar source
+	can be shared with GNED
+
+1998-04-14  Andras Varga
+
+        * "display:" phrase added to NED language; it is to support
+	visualization/animation in Tkenv and other GUI simulation tools.
+	See SIM's version.log for info on setDisplayString(type).
+
+1998-02-14  Andras Varga
+
+        * "generate vs not generate code from include files" problem:
+	reverted back to pre-98 versions (98-103 were never released).
+
+        * improved error msg format
+
+        * JAR was renamed to NEDC.  This was necessary to reduce
+	confusion: ARJ software has an archiver called jar; on Sun, Java
+	archiver is also called jar; and JAR compiles NED files anyway.
+	So this version is NEDC104.
+
+1998-02-10  Andras Varga
+
+        * bugfixes on #102; output code cleaned up around 'if' sections
+
+1998-02-08  Andras Varga
+
+        * typed parameters and type checking added to NED language and Jar compiler.
+	  Parameters can be declared: numeric, const numeric, string, bool, anytype.
+	    Syntax:
+		   module Foo
+		      parameters:
+			nn1,
+			nn2: numeric,
+			nn3: numeric const,
+			bb: bool,
+			ss: string,
+			aa: anytype;
+			...
+
+	Default type is numeric (as for nn1).  Anytype turns off type
+	checking for the parameter, it will be compatible with any other
+	type.  In computations, bool is treated as numeric.
+
+	* C-style expressions completed with NEW bitwise operators:
+           & and, | or, # xor (Note that ^ is reserved for power!)
+           ~ complement, << >> shift
+
+	    Bitwise operators raised to one rank higher precedence than in C
+	    (just above ==,!=,<,>,<=,>=). Conditional (?:) is also at higher
+	    level than in C, just above &&,||,##.
+
+        * notation of logical operators changed:
+           && and, || or, ## xor (does not exist in C), ! not
+
+        * compatibility: requires sim154 or above
+
+1998-02-05  Andras Varga
+
+        * development version
+
+1998-01-01  Andras Varga
+
+        * initial version of typed parameters added; still bogus
+
+        * testNN.ned files cleaned up a bit
+
+1997-12-13  Andras Varga
+
+        * check for unset submodule parameters have been disabled. Now all
+	parameters not explicitly set will be 'Input'.
+
+        * known problem: if the same module gets included more than once
+	in a ned file, C++ compiler will report duplicated symbols. This
+	could be eliminated if Jar kept track what has been written out.
+
+1997-12-13  Andras Varga
+
+        * now generates code from include files too
+
+        * uses Register_Module() macro
+
+        * compatible with: sim150 and up
+
+1997-10-02  Andras Varga
+
+        * cleaned up & renamed several member functions; compatible with
+	sim147
+
+1997-07-10  Andras Varga
+
+        * changes to makefile; #ifdefs in source to get it compiled with
+	Cygnus gcc
+
+1997-07-06  Andras Varga
+
+        * handling of CONST parameters changed
+
+        * support for consistency check of module interface declarations
+
+1997-06-30  Andras Varga
+
+        * INPUT now can be used without specifying default value
+
+        * fixed bug with the NOT operator
+
+1997-04-18  Andras Varga
+
+        * bug with 'ancestor ref' parameters fixed
+
+1997-04-12  Andras Varga
+
+        * Change in generated source: 'value.cancelindirection()' placed
+	before each setting of 'value' (otherwise, ref parameters would
+	cause problems)
+
+1997-04-06  Andras Varga
+
+        * small changes to makefile
+
+        * copyright msg changed; a typo corrected
+
+1997-03-10  Andras Varga
+
+        * bugfixes
+
+1997-03-07  Andras Varga
+
+        * new feature: submodule type can be parameter. Syntax:
+        modulename : parametername LIKE moduletype
+
+1997-03-03  Andras Varga
+
+        * updated for sim108: knows about genk_xxxx functions
+
+1997-02-25  Andras Varga
+
+        * bugfixes
+
+        * after submodule parameters sections, "if (isinput()) read()"
+	added for each parameter
+
+        * time units can be used as constants (e.g. 10ms, 1h 2m .001s)
+
+1997-02-24  Andras Varga
+
+        * makejar.bat added
+
+1997-02-21  Andras Varga
+
+        * internal expression handling totally rewritten; now it goes with
+	sim103
+
+        * keyword 'system' changed to 'network'
+
+        * small additional modifications
+
+1997-02-15  Andras Varga
+
+        * data rate support added
+
+1997-01-16  Andras Varga
+
+        * jar_mod.c: bug with "inline connection delay specification"
+	('mm1.gg1 --> delay a --> mm2.gg2') fixed
+
+1997-01-16  Andras Varga
+
+        * jar.c: '-i' option corrected to '-I'
+
+1997-01-10  Andras Varga
+
+        * loop connection: 'start_index<=end_index' check removed from
+	generated code
+
+1996-12-15  Andras Varga
+
+        * added support for delay, error phrases in connections
+
+        * made case-sensitive
+
+1996-12-01  Andras Varga
+
+        * modified makefile for use with yacc
+
+1996-11-01  Andras Varga
+
+        * added oparators: == != < <= > >= and or ..
+
+        * now recognizes external C++ functions
+
+        * `sizeof()' and `index' operators
+
+        * support for <-- (not only -->)
+
+        * implemented conditional sections, conditional connections
+
+        * `nocheck' operator
+
+        * changed the implementation of links
+
+        * removed "Mapping:" section (that info was moved into omnet.ini)
+
+        * bug fixes etc
+
+1996-09-29  Andras Varga
+
+        * changed global "Machines:" keyword to "Mapping:" and implemented
+	it
+
+        * inserted adding of "default" machine to modules with no
+	"machines:" definition
+
+        * added opt_semicolon to make compiler more tolerant
+
+        * fixed small bugs
+
+        * to do: implement the I/O interfaces
+
+1996-05-01  Andras Varga
+
+        * PVM, machine, on
+
+        * to do: system module: host.domain, only the defined formal
+	machines can be used
+
+1996-03-29  Andras Varga
+
+	* increased buffer sizes....
+
+1996-03-29  Andras Varga
+
+	* under MSDOS, limit output filenames to 8+3 chars
+
+	* stop processing if there's parse error in ANY file
+
+1996-03-29  Andras Varga
+
+	* totally rewritten parameter handling mechanism, for example
+	changed implementation of REF to parentmodpar() mechanism.
+
+1996-03-29  Andras Varga
+
+	* simplified the grammar: functionvalue eliminated, inputvalue
+	simplified
+
+	* discovered that expressions cannot be nested (because code uses
+	global variables). This way, one cannot write "-uniform(0,1)^2"!!!
+
+1996-03-29  Andras Varga (15-29)
+
+	* finished rewriting the grammar. Now the simple modules can have
+	different gate vector sizes for each occurrence in the NED file;
+
+	* deleted keywords `EndSubmodules', `EndConnections' etc;
+
+	* added `GateSizes' section to compound module definition
+
+	* added `sizeof(gate_vector_name)' phrase to NED
+
+	* added several `check_xxx()' macros to generated code
+
+	* changed the generated code for the `input' parameters
+
+	* in the generated code, changed addgate()/addpar() calls to
+	setgatesize()/setpar() -- addgate()/addpar() was moved to cMod's
+	constructor
+
+	* commented how expressions work
+
+1996-03-15  Andras Varga
+
+	* changed the grammar!!!  Not finished yet.
+
+1996-03-15  Andras Varga
+
+	* changed var names in generated code etc.
+
+1996-03-15  Andras Varga (8-15)
+
+	* begun porting to DOS/Borland C++
+
+	* moved global variable definitions from jar.h to jar.c
+
+	* added function prototypes and changed empty funtion arg list
+	'()' to '(void)' to enable arg list checks in C
+
+	* several small modifications to make source portable between
+	yacc/bison, lex/flex and between different platforms
+
+	* reorganized header files and renamed jar.h to jar_func.h; added
+	several comments
+
+	* added banners and comments to src files
+
+	* added jar_yyrestart() function for compatibility with flex
+
+	* added jar_mem.c to help debugging memory allocation problems
+
+	* fixed a bug in jar_mod.c (pointer deallocated twice)
+
+	* eliminated the source of several null pointer
+	assignments/segmentation faults by adding jar_strcpy(),
+	jar_strcat(), jar_strdup() etc.
+
+	* begun tailoring generated code: changed format of channel
+	creation function in generated C++ src
+
+	* JAR now compiles and works under DOS/Borland C++ 3.1, DOS/DJGPP
+	V1, Linux/Gnu C++
+
 by Andras Varga, from March 1996
 Initial version was written on AIX by Alex Paalvast, Jan Heijmans and
 Robert van der Leij, during summer 1995.
-#1-9 Mar 8-15 1996:
- - begun porting to DOS/Borland C++
- - moved global variable definitions from jar.h to jar.c
- - added function prototypes and changed empty funtion arg list '()'
-   to '(void)' to enable arg list checks in C
- - several small modifications to make source portable between yacc/bison,
-   lex/flex and between different platforms
- - reorganized header files and renamed jar.h to jar_func.h; added several
-   comments
- - added banners and comments to src files
- - added jar_yyrestart() function for compatibility with flex
- - added jar_mem.c to help debugging memory allocation problems
- - fixed a bug in jar_mod.c (pointer deallocated twice)
- - eliminated the source of several null pointer assignments/segmentation
-   faults by adding jar_strcpy(), jar_strcat(), jar_strdup() etc.
- - begun tailoring generated code: changed format of channel creation
-   function in generated C++ src
- - JAR now compiles and works under DOS/Borland C++ 3.1, DOS/DJGPP V1,
-   Linux/Gnu C++
-#10-11 Mar 15 1996:
- - changed var names in generated code etc.
-#12 Mar 15 1996:
- - changed the grammar!!!   Not finished yet.
-#13-24 Mar 15-29 1996:
- - finished rewriting the grammar. Now the simple modules can have different
-   gate vector sizes for each occurrence in the NED file;
- - deleted keywords `EndSubmodules', `EndConnections' etc;
- - added `GateSizes' section to compound module definition
- - added `sizeof(gate_vector_name)' phrase to NED
- - added several `check_xxx()' macros to generated code
- - changed the generated code for the `input' parameters
- - in the generated code, changed addgate()/addpar() calls to
-   setgatesize()/setpar() -- addgate()/addpar() was moved to cMod's
-   constructor
- - commented how expressions work
-#25 Mar 29 1996:
- - simplified the grammar: functionvalue eliminated, inputvalue simplified
- - discovered that expressions cannot be nested (because code uses global
-   variables). This way, one cannot write "-uniform(0,1)^2"!!!
-#26 Mar 29 1996:
- - totally rewritten parameter handling mechanism, for example changed
-   implementation of REF to parentmodpar() mechanism.
-#27 Mar 29 1996:
- - under MSDOS, limit output filenames to 8+3 chars
- - stop processing if there's parse error in ANY file
-#28 Mar 29 1996:
- - increased buffer sizes....
-#38-51 Apr-May 1996
-  - PVM, machine, on
-  - to do: system module: host.domain,
-           only the defined formal machines can be used
-#52 Sep 29 1996:
-  - changed global "Machines:" keyword to "Mapping:" and implemented it
-  - inserted adding of "default" machine to modules with no "machines:"
-    definition
-  - added opt_semicolon to make compiler more tolerant
-  - fixed small bugs
-  - to do: implement the I/O interfaces
-#53-75 Oct-Nov 1996
-  - added oparators: == != < <= > >= and or ..
-  - now recognizes external C++ functions
-  - `sizeof()' and `index' operators
-  - support for <-- (not only -->)
-  - implemented conditional sections, conditional connections
-  - `nocheck' operator
-  - changed the implementation of links
-  - removed "Mapping:" section (that info was moved into omnet.ini)
-  - bug fixes etc
-#76 Dec 1 1996:
-  - modified makefile for use with yacc
-#79 Dec 15 1996:
-  - added support for delay, error phrases in connections
-  - made case-sensitive
-#80 Jan ~10 1997:
-  - loop connection: 'start_index<=end_index' check removed from generated
-    code
-#81 Jan 16 1997:
-  - jar.c: '-i' option corrected to '-I'
-#82 Jan 16 1997:
-  - jar_mod.c: bug with "inline connection delay specification"
-    ('mm1.gg1 --> delay a --> mm2.gg2') fixed
-#83 Feb 15, 1997:
-  - data rate support added
-#84 Feb 21 1997:
-  - internal expression handling totally rewritten; now it goes with sim103
-  - keyword 'system' changed to 'network'
-  - small additional modifications
-#85 Feb 24 1997:
-  - makejar.bat added
-#87 Feb 25 1997:
-  - bugfixes
-  - after submodule parameters sections, "if (isinput()) read()"
-    added for each parameter
-  - time units can be used as constants (e.g. 10ms, 1h 2m .001s)
-#88 Mar 3 1997:
-  - updated for sim108: knows about genk_xxxx functions
-#89 Mar 7 1997:
-  - new feature: submodule type can be parameter. Syntax:
-        modulename : parametername LIKE moduletype
-#90 Mar 10 1997:
-  - bugfixes
-#91 Apr 6, 1997:
-  - small changes to makefile
-  - copyright msg changed; a typo corrected
-#92 Apr 12, 1997:
-  - Change in generated source:
-      'value.cancelindirection()' placed before each setting of 'value'
-    (otherwise, ref parameters would cause problems)
-#93 Apr 18, 1997:
-  - bug with 'ancestor ref' parameters fixed
-#94 Jun 30, 1997:
-  - INPUT now can be used without specifying default value
-  - fixed bug with the NOT operator
-#95 Jul 6, 1997:
-  - handling of CONST parameters changed
-  - support for consistency check of module interface declarations
-#96 Jul 10, 1997:
-  - changes to makefile; #ifdefs in source to get it compiled with Cygnus gcc
-#97 Oct 2, 1997
-  - cleaned up & renamed several member functions; compatible with sim147
-#98 Dec 13, 1997
-  - now generates code from include files too
-  - uses Register_Module() macro
-  - compatible with: sim150 and up
-#99 Dec 13, 1997
-  - check for unset submodule parameters have been disabled. Now all
-    parameters not explicitly set will be 'Input'.
-  - known problem: if the same module gets included more than once in
-    a ned file, C++ compiler will report duplicated symbols. This
-    could be eliminated if Jar kept track what has been written out.
-#100 Jan 1, 1998
-  - initial version of typed parameters added; still bogus
-  - testNN.ned files cleaned up a bit
-#101 Feb 5, 1998
-  - development version
-#102 Feb 8, 1998
-  - typed parameters and type checking added to NED language and Jar compiler.
-    Parameters can be declared: numeric, const numeric, string, bool, anytype.
-      Syntax:
-             module Foo
-                parameters:
-                  nn1,
-                  nn2: numeric,
-                  nn3: numeric const,
-                  bb: bool,
-                  ss: string,
-                  aa: anytype;
-                  ...
-      Default type is numeric (as for nn1).
-      Anytype turns off type checking for the parameter, it will be compatible
-      with any other type.
-      In computations, bool is treated as numeric.
-  - C-style expressions completed with NEW bitwise operators:
-           & and, | or, # xor (Note that ^ is reserved for power!)
-           ~ complement, << >> shift
-      Bitwise operators raised to one rank higher precedence than in C
-      (just above ==,!=,<,>,<=,>=). Conditional (?:) is also at higher
-      level than in C, just above &&,||,##.
-  - notation of logical operators changed:
-           && and, || or, ## xor (does not exist in C), ! not
-  - compatibility: requires sim154 or above
-#103 Feb 10, 1998
-  - bugfixes on #102; output code cleaned up around 'if' sections
-#104 Feb 14, 1998
-  - "generate vs not generate code from include files" problem:
-    reverted back to pre-98 versions (98-103 were never released).
-  - improved error msg format
-  - JAR was renamed to NEDC.
-    This was necessary to reduce confusion:
-      ARJ software has an archiver called jar; on Sun, Java archiver
-      is also called jar; and JAR compiles NED files anyway.
-    So this version is NEDC104.
-#105 April 14, 1998
-  - "display:" phrase added to NED language; it is to support
-     visualization/animation in Tkenv and other GUI simulation tools.
-     See SIM's version.log for info on setDisplayString(type).
-#106 May 4, 1998
-  - ebnfcfg.h added, ebnf.lex/ebnf.y modified so that grammar source can be
-    shared with GNED
-#107 May 11, 1998
-  - shared ebnf.y/ebnf.lex files updated from GNED package
-  - minor grammar change: made a bit more tolerant with semicolons
-  - new: synonyme for `include' keyword: `import'.
-    I feel that 'importing' is closer to what really happens (thanks Geza!)
-#108 June 5, 1998
-  - minor bug (with display strings) fixed
-#109 June 9, 1998
-  - upgraded for sim162
-#110 July 2, 1998
-  - some error messages made more clear
-#111 July 15, 1998
-  - small fixes
-#112 August 15, 1998
-  - error message format changed to Borland-like for easy integration into
-    the BC IDE ($CAP MSG(BORL2MSG) transfer macro can be used)
-#113 August 17, 1998
-  - in the generated code, added check_error() to the  'if (isInput) read' lines
-#114 Dec 27, 1998
-  - #include <malloc.h> changed to <stdlib.h>
-  - makefile renamed to makefile.in
-#115 Jan 25, 1999
-  - updated for sim172b: simulation.error() --> simError()
-#116 Feb 7, 1999
-  - updated for sim174
-#117 June 21, 1999
-  - all sources checked in under CVS
-  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
-  - version.log renamed to ChangeLog
-  - removed support for DOS with BC3.1
-  - portability change: ebnf.y now includes malloc.h
-June 30, 1999
-  - ebnf.y ported back from GNED
-  - added nedc.ide and b.bat
-  - doesn't work yet!
-July 10, 1999
-  - ebnf.y fixed, nedc works fine again.
-July 17, 1999
-  - help text changed
-Aug 15, 1999
-  - bugfix: with "like", simulation crashed if the actual module type didn't
-    have all parameters. (Brent's bug)
------- omnetpp-2.0b2 released ------
-Dec 5, 1999
-  - compiled with MSVC. enbf.h added.
-  - added generated files enbf.tab.c and lex.yy.c to CVS to make it possible to
-    build GNED where flex/bison is not available
-Dec 5,1999
-  - Makefile.vc added
-Dec 18, 1999
-  - changed isA() to className() in generated code (see sim/ChangeLog)
-  - macro names in module interface declarations (Interface...End) changed to
-    reduce chance of name clashes
-Dec 19, 1999
-  - changes in generated code due to cPar interface change (see sim/ChangeLog)
-Jan 4, 2000
-  - corrected '*new cPar = (char *)something' lines in the generated code to
-    '*new cPar() = (char *)something', because in the first case, the
-    cPar(char *) constructor was called (wrongly) instead of cPar() and
-    operator=(char *).
-Jan 13, 2000
-  - "-s" option (output file suffix) was added
------- omnetpp-2.0b3 released ------
-Mar 7, 2000
-  - bugfix for distributed execution: corrected handling of machine parameters
-    at network level
-  - changed test12.ned and test13.ned
-Mar 12, 2000
-  - added lines to generated code to disable compiler warnings about unused
-    vars under MSVC and Borland C++. I have no solution for gcc (gcc doesn't
-    seem to have #pragma or any other mechanism to disable warnings from the
-    source).
-Mar 26, 2000
- - 'char *' --> 'const char *' changes in generated code
-Mar 27, 2000
- - bugfix: conditional (?:) operator caused parse error [reported by Niko]
-Apr 5, 2000
- - bugfix: nedc hung if last line was a comment and it was incomplete
-   (without LF)  [reported by Roland Bless]
-Apr 10, 2000
- - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
- - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
-Apr 13, 2000
- - Changed operator precedence to bind ||,&& thighter than ?: [suggested by Niko]
-May 7, 2000
- - Makefile.vc improvements [from Balazs Kelemen]
-May 22, 2000
- - const-correctness fix on get_expression() arg list [reported by Frank Paehlke]
------- omnetpp-2.0b4 released ------
------- omnetpp-2.0b5 released ------
-Sep 30, 2000
- - improvement just for Cygwin: lexer now explicitly ignores '\r' (=CR) chars
-Nov 19, 2000
- - ebnf.y updated from GNED (no effect on nedc)
-Jan 16, 2001
- - disabled heapcheck in jar_mem.c (this makes nedc a lot faster if compiled with
-   Borland C++)
- - added version mismatch check to generated _n.cc files
------- omnetpp-2.0 released ------
------- omnetpp-2.0p1 released ------
-Mar 10, 2001
- - Borland C++ support removed: I deleted the project files (*.ide). I added
-   equivalent Makefile.bc files (generated from the BC IDE), but they are
-   completely unsupported at the moment. If there's interest, it's possible
-   that later I'll add makefiles for the free command-line bc5.5 compiler.
------- omnetpp-2.1 released ------

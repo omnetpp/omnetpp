@@ -1,26 +1,53 @@
-Oct 10, 1999
- - standardized indentation of source files
- - FF1 prefix added to Generator and Sink modules
-Oct 12, 1999
- - ACPFifo and ACBFifo renamed to FF1PacketFifo and FF1BitFifo
- - display strings moved to NED file
- - num_messages value changed from 1000 to 50 (better for demonstration)
-Oct 17, 1999
- - the "1" suffix was added to all file names (to make it possible to link
-   all sample simulations into a single executable)
-Jan 18, 2000
- - added explicit cast to math expressions with cPar...
------- omnetpp-2.0b3 released ------
------- omnetpp-2.0b4 released ------
------- omnetpp-2.0b5 released ------
-Jul 1, 2000
- - calls to obsolete cQueue functions upgraded to new functions (insert(),pop())
------- omnetpp-2.0 released ------
------- omnetpp-2.0p1 released ------
-Mar 10, 2001
- - Borland C++ project file (*.ide) removed, Makefile.bc added (unsupported!)
- - MSVC makefiles and project files now contain the OMNeT++ include and lib
-   directories with absolute paths (previously they were relative paths,
-   like ..\..\lib). This means the samples will compile even when they're moved
-   to another location in the file system.
------- omnetpp-2.1 released ------
+
+2001-03-10  Andras Varga
+
+	* ------ omnetpp-2.1 released ------
+
+	* MSVC makefiles and project files now contain the OMNeT++ include
+	and lib directories with absolute paths (previously they were
+	relative paths, like ..\..\lib). This means the samples will
+	compile even when they're moved to another location in the file
+	system.
+	
+	* Borland C++ project file (*.ide) removed, Makefile.bc added
+	(unsupported!)
+
+
+2000-07-01  Andras Varga
+
+	* ------ omnetpp-2.0p1 released ------
+
+	* ------ omnetpp-2.0 released ------
+
+	* calls to obsolete cQueue functions upgraded to new functions
+	(insert(),pop())
+
+2000-01-18  Andras Varga
+
+	* ------ omnetpp-2.0b5 released ------
+
+	* ------ omnetpp-2.0b4 released ------
+
+	* ------ omnetpp-2.0b3 released ------
+
+	* added explicit cast to math expressions with cPar...
+
+1999-10-17  Andras Varga
+
+	* the "1" suffix was added to all file names (to make it possible
+	to link all sample simulations into a single executable)
+
+1999-10-12  Andras Varga
+
+	* ACPFifo and ACBFifo renamed to FF1PacketFifo and FF1BitFifo
+
+	* display strings moved to NED file
+
+	* num_messages value changed from 1000 to 50 (better for
+	demonstration)
+
+1999-10-10  Andras Varga
+
+	* standardized indentation of source files
+
+	* FF1 prefix added to Generator and Sink modules

@@ -1,301 +1,565 @@
-#1  Nov 26, 1997
-   - project founded
-#8  Nov 27, 1997
-   - load/save works ok
-#9  Nov 29, 1997
-   - drawing,selecting,moving done OK, only 2 modes: draw and move!
-   - shift+click extends selection
-   - right click: properties
-   - to do: add title etc to submods + 1000 things
-#12 Dec 2, 1997
-   - to do: file open dialogs
-#14 Dec 3, 1997
-   - to do:
-       some consistency check (arrows should start/end in the right modules)
-       multiple canvases...
-#15 Dec 4, 1997
-  - snap to grid added
-  - to do: parent module code generation
-#16 Dec 4, 1997
-  - still to do:
-      excusing text in about box...
-      some consistency check (arrows should start/end in the right modules)
-      parent module code generation
-      good statusbar
-#17 Dec 5 1997
-  - still to do: all the above plus:
-      file|close
-      ask to save before exit
-      right click on "name" tag should bring up Properties dialog
-      one module == one file
-#19 Dec 5 1997
- - file names ok
- - to do (cummulated):
-      right click on "name" tag should bring up Properties dialog
-      don't load same file several times
-      bug: after double-click a dot remains
-      better auto naming of submods
-#20 Dec 6 1997
- - done:
-      parent module code generation
-      added "Comments" entry to props dialogs
-      improved dialogs
-      improved generated code (indentation etc.)
-      remove 'Print' toolbutton
-#21 Dec 6 1997
- put back 'Snap to grid'
- fixed: resizing parent doesn't move connection arrows
- file|close
- ask to save before exit
-#22 Dec 6 1997
- improvements on editor
- good statusbar
- generate: use $want_info, $want_data, $want_drawing variables in saved file
-#23-24 Dec 6 1997
- - done:
-      excusing text in about box...
-      added 'view generated NED' option
-      added 'load background'
- - still to do:
-      don't load same file several times
-      bug: after double-click a dot remains
-      better auto naming of submods
-      + ones in readme file
-#25 Dec 7 1997
- right click on "name" tag brings up Properties dialog
- file extension: .gnd
- improved on generated code
- gndview, gndinfo, gnd2ned added
-#26 Dec 7 1997
- misc improvements
- added demo files
-#27 Dec 9 1997
- double-click bug fixed
- check for Tcl/Tk version added
-#28 Dec 14 1997
- invalid file name bug on Windows fixed
-#29 Dec 14 1997
- improved file viewer; improved output NED quality
-#30 March 10 1998
- some improvements on appearance
- Tk8.0-style menu (native widgets)
- fixed bug which prevented gned from starting from outside its dir.
-#31 April 26 1998
- dummy makefile added
-#32a May 1, 1998
- cc files added; GNED could now use the opp_arrowcoords command.
-#32b May 4, 1998
- grammar files and opp_parsened command added; not finished yet!
- grammar files are now shared with NEDC!
-#32c May 11, 1998
- bugfixes on unfinished code...
-#33  July 20, 1998
- intermediate version
-#34  July 24, 1998
- Pataki I. and Vincze G.' stuff
-#34a-#38
- TOTAL REWRITE!!!
- internal data structure redesigned
- .gnd file format change (incompatible!)
- redesigned user interface
- arrow.cc rewritten
- display string format change:"p=m,50,50,50,50"
- ported to Windows (Borland C++ 5.0 project file included)
-#39  Aug 28, 1998
- - first beta version. Still badly misses the capability of loading
-   NED files directly!
-#40  Aug 30, 1998
- - Second beta
-#41  Dec 30, 1998
- - makefile renamed to makefile.in
- - bug with delete ('X') toolbar icon fixed
- - changes in the About box
-#42  Sept 1998 - March 1999
- DEVELOPMENT VERSIONS:
- - Pataki Istvan and Vincze Gabor -- added the parser and a manager, .gnd files
-   thrown out
-#43-45b  March 1999 - April 1999
- DEVELOPMENT VERSIONS
- - parser and code generation rewritten
- - data structures redesigned
- - made two-way tool
- - user interface redesigned: place manager at left, toolbar icons, tooltips etc.
-#46  May 1 1999
- GNED 1.2 ALPHA 1 released
-#47 June 21, 1999
-  - all sources checked in under CVS
-  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
-  - version.log renamed to ChangeLog
-July 11, 1999
-  - small fixes and enhancements
-July 17, 1999
-  - fixed the bug with scrolled canvas
-  - resizeBar implemented in widgets.tcl -- should be updated in Tkenv and Plove too!
-Aug 2, 1999
-  - OMNETPP_BITMAP_PATH turned into real path (a list of directories). The
-    separator char is ";" on Windows, and ":" or ";" on Unix.
-Aug 11, 1999
-  - changed widget.tcl -- must be updated elsewhere!
-Aug 15, 1999
-  - fixed bugs in nedfile.cc (lines 86,91,92 contained "==" instead of "=")
-Aug 18, 1999
-  - initial version of syntax highlight implemented
-Aug 26, 1999
-  - find/replace dialogs added
-Aug 28, 1999
-  - ddfields() array introduced for performance reasons
-Aug 30, 1999
-  - status bar added for text editor
------- omnetpp-2.0b1 released ------
------- omnetpp-2.0b2 released ------
-Oct 11, 1999
-  - fixed problem with resizing parent module
-Oct 12, 1999
-  - bugfix in balloon.tcl
-  - fixes on comment parsing/generating:
-      eliminated space from "// ---" comments
-      eliminated annoying generation of extra blank lines (except after "import")
-Nov 11, 1999
-  - begun writing Properties dialogs
-Nov 12, 1999
-  - tableEdit widget added
-Nov 13, 1999
-  - file props.tcl split to submprops.tcl, connprops.tcl,... (6 files)
-Nov 14, 1999
-  - submprops.tcl works; tbd comment handling; other dialogs; efficiency
-Nov 20-21, 1999
-  - implemented direct editing of module/submod names on the canvas
-  - implemented drag&drop of modules from the tree to the canvas
-  - implemented module properties dialog
-  - TBD: comment handling in properties dialogs!!!
-  - changed appendTo to append in makened.tcl
-  - renamed arrays: ddfields()-->ned_attlist(), ddict()-->ned_attr(), ddesc-->ned_desc()
-  - several bugs fixed
-Nov 30, 1999
-  - bugfix in drawItemRecursive
-Dec 2, 1999
-  - implemented Imports, Channel, Network Properties dialogs
-  - adjusted tree-view context menus
-Dec 5, 1999
-  - compiled with MSVC. enbf.h added. Removed changing slashes to backslashes
-    in OMNETPP_GNED_DIR and ..BITMAP_PATH on Win32 because Tcl/Tk accepts both.
-  - added generated files enbf.tab.c and lex.yy.c to CVS to make it possible to
-    build GNED where flex/bison is not available
-Dec 5,1999
-  - Makefile.vc added
-Dec 6, 1999
-  - adapted to Tcl8.2: font size changed.
-  - improved dialog box positioning
-  - added label-entry-chooser to widgets.tcl
-Dec 19, 1999
-  - wsize proc added to widgets.tcl
-  - font changes
------- omnetpp-2.0b3 released ------
-Mar 27, 2000
- - bugfix: conditional (?:) operator caused parse error [reported by Niko]
-Apr 10, 2000
- - in the C++ sources, TRUE/FALSE (defines) replaced by true/false (C++ keywords)
- - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
-Apr 13, 2000
- - ebnf.y: changed operator precedence to bind ||,&& thighter than ?:
-   [suggested by Niko]
-May 7, 2000
- - Makefile.vc improvements from Balazs Kelemen
-May 19,2000
- - fixed <Ctrl-H> in text editor
------- omnetpp-2.0b4 released ------
------- omnetpp-2.0b5 released ------
-July 17, 2000
- - accepts NED files on the command line
-July 26, 2000
- - minor fixes on Edit|Find
-Aug 7, 2000
- - makefile changes for RPM support
-Aug 26, 2000
- - added .gnedrc
- - find/replace operation improved
- - implemented "find next"
- - find/replace dialog contents is now preserved
- - open/save dialogs now remember the directory
-Aug 27, 2000
- - drag&drop creation of submodules now creates unique names (changed addItem,
-   renameItem procs)
- - deleteItem proc improved
- - renaming improved; "rename..." added to canvas popup menu
-Aug 29, 2000
- - command-line arg handling improved
-Sep 30, 2000
- - improvement just for Cygwin: lexer now explicitly ignores '\r' (=CR) chars
-Nov 14-19, 2000
- - display string handling rewritten. Now GNED won't delete from the
-   display strings the tags it doesn't understand. New file: dispstr.tcl.
- - XML support (experimental): GNED can now export and import XML files.
-   (File|Import XML...,Export XML... menu items)
-   New files in GNED: genxml.tcl, parsexml.tcl.
- - IMPORTANT! XML SUPPORT REQUIRES THE TclXML PACKAGE, at least version 1.2.
-   (The contents of TclXML-1.2.tgz should be extracted under the tcl/lib/ dir.)
-   BUG in the TclXML-1.2 parser: it silently discards attributes which contain
-   '&' or '<' characters!!!!
-Nov 19, 2000
- - bugfix: removed bogus asserts around parsened.cc#70 and #140 which caused the
-   program to abort when NED code contained two submodules with the
-   same name when switching from text to graphics.
-Nov 20, 2000
- - improvement: File|Close and File|Exit made more graceful -- the "Not saved,
-   save?" dialog now has a Cancel button
- - improvement: implemented File|Save all
- - bugfix: new submodules, modules, channels etc. now always get unique names
-Dec 17, 2000
- - improvement: switching from text mode to graphics made faster: now GNED
-   won't parse the ned source if it hasn't been edited
- - improvement: GNED will refuse to exit or close a NED file if there are text mode
-   canvases with edits. You'll have to switch those canvases to graphics
-   to get the NED source backparsed.
- - Connection Properties dialog implemented. (Cannot handle 'for' loops yet.)
-Dec 18, 2000
- - implemented Channel Properties dialog
- - old display string classes (disp.cc) removed
- - small bugfix on comment handling in Properties dialogs (no longer adds extra
-   blank lines)
-Dec 18-22, 2000
- - implemented scrolling for the tabs strip (the one with the names of the open
-   canvases) if there're too many tabs on it
-Jan 2, 2001
- - cosmetic changes in plotedit.tcl
-Jan 16, 2001
- - fix: added Tcl_FindExecutable(argv[0]) to Tcl initialization code (needed by
-   Cygwin 1.1)
-Jan 21, 2001
- - fixed bug with Ctrl-N (Find next) binding
-Feb 6, 2001
- - make clean didn't delete tclcode.cc
-Feb 13, 2001
- - fixed bug which caused the "Drawing options" dialog to go behind the main
-   app window after closing the color selection dialog
- - fixed handling of comments in all "Properties" dialogs (messed up newlines)
------- omnetpp-2.0 released ------
------- omnetpp-2.0p1 released ------
-Mar 10, 2001
- - Borland C++ support removed: I deleted the project files (*.ide). I added
-   equivalent Makefile.bc files (generated from the BC IDE), but they are
-   completely unsupported at the moment. If there's interest, it's possible
-   that later I'll add makefiles for the free command-line bc5.5 compiler.
-Mar 27, 2001
- - Makefile.vc change: replaced $(GNED_EMBED_SUFFIX) with $(GNED_EMBED_TCL).
-Apr 16, 2001
- - GNED can now be compiled as GUI application (not console app) on Windows,
-   setting USE_WINMAIN=yes in configuser.vc.
-   NOTE: main() and WinMain() use completely different startup sequences.
-   The reason: main()'s startup code with WinMain would result in an "unknown
-   channel stdout" error in the Tcl code (and it's not so easy to create a
-   dummy channel named stdout), while WinMain()'s startup sequence with main()
-   would result in a working command prompt in the console window (!!!).
-   Pretty weird.
- - added gned.ico
-Apr 20, 2001
- - bugfix in new WinMain() startup code
-May 2, 2001
- - fixed Help|README when using compiled-in Tcl code
-May 18, 2001
- - Windows: added rc file with icon
------- omnetpp-2.1 released ------
+
+2001-05-18  Andras Varga
+
+	* ------ omnetpp-2.1 released ------
+
+	* Windows: added rc file with icon
+
+2001-05-02  Andras Varga
+
+	* fixed Help|README when using compiled-in Tcl code
+
+2001-04-20  Andras Varga
+
+	* bugfix in new WinMain() startup code
+
+2001-04-16  Andras Varga
+
+	* GNED can now be compiled as GUI application (not console app) on
+	Windows, setting USE_WINMAIN=yes in configuser.vc.  NOTE: main()
+	and WinMain() use completely different startup sequences.  The
+	reason: main()'s startup code with WinMain would result in an
+	"unknown channel stdout" error in the Tcl code (and it's not so
+	easy to create a dummy channel named stdout), while WinMain()'s
+	startup sequence with main() would result in a working command
+	prompt in the console window (!!!).  Pretty weird.
+
+	* added gned.ico
+
+2001-03-27  Andras Varga
+
+	* Makefile.vc change: replaced $(GNED_EMBED_SUFFIX) with
+	$(GNED_EMBED_TCL).
+
+2001-03-10  Andras Varga
+
+	* Borland C++ support removed: I deleted the project files
+	(*.ide). I added equivalent Makefile.bc files (generated from the
+	BC IDE), but they are completely unsupported at the moment. If
+	there's interest, it's possible that later I'll add makefiles for
+	the free command-line bc5.5 compiler.
+
+2001-02-13  Andras Varga
+
+	* ------ omnetpp-2.0p1 released ------
+
+	* ------ omnetpp-2.0 released ------
+
+	* fixed bug which caused the "Drawing options" dialog to go behind
+	the main app window after closing the color selection dialog
+
+	* fixed handling of comments in all "Properties" dialogs (messed
+	up newlines)
+
+2001-02-06  Andras Varga
+
+	* make clean didn't delete tclcode.cc
+
+2001-01-21  Andras Varga
+
+	* fixed bug with Ctrl-N (Find next) binding
+
+2001-01-16  Andras Varga
+
+	* fix: added Tcl_FindExecutable(argv[0]) to Tcl initialization
+	code (needed by Cygwin 1.1)
+
+2001-01-02  Andras Varga
+
+	* cosmetic changes in plotedit.tcl
+
+2000-12-22  Andras Varga
+
+	* implemented scrolling for the tabs strip (the one with the names
+	of the open canvases) if there're too many tabs on it
+
+2000-12-18  Andras Varga
+
+	* implemented Channel Properties dialog
+
+	* old display string classes (disp.cc) removed
+
+	* small bugfix on comment handling in Properties dialogs (no
+	longer adds extra blank lines)
+
+2000-12-17  Andras Varga
+
+	* improvement: switching from text mode to graphics made faster:
+	now GNED won't parse the ned source if it hasn't been edited
+
+	* improvement: GNED will refuse to exit or close a NED file if
+	there are text mode canvases with edits. You'll have to switch
+	those canvases to graphics to get the NED source backparsed.
+
+	* Connection Properties dialog implemented. (Cannot handle 'for'
+	loops yet.)
+
+2000-11-20  Andras Varga
+
+	* improvement: File|Close and File|Exit made more graceful -- the
+	"Not saved, save?" dialog now has a Cancel button
+
+	* improvement: implemented File|Save all
+
+	* bugfix: new submodules, modules, channels etc. now always get
+	unique names
+
+2000-11-19  Andras Varga
+
+	* bugfix: removed bogus asserts around parsened.cc#70 and #140
+	which caused the program to abort when NED code contained two
+	submodules with the same name when switching from text to
+	graphics.
+
+2000-11-19  Andras Varga
+
+	* display string handling rewritten. Now GNED won't delete from
+	the display strings the tags it doesn't understand. New file:
+	dispstr.tcl.
+
+	* XML support (experimental): GNED can now export and import XML
+	files.
+	(File|Import XML...,Export XML... menu items) New files in GNED:
+	genxml.tcl, parsexml.tcl.
+
+	* IMPORTANT! XML SUPPORT REQUIRES THE TclXML PACKAGE, at least
+	version 1.2.
+	(The contents of TclXML-1.2.tgz should be extracted under the
+	tcl/lib/ dir.)  BUG in the TclXML-1.2 parser: it silently discards
+	attributes which contain '&' or '<' characters!!!!
+
+2000-09-30  Andras Varga
+
+	* improvement just for Cygwin: lexer now explicitly ignores '\r'
+	(=CR) chars
+
+2000-08-29  Andras Varga
+
+	* command-line arg handling improved
+
+2000-08-27  Andras Varga
+
+	* drag&drop creation of submodules now creates unique names
+	(changed addItem, renameItem procs)
+
+	* deleteItem proc improved
+
+	* renaming improved; "rename..." added to canvas popup menu
+
+2000-08-26  Andras Varga
+
+	* added .gnedrc
+
+	* find/replace operation improved
+
+	* implemented "find next"
+
+	* find/replace dialog contents is now preserved
+
+	* open/save dialogs now remember the directory
+
+2000-08-07  Andras Varga
+
+	* makefile changes for RPM support
+
+2000-07-26  Andras Varga
+
+	* minor fixes on Edit|Find
+
+2000-07-17  Andras Varga
+
+	* accepts NED files on the command line
+
+2000-05-19  Andras Varga
+
+	* ------ omnetpp-2.0b5 released ------
+
+	* ------ omnetpp-2.0b4 released ------
+
+	* fixed <Ctrl-H> in text editor
+
+2000-05-07  Andras Varga
+
+	* Makefile.vc improvements from Balazs Kelemen
+
+2000-04-13  Andras Varga
+
+	* ebnf.y: changed operator precedence to bind ||,&& thighter than
+	?: [suggested by Niko]
+
+2000-04-10  Andras Varga
+
+	* in the C++ sources, TRUE/FALSE (defines) replaced by true/false
+	(C++ keywords)
+
+	* in printf() statements, all "%lf","%lg","%le" was replaced by
+	"%f","%g","%e"
+
+2000-03-27  Andras Varga
+
+	* bugfix: conditional (?:) operator caused parse error [reported
+	by Niko]
+
+1999-12-19  Andras Varga
+
+	* ------ omnetpp-2.0b3 released ------
+
+        * wsize proc added to widgets.tcl
+
+        * font changes
+
+1999-12-06  Andras Varga
+
+        * adapted to Tcl8.2: font size changed.
+
+        * improved dialog box positioning
+
+        * added label-entry-chooser to widgets.tcl
+
+1999-12-05  Andras Varga
+
+        * Makefile.vc added
+
+1999-12-05  Andras Varga
+
+        * compiled with MSVC. enbf.h added. Removed changing slashes to
+	backslashes in OMNETPP_GNED_DIR and ..BITMAP_PATH on Win32 because
+	Tcl/Tk accepts both.
+
+        * added generated files enbf.tab.c and lex.yy.c to CVS to make it
+	possible to build GNED where flex/bison is not available
+
+1999-12-02  Andras Varga
+
+        * implemented Imports, Channel, Network Properties dialogs
+
+        * adjusted tree-view context menus
+
+1999-11-30  Andras Varga
+
+        * bugfix in drawItemRecursive
+
+1999-11-21  Andras Varga
+
+        * implemented direct editing of module/submod names on the canvas
+
+        * implemented drag&drop of modules from the tree to the canvas
+
+        * implemented module properties dialog
+
+        * TBD: comment handling in properties dialogs!!!
+
+        * changed appendTo to append in makened.tcl
+
+        * renamed arrays: ddfields()-->ned_attlist(),
+	ddict()-->ned_attr(), ddesc-->ned_desc()
+
+        * several bugs fixed
+
+1999-11-14  Andras Varga
+
+        * submprops.tcl works; tbd comment handling; other dialogs;
+	efficiency
+
+1999-11-13  Andras Varga
+
+        * file props.tcl split to submprops.tcl, connprops.tcl,... (6
+	files)
+
+1999-11-12  Andras Varga
+
+        * tableEdit widget added
+
+1999-11-11  Andras Varga
+
+        * begun writing Properties dialogs
+
+1999-10-12  Andras Varga
+
+        * bugfix in balloon.tcl
+
+        * fixes on comment parsing/generating:
+
+	eliminated space from "// ---" comments
+      	eliminated annoying generation of extra blank lines (except after "import")
+
+1999-10-11  Andras Varga
+
+        * fixed problem with resizing parent module
+
+1999-08-30  Andras Varga
+
+	* ------ omnetpp-2.0b2 released ------
+
+	* ------ omnetpp-2.0b1 released ------
+
+        * status bar added for text editor
+
+1999-08-28  Andras Varga
+
+        * ddfields() array introduced for performance reasons
+
+1999-08-26  Andras Varga
+
+        * find/replace dialogs added
+
+1999-08-18  Andras Varga
+
+        * initial version of syntax highlight implemented
+
+1999-08-15  Andras Varga
+
+        * fixed bugs in nedfile.cc (lines 86,91,92 contained "==" instead
+	of "=")
+
+1999-08-11  Andras Varga
+
+        * changed widget.tcl -- must be updated elsewhere!
+
+1999-08-02  Andras Varga
+
+        * OMNETPP_BITMAP_PATH turned into real path (a list of
+	directories). The separator char is ";" on Windows, and ":" or ";"
+	on Unix.
+
+1999-07-17  Andras Varga
+
+        * fixed the bug with scrolled canvas
+
+        * resizeBar implemented in widgets.tcl -- should be updated in
+	Tkenv and Plove too!
+
+1999-07-11  Andras Varga
+
+        * small fixes and enhancements
+
+1999-06-21  Andras Varga
+
+        * all sources checked in under CVS
+
+        * makefile.in modified for use with GNU Autoconf; also renamed to
+	Makefile.in
+
+        * version.log renamed to ChangeLog
+
+1999-05-01  Andras Varga
+
+	* GNED 1.2 ALPHA 1 released
+
+1999-04-01  Andras Varga
+
+	* DEVELOPMENT VERSIONS
+
+	* parser and code generation rewritten
+
+	* data structures redesigned
+
+	* made two-way tool
+
+	* user interface redesigned: place manager at left, toolbar icons,
+	tooltips etc.
+
+1999-03-01  Andras Varga
+
+	* DEVELOPMENT VERSIONS:
+
+	* Pataki Istvan and Vincze Gabor -- added the parser and a
+	manager, .gnd files thrown out
+
+1998-12-30  Andras Varga
+
+	* makefile renamed to makefile.in
+
+	* bug with delete ('X') toolbar icon fixed
+
+	* changes in the About box
+
+1998-08-30  Andras Varga
+
+	* Second beta
+
+1998-08-28  Andras Varga
+
+	* first beta version. Still badly misses the capability of loading
+	NED files directly!
+
+	* TOTAL REWRITE!!!
+
+	 internal data structure redesigned
+	 .gnd file format change (incompatible!)
+	 redesigned user interface
+	 arrow.cc rewritten
+	 display string format change:"p=m,50,50,50,50"
+	 ported to Windows (Borland C++ 5.0 project file included)
+
+1998-07-24  Andras Varga
+
+	* Pataki I. and Vincze G.' stuff
+
+1998-07-20  Andras Varga
+
+	* intermediate version
+
+1998-05-11  Andras Varga
+
+	* bugfixes on unfinished code...
+
+1998-05-04  Andras Varga
+
+	* grammar files and opp_parsened command added; not finished yet!
+
+	* grammar files are now shared with NEDC!
+
+1998-05-01  Andras Varga
+
+	* cc files added; GNED could now use the opp_arrowcoords command.
+
+1998-04-26  Andras Varga
+
+	* dummy makefile added
+
+1998-03-10  Andras Varga
+
+	* some improvements on appearance
+
+	* Tk8.0-style menu (native widgets)
+
+	* fixed bug which prevented gned from starting from outside its
+	dir.
+
+1997-12-14  Andras Varga
+
+	* improved file viewer; improved output NED quality
+
+1997-12-14  Andras Varga
+
+	* invalid file name bug on Windows fixed
+
+1997-12-09  Andras Varga
+
+	* double-click bug fixed
+
+	* check for Tcl/Tk version added
+
+1997-12-07  Andras Varga
+
+	* misc improvements
+
+	* added demo files
+
+1997-12-07  Andras Varga
+
+	* right click on "name" tag brings up Properties dialog
+
+	* file extension: .gnd
+
+	* improved on generated code
+
+	* gndview, gndinfo, gnd2ned added
+
+1997-12-06  Andras Varga
+
+       * done:
+	    excusing text in about box...
+	    added 'view generated NED' option
+	    added 'load background'
+
+       * still to do:
+	    don't load same file several times
+	    bug: after double-click a dot remains
+	    better auto naming of submods
+	    + ones in readme file
+
+1997-12-06  Andras Varga
+
+	* improvements on editor
+
+	* good statusbar
+
+	* generate: use $want_info, $want_data, $want_drawing variables in saved file
+
+1997-12-06  Andras Varga
+
+	* put back 'Snap to grid'
+
+	* fixed: resizing parent doesn't move connection arrows
+
+	* file|close
+
+	* ask to save before exit
+
+1997-12-06  Andras Varga
+
+       * done:
+	    parent module code generation
+	    added "Comments" entry to props dialogs
+	    improved dialogs
+	    improved generated code (indentation etc.)
+	    remove 'Print' toolbutton
+
+1997-12-05  Andras Varga
+
+       * file names ok
+
+       * to do (cummulated):
+
+	right click on "name" tag should bring up Properties dialog don't
+	load same file several times bug: after double-click a dot remains
+	better auto naming of submods
+
+1997-12-05  Andras Varga
+
+        * still to do: all the above plus:
+
+	file|close
+
+	ask to save before exit
+
+	right click on "name" tag should bring up Properties dialog
+
+	one module == one file
+
+1997-12-04  Andras Varga
+
+        * still to do:
+
+	excusing text in about box...
+
+	some consistency check (arrows should start/end in the right modules)
+
+	parent module code generation
+
+	good statusbar
+
+1997-12-04  Andras Varga
+
+        * snap to grid added
+
+        * to do: parent module code generation
+
+1997-12-03  Andras Varga
+
+         * to do: some consistency check (arrows should start/end in the
+	 right modules), multiple canvases...
+
+1997-12-02  Andras Varga
+
+         * to do: file open dialogs
+
+1997-11-29  Andras Varga
+
+         * drawing,selecting,moving done OK, only 2 modes: draw and move!
+
+         * shift+click extends selection
+
+         * right click: properties
+
+         * to do: add title etc to submods + 1000 things
+
+1997-11-27  Andras Varga
+
+         * load/save works ok
+
+1997-11-26  Andras Varga
+
+         * project founded

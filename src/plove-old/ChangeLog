@@ -1,96 +1,181 @@
-#1  March 4, 1998
- - project founded
-#10 March 11, 1998
- - first public release
-#11 March 16, 1998
- - small corrections: "-indicatoron 1" added to combos,
-   "-exportselection 0" to listboxes
-#12 March 18, 1998
- - many bugfixes and improvements
-#13 March 29, 1998
- - option 'move/copy vectors from left or right pane' added
-#14 May 21, 1998
- - several bugfixes;
- - OFMT='%.10f' is now added to awk scripts
- To Do: maybe call a2p and perl for faster filters?
-#15 July 10, 1998
- - .ploverc is now placed in the home directory (~/)
- - only the selected vectors (not all) in the right pane are plotted
- - selection can be inverted
- - mc-like key bindings
- - vector options dialogs changed
-#16 July 15, 1998
- - right-click support
- - several refinements
- - readme file extended
-#17 July 15, 1998
- - bugfixes
-#18 July 21, 1998
- - bugfixes: [],{} in select/replace dialogs; popup menus extended;
-   minor bug in winavgN filter corrected; selected vectors now remain
-   selected after operations on them.
-#19 July 24, 1998
- - statusbar added at bottom of panes;
- - TAB key binding corrected;
- - 'Vector options' dialog now correctly works for multiple selected
-   vectors
-#20 August 23, 1998
- - plove.bat added
- - widgets.tcl updated
-#21 Jan 1, 1999
- - small fixes
-#22 June 21, 1999
- - all sources checked in under CVS
- - added a small, almost dummy Makefile.in
- - version.log renamed to ChangeLog
-July 17, 1999
- - added slash/backslash option for gnuplot on Windows
------- omnetpp-2.0b2 released ------
-Jan 18, 2000
- - bugfix: Plove hung on selecting filters
------- omnetpp-2.0b3 released ------
-Apr 5, 2000
- - Makefile.vc now creates plove.bat (requires correct WISH= setting in
-   configuser.vc)
-May 7, 2000
- - plove now starts using the classic trick to avoid a hardcoded 'wish' path
-   (check top of the 'plove' file).
------- omnetpp-2.0b4 released ------
------- omnetpp-2.0b5 released ------
-Aug 26, 2000
- - modified startup code
-Aug 29, 2000
- - Makefile.vc modified: generated plove.bat now passes command-line parameters
-   to Plove
------- omnetpp-2.0 released ------
------- omnetpp-2.0p1 released ------
-Mar 24, 2001
- - now you can build a single Plove executable, with all Tcl code compiled in.
-   This made it necessary to reorganize the makefiles too.
-Apr 3, 2001
- - fix: the app window didn't acquire focus on startup (added deiconify command)
-Apr 16, 2001
- - Plove can now be compiled as GUI application (not console app) on Windows,
-   setting USE_WINMAIN=yes in configuser.vc.
-   NOTE: main() and WinMain() use completely different startup sequences.
-   The reason: main()'s startup code with WinMain would result in an "unknown
-   channel stdout" error in the Tcl code (and it's not so easy to create a
-   dummy channel named stdout), while WinMain()'s startup sequence with main()
-   would result in a working command prompt in the console window (!!!).
-   Pretty weird.
- - added plove.ico
- - window title
-Apr 19, 2001
- - default config file added: before processing $HOME/.ploverc, also reads
-   .ploverc from the Plove program dir
-Apr 20, 2001
- - bugfix in new WinMain() startup code
-Apr 28, 2001
- - bugfix in .ploverc handling
-May 2, 2001
- - fixed Help|README when using compiled-in Tcl code
- - geometry management improved
-May 18,2001
- - fixed a bug in startup code
- - Windows: added rc file with icon
------- omnetpp-2.1 released ------
+
+2001-05-18  Andras Varga
+
+	* ------ omnetpp-2.1 released ------
+	
+	* fixed a bug in startup code
+
+	* Windows: added rc file with icon
+
+2001-05-02  Andras Varga
+
+	* fixed Help|README when using compiled-in Tcl code
+
+	* geometry management improved
+
+2001-04-28  Andras Varga
+
+	* bugfix in .ploverc handling
+
+2001-04-20  Andras Varga
+
+	* bugfix in new WinMain() startup code
+
+2001-04-19  Andras Varga
+
+	* default config file added: before processing $HOME/.ploverc,
+	also reads .ploverc from the Plove program dir
+
+2001-04-16  Andras Varga
+
+	* Plove can now be compiled as GUI application (not console app)
+	on Windows, setting USE_WINMAIN=yes in configuser.vc.
+
+	NOTE: main() and WinMain() use completely different startup
+	sequences.  The reason: main()'s startup code with WinMain would
+	result in an "unknown channel stdout" error in the Tcl code (and
+	it's not so easy to create a dummy channel named stdout), while
+	WinMain()'s startup sequence with main() would result in a working
+	command prompt in the console window (!!!).  Pretty weird.
+
+	* added plove.ico
+
+	* window title
+
+2001-04-03  Andras Varga
+
+	* fix: the app window didn't acquire focus on startup (added
+	deiconify command)
+
+2001-03-24  Andras Varga
+
+	* now you can build a single Plove executable, with all Tcl code
+	compiled in.  This made it necessary to reorganize the makefiles
+	too.
+
+2000-08-29  Andras Varga
+
+	* ------ omnetpp-2.0p1 released ------
+
+	* ------ omnetpp-2.0 released ------
+
+	* Makefile.vc modified: generated plove.bat now passes
+	command-line parameters to Plove
+
+2000-08-26  Andras Varga
+
+	* modified startup code
+
+2000-05-07  Andras Varga
+
+	* ------ omnetpp-2.0b5 released ------
+
+	* ------ omnetpp-2.0b4 released ------
+
+	* plove now starts using the classic trick to avoid a hardcoded
+	'wish' path
+	(check top of the 'plove' file).
+
+2000-04-05  Andras Varga
+
+	* Makefile.vc now creates plove.bat (requires correct WISH=
+	setting in configuser.vc)
+
+2000-01-18  Andras Varga
+
+	* ------ omnetpp-2.0b3 released ------
+
+	* bugfix: Plove hung on selecting filters
+
+1999-07-17  Andras Varga
+
+	* ------ omnetpp-2.0b2 released ------
+
+	* added slash/backslash option for gnuplot on Windows
+
+1999-06-21  Andras Varga
+
+	* all sources checked in under CVS
+
+	* added a small, almost dummy Makefile.in
+
+	* version.log renamed to ChangeLog
+
+1999-01-01  Andras Varga
+
+	* small fixes
+
+1998-08-23  Andras Varga
+
+	* plove.bat added
+
+	* widgets.tcl updated
+
+1998-07-24  Andras Varga
+
+	* statusbar added at bottom of panes;
+
+	* TAB key binding corrected;
+
+	* 'Vector options' dialog now correctly works for multiple
+	selected vectors
+
+1998-07-21  Andras Varga
+
+	* bugfixes: [],{} in select/replace dialogs; popup menus extended;
+	minor bug in winavgN filter corrected; selected vectors now remain
+	selected after operations on them.
+
+1998-07-15  Andras Varga
+
+	* bugfixes
+
+1998-07-15  Andras Varga
+
+	* right-click support
+
+	* several refinements
+
+	* readme file extended
+
+1998-07-10  Andras Varga
+
+	* .ploverc is now placed in the home directory (~/)
+
+	* only the selected vectors (not all) in the right pane are
+	plotted
+
+	* selection can be inverted
+
+	* mc-like key bindings
+
+	* vector options dialogs changed
+
+1998-05-21  Andras Varga
+
+	* several bugfixes;
+
+	* OFMT='%.10f' is now added to awk scripts
+
+	To Do: maybe call a2p and perl for faster filters?
+
+1998-03-29  Andras Varga
+
+	* option 'move/copy vectors from left or right pane' added
+
+1998-03-18  Andras Varga
+
+	* many bugfixes and improvements
+
+1998-03-16  Andras Varga
+
+	* small corrections: "-indicatoron 1" added to combos,
+	"-exportselection 0" to listboxes
+
+1998-03-11  Andras Varga
+
+	* first public release
+
+1998-03-04  Andras Varga
+
+	* project founded

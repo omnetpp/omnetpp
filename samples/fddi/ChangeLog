@@ -1,221 +1,329 @@
-FDDI24.arj:
-  more or less working FDDI ring version, implemented as a vector of computers
-FDDI30.arj:
-  preparing for TUB Northen FDDI ring smulation, it compiles, but runs still
-  the vector implemented ring as in fddi24.arj
-FDDI31.arj:
-  the token goes round amoung 3 stations of the N. ring
-FDDI33.arj:
-  The topology of the Northen ring is decribed, everywhere the same cable is used
-  compiles, but does not run: loop bounday problems with CON-s.
-  ...
-FDDI37.arj:
-  Takes the load of the fddi stations from files, runs only under linux, because
-  the file names are 12 char long. (MAC address)
-FDDI38.arj:
-  Runs under dos correctly too: the last 6 characters of the linux filenames are
-  used under dos.
-  ...
-FDDI40.arj:
-  The MAC algorithm was rewised according to the FDDI MAC standard.
-  The algorithm used is described in: STATETR2.XLS
-  This version seems to operate correctly
-FDDI41.arj:
-  The direction of the connections was reversed, because they're always
-  "upstream neighbours"
-  The address of Goliat was corrected to "Sun___1BD035"
-  The sniffer is stll in its old place, it should be transferred, if the new 10
-  results would be used
-FDDI42.arj:
-  The real cable lengths are used: transmission delay is calculated from them
-  using light speed of 200m/microseconds
-  ...
-FDDI45.arj:
-  Rewritten for the new version of OMNeT++ (sim 103)
-FDDI46.arj:
-  The last version before building a real "Sniffer". Here, sniffer is still just
-  a SAS.
-FDDI47.arj:
-  An FDDI_Sniffer exists, but its simples moules have empty activity() functions.
-  Compiles, but doest work for the reason above.
-FDDI48.arj:
-  The FDDI_Sniffer is coded, but not tested yet. It is very much like its base
-  class the differences are: two virtual member functions redefined.
-  (and these are made virtual in the base class)
-  ERROR: repeat loses the name of the FDDI_FRAME-s
-FDDI49.arj
-  Runs correctly (without msg name loss) with the new simulation kernel
-FDDI50.arj
-  IdleTimes mechanism deleted.
-  There is only one FDDI_MAC activity function.
-  if ( findpar("StationID") < 0 )
-    my_station_id = parentmod()->index(); //in the case of a ring made by indexing
-  else
-    my_station_id = par("StationID")
-FDDI51.arj
-  In the NeD file:
-  - parameter max_idle deleted
-  - time is given in ns and us
-  - between stations in the same building, 10m cable length is assumed
-  In the .cc file:
-  FDDI_Sink and FDDI_Monitor::activity() functions...
-FDDI51a.arj
-  Thinking about introducing a parameter "TrafficFromTracefile"...
-FDDI51b.arj
-  Introducing the parameter mentioned above, taking the load from tracefile
-  if yes and from previously saved statistics file, if no. But the second is
-  NOT finished yet!
-FDDI52.arj
-  Introducing the parameter "TrafficFromTracefile", taking the load from
-  tracefile if yes and from previously saved statistics file, if no.
-FDDI53.arj
-  A hierarcy of FDDI_Generator classes was introduced.
-  The user can select the generator type of the SAS-s from the *.ini file.
-  Possible types:
-  - FDDI_GeneratorFromTraceFile
-  - FDDI_GeneratorHistogram2x1D // not tested yet
-  - FDDI_GeneratorPiSquare2x1D // not implemented yet
-  - FDDI_GeneratorKSplit2x1D // not implemented yet
-  - FDDI_GeneratorKSplit2D // not implemented yet
-FDDI54.arj
-  - Bugfixes
-  - LoadMultiplier introduced
-  - virtual char * FileNameEnding() introduced
-  - FDDI_GeneratorPiSquare2x1D: implemented, not tested
-  - directory "res" was renamed to "load"
-  - version.log introduced
-FDDI54a.arj
-  - Bugfix in load filename, + linux will use also the 6 char. card addresses
-FDDI55.arj
-  - two interconnected rings, routing on the basis of the packet length statist.
-FDDI56.arj
-  - SSM OIF and IIF implemented
-  - TUBw NRing and SRing connected with wires
-  - TUBs NRing and SRing connected through OIF - IIF pairs
-FDDI56a.arj
-  - bugfixes
-FDDI56b.arj
-  - RingID2prefix() function was introduced
-    case 0 : return "nr"
-    case 1 : return "sr"
-    default: return 0
-    prefixes for load file names.
-    eg. "./load/nr000728.trc"
-FDDI56c.arj
-  - bugfix: new cMsg(*msg) was replaced by msg->dup()
-FDDI56d.arj
-  - NR, SR : correct cable lengths, IDs, network description files: "*."
-FDDI57.arj
-  - all kinds of bugfixes, runs with sim133, produces results!
-FDDI58.arj
-  - bugfixes
-  - histogram constructors always get the appropriate parameters
-  - OIF and IIF classes have data members or constructors/destructors NO MORE
-FDDI59.arj
-  - ported to PVM, just the code is modified, NOT tested yet!
-FDDI60.arj
-  - the program runs, but the simulation times of the segments are not
-    synchronized yet. (runs with Aug. 6. version of sim)
-FDDI61.arj
-  - the code for sync is written, the OIF's take the parameters from file:
-    - "delete" and "send" commands (send is the default, can be omitted)
-    - "every", "at" and "from - to - step" constructions
-  the sync. function calls are commented out, so it compiles.
-  Tested, seems to work. (except for the sync, of course)
-FDDI62.arj
-  - syncpoint calls are added, runs parallel well.
-    (Histogram dup() bugfix in sim. kernel was done.)
-  - SSM-UI (time driven) produces similar results than SSM-UT (counter driven).
-  - SSM-UI-1 and SSM-UI-2 produce slightliy different results, because SSM-UI-1
-    runs in one task and both rings use the same random number generator, but
-    SSM-UI-2 runs in two tasks and the two rings use 2 random number generators.
-FDDI63.arj
-  - bugfix: in case of empty histogram no packets to be generated by the IIF
-FDDI64.tgz
-  - converted to be runnable with simulation kernel sim148e
-  - the implementation of the FDDI MAC was placed into file fddi_mac.cc
-FDDI65.tgz
-  - separate files for different parts:
-    The essential files for the FDDI MAC:
-    fddi_mac.ned fddi_def.h fddi_mac.h fddi_mac.cc
-    The files for the SSM Input and Output interfaces:
-    ssm_ifs.ned ssmifdef.h ssm_ifs.h ssm_ifs.cc
-    The file that contains the topology description of the FDDI network:
-    fddi_net.ned
-    Other parts of the simulation:
-    othermod.ned otherdef.h othermod.h othermod.cc
-FDDI66.tgz
-  - inorder_epsilon value was corrected to 1e-10
-  - filenames were made DOS compatible
-FDDI67.arj
-  - some beautifying
-FDDI68.arj
-  - upgraded for sim151
-FDDI69.arj
-  - upgraded for JAR100/SIM158: parameter type declarations (string, numeric)
-    added to NED files;
-  - adopted to cancelEvent()'s changed behaviour
-------maintenance completely taken over by Andras Varga-------
-FDDI70.arj
-  - corrected a missing ':string' type declaration in a NED file
-FDDI73.arj
-  - `display:' phrases added to NED
-  - bug fixed in othermods.h: FDDI_Address_Generator's constructor didn't initialize f
-  - fddi_mac.cc: FDDI_MAC: setOwner calls for sync_buf/async_buf removed;
-  - added a name string to sync_buf/async_buf
-FDDI74.arj
-  - improved "display:" stuff in fddi_net.ned
-FDDI76.arj
-  - updated to the new histograms in sim161
-FDDI77.arj
-  - added fddi.ide; doesn't run correctly under NT though (causes exception)
-    [later discovered it was caused by the mystrlwr() bug, see Jul 11, 1999]
-FDDI78.arj
-  - makefile renamed to makefile.in
-FDDI79.arj
-  - simulation.error() calls corrected to error()
-FDDI80.arj
-  - ?
-#81 June 21, 1999
-  - all sources checked in under CVS
-  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
-  - version.log renamed to ChangeLog; some cosmetics on it (indents etc)
-  - removed support for DOS with BC3.1
-Jul 11, 1999
-  - bug in mystrlwr() [othermod.cc] fixed
------- omnetpp-2.0b1 released ------
------- omnetpp-2.0b2 released ------
-Oct 10, 1999
-  - standardized indentation in ned files
-  - fddi_net.ned split to fddi_nodes.ned, fddi_rings.ned, fddi_nets.ned
-  - proper README written
-Oct 17, 1999
-  - Computer renamed to FDDIStation (clashed with Token's Computer when
-    linking all sample simulations into one executable)
-Dec 23, 1999
-  - BC3.1 support removed
-  - rewritten msg->addPar( *new cPar(...)) lines (see change to cPar interface
-    in the sim library)
-  - minor cosmetics changes
-Jan 25, 2000
-  - ssm_ifs.cc updated because of cArray interface change
------- omnetpp-2.0b3 released ------
-Mar 12, 2000
-  - readme expanded with advice on PVM setup
-May 7, 2000
-  - char * --> const char * changes
------- omnetpp-2.0b4 released ------
-Jun 2, 2000
-  - fix in MSVC makefile; warning eliminated in othermod.cc
------- omnetpp-2.0b5 released ------
-Jul 1, 2000
- - calls to obsolete cQueue functions upgraded to new functions (insert(),pop())
------- omnetpp-2.0 released ------
------- omnetpp-2.0p1 released ------
-Mar 10, 2001
- - Borland C++ project file (*.ide) removed, Makefile.bc added (unsupported!)
- - MSVC makefiles and project files now contain the OMNeT++ include and lib
-   directories with absolute paths (previously they were relative paths,
-   like ..\..\lib). This means the samples will compile even when they're moved
-   to another location in the file system.
------- omnetpp-2.1 released ------
+
+2001-03-10  Andras Varga
+
+	* ------ omnetpp-2.1 released ------
+
+	* MSVC makefiles and project files now contain the OMNeT++ include
+	and lib directories with absolute paths (previously they were
+	relative paths, like ..\..\lib). This means the samples will
+	compile even when they're moved to another location in the file
+	system.
+
+	* Borland C++ project file (*.ide) removed, Makefile.bc added
+	(unsupported!)
+
+
+2000-07-01  Andras Varga
+
+	* ------ omnetpp-2.0p1 released ------
+
+	* ------ omnetpp-2.0 released ------
+
+	* calls to obsolete cQueue functions upgraded to new functions
+	(insert(),pop())
+
+
+2000-06-02  Andras Varga
+
+	* ------ omnetpp-2.0b5 released ------
+
+        * fix in MSVC makefile; warning eliminated in othermod.cc
+
+
+2000-05-07  Andras Varga
+
+	* ------ omnetpp-2.0b4 released ------
+
+        * char * --> const char * changes
+
+2000-03-12  Andras Varga
+
+        * readme expanded with advice on PVM setup
+
+2000-01-25  Andras Varga
+
+	* ------ omnetpp-2.0b3 released ------
+
+        * ssm_ifs.cc updated because of cArray interface change
+
+1999-12-23  Andras Varga
+
+        * BC3.1 support removed
+
+        * rewritten msg->addPar( *new cPar(...)) lines (see change to cPar
+	interface in the sim library)
+
+        * minor cosmetics changes
+
+1999-10-17  Andras Varga
+
+        * Computer renamed to FDDIStation (clashed with Token's Computer
+	when linking all sample simulations into one executable)
+
+1999-10-10  Andras Varga
+
+        * standardized indentation in ned files
+
+        * fddi_net.ned split to fddi_nodes.ned, fddi_rings.ned,
+	fddi_nets.ned
+
+        * proper README written
+
+1999-07-11  Andras Varga
+
+	* ------ omnetpp-2.0b2 released ------
+
+	* ------ omnetpp-2.0b1 released ------
+
+        * bug in mystrlwr() [othermod.cc] fixed
+
+1999-06-21  Andras Varga
+
+        * all sources checked in under CVS
+
+        * makefile.in modified for use with GNU Autoconf; also renamed to
+	Makefile.in
+
+        * version.log renamed to ChangeLog; some cosmetics on it (indents
+	etc)
+
+        * removed support for DOS with BC3.1
+
+1999-06-21  Andras Varga
+
+	older news follow this line
+	
+	FDDI80.arj
+
+		* ?
+	FDDI79.arj
+
+		* simulation.error() calls corrected to error()
+	FDDI78.arj
+
+		* makefile renamed to makefile.in
+	FDDI77.arj
+
+		* added fddi.ide; doesn't run correctly under NT though (causes exception)
+	    [later discovered it was caused by the mystrlwr() bug, see Jul 11, 1999]
+	FDDI76.arj
+
+		* updated to the new histograms in sim161
+	FDDI74.arj
+
+		* improved "display:" stuff in fddi_net.ned
+	FDDI73.arj
+
+		* `display:' phrases added to NED
+
+		* bug fixed in othermods.h: FDDI_Address_Generator's constructor didn't initialize f
+
+		* fddi_mac.cc: FDDI_MAC: setOwner calls for sync_buf/async_buf removed;
+
+		* added a name string to sync_buf/async_buf
+	FDDI70.arj
+
+		* corrected a missing ':string' type declaration in a NED file
+	FDDI69.arj
+
+		* upgraded for JAR100/SIM158: parameter type declarations (string, numeric)
+	    added to NED files;
+
+		* adopted to cancelEvent()'s changed behaviour
+	------maintenance completely taken over by Andras Varga-------
+	FDDI68.arj
+
+		* upgraded for sim151
+	FDDI67.arj
+
+		* some beautifying
+	FDDI66.tgz
+
+		* inorder_epsilon value was corrected to 1e-10
+
+		* filenames were made DOS compatible
+	FDDI65.tgz
+
+		* separate files for different parts:
+	    The essential files for the FDDI MAC:
+	    fddi_mac.ned fddi_def.h fddi_mac.h fddi_mac.cc
+	    The files for the SSM Input and Output interfaces:
+	    ssm_ifs.ned ssmifdef.h ssm_ifs.h ssm_ifs.cc
+	    The file that contains the topology description of the FDDI network:
+	    fddi_net.ned
+	    Other parts of the simulation:
+	    othermod.ned otherdef.h othermod.h othermod.cc
+	FDDI64.tgz
+
+		* converted to be runnable with simulation kernel sim148e
+
+		* the implementation of the FDDI MAC was placed into file fddi_mac.cc
+	FDDI63.arj
+
+		* bugfix: in case of empty histogram no packets to be generated by the IIF
+	FDDI62.arj
+
+		* syncpoint calls are added, runs parallel well.
+	    (Histogram dup() bugfix in sim. kernel was done.)
+
+		* SSM-UI (time driven) produces similar results than SSM-UT (counter driven).
+
+		* SSM-UI-1 and SSM-UI-2 produce slightliy different results, because SSM-UI-1
+	    runs in one task and both rings use the same random number generator, but
+	    SSM-UI-2 runs in two tasks and the two rings use 2 random number generators.
+	FDDI61.arj
+
+		* the code for sync is written, the OIF's take the parameters from file:
+
+		  * "delete" and "send" commands (send is the default, can be omitted)
+
+		  * "every", "at" and "from - to - step" constructions
+	  the sync. function calls are commented out, so it compiles.
+	  Tested, seems to work. (except for the sync, of course)
+	FDDI60.arj
+
+		* the program runs, but the simulation times of the segments are not
+	    synchronized yet. (runs with Aug. 6. version of sim)
+	FDDI59.arj
+
+		* ported to PVM, just the code is modified, NOT tested yet!
+	FDDI58.arj
+
+		* bugfixes
+
+		* histogram constructors always get the appropriate parameters
+
+		* OIF and IIF classes have data members or constructors/destructors NO MORE
+	FDDI57.arj
+
+		* all kinds of bugfixes, runs with sim133, produces results!
+	FDDI56d.arj
+
+		* NR, SR : correct cable lengths, IDs, network description files: "*."
+	FDDI56c.arj
+
+		* bugfix: new cMsg(*msg) was replaced by msg->dup()
+	FDDI56b.arj
+
+		* RingID2prefix() function was introduced
+	    case 0 : return "nr"
+	    case 1 : return "sr"
+	    default: return 0
+	    prefixes for load file names.
+	    eg. "./load/nr000728.trc"
+	FDDI56a.arj
+
+		* bugfixes
+	FDDI56.arj
+
+		* SSM OIF and IIF implemented
+
+		* TUBw NRing and SRing connected with wires
+
+		* TUBs NRing and SRing connected through OIF - IIF pairs
+	FDDI55.arj
+
+		* two interconnected rings, routing on the basis of the packet length statist.
+	FDDI54a.arj
+
+		* Bugfix in load filename, + linux will use also the 6 char. card addresses
+	FDDI54.arj
+
+		* Bugfixes
+
+		* LoadMultiplier introduced
+
+		* virtual char * FileNameEnding() introduced
+
+		* FDDI_GeneratorPiSquare2x1D: implemented, not tested
+
+		* directory "res" was renamed to "load"
+
+		* version.log introduced
+	FDDI53.arj
+	  A hierarcy of FDDI_Generator classes was introduced.
+	  The user can select the generator type of the SAS-s from the *.ini file.
+	  Possible types:
+
+		* FDDI_GeneratorFromTraceFile
+
+		* FDDI_GeneratorHistogram2x1D // not tested yet
+
+		* FDDI_GeneratorPiSquare2x1D // not implemented yet
+
+		* FDDI_GeneratorKSplit2x1D // not implemented yet
+
+		* FDDI_GeneratorKSplit2D // not implemented yet
+	FDDI52.arj
+	  Introducing the parameter "TrafficFromTracefile", taking the load from
+	  tracefile if yes and from previously saved statistics file, if no.
+	FDDI51b.arj
+	  Introducing the parameter mentioned above, taking the load from tracefile
+	  if yes and from previously saved statistics file, if no. But the second is
+	  NOT finished yet!
+	FDDI51a.arj
+	  Thinking about introducing a parameter "TrafficFromTracefile"...
+	FDDI51.arj
+	  In the NeD file:
+
+		* parameter max_idle deleted
+
+		* time is given in ns and us
+
+		* between stations in the same building, 10m cable length is assumed
+	  In the .cc file:
+	  FDDI_Sink and FDDI_Monitor::activity() functions...
+	FDDI50.arj
+	  IdleTimes mechanism deleted.
+	  There is only one FDDI_MAC activity function.
+	  if ( findpar("StationID") < 0 )
+	    my_station_id = parentmod()->index(); //in the case of a ring made by indexing
+	  else
+	    my_station_id = par("StationID")
+	FDDI49.arj
+	  Runs correctly (without msg name loss) with the new simulation kernel
+	FDDI48.arj:
+	  The FDDI_Sniffer is coded, but not tested yet. It is very much like its base
+	  class the differences are: two virtual member functions redefined.
+	  (and these are made virtual in the base class)
+	  ERROR: repeat loses the name of the FDDI_FRAME-s
+	FDDI47.arj:
+	  An FDDI_Sniffer exists, but its simples moules have empty activity() functions.
+	  Compiles, but doest work for the reason above.
+	FDDI46.arj:
+	  The last version before building a real "Sniffer". Here, sniffer is still just
+	  a SAS.
+	FDDI45.arj:
+	  Rewritten for the new version of OMNeT++ (sim 103)
+	FDDI42.arj:
+	  The real cable lengths are used: transmission delay is calculated from them
+	  using light speed of 200m/microseconds
+	  ...
+	FDDI41.arj:
+	  The direction of the connections was reversed, because they're always
+	  "upstream neighbours"
+	  The address of Goliat was corrected to "Sun___1BD035"
+	  The sniffer is stll in its old place, it should be transferred, if the new 10
+	  results would be used
+	FDDI40.arj:
+	  The MAC algorithm was rewised according to the FDDI MAC standard.
+	  The algorithm used is described in: STATETR2.XLS
+	  This version seems to operate correctly
+	FDDI38.arj:
+	  Runs under dos correctly too: the last 6 characters of the linux filenames are
+	  used under dos.
+	  ...
+	FDDI37.arj:
+	  Takes the load of the fddi stations from files, runs only under linux, because
+	  the file names are 12 char long. (MAC address)
+	FDDI33.arj:
+	  The topology of the Northen ring is decribed, everywhere the same cable is used
+	  compiles, but does not run: loop bounday problems with CON-s.
+	  ...
+	FDDI31.arj:
+	  the token goes round amoung 3 stations of the N. ring
+	FDDI30.arj:
+	  preparing for TUB Northen FDDI ring smulation, it compiles, but runs still
+	  the vector implemented ring as in fddi24.arj
+	FDDI24.arj:
+	  more or less working FDDI ring version, implemented as a vector of computers
