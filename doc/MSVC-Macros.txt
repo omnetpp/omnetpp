@@ -1,5 +1,5 @@
-OMNeT++ Integration Macros (AddNedFile)
-=======================================
+Visual C++ Integration Macros (AddNedFile)
+==========================================
 
 Requirements: MSVC 6.0.SP1. Without SP1, AddNedFile may crash the IDE due to 
 bugs in the Visual Studio Scripting Host.
