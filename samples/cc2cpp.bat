@@ -15,3 +15,4 @@ ren hist\*.cc *.cpp
 ren nim\*.cc *.cpp
 ren pvmex\*.cc *.cpp
 ren token\*.cc *.cpp
+ren dyna2\*.cc *.cpp
