@@ -843,7 +843,6 @@ void @TESTNAME@::activity()
 
     $INITemplate = '
 [General]
-preload-ned-files=*.ned
 network=@TESTNAME@_network
 output-vector-file = @TESTNAME@.vec
 output-scalar-file = @TESTNAME@.sca

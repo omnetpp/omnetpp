@@ -1,3 +1,7 @@
+2004-12-10  Andras Varga
+
+	* opp_test: always used dynamic NED loading, regardless of -N option
+
 2004-11-29  Andras Varga
 
   	* opp_makemake.in: avoid generating $(wildcard ..) without args.
