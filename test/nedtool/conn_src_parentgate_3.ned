@@ -1,4 +1,4 @@
-//ERROR: wrong source gate for connection: 'in' is not a vector gate
+//ERROR: wrong source gate for connection: extra gate index ('in' is not a vector gate)
 module Network
     gates:
         in: in;

@@ -1,4 +1,4 @@
-//ERROR: wrong destination gate for connection: submodule 'a' is a vector submodule
+//ERROR: wrong destination gate for connection: missing submodule index ('a' is a vector submodule)
 simple Node
 endsimple
 

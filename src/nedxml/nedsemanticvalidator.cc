@@ -225,15 +225,15 @@ void NEDSemanticValidator::checkGate(GateNode *gate, bool hasGateIndex, bool isI
     // check gate direction, check if vector
     const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
     if (hasGateIndex && !gate->getIsVector())
-        NEDError(conn, "%s: '%s' is not a vector gate", q, gate->getName());
+        NEDError(conn, "%s: extra gate index ('%s' is not a vector gate)", q, gate->getName());
     else if (!hasGateIndex && gate->getIsVector())
-        NEDError(conn, "%s: '%s' is a vector gate", q, gate->getName());
+        NEDError(conn, "%s: missing gate index ('%s' is a vector gate)", q, gate->getName());
 
     // check gate direction, check if vector
     if (isInput && gate->getDirection()==NED_GATEDIR_OUTPUT)
-        NEDError(conn, "%s: '%s' is an output gate", q, gate->getName());
+        NEDError(conn, "%s: input gate expected but '%s' is an output gate", q, gate->getName());
     else if (!isInput && gate->getDirection()==NED_GATEDIR_INPUT)
-        NEDError(conn, "%s: '%s' is an input gate", q, gate->getName());
+        NEDError(conn, "%s: output gate expected but '%s' is an input gate", q, gate->getName());
 }
 
 void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubmodIndex,
@@ -264,9 +264,9 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
         {
             bool isSubmodVector = submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")!=NULL;
             if (hasSubmodIndex && !isSubmodVector)
-                NEDError(conn, "%s: submodule '%s' is not a vector submodule", q, submodName);
+                NEDError(conn, "%s: extra submodule index ('%s' is not a vector submodule)", q, submodName);
             else if (!hasSubmodIndex && isSubmodVector)
-                NEDError(conn, "%s: submodule '%s' is a vector submodule", q, submodName);
+                NEDError(conn, "%s: missing submodule index ('%s' is a vector submodule)", q, submodName);
 
             // check gate
             NEDElement *submodType = symboltable->getModuleDeclaration(submod->getTypeName());

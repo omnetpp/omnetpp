@@ -1,4 +1,4 @@
-//ERROR: wrong destination gate for connection: 'out' is a vector gate
+//ERROR: wrong destination gate for connection: missing gate index ('out' is a vector gate)
 module Network
     gates:
         out: out[];

@@ -1,4 +1,4 @@
-//ERROR: wrong source gate for connection: 'out' is a vector gate
+//ERROR: wrong source gate for connection: missing gate index ('out' is a vector gate)
 simple Node
     gates:
         out: out[];

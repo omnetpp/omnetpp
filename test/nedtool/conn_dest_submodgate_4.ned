@@ -1,4 +1,4 @@
-//ERROR: wrong destination gate for connection: 'out' is an output gate
+//ERROR: wrong destination gate for connection: input gate expected but 'out' is an output gate
 simple Node
     gates:
         out: out;

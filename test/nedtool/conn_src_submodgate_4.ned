@@ -1,4 +1,4 @@
-//ERROR: wrong source gate for connection: 'in' is an input gate
+//ERROR: wrong source gate for connection: output gate expected but 'in' is an input gate
 simple Node
     gates:
         in: in;
