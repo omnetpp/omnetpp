@@ -18,13 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef USE_STD_NAMESPACE
 #include <fstream>
-using std::ofstream;
-#else
-#include <fstream.h>
-#endif
 
 #include "nedparser.h"
 #include "nederror.h"
@@ -36,6 +30,10 @@ using std::ofstream;
 #include "xmlgenerator.h"
 #include "cppgenerator.h"
 #include "nedcompiler.h"
+
+using std::ofstream;
+using std::ifstream;
+using std::ios;
 
 
 #if defined(_WIN32) && !defined(__CYGWIN32__)
@@ -309,7 +307,7 @@ bool processListFile(const char *listfilename)
 
     if (opt_verbose) fprintf(stderr,"processing list file '%s'...\n",listfilename);
 
-    ifstream in(listfilename, ios::in | ios::nocreate);
+    ifstream in(listfilename, ios::in);
     if (in.fail())
     {
         fprintf(stderr,"nedtool: cannot open list file '%s'\n",listfilename);
