@@ -1,5 +1,11 @@
 2003-11-13  Andras Varga
 
+	* jar_expr.c: added typecast when taking address of <math.h> functions
+	in generated code. Needed for MSVC 7.0 compiler (it overloads some
+	of these functions which caused ambiguities).
+
+2003-11-13  Andras Varga
+
 	* Checked in parallel simulation code that was developed March-May 2003,
 	during my stay at Monash University. Changes:
 

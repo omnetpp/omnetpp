@@ -1,3 +1,13 @@
+2003-11-22  Andras Varga
+
+	* carray.cc: fixed bug in cBag which caused crash under certain rare
+	circumstances [reported by Nicolas Betbeder-Matibet]
+
+2003-11-13  Andras Varga
+
+	* distrib.cc: added typecast for MSVC 7.0 compiler [reported by Bob 
+	Scheffler]
+
 2003-11-13  Andras Varga
 
 	* Checked in parallel simulation code that was developed March-May 2003,
@@ -5,11 +15,6 @@
 
 	2003-04-20  Andras Varga
 	* cmodule.cc: setGateSize(): added check for negative vector size
-
-	2003-04-15  Andras Varga
-	* csimplemodule.cc: fixed bug introduced in 2.3b1 in deleteModule()
-	which caused deleting another module (i.e. mod->deleteModule())
-	to crash.
 
 	2003-03-30  Andras Varga
 	* Makefile.vc uses implicit rules

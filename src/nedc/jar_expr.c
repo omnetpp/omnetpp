@@ -118,7 +118,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
        case 0: sprintf( temp_res,
                         EXPR_PREFIX "%s"
                         "%svalue.cancelRedirection();\n" /* I-bug */
-                        "%svalue.setDoubleValue(%s);\n",
+                        "%svalue.setDoubleValue((MathFuncNoArg)%s);\n",
                         findfunc_code,
                         indent,
                         indent,func);
@@ -136,7 +136,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
                   sprintf( temp_res,
                            EXPR_PREFIX "%s"
                            "%svalue.cancelRedirection();\n" /* I-bug */
-                           "%svalue.setDoubleValue(%s,%s);\n",
+                           "%svalue.setDoubleValue((MathFunc1Arg)%s,%s);\n",
                            findfunc_code,
                            indent,
                            indent,func,
@@ -153,7 +153,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
                   add_to_exprtab(temp_res, p1);
                   strcat(temp_res,findfunc_code);
 
-                  sprintf(buf, EXPR_PREFIX "%s", func);
+                  sprintf(buf, EXPR_PREFIX "(MathFunc1Arg)%s", func);
                   EXPR_USE(buf) = USE_LITERAL;
                   EXPR_TYPE(buf) = TYPE_NUMERIC;
                   add_to_exprtab(temp_res,buf);
@@ -171,7 +171,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
                   sprintf( temp_res,
                            EXPR_PREFIX "%s"
                            "%svalue.cancelRedirection();\n" /* I-bug */
-                           "%svalue.setDoubleValue(%s,%s,%s);\n",
+                           "%svalue.setDoubleValue((MathFunc2Args)%s,%s,%s);\n",
                            findfunc_code,
                            indent,
                            indent,func,
@@ -189,7 +189,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
                   add_to_exprtab(temp_res, p2);
                   strcat(temp_res,findfunc_code);
 
-                  sprintf(buf, EXPR_PREFIX "%s", func);
+                  sprintf(buf, EXPR_PREFIX "(MathFunc2Args)%s", func);
                   EXPR_USE(buf) = USE_LITERAL;
                   EXPR_TYPE(buf) = TYPE_NUMERIC;
                   add_to_exprtab(temp_res,buf);
@@ -210,7 +210,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
                   sprintf( temp_res,
                            EXPR_PREFIX "%s"
                            "%svalue.cancelRedirection();\n" /* I-bug */
-                           "%svalue.setDoubleValue(%s,%s,%s,%s);\n",
+                           "%svalue.setDoubleValue((MathFunc3Args)%s,%s,%s,%s);\n",
                            findfunc_code,
                            indent,
                            indent,func,
@@ -229,7 +229,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
                   add_to_exprtab(temp_res, p3);
                   strcat(temp_res,findfunc_code);
 
-                  sprintf(buf, EXPR_PREFIX "%s", func);
+                  sprintf(buf, EXPR_PREFIX "(MathFunc3Args)%s", func);
                   EXPR_USE(buf) = USE_LITERAL;
                   EXPR_TYPE(buf) = TYPE_NUMERIC;
                   add_to_exprtab(temp_res,buf);
@@ -252,7 +252,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
                   sprintf( temp_res,
                            EXPR_PREFIX "%s"
                            "%svalue.cancelRedirection();\n" /* I-bug */
-                           "%svalue.setDoubleValue(%s,%s,%s,%s,%s);\n",
+                           "%svalue.setDoubleValue((MathFunc4Args)%s,%s,%s,%s,%s);\n",
                            findfunc_code,
                            indent,
                            indent,func,
@@ -272,7 +272,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
                   add_to_exprtab(temp_res, p4);
                   strcat(temp_res,findfunc_code);
 
-                  sprintf(buf, EXPR_PREFIX "%s", func);
+                  sprintf(buf, EXPR_PREFIX "(MathFunc4Args)%s", func);
                   EXPR_USE(buf) = USE_LITERAL;
                   EXPR_TYPE(buf) = TYPE_NUMERIC;
                   add_to_exprtab(temp_res,buf);

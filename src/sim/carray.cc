@@ -135,7 +135,7 @@ int cBag::add(void *obj)
       lastused = Max(lastused,firstfree);
       do {
          firstfree++;
-      } while (USED(firstfree) && firstfree<=lastused);
+      } while (firstfree<=lastused && USED(firstfree));
    }
    else // must allocate bigger vector
    {
@@ -164,7 +164,7 @@ int cBag::addAt(int m, void *obj) // --LG
       if (m==firstfree)
          do {
             firstfree++;
-         } while (USED(firstfree) && firstfree<=lastused);
+         } while (firstfree<=lastused && USED(firstfree));
       return m;
    }
    else // must allocate bigger vector
@@ -231,7 +231,7 @@ void *cBag::remove(int m)
     if (m==lastused)
         do {
            lastused--;
-        } while ( !USED(lastused) && lastused>=0);
+        } while (lastused>=0 && !USED(lastused));
     return ELEM(m);
 }
 
