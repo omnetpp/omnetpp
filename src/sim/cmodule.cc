@@ -52,7 +52,7 @@ cModule::cModule(const cModule& mod) :
     //take(&gatev);
     //take(&paramv);
 
-    prevp = nextp = firstsubmodp = NULL;
+    prevp = nextp = firstsubmodp = lastsubmodp = NULL;
     idx=0; vectsize=-1;
     fullname = NULL;
 
@@ -83,7 +83,7 @@ cModule::cModule(const char *name, cModule *parentmod) :
     dispstr = NULL;
     bgdispstr = NULL;
 
-    prevp = nextp = firstsubmodp = NULL;
+    prevp = nextp = firstsubmodp = lastsubmodp = NULL;
     if (parentmod)
         parentmod->insertSubmodule(this);
 
@@ -193,13 +193,6 @@ void cModule::insertSubmodule(cModule *mod)
     // take ownership
     take(mod);
 
-    // find end of submodule list
-    // TBD maybe introduce a lastsubmodp member to make this more efficient
-    cModule *lastsubmodp = firstsubmodp;
-    if (lastsubmodp)
-        while (lastsubmodp->nextp)
-            lastsubmodp = lastsubmodp->nextp;
-
     // append at end of submodule list
     mod->nextp = NULL;
     mod->prevp = lastsubmodp;
@@ -207,6 +200,7 @@ void cModule::insertSubmodule(cModule *mod)
         mod->prevp->nextp = mod;
     if (!firstsubmodp)
         firstsubmodp = mod;
+    lastsubmodp = mod;
 }
 
 void cModule::removeSubmodule(cModule *mod)
@@ -222,6 +216,11 @@ void cModule::removeSubmodule(cModule *mod)
          mod->prevp->nextp = mod->nextp;
     if (firstsubmodp==mod)
          firstsubmodp = mod->nextp;
+    if (lastsubmodp==mod)
+         lastsubmodp = mod->prevp;
+
+    // this is not strictly needed but makes it cleaner
+    mod->prevp = mod->nextp = NULL;
 }
 
 void cModule::setModuleType(cModuleType *mtype)
