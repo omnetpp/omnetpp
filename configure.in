@@ -468,6 +468,15 @@ else
    fi
 fi
 
+#----------------------
+# #defines in CFLAGS
+#----------------------
+if test "$WITH_PARSIM" = yes; then
+   CFLAGS="$CFLAGS -DWITH_PARSIM"
+fi
+if test "$WITH_NETBUILDER" = yes; then
+   CFLAGS="$CFLAGS -DWITH_NETBUILDER"
+fi
 
 #----------------------
 # Files to be generated

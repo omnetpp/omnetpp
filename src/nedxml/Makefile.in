@@ -73,7 +73,7 @@ lex.yy.cc: ned.lex
 	mv lex.yy.c lex.yy.cc
 
 ned.tab.o: ned.tab.h ned.tab.cc
-	$(CXX) -c $(COPTS) ned.tab.c
+	$(CXX) -c $(COPTS) ned.tab.cc
 
 ned.tab.cc ned.tab.h: ned.y
 	$(YACC) -b ned -d ned.y
