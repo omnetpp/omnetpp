@@ -1,3 +1,13 @@
+2004-03-05  Andras Varga
+
+	* opp_makemake: added --genconfig option which generates config file
+	for which can be included by makefiles (see opp_makemake -c option).
+
+	* opp_makemake, opp_nmakemake: old targets "re-makemake" and 
+	"re-makemake-m" renamed to "makefiles" and "makefile-ins". 
+	Old target names also kept for compatibility but should not be used
+	any more.
+
 2004-03-04  Andras Varga
 
 	* opp_makemake, opp_nmakemake: improved dealing with .msg files.
