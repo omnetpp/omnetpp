@@ -33,6 +33,8 @@ usman.html : $(HTM_FILES) omnest.thtml omnetpp.thtml prephtml2 ltoh.specs ltoh.p
 	for %%i in ($(HTM_FILES)) do type %i >> usman.tmp
 	$(PERL) prephtml2 usman.tmp
 	del usman.tmp
+	copy usman.html ..\..\manual
+	copy *.gif ..\..\manual
 
 clean:
 	-del *.htm
