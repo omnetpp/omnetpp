@@ -1,6 +1,10 @@
 %description:
 Shift operator in NED (Stefan Feuerhahn's bug)
 
+*** Known to fail on Linux (on Windows it's OK) because with double d=0xc0000000,
+(long)d yields 0x80000000  (Linux discards a bit on the double->long conversion).
+This occurs at cpar.cc#827 return (long)doubleValue();
+
 %file: {}.ned
 
 simple {Simple}
