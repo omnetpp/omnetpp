@@ -220,8 +220,10 @@ void TOmnetTkApp::doOneStep()
 
     if (!simulation.ok())
     {
-       if (simulation.normalTermination()) simulation.callFinish();
-       simulation.endRun();
+       if (simulation.normalTermination())
+          callFinish();  // includes endRun()
+       else
+          simulation.endRun();
     }
 }
 
@@ -289,8 +291,10 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 
     if (!simulation.ok())
     {
-       if (simulation.normalTermination()) simulation.callFinish();
-       simulation.endRun();
+       if (simulation.normalTermination())
+          callFinish();  // includes endRun()
+       else
+          simulation.endRun();
     }
 
     updateNextModuleDisplay();
@@ -334,8 +338,10 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
 
     if (!simulation.ok())
     {
-       if (simulation.normalTermination()) simulation.callFinish();
-       simulation.endRun();
+       if (simulation.normalTermination())
+          callFinish();  // includes endRun()
+       else
+          simulation.endRun();
     }
 
     ev.disable_tracing = FALSE;
@@ -352,6 +358,16 @@ void TOmnetTkApp::startAll()
 
 void TOmnetTkApp::callFinish()
 {
+    // print banner into main window
+    if (opt_use_mainwindow)
+         CHK(Tcl_VarEval(interp,
+              ".main.text insert end {** Calling finish() for modules} event\n"
+              ".main.text see end", NULL));
+
+    // should print banner into per module windows too!
+    // TO BE IMPLEMENTED
+
+    // now really call finish()
     simulation.callFinish();
     simulation.endRun();
     opp_terminate(eFINISH);

@@ -318,3 +318,5 @@ Dec 4,1999
     for compiling (ren *.cc *.cpp)!
 Dec 5,1999
   - Makefile.vc added
+  - prints a banner line into main window before calling finish() on modules
+    TBD: should print it into per-module windows too
