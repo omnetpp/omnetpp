@@ -19,3 +19,6 @@ Save rc file
 Display basic statistics of variables displayed: mean, stddev, maybe histogram?
 
 Filter: values between [...] and [...]
+
+Chart properties dialog: save/load&apply chart properties (can be implemented 
+with a Tcl array)
