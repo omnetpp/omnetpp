@@ -50,9 +50,18 @@ void {Sender}::activity()
    out->connectTo(rcvin);
    PRINT(out->channel());
 
-   // send message to verify
+   // send to verify
    cMessage *msg2 = new cMessage("hello2");
    send(msg2, "out");
+   wait(1);
+
+   // change channel
+   ch = createChannel(0.125);
+   out->setChannel(ch);
+
+   // send to verify
+   cMessage *msg3 = new cMessage("hello3");
+   send(msg3, "out");
    wait(1);
 
    // remove channel
@@ -93,5 +102,9 @@ out->channel\(\):chan
 .*
 hello2 arrived at 1.25
 .*
+hello3 arrived at 2.125
+.*
 out->channel\(\):NULL
 done
+
+
