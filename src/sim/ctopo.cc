@@ -37,18 +37,18 @@ Register_Class(cTopology);
 
 //==========================================================================
 
-sTopoLinkIn *sTopoNode::in(int i)
+cTopology::LinkIn *cTopology::Node::in(int i)
 {
     if (i<0 || i>=num_in_links)
-        throw new cException("sTopoNode: invalid in() index %d",i);
-    return (sTopoLinkIn *)in_links[i];
+        throw new cException("cTopology::Node: invalid in() index %d",i);
+    return (cTopology::LinkIn *)in_links[i];
 }
 
-sTopoLinkOut *sTopoNode::out(int i)
+cTopology::LinkOut *cTopology::Node::out(int i)
 {
     if (i<0 || i>=num_out_links)
-        throw new cException("sTopoNode: invalid out() index %d",i);
-    return (sTopoLinkOut *)(out_links+i);
+        throw new cException("cTopology::Node: invalid out() index %d",i);
+    return (cTopology::LinkOut *)(out_links+i);
 }
 
 //==========================================================================
@@ -140,7 +140,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 
     int mod_id, gate_id;
 
-    sTopoNode *temp_nodev = new sTopoNode[simulation.lastModuleId()];
+    Node *temp_nodev = new Node[simulation.lastModuleId()];
 
     // Loop through all modules and find those which have the required
     // parameter with the (optionally) required value.
@@ -169,8 +169,8 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
     }
     num_nodes = k;
 
-    nodev = new sTopoNode[num_nodes];
-    memcpy(nodev,temp_nodev,num_nodes*sizeof(sTopoNode));
+    nodev = new Node[num_nodes];
+    memcpy(nodev,temp_nodev,num_nodes*sizeof(Node));
     delete [] temp_nodev;
 
     // Discover out neighbors too.
@@ -224,14 +224,14 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
     }
 }
 
-sTopoNode *cTopology::node(int i)
+cTopology::Node *cTopology::node(int i)
 {
     if (i<0 || i>=num_nodes)
         throw new cException(this,"invalid node index %d",i);
     return nodev+i;
 }
 
-sTopoNode *cTopology::nodeFor(cModule *mod)
+cTopology::Node *cTopology::nodeFor(cModule *mod)
 {
     // binary search can be done because nodev[] is ordered
 
@@ -249,7 +249,7 @@ sTopoNode *cTopology::nodeFor(cModule *mod)
     return (mod->id() == nodev[index].module_id) ? nodev+index : NULL;
 }
 
-void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
+void cTopology::unweightedSingleShortestPathsTo(Node *_target)
 {
     // multiple paths not supported :-(
 
@@ -271,14 +271,14 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
 
     while (!q.empty())
     {
-       sTopoNode *v = (sTopoNode *) q.pop();
+       Node *v = (Node *) q.pop();
 
        // for each w adjacent to v...
        for (int i=0; i<v->num_in_links; i++)
        {
            if (!(v->in_links[i]->enabl)) continue;
 
-           sTopoNode *w = v->in_links[i]->src_node;
+           Node *w = v->in_links[i]->src_node;
            if (!(w->enabl)) continue;
 
            if (w->dist == INFINITY)
@@ -293,7 +293,7 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
 
 
 /* to be adapted:
-void cTopology::weightedSingleShortestPathsTo(sTopoNode *_target)
+void cTopology::weightedSingleShortestPathsTo(Node *_target)
 {
     if (!_target)
         throw new cException(this,"..ShortestPathTo(): target node is NULL");

@@ -25,78 +25,131 @@
 
 #include "cdensity.h"
 
-// classes declared
-class cKSplit;
-struct sGrid;
-class cKSplitIterator;
 
 // K: the grid size of the algorithm
 #define K 2
 
 
 /**
- * Prototype for cell split criterion functions used by cKSplit objects.
- * @ingroup EnumsTypes
- */
-typedef int (*KSplitCritFunc)(const cKSplit&, sGrid&, int, double *);
-
-/**
- * Prototype for cell division criterion functions used by cKSplit objects.
- * @ingroup EnumsTypes
- */
-typedef double (*KSplitDivFunc)(const cKSplit&, sGrid&, double, double *);
-
-// cell split criteria
-int critfunc_const(const cKSplit&, sGrid&, int, double *);
-int critfunc_depth(const cKSplit&, sGrid&, int, double *);
-
-// cell division criteria
-double divfunc_const(const cKSplit&, sGrid&, double, double *);
-double divfunc_babak(const cKSplit&, sGrid&, double, double *);
-
-//==========================================================================
-
-/**
- * Supporting struct for cKSplit. Represents one grid in the k-split
- * data structure.
- */
-struct sGrid   // FIXME: to be renamed to sKSplitGrid! make internal class to cKSplit?
-{
-  int parent;      ///< index of parent grid
-  int reldepth;    ///< depth = (reldepth - rootgrid's reldepth)
-  long total;      ///< sum of cells & all subgrids (also includes 'mother')
-  int mother;      ///< observations 'inherited' from mother cell
-  int cells[K];    ///< cell values
-};
-
-//==========================================================================
-
-/**
  * Implements k-split, an adaptive histogram-like density estimation
  * algorithm.
  *
  * @ingroup Statistics
- * @see cKSplitIterator, sGrid
+ * @see Iterator Grid
  */
 class SIM_API cKSplit : public cDensityEstBase
 {
-    friend class cKSplitIterator;
+   public:
+    /**
+     * Supporting struct for cKSplit. Represents one grid in the k-split
+     * data structure.
+     */
+    struct Grid
+    {
+      int parent;      ///< index of parent grid
+      int reldepth;    ///< depth = (reldepth - rootgrid's reldepth)
+      long total;      ///< sum of cells & all subgrids (also includes 'mother')
+      int mother;      ///< observations 'inherited' from mother cell
+      int cells[K];    ///< cell values
+    };
+
+    /**
+     * Prototype for cell split criterion functions used by cKSplit objects.
+     * @ingroup EnumsTypes
+     */
+    typedef int (*CritFunc)(const cKSplit&, cKSplit::Grid&, int, double *);
+
+    /**
+     * Prototype for cell division criterion functions used by cKSplit objects.
+     * @ingroup EnumsTypes
+     */
+    typedef double (*DivFunc)(const cKSplit&, cKSplit::Grid&, double, double *);
+
+    /**
+     * Walks along cells of the distribution stored in a cKSplit object.
+     */
+    class Iterator
+    {
+      private:
+        cKSplit *ks;             // host object
+        int cellnum;             // global index of current cell
+        int grid, cell;          // root index in gridv[], cell index in grid.cell[]
+        double gridmin;          // left edge of current grid
+        double cellsize;         // cell width on current grid
+
+        // internal
+        void dive(int where);
+
+      public:
+        /**
+         * Constructor.
+         */
+        Iterator(const cKSplit& ksplit, bool atbeginning=true);
+
+        /**
+         * Reinitializes the iterator.
+         */
+        void init(const cKSplit& ksplit, bool atbeginning=true);
+
+        /**
+         * Moves the iterator to the next cell.
+         */
+        void operator++(int);
+
+        /**
+         * Moves the iterator to the previous cell.
+         */
+        void operator--(int);
+
+        /**
+         * Returns true if the iterator has reached either end of the cell sequence.
+         */
+        bool end() const           {return grid==0;}
+
+        /**
+         * Returns the index of the current cell.
+         */
+        int cellNumber() const     {return cellnum;}
+
+        /**
+         * Returns the upper lower of the current cell.
+         */
+        double cellMin() const     {return gridmin+cell*cellsize;}
+
+        /**
+         * Returns the upper bound of the current cell.
+         */
+        double cellMax() const     {return gridmin+(cell+1)*cellsize;}
+
+        /**
+         * Returns the size of the current cell.
+         */
+        double cellSize() const    {return cellsize;}
+
+        /**
+         * Returns the actual amount of observations in current cell.
+         * This is not necessarily an integer value because of previous cell splits.
+         */
+        double cellValue() const;
+    };
+
+    friend class Iterator;
 
   protected:
     int num_cells;            // number of cells
 
-    sGrid *gridv;             // grid vector
+    Grid *gridv;              // grid vector
     int gridv_size;           // size of gridv[]+1
     int rootgrid, lastgrid;   // indices into gridv[]
     bool rangeext_enabled;    // enable/disable range extension
 
-    KSplitCritFunc critfunc;  // function that determines when to split a cell
+    CritFunc critfunc;        // function that determines when to split a cell
     double *critdata;         // data array to pass to crit. function
 
-    KSplitDivFunc divfunc;    // function to calc. lambda for cell division
+    DivFunc divfunc;          // function to calc. lambda for cell division
     double *divdata;          // data array to pass to div. function
 
-    mutable cKSplitIterator *iter; // iterator used by basepoint(), cell() etc.
+    mutable Iterator *iter;   // iterator used by basepoint(), cell() etc.
     mutable long iter_num_samples; // num_samples when iterator was created
 
   protected:
@@ -243,13 +296,13 @@ class SIM_API cKSplit : public cDensityEstBase
      * Configures the k-split algorithm by supplying a custom split
      * criterion function.
      */
-    void setCritFunc(KSplitCritFunc _critfunc, double *_critdata);
+    void setCritFunc(CritFunc _critfunc, double *_critdata);
 
     /**
      * Configures the k-split algorithm by supplying a custom cell division
      * function.
      */
-    void setDivFunc(KSplitDivFunc _divfunc, double *_divdata);
+    void setDivFunc(DivFunc _divfunc, double *_divdata);
 
     /**
      * Enables/disables range extension. If range extension is enabled,
@@ -273,13 +326,13 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Returns the depth of the k-split tree measured from the specified grid.
      */
-    int treeDepth(sGrid& grid) const;
+    int treeDepth(Grid& grid) const;
 
     /**
      * Returns the actual amount of observations in cell 'cell' of 'grid'.
      * This is not necessarily an integer value because of previous cell splits.
      */
-    double realCellValue(sGrid& grid, int cell) const;
+    double realCellValue(Grid& grid, int cell) const;
 
     /**
      * Dumps the contents of the k-split data structure to ev.
@@ -289,83 +342,24 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Returns the kth grid in the k-split data structure.
      */
-    sGrid& grid(int k) const {return gridv[k];}
+    Grid& grid(int k) const {return gridv[k];}
 
     /**
      * Returns the root grid of the k-split data structure.
      */
-    sGrid& rootGrid() const {return gridv[rootgrid];}
+    Grid& rootGrid() const {return gridv[rootgrid];}
     //@}
 };
 
 
-/**
- * Walks along cells of the distribution stored in a cKSplit object.
- */
-class SIM_API cKSplitIterator
-{
-  private:
-    cKSplit *ks;             // host object
-    int cellnum;             // global index of current cell
-    int grid, cell;          // root index in gridv[], cell index in grid.cell[]
-    double gridmin;          // left edge of current grid
-    double cellsize;         // cell width on current grid
+// cell split criteria
+int critfunc_const(const cKSplit&, cKSplit::Grid&, int, double *);
+int critfunc_depth(const cKSplit&, cKSplit::Grid&, int, double *);
 
-    // internal
-    void dive(int where);
+// cell division criteria
+double divfunc_const(const cKSplit&, cKSplit::Grid&, double, double *);
+double divfunc_babak(const cKSplit&, cKSplit::Grid&, double, double *);
 
-  public:
-    /**
-     * Constructor.
-     */
-    cKSplitIterator(const cKSplit& _ks, int _beg=1);
-
-    /**
-     * Reinitializes the iterator.
-     */
-    void init(const cKSplit& _ks, int _beg=1);
-
-    /**
-     * Moves the iterator to the next cell.
-     */
-    void operator++(int);
-
-    /**
-     * Moves the iterator to the previous cell.
-     */
-    void operator--(int);
-
-    /**
-     * Returns true if the iterator has reached either end of the cell sequence.
-     */
-    bool end() const           {return grid==0;}
-
-    /**
-     * Returns the index of the current cell.
-     */
-    int cellNumber() const     {return cellnum;}
-
-    /**
-     * Returns the upper lower of the current cell.
-     */
-    double cellMin() const     {return gridmin+cell*cellsize;}
-
-    /**
-     * Returns the upper bound of the current cell.
-     */
-    double cellMax() const     {return gridmin+(cell+1)*cellsize;}
-
-    /**
-     * Returns the size of the current cell.
-     */
-    double cellSize() const    {return cellsize;}
-
-    /**
-     * Returns the actual amount of observations in current cell.
-     * This is not necessarily an integer value because of previous cell splits.
-     */
-    double cellValue() const;
-};
 
 #endif
 

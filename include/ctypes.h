@@ -65,17 +65,6 @@ typedef cPar *(*ParCreateFunc)();
 
 //==========================================================================
 
-//
-// Used internally by cModuleInterface
-//
-// FIXME: why not inner class?
-struct sDescrItem {
-    char what;
-    char *name;
-    char *types;
-    char type;
-};
-
 /**
  * Describes the interface (modules, gates,...) of a module type.
  *
@@ -114,6 +103,16 @@ struct sDescrItem {
  */
 class SIM_API cModuleInterface : public cObject
 {
+  public:
+    // used by the ModuleInterface macro
+    struct sDescrItem {
+        char what;
+        char *name;
+        char *types;
+        char type;
+    };
+
+  protected:
     // structures used in a cModuleInterface
     struct sGateInfo {
        char *name;

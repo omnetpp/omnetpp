@@ -1,24 +1,35 @@
+2002-11-03  Andras Varga
+
+	* namespace cleanup: several iterator and other small classes
+	made inner classes (cKSplitIterator changed to cKSplit::Iterator,
+        cQueueIterator to cQueue::Iterator, cLinkedListIterator to
+        cLinkedList::Iterator, cMessageHeapIterator to cMessageHeap::Iterator,
+        sXElem to cPar::ExprElem, sGrid to cKSplit::Grid, sTopoLink to
+        cTopology::Link, sTopoLinkIn to cTopology::LinkIn, sTopoLinkOut to
+        cTopology::LinkOut, sTopoNode to cTopology::Node). #defines for
+        backwards compatibility were added to defs.h.
+
 2002-10-27  Andras Varga
 
 	* Started to use C++ RTTI. It is no longer necessary to redefine
 	className() in every cObject subclass. The class name string is now
-	produced in the base class (cObject::className()) using the typeid 
-	operator. 
-	
-	Tested with MSVC 6.0 and Cygwin/gcc-2.95.3-5. With MSVC, one needs 
-	to compile every source using /GR, otherwise Tkenv crashes (RTTI 
+	produced in the base class (cObject::className()) using the typeid
+	operator.
+
+	Tested with MSVC 6.0 and Cygwin/gcc-2.95.3-5. With MSVC, one needs
+	to compile every source using /GR, otherwise Tkenv crashes (RTTI
 	exception)!
 
 	* cobject.h: removed inspector() and inspectorFactoryName() methods
 	from cObject
-	
-        * ctypes.h, macros.h: removed TInspector and the inspectorfactory 
-        stuff altogether (they didn't really belong here). The whole stuff 
+
+        * ctypes.h, macros.h: removed TInspector and the inspectorfactory
+        stuff altogether (they didn't really belong here). The whole stuff
         was moved to Tkenv.
 
 2002-10-20  Andras Varga
 
-	* cgate.h: added isConnectedOutside() and isConnectedInside() 
+	* cgate.h: added isConnectedOutside() and isConnectedInside()
 	utility methods.
 
 2002-10-19  Andras Varga
@@ -32,7 +43,7 @@
 	should be redefined in subclasses, and also nedc generates now
 	doBuildInside() code.
 
-	* ctypes.h, macros.h: refactoring around cNetworkType and 
+	* ctypes.h, macros.h: refactoring around cNetworkType and
 	Define_Network: subclass cNetworkType instead of using a naked
 	pointer to a network setup function.
 
@@ -44,22 +55,22 @@
 
 2002-10-16  Andras Varga
 
-	* csimul.h: cSimulation: methods warning(), setWarnings(bool), 
+	* csimul.h: cSimulation: methods warning(), setWarnings(bool),
 	warnings() removed from class. Warnings are no longer used by the
-	simulation library at all. opp_warning() remained (but its use 
-	discouraged) -- it can further be used	to report non-fatal 
-	discrepancies, but the user won't be offered the possibility 
+	simulation library at all. opp_warning() remained (but its use
+	discouraged) -- it can further be used	to report non-fatal
+	discrepancies, but the user won't be offered the possibility
 	to stop the simulation. (In Cmdenv, warnings will be written
-	to the standard error, and in Tkenv it will probably pop up an 
+	to the standard error, and in Tkenv it will probably pop up an
 	[OK] dialog.
 
 	* Convention 1: methods returning an object reference (e.g. cPar&) now
-	always throw an exception if the object is not found. (Until now, some 
-	methods issued a warning and returned null reference, i.e. 
+	always throw an exception if the object is not found. (Until now, some
+	methods issued a warning and returned null reference, i.e.
 	*(cPar*)NULL).
 
 	* Convention 2: methods returning a pointer (e.g. cGate*) return NULL
-	pointer if the object is not found. (Until now, some methods issued 
+	pointer if the object is not found. (Until now, some methods issued
 	a warning and returned NULL pointer.
 
 	* csimul.h: cSimulation: lastModuleIndex() renamed to lastModuleId();
@@ -91,37 +102,37 @@
 
 	* chead.h: removed deleteChildren() from cHead destructor call.
 
-	* cobject.h: refactoring/simplification: removed deleteChildren() and 
+	* cobject.h: refactoring/simplification: removed deleteChildren() and
 	destructChildren() methods; dealloc(cObject *) renamed to discard().
 
 2002-10-07  Andras Varga
 
-	* macros.h, cobject.h: refactoring of internal workings: way of 
+	* macros.h, cobject.h: refactoring of internal workings: way of
 	constructing global registration lists (module types, networks, etc)
 	have been reorganized. Now it uses a new EXECUTE_ON_STARTUP() macro
-	instead of having hardwired into global objects' constructor to 
+	instead of having hardwired into global objects' constructor to
 	join lists. As a consequence, cObject constructors could be simplified.
 
-	* onstartup.h: new file, contains EXECUTE_ON_STARTUP() macro and 
+	* onstartup.h: new file, contains EXECUTE_ON_STARTUP() macro and
 	underlying object.
 
 	* Interface() macro renamed to ModuleInterface() (name clashed with
-	COM stuff on Windows); Register_Interface() macro renamed to 
+	COM stuff on Windows); Register_Interface() macro renamed to
 	Register_ModuleInterface().
 
 2002-10-04  Andras Varga
 
         * csimul.h: refactoring on cSimulation object:
 
-	* incEventCount() removed, incrementing event count was moved into 
+	* incEventCount() removed, incrementing event count was moved into
 	doOneEvent()
 
 	* responsibilities of startRun() and endRun() changed, see doc comment.
 
-	* several methods moved from cSimulation into the Envir library: 
-	timeLimit(), simTimeLimit(), startClock(), stopClock(), resetClock(), 
-	checkTimes(). Also, it is no longer the scheduler function's 
-	responsibility to stop the simulation if sim/real time limits have 
+	* several methods moved from cSimulation into the Envir library:
+	timeLimit(), simTimeLimit(), startClock(), stopClock(), resetClock(),
+	checkTimes(). Also, it is no longer the scheduler function's
+	responsibility to stop the simulation if sim/real time limits have
 	been reached
 
 	* cexception.h changed
@@ -131,22 +142,22 @@
 	* added cchannel.h: cChannel, cSimpleChannel introduced
 
 	* cGate: added setChannel(), channel()
-	
+
 	* cGate: DEPRECATED setDelay(), setError(), setDatarate(), setLink()
 	methods. Channel objects should be used instead.
 
 	* cGate: added connectTo() method; DEPRECATED setFrom() and setTo()
 
-	* cMessage: refactoring: added setSentFrom() and setArrival() methods 
-	instead of letting friend classes manipulate private data members 
+	* cMessage: refactoring: added setSentFrom() and setArrival() methods
+	instead of letting friend classes manipulate private data members
 	of cMessage, and reduced friend class list.
 
-	* cModule, cGate: deliver(cMessage*) changed to 
+	* cModule, cGate: deliver(cMessage*) changed to
 	deliver(cMessage*, simtime_t); arrived() method signature changed
 	similarly
 
-	* cArray: created set(cObject*) method to add optional hashtable-like 
-	behaviour to cArray: this method replaces the object with the same 
+	* cArray: created set(cObject*) method to add optional hashtable-like
+	behaviour to cArray: this method replaces the object with the same
 	name in the array with the object passed.
 
 	* cArray: commented out opp_warning() calls from all remove() methods.
@@ -163,9 +174,9 @@
 
 2002-06-17  Andras Varga
 
-	* cpar.cc: new feature: cPar can use compiled expressions subclassed 
+	* cpar.cc: new feature: cPar can use compiled expressions subclassed
 	from cDoubleExpression (new class). This is needed for code generated
-	by the new, nedxml-based nedc. 
+	by the new, nedxml-based nedc.
 
 2002-06-12  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
@@ -181,7 +192,7 @@
 
 	* defs.h: added macro USE_STD_NAMESPACES for C++ compilers with
 	standard library and namespaces (currently GNU C++ >= 3.0)
-	
+
 	* cdensity.h, cenvir.h, chist.h, cksplit.h, cmodule.h, cobject.h,
 	cpsquare.h, csimul.h, cstat.h, ctopo.h, ctypes.h, cvarhist.h,
 	envirext.h: Use standard headers and namespaces if

@@ -26,7 +26,6 @@
 
 #define SHORTSTR  27
 
-#define NOPAR  NULL
 
 //=== classes declared here:
 class  cPar;
@@ -88,147 +87,6 @@ class cDoubleExpression : public cExpression
 //==========================================================================
 
 /**
- * sXElem: one component in a (reversed Polish) expression in a cPar.
- *
- * If the value of the cPar is of expression type, the expression
- * must be converted to reversed Polish form. The reversed Polish
- * form expression is stored in a vector of sXElem structures.
- * sXElem is not a descendant of cObject.
- *
- * NOTE: not a cObject descendant!
- */
-struct sXElem
-{
-    // Type chars:
-    //   D  double constant
-    //   P  pointer to "external" cPar (owned by someone else)
-    //   R  "reference": the cPar will be dup()'ped and the copy kept
-    //   0/1/2/3  function with 0/1/2/3 arguments
-    //   @  math operator (+-*%/^=!<{>}?); see cPar::evaluate()
-    //
-    char type;    // D/P/R/0/1/2/3/@ (see above)
-    union {
-        double d;           // D
-        cPar *p;            // P/R
-        MathFuncNoArg f0;   // 0
-        MathFunc1Arg  f1;   // 1
-        MathFunc2Args f2;   // 2
-        MathFunc3Args f3;   // 3
-        char op;            // @, op = +-*/%^=!<{>}?
-    };
-
-    /**
-     * Effect during evaluation of the expression: pushes the given number
-     * (which is converted to double) on the evaluation stack.
-     */
-    void operator=(int _i)            {type='D'; d=_i;  }
-
-    /**
-     * Effect during evaluation of the expression: pushes the given number
-     * (which is converted to double) on the evaluation stack.
-     */
-    void operator=(long _l)           {type='D'; d=_l;  }
-
-    /**
-     * Effect during evaluation of the expression: pushes the given number
-     * (which is converted to double) on the evaluation stack.
-     */
-    void operator=(double _d)         {type='D'; d=_d;  }
-
-    /**
-     * Effect during evaluation of the expression: takes the value of
-     * the cPar object  (a double) and pushes the value
-     * on the evaluation stack. The cPar is an "external"
-     * one: its ownership does not change. This is how NED-language REF
-     * parameters in expressions are handled.
-     */
-    void operator=(cPar *_p)          {type='P'; p=_p;  }
-
-    /**
-     * Effect during evaluation of the expression: takes the value of
-     * the cPar object  (a double) and pushes the value
-     * on the evaluation stack. The cPar which evaluates this
-     * expression will copy the cPar for itself.
-     */
-    void operator=(cPar& _r);         //{type='R'; p=(cPar *)_r.dup();} See after cPar!
-
-    /**
-     * The argument can be a pointer to a function that takes (0, 1,
-     * 2, or 3) double arguments and returns a double
-     * (e.g. sqrt()). Effect during evaluation of the expression:
-     * the given number of doubles are popped from the stack,
-     * the given function is called with them as arguments, and the return
-     * value is pushed back on the stack. See also the cFunctionType
-     * class and the Define_Function() macro.
-     *
-     * The OMNeT++ functions generating random variables of different
-     * distributions can also be used in sXElem expressions.
-     */
-    void operator=(MathFuncNoArg _f)  {type='0'; f0=_f;}
-
-    /**
-     * The argument can be a pointer to a function that takes (0, 1,
-     * 2, or 3) double arguments and returns a double
-     * (e.g. sqrt()). Effect during evaluation of the expression:
-     * the given number of doubles are popped from the stack,
-     * the given function is called with them as arguments, and the return
-     * value is pushed back on the stack. See also the cFunctionType
-     * class and the Define_Function() macro.
-     *
-     * The OMNeT++ functions generating random variables of different
-     * distributions can also be used in sXElem expressions.
-     */
-    void operator=(MathFunc1Arg  _f)  {type='1'; f1=_f;}
-
-    /**
-     * The argument can be a pointer to a function that takes (0, 1,
-     * 2, or 3) double arguments and returns a double
-     * (e.g. sqrt()). Effect during evaluation of the expression:
-     * the given number of doubles are popped from the stack,
-     * the given function is called with them as arguments, and the return
-     * value is pushed back on the stack. See also the cFunctionType
-     * class and the Define_Function() macro.
-     *
-     * The OMNeT++ functions generating random variables of different
-     * distributions can also be used in sXElem expressions.
-     */
-    void operator=(MathFunc2Args _f)  {type='2'; f2=_f;}
-
-    /**
-     * The argument can be a pointer to a function that takes (0, 1,
-     * 2, or 3) double arguments and returns a double
-     * (e.g. sqrt()). Effect during evaluation of the expression:
-     * the given number of doubles are popped from the stack,
-     * the given function is called with them as arguments, and the return
-     * value is pushed back on the stack. See also the cFunctionType
-     * class and the Define_Function() macro.
-     *
-     * The OMNeT++ functions generating random variables of different
-     * distributions can also be used in sXElem expressions.
-     */
-    void operator=(MathFunc3Args _f)  {type='3'; f3=_f;}
-
-    /**
-     * Operation. During evaluation of the expression, two items (or three,
-     * with '?') are popped out of the stack, the given operator
-     * is applied to them and the result is pushed back on the stack.
-     *
-     * The operation can be:
-     * <UL>
-     *   <LI> + - * / add, subtract, multiply, divide
-     *   <LI> % ^  modulo, power of
-     *   <LI> = !  equal, not equal
-     *   <LI> > }  greater, greater or equal
-     *   <LI> < {  less, less or equal
-     *   <LI> ?  inline if (the C/C++ ?: operator)
-     * </UL>
-     */
-    void operator=(char _op)          {type='@'; op=_op;}
-};
-
-//==========================================================================
-
-/**
  * Parameter class are designed to hold a value.
  *
  * Types and type characters:
@@ -236,7 +94,7 @@ struct sXElem
  * <UL>
  *   <LI> basic types: C char, S string, L long, D double
  *   <LI> F math function (MathFuncNoArgs,MathFunc1Args,etc),
- *   <LI> X expression (table of sXElems),
+ *   <LI> X expression (table of ExprElems),
  *   <LI> C compiled expression (subclassed from cDoubleExpression),
  *   <LI> T distribution from a cStatistic,
  *   <LI> P pointer to cObject,
@@ -253,10 +111,147 @@ struct sXElem
  * cObject pointed to in 'P' type, cStatistic in disTribution type
  *
  * @ingroup SimCore
- * @see sXElem
+ * @see ExprElem
  */
 class SIM_API cPar : public cObject
 {
+  public:
+    /**
+     * One component in a (reversed Polish) expression in a cPar.
+     *
+     * If the value of the cPar is of expression type, the expression
+     * must be converted to reversed Polish form. The reversed Polish
+     * form expression is stored in a vector of ExprElem structures.
+     */
+    struct ExprElem
+    {
+        // Type chars:
+        //   D  double constant
+        //   P  pointer to "external" cPar (owned by someone else)
+        //   R  "reference": the cPar will be dup()'ped and the copy kept
+        //   0/1/2/3  function with 0/1/2/3 arguments
+        //   @  math operator (+-*%/^=!<{>}?); see cPar::evaluate()
+        //
+        char type;    // D/P/R/0/1/2/3/@ (see above)
+        union {
+            double d;           // D
+            cPar *p;            // P/R
+            MathFuncNoArg f0;   // 0
+            MathFunc1Arg  f1;   // 1
+            MathFunc2Args f2;   // 2
+            MathFunc3Args f3;   // 3
+            char op;            // @, op = +-*/%^=!<{>}?
+        };
+
+        /**
+         * Effect during evaluation of the expression: pushes the given number
+         * (which is converted to double) on the evaluation stack.
+         */
+        void operator=(int _i)            {type='D'; d=_i;  }
+
+        /**
+         * Effect during evaluation of the expression: pushes the given number
+         * (which is converted to double) on the evaluation stack.
+         */
+        void operator=(long _l)           {type='D'; d=_l;  }
+
+        /**
+         * Effect during evaluation of the expression: pushes the given number
+         * (which is converted to double) on the evaluation stack.
+         */
+        void operator=(double _d)         {type='D'; d=_d;  }
+
+        /**
+         * Effect during evaluation of the expression: takes the value of
+         * the cPar object  (a double) and pushes the value
+         * on the evaluation stack. The cPar is an "external"
+         * one: its ownership does not change. This is how NED-language REF
+         * parameters in expressions are handled.
+         */
+        void operator=(cPar *_p)          {type='P'; p=_p;  }
+
+        /**
+         * Effect during evaluation of the expression: takes the value of
+         * the cPar object  (a double) and pushes the value
+         * on the evaluation stack. The cPar which evaluates this
+         * expression will copy the cPar for itself.
+         */
+        void operator=(cPar& _r);         //{type='R'; p=(cPar *)_r.dup();} See after cPar!
+
+        /**
+         * The argument can be a pointer to a function that takes (0, 1,
+         * 2, or 3) double arguments and returns a double
+         * (e.g. sqrt()). Effect during evaluation of the expression:
+         * the given number of doubles are popped from the stack,
+         * the given function is called with them as arguments, and the return
+         * value is pushed back on the stack. See also the cFunctionType
+         * class and the Define_Function() macro.
+         *
+         * The OMNeT++ functions generating random variables of different
+         * distributions can also be used in ExprElem expressions.
+         */
+        void operator=(MathFuncNoArg _f)  {type='0'; f0=_f;}
+
+        /**
+         * The argument can be a pointer to a function that takes (0, 1,
+         * 2, or 3) double arguments and returns a double
+         * (e.g. sqrt()). Effect during evaluation of the expression:
+         * the given number of doubles are popped from the stack,
+         * the given function is called with them as arguments, and the return
+         * value is pushed back on the stack. See also the cFunctionType
+         * class and the Define_Function() macro.
+         *
+         * The OMNeT++ functions generating random variables of different
+         * distributions can also be used in ExprElem expressions.
+         */
+        void operator=(MathFunc1Arg  _f)  {type='1'; f1=_f;}
+
+        /**
+         * The argument can be a pointer to a function that takes (0, 1,
+         * 2, or 3) double arguments and returns a double
+         * (e.g. sqrt()). Effect during evaluation of the expression:
+         * the given number of doubles are popped from the stack,
+         * the given function is called with them as arguments, and the return
+         * value is pushed back on the stack. See also the cFunctionType
+         * class and the Define_Function() macro.
+         *
+         * The OMNeT++ functions generating random variables of different
+         * distributions can also be used in ExprElem expressions.
+         */
+        void operator=(MathFunc2Args _f)  {type='2'; f2=_f;}
+
+        /**
+         * The argument can be a pointer to a function that takes (0, 1,
+         * 2, or 3) double arguments and returns a double
+         * (e.g. sqrt()). Effect during evaluation of the expression:
+         * the given number of doubles are popped from the stack,
+         * the given function is called with them as arguments, and the return
+         * value is pushed back on the stack. See also the cFunctionType
+         * class and the Define_Function() macro.
+         *
+         * The OMNeT++ functions generating random variables of different
+         * distributions can also be used in ExprElem expressions.
+         */
+        void operator=(MathFunc3Args _f)  {type='3'; f3=_f;}
+
+        /**
+         * Operation. During evaluation of the expression, two items (or three,
+         * with '?') are popped out of the stack, the given operator
+         * is applied to them and the result is pushed back on the stack.
+         *
+         * The operation can be:
+         * <UL>
+         *   <LI> + - * / add, subtract, multiply, divide
+         *   <LI> % ^  modulo, power of
+         *   <LI> = !  equal, not equal
+         *   <LI> > }  greater, greater or equal
+         *   <LI> < {  less, less or equal
+         *   <LI> ?  inline if (the C/C++ ?: operator)
+         * </UL>
+         */
+        void operator=(char _op)          {type='@'; op=_op;}
+    };
+
   protected:
     static char *possibletypes;
   private:
@@ -274,7 +269,7 @@ class SIM_API cPar : public cObject
                 double p1,p2,p3;                } func; // F:math function
        struct { cStatistic *res;                } dtr;  // T:distribution
        struct { cDoubleExpression *expr;        } cexpr;// C:compiled expression
-       struct { sXElem *xelem; int n;           } expr; // X:expression
+       struct { ExprElem *xelem; int n;           } expr; // X:expression
        struct { cPar *par;                      } ind;  // I:indirection
        struct { void *ptr;
                 VoidDelFunc delfunc;
@@ -428,7 +423,7 @@ class SIM_API cPar : public cObject
      * Every time the cPar's value is asked the expression will be
      * evaluated.
      */
-    cPar& setDoubleValue(sXElem *x, int n);
+    cPar& setDoubleValue(ExprElem *x, int n);
 
     /**
      * Sets the value to the given compiled expression.
@@ -487,7 +482,7 @@ class SIM_API cPar : public cObject
      *
      * <TABLE BORDER=1>
      *   <TR>
-     *     <TH>delete func.</TH><TH>dupl.func.</TH><TH>itemsize</TH><TH>behavior</TH>
+     *     <TD><b>delete func.</b></TD><TD><b>dupl.func.</b></TD><TD><b>itemsize</b></TD><TD><b>behavior</b></TD>
      *   </TR>
      *   <TR>
      *     <TD>NULL</TD><TD>NULL</TD><TD>0</TD><TD>Pointer is treated as mere pointer - no memory management. Duplication copies the pointer, and deletion does nothing.</TD>
@@ -793,8 +788,8 @@ class SIM_API cPar : public cObject
     //@}
 };
 
-// this function cannot be defined within sXElem because of declaration order
-inline void sXElem::operator=(cPar& _r)  {type='R'; p=(cPar *)_r.dup();}
+// this function cannot be defined within ExprElem because of declaration order
+inline void cPar::ExprElem::operator=(cPar& _r)  {type='R'; p=(cPar *)_r.dup();}
 
 //==========================================================================
 

@@ -50,12 +50,12 @@ Register_Class(cKSplit);
 
 double critdata_default[] = {20, 4, 2};
 
-int critfunc_const(const cKSplit&, sGrid& g, int i, double *c)
+int critfunc_const(const cKSplit&, cKSplit::Grid& g, int i, double *c)
 {
      return g.cells[i] >= c[0];
 }
 
-int critfunc_depth(const cKSplit& ks, sGrid& g, int i, double *c)
+int critfunc_depth(const cKSplit& ks, cKSplit::Grid& g, int i, double *c)
 {
      int depth = g.reldepth - ks.rootGrid().reldepth;
      return g.cells[i] >= c[1]*pow(c[2],depth);
@@ -63,12 +63,12 @@ int critfunc_depth(const cKSplit& ks, sGrid& g, int i, double *c)
 
 double divdata_default[] = {0.5};
 
-double divfunc_const(const cKSplit&, sGrid&, double, double *d)
+double divfunc_const(const cKSplit&, cKSplit::Grid&, double, double *d)
 {
      return d[0]; // lambda=constant
 }
 
-double divfunc_babak(const cKSplit&, sGrid& g, double mother, double *d)
+double divfunc_babak(const cKSplit&, cKSplit::Grid& g, double mother, double *d)
 {
      int newobs = g.total-g.mother;
      double lambda = newobs / (d[1]*mother);
@@ -123,7 +123,7 @@ cKSplit& cKSplit::operator=(const cKSplit& res)
        gridv = NULL;
     else
     {
-       gridv = new sGrid[gridv_size + 1];
+       gridv = new Grid[gridv_size + 1];
        for (int i=1; i<=lastgrid; i++)
           gridv[i] = res.gridv[i];
     }
@@ -151,13 +151,13 @@ void cKSplit::writeContents(ostream& os)
       os << "       >=" << basepoint(i) << ": " << cell(i) << endl;
 }
 
-void cKSplit::setCritFunc(KSplitCritFunc _critfunc, double *_critdata)
+void cKSplit::setCritFunc(CritFunc _critfunc, double *_critdata)
 {
     critfunc = _critfunc;
     critdata = _critdata;
 }
 
-void cKSplit::setDivFunc(KSplitDivFunc _divfunc, double *_divdata)
+void cKSplit::setDivFunc(DivFunc _divfunc, double *_divdata)
 {
     divfunc = _divfunc;
     divdata = _divdata;
@@ -170,7 +170,7 @@ void cKSplit::rangeExtension( bool enabled )
 
 void cKSplit::resetGrids( int grid )
 {
-    sGrid *g = &(gridv[grid]);
+    Grid *g = &(gridv[grid]);
     g->total = g->mother = 0;
     for (int i=0; i<K; i++)
     {
@@ -206,7 +206,7 @@ void cKSplit::transform()
 void cKSplit::createRootGrid()
 {
    gridv_size = 8;
-   gridv = new sGrid[gridv_size+1];
+   gridv = new Grid[gridv_size+1];
 
    rootgrid = 1;
    lastgrid = 1;
@@ -301,8 +301,8 @@ void cKSplit::splitCell(int grid, int cell)
       expandGridVector();
 
    // create shorthands for the two grids in question
-   sGrid& g = gridv[grid];
-   sGrid& subg = gridv[lastgrid+1];
+   Grid& g = gridv[grid];
+   Grid& subg = gridv[lastgrid+1];
 
    // if none of the cells in the current grid has divided yet, than
    // the observations from the mother cell have to be divided as well
@@ -327,8 +327,8 @@ void cKSplit::splitCell(int grid, int cell)
 #ifdef DISTRIBUTE_ON_CHILD_SPLIT
 void cKSplit::distributeMotherObservations(int grid)
 {
-   sGrid& g = gridv[grid];
-   sGrid orig = g;
+   Grid& g = gridv[grid];
+   Grid orig = g;
 
    for(int i=0; i<K; i++)
       g.cells[i] = (unsigned)realCellValue(orig,i); // WRONG!!!
@@ -405,7 +405,7 @@ void cKSplit::newRootGrids(double x)
 void cKSplit::expandGridVector()
 {
    gridv_size += 8;
-   sGrid *newgridv = new sGrid[gridv_size+1];
+   Grid *newgridv = new Grid[gridv_size+1];
 
    for (int i=1; i<=lastgrid; i++)
       newgridv[i] = gridv[i];
@@ -414,7 +414,7 @@ void cKSplit::expandGridVector()
    gridv = newgridv;
 }
 
-double cKSplit::realCellValue (sGrid& grid, int i) const
+double cKSplit::realCellValue (Grid& grid, int i) const
 {
    // returns the actual amount of observations in cell 'i' of 'grid'
 
@@ -431,7 +431,7 @@ double cKSplit::realCellValue (sGrid& grid, int i) const
    {
       // find (into k) which cell of the parent our 'grid' was
       int k;
-      sGrid& parentgrid = gridv[grid.parent];
+      Grid& parentgrid = gridv[grid.parent];
       int gridnum = &grid - gridv;
       for (k=0; k<K; k++)
          if (parentgrid.cells[k]==-gridnum)
@@ -458,7 +458,7 @@ int cKSplit::treeDepth() const
    return treeDepth( gridv[rootgrid] );
 }
 
-int cKSplit::treeDepth(sGrid& grid) const
+int cKSplit::treeDepth(Grid& grid) const
 {
    int d, maxd=0;
    double c;
@@ -503,7 +503,7 @@ void cKSplit::iteratorToCell(int cell_nr) const
    // create iterator or reinit if it is stale
    iter=0;
    if (!iter)
-      {iter=new cKSplitIterator(*this); iter_num_samples=num_samples;}
+      {iter=new Iterator(*this); iter_num_samples=num_samples;}
    else if (num_samples!=iter_num_samples)
       {iter->init(*this,cell_nr<num_cells/2); iter_num_samples=num_samples;}
 
@@ -573,7 +573,7 @@ double cKSplit::random() const
      double hlp, hlp4;
 
      while (finish2 == 0)
-     { sGrid lp = gridv[location];
+     { Grid lp = gridv[location];
 
        if (lp.cells[i] >= 0)
        { hlp = realCellValue (lp,i);}
@@ -659,7 +659,7 @@ double cKSplit::pdf (double x) const
          finish = 1;
    } //while...
 
-   sGrid lp = gridv[location];
+   Grid lp = gridv[location];
 
    return realCellValue(lp,i) / pow (K, dpth - cdpth);
 }
@@ -712,7 +712,7 @@ void cKSplit::loadFromFile(FILE *f)
    delete [] gridv; gridv=NULL;
    if (gridv_exists)
    {
-     gridv = new sGrid[gridv_size+1];
+     gridv = new Grid[gridv_size+1];
      for (int i=1; i<=lastgrid; i++)
      {
         freadvarsf(f,"");
@@ -732,12 +732,12 @@ void cKSplit::loadFromFile(FILE *f)
 
 //========================================================================
 
-cKSplitIterator::cKSplitIterator(const cKSplit& _ks, int _beg)
+cKSplit::Iterator::Iterator(const cKSplit& _ks, bool _beg)
 {
    init(_ks,_beg);
 }
 
-void cKSplitIterator::init(const cKSplit& _ks, int _beg)
+void cKSplit::Iterator::init(const cKSplit& _ks, bool _beg)
 {
    ks = const_cast<cKSplit*>(&_ks);
    grid = ks->rootgrid;
@@ -749,7 +749,7 @@ void cKSplitIterator::init(const cKSplit& _ks, int _beg)
    dive( _beg ? 0 : K-1 );
 }
 
-void cKSplitIterator::dive(int where)
+void cKSplit::Iterator::dive(int where)
 {
    // go into subgrids as deep as possible, along cells[where]
    while (ks->gridv[grid].cells[cell]<0)
@@ -762,7 +762,7 @@ void cKSplitIterator::dive(int where)
    }
 }
 
-void cKSplitIterator::operator++(int)
+void cKSplit::Iterator::operator++(int)
 {
    if (grid==0)  {init(*ks,1); return;}
 
@@ -790,7 +790,7 @@ void cKSplitIterator::operator++(int)
    dive(0);
 }
 
-void cKSplitIterator::operator--(int)
+void cKSplit::Iterator::operator--(int)
 {
    if (grid==0)  {init(*ks,0); return;}
 
@@ -818,8 +818,8 @@ void cKSplitIterator::operator--(int)
    dive(K-1);
 }
 
-double cKSplitIterator::cellValue() const
+double cKSplit::Iterator::cellValue() const
 {
-   sGrid& g = ks->gridv[grid];
+   cKSplit::Grid& g = ks->gridv[grid];
    return ks->realCellValue(g,cell);
 }

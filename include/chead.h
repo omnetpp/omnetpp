@@ -130,8 +130,6 @@ class SIM_API cHead : public cObject
 
 /**
  * Walks along a cHead-cObject list.
- *
- * NOTE: not a cObject descendant.
  */
 class SIM_API cIterator
 {
@@ -157,12 +155,12 @@ class SIM_API cIterator
     /**
      * Returns true if the iterator reached the end of the list.
      */
-    bool end() const               {return (bool)(p==NULL);}
+    bool end() const  {return (bool)(p==NULL);}
 
     /**
      * Returns the current item, then moves the iterator to the next one.
      */
-    cObject *operator++(int) {cObject *t=p; if(p) p=p->nextp; return t;}
+    cObject *operator++(int)  {if (!p) return NULL; cObject *t=p; p=p->nextp; return t;}
 };
 
 
@@ -188,17 +186,17 @@ class SIM_API const_cIterator
     /**
      * Returns a pointer to the current object.
      */
-    const cObject *operator()() const {return p;}
+    const cObject *operator()() const  {return p;}
 
     /**
      * Returns true if the iterator reached the end of the list.
      */
-    bool end() const               {return (bool)(p==NULL);}
+    bool end() const  {return (bool)(p==NULL);}
 
     /**
      * Returns the current item, then moves the iterator to the next one.
      */
-    const cObject *operator++(int) {const cObject *t=p; if(p) p=p->nextp; return t;}
+    const cObject *operator++(int)  {if (!p) return NULL; const cObject *t=p; p=p->nextp; return t;}
 };
 
 //==========================================================================

@@ -39,8 +39,7 @@ cLinkedList::cLinkedList(const cLinkedList& llist) : cObject()
     operator=(llist);
 }
 
-cLinkedList::cLinkedList(const char *name) :
-cObject( name )
+cLinkedList::cLinkedList(const char *name) : cObject(name)
 {
     headp=tailp=NULL;
     n=0;
@@ -74,7 +73,7 @@ void cLinkedList::config( VoidDelFunc _delfunc, VoidDupFunc _dupfunc,
 
 void cLinkedList::clear()
 {
-    sLLElem *tmp;
+    Elem *tmp;
     while (headp)
     {
         tmp = headp->next;
@@ -118,17 +117,17 @@ cLinkedList& cLinkedList::operator=(const cLinkedList& llist)
 //==  'headp' and 'tailp' point to the ends of the list (NULL if it is empty).
 //==  The list is double-linked, but 'headp->prev' and 'tailp->next' are NULL.
 
-sLLElem *cLinkedList::find_llelem(void *item) const
+cLinkedList::Elem *cLinkedList::find_llelem(void *item) const
 {
-    sLLElem *p = headp;
+    Elem *p = headp;
     while( p && p->item!=item )
              p = p->next;
     return p;
 }
 
-void cLinkedList::insbefore_llelem(sLLElem *p, void *item)
+void cLinkedList::insbefore_llelem(Elem *p, void *item)
 {
-    sLLElem *e = new sLLElem;
+    Elem *e = new Elem;
     e->item = item;
 
     e->prev = p->prev;
@@ -141,9 +140,9 @@ void cLinkedList::insbefore_llelem(sLLElem *p, void *item)
     n++;
 }
 
-void cLinkedList::insafter_llelem(sLLElem *p, void *item)
+void cLinkedList::insafter_llelem(Elem *p, void *item)
 {
-    sLLElem *e = new sLLElem;
+    Elem *e = new Elem;
     e->item = item;
 
     e->next = p->next;
@@ -156,7 +155,7 @@ void cLinkedList::insafter_llelem(sLLElem *p, void *item)
     n++;
 }
 
-void *cLinkedList::remove_llelem(sLLElem *p)
+void *cLinkedList::remove_llelem(Elem *p)
 {
     if( p->prev )
        p->prev->next = p->next;
@@ -176,7 +175,7 @@ void *cLinkedList::remove_llelem(sLLElem *p)
 
 void cLinkedList::insert(void *item)
 {
-    sLLElem *p = headp;
+    Elem *p = headp;
 
     if (p)
         insbefore_llelem(p,item);
@@ -185,7 +184,7 @@ void cLinkedList::insert(void *item)
     else
     {
         // insert as the only item
-        sLLElem *e = new sLLElem;
+        Elem *e = new Elem;
         e->item = item;
         headp = tailp = e;
         e->prev = e->next = NULL;
@@ -195,7 +194,7 @@ void cLinkedList::insert(void *item)
 
 void cLinkedList::insertBefore(void *where, void *item)
 {
-    sLLElem *p = find_llelem(where);
+    Elem *p = find_llelem(where);
     if (!p)
         throw new cException(this,"insertBefore(w,o): item w not in list");
     insbefore_llelem(p,item);
@@ -203,7 +202,7 @@ void cLinkedList::insertBefore(void *where, void *item)
 
 void cLinkedList::insertAfter(void *where, void *item)
 {
-    sLLElem *p = find_llelem(where);
+    Elem *p = find_llelem(where);
     if (!p)
         throw new cException(this,"insertAfter(w,o): item w not in list");
     insafter_llelem(p,item);
@@ -213,7 +212,7 @@ void *cLinkedList::remove(void *item)
 {
     if(!item) return NULL;
 
-    sLLElem *p = find_llelem(item);
+    Elem *p = find_llelem(item);
     if (!p)
         return NULL;
     return remove_llelem( p );

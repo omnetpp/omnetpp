@@ -69,6 +69,8 @@ class  cNetworkType;
 //@{
 
 /**
+ * DEPRECATED: use cGate::connectTo() instead.
+ *
  * Connects two gates.
  */
 SIM_API void connect(cModule *frm, int frg,
@@ -76,6 +78,8 @@ SIM_API void connect(cModule *frm, int frg,
                      cModule *tom, int tog);
 
 /**
+ * DEPRECATED: use cGate::connectTo() instead.
+ *
  * Connects two gates.
  */
 SIM_API void connect(cModule *frm, int frg,

@@ -385,7 +385,7 @@ cPar& cPar::setDoubleValue(MathFunc3Args f, double p1, double p2, double p3)
     return *this;
 }
 
-cPar& cPar::setDoubleValue(sXElem *x, int n)
+cPar& cPar::setDoubleValue(ExprElem *x, int n)
 {
     if (isRedirected())
         return ind.par->setDoubleValue(x,n);
@@ -405,7 +405,7 @@ cPar& cPar::setDoubleValue(sXElem *x, int n)
     {
        if (expr.xelem[i].type=='R')
        {
-           //  sXElem::op= has already dupped the pointed cPar for us
+           //  ExprElem::op= has already dupped the pointed cPar for us
            cPar *p = expr.xelem[i].p;
 
            // if the pointed cPar is not indirect and it is a constant,
@@ -950,7 +950,7 @@ double cPar::evaluate()
 
       /*---------------------------------
          Type X (expression) - interprets the expression given
-            in the sXElem vector as a reversed Polish one and
+            in the ExprElem vector as a reversed Polish one and
             evaluates it.
          --------------------------*/
     if (typechar!='X')
@@ -961,7 +961,7 @@ double cPar::evaluate()
     int tos = -1;
 
     for(int i=0; i<expr.n; i++) {
-       sXElem& e = expr.xelem[i];
+       ExprElem& e = expr.xelem[i];
        switch( toupper(e.type) ) {
            case 'D':
              if(tos>=stksize - 1) throw new cException(this,eBADEXP);
@@ -1107,8 +1107,8 @@ cPar& cPar::operator=(const cPar& val)
     else if (typechar=='X')
     {
          // play with ownership stuff
-         memcpy( expr.xelem = new sXElem[expr.n], val.expr.xelem,
-                 expr.n*sizeof(sXElem) );
+         memcpy( expr.xelem = new ExprElem[expr.n], val.expr.xelem,
+                 expr.n*sizeof(ExprElem) );
          for(int i=0; i<expr.n; i++)
          {
              if (expr.xelem[i].type=='R')

@@ -24,11 +24,6 @@
 
 #include "cobject.h"
 
-//=== classes declared here
-class  cArray;
-class  cBag;
-
-//==========================================================================
 
 /**
  * Container class to hold small non-class items (int, double, etc).
@@ -263,8 +258,7 @@ class SIM_API cArray : public cObject
     virtual void info(char *buf);
 
     /**
-     * Calls the given function for each object
-     * contained.
+     * Calls the given function for each object contained.
      */
     virtual void forEach(ForeachFunc f);
 

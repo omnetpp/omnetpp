@@ -37,8 +37,6 @@ class cCompoundModule;
 class cSimulation;
 class cMessageHeap;
 
-//=== classes declared here:
-class  cMessage;
 
 /**
  * Predefined message kind values (values for cMessage's kind(),

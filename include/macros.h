@@ -125,7 +125,7 @@
 
 /**
  * This macro facilitates the declaration of a simple module class, and
- * it expands to the definition of mandatory member functions. 
+ * it expands to the definition of mandatory member functions.
  * (Currently only a constructor.)
  *
  * The macro is used like this:
@@ -156,7 +156,7 @@
 //        Machine(NAME)
 //    EndInterface
 //
-#define ModuleInterface(CLASSNAME)    static sDescrItem CLASSNAME##__descr[] = {
+#define ModuleInterface(CLASSNAME)    static cModuleInterface::sDescrItem CLASSNAME##__descr[] = {
 #define Gate(NAME,TYPE)         {'G', #NAME, NULL,  TYPE},
 #define Parameter(NAME,TYPES)   {'P', #NAME, TYPES, 0   },
 #define Machine(NAME)           {'M', #NAME, NULL,  0   },

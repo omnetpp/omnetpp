@@ -31,12 +31,53 @@ class cMessage;
  * Stores future event set. The underlying data structure is heap;
  * the array used to store the heap expands as needed.
  *
+ * @see Iterator
  * @ingroup Internals
- * @see cMessageHeapIterator
  */
 class SIM_API cMessageHeap : public cObject
 {
-    friend class cMessageHeapIterator;
+  public:
+    /**
+     * Walks along a cMessageHeap. Note that objects in cMessageHeap are not
+     * necessarily iterated ordered by arrival time. Use msgheap->sort()
+     * if necessary before using the iterator.
+     */
+    class Iterator
+    {
+      private:
+        cMessageHeap *q;
+        int pos;
+
+      public:
+        /**
+         * Constructor.
+         */
+        Iterator(const cMessageHeap& mh)  {q=const_cast<cMessageHeap*>(&mh);pos=1;} //FIXME: not correct?
+
+        /**
+         * Reinitializes the iterator object.
+         */
+        void init(const cMessageHeap& mh) {q=const_cast<cMessageHeap*>(&mh);pos=1;}
+
+        /**
+         * Returns the current object.
+         */
+        cMessage *operator()()      {return q->h[pos];}
+
+        /**
+         * Returns the current object, then moves the iterator to the next item.
+         * If the iterator has reached the end of the list, NULL is returned.
+         */
+        cMessage *operator++(int)   {return pos<=q->n ? q->h[++pos] : NULL;}
+
+        /**
+         * Returns true if the iterator has reached the end of the list.
+         */
+        bool end() const   {return (bool)(pos>q->n);}
+    };
+
+    friend class Iterator;
+
   private:
     cMessage **h;             // pointer to the 'heap'  (h[0] always empty)
     int n;                    // number of elements in the heap
@@ -141,47 +182,6 @@ class SIM_API cMessageHeap : public cObject
      */
     bool empty() const {return n==0;}
     //@}
-};
-
-//==========================================================================
-
-/**
- * Walks along a cMessageHeap. Note that objects in cMessageHeap are not
- * necessarily iterated ordered by arrival time. Use msgheap->sort()
- * if necessary before using the iterator.
- */
-class SIM_API cMessageHeapIterator
-{
-  private:
-    cMessageHeap *q;
-    int pos;
-  public:
-
-    /**
-     * Constructor.
-     */
-    cMessageHeapIterator(const cMessageHeap& mh)  {q=const_cast<cMessageHeap*>(&mh);pos=1;} //FIXME: not correct?
-
-    /**
-     * Reinitializes the iterator object.
-     */
-    void init(const cMessageHeap& mh) {q=const_cast<cMessageHeap*>(&mh);pos=1;}
-
-    /**
-     * Returns the current object.
-     */
-    cMessage *operator()()      {return q->h[pos];}
-
-    /**
-     * Returns the current object, then moves the iterator to the next item.
-     * If the iterator has reached the end of the list, NULL is returned.
-     */
-    cMessage *operator++(int)   {return pos<=q->n ? q->h[++pos] : NULL;}
-
-    /**
-     * Returns true if the iterator has reached the end of the list.
-     */
-    bool end() const                  {return (bool)(pos>q->n);}
 };
 
 #endif

@@ -54,7 +54,7 @@ cQueue::~cQueue()
         // delete only the holder structs; owned objects will be
         // deleted by cObject's destructor
         //
-        sQElem *tmp = headp->next;
+        QElem *tmp = headp->next;
         delete headp;
         headp=tmp;
     }
@@ -74,14 +74,14 @@ void cQueue::forEach( ForeachFunc do_fn )
 {
     if (do_fn(this,true))
         // loop through elements in reverse order
-        for( sQElem *p=tailp; p!=NULL; p=p->prev )
+        for( QElem *p=tailp; p!=NULL; p=p->prev )
              p->obj->forEach( do_fn );
     do_fn(this,false);
 }
 
 void cQueue::clear()
 {
-    sQElem *tmp;
+    QElem *tmp;
     while (headp)
     {
         tmp = headp->next;
@@ -128,17 +128,17 @@ void cQueue::setup(CompareFunc cmp, bool a)
 //==  'headp' and 'tailp' point to the ends of the list (NULL if it is empty).
 //==  The list is double-linked, but 'headp->prev' and 'tailp->next' are NULL.
 
-sQElem *cQueue::find_qelem(cObject *obj) const
+cQueue::QElem *cQueue::find_qelem(cObject *obj) const
 {
-    sQElem *p = headp;
+    QElem *p = headp;
     while( p && p->obj!=obj )
         p = p->next;
     return p;
 }
 
-void cQueue::insbefore_qelem(sQElem *p, cObject *obj)
+void cQueue::insbefore_qelem(QElem *p, cObject *obj)
 {
-    sQElem *e = new sQElem;
+    QElem *e = new QElem;
     e->obj = obj;
 
     e->prev = p->prev;
@@ -151,9 +151,9 @@ void cQueue::insbefore_qelem(sQElem *p, cObject *obj)
     n++;
 }
 
-void cQueue::insafter_qelem(sQElem *p, cObject *obj)
+void cQueue::insafter_qelem(QElem *p, cObject *obj)
 {
-    sQElem *e = new sQElem;
+    QElem *e = new QElem;
     e->obj = obj;
 
     e->next = p->next;
@@ -166,7 +166,7 @@ void cQueue::insafter_qelem(sQElem *p, cObject *obj)
     n++;
 }
 
-cObject *cQueue::remove_qelem(sQElem *p)
+cObject *cQueue::remove_qelem(QElem *p)
 {
     if( p->prev )
         p->prev->next = p->next;
@@ -194,7 +194,7 @@ void cQueue::insert(cObject *obj)
     if (takeOwnership())
         take(obj);
 
-    sQElem *p = headp;
+    QElem *p = headp;
     if (compare)           // seek insertion place if necessary
     {
         if (asc)
@@ -212,7 +212,7 @@ void cQueue::insert(cObject *obj)
     else
     {
         // insert as the only item
-        sQElem *e = new sQElem;
+        QElem *e = new QElem;
         e->obj = obj;
         headp = tailp = e;
         e->prev = e->next = NULL;
@@ -225,7 +225,7 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
     if (!obj)
         throw new cException(this,"cannot insert NULL pointer in queue");
 
-    sQElem *p = find_qelem(where);
+    QElem *p = find_qelem(where);
     if (!p)
         throw new cException(this, "insertBefore(w,o): object w=`%s' not in queue", where->name());
 
@@ -239,7 +239,7 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
     if (!obj)
         throw new cException(this,"cannot insert NULL pointer in queue");
 
-    sQElem *p = find_qelem(where);
+    QElem *p = find_qelem(where);
     if (!p)
         throw new cException(this, "insertAfter(w,o): object w=`%s' not in queue",where->name());
 
@@ -262,7 +262,7 @@ cObject *cQueue::remove(cObject *obj)
 {
     if(!obj) return NULL;
 
-    sQElem *p = find_qelem(obj);
+    QElem *p = find_qelem(obj);
     if (!p)
         return NULL;
     return remove_qelem( p );

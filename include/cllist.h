@@ -24,22 +24,6 @@
 
 #include "cobject.h"
 
-//=== classes declared here
-class  cLinkedList;
-class  cLinkedListIterator;
-
-//==========================================================================
-
-//
-// Used internally by cLinkedList and cLinkedListIterator.
-//
-struct sLLElem
-{
-    void *item;
-    sLLElem *prev, *next;
-};
-
-//-------------------------------------------------------------------------
 
 /**
  * A double-linked list of non-cObject items. cLinkedList has a cQueue-like
@@ -49,14 +33,71 @@ struct sLLElem
  * function. As default, pointers are treated as mere pointers, so
  * items are never duplicated or deleted.
  *
+ * @see Iterator
  * @ingroup Containers
  */
 class SIM_API cLinkedList : public cObject
 {
-    friend class cLinkedListIterator;
+    // a list elem
+    struct Elem
+    {
+        void *item;
+        Elem *prev, *next;
+    };
+
+  public:
+    /**
+     * Walks along a cLinkedList object. To examine each element in the list,
+     * the Iterator class can be used. Once an Iterator object is created for the list,
+     * the ++ and -- operators can be used to step from one element of
+     * the list to the next/previous one.
+     */
+    class Iterator
+    {
+      private:
+        Elem *p;
+
+      public:
+        /**
+         * Constructor. Takes the cLinkedList object as argument.
+         * The current item will be the first (if athead==true, default) or the last
+         * (if athead==false) item in the list.
+         */
+        Iterator(const cLinkedList& q, bool athead=true)
+                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
+
+        /**
+         * Reinitializes the iterator object.
+         */
+        void init(const cLinkedList& q, bool athead=true)
+                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
+
+        /**
+         * Returns the current item.
+         */
+        void *operator()() const  {return p->item;}
+
+        /**
+         * Returns true if we have reached the end (with operator++) or the beginning
+         * (with operator--) of the list.
+         */
+        bool end() const   {return (bool)(p==NULL);}
+
+        /**
+         * Returns the current item and steps to the next one.
+         */
+        void *operator++(int)  {if (!p) return NULL; Elem *t=p; p=p->next; return t->item;}
+
+        /**
+         * Returns the current item and steps to the previous one.
+         */
+        void *operator--(int)  {if (!p) return NULL; Elem *t=p; p=p->prev; return t->item;}
+    };
+
+    friend class Iterator;
 
   private:
-    sLLElem *headp, *tailp;   // inserting at head, removal at tail
+    Elem *headp, *tailp;      // inserting at head, removal at tail
     int n;                    // number of items in list
 
     VoidDelFunc delfunc;      // user func to free up item (NULL-->delete)
@@ -69,16 +110,16 @@ class SIM_API cLinkedList : public cObject
     // internal use.
     // if both dupfunc and itemsize are 0, we do no memory management
     // (we treat pointers as mere pointers)
-    sLLElem *find_llelem(void *item) const;
+    Elem *find_llelem(void *item) const;
 
     // internal use
-    void insbefore_llelem(sLLElem *p, void *item);
+    void insbefore_llelem(Elem *p, void *item);
 
     // internal use
-    void insafter_llelem(sLLElem *p, void *item);
+    void insafter_llelem(Elem *p, void *item);
 
     // internal use
-    void *remove_llelem(sLLElem *p);
+    void *remove_llelem(Elem *p);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -230,59 +271,6 @@ class SIM_API cLinkedList : public cObject
     //@}
 };
 
-//==========================================================================
-
-/**
- * Walks along a cLinkedList object.
- * To examine each element in the list, the cLinkedListIterator
- * iterator class can be used. Once a cLinkedListIterator
- * object is created for the list (the cLinkedList object),
- * the ++ and -- operators can be used to step from one element of
- * the list to the next/previous one.
- *
- * NOTE: not a cObject descendant!
- */
-class SIM_API cLinkedListIterator
-{
-  private:
-    sLLElem *p;
-
-  public:
-    /**
-     * Constructor. Takes the cLinkedList object as argument.
-     * The current item will be the first (if athead==1, default) or the last
-     * (if athead==0) item in the list.
-     */
-    cLinkedListIterator(const cLinkedList& q, int athead=1)  //FIXME: make bool!
-            {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
-
-    /**
-     * Reinitializes the iterator object.
-     */
-    void init(const cLinkedList& q, int athead=1)
-            {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
-
-    /**
-     * Returns the current item.
-     */
-    void *operator()() const        {return p->item;}
-
-    /**
-     * Returns true if we have reached the end (with operator++) or the beginning
-     * (with operator--) of the list.
-     */
-    bool end() const                {return (bool)(p==NULL);}
-
-    /**
-     * Returns the current item and steps to the next one.
-     */
-    void *operator++(int)  {sLLElem *t=p; if(p) p=p->next; return t->item;}
-
-    /**
-     * Returns the current item and steps to the previous one.
-     */
-    void *operator--(int)  {sLLElem *t=p; if(p) p=p->prev; return t->item;}
-};
 
 #endif
 

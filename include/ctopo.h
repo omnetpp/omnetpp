@@ -29,257 +29,6 @@ class cPar;
 #define INFINITY  HUGE_VAL
 #endif
 
-class sTopoLink;
-class sTopoLinkIn;
-class sTopoLinkOut;
-
-
-/**
- * Supporting class for cTopology, represents a node in the graph.
- */
-class SIM_API sTopoNode
-{
-    friend class cTopology;
-
-  private:
-    int module_id;
-    double wgt;
-    bool enabl;
-
-    int num_in_links;
-    sTopoLink **in_links;
-    int num_out_links;
-    sTopoLink *out_links;
-
-    // variables used by the shortest-path algorithms
-    bool known;
-    double dist;
-    sTopoLink *out_path;
-
-  public:
-    /** @name Node attributes: weight, enabled state, correspondence to modules. */
-    //@{
-
-    /**
-     * Returns the ID of the network module to which this node corresponds.
-     */
-    int moduleId() const         {return module_id;}
-
-    /**
-     * Returns the pointer to the network module to which this node corresponds.
-     */
-    cModule *module() const           {return &simulation[module_id];}
-
-    /**
-     * Returns the weight of this node. Weight is used with the
-     * weighted shortest path finder methods of cTopology.
-     */
-    double weight() const        {return wgt;}
-
-    /**
-     * Sets the weight of this node. Weight is used with the
-     * weighted shortest path finder methods of cTopology.
-     */
-    void setWeight(double d)    {wgt=d;}
-
-    /**
-     * Returns true of this node is enabled. This has significance
-     * with the shortest path finder methods of cTopology.
-     */
-    bool enabled() const         {return enabl;}
-
-    /**
-     * Enable this node. This has significance with the shortest path
-     * finder methods of cTopology.
-     */
-    void enable()               {enabl=true;}
-
-    /**
-     * Disable this node. This has significance with the shortest path
-     * finder methods of cTopology.
-     */
-    void disable()              {enabl=false;}
-    //@}
-
-    /** @name Node connectivity. */
-    //@{
-
-    /**
-     * Returns the number of incoming links to this graph node.
-     */
-    int inLinks() const          {return num_in_links;}
-
-    /**
-     * Returns ith incoming link of graph node.
-     */
-    sTopoLinkIn *in(int i);
-
-    /**
-     * Returns the number of outgoing links from this graph node.
-     */
-    int outLinks() const         {return num_out_links;}
-
-    /**
-     * Returns ith outgoing link of graph node.
-     */
-    sTopoLinkOut *out(int i);
-    //@}
-
-    /** @name Result of shortest path extraction. */
-    //@{
-
-    /**
-     * Returns the distance of this node to the target node.
-     */
-    double distanceToTarget() const   {return dist;}
-
-    /**
-     * Returns the number of shortest paths towards the target node.
-     * (There might be several paths with the same lengths.)
-     */
-    int paths() const                 {return out_path?1:0;}
-
-    /**
-     * Returns the next link in the ith shortest paths towards the
-     * target node. (There might be several paths with the same
-     * lengths.)
-     */
-    sTopoLinkOut *path(int) const     {return (sTopoLinkOut *)out_path;}
-    //@}
-};
-
-
-/**
- * Supporting class for cTopology, represents a link in the graph.
- */
-class SIM_API sTopoLink
-{
-    friend class cTopology;
-
-  protected:
-    sTopoNode *src_node;
-    int src_gate;
-    sTopoNode *dest_node;
-    int dest_gate;
-    double wgt;
-    bool enabl;
-
-  public:
-    /**
-     * Returns the weight of this link. Weight is used with the
-     * weighted shortest path finder methods of cTopology.
-     */
-    double weight() const        {return wgt;}
-
-    /**
-     * Sets the weight of this link. Weight is used with the
-     * weighted shortest path finder methods of cTopology.
-     */
-    void setWeight(double d)    {wgt=d;}
-
-    /**
-     * Returns true of this link is enabled. This has significance
-     * with the shortest path finder methods of cTopology.
-     */
-    bool enabled() const         {return enabl;}
-
-    /**
-     * Enables this link. This has significance with the shortest path
-     * finder methods of cTopology.
-     */
-    void enable()               {enabl=true;}
-
-    /**
-     * Disables this link. This has significance with the shortest path
-     * finder methods of cTopology.
-     */
-    void disable()              {enabl=false;}
-};
-
-
-/**
- * Supporting class for cTopology.
- *
- * While navigating the graph stored in a cTopology, sTopoNode's methods return
- * sTopoLinkIn and sTopoLinkOut objects, which are 'aliases' to sTopoLink objects.
- * sTopoLinkIn and sTopoLinkOut provide convenience functions that return the
- * 'local' and 'remote' end of the connection when traversing the topology.
- */
-class SIM_API sTopoLinkIn : public sTopoLink
-{
-  public:
-    /**
-     * Returns the node at the remote end of this connection.
-     *
-     * Note: There's no corresponding localNode() method: the local node of
-     * this connection is the sTopoNode object whose method returned
-     * this sTopoLinkIn object.
-     */
-    sTopoNode *remoteNode() const  {return src_node;}
-
-    /**
-     * Returns the gate ID at the remote end of this connection.
-     */
-    int remoteGateId() const  {return src_gate;}
-
-    /**
-     * Returns the gate ID at the local end of this connection.
-     */
-    int localGateId() const   {return dest_gate;}
-
-    /**
-     * Returns the gate at the remote end of this connection.
-     */
-    cGate *remoteGate() const      {return src_node->module()->gate(src_gate);}
-
-    /**
-     * Returns the gate at the local end of this connection.
-     */
-    cGate *localGate() const       {return dest_node->module()->gate(dest_gate);}
-};
-
-
-/**
- * Supporting class for cTopology.
- *
- * While navigating the graph stored in a cTopology, sTopoNode's methods return
- * sTopoLinkIn and sTopoLinkOut objects, which are 'aliases' to sTopoLink objects.
- * sTopoLinkIn and sTopoLinkOut provide convenience functions that return the
- * 'local' and 'remote' end of the connection when traversing the topology.
- */
-class SIM_API sTopoLinkOut : public sTopoLink
-{
-  public:
-    /**
-     * Returns the node at the remote end of this connection.
-     *
-     * Note: There's no corresponding localNode() method: the local node of
-     * this connection is the sTopoNode object whose method returned
-     * this sTopoLinkIn object.
-     */
-    sTopoNode *remoteNode() const  {return dest_node;}
-
-    /**
-     * Returns the gate ID at the remote end of this connection.
-     */
-    int remoteGateId() const  {return dest_gate;}
-
-    /**
-     * Returns the gate ID at the local end of this connection.
-     */
-    int localGateId() const   {return src_gate;}
-
-    /**
-     * Returns the gate at the remote end of this connection.
-     */
-    cGate *remoteGate() const      {return dest_node->module()->gate(dest_gate);}
-
-    /**
-     * Returns the gate at the local end of this connection.
-     */
-    cGate *localGate() const       {return src_node->module()->gate(src_gate);}
-};
-
 
 /**
  * Routing support. The cTopology class was designed primarily to support
@@ -300,14 +49,266 @@ class SIM_API sTopoLinkOut : public sTopoLink
  * just as module gates are.
  *
  * @ingroup SimSupport
- * @see sTopoNode, sTopoLink, sTopoLinkIn, sTopoLinkOut
+ * @see cTopology::Node, cTopology::Link, cTopology::LinkIn, cTopology::LinkOut
  */
 class SIM_API cTopology : public cObject
 {
+  public:
+    class Link;
+    class LinkIn;
+    class LinkOut;
+
+    /**
+     * Supporting class for cTopology, represents a node in the graph.
+     */
+    class Node
+    {
+        friend class cTopology;
+
+      private:
+        int module_id;
+        double wgt;
+        bool enabl;
+
+        int num_in_links;
+        Link **in_links;
+        int num_out_links;
+        Link *out_links;
+
+        // variables used by the shortest-path algorithms
+        bool known;
+        double dist;
+        Link *out_path;
+
+      public:
+        /** @name Node attributes: weight, enabled state, correspondence to modules. */
+        //@{
+
+        /**
+         * Returns the ID of the network module to which this node corresponds.
+         */
+        int moduleId() const         {return module_id;}
+
+        /**
+         * Returns the pointer to the network module to which this node corresponds.
+         */
+        cModule *module() const           {return &simulation[module_id];}
+
+        /**
+         * Returns the weight of this node. Weight is used with the
+         * weighted shortest path finder methods of cTopology.
+         */
+        double weight() const        {return wgt;}
+
+        /**
+         * Sets the weight of this node. Weight is used with the
+         * weighted shortest path finder methods of cTopology.
+         */
+        void setWeight(double d)    {wgt=d;}
+
+        /**
+         * Returns true of this node is enabled. This has significance
+         * with the shortest path finder methods of cTopology.
+         */
+        bool enabled() const         {return enabl;}
+
+        /**
+         * Enable this node. This has significance with the shortest path
+         * finder methods of cTopology.
+         */
+        void enable()               {enabl=true;}
+
+        /**
+         * Disable this node. This has significance with the shortest path
+         * finder methods of cTopology.
+         */
+        void disable()              {enabl=false;}
+        //@}
+
+        /** @name Node connectivity. */
+        //@{
+
+        /**
+         * Returns the number of incoming links to this graph node.
+         */
+        int inLinks() const          {return num_in_links;}
+
+        /**
+         * Returns ith incoming link of graph node.
+         */
+        LinkIn *in(int i);
+
+        /**
+         * Returns the number of outgoing links from this graph node.
+         */
+        int outLinks() const         {return num_out_links;}
+
+        /**
+         * Returns ith outgoing link of graph node.
+         */
+        LinkOut *out(int i);
+        //@}
+
+        /** @name Result of shortest path extraction. */
+        //@{
+
+        /**
+         * Returns the distance of this node to the target node.
+         */
+        double distanceToTarget() const   {return dist;}
+
+        /**
+         * Returns the number of shortest paths towards the target node.
+         * (There might be several paths with the same lengths.)
+         */
+        int paths() const                 {return out_path?1:0;}
+
+        /**
+         * Returns the next link in the ith shortest paths towards the
+         * target node. (There might be several paths with the same
+         * lengths.)
+         */
+        LinkOut *path(int) const     {return (LinkOut *)out_path;}
+        //@}
+    };
+
+
+    /**
+     * Supporting class for cTopology, represents a link in the graph.
+     */
+    class Link
+    {
+        friend class cTopology;
+
+      protected:
+        Node *src_node;
+        int src_gate;
+        Node *dest_node;
+        int dest_gate;
+        double wgt;
+        bool enabl;
+
+      public:
+        /**
+         * Returns the weight of this link. Weight is used with the
+         * weighted shortest path finder methods of cTopology.
+         */
+        double weight() const        {return wgt;}
+
+        /**
+         * Sets the weight of this link. Weight is used with the
+         * weighted shortest path finder methods of cTopology.
+         */
+        void setWeight(double d)    {wgt=d;}
+
+        /**
+         * Returns true of this link is enabled. This has significance
+         * with the shortest path finder methods of cTopology.
+         */
+        bool enabled() const         {return enabl;}
+
+        /**
+         * Enables this link. This has significance with the shortest path
+         * finder methods of cTopology.
+         */
+        void enable()               {enabl=true;}
+
+        /**
+         * Disables this link. This has significance with the shortest path
+         * finder methods of cTopology.
+         */
+        void disable()              {enabl=false;}
+    };
+
+
+    /**
+     * Supporting class for cTopology.
+     *
+     * While navigating the graph stored in a cTopology, Node's methods return
+     * LinkIn and LinkOut objects, which are 'aliases' to Link objects.
+     * LinkIn and LinkOut provide convenience functions that return the
+     * 'local' and 'remote' end of the connection when traversing the topology.
+     */
+    class LinkIn : public Link
+    {
+      public:
+        /**
+         * Returns the node at the remote end of this connection.
+         *
+         * Note: There's no corresponding localNode() method: the local node of
+         * this connection is the Node object whose method returned
+         * this LinkIn object.
+         */
+        Node *remoteNode() const  {return src_node;}
+
+        /**
+         * Returns the gate ID at the remote end of this connection.
+         */
+        int remoteGateId() const  {return src_gate;}
+
+        /**
+         * Returns the gate ID at the local end of this connection.
+         */
+        int localGateId() const   {return dest_gate;}
+
+        /**
+         * Returns the gate at the remote end of this connection.
+         */
+        cGate *remoteGate() const      {return src_node->module()->gate(src_gate);}
+
+        /**
+         * Returns the gate at the local end of this connection.
+         */
+        cGate *localGate() const       {return dest_node->module()->gate(dest_gate);}
+    };
+
+
+    /**
+     * Supporting class for cTopology.
+     *
+     * While navigating the graph stored in a cTopology, Node's methods return
+     * LinkIn and LinkOut objects, which are 'aliases' to Link objects.
+     * LinkIn and LinkOut provide convenience functions that return the
+     * 'local' and 'remote' end of the connection when traversing the topology.
+     */
+    class SIM_API LinkOut : public Link
+    {
+      public:
+        /**
+         * Returns the node at the remote end of this connection.
+         *
+         * Note: There's no corresponding localNode() method: the local node of
+         * this connection is the Node object whose method returned
+         * this LinkIn object.
+         */
+        Node *remoteNode() const  {return dest_node;}
+
+        /**
+         * Returns the gate ID at the remote end of this connection.
+         */
+        int remoteGateId() const  {return dest_gate;}
+
+        /**
+         * Returns the gate ID at the local end of this connection.
+         */
+        int localGateId() const   {return src_gate;}
+
+        /**
+         * Returns the gate at the remote end of this connection.
+         */
+        cGate *remoteGate() const      {return dest_node->module()->gate(dest_gate);}
+
+        /**
+         * Returns the gate at the local end of this connection.
+         */
+        cGate *localGate() const       {return src_node->module()->gate(src_gate);}
+    };
+
+
   protected:
     int num_nodes;
-    sTopoNode *nodev;
-    sTopoNode *target;
+    Node *nodev;
+    Node *target;
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -401,7 +402,7 @@ class SIM_API cTopology : public cObject
 
     /** @name Functions to examine topology by hand.
      *
-     * Users also need to rely on sTopoNode and sTopoLink member functions
+     * Users also need to rely on Node and Link member functions
      * to explore the graph stored in the object.
      */
     //@{
@@ -412,10 +413,10 @@ class SIM_API cTopology : public cObject
     int nodes() const  {return num_nodes;}
 
     /**
-     * Returns pointer to the ith node in the graph. sTopoNode's methods
+     * Returns pointer to the ith node in the graph. Node's methods
      * can be used to further examine the node's connectivity, etc.
      */
-    sTopoNode *node(int i);
+    Node *node(int i);
 
     /**
      * Returns the graph node which corresponds to the given module in the
@@ -424,29 +425,29 @@ class SIM_API cTopology : public cObject
      * network, that is, it was probably created with one of the
      * extract...() functions.
      */
-    sTopoNode *nodeFor(cModule *mod);
+    Node *nodeFor(cModule *mod);
     //@}
 
     /** @name Algorithms to find shortest paths.
      *
      * To be implemented:
-     *    -  void unweightedMultiShortestPathsTo(sTopoNode *target);
-     *    -  void weightedSingleShortestPathsTo(sTopoNode *target);
-     *    -  void weightedMultiShortestPathsTo(sTopoNode *target);
+     *    -  void unweightedMultiShortestPathsTo(Node *target);
+     *    -  void weightedSingleShortestPathsTo(Node *target);
+     *    -  void weightedMultiShortestPathsTo(Node *target);
      */
     //@{
 
     /**
      * Apply the Dijkstra algorithm to find all shortest paths to the given
-     * graph node. The paths found can be extracted via sTopoNode's methods.
+     * graph node. The paths found can be extracted via Node's methods.
      */
-    void unweightedSingleShortestPathsTo(sTopoNode *target);
+    void unweightedSingleShortestPathsTo(Node *target);
 
     /**
      * Returns the node that was passed to the most recently called
      * shortest path finding function.
      */
-    sTopoNode *targetNode() const {return target;}
+    Node *targetNode() const {return target;}
     //@}
 };
 

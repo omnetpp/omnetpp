@@ -24,22 +24,6 @@
 
 #include "cobject.h"
 
-//=== classes declared here
-class  cQueue;
-class  cQueueIterator;
-
-//==========================================================================
-
-//
-// Used internally by cQueue and cQueueIterator.
-//
-struct sQElem
-{
-    cObject *obj;
-    sQElem *prev, *next;
-};
-
-//-------------------------------------------------------------------------
 
 /**
  * Queue class. cQueue is a container class that can hold objects derived
@@ -59,24 +43,86 @@ struct sQElem
  * They must return a negative value if a&lt;b, 0 if a==b and a positive value
  * if a&gt;b.
  *
+ * @see Iterator
  * @ingroup Containers
- * @see cQueueIterator
  */
 class SIM_API cQueue : public cObject
 {
-    friend class cQueueIterator;
   private:
-    sQElem *headp, *tailp;          // inserting at head, removal at tail
+    struct QElem
+    {
+        cObject *obj;
+        QElem *prev, *next;
+    };
+
+  public:
+    /**
+     * Walks along a cQueue.
+     */
+    class Iterator
+    {
+      private:
+        QElem *p;
+
+      public:
+        /**
+         * Constructor. cQueueIterator will walk on the queue passed
+         * as argument. The current object will be the first (if athead==true) or
+         * the last (athead==false) object in the queue.
+         */
+        Iterator(const cQueue& q, bool athead=true)
+                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
+
+        /**
+         * Reinitializes the iterator object.
+         */
+        void init(const cQueue& q, bool athead=true)
+                {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
+
+        /**
+         * DEPRECATED. Use operator () instead.
+         */
+        cObject& operator[](int)  {return p ? *(p->obj) : *(cObject *)NULL;}
+
+        /**
+         * Returns the current object.
+         */
+        cObject *operator()()  {return p ? p->obj : NULL;}
+
+        /**
+         * Returns true if the iterator has reached either end of the queue.
+         */
+        bool end() const   {return (bool)(p==NULL);}
+
+        /**
+         * Returns the current object, then moves the iterator to the next item.
+         * If the iterator has reached either end of the queue, nothing happens;
+         * you have to call init() again to restart iterating.
+         */
+        cObject *operator++(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->next; return r;}
+
+        /**
+         * Returns the current object, then moves the iterator to the previous item.
+         * If the iterator has reached either end of the queue, nothing happens;
+         * you have to call init() again to restart iterating.
+         */
+        cObject *operator--(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->prev; return r;}
+    };
+
+    friend class Iterator;
+
+  private:
+    QElem *headp, *tailp;           // inserting at head, removal at tail
     int n;                          // number of items in queue
     CompareFunc compare;            // compare function
     bool asc;                       // order: true=ascending
 
   protected:
     // internal functions
-    sQElem *find_qelem(cObject *obj) const;
-    void insbefore_qelem(sQElem *p, cObject *obj);
-    void insafter_qelem(sQElem *p, cObject *obj);
-    cObject *remove_qelem(sQElem *p);
+    QElem *find_qelem(cObject *obj) const;
+    void insbefore_qelem(QElem *p, cObject *obj);
+    void insafter_qelem(QElem *p, cObject *obj);
+    cObject *remove_qelem(QElem *p);
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -225,63 +271,6 @@ class SIM_API cQueue : public cObject
      */
     virtual bool contains(cObject *obj) const;
     //@}
-};
-
-//==========================================================================
-
-/**
- * Walks along a cQueue.
- *
- * NOTE: not a cObject descendant.
- */
-class SIM_API cQueueIterator
-{
-  private:
-    sQElem *p;
-
-  public:
-    /**
-     * Constructor. cQueueIterator will walk on the queue passed
-     * as argument. The current object will be the first (if athead==true) or
-     * the last (athead==false) object in the queue.
-     */
-    cQueueIterator(const cQueue& q, bool athead=true)
-            {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
-
-    /**
-     * Reinitializes the iterator object.
-     */
-    void init(const cQueue& q, bool athead=true)
-            {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
-
-    /**
-     * DEPRECATED. Use operator () instead.
-     */
-    cObject& operator[](int)  {return p ? *(p->obj) : *(cObject *)NULL;}
-
-    /**
-     * Returns the current object.
-     */
-    cObject *operator()()  {return p ? p->obj : NULL;}
-
-    /**
-     * Returns true if the iterator has reached either end of the queue.
-     */
-    bool end() const   {return (bool)(p==NULL);}
-
-    /**
-     * Returns the current object, then moves the iterator to the next item.
-     * If the iterator has reached either end of the queue, nothing happens;
-     * you have to call init() again to restart iterating.
-     */
-    cObject *operator++(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->next; return r;}
-
-    /**
-     * Returns the current object, then moves the iterator to the previous item.
-     * If the iterator has reached either end of the queue, nothing happens;
-     * you have to call init() again to restart iterating.
-     */
-    cObject *operator--(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->prev; return r;}
 };
 
 #endif

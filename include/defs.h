@@ -71,26 +71,6 @@
 
 //=== other common defines
 
-// for backwards compatibility:
-#ifndef TRUE
-#define TRUE      true
-#define FALSE     false
-#else
-#ifdef CXX
-#undef TRUE
-#undef FALSE
-#define TRUE true
-#define FALSE false
-#endif
-#endif
-
-//// old compilers which don't know bool are no longer supported
-// #if (defined(__BORLANDC__) && (__BORLANDC__<=0x410)) || (defined(__WATCOMC__) && (__WATCOMC__<1060))
-// typedef int bool;
-// #define true   1
-// #define false  0
-// #endif
-
 #ifndef PI
 #define PI        3.141592653589793
 #endif
@@ -112,11 +92,17 @@
 #endif
 
 
-//=== model time
+/**
+ * Modelled time.
+ */
 typedef double       simtime_t;
+
 #define MAXTIME      HUGE_VAL
 
-//=== backwards compatibility defines
+
+//
+// backwards compatibility defines
+//
 #define isA()          className()
 // cQueue:
 #define insertHead(a)  insert(a)
@@ -126,9 +112,21 @@ typedef double       simtime_t;
 // cSimulation
 #define lastModuleIndex() lastModuleId()
 
+// following ones became inner classes:
+#define cKSplitIterator       cKSplit::Iterator
+#define sGrid                 cKSplit::Grid
+#define cQueueIterator        cQueue::Iterator
+#define cLinkedListIterator   cLinkedList::Iterator
+#define sXElem                cPar::ExprElem
+#define cMessageHeapIterator  cMessageHeap::Iterator
+#define sTopoLink             cTopology::Link
+#define sTopoLinkIn           cTopology::LinkIn
+#define sTopoLinkOut          cTopology::LinkOut
+#define sTopoNode             cTopology::Node
 
-//=== memory mgmt functions for void* pointers
-//    (used by cLinkedList and cPar)
+//
+// memory mgmt functions for void* pointers  (used by cLinkedList and cPar)
+//
 
 /**
  * Prototype for functions that are called by some objects (cPar, cLinkedList)
@@ -144,42 +142,45 @@ typedef void (*VoidDelFunc)(void *);
  */
 typedef void *(*VoidDupFunc)(void *);
 
-//=== used by cPar expressions
+//
+// used by cPar expressions
+//
 
 /**
  * Prototype for mathematical functions that can be used in reverse
- * Polish expressions (see sXElem).
+ * Polish expressions (see ExprElem).
  * @ingroup EnumsTypes
  */
 typedef double (*MathFunc)(...);
 
 /**
  * Prototype for mathematical functions taking no arguments
- * that can be used in reverse Polish expressions (see sXElem).
+ * that can be used in reverse Polish expressions (see ExprElem).
  * @ingroup EnumsTypes
  */
 typedef double (*MathFuncNoArg)();
 
 /**
  * Prototype for mathematical functions taking one argument
- * that can be used in reverse Polish expressions (see sXElem).
+ * that can be used in reverse Polish expressions (see ExprElem).
  * @ingroup EnumsTypes
  */
 typedef double (*MathFunc1Arg)(double);
 
 /**
  * Prototype for mathematical functions taking two arguments
- * that can be used in reverse Polish expressions (see sXElem).
+ * that can be used in reverse Polish expressions (see ExprElem).
  * @ingroup EnumsTypes
  */
 typedef double (*MathFunc2Args)(double,double);
 
 /**
  * Prototype for mathematical functions taking three arguments
- * that can be used in reverse Polish expressions (see sXElem).
+ * that can be used in reverse Polish expressions (see ExprElem).
  * @ingroup EnumsTypes
  */
 typedef double (*MathFunc3Args)(double,double,double);
+
 
 #endif
 
