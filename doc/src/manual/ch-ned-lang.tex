@@ -1229,7 +1229,55 @@ or
 
 \subsection{XML documents and the XPath subset supported}
 
-% FIXME
+\ttt{xmldoc()} with two arguments accepts an XPath-like expression
+to select an element within the document. This feature is meant to
+facilitate merging several smaller XML config files into a single larger
+one.
+
+If the expression matches several elements, the first element
+(in preorder depth-first traversal) will be selected.
+
+Expression syntax is the following:
+
+\begin{itemize}
+    \item An expression consists of \textit{path components} (or "steps")
+    separated by "\ttt{/}" or "\ttt{//}".
+
+    \item A path component can be an element tag name, "\ttt{*}", "\ttt{.}"
+    or "\ttt{..}". Element tag names and "\ttt{*}" can have an optional predicate
+    in the form "\ttt{[position]}" or "\ttt{[@attribute='value']}".
+
+    \item "\ttt{/}" means child element (just as e.g. in \ttt{/usr/bin/gcc});
+    "\ttt{//}" means an element any levels under the current element.
+
+    \item "\ttt{.}", "\ttt{..}" and "\ttt{*}" mean current element,
+    parent element, and an element with any tag name, respectively.
+\end{itemize}
+
+These interpretations are consistent with the XPath specification.
+
+  \footnote{While the XPath specification defines other axes, alternative
+  axis syntax (using "::") and more powerful predicates, for our purposes
+  (finding elements in XML config files) the above support is completely
+  enough.}
+
+Examples:
+
+%FIXME!!
+\begin{itemize}
+  \item \ttt{/} -- the root element
+  \item \ttt{/foo} -- first <foo> child of the root element
+  \item \ttt{/foo/bar} -- first <bar> child of first <foo> child of the root element
+  \item \ttt{//bar} -- first <bar> anywhere (depth-first search!)
+  \item \ttt{/*/bar} -- first <bar> child two levels below root element
+  \item \ttt{/foo[0]} -- first <foo> child of the root element
+  \item \ttt{/foo[1]} -- second <foo> child of the root element
+  \item \ttt{/foo[@color='green']} -- first <foo> child which has attribute "color" with value "green"
+  \item \ttt{//bar[1]} -- a <bar> anywhere under the root element which is the second <bar> among its siblings
+  \item \ttt{//*[@color='yellow']} -- an element under the root element with attribute color="yellow"
+  \item \ttt{//*[@color='yellow']/foo/bar} -- first <bar> child of first <foo> child of a "yellow-colored" node
+\end{itemize}
+
 
 
 \subsection{Functions}

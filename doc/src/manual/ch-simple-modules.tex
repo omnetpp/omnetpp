@@ -551,12 +551,11 @@ need to be interested in it):
 
 \begin{Verbatim}[commandchars=\\\{\}]
 static cModule *\textit{MyClass}__create(const char *name, cModule *parentmod)
-{
+\{
     return (cModule *) new \textit{MyClass}(name, parentmod);
-}
+\}
 
-cModuleType \textit{MyClass}__type("\textit{MyClass}","\textit{MyClass}",
- (ModuleCreateFunc)\textit{MyClass}__create);
+cModuleType \textit{MyClass}__type("\textit{MyClass}","\textit{MyClass}", (ModuleCreateFunc)\textit{MyClass}__create);
 \end{Verbatim}
 
 
