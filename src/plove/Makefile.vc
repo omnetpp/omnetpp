@@ -1,0 +1,112 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+#FIXME remove next lines!
+OMNETPP_PLOVE_DIR=.
+HAVE_BLT=yes
+
+#
+# Local setup
+#
+!if "$(PLOVE_EMBED_TCL)"=="yes"
+PLOVE_EMBED_SUFFIX=-e
+!else
+PLOVE_EMBED_SUFFIX=
+!endif
+
+!if "$(USE_WINMAIN)"=="yes"
+CFLAGS=$(CFLAGS) /DUSE_WINMAIN
+LDFLAGS=$(LDFLAGS) /SUBSYSTEM:WINDOWS user32.lib
+!endif
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) $(TK_CFLAGS)
+
+!if "$(HAVE_BLT)"=="yes"
+COPTS=$(COPTS) /DHAVE_BLT
+TK_LIBS=$(TK_LIBS) blt24.lib
+!endif
+
+PLOVE_OBJS = plove.obj
+ENGINE_OBJS =  \
+               tklib.obj \
+               tkcmd.obj \
+               engine/exception.obj \
+               engine/commonnodes.obj \
+               engine/nodetype.obj \
+               engine/channel.obj \
+               engine/dataflowmanager.obj \
+               engine/windowavg.obj \
+               engine/arraybuilder.obj \
+               engine/filewriter.obj \
+               engine/vectorfilereader.obj \
+               engine/vectorfilewriter.obj \
+               engine/nodetyperegistry.obj \
+               engine/getvectors.obj \
+               engine/filternodes.obj \
+               engine/mergernodes.obj \
+               engine/compoundfilter.obj
+
+
+OBJS = $(PLOVE_OBJS) $(ENGINE_OBJS)
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+#
+# Targets
+#
+default : plove
+
+plove : plove.exe
+
+plove.exe : $(OBJS) plove.res
+	$(LINK) /out:"plove.exe" plove.res $(OBJS) $(LDFLAGS) $(TK_LIBS) $(SYS_LIBS)
+	copy plove.exe $(OMNETPP_BIN_DIR:/=\)
+
+
+plove.obj : plove.cc
+	$(CXX) /DOMNETPP_PLOVE_DIR="\"$(OMNETPP_PLOVE_DIR)\"" $(COPTS) /c /Tp plove.cc
+
+plove-e.obj : plove.cc tclcode.cc
+	$(CXX) /Fo"plove-e.obj" $(COPTS) /c /Tp plove.cc
+
+tclcode.cc: *.tcl
+	..\omnetpp\src\utils\tcl2c tclcode.cc *.tcl
+
+plove.res: plove.rc plove.ico
+	rc -fo plove.res -r plove.rc
+
+depend:
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
+
+clean:
+	-del tclcode.cc *.obj engine\*.obj plove.exe 2> nul
+	-del *.ilk *.idb *.pdb *.pch 2> nul
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+plove.obj: plove.cc \
+  tklib.h
+tkcmd.obj: tkcmd.cc \
+  tklib.h \
+  engine/node.h \
+  engine/nodetype.h \
+  engine/nodetyperegistry.h \
+  engine/dataflowmanager.h \
+  engine/arraybuilder.h \
+  engine/getvectors.h \
+  engine/compoundfilter.h \
+  engine/exception.h \
+  engine/channel.h \
+  engine/commonnodes.h
+tklib.obj: tklib.cc \
+  tklib.h

@@ -1,0 +1,70 @@
+#
+# Definitions to be customized by 'configure'
+#
+CXX=@CXX@
+CC=@CC@
+YACC=@YACC@
+LEX=@LEX@
+WISH=@WISH@
+MAKEDEPEND=@MAKEDEPEND@
+
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
+
+OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
+
+TK_CFLAGS=@TK_CFLAGS@
+TK_LIBS=@TK_LIBS@
+SYS_LIBS=@SYS_LIBS@
+
+OMNETPP_PLOVE_DIR=@OMNETPP_PLOVE_DIR@
+
+# The following is either 'plove-exe' (embedded Tcl code) or 'plove-sh' (no embedding)
+PLOVE_VARIANT=@PLOVE_VARIANT@
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) $(TK_CFLAGS)
+OBJS=plove.o
+
+all: plove
+	rm -f $(OMNETPP_BIN_DIR)/plove $(OMNETPP_BIN_DIR)/plove.exe $(OMNETPP_BIN_DIR)/plove.bat
+	if test -f plove; then cp plove $(OMNETPP_BIN_DIR); fi
+	if test -f plove.bat; then cp plove.bat $(OMNETPP_BIN_DIR); fi
+	if test -f plove.exe; then cp plove.exe $(OMNETPP_BIN_DIR); fi
+
+plove: $(PLOVE_VARIANT)
+	@echo '' # NOP to prevent automatic rules from firing
+
+plove-sh:
+	echo "$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh "'$$*' > plove
+	chmod +x plove
+
+plove-cyg:
+	echo "@$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh %1 %2 %3 %4 %5 %6 %7 %8 %9" > plove.bat
+	echo "$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh "'$$*' > plove
+	chmod +x plove
+
+plove-exe: $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o plove
+
+plove.o: plove.cc tclcode.cc
+	$(CXX) -c $(COPTS) plove.cc
+
+tclcode.cc: *.tcl
+	../utils/tcl2c tclcode.cc *.tcl
+
+missing-library:
+	@ echo '*** No Tk installation found -- skipping Plove'
+
+depend:
+	$(MAKEDEPEND) -I. -- *.cc
+	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc
+
+clean:
+	rm -f tclcode.cc *.o plove$(EXE_SUFFIX) plove
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+plove.o: plove.cc
