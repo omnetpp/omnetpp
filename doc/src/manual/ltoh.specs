@@ -27,7 +27,9 @@ htmlfile_spec := $BASE.htm
 #     b/e = begin/end delimited command \begin{xxx} ... \end{xxx}
 #
 
-# FIXME we have some \fname[..]{..} macros too, they don't get substituted!
+:comm   :\opp:OMNEST::
+#:comm   :\opp:OMNeT++::
+
 
 :{}     :\textbf:<b>:</>:
 :{}	:\textsl:<i>:</>:
@@ -92,9 +94,6 @@ htmlfile_spec := $BASE.htm
 #
 # End specifications for standard Latex command
 #
-
-:comm   :\opp:OMNEST::
-#:comm   :\opp:OMNeT++::
 
 :comm   :\omnetpp:OMNeT++::
 :comm   :\omnest:OMNEST::
