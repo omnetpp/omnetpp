@@ -382,7 +382,7 @@
 
 <xsl:template name="print-uses">
    <xsl:if test="key('module',.//submodule/@type-name)">
-      <h3 class="subtitle">Builds on modules:</h3>
+      <h3 class="subtitle">Contains the following modules:</h3>
       <table>
         <xsl:for-each select="key('module',.//submodule/@type-name)">
            <xsl:sort select="@name"/>
@@ -391,7 +391,7 @@
       </table>
    </xsl:if>
    <xsl:if test="key('channel',.//conn-attr[@name='channel']/@value)">
-      <h3 class="subtitle">Builds on channels:</h3>
+      <h3 class="subtitle">Contains the following channels:</h3>
       <table>
          <xsl:for-each select="key('channel',.//conn-attr[@name='channel']/@value)">
             <xsl:sort select="@name"/>
@@ -435,7 +435,7 @@
 
 <xsl:template name="print-type">
    <xsl:if test="key('module',@type-name)">
-      <h3 class="subtitle">Instance of:</h3>
+      <h3 class="subtitle">Instantiates the following module:</h3>
       <table>
          <xsl:for-each select="key('module',@type-name)">
             <xsl:sort select="@name"/>
