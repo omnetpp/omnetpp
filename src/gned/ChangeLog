@@ -179,3 +179,5 @@ Dec 2, 1999
 Dec 5, 1999
   - compiled with MSVC. enbf.h added. Removed changing slashes to backslashes
     in OMNETPP_GNED_DIR and ..BITMAP_PATH on Win32 because Tcl/Tk accepts both.
+  - added generated files enbf.tab.c and lex.yy.c to CVS to make it possible to
+    build GNED where flex/bison is not available
