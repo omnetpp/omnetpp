@@ -1,3 +1,10 @@
+2003-11-23  Andras Varga
+
+	* cdispstr.h: insertTag() return value changed from bool to int.
+
+	* ccoroutine.h: MSVC version check fixed (#if _MSC_VER==1200 changed
+	to #if _MSC_VER>=1200)
+
 2003-11-13  Andras Varga
 
 	* Checked in parallel simulation code that was developed March-May 2003,

@@ -7,9 +7,7 @@ Source distribution test platforms/configurations:
    - NT, Visual C++ 6.0 with USE_WINMAIN
    - NT, Visual C++ 6.0 with Tcl embedding
    - NT, Visual C++ 6.0 with Tcl embedding and USE_WINMAIN
-   - NT, Visual C++ 6.0 with PVM (compile only)
-
-   - Win95/98, Visual C++ 6.0 (compile only, to test Makefile.98)
+   - NT, Visual C++ 6.0 with MPI
 
    - NT, Cygwin 1.1, static libs
    - NT, Cygwin 1.1, static libs, with Tcl embedding
@@ -18,7 +16,7 @@ Source distribution test platforms/configurations:
 
    - Linux, gcc, static libs
    - Linux, gcc, static libs, with Tcl embedding
-   - Linux, gcc, static libs, with PVM (compile only)
+   - Linux, gcc, static libs, with MPI
 
 One test goes like this:
    1. compile
