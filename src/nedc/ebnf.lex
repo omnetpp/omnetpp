@@ -72,7 +72,9 @@ void count (void);
 
 /* Vars updated by count(): */
 LineColumn pos,prevpos;
-char textbuf[256], lasttextbuf[256] = "";
+
+#define TEXTBUF_LEN 1024
+char textbuf[TEXTBUF_LEN];
 
 %}
 
@@ -180,7 +182,7 @@ char textbuf[256], lasttextbuf[256] = "";
 "<<"                    { count(); return (SHIFT_LEFT); } /* --VA */
 ">>"                    { count(); return (SHIFT_RIGHT); } /* --VA */
 
-"^"                     { count(); return (EXP); } 
+"^"                     { count(); return (EXP); }
 "+"                     { count(); return (PLUS); }
 "-"                     { count(); return (MIN); }
 "*"                     { count(); return (MUL); }
@@ -249,14 +251,22 @@ void count(void)
                 if (yytext[i] == '\n') {
                         pos.co = 0;
                         pos.li++;
-                        strcpy (lasttextbuf, textbuf);
                         textbuflen=0; textbuf[0]='\0';
                 } else if (yytext[i] == '\t')
                         pos.co += 8 - (pos.co % 8);
-                else
+                else {
                         pos.co++;
+                }
                 if (yytext[i] != '\n') {
-                        textbuf[textbuflen++]=yytext[i]; textbuf[textbuflen]='\0';
+                        if (textbuflen < TEXTBUF_LEN-5) {
+                            textbuf[textbuflen++]=yytext[i]; textbuf[textbuflen]='\0';
+                        }
+                        else if (textbuflen == TEXTBUF_LEN-5) {
+                            strcpy(textbuf+textbuflen, "...");
+                            textbuflen++;
+                        } else {
+                            /* line too long -- ignore */
+                        }
                 }
         }
         /* printf("li=%d co=%d\n", pos.li, pos.co); good for debugging... */

@@ -1167,7 +1167,6 @@ char yyfailure[250] = "";
 extern int yydebug; /* needed if compiled with yacc --VA */
 
 extern char textbuf[];
-extern char lasttextbuf[];
 
 int runparse ()
 {
@@ -1178,7 +1177,6 @@ int runparse ()
         pos.li = 1;
         prevpos = pos;
 
-        strcpy (lasttextbuf, "");
         strcpy (yyfailure, "");
 
         if (yyin)
@@ -1203,10 +1201,6 @@ void yyerror (char *s)
                         "Warning %s %d: %s",
                         current_fname, pos.li, yyfailure + 1);
         else
-                /*-- fprintf(stderr,
-                        "line %d: (E) %s----\t%s\n----\t%s\n\t%*s\n",
-                        pos.li, yyfailure, lasttextbuf, textbuf, pos.co, "^");
-                 -- shortened --VA*/
                 fprintf(stderr,
                         "Error %s %d: %s> %s\n  %*s\n",
                         current_fname, pos.li, yyfailure, textbuf, pos.co, "^");
