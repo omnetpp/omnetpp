@@ -39,27 +39,6 @@ class cDynamicNetworkType : public cNetworkType
     virtual void setupNetwork();
 };
 
-#if 0
-/**
- * Channel registration object, to be used with dynamic NED loading.
- * See cDynamicModuleType for more information.
- */
-class cDynamicChannelType : public cChannelType
-{
-  protected:
-    ChannelNode *channelnode;  // contains NEDElement tree
-
-  public:
-    cDynamicChannelType(const char *name, ChannelNode *channelNode);
-    virtual cDynamicChannelType();
-
-    /**
-     * Factory method that creates a channel instance.
-     */
-    virtual cChannel *create();
-};
-#endif
-
 #endif
 
 

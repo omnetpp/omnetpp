@@ -198,7 +198,7 @@ void cNEDNetworkBuilder::assignSubmoduleParams(cModule *submodp, NEDElement *sub
                 // assign param value
                 const char *parname = par->getName();
                 cPar& p = submodp->par(parname);
-                assignParamValue(p, findExpression(par,"value"),modp);
+                assignParamValue(p, findExpression(par,"value"),modp,submodp);
             }
         }
     }
@@ -422,7 +422,7 @@ cChannel *cNEDNetworkBuilder::createChannelForConnection(ConnectionNode *conn, c
         const char *name = child->getName();
         ExpressionNode *expr = findExpression(child,"value");
         cPar *par = new cPar(name);
-        assignParamValue(*par, expr, parentmodp);
+        assignParamValue(*par, expr, parentmodp,NULL);
         channel->addPar(par);
     }
     return channel;
@@ -733,11 +733,9 @@ static void printXElems(char *buf, cPar::ExprElem *xelems, int n)
     }
 }
 
-void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule *parentmodp)
+void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule *parentmodp, cModule *submodp)
 {
     // when p is a connection or channel attribute, submodp==NULL (with channel attr, even parentmodp!)
-    cModulePar *mp = dynamic_cast<cModulePar *>(&p);
-    cModule *submodp = mp ? mp->ownerModule() : NULL;
 
     // handle "input" here (it must be single item in expression)
     FunctionNode *fnode = expr->getFirstFunctionChild();
@@ -814,10 +812,15 @@ void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule
     }
 
     // check if p should be constant, according to the module decl.
-    //FIXME p->ownerModule()->moduleType()->moduleInterface()->isParamConst()
+    bool isConst = false;
+    if (submodp)
+    {
+        cModuleInterface *modif = submodp->moduleType()->moduleInterface();
+        isConst = modif->isParamConst(modif->findParam(p.name()));
+    }
 
     // check if we really need an expression (ie. not if expr is simple or param is const)
-    if (!needsDynamicExpression(expr))
+    if (isConst || !needsDynamicExpression(expr))
     {
         // static evaluation will do
         double d = evaluate(parentmodp, expr, submodp);

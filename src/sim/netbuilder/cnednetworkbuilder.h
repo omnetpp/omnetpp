@@ -71,7 +71,7 @@ class cNEDNetworkBuilder
     double evalIdent(IdentNode *node, cModule *parentmodp, cModule *submodp);
     double evalConst(ConstNode *node, cModule *parentmodp, cModule *submodp);
 
-    void assignParamValue(cPar& p, ExpressionNode *expr, cModule *parentmodp);
+    void assignParamValue(cPar& p, ExpressionNode *expr, cModule *parentmodp, cModule *submodp);
 
     bool needsDynamicExpression(ExpressionNode *expr);
     void addXElems(NEDElement *node, cPar::ExprElem *xelems, int& pos, cModule *submodp);

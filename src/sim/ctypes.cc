@@ -218,6 +218,68 @@ void cModuleInterface::addParametersGatesTo(cModule *module)
     }
 }
 
+int cModuleInterface::numParams()
+{
+    return numparams;
+}
+
+int cModuleInterface::findParam(const char *name)
+{
+    for (int i=0; i<numparams; i++)
+        if (!strcmp(paramv[i].name, name))
+            return i;
+    return -1;
+}
+
+const char *cModuleInterface::paramName(int k)
+{
+    if (k<0 || k>=numparams) return NULL;
+    return paramv[k].name;
+}
+
+const char *cModuleInterface::paramType(int k)
+{
+    if (k<0 || k>=numparams) return NULL;
+    return paramv[k].types;
+}
+
+bool cModuleInterface::isParamConst(int k)
+{
+    if (k<0 || k>=numparams) return NULL;
+    return strchr(paramv[k].types, ParType_Const[0])!=NULL;
+}
+
+int cModuleInterface::numGates()
+{
+    return numgates;
+}
+
+int cModuleInterface::findGate(const char *name)
+{
+    for (int i=0; i<numgates; i++)
+        if (!strcmp(gatev[i].name, name))
+            return i;
+    return -1;
+}
+
+const char *cModuleInterface::gateName(int k)
+{
+    if (k<0 || k>=numgates) return NULL;
+    return gatev[k].name;
+}
+
+char cModuleInterface::gateType(int k)
+{
+    if (k<0 || k>=numgates) return 'I';
+    return gatev[k].type;
+}
+
+bool cModuleInterface::isGateVector(int k)
+{
+    if (k<0 || k>=numgates) return false;
+    return gatev[k].vect;
+}
+
 void cModuleInterface::checkParametersOf( cModule *mod )
 {
     // check parameter types and convert const parameters to constant

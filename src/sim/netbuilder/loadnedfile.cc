@@ -52,17 +52,17 @@ cModuleInterface *createModuleInterfaceFrom(NEDElement *modulenode)
             const char *parname = par->getName();
             const char *datatype = par->getDataType();
             const char *typecode = NULL;
-            if (strcmp(datatype,"numeric"))
+            if (!strcmp(datatype,"numeric"))
                typecode = ParType_Numeric;
-            if (strcmp(datatype,"numeric const"))
+            else if (!strcmp(datatype,"numeric const"))
                typecode = ParType_Numeric ParType_Const;
-            if (strcmp(datatype,"string"))
+            else if (!strcmp(datatype,"string"))
                typecode = ParType_String;
-            if (strcmp(datatype,"bool"))
+            else if (!strcmp(datatype,"bool"))
                typecode = ParType_Bool;
-            if (strcmp(datatype,"xml"))
+            else if (!strcmp(datatype,"xml"))
                typecode = ParType_XML;
-            if (strcmp(datatype,"any"))
+            else if (!strcmp(datatype,"any"))
                typecode = ParType_Any;
             else
                throw new cException("createModuleInterface(): unknown parameter type `%s'", datatype);

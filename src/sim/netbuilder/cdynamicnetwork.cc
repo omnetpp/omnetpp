@@ -40,23 +40,3 @@ void cDynamicNetworkType::setupNetwork()
 }
 
 
-//------------------
-
-#if 0
-cDynamicChannelType::cDynamicChannelType(const char *name, ChannelNode *channelNode) :
-  cChannelType(name)
-{
-    channelnode = channelNode;
-}
-
-cDynamicChannelType::~cDynamicChannelType()
-{
-    delete channelnode;
-}
-
-cChannel *cDynamicChannelType::create()
-{
-    cNEDNetworkBuilder builder;
-    return builder.createChannel(channelnode);
-}
-#endif
