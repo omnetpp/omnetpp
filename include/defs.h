@@ -73,8 +73,12 @@
 
 #define sgn(x)       ((x)==0 ? 0 : ((x)<0 ? -1 : 1))
 
-
-// FIXME verify gcc version >= 3.0
+// gcc 2.9x.x had broken exception handling
+#ifdef __GNUC__
+#  if  __GNUC__<3
+#    error gcc 3.x required -- please upgrade
+#  endif
+#endif
 
 #ifndef NDEBUG
 #define ASSERT(expr)  \
