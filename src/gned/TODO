@@ -1,7 +1,7 @@
 Bugs:
 - module name mismatch in the submods and conns sections ==> sometimes "assert failed"
 - connection drawing doesn't work sometimes (can't reproduce...)
-- sometimes generates empty lines into the code
+- after an "import", generates an empty line into the code
 - should eliminate "staircase comment" effect, like:
     param1: string,
                     // param2: string;

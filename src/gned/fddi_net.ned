@@ -1,26 +1,27 @@
-// ==========================================================================
-//  FDDI_NET.NED  -  Network Description file for
-//                   Discrete System Simulation in OMNeT++
+//==========================================================================
+// FDDI_NET.NED  -  Network Description file for
+//                  Discrete System Simulation in OMNeT++
 // 
-//  Simulated system: TUB Northen&Southen FDDI Rings
+// Simulated system: TUB Northen&Southen FDDI Rings
 // 
-//  Author: Gabor.Lencse@hit.bme.hu
-// ==========================================================================
+// Author: Gabor.Lencse@hit.bme.hu
+//==========================================================================
 
-// --------------------------------------------------------------*
-//  Copyright (C) 1996,97 Gabor Lencse,
-//  Technical University of Budapest, Dept. of Telecommunications,
-//  Stoczek u.2, H-1111 Budapest, Hungary.
-// 
-//  This file is distributed WITHOUT ANY WARRANTY. See the file
-//  `license' for details on this and other legal matters.
-// --------------------------------------------------------------*
+//--------------------------------------------------------------*
+// Copyright (C) 1996,97 Gabor Lencse,
+// Technical University of Budapest, Dept. of Telecommunications,
+// Stoczek u.2, H-1111 Budapest, Hungary.
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//--------------------------------------------------------------*
+
 
 import  
     "fddi_mac", 
-    "ssm_ifs", 
+    "ssm_ifs",  
     "othermod"; 
-                
+
 
 channel FDDICable // used in the ring of identical nodes
     error 0; 
@@ -35,37 +36,46 @@ endchannel
 
 
 simple FDDI_MAC // acts as an the Media Access Control system of an FDDI station
-        machines:
-                host;
-        parameters:
-                StationID: numeric,
-                address: string;
-        gates:
-                in: in, from_LLC;
-                out: out, to_LLC;
-endsimple
+    machines: 
+        host; 
+    parameters: 
+        StationID : numeric, 
+        address : string; 
+    gates: 
+        in: in; 
+        in: from_LLC; 
+        out: out; 
+        out: to_LLC; 
+endsimple 
+
 
 simple FDDI_MAC4Ring // acts as an the Media Access Conrol system of
                      // an FDDI station in a simple ring of identical nodes
-        parameters:
-                const no_comps,
-                no_msg;
-        gates:
-                in: in, from_LLC;
-                out: out, to_LLC;
-endsimple
+    parameters: 
+        no_comps : numeric const, 
+        no_msg : numeric; 
+    gates: 
+        in: in; 
+        in: from_LLC; 
+        out: out; 
+        out: to_LLC; 
+endsimple 
+
 
 simple FDDI_MAC4Sniffer // acts as an the Media Access Conrol system of
                         // an FDDI Sniffer
-        machines:
-                host;
-        parameters:
-                StationID: numeric,
-                address: string;
-        gates:
-                in: in, from_LLC;
-                out: out, to_LLC;
-endsimple
+    machines: 
+        host; 
+    parameters: 
+        StationID : numeric, 
+        address : string; 
+    gates: 
+        in: in; 
+        in: from_LLC; 
+        out: out; 
+        out: to_LLC; 
+endsimple 
+
 
 module FDDI_SAC // acts as a Single Attachment Concentrator
     parameters: 
@@ -777,7 +787,4 @@ network TUBs : TUB_SSM
         NROIFControlFile = input ("NR_OIFct","NR SSM OIF Control File: "), 
         SROIFControlFile = input ("SR_OIFct","SR SSM OIF Control File: "); 
 endnetwork 
-
-
-
 

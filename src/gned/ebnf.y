@@ -234,7 +234,8 @@ import
                 {GNED( IMPORTS_KEY = np->create("imports",NEDFILE_KEY);
                        setComments(IMPORTS_KEY,@1); )}
           filenames
-                {GNED( setTrailingComment(IMPORTS_KEY,@3); )}
+                {/* GNED( setTrailingComment(IMPORTS_KEY,@3); )
+                  * comment already stored with last filename */}
         ;
 
 filenames

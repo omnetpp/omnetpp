@@ -56,7 +56,7 @@ bool NEDFile::readFile(char *filename)
     struct stat statbuf;
     fstat(fileno(intmp), &statbuf);
     int size = statbuf.st_size;
-    wholeFile = new char [size+1];
+    wholeFile = new char [size+2];  // +1 because last line may need an extra '\n'
     if (!wholeFile) return false;
 
     fread(wholeFile,size,1,intmp);
@@ -76,6 +76,9 @@ bool NEDFile::setData(char *data)
     return indexLines();
 }
 
+// indexLines()
+//   Sets up the lineBeg[] array. Line numbering goes from 1, ie. the first line
+//   is lineBeg[1]
 bool NEDFile::indexLines()
 {
     // convert all CR and CR+LF into LF
@@ -88,17 +91,17 @@ bool NEDFile::indexLines()
     }
 
     // terminate last line if necessary
-    if (*d!='\n') *d++ = '\n';
+    if (*(d-1)!='\n') *d++ = '\n';
     *d = '\0';
 
     // count lines
-    numLines = 1;
+    numLines = 0;
     for (s = wholeFile; *s; s++)
         if (*s=='\n')
             numLines++;
 
     // allocate array
-    lineBeg = new char * [numLines+1];  // numbering goes from 1
+    lineBeg = new char * [numLines+2];
     if (!lineBeg) return false;
 
     // fill in array
@@ -262,7 +265,6 @@ char *NEDFile::getTrailingComment(YYLTYPE pos)
 {
     if (end) {*end = savedChar; end=NULL;}
 
-
     // there must be no code after it on the same line
     char *endp = getPosition(pos.last_line, pos.last_column);
     if (lineContainsCode(endp))
@@ -297,7 +299,7 @@ char *NEDFile::getTrailingComment(YYLTYPE pos)
 
 // stripComment()
 //  return a "stripped" version of a multi-line comment --
-//  comment marks "// " and spaces before them removed,
+//  comment marks "//" and spaces before them removed,
 //  lines without comments are replaced by a pure "-" line
 //
 char *NEDFile::stripComment(char *comment, int numlines)
@@ -317,7 +319,7 @@ char *NEDFile::stripComment(char *comment, int numlines)
     while(*s)
     {
         // find beg. of comment on the line (or end of line)
-        while (!(*s=='/' && *(s+1)=='/') && *s!='\n') *s++;
+        while (!(*s=='/' && *(s+1)=='/') && *s!='\n') s++;
 
         if (*s=='\n')
         {
