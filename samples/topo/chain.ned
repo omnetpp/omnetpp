@@ -20,6 +20,6 @@ endmodule
 
 network chain : Chain
     parameters:
-        n = 5;
+        n = input(5,"Number of modules");
 endnetwork
 

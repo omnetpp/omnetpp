@@ -1,28 +1,29 @@
 
-simple FullGraphNode 
-    gates: 
-        in: in[]; 
-        out: out[]; 
-endsimple 
+simple FullGraphNode
+    gates:
+        in: in[];
+        out: out[];
+endsimple
 
 
-module FullGraph 
-    parameters: 
-        count : numeric const;
-    submodules: 
-        node: FullGraphNode[count]; 
-            gatesizes: 
-                in[count], 
-                out[count]; 
-    connections nocheck: 
-        for i=0..count-1, j=0..count-1 do 
-            node[i].out[j] --> node[j].in[i] if i!=j; 
-        endfor; 
-endmodule 
+module FullGraph
+    parameters:
+        n : numeric const;
+    submodules:
+        node: FullGraphNode[n];
+            gatesizes:
+                in[n],
+                out[n];
+            display: "i=ball2_s";
+    connections nocheck:
+        for i=0..n-1, j=0..n-1 do
+            node[i].out[j] --> node[j].in[i] if i!=j;
+        endfor;
+endmodule
 
 
-network fullGraph : FullGraph 
-    parameters: 
-        count = 10;
-endnetwork 
+network fullGraph : FullGraph
+    parameters:
+        n = input(10,"Number of nodes");
+endnetwork
 

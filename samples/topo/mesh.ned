@@ -23,7 +23,7 @@ endmodule
 
 network mesh : Mesh
     parameters:
-        height = 4,
-        width = 6;
+        height = input(4,"Number of rows"),
+        width = input(6,"Number of columns");
 endnetwork
 

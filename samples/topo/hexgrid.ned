@@ -29,7 +29,7 @@ endmodule
 
 network hexGrid : HexGrid
     parameters:
-        rows = 7,
-        cols = 3;
+        rows = input(7,"Number of rows"),
+        cols = input(3,"Number of columns");
 endnetwork
 

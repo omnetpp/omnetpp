@@ -1,36 +1,36 @@
 
-simple RndNode 
+simple RndNode
     parameters:
         x,y;
-    gates: 
-        in: in[]; 
-        out: out[]; 
-endsimple 
+    gates:
+        in: in[];
+        out: out[];
+endsimple
 
 
-module RandomGraph 
-    parameters: 
-        count : numeric const, 
+module RandomGraph
+    parameters:
+        n : numeric const,
         connectedness : numeric; // 0.0<x<1.0
-    submodules: 
-        node: RndNode[count]; 
-            parameters: 
+    submodules:
+        node: RndNode[n];
+            parameters:
                 x = uniform(0,350),
                 y = uniform(0,350);
-            gatesizes: 
-                in[count], 
-                out[count]; 
-            display: "p=20,20,exact,$x,$y;i=ball_vs";
-    connections nocheck: 
-        for i=0..count-1, j=0..count-1 do 
-            node[i].out[j] --> node[j].in[i] if i!=j && uniform(0,1) < connectedness; 
-        endfor; 
-endmodule 
+            gatesizes:
+                in[n],
+                out[n];
+            display: "p=20,20,exact,$x,$y;i=ball2_s";
+    connections nocheck:
+        for i=0..n-1, j=0..n-1 do
+            node[i].out[j] --> node[j].in[i] if i!=j && uniform(0,1) < connectedness;
+        endfor;
+endmodule
 
 
-network randomGraph : RandomGraph 
-    parameters: 
-        count = 10, 
-        connectedness = 0.3; 
-endnetwork 
+network randomGraph : RandomGraph
+    parameters:
+        n = 10,
+        connectedness = 0.3;
+endnetwork
 
