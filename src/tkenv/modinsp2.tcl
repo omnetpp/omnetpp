@@ -512,8 +512,8 @@ proc create_graphicalmodwindow {name geom} {
     iconbutton $w.toolbar.sep1   -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
     iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "module_run $w"
-    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "module_run_fast $w"
+    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
+    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
     iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
     iconbutton $w.toolbar.sep3   -separator
     iconbutton $w.toolbar.redraw -image $icons(redraw) -command "opp_inspectorcommand $w relayout"
@@ -524,7 +524,7 @@ proc create_graphicalmodwindow {name geom} {
     animcontrol $w.toolbar.animspeed
     pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
 
-    bind $w <Control-F4> "module_run_fast $w"
+    bind $w <Control-F4> "runsimulation_local $w fast"
 
     set help_tips($w.toolbar.ascont)  {Inspect as object}
     set help_tips($w.toolbar.win)     {See module output}

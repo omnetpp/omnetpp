@@ -283,14 +283,14 @@ void TOmnetTkApp::doOneStep()
     }
 }
 
-void TOmnetTkApp::runSimulation(simtime_t until_time, long until_event, int mode,
-                                cSimpleModule *stepwithinmodule)
+void TOmnetTkApp::runSimulation(int mode, simtime_t until_time, long until_event, cModule *until_module)
 {
     ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
     runmode = mode;
     rununtil_time = until_time;
     rununtil_event = until_event;
+    rununtil_module = until_module;  // Note: this is NOT supported with RUNMODE_EXPRESS
 
     breakpointhit_flag = false;
     stopsimulation_flag = false;
@@ -308,11 +308,10 @@ void TOmnetTkApp::runSimulation(simtime_t until_time, long until_event, int mode
         bool cont = true;
         while (cont)
         {
-            // note: stepwithinmodule not supported with RUNMODE_EXPRESS
             if (runmode==RUNMODE_EXPRESS)
                 cont = doRunSimulationExpress();
             else
-                cont = doRunSimulation(stepwithinmodule);
+                cont = doRunSimulation();
         }
         simstate = SIM_READY;
     }
@@ -362,9 +361,20 @@ void TOmnetTkApp::setSimulationRunUntil(simtime_t until_time, long until_event)
     rununtil_event = until_event;
 }
 
-
-bool TOmnetTkApp::doRunSimulation(cSimpleModule *stepwithinmodule)
+void TOmnetTkApp::setSimulationRunUntilModule(cModule *until_module)
 {
+    rununtil_module = until_module;
+}
+
+bool TOmnetTkApp::doRunSimulation()
+{
+    //
+    // IMPORTANT:
+    // The following variables may change during execution (as a result of user interaction
+    // during Tcl_Eval("update"):
+    //  - runmode, rununtil_time, rununtil_event, rununtil_module;
+    //  - breakpointhit_flag, stopsimulation_flag
+    //
     Speedometer speedometer;
     ev.disable_tracing = false;
     bool firstevent = true;
@@ -382,8 +392,8 @@ bool TOmnetTkApp::doRunSimulation(cSimpleModule *stepwithinmodule)
         // if stepping locally in module, we stop both immediately
         // *before* and *after* executing the event in that module,
         // but we always execute at least one event
-        bool stepwithinmodule_reached = stepwithinmodule && moduleContains(stepwithinmodule,mod);
-        if (stepwithinmodule_reached && !firstevent)
+        bool untilmodule_reached = rununtil_module && moduleContains(rununtil_module,mod);
+        if (untilmodule_reached && !firstevent)
             break;
         firstevent = false;
 
@@ -396,7 +406,7 @@ bool TOmnetTkApp::doRunSimulation(cSimpleModule *stepwithinmodule)
         speedometer.addEvent(simulation.simTime());
 
         // exit conditions
-        if (stepwithinmodule_reached) break;
+        if (untilmodule_reached) break;
         if (breakpointhit_flag || stopsimulation_flag) break;
         if (rununtil_time>0 && simulation.simTime()>=rununtil_time) break;
         if (rununtil_event>0 && simulation.eventNumber()>=rununtil_event) break;
@@ -430,6 +440,15 @@ bool TOmnetTkApp::doRunSimulation(cSimpleModule *stepwithinmodule)
 
 bool TOmnetTkApp::doRunSimulationExpress()
 {
+    //
+    // IMPORTANT:
+    // The following variables may change during execution (as a result of user interaction
+    // during Tcl_Eval("update"):
+    //  - runmode, rununtil_time, rununtil_event, rununtil_module;
+    //  - breakpointhit_flag, stopsimulation_flag
+    //
+    // EXPRESS does not support rununtil_module!
+    //
     Speedometer speedometer;
     ev.disable_tracing = true;
     animating = false;

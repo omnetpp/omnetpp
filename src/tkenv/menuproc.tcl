@@ -273,28 +273,49 @@ proc toggle_treeview {} {
    }
 }
 
-proc set_gui_for_runmode {mode {untilmode ""}} {
+proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
+    global opp
+    set w $modinspwin
+    if {$w!="" && ![winfo exists $w]} {set w ""}
+
     .toolbar.step config -relief raised
     .toolbar.run config -relief raised
     .toolbar.fastrun config -relief raised
     .toolbar.exprrun config -relief raised
+    catch {$opp(sunken-run-button) config -relief raised}
     remove_stopdialog
 
-    if {$mode=="step"} {
-        .toolbar.step config -relief sunken
-    } elseif {$mode=="slow"} {
-        .toolbar.run config -relief sunken
-    } elseif {$mode=="normal"} {
-        .toolbar.run config -relief sunken
-    } elseif {$mode=="fast"} {
-        .toolbar.fastrun config -relief sunken
-    } elseif {$mode=="express"} {
-        .toolbar.exprrun config -relief sunken
-        display_stopdialog with_update
-    } elseif {$mode=="notrunning"} {
-        .toolbar.until config -relief raised
+    if {$w==""} {
+        if {$mode=="step"} {
+            .toolbar.step config -relief sunken
+        } elseif {$mode=="slow"} {
+            .toolbar.run config -relief sunken
+        } elseif {$mode=="normal"} {
+            .toolbar.run config -relief sunken
+        } elseif {$mode=="fast"} {
+            .toolbar.fastrun config -relief sunken
+        } elseif {$mode=="express"} {
+            .toolbar.exprrun config -relief sunken
+            display_stopdialog with_update
+        } elseif {$mode=="notrunning"} {
+            .toolbar.until config -relief raised
+        } else {
+            error "wrong mode parameter $mode"
+        }
     } else {
-        error "wrong mode parameter $mode"
+        if {$mode=="normal"} {
+            $w.toolbar.mrun config -relief sunken
+            set opp(sunken-run-button) $w.toolbar.mrun
+        } elseif {$mode=="fast"} {
+            $w.toolbar.mfast config -relief sunken
+            set opp(sunken-run-button) $w.toolbar.mfast
+        } elseif {$mode=="express"} {
+            display_stopdialog with_update
+        } elseif {$mode=="notrunning"} {
+            .toolbar.until config -relief raised
+        } else {
+            error "wrong mode parameter $mode with module inspector"
+        }
     }
 
     if {$untilmode=="until_on"} {
@@ -320,60 +341,37 @@ proc one_step {} {
     }
 }
 
-proc run_slow {} {
-    # implements Simulate|Slow execution
-
+proc runsimulation {mode} {
     if [is_running] {
-        set_gui_for_runmode slow
-        opp_set_run_mode slow
+        set_gui_for_runmode $mode
+        opp_set_run_mode $mode
+        opp_set_run_until_module
     } else {
         if {![network_ready]} {return}
-        set_gui_for_runmode slow
-        opp_run slow
+        set_gui_for_runmode $mode
+        opp_run $mode
         set_gui_for_runmode notrunning
     }
 }
 
-proc run {} {
-    # implements Simulate|Run
+proc run_slow {} {
+    # implements Simulate|Slow execution
+    runsimulation slow
+}
 
-    if [is_running] {
-        set_gui_for_runmode normal
-        opp_set_run_mode normal
-    } else {
-        if {![network_ready]} {return}
-        set_gui_for_runmode normal
-        opp_run normal
-        set_gui_for_runmode notrunning
-    }
+proc run_normal {} {
+    # implements Simulate|Run
+    runsimulation normal
 }
 
 proc run_fast {} {
     # implements Simulate|Fast Run
-
-    if [is_running] {
-        set_gui_for_runmode fast
-        opp_set_run_mode fast
-    } else {
-        if {![network_ready]} {return}
-        set_gui_for_runmode fast
-        opp_run fast
-        set_gui_for_runmode notrunning
-    }
+    runsimulation fast
 }
 
 proc run_express {} {
     # implements Simulate|Express Run
-
-    if [is_running] {
-        set_gui_for_runmode express
-        opp_set_run_mode express
-    } else {
-        if {![network_ready]} {return}
-        set_gui_for_runmode express
-        opp_run express
-        set_gui_for_runmode notrunning
-    }
+    runsimulation express
 }
 
 proc run_until {} {
@@ -399,13 +397,16 @@ proc run_until {} {
         set mode "normal"
     }
 
+    set untilmode "until_on"
+    if {$time=="" && $event==""} {set until_on "until_off"}
+
     if [is_running] {
-        set_gui_for_runmode $mode until_on
+        set_gui_for_runmode $mode "" $untilmode
         opp_set_run_mode $mode
         opp_set_run_until $time $event
     } else {
         if {![network_ready]} {return}
-        set_gui_for_runmode $mode until_on
+        set_gui_for_runmode $mode "" $untilmode
         opp_run $mode $time $event
         set_gui_for_runmode notrunning
     }

@@ -85,8 +85,8 @@ proc create_simplemodinspector {name geom} {
     iconbutton $w.toolbar.sep1   -separator
     iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
     iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "module_run $w"
-    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "module_run_fast $w"
+    iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
+    iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
     iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
     foreach i {win sep1 parent sep2 mrun mfast stop} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
@@ -104,7 +104,7 @@ proc create_simplemodinspector {name geom} {
     set help_tips($w.toolbar.apply)   {Apply changes (Enter)}
     set help_tips($w.toolbar.revert)  {Revert}
 
-    bind $w <Control-F4> "module_run_fast $w"
+    bind $w <Control-F4> "runsimulation_local $w fast"
 
     set nb $w.nb
     notebook $nb
@@ -142,38 +142,17 @@ proc create_simplemodinspector {name geom} {
     create_inspector_listbox $nb.submods
 }
 
-proc set_modinsp_gui_for_runmode {w mode} {
-    $w.toolbar.mrun config -relief raised
-    $w.toolbar.mfast config -relief raised
-
-    if {$mode=="normal"} {
-        $w.toolbar.mrun config -relief sunken
-    } elseif {$mode=="fast"} {
-        $w.toolbar.mfast config -relief sunken
-    } elseif {$mode!="notrunning"} {
-        error "wrong mode parameter $mode"
-    }
-}
-
-proc module_run {w} {
+proc runsimulation_local {w mode} {
     # invoked from toolbar in module inspectors
-    if [check_running] return
-
-    if {[network_ready] == 1} {
-        set_modinsp_gui_for_runmode $w normal
-        opp_onestepinmodule $w
-        set_modinsp_gui_for_runmode $w notrunning
-    }
-}
-
-proc module_run_fast {w} {
-    # invoked from toolbar in module inspectors
-    if [check_running] return
-
-    if {[network_ready] == 1} {
-        set_modinsp_gui_for_runmode $w fast
-        opp_onestepinmodule $w fast
-        set_modinsp_gui_for_runmode $w notrunning
+    if [is_running] {
+        set_gui_for_runmode $mode $w
+        opp_set_run_mode $mode
+        opp_set_run_until_module $w
+    } else {
+        if {![network_ready]} {return}
+        set_gui_for_runmode $mode $w
+        opp_onestepinmodule $w $mode
+        set_gui_for_runmode notrunning
     }
 }
 
@@ -199,15 +178,15 @@ proc _create_modulewindow {name geom iscompound} {
         iconbutton $w.toolbar.sep1   -separator
         iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
         iconbutton $w.toolbar.sep2   -separator
-        iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "module_run $w"
-        iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "module_run_fast $w"
+        iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
+        iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
         iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
         iconbutton $w.toolbar.sep3   -separator
         iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
         foreach i {obj graph sep1 parent sep2 mrun mfast stop sep3 find} {
            pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
         }
-        bind $w <Control-F4> "module_run_fast $w"
+        bind $w <Control-F4> "runsimulation_local $w fast"
 
         set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.obj)    {Inspect as object}
@@ -222,15 +201,15 @@ proc _create_modulewindow {name geom iscompound} {
         iconbutton $w.toolbar.sep1   -separator
         iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
         iconbutton $w.toolbar.sep2   -separator
-        iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "module_run $w"
-        iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "module_run_fast $w"
+        iconbutton $w.toolbar.mrun   -image $icons(mrun) -command "runsimulation_local $w normal"
+        iconbutton $w.toolbar.mfast  -image $icons(mfast) -command "runsimulation_local $w fast"
         iconbutton $w.toolbar.stop   -image $icons(stop) -command "stop_simulation"
         iconbutton $w.toolbar.sep3   -separator
         iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
         foreach i {obj sep1 parent sep2 mrun mfast stop sep3 find} {
            pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
         }
-        bind $w <Control-F4> "module_run_fast $w"
+        bind $w <Control-F4> "runsimulation_local $w fast"
 
         set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.parent) {Inspect parent module}

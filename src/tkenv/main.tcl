@@ -118,7 +118,7 @@ proc create_omnetpp_window {} {
       {command -command one_step -label {One step} -accel {F4} -underline 4}
       {command -command run_slow -label {Slow execution} -underline 1}
       {separator}
-      {command -command run -label {Run}  -accel {F5} -underline 0}
+      {command -command run_normal -label {Run}  -accel {F5} -underline 0}
       {command -command run_fast -label {Fast run (rare display updates)} -accel {F6} -underline 0}
       {command -command run_express -label {Express run (tracing off)} -accel {F7} -underline 0}
       {command -command run_until -label {Run until...} -underline 4}
@@ -219,7 +219,7 @@ proc create_omnetpp_window {} {
       {sep0     -separator}
       {step     -image $icons(step)    -command {one_step}}
       {sep1     -separator}
-      {run      -image $icons(run)     -command {run}}
+      {run      -image $icons(run)     -command {run_normal}}
       {fastrun  -image $icons(fast)    -command {run_fast}}
       {exprrun  -image $icons(express) -command {run_express}}
       {sep2     -separator}
@@ -380,7 +380,7 @@ proc create_omnetpp_window {} {
 
 proc bind_runcommands {w} {
     bind $w <F4> {one_step}
-    bind $w <F5> {run}
+    bind $w <F5> {run_normal}
     bind $w <F6> {run_fast}
     bind $w <F7> {run_express}
     bind $w <F8> {stop_simulation}
