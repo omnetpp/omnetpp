@@ -175,25 +175,21 @@ proc create_omnetpp_window {} {
 
     frame $w.toolbar -relief raised -borderwidth 1
     foreach i {
-      {space    0}
+      {sep0    -separator}
       {new     -image $icons(new)   -command {fileNewComponent module}}
       {open    -image $icons(open)  -command {fileOpen}}
       {save    -image $icons(save)  -command {fileSave}}
-      {space    1}
+      {sep1    -separator}
       {cut     -image $icons(cut)   -command {editCut}}
       {copy    -image $icons(copy)  -command {editCopy}}
       {paste   -image $icons(paste) -command {editPaste}}
-      {space    2}
+      {sep2    -separator}
       {graph   -image $icons(graph) -command {switchToGraphics}}
       {ned     -image $icons(ned)   -command {switchToNED}}
-      {space    3}
+      {sep3    -separator}
       {check   -image $icons(check) -command {editCheck}}
     } {
-      if {[lindex $i 0]=="space"} {
-         set b [canvas $w.toolbar.[lindex $i 1]  -height 1 -width 4]
-      } else {
-         set b [eval iconbutton $w.toolbar.$i -bd 1]
-      }
+      set b [eval iconbutton $w.toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
     $w.toolbar.graph config -relief sunken
@@ -248,22 +244,18 @@ proc create_omnetpp_window {} {
     set gned(toolbar) $w.main.toolbar
 
     foreach i {
-      {space 0}
+      {sep0     -separator}
       {draw     -image $icons(draw)     -command {drawBindings $gned(canvas)}}
       {select   -image $icons(select)   -command {selectOrMoveBindings $gned(canvas)}}
       {delete   -image $icons(delete)   -command {deleteSelected}}
-      {space 1}
+      {sep1     -separator}
       {grid     -image $icons(grid)     -command {toggleGrid 1}}
       {bounds   -image $icons(bounds)   -command {resetModuleBounds}}
-      {space 2}
+      {sep2     -separator}
       {props    -image $icons(props)    -command {propertiesSelected $gned(canvas)}}
       {opts     -image $icons(drawopts) -command {drawOptionsSelected $gned(canvas)}}
     } {
-      if {[lindex $i 0]=="space"} {
-         set b [canvas $gned(toolbar).[lindex $i 1] -height 4 -width 1]
-      } else {
-         set b [eval iconbutton $gned(toolbar).$i -bd 1]
-      }
+      set b [eval iconbutton $gned(toolbar).$i]
       pack $b -anchor w -expand 0 -fill x -side top -padx 2 -pady 0
     }
 
