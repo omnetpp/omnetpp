@@ -1,5 +1,5 @@
 %description:
-Tests parameter passing in NED.
+Tests the basics of parameter passing in NED.
 
 FIXME should test if "ref" params are really taken by ref
 FIXME also it doesn't test ancestor properly

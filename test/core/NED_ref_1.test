@@ -1,0 +1,61 @@
+%description:
+Tests ref parameters. If a parameter is taken by "ref" by two modules
+and one of them changes the param, it'll be visible for the other as well
+
+%file: {}.ned
+
+simple {Simple}
+   parameters:
+      p;
+endsimple
+
+module {Compound}
+   parameters:
+      par;
+   submodules:
+      a: {Simple}
+         parameters:
+            p = ref par;
+      b: {Simple}
+         parameters:
+            p = 1 + ref par;
+endmodule
+
+network {Net}: {Compound}
+   parameters:
+      par = 50;
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+#define PRINT_PARAMETER(x) ev << fullName() << "." << #x << " = " << (double)par(#x) << endl;
+
+void {Simple}::activity()
+{
+    PRINT_PARAMETER(p);
+    wait(1);
+    if (isName("a"))
+        par("p") = 100;
+    wait(1);
+    PRINT_PARAMETER(p);
+}
+
+%inifile: {}.ini
+[General]
+network={Net}
+
+%contains-regex: stdout
+a\.p = 50.*
+b\.p = 51.*
+a\.p = 100.*
+b\.p = 101.*

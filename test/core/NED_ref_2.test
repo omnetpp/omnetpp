@@ -1,0 +1,61 @@
+%description:
+Tests NON-ref parameters. Like NED_ref_1, only if the parameter is NOT taken
+by ref, changes won't affect the other module
+
+%file: {}.ned
+
+simple {Simple}
+   parameters:
+      p;
+endsimple
+
+module {Compound}
+   parameters:
+      par;
+   submodules:
+      a: {Simple}
+         parameters:
+            p = ref par;
+      b: {Simple}
+         parameters:
+            p = 1 + par;
+endmodule
+
+network {Net}: {Compound}
+   parameters:
+      par = 50;
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+#define PRINT_PARAMETER(x) ev << fullName() << "." << #x << " = " << (double)par(#x) << endl;
+
+void {Simple}::activity()
+{
+    PRINT_PARAMETER(p);
+    wait(1);
+    if (isName("a"))
+        par("p") = 100;
+    wait(1);
+    PRINT_PARAMETER(p);
+}
+
+%inifile: {}.ini
+[General]
+network={Net}
+
+%contains-regex: stdout
+a\.p = 50.*
+b\.p = 51.*
+a\.p = 100.*
+b\.p = 51.*
