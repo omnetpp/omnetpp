@@ -131,13 +131,11 @@ void splitInspectorName(char *namestr, cObject *&object,int& type)
 {
    // namestr is the window path name, sth like ".ptr80005a31-2"
    // split it into pointer string ("ptr80005a31") and inspector type ("2")
-   char ptrbuf[20];
-   char *p,*s;
-   assert(namestr && namestr[0]); // at least 1 char
-   for (s=namestr+1,p=ptrbuf; *s && *s!='-'; s++,p++)
-      *p = *s;
-   assert(*s!='\0'); // there must be a '-' in the string
-   *p = '\0';
+   assert(namestr!=0); // must exist
+   char *s;
+   for (s=namestr; *s!='-' && *s!='\0'; s++);
+   assert(*s=='-'); // there must be a '-' in the string
+   *s = '\0';
    s++;
 
    object = (cObject *)strToPtr( ptrbuf );

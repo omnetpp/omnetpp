@@ -152,7 +152,7 @@ void FDDI_GeneratorFromTraceFile::InitStatistics()
 
 bool FDDI_GeneratorFromTraceFile::RetrieveDestLength(cMessage *m, int &dest, int &pkt_len)
   {
-  sscanf(line,"%*lf,%d,%d\n",&pkt_len,&dest);
+  sscanf(line,"%*f,%d,%d\n",&pkt_len,&dest);
   if ( fgets(line,50,f) )
     {
     double t;

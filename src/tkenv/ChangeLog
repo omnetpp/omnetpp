@@ -371,3 +371,5 @@ May 21, 2000
  - bugfix: 'Options|Load inspector list' now works again (you must re-generate
    your existing inspect.lst files)
 ------ omnetpp-2.0b4 released ------
+Jun 2, 2000
+ - minor fix in tkcmd.cc [reported by Richard Lyon]

@@ -799,7 +799,7 @@ bool cPar::setfunction(char *text)
 
     // find '('
     char *d;
-    for (d=text; *d!='(' || *d; d++);
+    for (d=text; *d!='(' && *d!='\0'; d++);
     if (*d!='(') return false;  // no opening paren
     char *args = d;
 
