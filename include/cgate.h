@@ -185,7 +185,8 @@ class SIM_API cGate : public cObject
 
     /**
      * Disconnects the gate. It also destroys the associated channel object
-     * if one has been set (see setChannel()).
+     * if one has been set (see setChannel()). disconnect() must be invoked
+     * on the source gate ("from" side) of the connection.
      *
      * The method has no effect if the gate is not connected.
      */
