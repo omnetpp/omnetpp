@@ -239,8 +239,8 @@ void TCmdenvApp::makeOptionsEffective()
 
 void TCmdenvApp::simulate()
 {
-     simulation.startClock();
-     sigint_received = false;
+    startClock();
+    sigint_received = false;
     try
     {
         if (opt_verbose || opt_modulemsgs)
@@ -276,7 +276,7 @@ void TCmdenvApp::simulate()
 
                // execute event
                simulation.doOneEvent( mod );
-               simulation.incEventNumber();
+               checkTimeLimits();
            }
         }
         else
@@ -294,25 +294,25 @@ void TCmdenvApp::simulate()
                    next_update += opt_displayinterval;
                    printf( "** Event #%ld \tT=%s.\n",
                            simulation.eventNumber(),
-                           simtimeToStr(simulation.simTime()) );
+                           simtimeToStr(simulation.simTime()));
                }
 
                // execute event
                simulation.doOneEvent( mod );
-               simulation.incEventNumber();
+               checkTimeLimits();
            }
            ev.disable_tracing = false;
         }
     }
     catch (cException *e)
     {
-        simulation.stopClock();
+        stopClock();
         if (!e->isNormalTermination())
             throw;
         delete e;
         return;
     }
-    simulation.stopClock();
+    stopClock();
 }
 
 void TCmdenvApp::help()
