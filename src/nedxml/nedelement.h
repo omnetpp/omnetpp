@@ -25,6 +25,18 @@
 #include <string>
 
 /**
+ * Subclass from this if you want to attach extra data to NEDElement objects.
+ *
+ * @ingroup Data
+ */
+class NEDElementUserData
+{
+  public:
+    NEDElementUserData() {}
+    virtual ~NEDElementUserData() {}
+};
+
+/**
  * Base class for objects in a NED object tree, the XML-based
  * in-memory representation for NED files. An instance of a NEDElement
  * subclass represent an XML element.
@@ -43,6 +55,7 @@ class NEDElement
     NEDElement *lastchild;
     NEDElement *prevsibling;
     NEDElement *nextsibling;
+    NEDElementUserData *userdata;
     static long lastid;
 
   protected:
@@ -217,7 +230,7 @@ class NEDElement
 
     /**
      * Returns pointer to the next sibling of this element (i.e. the next child
-     * in the parent element). Return NULL if there're no subsequent elements.
+     * in the parent element). Returns NULL if there're no subsequent elements.
      *
      * getFirstChild() and getNextSibling() can be used to loop through
      * the child list:
@@ -231,6 +244,12 @@ class NEDElement
      *
      */
     virtual NEDElement *getNextSibling() const;
+
+    /**
+     * Returns pointer to the previous sibling of this element (i.e. the previous child
+     * in the parent element). Returns NULL if there're no elements before this one.
+     */
+    virtual NEDElement *getPrevSibling() const;
 
     /**
      * Appends the given element at the end of the child element list.
@@ -286,6 +305,21 @@ class NEDElement
      * Returns the number of child elements with the given tag code.
      */
     virtual int getNumChildrenWithTag(int tagcode) const;
+    //@}
+
+    /** @name User data */
+    //@{
+
+    /**
+     * Replaces user data object with the given one.
+     */
+    virtual void setUserData(NEDElementUserData *data);
+
+    /**
+     * Return pointer to the user data object, or NULL if
+     * setUserData() has not been called yet.
+     */
+    virtual NEDElementUserData *getUserData() const;
     //@}
 };
 

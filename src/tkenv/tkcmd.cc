@@ -301,7 +301,15 @@ void sortObjectsByClassName(cObject **objs, int n)
 }
 
 //----------------------------------------------------------------
+// helper
+static char *my_itol(long l, char *buf)
+{
+    sprintf(buf, "%ld", l);
+    return buf;
+}
 
+
+//----------------------------------------------------------------
 // Command functions:
 int newNetwork_cmd(ClientData, Tcl_Interp *, int, const char **);
 int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -339,6 +347,7 @@ int getSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getStringHashCode_cmd(ClientData, Tcl_Interp *, int, const char **);
 int displayString_cmd(ClientData, Tcl_Interp *, int, const char **);
+int hsbToRgb_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -403,6 +412,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_setsimoption",     setSimOption_cmd     }, // args: <option-namestr> <value>
    { "opp_getstringhashcode",getStringHashCode_cmd}, // args: <string> ret: numeric hash code
    { "opp_displaystring",    displayString_cmd    }, // args: <displaystring> <command> <args>
+   { "opp_hsb_to_rgb",       hsbToRgb_cmd             }, // args: <@hhssbb> ret: <#rrggbb>
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
@@ -1080,6 +1090,110 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
    }
    return TCL_OK;
 }
+
+
+// HSB-to-RGB conversion
+// source: http://nuttybar.drama.uga.edu/pipermail/dirgames-l/2001-March/006061.html
+// Input:   hue, saturation, and brightness as floats scaled from 0.0 to 1.0
+// Output:  red, green, and blue as floats scaled from 0.0 to 1.0
+static void hsbToRgb(double hue, double saturation, double brightness,
+                     double& red, double& green, double &blue)
+{
+   if (brightness == 0.0)
+   {   // safety short circuit again
+       red   = 0.0;
+       green = 0.0;
+       blue  = 0.0;
+       return;
+   }
+
+   if (saturation == 0.0)
+   {   // grey
+       red   = brightness;
+       green = brightness;
+       blue  = brightness;
+       return;
+   }
+
+   float domainOffset;         // hue mod 1/6
+   if (hue < 1.0/6)
+   {   // red domain; green ascends
+       domainOffset = hue;
+       red   = brightness;
+       blue  = brightness * (1.0 - saturation);
+       green = blue + (brightness - blue) * domainOffset * 6;
+   }
+     else if (hue < 2.0/6)
+     { // yellow domain; red descends
+       domainOffset = hue - 1.0/6;
+       green = brightness;
+       blue  = brightness * (1.0 - saturation);
+       red   = green - (brightness - blue) * domainOffset * 6;
+     }
+     else if (hue < 3.0/6)
+     { // green domain; blue ascends
+       domainOffset = hue - 2.0/6;
+       green = brightness;
+       red   = brightness * (1.0 - saturation);
+       blue  = red + (brightness - red) * domainOffset * 6;
+     }
+     else if (hue < 4.0/6)
+     { // cyan domain; green descends
+       domainOffset = hue - 3.0/6;
+       blue  = brightness;
+       red   = brightness * (1.0 - saturation);
+       green = blue - (brightness - red) * domainOffset * 6;
+     }
+     else if (hue < 5.0/6)
+     { // blue domain; red ascends
+       domainOffset = hue - 4.0/6;
+       blue  = brightness;
+       green = brightness * (1.0 - saturation);
+       red   = green + (brightness - green) * domainOffset * 6;
+     }
+     else
+     { // magenta domain; blue descends
+       domainOffset = hue - 5.0/6;
+       red   = brightness;
+       green = brightness * (1.0 - saturation);
+       blue  = red - (brightness - green) * domainOffset * 6;
+     }
+}
+
+inline int h2d(char c)
+{
+    if (c>='0' && c<='9') return c-'0';
+    if (c>='A' && c<='F') return c-'A'+10;
+    if (c>='a' && c<='f') return c-'a'+10;
+    return 0;
+}
+
+int hsbToRgb_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc<2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   const char *hsb = argv[1];
+   if (hsb[0]!='@' || strlen(hsb)!=7) {Tcl_SetResult(interp, "malformed HSB color, format is @hhssbb where h,s,b are hex digits", TCL_STATIC); return TCL_ERROR;}
+
+   // parse hsb
+   double hue =        (h2d(hsb[1])*16+h2d(hsb[2]))/256.0;
+   double saturation = (h2d(hsb[3])*16+h2d(hsb[4]))/256.0;
+   double brightness = (h2d(hsb[5])*16+h2d(hsb[6]))/256.0;
+
+   // convert
+   double red, green, blue;
+   hsbToRgb(hue, saturation, brightness, red, green, blue);
+
+   // produce rgb
+   char rgb[10];
+   sprintf(rgb,"#%2.2x%2.2x%2.2x",
+                int(min(red*256,255)),
+                int(min(green*256,255)),
+                int(min(blue*256,255))
+          );
+   Tcl_SetResult(interp, rgb, TCL_VOLATILE);
+   return TCL_OK;
+}
+
 //--------------
 
 int inspect_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)

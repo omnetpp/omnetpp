@@ -149,6 +149,7 @@ void TOmnetApp::setup()
      {
          displayError(e);
          delete e;
+         return;  // don't set initialized to true
      }
      initialized = true;
 }

@@ -1,3 +1,27 @@
+FIXME: next event markers interfere with wait() operation!!!
+FIXME: auto position depends on size -- this shouldn't be so!
+
+
+2003-10-19  Andras Varga
+
+        * slight change in submodule display strings: if both "b=" (box) and 
+        "i=" (icon) occurs in the display string, *both* are displayed
+        (the icon on top of the box; prevoiusly, the icon took precedence). 
+        This facilitates visualizing the state of a module: state can be coded 
+        in the color (or size) of the underlying box or oval (or frame/circle,
+        because transparency is also supported, see below)
+
+	* enhancement in display strings: special color "-" means transparent;
+	@hhssbb (with h,s,b as hex digits) stands for a color given with 
+	(hue,saturation,brightness) values -- this makes it easier to scale
+	colors e.g. from white to bright red
+
+	* tkcmd.cc: added opp_hsb_to_rgb command
+
+2003-10-18  Andras Varga
+
+	* tkcmd.cc: added Tcl commands for working with the nedxml library
+
 2003-10-06  Andras Varga
 
 	* modinsp2.tcl, modinsp.h/cc: new feature: queue size can be displayed

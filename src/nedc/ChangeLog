@@ -1,3 +1,8 @@
+2003-10-07  Andras Varga
+
+	* ebnf.y: fixed nedc bug, it didn't handle user-defined functions 
+	with 4 parameters properly. [Reported by Andreas Koepke]
+
 2003-10-07  Johnny Lai  
 
 	* jar.c : nedc added -h support for intel compiler on Linux

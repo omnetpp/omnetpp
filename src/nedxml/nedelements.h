@@ -22,7 +22,6 @@
 
 #include "nedelement.h"
 
-
 class NedFilesNode;
 class NedFileNode;
 class ImportNode;

@@ -66,6 +66,7 @@ NEDElement::NEDElement()
     lastchild = 0;
     prevsibling = 0;
     nextsibling = 0;
+    userdata = 0;
 
     id = ++lastid;
 }
@@ -77,6 +78,7 @@ NEDElement::NEDElement(NEDElement *parent)
     lastchild = 0;
     prevsibling = 0;
     nextsibling = 0;
+    userdata = 0;
 
     id = ++lastid;
 
@@ -85,6 +87,11 @@ NEDElement::NEDElement(NEDElement *parent)
 
 NEDElement::~NEDElement()
 {
+    if (parent)
+    {
+        parent->removeChild(this);
+    }
+    delete userdata;
     while (firstchild)
     {
         delete removeChild(firstchild);
@@ -174,8 +181,15 @@ NEDElement *NEDElement::getNextSibling() const
     return nextsibling;
 }
 
+NEDElement *NEDElement::getPrevSibling() const
+{
+    return prevsibling;
+}
+
 void NEDElement::appendChild(NEDElement *node)
 {
+    if (node->parent)
+        node->parent->removeChild(node);
     node->parent = this;
     node->prevsibling = lastchild;
     node->nextsibling = 0;
@@ -188,6 +202,8 @@ void NEDElement::appendChild(NEDElement *node)
 
 void NEDElement::insertChildBefore(NEDElement *where, NEDElement *node)
 {
+    if (node->parent)
+        node->parent->removeChild(node);
     node->parent = this;
     node->prevsibling = where->prevsibling;
     node->nextsibling = where;
@@ -254,4 +270,14 @@ int NEDElement::getNumChildrenWithTag(int tagcode) const
     return n;
 }
 
+void NEDElement::setUserData(NEDElementUserData *data)
+{
+    delete userdata;
+    userdata = data;
+}
+
+NEDElementUserData *NEDElement::getUserData() const
+{
+    return userdata;
+}
 

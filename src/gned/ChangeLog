@@ -1,6 +1,7 @@
 Remaining issue: gate directions not observed in Conn Props dialog.
 FIXME!!! when submodule has random placement, strange thing happens 
 after OK'ing Props dialog
+GNED not compatible with new Tkenv mode of using "i=" and "b=" together
 
 2003-1024  Andras Varga
 

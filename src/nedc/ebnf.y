@@ -1078,7 +1078,7 @@ expr
         | NAME '(' expr ',' expr ',' expr ')'
                 {NEDC( $$ = do_func(3,$1, $3,$5,$7,NULL); )}
         | NAME '(' expr ',' expr ',' expr ',' expr ')'
-                {NEDC( $$ = do_func(3,$1, $3,$5,$7,$9); )}
+                {NEDC( $$ = do_func(4,$1, $3,$5,$7,$9); )}
         ;
 
 simple_expr

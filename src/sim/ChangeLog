@@ -1,3 +1,14 @@
+2003-11-01  Andras Varga
+
+	* cdispstr.cc: cDisplayString::setTagArg() now adds the tag if it 
+	doesn't exist yet
+
+2003-10-21  Andras Varga
+
+	* csimul.h: fixed simulation.moduleByPath(): it didn't work when
+	name of system module (the toplevel module) was included in the path
+	[reported by Andreas Koepke]
+
 2003-10-02  Andras Varga
 
 	* util.h: added implementation of cContextSwitcher internal class, 

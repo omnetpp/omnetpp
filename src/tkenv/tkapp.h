@@ -136,10 +136,6 @@ class TOmnetTkApp : public TOmnetApp
       void startAll();
       void finishSimulation(); // wrapper around simulation.callFinish() and simulation.endRun()
 
-      void inspectorByName();
-      void newMsgWindow();
-      void newFileWindow();
-
       bool isBreakpointActive(const char *label, cSimpleModule *mod);
       void stopAtBreakpoint(const char *label, cSimpleModule *mod);
 
@@ -152,7 +148,6 @@ class TOmnetTkApp : public TOmnetApp
       Tcl_Interp *getInterp() {return interp;}
 
       // small functions:
-      cSimpleModule *guessNextModule();
       void updateNetworkRunDisplay();
       void updateSimtimeDisplay();
       void updateNextModuleDisplay();

@@ -502,7 +502,7 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
         // arg holds pointer of current module
         out << "(double)mod";
         if (strnotnull(node->getModule())) {
-            out << "->getSubmodule(\"" << node->getModule() << "\")";
+            out << "->submodule(\"" << node->getModule() << "\")";
             // FIXME index here!
         }
         out << "->par(\"" << node->getParamName() << "\")";

@@ -1,3 +1,8 @@
+2003-10-19  Andras Varga
+
+	* nedelement.cc/h: added userdata field which makes it possible
+	to attach additional data to NEDElement objects (needed for GNED)
+
 2003-08-30  Andras Varga
 
 	* ned.dtd: storing of "like" parameters changed (attribute @like-param

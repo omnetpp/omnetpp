@@ -64,7 +64,7 @@ proc get_submod_coords {c tag} {
 
    set id [$c find withtag $tag]
    if {$id==""} {error "$tag not found"}
-   #return [$c bbox $id]  -- this could be faster, but somehow doesn't work properly with senddirect animation
+   return [$c bbox $tag]  ;#-- this could be faster, but somehow doesn't work properly with senddirect animation
 
    if {[$c type $id]=="image"} {
        set pos [$c coords $id]
@@ -97,24 +97,31 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
        split_dispstr $dispstr tags [winfo toplevel $c] $submodptr 1
 
        # set sx and sy
+       set isx 0
+       set isy 0
+       set bsx 0
+       set bsy 0
        if [info exists tags(i)] {
            set img [lindex $tags(i) 0]
            if {$img=="" || [catch {image type $img}]} {
                # using default."
                set img $icons(unknown)
            }
-           set sx [image width $img]
-           set sy [image height $img]
-       } elseif [info exists tags(b)] {
-           set sx [lindex $tags(b) 0]
-           if {$sx==""} {set sx 40}
-           set sy [lindex $tags(b) 1]
-           if {$sy==""} {set sy [expr 0.6*$sx]}
-       } else {
-           set tags(b) {40 24 rect}
-           set sx 40
-           set sy 24
+           set isx [image width $img]
+           set isy [image height $img]
        }
+       if [info exists tags(b)] {
+           set bsx [lindex $tags(b) 0]
+           if {$bsx==""} {set bsx 40}
+           set bsy [lindex $tags(b) 1]
+           if {$bsy==""} {set bsy [expr 0.6*$bsx]}
+       } elseif ![info exists tags(i)] {
+           set tags(b) {40 24 rect}
+           set bsx 40
+           set bsy 24
+       }
+       set sx [expr {$isx<$bsx ? $bsx : $isx}]
+       set sy [expr {$isy<$bsy ? $bsy : $isy}]
 
        # determine position
        if {![info exists tags(p)]} {set tags(p) {}}
@@ -200,17 +207,12 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
            }
        }
 
-       if [info exists tags(i)] {
+       if [info exists tags(b)] {
 
-           $c create image $x $y -image $img -anchor center -tags "tooltip submod $submodptr"
-           $c create text $x [expr $y+$sy/2+3] -text $name -anchor n
-
-       } elseif [info exists tags(b)] {
-
-           set x1 [expr $x - $sx/2]
-           set y1 [expr $y - $sy/2]
-           set x2 [expr $x + $sx/2]
-           set y2 [expr $y + $sy/2]
+           set x1 [expr $x - $bsx/2]
+           set y1 [expr $y - $bsy/2]
+           set x2 [expr $x + $bsx/2]
+           set y2 [expr $y + $bsy/2]
 
            set sh [lindex $tags(b) 2]
            if {$sh == ""} {set sh rect}
@@ -218,18 +220,33 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
            if {![info exists tags(o)]} {set tags(o) {}}
            set fill [lindex $tags(o) 0]
            if {$fill == ""} {set fill #8080ff}
+           if {$fill == "-"} {set fill ""}
+           if {[string index $fill 0]== "@"} {set fill [opp_hsb_to_rgb $fill]}
            set outline [lindex $tags(o) 1]
            if {$outline == ""} {set outline black}
+           if {$outline == "-"} {set outline ""}
+           if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
            set width [lindex $tags(o) 2]
            if {$width == ""} {set width 2}
 
            $c create $sh $x1 $y1 $x2 $y2 \
                -fill $fill -width $width -outline $outline \
                -tags "tooltip submod $submodptr"
+
+           if [info exists tags(i)] {
+               $c create image $x $y -image $img -anchor center -tags "tooltip submod $submodptr"
+           }
+
            $c create text $x [expr $y2+$width/2+3] -text $name -anchor n
+
+       } elseif [info exists tags(i)] {
+
+           $c create image $x $y -image $img -anchor center -tags "tooltip submod $submodptr"
+           $c create text $x [expr $y+$sy/2+3] -text $name -anchor n
 
        }
 
+       # queue length
        if {[info exists tags(q)]} {
            set r [get_submod_coords $c $submodptr]
            set x [expr [lindex $r 2]+1]
@@ -242,9 +259,13 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
            set radius [lindex $tags(r) 0]
            if {$radius == ""} {set radius 100}
            set rfill [lindex $tags(r) 1]
+           if {$rfill == "-"} {set rfill ""}
+           if {[string index $rfill 0]== "@"} {set rfill [opp_hsb_to_rgb $rfill]}
            # if rfill=="" --> not filled
            set routline [lindex $tags(r) 2]
            if {$routline == "" && $rfill == ""} {set routline black}
+           if {$routline == "-"} {set routline ""}
+           if {[string index $routline 0]== "@"} {set routline [opp_hsb_to_rgb $routline]}
            set rwidth [lindex $tags(r) 3]
            if {$rwidth == ""} {set rwidth 1}
 
@@ -301,8 +322,12 @@ proc draw_enclosingmod {c ptr name dispstr} {
        if {![info exists tags(o)]} {set tags(o) {}}
        set fill [lindex $tags(o) 0]
        if {$fill == ""} {set fill #c0c0c0}
+       if {$fill == "-"} {set fill ""}
+       if {[string index $fill 0]== "@"} {set fill [opp_hsb_to_rgb $fill]}
        set outline [lindex $tags(o) 1]
        if {$outline == ""} {set outline black}
+       if {$outline == "-"} {set outline ""}
+       if {[string index $outline 0]== "@"} {set outline [opp_hsb_to_rgb $outline]}
        set width [lindex $tags(o) 2]
        if {$width == ""} {set width 2}
 

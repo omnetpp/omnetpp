@@ -270,13 +270,16 @@ cModule *cSimulation::moduleByPath(const char *path) const
 
     // 1st component in the path may be the system module, skip it then
     if (modp->isName(s))
-        s = strtok(pathbuf.buffer(),".");
+        s = strtok(NULL,".");
 
     // match components of the path
-    do {
+    while (s && modp) 
+    {
         char *b;
         if ((b=strchr(s,'['))==NULL)
+        {
             modp = modp->submodule(s);  // no index given
+        }
         else
         {
             if (s[strlen(s)-1]!=']')
@@ -284,7 +287,8 @@ cModule *cSimulation::moduleByPath(const char *path) const
             *b='\0';
             modp = modp->submodule(s,atoi(b+1));
         }
-    } while ((s=strtok(NULL,"."))!=NULL && modp!=NULL);
+        s = strtok(NULL,".");
+    }
 
     return modp;  // NULL if not found
 }
@@ -514,6 +518,38 @@ cSimpleModule *cSimulation::selectNextModule()
 
     // advance simulation time
     sim_time = msg->arrivalTime();
+
+    return modp;
+}
+
+cSimpleModule *cSimulation::guessNextModule()
+{
+    // Guess what's the next event, to be displayed in the GUI.
+    // We shouldn't cause any change anywhere.
+
+    // is a send() or a pause() pending?
+    if (backtomod!=NULL)
+    {
+        cSimpleModule *p = backtomod;
+        return p;
+    }
+
+    // determine the probable next event. No call to cSheduler!!!
+    cMessage *msg = msgQueue.peekFirst();
+    if (!msg)
+        return NULL;
+
+    // FIXME if this event is "not good" (no module or module ended),
+    // we might look for another event, but this is not done right now...
+
+    // check if dest module exists and still running
+    if (msg->arrivalModuleId()==-1)
+        return NULL;
+    cSimpleModule *modp = (cSimpleModule *)vect[msg->arrivalModuleId()];
+    if (!modp)
+        return NULL;
+    if (modp->moduleState()==sENDED)
+        return NULL;
 
     return modp;
 }

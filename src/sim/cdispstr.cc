@@ -1,12 +1,8 @@
 //==========================================================================
-//   CPAR.H   - header for
+//   CDISPSTR.CC   - header for
 //                             OMNeT++
 //            Discrete System Simulation in C++
 //
-//
-//  Declaration of the following classes:
-//    cPar       : general value holding class
-//    cModulePar : specialized cPar that serves as module parameter
 //
 //==========================================================================
 
@@ -86,7 +82,10 @@ const char *cDisplayStringParser::getTagArg(const char *tagname, int index)
 
 bool cDisplayStringParser::setTagArg(const char *tagname, int index, const char *value)
 {
-    return setTagArg(gettagindex(tagname), index, value);
+    int t = gettagindex(tagname);
+    if (t==-1)
+        t = insertTag(tagname);
+    return setTagArg(t, index, value);
 }
 
 
@@ -144,11 +143,12 @@ bool cDisplayStringParser::setTagArg(int tagindex, int index, const char *value)
 }
 
 
-bool cDisplayStringParser::insertTag(const char *tagname, int atindex)
+int cDisplayStringParser::insertTag(const char *tagname, int atindex)
 {
     // check uniqueness
-    if (gettagindex(tagname)!=-1)
-        return false;
+    int t = gettagindex(tagname);
+    if (t!=-1)
+        return t;
 
     // check index
     if (atindex<0) atindex=0;
@@ -171,7 +171,7 @@ bool cDisplayStringParser::insertTag(const char *tagname, int atindex)
     for (int i=0; i<MAXARGS; i++) tags[atindex].args[i] = NULL;
 
     // success
-    return true;
+    return atindex;
 }
 
 

@@ -23,7 +23,6 @@
 #include "nedelements.h"
 #include "nedvalidator.h"
 
-
 /**
  * GENERATED CLASS. Validates a NEDElement tree by the DTD.
  * 

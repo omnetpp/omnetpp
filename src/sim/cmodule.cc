@@ -265,7 +265,8 @@ void cModule::setMachinePar(const char *pname, const char *value)
 {
     int i = machinev.find( pname );
     if (i==-1)
-         throw new cException(this,"Machine par `%s' does not exist", pname);
+         return; //FIXME ok..
+         //throw new cException(this,"Machine par `%s' does not exist", pname);
 
     ((cPar *)machinev[i])->setStringValue(value);
 }
@@ -420,8 +421,9 @@ int cModule::buildInside()
     cModule *oldcontext = simulation.contextModule();
     simulation.setContextModule(this);
 
-    // check parameters and gates
+    // check parameters and gates  FIXME only if module interface exists?
     cModuleInterface *iface = moduleType()->moduleInterface();
+    if (iface)
     iface->checkParametersOf(this);
 
     // call doBuildInside() in this context

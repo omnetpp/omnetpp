@@ -770,30 +770,12 @@ void TOmnetTkApp::updateSimtimeDisplay()
 
 }
 
-cSimpleModule *TOmnetTkApp::guessNextModule()
+void TOmnetTkApp::updateNextModuleDisplay()
 {
     cSimpleModule *mod = NULL;
 
     if (simstate==SIM_NEW || simstate==SIM_READY || simstate==SIM_RUNNING)
-    {
-        try
-        {
-            // FIXME in parsim, this will have to change to simulation.guessNextModule()
-            mod = simulation.selectNextModule(); 
-        }
-        catch (cException *e)
-        {
-            // simply ignore the exception -- selectNextModule should be idempotent,
-            // so we'll display it another time.
-            delete e;
-        }
-    }
-    return mod;
-}
-
-void TOmnetTkApp::updateNextModuleDisplay()
-{
-    cSimpleModule *mod = guessNextModule();
+        mod = simulation.guessNextModule();
 
     char id[16];
     const char *modname;

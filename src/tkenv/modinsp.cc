@@ -360,7 +360,7 @@ void TGraphicalModWindow::redrawNextEventMarker()
        return;
 
    // if any parent of the module containing the next event is on this canvas, draw marker
-   cModule *nextmod = ((TOmnetTkApp *)ev.app)->guessNextModule();
+   cModule *nextmod = simulation.guessNextModule();
    cModule *nextmodparent = nextmod; 
    while (nextmodparent && nextmodparent->parentModule()!=mod)
        nextmodparent = nextmodparent->parentModule();
