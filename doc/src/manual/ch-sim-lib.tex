@@ -940,11 +940,21 @@ X & expr. &
 double \fname{doubleValue()}; \linebreak
 op \fname{double()};}
 &
-Reverse Polish expression. Expression can contain constants,
+Runtime-evaluated Reverse Polish expression. Expression can contain constants,
 \cclass{cPar} objects, refer to other \cclass{cPars} (e.g. module parameters),
-can use many math operators (+-*/{\textasciicircum}\% etc), function calls
+can use math operators (+-*/{\textasciicircum}\% etc), function calls
 (function must take 0,1,2 or 3 doubles and return a double).
-The expression must be given is in an cPar::ExprElem array (see later).\\\hline
+The expression must be given in an array of \ttt{cPar::ExprElem} structs.\\\hline
+%% ROW 7a
+C & compiled\linebreak expr. &
+\ttt{setDoubleValue( \linebreak
+\hspace*{0.3cm} cDoubleExpression *expr); \linebreak
+double \fname{doubleValue()}; \linebreak
+op \fname{double()};}
+&
+Runtime-evaluated compiled expression. The expression should be
+supplied in a method of an object subclassed from \cclass{cDoubleExpression}.
+\\\hline
 %% ROW 8
 T & distrib. &
 \ttt{setDoubleValue( \linebreak
@@ -954,6 +964,15 @@ op \fname{double()}; \linebreak
 } &
 random variable generated from a distribution collected by a
 statistical data collection object (derived from \cclass{cStatistic}).\\\hline
+%% ROW 8a
+M & XML &
+\ttt{setXMLValue( \linebreak
+\hspace*{0.3cm} \cclass{cXMLElement} *node); \linebreak
+\cclass{cXMLElement} *\fname{xmlValue}()}; \linebreak
+op \fname{cXMLElement*()};
+&
+Reference to an XML element, found in an XML config file.
+\\\hline
 %% ROW 9
 P & void* pointer &
 \ttt{setPointerValue(void*); \linebreak
