@@ -7,10 +7,7 @@ Continuous:
 - EXPONDIST(x,lambda,cumulative)
 - NORMDIST(x,mean,standard_dev,cumulative)
 - GAMMADIST(x,alpha,beta,cumulative)
-- BETADIST(x,alpha,beta,A,B)
-   A   is an optional lower bound to the interval of x.
-   B   is an optional upper bound to the interval of x.
-   If you omit values for A and B, BETADIST uses the standard cumulative beta distribution, so that A = 0 and B = 1.
+- BETADIST(x,alpha,beta,0,0)
 - Erlang: GAMMADIST with integer alpha
 - CHIDIST(x,degrees_freedom)
 - TDIST(x,degrees_freedom,tails)
@@ -45,6 +42,10 @@ When using Tkenv, do only one step after setting up a run, then find and open
 the inspector for the histogram.
 
 See omnetpp.ini for comments on specific tests.
+
+Gnumeric might also be usable instead of Excel, I saw many of its functions
+are Excel-compatible. Nevertheless, I've never tried it. If you do and succeed,
+let me know.
 
 
 --Andras

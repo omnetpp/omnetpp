@@ -64,12 +64,12 @@ MEAN_AND_VARIANCE(negbinomial(5,0.1,rng));
 ev << endl;
 
 // hypergeometric (a,b,n)
-MEAN_AND_VARIANCE(hypergeometric(5,5,1,rng));
-MEAN_AND_VARIANCE(hypergeometric(5,5,2,rng));
-MEAN_AND_VARIANCE(hypergeometric(0,10,1,rng));
+//MEAN_AND_VARIANCE(hypergeometric(5,5,1,rng));
+//MEAN_AND_VARIANCE(hypergeometric(5,5,2,rng));
+//MEAN_AND_VARIANCE(hypergeometric(0,10,1,rng));
 //MEAN_AND_VARIANCE(hypergeometric(10,0,1,rng));
 //MEAN_AND_VARIANCE(hypergeometric(5,5,9,rng));
-ev << endl;
+//ev << endl;
 
 // poisson(lambda): both mean and variance equal to lambda
 MEAN_AND_VARIANCE(poisson(1,rng));

@@ -28,7 +28,8 @@ TEST_ERROR(weibull(1,1));
 TEST_ERROR(weibull(0,1));
 TEST_ERROR(weibull(1,0));
 
-/*TEST_ERROR(hypergeometric(0,1,1));
+/*
+TEST_ERROR(hypergeometric(0,1,1));
 TEST_ERROR(hypergeometric(1,0,1));
 TEST_ERROR(hypergeometric(2,3,6));
 TEST_ERROR(hypergeometric(2,3,5));

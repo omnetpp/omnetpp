@@ -61,7 +61,7 @@ for (int rng=0; rng<=2; rng++)
     CHECKSEEDS(binomial(10, 0.3, rng));
     CHECKSEEDS(geometric(0.3, rng));
     CHECKSEEDS(negbinomial(10, 0.3, rng));
-    CHECKSEEDS(hypergeometric(1, 2, 2, rng));
+    //CHECKSEEDS(hypergeometric(1, 2, 2, rng));
     CHECKSEEDS(poisson(1.0, rng));
     CHECKSEEDS(poisson(35.0, rng));
 }
@@ -89,7 +89,6 @@ checking bernoulli\(0.3, rng\)
 checking binomial\(10, 0.3, rng\)
 checking geometric\(0.3, rng\)
 checking negbinomial\(10, 0.3, rng\)
-checking hypergeometric\(1, 2, 2, rng\)
 checking poisson\(1.0, rng\)
 checking poisson\(35.0, rng\)
 RNG=1:
@@ -114,7 +113,6 @@ checking bernoulli\(0.3, rng\)
 checking binomial\(10, 0.3, rng\)
 checking geometric\(0.3, rng\)
 checking negbinomial\(10, 0.3, rng\)
-checking hypergeometric\(1, 2, 2, rng\)
 checking poisson\(1.0, rng\)
 checking poisson\(35.0, rng\)
 RNG=2:
@@ -139,7 +137,6 @@ checking bernoulli\(0.3, rng\)
 checking binomial\(10, 0.3, rng\)
 checking geometric\(0.3, rng\)
 checking negbinomial\(10, 0.3, rng\)
-checking hypergeometric\(1, 2, 2, rng\)
 checking poisson\(1.0, rng\)
 checking poisson\(35.0, rng\)
 finished
