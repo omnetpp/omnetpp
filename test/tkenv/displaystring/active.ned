@@ -1,5 +1,18 @@
 import "dummy";
 
+simple Gen
+    parameters:
+        startTime : numeric,
+        what : string;
+    gates:
+        out: out;
+endsimple
+
+simple Sink
+    gates:
+        in: in[];
+endsimple
+
 module Active
     submodules:
         hue: Gen;
