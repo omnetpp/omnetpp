@@ -10,11 +10,11 @@ import
     "sink";
 
 
-// FifoNet --
+// FifoNet2 --
 //
 // generator + FIFO + sink
 //
-module FifoNet
+module FifoNet2
     submodules:
         gen: FF2BurstyGenerator;
             parameters:
@@ -31,7 +31,7 @@ module FifoNet
         fifo.out --> sink.in;
 endmodule
 
-network fifonet : FifoNet
+network fifonet2 : FifoNet2
 endnetwork
 
 

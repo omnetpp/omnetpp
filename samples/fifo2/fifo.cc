@@ -7,14 +7,14 @@
 #include "fifo.h"
 
 
-void AbstractFifo::initialize()
+void FF2AbstractFifo::initialize()
 {
     msgServiced = NULL;
     endServiceMsg = new cMessage("end-service");
     queue.setName("queue");
 }
 
-void AbstractFifo::handleMessage(cMessage *msg)
+void FF2AbstractFifo::handleMessage(cMessage *msg)
 {
     if (msg==endServiceMsg)
     {

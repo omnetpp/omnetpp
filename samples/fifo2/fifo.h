@@ -6,11 +6,11 @@
 #ifndef __FIFO_H
 #define __FIFO_H
 
-// AbstractFifo : abstract base class for single-server queues
-class AbstractFifo : public cSimpleModule
+// FF2AbstractFifo : abstract base class for single-server queues
+class FF2AbstractFifo : public cSimpleModule
 {
   public:
-    Module_Class_Members(AbstractFifo,cSimpleModule,0);
+    Module_Class_Members(FF2AbstractFifo,cSimpleModule,0);
 
     cMessage *msgServiced;
     cMessage *endServiceMsg;
@@ -26,20 +26,20 @@ class AbstractFifo : public cSimpleModule
 };
 
 // ACPFifo : single-server queue with given service time
-class ACPFifo : public AbstractFifo
+class ACPFifo : public FF2AbstractFifo
 {
   public:
-    Module_Class_Members(ACPFifo,AbstractFifo,0);
+    Module_Class_Members(ACPFifo,FF2AbstractFifo,0);
 
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);
 };
 
 // ACBFifo : single-server queue with service time based on message length
-class ACBFifo : public AbstractFifo
+class ACBFifo : public FF2AbstractFifo
 {
   public:
-    Module_Class_Members(ACBFifo,AbstractFifo,0);
+    Module_Class_Members(ACBFifo,FF2AbstractFifo,0);
 
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);
