@@ -3,7 +3,7 @@
 exec wish "$0" "$@"
 
 puts {Plove - Output vector plotting tool (Gnuplot front-end), part of OMNeT++.
-(c) 1992,99 Andras Varga, TU Budapest
+(c) 1992-2001 Andras Varga, TU Budapest
 See the license for distribution terms and warranty disclaimer.
 }
 
