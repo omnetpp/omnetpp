@@ -23,15 +23,18 @@ KELEMEN (kelemen@sch.bme.hu) in March 2000.
 o  Windows XP, Windows 2000, NT4.0 or other NT-derivative.
 
    OMNET++ IS NOT SUPPORTED, MOREOVER IT WON'T EVEN WORK ON WIN95/98/ME,
-   because it uses the Win32 Fiber API only available in NT systems.
-   Also the makefiles and tools won't work with command.com. Besides
-   the above "hard" prohibitive factors, it is anyway advisable to use
-   a more stable operating system.
+   because it uses the Win32 Fiber API which is only available on NT systems.
+   Moreover, the makefiles and some batch (.cmd) files use syntax which
+   is not supported by the old command.com. Besides the above "hard"
+   prohibitive factors, it is anyway advisable to use a more stable operating
+   system.
 
 o  Microsoft Visual Studio 6.0, with at least Service Pack 1 installed.
+   I recommend Service Pack 5 which can be downloaded from Microsoft's site
+   under the name vs6sp5.exe.
 
-o  About 40MB free space on your hard disk if your want to compile from
-   source. If you use the binary, you need about half this amount.
+o  About 40MB free space on your hard disk. If your want to compile from
+   source, you'll need about 20MB more.
 
 
 2. Packages to download and install
@@ -64,7 +67,7 @@ set these manually (My Computer-->Properties-->Environment tab).
 3. Compiling OMNeT++
 ~~~~~~~~~~~~~~~~~~~~
 
-If you use the binary release, you can skip this section.
+If you're using the binary release, you can skip this section.
 
 Download the omnetpp source code and documentation from the omnetpp site.
 If you downloaded a zip file, extract its contents to the installation
@@ -142,6 +145,30 @@ files by substituting the correct Tcl/Tk version and library location.
 If you need to modify the names of the Tcl/Tk libs (because you installed
 a Tcl/Tk version other than 8.4), see Project|Settings --> 'Link' tab -->
 choose 'Input' from combo --> Libraries.
+
+*** NOTE ***
+   While trying to build some of the samples in the MSVC IDE, you might
+   get the following error:
+
+   Processing .\token.msg with opp_msgc
+   'Perl is not recognized as an internal or external command, operable
+   program or batch file. Error executing c:\windows\system32\cmd.exe
+
+   This is probably a Visual Studio bug. I'm not sure under which
+   circumstances it occurs. It was reported on Windows XP + MSVC 6.0 without
+   a service pack (?), but I've been unable to reproduce it on Windows 2000 +
+   MSVC 6.0 SP5. Anyhow, if this occurs on your PC, try one/both of the
+   following:
+     a) install Visual Studio Service Pack 5 (vs6sp5.exe) or later
+     b) edit opp_msgc.cmd (in the ..\OMNeT++\bin directory) and
+        supply the full path to perl.exe in line 4 (i.e. change "perl" to
+        "c:\OMNeT++\bin\perl.exe", "c:\Perl\bin\perl.exe" or the location
+        of your perl program)
+   If this doesn't work out, please let me know. You can also try the
+   workaround described in Mudassar Farooq's email to the mailing list
+   on 2/18/2003, with subject "Perl Problem".
+
+   Thanks to Farooq for finding out about this bug.
 
 
 5. Creating your own simulations
