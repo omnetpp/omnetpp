@@ -27,7 +27,7 @@ tkapp.obj : tkapp.cc
 	$(CXX) /DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp tkapp.cc
 
 tkapp-e.obj : tkapp.cc  tclcode.cc
-	$(CXX)  /Fo"tkapp-e.obj" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp tkapp.cc
+	$(CXX) /Fo"tkapp-e.obj" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp tkapp.cc
 
 tkcmd.obj : tkcmd.cc
 	$(CXX) $(COPTS) /c /Tp tkcmd.cc

@@ -8,23 +8,21 @@
 #
 COPTS=$(CFLAGS) $(TK_CFLAGS)
 
-OMNETPP_GNED_DIR=`@MYPWD@`
-
 OBJS = gned$(GNED_EMBED_SUFFIX).obj tklib.obj arrow.obj ebnf.tab.obj lex.yy.obj parsened.obj disp.obj nedfile.obj
 
 #
 # Targets
 #
-default: @GNED_IF_POSSIBLE@
+default: $(GNED_IF_POSSIBLE)
 
 gned : $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
 
 gned.obj : gned.cc
-	$(CXX) $(COPTS) /c /Tp -DOMNETPP_GNED_DIR="\"$(OMNETPP_GNED_DIR)\"" -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" gned.cc
+	$(CXX) /DOMNETPP_GNED_DIR="\"$(OMNETPP_GNED_DIR)\"" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp  gned.cc
 
 gned-e.obj : gned.cc tclcode.cc
-	$(CXX) $(COPTS) /c /Tp -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" gned.cc -o gned-e.obj
+	$(CXX) /Fo"gned-e.obj" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp gned.cc
 
 tklib.obj : tklib.cc
 	$(CXX) $(COPTS) /c /Tp tklib.cc
@@ -57,10 +55,10 @@ lex.yy.c: ebnf.lex
 	$(LEX) ebnf.lex
 
 tclcode.cc: *.tcl
-	..\utils/tcl2c tclcode.cc *.tcl
+	..\utils\tcl2c tclcode.cc *.tcl
 
 missing-library:
-	@ echo '  *** No Tk installation found -- skipping GNED'
+	@ echo *** No Tk installation found -- skipping GNED
 
 depend:
 	@ echo *** make depend not (yet) supported with MSVC
@@ -69,7 +67,7 @@ clean:
 	del *.obj lex.yy.c ebnf.tab.c ebnf.tab.h gned.exe
 
 install-local: default
-	..\utils/install-prog gned $(OMNETPP_BIN_DIR)
+	copy gned.exe $(OMNETPP_BIN_DIR)
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
