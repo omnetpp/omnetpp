@@ -27,7 +27,8 @@
 
 # addItem --
 #
-# create an item with the given type and add it to ned()
+# Create an item with the given type and add it to ned().
+# Doesn't care about the 'name' attribute! Use renameItem to change that.
 #
 proc addItem {type parentkey} {
     global ned ned_attr ned_attlist
@@ -89,6 +90,8 @@ proc deleteItem {key} {
        deleteItem $childkey
     }
 
+    set type $ned($key,type)
+
     # delete non-child linked objects
     #   (e.g. connections when a submod is deleted)
 puts "deleteItem: inefficient code ('foreach array names')"
@@ -103,14 +106,15 @@ puts "deleteItem: inefficient code ('foreach array names')"
     # if a canvas displayed exactly this item, close that canvas
     set canv_id [canvasIdFromItemKey $key]
     if {$canv_id!=""} {
-
        if {$canvas($canv_id,module-key)==$key} {
            destroyCanvas $canv_id
        } else {
            set c $canvas($canv_id,canvas)
-puts "deleteItem: inefficient code2 ('foreach array names') -- easy to rewrite!"
-           foreach i [array names ned "$key,*-cid"] {
-              $c delete $ned($i)
+           # note: we assume here that 'common' attributes don't contain any 'cid'
+           foreach attr $ned_attlist($type) {
+               if [string match "*-cid" $attr] {
+                  $c delete $ned($key,$attr)
+               }
            }
        }
     }
@@ -121,7 +125,6 @@ puts "deleteItem: inefficient code2 ('foreach array names') -- easy to rewrite!"
     set ned($parentkey,childrenkeys) [lreplace $ned($parentkey,childrenkeys) $pos $pos]
 
     # delete from array
-    set type $ned($key,type)
     foreach field $ned_attlist($type) {
         unset ned($key,$field)
     }
