@@ -326,8 +326,8 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
     if (msg==NULL)
         throw new cException("send()/sendDelayed(): message pointer is NULL");
     if (msg->owner()!=this)
-        throw new cException("send()/sendDelayed(): not owner of message `%s'; owner is `%s'",
-                             msg->name(),msg->owner()->fullPath());
+        throw new cException("send()/sendDelayed(): not owner of message (%s)%s; owner is (%s)%s",
+                             msg->className(), msg->name(), msg->owner()->className(), msg->owner()->fullPath());
     if (delay<0.0)
         throw new cException("sendDelayed(): negative delay %g",delay);
 
@@ -386,7 +386,8 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
     if (msg==NULL)
         throw new cException("sendDirect(): message pointer is NULL");
     if (msg->owner()!=this)
-        throw new cException("sendDirect(): not owner of message `%s'; owner is `%s'", msg->name(),msg->owner()->fullPath());
+        throw new cException("sendDirect(): not owner of message (%s)%s; owner is (%s)%s",
+                             msg->className(), msg->name(), msg->owner()->className(), msg->owner()->fullPath());
 
     // to help debugging, switch back to main for a moment
     if (pause_in_sendmsg && usesactivity)
@@ -414,7 +415,8 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     if (msg==NULL)
         throw new cException("scheduleAt(): message pointer is NULL");
     if (msg->owner()!=this)
-        throw new cException("scheduleAt(): not owner of message `%s'; owner is `%s'",msg->name(),msg->owner()->fullPath());
+        throw new cException("scheduleAt(): not owner of message (%s)%s; owner is (%s)%s",
+                             msg->className(), msg->name(), msg->owner()->className(), msg->owner()->fullPath());
 
     // to help debugging, switch back to main for a moment
     if (pause_in_sendmsg && usesactivity)
