@@ -420,6 +420,9 @@ From the syntax you have probably guessed that OMNeT++ supports
 more than one RNGs. That's right, however, all models in this tutorial
 use RNG 0.
 
+<i>Exercise: Try other distributions as well.
+</i>
+
 Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
 
 
@@ -626,6 +629,14 @@ on the Contents page.
 
 <img src="step10b.gif">
 
+<i>Exercise: In this model, there is only one message underway at any
+given moment: nodes only generate a message when another message arrives
+at them. We did it this way to make it easier to follow the simulation.
+Change the module class so that instead, it generates messages periodically.
+The interval between messages should be a module parameter, returning
+exponentially distributed random numbers.
+</i>
+
 Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
 
 NEXT: @ref part4
@@ -638,9 +649,13 @@ NEXT: @ref part4
 
 PREV: @ref part3 UP: @ref contents
 
-@section s11 Step 11
+@section s11 Step 11: Adding statistics collection
 
-This model is exciting enough so that we can collect some statistics.
+The previous simulation model is does something interesting enough
+so that we can collect some statistics. For example, you may be interested
+in the average hop count a message has to travel before reaching
+its destination.
+
 We'll record in output vectors the hop count of every message upon arrival.
 Output vectors are written into the omnetpp.vec file and can be visualized
 with the Plove program.
