@@ -31,9 +31,9 @@ NO WARRANTY -- see license.\
 
 
 proc helpReadme {} {
-    global plove_dir
+    global OMNETPP_PLOVE_DIR
 
-    set fname [file join $plove_dir README]
+    set fname [file join $OMNETPP_PLOVE_DIR README]
     if [catch {
         set f [open $fname r]
         set contents [read $f]
