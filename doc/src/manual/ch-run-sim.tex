@@ -347,6 +347,7 @@ or the \texttt{[Run 1]}, \texttt{[Run 2]} etc. sections of the ini file.
 The run-specific settings take precedence over the overall settings.
 
 \subsection{Wildcards}
+\label{sec:ch-run-sim:wildcards}
 
 Wildcards (\ttt{*,?})\index{ini file!wildcards} can be used to supply values
 to several model parameters at a time. Filename (glob) style patterns
@@ -360,6 +361,7 @@ name matches several wildcards-patterns, the first matching occurrence
 is used. This means that you need to list specific settings first, and
 more general ones later. Catch-all settings should come last.
 
+%FIXME numbers, numeric ranges!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 An example ini file:
 
@@ -1458,7 +1460,7 @@ These lines cause the simulation to obtain random numbers from Akaroa,
 and allows data written to selected output vectors to be passed to Akaroa's
 global data analyser.
     \footnote{For more details on the plugin mechanism these settings make use of,
-    see section \ref{FIXME}.}
+    see section \ref{sec:ch-opp-design:customization}.}
 
 Akaroa's RNG is a Combined Multiple Recursive pseudorandom
 number generator (CMRG) with a period of approximately $2^{191}$
@@ -1477,7 +1479,7 @@ control; the
 
 setting can be used to make Akaroa ignore specific vectors.
 You can use the \ttt{*}, \ttt{**} wildcards here (see
-section \ref{FIXME-ini-pattern-rules}). For example,
+section \ref{sec:ch-run-sim:wildcards}). For example,
 if you only want a few vectors be placed under Akaroa,
 you can use the following trick:
 
