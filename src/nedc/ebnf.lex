@@ -117,11 +117,7 @@ char textbuf[TEXTBUF_LEN];
 "submodules"            { count(); return (SUBMODULES); }
 "connections"           { count(); return (CONNECTIONS); }
 "display"               { count(); return (DISPLAY); }
-"on"                    { count(); return (ON); }          /* --LG */
 "like"                  { count(); return (LIKE); }
-"machines"              { count(); return (MACHINES); }         /* --LG */
-"io-interfaces"         { count(); return (IO_INTERFACES); }    /* --LG */
-"ifpair"                { count(); return (IFPAIR); }    /* --LG */
 "-->"                   { count(); return (RIGHT_ARROW); }
 "<--"                   { count(); return (LEFT_ARROW); } /* --VA */
 ".."                    { count(); return (TO); }

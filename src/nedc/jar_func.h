@@ -49,10 +49,6 @@ void do_include (char *fname);
 /*--- channels ---*/
 void do_channel (char *cname, char *delay, char *error, char *datarate );
 
-/*--- machines ---*/
-/*void do_physicalmachine (char *pm);*/
-/*void do_addvirtualmachine (char *vm);*/
-
 /*--- modules, gates, parameters ---*/
 
 /* begin a simple or compound module */
@@ -74,11 +70,6 @@ void do_gatedecl (char *gname, int is_in, int is_vector ); /* --VA */
 void do_submodules (void);
 void do_submodule1 (char *smname, char *smcount, char *smtype, char *smlike);
 void do_submodule2 (char *smname, char *smcount, char *smtype, char *smlike);
-
-/* submodules: on list */
-void do_onlist();
-void do_on_mach(char* maname);
-void do_empty_onlist(void);
 
 /* submodules: defining parameter values */
 void do_substparams (void);

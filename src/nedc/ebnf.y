@@ -168,16 +168,12 @@ NEDParser *np;
 #define PARAM_KEY         np->param_key
 #define GATES_KEY         np->gates_key
 #define GATE_KEY          np->gate_key
-#define MACHINES_KEY      np->machines_key
-#define MACHINE_KEY       np->machine_key
 #define SUBMODS_KEY       np->submods_key
 #define SUBMOD_KEY        np->submod_key
 #define SUBSTPARAMS_KEY   np->substparams_key
 #define SUBSTPARAM_KEY    np->substparam_key
 #define GATESIZES_KEY     np->gatesizes_key
 #define GATESIZE_KEY      np->gatesize_key
-#define SUBSTMACHINES_KEY np->substmachines_key
-#define SUBSTMACHINE_KEY  np->substmachine_key
 #define CONNS_KEY         np->conns_key
 #define CONN_KEY          np->conn_key
 #define CONNATTR_KEY      np->connattr_key
@@ -197,7 +193,6 @@ int addSubmodule(int submods_key, YYLTYPE namepos, YYLTYPE vectorpos,
                                    YYLTYPE typepos,YYLTYPE likepos);
 int addGateSize(int gatesizes_key, YYLTYPE namepos, YYLTYPE vectorpos);
 int addSubstparam(int substparams_key, YYLTYPE namepos, YYLTYPE valuepos);
-int addSubstmachine(int substmachines_key, YYLTYPE namepos);
 int addConnAttr(int conn_key, char *attrname, YYLTYPE valuepos);
 int addLoopVar(int forloop_key, YYLTYPE varnamepos, YYLTYPE frompos, YYLTYPE topos);
 int addNetwork(int nedfile_key, YYLTYPE namepos, YYLTYPE typepos, YYLTYPE likepos);
@@ -333,7 +328,6 @@ chdatarate
 
 simpledefinition  /* --LG */
         : simpleheader
-            opt_machineblock
             opt_paramblock
             opt_gateblock
           endsimple
@@ -359,7 +353,6 @@ endsimple
 
 moduledefinition
         : moduleheader
-            opt_machineblock
             opt_paramblock
             opt_gateblock
             opt_submodblock
@@ -385,41 +378,11 @@ endmodule
                  GNED( setTrailingComment(MODULE_KEY,@1); )}
         ;
 
-opt_machineblock
-        : machineblock
-        |
-             {NEDC( do_machine(jar_strdup("default")); )}
-        ;
 opt_displayblock : displayblock | ;
 opt_paramblock   : paramblock   | ;
 opt_gateblock    : gateblock    | ;
 opt_submodblock  : submodblock  | ;
 opt_connblock    : connblock    | ;
-
-machineblock
-        : MACHINES ':'
-                {GNED( MACHINES_KEY = np->create("machines",MODULE_KEY);
-                       setComments(MACHINES_KEY,@1,@2); )}
-          opt_machinelist
-        ;
-
-opt_machinelist
-        : machinelist ';'
-        |
-        ;
-
-machinelist
-        : machinelist ',' machine
-        | machine
-        ;
-
-machine
-        : NAME
-                {NEDC( do_machine ($1); )
-                 GNED( MACHINE_KEY = np->create("machine",MACHINES_KEY);
-                       np->set(MACHINE_KEY,"name", @1);
-                       setComments(MACHINE_KEY,@1,@1); )}
-        ;
 
 displayblock
         : DISPLAY ':' STRING ';'
@@ -553,28 +516,24 @@ submodule
                 {NEDC( do_submodule1 ($1, NULL, $3, NULL); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, @1, NULLPOS, @3, NULLPOS);
                        setComments(SUBMOD_KEY,@1,@4);  )}
-          opt_on_blocks
                 {NEDC( do_submodule2 ($1, NULL, $3, NULL); )}
           submodule_body
         | NAME ':' NAME vector opt_semicolon
                 {NEDC( do_submodule1 ($1, $4, $3, NULL); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, @1, @4, @3, NULLPOS);
                        setComments(SUBMOD_KEY,@1,@5);  )}
-          opt_on_blocks
                 {NEDC( do_submodule2 ($1, $4, $3, NULL); )}
           submodule_body
         | NAME ':' NAME LIKE NAME opt_semicolon
                 {NEDC( do_submodule1 ($1, NULL, $3, $5); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, @1, NULLPOS, @3, @5);
                        setComments(SUBMOD_KEY,@1,@6);  )}
-          opt_on_blocks
                 {NEDC( do_submodule2 ($1, NULL, $3, $5); )}
           submodule_body
         | NAME ':' NAME vector LIKE NAME opt_semicolon
                 {NEDC( do_submodule1 ($1, $4, $3, $6); )
                  GNED( SUBMOD_KEY=addSubmodule(SUBMODS_KEY, @1, @4, @3, @6);
                        setComments(SUBMOD_KEY,@1,@7);  )}
-          opt_on_blocks
                 {NEDC( do_submodule2 ($1, $4, $3, $6); )}
           submodule_body
         ;
@@ -585,50 +544,6 @@ submodule_body
           opt_gatesizeblocks
           opt_submod_displayblock
                 {NEDC( end_submodule (); )}
-        ;
-
-opt_on_blocks
-        : on_blocks
-        |
-            {NEDC( do_empty_onlist(); )}
-        ;
-
-on_blocks
-        : on_blocks on_block
-        | on_block
-        ;
-
-on_block                            /* --LG */
-        : ON ':'
-                {NEDC( do_onlist(); )
-                 GNED( SUBSTMACHINES_KEY = np->create("substmachines",in_network?NETWORK_KEY:SUBMOD_KEY);
-                       setComments(SUBSTMACHINES_KEY,@1,@2); )}
-          opt_on_list
-        | ON IF expression ':'
-                {NEDC( open_if($3); do_onlist(); )
-                 GNED( SUBSTMACHINES_KEY = np->create("substmachines",in_network?NETWORK_KEY:SUBMOD_KEY);
-                       np->set(SUBSTMACHINES_KEY,"condition",@3);
-                       setComments(SUBSTMACHINES_KEY,@1,@4); )}
-          opt_on_list
-                {NEDC( close_if(); )}
-        ;
-
-opt_on_list
-        : on_list ';'
-        |
-            {NEDC( do_empty_onlist(); )}
-        ;
-
-on_list
-        : on_list ',' on_mach
-        | on_mach
-        ;
-
-on_mach
-        : NAME
-                {NEDC( do_on_mach($1); )
-                 GNED( SUBSTMACHINE_KEY = addSubstmachine(SUBSTMACHINES_KEY,@1);
-                       setComments(SUBSTMACHINE_KEY,@1); )}
         ;
 
 opt_substparamblocks
@@ -953,12 +868,11 @@ cddatarate
                  GNED( CONNATTR_KEY=addConnAttr(CONN_KEY,"datarate",@2); )}
         ;
 
-network /* opt_on_blocks NOT GOOD!!! appends stuff to last _submodule_ */
+network
         : NETWORK NAME ':' NAME opt_semicolon
                 {NEDC( do_system ($2); )
                  GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,@2,@4,NULLPOS);
                        setComments(NETWORK_KEY,@1,@5); in_network=1;)}
-          opt_on_blocks
                 {NEDC( do_systemmodule ($2, $4, NULL); )}
           opt_substparamblocks
                 {NEDC( do_readallparameters(); )}
@@ -966,7 +880,6 @@ network /* opt_on_blocks NOT GOOD!!! appends stuff to last _submodule_ */
                 {NEDC( end_system (); )}
         | NETWORK NAME ':' NAME LIKE NAME opt_semicolon
                 {NEDC( do_system ($2); )}
-          opt_on_blocks
                 {NEDC( do_systemmodule ($2, $4, $6); )
                  GNED( NETWORK_KEY = addNetwork(NEDFILE_KEY,@2,@4,@6);
                        setComments(NETWORK_KEY,@1,@7); )}
@@ -1340,13 +1253,6 @@ int addSubstparam(int substparams_key, YYLTYPE namepos, YYLTYPE valuepos)
    np->set(substparam_key, "name", namepos);
    np->set(substparam_key, "value", valuepos);
    return substparam_key;
-}
-
-int addSubstmachine(int substmachines_key, YYLTYPE namepos)
-{
-   int substmachine_key = np->create("substmachine", substmachines_key);
-   np->set(substmachine_key, "value", namepos);
-   return substmachine_key;
 }
 
 int addLoopVar(int forloop_key, YYLTYPE varnamepos, YYLTYPE frompos, YYLTYPE topos)

@@ -43,7 +43,6 @@ name_list path_list;
 name_list include_list;
 name_list channel_list;
 name_list for_list;
-name_list machine_list;
 
 mod_def_list mdl;
 
@@ -265,7 +264,6 @@ void mdl_empty (void)
                 cur = next;
                 next = cur -> next;
 
-                nl_empty (&cur -> machs); /* --LG */
                 nl_empty (&cur -> pars);
                 nl_empty (&cur -> gates);
                 jar_free (cur);
@@ -289,7 +287,6 @@ void mdl_add_mod (char *m_name)
 
         nw -> next = mdl.mods;
         jar_strcpy (nw -> namestr, m_name);
-        nl_init (&nw -> machs);
         nl_init (&nw -> pars);
         nl_init (&nw -> gates);
 
@@ -335,23 +332,6 @@ void mdl_add_gate (char *m_name, char *g_name, int isin, int isvec)
         nl_add_par (&me -> gates, g_name, isin, isvec);
 }
 
-void mdl_add_mach (char *m_name, char *ma_name) /* --LG */
-{
-        mod_def_elem *me;
-
-        if (mdl_find_mach (m_name, ma_name))
-                {
-                        sprintf (errstr,
-                                "Duplicate machine name \"%s\" in module defintion \"%s\"\n",
-                                ma_name, m_name);
-                        adderr;
-                }
-
-        me = mdl_find_mod (m_name);
-        assert( me!=NULL );
-        nl_add (&me -> machs, ma_name);
-}
-
 mod_def_elem *mdl_find_mod (char *m_name)
 {
         mod_def_elem *me;
@@ -394,19 +374,6 @@ int mdl_find_gate (char *m_name, char *g_name, int *isin, int *isvec)
         return i;
 }
 
-int mdl_find_mach (char *m_name, char *p_name)
-{
-        mod_def_elem *me;
-        int i;
-
-        me = mdl_find_mod (m_name);
-        if (!me)
-                return 0;
-
-        i = nl_find (me -> machs, p_name);
-        return i;
-}
-
 void mdl_print (void)
 {
         mod_def_elem *me;
@@ -432,8 +399,6 @@ void cmd_init (void)
         nl_init (&cmd.submods);
         nl_init (&cmd.submods_typ);
 
-        nl_init (&cmd.submod_machs);
-
         nl_init (&cmd.submod_pars);
 
         nl_init (&cmd.gates_mod);
@@ -447,8 +412,6 @@ void cmd_new (char *namestr, int is_simple)
 
         nl_empty (&cmd.submods);
         nl_empty (&cmd.submods_typ);
-
-        nl_empty (&cmd.submod_machs);
 
         nl_empty (&cmd.submod_pars);
 
@@ -533,26 +496,6 @@ void cmd_add_submod_par (char *par)
                 }
 
         nl_add (&cmd.submod_pars, par);
-}
-
-void cmd_add_submod_mach (char *maname)
-{
-        /* Commented out because with IF, multiple PARAMETERS sections can be present
-        *  commented out by           +--LG
-        * n = nl_count (cmd.submods);
-        * nl_get (cmd.submods, n, namestr);
-        * nl_get (cmd.submods_typ, n, typ);
-        *
-        * if (nl_find (cmd.submod_machs, maname))
-        * {
-        *       sprintf (errstr,
-        *               "Duplicate machine \"%s\" substitution in submodule \"%s\" declaration\n",
-        *               maname, namestr);
-        *       adderr;
-        * }
-        */
-
-        nl_add (&cmd.submod_machs, maname);
 }
 
 void cmd_add_gate (char *namestr, int modvec, char *gate, int isin, int isvec)
@@ -841,8 +784,7 @@ void print_temp_vars (FILE *f)
         fprintf (f, "\tcFunctionType *functype;\n");
         fprintf (f, "\tconst char *type_name;\n");
         fprintf (f, "\tchar b1[64], b2[64];\n");
-        fprintf (f, "\tcArray machines;\n"); /* --LG */
-        fprintf (f, "\tbool islocal, do_this_block;\n");
+        fprintf (f, "\tbool do_this_block;\n");
         fprintf (f, "\tint n;\n");
         fprintf (f, "\n");
 }

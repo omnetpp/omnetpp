@@ -440,14 +440,14 @@ int do_secondpass (char *root_fname)
           return -1;
         }
         strncat(cc_fname, name_template, strlen(name_template) + 1);
-        int yyoutfd = mkstemp(cc_fname); 
+        int yyoutfd = mkstemp(cc_fname);
         if (yyoutfd == -1)
         {
           fprintf(stderr, "Can't create file %s", cc_fname);
           return -1;
         }
         yyout = fdopen(yyoutfd, "w");
-#else        
+#else
         /*
          * open .cc file for output
          */
@@ -522,7 +522,7 @@ int do_secondpass (char *root_fname)
           return -1;
         }
 #endif
-        
+
         /*
         * cleanup
         */
@@ -565,7 +565,6 @@ int main (int argc, char *argv [])
         nl_init (&include_list);
         nl_init (&channel_list);
         nl_init (&for_list);
-        nl_init (&machine_list);
         nl_init (&path_list);
 
         perr = 0;

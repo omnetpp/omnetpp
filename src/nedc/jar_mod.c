@@ -28,8 +28,6 @@
 
 /*--- Global variable defs ----------------------------*/
 
-name_type physicalmach_name = "";
-
 name_type module_name = "";
 name_type submodule_name = "";
 name_type submodule_var = "";
@@ -186,20 +184,6 @@ void end_simple (char *mname)
         jar_free (mname);
 }
 
-void do_machine (char *maname)  /* --LG */
-{
-        if (firstpass)
-        {
-            mdl_add_mach (module_name, maname);
-            jar_free (maname);
-            return;
-        }
-
-        fprintf (yyout, "\tMachine( %s )\n", maname);
-        jar_free (maname);
-
-}
-
 void do_parameters (void)
 {
         if (firstpass)
@@ -312,17 +296,6 @@ void do_sub_or_sys1 (char *smname, char *smcount, int issys, char *smtype, char 
 
         jar_strcpy (submodule_nr, smcount);
 
-        /*
-        *if (issys)
-        *{
-        *       print_remark (tmp, "starting the program on other machines");
-        *       fprintf (tmp, "\tif (simulation.netInterface()!=NULL &&\n"
-        *                     "\t    simulation.netInterface()->isConsole())\n"
-        *                     "\t\tsimulation.netInterface()->start_segments( "
-        *                         "machines, ev.argc, ev.argv );\n");
-        *}
-        */
-
         if (!issys)
         {
                 print_remark (tmp, smname);
@@ -389,85 +362,18 @@ void do_sub_or_sys2 (char *smname, char *smcount, int issys, char *smtype, char 
 
         print_remark(tmp, "module creation:");
 
-        fprintf (tmp, "%sislocal = simulation.netInterface()==NULL ||\n"
-                      "%s          simulation.netInterface()->isLocalMachineIn( machines );\n",
-                      indent, indent );
-        if (issys)
-        {
-          fprintf (tmp, "%sif (!islocal)\n"
-                        "%s    throw new cException(\"Local machine `%%s' is not among machines specified for this network\",\n"
-                        "%s              simulation.netInterface()->localhost());\n",
-                        indent, indent, indent);
-        }
-
-        fprintf (tmp, "%s%s = modtype->create( \"%s\", %s, islocal);\n",
-                      indent, submodule_var, smname, issys?"NULL":"mod" );
+        fprintf (tmp, "%s%s = modtype->create( \"%s\", %s%s);\n",
+                      indent,
+                      submodule_var,
+                      smname,
+                      (issys ? "NULL" : "mod"),
+                      (smcount ? ",sub_nr, sub_i" : "")
+                );
 
         fprintf (tmp, "%scheck_error(); check_memory();\n\n", indent);
 
-        if (smcount)
-                fprintf (tmp, "%s%s->setIndex(sub_i, sub_nr);\n\n",
-                              indent, submodule_var);
-
         cmd_add_submod (smname, smlike==NULL?smtype:smlike, smcount!=NULL );
 
-        /* check the number of formal and actual machines --LG */
-        me = mdl_find_mod(submodule_type);
-        if (me==NULL)
-        {
-          /* "module type was not found" msg was printed earlier, ignore */
-        }
-        else if (nl_count(me->machs) != cmd.submod_machs.count)
-        {
-          name_list *machs;
-          machs = &(me->machs);
-
-          /* they differ: give an appropriate error message --LG */
-          if ( issys )
-          {
-            sprintf (errstr,
-              "System Module \"%s\" has %i actual machine(s) to substitute "
-              "%i formal machine(s)\n",
-              submodule_name, cmd.submod_machs.count, nl_count(*machs) );
-            adderr;
-          }
-          else
-          {
-            sprintf (errstr,
-              "Module \"%s\" has %i actual machine(s) to substitute "
-              "%i formal machine(s) in compound module \"%s\"\n",
-              submodule_name, cmd.submod_machs.count,
-              nl_count(*machs), cmd.namestr );
-            adderr;
-          }
-        }
-        else
-        {
-          name_list *machs;
-          machs = &(me->machs);
-
-          /* they are equal: set machine list if machines are given --LG */
-          if ( cmd.submod_machs.count ) /* actual machine list is not epmty */
-          {
-            int i;
-
-            print_remark(tmp, "set machine list:");
-            for (i=0; i<cmd.submod_machs.count; i++)
-            {
-              if (issys)
-                fprintf(tmp,
-                  "%s%s->setMachinePar( \"%s\", ev.getPhysicalMachineFor(\"%s\") );\n",
-                  indent, submodule_var, nl_retr_ith(machs,i+1)->namestr,
-                  nl_retr_ith( /*machs*/ &cmd.submod_machs,i+1)->namestr );
-              else
-                fprintf(tmp,
-                  "%s%s->setMachinePar( \"%s\", ((cPar *)machines[%i])->stringValue() );\n",
-                  indent, submodule_var, nl_retr_ith(machs,i+1)->namestr, i );
-            }
-            fprintf (tmp, "%scheck_error(); check_memory();\n\n", indent);
-            nl_empty(&cmd.submod_machs);
-          }
-        }
         jar_free (smname);
         jar_free (smcount);
         jar_free (smtype);
@@ -496,63 +402,6 @@ void do_substparams (void)
                 return;
 
         print_remark (tmp, "'parameters:' section");
-}
-
-void do_onlist()        /* --LG */
-{
-        if (firstpass)
-                return;
-
-        print_remark (tmp, "'on:' section");
-
-        nl_empty(&cmd.submod_machs);
-}
-
-void do_on_mach(char * maname)  /* --LG */
-{
-        if (firstpass)
-        {
-            jar_free (maname);
-            return;
-        }
-        if (!is_system)
-        {
-            fprintf (tmp,  "%spar = new cPar();\n"
-                           "%s*par = mod->machinePar(\"%s\");\n"
-                           "%smachines.add( par );\n",
-                           indent, indent, maname, indent );
-        }
-        else
-        {
-            int idx;
-            char *phys_mach;
-            idx = nl_find (machine_list, maname);
-            if (idx==0)
-               phys_mach = maname; /* no substitution! */
-            else
-               phys_mach = nl_retr_ith( &machine_list, idx )->parstr;
-
-            fprintf (tmp,  "%spar = new cPar();\n"
-                           "%s*par = ev.getPhysicalMachineFor(\"%s\");\n"
-                           "%smachines.add( par );\n",
-                           indent, indent, phys_mach, indent );
-        }
-        fprintf (tmp, "%scheck_error(); check_memory();\n\n",
-                      indent);
-        cmd_add_submod_mach (maname);
-        jar_free (maname);
-}
-
-void do_empty_onlist(void)
-{
-        if (firstpass)
-                return;
-
-        print_remark (tmp, "an empty actual machine list for the next module");
-
-        nl_empty(&cmd.submod_machs);
-
-        do_on_mach( jar_strdup("default"));
 }
 
 void do_substparameter(char *pname, char *expr)
@@ -638,7 +487,6 @@ void end_submodule (void)
                 fprintf (tmp, "\t}\n");
 
         jar_strcpy (indent, "\t");
-        fprintf (tmp, "%smachines.clear();\n\n", indent);
 
 }
 
@@ -978,27 +826,6 @@ void end_connection (char *channel, char dir, char *dispstr)
         jar_free (dispstr);
 }
 
-/* void do_physicalmachine (char *pm)
-{
-        if (firstpass)
-        {
-            -- pm string contains the quotes too which must be chopped off --
-            jar_strcpy( physicalmach_name, pm+1);
-            physicalmach_name[ strlen(physicalmach_name)-1 ] = '\0';
-        }
-        jar_free (pm);
-}
-*/
-
-/* void do_addvirtualmachine (char *vm)
-{
-        if (firstpass)
-        {
-            nl_add_str( &machine_list, vm, physicalmach_name);
-        }
-        jar_free (vm);
-}
-*/
 
 void do_condition(char *cond_expr)
 {

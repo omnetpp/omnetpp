@@ -29,7 +29,6 @@ typedef char name_type [128];
 typedef char expr_type [3072];
 
 /*--- Global variables used during parsing ---*/
-extern name_type physicalmach_name;
 extern name_type module_name;
 extern name_type submodule_name;
 extern name_type submodule_var;  /*submodule_name + "_mod" */
@@ -80,7 +79,6 @@ extern name_list path_list;
 extern name_list include_list;
 extern name_list channel_list;
 extern name_list for_list;
-extern name_list machine_list;
 
 /*------------------------------------------------------------------*/
 /*--- mod_def_list:
@@ -93,7 +91,6 @@ typedef struct mod_def_elem
 
         name_list pars;
         name_list gates;
-        name_list machs;
 
         struct mod_def_elem *next;
 }
@@ -114,11 +111,9 @@ void mdl_empty (void);
 void mdl_add_mod (char *);
 void mdl_add_par (char *, char *, char);
 void mdl_add_gate (char *, char *, int, int);
-void mdl_add_mach (char *, char *); /* --LG */
 
 int mdl_find_par (char *, char *);
 int mdl_find_gate (char *, char *, int *, int *);
-int mdl_find_mach (char *, char *); /* --LG */
 mod_def_elem *mdl_find_mod (char *);
 
 /*--- Global module definition list ---*/
@@ -141,7 +136,6 @@ typedef struct
         name_list submod_pars;
         name_list gates_mod;
         name_list gates;
-        name_list submod_machs; /* --LG */
 }
 current_mod_def;
 
@@ -152,12 +146,9 @@ void cmd_add_submod (char *, char *, int);
 char cmd_get_submod_par_type (char *);
 void cmd_add_submod_par (char *);
 void cmd_add_gate (char *, int, char *, int, int);
-void cmd_add_submod_mach (char *); /* --LG */
-char * cmd_retr_submod_mach(int i);
 
 void cmd_check_submod_pars (void);
 void cmd_check_gates (void);
-void cmd_check_mach (void); /* --LG */
 void cmd_check_submodpar_exists (char *modname, int modvec, char *parname);
 
 

@@ -1,3 +1,11 @@
+FIXME PARSIM: 
+2003-03-25  Andras Varga
+
+	* jar_mod.c: removed "islocal" stuff from module creation -- parallel
+	simulation is being reorganized
+	removed all machines stuff!!!!!!!!!!!!!!!1
+------------------------------------------
+
 2003-10-07  Andras Varga
 
 	* ebnf.y: fixed nedc bug, it didn't handle user-defined functions 
