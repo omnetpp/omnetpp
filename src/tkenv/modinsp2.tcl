@@ -214,17 +214,41 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
            if {![info exists tags(o)]} {set tags(o) {}}
            set fill [lindex $tags(o) 0]
            if {$fill == ""} {set fill #8080ff}
-           set outl [lindex $tags(o) 1]
-           if {$outl == ""} {set outl black}
+           set outline [lindex $tags(o) 1]
+           if {$outline == ""} {set outline black}
            set width [lindex $tags(o) 2]
            if {$width == ""} {set width 2}
 
            $c create $sh $x1 $y1 $x2 $y2 \
-               -fill $fill -width $width -outline $outl \
+               -fill $fill -width $width -outline $outline \
                -tags "tooltip submod $submodptr"
            $c create text $x [expr $y2+$width/2+3] -text $name -anchor n
 
        }
+
+#-----------
+       # r=<radius>,<fillcolor>,<color>,<width>
+       if {[info exists tags(r)]} {
+           set radius [lindex $tags(r) 0]
+           if {$radius == ""} {set radius 100}
+           set rfill [lindex $tags(r) 1]
+           # if rfill=="" --> not filled
+           set routline [lindex $tags(r) 2]
+           if {$routline == "" && $rfill == ""} {set routline black}
+           set rwidth [lindex $tags(r) 3]
+           if {$rwidth == ""} {set rwidth 1}
+
+           set x1 [expr $x - $radius/2]
+           set y1 [expr $y - $radius/2]
+           set x2 [expr $x + $radius/2]
+           set y2 [expr $y + $radius/2]
+
+           set circle [$c create oval $x1 $y1 $x2 $y2 \
+               -fill $rfill -width $rwidth -outline $routline]
+           $c lower $circle    
+       }
+#-----------
+
    } errmsg] {
        tk_messageBox -type ok -title Error -icon error \
                      -message "Error in display string of $name: $errmsg"
@@ -268,13 +292,13 @@ proc draw_enclosingmod {c ptr name dispstr} {
        if {![info exists tags(o)]} {set tags(o) {}}
        set fill [lindex $tags(o) 0]
        if {$fill == ""} {set fill #c0c0c0}
-       set outl [lindex $tags(o) 1]
-       if {$outl == ""} {set outl black}
+       set outline [lindex $tags(o) 1]
+       if {$outline == ""} {set outline black}
        set width [lindex $tags(o) 2]
        if {$width == ""} {set width 2}
 
        $c create $sh $bx $by [expr $bx+$sx] [expr $by+$sy] \
-           -fill $fill -width $width -outline $outl \
+           -fill $fill -width $width -outline $outline \
            -tags "mod $ptr"
        $c create text [expr $bx+3] [expr $by+3] -text $name -anchor nw -tags "tooltip modname"
        $c lower mod
@@ -320,8 +344,8 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
        set src_anch  [list [lindex $tags(m) 1] [lindex $tags(m) 2]]
        set dest_anch [list [lindex $tags(m) 3] [lindex $tags(m) 4]]
 
-       # puts "DEBUG: src_rect=($src_rect) dest_rect=($dest_rect)"
-       # puts "DEBUG: src_anch=($src_anch) dest_anch=($dest_anch)"
+       puts "DEBUG: src_rect=($src_rect) dest_rect=($dest_rect)"
+       puts "DEBUG: src_anch=($src_anch) dest_anch=($dest_anch)"
 
        regexp -- {^.[^.]*} $c win
 

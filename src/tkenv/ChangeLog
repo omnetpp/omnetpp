@@ -1,3 +1,11 @@
+2003-09-25  Andras Varga
+
+	* modinsp2.tcl: added support for "r" submodule display string tag.
+	It draws a circle (or a disc) around the submodule with the given 
+	radius, and it can be used to visualize transmission range of 
+	wireless nodes. Syntax: "r=<radius>,<fillcolor>,<color>,<width>",
+	the default is unfilled black circle with radius=100.
+
 2003-09-22  Andras Varga
 	* tkapp.cc, modinsp.cc, modinsp2.tcl: implemented animation of
 	sendDirect().
