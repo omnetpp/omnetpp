@@ -1,5 +1,8 @@
 
 opp_test, the OMNeT++ regression test tool is currently documented in
-doc/Readme. The contents of that file will be part of the manual some time.
+test/Readme. The contents of that file will be part of the manual some time.
+
+opp_test is currently not supported in Windows+MSVC environment due to the
+lack of an automatic makefile generation tool.
 
 --Andras
