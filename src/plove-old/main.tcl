@@ -421,6 +421,9 @@ proc createMainWindow {{geom ""}} {
     wm deiconify .
     wm protocol $w WM_DELETE_WINDOW "fileExit"
 
+    wm title . "Plove"
+
+
     #################################
     # menu
     #################################
