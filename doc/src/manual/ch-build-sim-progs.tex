@@ -143,11 +143,8 @@ contains other targets, too. Here is a list of important ones:
  & The default target is to build the simulation executable\\\hline
 depend & Adds (or refreshes) dependencies in the \texttt{Makefile}\\\hline
 clean &  Deletes all files that were produced by the make process\\\hline
-neddoc.html & Generates documentation for all NED files. The resulting file is named \texttt{neddoc.html}\\\hline
-htmldoc & Generates code documentation using doxygen. The documentation will be placed into the directory \texttt{htmldoc}\\\hline
-doc & Convenience target that calls neddoc.html and htmldoc\\\hline
-re-makemake & Regenerates the \texttt{Makefile} using \fprog[make]{opp\_makemake} (this is useful if e.g.  after upgrading {\opp}, if \fprog{opp\_makemake} has changed)\\\hline
-re-makemake-m & Similar to \fprog[make]{make re-makemake}, but it regenerates the \texttt{Makefile.in} instead\\\hline
+makefiles & Regenerates the \texttt{Makefile} using \fprog[make]{opp\_makemake} (this is useful if e.g.  after upgrading {\opp}, if \fprog{opp\_makemake} has changed)\\\hline
+makefile-ins & Similar to \fprog[make]{make makefiles}, but it regenerates the \texttt{Makefile.in} instead\\\hline
 \end{longtable}
 
 If you already had a \texttt{Makefile} in that directory, \fprog{opp\_makemake}
@@ -159,11 +156,9 @@ with the -f option:
 \end{verbatim}
 
 If you have problems, check the path definitions (locations of include
-files and libraries etc.) in the configure script\index{configure
-  script} and correct them if necessary. Then re-run configure to
-commit the changes to all makefiles, the \fprog{opp\_makemake} script
-etc.
-
+files and libraries etc.) in the configure script\index{configure script}
+and correct them if necessary. Then re-run configure for the changes
+to take effect.
 
 You can specify the user interface (Cmdenv/Tkenv) with the -u option
 (with no -u, Tkenv is the default):
