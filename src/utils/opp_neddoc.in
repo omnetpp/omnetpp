@@ -59,7 +59,7 @@ if ($DOT ne "")
 
 if (@ARGV==())
 {
-       $do_help = 1;
+    $do_help = 1;
 }
 
 # process arg vector
@@ -95,7 +95,7 @@ while (@ARGV)
     }
     elsif ($arg eq '-x' || $arg eq '--no-diagrams')
     {
-       $have_dot = 1;
+       $have_dot = 0;
     }
     elsif ($arg eq '-g' || $arg eq '--debug')
     {
@@ -315,7 +315,7 @@ $xsltcommand = "$XSLTPROC".
                " --stringparam outputdir \"".toslash($outdir)."\"".
                " --stringparam imagesxml \"".toslash($imagesxml)."\"".
                " --stringparam document-unassigned-params \"".($unassignedpars?"y":"n")."\"".
-               " --stringparam have_dot \"".($have_dot?"y":"n")."\"".
+               " --stringparam have-dot \"".($have_dot?"y":"n")."\"".
                " --stringparam doxytagfile \"".toslash($doxytagfile)."\"".
                " --stringparam doxyhtmldir \"".toslash($doxyhtmldir)."\"".
                " --output -".
