@@ -21,6 +21,7 @@
 #include "nederror.h"
 #include "nedelements.h"
 
+
 static const char *io_vals[] = {"input", "output"};
 static int io_nums[] = {NED_GATEDIR_INPUT, NED_GATEDIR_OUTPUT};
 static const int io_n = 2;

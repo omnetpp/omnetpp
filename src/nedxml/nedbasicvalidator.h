@@ -19,6 +19,7 @@
 
 #include "nedvalidator.h"
 
+
 /**
  * Performs structural validation of components. Assumes the tree already
  * passed DTD validation. Each compound module and other component is
