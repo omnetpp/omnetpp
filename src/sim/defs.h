@@ -25,19 +25,19 @@
 
 
 //=== Windows DLL IMPORT/EXPORT stuff
-#define DLLIMPORT  __declspec( dllimport )
-#define DLLEXPORT  __declspec( dllexport )
+#define OPP_DLLIMPORT  __declspec( dllimport )
+#define OPP_DLLEXPORT  __declspec( dllexport )
 
 #ifdef _WIN32
 #  ifdef BUILDING_SIM
-#    define SIM_API  DLLEXPORT
+#    define SIM_API  OPP_DLLEXPORT
 #  else
-#    define SIM_API  DLLIMPORT
+#    define SIM_API  OPP_DLLIMPORT
 #  endif
 #  ifdef BUILDING_ENVIR
-#    define ENVIR_API  DLLEXPORT
+#    define ENVIR_API  OPP_DLLEXPORT
 #  else
-#    define ENVIR_API  DLLIMPORT
+#    define ENVIR_API  OPP_DLLIMPORT
 #  endif
 #else
 #  define SIM_API
