@@ -145,61 +145,6 @@ SOURCE=.\client.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\dyna.ned
-
-!IF  "$(CFG)" == "dyna - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\dyna.ned
-InputName=dyna
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "dyna - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\dyna.ned
-InputName=dyna
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "dyna - Win32 Release Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\dyna.ned
-InputName=dyna
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "dyna - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\dyna.ned
-InputName=dyna
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\dyna_n.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\dynapacket.msg
 
 !IF  "$(CFG)" == "dyna - Win32 Debug Tkenv"

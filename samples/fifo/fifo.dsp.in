@@ -7,21 +7,21 @@
 CFG=fifo - Win32 Debug Tkenv
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE
+!MESSAGE 
 !MESSAGE NMAKE /f "fifo.mak".
-!MESSAGE
+!MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE
+!MESSAGE 
 !MESSAGE NMAKE /f "fifo.mak" CFG="fifo - Win32 Debug Tkenv"
-!MESSAGE
+!MESSAGE 
 !MESSAGE Possible choices for configuration are:
-!MESSAGE
+!MESSAGE 
 !MESSAGE "fifo - Win32 Debug Tkenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "fifo - Win32 Debug Cmdenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "fifo - Win32 Release Tkenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "fifo - Win32 Release Cmdenv" (based on "Win32 (x86) Console Application")
-!MESSAGE
+!MESSAGE 
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -128,7 +128,7 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 # ADD LINK32 cmdenv.lib sim_std.lib envir.lib nedxml.lib @XML_LIBS@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x10000 /subsystem:console /machine:I386 /libpath:"@OMNETPP_LIB_DIR@"
 
-!ENDIF
+!ENDIF 
 
 # Begin Target
 
@@ -145,231 +145,11 @@ SOURCE=.\fifo.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\fifo.ned
-
-!IF  "$(CFG)" == "fifo - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\fifo.ned
-InputName=fifo
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\fifo.ned
-InputName=fifo
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Release Tkenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\fifo.ned
-InputName=fifo
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\fifo.ned
-InputName=fifo
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\fifo_n.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\fifonet.ned
-
-!IF  "$(CFG)" == "fifo - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\fifonet.ned
-InputName=fifonet
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\fifonet.ned
-InputName=fifonet
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Release Tkenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\fifonet.ned
-InputName=fifonet
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\fifonet.ned
-InputName=fifonet
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\fifonet_n.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\gen.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\gen.ned
-
-!IF  "$(CFG)" == "fifo - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\gen.ned
-InputName=gen
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\gen.ned
-InputName=gen
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Release Tkenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\gen.ned
-InputName=gen
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\gen.ned
-InputName=gen
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\gen_n.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\sink.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\sink.ned
-
-!IF  "$(CFG)" == "fifo - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\sink.ned
-InputName=sink
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\sink.ned
-InputName=sink
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Release Tkenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\sink.ned
-InputName=sink
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fifo - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED compiling $(InputPath)
-InputPath=.\sink.ned
-InputName=sink
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\sink_n.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"

@@ -7,21 +7,21 @@
 CFG=fddi - Win32 Debug Tkenv
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE
+!MESSAGE 
 !MESSAGE NMAKE /f "fddi.mak".
-!MESSAGE
+!MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE
+!MESSAGE 
 !MESSAGE NMAKE /f "fddi.mak" CFG="fddi - Win32 Debug Tkenv"
-!MESSAGE
+!MESSAGE 
 !MESSAGE Possible choices for configuration are:
-!MESSAGE
+!MESSAGE 
 !MESSAGE "fddi - Win32 Debug Tkenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "fddi - Win32 Debug Cmdenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "fddi - Win32 Release Tkenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "fddi - Win32 Release Cmdenv" (based on "Win32 (x86) Console Application")
-!MESSAGE
+!MESSAGE 
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -128,7 +128,7 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
 # ADD LINK32 cmdenv.lib sim_std.lib envir.lib nedxml.lib @XML_LIBS@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x10000 /subsystem:console /machine:I386 /libpath:"@OMNETPP_LIB_DIR@"
 
-!ENDIF
+!ENDIF 
 
 # Begin Target
 
@@ -145,341 +145,11 @@ SOURCE=.\fddi_mac.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\fddi_mac.ned
-
-!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_mac.ned
-InputName=fddi_mac
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_mac.ned
-InputName=fddi_mac
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_mac.ned
-InputName=fddi_mac
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_mac.ned
-InputName=fddi_mac
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\fddi_mac_n.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\fddi_nets.ned
-
-!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_nets.ned
-InputName=fddi_nets
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_nets.ned
-InputName=fddi_nets
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_nets.ned
-InputName=fddi_nets
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_nets.ned
-InputName=fddi_nets
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\fddi_nets_n.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\fddi_nodes.ned
-
-!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_nodes.ned
-InputName=fddi_nodes
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_nodes.ned
-InputName=fddi_nodes
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_nodes.ned
-InputName=fddi_nodes
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_nodes.ned
-InputName=fddi_nodes
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\fddi_nodes_n.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\fddi_rings.ned
-
-!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_rings.ned
-InputName=fddi_rings
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_rings.ned
-InputName=fddi_rings
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_rings.ned
-InputName=fddi_rings
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\fddi_rings.ned
-InputName=fddi_rings
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\fddi_rings_n.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\othermod.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\othermod.ned
-
-!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\othermod.ned
-InputName=othermod
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\othermod.ned
-InputName=othermod
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\othermod.ned
-InputName=othermod
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\othermod.ned
-InputName=othermod
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\othermod_n.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\ssm_ifs.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\ssm_ifs.ned
-
-!IF  "$(CFG)" == "fddi - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\ssm_ifs.ned
-InputName=ssm_ifs
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\ssm_ifs.ned
-InputName=ssm_ifs
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\ssm_ifs.ned
-InputName=ssm_ifs
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "fddi - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\ssm_ifs.ned
-InputName=ssm_ifs
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedtool.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\ssm_ifs_n.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
