@@ -9,6 +9,7 @@ cMessage *msg = new cMessage("msg");
 // we shouldn't be able to cast to an unrelated type
 cTopology *p = check_and_cast<cTopology *>(msg);
 ev << "fell through\n" << endl;
+ev << p << endl;
 
 %exitcode: 1
 

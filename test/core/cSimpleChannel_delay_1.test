@@ -46,7 +46,7 @@ void {Node1}::activity()
     for (int i=0; i<100; i++)
     {
         cMessage *msg = new cMessage();
-        msg->setLength(exponential(1000));  // delay should not depend on message length
+        msg->setLength((long)exponential(1000));  // delay should not depend on message length
         send(msg, "out");
         wait(exponential(1.0));
     }

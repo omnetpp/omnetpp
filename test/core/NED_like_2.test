@@ -26,5 +26,5 @@ warnings=yes
 %exitcode: 1
 
 %contains-regex: stdout
-module type definition .*bla-bla-bla.* not found
+type definition .*bla-bla-bla.* not found
 

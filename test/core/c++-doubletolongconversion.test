@@ -5,7 +5,7 @@ Test double-to-long conversions:
 
 %activity:
 
-#define PRINT(x) {d=x; l=d; ul=d; ev << "d=" << d << ", l=" << l << ", ul=" << ul << endl;}
+#define PRINT(x) {d=(double)x; l=(long)d; ul=(unsigned long)d; ev << "d=" << d << ", l=" << l << ", ul=" << ul << endl;}
 
 double d;
 long l;
