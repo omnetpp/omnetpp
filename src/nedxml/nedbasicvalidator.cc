@@ -177,6 +177,8 @@ void NEDBasicValidator::validateElement(ImportedFileNode *node)
 
 void NEDBasicValidator::validateElement(ChannelNode *node)
 {
+    // make sure submodule names are unique
+    checkUniqueness(node, NED_CHANNEL_ATTR, "name");
 }
 
 void NEDBasicValidator::validateElement(ChannelAttrNode *node)
