@@ -100,9 +100,9 @@ AR="ar cr"
 SHLIB_LD="gcc -shared"
 NEDC=nedc
 if uname | grep "CYGWIN" >/dev/null; then
-    PWD="$OMNETPP_SRC_DIR/utils/cygpwd"
+    MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
 else
-    PWD=pwd
+    MYPWD=pwd
 fi
 
 A_LIB_SUFFIX=".a"
@@ -298,7 +298,7 @@ AC_SUBST(YACC)
 AC_SUBST(LEX)
 AC_SUBST(CC)
 AC_SUBST(CXX)
-AC_SUBST(PWD)
+AC_SUBST(MYPWD)
 AC_SUBST(NEDC)
 AC_SUBST(AS)
 AC_SUBST(AR)

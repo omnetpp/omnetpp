@@ -126,10 +126,10 @@ token:
 
 check-env:
 	@ if echo $$PATH | grep -q "@OMNETPP_BIN_DIR@"; then :; else \
-	  echo ' *** Error: @OMNETPP_BIN_DIR@ is not in the path!'; exit 1; \
+	  echo ' *** Warning: @OMNETPP_BIN_DIR@ not in the path, some components won'\''t build!'; \
 	fi
 	@ if echo $$LD_LIBRARY_PATH | grep -q "@OMNETPP_LIB_DIR@"; then :; else \
-	  echo ' *** Warning: @OMNETPP_LIB_DIR@ is not in LD_LIBRARY_PATH!'; \
+	  echo ' *** Warning: @OMNETPP_LIB_DIR@ not in LD_LIBRARY_PATH, shared libs won'\''t work!'; \
 	fi
 
 clean:

@@ -1094,11 +1094,10 @@ AS="as"
 AR="ar cr"
 SHLIB_LD="gcc -shared"
 NEDC=nedc
-
 if uname | grep "CYGWIN" >/dev/null; then
-    PWD="$OMNETPP_SRC_DIR/utils/cygpwd"
+    MYPWD="$OMNETPP_SRC_DIR/utils/cygpwd"
 else
-    PWD=pwd
+    MYPWD=pwd
 fi
 
 A_LIB_SUFFIX=".a"
@@ -2299,8 +2298,6 @@ trap 'rm -fr `echo "Makefile
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
-echo XXXXXXX:$OMNETPP_BITMAP_PATH
-
 # Protect against being on the right side of a sed subst in config.status.
 sed 's/%@/@@/; s/@%/@@/; s/%g\$/@g/; /@g\$/s/[\\\\&%]/\\\\&/g;
  s/@@/%@/; s/@@/@%/; s/@g\$/%g/' > conftest.subs <<\\CEOF
@@ -2345,7 +2342,7 @@ s%@OMNETPP_BITMAP_PATH@%$OMNETPP_BITMAP_PATH%g
 s%@OMNETPP_SRC_DIR@%$OMNETPP_SRC_DIR%g
 s%@OMNETPP_SAMPLES_DIR@%$OMNETPP_SAMPLES_DIR%g
 s%@OMNETPP_MODELS_DIR@%$OMNETPP_MODELS_DIR%g
-s%@PWD@%$PWD%g
+s%@MYPWD@%$MYPWD%g
 s%@NEDC@%$NEDC%g
 s%@AS@%$AS%g
 s%@AR@%$AR%g
