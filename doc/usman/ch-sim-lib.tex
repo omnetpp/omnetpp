@@ -4224,7 +4224,7 @@ program can be written in a releatively short time, and it is
 inexpensive to maintain afterwards: if the structure of the data files
 change, the NED-creating program can be easily modified. The
 disadvantage is that the resulting NED files are often quite big and
-the C++ compilation of the *\_n.cc files take too long.
+the C++ compilation of the \texttt{*\_n.cc} files take too long.
 
 This method is best suited in the first phase of a simulation
 project when the topology, the format of the data files, etc.
@@ -4239,7 +4239,7 @@ have not yet settled down.
 Another alternative is to write C++ code which becomes part of the
 simulation executable. The code would read the topology data from data
 files or a database, and build the network directly.  The code which
-builds the network would be quite similar to the *\_n.cc files output
+builds the network would be quite similar to the \ttt{*\_n.cc} files output
 by nedc.
 
 
@@ -4255,7 +4255,7 @@ a network design tool.
 \section{Object ownership management}
 \label{sec:ch-sim-lib:ownership-management}
 
-OMNeT++ has a built-in ownership management mechanism which
+{\opp} has a built-in ownership management mechanism which
 is used for garbage collection, sanity checks, and as
 part of the infrastructure supporting Tkenv inspectors.
 It usually works transparently, but it is useful to know
@@ -4284,15 +4284,16 @@ objects owned is not this straightforward, but it's also possible
 using the \fname{cIterator} class.
 
 The data structure used to maintain this ownership tree consists of
-4 pointers in \cclass{cObject}. \fname{ownerp} points to the owner,
-\fname{firstchildp} points to the first owned object, while
-\fname{prevp}, \fname{nextp} are used to build a doubly linked list
+4 pointers in \cclass{cObject}. \textit{ownerp} points to the owner,
+\textit{firstchildp} points to the first owned object, while
+\textit{prevp}, \textit{nextp} are used to build a doubly linked list
 of objects held by the same owner. These pointers are private data
 members, they cannot be accessed directly, only via certain
 member functions. Changing the owner of an object
 (\fname{setOwner()} method in \cclass{cObject})
 can be done in constant time, and involves about 8-9 pointer
-assignments.
+assignments (i.e., \textit{ownerp}, \textit{prevp}, \textit{nextp} and
+\textit{firstchildp} in the object, in its owner and siblings).
 
 
 \subsection{Purpose}
@@ -4306,9 +4307,9 @@ The purpose of maintaining the ownership tree is threefold:
     \item{to prevent a certain types of programming errors, namely,
     those associated with wrong ownership handling.}
 
-    \item{it provides some "reflection" (in the Java sense), which
+    \item{it provides some ``reflection'' (in the Java sense), which
     enables Tkenv to display which objects are present (and where)
-    in the simulation, to find "lost" (leaked) objects, etc.}
+    in the simulation, to find ``lost'' (leaked) objects, etc.}
 \end{itemize}
 
 Some examples of programming errors that can be caught
@@ -4339,14 +4340,14 @@ which has been sent to (and so currently kept by) another module.
 The concept of \fname{ownership} means that \textit{owner has the
 exclusive right and duty to delete the object it owns}.
 
-In practice, this means if you delete a message, its encapsulated
+As an example, this means if you delete a message, its encapsulated
 message (see \fname{encapsulate()} method) and attached
 \fname{cPar} objects are also deleted. If you delete a queue,
 all messages it contains and owns will also be deleted.
   \footnote{note that it's not necessary for a container object like
   a queue to actually own all inserted objects. This behavior
-  can be controlled via the \textit{takeownership} flag as
-  explained later.}
+  can be controlled via the \textit{takeownership} flag,
+  as explained later.}
 
 The ownership principle is enforced in \cclass{cObject}:
 \textbf{\cclass{cObject}'s destructor deletes all owned objects}.
@@ -4364,6 +4365,8 @@ deletion here.
 
 \subsection{Ownership is managed transparently}
 
+\textbf{Automatic transfer of ownership}
+
 Ownership is usually established and managed automatically.
 It is not hard to guess that objects (i.e. messages) inserted
 into a \cclass{cQueue} or a \cclass{cArray} will be owned by that object
@@ -4371,15 +4374,17 @@ into a \cclass{cQueue} or a \cclass{cArray} will be owned by that object
 Messages encapsulated into other messages (by \fname{cMessages}'s
 \fname{encapsulate()} method), and \fname{cPar}'s added to a message
 will also become owned by the message object (again, this can be
-changed), so they are deallocated automatically when the
+changed), and they are deallocated automatically when the
 message object is deleted.
+
+\textbf{The \textit{local objects} list}
 
 But objects which, not being stored in another object, appear not to
 have owners usually have one as well. If you just create a
 message object inside a simple module (e.g. from \fname{activity()},
 \fname{handleMessage()} or any function called from them), it will
 be \textit{owned by simple module}, or more precisely, by
-its \textit{"local objects list"} (an object data member of
+its \textit{``local objects list''} (an object data member of
 \fname{cSimpleModule}).
 
 So the following line:
@@ -4394,28 +4399,11 @@ to the module's local objects list.
   local object list, because that's the best guess a \fname{cMessage}
   constructor can do.}
 
-The \fname{send()} and \fname{scheduleAt()} functions make use of this fact
-to make some sanity check: the message being sent/scheduled
-\textit{must} be owned by module's local objects list.
-If it is not, then it's an error, because then the message is
-probably with another module (i.e. already sent), or
-currently scheduled, or inside a queue, a message or some
-other object -- in either case we do not have any authority
-to send it. When you get this error message (\ttt{"not owner of object"}),
-you might feel tempted to forcibly take ownership of the message object
-by means of \fname{setOwner()}, but note that it would be
-entirely wrong, and would probably lead to crash further on in
-your program. Instead, you need to carefully examine who
-has the ownership of the message, why's that, and then
-probably you'll need to change some logic somewhere
-in your program.
-
-
 The local objects list also plays a role when an object is
 removed from a container object (e.g. when a message is removed
 from a queue).
-In that case, the container object "drops" the ownership of the
-object, and the object will "join" the local objects list
+In that case, the container object ``drops'' the ownership of the
+object, and the object will ``join'' the local objects list
 of the simple module (again, to the \textit{currently active} simple
 module's list). Thus, an innocent-looking
 
@@ -4428,8 +4416,30 @@ object from the queue to the simple module.
 The same thing happens when a message is decapsulated from another message,
 when \fname{cPar}'s are removed from a \cclass{cArray}, and in many more cases.
 
+
+\textbf{Sanity checks}
+
+The \fname{send()} and \fname{scheduleAt()} functions make use
+of the ownership mechanism to do some sanity check:
+the message being sent/scheduled \textit{must} be owned
+by module's local objects list.
+If it is not, then it's an error, because then the message is
+probably with another module (i.e. already sent), or
+currently scheduled, or inside a queue, a message or some
+other object -- in either case, we do not have any authority
+to send it. When you get this error message (\ttt{"not owner of object"}),
+you might feel tempted to forcibly take ownership of the message object
+by means of \fname{setOwner()}, but note that it would be
+entirely wrong, and would probably lead to crash further on in
+your program. Instead, you need to carefully examine who
+has the ownership of the message, why's that, and then
+probably you'll need to change some logic somewhere
+in your program.
+
+\textbf{The \textit{class members} list}
+
 For completeness, it should also be mentioned that class
-members of a simple module are collected on a \textit{"class members list"}.
+members of a simple module are collected on a \textit{``class members list''}.
 The reason for the existence of this list is not so much garbage collection
 or sanity checks, but rather assisting Tkenv in displaying
 the class members list in simple module inspectors.
@@ -4445,7 +4455,7 @@ The local objects list is also the reason why you rarely need to
 put delete statements in your simple module destructors.
 
 When you restart the simulation in Tkenv or begin a new run in Cmdenv,
-OMNeT++ has to clean up the previously running simulation.
+{\opp} has to clean up the previously running simulation.
 This involves (a) deleting all modules in the network, and
 (b) deleting all messages in the Future Events Set.
 Modules (both simple and compound) can also be dynamically deleted
@@ -4454,14 +4464,16 @@ of recursively deleting all submodules). At that time,
 one expects all dynamically allocated objects to be properly
 destructed and memory released. Here's how that happens.
 
-When a simple module gets deleted, the local objects list is also deleted
-in addition to the module's gates and parameters.
-This means that all objects whose owner is the module's
-local objects list will also be deleted.
-The convenience of this behaviour is that as long as you only
-have dynamically allocated memory as (or within) \cclass{cObject}-based objects,
-you don't have to worry about destructors: everything is taken
-care of automatically.
+When a simple module gets deleted, the local objects list is also
+deleted in addition to the module's gates and parameters.
+This means that all objects on the module's local objects list
+(i.e. objects you allocated and need to be garbage collected)
+will also be deleted, and this is exactly what we need.
+
+The result is that as long as you only have dynamically allocated
+memory as (or within) \cclass{cObject}-based objects,
+you don't have to worry about writing module destructors:
+everything is taken care of automatically.
 
 \textbf{Garbage collection and your destructors}
 
@@ -4471,41 +4483,68 @@ but does no harm: its destructor will also remove it from the
 owner's list (which might be the module's local object list),
 so double deletion will not occur.
 
+\begin{verbatim}
+class MyModule : public cSimpleModule
+{
+    ...
+    cMessage *timeoutmsg;
+    ...
+};
+
+MyModule::~MyModule()
+{
+    delete timeoutmsg;   // redundant but does no harm
+}
+\end{verbatim}
+
 Other allocated memory (e.g. C++ arrays of integers, doubles, structs
 or pointers) or objects which have nothing to do with \cclass{cObject}
 (e.g. STL objects or your non-\cclass{cObject} rooted classes)
 are invisible to the ownership mechanism discussed here,
 and must be deleted in the destructor in the conventional way.
 
-In any case, remember \textit{not} to put any destructor-like
-code inside the module's \fname{finish()} function. The main reason
-is that whenever your simulation stops with an error (or
-you just stop it within Tkenv), the \fname{finish()} functions
-will not be called and thus, memory will be leaked.
+\begin{verbatim}
+class MyModule : public cSimpleModule
+{
+    ...
+    double *distances; // array allocated via new double []
+    ...
+};
 
-The following code is an example of the above.
+MyModule::~MyModule()
+{
+    delete [] distances; // OMNeT++ knows nothing about this vector,
+                         // so we need to clean up it manually
+}
+\end{verbatim}
+
+It is similar when you have arrays of \cclass{cMessage} pointers
+(or in general any other non-{\opp} data structure which holds pointers to
+\cclass{cObject}-rooted objects). Then it is enough if you delete
+the array or the data structure, the objects will be cleaned up
+via the garbage collection mechanism.
 
 \begin{verbatim}
 class MyModule : public cSimpleModule
 {
     ...
-    cMessage *timeoutmsg;
-    double *distances; // array allocated via new double []
     cMessage **events; // array allocated via new cMessage *[]
     ...
 };
 
-...
-
 MyModule::~MyModule()
 {
-    delete timeoutmsg;   // redundant but does no harm
-    delete [] distances; // necessary for proper cleanup
-    delete [] events;    // delete only the pointer array itself --
-                         //   deleting contained cMessages is left to
-                         //   default garbage collection mechanism
+    delete [] events; // we need to delete only the pointer array itself,
+                      // deleting the message objects can be left to
+                      // the garbage collection mechanism
 }
 \end{verbatim}
+
+In any case, remember \textit{not} to put any destructor-like
+code inside the module's \fname{finish()} function. The main reason
+is that whenever your simulation stops with an error (or
+you just stop it within Tkenv), the \fname{finish()} functions
+will not be called and thus, memory will be leaked.
 
 \textbf{Can it crash?}
 
@@ -4538,7 +4577,7 @@ of \fname{activity()} are just left on the coroutine stack.
 They themselves need not (and must not) be deleted using the
 \fname{delete} operator, but they need to be properly destructed
 (their destructors called) so that the memory \textit{they} allocated
-can be released. As of OMNeT++ version 2.3, this is done by actually
+can be released. As of {\opp} version 2.3, this is done by actually
 calling the method named \fname{discard()} in the \cclass{cObject} destructor
 instead of the directly the \fname{delete} operator. \fname{discard()}
 invokes either the \fname{delete} operator (if the object was allocated
@@ -4554,7 +4593,7 @@ cleanup.
 How can the ownership mechanism operate transparently?
 It is useful to look inside \cclass{cQueue} and \cclass{cArray},
 because they might give you a hint what behavior you need
-to implement when you want to use non-OMNeT++ container classes
+to implement when you want to use non-{\opp} container classes
 to store messages or other \cclass{cObject}-based objects.
 
 \textbf{Insertion}
@@ -4571,7 +4610,7 @@ As it was mentioned before, the default behaviour of \cclass{cQueue} and
 \cclass{cArray} is to take ownership of the objects inserted.
 However, this behavior can be changed via the \textit{takeOwnership} flag.
 The flag is part of \cclass{cObject} so that every container object
-can use it, and can be get/set via the
+can make use of it, and can be get/set via the
 \fname{takeOwnership()} and \fname{setTakeOwnership()} methods.
 
 Here's what the \textit{insert} operation of \cclass{cQueue} (or \cclass{cArray}) does:
@@ -4611,6 +4650,9 @@ Here's what the \textit{remove} family of operations in \cclass{cQueue}
     its current owner}
 \end{itemize}
 
+After the object was removed from a \cclass{cQueue}/\cclass{cArray},
+you may further use it, or if it's not needed any more, you can delete it.
+
 The \textit{release ownership} phrase requires further explanation.
 When you remove and object from a queue or array, the ownership
 is expected to be transferred to the simple module's local objects list.
@@ -4619,7 +4661,6 @@ This is acomplished by the \fname{drop()} function, which is a shorthand for
 \fname{defaultOwner()} is a virtual method defined in \cclass{cObject},
 and its \cclass{cObject} implementation returns the currently executing
 simple module's local object list.
-
 
 As an example, the \fname{remove()} method of \cclass{cQueue} is
 implemented like this:
@@ -4667,7 +4708,7 @@ left unchanged.
 In fact, the same question arises at three places:
 the assignment operator \fname{operator=()}, the copy constructor
 (e.g. \fname{cArray(const cArray\&)}) and the \fname{dup()} method.
-In OMNeT++, the convention is that copying is implemented
+In {\opp}, the convention is that copying is implemented
 in the assignment operator. (The copy constructor just constructs
 an empty object and invokes assigment, while \fname{dup()}
 is implemented as \fname{new cArray(*this)}).

@@ -113,6 +113,8 @@ htmlfile_spec := $BASE.html
 :comm   :\linebreak:<br>::
 :comm   :\newline:<br>::
 :comm   :\tab: ::
+:comm   :\new:[New!]::
+:comm   :\changed:[Changed!]::
 :comm   :\sloppy:::
 :comm   :\fpar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fdef(\[.*?\])?{(.*?)}:<tt>$2</tt>::

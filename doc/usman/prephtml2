@@ -8,7 +8,7 @@ $fname = $ARGV[0];
 $quiet = 0;
 $singlePage = 1;
 $ext = "html";
-$opp_version = "2.3b1";
+$opp_version = "2.3";
 
 #
 # general template for our output HTML pages; real contents will go to __BODY__

@@ -365,8 +365,8 @@ The simulation system provides the following components:
     code that manages the simulation and the simulation class library.
     It is written in C++, compiled and put together to form a library
     (a file with .a or .lib extension)}
-  \item{User interfaces\index{simulation!user interface}
-    \index{user interface|see{simulation interface}}. {\opp} user interfaces
+  \item{User interfaces\index{simulation!user interface}.
+    \index{user interface|see{simulation interface}} {\opp} user interfaces
     are used with simulation execution, to facilitate debugging,
     demonstration, or batch execution of simulations. There are
     several user interfaces, written in C++, compiled and put together
@@ -473,12 +473,15 @@ The simulation system itself:
         \tbf{std/}     files for non-distributed execution
         \tbf{pvm/}     files for distributed execution over PVM
         \tbf{mpi/}     files for distributed execution using MPI
+      \tbf{nedxml/}    the NEDXML library
       \tbf{envir/}     common code for user interfaces
       \tbf{cmdenv/}    command-line user interface
       \tbf{tkenv/}     Tcl/Tk-based user interface
       \tbf{gned/}      graphical NED editor\index{ned!graphical interface}
       \tbf{plove/}     output vector analyzer and plotting tool
       \tbf{utils/}     makefile-autocreator etc
+    \tbf{test/}        regression test suite for the simulation kernel
+      \tbf{distrib/}   regression test suite for built-in distributions
 \end{Verbatim}
 
 There is a tutorial, contributed by Nick van Foreest
@@ -486,7 +489,7 @@ There is a tutorial, contributed by Nick van Foreest
 \begin{Verbatim}[commandchars=\\\{\}]
     \tbf{tutorial/}    the tutorial document
       \tbf{queues/}    sample simulation that supports the tutorial
-      \tbf{doc\_src/}  the Latex sources for the tutorial doc
+      \tbf{doc\_src/}   the Latex sources for the tutorial doc
 \end{Verbatim}
 
 Sample simulations are within the \texttt{samples} directory. Each of the
@@ -498,12 +501,13 @@ Makefiles are included.
     \tbf{samples/}     directories for sample simulations
       \tbf{nim/}       a simple two-player game
       \tbf{hcube/}     hypercube network with deflection routing
-      \tbf{token/}     Token-Ring network
+      \tbf{token/}     Token Ring network
       \tbf{fddi/}      an accurate FDDI MAC simulation
       \tbf{hist/}      demo of the histogram classes
       \tbf{dyna/}      dynamic module creation (client-server network)
       \tbf{fifo1/}     single-server queue
-      \tbf{fifo2/}     another implementation of a single-server queue
+      \tbf{fifo2/}     another version of fifo, with handleMessage() and FSM
+      \tbf{topo/}      demonstrates creating various topologies
       \tbf{demo/}      several sim. models in a single executable
 \end{Verbatim}
 
@@ -516,7 +520,7 @@ The \texttt{contrib} directory contains material from the {\opp} community.
       \tbf{emacs/}     NED syntax highlight for Emacs
 \end{Verbatim}
 
-You may also find additional directories like \texttt{msvc/}, which contains
+You may also find additional directories like \texttt{msvc/}, which contain
 integration components for Microsoft Visual C++, etc.
 
 
