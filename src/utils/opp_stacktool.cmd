@@ -7,8 +7,6 @@ echo  1. Needs dumpbin.exe in the path (part of MS Visual C++); also needs Perl.
 echo  2. Currently only prints the stack size. To set the stack size, type:
 echo          editbin /stack:^<stack-size^> ^<program.exe^>
 echo     Then use this tool to verify the result.
-echo  3. The total-stack-kb setting in omnetpp.ini should be smaller than the
-echo     stack size displayed by this program -- otherwise crash is possible.
 echo.
 goto end
 

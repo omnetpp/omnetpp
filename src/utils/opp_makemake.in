@@ -15,6 +15,8 @@
 #
 args="$*"
 
+MAKEDEPEND="@MAKEDEPEND@"
+
 userif=TKENV
 outfile=`pwd | sed "s/\/$//;s/.*\///"`
 type="exe"
@@ -499,5 +501,11 @@ EOT
 
 ) > $outputfile
 
-echo "$outputfile created -- type 'make depend' to add dependencies to it"
+echo "$outputfile created, adding dependencies..."
+
+if ! $MAKEDEPEND $includes -f$outputfile -- *.cc; then
+    echo "Error: command '$MAKEDEPEND $includes -f$outputfile -- *.cc' returned nonzero exit code"
+else
+    echo "Done."
+fi
 

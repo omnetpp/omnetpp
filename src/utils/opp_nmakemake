@@ -64,8 +64,6 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-s] [-u user-interface]
     -o, --outputfile      Name of simulation executable/library
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several dirs.
-    -s, --make-so         Make DLL. Useful if you want to load the model
-                          dynamically (Cmdenv/Tkenv -l so-file switch).
     -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv
     -M, --mpi             Link executable with MPI
     -p, --pvm             Link executable with PVM
@@ -81,7 +79,7 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-s] [-u user-interface]
     library or object     Link with that file
 
 Default output is Makefile.vc which you can run by typing nmake -f Makefile.vc.
-With the -n and -s options, -u, -p and -l have no effect.
+With the -n option, -u, -p and -l have no effect.
 If you have a source tree instead of a single directory, run opp_nmakemake -n
 in the subdirs and then opp_nmakemake dir1 dir2 etc. in your top-level directory.
 The -i option is useful if a source file (.ned, .msg or .cc) is to be generated
@@ -109,10 +107,10 @@ from other files.
     {
         $type = "o";
     }
-    elsif ($arg eq '-s' || $arg eq '--make-so')
-    {
-        $type = "so";
-    }
+    # elsif ($arg eq '-s' || $arg eq '--make-so')
+    # {
+    #    $type = "so";
+    # }
     elsif ($arg eq '-u' || $arg eq '--userinterface')
     {
         $userif = shift @ARGV;
@@ -515,7 +513,16 @@ re-makemake:
 
 close OUT;
 
-print "$makefile created -- type 'nmake -f $makefile depend' to add dependencies to it\n";
+print "$makefile created, adding dependencies...\n";
+
+$cmd = "opp_makedep $includes -f$makefile -- *.$ccext";
+$status = system ("$cmd");
+if ($status != 0) {
+    print "Error: command `$cmd' returned nonzero exit code"
+}
+else {
+    print "done\n";
+}
 
 
 

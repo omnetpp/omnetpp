@@ -1,9 +1,11 @@
+2003-01-30  Andras Varga 
+	
+	* opp_makemake.in: now runs make depend after makefile creation
+
 2002-12-18  Andras Varga 
 
 	* opp_stacktool.cmd added: it displays maximum reserved stack size
-	for a program. This is the value which the sum of all coroutine
-	stacks cannot exceed; also the upper bound of the total-stack-kb
-	ini file setting.
+	for a program.
 
 	* seedtool.cc: incorporated fix from N. Reijers. If too many seeds, 
 	too far apart are requested, there were zeroes in the generated
