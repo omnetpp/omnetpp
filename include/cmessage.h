@@ -200,15 +200,16 @@ class SIM_API cMessage : public cObject
     void setPriority(int p) {prior=p;}
 
     /**
-     * Sets message length. When the message is sent through a
+     * Sets message length (bits). When the message is sent through a
      * channel, message length affects transmission delay
      * and the probability of setting the bit error flag.
      */
     void setLength(long l);
 
     /**
-     * Changes message length by the given value. This is useful for modeling
-     * encapsulation/decapsulation. (See also encapsulate() and decapsulate().)
+     * Changes message length by the given value (bits). This is useful for 
+     * modeling encapsulation/decapsulation. (See also encapsulate() and 
+     * decapsulate().)
      *
      * The value may be negative (message length may be decreased too).
      * If the resulting length would be negative, the method throws a cException.
@@ -270,7 +271,7 @@ class SIM_API cMessage : public cObject
     int  priority() const {return prior;}
 
     /**
-     * Returns message length.
+     * Returns message length (bits).
      */
     long length() const   {return len;}
 
