@@ -106,10 +106,14 @@ simulations.
 Installation
 ~~~~~~~~~~~~
 
-For installation instructions, read one of the INSTALL.Unix, INSTALL.Cygwin and
-INSTALL.BC5 files, depending on your environment. For the first two, the process
-is not much different from the normal GNU build and install procedure, except
-that you may need to edit configure.user manually.
+For installation instructions, read one of these files, depending on your
+compiler:
+   INSTALL.Unix    -- generic Unix/Linux
+   INSTALL.Cygwin  -- Cygwin on NT/W95 (www.cygnus.com)
+   INSTALL.MSVC    -- Microsoft Visual C++ 6.0 on NT/W95
+   INSTALL.BC5     -- Borland C++ 5.0 on NT/W95
+For the first two, the process is not much different from the normal GNU build
+and install procedure, except that you may need to edit configure.user manually.
 
 
 Authors and contributors
