@@ -136,7 +136,12 @@ void Host::handleMessage(cMessage *msg)
             state = DEFER;
             scheduleAt(simTime()+iaTime->doubleValue(), endTxEvent);
 
-            if (ev.isGUI()) displayString().setTagArg("i",1,"orange");
+            if (ev.isGUI())
+            {
+                displayString().setTagArg("t",0,"DEFER");
+                displayString().setTagArg("t",2,"#808000");
+                displayString().setTagArg("i",1,"orange");
+            }
         }
         else
         {
@@ -145,14 +150,20 @@ void Host::handleMessage(cMessage *msg)
             sprintf(pkname,"pk-%d-#%d", id(), pkCounter++);
             ev << "generating packet " << pkname << endl;
 
-            displayString().setTagArg("i",1,"green");
+            state = TRANSMIT;
+
+            if (ev.isGUI())
+            {
+                displayString().setTagArg("i",1,"red");
+                displayString().setTagArg("t",2,"#800000");
+                displayString().setTagArg("t",0,"TRANSMIT");
+            }
 
             cMessage *pk = new cMessage(pkname);
             pk->setLength(pkLenBits->longValue());
             double txtime = pk->length() / txRate;
             sendDirect(pk, radioDelay, server->gate("in"));
 
-            state = TRANSMIT;
             scheduleAt(simTime()+txtime, endTxEvent);
         }
     }
@@ -164,7 +175,11 @@ void Host::handleMessage(cMessage *msg)
         // schedule next sending
         scheduleAt(simTime()+iaTime->doubleValue(), endTxEvent);
 
-        if (ev.isGUI()) displayString().setTagArg("i",1,"");
+        if (ev.isGUI())
+        {
+            displayString().setTagArg("i",1,"");
+            displayString().setTagArg("t",0,"");
+        }
     }
     else
     {
