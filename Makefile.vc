@@ -7,8 +7,9 @@
 #
 # Directories
 #
-OMNETPP_SRC_DIR =       @OMNETPP_SRC_DIR@
-OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
+!include configuser.vc
+
+MAKE=nmake.exe /F Makefile.vc
 
 #=====================================================================
 #
@@ -46,19 +47,19 @@ samples: $(SAMPLES)
 #
 
 sim:
-	cd $(OMNETPP_SRC_DIR)/sim && $(MAKE)
+	cd /d $(OMNETPP_SRC_DIR)/sim && $(MAKE)
 
 envir:
-	cd $(OMNETPP_SRC_DIR)/envir && $(MAKE)
+	cd /d $(OMNETPP_SRC_DIR)/envir && $(MAKE)
 
 cmdenv:
-	cd $(OMNETPP_SRC_DIR)/cmdenv && $(MAKE)
+	cd /d $(OMNETPP_SRC_DIR)/cmdenv && $(MAKE)
 
 tkenv:
-	cd $(OMNETPP_SRC_DIR)/tkenv && $(MAKE)
+	cd /d $(OMNETPP_SRC_DIR)/tkenv && $(MAKE)
 
 tvenv:
-	cd $(OMNETPP_SRC_DIR)/tvenv && $(MAKE)
+	cd /d $(OMNETPP_SRC_DIR)/tvenv && $(MAKE)
 
 
 #
@@ -66,50 +67,50 @@ tvenv:
 #
 
 nedc:
-	cd $(OMNETPP_SRC_DIR)/nedc && $(MAKE)
+	cd /d $(OMNETPP_SRC_DIR)/nedc && $(MAKE)
 
 gned:
-	cd $(OMNETPP_SRC_DIR)/gned && $(MAKE)
+	cd /d $(OMNETPP_SRC_DIR)/gned && $(MAKE)
 
 plove:
 	@ # needs no build
 
 utils:
-	cd $(OMNETPP_SRC_DIR)/utils &&  $(MAKE)
+	cd /d $(OMNETPP_SRC_DIR)/utils &&  $(MAKE)
 
 #
 # Sample programs
 #
 
 dyna:
-	cd $(OMNETPP_SAMPLES_DIR)/dyna && $(MAKE)
+	cd /d $(OMNETPP_SAMPLES_DIR)/dyna && $(MAKE)
 
 fddi:
-	cd $(OMNETPP_SAMPLES_DIR)/fddi && $(MAKE)
+	cd /d $(OMNETPP_SAMPLES_DIR)/fddi && $(MAKE)
 
 fifo1:
-	cd $(OMNETPP_SAMPLES_DIR)/fifo1 && $(MAKE)
+	cd /d $(OMNETPP_SAMPLES_DIR)/fifo1 && $(MAKE)
 
 fifo2:
-	cd $(OMNETPP_SAMPLES_DIR)/fifo2 && $(MAKE)
+	cd /d $(OMNETPP_SAMPLES_DIR)/fifo2 && $(MAKE)
 
 hcube:
-	cd $(OMNETPP_SAMPLES_DIR)/hcube && $(MAKE)
+	cd /d $(OMNETPP_SAMPLES_DIR)/hcube && $(MAKE)
 
 hist:
-	cd $(OMNETPP_SAMPLES_DIR)/hist && $(MAKE)
+	cd /d $(OMNETPP_SAMPLES_DIR)/hist && $(MAKE)
 
 nim:
-	cd $(OMNETPP_SAMPLES_DIR)/nim && $(MAKE)
+	cd /d $(OMNETPP_SAMPLES_DIR)/nim && $(MAKE)
 
 pvmex:
-	cd $(OMNETPP_SAMPLES_DIR)/pvmex && $(MAKE)
+	cd /d $(OMNETPP_SAMPLES_DIR)/pvmex && $(MAKE)
 
 token:
-	cd $(OMNETPP_SAMPLES_DIR)/token && $(MAKE)
+	cd /d $(OMNETPP_SAMPLES_DIR)/token && $(MAKE)
 
 demo:
-	cd $(OMNETPP_SAMPLES_DIR)/demo && $(MAKE)
+	cd /d $(OMNETPP_SAMPLES_DIR)/demo && $(MAKE)
 
 #=====================================================================
 #
@@ -127,22 +128,22 @@ check-env:
 
 clean:
 	for i in $(LIBS) $(PROGS); do \
-	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
+	    (cd /d $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
 	for i in $(SAMPLES); do \
-	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); \
+	    (cd /d $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); \
 	done
 
 depend:
 	for i in $(LIBS) $(PROGS); do \
-	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) depend); \
+	    (cd /d $(OMNETPP_SRC_DIR)/$$i && $(MAKE) depend); \
 	done
 	for i in $(SAMPLES); do \
-	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) depend); \
+	    (cd /d $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) depend); \
 	done
 
 install-local:
 	for i in $(LIBS) $(PROGS); do \
-	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) install-local); \
+	    (cd /d $(OMNETPP_SRC_DIR)/$$i && $(MAKE) install-local); \
 	done
 

@@ -9,15 +9,15 @@ OMNETPP_VERSION=omnetpp-2.0b2
 #
 # directories
 #
-OMNETPP_ROOT=d:\work\omnetpp
+OMNETPP_ROOT=d:/work/omnetpp
 
-OMNETPP_SRC_DIR=$(OMNETPP_ROOT)\src
-OMNETPP_SAMPLES_DIR=$(OMNETPP_ROOT)\samples
-# OMNETPP_MODELS_DIR=$(OMNETPP_ROOT)\models
+OMNETPP_SRC_DIR=$(OMNETPP_ROOT)/src
+OMNETPP_SAMPLES_DIR=$(OMNETPP_ROOT)/samples
+# OMNETPP_MODELS_DIR=$(OMNETPP_ROOT)/models
 
-OMNETPP_BIN_DIR=$(OMNETPP_ROOT)\bin
-OMNETPP_INCL_DIR=$(OMNETPP_SRC_DIR)\sim
-OMNETPP_LIB_DIR=$(OMNETPP_ROOT)\lib
+OMNETPP_BIN_DIR=$(OMNETPP_ROOT)/bin
+OMNETPP_INCL_DIR=$(OMNETPP_SRC_DIR)/sim
+OMNETPP_LIB_DIR=$(OMNETPP_ROOT)/lib
 
 
 #
@@ -36,7 +36,7 @@ NEDC=nedc.exe
 #
 
 # Compiler optimization switches. First one is for debug, second one for release
-CFLAGS=/nologo /MLd /W3 /GX /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /GZ
+CFLAGS=/nologo /MLd /W3 /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /GZ
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
@@ -44,9 +44,9 @@ LIB_SUFFIX=.lib
 HAVE_DLOPEN=0
 
 # use double backslashes here:
-OMNETPP_TKENV_DIR=d:\\work\\omnetpp\\src\\tkenv
-OMNETPP_GNED_DIR=d:\\work\\omnetpp\\src\\gned
-OMNETPP_BITMAP_PATH=.;.\\bitmaps;$(OMNETPP_ROOT)\\bitmaps
+OMNETPP_TKENV_DIR=d:/work/omnetpp/src/tkenv
+OMNETPP_GNED_DIR=d:/work/omnetpp/src/gned
+OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
 
 #
 # Here you may help 'configure' to determine which compile switches (e.g. -Ixxx)
@@ -59,7 +59,7 @@ OMNETPP_BITMAP_PATH=.;.\\bitmaps;$(OMNETPP_ROOT)\\bitmaps
 # If you set TK_CFLAGS here, remember to include -fwritable-strings (or the
 # equivalent switch for your compiler).
 #
-TK_CFLAGS=/I "d:\tcl\tcl8.2.1\generic" /I "d:\tcl\tk8.2.1\generic" /I "d:\tcl\tk8.2.1\xlib"
+TK_CFLAGS=/I "d:/tcl/tcl8.2.1/generic" /I "d:/tcl/tk8.2.1/generic" /I "d:/tcl/tk8.2.1/xlib"
 TK_LIBS=
 PVM_INCL_DIR=
 PVM_LIBS=
