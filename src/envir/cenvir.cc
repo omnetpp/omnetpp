@@ -267,6 +267,16 @@ cXMLElement *cEnvir::getXMLDocument(const char *filename, const char *path)
     return app->getXMLDocument(filename, path);
 }
 
+unsigned cEnvir::extraStackForEnvir()
+{
+    return app->extraStackForEnvir();
+}
+
+cConfiguration *cEnvir::config()
+{
+    return app->getConfig();
+}
+
 //-----------------------------------------------------------------
 
 void cEnvir::messageSent( cMessage *msg, cGate *directToGate)
@@ -504,11 +514,6 @@ void cEnvir::releaseStreamForSnapshot(ostream *os)
 
 //---------------------------------------------------------
 
-unsigned cEnvir::extraStackForEnvir()
-{
-    return app->extraStackForEnvir();
-}
-
 int cEnvir::argCount()
 {
     return app->argList()->argCount();
@@ -519,9 +524,9 @@ char **cEnvir::argVector()
     return app->argList()->argVector();
 }
 
-cConfiguration *cEnvir::config()
+unsigned long cEnvir::getUniqueNumber()
 {
-    return app->getConfig();
+    return app->getUniqueNumber();
 }
 
 bool cEnvir::idle()

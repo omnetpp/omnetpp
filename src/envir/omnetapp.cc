@@ -259,11 +259,14 @@ void TOmnetApp::startRun()
     outvectmgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
+    nextuniquenumber = 0;
     if (opt_parsim)
     {
 #ifdef WITH_PARSIM
         parsimpartition->startRun();
         parsimsynchronizer->startRun();
+        nextuniquenumber = (unsigned)parsimcomm->getProcId() *
+                           ((~0UL) / (unsigned)parsimcomm->getNumPartitions());
 #endif
     }
     simulation.startRun();
@@ -680,6 +683,12 @@ void TOmnetApp::releaseStreamForSnapshot(ostream *os)
 }
 
 //-------------------------------------------------------------
+
+unsigned long TOmnetApp::getUniqueNumber()
+{
+    // TBD check for overflow
+    return nextuniquenumber++;
+}
 
 bool TOmnetApp::memoryIsLow()
 {

@@ -97,6 +97,8 @@ class ENVIR_API TOmnetApp
     cOutputScalarManager *outscalarmgr;
     cSnapshotManager *snapshotmgr;
 
+    unsigned long nextuniquenumber;
+
     struct timeb simbegtime;  // real time when sim. started
     struct timeb simendtime;  // real time when sim. ended
     struct timeb laststarted; // real time from where sim. was last cont'd
@@ -250,6 +252,9 @@ class ENVIR_API TOmnetApp
      * for the simple modules; called by cEnvir's similar function.
      */
     virtual unsigned extraStackForEnvir() {return 0;}
+
+    /** Called from cEnvir's similar function */
+    virtual unsigned long getUniqueNumber();
 
     /** @name Utility functions. */
     //@{
