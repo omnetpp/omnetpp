@@ -717,20 +717,13 @@ enforces compound modules to be self-contained, and thus promotes
 reusability. Gate directions must also be observed,
 that is, you cannot connect two output gates or two input gates.
 
-Only one-to-one connections are supported. One-to-many and many-to-one
+Only one-to-one connections are supported, so a particular gate may only
+be used occur in one connection. One-to-many and many-to-one
 connections can be achieved using simple modules that duplicate
 messages or merge message flows. The rationale is that wherever
 such fan-in or fan-out occurs in a model, it is usually associated
 with some processing anyway that makes it necessary to use
 simple modules.
-
-A gate can only be connected once: if two connections refer to
-the same gate, a compilation or runtime error will occur.
-
-By default, NED expects every gate to be connected, resulting in
-a compilation or runtime error if an unconnected gate is found.
-This check can be turned off with the \ttt{nocheck} modifier,
-described later in this section.
 
 Connections\index{ned!connections} are specified in the
 \fpar[ned!keywords!connections]{connections:} section of a compound
@@ -749,6 +742,11 @@ Example:
         //...
 \tbf{endmodule}
 \end{Verbatim}
+
+The source gate can be an output gate of a submodule or an input
+gate of the compound module, and the destination gate can be
+an input gate of a submodule or an output gate of the compound
+module. The arrow can point either left-to-right or right-to-left.
 
 The \textit{gate++} notation allows you to extend a gate vector
 with new gates, without having to declare the vector size in advance
@@ -801,23 +799,16 @@ These connection types are described in the following sections.
 \index{ned!connections}
 \index{connection}
 
-The source gate can be an output gate of a submodule or an input
-gate of the compound module, and the destination gate can be
-an input gate of a submodule or an output gate of the compound
-module.
-
-
 If you do not specify a channel\index{channel}, the connection will have
 no propagation delay, no transmission delay and no bit errors:
-\begin{verbatim}
-    sender.outGate --> receiver.inGate;
-\end{verbatim}
 
-The arrow can point either left-to-right or right-to-left.
+\begin{verbatim}
+    node1.outGate --> node2.inGate;
+\end{verbatim}
 
 You can specify a channel by its name\index{channel!name}:
 \begin{verbatim}
-    sender.outGate --> Dialup14400 --> receiver.inGate;
+    node1.outGate --> Fiber --> node2.inGate;
 \end{verbatim}
 
 In this case, the NED sources must contain the definition of
@@ -825,7 +816,7 @@ the channel.
 
 One can also specify the channel parameters directly\index{channel!parameters}:
 \begin{verbatim}
-    sender.outGate --> error 1e-5 delay 0.001 --> receiver.inGate;
+    node1.outGate --> error 1e-9 delay 0.001 --> node2.inGate;
 \end{verbatim}
 
 Either of the parameters can be omitted and they can be in any
@@ -844,7 +835,7 @@ statement:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{for} i=0..4 \tbf{do}
-    sender.outGate[i] --> receiver[i].inGate
+    node1.outGate[i] --> node2[i].inGate
 \tbf{endfor};
 \end{Verbatim}
 
@@ -895,7 +886,7 @@ keyword:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{for} i=0..n \tbf{do}
-    sender.outGate[i] --> receiver[i].inGate \tbf{if} i\%2==0;
+    node1.outGate[i] --> node2[i].inGate \tbf{if} i\%2==0;
 \tbf{endfor};
 \end{Verbatim}
 
@@ -1031,17 +1022,17 @@ time in units like milliseconds, minutes or hours:
 
 The following units\index{time units} can be used:
 
-\begin{longtable}{|c|l|l|}
+\begin{longtable}{|c|l|}
 \hline
 \tabheadcol
-\tbf{Unit} & \tbf{Meaning} & \tbf{Seconds} \\\hline
-\ttt{ns} & nanoseconds & $*10^{-9}$ \\\hline
-\ttt{us} & microseconds & $*10^{-6}$ \\\hline
-\ttt{ms} & milliseconds & $*10^{-3}$ \\\hline
-\ttt{s}  & seconds & $*1$ \\\hline
-\ttt{m}  & minutes & $*60$ \\\hline
-\ttt{h}  & hours & $*3600$ \\\hline
-\ttt{d}  & days & $*24*3600$ \\\hline
+\tbf{Unit} & \tbf{Meaning} \\\hline
+\ttt{ns} & nanoseconds (10$^-9$s) \\\hline
+\ttt{us} & microseconds (10$^-6$s) \\\hline
+\ttt{ms} & milliseconds (10$^-3$) \\\hline
+\ttt{s}  & seconds \\\hline
+\ttt{m}  & minutes (60s) \\\hline
+\ttt{h}  & hours (3600s) \\\hline
+\ttt{d}  & days (86400s) \\\hline
 \end{longtable}
 
 
