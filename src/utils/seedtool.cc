@@ -151,17 +151,13 @@ long seedatindex(long index)
 
 int main(int argc, char *argv[])
 {
-    if (!testrand())
-    {
-	 fprintf(stderr,"Random number generator does not work correctly!\n");
-	 exit(1);
-    }
-
     if (argc==1)
     {
 	 fprintf(stderr,
-		"seedtool - part of the OMNeT++ Simulation System, BME-HIT 1997\n"
-		"A tool to help select good random number generator seed values.\n"
+		"seedtool - part of OMNeT++, (c) 1992,99 Andras Varga, TU Budapest\n"
+                "See the license for distribution terms and warranty disclaimer.\n"
+                "\n"
+              	"A tool to help select good random number generator seed values.\n"
 		"Usage:\n"
 		"  seedtool i seed	   - index of 'seed' in cycle\n"
 		"  seedtool s index	   - seed at index 'index' in cycle\n"
@@ -172,6 +168,12 @@ int main(int argc, char *argv[])
 		"  seedtool p		   - print out hashtable\n"
 		);
 	 exit(0);
+    }
+
+    if (!testrand())
+    {
+	 fprintf(stderr,"Random number generator does not work correctly!\n");
+	 exit(1);
     }
 
     long arg[5];
