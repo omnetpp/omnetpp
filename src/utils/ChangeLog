@@ -1,3 +1,9 @@
+2003-05-24  Andras Varga
+
+	* opp_nmakemake: changed handling of -e option -- now, if no -e	option
+	is given, opp_nmakemake tries to detect the C++ file extension 
+	from files already in the directory.
+
 2003-03-15  ------ omnetpp-2.3b2 released ------
 
 2003-03-15  Andras Varga

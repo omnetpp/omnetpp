@@ -36,7 +36,7 @@ $sobjs = "";
 $doxyconf = "doxy.cfg";
 @nedfiles = ();
 #@msgfiles = ();
-$ccext = "cpp";
+$ccext = "";  # we'll try to autodetect it
 $cfgfile="../../configuser.vc";
 
 $force="n";
@@ -61,7 +61,9 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
               [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
-    -e, --ext             Assumed extension of C++ sources (default is "cpp")
+    -e, --ext             C++ source file extension, usually "cc" or "cpp".
+                          By default, this is decided by looking at existing
+                          files in the directory.
     -o, --outputfile      Name of simulation executable/library
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several
@@ -74,7 +76,7 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
     -Ldir                 Add a directory to the library path
     -llibrary             Additional library to link against
                           (e.g. -lmylibrary.lib)
-    -c, --configfile      Included config file (default is "../../configuser.vc")
+    -c, --configfile      Included config file (default:"../../configuser.vc")
     -i, --includefragment Append file to near end of Makefile. The file
                           makefrag.vc (if exists) is appended automatically
                           if no -i options are given. This option is useful
@@ -183,6 +185,43 @@ if (-f $makefile && $force ne "y")
 
 if (! -f $cfgfile) {
     print STDERR "opp_nmakemake: warning: config file $cfgfile not found -- try -c option\n";
+}
+
+# try to determine if .cc or .cpp files are used
+@ccfiles = glob("*.cc");
+@cppfiles = glob("*.cpp");
+if ($ccext eq '')
+{
+    @ccfiles = glob("*.cc");
+    @cppfiles = glob("*.cpp");
+    if (@ccfiles==() && @cppfiles!=()) {
+        $ccext = "cpp";
+    }
+    elsif (@ccfiles!=() && @cppfiles==()) {
+        $ccext = "cc";
+    }
+    elsif (@ccfiles!=() && @cppfiles!=()) {
+        print STDERR "opp_nmakemake: you have both .cc and .cpp files -- ".
+                     "use -e cc or -e cpp option to select which set of files to use\n";
+        exit(1);
+    }
+    else {
+        # if no files, use .cc extension
+        $ccext = "cc";
+    }
+}
+else
+{
+    if (glob("*.$ccext")==()) {
+        if (@ccfiles!=()) {
+            print STDERR "opp_nmakemake: info: ignoring existing .cc files ".
+                         "because of -e $ccext option on command-line\n";
+        }
+        if (@cppfiles!=()) {
+            print STDERR "opp_nmakemake: info: ignoring existing .cpp files ".
+                         "because of -e $ccext option on command-line\n";
+        }
+    }
 }
 
 @sobj_list = ();
