@@ -1101,8 +1101,8 @@ topo.extractByParameter( "includeInTopo", &yes );
 The third form allows you to pass a function which can determine for
 each module whether it should or should not be included.  You can have
 \cclass{cTopology} pass supplemental data to the function through a
-void* pointer. An example which selects all top-level modules (and
-does not use the void* pointer):
+\ttt{void*} pointer. An example which selects all top-level modules (and
+does not use the \ttt{void*} pointer):
 
 \begin{verbatim}
 int selectFunction(cModule *mod, void *)
@@ -1117,9 +1117,9 @@ topo.extractFromNetwork( selectFunction, NULL );
 % TBD one more example which \textit{does use} the void* ptr.
 %
 
-A \cclass{cTopology} object uses two types: \cclass{sTopoNode} for
-nodes and \cclass{sTopoLink} for edges. (\cclass{sTopo\-Link\-In} and
-\cclass{sTopoLinkOut} are `aliases' for \cclass{sTopoLink}; we'll
+A \cclass{cTopology} object uses two types: \cclass{cTopology::Node} for
+nodes and \cclass{cTopology::Link} for edges. (\cclass{sTopo\-Link\-In} and
+\cclass{cTopology::LinkOut} are `aliases' for \cclass{cTopology::Link}; we'll
 talk about them later.)
 
 Once you have the topology extracted, you can start exploring
@@ -1128,7 +1128,7 @@ it. Consider the following code (we'll explain it shortly):
 \begin{verbatim}
 for (int i=0; i<topo.nodes(); i++)
 {
-  sTopoNode *node = topo.node(i);
+  cTopology::Node *node = topo.node(i);
   ev << "Node i=" << i << " is " << node->module()->fullPath() << endl;
   ev << " It has " << node->outLinks() << " conns to other nodes\n";
   ev << " and " << node->inLinks() << " conns from other nodes\n";
@@ -1136,7 +1136,7 @@ for (int i=0; i<topo.nodes(); i++)
   ev << " Connections to other modules are:\n";
   for (int j=0; j<node->outLinks(); j++)
   {
-    sTopoNode *neighbour = node->out(j)->remoteNode();
+    cTopology::Node *neighbour = node->out(j)->remoteNode();
     cGate *gate = node->out(j)->localGate();
     ev << " " << neighbour->module()->fullPath()
        << " through gate " << gate->fullName() << endl;
@@ -1146,14 +1146,14 @@ for (int i=0; i<topo.nodes(); i++)
 
 The \fname{nodes()} member function (1st line) returns the number of
 nodes in the graph, and node(i) returns a pointer to the \textit{i}th
-node, an \cclass{sTopoNode} structure.
+node, an \cclass{cTopology::Node} structure.
 
 
 The correspondence between a graph node and a module can be obtained
 by:
 
 \begin{verbatim}
-sTopoNode *node = topo.nodeFor( module );
+cTopology::Node *node = topo.nodeFor( module );
 cModule *module = node->module();
 \end{verbatim}
 
@@ -1164,7 +1164,7 @@ returns \ttt{NULL}). \fname{nodeFor()} uses binary search within the
 \cclass{cTopology} object so it is fast enough.
 
 
-\cclass{sTopoNode}'s other member functions let you determine the
+\cclass{cTopology::Node}'s other member functions let you determine the
 connections of this node: \fname{inLinks()}, \fname{outLinks()} return
 the number of connections, \ttt{in(i)} and
 \ttt{out(i)} return pointers to graph edge objects.
@@ -1176,8 +1176,8 @@ function returns the other end of the connection, and
 \fname{localGate()}, \fname{remoteGate()}, \fname{localGateId()} and
 \fname{remoteGateId()} return the gate pointers and ids of the gates
 involved. (Actually, the implementation is a bit tricky here: the same
-graph edge object \cclass{sTopoLink} is returned either as
-\cclass{sTopoLinkIn} or as \cclass{sTopoLinkOut} so that ``remote''
+graph edge object \cclass{cTopology::Link} is returned either as
+\cclass{cTopology::LinkIn} or as \cclass{cTopology::LinkOut} so that ``remote''
 and ``local'' can be correctly interpreted for edges of both
 directions.)
 
@@ -1199,7 +1199,7 @@ the shortest path looks like this:
 
 \begin{verbatim}
 cModule *targetmodulep =...;
-sTopoNode *targetnode = topo.nodeFor( targetmodulep );
+cTopology::Node *targetnode = topo.nodeFor( targetmodulep );
 topo.unweightedSingleShortestPathsTo( targetnode );
 \end{verbatim}
 
@@ -1207,14 +1207,14 @@ topo.unweightedSingleShortestPathsTo( targetnode );
 This performs the Dijkstra algorithm\index{Dijkstra algorithm} and
 stores the result in the \cclass{cTopology} object. The result can
 then be extracted using \cclass{cTopology} and
-\ttt{sTopoNode}\index{sTopoNode} methods.  Naturally, each call to
+\ttt{cTopology::Node}\index{cTopology::Node} methods.  Naturally, each call to
 \fname{unweightedSingleShortestPathsTo()} overwrites the results of
 the previous call.
 
 Walking along the path from our module to the target node:
 
 \begin{verbatim}
-sTopoNode *node = topo.nodeFor( this );
+cTopology::Node *node = topo.nodeFor( this );
 
 if (node == NULL)
 {
@@ -1232,7 +1232,7 @@ else
     ev << node->distanceToTarget() << " hops to go\n";
     ev << "There are " << node->paths()
        << " equally good directions, taking the first one\n";
-    sTopoLinkOut *path = node->path(0);
+    cTopology::LinkOut *path = node->path(0);
     ev << "Taking gate " << path->localGate()->fullName()
        << " we arrive in " << path->remoteNode()->module()->fullPath()
        << " on its gate " << path->remoteGate()->fullName() << endl;
@@ -1247,7 +1247,7 @@ node is self-explanatory. In the unweighted case, it returns the
 number of hops. The \fname{paths()} member function returns the number
 of edges which are part of a shortest path, and
 \fname[path()]{path(i)} returns the \textit{i}th edge of them as
-\cclass{sTopoLinkOut}. If the shortest paths were created by the
+\cclass{cTopology::LinkOut}. If the shortest paths were created by the
 \fname[SingleShortestPaths()]{...SingleShortestPaths()} function,
 \fname{paths()} will always return 1 (or 0 if the target is not
 reachable), that is, only one of the several possible shortest paths
@@ -1271,14 +1271,14 @@ you must disable the current node to prevent the shortest paths
 from going through it:
 
 \begin{verbatim}
-sTopoNode *thisnode = topo.nodeFor( this );
+cTopology::Node *thisnode = topo.nodeFor( this );
 thisnode->disable();
 topo.unweightedSingleShortestPathsTo( targetnode );
 thisnode->enable();
 
 for (int j=0; j<thisnode->outLinks(); j++)
 {
-  sTopoLinkOut *link = thisnode->out(i);
+  cTopology::LinkOut *link = thisnode->out(i);
   ev << "Through gate " << link->localGate()->fullName() << " : "
      << 1 + link->remoteNode()->distanceToTarget() << " hops" << endl;
 }
@@ -1287,9 +1287,9 @@ for (int j=0; j<thisnode->outLinks(); j++)
 In the future, other shortest path algorithms will also be implemented:
 
 \begin{verbatim}
-unweightedMultiShortestPathsTo(sTopoNode *target);
-weightedSingleShortestPathsTo(sTopoNode *target);
-weightedMultiShortestPathsTo(sTopoNode *target);
+unweightedMultiShortestPathsTo(cTopology::Node *target);
+weightedSingleShortestPathsTo(cTopology::Node *target);
+weightedMultiShortestPathsTo(cTopology::Node *target);
 \end{verbatim}
 
 
