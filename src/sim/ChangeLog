@@ -1,3 +1,8 @@
+2005-03-22  Andras Varga
+
+	* cpar.cc: updated for changed cEnvir::getParameter() return type, see
+	include/ChangeLog and src/envir/ChangeLog.
+
 2005-03-19  Andras Varga
 
 	* cdispstr.cc: fixed incorrect handling of terminating stray backlash

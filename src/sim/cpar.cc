@@ -1239,12 +1239,12 @@ bool cPar::setfunction(char *text)
 cPar& cPar::read()
 {
     // get it from ini file
-    const char *s = ev.getParameter(simulation.runNumber(), fullPath().c_str());
-    if (s!=NULL)
+    std::string str = ev.getParameter(simulation.runNumber(), fullPath().c_str());
+    if (!str.empty())
     {
-        bool success = setFromText(s,'?');
+        bool success = setFromText(str.c_str(),'?');
         if (!success)
-            throw new cRuntimeError("Wrong value `%s' for parameter `%s'", s, fullPath().c_str());
+            throw new cRuntimeError("Wrong value `%s' for parameter `%s'", str.c_str(), fullPath().c_str());
         return *this;
     }
 
@@ -1266,10 +1266,10 @@ cPar& cPar::read()
             reply = ev.gets((string("Enter parameter `")+fullPath()+"':").c_str(), getAsText().c_str());
 
         try {
-           success = false;
-           success = setFromText(reply.c_str(),'?');
-           if (!success)
-              throw new cRuntimeError("Syntax error, please try again.");
+            success = false;
+            success = setFromText(reply.c_str(),'?');
+            if (!success)
+                throw new cRuntimeError("Syntax error, please try again.");
         } catch (cException *e) {
             ev.printfmsg("%s", e->message());
             delete e;
