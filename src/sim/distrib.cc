@@ -67,38 +67,41 @@ double gamma_d(double alpha, double beta, int rng)
                              "(alpha=%lg, beta=%lg)", alpha, beta);
 
     if (fabs(alpha - 1.0) <= DBL_EPSILON)
-        return exponential(beta);
-
-    if (0.0 < alpha && alpha < 1.0)
     {
-        double b, U1, U2, P, Y;
+        return exponential(beta, rng);
+    }
+    else if (alpha < 1.0)
+    {
+        double b = (M_E + alpha) / M_E;
 
-        b = (M_E + alpha) / M_E;
+        double Y;
         for (;;)
         {
+            double U1, U2, P;
+
             // step 1
-            U1 = normal(0, 1);
+            U1 = normal(0, 1, rng);
             P = b * U1;
             if (P > 1)
             {
                 // step 3
                 Y = -log((b - P) / alpha);
-                U2 = normal(0, 1);
+                U2 = normal(0, 1, rng);
                 if (U2 <= pow(Y, alpha - 1.0))
-                    return Y;
+                    break; // accept Y
             }
             else
             {
                 // step 2
                 Y = pow(P, (1 / alpha));
-                U2 = normal(0, 1);
+                U2 = normal(0, 1, rng);
                 if (U2 <= exp(-Y))
-                    return Y;
+                    break;  // accept Y
             }
         }
+        return Y;
     }
-
-    if (alpha > 1.0)
+    else // if (alpha > 1.0)
     {
         double a = 1.0 / sqrt(2.0 * alpha - 1);
         double b = alpha - log(4.0);
@@ -106,9 +109,10 @@ double gamma_d(double alpha, double beta, int rng)
         double theta = 4.5;
         double d = 1 + log(theta);
 
+        double Y;
         for (;;)
         {
-            double U1, U2, V, Y, Z, W;
+            double U1, U2, V, Z, W;
 
             // step 1
             U1 = genk_dblrand(rng);
@@ -122,12 +126,13 @@ double gamma_d(double alpha, double beta, int rng)
 
             // step 3
             if (W + d - theta * Z >= .0)
-                return Y;
+                break;  // accept Y
 
             // step 4
             if (W >= log(Z))
-                return Y;
+                break;  // accept Y
         }
+        return Y;
     }
 }
 
@@ -166,7 +171,7 @@ double chi_square(unsigned int k, int rng)
 
 double student_t(unsigned int i, int rng)
 {
-    double Z = normal(0, 1);
+    double Z = normal(0, 1, rng);
     double W = sqrt(chi_square(i, rng) / (double) i);
     return Z / W;
 }
