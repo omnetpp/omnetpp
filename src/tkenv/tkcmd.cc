@@ -133,8 +133,10 @@ void splitInspectorName(char *namestr, cObject *&object,int& type)
    // split it into pointer string ("ptr80005a31") and inspector type ("2")
    char ptrbuf[20];
    char *p,*s;
-   for (s=namestr+1,p=ptrbuf; *s!='-'; s++,p++)
+   assert(namestr && namestr[0]); // at least 1 char
+   for (s=namestr+1,p=ptrbuf; *s && *s!='-'; s++,p++)
       *p = *s;
+   assert(*s!='\0'); // there must be a '-' in the string
    *p = '\0';
    s++;
 

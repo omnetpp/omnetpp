@@ -350,4 +350,7 @@ Apr 10, 2000
 Apr 13, 2000
  - code for Express Run (runSimulationNoTracing()) modified so that it prints
    module output (ev<<...) for the finish() functions [suggested by Niko]
-
+May 5, 2000
+ - implemented module parameter substitution in display strings (like
+   "p=$x_pos,$y_pos"). Substitution still not supported in connection display
+   strings.

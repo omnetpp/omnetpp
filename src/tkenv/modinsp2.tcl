@@ -35,26 +35,37 @@ image create bitmap defaulticon -data {
 }
 
 
-proc split_dispstr {str array} {
+# split_dispstr --
+#
+# Split up display string into an array.
+#    str:     display string
+#    array:   dest array name
+#    w:       inspector window name
+#    modptr:  pointer of module whose parameters should be used for "$x" style
+#             parameters in the display string
+# Example:
+#   if "p=50,$y_pos;i=cloud"  is parsed into array 'a' and the
+#    y_pos module parameter is 99, the result is:
+#      $a(p) = {50 99}
+#      $a(i) = {cloud}
+#
+proc split_dispstr {str array w modptr} {
    upvar $array arr
-
-   #
-   # BUG: module parameters not handled
-   #
 
    foreach tag [split $str {;}] {
       set tag [split $tag {=}]
       set key [lindex $tag 0]
       set val [split [lindex $tag 1] {,}]
 
-      # set i 0
-      # foreach v $val {
-      #    if {[string range $v 0 0]=={$}} {
-      #       set v [opp_inspectorcommand $ptr modpar $modptr [string range $v 1 end]]
-      #       lreplace val $i $i $v
-      #     }
-      #     incr i
-      # }
+      set i 0
+      foreach v $val {
+         if {[string range $v 0 0]=={$}} {
+            if {$modptr==""} {error "Cannot substitute parameters into this display string"}
+            set v [opp_inspectorcommand $w modpar $modptr [string range $v 1 end]]
+            set val [lreplace $val $i $i $v]
+         }
+         incr i
+      }
 
       if {$key != ""} {
          set arr($key) $val
@@ -62,16 +73,44 @@ proc split_dispstr {str array} {
    }
 }
 
-proc draw_submod {c ptr name dispstr i n default_layout} {
 
-    # puts "DEBUG: draw_submod $c $ptr $name $dispstr $i $n $default_layout"
+proc get_submod_coords {c tag} {
 
-    split_dispstr $dispstr tags
+   set id [$c find withtag $tag]
+   if {$id==""} {error "$tag not found"}
 
-    set bx 10
-    set by 10
+   if {[$c type $id]=="image"} {
+       set pos [$c coords $id]
+       set x [lindex $pos 0]
+       set y [lindex $pos 1]
+       set img [$c itemcget $id -image]
+       set hwidth  [expr [image width $img] / 2]
+       set hheight [expr [image height $img] / 2]
 
-    if [catch {
+       set coords "[expr $x-$hwidth] [expr $y-$hheight] \
+                       [expr $x+$hwidth] [expr $y+$hheight]"
+   } else {
+       set coords [$c coords $id]
+   }
+   return $coords
+}
+
+
+# draw_submod --
+#
+# This function is invoked from the module inspector C++ code.
+#
+proc draw_submod {c submodptr name dispstr i n default_layout} {
+
+   # puts "DEBUG: draw_submod $c $submodptr $name $dispstr $i $n $default_layout"
+
+   if [catch {
+
+       split_dispstr $dispstr tags [winfo toplevel $c] $submodptr
+
+       set bx 10
+       set by 10
+
        # set sx and sy
        if [info exists tags(i)] {
            set img [lindex $tags(i) 0]
@@ -154,7 +193,7 @@ proc draw_submod {c ptr name dispstr i n default_layout} {
 
        if [info exists tags(i)] {
 
-           $c create image $x $y -image $img -anchor center -tags "submod $ptr"
+           $c create image $x $y -image $img -anchor center -tags "submod $submodptr"
            $c create text $x [expr $y+$sy/2+3] -text $name -anchor n
 
        } elseif [info exists tags(b)] {
@@ -177,7 +216,7 @@ proc draw_submod {c ptr name dispstr i n default_layout} {
 
            $c create $sh $x1 $y1 $x2 $y2 \
                -fill $fill -width $width -outline $outl \
-               -tags "submod $ptr"
+               -tags "submod $submodptr"
            $c create text $x [expr $y2+$width/2+3] -text $name -anchor n
 
        }
@@ -187,16 +226,22 @@ proc draw_submod {c ptr name dispstr i n default_layout} {
    }
 }
 
+
+# draw_enclosingmod --
+#
+# This function is invoked from the module inspector C++ code.
+#
 proc draw_enclosingmod {c ptr name dispstr} {
 
-    # puts "DEBUG: draw_enclosingmod $c $ptr $name $dispstr"
+   # puts "DEBUG: draw_enclosingmod $c $ptr $name $dispstr"
 
-    split_dispstr $dispstr tags
+   if [catch {
 
-    set bx 10
-    set by 10
+       split_dispstr $dispstr tags [winfo toplevel $c] $ptr
 
-    if [catch {
+       set bx 10
+       set by 10
+
        if {![info exists tags(b)]} {set tags(b) {{} {} {}}}
 
        set sx [lindex $tags(b) 0]
@@ -238,55 +283,44 @@ proc draw_enclosingmod {c ptr name dispstr} {
    }
 }
 
-proc _getcoords {c tag} {
 
-    set id [$c find withtag $tag]
-    if {$id==""} {error "$tag not found"}
+# draw_connection --
+#
+# This function is invoked from the module inspector C++ code.
+#
+proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n} {
 
-    if {[$c type $id]=="image"} {
-       set pos [$c coords $id]
-       set x [lindex $pos 0]
-       set y [lindex $pos 1]
-       set img [$c itemcget $id -image]
-       set hwidth  [expr [image width $img] / 2]
-       set hheight [expr [image height $img] / 2]
-
-       set coords "[expr $x-$hwidth] [expr $y-$hheight] \
-                       [expr $x+$hwidth] [expr $y+$hheight]"
-    } else {
-       set coords [$c coords $id]
-    }
-    return $coords
-}
-
-proc draw_connection {c ptr dispstr srcptr destptr src_i src_n dest_i dest_n} {
-
-    # puts "DEBUG: draw_connection $c $ptr $dispstr $srcptr $destptr \
-                 $src_i $src_n $dest_i $dest_n"
-
-    split_dispstr $dispstr tags
-
-    if {![info exists tags(m)]} {set tags(m) {a}}
-
-    set src_rect [_getcoords $c $srcptr]
-    set dest_rect [_getcoords $c $destptr]
-
-    set mode [lindex $tags(m) 0]
-    set src_anch  [list [lindex $tags(m) 1] [lindex $tags(m) 2]]
-    set dest_anch [list [lindex $tags(m) 3] [lindex $tags(m) 4]]
-
-    # puts "DEBUG: src_rect=($src_rect) dest_rect=($dest_rect)"
-    # puts "DEBUG: src_anch=($src_anch) dest_anch=($dest_anch)"
-
-    regexp -- {^.[^.]*} $c win
-
-    set arrow_coords [eval [concat opp_inspectorcommand $win arrowcoords \
-               $src_rect $dest_rect $src_i $src_n $dest_i $dest_n \
-               $mode $src_anch $dest_anch]]
-
-    # puts "DEBUG: arrow=($arrow_coords)"
+    # puts "DEBUG: draw_connection $c $gateptr $dispstr $srcptr $destptr $src_i $src_n $dest_i $dest_n"
 
     if [catch {
+       set src_rect [get_submod_coords $c $srcptr]
+       set dest_rect [get_submod_coords $c $destptr]
+    } errmsg] {
+       # skip this connection if source or destination of the arrow cannot be found
+       return
+    }
+
+    if [catch {
+
+       split_dispstr $dispstr tags [winfo toplevel $c] {}
+
+       if {![info exists tags(m)]} {set tags(m) {a}}
+
+       set mode [lindex $tags(m) 0]
+       set src_anch  [list [lindex $tags(m) 1] [lindex $tags(m) 2]]
+       set dest_anch [list [lindex $tags(m) 3] [lindex $tags(m) 4]]
+
+       # puts "DEBUG: src_rect=($src_rect) dest_rect=($dest_rect)"
+       # puts "DEBUG: src_anch=($src_anch) dest_anch=($dest_anch)"
+
+       regexp -- {^.[^.]*} $c win
+
+       set arrow_coords [eval [concat opp_inspectorcommand $win arrowcoords \
+                  $src_rect $dest_rect $src_i $src_n $dest_i $dest_n \
+                  $mode $src_anch $dest_anch]]
+
+       # puts "DEBUG: arrow=($arrow_coords)"
+
        if {![info exists tags(o)]} {set tags(o) {}}
        set fill [lindex $tags(o) 0]
        if {$fill == ""} {set fill black}
@@ -294,7 +328,7 @@ proc draw_connection {c ptr dispstr srcptr destptr src_i src_n dest_i dest_n} {
        if {$width == ""} {set width 1}
 
        eval $c create line $arrow_coords -arrow last \
-           -fill $fill -width $width -tags "\"conn $ptr\""
+           -fill $fill -width $width -tags "\"conn $gateptr\""
 
     } errmsg] {
        tk_messageBox -type ok -title Error -icon error \
