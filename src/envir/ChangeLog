@@ -1,3 +1,8 @@
+2002-06-13  Andras Varga
+
+	* filemgrs.cc: 2 bugfixes: (1) output scalar file did not get opened
+	sometimes; (2) output scalar file got removed between runs
+
 2002-05-28  Frank Paehlke  <paehlke@tm.uni-karlsruhe.de>
 
 	* filemgrs.cc: Use standard headers and namespaces if

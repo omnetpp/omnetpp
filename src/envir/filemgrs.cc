@@ -199,7 +199,7 @@ void cFileOutputScalarManager::startRun()
     closeFile();
     const char *s = ev.app->getConfigEntry(simulation.runNumber(), "output-scalar-file");
     fname = s ? s : "omnetpp.sca";
-    remove(fname);
+    initialized = false;
 }
 
 void cFileOutputScalarManager::endRun()
