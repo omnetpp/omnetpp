@@ -124,8 +124,14 @@ class SIM_API cModule : public cObject
     // The following functions are expected to be redefined in concrete
     // module types. They are made protected because they are supposed
     // to be called only via callInitialize() and callFinish().
-    virtual void initialize();     // called before simulation starts
-    virtual void finish();         // called after end of simulation
+
+    // multi-stage init functions are called before simulation starts
+    virtual void initialize(int stage) {initialize();}  // multi-stage init: defaults to single-stage init
+    virtual int  numInitStages()       {return 1;}      // multi-stage init: defaults to single-stage init
+    virtual void initialize();                          // single-stage init
+
+    // finish() is called after end of simulation (if it terminated without error)
+    virtual void finish();
 
   public:
     cModule(cModule& mod);
@@ -196,7 +202,8 @@ class SIM_API cModule : public cObject
     const char *machinePar(const char *machinename); // NET
 
     // interface for calling initialize() and finish() from outside
-    virtual void callInitialize() = 0;           // calls initialize()
+    virtual void callInitialize();               // full multi-stage init for this module
+    virtual bool callInitialize(int stage) = 0;  // does single stage of initialization; returns true if more stages are required
     virtual void callFinish() = 0;               // calls finish()
 
     // dynamic module creation
@@ -279,7 +286,8 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     bool usesActivity()  {return usesactivity;}
 
     // interface for calling initialize() and finish() from outside
-    virtual void callInitialize();
+    //virtual void callInitialize();
+    virtual bool callInitialize(int stage);
     virtual void callFinish();
 
     // dynamic module creation
@@ -385,8 +393,9 @@ class SIM_API cCompoundModule : public cModule
     virtual bool isSimple() {return false;}
 
     // interface for calling initialize() and finish() from outside
-    virtual void callInitialize();   // first for this module, then for submods
-    virtual void callFinish();       // first for submods, then for itself
+    //virtual void callInitialize();           // full multi-stage init
+    virtual bool callInitialize(int stage);  // first for this module, then for submods
+    virtual void callFinish();               // first for submods, then for itself
 
     // dynamic module creation
     virtual void scheduleStart(simtime_t t); // starting msg for submodules

@@ -46,18 +46,6 @@ bool cModule::pause_in_sendmsg;
 //=========================================================================
 //=== cModule - member functions
 
-void cModule::initialize()
-{
-    // Called before simulation starts (or usually after dynamic module was created).
-    // Should be redefined by user.
-}
-
-void cModule::finish()
-{
-    // Called after end of simulation (and usually before destroying a dynamic module).
-    // Should be redefined by user.
-}
-
 cModule::cModule(cModule& mod) : cObject(),
  gatev(NULL, 0,2),
  paramv(NULL, 0,2),
@@ -434,6 +422,25 @@ const char *cModule::machinePar(const char *pname)
 bool cModule::isOnLocalMachine()                                   //NET
 {
     return simulation.netInterface()==NULL || simulation.netInterface()->isLocalMachineIn( machinev );
+}
+
+void cModule::initialize()
+{
+    // Called before simulation starts (or usually after dynamic module was created).
+    // Should be redefined by user.
+}
+
+void cModule::finish()
+{
+    // Called after end of simulation (and usually before destroying a dynamic module).
+    // Should be redefined by user.
+}
+
+void cModule::callInitialize()
+{
+    int stage = 0;
+    while (callInitialize(stage))
+        ++stage;
 }
 
 void cModule::setDisplayString(int type, const char *s, bool immediate)
@@ -1153,20 +1160,28 @@ void cSimpleModule::handleMessage(cMessage *)
 
 //-------------
 
-void cSimpleModule::callInitialize()
+//void cSimpleModule::callInitialize()
+//{
+//    cModule::callInitialize();
+//}
+
+bool cSimpleModule::callInitialize(int stage)
 {
-    // This is the interface for calling initialize().
-    // We switch to the module's context for the duration of the call.
+    int numStages = numInitStages();
+    if (stage < numStages)
+    {
+        // switch to the module's context for the duration of the initialize() call.
+        cModule *oldcontext = simulation.contextModule();
+        simulation.setContextModule( this );
 
-    cModule *oldcontext = simulation.contextModule();
-    simulation.setContextModule( this );
+        initialize( stage );
 
-    initialize();
-
-    if (oldcontext)
-        simulation.setContextModule( oldcontext );
-    else
-        simulation.setGlobalContext();
+        if (oldcontext)
+            simulation.setContextModule( oldcontext );
+        else
+            simulation.setGlobalContext();
+    }
+    return stage < numStages-1;  // return true if there's more stages to do
 }
 
 void cSimpleModule::callFinish()
@@ -1290,27 +1305,41 @@ void cCompoundModule::scheduleStart(simtime_t t)
     }
 }
 
-void cCompoundModule::callInitialize()
+//void cCompoundModule::callInitialize()
+//{
+//    cModule::callInitialize();
+//}
+
+bool cCompoundModule::callInitialize(int stage)
 {
     // This is the interface for calling initialize().
 
     // first call it for this module...
-    cModule *oldcontext = simulation.contextModule();
-    simulation.setContextModule( this );
+    int numStages = numInitStages();
+    if (stage < numStages)
+    {
+        cModule *oldcontext = simulation.contextModule();
+        simulation.setContextModule( this );
 
-    initialize();
+        initialize(stage);
 
-    if (oldcontext)
-        simulation.setContextModule( oldcontext );
-    else
-        simulation.setGlobalContext();
+        if (oldcontext)
+            simulation.setContextModule( oldcontext );
+        else
+            simulation.setGlobalContext();
+    }
 
-    // ...then for submods
+    // ...then for submods (meanwhile determine if more stages are needed)
+    bool moreStages = stage < numStages-1;
     for (cSubModIterator submod(*this); !submod.end(); submod++)
     {
-        submod()->callInitialize();
+        if (submod()->callInitialize(stage))
+            moreStages = true;
     }
+
+    return moreStages; // return true if there's more stages to do
 }
+
 
 void cCompoundModule::callFinish()
 {

@@ -892,5 +892,18 @@ May 21, 2000
    reaches that gate. I didn't implement it for now because I felt such a very
    general function would cause confusion for simulation programmers,
    but I'd like to hear more opinions about this...)
-
+ - multi-stage initialization support added. Modules have two new functions
+   which can be redefined by the user:
+      void initialize(int stage);
+      int numInitStages();
+   At the beginning of the simulation, initialize(0) is called for all modules,
+   then initialize(1), initialize(2), etc. For each module, numInitStages()
+   must be redefined to return the number of init stages required, e.g. for a
+   two-stage init, numInitStages() should return 2, and initialize(int stage)
+   must be implemented to handle the stage=0 and stage=1 cases.
+   callInitialize() now performs the full multi-stage initialization for that
+   module and all its submodules.
+   Multi-stage initialization defaults to the good old single-stage initialize()
+   function (without args): the default numInitStages() returns 1, and the
+   default initialize(int stage) simply calls initialize().
 
