@@ -52,6 +52,9 @@ AR=link.exe /lib
 SHLIB_LD=link.exe /dll
 RC=rc.exe
 
+# dependency generator (needs Perl in the path!)
+MAKEDEPEND=perl $(OMNETPP_ROOT)/src/utils/makedep.pl -Y --objsuffix .obj 
+
 # OMNeT++ tools
 NEDC=$(OMNETPP_BIN_DIR)/nedc.exe
 REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace.exe
