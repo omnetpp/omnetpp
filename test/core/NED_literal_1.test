@@ -54,12 +54,20 @@ void {Simple}::activity()
 }
 
 %contains-regex: stdout
-p00=-3
-p01=-5
-p02=0
-p03=1
-p04=1
-p05=0
-p06=[0-9eE+.]+
-p20=1
-p47=2
+s:S="hello"
+b1:B=true
+b2:B=false
+b3:L=5
+b4:D=3.1415
+b5:D=6.01e+023
+n1:B=true
+n2:B=false
+n3:L=5
+n4:D=3.1415
+n5:D=6.01e+023
+nc1:B=true
+nc2:B=false
+nc3:L=5
+nc4:D=3.1415
+nc5:D=6.01e+023
+
