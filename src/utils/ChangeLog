@@ -1,128 +1,204 @@
-#27  Jun 23, 1997
-  - splitvec rewritten in awk
-  - install.bat now checks if env vars were set OK
-  - makedist, buildall improved
-  - mkmk removed
-#28  Jun 26, 1997
-  - mkmk deleted from scripts
-  - splitvec.bat added
-  - bug: jar_mkmk gives an error if there's no ned file in the directory
-#29  Jul 2, 1997
-  - install.bat changed
-#30  Jul 10, 1997
-  - jar_mkmk changed to generate makefiles edible for Cygnus gcc on Win95/NT
-#31  Oct 6, 1997
-  - added convert that upgrades older OMNeT++ sources
-#32  Dec 16, 1997
-  - added GNED and FIFO example to installation scripts
-  - convert script upgraded for sim151
-#33  Feb 15, 1998
-  - added 'configur' script
-  - renamed (and modified) some scripts:
-     tounix-->dos2unix
-     buildall-->makeall
-     buildlib.bat-->makeall.bat
-     jar_mkmk-->makemake
-#34 Feb 20, 1998
-  - improved on scripts
-#35 Feb 26, 1998
-  - 'make clean' added to makemake-generated makefiles
-  - ifeq's removed from makefiles (they are not supported everywhere)
-  - configur script improved (now checks for gcc, bison etc.)
-#36 March 10, 1998
-  - Plove added to install etc scripts
-  - wrote readme file
-#37 April 22, 1998
-  - bitmaps dir added to scripts
-  - dos2unix, configur etc scripts improved
-#38 April 26, 1998
-  - support for dynamic linking
-  - makeall now does a make in utils/ and gned/ too
-  - makedist creates bin/ directory will several soft links in it
-#39 April 29, 1998
-  - makedist creates a lib/ directory with soft links to the libraries
-#39a May 11, 1998
-  - bugfixes
-  - sim, envir, nedc, plove, gned, utils placed into a src subdirectory
-#40 May 12, 1998
-  - bugfixes
-  - mklinks added
-#41 May 21, 1998
-  - prephtml added
-#42 June 4, 1998
-  - small corrections on prephtml and configure
-#43 June 15, 1998
-  - makemake rewritten. Accepts several command-line options, can handle
-    source trees etc.
-#44 July 2, 1998
-  - makemake revisited; configure improved too
-#45 July 15, 1998
-  - html/ directory moved one level up: omnetpp/html/
-  - prephtml fixed: two-level table of contents
-  - several small fixes
-#46 August 14, 1998
-  - small fixes
-#47 August 16, 1998
-  - fixes on the install scripts
-#48 August 16, 1998
-  - support for the models/ directory
-  - configure now puts OMNETPP_ROOT-relative paths into the makefiles etc.
-#49 Dec 30, 1998
-  - configure script improved;
-  - DYNAMIC_LINKAGE config flag renamed to USE_DLOPEN
-  - configure now creates makefile out of makefile.in
-  - makefile renamed to makefile.in
-#50 Jan 1, 1999
-  - fifo2 sample added to install.bat; fifo renamed to fifo1
-  - misc fixes
-  - 'convert' script removed
-#51 Jan 25, 1999
-  - minor changes
-#52 June 21, 1999
-  - all sources checked in under CVS
-  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
-  - version.log renamed to ChangeLog
-  - cleanup: removed a number of old scripts
-  - tcl2c.c moved here
-July 17, 1999
-  - seedtool help text changed
------- omnetpp-2.0b released ------
-Oct 10, 1999
-  - makemake: better error handling with recursive makefiles; EXE_SUFFIX added
-  - tcl2c.c: encoding simplified (old one was unnecessarily complicated and
-    didn't work under cygwin)
------- omnetpp-2.0b2 released ------
-Dec 5,1999
-  - Makefile.vc added
------- omnetpp-2.0b3 released ------
-Apr 10, 2000
- - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
-Apr 16, 2000
- - prephtml script enhanced: now it splits up the manual to several HTML files
-   (usman.html, toc.html plus chapN.html files); it also adds heading numbering.
-Apr 19, 2000
- - added some Purify support to makemake [from Ulrich Kaage]
-Apr 30, 2000
- - TVEnv support removed from makemake [suggested by Niko]
- - prephtml now puts a version number into the html file
-May 7, 2000
- - replace.c added [from Balazs Kelemen]
------- omnetpp-2.0b4 released ------
------- omnetpp-2.0b5 released ------
-Sep 30, 2000
- - typos in makemake.in
-Feb 6, 2001
- - tcl2c now compiles with MSVC.
------- omnetpp-2.0 released ------
-Feb 27, 2001
- - fixed bug in tcl2c which prevented it from compiling with Cygwin
------- omnetpp-2.0p1 released ------
-March 27, 2001
- - Makefile change: now it copies makemake, splitvec and seedtool to bin/
-   (instead of making soft links).
- - makemake renamed to opp_makemake
-March 29, 2001
- - replace utility renamed to opp_replace
-May 24, 2001
- - prephtml, wc-l moved to _scripts
------- omnetpp-2.1 released ------
+2001-06-19  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* Makefile.in (all): use "ln -sf" instead of "ln -s" to avoid an
+	error when link already exists.
+
+	
+2001-05-24 Andras Varga
+
+	* ------ omnetpp-2.1 released ------
+
+	* prephtml, wc-l moved to _scripts
+
+2001-03-29 Andras Varga
+
+	* replace utility renamed to opp_replace
+
+2001-03-27 Andras Varga
+
+	* Makefile change: now it copies makemake, splitvec and seedtool
+	to bin/ (instead of making soft links).
+
+	* makemake renamed to opp_makemake
+
+2001-02-27 Andras Varga
+
+	* ------ omnetpp-2.0p1 released ------
+
+	* fixed bug in tcl2c which prevented it from compiling with Cygwin
+
+2001-02-06 Andras Varga
+
+	* ------ omnetpp-2.0 released ------
+
+	* tcl2c now compiles with MSVC.
+
+2000-09-30 Andras Varga
+
+	* typos in makemake.in
+
+2000-05-07 Andras Varga
+
+	* ------ omnetpp-2.0b5 released ------
+
+	* ------ omnetpp-2.0b4 released ------
+
+	* replace.c added [from Balazs Kelemen]
+
+2000-04-30 Andras Varga
+
+	* TVEnv support removed from makemake [suggested by Niko]
+
+	* prephtml now puts a version number into the html file
+
+2000-04-19 Andras Varga
+
+	* added some Purify support to makemake [from Ulrich Kaage]
+
+2000-04-16 Andras Varga
+
+	* prephtml script enhanced: now it splits up the manual to several
+	HTML files (usman.html, toc.html plus chapN.html files); it also
+	adds heading numbering.
+
+2000-04-10 Andras Varga
+
+	* TRUE/FALSE (defines) replaced by true/false (C++ keywords)
+
+1999-12-05 Andras Varga
+
+	* ------ omnetpp-2.0b3 released ------
+
+	* Makefile.vc added
+
+1999-10-10 Andras Varga
+
+	* ------ omnetpp-2.0b2 released ------
+
+	* makemake: better error handling with recursive makefiles; EXE_SUFFIX added
+
+	* tcl2c.c: encoding simplified (old one was unnecessarily
+	complicated and didn't work under cygwin)
+
+1999-07-17 Andras Varga
+
+	* ------ omnetpp-2.0b released ------
+
+	* seedtool help text changed
+
+1999-06-21 Andras Varga
+
+	* older news entries follow this line
+	
+	* 52 June 21, 1999
+	  - all sources checked in under CVS
+	  - makefile.in modified for use with GNU Autoconf; also renamed to Makefile.in
+	  - version.log renamed to ChangeLog
+	  - cleanup: removed a number of old scripts
+	  - tcl2c.c moved here
+	* 51 Jan 25, 1999
+	  - minor changes
+
+	* 50 Jan 1, 1999
+	  - fifo2 sample added to install.bat; fifo renamed to fifo1
+	  - misc fixes
+	  - 'convert' script removed
+
+	* 49 Dec 30, 1998
+	  - configure script improved;
+	  - DYNAMIC_LINKAGE config flag renamed to USE_DLOPEN
+	  - configure now creates makefile out of makefile.in
+	  - makefile renamed to makefile.in
+
+	* 48 August 16, 1998
+	  - support for the models/ directory
+	  - configure now puts OMNETPP_ROOT-relative paths into the makefiles etc.
+
+	* 47 August 16, 1998
+	  - fixes on the install scripts
+
+	* 46 August 14, 1998
+	  - small fixes
+
+	* 45 July 15, 1998
+	  - html/ directory moved one level up: omnetpp/html/
+	  - prephtml fixed: two-level table of contents
+	  - several small fixes
+
+	* 44 July 2, 1998
+	  - makemake revisited; configure improved too
+
+	* 43 June 15, 1998
+	  - makemake rewritten. Accepts several command-line options, can handle
+	    source trees etc.
+
+	* 42 June 4, 1998
+	  - small corrections on prephtml and configure
+
+	* 41 May 21, 1998
+	  - prephtml added
+
+	* 40 May 12, 1998
+	  - bugfixes
+	  - mklinks added
+
+	* 39a May 11, 1998
+	  - bugfixes
+	  - sim, envir, nedc, plove, gned, utils placed into a src subdirectory
+
+	* 39 April 29, 1998
+	  - makedist creates a lib/ directory with soft links to the libraries
+
+	* 38 April 26, 1998
+	  - support for dynamic linking
+	  - makeall now does a make in utils/ and gned/ too
+	  - makedist creates bin/ directory will several soft links in it
+
+	* 37 April 22, 1998
+	  - bitmaps dir added to scripts
+	  - dos2unix, configur etc scripts improved
+
+	* 36 March 10, 1998
+	  - Plove added to install etc scripts
+	  - wrote readme file
+
+	* 35 Feb 26, 1998
+	  - 'make clean' added to makemake-generated makefiles
+	  - ifeq's removed from makefiles (they are not supported everywhere)
+	  - configur script improved (now checks for gcc, bison etc.)
+
+	* 34 Feb 20, 1998
+	  - improved on scripts
+
+	* 33  Feb 15, 1998
+	  - added 'configur' script
+	  - renamed (and modified) some scripts:
+	     tounix-->dos2unix
+	     buildall-->makeall
+	     buildlib.bat-->makeall.bat
+	     jar_mkmk-->makemake
+
+	* 32  Dec 16, 1997
+	  - added GNED and FIFO example to installation scripts
+	  - convert script upgraded for sim151
+
+	* 31  Oct 6, 1997
+	  - added convert that upgrades older OMNeT++ sources
+
+	* 30  Jul 10, 1997
+	  - jar_mkmk changed to generate makefiles edible for Cygnus gcc on Win95/NT
+
+	* 29  Jul 2, 1997
+	  - install.bat changed
+
+	* 28  Jun 26, 1997
+	  - mkmk deleted from scripts
+	  - splitvec.bat added
+	  - bug: jar_mkmk gives an error if there's no ned file in the directory
+
+	* 27  Jun 23, 1997
+	  - splitvec rewritten in awk
+	  - install.bat now checks if env vars were set OK
+	  - makedist, buildall improved
+	  - mkmk removed
+	
