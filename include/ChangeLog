@@ -2,6 +2,11 @@ FIXME todo: create parsim/ (and nedxml/?) subdirectories here
 cMessage: change prio() from int to short (2 bytes less)
 add deleteGate()
 
+2004-11-02  Andras Varga
+
+	* csimplemodule.h: expanded scheduleAt() comment, to call attention
+	to related methods.
+
 2004-10-25  Andras Varga
 
 	* added crng.h

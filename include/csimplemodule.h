@@ -29,25 +29,29 @@
  * one or more virtual member functions to make it do useful work:
  *
  *    - void initialize()
- *    - void activity()
  *    - void handleMessage(cMessage *msg)
+ *    - void activity()
  *    - void finish()
  *
  * initialize() is called after OMNeT++ created the module.
  *
- * One has to redefine either activity() or handleMessage() to contain
- * the internal logic of the module. activity() and handleMessage() implement
- * different event processing strategies: activity() is a coroutine-based
- * solution which implements the process-interaction approach (coroutines are
- * non-preemptive [cooperative] threads). handleMessage() is a method that is
- * called by the simulation kernel when the module receives a message.
+ * One has to redefine either handleMessage() to contain
+ * the internal logic of the module. handleMessage() is called
+ * by the simulation kernel when the module receives a message.
+ * (An alternative to handleMessage() is activity(), but activity()
+ * is not recommended for serious model development because of
+ * scalability and debuggability problems. It also tends to lead
+ * to messy simple module implementations.)
+ *
+ * You can send() messages to other modules, or use scheduleAt() +
+ * cancelEvent() to implement delays, timers or timeouts.
+ * Messages sent or scheduled (but not cancelled) are delivered
+ * to modules via handleMessage(), or (if using activity()) via
+ * receive().
  *
  * The finish() functions are called when the simulation terminates
  * successfully. Typical use of finish() is recording statistics
  * collected during simulation.
- *
- * The activity() functions run as coroutines during simulation.
- * Coroutines are brought to cSimpleModule from the cCoroutine base class.
  *
  * @ingroup SimCore
  */
@@ -92,6 +96,7 @@ class SIM_API cSimpleModule : public cModule
 
     /**
      * Should be redefined to contain the module activity function.
+     * For several good reasons, you should prefer handleMessage() to activity().
      * This default implementation issues an error message (throws cException).
      */
     virtual void activity();
@@ -321,8 +326,30 @@ class SIM_API cSimpleModule : public cModule
     //@{
 
     /**
-     * Schedules a self-message. Receive() will return the message at
-     * t simulation time.
+     * Schedules a self-message. It will be delivered back to the module
+     * via receive() or handleMessage() at simulation time t. This method
+     * is the way you can implement timers or timeouts. Timers can also
+     * be cancelled via cancelEvent() (See below.)
+     *
+     * When the message is delivered at the module, you can call
+     * <tt>msg->isSelfMessage()</tt> to tell it apart from messages arriving
+     * from other modules. <tt>msg->kind()</tt> can be used to further
+     * classify it, or of you need to manage an unbounded number of timers,
+     * you can set <tt>msg->contextPointer()</tt> before scheduling to
+     * point to the data structure the message belongs to -- this way
+     * you can avoid having to search through lists or other data structures
+     * to find out where a just-arrived self-message belongs.
+     *
+     * cancelEvent() can be used to cancel the self-message before it arrives.
+     * This is useful for implementing timeouts: if the event occurs "in time"
+     * (before timeout), the scheduled self-message can be cancelled.
+     *
+     * Given a cMessage pointer, you can check whether it is currently
+     * scheduled by calling <tt>msg->isScheduled()</tt>. If it is scheduled,
+     * you cannot schedule it again without calling cancelEvent() first.
+     * However, after the message was delivered to the module or cancelled,
+     * you can schedule it again -- so you can reuse the same message
+     * object for timeouts over and over during the whole simulation.
      */
     int scheduleAt(simtime_t t, cMessage *msg);
 
