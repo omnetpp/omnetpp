@@ -128,11 +128,7 @@ re-makemake-m:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 fifo1.o: fifo1.cc \
   fifo1.h
-fifo1_n.o: fifo1_n.cc
-fifonet1_n.o: fifonet1_n.cc
 gen1.o: gen1.cc \
   gen1.h
-gen1_n.o: gen1_n.cc
 sink1.o: sink1.cc \
   sink1.h
-sink1_n.o: sink1_n.cc
