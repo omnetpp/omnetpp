@@ -1,6 +1,36 @@
 What's New
 ==========
 
+OMNeT++ 3.0 alpha 9 (Nov 3 2004)
+--------------------------------
+- fixed configure script problems in alpha 8
+
+- new random number architecture: support for Mersenne Twister and Akaroa
+  RNGs; unlimited number of RNGs; RNG mapping (module-local RNG numbers
+  can be mapped arbitrarily to physical RNGs from omnetpp.ini. Details
+  in src/envir/ChangeLog and on omnetpp.org.
+
+- Tkenv fixes and usability improvements: (1) allow user interactions during
+  message animation: animation speed can be changed with the slider, STOP
+  button can be clicked, inspectors can be closed, etc;  (2) improved
+  "Fast Run until next local event" function: now it always animates events
+  that occur in the local module;  (3) fixed display string handling bugs: in
+  "t=", commas and equals signs weren't handled properly.
+
+- signatures of fullPath() and info() functions changed to use std::string.
+  The new signatures are both safer (no danger of accidental buffer overrun
+  or confusion caused by using static buffers) and easier to use.
+  POTENTIAL INCOMPATIBILITY: fullPath() calls in sprintf(), ev.printf(),
+  new cException() etc calls should be changed to fullPath().c_str().
+  (ev<< statements are not affected.)
+
+- support for categorized icons (icons grouped into subdirectories with
+  the bitmaps folder) in GNED and Tkenv
+
+- linking problems (linker symbol conflicts) with recent Akaroa versions
+  resolved
+
+
 OMNeT++ 3.0 alpha 8 (Oct 2004)
 --------------------------------
 - in .msg files, struct fields can have initializers (a constructor gets
