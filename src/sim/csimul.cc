@@ -54,16 +54,16 @@ static bool currentmod_was_deleted = false;
 
 ostream& operator<<(ostream& os, struct tm d)
 {
-      static char *month[] =
-         {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    static char *month[] =
+       {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-      os << month[d.tm_mon] << ' ' << (int)d.tm_mday << ", " <<
-            (1900+d.tm_year) << ", ";
-      os << (int)d.tm_hour << ':' <<
-            (int)d.tm_min << ':' <<
-            (int)d.tm_sec;
-      return os;
+    os << month[d.tm_mon] << ' ' << (int)d.tm_mday << ", " <<
+          (1900+d.tm_year) << ", ";
+    os << (int)d.tm_hour << ':' <<
+          (int)d.tm_min << ':' <<
+          (int)d.tm_sec;
+    return os;
 }
 
 
@@ -163,10 +163,9 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     os << "||               SNAPSHOT                     ||" << "\n";
     os << "================================================" << "\n";
     os << "| Of object:    `" << object->fullPath() << "'" << "\n";
-    os << "| Label:        `" << label << "'" << "\n";
+    os << "| Label:        `" << (label?label:"") << "'" << "\n";
     os << "| Sim. time:     " << simtimeToStr(simTime()) << "\n";
-    os << "| Network:      `" << (networktype->name() ?
-                                 networktype->name():"unnamed") << "'\n";
+    os << "| Network:      `" << networktype->name() << "'\n";
     os << "| Run no.        " << run_number << '\n';
     os << "| Started at:    " << *localtime(&simbegtime) << '\n';
     os << "| Time:          " << *localtime(&simendtime) << '\n';
@@ -174,9 +173,9 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     if (err)
        os << "| Simulation stopped with error message.\n";
     if (contextModule())
-       os << "| Initiated from: `" << contextModule()->fullPath() << "'\n";
+        os << "| Initiated from: `" << contextModule()->fullPath() << "'\n";
     else
-       os << "| Initiated by:  user\n";
+        os << "| Initiated by:  user\n";
     os << "================================================" << "\n\n";
 
     _do_writesnapshot( NULL,false, os );         // setup
@@ -190,7 +189,7 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     return !os.fail(); // success
 }
 
-static void write_cmod( ostream& os, cModule& m, int indent )
+static void writemodule( ostream& os, cModule& m, int indent )
 {
     static char sp[] = "                                                 ";
     os << (sp+sizeof(sp)-indent) << "`" << m.fullName() << "'";
@@ -201,7 +200,7 @@ static void write_cmod( ostream& os, cModule& m, int indent )
 
 static void writesubmodules(ostream& os, cModule *p, int indent )
 {
-    write_cmod( os, *p, indent );
+    writemodule( os, *p, indent );
     for (int i=1; i<=simulation.lastModuleIndex(); i++)
         if (&simulation[i] && p==simulation[i].parentModule())
             writesubmodules(os, &simulation[i], indent+4 );

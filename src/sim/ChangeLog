@@ -872,4 +872,6 @@ May 6, 2000
    messages with custom appearance in Tkenv. (Not implemented yet in Tkenv!)
 May 7, 2000
  - Makefile.vc improvements from Balazs Kelemen
-
+May 19, 2000
+ - fixed a bug in cSimulation::snapshot() which caused segfault if snapshot()
+   was called with no 'label' parameter (reported by Gy. Pongor)
