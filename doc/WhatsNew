@@ -1,6 +1,77 @@
 What's New
 ==========
 
+OMNeT++ 3.1 (Mar 2005)
+----------------------
+- Several bugfixes since 3.0, mainly on new features introduced in version 3.0.
+  Most notably with RNG seeding and mapping, but several others as well.
+  See the ChangeLogs in the various source directories for a detailed list.
+  A big thank you to the user community for efficiently finding and reporting
+  the bugs in such a short time!
+- Examples of real-time and hybrid (hardware-in-the-loop) simulation; also
+  cScheduler interface refined, cRealTimeScheduler added
+- New class cStringTokenizer
+- cRuntimeError + ini option
+- opp_makemake, opp_nmakemake: implemented -X (ignore subdirectory during
+  recursive build) option
+- handling of included ini files, NED files loaded via preload-ned-files
+  ini file option and xml files included via xmldoc(): file is now searched
+  relative to the location of the file which contains the reference,
+  rather than relative to the current working directory of the simulation.
+  This change is NOT BACKWARDS COMPATIBLE, but only affects the IPv6Suite
+  model which has not been ported to 3.0 yet.
+- the following configuration settings are now relative to the
+  location of the ini file which contains them:
+    [General], load-libs=
+    [Cmdenv], output-file=
+    [Tkenv], bitmap-path=
+    [General], preload-ned-files=
+    [General] or [Run X], output-vector-file=
+    [General] or [Run X], output-scalar-file=
+    [General] or [Run X], snapshot-file=
+
+- nedc has now been removed from the distribution
+
+- The -h option is now understood by both Cmdenv and Tkenv, and handled
+  in a consistent way
+
+Tkenv:
+- ini file runs can be given descriptions, which appear in run selection dialog
+  in Tkenv. description="some text"
+
+- implemented new display string tag:  tt=<tooltip-string>
+  It can be used in module, submodule, connection and msg display
+  strings, and will cause the given string to appear in a tooltip.
+
+- implemented the "t=<string>,<color>" display string tag for connections.
+
+- added support for -r <run-number> command-line option, which has the same
+  effect as (but takes priority over) [Tkenv]/default-run ini file entry.
+
+General:
+- new omnetpp.ini entry:
+    [General]
+    debug-on-errors = true/false  (default: false)
+  If turned on, errors will cause the program to break into the C++
+  debugger. More previsely, cRuntimeError's constructor will do
+  __asm int 3 (debugger interrupt) on Windows, and raise(SIGABRT)
+  on other platforms (Linux, etc). This makes it possible to
+  investigate the context (stack frames, variables etc) of a runtime
+  error.
+
+Sim:
+- csimplemodule.cc, csimul.cc: changed the way scheduled events or sent
+  messages for deleted or finished (see cSimpleModule::end()) modules
+  are handled. Before, these messages were deleted by the cSimpleModule
+  destructor, but this made it very long to clean up large models.
+  Now, messages are not deleted in the dtor, but left in the FES -- they
+  will be discarded in cSimulation::selectNextModule() when they're met.
+
+- cDisplayString's getTagArg() method now never return NULLs (returns ""
+  instead)
+
+
+
 OMNeT++ 3.0 (Dec 2004)
 ----------------------
 
@@ -8,57 +79,57 @@ The following list summarizes *all* changes since OMNeT++ 2.3:
 
 - The simulation kernel has received an overhaul.
 
-- A new step-by-step tutorial, revised documentation and several new 
+- A new step-by-step tutorial, revised documentation and several new
   sample simulations have been included to shorten your learning curve.
 
 - Dynamic NED loading will cut model build time and simplify your work.
 
-- Documentation generation tool will document your own large simulation 
-  models, and help you quickly get an overview about the structure 
+- Documentation generation tool will document your own large simulation
+  models, and help you quickly get an overview about the structure
   of 3rd party models.
 
-- The new Random Number Architecture features a modern, very long cycle 
-  Random Number Generator (Mersenne Twister) for more realistic simulation 
+- The new Random Number Architecture features a modern, very long cycle
+  Random Number Generator (Mersenne Twister) for more realistic simulation
   results, and RNG mapping for more flexibility in simulation experiments.
 
-- Simulation models can now conveniently access XML configuration files 
+- Simulation models can now conveniently access XML configuration files
   for complex input.
 
-- Plove now features a powerful interactive charting component, and also 
-  an internal data-flow engine for processing output vectors before 
+- Plove now features a powerful interactive charting component, and also
+  an internal data-flow engine for processing output vectors before
   plotting.
 
-- The new Scalars tool complements Plove, and lets you analyze and plot 
+- The new Scalars tool complements Plove, and lets you analyze and plot
   scalar data produced by simulations.
 
 - Support for Parallel Distributed Simulation
 
-- Several Simulation GUI usability enhancements will save you time, and 
+- Several Simulation GUI usability enhancements will save you time, and
   make your work more efficient.
 
-- New icons, and enhanced animation capabilities (icon coloring, queue 
-  length display, status text, transmission range, transient bubbles, 
-  etc.) improve the overall look and feel of your models, give you more 
+- New icons, and enhanced animation capabilities (icon coloring, queue
+  length display, status text, transmission range, transient bubbles,
+  etc.) improve the overall look and feel of your models, give you more
   insight, and make the models instantly presentable.
 
-- For better visualization of model dynamics, OMNeT++ now supports 
+- For better visualization of model dynamics, OMNeT++ now supports
   animation of direct message sending and C++ method calls across modules.
 
-- The automatic network layouting using the SpringEmbedder algorithm will 
-  let you work with large networks in the GUI, without the need for 
+- The automatic network layouting using the SpringEmbedder algorithm will
+  let you work with large networks in the GUI, without the need for
   individual positioning of nodes.
 
-- Ready to receive your extensions: plug-in interfaces for new random 
-  number generators, new configuration databases and simulation event 
-  schedulers complement existing plug-in interfaces for recording simulation 
-  data, and let you implement custom input/output, real-time simulation, 
+- Ready to receive your extensions: plug-in interfaces for new random
+  number generators, new configuration databases and simulation event
+  schedulers complement existing plug-in interfaces for recording simulation
+  data, and let you implement custom input/output, real-time simulation,
   hardware-in-the-loop simulation and more.
 
 Delta from 3.0 beta 1:
 
 - User Manual revised
 
-- Several bugfixes and new test cases, significant performance improvements 
+- Several bugfixes and new test cases, significant performance improvements
   in the network setup code; more intuitive error messages at places.
 
 - The new <parametername>.use-default=true notation in omnetpp.ini makes it
