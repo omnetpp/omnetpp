@@ -64,6 +64,8 @@ int groupByRunAndName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int groupByModuleAndName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int prepareScatterPlot_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getModuleAndNamePairs_cmd(ClientData, Tcl_Interp *, int, const char **);
+int prepareCopyToClipboard_cmd(ClientData, Tcl_Interp *, int, const char **);
+
 
 // command table
 OmnetTclCommand tcl_commands[] = {
@@ -88,6 +90,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_groupByModuleAndName",  groupByModuleAndName_cmd }, // opp_groupByModuleAndName $idlist
    { "opp_prepareScatterPlot",    prepareScatterPlot_cmd },   // opp_prepareScatterPlot $idlist $modulename $scalarname
    { "opp_getModuleAndNamePairs", getModuleAndNamePairs_cmd },// opp_getModuleAndNamePairs $idlist $maxcount
+   { "opp_prepareCopyToClipboard",prepareCopyToClipboard_cmd},// opp_prepareCopyToClipboard $idlist
    // end of list
    { NULL, },
 };
@@ -271,14 +274,19 @@ typedef std::vector<ScalarManager::IntVector> IntVectorVector;
 typedef bool (*GroupingFunc)(const ScalarManager::Datum&, const ScalarManager::Datum&);
 typedef bool (*CompareFunc)(int id1, int id2);
 
-static bool sameGroupFRN(const ScalarManager::Datum& d1, const ScalarManager::Datum& d2)
+static bool sameGroupFileRunScalar(const ScalarManager::Datum& d1, const ScalarManager::Datum& d2)
 {
     return d1.fileRef==d2.fileRef && d1.runNumber==d2.runNumber && d1.scalarNameRef==d2.scalarNameRef;
 }
 
-static bool sameGroupMN(const ScalarManager::Datum& d1, const ScalarManager::Datum& d2)
+static bool sameGroupModuleScalar(const ScalarManager::Datum& d1, const ScalarManager::Datum& d2)
 {
     return d1.moduleNameRef==d2.moduleNameRef && d1.scalarNameRef==d2.scalarNameRef;
+}
+
+static bool sameGroupFileRunModule(const ScalarManager::Datum& d1, const ScalarManager::Datum& d2)
+{
+    return d1.fileRef==d2.fileRef && d1.runNumber==d2.runNumber && d1.moduleNameRef==d2.moduleNameRef;
 }
 
 static bool lessByModuleRef(int id1, int id2)
@@ -312,6 +320,20 @@ static bool equalByFileAndRun(int id1, int id2)
     const ScalarManager::Datum& d1 = scalarMgr.getValue(id1);
     const ScalarManager::Datum& d2 = scalarMgr.getValue(id2);
     return d1.fileRef==d2.fileRef && d1.runNumber==d2.runNumber;
+}
+
+static bool lessByScalarNameRef(int id1, int id2)
+{
+    const ScalarManager::Datum& d1 = scalarMgr.getValue(id1);
+    const ScalarManager::Datum& d2 = scalarMgr.getValue(id2);
+    return *(d1.scalarNameRef) < *(d2.scalarNameRef);
+}
+
+static bool equalByScalarNameRef(int id1, int id2)
+{
+    const ScalarManager::Datum& d1 = scalarMgr.getValue(id1);
+    const ScalarManager::Datum& d2 = scalarMgr.getValue(id2);
+    return d1.scalarNameRef == d2.scalarNameRef;
 }
 
 static bool lessByValue(int id1, int id2)
@@ -405,7 +427,7 @@ int groupByRunAndName_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 
     // form groups (IntVectors) by fileRef+runNumber+scalarName
     IntVectorVector vv;
-    doGrouping(argv[1],sameGroupFRN,vv);
+    doGrouping(argv[1],sameGroupFileRunScalar,vv);
 
     // order each group by module name, and insert "null" elements (id=-1) so that
     // every group is of same length, and same indices contain same moduleNameRefs
@@ -423,7 +445,7 @@ int groupByModuleAndName_cmd(ClientData, Tcl_Interp *interp, int argc, const cha
 
     // form groups (IntVectors) by moduleName+scalarName
     IntVectorVector vv;
-    doGrouping(argv[1],sameGroupMN,vv);
+    doGrouping(argv[1],sameGroupModuleScalar,vv);
 
     // order each group by fileRef+runNumber, and insert "null" elements (id=-1) so that
     // every group is of same length, and same indices contain same fileRef+runNumber
@@ -441,7 +463,7 @@ int prepareScatterPlot_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
     // form groups (IntVectors) by moduleName+scalarName
     IntVectorVector vv;
-    doGrouping(argv[1],sameGroupMN,vv);
+    doGrouping(argv[1],sameGroupModuleScalar,vv);
     if (vv.size()==0) return TCL_OK;
 
     // order each group by fileRef+runNumber, and insert "null" elements (id=-1) so that
@@ -549,6 +571,24 @@ int getModuleAndNamePairs_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
     for (ScalarManager::IntVector::iterator i = vec.begin(); i!=vec.end(); ++i)
         Tcl_ListObjAppendElement(interp, vobj, Tcl_NewIntObj(*i));
     Tcl_SetObjResult(interp, vobj);
+    return TCL_OK;
+}
+
+int prepareCopyToClipboard_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_prepareCopyToClipboard <idlist>\"", TCL_STATIC); return TCL_ERROR;}
+
+    // form groups (IntVectors) by fileRef+runNumber+moduleNameRef
+    IntVectorVector vv;
+    doGrouping(argv[1],sameGroupFileRunModule,vv);
+
+    // order each group by scalar name, and insert "null" elements (id=-1) so that
+    // every group is of same length, and same indices contain same scalarNameRefs
+    sortAndAlign(vv,lessByScalarNameRef,equalByScalarNameRef);
+
+    // convert result to Tcl list of lists
+    Tcl_Obj *vvobj = doConvertToTcl(interp, vv);
+    Tcl_SetObjResult(interp, vvobj);
     return TCL_OK;
 }
 
