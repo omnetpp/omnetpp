@@ -1177,11 +1177,11 @@
       <xsl:variable name="classname" select="@name"/>
       <xsl:for-each select="key('msg-or-class',@extends-name)">
          <xsl:call-template name="do-diagram-node"/>
-         "<xsl:value-of select="$classname"/>" -> "<xsl:value-of select="@name"/>";
+         "<xsl:value-of select="@name"/>" -> "<xsl:value-of select="$classname"/>";
       </xsl:for-each>
       <xsl:for-each select="key('msg-or-class-extends',$classname)">
          <xsl:call-template name="do-diagram-node"/>
-         "<xsl:value-of select="@name"/>" -> "<xsl:value-of select="$classname"/>";
+         "<xsl:value-of select="$classname"/>" -> "<xsl:value-of select="@name"/>";
       </xsl:for-each>
    }
 </xsl:template>
