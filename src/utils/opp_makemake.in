@@ -253,7 +253,7 @@ EOT
         -L*)
         dir=`echo $1 | sed 's/^-L//'`
         dir=`perl $abs2rel $dir $basedir`
-        libpath="$libpath $dir"
+        libpath="$libpath -L$dir"
         ;;
 
         -l*)
