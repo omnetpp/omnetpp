@@ -1,3 +1,8 @@
+2004-02-03  Andras Varga
+
+	* neddoc.xsl: module etc names in generated .dot files need quotes 
+	otherwise they may clash with dot's reserved keywords ("Node")
+
 2003-12-06  Andras Varga
 
 	* opp_nmakemake now will make some effort to find configuser.vc 
