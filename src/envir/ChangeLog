@@ -1,3 +1,7 @@
+2004-10-28  Andras Varga
+
+	* added cakaroarng.h/cc
+
 2004-10-27  Andras Varga
 
 	* omnetapp.h/cc, cenvir.cc: added numRNGs(), rng(k) functions (see 
