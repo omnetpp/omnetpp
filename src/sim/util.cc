@@ -62,6 +62,18 @@ void genk_opp_randomize(int gen_nr)
        genk_randseed( gen_nr, time(NULL) );
 }
 
+long randseed()
+{
+       return seeds[0];
+}
+
+long genk_randseed(int gen_nr)
+{
+       if (gen_nr<0 || gen_nr>=NUM_RANDOM_GENERATORS)
+          {opp_error("Invalid random number generator %d",gen_nr);return 0;}
+       return seeds[gen_nr];
+}
+
 long randseed(long seed)
 {
        if (seed==0 || seed>=INTRAND_MAX)
@@ -120,6 +132,27 @@ int testrand()
      seeds[0] = oldseed;
      return good;
 }
+
+long intrand(long r)
+{
+     if (r>0)
+         return intrand()%r;   // good if r<<MAX_LONG
+     else if (r<0)
+         return -intrand()%(-r);
+     else
+         return 0L;
+}
+
+long genk_intrand(int gen_nr, long r)
+{
+     if (r>0)
+         return genk_intrand(gen_nr)%r;   // good if r<<MAX_LONG
+     else if (r<0)
+         return -genk_intrand(gen_nr)%(-r);
+     else
+         return 0L;
+}
+
 
 //==========================================================================
 // Distributions:

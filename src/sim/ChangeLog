@@ -594,7 +594,13 @@ Jul 10, 1999
   - fixed bug in cQueue and cLinkedList (didn't always increment item count
     on insertion)
   - fixed bug in cPar::info(): didn't handle boolean (B) type
+Aug 2, 1999
+  - fixed the bug with randseed() [it was an error to call it without
+    an argument] and split randseed(long seed=0) into 2 functions:
+    randseed() and randseed(long seed).
+  - fixed the bug in intrand(r) and genk_intrand(r) that caused division by
+    zero if called with r=0L; also, for r<0 it now returns a random number in
+    [r+1,0]
 
   KNOWN BUGS:
      cModule::initialize() doesn't get called with dynamic modules
-     randseed() --> split to 2 separate funcs with and without args
