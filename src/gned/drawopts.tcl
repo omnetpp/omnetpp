@@ -37,34 +37,42 @@ proc editModuleDrawOptions {key} {
     set c $canvas($canv_id,canvas)
 
     # create dialog with OK and Cancel buttons
-    createOkCancelDialog .modopts "Module Drawing Options"
+    createOkCancelDialog .modopts "Module Appearance"
 
-    label-entry .modopts.f.thick "Line thickness:" $ned($key,disp-linethickness)
+    label-combo .modopts.f.thick "Line thickness:" {default 1 2 3 4}
     label-colorchooser .modopts.f.fill "Fill Color:" fill $ned($key,disp-fillcolor)
     label-colorchooser .modopts.f.outl "Outline color:" outl $ned($key,disp-outlinecolor)
     pack .modopts.f.thick -expand 1 -fill both  -side top
     pack .modopts.f.fill -expand 1 -fill both  -side top
     pack .modopts.f.outl -expand 1 -fill both  -side top
 
+    set thickness $ned($key,disp-linethickness)
+    if {$thickness==""} {set thickness "default"}
+    .modopts.f.thick.e configure -value $thickness
+
     focus .modopts.f.thick.e
 
     # exec the dialog, extract its contents if OK was pressed
     if {[execOkCancelDialog .modopts] == 1} {
-        # line
-        set ned($key,disp-linethickness)  [.modopts.f.thick.e get]
+
+        # line thickness
+        set thickness [.modopts.f.thick.e cget -value]
+        if {$thickness=="default"} {set thickness ""}
+        if {![regexp {^[0-9]*$} $thickness]} {set thickness ""}
+        set ned($key,disp-linethickness) $thickness
 
         # fill color
         if {$gned(fill)=="default"} {
            set ned($key,disp-fillcolor) ""
         } else {
-           set ned($key,disp-fillcolor) [.modopts.f.fill.f.b cget -bg]
+           set ned($key,disp-fillcolor) [.modopts.f.fill.f.radio.r2f.b cget -bg]
         }
 
         # outline color
         if {$gned(outl)=="default"} {
            set ned($key,disp-outlinecolor) ""
         } else {
-           set ned($key,disp-outlinecolor) [.modopts.f.outl.f.b cget -bg]
+           set ned($key,disp-outlinecolor) [.modopts.f.outl.f.radio.r2f.b cget -bg]
         }
 
         # redraw
@@ -80,26 +88,35 @@ proc editSubmoduleDrawOptions {key} {
     set c $canvas($canv_id,canvas)
 
     # create dialog with OK and Cancel buttons
-    createOkCancelDialog .submopts "Submodule Drawing Options"
+    createOkCancelDialog .submopts "Submodule Appearance"
 
     # add entry fields and focus on first one
     set icon  $ned($key,disp-icon)
     if {$icon == ""} {set gned(radio) rect} else {set gned(radio) icon}
 
-
+    label .submopts.f.head -text "Choose between icon and colored rectangle:"
+    label .submopts.f.sep1 -text "_____________________________"
     radiobutton .submopts.f.r1 -text "Icon" -value icon  -variable gned(radio)
     label-iconchooser .submopts.f.icon "Selected icon:" $ned($key,disp-icon)
+    label .submopts.f.sep2 -text "_____________________________"
     radiobutton .submopts.f.r2 -text "Rectangle" -value rect -variable gned(radio)
-    label-entry .submopts.f.thick "Line thickness:" $ned($key,disp-linethickness)
+    label-combo .submopts.f.thick "Line thickness:" {default 1 2 3 4}
     label-colorchooser .submopts.f.fill "Fill Color:" fill $ned($key,disp-fillcolor)
     label-colorchooser .submopts.f.outl "Outline color:" outl $ned($key,disp-outlinecolor)
 
+    pack .submopts.f.head -expand 0 -fill y  -side top -anchor w
+    pack .submopts.f.sep1 -expand 1 -fill x
     pack .submopts.f.r1 -expand 0 -fill y  -side top -anchor w
     pack .submopts.f.icon -expand 1 -fill both  -side top
+    pack .submopts.f.sep2 -expand 1 -fill x
     pack .submopts.f.r2 -expand 0 -fill y  -side top -anchor w
     pack .submopts.f.thick -expand 1 -fill both  -side top
     pack .submopts.f.fill -expand 1 -fill both  -side top
     pack .submopts.f.outl -expand 1 -fill both  -side top
+
+    set thickness $ned($key,disp-linethickness)
+    if {$thickness==""} {set thickness "default"}
+    .submopts.f.thick.e configure -value $thickness
 
     focus .submopts.f.thick.e
 
@@ -107,7 +124,10 @@ proc editSubmoduleDrawOptions {key} {
     if {[execOkCancelDialog .submopts] == 1} {
 
         # line thickness
-        set ned($key,disp-linethickness)  [.submopts.f.thick.e get]
+        set thickness [.submopts.f.thick.e cget -value]
+        if {$thickness=="default"} {set thickness ""}
+        if {![regexp {^[0-9]*$} $thickness]} {set thickness ""}
+        set ned($key,disp-linethickness) $thickness
 
         # icon
         set centsiz [_getCenterAndSize $c $key]
@@ -127,14 +147,14 @@ proc editSubmoduleDrawOptions {key} {
         if {$gned(fill)=="default"} {
            set ned($key,disp-fillcolor) ""
         } else {
-           set ned($key,disp-fillcolor) [.submopts.f.fill.f.b cget -bg]
+           set ned($key,disp-fillcolor) [.submopts.f.fill.f.radio.r2f.b cget -bg]
         }
 
         # outline color
         if {$gned(outl)=="default"} {
            set ned($key,disp-outlinecolor) ""
         } else {
-           set ned($key,disp-outlinecolor) [.submopts.f.outl.f.b cget -bg]
+           set ned($key,disp-outlinecolor) [.submopts.f.outl.f.radio.r2f.b cget -bg]
         }
 
         # redraw item and connections to/from it
@@ -163,32 +183,40 @@ proc editConnectionDrawOptions {key} {
     set c $canvas($canv_id,canvas)
 
     # create dialog with OK and Cancel buttons
-    createOkCancelDialog .connopts "Connection Drawing Options"
+    createOkCancelDialog .connopts "Connection Appearance"
 
     # add entry fields and focus on first one
-    label-entry .connopts.f.thick "Line thickness:" $ned($key,disp-linethickness)
+    label-combo .connopts.f.thick "Line thickness:" {default 1 2 3 4}
     label-colorchooser .connopts.f.fill "Line color:" fill $ned($key,disp-fillcolor)
     label-combo .connopts.f.drawmode "Drawing mode:" {auto manual north east south west}
-    label-sunkenlabel .connopts.f.src_an "Source anchoring:" "x=$ned($key,disp-src-anchor-x)% y=$ned($key,disp-src-anchor-y)%"
-    label-sunkenlabel .connopts.f.dest_an "Dest. anchoring:" "x=$ned($key,disp-dest-anchor-x)% y=$ned($key,disp-dest-anchor-y)%"
+    label-sunkenlabel .connopts.f.src_an "Source anchoring:" "x=$ned($key,disp-src-anchor-x)%   y=$ned($key,disp-src-anchor-y)%"
+    label-sunkenlabel .connopts.f.dest_an "Dest. anchoring:" "x=$ned($key,disp-dest-anchor-x)%   y=$ned($key,disp-dest-anchor-y)%"
     pack .connopts.f.thick -expand 0 -fill x -side top
     pack .connopts.f.fill -expand 0 -fill x -side top
     pack .connopts.f.drawmode -expand 0 -fill x -side top
     pack .connopts.f.src_an -expand 0 -fill x -side top
     pack .connopts.f.dest_an -expand 0 -fill x -side top
 
-    .connopts.f.drawmode.e configure -text $drawmodes($ned($key,disp-drawmode))
+    set thickness $ned($key,disp-linethickness)
+    if {$thickness==""} {set thickness "default"}
+    .connopts.f.thick.e configure -value $thickness
+    .connopts.f.drawmode.e configure -value $drawmodes($ned($key,disp-drawmode))
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .connopts] == 1} {
 
-        set ned($key,disp-linethickness)  [.connopts.f.thick.e get]
+        # line thickness
+        set thickness [.connopts.f.thick.e cget -value]
+        if {$thickness=="default"} {set thickness ""}
+        if {![regexp {^[0-9]*$} $thickness]} {set thickness ""}
+        set ned($key,disp-linethickness) $thickness
 
         # draw mode: one of m,n,e,w,s. auto is the default
-        set dm [.connopts.f.drawmode.e cget -text]
+        set dm [.connopts.f.drawmode.e cget -value]
         if {$dm=="auto"} {
            set ned($key,disp-drawmode)  ""
         } else {
+           if {[lsearch -exact {auto manual north east south west} $dm]==-1} {set dm auto}
            set ned($key,disp-drawmode)  [string index $dm 0]
            debug "drawmode=$ned($key,disp-drawmode)"
         }
@@ -197,7 +225,7 @@ proc editConnectionDrawOptions {key} {
         if {$gned(fill)=="default"} {
            set ned($key,disp-fillcolor) ""
         } else {
-           set ned($key,disp-fillcolor) [.connopts.f.fill.f.b cget -bg]
+           set ned($key,disp-fillcolor) [.connopts.f.fill.f.radio.r2f.b cget -bg]
         }
 
         redrawItem $key
@@ -212,6 +240,36 @@ proc editConnectionDrawOptions {key} {
 # utility function: create a frame with a label and a color chooser button
 #
 proc label-colorchooser {w label var {color ""}} {
+    global gned
+
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    frame $w.f
+    pack $w.l -anchor nw -expand 0 -fill none -side left -padx 2 -pady 2
+    pack $w.f -anchor n -expand 1 -fill x -side left
+
+    frame $w.f.radio
+    pack $w.f.radio -anchor n -expand 1 -fill x -side left
+
+    radiobutton $w.f.radio.r1 -text "default" -value default -variable gned($var)
+    frame $w.f.radio.r2f
+    pack $w.f.radio.r1 -anchor w -expand 0 -side top
+    pack $w.f.radio.r2f -anchor w -expand 0 -side top
+
+    radiobutton $w.f.radio.r2f.r2 -text "color:"   -value color   -variable gned($var)
+    button $w.f.radio.r2f.b -command [list _setColor $w.f.radio.r2f.b $var [winfo toplevel $w]] -width 6
+    pack $w.f.radio.r2f.r2 -anchor n -expand 0 -side left
+    pack $w.f.radio.r2f.b -anchor c -expand 0 -fill none -side left
+
+    if {$color!=""} {
+       $w.f.radio.r2f.b config -background $color -activebackground $color
+       set gned($var) color
+    } else {
+       set gned($var) default
+    }
+}
+
+proc label-colorchooser-old {w label var {color ""}} {
     global gned
 
     frame $w

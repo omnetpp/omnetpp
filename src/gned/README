@@ -1,4 +1,3 @@
-
                     GNED -- Graphical NED Editor
                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
            Part of the OMNeT++ Discrete Event Simulator
@@ -128,10 +127,3 @@ In the very distant future, maybe...:
     FSM, Petri Graph etc.
 
 Andras
-
----------
-Copyright (c) 1997,99 Andras Varga and others
-E-mail: andras@hit.bme.hu, vargaa@hit.bme.hu
-WWW:    http://www.hit.bme.hu/phd/vargaa
-
-

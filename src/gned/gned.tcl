@@ -35,6 +35,7 @@ See TODO for known bugs and missing features.}
 if [info exist OMNETPP_GNED_DIR] {
 
    set dir $OMNETPP_GNED_DIR
+   source [file join $dir combobox.tcl]
    source [file join $dir datadict.tcl]
    source [file join $dir widgets.tcl]
    source [file join $dir data.tcl]
@@ -69,11 +70,7 @@ if [info exist OMNETPP_GNED_DIR] {
    source [file join $dir netwprops.tcl]
    source [file join $dir props.tcl]
    source [file join $dir submprops.tcl]
-   set OMNETPP_GNED_README [file join $OMNETPP_GNED_DIR README]
-} else {
-   set OMNETPP_GNED_README [file join [file dirname $argv0] .. doc Readme-GNED.txt]
 }
-
 
 #
 # Exec startup code

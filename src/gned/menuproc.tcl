@@ -426,28 +426,14 @@ proc optionsViewFile {} {
 }
 
 proc helpAbout {} {
-    createOkCancelDialog .about "About OMNeT++/GNED"
+    aboutDialog "About OMNeT++/GNED" {
+OMNeT++/GNED
 
-    label .about.f.l -text \
-{
-GNED 2.2
-Part of the OMNeT++ Discrete Event Simulator
+(c) 1997-2002 Andras Varga
 
-(C) 1997-2001 Andras Varga
-
-NO WARRANTY. See Help|Release notes and the 'license' file for details.
+NO WARRANTY -- see license for details.}
 }
 
-    pack .about.f.l -anchor center -expand 0 -fill x -side top
-
-    execOkCancelDialog .about
-    destroy .about
-}
-
-proc helpRelNotes {} {
-    global OMNETPP_GNED_README
-    createFileViewer $OMNETPP_GNED_README
-}
 
 proc notImplemented {args} {
     # the most versatile function :-)

@@ -99,3 +99,39 @@ proc createFileViewer {filename} {
     loadFile $w $filename
 }
 
+
+# currently not used:
+proc textView {w title text} {
+    if {[winfo exists $w]} {
+        wm deiconify $w
+        return
+    }
+
+    toplevel $w -class Toplevel
+    wm focusmodel $w passive
+    wm geometry $w 512x275
+    wm maxsize $w 1009 738
+    wm minsize $w 1 1
+    wm overrideredirect $w 0
+    wm resizable $w 1 1
+    wm title $w $title
+
+    frame $w.main
+    scrollbar $w.main.sb -borderwidth 1 -command "$w.main.text yview"
+    pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
+    text $w.main.text -yscrollcommand "$w.main.sb set"
+    pack $w.main.text -anchor center -expand 1 -fill both -side left
+
+    frame $w.butt
+    button $w.butt.close -text Close -command "destroy $w"
+    pack $w.butt.close -anchor n -expand 0 -side right
+
+    pack $w.butt -expand 0 -fill x -side bottom
+    pack $w.main -expand 1 -fill both -side top
+
+    set t $w.main.text
+    set curpos [$t index insert]
+    $t insert end $text
+    $t mark set insert 1.0
+    $t see insert
+}

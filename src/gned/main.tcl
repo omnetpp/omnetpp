@@ -187,8 +187,6 @@ proc createMainWindow {} {
     # Help menu
     foreach i {
       {command -command helpAbout -label {About GNED...} -underline 0}
-      {separator}
-      {command -command {helpRelNotes} -label {Release notes} -underline 0}
     } {
       eval .menubar.helpmenu add $i
     }
