@@ -1,0 +1,201 @@
+//==========================================================================
+//  FDDI_NETS.NED  -  Network Description file for
+//                    Discrete System Simulation in OMNeT++
+//
+//  Simulated system: TUB Northen&Southern FDDI Rings
+//
+//  Author: Gabor.Lencse@hit.bme.hu
+//==========================================================================
+
+//--------------------------------------------------------------*
+//  Copyright (C) 1996,97 Gabor Lencse,
+//  Technical University of Budapest, Dept. of Telecommunications,
+//  Stoczek u.2, H-1111 Budapest, Hungary.
+//
+//  This file is distributed WITHOUT ANY WARRANTY. See the file
+//  `license' for details on this and other legal matters.
+//--------------------------------------------------------------*
+
+import
+    "fddi_mac",
+    "ssm_ifs",
+    "othermod",
+    "fddi_rings";
+
+
+// FDDI1 --
+//
+// Network: A ring with identical stations.
+//
+network FDDI1 : FDDIRing
+    parameters:
+        RingID = input (1, "RingID: "),
+        TTRT = input (10 ms, "TTRT: "),
+        no_comps = input (3, "# computers: "),
+        no_msg = input (50, "# messages: "),
+        wait_time = input (0.0001, "wait time (sec): ");
+endnetwork
+
+
+// NRing --
+//
+// Network: Technical University Northern Ring, modeled standalone.
+//
+network NRing : TUBNRing
+    parameters:
+        LoadControlFile = input ( "nr_lctrl", "NR LoadControlFile: "),
+        RingID = input (1, "RingID: "),
+        FDDI_Generator_type = input ( "FDDI_GeneratorFromTraceFile",
+                                              "FDDI SAS Generator type: "),
+        RingID = input (1, "RingID: "),
+        TTRT = input (10 ms, "TTRT: "),
+        LoadMultiplier = input (10, "Load multiplier: ");
+endnetwork
+
+
+// TUB_wired --
+//
+// Technical University Northern & Southern rings.
+//
+module TUB_wired
+    machines:
+        NR_host,
+        SR_host;
+    parameters:
+        NRLoadControlFile : string,
+        SRLoadControlFile : string,
+        FDDI_Generator_type : string,
+        NRLoadMultiplier : numeric,
+        SRLoadMultiplier : numeric;
+    submodules:
+        NRing: TUBNRing;
+            on:
+                NR_host;
+            parameters:
+                LoadControlFile = NRLoadControlFile,
+                FDDI_Generator_type = FDDI_Generator_type,
+                RingID = 0,
+                TTRT = 5 ms,
+                LoadMultiplier = NRLoadMultiplier; // to be changed!!!
+            display: "i=ring";
+        SRing: TUBSRing;
+            on:
+                SR_host;
+            parameters:
+                LoadControlFile = SRLoadControlFile,
+                FDDI_Generator_type = FDDI_Generator_type,
+                RingID = 1,
+                TTRT = 5.017 ms,
+                LoadMultiplier = SRLoadMultiplier; // to be changed!!!
+            display: "i=ring";
+    connections:
+        NRing.out --> delay 0.05 us --> SRing.in;
+        SRing.out --> delay 0.05 us --> NRing.in;
+endmodule
+
+
+// TUB_SSM --
+//
+// Technical University Northern & Southern rings, interconnected by
+// Statistical Synchronisation interfaces.
+//
+module TUB_SSM
+    machines:
+        NR_host,
+        SR_host;
+    parameters:
+        NRLoadControlFile : string,
+        SRLoadControlFile : string,
+        FDDI_Generator_type : string,
+        NRLoadMultiplier : numeric,
+        SRLoadMultiplier : numeric,
+        SSM_OIF_type : string,
+        SSM_OIF_frequency : numeric const,
+        NROIFControlFile : string,
+        SROIFControlFile : string;
+    submodules:
+        NRing: TUBNRing;
+            on:
+                NR_host;
+            parameters:
+                LoadControlFile = NRLoadControlFile,
+                FDDI_Generator_type = FDDI_Generator_type,
+                RingID = 0,
+                TTRT = 5 ms,
+                LoadMultiplier = ref NRLoadMultiplier;
+            display: "p=150,50;i=ring";
+        SRing: TUBSRing;
+            on:
+                SR_host;
+            parameters:
+                LoadControlFile = SRLoadControlFile,
+                FDDI_Generator_type = FDDI_Generator_type,
+                RingID = 1,
+                TTRT = 5.017 ms,
+                LoadMultiplier = ref SRLoadMultiplier;
+            display: "p=150,250;i=ring";
+        NRing_oif: SSM_OIF_type like SSM_OIF;
+            on:
+                NR_host;
+            parameters:
+                frequency = SSM_OIF_frequency,
+                OIFControlFile = NROIFControlFile;
+            display: "p=50,110";
+        NRing_iif: SSM_IIF;
+            on:
+                NR_host;
+            display: "p=250,110";
+        SRing_oif: SSM_OIF_type like SSM_OIF;
+            on:
+                SR_host;
+            parameters:
+                frequency = SSM_OIF_frequency,
+                OIFControlFile = SROIFControlFile;
+            display: "p=250,180";
+        SRing_iif: SSM_IIF;
+            on:
+                SR_host;
+            display: "p=50,180";
+    connections:
+        NRing.out --> NRing_oif.in;
+        NRing_oif.out --> delay 0.05 us --> SRing_iif.in;
+        SRing_iif.out --> SRing.in;
+
+        SRing.out --> SRing_oif.in;
+        SRing_oif.out --> delay 0.05 us --> NRing_iif.in;
+        NRing_iif.out --> NRing.in;
+endmodule
+
+
+network TUBw : TUB_wired
+    on:
+        NR_host,
+        SR_host;
+    parameters:
+        NRLoadControlFile = input ( "nr_lctrl", "NR LoadControlFile: "),
+        SRLoadControlFile = input ( "sr_lctrl", "SR LoadControlFile: "),
+        FDDI_Generator_type = input ( "FDDI_GeneratorFromTraceFile",
+                                              "FDDI SAS Generator type: "),
+        NRLoadMultiplier = input (10, "NR Load multiplier: "),
+        SRLoadMultiplier = input (10, "SR Load multiplier: ");
+endnetwork
+
+
+network TUBs : TUB_SSM
+    on:
+        NR_host,
+        SR_host;
+    parameters:
+        NRLoadControlFile = input ( "nr_lctrl", "NR LoadControlFile: "),
+        SRLoadControlFile = input ( "sr_lctrl", "SR LoadControlFile: "),
+        FDDI_Generator_type = input ( "FDDI_GeneratorFromTraceFile",
+                                              "FDDI SAS Generator type: "),
+        NRLoadMultiplier = input (10, "NR Load multiplier: "),
+        SRLoadMultiplier = input (10, "SR Load multiplier: "),
+        SSM_OIF_type = input ("SSM_OIF_by_frequency", "SSM Output Interface Type: "),
+        SSM_OIF_frequency = input (100, "SSM Output Interface Frequency: "),
+        NROIFControlFile = input ("NR_OIFct","NR SSM OIF Control File: "),
+        SROIFControlFile = input ("SR_OIFct","SR SSM OIF Control File: ");
+endnetwork
+
+
