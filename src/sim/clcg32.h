@@ -53,10 +53,11 @@ class SIM_API cLCG32 : public cRNG
     cLCG32() {}
     virtual ~cLCG32() {}
 
-    /**
-     * Sets up the RNG.
-     */
+    /** Sets up the RNG. */
     virtual void initialize(int runNumber, int id, int numRngs, cConfiguration *cfg);
+
+    /** Tests correctness of the RNG */
+    virtual void selfTest();
 
     /** Random integer in the range [0,intRandMax()] */
     virtual unsigned long intRand();

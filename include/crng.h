@@ -40,6 +40,14 @@ class SIM_API cRNG : public cPolymorphic
     virtual void initialize(int runNumber, int id, int numRngs, cConfiguration *cfg) = 0;
 
     /**
+     * Coarse test for the correctness of the RNG algorithm. It should detect
+     * platform-dependent bugs (e.g. caused by different word size or compiler
+     * anomaly). The method should throw an exception if something is wrong.
+     * It is invoked only once, when the simulation program starts up.
+     */
+    virtual void selfTest() = 0;
+
+    /**
      * Random integer in the range [0,intRandMax()]
      */
     virtual unsigned long intRand() = 0;

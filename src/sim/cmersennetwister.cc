@@ -41,6 +41,15 @@ void cMersenneTwister::initialize(int runNumber, int id, int numRngs, cConfigura
     rng.seed(seed);
 }
 
+void cMersenneTwister::selfTest()
+{
+    rng.seed(1);
+    for (int i=0; i<10000; i++)
+        intRand();
+    if (intRand()!=2915232614L)
+        throw new cException("cMersenneTwister: selfTest() failed, please report this problem!");
+}
+
 unsigned long cMersenneTwister::intRand()
 {
     return rng.randInt();

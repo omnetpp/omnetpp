@@ -45,6 +45,15 @@ void cLCG32::initialize(int runNumber, int id, int numRngs, cConfiguration *cfg)
     }
 }
 
+void cLCG32::selfTest()
+{
+    seed = 1;
+    for (int i=0; i<10000; i++)
+        intRand();
+    if (seed!=1043618065L)
+        throw new cException("cLCG32: selfTest() failed, please report this problem!");
+}
+
 unsigned long cLCG32::intRand()
 {
     const long int a=16807, q=127773, r=2836;
