@@ -1,3 +1,7 @@
+2004-12-08  Andras Varga
+
+	* cpar.cc: read(): invoke new ev.getParameterUseDefault() function
+
 2004-11-27  Andras Varga
 
 	* nearly all .cc files: forEach() methods ported to cVisitor, see 

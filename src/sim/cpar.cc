@@ -37,6 +37,7 @@
 #include "cmodule.h"  // for cModulePar
 #include "csimul.h"   // for cModulePar
 #include "cxmlelement.h"
+#include "cconfig.h"
 #include "cenvir.h"
 #include "cexception.h"
 
@@ -1231,12 +1232,21 @@ cPar& cPar::read()
     const char *s = ev.getParameter(simulation.runNumber(), fullPath().c_str());
     if (s!=NULL)
     {
-       bool success = setFromText(s,'?');
-       if (!success)
-             throw new cException("Wrong value `%s' for parameter `%s'", s, fullPath().c_str());
-       return *this;
+        bool success = setFromText(s,'?');
+        if (!success)
+            throw new cException("Wrong value `%s' for parameter `%s'", s, fullPath().c_str());
+        return *this;
     }
 
+    // maybe we should use default value
+    bool useDefault = ev.getParameterUseDefault(simulation.runNumber(), fullPath().c_str());
+    if (useDefault)
+    {
+        setInput(false);
+        return *this;
+    }
+
+    // otherwise, we have to ask the user
     bool success;
     do {
         string reply;
