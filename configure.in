@@ -656,7 +656,7 @@ chmod +x src/utils/opp_neddoc
 if test "$OPP_PROBLEM_PACKAGES" != ""; then
       cat 1>&2 << EOT
 
-WARNING: The configuration script found problems with the following packages:
+WARNING: The configuration script has found problems with the following packages:
 
   $OPP_PROBLEM_PACKAGES
 

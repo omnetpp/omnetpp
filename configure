@@ -4787,7 +4787,7 @@ rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 
 if test $blt_ok = yes; then
     HAVE_BLT=yes
-    if echo 'catch {package require BLT 2.8; puts OK}; exit' | tclsh | grep OK >/dev/null; then :; else
+    if echo 'catch {package require BLT 2.4; puts OK}; exit' | tclsh | grep OK >/dev/null; then :; else
         OPP_PROBLEM_PACKAGES="$OPP_PROBLEM_PACKAGES BLT"
         { echo "$as_me:$LINENO: WARNING: Tcl cannot load BLT, probably BLT not installed correctly." >&5
 echo "$as_me: WARNING: Tcl cannot load BLT, probably BLT not installed correctly." >&2;}
@@ -6306,7 +6306,7 @@ chmod +x src/utils/opp_neddoc
 if test "$OPP_PROBLEM_PACKAGES" != ""; then
       cat 1>&2 << EOT
 
-WARNING: The configuration script found problems with the following packages:
+WARNING: The configuration script has found problems with the following packages:
 
   $OPP_PROBLEM_PACKAGES
 
