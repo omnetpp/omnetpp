@@ -1,17 +1,14 @@
 OMNeT++ License Agreement
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-OMNeT++ is Copyright (C) 1992-99 Andras Varga, Technical University
+OMNeT++ is Copyright (C) 1992-2000 Andras Varga, Technical University
 of Budapest, Dept. of Telecommunications, Stoczek u.2, H-1111 Budapest,
 Hungary.
 
 This file describes the license conditions of using OMNeT++. As an alternative,
 you may elect to use the GNU General Public License instead of this License
-for a particular copy of the following components of OMNeT++: nedc, sim,
-envir, cmdenv, utils, samples, and the auxiliary files that are necessary to
-build them. (The component names above refer to the contents of the
-corresponding subdirectories in the distribution.) The "GPLElect" file
-describes how to technically perform the election.
+for a particular copy of OMNeT++. The "GPLElect" file describes how to
+technically perform the election.
 
 OMNeT++ (the "Software") is distributed in the hope that it will be
 useful. You may copy and distribute verbatim copies of the Software

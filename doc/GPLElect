@@ -2,15 +2,14 @@ Using the GPL for certain components of OMNeT++
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Instead of using the original license, you may instead elect to use
-the GNU General Public License (GPL) for a particular copy of some OMNeT++
-components. The "License" file lists the components that are eligible for this.
+the GNU General Public License (GPL) for a particular copy of OMNeT++.
 The election to use the GPL is irrevocable for that particular copy.
 
 If you do elect to use the GPL, then you must replace the copyright notice
 on each affected file with the following:
 
 -----begin-----
-Copyright (C) 1999 Andras Varga
+Copyright (C) 2000 Andras Varga
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

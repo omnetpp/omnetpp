@@ -1,12 +1,12 @@
 OMNeT++ Discrete Event Simulation System
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Copyright (c) 1998, 1999 Andras Varga.
+Copyright (c) 1998-2000 Andras Varga.
 
 OMNeT++ is subject to the license described in the "License" file.
 You may as a special exception elect to use the GNU General Public License
-(see the "GPLElect" file) for the core components. Please contact me if you
-wish to negotiate an alternative license.
+(see the "GPLElect" file). Please contact me if you wish to negotiate an
+alternative license.
 
 
 What is OMNeT++?
@@ -71,6 +71,7 @@ UNIX makefiles and Borland C++ 3.1 project files are included.
 
 omnetpp/
    samples/           directories for sample simulations
+       demo/          a tour of the sample simulations
        nim/           a simple two-player game
        hcube/         hypercube network with deflection routing
        token/         Token-Ring network
@@ -98,6 +99,8 @@ The example programs are designed to demonstrate as many of the features of
 OMNeT++ as possible. (See README file in samples/ for more info.)
 I recommend the following order to try them out:
       nim - fifo1 - token - hist - hcube - dyna - fifo2 - fddi - pvmex
+It's best to begin by running Demo, which is a tour of the other sample
+simulations.
 
 
 Installation
