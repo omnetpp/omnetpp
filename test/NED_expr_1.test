@@ -1,41 +1,83 @@
 %description:
 **EXPERIMENTAL TEST**
-Tests parameter passing in NED.
+Test oparators and precedence in NED.
 
 %file: {}.ned
 
 simple {Simple}
    parameters:
-      p0,
-      p1,p2,p3,p4,
-      p1e,p2e,p3e,p4e,
-      p1c,p2c,p3c,p4c;
+      p00, p01, p02, p03, p04, p05, p06, p07, p08, p09,
+      p10, p11, p12, p13, p14, p15, p16, p17, p18, p19,
+      p20, p21, p22, p23, p24, p25, p26, p27, p28, p29,
+      p30, p31, p32, p33, p34, p35, p36, p37, p38, p39,
+      p40, p41, p42, p43, p44, p45, p46, p47;
 endsimple
 
-module {Compound}
+network {net}: {Simple}
    parameters:
-      par;
-   submodules:
-      a{Simple}: {Simple}
-         parameters:
-            p0 = 5,
-            p1 = par,
-            p2 = ref par,
-            p3 = ancestor par,
-            p4 = ref ancestor par,
-            p1e = (par),
-            p2e = (ref par),
-            p3e = (ancestor par),
-            p4e = (ancestor ref par),
-            p1c = 1+(par),
-            p2c = 1+(ref par),
-            p3c = 1+(ancestor par),
-            p4c = 1+(ancestor ref par);
-endmodule
+      p00 = -3,      // unary minus
+      p01 = -(4+1),  // unary minus
 
-network {Net}: {Compound}
-   parameters:
-      par = 100;
+      p02 = ! true,  // negation
+      p03 = ! false, // negation
+      p04 = ! 0,     // negation
+      p05 = ! 3,     // negation
+
+      p06 = ~3,      // bitwise complement
+      p07 = 12 ^ 3,  // power of
+      p08 = 12 * 3,  // multiply
+      p09 = 12 / 3,  // divide
+      p10 = 12 % 3,  // modulus
+      p11 = 12 + 3,  // add
+      p12 = 12 - 3,  // subtract
+
+      p13 = 10 << 2, // bitwise shifting
+      p14 = 10 >> 2, // bitwise shifting
+
+      p15 = 10 & 3,  // bitwise and
+      p16 = 10 | 3,  // bitwise or
+      p17 = 10 # 3,  // bitwise xor
+
+      p18 = 8 == 3, // equal
+      p19 = 8 == 8, // equal
+
+      p20 = 8 != 3, // not equal
+      p21 = 8 != 8, // not equal
+
+      p22 = 8 > 3,  // greater
+      p23 = 3 > 8,  // greater
+      p24 = 8 > 8,  // greater
+
+      p25 = 8 >= 3, // greater or equal
+      p26 = 3 >= 8, // greater or equal
+      p27 = 8 >= 8, // greater or equal
+
+      p28 = 8 < 3,  // less
+      p29 = 3 < 8,  // less
+      p30 = 8 < 8,  // less
+
+      p31 = 8 <= 3, // less or equal
+      p32 = 3 <= 8, // less or equal
+      p33 = 8 <= 8, // less or equal
+
+      p34 = 8 && 3, // logical and
+      p35 = 8 && 0, // logical and
+      p36 = 0 && 3, // logical and
+      p37 = 0 && 0, // logical and
+
+      p38 = 8 || 3, // logical or
+      p39 = 8 || 0, // logical or
+      p40 = 0 || 3, // logical or
+      p41 = 0 || 0, // logical or
+
+      p42 = 8 ## 3, // logical xor
+      p43 = 8 ## 0, // logical xor
+      p44 = 0 ## 3, // logical xor
+      p45 = 0 ## 0, // logical xor
+
+      p46 = true ? 5 : 2,  // the C/C++ ``inline if''
+      p47 = false ? 5 : 2; // the C/C++ ``inline if''
+
 endnetwork
 
 %file: {}.cc
@@ -50,41 +92,15 @@ class {Simple} : public cSimpleModule
 
 Define_Module({Simple});
 
-#define PRINT_PARAMETER(x) ev << #x << " = " << (double)par(#x) << endl;
-
 void {Simple}::activity()
 {
-    PRINT_PARAMETER( p0 );
-    PRINT_PARAMETER( p1 );
-    PRINT_PARAMETER( p2 );
-    PRINT_PARAMETER( p3 );
-    PRINT_PARAMETER( p4 );
-    PRINT_PARAMETER( p1e );
-    PRINT_PARAMETER( p2e );
-    PRINT_PARAMETER( p3e );
-    PRINT_PARAMETER( p4e );
-    PRINT_PARAMETER( p1c );
-    PRINT_PARAMETER( p2c );
-    PRINT_PARAMETER( p3c );
-    PRINT_PARAMETER( p4c );
+    for (int i=0; i<params(); i++)
+        ev << par(i).name() << "=" << par(i) << endl;
 }
 
 %inifile: {}.ini
 [General]
-network={Net}
+network={net}
 
 %contains: stdout
-p0 = 5
-p1 = 100
-p2 = 100
-p3 = 100
-p4 = 100
-p1e = 100
-p2e = 100
-p3e = 100
-p4e = 100
-p1c = 101
-p2c = 101
-p3c = 101
-p4c = 101
 
