@@ -46,13 +46,10 @@ CFLAGS='-g'
 #CFLAGS='-g -Wall'
 #CFLAGS='-O3 -DNDEBUG=1'
 
-# on NT, set total stack size to 128MB
+LDFLAGS=
+
+# total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
 CYGWIN_STACKSIZE= 134217728
-if uname | grep "CYGWIN" >/dev/null; then
-  LDFLAGS="-s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
-else
-  LDFLAGS=
-fi
 
 #----------------------
 # Read in user settings
@@ -235,6 +232,15 @@ AC_FUNC_MEMCMP
 AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(select strdup strspn strstr)
+
+#----------------------
+# Linker flags
+#----------------------
+
+# on NT, set total stack size
+if uname | grep "CYGWIN" >/dev/null; then
+  LDFLAGS="$LDFLAGS -s -Xlinker --stack -Xlinker $CYGWIN_STACKSIZE"
+fi
 
 #----------------------
 # shared or static libraries
