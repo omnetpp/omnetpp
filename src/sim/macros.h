@@ -61,21 +61,21 @@
 #define Gate(NAME,TYPE)         {'G', #NAME, NULL,  TYPE},
 #define Parameter(NAME,TYPES)   {'P', #NAME, TYPES, 0   },
 #define Machine(NAME)           {'M', #NAME, NULL,  0   },
-#define End                     {'E', NULL,  NULL,  0   }};
+#define EndInterface            {'E', NULL,  NULL,  0   }};
 
 #define Register_Interface(CLASSNAME) \
   static cModuleInterface CLASSNAME##__interface( #CLASSNAME, CLASSNAME##__descr);
 
 // gate types:
-#define Input          'I'
-#define Output         'O'
+#define GateDir_Input      'I'
+#define GateDir_Output     'O'
 
 // param allowed types:
-#define Const          "#"
-#define AnyType        "*"
-#define NumericType    "LDXFT"
-#define BoolType       "B"
-#define StringType     "S"
+#define ParType_Const      "#"
+#define ParType_Any        "*"
+#define ParType_Numeric    "LDXFT"
+#define ParType_Bool       "B"
+#define ParType_String     "S"
 
 // create cModuleType
 // version 1: module interface has the same name as module

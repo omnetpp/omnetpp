@@ -702,4 +702,5 @@ Dec 18,1999
     #define added to defs.h
   - in cMessage, isbad() renamed to hasBitError(), isgood() removed, and
     setError() renamed to setBitError()
-
+  - macro names in module interface declarations (Interface...End) changed to
+    reduce chance of name clashes

@@ -157,7 +157,7 @@ void end_module (char *mname)
                 adderr;
             }
 
-        fprintf (yyout, "End\n\n"
+        fprintf (yyout, "EndInterface\n\n"
                         "Register_Interface( %s )\n\n", module_name);
 
         fprintf (tmp, "\tcheck_error(); check_memory();\n");
@@ -171,7 +171,7 @@ void end_simple (char *mname)
 {
         if (firstpass) {jar_free (mname);return;}
 
-        fprintf (yyout, "End\n\n"
+        fprintf (yyout, "EndInterface\n\n"
                         "Register_Interface( %s )\n\n",cmd.namestr);
         fprintf (yyout, "// class %s : public cSimpleModule\n"
                         "// {\n"
@@ -227,11 +227,11 @@ void do_parameter (char *pname, char ptype)
         }
 
         switch(ptype) {
-           case TYPE_NUMERIC:   s = "NumericType"; break;
-           case TYPE_CONST_NUM: s = "NumericType Const"; break;
-           case TYPE_STRING:    s = "StringType"; break;
-           case TYPE_BOOL:      s = "BoolType"; break;
-           case TYPE_ANYTYPE:   s = "AnyType"; break;
+           case TYPE_NUMERIC:   s = "ParType_Numeric"; break;
+           case TYPE_CONST_NUM: s = "ParType_Numeric ParType_Const"; break;
+           case TYPE_STRING:    s = "ParType_String"; break;
+           case TYPE_BOOL:      s = "ParType_Bool"; break;
+           case TYPE_ANYTYPE:   s = "ParType_Any"; break;
         }
         fprintf (yyout, "\tParameter( %s, %s )\n", pname, s );
         jar_free (pname);
@@ -251,7 +251,8 @@ void do_gatedecl (char *gname, int is_in, int is_vector )
         }
 
         fprintf (yyout, "\tGate( %s%s, %s )\n", gname,
-                        is_vector?"[]":"", is_in?"Input":"Output");
+                        is_vector ? "[]" : "",
+                        is_in ? "GateDir_Input" : "GateDir_Output");
         jar_free( gname );
 }
 
