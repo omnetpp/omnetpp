@@ -396,11 +396,11 @@ void do_sub_or_sys2 (char *smname, char *smcount, int issys, char *smtype, char 
         {
           fprintf (tmp, "%sif (!islocal)\n"
                         "%s{\n"
-                        "%s    opp_error(\"Local machine is not among machines"
-                                           " specified for this network.\");\n"
+                        "%s    opp_error(\"Local machine `%%s' is not among machines specified for this network\",\n"
+                        "%s              simulation.netInterface()->localhost());\n"
                         "%s    return;\n"
                         "%s}\n",
-                        indent, indent, indent, indent, indent);
+                        indent, indent, indent, indent, indent, indent);
         }
 
         fprintf (tmp, "%s%s = modtype->create( \"%s\", %s, islocal);\n",

@@ -10,3 +10,4 @@ nedc test9.ned
 nedc test10.ned
 nedc test11.ned
 nedc test12.ned
+nedc test13.ned
