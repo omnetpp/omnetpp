@@ -26,7 +26,7 @@
 
 #include <exception>
 #ifndef _MSC_VER
-#include <stdexcept>
+#include <stdexcept>   // std::runtime_exception (with MSVC, it's in <exception>)
 #endif
 #include "platdep/misc.h"  // opp_getWindowsError()
 
@@ -49,7 +49,7 @@ inline bool opp_loadlibrary(const char *libname)
          throw std::runtime_error(std::string("Cannot load library '")+libfname+"': "+opp_getWindowsError(GetLastError()));
      return true;
 #else
-     throw std::runtime_error(std::string("Cannot load library '")+libfname+"': dlopen() syscall not available");
+     throw std::runtime_error(std::string("Cannot load library '")+libname+"': dlopen() syscall not available");
 #endif
 }
 

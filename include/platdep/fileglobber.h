@@ -25,7 +25,10 @@
 #endif
 
 #include <string>
-#include <exception>   // std::runtime_exception
+#include <exception>   
+#ifndef _MSC_VER     
+#include <stdexcept>   // std::runtime_exception (with MSVC, it's in <exception>)
+#endif
 
 
 class GlobPrivateData;
