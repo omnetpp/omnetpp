@@ -12,6 +12,8 @@ FIXME bold text? make it more flexible with position?
 FIXME add "t2", "t3" etc too?
 FIXME doesn't interpret "\n"!
 
+FIXME print banners on initialize() and finish()!!!
+
 2004-01-09  Andras Varga
 
 	* modinsp.cc/h/tcl,tkapp.cc/h: implemented bubble() -- submodules
