@@ -193,7 +193,7 @@
 #define ParType_Const      "#"
 #define ParType_Any        "*"
 #define ParType_Numeric    "LDCXFTB"
-#define ParType_Bool       "B"
+#define ParType_Bool       "LDCXFTB"
 #define ParType_String     "S"
 #define ParType_XML        "M"
 
