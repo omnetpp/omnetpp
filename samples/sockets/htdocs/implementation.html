@@ -1,18 +1,59 @@
 <html>
 <style type="text/css">
-h1,h2,h3,p,table,ul {font-family: Geneva, Arial, Helvetica, sans-serif;}
+h1,h2,h3,h4,p,table,ul {font-family: Geneva, Arial, Helvetica, sans-serif;}
 pre { margin-left:8pt; background:#fffff4; padding:5pt; border:1px solid; border-color:#a0a0a0 }
 </style>
 
 <body>
 <h3>The implementation</h3>
 
+<h4>Setup</h4>
+
 <p>
 The external interface used in this example simulation is a single TCP socket.
-Interesting functionality is in the <tt>cSocketRTScheduler</tt> class.
+All interesting functionality is in the <tt>cSocketRTScheduler</tt> class.
 Its source code is in socketrtscheduler.h/cc.
+
+<p>
 <tt>cSocketRTScheduler</tt> combines synchronizing to real-time with
-socket communication.
+socket communication. When the simulation starts, the <tt>cSocketRTScheduler</tt>
+object starts to listen on port 4242 (or the one that was
+<a href="config.html">configured</a>) for incoming TCP connections.
+All connections will be accepted, but only one at a time (the OS serializes
+connections on the same socket, and for simplicity we don't open a new socket
+or start a new thread whenever one connection gets established.)
+
+<h4>Synchronization and receiving</h4>
+
+<p>
+Then normal real-time simulation will begin, except that <tt>cSocketRTScheduler</tt>
+will use <tt>select()</tt> instead of <tt>usleep()</tt> to wait, so that it
+always learns immediately whenever some data arrive on the socket.
+
+<p>
+When data arrives on the socket, it will be received into a buffer
+(a byte array), the current time/date will be remembered, and a given
+<tt>cMessage</tt> object will be scheduled (put into the FES)
+with the simulation time that corresponds to the current time
+for the dedicated "interface module". The scheduler function
+then returns, and the new simulation event will be immediately executed
+in exactly the same way as any other event would.
+
+<p>
+At the beginning of the simulation, the <tt>extClient</tt> simple module
+(which is of class <tt>ExtHTTPClient</tt> or <tt>ExtTelnetClient</tt>)
+had registered itself with <tt>cSocketRTScheduler</tt> at the beginning
+of the simulation as the dedicated "interface module".
+So it's this module that will receive the event, just as a normal self-message.
+
+<p>
+From the self-message it knows that it has to look into the buffer
+for the bytes that were received, and it will convert them to a simulated
+packet (e.g. a <tt>HTTPMsg</tt> or <tt>TelnetPkt</tt> in this model).
+The packet then gets sent out on the <tt>"out"</tt> gate into the simulated
+network, just as it would on any other OMNeT++/OMNEST simulation.
+
+<h4>Sending</h4>
 
 <p>
 <a href="index.html>Back</a>
