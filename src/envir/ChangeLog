@@ -1,3 +1,8 @@
+2004-04-14  Andras Varga
+
+	* neddoc.xsl: fixed bug which caused some interitance arrows to be 
+	drawn in reverse direction
+
 2004-03-26  Andras Varga
 
 	* filemgrs.h: (patch from Johnny Lai  <johnny.lai@eng.monash.edu.au>):
