@@ -1,3 +1,6 @@
+2002-04-07  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* Makefile.in (NEDCFLAGS): fixed substitution
 
 2000-03-21  Andras Varga
 

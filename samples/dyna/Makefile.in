@@ -26,7 +26,7 @@ EXRA_OBJS=
 # object files in subdirectories
 SUBDIR_OBJS=
 
-# Additional libraries (-l option)
+# Additional libraries (-L option -l option)
 LIBS=
 
 #------------------------------------------------------------------------------
@@ -39,6 +39,7 @@ SHLIB_LD=@SHLIB_LD@
 MAKEDEPEND=@MAKEDEPEND@
 
 CFLAGS=@CFLAGS@
+NEDCFLAGS=@NEDCFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
 
@@ -64,8 +65,7 @@ PVM_KERNEL_LIBS=-lsim_pvm $(PVM_LIBS)
 OMNETPP_LIBS=-L$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
 
 COPTS=$(CFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
-NEDCFLAGS=-gstabs+3 -pipe -fpermissive -Wall -Wno-unused
-NEDCOPTS=$(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 
@@ -97,12 +97,12 @@ switch.o: switch.cc
 	$(CXX) -c $(COPTS) switch.cc
 
 clean:
-	rm -f *.o *_n.cc $(TARGET)$(EXE_SUFFIX)
+	rm -f *.o *_n.cc *_n.h $(TARGET)$(EXE_SUFFIX)
 	rm -f *.vec *.sca
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -- *.cc
-	$(MAKEDEPEND) $(INCLUDE_PATH) -fMakefile.in -- *.cc
+	# $(MAKEDEPEND) $(INCLUDE_PATH) -fMakefile.in -- *.cc
 
 re-makemake:
 	opp_makemake -f    #recreate Makefile
@@ -112,7 +112,3 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-client.o: dyna.h
-server.o: dyna.h
-servproc.o: dyna.h
-switch.o: dyna.h
