@@ -106,14 +106,14 @@ inline std::string concatDirAndFile(const char *basedir, const char *pathname)
     if (pathname[0] && pathname[1]==':') // drive only
     {
         if (!basedir[0] || basedir[1]!=':' || toupper(basedir[0])!=toupper(pathname[0]))  // no or different drive letter
-            return std::string(pathname);
+            return std::string(pathname);  // possibly different drives: don't touch pathname
         return std::string(basedir) + "\\" + (pathname+2);
     }
     if (pathname[0]=='/' || pathname[0]=='\\')  // directory only (no drive letter)
     {
         // must prepend with drive from basedir if it has one
         if (!basedir[0] || basedir[1]!=':')  // no drive letter
-            return std::string(pathname);
+            return std::string(pathname);  // possibly different drives: don't touch pathname
         return std::string(basedir,2)+pathname;
     }
     return std::string(basedir) + "\\" + pathname;
