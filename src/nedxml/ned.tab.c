@@ -576,14 +576,14 @@ static const short yyrline[] = { 0,
   1993,  1994,  1995,  1996,  2000,  2005,  2010,  2016,  2022,  2030,
   2035,  2037,  2042,  2046,  2048,  2050,  2055,  2057,  2059,  2065,
   2066,  2067,  2068,  2076,  2085,  2094,  2101,  2111,  2118,  2122,
-  2130,  2137,  2138,  2142,  2143,  2147,  2152,  2161,  2167,  2171,
-  2178,  2185,  2191,  2195,  2202,  2209,  2215,  2219,  2226,  2233,
-  2239,  2239,  2243,  2244,  2248,  2249,  2253,  2263,  2264,  2265,
-  2266,  2267,  2268,  2272,  2278,  2278,  2282,  2283,  2287,  2288,
-  2292,  2298,  2302,  2309,  2316,  2317,  2319,  2320,  2321,  2322,
-  2324,  2325,  2326,  2327,  2329,  2330,  2331,  2336,  2341,  2345,
-  2349,  2353,  2357,  2361,  2365,  2366,  2367,  2368,  2369,  2370,
-  2371,  2374,  2374,  2376,  2376
+  2130,  2137,  2138,  2142,  2143,  2147,  2153,  2163,  2169,  2173,
+  2180,  2187,  2193,  2197,  2204,  2211,  2217,  2221,  2228,  2235,
+  2241,  2241,  2245,  2246,  2250,  2251,  2255,  2265,  2266,  2267,
+  2268,  2269,  2270,  2274,  2280,  2280,  2284,  2285,  2289,  2290,
+  2294,  2300,  2304,  2311,  2318,  2319,  2321,  2322,  2323,  2324,
+  2326,  2327,  2328,  2329,  2331,  2332,  2333,  2338,  2343,  2347,
+  2351,  2355,  2359,  2363,  2367,  2368,  2369,  2370,  2371,  2372,
+  2373,  2376,  2376,  2378,  2378
 };
 #endif
 
@@ -3264,18 +3264,20 @@ case 426:
 {
                   ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(yylsp[-1]));
+                  setComments(ps.enumfield,yylsp[-1],yylsp[-1]);
                 ;
     break;}
 case 427:
-#line 2153 "ned.y"
+#line 2154 "ned.y"
 {
                   ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(yylsp[-3]));
                   ps.enumfield->setValue(toString(yylsp[-1]));
+                  setComments(ps.enumfield,yylsp[-3],yylsp[-1]);
                 ;
     break;}
 case 428:
-#line 2162 "ned.y"
+#line 2164 "ned.y"
 {
                   ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
                   ps.messagep->setName(toString(yylsp[-1]));
@@ -3283,13 +3285,13 @@ case 428:
                 ;
     break;}
 case 429:
-#line 2168 "ned.y"
+#line 2170 "ned.y"
 {
                   setTrailingComment(ps.messagep,yylsp[-1]);
                 ;
     break;}
 case 430:
-#line 2172 "ned.y"
+#line 2174 "ned.y"
 {
                   ps.msgclassorstruct = ps.messagep = (MessageNode *)createNodeWithTag(NED_MESSAGE, ps.nedfile );
                   ps.messagep->setName(toString(yylsp[-3]));
@@ -3298,13 +3300,13 @@ case 430:
                 ;
     break;}
 case 431:
-#line 2179 "ned.y"
+#line 2181 "ned.y"
 {
                   setTrailingComment(ps.messagep,yylsp[-1]);
                 ;
     break;}
 case 432:
-#line 2186 "ned.y"
+#line 2188 "ned.y"
 {
                   ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
                   ps.classp->setName(toString(yylsp[-1]));
@@ -3312,13 +3314,13 @@ case 432:
                 ;
     break;}
 case 433:
-#line 2192 "ned.y"
+#line 2194 "ned.y"
 {
                   setTrailingComment(ps.classp,yylsp[-1]);
                 ;
     break;}
 case 434:
-#line 2196 "ned.y"
+#line 2198 "ned.y"
 {
                   ps.msgclassorstruct = ps.classp = (ClassNode *)createNodeWithTag(NED_CLASS, ps.nedfile );
                   ps.classp->setName(toString(yylsp[-3]));
@@ -3327,13 +3329,13 @@ case 434:
                 ;
     break;}
 case 435:
-#line 2203 "ned.y"
+#line 2205 "ned.y"
 {
                   setTrailingComment(ps.classp,yylsp[-1]);
                 ;
     break;}
 case 436:
-#line 2210 "ned.y"
+#line 2212 "ned.y"
 {
                   ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
                   ps.structp->setName(toString(yylsp[-1]));
@@ -3341,13 +3343,13 @@ case 436:
                 ;
     break;}
 case 437:
-#line 2216 "ned.y"
+#line 2218 "ned.y"
 {
                   setTrailingComment(ps.structp,yylsp[-1]);
                 ;
     break;}
 case 438:
-#line 2220 "ned.y"
+#line 2222 "ned.y"
 {
                   ps.msgclassorstruct = ps.structp = (StructNode *)createNodeWithTag(NED_STRUCT, ps.nedfile );
                   ps.structp->setName(toString(yylsp[-3]));
@@ -3356,20 +3358,20 @@ case 438:
                 ;
     break;}
 case 439:
-#line 2227 "ned.y"
+#line 2229 "ned.y"
 {
                   setTrailingComment(ps.structp,yylsp[-1]);
                 ;
     break;}
 case 440:
-#line 2234 "ned.y"
+#line 2236 "ned.y"
 {
                   ps.properties = (PropertiesNode *)createNodeWithTag(NED_PROPERTIES, ps.msgclassorstruct);
                   setComments(ps.properties,yylsp[-1]);
                 ;
     break;}
 case 447:
-#line 2254 "ned.y"
+#line 2256 "ned.y"
 {
                   ps.property = (PropertyNode *)createNodeWithTag(NED_PROPERTY, ps.properties);
                   ps.property->setName(toString(yylsp[-3]));
@@ -3378,14 +3380,14 @@ case 447:
                 ;
     break;}
 case 454:
-#line 2273 "ned.y"
+#line 2275 "ned.y"
 {
                   ps.fields = (FieldsNode *)createNodeWithTag(NED_FIELDS, ps.msgclassorstruct);
                   setComments(ps.fields,yylsp[-1]);
                 ;
     break;}
 case 461:
-#line 2293 "ned.y"
+#line 2295 "ned.y"
 {
                   ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
                   ps.field->setName(toString(yylsp[0]));
@@ -3393,13 +3395,13 @@ case 461:
                 ;
     break;}
 case 462:
-#line 2299 "ned.y"
+#line 2301 "ned.y"
 {
                   setComments(ps.field,yylsp[-6],yylsp[-1]);
                 ;
     break;}
 case 463:
-#line 2303 "ned.y"
+#line 2305 "ned.y"
 {
                   ps.field = (FieldNode *)createNodeWithTag(NED_FIELD, ps.fields);
                   ps.field->setName(toString(yylsp[0]));
@@ -3408,32 +3410,32 @@ case 463:
                 ;
     break;}
 case 464:
-#line 2310 "ned.y"
+#line 2312 "ned.y"
 {
                   setComments(ps.field,yylsp[-7],yylsp[-1]);
                 ;
     break;}
 case 478:
-#line 2337 "ned.y"
+#line 2339 "ned.y"
 {
                   ps.field->setIsVector(true);
                   ps.field->setVectorSize(toString(yylsp[-1]));
                 ;
     break;}
 case 479:
-#line 2342 "ned.y"
+#line 2344 "ned.y"
 {
                   ps.field->setIsVector(true);
                 ;
     break;}
 case 481:
-#line 2350 "ned.y"
+#line 2352 "ned.y"
 {
                   ps.field->setEnumName(toString(yylsp[-1]));
                 ;
     break;}
 case 483:
-#line 2358 "ned.y"
+#line 2360 "ned.y"
 {
                   ps.field->setDefaultValue(toString(yylsp[0]));
                 ;
@@ -3660,7 +3662,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 2378 "ned.y"
+#line 2380 "ned.y"
 
 
 //----------------------------------------------------------------------

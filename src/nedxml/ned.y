@@ -2148,12 +2148,14 @@ enumfield
                 {
                   ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(@1));
+                  setComments(ps.enumfield,@1,@1);
                 }
         | NAME '=' INTCONSTANT ';'
                 {
                   ps.enumfield = (EnumFieldNode *)createNodeWithTag(NED_ENUM_FIELD, ps.enumfields);
                   ps.enumfield->setName(toString(@1));
                   ps.enumfield->setValue(toString(@3));
+                  setComments(ps.enumfield,@1,@3);
                 }
         ;
 
