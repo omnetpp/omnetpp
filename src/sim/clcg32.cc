@@ -1,5 +1,5 @@
 //==========================================================================
-//  CMERSENNETWISTER.CC - part of
+//  CLCG32.CC - part of
 //                         OMNeT++
 //              Discrete System Simulation in C++
 //
