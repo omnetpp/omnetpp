@@ -311,33 +311,47 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, char **a
    {
       return redrawModules(interp,argc,argv);
    }
-   else if (strcmp(argv[0],"modpar")==0)
+   else if (strcmp(argv[0],"dispstrpar")==0)
    {
-      return getModPar(interp,argc,argv);
+      return getDisplayStringPar(interp,argc,argv);
    }
    return TCL_ERROR;
 }
 
-int TGraphicalModWindow::getModPar(Tcl_Interp *interp, int argc, char **argv)
+int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, char **argv)
 {
-   // args: <module ptr> <parname>
-   if (argc!=3) {interp->result="wrong number of args"; return TCL_ERROR;}
+   // args: <module ptr> <parname> <searchparent>
+   if (argc!=4) {interp->result="wrong number of args"; return TCL_ERROR;}
 
+   bool searchparents = atoi(argv[3])!=0;
    cModule *mod = (cModule *)strToPtr( argv[1] );
-   int parindex = mod->findPar( argv[2] );
+   int k;
+   cPar *par = 0;
 
-   if (parindex<0)
+   k = mod->findPar( argv[2] );
+   if (k>=0)
+      par = &(mod->par(k));
+
+   if (!par && searchparents && mod->parentModule())
    {
-      sprintf(interp->result, "module '%s' has no '%s' parameter",
+      k = mod->parentModule()->findPar( argv[2] );
+      if (k>=0)
+         par = &(mod->parentModule()->par(k));
+   }
+
+   if (!par)
+   {
+      sprintf(interp->result,
+              (!searchparents ? "module '%s' has no '%s' parameter" :
+               "module '%s' and its parent have no '%s' parameter"),
               mod->fullPath(), argv[2]);
       return TCL_ERROR;
    }
 
-   cPar& par = mod->par(parindex);
-   if (par.type()=='S')
-     interp->result = CONST_CAST(par.stringValue());
+   if (par->type()=='S')
+     interp->result = CONST_CAST(par->stringValue());
    else
-     sprintf(interp->result, "%g", par.doubleValue());
+     sprintf(interp->result, "%g", par->doubleValue());
 
    return TCL_OK;
 }

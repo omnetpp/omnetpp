@@ -43,13 +43,15 @@ image create bitmap defaulticon -data {
 #    w:       inspector window name
 #    modptr:  pointer of module whose parameters should be used for "$x" style
 #             parameters in the display string
+#    parent:  if nonzero, parameter is searched in the parent module too;
+#             otherwise, only that very module is considered
 # Example:
-#   if "p=50,$y_pos;i=cloud"  is parsed into array 'a' and the
-#    y_pos module parameter is 99, the result is:
+#   if "p=50,$y_pos;i=cloud" is parsed into array 'a' and the "y_pos" module
+#   parameter is 99, the result is:
 #      $a(p) = {50 99}
 #      $a(i) = {cloud}
 #
-proc split_dispstr {str array w modptr} {
+proc split_dispstr {str array w modptr parent} {
    upvar $array arr
 
    foreach tag [split $str {;}] {
@@ -61,7 +63,7 @@ proc split_dispstr {str array w modptr} {
       foreach v $val {
          if {[string range $v 0 0]=={$}} {
             if {$modptr==""} {error "Cannot substitute parameters into this display string"}
-            set v [opp_inspectorcommand $w modpar $modptr [string range $v 1 end]]
+            set v [opp_inspectorcommand $w dispstrpar $modptr [string range $v 1 end] $parent]
             set val [lreplace $val $i $i $v]
          }
          incr i
@@ -106,7 +108,7 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
 
    if [catch {
 
-       split_dispstr $dispstr tags [winfo toplevel $c] $submodptr
+       split_dispstr $dispstr tags [winfo toplevel $c] $submodptr 1
 
        set bx 10
        set by 10
@@ -160,16 +162,20 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
        switch $layout {
            {} {
            }
+           r -
            row {
                set spc [lindex $tags(p) 3]
                if {$spc==""} {set spc [expr 2*$sx]}
                set x [expr $x + $i*$spc]
            }
-           col {
+           c -
+           col -
+           column {
                set spc [lindex $tags(p) 3]
                if {$spc==""} {set spc [expr 2*$sy]}
                set y [expr $y + $i*$spc]
            }
+           m -
            matrix {
                # perrow: how many submodules we want in a row
                set perrow [lindex $tags(p) 3]
@@ -181,6 +187,7 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
                set x [expr $x + ($i % $perrow) * $dx]
                set y [expr $y + int($i / $perrow) * $dy]
            }
+           ri -
            ring {
                set rx [lindex $tags(p) 3]
                if {$rx==""} {set rx [expr ($sx+$sy)*$n/4]}
@@ -188,6 +195,9 @@ proc draw_submod {c submodptr name dispstr i n default_layout} {
                if {$ry==""} {set ry $rx}
                set x [expr $x + $rx + $rx*sin($i*6.2832/$n)]
                set y [expr $y + $ry - $ry*cos($i*6.2832/$n)]
+           }
+           default {
+               error "'p' tag: invalid 3rd argument '$layout'"
            }
        }
 
@@ -237,7 +247,7 @@ proc draw_enclosingmod {c ptr name dispstr} {
 
    if [catch {
 
-       split_dispstr $dispstr tags [winfo toplevel $c] $ptr
+       split_dispstr $dispstr tags [winfo toplevel $c] $ptr 0
 
        set bx 10
        set by 10
@@ -302,7 +312,7 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 
     if [catch {
 
-       split_dispstr $dispstr tags [winfo toplevel $c] {}
+       split_dispstr $dispstr tags [winfo toplevel $c] {} 0
 
        if {![info exists tags(m)]} {set tags(m) {a}}
 

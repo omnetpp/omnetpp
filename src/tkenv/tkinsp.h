@@ -224,7 +224,7 @@ class TGraphicalModWindow : public TInspector
 
       virtual int redrawModules(Tcl_Interp *interp, int argc, char **argv);
       virtual int redrawMessages(Tcl_Interp *interp, int argc, char **argv);
-      virtual int getModPar(Tcl_Interp *interp, int argc, char **argv);
+      virtual int getDisplayStringPar(Tcl_Interp *interp, int argc, char **argv);
       virtual void displayStringChange(cModule *, bool immediate);
 
 };

@@ -382,4 +382,9 @@ July 26, 2000
  - added Edit|Find... to main menu.
 Aug 7, 2000
  - makefile changes for RPM support
-
+Sep 29, 2000
+ - fixed a bug which caused Tkenv NOT to report an error when the 'p' display
+   string tag's 3rd arg (layout) was invalid
+ - the 'p' display string tag's 3rd arg (layout) can now be abbreviated:
+   row: r, col: c or column, matrix: m, ring: ri
+ - submodule display strings may use the parent module's parameters too
