@@ -73,7 +73,7 @@ module ClientServer
         server: Server;
             parameters:
                 processingTime = input(0.2s,"Query processing time:");
-            display: "i=device/server;p=160,60";
+            display: "i=device/server;p=210,70";
         switch: Switch;
             parameters:
                 // switchPkRate should be >= numClients, otherwise switch will
@@ -84,14 +84,14 @@ module ClientServer
             gatesizes:
                 in[numClients+1],
                 out[numClients+1];
-            display: "i=device/switch;q=queue;p=160,140";
+            display: "i=device/switch;q=queue;p=210,170";
         client: Client[numClients];
             parameters:
                 timeout = 5s,
                 connIaTime = input(10s,"Connection interarrival time:"),
                 queryIaTime = input(2s,"Query interarrival time:"),
                 numQuery = input(5,"Number of queries per conn:");
-            display: "i=device/pc2;p=50,220,m,10";
+            display: "i=device/pc2;p=70,270,m,10,80";
     connections:
         for i=0..numClients-1 do
             client[i].out --> delay 10ms --> switch.in[i];
