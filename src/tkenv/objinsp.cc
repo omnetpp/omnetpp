@@ -84,9 +84,7 @@ void TObjInspector::update()
    setLabel(".nb.info.fullpath.e",object->fullPath());
    setLabel(".nb.info.class.e",object->className());
 
-   static char buf[MAX_OBJECTINFO];
-   object->info(buf);
-   setLabel(".nb.info.info.e",buf);
+   setLabel(".nb.info.info.e",object->info().c_str());
    setLabel(".nb.info.details.e",object->detailedInfo().c_str());
 
    if (fieldspage)

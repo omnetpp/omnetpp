@@ -465,9 +465,7 @@ int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
-   static char buf[MAX_OBJECTINFO];
-   object->info(buf);
-   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   Tcl_SetResult(interp, TCLCONST(object->info().c_str()), TCL_VOLATILE);
    return TCL_OK;
 }
 
@@ -478,7 +476,6 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    const char *field = argv[2];
 
-   static char buf[MAX_OBJECTINFO];
    if (!strcmp(field,"fullName")) {
        Tcl_SetResult(interp, TCLCONST(object->fullName()), TCL_VOLATILE);
    } else if (!strcmp(field,"fullPath")) {
@@ -486,8 +483,9 @@ int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **ar
    } else if (!strcmp(field,"className")) {
        Tcl_SetResult(interp, TCLCONST(object->className()), TCL_VOLATILE);
    } else if (!strcmp(field,"info")) {
-       object->info(buf);
-       Tcl_SetResult(interp, buf, TCL_VOLATILE);
+       Tcl_SetResult(interp, TCLCONST(object->info().c_str()), TCL_VOLATILE);
+   } else if (!strcmp(field,"detailedInfo")) {
+       Tcl_SetResult(interp, TCLCONST(object->detailedInfo().c_str()), TCL_VOLATILE);
    } else if (!strcmp(field,"displayString")) {
        // FIXME use hasDisplayString here!!!!
        if (dynamic_cast<cModule *>(object)) {

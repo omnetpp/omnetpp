@@ -1037,14 +1037,12 @@ void TOmnetTkApp::objectDeleted(cObject *object)
     }
 }
 
-void TOmnetTkApp::messageSent( cMessage *msg, cGate *directToGate)
+void TOmnetTkApp::messageSent(cMessage *msg, cGate *directToGate)
 {
     // display in message window
-    static char buf[MAX_OBJECTINFO];
-    msg->info(buf);
     CHK(Tcl_VarEval(interp, "catch {\n"
                             " .messagewindow.main.text insert end"
-                            "    {SENT:\t (",msg->className(),")",msg->fullName(),"  ",buf,"\n}\n"
+                            "    {SENT:\t (",msg->className(),")",msg->fullName(),"  ",TclQuotedString(msg->info().c_str()).get(),"\n}\n" // FIXME extra "{}" around info()!
                             " .messagewindow.main.text see end\n"
                             "}\n",
                             NULL));
@@ -1068,14 +1066,12 @@ void TOmnetTkApp::messageSent( cMessage *msg, cGate *directToGate)
     }
 }
 
-void TOmnetTkApp::messageDelivered( cMessage *msg )
+void TOmnetTkApp::messageDelivered(cMessage *msg)
 {
     // display in message window
-    static char buf[MAX_OBJECTINFO];
-    msg->info(buf);
     CHK(Tcl_VarEval(interp, "catch {\n"
                             " .messagewindow.main.text insert end"
-                            "    {DELIVD:\t (",msg->className(),")",msg->fullName(),"  ",buf,"\n}\n"
+                            "    {DELIVD:\t (",msg->className(),")",msg->fullName(),"  ",TclQuotedString(msg->info().c_str()).get(),"\n}\n" // FIXME extra "{}" around info()!
                             " .messagewindow.main.text see end\n"
                             "}\n",
                             NULL));

@@ -52,7 +52,7 @@
 class TclQuotedString
 {
   private:
-    char buf[80];
+    char buf[80];  // used only if string is short, to spare alloc/dealloc
     char *quotedstr;
   public:
     TclQuotedString(const char *s);

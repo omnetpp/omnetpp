@@ -104,13 +104,11 @@ void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor)
 void insertIntoInspectorListbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
 {
     const char *ptr = ptrToStr(obj);
-    static char buf[MAX_OBJECTINFO];
-    obj->info(buf);
     CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
                             "ptr {",ptr,"} "
                             "name {",(fullpath ? obj->fullPath() : obj->fullName()),"} "
                             "class {",obj->className(),"} "
-                            "info {",buf,"}"
+                            "info ",TclQuotedString(obj->info().c_str()).get(),
                             "}",NULL));
 }
 

@@ -506,10 +506,7 @@ void TCmdenvApp::messageSent(cMessage *msg, cGate *)
 {
     if (!opt_expressmode && opt_messagetrace)
     {
-        static char buf[1000];
-        msg->info( buf );
-        ::fprintf(fout, "SENT:   %s\n", buf);
-
+        ::fprintf(fout, "SENT:   %s\n", msg->info().c_str());
         if (opt_autoflush)
             ::fflush(fout);
     }
@@ -519,10 +516,7 @@ void TCmdenvApp::messageDelivered(cMessage *msg)
 {
     if (!opt_expressmode && opt_messagetrace)
     {
-        static char buf[1000];
-        msg->info( buf );
-        ::fprintf(fout, "DELIVD: %s\n", buf);
-
+        ::fprintf(fout, "DELIVD: %s\n", msg->info().c_str());
         if (opt_autoflush)
             ::fflush(fout);
     }

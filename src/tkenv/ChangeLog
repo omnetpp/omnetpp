@@ -1,3 +1,8 @@
+2004-10-25  Andras Varga
+	
+	* tkapp.cc, tkcmd.cc, etc: updated for info() signature change 
+	(see include/ChangeLog)
+
 2004-10-20  Andras Varga
 
 	* main.tcl, modinsp2.tcl: preparations for new icons, categorized into 
