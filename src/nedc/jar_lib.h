@@ -37,17 +37,7 @@ extern name_type submodule_name;
 extern name_type submodule_var;  /*submodule_name + "_mod" */
 extern name_type submodule_type;
 
-extern name_type gate_mod_L;
-extern name_type gate_L;
-extern name_type gate_mod_R;
-extern name_type gate_R;
-
 extern expr_type submodule_nr;
-
-extern expr_type gate_mod_nr_L;
-extern expr_type gate_nr_L;
-extern expr_type gate_mod_nr_R;
-extern expr_type gate_nr_R;
 
 extern int hassimple;
 extern int is_system;
