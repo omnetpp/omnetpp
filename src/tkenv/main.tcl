@@ -27,7 +27,7 @@ proc create_omnetpp_window {} {
         wm deiconify $w; return
     }
 
-    global fonts tcl_version
+    global icons fonts tcl_version help_tips
 
     toplevel $w -class Toplevel
     wm focusmodel $w passive
@@ -199,18 +199,33 @@ proc create_omnetpp_window {} {
     # Create toolbar
     #################################
 
-    frame $w.toolbar
+    frame $w.toolbar -relief raised -borderwidth 1
     foreach i {
-      {step     -text Step          -command {one_step}}
-      {run      -text {Run >}       -command {run}}
-      {fastrun  -text {Fast >>}     -command {run_fast}}
-      {exprrun  -text {Express >>>} -command {run_notracing}}
-      {until    -text {Until...}    -command {run_until}}
-      {stop     -text {STOP}        -command {stop_simulation}}
+      {space 0}
+      {step     -image $icons(step)    -command {one_step}}
+      {space 1}
+      {run      -image $icons(run)     -command {run}}
+      {fastrun  -image $icons(fast)    -command {run_fast}}
+      {exprrun  -image $icons(express) -command {run_notracing}}
+      {space 2}
+      {until    -image $icons(until)   -command {run_until}}
+      {space 3}
+      {stop     -image $icons(stop)    -command {stop_simulation}}
     } {
-      set b [eval iconbutton $w.toolbar.$i]
-      pack $b -anchor n -expand 0 -fill none -side left
+      if {[lindex $i 0]=="space"} {
+         set b [canvas $w.toolbar.[lindex $i 1]  -height 1 -width 4]
+      } else {
+         set b [eval iconbutton $w.toolbar.$i -bd 1]
+      }
+      pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
+
+    set help_tips($w.toolbar.step)    {Execute one event}
+    set help_tips($w.toolbar.run)     {Run with full animation}
+    set help_tips($w.toolbar.fastrun) {Run faster: no animation and rare inspector updates}
+    set help_tips($w.toolbar.exprrun) {Run at full speed: all tracing, animation and inspectors off}
+    set help_tips($w.toolbar.until)   {Run until time or event number}
+    set help_tips($w.toolbar.stop)    {Stop simulation (if running)}
 
     #################################
     # Create status bar
@@ -371,6 +386,7 @@ proc font_bindings {} {
       set fonts(big)    -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
       set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
       set fonts(fixed)  fixed
+      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
    } else {
       # Windows, Mac
       set fonts(normal) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
@@ -378,9 +394,8 @@ proc font_bindings {} {
       set fonts(icon)   -Adobe-Helvetica-Bold-R-Normal-*-*-140-*-*-*-*-*-*
       set fonts(big)    -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
       set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
-      set fonts(fixed)  fixed
-       option add *Button.padX     0
-       option add *Button.padY     0
+      set fonts(fixed)  FixedSys
+      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-140-*-*-*-*-*-*
    }
 
    if {$tcl_platform(platform) == "unix"} {

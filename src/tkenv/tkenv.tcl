@@ -20,7 +20,9 @@ if [info exist OMNETPP_TKENV_DIR] {
 
    set dir $OMNETPP_TKENV_DIR
 
+   source [file join $dir icons.tcl]
    source [file join $dir widgets.tcl]
+   source [file join $dir balloon.tcl]
    source [file join $dir dialogs.tcl]
    source [file join $dir windows.tcl]
    source [file join $dir objinsp.tcl]
@@ -49,6 +51,7 @@ proc start_tkenv {} {
   checkVersion
   generic_bindings
   font_bindings
+  init_balloons
   create_omnetpp_window
   load_bitmaps $OMNETPP_BITMAP_PATH
   load_plugins $OMNETPP_PLUGIN_PATH
