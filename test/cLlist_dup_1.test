@@ -1,0 +1,53 @@
+%name: cLlist_dup_1
+
+%description:
+check that cLinkedList::operator=() works correctly and preserves order
+
+%module: {Llist}
+
+class {Llist} : public cSimpleModule
+{
+	Module_Class_Members({Llist}, cSimpleModule, 16384);
+	virtual void activity();
+        void fillLlist(cLinkedList& ll);
+        void output(cLinkedList& ll);
+};
+
+Define_Module({Llist});
+
+void {Llist}::fillLlist(cLinkedList& ll)
+{
+  cPar* parm = NULL;
+  parm = new cPar("1");
+  ll.insert(parm);
+  parm = new cPar("3");
+  ll.insert(parm);
+  parm = new cPar("2");
+  ll.insert(parm);
+}
+
+void {Llist}::output(cLinkedList& ll)
+{
+  ev << ll.name() << ": "
+     << ((cPar*) ll.pop())->name() << " "
+     << ((cPar*) ll.pop())->name() << " "
+     << ((cPar*) ll.pop())->name() << endl;
+}
+
+void {Llist}::activity()
+{
+  cLinkedList initial("Initial");
+  cLinkedList duplicate("Duplicate");
+
+  fillLlist(initial);
+  duplicate = initial;
+  output(initial);
+  output(duplicate);
+  
+}
+
+%ignore-exitcode:1
+
+%contains: stdout
+Initial: 1 3 2
+Duplicate: 1 3 2
