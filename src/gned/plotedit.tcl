@@ -222,7 +222,7 @@ proc deleteSelected {} {
 
     set keys [selectedItems]
 
-    if {$keys!=""} {set canvas($gned(canvas_id),changed) 1}
+    if {$keys!=""} {markCanvasDirty}
 
     foreach key $keys {
         if {$ned($key,type)!="module"} {
@@ -468,7 +468,7 @@ proc selectOrMoveDrag {c x y} {
 
     } elseif {$mouse(mode) == "move"} {
 
-       set canvas($gned(canvas_id),changed) 1
+       markCanvasDirty
 
        set byX [expr $x-$mouse(lastX)]
        set byY [expr $y-$mouse(lastY)]
@@ -482,7 +482,7 @@ proc selectOrMoveDrag {c x y} {
 
     } elseif {$mouse(mode) == "resize"} {
 
-       set canvas($gned(canvas_id),changed) 1
+       markCanvasDirty
 
        set byX [expr $x-$mouse(lastX)]
        set byY [expr $y-$mouse(lastY)]
@@ -500,7 +500,7 @@ proc selectOrMoveDrag {c x y} {
 
     } elseif {$mouse(mode) == "reanchor"} {
 
-       set canvas($gned(canvas_id),changed) 1
+       markCanvasDirty
 
        set byX [expr $x-$mouse(lastX)]
        set byY [expr $y-$mouse(lastY)]
@@ -516,7 +516,7 @@ proc selectOrMoveDrag {c x y} {
 
     } elseif {$mouse(mode) == "endp-reanchor"} {
 
-       set canvas($gned(canvas_id),changed) 1
+       markCanvasDirty
 
        set byX [expr $x-$mouse(lastX)]
        set byY [expr $y-$mouse(lastY)]
@@ -712,7 +712,7 @@ proc drawEnd {c x y} {
 
           drawItem $key
 
-          set canvas($gned(canvas_id),changed) 1
+          markCanvasDirty
        }
        $c delete $mouse(rect)
        set mouse(rect) ""
@@ -748,7 +748,7 @@ proc drawEnd {c x y} {
                set ned($key,src-ownerkey) $mouse(src-key)
                set ned($key,dest-ownerkey) $destkey
 
-               set canvas($gned(canvas_id),changed) 1
+               markCanvasDirty
 
                set l_coords [$c coords $mouse(arrow)]
                set s_coords [_getCoords $c $ned($mouse(src-key),rect-cid)]
@@ -922,3 +922,22 @@ proc _getCenterAndSize {c key} {
     return {}
 }
 
+# markCanvasDirty --
+#
+# Mark the component (module) on the current canvas as changed.
+#
+proc markCanvasDirty {} {
+    global canvas ned gned
+
+    # find ned file key
+    set canv_id $gned(canvas_id)
+    set modkey $canvas($canv_id,module-key)
+    set fkey $ned($modkey,parentkey)
+
+    if {$ned($fkey,type)!="nedfile"} {error "internal error in markCanvasDirty"}
+
+    if {$ned($fkey,dirty)==0} {
+       set ned($fkey,dirty) 1
+       updateTreeManager
+    }
+}

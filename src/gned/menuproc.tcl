@@ -21,7 +21,6 @@ proc fileNewNedfile {} {
    # create a new module in a new file
    set nedfilekey [addItem nedfile 0]
    set modkey [addItem module $nedfilekey]
-
    openModuleOnNewCanvas $modkey
 
    updateTreeManager
@@ -59,7 +58,10 @@ proc fileOpen {{fname ""}} {
 
       set type [file extension $fname]
       if {$type==".ned"} {
+catch {
          loadNED $fname
+} err
+puts "$err"
       } else {
          tk_messageBox -icon warning -type ok \
                        -message "Don't know how to open $type files."
@@ -74,8 +76,11 @@ proc fileSave {} {
    set modkey $canvas($canv_id,module-key)
    set nedfilekey $ned($modkey,parentkey)
 
-   if {$ned($nedfilekey,filename)!=""} {
+   if {$ned($nedfilekey,type)!="nedfile"} {error "internal error in fileSave"}
+
+   if {!$ned($nedfilekey,unnamed)} {
       saveNED $nedfilekey
+      nedfileClearDirty $nedfilekey
    } else {
       fileSaveAs
    }
@@ -103,11 +108,13 @@ proc fileSaveAs {} {
    if {$fname!=""} {
       # regsub "^$env(HOME)/" $fname "~/" fname
 
+      set ned($nedfilekey,unnamed) 0
       set ned($nedfilekey,filename) $fname
       adjustWindowTitle
       updateTreeManager
 
       saveNED $nedfilekey
+      nedfileClearDirty $nedfilekey
    }
 }
 
@@ -119,8 +126,9 @@ proc fileCloseNedfile {} {
    set fkey $ned($modkey,parentkey)
    set fname $ned($fkey,name)
 
-   if {$canvas($canv_id,changed)} {
-       if {$ned($fkey,filename)==""} {
+   # offer saving it
+   if [nedfileIsDirty $fkey] {
+       if {$ned($fkey,unnamed)} {
           set reply [tk_messageBox -title "Last chance" -icon warning -type yesno \
                 -message "File not saved yet. Save it now?"]
           if {$reply=="yes"} fileSave
@@ -128,14 +136,13 @@ proc fileCloseNedfile {} {
           set fname $ned($fkey,filename)
           set fname [file tail $fname]
           set reply [tk_messageBox -title "Last chance" -icon warning -type yesno \
-                -message "File $fname modified. Save?"]
+                -message "File $fname contains unsaved changes. Save?"]
           if {$reply=="yes"} fileSave
        }
    }
 
-puts "proc fileCloseNedfile: to be checked!!!"
-   MFileClose $fname
-
+   # delete from memory
+   deleteItem $fkey
    updateTreeManager
 }
 
@@ -147,7 +154,8 @@ proc fileCloseCanvas {} {
 proc fileExit {} {
    global gned
 
-   # scan for unsaved canvases and call fileClose for them
+   # scan for unsaved files call fileCloseNedfile for them
+puts "dbg: fileExit is incomplete!"
    for {set canv_id 1} {$canv_id<=$gned(canvas_lastid)} {incr canv_id} {
       if {[info exist canvas($canv_id,canvas)]} {
          if {$canvas($canv_id,changed)} {

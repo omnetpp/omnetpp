@@ -38,7 +38,6 @@ set gned(icons) {}
 # canvas(1,tab)        tab widget
 # canvas(1,mode)       current mode. values: "canvas" or "textedit"
 # canvas(1,module-key) key value in the ned() array
-# canvas(1,changed)    nonzero if canvas has beed edited
 
 # For the ned() array, see datadict.tcl
 # ned($key,$field)

@@ -17,11 +17,11 @@
 // blank lines. (Otherwise the lines above the blank one will be taken as
 // part of a file comment or trailing comment.)
 // 
-module Module1
+module Module1 
     submodules: // and this is right-comment
         // This is another banner comment, for the submodule
         submod1: Module; 
-            display: "p=120,108;b=96,72,rect";
+            display: "p=120,116;b=96,72,rect";
     connections: 
         out --> submod1.in; // Right-comments can also be 
                             // multi-line.
@@ -38,6 +38,7 @@ endmodule
 // 
 module Module2 
 endmodule 
+
 
 
 

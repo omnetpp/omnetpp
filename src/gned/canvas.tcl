@@ -78,7 +78,6 @@ proc openModuleOnNewCanvas {modkey} {
     set canvas($canv_id,textedit)    $txt
     set canvas($canv_id,mode)        "graphics"
     set canvas($canv_id,tab)         $tab
-    set canvas($canv_id,changed)     0
     set canvas($canv_id,module-key)  $modkey
 
     canvas $canv -background #a0e0a0  -relief ridge -border 2

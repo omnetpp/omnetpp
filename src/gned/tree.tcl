@@ -176,6 +176,7 @@ proc Tree:buildlayer {w v in} {
     incr Tree($w:y) 17
     $w create line $in $y [expr $in+10] $y -fill gray50
     set text [getNodeInfo $w text $c]
+    set options [getNodeInfo $w options $c]
     set icon [getNodeInfo $w icon $c]
     set x [expr $in+12]
     if {[string length $icon]>0} {
@@ -185,6 +186,7 @@ proc Tree:buildlayer {w v in} {
     }
     set tags [list "node-$c" "text-$c"]
     set j [$w create text $x $y -text $text -font $Tree(font) -anchor w -tags $tags]
+    eval $w itemconfig $j $options
     if [getNodeInfo $w haschildren $c] {
       if {[info exists Tree($w:$c:open)] && $Tree($w:$c:open)} {
          set j [$w create image $in $y -image Tree:openbm]

@@ -420,3 +420,21 @@ proc checkArray {} {
    }
 }
 
+proc nedfileIsDirty {key} {
+   global ned
+
+   if {$ned($key,type)!="nedfile"} {error "internal error in nedfileIsDirty"}
+
+   return $ned($key,dirty)
+}
+
+proc nedfileClearDirty {key} {
+   global ned
+
+   if {$ned($key,type)!="nedfile"} {error "internal error in nedfileIsDirty"}
+
+   set ned($key,dirty) 0
+
+   updateTreeManager
+}
+

@@ -84,6 +84,8 @@ set ddict(nedfile,type)            {nedfile}
 set ddict(nedfile,name)            {untitled.ned}
 set ddict(nedfile,filename)        {untitled.ned}
 set ddict(nedfile,banner-comment)  {}
+set ddict(nedfile,unnamed)         {1}
+set ddict(nedfile,dirty)           {0}
 
 #
 # imports

@@ -250,6 +250,16 @@ proc getNodeInfo {w op {key {}}} {
         }
       }
 
+      options {
+        if [info exist ned($key,dirty)] {
+          if {$ned($key,dirty)} {
+             return "-fill #ff0000"
+          } else {
+             return ""
+          }
+        }
+      }
+
       icon {
         set type $ned($key,type)
         if [info exist ddesc($type,treeicon)] {
