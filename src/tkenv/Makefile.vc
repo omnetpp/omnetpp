@@ -8,8 +8,6 @@
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "..\envir" $(TK_CFLAGS)
 
-OMNETPP_TKENV_DIR=`@MYPWD@`
-
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj objinsp.obj modinsp.obj statinsp.obj inspect.obj arrow.obj
 
 #
@@ -26,10 +24,10 @@ tkenv.dll : $(OBJS)
 	#FIXME $(SHLIB_LD) -o tkenv.dll $(OBJS)
 
 tkapp.obj : tkapp.cc
-	$(CXX) $(COPTS) /c /Tp -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" tkapp.cc
+	$(CXX) /DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp tkapp.cc
 
 tkapp-e.obj : tkapp.cc  tclcode.cc
-	$(CXX) $(COPTS) /c /Tp -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" tkapp.cc -o tkapp-e.obj
+	$(CXX)  /Fo"tkapp-e.obj" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp tkapp.cc
 
 tkcmd.obj : tkcmd.cc
 	$(CXX) $(COPTS) /c /Tp tkcmd.cc
@@ -53,7 +51,7 @@ arrow.obj: arrow.cc arrow.h
 	$(CXX) $(COPTS) /c /Tp arrow.cc
 
 tclcode.cc: *.tcl
-	..\utils/tcl2c tclcode.cc *.tcl
+	..\utils\tcl2c tclcode.cc *.tcl
 
 missing-library:
 	@ echo '  *** No Tk installation found -- skipping Tkenv'
@@ -62,7 +60,7 @@ depend:
 	@ echo *** make depend not (yet) supported with MSVC
 
 clean:
-	del *.obj tkenv.lib tkenv.dll tcl2c
+	del *.obj tkenv.lib tkenv.dll
 
 install-local: $(TKENV_IF_POSSIBLE)
 	copy tkenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)

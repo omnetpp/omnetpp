@@ -34,7 +34,7 @@ main.obj : main.cc
 	$(CXX) $(COPTS) /c /Tp main.cc
 
 omnetapp.obj : omnetapp.cc
-	$(CXX) $(COPTS) /c /Tp -DHAVE_DLOPEN=$(HAVE_DLOPEN) omnetapp.cc
+	$(CXX) /DHAVE_DLOPEN=$(HAVE_DLOPEN) $(COPTS) /c /Tp omnetapp.cc
 
 slaveapp.obj : slaveapp.cc
 	$(CXX) $(COPTS) /c /Tp slaveapp.cc
