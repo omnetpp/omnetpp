@@ -49,7 +49,8 @@ The file is best read from the bottom up. Here's what it says:
    - Tictoc1 is a compound module, which is assembled from two submodules,
      tic and toc. tic and toc are instances of the same module type
      called Txc1. We connect tic's output gate (named out) to toc's input
-     gate (named in), and vice versa (<tt>module..endmodule</tt>);
+     gate (named in), and vica versa (<tt>module..endmodule</tt>). There
+     will be a 100ms propagation delay both ways;
    - Txc1 is a simple module type (which means it is atomic on NED level, and
      will be implemented in C++). Txc1 has one input gate named in,
      and one output gate named out (<tt>simple..endsimple</tt>).
