@@ -24,59 +24,63 @@ set unixbrowser "netscape"
 #set unixbrowser "konqueror"
 
 #
-# title line:   {"title"}
-# program line: {"name" "directory" "unix-command" "windows-command"}
-# readme line:  {"name" "readme-file"}
-# docu line:    {"name" "readme-file"  "html-file"}
+# title line:   {"color" "title"}
+# program line: {"color" "name" "directory" "unix-command" "windows-command"}
+# readme line:  {"color" "name" "readme-file"}
+# docu line:    {"color" "name" "readme-file"  "html-file"}
 # separator:    {}
 #
 set i 0
 set first ""
 foreach line {
-   {"About..."         "README"}
-   {"Tictoc"           "tictoc"           "./tictoc"    "tictoc.exe"}
-   {"NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
-   {"Hist"             "hist"             "./hist"      "hist.exe"}
-   {"Fifo"             "fifo"             "./fifo"      "fifo.exe"}
-   {"Queues"           "queues"           "./queues"    "queues.exe"}
-   {"CQN"              "cqn"              "./cqn"       "cqn.exe"}
-   {"Queueing"         "queueing"         "./queueing"  "queueing.exe"}
-   {"P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
-   {"Aloha"            "aloha"            "./aloha"     "aloha.exe"}
-   {"Dyna"             "dyna"             "./dyna"      "dyna.exe"}
-   {"FDDI"             "fddi"             "./fddi"      "fddi.exe"}
-   {"HCube"            "hcube"            "./hcube"     "hcube.exe"}
-   {"Routing"          "routing"          "./routing"   "routing.exe"}
-   {"Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
-   {"TokenRing"        "tokenring"        "./tokenring" "tokenring.exe"}
-   {"Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
-   {"Dyna in real-time" "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
-   {"Sockets/HTTP"     "sockets"          "./sockets -r 1"  "sockets.exe -r 1"}
-   {"Sockets/Telnet"   "sockets"          "./sockets -r 2"  "sockets.exe -r 2"}
+   {"#d4e6ff"  "About..."         "README"}
+   {"#d4e6ff" "Tictoc"           "tictoc"           "./tictoc"    "tictoc.exe"}
+   {"#d4e6ff"  "NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
+   {"#d4e6ff"  "Hist"             "hist"             "./hist"      "hist.exe"}
+   {"#d4e6ff"  "Fifo"             "fifo"             "./fifo"      "fifo.exe"}
+   {"#d4e6ff"  "Queues"           "queues"           "./queues"    "queues.exe"}
+   {"#d4e6ff"  "CQN"              "cqn"              "./cqn"       "cqn.exe"}
+   {"#d4e6ff"  "Queueing"         "queueing"         "./queueing"  "queueing.exe"}
+   {"#d4e6ff"  "P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
+   {"#ffee8c"  "Aloha"            "aloha"            "./aloha"     "aloha.exe"}
+   {"#ffee8c"  "Dyna"             "dyna"             "./dyna"      "dyna.exe"}
+   {"#ffee8c"  "FDDI"             "fddi"             "./fddi"      "fddi.exe"}
+   {"#ffee8c"  "HCube"            "hcube"            "./hcube"     "hcube.exe"}
+   {"#ffee8c"  "Routing"          "routing"          "./routing"   "routing.exe"}
+   {"#ffee8c"  "Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
+   {"#ffee8c"  "TokenRing"        "tokenring"        "./tokenring" "tokenring.exe"}
+   {"#2aa457"  "Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
+   {"#2aa457"  "Dyna in real-time" "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
+   {"#2aa457"  "Sockets/HTTP"     "sockets"          "./sockets -r 1"  "sockets.exe -r 1"}
+   {"#2aa457"  "Sockets/Telnet"   "sockets"          "./sockets -r 2"  "sockets.exe -r 2"}
 } {
    lappend samples $i
    if {[llength $line]==0} {
        set db($i,type) "spacer"
-   } elseif {[llength $line]==1} {
-       set db($i,type) "heading"
-       set db($i,title) [lindex $line 0]
    } elseif {[llength $line]==2} {
-       set db($i,type) "readme"
-       set db($i,title) [lindex $line 0]
-       set db($i,readme) [lindex $line 1]
-       if {$first==""} {set first $i}
+       set db($i,type) "heading"
+       set db($i,color) [lindex $line 0]
+       set db($i,title) [lindex $line 1]
    } elseif {[llength $line]==3} {
-       set db($i,type) "docu"
-       set db($i,title) [lindex $line 0]
-       set db($i,readme) [lindex $line 1]
-       set db($i,docu) [lindex $line 2]
+       set db($i,type) "readme"
+       set db($i,color) [lindex $line 0]
+       set db($i,title) [lindex $line 1]
+       set db($i,readme) [lindex $line 2]
        if {$first==""} {set first $i}
    } elseif {[llength $line]==4} {
+       set db($i,type) "docu"
+       set db($i,color) [lindex $line 0]
+       set db($i,title) [lindex $line 1]
+       set db($i,readme) [lindex $line 2]
+       set db($i,docu) [lindex $line 3]
+       if {$first==""} {set first $i}
+   } elseif {[llength $line]==5} {
        set db($i,type) "program"
-       set db($i,title) [lindex $line 0]
-       set db($i,dir)   [lindex $line 1]
-       set db($i,uprog) [lindex $line 2]
-       set db($i,wprog) [lindex $line 3]
+       set db($i,color) [lindex $line 0]
+       set db($i,title) [lindex $line 1]
+       set db($i,dir)   [lindex $line 2]
+       set db($i,uprog) [lindex $line 3]
+       set db($i,wprog) [lindex $line 4]
        if {$first==""} {set first $i}
    } else {
        tk_messageBox -title {Error} -type ok -icon error -message "Error in table: wrong #items in {$line}"
@@ -177,6 +181,7 @@ proc createWindow {} {
             pack $f.$i -fill x -side top -padx 5 -pady 5
         } elseif {$db($i,type)=="readme" || $db($i,type)=="docu" || $db($i,type)=="program"} {
             button $f.$i -text $db($i,title) -bd 1 -command "showDemo $i"
+            if {$db($i,color)!=""} {$f.$i config -bg $db($i,color)}
             pack $f.$i -fill x -side top -padx 5 -pady 2
         } else {
             tk_messageBox -title {Error} -type ok -icon error -message "internal error: wrong type '$db($i,type)'"
@@ -200,11 +205,13 @@ proc showDemo {sample} {
    set f .sel.c.f
    foreach i $samples {
         if {$db($i,type)=="readme" || $db($i,type)=="docu" || $db($i,type)=="program"} {
-            $f.$i config -relief raised -bg $colors(unselbutton)
+            #$f.$i config -relief raised -bg $colors(unselbutton)
+            $f.$i config -relief raised
         }
    }
 
-   $f.$sample config -relief sunken -bg $colors(selbutton)
+   #$f.$sample config -relief sunken -bg $colors(selbutton)
+   $f.$sample config -relief sunken
 
    if {$db($sample,type)=="readme"} {
 
