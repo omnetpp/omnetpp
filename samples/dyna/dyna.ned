@@ -40,7 +40,8 @@ endsimple
 //
 simple Switch 
     parameters: 
-        pk_rate : numeric; 
+        pk_rate : numeric,
+        queue_max_len: numeric;
     gates: 
         out: out[]; 
         in: in[]; 
@@ -90,7 +91,9 @@ module ClientServer
             parameters: 
                 // switch_pk_rate should be >= num_clients, otherwise switch will 
                 // become the bottleneck
-                pk_rate = 1.5*num_clients;
+                pk_rate = 1.5*num_clients,
+                // buffer max 20 packets
+                queue_max_len = 20; 
             gatesizes: 
                 in[num_clients+1], 
                 out[num_clients+1]; 
