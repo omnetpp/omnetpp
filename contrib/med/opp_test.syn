@@ -1,0 +1,109 @@
+#===========================================================
+#
+# MED file mode definition file
+# Last updated: 01-12-2003   09:53 AM
+#
+#===========================================================
+
+files: *.test
+title: OMNeT++ regression test file
+
+default: no
+caseSensitive: yes
+checkCommentInString: yes
+shiftDistance: 1
+tabWidth: 8
+tabLoadExpand: 0
+tabInsAsBlank: 0
+sectionDisplay: 5000, 1000
+
+wordWrap: disabled 76 >!:~#  
+
+wordSep:'&()[]{}\<>,;-+*.:?!=-|"
+
+# 3rd party online help
+inf: * win32sdk.hlp [A-Z]* win32sdk.hlp
+inf: * clib * clib
+
+
+# brackets
+bracket: { } 1
+bracket: ( ) 1
+bracket: [ ] 0
+
+
+# Color definitions
+defineColor: myDarkYellow 150 150 0
+defineColor: myDarkBlue 0 0 150
+defineColor: myDarkRed 191 0 0
+defineColor: myLightGray 220 220 220
+defineColor: myDarkGreen 0 128 0
+
+
+foregroundColor: black
+backgroundColor: white
+blockColor: myLightGray
+
+# Reserved words
+
+color: myDarkYellow, normal, myDarkYellow, normal
+token: %activity %contains %description %exitcode %file %global %ignore-exitcode
+token: %inifile %module %module_a %module_b %not-contains
+
+color: blue, normal, blue, bold
+token: asm auto break case catch cdecl char class const continue default delete
+token: do double else enum extern far float for friend goto huge if int interrupt
+token: long near new operator pascal private protected public register return
+token: short signed sizeof static struct switch template this throw try typedef
+token: union unsigned virtual void volatile while yield
+
+color: myDarkGreen, normal, cyan, bold
+token: #define #elif #else #endif #error #if #ifdef #ifndef #include #line #pragma
+token: #undef elif inline warn
+
+# Comments
+color: darkcyan, normal, darkcyan, normal
+eolCom: //
+comCol: 0
+eolCom: %
+comCol: 0
+
+openCom: /*
+closeCom: */
+
+# Symbols
+
+color: darkpink, normal, darkpink, italic
+string: "
+
+color: darkpink, normal, darkpink, italic
+char: '
+
+color: red, normal, red, normal
+literal: \
+
+color: myDarkBlue, normal, myDarkBlue, bold
+funcParml: (
+
+color: myDarkYellow, normal, myDarkYellow, normal
+decPrefix: 
+
+color: darkgreen, normal, darkgreen, normal
+hexPrefix: 0x
+
+color: green, normal, black, normal
+binPrefix: 
+
+color: darkgray, normal, darkgray, normal
+octalPrefix: 0
+
+numPostfix: L
+
+color: myDarkRed, normal, myDarkRed, normal
+symbol: ><{}()+-:&!|=~?.;,^/*
+color: darkgreen, normal, darkred, normal
+symbol: []
+
+
+#===========================================================
+

@@ -1,0 +1,91 @@
+#===========================================================
+#
+# MED file mode definition file
+# Last updated: 01-12-2003   09:43 AM
+#
+#===========================================================
+
+files: *.ned
+title: OMNeT++ NED file
+
+default: no
+caseSensitive: yes
+checkCommentInString: yes
+shiftDistance: 1
+tabWidth: 4
+tabLoadExpand: 1
+tabInsAsBlank: 1
+sectionDisplay: 5000, 1000
+
+wordWrap: disabled 76 >!:~#  
+
+wordSep:'&()[]{}\<>,;-+*.:?!=-|"
+
+
+
+# brackets
+bracket: { } 1
+bracket: ( ) 1
+bracket: [ ] 0
+
+
+# Color definitions
+defineColor: myDarkYellow 150 150 0
+defineColor: myDarkBlue 0 0 150
+defineColor: myDarkRed 191 0 0
+defineColor: myLightGray 220 220 220
+
+
+foregroundColor: black
+backgroundColor: white
+blockColor: myLightGray
+
+# Reserved words
+
+color: blue, normal, blue, bold
+token: ancestor any bool channel connections const datarate delay display do endchannel
+token: endfor endmodule endnetwork endsimple error false for gates gatesizes if
+token: import in index input like machines module network nocheck numeric on out
+token: parameters ref simple sizeof string submodules true
+
+# Comments
+color: darkcyan, normal, darkcyan, normal
+eolCom: //
+comCol: 0
+
+openCom: /*
+closeCom: */
+
+# Symbols
+
+color: darkpink, normal, darkpink, italic
+string: "
+
+color: red, normal, red, normal
+literal: \
+
+color: myDarkBlue, normal, myDarkBlue, bold
+funcParml: (
+
+color: myDarkYellow, normal, myDarkYellow, normal
+decPrefix: 
+
+color: darkgreen, normal, darkgreen, normal
+hexPrefix: 0x
+
+color: green, normal, black, normal
+binPrefix: 
+
+color: darkgray, normal, darkgray, normal
+octalPrefix: 0
+
+numPostfix: L
+
+color: myDarkRed, normal, myDarkRed, normal
+symbol: ><{}()+-:&!|=~?.;,^/*
+color: darkgreen, normal, darkred, normal
+symbol: []
+
+
+#===========================================================
+
