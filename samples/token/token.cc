@@ -346,7 +346,7 @@ void Sink::activity()
 
     // collect histogram
     cKSplit endToEndDelayKS("End-to-End Delay histogram (K-split)");
-    endToEndDelayKS.setRangeAuto(100, 2.0);
+    endToEndDelayKS.setRangeAutoUpper(0.0, 100, 2.0);
     cPSquare endToEndDelayPS("End-to-End Delay histogram (P2)");
 
     bool debug=true;

@@ -51,6 +51,7 @@ OBJS = \
   ../nim/debug/nim_n.obj \
   ../nim/debug/players.obj \
   ../token/debug/token_n.obj \
+  ../token/debug/token_m.obj \
   ../token/debug/token.obj \
   ../topo/debug/binarytree_n.obj  \
   ../topo/debug/chain_n.obj  \
