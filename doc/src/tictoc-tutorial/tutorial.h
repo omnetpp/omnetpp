@@ -851,6 +851,9 @@ charts.
 
 @section conclusion Conclusion
 
+Hope you have found this tutorial a useful introduction into OMNeT++. Comments
+and suggestions will be appreciated.
+
 UP: @ref contents
 */
 
