@@ -236,9 +236,6 @@ proc create_omnetpp_window {} {
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
 
-    animcontrol .toolbar.animspeed
-    pack .toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
-
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
     set help_tips(.toolbar.newrun)  {Set up a run}
     set help_tips(.toolbar.newnet)  {Set up a network}
@@ -256,7 +253,6 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
     set help_tips(.toolbar.find)    {Find string in main window (Ctrl-F)}
-    set help_tips(.toolbar.animspeed) {Animation speed -- see Options dialog}
 
     #################################
     # Create status bars
@@ -568,12 +564,3 @@ proc notifyPlugins {command args} {
     }
 }
 
-#------------------------------------------------------------------
-
-proc animcontrol {w} {
-    global priv
-
-    scale $w -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
-    $w config -from .5 -to 3 -resolution 0.01 -variable priv(animspeed)
-    trace add variable priv(animspeed) write animSpeedChanged
-}

@@ -486,6 +486,14 @@ proc draw_message {c msgptr x y msgname msgkind} {
     }
 }
 
+proc animcontrol {w} {
+    global priv
+
+    scale $w -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
+    $w config -from .5 -to 3 -resolution 0.01 -variable priv(animspeed)
+    trace add variable priv(animspeed) write animSpeedChanged
+}
+
 proc create_graphicalmodwindow {name geom} {
     global icons help_tips
 
