@@ -9,6 +9,13 @@ proc cpanel:newNetwork {} {
     cpanel_readParams
 }
 
+proc cpanel:inspectorUpdate {} {
+    global counter
+    if {![info exist counter]} {set counter 0}
+    incr counter
+    puts $counter
+}
+
 #
 # Utility function to create a slider
 #

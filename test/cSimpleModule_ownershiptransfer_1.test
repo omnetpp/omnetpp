@@ -1,0 +1,84 @@
+%description:
+Test if ownership of a message can be manually transferred from one
+module to the other. Such functionality is needed for one particular
+project, it's rarely if ever useful for normal simulation models.
+
+%file: {test}.ned
+
+simple {First}
+endsimple
+
+simple {Second}
+endsimple
+
+module {Net}
+  submodules:
+    first : {First};
+    second : {Second};
+endmodule
+
+network {net} : {Net}
+endnetwork
+
+%file: {modules}.cc
+
+#include <omnetpp.h>
+
+class {First} : public cSimpleModule
+{
+    Module_Class_Members({First},cSimpleModule,16384)
+    virtual void activity();
+};
+
+class {Second} : public cSimpleModule
+{
+  protected:
+    cMessage *receivedMsg;
+    Module_Class_Members({Second},cSimpleModule,16384)
+    virtual void activity();
+  public:
+    void accept(cMessage *msg); // stores in 'receivedMsg' member
+};
+
+Define_Module({First});
+Define_Module({Second});
+
+void {First}::activity()
+{
+   {Second} *other = check_and_cast<{Second} *>(parentModule()->submodule("second"));
+   cMessage *msg = new cMessage("hello");
+   ev << "before:  " << msg->fullPath() << endl;
+   ev << "  owner: " << msg->owner()->fullPath() << endl;
+   other->accept(msg);
+   ev << "after:   " << msg->fullPath() << endl;
+   ev << "  owner: " << msg->owner()->fullPath() << endl;
+}
+
+void {Second}::accept(cMessage *msg)
+{
+   receivedMsg = msg;
+   take(msg);
+}
+
+void {Second}::activity()
+{
+   wait(1.0); // until accept() surely takes place
+   ev << "receivedMsg: " << receivedMsg->fullPath() << endl;
+   ev << "      owner: " << receivedMsg->owner()->fullPath() << endl;
+}
+
+%inifile: {test}.ini
+[General]
+network={net}
+
+%contains: stdout
+before:  {net}.first.local-objects.hello
+  owner: {net}.first.local-objects
+after:   {net}.second.hello
+  owner: {net}.second
+
+%contains: stdout
+SimpleModule_ownershiptransfer_1_net.second (id=3)
+receivedMsg: {net}.second.hello
+      owner: {net}.second
+
