@@ -145,7 +145,7 @@ proc showDemo {sample} {
      set cmd "cd $dir($sample); $wprog($sample)"
    }
    .main.up.banner config -text "$title($sample) README"
-   .main.lo.start config -text "Launch $title($sample)  (command: $cmd)"
+   .main.lo.start config -text "Launch $title($sample)\n($cmd)"
    .main.lo.start config -command "runSample $sample"
 
    loadFile .main.mid.text "$dir($sample)/Readme.txt"
