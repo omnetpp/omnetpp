@@ -62,6 +62,7 @@ proc createMenubar {w} {
     foreach i {
        {filemenu     -$label_opt File -underline 0}
        {editmenu     -$label_opt Edit -underline 0}
+       {plotmenu     -$label_opt Plot -underline 0}
        {optionsmenu  -$label_opt Options -underline 0}
        {helpmenu     -$label_opt Help -underline 0}
     } {
@@ -105,6 +106,14 @@ proc createMenubar {w} {
       {command -command {delVectors} -label {Remove  Del,F8} -underline 0}
     } {
       eval $w.editmenu$m add $i
+    }
+
+    # Plot menu
+    foreach i {
+      {command -command {createVectorPlot} -label {Plot} -underline 0}
+      {command -command {plotVectorScatterPlot} -label {Scatter (x-y) plot...} -underline 0}
+    } {
+      eval $w.plotmenu$m add $i
     }
 
     # Options menu
@@ -402,7 +411,7 @@ proc createMainWindow {{geom ""}} {
       {sep3  -separator}
       {config -image $icons(config)  -command filterListDialog}
       {sep4  -separator}
-      {plot  -image $icons(plotopt)     -command createVectorPlot}
+      {plot  -image $icons(plotopt)  -command createVectorPlot}
       {xyplot -image $icons(xyplot)  -command plotVectorScatterPlot}
 
     } {

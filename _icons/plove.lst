@@ -1,5 +1,8 @@
 open.gif
+copy.gif
 del.gif
+copyspec.gif
+close.gif
 dup.gif
 info.gif
 find.gif
@@ -14,6 +17,7 @@ saveps.gif
 opencfg.gif
 savecfg.gif
 savescript.gif
+barchart.gif
 xyplot.gif
 hist.gif
 filter.gif
