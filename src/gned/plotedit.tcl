@@ -57,7 +57,7 @@ proc selectOrMoveBindings c {
     $gned(toolbar).select config -relief sunken
     $gned(toolbar).draw config -relief raised
 
-    $c config -cursor hand2
+    $c config -cursor arrow
 
     # <Double-1> is tricky: must include what <ButtonRelease-1> does!
     bind $c <Delete>           "deleteSelected"
