@@ -279,7 +279,7 @@ unlink("$outdir/filelist.tmp") if (!debug);
 #
 print "transforming to xml...\n" if $verbose;
 if ($NEDTOOL eq "") {error("nedtool not configured");}
-runprog("$NEDTOOL -x -e -t -y -m -o $outdir/inputfiles.xml \@$outdir/filelist.txt")==0 || error("error invoking nedtool");
+runprog($NEDTOOL, "-x", "-e", "-t", "-y", "-m", "-o", "$outdir/inputfiles.xml", "\@$outdir/filelist.txt")==0 || error("error invoking nedtool");
 
 if ($screenshots)
 {
@@ -287,7 +287,7 @@ if ($screenshots)
     {
         print "exporting screenshots in Postscript using GNED...\n" if $verbose;
         if ($GNED eq "") {error("gned not configured");}
-        runprog("$GNED -- -c $outdir -e jpg \@$outdir/filelist.txt >$nul")==0 || error("error invoking GNED");
+        runprog($GNED, "--", "-c", $outdir, "-e", "jpg", "\@$outdir/filelist.txt", ">$nul")==0 || error("error invoking GNED");
         print "converting Postscript to JPG...\n" if $verbose;
         foreach $i (glob("$outdir/*.eps"))
         {
@@ -296,9 +296,9 @@ if ($screenshots)
            $jpg =~ s/eps$/jpg/;
            if ($CONVERT ne "") {
               # we prefer ImageMagick because many Ghostscript versions are broken (ignore -dEPSCrop)
-              runprog("$CONVERT $i $jpg >>$outdir/ghostscript.err")==0 || error("error invoking ImageMagick convert");
+              runprog($CONVERT, $i, $jpg, ">>$outdir/ghostscript.err")==0 || error("error invoking ImageMagick convert");
            } else {
-              runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >>$outdir/ghostscript.err")==0 || error("error invoking Ghostscript");
+              runprog($GHOSTSCRIPT, "-dEPSCrop", "-sNOPAUSE", "-sBATCH", "-sDEVICE=jpeg", "-sOutputFile=$jpg", $i, ">>$outdir/ghostscript.err")==0 || error("error invoking Ghostscript");
            }
         }
         print "\n" if (!$debug && $verbose);
@@ -307,10 +307,10 @@ if ($screenshots)
         {
            print "see Ghostscript warnings in $outdir/ghostscript.err\n" if $verbose;
         }
-	else
-	{
-	    unlink("$outdir/ghostscript.err");
-	}
+        else
+        {
+            unlink("$outdir/ghostscript.err");
+        }
 
         # must convert $outdir to absolute path, otherwise xslt will take it
         # as relative to the sylesheet (@#$#@$!!)
@@ -331,17 +331,17 @@ if ($doxytagfile ne "") {
 
 print "applying XSLT stylesheet...\n" if $verbose;
 if ($XSLTPROC eq "") {error("xsltproc not configured");}
-$xsltcommand = "$XSLTPROC".
-               " --stringparam outputdir \"".toslash($outdir)."\"".
-               " --stringparam imagesxml \"".toslash($imagesxml)."\"".
-               " --stringparam document-unassigned-params \"".($unassignedpars?"yes":"no")."\"".
-               " --stringparam have-dot \"".($have_dot?"yes":"no")."\"".
-               " --stringparam include-source-code \"".($sourcecode?"yes":"no")."\"".
-               " --stringparam doxytagfile \"".toslash($doxytagfile)."\"".
-               " --stringparam doxyhtmldir \"".toslash($doxyhtmldir)."\"".
-               " --output -".
-               " $NEDDOC_XSL $outdir/inputfiles.xml >$nul";
-runprog($xsltcommand)==0 || error("error invoking xsltproc");
+@xsltcommand = ($XSLTPROC,
+               "--stringparam", "outputdir", "\"".toslash($outdir)."\"",
+               "--stringparam", "imagesxml", "\"".toslash($imagesxml)."\"",
+               "--stringparam", "document-unassigned-params", "\"".($unassignedpars?"yes":"no")."\"",
+               "--stringparam", "have-dot", "\"".($have_dot?"yes":"no")."\"",
+               "--stringparam", "include-source-code", "\"".($sourcecode?"yes":"no")."\"",
+               "--stringparam", "doxytagfile", "\"".toslash($doxytagfile)."\"",
+               "--stringparam", "doxyhtmldir", "\"".toslash($doxyhtmldir)."\"",
+               "--output", "-",
+               "$NEDDOC_XSL", "$outdir/inputfiles.xml", ">$nul");
+runprog(@xsltcommand)==0 || error("error invoking xsltproc");
 
 if ($have_dot)
 {
@@ -351,12 +351,12 @@ if ($have_dot)
        print "#" if (!$debug && $verbose);
        $gif = $i; $gif =~ s/dot$/gif/;
        $map = $i; $map =~ s/dot$/map/;
-       runprog("$DOT -Tgif  <$i >$gif 2>>$outdir/dot.err")==0 || error("error invoking DOT");
-       runprog("$DOT -Tcmap <$i >$map 2>>$outdir/dot.err")==0 || error("error invoking DOT");
+       runprog($DOT, "-Tgif",  "<$i", ">$gif", "2>>$outdir/dot.err")==0 || error("error invoking DOT");
+       runprog($DOT, "-Tcmap", "<$i", ">$map", "2>>$outdir/dot.err")==0 || error("error invoking DOT");
        if ($GIFTRANS ne "")
        {
            rename($gif, "$outdir/__tmp.gif");
-           runprog("$GIFTRANS -t \"#ffffff\" ".tobackslash("$outdir/__tmp.gif")." >$gif")==0 || error("error invoking giftrans");
+           runprog($GIFTRANS, "-t", "\"#ffffff\"", tobackslash("$outdir/__tmp.gif"), ">$gif")==0 || error("error invoking giftrans");
            unlink("$outdir/__tmp.gif");
        }
     }
@@ -367,12 +367,12 @@ if ($have_dot)
     }
     else
     {
-	unlink("$outdir/dot.err");
+        unlink("$outdir/dot.err");
     }
 }
 
 print "formatting comments...\n" if $verbose;
-runprog("$PERL $NEDDOC_PL $outdir")==0 || error("error invoking HTML formatter");
+runprog($PERL, $NEDDOC_PL, $outdir)==0 || error("error invoking HTML formatter");
 
 if (!$debug)
 {
@@ -393,9 +393,13 @@ print "documentation created in $outdir/ -- start page is index.html\n" if $verb
 
 sub runprog
 {
-    my $prog = shift;
-    print "running: $prog\n" if $debug;
-    system($prog);
+    my @prog = @_;
+    print "running: ".join(' ',@prog)."\n" if $debug;
+    if ($isWindows) {
+        system($ENV{COMSPEC}, "/c", @prog);
+    } else {
+        system(@prog);
+    }
 }
 
 sub absolutepath
@@ -447,8 +451,7 @@ sub delete_recursive
 {
     my $dir = tobackslash(shift);
     if ($isWindows) {
-        # COMSPEC is necessary to prevent getting other "del" programs in the path
-        runprog("$ENV{COMSPEC} /c del /s /q $dir\\* >$nul");
+        runprog("del", "/s", "/q", "$dir\\*", ">$nul");
     } else {
         runprog("rm -rf $dir/*");
     }
@@ -460,13 +463,12 @@ sub collect_files
     my $dir = tobackslash(shift);
     my $listfile = tobackslash(shift);
     if ($isWindows) {
-        # COMSPEC is necessary to prevent getting other "dir" programs in the path.
         # Issue: "dir" returns error (nonzero exit code) if no file was listed.
         # To prevent that from stopping opp_neddoc with error, we forcefully return 0
         # here. Downside is that any "real" error will go unnoticed, but if there
         # was a problem with $ENV{COMSPEC} we'd have choked on it already.
         # (TODO: we could check output was really "File Not Found")
-        runprog("$ENV{COMSPEC} /c dir /s /b $dir\\*.ned $dir\\*.msg >>$listfile 2>>nul");
+        runprog("dir", "/s", "/b", "$dir\\*.ned", "$dir\\*.msg", ">>$listfile", "2>>nul");
         0;
     } else {
         runprog("find $dir -name '*.ned' -o -name '*.msg' >>$listfile");

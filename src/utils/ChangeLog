@@ -1,3 +1,9 @@
+2004-11-21  Andras Varga
+
+  	* opp_neddoc.in: fixed the way it invokes commmands via system()
+  	(We to break up the command line, otherwise redirection sometimes 
+  	breaks on Windows; plus we always need to use COMSPEC)
+
 2004-11-03  ------ omnetpp-3.0a9 released ------
 
 2004-11-03  Andras Varga
