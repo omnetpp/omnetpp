@@ -19,7 +19,7 @@ autoconf
 ./configure
 
 (cd bin; ln -s ../src/utils/makemake .)
-for i in models/* samples/*; do
+for i in samples/*; do
 	(cd $i; make re-makemake; make re-makemake-m; make depend; rm Makefile)
 done
 for i in sim/*; do

@@ -52,16 +52,16 @@ GNED_EMBED_TCL=no
 PVM_CFLAGS=
 PVM_LIBS=
 
-#TK_LIBS='-ltk80 -ltcl80'
 TK_CFLAGS=
 TK_LIBS=
+#TK_LIBS='-ltk80 -ltcl80'
 
 TV_CFLAGS=
 TV_LIBS=
 
 #
-# You may also override the settings below. This is only useful if you
-# have moved (want to move) parts of the OMNeT++ distribution to other places
+# You may override the settings below. This is only useful if you have moved
+# (or want to move) parts of the OMNeT++ distribution to other places
 # in the file system (e.g. libraries to /usr/lib, sim headers to
 # /usr/include/omnetpp and so on).
 #
@@ -69,7 +69,6 @@ TV_LIBS=
 #
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
-OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
 OMNETPP_BITMAP_PATH=".;./bitmaps;$OMNETPP_ROOT/bitmaps"
 
 OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"

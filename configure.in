@@ -5,7 +5,7 @@ AC_INIT(src/sim/omnetpp.h)
 #
 # OMNeT++ version number
 #
-OMNETPP_VERSION="1.2"
+OMNETPP_VERSION="2.0b"
 
 #
 # Detect platform...
@@ -29,7 +29,7 @@ fi
 
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
-OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
+# OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
 OMNETPP_BITMAP_PATH=".;./bitmaps;$OMNETPP_ROOT/bitmaps"
 
 OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
@@ -328,7 +328,7 @@ AC_SUBST(OMNETPP_BITMAP_PATH)
 
 AC_SUBST(OMNETPP_SRC_DIR)
 AC_SUBST(OMNETPP_SAMPLES_DIR)
-AC_SUBST(OMNETPP_MODELS_DIR)
+dnl AC_SUBST(OMNETPP_MODELS_DIR)
 
 AC_SUBST(YACC)
 AC_SUBST(LEX)
@@ -378,7 +378,6 @@ AC_OUTPUT(
   src/tvenv/Makefile
   src/utils/Makefile
   src/utils/makemake
-  models/support/Makefile
   samples/dyna/Makefile
   samples/fddi/Makefile
   samples/fifo1/Makefile

@@ -8,7 +8,6 @@
 # Directories
 #
 OMNETPP_SRC_DIR =       @OMNETPP_SRC_DIR@
-OMNETPP_MODELS_DIR =    @OMNETPP_MODELS_DIR@
 OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 
 #=====================================================================
@@ -20,7 +19,7 @@ OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 
 all: check-env components
 
-components: all-libs all-progs install-local all-models all-samples
+components: all-libs all-progs install-local all-samples
 
 
 #=====================================================================
@@ -37,8 +36,6 @@ components: all-libs all-progs install-local all-models all-samples
 all-libs: utils sim envir cmdenv tkenv tvenv
 
 all-progs: utils nedc gned plove
-
-all-models: support
 
 all-samples: dyna fddi fifo1 fifo2 hcube hist nim pvmex token
 
@@ -78,13 +75,6 @@ plove:
 
 utils:
 	cd $(OMNETPP_SRC_DIR)/utils; $(MAKE)
-
-#
-# Models
-#
-
-support:
-	cd $(OMNETPP_MODELS_DIR)/support; $(MAKE)
 
 #
 # Sample programs
@@ -136,9 +126,6 @@ clean:
 	for i in sim envir tkenv tvenv cmdenv nedc gned plove utils; do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i; $(MAKE) clean); \
 	done
-	for i in `echo $(OMNETPP_MODELS_DIR)/*`; do \
-	    (cd $$i; $(MAKE) clean); \
-	done
 	for i in `echo $(OMNETPP_SAMPLES_DIR)/*`; do \
 	    (cd $$i; $(MAKE) clean); \
 	done
@@ -146,9 +133,6 @@ clean:
 depend:
 	for i in sim envir tkenv tvenv cmdenv nedc gned plove utils; do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i; $(MAKE) depend); \
-	done
-	for i in `echo $(OMNETPP_MODELS_DIR)/*`; do \
-	    (cd $$i; $(MAKE) depend); \
 	done
 	for i in `echo $(OMNETPP_SAMPLES_DIR)/*`; do \
 	    (cd $$i; $(MAKE) depend); \
