@@ -42,9 +42,8 @@ void TelnetServer::endService(cMessage *msg)
 std::string TelnetServer::processChars(const char *chars)
 {
     std::string s = chars;
-    for (int i=0; i<s.length(); i++)
+    for (unsigned int i = 0; i < s.length(); i++)
         s.at(i) = toupper(s.at(i));
     return s;
 }
-
 
