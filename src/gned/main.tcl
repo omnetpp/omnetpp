@@ -197,7 +197,11 @@ proc createMainWindow {} {
     # Create horiz. toolbar
     #################################
 
-    frame .toolbar -relief raised -borderwidth 1
+    set gned(horiz-toolbar) .toolbar
+    frame $gned(horiz-toolbar) -relief raised -borderwidth 1
+    #  {sep2    -separator}
+    #  {graph   -image $icons(graph) -command {switchToGraphics}}
+    #  {ned     -image $icons(ned)   -command {switchToNED}}
     foreach i {
       {sep0    -separator}
       {new     -image $icons(new)   -command {fileNewComponent module}}
@@ -207,42 +211,40 @@ proc createMainWindow {} {
       {cut     -image $icons(cut)   -command {editCut}}
       {copy    -image $icons(copy)  -command {editCopy}}
       {paste   -image $icons(paste) -command {editPaste}}
+      {sep3     -separator}
       {undo    -image $icons(undo)  -command {editUndo}}
       {redo    -image $icons(redo)  -command {editRedo}}
       {sep2    -separator}
-      {graph   -image $icons(graph) -command {switchToGraphics}}
-      {ned     -image $icons(ned)   -command {switchToNED}}
-      {sep3    -separator}
       {check   -image $icons(check) -command {editCheck}}
+      {sep5    -separator}
+      {sep6    -separator}
+      {sep7    -separator}
     } {
-      set b [eval iconbutton .toolbar.$i]
+      set b [eval iconbutton $gned(horiz-toolbar).$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
-    }
-    .toolbar.graph config -relief sunken
-
-    # check if undo works
-    if [catch {text .tmp -undo true; destroy .tmp}] {
-        .toolbar.undo config -state disabled
-        .toolbar.redo config -state disabled
-        puts "NOTE: This version of Tcl/Tk doesn't support Undo in text widgets yet."
     }
 
     # close button
-    set b [button .toolbar.close -image $icons(close) -command fileCloseCanvas -relief flat]
+    set b [button $gned(horiz-toolbar).close -image $icons(close) -command fileCloseCanvas -relief flat]
     pack $b -anchor n -expand 0 -fill none -side right -padx 0 -pady 2
-
-    set gned(horiz-toolbar) .toolbar
 
     set help_tips($gned(horiz-toolbar).new)   {Create new module in current file}
     set help_tips($gned(horiz-toolbar).open)  {Open NED file}
     set help_tips($gned(horiz-toolbar).save)  {Save NED file of current canvas}
+    set help_tips($gned(horiz-toolbar).check) {Check module consistency}
     set help_tips($gned(horiz-toolbar).cut)   {Cut to clipboard}
     set help_tips($gned(horiz-toolbar).copy)  {Copy to clipboard}
     set help_tips($gned(horiz-toolbar).paste) {Paste from clipbard}
-    set help_tips($gned(horiz-toolbar).graph) {Edit in graphics view}
-    set help_tips($gned(horiz-toolbar).ned)   {Edit in NED source view}
-    set help_tips($gned(horiz-toolbar).check) {Check module consistency}
+    set help_tips($gned(horiz-toolbar).undo)  {Undo editing}
+    set help_tips($gned(horiz-toolbar).redo)  {Redo editing}
     set help_tips($gned(horiz-toolbar).close) {Close current canvas}
+
+    # check if undo works
+    if [catch {text .tmp -undo true; destroy .tmp}] {
+        $gned(horiz-toolbar).undo config -state disabled
+        $gned(horiz-toolbar).redo config -state disabled
+        puts "NOTE: This version of Tcl/Tk doesn't support Undo in text widgets yet."
+    }
 
 
     #################################
@@ -270,11 +272,11 @@ proc createMainWindow {} {
 
 
     #################################
-    # Create vert. toolbar
+    # Create graphics toolbar
     #################################
-    frame .main.toolbar -relief raised -borderwidth 1
-
-    set gned(toolbar) .main.toolbar
+    frame .toolbar.graphics
+    pack .toolbar.graphics -expand 1 -fill both
+    set gned(graphics-toolbar) .toolbar.graphics
 
     foreach i {
       {sep0     -separator}
@@ -288,17 +290,39 @@ proc createMainWindow {} {
       {props    -image $icons(props)    -command {propertiesSelected $gned(canvas)}}
       {opts     -image $icons(drawopts) -command {drawOptionsSelected $gned(canvas)}}
     } {
-      set b [eval iconbutton $gned(toolbar).$i]
-      pack $b -anchor w -expand 0 -fill x -side top -padx 2 -pady 0
+      set b [eval iconbutton $gned(graphics-toolbar).$i]
+      #pack $b -anchor w -expand 0 -fill x -side top -padx 2 -pady 0
+      pack $b -anchor w -expand 0 -fill y -side left -padx 0 -pady 2
     }
 
-    set help_tips($gned(toolbar).draw)   {Switch to submodule/connection drawing mode}
-    set help_tips($gned(toolbar).select) {Switch to select/resize mode}
-    set help_tips($gned(toolbar).delete) {Delete selected items}
-    set help_tips($gned(toolbar).grid)   {Snap to grid on/off}
-    set help_tips($gned(toolbar).bounds) {"Natural" parent module size}
-    set help_tips($gned(toolbar).props)  {Properties of selected item}
-    set help_tips($gned(toolbar).opts)   {Appearance of selected item}
+    set help_tips($gned(graphics-toolbar).draw)   {Switch to submodule/connection drawing mode}
+    set help_tips($gned(graphics-toolbar).select) {Switch to select/resize mode}
+    set help_tips($gned(graphics-toolbar).delete) {Delete selected items}
+    set help_tips($gned(graphics-toolbar).grid)   {Snap to grid on/off}
+    set help_tips($gned(graphics-toolbar).bounds) {"Natural" parent module size}
+    set help_tips($gned(graphics-toolbar).props)  {Properties of selected item}
+    set help_tips($gned(graphics-toolbar).opts)   {Appearance of selected item}
+
+
+    #################################
+    # Create textedit toolbar
+    #################################
+    frame .toolbar.textedit
+    #pack .toolbar.textedit -expand 1 -fill both
+    set gned(textedit-toolbar) .toolbar.textedit
+
+    foreach i {
+      {sep0    -separator}
+      {find    -image $icons(find)  -command {editFind}}
+      {repl    -image $icons(findrepl) -command {editReplace}}
+    } {
+      set b [eval iconbutton $gned(textedit-toolbar).$i]
+      #pack $b -anchor w -expand 0 -fill x -side top -padx 2 -pady 0
+      pack $b -anchor w -expand 0 -fill y -side left -padx 0 -pady 2
+    }
+
+    set help_tips($gned(textedit-toolbar).find)  {Find text}
+    set help_tips($gned(textedit-toolbar).repl)  {Replace text}
 
 
     #################################
@@ -308,15 +332,27 @@ proc createMainWindow {} {
 
 
     #################################
-    # Create tabs below
+    # Create tabs and switching buttons
     #################################
-    frame .main.f.tabs
+    frame .main.f.tabs 
     pack .main.f.tabs -expand 0 -fill x -side bottom -ipadx 0 -ipady 0 -padx 0 -pady 0
 
     set tabs .main.f.tabs
-    canvas $tabs.c -height 15
+    canvas $tabs.c -height 15 
     frame $tabs.c.f
     $tabs.c create window 0 0 -anchor nw -window $tabs.c.f
+
+    frame .main.f.switcher
+    pack .main.f.switcher -expand 0 -fill x -side top -ipadx 0 -ipady 0 -padx 0 -pady 0
+    button .main.f.switcher.graphics -text {Graphics view} -command {switchToGraphics} \
+           -relief flat -highlightthickness 0 -pady 1
+    button .main.f.switcher.textedit -text {NED source view} -command {switchToNED} \
+           -relief flat -highlightthickness 0 -pady 1
+    pack .main.f.switcher.graphics .main.f.switcher.textedit -expand 0 -fill none -side left  
+
+    set help_tips(.main.f.switcher.graphics) {Edit in graphics view}
+    set help_tips(.main.f.switcher.textedit) {Edit in NED source view}
+
 
     # create scrollbar to scroll buttons if there are too many windows open
     if {0} {
@@ -362,7 +398,7 @@ proc createMainWindow {} {
     # Pack the vert.toolbar, the tree manager and the main area
     #################################
     pack .main.mgr     -expand 0 -fill y    -side left
-    pack .main.toolbar -expand 0 -fill y    -side left
+    #pack .main.toolbar -expand 0 -fill y    -side left
     pack .main.f       -expand 1 -fill both -side right
 
     #################################

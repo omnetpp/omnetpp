@@ -1,3 +1,7 @@
+2003-09-02  Andras Varga
+
+	* canvas.tcl, main.tcl: GUI layout rearranged a bit for usability 
+	reasons
 
 2003-09-01  Andras Varga
 

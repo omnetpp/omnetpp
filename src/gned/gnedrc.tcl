@@ -107,9 +107,9 @@ proc reflectConfigInGUI {} {
    global config gned
 
    if {$config(snaptogrid)} {
-       $gned(toolbar).grid config -relief sunken
+       $gned(graphics-toolbar).grid config -relief sunken
    } else {
-       $gned(toolbar).grid config -relief raised
+       $gned(graphics-toolbar).grid config -relief raised
    }
 }
 

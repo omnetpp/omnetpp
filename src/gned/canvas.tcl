@@ -113,8 +113,8 @@ proc openModuleOnNewCanvas {modkey} {
     configureEditor $txt
 
     # create tab
-    button $tab -command "switchToCanvas $canv_id" -relief ridge \
-                -bg wheat2 -highlightthickness 0 -height 1 -pady 0
+    button $tab -command "switchToCanvas $canv_id" -relief solid \
+                -highlightthickness 0 -height 1 -pady 0 -borderwidth 1
     pack $tab -expand 0 -fill none -side left
 
     # bindings for the canvas
@@ -158,7 +158,7 @@ proc switchToCanvas {canv_id} {
     # unmap old canvas
     if {$gned(canvas_id)!=""} {
         set old_canv_id $gned(canvas_id)
-        $canvas($old_canv_id,tab) config -relief flat -bg #d9d9d9
+        $canvas($old_canv_id,tab) config -relief flat
         if {$canvas($old_canv_id,mode)=="textedit"} {
             grid forget $canvas($old_canv_id,textedit)
         } elseif {$canvas($old_canv_id,mode)=="graphics"} {
@@ -174,7 +174,7 @@ proc switchToCanvas {canv_id} {
     set gned(tab)       $canvas($canv_id,tab)
 
     # map new canvas/textedit and update tabs
-    $canvas($canv_id,tab) config -relief ridge -bg wheat2
+    $canvas($canv_id,tab) config -relief solid
     setCanvasMode $canvas($canv_id,mode)
 }
 
@@ -198,13 +198,27 @@ proc setCanvasMode {mode} {
     # make new mapping
     if {$mode=="textedit"} {
         set c $canvas($canv_id,textedit)
-        $gned(horiz-toolbar).graph config -relief raised
-        $gned(horiz-toolbar).ned config -relief sunken
+        .main.f.switcher.graphics config -relief flat
+        .main.f.switcher.textedit config -relief raised
+
+        pack $gned(textedit-toolbar) -side left -expand 0 -fill both
+        pack forget $gned(graphics-toolbar)
+        foreach i {cut copy paste undo redo} {
+            $gned(horiz-toolbar).$i config -state active
+        }
+
     } elseif {$mode=="graphics"} {
         set c $canvas($canv_id,canvas)
         adjustCanvasScrolling $c
-        $gned(horiz-toolbar).graph config -relief sunken
-        $gned(horiz-toolbar).ned config -relief raised
+        .main.f.switcher.graphics config -relief raised
+        .main.f.switcher.textedit config -relief flat
+
+        pack forget $gned(textedit-toolbar)
+        pack $gned(graphics-toolbar) -side left -expand 0 -fill both
+        foreach i {cut copy paste undo redo} {
+            $gned(horiz-toolbar).$i config -state disabled
+        }
+
     } else {
         error "invalid mode $mode"
     }

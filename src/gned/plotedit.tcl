@@ -52,8 +52,8 @@ proc selectOrMoveBindings c {
     global gned
     set gned(editmode) "select/move"
     $gned(statusbar).mode config -text "Select/move/resize objects"
-    $gned(toolbar).select config -relief sunken
-    $gned(toolbar).draw config -relief raised
+    $gned(graphics-toolbar).select config -relief sunken
+    $gned(graphics-toolbar).draw config -relief raised
 
     $c config -cursor arrow
 
@@ -82,8 +82,8 @@ proc drawBindings c {
     global gned
     set gned(editmode) "draw"
     $gned(statusbar).mode config -text "Create submodule/connection"
-    $gned(toolbar).select config -relief raised
-    $gned(toolbar).draw config -relief sunken
+    $gned(graphics-toolbar).select config -relief raised
+    $gned(graphics-toolbar).draw config -relief sunken
 
     $c config -cursor crosshair
 
