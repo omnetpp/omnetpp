@@ -209,19 +209,23 @@ cMessage *cMessage::decapsulate()
 cPar& cMessage::par(int n)
 {
     cArray& parlist = parList();
-    cPar *p = (cPar *)parlist[n];
+    cObject *p = parlist.get(n);
     if (!p)
-        throw new cException(this,"has no parameter #%d",n);
-    return *p;
+        throw new cException(this,"par(int): has no parameter #%d",n);
+    if (!dynamic_cast<cPar *>(p))
+        throw new cException(this,"par(int): parameter #%d is of type %s, not cPar",n, p->className());
+    return *(cPar *)p;
 }
 
 cPar& cMessage::par(const char *s)
 {
     cArray& parlist = parList();
-    cPar *p = (cPar *)parlist.get(s);
+    cObject *p = parlist.get(s);
     if (!p)
-        throw new cException(this,"has no parameter called `%s'",s);
-    return *p;
+        throw new cException(this,"par(const char *): has no parameter called `%s'",s);
+    if (!dynamic_cast<cPar *>(p))
+        throw new cException(this,"par(const char *): parameter `%s' is of type %s, not cPar",s, p->className());
+    return *(cPar *)p;
 }
 
 int cMessage::findPar(const char *s) const

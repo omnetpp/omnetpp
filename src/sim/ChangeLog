@@ -1,3 +1,8 @@
+2002-12-02  Andras Varga
+
+	* cmessage.cc: par() methods to throw cException when object cannot
+	be cast to cPar using dynamic_cast<cPar *>().
+
 2002-11-14  Andras Varga
 
 	* cmodule.cc: cSimpleModule::end() and deleteModule() are now driven
