@@ -44,12 +44,13 @@ font-weight: bold;
 <B><A HREF="#toc_6.">6. Messages</A></B><BR>
 <B><A HREF="#toc_7.">7. The Simulation Library</A></B><BR>
 <B><A HREF="#toc_8.">8. Building Simulation Programs</A></B><BR>
-<B><A HREF="#toc_9.">9. Running The Simulation</A></B><BR>
-<B><A HREF="#toc_10.">10. Analyzing Simulation Results</A></B><BR>
-<B><A HREF="#toc_11.">11. Parallel Execution</A></B><BR>
-<B><A HREF="#toc_12.">12. Customization and Embedding</A></B><BR>
-<B><A HREF="#toc_13.">13. NED Language Grammar</A></B><BR>
-<B><A HREF="#toc_14.">14. References</A></B><BR>
+<B><A HREF="#toc_9.">9. Documenting NED and Messages</A></B><BR>
+<B><A HREF="#toc_10.">10. Running The Simulation</A></B><BR>
+<B><A HREF="#toc_11.">11. Analyzing Simulation Results</A></B><BR>
+<B><A HREF="#toc_12.">12. Parallel Execution</A></B><BR>
+<B><A HREF="#toc_13.">13. Customization and Embedding</A></B><BR>
+<B><A HREF="#toc_14.">14. NED Language Grammar</A></B><BR>
+<B><A HREF="#toc_15.">15. References</A></B><BR>
 <HR><H1>Table of Contents</H1>
 <BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_1."></A><A HREF="#sec100">1. Introduction</A></B></FONT><BR>
 <B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_1.1."></A><A HREF="#sec101">1.1. What is OMNeT++?</A></B><BR>
@@ -166,154 +167,173 @@ font-weight: bold;
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_5.10.2."></A><A HREF="#sec212">5.10.2. Overview</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_5.10.3."></A><A HREF="#sec213">5.10.3. Creating modules</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_5.10.4."></A><A HREF="#sec214">5.10.4. Deleting modules</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_5.10.5."></A><A HREF="#sec215">5.10.5. Creating connections</A><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_6."></A><A HREF="#sec216">6. Messages</A></B></FONT><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1."></A><A HREF="#sec217">6.1. Messages and packets</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.1."></A><A HREF="#sec218">6.1.1. The cMessage class</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.2."></A><A HREF="#sec219">6.1.2. Message encapsulation</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.3."></A><A HREF="#sec220">6.1.3. Information about the last sending</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.4."></A><A HREF="#sec221">6.1.4. Context pointer</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.5."></A><A HREF="#sec222">6.1.5. Modeling packets and frames</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.6."></A><A HREF="#sec223">6.1.6. Attaching parameters and objects</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2."></A><A HREF="#sec224">6.2. Message definitions</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.1."></A><A HREF="#sec225">6.2.1. Introduction</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.2."></A><A HREF="#sec226">6.2.2. Declaring enums</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.3."></A><A HREF="#sec227">6.2.3. Message declarations</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.4."></A><A HREF="#sec228">6.2.4. Inheritance, composition</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.5."></A><A HREF="#sec229">6.2.5. Using existing C++ types</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.6."></A><A HREF="#sec230">6.2.6. Customizing the generated class</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.7."></A><A HREF="#sec231">6.2.7. Summary</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.8."></A><A HREF="#sec232">6.2.8. What else is there in the generated code?</A><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_7."></A><A HREF="#sec233">7. The Simulation Library</A></B></FONT><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.1."></A><A HREF="#sec234">7.1. Class library conventions</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.2."></A><A HREF="#sec235">7.2. Utilities</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.3."></A><A HREF="#sec236">7.3. Generating random numbers</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.3.1."></A><A HREF="#sec237">7.3.1. Random number generators</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.3.2."></A><A HREF="#sec238">7.3.2. Random variates</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.3.3."></A><A HREF="#sec239">7.3.3. Random numbers from histograms</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.4."></A><A HREF="#sec240">7.4. Container classes</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.4.1."></A><A HREF="#sec241">7.4.1. Queue class: cQueue</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.4.2."></A><A HREF="#sec242">7.4.2. Expandable array: cArray</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.5."></A><A HREF="#sec243">7.5. Non-object container classes</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6."></A><A HREF="#sec244">7.6. The parameter class: cPar</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.1."></A><A HREF="#sec245">7.6.1. Basic usage</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.2."></A><A HREF="#sec246">7.6.2. Random number generation through cPar</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.3."></A><A HREF="#sec247">7.6.3. Storing object and non-object pointers in cPar</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.4."></A><A HREF="#sec248">7.6.4. Reverse Polish expressions</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.5."></A><A HREF="#sec249">7.6.5. Using redirection</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.6."></A><A HREF="#sec250">7.6.6. Type characters</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.7."></A><A HREF="#sec251">7.6.7. Summary</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.7."></A><A HREF="#sec252">7.7. Routing support: cTopology</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.7.1."></A><A HREF="#sec253">7.7.1. Overview</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.7.2."></A><A HREF="#sec254">7.7.2. Basic usage</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.7.3."></A><A HREF="#sec255">7.7.3. Shortest paths</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.8."></A><A HREF="#sec256">7.8. Statistics and distribution estimation</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.8.1."></A><A HREF="#sec257">7.8.1. cStatistic and descendants</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.8.2."></A><A HREF="#sec258">7.8.2. Distribution estimation</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.8.3."></A><A HREF="#sec259">7.8.3. The k-split algorithm</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.8.4."></A><A HREF="#sec260">7.8.4. Transient detection and result accuracy</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.9."></A><A HREF="#sec261">7.9. Recording simulation results</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.9.1."></A><A HREF="#sec262">7.9.1. Output vectors: cOutVector</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.9.2."></A><A HREF="#sec263">7.9.2. Output scalars</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10."></A><A HREF="#sec264">7.10. Tracing and debugging aids</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.1."></A><A HREF="#sec265">7.10.1. Displaying information about module activity</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.2."></A><A HREF="#sec266">7.10.2. Watches</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.3."></A><A HREF="#sec267">7.10.3. Snapshots</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.4."></A><A HREF="#sec268">7.10.4. Breakpoints</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.5."></A><A HREF="#sec269">7.10.5. Disabling warnings</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.6."></A><A HREF="#sec270">7.10.6. Getting coroutine stack usage</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.11."></A><A HREF="#sec271">7.11. Changing the network graphics at run-time</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.11.1."></A><A HREF="#sec272">7.11.1. Setting display strings</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.11.2."></A><A HREF="#sec273">7.11.2. The cDisplayStringParser class</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.12."></A><A HREF="#sec274">7.12. Deriving new classes</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.12.1."></A><A HREF="#sec275">7.12.1. cObject or not?</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.12.2."></A><A HREF="#sec276">7.12.2. cObject virtual methods</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.12.3."></A><A HREF="#sec277">7.12.3. Class registration</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.12.4."></A><A HREF="#sec278">7.12.4. Details</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13."></A><A HREF="#sec279">7.13. Object ownership management</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.1."></A><A HREF="#sec280">7.13.1. Ownership tree</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.2."></A><A HREF="#sec281">7.13.2. Purpose</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.3."></A><A HREF="#sec282">7.13.3. Objects are deleted by their owners</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.4."></A><A HREF="#sec283">7.13.4. Ownership is managed transparently</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.5."></A><A HREF="#sec284">7.13.5. Garbage collection</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.6."></A><A HREF="#sec285">7.13.6. What cQueue and cArray do</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.7."></A><A HREF="#sec286">7.13.7. Change of implementation</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.14."></A><A HREF="#sec287">7.14. Tips for speeding up the simulation</A></B><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_8."></A><A HREF="#sec288">8. Building Simulation Programs</A></B></FONT><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.1."></A><A HREF="#sec289">8.1. Overview</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.2."></A><A HREF="#sec290">8.2. Using Unix and gcc</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.2.1."></A><A HREF="#sec291">8.2.1. Installation</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.2.2."></A><A HREF="#sec292">8.2.2. Building simulation models</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.2.3."></A><A HREF="#sec293">8.2.3. Multi-directory models</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.2.4."></A><A HREF="#sec294">8.2.4. Static vs shared OMNeT++ system libraries</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.3."></A><A HREF="#sec295">8.3. Using Windows and Microsoft Visual C++</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.3.1."></A><A HREF="#sec296">8.3.1. Installation</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.3.2."></A><A HREF="#sec297">8.3.2. Building simulation models on the command line</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.3.3."></A><A HREF="#sec298">8.3.3. Building simulation models from the MSVC IDE</A><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_9."></A><A HREF="#sec299">9. Running The Simulation</A></B></FONT><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.1."></A><A HREF="#sec300">9.1. User interfaces</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2."></A><A HREF="#sec301">9.2. The configuration file: omnetpp.ini</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.1."></A><A HREF="#sec302">9.2.1. An example</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.2."></A><A HREF="#sec303">9.2.2. The concept of simulation runs</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.3."></A><A HREF="#sec304">9.2.3. File syntax</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.4."></A><A HREF="#sec305">9.2.4. File inclusion</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.5."></A><A HREF="#sec306">9.2.5. Sections</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.6."></A><A HREF="#sec307">9.2.6. The [General] section</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3."></A><A HREF="#sec308">9.3. Cmdenv: the command-line interface</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3.1."></A><A HREF="#sec309">9.3.1. Command-line switches</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3.2."></A><A HREF="#sec310">9.3.2. Cmdenv ini file options</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3.3."></A><A HREF="#sec311">9.3.3. Interpreting Cmdenv output</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.4."></A><A HREF="#sec312">9.4. Tkenv: the graphical user interface</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.4.1."></A><A HREF="#sec313">9.4.1. Command-line switches</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.4.2."></A><A HREF="#sec314">9.4.2. Tkenv ini file settings</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.4.3."></A><A HREF="#sec315">9.4.3. Using the graphical environment</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.4.4."></A><A HREF="#sec316">9.4.4. In Memoriam... </A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.5."></A><A HREF="#sec317">9.5. More about omnetpp.ini</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.5.1."></A><A HREF="#sec318">9.5.1. Module parameters in the configuration file</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.5.2."></A><A HREF="#sec319">9.5.2. Configuring output vectors</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.5.3."></A><A HREF="#sec320">9.5.3. Display strings</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.5.4."></A><A HREF="#sec321">9.5.4. Specifying seed values</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.6."></A><A HREF="#sec322">9.6. Choosing good seed values: the seedtool utility</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.7."></A><A HREF="#sec323">9.7. Repeating or iterating simulation runs</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.7.1."></A><A HREF="#sec324">9.7.1. Executing several runs</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.7.2."></A><A HREF="#sec325">9.7.2. Variations over parameter values</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.7.3."></A><A HREF="#sec326">9.7.3. Variations over seed value (multiple independent runs)</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.8."></A><A HREF="#sec327">9.8. Akaroa support: Multiple Replications in Parallel</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.8.1."></A><A HREF="#sec328">9.8.1. Introduction</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.8.2."></A><A HREF="#sec329">9.8.2. What is Akaroa</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.8.3."></A><A HREF="#sec330">9.8.3. Using Akaroa with OMNeT++</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.9."></A><A HREF="#sec331">9.9. Typical problems</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.9.1."></A><A HREF="#sec332">9.9.1. Stack problems</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.9.2."></A><A HREF="#sec333">9.9.2. Memory leaks and crashes</A><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_10."></A><A HREF="#sec334">10. Analyzing Simulation Results</A></B></FONT><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.1."></A><A HREF="#sec335">10.1. Output vectors</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2."></A><A HREF="#sec336">10.2. Plotting output vectors with Plove</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2.1."></A><A HREF="#sec337">10.2.1. Plove features</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2.2."></A><A HREF="#sec338">10.2.2. Usage</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2.3."></A><A HREF="#sec339">10.2.3. Writing filters</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.3."></A><A HREF="#sec340">10.3. Format of output vector files</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.4."></A><A HREF="#sec341">10.4. Working without Plove</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.4.1."></A><A HREF="#sec342">10.4.1. Extracting vectors from the file</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.4.2."></A><A HREF="#sec343">10.4.2. Using splitvec</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.4.3."></A><A HREF="#sec344">10.4.3. Visualization under Unix</A><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_11."></A><A HREF="#sec345">11. Parallel Execution</A></B></FONT><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.1."></A><A HREF="#sec346">11.1. OMNeT++ support for parallel execution</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.1.1."></A><A HREF="#sec347">11.1.1. Introduction to Parallel Discrete Event Simulation</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.1.2."></A><A HREF="#sec348">11.1.2. In work</A><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_12."></A><A HREF="#sec349">12. Customization and Embedding</A></B></FONT><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.1."></A><A HREF="#sec350">12.1. Architecture</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.2."></A><A HREF="#sec351">12.2. Embedding OMNeT++</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.3."></A><A HREF="#sec352">12.3. Sim: the simulation kernel and class library</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.3.1."></A><A HREF="#sec353">12.3.1. The global simulation object</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.3.2."></A><A HREF="#sec354">12.3.2. The coroutine package</A><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.4."></A><A HREF="#sec355">12.4. The Model Component Library</A></B><BR>
-<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.5."></A><A HREF="#sec356">12.5. Envir, Tkenv and Cmdenv</A></B><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.5.1."></A><A HREF="#sec357">12.5.1. The main() function</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.5.2."></A><A HREF="#sec358">12.5.2. The cEnvir interface</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.5.3."></A><A HREF="#sec359">12.5.3. Customizing Envir</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.5.4."></A><A HREF="#sec360">12.5.4. Implementation of the user interface: simulation applications</A><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_13."></A><A HREF="#sec361">13. NED Language Grammar</A></B></FONT><BR>
-<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_14."></A><A HREF="#sec362">14. References</A></B></FONT><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_5.10.5."></A><A HREF="#sec215">5.10.5. Module deletion and finish()</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_5.10.6."></A><A HREF="#sec216">5.10.6. Creating connections</A><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_6."></A><A HREF="#sec217">6. Messages</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1."></A><A HREF="#sec218">6.1. Messages and packets</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.1."></A><A HREF="#sec219">6.1.1. The cMessage class</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.2."></A><A HREF="#sec220">6.1.2. Message encapsulation</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.3."></A><A HREF="#sec221">6.1.3. Information about the last sending</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.4."></A><A HREF="#sec222">6.1.4. Context pointer</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.5."></A><A HREF="#sec223">6.1.5. Modeling packets and frames</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.6."></A><A HREF="#sec224">6.1.6. Attaching parameters and objects</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2."></A><A HREF="#sec225">6.2. Message definitions</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.1."></A><A HREF="#sec226">6.2.1. Introduction</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.2."></A><A HREF="#sec227">6.2.2. Declaring enums</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.3."></A><A HREF="#sec228">6.2.3. Message declarations</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.4."></A><A HREF="#sec229">6.2.4. Inheritance, composition</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.5."></A><A HREF="#sec230">6.2.5. Using existing C++ types</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.6."></A><A HREF="#sec231">6.2.6. Customizing the generated class</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.7."></A><A HREF="#sec232">6.2.7. Using STL in message classes</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.8."></A><A HREF="#sec233">6.2.8. Summary</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2.9."></A><A HREF="#sec234">6.2.9. What else is there in the generated code?</A><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_7."></A><A HREF="#sec235">7. The Simulation Library</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.1."></A><A HREF="#sec236">7.1. Class library conventions</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.2."></A><A HREF="#sec237">7.2. Utilities</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.3."></A><A HREF="#sec238">7.3. Generating random numbers</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.3.1."></A><A HREF="#sec239">7.3.1. Random number generators</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.3.2."></A><A HREF="#sec240">7.3.2. Random variates</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.3.3."></A><A HREF="#sec241">7.3.3. Random numbers from histograms</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.4."></A><A HREF="#sec242">7.4. Container classes</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.4.1."></A><A HREF="#sec243">7.4.1. Queue class: cQueue</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.4.2."></A><A HREF="#sec244">7.4.2. Expandable array: cArray</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.5."></A><A HREF="#sec245">7.5. Non-object container classes</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6."></A><A HREF="#sec246">7.6. The parameter class: cPar</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.1."></A><A HREF="#sec247">7.6.1. Basic usage</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.2."></A><A HREF="#sec248">7.6.2. Random number generation through cPar</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.3."></A><A HREF="#sec249">7.6.3. Storing object and non-object pointers in cPar</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.4."></A><A HREF="#sec250">7.6.4. Reverse Polish expressions</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.5."></A><A HREF="#sec251">7.6.5. Using redirection</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.6."></A><A HREF="#sec252">7.6.6. Type characters</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.6.7."></A><A HREF="#sec253">7.6.7. Summary</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.7."></A><A HREF="#sec254">7.7. Routing support: cTopology</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.7.1."></A><A HREF="#sec255">7.7.1. Overview</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.7.2."></A><A HREF="#sec256">7.7.2. Basic usage</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.7.3."></A><A HREF="#sec257">7.7.3. Shortest paths</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.8."></A><A HREF="#sec258">7.8. Statistics and distribution estimation</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.8.1."></A><A HREF="#sec259">7.8.1. cStatistic and descendants</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.8.2."></A><A HREF="#sec260">7.8.2. Distribution estimation</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.8.3."></A><A HREF="#sec261">7.8.3. The k-split algorithm</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.8.4."></A><A HREF="#sec262">7.8.4. Transient detection and result accuracy</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.9."></A><A HREF="#sec263">7.9. Recording simulation results</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.9.1."></A><A HREF="#sec264">7.9.1. Output vectors: cOutVector</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.9.2."></A><A HREF="#sec265">7.9.2. Output scalars</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10."></A><A HREF="#sec266">7.10. Tracing and debugging aids</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.1."></A><A HREF="#sec267">7.10.1. Displaying information about module activity</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.2."></A><A HREF="#sec268">7.10.2. Watches</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.3."></A><A HREF="#sec269">7.10.3. Snapshots</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.4."></A><A HREF="#sec270">7.10.4. Breakpoints</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.5."></A><A HREF="#sec271">7.10.5. Disabling warnings</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.10.6."></A><A HREF="#sec272">7.10.6. Getting coroutine stack usage</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.11."></A><A HREF="#sec273">7.11. Changing the network graphics at run-time</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.11.1."></A><A HREF="#sec274">7.11.1. Setting display strings</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.11.2."></A><A HREF="#sec275">7.11.2. The cDisplayStringParser class</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.12."></A><A HREF="#sec276">7.12. Deriving new classes</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.12.1."></A><A HREF="#sec277">7.12.1. cObject or not?</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.12.2."></A><A HREF="#sec278">7.12.2. cObject virtual methods</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.12.3."></A><A HREF="#sec279">7.12.3. Class registration</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.12.4."></A><A HREF="#sec280">7.12.4. Details</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13."></A><A HREF="#sec281">7.13. Object ownership management</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.1."></A><A HREF="#sec282">7.13.1. Ownership tree</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.2."></A><A HREF="#sec283">7.13.2. Purpose</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.3."></A><A HREF="#sec284">7.13.3. Objects are deleted by their owners</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.4."></A><A HREF="#sec285">7.13.4. Ownership is managed transparently</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.5."></A><A HREF="#sec286">7.13.5. Garbage collection</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.6."></A><A HREF="#sec287">7.13.6. What cQueue and cArray do</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.13.7."></A><A HREF="#sec288">7.13.7. Change of implementation</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_7.14."></A><A HREF="#sec289">7.14. Tips for speeding up the simulation</A></B><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_8."></A><A HREF="#sec290">8. Building Simulation Programs</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.1."></A><A HREF="#sec291">8.1. Overview</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.2."></A><A HREF="#sec292">8.2. Using Unix and gcc</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.2.1."></A><A HREF="#sec293">8.2.1. Installation</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.2.2."></A><A HREF="#sec294">8.2.2. Building simulation models</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.2.3."></A><A HREF="#sec295">8.2.3. Multi-directory models</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.2.4."></A><A HREF="#sec296">8.2.4. Static vs shared OMNeT++ system libraries</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.3."></A><A HREF="#sec297">8.3. Using Windows and Microsoft Visual C++</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.3.1."></A><A HREF="#sec298">8.3.1. Installation</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.3.2."></A><A HREF="#sec299">8.3.2. Building simulation models on the command line</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_8.3.3."></A><A HREF="#sec300">8.3.3. Building simulation models from the MSVC IDE</A><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_9."></A><A HREF="#sec301">9. Documenting NED and Messages</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.1."></A><A HREF="#sec302">9.1. Overview</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2."></A><A HREF="#sec303">9.2. Writing the documentation</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.1."></A><A HREF="#sec304">9.2.1. Documentation comments</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.2."></A><A HREF="#sec305">9.2.2. Text layout and formatting</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.3."></A><A HREF="#sec306">9.2.3. Additional text formatting using HTML</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.4."></A><A HREF="#sec307">9.2.4. Turning off HTML</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.5."></A><A HREF="#sec308">9.2.5. Where to put comments</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.6."></A><A HREF="#sec309">9.2.6. Customizing the title page</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.7."></A><A HREF="#sec310">9.2.7. Adding extra pages</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.2.8."></A><A HREF="#sec311">9.2.8. Incorporating externally created pages</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3."></A><A HREF="#sec312">9.3. Generating HTML</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.3.1."></A><A HREF="#sec313">9.3.1. Multiple projects</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_9.4."></A><A HREF="#sec314">9.4. How does opp_neddoc work?</A></B><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_10."></A><A HREF="#sec315">10. Running The Simulation</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.1."></A><A HREF="#sec316">10.1. User interfaces</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2."></A><A HREF="#sec317">10.2. The configuration file: omnetpp.ini</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2.1."></A><A HREF="#sec318">10.2.1. An example</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2.2."></A><A HREF="#sec319">10.2.2. The concept of simulation runs</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2.3."></A><A HREF="#sec320">10.2.3. File syntax</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2.4."></A><A HREF="#sec321">10.2.4. File inclusion</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2.5."></A><A HREF="#sec322">10.2.5. Sections</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.2.6."></A><A HREF="#sec323">10.2.6. The [General] section</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.3."></A><A HREF="#sec324">10.3. Cmdenv: the command-line interface</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.3.1."></A><A HREF="#sec325">10.3.1. Command-line switches</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.3.2."></A><A HREF="#sec326">10.3.2. Cmdenv ini file options</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.3.3."></A><A HREF="#sec327">10.3.3. Interpreting Cmdenv output</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.4."></A><A HREF="#sec328">10.4. Tkenv: the graphical user interface</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.4.1."></A><A HREF="#sec329">10.4.1. Command-line switches</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.4.2."></A><A HREF="#sec330">10.4.2. Tkenv ini file settings</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.4.3."></A><A HREF="#sec331">10.4.3. Using the graphical environment</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.4.4."></A><A HREF="#sec332">10.4.4. In Memoriam... </A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.5."></A><A HREF="#sec333">10.5. More about omnetpp.ini</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.5.1."></A><A HREF="#sec334">10.5.1. Module parameters in the configuration file</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.5.2."></A><A HREF="#sec335">10.5.2. Configuring output vectors</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.5.3."></A><A HREF="#sec336">10.5.3. Display strings</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.5.4."></A><A HREF="#sec337">10.5.4. Specifying seed values</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.6."></A><A HREF="#sec338">10.6. Choosing good seed values: the seedtool utility</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.7."></A><A HREF="#sec339">10.7. Repeating or iterating simulation runs</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.7.1."></A><A HREF="#sec340">10.7.1. Executing several runs</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.7.2."></A><A HREF="#sec341">10.7.2. Variations over parameter values</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.7.3."></A><A HREF="#sec342">10.7.3. Variations over seed value (multiple independent runs)</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.8."></A><A HREF="#sec343">10.8. Akaroa support: Multiple Replications in Parallel</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.8.1."></A><A HREF="#sec344">10.8.1. Introduction</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.8.2."></A><A HREF="#sec345">10.8.2. What is Akaroa</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.8.3."></A><A HREF="#sec346">10.8.3. Using Akaroa with OMNeT++</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.9."></A><A HREF="#sec347">10.9. Typical problems</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.9.1."></A><A HREF="#sec348">10.9.1. Stack problems</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_10.9.2."></A><A HREF="#sec349">10.9.2. Memory leaks and crashes</A><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_11."></A><A HREF="#sec350">11. Analyzing Simulation Results</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.1."></A><A HREF="#sec351">11.1. Output vectors</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.2."></A><A HREF="#sec352">11.2. Plotting output vectors with Plove</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.2.1."></A><A HREF="#sec353">11.2.1. Plove features</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.2.2."></A><A HREF="#sec354">11.2.2. Usage</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.2.3."></A><A HREF="#sec355">11.2.3. Writing filters</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.3."></A><A HREF="#sec356">11.3. Format of output vector files</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.4."></A><A HREF="#sec357">11.4. Working without Plove</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.4.1."></A><A HREF="#sec358">11.4.1. Extracting vectors from the file</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.4.2."></A><A HREF="#sec359">11.4.2. Using splitvec</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.5."></A><A HREF="#sec360">11.5. Visualization tools</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.5.1."></A><A HREF="#sec361">11.5.1. Grace</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.5.2."></A><A HREF="#sec362">11.5.2. ROOT</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_11.5.3."></A><A HREF="#sec363">11.5.3. Using Gnuplot</A><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_12."></A><A HREF="#sec364">12. Parallel Execution</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.1."></A><A HREF="#sec365">12.1. OMNeT++ support for parallel execution</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.1.1."></A><A HREF="#sec366">12.1.1. Introduction to Parallel Discrete Event Simulation</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_12.1.2."></A><A HREF="#sec367">12.1.2. In work</A><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_13."></A><A HREF="#sec368">13. Customization and Embedding</A></B></FONT><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.1."></A><A HREF="#sec369">13.1. Architecture</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.2."></A><A HREF="#sec370">13.2. Embedding OMNeT++</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.3."></A><A HREF="#sec371">13.3. Sim: the simulation kernel and class library</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.3.1."></A><A HREF="#sec372">13.3.1. The global simulation object</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.3.2."></A><A HREF="#sec373">13.3.2. The coroutine package</A><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.4."></A><A HREF="#sec374">13.4. The Model Component Library</A></B><BR>
+<B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.5."></A><A HREF="#sec375">13.5. Envir, Tkenv and Cmdenv</A></B><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.5.1."></A><A HREF="#sec376">13.5.1. The main() function</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.5.2."></A><A HREF="#sec377">13.5.2. The cEnvir interface</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.5.3."></A><A HREF="#sec378">13.5.3. Customizing Envir</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_13.5.4."></A><A HREF="#sec379">13.5.4. Implementation of the user interface: simulation applications</A><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_14."></A><A HREF="#sec380">14. NED Language Grammar</A></B></FONT><BR>
+<BR><FONT SIZE=+1><B>&nbsp;&nbsp;<A NAME="toc_15."></A><A HREF="#sec381">15. References</A></B></FONT><BR>
  
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
@@ -330,6 +350,9 @@ Unnamed Web page
 <TR> <TD align=left>
 
 <p><b>Date</b> </TD> <TD align=left> <b>Author</b> </TD> <TD align=left> <b>Change</b></TD></TR>
+<TR> <TD align=left> 2003/06 </TD> <TD align=left> AV </TD> <TD align=left> Mentioned Grace and ROOT in section "Visualizing...".
+               Added section "Using STL in message classes".
+               </TD></TR>
 <TR> <TD align=left> 2003/06 </TD> <TD align=left> AV </TD> <TD align=left> OMNeT++ 2.3 released</TD></TR>
 <TR> <TD align=left> 2003/04-06 </TD> <TD align=left> AV </TD> <TD align=left> "Design of OMNeT++" chapter revised, extended, and renamed to
                "Customization and Embedding".
@@ -377,7 +400,8 @@ Unnamed Web page
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jun 18 2003</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -390,7 +414,7 @@ Unnamed Web page
 </HEAD>
 <BODY>
 <hr><H1><A NAME="sec100"/>1. Introduction</H1>
-<a name="cha:introduction"/>
+<a name="cha:introduction"></a>
 
 <p>
 <hr><H2><A NAME="sec101"/>1.1. What is OMNeT++?</H2>
@@ -754,8 +778,8 @@ Heijmans, Alex Paalvast and Robert van der Leij.
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jun 14 2003</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -768,7 +792,7 @@ Unnamed Web page
 </HEAD>
 <BODY>
 <hr><H1><A NAME="sec106"/>2. Overview</H1>
-<a name="cha:overview"/>
+<a name="cha:overview"></a>
 
 <p>
 <hr><H2><A NAME="sec107"/>2.1. Modeling concepts</H2>
@@ -797,9 +821,9 @@ structure of the actual system in the model structure.
 
 <p>
 <DIV ALIGN=center>
-<img src="usmanFig2.gif">
+<img src="figures/usmanFig2.gif">
 <center><i>Figure: Simple and compound modules</i></center>
-<a name="fig:ch-overview:modules"/>
+<a name="fig:ch-overview:modules"></a>
 </DIV>
 
 <p>
@@ -870,9 +894,9 @@ a gate of the compound module (Fig.
 
 <p>
 <DIV ALIGN=center>
-<img src="usmanFig3.gif">
+<img src="figures/usmanFig3.gif">
 <center><i>Figure: Connections</i></center>
-<a name="fig:ch-overview:connections"/>
+<a name="fig:ch-overview:connections"></a>
 </DIV>
 
 <p>
@@ -1225,17 +1249,9 @@ Makefiles are included.
 
 <p><pre>
     <b>samples/</b>     directories for sample simulations
-      <b>nim/</b>       a simple two-player game
-      <b>hcube/</b>     hypercube network with deflection routing
-      <b>token/</b>     simple model of a Token Ring LAN
-      <b>fddi/</b>      an accurate FDDI MAC simulation
-      <b>hist/</b>      demo of the histogram classes
-      <b>dyna/</b>      model of a client-server network
-      <b>dyna2/</b>     a version of dyna, using message subclassing
-      <b>fifo1/</b>     single-server queue
-      <b>fifo2/</b>     another version of fifo, with handleMessage() and FSM
-      <b>topo/</b>      NED demo, shows how to create various topologies
-      <b>demo/</b>      several sim. models in a single executable
+      <b>aloha/</b>     models the Aloha protocol
+      <b>cqn/</b>       Closed Queueing Network
+      ...
 </pre>
 
 <p>
@@ -1256,8 +1272,8 @@ integration components for Microsoft Visual C++, etc.
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Feb  2 2004</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jan 21 2004</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -1270,7 +1286,7 @@ Unnamed Web page
 </HEAD>
 <BODY>
 <hr><H1><A NAME="sec122"/>3. An Example: The Nim Game</H1>
-<a name="cha:the-nim-game"/>
+<a name="cha:the-nim-game"></a>
 
 <p>
 This chapter contains a full example program that can give you
@@ -1307,7 +1323,7 @@ from the Game module and sends back its move.
 
 <p>
 <DIV ALIGN=center>
-<img src="usmanFig6.gif">
+<img src="figures/usmanFig6.gif">
 <center><i>Figure: Module structure for the Nim game.</i></center>
 </DIV>
 
@@ -1761,8 +1777,8 @@ star topology with the number of modules as parameters</TD></TR>
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jun 14 2003</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -1775,7 +1791,7 @@ Unnamed Web page
 </HEAD>
 <BODY>
 <hr><H1><A NAME="sec127"/>4. The NED Language</H1>
-<a name="cha:the-ned-language"/>
+<a name="cha:the-ned-language"></a>
 
 <p>
 <hr><H2><A NAME="sec128"/>4.1. NED overview</H2>
@@ -1969,7 +1985,7 @@ gates.
 <p>
 
 <p><H3><A NAME="sec137"/>4.4.1. Simple module parameters</H3>
-<a name="sec:ch-ned-lang:simple-module-param"/>
+<a name="sec:ch-ned-lang:simple-module-param"></a>
 
 <p>
 
@@ -2013,7 +2029,7 @@ module.
 
 <p>
 <br><P class="subheading">Const parameters</P>
-<a name="sec:ch-ned-lang:const"/>
+<a name="sec:ch-ned-lang:const"></a>
 
 
 
@@ -2034,7 +2050,7 @@ other modules and cause errors that are difficult to discover.
 
 <p>
 <H3><A NAME="sec138"/>4.4.2. Simple module gates</H3>
-<a name="sec:ch-ned-lang:simple-module-gates"/>
+<a name="sec:ch-ned-lang:simple-module-gates"></a>
 
 <p>
 
@@ -2240,7 +2256,7 @@ to module parameters. A zero value as module count is also allowed.
 <p>
 
 <p><H3><A NAME="sec142"/>4.5.3. Submodule type as parameter</H3>
-<a name="sec:ch-ned-lang:like"/>
+<a name="sec:ch-ned-lang:like"></a>
 
 
 <p>Sometimes it is convenient to make the name of a submodule type a parameter,
@@ -2378,7 +2394,7 @@ with the syntax <tt>submodule.parametername</tt>
 
 <p>
 <br><P class="subheading">The <tt>input</tt> keyword</P>
-<a name="sec:ch-ned-lang:input"/>
+<a name="sec:ch-ned-lang:input"></a>
 
 <p>When a parameter does not receive a value inside NED files or in
 the configuration file (<tt>omnetpp.ini</tt>), the user will be prompted
@@ -2599,9 +2615,9 @@ depicted in Fig. <a href="#fig:ch-ned-lang:loop-connection">[click]</a>.
 
 <p>
 <DIV ALIGN=center>
-<img src="usmanFig7.gif">
+<img src="figures/usmanFig7.gif">
 <center><i>Figure: Loop connection</i></center>
-<a name="fig:ch-ned-lang:loop-connection"/>
+<a name="fig:ch-ned-lang:loop-connection"></a>
 </DIV>
 
 <p>
@@ -2678,7 +2694,7 @@ that are not connected.
 
 <p>
 <hr><H2><A NAME="sec147"/>4.6. Network definitions</H2>
-<a name="sec:ch-ned-lang:network"/>
+<a name="sec:ch-ned-lang:network"></a>
 
 
 <p>Module module declarations (compound and simple module declarations)
@@ -2723,7 +2739,7 @@ config file (<tt>omnetpp.ini</tt>) or interactively prompted for.
 <p>
 
 <p><hr><H2><A NAME="sec148"/>4.7. Expressions</H2>
-<a name="ch-ned-lang:sec:expressions"/>
+<a name="ch-ned-lang:sec:expressions"></a>
 
 <p>In the NED language there are a number of places where
 expressions are expected.
@@ -2992,7 +3008,7 @@ Your distributions will be treated in the same way as the built-in ones.
 
 <p><H3><A NAME="sec155"/>4.7.7. Defining new functions</H3>
 
-<a name="sec:ch-ned-lang:defining-functions"/>
+<a name="sec:ch-ned-lang:defining-functions"></a>
 
 <p>To use user-defined functions, one has
 to code the function in C++.  The C++ function must take 0, 1, 2, 3, or 4
@@ -3058,7 +3074,7 @@ Define_Function2(factorial, _wrap_factorial, 1);
 
 <p>
 <hr><H2><A NAME="sec156"/>4.8. Display strings</H2>
-<a name="sec:ch-ned-lang:display-strings"/>
+<a name="sec:ch-ned-lang:display-strings"></a>
 
 <p>
 Display strings specify the arrangement and
@@ -3096,9 +3112,26 @@ Objects that may have display strings are:
   <li><strong></strong>connections
 </UL>
 
-<p>
+<p>The following NED sample shows where to place display strings in the code.
 
-<p><H3><A NAME="sec157"/>4.8.1. Submodule display strings</H3>
+<p><pre>
+<b>module</b> ClientServer
+    <b>submodules</b>:
+        pc: Host;
+            <b>display</b>: "p=66,55;i=comp"; // position and icon
+        server: Server;
+            <b>display</b>: "p=135,73;i=server1";
+    <b>connections</b>:
+        pc.out -&gt; server.in
+            <b>display</b> "m=m,61,40,41,28"; // note missing ":"
+        server.out -&gt; pc.in
+            <b>display</b> "m=m,15,57,35,69";
+    <b>display</b>: "o=#ffffff"; // affects background
+<b>endmodule</b>
+</pre>
+
+<p>
+<H3><A NAME="sec157"/>4.8.1. Submodule display strings</H3>
 
 <p>
 The following table lists the tags used in submodule display strings:
@@ -3523,7 +3556,7 @@ would do it in most existing simulators.
 
 <p>
 <H3><A NAME="sec163"/>4.9.3. Topology templates</H3>
-<a name="sec:ch-ned-lang:topology-templates"/>
+<a name="sec:ch-ned-lang:topology-templates"></a>
 
 <p>
 <br><P class="subheading">Overview</P>
@@ -3553,9 +3586,9 @@ only in one bit of the binary representations of the node indices
 
 <p>
   <DIV ALIGN=center>
-    <img src="usmanFig8.gif">
+    <img src="figures/usmanFig8.gif">
     <center><i>Figure: Hypercube topology</i></center>
-    <a name="fig:ch-ned-lang:hypercube-topology"/>
+    <a name="fig:ch-ned-lang:hypercube-topology"></a>
   </DIV>
 
 <p>
@@ -3879,8 +3912,7 @@ create a submodule of that type </TD></TR>
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Dec 18 2003</samp></font>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -3893,7 +3925,7 @@ Unnamed Web page
 </HEAD>
 <BODY>
 <hr><H1><A NAME="sec171"/>5. Simple Modules</H1>
-<a name="cha:simple-modules"/>
+<a name="cha:simple-modules"></a>
 
 <p>The activities of simple modules are implemented by the user.
 The algorithms are programmed in C++, using the OMNeT++ class
@@ -4132,7 +4164,7 @@ ever need to care about it.
 <p>
 
 <p><hr><H2><A NAME="sec178"/>5.2. Packet transmission modeling</H2>
-<a name="ch:simple-modules:packet-transmission"/>
+<a name="ch:simple-modules:packet-transmission"></a>
 
 <p><H3><A NAME="sec179"/>5.2.1. Delay, bit error rate, data rate</H3>
 
@@ -4176,9 +4208,9 @@ of the last bit (Fig. <a href="#fig:ch-overview:message-transm">[click]</a>).
 
 <p>
 <DIV ALIGN=center>
-<img src="usmanFig4.gif">
+<img src="figures/usmanFig4.gif">
 <center><i>Figure: Message transmission</i></center>
-<a name="fig:ch-overview:message-transm"/>
+<a name="fig:ch-overview:message-transm"></a>
 </DIV>
 
 <p>
@@ -4196,9 +4228,9 @@ last bit of the message arrives and only start its transmission then
 
 <p>
 <DIV ALIGN=center>
-<img src="usmanFig5.gif">
+<img src="figures/usmanFig5.gif">
 <center><i>Figure: Message sending over multiple channels</i></center>
-<a name="fig:ch-overview:msg-multiple-ch"/>
+<a name="fig:ch-overview:msg-multiple-ch"></a>
 </DIV>
 
 <p>
@@ -4218,9 +4250,9 @@ a given period (``it is being transmitted'').
 
 <p>
   <DIV ALIGN=center>
-    <img src="usmanFig9.gif">
+    <img src="figures/usmanFig9.gif">
     <center><i>Figure: Connection with a data rate</i></center>
-    <a name="fig:ch-simple-modules:conn-w-data-rate"/>
+    <a name="fig:ch-simple-modules:conn-w-data-rate"></a>
   </DIV>
 
 <p>
@@ -5804,7 +5836,7 @@ simulation.
 <p>
 
 <p><hr><H2><A NAME="sec194"/>5.6. Sending and receiving messages</H2>
-<a name="ch:simple-modules:sending-and-receiving"/>
+<a name="ch:simple-modules:sending-and-receiving"></a>
 
 <p>On an abstract level, an OMNeT++ simulation model is a set of
 simple modules that communicate with each other via message passing.
@@ -6075,7 +6107,7 @@ else
 <p>
 
 <p><br><P class="subheading">Deprecated functionality: putaside-queue</P>
-<a name="ch:simple-modules:putaside-queue"/>
+<a name="ch:simple-modules:putaside-queue"></a>
 
 <p>Earlier versions of OMNeT++ supported something called <EM>putaside-queue</EM>
 which stored messages that arrived while the module was waiting for
@@ -6157,7 +6189,7 @@ if you want to allow such messages, you should use <tt>waitAndEnqueue()</tt>.
 <p>
 
 <p><H3><A NAME="sec201"/>5.6.7. Modeling events using self-messages</H3>
-<a name="sec:ch-sim-lib:self-messages"/>
+<a name="sec:ch-sim-lib:self-messages"></a>
 
 <p>In most simulation models it is necessary to implement timers,
 or schedule events that occur at some point in the future.
@@ -6302,7 +6334,7 @@ or exclamation mark) in the error text, as it will be added by OMNeT++.
 <p>
 
 <p><hr><H2><A NAME="sec203"/>5.7. Accessing module parameters</H2>
-<a name="ch:simple-modules:parameters"/>
+<a name="ch:simple-modules:parameters"></a>
 
 <p>Module parameters can be accessed
 with the <tt>par()</tt> member function of <tt>cModule</tt>:
@@ -6364,7 +6396,7 @@ on how to change a <tt>cPar</tt>'s value.
 
 <p>
 <hr><H2><A NAME="sec204"/>5.8. Accessing gates and connections</H2>
-<a name="ch:simple-modules:gates"/>
+<a name="ch:simple-modules:gates"></a>
 
 <p><H3><A NAME="sec205"/>5.8.1. Gate objects</H3>
 
@@ -6476,7 +6508,7 @@ cPar *r = outgate-&gt;datarate();
 <p>
 
 <p><H3><A NAME="sec207"/>5.8.3. Transmission state</H3>
-<a name="ch:simple-modules:cgate-transmission-state"/>
+<a name="ch:simple-modules:cgate-transmission-state"></a>
 
 <p>The <tt>isBusy()</tt> member function returns whether the gate
 is currently transmitting, and if so, the
@@ -6582,7 +6614,7 @@ cModule *destmod = gate-&gt;ownerModule();
 <p>
 
 <p><hr><H2><A NAME="sec209"/>5.9. Walking the module hierarchy</H2>
-<a name="ch:simple-modules:walking-module-hieararchy"/>
+<a name="ch:simple-modules:walking-module-hieararchy"></a>
 
 <p><br><P class="subheading">Module vectors</P>
 
@@ -6731,7 +6763,7 @@ cModule *neighbour = gate( "outputgate" )-&gt;toGate()-&gt;ownerModule();
 <p>
 
 <p><hr><H2><A NAME="sec210"/>5.10. Dynamic module creation</H2>
-<a name="ch:simple-modules:dynamic-module-creation"/>
+<a name="ch:simple-modules:dynamic-module-creation"></a>
 
 
 <p><H3><A NAME="sec211"/>5.10.1. When do you need dynamic module creation</H3>
@@ -6754,6 +6786,10 @@ recursively.
 
 <p>It is often convenient to use direct message sending with dynamically
 created modules.
+
+<p>Once created and started, dynamic modules aren't any different from
+``static'' modules; for example, one could also delete static modules
+during simulation (only that's rarely useful.)
 
 <p>
 <H3><A NAME="sec212"/>5.10.2. Overview</H3>
@@ -6793,8 +6829,7 @@ modules, this message is created automatically by OMNeT++, but for
 dynamically created modules, you have to do this explicitly by calling
 the appropriate functions.
 
-<p>
-Calling <tt>initialize()</tt> has to take place after insertion of the
+<p>Calling <tt>initialize()</tt> has to take place after insertion of the
 starter messages, because the initializing code may insert new messages
 into the FES, and these messages should be processed
 <EM>after</EM> the starter message.
@@ -6809,7 +6844,8 @@ into the FES, and these messages should be processed
 cModuleType *moduleType = findModuleType("TCPConnectionHandler");
 </pre>
 <p>
-<br><P class="subheading">Simplified form</P>
+
+<p><br><P class="subheading">Simplified form</P>
 
 <p><tt>cModuleType</tt> has
 \fname[createScheduleInit()]createScheduleInit(const char *name,
@@ -6889,14 +6925,10 @@ To delete a module dynamically:
 module-&gt;deleteModule();
 </pre>
 <p>
-
-<p>
 If the module was a compound module, this involves recursively
 destroying all its submodules. A simple module can also delete itself;
-in this case, if the module was implemented using <tt>activity()</tt>,
-the <tt>deleteModule()</tt> call does not return to the caller (the
-reason is that deleting the module also deletes the CPU stack of the
-coroutine).
+in this case, the <tt>deleteModule()</tt> call does not return to the
+caller.
 
 <p>Currently, you cannot safely delete a
 compound module from a simple module
@@ -6904,7 +6936,34 @@ in it; you must delegate the job to a module outside the compound
 module.
 
 <p>
-<H3><A NAME="sec215"/>5.10.5. Creating connections</H3>
+<H3><A NAME="sec215"/>5.10.5. Module deletion and finish()</H3>
+
+<p>When you delete a module <EM>during simulation</EM>, its <tt>finish()</tt>
+function is not called automatically (<tt>deleteModule()</tt> doesn't do it.)
+How the module was created doesn't play any role here:
+<tt>finish()</tt> gets called for <EM>all</EM> modules - at the end of the
+simulation. If a module doesn't live that long, <tt>finish()</tt> is not
+invoked, but you can still manually invoke it.
+
+<p>You can use the <tt>callFinish()</tt> function to arrange <tt>finish()</tt>
+to be called. It's usually not a good idea to invoke <tt>finish()</tt>
+directly. If you're deleting a compound module, <tt>callFinish()</tt> will
+recursively invoke <tt>finish()</tt> for all submodules, and if you're deleting
+a simple module from another module, <tt>callFinish()</tt> will do the context
+switch for the duration of the call.
+  <br><ul><font size=-1>[The <tt>finish()</tt> function is even made <tt>protected</tt>
+  in <tt>cSimpleModule</tt>, in order to discourage its invocation from
+  other modules.]</font></ul>
+
+<p>Example:
+
+<pre>
+mod-&gt;callFinish();
+mod-&gt;deleteModule();
+</pre>
+<p>
+
+<p><H3><A NAME="sec216"/>5.10.6. Creating connections</H3>
 
 <p>Connections can be created using <tt>cGate</tt>'s <tt>connectTo()</tt>
 method.
@@ -6973,8 +7032,8 @@ a-&gt;gate("out")-&gt;connectTo(b-&gt;gate("in"), channel); // a,b are modules
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Feb  2 2004</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jan 20 2004</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -6986,12 +7045,12 @@ Unnamed Web page
 </TITLE>
 </HEAD>
 <BODY>
-<hr><H1><A NAME="sec216"/>6. Messages</H1>
-<a name="cha:messages"/>
+<hr><H1><A NAME="sec217"/>6. Messages</H1>
+<a name="cha:messages"></a>
 
-<p><hr><H2><A NAME="sec217"/>6.1. Messages and packets</H2>
+<p><hr><H2><A NAME="sec218"/>6.1. Messages and packets</H2>
 
-<p><H3><A NAME="sec218"/>6.1.1. The cMessage class</H3>
+<p><H3><A NAME="sec219"/>6.1.1. The cMessage class</H3>
 
 <p><tt>cMessage</tt> is a central class in OMNeT++. Objects of <tt>cMessage</tt> and
 subclasses may model a number of things: events;
@@ -7132,7 +7191,9 @@ object types) and encapsulated messages.
 <p>
 
 <p>
-<H3><A NAME="sec219"/>6.1.2. Message encapsulation</H3>
+<H3><A NAME="sec220"/>6.1.2. Message encapsulation</H3>
+
+<p><br><P class="subheading">Encapsulating one message</P>
 
 <p>It is often necessary to encapsulate a
 message into another when you're modeling
@@ -7156,8 +7217,7 @@ tcpseg-&gt;encapsulate(userdata);
 ev &lt;&lt; tcpseg-&gt;length() &lt;&lt; endl; // --&gt; 8*2024 = 16192
 </pre>
 <p>
-
-<p>A message can only hold one encapsulated message at a time. The
+A message can only hold one encapsulated message at a time. The
 second <tt>encapsulate()</tt> call will result in an error. It is also
 an error if the message to be encapsulated isn't owned by the
 module.
@@ -7172,15 +7232,52 @@ cMessage *userdata = tcpseg-&gt;decapsulate();
 except if it was zero. If the length would become negative, an
 error occurs.
 
-<p>
-The <tt>encapsulatedMsg()</tt> function returns a pointer to the encapsulated
+<p>The <tt>encapsulatedMsg()</tt> function returns a pointer to the encapsulated
 message, or NULL if no message was encapsulated.
 
 <p>
+<br><P class="subheading">Encapsulating several messages [New!]</P>
+
+<p>The <tt>cMessage</tt> class doesn't directly support adding more than one
+messages to a message object, but you can subclass <tt>cMessage</tt>
+and add the necessary functionality. (It is recommended that you
+use the message definition syntax <a href="#ch:messages:message-definitions">[click]</a>
+and customized messages <a href="#sec:ch-messages:customizing-generated-class">[click]</a>
+to be described later on in this chapter - it can spare you some work.)
+
+<p>You can store the messages in a fixed-size or a dynamically allocated
+array, or you can use STL classes like <tt>std::vector</tt> or <tt>std::list</tt>.
+There is one additional ``trick'' that you might not expect: your message
+class has to <STRONG>take ownership</STRONG> of the inserted messages, and
+<STRONG>release</STRONG> them when they are removed from the message. These are
+done via the <tt>take()</tt> and <tt>drop()</tt> methods. Let us see
+an example which assumes you have added to the class an <tt>std::list</tt> member
+called <tt>messages</tt> that stores message pointers:
+
+<pre>
+void MessageBundleMessage::insertMessage(cMessage *msg)
+{
+    take(msg);  // take ownership
+    messages.push_back(msg);  // store pointer
+}
+
+void MessageBundleMessage::removeMessage(cMessage *msg)
+{
+    messages.remove(msg);  // remove pointer
+    drop(msg);  // release ownership
+}
+</pre>
+<p>
+You will also have to provide an <tt>operator=()</tt> method to
+make sure your message objects can be copied and duplicated
+properly - this is something often needed in simulations
+(think of broadcasts and retransmissions!). Section
+<a href="#sec:ch-sim-lib:deriving-new-classes">[click]</a> contains more info
+about the things you need to take care of when deriving new classes.
 
 <p>
 
-<p><H3><A NAME="sec220"/>6.1.3. Information about the last sending</H3>
+<p><H3><A NAME="sec221"/>6.1.3. Information about the last sending</H3>
 
 <p>There are several variables in <tt>cMessage</tt> that store
 information about the last time the message was sent or
@@ -7233,7 +7330,7 @@ simtime_t <tt>arrivalTime()</tt>;
 <p>
 
 <p>
-<H3><A NAME="sec221"/>6.1.4. Context pointer</H3>
+<H3><A NAME="sec222"/>6.1.4. Context pointer</H3>
 
 <p><tt>cMessage</tt> contains a void* pointer which is
 set/returned by the <tt>setContextPointer()</tt> and
@@ -7261,7 +7358,7 @@ enough ``context'' information about the event.
 
 <p>
 
-<p><H3><A NAME="sec222"/>6.1.5. Modeling packets and frames</H3>
+<p><H3><A NAME="sec223"/>6.1.5. Modeling packets and frames</H3>
 
 <p>The <tt>cPacket</tt> class is now deprecated. Please do not use it
 in new models.
@@ -7298,7 +7395,7 @@ if (dynamic_cast&lt;IPv6Packet *&gt;(msg) != NULL)
 
 <p>
 
-<p><H3><A NAME="sec223"/>6.1.6. Attaching parameters and objects</H3>
+<p><H3><A NAME="sec224"/>6.1.6. Attaching parameters and objects</H3>
 
 <p>If you want to add parameters or objects to a message, the preferred
 way to do that is via message definitions, described in chapter
@@ -7388,10 +7485,10 @@ long dest_addr = msg-&gt;par("dest_addr");
 <p>
 
 
-<p><hr><H2><A NAME="sec224"/>6.2. Message definitions</H2>
-<a name="ch:messages:message-definitions"/>
+<p><hr><H2><A NAME="sec225"/>6.2. Message definitions</H2>
+<a name="ch:messages:message-definitions"></a>
 
-<p><H3><A NAME="sec225"/>6.2.1. Introduction</H3>
+<p><H3><A NAME="sec226"/>6.2.1. Introduction</H3>
 
 <p>In practice, you'll need to add various fields to <tt>cMessage</tt> to
 make it useful. For example, if you're modelling packets in communication
@@ -7538,7 +7635,7 @@ representation for some field, you can have it by customizing the class.
 <p>The following sections describe the message syntax and features in detail.
 
 <p>
-<H3><A NAME="sec226"/>6.2.2. Declaring enums</H3>
+<H3><A NAME="sec227"/>6.2.2. Declaring enums</H3>
 
 <p>An <tt>enum {..}</tt> generates a normal C++ enum, plus creates an object
 which stores text representations of the constants. The latter makes it possible
@@ -7557,7 +7654,7 @@ An example:
 
 <p>
 
-<H3><A NAME="sec227"/>6.2.3. Message declarations</H3>
+<H3><A NAME="sec228"/>6.2.3. Message declarations</H3>
 
 <p><br><P class="subheading">Basic use</P>
 
@@ -7755,7 +7852,7 @@ virtual void setChars(unsigned k, char a);
 </pre>
 <p>
 
-<p><H3><A NAME="sec228"/>6.2.4. Inheritance, composition</H3>
+<p><H3><A NAME="sec229"/>6.2.4. Inheritance, composition</H3>
 
 <p>So far we have discussed how to add fields of primitive types
 (<tt>int</tt>, <tt>double</tt>, <tt>char</tt>, ...) to <tt>cMessage</tt>.
@@ -7927,7 +8024,7 @@ virtual void setSrc(const IPAddress& src);
 
 <p>
 
-<p><H3><A NAME="sec229"/>6.2.5. Using existing C++ types</H3>
+<p><H3><A NAME="sec230"/>6.2.5. Using existing C++ types</H3>
 
 <p>
 <br><P class="subheading">Announcing C++ types</P>
@@ -7992,7 +8089,8 @@ message compiler into thinking that your class is rooted in
 error in the generated header file.
 
 <p>
-<H3><A NAME="sec230"/>6.2.6. Customizing the generated class</H3>
+<H3><A NAME="sec231"/>6.2.6. Customizing the generated class</H3>
+<a name="sec:ch-messages:customizing-generated-class"></a>
 
 <p>
 <br><P class="subheading">The Generation Gap pattern</P>
@@ -8094,7 +8192,10 @@ class FooPacket : public FooPacket_Base
 Register_Class(FooPacket);
 </pre>
 <p>
-So, returning to our original example about payload length
+Note that it is important that you redefine <tt>dup()</tt> and
+provide an assignment operator (<tt>operator=()</tt>).
+
+<p>So, returning to our original example about payload length
 affecting packet length, the code you'd write is the following:
 
 <pre>
@@ -8158,7 +8259,113 @@ redefine the abstract (pure virtual) methods and
 supply your implementation.
 
 <p>
-<H3><A NAME="sec231"/>6.2.7. Summary</H3>
+
+<p><H3><A NAME="sec232"/>6.2.7. Using STL in message classes</H3>
+
+<p>You may want to use STL <tt>vector</tt> or <tt>stack</tt> classes in your message classes.
+This is possible using abstract fields. After all, <tt>vector</tt> and <tt>stack</tt>
+are representations of a <EM>sequence</EM> - same abstraction as dynamic-size vectors.
+That is, you can declare the field as <tt>abstract T fld[]</tt>, and provide
+an underlying implementation using <tt>vector&lt;T&gt;</tt>. You can also add methods
+to the message class that invoke <tt>push_back()</tt>, <tt>push()</tt>, <tt>pop()</tt>, etc.
+on the underlying STL object.
+
+<p>See the following message declaration:
+
+<p><pre>
+<b>struct</b> Item
+{
+    <b>fields</b>:
+        <b>int</b> a;
+        <b>double</b> b;
+}
+
+<p><b>message</b> STLMessage
+{
+   <b>properties</b>:
+       customize=true;
+   <b>fields</b>:
+       <b>abstract</b> Item foo[]; // will use vector&lt;Item&gt;
+       <b>abstract</b> Item bar[]; // will use stack&lt;Item&gt;
+}
+</pre>
+
+<p>If you compile the above, in the generated code you'll only find a couple of
+abstract methods for <tt>foo</tt> and <tt>bar</tt>, no data members or anything concrete.
+You can implement everything as you like. You can write the following C++ file
+then to implement <tt>foo</tt> and <tt>bar</tt> with <tt>std::vector</tt> and <tt>std::stack</tt>:
+
+<pre>
+#include &lt;vector&gt;
+#include &lt;stack&gt;
+#include "stlmessage_m.h"
+
+
+class STLMessage : public STLMessage_Base
+{
+  protected:
+    std::vector&lt;Item&gt; foo;
+    std::stack&lt;Item&gt; bar;
+
+  public:
+    STLMessage(const char *name=NULL, int kind=0) : STLMessage_Base(name,kind) {}
+    STLMessage(const STLMessage& other) : STLMessage_Base(other.name()) {operator=(other);}
+    STLMessage& operator=(const STLMessage& other) {
+        if (&other==this) return *this;
+        STLMessage_Base::operator=(other);
+        foo = other.foo;
+        bar = other.bar;
+        return *this;
+    }
+    virtual cObject *dup() {return new STLMessage(*this);}
+
+    // foo methods
+    virtual void setFooArraySize(unsigned int size) {}
+    virtual unsigned int getFooArraySize() const {return foo.size();}
+    virtual Item& getFoo(unsigned int k) {return foo[k];}
+    virtual void setFoo(unsigned int k, const Item& afoo) {foo[k]=afoo;}
+    virtual void addToFoo(const Item& afoo) {foo.push_back(afoo);}
+
+    // bar methods
+    virtual void setBarArraySize(unsigned int size) {}
+    virtual unsigned int getBarArraySize() const {return bar.size();}
+    virtual Item& getBar(unsigned int k) {throw new cException("sorry");}
+    virtual void setBar(unsigned int k, const Item& bar) {throw new cException("sorry");}
+    virtual void barPush(const Item& abar) {bar.push(abar);}
+    virtual void barPop() {bar.pop();}
+    virtual Item& barTop() {return bar.top();}
+};
+
+Register_Class(STLMessage);
+</pre>
+<p>
+Some additional notes:
+
+<p><OL>
+  <li><strong></strong><tt>setFooArraySize()</tt>, <tt>setBarArraySize()</tt> are redundant.
+     <br><ul><font size=-1>[FIXME Wonder if I shouldn't generate <tt>set...ArraySize()</tt> methods
+     for abstract arrays? Tkenv doesn't really need them and seems like
+     they're in the way.]</font></ul>
+  <li><strong></strong><tt>getBar(int k)</tt> cannot be implemented in a straightforward way
+     (<tt>std::stack</tt> does not support accessing elements by index).
+     It could still be implemented in a less efficient way using STL iterators,
+     and efficiency does not seem to be major problem because only Tkenv
+     is going to invoke this function.
+  <li><strong></strong><tt>setBar(int k, const Item&amp;)</tt> could not be implemented, but this
+     is not particularly a problem. The exception will materialize in a
+     Tkenv error dialog when you try to change the field value.
+</OL>
+
+<p>You may regret that the STL <tt>vector</tt>/<tt>stack</tt> are not directly exposed.
+Well you could expose them (by adding a <tt>vector&lt;Item&gt;&amp; getFoo() {return foo;}</tt>
+method to the class) but this is probably not a good idea.
+STL itself was purposefully designed with a low-level approach, to provide
+``nuts and bolts'' for C++ programming, and STL is better used in other classes
+for internal representation of data.
+
+<p>
+
+<p><H3><A NAME="sec233"/>6.2.8. Summary</H3>
 
 <p>This section attempts to summarize the possibilities.
 
@@ -8290,8 +8497,8 @@ void setField(double d) = 0;
 <p>
 <br><P class="subheading">Example simulations</P>
 
-<p>Several of the example simulations (Token Ring, Dyna2, Hypercube)
-use message definitions. For example, in Dyna2 you'll find this:
+<p>Several of the example simulations (Token Ring, Dyna, Hypercube)
+use message definitions. For example, in Dyna you'll find this:
 
 <p><UL>
  <li><strong></strong> <tt>dynapacket.msg</tt> defines <tt>DynaPacket</tt> and <tt>DynaDataPacket</tt>;
@@ -8305,7 +8512,7 @@ use message definitions. For example, in Dyna2 you'll find this:
 
 <p>
 
-<p><H3><A NAME="sec232"/>6.2.8. What else is there in the generated code?</H3>
+<p><H3><A NAME="sec234"/>6.2.9. What else is there in the generated code?</H3>
 
 <p>In addition to the message class and its implementation,
 the message compiler also generates reflection code which makes it
@@ -8387,7 +8594,8 @@ much.
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
+Last modified: <fontmaroon><samp>Feb  2 2004</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jan 21 2004</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -8399,8 +8607,8 @@ Unnamed Web page
 </TITLE>
 </HEAD>
 <BODY>
-<hr><H1><A NAME="sec233"/>7. The Simulation Library</H1>
-<a name="cha:the-simulation-library"/>
+<hr><H1><A NAME="sec235"/>7. The Simulation Library</H1>
+<a name="cha:the-simulation-library"></a>
 
 <p>OMNeT++ has an extensive C++ class library which you can use when implementing
 simple modules. Some areas of class librar have already been covered in the
@@ -8444,10 +8652,10 @@ previous chapters:
 
 <p>
 
-<p><hr><H2><A NAME="sec234"/>7.1. Class library conventions</H2>
+<p><hr><H2><A NAME="sec236"/>7.1. Class library conventions</H2>
 
 <p><br><P class="subheading">Base class</P>
-<a name="sec:ch-sim-lib:cObject"/>
+<a name="sec:ch-sim-lib:cObject"></a>
 
 <p>
 Classes in the OMNeT++ simulation library are derived from <tt>cObject</tt>.
@@ -8654,7 +8862,7 @@ will be inserted in the future.
 <a href="#sec:ch-sim-lib:ownership-management">[click]</a>
 
 <p>
-<hr><H2><A NAME="sec235"/>7.2. Utilities</H2>
+<hr><H2><A NAME="sec237"/>7.2. Utilities</H2>
 
 <p><br><P class="subheading">Tracing</P>
 
@@ -8736,7 +8944,7 @@ to the result. The result's length shouldn't exceed 255 characters.
 
 <p>
 
-<p><hr><H2><A NAME="sec236"/>7.3. Generating random numbers</H2>
+<p><hr><H2><A NAME="sec238"/>7.3. Generating random numbers</H2>
 
 <p>Random numbers in simulation are never random. Rather, they are
 produced using deteministic algorithms. Algorithms take a <EM>seed</EM> value
@@ -8758,7 +8966,7 @@ usually between 0 or 1 and $2^32$ or so. Matematical transformations
 are used to produce random variates from them that correspond to
 specific distributions.
 
-<p><H3><A NAME="sec237"/>7.3.1. Random number generators</H3>
+<p><H3><A NAME="sec239"/>7.3.1. Random number generators</H3>
 
 <p><br><P class="subheading">The current RNG</P>
 
@@ -8878,7 +9086,7 @@ double prob = genk_dblrand(k);    // ""
 
 <p>
 
-<p><H3><A NAME="sec238"/>7.3.2. Random variates</H3>
+<p><H3><A NAME="sec240"/>7.3.2. Random variates</H3>
 
 <p>The following functions are based on <tt>dblrand()</tt> and return
 random variables of different distributions:
@@ -8933,7 +9141,7 @@ with the <tt>Register_Function()</tt> macro, you can use them in NED
 files and ini files too.
 
 <p>
-<H3><A NAME="sec239"/>7.3.3. Random numbers from histograms</H3>
+<H3><A NAME="sec241"/>7.3.3. Random numbers from histograms</H3>
 
 <p>You can also specify your distribution as a
 histogram. The
@@ -8947,9 +9155,9 @@ the statistical classes.
 
 <p>
 
-<p><hr><H2><A NAME="sec240"/>7.4. Container classes</H2>
+<p><hr><H2><A NAME="sec242"/>7.4. Container classes</H2>
 
-<p><H3><A NAME="sec241"/>7.4.1. Queue class: cQueue</H3>
+<p><H3><A NAME="sec243"/>7.4.1. Queue class: cQueue</H3>
 
 <p><br><P class="subheading">Basic usage</P>
 
@@ -8966,9 +9174,9 @@ are inserted at its head and elements are removed at its tail.
 <p>
 
 <p>  <DIV ALIGN=center>
-    <img src="usmanFig10.gif">
+    <img src="figures/usmanFig10.gif">
     <center><i>Figure: What is what with cQueue</i></center>
-    <a name="fig:ch-sim-lib:cqueue"/>
+    <a name="fig:ch-sim-lib:cqueue"></a>
   </DIV>
 
 <p>
@@ -9070,7 +9278,7 @@ for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 
 <p>
 
-<p><H3><A NAME="sec242"/>7.4.2. Expandable array: cArray</H3>
+<p><H3><A NAME="sec244"/>7.4.2. Expandable array: cArray</H3>
 
 <p><br><P class="subheading">Basic usage</P>
 
@@ -9170,7 +9378,7 @@ for (int i=0; i&lt;array.items(); i++)
 
 <p>
 
-<p><hr><H2><A NAME="sec243"/>7.5. Non-object container classes</H2>
+<p><hr><H2><A NAME="sec245"/>7.5. Non-object container classes</H2>
 
 <p>There are two container classes to store non-object
 items: <tt>cLinkedList</tt> and
@@ -9185,9 +9393,9 @@ deal with C structs or objects that are not derived from
 
 <p>
 
-<p><hr><H2><A NAME="sec244"/>7.6. The parameter class: cPar</H2>
+<p><hr><H2><A NAME="sec246"/>7.6. The parameter class: cPar</H2>
 
-<p><H3><A NAME="sec245"/>7.6.1. Basic usage</H3>
+<p><H3><A NAME="sec247"/>7.6.1. Basic usage</H3>
 
 <p><tt>cPar</tt> is a class that is designed to hold a value. The value
 is numeric (long or double) in the first place, but string, pointer
@@ -9270,7 +9478,7 @@ double a = (double)inp; // the user will be prompted HERE
 
 <p>
 
-<p><H3><A NAME="sec246"/>7.6.2. Random number generation through cPar</H3>
+<p><H3><A NAME="sec248"/>7.6.2. Random number generation through cPar</H3>
 
 <p>Setting <tt>cPar</tt> to call a function with constant arguments can
 be used to make <tt>cPar</tt> return random variables of different distributions:
@@ -9309,7 +9517,7 @@ rnd2.setDoubleValue(hist);
 
 <p>
 
-<p><H3><A NAME="sec247"/>7.6.3. Storing object and non-object pointers in cPar</H3>
+<p><H3><A NAME="sec249"/>7.6.3. Storing object and non-object pointers in cPar</H3>
 
 <p><tt>cPar</tt> can store pointers to OMNeT++ objects. You can use both
 assignment and the <tt>setObjectValue()</tt> member function:
@@ -9402,7 +9610,7 @@ management for the block. If you temporarily use the same
 
 <p>
 
-<p><H3><A NAME="sec248"/>7.6.4. Reverse Polish expressions</H3>
+<p><H3><A NAME="sec250"/>7.6.4. Reverse Polish expressions</H3>
 
 <p>This feature is rarely needed by the user, it is more used internally.
 A <tt>cPar</tt> object can also store
@@ -9451,7 +9659,7 @@ for parameter expressions.
 
 <p>
 
-<p><H3><A NAME="sec249"/>7.6.5. Using redirection</H3>
+<p><H3><A NAME="sec251"/>7.6.5. Using redirection</H3>
 
 <p>A <tt>cPar</tt> object can be set to stand for a value actually stored
 in another <tt>cPar</tt> object. This is called <EM>indirect</EM> or
@@ -9461,9 +9669,9 @@ actually done to the other <tt>cPar</tt> object:
 
 <p>
   <DIV ALIGN=center>
-    <img src="usmanFig11.gif">
+    <img src="figures/usmanFig11.gif">
     <center><i>Figure: cPar redirection</i></center>
-    <a name="fig:ch-sim-lib:cPar-redirection"/>
+    <a name="fig:ch-sim-lib:cPar-redirection"></a>
   </DIV>
 
 <p>
@@ -9525,7 +9733,7 @@ a = *value;                     // copy the contents of bb into a
 
 <p>
 
-<p><H3><A NAME="sec250"/>7.6.6. Type characters</H3>
+<p><H3><A NAME="sec252"/>7.6.6. Type characters</H3>
 
 <p>Internally, <tt>cPar</tt> objects identify the types of the stored values
 by type characters. The type character is returned by the <tt>type()</tt>
@@ -9546,7 +9754,7 @@ can be invoked on it.
 <p>
 
 <p>
-<H3><A NAME="sec251"/>7.6.7. Summary</H3>
+<H3><A NAME="sec253"/>7.6.7. Summary</H3>
 
 <p>The various <tt>cPar</tt> types and the member functions used to manipulate them are summarized
 in the following table:
@@ -9656,9 +9864,9 @@ member function. Module parameters taken by REF use this mechanism.</TD></TR>
 
 <p>
 
-<p><hr><H2><A NAME="sec252"/>7.7. Routing support: cTopology</H2>
+<p><hr><H2><A NAME="sec254"/>7.7. Routing support: cTopology</H2>
 
-<p><H3><A NAME="sec253"/>7.7.1. Overview</H3>
+<p><H3><A NAME="sec255"/>7.7.1. Overview</H3>
 
 <p>The <tt>cTopology</tt> class was designed primarily to support
 routing in telecommunication or multiprocessor
@@ -9694,7 +9902,7 @@ the corresponding module for a <tt>cTopology</tt> node and vica versa.
 
 <p>
 
-<p><H3><A NAME="sec254"/>7.7.2. Basic usage</H3>
+<p><H3><A NAME="sec256"/>7.7.2. Basic usage</H3>
 
 <p>You can extract the network topology into a <tt>cTopology</tt>
 object by a single function call. You have several ways to select
@@ -9817,7 +10025,7 @@ directions.)
 
 <p>
 
-<p><H3><A NAME="sec255"/>7.7.3. Shortest paths</H3>
+<p><H3><A NAME="sec257"/>7.7.3. Shortest paths</H3>
 
 <p>The real power of <tt>cTopology</tt> is in finding shortest
 paths in the network to support optimal
@@ -9929,9 +10137,9 @@ weightedMultiShortestPathsTo(sTopoNode *target);
 
 <p>
 
-<p><hr><H2><A NAME="sec256"/>7.8. Statistics and distribution estimation</H2>
+<p><hr><H2><A NAME="sec258"/>7.8. Statistics and distribution estimation</H2>
 
-<p><H3><A NAME="sec257"/>7.8.1. cStatistic and descendants</H3>
+<p><H3><A NAME="sec259"/>7.8.1. cStatistic and descendants</H3>
 
 <p>There are several statistic and result collection classes:
 <tt>cStdDev</tt>, <tt>cWeightedStdDev</tt>, <tt>LongHistogram</tt>,
@@ -9991,7 +10199,7 @@ double mean = stat.mean(),
 <p>
 
 <p>
-<H3><A NAME="sec258"/>7.8.2. Distribution estimation</H3>
+<H3><A NAME="sec260"/>7.8.2. Distribution estimation</H3>
 
 <p><br><P class="subheading">Initialization and usage</P>
 
@@ -10040,7 +10248,7 @@ range.
 
 <p>
   <DIV ALIGN=center>
-    <img src="usmanFig12.gif">
+    <img src="figures/usmanFig12.gif">
     <center><i>Figure: Setting up a histogram's range</i></center>
   </DIV>
 
@@ -10058,7 +10266,7 @@ member functions.
 
 <p>
 <DIV ALIGN=center>
-  <img src="usmanFig13.gif">
+  <img src="figures/usmanFig13.gif">
   <center><i>Figure: Histogram structure after setting up the cells</i></center>
 </DIV>
 
@@ -10088,7 +10296,7 @@ histogram types, plus <tt>cPSquare</tt> and <tt>cKSplit</tt>.
 
 <p>
   <DIV ALIGN=center>
-    <img src="usmanFig14.gif">
+    <img src="figures/usmanFig14.gif">
     <center><i>Figure: base points and cells</i></center>
   </DIV>
 
@@ -10213,7 +10421,7 @@ boundaries when the histogram has already been transformed.
 
 <p>
 
-<p><H3><A NAME="sec259"/>7.8.3. The k-split algorithm</H3>
+<p><H3><A NAME="sec261"/>7.8.3. The k-split algorithm</H3>
 
 <p><br><P class="subheading">Purpose</P>
 
@@ -10255,7 +10463,7 @@ are to be considered. In this paper we examine only the $k=2$ case.
 
 <p>
   <DIV ALIGN=center>
-    <img src="usmanFig15.gif">
+    <img src="figures/usmanFig15.gif">
     <center><i>Figure: Illustration of the k-split algorithm, $k=2$. The
       numbers in boxes represent the observation count values</i></center>
   </DIV>
@@ -10301,7 +10509,7 @@ m_..,i,j=(1-lambda )<fontmaroon><em> Unknown LaTeX command </em> \frac </font>&n
 
 <p>
   <DIV ALIGN=center>
-    <img src="usmanFig16.gif">
+    <img src="figures/usmanFig16.gif">
     <center><i>Figure: Density estimation from the k-split cell tree. We
       assume $lambda=0$, i.e. we distribute mother observations
       evenly.</i></center>
@@ -10381,7 +10589,7 @@ struct sGrid
 
 <p>
 
-<p><H3><A NAME="sec260"/>7.8.4. Transient detection and result accuracy</H3>
+<p><H3><A NAME="sec262"/>7.8.4. Transient detection and result accuracy</H3>
 
 <p>In many simulations, only the steady state performance (i.e.
 the performance after the system has reached a stable state)
@@ -10461,10 +10669,10 @@ void setParameters(double acc=0.1,
 
 <p>
 
-<p><hr><H2><A NAME="sec261"/>7.9. Recording simulation results</H2>
+<p><hr><H2><A NAME="sec263"/>7.9. Recording simulation results</H2>
 
-<p><H3><A NAME="sec262"/>7.9.1. Output vectors: cOutVector</H3>
-<a name="sec:ch-sim-lib:cOutVector"/>
+<p><H3><A NAME="sec264"/>7.9.1. Output vectors: cOutVector</H3>
+<a name="sec:ch-sim-lib:cOutVector"></a>
 
 <p>Objects of type <tt>cOutVector</tt> are responsible for writing time series
 data (referred to as <EM>output vectors</EM>) to a file. The <tt>record()</tt>
@@ -10519,7 +10727,7 @@ output vector object.
 
 <p>
 
-<p><H3><A NAME="sec263"/>7.9.2. Output scalars</H3>
+<p><H3><A NAME="sec265"/>7.9.2. Output scalars</H3>
 
 <p>While output vectors are to record time series data and thus they
 typically record a large volume of data during a simulation run,
@@ -10563,9 +10771,9 @@ output from different simulation runs are separated by special lines.
 <p>
 
 <p>
-<hr><H2><A NAME="sec264"/>7.10. Tracing and debugging aids</H2>
+<hr><H2><A NAME="sec266"/>7.10. Tracing and debugging aids</H2>
 
-<p><H3><A NAME="sec265"/>7.10.1. Displaying information about module activity</H3>
+<p><H3><A NAME="sec267"/>7.10.1. Displaying information about module activity</H3>
 
 <p>You can have simple modules print textual output for
 debugging purposes.
@@ -10601,7 +10809,7 @@ would appear in the terminal window behind the graphical window of the
 simulation application.
 
 <p>
-<H3><A NAME="sec266"/>7.10.2. Watches</H3>
+<H3><A NAME="sec268"/>7.10.2. Watches</H3>
 
 <p>You may want some of your int, long, double, char, etc. variables to
 be inspect-able in Tkenv and to be output into the snapshot
@@ -10654,8 +10862,8 @@ called.
 
 <p>
 
-<p><H3><A NAME="sec267"/>7.10.3. Snapshots</H3>
-<a name="sec:ch-sim-lib:snapshots"/>
+<p><H3><A NAME="sec269"/>7.10.3. Snapshots</H3>
+<a name="sec:ch-sim-lib:snapshots"></a>
 
 <p>The <tt>snapshot()</tt> function outputs textual information about all
 or selected objects of the simulation (including the objects created
@@ -10876,7 +11084,7 @@ end
 
 <p>
 
-<p><H3><A NAME="sec268"/>7.10.4. Breakpoints</H3>
+<p><H3><A NAME="sec270"/>7.10.4. Breakpoints</H3>
 
 <p><STRONG>With activity() only!</STRONG> In those user interfaces which support
 debugging, breakpoints stop execution and the state of the simulation
@@ -10904,7 +11112,7 @@ calls are simply ignored.
 
 <p>
 
-<p><H3><A NAME="sec269"/>7.10.5. Disabling warnings</H3>
+<p><H3><A NAME="sec271"/>7.10.5. Disabling warnings</H3>
 
 <p>Some container classes and functions suspend the simulation and issue
 warning messages in potentially bogus/dangerous situations, for
@@ -10932,7 +11140,7 @@ simulation.setWarnings( w );
 <p>
 
 <p>
-<H3><A NAME="sec270"/>7.10.6. Getting coroutine stack usage</H3>
+<H3><A NAME="sec272"/>7.10.6. Getting coroutine stack usage</H3>
 
 <p>It is important to choose the correct stack size for
 modules.  If the stack is
@@ -10973,9 +11181,9 @@ byte patterns in the stack area, so it is also subject to the above
 effect with local variables.
 
 <p>
-<hr><H2><A NAME="sec271"/>7.11. Changing the network graphics at run-time</H2>
+<hr><H2><A NAME="sec273"/>7.11. Changing the network graphics at run-time</H2>
 
-<p><H3><A NAME="sec272"/>7.11.1. Setting display strings</H3>
+<p><H3><A NAME="sec274"/>7.11.1. Setting display strings</H3>
 
 <p>Sometimes it is useful to change the appearance or position of
 some components in the network graphics, such as the color of the
@@ -11025,7 +11233,7 @@ animation first), because message animations are performed immediately
 (actually within the <tt>send()</tt> call).
 
 <p>
-<H3><A NAME="sec273"/>7.11.2. The cDisplayStringParser class</H3>
+<H3><A NAME="sec275"/>7.11.2. The cDisplayStringParser class</H3>
 
 <p>The <tt>cDisplayStringParser</tt> utility class lets you parse and
 manipulate display strings.
@@ -11058,9 +11266,10 @@ ev &lt;&lt; dispstr.getString();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
 
 <p>
 
-<p><hr><H2><A NAME="sec274"/>7.12. Deriving new classes</H2>
+<p><hr><H2><A NAME="sec276"/>7.12. Deriving new classes</H2>
+<a name="sec:ch-sim-lib:deriving-new-classes"></a>
 
-<p><H3><A NAME="sec275"/>7.12.1. cObject or not?</H3>
+<p><H3><A NAME="sec277"/>7.12.1. cObject or not?</H3>
 
 <p>If you plan to implement a completely new class (as opposed to
 subclassing something already present in OMNeT++), you have
@@ -11104,7 +11313,7 @@ see if <tt>cObject</tt> brings any benefit for you, and
 decide accordingly.
 
 <p>
-<H3><A NAME="sec276"/>7.12.2. cObject virtual methods</H3>
+<H3><A NAME="sec278"/>7.12.2. cObject virtual methods</H3>
 
 <p>Most classes in the simulation class library are descendants of
 <tt>cObject</tt>. If you want to derive a new class from
@@ -11169,14 +11378,14 @@ via pointers or as data member) other object subclassed from <tt>cObject</tt>.
 
 
 <p>
-<H3><A NAME="sec277"/>7.12.3. Class registration</H3>
+<H3><A NAME="sec279"/>7.12.3. Class registration</H3>
 
 <p>You should also use the <tt>Register_Class()</tt> macro to register the
 new class. It is used by the <tt>createOne()</tt> function.
 
 <p>
 
-<p><H3><A NAME="sec278"/>7.12.4. Details</H3>
+<p><H3><A NAME="sec280"/>7.12.4. Details</H3>
 
 <p>We'll go through the details using an example. We create a new
 class <tt>NewClass</tt>, redefine all above mentioned <tt>cObject</tt>
@@ -11246,12 +11455,11 @@ NewClass::NewClass(const char *name, int d) : cObject(name)
 <p>
 The constructor (above) calls the base class constructor with
 the name of the object, then initializes its own data members.
-<tt>cObject</tt>-based data members should have their
-owners explicitly set to NULL.
+You need to call <tt>take()</tt> for <tt>cObject</tt>-based data members.
 
 <p>
 <pre>
-NewClass::NewClass(const NewClass& other) : cObject(name())
+NewClass::NewClass(const NewClass& other) : cObject(other.name())
 {
     array = new double[10];
     msg = NULL;
@@ -11270,8 +11478,7 @@ into the function body.)
 allocated object/memory) before calling the assignment operator,
 to avoid crashes.
 
-<p><tt>cObject</tt>-based data members should have their
-owners explicitly set to NULL.
+<p>You need to call <tt>take()</tt> for <tt>cObject</tt>-based data members.
 
 <pre>
 NewClass::~NewClass()
@@ -11412,8 +11619,8 @@ for more information. The sources of the Sim library (<tt>include/</tt>,
 <p>
 
 <p>
-<hr><H2><A NAME="sec279"/>7.13. Object ownership management</H2>
-<a name="sec:ch-sim-lib:ownership-management"/>
+<hr><H2><A NAME="sec281"/>7.13. Object ownership management</H2>
+<a name="sec:ch-sim-lib:ownership-management"></a>
 
 <p>OMNeT++ has a built-in ownership management mechanism which
 is used for garbage collection, sanity checks, and as
@@ -11429,7 +11636,7 @@ unexplicable segmentation faults because of double deletion of objects,
 it is probably time to read the following discussion.
 
 <p>
-<H3><A NAME="sec280"/>7.13.1. Ownership tree</H3>
+<H3><A NAME="sec282"/>7.13.1. Ownership tree</H3>
 
 <p>Any <tt>cObject</tt>-based object can be both <EM>owner</EM> of other
 objects and can at the same time be <EM>owned</EM> by another object.
@@ -11444,7 +11651,7 @@ objects owned can be done via <tt>foreach()</tt> that loops through all
 contained objects and checking the owner of each object.
 
 <p>
-<H3><A NAME="sec281"/>7.13.2. Purpose</H3>
+<H3><A NAME="sec283"/>7.13.2. Purpose</H3>
 
 <p>The purpose of maintaining the ownership tree is threefold:
 
@@ -11483,7 +11690,7 @@ automatically, like calling member functions of a message object
 which has been sent to (and so currently kept by) another module.
 
 <p>
-<H3><A NAME="sec282"/>7.13.3. Objects are deleted by their owners</H3>
+<H3><A NAME="sec284"/>7.13.3. Objects are deleted by their owners</H3>
 
 <p>The concept of <tt>ownership</tt> is that <EM>the owner has the
 exclusive right and duty to delete the objects it owns</EM>.
@@ -11503,7 +11710,7 @@ that is, you have to check <tt>owner()</tt> of each object
 before you delete it.
 
 <p>
-<H3><A NAME="sec283"/>7.13.4. Ownership is managed transparently</H3>
+<H3><A NAME="sec285"/>7.13.4. Ownership is managed transparently</H3>
 
 <p><br><P class="subheading">Automatic transfer of ownership</P>
 
@@ -11588,8 +11795,8 @@ the class members list in simple module inspectors.
 <p>
 
 <p>
-<H3><A NAME="sec284"/>7.13.5. Garbage collection</H3>
-<a name="sec:ch-sim-lib:garbage-collection"/>
+<H3><A NAME="sec286"/>7.13.5. Garbage collection</H3>
+<a name="sec:ch-sim-lib:garbage-collection"></a>
 
 <p><br><P class="subheading">How it's done</P>
 
@@ -11733,7 +11940,7 @@ be changed to rely on C++ exceptions (stack unwinding) for proper
 cleanup.
 
 <p>
-<H3><A NAME="sec285"/>7.13.6. What cQueue and cArray do</H3>
+<H3><A NAME="sec287"/>7.13.6. What cQueue and cArray do</H3>
 
 <p>How can the ownership mechanism operate transparently?
 It is useful to look inside <tt>cQueue</tt> and <tt>cArray</tt>,
@@ -11856,7 +12063,7 @@ invokes assigment, while <tt>dup()</tt>
 is implemented as <tt>new cArray(*this)</tt>).
 
 
-<H3><A NAME="sec286"/>7.13.7. Change of implementation</H3>
+<H3><A NAME="sec288"/>7.13.7. Change of implementation</H3>
 
 <p>In the current release (version 2.3), the data structure
 used to maintain the ownership tree is in <tt>cObject</tt>.
@@ -11897,7 +12104,7 @@ in its owner and siblings).
 and only <EM>ownerp</EM> will remain. The <tt>setOwner()</tt> method
 will probably be removed entirely.
 
-<p><hr><H2><A NAME="sec287"/>7.14. Tips for speeding up the simulation</H2>
+<p><hr><H2><A NAME="sec289"/>7.14. Tips for speeding up the simulation</H2>
 
 <p>Here are a few tips that can help you make the simulation faster:
 <UL>
@@ -11920,7 +12127,7 @@ will probably be removed entirely.
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -11932,13 +12139,13 @@ Unnamed Web page
 </TITLE>
 </HEAD>
 <BODY>
-<hr><H1><A NAME="sec288"/>8. Building Simulation Programs</H1>
-<a name="cha:building-simulation-programs"/>
+<hr><H1><A NAME="sec290"/>8. Building Simulation Programs</H1>
+<a name="cha:building-simulation-programs"></a>
 
 <p>
 
 <p>
-<hr><H2><A NAME="sec289"/>8.1. Overview</H2>
+<hr><H2><A NAME="sec291"/>8.1. Overview</H2>
 
 <p>As it was already mentioned, an OMNeT++ model physically consists of
 the following parts:
@@ -11995,7 +12202,7 @@ and running simulation programs.
 
 <p>
   <DIV ALIGN=center>
-    <img src="usmanFig17.gif">
+    <img src="figures/usmanFig17.gif">
     <center><i>Figure: Building and running simulation</i></center>
   </DIV>
 
@@ -12011,7 +12218,7 @@ following platforms:
 <p>
 
 <p>
-<hr><H2><A NAME="sec290"/>8.2. Using Unix and gcc</H2>
+<hr><H2><A NAME="sec292"/>8.2. Using Unix and gcc</H2>
 
 <p>This section applies to using OMNeT++ on Linux, Solaris, FreeBSD and
 other Unix derivatives, and also more or less to Cygwin and MinGW
@@ -12023,7 +12230,7 @@ The <tt>doc/</tt> directory of your OMNeT++ installation contains
 up-to-date, more detailed and more precise instructions.
 
 <p>
-<H3><A NAME="sec291"/>8.2.1. Installation</H3>
+<H3><A NAME="sec293"/>8.2.1. Installation</H3>
 
 <p>The installation process depends on what distribution you take
 (source, precompiled RPM, etc.) and it may change from release
@@ -12032,7 +12239,7 @@ If you compile from source, you can expect the usual GNU
 procedure: <tt>./configure</tt> followed by <tt>make</tt>.
 
 <p>
-<H3><A NAME="sec292"/>8.2.2. Building simulation models</H3>
+<H3><A NAME="sec294"/>8.2.2. Building simulation models</H3>
 
 <p>The <tt>opp_makemake</tt> script can automatically generate the
 <SAMP>Makefile</SAMP> for your simulation program, based on the source files
@@ -12132,7 +12339,7 @@ the <SAMP>Makefile</SAMP>.
 <p>
 
 <p>
-<H3><A NAME="sec293"/>8.2.3. Multi-directory models</H3>
+<H3><A NAME="sec295"/>8.2.3. Multi-directory models</H3>
 
 <p>In the case of a large project, your source files may be spread across
 several directories. You have to decide whether you want to use static
@@ -12179,7 +12386,7 @@ do so.
 
 <p>
 
-<p><H3><A NAME="sec294"/>8.2.4. Static vs shared OMNeT++ system libraries</H3>
+<p><H3><A NAME="sec296"/>8.2.4. Static vs shared OMNeT++ system libraries</H3>
 
 <p>Default linking uses the shared libraries. One
 reason you would want static linking is that
@@ -12212,14 +12419,14 @@ make
 <p>
 
 <p>
-<hr><H2><A NAME="sec295"/>8.3. Using Windows and Microsoft Visual C++</H2>
+<hr><H2><A NAME="sec297"/>8.3. Using Windows and Microsoft Visual C++</H2>
 
 <p>This is only a rough overview. Up-to-date, more detailed and more
 precise instructions can be found in the <tt>doc/</tt> directory
 of your OMNeT++ installation, in the file <tt>Readme.MSVC</tt>.
 
 <p>
-<H3><A NAME="sec296"/>8.3.1. Installation</H3>
+<H3><A NAME="sec298"/>8.3.1. Installation</H3>
 
 <p>It is easiest to start with the binary, installer version.
 It contains all necessary software except MSVC,
@@ -12236,7 +12443,7 @@ Additional software needed for the compilation is also described
 in <tt>doc/</tt>.
 
 <p>
-<H3><A NAME="sec297"/>8.3.2. Building simulation models on the command line</H3>
+<H3><A NAME="sec299"/>8.3.2. Building simulation models on the command line</H3>
 
 <p>OMNeT++ has an automatic MSVC makefile creator named <tt>opp_nmakemake</tt>
 which is probably the easier way to go. Its usage is very similar
@@ -12272,7 +12479,7 @@ MSVC <tt>bin</tt> directory (usually
 Visual Studio\VC98\Bin</tt>).
 
 <p>
-<H3><A NAME="sec298"/>8.3.3. Building simulation models from the MSVC IDE</H3>
+<H3><A NAME="sec300"/>8.3.3. Building simulation models from the MSVC IDE</H3>
 
 <p>You can also use the MSVC IDE for development.
 There is an MSVC wizard which will create project files for you,
@@ -12330,8 +12537,8 @@ Outputs: $(InputName)_n.cpp
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jun 14 2003</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -12343,10 +12550,462 @@ Unnamed Web page
 </TITLE>
 </HEAD>
 <BODY>
-<hr><H1><A NAME="sec299"/>9. Running The Simulation</H1>
-<a name="cha:running-the-simulation"/>
+<hr><H1><A NAME="sec301"/>9. Documenting NED and Messages</H1>
+<a name="cha:neddoc"></a>
 
-<p><hr><H2><A NAME="sec300"/>9.1. User interfaces</H2>
+<p><hr><H2><A NAME="sec302"/>9.1. Overview</H2>
+
+<p>Like Javadoc and Doxygen... opp_neddoc
+
+<p>
+<hr><H2><A NAME="sec303"/>9.2. Writing the documentation</H2>
+
+<p>
+<H3><A NAME="sec304"/>9.2.1. Documentation comments</H3>
+
+<p>Documentation is embedded in normal comments. All <SAMP>//</SAMP> comments
+that are in the ``right place'' (from the documentation tool's 
+point of view) will be included in the generated documentation.
+  <br><ul><font size=-1>[In contrast, Javadoc and Doxygen use special comments (those 
+     beginning with <SAMP>/**</SAMP>, <SAMP>///</SAMP>, <SAMP>//&lt;</SAMP> or a similar 
+     marker) to distinguish documentation from ``normal'' comments in the 
+     source code. In OMNeT++ there's no need for that: NED and the message 
+     syntax so compact that practically all comments one would want to write 
+     in them can serve documentation purposes. Still, there is a way to write
+     comments that <EM>don't</EM> make it into the documentation - by starting
+     them with <SAMP>//#</SAMP>.]</font></ul>
+
+<p>Example:
+
+<pre>
+//
+// An ad-hoc traffic generator to test the Ethernet models.
+//
+simple Gen
+    parameters:
+        destAddress: string,  // destination MAC address
+        protocolId: numeric,  // value for SSAP/DSAP in Ethernet frame
+        waitMean: numeric;    // mean for exponential interarrival times
+    gates:
+        out: out;             // to Ethernet LLC
+endsimple
+</pre>
+<p>
+You can also place comments above parameters and gates. This is useful
+if they need long explanations. Example:
+
+<pre>
+//
+// Deletes packets and optionally keeps statistics.
+//
+simple Sink
+    parameters:
+        // You can turn statistics generation on and off. This is
+        // a very long comment because it has to be described what
+        // statistics are collected (or not).
+        statistics: bool;
+    gates:
+        in: in;
+endsimple
+</pre>
+<p>
+If you want a comment line <EM>not</EM> to appear in the documentation,
+begin it with <SAMP>//#</SAMP>. Those lines will be ignored by the
+documentation generation, and can be used to comment out
+unused NED code or to make ``private'' comments like <SAMP>FIXME</SAMP> or
+<SAMP>TBD</SAMP>.
+
+<pre>
+//
+// An ad-hoc traffic generator to test the Ethernet models.
+//# FIXME above description needs to be refined
+//
+simple Gen
+    parameters:
+        destAddress: string,  // destination MAC address
+        protocolId: numeric,  // value for SSAP/DSAP in Ethernet frame
+        //# burstiness: numeric;  -- not yet supported
+        waitMean: numeric;    // mean for exponential interarrival times
+    gates:
+        out: out;             // to Ethernet LLC
+endsimple
+</pre>
+<p>
+
+<p><H3><A NAME="sec305"/>9.2.2. Text layout and formatting</H3>
+
+<p>If you write longer descriptions, you'll need text formatting capabilities.
+Text formatting works like in Javadoc or Doxygen - you can break up the
+text into paragraphs and create bulleted/numbered lists without
+special commands, and use HTML for more fancy formatting.
+
+<p>Paragraphs are separated by empty lines, like in LaTeX or Doxygen. 
+Lines beginning with `<tt>-</tt>' will be turned into bulleted lists, 
+and lines beginning with `<tt>-#</tt>' into numbered lists.
+
+<p>Example:
+
+<pre>
+// Ethernet MAC layer. MAC performs transmission and reception of frames.
+//
+// Processing of frames received from higher layers:
+// - sends out frame to the network
+// - no encapsulation of frames -- this is done by higher layers.
+// - can send PAUSE message if requested by higher layers (PAUSE protocol,
+//   used in switches). PAUSE is not implemented yet.
+//
+// Supported frame types:
+// -# IEEE 802.3
+// -# Ethernet-II
+//
+</pre>
+<p>
+<H3><A NAME="sec306"/>9.2.3. Additional text formatting using HTML</H3>
+
+<p>Common HTML tags are understood as formatting commands.
+The most useful of these tags are: <tt>&lt;i&gt;..&lt;/i&gt;</tt> (italic),
+<tt>&lt;b&gt;..&lt;/b&gt;</tt> (bold), <tt>&lt;tt&gt;..&lt;/tt&gt;</tt> (typewriter font),
+<tt>&lt;sub&gt;..&lt;/sub&gt;</tt> (subscript), <tt>&lt;sup&gt;..&lt;/sup&gt;</tt> (superscript),
+<tt>&lt;br&gt;</tt> (line break), <tt>&lt;h3&gt;</tt> (heading),
+<tt>&lt;pre&gt;..&lt;/pre&gt;</tt> (preformatted text) and <tt>&lt;a href=..&gt;..&lt;/a&gt;</tt> (link),
+as well as a few other tags used for table creation (see below).
+For example, <SAMP>&lt;i&gt;Hello&lt;/i&gt;</SAMP> will be rendered as ``<EM>Hello</EM>''
+(using an italic font).
+
+<p>The complete list of HTML tags interpreted by <tt>opp_neddoc</tt> are:
+<SAMP>&lt;a&gt;</SAMP>, <SAMP>&lt;b&gt;</SAMP>, <SAMP>&lt;body&gt;</SAMP>, <SAMP>&lt;br&gt;</SAMP>, <SAMP>&lt;center&gt;</SAMP>,
+<SAMP>&lt;caption&gt;</SAMP>, <SAMP>&lt;code&gt;</SAMP>, <SAMP>&lt;dd&gt;</SAMP>, <SAMP>&lt;dfn&gt;</SAMP>, <SAMP>&lt;dl&gt;</SAMP>,
+<SAMP>&lt;dt&gt;</SAMP>, <SAMP>&lt;em&gt;</SAMP>, <SAMP>&lt;form&gt;</SAMP>, <SAMP>&lt;font&gt;</SAMP>, <SAMP>&lt;hr&gt;</SAMP>,
+<SAMP>&lt;h1&gt;</SAMP>, <SAMP>&lt;h2&gt;</SAMP>, <SAMP>&lt;h3&gt;</SAMP>, <SAMP>&lt;i&gt;</SAMP>, <SAMP>&lt;input&gt;</SAMP>, <SAMP>&lt;img&gt;</SAMP>,
+<SAMP>&lt;li&gt;</SAMP>, <SAMP>&lt;meta&gt;</SAMP>, <SAMP>&lt;multicol&gt;</SAMP>, <SAMP>&lt;ol&gt;</SAMP>, <SAMP>&lt;p&gt;</SAMP>, <SAMP>&lt;small&gt;</SAMP>,
+<SAMP>&lt;span&gt;</SAMP>, <SAMP>&lt;strong&gt;</SAMP>,
+<SAMP>&lt;sub&gt;</SAMP>, <SAMP>&lt;sup&gt;</SAMP>, <SAMP>&lt;table&gt;</SAMP>, <SAMP>&lt;td&gt;</SAMP>, <SAMP>&lt;th&gt;</SAMP>, <SAMP>&lt;tr&gt;</SAMP>,
+<SAMP>&lt;tt&gt;</SAMP>, <SAMP>&lt;kbd&gt;</SAMP>, <SAMP>&lt;ul&gt;</SAMP>, <SAMP>&lt;var&gt;</SAMP>.
+
+<p>Any tags not in the above list will not be interpreted as formatting commands
+but will be printed verbatim - for example, <SAMP>&lt;what&gt;bar&lt;/what&gt;</SAMP>
+will be rendered literally as ``&lt;what&gt;bar&lt;/what&gt;'' (unlike HTML where
+unknown tags are simply ignored, i.e. HTML would display ``bar'').
+
+<p>If you insert links to external pages (web sites), its useful to add
+the <tt>target="_blank"</tt> attribute to ensure pages come up in a new
+browser window and not just in the current frame which looks awkward.
+(Alternatively, you can use the <tt>target="_top"</tt> attribute
+which replaces all frames in the current browser).
+
+<p>Examples:
+
+<pre>
+//
+// For more info on Ethernet and other LAN standards, see the
+// &lt;a href="http://www.ieee802.org/" target="_blank"&gt;IEEE 802
+// Committee's site&lt;/a&gt;.
+//
+</pre>
+<p>
+You can also use the <tt>&lt;a href=..&gt;</tt> tag to create links within the page:
+
+<pre>
+//
+// See the &lt;a href="#resources"&gt;resources&lt;/a&gt; in this page.
+// ...
+// &lt;a name="resources"&gt;&lt;b&gt;Resources&lt;/b&gt;&lt;/a&gt;
+// ...
+//
+</pre>
+<p>
+You can use the <SAMP>&lt;pre&gt;..&lt;/pre&gt;</SAMP> HTML tag to insert souce code examples
+into the documentation. Line breaks and indentation will be preserved,
+but HTML tags continue to be interpreted (or you can turn them off
+with <SAMP>&lt;nohtml&gt;</SAMP>, see later).
+
+<p>Example:
+
+<pre>
+// &lt;pre&gt;
+// // my preferred way of indentation in C/C++ is this:
+// &lt;b&gt;for&lt;/b&gt; (&lt;b&gt;int&lt;/b&gt; i=0; i&lt;10; i++)
+// {
+//     printf(&lt;i&gt;"%d\n"&lt;/i&gt;, i);
+// }
+// &lt;/pre&gt;
+</pre>
+<p>
+will be rendered as
+
+<p><pre>
+// my preferred way of indentation in C/C++ is this:
+<STRONG>for</STRONG> (<STRONG>int</STRONG> i=0; i&lt;10; i++)
+{
+    printf(<EM>"%d\n"</EM>, i);
+}
+</pre>
+
+<p>HTML is also the way to create tables. The example below
+
+<pre>
+//
+// &lt;table border="1"&gt;
+//   &lt;tr&gt;  &lt;th&gt;#&lt;/th&gt; &lt;th&gt;number&lt;/th&gt; &lt;/tr&gt;
+//   &lt;tr&gt;  &lt;td&gt;1&lt;/td&gt; &lt;td&gt;one&lt;/td&gt;    &lt;/tr&gt;
+//   &lt;tr&gt;  &lt;td&gt;2&lt;/td&gt; &lt;td&gt;two&lt;/td&gt;    &lt;/tr&gt;
+//   &lt;tr&gt;  &lt;td&gt;3&lt;/td&gt; &lt;td&gt;three&lt;/td&gt;  &lt;/tr&gt;
+// &lt;/table&gt;
+//
+</pre>
+<p>
+will be rendered approximately as:
+
+<p><table border>
+<TR> <TD align=left>
+
+<p><b>#</b> </TD> <TD align=left> <b>number</b> </TD></TR>
+<TR> <TD align=left> 1 </TD> <TD align=left> one </TD></TR>
+<TR> <TD align=left> 2 </TD> <TD align=left> two </TD></TR>
+<TR> <TD align=left> 3 </TD> <TD align=left> three </TD></TR>
+</table>
+
+<p>
+<H3><A NAME="sec307"/>9.2.4. Turning off HTML</H3>
+
+<p>You may temporarily turn off interpreting <tt>&lt;i&gt;</tt>, <tt>&lt;b&gt;</tt>, etc.
+as HTML formatting commands. This is useful if you have to put literal
+<tt>&lt;i&gt;</tt>, <tt>&lt;b&gt;</tt> text in the documentation. To turn off interpreting
+HTML, surround the text with <tt>&lt;nohtml&gt;</tt>...<tt>&lt;/nohtml&gt;</tt> tags.
+For example,
+
+<pre>
+// Use the &lt;nohtml&gt;&lt;i&gt;&lt;/nohtml&gt; tag (like &lt;tt&gt;&lt;nohtml&gt;&lt;i&gt;this&lt;/i&gt;&lt;/nohtml&gt;&lt;tt&gt;)
+// to write in &lt;i&gt;italic&lt;/i&gt;.
+</pre>
+<p>
+will be rendered as ``Use the &lt;i&gt; tag (like <SAMP>&lt;i&gt;this&lt;/i&gt;</SAMP>) to write
+in <EM>italic</EM>.''
+
+<p>
+
+<p><H3><A NAME="sec308"/>9.2.5. Where to put comments</H3>
+
+<p>You have to put the comments where nedtool will find them.
+This is a) above the documented item, or b) after the
+documented item, on the same line.
+
+<p>If you put it above, make sure there's no blank line left
+between the comment and the documented item. Blank lines
+detach the comment from the documented item.
+
+<p>Example:
+<pre>
+// This is wrong! Because of the blank line, this comment is not
+// associated with the following simple module!
+
+simple Gen
+    parameters:
+    ...
+endsimple
+</pre>
+
+<p>Do not try to comment groups of parameters together. The result
+will be awkward.
+
+<p>
+<H3><A NAME="sec309"/>9.2.6. Customizing the title page</H3>
+
+<p>The title page is the one that appears in the main frame after 
+opening the documentation in the browser. By default it contains
+a boilerplate text with the generic title <EM>``OMNeT++ Model Documentation''</EM>.
+You probably want to customize that, and at least change the title
+to the name of the documented simulation model.
+ 
+<p>You can supply your own version of the title page adding a <tt>@titlepage</tt>
+directive to a file-level comment (a comment that appears at the top of
+a NED file, but is separated from the first <tt>import</tt>, <tt>channel</tt>, 
+<tt>module</tt>, etc. definition by at least one blank line).
+In theory you can place your title page definition into 
+any NED or MSG file, but it is probably a good idea to create
+a separate <tt>index.ned</tt> file for it.   
+
+<p>The lines you write after the <tt>@titlepage</tt> line up to the next 
+<tt>@page</tt> line (see later) or the end of the comment will be used 
+as the title page.
+You probably want to begin with a title because the documentation
+tool doesn't add one (it lets you have full control over the
+page contents). You can use the <tt>&lt;h1&gt;..&lt;/h1&gt;</tt> HTML tag 
+to define a title. 
+
+<p>Example:
+
+<pre>
+//
+// @titlepage
+// &lt;h1&gt;Ethernet Model Documentation&lt;/h1&gt;
+//
+// This documents the Ethernet model created by David Wu and refined by Andras
+// Varga at CTIE, Monash University, Melbourne, Australia.
+//
+</pre>
+<p>
+
+<p><H3><A NAME="sec310"/>9.2.7. Adding extra pages</H3>
+
+<p>You can add new pages to the documentation in a similar way as customizing
+the title page. The directive to be used is <tt>@page</tt>, and it can 
+appear in any file-level comment (see above).
+
+<p>The syntax of the <tt>@page</tt> directive is the following:
+
+<pre>
+// @page filename.html, Title of the Page
+</pre>
+<p>  
+Please choose a file name that doesn't collide with the files generated
+by the documentation tool (such as <tt>index.html</tt>). 
+The page title you supply will appear on the top of the page as well as
+in the page index.
+
+<p>The lines after the <tt>@page</tt> line up to the next <tt>@page</tt> line
+or the end of the comment will be used as the page body.
+You don't need to add a title because the documentation tool
+automatically adds one.
+
+<p>Example:
+<pre>
+//
+// @page structure.html, Directory Structure
+//
+// The model core model files and the examples have been placed 
+// into different directories. The &lt;tt&gt;examples/&lt;/tt&gt; directory...
+//
+//
+// @page examples.html, Examples
+// ...
+//
+</pre>
+
+<p>You can create links to the generated pages in the normal HTML way,
+using the <tt>&lt;a href="..."&gt;...&lt;/a&gt;</tt> tag. All HTML files are 
+placed in a single directory, so you don't have to worry about 
+specifying directories.
+
+<p>Example:
+<pre>
+//
+// @titlepage
+// ...
+// The structure of the model is described &lt;a href="structure.html"&gt;here&lt;/a&gt;.
+//
+</pre>
+
+<p>
+<H3><A NAME="sec311"/>9.2.8. Incorporating externally created pages</H3>
+
+<p>You may want to create pages outside the documentation tool 
+(e.g. using a HTML editor) and include them in the documentation. 
+This is possible, all you have to do is declare such pages with 
+the <tt>@externalpage</tt> directive in any of the NED files, and 
+they will be added to the page index. The pages can then be linked to
+from other pages using the HTML <tt>&lt;a href="..."&gt;...&lt;/a&gt;</tt> tag. 
+
+<p>The <tt>@externalpage</tt> directive is similar in syntax
+<tt>@page</tt>:  
+
+<pre>
+// @externalpage filename.html, Title of the Page
+</pre>
+<p>
+The documentation tool does not check if the page exists 
+or not. It is your responsibility to copy them manually into 
+the directory of the generated documentation and then to make
+sure the hyperlinks work. 
+
+<p>
+
+<p><hr><H2><A NAME="sec312"/>9.3. Generating HTML</H2>
+
+<p><tt>opp_neddoc</tt> generates HTML documentation from NED and MSG files.
+
+<p>FIXME describe.
+
+<p>Usage: opp_neddoc [-o &lt;dir&gt;] [-n] [-a] file1 file2 ...
+
+<p>It accepts the following options:
+ -o &lt;dir&gt;      output directory, defaults to ./html
+ -n, -nofig   do not generate screenshots
+ -a, -all     process all *.ned and *.msg files recursively
+ -h, -help    this help text
+
+<p>
+
+<p><H3><A NAME="sec313"/>9.3.1. Multiple projects</H3>
+
+<p>The generated <tt>tags.xml</tt> can be used to generate other documentation
+that refers to pages in this documentation via HTML links.
+
+<p>
+<hr><H2><A NAME="sec314"/>9.4. How does opp_neddoc work?</H2>
+
+<p><tt>*.ned</tt> and <tt>*.msg</tt> files are collected (e.g. via the <tt>find</tt>
+command if you used the <tt>-a</tt> option on Unix) and processed
+with <tt>nedtool</tt>. <tt>nedtool</tt> parses them and outputs the resulting syntax
+tree in XML - a single large XML file wich contains all files.
+
+<p>The <tt>*.ned</tt> files are processed with the <tt>-c</tt> (export-diagrams-and-exit)
+option of <tt>gned</tt>. This causes <tt>gned</tt> to export diagrams for the
+compound modules in Postscript. Postscript files are then converted
+to GIFs using <tt>convert</tt> (part of the ImageMagick package).
+<tt>gned</tt> also exports an <tt>images.xml</tt> file which describes which
+image was generated from which compound module, and also contains
+additional info (coordinates of submodule rectangles and icons in the image)
+for creating clickable image maps.
+
+<p>The XML file containing parsed NED and message files is then processed
+with an XSLT stylesheet to generate HTML. XSLT is a very powerful way
+of converting an XML document into another XML (or HTML, or text) document.
+Additionally, the stylesheet reads <tt>images.xml</tt> and uses its contents
+to make the compound module images clickable.
+The stylesheet also outputs a <tt>tags.xml</tt> file which describes what is documented
+in which .html file, so that external documentation can link to this one.
+
+<p>As a final step, the comments in the generated HTML file are processed
+with a perl script. The perl script also performs syntax hightlighting
+of the source listings in the HTML, and puts hyperlinks on module,
+channel, message, etc. names. (It uses the info in the <tt>tags.xml</tt> file
+for the latter task.) This last step, comment formatting and source code
+coloring whould have been very difficult to achieve from XSLT, which
+(at least in its 1.0 version of the standard) completely lacks powerful
+string manipulation functions. (Not even simple find/replace
+is supported in strings, let alone regular expressions. Perhaps the
+2.0 version of XSLT will improve on this.)
+
+<p>The whole process is controlled by the <tt>opp_neddoc</tt> shell script
+(or on Windows, the <tt>opp_neddoc.cmd</tt> batch file.)
+
+<p>
+
+<p>
+
+<HR>
+<font size=+0><EM>[Converted LaTeX --> HTML by <a href="http://www.best.com/~quong/ltoh.html">ltoh</a>]</EM></font><br>
+<ADDRESS>
+<A href="http://www.best.com/~quong">Russell W. Quong</A>
+(<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
+Last modified: <fontmaroon><samp>Feb  2 2004</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jan 30 2004</samp></font>)<br>
+</ADDRESS>
+</BODY>
+</HTML>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<TITLE>
+Unnamed Web page
+</TITLE>
+</HEAD>
+<BODY>
+<hr><H1><A NAME="sec315"/>10. Running The Simulation</H1>
+<a name="cha:running-the-simulation"></a>
+
+<p><hr><H2><A NAME="sec316"/>10.1. User interfaces</H2>
 
 <p>OMNeT++ simulations can be run under different user interfaces.
 Currenly, two user interfaces are supported:
@@ -12390,9 +13049,9 @@ the user interfaces, describe Cmdenv and Tkenv in detail, then
 go on to specific problems.
 
 <p>
-<hr><H2><A NAME="sec301"/>9.2. The configuration file: omnetpp.ini</H2>
+<hr><H2><A NAME="sec317"/>10.2. The configuration file: omnetpp.ini</H2>
 
-<p><H3><A NAME="sec302"/>9.2.1. An example</H3>
+<p><H3><A NAME="sec318"/>10.2.1. An example</H3>
 
 <p>For a start, let us see a simple <tt>omnetpp.ini</tt> file which
 can be used to run the Fifo1 sample simulation under Cmdenv.
@@ -12474,7 +13133,7 @@ customized via <tt>omnetpp.ini</tt> entries. The output file <tt>fifo1.vec</tt>
 contains vector data recorded during simulation (here, queueing times),
 and it can be processed using Plove or other tools.
 
-<p><H3><A NAME="sec303"/>9.2.2. The concept of simulation runs</H3>
+<p><H3><A NAME="sec319"/>10.2.2. The concept of simulation runs</H3>
 
 <p>OMNeT++ can execute several simulation runs automatically one after
 another. If multiple runs are
@@ -12482,7 +13141,7 @@ selected, option settings and parameter values can be given either
 individually for each run, or together for all runs, depending in
 which section the option or parameter appears.
 
-<p><H3><A NAME="sec304"/>9.2.3. File syntax</H3>
+<p><H3><A NAME="sec320"/>10.2.3. File syntax</H3>
 
 <p>The ini file is a text file consisting of entries grouped into different sections.
 The order of the sections doesn't matter. Also, if you have two sections
@@ -12512,7 +13171,7 @@ for the foo parameter"
 bar="belongs to the same section as foo"
 </pre>
 <p>
-<H3><A NAME="sec305"/>9.2.4. File inclusion</H3>
+<H3><A NAME="sec321"/>10.2.4. File inclusion</H3>
 
 <p>OMNeT++ supports including an ini file in another,
 via the <tt>include</tt> keyword. This feature allows you to partition large ini
@@ -12529,7 +13188,7 @@ include per-run-pars.ini
 </pre>
 <p>
 
-<p><H3><A NAME="sec306"/>9.2.5. Sections</H3>
+<p><H3><A NAME="sec322"/>10.2.5. Sections</H3>
 
 <p>The following sections can exist:
 
@@ -12565,8 +13224,8 @@ For details, see section <a href="#sec:ch-run-sim:displaystrings-section">[click
 
 <p>
 
-<p><H3><A NAME="sec307"/>9.2.6. The [General] section</H3>
-<a name="sec:ch-run-sim:general-section"/>
+<p><H3><A NAME="sec323"/>10.2.6. The [General] section</H3>
+<a name="sec:ch-run-sim:general-section"></a>
 
 <p>The most important options of the <SAMP>[General]</SAMP> section are the
 following.
@@ -12642,7 +13301,7 @@ in <tt>envirext.h</tt>.</TD></TR>
 <TR> <TD align=left> 
 </table>
 
-<p><hr><H2><A NAME="sec308"/>9.3. Cmdenv: the command-line interface</H2>
+<p><hr><H2><A NAME="sec324"/>10.3. Cmdenv: the command-line interface</H2>
 
 <p>The command line user interface is
 a small, portable and fast user interface that compiles and runs on
@@ -12653,7 +13312,7 @@ in the configuration file. If one run stops with an error message,
 subsequent ones will still be executed. The runs to be executed can be
 passed via command-line argument or in the ini file.
 
-<p><H3><A NAME="sec309"/>9.3.1. Command-line switches</H3>
+<p><H3><A NAME="sec325"/>10.3.1. Command-line switches</H3>
 
 <p>A simulation program built with Cmdenv accepts the following command line
 switches:
@@ -12730,8 +13389,8 @@ End run of OMNeT++
 </pre>
 <p>
 
-<p><H3><A NAME="sec310"/>9.3.2. Cmdenv ini file options</H3>
-<a name="sec:ch-run-sim:cmdenv-section"/>
+<p><H3><A NAME="sec326"/>10.3.2. Cmdenv ini file options</H3>
+<a name="sec:ch-run-sim:cmdenv-section"></a>
 
 <p>Cmdenv can be executed in two modes, selected by the <tt>express-mode</tt> ini file entry:
 
@@ -12783,8 +13442,8 @@ number of messages created/still present/currently scheduled in FES.
 simple module when the simulation is linked with Cmdenv. </TD></TR>
 </table>
 
-<p><H3><A NAME="sec311"/>9.3.3. Interpreting Cmdenv output</H3>
-<a name="sec:ch-run-sim:interpreting-cmdenv-output"/>
+<p><H3><A NAME="sec327"/>10.3.3. Interpreting Cmdenv output</H3>
+<a name="sec:ch-run-sim:interpreting-cmdenv-output"></a>
 
 <p>When the simulation is running in ``express'' mode with detailed
 performance display enabled, Cmdenv periodically outputs a three-line
@@ -12869,7 +13528,7 @@ most common way of leaking memory in a simulation is by not deleting messages.
 
 <p>
 
-<p><hr><H2><A NAME="sec312"/>9.4. Tkenv: the graphical user interface</H2>
+<p><hr><H2><A NAME="sec328"/>10.4. Tkenv: the graphical user interface</H2>
 
 <p><br><P class="subheading">Features</P>
 
@@ -12910,7 +13569,7 @@ Tcl/Tk has been ported to: Unix/X, Windows, Macintosh.
 You can get more information about Tcl/Tk on the Web pages listed
 in the Reference.
 
-<p><H3><A NAME="sec313"/>9.4.1. Command-line switches</H3>
+<p><H3><A NAME="sec329"/>10.4.1. Command-line switches</H3>
 
 <p>A simulation program built with Tkenv accepts the following command line
 switches:
@@ -12941,8 +13600,8 @@ switches:
   created with <SAMP>gcc -shared...</SAMP>)</TD></TR>
 </table>
 
-<p><H3><A NAME="sec314"/>9.4.2. Tkenv ini file settings</H3>
-<a name="sec:ch-run-sim:tkenv-section"/>
+<p><H3><A NAME="sec330"/>10.4.2. Tkenv ini file settings</H3>
+<a name="sec:ch-run-sim:tkenv-section"></a>
 
 <p>Tkenv accepts several settings in the <tt>[Tkenv]</tt> section of the ini file.
 These settings can also be set within the graphical environment too,
@@ -12981,7 +13640,7 @@ Tkenv. </TD></TR>
 </table>
 
 <p>
-<H3><A NAME="sec315"/>9.4.3. Using the graphical environment</H3>
+<H3><A NAME="sec331"/>10.4.3. Using the graphical environment</H3>
 
 <p><br><P class="subheading">Simulation running modes in Tkenv</P>
 
@@ -13079,7 +13738,7 @@ code (<SAMP>tclcode.cc</SAMP>), which gets included into
 <SAMP>tkapp.cc</SAMP>. This possibility is built into the makefiles
 and can be optionally enabled.
 
-<p><H3><A NAME="sec316"/>9.4.4. In Memoriam... </H3>
+<p><H3><A NAME="sec332"/>10.4.4. In Memoriam... </H3>
 
 <p>There used to be other windowing user interfaces which have been removed
 from the distribution:
@@ -13096,11 +13755,11 @@ from the distribution:
 </UL>
 
 <p>
-<hr><H2><A NAME="sec317"/>9.5. More about omnetpp.ini</H2>
+<hr><H2><A NAME="sec333"/>10.5. More about omnetpp.ini</H2>
 
 <p>
-<H3><A NAME="sec318"/>9.5.1. Module parameters in the configuration file</H3>
-<a name="sec:ch-run-sim:parameter-settings"/>
+<H3><A NAME="sec334"/>10.5.1. Module parameters in the configuration file</H3>
+<a name="sec:ch-run-sim:parameter-settings"></a>
 
 
 <p>Values for module parameters go into the <SAMP>[Parameters]</SAMP> or the
@@ -13135,8 +13794,8 @@ token.stations[*].wait_time = 1000ms
 </pre>
 
 <p>
-<H3><A NAME="sec319"/>9.5.2. Configuring output vectors</H3>
-<a name="sec:ch-run-sim:outvectors-section"/>
+<H3><A NAME="sec335"/>10.5.2. Configuring output vectors</H3>
+<a name="sec:ch-run-sim:outvectors-section"></a>
 
 <p>As a simulation program is evolving, it is becoming capable of
 collecting more and more statistics. The size of output vector
@@ -13197,8 +13856,8 @@ except all end-to-end delays and the ones in any module called Router2.
 
 
 
-<p><H3><A NAME="sec320"/>9.5.3. Display strings</H3>
-<a name="sec:ch-run-sim:displaystrings-section"/>
+<p><H3><A NAME="sec336"/>10.5.3. Display strings</H3>
+<a name="sec:ch-run-sim:displaystrings-section"></a>
 
 <p>Display strings control the modules' graphical
 appearance in the Tkenv user interface. Display strings can be
@@ -13225,7 +13884,7 @@ As with parameter names, wildcards
 are allowed in module types, submodule and gate names.
 
 <p>
-<H3><A NAME="sec321"/>9.5.4. Specifying seed values</H3>
+<H3><A NAME="sec337"/>10.5.4. Specifying seed values</H3>
 
 <p>As is was pointed out earlier, it is of great importance that
 different simulation runs and different random number sources
@@ -13303,8 +13962,8 @@ values from the code of a simple module using
 so.
 
 <p>
-<hr><H2><A NAME="sec322"/>9.6. Choosing good seed values: the seedtool utility</H2>
-<a name="sec:ch-run-sim:choosing-good-seed"/>
+<hr><H2><A NAME="sec338"/>10.6. Choosing good seed values: the seedtool utility</H2>
+<a name="sec:ch-run-sim:choosing-good-seed"></a>
 
 <p>For selecting good seeds, the <tt>seedtool</tt> program can be used (it
 is in the utils directory). When started without command-line
@@ -13359,7 +14018,7 @@ seeds:
 
 <p>
 
-<p><hr><H2><A NAME="sec323"/>9.7. Repeating or iterating simulation runs</H2>
+<p><hr><H2><A NAME="sec339"/>10.7. Repeating or iterating simulation runs</H2>
 
 <p>Once your model works reliably, you'll usually want to run several
 simulations. You may want to run the model with various
@@ -13381,7 +14040,7 @@ If you'd prefer Matlab/Octave, the <tt>contrib/octave/</tt> directory
 contains example scripts (contributed by Richard Lyon).
 
 <p>
-<H3><A NAME="sec324"/>9.7.1. Executing several runs</H3>
+<H3><A NAME="sec340"/>10.7.1. Executing several runs</H3>
 
 <p>In simple cases, you may define all simulation runs needed in the
 <tt>[Run 1]</tt>, <tt>[Run 2]</tt>, etc. sections of <tt>omnetpp.ini</tt>,
@@ -13435,7 +14094,7 @@ done
 </pre>
 <p>
 
-<p><H3><A NAME="sec325"/>9.7.2. Variations over parameter values</H3>
+<p><H3><A NAME="sec341"/>10.7.2. Variations over parameter values</H3>
 
 <p>It may not be practical to hand-write descriptions of all runs
 in an ini file, especially if there are many parameter
@@ -13512,7 +14171,7 @@ done
 <p>
 
 <p>
-<H3><A NAME="sec326"/>9.7.3. Variations over seed value (multiple independent runs)</H3>
+<H3><A NAME="sec342"/>10.7.3. Variations over seed value (multiple independent runs)</H3>
 
 <p>The same kind of control script can be used if you want to execute
 several runs with different random seeds.
@@ -13541,9 +14200,9 @@ done
 <p>
 
 <p>
-<hr><H2><A NAME="sec327"/>9.8. Akaroa support: Multiple Replications in Parallel</H2>
+<hr><H2><A NAME="sec343"/>10.8. Akaroa support: Multiple Replications in Parallel</H2>
 
-<p><H3><A NAME="sec328"/>9.8.1. Introduction</H3>
+<p><H3><A NAME="sec344"/>10.8.1. Introduction</H3>
 
 <p>Typical simulations are Monte-Carlo simulations: they use
 (pseudo-)random numbers to drive the simulation model.
@@ -13576,7 +14235,7 @@ But ex ante it is unknown how many observations have to be collected
 to achieve this level - it must be determined runtime.
 
 <p>
-<H3><A NAME="sec329"/>9.8.2. What is Akaroa</H3>
+<H3><A NAME="sec345"/>10.8.2. What is Akaroa</H3>
 
 <p>Akaroa [<a href="#bib-Akaroa99">Akaroa99</a>] addresses the above problem.
 According to its authors, Akaroa (Akaroa2) is a ``fully automated
@@ -13611,7 +14270,7 @@ to the number of processors used and sometimes even more.
 and can be used free of charge for teaching and non-profit research activities.
 
 <p>
-<H3><A NAME="sec330"/>9.8.3. Using Akaroa with OMNeT++</H3>
+<H3><A NAME="sec346"/>10.8.3. Using Akaroa with OMNeT++</H3>
 
 <p><br><P class="subheading">Akaroa</P>
 
@@ -13661,7 +14320,7 @@ the output vectors under Akaroa control.
 
 <pre>
 [General]
-outputvectormanager-class="AkOutputVectorManager"
+outputvectormanager-class="cAkOutputVectorManager"
 </pre>
 <p>
 The above line replaces the normal output vector handler
@@ -13749,9 +14408,9 @@ real Weibull(real alpha, real beta);
 
 <p>
 
-<p><hr><H2><A NAME="sec331"/>9.9. Typical problems</H2>
+<p><hr><H2><A NAME="sec347"/>10.9. Typical problems</H2>
 
-<p><H3><A NAME="sec332"/>9.9.1. Stack problems</H3>
+<p><H3><A NAME="sec348"/>10.9.1. Stack problems</H3>
 
 <p><br><P class="subheading">``Stack violation (<EM>FooModule</EM> stack too small?) in module <EM>bar.foo</EM>''</P>
 
@@ -13892,7 +14551,7 @@ scale well for large simulations.
 
 <p>
 
-<p><H3><A NAME="sec333"/>9.9.2. Memory leaks and crashes</H3>
+<p><H3><A NAME="sec349"/>10.9.2. Memory leaks and crashes</H3>
 
 <p>The most common problems in C++ are associated with memory allocation
 (usage of <tt>new</tt> and <tt>delete</tt>):
@@ -13987,7 +14646,8 @@ have memory leaks.
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Nov  5 2003</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -13999,11 +14659,11 @@ Unnamed Web page
 </TITLE>
 </HEAD>
 <BODY>
-<hr><H1><A NAME="sec334"/>10. Analyzing Simulation Results</H1>
-<a name="cha:analyzing-simulation-results"/>
+<hr><H1><A NAME="sec350"/>11. Analyzing Simulation Results</H1>
+<a name="cha:analyzing-simulation-results"></a>
 
 <p>
-<hr><H2><A NAME="sec335"/>10.1. Output vectors</H2>
+<hr><H2><A NAME="sec351"/>11.1. Output vectors</H2>
 
 <p>Output vectors are time series data: values with timestamps.
 You can use output vectors to record end-to-end delays or
@@ -14023,9 +14683,9 @@ The following sections describe the format of the file, and
 how you can process them.
 
 <p>
-<hr><H2><A NAME="sec336"/>10.2. Plotting output vectors with Plove</H2>
+<hr><H2><A NAME="sec352"/>11.2. Plotting output vectors with Plove</H2>
 
-<p><H3><A NAME="sec337"/>10.2.1. Plove features</H3>
+<p><H3><A NAME="sec353"/>11.2.1. Plove features</H3>
 
 <p>Typically, you'll get output vector files as a result of a simulation.
 Data written to <tt>cOutVector</tt> objects from
@@ -14072,7 +14732,7 @@ filter configuration etc. (that is, the stuff from the Options menu).
 <p>
 
 <p>
-<H3><A NAME="sec338"/>10.2.2. Usage</H3>
+<H3><A NAME="sec354"/>11.2.2. Usage</H3>
 
 <p>First, you load an output vector file (<SAMP>.vec</SAMP>) into the left
 pane.  You can also load gzipped vector files (<SAMP>.vec.gz</SAMP>)
@@ -14100,7 +14760,7 @@ back into the left pane for storage.
 
 <p>
 
-<p><H3><A NAME="sec339"/>10.2.3. Writing filters</H3>
+<p><H3><A NAME="sec355"/>11.2.3. Writing filters</H3>
 
 <p>Filters get an output vector on their standard input (as plain
 text, with the timestamp being the second and the value being
@@ -14171,7 +14831,7 @@ file.
 
 <p>
 
-<p><hr><H2><A NAME="sec340"/>10.3. Format of output vector files</H2>
+<p><hr><H2><A NAME="sec356"/>11.3. Format of output vector files</H2>
 
 <p>An output vector file contains several
 series of data produced during simulation. The file is textual, it
@@ -14202,9 +14862,9 @@ ID, current simulation time, and one or two double values.
 
 <p>
 
-<p><hr><H2><A NAME="sec341"/>10.4. Working without Plove</H2>
+<p><hr><H2><A NAME="sec357"/>11.4. Working without Plove</H2>
 
-<p><H3><A NAME="sec342"/>10.4.1. Extracting vectors from the file</H3>
+<p><H3><A NAME="sec358"/>11.4.1. Extracting vectors from the file</H3>
 
 <p>You can use the Unix <tt>grep</tt> tool to extract a particular vector
 from the file. As the first step, you must find out the ID of the
@@ -14245,7 +14905,7 @@ eliminated by the OMNeT++ <tt>splitvec</tt> utility (written in
 <p>
 
 <p>
-<H3><A NAME="sec343"/>10.4.2. Using splitvec</H3>
+<H3><A NAME="sec359"/>11.4.2. Using splitvec</H3>
 
 <p>The <tt>splitvec</tt> script (part of OMNeT++) breaks the vector file
 into several files which contain one vector each:
@@ -14276,29 +14936,64 @@ As you can see, the vector ID is gone.
 <p>The files can be further processed with math packages, or read
 by analysis or spreadsheet programs which provide numerous ways
 to display data as diagrams, do calculations on them etc. One
-could use for example Gnuplot, Matlab, Excel, etc.
+could use for example Matlab/Octave, Excel, or one of the programs
+described in the next section.
 
 <p>
 
 <p>
+<hr><H2><A NAME="sec360"/>11.5. Visualization tools</H2>
 
-<p><H3><A NAME="sec344"/>10.4.3. Visualization under Unix</H3>
+<p>There are a couple of open-source programs you can use for plotting
+the results. <EM>Gnuplot</EM> is the most commonly used one
+(also supported by OMNeT++ Plove); other, more powerful ones
+include <EM>Grace</EM> and <EM>ROOT</EM>.
 
-<p>Two programs are in common use: Gnuplot and Xmgr. Both are free
-and both have their good and bad sides; we'll briefly discuss
-them. There are innumerable tutorials and documentation about
-them on the Web; some of them you will find among the References.
+<p>These programs can eat files produced by <tt>splitvec</tt>, and
+can produce output in various forms (on the screen, as PostScript,
+in various image formats, etc.)
+
+<p>On Windows, the easiest way to include a picture in a document
+is to copy the picture to the clipboard from the Gnuplot
+window's system menu.
 
 <p>
-Both programs can eat files produced by <tt>splitvec</tt>. Both
-programs can produce output in various forms: on screen, in Postscript
-format, printer files, Latex output etc. For DTP purposes, Postscript
-seems to be the most appropriate. On Windows, the easiest way is to
-copy the picture to the clipboard from the Gnuplot window's system
-menu.
+<H3><A NAME="sec361"/>11.5.1. Grace</H3>
+
+<p><EM>Grace</EM> (also known as <EM>xmgrace</EM>, a successor of <EM>ACE/gr</EM> or
+<EM>Xmgr</EM>) is a GPL-ed powerful data visualization program
+with a WYSIWIG point-and-click graphical user interface. It has been
+written for Unix, but has a Windows version, too.
+
+<p>You load the appropriate file by selecting from a dialog box.
+The icon bar and menu commands can be used to customize
+the graph.
+
+<p>As of June 2003, Grace 1.5.12 can export graphics to (E)PS, PDF, MIF, SVG,
+PNM, JPEG and PNG formats. It has many useful features like built-in statistics
+and analysis functions (e.g. correlation, histogram), fitting, splines, etc.,
+and it also sports a built-in programming language.
 
 <p>
-Gnuplot has an interactive command interface. To get the vectors in
+<H3><A NAME="sec362"/>11.5.2. ROOT</H3>
+
+<p><EM>ROOT</EM> is a powerful object-oriented data analysis framework,
+with strong support for plotting and graphics in general.
+ROOT has been developed at CERN, and it is distributed under a BSD-like license.
+
+<p>An interesting thing is ROOT is based on <EM>CINT</EM>, a ``C/C++ interpreter''
+aimed at processing C/C++ scripts. It is probably harder to get started
+using ROOT than with either Gnuplot or Grace, but if you are serious
+about analysing simulation results, you will find that ROOT gives you
+as much power and flexibility that is unthinkable in the other two programs.
+
+<p>Curt Brune's page at Stanford (http://www.slac.stanford.edu/~curt/omnet++/)
+shows examples what you can achieve using using ROOT with OMNeT++.
+
+<p>
+<H3><A NAME="sec363"/>11.5.3. Using Gnuplot</H3>
+
+<p>Gnuplot has an interactive command interface. To get the vectors in
 <SAMP>mysim1.vec</SAMP> and <SAMP>mysim4.vec</SAMP> plotted in the same graph,
 you can type:
 
@@ -14322,23 +15017,15 @@ However, we recommend that you use OMNeT++'s Plove tool, described in
 an earlier section.
 
 <p>
-Xmgr is an X/Motif based program, with a menu-driven
-graphical interface. You load the appropriate file by selecting in a
-dialog box. The icon bar and menu commands can be used to customize
-the graph. Some say that Xmgr can produce nicer output that Gnuplot
-and it is easier to use. Xmgr cannot do 3D and only runs on Unixes
-with X and Motif installed. Xmgr also has a batch interface so you can
-use it from scripts too.
 
 <p>
-
 <HR>
 <font size=+0><EM>[Converted LaTeX --> HTML by <a href="http://www.best.com/~quong/ltoh.html">ltoh</a>]</EM></font><br>
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jun 18 2003</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -14350,12 +15037,12 @@ Unnamed Web page
 </TITLE>
 </HEAD>
 <BODY>
-<hr><H1><A NAME="sec345"/>11. Parallel Execution</H1>
-<a name="cha:parallel-execution"/>
+<hr><H1><A NAME="sec364"/>12. Parallel Execution</H1>
+<a name="cha:parallel-execution"></a>
 
-<p><hr><H2><A NAME="sec346"/>11.1. OMNeT++ support for parallel execution</H2>
+<p><hr><H2><A NAME="sec365"/>12.1. OMNeT++ support for parallel execution</H2>
 
-<p><H3><A NAME="sec347"/>11.1.1. Introduction to Parallel Discrete Event Simulation</H3>
+<p><H3><A NAME="sec366"/>12.1.1. Introduction to Parallel Discrete Event Simulation</H3>
 
 <p>OMNeT++ supports parallel execution of large
 simulations. The following paragraphs provide a brief picture
@@ -14406,7 +15093,7 @@ above:
 </OL>
 
 <p>
-<H3><A NAME="sec348"/>11.1.2. In work</H3>
+<H3><A NAME="sec367"/>12.1.2. In work</H3>
 
 <p>Parallel simulation support in OMNeT++ has recently been reimplemented.
 The new code is currently being refined and tested, and it will be
@@ -14420,8 +15107,8 @@ available in the following releases.
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jun 14 2003</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -14433,17 +15120,17 @@ Unnamed Web page
 </TITLE>
 </HEAD>
 <BODY>
-<hr><H1><A NAME="sec349"/>12. Customization and Embedding</H1>
-<a name="cha:the-design-of-omnet"/>
+<hr><H1><A NAME="sec368"/>13. Customization and Embedding</H1>
+<a name="cha:the-design-of-omnet"></a>
 
-<p><hr><H2><A NAME="sec350"/>12.1. Architecture</H2>
+<p><hr><H2><A NAME="sec369"/>13.1. Architecture</H2>
 
 <p>OMNeT++ has a modular architecture. The following diagram shows the
 high-level architecture of OMNeT++ simulations:
 
 <p>
   <DIV ALIGN=center>
-    <img src="usmanFig18.gif">
+    <img src="figures/usmanFig18.gif">
     <center><i>Figure: Architecture of OMNeT++ simulation programs</i></center>
   </DIV>
 
@@ -14530,8 +15217,8 @@ each other:
 </UL>
 
 <p>
-<hr><H2><A NAME="sec351"/>12.2. Embedding OMNeT++</H2>
-<a name="sec:ch-opp-design:embedding"/>
+<hr><H2><A NAME="sec370"/>13.2. Embedding OMNeT++</H2>
+<a name="sec:ch-opp-design:embedding"></a>
 
 <p>Embedding is a special issue. You probably
 do not want to keep the appearance of the simulation program, so you
@@ -14564,7 +15251,7 @@ linkage.
 
 <p>
 
-<p><hr><H2><A NAME="sec352"/>12.3. Sim: the simulation kernel and class library</H2>
+<p><hr><H2><A NAME="sec371"/>13.3. Sim: the simulation kernel and class library</H2>
 
 <p>There is little to say about Sim here, since chapters
 <a href="#cha:simple-modules">[click]</a> and <a href="#cha:the-simulation-library">[click]</a>,
@@ -14579,7 +15266,7 @@ chapters.
 and class library reside in the <tt>src/sim/</tt> subdirectory.
 
 <p>
-<H3><A NAME="sec353"/>12.3.1. The global simulation object</H3>
+<H3><A NAME="sec372"/>13.3.1. The global simulation object</H3>
 
 <p>The global <tt>simulation</tt> object is an instance of <tt>cSimulation</tt>.
 It stores the model, and encapsulated much of the functionality
@@ -14594,7 +15281,7 @@ of setting up and running a simulation model.
 
 <p>
 
-<p><H3><A NAME="sec354"/>12.3.2. The coroutine package</H3>
+<p><H3><A NAME="sec373"/>13.3.2. The coroutine package</H3>
 
 <p>The coroutine package is in fact two coroutine
 packages:
@@ -14616,7 +15303,7 @@ base class.
 
 <p>
 
-<p><hr><H2><A NAME="sec355"/>12.4. The Model Component Library</H2>
+<p><hr><H2><A NAME="sec374"/>13.4. The Model Component Library</H2>
 
 <p>All model components (simple module definitions and their C++
 implementations, compound module types, channels, networks,
@@ -14748,7 +15435,7 @@ compiler, one for each channel definition. </TD></TR>
 
 <p>
 
-<p><hr><H2><A NAME="sec356"/>12.5. Envir, Tkenv and Cmdenv</H2>
+<p><hr><H2><A NAME="sec375"/>13.5. Envir, Tkenv and Cmdenv</H2>
 
 <p>The source code for the user interface of OMNeT++ resides in the
 <SAMP>src/envir/</SAMP> directory (common part) and in the <SAMP>src/cmdenv/</SAMP>,
@@ -14759,7 +15446,7 @@ they are completely separated from the simulation kernel.
 
 <p>
 
-<p><H3><A NAME="sec357"/>12.5.1. The main() function</H3>
+<p><H3><A NAME="sec376"/>13.5.1. The main() function</H3>
 
 <p>The <tt>main()</tt> function of OMNeT++ simply sets up the user
 interface and runs it. Actual simulation is done in
@@ -14767,7 +15454,7 @@ interface and runs it. Actual simulation is done in
 
 <p>
 
-<p><H3><A NAME="sec358"/>12.5.2. The cEnvir interface</H3>
+<p><H3><A NAME="sec377"/>13.5.2. The cEnvir interface</H3>
 
 <p>The <tt>cEnvir</tt> class has only one instance, a global object
 called <tt>ev</tt>:
@@ -14800,8 +15487,8 @@ dynamically allocated simulation application object (derived from
 </UL>
 
 <p>
-<H3><A NAME="sec359"/>12.5.3. Customizing Envir</H3>
-<a name="sec:ch-opp-design:customization"/>
+<H3><A NAME="sec378"/>13.5.3. Customizing Envir</H3>
+<a name="sec:ch-opp-design:customization"></a>
 
 <p>Certain aspects of Envir can be customized via plugin interfaces.
 Plugin interfaces are presented in the form of C++ abstract classes
@@ -14834,7 +15521,7 @@ documented in section <a href="#sec:ch-run-sim:general-section">[click]</a>.
 
 <p>
 
-<p><H3><A NAME="sec360"/>12.5.4. Implementation of the user interface: simulation applications</H3>
+<p><H3><A NAME="sec379"/>13.5.4. Implementation of the user interface: simulation applications</H3>
 
 <p>The base class for simulation application is <tt>TOmnetApp</tt>.
 Specific user interfaces such as <tt>TCmdenv</tt>,
@@ -14875,8 +15562,8 @@ Specific user interfaces such as <tt>TCmdenv</tt>,
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jun 14 2003</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -14888,8 +15575,8 @@ Unnamed Web page
 </TITLE>
 </HEAD>
 <BODY>
-<hr><H1><A NAME="sec361"/>13. NED Language Grammar</H1>
-<a name="cha:ned-language-grammar"/>
+<hr><H1><A NAME="sec380"/>14. NED Language Grammar</H1>
+<a name="cha:ned-language-grammar"></a>
 
 <p>The NED language, the network topology description language of
 OMNeT++ will be given using the extended BNF notation.
@@ -15111,8 +15798,8 @@ in the C++ sources with the Define_Function macro.<br>
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>May  1 2003</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
@@ -15124,16 +15811,16 @@ Unnamed Web page
 </TITLE>
 </HEAD>
 <BODY>
-<H1><A NAME="sec362"/>14. References</H1>
+<H1><A NAME="sec381"/>15. References</H1>
 
-<p><a name="bib-Entacher02">[EHW02]&nbsp;&nbsp;
+<p><a name="bib-Entacher02"></a>[EHW02]&nbsp;&nbsp;
 K. Entacher, B. Hechenleitner, and S. Wegenkittl.
  A simple OMNeT++ queuing experiment using parallel streams.
   PARALLEL NUMERICS'02 - Theory and Applications, pages 89-105,
   2002.
  Editors: R. Trobec, P. Zinterhof, M. Vajtersic and A. Uhl.
 
-<p><a name="bib-Akaroa99">[EPM99]&nbsp;&nbsp;
+<p><a name="bib-Akaroa99"></a>[EPM99]&nbsp;&nbsp;
 G. Ewing, K. Pawlikowski, and D. McNickle.
  Akaroa2: Exploiting network computing by distributing stochastic
   simulation.
@@ -15141,50 +15828,50 @@ G. Ewing, K. Pawlikowski, and D. McNickle.
   ESM'99, Warsaw, June 1999, pages 175-181. International Society for
   Computer Simulation, 1999.
 
-<p><a name="bib-Goldberg91what">[Gol91]&nbsp;&nbsp;
+<p><a name="bib-Goldberg91what"></a>[Gol91]&nbsp;&nbsp;
 David Goldberg.
  What every computer scientist should know about floating-point
   arithmetic.
   ACM Computing Surveys, 23(1):5-48, 1991.
 
-<p><a name="bib-Hellekalek98">[Hel98]&nbsp;&nbsp;
+<p><a name="bib-Hellekalek98"></a>[Hel98]&nbsp;&nbsp;
 P. Hellekalek.
  Don't trust parallel Monte Carlo.
   ACM SIGSIM Simulation Digest, 28(1):82-89, jul 1998.
  Author's page is a great source of information, see
   http://random.mat.sbg.ac.at/.
 
-<p><a name="bib-JAR">[HPvdL95]&nbsp;&nbsp;
+<p><a name="bib-JAR"></a>[HPvdL95]&nbsp;&nbsp;
 Jan Heijmans, Alex Paalvast, and Robert van~der Leij.
  Network simulation using the JAR compiler for the OMNeT++
   simulation system.
  Technical report, Technical University of Budapest, Dept. of
   Telecommunications, 1995.
 
-<p><a name="bib-Jain91">[Jai91]&nbsp;&nbsp;
+<p><a name="bib-Jain91"></a>[Jai91]&nbsp;&nbsp;
 Raj Jain.
   The Art of Computer Systems Performance Analysis.
  Wiley, New York, 1991.
 
-<p><a name="bib-JCh85">[JC85]&nbsp;&nbsp;
+<p><a name="bib-JCh85"></a>[JC85]&nbsp;&nbsp;
 Raj Jain and Imrich Chlamtac.
  The $P^2$ algorithm for dynamic calculation of quantiles and
   histograms without storing observations.
   Communications of the ACM, 28(10):1076-1085, 1985.
 
-<p><a name="bib-Kofoed95">[Kof95]&nbsp;&nbsp;
+<p><a name="bib-Kofoed95"></a>[Kof95]&nbsp;&nbsp;
 Stig Kofoed.
  Portable multitasking in C++.
   Dr. Dobb's Journal, November 1995.
  Download sorce from http://www.ddj.com/ftp/1995/1995.11/mtask.zip/.
 
-<p><a name="bib-LGThesis">[Len94]&nbsp;&nbsp;
+<p><a name="bib-LGThesis"></a>[Len94]&nbsp;&nbsp;
 G&aacute;bor Lencse.
  Graphical network editor for OMNeT++.
  Master's thesis, Technical University of Budapest, 1994.
  In Hungarian.
 
-<p><a name="bib-LEcuyer02">[LSCK02]&nbsp;&nbsp;
+<p><a name="bib-LEcuyer02"></a>[LSCK02]&nbsp;&nbsp;
 P. L'Ecuyer, R. Simard, E. J. Chen, and W. D. Kelton.
  An objected-oriented random-number package with many long streams and
   substreams.
@@ -15192,7 +15879,7 @@ P. L'Ecuyer, R. Simard, E. J. Chen, and W. D. Kelton.
  Source code can be downloaded from
   http://www.iro.umontreal.ca/~lecuyer/papers.html.
 
-<p><a name="bib-Matsumoto98">[MN98]&nbsp;&nbsp;
+<p><a name="bib-Matsumoto98"></a>[MN98]&nbsp;&nbsp;
 M. Matsumoto and T. Nishimura.
  Mersenne Twister: A 623-dimensionally equidistributed uniform
   pseudorandom number generator.
@@ -15201,56 +15888,56 @@ M. Matsumoto and T. Nishimura.
  Source code can be downloaded from
   http://www.math.keio.ac.jp/~matumoto/emt.html.
 
-<p><a name="bib-OMNeTExamples">[MvMvdW95]&nbsp;&nbsp;
+<p><a name="bib-OMNeTExamples"></a>[MvMvdW95]&nbsp;&nbsp;
 Andr&eacute; Maurits, George van Montfort, and Gerard van~de Weerd.
  OMNeT++ extensions and examples.
  Technical report, Technical University of Budapest, Dept. of
   Telecommunications, 1995.
 
-<p><a name="bib-BFS86">[PFS86]&nbsp;&nbsp;
+<p><a name="bib-BFS86"></a>[PFS86]&nbsp;&nbsp;
 Bratley P., B. L. Fox, and L. E. Schrage.
   A Guide to Simulation.
  Springer-Verlag, New York, 1986.
 
-<p><a name="bib-Pawlikowsky02">[PJL02]&nbsp;&nbsp;
+<p><a name="bib-Pawlikowsky02"></a>[PJL02]&nbsp;&nbsp;
 K. Pawlikowski, H. Jeong, and J. Lee.
  On credibility of simulation studies of telecommunication networks.
   IEEE Communications Magazine, pages 132-139, jan 2002.
 
-<p><a name="bib-PongorOmnet">[Pon91]&nbsp;&nbsp;
+<p><a name="bib-PongorOmnet"></a>[Pon91]&nbsp;&nbsp;
 Gy&ouml;rgy Pongor.
  OMNET: An object-oriented network simulator.
  Technical report, Technical University of Budapest, Dept. of
   Telecommunications, 1991.
 
-<p><a name="bib-PongorSSM92">[Pon92]&nbsp;&nbsp;
+<p><a name="bib-PongorSSM92"></a>[Pon92]&nbsp;&nbsp;
 Gy&ouml;rgy Pongor.
  Statistical Synchronization: A different approach of parallel
   discrete event simulation.
  Technical report, University of Technology, Data Communications
   Laboratory, Lappeenranta, Finland, 1992.
 
-<p><a name="bib-PongorSSM93">[Pon93]&nbsp;&nbsp;
+<p><a name="bib-PongorSSM93"></a>[Pon93]&nbsp;&nbsp;
 Gy&ouml;rgy Pongor.
  On the efficiency of the Statistical Synchronization Method.
  In  Proceedings of the European Simulation Symposium (ESS'93),
   Delft, The Netherlands, Oct. 25-28, 1993. International Society for Computer
   Simulation, 1993.
 
-<p><a name="bib-AVTDK">[Var92]&nbsp;&nbsp;
+<p><a name="bib-AVTDK"></a>[Var92]&nbsp;&nbsp;
 Andr&aacute;s Varga.
  OMNeT++ - portable simulation environment in C++.
  In  Proceedings of the Annual Students' Scientific Conference
   (TDK), 1992. Technical University of Budapest, 1992.
  In Hungarian.
 
-<p><a name="bib-AVThesis">[Var94]&nbsp;&nbsp;
+<p><a name="bib-AVThesis"></a>[Var94]&nbsp;&nbsp;
 Andr&aacute;s Varga.
  Portable user interface for the OMNeT++ simulation system.
  Master's thesis, Technical University of Budapest, 1994.
  In Hungarian.
 
-<p><a name="bib-KSplit98">[Var98a]&nbsp;&nbsp;
+<p><a name="bib-KSplit98"></a>[Var98a]&nbsp;&nbsp;
 Andr&aacute;s Varga.
  K-split - on-line density estimation for simulation result
   collection.
@@ -15258,7 +15945,7 @@ Andr&aacute;s Varga.
   Nottingham, UK, October 26-28. International Society for Computer
   Simulation, 1998.
 
-<p><a name="bib-Paramtop98">[Var98b]&nbsp;&nbsp;
+<p><a name="bib-Paramtop98"></a>[Var98b]&nbsp;&nbsp;
 Andr&aacute;s Varga.
  Parameterized topologies for simulation programs.
  In  Proceedings of the Western Multiconference on Simulation
@@ -15266,20 +15953,20 @@ Andr&aacute;s Varga.
   Diego, CA, January 11-14. International Society for Computer Simulation,
   1998.
 
-<p><a name="bib-Edu99">[Var99]&nbsp;&nbsp;
+<p><a name="bib-Edu99"></a>[Var99]&nbsp;&nbsp;
 Andr&aacute;s Varga.
  Using the OMNeT++ discrete event simulation system in education.
   IEEE Transactions on Education, 42(4):372, November 1999.
  on CD-ROM issue; journal contains abstract.
 
-<p><a name="bib-VZThesis">[Vas96]&nbsp;&nbsp;
+<p><a name="bib-VZThesis"></a>[Vas96]&nbsp;&nbsp;
 Zolt&aacute;n Vass.
  PVM extension of OMNeT++ to support Statistical
   Synchronization.
  Master's thesis, Technical University of Budapest, 1996.
  In Hungarian.
 
-<p><a name="bib-KSplit97">[VF97]&nbsp;&nbsp;
+<p><a name="bib-KSplit97"></a>[VF97]&nbsp;&nbsp;
 Andr&aacute;s Varga and Babak Fakhamzadeh.
  The K-Split algorithm for the PDF approximation of
   multi-dimensional empirical distributions without storing observations.
@@ -15287,13 +15974,13 @@ Andr&aacute;s Varga and Babak Fakhamzadeh.
   (ESS'97), Passau, Germany, October 19-22, 1997, pages 94-98. International
   Society for Computer Simulation, 1997.
 
-<p><a name="bib-Flex97">[VP97]&nbsp;&nbsp;
+<p><a name="bib-Flex97"></a>[VP97]&nbsp;&nbsp;
 Andr&aacute;s Varga and Gy&ouml;rgy Pongor.
  Flexible topology description language for simulation programs.
  In  Proceedings of the 9th European Simulation Symposium
   (ESS'97), Passau, Germany, October 19-22, 1997, pages 225-229, 1997.
 
-<p><a name="bib-WelchBook">[Wel95]&nbsp;&nbsp;
+<p><a name="bib-WelchBook"></a>[Wel95]&nbsp;&nbsp;
 Brent Welch.
   Practical Programming in Tcl and Tk.
  Prentice-Hall, 1995.
@@ -15304,8 +15991,8 @@ Brent Welch.
 <ADDRESS>
 <A href="http://www.best.com/~quong">Russell W. Quong</A>
 (<A href="mailto:quong@best.com"><SAMP>quong@best.com</SAMP></A>)
-Last modified: <fontmaroon><samp>Jun 16 2003</samp></font>
-(LaTeX doc modified: <fontmaroon><samp>Jun 15 2003</samp></font>)<br>
+Last modified: <fontmaroon><samp>Dec  7 2003</samp></font>
+(LaTeX doc modified: <fontmaroon><samp>Jun 14 2003</samp></font>)<br>
 </ADDRESS>
 </BODY>
 </HTML>
