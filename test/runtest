@@ -5,7 +5,7 @@
 #
 TESTFILES=$*
 if [ "x$TESTFILES" = "x" ]; then TESTFILES='*.test'; fi
-if ! [ -d work ];  then mkdir work; fi
+if [ ! -d work ];  then mkdir work; fi
 perl opp_test.pl -g -v $TESTFILES || exit 1
 echo
 (cd work; opp_makemake -f -u cmdenv; make) || exit 1
