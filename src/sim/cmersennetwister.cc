@@ -20,6 +20,7 @@
 #include "util.h"
 #include "crng.h"
 #include "cexception.h"
+#include "cconfig.h"
 #include "mersennetwister.h"
 
 
