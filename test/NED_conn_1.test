@@ -50,14 +50,16 @@ void {Gen}::activity()
 {
     for (int i=0; i<gate("out")->size(); i++)
     {
+        ev << i << ":";
         cGate *g = gate("out",i);
         cChannel *ch = g->channel();
-        cSimpleChannel *sch = check_and_cast<cSimpleChannel *>(ch);
-
-        ev << i << ":";
-        if (sch->delay())  ev << "delay=" << *(sch->delay()) << ":";
-        if (sch->error())  ev << "error=" << *(sch->error()) << ":";
-        if (sch->datarate())  ev << "datarate=" << *(sch->datarate()) << ":";
+        if (ch)
+        {
+            cSimpleChannel *sch = check_and_cast<cSimpleChannel *>(ch);
+            if (sch->delay())  ev << "delay=" << *(sch->delay()) << ":";
+            if (sch->error())  ev << "error=" << *(sch->error()) << ":";
+            if (sch->datarate())  ev << "datarate=" << *(sch->datarate()) << ":";
+        }
         ev << endl;
     }
 }
