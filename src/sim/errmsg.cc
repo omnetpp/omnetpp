@@ -73,9 +73,9 @@ char *emsg[] = {
   "Badly connected gate",                                // eBADGATE
   "Gate not connected to anything",                      // eNOTCONN
   "",                                                    // eBADKEY
-  "Simple module definition not found",                  // eNOMODDEF
-  "Channel definition not found",                        // eNOCHANDEF
-  "Network not found",                                   // eNOSUCHNET
+  "",                                                    // eNOMODDEF
+  "",                                                    // eNOCHANDEF
+  "",                                                    // eNOSUCHNET
   "PVM: function call error in %s",                      // ePVM
   "Bad command line argument",                           // eBADARGS
   "Cannot schedule a message to the past",               // eBACKSCHED
