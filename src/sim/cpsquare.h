@@ -39,7 +39,7 @@ class cPSquare : public cDensityEstBase
 
   public:
     cPSquare(cPSquare& r);
-    cPSquare (char *namestr=NULL, int cells=10);
+    explicit cPSquare(char *namestr=NULL, int cells=10);
     virtual ~cPSquare();
 
      // redefined functions

@@ -78,7 +78,7 @@ class cDensityEstBase : public cStdDev
   public:
     cDensityEstBase(cDensityEstBase& r) : cStdDev(r)
             {setName(r.name());firstvals=NULL;operator=(r);}
-    cDensityEstBase (char *s=NULL);    // name of collected data
+    explicit cDensityEstBase(char *s=NULL);    // name of collected data
     virtual ~cDensityEstBase();
 
     // redefined functions

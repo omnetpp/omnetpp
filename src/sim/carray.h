@@ -42,7 +42,7 @@ class cBag : public cObject {
      int firstfree;
    public:
      cBag(cBag& bag);
-     cBag(char *namestr=NULL, int esiz=4,int siz=0,int delt=5);
+     explicit cBag(char *namestr=NULL, int esiz=4,int siz=0,int delt=5);
      virtual ~cBag()         {clear();}
 
      // redefined functions
@@ -85,7 +85,7 @@ class cArray : public cObject {
 
    public:
         cArray(cArray& list);
-        cArray(char *namestr=NULL, int siz=0, int dt=10);
+        explicit cArray(char *namestr=NULL, int siz=0, int dt=10);
         virtual ~cArray();
 
         // redefined functions

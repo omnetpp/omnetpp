@@ -96,7 +96,7 @@ class cKSplit : public cDensityEstBase
   public:
 
     cKSplit(cKSplit& r);
-    cKSplit(char *namestr=NULL);
+    explicit cKSplit(char *namestr=NULL);
     virtual ~cKSplit();
 
     // redefined functions

@@ -53,7 +53,7 @@ class cTransientDetection : public cObject
 
   public:
     cTransientDetection(cTransientDetection& r) : cObject() {setName(r.name());operator=(r);}
-    cTransientDetection(char *s=NULL) : cObject(s) {}
+    explicit cTransientDetection(char *s=NULL) : cObject(s) {}
     virtual ~cTransientDetection()  {}
 
     // redefined functions
@@ -82,7 +82,7 @@ class cAccuracyDetection : public cObject
 
   public:
     cAccuracyDetection(cAccuracyDetection& r) : cObject() {setName(r.name());operator=(r);}
-    cAccuracyDetection(char *s=NULL) : cObject(s)  {}
+    explicit cAccuracyDetection(char *s=NULL) : cObject(s)  {}
     virtual ~cAccuracyDetection()  {}
 
     // redefined functions
@@ -125,7 +125,7 @@ class cTDExpandingWindows : public cTransientDetection
 
   public:
     cTDExpandingWindows(cTDExpandingWindows& r);
-    cTDExpandingWindows(int reps=3, int minw=4, double wind=1.3,
+    explicit cTDExpandingWindows(int reps=3, int minw=4, double wind=1.3,
                         double acc=0.3,
                         PostTDFunc f=NULL,void *p=NULL);
     virtual ~cTDExpandingWindows();
@@ -167,7 +167,7 @@ class cADByStddev : public cAccuracyDetection
 
   public:
     cADByStddev(cADByStddev& r);
-    cADByStddev(double acc=0.01, int reps=3, PostADFunc f=NULL, void *p=NULL);
+    explicit cADByStddev(double acc=0.01, int reps=3, PostADFunc f=NULL, void *p=NULL);
     virtual ~cADByStddev()  {}
 
     // redefined functions

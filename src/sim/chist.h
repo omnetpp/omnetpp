@@ -65,7 +65,7 @@ class cEqdHistogramBase : public cHistogramBase //--LG
   public:
     cEqdHistogramBase(cEqdHistogramBase& r) : cHistogramBase(r)
         {setName(r.name());operator=(r);}
-    cEqdHistogramBase (char *s=NULL, int numcells=10);
+    explicit cEqdHistogramBase(char *s=NULL, int numcells=10);
 
     // redefined functions
     virtual char *className()  {return "cEqdHistogramBase";}
@@ -97,7 +97,7 @@ class cLongHistogram : public cEqdHistogramBase
   public:
     cLongHistogram(cLongHistogram& r) : cEqdHistogramBase(r)
         {setName(r.name());operator=(r);}
-    cLongHistogram(char *s=NULL, int numcells=10);
+    explicit cLongHistogram(char *s=NULL, int numcells=10);
     virtual ~cLongHistogram();
 
     // redefined functions
@@ -123,7 +123,7 @@ class cDoubleHistogram : public cEqdHistogramBase
   public:
     cDoubleHistogram(cDoubleHistogram& r) : cEqdHistogramBase(r)
           {setName(r.name());operator=(r);}
-    cDoubleHistogram(char *s=NULL, int numcells=10);
+    explicit cDoubleHistogram(char *s=NULL, int numcells=10);
     virtual ~cDoubleHistogram();
 
     // redefined functions

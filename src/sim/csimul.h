@@ -102,7 +102,7 @@ class cSimulation : public cObject
      bool scalarfile_header_written;
 
    public:
-     cSimulation(char *namestr, cHead *h=NULL);
+     explicit cSimulation(char *namestr, cHead *h=NULL);
      virtual ~cSimulation();
 
      // redefined functions

@@ -55,7 +55,7 @@ class cQueue : public cObject
 
     public:
         cQueue(cQueue& queue);
-        cQueue(char *namestr=NULL, CompareFunc cmp=NULL, bool a=FALSE);
+        explicit cQueue(char *namestr=NULL, CompareFunc cmp=NULL, bool a=FALSE);
         virtual ~cQueue();
 
         // redefined functions

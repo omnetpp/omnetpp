@@ -121,7 +121,7 @@ class cTopology : public cObject
     sTopoNode *target;
 
   public:
-    cTopology(char *name=NULL);
+    explicit cTopology(char *name=NULL);
     cTopology(cTopology& topo);
     virtual ~cTopology();
 

@@ -89,7 +89,7 @@ class cMessage : public cObject
 
       public:
         cMessage(cMessage& msg);
-        cMessage(char *name=NULL, int k=0, long len=1, int pri=0, bool err=FALSE);
+        explicit cMessage(char *name=NULL, int k=0, long len=1, int pri=0, bool err=FALSE);
         virtual ~cMessage() {}     /*parlistp is deleted in ~cObject()*/
 
         // redefined functions

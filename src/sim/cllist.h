@@ -61,7 +61,7 @@ class cLinkedList : public cObject
 
     public:
         cLinkedList(cLinkedList& llist);
-        cLinkedList(char *namestr=NULL);
+        explicit cLinkedList(char *namestr=NULL);
         virtual ~cLinkedList();
 
         // redefined functions

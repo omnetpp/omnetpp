@@ -44,7 +44,7 @@ class cOutFileMgr : public cObject
     FILE *handle;      // file ptr of output file
 
   public:
-    cOutFileMgr(char *s=NULL);
+    explicit cOutFileMgr(char *s=NULL);
     virtual ~cOutFileMgr();
 
     // redefined functions
@@ -104,7 +104,7 @@ class cOutVector : public cObject
 
   public:
     cOutVector(cOutVector& r) : cObject(r) {setName(r.name());operator=(r);}
-    cOutVector (char *s=NULL, int tupl=1);
+    explicit cOutVector(char *s=NULL, int tupl=1);
     virtual ~cOutVector();
 
     // redefined functions

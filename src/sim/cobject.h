@@ -98,10 +98,10 @@ class cObject
         // create object with no name and default owner:
         cObject();
 
-        // create object with given namestr and default owner:
-        cObject(char *name_str);
+        // create object with given name and default owner:
+        explicit cObject(char *name_str);
 
-        // create object with given namestr and specified owner:
+        // create object with given name and specified owner:
         cObject(char *name_str, cObject *ownerobj );
 
         // virtual destructor:

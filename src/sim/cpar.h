@@ -124,8 +124,8 @@ class cPar : public cObject
 
    public:
      cPar(cPar& other);
-     cPar(char *namestr=NULL);
-     cPar(char *namestr, cPar& other);
+     explicit cPar(char *namestr=NULL);
+     explicit cPar(char *namestr, cPar& other);
 
      virtual ~cPar();
 
@@ -247,8 +247,8 @@ class cModulePar : public cPar
 
    public:
      cModulePar(cPar& other);
-     cModulePar(char *namestr=NULL);
-     cModulePar(char *namestr, cPar& other);
+     explicit cModulePar(char *namestr=NULL);
+     explicit cModulePar(char *namestr, cPar& other);
 
      virtual ~cModulePar();
 

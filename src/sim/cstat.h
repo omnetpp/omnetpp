@@ -36,7 +36,7 @@ class cStatistic : public cObject
 
   public:
     cStatistic(cStatistic& r) : cObject() {setName(r.name());td=NULL;ra=NULL;operator=(r);}
-    cStatistic(char *s=NULL) : cObject(s) {td=NULL;ra=NULL;genk=0;}
+    explicit cStatistic(char *s=NULL) : cObject(s) {td=NULL;ra=NULL;genk=0;}
     virtual ~cStatistic()  {}
 
     // redefined functions
@@ -92,7 +92,7 @@ class cStdDev : public cStatistic
 
   public:
     cStdDev(cStdDev& r) : cStatistic(r) {setName(r.name());operator=(r);}
-    cStdDev(char *s=NULL) : cStatistic(s)  {sum=sqrsum=min_samples=max_samples=num_samples=0;}
+    explicit cStdDev(char *s=NULL) : cStatistic(s)  {sum=sqrsum=min_samples=max_samples=num_samples=0;}
     virtual ~cStdDev() {}
 
     // redefined functions
@@ -134,7 +134,7 @@ class cWeightedStdDev : public cStdDev
 
   public:
     cWeightedStdDev(cWeightedStdDev& r) : cStdDev(r) {setName(r.name());operator=(r);}
-    cWeightedStdDev(char *s=NULL) : cStdDev(s)  {sum_weights=0;}
+    explicit cWeightedStdDev(char *s=NULL) : cStdDev(s)  {sum_weights=0;}
     virtual ~cWeightedStdDev() {}
 
     // redefined functions

@@ -37,7 +37,7 @@ class cPacket : public cMessage
       short _protocol;
       short _pdu;
     public:
-      cPacket (char *name=NULL, short protocol=0, short pdu=0) :
+      explicit cPacket(char *name=NULL, short protocol=0, short pdu=0) :
          cMessage(name,MK_PACKET) {_protocol=protocol;_pdu=pdu;}
       cPacket (cPacket& m);
       virtual cObject *dup() {return new cPacket(*this);}

@@ -112,7 +112,7 @@ class cFSM : public cObject
         int _state;
         char *_statename;   // just a ptr to an external string
     public:
-        cFSM(char *name=NULL);
+        explicit cFSM(char *name=NULL);
         cFSM(cFSM& vs) {setName(vs.name());operator=(vs);}
         virtual char *className()  {return "cFSM";}
         virtual cObject *dup()   {return new cFSM(*this);}

@@ -60,7 +60,7 @@ class cGate : public cObject
 
     public:
         cGate(cGate& gate);
-        cGate(char *s, char tp);
+        explicit cGate(char *s, char tp);
         virtual ~cGate() {}
 
         // redefined functions

@@ -746,15 +746,12 @@ Dec 19,1999
      getHead() removed            (it can be expressed as q.remove(q.head()))
    Compatibility #defines added to defs.h for insertHead(a), peekTail(),
    peekHead(), getTail().
-Jan 4,2000
+Jan 4-15,2000
  - cPar::setStringValue() now accepts NULL (and treats it as "")
- - cPar caveat discovered: beware of constructs like
+ - the 'explicit' keyword was added to a number of constructors, most notably
+   cPar(char *name). The reason was that constructs like
       cPar p = "foo";
-   It does NOT compile as you would expect!!! It doesn't compile to
-   cPar p;p="foo";, but rather to cPar p("foo")! That is, "foo" becomes the
-   object's NAME instead of its value. This is one of the quirks of C++...
-   The solution it to use explicit parens to denote the constructor call:
-      cPar p() = "foo";
-   This is a hint that it might be ALWAYS a good idea to write empty parens
-   in constructor calls (like 'new cMessage()' instead of 'new cMessage') to
-   avoid such surprises. Java does that too.
+   did NOT compile as one would expect (i.e. to a cPar() construction followed
+   by an assignment), but to a cPar p("foo") constructor call, which is quite
+   different! ("foo" becomes the object's NAME instead of its value.)
+   The explicit keyword is supported to prevent this from happening.

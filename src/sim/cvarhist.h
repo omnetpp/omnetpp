@@ -68,9 +68,9 @@ class cVarHistogram : public cHistogramBase //--LG
   public:
     cVarHistogram(cVarHistogram& r) : cHistogramBase(r)
        {setName(r.name());bin_bounds=NULL;operator=(r);}
-    cVarHistogram(char *s=NULL,
-                 int numcells=11,
-                 int transformtype=HIST_TR_AUTO_EPC_DBL);
+    explicit cVarHistogram(char *s=NULL,
+                           int numcells=11,
+                           int transformtype=HIST_TR_AUTO_EPC_DBL);
     virtual ~cVarHistogram();
 
     // redefined functions
