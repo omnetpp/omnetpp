@@ -39,8 +39,7 @@ ALL : "$(OUTDIR)\token.exe"
 
 
 CLEAN :
-	-@erase "$(INTDIR)\tknmods_n.obj"
-	-@erase "$(INTDIR)\tknring_n.obj"
+	-@erase "$(INTDIR)\token_n.obj"
 	-@erase "$(INTDIR)\token.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
@@ -95,8 +94,7 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\token.pdb" /debug /machine:I386 /out:"$(OUTDIR)\token.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
-	"$(INTDIR)\tknmods_n.obj" \
-	"$(INTDIR)\tknring_n.obj" \
+	"$(INTDIR)\token_n.obj" \
 	"$(INTDIR)\token.obj"
 
 "$(OUTDIR)\token.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -116,8 +114,7 @@ ALL : "$(OUTDIR)\token.exe"
 
 
 CLEAN :
-	-@erase "$(INTDIR)\tknmods_n.obj"
-	-@erase "$(INTDIR)\tknring_n.obj"
+	-@erase "$(INTDIR)\token_n.obj"
 	-@erase "$(INTDIR)\token.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(INTDIR)\vc60.pdb"
@@ -172,8 +169,7 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\token.pdb" /debug /machine:I386 /out:"$(OUTDIR)\token.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@"
 LINK32_OBJS= \
-	"$(INTDIR)\tknmods_n.obj" \
-	"$(INTDIR)\tknring_n.obj" \
+	"$(INTDIR)\token_n.obj" \
 	"$(INTDIR)\token.obj"
 
 "$(OUTDIR)\token.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -193,8 +189,7 @@ ALL : "$(OUTDIR)\token.exe"
 
 
 CLEAN :
-	-@erase "$(INTDIR)\tknmods_n.obj"
-	-@erase "$(INTDIR)\tknring_n.obj"
+	-@erase "$(INTDIR)\token_n.obj"
 	-@erase "$(INTDIR)\token.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\token.exe"
@@ -246,8 +241,7 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\token.pdb" /machine:I386 /out:"$(OUTDIR)\token.exe" /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
-	"$(INTDIR)\tknmods_n.obj" \
-	"$(INTDIR)\tknring_n.obj" \
+	"$(INTDIR)\token_n.obj" \
 	"$(INTDIR)\token.obj"
 
 "$(OUTDIR)\token.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -267,8 +261,7 @@ ALL : "$(OUTDIR)\token.exe"
 
 
 CLEAN :
-	-@erase "$(INTDIR)\tknmods_n.obj"
-	-@erase "$(INTDIR)\tknring_n.obj"
+	-@erase "$(INTDIR)\token_n.obj"
 	-@erase "$(INTDIR)\token.obj"
 	-@erase "$(INTDIR)\vc60.idb"
 	-@erase "$(OUTDIR)\token.exe"
@@ -320,8 +313,7 @@ BSC32_SBRS= \
 LINK32=link.exe
 LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\token.pdb" /machine:I386 /out:"$(OUTDIR)\token.exe" /libpath:"@OMNETPP_LIB_DIR@"
 LINK32_OBJS= \
-	"$(INTDIR)\tknmods_n.obj" \
-	"$(INTDIR)\tknring_n.obj" \
+	"$(INTDIR)\token_n.obj" \
 	"$(INTDIR)\token.obj"
 
 "$(OUTDIR)\token.exe" : "$(OUTDIR)" $(DEF_FILE) $(LINK32_OBJS)
@@ -342,14 +334,15 @@ LINK32_OBJS= \
 
 
 !IF "$(CFG)" == "token - Win32 Debug Tkenv" || "$(CFG)" == "token - Win32 Debug Cmdenv" || "$(CFG)" == "token - Win32 Release Tkenv" || "$(CFG)" == "token - Win32 Release Cmdenv"
-SOURCE=.\tknmods.ned
+
+SOURCE=.\token.ned
 
 !IF  "$(CFG)" == "token - Win32 Debug Tkenv"
 
-InputPath=.\tknmods.ned
-InputName=tknmods
+InputPath=.\token.ned
+InputName=token
 
-".\tknmods_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\token_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
@@ -358,10 +351,10 @@ InputName=tknmods
 
 !ELSEIF  "$(CFG)" == "token - Win32 Debug Cmdenv"
 
-InputPath=.\tknmods.ned
-InputName=tknmods
+InputPath=.\token.ned
+InputName=token
 
-".\tknmods_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\token_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
@@ -370,10 +363,10 @@ InputName=tknmods
 
 !ELSEIF  "$(CFG)" == "token - Win32 Release Tkenv"
 
-InputPath=.\tknmods.ned
-InputName=tknmods
+InputPath=.\token.ned
+InputName=token
 
-".\tknmods_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\token_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
@@ -382,10 +375,10 @@ InputName=tknmods
 
 !ELSEIF  "$(CFG)" == "token - Win32 Release Cmdenv"
 
-InputPath=.\tknmods.ned
-InputName=tknmods
+InputPath=.\token.ned
+InputName=token
 
-".\tknmods_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\token_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
@@ -394,66 +387,9 @@ InputName=tknmods
 
 !ENDIF
 
-SOURCE=.\tknmods_n.cpp
+SOURCE=.\token_n.cpp
 
-"$(INTDIR)\tknmods_n.obj" : $(SOURCE) "$(INTDIR)"
-
-
-SOURCE=.\tknring.ned
-
-!IF  "$(CFG)" == "token - Win32 Debug Tkenv"
-
-InputPath=.\tknring.ned
-InputName=tknring
-
-".\tknring_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat
-	@echo off
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<<
-
-
-!ELSEIF  "$(CFG)" == "token - Win32 Debug Cmdenv"
-
-InputPath=.\tknring.ned
-InputName=tknring
-
-".\tknring_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat
-	@echo off
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<<
-
-
-!ELSEIF  "$(CFG)" == "token - Win32 Release Tkenv"
-
-InputPath=.\tknring.ned
-InputName=tknring
-
-".\tknring_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat
-	@echo off
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<<
-
-
-!ELSEIF  "$(CFG)" == "token - Win32 Release Cmdenv"
-
-InputPath=.\tknring.ned
-InputName=tknring
-
-".\tknring_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat
-	@echo off
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<<
-
-
-!ENDIF
-
-SOURCE=.\tknring_n.cpp
-
-"$(INTDIR)\tknring_n.obj" : $(SOURCE) "$(INTDIR)"
+"$(INTDIR)\token_n.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\token.cpp

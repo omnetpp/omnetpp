@@ -70,7 +70,7 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 #------------------------------------------------------------------------------
 
 # Object files from this directory to link
-OBJS= tknmods_n.o tknring_n.o token.o
+OBJS= token_n.o token.o
 
 $(TARGET): $(OBJS) $(EXRA_OBJS) Makefile 
 	$(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
@@ -78,17 +78,11 @@ $(TARGET): $(OBJS) $(EXRA_OBJS) Makefile
 purify: $(OBJS) $(EXRA_OBJS)   Makefile
 	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
 
-tknmods_n.o: tknmods_n.cc
-	$(CXX) -c $(NEDCOPTS) tknmods_n.cc
+token_n.o: token_n.cc
+	$(CXX) -c $(NEDCOPTS) token_n.cc
 
-tknmods_n.cc: tknmods.ned
-	$(NEDC) $(INCLUDE_PATH) tknmods.ned
-
-tknring_n.o: tknring_n.cc
-	$(CXX) -c $(NEDCOPTS) tknring_n.cc
-
-tknring_n.cc: tknring.ned
-	$(NEDC) $(INCLUDE_PATH) tknring.ned
+token_n.cc: token.ned
+	$(NEDC) $(INCLUDE_PATH) token.ned
 
 token.o: token.cc
 	$(CXX) -c $(COPTS) token.cc
@@ -108,7 +102,6 @@ re-makemake-m:
 	opp_makemake -f -m    #recreate Makefile.in
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-tknmods_n.o: tknmods_n.cc
-tknring_n.o: tknring_n.cc
+token_n.o: token_n.cc
 token.o: token.cc \
   token.h
