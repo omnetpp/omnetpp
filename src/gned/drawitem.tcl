@@ -297,14 +297,12 @@ proc draw_module {c key} {
     global ned
 
     # top-left corner
-    set x1 $ned($key,disp-xpos)
-    set y1 $ned($key,disp-ypos)
-    if {$x1==""} {set x1 10}
-    if {$y1==""} {set y1 10}
+    set x1 [resolveDispStrArg $ned($key,disp-xpos) 10]
+    set y1 [resolveDispStrArg $ned($key,disp-ypos) 10]
 
     # size
-    set sx $ned($key,disp-xsize)
-    set sy $ned($key,disp-ysize)
+    set sx [resolveDispStrArg $ned($key,disp-xsize) ""]
+    set sy [resolveDispStrArg $ned($key,disp-ysize) ""]
 
     set bb [$c bbox submod]
     if {$sx==""} {
