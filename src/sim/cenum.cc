@@ -130,7 +130,7 @@ void cEnum::insert(int key, const char *str)
     if (vect[k].key == key && vect[k].string && strcmp(vect[k].string, str))
     {
         // oops! same keys but different strings!
-        throw new cException("Key mismatch for enum %s: %s and %s have the same value (%d)\n",
+        throw new cException("Key mismatch for enum %s: %s and %s have the same value (%d)",
                 name(), vect[k].string, str, key);
     }
     else if (vect[k].key != key)
