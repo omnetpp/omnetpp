@@ -141,6 +141,17 @@ proc defaultPopup {key} {
 
 #-------------- temp solution: -----------------
 
+set files [glob -nocomplain -- {icons/*_vs.gif}]
+foreach f $files {
+  set name [string tolower [file tail [file rootname $f]]]
+  if [catch {image type $name}] {
+     puts -nonewline "$name "
+     image create photo $name -file $f
+  }
+}
+puts ""
+
+
 # getNodeInfo --
 #
 # This user-supplied function gets called by the tree widget to get info about
@@ -148,7 +159,7 @@ proc defaultPopup {key} {
 # nodes, everything else comes from this function.
 #
 proc getNodeInfo {w op {key {}}} {
-    global ned
+    global ned ddesc
 
     switch $op {
 
@@ -168,10 +179,11 @@ proc getNodeInfo {w op {key {}}} {
       }
 
       icon {
-        if {$ned($key,type)=="nedfile"} {
-          return "idir"
+        set type $ned($key,type)
+        if [info exist ddesc($type,treeicon)] {
+          return $ddesc($type,treeicon)
         } else {
-          return "ifile"
+          return $ddesc(root,treeicon)
         }
       }
 
@@ -180,11 +192,14 @@ proc getNodeInfo {w op {key {}}} {
       }
 
       children {
+        # FIXME: ordering!
         return $ned($key,childrenkeys)
       }
 
       haschildren {
-        # DBG: return [expr [llength $ned($key,childrenkeys)]!=0]
+        # DBG:
+        return [expr [llength $ned($key,childrenkeys)]!=0]
+
         set type $ned($key,type)
         if {$type=="root" || $type=="nedfile"} {
           return [expr [llength $ned($key,childrenkeys)]!=0]

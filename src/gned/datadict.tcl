@@ -71,6 +71,7 @@ set ddict(common,order)           {}
 # root
 #
 set ddesc(root,parents)           {}
+set ddesc(root,treeicon)          {cogwheel_vs}
 set ddict(root,type)              {root}
 
 #
@@ -78,6 +79,7 @@ set ddict(root,type)              {root}
 #
 set ddesc(nedfile,plusindent)      {}
 set ddesc(nedfile,parents)         {root}
+set ddesc(nedfile,treeicon)        {file_vs}
 set ddict(nedfile,type)            {nedfile}
 set ddict(nedfile,name)            {untitled.ned}
 set ddict(nedfile,filename)        {untitled.ned}
@@ -88,6 +90,7 @@ set ddict(nedfile,banner-comment)  {}
 #
 set ddesc(imports,plusindent)       {}
 set ddesc(imports,parents)          {nedfile}
+set ddesc(imports,treeicon)         {incl_vs}
 set ddict(imports,type)             {imports}
 set ddict(imports,banner-comment)   {}
 set ddict(imports,right-comment)    {}
@@ -108,6 +111,7 @@ set ddict(import,right-comment)    {}
 #
 set ddesc(channel,plusindent)       {}
 set ddesc(channel,parents)          {nedfile}
+set ddesc(channel,treeicon)         {chan_vs}
 set ddict(channel,type)             {channel}
 set ddict(channel,name)             {Channel}
 set ddict(channel,banner-comment)   {}
@@ -130,6 +134,7 @@ set ddict(chanattr,value)            {}
 #
 set ddesc(network,plusindent)       {}
 set ddesc(network,parents)          {nedfile}
+set ddesc(network,treeicon)         {net_vs}
 set ddict(network,type)             {network}
 set ddict(network,name)             {Network}
 set ddict(network,banner-comment)   {}
@@ -143,6 +148,7 @@ set ddict(network,like-name)        {}
 #
 set ddesc(simple,plusindent)       {}
 set ddesc(simple,parents)          {nedfile}
+set ddesc(simple,treeicon)         {simple_vs}
 set ddict(simple,type)             {simple}
 set ddict(simple,name)             {Simple}
 set ddict(simple,banner-comment)   {}
@@ -154,6 +160,7 @@ set ddict(simple,trailing-comment) {}
 #
 set ddesc(module,plusindent)       {}
 set ddesc(module,parents)          {nedfile}
+set ddesc(module,treeicon)         {compound_vs}
 set ddict(module,type)             {module}
 set ddict(module,name)             {Module}
 set ddict(module,banner-comment)   {}
