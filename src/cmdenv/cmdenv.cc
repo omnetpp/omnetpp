@@ -308,6 +308,7 @@ void TCmdenvApp::simulate()
     catch (cTerminationException *e)
     {
         stopClock();
+        displayError(e);
         delete e;
         return;
     }
