@@ -1,6 +1,11 @@
 What's New
 ==========
 
+In the OMNeT++ 2.0 beta 5 version (June 2000)
+--------------------------------------------
+Fixed the errors/warnings that occurred when compiling 2.0b4 with gcc 2.95.2.
+
+
 In the OMNeT++ 2.0 beta 4 version (May 2000)
 --------------------------------------------
 This is release is a preparation to the 2.0 final release: most of the changes
