@@ -602,7 +602,7 @@ double cNEDNetworkBuilder::evalFunction(FunctionNode *node, cModule *parentmodp,
     // operators should be handled specially
     if (!strcmp(funcname,"index"))
     {
-        if (!submodp)
+        if (!submodp) // FIXME allow it for nedc compatibility -- should mean index() of parent module
             throw new cException("dynamic module builder: evaluate: index operator cannot be used outside a submodule");
         return submodp->index();
     }
