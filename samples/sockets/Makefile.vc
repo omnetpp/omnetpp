@@ -158,7 +158,9 @@ exthttpclient.obj: exthttpclient.cc \
   httpmsg_m.h \
   csocketrtscheduler.h \
   netpkt_m.h
-httpclient.obj: httpclient.cc
+httpclient.obj: httpclient.cc \
+  httpmsg_m.h \
+  netpkt_m.h
 httpmsg_m.obj: httpmsg_m.cc \
   httpmsg_m.h \
   netpkt_m.h

@@ -7,12 +7,21 @@
 // `license' for details on this and other legal matters.
 //
 
+#ifdef _MSC_VER
+#pragma warning(disable:4786)
+#endif
 
+#include <fstream>
 #include "httpserver.h"
 #include "httpmsg_m.h"
 
 
 Define_Module( HTTPServer );
+
+void HTTPServer::initialize()
+{
+    QueueBase::initialize();
+}
 
 simtime_t HTTPServer::startService(cMessage *msg)
 {
@@ -61,7 +70,7 @@ std::string HTTPServer::processHTTPCommand(const char *httpReqHeader)
 
     // parse URI and get corresponding content
     pos = cmd.find(" ",4);
-    std::string uri(cmd,4,pos);
+    std::string uri(cmd,4,pos-4);
 
     std::string content = getContentFor(uri.c_str());
 
@@ -78,11 +87,36 @@ std::string HTTPServer::processHTTPCommand(const char *httpReqHeader)
 
 std::string HTTPServer::getContentFor(const char *uri)
 {
-    std::string content = std::string("<html><body>"
-                          "<h3>This is page ") + uri + "</h3>"
-                          "<a href='foo'>foo</a> "
-                          "<a href='bar'>bar</a> "
-                          "<a href='foo'>baz</a> "
-                          "</body></html>\r\n";
+    // try to find in cache
+    StringMap::iterator it = htdocs.find(uri);
+    if (it!=htdocs.end())
+        return it->second;
+
+    // not in cache -- load and cache it
+    std::string fname = std::string("htdocs/")+(strcmp(uri,"/")==0 ? "index.html" : uri);
+#ifdef _MSC_VER
+    for (int i=0; i<fname.length(); i++)
+        if (fname.at(i)=='/')
+            fname.at(i) = '\\';
+#endif
+
+    std::ifstream file(fname.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
+    if (file.fail())
+    {
+        std::string content = "<html><body><h3>404 Not found</h3></body></html>";
+        htdocs[uri] = content;
+        return content;
+    }
+
+    long size = file.tellg();
+    file.seekg (0, std::ios::beg);
+    char *buffer = new char [size];
+    file.read (buffer, size);
+    file.close();
+    std::string content(buffer, size);
+    delete [] buffer;
+
+    ev << "URI=" << uri << " ---> " << content << "\n";
+    htdocs[uri] = content;
     return content;
 }

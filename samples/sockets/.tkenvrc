@@ -15,7 +15,7 @@ option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{0}
 option bubbles	{1}
-option animation_speed	{2.56}
+option animation_speed	{3}
 option bkpts_enabled	{1}
 option expressmode_autoupdate	{1}
 config rununtil-event	{}
@@ -35,5 +35,5 @@ config display-treeview	{1}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "httpNet" "HTTPNet" "2" "553x499+19+137"
+inspector "httpNet" "HTTPNet" "2" "553x435+22+29"
 

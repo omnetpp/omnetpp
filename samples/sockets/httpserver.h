@@ -11,6 +11,8 @@
 #ifndef __HTTPSERVER_H
 #define __HTTPSERVER_H
 
+#include <map>
+#include <string>
 #include "queuebase.h"
 
 /**
@@ -21,6 +23,10 @@ class HTTPServer : public QueueBase
   public:
     Module_Class_Members(HTTPServer,QueueBase,0);
 
+    typedef std::map<std::string, std::string> StringMap;
+    StringMap htdocs;
+
+    virtual void initialize();
     virtual simtime_t startService(cMessage *msg);
     virtual void endService(cMessage *msg);
     std::string processHTTPCommand(const char *req);

@@ -9,6 +9,7 @@
 
 
 #include <omnetpp.h>
+#include "httpmsg_m.h"
 
 
 class HTTPClient : public cSimpleModule
@@ -16,17 +17,54 @@ class HTTPClient : public cSimpleModule
   public:
     Module_Class_Members(HTTPClient,cSimpleModule,0);
 
+    int addr;
+    int srvAddr;
+
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
+    void sendHTTPRequest();
+    void processHTTPReply(HTTPMsg *httpMsg);
 };
 
 Define_Module(HTTPClient);
 
 void HTTPClient::initialize()
 {
+    addr = par("addr");
+    srvAddr = par("srvAddr");
+
+    cMessage *timer = new cMessage("timer");
+    scheduleAt(simTime()+par("sendIaTime").doubleValue(), timer);
 }
 
 void HTTPClient::handleMessage(cMessage *msg)
 {
+    if (msg->isSelfMessage())
+    {
+        sendHTTPRequest();
+        scheduleAt(simTime()+par("sendIaTime").doubleValue(), msg);
+    }
+    else
+    {
+        processHTTPReply(check_and_cast<HTTPMsg *>(msg));
+    }
+}
+
+void HTTPClient::sendHTTPRequest()
+{
+    const char *header = "GET / HTTP/1.0\r\n\r\n";
+
+    // assemble and send HTTP request
+    HTTPMsg *httpMsg = new HTTPMsg();
+    httpMsg->setPayload(header);
+    httpMsg->setDestAddress(srvAddr);
+    httpMsg->setSrcAddress(addr);
+
+    send(httpMsg,"out");
+}
+
+void HTTPClient::processHTTPReply(HTTPMsg *httpMsg)
+{
+    delete httpMsg;
 }
 
