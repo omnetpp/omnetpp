@@ -436,7 +436,7 @@ std::string cEnvir::gets(const char *prompt, const char *defaultreply)
 {
     buffer[0] = '\0';
     if (defaultreply) strncpy(buffer,defaultreply,ENVIR_TEXTBUF_LEN-1);
-    buffer[ENVIR_TEXTBUF_LEN]='\0';
+    buffer[ENVIR_TEXTBUF_LEN-1]='\0';
     bool esc = app->gets(prompt, buffer, ENVIR_TEXTBUF_LEN-1);
     if (esc)
         throw new cException(eCANCEL);
