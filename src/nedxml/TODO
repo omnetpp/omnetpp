@@ -1,7 +1,0 @@
-- expressions in channel defs
-- check: all comments must end in a newline!! (or be empty)
-- nedgen: indent should be skipped if we're not at end of line (ie prev comment="")
-- use vsnprintf() instead of vsprintf everywhere (also in sim/!)
-- update ned.dtd to NED-2! properties, chan-attrs instead of parameters, 
-- disp string should become a property, etc.
-- comments as child elements (w/ content as body) rather than attributes
