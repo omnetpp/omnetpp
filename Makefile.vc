@@ -72,7 +72,7 @@ gned:
 	cd /d $(OMNETPP_SRC_DIR:/=\)\gned && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 plove:
-	@ rem needs no build
+	cd /d $(OMNETPP_SRC_DIR:/=\)\plove && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 utils:
 	cd /d $(OMNETPP_SRC_DIR:/=\)\utils &&  $(MAKE) $(MOPTS) $(MAKEFILE)

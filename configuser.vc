@@ -32,6 +32,9 @@ AR=link.exe -lib
 SHLIB_LD=...
 NEDC=$(OMNETPP_ROOT)/bin/nedc.exe
 
+# Tk's wish application, used by Plove. You'll almost surely need to change this path!
+WISH=$(TK_LIB_DIR)/../bin/wish82.exe
+
 #
 # configuration
 #
@@ -59,8 +62,11 @@ PVM_INCL_DIR=d:/work/pvm3/include
 PVM_LIBS=
 SYS_LIBS=
 
+#
+# If you don't want to build some of the components below, substitute
+# missing-library below
+#
 TKENV_IF_POSSIBLE=tkenv
-TVENV_IF_POSSIBLE=missing-library
 SIM_PVM_IF_POSSIBLE=sim_pvm
 GNED_IF_POSSIBLE=gned
 
