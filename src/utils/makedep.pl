@@ -6,13 +6,14 @@
 #
 # Usage:
 #
-#       % makedep.pl [flags] <file_list>
+#       % makedep.pl [flags] [--] <file_list>
 #
 # where possible flags are:
 #   -Y
 #   -I<include-dir>
 #   -I <include-dir>
 #   --stdout
+#   --f<makefile-name>
 #   --makefile <makefile-name>
 #   --objsuffix <object-file-suffix>
 #   --objdir <object-file-directory>
@@ -20,10 +21,14 @@
 #
 # <file_list> is the list of C/C++ files for which dependencies must be generated.
 #
+# -- marks the end of the flags (optional).
+#
 # -Y causes makedep to ignore (and also leave out from the dependencies)
 #    the include files that cannot be found.
 #
 # -I adds directories to the include search path
+#
+# -f,--makefile specifies the makefile in which to substitute. Defaults to "Makefile".
 #
 # --stdout causes dependencies to be written to the standard output,
 #    (instead of updating a makefile)
@@ -74,18 +79,28 @@ $Makefile = "Makefile";
 #  This first thing this script does is parse the command line
 #  for Include Path specifications, options, and files.
 #
+$accept_flags = 1;
 while (@ARGV)
 {
     $arg = shift @ARGV;
 
-    if ($arg eq "-I")
+    if (!$accept_flags)
+    {
+        # after "--", everything is treated as input file name
+        push(@CFileList, $arg);
+    }
+    elsif ($arg eq "--")
+    {
+        $accept_flags = 0;
+    }
+    elsif ($arg eq "-I")
     {
         $dir_name = shift @ARGV;
         push(@IncludePath, $dir_name);
     }
     elsif ($arg =~ /^-I/)
     {
-        $arg =~ s/-I//;
+        $arg =~ s/^-I//;
         push(@IncludePath, $arg);
     }
     elsif ($arg eq "-Y")
@@ -95,6 +110,11 @@ while (@ARGV)
     elsif ($arg eq "--stdout")
     {
         $UseStdout = 1;
+    }
+    elsif ($arg =~ /^-f/)
+    {
+        $arg =~ s/^-f//;
+        $Makefile = $arg;
     }
     elsif ($arg eq "--makefile")
     {
@@ -281,7 +301,9 @@ sub update_makefile {
     $makefiletext = "";
     open(INPUT, $Makefile) || die "makedep: cannot open $Makefile: $!";
     while (<INPUT>) {
-      $makefiletext .= $_;
+        # some "\n", "\r" magic, because on Cygwin there's a chaos about this
+        s/[\r\n]*$//;
+        $makefiletext .= $_."\n";
     }
     close(INPUT);
 
