@@ -1,8 +1,8 @@
 What's New
 ==========
 
-In the OMNeT++ 2.0 final version (January 2001)
------------------------------------------------
+In the OMNeT++ 2.0 final version (February 2001)
+------------------------------------------------
 There are a number of enhancements mainly on the GUI parts, GNED and Tkenv,
 but the simulation API remains fully compatible. Bugs that were reported
 since the 2.0b5 release have largely been fixed. All those who cared to
@@ -23,19 +23,19 @@ behaviour of the "step within module" command (^F4) was refined. I added a
 Performance status bar (it displays events/sec, simulated sec/sec,
 events/simulated sec readings). Another toolbar shows (among others) the number
 of message objects currently in existence -- this feature may help you discover
-the most common kind of memory leaks. Display string handling was improved:
-modules in a module vector may now be positioned individually, and submodule
-display strings may use the parent module's parameters, too.
-See src/tkenv/ChangeLog for details.
+the most common kind of memory leaks: forgetting to delete messages.
+Display string handling was improved: modules in a module vector may now be
+positioned individually, and submodule display strings may use the parent
+module's parameters, too. See src/tkenv/ChangeLog for details.
 
 The most important addition to GNED is its new, experimental XML support (needs
 the TclXML-1.2 package). XML will play a much more significant role in future
-releases of OMNeT++, as a universal data exchange format. Other enhancements:
-GNED now accepts NED file names as command line arguments. The .gnedrc file
-was introduced to store settings between runs. Further Properties dialogs
-(Channels, Connections) were implemented, and GNED is more careful now when
-you want to exit the program. File|Save all was also implemented. A number of
-other fixes improved the robustness and reliability of the code.
+releases of OMNeT++, as a universal data exchange format. Many smaller
+enhancements: GNED now accepts NED file names as command line arguments;
+.gnedrc was introduced; more & better Properties dialogs (Channel, Connection,
+Module, etc. Properties); GNED is more careful now when you want to exit the
+program; the File menu now has a Save all item. Plus a number of other fixes
+to improve the robustness and reliability of the code.
 
 A short section was added to the manual about parallel simulation in general.
 
