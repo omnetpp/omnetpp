@@ -294,13 +294,13 @@ fi
 #----------------------
 # Check for wish.
 #----------------------
-AC_CHECK_PROGS(WISH, $WISH wish wish84 wish83 wish82 cygwish cygwish84 cygwish83 cygwish82, nope)
+AC_CHECK_PROGS(WISH, $WISH wish wish84 cygwish cygwish84, nope)
 if test "$WISH" = nope -a ! "$EMBED_TCL_CODE" = yes; then
    AC_MSG_WARN([cannot find wish, part of Tcl/Tk - Plove will not work])
 fi
 
 #----------------------
-# Check for Tcl/Tk.
+# Check for Tcl/Tk (version 8.4 required).
 #----------------------
 OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
 if test $tcltk_ok = no; then
@@ -319,36 +319,16 @@ if test $tcltk_ok = no; then
     fi
 fi
 if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84,
+    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84,
                   tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
 fi
 if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.4 -ltcl8.4,
+    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.4 -ltcl8.4,
                   tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.4 -ltcl8.4")
 fi
 if test $tcltk_ok = no -a "$cygwin" = yes; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
+    OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
                   tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk83 -ltcl83,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk83 -ltcl83")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.3 -ltcl8.3,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.3 -ltcl8.3")
-fi
-if test $tcltk_ok = no -a "$cygwin" = yes; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk83 -lcygtcl83,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk83 -lcygtcl83")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk82 -ltcl82,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk82 -ltcl82")
-fi
-if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.2 -ltcl8.2,
-                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.2 -ltcl8.2")
 fi
 if test $tcltk_ok = yes; then
     TKENV_IF_POSSIBLE=tkenv
