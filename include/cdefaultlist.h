@@ -24,7 +24,7 @@
 
 /**
  * Internal class, used as a base class for cModule. cDefaultList acts
- * as a "soft owner" (see object ownership discussion in cObjct documentation).
+ * as a "soft owner" (see object ownership discussion in cObject documentation).
  * Do not subclass your own classes from cDefaultList.
  *
  * @ingroup Containers
