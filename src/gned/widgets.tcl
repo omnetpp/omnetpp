@@ -1095,7 +1095,7 @@ proc showTextOnceDialog {key} {
     set w .once
     createOkCancelDialog $w "Hint"
     destroy $w.buttons.cancelbutton
-    wm geometry $w "340x160"
+    wm geometry $w "360x180"
 
     text $w.f.text -relief solid -bd 1 -wrap word
     $w.f.text insert 1.0 $text

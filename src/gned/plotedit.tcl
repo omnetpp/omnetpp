@@ -322,6 +322,8 @@ proc resetModuleBounds {} {
     }
 
     markCanvasDirty
+
+    showTextOnceDialog "resetModuleBounds"
 }
 
 # refreshModuleBounds --

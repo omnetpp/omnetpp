@@ -175,7 +175,7 @@ proc createMainWindow {} {
       {command -command {drawBindings $gned(canvas)} -label {Submodule/connection drawing mode}}
       {command -command {selectOrMoveBindings $gned(canvas)} -label {Select/resize mode}}
       {separator}
-      {command -command {resetModuleBounds}  -label {Fit parent module size} -underline 1}
+      {command -command {resetModuleBounds}  -label {Fit compound module to contents} -underline 1}
       {separator}
       {command -command {propertiesSelected $gned(canvas)} -label {Properties of selected item...}}
       {command -command {drawOptionsSelected $gned(canvas)} -label {Appearance of selected item...}}
@@ -313,7 +313,7 @@ proc createMainWindow {} {
     set help_tips($gned(graphics-toolbar).select) {Select, move or resize items}
     set help_tips($gned(graphics-toolbar).delete) {Delete selected items}
     set help_tips($gned(graphics-toolbar).grid)   {Snap to grid on/off}
-    set help_tips($gned(graphics-toolbar).bounds) {Fit parent module size}
+    set help_tips($gned(graphics-toolbar).bounds) {Fit compound module area to contents}
     set help_tips($gned(graphics-toolbar).props)  {Properties of selected item}
     set help_tips($gned(graphics-toolbar).opts)   {Appearance of selected item}
 
@@ -542,5 +542,41 @@ proc busy {{msg {}}} {
     }
 }
 
-set hints(insert-imports) {Here you can list other NED files which contain\
-modules that you want to use in this NED file.}
+#----------------
+set hints(insert-imports) {Imports contain the list of other NED files, from which\
+you use modules or channels in this NED file. You can import NED files from other\
+directories as well -- if you use nedtool you'll be able to specify NED import\
+directories via the -I command-line option.
+
+If you want to edit these imports later, you'll find them in the object tree on the left.}
+#----------------
+set hints(insert-channel) {You are creating a new channel type,\
+which you can use later as a prototype for creating connections.
+
+If you want to edit this channel later, you'll find it in the object tree on the left.}
+#----------------
+set hints(insert-simple)  {You are creating a new simple module type,\
+which you can use as building blocks for compund modules.
+
+If you want to edit this simple module later, you'll find it in the object tree on the left.\
+You can also drag it on the canvas to create an instance.}
+#----------------
+set hints(insert-module)  {You are creating a new compound module type.
+
+You can edit it graphically or in NED form in the main area, \
+and you can also find it in the in the object tree on the left.}
+#----------------
+set hints(insert-network)  {You are creating a new "network", which is an instance\
+of a compound (or simple) module type that you can simulate. You'll have\
+to specify which compound module you want to simulate as a network, and\
+you can set parameters.
+
+For further editing, you'll find this "network" component in the object tree on the left.}
+#----------------
+set hints(resetModuleBounds)  {This will make the compound module's area \
+(that is, the background rectange) always auto-adjust to the submodules in it. \
+To turn off this behavior, drag the right or bottom edge of the background rectangle\
+to the desired size.}
+
+
+
