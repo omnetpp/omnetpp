@@ -77,7 +77,7 @@ struct sDescrItem {
 };
 
 /**
- * Represents a module interface: gates and parameter names.
+ * Describes the interface (modules, gates,...) of a module type.
  *
  * cModuleInterfaces are the compiled form of NED declarations of simple
  * modules. They are created in the following way:
@@ -272,7 +272,7 @@ class SIM_API cModuleType : public cObject
     virtual cObject *dup() const     {return new cModuleType(*this);}
     //@}
 
-    /** @name FIXME */
+    /** @name Module creation */
     //@{
 
     /**
@@ -283,8 +283,8 @@ class SIM_API cModuleType : public cObject
     cModule *create(const char *name, cModule *parentmod, bool local=true);
 
     /**
-     * Builds adds submodules and internal connections to the empty compound
-     * module passed.
+     * DEPRECATED. Use <code>mod->buildInside()</code> instead; that's what
+     * this method does anyway.
      */
     void buildInside(cModule *mod);
 
@@ -305,6 +305,14 @@ class SIM_API cModuleType : public cObject
      *  - gates to be connected before initialize()
      */
     cModule *createScheduleInit(char *name, cModule *parentmod);
+
+    /**
+     * Returns pointer to the module interface object corresponding to this
+     * module type.
+     *
+     * @see cModuleInterface
+     */
+    cModuleInterface *moduleInterface();
     //@}
 };
 
@@ -581,8 +589,8 @@ class SIM_API cClassRegister : public cObject
  * to the appropriate type by hand. The class must have been registered
  * previously with the Register_Class() macro. This function internally
  * relies on the cClassRegister class.
- * 
- * Example: 
+ *
+ * Example:
  *
  * <code>cObject *param = createOne( "cPar" );</code>
  *

@@ -416,6 +416,27 @@ bool cModule::isOnLocalMachine() const
     return simulation.netInterface()==NULL || simulation.netInterface()->isLocalMachineIn( machinev );
 }
 
+int cModule::buildInside()
+{
+    // temporarily switch context
+    cModule *oldcontext = simulation.contextModule();
+    simulation.setContextModule(this);
+
+    // check parameters and gates
+    cModuleInterface *iface = moduleType()->moduleInterface();
+    iface->checkParametersOf(this);
+
+    // call doBuildInside() in this context
+    doBuildInside();
+
+    if (oldcontext)
+        simulation.setContextModule( oldcontext );
+    else
+        simulation.setGlobalContext();
+
+    return 0;
+}
+
 void cModule::initialize()
 {
     // Called before simulation starts (or usually after dynamic module was created).

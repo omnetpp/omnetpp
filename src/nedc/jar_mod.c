@@ -105,14 +105,14 @@ void do_simp_or_comp (char *mname, int is_simple)
              fprintf (tmp,
                   "    virtual const char *className() const {return \"%s\";}\n"
                   "\n"
-                  "    // function to build submodules\n"
-                  "    virtual void buildInside();\n"
+                  "  protected:\n"
+                  "    virtual void doBuildInside();\n"
                   "};\n\n",
                   mname);
 
              fprintf (tmp, "Define_Module( %s );\n\n", mname);
 
-             fprintf (tmp, "void %s::buildInside()\n", mname);
+             fprintf (tmp, "void %s::doBuildInside()\n", mname);
              fprintf (tmp, "{\n");
              fprintf (tmp, "\tcModule *mod = this;\n");
 
@@ -635,7 +635,7 @@ void end_submodule (void)
         */
 
         print_remark (tmp, "build function call:");
-        fprintf (tmp, "%smodtype->buildInside( %s );\n",
+        fprintf (tmp, "%s%s->buildInside();\n",
                       indent, submodule_var);
 
         if (jar_strlen (submodule_nr) != 0)

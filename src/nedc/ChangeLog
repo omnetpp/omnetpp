@@ -1,3 +1,7 @@
+2002-10-19  Andras Varga
+
+	* adopted to kernel changes around buildInside(), see include/ChangeLog
+
 2002-10-07  Andras Varga
 
 	* jar_mod.c: changed Interface macro names to ModuleInterface (see also

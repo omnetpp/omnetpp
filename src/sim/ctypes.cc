@@ -379,35 +379,15 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, bool local
          simulation.setSystemModule( mod );
     }
 
-    // find the module interface
-    if (!iface)
-        iface = findModuleInterface( interface_name );
-    if (!iface)
-        throw new cException(eNOMODIF, interface_name, name());
-
-    // add parameters and gates to the new module
+    // add parameters and gates to the new module, using module interface object
+    cModuleInterface *iface = moduleInterface();
     iface->addParametersGatesTo( mod );
     return mod;
 }
 
 void cModuleType::buildInside(cModule *mod)
 {
-    cModule *oldcontext = simulation.contextModule();
-    simulation.setContextModule( mod );
-
-    if (!iface)
-        iface = findModuleInterface( interface_name );
-    if (!iface)
-        throw new cException(eNOMODIF, interface_name, name());
-
-    iface->checkParametersOf( mod );
-
     mod->buildInside();
-
-    if (oldcontext)
-        simulation.setContextModule( oldcontext );
-    else
-        simulation.setGlobalContext();
 }
 
 cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
@@ -430,6 +410,16 @@ cModule *cModuleType::createScheduleInit(char *modname, cModule *parentmod)
     mod->scheduleStart( simulation.simTime() );
     mod->callInitialize();
     return mod;
+}
+
+
+cModuleInterface *cModuleType::moduleInterface()
+{
+    if (!iface)
+        iface = findModuleInterface( interface_name );
+    if (!iface)
+        throw new cException(eNOMODIF, interface_name, name());
+    return iface;
 }
 
 //=========================================================================

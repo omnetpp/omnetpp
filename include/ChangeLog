@@ -1,3 +1,14 @@
+2002-10-19  Andras Varga
+
+	* cmodule.h, ctype.h: refactoring on dynamic module creation: instead of
+	modtype->buildInside(mod), one should now write mod->buildInside(),
+	which is more logical.
+	(Former syntax still works -- a cModuleType::buildInside() is still
+	provided for backward compatibility). buildInside() delegates task
+	to doBuildInside() (a new method), so it's doBuildInside() which
+	should be redefined in subclasses, and also nedc generates now
+	doBuildInside() code.
+
 2002-10-16  Andras Varga
 
 	* csimul.h: cSimulation: methods warning(), setWarnings(bool), 

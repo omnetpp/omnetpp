@@ -171,6 +171,18 @@ class SIM_API cModule : public cObject
     //@{
 
     /**
+     * Should be refined in subclasses representing compound modules
+     * to build submodule and internal connections of this module.
+     * This default implementation does nothing.
+     *
+     * This method should not be called directly, only via buildInside();
+     * this method is declared protected to enforce this.
+     *
+     * @see buildInside()
+     */
+    virtual void doBuildInside() {}
+
+    /**
      * Multi-stage initialization hook. This default implementation does
      * single-stage init, that is, calls initialize() if stage is 0.
      */
@@ -206,7 +218,11 @@ class SIM_API cModule : public cObject
     cModule(const cModule& mod);
 
     /**
-     * Constructor.
+     * Constructor. Note that module objects should not be created directly,
+     * only via their cModuleType objects. cModuleType::create() will do
+     * all housekeeping tasks associated with module creation (assigning
+     * an ID to the module, inserting it into the global <code>simulation</code>
+     * object (see cSimulation), etc.).
      */
     cModule(const char *name, cModule *parentmod);
 
@@ -313,10 +329,27 @@ class SIM_API cModule : public cObject
     void setMachinePar(const char *pnam, const char *val);
 
     /**
-     * Builds submodules and internal connections. This default implementation
-     * does nothing.
+     * In compound modules, this method can be called to build submodules
+     * and internal connections after module creation. This method is a
+     * wrapper around doBuildInside().
+     *
+     * It does the following:
+     *
+     *    - 1. checks if module parameters and gates conform to the module interface
+     *    (cModuleInterface object, generated from NED declaration of module)
+     *
+     *    - 2. calls doBuildInside(), switching to the context of this module
+     *    for the duration of the call (using simulation.setContextModule()).
+     *
+     * Note: semantic has changed -- in OMNeT++ 2.2 and earlier versions,
+     * doBuildInside() did not exist, its role was fulfilled by this method.
+     * After 2.2, the return value of this method was changed from void
+     * to int deliberately to cause compile error in older code, in order to
+     * call attention to the semantics change. (Returned value can be ignored.)
+     *
+     * @see doBuildInside()
      */
-    virtual void buildInside() {}
+    virtual int buildInside();
     //@}
 
     /** @name Information about the module itself. */
@@ -709,7 +742,8 @@ class SIM_API cSimpleModule : public cModule
     cSimpleModule(const cSimpleModule& mod);
 
     /**
-     * Constructor.
+     * Constructor. Note that module objects should not be created directly,
+     * only via their cModuleType objects. See cModule constructor for more info.
      */
     cSimpleModule(const char *name, cModule *parentmod, unsigned stk);
 
@@ -1194,7 +1228,8 @@ class SIM_API cCompoundModule : public cModule
     cCompoundModule(const cCompoundModule& mod);
 
     /**
-     * Constructor.
+     * Constructor. Note that module objects should not be created directly,
+     * only via their cModuleType objects. See cModule constructor for more info.
      */
     cCompoundModule(const char *name, cModule *parentmod);
 
