@@ -24,6 +24,9 @@ EXTRA_OBJS=
 # object files from other directories to link with
 EXT_DIR_OBJS=
 
+# time stamps of other directories (used as dependency)
+EXT_DIR_TSTAMPS=
+
 # Additional libraries (-L option -l option)
 LIBS=
 
@@ -55,14 +58,20 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= tictoc1_n.obj tictoc10_n.obj tictoc11_n.obj tictoc2_n.obj tictoc3_n.obj tictoc4_n.obj tictoc5_n.obj tictoc6_n.obj tictoc7_n.obj tictoc8_n.obj tictoc9_n.obj tictoc10_m.obj tictoc11_m.obj              txc1.obj txc10.obj txc11.obj txc2.obj txc3.obj txc4.obj txc5.obj txc6.obj txc7.obj txc8.obj txc9.obj
+OBJS= tictoc1_n.obj tictoc10_n.obj tictoc11_n.obj tictoc12_n.obj tictoc2_n.obj tictoc3_n.obj tictoc4_n.obj tictoc5_n.obj tictoc6_n.obj tictoc7_n.obj tictoc8_n.obj tictoc9_n.obj tictoc10_m.obj tictoc11_m.obj tictoc12_m.obj txc1.obj txc10.obj txc11.obj txc12.obj txc2.obj txc3.obj txc4.obj txc5.obj txc6.obj txc7.obj txc8.obj txc9.obj
+
+# header files generated (from msg files)
+GENERATEDHEADERS= tictoc10_m.h tictoc11_m.h tictoc12_m.h
 
 # subdirectories to recurse into
 SUBDIRS= 
 SUBDIR_TARGETS= 
 
-$(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
+$(TARGET): $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS)  Makefile.vc
 	$(LINK) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) $(OMNETPP_LIBS) /out:$(TARGET)
+	@echo.>.tstamp
+
+$(OBJS) : $(GENERATEDHEADERS)
 
 # purify: $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 # 	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure
@@ -86,6 +95,12 @@ tictoc11_n.obj: tictoc11_n.cpp
 
 tictoc11_n.cpp: tictoc11.ned
 	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) tictoc11.ned
+
+tictoc12_n.obj: tictoc12_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp tictoc12_n.cpp
+
+tictoc12_n.cpp: tictoc12.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) tictoc12.ned
 
 tictoc2_n.obj: tictoc2_n.cpp
 	$(CXX) -c $(NEDCOPTS) /Tp tictoc2_n.cpp
@@ -147,6 +162,12 @@ tictoc11_m.obj: tictoc11_m.cpp
 tictoc11_m.cpp tictoc11_m.h: tictoc11.msg
 	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) tictoc11.msg
 
+tictoc12_m.obj: tictoc12_m.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp tictoc12_m.cpp
+
+tictoc12_m.cpp tictoc12_m.h: tictoc12.msg
+	$(MSGC:/=\) -s _m.cpp $(INCLUDE_PATH) tictoc12.msg
+
 txc1.obj: txc1.cpp
 	$(CXX) -c $(COPTS) /Tp txc1.cpp
 
@@ -155,6 +176,9 @@ txc10.obj: txc10.cpp
 
 txc11.obj: txc11.cpp
 	$(CXX) -c $(COPTS) /Tp txc11.cpp
+
+txc12.obj: txc12.cpp
+	$(CXX) -c $(COPTS) /Tp txc12.cpp
 
 txc2.obj: txc2.cpp
 	$(CXX) -c $(COPTS) /Tp txc2.cpp
@@ -189,26 +213,25 @@ txc9.obj: txc9.cpp
 #doxy: doxy.cfg
 #	@doxygen doxy.cfg
 
+generateheaders: $(GENERATEDHEADERS)
+	@if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do @cd %%i && nmake /nologo /f Makefile.vc generateheaders && cd .. || exit /b 1
+
 clean:
-	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del $(TARGET)$(EXE_SUFFIX) 2>NUL	-del *.obj *.idb *.pdb .tstamp 2>NUL
+	-del *_n.cpp *_n.h *_m.cpp *_m.h 2>NUL
 	-del *.vec *.sca 2>NUL
-	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
+	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd .. || exit /b 1
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
+	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc depend && cd .. || exit /b 1
 
-re-makemake:
-	opp_nmakemake -f -f -e cpp  #recreate Makefile
+makefiles:
+	opp_nmakemake -f  -e cpp 
+	if not "$(SUBDIRS)"=="" for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc makefiles && cd .. || exit /b 1
+
+# "re-makemake" is a deprecated, historic name of the above target
+re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-txc1.obj: txc1.cpp
-txc10.obj: txc10.cpp
-txc11.obj: txc11.cpp
-txc2.obj: txc2.cpp
-txc3.obj: txc3.cpp
-txc4.obj: txc4.cpp
-txc5.obj: txc5.cpp
-txc6.obj: txc6.cpp
-txc7.obj: txc7.cpp
-txc8.obj: txc8.cpp
-txc9.obj: txc9.cpp
+

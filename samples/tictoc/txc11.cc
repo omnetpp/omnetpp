@@ -15,32 +15,24 @@
 
 
 /**
- * This model is exciting enough so that we can collect some statistics.
- * We'll record in output vectors the hop count of every message upon arrival.
- * Output vectors are written into the omnetpp.vec file and can be visualized
- * with the Plove program.
- *
- * We also collect basic statistics (min, max, mean, std.dev.) and histogram
- * about the hop count which we'll print out at the end of the simulation.
+ * In this step we keep track of how many messages we send and received,
+ * and display it above the icon.
  */
 class Txc11 : public cSimpleModule
 {
   protected:
     long numSent;
     long numReceived;
-    cLongHistogram hopCountStats;
-    cOutVector hopCountVector;
 
   public:
     Module_Class_Members(Txc11, cSimpleModule, 0);
 
     virtual TicTocMsg11 *generateMessage();
     virtual void forwardMessage(TicTocMsg11 *msg);
+    virtual void updateDisplay();
+
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
-
-    // The finish() function is called by OMNeT++ at the end of the simulation:
-    virtual void finish();
 };
 
 Define_Module(Txc11);
@@ -48,8 +40,8 @@ Define_Module(Txc11);
 TicTocMsg11 *Txc11::generateMessage()
 {
     // Produce source and destination addresses.
-    int src = index();
-    int n = size();
+    int src = index();   // our module index
+    int n = size();      // module vector size
     int dest = intuniform(0,n-2);
     if (dest==src) dest++;
 
@@ -78,14 +70,7 @@ void Txc11::forwardMessage(TicTocMsg11 *msg)
 
 void Txc11::initialize()
 {
-    // Initialize variables
-    numSent = 0;
-    numReceived = 0;
-    WATCH(numSent);
-    WATCH(numReceived);
-    hopCountStats.setName("hopCountStats");
-    hopCountStats.setRangeAutoUpper(0, 10, 1.5);
-    hopCountVector.setName("HopCount");
+    numSent = numReceived = 0;
 
     // Module 0 sends the first message
     if (index()==0)
@@ -105,14 +90,9 @@ void Txc11::handleMessage(cMessage *msg)
         // Message arrived
         int hopcount = ttmsg->getHopCount();
         ev << "Message " << ttmsg << " arrived after " << hopcount << " hops.\n";
-        bubble("ARRIVED, starting new one!");
-
-        // update statistics.
         numReceived++;
-        hopCountVector.record(hopcount);
-        hopCountStats.collect(hopcount);
-
         delete ttmsg;
+        bubble("ARRIVED, starting new one!");
 
         // Generate another one.
         ev << "Generating another message: ";
@@ -120,6 +100,9 @@ void Txc11::handleMessage(cMessage *msg)
         ev << newmsg << endl;
         forwardMessage(newmsg);
         numSent++;
+
+        if (ev.isGUI())
+            updateDisplay();
     }
     else
     {
@@ -128,20 +111,11 @@ void Txc11::handleMessage(cMessage *msg)
     }
 }
 
-void Txc11::finish()
+void Txc11::updateDisplay()
 {
-    // This function is called by OMNeT++ at the end of the simulation.
-    ev << "Sent:     " << numSent << endl;
-    ev << "Received: " << numReceived << endl;
-    ev << "Hop count, min:    " << hopCountStats.min() << endl;
-    ev << "Hop count, max:    " << hopCountStats.max() << endl;
-    ev << "Hop count, mean:   " << hopCountStats.mean() << endl;
-    ev << "Hop count, stddev: " << hopCountStats.stddev() << endl;
-
-    recordScalar("#sent", numSent);
-    recordScalar("#received", numReceived);
-    hopCountStats.recordScalar("hop count");
-
+    char buf[40];
+    sprintf(buf, "rcvd: %d sent: %d", numReceived, numSent);
+    displayString().setTagArg("t",0,buf);
 }
 
 
