@@ -148,13 +148,13 @@ void cEnvir::setup(int argc, char *argv[])
             loadExtensionLibrary(libname);
 
         // load shared libs given in [General]/load-libs=
-        std::string libs = inifile->getAsFilenames( "General", "load-libs", NULL);
+        std::string libs = inifile->getAsFilenames("General", "load-libs", NULL);
         loadLibs(libs.c_str());
 
         //
         // Create custom configuration object, if needed.
         //
-        const char *configclass = inifile->getAsString( "General", "configuration-class", NULL);
+        const char *configclass = inifile->getAsString("General", "configuration-class", NULL);
         cConfiguration *configobject = NULL;
         if (!configclass)
         {
@@ -168,7 +168,7 @@ void cEnvir::setup(int argc, char *argv[])
             delete inifile;
 
             // load libs from this config as well
-            std::string libs = configobject->getAsFilenames( "General", "load-libs", NULL);
+            std::string libs = configobject->getAsFilenames("General", "load-libs", NULL);
             loadLibs(libs.c_str());
         }
 
@@ -181,7 +181,7 @@ void cEnvir::setup(int argc, char *argv[])
         // was it specified explicitly which one to use?
         const char *appname = args->argValue('u',0);  // 1st '-u name' option
         if (!appname)
-            appname = configobject->getAsString( "General", "user-interface", NULL);
+            appname = configobject->getAsString("General", "user-interface", NULL);
 
         cOmnetAppRegistration *appreg = NULL;
         if (appname && appname[0])
@@ -191,7 +191,7 @@ void cEnvir::setup(int argc, char *argv[])
             appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->get(appname));
             if (!appreg)
             {
-                ::printf("User interface %s not found, available ones are:\n", appname);
+                ::printf("\nUser interface '%s' not found. Available ones are:\n", appname);
                 for (cArray::Iterator iter(*omnetapps.instance()); iter(); iter++)
                     ::printf("  '%s' : %s\n", iter()->name(), iter()->info().c_str());
 
