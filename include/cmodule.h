@@ -135,11 +135,17 @@ class SIM_API cModule : public cDefaultList
     cDisplayString *dispstr;       // display string as submodule
     cDisplayString *parentdispstr; // display string as parent (enclosing) module
 
+    bool ev_enabled;        // in Cmdenv this tells if ev<< output if printed for this module
+
   public:
     // internal: used from Tkenv: find out if cGate has a display string.
     // displayString() would create the object immediately which we want to avoid.
     bool hasDisplayString() {return dispstr!=NULL;}
     bool hasDisplayStringAsParent() {return parentdispstr!=NULL;}
+
+    // internal: currently used by Cmdenv
+    void setEvEnabled(bool e)  {ev_enabled = e;}
+    bool isEvEnabled() {return ev_enabled;}
 
   protected:
     // internal: called when a message arrives at a gate which is no further

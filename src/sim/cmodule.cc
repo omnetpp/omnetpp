@@ -81,6 +81,8 @@ cModule::cModule(const char *name, cModule *parentmod) :
     if (parentmod)
         parentmod->insertSubmodule(this);
 
+    ev_enabled = true; // may be overridden from cEnvir::moduleCreated() hook
+
     initDisplayStrings();
 
     // cModuleType::create() call will create gates, params

@@ -1,3 +1,8 @@
+2004-07-10   Andras Varga
+
+	* cmodule.cc: added ev_enabled to cModule -- this makes it possible
+	to select in Cmdenv which modules' output you want to see.
+
 2004-07-05   Andras Varga
 
 	* csimplemodule.h, cenvir.h, envirext.h: recordScalar() functions for
