@@ -32,7 +32,7 @@ S  [ \t\v\n\r\f]
 #if defined(__BORLANDC__)
 # include <io.h>
 # pragma warn -rch  /*turn off tons of 'Unreachable code' warnings --VA */
-#elseif defined(_MSC_VER)
+#elif defined(_MSC_VER)
 # include <io.h>
 # define isatty _isatty
 #else

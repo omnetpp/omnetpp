@@ -20,6 +20,7 @@
 
 #include <assert.h>
 #include <string.h>   // strlen
+#include "macros.h"
 #include "coutvect.h"
 #include "cmodule.h"
 #include "csimul.h"
@@ -30,6 +31,7 @@
 #include "ccommbuffer.h"
 #endif
 
+Register_Class(cOutVector);
 
 cOutVector::cOutVector(const char *nam, int tuple) : cObject(nam)
 {
