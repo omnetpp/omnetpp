@@ -22,8 +22,8 @@
 
 using std::ostream;
 
-#define NEDC_VERSION "2.30" //FIXME
-#define NEDC_VERSION_HEX "0x0230" //FIXME
+#define NEDC_VERSION "3.0pre1"
+#define NEDC_VERSION_HEX "0x02F1"
 
 
 void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab)
@@ -266,10 +266,7 @@ void NEDCppGenerator::printTemporaryVariables(const char *indent)
 {
         out << indent << "// temporary variables:\n";
         out << indent << "cPar tmpval;\n";  // for compiled expressions
-        out << indent << "cPar *machinename;\n";  // for 'on:'
         out << indent << "const char *type_name;\n";   // for submodule creation
-        out << indent << "cArray machines;\n";  // for 'on:'
-        out << indent << "bool islocal;\n";  // for 'on:'
         out << indent << "int size;\n";  // for gatesize
         out << "\n";
 }
@@ -340,24 +337,6 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    if (num<0)\n";
     out << "        throw new cException(\"Negative gate vector size %s.%s[%d] in compound module %s\", mod,gate,(int)num,parentmod);\n";
     out << "}\n";
-    out << "static void check_loop_bounds(long lower, long upper, const char *parentmod) {\n";
-    out << "    if (lower<0)\n";
-    out << "        throw new cException(\"Bad loop bounds (%d..%d) in compound module %s\", (int)lower,(int)upper,parentmod);\n";
-    out << "}\n";
-    out << "static void check_module_index(long index, cModule **modvar, const char *modname, const char *parentmod) {\n";
-    out << "    if (index<0 || index>=modvar[0]->size())\n";
-    out << "        throw new cException(\"Bad submodule index %s[%d] in compound module %s\", modname,(int)index,parentmod);\n";
-    out << "}\n";
-    out << "static void check_channel_params(double delay, double err, const char *channel) {\n";
-    out << "    if (delay<0.0)\n";
-    out << "        throw new cException(\"Negative delay value %lf in channel %s\",(double)delay,channel);\n";
-    out << "    if (err<0.0 || err>1.0)\n";
-    out << "        throw new cException(\"Incorrect error value %lf in channel %s\",(double)err,channel);\n";
-    out << "}\n";
-    out << "static void check_modtype(cModuleType *modtype, const char *modname) {\n";
-    out << "    if (!modtype)\n";
-    out << "        throw new cException(\"Simple module type definition %s not found\", modname);\n";
-    out << "}\n";
     out << "static void check_gate(int gateindex, const char *modname, const char *gatename) {\n";
     out << "    if (gateindex==-1)\n";
     out << "        throw new cException(\"Gate %s.%s not found\",modname,gatename);\n";
@@ -366,11 +345,15 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    if (!ptr)\n";
     out << "        throw new cException(\"Unknown ancestor parameter named %s in compound module %s\", parname,compoundmod);\n";
     out << "}\n";
-    out << "static void check_param(cModule *modulep, const char *parname) {\n";
-    out << "    if (!modulep->hasPar(parname))\n";
-    out << "        throw new cException(\"Unknown parameter named %s\",parname);\n";
-    out << "}\n";
     out << "\n";
+
+    out << "static cModuleType *_getModuleType(const char *modname)\n";
+    out << "{\n";
+    out << "    cModuleType *modtype = findModuleType(modname);\n";
+    out << "    if (!modtype)\n";
+    out << "        throw new cException(\"Module type definition %s not found\", modname);\n";
+    out << "    return modtype;\n";
+    out << "}\n\n";
 
     out << "static void _readModuleParameters(cModule *mod)\n";
     out << "{\n";
@@ -385,12 +368,6 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "}\n";
     out << "\n";
 
-    out << "static bool _isLocal(cArray& machines)\n";
-    out << "{\n";
-    out << "    return !simulation.netInterface() || simulation.netInterface()->isLocalMachineIn( machines );\n";
-    out << "}\n";
-    out << "\n";
-
     out << "static cFunctionType *_getFunction(const char *funcname, int argcount)\n";
     out << "{\n";
     out << "    cFunctionType *functype = findFunction(funcname,argcount);\n";
@@ -400,6 +377,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "}\n";
     out << "\n";
 
+    // FIXME seems to be unused...
     out << "static cChannel *_createSimpleChannel(double delay, double error, double datarate)\n";
     out << "{\n";
     out << "    cChannel *channel = new cSimpleChannel(\"channel\");\n";
@@ -427,11 +405,19 @@ void NEDCppGenerator::writeProlog(ostream& out)
 
     out << "static cChannel *_createChannel(const char *name)\n";
     out << "{\n";
-    out << "    cLinkType *link = findLink(name);\n";
-    out << "    if (!link)\n";
+    out << "    cChannelType *chantype = findChannelType(name);\n";
+    out << "    if (!chantype)\n";
     out << "        throw new cException(\"Channel type %s not found\", name);\n";
-    out << "    cChannel *channel = new cSimpleChannel(\"channel\",link);\n";
+    out << "    cChannel *channel = chantype->create(\"channel\");\n";
     out << "    return channel;\n";
+    out << "}\n";
+    out << "\n";
+
+    out << "static int _checkModuleIndex(int index, int vectorsize, const char *modname)\n";
+    out << "{\n";
+    out << "    if (index<0 || index>=vectorsize)\n";
+    out << "        throw new cException(\"Submodule index %s[%d] out of range, sizeof(%s) is %d\", modname, index, modname, vectorsize);\n";
+    out << "    return index;\n";
     out << "}\n";
     out << "\n";
 }
@@ -475,37 +461,42 @@ void NEDCppGenerator::doChannel(ChannelNode *node, const char *indent, int mode,
     exprgen.collectExpressions(node);
     exprgen.generateExpressionClasses();
 
+    // channeltype object definition
+    const char *channelname = node->getName();
+    out << "// channel definition " << channelname << "\n";
+    out << "class " << channelname <<  " : public cChannelType\n";
+    out << "{\n";
+    out << "  public:\n";
+    out << "    " << channelname << "(const char *name) : cChannelType(name) {}\n";
+    out << "    " << channelname << "(const " << channelname << "& n)  {setName(n.name());operator=(n);}\n";
+    out << "    virtual cChannel *create(const char *name);\n";
+    out << "};\n\n";
+
+    out << "Define_Channel(" << channelname << ");\n\n";
+
+    // factory method
+    out << "cChannel *" << channelname << "::create(const char *name)\n";
+    out << "{\n";
+    out << "    cChannel *chan = new cSimpleChannel(name);\n";
+    out << "    cPar tmpval;\n\n";
+
     // generate channel attributes code
     generateChildren(node, increaseIndent(indent));
 
-    // generate channel code itself
-    const char *channelname = node->getName();
-    bool delay = findChannelAttribute(node, "delay") != 0;
-    bool error = findChannelAttribute(node, "error") != 0;
-    bool datarate = findChannelAttribute(node, "datarate") != 0;
-
-    out << "// channel definition " << channelname << "\n";
-    out << "Define_Link( " << channelname << ", ";
-    out << (delay ?    channelname:"NULL") << (delay    ? "__delay"   :"") << ", ";
-    out << (error ?    channelname:"NULL") << (error    ? "__error"   :"") << ", ";
-    out << (datarate ? channelname:"NULL") << (datarate ? "__datarate":"") << ");\n\n";
+    out << "    return chan;\n";
+    out << "};\n\n";
 }
 
 void NEDCppGenerator::doChannelAttr(ChannelAttrNode *node, const char *indent, int mode, const char *)
 {
-    const char *channelname = ((ChannelNode *)(node->getParent()))->getName();  // channel name
     const char *attrname = node->getName();    // attribute name
 
-    out << "static cPar *" << channelname << "__" << attrname << "()\n";
-    out << "{\n";
-    out << "    cPar tmpval;\n";
-    out << "    cPar *p = new cPar(\"" << channelname << "_datarate\");\n";
+    out << "    cPar *p = new cPar(\"" << attrname << "\");\n";
     ExpressionNode *value = findExpression(node, "value");
     out << "    *p = ";
     generateItem(value, indent, mode);
     out << ";\n";
-    out << "    return p;\n";
-    out << "}\n\n";
+    out << "    chan->addPar(p);\n\n";
 }
 
 void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode, const char *)
@@ -522,7 +513,7 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     out << "    virtual void setupNetwork();\n";
     out << "};\n\n";
 
-    out << "Define_Network( " << networkname << " );\n\n";
+    out << "Define_Network(" << networkname << ");\n\n";
 
     // generate expression shells
     exprgen.collectExpressions(node);
@@ -541,43 +532,13 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     // - network cannot be a vector of modules
 
     // find module descriptor
-    out << indent << "modtype = findModuleType( \"" << node->getTypeName() << "\" );\n";
-    out << indent << "check_modtype( modtype, \"" << node->getTypeName() << "\" );\n";
+    out << indent << "modtype = _getModuleType(\"" << node->getTypeName() << "\");\n";
 
     // create module
     submodule_name = node->getName();
     submodule_var = node->getName();
     submodule_var += "_p";
-    out << indent << "cModule *" << submodule_var.c_str() << ";\n\n";
-
-    out << indent << "// create module:\n";
-    out << indent << "islocal = _isLocal( machines );\n";
-
-    // check locality
-    out << indent << "if (!islocal)\n";
-    out << indent << "    throw new cException(\"Local machine `%s' is not among machines specified for this network\",\n";
-    out << indent << "              simulation.netInterface()->localhost());\n";
-
-    // do create module
-    out << indent << submodule_var.c_str() << " = modtype->create( \"" << submodule_name.c_str() << "\", NULL, islocal);\n";
-
-    // FIXME:
-    //   check module type exists
-    //   check machine count matches
-
-#if 0
-     // they are equal: set machine list if machines are given --LG
-     if ( cmd.submod_machs.count ) // actual machine list is not empty
-     {
-       int i;
-
-       print_remark(tmp, "set machine list:");
-       for (i=0; i<cmd.submod_machs.count; i++)
-           out << indent << submodule_var << "->setMachinePar( \"" << nl_retr_ith(machs,i+1)->namestr << "\", ev.getPhysicalMachineFor(\"" << nl_retr_ith( &cmd.submod_machs,i+1)->namestr << "\") );\n",
-       out << "\n";
-       nl_empty(&cmd.submod_machs);
-     }
-#endif
+    out << indent << "cModule *" << submodule_var.c_str() << " = modtype->create(\"" << submodule_name.c_str() << "\", NULL);\n\n";
 
     // generate children (except expressions)
     generateChildrenWithTags(node, "substmachines,substparams,gatesizes", indent, mode);
@@ -586,15 +547,13 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
-        out << "\n" << indent << submodule_var.c_str() << "->setDisplayStringAsParent(\""
-            <<  dispstr->getValue() << "\");\n";
+        out << indent << submodule_var.c_str() << "->setDisplayStringAsParent(\""
+            << dispstr->getValue() << "\");\n\n";
     }
 
     // build function call
     out << indent << "// build submodules recursively (if it has any):\n";
     out << indent << submodule_var.c_str() << "->buildInside();\n";
-
-    out << indent << "machines.clear();\n\n";
 
     // epilog
     out << "}\n\n";
@@ -606,10 +565,10 @@ void NEDCppGenerator::doSimple(SimpleModuleNode *node, const char *indent, int m
     // generate Interface() stuff
     module_name = node->getName();
 
-    out << "ModuleInterface( " << module_name.c_str() << " )\n";
+    out << "ModuleInterface(" << module_name.c_str() << ")\n";
     generateChildrenWithTags(node, "params,gates,machines", increaseIndent(indent));
     out << "EndInterface\n\n";
-    out << "Register_ModuleInterface( " << module_name.c_str() << " )\n\n";
+    out << "Register_ModuleInterface(" << module_name.c_str() << ")\n\n";
 
     // epilog
     out << "//// Sample code:\n";
@@ -620,7 +579,7 @@ void NEDCppGenerator::doSimple(SimpleModuleNode *node, const char *indent, int m
     out << "//     // Add you own member functions here!\n";
     out << "// };\n";
     out << "//\n";
-    out << "// Define_Module( " << module_name.c_str() << " );\n";
+    out << "// Define_Module(" << module_name.c_str() << ");\n";
     out << "//\n";
     out << "// void " << module_name.c_str() << "::activity()\n";
     out << "// {\n";
@@ -634,11 +593,11 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     // generate Interface() stuff
     module_name = node->getName();
 
-    out << "ModuleInterface( " << module_name.c_str() << " )\n";
+    out << "ModuleInterface(" << module_name.c_str() << ")\n";
     generateChildrenWithTags(node, "params,gates,machines", increaseIndent(indent));
     out << "EndInterface\n\n";
 
-    out << "Register_ModuleInterface( " << module_name.c_str() << " )\n\n";
+    out << "Register_ModuleInterface(" << module_name.c_str() << ");\n\n";
 
     // class declaration
     out << "class " << module_name.c_str() << " : public cCompoundModule\n";
@@ -651,7 +610,7 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     out << "    virtual void doBuildInside();\n";
     out << "};\n\n";
 
-    out << "Define_Module( " << module_name.c_str() << " );\n\n";
+    out << "Define_Module(" << module_name.c_str() << ");\n\n";
 
     // generate expression shells
     exprgen.collectExpressions(node);
@@ -669,7 +628,7 @@ void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
-        out << "\n" << indent << "mod->setDisplayStringAsParent(\"" << dispstr->getValue() << "\");\n";
+        out << indent << "mod->setDisplayStringAsParent(\"" << dispstr->getValue() << "\");\n\n";
     }
 
     // generate submodules
@@ -706,7 +665,7 @@ void NEDCppGenerator::doParam(ParamNode *node, const char *indent, int mode, con
     if (strcmp(datatype,"any"))
        typecode = "ParType_Any";
 
-    out << indent << "Parameter( " << node->getName() << ", " << typecode << " )\n";
+    out << indent << "Parameter(" << node->getName() << ", " << typecode << ")\n";
 }
 
 void NEDCppGenerator::doGates(GatesNode *node, const char *indent, int mode, const char *)
@@ -718,21 +677,19 @@ void NEDCppGenerator::doGates(GatesNode *node, const char *indent, int mode, con
 
 void NEDCppGenerator::doGate(GateNode *node, const char *indent, int mode, const char *)
 {
-    out << indent << "Gate( " << node->getName();
+    out << indent << "Gate(" << node->getName();
     out << (node->getIsVector() ? "[]" : "") << ", ";
-    out << (node->getDirection()==NED_GATEDIR_INPUT ? "GateDir_Input" : "GateDir_Output") << " )\n";
+    out << (node->getDirection()==NED_GATEDIR_INPUT ? "GateDir_Input" : "GateDir_Output") << ")\n";
 }
 
 void NEDCppGenerator::doMachines(MachinesNode *node, const char *indent, int mode, const char *)
 {
-    // generate children
-    out << indent << "// machines:\n";
-    generateChildren(node, indent, mode);
+    // ignore machines (obsolete)
 }
 
 void NEDCppGenerator::doMachine(MachineNode *node, const char *indent, int mode, const char *)
 {
-    out << indent << "Machine( " << node->getName() << " )\n";
+    // ignore machines (obsolete)
 }
 
 void NEDCppGenerator::doSubmodules(SubmodulesNode *node, const char *indent, int mode, const char *)
@@ -740,8 +697,7 @@ void NEDCppGenerator::doSubmodules(SubmodulesNode *node, const char *indent, int
     // prolog
     out << indent << "// submodules:\n";
     out << indent << "cModuleType *modtype = NULL;\n";
-    out << indent << "long submod_count = 0;\n";
-    out << indent << "long submod_i = 0;\n\n";
+    out << indent << "int submod_index;\n\n";
 
     // generate children
     generateChildren(node, indent, mode);
@@ -756,14 +712,12 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     // find module descriptor
     if (!strnotnull(node->getLikeParam()))
     {
-        out << indent << "modtype = findModuleType( \"" << node->getTypeName() << "\" );\n";
-        out << indent << "check_modtype( modtype, \"" << node->getTypeName() << "\" );\n";
+        out << indent << "modtype = _getModuleType(\"" << node->getTypeName() << "\");\n";
     }
     else
     {
         out << indent << "type_name = mod->par(\"" << node->getLikeParam() << "\");\n";
-        out << indent << "modtype = findModuleType( type_name );\n";
-        out << indent << "check_modtype( modtype, type_name );\n";
+        out << indent << "modtype = _getModuleType(type_name);\n";
     }
 
     // create module
@@ -774,51 +728,29 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     {
         submodule_var = node->getName();
         submodule_var += "_p";
-        out << indent << "cModule *" << submodule_var.c_str() << ";\n\n";
+        out << indent << "cModule *" << submodule_var.c_str() << " = modtype->create(\"" << submodule_name.c_str() << "\", mod);\n";
+        out << indent << "int " << node->getName() << "_size = 1;\n";
     }
     else
     {
-        out << indent << "submod_count = ";
-        generateItem(vectorsize, indent, mode);
-        out << ";\n";
         submodule_var = node->getName();
         submodule_var += "_p";
-        out << indent << "check_module_count(submod_count,\"" << submodule_name.c_str() << "\",\"" << module_name.c_str() << "\");\n";
-        out << indent << "cModule **" << submodule_var.c_str() << " = new cModule *[submod_count];\n\n";
-        out << indent << "for (submod_i=0; submod_i<submod_count; submod_i++)\n";
+        std::string submodulesize_var = node->getName();
+        submodulesize_var += "_size";
+
+        out << indent << submodulesize_var.c_str() << " = ";
+        generateItem(vectorsize, indent, mode);
+        out << ";\n";
+
+        out << indent << "check_module_count(" << submodulesize_var.c_str() << ",\"" << submodule_name.c_str() << "\",\"" << module_name.c_str() << "\");\n";
+        out << indent << "cModule **" << submodule_var.c_str() << " = new cModule *[" << submodulesize_var.c_str() << "];\n\n";
+        out << indent << "for (submod_index=0; submod_index<" << submodulesize_var.c_str() << "; submod_index++)\n";
         out << indent << "{\n";
-        submodule_var += "[submod_i]";
+        submodule_var += "[submod_index]";
         indent = increaseIndent(indent);
+        out << indent << submodule_var.c_str() << " = modtype->create(\"" << submodule_name.c_str() << "\", mod, " << submodulesize_var.c_str() << ", submod_index);\n";
     }
-
-    out << indent << "// create module:\n";
-    out << indent << "islocal = _isLocal( machines );\n";
-
-    // create submodule
-    out << indent << submodule_var.c_str() << " = modtype->create( \"" << submodule_name.c_str() << "\", mod, islocal);\n";
-
-    if (vectorsize)
-    {
-        out << indent << submodule_var.c_str() << "->setIndex(submod_i, submod_count);\n\n";
-    }
-
-    // FIXME:
-    //   check module type exists
-    //   check machine count matches
-
-#if 0
-     // they are equal: set machine list if machines are given --LG
-     if ( cmd.submod_machs.count ) // actual machine list is not empty
-     {
-       int i;
-
-       print_remark(tmp, "set machine list:");
-       for (i=0; i<cmd.submod_machs.count; i++)
-           out << indent << submodule_var << "->setMachinePar( \"" << nl_retr_ith(machs,i+1)->namestr << "\", ((cPar *)machines[" << i << "])->stringValue() );\n",
-       out << "\n";
-       nl_empty(&cmd.submod_machs);
-     }
-#endif
+    out << "\n";
 
     // generate children (except expressions)
     generateChildrenWithTags(node, "substmachines,substparams,gatesizes", indent, mode);
@@ -827,7 +759,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
-        out << "\n" << indent << submodule_var.c_str() << "->setDisplayString(\"" <<  dispstr->getValue() << "\");\n";
+        out << indent << submodule_var.c_str() << "->setDisplayString(\"" <<  dispstr->getValue() << "\");\n\n";
     }
 
     // build function call
@@ -839,7 +771,7 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
         indent = decreaseIndent(indent);
         out << indent << "}\n";
     }
-    out << indent << "machines.clear();\n\n";
+    out << "\n";
 }
 
 void NEDCppGenerator::doSubmoduleCleanup(SubmoduleNode *node, const char *indent, int mode, const char *)
@@ -883,11 +815,10 @@ void NEDCppGenerator::doSubstparam(SubstparamNode *node, const char *indent, int
 //    }
 
     // set parameter value
-    out << indent << "check_param(" << submodule_var.c_str() << ", \"" << node->getName() << "\");\n";
     out << indent << submodule_var.c_str() << "->par(\"" << node->getName() << "\") = ";
     ExpressionNode *paramvalue = findExpression(node, "value");
     if (paramvalue)  generateItem(paramvalue, indent, mode);
-    out << ";\n\n";
+    out << ";\n";
 }
 
 void NEDCppGenerator::doGatesizes(GatesizesNode *node, const char *indent, int mode, const char *arg)
@@ -911,50 +842,18 @@ void NEDCppGenerator::doGatesize(GatesizeNode *node, const char *indent, int mod
     if (vectorsize)  generateItem(vectorsize, indent, mode);
     out << ";\n";
 
-    out << indent << "check_gate_count( size, \"" << submodule_name.c_str() << "\",\"" << node->getName() << "\",\"" << module_name.c_str() << "\");\n";
+    out << indent << "check_gate_count(size, \"" << submodule_name.c_str() << "\",\"" << node->getName() << "\",\"" << module_name.c_str() << "\");\n";
     out << indent << submodule_var.c_str() << "->setGateSize(\"" << node->getName() << "\", size);\n\n";
 }
 
 void NEDCppGenerator::doSubstmachines(SubstmachinesNode *node, const char *indent, int mode, const char *arg)
 {
-    // prolog
-    out << indent << "// 'on' section:\n";
-    beginConditionalBlock(node, indent, mode, arg);
-
-    // generate children
-    generateChildrenExceptTags(node, "expression", indent, mode);
-
-    // epilog
-    endConditionalBlock(node, indent, mode, arg);
-    out << "\n";
+    // ignore machines (obsolete)
 }
 
 void NEDCppGenerator::doSubstmachine(SubstmachineNode *node, const char *indent, int mode, const char *)
 {
-    if (!in_network)
-    {
-        out << indent << "machinename = new cPar();\n";
-        out << indent << "*machinename = mod->machinePar(\"" << node->getName() << "\");\n";
-        out << indent << "machines.add( machinename );\n";
-    }
-    else
-    {
-#if 0
-        int idx;
-        char *phys_mach;
-        idx = nl_find (machine_list, maname);
-        if (idx==0)
-           phys_mach = maname; // no substitution!
-        else
-           phys_mach = nl_retr_ith( &machine_list, idx )->parstr;
-
-        out << %s << "par = new cPar();\n"
-                      %s << "*par = ev.getPhysicalMachineFor(\"" << %s << "\");\n"
-                      %s << "machines.add( par );\n",
-                       indent, indent, phys_mach, indent );
-#endif
-    }
-    out << "\n";
+    // ignore machines (obsolete)
 }
 
 void NEDCppGenerator::doConnections(ConnectionsNode *node, const char *indent, int mode, const char *)
@@ -963,7 +862,7 @@ void NEDCppGenerator::doConnections(ConnectionsNode *node, const char *indent, i
     out << indent << "//\n";
     out << indent << "// connections:\n";
     out << indent << "//\n";
-    out << indent << "cLinkType *channeltype;\n";
+    out << indent << "cChannelType *channeltype;\n";
     out << indent << "cModule *tmpmod;\n";
     out << indent << "cPar *par;\n";
     out << indent << "cChannel *channel;\n";
@@ -994,9 +893,9 @@ void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex,
        out << modname << "_p";
        if (modindex)
        {
-            out << "[(long)("; // FIXME bounds check needed!
+            out << "[_checkModuleIndex((int)(";
             generateItem(modindex,  "        ");
-            out << ")]";
+            out << ")," << modname << "_size,\"" << modname << "\")]";
        }
    }
 
@@ -1008,10 +907,7 @@ void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex,
        generateItem(gateindex, "        ");
    }
    out << ")";
-
-   //   out << indent << "check_gate( gateL, \"" << %s << "\", "
-   //      "indexedname(b1,\"" << %s << "\",gate_nr_L) );\n\n",
-   //      indent, mod_L, gate_L );
+// FIXME check_gate_index!!!!!!!!!!!!!!
 }
 
 void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const char *indent, int mode)
@@ -1101,7 +997,7 @@ void NEDCppGenerator::doConnection(ConnectionNode *node, const char *indent, int
     DisplayStringNode *dispstr = (DisplayStringNode *)node->getFirstChildWithTag(NED_DISPLAY_STRING);
     if (dispstr)
     {
-        out << "\n" << indent << "srcgate->setDisplayString(\"" <<  dispstr->getValue() << "\");\n";
+        out << indent << "srcgate->setDisplayString(\"" <<  dispstr->getValue() << "\");\n\n";
     }
 
     // epilog

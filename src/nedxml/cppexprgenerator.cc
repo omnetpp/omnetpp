@@ -417,7 +417,7 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     if (!strcmp(funcname,"index"))
     {
         // TBD validation: if (argcount!=0) -->error
-        out << "submod_i";
+        out << "submod_index";
         return;
     }
     else if (!strcmp(funcname,"sizeof"))
@@ -511,7 +511,7 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
     {
         out << "(double)";
         if (node->getIsAncestor())
-            out << "ancestor "; // FIXME
+            out << "ancestor "; // FIXME, use check_anc_param
 
         if (node->getIsRef())
             out << "ref "; // FIXME
