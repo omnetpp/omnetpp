@@ -2869,7 +2869,7 @@ NewClass::NewClass(const char *name, int d) : cObject(name)
 {
     data = d;
     array = new double[10];
-    queue.setOwner(NULL);
+    take(&queue);
     msg = NULL;
 }
 \end{verbatim}
@@ -2885,7 +2885,7 @@ NewClass::NewClass(const NewClass& other) : cObject(name())
 {
     array = new double[10];
     msg = NULL;
-    queue.setOwner(NULL);
+    take(&queue);
     operator=(other);
 }
 \end{verbatim}
@@ -3201,7 +3201,8 @@ to send it. When you get this error message (\ttt{"not owner of object"}),
 you might feel tempted to forcibly take ownership of the message object
 by means of \fname{setOwner()}. Note that it would be
 entirely wrong, and would probably lead to crash further on in
-your program. Instead, you need to carefully examine who
+your program. \textit{Do not use} \fname{setOwner()}! Instead,
+you need to carefully examine who
 has the ownership of the message, why's that, and then
 probably you'll need to fix the logic somewhere
 in your program.
@@ -3403,7 +3404,7 @@ void cQueue::insert(cObject *obj)
 
     // take ownership if needed
     if (takeOwnership())
-        take(obj);  // same as obj->setOwner(this)
+        take(obj);
 
 }
 \end{verbatim}
@@ -3428,11 +3429,11 @@ you may further use it, or if it's not needed any more, you can delete it.
 The \textit{release ownership} phrase requires further explanation.
 When you remove and object from a queue or array, the ownership
 is expected to be transferred to the simple module's local objects list.
-This is acomplished by the \fname{drop()} function, which is a shorthand for
-\texttt{obj->setOwner(obj->defaultOwner())}.
-\fname{defaultOwner()} is a virtual method defined in \cclass{cObject},
-and its \cclass{cObject} implementation returns the currently executing
-simple module's local object list.
+This is acomplished by the \fname{drop()} function, which transfers the
+ownership to the object's default owner.
+\fname{defaultOwner()} is a virtual method returning \ttt{cObject*}
+defined in \cclass{cObject}, and its implementation returns
+the currently executing simple module's local object list.
 
 As an example, the \fname{remove()} method of \cclass{cQueue} is
 implemented like this:
@@ -3555,9 +3556,8 @@ in its owner and siblings).
 
 This data structure is likely to change: \textit{firstchildp},
 \textit{prevp} and \textit{nextp} will be removed from \cclass{cObject},
-and only \textit{ownerp} will remain. Call to \fname{setOwner()}
-will be restricted to implementations of container classes.
-
+and only \textit{ownerp} will remain. The \fname{setOwner()} method
+will probably be removed entirely.
 
 \section{Tips for speeding up the simulation}
 
