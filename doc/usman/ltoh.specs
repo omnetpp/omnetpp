@@ -29,33 +29,33 @@ htmlfile_spec := $BASE.html
 
 # FIXME we have some \fname[..]{..} macros too, they don't get substituted!
 
-:{}     :\textbf:<STRONG>:</>:
-:{}	:\textsl:<EM>:</>:
-:{}	:\textem:<EM>:</>:
-:{}	:\textit:<EM>:</>:
-:{}	:\texttt:<SAMP>:</>:
-:{}	:\textsf:<EM>:</>:
-:{}	:\underline:<EM>:</>:
+:{}     :\textbf:<b>:</>:
+:{}	:\textsl:<i>:</>:
+:{}	:\textem:<i>:</>:
+:{}	:\textit:<i>:</>:
+:{}	:\texttt:<tt>:</>:
+:{}	:\textsf:<i>:</>:
+:{}	:\underline:<ul>:</>:
 :{}	:\chapter:<hr><H1>:</H1>:
 :{}	:\section:<hr><H2>:</H2>:
 :{}	:\subsection:<H3>:</H3>:
-:{}	:\subsubsection:<br><P class="subheading">:</P>:
-:{}	:\centerline:<P align=center>:</>:
+:{}	:\subsubsection:<br><p class="subheading">:</p>:
+:{}	:\centerline:<p align=center>:</>:
 :{}	:\footnote:<br><ul><font size=-1>[:]</font></ul>:
 :{}	:\mbox:::
-:{}	:\ensuremath:<IT>:</>:
+:{}	:\ensuremath:<it>:</>:
 :{2}	:\renewcommand#1#2:::
 :{1}	:\makebox[^{]*#1:#1::
-:b/e	:\begin{center}:<DIV ALIGN=center>:</>:
-:b/e	:\begin{itemize}:<UL>:</>:
-:b/e	:\begin{enumerate}:<OL>:</>:
-:b/e	:\begin{description}:<DL>:</>:
-:b/e	:\begin{multques}(\{[^\}]*\})*:<OL>:</>:
+:b/e	:\begin{center}:<div align=center>:</>:
+:b/e	:\begin{itemize}:<ul>:</>:
+:b/e	:\begin{enumerate}:<ol>:</>:
+:b/e	:\begin{description}:<dl>:</>:
+:b/e	:\begin{multques}(\{[^\}]*\})*:<ol>:</>:
 :b/e	:\begin{document}:::
 :b/e	:\begin{tabular}:\begin{tabular}:\end{tabular}:
 :b/e	:\begin{longtable}:\begin{longtable}:\end{longtable}:
-:b/e	:\begin{quote}:<BLOCKQUOTE>:</>:
-:b/e	:\begin{verse}:<BLOCKQUOTE>:</>:
+:b/e	:\begin{quote}:<blockquote>:</>:
+:b/e	:\begin{verse}:<blockquote>:</>:
 :comm	:\ldots:...::
 :comm	:\par:<p>::
 :comm	:\LaTeX[^ \t\n]*:LaTeX::
