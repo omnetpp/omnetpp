@@ -45,14 +45,12 @@ where possible options are:
    structure as the sources (by default, they are assumed to be all in the
    same directory)
 
-Bugs:
- - #include <foo.h> and #include "foo.h" are treated the same
- - ignores #ifdefs altogether
+Bug (feature?): ignores #ifdefs altogether
 ';
 
 
 # the #include syntax we are looking for
-$Syntax = '^\s*#\s*include\s+["<]([^">]*)[">]' ;
+$Syntax = '^\s*#\s*include\s+["<]([^">]*)([">])' ;
 
 # marker line in the makefile
 $Separator = '# DO NOT DELETE THIS LINE -- make depend depends on it.';
@@ -219,74 +217,86 @@ sub scan {
 
    if (!open( INPUT, $filename ))
    {
-       # be more tolerant if filename contains wildcard (which means the shell couldn't expand it)
-       if ($filename =~ /[\*\?]/) {
-           print STDERR "makedep: warning: unable to open $filename: $!\n";
-       } else {
-           print STDERR "makedep: unable to open $filename: $!\n" ;
-           exit(2);
-       }
+      # be more tolerant if filename contains wildcard (which means the shell couldn't expand it)
+      if ($filename =~ /[\*\?]/) {
+         print STDERR "makedep: warning: unable to open $filename: $!\n";
+      } else {
+         print STDERR "makedep: unable to open $filename: $!\n" ;
+         exit(2);
+      }
    }
 
-   while ( <INPUT> ) {
-      if ( /${Syntax}/ ) {
+   while (<INPUT>)
+   {
+      if ( /${Syntax}/ )
+      {
          $included = $1;
-         if ( $included =~ /^\./ )
-         {
-            # relative path from current file
-            $filename =~ /^(.*?)[^\/]*$/;
-            $dir = $1;
-            $included = $dir.$included;
-         }
-         elsif ( $included =~ /^\// )
+         $delim = $2;  # " or >
+
+         # try to find included file
+         undef $found;
+         if ( $included =~ /^\// )
          {
             # absolute path -- no search needed
+            if (-e $included)
+            {
+               $found = 1;
+            }
          }
          else
          {
+            # filename only or relative path
+            # if quote delimited, try relative path from location of current file
+            if ($delim eq '"')
+            {
+               $filename =~ /^(.*?)[^\/]*$/;
+               $dir = $1;
+               if (-e $dir.$included)
+               {
+                  $found = 1;
+                  $included = $dir.$included;
+               }
+            }
+
             # look for file in the search path
-            undef $found;
-            if (-e $included)
+            if (!defined($found))
             {
-                $found = $included;
+               foreach $IncludeDir (@IncludePath)
+               {
+                  if (-e "$IncludeDir/$included")
+                  {
+                     $found = 1;
+                     $included = "$IncludeDir/$included";
+                     last;
+                  }
+               }
             }
-            else
-            {
-                foreach $IncludeDir (@IncludePath)
-                {
-                    $IncludePathName = "$IncludeDir/$included";
-                    if (-e $IncludePathName)
-                    {
-                        $found = $IncludePathName;
-                        last;
-                    }
-                }
-            }
-
-            if ( defined($found) )
-            {
-                $included = $found;
-            }
-            elsif ($IgnoreStdHeaders)
-            {
-                next;
-            }
-            else
-            {
-                print STDERR "makedep: file not in include path: $included\n";
-                exit(1);
-            }
-
          }
 
-         ## see if its already on the list
+         # if not found, either skip this file or raise error
+         if (!defined($found))
+         {
+            if ($IgnoreStdHeaders)
+            {
+               next;
+            }
+            else
+            {
+               print STDERR "makedep: file not in include path: $included\n";
+               exit(1);
+            }
+         }
+
+         # if found, see if it's already on the list
          undef $found ;
-         for ( $[ .. $#Includes ) {
-            $found = $_, last if ( $Includes[$_] eq $included );
+         for ($[ .. $#Includes)
+         {
+             $found = $_, last if ( $Includes[$_] eq $included );
          }
 
-         ## nope! put it on
-         if ( ! defined( $found ) ) {
+         # nope! put it on
+         if ( ! defined( $found ) )
+         {
             push( @Includes, $included );
             push( @list, $included );
          }
@@ -294,7 +304,7 @@ sub scan {
    }
    close( INPUT );
 
-   ## scan through each of the files that turned up
+   # scan through each of the files that turned up
    for ( @list ) {
       &scan( $_ );
    }
