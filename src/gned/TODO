@@ -36,11 +36,13 @@ Load/save:
        load the saves file back into gned)
      - silently backparse?
      - refuse to save: ask user to switch to graphics?
+  now it just silently ignores that canvas...
 - load: if there's a parse error, load the whole stuff into a "scratch" text-mode canvas?
 
 Text editor:
 - "find next" missing
 - ctrl-H doesn't bring up Find/Replace dialog [from Niko]
+- <Enter> in the Find/Replace dialog causes error
 - pgup, ctrl-pgup doesn't work correctly
 - syntax highlighting not 100% OK: it can be fooled with string constants
   containing `//' or `\"' sequences; `in:' and `out:' are not highlighted
