@@ -90,7 +90,7 @@ void print_header (FILE *f)
         fprintf (f, "#define check_memory() \\\n"
                     "    {if (memoryIsLow()) {throw new cException(eNOMEM); }}\n");
         fprintf (f, "#define check_module_count(num, mod, parentmod) \\\n"
-                    "    {if ((int)num<0) {throw new cException(\"Negative module vector size %%s[%%d] in compound module %%s\", \\\n"
+                    "    {if ((int)num<=0) {throw new cException(\"Negative or zero module vector size %%s[%%d] in compound module %%s\", \\\n"
                     "                          mod,(int)num,parentmod);}}\n");
         fprintf (f, "#define check_gate_count(num, mod, gate, parentmod) \\\n"
                     "    {if ((int)num<0) {throw new cException(\"Negative gate vector size %%s.%%s[%%d] in compound module %%s\", \\\n"
