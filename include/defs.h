@@ -175,6 +175,12 @@ typedef double (*MathFunc2Args)(double,double);
  */
 typedef double (*MathFunc3Args)(double,double,double);
 
+/**
+ * Prototype for mathematical functions taking four arguments
+ * that can be used in reverse Polish expressions (see ExprElem).
+ * @ingroup EnumsTypes
+ */
+typedef double (*MathFunc4Args)(double,double,double,double);
 
 #endif
 

@@ -474,6 +474,11 @@ class SIM_API cFunctionType : public cObject
     cFunctionType(const char *name, MathFunc3Args f, int argc=-1);
 
     /**
+     * Constructor.
+     */
+    cFunctionType(const char *name, MathFunc4Args f, int argc=-1);
+
+    /**
      * Destructor.
      */
     virtual ~cFunctionType() {}
@@ -530,6 +535,12 @@ class SIM_API cFunctionType : public cObject
      * Throws exception is actual arg count is different.
      */
     MathFunc3Args mathFunc3Args();
+
+    /**
+     * Returns function pointer as double function with 4 double args.
+     * Throws exception is actual arg count is different.
+     */
+    MathFunc4Args mathFunc4Args();
     //@}
 
 };

@@ -138,6 +138,7 @@ class SIM_API cPar : public cObject
             MathFunc1Arg  f1;   // 1
             MathFunc2Args f2;   // 2
             MathFunc3Args f3;   // 3
+            MathFunc4Args f4;   // 4
             char op;            // @, op = +-*/%^=!<{>}?
         };
 
@@ -177,12 +178,9 @@ class SIM_API cPar : public cObject
         void operator=(cPar& _r);         //{type='R'; p=(cPar *)_r.dup();} See after cPar!
 
         /**
-         * The argument can be a pointer to a function that takes (0, 1,
-         * 2, or 3) double arguments and returns a double
-         * (e.g. sqrt()). Effect during evaluation of the expression:
-         * the given number of doubles are popped from the stack,
-         * the given function is called with them as arguments, and the return
-         * value is pushed back on the stack. See also the cFunctionType
+         * The argument can be a pointer to a function that takes no arguments
+         * and returns a double. Effect during evaluation of the expression:
+         * the return value is pushed on the stack. See also the cFunctionType
          * class and the Define_Function() macro.
          *
          * The OMNeT++ functions generating random variables of different
@@ -191,11 +189,10 @@ class SIM_API cPar : public cObject
         void operator=(MathFuncNoArg _f)  {type='0'; f0=_f;}
 
         /**
-         * The argument can be a pointer to a function that takes (0, 1,
-         * 2, or 3) double arguments and returns a double
-         * (e.g. sqrt()). Effect during evaluation of the expression:
-         * the given number of doubles are popped from the stack,
-         * the given function is called with them as arguments, and the return
+         * The argument can be a pointer to a function that takes 1
+         * double argument and returns a double (e.g. sqrt()).
+         * Effect during evaluation of the expression: 1 double is popped from the
+         * stack, the given function is called with them as arguments, and the return
          * value is pushed back on the stack. See also the cFunctionType
          * class and the Define_Function() macro.
          *
@@ -205,10 +202,10 @@ class SIM_API cPar : public cObject
         void operator=(MathFunc1Arg  _f)  {type='1'; f1=_f;}
 
         /**
-         * The argument can be a pointer to a function that takes (0, 1,
-         * 2, or 3) double arguments and returns a double
-         * (e.g. sqrt()). Effect during evaluation of the expression:
-         * the given number of doubles are popped from the stack,
+         * The argument can be a pointer to a function that takes 2
+         * double arguments and returns a double.
+         * Effect during evaluation of the expression:
+         * 2 doubles are popped from the stack,
          * the given function is called with them as arguments, and the return
          * value is pushed back on the stack. See also the cFunctionType
          * class and the Define_Function() macro.
@@ -219,10 +216,10 @@ class SIM_API cPar : public cObject
         void operator=(MathFunc2Args _f)  {type='2'; f2=_f;}
 
         /**
-         * The argument can be a pointer to a function that takes (0, 1,
-         * 2, or 3) double arguments and returns a double
-         * (e.g. sqrt()). Effect during evaluation of the expression:
-         * the given number of doubles are popped from the stack,
+         * The argument can be a pointer to a function that takes 3
+         * double arguments and returns a double.
+         * Effect during evaluation of the expression:
+         * 3 doubles are popped from the stack,
          * the given function is called with them as arguments, and the return
          * value is pushed back on the stack. See also the cFunctionType
          * class and the Define_Function() macro.
@@ -231,6 +228,20 @@ class SIM_API cPar : public cObject
          * distributions can also be used in ExprElem expressions.
          */
         void operator=(MathFunc3Args _f)  {type='3'; f3=_f;}
+
+        /**
+         * The argument can be a pointer to a function that takes 4
+         * double arguments and returns a double.
+         * Effect during evaluation of the expression:
+         * 4 doubles are popped from the stack,
+         * the given function is called with them as arguments, and the return
+         * value is pushed back on the stack. See also the cFunctionType
+         * class and the Define_Function() macro.
+         *
+         * The OMNeT++ functions generating random variables of different
+         * distributions can also be used in ExprElem expressions.
+         */
+        void operator=(MathFunc4Args _f)  {type='4'; f4=_f;}
 
         /**
          * Operation. During evaluation of the expression, two items (or three,
@@ -264,7 +275,7 @@ class SIM_API cPar : public cObject
        struct { long val;                       } lng;  // L:long,B:bool
        struct { double val;                     } dbl;  // D:double
        struct { MathFunc f; int argc;
-                double p1,p2,p3;                } func; // F:math function
+                double p1,p2,p3,p4;             } func; // F:math function
        struct { cStatistic *res;                } dtr;  // T:distribution
        struct { cDoubleExpression *expr;        } cexpr;// C:compiled expression
        struct { ExprElem *xelem; int n;         } expr; // X:expression
@@ -463,6 +474,13 @@ class SIM_API cPar : public cObject
      * with p1, p2 and p3 as an arguments.
      */
     cPar& setDoubleValue(MathFunc3Args f, double p1, double p2, double p3);
+
+    /**
+     * Sets the value to the given math function with four arguments.
+     * Every time the cPar's value is asked the function will be called
+     * with p1, p2, p3 and p4 as an arguments.
+     */
+    cPar& setDoubleValue(MathFunc4Args f, double p1, double p2, double p3, double p4);
 
     /**
      * Sets the value to the given pointer. The ownership of the block
