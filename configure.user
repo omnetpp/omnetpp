@@ -41,7 +41,7 @@ GNED_EMBED_TCL=no
 #
 # Here you may help 'configure' to determine which compile switches (e.g. -Ixxx) 
 # and which linker switches (e.g. -Lxxx -ltk80 -ltcl80 -lX11) are needed
-# to build an app with PVM, Tcl/Tk or Turbo Vision.
+# to build an app with PVM or Tcl/Tk.
 #
 # Normally these settings are autodetected by 'configure', so you only need to
 # edit here if autodetection doesn't work.
@@ -55,9 +55,6 @@ PVM_LIBS=
 TK_CFLAGS=
 TK_LIBS=
 #TK_LIBS='-ltk80 -ltcl80'
-
-TV_CFLAGS=
-TV_LIBS=
 
 #
 # You may override the settings below. This is only useful if you have moved
