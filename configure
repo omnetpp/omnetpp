@@ -667,7 +667,7 @@ Some influential environment variables:
               headers in a nonstandard directory <include dir>
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
-  DOXYGEN     The doxygen documentation tool
+  DOXYGEN     The Doxygen documentation tool
   PERL        The Perl interpreter
   CPP         C preprocessor
 
@@ -5242,14 +5242,26 @@ else
   if ($probefile) >/dev/null 2>/dev/null; then
     echo "Your PATH contains $OMNETPP_BIN_DIR. Good!"
   else
-    cat 1>&2 << EOT
+    if test "$cygwin" = yes; then
+      opp_bin_dir=`cygpath -u $OMNETPP_BIN_DIR`
+      if test -z "$opp_bin_dir"; then opp_bin_dir=$OMNETPP_BIN_DIR; fi
+      cat 1>&2 << EOT
 
-Warning: your PATH doesn't contain $OMNETPP_BIN_DIR!
+WARNING: your PATH doesn't contain $opp_bin_dir!
+Add the following line to your $HOME/.bash_profile:
+  export PATH=\$PATH:$opp_bin_dir
+
+EOT
+    else
+      cat 1>&2 << EOT
+
+WARNING: your PATH doesn't contain $OMNETPP_BIN_DIR!
 Add the following line to your startup file:
   export PATH=\$PATH:$OMNETPP_BIN_DIR  # .(bash_)profile if you use sh/bash
   setenv PATH \$PATH:$OMNETPP_BIN_DIR  # .cshrc if you use csh,tcsh etc.
 
 EOT
+    fi
   fi
   rm $omnetpp_bin_dir/$probefile
 fi
@@ -5265,7 +5277,7 @@ if test "$build_shared_libs" = yes -a "$cygwin" != yes; then
   else
     cat 1>&2 << EOT
 
-Warning: You selected shared libraries in configure.user, but your
+WARNING: You selected shared libraries in configure.user, but your
 LD_LIBRARY_PATH doesn't seem to contain $OMNETPP_LIB_DIR!
 
 So that the dynamic linker can find the OMNeT++ shared libs, you either have
