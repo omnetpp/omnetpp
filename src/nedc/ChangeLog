@@ -225,3 +225,7 @@ Aug 15, 1999
   - bugfix: with "like", simulation crashed if the actual module type didn't
     have all parameters. (Brent's bug)
 ------ omnetpp-2.0b2 released ------
+Dec 5, 1999
+  - compiled with MSVC. enbf.h added.
+  - added generated files enbf.tab.c and lex.yy.c to CVS to make it possible to
+    build GNED where flex/bison is not available
