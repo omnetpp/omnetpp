@@ -12,16 +12,16 @@ strongly encouraged to look into the literature.
 For parallel execution, the model is to be partitioned to several
 LPs that will be simulated independently on different hosts or
 processors. Each LP will have its own local Future Event Set,
-thus they will maintain local simulation times. The main issue with
+thus they will maintain their own local simulation times. The main issue with
 parallel simulations is keeping LPs synchronized in order to
-avoid violating causality of events. Without synchronization, a
+avoid violating the causality of events. Without synchronization, a
 message sent by one LP could arrive in another LP when the
 simulation time in the receiving LP has already passed the
 timestamp (arrival time) of the message. This would break
 causality\index{event!causality} of events in the receiving LP.
 
 There are two broad categories of parallel simulation algorithms
-that differ in the way they solve the causality problem outlined
+that differ in the way they handle causality problems outlined
 above:
 
 \begin{enumerate}
@@ -54,15 +54,15 @@ above:
 
 \section{Parallel distributed simulation support in {\opp}}
 
-This chapter paper presents the parallel simulation architecture
+This chapter presents the parallel simulation architecture
 of {\opp}. The design allows simulation models to be run
-in parallel without code modification, only by configuration change.
-It relies on a novel approach of placeholders
-to instantiate the model on different LPs --
+in parallel without code modification -- it only requires configuration.
+The implementation relies on the approach of placeholder modules
+and proxy gates to instantiate the model on different LPs --
 the placeholder approach allows simulation techniques such as
 topology discovery and direct message sending to work unmodified with
-PDES. The architecture is modular and extensible so it may
-serve as a potential framework for research on parallel simulation.
+PDES. The architecture is modular and extensible, so it can
+serve as a framework for research on parallel simulation.
 
 {\opp} currently supports conservative synchronization
 via the classic Chandy-Misra-Bryant (or null message) algorithm
@@ -147,8 +147,8 @@ configuration.
 
 \section{Parallel Simulation Example}
 
-For demostrating PDES capabilities of {\opp}, we will use
-the closed queuing network (CQN) model described in \cite{bagrodia00}.
+Here we use the Parallel CQN example simulation for demonstrating the
+PDES capabilities of {\opp}.
 The model consists of $N$ tandem queues where each tandem consists
 of a switch and $k$ single-server queues with exponential service times
 (Figure \ref{fig:cqn-model}).
@@ -187,9 +187,9 @@ with the following lines:
 
 \begin{verbatim}
 [Partitioning]
-*.tandemQueue[0].segment-id = 0
-*.tandemQueue[1].segment-id = 1
-*.tandemQueue[2].segment-id = 2
+*.tandemQueue[0].partition-id = 0
+*.tandemQueue[1].partition-id = 1
+*.tandemQueue[2].partition-id = 2
 \end{verbatim}
 
 The numbers after the equal sign identify the LP.
@@ -363,7 +363,7 @@ the null message algorithm uses this hook to piggyback null
 messages on outgoing model messages. The third hook is invoked
 when any message arrives from other LPs, and it allows the
 parallel simulation algorithm to process its own internal messages
-from other segments; the null message algorithm processes
+from other partitions; the null message algorithm processes
 incoming null messages here.
 
 The null message protocol implementation itself is modular,

@@ -101,14 +101,13 @@ each other:
 This section discusses the issues of embedding the simulation kernel
 or a simulation model into a larger application.
 
-You probably do not want to keep the appearance of the simulation program, so you
-do not want Cmdenv and Tkenv. You may or may not want to keep Envir.
-
-What you'll absolutely need for a simulation to run is the Sim
-library. You can keep Envir if its philosophy and the infrastructure
-it provides (\ttt{omnetpp.ini}, certain command-line options etc.)
-fit into your design. Then your application, the embedding program
-will take the place of Cmdenv and Tkenv.
+What you'll absolutely need for a simulation to run is the Sim library. You
+probably do not want to keep the appearance of the simulation program, so
+you do not want Cmdenv and Tkenv. You may or may not want to keep Envir.
+You can keep Envir if its philosophy and the infrastructure it provides
+(\ttt{omnetpp.ini}, certain command-line options etc.) fit into your
+design. Then your application, the embedding program will take the place of
+Cmdenv and Tkenv.
 
 If Envir does not fit your needs (for example, you want the model
 parameters to come from a database not from \ttt{omnetpp.ini}), then you
