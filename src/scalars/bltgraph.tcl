@@ -268,20 +268,29 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     set tmp(axisxdiv) [$graph axis cget x -subdivisions]
     set tmp(axisydiv) [$graph axis cget y -subdivisions]
 
-    if {[$graph element names]=={}} {
-        set tmp(showsymbols) "yes"
-        set tmp(symbolsize)  5
-        set tmp(showlines)   "yes"
-        set tmp(linesmooth)  "linear"
+    if {[winfo class $graph]=="Barchart"} {
+        set tmp(barmode) [$graph cget -barmode]
+        if {[$graph element names]=={}} {
+            set tmp(barbaseline) 0
+        } else {
+            set e [lindex [$graph element names] 0]
+            set tmp(barbaseline)  [$graph element cget $e -baseline]
+        }
     } else {
-        set e [lindex [$graph element names] 0]
-        set tmp(showsymbols) [expr [$graph element cget $e -pixels]==0 ? "no" : "yes"]
-        set tmp(symbolsize)  [$graph element cget $e -pixels]
-        if {$tmp(symbolsize)==0} {set tmp(symbolsize) 5}
-        set tmp(showlines)   [expr [$graph element cget $e -linewidth]==0 ? "no" : "yes"]
-        set tmp(linesmooth)  [$graph element cget $e -smooth]
+        if {[$graph element names]=={}} {
+            set tmp(showsymbols) "yes"
+            set tmp(symbolsize)  5
+            set tmp(showlines)   "yes"
+            set tmp(linesmooth)  "linear"
+        } else {
+            set e [lindex [$graph element names] 0]
+            set tmp(showsymbols) [expr [$graph element cget $e -pixels]==0 ? "no" : "yes"]
+            set tmp(symbolsize)  [$graph element cget $e -pixels]
+            if {$tmp(symbolsize)==0} {set tmp(symbolsize) 5}
+            set tmp(showlines)   [expr [$graph element cget $e -linewidth]==0 ? "no" : "yes"]
+            set tmp(linesmooth)  [$graph element cget $e -smooth]
+        }
     }
-
     set tmp(legendshow) [expr [$graph legend cget -hide]==0]
     set tmp(legendpos) [$graph legend cget -position]
     set tmp(legendanchor) [$graph legend cget -anchor]
@@ -358,6 +367,11 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     # Bars page -- all elements together
     # only if {[winfo class $graph]=="Barchart"} ?
     set f $nb.bars
+    label-entry $f.barbaseline "Baseline"
+    label-combo $f.barmode "Bar placement" {infront stacked aligned overlap}
+    pack $f.barbaseline $f.barmode -side top -expand 0 -fill x
+    $f.barbaseline.e configure -textvariable tmp(barbaseline)
+    $f.barmode.e configure -textvariable tmp(barmode)
 
     # Legend page
     set f $nb.legend
@@ -388,14 +402,22 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
         $graph axis config x -subdivisions $tmp(axisxdiv)
         $graph axis config y -subdivisions $tmp(axisydiv)
 
+        if {[winfo class $graph]=="Barchart"} {
+            $graph configure -barmode $tmp(barmode)
+        }
         foreach i [$graph element names] {
-            set pixels $tmp(symbolsize)
-            if {$tmp(showsymbols)=="no"} {set pixels 0}
-            $graph element configure $i -pixels $pixels
-            set linewidth 1
-            if {$tmp(showlines)=="no"} {set linewidth 0}
-            $graph element configure $i -linewidth $linewidth
-            $graph element configure $i -smooth $tmp(linesmooth)
+            if {[$graph element type $i]=="line"} {
+                set pixels $tmp(symbolsize)
+                if {$tmp(showsymbols)=="no"} {set pixels 0}
+                $graph element configure $i -pixels $pixels
+                set linewidth 1
+                if {$tmp(showlines)=="no"} {set linewidth 0}
+                $graph element configure $i -linewidth $linewidth
+                $graph element configure $i -smooth $tmp(linesmooth)
+            } else {
+                # bar
+                $graph element config $i -baseline $tmp(barbaseline)
+            }
         }
 
         $graph legend config -hide [expr !$tmp(legendshow)]
