@@ -514,6 +514,11 @@ void NEDBasicValidator::validateElement(ParamRefNode *node)
 
 void NEDBasicValidator::validateElement(IdentNode *node)
 {
+    // IdentNode may occur: (1) as loop variable inside for-loops (2) argument to sizeof
+    if (node->getParent()->getTagCode()==NED_FUNCTION &&
+        !strcmp(((FunctionNode*)node->getParent())->getName(),"sizeof"))
+        return;
+
     // make sure ident (loop variable) exists
     const char *name = node->getName();
     NEDElement *forloop = node->getParentWithTag(NED_FOR_LOOP);
