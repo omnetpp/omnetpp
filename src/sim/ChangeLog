@@ -1,3 +1,12 @@
+2002-01-23 Andras Varga
+
+	* cmodule.cc: bugfix: send..() and scheduleAt() crashed if message
+        owner was set to NULL.
+
+	* carray.cc: get() methods of cArray and cBag no longer give a warning
+        if the slot is empty, but simply return NULL pointer. Warnings remained
+        only in the remove() methods.
+
 2001-11-06 Andras Varga
 
 	* csimul.cc: bugfix: startRun() unnecessarily disabled warnings

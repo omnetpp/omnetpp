@@ -159,8 +159,9 @@ const char *cModule::fullPath2(char *buffer, int bufsize) const
 void cModule::addGate(const char *gname, char tp)
 {
     if (findGate(gname)>=0)
-       opp_error("addGate(): Gate %s.%s already present",
-                fullPath(), gname );
+    {
+       opp_error("addGate(): Gate %s.%s already present", fullPath(), gname);
+    }
     else
     {
        cGate *newg = new cGate( gname, tp );
@@ -174,8 +175,7 @@ void cModule::setGateSize(const char *gname, int size)
     if (pos<0) pos = findGate(gname,0);
     if (pos<0)
     {
-       opp_error("setGateSize(): Gate %s.%s[] not found",
-                 fullPath(), gname );
+       opp_error("setGateSize(): Gate %s.%s[] not found", fullPath(), gname);
     }
     else
     {
@@ -849,7 +849,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
        {opp_error("send()/sendDelayed(): cannot send via an input gate (`%s')",outgate->name());return -1;}
     if (msg==NULL)
         {opp_error("send()/sendDelayed(): message pointer is NULL");return -1;}
-    if (msg->owner()!=&(this->locals))
+    if (msg->owner() && msg->owner()!=&(this->locals))
         {opp_error("send()/sendDelayed(): not owner of message `%s'; owner is `%s'",
          msg->name(),msg->owner()->fullPath());return -1;}
     if (delay<0.0)
@@ -907,7 +907,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
 
     if (msg==NULL)
         {opp_error("sendDirect(): message pointer is NULL");return -1;}
-    if (msg->owner()!=&(this->locals))
+    if (msg->owner() && msg->owner()!=&(this->locals))
         {opp_error("sendDirect(): not owner of message `%s'; owner is `%s'",
          msg->name(),msg->owner()->fullPath());return -1;}
 
@@ -934,7 +934,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
         {opp_error(eBACKSCHED);return -1;}
     if (msg==NULL)
         {opp_error("scheduleAt(): message pointer is NULL");return -1;}
-    if (msg->owner()!=&this->locals && msg->owner()!=this)
+    if (msg->owner() && msg->owner()!=&(this->locals) && msg->owner()!=this)
         {opp_error("scheduleAt(): not owner of message `%s'; owner is `%s'",
          msg->name(),msg->owner()->fullPath());return -1;}
 
@@ -947,7 +947,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
     }
     msg->frommod = msg->tomod = id();
     msg->fromgate = msg->togate = -1;
-    msg->sent   = simTime();
+    msg->sent = simTime();
     msg->delivd = t;
 
     ev.messageSent( msg );
@@ -963,11 +963,10 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
     if (!msg->isScheduled())
     {
         if (putAsideQueue.contains(msg))
-            {opp_error("cancelEvent(): message `%s' is in the put-aside queue",
-             msg->name());return NULL;}
+            opp_error("cancelEvent(): message `%s' is in the put-aside queue",msg->name());
         else
-            {opp_error("cancelEvent(): message `%s' is currently not scheduled,"
-             " owner is `%s'", msg->name(),msg->owner()->fullPath());return NULL;}
+            opp_error("cancelEvent(): message `%s' is currently not scheduled",msg->name());
+        return NULL;
     }
 
     // now remove it from future events and return pointer

@@ -173,29 +173,17 @@ int cBag::find(void *obj) const
 void *cBag::get(int m)
 {
     if( m>=0 && m<=lastused && USED(m) )
-    {
         return ELEM(m);
-    }
     else
-    {
-        opp_warning("(%s)%s: slot #%d empty, returning NULL",
-                    className(),fullName(),m);
         return NULL;
-    }
 }
 
 const void *cBag::get(int m) const
 {
-  if( m>=0 && m<=lastused && USED(m) )
-    {
-      return ELEM(m);
-    }
-  else
-    {
-      opp_warning("(%s)%s: slot #%d empty, returning NULL",
-                  +                    className(),fullName(),m);
-      return NULL;
-    }
+    if( m>=0 && m<=lastused && USED(m) )
+        return ELEM(m);
+    else
+        return NULL;
 }
 
 
@@ -396,12 +384,12 @@ int cArray::find(cObject *obj) const
 {
     int i;
     for (i=0; i<=last; i++)
-         if (vect[i]==obj)
+        if (vect[i]==obj)
             break;
     if (i<=last)
-         return i;
+        return i;
     else
-         return -1;
+        return -1;
 }
 
 int cArray::find(const char *objname) const
@@ -411,9 +399,9 @@ int cArray::find(const char *objname) const
         if (vect[i] && vect[i]->isName(objname))
             break;
     if (i<=last)
-         return i;
+        return i;
     else
-         return -1;
+        return -1;
 }
 
 cObject *cArray::get(int m)
@@ -421,34 +409,30 @@ cObject *cArray::get(int m)
     if (m>=0 && m<=last && vect[m])
         return vect[m];
     else
-        {opp_warning(eNULLPTR,className(),fullName(),m);return NO(cObject);}
+        return NULL;
 }
 
 const cObject *cArray::get(int m) const
 {
-  if (m>=0 && m<=last && vect[m])
-    return vect[m];
-  else
-    {opp_warning(eNULLPTR,className(),fullName(),m);return NO(cObject);}
+    if (m>=0 && m<=last && vect[m])
+        return vect[m];
+    else
+        return NULL;
 }
 
 cObject *cArray::get(const char *objname)
 {
-  int m = find( objname );
-  if (m==-1) {
-    opp_warning("(%s)%s: get(): no object called `%s'",className(),fullName(),objname);
-    return NO(cObject);
-  }
-  return get(m);
+    int m = find( objname );
+    if (m==-1)
+        return NULL;
+    return get(m);
 }
 
 const cObject *cArray::get(const char *objname) const
 {
     int m = find( objname );
-    if (m==-1) {
-        opp_warning("(%s)%s: get(): no object called `%s'",className(),fullName(),objname);
-        return NO(cObject);
-    }
+    if (m==-1)
+        return NULL;
     return get(m);
 }
 
