@@ -44,9 +44,9 @@ The writer of the network description has to take care that no
 reserved words are used for names. The reserved words of the
 NED language are:
 \begin{verbatim}
-  import include channel endchannel simple endsimple module endmodule
+  import channel endchannel simple endsimple module endmodule
   error delay datarate const parameters gates submodules connections
-  gatesizes on if machines for do endfor network endnetwork nocheck
+  gatesizes on if for do endfor network endnetwork nocheck
   ref ancestor true false like input numeric string bool char
 \end{verbatim}
 
@@ -78,15 +78,16 @@ For example, \ttt{TCP} and \ttt{Tcp} are two different names.
 
 
 \subsection{Comments}
-
 \index{ned!comments}
 
 Comments can be placed anywhere in the NED file, with the usual C++
 syntax: comments begin with a double slash `//', and last until
 the end of the line. Comments are ignored by the NED compiler.
 
-It is planned that future {\opp} versions will use comments
-for documentation generation, much like JavaDoc or Doxygen.
+NED comments can be used for documentation generation,
+much like JavaDoc or Doxygen. This feature is described in
+Chapter \ref{cha:neddoc}.
+
 
 
 \section{The import directive}
@@ -101,13 +102,13 @@ After importing a network description, one can use the components
 
 When a file is imported, only the declaration information is used.
 Also, importing a \ttt{.ned} file does not cause that file to be compiled
-with the NED compiler when the parent file is NEDC compiled, i.e.,
+with the NED compiler when the parent file is NED compiled, i.e.,
 one must compile and link all network description files --
 not only the top-level ones.
 
 You can specify the name of the files with or without the
 \texttt{.ned} extension. You can also include a path in the
-filenames\index{ned!include files}, or better, use the NEDC compiler's
+filenames\index{ned!include files}, or better, use the NED compiler's
 \ttt{-I <path>} command-line option to name the directories where the
 imported files reside.
 

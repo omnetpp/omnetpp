@@ -533,7 +533,7 @@ compiler generates code.
 
 All module types (including compound\index{module!compound} modules)
 need to have module declarations\index{module!declaration}. For all
-compound modules, the NEDC compiler generates the
+compound modules, the NED compiler generates the
 \fmac[Define\_Module()]{Define\_Module(..)} lines automatically.
 However, it is your responsibility to put Define\_Module(..) lines into
 one of the C++ sources for all your simple module types.
@@ -2955,7 +2955,7 @@ running in one step.
 mod = modtype->createScheduleInit("name",this);
 \end{verbatim}
 
-It does \fname{create()} + \fname{buildInside()} + 
+It does \fname{create()} + \fname{buildInside()} +
 \fname[scheduleStart()]{scheduleStart(now)} + \fname{callInitialize()}.
 
 This method can be used for both simple and compound modules.
