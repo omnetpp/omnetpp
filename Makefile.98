@@ -42,7 +42,7 @@ ENVIR_ILIB=
 
 all: check-env components reminder
 
-components: libs progs configsamples samples configtutorial tutorial
+components: libs progs configsamples samples configtutorial thetutorial
 
 
 #=====================================================================
@@ -172,7 +172,7 @@ demo:
 	cd $(OMNETPP_SAMPLES_DIR:/=\)\demo
 	$(MAKE) $(MOPTS) $(MAKEFILE)
 
-tutorial:
+thetutorial:
 	@echo ===== Compiling $@ ====
 	cd $(OMNETPP_TUTORIAL_DIR:/=\)\queues && $(MAKE) $(MOPTS) -f queues.mak
 
