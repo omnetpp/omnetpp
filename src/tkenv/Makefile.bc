@@ -1,0 +1,133 @@
+#
+# Borland C++ IDE generated makefile
+# Generated 3/11/01 at 10:55:04 AM 
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCC32   = Bcc32 +BccW32.cfg 
+TLINK32 = TLink32
+TLIB    = TLib
+BRC32   = Brc32
+TASM32  = Tasm32
+#
+# IDE macros
+#
+
+
+#
+# Options
+#
+IDE_LinkFLAGS32 =  -LC:\BC5\LIB
+LinkerLocalOptsAtC32_tkenvdlib =  -Tpe -ap -c
+ResLocalOptsAtC32_tkenvdlib = 
+BLocalOptsAtC32_tkenvdlib = 
+CompInheritOptsAt_tkenvdlib = -IC:\BC5\INCLUDE;C:\TK80\GENERIC;C:\TK80\XLIB;C:\TCL80\GENERIC;..\..\SIM;.. -D_RTLDLL; OMNETPP_TKENV_DIR="d:\\omnetpp\\src\\envir\\tkenv"; OMNETPP_BITMAP_PATH="d:\\omnetpp\\bitmaps"
+LinkerInheritOptsAt_tkenvdlib = -x
+LinkerOptsAt_tkenvdlib = $(LinkerLocalOptsAtC32_tkenvdlib)
+ResOptsAt_tkenvdlib = $(ResLocalOptsAtC32_tkenvdlib)
+BOptsAt_tkenvdlib = $(BLocalOptsAtC32_tkenvdlib)
+
+#
+# Dependency List
+#
+Dep_tkenv = \
+   tkenv.lib
+
+tkenv : BccW32.cfg $(Dep_tkenv)
+  echo MakeNode
+
+Dep_tkenvdlib = \
+   arrow.obj\
+   tkcmd.obj\
+   tkapp.obj\
+   statinsp.obj\
+   objinsp.obj\
+   modinsp.obj\
+   inspect.obj\
+   tklib.obj
+
+tkenv.lib : $(Dep_tkenvdlib)
+  $(TLIB) $< $(IDE_BFLAGS) $(BOptsAt_tkenvdlib) @&&|
+ -+arrow.obj &
+-+tkcmd.obj &
+-+tkapp.obj &
+-+statinsp.obj &
+-+objinsp.obj &
+-+modinsp.obj &
+-+inspect.obj &
+-+tklib.obj
+|
+
+arrow.obj :  arrow.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tkenvdlib) $(CompInheritOptsAt_tkenvdlib) -o$@ arrow.cc
+|
+
+tkcmd.obj :  tkcmd.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tkenvdlib) $(CompInheritOptsAt_tkenvdlib) -o$@ tkcmd.cc
+|
+
+tkapp.obj :  tkapp.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tkenvdlib) $(CompInheritOptsAt_tkenvdlib) -o$@ tkapp.cc
+|
+
+statinsp.obj :  statinsp.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tkenvdlib) $(CompInheritOptsAt_tkenvdlib) -o$@ statinsp.cc
+|
+
+objinsp.obj :  objinsp.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tkenvdlib) $(CompInheritOptsAt_tkenvdlib) -o$@ objinsp.cc
+|
+
+modinsp.obj :  modinsp.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tkenvdlib) $(CompInheritOptsAt_tkenvdlib) -o$@ modinsp.cc
+|
+
+inspect.obj :  inspect.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tkenvdlib) $(CompInheritOptsAt_tkenvdlib) -o$@ inspect.cc
+|
+
+tklib.obj :  tklib.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_tkenvdlib) $(CompInheritOptsAt_tkenvdlib) -o$@ tklib.cc
+|
+
+# Compiler configuration file
+BccW32.cfg : 
+   Copy &&|
+-w
+-R
+-v
+-vi
+-H
+-H=sim_std.csm
+-WC
+-H-
+-H=
+-wsig
+-wucp
+-wpin
+-wnak
+-wdef
+-wnod
+-wamb
+-wuse
+-wstv
+-wasm
+-wamp
+-wobs
+-wpch
+| $@
+
+

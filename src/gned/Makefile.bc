@@ -1,0 +1,123 @@
+#
+# Borland C++ IDE generated makefile
+# Generated 3/11/01 at 11:00:51 AM 
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCC32   = Bcc32 +BccW32.cfg 
+TLINK32 = TLink32
+TLIB    = TLib
+BRC32   = Brc32
+TASM32  = Tasm32
+#
+# IDE macros
+#
+
+
+#
+# Options
+#
+IDE_LinkFLAGS32 =  -LC:\BC5\LIB
+LinkerLocalOptsAtC32_gneddexe =  -Tpe -ap -c -LC:\BC5\LIB;C:\TCL80\WIN;C:\TK80\WIN
+ResLocalOptsAtC32_gneddexe = 
+BLocalOptsAtC32_gneddexe = 
+CompInheritOptsAt_gneddexe = -IC:\BC5\INCLUDE;C:\TK80\GENERIC;C:\TK80\XLIB;C:\TCL80\GENERIC;..\..\SIM;..;. -D_RTLDLL; OMNETPP_GNED_DIR="."; OMNETPP_BITMAP_PATH="bitmaps"
+LinkerInheritOptsAt_gneddexe = -x
+LinkerOptsAt_gneddexe = $(LinkerLocalOptsAtC32_gneddexe)
+ResOptsAt_gneddexe = $(ResLocalOptsAtC32_gneddexe)
+BOptsAt_gneddexe = $(BLocalOptsAtC32_gneddexe)
+
+#
+# Dependency List
+#
+Dep_gned = \
+   gned.exe
+
+gned : BccW32.cfg $(Dep_gned)
+  echo MakeNode
+
+Dep_gneddexe = \
+   nedfile.obj\
+   ebnf.tab.obj\
+   lex.yy.obj\
+   tklib.obj\
+   gned.obj\
+   parsened.obj\
+   arrow.obj\
+   C:\TCL80\WIN\tcl80.lib\
+   C:\TK80\WIN\tk80.lib
+
+gned.exe : $(Dep_gneddexe)
+  $(TLINK32) @&&|
+ /v $(IDE_LinkFLAGS32) $(LinkerOptsAt_gneddexe) $(LinkerInheritOptsAt_gneddexe) +
+c0x32.obj+
+nedfile.obj+
+ebnf.tab.obj+
+lex.yy.obj+
+tklib.obj+
+gned.obj+
+parsened.obj+
+arrow.obj
+$<,$*
+C:\TCL80\WIN\tcl80.lib+
+C:\TK80\WIN\tk80.lib+
+import32.lib+
+cw32i.lib
+
+|
+
+nedfile.obj :  nedfile.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ nedfile.cc
+|
+
+ebnf.tab.obj :  ebnf.tab.c
+  $(BCC32) -c @&&|
+ $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ ebnf.tab.c
+|
+
+lex.yy.obj :  lex.yy.c
+  $(BCC32) -c @&&|
+ $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ lex.yy.c
+|
+
+tklib.obj :  tklib.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ tklib.cc
+|
+
+gned.obj :  gned.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ gned.cc
+|
+
+parsened.obj :  parsened.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ parsened.cc
+|
+
+arrow.obj :  arrow.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ arrow.cc
+|
+
+# Compiler configuration file
+BccW32.cfg : 
+   Copy &&|
+-w
+-R
+-v
+-vi
+-H
+-H=sim_std.csm
+-H-
+-H=
+-WC
+| $@
+
+

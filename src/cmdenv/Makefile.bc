@@ -1,0 +1,101 @@
+#
+# Borland C++ IDE generated makefile
+# Generated 3/11/01 at 10:59:22 AM 
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCC32   = Bcc32 +BccW32.cfg 
+TLINK32 = TLink32
+TLIB    = TLib
+BRC32   = Brc32
+TASM32  = Tasm32
+#
+# IDE macros
+#
+
+
+#
+# Options
+#
+IDE_LinkFLAGS32 =  -LC:\BC5\LIB
+LinkerLocalOptsAtC32_cmdenvdlib =  -Tpe -aa -V4.0 -c
+ResLocalOptsAtC32_cmdenvdlib = 
+BLocalOptsAtC32_cmdenvdlib =  /P32
+CompInheritOptsAt_cmdenvdlib = -IC:\BC5\INCLUDE;..\..\SIM;.. -DINC_OLE2;_RTLDLL;
+LinkerInheritOptsAt_cmdenvdlib = -x
+LinkerOptsAt_cmdenvdlib = $(LinkerLocalOptsAtC32_cmdenvdlib)
+ResOptsAt_cmdenvdlib = $(ResLocalOptsAtC32_cmdenvdlib)
+BOptsAt_cmdenvdlib = $(BLocalOptsAtC32_cmdenvdlib)
+
+#
+# Dependency List
+#
+Dep_cmdenv = \
+   cmdenv.lib
+
+cmdenv : BccW32.cfg $(Dep_cmdenv)
+  echo MakeNode
+
+Dep_cmdenvdlib = \
+   cmdenv.obj\
+   heap.obj\
+   enumstr.obj
+
+cmdenv.lib : $(Dep_cmdenvdlib)
+  $(TLIB) $< $(IDE_BFLAGS) $(BOptsAt_cmdenvdlib) @&&|
+ -+cmdenv.obj &
+-+heap.obj &
+-+enumstr.obj
+|
+
+cmdenv.obj :  cmdenv.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_cmdenvdlib) $(CompInheritOptsAt_cmdenvdlib) -o$@ cmdenv.cc
+|
+
+heap.obj :  heap.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_cmdenvdlib) $(CompInheritOptsAt_cmdenvdlib) -o$@ heap.cc
+|
+
+enumstr.obj :  enumstr.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_cmdenvdlib) $(CompInheritOptsAt_cmdenvdlib) -o$@ enumstr.cc
+|
+
+# Compiler configuration file
+BccW32.cfg : 
+   Copy &&|
+-w
+-R
+-v
+-vi
+-H
+-H=sim_std.csm
+-H-
+-x-
+-xd-
+-WM
+-H=
+-wsig
+-wucp
+-wpin
+-wnak
+-wdef
+-wnod
+-wamb
+-wuse
+-wstv
+-wasm
+-wamp
+-wobs
+-wpch
+-w-bbf
+| $@
+
+

@@ -1,0 +1,287 @@
+#
+# Borland C++ IDE generated makefile
+# Generated 3/11/01 at 11:02:16 AM 
+#
+.AUTODEPEND
+
+
+#
+# Borland C++ tools
+#
+IMPLIB  = Implib
+BCC32   = Bcc32 +BccW32.cfg 
+TLINK32 = TLink32
+TLIB    = TLib
+BRC32   = Brc32
+TASM32  = Tasm32
+#
+# IDE macros
+#
+
+
+#
+# Options
+#
+IDE_LinkFLAGS32 =  -LC:\BC5\LIB
+LinkerLocalOptsAtC32_sim_stddlib =  -Tpe -ap -c
+ResLocalOptsAtC32_sim_stddlib = 
+BLocalOptsAtC32_sim_stddlib =  /P32
+CompInheritOptsAt_sim_stddlib = -IC:\BC5\INCLUDE -D_RTLDLL;
+LinkerInheritOptsAt_sim_stddlib = -x
+LinkerOptsAt_sim_stddlib = $(LinkerLocalOptsAtC32_sim_stddlib)
+ResOptsAt_sim_stddlib = $(ResLocalOptsAtC32_sim_stddlib)
+BOptsAt_sim_stddlib = $(BLocalOptsAtC32_sim_stddlib)
+
+#
+# Dependency List
+#
+Dep_sim_std = \
+   sim_std.lib
+
+sim_std : BccW32.cfg $(Dep_sim_std)
+  echo MakeNode
+
+Dep_sim_stddlib = \
+   cpacket.obj\
+   cfsm.obj\
+   errmsg.obj\
+   ctopo.obj\
+   cvarhist.obj\
+   ctypes.obj\
+   cwatch.obj\
+   cstk.obj\
+   cstat.obj\
+   csimul.obj\
+   cqueue.obj\
+   carray.obj\
+   cpsquare.obj\
+   cpar.obj\
+   coutvect.obj\
+   cobject.obj\
+   cnetmod.obj\
+   cmsgheap.obj\
+   cmodule.obj\
+   cmessage.obj\
+   cllist.obj\
+   cksplit.obj\
+   chist.obj\
+   chead.obj\
+   cgate.obj\
+   cdetect.obj\
+   cdensity.obj\
+   ccor.obj\
+   util.obj\
+   netpack.obj
+
+sim_std.lib : $(Dep_sim_stddlib)
+  $(TLIB) $< $(IDE_BFLAGS) $(BOptsAt_sim_stddlib) @&&|
+ -+cpacket.obj &
+-+cfsm.obj &
+-+errmsg.obj &
+-+ctopo.obj &
+-+cvarhist.obj &
+-+ctypes.obj &
+-+cwatch.obj &
+-+cstk.obj &
+-+cstat.obj &
+-+csimul.obj &
+-+cqueue.obj &
+-+carray.obj &
+-+cpsquare.obj &
+-+cpar.obj &
+-+coutvect.obj &
+-+cobject.obj &
+-+cnetmod.obj &
+-+cmsgheap.obj &
+-+cmodule.obj &
+-+cmessage.obj &
+-+cllist.obj &
+-+cksplit.obj &
+-+chist.obj &
+-+chead.obj &
+-+cgate.obj &
+-+cdetect.obj &
+-+cdensity.obj &
+-+ccor.obj &
+-+util.obj &
+-+netpack.obj
+|
+
+cpacket.obj :  cpacket.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cpacket.cc
+|
+
+cfsm.obj :  cfsm.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cfsm.cc
+|
+
+errmsg.obj :  errmsg.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ errmsg.cc
+|
+
+ctopo.obj :  ctopo.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ ctopo.cc
+|
+
+cvarhist.obj :  cvarhist.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cvarhist.cc
+|
+
+ctypes.obj :  ctypes.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ ctypes.cc
+|
+
+cwatch.obj :  cwatch.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cwatch.cc
+|
+
+cstk.obj :  cstk.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cstk.cc
+|
+
+cstat.obj :  cstat.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cstat.cc
+|
+
+csimul.obj :  csimul.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ csimul.cc
+|
+
+cqueue.obj :  cqueue.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cqueue.cc
+|
+
+carray.obj :  carray.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ carray.cc
+|
+
+cpsquare.obj :  cpsquare.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cpsquare.cc
+|
+
+cpar.obj :  cpar.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cpar.cc
+|
+
+coutvect.obj :  coutvect.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ coutvect.cc
+|
+
+cobject.obj :  cobject.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cobject.cc
+|
+
+cnetmod.obj :  cnetmod.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cnetmod.cc
+|
+
+cmsgheap.obj :  cmsgheap.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cmsgheap.cc
+|
+
+cmodule.obj :  cmodule.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cmodule.cc
+|
+
+cmessage.obj :  cmessage.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cmessage.cc
+|
+
+cllist.obj :  cllist.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cllist.cc
+|
+
+cksplit.obj :  cksplit.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cksplit.cc
+|
+
+chist.obj :  chist.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ chist.cc
+|
+
+chead.obj :  chead.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ chead.cc
+|
+
+cgate.obj :  cgate.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cgate.cc
+|
+
+cdetect.obj :  cdetect.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cdetect.cc
+|
+
+cdensity.obj :  cdensity.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ cdensity.cc
+|
+
+ccor.obj :  ccor.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ ccor.cc
+|
+
+util.obj :  util.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ util.cc
+|
+
+netpack.obj :  std\netpack.cc
+  $(BCC32) -c @&&|
+ $(CompOptsAt_sim_stddlib) $(CompInheritOptsAt_sim_stddlib) -o$@ std\netpack.cc
+|
+
+# Compiler configuration file
+BccW32.cfg : 
+   Copy &&|
+-w
+-R
+-v
+-vi
+-H
+-H=sim_std.csm
+-WC
+-x-
+-xd-
+-wsig
+-wucp
+-wdef
+-wuse
+-wstv
+-wobs
+-wpch
+-wnod
+-wamb
+-wpin
+-wnak
+-wasm
+-wamp
+| $@
+
+
