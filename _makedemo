@@ -1,0 +1,42 @@
+#
+# make OMNeT++ demo package
+#
+
+DIR=../demo
+
+if [ ! -f configure.in ]; then
+    echo Must be called in top-level omnetpp dir!!!
+    exit
+fi
+
+if [ -d $DIR]; then
+    echo Target directory $DIR already exists - delete it or move it away!!!
+    exit
+fi
+
+# copy stuff
+mkdir $DIR
+cp bin/gned.exe $DIR
+cp samples/demo.exe $DIR/opp_demo.exe
+cp -r bitmaps $DIR
+cp -r samples $DIR
+
+# clean samples
+rm -rf `find $DIR/samples -name CVS`
+rm -rf $DIR/samples/demo
+rm -rf $DIR/samples/pvmex
+rm -f $DIR/samples/*.dep
+rm -f $DIR/samples/*.dsw
+rm -f $DIR/samples/*.dsp
+rm -f $DIR/samples/*.exe
+rm -f $DIR/samples/*.ide
+rm -f $DIR/samples/*.ilk
+rm -f $DIR/samples/*.mak
+rm -f $DIR/samples/*.in
+rm -f $DIR/samples/*.pdb
+rm -f $DIR/samples/*.vc
+
+
+
+
+
