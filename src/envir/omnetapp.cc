@@ -339,7 +339,6 @@ void TOmnetApp::readPerRunOptions(int run_nr)
 
 void TOmnetApp::makeOptionsEffective()
 {
-     simulation.setWarnings( opt_warnings );
      cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
      simulation.setNetIfCheckFreq( opt_netifcheckfreq );
 

@@ -146,8 +146,6 @@ int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int ac, char **av)
    if (ac>=2 && av[1][0]=='1')
       random_seed++;
 
-   bool w = simulation.warnings(); simulation.setWarnings(false);
-
    // reset seed for tcl/tk ("random arrangement" depends on seed!)
    char buf[16];
    sprintf(buf,"%d",random_seed);
@@ -264,8 +262,6 @@ int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int ac, char **av)
 
    // display messages
    redrawMessages(interp, 0, NULL);
-
-   simulation.setWarnings(w);
 
    return TCL_OK;
 }
@@ -519,7 +515,6 @@ void TGateInspector::update()
    if (g->datarate()) setLabel(".main.datarate.e", (double)(*g->datarate()) );
               else setLabel(".main.datarate.e", "none" );
 
-   bool w = simulation.warnings(); simulation.setWarnings(false);
    setLabel(".main.trfinish.e", g->transmissionFinishes() );
 
    cGate *gate;
@@ -533,8 +528,6 @@ void TGateInspector::update()
    setButtonText(".main.to", buf);
 
    setInspectButton(".toolbar.mod",g->ownerModule(), INSP_DEFAULT);
-
-   simulation.setWarnings(w);
 }
 
 //=======================================================================

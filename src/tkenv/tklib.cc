@@ -108,7 +108,7 @@ void collection( cObject *object, Tcl_Interp *interp, char *listbox, InfoFunc in
 static void _modcollection(cModule *parent, Tcl_Interp *interp, char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
 {
     // loop through module vector
-    for( int i=1; i<=simulation.lastModuleIndex() && !memoryIsLow(); i++ )
+    for (int i=0; i<=simulation.lastModuleId() && !memoryIsLow(); i++ )
     {
       cModule *mod = simulation.module(i);
       if (mod && mod!=simulation.systemModule() && mod->parentModule()==parent)

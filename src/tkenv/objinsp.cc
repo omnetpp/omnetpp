@@ -396,11 +396,11 @@ void TMessageInspector::update()
    setButtonText(".nb.send.owner", buf);
 
    cModule *mod;
-   setInspectButton(".nb.send.src",mod=&(simulation[msg->senderModuleId()]), INSP_DEFAULT);
+   setInspectButton(".nb.send.src",mod=simulation.module(msg->senderModuleId()), INSP_DEFAULT);
    if (mod) sprintf(buf,"Src: #%d %.50s", mod->id(), mod->fullPath());
        else strcpy(buf,"Src: n/a");
    setButtonText(".nb.send.src", buf);
-   setInspectButton(".nb.send.dest",mod=&(simulation[msg->arrivalModuleId()]), INSP_DEFAULT);
+   setInspectButton(".nb.send.dest",mod=simulation.module(msg->arrivalModuleId()), INSP_DEFAULT);
    if (mod) sprintf(buf,"Dest: #%d %.50s", mod->id(), mod->fullPath());
        else strcpy(buf,"Dest: n/a");
    setButtonText(".nb.send.dest", buf);
