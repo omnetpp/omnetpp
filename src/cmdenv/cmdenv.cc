@@ -29,6 +29,7 @@
 #include "appreg.h"
 #include "cinifile.h"
 #include "cmodule.h"
+#include "cmessage.h"
 #include "cnetmod.h"
 #include "args.h"
 #include "speedmtr.h"
@@ -50,6 +51,23 @@ CMDENV_API void envirDummy() {}
 bool cmdenvMemoryIsLow();
 
 bool TCmdenvApp::sigint_received;
+
+
+// utility function for printing elapsed time
+char *timeToStr(time_t t, char *buf=NULL)
+{
+   static char buf2[48];
+   char *b = buf ? buf : buf2;
+
+   if (t<3600)
+       sprintf(b,"%dm %2ds", int(t/60L), int(t%60L));
+   else if (t<86400)
+       sprintf(b,"%dh %2dm", int(t/3600L), int((t%3600L)/60L));
+   else
+       sprintf(b,"%dd %2dh)", int(t/86400L), int((t%86400L)/3600L));
+
+   return b;
+}
 
 //==========================================================================
 // TCmdenvApp: command line user interface.
@@ -308,6 +326,7 @@ void TCmdenvApp::simulate()
         {
            ev.disable_tracing = true;
            Speedometer speedometer;
+           char buf1[32], buf2[32];
            while (true)
            {
                cSimpleModule *mod = simulation.selectNextModule();
@@ -319,19 +338,26 @@ void TCmdenvApp::simulate()
                {
                    if (opt_perfdisplay)
                    {
-                       printf( "** Event #%ld \tT=%s\n",
+                       printf( "** Event #%ld   T=%s    Elapsed: %s\n",
                                simulation.eventNumber(),
-                               simtimeToStr(simulation.simTime()));
-                       printf( "      ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
+                               simtimeToStr(simulation.simTime()),
+                               timeToStr(totalElapsed()));
+                       printf( "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
                                speedometer.eventsPerSec(),
                                speedometer.simSecPerSec(),
                                speedometer.eventsPerSimSec());
+
+                       printf( "     Messages:  created: %ld   present: %ld   in FES: %ld\n",
+                               cMessage::totalMessageCount(),
+                               cMessage::liveMessageCount(),
+                               simulation.msgQueue.length());
                    }
                    else
                    {
-                       printf( "** Event #%ld \tT=%s \tev/sec=%g\n",
+                       printf( "** Event #%ld   T=%s   Elapsed: %s   ev/sec=%g\n",
                                simulation.eventNumber(),
                                simtimeToStr(simulation.simTime()),
+                               timeToStr(totalElapsed()),
                                speedometer.eventsPerSec());
                    }
                    speedometer.beginNewInterval();

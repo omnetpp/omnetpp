@@ -1,3 +1,7 @@
+2002-11-03  Andras Varga
+
+	* cmdenv.cc: improved status display 
+
 2002-10-20  Andras Varga
 
 	* cmdenv.cc: revised omnetpp.ini entries understood by Cmdenv.
