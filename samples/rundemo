@@ -47,7 +47,7 @@ foreach line {
    {"FDDI"             "fddi"             "./fddi"      "fddi.exe"}
    {"HCube"            "hcube"            "./hcube"     "hcube.exe"}
    {"Routing"          "routing"          "./routing"   "routing.exe"}
-   {"Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
+   {"Routing/Networks" "routing/networks" "../routing"  "..\\\\routing.exe"}
    {"TokenRing"        "tokenring"        "./tokenring" "tokenring.exe"}
    {"NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
 } {
