@@ -122,9 +122,9 @@ typedef bool (*ForeachFunc)(cObject *,bool);
  *
  * Some more details, in case you're writing a class that acts as a container:
  *
- *    - you should use use the functions take(obj), drop(obj) on insert/remove
- *    - you should delete theowned objects in the destructor
- *    - the copy constructor of a container should dup() and owned objects
+ *    - you should use the functions take(), drop() on inserting/removing objects
+ *    - you should delete the owned objects in the destructor
+ *    - the copy constructor of a container should dup() the owned objects
  *      and take() the copies
  *    - if you want to have a class which contains cObject-subclasses as
  *      data members: your class (the enclosing object) should own them --
@@ -275,7 +275,7 @@ class SIM_API cObject : public cPolymorphic
      * Duplicates this object.  Duplicates the object and returns
      * a pointer to the new one. Must be redefined in derived classes!
      * In derived classes, it is usually implemented as
-     * <tt>return new cObject(*this)</tt>.
+     * <tt>return new ClassName(*this)</tt>.
      */
     virtual cObject *dup() const    {return new cObject(*this);}
 
