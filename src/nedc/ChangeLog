@@ -1,3 +1,8 @@
+2003-07-27  Andras Varga
+
+	* nedtool: implemented -t option (store source code), needed for
+	documentation generation
+
 2003-06-18  Andras Varga
 
 	* TODO: should not generate set...ArraySize() methods for abstract 

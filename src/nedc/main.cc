@@ -108,6 +108,7 @@ bool opt_newsyntax = false;        // -N
 const char *opt_suffix = NULL;     // -s
 const char *opt_hdrsuffix = NULL;  // -S
 bool opt_unparsedexpr = false;     // -e
+bool opt_storesrc = false;         // -t
 bool opt_novalidation = false;     // -y
 bool opt_noimports = false;        // -z
 bool opt_srcloc = false;           // -p
@@ -141,6 +142,7 @@ void printUsage()
        "  -s <suffix>: suffix for generated files\n"
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
+       "  -t: with NED parsing: include source code of components in XML\n"
        "  -y: skip semantic validation (also skip processing imports)\n"
        "  -z: skip processing imports\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
@@ -188,7 +190,9 @@ bool processFile(const char *fname)
     else if (ftype==NED)
     {
         NEDParser parser;
-        parser.parseFile(fname,!opt_unparsedexpr);
+        parser.setParseExpressions(!opt_unparsedexpr);
+        parser.setStoreSource(opt_storesrc);
+        parser.parseFile(fname);
         tree = parser.getTree();
     }
     if (errorsOccurred())
@@ -413,6 +417,10 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-e"))
         {
             opt_unparsedexpr = true;
+        }
+        else if (!strcmp(argv[i],"-t"))
+        {
+            opt_storesrc = true;
         }
         else if (!strcmp(argv[i],"-y"))
         {
