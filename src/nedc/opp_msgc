@@ -763,8 +763,12 @@ sub generateClass
     }
     print H "    virtual ~$msgclass();\n";
     print H "    $msgclass& operator=(const $msgclass& other);\n";
-    if ($classtype eq "cobject" && !$gap) {
-        print H "    virtual cObject *dup() const {return new $msgclass(*this);}\n";
+    if ($classtype eq "cobject") {
+        if ($gap) {
+            print H "    virtual cObject *dup() const {throw new cException(\"You forgot to manually add a dup() function to class $realmsgclass\");}\n";
+        } else {    
+            print H "    virtual cObject *dup() const {return new $msgclass(*this);}\n";
+        }    
     }
     print H "\n";
     print H "    // field getter/setter methods\n";

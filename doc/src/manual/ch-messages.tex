@@ -1129,6 +1129,9 @@ class FooPacket : public FooPacket_Base
 Register_Class(FooPacket);
 \end{verbatim}
 
+Note that it is important that you redefine \fname{dup()} and 
+provide an assignment operator (\fname{operator=()}).
+
 So, returning to our original example about payload length
 affecting packet length, the code you'd write is the following:
 

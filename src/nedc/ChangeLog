@@ -1,3 +1,8 @@
+2003-09-30  Andras Varga
+
+	* opp_msgc: with customize=true, adds a default dup() function to the 
+	generated _Base class that throws an exception and warns the user
+
 2003-08-12  Andras Varga
 
 	* opp_msgc: implemented -h option, meaning identical to nedc 
