@@ -208,8 +208,8 @@ proc create_inspector_listbox {w} {
     pack $w.main -expand 1 -fill both -side top
 
     multicolumnlistbox $w.main.list {
-       {class  Class}
-       {name   Name}
+       {class  Class   80}
+       {name   Name   120}
        {info   Info}
        {ptr    Pointer}
     } -width 400 -yscrollcommand "$w.main.vsb set" -xscrollcommand "$w.main.hsb set"

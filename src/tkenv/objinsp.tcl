@@ -22,7 +22,7 @@ proc create_objinspector {name geom} {
 
     set nb $w.nb
     notebook $nb
-    $nb config  -width 300 -height 200
+    $nb config -width 460 -height 300
     pack $nb -expand 1 -fill both
 
     set fieldspage_needed [opp_hasdescriptor $w]
@@ -37,7 +37,7 @@ proc create_objinspector {name geom} {
     label-sunkenlabel $nb.info.fullpath {Full path:} ;# FIXME make it disabled editfield, and next ones too
     label-sunkenlabel $nb.info.class {C++ class:}
     label-sunkenlabel $nb.info.info {Info:}
-    label-message $nb.info.details {Details:} ;# FIXME make it disabled text
+    label-message $nb.info.details {Detailed info:} ;# FIXME make it disabled text
 
     pack $nb.info.name -fill x -side top
     pack $nb.info.fullpath -fill x -side top
@@ -85,7 +85,7 @@ proc create_messageinspector {name geom} {
 
     set nb $w.nb
     notebook $nb
-    $nb config  -width 300 -height 200
+    $nb config -width 460 -height 300
     pack $nb -expand 1 -fill both
 
     set fieldspage_needed [opp_hasdescriptor $w]

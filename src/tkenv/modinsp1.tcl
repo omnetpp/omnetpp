@@ -51,7 +51,7 @@ proc create_compoundmodinspector {name geom} {
 
     set nb $w.nb
     notebook $nb
-    $nb config  -width 300 -height 200
+    $nb config -width 460 -height 300
     pack $nb -expand 1 -fill both
 
     notebook_addpage $nb info    {Info}
@@ -108,7 +108,7 @@ proc create_simplemodinspector {name geom} {
 
     set nb $w.nb
     notebook $nb
-    $nb config  -width 300 -height 200
+    $nb config -width 460 -height 300
     pack $nb -expand 1 -fill both
 
     notebook_addpage $nb info    {Info}

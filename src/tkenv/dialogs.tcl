@@ -124,8 +124,8 @@ proc inspectfromlistbox {title text type fillistbox_args} {
     scrollbar $w.f.main.vsb -command "$w.f.main.list yview"
     scrollbar $w.f.main.hsb -command "$w.f.main.list xview" -orient horiz
     multicolumnlistbox $w.f.main.list {
-        {class   Class}
-        {name    Name  160}
+        {class   Class  80}
+        {name    Name  120}
         {info    Info}
         {ptr     Pointer}
     } -height 200 -yscrollcommand "$w.f.main.vsb set" -xscrollcommand "$w.f.main.hsb set"
@@ -673,8 +673,8 @@ proc filteredobjectlist_dialog {} {
     scrollbar $w.f.main.vsb -command "$w.f.main.list yview"
     scrollbar $w.f.main.hsb -command "$w.f.main.list xview" -orient horiz
     multicolumnlistbox $w.f.main.list {
-        {class   Class}
-        {name    Name  160}
+        {class   Class  80}
+        {name    Name  180}
         {info    Info}
         {ptr     Pointer}
     } -height 200 -yscrollcommand "$w.f.main.vsb set" -xscrollcommand "$w.f.main.hsb set"
