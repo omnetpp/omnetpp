@@ -35,7 +35,7 @@ proc fileNewComponent {type} {
    set curmodkey $canvas($canv_id,module-key)
    set nedfilekey $ned($curmodkey,parentkey)
 
-   set key [addItem $type $nedfilekey]
+   set key [addItemWithUniqueName $type $nedfilekey]
    markNedfileOfItemDirty $key
 
    if {$type=="module"} {

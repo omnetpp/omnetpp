@@ -119,8 +119,8 @@ proc createMainWindow {} {
     foreach i {
       {command -command {fileNewComponent imports} -label {imports} -underline 0}
       {command -command {fileNewComponent channel} -label {channel} -underline 0}
-      {command -command {fileNewComponent simple}  -label {simple}  -underline 0}
-      {command -command {fileNewComponent module}  -label {module}  -underline 0}
+      {command -command {fileNewComponent simple}  -label {simple module}  -underline 0}
+      {command -command {fileNewComponent module}  -label {compound module}  -underline 0}
       {command -command {fileNewComponent network} -label {network} -underline 0}
     } {
        eval .menubar.filemenu.newmenu add $i
