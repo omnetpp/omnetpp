@@ -62,6 +62,7 @@
 #include "cscheduler.h"
 #include "compat.h"
 #ifdef WITH_PARSIM
+#include "cparsimcomm.h"
 #include "ccommbuffer.h"
 #endif
 
