@@ -47,7 +47,7 @@ components: libs progs configsamples samples configtutorial thetutorial
 #=====================================================================
 
 LIBS=$(ENVIR_ILIB) nedxml sim envir cmdenv tkenv
-PROGS=utils nedc gned plove
+PROGS=utils nedc gned scalars plove
 SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing routingdb tictoc tokenring
 
 #
@@ -98,6 +98,10 @@ nedc:
 gned:
 	@echo ===== Compiling $@ ====
 	cd /d $(OMNETPP_SRC_DIR:/=\)\gned && $(MAKE) $(MOPTS) $(MAKEFILE)
+
+scalars:
+	@echo ===== Compiling $@ ====
+	cd /d $(OMNETPP_SRC_DIR:/=\)\scalars && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 plove:
 	@echo ===== Compiling $@ ====

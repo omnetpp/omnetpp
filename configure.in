@@ -99,6 +99,7 @@ OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 OMNETPP_TKENV_DIR="$OMNETPP_SRC_DIR/tkenv"
 OMNETPP_GNED_DIR="$OMNETPP_SRC_DIR/gned"
 OMNETPP_NEDC_DIR="$OMNETPP_SRC_DIR/nedc"
+OMNETPP_SCALARS_DIR="$OMNETPP_SRC_DIR/scalars"
 OMNETPP_PLOVE_DIR="$OMNETPP_SRC_DIR/plove"
 
 CFLAGS='-g Wall'
@@ -360,10 +361,12 @@ fi
 if test $tcltk_ok = yes; then
     TKENV_IF_POSSIBLE=tkenv
     GNED_IF_POSSIBLE=gned
+    SCALARS_IF_POSSIBLE=scalars
     PLOVE_IF_POSSIBLE=plove
 else
     TKENV_IF_POSSIBLE=missing-library
     GNED_IF_POSSIBLE=missing-library
+    SCALARS_IF_POSSIBLE=missing-library
     PLOVE_IF_POSSIBLE=missing-library
     if test "$no_x" = "yes"; then
         if test "$cygwin" = yes; then
@@ -466,10 +469,12 @@ fi
 if test "$EMBED_TCL_CODE" = yes; then
    TKENV_EMBED_SUFFIX=-e
    GNED_EMBED_SUFFIX=-e
+   SCALARS_EMBED_SUFFIX=-e
    PLOVE_VARIANT=plove-exe
 else
    TKENV_EMBED_SUFFIX=
    GNED_EMBED_SUFFIX=
+   SCALARS_EMBED_SUFFIX=
    if test "$cygwin" = yes; then
       PLOVE_VARIANT=plove-cyg
    else
@@ -497,6 +502,7 @@ AC_CONFIG_FILES(
   src/gned/Makefile
   src/nedxml/Makefile
   src/nedc/Makefile
+  src/scalars/Makefile
   src/plove/Makefile
   src/sim/Makefile
   src/tkenv/Makefile
@@ -588,14 +594,17 @@ AC_SUBST(AKAROA_LIBS)
 
 AC_SUBST(TKENV_IF_POSSIBLE)
 AC_SUBST(GNED_IF_POSSIBLE)
+AC_SUBST(SCALARS_IF_POSSIBLE)
 AC_SUBST(PLOVE_IF_POSSIBLE)
 
 AC_SUBST(TKENV_EMBED_SUFFIX)
 AC_SUBST(GNED_EMBED_SUFFIX)
+AC_SUBST(SCALARS_EMBED_SUFFIX)
 AC_SUBST(PLOVE_VARIANT)
 
 AC_SUBST(OMNETPP_TKENV_DIR)
 AC_SUBST(OMNETPP_GNED_DIR)
+AC_SUBST(OMNETPP_SCALARS_DIR)
 AC_SUBST(OMNETPP_PLOVE_DIR)
 
 AC_SUBST(WITH_NETBUILDER)

@@ -76,6 +76,7 @@ XMLPARSER=expat
 #
 TKENV_IF_POSSIBLE=tkenv
 GNED_IF_POSSIBLE=gned
+SCALARS_IF_POSSIBLE=scalars
 
 #
 # It is possible to have the Tcl files embedded into the compiled OMNeT++
@@ -83,15 +84,15 @@ GNED_IF_POSSIBLE=gned
 # self-contained standalone executables which do not rely on external
 # Tcl scripts.
 #
-# This option is available at present for Tkenv, GNED and Plove.
+# This option is available at present for Tkenv, GNED, Scalars and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
 EMBED_TCL_CODE=no
 
 #
-# It is possible to compile GNED and Plove as Windows GUI apps (ie. not
-# console apps). Set the following variable to "yes" to enable compiling
-# GUI apps.
+# It is possible to compile GNED, Scalars and Plove as Windows GUI apps
+# (ie. not as console apps). Set the following variable to "yes" to enable
+# compiling GUI apps.
 #
 USE_WINMAIN=no
 
@@ -134,6 +135,7 @@ OMNETPP_LIB_DIR=$(OMNETPP_ROOT)/lib
 
 OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
 OMNETPP_GNED_DIR=$(OMNETPP_ROOT)/src/gned
+OMNETPP_SCALARS_DIR=$(OMNETPP_ROOT)/src/scalars
 OMNETPP_PLOVE_DIR=$(OMNETPP_ROOT)/src/plove
 OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
 

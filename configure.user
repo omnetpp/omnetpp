@@ -37,7 +37,7 @@ NEDCFLAGS='-Wno-unused'
 # It is possible to have the Tcl files embedded into the compiled OMNeT++
 # libraries and executables. This can be useful if you want to ship
 # self-contained standalone executables which do not rely on external
-# Tcl scripts. This option affects Tkenv, GNED and Plove.
+# Tcl scripts. This option affects Tkenv, GNED, Scalars and Plove.
 #
 EMBED_TCL_CODE=no
 
