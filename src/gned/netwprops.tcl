@@ -38,15 +38,14 @@ proc editNetworkProps {key} {
 
     # create "General" page
     label-entry $nb.general.name "Name:"
-    radiobutton $nb.general.r1 -text "Type is fixed:" -value 0  -variable tmp(uselike)
+    radiobutton $nb.general.r1 -text "Type is fixed:" -value 0  -variable tmp(uselike) -command "NetworkProps:notUseLike $w"
     label-entry-chooser $nb.general.type "  Type:" "" chooseModuleType
-    radiobutton $nb.general.r2 -text "Type is passed in a parameter:" -value 1  -variable tmp(uselike)
+    radiobutton $nb.general.r2 -text "Type is passed in a parameter:" -value 1  -variable tmp(uselike) -command "NetworkProps:useLike $w"
     label-entry-chooser $nb.general.likepar "  Parameter name:" "" puts
     label-entry-chooser $nb.general.likemod "  Prototype module:" "" chooseModuleType
     label-text  $nb.general.comment "Comments:" 4
 
     pack $nb.general.name  -expand 0 -fill x -side top
-    pack $nb.general.vs    -expand 0 -fill x -side top
     pack $nb.general.r1  -expand 0 -fill none -side top -anchor w
     pack $nb.general.type  -expand 0 -fill x -side top
     pack $nb.general.r2  -expand 0 -fill none -side top -anchor w
@@ -59,10 +58,12 @@ proc editNetworkProps {key} {
     if {$ned($key,like-name)==""} {
         set tmp(uselike) 0
         $nb.general.type.e insert 0 $ned($key,type-name)
-    } else {
+        NetworkProps:notUseLike $w
+     } else {
         set tmp(uselike) 1
         $nb.general.likepar.e insert 0 $ned($key,type-name)
         $nb.general.likemod.e insert 0 $ned($key,like-name)
+        NetworkProps:useLike $w
     }
     $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
 
@@ -134,6 +135,22 @@ proc editNetworkProps {key} {
 
     }
     destroy $w
+}
+
+# helper proc
+proc NetworkProps:notUseLike {w} {
+    set nb $w.f.nb
+    $nb.general.type.e config  -state normal
+    $nb.general.likepar.e config -state disabled
+    $nb.general.likemod.e config -state disabled
+}
+
+# helper proc
+proc NetworkProps:useLike {w} {
+    set nb $w.f.nb
+    $nb.general.type.e config -state disabled
+    $nb.general.likepar.e config -state normal
+    $nb.general.likemod.e config -state normal
 }
 
 # NetworkProps:validate --

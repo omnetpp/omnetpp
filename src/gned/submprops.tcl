@@ -41,9 +41,9 @@ proc editSubmoduleProps {key} {
     # create "General" page
     label-entry $nb.general.name "Name:"
     label-entry $nb.general.vs   "Vector size:"
-    radiobutton $nb.general.r1 -text "Type is fixed:" -value 0  -variable tmp(uselike)
+    radiobutton $nb.general.r1 -text "Type is fixed:" -value 0  -variable tmp(uselike) -command "SubmoduleProps:notUseLike $w"
     label-entry-chooser $nb.general.type "  Type:" "" chooseModuleType
-    radiobutton $nb.general.r2 -text "Type is passed in a parameter:" -value 1  -variable tmp(uselike)
+    radiobutton $nb.general.r2 -text "Type is passed in a parameter:" -value 1  -variable tmp(uselike) -command "SubmoduleProps:useLike $w"
     label-entry-chooser $nb.general.likepar "  Parameter name:" "" puts
     label-entry-chooser $nb.general.likemod "  Prototype module:" "" chooseModuleType
     label-text  $nb.general.comment "Doc. comments:" 3
@@ -65,10 +65,12 @@ proc editSubmoduleProps {key} {
     if {$ned($key,like-name)==""} {
         set tmp(uselike) 0
         $nb.general.type.e insert 0 $ned($key,type-name)
+        SubmoduleProps:notUseLike $w
     } else {
         set tmp(uselike) 1
         $nb.general.likepar.e insert 0 $ned($key,type-name)
         $nb.general.likemod.e insert 0 $ned($key,like-name)
+        SubmoduleProps:useLike $w
     }
     $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
     $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
@@ -160,6 +162,21 @@ proc editSubmoduleProps {key} {
     destroy $w
 }
 
+# helper proc
+proc SubmoduleProps:notUseLike {w} {
+    set nb $w.f.nb
+    $nb.general.type.e config  -state normal
+    $nb.general.likepar.e config -state disabled
+    $nb.general.likemod.e config -state disabled
+}
+
+# helper proc
+proc SubmoduleProps:useLike {w} {
+    set nb $w.f.nb
+    $nb.general.type.e config -state disabled
+    $nb.general.likepar.e config -state normal
+    $nb.general.likemod.e config -state normal
+}
 
 # editSubmoduleProps:validate --
 #
@@ -183,12 +200,6 @@ proc SubmoduleProps:validate {w} {
             assertEntryFilledIn $nb.general.likemod.e "prototype module"
             assertEntryIsValidName $nb.general.likemod.e "prototype module"
         }
-
-        assertEntryIsValidName $nb.general.type.e "prototype ('like')"
-
-        # FIXME validate tables too
-
-        # FIXME assertUnique
         # FIXME validate tables too
     } message] {
         tk_messageBox -parent $w -icon error -type ok -title "Error" -message $message
