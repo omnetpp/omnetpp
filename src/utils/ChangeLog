@@ -1,3 +1,5 @@
+2004-11-23  ------ omnetpp-3.0b1 released ------
+
 2004-11-21  Andras Varga
 
   	* opp_neddoc.in: fixed the way it invokes commmands via system()
