@@ -869,8 +869,52 @@ accumulated in data members of the class at the end of the simulation.
 \end{enumerate}
 
 
+\subsubsection{Example 1: Protocol models}
 
-\subsubsection{Example 1: Simple traffic generators and sinks}
+Models of protocol layers in a communication network tend to have
+a common structure on a high level because fundamentally they all have to react
+to three types of events: to messages arriving from higher layer protocols
+(or apps), to messages arriving from lower layer protocols (from the network),
+and to various timers and timeouts (that is, self-messages).
+
+This usually results in the following source code pattern:
+
+\begin{verbatim}
+class FooProtocol : public cSimpleModule
+{
+  protected:
+    // state variables
+    // ...
+
+    virtual void processMsgFromHigherLayer(cMessage *packet);
+    virtual void processMsgFromLowerLayer(FooPacket *packet);
+    virtual void processTimer(cMessage *timer);
+
+  public:
+    Module_Class_Members(FooProtocol, cSimpleModule, 0);
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+// ...
+
+void FooProtocol handleMessage(cMessage *msg)
+{
+    if (msg->isSelfMessage())
+        processTimer(msg);
+    else if (msg->arrivedOn("fromNetw"))
+        processMsgFromLowerLayer(check_and_cast<FooPacket *>(msg));
+    else
+        processMsgFromHigherLayer(msg);
+}
+\end{verbatim}
+
+The functions \ttt{processMsgFromHigherLayer()}, \ttt{processMsgFromLowerLayer()}
+and \ttt{processTimer()} are then usually split further: there are separate
+methods to process separate packet types and separate timers.
+
+
+\subsubsection{Example 2: Simple traffic generators and sinks}
 
 
 The code for simple packet generators and sinks programmed with \fname{handleMessage()} might
@@ -928,7 +972,7 @@ void Generator::handleMessage(cMessage *msg)
 
 
 
-\subsubsection{Example 2: Bursty traffic generator}
+\subsubsection{Example 3: Bursty traffic generator}
 
 
 A bit more realistic example is to rewrite our Generator to create
