@@ -44,6 +44,7 @@ foreach line {
    {"P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
    {"Aloha"            "aloha"            "./aloha"     "aloha.exe"}
    {"Dyna"             "dyna"             "./dyna"      "dyna.exe"}
+   {"Dyna in real-time" "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
    {"FDDI"             "fddi"             "./fddi"      "fddi.exe"}
    {"HCube"            "hcube"            "./hcube"     "hcube.exe"}
    {"Routing"          "routing"          "./routing"   "routing.exe"}
