@@ -2073,7 +2073,7 @@ timeconstant
  */
 
 cplusplus
-        : CPLUSPLUS CPLUSPLUSBODY
+        : CPLUSPLUS CPLUSPLUSBODY opt_semicolon
                 {
                   ps.cplusplus = (CplusplusNode *)createNodeWithTag(NED_CPLUSPLUS, ps.nedfile );
                   ps.cplusplus->setBody(toString(trimDoubleBraces(@2)));
@@ -2115,7 +2115,7 @@ enum
                   setComments(ps.enump,@1,@2);
                   ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
                 }
-          opt_enumfields '}' ';'
+          opt_enumfields '}' opt_semicolon
                 {
                   setTrailingComment(ps.enump,@6);
                 }
@@ -2127,7 +2127,7 @@ enum
                   setComments(ps.enump,@1,@4);
                   ps.enumfields = (EnumFieldsNode *)createNodeWithTag(NED_ENUM_FIELDS, ps.enump);
                 }
-          opt_enumfields '}' ';'
+          opt_enumfields '}' opt_semicolon
                 {
                   setTrailingComment(ps.enump,@8);
                 }
@@ -2166,7 +2166,7 @@ message
                   ps.messagep->setName(toString(@2));
                   setComments(ps.messagep,@1,@2);
                 }
-          opt_propertiesblock opt_fieldsblock '}' ';'
+          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
                   setTrailingComment(ps.messagep,@7);
                 }
@@ -2177,7 +2177,7 @@ message
                   ps.messagep->setExtendsName(toString(@4));
                   setComments(ps.messagep,@1,@4);
                 }
-          opt_propertiesblock opt_fieldsblock '}' ';'
+          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
                   setTrailingComment(ps.messagep,@9);
                 }
@@ -2190,7 +2190,7 @@ class
                   ps.classp->setName(toString(@2));
                   setComments(ps.classp,@1,@2);
                 }
-          opt_propertiesblock opt_fieldsblock '}' ';'
+          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
                   setTrailingComment(ps.classp,@7);
                 }
@@ -2201,7 +2201,7 @@ class
                   ps.classp->setExtendsName(toString(@4));
                   setComments(ps.classp,@1,@4);
                 }
-          opt_propertiesblock opt_fieldsblock '}' ';'
+          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
                   setTrailingComment(ps.classp,@9);
                 }
@@ -2214,7 +2214,7 @@ struct
                   ps.structp->setName(toString(@2));
                   setComments(ps.structp,@1,@2);
                 }
-          opt_propertiesblock opt_fieldsblock '}' ';'
+          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
                   setTrailingComment(ps.structp,@7);
                 }
@@ -2225,7 +2225,7 @@ struct
                   ps.structp->setExtendsName(toString(@4));
                   setComments(ps.structp,@1,@4);
                 }
-          opt_propertiesblock opt_fieldsblock '}' ';'
+          opt_propertiesblock opt_fieldsblock '}' opt_semicolon
                 {
                   setTrailingComment(ps.structp,@9);
                 }
