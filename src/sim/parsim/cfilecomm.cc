@@ -252,7 +252,7 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
         if (!f)
             throw new cException("cFileCommunications: cannot open existing file %s for read: %s", fname, strerror(errno));
         if (fread(b->getBuffer(), len, 1, f)==0)
-            // FIXME: condition always fires. why?
+            // FIXME condition always fires. why?
             //throw new cException("cFileCommunications: cannot read existing file %s: %s", fname, strerror(errno));
             ;
         fclose(f);
@@ -287,7 +287,7 @@ bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, i
 
 void cFileCommunications::synchronize()
 {
-    // FIXME: not implemented
+    // FIXME not implemented
 }
 
 

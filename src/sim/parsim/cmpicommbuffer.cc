@@ -35,7 +35,7 @@ cMPICommBuffer::~cMPICommBuffer()
 
 void cMPICommBuffer::extendBufferFor(int count, MPI_Datatype dataType)
 {
-    int dataSize = count * sizeof(double);  // FIXME!!!
+    int dataSize = count * sizeof(double);  // FIXME use more precise size estimation
 
     // FIXME move reallocate+copy out of loop
     while (mMsgSize+dataSize >= mBufferSize)

@@ -105,7 +105,7 @@ void cAdvancedLinkDelayLookahead::startRun()
             for (int gateId=0; gateId<mod->gates(); gateId++)
             {
                 // if this is a properly connected proxygate, process it
-                // FIXME: leave out gates from other cPlaceHolderModules!!!
+                // FIXME leave out gates from other cPlaceHolderModules
                 cGate *g = mod->gate(gateId);
                 cProxyGate *pg  = dynamic_cast<cProxyGate *>(g);
                 if (pg && pg->fromGate() && pg->getRemoteProcId()>=0)

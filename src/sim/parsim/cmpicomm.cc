@@ -110,7 +110,7 @@ void cMPICommunications::send(cCommBuffer *buffer, int tag, int destination)
 
 void cMPICommunications::broadcast(cCommBuffer *buffer, int tag)
 {
-    // FIXME: could be done better...
+    // FIXME could make use of MPI call
     for (int i=0; i<numPartitions; i++)
         if (myRank != i)
             send(buffer, tag, i);

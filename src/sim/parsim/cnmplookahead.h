@@ -37,7 +37,7 @@ class cNMPLookahead
 {
   protected:
     cSimulation *sim;
-    cParsimCommunications *comm; // FIXME only reason we need this is numPartitions!!!!
+    cParsimCommunications *comm; // FIXME only reason we need this is numPartitions
     cParsimPartition *partition;
     // cNullMessageProtocol *nullmsgprot;
 

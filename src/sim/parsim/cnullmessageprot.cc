@@ -228,7 +228,7 @@ cMessage *cNullMessageProtocol::getNextEvent()
         return NULL;
 
     // look at our mailbox, maybe we got something
-    // FIXME: only look at mailbox if we're stuck on EIT, why at other times???? only each 1000 events
+    // FIXME only look at mailbox if we're stuck on EIT, why at other times? only each 1000 events
     //receiveNonblocking();
 
     cMessage *msg;

@@ -30,7 +30,7 @@
 #include "messagetags.h"
 #include "macros.h"
 
-// FIXME needs to use cMessage::srcProcId()!!!
+// FIXME needs to use cMessage::srcProcId()
 
 Register_Class(cIdealSimulationProtocol);
 

@@ -72,7 +72,7 @@ struct PipeHeader
 
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
-    // FIXME hardcoded name!!!
+    // FIXME hardcoded name
     prefix = "omnetpp";
     rpipes = NULL;
     wpipes = NULL;
@@ -289,7 +289,7 @@ bool cNamedPipeCommunications::receiveNonblocking(int filtTag, cCommBuffer *buff
 
 void cNamedPipeCommunications::synchronize()
 {
-    // FIXME: not implemented
+    // FIXME not implemented
 }
 
 #endif  /* USE_WINDOWS_PIPES */

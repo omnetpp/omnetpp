@@ -64,7 +64,7 @@ struct PipeHeader
 
 cNamedPipeCommunications::cNamedPipeCommunications()
 {
-    // FIXME hardcoded directory name!!!
+    // FIXME hardcoded directory name
     prefix = "comm/";
     rpipes = NULL;
     wpipes = NULL;
@@ -282,7 +282,7 @@ bool cNamedPipeCommunications::receiveNonblocking(int filtTag, cCommBuffer *buff
 
 void cNamedPipeCommunications::synchronize()
 {
-    // FIXME: not implemented
+    // FIXME not implemented
 }
 
 #endif /* (!USE_WINDOWS_PIPES) */
