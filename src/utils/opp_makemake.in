@@ -34,6 +34,8 @@ generatecfgfile=""
 linkwithobjects=n
 ignorened=n
 force=n
+tstamp=y
+tstampdirs=""
 
 while [ ! $# = 0 ] ; do
     case "$1" in
@@ -43,7 +45,7 @@ while [ ! $# = 0 ] ; do
 opp_makemake: generate OMNeT++ Makefile based on contents of current directory
 
 opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
-        [-c configfile] [-p] [-Idir] [-Llibrary-path] [-llibrary]
+        [-c configfile] [-p] [-w] [-x] [-Idir] [-Llibrary-path] [-llibrary]
         [-i makefile-fragment-file] [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile (or config file)
@@ -71,6 +73,9 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
                           -n option is present. Dependencies between directo-
                           ries have be handled in high Makefiles (see -r
                           option).
+    -x, --notstamp        Do not require a .tstamp file to be present in the
+                          link directories and (if -w option is present)
+                          -I directories after this option.
     -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv.
     -Idir                 Additional NED and C++ include directory
     -Llibrary-path        Additional library path
@@ -129,6 +134,10 @@ EOT
         linkwithobjects=y
         ;;
 
+        -x | --notstamp)
+        tstamp=n
+        ;;
+
         -m | --makefile-in)
         makefilein=y
         ;;
@@ -153,6 +162,9 @@ EOT
 
         -I*)
         includes="$includes $1"
+        if [ $tstamp = "y" ]; then
+            tstampdirs="$tstampdirs `echo $1 | sed 's/^-I//'`"
+        fi
         ;;
 
         -L*)
@@ -166,6 +178,9 @@ EOT
         *)
         if [ -d $1 ]; then
             linkdirs="$linkdirs $1"
+            if [ $tstamp = "y" ]; then
+                tstampdirs="$tstampdirs $1"
+            fi
         else
             if [ ! -f $1 ]; then
                 echo "opp_makemake: $1 is neither an existing file/dir nor a valid option" 1>&2
@@ -276,19 +291,21 @@ if [ $recursive = "y" ]; then
 fi
 
 extdirobjs=
-extdirtstamps=
 if [ "$linkwithobjects" = "y" ]; then
     for i in $includes; do
         dir=`echo $i | sed 's/^-I//'`
         if [ "$dir" != "." ]; then
             extdirobjs="$extdirobjs $dir/*.o"
-            extdirtstamps="$extdirtstamps $dir/.tstamp"
         fi
     done
 fi
 
 for i in $linkdirs; do
     extdirobjs="$extdirobjs $i/*.o"
+done
+
+extdirtstamps=
+for i in $tstampdirs; do
     extdirtstamps="$extdirtstamps $i/.tstamp"
 done
 
