@@ -152,9 +152,8 @@ Defaults: \textit{width}=40, \textit{height}=24}\\\hline
 % ROW 10
 \tbf{o=}\textit{fillcolor},\textit{outlinecolor},\textit{borderwidth}
 &
-{\raggedright Specifies options for the rectangle or oval. Any valid Tk color
-specification is accepted: English color names or \textit{\#rgb}, \textit{\#rrggbb}
-format (where \textit{r},\textit{g},\textit{b} are hex digits).
+{\raggedright Specifies options for the rectangle or oval.
+For color notation, see section \ref{sec:ch-graphics:colors}.
 
 Defaults: \textit{fillcolor}=\#8080ff (a lightblue), \textit{outlinecolor}=black,
 \textit{borderwidth}=2}\\\hline
@@ -234,9 +233,8 @@ Defaults: \textit{width,} \textit{height} are chosen automatically}\\\hline
 % ROW 5
 \tbf{o=}\textit{fillcolor},\textit{outlinecolor},\textit{borderwidth}
 &
-{\raggedright Specifies options for the rectangle or oval. Any valid Tk color
-specification is accepted: English color names or \textit{\#rgb}, \textit{\#rrggbb}
-format (where \textit{r},\textit{g},\textit{b} are hex digits).
+{\raggedright Specifies options for the rectangle or oval.
+For color notation, see section \ref{sec:ch-graphics:colors}.
 
 Defaults: \textit{fillcolor}=\#8080ff (a lightblue), \textit{outlinecolor}=black,
 \textit{borderwidth}=2}\\\hline
@@ -276,9 +274,8 @@ m=m,50,50,50,50
 would connect the centers of the two module rectangles.}\\\hline
 % ROW 4
 \tbf{o=}\textit{color},\textit{width} &
-Specifies the appearance of the arrow. Any valid Tk color specification
-is accepted: English color names or \#rgb, \#rrggbb specification
-(where r,g,b are hex digits).
+Specifies the appearance of the arrow.
+For color notation, see section \ref{sec:ch-graphics:colors}.
 
 Defaults: \textit{color}=black, \textit{width}=2\\\hline
 \end{longtable}
@@ -332,9 +329,8 @@ Defaults: \textit{width}=10, \textit{height}=10}\\\hline
 % ROW 4
 \tbf{o=}\textit{fillcolor},\textit{outlinecolor},\textit{borderwidth}
 &
-{\raggedright Specifies options for the rectangle or oval. Any valid Tk color
-specification is accepted: English color names or \textit{\#rgb}, \textit{\#rrggbb}
-format (where \textit{r},\textit{g},\textit{b} are hex digits).
+{\raggedright Specifies options for the rectangle or oval.
+For color notation, see section \ref{sec:ch-graphics:colors}.
 
 Defaults: \textit{fillcolor}=red, \textit{outlinecolor}=black,
 \textit{borderwidth}=1}\\\hline
@@ -395,7 +391,7 @@ Examples:
 
 \begin{itemize}
   \item \ttt{"i=device/server,gold"} creates a gold server icon
-  \item \ttt{"i=place/globe,#808080,100"} makes icon grayscale
+  \item \ttt{"i=place/globe,#808080,100"} makes the icon grayscale
   \item \ttt{"i=block/queue,white,100"} yields a "burnt-in" black-and-white icon
 \end{itemize}
 
