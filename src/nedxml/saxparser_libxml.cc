@@ -22,6 +22,11 @@
 #include "saxparser.h"
 
 
+//
+// Validating only if LibXML is at least 2.6.0
+//
+#if LIBXML_VERSION>20600
+
 SAXParser::SAXParser()
 {
     saxhandler = NULL;
@@ -192,13 +197,12 @@ int SAXParser::getCurrentLineNumber()
 }
 
 
+#else
 
-/*
-*-----------------------------------------------------------------------------
-*
-* Old, SAX1-based code. Doesn't perform DTD validation and attr completion.
-*
-*-----------------------------------------------------------------------------
+//
+// Old, SAX1-based code, left here as fallback. Doesn't perform DTD validation
+// and attr completion.
+//
 
 static void libxmlStartElementHandler(void *userData, const xmlChar *name, const xmlChar **atts)
 {
@@ -309,6 +313,12 @@ static xmlParserCtxtPtr ctxt;
 
 bool SAXParser::parse(const char *filename)
 {
+    LIBXML_TEST_VERSION
+
+    printf("\n*** WARNING: Your LibXML version is too old: " LIBXML_DOTTED_VERSION
+           ". DTD validation and attribute completion is currently OFF. "
+           "Please upgrade to at least version 2.6.0!\n\n");
+
     FILE *f = fopen(filename,"r");
     if (!f)
     {
@@ -355,4 +365,4 @@ int SAXParser::getCurrentLineNumber()
     return ctxt->input->line;
 }
 
-*/
+#endif

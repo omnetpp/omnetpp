@@ -36,12 +36,14 @@ MPI_DIR=
 #MPI_DIR=d:/home/tools/mpi
 
 #
-# Choice of XML parser. Possible choices: expat, libxml or none.
+# Choice of XML parser. Possible choices: libxml, expat or none.
+# Preferred one is libxml, at least 2.6.0 (expat cannot perform DTD validation
+# and default attribute completion.)
 # If set to 'none', nedtool will compile but won't support XML input,
 # and NED parameters of type xml cannot be used.
 #
-#XMLPARSER=expat
 XMLPARSER=libxml
+#XMLPARSER=expat
 #XMLPARSER=none
 
 #
@@ -52,8 +54,8 @@ EXPAT_DIR=d:/home/tools/expat-1.95.6
 #
 # Location of LibXML2 and its supporting library ICONV (only used if XMLPARSER=libxml)
 #
-ICONV_DIR=d:/home/tools/iconv-1.8.win32
-LIBXML_DIR=d:/home/tools/libxml2-2.5.4.win32
+ICONV_DIR=d:/home/tools/iconv-1.9.1.win32
+LIBXML_DIR=d:/home/tools/libxml2-2.6.12.win32
 
 #
 # Directory of various tools
@@ -171,7 +173,7 @@ EXPAT_CFLAGS=/I "$(EXPAT_DIR)/source/lib"
 EXPAT_LIBS=libexpat.lib /libpath:"$(EXPAT_DIR)/libs"
 
 LIBXML_CFLAGS=/I "$(ICONV_DIR)/include" /I "$(LIBXML_DIR)/include"
-LIBXML_LIBS=iconv_a.lib libxml2_a.lib /libpath:"$(ICONV_DIR)/lib" /libpath:"$(LIBXML_DIR)/lib"
+LIBXML_LIBS=libxml2.lib iconv.lib wsock32.lib /libpath:"$(LIBXML_DIR)/lib" /libpath:"$(ICONV_DIR)/lib"
 
 # compiler and linker switches necessary to build an app with Tcl/Tk, MPI, expat, etc.
 TK_CFLAGS=/I "$(TK_INCL_DIR)"
