@@ -1,3 +1,8 @@
+2003-02-15  Andras Varga
+
+	* cstat.h, chist.h: observation count and histogram cell value made
+	unsigned long. 
+
 2003-02-10  Andras Varga
 
 	* chist.h: cHistogramBase: added setNumCells() method

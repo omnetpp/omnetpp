@@ -82,8 +82,8 @@ class SIM_API cDensityEstBase : public cStdDev
     double rangemin,rangemax;   // range for distribution density collection
     long num_firstvals;         // number of "pre-collected" samples
                                 // before transform() is performed.
-    unsigned long cell_under,
-                  cell_over;    // counting samples fall out of range
+    unsigned long cell_under;
+    unsigned long cell_over;    // for counting observations that fall out of range
 
     double range_ext_factor;    // the range of histogram is: [min_samples,max_samples] made
                                 // range_ext_factor times larger

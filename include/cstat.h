@@ -132,7 +132,7 @@ class SIM_API cStatistic : public cObject
      * Returns the number of samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual long samples() const = 0;
+    virtual unsigned long samples() const = 0;
 
     /**
      * Returns the sum of weights of the samples collected.
@@ -253,7 +253,7 @@ class SIM_API cStatistic : public cObject
 class SIM_API cStdDev : public cStatistic
 {
   protected:
-    long num_samples;
+    unsigned long num_samples;
     double min_samples,max_samples;
     double sum_samples,sqrsum_samples;
 
@@ -329,7 +329,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Returns the number of samples collected.
      */
-    virtual long samples() const   {return num_samples;}
+    virtual unsigned long samples() const   {return num_samples;}
 
     /**
      * Returns the sum of weights of the samples collected.
