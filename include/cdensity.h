@@ -66,6 +66,8 @@
  *                    |                             |
  *                rangemin                       rangemax
  * </TT></PRE>
+ *
+ * @ingroup Statistics
  */
 class SIM_API cDensityEstBase : public cStdDev
 {

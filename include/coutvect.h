@@ -25,6 +25,8 @@
  * directly, only through cOutVector.
  *
  * cOutFileMgr is also used to handle snapshot and parameter change files.
+ *
+ * @ingroup Internals
  */
 class SIM_API cOutFileMgr : public cObject
 {
@@ -126,6 +128,8 @@ class TOutVectorWindow;
  * (or a value pair). This will generate a data line in the file,
  * unless the output vector is disabled or the current simulation
  * time is outside a specified interval (see member functions).
+ *
+ * @ingroup SimSupport
  */
 class SIM_API cOutVector : public cObject
 {

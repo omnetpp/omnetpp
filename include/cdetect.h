@@ -47,6 +47,8 @@ typedef void (*PostADFunc)(cAccuracyDetection *, void *);
 
 /**
  * Virtual base class for transient detection classes.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cTransientDetection : public cObject
 {
@@ -134,6 +136,8 @@ class SIM_API cTransientDetection : public cObject
 
 /**
  * Virtual base class for result accuracy detection classes.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cAccuracyDetection : public cObject
 {
@@ -223,6 +227,8 @@ class SIM_API cAccuracyDetection : public cObject
  * A transient detection algorithm. Uses sliding window approach
  * with two windows, and checks the difference of the two averages
  * to see if the transient period is over.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cTDExpandingWindows : public cTransientDetection
 {
@@ -274,7 +280,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     virtual const char *className() const {return "cTDExpandingWindows";}
 
     /**
-     * MISSINGDOC: cTDExpandingWindows:cTDExpandingWindows&operator=(cTDExpandingWindows&)
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
     cTDExpandingWindows& operator=(cTDExpandingWindows& res);
 
@@ -324,6 +330,8 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
  * An algorithm for result accuracy detection. The actual algorithm:
  * divide the standard deviation by the square of the number of values
  * and check if this is small enough.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cADByStddev : public cAccuracyDetection
 {
@@ -376,7 +384,8 @@ class SIM_API cADByStddev : public cAccuracyDetection
     virtual const char *className() const {return "cADByStddev";}
 
     /**
-     * MISSINGDOC: cADByStddev:cADByStddev&operator=(cADByStddev&)
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     cADByStddev& operator=(cADByStddev& res);
 

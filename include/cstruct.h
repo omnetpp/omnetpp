@@ -33,6 +33,7 @@ class sFieldWrapper;
  * The copy constructor, dup() and the assignment operator are redefined
  * to raise an error, since they would be of no use in subclasses.
  *
+ * @ingroup Internals
  */
 class cStructDescriptor : public cObject
 {
@@ -93,7 +94,8 @@ class cStructDescriptor : public cObject
     virtual cObject *dup();
 
     /**
-     * MISSINGDOC: xxx
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     cStructDescriptor& operator=(cStructDescriptor& cs);
 

@@ -45,6 +45,8 @@ class  cStatistic;
 
 /**
  * Global simulation instance.
+ *
+ * @ingroup Internals
  */
 SIM_API extern cSimulation simulation;
 
@@ -59,6 +61,8 @@ SIM_API extern cSimulation simulation;
  * cSimulation should normally be of little interest to the simulation
  * programmer. Most of its methods are called by the user interface libraries
  * (Envir, Cmdenv, Tkenv) to set up and run simulations.
+ *
+ * @ingroup Internals
  */
 class SIM_API cSimulation : public cObject
 {

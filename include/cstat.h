@@ -29,6 +29,8 @@ class cAccuracyDetection;
  * or algorithms to cObject, it only defines virtual functions
  * that will be redefined in descendants. No instance of cStatistic
  * can be created.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cStatistic : public cObject
 {
@@ -246,6 +248,8 @@ class SIM_API cStatistic : public cObject
 
 /**
  * Statistics class to collect min, max, mean, standard deviation.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cStdDev : public cStatistic
 {
@@ -402,6 +406,8 @@ class SIM_API cStdDev : public cStatistic
 /**
  * Statistics class to collect doubles and calculate weighted statistics
  * of them.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cWeightedStdDev : public cStdDev
 {

@@ -40,6 +40,8 @@ class  cBag;
  * of the items inserted (and not the pointers). cBag works
  * as an array, but if it gets full, it grows automatically by a
  * specified delta.
+ *
+ * @ingroup Containers
  */
 class SIM_API cBag : public cObject
 {
@@ -73,6 +75,7 @@ class SIM_API cBag : public cObject
     virtual ~cBag()  {clear();}
 
     /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      * Duplication and assignment work all right with cBag.
      */
     cBag& operator=(cBag& bag);
@@ -208,6 +211,8 @@ class SIM_API cBag : public cObject
  * can be specified per-object basis (see cObject::takeOwnership()).
  * Default is that cArray takes the ownership of each object inserted
  * (that is, takeOwnership() is set to true).
+ *
+ * @ingroup Containers
  */
 class SIM_API cArray : public cObject
 {
@@ -243,6 +248,8 @@ class SIM_API cArray : public cObject
     virtual ~cArray();
 
     /**
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      * Duplication and assignment work all right with cArray.
      * Contained objects that are owned by cArray will be duplicated
      * so that the new cArray will have its own copy of them.

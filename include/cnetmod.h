@@ -56,6 +56,8 @@ SIM_API int is_started_as_master();
  * The virtual functions will be redefined in the specific network
  * interface.(e.g.:pvmmod.cc)
  *
+ *
+ * @ingroup Internals
  */
 class SIM_API cNetMod : public cModule
 {
@@ -156,7 +158,8 @@ class SIM_API cNetMod : public cModule
 
 
     /**
-     * MISSINGDOC: cNetMod:cNetMod&operator=(cNetMod&)
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     virtual cNetMod& operator=(cNetMod& other);
 

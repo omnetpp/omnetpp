@@ -90,6 +90,8 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
  *
  * NOTE: <tt>dup()</tt> cannot be use with modules. Use <tt>mod->moduleType()->create()</tt>/<tt>buildInside()</tt>
  * instead.
+ *
+ * @ingroup SimCore
  */
 class SIM_API cModule : public cObject
 {
@@ -197,7 +199,7 @@ class SIM_API cModule : public cObject
     virtual ~cModule() {}
 
     /**
-     * MISSINGDOC: cModule:cModule&operator=(cModule&)
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
     cModule& operator=(cModule& mod);
     //@}
@@ -579,6 +581,8 @@ struct sBlock
  *
  * The <tt>activity()</tt> functions run as coroutines during simulation.
  * Coroutines are brought to <tt>cSimpleModule</tt> from the <tt>cCoroutine</tt> base class.
+ *
+ * @ingroup SimCore
  */
 class SIM_API cSimpleModule : public cCoroutine, public cModule
 {
@@ -649,7 +653,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     virtual ~cSimpleModule();
 
     /**
-     * MISSINGDOC: cSimpleModule:cSimpleModule&operator=(cSimpleModule&)
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
     cSimpleModule& operator=(cSimpleModule& mod);
     //@}
@@ -1070,6 +1074,8 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
  * Represents a compound module in the simulation.
  *
  * NOTE: dup() cannot be used. Use moduleType()->create() instead.
+ *
+ * @ingroup SimCore
  */
 class SIM_API cCompoundModule : public cModule
 {
@@ -1099,7 +1105,7 @@ class SIM_API cCompoundModule : public cModule
     virtual ~cCompoundModule();
 
     /**
-     * MISSINGDOC: cCompoundModule:cCompoundModule&operator=(cCompoundModule&)
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
     cCompoundModule& operator=(cCompoundModule& mod);
     //@}

@@ -24,6 +24,8 @@
 /**
  * Base class for histogram classes. It adds a vector of counters to
  * cDensityEstBase.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cHistogramBase : public cDensityEstBase
 {
@@ -116,6 +118,8 @@ class SIM_API cHistogramBase : public cDensityEstBase
 
 /**
  * Base class for equal cell size histograms.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
 {
@@ -233,6 +237,8 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
  *        <I>range_ext_factor</I> times and rounded up to the nearest integer
  *        multiple of <I>num_cells</I>.
  * </UL>
+ *
+ * @ingroup Statistics
  */
 class SIM_API cLongHistogram : public cEqdHistogramBase
 {
@@ -319,6 +325,8 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
 /**
  * Equidistant histogram for doubles. cDoubleHistogram is derived from
  * cEqdHistogramBase which contains most of the functionality.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cDoubleHistogram : public cEqdHistogramBase
 {

@@ -48,6 +48,8 @@ struct sLLElem
  * Memory management of contained items is controlled by the configPointer()
  * function. As default, pointers are treated as mere pointers, so
  * items are never duplicated or deleted.
+ *
+ * @ingroup Containers
  */
 class SIM_API cLinkedList : public cObject
 {
@@ -101,6 +103,8 @@ class SIM_API cLinkedList : public cObject
     virtual ~cLinkedList();
 
     /**
+     * Assignment operator. The name member doesn't get copied; see cObject's
+     * operator=() for more details.
      * Duplication and assignment work all right with cLinkedList.
      * Contained items are treated as configured with configPointer().
      * By default, only pointers are copied.

@@ -65,6 +65,8 @@ struct sGrid
 /**
  * Implements k-split, an adaptive histogram-like density estimation
  * algorithm.
+ *
+ * @ingroup Statistics
  */
 class SIM_API cKSplit : public cDensityEstBase
 {

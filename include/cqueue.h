@@ -58,6 +58,8 @@ struct sQElem
  *
  * They must return a negative value if a&lt;b, 0 if a==b and a positive value
  * if a&gt;b.
+ *
+ * @ingroup Containers
  */
 class SIM_API cQueue : public cObject
 {

@@ -45,6 +45,8 @@ class  cWatch;
  *
  * Users rarely need to create cWatch objects directly, they rather use
  * the WATCH() and LWATCH() macros.
+ *
+ * @ingroup SimSupport
  */
 class SIM_API cWatch : public cObject
 {

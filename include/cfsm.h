@@ -102,6 +102,8 @@
  * Store the state of an FSM. This class is used in conjunction with
  * the FSM_Switch(), FSM_Transient(), FSM_Steady(), FSM_Enter(),
  * FSM_Exit(), FSM_Goto() macros.
+ *
+ * @ingroup SimSupport
  */
 class SIM_API cFSM : public cObject
 {
@@ -151,7 +153,8 @@ class SIM_API cFSM : public cObject
     virtual const char *inspectorFactoryName() const {return "cFSMIFC";}
 
     /**
-     * MISSINGDOC: cFSM:cFSM&operator=(cFSM&)
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     cFSM& operator=(cFSM& vs);
 

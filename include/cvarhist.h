@@ -66,6 +66,8 @@ enum {
  *   <LI> add all the boundaries (manually) before collecting samples
  *   <LI> collect samples and transform() makes the boundaries
  * </OL>
+ *
+ * @ingroup Statistics
  */
 class SIM_API cVarHistogram : public cHistogramBase //--LG
 {

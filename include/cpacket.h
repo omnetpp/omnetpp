@@ -28,6 +28,8 @@
 /**
  * Network packet class. It adds protocol and PDU type to cMessage.
  * The message kind must be either MK_PACKET or MK_INFO for cPackets.
+ *
+ * @ingroup SimCore
  */
 class SIM_API cPacket : public cMessage
 {
@@ -51,7 +53,8 @@ class SIM_API cPacket : public cMessage
     cPacket (cPacket& m);
 
     /**
-     * MISSINGDOC: cPacket:cPacket&operator=(cPacket&)
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     cPacket& operator=(cPacket& m);
     //@}

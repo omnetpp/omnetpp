@@ -61,6 +61,8 @@ typedef bool (*ForeachFunc)(cObject *,bool);
  *  - name string
  *  - ownership control
  *  - virtual functions for derived classes
+ *
+ * @ingroup SimCore
  */
 class SIM_API cObject
 {

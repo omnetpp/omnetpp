@@ -409,6 +409,8 @@ SIM_API void opp_terminate(const char *msg,...);
  *
  * Recommended use: as class member, where otherwise the class members
  * would have to call opp_strdup() and delete for the char* member.
+ *
+ * @ingroup SimSupport
  */
 class SIM_API opp_string
 {
@@ -442,7 +444,9 @@ class SIM_API opp_string
     operator const char *()    {return str;}
 
     /**
-     * MISSINGDOC: opp_string:char*buffer()
+     * Returns pointer to the internal buffer where the string is stored.
+     * It is allowed to write into the string via this pointer, but the
+     * length of the string should not be exceeded.
      */
     char *buffer()             {return str;}
 

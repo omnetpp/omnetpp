@@ -72,6 +72,8 @@ extern "C"
 
 /**
  * Low-level coroutine class, used by cSimpleModule.
+ *
+ * @ingroup Internals
  */
 class SIM_API cCoroutine
 {
@@ -107,7 +109,6 @@ class SIM_API cCoroutine
      */
     static void switchtoMain();
 
-
     /**
      * Constructor.
      */
@@ -115,10 +116,10 @@ class SIM_API cCoroutine
     ~cCoroutine();
 
     /**
-     * MISSINGDOC: cCoroutine:cCoroutine&operator=(cCoroutine&)
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     cCoroutine& operator=(cCoroutine& cor);
-
 
     /**
      * MISSINGDOC: cCoroutine:bool setup(CoroutineFnp,void*,unsigned)

@@ -46,7 +46,6 @@ class  cStatistic;
  * sXElem is not a descendant of cObject.
  *
  * NOTE: not a cObject descendant!
- *
  */
 struct sXElem
 {
@@ -202,6 +201,8 @@ struct sXElem
  *
  * NOTE: forEach() ignores objects stored here such as cPars in eXpressions,
  * cObject pointed to in 'P' type, cStatistic in disTribution type
+ *
+ * @ingroup SimCore
  */
 class SIM_API cPar : public cObject
 {
@@ -277,6 +278,7 @@ class SIM_API cPar : public cObject
     virtual ~cPar();
 
     /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      * The assignment operator works with cPar objects.
      */
     cPar& operator=(cPar& otherpar);
@@ -714,6 +716,8 @@ inline void sXElem::operator=(cPar& _r)  {type='R'; p=(cPar *)_r.dup();}
  * of logging parameter changes to file.
  *
  * NOTE: dup() creates only a cPar, NOT a cModulePar!
+ *
+ * @ingroup Internals
  */
 class SIM_API cModulePar : public cPar
 {
@@ -753,7 +757,8 @@ class SIM_API cModulePar : public cPar
     virtual ~cModulePar();
 
     /**
-     * MISSINGDOC: cModulePar:cModulePar&operator=(cModulePar&)
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     cModulePar& operator=(cModulePar& otherpar);
     //@}

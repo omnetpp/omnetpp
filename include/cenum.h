@@ -31,6 +31,8 @@
  * effective integer-to-string mapping. Primary usage is to support displaying
  * symbolic names for integer values that represent some code (such as an enum
  * or #define). To be used mostly from Tkenv and possibly other user interfaces.
+ *
+ * @ingroup Internals
  */
 class cEnum : public cObject
 {
@@ -76,7 +78,8 @@ class cEnum : public cObject
     virtual void info(char *buf);
 
     /**
-     * Assignment.
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     cEnum& operator=(cEnum& list);
 

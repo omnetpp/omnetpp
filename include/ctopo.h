@@ -297,6 +297,8 @@ class SIM_API sTopoLinkOut : public sTopoLink
  * no submodule nesting. Connections which span across compound module
  * boundaries are also represented as one graph edge. Graph edges are directed,
  * just as module gates are.
+ *
+ * @ingroup SimSupport
  */
 class SIM_API cTopology : public cObject
 {

@@ -30,6 +30,8 @@ class cMessage;
 /**
  * Stores future event set. The underlying data structure is heap;
  * the array used to store the heap expands as needed.
+ *
+ * @ingroup Internals
  */
 class SIM_API cMessageHeap : public cObject
 {
@@ -63,7 +65,8 @@ class SIM_API cMessageHeap : public cObject
     virtual ~cMessageHeap();
 
     /**
-     * MISSINGDOC: cMessageHeap:cMessageHeap&operator=(cMessageHeap&)
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     cMessageHeap& operator=(cMessageHeap& msgqueue);
     //@}

@@ -37,6 +37,8 @@ class  cLinkType;
  * the user typically does not want to directly create or destroy cGate
  * objects. However, they are important if a simple module algorithm
  * needs to know about its surroundings.
+ *
+ * @ingroup SimCore
  */
 class SIM_API cGate : public cObject
 {
@@ -84,7 +86,8 @@ class SIM_API cGate : public cObject
     virtual ~cGate() {}
 
     /**
-     * MISSINGDOC: cGate:cGate&operator=(cGate&)
+     * Assignment operator. The name member doesn't get copied;
+     * see cObject's operator=() for more details.
      */
     cGate& operator=(cGate& gate);
     //@}

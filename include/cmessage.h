@@ -68,6 +68,8 @@ enum eMessageKind {
  * holds a cArray which means that a cMessage can
  * be attached any number of objects. These objects will typically
  * be of cPar type, but other types are also possible.
+ *
+ * @ingroup SimCore
  */
 class SIM_API cMessage : public cObject
 {
@@ -124,7 +126,8 @@ class SIM_API cMessage : public cObject
     virtual ~cMessage();
 
     /**
-     * Duplication and the assignment operator work all right with cMessage.
+     * Assignment operator. Duplication and the assignment operator work all right with cMessage.
+     * The name member doesn't get copied; see cObject's operator=() for more details.
      */
     cMessage& operator=(cMessage& msg);
     //@}
