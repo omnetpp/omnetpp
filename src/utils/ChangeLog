@@ -1,3 +1,7 @@
+2002-04-06  Andras Varga
+
+	* opp_test added (moved here from test/); makefile installs it into bin/
+
 2002-04-02  Ulrich Kaage <kaage@int.uni-karlsruhe.de>  <kaage@int.etec.uni-karlsruhe.de>
 
 	* opp_makemake.in (): when parsing option -u: use brackets around
