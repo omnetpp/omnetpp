@@ -49,7 +49,7 @@ OBJS = $(SCALARS_OBJS) $(ENGINE_OBJS)
 #
 # Targets
 #
-default: $(SCALARS_IF_POSSIBLE)
+default: scalars
 
 scalars : scalars.exe
 
@@ -64,13 +64,10 @@ scalars-e.obj : scalars.cc tclcode.cc
 	$(CXX) /Fo"scalars-e.obj" $(COPTS) /c /Tp scalars.cc
 
 tclcode.cc: *.tcl
-	..\omnetpp\src\utils\tcl2c tclcode.cc *.tcl
+	..\utils\tcl2c tclcode.cc *.tcl
 
 scalars.res: scalars.rc scalars.ico
 	rc -fo scalars.res -r scalars.rc
-
-missing-library:
-	@ echo *** No Tk installation found -- skipping Scalars
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc engine/*.cc
