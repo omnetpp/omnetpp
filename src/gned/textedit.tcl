@@ -277,7 +277,6 @@ proc askReplaceYesNo {w} {
 #
 proc doReplace {w findstring replstring case words regexp} {
 
-    set doall 0
     while 1 {
         # find occurrence
         set length [doFind $w $findstring $case $words $regexp]
@@ -286,23 +285,29 @@ proc doReplace {w findstring replstring case words regexp} {
         }
 
         # ask whether to replace it
-        if {$doall} {
-            set action yes
-        } else {
-            set action [askReplaceYesNo $w]
-        }
-        if {$action == "all"} {
-            set action yes
-            set doall 1
-        }
+        set action [askReplaceYesNo $w]
+
         case $action in {
             yes {
                 $w delete "insert - $length char" insert
                 $w insert insert $replstring
-                syntaxHighlight $w 1.0 end  ;# brute force...
+                syntaxHighlight $w "insert linestart" "insert lineend"
             }
-            no {}
+            all {
+                while 1 {
+                    $w delete "insert - $length char" insert
+                    $w insert insert $replstring
+                    set length [doFind $w $findstring $case $words $regexp]
+                    if {$length == ""} {
+                        syntaxHighlight $w 1.0 end ;# for multi-line replaces...
+                        return
+                    }
+                }
+            }
+            no {
+            }
             close {
+                syntaxHighlight $w 1.0 end ;# for multi-line replaces...
                 return
             }
         }
