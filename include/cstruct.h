@@ -113,21 +113,10 @@ class SIM_API cStructDescriptor : public cObject
     //@{
 
     /**
-     * Returns true if the class 'classname' has an associated cStructDescriptor object.
-     */
-    static bool hasDescriptor(const char *classname);
-
-    /**
-     * Creates and returns a descriptor object for the object passed as argument.
-     * The type of the descriptor object will be determined from the className()
-     * of 'obj'. 'obj' will be the client object for the descriptor object.
-     */
-    static cStructDescriptor *createDescriptorFor(cObject *obj);
-
-    /**
      * Creates and returns a descriptor object for the struct passed as argument.
-     * The type of the descriptor object will be determined from the 1st argument,
-     * classname. The passed struct will be the client object for the descriptor object.
+     * The class of the descriptor object will be determined from the 1st argument:
+     * an instance of the class classname+"Descriptor" will be created.
+     * The passed struct will be the client object for the descriptor object.
      */
     static cStructDescriptor *createDescriptorFor(const char *classname, void *p);
     //@}

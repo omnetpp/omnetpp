@@ -30,14 +30,14 @@
 #define MAX_INTERNAL_NAME 11  /* should be 4n+3 */
 
 //=== classes declared here
-class  cObject;
-class  cStaticFlag;
+class cObject;
+class cStaticFlag;
 
 //=== classes mentioned
-class  cCommBuffer;
-class  cArray;
-class  cDefaultList;
-
+class cCommBuffer;
+class cArray;
+class cDefaultList;
+class cStructDescriptor;
 
 /**
  * Prototype for functions that can be used by cQueue objects configured as
@@ -162,6 +162,10 @@ class SIM_API cObject : public cPolymorphic
 
     // called internally by cSimpleModule::snapshot(), and in turn it calls writeContents()
     virtual void writeTo(std::ostream& os);
+
+    // Creates and returns a descriptor object for this object passed as argument.
+    // This version return an instance of the class className()+"Descriptor".
+    virtual cStructDescriptor *createDescriptor();
 
   protected:
     /** @name Ownership control.
