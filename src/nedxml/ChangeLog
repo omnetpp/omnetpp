@@ -1,3 +1,8 @@
+2002-06-09  Ulrich Kaage <kaage@int.uni-karlsruhe.de>  <kaage@int.etec.uni-karlsruhe.de>
+
+	* ned.y (swapAttributes): compile fix for gcc 3.x: Ambiguous
+	implicit conversion for NEDString::NEDString(NEDString)
+	
 2002-06-08  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* Makefile.in: created from Makefile.vc

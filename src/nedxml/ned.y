@@ -1541,7 +1541,7 @@ void swapConnection(NEDElement *conn)
 
 void swapAttributes(NEDElement *node, const char *attr1, const char *attr2)
 {
-   NEDString oldv1 = node->getAttribute(attr1);
+   NEDString oldv1(node->getAttribute(attr1));
    node->setAttribute(attr1,node->getAttribute(attr2));
    node->setAttribute(attr2,oldv1);
 }
