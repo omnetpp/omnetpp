@@ -20,7 +20,7 @@
 #include "util.h"
 #include "crng.h"
 #include "cexception.h"
-#include "mt19937ar.h"
+#include "mersennetwister.h"
 
 
 /**
@@ -33,10 +33,7 @@
 class cMersenneTwister : public cRNG
 {
   protected:
-    unsigned long mt[MT19937_N];
-    int mti;
-
-    void useThisRNG() {current_mt = mt; current_mti_ptr = &mti;}
+    MTRand rng;
 
   public:
     cMersenneTwister() {}
@@ -63,16 +60,13 @@ Register_Class(cMersenneTwister);
 
 void cMersenneTwister::initialize(int runnumber, int id, cConfiguration *cfg)
 {
-    useThisRNG();
-
     unsigned int seed = 0; //FIXME
-    mt19937_init_genrand(seed);
+    rng.seed(seed);
 }
 
 unsigned long cMersenneTwister::intRand()
 {
-    useThisRNG();
-    return mt19937_genrand_int31();
+    return rng.randExc();
 }
 
 double cMersenneTwister::doubleRand()

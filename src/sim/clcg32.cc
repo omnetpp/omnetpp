@@ -23,7 +23,7 @@
 
 
 /**
- * Implemements a 32-bit (2^31-2 cycle length) linear congruential random
+ * Implements a 32-bit (2^31-2 cycle length) linear congruential random
  * number generator.
  *    - Range:          1 ... 2**31-2
  *    - Period length:  2**31-2
