@@ -29,16 +29,9 @@ Description:
   in fact, the graphics will be totally reconstructed from the NED source and
   the display strings in it.
 
-IMPORTANT!
-  GNED is now in ALPHA state. There are many missing functions, but what works
-  should be fairly reliable. See the todo.txt in the GNED directory for
+  GNED is now in BETA state. There are some missing functions and bugs, but 
+  overall it should be fairly reliable. See the TODO in the GNED directory for
   problems and missing features.
-
-  The NED grammar has slightly changed (became more liberal at some points),
-  so occasionally nedc might not be able to compile the output from GNED.
-  Such problems are rare and you can easily fix the NED file. The next
-  release of OMNeT++ will contain an updated nedc and then this problem
-  will go away.
 
 Comment parsing:
   It is useful to know how exactly GNED identifies the comments in the NED file.
@@ -120,6 +113,8 @@ Development ideas:
 
 - changing properties for all selected objects together
 
+In the very distant future, maybe...:
+
 - support for simple modules
     Generating C++ class declaration etc. for simple modules. Editing of
     C++ sources from within GNED.
@@ -138,4 +133,5 @@ Andras
 Copyright (c) 1997,99 Andras Varga and others
 E-mail: andras@hit.bme.hu, vargaa@hit.bme.hu
 WWW:    http://www.hit.bme.hu/phd/vargaa
+
 
