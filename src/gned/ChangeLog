@@ -217,3 +217,5 @@ Aug 26, 2000
  - implemented "find next"
  - find/replace dialog contents is now preserved
  - open/save dialogs now remember the directory
+Aug 27, 2000
+ - drag&drop creation of submodules now creates unique names

@@ -1026,7 +1026,7 @@ proc _renameOnCanvas {key name} {
 
     if [string compare $name $newname] {
         tk_messageBox -type ok -title GNED -icon warning \
-            -message "The name you typed was changed from '$name' to '$newname' to make it legal/unique."
+            -message "The name you typed was modified to '$newname' to make it legal and unique."
     }
 
     # update all display elements

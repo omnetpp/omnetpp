@@ -30,48 +30,33 @@
 # create an item with the given type and add it to ned()
 #
 proc addItem {type parentkey} {
-   global ned ned_attr ned_attlist
+    global ned ned_attr ned_attlist
 
-   # choose key
-   set key $ned(nextkey)
-   incr ned(nextkey)
+    # choose key
+    set key $ned(nextkey)
+    incr ned(nextkey)
 
-   # add ned() attributes: (for 'common' and for $type)
-   foreach attr $ned_attlist(common) {
-      set ned($key,$attr) $ned_attr(common,$attr)
-   }
-   foreach attr $ned_attlist($type) {
-      set ned($key,$attr) $ned_attr($type,$attr)
-   }
-   set ned($key,type) $type
+    # add ned() attributes: (for 'common' and for $type)
+    foreach attr $ned_attlist(common) {
+       set ned($key,$attr) $ned_attr(common,$attr)
+    }
+    foreach attr $ned_attlist($type) {
+       set ned($key,$attr) $ned_attr($type,$attr)
+    }
+    set ned($key,type) $type
 
-   # set parent  (everyone has one except root)
-   set ned($key,parentkey) $parentkey
-   if {$type!="root"} {
-       lappend ned($parentkey,childrenkeys) $key
-   }
+    # set parent  (everyone has one except root)
+    set ned($key,parentkey) $parentkey
+    if {$type!="root"} {
+        lappend ned($parentkey,childrenkeys) $key
+    }
 
-   # generate a unique name if necessary
-puts "dbg: addItem: should generate _locally_ unique name!"
-   if [info exist ned($key,name)] {
-      set name $ned($key,name)
-      set max 0
-      set name $ned($key,name)
-      foreach i [array names ned "*,name"] {
-         if [regsub -- "$name" $ned($i) "" n] {
-             catch {if {int($n)>$max} {set max $n}}
-         }
-      }
-      set max [expr int($max+1)]
-      set ned($key,name) "$name$max"
-   }
+    # mark it "not selected" on canvas
+    set ned($key,selected) 0
 
-   # mark it "not selected" on canvas
-   set ned($key,selected) 0
+    #puts "dbg: addItem: $type $key added to $parentkey (its children now: $ned($parentkey,childrenkeys))"
 
-   #puts "dbg: addItem: $type $key added to $parentkey (its children now: $ned($parentkey,childrenkeys))"
-
-   return $key
+    return $key
 }
 
 
@@ -160,23 +145,40 @@ proc renameItem {key name} {
 
     # check if item has a name at all
     if ![info exist ned($key,name)] {
-       error "item $key has no name attribute"
+        error "item $key has no name attribute"
     }
 
     # adjust name string: kill invalid chars and make it begin with letter
     regsub -all -- {[^a-zA-Z0-9_]} $name {} name
     regsub -- {^[0-9]} $name {_\0} name
     if {$name==""} {
-       return $ned($key,name)
+        # leave original name
+        return $ned($key,name)
     }
 
-    # make name unique
-    puts "TBD: renameItem: make name unique"
+    # make name unique among all siblings by appending numbers
+    set suffixneeded ""
+    foreach siblingkey [getChildren $ned($key,parentkey)] {
+        if {$siblingkey!=$key && [info exist ned($siblingkey,name)]} {
+            if [regexp -- "^${name}(\[0-9\]*)$" $ned($siblingkey,name) match suffix] {
+                set suffix1 [expr $suffix + 1]
+                if {$suffixneeded == ""} {
+                    set suffixneeded $suffix1
+                } else {
+                    if {$suffix1 > $suffixneeded} {
+                        set suffixneeded $suffix1
+                    }
+                }
+            }
+        }
+    }
 
     # rename
-    set ned($key,name) $name
+    set ned($key,name) "$name$suffixneeded"
 
-    return $name
+    #puts "dbg: renameItem: name=$ned($key,name)"
+
+    return $ned($key,name)
 }
 
 

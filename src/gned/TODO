@@ -1,7 +1,5 @@
 To be finished (top priority!):
-- addItem
 - deleteItem
-- renameItem
 - reduce number of "array names ned ..." lines -- they're SLOW!
 - "properties" dialogs
 
