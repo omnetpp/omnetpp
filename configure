@@ -655,7 +655,7 @@ if test -n "$ac_init_help"; then
 Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --enable-nedc-subcl     experimental nedc subclassing extension (no support - use at own risk)
+  --enable-nedc-subcl     NO LONGER NECESSARY, see doc/subclassing.txt
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -3098,8 +3098,8 @@ AS="as"
 AR="ar cr"
 SHLIB_LD="$CXX -shared -fPIC"
 SHLIB_CFLAGS="-fPIC"
-# NEDC default - maybe overwritten by feature nedc-subcl
 NEDC="nedc"
+MSGC="opp_msgc"
 MAKEDEPEND="opp_makedep -Y --objdirtree"
 
 case "$CXX" in
@@ -4930,28 +4930,7 @@ else
   enableval=no
 fi;
 if test "${enableval}" = yes; then
-  if test -z "${PERL}" ; then
-    { echo "$as_me:4934: WARNING: no perl found - disabling feature nedc-subcl" >&5
-echo "$as_me: WARNING: no perl found - disabling feature nedc-subcl" >&2;}
-  else
-    cat 1>&2 << EOT
-
-Warning: You have enabled nedc subclassing which is experimental.
-         Please note that it works for unix like systems only and
-         that there is no support possible if you encounter problems.
-         At least you should read the message subclassing documentation
-         ${OMNETPP_NEDC_DIR}/msgdoc.txt
-
-	 Have a look at ${OMNETPP_SAMPLES_DIR}/dyna2 as a sample
-	 simulation using nedc subclassing
-
-EOT
-
-  NEDC="${OMNETPP_NEDC_DIR}/nedcwrapper.sh"
-  ac_config_files="$ac_config_files samples/dyna2/Makefile"
-
-  OMNETPP_SAMPLES="$OMNETPP_SAMPLES dyna2"
-  fi
+    echo "WARNING: --enable-nedc-subcl option no longer necessary: subclassing support is enabled by default, although with different usage, see doc/subclassing!" 1>&2
 fi
 
 #----------------------
@@ -5075,7 +5054,7 @@ rm -f confdef2opt.sed
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
 ac_clean_files="$ac_clean_files $CONFIG_STATUS"
-{ echo "$as_me:5078: creating $CONFIG_STATUS" >&5
+{ echo "$as_me:5057: creating $CONFIG_STATUS" >&5
 echo "$as_me: creating $CONFIG_STATUS" >&6;}
 cat >$CONFIG_STATUS <<_ACEOF
 #! $SHELL
@@ -5242,7 +5221,7 @@ cat >>$CONFIG_STATUS <<\EOF
     echo "$ac_cs_version"; exit 0 ;;
   --he | --h)
     # Conflict between --help and --header
-    { { echo "$as_me:5245: error: ambiguous option: $1
+    { { echo "$as_me:5224: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: ambiguous option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -5261,7 +5240,7 @@ Try \`$0 --help' for more information." >&2;}
     ac_need_defaults=false;;
 
   # This is an error.
-  -*) { { echo "$as_me:5264: error: unrecognized option: $1
+  -*) { { echo "$as_me:5243: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&5
 echo "$as_me: error: unrecognized option: $1
 Try \`$0 --help' for more information." >&2;}
@@ -5296,7 +5275,6 @@ for ac_config_target in $ac_config_targets
 do
   case "$ac_config_target" in
   # Handling of arguments.
-  "samples/dyna2/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/dyna2/Makefile" ;;
   "Makefile" ) CONFIG_FILES="$CONFIG_FILES Makefile" ;;
   "src/cmdenv/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/cmdenv/Makefile" ;;
   "src/envir/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/envir/Makefile" ;;
@@ -5322,7 +5300,7 @@ do
   "tutorial/queues/Makefile" ) CONFIG_FILES="$CONFIG_FILES tutorial/queues/Makefile" ;;
   "include/Makefile" ) CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
-  *) { { echo "$as_me:5325: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:5303: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -5445,6 +5423,7 @@ s,@OMNETPP_TEST_DIR@,$OMNETPP_TEST_DIR,;t t
 s,@OMNETPP_SAMPLES@,$OMNETPP_SAMPLES,;t t
 s,@MYPWD@,$MYPWD,;t t
 s,@NEDC@,$NEDC,;t t
+s,@MSGC@,$MSGC,;t t
 s,@NEDCFLAGS@,$NEDCFLAGS,;t t
 s,@AS@,$AS,;t t
 s,@AR@,$AR,;t t
@@ -5587,7 +5566,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:5590: creating $ac_file" >&5
+    { echo "$as_me:5569: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -5605,7 +5584,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:5608: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:5587: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5618,7 +5597,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5621: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5600: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;

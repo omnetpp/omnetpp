@@ -162,8 +162,8 @@ AS="as"
 AR="ar cr"
 SHLIB_LD="$CXX -shared -fPIC"
 SHLIB_CFLAGS="-fPIC"
-# NEDC default - maybe overwritten by feature nedc-subcl
 NEDC="nedc"
+MSGC="opp_msgc"
 MAKEDEPEND="opp_makedep -Y --objdirtree"
 
 case "$CXX" in
@@ -535,33 +535,14 @@ fi
 
 # experimental subclassing
 AC_ARG_ENABLE(nedc-subcl,
-[  --enable-nedc-subcl     experimental nedc subclassing extension (no support - use at own risk)],
+[  --enable-nedc-subcl     NO LONGER NECESSARY, see doc/subclassing.txt],
 [case "${enableval}" in
    yes|no) ;;
    *)      AC_MSG_ERROR([bad value ${enableval} for nedc-subcl option]) ;;
  esac],
               [enableval=no])
 if test "${enableval}" = yes; then
-  if test -z "${PERL}" ; then
-    AC_MSG_WARN(no perl found - disabling feature nedc-subcl)
-  else
-    cat 1>&2 << EOT
-
-Warning: You have enabled nedc subclassing which is experimental.
-         Please note that it works for unix like systems only and
-         that there is no support possible if you encounter problems.
-         At least you should read the message subclassing documentation
-         ${OMNETPP_NEDC_DIR}/msgdoc.txt
-
-	 Have a look at ${OMNETPP_SAMPLES_DIR}/dyna2 as a sample
-	 simulation using nedc subclassing
-
-EOT
-
-  NEDC="${OMNETPP_NEDC_DIR}/nedcwrapper.sh"
-  AC_CONFIG_FILES( samples/dyna2/Makefile )
-  OMNETPP_SAMPLES="$OMNETPP_SAMPLES dyna2"
-  fi
+    echo "WARNING: --enable-nedc-subcl option no longer necessary: subclassing support is enabled by default, although with different usage, see doc/subclassing!" 1>&2
 fi
 
 
@@ -625,6 +606,7 @@ AC_SUBST(CXX)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(MYPWD)
 AC_SUBST(NEDC)
+AC_SUBST(MSGC)
 AC_SUBST(NEDCFLAGS)
 AC_SUBST(AS)
 AC_SUBST(AR)
