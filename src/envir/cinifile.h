@@ -34,34 +34,37 @@ class cIniFileIterator;
 //=====================================================================
 //=== cIniFile
 
-#define MAX_INI_SECTIONS 110
-#define MAX_INI_ENTRIES  1000   // increase if necessary
-
 class ENVIR_API cIniFile
 {
   friend class cIniFileIterator;
   friend class cIniFileSectionIterator;
 
   private:
-    char *fname;
-    struct sEntry {             //one entry contains:
-        char *section;          //  name of section it belongs to
+    char *fname;                // file name
+
+    struct sEntry {             // one entry contains:
+        int section_id;         //  section it belongs to
         char *key;              //  the parameter
         char *value;            //  its value
         char *rawvalue;         //  if original was quoted, this is the
-                                //        strdupped version of it, otherwise 0
+                                //        strdupped version of it, otherwise NULL
         bool accessed;          //  has it been accessed?
     };
-    int num_sections;           //total number of sections
-    char *section[MAX_INI_SECTIONS]; //array of sectionnames
-    int num_entries;                 //total number of entries
-    sEntry entry[MAX_INI_ENTRIES];   //array of entries
-    int _error;   //OK=0, ERROR=1
+
+    char **sections;            // table of section names
+    int sectiontable_size;      // size of section table allocated
+    int num_sections;           // number of sections used
+
+    sEntry *entries;            // table of entries
+    int entrytable_size;        // size of entry table allocated
+    int num_entries;            // number of entries used
+
+    int _error;                 // OK=0, ERROR=1
 
     const char *_getValue(const char *section, const char *key,int raw);
-    void _readFile(const char *fname, const char *sectionptr);
-  public:
+    void _readFile(const char *fname, int section_id);
 
+  public:
     cIniFile(const char *fname);
     ~cIniFile();
 
@@ -101,10 +104,10 @@ class ENVIR_API cIniFileIterator
       void reset()            {idx=0;}
       bool end()              {return (bool)(idx>=ini->num_entries);}
       void operator++(int)    {if (idx<ini->num_entries) idx++;}
-      const char *section()   {return ini->entry[idx].section;}
-      const char *entry()     {return ini->entry[idx].key;}
-      const char *value()     {return ini->entry[idx].value;}
-      bool accessed()         {return ini->entry[idx].accessed;}
+      const char *section()   {return ini->sections[ini->entries[idx].section_id];}
+      const char *entry()     {return ini->entries[idx].key;}
+      const char *value()     {return ini->entries[idx].value;}
+      bool accessed()         {return ini->entries[idx].accessed;}
 };
 
 class ENVIR_API cIniFileSectionIterator
@@ -117,7 +120,7 @@ class ENVIR_API cIniFileSectionIterator
       void reset()            {idx=0;}
       bool end()              {return (bool)(idx>=ini->num_sections);}
       void operator++(int)    {if (idx<ini->num_sections) idx++;}
-      const char *section()   {return ini->section[idx];}
+      const char *section()   {return ini->sections[idx];}
 };
 
 #endif

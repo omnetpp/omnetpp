@@ -1,3 +1,8 @@
+2001-10-04 Andras Varga
+
+	* cinifile.h, cinifile.cc: no more upper limit on size of ini file
+        (tables are dynamically reallocated if needed)
+
 2001-09-01 Andras Varga
 
 	* CONST_CAST() replaced by const_cast<>()

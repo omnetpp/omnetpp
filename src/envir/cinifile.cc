@@ -33,8 +33,15 @@
 //
 cIniFile::cIniFile(const char *filename)
 {
+    sectiontable_size = 32;
+    sections = new char*[sectiontable_size];
+    num_sections = 0;
+
+    entrytable_size = 128;
+    entries = new sEntry[entrytable_size];
+    num_entries = 0;
+
     warnings=false;
-    num_sections = num_entries = 0;
     _error = false;
     fname = opp_strdup(filename);
 
@@ -53,10 +60,10 @@ cIniFile::~cIniFile()
 
 void cIniFile::readFile(const char *fname)
 {
-    _readFile(fname,0);
+    _readFile(fname,-1);
 }
 
-void cIniFile::_readFile(const char *fname, const char *sect)
+void cIniFile::_readFile(const char *fname, int section_id)
 {
     FILE *file;
     char buf[MAX_LINE];
@@ -111,7 +118,7 @@ void cIniFile::_readFile(const char *fname, const char *sect)
             while (*e!=' ' && *e!='\t' && *e!='\0') e++;
             *e = '\0';
 
-            _readFile( s, sect );    // process included inifile
+            _readFile( s, section_id );    // process included inifile
         }
 
         // process section heading '[new section]'
@@ -126,18 +133,20 @@ void cIniFile::_readFile(const char *fname, const char *sect)
 
            // maybe already exists
            for (i=0; i<num_sections; i++)
-               if (strcmp(section[i],s)==0)
+               if (strcmp(sections[i],s)==0)
                    break;
-           if (i==num_sections)
-               sect = section[num_sections++] = opp_strdup(s);
-           else
-               sect = section[i];
+           if (i==num_sections) {
+               sections[section_id=num_sections++] = opp_strdup(s);
+           }
+           else {
+               section_id = i;
+           }
         }
 
         // process 'key = value' line
         else
         {
-           if (!sect) SYNTAX_ERROR("no section header (like [Foo]) seen yet");
+           if (section_id<0) SYNTAX_ERROR("no section header (like [Foo]) seen yet");
 
            // s --> key, e --> value, e1 --> last char of value
 
@@ -172,41 +181,55 @@ void cIniFile::_readFile(const char *fname, const char *sect)
            }
 
            // fill in the entry
-           entry[num_entries].section = const_cast<char*>(sect);
-           entry[num_entries].key = opp_strdup(s);
+           entries[num_entries].section_id = section_id;
+           entries[num_entries].key = opp_strdup(s);
            if (*e=='"') {
-              entry[num_entries].rawvalue = opp_strdup(e);
+              entries[num_entries].rawvalue = opp_strdup(e);
               *e1=0;
-              entry[num_entries].value = opp_strdup(e+1);
+              entries[num_entries].value = opp_strdup(e+1);
            } else {
-              entry[num_entries].rawvalue = NULL;
-              entry[num_entries].value = opp_strdup(e);
+              entries[num_entries].rawvalue = NULL;
+              entries[num_entries].value = opp_strdup(e);
            }
-           entry[num_entries++].accessed = 0;
+           entries[num_entries++].accessed = 0;
 
            // // maybe already exists
            // for (i=0; i<num_entries; i++)
-           //   if (entry[i].section==sect && strcmp(entry[i].key,s)==0)
+           //   if (entries[i].section==sect && strcmp(entries[i].key,s)==0)
            //      break;
            // if (i==num_entries)
            // {
-           //    entry[num_entries].section = sect;   //fill in the entry
-           //    entry[num_entries].key = opp_strdup(s);
-           //    entry[num_entries].value = opp_strdup(e);
-           //    entry[num_entries++].accessed = 0;
+           //    entries[num_entries].section = sect;   //fill in the entry
+           //    entries[num_entries].key = opp_strdup(s);
+           //    entries[num_entries].value = opp_strdup(e);
+           //    entries[num_entries++].accessed = 0;
            // }
            // else
            // {
            //    ev.printfmsg("Warning: `%s', line %d: duplicate entry %s=",fname,line,s);
-           //    delete entry[i].value;
-           //    entry[i].value = opp_strdup(e);
+           //    delete entries[i].value;
+           //    entries[i].value = opp_strdup(e);
            // }
         }
-        if (num_entries>=MAX_INI_ENTRIES || num_sections>=MAX_INI_SECTIONS)
-        {
-           _error=true;               // file is too big
-           ev.printfmsg("Ini file reader: Table full, change src/envir/cinifile.h");
-           break;
+
+        if (num_entries>=entrytable_size) {
+           // reallocate entries[] array
+           int newsize = 2*entrytable_size;
+           sEntry *tmp = new sEntry[newsize];
+           memcpy(tmp,entries,num_entries*sizeof(sEntry));
+           delete [] entries;
+           entries = tmp;
+           entrytable_size = newsize;
+        }
+
+        if (num_sections>=sectiontable_size) {
+           // reallocate sections[] array
+           int newsize = 2*sectiontable_size;
+           char **tmp = new char*[newsize];
+           memcpy(tmp,sections,num_sections*sizeof(char*));
+           delete [] sections;
+           sections = tmp;
+           sectiontable_size = newsize;
         }
     }
     fclose(file);
@@ -217,13 +240,15 @@ void cIniFile::clearContents()
 {
     int i;
     for (i=0; i<num_sections; i++)
-       delete [] section[i];
+       delete [] sections[i];
     for (i=0; i<num_entries; i++)
     {
-       delete [] entry[i].key;
-       delete [] entry[i].value;
-       delete [] entry[i].rawvalue;
+       delete [] entries[i].key;
+       delete [] entries[i].value;
+       delete [] entries[i].rawvalue;
     }
+    delete [] sections;
+    delete [] entries;
     num_sections = num_entries = 0;
 
     delete fname;
@@ -236,33 +261,33 @@ const char *cIniFile::_getValue(const char *sect, const char *ent, int raw)
     int i;
 
     // search for section
-    char *sect_p = NULL;
+    int section_id = -1;
     if (sect)
-       for(i=0; i<num_sections && !sect_p; i++)
-          if (strcmp(sect,section[i])==0)
-              sect_p = section[i];
+       for(i=0; i<num_sections && section_id<0; i++)
+          if (strcmp(sect,sections[i])==0)
+              section_id = i;
 
     // search for entry
     for(i=0; i<num_entries; i++)
     {
-       if( !sect_p || entry[i].section==sect_p)
+       if (!sect || entries[i].section_id==section_id)
        {
-          if (strcmp(ent,entry[i].key)==0)
+          if (strcmp(ent,entries[i].key)==0)
           {
-              entry[i].accessed=1;
-              return (raw && entry[i].rawvalue) ? entry[i].rawvalue : entry[i].value;
+              entries[i].accessed=1;
+              return (raw && entries[i].rawvalue) ? entries[i].rawvalue : entries[i].value;
           }
 
-          if (strchr(entry[i].key,'*') ||
-              strchr(entry[i].key,'?') ||
-              strchr(entry[i].key,'{'))
+          if (strchr(entries[i].key,'*') ||
+              strchr(entries[i].key,'?') ||
+              strchr(entries[i].key,'{'))
           {
              // try pattern matching
              short pat[256];
-             if (transform_pattern(entry[i].key,pat) && stringmatch(pat,ent))
+             if (transform_pattern(entries[i].key,pat) && stringmatch(pat,ent))
              {
-                 entry[i].accessed=1;
-                 return (raw && entry[i].rawvalue) ? entry[i].rawvalue : entry[i].value;
+                 entries[i].accessed=1;
+                 return (raw && entries[i].rawvalue) ? entries[i].rawvalue : entries[i].value;
              }
           }
        }
