@@ -47,6 +47,19 @@ on the performance gauge bar: the simsec/sec gauge should stay around 1.0).
 
 How it works
 ------------
+Hardware-in-the-loop simulation has two ingredients:
+
+ - the simulation has to be synchronized to real time;
+
+ - there has to be a way the simulation can communicate with the real world:
+   it has to be able to receive external events, and possibly also to send
+   events out of the simulation. The implementation of this external
+   communication can be very different from one simulation scenario to another:
+   it can be as simple as TCP sockets (as here) or pipes, it can be raw
+   communication on an Ethernet NIC or an USB port, or communication with a
+   interface card via interrupts and DMA transfer. If you plan to do
+   hardware-in-the-loop simulation, you'll most like have to implement your
+   own external communication interface.
 
 The word "real-time" means that the simulation is executed in a way such that
 simulation time is synchronized to real time: simulating one second
@@ -55,9 +68,17 @@ in the model will also take one "real" second. This is in contrast to
 Of course, the CPU has to be fast enough so that the simulation can keep up
 with real time.
 
+The external interface used in this example simulation is a single TCP socket.
+
 Hardware-in-the-loop simulation is enabled by the following omnetpp.ini entry:
 
 [General]
 scheduler-class = "cSocketRTScheduler"
 
-FIXMe finish...............
+Interesting functionality is in the cSocketRTScheduler class. Its source code
+is in socketrtscheduler.h/cc. It combines synchronizing to real-time with
+socket communication.
+
+ExtHTTPClient....
+
+
