@@ -118,12 +118,12 @@ TOmnetApp::~TOmnetApp()
     delete outscalarmgr;
     delete snapshotmgr;
 
-    delete [] rngs;
-
     for (int i = 0; i < num_rngs; i++)
     {
          delete rngs[i];
     }
+
+    delete [] rngs;
 
     delete scheduler;
 #ifdef WITH_PARSIM
