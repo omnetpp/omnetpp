@@ -314,8 +314,8 @@ if ($XSLTPROC eq "") {error("xsltproc not configured");}
 $xsltcommand = "$XSLTPROC".
                " --stringparam outputdir \"".toslash($outdir)."\"".
                " --stringparam imagesxml \"".toslash($imagesxml)."\"".
-               " --stringparam document-unassigned-params \"".($unassignedpars?"y":"n")."\"".
-               " --stringparam have-dot \"".($have_dot?"y":"n")."\"".
+               " --stringparam document-unassigned-params \"".($unassignedpars?"yes":"no")."\"".
+               " --stringparam have-dot \"".($have_dot?"yes":"no")."\"".
                " --stringparam doxytagfile \"".toslash($doxytagfile)."\"".
                " --stringparam doxyhtmldir \"".toslash($doxyhtmldir)."\"".
                " --output -".

@@ -85,7 +85,7 @@ bool NEDFileBuffer::indexLines()
 {
     // convert all CR and CR+LF into LF to avoid trouble
     char *s, *d;
-    for (s=d=wholeFile; *d; )
+    for (s=d=wholeFile; d==wholeFile || *(d-1); )
     {
         if (*s=='\r' && *(s+1)=='\n')  s++;
         else if (*s=='\r') {s++; *d++ = '\n';}
