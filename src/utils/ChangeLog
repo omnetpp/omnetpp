@@ -1,9 +1,50 @@
-2003-09-17  Andras Varga
+2003-10-02  Andras Varga
 
-	* opp_nmakemake: fix: with -n, it's not necessary to compile all
-	all other directories. 
-
-FIXME probably opp_makemake.in needs the same fix!
+	* opp_makemake.in, opp_nmakemake: a thorough rewrite of how 
+	multi-directory models are handled. This version should be usable, 
+	it's been proven on IPSuite and MPLS (I generated _all_ of its 
+	Makefiles including the toplevel one with opp_(n)makemake). 
+	The changes in nutshell:
+	- opp_(n)makemake no longer invokes `make' in other directories
+	  while generating the makefile. (It wasn't a very good idea in
+	  the first place)
+	- it is now possible to generate a Makefile that imports the 
+	  settings from another file (via Makefile inclusion). Thus
+	  you don't have to regenerate all the Makefiles (or edit the
+	  settings in them) if you move to a different machine or change
+	  the compile flags.
+	- "recursive make" (descenting into subdirs) is now independent
+	  from which directories you want to link with object files.
+	  Recursive make is enabled with the -r option, and it'll simply
+	  cause the Makefile to go into all subdirs and run make in them.
+	  That's all. If you need to ensure a specific order or you want
+	  to leave out certain subdirs, you can put additional dependencies
+	  and rules into makefrag (makefrag.vc).
+	- any file you list on the opp_(n)makemake command line is still 
+	  something to link with. No change here. 
+	- any directory on the opp_(n)makemake command line is a something
+	  that (will) contain object files you want to link with. 
+	  opp_(n)makemake won't specifically list the object files in the 
+	  Makefile, it'll just say *.o (or *.obj). Also, it won't add 
+	  dependencies to that directory -- you have to add that manually 
+	  (see "recursive make" above).
+	- one shortcut I found useful: the -w option causes linking with all
+	  object files found in the -I (include) directories. That saves you
+	  from listing directories with -I (because you want to import NED
+	  files from there and #include header files) and again as argument
+	  (because you also want to link with the object files from there) --
+	  you just add -w, and the -I's.
+	Note that primarily, linking with object files is considered and not
+	building static or shared libraries. Putting modules into static
+	libraries doesn't work very well on Unix (the linker tends to optimize
+	too eagerly and leave out your modules from the executable), but 
+	shared libraries are fine. On Windows, static libs have the same
+	problem as on Unix; DLLs are more difficult to build.
+	   Any customization should go to the makefrag(.vc) file. The above 
+	machinery should probably be satisfactory for except very large and 
+	very modular simulation models. If you find that you've outgrown
+	the opp_makemake features, you should probably consider moving to
+	CMake or Automake which are far more powerful.
 
 2003-08-20  Andras Varga
 
