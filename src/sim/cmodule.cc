@@ -554,24 +554,12 @@ cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stks
     take( &locals );
     take( &putAsideQueue );
 
-    if (!usesactivity)
-    {
-       timeoutmsg = NULL;
-    }
-    else
-    {
-       // this message is used as starter and later as
-       // internal timeout message
-       timeoutmsg = new cMessage(0,MK_STARTER);
-       take( timeoutmsg );
+    // for an activity() module, timeoutmsg will be created in scheduleStart()
+    // which must always be called
+    timeoutmsg = NULL;
 
-       // initialize message fields
-       timeoutmsg->frommod = -1;
-       // timeoutmsg->tomod set in setId()
-       timeoutmsg->fromgate = timeoutmsg->togate = -1;
-       timeoutmsg->sent = 0.0;
-       // timeoutmsg->delivd set in scheduleStart()
-
+    if (usesactivity)
+    {
        // setup coroutine, allocate stack for it
        if (!cCoroutine::setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
            opp_error("Cannot allocate %d+%d bytes of stack for module `%s'",
@@ -701,11 +689,21 @@ void cSimpleModule::scheduleStart(simtime_t t)
     if (!usesactivity)
         return;
 
-    // we'll use timeoutmsg as the activation message
-    if (timeoutmsg->kind()!=MK_STARTER)
+    if (timeoutmsg!=NULL)
         {opp_error("scheduleStart(): module `%s' already started",fullPath());return;}
 
+    // create timeoutmsg, used as internal timeout message
+    timeoutmsg = new cMessage(0,MK_STARTER);
+    take( timeoutmsg );
+
+    // initialize message fields
+    timeoutmsg->frommod = -1;
+    timeoutmsg->tomod = id();
+    timeoutmsg->fromgate = timeoutmsg->togate = -1;
+    timeoutmsg->sent = 0.0;
     timeoutmsg->delivd = t;
+
+    // use timeoutmsg as the activation message; insert it into the FES
     simulation.msgQueue.insert( timeoutmsg );
 }
 

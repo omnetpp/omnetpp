@@ -919,3 +919,10 @@ Jan 3, 2000
    these variables are incremented/decremented by the cMessage constructor
    and destructor, and displayed in Tkenv. They can be very handy at
    checking for memory leaks.
+ - changed the place where cSimpleModule's timeoutmsg is created: from the
+   constructor to scheduleStart() which is also mandatorily called for
+   activity() modules. Reason: "Total msgs" count in Tkenv incorrectly
+   displayed zero at the beginning of the simulation, while the
+   activation/timeout msg objects already existed)
+
+    
