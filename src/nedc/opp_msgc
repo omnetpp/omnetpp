@@ -759,10 +759,14 @@ sub generateClass
     }
     print H "    $msgclass(const $msgclass& other);\n";
     if ($gap) {
+        print H "    // make assignment operator protected to force the user override it\n";
+        print H "    $msgclass& operator=(const $msgclass& other);\n";
         print H "  public:\n";
     }
     print H "    virtual ~$msgclass();\n";
-    print H "    $msgclass& operator=(const $msgclass& other);\n";
+    if (!$gap) {
+        print H "    $msgclass& operator=(const $msgclass& other);\n";
+    }    
     if ($classtype eq "cobject") {
         if ($gap) {
             print H "    virtual cObject *dup() const {throw new cException(\"You forgot to manually add a dup() function to class $realmsgclass\");}\n";

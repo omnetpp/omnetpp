@@ -1,7 +1,9 @@
 2003-09-30  Andras Varga
 
 	* opp_msgc: with customize=true, adds a default dup() function to the 
-	generated _Base class that throws an exception and warns the user
+	generated _Base class that throws an exception and warns the user.
+	Also made assignment operator protected, to force the user overwrite
+	it with a fresh one in the customized class.
 
 2003-08-12  Andras Varga
 
