@@ -278,6 +278,7 @@ proc options_dialog {} {
     label-scale $w.f.f3.methdelay {Method call delay (ms):}
     $w.f.f3.methdelay.e config -length 200 -from 0 -to 3000 -resolution 1 -variable opp(methdelay)
     checkbutton $w.f.f3.msgnam -text {Display message names during animation} -variable opp(msgnam)
+    checkbutton $w.f.f3.msgclass -text {Display message class during animation} -variable opp(msgclass)
     checkbutton $w.f.f3.msgcol -text {Color coding by message kind} -variable opp(msgcol)
     commentlabel $w.f.f3.c {Color code (message->kind() mod 8):
      0=red 1=green 2=blue 3=white
@@ -293,6 +294,7 @@ proc options_dialog {} {
     pack $w.f.f3.animmeth -anchor w
     pack $w.f.f3.methdelay -anchor w -expand 0 -fill x
     pack $w.f.f3.msgnam -anchor w
+    pack $w.f.f3.msgclass -anchor w
     pack $w.f.f3.msgcol -anchor w
     pack $w.f.f3.c -anchor w
     pack $w.f.f3.penguin -anchor w
@@ -317,6 +319,7 @@ proc options_dialog {} {
     set opp(animmeth)   [opp_getsimoption anim_methodcalls]
     set opp(methdelay)  [opp_getsimoption methodcalls_delay]
     set opp(msgnam)     [opp_getsimoption animation_msgnames]
+    set opp(msgclass)   [opp_getsimoption animation_msgclassnames]
     set opp(msgcol)     [opp_getsimoption animation_msgcolors]
     set opp(penguin)    [opp_getsimoption penguin_mode]
     set opp(layouting)  [opp_getsimoption showlayouting]
@@ -340,6 +343,7 @@ proc options_dialog {} {
         opp_setsimoption anim_methodcalls    $opp(animmeth)
         opp_setsimoption methodcalls_delay   $opp(methdelay)
         opp_setsimoption animation_msgnames  $opp(msgnam)
+        opp_setsimoption animation_msgclassnames $opp(msgclass)
         opp_setsimoption animation_msgcolors $opp(msgcol)
         opp_setsimoption penguin_mode        $opp(penguin)
         opp_setsimoption showlayouting       $opp(layouting)

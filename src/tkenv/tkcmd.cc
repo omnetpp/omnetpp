@@ -735,6 +735,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%d", app->opt_methodcalls_delay);
    else if (0==strcmp(argv[1], "animation_msgnames"))
       sprintf(buf,"%d", app->opt_animation_msgnames);
+   else if (0==strcmp(argv[1], "animation_msgclassnames"))
+      sprintf(buf,"%d", app->opt_animation_msgclassnames);
    else if (0==strcmp(argv[1], "animation_msgcolors"))
       sprintf(buf,"%d", app->opt_animation_msgcolors);
    else if (0==strcmp(argv[1], "penguin_mode"))
@@ -782,6 +784,8 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_methodcalls_delay = atoi(argv[2]);
    else if (0==strcmp(argv[1], "animation_msgnames"))
       app->opt_animation_msgnames = (argv[2][0]!='0');
+   else if (0==strcmp(argv[1], "animation_msgclassnames"))
+      app->opt_animation_msgclassnames = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "animation_msgcolors"))
       app->opt_animation_msgcolors = (argv[2][0]!='0');
    else if (0==strcmp(argv[1], "penguin_mode"))

@@ -967,6 +967,7 @@ void TOmnetTkApp::readOptions()
     opt_anim_methodcalls = ini_file->getAsBool( "Tkenv", "anim-methodcalls", true );
     opt_methodcalls_delay = long(1000*ini_file->getAsTime( "Tkenv", "methodcalls-delay", 0.2)+.5);
     opt_animation_msgnames = ini_file->getAsBool( "Tkenv", "animation-msgnames", true );
+    opt_animation_msgclassnames = ini_file->getAsBool( "Tkenv", "animation-msgclassnames", true );
     opt_animation_msgcolors = ini_file->getAsBool( "Tkenv", "animation-msgcolors", true );
     opt_penguin_mode = ini_file->getAsBool( "Tkenv", "penguin-mode", false );
     opt_showlayouting = ini_file->getAsBool( "Tkenv", "show-layouting", false);
@@ -1297,9 +1298,8 @@ void TOmnetTkApp::displayStringAsParentChanged(cModule *parentmodule)
 
 void TOmnetTkApp::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
 {
-    char msgptr[32], msgkind[16];
+    char msgptr[32];
     ptrToStr(msg,msgptr);
-    sprintf(msgkind,"%d",msg->kind());
 
     cGate *g = fromgate;
     cGate *arrivalgate = togate;
@@ -1316,9 +1316,7 @@ void TOmnetTkApp::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
             CHK(Tcl_VarEval(interp, "graphmodwin_animate_on_conn ",
                                     insp->windowName(), " ",
                                     ptrToStr(g)," ",
-                                    msgptr,
-                                    " {",msg->fullName(),"} ",
-                                    msgkind," ",
+                                    msgptr, " ",
                                     (lastgate?"beg":"thru"),
                                     NULL));
         }
@@ -1399,9 +1397,8 @@ void TOmnetTkApp::findDirectPath(cModule *srcmod, cModule *destmod, PathVec& pat
 
 void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *togate)
 {
-    char msgptr[32], msgkind[16];
+    char msgptr[32];
     ptrToStr(msg,msgptr);
-    sprintf(msgkind,"%d",msg->kind());
 
     PathVec pathvec;
     findDirectPath(frommodule, togate->ownerModule(), pathvec);
@@ -1426,9 +1423,7 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
                                         insp->windowName(), " ",
                                         parentptr," ",
                                         modptr," ",
-                                        msgptr,
-                                        " {",msg->fullName(),"} ",
-                                        msgkind," ",
+                                        msgptr, " ",
                                         "thru", // cannot be "beg" (msg ball cannot stay on encl.module rect)
                                         NULL));
             }
@@ -1448,9 +1443,7 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
                                         insp->windowName(), " ",
                                         parentptr," ",
                                         modptr," ",
-                                        msgptr,
-                                        " {",msg->fullName(),"} ",
-                                        msgkind," ",
+                                        msgptr, " ",
                                         (mod==arrivalmod?"beg":"thru"),
                                         NULL));
             }
@@ -1468,9 +1461,7 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
                                         insp->windowName(), " ",
                                         fromptr," ",
                                         toptr," ",
-                                        msgptr,
-                                        " {",msg->fullName(),"} ",
-                                        msgkind," ",
+                                        msgptr, " ",
                                         (i->to==arrivalmod?"beg":"thru"),
                                         NULL));
             }
@@ -1495,9 +1486,8 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
 
 void TOmnetTkApp::animateDelivery(cMessage *msg)
 {
-    char msgptr[32], msgkind[16];
+    char msgptr[32];
     ptrToStr(msg,msgptr);
-    sprintf(msgkind,"%d",msg->kind());
 
     // find suitable inspectors and do animate the message...
     cGate *g = msg->arrivalGate();
@@ -1515,8 +1505,6 @@ void TOmnetTkApp::animateDelivery(cMessage *msg)
                                 insp->windowName(), " ",
                                 ptrToStr(g)," ",
                                 msgptr,
-                                " {",msg->fullName(),"} ",
-                                msgkind,
                                 " end",
                                 NULL));
     }
@@ -1524,9 +1512,8 @@ void TOmnetTkApp::animateDelivery(cMessage *msg)
 
 void TOmnetTkApp::animateDeliveryDirect(cMessage *msg)
 {
-    char msgptr[32], msgkind[16];
+    char msgptr[32];
     ptrToStr(msg,msgptr);
-    sprintf(msgkind,"%d",msg->kind());
 
     // find suitable inspectors and do animate the message...
     cGate *g = msg->arrivalGate();
@@ -1541,8 +1528,6 @@ void TOmnetTkApp::animateDeliveryDirect(cMessage *msg)
                                 insp->windowName(), " ",
                                 ptrToStr(destmod)," ",
                                 msgptr,
-                                " {",msg->fullName(),"} ",
-                                msgkind,
                                 NULL));
     }
 }

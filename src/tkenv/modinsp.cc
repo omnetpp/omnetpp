@@ -557,9 +557,8 @@ void TGraphicalModWindow::redrawMessages()
    // loop through all messages in the event queue and display them
    for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
    {
-      char msgptr[32], msgkind[16];
+      char msgptr[32];
       ptrToStr(msg(),msgptr);
-      sprintf(msgkind,"%d",msg()->kind());
 
       cModule *arrivalmod = simulation.module( msg()->arrivalModuleId() );
       if (arrivalmod &&
@@ -576,8 +575,6 @@ void TGraphicalModWindow::redrawMessages()
                              canvas, " ",
                              ptrToStr(gate), " ",
                              msgptr,
-                             " {",msg()->fullName(),"} ",
-                             msgkind,
                              NULL));
          }
          else
@@ -586,8 +583,6 @@ void TGraphicalModWindow::redrawMessages()
                              canvas, " ",
                              ptrToStr(arrivalmod), " ",
                              msgptr,
-                             " {",msg()->fullName(),"} ",
-                             msgkind,
                              NULL));
          }
       }
@@ -1124,9 +1119,8 @@ void TGraphicalGateWindow::update()
    cGate *destgate = gate->destinationGate();
    for (cMessageHeap::Iterator msg(simulation.msgQueue); !msg.end(); msg++)
    {
-      char gateptr[32], msgptr[32], msgkind[16];
+      char gateptr[32], msgptr[32];
       ptrToStr(msg(),msgptr);
-      sprintf(msgkind,"%d",msg()->kind());
 
       if (msg()->arrivalGate()== destgate)
       {
@@ -1138,8 +1132,6 @@ void TGraphicalGateWindow::update()
                              canvas, " ",
                              ptrToStr(gate,gateptr), " ",
                              msgptr,
-                             " {",msg()->fullName(),"} ",
-                             msgkind,
                              NULL));
          }
       }

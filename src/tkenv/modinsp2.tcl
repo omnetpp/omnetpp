@@ -400,9 +400,11 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 #
 # This function is invoked from the message animation code.
 #
-proc draw_message {c msgptr x y msgname msgkind} {
+proc draw_message {c msgptr x y} {
     global fonts
+
     set dispstr [opp_getobjectfield $msgptr displayString]
+    set msgkind [opp_getobjectfield $msgptr kind]
 
     if {$dispstr=="" && [opp_getsimoption penguin_mode]} {
         # following lines were used for testing only...
@@ -425,9 +427,8 @@ proc draw_message {c msgptr x y msgname msgkind} {
         set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "dx tooltip msg $msgptr"]
         $c move $ball $x $y
 
-        if [opp_getsimoption animation_msgnames] {
-            $c create text $x $y -text $msgname -anchor n -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"
-        }
+        set labelx $x
+        set labely $y
 
     } else {
         # use display string
@@ -456,9 +457,9 @@ proc draw_message {c msgptr x y msgname msgkind} {
         if [info exists tags(i)] {
 
             $c create image $x $y -image $img -anchor center -tags "dx tooltip msg $msgptr"
-            if [opp_getsimoption animation_msgnames] {
-                $c create text $x [expr $y+$sy/2+3] -text $msgname -anchor n -tags "dx tooltip msgname $msgptr"
-            }
+
+            set labelx $x
+            set labely [expr $y+$sy/2+3]
 
         } elseif [info exists tags(b)] {
 
@@ -485,11 +486,24 @@ proc draw_message {c msgptr x y msgname msgkind} {
             if {$width == ""} {set width 1}
 
             $c create $sh $x1 $y1 $x2 $y2 -fill $fill -width $width -outline $outline -tags "dx tooltip msg $msgptr"
-            if [opp_getsimoption animation_msgnames] {
-                $c create text $x [expr $y2+$width/2+3] -text $msgname -anchor n -tags "dx tooltip msgname $msgptr"
-            }
+
+            set labelx $x
+            set labely [expr $y2+$width/2+3]
         }
     }
+
+    # display message label: "(classname)name"
+    set msglabel ""
+    if [opp_getsimoption animation_msgclassnames] {
+        set msglabel "([opp_getobjectclassname $msgptr])"
+    }
+    if [opp_getsimoption animation_msgnames] {
+        append msglabel "[opp_getobjectfullname $msgptr]"
+    }
+    if {$msglabel!=""} {
+        $c create text $labelx $labely -text $msglabel -anchor n -font $fonts(msgname) -tags "dx tooltip msgname $msgptr"
+    }
+
 }
 
 proc animcontrol {w} {
@@ -616,7 +630,7 @@ proc graphmodwin_rightclick {c X Y} {
 # Draw message near the head of the connection arrow.
 # Called from inspector C++ code.
 #
-proc graphmodwin_draw_message_on_gate {c gateptr msgptr msgname msgkind} {
+proc graphmodwin_draw_message_on_gate {c gateptr msgptr} {
 
     #puts "DBG: graphmodwin_draw_message_on_gate $msgptr"
 
@@ -655,7 +669,7 @@ proc graphmodwin_draw_message_on_gate {c gateptr msgptr msgname msgkind} {
     set xx [expr $x1+$dx*$steps]
     set yy [expr $y1+$dy*$steps]
 
-    draw_message $c $msgptr $xx $yy $msgname $msgkind
+    draw_message $c $msgptr $xx $yy
 }
 
 # graphmodwin_draw_message_on_module --
@@ -663,21 +677,21 @@ proc graphmodwin_draw_message_on_gate {c gateptr msgptr msgname msgkind} {
 # Draw message on submodule rectangle.
 # Called from inspector C++ code.
 #
-proc graphmodwin_draw_message_on_module {c modptr msgptr msgname msgkind} {
+proc graphmodwin_draw_message_on_module {c modptr msgptr} {
 
     #puts "DBG: graphmodwin_draw_message_on_module $msgptr"
     set r  [get_submod_coords $c $modptr]
     set x [expr ([lindex $r 0]+[lindex $r 2])/2]
     set y [expr ([lindex $r 1]+[lindex $r 3])/2]
 
-    draw_message $c $msgptr $x $y $msgname $msgkind
+    draw_message $c $msgptr $x $y
 }
 
 
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphmodwin_animate_on_conn {win gateptr msgptr msgname msgkind mode} {
+proc graphmodwin_animate_on_conn {win gateptr msgptr mode} {
 
     #puts "DBG: send $mode $msgptr"
 
@@ -697,7 +711,7 @@ proc graphmodwin_animate_on_conn {win gateptr msgptr msgname msgkind mode} {
     set x2 [lindex $coords 2]
     set y2 [lindex $coords 3]
 
-    graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind $mode
+    graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $mode
 
     if {$mode!="beg"} {
        $c delete $msgptr
@@ -708,7 +722,7 @@ proc graphmodwin_animate_on_conn {win gateptr msgptr msgname msgkind mode} {
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr msgname msgkind mode} {
+proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr mode} {
 
     #puts "DBG: senddirect horiz $mode $msgptr"
 
@@ -721,14 +735,14 @@ proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr msgname ms
     set x2 [expr ([lindex $dest 0]+[lindex $dest 2])/2]
     set y2 [expr ([lindex $dest 1]+[lindex $dest 3])/2]
 
-    graphmodwin_do_animate_senddirect $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind $mode
+    graphmodwin_do_animate_senddirect $win $x1 $y1 $x2 $y2 $msgptr $mode
 }
 
 
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr msgname msgkind mode} {
+proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr mode} {
 
     #puts "DBG: senddirect ascent $mode $msgptr"
 
@@ -740,14 +754,14 @@ proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr msgna
     set x2 [expr $x1 + $y1/4]
     set y2 0
 
-    graphmodwin_do_animate_senddirect $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind $mode
+    graphmodwin_do_animate_senddirect $win $x1 $y1 $x2 $y2 $msgptr $mode
 }
 
 
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr msgname msgkind mode} {
+proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr mode} {
 
     #puts "DBG: senddirect descent $mode $msgptr"
 
@@ -759,14 +773,14 @@ proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr msgn
     set x1 [expr $x2 - $y2/4]
     set y1 0
 
-    graphmodwin_do_animate_senddirect $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind $mode
+    graphmodwin_do_animate_senddirect $win $x1 $y1 $x2 $y2 $msgptr $mode
 }
 
 
 #
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
-proc graphmodwin_animate_senddirect_delivery {win modptr msgptr msgname msgkind} {
+proc graphmodwin_animate_senddirect_delivery {win modptr msgptr} {
 
     #puts "DBG: senddirect deliv $msgptr"
 
@@ -794,16 +808,16 @@ proc graphmodwin_animate_senddirect_delivery {win modptr msgptr msgname msgkind}
 #
 # Helper for senddirect animations
 #
-proc graphmodwin_do_animate_senddirect {win x1 y1 x2 y2 msgptr msgname msgkind mode} {
+proc graphmodwin_do_animate_senddirect {win x1 y1 x2 y2 msgptr mode} {
     set c $win.c
 
     if [opp_getsimoption senddirect_arrows] {
         #$c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill gray
         $c create line $x1 $y1 $x2 $y2 -tags {senddirect} -arrow last -fill blue -dash {.}
-        graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind "thru"
+        graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr "thru"
         #$c delete $arrow -- this will come in _cleanup
     } else {
-        graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr $msgname $msgkind "thru"
+        graphmodwin_do_animate $win $x1 $y1 $x2 $y2 $msgptr "thru"
     }
     if {$mode!="beg"} {
        $c delete $msgptr
@@ -814,7 +828,7 @@ proc graphmodwin_do_animate_senddirect {win x1 y1 x2 y2 msgptr msgname msgkind m
 #
 # Ultimate helper function which in fact performs the animation.
 #
-proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr msgname msgkind {mode thru}} {
+proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr {mode thru}} {
 
     global animdelay fonts
     set c $win.c
@@ -836,7 +850,7 @@ proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr msgname msgkind {mode thru}}
     switch $mode {
        beg -
        thru {
-          draw_message $c $msgptr $x1 $y1 $msgname $msgkind
+          draw_message $c $msgptr $x1 $y1
        }
        end {}
     }
@@ -1195,7 +1209,7 @@ proc animate2 {c tag} {
     set dx [expr ($x2-$x1)/$steps]
     set dy [expr ($y2-$y1)/$steps]
 
-    draw_message $c $msgptr $x1 $y1 $msgname $msgkind
+    draw_message $c $msgptr $x1 $y1
 
     global done$c$ball
     update idletasks

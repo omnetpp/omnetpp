@@ -34,6 +34,7 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
             anim_methodcalls
             methodcalls_delay
             animation_msgnames
+            animation_msgclassnames
             animation_msgcolors
             penguin_mode
             showlayouting

@@ -83,6 +83,7 @@ class TOmnetTkApp : public TOmnetApp
       bool opt_anim_methodcalls;   // animate method calls
       int  opt_methodcalls_delay;  // hold animation of method calls for this many ms
       bool opt_animation_msgnames; // msg animation: display message name or not
+      bool opt_animation_msgclassnames; // msg animation: display message class name or not
       bool opt_animation_msgcolors;// msg animation: display msg kind as color code or not
       bool opt_penguin_mode;       // msg animation: message appearance
       bool opt_showlayouting;      // show layouting process in graphical module inspectors
