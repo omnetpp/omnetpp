@@ -67,7 +67,7 @@ endnetwork
 
 %file: {}.cc
 
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 class {Simple} : public cSimpleModule
 {

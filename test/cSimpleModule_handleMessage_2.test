@@ -3,7 +3,7 @@ If there are no events at all.
 
 %module: {Module}
 
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 class {Module} : public cSimpleModule
 {

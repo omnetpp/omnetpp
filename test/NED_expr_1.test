@@ -17,20 +17,20 @@ module {Compound}
       par;
    submodules:
       a{Simple}: {Simple}
-	 parameters:
-	    p0 = 5,
-	    p1 = par,
-	    p2 = ref par,
-	    p3 = ancestor par,
-	    p4 = ref ancestor par,
-	    p1e = (par),
-	    p2e = (ref par),
-	    p3e = (ancestor par),
-	    p4e = (ancestor ref par),
-	    p1c = 1+(par),
-	    p2c = 1+(ref par),
-	    p3c = 1+(ancestor par),
-	    p4c = 1+(ancestor ref par);
+         parameters:
+            p0 = 5,
+            p1 = par,
+            p2 = ref par,
+            p3 = ancestor par,
+            p4 = ref ancestor par,
+            p1e = (par),
+            p2e = (ref par),
+            p3e = (ancestor par),
+            p4e = (ancestor ref par),
+            p1c = 1+(par),
+            p2c = 1+(ref par),
+            p3c = 1+(ancestor par),
+            p4c = 1+(ancestor ref par);
 endmodule
 
 network {Net}: {Compound}
@@ -40,7 +40,7 @@ endnetwork
 
 %file: {}.cc
 
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 class {Simple} : public cSimpleModule
 {

@@ -1,6 +1,9 @@
 %description:
 Tests assignment operator (copying a cPar to another cPar) for basic data types (string,bool,long,double).
 
+%global:
+#include <string.h>
+
 %activity:
 cPar p, q;
 

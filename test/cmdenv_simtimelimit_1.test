@@ -3,7 +3,7 @@ Tests if [General]/sim-time-limit= ini file setting works in Cmdenv.
 
 %module: {Module}
 
-#include "omnetpp.h"
+#include <omnetpp.h>
 
 class {Module} : public cSimpleModule
 {

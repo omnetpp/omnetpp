@@ -3,6 +3,9 @@ Tests copying of cMessage by op=, dup(), copy ctor().
 
 TODO: check copying of param array too
 
+%global:
+#include <string.h>
+
 %activity:
 
 #define CHECK(cond)  if (!(cond)) {throw new cException("BUG at line %d, failed condition %s", __LINE__, #cond);}

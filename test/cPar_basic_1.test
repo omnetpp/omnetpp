@@ -1,6 +1,9 @@
 %description:
 Tests cPar's basic data types (string,bool,long,double).
 
+%global:
+#include <string.h>
+
 %activity:
 cPar p;
 
