@@ -134,7 +134,7 @@ class ENVIR_API cEnvir
                             bool& enabled, /*output*/
 
     /**
-     * MISSINGDOC: cEnvir:void getOutVectorConfig(char*,char*,/*input*/ bool&,/*output*/ double&,double&)
+     * MISSINGDOC: cEnvir:void getOutVectorConfig(char*,char*,//input// bool&,//output// double&,double&)
      */
                             double& starttime, double& stoptime);
 

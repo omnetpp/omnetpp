@@ -43,7 +43,7 @@
 
 
 /**
- * FIXME: //#  define USE_STK         /* enables stack switching with iSTK,vSTK * /
+ * FIXME: //#  define USE_STK         // enables stack switching with iSTK,vSTK //
  */
 struct Stk
 {
