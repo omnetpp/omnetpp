@@ -1,6 +1,5 @@
-OMNeT++ Installation on Windows 95/NT
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(last updated: Sept, 1999)
+Using OMNeT++ on Windows 95/NT with Borland C++
+===============================================
 
 
 Necessary additional software
@@ -10,7 +9,7 @@ bison and flex:
 Tcl/Tk libraries:
   needed by tkenv, plove and gned; at least 8.0p1, preferably in source
 Gnuplot:
-  needed by plove; AFAIK latest version is 3.6 
+  needed by plove; AFAIK latest version is 3.6
 awk, grep:
   needed by plove; you can find them e.g. in the Cygwin distribution
 octave:
@@ -34,7 +33,7 @@ the experiences with BC5 may still be useful to you.
 IDE files are provided for all OMNeT++ libraries (Sim, Envir, Cmdenv, Tkenv;
 Tvenv is not really supported). You should be able to build the .lib files
 from the Borland C++ IDE without problem. You may need to adjust the include
-and lib paths in Options|Project --> Directories. 
+and lib paths in Options|Project --> Directories.
 
 The project files assume you installed OMNeT++ into d:\omnetpp.
 
@@ -79,7 +78,7 @@ project file:
 
  o your simple module C++ sources;
  o your NED files
- o for each NED file, the C++ file it will compile into (the _n.cc file). 
+ o for each NED file, the C++ file it will compile into (the _n.cc file).
  o the OMNeT++ libraries: sim_std.lib, envir.lib, plus cmdenv.lib or
    tkenv.lib, depending on which user interface you want to link in.
    You also need the Tcl and Tk libraries if you're using Tkenv.

@@ -54,7 +54,7 @@ If you want to recompile just a single library, then cd to the directory
 of the library and type:
 
     make clean
-    make 
+    make
 
 NOTE: the 'install-local' make target found in earlier OMNeT++ versions
 was removed in 2.0beta4. The built libraries and programs are immediately
