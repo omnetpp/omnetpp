@@ -28,6 +28,7 @@
 #include "envdefs.h"
 #include "envirext.h"
 #include "cconfig.h"
+#include "platdep.h"
 
 
 class cXMLDocCache;
@@ -95,11 +96,11 @@ class ENVIR_API TOmnetApp
     cOutputScalarManager *outscalarmgr;
     cSnapshotManager *snapshotmgr;
 
-    time_t simbegtime;         // real time when sim. started
-    time_t simendtime;         // real time when sim. ended
-    time_t laststarted;        // real time from where sim. was last cont'd
-    time_t elapsedtime;        // in seconds
-    simtime_t simulatedtime;   // sim.time at after finishing simulation
+    struct timeb simbegtime;  // real time when sim. started
+    struct timeb simendtime;  // real time when sim. ended
+    struct timeb laststarted; // real time from where sim. was last cont'd
+    struct timeb elapsedtime; // time spent simulating
+    simtime_t simulatedtime;  // sim. time after finishing simulation
 
   public:
     /**
@@ -297,7 +298,7 @@ class ENVIR_API TOmnetApp
     /**
      * Elapsed time
      */
-    time_t totalElapsed();
+    struct timeb totalElapsed();
     //@}
 
     //@{

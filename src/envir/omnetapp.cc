@@ -634,32 +634,41 @@ bool TOmnetApp::idle()
 
 void TOmnetApp::resetClock()
 {
-    laststarted = simendtime = simbegtime = time(0);
-    elapsedtime = 0LU;
+    struct timeb now;
+    ftime(&now);
+    laststarted = simendtime = simbegtime = now;
+    elapsedtime.time = elapsedtime.millitm = 0;
 }
 
 void TOmnetApp::startClock()
 {
-    laststarted = time(0);
+    ftime(&laststarted);
 }
 
 void TOmnetApp::stopClock()
 {
-    simendtime = time(0);
-    elapsedtime +=  simendtime - laststarted;
+    ftime(&simendtime);
+    elapsedtime = elapsedtime + simendtime - laststarted;
     simulatedtime = simulation.simTime();
 }
 
-time_t TOmnetApp::totalElapsed()
+struct timeb TOmnetApp::totalElapsed()
 {
-    return elapsedtime + time(0) - laststarted;
+    struct timeb now;
+    ftime(&now);
+    return now - laststarted + elapsedtime;
 }
 
 void TOmnetApp::checkTimeLimits()
 {
     if (opt_simtimelimit!=0 && simulation.simTime()>=opt_simtimelimit)
          throw new cTerminationException(eSIMTIME);
-    else if (opt_cputimelimit!=0 && elapsedtime+time(0)-laststarted>=opt_cputimelimit)
+    if (opt_cputimelimit==0)
+         return;
+    struct timeb now;
+    ftime(&now);
+    long elapsedsecs = now.time - laststarted.time + elapsedtime.time;
+    if (elapsedsecs>=opt_cputimelimit)
          throw new cTerminationException(eREALTIME);
 }
 

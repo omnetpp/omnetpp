@@ -69,4 +69,29 @@ unsigned long opp_difftimebmillis(const struct timeb& t, const struct timeb& t0)
     return (t.time - t0.time)*1000 + (t.millitm - t0.millitm);
 }
 
+struct timeb operator+(const struct timeb& a, const struct timeb& b)
+{
+    struct timeb r;
+    r.time = a.time + b.time;
+    r.millitm = a.millitm + b.millitm;
+    if (r.millitm>=1000)
+    {
+        r.time++;
+        r.millitm -= 1000;
+    }
+    return r;
+}
+
+struct timeb operator-(const struct timeb& a, const struct timeb& b)
+{
+    struct timeb r;
+    r.time = a.time - b.time;
+    r.millitm = a.millitm - b.millitm;
+    if (a.millitm < b.millitm)
+    {
+        r.time--;
+        r.millitm += 1000;
+    }
+    return r;
+}
 

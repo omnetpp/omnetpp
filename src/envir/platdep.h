@@ -28,6 +28,8 @@ ENVIR_API bool opp_loadlibrary(const char *libname);
 
 // (t-t0) in milliseconds (t>=t0 is assumed; overflows only after 49.7 days).
 unsigned long opp_difftimebmillis(const struct timeb& t, const struct timeb& t0);
+struct timeb operator+(const struct timeb& a, const struct timeb& b); // FIXME to better place! (utils?)
+struct timeb operator-(const struct timeb& a, const struct timeb& b);
 
 #endif
 
