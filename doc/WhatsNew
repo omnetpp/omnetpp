@@ -53,8 +53,6 @@ C++ part], and I could give any support needed.)
 
 Makefiles change: the 'install-local' target was eliminated: the new-built
 libraries and programs are immediately copied to the lib/ and bin/ subdirs.
-I also included Mark Rahner's mail about using Cygwin Developer Snapshots
-with OMNeT++ in doc/.
 
 Several other smaller changes like fixed PVM execution; improved error
 handling, bugfix related to wrong transmissionFinishes() behavior, etc; see the
