@@ -1,16 +1,25 @@
 2002-10-20  Andras Varga
 
 	* cmdenv.cc: revised omnetpp.ini entries understood by Cmdenv.
-	A New entry was introduced to select running mode:
-	  express-mode=yes/no (default: yes)
-	When in normal (not express) mode, these entries are in effect:
+	A new entry was introduced to make it easier to switch between
+	typical uses of Cmdenv.
+	  express-mode=yes/no (default: no)
+	Normal (non-express) mode is for debugging: detailed information 
+	will be written	to the standard output (event banners, module output, 
+	etc). Express mode can be used for long simulation runs: only 
+	periodical status update is displayed about the progress of the 
+	simulation.
+	When in normal (non-express) mode, the following ini file entries 
+	are taken into account:
 	  module-messages=yes/no (default: yes)
 	     - printing module ev<< output on/off (as before)
 	  event-banners=yes/no (default: yes)
 	     - printing event banners on/off; replaces verbose-simulation=
 	When in express mode, these entries are used:
-	  status-frequency=<integer> (default: 50000) -
-	     - print status update every n events
+	  status-frequency=<integer> (default: 50000)
+	     - print status update every n events (on today's computers, and
+	     for a typical model, this will produce an update every few seconds,
+	     perhaps a few times per second)
 	  performance-display=yes/no (default: yes)
 	     - print detailed performance status
 	Obsoleted entries: display-update=, verbose-simulation=.

@@ -78,7 +78,7 @@ void TCmdenvApp::readPerRunOptions( int run_nr )
     sprintf(section,"Run %d",run_nr);
     ini_file->error(); // clear error flag
 
-    opt_expressmode = ini_file->getAsBool2( section,"Cmdenv", "express-mode", true );
+    opt_expressmode = ini_file->getAsBool2( section,"Cmdenv", "express-mode", false);
     opt_modulemsgs = ini_file->getAsBool2( section,"Cmdenv", "module-messages", true );
     opt_eventbanners = ini_file->getAsBool2( section,"Cmdenv", "event-banners", true );
     opt_status_frequency_ev = ini_file->getAsInt2( section,"Cmdenv", "status-frequency", 50000 );
