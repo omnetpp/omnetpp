@@ -18,15 +18,17 @@
 /**
  * @mainpage OMNeT++ Parallel simulation support
  *
- * Please click on the Modules link at the top of this page to start browsing.
+ * This documentation describes the architecture of the distributed
+ * parallel simulation implementation in OMNeT++.
+ *
+ * All classes documented here are used internally -- if you're into
+ * writing simulation models, there's nothing interesting for you here.
+ *
+ * Click the following link for details: @ref Parsim
  */
 
 /**
  * @defgroup Parsim  Parallel simulation support
- *
- * These classes are internal to the implementation of the parallel
- * simulation support in OMNeT++ -- nothing interesting here for
- * the simulation programmer.
  *
  * Parallel simulation support has a layered architecture, with the
  * following layers:
