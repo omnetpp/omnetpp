@@ -267,6 +267,7 @@ cModule *cSimulation::moduleByPath(const char *path) const
 
     // search starts from system module
     cModule *modp = systemModule();
+    if (!modp) return NULL;
 
     // 1st component in the path may be the system module, skip it then
     if (modp->isName(s))
