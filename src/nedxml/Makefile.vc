@@ -77,13 +77,13 @@ ned.tab.obj: ned.tab.h ned.tab.c
         $(CXX) $(COPTS) /c /Tp ned.tab.c
 
 ned.tab.h: ned.y
-        $(YACC) -b ned -d ned.y
+        $(YACC:/=\) -b ned -d ned.y
 
 ned.tab.c: ned.y
-        $(YACC) -b ned -d ned.y
+        $(YACC:/=\) -b ned -d ned.y
 
 lex.yy.c: ned.lex
-        $(LEX) ned.lex
+        $(LEX:/=\) ned.lex
 
 nedgenerator.obj : nedgenerator.cc
         $(CXX) $(COPTS) /c /Tp nedgenerator.cc
@@ -226,12 +226,6 @@ nedxmlparser.obj: nedxmlparser.cc \
   nedsaxhandler.h \
   nederror.h \
   nedelement.h
-networkbuilder.obj: networkbuilder.cc \
-  nedelements.h \
-  networkbuilder.h \
-  nederror.h \
-  nedelement.h \
-  nedcompiler.h
 saxparser_expat.obj: saxparser_expat.cc \
   saxparser.h
 saxparser_libxml.obj: saxparser_libxml.cc \
