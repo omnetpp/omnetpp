@@ -2,7 +2,8 @@
 # Definitions to be customized by 'configure'
 #
 CXX=@CXX@
-AS=@AS@
+YACC=@YACC@
+LEX=@LEX@
 AR=@AR@
 RANLIB=@RANLIB@
 SHLIB_LD=@SHLIB_LD@
