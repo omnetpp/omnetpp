@@ -4,8 +4,9 @@
 	cPolymorphic* so that it can be used with type safety. Only classes
 	derived from cPolymorphic can be registered using Register_Class().
 
-	* envirext.h: classe cOutputVectorManager, cOutputScalarManager,
-	cSnapshotManager are now subclassed from cPolymorphic.
+	* envirext.h: classes cScheduler, cOutputVectorManager, 
+	cOutputScalarManager, cSnapshotManager are now subclassed from 
+	cPolymorphic.
 
 	* cobject.h, cpolymorphic.h: cPolymorphic removed from cobject.h and
 	placed into its own header file.
