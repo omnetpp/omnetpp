@@ -21,6 +21,7 @@
 //
 
 #include "platdep/misc.h"
+#include "platdep/fileglobber.h"
 
 #ifdef _MSC_VER
 

@@ -13,8 +13,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#ifndef __PLATDEP_MISC_H
-#define __PLATDEP_MISC_H
+#ifndef __PLATDEP_FILEGLOBBER_H
+#define __PLATDEP_FILEGLOBBER_H
 
 #ifdef _MSC_VER
 #include <process.h>
@@ -41,6 +41,8 @@
 #include <string>
 #include <exception>   // std::runtime_exception
 
+
+class GlobPrivateData;
 
 /**
  * Utility for resolving wildcards in file names. If the pattern doesn't contain

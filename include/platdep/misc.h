@@ -30,7 +30,7 @@
 #define getcwd _getcwd
 #define chdir  _chdir
 #define usleep(x) _sleep((x)/1000)
-#define stat _stat
+//#define stat _stat
 #define mkdir(x,y) _mkdir(x)
 
 #else
@@ -129,6 +129,24 @@ inline void findCleanup()
     globfree(&globdata);
 }
 #endif
+
+/***
+//
+// code for Borland C++ -- currently unused
+//
+#include <dir.h>
+struct ffblk ffblk;
+const char *findFirstFile(const char *mask)
+{
+    int done = findfirst(argv[k],&ffblk,0);
+    return done ? NULL : ffblk.ff_name;
+}
+const char *findNextFile()
+{
+    int done = findnext(&ffblk);
+    return done ? NULL : ffblk.ff_name;
+}
+***/
 
 #endif
 
