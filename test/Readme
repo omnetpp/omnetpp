@@ -32,7 +32,7 @@ How to run tests:
   % opp_makemake -u cmdenv; make
 
   The code from all test cases will be combined into a single executable.
-  (If there are may test cases, this results is in a dramatical
+  (If there are many test cases, this results in a dramatical
   improvement in terms of necessary disk space and compilation time,
   compared to the case when every test is a separate executable.)
 
@@ -53,7 +53,7 @@ In practice you would write a small script that automates the job
 for you. I use the following 'runtest' script:
 
   #! /bin/sh
-  perl opp_test.pl -g -v *.test
+  perl opp_test.pl -g -v *.test || exit 1
   (cd work; opp_makemake -f -u cmdenv; make) || exit 1
   perl opp_test.pl -r -v *.test
 
@@ -66,8 +66,8 @@ not done is the following:
 Since we're building a single executable that contains all
 test cases, we'd have to merge the opp_makemake options from
 all .test files, and that is neither trivial nor a clean way.
-Also, it was intended to omit everything that needs to be
-configured out from the .test files. With the present solution,
+Also, it was intended to omit everything from the .test files
+that needs to be configured. With the present solution,
 only the 'runtest' script contains settings that need to
 be configured.
 
@@ -84,8 +84,6 @@ file cMessage_properties_1.test:
   msg.setLength(456);
   ev << "name: " << msg.name() << endl;
   ev << "length: " << msg.length() << endl;
-
-  %exitcode: 19
 
   %contains: stdout
   name: Joe
