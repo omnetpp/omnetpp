@@ -2883,6 +2883,10 @@ recursively.
 It is often convenient to use direct message sending with dynamically
 created modules.
 
+Once created and started, dynamic modules aren't any different from
+``static'' modules; for example, one could also delete static modules
+during simulation (only that's rarely useful.)
+
 
 \subsection{Overview}
 
@@ -2921,7 +2925,6 @@ modules, this message is created automatically by {\opp}, but for
 dynamically created modules, you have to do this explicitly by calling
 the appropriate functions.
 
-
 Calling \fname{initialize()} has to take place after insertion of the
 starter messages, because the initializing code may insert new messages
 into the FES\index{FES}, and these messages should be processed
@@ -2939,6 +2942,7 @@ The first step, finding the factory object:
 \begin{verbatim}
 cModuleType *moduleType = findModuleType("TCPConnectionHandler");
 \end{verbatim}
+
 
 \subsubsection{Simplified form}
 
@@ -3024,19 +3028,42 @@ To delete a module dynamically\index{module!dynamic deletion}:
 module->deleteModule();
 \end{verbatim}
 
-
-
 If the module was a compound module, this involves recursively
 destroying all its submodules. A simple module can also delete itself;
-in this case, if the module was implemented using \fname{activity()},
-the \fname{deleteModule()} call does not return to the caller (the
-reason is that deleting the module also deletes the CPU stack of the
-coroutine\index{coroutine}).
+in this case, the \fname{deleteModule()} call does not return to the
+caller.
 
 Currently, you cannot safely delete a
 compound\index{module!compound!deletion} module from a simple module
 in it; you must delegate the job to a module outside the compound
 module.
+
+
+\subsection{Module deletion and finish()}
+
+When you delete a module \textit{during simulation}, its \fname{finish()}
+function is not called automatically (\fname{deleteModule()} doesn't do it.)
+How the module was created doesn't play any role here:
+\fname{finish()} gets called for \textit{all} modules -- at the end of the
+simulation. If a module doesn't live that long, \fname{finish()} is not
+invoked, but you can still manually invoke it.
+
+You can use the \fname{callFinish()} function to arrange \fname{finish()}
+to be called. It's usually not a good idea to invoke \fname{finish()}
+directly. If you're deleting a compound module, \fname{callFinish()} will
+recursively invoke \fname{finish()} for all submodules, and if you're deleting
+a simple module from another module, \fname{callFinish()} will do the context
+switch for the duration of the call.
+  \footnote{The \fname{finish()} function is even made \ttt{protected}
+  in \cclass{cSimpleModule}, in order to discourage its invocation from
+  other modules.}
+
+Example:
+
+\begin{verbatim}
+mod->callFinish();
+mod->deleteModule();
+\end{verbatim}
 
 
 \subsection{Creating connections}

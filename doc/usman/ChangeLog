@@ -1,3 +1,8 @@
+2004-01-20  Andras Varga
+
+	* ch-simple-modules.tex: clarified dynamic modules and finish()
+	[thanks to Francesco Scialpi]
+
 2003-12-07  Andras Varga
 
 	* ch-messages.tex: hints to call take() and drop() when adding
@@ -38,7 +43,7 @@
 2002-06-12  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* ch-build-sim-progs.tex (subsection{Producing a Makefile with the
-	opp(:_(Bmakemake script}): turned paragraph about available make
+	opp_makemake script}): turned paragraph about available make
 	targets into a table
 
 2002-06-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
