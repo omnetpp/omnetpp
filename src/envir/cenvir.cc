@@ -208,7 +208,7 @@ void cEnvir::setup(int argc, char *argv[])
         //
         // Finally, set up user interface object. All the rest will be done there.
         //
-        ::printf("Setting up %s...\n", appname);
+        ::printf("Setting up %s...\n", appreg->name());
         app = appreg->createOne(args, configobject);
         app->setup();
         isgui = app->isGUI();
