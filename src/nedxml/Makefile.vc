@@ -3,6 +3,10 @@
 #
 !include ..\..\configuser.vc
 
+!if "$(LIB_SUFFIX)"==".dll"
+CFLAGS=$(CFLAGS) /DWIN32_DLL
+!endif
+
 #
 # Local definitions
 #
@@ -16,12 +20,13 @@ OBJS=nedelements.obj nedelement.obj nedstring.obj nederror.obj \
 
 
 #
-# Targets
+# Targets (TBD: build dll)
 #
 all : nedxml.lib
 
 nedxml.lib : $(OBJS)
         $(AR) /nologo /out:nedxml.lib $(OBJS)
+	copy nedxml.lib $(OMNETPP_LIB_DIR:/=\)
 
 nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned.dtd
         perl dtdclassgen.pl ned.dtd
