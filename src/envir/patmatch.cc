@@ -217,7 +217,7 @@ bool cPatternMatcher::doMatch(const char *s, int k, int suffixlen)
             case LITERALSTRING:
                 len = e.literalstring.length();
                 // special case: last string literal with prefix match: allow s to be shorter
-                if (suffixlen>0 && k==pattern.size()-2)
+                if (suffixlen>0 && k==(int)pattern.size()-2)
                     len -= suffixlen;
                 // compare
                 if (iscasesensitive ?

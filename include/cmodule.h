@@ -410,7 +410,7 @@ class SIM_API cModule : public cDefaultList
      * (RNGs above the map size) are mapped one-to-one to physical RNGs,
      * that is, rng(100) returns ev.rng(100) (provided it exists).
      */
-    cRNG *rng(int k) const  {return ev.rng((unsigned)k<rngmapsize ? rngmap[(unsigned)k] : k);}
+    cRNG *rng(int k) const  {return ev.rng(k<rngmapsize ? rngmap[k] : k);}
     //@}
 
     /** @name Submodule access. */

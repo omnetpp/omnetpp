@@ -2368,7 +2368,7 @@ int main()
 *    not used with flex (only with lex) --VA
 ***************************************************/
 //#ifndef yywrap
-static int yywrap(void)
+int yywrap(void)
 {
          return 1;
 }

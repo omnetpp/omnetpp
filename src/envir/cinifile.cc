@@ -573,11 +573,11 @@ std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section1, con
     std::vector<opp_string> res2 = getEntriesWithPrefix(section2, keypart1, keypart2);
 
     // merge them: add those from res2 into res1 which are not already present
-    for (int i=0; i<res2.size(); i+=2)
+    for (int i=0; i<(int)res2.size(); i+=2)
     {
         opp_string& key = res2[i];
         bool found = false;
-        for (int j=0; j<res1.size(); j+=2)
+        for (int j=0; j<(int)res1.size(); j+=2)
         {
             if (!strcmp(key.c_str(), res1[j].c_str()))
             {

@@ -222,11 +222,13 @@ static void libxmlCharacterDataHandler(void *userData, const xmlChar *s, int len
     sh->characterData((const char *)s,len);
 }
 
+/*
 static void libxmlProcessingInstructionHandler(void *userData, const xmlChar *target, const xmlChar *data)
 {
     SAXHandler *sh = (SAXHandler *)userData;
     sh->processingInstruction((const char *)target,(const char *)data);
 }
+*/
 
 static void libxmlCommentHandler(void *userData, const xmlChar *data)
 {

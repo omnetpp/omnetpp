@@ -574,7 +574,7 @@ void TOmnetApp::getRNGMappingFor(cModule *mod)
     // extract into tmpmap[]
     int mapsize=0;
     int tmpmap[100];
-    for (int i=0; i<entries.size(); i+=2)
+    for (int i=0; i<(int)entries.size(); i+=2)
     {
         char *s1, *s2;
         int modRng = strtol(entries[i].c_str(), &s1, 10);

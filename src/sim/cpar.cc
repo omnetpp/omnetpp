@@ -183,7 +183,6 @@ std::string cPar::info() const
 
     // append useful info
     cFunctionType *ff;
-    const char *fn;
     const char *s;
     switch (typechar) {
         case 'S': s = ls.sht ? ss.str:ls.str;
