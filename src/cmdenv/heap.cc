@@ -121,7 +121,7 @@ int MemManager::lowmem;
 
 static MemManager memmanager;
 
-int memoryIsLow()
+bool memoryIsLow()
 {
     return MemManager::lowmem;
 }
