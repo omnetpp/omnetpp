@@ -1,5 +1,10 @@
 2004-10-10  Andras Varga
 
+	* inspector.cc, tkutil.cc/h: fix: label always displayed "0 objects" 
+	above inspector listboxes; refactoring
+
+2004-10-10  Andras Varga
+
 	* main.tcl: changed default "Run until" run mode to Express (was Normal)
 
 2004-10-04  ------ omnetpp-3.0a8 released ------
