@@ -257,7 +257,7 @@ class SIM_API cModule : public cDefaultList
      * Constructor. Note that module objects should not be created directly,
      * only via their cModuleType objects. cModuleType::create() will do
      * all housekeeping tasks associated with module creation (assigning
-     * an ID to the module, inserting it into the global <code>simulation</code>
+     * an ID to the module, inserting it into the global <tt>simulation</tt>
      * object (see cSimulation), etc.).
      */
     cModule(const char *name, cModule *parentmod);

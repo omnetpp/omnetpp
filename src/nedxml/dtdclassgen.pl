@@ -287,9 +287,9 @@ foreach $element (@elements)
     print H "/**\n";
     print H " * GENERATED CLASS. Represents the &lt;$element&gt; XML element in memory. DTD declaration:\n";
     print H " * \n";
-    print H " * <code>\n";
+    print H " * <pre>\n";
     print H $decl;
-    print H " * </code>\n";
+    print H " * </pre>\n";
     print H " * \n";
     print H " * \@ingroup Data\n";
     print H " */\n";

@@ -74,21 +74,21 @@ typedef cPar *(*ParCreateFunc)();
  * modules. They are created in the following way:
  *
  *  1) starting point is the NED declarations of simple modules, e.g:
- *     <code>
+ *     <pre>
  *        simple Generator
  *          parameters: ia_rate;
  *          gates: out: out;
  *        endsimple
- *     </code>
+ *     </pre>
  *
  *  2) the nedc compiler translates the NED declaration into a
  *     ModuleInterface...End macro and places it into the _n.cc file.
- *     <code>
+ *     <pre>
  *        ModuleInterface(Generator)
  *          Parameter("speed", Numeric)
  *          Gate( "out", Output)
  *        EndInterface
- *     </code>
+ *     </pre>
  *
  *     The above translates into cModuleInterface::DeclarationItem array
  *     by means of #define macros.
@@ -310,7 +310,7 @@ class SIM_API cModuleType : public cObject
     virtual cModule *create(const char *name, cModule *parentmod, int vectorsize, int index);
 
     /**
-     * DEPRECATED. Use <code>mod->buildInside()</code> instead; that's what
+     * DEPRECATED. Use <tt>mod->buildInside()</tt> instead; that's what
      * this method does anyway.
      */
     virtual void buildInside(cModule *mod);
@@ -695,7 +695,7 @@ class SIM_API cClassRegister : public cObject
  *
  * Example:
  *
- * <code>cObject *param = createOne( "cPar" );</code>
+ * <tt>cObject *param = createOne( "cPar" );</tt>
  *
  * createOne() is used e.g. in parallel simulation when an object is received
  * from another partition and it has to be demarshalled.

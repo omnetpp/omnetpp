@@ -436,8 +436,8 @@ class SIM_API cSimpleModule : public cModule
     void endSimulation();
 
     /**
-     * DEPRECATED. Equivalent to <code>throw new cException(
-     * ...<i>same argument list</i>...)</code>.
+     * DEPRECATED. Equivalent to <tt>throw new cException(
+     * ...<i>same argument list</i>...)</tt>.
      */
     void error(const char *fmt,...) const;
     //@}

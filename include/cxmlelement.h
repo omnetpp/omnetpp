@@ -167,12 +167,12 @@ class cXMLElement
      * getFirstChild() and getNextSibling() can be used to loop through
      * the child list:
      *
-     * <code>
+     * <pre>
      * for (cXMLElement *child=node->getFirstChild(); child; child = child->getNextSibling())
      * {
      *    ...
      * }
-     * </code>
+     * </pre>
      *
      */
     virtual cXMLElement *getNextSibling() const;

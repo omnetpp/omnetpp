@@ -44,14 +44,14 @@
  * signs and commas.
  *
  * An example:
- * <code>
+ * <pre>
  *   cDisplayString dispstr("a=1,2;p=alpha,,3");
  *   dispstr.insertTag("x");
  *   dispstr.setTagArg("x",0,"joe");
  *   dispstr.setTagArg("x",2,"jim");
  *   dispstr.setTagArg("p",0,"beta");
  *   ev << dispstr.getString();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
- * </code>
+ * </pre>
  *
  * Limitation: a tag may have at most 16 arguments.
  *

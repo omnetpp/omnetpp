@@ -32,19 +32,19 @@
  * Akaroa 2.7.4 provides only one RNG stream, and the available functions
  * are (from <tt>src/akaroa/random.H</tt>):
  *
- * <code>
+ * <pre>
  * real AkRandomReal();      // float 0 < x < 1
  * unsigned long AkRandom(); // integer 0 < x < 2^31-1
- * </code>
+ * </pre>
  *
  * The second (integer) form is probably better be avoided, because it is
  * coded as:
  *
- * <code>
+ * <pre>
  * unsigned long AkRandom() {
  *     return (unsigned long)(AkRandomReal() * 0x7fffffff);
  * }
- * </code>
+ * </pre>
  *
  * The <tt>doubleRand()</tt>, <tt>doubleRandNonz()</tt>, <tt>doubleRandIncl1()</tt>
  * methods in this class just invoke <tt>AkRandomReal()</tt>, so contrary to their

@@ -193,10 +193,10 @@ class SIM_API cObject : public cPolymorphic
 
     /**
      * This is a shortcut for the sequence
-     * <code>
+     * <pre>
      *   drop(obj);
      *   delete obj;
-     * </code>
+     * </pre>
      *
      * It is especially useful when writing destructors and assignment operators.
      *
@@ -500,13 +500,13 @@ inline std::ostream& operator<< (std::ostream& os, cObject& o) {
  * is thrown.
  *
  * Example:
- * <code>
+ * <pre>
  *   cMessage *msg = receive();
  *   // MyPacket is a subclass of cMessage. The next line makes sure
  *   // it is actually a MyPacket that we received -- if not, the simulation
  *   // stops with an error message as the result of the exception
  *   MyPacket *pkt = check_and_cast<MyPacket *>(msg);
- * </code>
+ * </pre>
  *
  * @ingroup Functions
  */

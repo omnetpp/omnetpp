@@ -41,7 +41,7 @@
  * relatively poor readability.)
  *
  * As an example, let's see a short NED code fragment and its XML representation:
- * <code>
+ * <pre>
  * module FDDINode
  *     parameters:
  *         address : string;
@@ -55,11 +55,11 @@
  *                 promiscuous = false;
  *         ...
  * endmodule
- * </code>
+ * </pre>
  *
  * The XML version is a bit less readable but straightforward:
  *
- * <code>
+ * <pre>
  * @verbatim
  * <?xml version="1.0" ?>
  * <nedfile filename="fddi.ned">
@@ -81,7 +81,7 @@
  *             ...
  *
  * @endverbatim
- * </code>
+ * </pre>
  *
  * The above XML fragment should be quite self-explanatory for those familiar
  * with NED.
