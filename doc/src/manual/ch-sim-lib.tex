@@ -271,21 +271,6 @@ const char *s = "30s 152ms and something extra";
 simtime_t t = strToSimtime0(s); // now s points to "and something extra"
 \end{verbatim}
 
-\subsection{Utility \texttt{<string.h>} functions}
-
-\begin{sloppypar}
-The \fname{opp\_strdup()}, \fname{opp\_strcpy()}, \fname{opp\_strcmp()}
-functions are the same as their \texttt{<string.h>} equivalents,
-except that they treat \ttt{NULL} and the empty string (\ttt{""}) as identical,
-and \fname{opp\_str\-dup()} uses operator new instead of \fname{malloc()}.
-\end{sloppypar}
-
-The \fname{opp\_concat()} function might also be useful, for example
-in constructing object names. It takes up to four \ttt{const char *}
-pointers, concatenates them in a static buffer and returns a pointer
-to the result. The result's length shouldn't exceed 255 characters.
-
-
 
 \section{Generating random numbers}
 
