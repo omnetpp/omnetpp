@@ -1,3 +1,8 @@
+2002-10-07  Andras Varga
+
+	* jar_mod.c: changed Interface macro names to ModuleInterface (see also
+	include/ChangeLog)
+
 2002-10-04  Andras Varga 
 
 	* nedc: changed opp_error() calls in generated code to throw new cException

@@ -89,7 +89,7 @@ void do_simp_or_comp (char *mname, int is_simple)
              return;
         }
 
-        fprintf (yyout, "Interface( %s )\n", mname);
+        fprintf (yyout, "ModuleInterface( %s )\n", mname);
 
         if (!is_simple)
         {
@@ -156,7 +156,7 @@ void end_module (char *mname)
             }
 
         fprintf (yyout, "EndInterface\n\n"
-                        "Register_Interface( %s )\n\n", module_name);
+                        "Register_ModuleInterface( %s )\n\n", module_name);
 
         fprintf (tmp, "\tcheck_error(); check_memory();\n");
         fprintf (tmp, "}\n\n");
@@ -170,7 +170,7 @@ void end_simple (char *mname)
         if (firstpass) {jar_free (mname);return;}
 
         fprintf (yyout, "EndInterface\n\n"
-                        "Register_Interface( %s )\n\n",cmd.namestr);
+                        "Register_ModuleInterface( %s )\n\n",cmd.namestr);
         fprintf (yyout, "// class %s : public cSimpleModule\n"
                         "// {\n"
                         "//     Module_Class_Members(%s,cSimpleModule,8192)\n"
