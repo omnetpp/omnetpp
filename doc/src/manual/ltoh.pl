@@ -608,6 +608,10 @@ sub do_comment_verbatim {
             fyi(8, "Truncating down to $i lines");
             last;
         }
+
+        # attempt math formatting. --Andras Varga
+        $line =~ s/\$([^\n]+?)\$/formatmath($1)/gse;
+
         $arr->[$i] = $line;
     }
 }
@@ -889,8 +893,6 @@ sub do_tex_comms {
             warning(8, "regex: $arr->[$i] ==> $line");
         }
 
-        # attempt math formatting. --Andras Varga
-        $line =~ s/\$([^\n]+?)\$/formatmath($1)/gse;
         $arr->[$i] = $line;
     }
 }
