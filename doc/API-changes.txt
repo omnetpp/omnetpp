@@ -60,8 +60,11 @@ Simulation library:
 (-)	discouraged use of classes cBag and cLinkedList. STL classes such as 
 	std::vector, std::list or std::deque should be used instead.
 
-(!)  	cSimpleModule::recordScalar() for writing const char* and cStatistic* 
-	data removed.
+(!)     cSimpleModule::recordScalar() for writing const char* data removed,
+        with no replacement.
+
+(!)     cSimpleModule::recordStats() (which took cStatistic* arg) was removed.
+        Replacement for recordStats(x) is x->recordScalar().
 
 (+)  	cStatistic::recordScalar() added
 
