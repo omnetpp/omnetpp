@@ -33,4 +33,3 @@ install-local: seedtool
 	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);rm -f splitvec;ln -s $$dir/splitvec .)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-

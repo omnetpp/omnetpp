@@ -105,3 +105,7 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
+client.o: dyna.h
+server.o: dyna.h
+servproc.o: dyna.h
+switch.o: dyna.h

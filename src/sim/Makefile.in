@@ -201,9 +201,9 @@ cmodule.o: cgate.h csimul.h errmsg.h cmsgheap.h coutvect.h cmessage.h cpar.h
 cmodule.o: ctypes.h cnetmod.h cenvir.h
 cmsgheap.o: macros.h ctypes.h chead.h cobject.h defs.h util.h cmessage.h
 cmsgheap.o: carray.h cpar.h csimul.h errmsg.h cmsgheap.h coutvect.h ccor.h
-cnetmod.o: cpar.h cobject.h defs.h util.h carray.h cenvir.h cnetmod.h
-cnetmod.o: cmodule.h ccor.h chead.h cqueue.h cgate.h csimul.h errmsg.h
-cnetmod.o: cmsgheap.h coutvect.h
+cnetmod.o: cpar.h cobject.h defs.h util.h cenvir.h cnetmod.h cmodule.h ccor.h
+cnetmod.o: chead.h carray.h cqueue.h cgate.h csimul.h errmsg.h cmsgheap.h
+cnetmod.o: coutvect.h
 cobject.o: csimul.h defs.h util.h errmsg.h chead.h cobject.h cmsgheap.h
 cobject.o: coutvect.h ccor.h cenvir.h macros.h ctypes.h
 coutvect.o: coutvect.h cobject.h defs.h util.h cmodule.h ccor.h chead.h
@@ -211,8 +211,8 @@ coutvect.o: carray.h cqueue.h cgate.h csimul.h errmsg.h cmsgheap.h cenvir.h
 cpacket.o: macros.h ctypes.h chead.h cobject.h defs.h util.h cpacket.h
 cpacket.o: cmessage.h carray.h cpar.h csimul.h errmsg.h cmsgheap.h coutvect.h
 cpacket.o: ccor.h
-cpar.o: cpar.h cobject.h defs.h util.h carray.h cstat.h macros.h ctypes.h
-cpar.o: chead.h errmsg.h cmodule.h ccor.h cqueue.h cgate.h csimul.h
+cpar.o: cpar.h cobject.h defs.h util.h cstat.h macros.h ctypes.h chead.h
+cpar.o: errmsg.h cmodule.h ccor.h carray.h cqueue.h cgate.h csimul.h
 cpar.o: cmsgheap.h coutvect.h cenvir.h
 cpsquare.o: macros.h ctypes.h chead.h cobject.h defs.h util.h cpsquare.h
 cpsquare.o: cdensity.h cstat.h
@@ -225,7 +225,7 @@ cstk.o: cstk.h ccor.h cobject.h defs.h util.h errmsg.h
 ctopo.o: macros.h ctypes.h chead.h cobject.h defs.h util.h cmodule.h ccor.h
 ctopo.o: carray.h cqueue.h cgate.h csimul.h errmsg.h cmsgheap.h coutvect.h
 ctopo.o: cpar.h cllist.h ctopo.h
-ctypes.o: cpar.h cobject.h defs.h util.h carray.h cmodule.h ccor.h chead.h
+ctypes.o: cpar.h cobject.h defs.h util.h cmodule.h ccor.h chead.h carray.h
 ctypes.o: cqueue.h cgate.h csimul.h errmsg.h cmsgheap.h coutvect.h macros.h
 ctypes.o: ctypes.h
 cvarhist.o: macros.h ctypes.h chead.h cobject.h defs.h util.h cvarhist.h

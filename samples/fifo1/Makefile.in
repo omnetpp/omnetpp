@@ -120,3 +120,6 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
+fifo1.o: fifo1.h
+gen1.o: gen1.h
+sink1.o: sink1.h

@@ -36,7 +36,7 @@
 #include "tkinsp.h"
 
 
-Register_OmnetApp(TOmnetTkApp,false,20,"Tkenv: Tk-based graphical user interface");
+Register_OmnetApp(TOmnetTkApp,false,20,"Tkenv (Tk-based graphical user interface)");
 
 
 //=========================================================================

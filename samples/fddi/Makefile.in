@@ -132,3 +132,6 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
+fddi_mac.o: fddi_def.h fddi_mac.h
+othermod.o: otherdef.h fddi_def.h othermod.h
+ssm_ifs.o: ssmifdef.h fddi_def.h ssm_ifs.h

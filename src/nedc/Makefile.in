@@ -68,10 +68,10 @@ install-local: nedc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-ebnf.tab.o: ebnfcfg.h jar_func.h
+ebnf.tab.o: ebnf.h ebnfcfg.h jar_func.h
 jar.o: jar_func.h jar_lib.h
 jar_expr.o: jar_func.h jar_lib.h
 jar_lib.o: jar_func.h jar_lib.h
 jar_mem.o: jar_func.h
 jar_mod.o: jar_func.h jar_lib.h
-lex.yy.o: ebnf.tab.h
+lex.yy.o: ebnf.h ebnf.tab.h ebnfcfg.h jar_func.h
