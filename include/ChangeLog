@@ -3,6 +3,8 @@
 	* cconfig.h: added getBaseDirectoryFor() and getLocation() functions 
 	to cConfiguration
 
+	* added cstrtokenizer.h
+
 2005-03-17  Andras Varga
 
 	* cscheduler.h: added method executionResumed() to cScheduler and
