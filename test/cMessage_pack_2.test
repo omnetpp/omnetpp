@@ -1,0 +1,41 @@
+%description:
+Tests cMessage.netPack/netUnpack and msg encapsulation.
+
+%global:
+#include <string.h>
+#include "../src/sim/parsim/cfilecommbuffer.h"
+
+%activity:
+
+#define PRINT(X)  ev << #X << ":" << (X) << endl
+
+cFileCommBuffer *buffer = new cFileCommBuffer();
+
+cMessage *payload = new cMessage("payload");
+payload->setLength(123);
+
+cMessage msg("msg");
+msg.setLength(1500);
+msg.encapsulate(payload);
+msg.netPack(buffer);
+
+cMessage msg2("tmp");
+msg2.netUnpack(buffer);
+ev << "isBufferEmpty:" << buffer->isBufferEmpty() << endl;
+
+PRINT(msg2.name());
+PRINT(msg2.length());
+PRINT(msg2.encapsulatedMsg()==NULL);
+
+cMessage *payload2 = msg2.decapsulate();
+PRINT(payload2->name());
+PRINT(payload2->length());
+
+%contains: stdout
+isBufferEmpty:1
+msg2.name():msg
+msg2.length():1623
+msg2.encapsulatedMsg()==NULL:0
+payload2->name():payload
+payload2->length():123
+
