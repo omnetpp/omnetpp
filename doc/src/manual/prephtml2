@@ -53,6 +53,17 @@ $html =~ s/\\'([AEOUaeuo])/&$1acute;/g;
 $html =~ s/\\"([OUuo])/&$1uml;/g;
 $html =~ s/\\-//g;
 
+#
+# kill <p> inside <pre>...
+#
+$html =~ s|(\<pre\>.*?\</pre\>)|kill_p_tag($1)|sge;
+
+sub kill_p_tag ()
+{
+      my $txt = shift @_;
+      $txt =~ s/\<p\>//sg;
+      return $txt;
+}
 
 #
 # kill html header, title page, bad table of contents etc.
