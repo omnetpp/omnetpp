@@ -227,6 +227,8 @@ clean:
 	    cd /d $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 	-del /q $(OMNETPP_BIN_DIR:/=\)\*.exe
 	-del /q $(OMNETPP_BIN_DIR:/=\)\*.bat
+	-del /q $(OMNETPP_BIN_DIR:/=\)\opp_*.*
+	-del /q $(OMNETPP_BIN_DIR:/=\)\neddoc.xsl
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.lib
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.dll
 	-del /q $(OMNETPP_LIB_DIR:/=\)\*.ilib
