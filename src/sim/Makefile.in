@@ -55,7 +55,7 @@ CPPOBJS= $(CPPOBJS_STD)
 
 ifeq ($(WITH_NETBUILDER),yes)
 CPPOBJS += $(CPPOBJS_NETBUILDER)
-COPTS += -I"$(OMNETPP_SRC_DIR)/nedxml"
+COPTS += -I../nedxml
 endif
 
 ifeq ($(WITH_PARSIM),yes)

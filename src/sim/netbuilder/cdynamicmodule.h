@@ -65,7 +65,7 @@ class cDynamicModuleType : public cModuleType
  */
 class cDynamicCompoundModule : public cCompoundModule
 {
-    friend cDynamicModuleType;
+    friend class cDynamicModuleType;
   protected:
     /**
      * FIXME comment
