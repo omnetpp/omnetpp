@@ -1,128 +1,137 @@
-Using OMNeT++ on Windows with the Cygwin32 compiler
-===================================================
-
+Using OMNeT++ on Windows with the Cygwin platform
+=================================================
 
 Based on a description from Richard Lyon (rlyon01@ozemail.com.au)
 
-NOTE!
-      The latest (1.1+) version of Cygwin can be downloaded from
-                http://sourceware.cygnus.com/cygwin/
-      This description is based on an earlier (beta 20.1) release,
-      so it might be out-of-date at points.
 
-      Some observations I made with Cygwin1.1:
-      - OMNeT++ must be installed in a binary-mounted directory
-        (e.g. mount -b c:/omnetpp /home/omnetpp; see mount --help or man mount
-        for more info)
-      - one should ONLY use Unix-style text files (with LF), because sed and
-        make have problems with CR/LF. (Cygwin-b20.1 didn't have this problem.)
-      - the Tcl/Tk libs seem to have problems with mounts. For TCL_LIBRARY,
-        one must use Win32-style directory name instead of a mounted dir
-        (e.g. rather c:/cygwin11/usr/share/tcl8.0 than /usr/share/tcl8.0).
+0. QUICKSTART
+
+Note: If you're unsure what the following steps mean, you should probably
+read the long description...
+
+So:
+ 1. install Cygwin (DOS file mode will be fine)
+ 2. download X11inc.zip from the OMNeT++ site then extract it to /usr/include/X11
+ 3. download and extract OMNeT++ (the .tgz bundle)
+ 4. add omnetpp/bin to the PATH
+ 5. do the usual GNU stuff: ./configure, make
+ 6. make sure nedc, gned, opp_makemake and the sample simulations work
+There you go!
 
 1. Introduction
 
-CYGNUS Solutions produce a development environment for Microsoft Windows
-based around the GNU compiler and binary utilities. The following packages
-are included:
+CYGNUS Solutions (now part of RedHat Inc.) produced a Unix-like development
+environment for Microsoft Windows, based around the GNU compiler and binary
+utilities. Cygwin includes the following packages:
 
-   Development tools: binutils, bison, byacc, dejagnu, diff, expect,
-   flex, gas, gcc, gdb, itcl, ld, libstdc++, make, patch, tcl, tix, tk
+   Development tools: binutils, bison, byacc, dejagnu, diff, expect, flex,
+   gas, gcc, gdb, itcl, ld, libstdc++, make, patch, tcl, tix, tk, ...
 
    User tools: ash, bash, bzip2, diff, fileutils, findutils, gawk,
-   grep, gzip, m4, sed, shellutils, tar, textutils, time
+   grep, gzip, m4, sed, shellutils, tar, textutils, time, ...
 
-The inclusion of bison, flex, tcl and tck make this development environment
-an ideal candidate for running omnet++. CYGNUS has named this product
-CYGWIN and released it under the GPL license. This means CYGWIN is free and
+The list is ever growing. The inclusion of bison, flex, tcl and tk make
+this development environment an ideal candidate for running OMNeT++.
+Cygwin is released under the GPL license, which means it is free and
 the source code is available. Further details and downloading instructions
 may be found on the web at
 
-    http://sourceware.cygnus.com/cygwin/top.html
+    http://sources.redhat.com/cygwin/
 
 OMNeT++ (from the 2.0b1 release on) is fully supported under Cygwin.
 
-Given that CYGWIN is still in beta, there are bugs in the product. This
-document explains how to work around these problems to complete the
-installation. It is hoped that other people will be motivated to use CYGWIN
-and OMNeT++ on computers with Microsoft Windows installed.
+Due to the differences between Windows and Unix, Cygwin has some quirks
+compared to Unix systems. This document explains how to work around these
+problems to complete the installation.
 
 
 2. Installing CYGWIN
 
-CYGWIN must be installed before OMNeT++. The latest full binary distribution
-should be downloaded from:
-
-    ftp://go.cygnus.com/pub/sourceware.cygnus.com/cygwin/latest/
-
-All you require is the single file 'full.exe' which is about 13.9 MB in size.
-In the same directory there is a readme.txt, which explains the installation.
+Cygwin must be installed before OMNeT++. First you should download
+setup.exe which is then used to download and install the packages.
+When you start setup.exe, it offers 3 possibilities:
+ (1) install from internet
+ (2) download from internet
+ (3) install from local directory
+I suggest you first download the packages and then install them from
+the local directory.
 
 You will need to be logged into the Administrator account before starting the
-installation. Start the installation by running full.exe. First off, the
-installer will prompt you for a location to extract the temporary files it
-needs to install the release on your system.  The default should be fine for
-most people.
+installation. Setup will ask:
 
-Next it will ask you to choose an install location.  The default is
-`<system-drive>:\cygnus\cygwin-b20'.  Feel free to choose another location if
-you would prefer.
+ - the root directory. Enter the directory where you want Cygwin to be
+   installed. The installer will create a Unix-like file system in this
+   directory, with the familiar bin/, etc/, home/, lib/, usr/, var/
+   directories.
 
-Finally, it will ask you for the name of the Program Files folder shortcut to
-add.  By default, the installer will create a `Cygwin B20' entry in a folder
-called `Cygnus Solutions'.  When this step is completed, it will install the
-tools and exit.
+ - install for all users/just me. This affects visibility of environment
+   variables and Start Menu icons.
 
-At this point, you should be able to look under the start menu and select
-"Cygwin B20".  This will pop up a bash shell with all special environment
+ - default text file type DOS/Unix. If you select DOS, the Cygwin DLL
+   (the layer between the Windows API and the Cygwin programs) will
+   transparently convert text files between CR/LF and LF line terminators
+   for Cygwin programs, allowing these programs to 'see' LF line endings
+   in files that have really CR/LFs on the disk. I recommend you use
+   DOS file type.
+
+The installer will create a `Cygwin bash shell' entry in a folder
+called `Cygnus Solutions' and also a desktop icon called `Cygwin'.
+
+If you should ever want to uninstall the tools, you may do so via the
+"Add/Remove Programs" control panel.
+
+Starting Cygwin will pop up a bash shell with all special environment
 variables set up for you.  If you are running Windows 95 or 98 and are faced
 with the error message "Out of environment space", you need to increase the
 amount of environment space in your config.sys and try again.  Adding the
 line `shell=C:\command.com /e:4096 /p' should do the trick if `C:' is your
 system drive letter.
 
-There are two remaining things you should do from this prompt. First, you need
-to type `mkdir -p /tmp' to ensure that a directory for temporary files exists
-for programs that expect to find one there.
+Within the bash shell, the installation directory will appear as "/".
+Your Windows drives will appear as /cygdrive/c/, /cygdrive/d/, etc.
+(Don't be surprised when you don't see a /cygdrive directory in the
+file system though!) The cygpath program allows you to convert between
+Cygwin-style and Windows style directory names.
 
-Second, if you are installing the full distribution (`full.exe'), various
-programs will need to be able to find `/bin/sh'.  You should `mkdir -p /bin'
-and put a copy of `sh.exe' there, removing the older version, if present.
-You can use the `mount' utility to select which drive letter is mounted as
-`/'. See the Frequently Asked Questions (FAQ) file for more information on
-`mount'.
-
-If you should ever want to uninstall the tools, you may do so via the
-"Add/Remove Programs" control panel.
-
-It is a good idea to create a .bashrc for each user who will use CYGWIN. This
-should be stored in each users home directory. As an example, my initial
-.bashrc file contained:
+It is a good idea to create a .bash_profile for each user who will use Cygwin.
+This should be stored in each users home directory (i.e. /home/<you>).
+For example, an initial .bash_profile may contain:
 
     export PS1='# '
     alias ls='ls -aF'
     alias ll='ls -l'
-    export BISONLIB=c:/cygnus/cygwin-b20/share/
-    export TCL_LIBRARY=c:/cygnus/cygwin-b20/share/tcl8.0
-    cd c:/usr/rlyon01
+    export TCL_LIBRARY=c:/cygwin/usr/share/tcl8.0
 
-The BISONLIB and TCL_LIBRARY are necessary to allow bison and tcl/tk to
-operate correctly. The home directory is c:\usr\rlyon01 and I intend to install
-omnetpp in c:\usr\rlyon01\omnetpp.
+TCL_LIBRARY is necessary to allow tcl/tk to operate correctly.
 
-An editor will be required during the installation. For unix diehards, it
-possible to compile and install vim or emacs (my favourite). A good NT port
-of emacs is available from:
+An editor will be required during the installation. For Unix diehards,
+Cygwin contains vi, or you can download emacs. A good NT port of emacs
+is available from:
 
 http://www.cs.washington.edu/homes/voelker/ntemacs.html
 
 
-3. Installing OMNeT++
+3. Getting Tcl/Tk to work
+
+The Tcl/Tk libs seemingly don't recognize Cygwin paths. For TCL_LIBRARY,
+be sure to use a Windows-style directory name, e.g. use
+   TCL_LIBRARY=c:/cygwin11/usr/share/tcl8.0
+and not
+   TCL_LIBRARY=/usr/share/tcl8.0     ;# WRONG!
+
+Another issue is that Cygwin misses X11 headers that are normally required
+to build programs with Tcl/Tk. If you're getting compilation errors like
+    /usr/include/tk.h:77: X11/Xlib.h: No such file or directory
+while building Tkenv, download X11inc.zip from the OMNeT++ site, and extract
+it to your /usr/include/X11 directory.
+
+
+4. Installing OMNeT++
 
 Download the omnetpp source code and documentation from the omnetpp site.
 Make sure you select to download the unix archive omnetpp.tgz.
 
->From the startup menu open the bash shell. This a character based console,
+From the startup menu open the bash shell. This a character based console,
 which works in a similar manner to the dos console window. The difference is
 that you use unix commands like ls, rm, mkdir, etc ...
 
@@ -132,12 +141,11 @@ Copy the omnetpp archive to the directory where you want to install it
     tar zxvf omnetpp.tgz
 
 A sub-directory called omnetpp will be created which will contain the simulator
-files. You should now add the following lines to your startup file .bashrc:
+files. You should now add the following lines to your startup file .bash_profile:
 
     export PATH=$PATH:~/omnetpp/bin
-    export LD_LIBRARY_PATH=~/omnetpp/lib
 
-For these variables to be included in the bash environment you will need to
+For the variables to be included in the bash environment you will need to
 restart the bash shell before proceeding. All following commands in this
 section are entered on the bash command line.
 
@@ -162,7 +170,7 @@ By default the samples will run using the Tcl/Tk environment. You should see
 nice gui windows and dialogs.
 
 
-4. Reconfiguring the libraries
+5. Reconfiguring the libraries
 
 If you need to recompile the OMNeT++ components with different flags (e.g.
 for debugging or optimized for speed), then cd to the top-level omnetpp
@@ -183,19 +191,10 @@ was removed in 2.0beta4. The built libraries and programs are immediately
 copied to the lib/ and bin/ subdirs.
 
 
-5. Comments
+6. Comments
 
-I have tested a number of simulation models using the command line
-environment. These work correctly. Given that CYGWIN is still in beta I am
-sure that there will be other bugs which will only become apparent as more
-people use omnetpp and CYGWIN. I guess the warning here is to double check
-any simulation results you obtain.
-
-I only use Windows NT. Hopefully others will test OMNeT++ using Windows
-95/98.
-
-Any questions concerning the use of CYGWIN should be directed to the CYGWIN
-mail list at gnu-win32@cygnus.com. Omnetpp specific questions should be
+Any questions concerning the use of Cygwin should be directed to the Cygwin
+mail list at gnu-win32@cygnus.com. OMNeT++ specific questions should be
 directed to the mail list at omnetpp-l@ecselists.eng.monash.edu.au.
 
 If you find any errors in this document please let me know.
