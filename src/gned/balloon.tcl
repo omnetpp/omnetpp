@@ -63,6 +63,7 @@ proc cancel_balloon {} {
 
 proc create_balloon {text x y} {
     global balloon_after_ID help_tips
+    if [winfo exists .balloon_help] {destroy .balloon_help}
     toplevel .balloon_help -relief flat
     unset balloon_after_ID
     wm overrideredirect .balloon_help true

@@ -329,7 +329,7 @@ char *NEDFile::stripComment(char *comment, int numlines)
         {
             // add the comment (chars after the '//') to the buffer
             s+=2;
-            if (*s==' ') s++;
+            //if (*s==' ') s++;
             while (*s && *s!='\n') *d++ = *s++;
             if (*s=='\n') *d++ = *s++;
         }

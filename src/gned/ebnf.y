@@ -751,7 +751,7 @@ loopconnection
                        in_loop=1; setComments(FORLOOP_KEY,@1); )}
           loopvarlist DO notloopconnections ENDFOR /* --LG*/
                 {NEDC( end_for (); ) 
-                 GNED( in_loop=0; setTrailingComment(FORLOOP_KEY,@7); )}
+                 GNED( in_loop=0; setTrailingComment(FORLOOP_KEY,@6); )}
         ;
 
 loopvarlist

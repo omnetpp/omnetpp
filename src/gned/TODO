@@ -5,29 +5,11 @@ Bugs:
 - should eliminate "staircase comment" effect, like:
     param1: string,
                     // param2: string;
-- in this code, the "// # is bitwise comment" will appear twice:
- module Hypercube
-  parameters:
-    dim: numeric const,
-    nodetype: string;
-  submodules:
-    node: nodetype[2^dim] like Node
-      parameters:
-        address = index, // module's position in (2^dim)-size vector
-        dim = dim;
-      gatesizes:
-        out[dim], in[dim];
-  connections:
-    for i=0..2^dim-1, j=0..dim-1 do
-      node[i].out[j] --> node[i # (1<<j)].in[j];  // # is bitwise xor
-    endfor;
- endmodule
 
 Parse/Generate:
 - comments around display strings, channel attributes are lost
 - add default comments for newly created modules!
 - display string parsing -- rewrite!!!
-- comments -- choose different approach? (do not cut of "// ")
 - error recovery in the grammar: TBD
 
 Data struct change:

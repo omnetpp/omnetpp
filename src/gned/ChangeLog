@@ -149,3 +149,6 @@ Aug 30, 1999
 ------ omnetpp-2.0b2 released ------
 Oct 11, 1999
   - fixed problem with resizing parent module
+Oct 12, 1999
+  - bugfix in balloon.tcl
+  - some fix on comment parsing/generating (eliminated space from "// ---" comments)

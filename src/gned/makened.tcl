@@ -571,10 +571,10 @@ proc appendBannerComment {outvar comment indent {default {}}} {
 
     if {$comment==""} return
 
-    regsub -all "\n" $comment "\n$indent// " comment
-    set comment "$indent// $comment"
-    regsub -all "// -\n" $comment "\n" comment
-    regsub "$indent// $" $comment "" comment
+    regsub -all "\n" $comment "\n$indent//" comment
+    set comment "$indent//$comment"
+    regsub -all "//-\n" $comment "\n" comment
+    regsub "$indent//$" $comment "" comment
 
     appendTo out $comment nonewline
 }
@@ -590,10 +590,10 @@ proc appendRightComment {outvar comment} {
     #puts "dbg: indent:   ($indent)"
 
     #puts "dbg: rightcomment: (($comment))"
-    set comment " // $comment"
-    regsub -all "\n" $comment "\n$indent // " comment
-    regsub -all "// -\n" $comment "\n" comment
-    regsub -all "$indent // $" $comment "" comment
+    set comment " //$comment"
+    regsub -all "\n" $comment "\n$indent //" comment
+    regsub -all "//-\n" $comment "\n" comment
+    regsub -all "$indent //$" $comment "" comment
     #puts "dbg: turned into:  (($comment))"
 
     appendTo out $comment nonewline
@@ -604,10 +604,10 @@ proc appendInlineRightComment {outvar comment indent} {
 
     if {$comment=="-\n"} return
 
-    regsub -all "\n" $comment "\n$indent// " comment
-    set comment "// $comment"
-    regsub -all "// -\n" $comment "\n" comment
-    regsub "$indent// $" $comment "$indent" comment
+    regsub -all "\n" $comment "\n$indent//" comment
+    set comment "//$comment"
+    regsub -all "//-\n" $comment "\n" comment
+    regsub "$indent//$" $comment "$indent" comment
 
     appendTo out $comment nonewline
 }
@@ -617,10 +617,10 @@ proc appendTrailingComment {outvar comment indent} {
 
     if {$comment==""} {set comment "-\n"}
 
-    regsub -all "\n" $comment "\n$indent// " comment
-    set comment " // $comment"
-    regsub -all "// -\n" $comment "\n" comment
-    regsub "$indent// $" $comment "" comment
+    regsub -all "\n" $comment "\n$indent//" comment
+    set comment " //$comment"
+    regsub -all "//-\n" $comment "\n" comment
+    regsub "$indent//$" $comment "" comment
 
     appendTo out $comment nonewline
 
