@@ -76,7 +76,7 @@ char *emsg[] = {
   "",                                                    // eNOMODDEF
   "",                                                    // eNOCHANDEF
   "",                                                    // eNOSUCHNET
-  "Simulation kernel was compiled without parallel simulation support", // eNOPARSIM
+  "Simulation kernel was compiled without parallel simulation support (WITH_PARSIM=no)", // eNOPARSIM
   "Bad command line argument",                           // eBADARGS
   "Cannot schedule a message to the past",               // eBACKSCHED
   "receiveOn(): gate %d is output gate",                 // eOUTGATE

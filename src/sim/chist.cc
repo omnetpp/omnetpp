@@ -32,6 +32,7 @@
 #include "cdetect.h"
 #include "chist.h"
 #include "cexception.h"
+#include "errmsg.h"
 
 #ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"

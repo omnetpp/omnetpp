@@ -29,10 +29,10 @@
 #include "cdensity.h"
 #include "cdispstr.h"
 
+#include "modinsp.h"
 #include "tkapp.h"
 #include "tklib.h"
 #include "inspfactory.h"
-#include "modinsp.h"
 #include "arrow.h"
 #include "graphlayout.h"
 

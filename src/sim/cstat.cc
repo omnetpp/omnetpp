@@ -32,6 +32,7 @@
 #include "cdetect.h"  //NL
 #include "cexception.h"
 #include "cenvir.h"
+#include "errmsg.h"
 
 #ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"

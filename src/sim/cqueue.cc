@@ -23,6 +23,7 @@
 #include "macros.h"
 #include "cqueue.h"
 #include "cexception.h"
+#include "errmsg.h"
 
 #ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"

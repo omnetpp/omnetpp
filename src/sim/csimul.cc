@@ -246,7 +246,7 @@ void cSimulation::loadNedFile(const char *nedfile)
     ::loadNedFile(nedfile, false);
 #else
     throw new cException("cannot load `%s': simulation kernel was compiled without "
-                         "support for dynamic loading of NED files", nedfile);
+                         "support for dynamic loading of NED files (WITH_NETBUILDER=no)", nedfile);
 #endif
 }
 

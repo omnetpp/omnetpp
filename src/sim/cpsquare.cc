@@ -26,6 +26,7 @@
 #include "cexception.h"
 #include "random.h"
 #include "distrib.h"
+#include "errmsg.h"
 
 #ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
