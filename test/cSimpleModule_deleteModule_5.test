@@ -1,0 +1,89 @@
+%description:
+Tests deletion of a compound module when deleting module is not part
+of the compound module.
+
+FIXME test that messages sent between modules of the deleted compund
+module do not cause errors (they're removed too).
+
+%file: {}.ned
+
+simple {Node}
+endsimple
+
+module {Compound}
+    submodules:
+        node1: {Node};
+        node2: {Node};
+endmodule
+
+simple {Deleter}
+endsimple
+
+module {Net}
+    submodules:
+        compound: {Compound};
+        deleter: {Deleter};
+endmodule
+
+network {network} : {Net};
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Node} : public cSimpleModule
+{
+    Module_Class_Members({Node},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Node});
+
+void {Node}::activity()
+{
+    for (int i=0; i<10; i++)
+    {
+        ev << "Node " << fullPath() << " at t=" << simTime() << endl;
+        wait(1);
+    }
+}
+
+class {Deleter} : public cSimpleModule
+{
+    Module_Class_Members({Deleter},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Deleter});
+
+void {Deleter}::activity()
+{
+    wait(3);
+
+    ev << "Deleting compound t=" << simTime() << endl;
+    cModule *node = parentModule()->submodule("compound");
+    node->deleteModule();
+    ev << "Deleted" << endl;
+
+    wait(2);
+    ev << "Still here at t=" << simTime() << endl;
+}
+
+%inifile: {}.ini
+[General]
+network={network}
+
+[Cmdenv]
+event-banners=no
+
+%contains: stdout
+Node {network}.compound.node1 at t=0
+Node {network}.compound.node2 at t=0
+Node {network}.compound.node1 at t=1
+Node {network}.compound.node2 at t=1
+Node {network}.compound.node1 at t=2
+Node {network}.compound.node2 at t=2
+Deleting compound t=3
+Deleted
+Still here at t=5

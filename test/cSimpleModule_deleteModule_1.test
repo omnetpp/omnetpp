@@ -1,48 +1,83 @@
 %description:
-Tests that deleteModule() works from activity().
-Moreover, we test by deleting the system module.
+Tests that an activity() module can delete itself, and execution of that module
+stops immediately. Simulation of other modules continue.
 
-TODO:
-- test that simulation of other modules goes on
-- test that deletion of another module is possible
-- test that deletion of compound modules is possible
+FIXME test that messages sent to the deleted module stop the simulation with error.
 
-%module: {Module}
+%file: {}.ned
 
-class {Module} : public cSimpleModule
+simple {Node}
+endsimple
+
+simple {Suicide}
+endsimple
+
+module {Net}
+    submodules:
+        node: {Node};
+        suicide: {Suicide};
+endmodule
+
+network {network} : {Net};
+endnetwork
+
+
+%file: {}.cc
+#include <omnetpp.h>
+
+class {Node} : public cSimpleModule
 {
-    Module_Class_Members({Module},cSimpleModule,32768);
+    Module_Class_Members({Node},cSimpleModule,16384)
     virtual void activity();
-    virtual void finish();
 };
 
-Define_Module({Module});
+Define_Module({Node});
 
-void {Module}::activity()
+void {Node}::activity()
+{
+    for (int i=0; i<5; i++)
+    {
+        bool exists = (parentModule()->submodule("suicide") != NULL);
+        ev << "t=" << simTime()  << ": exists=" << exists << endl;
+        wait(1);
+    }
+}
+
+class {Suicide} : public cSimpleModule
+{
+    Module_Class_Members({Suicide},cSimpleModule,32768);
+    virtual void activity();
+};
+
+Define_Module({Suicide});
+
+void {Suicide}::activity()
 {
     wait(1.0);
-    wait(1.0);
 
+    ev << "before deleteModule\n";
     deleteModule();
-
     ev << "after deleteModule\n";
 
     wait(1.0);
     ev << "event after deleteModule\n";
 }
 
-void {Module}::finish()
-{
-    // this shouldn't be called because the module got deleted
-    ev << "finish called\n";
-}
+%inifile: {}.ini
+[General]
+network={network}
 
-%not-contains: stdout
-finish called
+[Cmdenv]
+event-banners=no
+
+%contains: stdout
+t=0: exists=1
+t=1: exists=1
+before deleteModule
+t=2: exists=0
+t=3: exists=0
+t=4: exists=0
 
 %not-contains: stdout
 after deleteModule
-
-%not-contains: stdout
-event after deleteModule
 

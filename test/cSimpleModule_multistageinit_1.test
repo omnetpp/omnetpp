@@ -49,8 +49,11 @@ int {Module}::numInitStages() const
 void {Module}::initialize(int stage)
 {
    ev << fullPath() << ": initialize stage=" << stage << " called" << endl;
+   if (stage==2)
+   {
    cMessage *msg = new cMessage();
    scheduleAt(1.0, msg);
+}
 }
 
 void {Module}::handleMessage(cMessage *msg)

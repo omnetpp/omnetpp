@@ -1,0 +1,84 @@
+%description:
+Tests deletion of a handleMessage() simple module which has scheduled events.
+
+%file: {}.ned
+
+simple {NodeA}
+endsimple
+
+simple {Deleter}
+endsimple
+
+module {Net}
+    submodules:
+        nodeA: {NodeA};
+        deleter: {Deleter};
+endmodule
+
+network {network} : {Net};
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {NodeA} : public cSimpleModule
+{
+    Module_Class_Members({NodeA},cSimpleModule,0)
+    cMessage *msg;
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module({NodeA});
+
+void {NodeA}::initialize()
+{
+    cMessage *msg = new cMessage("timeout");
+    scheduleAt(0, msg);
+}
+
+void {NodeA}::handleMessage(cMessage *msg)
+{
+    ev << "NodeA " << fullPath() << " at t=" << simTime() << endl;
+    scheduleAt(simTime()+1, msg);
+}
+
+class {Deleter} : public cSimpleModule
+{
+    Module_Class_Members({Deleter},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Deleter});
+
+void {Deleter}::activity()
+{
+    wait(3);
+
+    ev << "Deleting nodeA at t=" << simTime() << endl;
+    cModule *nodeA = parentModule()->submodule("nodeA");
+    nodeA->deleteModule();
+    ev << "Deleted" << endl;
+
+    wait(2);
+    ev << "Still here at t=" << simTime() << endl;
+}
+
+%inifile: {}.ini
+[General]
+network={network}
+
+[Cmdenv]
+event-banners=no
+
+
+%contains: stdout
+NodeA {network}.nodeA at t=0
+NodeA {network}.nodeA at t=1
+NodeA {network}.nodeA at t=2
+Deleting nodeA at t=3
+Deleted
+Still here at t=5
+
+
