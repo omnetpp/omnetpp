@@ -44,6 +44,23 @@ proc printNed c {
     }
 }
 
+
+# updateGraphicsModeBindings --
+#
+# Make bindings of mode in $gned(editmode) for current canvas
+#
+proc updateGraphicsModeBindings {canv_id} {
+    global gned canvas
+    set c $canvas($canv_id,canvas)
+
+    if {$gned(editmode)=="select/move"} {
+        selectOrMoveBindings $c
+    } else {
+        drawBindings $c
+    } 
+}
+
+
 #  selectOrMoveBindings --
 #
 #    Switch editing mode to "select/move".

@@ -118,7 +118,7 @@ proc openModuleOnNewCanvas {modkey} {
     pack $tab -expand 0 -fill none -side left
 
     # bindings for the canvas
-    selectOrMoveBindings $canv
+    updateGraphicsModeBindings $canv_id
     bind $canv <Control-x> editCut
     bind $canv <Control-c> editCopy
     bind $canv <Control-v> editPaste
@@ -176,6 +176,7 @@ proc switchToCanvas {canv_id} {
     # map new canvas/textedit and update tabs
     $canvas($canv_id,tab) config -relief solid
     setCanvasMode $canvas($canv_id,mode)
+    updateGraphicsModeBindings $canv_id
 }
 
 # setCanvasMode --
@@ -201,10 +202,18 @@ proc setCanvasMode {mode} {
         .main.f.switcher.graphics config -relief flat
         .main.f.switcher.textedit config -relief raised
 
+        # swap toolbars
         pack $gned(textedit-toolbar) -side left -expand 0 -fill both
         pack forget $gned(graphics-toolbar)
-        foreach i {cut copy paste undo redo} {
+
+        # enable/disable icons on common toolbar
+        foreach i {cut copy paste} {
             $gned(horiz-toolbar).$i config -state active
+        }
+        if {$gned(supports-undo)==1} {
+            foreach i {undo redo} {
+                $gned(horiz-toolbar).$i config -state active
+            }
         }
 
     } elseif {$mode=="graphics"} {
@@ -213,8 +222,11 @@ proc setCanvasMode {mode} {
         .main.f.switcher.graphics config -relief raised
         .main.f.switcher.textedit config -relief flat
 
+        # swap toolbars
         pack forget $gned(textedit-toolbar)
         pack $gned(graphics-toolbar) -side left -expand 0 -fill both
+
+        # enable/disable icons on common toolbar
         foreach i {cut copy paste undo redo} {
             $gned(horiz-toolbar).$i config -state disabled
         }

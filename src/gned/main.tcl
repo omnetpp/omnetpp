@@ -239,9 +239,11 @@ proc createMainWindow {} {
     set help_tips($gned(horiz-toolbar).close) {Close current canvas}
 
     # check if undo works
+    set gned(supports-undo) 1
     if [catch {text .tmp -undo true; destroy .tmp}] {
-        $gned(horiz-toolbar).undo config -state disabled
-        $gned(horiz-toolbar).redo config -state disabled
+        set gned(supports-undo) 0
+        #$gned(horiz-toolbar).undo config -state disabled
+        #$gned(horiz-toolbar).redo config -state disabled
         puts "NOTE: This version of Tcl/Tk doesn't support Undo in text widgets yet."
     }
 
