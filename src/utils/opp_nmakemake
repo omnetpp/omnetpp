@@ -52,38 +52,46 @@ while (@ARGV)
     if ($arg eq '-h' || $arg eq '--help')
     {
         print '
-opp_nmakemake: create MSVC makefile for an OMNeT++ model, based on source files
-in current directory
+opp_nmakemake: create MSVC makefile for an OMNeT++ model, based on source
+files in current directory
 
-opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-s] [-u user-interface]
-         [-p] [-Idir] [-Llibrary-path] [-llibrary] [-c configdir] [-i makefile-fragment-file]
-         [directories, library and object files]...
+opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
+              [-p] [-M] [-Idir] [-Ldir] [-llibrary] [-c configdir]
+              [-i makefile-fragment-file]
+              [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
     -e, --ext             Assumed extension of C++ sources (default is "cpp")
     -o, --outputfile      Name of simulation executable/library
     -n, --nolink          Produce object files but do not create executable or
-                          library. Useful for models with parts in several dirs.
+                          library. Useful for models with parts in several
+                          directories. With this option, -u, -p and -l have
+                          no effect.
     -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv
     -M, --mpi             Link executable with MPI
     -p, --pvm             Link executable with PVM
     -Idir                 Additional NED and C++ include directory
-    -Llibrary-path        Additional library path
+    -Ldir                 Add a directory to the library path
     -llibrary             Additional library to link against
+                          (e.g. -lmylibrary.lib)
     -c, --configfile      Included config file (default is "../../configuser.vc")
-    -i, --includefragment Append file to near end of Makefile. The file makefrag.vc
-                          is appended implicitly if no -i options are given.
-    directory             Recursive make in that dir. Makemake will need
-                          to call make there to see what object files to
-                          include in the Makefile.
+    -i, --includefragment Append file to near end of Makefile. The file
+                          makefrag.vc (if exists) is appended automatically
+                          if no -i options are given. This option is useful
+                          if a source file (.ned, .msg or .cc) is to be
+                          generated from other files.
+    directory             Recursive make in that dir. Makemake will need to
+                          call "make" there to determine the list of object
+                          files to be added to the Makefile.
     library or object     Link with that file
 
-Default output is Makefile.vc which you can run by typing nmake -f Makefile.vc.
-With the -n option, -u, -p and -l have no effect.
-If you have a source tree instead of a single directory, run opp_nmakemake -n
-in the subdirs and then opp_nmakemake dir1 dir2 etc. in your top-level directory.
-The -i option is useful if a source file (.ned, .msg or .cc) is to be generated
-from other files.
+Default output is Makefile.vc, which you can invoke by typing
+  nmake -f Makefile.vc
+If your model is in multiple directories instead of a single directory, run
+  opp_nmakemake -n
+in the subdirectories, and then
+  opp_nmakemake dir1 dir2 ...
+in your top-level directory.
 ';
         exit(1);
     }
@@ -139,11 +147,13 @@ from other files.
     }
     elsif ($arg =~ /^-L/)
     {
-        $libpath .= " ".$arg;
+        $arg =~ s/^-L//;
+        $libpath .= " /libpath:\"$arg\"";
     }
     elsif ($arg =~ /^-l/)
     {
-        $libs .= " ".$arg;
+        $arg =~ s/^-l//;
+        $libs .= " $arg";
     }
     else
     {

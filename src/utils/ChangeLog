@@ -1,3 +1,7 @@
+2003-03-15  Andras Varga
+
+	* opp_nmakemake: fixed -l and -L options; clarified help text
+
 2003-03-13  Andras Varga
 
 	* opp_test: changed #include "omnetpp.h" to <omnetpp.h> in generated
@@ -5,7 +9,8 @@
 
 2003-03-11  Andras Varga
 
-	* opp_test: couldn't run test program on Unix if "." was not in the PATH
+	* opp_test: couldn't run test program on Unix if "." was not 
+	in the PATH
 
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
