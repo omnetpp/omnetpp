@@ -95,7 +95,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\token.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\token.pdb" /debug /machine:I386 /out:"$(OUTDIR)\token.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\token.pdb" /debug /machine:I386 /out:"$(OUTDIR)\token.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\token.obj" \
 	"$(INTDIR)\token_m.obj" \
@@ -174,7 +174,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\token.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\token.pdb" /debug /machine:I386 /out:"$(OUTDIR)\token.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@"
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\token.pdb" /debug /machine:I386 /out:"$(OUTDIR)\token.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@"
 LINK32_OBJS= \
 	"$(INTDIR)\token.obj" \
 	"$(INTDIR)\token_m.obj" \
@@ -250,7 +250,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\token.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\token.pdb" /machine:I386 /out:"$(OUTDIR)\token.exe" /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\token.pdb" /machine:I386 /out:"$(OUTDIR)\token.exe" /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\token.obj" \
 	"$(INTDIR)\token_m.obj" \
@@ -326,7 +326,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\token.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\token.pdb" /machine:I386 /out:"$(OUTDIR)\token.exe" /libpath:"@OMNETPP_LIB_DIR@"
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\token.pdb" /machine:I386 /out:"$(OUTDIR)\token.exe" /libpath:"@OMNETPP_LIB_DIR@"
 LINK32_OBJS= \
 	"$(INTDIR)\token.obj" \
 	"$(INTDIR)\token_m.obj" \
@@ -363,11 +363,11 @@ InputPath=.\token.msg
 InputName=token
 
 ".\token_m.cpp"	".\token_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "token - Win32 Debug Cmdenv"
 
@@ -375,11 +375,11 @@ InputPath=.\token.msg
 InputName=token
 
 ".\token_m.cpp"	".\token_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "token - Win32 Release Tkenv"
 
@@ -387,11 +387,11 @@ InputPath=.\token.msg
 InputName=token
 
 ".\token_m.cpp"	".\token_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "token - Win32 Release Cmdenv"
 
@@ -399,13 +399,13 @@ InputPath=.\token.msg
 InputName=token
 
 ".\token_m.cpp"	".\token_m.h" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\opp_msgc -s _m.cpp $(InputName).msg
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\token.ned
 

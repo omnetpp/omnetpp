@@ -95,7 +95,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\dyna.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\dyna.pdb" /debug /machine:I386 /out:"$(OUTDIR)\dyna.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\dyna.pdb" /debug /machine:I386 /out:"$(OUTDIR)\dyna.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
@@ -176,7 +176,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\dyna.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\dyna.pdb" /debug /machine:I386 /out:"$(OUTDIR)\dyna.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@"
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\dyna.pdb" /debug /machine:I386 /out:"$(OUTDIR)\dyna.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@"
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
@@ -254,7 +254,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\dyna.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\dyna.pdb" /machine:I386 /out:"$(OUTDIR)\dyna.exe" /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\dyna.pdb" /machine:I386 /out:"$(OUTDIR)\dyna.exe" /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
@@ -332,7 +332,7 @@ BSC32_FLAGS=/nologo /o"$(OUTDIR)\dyna.bsc"
 BSC32_SBRS= \
 
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\dyna.pdb" /machine:I386 /out:"$(OUTDIR)\dyna.exe" /libpath:"@OMNETPP_LIB_DIR@"
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\dyna.pdb" /machine:I386 /out:"$(OUTDIR)\dyna.exe" /libpath:"@OMNETPP_LIB_DIR@"
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \

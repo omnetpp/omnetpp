@@ -2,30 +2,30 @@
 !IF "$(CFG)" == ""
 CFG=topo - Win32 Debug Tkenv
 !MESSAGE No configuration specified. Defaulting to topo - Win32 Debug Tkenv.
-!ENDIF 
+!ENDIF
 
 !IF "$(CFG)" != "topo - Win32 Debug Tkenv" && "$(CFG)" != "topo - Win32 Debug Cmdenv" && "$(CFG)" != "topo - Win32 Release Tkenv" && "$(CFG)" != "topo - Win32 Release Cmdenv"
 !MESSAGE Invalid configuration "$(CFG)" specified.
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "topo.mak" CFG="topo - Win32 Debug Tkenv"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "topo - Win32 Debug Tkenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "topo - Win32 Debug Cmdenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "topo - Win32 Release Tkenv" (based on "Win32 (x86) Console Application")
 !MESSAGE "topo - Win32 Release Cmdenv" (based on "Win32 (x86) Console Application")
-!MESSAGE 
+!MESSAGE
 !ERROR An invalid configuration is specified.
-!ENDIF 
+!ENDIF
 
 !IF "$(OS)" == "Windows_NT"
 NULL=
-!ELSE 
+!ELSE
 NULL=nul
-!ENDIF 
+!ENDIF
 
 !IF  "$(CFG)" == "topo - Win32 Debug Tkenv"
 
@@ -60,45 +60,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MLd /W3 /Gm /GR /GX /ZI /Od /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\topo.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MLd /W3 /Gm /GR /GX /ZI /Od /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\topo.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\topo.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\topo.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib tcl84.lib tk84.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\topo.pdb" /debug /machine:I386 /out:"$(OUTDIR)\topo.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@" 
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib tcl84.lib tk84.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\topo.pdb" /debug /machine:I386 /out:"$(OUTDIR)\topo.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\binarytree_n.obj" \
 	"$(INTDIR)\chain_n.obj" \
@@ -147,45 +147,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /MLd /W3 /Gm /GR /GX /ZI /Od /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\topo.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c 
+CPP_PROJ=/nologo /MLd /W3 /Gm /GR /GX /ZI /Od /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\topo.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /GZ /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\topo.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\topo.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\topo.pdb" /debug /machine:I386 /out:"$(OUTDIR)\topo.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@" 
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:yes /pdb:"$(OUTDIR)\topo.pdb" /debug /machine:I386 /out:"$(OUTDIR)\topo.exe" /pdbtype:sept /libpath:"@OMNETPP_LIB_DIR@"
 LINK32_OBJS= \
 	"$(INTDIR)\binarytree_n.obj" \
 	"$(INTDIR)\chain_n.obj" \
@@ -231,45 +231,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /ML /W3 /GR /GX /O2 /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\topo.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /ML /W3 /GR /GX /O2 /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\topo.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\topo.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\topo.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib tcl84.lib tk84.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\topo.pdb" /machine:I386 /out:"$(OUTDIR)\topo.exe" /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@" 
+LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib tcl84.lib tk84.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\topo.pdb" /machine:I386 /out:"$(OUTDIR)\topo.exe" /libpath:"@OMNETPP_LIB_DIR@" /libpath:"@TK_LIB_PATH@"
 LINK32_OBJS= \
 	"$(INTDIR)\binarytree_n.obj" \
 	"$(INTDIR)\chain_n.obj" \
@@ -315,45 +315,45 @@ CLEAN :
     if not exist "$(INTDIR)/$(NULL)" mkdir "$(INTDIR)"
 
 CPP=cl.exe
-CPP_PROJ=/nologo /ML /W3 /GR /GX /O2 /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\topo.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c 
+CPP_PROJ=/nologo /ML /W3 /GR /GX /O2 /I "@OMNETPP_INCL_DIR@" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /Fp"$(INTDIR)\topo.pch" /YX /Fo"$(INTDIR)\\" /Fd"$(INTDIR)\\" /FD /c
 
 .c{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.obj::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .c{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cpp{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 .cxx{$(INTDIR)}.sbr::
    $(CPP) @<<
-   $(CPP_PROJ) $< 
+   $(CPP_PROJ) $<
 <<
 
 RSC=rc.exe
 BSC32=bscmake.exe
-BSC32_FLAGS=/nologo /o"$(OUTDIR)\topo.bsc" 
+BSC32_FLAGS=/nologo /o"$(OUTDIR)\topo.bsc"
 BSC32_SBRS= \
-	
+
 LINK32=link.exe
-LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:0x1000000 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\topo.pdb" /machine:I386 /out:"$(OUTDIR)\topo.exe" /libpath:"@OMNETPP_LIB_DIR@" 
+LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /stack:65536 /subsystem:console /incremental:no /pdb:"$(OUTDIR)\topo.pdb" /machine:I386 /out:"$(OUTDIR)\topo.exe" /libpath:"@OMNETPP_LIB_DIR@"
 LINK32_OBJS= \
 	"$(INTDIR)\binarytree_n.obj" \
 	"$(INTDIR)\chain_n.obj" \
@@ -369,16 +369,16 @@ LINK32_OBJS= \
   $(LINK32_FLAGS) $(LINK32_OBJS)
 <<
 
-!ENDIF 
+!ENDIF
 
 
 !IF "$(NO_EXTERNAL_DEPS)" != "1"
 !IF EXISTS("topo.dep")
 !INCLUDE "topo.dep"
-!ELSE 
+!ELSE
 !MESSAGE Warning: cannot find "topo.dep"
-!ENDIF 
-!ENDIF 
+!ENDIF
+!ENDIF
 
 
 !IF "$(CFG)" == "topo - Win32 Debug Tkenv" || "$(CFG)" == "topo - Win32 Debug Cmdenv" || "$(CFG)" == "topo - Win32 Release Tkenv" || "$(CFG)" == "topo - Win32 Release Cmdenv"
@@ -390,11 +390,11 @@ InputPath=.\binarytree.ned
 InputName=binarytree
 
 ".\binarytree_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
@@ -402,11 +402,11 @@ InputPath=.\binarytree.ned
 InputName=binarytree
 
 ".\binarytree_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
 
@@ -414,11 +414,11 @@ InputPath=.\binarytree.ned
 InputName=binarytree
 
 ".\binarytree_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -426,13 +426,13 @@ InputPath=.\binarytree.ned
 InputName=binarytree
 
 ".\binarytree_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\binarytree_n.cpp
 
@@ -447,11 +447,11 @@ InputPath=.\chain.ned
 InputName=chain
 
 ".\chain_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
@@ -459,11 +459,11 @@ InputPath=.\chain.ned
 InputName=chain
 
 ".\chain_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
 
@@ -471,11 +471,11 @@ InputPath=.\chain.ned
 InputName=chain
 
 ".\chain_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -483,13 +483,13 @@ InputPath=.\chain.ned
 InputName=chain
 
 ".\chain_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\chain_n.cpp
 
@@ -504,11 +504,11 @@ InputPath=.\fullgraph.ned
 InputName=fullgraph
 
 ".\fullgraph_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
@@ -516,11 +516,11 @@ InputPath=.\fullgraph.ned
 InputName=fullgraph
 
 ".\fullgraph_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
 
@@ -528,11 +528,11 @@ InputPath=.\fullgraph.ned
 InputName=fullgraph
 
 ".\fullgraph_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -540,13 +540,13 @@ InputPath=.\fullgraph.ned
 InputName=fullgraph
 
 ".\fullgraph_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\fullgraph_n.cpp
 
@@ -561,11 +561,11 @@ InputPath=.\hexgrid.ned
 InputName=hexgrid
 
 ".\hexgrid_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
@@ -573,11 +573,11 @@ InputPath=.\hexgrid.ned
 InputName=hexgrid
 
 ".\hexgrid_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
 
@@ -585,11 +585,11 @@ InputPath=.\hexgrid.ned
 InputName=hexgrid
 
 ".\hexgrid_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -597,13 +597,13 @@ InputPath=.\hexgrid.ned
 InputName=hexgrid
 
 ".\hexgrid_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\hexgrid_n.cpp
 
@@ -618,11 +618,11 @@ InputPath=.\mesh.ned
 InputName=mesh
 
 ".\mesh_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
@@ -630,11 +630,11 @@ InputPath=.\mesh.ned
 InputName=mesh
 
 ".\mesh_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
 
@@ -642,11 +642,11 @@ InputPath=.\mesh.ned
 InputName=mesh
 
 ".\mesh_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -654,13 +654,13 @@ InputPath=.\mesh.ned
 InputName=mesh
 
 ".\mesh_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\mesh_n.cpp
 
@@ -680,11 +680,11 @@ InputPath=.\randomgraph.ned
 InputName=randomgraph
 
 ".\randomgraph_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
@@ -692,11 +692,11 @@ InputPath=.\randomgraph.ned
 InputName=randomgraph
 
 ".\randomgraph_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
 
@@ -704,11 +704,11 @@ InputPath=.\randomgraph.ned
 InputName=randomgraph
 
 ".\randomgraph_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -716,13 +716,13 @@ InputPath=.\randomgraph.ned
 InputName=randomgraph
 
 ".\randomgraph_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\randomgraph_n.cpp
 
@@ -737,11 +737,11 @@ InputPath=.\star.ned
 InputName=star
 
 ".\star_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
@@ -749,11 +749,11 @@ InputPath=.\star.ned
 InputName=star
 
 ".\star_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
 
@@ -761,11 +761,11 @@ InputPath=.\star.ned
 InputName=star
 
 ".\star_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
+
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -773,13 +773,13 @@ InputPath=.\star.ned
 InputName=star
 
 ".\star_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	<<tempfile.bat 
-	@echo off 
+	<<tempfile.bat
+	@echo off
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-<< 
-	
+<<
 
-!ENDIF 
+
+!ENDIF
 
 SOURCE=.\star_n.cpp
 
@@ -787,5 +787,5 @@ SOURCE=.\star_n.cpp
 
 
 
-!ENDIF 
+!ENDIF
 
