@@ -327,3 +327,4 @@ Jan 15,2000
 Jan 17-18,2000
   - bugfix in OmnetTkApp::objectDeleted() (tkapp.cc)
   - edited error msgs in tkapp.cc
+  - font settins updated for Tk8.2/Win in main.tcl
