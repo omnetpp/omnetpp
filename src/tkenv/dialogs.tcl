@@ -309,58 +309,98 @@ proc rununtil_dialog {time_var event_var mode_var} {
 #
 proc findDialog {w} {
 
-    global tmp
+    global tmp config
 
-    # set tmp(case-sensitive)  $prefs(editor-case-sensitive)
-    # set tmp(whole-words)     $prefs(editor-whole-words)
-    # set tmp(regexp)          $prefs(editor-regexp)
+    set tmp(case-sensitive)  $config(editor-case-sensitive)
+    set tmp(whole-words)     $config(editor-whole-words)
+    set tmp(regexp)          $config(editor-regexp)
+
+    # dialog should be child of the window which contains the text widget
+    set dlg [winfo toplevel $w].dlg
+    if {$dlg=="..dlg"} {set dlg .dlg}
 
     # create dialog with OK and Cancel buttons
     set title "Find"
-    createOkCancelDialog .dlg $title
+    createOkCancelDialog $dlg $title
 
     # add entry fields
-    label-entry .dlg.f.find "Find string:"
-    pack .dlg.f.find  -expand 0 -fill x -side top
+    label-entry $dlg.f.find "Find string:"
+    pack $dlg.f.find  -expand 0 -fill x -side top
 
-    checkbutton .dlg.f.regexp -text {regular expression} -variable tmp(regexp)
-    pack .dlg.f.regexp  -anchor w -side top
+    checkbutton $dlg.f.regexp -text {regular expression} -variable tmp(regexp)
+    pack $dlg.f.regexp  -anchor w -side top
 
-    checkbutton .dlg.f.case -text {case sensitive} -variable tmp(case-sensitive)
-    pack .dlg.f.case  -anchor w -side top
+    checkbutton $dlg.f.case -text {case sensitive} -variable tmp(case-sensitive)
+    pack $dlg.f.case  -anchor w -side top
 
-    checkbutton .dlg.f.words -text {whole words only} -variable tmp(whole-words)
-    pack .dlg.f.words  -anchor w -side top
+    checkbutton $dlg.f.words -text {whole words only} -variable tmp(whole-words)
+    pack $dlg.f.words  -anchor w -side top
 
-    focus .dlg.f.find.e
+    $dlg.f.find.e insert 0 $config(editor-findstring)
+    $dlg.f.find.e select range 0 end
+
+    focus $dlg.f.find.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
-    if {[execOkCancelDialog .dlg] == 1} {
-        set findstring [.dlg.f.find.e get]
+    if {[execOkCancelDialog $dlg] == 1} {
+        set findstring [$dlg.f.find.e get]
 
         set case $tmp(case-sensitive)
         set words $tmp(whole-words)
         set regexp $tmp(regexp)
 
-        destroy .dlg
+        set config(editor-findstring) $findstring
+        set config(editor-case-sensitive) $case
+        set config(editor-whole-words) $words
+        set config(editor-regexp) $regexp
+
+        destroy $dlg
         doFind $w $findstring $case $words $regexp
    }
-   catch {destroy .dlg}
+   catch {destroy $dlg}
 }
+
+
+# findNext --
+#
+# find next occurrence of the string in the editor window
+#
+proc findNext {w} {
+    global config
+
+    set findstring   $config(editor-findstring)
+    set case         $config(editor-case-sensitive)
+    set words        $config(editor-whole-words)
+    set regexp       $config(editor-regexp)
+
+    doFind $w $findstring $case $words $regexp
+}
+
 
 # doFind --
 #
-# Finds the given string, positions the cursor after its last char,
-# and returns the length. Returns empty string and shows a dialog
-# if not found.
 #
 proc doFind {w findstring case words regexp} {
+    if {[_doFind $w $findstring $case $words $regexp] == ""} {
+        tk_messageBox -parent [winfo toplevel $w] -title "Find" -icon warning \
+                      -type ok -message "'$findstring' not found."
+    }
+}
+
+# _doFind --
+#
+# Internal proc for doFind and doReplace.
+#
+# Finds the given string, positions the cursor after its last char,
+# and returns the length. Returns empty string if not found.
+#
+proc _doFind {w findstring case words regexp} {
 
     # remove previous highlights
     $w tag remove SELECT 0.0 end
 
     # find the string
-    set cur insert
+    set cur "insert"
     while 1 {
         if {$case && $regexp} {
             set cur [$w search -count length -regexp -- $findstring $cur end]
@@ -386,15 +426,15 @@ proc doFind {w findstring case words regexp} {
 
     # check if found
     if {$cur == ""} {
-        tk_messageBox  -title "Find" -icon warning -type ok -message "'$findstring' not found."
         return ""
     }
 
     # highlight it and return length
     $w tag add SELECT $cur "$cur + $length chars"
-    $w mark set insert "$cur + $length chars - 1 char"
+    $w mark set insert "$cur + $length chars"
     $w see insert
 
     return $length
 }
+
 

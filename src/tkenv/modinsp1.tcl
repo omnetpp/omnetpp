@@ -125,66 +125,75 @@ proc one_step_in_module {w} {
     }
 }
 
+
 proc create_simplemodulewindow {name} {
-    global icons help_tips
-
-    set w $name
-    create_inspector_toplevel $w
-
-    # Add icons
-    iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
-    iconbutton $w.toolbar.sep1   -separator
-    iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-    iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
-
-    foreach i {obj sep1 parent sep2 step} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    }
-
-    set help_tips($w.toolbar.obj)    {Inspect as object}
-    set help_tips($w.toolbar.parent) {Inspect parent module}
-    set help_tips($w.toolbar.step)   {Stop at events in this module}
-
-    frame $w.main
-    text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15
-    scrollbar $w.main.sb -command "$w.main.text yview"
-    $w.main.text tag configure event -foreground blue
-
-    pack $w.main -anchor center -expand 1 -fill both -side top
-    pack $w.main.sb -anchor center -expand 0 -fill y -side right
-    pack $w.main.text -anchor center -expand 1 -fill both -side left
+    _create_modulewindow $name 0
 }
 
 proc create_compoundmodulewindow {name} {
+    _create_modulewindow $name 1
+}
+
+proc _create_modulewindow {name iscompound} {
     global icons help_tips
 
     set w $name
     create_inspector_toplevel $w
 
     # Add icons
-    iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
-    iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
-    iconbutton $w.toolbar.sep1   -separator
-    iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
-    iconbutton $w.toolbar.sep2   -separator
-    iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
+    if {$iscompound} {
+        # for compound module
+        iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
+        iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
+        iconbutton $w.toolbar.sep1   -separator
+        iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
+        iconbutton $w.toolbar.sep2   -separator
+        iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
 
-    foreach i {obj graph sep1 parent sep2 step} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+        foreach i {obj graph sep1 parent sep2 step} {
+           pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+        }
+
+        set help_tips($w.toolbar.obj)    {Inspect as object}
+        set help_tips($w.toolbar.parent) {Inspect parent module}
+        set help_tips($w.toolbar.step)   {Stop at events in this module}
+    } else {
+        # for simple module
+        iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
+        iconbutton $w.toolbar.sep1   -separator
+        iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
+        iconbutton $w.toolbar.sep2   -separator
+        iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
+
+        foreach i {obj sep1 parent sep2 step} {
+           pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+        }
+
+        set help_tips($w.toolbar.obj)    {Inspect as object}
+        set help_tips($w.toolbar.parent) {Inspect parent module}
+        set help_tips($w.toolbar.step)   {Stop at events in this module}
     }
-
-    set help_tips($w.toolbar.obj)    {Inspect as object}
-    set help_tips($w.toolbar.parent) {Inspect parent module}
-    set help_tips($w.toolbar.step)   {Stop at events in this module}
 
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15
     scrollbar $w.main.sb -command "$w.main.text yview"
     $w.main.text tag configure event -foreground blue
+    $w.main.text tag configure SELECT -back #808080 -fore #ffffff
 
     pack $w.main -anchor center -expand 1 -fill both -side top
     pack $w.main.sb -anchor center -expand 0 -fill y -side right
     pack $w.main.text -anchor center -expand 1 -fill both -side left
+
+    # bindings for find
+    #   'break' is needed below because
+    #      ^F is originally bound to 1 char right
+    #      ^N is originally bound to 1 line down
+    set txt $w.main.text
+    bind $txt <Control-f> "findDialog $txt;break"
+    bind $txt <Control-F> "findDialog $txt;break"
+    bind $txt <Control-n> "findNext $txt;break"
+    bind $txt <Control-N> "findNext $txt;break"
+    bind $txt <F3> "findNext $txt"
 }
+
 

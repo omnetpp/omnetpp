@@ -131,8 +131,13 @@ proc new_run {} {
 }
 
 proc edit_find {} {
-   # implements Edit|Find
+   # implements Edit|Find...
    findDialog .main.text
+}
+
+proc edit_findnext {} {
+   # implements Edit|Find next
+   findNext .main.text
 }
 
 proc one_step {} {

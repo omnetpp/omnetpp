@@ -18,6 +18,17 @@
 #------
 
 #===================================================================
+#    GLOBAL VARIABLES
+#===================================================================
+
+# default config settings
+set config(editor-findstring) ""
+set config(editor-case-sensitive) 0
+set config(editor-whole-words) 0
+set config(editor-regexp) 0
+
+
+#===================================================================
 #    MAIN OMNET++ WINDOW
 #===================================================================
 
@@ -84,6 +95,7 @@ proc create_omnetpp_window {} {
     # Edit menu
     foreach i {
       {command -command edit_find -label {Find...} -accel {Ctrl-F} -underline 0}
+      {command -command edit_findnext -label {Find next} -accel {Ctrl-N,F3} -underline 5}
     } {
       eval .menubar.editmenu$m add $i
     }
@@ -313,8 +325,15 @@ proc create_omnetpp_window {} {
     ###############################
     bind .main.text <Key> {%W tag remove SELECT 0.0 end}
 
-    bind .main.text <Control-f> {edit_find}
-    bind .main.text <Control-F> {edit_find}
+    # bindings for find
+    #   'break' is needed below because
+    #      ^F is originally bound to 1 char right
+    #      ^N is originally bound to 1 line down
+    bind .main.text <Control-f> {findDialog .main.text;break}
+    bind .main.text <Control-F> {findDialog .main.text;break}
+    bind .main.text <Control-n> {findNext .main.text;break}
+    bind .main.text <Control-N> {findNext .main.text;break}
+    bind .main.text <F3> {findNext .main.text}
 
 }
 
