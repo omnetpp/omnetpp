@@ -162,6 +162,16 @@ class ENVIR_API TOmnetApp
      * Utility function: handles list files with dynamic NED loading
      */
     virtual void processListFile(const char *listfilename);
+
+    /**
+     * Partition Id when parallel simulation is active.
+     */
+    virtual int getParsimProcId();
+    /**
+     * Number of partitions when parallel simulation is active, otherwise 0.
+     */
+    virtual int getParsimNumPartitions();
+
     //@}
 
     /** @name Functions called from the objects of the simulation kernel

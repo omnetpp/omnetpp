@@ -134,18 +134,20 @@ void TInspector::update()
    Tcl_Interp *interp = getTkApplication()->getInterp();
 
    // update window title (only if changed)
-   //  (always updating the title produced many unnecessary redraws under fvwm2-95)
+   //  (always updating the title produces many unnecessary redraws under some window mgrs)
+   char newtitle[128];
+   const char *prefix = getTkApplication()->getWindowTitlePrefix();
    char fullpath[300];
    object->fullPath(fullpath,300);
-   int l = strlen(fullpath);
-   char newtitle[128];
-   if (l<=37)
-       sprintf(newtitle, "(%.40s) %s",object->className(), fullpath);
+   int len = strlen(fullpath);
+   if (len<=45)
+       sprintf(newtitle, "%s(%.40s) %s", prefix, object->className(), fullpath);
    else
-       sprintf(newtitle, "(%.40s) ...%s",object->className(), fullpath+l-35);
+       sprintf(newtitle, "%s(%.40s) ...%s", prefix, object->className(), fullpath+len-40);
+
    if (strcmp(newtitle, windowtitle)!=0)
    {
-       strcpy( windowtitle, newtitle);
+       strcpy(windowtitle, newtitle);
        CHK(Tcl_VarEval(interp, "wm title ",windowname," {",windowtitle,"}",NULL));
    }
 

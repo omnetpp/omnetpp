@@ -87,10 +87,11 @@ class TOmnetTkApp : public TOmnetApp
       unsigned opt_extrastack;     // per-module extra stack
 
       // state variables
-      bool  animating;         // while execution, do message animation or not
+      bool  animating;             // while execution, do message animation or not
+      opp_string windowtitleprefix;// contains "procId=.." when using parsim
 
    protected:
-      Tcl_Interp *interp;      // TCL interpreter
+      Tcl_Interp *interp;      // Tcl interpreter
 
       opp_string tkenv_dir;    // directory of Tkenv's *.tcl files
       opp_string bitmap_dir;   // directory of icon files
@@ -192,6 +193,8 @@ class TOmnetTkApp : public TOmnetApp
       const char *getOutVectorFileName() {return outvectmgr->fileName();}
       const char *getOutScalarFileName() {return outscalarmgr->fileName();}
       const char *getSnapshotFileName()  {return snapshotmgr->fileName();}
+      const char *getWindowTitlePrefix() {return correct(windowtitleprefix);}
+
 };
 
 

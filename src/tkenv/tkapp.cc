@@ -180,6 +180,13 @@ void TOmnetTkApp::setup()
         return;
     }
 
+    // create windowtitle prefix
+    if (getParsimNumPartitions()>0)
+    {
+        windowtitleprefix.allocate(24);
+        sprintf(windowtitleprefix.buffer(), "Proc %d/%d - ",
+                                            getParsimProcId(), getParsimNumPartitions());
+    }
 }
 
 int TOmnetTkApp::run()
@@ -774,7 +781,7 @@ void TOmnetTkApp::updateNetworkRunDisplay()
     CHK(Tcl_VarEval(interp, NETWORK_LABEL " config -text {",
                         "Run #",runnr,": ",networkname,
                         "}", NULL ));
-    CHK(Tcl_VarEval(interp, "wm title . {OMNeT++/Tkenv - ",networkname,"}",NULL));
+    CHK(Tcl_VarEval(interp, "wm title . {OMNeT++/Tkenv - ", getWindowTitlePrefix(), networkname,"}",NULL));
 }
 
 void TOmnetTkApp::updateSimtimeDisplay()

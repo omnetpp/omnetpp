@@ -280,6 +280,25 @@ void TOmnetApp::setup()
      initialized = true;
 }
 
+int TOmnetApp::getParsimProcId()
+{
+#ifdef WITH_PARSIM
+    return parsimcomm ? parsimcomm->getProcId() : 0;
+#else
+    return 0;
+#endif
+}
+
+int TOmnetApp::getParsimNumPartitions()
+{
+#ifdef WITH_PARSIM
+    return parsimcomm ? parsimcomm->getNumPartitions() : 0;
+#else
+    return 0;
+#endif
+}
+
+
 void TOmnetApp::shutdown()
 {
     try
