@@ -60,6 +60,7 @@ enum {
    PR_TOKENRING,
    PR_LAPB,
    PR_PPP,
+   PR_WETHERNET,
 
    // network
    PR_IP = 3000,
