@@ -962,10 +962,7 @@ switches\index{command line switches}:
 \subsection{Tkenv ini file settings}
 \label{sec:ch-run-sim:tkenv-section}
 
-Tkenv accepts several settings in the \ttt{[Tkenv]} section of the ini file.
-These settings can also be set within the graphical environment too,
-via menu items and dialogs.
-
+Tkenv accepts the following settings in the \ttt{[Tkenv]} section of the ini file.
 
 \begin{longtable}{|p{6.5cm}|p{7.5cm}|}
 \hline
@@ -973,9 +970,30 @@ via menu items and dialogs.
 \tbf{Entry and default value} & \tbf{Description}\\\hline
 \multicolumn{2}{|c|}{\tbf{[Tkenv]}}\\\hline
 %%
+\fpar{extra-stack-kb} = 48 & Specifies the extra amount of stack
+(in kilobytes) that is reserved for each \textit{\fname{activity()}}
+simple module when the simulation is run under Tkenv. This value is
+significantly higher than the similar one for Cmdenv -- handling
+GUI events requires a large amount of stack space.\\\hline
+%%
 \fpar{default-run} = 1 & Specifies which run Tkenv should set up
 automatically after startup. If there's no default-run= entry or the
 value is 0, Tkenv will ask which run to set up. \\\hline
+%%
+\end{longtable}
+
+The following configuration entries are of marginal usefulness,
+because corresponding settings are also accessible in the
+Simulation options dialog in the Tkenv GUI, and the GUI settings
+take precedence. Tkenv stores the settings in the
+\ttt{.tkenvrc} file in the current directory -- the ini file
+settings are only used if there is no \ttt{.tkenvrc} file.
+
+\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
+\hline
+\tabheadcol
+\tbf{Entry and default value} & \tbf{Description}\\\hline
+\multicolumn{2}{|c|}{\tbf{[Tkenv]}}\\\hline
 %%
 \fpar{use-mainwindow} = yes & Enables/disables writing \textit{ev} output to the Tkenv main window. \\\hline
 %%
@@ -1004,11 +1022,10 @@ for each message kind during message flow animation. \\\hline
 %%
 \fpar{animation-speed} = 1.0 & Specifies the speed of message flow animation. \\\hline
 %%
-\fpar{extra-stack-kb} = 48 & Specifies the extra amount of stack
-(in kilobytes) that is reserved for each \textit{\fname{activity()}}
-simple module when the simulation is run under Tkenv. This value is
-significantly higher than the similar one for Cmdenv -- handling
-GUI events requires a large amount of stack space.\\\hline
+\fpar{methodcalls-delay} = & Sets delay after method call animation. \\\hline
+%%
+\fpar{show-layouting} = true & Show layouting process of network graphics. \\\hline
+%%
 \end{longtable}
 
 

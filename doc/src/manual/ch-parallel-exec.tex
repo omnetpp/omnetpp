@@ -373,9 +373,17 @@ everywhere else (Figure \ref{fig:inst}).
 \tbf{Entry and default value} & \tbf{Description}\\\hline
 \multicolumn{2}{|l|}{\tbf{[Cmdenv]}}\\\hline
 
+parallel-simulation = <true/false>\linebreak
+default: false
+&
+Enables parallel distributed simulation. The following configuration
+entries are only examined if \ttt{parallel-simulation=true}
+\\\hline
+
 parsim-debug = <true/false>\linebreak
 default: true
 &
+Enables debugging output
 \\\hline
 
 parsim-mpicommunications-mpibuffer = <bytes>\linebreak
@@ -400,10 +408,13 @@ already exist when the simulation is launched.
 parsim-filecommunications-prefix = <string>\linebreak
 default: "comm/"
 &
+(see below)
 \\\hline
 
 parsim-filecommunications-preserve-read = <true/false>\linebreak
 default: false
+&
+(see below)
 \\\hline
 
 parsim-filecommunications-read-prefix = <string>\linebreak
