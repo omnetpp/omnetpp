@@ -28,7 +28,7 @@ a:visited {text-decoration: none;}
 <I><FONT SIZE=+1>Discrete Event Simulation System</FONT></I></FONT></h1>
 -->
 
-<H1><B>User Manual</B></H1><H3>OMNeT++ version 3.0</H3><H1>Chapters</H1>
+<H1><B>User Manual</B></H1><H3>OMNeT++ version 3.1</H3><H1>Chapters</H1>
 <p>
 <B><A HREF="#toc_1" class="toc">1 Introduction</A></B><BR>
 <B><A HREF="#toc_2" class="toc">2 Overview</A></B><BR>
@@ -176,7 +176,7 @@ a:visited {text-decoration: none;}
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.5"/><A HREF="#sec226" class="toc">6.1.5 fullName() and fullPath()</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.6"/><A HREF="#sec227" class="toc">6.1.6 Copying and duplicating objects</A><BR>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.7"/><A HREF="#sec228" class="toc">6.1.7 Iterators</A><BR>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.8"/><A HREF="#sec229" class="toc">6.1.8 Error handling [New!]</A><BR>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.1.8"/><A HREF="#sec229" class="toc">6.1.8 Error handling</A><BR>
 <B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.2"/><A HREF="#sec230" class="toc">6.2 Logging from modules</A></B><BR>
 <B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.3"/><A HREF="#sec231" class="toc">6.3 Simulation time conversion</A></B><BR>
 <B>&nbsp;&nbsp;&nbsp;&nbsp;<A NAME="toc_6.4"/><A HREF="#sec232" class="toc">6.4 Generating random numbers</A></B><BR>
@@ -354,6 +354,7 @@ a:visited {text-decoration: none;}
 <TR> <TD align=left>
 
 <p><b>Date</b> </TD> <TD align=left> <b>Author</b> </TD> <TD align=left> <b>Change</b></TD></TR>
+<TR> <TD align=left> 2005/03 </TD> <TD align=left> AV </TD> <TD align=left> updated for the OMNeT++ 3.1 release</TD></TR>
 <TR> <TD align=left> 2004/12 </TD> <TD align=left> AV </TD> <TD align=left> updated for the OMNeT++ 3.0 release</TD></TR>
 <TR> <TD align=left> 2003/06 </TD> <TD align=left> AV </TD> <TD align=left> Mentioned Grace and ROOT in section "Visualizing...".
                Added section "Using STL in message classes".
@@ -7742,7 +7743,7 @@ for (<a href="../api/classcQueue.html">cQueue</a>::Iterator queueIter(queue); !q
 <p>
 
 <p>
-<H3><A NAME="sec229"/>6.1.8 Error handling [New!]</H3>
+<H3><A NAME="sec229"/>6.1.8 Error handling</H3>
 
 <p>
 When library objects detect an error condition, they throw a C++ exception.
@@ -7753,7 +7754,7 @@ an error dialog or displays the error message.
 (just before the exception is thrown) and use a C++ debugger to look
 at the stack trace and examine variables. Enabling the <tt>debug-on-errors</tt>
 ini file entry lets you do that -- check it in section
-<a href="#sec295">[8.2.6]</a>.
+<a href="#sec295">[8.2.6]</a>  <sup><b>[New!]</b></sup>.
 
 <p>If you detect an error condition in your code, you can stop the
 simulation with an error message using the <tt>opp_error()</tt> function.
@@ -9092,13 +9093,13 @@ collected by the histogram object:
 
 <pre>
 FILE *f = fopen("histogram.dat","w");
-histogram.saveToFile( f ); // save the distribution
-fclose( f );
+histogram.saveToFile(f); // save the distribution
+fclose(f);
 
-FILE *f2 = fopen("histogram.dat","r");}
 <a href="../api/classcDoubleHistogram.html">cDoubleHistogram</a> hist2("Hist-from-file");
-hist2.loadFromFile( f2 ); // load stored distribution
-fclose( f2 );
+FILE *f2 = fopen("histogram.dat","r");
+hist2.loadFromFile(f2); // load stored distribution
+fclose(f2);
 </pre>
 <p>
 
@@ -11258,7 +11259,7 @@ in kilobytes. You need to increase this value if you get the
 <TR> <TD align=left> <tt>debug-on-errors</tt> = false </TD> <TD align=left> When set to <tt>true</tt>, runtime errors will
 cause the simulation program to break into the C++ debugger (if the simulation
 is running under one, or just-in-time debugging is activated).
-Once in the debugger, you can view the stack trace or examine variables. [New!]</TD></TR>
+Once in the debugger, you can view the stack trace or examine variables. <sup><b>[New!]</b></sup></TD></TR>
 <TR> <TD align=left> <tt>load-libs</tt> = </TD> <TD align=left>  List of shared libraries (separated by
 spaces) to load in the initialization phase. OMNeT++ appends a platform-specific
 extension to the library name: <tt>.dll</tt> on Windows and <tt>.so</tt> on Unix systems.
@@ -11425,7 +11426,12 @@ net.server.transactionsPerSecond = 100
 or the <tt>[Run 1]</tt>, <tt>[Run 2]</tt> etc. sections of the ini file.
 The run-specific settings take precedence over the overall settings.
 
-<p>An example <tt>omnetpp.ini</tt>:
+<p>Though runs are identified by numbers, you can assign them short
+descriptive labels, which will get displayed e.g. in the Tkenv
+run selection dialog. Just place a <tt>description="some text"</tt>
+line under the <tt>[Run x]</tt> heading. <sup><b>[New!]</b></sup>
+
+<p>An example <tt>omnetpp.ini</tt> (everything after # is a comment):
 
 <pre>
 [Parameters]
@@ -11433,13 +11439,16 @@ net.numHosts = 15
 net.server.transactionsPerSecond = 100
 
 [Run 1]
+description="general settings"
 # uses settings from the [Parameters] section
 
 [Run 2]
+description="higher transaction rate"
 net.server.transactionsPerSecond = 150  # overrides the value in [Parameters]
 # net.numHosts comes from the [Parameters] section
 
 [Run 3]
+description="more hosts and higher transaction rate"
 # override both setting in [Parameters]
 net.numHosts = 20
 net.server.transactionsPerSecond = 150
@@ -11447,7 +11456,8 @@ net.server.transactionsPerSecond = 150
 <p>
 
 <p>
-<H3><A NAME="sec299"/>8.4.2 Using wildcard patterns</H3>
+
+<p><H3><A NAME="sec299"/>8.4.2 Using wildcard patterns</H3>
 <a name="sec:ch-run-sim:wildcards"></a>
 <!--ini file!wildcards-->
 
@@ -13086,7 +13096,7 @@ Defaults: <i>pos</i>="t", <i>color</i>=blue</TD></TR>
  Displays the given text in a tooltip when the user moves
 the mouse over the icon. This complements the <tt>t=</tt> tag, and
 lets you display more information that otherwise would not fit on the
-screen.</TD></TR>
+screen. <sup><b>[New!]</b></sup></TD></TR>
 <TR> <TD align=left> 
 </table>
 
@@ -13135,7 +13145,7 @@ For color notation, see section <a href="#sec336">[9.2]</a>.
 <TR> <TD align=left> <b>tt=</b><i>tooltip-text</i>
 </TD> <TD align=left>
  Displays the given text in a tooltip when the user moves
-the mouse over the module name in the top-left corner.</TD></TR>
+the mouse over the module name in the top-left corner. <sup><b>[New!]</b></sup></TD></TR>
 </table>
 
 <p>
@@ -13176,16 +13186,16 @@ For color notation, see section <a href="#sec336">[9.2]</a>.
 </TD> <TD align=left>
  Displays a short text near the connection arrow.
 The text may convey status information or connection properties
-(<i>"down"</i>, <i>"10Mb"</i>) or statistics.
+(<i>"down"</i>, <i>"100Mb"</i>) or statistics. <sup><b>[New!]</b></sup>
 
 <p>
-Defaults: <i>color</i>=blue</TD></TR>
+Defaults: <i>color</i>=#005030</TD></TR>
 <TR> <TD align=left> <b>tt=</b><i>tooltip-text</i>
 </TD> <TD align=left>
  Displays the given text in a tooltip when the user moves
 the mouse over the connection arrow. This complements the <tt>t=</tt> tag, and
 lets you display more information that otherwise would not fit on the
-screen.</TD></TR>
+screen. <sup><b>[New!]</b></sup></TD></TR>
 </table>
 
 <p>
@@ -13250,7 +13260,7 @@ red solid circle will be used;
 <TR> <TD align=left> <b>tt=</b><i>tooltip-text</i>
 </TD> <TD align=left>
  Displays the given text in a tooltip when the user moves
-the mouse over the message icon.</TD></TR>
+the mouse over the message icon. <sup><b>[New!]</b></sup></TD></TR>
 <TR> <TD align=left> 
 </table>
 
@@ -13296,7 +13306,7 @@ specify a color with about 50% brightness (e.g. #808080 mid-grey,
 
 <p><ul>
   <li> <tt>"i=device/server,gold"</tt> creates a gold server icon
-  <li> <tt>"i=place/globe,#808080,100"</tt> makes the icon grayscale
+  <li> <tt>"i=misc/globe,#808080,100"</tt> makes the icon grayscale
   <li> <tt>"i=block/queue,white,100"</tt> yields a "burnt-in" black-and-white icon
 </ul>
 
@@ -13356,7 +13366,7 @@ by folders. These categories include:
   <li> block/ - icons for subcomponents (queues, protocols, etc).
   <li> device/ - network devices: servers, hosts, routers, etc.
   <li> abstract/ - symbolic icons for various devices
-  <li> place/ - subnet, building, town, city; map symbols
+  <li> misc/ - node, subnet, cloud, building, town, city, etc.
   <li> msg/ - icons that can be used for messages
 </ul>
 

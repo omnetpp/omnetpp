@@ -20,12 +20,30 @@ Legend:
 (i)     information
 
 
+OMNeT++ 3.1 (Mar 2005)
+~~~~~~~~~~~~~~~~~~~~~~
+Simulation library:
+(+)     added cStringTokenizer class
+
+(+)     extended cScheduler interface, added cRealTimeScheduler class
+
+(!)     cDisplayString's getTagArg() method now never return NULLs (returns
+        empty string "" instead)
+
+(+)     added getBaseDirectoryFor() and getLocation() to cConfiguration
+
+(+)     introduced cRuntimeError class, a subclass of cException
+
+
 OMNeT++ 3.0 (Dec 2004)
 ~~~~~~~~~~~~~~~~~~~~~~
 Simulation library:
 (x)     removed setOwner() with no replacement. Use take() from within
         objects, e.g. foo->setOwner(this) should be replaced with
-        this->take(foo) or just take(foo).
+        this->take(foo) or just take(foo). Some existing simulation models
+        used setOwner() to "work around" (hack) message ownership
+        problems instead of tracking them down and fixing them properly --
+        the intent of removing setOwner() is to close this backdoor.
 
 (x)     removed putAsideQueue, receiveOn(), receiveNewOn(), receiveNew();
         only receive() remained.
@@ -67,9 +85,9 @@ Simulation library:
 
 (+)     added cModule::changeParentTo()
 
-(+)	added cSimulation::getUniqueNumber(). Useful in models for ID 
-	generation, and (unlike incrementing global vars) it also works 
-	with parallel execution
+(+)     added cSimulation::getUniqueNumber(). Useful in models for ID
+        generation, and (unlike incrementing global vars) it also works
+        with parallel execution
 
 (-)     cDisplayStringParser renamed to cDisplayString (compatibility
         typedef exists)
