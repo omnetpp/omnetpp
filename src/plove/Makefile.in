@@ -89,8 +89,8 @@ missing-library:
 	@ echo '*** No Tk installation found -- skipping Scalars'
 
 depend:
-	$(MAKEDEPEND) -I. -- *.cc
-	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc
+	$(MAKEDEPEND) -I. -- *.cc engine/*.cc
+	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc engine/*.cc
 
 clean:
 	rm -f tclcode.cc *.o plove$(EXE_SUFFIX)

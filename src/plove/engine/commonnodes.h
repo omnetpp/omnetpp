@@ -18,6 +18,10 @@
 #include "node.h"
 #include "nodetype.h"
 
+#ifdef _MSC_VER
+#pragma warning(disable:4355) // 'this' : used in base member initializer list
+#endif
+
 
 /**
  * Base class for one-port producer nodes.

@@ -73,7 +73,7 @@ missing-library:
 	@ echo *** No Tk installation found -- skipping Scalars
 
 depend:
-	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc engine/*.cc
 
 clean:
 	-del tclcode.cc *.obj engine\*.obj scalars.exe 2> nul
