@@ -363,17 +363,17 @@ Typically, compound module parameters are passed to submodules and
 used for initializing their parameters.
 
 Parameters can also be used in defining the internal structure of
-the compound module: the number of submodules, gate vector sizes
-can be define with the help of parameters, and parameters can
+the compound module: the number of submodules and sizes of gate vectors
+can be defined with the help of parameters, and parameters can
 also be used in defining the connections inside the compound module.
 As a practical example, you can create a \ttt{Router} compound module
 with a variable number of ports, specified in a \ttt{numOfPorts} parameter.
 
 Parameters affecting the internal structure should always be declared
 \ttt{const}, so that accessing them always yields the same value.
-(Otherwise, if the parameter was assigned a random value, one could
+Otherwise, if the parameter was assigned a random value, one could
 get a different value each time the parameter is accessed during building
-the internals of the compound module, which is surely not what was meant.)
+the internals of the compound module, which is surely not what was meant.
 
 Example:
 
@@ -489,7 +489,7 @@ or even enter it interactively),
 and your network will use the routing algorithm you chose.
 
 If you specify a wrong value, say \texttt{"FooBarRoutingNode"}
-whereas you have no \ttt{FooBarRoutingNode} module implemented,
+when you have no \ttt{FooBarRoutingNode} module implemented,
 you'll get a runtime error at the beginning of the simulation:
 \textit{module type definition not found}.
 
