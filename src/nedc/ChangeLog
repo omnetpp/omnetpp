@@ -251,6 +251,10 @@ Mar 7, 2000
   - changed test12.ned and test13.ned
 Mar 12, 2000
   - added lines to generated code to disable compiler warnings about unused
-    vars under MSVC and Borland C++. I have no solution for gcc.
+    vars under MSVC and Borland C++. I have no solution for gcc (gcc doesn't
+    seem to have #pragma or any other mechanism to disable warnings from the
+    source).
 Mar 26, 2000
  - 'char *' --> 'const char *' changes in generated code
+Mar 27, 2000
+ - bugfix: conditional (?:) operator caused parse error [reported by Niko]

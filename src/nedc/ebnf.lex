@@ -168,6 +168,7 @@ char textbuf[256], lasttextbuf[256] = "";
 "["                     { count(); return ('['); }
 "]"                     { count(); return (']'); }
 "."                     { count(); return ('.'); }
+"?"                     { count(); return ('?'); } /* --VA */
 
 "||"                    { count(); return (OR); }  /* --VA */
 "&&"                    { count(); return (AND); } /* --VA */
@@ -181,7 +182,7 @@ char textbuf[256], lasttextbuf[256] = "";
 "<<"                    { count(); return (SHIFT_LEFT); } /* --VA */
 ">>"                    { count(); return (SHIFT_RIGHT); } /* --VA */
 
-"^"                     { count(); return (EXP); }  /* --VA */
+"^"                     { count(); return (EXP); } 
 "+"                     { count(); return (PLUS); }
 "-"                     { count(); return (MIN); }
 "*"                     { count(); return (MUL); }
@@ -196,7 +197,7 @@ char textbuf[256], lasttextbuf[256] = "";
 ">="                    { count(); return (GE); }  /* --VA */
 
 [ \t\v\n\f]             { count(); }
-.                       { count(); /* ignore bad characters */ }
+.                       { count(); return (INVALID_CHAR); }
 
 %%
 

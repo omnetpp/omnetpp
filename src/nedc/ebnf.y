@@ -58,6 +58,8 @@
 %token BIN_AND BIN_OR BIN_XOR BIN_COMPL
 %token SHIFT_LEFT SHIFT_RIGHT
 
+%token INVALID_CHAR   /* just to generate parse error --VA */
+
 /* Operator precedences (low to high) and associativity */
 %left AND OR XOR
 %left '?' ':'
