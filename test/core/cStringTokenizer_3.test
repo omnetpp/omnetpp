@@ -1,21 +1,41 @@
 %description:
-empty string, or empty delimiters
+check empty/NULL string, empty/NULL delimiters
 
 %activity:
 
 const char *token;
 
-cStringTokenizer tok1("");
-while ((token = tok1.nextToken())!=NULL)
-    ev << ":" << token;
-ev << ".\n";
+{
+    cStringTokenizer tok("");
+    while ((token = tok.nextToken())!=NULL)
+        ev << ":" << token;
+    ev << ".\n";
+}
 
-cStringTokenizer tok2("bla bla", "");
-tok2.setDelimiter("- ");
-while ((token = tok2.nextToken())!=NULL)
-    ev << ":" << token;
-ev << ".\n";
+{
+    cStringTokenizer tok(NULL);
+    while ((token = tok.nextToken())!=NULL)
+        ev << ":" << token;
+    ev << ".\n";
+}
+
+{
+    cStringTokenizer tok("bla bla", "");
+    while ((token = tok.nextToken())!=NULL)
+        ev << ":" << token;
+    ev << ".\n";
+}
+
+{
+    cStringTokenizer tok("bla bla", NULL);
+    while ((token = tok.nextToken())!=NULL)
+        ev << ":" << token;
+    ev << ".\n";
+}
+
 
 %contains: stdout
 .
+.
+:bla:bla.
 :bla:bla.

@@ -157,6 +157,7 @@ cinifile.obj: cinifile.cc \
   ../../include/cexception.h \
   fsutils.h \
   ../../include/platdep/fileutil.h \
+  ../../include/cstrtokenizer.h \
   ../../include/defs.h \
   envdefs.h \
   ../../include/cconfig.h \
@@ -236,6 +237,7 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cmodule.h \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
+  ../../include/cstrtokenizer.h \
   ../../include/cparsimcomm.h \
   ../../include/platdep/time.h \
   ../../include/platdep/misc.h \
