@@ -46,8 +46,7 @@ void RoutingDB::initialize()
 
     // this can probably be made more flexible
     topo->extractByModuleType(par("nodeType"), NULL);
-
-    cTopology::Node *thisNode = topo->nodeFor(parentModule());
+    ev << "cTopology found " << topo->nodes() << " nodes\n";
 
     // find and store next hops
     //
@@ -71,6 +70,7 @@ void RoutingDB::initialize()
             key.atAddress = atNode->module()->par("address");
             int gateId = atNode->path(0)->localGate()->id();
             rtable[key] = gateId;
+            ev << "  from " << key.atAddress << " towards " << key.destAddress << " gateId is " << gateId << endl;
         }
     }
     delete topo;

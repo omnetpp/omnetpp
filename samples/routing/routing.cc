@@ -42,8 +42,8 @@ void Routing::initialize()
     //
     cTopology *topo = new cTopology("topo");
 
-    // FIXME this can be made more flexible
     topo->extractByModuleType(parentModule()->className(), NULL);
+    ev << "cTopology found " << topo->nodes() << " nodes\n";
 
     cTopology::Node *thisNode = topo->nodeFor(parentModule());
 
@@ -59,6 +59,7 @@ void Routing::initialize()
         int gateId = parentModuleGate->fromGate()->id();
         int address = topo->node(i)->module()->par("address");
         rtable[address] = gateId;
+        ev << "  towards address " << address << " gateId is " << gateId << endl;
     }
     delete topo;
 }
