@@ -165,6 +165,9 @@ class SIM_API cGate : public cObject
      * Connect the a gate to another gate, optionally using the given
      * channel object. This methods can e.g. be used to manually create
      * connections for dynamically created modules.
+     *
+     * The channel already belonging to the gate will either be be deleted
+     * (if chan is NULL) or replaced with the one you specify here.
      */
     void connectTo(cGate *g, cChannel *chan=NULL);
 
