@@ -40,7 +40,7 @@ Text editor:
 - pgup, ctrl-pgup doesn't work correctly
 - make status line: line number etc.
 - syntax highlighting not 100% OK: it can be fooled with string constants
-  containing `//' or `\"' sequences
+  containing `//' or `\"' sequences; `in:' and `out:' are not highlighted
 
 General:
 - introduce ~/.gnedrc
