@@ -1,5 +1,5 @@
 #! /bin/sh
-NEDDOC_XSL=@OMNETPP_UTILS_DIR@/neddoc.xsl
+NEDDOC_XSL=`dirname $0`/neddoc.xsl
 TMPFILE=/tmp/opp_neddoc.tmp.$$
 
 cleanup()
