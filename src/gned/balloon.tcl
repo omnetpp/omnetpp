@@ -3,7 +3,7 @@
 #            part of the GNED, the Tcl/Tk graphical topology editor of
 #                            OMNeT++
 #
-#  Uses balloon.tcl, Copyright (c) by Victor Wagner, 1997
+#  Based on balloon.tcl, Copyright (c) by Victor Wagner, 1997
 #
 #==========================================================================
 

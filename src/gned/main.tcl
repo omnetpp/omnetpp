@@ -251,6 +251,25 @@ proc create_omnetpp_window {} {
     pack $w.main.mgr.tree -side left -fill y -padx 0 -pady 0 -ipadx 0 -ipady 0
 
     set gned(manager) $w.main.mgr
+    Tree:init $gned(manager).tree
+
+    #
+    # manager bindings
+    #
+    # FIXME:
+    bind $gned(manager).tree <1> {
+      set node [Tree:nodeat %W %x %y]
+      if {$node!=""} {
+        Tree:setselection %W $node
+      }
+    }
+
+    # FIXME:
+    bind $gned(manager).tree <Double-1> {
+      set node [Tree:nodeat %W %x %y]
+      if {$node!=""} {Tree:toggle %W $node}
+    }
+
 
     #################################
     # Create vert. toolbar

@@ -20,51 +20,66 @@
 # updateTreeManager --
 #
 # Redraws the manager window (left side of main window).
-# This function is a temporary solution, it must be replaced with
-# some more sophisticated notification mechanism (like "$key
-# deleted/added")
 #
 proc updateTreeManager {} {
-    global ned gned fonts
+    global gned
 
-    # clear canvas
-    set c $gned(manager).tree
-    $c delete all
-
-    # add items
-    set y 5
-    set dy 14
-
-    # debug code:
-    #foreach i [lsort [array names ned ]] {
-    #   $c create text 8 $y -anchor nw -text "$i: $ned($i)"
-    #   set y [expr $y+12]
-    #}
-
-    foreach nedfilekey $ned(0,childrenkeys) {
-        set fname [file tail $ned($nedfilekey,filename)]
-        $c create text 8 $y -anchor nw -text $fname -font $fonts(bold)
-        set y [expr $y+$dy]
-
-        foreach key $ned($nedfilekey,childrenkeys) {
-            if [info exist ned($key,name)] {
-                 set txt "$ned($key,type) $ned($key,name)"
-            } else {
-                 set txt "$ned($key,type)"
-            }
-            $c create text 20 $y -anchor nw -text $txt -font $fonts(normal)
-            set y [expr $y+$dy]
-        }
-    }
-
-    # adjust scrolling region
-    set bbox [$c bbox all]
-    if {$bbox==""} {
-        $c config -scrollregion "0 0 0 0"
-    } else {
-        $c config -scrollregion $bbox
-    }
+    Tree:build $gned(manager).tree
 }
 
 
+#-------------- temp solution: -----------------
 
+# This user-supplied function gets called by the tree widget to get info about
+# tree nodes. The widget itself only stores the state (open/closed) of the
+# nodes, everything else comes from this function.
+#
+proc getNodeInfo {w op {nodeid {}}} {
+
+  global ned
+
+  switch $op {
+    root {
+      return 1
+    }
+    text {
+      return "Node-$nodeid"
+    }
+    icon {
+      if {[expr $nodeid<32]} {
+        return "idir"
+      } else {
+        return "ifile"
+      }
+    }
+    parent {
+      if {$nodeid=="1"} {
+        return ""
+      } else {
+        return [expr int($nodeid/2)]
+      }
+    }
+    children {
+      return [list [expr 2*$nodeid] [expr 2*$nodeid+1]]
+    }
+    haschildren {
+      if {[expr $nodeid<32]} {
+        return 1
+      } else {
+        return 0
+      }
+    }
+  }
+}
+
+
+image create photo idir -data {
+    R0lGODdhEAAQAPIAAAAAAHh4eLi4uPj4APj4+P///wAAAAAAACwAAAAAEAAQAAADPVi63P4w
+    LkKCtTTnUsXwQqBtAfh910UU4ugGAEucpgnLNY3Gop7folwNOBOeiEYQ0acDpp6pGAFArVqt
+    hQQAO///
+}
+image create photo ifile -data {
+    R0lGODdhEAAQAPIAAAAAAHh4eLi4uPj4+P///wAAAAAAAAAAACwAAAAAEAAQAAADPkixzPOD
+    yADrWE8qC8WN0+BZAmBq1GMOqwigXFXCrGk/cxjjr27fLtout6n9eMIYMTXsFZsogXRKJf6u
+    P0kCADv/
+}
