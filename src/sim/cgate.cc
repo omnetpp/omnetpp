@@ -120,21 +120,31 @@ const char *cGate::fullName() const
       }
 }
 
-const char *cGate::fullPath() const
+const char *cGate::fullPath2(char *buffer, int bufsize) const
 {
-      // use cObject::fullPath()'s static buffer
-      // hide gate vector: skip directly to owner module
-      if (omodp!=NULL)
-      {
-         static char buf[512]; // should be big enough because there's no check!!
-         const char *p = omodp->fullPath();
-         if (p!=buf) strcpy(buf,p);
-         strcat(buf,".");
-         strcat(buf,fullName());
-         return buf;
-      }
-      else
-         return fullName();
+     // check we got a decent buffer
+     if (!buffer || bufsize<4)
+     {
+         if (buffer) buffer[0]='\0';
+         return "(fullPath(): no or too small buffer)";
+     }
+
+     // hide gate vector: skip directly to owner module
+     // append parent path + "."
+     char *buf = buffer;
+     if (omodp!=NULL)
+     {
+        omodp->fullPath2(buf,bufsize);
+        int len = strlen(buf);
+        buf+=len;
+        bufsize-=len;
+        *buf++ = '.';
+        bufsize--;
+     }
+
+     // append our own name
+     opp_strprettytrunc(buf, fullName(), bufsize-1);
+     return buffer;
 }
 
 void cGate::writeContents(ostream& os)

@@ -129,21 +129,31 @@ const char *cModule::fullName() const
     }
 }
 
-const char *cModule::fullPath() const
+const char *cModule::fullPath2(char *buffer, int bufsize) const
 {
-    // follows module hierarchy instead of ownership hierarchy
-    static char buf[512]; // should be big enough because there's no check!!
-
-    if (parentmodp==NULL)
-       strcpy(buf, fullName());
-    else
+    // check we got a decent buffer
+    if (!buffer || bufsize<4)
     {
-       const char *p = parentmodp->fullPath();
-       if (p!=buf) strcpy(buf,p);
-       strcat( buf, "." );
-       strcat( buf, fullName() );
+        if (buffer) buffer[0]='\0';
+        return "(fullPath(): no or too small buffer)";
     }
-    return buf;
+
+    // follows module hierarchy instead of ownership hierarchy
+    // append parent path + "."
+    char *buf = buffer;
+    if (parentmodp!=NULL)
+    {
+       parentmodp->fullPath2(buf,bufsize);
+       int len = strlen(buf);
+       buf+=len;
+       bufsize-=len;
+       *buf++ = '.';
+       bufsize--;
+    }
+
+    // append our own name
+    opp_strprettytrunc(buf, fullName(), bufsize-1);
+    return buffer;
 }
 
 void cModule::addGate(const char *gname, char tp)

@@ -136,6 +136,20 @@ void cSimulation::forEach( ForeachFunc do_fn )
     do_fn(this,false);
 }
 
+const char *cSimulation::fullPath2(char *buffer, int bufsize) const
+{
+    // check we got a decent buffer
+    if (!buffer || bufsize<4)
+    {
+        if (buffer) buffer[0]='\0';
+        return "(fullPath(): no or too small buffer)";
+    }
+
+    // add our own name
+    opp_strprettytrunc(buffer, fullName(), bufsize-1);
+    return buffer;
+}
+
 static bool _do_writesnapshot(cObject *obj, bool beg, ostream& s)
 {
     static ostream *os;

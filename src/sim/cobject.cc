@@ -177,75 +177,91 @@ void cObject::info(char *buf)
 
 void cObject::setOwner(cObject *newowner)
 {
-     if (ownerp!=NULL)   /* remove from owner's child list */
-     {
-          if (nextp!=NULL)
-               nextp->prevp = prevp;
-          if (prevp!=NULL)
-               prevp->nextp = nextp;
-          if (ownerp->firstchildp==this)
-               ownerp->firstchildp = nextp;
-          ownerp = NULL;
-     }
-     if (newowner!=NULL) /* insert into owner's child list as first elem. */
-     {
-          ownerp = newowner;
-          prevp = NULL;
-          nextp = ownerp->firstchildp;
-          if (nextp!=NULL)
-               nextp->prevp = this;
-          ownerp->firstchildp = this;
-     }
+    if (ownerp!=NULL)   /* remove from owner's child list */
+    {
+         if (nextp!=NULL)
+              nextp->prevp = prevp;
+         if (prevp!=NULL)
+              prevp->nextp = nextp;
+         if (ownerp->firstchildp==this)
+              ownerp->firstchildp = nextp;
+         ownerp = NULL;
+    }
+    if (newowner!=NULL) /* insert into owner's child list as first elem. */
+    {
+         ownerp = newowner;
+         prevp = NULL;
+         nextp = ownerp->firstchildp;
+         if (nextp!=NULL)
+              nextp->prevp = this;
+         ownerp->firstchildp = this;
+    }
 }
 
 cObject *cObject::defaultOwner() const
 {
-     return simulation.localList();
+    return simulation.localList();
 }
 
 void cObject::deleteChildren()
 {
-     bool nothing;                           // a bit difficult, because
-     do {                                    // deleting a container object
-          nothing = true;                    // may add new items
-          cObject *t, *p = firstchildp;
-          while (p)
-          {
-              t=p; p=p->nextp;
-              if (t->storage()=='D')
-                 {delete t; nothing = false;}
-          }
-     } while (!nothing);
+    bool nothing;                           // a bit difficult, because
+    do {                                    // deleting a container object
+         nothing = true;                    // may add new items
+         cObject *t, *p = firstchildp;
+         while (p)
+         {
+             t=p; p=p->nextp;
+             if (t->storage()=='D')
+                {delete t; nothing = false;}
+         }
+    } while (!nothing);
 }
 
 void cObject::destructChildren()
 {
-     while (firstchildp)
-     {
-        stor = firstchildp->storage();
-        if (stor == 'D')
-           delete firstchildp;
-        else if (stor == 'A')
-           firstchildp->destruct();
-        else  /* stor == 'S' */
-           firstchildp->setOwner( NULL );
-     }
-
+    while (firstchildp)
+    {
+       stor = firstchildp->storage();
+       if (stor == 'D')
+          delete firstchildp;
+       else if (stor == 'A')
+          firstchildp->destruct();
+       else  /* stor == 'S' */
+          firstchildp->setOwner( NULL );
+    }
 }
 
 const char *cObject::fullPath() const
 {
-     static char buf[1024]; // should be enough because there's no check!!!
-     if (owner()==NULL)
-        strcpy( buf, fullName() );
-     else
-     {
-        const char *p = owner()->fullPath();
-        if (p!=buf) strcpy(buf,p);
-        strcat( buf, "." );
-        strcat( buf, fullName() );
-     }
-     return buf;
+    static char buf[1024];
+    return fullPath2(buf,1024);
+}
+
+const char *cObject::fullPath2(char *buffer, int bufsize) const
+{
+    // check we got a decent buffer
+    if (!buffer || bufsize<4)
+    {
+        if (buffer) buffer[0]='\0';
+        return "(fullPath(): no or too small buffer)";
+    }
+
+    // append parent path + "."
+    char *buf = buffer;
+    if (owner()!=NULL)
+    {
+       owner()->fullPath2(buf,bufsize);
+       int len = strlen(buf);
+       buf+=len;
+       bufsize-=len;
+       *buf++ = '.';
+       bufsize--;
+    }
+
+    // append our own name
+    opp_strprettytrunc(buf, fullName(), bufsize-1);
+    return buffer;
 }
 
 
@@ -278,31 +294,31 @@ const char *cObject::fullPath() const
 
 void cObject::forEach( ForeachFunc do_fn )
 {
-        do_fn(this,true);
-        do_fn(this,false);
+    do_fn(this,true);
+    do_fn(this,false);
 }
 
 void cObject::writeTo(ostream& os)
 {
-        os << "(" << className() << ") `" << fullPath() << "' begin\n";
-        writeContents( os );
-        os << "end\n\n";
+    os << "(" << className() << ") `" << fullPath() << "' begin\n";
+    writeContents( os );
+    os << "end\n\n";
 }
 
 void cObject::writeContents(ostream& os)
 {
-      //os << "  objects:\n";
-      _do_list( NULL, false, os );                    // prepare do_list
-      forEach( (ForeachFunc)_do_list );
+    //os << "  objects:\n";
+    _do_list( NULL, false, os );                    // prepare do_list
+    forEach( (ForeachFunc)_do_list );
 }
 
 cObject *cObject::findObject(const char *objname, bool deep)
 {
-      cObject *p;
-      _do_find( NULL, false, objname, p, deep ); // give 'objname' and 'deep' to do_find
-      forEach( (ForeachFunc)_do_find );          // perform search
-      _do_find( NULL, false, objname, p, deep ); // get result into p
-      return p;
+    cObject *p;
+    _do_find( NULL, false, objname, p, deep ); // give 'objname' and 'deep' to do_find
+    forEach( (ForeachFunc)_do_find );          // perform search
+    _do_find( NULL, false, objname, p, deep ); // get result into p
+    return p;
 }
 
 TInspector *cObject::inspector(int type, void *data)
@@ -319,51 +335,51 @@ TInspector *cObject::inspector(int type, void *data)
 
 int cObject::cmpbyname(cObject *one, cObject *other)
 {
-        return opp_strcmp(one->namestr, other->namestr);
+    return opp_strcmp(one->namestr, other->namestr);
 }
 
 static bool _do_find(cObject *obj, bool beg, const char *objname, cObject *&p, bool deep)
 {
-      static const char *name_str;
-      static cObject *r;
-      static int ctr;
-      static bool deepf;
-      if (!obj)
-      {
-          name_str = objname;
-          p = r;
-          r = NULL;
-          deepf = deep;
-          ctr = 0;
-          return true;
-      }
-      if (beg && obj->isName(name_str)) r=obj;
-      return deepf || ctr==0;
+    static const char *name_str;
+    static cObject *r;
+    static int ctr;
+    static bool deepf;
+    if (!obj)
+    {
+        name_str = objname;
+        p = r;
+        r = NULL;
+        deepf = deep;
+        ctr = 0;
+        return true;
+    }
+    if (beg && obj->isName(name_str)) r=obj;
+    return deepf || ctr==0;
 }
 
 static bool _do_list(cObject *obj, bool beg, ostream& s)
 {
-      static char buf[256];
-      static int ctr;       // static is very important here!!!
-      static ostream *os;
-      if (!obj)
-      {        // setup call
-           ctr = 0;
-           os = &s;
-           return true;
-      }
+    static char buf[256];
+    static int ctr;       // static is very important here!!!
+    static ostream *os;
+    if (!obj)
+    {        // setup call
+        ctr = 0;
+        os = &s;
+        return true;
+    }
 
-      if (beg)
-      {
-           if (ctr)
-           {
-               //*os << "  (" << obj->className() << ") `" << obj->name() << "'\n";
-               obj->info(buf);
-               *os << "   " << buf << "\n";
-           }
-           return ctr++ == 0;       // only one level!
-      }
-      else
-           return true;
+    if (beg)
+    {
+        if (ctr)
+        {
+            //*os << "  (" << obj->className() << ") `" << obj->name() << "'\n";
+            obj->info(buf);
+            *os << "   " << buf << "\n";
+        }
+        return ctr++ == 0;       // only one level!
+    }
+    else
+        return true;
 }
 

@@ -1143,14 +1143,31 @@ cModulePar::~cModulePar()
 
 // other member functions
 
-const char *cModulePar::fullPath() const
+const char *cModulePar::fullPath2(char *buffer, int bufsize) const
 {
-    // use cObject::fullPath()'s static buffer
-    // hide param vector: skip directly to owner module
-    char *buf = const_cast<char*>(omodp->fullPath());
-    strcat(buf,".");
-    strcat(buf,fullName());
-    return buf;
+    // check we got a decent buffer
+    if (!buffer || bufsize<4)
+    {
+        if (buffer) buffer[0]='\0';
+        return "(fullPath(): no or too small buffer)";
+    }
+
+    // follows module hierarchy instead of ownership hierarchy
+    // append parent path + "."
+    char *buf = buffer;
+    if (omodp!=NULL)
+    {
+       omodp->fullPath2(buf,bufsize);
+       int len = strlen(buf);
+       buf+=len;
+       bufsize-=len;
+       *buf++ = '.';
+       bufsize--;
+    }
+
+    // append our own name
+    opp_strprettytrunc(buf, fullName(), bufsize-1);
+    return buffer;
 }
 
 cModulePar& cModulePar::operator=(const cModulePar& otherpar)

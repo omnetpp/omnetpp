@@ -1,3 +1,11 @@
+2001-10-28 Andras Varga
+
+	* util.cc: opp_strprettytrunc() added; indexedname() renamed to
+        opp_mkindexedname() (old name still exists as macro)
+        * cobject.cc, cmodule.cc, csimul.cc, cgate.cc, cpar.cc: added
+        fullPath2(buffer,buflen) which produces the result in an external
+        buffer; cObject::fullPath() now relies on fullPath2().
+
 2001-10-25  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* cqueue.cc (operator=): Bugfix for stop condition in iteration
