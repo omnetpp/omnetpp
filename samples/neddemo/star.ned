@@ -25,7 +25,7 @@ module Star
         n : numeric const;
     submodules:
         node: StarNode[n];
-            display: "p=50,50,ring,150,150;i=comp2_s";
+            display: "p=50,50,ring,150,150;i=device/pc2_s";
         hub: HubNode;
             gatesizes:
                 out[n];
