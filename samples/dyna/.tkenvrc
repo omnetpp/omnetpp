@@ -35,7 +35,6 @@ config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
 inspector "dyna.client[2]" "Client" "3" "504x162+13+362"
-inspector "dyna.client[0]" "Client" "1" "349x240+231+455"
 inspector "dyna.server" "Server" "3" "502x125+14+556"
-inspector "simulation.scheduled-events.CONN_REQ" "cMessage" "1" "349x199+227+432"
+inspector "dyna" "ClientServer" "2" "405x417+70+60"
 
