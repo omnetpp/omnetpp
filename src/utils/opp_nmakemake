@@ -405,7 +405,8 @@ print OUT "OBJS= $objs\n";
 print OUT "\n";
 $subdirs = join(" ", @subdirs);
 print OUT "# subdirectories to recurse into\n";
-print OUT "SUBDIRS= ";
+print OUT "SUBDIRS= $subdirs\n";
+print OUT "SUBDIR_TARGETS= ";
 foreach $i (@subdirs) {print OUT " ${i}_dir";}
 print OUT "\n\n";
 
@@ -468,7 +469,7 @@ print OUT "\n";
 
 # rules for recursive build
 # simplified because @#$!? microsoft doesn't know about phony targets
-print OUT "subdirs: \$(SUBDIRS)";
+print OUT "subdirs: \$(SUBDIR_TARGETS)";
 print OUT "\n\n";
 foreach $i (@subdirs)
 {
@@ -543,7 +544,7 @@ print OUT "
 clean:
 \t-del *.obj *_n.$ccext *_n.h *_m.$ccext *_m.h \$(TARGET)\$(EXE_SUFFIX) 2>NUL
 \t-del *.vec *.sca 2>NUL
-\t-for %%i in ( $subdirs ) do cd %%i && $makecommand clean && cd ..
+\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand clean && cd ..
 ";
 
 # makedepend, re-makemake
