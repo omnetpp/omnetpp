@@ -793,10 +793,11 @@ sub generateClass
             } else {
                 print H "*     $realmsgclass(const char *name=NULL) : $msgclass(name) {}\n";
             }
+            print H "*     $realmsgclass(const $realmsgclass& other) : $msgclass(other.name()) {operator=(other);}\n";
         } else {
             print H "*     $realmsgclass() : $msgclass() {}\n";
+            print H "*     $realmsgclass(const $realmsgclass& other) : $msgclass() {operator=(other);}\n";
         }
-        print H "*     $realmsgclass(const $realmsgclass& other) : $msgclass() {operator=(other);}\n";
         print H "*     $realmsgclass& operator=(const $realmsgclass& other) {$msgclass\:\:operator=(other); return *this;}\n";
         if ($classtype eq "cobject") {
             print H "*     virtual cObject *dup() {return new $realmsgclass(*this);}\n";
