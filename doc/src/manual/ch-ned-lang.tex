@@ -750,14 +750,47 @@ Example:
 \tbf{endmodule}
 \end{Verbatim}
 
+The \textit{gate++} notation allows you to extend a gate vector
+with new gates, without having to declare the vector size in advance
+with \ttt{gatesizes}. This feature is very convenient for connecting
+nodes of a network:
 
-Each connection can be:
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{simple} Node
+    \tbf{gates}:
+        \tbf{in}: in[];
+        \tbf{out}: out[];
+\tbf{endsimple}
+
+\tbf{module} SmallNet
+    \tbf{submodules}:
+        node: Node[6];
+    \tbf{connections}:
+        node[0].out++ --> node[1].in++;
+        node[0].in++ <-- node[1].out++;
+
+        node[1].out++ --> node[2].in++;
+        node[1].in++ <-- node[2].out++;
+
+        node[1].out++ --> node[4].in++;
+        node[1].in++ <-- node[4].out++;
+
+        node[3].out++ --> node[4].in++;
+        node[3].in++ <-- node[4].out++;
+
+        node[4].out++ --> node[5].in++;
+        node[4].in++ <-- node[5].out++;
+\tbf{endmodule}
+\end{Verbatim}
+
+
+A connection:
+
 \begin{itemize}
-  \item{simple (that is, no delay, bit error rate or data rate), can
-    use a named channel, or a channel given with delay, error and
-    data rate values;}
-\item{single or multiple (loop) connection;}
-\item{conditional or non-conditional.}
+  \item{may have attributes (delay, bit error rate or data rate) or
+        use a named channel;}
+  \item{may occur inside a for-loop (to create multiple connections);}
+  \item{may be conditional.}
 \end{itemize}
 
 These connection types are described in the following sections.
