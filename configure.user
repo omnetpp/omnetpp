@@ -72,13 +72,14 @@ PLOVE_EMBED_TCL=no
 # off. Sometimes you need to explicitly link with the X11 libraries too, in that
 # case add -lX11 to TK_LIBS.
 #
-# With MINGW I use the following:
+# With MinGW I use the following:
 #  TK_CFLAGS="-I/d/home/tools/Tcl-8.4.1/include -fwritable-strings"
 #  TK_LIBS="-L/d/home/tools/Tcl-8.4.1/lib -ltk84 -ltcl84"
 # With Cygwin, you can try:
 #  TK_CFLAGS="-fwritable-strings"
 #  TK_LIBS="-lcygtk83 -lcygtcl83"
-# If left empty, the configure script will try to autodetect it
+#
+# If commented out, the configure script will try to autodetect it
 #
 #TK_CFLAGS=
 #TK_LIBS=
@@ -86,7 +87,7 @@ PLOVE_EMBED_TCL=no
 #
 # Compiler and linker options for PVM (optional component)
 #
-# If left empty, the configure script will try to autodetect it
+# If commented out, the configure script will try to autodetect it
 #
 #PVM_CFLAGS=
 #PVM_LIBS=
@@ -94,7 +95,7 @@ PLOVE_EMBED_TCL=no
 #
 # Compiler and linker options for MPI (optional component)
 #
-# If left empty, the configure script will try to autodetect it
+# If commented out, the configure script will try to autodetect it
 #
 #MPI_CFLAGS=
 #MPI_LIBS=
@@ -102,10 +103,10 @@ PLOVE_EMBED_TCL=no
 #
 # Compiler and linker options for Expat (optional component)
 #
-# With MINGW I use the following:
+# With MinGW I use the following:
 #   EXPAT_CFLAGS="-I/d/home/tools/expat-1.95.2/Source/lib"
 #   EXPAT_LIBS="-L/d/home/tools/expat-1.95.2/libs -lexpat"
-# If left empty, the configure script will try to autodetect it
+# If commented out, the configure script will try to autodetect it
 #
 #EXPAT_CFLAGS=
 #EXPAT_LIBS=
@@ -113,10 +114,10 @@ PLOVE_EMBED_TCL=no
 #
 # Compiler and linker options for LIBXML (optional component)
 #
-# With MINGW I use the following:
+# With MinGW I use the following:
 #  LIBXML_CFLAGS="-I/d/home/tools/libxml2-2.4.26.win32/include"
 #  LIBXML_LIBS="-L/d/home/tools/libxml2-2.4.26.win32/lib -lxml2 -L/d/home/tools/iconv-1.8.win32/lib -liconv"
-# If left empty, the configure script will try to autodetect it
+# If commented out, the configure script will try to autodetect it
 #
 #LIBXML_CFLAGS=
 #LIBXML_LIBS=
@@ -124,10 +125,10 @@ PLOVE_EMBED_TCL=no
 #
 # Compiler and linker options for Akaroa (optional component)
 #
-# With MINGW I use the following:
+# With MinGW I use the following:
 #  AKAROA_CFLAGS="-I/d/home/tools/akaroa-2.7.2/src/include"
 #  AKAROA_LIBS="-L/d/home/tools/akaroa-2.7.2/lib/include -lakaroa"
-# If left empty, the configure script will try to autodetect it
+# If commented out, the configure script will try to autodetect it
 #
 #AKAROA_CFLAGS=
 #AKAROA_LIBS=

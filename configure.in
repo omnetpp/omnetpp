@@ -39,6 +39,9 @@ AC_CONFIG_SRCDIR(include/omnetpp.h)
 AC_LANG(C++)
 AC_CONFIG_AUX_DIR(src/utils)
 AC_CANONICAL_HOST()
+# figure out here if we have gcc or not -- we'll need it soon
+AC_PROG_CC
+AC_PROG_CXX
 
 
 #
@@ -142,6 +145,7 @@ build_shared_libs=if-not-cygwin
 #----------------------
 
 # for Tcl/Tk
+# following line relies on having AC_PROG_CXX earlier!
 if test "$GCC" = "yes"; then
    TK_CFLAGS="-fwritable-strings"
 else
@@ -197,10 +201,9 @@ AC_PROG_YACC
 if test "$YACC" = "yacc"; then
    AC_MSG_WARN([neither bison nor byacc is found...])
 fi
-
 AC_PROG_LEX
-AC_PROG_CC
-AC_PROG_CXX
+# AC_PROG_CC -- these are needed at the top
+# AC_PROG_CXX
 AC_PROG_RANLIB
 
 # doxygen is used for generation of api doc
@@ -290,22 +293,22 @@ if test $tcltk_ok = no; then
 fi
 if test $tcltk_ok = no -a "$cygwin" = yes; then
     # in Cygwin, we try 8.4, 8.3 and 8.0:
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc, $opp_x11lib -lcygtk84 -lcygtcl84, tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84, tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
     if test $tcltk_ok = no; then
-        OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc, $opp_x11lib -lcygtk83 -lcygtcl83, tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk83 -lcygtcl83")
+        OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk83 -lcygtcl83, tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk83 -lcygtcl83")
     fi
     if test $tcltk_ok = no; then
-        OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc, $opp_x11lib -lcygtk80 -lcygtcl80, tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk80 -lcygtcl80")
+        OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk80 -lcygtcl80, tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk80 -lcygtcl80")
     fi
 fi
 if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc, $opp_x11lib -ltk84 -ltcl84, tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk84 -ltcl84, tcltk_ok, TK_LIBS="$opp_x11lib -ltk84 -ltcl84")
 fi
 if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc, $opp_x11lib -ltk83 -ltcl83, tcltk_ok, TK_LIBS="$opp_x11lib -ltk83 -ltcl83")
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk83 -ltcl83, tcltk_ok, TK_LIBS="$opp_x11lib -ltk83 -ltcl83")
 fi
 if test $tcltk_ok = no; then
-    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc, $opp_x11lib -ltk82 -ltcl82, tcltk_ok, TK_LIBS="$opp_x11lib -ltk82 -ltcl82")
+    OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk82 -ltcl82, tcltk_ok, TK_LIBS="$opp_x11lib -ltk82 -ltcl82")
 fi
 if test $tcltk_ok = yes; then
    TKENV_IF_POSSIBLE=tkenv
