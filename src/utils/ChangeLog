@@ -1,3 +1,10 @@
+2001-10-18  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* opp_makemake.in: introduced NEDCFLAGS and NEDCOPTS so that
+	compile flag -Wno-unused can be used for compiling _n.cc files
+	only. NEDCFLAGS is defined in configure.in and set in
+	configure.user in the top level directory.
+
 2001-08-28  Andras Varga 
 
 	* added makedep.pl. The makedepend program in newer XFree versions
