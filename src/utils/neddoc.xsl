@@ -28,6 +28,7 @@
 <xsl:key name="module" match="//simple-module|//compound-module" use="@name"/>
 <xsl:key name="msg-or-class" match="//message|//class|//struct" use="@name"/>
 <xsl:key name="channel" match="//channel" use="@name"/>
+<xsl:key name="msg-or-class-extends" match="//message|//class|//struct" use="@extends-name"/>
 
 <xsl:key name="image" match="//image" use="concat(@name,':',@nedfilename)"/>
 
@@ -433,6 +434,7 @@
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
          <xsl:call-template name="print-extends"/>
+         <xsl:call-template name="print-subclasses"/>
          <xsl:call-template name="print-properties"/>
          <xsl:call-template name="print-fields"/>
          <xsl:call-template name="print-source"/>
@@ -448,6 +450,7 @@
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
          <xsl:call-template name="print-extends"/>
+         <xsl:call-template name="print-subclasses"/>
          <xsl:call-template name="print-properties"/>
          <xsl:call-template name="print-fields"/>
          <xsl:call-template name="print-source"/>
@@ -463,6 +466,7 @@
          <xsl:call-template name="print-file"/>
          <xsl:call-template name="process-comment"/>
          <xsl:call-template name="print-extends"/>
+         <xsl:call-template name="print-subclasses"/>
          <xsl:call-template name="print-properties"/>
          <xsl:call-template name="print-fields"/>
          <xsl:call-template name="print-source"/>
@@ -871,6 +875,17 @@
         <xsl:for-each select="@extends-name[not(key('msg-or-class',.))]">
            <xsl:call-template name="print-unresolved-componentref"/>
         </xsl:for-each>
+      </table>
+   </xsl:if>
+</xsl:template>
+
+<xsl:template name="print-subclasses">
+   <xsl:if test="key('msg-or-class-extends',@name)">
+      <h3 class="subtitle">Known subclasses:</h3>
+      <table>
+         <xsl:for-each select="key('msg-or-class-extends',@name)">
+            <xsl:call-template name="print-componentref"/>
+         </xsl:for-each>
       </table>
    </xsl:if>
 </xsl:template>
