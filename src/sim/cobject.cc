@@ -25,7 +25,6 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy, strlen etc.
-#include <iostream.h>
 #include "csimul.h"
 #include "cenvir.h"
 #include "macros.h"

@@ -1,3 +1,8 @@
+2002-05-16  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* jar_mod.c (do_simp_or_comp): fixed declaration of className()
+	[resolves bug report #14 by jiake]
+
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-04-06  Andras Varga

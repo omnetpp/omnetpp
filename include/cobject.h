@@ -20,9 +20,14 @@
 #ifndef __COBJECT_H
 #define __COBJECT_H
 
-#include <iostream.h>
-#include "defs.h"
 #include "util.h"
+
+#ifdef USE_STD_NAMESPACE
+#include <iostream>
+using std::ostream;
+#else
+#include <iostream.h>
+#endif
 
 #define FULLPATHBUF_SIZE  1024
 

@@ -23,7 +23,6 @@
 #ifndef __CKSPLIT_H
 #define __CKSPLIT_H
 
-#include <iostream.h>
 #include "cdensity.h"
 
 // classes declared

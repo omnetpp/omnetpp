@@ -27,6 +27,10 @@
 #include "cenvir.h"
 #include "cksplit.h"
 
+#ifdef USE_STD_NAMESPACE
+using std::endl;
+#endif
+
 //=========================================================================
 //=== Registration
 

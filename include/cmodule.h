@@ -23,6 +23,8 @@
 #ifndef __CMODULE_H
 #define __CMODULE_H
 
+#include "defs.h"
+
 #include <time.h>     // time_t, clock_t in cSimulation
 #include "cobject.h"
 #include "ccor.h"

@@ -1,3 +1,15 @@
+2002-05-28  Frank Paehlke  <paehlke@tm.uni-karlsruhe.de>
+
+	* defs.h: added macro USE_STD_NAMESPACES for C++ compilers with
+	standard library and namespaces (currently GNU C++ >= 3.0)
+	
+	* cdensity.h, cenvir.h, chist.h, cksplit.h, cmodule.h, cobject.h,
+	cpsquare.h, csimul.h, cstat.h, ctopo.h, ctypes.h, cvarhist.h,
+	envirext.h: Use standard headers and namespaces if
+	USE_STD_NAMESPACES is defined
+
+	* ctopo.h: check if INFINITY is already defined
+
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-04-06  Andras Varga

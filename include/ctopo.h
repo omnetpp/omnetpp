@@ -25,8 +25,9 @@
 
 class cPar;
 
-
+#ifndef INFINITY
 #define INFINITY  HUGE_VAL
+#endif
 
 class sTopoLink;
 class sTopoLinkIn;

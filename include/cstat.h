@@ -13,8 +13,9 @@
 #ifndef __CSTAT_H
 #define __CSTAT_H
 
+#include "defs.h"
+
 #include <stdio.h>
-#include <iostream.h>
 #include "cobject.h"
 
 class cTransientDetection;

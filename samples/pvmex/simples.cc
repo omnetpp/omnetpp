@@ -1,6 +1,4 @@
 #include <stdio.h>
-#include <iostream.h>
-
 #include "omnetpp.h"
 
 class smSender : public cSimpleModule

@@ -22,7 +22,6 @@
 #ifndef __CPSQUARE_H
 #define __CPSQUARE_H
 
-#include "iostream.h"
 #include "cdensity.h"
 
 //==========================================================================

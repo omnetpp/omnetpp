@@ -30,7 +30,6 @@
 #include <math.h>
 #include <string.h>          // strlen
 #include <stdarg.h>          // va_list
-#include <iostream.h>        // ostream
 #include "cpar.h"
 #include "cmodule.h"
 #include "macros.h"

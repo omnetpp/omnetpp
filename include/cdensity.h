@@ -21,7 +21,6 @@
 #ifndef __CDENSITY_H
 #define __CDENSITY_H
 
-#include <iostream.h>
 #include "cstat.h"
 
 //==========================================================================

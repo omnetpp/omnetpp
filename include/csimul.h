@@ -21,8 +21,9 @@
 #ifndef __CSIMUL_H
 #define __CSIMUL_H
 
-#include <time.h>     // time_t, clock_t in cSimulation
 #include "defs.h"
+
+#include <time.h>     // time_t, clock_t in cSimulation
 #include "util.h"
 #include "errmsg.h"
 #include "chead.h"

@@ -1,3 +1,12 @@
+2002-05-28  Frank Paehlke  <paehlke@tm.uni-karlsruhe.de>
+
+	* filemgrs.cc: Use standard headers and namespaces if
+	USE_STD_NAMESPACES is defined
+
+2002-05-16  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* appreg.h (cOmnetAppRegistration): fixed declaration of className()
+
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-03-11  Uli Kaage  <kaage@int.uni-karlsruhe.de>

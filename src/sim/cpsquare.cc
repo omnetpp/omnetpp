@@ -20,13 +20,15 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <fstream.h>
-#include <iomanip.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #include "macros.h"
 #include "cpsquare.h"
+
+#ifdef USE_STD_NAMESPACE
+using std::endl;
+#endif
 
 //=========================================================================
 //=== Registration

@@ -255,11 +255,11 @@ proc create_omnetpp_window {} {
     label .statusbar.networklabel \
         -relief groove -text {(no network set up)} -width 18 -anchor w
     label .statusbar.eventlabel \
-        -relief groove -text {Event #0} -width 12  -anchor w
+        -relief groove -text {Event #0} -width 15  -anchor w
     label .statusbar.timelabel \
         -relief groove -text {T=0.0000000 (0.00s)} -width 20 -anchor w
     label .statusbar.nextlabel \
-        -relief groove -text {Next:} -width 26 -anchor w
+        -relief groove -text {Next:} -width 23 -anchor w
 
     label .statusbar2.feslength \
         -relief groove -text {Msgs in FES: 0} -width 20 -anchor w

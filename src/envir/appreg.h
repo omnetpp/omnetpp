@@ -66,7 +66,7 @@ class ENVIR_API cOmnetAppRegistration : public cObject
     virtual ~cOmnetAppRegistration()  {}
 
     // redefined functions
-    virtual const char *className()  {return "cOmnetAppRegistration";}
+    virtual const char *className() const {return "cOmnetAppRegistration";}
 
     // new functions
     TOmnetApp *createOne(ArgList *args, cIniFile *inifile)  {return creatorfunc(args,inifile);}

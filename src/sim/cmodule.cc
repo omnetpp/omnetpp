@@ -24,7 +24,6 @@
 
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
-#include <iostream.h>        // ostream
 #include <assert.h>
 #include "cmodule.h"
 #include "cgate.h"

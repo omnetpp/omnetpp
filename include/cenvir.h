@@ -21,8 +21,9 @@
 #ifndef __CENVIR_H
 #define __CENVIR_H
 
-#include <stdlib.h> // atol, atof
 #include "defs.h"
+
+#include <stdlib.h> // atol, atof
 #include "cpar.h"
 
 

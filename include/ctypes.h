@@ -28,6 +28,8 @@
 #ifndef __CTYPES_H
 #define __CTYPES_H
 
+#include "defs.h"
+
 #include <stdarg.h>
 #include "chead.h"
 #include "cobject.h"

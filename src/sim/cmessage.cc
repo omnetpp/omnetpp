@@ -23,7 +23,6 @@
 #include <math.h>            // pow
 #include <stdio.h>           // sprintf
 #include <string.h>          // strcpy
-#include <iostream.h>        // ostream
 #include "macros.h"
 #include "cmodule.h"
 #include "cmessage.h"
@@ -202,7 +201,7 @@ void cMessage::encapsulate(cMessage *msg)
 
 cMessage *cMessage::decapsulate()
 {
-    if (len>0) len-=encapmsg->len;
+    if ((len>0) && encapmsg) len-=encapmsg->len;
     if (len<0) {opp_error("(%s)%s: decapsulate(): msg length smaller than"
                                  " encapsulated msg length",className(),fullName());}
 

@@ -16,7 +16,6 @@
 #ifndef __CHIST_H
 #define __CHIST_H
 
-#include <iostream.h>
 #include "cdensity.h"
 
 //==========================================================================

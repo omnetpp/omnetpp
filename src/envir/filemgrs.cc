@@ -19,10 +19,19 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+#include "defs.h"
+
 #include <assert.h>
 #include <string.h>
-#include <fstream.h>   // ostream
-#include <iostream.h>  // ostream
+
+#ifdef USE_STD_NAMESPACE
+#include <fstream>
+using std::ofstream;
+using std::ios;
+#else
+#include <fstream.h>   // ofstream
+#endif
+
 #include "cenvir.h"
 #include "omnetapp.h"
 #include "csimul.h"

@@ -13,7 +13,6 @@
 #ifndef __CVARHIST_H
 #define __CVARHIST_H
 
-#include <iostream.h>
 #include "chist.h"
 
 //==========================================================================

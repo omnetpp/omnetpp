@@ -28,8 +28,6 @@
 
 #include <string.h>    // strcpy
 #include <stdio.h>     // vsprintf()
-#include <fstream.h>   // ostream
-#include <iostream.h>  // ostream
 #include "cmodule.h"
 #include "cmessage.h"
 #include "csimul.h"

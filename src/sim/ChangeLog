@@ -1,3 +1,21 @@
+2002-05-28  Frank Paehlke  <paehlke@tm.uni-karlsruhe.de>
+
+	* cdensity.cc, chist.cc, cksplit.cc, cmodule.cc, cobject.cc,
+	cpar.cc, cpsquare.cc, csimul.cc, cstat.cc, ctypes.cc, cvarhist.cc:
+	do not include iostream.h et.al. directly (already included by
+	header files)
+	
+	* cmessage.cc (decapsulate): added check for encapmsg==0 before
+	accessing encapmsg->len
+
+2002-05-16  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* mpi/mpimod.h (class cNetGate): fixed className() declaration
+	(class cMpiMod): dito.
+
+	* pvm/pvmmod.h (class cNetGate): fixed className() declaration
+	(class cPvmMod): dito.
+
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-04-07  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>

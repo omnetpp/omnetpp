@@ -23,8 +23,6 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <fstream.h>
-#include <iomanip.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>

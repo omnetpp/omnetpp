@@ -26,7 +26,6 @@ This file is distributed WITHOUT ANY WARRANTY. See the file
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include <iostream.h>
 #include "cpar.h"
 #include "cstat.h"
 #include "macros.h"
