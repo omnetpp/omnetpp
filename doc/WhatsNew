@@ -41,7 +41,7 @@ The following list summarizes *all* changes since OMNeT++ 2.3:
   etc.) improve the overall look and feel of your models, give you more 
   insight, and make the models instantly presentable.
 
-- For better visualization of model dynamics, OMNEST now supports 
+- For better visualization of model dynamics, OMNeT++ now supports 
   animation of direct message sending and C++ method calls across modules.
 
 - The automatic network layouting using the SpringEmbedder algorithm will 
