@@ -1,7 +1,7 @@
 Using OMNeT++ with Microsoft Visual C++
 =======================================
 
-This is an installation HOWTO for OMNeT++ for Microsoft Visual C++.
+This is a HOWTO for OMNeT++ for Microsoft Visual C++.
 This specification is written for Visual C++ 6.0 and OMNeT++ 2.0b4.
 
 Part of this documentation comes from a readme written by Balazs
@@ -13,8 +13,8 @@ KELEMEN (kelemen@sch.bme.hu) in March 2000.
 
 You need to have Microsoft Visual Studio, Microsoft Visual C++ 6.0 installed
 your Windows NT 4.0 (or higher).
-  The minimal install requires about 30 Mbytes free space on your hard disk 
-to compile OMNeT++ and to install all related packages. (And about +20MB 
+  The minimal install requires about 30 Mbytes free space on your hard disk
+to compile OMNeT++ and to install all related packages. (And about +20MB
 temporary space for the downloaded packages and documentations.)
 
 Win95/98 users:
@@ -38,13 +38,13 @@ To unpack .tgz or .tar.gz (gzipped, tar packed) files you can use gzip and tar,
 or WinZip.
 
 After installation, check if you have the necessary environment variables set.
-(See Appendix A!) These variables should be set by the install program of 
+(See Appendix A!) These variables should be set by the install program of
 the related package. Unfortunately this is not always done, so you may have to
 set these manually (My Computer-->Properties-->Environment tab).
 
 
-3. Compilation
-~~~~~~~~~~~~~~
+3. Compiling OMNeT++
+~~~~~~~~~~~~~~~~~~~~
 
 Download the omnetpp source code and documentation from the omnetpp site.
 If you downloaded a zip file, extract its contents to the installation
@@ -76,8 +76,8 @@ Then type
 This should build the executables and the libraries and copy them to the bin
 and lib subdirectories within the top-level omnetpp directory.
 
-Note: As the Visual Studio IDE (and makefiles exported from the IDE) 
-accept only .cpp as an extension of a C++ file, the .cc files in the 
+Note: As the Visual Studio IDE (and makefiles exported from the IDE)
+accept only .cpp as an extension of a C++ file, the .cc files in the
 samples/ directory will be renamed.
 
 If you only want to create the executables or the libraries, type
@@ -87,29 +87,21 @@ If you only want to create the executables or the libraries, type
 To delete all built files, type
     nmake -f Makefile.vc clean .
 
-
-4. Using
-~~~~~~~~
-
-As the result of the compilation the following files has been created.
+As the result of the compilation the following files should have been created:
 In the BIN directory:
     seedtool.exe nedc.exe gned.exe
 
 In the LIB directory:
     tkenv.lib sim_std.lib envir.lib cmdenv.lib
 
-To run Tcl/Tk-based programs (like GNED), the TCL_LIBRARY environment
-variable should be set to the script directory of the Tcl. It is usually the
-C:/PROGRA~1/TCL/LIB/TCLx.x directory.
 
-
-5. Building the samples from the MSVC IDE
+4. Building the samples from the MSVC IDE
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To build a sample simulation, start MSVC and open the workspace (.dsw) file.
 The simulation should build without any project file adjustment.
 
-The top-level makefile automatically renames the .cc files to .cpp; 
+The top-level makefile automatically renames the .cc files to .cpp;
 but if you want to do it manually, you can run samples/cc2cpp.bat.
 The top-level makefile also automatically configures the project (.dsp)
 files by substituting the correct Tcl/Tk version and library location.
@@ -128,27 +120,57 @@ a Tcl/Tk version other than 8.2), see Project|Settings --> 'Link' tab -->
 choose 'Input' from combo --> Libraries.
 
 
-6. Creating project files for your simulations
+5. Creating project files for your simulations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Some hint how to do it:
- 1. Start by copying & renaming one of the .dsp files from the samples
+Some instructions to build project files for your own simulations or
+to have the standard samples compile in a different directory:
+
+ 1. Start by copying and renaming one of the .dsp files from the samples
     directory. It already contains the Tkenv/Cmdenv configurations, etc.
- 2. Rename all .cc files to .cpp (ren *.cc *.cpp) and add them to the project.
- 3. Add the .ned files to the project and set custom build option for them:
+
+ 2. Adjust the project settings so that MSVC will find OMNeT++'s components
+    that are needed to build simulation programs. Make sure you enter these
+    settings for *all* configurations (In the Project|Settings dialog,
+    select 'All configurations' from the combo in the top-left corner.)
+    - include path: You must tell MSVC the location of omnetpp.h and other
+      header files.  Add omnetpp/src/sim to the include path in
+      Project|Settings --> 'C/C++' tab --> 'Preprocessor' category -->
+      Additional include directories.
+    - library path: MSVC needs to know where to find sim_std.lib, envir.lib
+      and other libraries. Add omnetpp/lib to the linker path in
+      Project|Settings --> 'Link' tab --> 'Input' category -->
+      Additional library path.
+    - nedc: It's advisable to put OMNeT++'s bin directory into the PATH
+      so that MSVC will find the NED compiler. (An alternative is to enter
+      explicit nedc path for each NED file's Custom build step, but that's
+      much more cumbersome.)
+
+ 3. Add C++ files to the project. Note that they need to have .cpp extension.
+    You might need to rename your .cc files to .cpp (ren *.cc *.cpp) and add
+    them to the project.
+
+ 4. Add the .ned files to the project and set custom build option for them:
        Description:  NED Compiling $(InputPath)
        Command:      nedc -s _n.cpp $(InputPath)
        Outputs:      $(InputPath)_n.cpp
     Hint: you can select all .ned files together, and 'All configurations'
     from the combo at the left of the Settings dialog, and then you have to
     type this settings only once.
- 4. For each .ned file, add a corresponding _n.cpp file.
+    Note: If you copied one of the sample projects, you'll have to adjust
+    Command, because they contain explicit nedc path (..\..\bin\nedc).
+
+ 5. For each .ned file, add a corresponding _n.cpp file.
     Hint: if you 'Compile' the .ned files, the _n.cpp files will be created,
     and you can select them all at once in the 'Add files' dialog.
- 5. Make sure to turn off exception handling and RTTI (they interfere with the
+
+ 6. Make sure to turn off exception handling and RTTI (they interfere with the
     coroutine library), and set the necessary reserved stack size.
- 6. Note: for Tkenv, link with sim_std.lib, envir.lib, tkenv.lib and the
-    Tcl/Tk libraries (link as Win32 Console app...). For Cmdenv, you need
-    to link with sim_std.lib, envir.lib, and cmdenv.lib.
+
+ 7. Choose the appropriate configuration from Build|Set active configuration...
+    Note: for Tkenv, the simulation will be linked with sim_std.lib, envir.lib,
+    tkenv.lib and the Tcl/Tk libraries (link as Win32 Console app...).
+    For Cmdenv, this will be sim_std.lib, envir.lib, and cmdenv.lib.
+
 It is planned to create wizards in the future to ease some of these steps.
 
 
@@ -176,15 +198,20 @@ copied to the lib/ and bin/ subdirs.
 8. Using DLLs
 ~~~~~~~~~~~~~
 
-Using DLLs is not possible, and it will probably never be. It is impossible
-to implement the kind of global registration lists ("modules", "networks", etc)
-in the same elegant way as under Unix, because a DLL, while initializing,
-cannot write outside its address space. It's the initialisation code when
-the constructors of global objects run.  Greetings to Bill Gates, and thanks
-for the wonderful DLL mechanism...
+Currently it's possible to build DLLs from the OMNeT++ libraries and
+link a simulation program which uses them. However, because of some
+obscure technical problems associated with loading the DLLs, the resulting
+simulation program will not run :-(
 
-It is possible, however, to build (useless) DLLs from the OMNeT++ libraries.
-To do so, set the desired library suffix to ".dll" in configuser.vc:
+(Well in case you're interested why: A DLL, while initializing, cannot write
+outside its address space. OMNeT++, however, would rely on this mechanism
+to build global registration lists ("modules", "networks", etc). Each item
+in a registration list is an object whose constructor would add the object
+to the global list (an object outside the DLL), and it seems like constructors
+of global objects run as part of the DLL initialisation code (DLLMain())).
+
+To build the DLLs anyway, set the desired library suffix to ".dll" in
+configuser.vc:
   LIB_SUFFIX=.dll
 After re-building OMNeT++, the DLLs should appear in the lib/ directory,
 together with the respective import libraries which have the .ilib suffix.
@@ -193,7 +220,7 @@ together with the respective import libraries which have the .ilib suffix.
 There's one trick when using the DLLs: when you compile your model sources,
 you must have the WIN32_DLL symbol #defined! It is best to pass them
 to the compiler from your makefile (or if you use the IDE, add it to
-Settings--> C/C++ --> Preprocessor --> Preprocessor definitions). If you
+Settings --> C/C++ --> Preprocessor --> Preprocessor definitions). If you
 fail to do so, you'll get undefined linker symbols!
 
 
@@ -236,9 +263,11 @@ Note:
   The lib and include directories should appear in the LIB and INCLUDE
   environment variables.
 
-- Tcl/Tk: To run Tcl-based programs, the DLL directory of Tcl should appear
-  in the PATH environment variable. To run Tcl applications, the script 
-  directory of Tcl should be set in the TCL_LIBRARY.
+- Tcl/Tk requires the following:
+  - the DLL directory of Tcl should appear in the PATH.
+  - the TCL_LIBRARY environment variable should be set to the directory
+    which contains init.tcl. It is usually the C:/PROGRA~1/TCL/LIB/TCLx.x
+    directory.
 
 
 Appendix B
@@ -273,24 +302,24 @@ Appendix C
 ~~~~~~~~~~
 Patching the makefiles for Win95/98, a posting from the mailing list:
 
-Subject: Re: Questions of installation with OMNet++ on MSVC 
-From: Andras Varga <avarga@freemail.hu> 
-Date: Mon, 19 Jun 2000 20:20:57 +0200 
+Subject: Re: Questions of installation with OMNet++ on MSVC
+From: Andras Varga <avarga@freemail.hu>
+Date: Mon, 19 Jun 2000 20:20:57 +0200
 
 > I've encountered some problems while installing OMNet++ on my system
 > (VC6.0 + Windows 98).
 > After executing nmake, the prompted message are as following:
->  
+>
 > C:\omnetpp>nmake -f makefile.vc
-> 
+>
 [output from failed build]
 
-Win98 doesn't seem to support '&&' and '||' as command separators, 
-and its cd command doesn't have the /D option (=change drive too). 
+Win98 doesn't seem to support '&&' and '||' as command separators,
+and its cd command doesn't have the /D option (=change drive too).
 I didn't test the MSVC makefiles on Win98 as I have only NT4...
 When will all win32 platforms finally be equal???
 
-I just received a nice trick (dirty hack?) from a guy at my 
+I just received a nice trick (dirty hack?) from a guy at my
 university to get omnetpp compiled on Win98. First, create a cdm.bat
 with the following contents in the toplevel omnetpp dir:
 
@@ -309,7 +338,7 @@ Then replace each 'cd' in the toplevel Makefile.vc with 'cdm'.
 You may also need (I'm not sure) to remove the 'check-env' dependency
 from the 'all' target in Makefile.vc line 30 if it causes problems.
 
-With this modification you should be able to build everything but the 
+With this modification you should be able to build everything but the
 samples. I haven't verified though if it really works, and I won't
 be able to support it... Hope it helps though.
 
