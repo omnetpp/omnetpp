@@ -203,25 +203,25 @@ cat <<EOT
 TARGET = $outfile$suffix
 
 # User interface (uncomment one) (-u option)
-${c_cmd}USERIF_LIBS= \$(CMDENV_LIBS)
-${c_tk}USERIF_LIBS= \$(TKENV_LIBS)
-${c_tv}USERIF_LIBS= \$(TVENV_LIBS)
+${c_cmd}USERIF_LIBS=\$(CMDENV_LIBS)
+${c_tk}USERIF_LIBS=\$(TKENV_LIBS)
+${c_tv}USERIF_LIBS=\$(TVENV_LIBS)
 
 # Uncomment the second line for parallel execution (PVM3) support (-p option):
-${c_std}KERNEL_LIBS= \$(STD_KERNEL_LIBS)
-${c_pvm}KERNEL_LIBS= \$(PVM_KERNEL_LIBS)
+${c_std}KERNEL_LIBS=\$(STD_KERNEL_LIBS)
+${c_pvm}KERNEL_LIBS=\$(PVM_KERNEL_LIBS)
 
 # .ned or .h include paths with -I
-INCLUDE_PATH = $includes
+INCLUDE_PATH=$includes
 
 # misc additional object and library files to link
-EXRA_OBJS = $xobjs
+EXRA_OBJS=$xobjs
 
 # object files in subdirectories
-SUBDIR_OBJS = $sobjs
+SUBDIR_OBJS=$sobjs
 
 # Additional libraries (-l option)
-LIBS = $libs
+LIBS=$libs
 
 #------------------------------------------------------------------------------
 EOT
@@ -371,8 +371,8 @@ clean:
 	rm -f *.vec *.sca
 
 depend:
-	makedepend -Y \$(COPTS) -- *.cc
-	makedepend -Y \$(COPTS) -fmakefile.in -- *.cc
+	makedepend -Y \$(INCLUDE_PATH) -- *.cc
+	makedepend -Y \$(INCLUDE_PATH) -fmakefile.in -- *.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
