@@ -33,7 +33,7 @@ TStructPanel::TStructPanel(const char *widgetname, cObject *obj) :
 {
 }
 
-static void flush_if_needed(const char *buf, const char *&s, int limit, Tcl_Interp *interp, const char *widgetname)
+static void flush_if_needed(char *buf, char *&s, int limit, Tcl_Interp *interp, const char *widgetname)
 {
     // if there are more than limit chars in the buffer
     if (s-buf>=limit)

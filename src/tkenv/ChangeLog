@@ -1,3 +1,9 @@
+2002-03-08  Ulrich Kaage <kaage@int.uni-karlsruhe.de>
+
+	* structinsp.cc (flush_if_needed): Compile Fix for gcc versions
+	2.95.3 (complaints) and 3.0.x (errors): declare buf and s as non
+	const function call arguments.
+
 2002-03-08  Andras Varga
 
 	* structinsp.cc (update()): keep buffer size low by periodically
