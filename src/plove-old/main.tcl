@@ -181,9 +181,7 @@ proc createMenubar {w} {
 
     # Help menu
     foreach i {
-      {command -command helpAbout -label {About Plove...} -underline 0}
-      {separator}
-      {command -command helpReadme -label {README...} -underline 0}
+      {command -command helpAbout -label {About OMNeT++/Plove...} -underline 0}
     } {
       eval $w.helpmenu$m add $i
     }

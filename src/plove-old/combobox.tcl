@@ -5,22 +5,22 @@
 # oakley@channelpoint.com
 #
 # combobox v1.06 September 3, 1998
-# a combobox / dropdown listbox (pick your favorite name) widget 
+# a combobox / dropdown listbox (pick your favorite name) widget
 # written in pure tcl
 #
-# this code is freely distributable without restriction, but is 
-# provided as-is with no waranty expressed or implied. 
+# this code is freely distributable without restriction, but is
+# provided as-is with no waranty expressed or implied.
 #
 # thanks to the following people who provided beta test support or
 # patches to the code (in no particular order):
 #
-# Scott Beasley     Alexandre Ferrieux    
-# Matt Gushee       Laurent Duperval       
+# Scott Beasley     Alexandre Ferrieux
+# Matt Gushee       Laurent Duperval
 # Fred Rapp         Christopher Nelson
 # Eric Galluzzo     Jean-Francois Moine
 
-# A special thanks to Martin M. Hunt who provided several good ideas, 
-# and always with a patch to implement them. Jean-Francois Moine was 
+# A special thanks to Martin M. Hunt who provided several good ideas,
+# and always with a patch to implement them. Jean-Francois Moine was
 # also kind enough to send in some code patches.
 
 package require Tk 8.0
@@ -37,7 +37,7 @@ namespace eval ::combobox {
     # bar.
     #
     # NB: we need to be sure and pick a window  that doesn't already
-    # exist... 
+    # exist...
     set sbtest ".sbtest"
     set count 0
     while {[winfo exists $sbtest]} {
@@ -52,15 +52,15 @@ namespace eval ::combobox {
 	#define down_arrow_width 15
 	#define down_arrow_height 15
 	static char down_arrow_bits[] = {
-	    0x00,0x80,0x00,0x80,0x00,0x80,0x00,0x80,
-	    0x00,0x80,0xf8,0x8f,0xf0,0x87,0xe0,0x83,
-	    0xc0,0x81,0x80,0x80,0x00,0x80,0x00,0x80,
-	    0x00,0x80,0x00,0x80,0x00,0x80
+	    0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	    0x00,0x00,0x00,0x00,0xf0,0x07,0xe0,0x03,
+	    0xc0,0x01,0x80,0x00,0x00,0x00,0x00,0x00,
+	    0x00,0x00,0x00,0x00,0x00,0x00
 	}
     }
 }
 
-# this is the command that gets exported, and creates a new 
+# this is the command that gets exported, and creates a new
 # combobox widget. It works like other widget commands in that
 # it takes as its first argument a widget path, and any remaining
 # arguments are option/value pairs for the widget
@@ -112,21 +112,21 @@ proc ::combobox::build {w args } {
 	    -textvariable {} \
 	    -editable     1 \
 	    -commandstate normal \
-	    -state        normal 
+	    -state        normal
     ]
 
     # this lets us reference the actual widget name from within
-    # the namespace of the widget. 
+    # the namespace of the widget.
     namespace eval ::combobox::$w "set this $w"
 
     # the basic, always-visible parts of the combobox. We do these
     # here, because we want to query some of them for their default
     # values, which we want to juggle to other widgets. I suppose
-    # I could use the options database, but for simplicity I choose 
+    # I could use the options database, but for simplicity I choose
     # not to...
     set widgets(this)   [frame  $w -class Combobox -takefocus 0]
     set widgets(entry)  [entry  $w.entry -takefocus {}]
-    set widgets(button) [label  $w.button -takefocus 0] 
+    set widgets(button) [label  $w.button -takefocus 0]
 
     # we will later rename the frame's widget proc to be our
     # own custom widget proc. We need to keep track of this
@@ -143,7 +143,7 @@ proc ::combobox::build {w args } {
 	    -borderwidth -highlightthickness -highlightbackground \
 	    -font -width -selectbackground -selectborderwidth \
 	    -selectforeground] {
-	set options($option) [$widgets(entry) cget $option] 
+	set options($option) [$widgets(entry) cget $option]
     }
 
     # I should probably do this in a catch, but for now it's
@@ -164,7 +164,7 @@ proc ::combobox::build {w args } {
     # arbitrary values...)
 
     # NB: we are going to use the frame to handle the relief
-    # of the widget as a whole, so the entry widget will be 
+    # of the widget as a whole, so the entry widget will be
     # flat. This makes the button which drops down the list
     # to appear "inside" the entry widget.
 
@@ -181,7 +181,7 @@ proc ::combobox::build {w args } {
     $widgets(entry) configure \
 	    -borderwidth 0 \
 	    -relief flat \
-	    -highlightthickness 0 
+	    -highlightthickness 0
 
     $widgets(popup) configure \
 	    -borderwidth 1 \
@@ -200,7 +200,7 @@ proc ::combobox::build {w args } {
     wm group            $widgets(popup) [winfo parent $w]
     wm resizable        $widgets(popup) 0 0
     wm withdraw         $widgets(popup)
-    
+
     # this moves the original frame widget proc into our
     # namespace and gives it a handy name
     rename ::$w $widgets(frame)
@@ -208,11 +208,11 @@ proc ::combobox::build {w args } {
     # now, create our widget proc. Obviously (?) it goes in
     # the global namespace. All combobox widgets will actually
     # share the same widget proc to cut down on the amount of
-    # bloat. 
+    # bloat.
     proc ::$w {command args} \
 	    "eval ::combobox::widgetProc $w \$command \$args"
 
-    # ok, the thing exists... let's do a bit more configuration. 
+    # ok, the thing exists... let's do a bit more configuration.
     foreach opt [array names options] {
 	::combobox::configure $widgets(this) set $opt $options($opt)
     }
@@ -231,15 +231,15 @@ proc ::combobox::setBindings {w} {
 	# this closes the listbox if we get hidden
 	bind $widgets(this) <Unmap> "$widgets(this) close"
 
-	# this helps (but doesn't fully solve) focus issues. 
+	# this helps (but doesn't fully solve) focus issues.
 	bind $widgets(this) <FocusIn> [list focus $widgets(entry)]
 
-	# this makes our "button" (which is actually a label) 
+	# this makes our "button" (which is actually a label)
 	# do the right thing
 	bind $widgets(button) <ButtonPress-1> [list $widgets(this) toggle]
 
 	# this lets the autoscan of the listbox work, even if they
-	# move the cursor over the entry widget. 
+	# move the cursor over the entry widget.
 	bind $widgets(entry) <B1-Enter> "break"
 	bind $widgets(entry) <FocusIn> \
 		[list ::combobox::entryFocus $widgets(this) "<FocusIn>"]
@@ -248,7 +248,7 @@ proc ::combobox::setBindings {w} {
 
 	# this will (hopefully) close (and lose the grab on) the
 	# listbox if the user clicks anywhere outside of it. Note
-	# that on Windows, you can click on some other app and 
+	# that on Windows, you can click on some other app and
 	# the listbox will still be there, because tcl won't see
 	# that button click
 	bind $widgets(this) <Any-ButtonPress> [list $widgets(this) close]
@@ -288,14 +288,14 @@ proc ::combobox::handleEvent {w event} {
     upvar ::combobox::${w}::oldValue oldValue
 
     # for all of these events, if we have a special action we'll
-    # do that and do a "return -code break" to keep additional 
+    # do that and do a "return -code break" to keep additional
     # bindings from firing. Otherwise we'll let the event fall
-    # on through. 
+    # on through.
     switch $event {
 	"<Any-KeyPress>" {
 	    set editable [::combobox::getBoolean $options(-editable)]
-	    # if the widget is editable, clear the selection. 
-	    # this makes it more obvious what will happen if the 
+	    # if the widget is editable, clear the selection.
+	    # this makes it more obvious what will happen if the
 	    # user presses <Return> (and helps our code know what
 	    # to do if the user presses return)
 	    if {$editable} {
@@ -360,7 +360,7 @@ proc ::combobox::handleEvent {w event} {
 	    set editable [::combobox::getBoolean $options(-editable)]
 	    if {$editable} {
 		# if there is something in the list that is selected,
-		# we'll pick it. Otherwise, use whats in the 
+		# we'll pick it. Otherwise, use whats in the
 		# entry widget...
 		set index [$widgets(listbox) curselection]
 		if {[winfo ismapped $widgets(popup)] && \
@@ -381,7 +381,7 @@ proc ::combobox::handleEvent {w event} {
 		::combobox::select $widgets(this) \
 			[$widgets(listbox) curselection]
 		return -code break;
-	    } 
+	    }
 
 	}
 
@@ -413,7 +413,8 @@ proc ::combobox::handleEvent {w event} {
 		    return -code break;
 		}
 	    } else {
-		tkListboxUpDown $widgets(listbox) 1
+		catch {tkListboxUpDown $widgets(listbox) 1}
+		catch {tk::ListboxUpDown $widgets(listbox) 1}
 		return -code break;
 	    }
 	}
@@ -424,14 +425,15 @@ proc ::combobox::handleEvent {w event} {
 		    return -code break;
 		}
 	    } else {
-		tkListboxUpDown $widgets(listbox) -1
+		catch {tkListboxUpDown $widgets(listbox) -1}
+		catch {tk::ListboxUpDown $widgets(listbox) -1}
 		return -code break;
 	    }
 	}
     }
 }
 
-# this cleans up the mess that is left behind when the widget goes away 
+# this cleans up the mess that is left behind when the widget goes away
 proc ::combobox::destroyHandler {w} {
 
     # kill any trace we may have started...
@@ -503,9 +505,9 @@ proc ::combobox::find {w {exact 0}} {
     # did we find a match? If so, do some additional munging...
     if {$index != -1} {
 
-	# we need to find the part of the first item that is 
+	# we need to find the part of the first item that is
 	# unique wrt the second... I know there's probably a
-	# simpler way to do this... 
+	# simpler way to do this...
 
 	set nextIndex [expr {$index + 1}]
 	set nextItem [lindex $list $nextIndex]
@@ -530,7 +532,7 @@ proc ::combobox::find {w {exact 0}} {
 	} else {
 	    set marker [string length $pattern]
 	}
-	
+
     } else {
 	set marker end
 	set index 0
@@ -576,7 +578,7 @@ proc ::combobox::handleScrollbar {w {action "unknown"}} {
 	set hlimit $options(-maxheight)
     } else {
 	set hlimit $options(-height)
-    }		    
+    }
 
     switch $action {
 	"grow" {
@@ -606,7 +608,7 @@ proc ::combobox::handleScrollbar {w {action "unknown"}} {
 proc ::combobox::computeGeometry {w} {
     upvar ::combobox::${w}::widgets widgets
     upvar ::combobox::${w}::options options
-    
+
     if {$options(-height) == 0 && $options(-maxheight) != "0"} {
 	# if this is the case, count the items and see if
 	# it exceeds our maxheight. If so, set the listbox
@@ -677,7 +679,7 @@ proc ::combobox::widgetProc {w command args} {
 	    [list ::combobox::doInternalWidgetCommand $widgets(this)]
 
     if {$command == "list"} {
-	# ok, the next argument is a list command; we'll 
+	# ok, the next argument is a list command; we'll
 	# rip it from args and append it to command to
 	# create a unique internal command
 	#
@@ -757,10 +759,10 @@ proc ::combobox::widgetProc {w command args} {
 	    # the focus there when we're done
 	    set oldFocus [focus]
 
-	    # ok, tweak the visual appearance of things and 
+	    # ok, tweak the visual appearance of things and
 	    # make the list pop up
 	    $widgets(button) configure -relief sunken
-	    wm deiconify $widgets(popup) 
+	    wm deiconify $widgets(popup)
 	    raise $widgets(popup) [winfo parent $widgets(this)]
 
 	    # force focus to the entry widget so we can handle keypress
@@ -775,7 +777,7 @@ proc ::combobox::widgetProc {w command args} {
 	    # do things like this, but these are desparate times.
 	    grab -global $widgets(this)
 
-	    # fake the listbox into thinking it has focus. This is 
+	    # fake the listbox into thinking it has focus. This is
 	    # necessary to get scanning initialized properly in the
 	    # listbox.
 	    event generate $widgets(listbox) <B1-Enter>
@@ -791,7 +793,7 @@ proc ::combobox::widgetProc {w command args} {
 	    # hides the listbox
 	    grab release $widgets(this)
 	    $widgets(button) configure -relief raised
-	    wm withdraw $widgets(popup) 
+	    wm withdraw $widgets(popup)
 
 	    # select the data in the entry widget. Not sure
 	    # why, other than observation seems to suggest that's
@@ -805,9 +807,10 @@ proc ::combobox::widgetProc {w command args} {
 	    # restore the focus, but ignore any errors...
 	    catch {focus $oldFocus} result
 
-	    # magic tcl stuff (see tk.tcl in the distribution 
+	    # magic tcl stuff (see tk.tcl in the distribution
 	    # lib directory)
-	    tkCancelRepeat
+	    catch {tkCancelRepeat}
+	    catch {tk::CancelRepeat}
 
 	    return 1
 	}
@@ -947,7 +950,7 @@ proc ::combobox::configure {w action {option ""} {newValue ""}} {
 	    -highlightthickness {
 		$widgets(frame) configure -highlightthickness $newValue
 	    }
-	    
+
 	    -image {
 		if {[string length $newValue] > 0} {
 		    $widgets(button) configure -image $newValue
@@ -1039,7 +1042,7 @@ proc ::combobox::configure {w action {option ""} {newValue ""}} {
     }
 }
 
-# this proc is called whenever the user changes the value of 
+# this proc is called whenever the user changes the value of
 # the -textvariable associated with a widget
 proc ::combobox::vTrace {w args} {
     upvar ::combobox::${w}::widgets widgets
@@ -1061,7 +1064,7 @@ proc ::combobox::setValue {w newValue {index -1}} {
 
     # update the widget, no matter what. This might cause a few
     # false triggers on a trace of the associated textvariable,
-    # but that's a chance we'll have to take. 
+    # but that's a chance we'll have to take.
     $widgets(entry) configure -state normal
     $widgets(entry) delete 0 end
     $widgets(entry) insert 0 $newValue
