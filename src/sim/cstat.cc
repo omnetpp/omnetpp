@@ -41,6 +41,22 @@ Register_Class( cWeightedStdDev )
 //=========================================================================
 // cStatistic - almost all functions are inline
 
+cStatistic::cStatistic(cStatistic& r) : cObject()
+{
+    setName(r.name());
+    td=NULL;
+    ra=NULL;
+    operator=(r);
+}
+
+cStatistic::cStatistic(const char *name) :
+  cObject(name)
+{
+    td=NULL;
+    ra=NULL;
+    genk=0;
+}
+
 cStatistic& cStatistic::operator=(cStatistic& res)   //--VA
 {
     cObject::operator=( res );
@@ -72,7 +88,7 @@ void cStatistic::collect2(double, double)
                        className(), fullName(),className());
 }
 
-void cStatistic::freadvarsf (FILE *f,  char *fmt, ...)
+void cStatistic::freadvarsf (FILE *f,  const char *fmt, ...)
 {
     char line[101];
 
@@ -101,7 +117,7 @@ void cStatistic::freadvarsf (FILE *f,  char *fmt, ...)
 //==========================================================================
 // cStdDev - member functions
 
-cStdDev::cStdDev(char *s) : cStatistic(s)
+cStdDev::cStdDev(const char *s) : cStatistic(s)
 {
     num_samples = 0L;
     sum_samples = sqrsum_samples = 0;

@@ -43,7 +43,7 @@ Register_Class( cObject )
 //==========================================================================
 //=== cObject - member functions
 
-static bool _do_find(cObject *obj, bool beg, char *s, cObject *&p, bool deep);
+static bool _do_find(cObject *obj, bool beg, const char *objname, cObject *&p, bool deep);
 static bool _do_list(cObject *obj, bool beg, ostream& s);
 
 /*--------------------------------------------------------------*\
@@ -113,7 +113,7 @@ cObject::cObject()
           firstchildp = NULL;
 }
 
-cObject::cObject(char *name_str)
+cObject::cObject(const char *name_str)
 {
     DETERMINE_STORAGE();
     tkownership = TRUE;
@@ -125,7 +125,7 @@ cObject::cObject(char *name_str)
           firstchildp = NULL;
 }
 
-cObject::cObject(char *name_str, cObject *ownerobj)
+cObject::cObject(const char *name_str, cObject *ownerobj)
 {
     DETERMINE_STORAGE();
     namestr = opp_strdup( name_str );
@@ -228,14 +228,14 @@ void cObject::destructChildren()
 
 }
 
-char *cObject::fullPath()
+const char *cObject::fullPath()
 {
      static char buf[512]; // should be enough because there's no check!!!
      if (owner()==NULL)
         strcpy( buf, fullName() );
      else
      {
-        char *p = owner()->fullPath();
+        const char *p = owner()->fullPath();
         if (p!=buf) strcpy(buf,p);
         strcat( buf, "." );
         strcat( buf, fullName() );
@@ -243,35 +243,6 @@ char *cObject::fullPath()
      return buf;
 }
 
-//unsigned cObject::storesize()
-//{
-//       return storetype() ? 1+strlen(namestr)+1+2*sizeof(bool) : 0;
-//}
-
-//void cObject::store(char*& area)
-//{
-//       if (storetype())
-//       {
-//          *area++ = storetype();
-//          strcpy(area, namestr);
-//          area += strlen(namestr)+1;
-//        STORE(area,resflag,1);
-//       }
-//}
-
-//int  cObject::load(char*& area)
-//{
-//       bool rf;
-//
-//       if (storetype())
-//       {
-//          if (*area != storetype()) return *area;
-//          area++;
-//          setName(area); area += strlen(namestr)+1;
-//        LOAD(area,rf,1); result(rf);
-//       }
-//       return 0;
-//}
 
 /*------------------------------------------------------------------------*
 
@@ -320,7 +291,7 @@ void cObject::writeContents(ostream& os)
       forEach( (ForeachFunc)_do_list );
 }
 
-cObject *cObject::findObject( char *objname, bool deep )
+cObject *cObject::findObject(const char *objname, bool deep)
 {
       cObject *p;
       _do_find( NULL, FALSE, objname, p, deep ); // give 'objname' and 'deep' to do_find
@@ -346,14 +317,15 @@ int cObject::cmpbyname(cObject *one, cObject *other)
         return opp_strcmp(one->namestr, other->namestr);
 }
 
-static bool _do_find(cObject *obj, bool beg, char *s, cObject *&p, bool deep)
+static bool _do_find(cObject *obj, bool beg, const char *objname, cObject *&p, bool deep)
 {
-      static char *name_str;
+      static const char *name_str;
       static cObject *r;
       static int ctr;
       static bool deepf;
-      if (!obj) {
-          name_str = s;
+      if (!obj)
+      {
+          name_str = objname;
           p = r;
           r = NULL;
           deepf = deep;
@@ -369,13 +341,15 @@ static bool _do_list(cObject *obj, bool beg, ostream& s)
       static char buf[256];
       static int ctr;       // static is very important here!!!
       static ostream *os;
-      if (!obj) {        // setup call
+      if (!obj)
+      {        // setup call
            ctr = 0;
            os = &s;
            return TRUE;
       }
 
-      if (beg) {
+      if (beg)
+      {
            if (ctr)
            {
                //*os << "  (" << obj->className() << ") `" << obj->name() << "'\n";

@@ -45,7 +45,7 @@ Register_Class( cPar )
 char *cPar::possibletypes = "SBLDFIXTP";
 
 // constructors
-cPar::cPar(char *namestr) : cObject( namestr )
+cPar::cPar(const char *name) : cObject( name )
 {
     takeOwnership( FALSE );         // doesn't take the objects!
     changedflag = inputflag = FALSE;
@@ -62,13 +62,13 @@ cPar::cPar(cPar& par) : cObject()
     cPar::operator=(par);
 }
 
-cPar::cPar(char *namestr, cPar& other) : cObject(namestr)
+cPar::cPar(const char *name, cPar& other) : cObject(name)
 {
     takeOwnership( FALSE );         // doesn't take the objects!
     changedflag = inputflag = FALSE;
     typechar = 'L'; lng.val = 0L;
 
-    setName(namestr);
+    setName(name);
     operator=(other);
 }
 
@@ -138,7 +138,8 @@ void cPar::info( char *buf )
 
     // append useful info
     cFunctionType *ff;
-    char *fn,*s;
+    const char *fn;
+    char *s;
     switch (typechar) {
         case 'S': s = ls.sht ? ss.str:ls.str;
                   if (!s) s = "";
@@ -192,7 +193,7 @@ char cPar::type()
      return typechar;
 }
 
-char *cPar::prompt()
+const char *cPar::prompt()
 {
      if (isRedirected())
          return ind.par->prompt();
@@ -215,7 +216,7 @@ bool cPar::changed()
      return ch;
 }
 
-void cPar::setPrompt(char *s)
+void cPar::setPrompt(const char *s)
 {
      if (isRedirected())
          {ind.par->setPrompt(s);return;}
@@ -237,7 +238,7 @@ void cPar::setInput(bool ip)
 //-----------------------------------------------------------------------
 // setXxxValue() funcs
 
-cPar& cPar::setStringValue(char *s)
+cPar& cPar::setStringValue(const char *s)
 {
      if (isRedirected())
          return ind.par->setStringValue(s);
@@ -491,7 +492,7 @@ void cPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
 //------------------------------------------------------------------------
 // functions returning the stored value
 
-char *cPar::stringValue()
+const char *cPar::stringValue()
 {
     if (isRedirected())
         return ind.par->stringValue();
@@ -669,7 +670,8 @@ void cPar::getAsText(char *buf, int maxlen)
     char bb[128];
     bb[0] = 0;
     cFunctionType *ff;
-    char *fn,*s;
+    const char *fn;
+    char *s;
     switch (typechar) {
        case 'S': s = ls.sht ? ss.str:ls.str;
                  if (!s) s = "";
@@ -848,7 +850,7 @@ cPar& cPar::read()
     char buf[256];
 
     // get it from ini file
-    char *s = ev.getParameter(simulation.runNumber(), fullPath());
+    const char *s = ev.getParameter(simulation.runNumber(), fullPath());
     if (s!=NULL)
     {
        strcpy(buf,s);
@@ -1113,12 +1115,12 @@ cModulePar::cModulePar(cPar& other) : cPar(other)
     _construct();
 }
 
-cModulePar::cModulePar(char *namestr) : cPar(namestr)
+cModulePar::cModulePar(const char *name) : cPar(name)
 {
     _construct();
 }
 
-cModulePar::cModulePar(char *namestr, cPar& other) : cPar(namestr, other)
+cModulePar::cModulePar(const char *name, cPar& other) : cPar(name, other)
 {
     _construct();
 }
@@ -1132,11 +1134,11 @@ cModulePar::~cModulePar()
 
 // other member functions
 
-char *cModulePar::fullPath()
+const char *cModulePar::fullPath()
 {
     // use cObject::fullPath()'s static buffer
     // hide param vector: skip directly to owner module
-    char *buf = omodp->fullPath();
+    char *buf = CONST_CAST(omodp->fullPath());
     strcat(buf,".");
     strcat(buf,fullName());
     return buf;

@@ -60,7 +60,8 @@ struct _Task;
 
 #else /* nonportable coroutines */
 
-extern "C" {
+extern "C"
+{
   void set_sp_reg(int *sp);   // overwrite SS:SP (or equiv.on a diff.platform)
   int *get_sp_reg();          // return SS:SP
 };
@@ -71,42 +72,43 @@ extern "C" {
 // cCoroutine - low-level coroutine; used by cSimpleModule
 //   NOTE: Not a cObject-descendant
 
-class cCoroutine {
-      private:
+class cCoroutine
+{
+  private:
 #ifdef PORTABLE_COROUTINES
-        _Task *task;
-        bool started;           // TRUE after 1st stack switch
+    _Task *task;
+    bool started;           // TRUE after 1st stack switch
 #else  /* nonportable coroutines */
-        CoroutineFnp fnp;       // pointer to task function
-        void *arg;              // argument to task function
-        int stack_size;         // size of stack
-        int *stack;             // ptr to stack allocated on heap
-        int *stkbeg;            // beginning of stack
-        int *stklow;            // stkbeg + safety area
-        int *sp;                // stack ptr (not used in task switches)
-        JMP_BUF jmpbuf;         // task state (incl. stack ptr)
-        bool started;           // TRUE after 1st stack switch
+    CoroutineFnp fnp;       // pointer to task function
+    void *arg;              // argument to task function
+    int stack_size;         // size of stack
+    int *stack;             // ptr to stack allocated on heap
+    int *stkbeg;            // beginning of stack
+    int *stklow;            // stkbeg + safety area
+    int *sp;                // stack ptr (not used in task switches)
+    JMP_BUF jmpbuf;         // task state (incl. stack ptr)
+    bool started;           // TRUE after 1st stack switch
 #endif
-      public:
-        static void init( unsigned total_stack, unsigned main_stack);
-        static void switchTo( cCoroutine *cor );
-        static void switchtoMain();
+  public:
+    static void init( unsigned total_stack, unsigned main_stack);
+    static void switchTo( cCoroutine *cor );
+    static void switchtoMain();
 
-        cCoroutine();
-        ~cCoroutine();
-        cCoroutine& operator=(cCoroutine& cor);
+    cCoroutine();
+    ~cCoroutine();
+    cCoroutine& operator=(cCoroutine& cor);
 
-        bool setup( CoroutineFnp fnp, void *arg, unsigned stack_size );
-        void free();
-        void restart();
+    bool setup( CoroutineFnp fnp, void *arg, unsigned stack_size );
+    void free();
+    void restart();
 
-        bool stackOverflow();
-        unsigned stackSize();
-        unsigned stackUsage();
+    bool stackOverflow();
+    unsigned stackSize();
+    unsigned stackUsage();
 
-        int stackLeft(); // obsolete
-        bool stackLow(); // obsolete
-        static int *getMainSP(); // obsolete
+    int stackLeft(); // obsolete
+    bool stackLow(); // obsolete
+    static int *getMainSP(); // obsolete
 };
 
 #ifdef PORTABLE_COROUTINES

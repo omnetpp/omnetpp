@@ -57,7 +57,7 @@ sTopoLinkOut *sTopoNode::out(int i)
 //==========================================================================
 //=== cTopology - member functions
 
-cTopology::cTopology(char *name) : cObject(name)
+cTopology::cTopology(const char *name) : cObject(name)
 {
     num_nodes = 0;
     nodev = NULL;

@@ -46,8 +46,8 @@ Register_Class( cDoubleHistogram )
 //==========================================================================
 // cHistogramBase - member functions
 
-cHistogramBase::cHistogramBase( char *namestr, int numcells) :
-cDensityEstBase(namestr)
+cHistogramBase::cHistogramBase(const char *name, int numcells) :
+cDensityEstBase(name)
 {
    cellv = NULL;
    num_cells = numcells;
@@ -164,8 +164,8 @@ void cHistogramBase::loadFromFile(FILE *f)
 //=========================================================================
 // cEqdHistogramBase - member functions
 
-cEqdHistogramBase::cEqdHistogramBase(char *namestr, int numcells) :
-cHistogramBase(namestr,numcells)
+cEqdHistogramBase::cEqdHistogramBase(const char *name, int numcells) :
+cHistogramBase(name,numcells)
 {
    cellsize=0;
 }
@@ -254,8 +254,8 @@ void cEqdHistogramBase::loadFromFile(FILE *f)
 //=========================================================================
 // cLongHistogram - member functions
 
-cLongHistogram::cLongHistogram(char *namestr, int numcells) :
-cEqdHistogramBase(namestr,numcells)
+cLongHistogram::cLongHistogram(const char *name, int numcells) :
+cEqdHistogramBase(name,numcells)
 {
 }
 
@@ -325,8 +325,8 @@ double cLongHistogram::random()
 //==========================================================================
 // cDoubleHistogram - member functions
 
-cDoubleHistogram::cDoubleHistogram(char *namestr, int numcells) :
-cEqdHistogramBase(namestr,numcells)
+cDoubleHistogram::cDoubleHistogram(const char *name, int numcells) :
+cEqdHistogramBase(name,numcells)
 {
 }
 

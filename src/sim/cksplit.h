@@ -96,11 +96,11 @@ class cKSplit : public cDensityEstBase
   public:
 
     cKSplit(cKSplit& r);
-    explicit cKSplit(char *namestr=NULL);
+    explicit cKSplit(const char *name=NULL);
     virtual ~cKSplit();
 
     // redefined functions
-    virtual char *className()  {return "cKSplit";}
+    virtual const char *className()  {return "cKSplit";}
     virtual cObject *dup()   {return new cKSplit (*this);}
     cKSplit& operator=(cKSplit& res);
     virtual void writeContents(ostream& os);

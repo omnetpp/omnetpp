@@ -53,11 +53,11 @@ class cTransientDetection : public cObject
 
   public:
     cTransientDetection(cTransientDetection& r) : cObject() {setName(r.name());operator=(r);}
-    explicit cTransientDetection(char *s=NULL) : cObject(s) {}
+    explicit cTransientDetection(const char *name=NULL) : cObject(name) {}
     virtual ~cTransientDetection()  {}
 
     // redefined functions
-    virtual char *className()  {return "cTransientDetection";}
+    virtual const char *className()  {return "cTransientDetection";}
     virtual int netPack();
     virtual int netUnpack();
 
@@ -82,11 +82,11 @@ class cAccuracyDetection : public cObject
 
   public:
     cAccuracyDetection(cAccuracyDetection& r) : cObject() {setName(r.name());operator=(r);}
-    explicit cAccuracyDetection(char *s=NULL) : cObject(s)  {}
+    explicit cAccuracyDetection(const char *name=NULL) : cObject(name)  {}
     virtual ~cAccuracyDetection()  {}
 
     // redefined functions
-    virtual char *className()  {return "cAccuracyDetection";}
+    virtual const char *className()  {return "cAccuracyDetection";}
     virtual int netPack();
     virtual int netUnpack();
 
@@ -125,13 +125,13 @@ class cTDExpandingWindows : public cTransientDetection
 
   public:
     cTDExpandingWindows(cTDExpandingWindows& r);
-    explicit cTDExpandingWindows(int reps=3, int minw=4, double wind=1.3,
-                        double acc=0.3,
+    explicit cTDExpandingWindows(const char *name,
+                        int reps=3, int minw=4, double wind=1.3, double acc=0.3,
                         PostTDFunc f=NULL,void *p=NULL);
     virtual ~cTDExpandingWindows();
 
     // redefined functions
-    virtual char *className()  {return "cTDExpandingWindows";}
+    virtual const char *className()  {return "cTDExpandingWindows";}
     cTDExpandingWindows& operator=(cTDExpandingWindows& res);
 
     // redefined cTransientDetection functions
@@ -167,20 +167,22 @@ class cADByStddev : public cAccuracyDetection
 
   public:
     cADByStddev(cADByStddev& r);
-    explicit cADByStddev(double acc=0.01, int reps=3, PostADFunc f=NULL, void *p=NULL);
+    explicit cADByStddev(const char *name=NULL,
+                         double acc=0.01, int reps=3,
+                         PostADFunc f=NULL, void *p=NULL);
     virtual ~cADByStddev()  {}
 
     // redefined functions
-    virtual char *className()  {return "cADByStddev";}
+    virtual const char *className()  {return "cADByStddev";}
     cADByStddev& operator=(cADByStddev& res);
 
     // redefined cAccuracyDetection functions
-    void setPostDetectFunction(PostADFunc f, void *p) {pdf = f; pdfdata = p;}
+    void setPostDetectFunction(PostADFunc f, void *p) {pdf=f; pdfdata=p;}
     virtual void collect(double val);
     virtual bool detected() {return resaccval;}
     virtual void reset();
-    virtual void stop()         {go = FALSE;}
-    virtual void start()        {go = TRUE;}
+    virtual void stop()   {go=FALSE;}
+    virtual void start()  {go=TRUE;}
     void setParameters(double acc=0.1, int reps=3)  //set the detection parameters
         {accuracy=acc; repeats=detreps=reps;}
 };

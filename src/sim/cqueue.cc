@@ -38,8 +38,8 @@ cQueue::cQueue(cQueue& queue) : cObject()
      operator=(queue);
 }
 
-cQueue::cQueue(char *namestr, CompareFunc cmp, bool a) :
-cObject( namestr )
+cQueue::cQueue(const char *name, CompareFunc cmp, bool a) :
+cObject( name )
 {
      headp=tailp=NULL;
      n=0;

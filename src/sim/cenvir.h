@@ -46,59 +46,60 @@ enum { SLAVE_MODE = 0,  // must be 0
 //==========================================================================
 // cEnvir
 
-class cEnvir {
-      public:
-         int argc;
-         char **argv;
-         TOmnetApp *app;  // user interface application
-         int disable_tracing;
-      private:
-         int running_mode; // MASTER_MODE / SLAVE_MODE / NONPARALLEL_MODE / STARTUPERROR_MODE
-         char prmpt[81];    // prompt used by prompt() and operator >>
+class cEnvir
+{
+  public:
+    int argc;
+    char **argv;
+    TOmnetApp *app;  // user interface application
+    int disable_tracing;
+  private:
+    int running_mode; // MASTER_MODE / SLAVE_MODE / NONPARALLEL_MODE / STARTUPERROR_MODE
+    char prmpt[81];    // prompt used by prompt() and operator >>
 
-      public:
-         cEnvir();
-         ~cEnvir();
+  public:
+    cEnvir();
+    ~cEnvir();
 
-         // called from main()
-         void setup(int ac, char *av[]);
-         void run();
-         void shutdown();
+    // called from main()
+    void setup(int ac, char *av[]);
+    void run();
+    void shutdown();
 
-         // called by the sim.kernel to notify environment about events
-         void objectDeleted(cObject *object);
-         void messageSent(cMessage *msg);
-         void messageDelivered(cMessage *msg);
-         void breakpointHit(char *lbl, cSimpleModule *mod);
+    // called by the sim.kernel to notify environment about events
+    void objectDeleted(cObject *object);
+    void messageSent(cMessage *msg);
+    void messageDelivered(cMessage *msg);
+    void breakpointHit(const char *lbl, cSimpleModule *mod);
 
-         // called by the sim.kernel to get info
-         char *getParameter(int run_no, char *parname);
-         char *getPhysicalMachineFor(char *logical_mach);
-         void getOutVectorConfig(char *modname,char *vecname, /*input*/
-                                 bool& enabled, /*output*/
-                                 double& starttime, double& stoptime);
-         char *getDisplayString(int run_no,char *name);
+    // called by the sim.kernel to get info
+    const char *getParameter(int run_no, const char *parname);
+    const char *getPhysicalMachineFor(const char *logical_mach);
+    void getOutVectorConfig(const char *modname,const char *vecname, /*input*/
+                            bool& enabled, /*output*/
+                            double& starttime, double& stoptime);
+    const char *getDisplayString(int run_no,const char *name);
 
-         // called from simple modules or the sim.kernel for I/O
-         void printfmsg(char *fmt,...);
-         void printf(char *fmt="\n",...);
-         void puts(char *s);
-         bool gets(char *prompt, char *buf, int len=255);
-         bool askf(char *buf, int len, char *promptfmt,...);
-         bool askYesNo(char *msgfmt,...);
+    // called from simple modules or the sim.kernel for I/O
+    void printfmsg(const char *fmt,...);
+    void printf(const char *fmt="\n",...);
+    void puts(const char *s);
+    bool gets(const char *prompt, char *buf, int len=255);
+    bool askf(char *buf, int len, const char *promptfmt,...);
+    bool askYesNo(const char *msgfmt,...);
 
-         void foreignPuts(char *hostname, char *mod, char *str);
+    void foreignPuts(const char *hostname, const char *mod, const char *str);
 
-         cEnvir& setPrompt(char *s);      // set prompt for >> operators
-         char *prompt()  {return prmpt;}  // return prompt string
+    cEnvir& setPrompt(const char *s);      // set prompt for >> operators
+    const char *prompt()  {return prmpt;}  // return prompt string
 
-         // runningMode() returns whether the simulation is distributed,
-         // and if yes, this process is master or slave
-         int runningMode()     {return running_mode;}
+    // runningMode() returns whether the simulation is distributed,
+    // and if yes, this process is master or slave
+    int runningMode()     {return running_mode;}
 
-         // extraStackForEnvir() is called from cSimpleModule; returns how much extra
-         // stack space the user interface recommends for the simple modules
-         unsigned extraStackForEnvir();
+    // extraStackForEnvir() is called from cSimpleModule; returns how much extra
+    // stack space the user interface recommends for the simple modules
+    unsigned extraStackForEnvir();
 };
 
 //==========================================================================
@@ -106,15 +107,15 @@ class cEnvir {
 
 #if !defined(__BORLANDC__) || __BCPLUSPLUS__>0x0310
 /* Compilers don't agree whether char==unsigned/signed char */
-inline cEnvir& operator<< (cEnvir& ev, char *s)
-  {ev.puts((char *)s); return ev;}
+inline cEnvir& operator<< (cEnvir& ev, const char *s)
+  {ev.puts(s); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, char c)
   {ev.printf("%c",c); return ev;}
 #endif
-inline cEnvir& operator<< (cEnvir& ev, signed char *s)
-  {ev.puts((char *)s); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, unsigned char *s)
-  {ev.puts((char *)s); return ev;}
+inline cEnvir& operator<< (cEnvir& ev, const signed char *s)
+  {ev.puts((const char *)s); return ev;}
+inline cEnvir& operator<< (cEnvir& ev, const unsigned char *s)
+  {ev.puts((const char *)s); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, unsigned char c)
   {ev.printf("%c",c); return ev;}
 inline cEnvir& operator<< (cEnvir& ev, signed char c)
@@ -143,10 +144,10 @@ inline cEnvir& operator<< (cEnvir& ev, long double d)
 inline cEnvir& operator* (cEnvir& ev, char *s)
  {return ev.setPrompt((char *)s);}
 #endif
-inline cEnvir& operator* (cEnvir& ev, signed char *s)
- {return ev.setPrompt((char *)s);}
-inline cEnvir& operator* (cEnvir& ev, unsigned char *s)
- {return ev.setPrompt((char *)s);}
+inline cEnvir& operator* (cEnvir& ev, const signed char *s)
+ {return ev.setPrompt((const char *)s);}
+inline cEnvir& operator* (cEnvir& ev, const unsigned char *s)
+ {return ev.setPrompt((const char *)s);}
 
 // note: each >> operator reads a whole line!
 #if !defined(__BORLANDC__) || __BCPLUSPLUS__>0x0310

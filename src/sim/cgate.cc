@@ -42,7 +42,6 @@ cGate::cGate(cGate& gate) : cObject()
 
     transm_finishes = 0.0;
 
-    dispstr = NULL;
     notify_inspector = NULL;
     data_for_inspector = NULL;
 
@@ -50,7 +49,7 @@ cGate::cGate(cGate& gate) : cObject()
     operator=(gate);
 }
 
-cGate::cGate(char *s, char tp) : cObject(s)
+cGate::cGate(const char *s, char tp) : cObject(s)
 {
     fromgatep = togatep = NULL;
     typ = tp;
@@ -65,7 +64,6 @@ cGate::cGate(char *s, char tp) : cObject(s)
 
     transm_finishes = 0.0;
 
-    dispstr = NULL;
     notify_inspector = NULL;
     data_for_inspector = NULL;
 
@@ -109,7 +107,7 @@ cGate& cGate::operator=(cGate& gate)
    return *this;
 }
 
-char *cGate::fullName()
+const char *cGate::fullName()
 {
       static char buf[256];
       if (!isVector())
@@ -120,14 +118,14 @@ char *cGate::fullName()
       }
 }
 
-char *cGate::fullPath()
+const char *cGate::fullPath()
 {
       // use cObject::fullPath()'s static buffer
       // hide gate vector: skip directly to owner module
       if (omodp!=NULL)
       {
          static char buf[512]; // should be big enough because there's no check!!
-         char *p = omodp->fullPath();
+         const char *p = omodp->fullPath();
          if (p!=buf) strcpy(buf,p);
          strcat(buf,".");
          strcat(buf,fullName());
@@ -347,9 +345,10 @@ bool cGate::isRouteOK()
            destinationGate()->ownerModule()->isSimple();
 }
 
-char *cGate::displayString()
+const char *cGate::displayString()
 {
-    if (dispstr) return dispstr;
+    if (!dispstr.isEmpty())
+        return dispstr;
 
     // no hardcoded display string -- try to get it from Envir
     char dispname[128];
@@ -366,14 +365,13 @@ char *cGate::displayString()
     {
         sprintf(dispname, "%s.%s",ownerModule()->className(),fullName());
     }
-    char *s = ev.getDisplayString(simulation.runNumber(),dispname);
-    return s ? s : CONST_CAST("");
+    const char *s = ev.getDisplayString(simulation.runNumber(),dispname);
+    return s ? s : "";
 }
 
-void cGate::setDisplayString(char *s)
+void cGate::setDisplayString(const char *s)
 {
-    delete dispstr;
-    dispstr = opp_strdup(s);
+    dispstr = s;
     if (notify_inspector) notify_inspector(data_for_inspector);
 }
 

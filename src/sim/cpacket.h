@@ -33,26 +33,26 @@ class  cPacket;
 //
 class cPacket : public cMessage
 {
-    protected:
-      short _protocol;
-      short _pdu;
-    public:
-      explicit cPacket(char *name=NULL, short protocol=0, short pdu=0) :
-         cMessage(name,MK_PACKET) {_protocol=protocol;_pdu=pdu;}
-      cPacket (cPacket& m);
-      virtual cObject *dup() {return new cPacket(*this);}
-      char *className()  {return "cPacket";}
-      cPacket& operator=(cPacket& m);
-      virtual char *inspectorFactoryName() {return "cPacketIFC";}
-      virtual void info(char *buf);
-      virtual int netPack();
-      virtual int netUnpack();
+  protected:
+    short _protocol;
+    short _pdu;
+  public:
+    explicit cPacket(const char *name=NULL, short protocol=0, short pdu=0) :
+       cMessage(name,MK_PACKET) {_protocol=protocol;_pdu=pdu;}
+    cPacket (cPacket& m);
+    virtual cObject *dup() {return new cPacket(*this);}
+    const char *className()  {return "cPacket";}
+    cPacket& operator=(cPacket& m);
+    virtual const char *inspectorFactoryName() {return "cPacketIFC";}
+    virtual void info(char *buf);
+    virtual int netPack();
+    virtual int netUnpack();
 
-      // new functions
-      short protocol()          {return _protocol;}
-      short pdu()               {return _pdu;}
-      void setProtocol(short p) {_protocol=p;}
-      void setPdu(short p)      {_pdu=p;}
+    // new functions
+    short protocol()          {return _protocol;}
+    short pdu()               {return _pdu;}
+    void setProtocol(short p) {_protocol=p;}
+    void setPdu(short p)      {_pdu=p;}
 };
 
 

@@ -50,31 +50,6 @@ typedef cModule *(*ModuleCreateFunc)(char *, cModule *);
 typedef cPar *(*ParCreateFunc)();
 
 //==========================================================================
-// structures used in a cModuleInterface
-// NOTE: not cObject descendants
-struct sDescrItem {
-   char what;
-   char *namestr;
-   char *types;
-   char type;
-};
-
-struct sGateInfo {
-   char *namestr;
-   char type;
-   bool vect;
-};
-
-struct sParamInfo {
-   char *namestr;
-   char *types;
-};
-
-struct sMachineInfo {    // that's structuritis. sorry. --VA
-   char *namestr;
-};
-
-//==========================================================================
 // cModuleInterface - represents a module interface: gate + parameter names
 //
 // cModuleInterfaces are the compiled form of NED declarations of simple
@@ -101,32 +76,55 @@ struct sMachineInfo {    // that's structuritis. sorry. --VA
 //
 class cModuleInterface : public cObject
 {
-  protected:
-        int ngate;
-        sGateInfo *gatev;
-        int nparam;
-        sParamInfo *paramv;
-        int nmachine;            // NET
-        sMachineInfo *machinev;  // NET
-  private:
-        void allocate( int ngte, int npram, int nmach );
-        void check_consistency();
+    // structures used in a cModuleInterface
+    struct sDescrItem {
+       char what;
+       char *name;
+       char *types;
+       char type;
+    };
 
-        void setup( sDescrItem *descr_table );
+    struct sGateInfo {
+       char *name;
+       char type;
+       bool vect;
+    };
+
+    struct sParamInfo {
+       char *name;
+       char *types;
+    };
+
+    struct sMachineInfo {
+       char *name;
+    };
+
+  protected:
+    int ngate;
+    sGateInfo *gatev;
+    int nparam;
+    sParamInfo *paramv;
+    int nmachine;            // NET
+    sMachineInfo *machinev;  // NET
+  private:
+    void allocate(int ngte, int npram, int nmach );
+    void check_consistency();
+
+    void setup(sDescrItem *descr_table );
 
   public:
-        cModuleInterface( char *namestr, sDescrItem *descr_table );
-        cModuleInterface( cModuleInterface& mi );
-        virtual ~cModuleInterface();
+    cModuleInterface(const char *name, sDescrItem *descr_table );
+    cModuleInterface(cModuleInterface& mi );
+    virtual ~cModuleInterface();
 
-        // redefined functions
-        virtual char *className()  {return "cModuleInterface";}
-        virtual cObject *dup()  {return new cModuleInterface(*this);}
-        cModuleInterface& operator=(cModuleInterface& mi);
+    // redefined functions
+    virtual const char *className()  {return "cModuleInterface";}
+    virtual cObject *dup()  {return new cModuleInterface(*this);}
+    cModuleInterface& operator=(cModuleInterface& mi);
 
-        // the important functions
-        void addParametersGatesTo( cModule *module);
-        void checkParametersOf( cModule *module );
+    // the important functions
+    void addParametersGatesTo( cModule *module);
+    void checkParametersOf( cModule *module );
 };
 
 //==========================================================================
@@ -146,69 +144,69 @@ class cModuleInterface : public cObject
 
 class cModuleType : public cObject
 {
-        friend class cModule;
+    friend class cModule;
   private:
-        char *interface_name;
-        cModuleInterface *interface;
-        ModuleCreateFunc create_func;
+    char *interface_name;
+    cModuleInterface *interface;
+    ModuleCreateFunc create_func;
   public:
-        cModuleType( char *classname, char *interf_name, ModuleCreateFunc cf);
-        cModuleType( cModuleType& mi );
-        virtual ~cModuleType();
+    cModuleType(const char *classname, const char *interf_name, ModuleCreateFunc cf);
+    cModuleType(cModuleType& mi );
+    virtual ~cModuleType();
 
-        // redefined functions
-        virtual char *className()  {return "cModuleType";}
-        virtual cObject *dup()     {return new cModuleType(*this);}
-        cModuleType& operator=(cModuleType& mi);
+    // redefined functions
+    virtual const char *className()  {return "cModuleType";}
+    virtual cObject *dup()     {return new cModuleType(*this);}
+    cModuleType& operator=(cModuleType& mi);
 
-        cModule *create(char *namestr, cModule *parentmod, bool local=TRUE);
-        void buildInside(cModule *mod);
+    cModule *create(char *name, cModule *parentmod, bool local=TRUE);
+    void buildInside(cModule *mod);
 
-        // convenience function: create()+buildInside()+scheduleStart(now)+callInitialize()
-        cModule *createScheduleInit(char *namestr, cModule *parentmod);
+    // convenience function: create()+buildInside()+scheduleStart(now)+callInitialize()
+    cModule *createScheduleInit(char *name, cModule *parentmod);
 };
 
 
 //==========================================================================
-// cLinkType - holds a connection type: namestr, delay, bit error rate, data rate
+// cLinkType - holds a connection type: name, delay, bit error rate, data rate
 
 class cLinkType : public cObject
 {
   private:
-        cPar *(*delayfunc)();     // delay
-        cPar *(*errorfunc)();     // bit error rate
-        cPar *(*dataratefunc)();  // data rate
+    cPar *(*delayfunc)();     // delay
+    cPar *(*errorfunc)();     // bit error rate
+    cPar *(*dataratefunc)();  // data rate
   public:
-        cLinkType( char *namestr, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)() );
-        cLinkType( cLinkType& li );
-        virtual ~cLinkType()    {}
+    cLinkType(const char *name, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)() );
+    cLinkType(cLinkType& li );
+    virtual ~cLinkType()    {}
 
-        // redefined functions
-        virtual char *className()  {return "cLinkType";}
-        virtual cObject *dup()     {return new cLinkType(*this);}
-        cLinkType& operator=(cLinkType& o);
+    // redefined functions
+    virtual const char *className()  {return "cLinkType";}
+    virtual cObject *dup()     {return new cLinkType(*this);}
+    cLinkType& operator=(cLinkType& o);
 
-        // new functions
-        cPar *createDelay();
-        cPar *createError();
-        cPar *createDataRate();
+    // new functions
+    cPar *createDelay();
+    cPar *createError();
+    cPar *createDataRate();
 };
 
 //==========================================================================
-// cNetworkType - Info to setup a network: namestr, no. of modules, setup function
+// cNetworkType - Info to setup a network: name, no. of modules, setup function
 //  NOTE: CANNOT dup() itself!
 
 class cNetworkType : public cObject
 {
-   public:
-        void (*setupfunc)();
-   public:
-        cNetworkType(char *namestr, void (*f)()) :
-          cObject(namestr,(cObject *)&networks), setupfunc(f) {}
-        virtual ~cNetworkType() {}
+  public:
+    void (*setupfunc)();
+  public:
+    cNetworkType(const char *name, void (*f)()) :
+      cObject(name,(cObject *)&networks), setupfunc(f) {}
+    virtual ~cNetworkType() {}
 
-        // redefined functions
-        virtual char *className()  {return "cNetworkType";}
+    // redefined functions
+    virtual const char *className()  {return "cNetworkType";}
 };
 
 //==========================================================================
@@ -217,16 +215,16 @@ class cNetworkType : public cObject
 
 class cFunctionType : public cObject
 {
-   public:
-        MathFunc f;
-        int argcount;
-   public:
-        cFunctionType(char *namestr, MathFunc f0, int argc) :
-          cObject(namestr,(cObject *)&functions) {f=f0;argcount=argc;}
-        virtual ~cFunctionType() {}
+  public:
+    MathFunc f;
+    int argcount;
+  public:
+    cFunctionType(const char *name, MathFunc f0, int argc) :
+      cObject(name,(cObject *)&functions) {f=f0;argcount=argc;}
+    virtual ~cFunctionType() {}
 
-        // redefined functions
-        virtual char *className()  {return "cFunctionType";}
+    // redefined functions
+    virtual const char *className()  {return "cFunctionType";}
 };
 
 cFunctionType *findfunctionbyptr(MathFunc f);
@@ -237,17 +235,17 @@ cFunctionType *findfunctionbyptr(MathFunc f);
 
 class cClassRegister : public cObject
 {
-        cObject *(*creatorfunc)();
-   public:
-        cClassRegister(char *namestr, cObject *(*f)()) :
-          cObject(namestr,(cObject *)&classes), creatorfunc(f) {}
-        virtual ~cClassRegister() {}
+    cObject *(*creatorfunc)();
+  public:
+    cClassRegister(const char *name, cObject *(*f)()) :
+      cObject(name,(cObject *)&classes), creatorfunc(f) {}
+    virtual ~cClassRegister() {}
 
-        // redefined functions
-        virtual char *className()  {return "cClassRegister";}
+    // redefined functions
+    virtual const char *className()  {return "cClassRegister";}
 
-        // new functions
-        cObject *createOne()  {return creatorfunc();}
+    // new functions
+    cObject *createOne()  {return creatorfunc();}
 };
 
 cObject *createOne(char *type);
@@ -258,16 +256,16 @@ cObject *createOne(char *type);
 
 class cInspectorFactory : public cObject
 {
-        TInspector *(*inspFactoryFunc)(cObject *,int,void *);
-   public:
-        cInspectorFactory(char *name, TInspector *(*f)(cObject *,int,void *));
-        virtual ~cInspectorFactory() {}
+    TInspector *(*inspFactoryFunc)(cObject *,int,void *);
+  public:
+    cInspectorFactory(const char *name, TInspector *(*f)(cObject *,int,void *));
+    virtual ~cInspectorFactory() {}
 
-        // redefined functions
-        virtual char *className()  {return "cInspectorFactory";}
+    // redefined functions
+    virtual const char *className()  {return "cInspectorFactory";}
 
-        // new functions;
-        TInspector *createInspectorFor(cObject *object,int type,void *data);
+    // new functions;
+    TInspector *createInspectorFor(cObject *object,int type,void *data);
 };
 
 

@@ -45,17 +45,17 @@ class cHead : public cObject
        friend class cIterator;
        friend class cObject;
    public:
-       cHead(char *namestr=NULL);
-       cHead(char *namestr, cHead *h);
-       virtual ~cHead()     {deleteChildren();}
+       cHead(const char *name=NULL);
+       cHead(const char *name, cHead *h);
+       virtual ~cHead()  {deleteChildren();}
 
        // redefined functions
-       virtual char *className()  {return "cHead";}
-       virtual char *inspectorFactoryName() {return "cHeadIFC";}
+       virtual const char *className()  {return "cHead";}
+       virtual const char *inspectorFactoryName()  {return "cHeadIFC";}
        virtual void forEach(ForeachFunc f);
 
        // new functions
-       cObject *find(char *s);
+       cObject *find(const char *objname);
        int count();
 };
 
@@ -78,11 +78,11 @@ class cIterator
 //==========================================================================
 //=== useful functions for finding objects by name:
 
-inline cNetworkType *findNetwork(char *s)    {return (cNetworkType *)networks.find(s);}
-inline cModuleType *findModuleType(char *s) {return (cModuleType *)modtypes.find(s);}
-inline cModuleInterface *findModuleInterface(char *s) {return (cModuleInterface *)modinterfaces.find(s);}
-inline cLinkType *findLink(char *s)       {return (cLinkType *)linktypes.find(s);}
-inline cFunctionType *findFunction(char *s)  {return (cFunctionType *)functions.find(s);}
-inline cInspectorFactory *findInspectorFactory(char *s)  {return (cInspectorFactory *)inspectorfactories.find(s);}
+inline cNetworkType *findNetwork(const char *s)    {return (cNetworkType *)networks.find(s);}
+inline cModuleType *findModuleType(const char *s)  {return (cModuleType *)modtypes.find(s);}
+inline cModuleInterface *findModuleInterface(const char *s) {return (cModuleInterface *)modinterfaces.find(s);}
+inline cLinkType *findLink(const char *s)          {return (cLinkType *)linktypes.find(s);}
+inline cFunctionType *findFunction(const char *s)  {return (cFunctionType *)functions.find(s);}
+inline cInspectorFactory *findInspectorFactory(const char *s) {return (cInspectorFactory *)inspectorfactories.find(s);}
 
 #endif

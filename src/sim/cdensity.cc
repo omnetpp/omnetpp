@@ -37,7 +37,7 @@
 //==========================================================================
 // cDensityEstBase - member functions
 
-cDensityEstBase::cDensityEstBase( char *name ) : cStdDev(name)
+cDensityEstBase::cDensityEstBase(const char *name ) : cStdDev(name)
 {
    range_mode = RANGE_INVALID;
    num_firstvals = 0;
@@ -206,7 +206,7 @@ double cDensityEstBase::cellPDF(int k)
 }
 
 // plot one line
-void cDensityEstBase::plotline( ostream& os, char *pref, double xval,
+void cDensityEstBase::plotline(ostream& os, char *pref, double xval,
                                double count, double a )
 {
    const int picwidth=54;           // width of picture

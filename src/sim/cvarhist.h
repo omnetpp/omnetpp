@@ -68,13 +68,13 @@ class cVarHistogram : public cHistogramBase //--LG
   public:
     cVarHistogram(cVarHistogram& r) : cHistogramBase(r)
        {setName(r.name());bin_bounds=NULL;operator=(r);}
-    explicit cVarHistogram(char *s=NULL,
+    explicit cVarHistogram(const char *name=NULL,
                            int numcells=11,
                            int transformtype=HIST_TR_AUTO_EPC_DBL);
     virtual ~cVarHistogram();
 
     // redefined functions
-    virtual char *className()  {return "cVarHistogram";}
+    virtual const char *className()  {return "cVarHistogram";}
     virtual cObject *dup()    {return new cVarHistogram(*this);}
     cVarHistogram& operator=(cVarHistogram& res);
     virtual int netPack();

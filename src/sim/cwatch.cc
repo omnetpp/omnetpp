@@ -55,31 +55,31 @@ void cWatch::printTo(char *buf)
 {
       switch (type)
       {
-         case 'c':  sprintf(buf, "char %s = '%c' (%d,0x%x)", namestr,
+         case 'c':  sprintf(buf, "char %s = '%c' (%d,0x%x)", name,
                                  *(char *)ptr, *(char *)ptr, *(char *)ptr );
                     break;
-         case 'i':  sprintf(buf, "int %s = %d (%uU, 0x%x)", namestr,
+         case 'i':  sprintf(buf, "int %s = %d (%uU, 0x%x)", name,
                                  *(int *)ptr, *(int *)ptr, *(int *)ptr );
                     break;
-         case 'l':  sprintf(buf, "long %s = %ldL (%luLU, 0x%lx)", namestr,
+         case 'l':  sprintf(buf, "long %s = %ldL (%luLU, 0x%lx)", name,
                                  *(long *)ptr, *(long *)ptr, *(long *)ptr );
                     break;
-         case 'd':  sprintf(buf, "double %s = %lf", namestr,
+         case 'd':  sprintf(buf, "double %s = %lf", name,
                                  *(double *)ptr );
                     break;
          case 's':  if (*(char **)ptr==NULL)
-                       sprintf(buf, "char *%s = NULL", namestr);
+                       sprintf(buf, "char *%s = NULL", name);
                     else
-                       sprintf(buf, "char *%s = \"%.40s\"", namestr, *(char **)ptr);
+                       sprintf(buf, "char *%s = \"%.40s\"", name, *(char **)ptr);
                     break;
          case 'o':  if (*(cObject **)ptr==NULL)
-                       sprintf(buf, "cObject *%s = NULL", namestr);
+                       sprintf(buf, "cObject *%s = NULL", name);
                     else
                        sprintf(buf, "cObject *%s = (not NULL, but maybe not a valid object)",
-                               namestr );
+                               name );
                        //// cannot call info(): recursivity!!!
                        //// even this is dangerous:
-                       //sprintf(buf, "cObject *%s --> (%s) `%s'", namestr,
+                       //sprintf(buf, "cObject *%s --> (%s) `%s'", name,
                        //                   (*(cObject **)ptr)->className(),
                        //                   (*(cObject **)ptr)->name() );
                     break;

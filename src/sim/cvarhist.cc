@@ -42,7 +42,7 @@ Register_Class( cVarHistogram )
 // cVarHistogram - member functions
 //
 // num_cells = -1 means that 0 bin boundaries are defined ( num_cells+1 is 0 )
-cVarHistogram::cVarHistogram(char *name, int maxnumcells, int transformtype ) :
+cVarHistogram::cVarHistogram(const char *name, int maxnumcells, int transformtype ) :
 cHistogramBase(name,-1) //--LG
 {
    range_mode = RANGE_NOTSET;

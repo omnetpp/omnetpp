@@ -46,8 +46,10 @@ cTDExpandingWindows::cTDExpandingWindows(cTDExpandingWindows& r) : cTransientDet
     operator=(r);
 }
 
-cTDExpandingWindows::cTDExpandingWindows(int reps, int minw, double wind, double acc,
-                 PostTDFunc f, void *p) : cTransientDetection()
+cTDExpandingWindows::cTDExpandingWindows(const char *name,
+    int reps, int minw, double wind, double acc,
+    PostTDFunc f, void *p) :
+  cTransientDetection(name)
 {
     pdf = f; pdfdata = p;
     setParameters(reps, minw, wind, acc);
@@ -225,11 +227,16 @@ cADByStddev::cADByStddev(cADByStddev& r) : cAccuracyDetection()
     operator=(r);
 }
 
-cADByStddev::cADByStddev(double acc, int reps, PostADFunc f, void *p)
+cADByStddev::cADByStddev(const char *name,
+                         double acc, int reps, PostADFunc f, void *p) :
+  cAccuracyDetection(name)
 {
    pdf = f; pdfdata = p;
-   accuracy = acc;repeats=detreps=reps;
-   go=resaccval=FALSE;sctr=0;ssum=sqrsum=0.0;
+   accuracy = acc;
+   repeats=detreps=reps;
+   go=resaccval=FALSE;
+   sctr=0;
+   ssum=sqrsum=0.0;
 }
 
 cADByStddev& cADByStddev::operator=(cADByStddev& res)

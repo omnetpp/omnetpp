@@ -50,30 +50,30 @@ class  cWatch;
 //
 class cWatch : public cObject
 {
-    private:
-        void *ptr;
-        char type;
-    public:
-        cWatch(cWatch& vs);
-        cWatch(char *namestr, char& c)  : cObject(namestr) {ptr=&c; type='c';}
-        cWatch(char *namestr, int&  i)  : cObject(namestr) {ptr=&i; type='i';}
-        cWatch(char *namestr, long& l)  : cObject(namestr) {ptr=&l; type='l';}
-        cWatch(char *namestr, double& d): cObject(namestr) {ptr=&d; type='d';}
-        cWatch(char *namestr, char* &s) : cObject(namestr) {ptr=&s; type='s';}
-        cWatch(char *namestr, cObject* &o) : cObject(namestr) {ptr=&o; type='o';}
-        virtual char *className()  {return "cWatch";}
-        virtual cObject *dup()   {return new cWatch(*this);}
-        virtual void info(char *buf);
-        virtual char *inspectorFactoryName() {return "cWatchIFC";}
-        cWatch& operator=(cWatch& vs)
-              {ptr=vs.ptr;type=vs.type;return *this;}
-        virtual void writeContents(ostream& os);
+  private:
+    void *ptr;
+    char type;
+  public:
+    cWatch(cWatch& vs);
+    cWatch(const char *name, char& c)  : cObject(name) {ptr=&c; type='c';}
+    cWatch(const char *name, int&  i)  : cObject(name) {ptr=&i; type='i';}
+    cWatch(const char *name, long& l)  : cObject(name) {ptr=&l; type='l';}
+    cWatch(const char *name, double& d): cObject(name) {ptr=&d; type='d';}
+    cWatch(const char *name, char* &s) : cObject(name) {ptr=&s; type='s';}
+    cWatch(const char *name, cObject* &o) : cObject(name) {ptr=&o; type='o';}
+    virtual const char *className()  {return "cWatch";}
+    virtual cObject *dup()   {return new cWatch(*this);}
+    virtual void info(char *buf);
+    virtual const char *inspectorFactoryName() {return "cWatchIFC";}
+    cWatch& operator=(cWatch& vs)
+          {ptr=vs.ptr;type=vs.type;return *this;}
+    virtual void writeContents(ostream& os);
 
-        virtual void printTo(char *s);
-        char typeChar() {return type;}
-        void *pointer() {return ptr;}
-        //virtual int netPack();
-        //virtual int netUnpack();
+    virtual void printTo(char *s);
+    char typeChar() {return type;}
+    void *pointer() {return ptr;}
+    //virtual int netPack();
+    //virtual int netUnpack();
 };
 
 #endif

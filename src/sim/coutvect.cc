@@ -30,7 +30,7 @@
 //==========================================================================
 // cOutFileMgr - see file OUTVECT.H for comments
 
-cOutFileMgr::cOutFileMgr(char *s) : cObject(s)
+cOutFileMgr::cOutFileMgr(const char *s) : cObject(s)
 {
    nextID = 0;
    handle=NULL;
@@ -42,9 +42,9 @@ cOutFileMgr::~cOutFileMgr()
       fclose(handle);
 }
 
-void cOutFileMgr::setFileName(char *s)
+void cOutFileMgr::setFileName(const char *s)
 {
-   // substitute run number into ##'s in file namestr
+   // substitute run number into ##'s in file name
    fname = s;
    char *p=strstr(fname,"##");
    if (p)
@@ -61,7 +61,7 @@ void cOutFileMgr::setFileName(char *s)
    }
 }
 
-char *cOutFileMgr::fileName()
+const char *cOutFileMgr::fileName()
 {
    return fname;
 }
@@ -70,7 +70,7 @@ void cOutFileMgr::openFile()
 {
    handle = fopen(fname,"a");
    if (handle==NULL)
-       opp_error("Cannot open output file `%s'",(char *)fname);
+       opp_error("Cannot open output file `%s'",(const char *)fname);
 }
 
 void cOutFileMgr::closeFile()
@@ -104,7 +104,7 @@ FILE *cOutFileMgr::filePointer()
 //==========================================================================
 // cOutVector - see file OUTVECT.H for comments
 
-cOutVector::cOutVector (char *s, int tupl) : cObject(s)
+cOutVector::cOutVector(const char *name, int tupl) : cObject(name)
 {
    tuple = tupl;
    enabled = TRUE;
@@ -115,20 +115,20 @@ cOutVector::cOutVector (char *s, int tupl) : cObject(s)
 
    record_in_inspector = NULL;
 
-   ev.getOutVectorConfig(simulation.contextSimpleModule()->fullPath(),name(),
-                          enabled,starttime,stoptime);
+   ev.getOutVectorConfig(simulation.contextSimpleModule()->fullPath(),name,
+                         enabled,starttime,stoptime);
 }
 
 cOutVector::~cOutVector()
 {
 }
 
-void cOutVector::setName(char *nam)
+void cOutVector::setName(const char *name)
 {
-   cObject::setName(nam);
+   cObject::setName(name);
 
-   ev.getOutVectorConfig(simulation.contextSimpleModule()->fullPath(),name(),
-                          enabled,starttime,stoptime);
+   ev.getOutVectorConfig(simulation.contextSimpleModule()->fullPath(),name,
+                         enabled,starttime,stoptime);
 }
 
 void cOutVector::info(char *buf)

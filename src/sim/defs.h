@@ -23,6 +23,7 @@
 #include <stddef.h>   // size_t
 #include <math.h>     // HUGE_VAL
 
+
 //=== NULL
 #ifndef NULL
 # define NULL ((void*)0)
@@ -64,8 +65,6 @@
 #define ASSERT(expr)  ((void)0)
 #endif
 
-//=== this macro is used to cast away the constness of string literals
-//    until (in the near future) the whole source is made const-correct
 #define CONST_CAST(x)  (char *)(x)
 
 //=== model time

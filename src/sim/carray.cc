@@ -47,8 +47,8 @@ cBag::cBag(cBag& bag) : cObject()
    operator=(bag);
 }
 
-cBag::cBag(char *namestr, int esiz, int siz, int delt) :
-cObject( namestr ), vect(NULL)
+cBag::cBag(const char *name, int esiz, int siz, int delt) :
+cObject( name ), vect(NULL)
 {
      setup(esiz, siz, delt);
 }
@@ -215,8 +215,8 @@ cArray::cArray(cArray& list) : cObject()
      operator=(list);
 }
 
-cArray::cArray(char *namestr, int siz, int dt) :
-cObject( namestr )
+cArray::cArray(const char *name, int siz, int dt) :
+cObject( name )
 {
      delta = Max(1,dt);
      size = Max(siz,0);
@@ -363,11 +363,11 @@ int cArray::find(cObject *obj)
          return -1;
 }
 
-int cArray::find(char *s)
+int cArray::find(const char *objname)
 {
      int i;
      for (i=0; i<=last; i++)
-        if (vect[i] && vect[i]->isName(s))
+        if (vect[i] && vect[i]->isName(objname))
             break;
      if (i<=last)
          return i;
@@ -383,26 +383,26 @@ cObject *cArray::get(int m)
           {opp_warning(eNULLPTR,className(),fullName(),m);return NO(cObject);}
 }
 
-cObject *cArray::get(char *s)
+cObject *cArray::get(const char *objname)
 {
-    int m = find( s );
+    int m = find( objname );
     if (m!=-1)
         return get(m);
     else
     {
-        opp_warning("(%s)%s: get(): no object called `%s'",className(),fullName(),s);
+        opp_warning("(%s)%s: get(): no object called `%s'",className(),fullName(),objname);
         return NO(cObject);
     }
 }
 
-cObject *cArray::remove(char *s)
+cObject *cArray::remove(const char *objname)
 {
-    int m = find( s );
+    int m = find( objname );
     if (m!=-1)
         return remove(m);
     else
     {
-        opp_warning("(%s)%s: remove(): no object called `%s'",className(),fullName(),s);
+        opp_warning("(%s)%s: remove(): no object called `%s'",className(),fullName(),objname);
         return NO(cObject);
     }
 }

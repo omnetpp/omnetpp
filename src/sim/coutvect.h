@@ -40,19 +40,19 @@
 class cOutFileMgr : public cObject
 {
     long nextID;       // holds next free ID for output vectors
-    opp_string fname;  // output file namestr
+    opp_string fname;  // output file name
     FILE *handle;      // file ptr of output file
 
   public:
-    explicit cOutFileMgr(char *s=NULL);
+    explicit cOutFileMgr(const char *name=NULL);
     virtual ~cOutFileMgr();
 
     // redefined functions
-    virtual char *className()  {return "cOutFileMgr";}
+    virtual const char *className()  {return "cOutFileMgr";}
 
     // new functions
-    void setFileName(char *s);
-    char *fileName();
+    void setFileName(const char *s);
+    const char *fileName();
     void openFile();
     void closeFile();
     void deleteFile();
@@ -71,7 +71,7 @@ class cOutFileMgr : public cObject
 //   5 15.850  5656.67644455
 //
 // The first line is a "label" line, assigns a label ("response time") to an
-// id (5). The "net.site[2].terminal[12]" is the namestr of the module which
+// id (5). The "net.site[2].terminal[12]" is the name of the module which
 // produces the data lines beginning with 5. The number 1 indicates that the
 // data lines (beginning with 5) will contain 1 data value after the time mark.
 // The second line is a data line, the 1st number is the id, the
@@ -104,15 +104,15 @@ class cOutVector : public cObject
 
   public:
     cOutVector(cOutVector& r) : cObject(r) {setName(r.name());operator=(r);}
-    explicit cOutVector(char *s=NULL, int tupl=1);
+    explicit cOutVector(const char *name=NULL, int tupl=1);
     virtual ~cOutVector();
 
     // redefined functions
-    virtual void setName(char *name);
-    virtual char *className()  {return "cOutVector";}
+    virtual void setName(const char *name);
+    virtual const char *className()  {return "cOutVector";}
     virtual cObject *dup()    {return new cOutVector(*this);}
     virtual void info(char *buf);
-    virtual char *inspectorFactoryName() {return "cOutVectorIFC";}
+    virtual const char *inspectorFactoryName() {return "cOutVectorIFC";}
     // no operator=()
 
     // new functions

@@ -37,7 +37,7 @@
 //  Empty string (or spaces+tabs) is also an error.
 //  E.g.  "3s 600ms x" --> returns -1.
 //
-simtime_t strToSimtime( char *str );
+simtime_t strToSimtime(const char *str);
 
 //
 // strToSimtime0():
@@ -46,7 +46,7 @@ simtime_t strToSimtime( char *str );
 //  Empty string is accepted as 0.0.
 //  E.g.  "3s 600ms x" --> returns 3.6 and str will point to 'x'.
 //
-simtime_t strToSimtime0( char *&str );
+simtime_t strToSimtime0(const char *&str);
 
 //
 // simtimeToStr():
@@ -128,23 +128,23 @@ double shift_right(double a, double b);
 #define mystrcpy    opp_strcpy
 #define mystrcmp    opp_strcmp
 #define mystrmatch  opp_strmatch
-char *opp_strdup(char *);
-char *opp_strcpy(char *,char *);
-int  opp_strcmp(char *, char *);
-bool opp_strmatch(char *, char *);
+char *opp_strdup(const char *);
+char *opp_strcpy(char *,const char *);
+int  opp_strcmp(const char *, const char *);
+bool opp_strmatch(const char *, const char *);
 
 // Fast string manipulation functions.
 // fastconcat() returns a pointer to a static buffer of length 256
-char *fastconcat(char *s1, char *s2, char *s3=NULL, char *s4=NULL);
+char *fastconcat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
 
 // indexedname() creates a string like "component[35]" into buf, the first argument.
-char *indexedname(char *buf, char *namestr, int index);
+char *indexedname(char *buf, const char *name, int index);
 
-// correct(): correct a NULL pointer to pointer to a null string
-inline char *correct(char *);            // returns s ? s : ""
+// correct(): correct NULL pointer to "" (ptr to a null string)
+inline const char *correct(const char *);
 
 // opp_vsscanf(): a restricted vsscanf implementation used by cStatistic::freadvarsf()
-int opp_vsscanf(char *s, char *fmt, va_list va);
+int opp_vsscanf(const char *s, const char *fmt, va_list va);
 
 bool memoryIsLow();
 
@@ -155,12 +155,12 @@ bool memoryIsLow();
 // introduced so that not every class that wants to issue an error message
 // needs to include "csimul.h" and half the simulation kernel with it.
 //
-void opp_error(int errcode,...);     // general error handler
-void opp_error(char *msg,...);       // same w/ custom message
-void opp_warning(int errcode,...);   // message + question:continue/abort?
-void opp_warning(char *msg,...);     // same w/ custom message
-void opp_terminate(int errcode,...); // print message and set error number
-void opp_terminate(char *msg,...);   // same w/ custom message
+void opp_error(int errcode,...);         // general error handler
+void opp_error(const char *msg,...);     // same w/ custom message
+void opp_warning(int errcode,...);       // message + question:continue/abort?
+void opp_warning(const char *msg,...);   // same w/ custom message
+void opp_terminate(int errcode,...);     // print message and set error number
+void opp_terminate(const char *msg,...); // same w/ custom message
 
 
 //==========================================================================
@@ -191,13 +191,15 @@ class opp_string
     char *str;
   public:
     opp_string()               {str = 0;}
-    opp_string(char *s)        {str = mystrdup(s);}
-    opp_string(opp_string& s)  {str = mystrdup(s.str);}
+    opp_string(const char *s)  {str = opp_strdup(s);}
+    opp_string(opp_string& s)  {str = opp_strdup(s.str);}
     ~opp_string()              {delete str;}
-    operator char *()          {return str;}
-    char *operator=(char *s)   {delete str;str=opp_strdup(s);return str;}
+    operator const char *()    {return str;}
+    const char *operator=(const char *s)
+                               {delete str;str=opp_strdup(s);return str;}
     opp_string& operator=(opp_string& s)
                                {delete str;str=opp_strdup(s.str);return *this;}
+    bool isEmpty()             {return str!=0;}
 };
 
 //==========================================================================
@@ -209,9 +211,9 @@ inline bool equal(double a, double b, double epsilon)
    return (d>=0.0 ? d : -d) < epsilon;
 }
 
-inline char *correct(char *s)
+inline const char *correct(const char *s)
 {
-   return s ? s : CONST_CAST("");
+   return s ? s : "";
 }
 
 inline double dblrand()

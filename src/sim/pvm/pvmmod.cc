@@ -48,7 +48,7 @@
 Register_Class( cPvmMod );
 
 
-extern int pack_str(char * str);
+extern int pack_str(const char * str);
 extern char *upack_str(int& err);
 extern cObject *upack_object(int& err);
 
@@ -79,7 +79,7 @@ cNetGate::cNetGate(cNetGate& gate) : cGate(NULL,0)
 }
 
 // The constructor.
-cNetGate::cNetGate(char *s, int tp) : cGate(s,tp)
+cNetGate::cNetGate(const char *name, int type) : cGate(name,type)
 {
    target_Proc=0;
    target_Gate=-1;
@@ -199,7 +199,7 @@ void cPvmMod::callFinish()
         simulation.setGlobalContext();
 }
 
-/-------------------------------------------------------------------------
+//-------------------------------------------------------------------------
 // start_segments:
 //    The console module checks whether all PVM hosts are running and
 //    starts up each segment.
@@ -208,7 +208,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
 {
         int i,j;
         int err=0;
-        char *act_host;
+        const char *act_host;
 
         if (ev.runningMode()!=MASTER_MODE)
         {
@@ -244,7 +244,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
         //    the first argument and NOT the program name.
         //  - argv2[] must be NULL-terminated.
         char **argv2 = new char *[argc];
-        for (i=1;i<argc;i++) argv2[i-1] = argv[i];
+        for (i=1; i<argc; i++) argv2[i-1] = argv[i];
         argv2[argc-1]=NULL;
 #else
         // SINGLE_HOST version:
@@ -252,7 +252,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
         //  - we pass the 'faked' host name to the slaves
         //    as the first command-line arg, argv[0].
         char **argv2 = new char *[argc+1];
-        for (i=1;i<argc;i++) argv2[i] = argv[i];
+        for (i=1; i<argc; i++) argv2[i] = argv[i];
         argv2[argc]=NULL;
 #endif /*SINGLE_HOST*/
 
@@ -260,7 +260,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
         segments=0;
         ev.printf("Starting up segments...\n");
         all_tids = new int[host_list.items()];
-        for(i=0;i<host_list.items();i++)
+        for(i=0; i<host_list.items(); i++)
         {
            // pick host i
            act_host = ((cPar *)host_list[i])->stringValue();
@@ -290,13 +290,14 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
                // print out command line
                ev.printf("  host %s:",act_host);
                ev.printf(" running '%s",argv[0]);
-               for(j=0;argv2[j];j++) ev.printf(" %s",argv2[j]);
+               for(j=0; argv2[j]; j++)
+                   ev.printf(" %s",argv2[j]);
                ev.printf("'");
 
                // start up the slave program
 #ifndef SINGLE_HOST
                // NORMAL: on act_host
-               err=pvm_spawn(argv[0],argv2,PvmTaskHost,act_host,1,all_tids+segments);
+               err=pvm_spawn(argv[0],argv2,PvmTaskHost,CONST_CAST(act_host),1,all_tids+segments);
 #else
                // SINGLE_HOST: on my_host
                err=pvm_spawn(argv[0],argv2,PvmTaskHost,my_host,1,all_tids+segments);
@@ -307,7 +308,8 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
                    // error, kill segments started up so far
                    ev.printf(": ERROR, code=%i\n",(all_tids+segments)[0]);
                    opp_error("PVM: Could not start segment");
-                   for (j=0;j++;j<segments)  pvm_kill(all_tids[j]);
+                   for (j=0; j<segments; j++)
+                       pvm_kill(all_tids[j]);
                    return FALSE;
                }
                else
@@ -497,7 +499,7 @@ void cPvmMod::net_sendmsg(cMessage *msg,int ongate)
 // putmsg_onconsole:
 //    send a message string to the PVM module on the console to display.
 
-void cPvmMod::putmsg_onconsole(char * strmsg)
+void cPvmMod::putmsg_onconsole(const char *strmsg)
 {
         int err=0;
         pvm_initsend(PvmDataDefault);
@@ -511,14 +513,14 @@ void cPvmMod::putmsg_onconsole(char * strmsg)
 // puts_onconsole:
 //    send a string to the PVM module on the console
 
-void cPvmMod::puts_onconsole(char * strmsg)
+void cPvmMod::puts_onconsole(const char *strmsg)
 {
         int err=0;
         pvm_initsend(PvmDataDefault);
         err=err||pack_str(my_host);
         err=err||pack_str(strmsg);
         cModule *mod = simulation.contextModule();
-        err=err||pack_str( mod?mod->fullPath():CONST_CAST("") );
+        err=err||pack_str(mod ? mod->fullPath() : "");
         err=err||pvm_send(parent_tid, MSG_PUTS_ONCONSOLE);
         if (err) opp_error(ePVM, "puts_onconsole()");
 }
@@ -528,11 +530,11 @@ void cPvmMod::puts_onconsole(char * strmsg)
 // gets_onconsole:
 //    Generates a user input on console, and waits for the results.
 
-bool cPvmMod::gets_onconsole(char * promptstr,char * buffer,int len)
+bool cPvmMod::gets_onconsole(const char *promptstr, char *buffer,int len)
 {
         char a;
         int err=0;
-        char * buff;
+        char *buff;
         pvm_initsend(PvmDataDefault);
         err=err||pack_str(my_host);
         err=err||pack_str(promptstr);
@@ -548,17 +550,16 @@ bool cPvmMod::gets_onconsole(char * promptstr,char * buffer,int len)
         if (buff) strcpy(buffer,buff);
         err=err||pvm_upkbyte(&a,1,1);
         if (err) {opp_error(ePVM, "gets_onconsole()/recv");return FALSE;};
-        return a;
+        return a!=0;
 }
 
 //-------------------------------------------------------------------------
 // askyesno_onconsole:
 //    Generates a user input on console, and waits for the results.
 
-bool cPvmMod::askyesno_onconsole(char *question)
+bool cPvmMod::askyesno_onconsole(const char *question)
 {
         int err=0;
-        char *buff;
         pvm_initsend(PvmDataDefault);
         err=err||pack_str(my_host);
         err=err||pack_str(question);
@@ -571,7 +572,7 @@ bool cPvmMod::askyesno_onconsole(char *question)
         char a;
         err=err||pvm_upkbyte(&a,1,1);
         if (err) {opp_error(ePVM, "askyesno_onconsole()/recv");return FALSE;}
-        return a;
+        return a!=0;
 }
 
 
@@ -977,7 +978,7 @@ void cPvmMod::synchronize()
 //--------------------------------------------------------------------------
 // findingate : search for serial num of input gate by its name
 
-int cPvmMod::findingate(char *s)
+int cPvmMod::findingate(const char *s)
 {
         return gatev.find(s);
 }
@@ -985,7 +986,7 @@ int cPvmMod::findingate(char *s)
 //--------------------------------------------------------------------------
 // ingate: reference to input gate with name s.
 
-cGate *cPvmMod::ingate(char *s)
+cGate *cPvmMod::ingate(const char *s)
 {
         int i=gatev.find(s);
         if (i==-1)
@@ -997,7 +998,7 @@ cGate *cPvmMod::ingate(char *s)
 //--------------------------------------------------------------------------
 // findoutgate : search for serial num of output gate by its name
 
-int cPvmMod::findoutgate(char *s)
+int cPvmMod::findoutgate(const char *s)
 {
         return out_gatev.find(s);
 }
@@ -1005,7 +1006,7 @@ int cPvmMod::findoutgate(char *s)
 //--------------------------------------------------------------------------
 // outgate: reference to output gate with name s.
 
-cGate *cPvmMod::outgate(char *s)
+cGate *cPvmMod::outgate(const char *s)
 {
         int i=out_gatev.find(s);
         if (i==-1)

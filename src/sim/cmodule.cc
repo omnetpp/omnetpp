@@ -68,14 +68,12 @@ cModule::cModule(cModule& mod) : cObject(),
 
         idx=0; vectsize=-1;
 
-        for (int i=0; i<dispNUMTYPES; i++) dispstr[i]=NULL;
-
         setName(mod.name());
         operator=(mod);
 }
 
-cModule::cModule(char *namestr, cModule *parentmod) :
- cObject(namestr, NULL),
+cModule::cModule(const char *name, cModule *parentmod) :
+ cObject(name, NULL),
  gatev("gates",0,2),
  paramv("parameters",0,2),
  machinev("machines",0,2),
@@ -90,7 +88,6 @@ cModule::cModule(char *namestr, cModule *parentmod) :
         parentmodp = parentmod;
         idx=0; vectsize=-1;
 
-        for (int i=0; i<dispNUMTYPES; i++) dispstr[i]=NULL;
         notify_inspector = NULL;
         data_for_inspector = NULL;
 
@@ -138,7 +135,7 @@ void cModule::setModuleType(cModuleType *mtype)
       mod_type = mtype;
 }
 
-char *cModule::fullName()
+const char *cModule::fullName()
 {
       static char buf[256];
       if (!isVector())
@@ -150,7 +147,7 @@ char *cModule::fullName()
       }
 }
 
-char *cModule::fullPath()
+const char *cModule::fullPath()
 {
       // follows module hierarchy instead of ownership hierarchy
       static char buf[512]; // should be big enough because there's no check!!
@@ -159,7 +156,7 @@ char *cModule::fullPath()
          strcpy(buf, fullName());
       else
       {
-         char *p = parentmodp->fullPath();
+         const char *p = parentmodp->fullPath();
          if (p!=buf) strcpy(buf,p);
          strcat( buf, "." );
          strcat( buf, fullName() );
@@ -167,7 +164,7 @@ char *cModule::fullPath()
       return buf;
 }
 
-void cModule::addGate(char *gname, char tp)
+void cModule::addGate(const char *gname, char tp)
 {
       if (findGate(gname)>=0)
          opp_error("addGate(): Gate %s.%s already present",
@@ -179,7 +176,7 @@ void cModule::addGate(char *gname, char tp)
       }
 }
 
-void cModule::setGateSize(char *gname, int size)
+void cModule::setGateSize(const char *gname, int size)
 {
       int pos = findGate(gname,-1);
       if (pos<0) pos = findGate(gname,0);
@@ -221,7 +218,7 @@ void cModule::setGateSize(char *gname, int size)
       }
 }
 
-void cModule::addPar(char *pname)
+void cModule::addPar(const char *pname)
 {
       int i = findPar(pname);
       if (i!=-1)
@@ -272,21 +269,21 @@ bool cModule::checkInternalConnections()
      return TRUE;
 }
 
-void cModule::addMachinePar(char *pname)
+void cModule::addMachinePar(const char *pname)
 {
     cPar *par = new cPar(pname);
     *par = "";
     machinev.add( par );
 }
 
-void cModule::setMachinePar(char *pname, char *value)
+void cModule::setMachinePar(const char *pname, const char *value)
 {
     int i = machinev.find( pname );
     if (i==-1)
          opp_error("(%s)%s: Machine par `%s' does not exist",
                    className(), fullPath(), pname );
     else
-         *(cPar *)machinev[i] = value;
+         ((cPar *)machinev[i])->setStringValue(value);
 }
 
 cModule *cModule::parentModule()
@@ -294,7 +291,7 @@ cModule *cModule::parentModule()
     return parentmodp;
 }
 
-int cModule::findGate(char *s, int sn)
+int cModule::findGate(const char *s, int sn)
 {
     bool w = simulation.warnings();
     simulation.setWarnings( FALSE );
@@ -326,7 +323,7 @@ int cModule::findGate(char *s, int sn)
        return -1;
 }
 
-cGate *cModule::gate(char *s, int sn)
+cGate *cModule::gate(const char *s, int sn)
 {
     int i = findGate(s,sn);
     if (i==-1)
@@ -340,7 +337,7 @@ cGate *cModule::gate(char *s, int sn)
         return gate(i);
 }
 
-int cModule::findPar(char *s)
+int cModule::findPar(const char *s)
 {
     return paramv.find(s);
 }
@@ -350,7 +347,7 @@ cPar& cModule::par(int pn)
     return *(cPar *)paramv[pn];
 }
 
-cPar& cModule::par(char *s)
+cPar& cModule::par(const char *s)
 {
     int pn = findPar( s );
     if (pn!=-1)
@@ -359,30 +356,30 @@ cPar& cModule::par(char *s)
         {opp_warning(eNOPARAM,s);return *NO(cPar);}
 }
 
-cPar& cModule::ancestorPar(char *namestr)
+cPar& cModule::ancestorPar(const char *name)
 {
     // search parameter in parent modules
     cModule *pmod = this; // ->parentModule() ?
     int k;
-    while (pmod && (k=pmod->findPar(namestr))<0)
+    while (pmod && (k=pmod->findPar(name))<0)
         pmod = pmod->parentmodp;
     if (pmod)
         return pmod->par(k);
     else
     {
          opp_warning("Ancestor parameter `%s' not found for module `%s'",
-                     namestr, fullPath() );
+                     name, fullPath() );
          return *NO(cPar);
     }
 }
 
-char *cModule::machinePar(int pn)
+const char *cModule::machinePar(int pn)
 {
     cPar *mp = (cPar *)machinev[pn];
     return (!mp) ? NULL : mp->stringValue();
 }
 
-char *cModule::machinePar(char *pname)
+const char *cModule::machinePar(const char *pname)
 {
     int i = machinev.find( pname );
     if (i==-1)
@@ -396,7 +393,7 @@ bool cModule::isOnLocalMachine()                                   //NET
     return simulation.netInterface()==NULL || simulation.netInterface()->isLocalMachineIn( machinev );
 }
 
-void cModule::setDisplayString(int type,char *s)
+void cModule::setDisplayString(int type, const char *s)
 {
     if (type<0 || type>=dispNUMTYPES)
     {
@@ -405,13 +402,12 @@ void cModule::setDisplayString(int type,char *s)
          return;
     }
 
-    delete dispstr[type];
-    dispstr[type] = opp_strdup(s);
+    dispstr[type] = s;
 
     if (notify_inspector) notify_inspector(type,data_for_inspector);
 }
 
-char *cModule::displayString(int type)
+const char *cModule::displayString(int type)
 {
     if (type<0 || type>=dispNUMTYPES)
     {
@@ -420,7 +416,8 @@ char *cModule::displayString(int type)
          return NULL;
     }
 
-    if (dispstr[type]) return dispstr[type];
+    if (!dispstr[type].isEmpty())
+        return dispstr[type];
 
     // no hardcoded display string -- try to get it from Envir
     char dispname[128];
@@ -434,8 +431,8 @@ char *cModule::displayString(int type)
     {
         sprintf(dispname, "%s",className());
     }
-    char *s = ev.getDisplayString(simulation.runNumber(),dispname);
-    return s ? s : CONST_CAST("");
+    const char *s = ev.getDisplayString(simulation.runNumber(),dispname);
+    return s ? s : "";
 }
 
 void cModule::setDisplayStringNotify(void (*notify_func)(int,void*), void *data)
@@ -484,7 +481,7 @@ cSimpleModule::cSimpleModule(cSimpleModule& mod ) :
         operator=( mod );
 }
 
-cSimpleModule::cSimpleModule(char *name, cModule *parentmod, unsigned stksize) :
+cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stksize) :
   cCoroutine(),
   cModule( name, parentmod ),
   locals( "local-objects", NULL),
@@ -575,7 +572,7 @@ void cSimpleModule::end()
     simulation.transferToMain();
 }
 
-void cSimpleModule::error(char *fmt...)
+void cSimpleModule::error(const char *fmt...)
 {
     va_list va;
     va_start(va, fmt);
@@ -693,25 +690,25 @@ int cSimpleModule::send(cMessage *msg, int g)
         return sendDelayed( msg, 0.0, g);
 }
 
-int cSimpleModule::send(cMessage *msg, char *s, int sn)
+int cSimpleModule::send(cMessage *msg, const char *gatename, int sn)
 {
-        int g = findGate(s,sn);
+        int g = findGate(gatename,sn);
         if (g<0)
         {
            opp_error(sn<0 ? "send(): module has no gate `%s'":
-                            "send(): module has no gate `%s[%d]'",s,sn);
+                            "send(): module has no gate `%s[%d]'",gatename,sn);
            return 0;
         }
         return sendDelayed( msg, 0.0, g );
 }
 
-int cSimpleModule::sendDelayed(cMessage *msg, double delay, char *s, int sn)
+int cSimpleModule::sendDelayed(cMessage *msg, double delay, const char *gatename, int sn)
 {
-        int g = findGate(s,sn);
+        int g = findGate(gatename,sn);
         if (g<0)
         {
            opp_error(sn<0 ? "sendDelayed(): module has no gate `%s'":
-                            "sendDelayed(): module has no gate `%s[%d]'",s,sn);
+                            "sendDelayed(): module has no gate `%s[%d]'",gatename,sn);
            return 0;
         }
         return sendDelayed( msg, delay, g );
@@ -831,15 +828,16 @@ int cSimpleModule::sendDirect(cMessage *msg, double delay, cModule *mod, int g)
         return 0;
 }
 
-int cSimpleModule::sendDirect(cMessage *msg, double delay, cModule *mod, char *s, int sn)
+int cSimpleModule::sendDirect(cMessage *msg, double delay,
+                              cModule *mod, const char *gatename, int sn)
 {
         if (!mod) {opp_error("sendDirect(): module ptr is NULL");return 0;}
-        int g = mod->findGate(s,sn);
+        int g = mod->findGate(gatename,sn);
         if (g<0)
         {
            opp_error(sn<0 ? "sendDirect(): module `%s' has no gate `%s'":
                             "sendDirect(): module `%s' has no gate `%s[%d]'",
-                            mod->fullPath(),s,sn);
+                            mod->fullPath(),gatename,sn);
            return 0;
         }
         return sendDirect( msg, delay, mod, g );
@@ -861,13 +859,13 @@ int cSimpleModule::syncpoint(simtime_t t, int g)
         return 0;
 }
 
-int cSimpleModule::syncpoint(simtime_t t, char *s, int sn)
+int cSimpleModule::syncpoint(simtime_t t, const char *gatename, int sn)
 {
-        int g = findGate(s,sn);
+        int g = findGate(gatename,sn);
         if (g<0)
         {
            opp_error(sn<0 ? "syncpoint(): module has no gate `%s'":
-                            "syncpoint(): module has no gate `%s[%d]'",s,sn);
+                            "syncpoint(): module has no gate `%s[%d]'",gatename,sn);
            return 0;
         }
         return syncpoint( t, g );
@@ -889,13 +887,13 @@ int cSimpleModule::cancelSyncpoint(simtime_t t, int g)
         return 0;
 }
 
-int cSimpleModule::cancelSyncpoint(simtime_t t, char *s, int sn)
+int cSimpleModule::cancelSyncpoint(simtime_t t, const char *gatename, int sn)
 {
-        int g = findGate(s,sn);
+        int g = findGate(gatename,sn);
         if (g<0)
         {
            opp_error(sn<0 ? "cancelSyncpoint(): module has no gate `%s'":
-                            "cancelSyncpoint(): module has no gate `%s[%d]'",s,sn);
+                            "cancelSyncpoint(): module has no gate `%s[%d]'",gatename,sn);
            return 0;
         }
         return cancelSyncpoint( t, g );
@@ -1023,9 +1021,9 @@ cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
      }
 }
 
-cMessage *cSimpleModule::receiveNewOn(char *s, int sn, simtime_t t)
+cMessage *cSimpleModule::receiveNewOn(const char *gatename, int sn, simtime_t t)
 {
-    return receiveNewOn( findGate(s,sn), t );
+    return receiveNewOn( findGate(gatename,sn), t );
 }
 
 //-------------
@@ -1059,13 +1057,13 @@ cMessage *cSimpleModule::receiveOn(int g, simtime_t t)
     return receiveNewOn( g, t );
 }
 
-cMessage *cSimpleModule::receiveOn(char *s, int sn, simtime_t t)
+cMessage *cSimpleModule::receiveOn(const char *gatename, int sn, simtime_t t)
 {
-    int g = findGate(s,sn);
+    int g = findGate(gatename,sn);
     if (g<0)
     {
         opp_error(sn<0 ? "receiveOn(): module has no gate `%s'":
-                         "receiveOn(): module has no gate `%s[%d]'",s,sn);
+                         "receiveOn(): module has no gate `%s[%d]'",gatename,sn);
         return NO(cMessage);
     }
     return receiveOn( g, t );
@@ -1121,9 +1119,10 @@ void cSimpleModule::callFinish()
         simulation.setGlobalContext();
 }
 
-void cSimpleModule::pause(char *s)
+void cSimpleModule::pause(const char *phase)
 {
-    if (s!=NULL) phse = s;
+    if (phase)
+        phasestr = phase;
     simulation.backtomod = this;
     simulation.transferToMain();
     simulation.backtomod = NULL;
@@ -1155,27 +1154,27 @@ void cSimpleModule::endSimulation()
     opp_terminate(eENDSIM);
 }
 
-void cSimpleModule::breakpoint(char *label)
+void cSimpleModule::breakpoint(const char *label)
 {
-    ev.breakpointHit( label, this );
+    ev.breakpointHit(label, this);
 }
 
-bool cSimpleModule::snapshot(cObject *object, char *label)
+bool cSimpleModule::snapshot(cObject *object, const char *label)
 {
     return simulation.snapshot(object, label);
 }
 
-void cSimpleModule::recordScalar(char *name, double value)
+void cSimpleModule::recordScalar(const char *name, double value)
 {
     simulation.recordScalar(name, value);
 }
 
-void cSimpleModule::recordScalar(char *name, char *text)
+void cSimpleModule::recordScalar(const char *name, const char *text)
 {
     simulation.recordScalar(name, text);
 }
 
-void cSimpleModule::recordStats(char *name, cStatistic *stats)
+void cSimpleModule::recordStats(const char *name, cStatistic *stats)
 {
     simulation.recordStats(name, stats);
 }
@@ -1190,8 +1189,8 @@ cCompoundModule::cCompoundModule(cCompoundModule& mod) :
     operator=(mod);
 }
 
-cCompoundModule::cCompoundModule( char *namestr, cModule *parentmod ) :
-  cModule( namestr, parentmod )
+cCompoundModule::cCompoundModule(const char *name, cModule *parentmod ) :
+  cModule( name, parentmod )
 {
 }
 

@@ -86,143 +86,143 @@ struct sXElem
 
 class cPar : public cObject
 {
-   protected:
-     static char *possibletypes;
-   private:
-     char typechar;     // S/B/L/D/F/T/X/P/O/I
-     bool inputflag;
-     bool changedflag;
-     opp_string promptstr; // prompt text used when the value is being input
+  protected:
+    static char *possibletypes;
+  private:
+    char typechar;     // S/B/L/D/F/T/X/P/O/I
+    bool inputflag;
+    bool changedflag;
+    opp_string promptstr; // prompt text used when the value is being input
 
-     union {    // Take care of 'operator=()' when changing this!!!
-        struct { bool sht; char *str;            } ls;   // S:long string
-        struct { bool sht; char str[SHORTSTR+1]; } ss;   // S:short str
-        struct { long val;                       } lng;  // L:long,B:bool
-        struct { double val;                     } dbl;  // D:double
-        struct { MathFunc f; int argc;
-                 double p1,p2,p3;                } func; // F:math function
-        struct { cStatistic *res;                } dtr;  // T:distribution
-        struct { sXElem *xelem; int n;           } expr; // X:expression
-        struct { cPar *par;                      } ind;  // I:indirection
-        struct { void *ptr;
-                 VoidDelFunc delfunc;
-                 VoidDupFunc dupfunc;
-                 size_t itemsize;                } ptr;  // P:void* pointer
-        struct { cObject *obj;                   } obj;  // O:object pointer
-     };
+    union {    // Take care of 'operator=()' when changing this!!!
+       struct { bool sht; char *str;            } ls;   // S:long string
+       struct { bool sht; char str[SHORTSTR+1]; } ss;   // S:short str
+       struct { long val;                       } lng;  // L:long,B:bool
+       struct { double val;                     } dbl;  // D:double
+       struct { MathFunc f; int argc;
+                double p1,p2,p3;                } func; // F:math function
+       struct { cStatistic *res;                } dtr;  // T:distribution
+       struct { sXElem *xelem; int n;           } expr; // X:expression
+       struct { cPar *par;                      } ind;  // I:indirection
+       struct { void *ptr;
+                VoidDelFunc delfunc;
+                VoidDupFunc dupfunc;
+                size_t itemsize;                } ptr;  // P:void* pointer
+       struct { cObject *obj;                   } obj;  // O:object pointer
+    };
 
-   private:
-     void deleteold();          // helper func: destruct old value
-     double evaluate();         // helper func: evaluates expression (X)
-     double fromstat();         // helper func: rand.num with given distr.(T)
-     bool setfunction(char *w); // setFromText() helper func.
+  private:
+    void deleteold();          // helper func: destruct old value
+    double evaluate();         // helper func: evaluates expression (X)
+    double fromstat();         // helper func: rand.num with given distr.(T)
+    bool setfunction(char *w); // setFromText() helper func.
 
-   protected:
-     virtual void valueChanges();
+  protected:
+    virtual void valueChanges();
 
-   public:
-     cPar(cPar& other);
-     explicit cPar(char *namestr=NULL);
-     explicit cPar(char *namestr, cPar& other);
+  public:
+    cPar(cPar& other);
+    explicit cPar(const char *name=NULL);
+    explicit cPar(const char *name, cPar& other);
 
-     virtual ~cPar();
+    virtual ~cPar();
 
-     // redefined functions
-     virtual char *className()  {return "cPar";}
-     virtual cObject *dup()   {return new cPar(*this);}
-     virtual void info(char *buf);
-     virtual char *inspectorFactoryName() {return "cParIFC";}
-     virtual void writeContents(ostream& os);
-     cPar& operator=(cPar& otherpar);
-     virtual int netPack();
-     virtual int netUnpack();
+    // redefined functions
+    virtual const char *className()  {return "cPar";}
+    virtual cObject *dup()   {return new cPar(*this);}
+    virtual void info(char *buf);
+    virtual const char *inspectorFactoryName() {return "cParIFC";}
+    virtual void writeContents(ostream& os);
+    cPar& operator=(cPar& otherpar);
+    virtual int netPack();
+    virtual int netUnpack();
 
-     // new functions:
+    // new functions:
 
-     // functions to set value (assignment operators also exist, see later)
-     cPar& setBoolValue(bool b);              // bool
-     cPar& setLongValue(long l);              // long
-     cPar& setStringValue(char *s);           // string
-     cPar& setDoubleValue(double d);          // double
-     cPar& setDoubleValue(cStatistic *res);   // distribution
-     cPar& setDoubleValue(sXElem *x, int n);  // expression
-     cPar& setDoubleValue(MathFuncNoArg f);   // math func: 0,1,2,3 args
-     cPar& setDoubleValue(MathFunc1Arg  f, double p1);
-     cPar& setDoubleValue(MathFunc2Args f, double p1, double p2);
-     cPar& setDoubleValue(MathFunc3Args f, double p1, double p2, double p3);
-     cPar& setPointerValue(void *ptr);        // void* pointer
-     cPar& setObjectValue(cObject *obj);      // cObject* pointer
+    // functions to set value (assignment operators also exist, see later)
+    cPar& setBoolValue(bool b);              // bool
+    cPar& setLongValue(long l);              // long
+    cPar& setStringValue(const char *s);     // string
+    cPar& setDoubleValue(double d);          // double
+    cPar& setDoubleValue(cStatistic *res);   // distribution
+    cPar& setDoubleValue(sXElem *x, int n);  // expression
+    cPar& setDoubleValue(MathFuncNoArg f);   // math func: 0,1,2,3 args
+    cPar& setDoubleValue(MathFunc1Arg  f, double p1);
+    cPar& setDoubleValue(MathFunc2Args f, double p1, double p2);
+    cPar& setDoubleValue(MathFunc3Args f, double p1, double p2, double p3);
+    cPar& setPointerValue(void *ptr);        // void* pointer
+    cPar& setObjectValue(cObject *obj);      // cObject* pointer
 
-     // memory management to void* pointer type
-     void configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t itemsize=0);
+    // memory management to void* pointer type
+    void configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc, size_t itemsize=0);
 
-     // functions to return value
-     //   conversion operators also exist; see later
-     bool   boolValue();
-     long   longValue();
-     char * stringValue();
-     double doubleValue();
-     void * pointerValue();
-     cObject *objectValue();
+    // functions to return value
+    //   conversion operators also exist; see later
+    bool   boolValue();
+    long   longValue();
+    const char *stringValue();
+    double doubleValue();
+    void *pointerValue();
+    cObject *objectValue();
 
-     // returns true if it is safe to call doubleValue()/longValue()/boolValue()
-     bool isNumeric();
+    // returns true if it is safe to call doubleValue()/longValue()/boolValue()
+    bool isNumeric();
 
-     // compares the stored values; the two objects must have the same typechar, etc. to be equal
-     bool equalsTo(cPar *par);
+    // compares the stored values; the two objects must have the same typechar, etc. to be equal
+    bool equalsTo(cPar *par);
 
-     // query/set value as string (e.g. "uniform(10,3)")
-     virtual void getAsText(char *buf, int maxlen);
-     virtual bool setFromText(char *text, char tp);
+    // query/set value as string (e.g. "uniform(10,3)")
+    virtual void getAsText(char *buf, int maxlen);
+    virtual bool setFromText(char *text, char tp);
 
-     // redirection
-     cPar& setRedirection(cPar *par);
-     bool isRedirected() {return typechar=='I';}
-     cPar *redirection();
-     void cancelRedirection();
+    // redirection
+    cPar& setRedirection(cPar *par);
+    bool isRedirected() {return typechar=='I';}
+    cPar *redirection();
+    void cancelRedirection();
 
-     cPar& read();
-     void convertToConst();
+    cPar& read();
+    void convertToConst();
 
-     // functions to get/set different flags
-     char type();                   // type char
+    // functions to get/set different flags
+    char type();                   // type char
 
-     char *prompt();                // prompt text
-     void setPrompt(char *s);       // set prompt str
+    const char *prompt();          // prompt text
+    void setPrompt(const char *s); // set prompt str
 
-     void setInput(bool ip);        // set input flag
-     bool isInput();                // is an input value?
+    void setInput(bool ip);        // set input flag
+    bool isInput();                // is an input value?
 
-     bool changed();                // has changed? (clears `changed' flag)
+    bool changed();                // has changed? (clears `changed' flag)
 
-     // redefined operators to set/get value
-     cPar& operator=(bool b)          {return setBoolValue(b);}
-     cPar& operator=(char *s)         {return setStringValue(s);}
-     cPar& operator=(char c)          {return setLongValue((long)c);}
-     cPar& operator=(unsigned char c) {return setLongValue((long)c);}
-     cPar& operator=(int i)           {return setLongValue((long)i);}
-     cPar& operator=(unsigned int i)  {return setLongValue((long)i);}
-     cPar& operator=(long l)          {return setLongValue(l);}
-     cPar& operator=(unsigned long l) {return setLongValue((long)l);}
-     cPar& operator=(double d)        {return setDoubleValue(d);}
-     cPar& operator=(long double d)   {return setDoubleValue((double)d);}
-     cPar& operator=(void *ptr)       {return setPointerValue(ptr);}
-     cPar& operator=(cObject *obj)    {return setObjectValue(obj);}
+    // redefined operators to set/get value
+    cPar& operator=(bool b)          {return setBoolValue(b);}
+    cPar& operator=(const char *s)   {return setStringValue(s);}
+    cPar& operator=(char c)          {return setLongValue((long)c);}
+    cPar& operator=(unsigned char c) {return setLongValue((long)c);}
+    cPar& operator=(int i)           {return setLongValue((long)i);}
+    cPar& operator=(unsigned int i)  {return setLongValue((long)i);}
+    cPar& operator=(long l)          {return setLongValue(l);}
+    cPar& operator=(unsigned long l) {return setLongValue((long)l);}
+    cPar& operator=(double d)        {return setDoubleValue(d);}
+    cPar& operator=(long double d)   {return setDoubleValue((double)d);}
+    cPar& operator=(void *ptr)       {return setPointerValue(ptr);}
+    cPar& operator=(cObject *obj)    {return setObjectValue(obj);}
 
-     operator bool()          {return boolValue();}
-     operator char*()         {return stringValue();}
-     operator char()          {return (char)longValue();}
-     operator unsigned char() {return (unsigned char)longValue();}
-     operator int()           {return (int)longValue();}
-     operator unsigned int()  {return (unsigned int)longValue();}
-     operator long()          {return longValue();}
-     operator unsigned long() {return longValue();}
-     operator double()        {return doubleValue();}
-     operator long double()   {return doubleValue();}
-     operator void *()        {return pointerValue();}
-     operator cObject *()     {return objectValue();}
+    operator bool()          {return boolValue();}
+    operator const char *()  {return stringValue();}
+    operator char()          {return (char)longValue();}
+    operator unsigned char() {return (unsigned char)longValue();}
+    operator int()           {return (int)longValue();}
+    operator unsigned int()  {return (unsigned int)longValue();}
+    operator long()          {return longValue();}
+    operator unsigned long() {return longValue();}
+    operator double()        {return doubleValue();}
+    operator long double()   {return doubleValue();}
+    operator void *()        {return pointerValue();}
+    operator cObject *()     {return objectValue();}
 
-     static int cmpbyvalue(cObject *one, cObject *other);
+    static int cmpbyvalue(cObject *one, cObject *other);
 };
 
 // this function cannot be defined within sXElem because of declaration order
@@ -237,35 +237,35 @@ inline void sXElem::operator=(cPar& _r)  {type='R'; p=(cPar *)_r.dup();}
 
 class cModulePar : public cPar
 {
-     friend class cModule;
-   private:
-     cModule *omodp;        // owner module
-     bool log_initialised;  // logging: TRUE if the "label" line already written out
-     long log_ID;           // logging: ID of the data lines
-     simtime_t lastchange;  // logging: time of last value change
-   private:
-     void _construct();     // helper function
+    friend class cModule;
+  private:
+    cModule *omodp;        // owner module
+    bool log_initialised;  // logging: TRUE if the "label" line already written out
+    long log_ID;           // logging: ID of the data lines
+    simtime_t lastchange;  // logging: time of last value change
+  private:
+    void _construct();     // helper function
 
-   public:
-     cModulePar(cPar& other);
-     explicit cModulePar(char *namestr=NULL);
-     explicit cModulePar(char *namestr, cPar& other);
+  public:
+    cModulePar(cPar& other);
+    explicit cModulePar(const char *name=NULL);
+    explicit cModulePar(const char *name, cPar& other);
 
-     virtual ~cModulePar();
+    virtual ~cModulePar();
 
-     // redefined functions
-     virtual char *className()  {return "cModulePar";}
-     virtual cObject *dup()  {return new cPar(*this);}
-     virtual char *inspectorFactoryName() {return "cModuleParIFC";}
-     virtual char *fullPath();
-     cModulePar& operator=(cModulePar& otherpar);
+    // redefined functions
+    virtual const char *className()  {return "cModulePar";}
+    virtual cObject *dup()  {return new cPar(*this);}
+    virtual const char *inspectorFactoryName() {return "cModuleParIFC";}
+    virtual const char *fullPath();
+    cModulePar& operator=(cModulePar& otherpar);
 
-     // redefined cPar function
-     virtual void valueChanges();    // does parameter logging
+    // redefined cPar function
+    virtual void valueChanges();    // does parameter logging
 
-     // new functions
-     void setOwnerModule(cModule *om)   {omodp=om;}
-     cModule *ownerModule()             {return omodp;}
+    // new functions
+    void setOwnerModule(cModule *om)   {omodp=om;}
+    cModule *ownerModule()             {return omodp;}
 };
 
 

@@ -121,15 +121,15 @@ class cTopology : public cObject
     sTopoNode *target;
 
   public:
-    explicit cTopology(char *name=NULL);
+    explicit cTopology(const char *name=NULL);
     cTopology(cTopology& topo);
     virtual ~cTopology();
 
      // redefined functions
-     virtual char *className()  {return "cTopology";}
+     virtual const char *className()  {return "cTopology";}
      virtual cObject *dup()     {return new cTopology(*this);}
      virtual void info(char *buf);
-     virtual char *inspectorFactoryName() {return "cTopologyIFC";}
+     virtual const char *inspectorFactoryName() {return "cTopologyIFC";}
 
      virtual int netPack();
      virtual int netUnpack();

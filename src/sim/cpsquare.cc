@@ -42,7 +42,7 @@ cPSquare::cPSquare(cPSquare& r) : cDensityEstBase()
 }
 
 
-cPSquare::cPSquare (char *namestr, int b) : cDensityEstBase( namestr )
+cPSquare::cPSquare (const char *name, int b) : cDensityEstBase(name)
 {
     transfd = TRUE;
 

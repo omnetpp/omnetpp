@@ -29,7 +29,7 @@
 Register_Class( cFSM )
 //=========================================================================
 
-cFSM::cFSM(char *name) :
+cFSM::cFSM(const char *name) :
   cObject(name)
 {
   _state=0;

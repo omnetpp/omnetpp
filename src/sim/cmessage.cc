@@ -42,7 +42,7 @@ cMessage::cMessage(cMessage& msg) : cObject()
         operator=( msg );
 }
 
-cMessage::cMessage(char *namestr, int k, long ln, int pri, bool err) : cObject( namestr )
+cMessage::cMessage(const char *name, int k, long ln, int pri, bool err) : cObject( name )
 {
         msgkind=k; len=ln; prior=pri; error=err;
         parlistp = NULL;

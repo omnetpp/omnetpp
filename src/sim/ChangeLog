@@ -792,3 +792,8 @@ Mar 12, 2000
    compiled into cPar X expressions which will _need_ to be converted to
    bool/long after evaluation.
  - isNumeric() added to cPar
+Mar 26, 2000
+ - 'char *' pointers made const-correct (lots of 'char *' --> 'const char *'
+   replacements throughout the code) -- this will affect the UI libraries too
+ - header files indentation uniformized; other little cleanups, e.g. some
+   method parameter names made mode descriptive

@@ -80,26 +80,26 @@
 // create cModuleType
 // version 1: module interface has the same name as module
 #define Define_Module(CLASSNAME) \
-  static cModule *CLASSNAME##__create(char *namestr, cModule *parentmod ) \
+  static cModule *CLASSNAME##__create(char *name, cModule *parentmod ) \
   { \
-     return (cModule *) new CLASSNAME(namestr, parentmod); \
+     return (cModule *) new CLASSNAME(name, parentmod); \
   } \
   cModuleType CLASSNAME##__type(#CLASSNAME,#CLASSNAME,(ModuleCreateFunc)CLASSNAME##__create);
 
 // version 2: use different module interface (support for 'like' phrase in NED)
 #define Define_Module_Like(CLASSNAME,INTERFACE) \
-  static cModule *CLASSNAME##__create(char *namestr, cModule *parentmod ) \
+  static cModule *CLASSNAME##__create(char *name, cModule *parentmod ) \
   { \
-     return (cModule *) new CLASSNAME(namestr, parentmod); \
+     return (cModule *) new CLASSNAME(name, parentmod); \
   } \
   cModuleType CLASSNAME##__type(#CLASSNAME,#INTERFACE,(ModuleCreateFunc)CLASSNAME##__create);
 
 // declaration of module class members:
 #define Module_Class_Members(CLASSNAME,BASECLASS,STACK) \
     public: \
-      CLASSNAME(char *namestr, cModule *parentmod, unsigned stk=STACK) : \
-           BASECLASS(namestr, parentmod, stk) {} \
-      virtual char *className()  {return #CLASSNAME;}
+      CLASSNAME(char *name, cModule *parentmod, unsigned stk=STACK) : \
+           BASECLASS(name, parentmod, stk) {} \
+      virtual const char *className()  {return #CLASSNAME;}
 
 
 #endif

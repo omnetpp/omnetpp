@@ -56,61 +56,61 @@ int is_started_as_master();
 
 class cNetMod : public cModule
 {
-         friend class cSimulation;
+    friend class cSimulation;
 
-        protected:
-         int segments;
-         cMessage *after_modinit_msg;
+  protected:
+    int segments;
+    cMessage *after_modinit_msg;
 
-        public:
-         cNetMod();
-         virtual ~cNetMod() {}
+  public:
+    cNetMod();
+    virtual ~cNetMod() {}
 
-         // redefined functions
-         virtual char *className()  {return "cNetMod";}
-         virtual char *inspectorFactoryName() {return "cNetModIFC";}
+    // redefined functions
+    virtual const char *className()  {return "cNetMod";}
+    virtual const char *inspectorFactoryName() {return "cNetModIFC";}
 
-         // redefined cModule functions
-         virtual bool isSimple() {return FALSE;}
-         virtual void scheduleStart(simtime_t t) {}
-         virtual void deleteModule() {}
-         virtual void callInitialize() {initialize();}
-         virtual void callFinish() {finish();}
+    // redefined cModule functions
+    virtual bool isSimple() {return FALSE;}
+    virtual void scheduleStart(simtime_t t) {}
+    virtual void deleteModule() {}
+    virtual void callInitialize() {initialize();}
+    virtual void callFinish() {finish();}
 
-         // new functions
-         int isLocalMachineIn(cArray& m);   // is local host in 'm' list?
-         virtual cGate *ingate(int g)=0;
-         virtual cGate *ingate(char *s)=0;
-         virtual int findingate(char *s)=0;
-         virtual cGate *outgate(int g)=0;
-         virtual cGate *outgate(char *s)=0;
-         virtual int findoutgate(char *s)=0;
+    // new functions
+    int isLocalMachineIn(cArray& m);   // is local host in 'm' list?
+    virtual cGate *ingate(int g)=0;
+    virtual cGate *ingate(const char *s)=0;
+    virtual int findingate(const char *s)=0;
+    virtual cGate *outgate(int g)=0;
+    virtual cGate *outgate(const char *s)=0;
+    virtual int findoutgate(const char *s)=0;
 
-         virtual cNetMod& operator=(cNetMod& other);
-         virtual char *localhost()=0;
-         virtual void restart() {}
-         virtual void sync_after_modinits()=0; // sync before processing first 'real' event
-         virtual void process_netmsgs()=0;
-         virtual void process_netmsg_blocking()=0;
-         virtual void send_syncpoint( simtime_t t, int gate) = 0;
-         virtual void send_cancelsyncpoint( simtime_t t, int gate) = 0;
-         virtual bool block_on_syncpoint( simtime_t t) = 0;
-         virtual int net_addgate(cModule * mod,int gate,char tp) {return 0;}
+    virtual cNetMod& operator=(cNetMod& other);
+    virtual const char *localhost()=0;
+    virtual void restart() {}
+    virtual void sync_after_modinits()=0; // sync before processing first 'real' event
+    virtual void process_netmsgs()=0;
+    virtual void process_netmsg_blocking()=0;
+    virtual void send_syncpoint(simtime_t t, int gate) = 0;
+    virtual void send_cancelsyncpoint(simtime_t t, int gate) = 0;
+    virtual bool block_on_syncpoint(simtime_t t) = 0;
+    virtual int net_addgate(cModule *mod, int gate, char tp) {return 0;}
 
-         // functions to be called from sim.application (TOmnetApp descendant)
-         virtual void putmsg_onconsole(char *s) = 0;
-         virtual void puts_onconsole(char *s) = 0;
-         virtual bool gets_onconsole(char *promptstr, char *buf, int len) = 0;
-         virtual bool askyesno_onconsole(char *question) = 0;
+    // functions to be called from sim.application (TOmnetApp descendant)
+    virtual void putmsg_onconsole(const char *s) = 0;
+    virtual void puts_onconsole(const char *s) = 0;
+    virtual bool gets_onconsole(const char *promptstr, char *buf, int len) = 0;
+    virtual bool askyesno_onconsole(const char *question) = 0;
 
-         // control functions
-         virtual short start_segments( cArray& host_list, int ac, char *av[]) = 0;
-         virtual void setup_connections()=0;
-         virtual void clear() {gatev.clear();}
-         virtual void stop_all_segments()=0;
-         virtual void request_stopsimulation()=0;
-         virtual int receive_runnumber() = 0;
-         virtual void send_runnumber(int run_nr) = 0;
+    // control functions
+    virtual short start_segments(cArray& host_list, int ac, char *av[]) = 0;
+    virtual void setup_connections()=0;
+    virtual void clear() {gatev.clear();}
+    virtual void stop_all_segments()=0;
+    virtual void request_stopsimulation()=0;
+    virtual int receive_runnumber() = 0;
+    virtual void send_runnumber(int run_nr) = 0;
 };
 
 #endif

@@ -239,7 +239,7 @@ static unsigned task_stackusage( _Task *t )
 {
     if (!t->used)
        return 0;
-    if (!t->next)                        // if unable to test 
+    if (!t->next)                        // if unable to test
        return t->stack_size;             // then return requested size
 
     _Task *p = t->next;

@@ -356,7 +356,7 @@ char *simtimeToStr(simtime_t t, char *buf)
 //       return dest;
 // }
 
-simtime_t strToSimtime( char *str )
+simtime_t strToSimtime(const char *str)
 {
     while (*str==' ' || *str=='\t') str++;
     if (*str=='\0') return -1; // empty string not accepted
@@ -364,7 +364,7 @@ simtime_t strToSimtime( char *str )
     return (*str=='\0') ? d : -1; // OK if whole string could be interpreted
 }
 
-simtime_t strToSimtime0( char *&str )
+simtime_t strToSimtime0(const char *&str)
 {
     double simtime = 0;
 
@@ -399,7 +399,7 @@ simtime_t strToSimtime0( char *&str )
     return (simtime_t)simtime;
 }
 
-char *opp_strdup(char *s)
+char *opp_strdup(const char *s)
 {
     if (!s || !s[0]) return NULL;
     char *p = new char[ strlen(s)+1 ];
@@ -407,23 +407,26 @@ char *opp_strdup(char *s)
     return p;
 }
 
-char *opp_strcpy(char *s1, char *s2)
+char *opp_strcpy(char *s1, const char *s2)
 {
     if (s1 && s2)       return strcpy(s1,s2);
     else if (!s1 && s2) return NULL;
     else {s1[0]='\x0';  return s1;}
 }
 
-int opp_strcmp(char *s1, char *s2)    // case-sensitive comparison
+int opp_strcmp(const char *s1, const char *s2)
 {
+    // case-sensitive comparison
     if (s1 && s2)       return strcmp(s1,s2);
     else if (!s1 && s2) return -1;
     else if (s1 && !s2) return 1;
     else                return 0;
 }
 
-bool opp_strmatch(char *s1, char *s2) // case-sensitive comparison until
-{                                     // the length of the shorter string
+bool opp_strmatch(const char *s1, const char *s2)
+{
+    // case-sensitive comparison until
+    // the length of the shorter string
     if (!s1 || !s2) {
          return TRUE;
     } else {
@@ -432,8 +435,12 @@ bool opp_strmatch(char *s1, char *s2) // case-sensitive comparison until
     }
 }
 
-char *fastconcat(char *s1,char *s2, char *s3, char *s4) // concatenate strings
-{                                                       // into static buffer
+char *fastconcat(const char *s1,
+                 const char *s2,
+                 const char *s3,
+                 const char *s4)
+{
+    // concatenate strings into static buffer
     static char buf[256];
     char *dest=buf;
     if (s1) while( *s1 && dest!=buf+255 ) *dest++ = *s1++;
@@ -444,15 +451,15 @@ char *fastconcat(char *s1,char *s2, char *s3, char *s4) // concatenate strings
     return buf;
 }
 
-char *indexedname(char *dest, char *namestr, int index)
+char *indexedname(char *dest, const char *name, int index)
 {
     static char buf[64];
     if (dest==NULL) dest=buf;
-    sprintf(dest,"%.54s[%d]",namestr,index);
+    sprintf(dest,"%.54s[%d]",name,index);
     return dest;
 }
 
-int opp_vsscanf(char *s, char *fmt, va_list va)
+int opp_vsscanf(const char *s, const char *fmt, va_list va)
 {
     // A simplified vsscanf implementation, solely for cStatistic::freadvarsf.
     // Only recognizes %d, %u, %ld, %lg and whitespace. '#' terminates scanning
@@ -504,7 +511,7 @@ int opp_vsscanf(char *s, char *fmt, va_list va)
             return k;
         }
         else
-        { 
+        {
             opp_error("opp_vsscanf: unexpected char in format: '%s'",fmt);
             return k;
         }
@@ -524,7 +531,7 @@ void opp_error(int errc...)
     simulation.error(errc,message);
 }
 
-void opp_error(char *msgformat...)
+void opp_error(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
@@ -546,7 +553,7 @@ void opp_warning(int errc...)
     simulation.warning(errc,message);
 }
 
-void opp_warning(char *msgformat...)
+void opp_warning(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
@@ -568,7 +575,7 @@ void opp_terminate(int errc...)
     simulation.terminate(errc,message);
 }
 
-void opp_terminate(char *msgformat...)
+void opp_terminate(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);

@@ -46,11 +46,11 @@ Register_Class( cHead )
 //==========================================================================
 //=== cHead - member functions
 
-cHead::cHead(char *namestr) : cObject(namestr)
+cHead::cHead(const char *name) : cObject(name)
 {
 }
 
-cHead::cHead(char *namestr, cHead *h) : cObject(namestr, h)
+cHead::cHead(const char *name, cHead *h) : cObject(name, h)
 {
 }
 
@@ -62,10 +62,10 @@ void cHead::forEach(ForeachFunc do_fn)
       do_fn(this,FALSE);
 }
 
-cObject *cHead::find(char *s)    // faster than findObject(s,FALSE)
+cObject *cHead::find(const char *objname)    // faster than findObject(s,FALSE)
 {
       cObject *p = firstchildp;
-      while (p && !p->isName(s)) p=p->nextp;
+      while (p && !p->isName(objname)) p=p->nextp;
       return p;
 }
 

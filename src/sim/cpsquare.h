@@ -39,11 +39,11 @@ class cPSquare : public cDensityEstBase
 
   public:
     cPSquare(cPSquare& r);
-    explicit cPSquare(char *namestr=NULL, int cells=10);
+    explicit cPSquare(const char *name=NULL, int cells=10);
     virtual ~cPSquare();
 
      // redefined functions
-    virtual char *className()  {return "cPSquare";}
+    virtual const char *className()  {return "cPSquare";}
     virtual cObject *dup()   {return new cPSquare(*this);}
     cPSquare& operator=(cPSquare& res);
     virtual int netPack();

@@ -65,7 +65,7 @@ static int qsort_cmp_msgs(const void *p1, const void *p2)
 //==========================================================================
 //=== cMessageHeap - member functions
 
-cMessageHeap::cMessageHeap(char *namestr, int siz) : cObject(namestr)
+cMessageHeap::cMessageHeap(const char *name, int siz) : cObject(name)
 {
      insertcntr = 0L;
      n = 0;

@@ -32,17 +32,17 @@ class cStatistic : public cObject
     int genk;                   // index of random number generator to use
 
   protected:
-    void freadvarsf (FILE *f,  char *fmt, ...); // for loadFromFile()
+    void freadvarsf (FILE *f,  const char *fmt, ...); // for loadFromFile()
 
   public:
-    cStatistic(cStatistic& r) : cObject() {setName(r.name());td=NULL;ra=NULL;operator=(r);}
-    explicit cStatistic(char *s=NULL) : cObject(s) {td=NULL;ra=NULL;genk=0;}
+    cStatistic(cStatistic& r);
+    explicit cStatistic(const char *name=NULL);
     virtual ~cStatistic()  {}
 
     // redefined functions
-    virtual char *className()  {return "cStatistic";}
+    virtual const char *className()  {return "cStatistic";}
     cStatistic& operator=(cStatistic& res);
-    virtual char *inspectorFactoryName() {return "cStatisticIFC";}
+    virtual const char *inspectorFactoryName() {return "cStatisticIFC";}
     virtual int netPack();
     virtual int netUnpack();
 
@@ -95,11 +95,11 @@ class cStdDev : public cStatistic
 
   public:
     cStdDev(cStdDev& r) : cStatistic(r) {setName(r.name());operator=(r);}
-    explicit cStdDev(char *s=NULL);
+    explicit cStdDev(const char *name=NULL);
     virtual ~cStdDev() {}
 
     // redefined functions
-    virtual char *className()  {return "cStdDev";}
+    virtual const char *className()  {return "cStdDev";}
     virtual cObject *dup() {return new cStdDev(*this);}
     virtual void info(char *buf);
     cStdDev& operator=(cStdDev& res);
@@ -139,11 +139,11 @@ class cWeightedStdDev : public cStdDev
 
   public:
     cWeightedStdDev(cWeightedStdDev& r) : cStdDev(r) {setName(r.name());operator=(r);}
-    explicit cWeightedStdDev(char *s=NULL) : cStdDev(s)  {sum_weights=0;}
+    explicit cWeightedStdDev(const char *name=NULL) : cStdDev(name)  {sum_weights=0;}
     virtual ~cWeightedStdDev() {}
 
     // redefined functions
-    virtual char *className()  {return "cWeightedStdDev";}
+    virtual const char *className()  {return "cWeightedStdDev";}
     virtual cObject *dup() {return new cWeightedStdDev(*this);}
     cWeightedStdDev& operator=(cWeightedStdDev& res);
     virtual int netPack();

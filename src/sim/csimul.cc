@@ -77,8 +77,8 @@ ostream& operator<<(ostream& os, struct tm d)
 //==========================================================================
 //=== cSimulation - member functions
 
-cSimulation::cSimulation(char *namestr, cHead *h) :
- cObject(namestr, h),
+cSimulation::cSimulation(const char *name, cHead *h) :
+ cObject(name, h),
  locals("simulation-locals"),
  runningmod_deleter(),
  msgQueue( "message-queue" )
@@ -154,7 +154,7 @@ static bool _do_writesnapshot(cObject *obj, bool beg, ostream& s)
       return !os->fail();      // check stream status
 }
 
-bool cSimulation::snapshot(cObject *object, char *label)
+bool cSimulation::snapshot(cObject *object, const char *label)
 {
      if (!object)
          {opp_error("snapshot(): object pointer is NULL");return FALSE;}
@@ -274,7 +274,7 @@ int cSimulation::find(cModule *obj)
          return -1;
 }
 
-bool cSimulation::isUnique(char *s)
+bool cSimulation::isUnique(const char *s)
 {
      for (int i=1, k=-1; i<size; i++)
         if (vect[i] && vect[i]->isName(s) && (!vect[i]->isVector() || vect[i]->index()==0))
@@ -283,7 +283,7 @@ bool cSimulation::isUnique(char *s)
      return TRUE;
 }
 
-int cSimulation::find(char *s, int n, int pt)
+int cSimulation::find(const char *s, int n, int pt)
 {
      if (pt==-1 && !isUnique(s))
         opp_warning("cSimulation::find(): Module name `%s' not unique, use moduleByPath()",s);
@@ -297,7 +297,7 @@ int cSimulation::find(char *s, int n, int pt)
 }
 
 // Format of path p: "SysModule.DemandGen[2].Source"
-cModule *cSimulation::moduleByPath(char *p)
+cModule *cSimulation::moduleByPath(const char *p)
 {
      char buf[201];
      char *s, *b;
@@ -325,7 +325,7 @@ cModule *cSimulation::moduleByPath(char *p)
      return vect[m];
 }
 
-cModule *cSimulation::module(char *s,int n,int pt)
+cModule *cSimulation::module(const char *s,int n,int pt)
 {
      int i=find(s,n,pt);
      return i>=0 ? vect[i] : NO(cModule);
@@ -688,7 +688,7 @@ cSimpleModule *cSimulation::contextSimpleModule()
     return (cSimpleModule *)contextmodp;
 }
 
-void cSimulation::terminate(int errc, char *message)
+void cSimulation::terminate(int errc, const char *message)
 {
     // If we run distributed, stop the other segments unless we were stopped
     // by one of them.
@@ -703,7 +703,7 @@ void cSimulation::terminate(int errc, char *message)
     transferToMain();
 }
 
-void cSimulation::error(int errc, char *message)
+void cSimulation::error(int errc, const char *message)
 {
     // If we run distributed, stop the other segments unless we were stopped
     // by one of them.
@@ -720,7 +720,7 @@ void cSimulation::error(int errc, char *message)
     transferToMain();
 }
 
-void cSimulation::warning(int errc, char *message)
+void cSimulation::warning(int errc, const char *message)
 {
     if (!warnings() || (contextModule()!=NULL && !contextModule()->warnings()))
         return;      // warnings are disabled
@@ -746,7 +746,7 @@ void cSimulation::warning(int errc, char *message)
 }
 
 
-void cSimulation::recordScalar(char *name, double value)
+void cSimulation::recordScalar(const char *name, double value)
 {
     FILE *f = simulation.scalarfilemgr.filePointer();
     if (f==NULL) return;
@@ -761,7 +761,7 @@ void cSimulation::recordScalar(char *name, double value)
               contextSimpleModule()->fullPath(), name, value);
 }
 
-void cSimulation::recordScalar(char *name, char *text)
+void cSimulation::recordScalar(const char *name, const char *text)
 {
     FILE *f = simulation.scalarfilemgr.filePointer();
     if (f==NULL) return;
@@ -776,7 +776,7 @@ void cSimulation::recordScalar(char *name, char *text)
               contextSimpleModule()->fullPath(), name, text);
 }
 
-void cSimulation::recordStats(char *name, cStatistic *stats)
+void cSimulation::recordStats(const char *name, cStatistic *stats)
 {
     FILE *f = simulation.scalarfilemgr.filePointer();
     if (f==NULL) return;

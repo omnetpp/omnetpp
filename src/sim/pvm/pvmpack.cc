@@ -50,16 +50,16 @@ int chkflag(int& err)
 //=========================================================================
 // Functions that handle strings
 //=========================================================================
-int pack_str(char * str)
+int pack_str(const char *str)
 {
         int err=0,len=0;
         if (str) len=strlen(str);
         err=pvm_pkint(&len,1,1);
-        if (len) err=err||pvm_pkstr(str);
+        if (len) err=err||pvm_pkstr(CONST_CAST(str));
         return err;
 }
 
-char * upack_str(int& err)
+char *upack_str(int& err)
 {
         int len=0;
         char * tmp;
@@ -458,8 +458,8 @@ int cStdDev::netPack()
         err|=pvm_pklong(&num_samples,1,1);
         err|=pvm_pkdouble(&min_samples,1,1);
         err|=pvm_pkdouble(&max_samples,1,1);
-        err|=pvm_pkdouble(&sum,1,1);
-        err|=pvm_pkdouble(&sqrsum,1,1);
+        err|=pvm_pkdouble(&sum_samples,1,1);
+        err|=pvm_pkdouble(&sqrsum_samples,1,1);
         return err;
 }
 
@@ -470,8 +470,8 @@ int cStdDev::netUnpack()
         err|=pvm_upklong(&num_samples,1,1);
         err|=pvm_upkdouble(&min_samples,1,1);
         err|=pvm_upkdouble(&max_samples,1,1);
-        err|=pvm_upkdouble(&sum,1,1);
-        err|=pvm_upkdouble(&sqrsum,1,1);
+        err|=pvm_upkdouble(&sum_samples,1,1);
+        err|=pvm_upkdouble(&sqrsum_samples,1,1);
         return err;
 }
 

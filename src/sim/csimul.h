@@ -102,15 +102,15 @@ class cSimulation : public cObject
      bool scalarfile_header_written;
 
    public:
-     explicit cSimulation(char *namestr, cHead *h=NULL);
+     explicit cSimulation(const char *name, cHead *h=NULL);
      virtual ~cSimulation();
 
      // redefined functions
-     virtual char *className()  {return "cSimulation";}
-     virtual char *inspectorFactoryName() {return "cSimulationIFC";}
+     virtual const char *className()  {return "cSimulation";}
+     virtual const char *inspectorFactoryName() {return "cSimulationIFC";}
      virtual void forEach(ForeachFunc f);
      virtual void writeContents(ostream& os);
-     virtual char *fullPath() {return name();}
+     virtual const char *fullPath() {return name();}
 
      // new functions
      void setup();                      // things that cannot be done
@@ -122,15 +122,21 @@ class cSimulation : public cObject
      void del(int id);                  // delete (& destroy) a module
      int lastModuleIndex()              // last module
          {return last_id;}
-     int find(cModule *mod);                  // find module (-1 if not found)
-     int find(char *s,int n=-1,int pt=-1);     // find name[idx] (-1 if not found)
-     cModule *moduleByPath(char *s);          // get by path
-     cModule *module(char *s,int n=-1,int pt_id=-1); // get by name, idx & parent
+     bool isUnique(const char *s);      // internal
+
+     // find module and return id (-1 if not found)
+     int find(cModule *mod);
+     int find(const char *modulename,int index=-1, int parentmod_id=-1);
+
+     // find module
+     cModule *moduleByPath(const char *modulepath);
+     cModule *module(const char *modulename,int index=-1,int parentmod_id=-1);
+
+     // look up by id
      cModule *module(int id)                  // get module by ID
          {return id>=0 && id<size ? vect[id] : NO(cModule);}
      cModule& operator[](int id)              // act as a vector
          {return id>=0 && id<size ? *vect[id] : *NO(cModule);}
-     bool isUnique(char *s);
 
      // selecting system module
      void setSystemModule(cModule *p)
@@ -188,21 +194,21 @@ class cSimulation : public cObject
      cHead *localList()                  {return locallistp==NULL?(&locals):locallistp;}
 
      // snapshot(): to be called from cSimpleModule::snapshot()
-     bool snapshot(cObject *obj, char *label);
+     bool snapshot(cObject *obj, const char *label);
 
      // record into scalar result file
-     void recordScalar(char *name, double value);
-     void recordScalar(char *name, char *text);
-     void recordStats(char *name, cStatistic *stats);
+     void recordScalar(const char *name, double value);
+     void recordScalar(const char *name, const char *text);
+     void recordStats(const char *name, cStatistic *stats);
 
      // errors / warnings / messages
      // Note: error() and warning() are supposed to be called through the
      //   opp_error() and opp_warning() global utility functions.
      bool warnings()          {return warn;}
      void setWarnings(bool w) {warn=w;}
-     void terminate(int errcode,char *message); // print message + set error num
-     void error(int errcode,char *message);     // general error handler
-     void warning(int errcode,char *message);   // message + question:continue/abort?
+     void terminate(int errcode,const char *message); // print message + set error num
+     void error(int errcode,const char *message);     // general error handler
+     void warning(int errcode,const char *message);   // message + question:continue/abort?
      bool ok()         {return err==eOK;}       // TRUE if sim. can go on
      int errorCode()   {return err;}            // error code
      void setErrorCode(int e) {err=e;}          // set error code without giving error message

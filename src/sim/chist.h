@@ -34,11 +34,11 @@ class cHistogramBase : public cDensityEstBase
   public:
     cHistogramBase(cHistogramBase& r) : cDensityEstBase(r)
         {setName(r.name());cellv=NULL;operator=(r);}
-    cHistogramBase (char *s, int numcells );
+    cHistogramBase(const char *name, int numcells);
     virtual ~cHistogramBase();
 
     // redefined functions
-    virtual char *className()  {return "cHistogramBase";}
+    virtual const char *className()  {return "cHistogramBase";}
     cHistogramBase& operator=(cHistogramBase& res);
     virtual void writeContents(ostream& os);
     virtual int netPack();
@@ -65,10 +65,10 @@ class cEqdHistogramBase : public cHistogramBase //--LG
   public:
     cEqdHistogramBase(cEqdHistogramBase& r) : cHistogramBase(r)
         {setName(r.name());operator=(r);}
-    explicit cEqdHistogramBase(char *s=NULL, int numcells=10);
+    explicit cEqdHistogramBase(const char *name=NULL, int numcells=10);
 
     // redefined functions
-    virtual char *className()  {return "cEqdHistogramBase";}
+    virtual const char *className()  {return "cEqdHistogramBase";}
     cEqdHistogramBase& operator=(cEqdHistogramBase& res);
     virtual int netPack();
     virtual int netUnpack();
@@ -97,11 +97,11 @@ class cLongHistogram : public cEqdHistogramBase
   public:
     cLongHistogram(cLongHistogram& r) : cEqdHistogramBase(r)
         {setName(r.name());operator=(r);}
-    explicit cLongHistogram(char *s=NULL, int numcells=10);
+    explicit cLongHistogram(const char *name=NULL, int numcells=10);
     virtual ~cLongHistogram();
 
     // redefined functions
-    virtual char *className()  {return "cLongHistogram";}
+    virtual const char *className()  {return "cLongHistogram";}
     virtual cObject *dup()    {return new cLongHistogram(*this);}
     virtual int netPack();
     virtual int netUnpack();
@@ -123,11 +123,11 @@ class cDoubleHistogram : public cEqdHistogramBase
   public:
     cDoubleHistogram(cDoubleHistogram& r) : cEqdHistogramBase(r)
           {setName(r.name());operator=(r);}
-    explicit cDoubleHistogram(char *s=NULL, int numcells=10);
+    explicit cDoubleHistogram(const char *name=NULL, int numcells=10);
     virtual ~cDoubleHistogram();
 
     // redefined functions
-    virtual char *className()  {return "cDoubleHistogram";}
+    virtual const char *className()  {return "cDoubleHistogram";}
     virtual cObject *dup()  {return new cDoubleHistogram(*this);}
     virtual int netPack();
     virtual int netUnpack();

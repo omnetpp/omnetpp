@@ -72,20 +72,20 @@ class cDensityEstBase : public cStdDev
     double *firstvals;         // pointer to array of "precollected" samples
 
   protected:
-    static void plotline (ostream& os,  char* pref, double xval,
+    static void plotline (ostream& os, char* pref, double xval,
            double count, double a);
 
   public:
     cDensityEstBase(cDensityEstBase& r) : cStdDev(r)
             {setName(r.name());firstvals=NULL;operator=(r);}
-    explicit cDensityEstBase(char *s=NULL);    // name of collected data
+    explicit cDensityEstBase(const char *name=NULL);    // name of collected data
     virtual ~cDensityEstBase();
 
     // redefined functions
-    virtual char *className()  {return "cDensityEstBase";}
+    virtual const char *className()  {return "cDensityEstBase";}
     cDensityEstBase& operator=(cDensityEstBase& res);
     virtual void writeContents(ostream& os);
-    virtual char *inspectorFactoryName() {return "cDensityEstBaseIFC";}
+    virtual const char *inspectorFactoryName() {return "cDensityEstBaseIFC";}
     virtual int netPack();
     virtual int netUnpack();
     // dup() and inspector(..) not needed

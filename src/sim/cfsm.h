@@ -102,33 +102,33 @@
 //
 class cFSM : public cObject
 {
-    private:
-        //
-        // About state codes:
-        //  initial state is number 0
-        //  negative state codes are transient states
-        //  positive state codes are steady states
-        //
-        int _state;
-        char *_statename;   // just a ptr to an external string
-    public:
-        explicit cFSM(char *name=NULL);
-        cFSM(cFSM& vs) {setName(vs.name());operator=(vs);}
-        virtual char *className()  {return "cFSM";}
-        virtual cObject *dup()   {return new cFSM(*this);}
-        virtual void info(char *buf);
+  private:
+    //
+    // About state codes:
+    //  initial state is number 0
+    //  negative state codes are transient states
+    //  positive state codes are steady states
+    //
+    int _state;
+    const char *_statename;   // just a ptr to an external string
+  public:
+    explicit cFSM(const char *name=NULL);
+    cFSM(cFSM& vs) {setName(vs.name());operator=(vs);}
+    virtual const char *className()  {return "cFSM";}
+    virtual cObject *dup()   {return new cFSM(*this);}
+    virtual void info(char *buf);
 
-        virtual char *inspectorFactoryName() {return "cFSMIFC";}
-        cFSM& operator=(cFSM& vs);
-        virtual void writeContents(ostream& os);
-        virtual int netPack();
-        virtual int netUnpack();
+    virtual const char *inspectorFactoryName() {return "cFSMIFC";}
+    cFSM& operator=(cFSM& vs);
+    virtual void writeContents(ostream& os);
+    virtual int netPack();
+    virtual int netUnpack();
 
-        // new functions
-        int state()  {return _state;}
-        char *stateName()  {return _statename?_statename:CONST_CAST("");}
-        int inTransientState()  {return _state<0;}
-        void setState(int state, char *stn=NULL)  {_state=state;_statename=stn;}
+    // new functions
+    int state()  {return _state;}
+    const char *stateName() {return _statename?_statename:"";}
+    int inTransientState()  {return _state<0;}
+    void setState(int state, const char *stn=NULL)  {_state=state;_statename=stn;}
 };
 
 #endif

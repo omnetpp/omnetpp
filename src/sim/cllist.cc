@@ -38,8 +38,8 @@ cLinkedList::cLinkedList(cLinkedList& llist) : cObject()
      operator=(llist);
 }
 
-cLinkedList::cLinkedList(char *namestr) :
-cObject( namestr )
+cLinkedList::cLinkedList(const char *name) :
+cObject( name )
 {
      headp=tailp=NULL;
      n=0;

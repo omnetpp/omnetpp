@@ -72,14 +72,14 @@ double divfunc_babak(cKSplit&, sGrid& g, double mother, double *d)
 
 //==========================================================================
 
-cKSplit::cKSplit (cKSplit& r) : cDensityEstBase()
+cKSplit::cKSplit(cKSplit& r) : cDensityEstBase()
 {
     setName( r.name() );
     gridv=NULL; iter=NULL;
     operator=(r);
 }
 
-cKSplit::cKSplit (char *namestr) : cDensityEstBase( namestr )
+cKSplit::cKSplit(const char *name) : cDensityEstBase(name)
 {
     num_cells = 0;
 
@@ -101,7 +101,7 @@ cKSplit::~cKSplit()
     delete iter;
 }
 
-cKSplit& cKSplit::operator= (cKSplit& res)
+cKSplit& cKSplit::operator=(cKSplit& res)
 {
     int i;
 
