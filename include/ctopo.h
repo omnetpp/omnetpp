@@ -19,6 +19,8 @@
 #ifndef __CTOPO_H
 #define __CTOPO_H
 
+#include <string>
+#include <vector>
 #include "cobject.h"
 
 class cPar;
@@ -374,9 +376,11 @@ class SIM_API cTopology : public cObject
 
     /**
      * Extracts model topology by a user-defined criteria. Includes into the graph
-     * modules for which the passed selfunc() returns nonzero.
+     * modules for which the passed selfunc() returns nonzero. The userdata
+     * parameter may take any value you like, and it is passed back to selfunc()
+     * in its second argument.
      */
-    void extractFromNetwork(int (*selfunc)(cModule *,void *), void *data=NULL);
+    void extractFromNetwork(int (*selfunc)(cModule *,void *), void *userdata=NULL);
 
     /**
      * Extracts model topology by module type (classnames). Includes into
@@ -384,6 +388,21 @@ class SIM_API cTopology : public cObject
      * listed as arguments. The argument list must be terminated by NULL.
      */
     void extractByModuleType(const char *type1,...);
+
+    /**
+     * Extracts model topology by module type (classnames). Includes into
+     * the graph all modules whose className() is one of the class names in
+     * in the 'types' argument. 'types' is a vector of char* pointers,
+     * terminated by a NULL pointer.
+     */
+    void extractByModuleType(const char **types);
+
+    /**
+     * Extracts model topology by module type (classnames). Includes into
+     * the graph all modules whose className() is one of the class names in
+     * in the 'types' argument.
+     */
+    void extractByModuleType(const std::vector<std::string> types);
 
     /**
      * Extracts model topology by parameter value. Includes into the graph
