@@ -13,10 +13,14 @@ a good time to discard it and print a new one -- even experienced OMNeT++
 users will find a wealth of new information in it. For the list of
 changes, see the "Document History" table at the front of the manual.
 
-Also: To ensure your simulation will be compatible with future releases,
-please check doc/API-Changes.txt and remove use of deprecated functions
-from you simulation models! Functions deprecated now are likely to
-be removed in next major release!
+Deprecations! To ensure your simulation will be compatible with future
+releases, please check doc/API-Changes.txt and remove use of
+deprecated functions from you simulation models. Functions deprecated
+now are likely to be removed in next major release.
+
+Improvements:
+- message subclassing: generated message classes now accept message kind
+  in the constructor.
 
 Bugfixes since 2.3b2:
 - fixed problem with deleting dynamically created modules
