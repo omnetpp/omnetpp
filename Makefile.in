@@ -175,7 +175,7 @@ clean:
 	cd $(OMNETPP_TUTORIAL_DIR)/queues && $(MAKE) clean
 	cd $(OMNETPP_TEST_DIR) && $(MAKE) clean
 
-depend:
+depend: utils
 	for i in $(LIBS) $(PROGS); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) depend); \
 	done
