@@ -5,7 +5,7 @@
 //
 //
 //  Declaration of the following classes:
-//    TOmnetApp:           abstract base class for simulation application
+//    TOmnetApp:  abstract base class for simulation applications
 //
 //==========================================================================
 
@@ -22,7 +22,9 @@
 #define __OMNETAPP_H
 
 #include "carray.h"
+#include "chead.h"
 #include "cenvir.h"
+#include "envdefs.h"
 
 
 class cIniFile;
@@ -130,3 +132,4 @@ class TOmnetApp
 };
 
 #endif
+

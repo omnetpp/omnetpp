@@ -19,6 +19,8 @@
 #ifndef __ARGS_H
 #define __ARGS_H
 
+#include "envdefs.h"
+
 void argInit(int argc, char *argv[]);     /* args passed to main() */
 
 int argGiven(char c);              /* returns 0 or 1 */

@@ -21,6 +21,7 @@
 #ifndef __SLAVEAPP_H
 #define __SLAVEAPP_H
 
+#include "envdefs.h"
 #include "omnetapp.h"
 
 //==========================================================================

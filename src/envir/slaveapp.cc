@@ -26,6 +26,11 @@
 #include "cinifile.h"
 #include "csimul.h"
 #include "cnetmod.h"
+#include "appreg.h"
+
+
+Register_OmnetApp(TSlaveApp,true,10,"default slave interface, for distributed execution");
+
 
 //==========================================================================
 // TSlaveApp: "slave mode" simulation application

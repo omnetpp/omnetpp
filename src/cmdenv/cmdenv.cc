@@ -25,7 +25,7 @@
 
 #include "cmdenv.h"
 #include "enumstr.h"
-#include "slaveapp.h"
+#include "appreg.h"
 #include "cinifile.h"
 #include "cmodule.h"
 #include "cnetmod.h"
@@ -36,21 +36,10 @@ static char buffer[1024];
 // dummy function to help cope with Unix linkers...
 void _dummy_for_env() {}
 
+Register_OmnetApp(TCmdenvApp,false,10,"Cmdenv: command line user interface");
+
 //==========================================================================
 // TCmdenvApp: command line user interface.
-
-TOmnetApp *TOmnetApp::create(int argc,char *argv[])
-{
-    return new TCmdenvApp(argc,argv);
-}
-
-TOmnetApp *TOmnetApp::createSlave(int argc,char *argv[])
-{
-    return new TSlaveApp(argc,argv);
-}
-
-//---------------------------------------------------------------------
-// TCmdenvApp member functions
 
 TCmdenvApp::TCmdenvApp(int argc, char *argv[]) : TOmnetApp(argc, argv)
 {

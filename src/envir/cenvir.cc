@@ -25,17 +25,39 @@
 #include "cenvir.h"
 #include "omnetapp.h"
 #include "slaveapp.h"   // dummy_func()
+#include "appreg.h"
 #include "cmodule.h"
 #include "cnetmod.h"
 
 //=== Global objects:
 cEnvir ev;
 
+// the global list for the registration objects
+cHead omnetapps( "user-interfaces", &superhead );
+
+// output buffer
 static char buffer[1024];
 
 // A dummy function to force UNIX linkers collect TSlaveApp's constructor
 // as a linker symbol. Otherwise we get "undefined symbol" for it.
 void tslave_dummy_function() {TSlaveApp x(0,NULL);}
+
+
+//========================================================================
+
+// User interface factory functions.
+cOmnetAppRegistration *chooseBestOmnetApp(bool slave)
+{
+    cOmnetAppRegistration *best_appreg = NULL;
+
+    for (cIterator i(omnetapps); !i.end(); i++)
+    {
+       cOmnetAppRegistration *appreg = (cOmnetAppRegistration*) i();
+       if (appreg->isSlave()==slave && (!best_appreg || appreg->score()>best_appreg->score()))
+           best_appreg = appreg;
+    }
+    return best_appreg;
+}
 
 //========================================================================
 
@@ -62,12 +84,16 @@ void cEnvir::setup(int ac, char *av[])
      running_mode = is_started_as_master();
      // ==> MASTER_MODE, SLAVE_MODE, NONPARALLEL_MODE or STARTUPERROR_MODE
 
-     if (running_mode!=SLAVE_MODE)
-        app = TOmnetApp::create(ac,av);
-     else  // SLAVE_MODE
-        app = TOmnetApp::createSlave(ac,av);
+     // choose and set up user interface (TOmnetApp subclass)
+     bool slave = (running_mode==SLAVE_MODE); // slave or normal app?
+     cOmnetAppRegistration *appreg = chooseBestOmnetApp(slave);
+     if (!appreg)
+         {opp_error("No appropriate user interface (Cmdenv,Tkenv,etc.) found");return;}
 
-     if (app!=NULL)  app->setup(ac,av);
+     printf("Setting up %s", appreg->description());
+
+     app = appreg->createOne(ac,av);
+     app->setup(ac,av);
 }
 
 void cEnvir::run()

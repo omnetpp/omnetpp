@@ -25,6 +25,7 @@
 #include <stdlib.h> // atol, atof
 #include <string.h> // strncpy
 #include "defs.h"
+#include "envdefs.h"
 
 
 class cIniFile;

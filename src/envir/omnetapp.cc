@@ -43,13 +43,13 @@
 
 #else /* nonportable coroutines, stacks are allocated on heap */
 
-# define TOTAL_STACK_KB         0  // dummy value
-# define MAIN_STACK_KB          0  // dummy value
+# define TOTAL_STACK_KB        0  // dummy value
+# define MAIN_STACK_KB         0  // dummy value
 
 #endif
 
-
 static char buffer[1024];
+
 
 TOmnetApp::TOmnetApp(int,char *[])
 {

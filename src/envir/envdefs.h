@@ -1,9 +1,9 @@
 //==========================================================================
-//  PATMATCH.H - part of
+//  ENVDEFS.H - part of
 //                             OMNeT++
 //             Discrete System Simulation in C++
 //
-//         pattern matching stuff
+//  General defines for the Envir library
 //
 //==========================================================================
 
@@ -16,9 +16,20 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include "defs.h"
-#include "envdefs.h"
+#ifndef __ENVDEFS_H
+#define __ENVDEFS_H
 
-bool transform_pattern(const char *from, short *topattern);
-bool stringmatch(const short *pattern, const char *line);
+#include "defs.h"  // for OPP_DLLIMPORT, OPP_DLLEXPORT
 
+#ifdef _WIN32
+#  ifdef BUILDING_ENVIR
+#    define ENVIR_API  OPP_DLLEXPORT
+#  else
+#    define ENVIR_API  OPP_DLLIMPORT
+#  endif
+#else
+#  define ENVIR_API
+#endif
+
+
+#endif

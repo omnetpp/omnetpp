@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <time.h>
 
-#include "slaveapp.h"
+#include "appreg.h"
 #include "cinifile.h"
 #include "cenvir.h"
 #include "cmodule.h"
@@ -35,6 +35,10 @@
 #include "tklib.h"
 #include "tkinsp.h"
 
+
+Register_OmnetApp(TOmnetTkApp,false,20,"Tkenv: Tk-based graphical user interface");
+
+
 //=========================================================================
 // TOmnetTkApp
 //        is the application class that runs the Tcl/Tk environment
@@ -44,19 +48,6 @@
 //        Class declaration and member function definitions for TOmnetTkApp
 //        follow here.
 //=========================================================================
-
-TOmnetApp *TOmnetApp::create(int argc, char *argv[])
-{
-    return new TOmnetTkApp(argc, argv);
-}
-
-TOmnetApp *TOmnetApp::createSlave(int argc, char *argv[])
-{
-    return new TSlaveApp(argc, argv);
-}
-
-//--------------------------------------------------------------------------
-//=== TOmnet member functions
 
 TOmnetTkApp::TOmnetTkApp(int argc, char *argv[]) :
   TOmnetApp( argc, argv),
