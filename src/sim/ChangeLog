@@ -1,3 +1,8 @@
+2005-03-07  Andras Varga
+
+	* chist.cc: changed to eliminate warnings about converting double to 
+	int
+
 2005-02-06  Andras Varga
 
 	* csimplemodule.cc: send()/sendDelayed() fix: check if output gate is

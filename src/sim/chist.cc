@@ -306,12 +306,16 @@ void cLongHistogram::setupRange()
 
     if (num_cells==-1)
     {
-        num_cells = rangemax - rangemin;
-        cellsize = 1;
-        if (num_cells > 10000)
+        double range = rangemax - rangemin;
+        if (range <= 10000)
         {
-            cellsize = ceil((double)num_cells / 10000.0);
-            num_cells /= cellsize;
+            num_cells = (int)range;
+            cellsize = 1;
+        }
+        else
+        {
+            cellsize = ceil(range / 10000.0);
+            num_cells = (int)ceil(range/cellsize);
         }
     }
     else
