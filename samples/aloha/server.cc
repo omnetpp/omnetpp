@@ -13,22 +13,30 @@
 class Server : public cSimpleModule
 {
   protected:
+    // state variables, event pointers
     bool channelBusy;
     cMessage *endRxEvent;
     double txRate;
 
     long currentCollisionNumFrames;
+    simtime_t recvStartTime;
 
+    // statistics
     long totalFrames;
     long collidedFrames;
+    simtime_t totalReceiveTime;
+    simtime_t totalCollisionTime;
+    double currentChannelUtilization;
+
+    cOutVector collisionMultiplicityVector;
+    cOutVector channelUtilizationVector;
 
   public:
     Module_Class_Members(Server,cSimpleModule,0);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
+    virtual void finish();
 };
-
-//FIXME add channel statistics and verify it!!!!
 
 Define_Module(Server);
 
@@ -45,6 +53,16 @@ void Server::initialize()
     WATCH(totalFrames);
     WATCH(collidedFrames);
 
+    totalReceiveTime = 0.0;
+    totalCollisionTime = 0.0;
+    currentChannelUtilization = 0;
+    WATCH(totalReceiveTime);
+    WATCH(totalCollisionTime);
+    WATCH(currentChannelUtilization);
+
+    collisionMultiplicityVector.setName("collision multiplicity");
+    channelUtilizationVector.setName("channel utilization");
+
     if (ev.isGUI()) displayString().setTagArg("i2",0,"x_off");
 }
 
@@ -54,7 +72,24 @@ void Server::handleMessage(cMessage *msg)
     {
         ev << "reception finished\n";
         channelBusy = false;
+
+        // update statistics
+        simtime_t dt = simTime() - recvStartTime;
+        if (currentCollisionNumFrames==0)
+        {
+            totalReceiveTime += dt;
+        }
+        else
+        {
+            totalCollisionTime += dt;
+            collisionMultiplicityVector.record(currentCollisionNumFrames);
+        }
+        currentChannelUtilization = totalReceiveTime/simTime();
+        channelUtilizationVector.record(currentChannelUtilization);
+
         currentCollisionNumFrames = 0;
+
+        // update network graphics
         if (ev.isGUI())
         {
             displayString().setTagArg("i2",0,"x_off");
@@ -68,6 +103,7 @@ void Server::handleMessage(cMessage *msg)
         if (!channelBusy)
         {
             ev << "started receiving\n";
+            recvStartTime = simTime();
             channelBusy = true;
             scheduleAt(endReception, endRxEvent);
             if (ev.isGUI())
@@ -93,6 +129,7 @@ void Server::handleMessage(cMessage *msg)
                 scheduleAt(endReception, endRxEvent);
             }
 
+            // update network graphics
             if (ev.isGUI())
             {
                 displayString().setTagArg("i2",0,"x_red");
@@ -108,92 +145,21 @@ void Server::handleMessage(cMessage *msg)
     }
 }
 
-//--------------------
-
-class Host : public cSimpleModule
+void Server::finish()
 {
-  protected:
-    cModule *server;
-    cMessage *endTxEvent;
-    enum {IDLE=0, TRANSMIT=2} state;
-    int pkCounter;
-    double radioDelay;
-    double txRate;
-    cPar *iaTime;
-    cPar *pkLenBits;
+    ev << "duration: " << simTime() << endl;
+    ev << "total frames: " << totalFrames << endl;
+    ev << "collided frames: " << collidedFrames << endl;
+    ev << "total receive time: " << totalReceiveTime << endl;
+    ev << "total collision time: " << totalCollisionTime << endl;
+    ev << "channel utilization: " << currentChannelUtilization << endl;
 
-  public:
-    Module_Class_Members(Host,cSimpleModule,0);
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-};
-
-Define_Module(Host);
-
-void Host::initialize()
-{
-    server = simulation.moduleByPath("server");
-    if (!server) error("server not found");
-
-    endTxEvent = new cMessage("endTxEvent");
-    state = IDLE;
-    pkCounter = 0;
-    txRate = par("txRate");
-    radioDelay = par("radioDelay");
-    iaTime = &par("iaTime");
-    pkLenBits = &par("pkLenBits");
-
-    if (ev.isGUI())
-    {
-        displayString().setTagArg("i",2,"100");
-        displayString().setTagArg("t",2,"#808000");
-    }
-    scheduleAt(iaTime->doubleValue(), endTxEvent);
+    recordScalar("duration", simTime());
+    recordScalar("total frames", totalFrames);
+    recordScalar("collided frames", collidedFrames);
+    recordScalar("total receive time", totalReceiveTime);
+    recordScalar("total collision time", totalCollisionTime);
+    recordScalar("channel utilization", currentChannelUtilization);
 }
 
-void Host::handleMessage(cMessage *msg)
-{
-    ASSERT(msg==endTxEvent);
-
-    if (state==IDLE)
-    {
-        // generate packet and schedule timer when it ends
-        char pkname[40];
-        sprintf(pkname,"pk-%d-#%d", id(), pkCounter++);
-        ev << "generating packet " << pkname << endl;
-
-        state = TRANSMIT;
-
-        if (ev.isGUI())
-        {
-            displayString().setTagArg("i",1,"yellow");
-            displayString().setTagArg("t",0,"TRANSMIT");
-        }
-
-        cMessage *pk = new cMessage(pkname);
-        pk->setLength(pkLenBits->longValue());
-        double txtime = pk->length() / txRate;
-        sendDirect(pk, radioDelay, server->gate("in"));
-
-        scheduleAt(simTime()+txtime, endTxEvent);
-    }
-    else if (state==TRANSMIT)
-    {
-        // endTxEvent signals end of transmission
-        state = IDLE;
-
-        // schedule next sending
-        scheduleAt(simTime()+iaTime->doubleValue(), endTxEvent);
-
-        if (ev.isGUI())
-        {
-            displayString().setTagArg("i",1,"");
-            displayString().setTagArg("t",0,"");
-        }
-    }
-    else
-    {
-        error("invalid state");
-    }
-}
 
