@@ -75,8 +75,16 @@ void SAXParser::setHandler(SAXHandler *sh)
     sh->setParser(this);
 }
 
-bool SAXParser::parse(FILE *f)
+bool SAXParser::parse(const char *filename)
 {
+    // open file
+    FILE *f = fopen(filename,"r");
+    if (!f)
+    {
+        sprintf(errortext, "Cannot open file");
+        return false;
+    }
+
     // prepare parser
     XML_Parser parser = XML_ParserCreate(NULL);
     XML_SetUserData(parser, saxhandler);

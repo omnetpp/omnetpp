@@ -117,7 +117,7 @@ class SAXParser
      * there was an error; in that case use getErrorMessage() to learn the
      * cause of the error.
      */
-    bool parse(FILE *f);
+    bool parse(const char *filename);
 
     /**
      * Returns the current line number in the input. Can be called from SAX handler code.

@@ -30,7 +30,7 @@
  *    SAXParser parser;
  *
  *    parser.setHandler(&nedsaxhandler);
- *    parser.parse(f);
+ *    parser.parse(filename);
  *
  *    NEDElement *result = nedsaxhandler.getTree();
  * </pre>

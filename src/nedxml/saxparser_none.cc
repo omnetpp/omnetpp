@@ -30,7 +30,7 @@ void SAXParser::setHandler(SAXHandler *sh)
     sh->setParser(this);
 }
 
-bool SAXParser::parse(FILE *f)
+bool SAXParser::parse(const char *filename)
 {
     strcpy(errortext, "XML input is not supported: this copy of NEDXML was "
                       "compiled without an XML parser (libXML or Expat)");

@@ -18,22 +18,14 @@
 
 NEDElement *parseXML(const char *filename)
 {
-    // open file
-    FILE *f = fopen(filename,"r");
-    if (!f)
-    {
-        NEDError(NULL, "Cannot open file '%s'", filename);
-        return 0;
-    }
-
     NEDSAXHandler sh(filename);
     SAXParser parser;
 
     parser.setHandler(&sh);
-    bool ok = parser.parse(f);
+    bool ok = parser.parse(filename);
     if (!ok)
     {
-        NEDError(NULL, "Error parsing `%s': %s", filename, parser.getErrorMessage());
+        NEDError(NULL, "Error reading `%s': %s", filename, parser.getErrorMessage());
         return 0;
     }
     return sh.getTree();
