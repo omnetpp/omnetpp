@@ -8,5 +8,6 @@ All kinds of scripts:
  readme      - this file
  tcl2.c      - utility for embedding Tcl source into an executable
  prephtml    - used during development
+ replace.c   - MSVC: substitute @something@ variables into makefiles, .bat files
 
 --VA

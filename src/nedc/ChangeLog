@@ -266,4 +266,6 @@ Apr 10, 2000
  - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
 Apr 13, 2000
  - Changed operator precedence to bind ||,&& thighter than ?: [suggested by Niko]
+May 7, 2000
+ - Makefile.vc improvements from Balazs Kelemen
 

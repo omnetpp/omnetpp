@@ -67,7 +67,10 @@ depend:
 	@ echo *** make depend not (yet) supported with MSVC
 
 clean:
-	del *.obj lex.yy.c ebnf.tab.c ebnf.tab.h gned.exe
+	del *.obj gned.exe *.ilk *.pdb 2> nul
+
+realclean: clean
+	del lex.yy.c ebnf.tab.c ebnf.tab.h
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
@@ -79,3 +82,4 @@ gned.obj: arrow.h parsened.h tklib.h
 nedfile.obj: nedfile.h parsened.h
 parsened.obj: parsened.h nedfile.h disp.h tklib.h
 tklib.obj: tklib.h
+

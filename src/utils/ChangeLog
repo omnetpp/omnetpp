@@ -105,3 +105,5 @@ Apr 19, 2000
 Apr 30, 2000
  - TVEnv support removed from makemake [suggested by Niko]
  - prephtml now puts a version number into the html file
+May 7, 2000
+ - replace.c added [from Balazs Kelemen]

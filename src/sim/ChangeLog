@@ -870,4 +870,6 @@ May 6, 2000
  - displayString() added to cMessage. By default it returns an empty string;
    users have to subclass cMessage and redefine displayString() to get
    messages with custom appearance in Tkenv. (Not implemented yet in Tkenv!)
+May 7, 2000
+ - Makefile.vc improvements from Balazs Kelemen
 

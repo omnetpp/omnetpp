@@ -359,4 +359,6 @@ May 5, 2000
    Annoyance: setDisplayString() also does a 'Rearrange randomly placed
    submodules'. This is not so trivial to change (module positions will need
    to be explicitly stored)...
+May 7, 2000
+ - Makefile.vc improvements from Balazs Kelemen
 

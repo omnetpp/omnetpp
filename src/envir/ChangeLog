@@ -245,4 +245,6 @@ April 6-10, 2000
 Apr 10, 2000
  - TRUE/FALSE (defines) replaced by true/false (C++ keywords)
  - in printf() statements, all "%lf","%lg","%le" was replaced by "%f","%g","%e"
+May 7, 2000
+ - Makefile.vc improvements from Balazs Kelemen
 

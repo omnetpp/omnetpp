@@ -41,7 +41,7 @@ depend:
 	@ echo *** make depend not (yet) supported with MSVC
 
 clean:
-	del *.obj cmdenv.lib cmdenv.dll cmdenv.ilib cmdenv.exp
+	del *.obj cmdenv.lib cmdenv.dll cmdenv.ilib cmdenv.exp 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

@@ -199,3 +199,5 @@ Apr 10, 2000
 Apr 13, 2000
  - ebnf.y: changed operator precedence to bind ||,&& thighter than ?:
    [suggested by Niko]
+May 7, 2000
+ - Makefile.vc improvements from Balazs Kelemen
