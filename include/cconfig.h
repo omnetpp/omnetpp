@@ -83,6 +83,8 @@ class ENVIR_API cConfiguration : public cPolymorphic
     virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue="") = 0; // quotes stripped (if any)
     virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL) = 0; // with quotes (if any)
 
+    virtual char **getEntriesWithPrefix(const char *section, const char *keyprefix) = 0;
+
     /**
      * Returns true if the last "get" call didn't find the configuration entry
      * and returned the default value.
@@ -100,6 +102,8 @@ class ENVIR_API cConfiguration : public cPolymorphic
     virtual double getAsTime2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0) = 0;
     virtual const char *getAsString2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
     virtual const char *getAsCustom2(const char *section1, const char *section2, const char *key, const char *defaultvalue="") = 0;
+
+    virtual char **getEntriesWithPrefix(const char *section1, const char *section2, const char *keyprefix) = 0;
     //@}
 
     /**
