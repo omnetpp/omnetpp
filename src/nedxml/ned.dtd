@@ -227,11 +227,11 @@
 
 <!ELEMENT expression ((operator|function|param-ref|ident|const))>
 <!ATTLIST expression
-     target              NMTOKEN   #IMPLIED >
+     target              CDATA     #IMPLIED >
 
 <!ELEMENT operator ((operator|function|param-ref|ident|const)+)>
 <!ATTLIST operator
-     name                NMTOKEN   #REQUIRED >
+     name                CDATA     #REQUIRED >
 
 <!ELEMENT function ((operator|function|param-ref|ident|const)*)>
 <!ATTLIST function

@@ -354,7 +354,6 @@ void NEDDTDValidator::validateElement(ExpressionNode *node)
     int tags[] = {NED_OPERATOR,NED_FUNCTION,NED_PARAM_REF,NED_IDENT,NED_CONST};
     checkChoice(node, tags, sizeof(tags)/sizeof(int), '1');
 
-    checkNMTokenAttribute(node, "target");
 }
 
 void NEDDTDValidator::validateElement(OperatorNode *node)
@@ -363,7 +362,6 @@ void NEDDTDValidator::validateElement(OperatorNode *node)
     checkChoice(node, tags, sizeof(tags)/sizeof(int), '+');
 
     checkRequiredAttribute(node, "name");
-    checkNMTokenAttribute(node, "name");
 }
 
 void NEDDTDValidator::validateElement(FunctionNode *node)

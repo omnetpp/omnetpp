@@ -95,7 +95,16 @@ void NEDDTDValidator::checkRequiredAttribute(NEDElement *node, const char *attr)
 
 void NEDDTDValidator::checkEnumeratedAttribute(NEDElement *node, const char *attr, const char *vals[], int n)
 {
-    // FIXME to be implemented
+    const char *s = node->getAttribute(attr);
+    if (!s || !*s)
+        {NEDError(node,"DTD validation error: required attribute %s is empty", attr); return;}
+    for (int i=0; i<n; i++)
+        if (!strcmp(s, vals[i]))
+            return;
+    if (n==0)
+        INTERNAL_ERROR1(node,"no allowed values for enumerated attribute %s", attr);
+    NEDError(node,"DTD validation error: invalid value for attribute %s, not one of the "
+                  "enumerated values ('%s',...)", attr, vals[0]);
 }
 
 void NEDDTDValidator::checkNameAttribute(NEDElement *node, const char *attr)
@@ -104,10 +113,10 @@ void NEDDTDValidator::checkNameAttribute(NEDElement *node, const char *attr)
     if (!s || !*s)
         return;
     if (!isalpha(*s) && *s!='_')
-        {NEDError(node,"DTD validation error: attribute %s='%s' starts with invalid character", attr, node->getAttribute(attr)); return;}
+        NEDError(node,"DTD validation error: attribute %s='%s' starts with invalid character (valid NED identifier expected)", attr, node->getAttribute(attr));
     while (*++s)
         if (!isalpha(*s) && !isdigit(*s) && *s!='_')
-            {NEDError(node,"DTD validation error: attribute %s='%s' contains invalid character", attr, node->getAttribute(attr)); return;}
+            {NEDError(node,"DTD validation error: attribute %s='%s' contains invalid character (valid NED identifier expected)", attr, node->getAttribute(attr)); return;}
 }
 
 void NEDDTDValidator::checkCommentAttribute(NEDElement *node, const char *attr)

@@ -1778,7 +1778,7 @@ class DisplayStringNode : public NEDElement
  * <pre>
  * <!ELEMENT expression ((operator|function|param-ref|ident|const))>
  * <!ATTLIST expression
- *      target              NMTOKEN   #IMPLIED >
+ *      target              CDATA     #IMPLIED >
  * </pre>
  * 
  * @ingroup Data
@@ -1826,7 +1826,7 @@ class ExpressionNode : public NEDElement
  * <pre>
  * <!ELEMENT operator ((operator|function|param-ref|ident|const)+)>
  * <!ATTLIST operator
- *      name                NMTOKEN   #REQUIRED >
+ *      name                CDATA     #REQUIRED >
  * </pre>
  * 
  * @ingroup Data
