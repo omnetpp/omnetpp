@@ -971,7 +971,6 @@ cMessage *cSimpleModule::receiveNew(simtime_t t)
      if (newmsg==timeoutmsg)  // timeout expired
      {
          take(timeoutmsg);
-         ev.messageDelivered( timeoutmsg );
          return NO(cMessage);
      }
      else  // message received OK
@@ -996,11 +995,13 @@ cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
          simulation.msgQueue.insert( timeoutmsg );
          for(;;)
          {
-             cMessage *newmsg = receiveNew();
+             simulation.transferToMain();
+             cMessage *newmsg = simulation.msgQueue.getFirst();
              if (newmsg==timeoutmsg)  // timeout expired
-                 {take(timeoutmsg); return NO(cMessage);}
+                {take(timeoutmsg); return NO(cMessage);}
              else
              {
+                ev.messageDelivered( newmsg );
                 if (newmsg->arrivedOn(g))  // OK!
                     {take(cancelEvent(timeoutmsg)); return newmsg;}
                 else   // not good --> put-aside queue
@@ -1012,7 +1013,9 @@ cMessage *cSimpleModule::receiveNewOn(int g, simtime_t t)
      {
          for(;;)
          {
-             cMessage *newmsg = receiveNew();
+             simulation.transferToMain();
+             cMessage *newmsg = simulation.msgQueue.getFirst();
+             ev.messageDelivered( newmsg );
              if (newmsg->arrivedOn(g))
                  return newmsg;
              else
