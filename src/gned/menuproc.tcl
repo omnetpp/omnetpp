@@ -94,7 +94,7 @@ proc fileSave {{nedfilekey {}}} {
       saveNED $nedfilekey
       nedfileClearDirty $nedfilekey
    } else {
-      fileSaveAs
+      fileSaveAs $nedfilekey
    }
 }
 
