@@ -1,5 +1,5 @@
 //==========================================================================
-//  PLATDEP/MISC.C - part of
+//  PLATDEP/FILEGLOBBER.C - part of
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
@@ -14,10 +14,11 @@
 *--------------------------------------------------------------*/
 
 //
-// IMPLEMENTATION of class FileGlobber. This file has to be #included
-// in exactly one source file in the program. The std_sim library
-// (src/sim) already includes it, so if you use this class in a simulation
-// program, you don't need to #include it again.
+// IMPLEMENTATION of class FileGlobber. This file is shared between the
+// simulation linrary, nedtool, etc. It has to be #included by exactly one
+// source file in the executable. For simulation programs, the std_sim
+// library (src/sim) already includes it, so if you use this class in models,
+// you don't need to #include it again.
 //
 
 #include "platdep/misc.h"
