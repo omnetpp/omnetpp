@@ -194,9 +194,13 @@ class SIM_API cBag : public cObject
  * Container object that holds objects derived from cObject.
  * cArray stores the pointers of the objects inserted instead of making copies.
  * cArray works as an array, but if it gets full, it grows automatically by
- * a specified delta. Ownership of contained objects (responsibility of deletion)
- * can be specified per-object basis (see takeOwnership()); default is that
- * cArray takes the ownership of each object inserted (takeOwnership(true)).
+ * a specified delta.
+ *
+ * By default, cArray's destructor deletes all contained objects. This behaviour
+ * can be changed by calling takeOwnership(false) before inserting objects.
+ * More precisely, the behaviour can be controlled per-object: the
+ * insertion-time state of the <i>takeOwnership</i> flag will determine
+ * whether the inserted object will be deleted by the cArray destructor or not.
  *
  * @ingroup Containers
  */

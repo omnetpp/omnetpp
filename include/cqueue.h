@@ -30,10 +30,11 @@
  * If no such function is given, cQueue implements a FIFO.
  * Order (ascending or descending) can be specified.
  *
- * Ownership of contained objects (responsibility of deletion) can
- * be specified per-object basis (see takeOwnership()); default is
- * that cQueue takes the ownership of each object
- * inserted (that is, takeOwnership(true)).
+ * By default, cQueue's destructor deletes all contained objects. This behaviour 
+ * can be changed by calling takeOwnership(false) before inserting objects.
+ * More precisely, the behaviour can be controlled per-object: the 
+ * insertion-time state of the <i>takeOwnership</i> flag will determine 
+ * whether the inserted object will be deleted by the cQueue destructor or not.  
  *
  * The sorting function should look like:
  * int CompareFunc(cObject* a, cObject* b);
