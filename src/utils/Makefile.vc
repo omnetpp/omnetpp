@@ -6,13 +6,13 @@
 #
 # Targets
 #
-all: seedtool tcl2c
+all: seedtool.exe tcl2c.exe
 
-seedtool : seedtool.cc
-	$(CXX) seedtool.cc -o seedtool
+seedtool.exe : seedtool.cc
+	$(CXX) seedtool.cc 
 
-tcl2c: tcl2c.c
-	$(CC) tcl2c.c -o tcl2c
+tcl2c.exe: tcl2c.c
+	$(CC) tcl2c.c
 
 depend:
 	@ echo *** make depend not (yet) supported with MSVC
@@ -20,9 +20,9 @@ clean:
 	del *.obj seedtool.exe tcl2c.exe
 
 install-local: seedtool
-	..\utils/install-prog seedtool $(OMNETPP_BIN_DIR)
-	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);del makemake;ln -s $$dir/makemake .)
-	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);del splitvec;ln -s $$dir/splitvec .)
+	copy seedtool.exe $(OMNETPP_BIN_DIR)
+	@rem (dir=`pwd`;cd $(OMNETPP_BIN_DIR);del makemake;ln -s $$dir/makemake .)
+	@rem (dir=`pwd`;cd $(OMNETPP_BIN_DIR);del splitvec;ln -s $$dir/splitvec .)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
