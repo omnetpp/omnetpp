@@ -36,6 +36,14 @@
  * - @ref Macros
  * - @ref Internals
  * - @ref EnvirExtensions
+ *
+ * If you have used OMNeT++ before:
+ * - @ref APIChanges
+ */
+
+/**
+ * @page APIChanges API Changes
+ * @verbinclude API-changes.txt
  */
 
 
