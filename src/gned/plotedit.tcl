@@ -211,13 +211,16 @@ proc openSubmodule c {
       set typename $ned($key,type-name)
       if {$typename==""} {
          tk_messageBox -title "Error" -icon warning -type ok \
-              -message "Module type for this submodule is blank."
-      } elseif {[itemKeyFromName $typename module]==""} {
-         tk_messageBox -title "Error" -icon warning -type ok \
-              -message "Module type '$typename' unknown to GNED (Not loaded?)"
-      } else {
+              -message "Module type for this submodule is not filled in."
+      } elseif {[itemKeyFromName $typename module]!=""} {
          set modkey [itemKeyFromName $typename module]
          openModuleOnCanvas $modkey
+      } elseif {[itemKeyFromName $typename simple]!=""} {
+         set modkey [itemKeyFromName $typename simple]
+         editModuleProps $key
+      } else {
+         tk_messageBox -title "Error" -icon warning -type ok \
+              -message "Module type '$typename' unknown to GNED -- none of the open NED files contain its definition."
       }
    }
 }

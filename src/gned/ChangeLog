@@ -7,6 +7,9 @@
 	* fixed bug that it always created display strings for connections
 	[hint from Steffen Sroka].
 
+	* double click on a submodule which is a simple module now opens 
+	module properties dialog
+
 	* increased default size of compound module
 
 2003-01-19  Andras Varga
