@@ -487,19 +487,6 @@ proc stop_simulation {} {
     }
 }
 
-proc module_windows {} {
-    # FIXME this function doesn't work now!
-    # implements Trace|Module output...
-    if {[network_present] == 0} return
-    inspectfromlistbox \
-         "Open module windows" \
-         "Open trace window for modules:" \
-         {Module output} \
-         "modules [opp_object_systemmodule] deep"
-    # set w [opp_inspect [opp_object_systemmodule] {(default)} ds]
-    # $w.buttons.type config -text modulewindow
-}
-
 proc message_windows {} {
     # implements Trace|Message sending...
     if {[network_present] == 0} return
@@ -537,30 +524,6 @@ proc inspect_messagequeue {} {
     # implements Inspect|Message queue...
     opp_inspect [opp_object_messagequeue] (default)
 }
-
-# proc inspect_modulelocals {} {
-#    # implements Inspect|Local objects...
-#    if {[network_present] == 0} return
-#    inspectfromlistbox \
-#         "Open local variables" \
-#         "Open list of local variables for modules:" \
-#         {Local vars} \
-#         "modules [opp_object_systemmodule] deep simpleonly"
-#    # set w [opp_inspect [opp_object_systemmodule] container ds]
-#    # $w.buttons.type config -text {Local vars}
-#}
-
-# proc inspect_modulemembers {} {
-#    # implements Inspect|Class members...
-#    if {[network_present] == 0} return
-#    inspectfromlistbox \
-#         "Open class members" \
-#         "Open list of module class members for modules:" \
-#         {Class members} \
-#         "modules [opp_object_systemmodule] deep simpleonly"
-#    # set w [opp_inspect [opp_object_systemmodule] container ds]
-#    # $w.buttons.type config -text {Class members}
-#}
 
 proc inspect_networks {} {
     opp_inspect [opp_object_networks] {(default)}

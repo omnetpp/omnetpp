@@ -71,98 +71,6 @@ proc comboSelectionDialog {title text label variable list} {
     return 0
 }
 
-# FIXME potentially obsolete:
-# proc listboxSelectionDialog {title text list} {
-#
-#    set w .listdialog
-#    createOkCancelDialog $w $title
-#
-#    label $w.f.label -text $text -justify left
-#    pack $w.f.label -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top
-#
-#    frame $w.f.main
-#    scrollbar $w.f.main.sb -command "$w.f.main.list yview"
-#    listbox $w.f.main.list  -height 6 -yscrollcommand "$w.f.main.sb set"
-#    pack $w.f.main.sb -anchor center -expand 0 -fill y -side right
-#    pack $w.f.main.list  -anchor center -expand 1 -fill both  -side left
-#    pack $w.f.main  -anchor center -expand 1 -fill both -side top
-#
-#    set lb $w.f.main.list
-#    foreach i $list {
-#       $lb insert end $i
-#    }
-#    $lb selection set 0
-#
-#    # Configure dialog
-#    bind $lb <Double-Button-1> "$w.buttons.okbutton invoke"
-#    bind $lb <Key-Return> "$w.buttons.okbutton invoke"
-#
-#    focus $lb
-#
-#    if [execOkCancelDialog $w] {
-#       if {[$lb curselection] != ""} {
-#           set selection [$lb get [$lb curselection]]
-#       } else {
-#          set selection ""
-#       }
-#       destroy $w
-#       return $selection
-#    }
-#    destroy $w
-#    return ""
-#}
-
-proc inspectfromlistbox {title text type fillistbox_args} {
-
-    set w .listdialog
-    createCloseDialog $w $title
-
-    label $w.f.label -text $text -justify left
-    pack $w.f.label -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top
-
-    frame $w.f.main
-    scrollbar $w.f.main.vsb -command "$w.f.main.list yview"
-    scrollbar $w.f.main.hsb -command "$w.f.main.list xview" -orient horiz
-    multicolumnlistbox $w.f.main.list {
-        {class   Class  80}
-        {name    Name  120}
-        {info    Info}
-        {ptr     Pointer}
-    } -height 200 -yscrollcommand "$w.f.main.vsb set" -xscrollcommand "$w.f.main.hsb set"
-
-    grid $w.f.main.list $w.f.main.vsb -sticky news
-    grid $w.f.main.hsb  x             -sticky news
-    grid rowconfig $w.f.main 0 -weight 1
-    grid columnconfig $w.f.main 0 -weight 1
-
-    pack $w.f.main  -anchor center -expand 1 -fill both -side top
-
-    set lb $w.f.main.list
-
-    # execute query
-    set objlist [opp_getsubobjectsfilt [opp_object_simulation] "" "" "Full name"]
-    #set num [llength $objlist]
-    #$w.f.numobj config -text "Found $num objects"
-
-    # insert into listbox
-    foreach ptr $objlist {
-        multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]]
-    }
-    #$lb selection set 0  FIXME what's this?
-
-    button $w.buttons.inspect -text "Open inspector" -command "inspect_item_in $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
-    pack $w.buttons.inspect -side top -anchor e -padx 2
-
-    # Configure dialog
-    bind $lb <Double-Button-1> "$w.buttons.inspect invoke"
-    bind $lb <Key-Return> "$w.buttons.inspect invoke"
-
-    focus $lb
-
-    execCloseDialog $w
-    destroy $w
-}
-
 proc display_stopdialog {} {
     # Create a dialog that can be used to stop a running simulation
     global opp fonts
@@ -687,8 +595,6 @@ proc filteredobjectlist_dialog {} {
     set lb $w.f.main.list
 
     set type "(default)"
-    #button $w.buttons.inspect -text "Open inspector" -command "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
-    #pack $w.buttons.inspect -side top -anchor e -padx 2
 
     # leave listbox empty -- filling it with all objects might take too long
 
