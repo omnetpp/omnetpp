@@ -4,7 +4,9 @@ for i in *.gif; do
   name=`echo $i|sed 's/^.*\///;s/\.gif$//'`
   echo "set icons($name) [image create photo -data {"
   # on Linux, base64 is called mimencode
-  base64 -E < $i | sed 's/^/    /'
+  # WARNING!!!!! cygwin bash does not like input redirection!!!!!!!
+  # data loss!!!!!
+  base64 -E $i | sed 's/^/    /'
   echo "}]"
   echo
 done
