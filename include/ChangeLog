@@ -1,6 +1,15 @@
 2004-10-25  Andras Varga
 
-	* crng.h: added
+	* added crng.h
+
+	* cenvir: added methods int numRNGs() and cRNG *rng(int k), which 
+	allow access to the RNGs. The concept is that there are a number
+	of RNGs available for the simulation, numbered globaly 0..N. 
+	Every module uses one or more RNGs identified with "module-local RNG 
+	numbers", and every local RNG number maps to a global RNGs -- and you
+	can specify the mapping. Thus e.g. several module types can all work
+	with RNG 0 (local RNG number), and you map some modules to physical
+	RNG 0, others to physical RNG 1, and so on.
 
 2004-10-25  Andras Varga
 

@@ -34,7 +34,7 @@ class SIM_API cRNG : public cPolymorphic
      * Called by the simulation framework to set up the RNG at the start
      * of a simulation run. Seed selection should take place here.
      */
-    virtual void initialize(int runnumber, int id, cConfiguration *cfg) = 0;
+    virtual void initialize(int runNumber, int id, int numRngs, cConfiguration *cfg) = 0;
 
     /**
      * Random integer in the range [0,intRandMax()]

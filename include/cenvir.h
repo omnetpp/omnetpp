@@ -419,6 +419,21 @@ class ENVIR_API cEnvir : public std::ostream
     bool askYesNo(const char *msgfmt,...);
     //@}
 
+    /** @name Access to RNGs. */
+    //@{
+
+    /**
+     * Returns the number of RNGs available for the simulation
+     * ("num-rngs=" omnetpp.ini setting).
+     */
+    int numRNGs();
+
+    /**
+     * Returns pointer to "physical" RNG k (0 <= k < numRNGs()).
+     */
+    cRNG *rng(int k);
+    //@}
+
     /** @name Methods for recording data from output vectors.
      *
      * These are functions cOutVector internally relies on.
