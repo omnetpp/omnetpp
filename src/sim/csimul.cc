@@ -539,7 +539,9 @@ void cSimulation::transferTo(cSimpleModule *modp)
     }
 
     if (modp->stackOverflow())
-        throw new cException("Stack violation in module `%s' (%s stack too small?)", modp->fullPath().c_str(), modp->className());
+        throw new cException("Stack violation in module (%s)%s: module stack too small? "
+                             "Try increasing it in the class' Module_Class_Members() or constructor",
+                             modp->className(), modp->fullPath().c_str());
 }
 
 void cSimulation::doOneEvent(cSimpleModule *mod)
