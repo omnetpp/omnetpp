@@ -1,3 +1,8 @@
+2004-11-27  Andras Varga
+
+	* added cvisitor.h, nearly all files changed: old forEach(do_fn) 
+	changed	to forEachChild(cVisitor *) (Visitor pattern)
+
 2004-11-25  Andras Varga
 
 	* cmodule.h: displayStringAsParent() renamed to backgroundDisplay-
