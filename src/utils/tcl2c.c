@@ -78,10 +78,10 @@ int main(int argc, char **argv)
 
            n = 0;
            while ((c=fgetc(fin))!=EOF) {
-
-                c = (c+sum)%256;
-                sum = (sum+c)%219;
-
+                c = 255-c;
+                /* c = (c+sum)%256;
+                   sum = (sum+c)%219;
+                */
                 fprintf(fout,"%d,",c);
                 if (++n == 20) {
                     n = 0;
@@ -102,15 +102,22 @@ int main(int argc, char **argv)
     fprintf(fout,
          "/* decoding part */\n"
          "{\n"
-         "  int i,sum=0;\n"
+         "  int i;\n"
          "  unsigned char *s = tcl_code;\n"
          "  for (i=0; i<sizeof(tcl_code)-1; i++,s++) {\n"
-         "    int c=*s;\n"
-         "    *s = (*s-sum+256)%256;\n"
-         "    sum=(sum+c)%219;\n"
-         "    /*printf(\"%%c\",*s);*/\n"
+         "    *s = 255-(*s);\n"
          "  }\n"
          "}\n"
+         /* "{\n"
+            "  int i,sum=0;\n"
+            "  unsigned char *s = tcl_code;\n"
+            "  for (i=0; i<sizeof(tcl_code)-1; i++,s++) {\n"
+            "    int c=*s;\n"
+            "    *s = (*s-sum+256)%256;\n"
+            "    sum=(sum+c)%219;\n"
+            "  }\n"
+            "}\n"
+         */
     );
 
     fclose(fout);
