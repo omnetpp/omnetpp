@@ -134,7 +134,7 @@ if ($do_help)
     {
         print "Note: cannot generate usage diagrams because Graphviz is not installed.\n\n";
     }
-    print "Usage: opp_neddoc [-o <dir>] [-n] [-a] files-or-directories ...\n";
+    print "Usage: opp_neddoc options files-or-directories ...\n";
     print " -a, --all    process all *.ned and *.msg files recursively\n";
     print "              ('opp_neddoc -a' is equivalent to 'opp_neddoc .')\n";
     print " -o <dir>     output directory, defaults to ./html\n";
