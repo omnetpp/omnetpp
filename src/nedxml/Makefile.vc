@@ -10,7 +10,7 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS)
+COPTS=$(CFLAGS) $(EXPAT_CFLAGS)
 OBJS=nedelements.obj nedelement.obj nedstring.obj nederror.obj \
      nedvalidator.obj neddtdvalidator.obj neddtdvalidator1.obj \
      nedbasicvalidator.obj nedsemanticvalidator.obj nedcompiler.obj \
