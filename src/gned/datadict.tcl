@@ -166,7 +166,6 @@ set ddict(module,name)             {Module}
 set ddict(module,banner-comment)   {}
 set ddict(module,right-comment)    {}
 set ddict(module,trailing-comment) {}
-set ddict(module,canvasnum)        {}
 set ddict(module,rect-cid)         {}
 set ddict(module,rect2-cid)        {}
 set ddict(module,label-cid)        {}
@@ -261,7 +260,6 @@ set ddict(submod,right-comment)    {}
 set ddict(submod,type-name)        {Module}
 set ddict(submod,vectorsize)       {}
 set ddict(submod,like-name)        {}
-set ddict(submod,canvasnum)        {}
 set ddict(submod,rect-cid)         {}
 set ddict(submod,icon-cid)         {}
 set ddict(submod,label-cid)        {}
@@ -363,7 +361,6 @@ set ddict(conn,src_gate_index)  {}
 set ddict(conn,dest_gate_index) {}
 set ddict(conn,condition)       {}
 set ddict(conn,arrowdir-l2r)    {1}
-set ddict(conn,canvasnum)       {}
 set ddict(conn,arrow-cid)       {}
 set ddict(conn,fill-color)      {}
 set ddict(conn,linethickness)   {}

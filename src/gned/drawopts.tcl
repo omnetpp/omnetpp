@@ -33,7 +33,8 @@ proc editDrawOptions {key} {
 proc editModuleDrawOptions {key} {
     global canvas ned gned
 
-    set c $canvas($ned($key,canvasnum),canvas)
+    set canv_id [canvasIdFromItemKey $key]
+    set c $canvas($canv_id,canvas)
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .modopts "Module Drawing Options"
@@ -75,7 +76,8 @@ proc editModuleDrawOptions {key} {
 proc editSubmoduleDrawOptions {key} {
     global canvas ned gned
 
-    set c $canvas($ned($key,canvasnum),canvas)
+    set canv_id [canvasIdFromItemKey $key]
+    set c $canvas($canv_id,canvas)
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .submopts "Submodule Drawing Options"
@@ -157,7 +159,8 @@ proc editConnectionDrawOptions {key} {
     set drawmodes(e)  east
     set drawmodes(w)  west
 
-    set c $canvas($ned($key,canvasnum),canvas)
+    set canv_id [canvasIdFromItemKey $key]
+    set c $canvas($canv_id,canvas)
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .connopts "Connection Drawing Options"

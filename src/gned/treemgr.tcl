@@ -16,6 +16,27 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
+#-------------- temp solution: -----------------
+# FIXME: rather include new icons into icons.tcl
+set files [glob -nocomplain -- {icons/*_vs.gif}]
+foreach f $files {
+  set name [string tolower [file tail [file rootname $f]]]
+  if [catch {image type $name}] {
+     puts -nonewline "$name "
+     image create photo $name -file $f
+  }
+}
+puts ""
+
+proc dispsel {} {
+    global ned
+#FIXME: debug proc
+    foreach i [array names ned "*,selected"] {
+       puts "dbg: ned($i)=$ned($i)"
+    }
+}
+#-----------------------------------------------
+
 # initTreeManager --
 #
 #
@@ -84,7 +105,7 @@ proc treemanagerDoubleClick {key} {
 
     set type $ned($key,type)
     if {$type=="module"} {
-        openModuleOnNewCanvas $key
+        openModuleOnCanvas $key
     } else {
         tk_messageBox -icon warning -type ok \
             -message "Opening a '$type' on canvas is not implemented yet."
@@ -137,7 +158,7 @@ proc modulePopup {key} {
     global ned
     # FIXME:
     foreach i {
-      {command -command "openModuleOnNewCanvas $key" -label {Open on canvas} -underline 0}
+      {command -command "openModuleOnCanvas $key" -label {Open on canvas} -underline 0}
       {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
       {separator}
       {command -command "deleteItem $key; updateTreeManager" -label {Delete} -underline 0}
@@ -201,19 +222,6 @@ proc displayCodeForItem {key} {
     $w.main.text insert end $nedcode
 }
 
-#-------------- temp solution: -----------------
-
-# FIXME: rather include new icons into icons.tcl
-set files [glob -nocomplain -- {icons/*_vs.gif}]
-foreach f $files {
-  set name [string tolower [file tail [file rootname $f]]]
-  if [catch {image type $name}] {
-     puts -nonewline "$name "
-     image create photo $name -file $f
-  }
-}
-puts ""
-
 
 # getNodeInfo --
 #
@@ -232,12 +240,13 @@ proc getNodeInfo {w op {key {}}} {
 
       text {
         #DBG:
-        # return "$key:$ned($key,type):($ned($key,childrenkeys))"
+        set k "$key:"
+        #set k ""
 
         if [info exist ned($key,name)] {
-          return "$ned($key,type) $ned($key,name)"
+          return "$k$ned($key,type) $ned($key,name)"
         } else {
-          return "$ned($key,type)"
+          return "$k$ned($key,type)"
         }
       }
 
@@ -274,13 +283,3 @@ proc getNodeInfo {w op {key {}}} {
 }
 
 
-image create photo idir -data {
-    R0lGODdhEAAQAPIAAAAAAHh4eLi4uPj4APj4+P///wAAAAAAACwAAAAAEAAQAAADPVi63P4w
-    LkKCtTTnUsXwQqBtAfh910UU4ugGAEucpgnLNY3Gop7folwNOBOeiEYQ0acDpp6pGAFArVqt
-    hQQAO///
-}
-image create photo ifile -data {
-    R0lGODdhEAAQAPIAAAAAAHh4eLi4uPj4+P///wAAAAAAAAAAACwAAAAAEAAQAAADPkixzPOD
-    yADrWE8qC8WN0+BZAmBq1GMOqwigXFXCrGk/cxjjr27fLtout6n9eMIYMTXsFZsogXRKJf6u
-    P0kCADv/
-}

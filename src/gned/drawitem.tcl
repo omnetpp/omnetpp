@@ -130,8 +130,6 @@ proc drawItem {key {canv_id {}}} {
     if {$canv_id==""} {set canv_id $gned(canvas_id)}
     set c $canvas($canv_id,canvas)
 
-    set ned($key,canvasnum) $canv_id
-
     if {$ned($key,type)=="module"} {
         draw_module $c $key
     } elseif {$ned($key,type)=="submod"} {
@@ -176,8 +174,8 @@ proc selectItem {key} {
 
     set ned($key,selected) 1
 
-    if {$ned($key,canvasnum)==""} return
-    set c $canvas($ned($key,canvasnum),canvas)
+    set canv_id [canvasIdFromItemKey $key]
+    set c $canvas($canv_id,canvas)
 
     if {$ned($key,type)=="module"} {
         $c itemconfig $ned($key,rect2-cid) -outline red
@@ -199,10 +197,12 @@ proc selectItem {key} {
 proc deselectItem {key} {
     global ned canvas
 
+puts "dbg: deselectItem $key"
+
     set ned($key,selected) 0
 
-    if {$ned($key,canvasnum)==""} return
-    set c $canvas($ned($key,canvasnum),canvas)
+    set canv_id [canvasIdFromItemKey $key]
+    set c $canvas($canv_id,canvas)
 
     if {$ned($key,type)=="module"} {
         set outline   [_getPar {} "$key,outline-color" #000000]

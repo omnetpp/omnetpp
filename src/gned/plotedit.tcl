@@ -207,11 +207,7 @@ proc openSubmodule c {
              -message "Module type '$typename' unknown to GNED (Not loaded?)"
      } else {
         set modkey [itemKeyFromName $typename module]
-        if {$ned($modkey,canvasnum)!=""} {
-          switchToCanvas $ned($modkey,canvasnum)
-        } else {
-          openModuleOnNewCanvas $modkey
-        }
+        openModuleOnCanvas $modkey
      }
    }
 }

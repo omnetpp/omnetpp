@@ -106,12 +106,19 @@ proc insertItem {key parentkey} {
 proc deleteItem {key} {
    global ned canvas
 
-   # delete item from canvas
-   # We need to check if ned($key,canvasnum) exists because the item
-   # may have been already deleted (eg. as a connection whose src/dest
-   # mod was deleted)
-   if {[info exist ned($key,canvasnum)] && $ned($key,canvasnum)!=""} {
-      set c $canvas($ned($key,canvasnum),canvas)
+   # delete children recursively
+   foreach childkey $ned($key,childrenkeys) {
+      deleteItem $childkey
+   }
+
+   # delete non-child linked objects
+   #   (e.g. connections when a submod is deleted)
+   puts "dbg: deleteItem to be completed!!!"
+
+   # delete item from canvas (if it's there)
+   set canv_id [canvasIdFromItemKey $key]
+   if {$canv_id!=""} {
+      set c $canvas($canv_id,canvas)
       foreach i [array names ned "$key,*-cid"] {
          $c delete $ned($i)
       }
@@ -127,13 +134,13 @@ proc deleteItem {key} {
       unset ned($i)
    }
 
-   # delete linked objects
-puts "dbg: deleteItem to be checked here!!!"
-   foreach i [array names ned "*,*ownerkey"] {
-      if {[info exist ned($i)] && $ned($i)==$key} {
-         regsub -- ",.*ownerkey" $i "" childkey
-         deleteItem $childkey
-      }
+   # close canvas if item was displayed on one
+   set canv_id [canvasIdFromItemKey $key]
+puts "dbg: needs to close canvas?"
+   if {$canv_id!=""} {
+puts "dbg: closing canvas"
+      # FIXME: something like forceCloseCanvas would be better
+      closeCanvas $key
    }
 }
 
@@ -164,6 +171,41 @@ proc getChildrenWithType {parentkey type} {
 }
 
 
+# canvasIdFromItemKey --
+#
+# returns the number of canvas the item is on
+#
+proc canvasIdFromItemKey {key} {
+   global ned canvas
+
+   while {$key!=""} {
+       # FIXME: very inefficient code
+       foreach i [array names canvas "*,module-key"] {
+           if {$canvas($i)==$key} {
+               regsub -- ",module-key" $i "" canv_id
+               return $canv_id
+           }
+       }
+       set key $ned($key,parentkey)
+   }
+   return ""
+}
+
+# isItemPartOfItem --
+#
+# check if 1st item is under 2nd one in the data structure tree
+#
+proc isItemPartOfItem {key anc_key} {
+   global ned
+   while {$key!=""} {
+       if {$key==$anc_key} {
+           return 1
+       }
+       set key $ned($key,parentkey)
+   }
+   return 0
+}
+
 # itemKeyFromName --
 #
 # get a key from name and type
@@ -183,24 +225,22 @@ proc itemKeyFromName {name type} {
    return ""
 }
 
-
 #
 # get a key from canvas item id
 #
-proc itemKeyFromCid {cid {canvasnum ""}} {
+proc itemKeyFromCid {cid {canv_id ""}} {
 
-   global ned gned
+   global ned gned canvas
 
    if {$cid==""} {return ""}
-   if {$canvasnum==""} {set canvasnum $gned(canvas_id)}
+   if {$canv_id==""} {set canv_id $gned(canvas_id)}
 
    foreach i [array names ned "*-cid"] {
       if {$ned($i)==$cid} {
          regsub -- ",.*-cid" $i "" key
-         if [info exist ned($key,canvasnum)] {
-            if {$ned($key,canvasnum)==$canvasnum} {
-               return $key
-            }
+         # make sure item is on this canvas
+         if [isItemPartOfItem $key $canvas($canv_id,module-key)] {
+             return $key
          }
       }
    }
@@ -267,11 +307,6 @@ proc copyArrayFromNed {tmp_ned_name keys} {
       if {[lsearch $keys $key]!=-1} {
          set tmp_ned($i) $ned($i)
       }
-   }
-
-   # null out canvasnum fields
-   foreach i [array names tmp_ned "*,canvasnum"] {
-      set tmp_ned($i) ""
    }
 
    # null out canvas ids

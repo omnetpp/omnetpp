@@ -191,6 +191,7 @@ proc editSubmoduleProps {key} {
                    set modk [addItem module]
                    set ned($modk,name) $typename
                    set ned($modk,parentkey) $ned($ned($key,module-ownerkey),parentkey)
+                   # FIXME: what's this????
                    openModuleOnNewCanvas $modk
                }
            }

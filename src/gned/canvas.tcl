@@ -17,6 +17,19 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
+# openModuleOnCanvas --
+#
+# switch to module's canvas or create a new canvas for it
+#
+proc openModuleOnCanvas {modkey} {
+    set canv_id [canvasIdFromItemKey $modkey]
+
+    if {$canv_id==""} {
+        openModuleOnNewCanvas $modkey
+    } else {
+        switchToCanvas $canv_id
+    }
+}
 
 # openModuleOnNewCanvas --
 #
@@ -68,6 +81,20 @@ proc openModuleOnNewCanvas {modkey} {
     switchToCanvas $canv_id
 }
 
+# closeCanvas --
+#
+# Close the canvas given by canvas id. Returns 1 if successful.
+#
+proc closeCanvas {id} {
+    #FIXME:
+    puts "dbg: closeCanvas to be fixed"
+    switchToCanvas $id
+    closeCurrentCanvas
+
+    # success not guaranteed here!!!
+    # pretend success:
+    return 1
+}
 
 # switchToCanvas --
 #
@@ -172,7 +199,7 @@ proc adjustCanvasScrolling {c} {
 proc closeCurrentCanvas {} {
     global gned canvas ned
 
-    set canv_id  $gned(canvas_id)
+    set canv_id $gned(canvas_id)
 
     # must be in graphics mode (because data structure must be up-to-date)
     if {$canvas($canv_id,mode)=="textedit"} {
@@ -211,14 +238,6 @@ puts "dbg: must check if NED text has in fact changed"
     foreach i [array names canvas "$canv_id,*"] {
         unset canvas($i)
     }
-
-    # null out canvasnum fields referring to this canvas
-    foreach i [array names ned "*,canvasnum"] {
-        if {$ned($i)==$canv_id} {
-            set ned($i) ""
-        }
-    }
-
 }
 
 

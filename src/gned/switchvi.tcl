@@ -176,6 +176,9 @@ puts "dbg: drawing..."
 
     # maybe the module name has changed
     updateTreeManager
+
+puts "DBG:dispsel"
+dispsel
 }
 
 # okToLoseChanges --

@@ -108,7 +108,7 @@ proc loadNED {nedfile} {
 
     # open modules on canvases
     foreach key $modulekeys {
-        openModuleOnNewCanvas $key
+        openModuleOnCanvas $key
     }
 }
 
