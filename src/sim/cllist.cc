@@ -194,7 +194,7 @@ void cLinkedList::insertBefore(void *where, void *item)
          insbefore_llelem(p,item);
       else
          opp_error("(%s)%s: insertBefore(w,o): item w not in list",
-                           isA(),fullName());
+                           className(),fullName());
 }
 
 void cLinkedList::insertAfter(void *where, void *item)
@@ -204,7 +204,7 @@ void cLinkedList::insertAfter(void *where, void *item)
          insafter_llelem(p,item);
       else
          opp_error("(%s)%s: insertAfter(w,o): item w not in list",
-                           isA(),fullName());
+                           className(),fullName());
 }
 
 void *cLinkedList::get(void *item)
@@ -213,7 +213,7 @@ void *cLinkedList::get(void *item)
 
       sLLElem *p = find_llelem(item);
       if (!p) {
-           opp_warning("(%s)%s: get(): item not in list",isA(),fullName());
+           opp_warning("(%s)%s: get(): item not in list",className(),fullName());
            return item;
       }
       return get_llelem( p );
@@ -222,7 +222,7 @@ void *cLinkedList::get(void *item)
 void *cLinkedList::getTail()
 {
       if (!tail) {
-           opp_error("(%s)%s: getTail(): list empty",isA(),fullName());
+           opp_error("(%s)%s: getTail(): list empty",className(),fullName());
            return NULL;
       }
       return get_llelem( tail );
@@ -231,7 +231,7 @@ void *cLinkedList::getTail()
 void *cLinkedList::getHead()
 {
       if (!head) {
-           opp_error("(%s)%s: getHead(): list empty",isA(),fullName());
+           opp_error("(%s)%s: getHead(): list empty",className(),fullName());
            return NULL;
       }
       return get_llelem( head );

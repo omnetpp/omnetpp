@@ -78,11 +78,11 @@ char * upack_str(int& err)
 //=========================================================================
 cObject *upack_object(int& err)
 {
-        char *isa = upack_str(err);
-        if (err) {delete isa; return NO(cObject);}
-        cObject *obj = createOne(isa);
+        char *clname = upack_str(err);
+        if (err) {delete clname; return NO(cObject);}
+        cObject *obj = createOne(clname);
         obj->netUnpack();
-        delete isa;
+        delete clname;
         return obj;
 }
 
@@ -98,7 +98,7 @@ cObject *upack_object(int& err)
 int cObject::netPack()
 {
         int err=0;
-        err=pack_str(isA());
+        err=pack_str(className());
         err=err||pack_str(namestr);
         return err;
 }
@@ -106,7 +106,7 @@ int cObject::netPack()
 int  cObject::netUnpack()
 {
         int err=0;
-        // upacking isA() string already done by upack_object() at this point
+        // upacking className() string already done by upack_object() at this point
         namestr=upack_str(err);
         return err;
 }
@@ -336,13 +336,13 @@ int cArray::netUnpack()
 
 int cLinkedList::netPack()
 {
-        opp_error("(%s)%s: netPack() not possible -- don't know how to pack an item",isA(),fullName());
+        opp_error("(%s)%s: netPack() not possible -- don't know how to pack an item",className(),fullName());
         return 0;
 }
 
 int cLinkedList::netUnpack()
 {
-        opp_error("(%s)%s: netUnpack() not possible",isA(),fullName());
+        opp_error("(%s)%s: netUnpack() not possible",className(),fullName());
         return 0;
 }
 
@@ -650,7 +650,7 @@ int cKSplit::netPack()
         int err=0;
         err|=cDensityEstBase::netPack();
 
-        opp_error("(%s)%s: netPack() not implemented",isA(), fullName());
+        opp_error("(%s)%s: netPack() not implemented",className(), fullName());
         return err;
 }
 
@@ -659,32 +659,32 @@ int cKSplit::netUnpack()
         int err=0;
         err=cDensityEstBase::netUnpack();
 
-        opp_error("(%s)%s: netUnpack() not implemented",isA(),fullName());
+        opp_error("(%s)%s: netUnpack() not implemented",className(),fullName());
         return err;
 }
 
 
 int cTopology::netPack()
 {
-        opp_error("(%s)%s: netPack() not implemented",isA(), fullName());
+        opp_error("(%s)%s: netPack() not implemented",className(), fullName());
         return 0;
 }
 
 int cTopology::netUnpack()
 {
-        opp_error("(%s)%s: netUnpack() not implemented",isA(),fullName());
+        opp_error("(%s)%s: netUnpack() not implemented",className(),fullName());
         return 0;
 }
 
 int cFSM::netPack()
 {
-        opp_error("(%s)%s: netPack() not implemented",isA(), fullName());
+        opp_error("(%s)%s: netPack() not implemented",className(), fullName());
         return 0;
 }
 
 int cFSM::netUnpack()
 {
-        opp_error("(%s)%s: netUnpack() not implemented",isA(),fullName());
+        opp_error("(%s)%s: netUnpack() not implemented",className(),fullName());
         return 0;
 }
 

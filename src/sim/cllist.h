@@ -65,7 +65,7 @@ class cLinkedList : public cObject
         virtual ~cLinkedList();
 
         // redefined functions
-        virtual char *isA()     {return "cLinkedList";}
+        virtual char *className()  {return "cLinkedList";}
         virtual cObject *dup()  {return new cLinkedList(*this);}
         virtual void info(char *buf);
         virtual char *inspectorFactoryName() {return "cLinkedListIFC";}

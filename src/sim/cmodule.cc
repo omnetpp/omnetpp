@@ -282,7 +282,7 @@ void cModule::setMachinePar(char *pname, char *value)
     int i = machinev.find( pname );
     if (i==-1)
          opp_error("(%s)%s: Machine par `%s' does not exist",
-                       isA(), fullPath(), pname );
+                       className(), fullPath(), pname );
     else
          (cPar&)machinev[i] = value;
 }
@@ -331,7 +331,7 @@ cGate *cModule::gate(char *s, int sn)
     {
         opp_warning(sn<0?"(%s)%s: Gate `%s' not found"
                                :"(%s)%s: Gate `%s[%d]' not found",
-                           isA(),fullName(), s, sn );
+                           className(),fullName(), s, sn );
         return NO(cGate);
     }
     else
@@ -402,7 +402,7 @@ void cModule::setDisplayString(int type,char *s)
     if (type<0 || type>=dispNUMTYPES)
     {
          opp_error("(%s)%s: setDisplayString(): type %d out of range",
-                       isA(), fullPath(), type );
+                       className(), fullPath(), type );
          return;
     }
 
@@ -417,7 +417,7 @@ char *cModule::displayString(int type)
     if (type<0 || type>=dispNUMTYPES)
     {
          opp_error("(%s)%s: displayString(): type %d out of range",
-                       isA(), fullPath(), type );
+                       className(), fullPath(), type );
          return NULL;
     }
 
@@ -429,11 +429,11 @@ char *cModule::displayString(int type)
     if (type==dispSUBMOD)
     {
         if (!parentModule()) return "";
-        sprintf(dispname, "%s.%s",parentModule()->isA(),fullName());
+        sprintf(dispname, "%s.%s",parentModule()->className(),fullName());
     }
     else // type==dispENCLOSINGMOD
     {
-        sprintf(dispname, "%s",isA());
+        sprintf(dispname, "%s",className());
     }
     char *s = ev.getDisplayString(simulation.runNumber(),dispname);
     return s ? s : (CONST_HACK)"";
@@ -544,7 +544,7 @@ cSimpleModule& cSimpleModule::operator=(cSimpleModule& other)
 
 void cSimpleModule::info(char *buf)
 {               // no cObject::info() !
-        sprintf(buf,"%-20.20s (%s,#%d)", fullName(), isA(), id() );
+        sprintf(buf,"%-20.20s (%s,#%d)", fullName(), className(), id() );
 }
 
 void cSimpleModule::forEach( ForeachFunc do_fn )
@@ -1202,7 +1202,7 @@ cCompoundModule::~cCompoundModule()
 
 void cCompoundModule::info( char *buf )
 {
-    sprintf(buf,"%-15.15s (%s,#%d)", fullName(), isA(), id() );
+    sprintf(buf,"%-15.15s (%s,#%d)", fullName(), className(), id() );
 }
 
 cCompoundModule& cCompoundModule::operator=(cCompoundModule& mod)

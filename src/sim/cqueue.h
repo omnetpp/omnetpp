@@ -59,7 +59,7 @@ class cQueue : public cObject
         virtual ~cQueue();
 
         // redefined functions
-        virtual char *isA()     {return "cQueue";}
+        virtual char *className()  {return "cQueue";}
         virtual cObject *dup()     {return new cQueue(*this);}
         virtual void info(char *buf);
         virtual char *inspectorFactoryName() {return "cQueueIFC";}

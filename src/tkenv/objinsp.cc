@@ -116,7 +116,7 @@ void TInspector::update()
    // update window title (only if changed)
    //  (always updating the title produced many unnecessary redraws under fvwm2-95)
    char newtitle[128];
-   sprintf(newtitle, "(%.20s) %.100s",object->isA(), object->fullPath());
+   sprintf(newtitle, "(%.20s) %.100s",object->className(), object->fullPath());
    if (strcmp(newtitle, windowtitle)!=0)
    {
        strcpy( windowtitle, newtitle);
@@ -217,7 +217,7 @@ void TInspector::fillInspectorListbox(char *listbox, cObject *object,
    // set "number of items" display
    CHK(Tcl_VarEval(interp,w," index end",NULL));
    sprintf(w, "%s.label", listbox);
-   sprintf(buf,"%s objects in (%s) %s:", interp->result,object->isA(),object->fullPath());
+   sprintf(buf,"%s objects in (%s) %s:", interp->result,object->className(),object->fullPath());
    setLabel(w, buf);
 }
 

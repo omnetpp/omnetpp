@@ -41,7 +41,7 @@ class cPacket : public cMessage
          cMessage(name,MK_PACKET) {_protocol=protocol;_pdu=pdu;}
       cPacket (cPacket& m);
       virtual cObject *dup() {return new cPacket(*this);}
-      char *isA() {return "cPacket";}
+      char *className()  {return "cPacket";}
       cPacket& operator=(cPacket& m);
       virtual char *inspectorFactoryName() {return "cPacketIFC";}
       virtual void info(char *buf);

@@ -52,7 +52,7 @@ cHistogramBase(name,-1) //--LG
 
    if ( (transform_type==HIST_TR_AUTO_EPC_DBL ||
          transform_type==HIST_TR_AUTO_EPC_INT) && max_num_cells<2 )
-     opp_error("(%s)%s: cVarHistogram::cVarHistogram(): the maximal number of cells/bin should be >=2",isA(),fullName());
+     opp_error("(%s)%s: cVarHistogram::cVarHistogram(): the maximal number of cells/bin should be >=2",className(),fullName());
 }
 
 cVarHistogram::~cVarHistogram()
@@ -63,7 +63,7 @@ cVarHistogram::~cVarHistogram()
 void cVarHistogram::addBinBound(double x) //--LG
 {
    if (transformed())
-      {opp_error("(%s)%s: cannot add bin bound any more after transform()",isA(),fullName());return;}
+      {opp_error("(%s)%s: cannot add bin bound any more after transform()",className(),fullName());return;}
 
    // create bin_bounds if not exists
    if ( bin_bounds == NULL )
@@ -131,12 +131,12 @@ void cVarHistogram::createEquiProbableCells()
 {
    if (num_cells>0)
       {opp_error("(%s)%s: some bin bounds already present when making "
-                        "equi-probable cells",isA(),fullName());return;}
+                        "equi-probable cells",className(),fullName());return;}
 
    if (range_mode != RANGE_NOTSET)
    {
       opp_error("(%s)%s: setRange..() only supported with "
-                       "HIST_TR_NO_TRANSFORM mode",isA(),fullName());
+                       "HIST_TR_NO_TRANSFORM mode",className(),fullName());
       return;
 
       // // put away samples that are out of range
@@ -260,7 +260,7 @@ void cVarHistogram::transform() //--LG
       {
          if (rangemin>bin_bounds[0] || rangemax<bin_bounds[num_cells])
             {opp_error("(%s)%s: some bin bounds out of preset range",
-                              isA(),fullName());return;}
+                              className(),fullName());return;}
 
          if (rangemin<bin_bounds[0]) addBinBound(rangemin);
          if (rangemax>bin_bounds[num_cells]) addBinBound(rangemax);
@@ -326,7 +326,7 @@ double cVarHistogram::basepoint(int k)
    if (k<num_cells+1)
        return bin_bounds[k];
    else
-       {opp_error("(%s)%s: invalid basepoint index %u",isA(),fullName(),k);return 0;}
+       {opp_error("(%s)%s: invalid basepoint index %u",className(),fullName(),k);return 0;}
 }
 
 double cVarHistogram::cell(int k)
@@ -334,7 +334,7 @@ double cVarHistogram::cell(int k)
    if (k<num_cells)
        return cellv[k];
    else
-       {opp_error("(%s)%s: invalid cell index %u",isA(),fullName(),k);return 0;}
+       {opp_error("(%s)%s: invalid cell index %u",className(),fullName(),k);return 0;}
 }
 
 double cVarHistogram::random() //--LG
@@ -373,7 +373,7 @@ double cVarHistogram::pdf(double x) // --LG
 
    if (!transformed())
    {
-      opp_error("(%s)%s: pdf(x) cannot be called before histogram is transformed", isA(),name());
+      opp_error("(%s)%s: pdf(x) cannot be called before histogram is transformed", className(),name());
       return 0.0;
    }
 
@@ -403,7 +403,7 @@ double cVarHistogram::pdf(double x) // --LG
 
 double cVarHistogram::cdf(double)
 {
-   opp_error("(%s)%s: cdf(x) not implemented", isA(),name());
+   opp_error("(%s)%s: cdf(x) not implemented", className(),name());
    return 0.0;
 }
 

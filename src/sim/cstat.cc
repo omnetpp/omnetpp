@@ -69,7 +69,7 @@ void cStatistic::addAccuracyDetection(cAccuracyDetection *obj)  //NL
 void cStatistic::collect2(double, double)
 {
     opp_error("(%s)%s: collect2() not implemented in %s",
-                       isA(), fullName(),isA());
+                       className(), fullName(),className());
 }
 
 void cStatistic::freadvarsf (FILE *f,  char *fmt, ...)
@@ -88,7 +88,7 @@ void cStatistic::freadvarsf (FILE *f,  char *fmt, ...)
     {
         opp_error("(%s)%s: bad file format in loadFromFile(): "
                          "expected `%s' and got `%s'",
-                         isA(), fullName(),fmt,line);
+                         className(), fullName(),fmt,line);
         return;
     }
 
@@ -193,7 +193,7 @@ double cStdDev::random()
 
 void cStdDev::saveToFile(FILE *f)
 {
-    fprintf(f,"\n#\n# (%s) %s\n#\n", isA(), fullPath());
+    fprintf(f,"\n#\n# (%s) %s\n#\n", className(), fullPath());
     fprintf(f,"%ld\t #= num_samples\n",num_samples);
     fprintf(f,"%lg %lg\t #= min, max\n", min_samples, max_samples);
     fprintf(f,"%lg\t #= sum\n", sum);
@@ -234,7 +234,7 @@ void cWeightedStdDev::clearResult()
 double cWeightedStdDev::variance()
 {
     opp_error("(%s)%s: variance()/stddev() not implemented",
-                      isA(), fullName());
+                      className(), fullName());
     return 0.0;
 
 

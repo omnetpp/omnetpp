@@ -360,11 +360,11 @@ char *cGate::displayString()
     {
         cModule *parent = ownerModule()->parentModule();
         if (!parent) return "";
-        sprintf(dispname, "%s.%s.%s",parent->isA(),ownerModule()->fullName(), fullName());
+        sprintf(dispname, "%s.%s.%s",parent->className(),ownerModule()->fullName(), fullName());
     }
     else
     {
-        sprintf(dispname, "%s.%s",ownerModule()->isA(),fullName());
+        sprintf(dispname, "%s.%s",ownerModule()->className(),fullName());
     }
     char *s = ev.getDisplayString(simulation.runNumber(),dispname);
     return s ? s : (CONST_HACK)"";

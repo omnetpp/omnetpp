@@ -93,7 +93,7 @@ void cDensityEstBase::clearResult ()
 void cDensityEstBase::setRange(double lower, double upper)
 {
     if (num_samples>0 || transformed())
-       {opp_error("(%s)%s: setRange() can only be called before collecting any values", isA(), fullName());return;}
+       {opp_error("(%s)%s: setRange() can only be called before collecting any values", className(), fullName());return;}
 
     range_mode = RANGE_FIXED;
     rangemin = lower;
@@ -103,7 +103,7 @@ void cDensityEstBase::setRange(double lower, double upper)
 void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-       {opp_error("(%s)%s: setRange...() can only be called before collecting any values", isA(), fullName());return;}
+       {opp_error("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());return;}
 
     range_mode = RANGE_AUTO;
     num_firstvals = num_fstvals;
@@ -114,7 +114,7 @@ void cDensityEstBase::setRangeAuto(int num_fstvals, double range_ext_fct)
 void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-       {opp_error("(%s)%s: setRange...() can only be called before collecting any values", isA(), fullName());return;}
+       {opp_error("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());return;}
 
     range_mode = RANGE_AUTOLOWER;
     num_firstvals = num_fstvals;
@@ -126,7 +126,7 @@ void cDensityEstBase::setRangeAutoLower(double upper, int num_fstvals, double ra
 void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double range_ext_fct)
 {
     if (num_samples>0 || transformed())
-       {opp_error("(%s)%s: setRange...() can only be called before collecting any values", isA(), fullName());return;}
+       {opp_error("(%s)%s: setRange...() can only be called before collecting any values", className(), fullName());return;}
 
     range_mode = RANGE_AUTOUPPER;
     num_firstvals = num_fstvals;
@@ -138,7 +138,7 @@ void cDensityEstBase::setRangeAutoUpper(double lower, int num_fstvals, double ra
 void cDensityEstBase::setNumFirstVals(int num_fstvals)
 {
     if (num_samples>0 || transformed())
-       {opp_error("(%s)%s: setNumFirstVals() can only be called before collecting any values", isA(), fullName());return;}
+       {opp_error("(%s)%s: setNumFirstVals() can only be called before collecting any values", className(), fullName());return;}
 
     num_firstvals = num_fstvals;
     delete [] firstvals;
@@ -175,7 +175,7 @@ void cDensityEstBase::setupRange()
 void cDensityEstBase::collect(double val)
 {
    if (range_mode == RANGE_INVALID && !transformed())
-      {opp_error("(%s)%s: must call setRange..() before collecting",isA(),fullName());return;}
+      {opp_error("(%s)%s: must call setRange..() before collecting",className(),fullName());return;}
 
    if (firstvals==0 && !transformed()) transform();
 

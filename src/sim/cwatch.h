@@ -61,7 +61,7 @@ class cWatch : public cObject
         cWatch(char *namestr, double& d): cObject(namestr) {ptr=&d; type='d';}
         cWatch(char *namestr, char* &s) : cObject(namestr) {ptr=&s; type='s';}
         cWatch(char *namestr, cObject* &o) : cObject(namestr) {ptr=&o; type='o';}
-        virtual char *isA()   {return "cWatch";}
+        virtual char *className()  {return "cWatch";}
         virtual cObject *dup()   {return new cWatch(*this);}
         virtual void info(char *buf);
         virtual char *inspectorFactoryName() {return "cWatchIFC";}

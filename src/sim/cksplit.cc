@@ -660,7 +660,7 @@ double cKSplit::pdf (double x)
 
 double cKSplit::cdf (double /*x*/)
 {
-   opp_error("(%s)%s: cdf() not implemented",isA(), fullName());
+   opp_error("(%s)%s: cdf() not implemented",className(), fullName());
    return 0;
 }
 

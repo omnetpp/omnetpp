@@ -50,7 +50,7 @@ class cHead : public cObject
        virtual ~cHead()     {deleteChildren();}
 
        // redefined functions
-       virtual char *isA()     {return "cHead";}
+       virtual char *className()  {return "cHead";}
        virtual char *inspectorFactoryName() {return "cHeadIFC";}
        virtual void forEach(ForeachFunc f);
 

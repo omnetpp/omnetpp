@@ -161,7 +161,7 @@ class cObject
         //
 
         // return pointer to type string; must be redefined in derived classes!
-        virtual char *isA()    {return "cObject";}
+        virtual char *className()  {return "cObject";}
 
         // put a one-line description of object into `buf':
         virtual void info(char *buf);

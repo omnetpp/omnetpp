@@ -48,7 +48,7 @@ class cOutFileMgr : public cObject
     virtual ~cOutFileMgr();
 
     // redefined functions
-    virtual char *isA()    {return "cOutFileMgr";}
+    virtual char *className()  {return "cOutFileMgr";}
 
     // new functions
     void setFileName(char *s);
@@ -109,7 +109,7 @@ class cOutVector : public cObject
 
     // redefined functions
     virtual void setName(char *name);
-    virtual char *isA()       {return "cOutVector";}
+    virtual char *className()  {return "cOutVector";}
     virtual cObject *dup()    {return new cOutVector(*this);}
     virtual void info(char *buf);
     virtual char *inspectorFactoryName() {return "cOutVectorIFC";}

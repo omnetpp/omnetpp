@@ -40,7 +40,7 @@ class cStatistic : public cObject
     virtual ~cStatistic()  {}
 
     // redefined functions
-    virtual char *isA()    {return "cStatistic";}
+    virtual char *className()  {return "cStatistic";}
     cStatistic& operator=(cStatistic& res);
     virtual char *inspectorFactoryName() {return "cStatisticIFC";}
     virtual int netPack();
@@ -96,7 +96,7 @@ class cStdDev : public cStatistic
     virtual ~cStdDev() {}
 
     // redefined functions
-    virtual char *isA()    {return "cStdDev";}
+    virtual char *className()  {return "cStdDev";}
     virtual cObject *dup() {return new cStdDev(*this);}
     virtual void info(char *buf);
     cStdDev& operator=(cStdDev& res);
@@ -138,7 +138,7 @@ class cWeightedStdDev : public cStdDev
     virtual ~cWeightedStdDev() {}
 
     // redefined functions
-    virtual char *isA()    {return "cWeightedStdDev";}
+    virtual char *className()  {return "cWeightedStdDev";}
     virtual cObject *dup() {return new cWeightedStdDev(*this);}
     cWeightedStdDev& operator=(cWeightedStdDev& res);
     virtual int netPack();

@@ -126,7 +126,7 @@ class cTopology : public cObject
     virtual ~cTopology();
 
      // redefined functions
-     virtual char *isA()        {return "cTopology";}
+     virtual char *className()  {return "cTopology";}
      virtual cObject *dup()     {return new cTopology(*this);}
      virtual void info(char *buf);
      virtual char *inspectorFactoryName() {return "cTopologyIFC";}

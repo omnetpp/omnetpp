@@ -85,7 +85,7 @@ cPSquare& cPSquare::operator=(cPSquare& res)
 void cPSquare::giveError()
 {
     opp_error("(%s)%s: setRange..() and setNumFirstVals() "
-                     "makes no sense with cPSquare", isA(), fullName());
+                     "makes no sense with cPSquare", className(), fullName());
 }
 
 #ifdef NEW_CODE_FROM_PUPPIS_WITH_FLOATING_POINT_EXCEPTION
@@ -249,7 +249,7 @@ double cPSquare::random()
     //if (num_obs==0)   // newer, from PUPPIS
     if (numobs<numcells+1)
     {
-        opp_error("(%s)%s: must collect at least num_cells values before random() can be used", isA(),fullPath());
+        opp_error("(%s)%s: must collect at least num_cells values before random() can be used", className(),fullPath());
         return 0.0;
     }
 

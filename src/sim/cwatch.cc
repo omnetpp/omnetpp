@@ -38,7 +38,7 @@ cWatch::cWatch(cWatch& vs) : cObject()
 
 void cWatch::info(char *buf)
 {
-      // sprintf(buf,"(%s) ", isA());
+      // sprintf(buf,"(%s) ", className());
       // printTo( buf + strlen(buf) );
 
       printTo( buf );
@@ -80,7 +80,7 @@ void cWatch::printTo(char *buf)
                        //// cannot call info(): recursivity!!!
                        //// even this is dangerous:
                        //sprintf(buf, "cObject *%s --> (%s) `%s'", namestr,
-                       //                   (*(cObject **)ptr)->isA(),
+                       //                   (*(cObject **)ptr)->className(),
                        //                   (*(cObject **)ptr)->name() );
                     break;
       }

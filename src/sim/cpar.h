@@ -143,7 +143,7 @@ class cPar : public cObject
      virtual ~cPar();
 
      // redefined functions
-     virtual char *isA()   {return "cPar";}
+     virtual char *className()  {return "cPar";}
      virtual cObject *dup()   {return new cPar(*this);}
      virtual void info(char *buf);
      virtual char *inspectorFactoryName() {return "cParIFC";}
@@ -276,7 +276,7 @@ class cModulePar : public cPar
      virtual ~cModulePar();
 
      // redefined functions
-     virtual char *isA()  {return "cModulePar";}
+     virtual char *className()  {return "cModulePar";}
      virtual cObject *dup()  {return new cPar(*this);}
      virtual char *inspectorFactoryName() {return "cModuleParIFC";}
      virtual char *fullPath();

@@ -166,7 +166,7 @@ void cObject::info(char *buf)
 {
     /* prepare one-line textual info about the object */
     sprintf( buf, "%-12s (%s)",
-             fullName() ? fullName():"<noname>", isA()
+             fullName() ? fullName():"<noname>", className()
            );
 }
 
@@ -308,7 +308,7 @@ void cObject::forEach( ForeachFunc do_fn )
 
 void cObject::writeTo(ostream& os)
 {
-        os << "(" << isA() << ") `" << fullPath() << "' begin\n";
+        os << "(" << className() << ") `" << fullPath() << "' begin\n";
         writeContents( os );
         os << "end\n\n";
 }
@@ -335,7 +335,7 @@ TInspector *cObject::inspector(int type, void *data)
     if (!p)
     {
         opp_error("Inspector factory object '%s' for class '%s' not found",
-                         inspectorFactoryName(), isA());
+                         inspectorFactoryName(), className());
         return NO(TInspector);
     }
     return p->createInspectorFor(this,type,data);
@@ -378,7 +378,7 @@ static bool _do_list(cObject *obj, bool beg, ostream& s)
       if (beg) {
            if (ctr)
            {
-               //*os << "  (" << obj->isA() << ") `" << obj->name() << "'\n";
+               //*os << "  (" << obj->className() << ") `" << obj->name() << "'\n";
                obj->info(buf);
                *os << "   " << buf << "\n";
            }

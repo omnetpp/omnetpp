@@ -67,7 +67,7 @@ class cNetMod : public cModule
          virtual ~cNetMod() {}
 
          // redefined functions
-         virtual char *isA() {return "cNetMod";}
+         virtual char *className()  {return "cNetMod";}
          virtual char *inspectorFactoryName() {return "cNetModIFC";}
 
          // redefined cModule functions

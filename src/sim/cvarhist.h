@@ -74,7 +74,7 @@ class cVarHistogram : public cHistogramBase //--LG
     virtual ~cVarHistogram();
 
     // redefined functions
-    virtual char *isA()       {return "cVarHistogram";}
+    virtual char *className()  {return "cVarHistogram";}
     virtual cObject *dup()    {return new cVarHistogram(*this);}
     cVarHistogram& operator=(cVarHistogram& res);
     virtual int netPack();

@@ -522,7 +522,7 @@ TInspector *cInspectorFactory::createInspectorFor(cObject *object,int type,void 
 {
     if (!inspFactoryFunc)
     {
-        opp_error("(%s)%s: factory function not set",isA(),fullName());
+        opp_error("(%s)%s: factory function not set",className(),fullName());
         return 0;
     }
     return (*inspFactoryFunc)(object,type,data);

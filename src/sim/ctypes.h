@@ -120,7 +120,7 @@ class cModuleInterface : public cObject
         virtual ~cModuleInterface();
 
         // redefined functions
-        virtual char *isA()     {return "cModuleInterface";}
+        virtual char *className()  {return "cModuleInterface";}
         virtual cObject *dup()  {return new cModuleInterface(*this);}
         cModuleInterface& operator=(cModuleInterface& mi);
 
@@ -157,7 +157,7 @@ class cModuleType : public cObject
         virtual ~cModuleType();
 
         // redefined functions
-        virtual char *isA()        {return "cModuleType";}
+        virtual char *className()  {return "cModuleType";}
         virtual cObject *dup()     {return new cModuleType(*this);}
         cModuleType& operator=(cModuleType& mi);
 
@@ -184,7 +184,7 @@ class cLinkType : public cObject
         virtual ~cLinkType()    {}
 
         // redefined functions
-        virtual char *isA()     {return "cLinkType";}
+        virtual char *className()  {return "cLinkType";}
         virtual cObject *dup()     {return new cLinkType(*this);}
         cLinkType& operator=(cLinkType& o);
 
@@ -208,7 +208,7 @@ class cNetworkType : public cObject
         virtual ~cNetworkType() {}
 
         // redefined functions
-        virtual char *isA()    {return "cNetworkType";}
+        virtual char *className()  {return "cNetworkType";}
 };
 
 //==========================================================================
@@ -226,7 +226,7 @@ class cFunctionType : public cObject
         virtual ~cFunctionType() {}
 
         // redefined functions
-        virtual char *isA()  {return "cFunctionType";}
+        virtual char *className()  {return "cFunctionType";}
 };
 
 cFunctionType *findfunctionbyptr(MathFunc f);
@@ -244,7 +244,7 @@ class cClassRegister : public cObject
         virtual ~cClassRegister() {}
 
         // redefined functions
-        virtual char *isA()  {return "cClassRegister";}
+        virtual char *className()  {return "cClassRegister";}
 
         // new functions
         cObject *createOne()  {return creatorfunc();}
@@ -264,7 +264,7 @@ class cInspectorFactory : public cObject
         virtual ~cInspectorFactory() {}
 
         // redefined functions
-        virtual char *isA()  {return "cInspectorFactory";}
+        virtual char *className()  {return "cInspectorFactory";}
 
         // new functions;
         TInspector *createInspectorFor(cObject *object,int type,void *data);

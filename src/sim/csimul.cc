@@ -653,7 +653,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
         else
            if (mod->stackOverflow())
               opp_error("Stack violation (%s stack too small?) in module `%s'",
-                              mod->isA(),mod->fullPath());
+                              mod->className(),mod->fullPath());
      }
      else
      {
@@ -788,7 +788,7 @@ void cSimulation::recordStats(char *name, cStatistic *stats)
     }
 
     fprintf(f,"statistics \"%s\" \t\"%s\" \t\"%s\"\n",
-              contextSimpleModule()->fullPath(), name, stats->isA());
+              contextSimpleModule()->fullPath(), name, stats->className());
     stats->saveToFile( f );
 }
 

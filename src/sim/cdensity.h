@@ -82,7 +82,7 @@ class cDensityEstBase : public cStdDev
     virtual ~cDensityEstBase();
 
     // redefined functions
-    virtual char *isA()    {return "cDensityEstBase";}
+    virtual char *className()  {return "cDensityEstBase";}
     cDensityEstBase& operator=(cDensityEstBase& res);
     virtual void writeContents(ostream& os);
     virtual char *inspectorFactoryName() {return "cDensityEstBaseIFC";}

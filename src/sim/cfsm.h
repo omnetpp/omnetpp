@@ -114,7 +114,7 @@ class cFSM : public cObject
     public:
         cFSM(char *name=NULL);
         cFSM(cFSM& vs) {setName(vs.name());operator=(vs);}
-        virtual char *isA()  {return "cFSM";}
+        virtual char *className()  {return "cFSM";}
         virtual cObject *dup()   {return new cFSM(*this);}
         virtual void info(char *buf);
 

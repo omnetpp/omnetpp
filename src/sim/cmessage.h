@@ -93,7 +93,7 @@ class cMessage : public cObject
         virtual ~cMessage() {}     /*parlistp is deleted in ~cObject()*/
 
         // redefined functions
-        virtual char *isA()     {return "cMessage";}
+        virtual char *className()  {return "cMessage";}
         virtual cObject *dup()  {return new cMessage(*this);}
         virtual void info(char *buf);
         virtual char *inspectorFactoryName() {return "cMessageIFC";}

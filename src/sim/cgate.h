@@ -64,7 +64,7 @@ class cGate : public cObject
         virtual ~cGate() {}
 
         // redefined functions
-        virtual char *isA()  {return "cGate";}
+        virtual char *className()  {return "cGate";}
         virtual cObject *dup()  {return new cGate(*this);}
         virtual char *inspectorFactoryName() {return "cGateIFC";}
         virtual void forEach(ForeachFunc f);

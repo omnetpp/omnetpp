@@ -135,7 +135,7 @@ class cModule : public cObject
         virtual ~cModule() {}
 
         // redefined functions
-        virtual char *isA()     {return "cModule";}
+        virtual char *className()  {return "cModule";}
         virtual cObject *dup();
         virtual void forEach(ForeachFunc f);
         virtual char *inspectorFactoryName() {return "cModuleIFC";}
@@ -257,7 +257,7 @@ class cSimpleModule : public cCoroutine, public cModule
         virtual ~cSimpleModule();
 
         // redefined functions
-        virtual char *isA()     {return "cSimpleModule";}
+        virtual char *className()  {return "cSimpleModule";}
         virtual cObject *dup()  {return new cSimpleModule(*this);}
         virtual void info(char *buf);
         virtual char *inspectorFactoryName() {return "cSimpleModuleIFC";}
@@ -366,7 +366,7 @@ class cCompoundModule : public cModule
         virtual ~cCompoundModule();
 
         // redefined functions
-        virtual char *isA()     {return "cCompoundModule";}
+        virtual char *className()  {return "cCompoundModule";}
         virtual cObject *dup()     {return new cCompoundModule(*this);}
         virtual void info(char *buf);
         virtual char *inspectorFactoryName() {return "cCompoundModuleIFC";}

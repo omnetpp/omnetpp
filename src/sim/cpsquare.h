@@ -43,7 +43,7 @@ class cPSquare : public cDensityEstBase
     virtual ~cPSquare();
 
      // redefined functions
-    virtual char *isA()  {return "cPSquare";}
+    virtual char *className()  {return "cPSquare";}
     virtual cObject *dup()   {return new cPSquare(*this);}
     cPSquare& operator=(cPSquare& res);
     virtual int netPack();

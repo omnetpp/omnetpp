@@ -170,7 +170,7 @@ void *cBag::get(int m)
      else
      {
           opp_warning("(%s)%s: slot #%d empty, returning NULL",
-                              isA(),fullName(),m);
+                              className(),fullName(),m);
           return NULL;
      }
 }
@@ -317,13 +317,13 @@ int cArray::addAt(int m, cObject& obj)
         if (m<0)
         {
            opp_error("(%s)%s: addAt(): negative position %d",
-                            isA(),fullPath(),m);
+                            className(),fullPath(),m);
            return -1;
         }
         if (vect[m]!=NULL)
         {
            opp_error("(%s)%s: addAt(): position %d already used",
-                            isA(),fullPath(),m);
+                            className(),fullPath(),m);
            return -1;
         }
         vect[m] = &obj; if (takeOwnership()) take( &obj );
@@ -376,7 +376,7 @@ cObject& cArray::get(int m)
      if (m>=0 && m<=last && vect[m])
           return *vect[m];
      else
-          {opp_warning(eNULLREF,isA(),fullName(),m);return *NO(cObject);}
+          {opp_warning(eNULLREF,className(),fullName(),m);return *NO(cObject);}
 }
 
 cObject& cArray::get(char *s)
@@ -386,7 +386,7 @@ cObject& cArray::get(char *s)
         return get(m);
     else
     {
-        opp_warning("(%s)%s: get(): no object called `%s'",isA(),fullName(),s);
+        opp_warning("(%s)%s: get(): no object called `%s'",className(),fullName(),s);
         return *NO(cObject);
     }
 }
@@ -398,7 +398,7 @@ cObject& cArray::remove(char *s)
         return remove(m);
     else
     {
-        opp_warning("(%s)%s: remove(): no object called `%s'",isA(),fullName(),s);
+        opp_warning("(%s)%s: remove(): no object called `%s'",className(),fullName(),s);
         return *NO(cObject);
     }
 }
@@ -406,7 +406,7 @@ cObject& cArray::remove(char *s)
 cObject& cArray::remove(int m)
 {
      if (m<0 || m>last || vect[m]==NULL)
-          {opp_warning(eNULLREF,isA(),fullName(),m);return *NO(cObject);}
+          {opp_warning(eNULLREF,className(),fullName(),m);return *NO(cObject);}
      else
      {
           cObject *obj = vect[m]; vect[m] = NULL;

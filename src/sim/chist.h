@@ -38,7 +38,7 @@ class cHistogramBase : public cDensityEstBase
     virtual ~cHistogramBase();
 
     // redefined functions
-    virtual char *isA()    {return "cHistogramBase";}
+    virtual char *className()  {return "cHistogramBase";}
     cHistogramBase& operator=(cHistogramBase& res);
     virtual void writeContents(ostream& os);
     virtual int netPack();
@@ -68,7 +68,7 @@ class cEqdHistogramBase : public cHistogramBase //--LG
     cEqdHistogramBase (char *s=NULL, int numcells=10);
 
     // redefined functions
-    virtual char *isA()    {return "cEqdHistogramBase";}
+    virtual char *className()  {return "cEqdHistogramBase";}
     cEqdHistogramBase& operator=(cEqdHistogramBase& res);
     virtual int netPack();
     virtual int netUnpack();
@@ -101,7 +101,7 @@ class cLongHistogram : public cEqdHistogramBase
     virtual ~cLongHistogram();
 
     // redefined functions
-    virtual char *isA()       {return "cLongHistogram";}
+    virtual char *className()  {return "cLongHistogram";}
     virtual cObject *dup()    {return new cLongHistogram(*this);}
     virtual int netPack();
     virtual int netUnpack();
@@ -127,7 +127,7 @@ class cDoubleHistogram : public cEqdHistogramBase
     virtual ~cDoubleHistogram();
 
     // redefined functions
-    virtual char *isA()     {return "cDoubleHistogram";}
+    virtual char *className()  {return "cDoubleHistogram";}
     virtual cObject *dup()  {return new cDoubleHistogram(*this);}
     virtual int netPack();
     virtual int netUnpack();

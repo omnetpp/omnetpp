@@ -46,7 +46,7 @@ class cBag : public cObject {
      virtual ~cBag()         {clear();}
 
      // redefined functions
-     virtual char *isA()        {return "cBag";}
+     virtual char *className()  {return "cBag";}
      virtual cObject *dup()     {return new cBag(*this);}
      virtual void info(char *buf);
      virtual char *inspectorFactoryName() {return "cBagIFC";}
@@ -89,7 +89,7 @@ class cArray : public cObject {
         virtual ~cArray();
 
         // redefined functions
-        virtual char *isA()     {return "cArray";}
+        virtual char *className()  {return "cArray";}
         virtual cObject *dup()  {return new cArray(*this);}
         virtual void info(char *buf);
         virtual char *inspectorFactoryName() {return "cArrayIFC";}

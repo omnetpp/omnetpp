@@ -99,7 +99,7 @@
     public: \
       CLASSNAME(char *namestr, cModule *parentmod, unsigned stk=STACK) : \
            BASECLASS(namestr, parentmod, stk) {} \
-      virtual char *isA() {return #CLASSNAME;}
+      virtual char *className()  {return #CLASSNAME;}
 
 
 #endif

@@ -46,7 +46,7 @@ class cMessageHeap : public cObject
         virtual ~cMessageHeap();
 
         // redefined functions
-        virtual char *isA()  {return "cMessageHeap";}
+        virtual char *className()  {return "cMessageHeap";}
         virtual cObject *dup()  {return new cMessageHeap(*this);}
         virtual void info(char *buf);
         virtual char *inspectorFactoryName() {return "cMessageHeapIFC";}

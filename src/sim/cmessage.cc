@@ -148,14 +148,14 @@ void cMessage::_createparlist()
 
 void cMessage::setLength(long l)
 {
-        if (l<0) {opp_error("(%s)%s: setLength(): negative length %ld",isA(),fullName(),l);}
+        if (l<0) {opp_error("(%s)%s: setLength(): negative length %ld",className(),fullName(),l);}
         len=l;
 }
 
 void cMessage::addLength(long l)
 {
         len+=l;
-        if (len<0) {opp_error("(%s)%s: addLength(): length became negative (%ld)",isA(),fullName(),len);}
+        if (len<0) {opp_error("(%s)%s: addLength(): length became negative (%ld)",className(),fullName(),len);}
 }
 
 void cMessage::encapsulate(cMessage *msg)
@@ -163,7 +163,7 @@ void cMessage::encapsulate(cMessage *msg)
         if (encapmsg)
         {
            opp_error("(%s)%s: encapsulate(): another message already"
-                            " encapsulated",isA(),fullName());
+                            " encapsulated",className(),fullName());
            return;
         }
 
@@ -172,7 +172,7 @@ void cMessage::encapsulate(cMessage *msg)
            if (msg->owner()!=&(simulation.contextSimpleModule()->locals))
            {
               opp_error("(%s)%s: encapsulate(): not owner of message",
-                               isA(),fullName());
+                               className(),fullName());
               return;
            }
            take( encapmsg = msg );
@@ -185,7 +185,7 @@ cMessage *cMessage::decapsulate()
 {
         if (len>0) len-=encapmsg->len;
         if (len<0) {opp_error("(%s)%s: decapsulate(): msg length smaller than"
-                                     " encapsulated msg length",isA(),fullName());}
+                                     " encapsulated msg length",className(),fullName());}
 
         cMessage *msg = encapmsg;
         encapmsg = NULL;
@@ -201,7 +201,7 @@ cPar& cMessage::par(int n)
         return *p;
     else
     {
-        opp_warning("(%s)%s: par(): no parameter #%d",isA(),fullName(),n);
+        opp_warning("(%s)%s: par(): no parameter #%d",className(),fullName(),n);
         return *NO(cPar);
     }
 }
@@ -214,7 +214,7 @@ cPar& cMessage::par(char *s)
         return (cPar&)parlist[pn];
     else
     {
-        opp_warning("(%s)%s: par(): no parameter called `%s'",isA(),fullName(),s);
+        opp_warning("(%s)%s: par(): no parameter called `%s'",className(),fullName(),s);
         return *NO(cPar);
     }
 }

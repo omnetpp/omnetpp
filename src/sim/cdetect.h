@@ -57,7 +57,7 @@ class cTransientDetection : public cObject
     virtual ~cTransientDetection()  {}
 
     // redefined functions
-    virtual char *isA()         {return "cTransientDetection";}
+    virtual char *className()  {return "cTransientDetection";}
     virtual int netPack();
     virtual int netUnpack();
 
@@ -86,7 +86,7 @@ class cAccuracyDetection : public cObject
     virtual ~cAccuracyDetection()  {}
 
     // redefined functions
-    virtual char *isA()       {return "cAccuracyDetection";}
+    virtual char *className()  {return "cAccuracyDetection";}
     virtual int netPack();
     virtual int netUnpack();
 
@@ -131,7 +131,7 @@ class cTDExpandingWindows : public cTransientDetection
     virtual ~cTDExpandingWindows();
 
     // redefined functions
-    virtual char *isA()         {return "cTDExpandingWindows";}
+    virtual char *className()  {return "cTDExpandingWindows";}
     cTDExpandingWindows& operator=(cTDExpandingWindows& res);
 
     // redefined cTransientDetection functions
@@ -171,7 +171,7 @@ class cADByStddev : public cAccuracyDetection
     virtual ~cADByStddev()  {}
 
     // redefined functions
-    virtual char *isA()         {return "cADByStddev";}
+    virtual char *className()  {return "cADByStddev";}
     cADByStddev& operator=(cADByStddev& res);
 
     // redefined cAccuracyDetection functions

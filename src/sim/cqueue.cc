@@ -181,7 +181,7 @@ cObject *cQueue::get_qelem(sQElem *p)
 void cQueue::insertHead(cObject *obj)
 {
       if (!obj) {
-         opp_error("(%s)%s: cannot insert NULL pointer in queue",isA(),fullName());
+         opp_error("(%s)%s: cannot insert NULL pointer in queue",className(),fullName());
          return;
       }
 
@@ -216,7 +216,7 @@ void cQueue::insertHead(cObject *obj)
 void cQueue::insertBefore(cObject *where, cObject *obj)
 {
       if (!obj) {
-         opp_error("(%s)%s: cannot insert NULL pointer in queue", isA(),fullName());
+         opp_error("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
          return;
       }
       sQElem *p = find_qelem(where);
@@ -224,13 +224,13 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
          insbefore_qelem(p,obj);
       else
          opp_error("(%s)%s: insertBefore(w,o): object w=`%s' not in queue",
-                           isA(),fullName(),where->name());
+                           className(),fullName(),where->name());
 }
 
 void cQueue::insertAfter(cObject *where, cObject *obj)
 {
       if (!obj) {
-         opp_error("(%s)%s: cannot insert NULL pointer in queue", isA(),fullName());
+         opp_error("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
          return;
       }
       sQElem *p = find_qelem(where);
@@ -238,7 +238,7 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
          insafter_qelem(p,obj);
       else
          opp_error("(%s)%s: insertAfter(w,o): object w=`%s' not in queue",
-                           isA(),fullName(),where->name());
+                           className(),fullName(),where->name());
 }
 
 cObject *cQueue::get(cObject *obj)
@@ -248,7 +248,7 @@ cObject *cQueue::get(cObject *obj)
       sQElem *p = find_qelem(obj);
       if(!p) {
            opp_warning("(%s)%s: get(): Object `%s' not in queue",
-                              isA(),fullName(),obj->fullName());
+                              className(),fullName(),obj->fullName());
            return obj;
       }
       return get_qelem( p );
@@ -257,7 +257,7 @@ cObject *cQueue::get(cObject *obj)
 cObject *cQueue::getTail()
 {
       if(!tail) {
-           opp_error("(%s)%s: getTail(): queue empty",isA(),fullName());
+           opp_error("(%s)%s: getTail(): queue empty",className(),fullName());
            return NO(cObject);
       }
       return get_qelem( tail );
@@ -266,7 +266,7 @@ cObject *cQueue::getTail()
 cObject *cQueue::getHead()
 {
       if(!head) {
-           opp_error("(%s)%s: getHead(): queue empty",isA(),fullName());
+           opp_error("(%s)%s: getHead(): queue empty",className(),fullName());
            return NO(cObject);
       }
       return get_qelem( head );

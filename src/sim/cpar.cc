@@ -314,7 +314,7 @@ cPar& cPar::setValue(char tp, char *s)
             else
                 ls.str = opp_strdup(s);
         } else
-            opp_error(eBADINIT,isA(),name(),tp);
+            opp_error(eBADINIT,className(),name(),tp);
         return *this;
 }
 
@@ -336,7 +336,7 @@ cPar& cPar::setValue(char tp, long l)
                      lng.val = l;
                      typechar = tp;  inputflag=FALSE;
                      break;
-          default:   opp_error(eBADINIT,isA(),name(),tp);
+          default:   opp_error(eBADINIT,className(),name(),tp);
         }
         return *this;
 }
@@ -356,7 +356,7 @@ cPar& cPar::setValue(char tp, double d)
                       dbl.val = d;
                       typechar = tp; inputflag=FALSE;
                       break;
-            default:  opp_error(eBADINIT,isA(),name(),tp);
+            default:  opp_error(eBADINIT,className(),name(),tp);
         }
         return *this;
 }
@@ -371,7 +371,7 @@ cPar& cPar::setValue(char tp, MathFuncNoArg f)
             case 'F': deleteold();
                       func.f = (MathFunc)f; func.argc=0;
                       typechar = 'F'; inputflag=FALSE;
-            default:  opp_error(eBADINIT,isA(),name(),tp);
+            default:  opp_error(eBADINIT,className(),name(),tp);
         }
         return *this;
 }
@@ -387,7 +387,7 @@ cPar& cPar::setValue(char tp, MathFunc1Arg f, double p1)
                       func.f = (MathFunc)f; func.argc=1;
                       func.p1 = p1;
                       typechar = 'F'; inputflag=FALSE; break;
-            default:  opp_error(eBADINIT,isA(),name(),tp);
+            default:  opp_error(eBADINIT,className(),name(),tp);
         }
         return *this;
 }
@@ -403,7 +403,7 @@ cPar& cPar::setValue(char tp, MathFunc2Args f, double p1, double p2)
                       func.f = (MathFunc)f; func.argc=2;
                       func.p1 = p1; func.p2 = p2;
                       typechar = 'F'; inputflag=FALSE; break;
-            default:  opp_error(eBADINIT,isA(),name(),tp);
+            default:  opp_error(eBADINIT,className(),name(),tp);
         }
         return *this;
 }
@@ -419,7 +419,7 @@ cPar& cPar::setValue(char tp, MathFunc3Args f, double p1, double p2, double p3)
                       func.f = (MathFunc)f; func.argc=3;
                       func.p1 = p1; func.p2 = p2; func.p3 = p3;
                       typechar = 'F'; inputflag=FALSE; break;
-            default:  opp_error(eBADINIT,isA(),name(),tp);
+            default:  opp_error(eBADINIT,className(),name(),tp);
         }
         return *this;
 }
@@ -431,10 +431,10 @@ cPar& cPar::setValue(char tp, sXElem *x, int n)
         valueChanges();
         tp = (char) toupper(tp);
         if (tp!='X')
-            opp_error(eBADINIT,isA(),name(),tp);
+            opp_error(eBADINIT,className(),name(),tp);
         else
         {
-            if (x==NULL) {opp_error(eBADINIT,isA(),name(),tp);return *this;}
+            if (x==NULL) {opp_error(eBADINIT,className(),name(),tp);return *this;}
             deleteold();
             expr.n = n; expr.xelem = x;
             typechar = tp; inputflag=FALSE;
@@ -478,7 +478,7 @@ cPar& cPar::setValue(char tp, cPar *par)
               cPar *p = par;
               while (p)
               {
-                 if (p==this) {opp_error(eCIRCREF,isA(),name());return *this;}
+                 if (p==this) {opp_error(eCIRCREF,className(),name());return *this;}
                  p = (p->typechar=='I') ? p->ind.par : NO(cPar);
               }
 
@@ -488,7 +488,7 @@ cPar& cPar::setValue(char tp, cPar *par)
               // don't take ownership of passed cPar object
               typechar = tp; inputflag=FALSE;
         } else
-              opp_error(eBADINIT,isA(),name(),tp);
+              opp_error(eBADINIT,className(),name(),tp);
         return *this;
 }
 
@@ -504,7 +504,7 @@ cPar& cPar::setValue(char tp, cStatistic *res)
               if (takeOwnership()) take( res );
               typechar = tp; inputflag=FALSE;
         } else
-              opp_error(eBADINIT,isA(),name(),tp);
+              opp_error(eBADINIT,className(),name(),tp);
         return *this;
 }
 
@@ -515,7 +515,7 @@ cPar& cPar::setValue(char tp, void *_ptr)
         valueChanges();
         tp = (char) toupper(tp);
         if (tp!='P')
-              opp_error(eBADINIT,isA(),name(),tp);
+              opp_error(eBADINIT,className(),name(),tp);
         else
         {
               // if it was a 'P' before, keep previous configuration
@@ -540,7 +540,7 @@ cPar& cPar::setValue(char tp, cObject *_obj)
         valueChanges();
         tp = (char) toupper(tp);
         if (tp!='O')
-              opp_error(eBADINIT,isA(),name(),tp);
+              opp_error(eBADINIT,className(),name(),tp);
         else
         {
               deleteold();
@@ -556,7 +556,7 @@ void cPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
 {
         if (typechar!='P')
               opp_error("(%s)%s: configPointer(): type is '%c';"
-                               " should be 'P'",isA(),name(),typechar);
+                               " should be 'P'",className(),name(),typechar);
         else
         {
              ptr.delfunc = delfunc;
@@ -576,7 +576,7 @@ char *cPar::stringValue()
         if (typechar=='S')
              {if (ss.sht) return ss.str; else return ls.str;}
         else
-             {opp_error(eBADCAST,isA(),name(),typechar,'S');return NULL;}
+             {opp_error(eBADCAST,className(),name(),typechar,'S');return NULL;}
 }
 
 long cPar::longValue()
@@ -598,7 +598,7 @@ bool cPar::boolValue()
         if (typechar=='B')
              return lng.val!=0;
         else
-             {opp_error(eBADCAST,isA(),name(),typechar,'B');return FALSE;}
+             {opp_error(eBADCAST,className(),name(),typechar,'B');return FALSE;}
 }
 
 double cPar::doubleValue()
@@ -620,7 +620,7 @@ double cPar::doubleValue()
                     func.argc==2 ? ((MathFunc2Args)func.f)(func.p1,func.p2) :
                                    ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3);
         else
-             {opp_error(eBADCAST,isA(),name(),typechar,'D');return 0.0;}
+             {opp_error(eBADCAST,className(),name(),typechar,'D');return 0.0;}
 }
 
 void *cPar::pointerValue()
@@ -631,7 +631,7 @@ void *cPar::pointerValue()
         if (typechar=='P')
             return ptr.ptr;
         else
-            {opp_error(eBADCAST,isA(),name(),typechar,'P'); return NULL;}
+            {opp_error(eBADCAST,className(),name(),typechar,'P'); return NULL;}
 }
 
 cObject *cPar::objectValue()
@@ -642,7 +642,7 @@ cObject *cPar::objectValue()
         if (typechar=='O')
             return obj.obj;
         else
-            {opp_error(eBADCAST,isA(),name(),typechar,'O'); return NULL;}
+            {opp_error(eBADCAST,className(),name(),typechar,'O'); return NULL;}
 }
 
 bool cPar::equalsTo(cPar *par)
@@ -664,7 +664,7 @@ bool cPar::equalsTo(cPar *par)
        case 'T': return dtr.res == par->dtr.res;
        case 'P': return ptr.ptr == par->ptr.ptr;
        case 'O': return obj.obj == par->obj.obj;
-       case 'X': opp_error("(%s): equalsTo() with X type not implemented",isA());
+       case 'X': opp_error("(%s): equalsTo() with X type not implemented",className());
        default: return 0;
     }
 }
@@ -939,34 +939,34 @@ double cPar::evaluate()
            sXElem& e = expr.xelem[i];
            switch( toupper(e.type) ) {
                case 'D':
-                 if(tos>=stksize - 1) {opp_error(eBADEXP,isA(),name());return 0.0;}
+                 if(tos>=stksize - 1) {opp_error(eBADEXP,className(),name());return 0.0;}
                  stk[++tos] = e.d;
                  break;
                case 'P':
                case 'R':
-                 if(!e.p || tos>=stksize - 1) {opp_error(eBADEXP,isA(),name());return 0.0;}
+                 if(!e.p || tos>=stksize - 1) {opp_error(eBADEXP,className(),name());return 0.0;}
                  stk[++tos] = (double)(*e.p);
                  break;
                case '0':
-                 if(!e.f0) {opp_error(eBADEXP,isA(),name());return 0.0;}
+                 if(!e.f0) {opp_error(eBADEXP,className(),name());return 0.0;}
                  stk[++tos] = e.f0();
                  break;
                case '1':
-                 if(!e.f1 || tos<0) {opp_error(eBADEXP,isA(),name());return 0.0;}
+                 if(!e.f1 || tos<0) {opp_error(eBADEXP,className(),name());return 0.0;}
                  stk[tos] = e.f1( stk[tos] );
                  break;
                case '2':
-                 if(!e.f2 || tos<1) {opp_error(eBADEXP,isA(),name());return 0.0;}
+                 if(!e.f2 || tos<1) {opp_error(eBADEXP,className(),name());return 0.0;}
                  stk[tos-1] = e.f2( stk[tos-1], stk[tos] );
                  tos--;
                  break;
                case '3':
-                 if(!e.f3 || tos<2) {opp_error(eBADEXP,isA(),name());return 0.0;}
+                 if(!e.f3 || tos<2) {opp_error(eBADEXP,className(),name());return 0.0;}
                  stk[tos-2] = e.f3( stk[tos-2], stk[tos-1], stk[tos] );
                  tos-=2;
                  break;
                case '@':
-                 if(!e.f2 || tos<1) {opp_error(eBADEXP,isA(),name());return 0.0;}
+                 if(!e.f2 || tos<1) {opp_error(eBADEXP,className(),name());return 0.0;}
                  switch(e.op) {
                     case '+':
                        stk[tos-1] = stk[tos-1] + stk[tos];
@@ -1021,19 +1021,19 @@ double cPar::evaluate()
                        tos-=2;
                        break;
                     default:
-                     opp_error(eBADEXP,isA(),name());
+                     opp_error(eBADEXP,className(),name());
                        return 0.0;
                  }
                  break;
                default:
-                 opp_error(eBADEXP,isA(),name());
+                 opp_error(eBADEXP,className(),name());
                  return 0.0;
            }
         }
         if(tos==0)
             return stk[tos];
         else
-            {opp_error(eBADEXP,isA(),name());return 0.0;}
+            {opp_error(eBADEXP,className(),name());return 0.0;}
 }
 
 double cPar::fromstat()
@@ -1041,7 +1041,7 @@ double cPar::fromstat()
         if (typechar=='T')
             return  dtr.res->random();
         else
-            {opp_error(eBADCAST,isA(),name(),typechar,'T');return 0.0;}
+            {opp_error(eBADCAST,className(),name(),typechar,'T');return 0.0;}
 }
 
 

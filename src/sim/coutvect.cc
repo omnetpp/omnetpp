@@ -145,7 +145,7 @@ void cOutVector::info(char *buf)
 void cOutVector::record(double value)
 {
    if (tuple!=1)
-      {opp_error(eNUMARGS,isA(),name(),1);return;}
+      {opp_error(eNUMARGS,className(),name(),1);return;}
 
    if (record_in_inspector)
       record_in_inspector(data_for_inspector,value,0.0);
@@ -172,7 +172,7 @@ void cOutVector::record(double value)
 void cOutVector::record(double value1, double value2)
 {
    if (tuple!=2)
-      {opp_error(eNUMARGS,isA(),name(),2);return;}
+      {opp_error(eNUMARGS,className(),name(),2);return;}
 
    if (record_in_inspector)
       record_in_inspector(data_for_inspector,value1,value2);

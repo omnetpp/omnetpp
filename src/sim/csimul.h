@@ -106,7 +106,7 @@ class cSimulation : public cObject
      virtual ~cSimulation();
 
      // redefined functions
-     virtual char *isA()     {return "cSimulation";}
+     virtual char *className()  {return "cSimulation";}
      virtual char *inspectorFactoryName() {return "cSimulationIFC";}
      virtual void forEach(ForeachFunc f);
      virtual void writeContents(ostream& os);

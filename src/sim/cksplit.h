@@ -100,7 +100,7 @@ class cKSplit : public cDensityEstBase
     virtual ~cKSplit();
 
     // redefined functions
-    virtual char *isA()      {return "cKSplit";}
+    virtual char *className()  {return "cKSplit";}
     virtual cObject *dup()   {return new cKSplit (*this);}
     cKSplit& operator=(cKSplit& res);
     virtual void writeContents(ostream& os);

@@ -229,3 +229,6 @@ Dec 5, 1999
   - compiled with MSVC. enbf.h added.
   - added generated files enbf.tab.c and lex.yy.c to CVS to make it possible to
     build GNED where flex/bison is not available
+Dec 18, 1999
+  - changed isA() to className() in generated code (see sim/ChangeLog)
+

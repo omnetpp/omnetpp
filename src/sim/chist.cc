@@ -198,7 +198,7 @@ double cEqdHistogramBase::pdf(double x)
 {
    if (!transformed())
    {
-      opp_error("(%s)%s: pdf(x) cannot be called before histogram is transformed", isA(),name());
+      opp_error("(%s)%s: pdf(x) cannot be called before histogram is transformed", className(),name());
       return 0;
    }
 
@@ -210,7 +210,7 @@ double cEqdHistogramBase::pdf(double x)
 
 double cEqdHistogramBase::cdf(double)
 {
-   opp_error("(%s)%s: cdf() not implemented",isA(), name());
+   opp_error("(%s)%s: cdf() not implemented",className(), name());
    return 0.0;
 }
 
@@ -228,7 +228,7 @@ double cEqdHistogramBase::basepoint(int k)
     else if (k==num_cells)
       return rangemax;
     else
-      {opp_error("(%s)%s: invalid basepoint index %u",isA(),name(),k);return 0;}
+      {opp_error("(%s)%s: invalid basepoint index %u",className(),name(),k);return 0;}
 }
 
 double cEqdHistogramBase::cell(int k)
@@ -236,7 +236,7 @@ double cEqdHistogramBase::cell(int k)
     if (k<num_cells)
       return cellv[k];
     else
-      {opp_error("(%s)%s: invalid cell index %u",isA(),name(),k);return 0;}
+      {opp_error("(%s)%s: invalid cell index %u",className(),name(),k);return 0;}
 }
 
 void cEqdHistogramBase::saveToFile(FILE *f)

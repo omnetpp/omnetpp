@@ -37,7 +37,7 @@ class cNetGate : public cGate
          cNetGate(cNetGate& gate);
          cNetGate(char *s, int tp);
          virtual ~cNetGate()    {}
-         virtual char *isA()    {return "cNetGate";}
+         virtual char *className() {return "cNetGate";}
          virtual cObject *dup()    {return new cNetGate(*this);}
          cNetGate& operator=(cNetGate& gate);
 
@@ -83,7 +83,7 @@ class cPvmMod : public cNetMod
         public:
          cPvmMod();
          virtual ~cPvmMod();
-         virtual char *isA() {return "cPvmMod";}
+         virtual char *className()  {return "cPvmMod";}
          virtual void info(char *buf);
          virtual TInspector *inspector(int type, void *data=NULL);
 

@@ -158,7 +158,7 @@ cPvmMod::~cPvmMod()
 // info: Simple information
 void cPvmMod::info(char *buf)
 {
-        sprintf(buf,"%-15.15s (%s,#%d)", fullName(), isA(), id() );
+        sprintf(buf,"%-15.15s (%s,#%d)", fullName(), className(), id() );
 }
 
 //-------------------------------------------------------------------------
@@ -951,7 +951,7 @@ cGate *cPvmMod::ingate(char *s)
 {
         int i=gatev.find(s);
         if (i==-1)
-           {opp_warning(eNULLREF,isA(),fullPath()); return NO(cNetGate);}
+           {opp_warning(eNULLREF,className(),fullPath()); return NO(cNetGate);}
         else
            return (cNetGate *)&gatev.get(i);
 }
@@ -971,7 +971,7 @@ cGate *cPvmMod::outgate(char *s)
 {
         int i=out_gatev.find(s);
         if (i==-1)
-           {opp_warning(eNULLREF,isA(),fullPath()); return NO(cNetGate);}
+           {opp_warning(eNULLREF,className(),fullPath()); return NO(cNetGate);}
         else
            return (cNetGate *)&out_gatev.get(i);
 }

@@ -71,6 +71,9 @@ typedef int bool;
 typedef double       simtime_t;
 #define MAXTIME      HUGE_VAL
 
+//=== backwards compatibility defines
+#define isA()        className()
+
 //=== memory mgmt functions for void* pointers
 //    (used by cLinkedList and cPar)
 typedef void (*VoidDelFunc)(void *);

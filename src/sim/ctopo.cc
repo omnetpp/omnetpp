@@ -83,7 +83,7 @@ void cTopology::info(char *buf)
 
 cTopology& cTopology::operator=(cTopology&)
 {
-    opp_error("(%s)%s: operator= not implemented yet",isA(),fullName());
+    opp_error("(%s)%s: operator= not implemented yet",className(),fullName());
     return *this;
 }
 
@@ -119,7 +119,7 @@ void cTopology::extractByParameter(char *parname, cPar *value)
 static int selectByModuleType(cModule *mod, void *data)
 {
     for (char **d = (char **)data; *d; d++)
-        if (strcmp(mod->isA(),*d)==0)
+        if (strcmp(mod->className(),*d)==0)
             return 1;
     return 0;
 }
@@ -233,7 +233,7 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 sTopoNode *cTopology::node(int i)
 {
     if (i<0 || i>=num_nodes) {
-        opp_error("(%s)%s: invalid node index %d",isA(),fullName(),i);
+        opp_error("(%s)%s: invalid node index %d",className(),fullName(),i);
         return NO(sTopoNode);
     }
     return nodev+i;
@@ -264,7 +264,7 @@ void cTopology::unweightedSingleShortestPathsTo(sTopoNode *_target)
     if (!_target)
     {
         opp_error("(%s)%s: ..ShortestPathTo(): target node is NULL",
-                          isA(),name());
+                          className(),name());
         return;
     }
     target = _target;
@@ -310,7 +310,7 @@ void cTopology::weightedSingleShortestPathsTo(sTopoNode *_target)
     if (!_target)
     {
         opp_error("(%s)%s: ..ShortestPathTo(): target node is NULL",
-                          isA(),name());
+                          className(),name());
         return;
     }
     target = _target;

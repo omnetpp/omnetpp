@@ -185,10 +185,10 @@ char *infofunc_typeandfullpath( cObject *object)
 {
     static char buf[128];
     char *d = printptr(object,buf);
-    char *isa = object->isA();
+    char *clname = object->className();
     char *path = object->fullPath();
-    int padding = 16-strlen(isa); if (padding<1) padding=1;
-    sprintf(d, "(%s)%*s %.80s", isa, padding,"", path );
+    int padding = 16-strlen(clname); if (padding<1) padding=1;
+    sprintf(d, "(%s)%*s %.80s", clname, padding,"", path );
     return buf;
 }
 
@@ -198,9 +198,9 @@ char *infofunc_module( cObject *object)
     char *d = printptr(object,buf);
     cModule *mod = (cModule *)object;
     char *path = mod->fullPath();
-    char *isa = mod->isA();
-    int padding = 16-strlen(isa); if (padding<1) padding=1;
-    sprintf(d, "#%-3d (%s)%*s %.80s", mod->id(), isa, padding,"", path);
+    char *clname = mod->className();
+    int padding = 16-strlen(clname); if (padding<1) padding=1;
+    sprintf(d, "#%-3d (%s)%*s %.80s", mod->id(), clname, padding,"", path);
     return buf;
 }
 

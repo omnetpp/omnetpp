@@ -483,7 +483,7 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat)
     {
             // message: object has no such inspector
             CHK(Tcl_VarEval(interp,"messagebox {Confirm}"
-                                   " {Class `",obj->isA(),"' has no `",
+                                   " {Class `",obj->className(),"' has no `",
                                    insptype_name_from_code(type),
                                    "' inspector.} info ok",NULL));
             return (TInspector *)0;
