@@ -465,7 +465,7 @@ proc nedfileContainsTextEdits {nedfilekey} {
 #
 # This proc is used to implement the -c command-line option.
 #
-proc exportCanvasesToPostscript {dir imgxmlfile} {
+proc exportCanvasesToPostscript {dir imgxmlfile imgsuffix} {
     global canvas ned
 
     set imgxml ""
@@ -480,9 +480,9 @@ proc exportCanvasesToPostscript {dir imgxmlfile} {
         set modname $ned($modkey,name)
         set nedfilename $ned($nedfilekey,filename)
 
-        regsub -all -- {[./\\]} $nedfilename "_" tmp
+        regsub -all -- {[./\\:]} $nedfilename "_" tmp
         set psfile [file join $dir "${modname}__${tmp}.eps"]
-        set imgfile "${modname}__${tmp}.gif"
+        set imgfile "${modname}__${tmp}.$imgsuffix"
 
         busy "Generating postscript to $psfile..."
 
@@ -495,8 +495,6 @@ proc exportCanvasesToPostscript {dir imgxmlfile} {
         set bby2 [lindex $bbox 3]
         set width [expr $bbx2-$bbx1]
         set height [expr $bby2-$bby1]
-        #$canv config -width [expr $bbx2-$bbx1]
-        #$canv config -height [expr $bby2-$bby1]
         update idletasks
 
         # export canvas

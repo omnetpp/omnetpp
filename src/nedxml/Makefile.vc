@@ -86,6 +86,18 @@ cppmsggenerator.obj: cppmsggenerator.cc \
   nedelement.h \
   cppexprgenerator.h \
   nedcompiler.h
+lex.yy.obj: lex.yy.cc \
+  ./unistd.h \
+  nedgrammar.h \
+  ned.tab.h
+ned.tab.obj: ned.tab.cc \
+  nedgrammar.h \
+  nederror.h \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nedutil.h \
+  nedelement.h
 nedbasicvalidator.obj: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \

@@ -74,7 +74,7 @@ if [info exist OMNETPP_GNED_DIR] {
 # Exec startup code
 #
 proc startGNED {argv} {
-   global config OMNETPP_BITMAP_PATH
+   global config OMNETPP_BITMAP_PATH tcl_platform
 
    wm withdraw .
    checkTclTkVersion
@@ -89,18 +89,28 @@ proc startGNED {argv} {
        set config(connmodeauto) 1  ;# FIXME deliberately change this setting; this line may be removed in the future
    }
    reflectConfigInGUI
-
    set convertandexit 0
+   set imgsuffix "gif"
+   set outdir "html"
+
    #foreach arg $argv ..
    for {set i 0} {$i<[llength $argv]} {incr i} {
        set arg [lindex $argv $i]
+       if {$tcl_platform(platform) == "windows"} {
+          # Tcl on Windows doesn't like backslashes in file names
+          regsub -all -- {\\} $arg "/" arg
+       }
        if {$arg == "--"} {
            # ignore
        } elseif {$arg == "-c"} {
            incr i
            set convertandexit 1
-           set psdir [lindex $argv $i]
-           if {$psdir==""} {set psdir "html"}
+           set arg [lindex $argv $i]
+           if {$arg!=""} {set outdir $arg}
+       } elseif {$arg == "-e"} {
+           incr i
+           set arg [lindex $argv $i]
+           if {$arg!=""} {set imgsuffix $arg}
        } else {
            # expand wildcards (on Windows, the shell doesn't do it for us)
            if [catch {
@@ -122,7 +132,7 @@ proc startGNED {argv} {
    # implement the -c option
    if {$convertandexit} {
        # just save the canvases to file, and exit
-       exportCanvasesToPostscript $psdir [file join $psdir "images.xml"]
+       exportCanvasesToPostscript $outdir [file join $outdir "images.xml"] $imgsuffix
        fileExit
    }
 }

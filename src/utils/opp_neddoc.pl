@@ -29,6 +29,8 @@ $unassignedpars = "y";
 $doxytagfile = "";
 $doxyhtmldir = "../api-doc/html";
 $all_files = "";
+$verbose = "y";
+$debug = "n";
 
 if ($DOT ne "")
 {
@@ -49,7 +51,7 @@ while (@ARGV)
     }
     elsif ($arg eq '-d' || $arg eq '--doxyhtmldir')
     {
-       $doxyhtmldir =  shift @ARGV;
+       $doxyhtmldir = shift @ARGV;
     }
     elsif ($arg eq '-t' || $arg eq '--doxytagfile')
     {
@@ -66,6 +68,14 @@ while (@ARGV)
     elsif ($arg eq '-x' || $arg eq '--no-diagrams')
     {
        $have_dot = "n";
+    }
+    elsif ($arg eq '-D' || $arg eq '--debug')
+    {
+       $debug = "y";
+    }
+    elsif ($arg eq '-s' || $arg eq '--silent')
+    {
+       $verbose = "n";
     }
     elsif ($arg eq '-h' || $arg eq '--help')
     {
@@ -122,6 +132,18 @@ if ($do_help eq "y")
     exit(0);
 }
 
+# we need backslashes in file names
+$NEDTOOL =~ s|/|\\|g;
+$XSLTPROC =~ s|/|\\|g;
+$GNED =~ s|/|\\|g;
+$GHOSTSCRIPT =~ s|/|\\|g;
+$GIFTRANS =~ s|/|\\|g;
+$DOT =~ s|/|\\|g;
+$PERL =~ s|/|\\|g;
+$NEDDOC_XSL =~ s|/|\\|g;
+$NEDDOC_PL =~ s|/|\\|g;
+
+
 #cleanup()
 #{
 #    rm $TMPFILE
@@ -131,12 +153,12 @@ if ($do_help eq "y")
 if (! -d $outdir) {
     mkdir($outdir) || die "cannot create output directory '$outdir'";
 }
-system("del /s /q $outdir\\* >nul")==0 || die "cannot clean output directory '$outdir' from old files";
+runprog("del /s /q $outdir\\* >nul")==0 || die "cannot clean output directory '$outdir' from old files";
 
-print "collecting files...\n";
+print "collecting files...\n" if $verbose;
 if ($all_files eq "")
 {
-    system("dir /s /b *.ned *.msg >$outdir\\filelist.txt")==0 || die "error creating the file list";
+    runprog("dir /s /b *.ned *.msg >$outdir\\filelist.txt")==0 || die "error creating the file list";
 }
 else
 {
@@ -151,18 +173,18 @@ else
         $arg = shift @ARGV;
         if (-d "$arg")
         {
-            system("dir /s /b *.ned *.msg >>$outdir\\filelist.txt")==0 || die "error creating the file list";
+            runprog("dir /s /b *.ned *.msg >>$outdir\\filelist.txt")==0 || die "error creating the file list";
         }
         else
         {
-            system("echo $arg >>$outdir\\filelist.txt")==0 || die "error creating the file list";
+            runprog("echo $arg >>$outdir\\filelist.txt")==0 || die "error creating the file list";
         }
         shift;
     }
 }
 
-print "transforming to xml...\n";
-system("$NEDTOOL -x -e -t -y -m -o $outdir\\inputfiles.xml \@$outdir\\filelist.txt")==0 || die "error";
+print "transforming to xml...\n" if $verbose;
+runprog("$NEDTOOL -x -e -t -y -m -o $outdir\\inputfiles.xml \@$outdir\\filelist.txt")==0 || die "error";
 
 if ($screenshots eq "y")
 {
@@ -170,14 +192,14 @@ if ($screenshots eq "y")
     {
         print "exporting screenshots (Postscript) using GNED...\n";
         $nedfilesonly = `type $outdir\\filelist.txt`;
-        system("$GNED -- -c $outdir $nedfilesonly")==0 || die "error invoking GNED";
+        runprog("$GNED -- -c $outdir -e jpg $nedfilesonly")==0 || die "error invoking GNED";
         print "converting Postscript to JPG with Ghostscript...\n";
         foreach $i (glob("$outdir/*.eps"))
         {
            print "#";
            $jpg = $i;
            $jpg =~ s/eps$/jpg/;
-           system("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >$outdir\\gs.err")==0 || die "error invoking Ghostscript";
+           runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >$outdir\\gs.err")==0 || die "error invoking Ghostscript";
         }
         print "\n";
 
@@ -188,7 +210,7 @@ if ($screenshots eq "y")
 
         # hack: must convert $outdir to absolute path, otherwise xslt will take it
         # as relative to the sylesheet (@#$#@$!!)
-        $imagesxml = `dir /s /b $outdir\\images.xml`;
+        $imagesxml = absolutepath("$outdir\\images.xml");
     }
     else
     {
@@ -200,10 +222,10 @@ if ($screenshots eq "y")
 # hack: must convert $doxytagfile to absolute path, otherwise xslt will take it
 # as relative to the sylesheet
 if ($doxytagfile ne "") {
-    $doxytagfile = `dir /s /b $doxytagfile`;
+    $doxytagfile = absolutepath($doxytagfile);
 }
 
-print "applying xslt stylesheet...\n";
+print "applying xslt stylesheet...\n" if $verbose;
 $xsltcommand = "$XSLTPROC".
                " --stringparam outputdir \"$outdir\"".
                " --stringparam imagesxml \"$imagesxml\"".
@@ -211,8 +233,9 @@ $xsltcommand = "$XSLTPROC".
                " --stringparam have_dot \"$have_dot\"".
                " --stringparam doxytagfile \"$doxytagfile\"".
                " --stringparam doxyhtmldir \"$doxyhtmldir\"".
+               " --output nul".
                " $NEDDOC_XSL $outdir\\inputfiles.xml";
-system($xsltcommand." >$outdir\\xsltproc.out")==0 || die "error invoking xsltproc";
+runprog($xsltcommand)==0 || die "error invoking xsltproc";
 
 if ($have_dot eq "y")
 {
@@ -222,12 +245,12 @@ if ($have_dot eq "y")
        print "#";
        $gif = $i; $gif =~ s/dot$/gif/;
        $map = $i; $map =~ s/dot$/map/;
-       system("$DOT -Tgif  <$i >$gif 2>>$outdir\\dot.err")==0 || die "error invoking DOT";
-       system("$DOT -Tcmap <$i >$map 2>>$outdir\\dot.err")==0 || die "error invoking DOT";
+       runprog("$DOT -Tgif  <$i >$gif 2>>$outdir\\dot.err")==0 || die "error invoking DOT";
+       runprog("$DOT -Tcmap <$i >$map 2>>$outdir\\dot.err")==0 || die "error invoking DOT";
        if ($GIFTRANS ne "")
        {
            rename($gif, "$gif.tmp");
-           system("$GIFTRANS -t white $gif.tmp >$gif")==0 || die "error invoking giftrans";
+           runprog("$GIFTRANS -t white $gif.tmp >$gif")==0 || die "error invoking giftrans";
            unlink("$gif.tmp");
        }
     }
@@ -238,14 +261,26 @@ if ($have_dot eq "y")
     }
 }
 
-print "formatting comments...\n";
-system("$PERL $NEDDOC_PL $outdir")==0 || die "error";
+print "formatting comments...\n" if $verbose;
+runprog("$PERL $NEDDOC_PL $outdir")==0 || die "error invoking formatter";
 
-print "documentation created in '$outdir'/ -- start page is index.html\n";
+print "documentation created in '$outdir'/ -- start page is index.html\n" if $verbose;
 
-unlink("$outdir/inputfiles.xml");
-
-
+#unlink("$outdir/inputfiles.xml"); FIXME put it back after debugging
 
 
+sub runprog
+{
+    my $prog = shift;
+    print "running: $prog\n" if ($debug eq "y");
+    system($prog);
+}
 
+sub absolutepath
+{
+    my $filename = shift;
+    $absfilename = `dir /s /b $filename`;
+    chomp($absfilename);
+    if ($absfilename eq "") {die "'$filename' does not exist";}
+    $absfilename;
+}

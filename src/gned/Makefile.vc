@@ -90,10 +90,8 @@ ebnf.tab.obj: ebnf.tab.cc \
   parsened.h \
   nedfile.h
 gned.obj: gned.cc \
-  arrow.h \
-  parsened.h \
   tklib.h \
-  ebnf.h
+  arrow.h
 lex.yy.obj: lex.yy.cc \
   ebnf.h \
   ebnf.tab.h \
@@ -107,6 +105,11 @@ parsened.obj: parsened.cc \
   parsened.h \
   nedfile.h \
   tklib.h \
+  ebnf.h
+tkcmd.obj: tkcmd.cc \
+  tklib.h \
+  arrow.h \
+  parsened.h \
   ebnf.h
 tklib.obj: tklib.cc \
   tklib.h
