@@ -13,3 +13,5 @@ General:
  - inspector list should save window positions
  - automatic loading of inspector lists (use "placeholder" windows for
    not-yet-existing objects)
+ - graphical FES inspector
+ - CDF display for histogram classes
