@@ -1272,7 +1272,7 @@ sub generateStruct
     print H "void doPacking(cCommBuffer *b, $msgclass& a);\n";
     print H "void doUnpacking(cCommBuffer *b, $msgclass& a);\n\n";
 
-    print CC "$msgclass::$msgclass()\n";
+    print CC "$msgclass\:\:$msgclass()\n";
     print CC "{\n";
     my $hasarray=0;
     foreach $fieldname (@fieldlist) {$hasarray=1 if ($fisarray{$fieldname});}
