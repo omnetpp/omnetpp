@@ -324,9 +324,10 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
 
        regexp -- {^.[^.]*} $c win
 
+       # FIXME: the following line is not correct Tcl list handling...
        set arrow_coords [eval [concat opp_inspectorcommand $win arrowcoords \
                   $src_rect $dest_rect $src_i $src_n $dest_i $dest_n \
-                  $mode $src_anch $dest_anch]]
+                  [list $mode] $src_anch $dest_anch]]
 
        # puts "DEBUG: arrow=($arrow_coords)"
 

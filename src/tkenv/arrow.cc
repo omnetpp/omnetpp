@@ -110,7 +110,22 @@ static void clip_line_to_rect(
 
 int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
 {
-      if (argc!=18) {Tcl_SetResult(interp, "17 args expected", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=18) {
+          printf("arrowcoords called with wrong number of args: %d\n", argc-1);
+          for (int i=1; i<argc; i++)
+          {
+              if (i==1) printf(" src:");
+              if (i==5) printf(" dest:");
+              if (i==9) printf(" srcgateindex/size:");
+              if (i==11) printf(" destgateindex/size:");
+              if (i==13) printf(" mode:");
+              if (i==14) printf(" anchorpoints:");
+              printf(" <%s>", argv[i]);
+          }
+          printf("\n");
+          Tcl_SetResult(interp, "17 args expected", TCL_STATIC); 
+          return TCL_ERROR;
+      }
 
       // args 1..4: coords of source module rectangle
       double src_x1 = atof(argv[1]),
