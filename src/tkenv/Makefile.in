@@ -85,7 +85,7 @@ depend:
 	makedepend -Y -I. -I../envir -I../sim -fMakefile.in -- *.cc
 
 clean:
-	rm -f *.o libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX) tcl2c
+	rm -f *.o libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX)
 
 install-local: @TKENV_IF_POSSIBLE@
 	../utils/install-lib libtkenv$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libtkenv$(LIB_SUFFIX)
