@@ -270,7 +270,7 @@ class SIM_API cSimulation : public cObject
      * model with a given set of parameter settings. Runs can be defined
      * in omnetpp.ini.
      */
-    // FIXME: does run number really belong to the simulation kernel? why not in Envir?
+    // TBD does run number really belong to the simulation kernel? why not in Envir?
     int  runNumber() const           {return run_number;}
 
     /**

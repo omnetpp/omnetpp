@@ -230,24 +230,23 @@ class cXMLElement
      * expect them to: current element, parent element, element with any tag name.
      *
      * Examples:
-     *  - "." : this element
-     *  - "./foo" : first "foo" child of this node
-     *  - "foo" : same as "./foo" (initial "./" can be omitted)
-     *  - "./foo" : first "foo" child of this node
-     *  - "./foo/bar" : first "bar" child of first "foo" child of this node
-     *  - ".//bar" : first "bar" anywhere under this node (depth-first search!)
-     *  - "./ * /bar" : first "bar" child two levels below this node
-     *  - "./foo[0]" : first "foo" child of this node
-     *  - "./foo[1]" : second "foo" child of this node
-     *  - "./foo[@color='green']" : first "foo" child which has attribute "color" with value "green"
-     *  - ".//bar[1]" : a "bar" anywhere under this node which is the second "bar" among its siblings
-     *  - ".// * [@color='yellow']" : an element under this node with attribute color="yellow"
-     *  - ".// * [@color='yellow']/foo/bar" : first "bar" child of first "foo" child of a "yellow-colored" node
+     *  - <tt>.</tt> -- this element
+     *  - <tt>./foo</tt> -- first "foo" child of this node
+     *  - <tt>foo</tt> -- same as <tt>./foo</tt> (initial <tt>./</tt> can be omitted)
+     *  - <tt>./foo</tt> -- first "foo" child of this node
+     *  - <tt>./foo/bar</tt> -- first "bar" child of first "foo" child of this node
+     *  - <tt>.//bar</tt> -- first "bar" anywhere under this node (depth-first search!)
+     *  - <tt>./ * /bar</tt> -- first "bar" child two levels below this node (omit spaces)
+     *  - <tt>./foo[0]</tt> -- first "foo" child of this node
+     *  - <tt>./foo[1]</tt> -- second "foo" child of this node
+     *  - <tt>./foo[\@color='green']</tt> -- first "foo" child which has attribute "color" with value "green"
+     *  - <tt>.//bar[1]</tt> -- a "bar" anywhere under this node which is the second "bar" among its siblings
+     *  - <tt>.// * [\@color='yellow']</tt> -- an element under this node with attribute color="yellow" (omit spaces)
+     *  - <tt>.// * [\@color='yellow']/foo/bar</tt> -- first "bar" child of first "foo" child of a "yellow-colored" node (omit spaces)
      *
      * The method throws an exception if the path expression is invalid,
      * and returns NULL if the element is not found.
      */
-    //FIXME get rid of spaces around "*" in the above doc somehow (without creating /*, or */)
     cXMLElement *getElementByPath(const char *pathexpression);
 
     /**

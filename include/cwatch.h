@@ -78,7 +78,7 @@ class  cWatch;
  *
  * @ingroup SimSupport
  */
-// FIXME todo: update watches to use templates
+// TBD update watches to use templates
 class SIM_API cWatch : public cObject
 {
   private:
