@@ -257,7 +257,7 @@ void cIniFile::clearContents()
     delete [] entries;
     num_sections = num_entries = 0;
 
-    delete fname;
+    delete [] fname;
     fname = NULL;
 }
 
