@@ -106,6 +106,16 @@ class cSequentialScheduler : public cScheduler
     cSequentialScheduler() {}
 
     /**
+     * Called at the beginning of a simulation run.
+     */
+    virtual void startRun() {}
+
+    /**
+     * Called at the end of a simulation run.
+     */
+    virtual void endRun() {}
+
+    /**
      * Returns the first event in the Future Event Set (that is,
      * msgQueue.peekFirst()).
      */
