@@ -26,6 +26,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <io.h>   // _sleep()
+#include <string>
+#include <iostream>
 
 #include "cexception.h"
 #include "cmemcommbuffer.h"
@@ -47,9 +49,8 @@ Register_Class(cNamedPipeCommunications);
 #define PIPE_INBUFFERSIZE  (1024*1024) /*1MB*/
 
 
-const char *getWindowsError()
+std::string getWindowsError()
 {
-    // FIXME ugly with the static char buf[]
     long errorcode = GetLastError();
     LPVOID lpMsgBuf;
     FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER |
@@ -61,11 +62,12 @@ const char *getWindowsError()
                    (LPTSTR) &lpMsgBuf,
                    0,
                    NULL );
-    static char buf[500];
-    sprintf(buf, "error %ld: %.450s", errorcode, (const char *)lpMsgBuf);
-    LocalFree( lpMsgBuf );
-    buf[strlen(buf)-3] = '\0';  // chop ".\r\n"
-    return buf;
+    ((char *)lpMsgBuf)[strlen((char *)lpMsgBuf)-3] = '\0';  // chop ".\r\n"
+
+    std::stringstream out;
+    out << "error " << errorcode << ": " << (const char *)lpMsgBuf;
+    LocalFree(lpMsgBuf);
+    return out.str();
 }
 
 struct PipeHeader
@@ -113,7 +115,7 @@ void cNamedPipeCommunications::init()
         int pipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT;
         rpipes[i] = CreateNamedPipe(fname, openMode, pipeMode, 1, 0, PIPE_INBUFFERSIZE, ~0UL, NULL);
         if (rpipes[i] == INVALID_HANDLE_VALUE)
-            throw new cException("cNamedPipeCommunications: CreateNamedPipe operation failed: %s", getWindowsError());
+            throw new cException("cNamedPipeCommunications: CreateNamedPipe operation failed: %s", getWindowsError().c_str());
     }
 
     // open pipes for write
