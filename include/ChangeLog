@@ -1,7 +1,26 @@
 2001-06-22  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	merged in documentation from refman.html into header files using
-	Andras' helper script opp_docify.pl.
+	* Some fixes to errors produced by opp_docify.pl:
+	
+	* include/cdensity.h (): missing #endif at bottom of file added
+	* include/cdetect.h (): missing #endif at bottom of file added
+	* include/chead.h (): missing #endif at bottom of file added
+	* include/cllist.h (): missing #endif at bottom of file added
+	* include/cmsgheap.h (): missing #endif at bottom of file added
+	* include/coutvect.h (): missing #endif at bottom of file added
+	* include/cstat.h (): missing #endif at bottom of file added
+	* include/cwatch.h (): missing #endif at bottom of file added
+	* include/defs.h (): missing #endif at bottom of file added
+	* include/errmsg.h (): missing #endif at bottom of file added
+	* include/omnetpp.h (): missing #endif at bottom of file added
+	* include/protocol.h (): missing #endif at bottom of file added
+	* include/util.h (): missing #endif at bottom of file added
+
+	* cstk.h (struct Stk): replaced /* */ statements inside comments with // //
+	* cenvir.h (cEnvir): replaced /* */ statements inside comments with // //
+
+	* Merged in documentation from refman.html into header files using
+	Andras' helper script opp_docify.pl:
 	
 	* unused.txt: contains doc entries extracted from opp_docify that did not
 	fit into the header files
