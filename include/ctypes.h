@@ -409,6 +409,11 @@ class SIM_API cNetworkType : public cObject
     //@{
 
     /**
+     * Copy constructor.
+     */
+    cNetworkType(const cNetworkType& n)  {setName(n.name());operator=(n);}
+
+    /**
      * Constructor. It takes pointer to a function that can build up a network.
      */
     cNetworkType(const char *name, void (*f)()) :
@@ -419,7 +424,10 @@ class SIM_API cNetworkType : public cObject
      */
     virtual ~cNetworkType() {}
 
-    //FIXME: op= missing! dup missing! copy constructor missing
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cNetworkType& operator=(const cNetworkType&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -429,6 +437,12 @@ class SIM_API cNetworkType : public cObject
      * Returns pointer to a string containing the class name, "cNetworkType".
      */
     virtual const char *className() const {return "cNetworkType";}
+
+    /**
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
+     */
+    virtual cObject *dup() const     {return new cNetworkType(*this);}
     //@}
 };
 
@@ -451,6 +465,11 @@ class SIM_API cFunctionType : public cObject
     //@{
 
     /**
+     * Copy constructor.
+     */
+    cFunctionType(const cFunctionType& ft)  {setName(ft.name());operator=(ft);}
+
+    /**
      * Constructor.
      */
     cFunctionType(const char *name, MathFunc f0, int argc) :
@@ -461,7 +480,10 @@ class SIM_API cFunctionType : public cObject
      */
     virtual ~cFunctionType() {}
 
-    //FIXME: op= missing! dup missing! copy constructor missing
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cFunctionType& operator=(const cFunctionType&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -471,6 +493,12 @@ class SIM_API cFunctionType : public cObject
      * Returns pointer to a string containing the class name, "cFunctionType".
      */
     virtual const char *className() const {return "cFunctionType";}
+
+    /**
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
+     */
+    virtual cObject *dup() const  {return new cFunctionType(*this);}
     //@}
 };
 
@@ -494,6 +522,11 @@ class SIM_API cClassRegister : public cObject
     //@{
 
     /**
+     * Copy constructor.
+     */
+    cClassRegister(const cClassRegister& c)  {setName(c.name());operator=(c);}
+
+    /**
      * Constructor.
      */
     cClassRegister(const char *name, cObject *(*f)()) :
@@ -504,7 +537,10 @@ class SIM_API cClassRegister : public cObject
      */
     virtual ~cClassRegister() {}
 
-    //FIXME: op= missing! dup missing! copy constructor missing
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cClassRegister& operator=(const cClassRegister&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -514,9 +550,15 @@ class SIM_API cClassRegister : public cObject
      * Returns pointer to a string containing the class name, "cClassRegister".
      */
     virtual const char *className() const {return "cClassRegister";}
+
+    /**
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
+     */
+    virtual cObject *dup() const  {return new cClassRegister(*this);}
     //@}
 
-    /** @name FIXME */
+    /** @name Factory function. */
     //@{
 
     /**
@@ -533,7 +575,8 @@ SIM_API cObject *createOne(const char *type);
 
 /**
  * Internal class. Serves as a base class for inspector factories of
- * specific classes.
+ * specific classes. Inspector factories are implemented as part of
+ * user interface libraries, and really belong there.
  *
  * @ingroup Internals
  */
@@ -546,6 +589,11 @@ class SIM_API cInspectorFactory : public cObject
     //@{
 
     /**
+     * Copy constructor.
+     */
+    cInspectorFactory(const cInspectorFactory& ifc)  {setName(ifc.name());operator=(ifc);}
+
+    /**
      * Constructor.
      */
     cInspectorFactory(const char *name, TInspector *(*f)(cObject *,int,void *));
@@ -555,7 +603,10 @@ class SIM_API cInspectorFactory : public cObject
      */
     virtual ~cInspectorFactory() {}
 
-    //FIXME: op= missing! dup missing! copy constructor missing
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cInspectorFactory& operator=(const cInspectorFactory&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -565,13 +616,22 @@ class SIM_API cInspectorFactory : public cObject
      * Returns pointer to a string containing the class name, "cInspectorFactory".
      */
     virtual const char *className() const {return "cInspectorFactory";}
+
+    /**
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
+     */
+    virtual cObject *dup() const  {return new cInspectorFactory(*this);}
     //@}
 
     /** @name Inspector creation. */
     //@{
 
     /**
-     * FIXME: new functions;
+     * Creates an inspector for the object passed. The type and data
+     * arguments influence the type of inspector created. These parameters
+     * as well as the created inspector object only make sense in the
+     * context of the user interface library (e.g.Tkenv)
      */
     TInspector *createInspectorFor(cObject *object,int type,void *data);
     //@}

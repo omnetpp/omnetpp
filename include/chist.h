@@ -67,6 +67,8 @@ class SIM_API cHistogramBase : public cDensityEstBase
      */
     virtual const char *className() const {return "cHistogramBase";}
 
+    /* No dup() because this is an abstract class. */
+
     /**
      * Serializes the object into a PVM or MPI send buffer.
      * Used by the simulation kernel for parallel execution.
@@ -80,7 +82,6 @@ class SIM_API cHistogramBase : public cDensityEstBase
      * See cObject for more details.
      */
     virtual int netUnpack();
-    // dup() and inspector(..) not needed
     //@}
 
     /** @name Redefined member functions from cStatistic and its subclasses. */
@@ -154,6 +155,8 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
      * Returns pointer to a string containing the class name, "cEqdHistogramBase".
      */
     virtual const char *className() const {return "cEqdHistogramBase";}
+
+    /* No dup() because this is an abstract class. */
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -262,7 +265,10 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      */
     virtual ~cLongHistogram();
 
-    // FIXME: assignment????
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cLongHistogram& operator=(const cLongHistogram&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -350,8 +356,10 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      */
     virtual ~cDoubleHistogram();
 
-    // FIXME: assignment???
-
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cDoubleHistogram& operator=(const cDoubleHistogram&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */

@@ -62,7 +62,7 @@ typedef void (*PostADFunc)(cAccuracyDetection *, void *);
 class SIM_API cTransientDetection : public cObject
 {
   private:
-    cStatistic *back;          // ptr to cStatistic that uses this object
+    cStatistic *back;    // ptr to cStatistic that uses this object
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -82,7 +82,11 @@ class SIM_API cTransientDetection : public cObject
      * Destructor.
      */
     virtual ~cTransientDetection()  {}
-    // FIXME: no op=!
+
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cTransientDetection& operator=(const cTransientDetection&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -91,7 +95,9 @@ class SIM_API cTransientDetection : public cObject
     /**
      * Returns pointer to a string containing the class name, "cTransientDetection".
      */
-    virtual const char *className() const {return "cTransientDetection";}
+    virtual const char *className() const  {return "cTransientDetection";}
+
+    /* No dup() because this is an abstract class. */
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -114,29 +120,29 @@ class SIM_API cTransientDetection : public cObject
     /**
      * Should be redefined to update the detection algorithm with a value.
      */
-    virtual void collect(double val)=0;
+    virtual void collect(double val) = 0;
 
     /**
      * Should be redefined to return true if end of transient has been detected.
      */
-    virtual bool detected()=0;
+    virtual bool detected() const = 0;
 
     /**
      * Should be redefined to reset detection algorithm.
      */
-    virtual void reset()=0;
+    virtual void reset() = 0;
 
     /**
      * Should be redefined to stop detection (further calls to collect()
      * should be ignored.)
      */
-    virtual void stop()=0;
+    virtual void stop() = 0;
 
     /**
      * Should be redefined to start detection (further calls to collect()
      * should update the detection algorithm.)
      */
-    virtual void start()=0;
+    virtual void start() = 0;
     //@}
 
     /** @name Host object. */
@@ -185,7 +191,11 @@ class SIM_API cAccuracyDetection : public cObject
      * Destructor.
      */
     virtual ~cAccuracyDetection()  {}
-    // FIXME: no op=!
+
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cAccuracyDetection& operator=(const cAccuracyDetection&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -195,6 +205,8 @@ class SIM_API cAccuracyDetection : public cObject
      * Returns pointer to a string containing the class name, "cAccuracyDetection".
      */
     virtual const char *className() const {return "cAccuracyDetection";}
+
+    /* No dup() because this is an abstract class. */
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -217,29 +229,29 @@ class SIM_API cAccuracyDetection : public cObject
     /**
      * Should be redefined to update the detection algorithm with a value.
      */
-    virtual void collect(double val)=0;
+    virtual void collect(double val) = 0;
 
     /**
      * Should be redefined to return true if required accuracy has been reached.
      */
-    virtual bool detected()=0;
+    virtual bool detected() const = 0;
 
     /**
      * Should be redefined to reset detection algorithm.
      */
-    virtual void reset()=0;
+    virtual void reset() = 0;
 
     /**
      * Should be redefined to stop detection (further calls to collect()
      * should be ignored).
      */
-    virtual void stop()=0;
+    virtual void stop() = 0;
 
     /**
      * Should be redefined to start detection (further calls to collect()
      * will update the detection algorithm).
      */
-    virtual void start()=0;
+    virtual void start() = 0;
     //@}
 
     /** @name Host object. */
@@ -322,6 +334,12 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
      * Returns pointer to a string containing the class name, "cTDExpandingWindows".
      */
     virtual const char *className() const {return "cTDExpandingWindows";}
+
+    /**
+     * Dupping is not implemented for this class. This function
+     * gives an error when called.
+     */
+    virtual cObject *dup() const  {return new cTDExpandingWindows(*this);}
     //@}
 
     /** @name Redefined cTransientDetection member functions. */
@@ -436,6 +454,12 @@ class SIM_API cADByStddev : public cAccuracyDetection
      * Returns pointer to a string containing the class name, "cADByStddev".
      */
     virtual const char *className() const {return "cADByStddev";}
+
+    /**
+     * Dupping is not implemented for this class. This function
+     * gives an error when called.
+     */
+    virtual cObject *dup() const  {return new cADByStddev(*this);}
     //@}
 
     /** @name Redefined cAccuracyDetection functions. */

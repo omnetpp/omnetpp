@@ -78,6 +78,8 @@ class SIM_API cStatistic : public cObject
      */
     virtual const char *className() const {return "cStatistic";}
 
+    /* Note: No dup() because this is an abstract class! */
+
     /**
      * Returns the name of the inspector factory class associated with this class.
      * See cObject for more details.

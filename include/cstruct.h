@@ -82,7 +82,7 @@ class SIM_API cStructDescriptor : public cObject
     /**
      * Copy constructor.
      */
-    cStructDescriptor(const cStructDescriptor& cs);
+    cStructDescriptor(const cStructDescriptor& cs)  {setName(cs.name());operator=(cs);}
 
     /**
      * Destructor.
@@ -90,10 +90,9 @@ class SIM_API cStructDescriptor : public cObject
     virtual ~cStructDescriptor();
 
     /**
-     * Assignment operator. The name member doesn't get copied;
-     * see cObject's operator=() for more details.
+     * Assignment is not supported for this class. This function raises an error when called.
      */
-    cStructDescriptor& operator=(const cStructDescriptor& cs);
+    cStructDescriptor& operator=(const cStructDescriptor&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -104,11 +103,7 @@ class SIM_API cStructDescriptor : public cObject
      */
     virtual const char *className() const {return "cStructDescriptor";}
 
-    /**
-     * Creates and returns an exact copy of this object.
-     * See cObject for more details.
-     */
-    virtual cObject *dup() const;
+    /* No dup() because this is an abstract class. */
     //@}
 
     /** @name Getting descriptor for an object or a struct. */

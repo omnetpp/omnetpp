@@ -133,6 +133,8 @@ class SIM_API cDensityEstBase : public cStdDev
      */
     virtual const char *className() const {return "cDensityEstBase";}
 
+    /* No dup() because this is an abstract class. */
+
     /**
      * Writes textual information about this object to the stream.
      * See cObject for more details.
@@ -158,8 +160,6 @@ class SIM_API cDensityEstBase : public cStdDev
      * See cObject for more details.
      */
     virtual int netUnpack();
-
-    // FIXME: dup() not needed???
     //@}
 
     /** @name Redefined cStatistic member functions. */

@@ -44,11 +44,19 @@ class SIM_API cOutFileMgr : public cObject
     explicit cOutFileMgr(const char *name=NULL);
 
     /**
+     * Copy constructor. Not supported.
+     */
+    cOutFileMgr(const cOutFileMgr& r) : cObject(r)  {setName(r.name());operator=(r);}
+
+    /**
      * Destructor. Closes the output file if it is still open.
      */
     virtual ~cOutFileMgr();
 
-    // FIXME: op= missing!
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cOutFileMgr& operator=(const cOutFileMgr&)  {copyNotSupported();return *this;}
 
     //@}
 
@@ -59,6 +67,11 @@ class SIM_API cOutFileMgr : public cObject
      * Returns pointer to a string containing the class name, "cOutFileMgr".
      */
     virtual const char *className() const {return "cOutFileMgr";}
+
+    /**
+     * dup() is not implemented for this class. This function raises an error when called.
+     */
+    virtual cObject *dup() const  {return new cOutFileMgr(*this);}
     //@}
 
     /** @name File handling. */
@@ -159,11 +172,6 @@ class SIM_API cOutVector : public cObject
     //@{
 
     /**
-     * Copy constructor.
-     */
-    cOutVector(const cOutVector& r) : cObject(r) {setName(r.name());operator=(r);}
-
-    /**
      * Constructor. Accepts the object name and the multiplicity of the
      * data it should write to the file at a time. Possible values of
      * tuple are 1 or 2.
@@ -171,11 +179,19 @@ class SIM_API cOutVector : public cObject
     explicit cOutVector(const char *name=NULL, int tupl=1);
 
     /**
+     * Copy constructor.
+     */
+    cOutVector(const cOutVector& r) : cObject(r) {setName(r.name());operator=(r);}
+
+    /**
      * Destructor.
      */
     virtual ~cOutVector();
 
-    // FIXME: op= missing!
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cOutVector& operator=(const cOutVector&)  {copyNotSupported();return *this;}
 
     //@}
 
@@ -183,7 +199,7 @@ class SIM_API cOutVector : public cObject
     //@{
 
     /**
-     * FIXME: redefined functions
+     * Sets the name of the object.
      */
     virtual void setName(const char *name);
 

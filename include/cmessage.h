@@ -111,7 +111,7 @@ class SIM_API cMessage : public cObject
     //@{
 
     /**
-     * Copy constructor, creates an exact copy of the argument msg.
+     * Copy constructor.
      */
     cMessage(const cMessage& msg);
 

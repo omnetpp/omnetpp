@@ -77,7 +77,7 @@ class SIM_API cHead : public cObject
     /**
      * Constructor.
      */
-   cHead(const char *name=NULL);
+    cHead(const char *name=NULL);
 
     /**
      * Constructor.
@@ -85,12 +85,20 @@ class SIM_API cHead : public cObject
     cHead(const char *name, cHead *h);
 
     /**
+     * Copy constructor.
+     */
+    cHead(const cHead& h) : cObject(h)  {setName(h.name());operator=(h);}
+
+    /**
      * The destructor deletes all objects in the list that were created
      * on the heap.
      */
     virtual ~cHead()  {deleteChildren();}
 
-    //FIXME: copy constructor, op=, dup() missing
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cHead& operator=(const cHead&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -100,6 +108,12 @@ class SIM_API cHead : public cObject
      * Returns pointer to a string containing the class name, "cHead".
      */
     virtual const char *className() const {return "cHead";}
+
+    /**
+     * Dupping is not implemented for this class. This function
+     * gives an error when called.
+     */
+    virtual cObject *dup() const  {return new cHead(*this);}
 
     /**
      * Returns the name of the inspector factory class associated with this class.

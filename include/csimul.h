@@ -121,6 +121,12 @@ class SIM_API cSimulation : public cObject
     //@{
 
     /**
+     * Copy constructor.
+     */
+    cSimulation(const cSimulation& r) : cObject(r)
+            {setName(r.name());vect=NULL;operator=(r);}
+
+    /**
      * Constructor.
      */
     explicit cSimulation(const char *name, cHead *h=NULL);
@@ -138,6 +144,12 @@ class SIM_API cSimulation : public cObject
      * Returns pointer to a string containing the class name, "cSimulation".
      */
     virtual const char *className() const {return "cSimulation";}
+
+    /**
+     * Dupping is not implemented for this class. This function
+     * gives an error when called.
+     */
+    virtual cObject *dup() const  {return new cSimulation(*this);}
 
     /**
      * Returns the name of the inspector factory class associated with this class.
@@ -161,7 +173,11 @@ class SIM_API cSimulation : public cObject
      * Returns the name of the simulation object, "simulation".
      */
     virtual const char *fullPath() const {return name();}
-    // FIXME: no dup(), op=!
+
+    /**
+     * Assignment is not supported for this class. This function raises an error when called.
+     */
+    cSimulation& operator=(const cSimulation&)  {copyNotSupported();return *this;}
     //@}
 
     // Internal: things that cannot be done from the constructor

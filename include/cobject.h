@@ -147,7 +147,18 @@ class SIM_API cObject
      */
     void free(cObject *object)
         {if(object->storage()=='D') delete object; else object->setOwner(NULL);}
+    //@}
 
+    /** @name Helper functions. */
+    //@{
+
+    /**
+     * Raises an error stating that assignment, copy constructor and dup()
+     * won't work for this object. This is a convenience function to be
+     * called from the operator=() method of cObject subclasses that do
+     * not wish to implement object copying.
+     */
+    void copyNotSupported();
     //@}
 
   public:

@@ -65,7 +65,7 @@ enum {
         eCANTDUP     = 37,
         eINFLOOP     = 38,
         eSTATECHG    = 39,
-        eADDPAR      = 40,
+        eCANTCOPY    = 40,
         eBADGATE     = 41,
         eNOTCONN     = 42,
         eBADKEY      = 43,

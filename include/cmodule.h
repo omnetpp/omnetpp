@@ -228,11 +228,7 @@ class SIM_API cModule : public cObject
      */
     virtual const char *className() const {return "cModule";}
 
-    /**
-     * Creates and returns an exact copy of this object.
-     * See cObject for more details.
-     */
-    virtual cObject *dup() const;
+    /* No dup() because this is an abstract class. */
 
     /**
      * Call the passed function for each contained object.

@@ -1,3 +1,11 @@
+2001-09-06 Andras Varga
+
+	* cleanup around object copying: every class has now a copy constructor,
+        an assignment operator, and every non-abstract class has dup().
+        All dup()s call the copy constructor, and all copy constructors 
+        call the assignment operator. In some classes the assignment operator
+        calls copyNotSupported().
+
 2001-08-23 Andras Varga
 
 	* index.h: wrote doc comment about internal classes

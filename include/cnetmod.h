@@ -72,6 +72,12 @@ class SIM_API cNetMod : public cModule
     //@{
 
     /**
+     * Copy constructor.
+     */
+    cNetMod(const cNetMod& m) : cModule(m)
+            {setName(m.name());after_modinit_msg=NULL;operator=(m);}
+
+    /**
      * Constructor.
      */
     cNetMod();
@@ -101,7 +107,6 @@ class SIM_API cNetMod : public cModule
      * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cNetModIFC";}
-    //FIXME: dup missing!
     //@}
 
     /** @name Redefined cModule member functions. */
