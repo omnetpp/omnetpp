@@ -43,7 +43,7 @@
 /**
  * Supporting class for EXECUTE_ON_STARTUP macro.
  *
- * @group Internals
+ * @ingroup Internals
  */
 class ExecuteOnStartup
 {
@@ -62,7 +62,7 @@ class ExecuteOnStartup
 /**
  * Singleton class, used for global registration lists.
  *
- * @group Internals
+ * @ingroup Internals
  */
 template<class T> class cSingleton
 {
