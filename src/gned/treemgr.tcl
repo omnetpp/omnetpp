@@ -189,11 +189,11 @@ proc nedfilePopup {key} {
 
     menu .popup.newmenu -tearoff 0
     foreach i {
-      {command -command "addItem imports $key; updateTreeManager" -label {imports} -underline 0}
-      {command -command "addItemWithUniqueName channel $key; updateTreeManager" -label {channel} -underline 0}
-      {command -command "addItemWithUniqueName simple $key;  updateTreeManager" -label {simple module}  -underline 0}
-      {command -command "addItemWithUniqueName module $key;  updateTreeManager" -label {compound module}  -underline 0}
-      {command -command "addItemWithUniqueName network $key; updateTreeManager" -label {network} -underline 0}
+      {command -command "markNedFileOfItemDirty $key; addItem imports $key; updateTreeManager" -label {imports} -underline 0}
+      {command -command "markNedFileOfItemDirty $key; addItemWithUniqueName channel $key; updateTreeManager" -label {channel} -underline 0}
+      {command -command "markNedFileOfItemDirty $key; addItemWithUniqueName simple $key;  updateTreeManager" -label {simple module}  -underline 0}
+      {command -command "markNedFileOfItemDirty $key; addItemWithUniqueName module $key;  updateTreeManager" -label {compound module}  -underline 0}
+      {command -command "markNedFileOfItemDirty $key; addItemWithUniqueName network $key; updateTreeManager" -label {network} -underline 0}
     } {
        eval .popup.newmenu add $i
     }
@@ -216,7 +216,7 @@ proc toplevelComponentPopup {key} {
       {command -command "moveUpItem $key; updateTreeManager" -label {Move up} -underline 5}
       {command -command "moveDownItem $key; updateTreeManager" -label {Move down} -underline 5}
       {separator}
-      {command -command "deleteItem $key; updateTreeManager" -label {Delete}}
+      {command -command "markNedFileOfItemDirty $key; deleteItem $key; updateTreeManager" -label {Delete}}
     } {
        eval .popup add $i
     }
@@ -231,7 +231,7 @@ proc defaultPopup {key} {
       {command -command "moveUpItem $key; updateTreeManager" -label {Move up} -underline 5}
       {command -command "moveDownItem $key; updateTreeManager" -label {Move down} -underline 5}
       {separator}
-      {command -command "deleteItem $key; updateTreeManager" -label {Delete}}
+      {command -command "markNedFileOfItemDirty $key; deleteItem $key; updateTreeManager" -label {Delete}}
     } {
        eval .popup add $i
     }
