@@ -43,7 +43,7 @@ class SIM_API cException
      * If obj is non-NULL, the message text will be prepended with the object
      * type and name, like this: "(cArray)array: ..."
      */
-    void init(cObject *obj, int errc, const char *fmt, va_list va);
+    void init(const cObject *obj, int errc, const char *fmt, va_list va);
 
     // helper for init()
     void storeCtx();
@@ -73,12 +73,12 @@ class SIM_API cException
      * string table. The error string may expect printf-like arguments
      * (%s, %d) which also have to be passed to the constructor.
      */
-    cException(cObject *where, int errcode,...);
+    cException(const cObject *where, int errcode,...);
 
     /**
      * To be called like printf(). The error code is set to eCUSTOM.
      */
-    cException(cObject *where, const char *msg,...);
+    cException(const cObject *where, const char *msg,...);
     //@}
 
     /** @name Getting exception info */
