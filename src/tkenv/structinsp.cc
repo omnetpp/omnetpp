@@ -45,9 +45,11 @@ void TStructPanel::update()
        CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {No cStructDescriptor registered for this class!}", NULL));
    }
 
-   // print everything in a 4K buffer, then display it in a text control.
+   // print everything in a 5M (was 4k)  buffer, then display it in a text control.
    // this is a temporary solution, should be replaced by something more professional!
-   char buf[4000]; // FIXME! hope 4K will be enough
+   char buf[5000000]; // UPS! 4k was not enough for some special message classes
+                      // containing arrays.
+
    char val[128];
    char *s = buf;
    for (int fld=0; fld<sd->getFieldCount(); fld++)
