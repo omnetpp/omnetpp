@@ -1188,6 +1188,9 @@ sub formatmath ()
       # convert \tilde{n}, N, a, A (other letters don't have tilde versions in HTML)
       $txt =~ s!\\tilde{(n|N|a|A)}!&$1tilde;!g;
 
+      # convert \in
+      $txt =~ s!\\in! is in !g;
+
       # convert ^ and _ without braces
       $txt =~ s!\^([a-zA-Z0-9]+)!<sup>$1</sup>!g;
       $txt =~ s!\_([a-zA-Z0-9]+)!<sub>$1</sub>!g;

@@ -1861,8 +1861,7 @@ observations, and intermediate nodes contain mother observation counts
 for their children. If an observation falls outside the histogram
 range, the range is extended in a natural manner by inserting new
 level(s) at the top of the tree. The fundamental parameter to the
-algorithm is the split factor $k$. Low values of $k$, $k=2$ and $k=3$
-are to be considered. In this paper we examine only the $k=2$ case.
+algorithm is the split factor $k$. Experience shows that $k=2$ worked best.
 
 \begin{figure}[htbp]
   \begin{center}
@@ -1909,7 +1908,8 @@ proportional distribution:
 
 % careful with reformatting! $..$ MUST NOT BE BROKEN TO SEVERAL LINES!
 
-$m_{\cdots,i,j}=(1-\lambda )\frac{\tilde{n}_{\cdots,i}}{k} + \lambda \tilde{n}_{\cdots,i} \frac{s_{...,i,j}}{s_{\cdots,i}}, {\lambda}\in[0,1]$
+$m_{\cdots,i,j} = (1-\lambda)\tilde{n}_{\cdots,i}/k + \lambda \tilde{n}_{\cdots,i} s_{...,i,j} / s_{\cdots,i}$
+where $\lambda\in[0,1]$
 
 \begin{figure}[htbp]
   \begin{center}

@@ -110,7 +110,6 @@ htmlfile_spec := $BASE.htm
 :comm   :\sim:~::
 :comm   :\dots:...::
 :comm   :\cdots:..::
-:comm   :\lambda:lambda::
 :comm   :\nobreakspace:&nbsp;::
 :comm   :\hline:::
 :comm   :\tabheadcol:::
