@@ -116,11 +116,7 @@ int initGNED(Tcl_Interp *interp)
 #ifdef USE_WINMAIN
 /* setargv --
  *
- *	Parse the Windows command line string into argc/argv.  Done here
- *	because we don't trust the builtin argument parser in crt0.
- *	Windows applications are responsible for breaking their command
- *	line into arguments.
- *
+ *	Parse the Windows command line string into argc/argv.
  *      Copied here from Tk source (win/winMain.c), appending the code
  *      to set argv[0].
  */
