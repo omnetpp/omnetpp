@@ -113,7 +113,7 @@ proc createMenubar {w} {
 
     # File menu
     foreach i {
-      {command -command fileOpen -label {Load vec file...} -underline 0}
+      {command -command fileOpen -label {Load output vector file...} -underline 0}
       {separator}
       {command -command loadVectorConfig -label {Load panel contents...} -underline 0}
       {command -command saveVectorConfig -label {Save panel contents...} -underline 0}

@@ -495,7 +495,10 @@ proc vectorInfo {{lb {}} {y {}}} {
     } else {
         set id "-"
     }
-    if {$id == ""} return
+    if {$id == ""} {
+        tk_messageBox -icon info -title "Vector info" -type ok -message "No vectors selected."
+        return
+    }
 
     set res [vectorInfoDialog $id]
 
@@ -533,7 +536,10 @@ proc editVectorFilters {{lb {}}} {
             lappend ids [lindex [$g(listbox$lb) get $s] end]
         }
     }
-    if {$ids == ""} return
+    if {$ids == ""} {
+        tk_messageBox -title "Vector plotting options" -icon info -type ok -message "No vectors selected."
+        return
+    }
 
     set res [filterParDialog $ids]
 

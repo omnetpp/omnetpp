@@ -151,6 +151,8 @@ proc editExtProgs {} {
     pack .ize.f.f1.sh      -expand 0 -fill x -side top
     pack .ize.f.f1.tmp     -expand 0 -fill x -side top
 
+    .ize.f.f1.awk.e config -width 40
+
     focus .ize.f.f1.grep.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog

@@ -16,6 +16,9 @@ proc filtCfgDel {lb} {
     set name [lindex [$lb get active] end]
     if {$name == ""} return
 
+    set ans [tk_messageBox -message "Remove filter \"$name\"?" -title "Confirm" -icon question -type okcancel -parent [winfo parent $lb]]
+    if {$ans == "cancel"} {return}
+
     set pos [lsearch $filt(names) $name]
     if {$pos == -1} return
 
@@ -110,7 +113,6 @@ proc editFilterConfig {} {
 
     grid $w.b.new $w.b.dup $w.b.edit  $w.b.del  -padx 2 -pady 3
     grid x        x         x        $w.b.close -padx 2 -pady 3
-    #pack $b -side right -expand 0 -fill none -padx 2
 
     #
     # fill dialog

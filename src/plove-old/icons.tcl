@@ -70,9 +70,10 @@ set icons(save) [image create photo -data {
 }]
 
 set icons(config) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxkZJuQAAwACA/8PDw25ubp6enkAAAIAAAP//////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARCMMhJq704a2y6/59lCGRpkoZ4rkJaGUUsz7FL
-    wQWg6zFvTzga7SfB7QA9n0goJAaMx2PBGWTWRKBsZ8Pter/gcCUCADs=
+    R0lGODlhFAATALMAAFBQUGUpHUBAQG5ubkZJuaAAAMAAAP9BQYCAgJiYl8PDw+/v
+    0QAAAAAAAEBAQAAAACH5BAEAAAsALAAAAAAUABMAAARmcC1jjrw4S0qt/hznfVgR
+    dsugrqtUmGGxEHRND9fLvZZd4zmTrvIBBmGojDHlQhoWjKhkaRwmNNRSAYG4SpkX
+    4HfBvYYxS0z5zI66JeVrlkReo1n4BYDbpX/2CAAAfhqCg4SFFxEAADs=
 }]
 
 set icons(load) [image create photo -data {
