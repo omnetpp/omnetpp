@@ -1,7 +1,7 @@
-2002-12-03  Andras Varga
+2002-12-07  Andras Varga
 
-	* msgc.pl renamed to msgc; msgc.bat added; msgc now get copied to the
-	bin/ directory
+	* msgc.pl was renamed opp_msgc, and now it gets copied to the bin/ 
+	directory; an opp_msgc.cmd was also added for Windows' sake
 
 2002-11-23  Andras Varga
 

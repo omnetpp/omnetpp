@@ -15,8 +15,8 @@ OBJS=ebnf.tab.obj lex.yy.obj jar.obj jar_lib.obj jar_mod.obj jar_expr.obj jar_me
 # Targets
 #
 all : nedc.exe nedtool.exe
-	copy msgc $(OMNETPP_BIN_DIR:/=\)
-	copy msgc.bat $(OMNETPP_BIN_DIR:/=\)
+	copy opp_msgc $(OMNETPP_BIN_DIR:/=\)
+	copy opp_msgc.cmd $(OMNETPP_BIN_DIR:/=\)
 
 #
 # nedtool

@@ -3,8 +3,8 @@
 
 //
 // An example to the experimental message subclassing support. This file has
-// to be processed by msgc.pl which generates C++ classes you can use from
-// your models as well as "reflection" classes that allow Tkenv to inspect
+// to be processed by opp_msgc which generates C++ classes you can use from
+// your models, as well as "reflection" classes that allow Tkenv to inspect
 // these data stuctures.
 //
 // Check msgdoc.txt for some more information.
@@ -12,7 +12,7 @@
 // The syntax and features shown in this file are all experimental.
 // Feedback is welcome!
 //
-// msgc.pl is an intermediate solution until the new extended nedc
+// opp_msgc is an intermediate solution until the new extended nedc
 // becomes available.
 //
 
