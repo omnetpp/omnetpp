@@ -181,9 +181,6 @@ bool cSimulation::snapshot(cObject *object, const char *label)
 
     ostream& os = *osptr;
 
-    bool w = warnings(); // temporarily disable warnings
-    setWarnings( false );
-
     os << "================================================" << "\n";
     os << "||               SNAPSHOT                     ||" << "\n";
     os << "================================================" << "\n";
@@ -206,8 +203,6 @@ bool cSimulation::snapshot(cObject *object, const char *label)
     _do_writesnapshot( NULL,false, os );         // setup
     object->forEach( (ForeachFunc)_do_writesnapshot );   // do
 
-    setWarnings( w );
-
     bool success = !os.fail();
     ev.releaseStreamForSnapshot(&os);
 
@@ -228,9 +223,9 @@ static void writemodule( ostream& os, cModule& m, int indent )
 static void writesubmodules(ostream& os, cModule *p, int indent )
 {
     writemodule( os, *p, indent );
-    for (int i=1; i<=simulation.lastModuleIndex(); i++)
-        if (&simulation[i] && p==simulation[i].parentModule())
-            writesubmodules(os, &simulation[i], indent+4 );
+    for (int i=0; i<=simulation.lastModuleId(); i++)
+        if (simulation.module(i) && p==simulation.module(i)->parentModule())
+            writesubmodules(os, simulation.module(i), indent+4 );
 }
 
 void cSimulation::writeContents( ostream& os )
@@ -325,10 +320,8 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
 
     try
     {
-        // call NEDC-generated network setup function (with warnings turned off)
-        bool w=warnings();setWarnings(false); // temporarily turn off warnings
+        // call NEDC-generated network setup function
         networktype->setupfunc();
-        setWarnings( w );
 
         // handle distributed execution
         if (netInterface()!=NULL)
@@ -629,36 +622,4 @@ cSimpleModule *cSimulation::contextSimpleModule() const
     return (cSimpleModule *)contextmodp;
 }
 
-// FIXME rewrite this totally....
-void cSimulation::warning(int errc, const char *message)
-{
-    // return if warnings are disabled (either globally or in the current module)
-    if (!warnings() || (contextModule()!=NULL && !contextModule()->warnings()))
-        return;
-
-    if (!contextModule())
-    {
-        // we're called from global context
-        ev.printfmsg( "%s.", message);
-    }
-    else if (!runningModule())
-    {
-        // we're inside handleMessage(), initialize() or finish(): no chance to
-        // stop the simulation in a clean way, so no point in asking
-        ev.printfmsg( "Module %s: %s.", contextModule()->fullPath(), message);
-    }
-    else
-    {
-        // we're inside activity()
-        if(ev.askYesNo( "Module %s: %s. Continue?",
-                         contextModule()->fullPath(), message) == false)
-        {
-            // if we run distributed, stop the other segments.
-            if (netInterface())
-                netInterface()->stop_all_segments();
-
-            transferToMain();
-        }
-    }
-}
 

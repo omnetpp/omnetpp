@@ -210,34 +210,25 @@ cPar& cMessage::par(int n)
 {
     cArray& parlist = parList();
     cPar *p = (cPar *)parlist[n];
-    if (p)
-        return *p;
-    else
-    {
-        opp_warning("(%s)%s: par(): no parameter #%d",className(),fullName(),n);
-        return *(cPar *)NULL;
-    }
+    if (!p)
+        throw new cException("(%s)%s: has no parameter #%d",className(),fullName(),n);
+    return *p;
 }
 
 cPar& cMessage::par(const char *s)
 {
     cArray& parlist = parList();
-    int pn = parlist.find( s );
-    if (pn!=-1)
-        return *(cPar *)parlist[pn];
-    else
-    {
-        opp_warning("(%s)%s: par(): no parameter called `%s'",className(),fullName(),s);
-        return *(cPar *)NULL;
-    }
+    cPar *p = (cPar *)parlist.get(s);
+    if (!p)
+        throw new cException("(%s)%s: has no parameter called `%s'",className(),fullName(),s);
+    return *p;
 }
 
 int cMessage::findPar(const char *s) const
 {
-    if (!parlistp) return -1;
-    return parlistp->find( s );
-    // alternatively: return parlistp ? parlistp->find( s ) : -1;
-
+    if (!parlistp)
+        return -1;
+    return parlistp->find(s);
 }
 
 cGate *cMessage::senderGate() const

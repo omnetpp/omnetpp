@@ -73,7 +73,6 @@ cModule::cModule(const char *name, cModule *parentmod) :
     take( &machinev );
     take( &members );
 
-    warn = true;
     parentmodp = parentmod;
     idx=0; vectsize=-1;
     fullname = NULL;
@@ -321,9 +320,6 @@ cModule *cModule::moduleByRelativePath(const char *path)
 
 int cModule::findGate(const char *s, int sn) const
 {
-    bool w = simulation.warnings();
-    simulation.setWarnings( false );
-
     const cGate *g = 0; // initialize g to prevent compiler warnings
     int i = 0, n = gates();
     while (i<n)
@@ -336,7 +332,6 @@ int cModule::findGate(const char *s, int sn) const
        else
           break;
     }
-    simulation.setWarnings( w );
 
     if (i>=n)
        return -1;
@@ -355,27 +350,15 @@ cGate *cModule::gate(const char *s, int sn)
 {
     int i = findGate(s,sn);
     if (i==-1)
-    {
-        opp_warning(sn<0 ? "(%s)%s: Gate `%s' not found"
-                         : "(%s)%s: Gate `%s[%d]' not found",
-                    className(),fullName(), s, sn );
         return NULL;
-    }
-    else
-        return gate(i);
+    return gate(i);
 }
 
 const cGate *cModule::gate(const char *s, int sn) const
 {
-  int i = findGate(s,sn);
-  if (i==-1)
-    {
-      opp_warning(sn<0 ? "(%s)%s: Gate `%s' not found"
-                  : "(%s)%s: Gate `%s[%d]' not found",
-                  className(),fullName(), s, sn );
-      return NULL;
-    }
-  else
+    int i = findGate(s,sn);
+    if (i==-1)
+        return NULL;
     return gate(i);
 }
 
@@ -386,39 +369,38 @@ int cModule::findPar(const char *s) const
 
 cPar& cModule::par(int pn)
 {
-    return *(cPar *)paramv[pn];
+    cPar *p = (cPar *)paramv[pn];
+    if (!p)
+        throw new cException("(%s)%s: has no parameter #%d",className(),fullName(),pn);
+    return *p;
 }
 
 cPar& cModule::par(const char *s)
 {
-    int pn = findPar( s );
-    if (pn!=-1)
-        return par(pn);
-    else
-        {opp_warning(eNOPARAM,s);return *(cPar *)NULL;}
+    cPar *p = (cPar *)paramv.get(s);
+    if (!p)
+        throw new cException("(%s)%s: has no parameter called `%s'",className(),fullName(),s);
+    return *p;
 }
 
 cPar& cModule::ancestorPar(const char *name)
 {
     // search parameter in parent modules
-    cModule *pmod = this; // ->parentModule() ?
+    cModule *pmod = this;
     int k;
     while (pmod && (k=pmod->findPar(name))<0)
         pmod = pmod->parentmodp;
-    if (pmod)
-        return pmod->par(k);
-    else
-    {
-         opp_warning("Ancestor parameter `%s' not found for module `%s'",
-                     name, fullPath() );
-         return *(cPar *)NULL;
-    }
+    if (!pmod)
+        throw new cException("(%s)%s: has no ancestor parameter called `%s'",className(),fullName(),name);
+    return pmod->par(k);
 }
 
 const char *cModule::machinePar(int pn)
 {
     cPar *mp = (cPar *)machinev[pn];
-    return (!mp) ? NULL : mp->stringValue();
+    if (!mp)
+        return NULL;
+    return mp->stringValue();
 }
 
 const char *cModule::machinePar(const char *pname)
@@ -426,8 +408,7 @@ const char *cModule::machinePar(const char *pname)
     int i = machinev.find( pname );
     if (i==-1)
          return NULL;
-    else
-         return ((cPar *)machinev[i])->stringValue();
+    return ((cPar *)machinev[i])->stringValue();
 }
 
 bool cModule::isOnLocalMachine() const
@@ -809,7 +790,6 @@ void cSimpleModule::deleteModule()
     }
 
     // adjust gates that were directed here
-    bool w=simulation.warnings(); simulation.setWarnings(false);
     for (int i=0; i<gates(); i++)
     {
         cGate *g = gate(i);
@@ -818,7 +798,6 @@ void cSimpleModule::deleteModule()
         if (g && g->fromGate() && g->fromGate()->toGate()==g)
            g->fromGate()->setTo( NULL );
     }
-    simulation.setWarnings(w);
 
     // delete module
     //   If a module deletes itself (ie. this module is the running one),
@@ -991,10 +970,11 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
     return msg;
 }
 
-int cSimpleModule::syncpoint(simtime_t t, int g)
+void cSimpleModule::syncpoint(simtime_t t, int g)
 {
     cGate *gatep = gate(g);
-    if (gatep==NULL) {opp_warning(eNOGATE,g);return -1;}
+    if (!gatep)
+        throw new cException(eNOGATE,g);
 
     // find route destination
     cGate *destgate = gatep->destinationGate();
@@ -1003,23 +983,22 @@ int cSimpleModule::syncpoint(simtime_t t, int g)
     // otherwise, send syncpoint to destination segment
     if (destgate->ownerModule()==simulation.netInterface())
         simulation.netInterface()->send_syncpoint(t, destgate->id());
-
-    return 0;
 }
 
-int cSimpleModule::syncpoint(simtime_t t, const char *gatename, int sn)
+void cSimpleModule::syncpoint(simtime_t t, const char *gatename, int sn)
 {
     int g = findGate(gatename,sn);
     if (g<0)
         throw new cException(sn<0 ? "syncpoint(): module has no gate `%s'":
                          "syncpoint(): module has no gate `%s[%d]'",gatename,sn);
-    return syncpoint( t, g );
+    syncpoint(t,g);
 }
 
-int cSimpleModule::cancelSyncpoint(simtime_t t, int g)
+void cSimpleModule::cancelSyncpoint(simtime_t t, int g)
 {
     cGate *gatep = gate(g);
-    if (gatep==NULL) {opp_warning(eNOGATE,g);return -1;}
+    if (!gatep)
+        throw new cException(eNOGATE,g);
 
     // find route destination
     cGate *destgate = gatep->destinationGate();
@@ -1028,17 +1007,15 @@ int cSimpleModule::cancelSyncpoint(simtime_t t, int g)
     // otherwise, send syncpoint to destination segment
     if (destgate->ownerModule()==simulation.netInterface())
         simulation.netInterface()->send_cancelsyncpoint(t, destgate->id());
-
-    return 0;
 }
 
-int cSimpleModule::cancelSyncpoint(simtime_t t, const char *gatename, int sn)
+void cSimpleModule::cancelSyncpoint(simtime_t t, const char *gatename, int sn)
 {
     int g = findGate(gatename,sn);
     if (g<0)
         throw new cException(sn<0 ? "cancelSyncpoint(): module has no gate `%s'":
                          "cancelSyncpoint(): module has no gate `%s[%d]'",gatename,sn);
-    return cancelSyncpoint( t, g );
+    cancelSyncpoint(t,g);
 }
 
 void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
@@ -1476,7 +1453,6 @@ void cCompoundModule::deleteModule()
     }
 
     // adjust gates that were directed here
-    bool w=simulation.warnings(); simulation.setWarnings(false);
     for (int i=0; i<gates(); i++)
     {
             cGate *g = gate(i);
@@ -1485,7 +1461,6 @@ void cCompoundModule::deleteModule()
             if (g && g->fromGate() && g->fromGate()->toGate()==g)
                g->fromGate()->setTo( NULL );
     }
-    simulation.setWarnings(w);
 
     // delete module
     simulation.deleteModule( id() );
@@ -1496,15 +1471,22 @@ void cCompoundModule::deleteModule()
 
 cModule *cSubModIterator::operator++(int)
 {
-    if (end()) return NULL;
-    int last = simulation.lastModuleIndex();
-    do {
-       i++;
-       cModule *mod = &simulation[i];
-       if (mod!=NULL && parent==mod->parentModule())
-           return mod;
-    } while( i<=last);
-    i=-1; // at end
+    if (end())
+        return NULL;
+
+    // linear search among all modules -- should be replaced with something faster
+    int lastId = simulation.lastModuleId();
+    do
+    {
+        id++;
+        cModule *mod = simulation.module(id);
+        if (mod!=NULL && parent==mod->parentModule())
+            return mod;
+    }
+    while (id<=lastId);
+
+    // not found
+    id = -1;
     return NULL;
 }
 

@@ -198,17 +198,16 @@ bool cBag::isUsed(int m) const
 
 void *cBag::remove(int m)
 {
-    if( m<0 || m>lastused || !USED(m) ) {
+    if (m<0 || m>lastused || !USED(m))
         return NULL;
-    } else {
-        USED(m)=false;
-        firstfree = Min(firstfree, m);
-        if (m==lastused)
-            do {
-               lastused--;
-            } while ( !USED(lastused) && lastused>=0);
-        return ELEM(m);
-    }
+
+    USED(m)=false;
+    firstfree = Min(firstfree, m);
+    if (m==lastused)
+        do {
+           lastused--;
+        } while ( !USED(lastused) && lastused>=0);
+    return ELEM(m);
 }
 
 #undef BOOL
@@ -447,10 +446,8 @@ const cObject *cArray::get(const char *objname) const
 cObject *cArray::remove(const char *objname)
 {
     int m = find( objname );
-    if (m==-1) {
-        //opp_warning("(%s)%s: remove(): no object called `%s'",className(),fullName(),objname);
+    if (m==-1)
         return NULL;
-    }
     return remove(m);
 }
 
@@ -459,19 +456,15 @@ cObject *cArray::remove(cObject *obj)
     if (!obj) return NULL;
 
     int m = find( obj );
-    if (m==-1) {
-        //opp_warning("(%s)%s: remove(): object `%s' not in array",className(),fullName(),obj->fullName());
+    if (m==-1)
         return NULL;
-    }
     return remove(m);
 }
 
 cObject *cArray::remove(int m)
 {
-    if (m<0 || m>last || vect[m]==NULL) {
-        //opp_warning(eNULLPTR,className(),fullName(),m);
+    if (m<0 || m>last || vect[m]==NULL)
         return NULL;
-    }
 
     cObject *obj = vect[m]; vect[m] = NULL;
     firstfree = Min(firstfree, m);

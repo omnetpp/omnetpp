@@ -133,8 +133,6 @@ class SIM_API cModule : public cObject
     cHead members;          // list of data members of derived classes
 
   protected:
-    bool warn;              // warnings on/off
-
     int  idx;               // index if module vector, 0 otherwise
     int  vectsize;          // vector size, -1 if not a vector
 
@@ -409,35 +407,33 @@ class SIM_API cModule : public cObject
     int gates() const {return gatev.items();}
 
     /**
-     * Return a gate by its ID. Issues a warning if gate does not exist.
+     * Returns a gate by its ID. Returns NULL if the gate does not exist.
      */
     cGate *gate(int g) {return (cGate*)gatev[g];}
 
     /**
-     * Return a gate by its ID. Issues a warning if gate does not exist.
+     * Returns a gate by its ID. Returns NULL if the gate does not exist.
      */
     const cGate *gate(int g) const {return (const cGate*)gatev[g];}
 
     /**
-     * Look up a gate by its name and index.
-     * Issues a warning if gate was not found.
+     * Looks up a gate by its name and index. Returns NULL if the gate does not exist.
      */
     cGate *gate(const char *gatename,int sn=-1);
 
     /**
-     * Look up a gate by its name and index.
-     * Issues a warning if gate was not found.
+     * Looks up a gate by its name and index. Returns NULL if the gate does not exist.
      */
     const cGate *gate(const char *gatename,int sn=-1) const;
 
     /**
-     * Return the ID of the gate specified by name and index.
+     * Returns the ID of the gate specified by name and index.
      * Returns -1 if the gate doesn't exist.
      */
     int findGate(const char *gatename, int sn=-1) const;
 
     /**
-     * Check if a gate exists.
+     * Checks if a gate exists.
      */
     bool hasGate(const char *gatename, int sn=-1) const {return findGate(gatename,sn)>=0;}
 
@@ -548,22 +544,6 @@ class SIM_API cModule : public cObject
      * and cSimpleModule.
      */
     virtual void deleteModule() = 0;
-    //@}
-
-    /** @name Enable/disable warnings */
-    //@{
-
-    /**
-     * Warning messages can be enabled/disabled individually for each
-     * module. This function returns the warning status for this module:
-     * <tt>true</tt>=enabled, <tt>false</tt>=disabled.
-     */
-    bool warnings() const       {return warn;}
-
-    /**
-     * Enables or disables warnings for this module: <tt>true</tt>=enable, <tt>false</tt>=disable.
-     */
-    void setWarnings(bool wr)  {warn=wr;}
     //@}
 
     /** @name Display strings. */
@@ -966,25 +946,25 @@ class SIM_API cSimpleModule : public cModule
      * Used with parallel execution: synchronize with receiver segment.
      * Blocks receiver at t until a message arrives.
      */
-    int syncpoint(simtime_t t, int gateid);
+    void syncpoint(simtime_t t, int gateid);
 
     /**
      * Used with parallel execution: synchronize with receiver segment.
      * Blocks receiver at t until a message arrives.
      */
-    int syncpoint(simtime_t t, const char *gatename, int sn=-1);
+    void syncpoint(simtime_t t, const char *gatename, int sn=-1);
 
     /**
      * Used with parallel execution: cancel a synchronization point set by a
      * syncpoint() call.
      */
-    int cancelSyncpoint(simtime_t t, int gateid);
+    void cancelSyncpoint(simtime_t t, int gateid);
 
     /**
      * Used with parallel execution: cancel a synchronization point set by a
      * syncpoint() call.
      */
-    int cancelSyncpoint(simtime_t t, const char *gatename, int sn=-1);
+    void cancelSyncpoint(simtime_t t, const char *gatename, int sn=-1);
     //@}
 
     /** @name Receiving messages.
@@ -1097,7 +1077,8 @@ class SIM_API cSimpleModule : public cModule
     void endSimulation();
 
     /**
-     * Issue an error message.
+     * DEPRECATED. Equivalent to <code>throw new cException(
+     * ...<i>same argument list</i>...)</code>.
      */
     void error(const char *fmt,...) const;
     //@}
@@ -1299,44 +1280,42 @@ class SIM_API cSubModIterator
 {
   private:
     const cModule *parent;
-    int i;
+    int id;
 
   public:
     /**
      * Constructor. It takes the parent module.
      */
-    cSubModIterator(const cModule& p)  {parent=&p;i=0;operator++(0);}
+    cSubModIterator(const cModule& p)  {parent=&p;id=0;operator++(0);}
 
     /**
      * Reinitializes the iterator.
      */
-    void init(const cModule& p)        {parent=&p;i=0;operator++(0);}
+    void init(const cModule& p)  {parent=&p;id=0;operator++(0);}
 
     /**
-     * Obsolete.
+     * DEPRECATED because it might return null reference; use operator() instead.
      */
-    // FIXME: should really return NULL and not crash!
-    cModule& operator[](int)     {return simulation[i];}
+    cModule& operator[](int)  {return id==-1 ? *(cModule*)NULL : *(simulation.module(id));}
 
     /**
      * Returns pointer to the current module. The pointer then
      * may be cast to the appropriate cModule subclass.
      * Returns NULL of the iterator has reached the end of the list.
      */
-    // FIXME: should really return NULL and not crash!
-    cModule *operator()()        {return &simulation[i];}
+    cModule *operator()()  {return id==-1 ? NULL : simulation.module(id);}
 
     /**
      * Returns true of the iterator has reached the end of the list.
      */
-    bool end() const                   {return (i==-1);}
+    bool end() const  {return (id==-1);}
 
     /**
      * Returns the current module, then moves the iterator to the
      * next module. Returns NULL if the iterator has already reached
      * the end of the list.
      */
-    cModule *operator++(int);    // sets i to -1 if end was reached
+    cModule *operator++(int);    // sets id to -1 if end was reached
 };
 
 #endif

@@ -36,6 +36,8 @@
 #include <ctype.h>   // isspace()
 #include <math.h>
 #include "util.h"
+#include "cenvir.h"
+#include "cmodule.h"
 #include "csimul.h"  // simulation.error()
 #include "macros.h"  // Define_Function()
 #include "cexception.h"
@@ -574,7 +576,15 @@ void opp_warning(int errc...)
     vsprintf(message,emsg[errc],va);
     va_end(va);
 
-    simulation.warning(errc,message);
+    if (!simulation.contextModule())
+    {
+        // we're called from global context
+        ev.printfmsg( "%s.", message);
+    }
+    else
+    {
+        ev.printfmsg( "Module %s: %s.", simulation.contextModule()->fullPath(), message);
+    }
 }
 
 void opp_warning(const char *msgformat...)
@@ -585,7 +595,15 @@ void opp_warning(const char *msgformat...)
     vsprintf(message,msgformat,va);
     va_end(va);
 
-    simulation.warning(eCUSTOM,message);
+    if (!simulation.contextModule())
+    {
+        // we're called from global context
+        ev.printfmsg( "%s.", message);
+    }
+    else
+    {
+        ev.printfmsg( "Module %s: %s.", simulation.contextModule()->fullPath(), message);
+    }
 }
 
 void opp_terminate(int errc...)
@@ -596,7 +614,7 @@ void opp_terminate(int errc...)
     vsprintf(message,emsg[errc],va);
     va_end(va);
 
-    throw new cException(errc,message); // FIXME this became same as opp_error()
+    throw new cException(errc,message);
 }
 
 void opp_terminate(const char *msgformat...)
@@ -607,7 +625,7 @@ void opp_terminate(const char *msgformat...)
     vsprintf(message,msgformat,va);
     va_end(va);
 
-    throw new cException(eCUSTOM,message); // FIXME this became same as opp_error()
+    throw new cException(eCUSTOM,message);
 }
 
 

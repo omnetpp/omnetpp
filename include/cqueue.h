@@ -189,7 +189,7 @@ class SIM_API cQueue : public cObject
 
     /**
      * Unlinks and returns the object given. If the object is not in the
-     * queue, a warning is issued and the same pointer is returned.
+     * queue, NULL pointer is returned.
      */
     virtual cObject *remove(cObject *obj);
 
@@ -256,17 +256,17 @@ class SIM_API cQueueIterator
      * as argument. The current object will be the first (if a==1) or
      * the last (a==0) object in the queue.
      */
-    cQueueIterator(const cQueue& q, int athead=1)  //FIXME: make bool!
+    cQueueIterator(const cQueue& q, bool athead=true)
             {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
 
     /**
      * Reinitializes the iterator object.
      */
-    void init(const cQueue& q, int athead=1)
+    void init(const cQueue& q, bool athead=true)
             {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
 
     /**
-     * OBSOLETE. Use operator () instead.
+     * DEPRECATED. Use operator () instead.
      */
     cObject& operator[](int)  {return *p->obj;}
 

@@ -196,21 +196,17 @@ void cLinkedList::insert(void *item)
 void cLinkedList::insertBefore(void *where, void *item)
 {
     sLLElem *p = find_llelem(where);
-    if (p)
-       insbefore_llelem(p,item);
-    else
-       throw new cException("(%s)%s: insertBefore(w,o): item w not in list",
-                         className(),fullName());
+    if (!p)
+        throw new cException("(%s)%s: insertBefore(w,o): item w not in list",className(),fullName());
+    insbefore_llelem(p,item);
 }
 
 void cLinkedList::insertAfter(void *where, void *item)
 {
     sLLElem *p = find_llelem(where);
-    if (p)
-       insafter_llelem(p,item);
-    else
-       throw new cException("(%s)%s: insertAfter(w,o): item w not in list",
-                         className(),fullName());
+    if (!p)
+        throw new cException("(%s)%s: insertAfter(w,o): item w not in list",className(),fullName());
+    insafter_llelem(p,item);
 }
 
 void *cLinkedList::remove(void *item)
@@ -218,17 +214,15 @@ void *cLinkedList::remove(void *item)
     if(!item) return NULL;
 
     sLLElem *p = find_llelem(item);
-    if (!p) {
-         opp_warning("(%s)%s: remove(): item not in list",className(),fullName());
-         return item;
-    }
+    if (!p)
+        return NULL;
     return remove_llelem( p );
 }
 
 void *cLinkedList::pop()
 {
     if (!tailp)
-         throw new cException("(%s)%s: pop(): list empty",className(),fullName());
+        throw new cException("(%s)%s: pop(): list empty",className(),fullName());
     return remove_llelem( tailp );
 }
 

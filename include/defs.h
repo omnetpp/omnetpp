@@ -123,6 +123,8 @@ typedef double       simtime_t;
 #define peekTail()     tail()
 #define peekHead()     head()
 #define getTail()      pop()
+// cSimulation
+#define lastModuleIndex() lastModuleId()
 
 
 //=== memory mgmt functions for void* pointers

@@ -138,15 +138,14 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 {
     clear();
 
-    bool w = simulation.warnings(); simulation.setWarnings(false);
     int mod_id, gate_id;
 
-    sTopoNode *temp_nodev = new sTopoNode[simulation.lastModuleIndex()];
+    sTopoNode *temp_nodev = new sTopoNode[simulation.lastModuleId()];
 
     // Loop through all modules and find those which have the required
     // parameter with the (optionally) required value.
     int k=0;
-    for (mod_id=1; mod_id<=simulation.lastModuleIndex(); mod_id++)
+    for (mod_id=0; mod_id<=simulation.lastModuleId(); mod_id++)
     {
         cModule *mod = simulation.module(mod_id);
         if (mod && selfunc(mod,data))
@@ -223,7 +222,6 @@ void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
             link->dest_node->in_links[link->dest_node->num_in_links++] = link;
         }
     }
-    simulation.setWarnings(w);
 }
 
 sTopoNode *cTopology::node(int i)

@@ -424,43 +424,59 @@ inline bool equal(double a, double b, double epsilon);
 SIM_API int opp_vsscanf(const char *s, const char *fmt, va_list va);
 
 /**
- * Error handling to be used in new classes. The functions call
- * simulation.error()/warning(). These functions were introduced so
- * that not every class that wants to issue an error message
- * needs to include "csimul.h" and half the simulation kernel with it.
+ * DEPRECATED: Error handling functions.
  */
 //@{
 
 /**
+ * DEPRECATED: use <code>throw new cException(...)</code> instead!
+ *
  * Terminates the simulation with an error message.
  */
 SIM_API void opp_error(int errcode,...);
 
 /**
+ * DEPRECATED: use <code>throw new cException(...)</code> instead!
+ *
  * Same as function with the same name, but using custom message string.
  * To be called like printf().
  */
 SIM_API void opp_error(const char *msg,...);
 
 /**
- * Issues a warning. In a graphical user interface, this will cause
- * a message box to pop up with the given message, and the
- * user will be given a chance to continue or abort the simulation.
+ * This method can be used to report non-fatal discrepancies to the user.
+ * Generally, warnings should VERY RARELY be used, if ever.
+ * Argument list is like printf().
+ *
+ * Unlike in earlier versions, the user will NOT be offered the possibility
+ * to stop the simulation. (In Cmdenv, warnings will be written
+ * to the standard error, and in Tkenv it will probably pop up an
+ * [OK] dialog.
  */
 SIM_API void opp_warning(int errcode,...);
 
 /**
- * Same as function with the same name, but using custom message string.
- * To be called like printf().
+ * This method can be used to report non-fatal discrepancies to the user.
+ * Generally, warnings should VERY RARELY be used, if ever.
+ * Argument list works like printf().
+ *
+ * Unlike in earlier versions, the user will NOT be offered the possibility
+ * to stop the simulation. (In Cmdenv, warnings will be written
+ * to the standard error, and in Tkenv it will probably pop up an
+ * [OK] dialog.
  */
 SIM_API void opp_warning(const char *msg,...);
 
 /**
+ * DEPRECATED.
+ *
  * Print message and set error number.
  */
 SIM_API void opp_terminate(int errcode,...);
 
 /**
+ * DEPRECATED.
+ *
  * Same as function with the same name, but using custom message string.
  * To be called like printf().
  */

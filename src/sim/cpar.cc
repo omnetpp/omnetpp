@@ -531,12 +531,9 @@ void cPar::configPointer( VoidDelFunc delfunc, VoidDupFunc dupfunc,
     if (typechar!='P')
         throw new cException("(%s)%s: configPointer(): type is '%c';"
                   " should be 'P'",className(),name(),typechar);
-    else
-    {
-         ptr.delfunc = delfunc;
-         ptr.dupfunc = dupfunc;
-         ptr.itemsize = itemsize;
-    }
+    ptr.delfunc = delfunc;
+    ptr.dupfunc = dupfunc;
+    ptr.itemsize = itemsize;
 }
 
 //------------------------------------------------------------------------
@@ -547,11 +544,11 @@ const char *cPar::stringValue()
     if (isRedirected())
         return ind.par->stringValue();
 
-    if (isInput()) read();
-    if (typechar=='S')
-         return ss.sht ? ss.str : ls.str;
-    else
-         throw new cException(eBADCAST,className(),name(),typechar,'S');
+    if (isInput())
+        read();
+    if (typechar!='S')
+        throw new cException(eBADCAST,className(),name(),typechar,'S');
+    return ss.sht ? ss.str : ls.str;
 }
 
 //
@@ -921,8 +918,7 @@ cPar& cPar::read()
        strcpy(buf,s);
        bool success = setFromText(buf,'?');
        if (!success)
-             throw new cException( "Wrong value `%s' for parameter `%s'",
-                           buf, fullPath() );
+             throw new cException( "Wrong value `%s' for parameter `%s'",buf, fullPath() );
        return *this;
     }
 
@@ -938,14 +934,12 @@ cPar& cPar::read()
         else
             esc = ev.gets("Enter unnamed parameter:",buf);
 
-        if (esc) {
-            // throw new cException(eCANCEL); -- already issued in cEnvir::gets()
-            return *this;
-        }
+        if (esc)
+            throw new cException(eCANCEL);
 
         success = setFromText(buf,'?');
         if (!success)
-              ev.printfmsg( "Syntax error, try again." );
+            ev.printfmsg( "Syntax error, try again." );
     } while (!success);
     return *this;
 }
@@ -1061,18 +1055,16 @@ double cPar::evaluate()
              throw new cException(eBADEXP,className(),name());
        }
     }
-    if(tos==0)
-        return stk[tos];
-    else
+    if (tos!=0)
         throw new cException(eBADEXP,className(),name());
+    return stk[tos];
 }
 
 double cPar::fromstat()
 {
-    if (typechar=='T')
-        return  dtr.res->random();
-    else
+    if (typechar!='T')
         throw new cException(eBADCAST,className(),name(),typechar,'T');
+    return  dtr.res->random();
 }
 
 

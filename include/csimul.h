@@ -86,8 +86,6 @@ class SIM_API cSimulation : public cObject
     cNetMod *netmodp;         // if runs distributed; communications
                               //      (network interface) module
 
-    bool warn;                // if true, overrides individual warn flags
-
     simtime_t sim_time;       // simulation time (time of current event)
     long event_num;           // sequence number of current event
 
@@ -192,7 +190,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns highest used module ID.
      */
-    int lastModuleIndex() const    {return last_id;}
+    int lastModuleId() const    {return last_id;}
 
     /**
      * Finds a module by its path.
@@ -205,7 +203,9 @@ class SIM_API cSimulation : public cObject
     cModule *module(int id) const  {return id>=0 && id<size ? vect[id] : NULL;}
 
     /**
-     * Same as module(int), only this returns reference instead of pointer. FIXME may return null reference!
+     * DEPRECATED because it might return null reference; use module(int) instead.
+     * 
+     * Same as module(int), only this returns reference instead of pointer.
      */
     cModule& operator[](int id) const {return id>=0 && id<size ? *vect[id] : *(cModule *)NULL;}
 
@@ -384,26 +384,6 @@ class SIM_API cSimulation : public cObject
      * This method is called internally from cSimpleModule's snapshot().
      */
     bool snapshot(cObject *obj, const char *label);
-    //@}
-
-    /** @name Errors and warnings. */
-    //@{
-
-    /**
-     * Return true if warnings are globally enabled.
-     */
-    bool warnings() const  {return warn;}
-
-    /**
-     * Globally disable/enable warnings.
-     */
-    void setWarnings(bool w) {warn=w;}
-
-    /**
-     * Issues simulation warning. message + question:continue/abort?
-     */
-    void warning(int errcode,const char *message);
-
     //@}
 };
 

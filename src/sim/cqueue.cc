@@ -181,7 +181,7 @@ cObject *cQueue::remove_qelem(sQElem *p)
     cObject *retobj = p->obj;
     delete p;
     n--;
-    if (retobj->owner()==this) 
+    if (retobj->owner()==this)
         drop( retobj );
     return retobj;
 }
@@ -192,7 +192,7 @@ void cQueue::insert(cObject *obj)
     if (!obj)
         throw new cException("(%s)%s: cannot insert NULL pointer in queue",className(),fullName());
 
-    if (takeOwnership()) 
+    if (takeOwnership())
         take(obj);
 
     sQElem *p = headp;
@@ -227,11 +227,11 @@ void cQueue::insertBefore(cObject *where, cObject *obj)
         throw new cException("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
 
     sQElem *p = find_qelem(where);
-    if (!p) 
+    if (!p)
         throw new cException("(%s)%s: insertBefore(w,o): object w=`%s' not in queue",
                   className(),fullName(),where->name());
 
-    if (takeOwnership()) 
+    if (takeOwnership())
         take(obj);
     insbefore_qelem(p,obj);
 }
@@ -242,11 +242,11 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
         throw new cException("(%s)%s: cannot insert NULL pointer in queue", className(),fullName());
 
     sQElem *p = find_qelem(where);
-    if (!p) 
+    if (!p)
         throw new cException("(%s)%s: insertAfter(w,o): object w=`%s' not in queue",
                   className(),fullName(),where->name());
 
-    if (takeOwnership()) 
+    if (takeOwnership())
         take(obj);
     insafter_qelem(p,obj);
 }
@@ -266,11 +266,8 @@ cObject *cQueue::remove(cObject *obj)
     if(!obj) return NULL;
 
     sQElem *p = find_qelem(obj);
-    if(!p) {
-        opp_warning("(%s)%s: remove(): Object `%s' not in queue",
-                     className(),fullName(),obj->fullName());
-        return obj;
-    }
+    if (!p)
+        return NULL;
     return remove_qelem( p );
 }
 

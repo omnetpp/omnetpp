@@ -439,7 +439,8 @@ class SIM_API cArray : public cObject
 
     /**
      * Removes the object given with its index/name/pointer from the
-     * container. (If the object was owned by the container, drop()
+     * container, and returns the same pointer. If the object was not
+     * found, NULL is returned. (If the object was owned by the container, drop()
      * is called.)
      */
     cObject *remove(cObject *obj);

@@ -1,3 +1,39 @@
+2002-10-16  Andras Varga
+
+	* csimul.h: cSimulation: methods warning(), setWarnings(bool), 
+	warnings() removed from class. Warnings are no longer used by the
+	simulation library at all. opp_warning() remained (but its use 
+	discouraged) -- it can further be used	to report non-fatal 
+	discrepancies, but the user won't be offered the possibility 
+	to stop the simulation. (In Cmdenv, warnings will be written
+	to the standard error, and in Tkenv it will probably pop up an 
+	[OK] dialog.
+
+	* Convention 1: methods returning an object reference (e.g. cPar&) now
+	always throw an exception if the object is not found. (Until now, some 
+	methods issued a warning and returned null reference, i.e. 
+	*(cPar*)NULL).
+
+	* Convention 2: methods returning a pointer (e.g. cGate*) return NULL
+	pointer if the object is not found. (Until now, some methods issued 
+	a warning and returned NULL pointer.
+
+	* csimul.h: cSimulation: lastModuleIndex() renamed to lastModuleId();
+	operator[] deprecated (use module(int) method instead)
+
+	* cmodule.h: cSubModIterator: operator[] deprecated (use operator()(int)
+	method instead)
+
+	* cModule: cGate *gate() methods no longer issue a warning if the
+	gate is not found, just return NULL. (see Convention 2 above)
+
+	* cModule, cMessage: par() throws an exception if parameter was not
+	found. (see Convention 1 above)
+
+	* cArray::remove(cObject *) and cQueue::remove(cObject *) methods
+	now return NULL instead of the original pointer if the object was
+	not found. see Convention 2 above)
+
 2002-10-09  Andras Varga
 
 	* cobject.h: clarified and extended documentation of cObject.

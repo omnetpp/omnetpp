@@ -130,10 +130,10 @@ cPar& cChannel::par(int n)
 cPar& cChannel::par(const char *s)
 {
     cArray& parlist = parList();
-    int pn = parlist.find( s );
-    if (pn==-1)
+    cPar *p = (cPar *)parlist.get(s);
+    if (!p)
         throw new cException("(%s)%s: has no parameter called `%s'",className(),fullName(),s);
-    return *(cPar *)parlist[pn];
+    return *p;
 }
 
 cArray& cChannel::parList()
