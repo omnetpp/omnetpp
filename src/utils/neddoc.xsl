@@ -25,6 +25,9 @@
 <!-- to generate table of unassigned-parameters, set this to 'yes' -->
 <xsl:param name="document-unassigned-params" select="'yes'"/>
 
+<!-- to enable generating diagrams via .dot files, set this to 'yes' -->
+<xsl:param name="have-dot" select="'yes'"/>
+
 <xsl:param name="inputdoc" select="/"/>
 
 <xsl:key name="module" match="//simple-module|//compound-module" use="@name"/>
@@ -196,6 +199,22 @@
       </xsl:with-param>
    </xsl:call-template>
 
+   <xsl:if test="$have-dot='yes'">
+      <xsl:call-template name="write-html-page">
+         <xsl:with-param name="href" select="'module-diagram.html'"/>
+         <xsl:with-param name="content">
+            <h2 class="comptitle">Module Hierarchy</h2>
+            <p>The following diagram shows what other modules compound modules are composed of.
+            Unresolved module types are missing from the diagram.</p>
+            <img href="module-diagram.gif"/>
+         </xsl:with-param>
+      </xsl:call-template>
+
+      <xsl:document href="{$outputdir}/module-diagram.dot" method="text">
+         <xsl:call-template name="create-module-diagram"/>
+      </xsl:document>
+   </xsl:if>
+   
    <xsl:document href="{$outputdir}/tags.xml" indent="yes">
       <xsl:call-template name="create-tags"/>
    </xsl:document>
@@ -213,9 +232,10 @@
    </xsl:call-template>
    <h3 class="indextitle">Pages</h3>
    <ul>
-      <li>
-         <a href="overview.html" target="mainframe">HOME</a>
-      </li>
+      <li><a href="overview.html" target="mainframe">HOME</a></li>
+      <xsl:if test="$have-dot='yes'">
+         <li><a href="module-diagram.html" target="mainframe">Module Hierarchy</a></li>
+      </xsl:if>
       <xsl:for-each select="//ned-file/@banner-comment[contains(.,'@page')]">
          <xsl:call-template name="do-extract-pageindex">
             <xsl:with-param name="comment" select="."/>
@@ -1182,6 +1202,21 @@
          </xsl:call-template>
       </xsl:for-each>
    </xsl:for-each>
+</xsl:template>
+
+<xsl:template name="create-module-diagram">
+   <!-- FIXME include channels, too! -->
+   digraph opp {
+      node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#fffcaf"];
+      <xsl:for-each select="//simple-module|//compound-module">
+         <xsl:sort select="@name"/>
+         <xsl:variable name="modname" select="@name"/>
+         <xsl:value-of select="$modname"/>;
+         <xsl:for-each select="key('module',submodules/submodule/@type-name)">
+            <xsl:value-of select="$modname"/> -> <xsl:value-of select="@name"/>; 
+         </xsl:for-each>
+      </xsl:for-each>
+   }
 </xsl:template>
 
 </xsl:stylesheet>
