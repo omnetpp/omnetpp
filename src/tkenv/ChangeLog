@@ -13,6 +13,8 @@ TODO: Need display string option to turn off module labels
 TODO: need <Copy> icon on module output window toolbars
 TODO: treeview into each object inspector!
 TODO: BUSY cursor!!! at network setup, callfinish, etc
+TODO: needed function: "express run until next event in this module"
+TODO: needed new mode: express run for other modules, fast/normal for this module
 
 2004-04-20  Andras Varga
 
