@@ -1381,6 +1381,7 @@ double mean = stat.mean(),
 
 \subsubsection{Initialization and usage}
 
+% TBD this has to be rewritten at some point... maybe take over examples from Doxygen doc.
 
 The distribution estimation\index{distribution!estimation} classes (the histogram classes,
 \cclass{cPSquare} and \cclass{cKSplit}) are derived from
@@ -1399,7 +1400,7 @@ automatically determining the range.
 setRange(lower,upper);
 setRangeAuto(numFirstvals, rangeExtFactor);
 setRangeAutoLower(upper, numFirstvals, rangeExtFactor);
-setRangeAutoUpper(lower, num, rangeExtFactor);
+setRangeAutoUpper(lower, numFirstvals, rangeExtFactor);
 \end{verbatim}
 
 \begin{verbatim}
