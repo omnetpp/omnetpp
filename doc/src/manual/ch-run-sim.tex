@@ -229,9 +229,6 @@ For details, see section \ref{sec:ch-run-sim:outvectors}
 The most important options of the \texttt{[General]} section are the
 following.
 \begin{itemize}
-  \item{The \fpar{ini-warnings} option can be used for ``debugging'' ini
-    files: when enabled, {\opp} lists the names of ini file entries which
-    were searched for but not found.}
   \item{The \fpar{network} option selects the model to be set up and run.}
   \item{The length of the simulation can be set with the
     \fpar{sim-time-limit} and the \fpar{cpu-time-limit} options (the
@@ -251,9 +248,9 @@ have priority over globally set ones.
 \tbf{Name and default value} & \tbf{Description}\\\hline
 \multicolumn{2}{|c|}{\tbf{[General]}} \\\hline
 %%
-\fpar{ini-warnings} = yes & Helps debugging of the ini file.
-When enabled, {\opp} lists the names of ini file entries which
-were searched for but not found.
+\fpar{ini-warnings} = yes & When enabled, {\opp} lists the names of
+ini file entries for which the default values were used.
+This can at times be useful for debugging ini files.
 \\\hline
 %%
 \fpar{preload-ned-files} = & List of NED files to be loaded dynamically
@@ -298,30 +295,62 @@ managers, etc.) or simple modules. Example:
 
 \fpar{load-libs} = \ttt{"../lib/rng2 ../lib/ospfrouting"}}\\\hline
 %%
+\fpar{fname-append-host} = false & {\raggedright Turning it on will cause the
+host name and process Id to be appended to the names of output files
+(e.g. \ttt{omnetpp.vec}, \ttt{omnetpp.sca}). This is especially useful
+for parallel distributed simulation (chapter \ref{cha:parallel-execution}).}\\\hline
+%%
+\fpar{parallel-simulation} = false & {\raggedright Enables parallel distributed
+simulation (see chapter \ref{cha:parallel-execution}).}\\\hline
+%%
+\mbox{\fpar{scheduler-class} =} \linebreak
+\cclass{cSequentialScheduler}
+&
+{\raggedright Part of the Envir\index{Envir} plugin mechanism:
+selects the scheduler class. This plugin interface allows for implementing
+real-time, hardware-in-the-loop, distributed and distributed parallel simulation.
+The class has to implement the \cclass{cScheduler} interface
+defined in \ttt{envirext.h}.
+More details in section \ref{sec:ch-opp-design:customization}.}\\\hline
+%%
+\mbox{\fpar{configuration-class} =} \linebreak
+\cclass{cInifile}
+&
+{\raggedright Part of the Envir\index{Envir} plugin mechanism: selects the
+class from which all configuration will be obtained. In other words, this
+option lets you replace \ttt{omnetpp.ini} with some other implementation,
+e.g. database input. The simulation program still has to bootstrap from
+an \ttt{omnetpp.ini} though (which contains the \ttt{configuration-class}
+setting). The class has to implement the \cclass{cConfiguration} interface
+defined in \ttt{envirext.h}.
+More details in section \ref{sec:ch-opp-design:customization}.}\\\hline
+%%
 \mbox{\fpar{outputvectormanager-class} =} \linebreak
 \cclass{cFileOutputVectorManager}
 &
-Part of the Envir\index{Envir} plugin mechanism: defines the name of
+{\raggedright Part of the Envir\index{Envir} plugin mechanism: selects
 the output vector manager class to be used to record data from output
 vectors\index{output!vector}.  The class has to implement the
-\cclass{cOutputVectorManager} interface defined in \ttt{envirext.h}.\\\hline
+\cclass{cOutputVectorManager} interface defined in \ttt{envirext.h}.
+More details in section \ref{sec:ch-opp-design:customization}.}\\\hline
 %%
 \mbox{\fpar{outputscalarmanager-class} =} \linebreak
 \cclass{cFileOutputScalarManager}
 &
-Part of the Envir plugin mechanism: defines the name of the output
+{\raggedright Part of the Envir plugin mechanism: selects the output
 scalar manager class to be used to record data passed to
 \fname{recordScalar()}. The class has to implement the
 \cclass{cOutputScalarManager} interface defined in \ttt{envirext.h}.
-\\\hline
+More details in section \ref{sec:ch-opp-design:customization}.}\\\hline
 %%
 \mbox{\fpar{snapshotmanager-class} =} \linebreak
 \cclass{cFileSnapshotManager}
 &
-Part of the Envir plugin mechanism: defines the name of the class to
+{\raggedright Part of the Envir plugin mechanism: selects the class to
 handle streams to which \fname{snapshot()} writes its output.  The
 class has to implement the \cclass{cSnapshotManager} interface defined
-in \ttt{envirext.h}.\\\hline
+in \ttt{envirext.h}.
+More details in section \ref{sec:ch-opp-design:customization}.}\\\hline
 
 \end{longtable}
 
