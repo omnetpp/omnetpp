@@ -123,3 +123,5 @@ March 27, 2001
  - makemake renamed to opp_makemake
 March 29, 2001
  - replace utility renamed to opp_replace
+May 24, 2001
+ - prephtml, wc-l moved to _scripts

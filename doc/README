@@ -64,6 +64,7 @@ omnetpp/              OMNeT++ root directory
    bin/               executables
    include/           header files for compiling simulations
    lib/               simulation library files
+   bitmaps/           icons that can be used in network graphics
    doc/               readme, license etc.
    html/              manuals in HTML format
    src/
