@@ -191,8 +191,13 @@ Simple modules are declared with the following syntax:
 
 \subsection{Simple module parameters}
 \label{sec:ch-ned-lang:simple-module-param}
-
 \index{module!parameters}
+\index{ned!keywords!numeric}
+\index{ned!keywords!const}
+\index{ned!keywords!bool}
+\index{ned!keywords!string}
+\index{ned!keywords!xml}
+
 
 Parameters are variables that belong to a module. Simple module
 parameters can be queried and used by simple module algorithms.
@@ -204,14 +209,10 @@ Parameters are identified by names.
 By convention, parameter names begin with lower-case letters.
 
 Parameters are declared by listing their names in the
-parameters:\index{module!parameter declaration} section of a
-module description. The parameter type can optionally be specified as
-\fpar[ned!keywords!numeric]{numeric}, \fpar[ned!keywords!numeric const]{numeric const}
-(or simply \fpar[ned!keywords!const]{const}),
-\fpar[ned!keywords!bool]{bool}, \fpar[ned!keywords!string]{string}, or
-\fpar[ned!keywords!xml]{xml}. (The last one, \ttt{xml} makes external XML files
-accessible to modules.)
-
+\ttt{parameters:} section of a module description.
+The parameter type can optionally be specified as \ttt{numeric},
+\ttt{numeric const} (or simply \ttt{const}), \ttt{bool}, \ttt{string},
+or \ttt{xml}. If the parameter type is omitted, \ttt{numeric} is assumed.
 
 Example:
 
@@ -225,34 +226,57 @@ Example:
 \tbf{endsimple}
 \end{Verbatim}
 
-If the parameter type is omitted, \fpar[ned!keywords!numeric]{numeric}
-is assumed. Practically, this means that you only need to explicitly
-specify the type for string, bool or xml-valued parameters.
-
-Note that the actual parameter values are given later, when the module
-is used as a building block of a compound module type or as a system
-module.
+Parameters are assigned from NED (when the module is used as a building block
+of a larger compound module) or from the config file \ttt{omnetpp.ini}.
+\ttt{omnetpp.ini} is described in Chapter \ref{cha:run-sim}.
 
 
-\subsubsection{Const parameters}
+\subsubsection{Random parameters and const}
 \label{sec:ch-ned-lang:const}
 \index{const}
 \index{module!parameters!const}
 
-When you declare a parameter to be \fpar[ned!keywords!const]{const},
-it will be evaluated and replaced by the resulting constant value
-at the beginning of the simulation. This can be important when the
-original value was a random number\index{random!number} or an
-expression\index{ned!expression}. One is advised to write the
-\fpar[ned!keywords!const]{const} keyword for each parameter that
-should be constant.
+Numeric parameters can be set to return random numbers, uniformly
+distributed or from various distributions. For example, setting a
+parameter to \ttt{truncnormal(2,0.8)} would return a new random number
+from the truncated normal distribution with mean 2.0 and standard deviation 0.8
+every time the parameter is read from the simple module (from C++ code).
+For example, this is useful for specifying interarrival times for generated
+packets or jobs.
 
-Beware when using \fpar[ned!keywords!const]{const} and by-reference
-parameter passing (\fpar[ned!keywords!ref]{ref} modifier, see later)
-at the same time. Converting the parameter to constant can affect
-other modules and cause errors that are difficult to discover.
+You may want the initial parameter value to be chosen randomly, but not
+to change it afterwards. This can be achieved with declaring the parameter
+to be \ttt{const}. \ttt{const} parameters will be evaluated only once
+at the beginning of the simulation then set to a constant value.
+
+It is recommended to mark every parameter with \ttt{const} unless
+you really want to make use of the random numbers feature.
 
 
+\subsubsection{XML parameters}
+\index{xml}
+\index{module!parameters!xml}
+
+Sometimes modules need more complex input than simple module parameters
+can describe. Then you'd put these parameters into an external config file,
+and let the modules read and process the file. You'd pass the file name
+to the modules in a string parameter.
+
+These days, XML is increasingly becoming a standard format for configuration
+files as well, so you might as well describe your configuration in XML.
+From the 3.0 version, {\opp} contains built-in support for XML config files.
+
+{\opp} wraps the XML parser (LibXML, Expat, etc.), reads and DTD-validates
+the file (if the XML document contains a DOCTYPE), caches the file
+(so that if you refer to it from several modules, it'll still be loaded
+only once), lets you pick parts of the document via an XPath-subset notation,
+and presents the contents to you in a DOM-like object tree.
+
+This machinery can be accessed via the NED parameter type \ttt{xml}, and the
+\ttt{xmldoc()} operator. You can point \ttt{xml}-type module parameters
+to a specific XML file (or to an element inside an XML file) via the
+\ttt{xmldoc()} operator. You can assign \ttt{xml} parameters both from NED
+and from \ttt{omnetpp.ini}.
 
 
 \subsection{Simple module gates}
@@ -1180,15 +1204,13 @@ documented below.
 From the C++ code you'd access the XML element in the following way:
 
 \begin{verbatim}
-cXMLElement *rootelement = par("xmlparam").asXML();
+cXMLElement *rootelement = par("xmlparam").xmlValue();
 \end{verbatim}
 
 The \cclass{cXMLElement} class provides a DOM-like access to the XML document.
 You can then navigate the document tree, extract the information you need,
 and store it in variables or your internal data structure.
 \cclass{cXMLElement} is documented in Chapter \ref{the-simulation-library}.
-
-% FIXME introduce omnetpp.ini and param assignments somewhere before this point
 
 You can also XML parameters from omnetpp.ini:
 

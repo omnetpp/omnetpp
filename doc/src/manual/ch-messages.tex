@@ -1209,9 +1209,6 @@ It is also useful for implementing computed fields.
 
 You can declare any field to be abstract with the following syntax:
 
-%
-% FIXME TBD: is customize=true really needed?
-%
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{message} FooPacket
 \{
@@ -1322,9 +1319,6 @@ Some additional notes:
 
 \begin{enumerate}
   \item{\ttt{setFooArraySize()}, \ttt{setBarArraySize()} are redundant.
-     \footnote{FIXME Wonder if I shouldn't generate \ttt{set...ArraySize()} methods
-     for abstract arrays? Tkenv doesn't really need them and seems like
-     they're in the way.}}
   \item{\ttt{getBar(int k)} cannot be implemented in a straightforward way
      (\ttt{std::stack} does not support accessing elements by index).
      It could still be implemented in a less efficient way using STL iterators,
