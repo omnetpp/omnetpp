@@ -13,7 +13,7 @@
 
 set graphnumber 0
 
-proc createBltGraph {graphtype {graphname ""}} {
+proc createBltGraph {graphtype {graphtitle ""}} {
 
     global help_tips icons
     global graphnumber
@@ -71,6 +71,7 @@ proc createBltGraph {graphtype {graphname ""}} {
 
     # create page for graph
     incr graphnumber
+    set graphname $graphtitle
     if {$graphname==""} {set graphname "Chart $graphnumber"}
     set tabId [$w.nb insert end -text $graphname]
     set page $w.nb.page$tabId
@@ -88,6 +89,8 @@ proc createBltGraph {graphtype {graphname ""}} {
         blt::barchart $graph
         $graph configure -barmode aligned
     }
+    $graph configure -title $graphtitle
+
     # optimize default settings for pasting graph into documents
     $graph configure -plotborderwidth 1
     $graph configure -plotrelief solid
