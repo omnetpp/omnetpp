@@ -69,5 +69,6 @@
 #include "compat.h"
 #include "cparsimcomm.h"
 #include "ccommbuffer.h"
+#include "crng.h"
 
 #endif

@@ -1,5 +1,9 @@
 2004-10-25  Andras Varga
 
+	* crng.h: added
+
+2004-10-25  Andras Varga
+
         * all files: void info(char *buf) changed to std::string info() const
         -- new signature is both safer (no danger of accidental buffer overrun)
         and easier to use.
