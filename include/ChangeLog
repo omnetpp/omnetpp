@@ -1,3 +1,8 @@
+2002-12-02  Andras Varga
+	* cmessage.h: added convenience methods: addObject(), getObject(), 
+	hasObject(), removeObject(). Refined related documentation and 
+	added hint to message subclassing to class description.
+
 2002-11-03  Andras Varga
 
 	* namespace cleanup: several iterator and other small classes

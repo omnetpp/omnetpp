@@ -46,7 +46,8 @@ class cMessageHeap;
  * standard libraries. Zero and positive values can be freely used
  * by simulation models.
  */
-enum eMessageKind {
+enum eMessageKind
+{
   MK_STARTER = -1,  /// Starter message. Used by scheduleStart().
   MK_TIMEOUT = -2,  /// Internal timeout message. Used by wait(), etc.
   MK_PACKET  = -3,  /// Network packet. Used by cPacket.
@@ -63,10 +64,22 @@ enum eMessageKind {
  * error flag and time stamp.
  *
  * After being sent through a channel, cMessage also remembers
- * the sending and delivery times and its source module. cMessage
- * holds a cArray which means that a cMessage can
- * be attached any number of objects. These objects will typically
- * be of cPar type, but other types are also possible.
+ * the sending and delivery times and its source module.
+ *
+ * You can encapsulate another message into a message object, which
+ * is useful when modeling protocol stacks.
+ *
+ * cMessage holds a cArray (see parList()) which means that you can attach
+ * any number of objects to a message. These objects
+ * can be cPar or other objects (like statistics objects, for example).
+ * However, when modeling protocol headers, it is not convenient to add
+ * header fields as cPar objects: cPars are fairly complex objects themselves,
+ * so they add both execution and memory overhead, and they are also error-prone
+ * because cPar objects have to be added dynamically and individually to each
+ * message object. It is a better idea to leave out cPar objects, and define
+ * new C++ message classes with the necessary parameters as int, char, double, etc.
+ * instance variables. The latter technique is called 'message subclassing',
+ * and the manual describes it in detail.
  *
  * @ingroup SimCore
  */
@@ -196,7 +209,7 @@ class SIM_API cMessage : public cObject
      * encapsulation/decapsulation. (See also encapsulate() and decapsulate().)
      *
      * The value may be negative (message length may be decreased too).
-     * If the resulting length would be negative, the method throws cException.
+     * If the resulting length would be negative, the method throws a cException.
      */
     void addLength(long delta);
 
@@ -216,7 +229,7 @@ class SIM_API cMessage : public cObject
     void setTimestamp(simtime_t t) {tstamp=t;}
 
     /**
-     * Set context pointer.
+     * Sets context pointer.
      */
     void setContextPointer(void *p) {contextptr=p;}
 
@@ -246,7 +259,7 @@ class SIM_API cMessage : public cObject
     simtime_t timestamp() const {return tstamp;}
 
     /**
-     * FIXME: INTERNAL: Used by cMessageHeap.
+     * INTERNAL: Used by cMessageHeap.
      */
     unsigned long insertOrder() const {return insertordr;}
 
@@ -256,55 +269,161 @@ class SIM_API cMessage : public cObject
     void *contextPointer() const {return contextptr;}
     //@}
 
-    /** @name Parameter list. */
+    /** @name Dynamically attaching objects. */
     //@{
 
     /**
-     * Returns the cArray member of the message which holds
-     * the parameters and other attached objects. Parameters can be inserted,
-     * retrieved, looked up or deleted through cArray's member
-     * functions.
+     * Returns reference to the 'object list' of the message: a cArray
+     * which is used to store parameter (cPar) objects and other objects
+     * attached to the message.
+     *
+     * One can use either parList() combined with cArray methods,
+     * or several convenience methods (addPar(), addObject(), par(), etc.)
+     * to add, retrieve or remove cPars and other objects.
+     *
+     * <i>NOTE: using the object list has alternatives which may better
+     * suit your needs. For more information, see class description for discussion
+     * about message subclassing vs dynamically attached objects.</i>
      */
     cArray& parList()
         {if (!parlistp) _createparlist(); return *parlistp;}
 
     /**
-     * Add a parameter to the message's parameter list. Convenience function.
+     * Add a new, empty parameter (cPar object) with the given name
+     * to the message's object list.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::add() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
      */
     cPar& addPar(const char *s)  {cPar *p=new cPar(s);parList().add(p);return *p;}
 
     /**
-     * Add a parameter to the message's parameter list. Convenience function.
+     * Add a parameter object to the message's object list.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::add() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
      */
     cPar& addPar(cPar *p)  {parList().add(p); return *p;}
 
     /**
-     * Add a parameter to the message's parameter list. DEPRECATED.
+     * DEPRECATED! Use addPar(cPar *p) instead.
      */
     cPar& addPar(cPar& p)  {parList().add(&p); return p;}
 
     /**
-     * Returns the nth object in the message's parameter list,
-     * converting it to a cPar. Convenience function.
+     * Returns the nth object in the message's object list, converting it to a cPar.
+     * If the object doesn't exist or it cannot be cast to cPar (using dynamic_cast<>),
+     * the method throws a cException.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::get() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
      */
     cPar& par(int n);
 
     /**
-     * Returns the object with the given name in the message's parameter list,
-     * converting it to a cPar. Convenience function.
+     * Returns the object with the given name in the message's object list,
+     * converting it to a cPar.
+     * If the object doesn't exist or it cannot be cast to cPar (using dynamic_cast<>),
+     * the method throws a cException.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::get() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
      */
     cPar& par(const char *s);
 
     /**
      * Returns the index of the parameter with the given name in the message's
-     * parameter list, or -1 if it could not be found. Convenience function.
+     * object list, or -1 if it could not be found.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::find() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
      */
     int findPar(const char *s) const;
 
     /**
-     * Check if a parameter exists.
+     * Check if a parameter with the given name exists in the message's
+     * object list.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::exist() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
      */
     bool hasPar(const char *s) const {return findPar(s)>=0;}
+
+    /**
+     * Add an object to the message's object list.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::add() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
+     */
+    cObject *addObject(cObject *p)  {parList().add(p); return p;}
+
+    /**
+     * Returns the object with the given name in the message's object list.
+     * If the object is not found, it returns NULL.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::get() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
+     */
+    cObject *getObject(const char *s)  {return parList().get(s);}
+
+    /**
+     * Check if an object with the given name exists in the message's object list.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::exist() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
+     */
+    bool hasObject(const char *s)  {return !parlistp ? false : parlistp->find(s)>=0;}
+
+    /**
+     * Remove the object with the given name from the message's object list, and
+     * return its pointer. If the object doesn't exist, NULL is returned.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::remove() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
+     */
+    cObject *removeObject(const char *s)  {return parList().remove(s);}
+
+    /**
+     * Remove the object with the given name from the message's object list, and
+     * return its pointer. If the object doesn't exist, NULL is returned.
+     *
+     * <i>NOTE: This is a convenience function: one may use parList() and
+     * cArray::remove() instead. See also class description for discussion about
+     * message subclassing vs dynamically attached objects.</i>
+     *
+     * @see parList()
+     */
+    cObject *removeObject(cObject *p)  {return parList().remove(p);}
     //@}
 
     /** @name Message encapsulation. */
