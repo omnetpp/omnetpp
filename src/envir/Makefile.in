@@ -75,11 +75,11 @@ clean:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 args.o: args.h envdefs.h ../sim/defs.h
-cenvir.o: args.h envdefs.h ../sim/defs.h ../sim/cenvir.h omnetapp.h
-cenvir.o: ../sim/carray.h ../sim/cobject.h ../sim/util.h ../sim/chead.h
-cenvir.o: slaveapp.h appreg.h ../sim/cmodule.h ../sim/ccor.h ../sim/cqueue.h
-cenvir.o: ../sim/cgate.h ../sim/csimul.h ../sim/errmsg.h ../sim/cmsgheap.h
-cenvir.o: ../sim/coutvect.h ../sim/cnetmod.h
+cenvir.o: args.h envdefs.h ../sim/defs.h cinifile.h ../sim/cenvir.h
+cenvir.o: omnetapp.h ../sim/carray.h ../sim/cobject.h ../sim/util.h
+cenvir.o: ../sim/chead.h slaveapp.h appreg.h ../sim/cmodule.h ../sim/ccor.h
+cenvir.o: ../sim/cqueue.h ../sim/cgate.h ../sim/csimul.h ../sim/errmsg.h
+cenvir.o: ../sim/cmsgheap.h ../sim/coutvect.h ../sim/cnetmod.h
 cinifile.o: ../sim/cenvir.h ../sim/defs.h ../sim/util.h cinifile.h envdefs.h
 cinifile.o: patmatch.h
 main.o: ../sim/cobject.h ../sim/defs.h ../sim/util.h ../sim/csimul.h
@@ -93,9 +93,10 @@ omnetapp.o: ../sim/coutvect.h ../sim/cpar.h ../sim/cnetmod.h ../sim/cmodule.h
 omnetapp.o: ../sim/cqueue.h ../sim/cgate.h
 patmatch.o: patmatch.h ../sim/defs.h envdefs.h
 seeds.o: omnetapp.h ../sim/carray.h ../sim/cobject.h ../sim/defs.h
-seeds.o: ../sim/util.h ../sim/chead.h ../sim/cenvir.h envdefs.h
+seeds.o: ../sim/util.h ../sim/chead.h ../sim/cenvir.h args.h envdefs.h
 slaveapp.o: slaveapp.h envdefs.h ../sim/defs.h omnetapp.h ../sim/carray.h
 slaveapp.o: ../sim/cobject.h ../sim/util.h ../sim/chead.h ../sim/cenvir.h
-slaveapp.o: cinifile.h ../sim/csimul.h ../sim/errmsg.h ../sim/cmsgheap.h
-slaveapp.o: ../sim/coutvect.h ../sim/ccor.h ../sim/cnetmod.h ../sim/cmodule.h
-slaveapp.o: ../sim/cqueue.h ../sim/cgate.h appreg.h
+slaveapp.o: args.h cinifile.h ../sim/csimul.h ../sim/errmsg.h
+slaveapp.o: ../sim/cmsgheap.h ../sim/coutvect.h ../sim/ccor.h
+slaveapp.o: ../sim/cnetmod.h ../sim/cmodule.h ../sim/cqueue.h ../sim/cgate.h
+slaveapp.o: appreg.h

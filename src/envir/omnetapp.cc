@@ -20,10 +20,6 @@
 #include <ctype.h>
 #include <stdio.h>
 
-#if HAVE_DLOPEN
-#include <dlfcn.h>
-#endif
-
 #include "args.h"
 #include "omnetapp.h"
 #include "cinifile.h"

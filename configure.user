@@ -11,8 +11,8 @@
 # the libraries.
 #
 #CFLAGS='-g'
-#CFLAGS='-g -Wall'
-CFLAGS='-O3 -DNDEBUG=1'
+CFLAGS='-g -Wall'
+#CFLAGS='-O3 -DNDEBUG=1'
 
 #
 # Select here whether you want to build static or shared libraries.

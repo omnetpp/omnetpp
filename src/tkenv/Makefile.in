@@ -101,13 +101,15 @@ inspect.o: ../sim/cstk.h ../sim/cmodule.h ../sim/cstat.h ../sim/cdensity.h
 inspect.o: ../sim/chist.h ../sim/cvarhist.h ../sim/cpsquare.h
 inspect.o: ../sim/cksplit.h ../sim/cdetect.h ../sim/ctopo.h ../sim/cnetmod.h
 inspect.o: ../sim/cfsm.h ../sim/protocol.h ../sim/cenvir.h tkapp.h
-inspect.o: ../envir/omnetapp.h ../envir/envdefs.h tklib.h tkinsp.h
+inspect.o: ../envir/omnetapp.h ../envir/args.h ../envir/envdefs.h tklib.h
+inspect.o: tkinsp.h
 modinsp.o: ../sim/cmodule.h ../sim/cobject.h ../sim/defs.h ../sim/util.h
 modinsp.o: ../sim/ccor.h ../sim/chead.h ../sim/carray.h ../sim/cqueue.h
 modinsp.o: ../sim/cgate.h ../sim/csimul.h ../sim/errmsg.h ../sim/cmsgheap.h
 modinsp.o: ../sim/coutvect.h ../sim/cmessage.h ../sim/cpar.h ../sim/cnetmod.h
 modinsp.o: ../sim/cstat.h ../sim/cdensity.h tkapp.h ../envir/omnetapp.h
-modinsp.o: ../sim/cenvir.h ../envir/envdefs.h tklib.h tkinsp.h arrow.h
+modinsp.o: ../sim/cenvir.h ../envir/args.h ../envir/envdefs.h tklib.h
+modinsp.o: tkinsp.h arrow.h
 objinsp.o: ../sim/omnetpp.h ../sim/defs.h ../sim/util.h ../sim/errmsg.h
 objinsp.o: ../sim/cobject.h ../sim/csimul.h ../sim/chead.h ../sim/cmsgheap.h
 objinsp.o: ../sim/coutvect.h ../sim/ccor.h ../sim/macros.h ../sim/ctypes.h
@@ -117,28 +119,31 @@ objinsp.o: ../sim/cstk.h ../sim/cmodule.h ../sim/cstat.h ../sim/cdensity.h
 objinsp.o: ../sim/chist.h ../sim/cvarhist.h ../sim/cpsquare.h
 objinsp.o: ../sim/cksplit.h ../sim/cdetect.h ../sim/ctopo.h ../sim/cnetmod.h
 objinsp.o: ../sim/cfsm.h ../sim/protocol.h ../sim/cenvir.h tkapp.h
-objinsp.o: ../envir/omnetapp.h ../envir/envdefs.h tklib.h tkinsp.h arrow.h
+objinsp.o: ../envir/omnetapp.h ../envir/args.h ../envir/envdefs.h tklib.h
+objinsp.o: tkinsp.h arrow.h
 statinsp.o: ../sim/cmodule.h ../sim/cobject.h ../sim/defs.h ../sim/util.h
 statinsp.o: ../sim/ccor.h ../sim/chead.h ../sim/carray.h ../sim/cqueue.h
 statinsp.o: ../sim/cgate.h ../sim/csimul.h ../sim/errmsg.h ../sim/cmsgheap.h
 statinsp.o: ../sim/coutvect.h ../sim/cmessage.h ../sim/cpar.h
 statinsp.o: ../sim/cnetmod.h ../sim/cstat.h ../sim/cdensity.h tkapp.h
-statinsp.o: ../envir/omnetapp.h ../sim/cenvir.h ../envir/envdefs.h tklib.h
-statinsp.o: tkinsp.h arrow.h
+statinsp.o: ../envir/omnetapp.h ../sim/cenvir.h ../envir/args.h
+statinsp.o: ../envir/envdefs.h tklib.h tkinsp.h arrow.h
 tkapp.o: ../envir/appreg.h ../sim/chead.h ../sim/cobject.h ../sim/defs.h
 tkapp.o: ../sim/util.h ../envir/cinifile.h ../envir/envdefs.h ../sim/cenvir.h
 tkapp.o: ../sim/cmodule.h ../sim/ccor.h ../sim/carray.h ../sim/cqueue.h
 tkapp.o: ../sim/cgate.h ../sim/csimul.h ../sim/errmsg.h ../sim/cmsgheap.h
 tkapp.o: ../sim/coutvect.h ../sim/cmessage.h ../sim/cpar.h ../sim/cstk.h
-tkapp.o: ../sim/ctypes.h ../sim/cnetmod.h tkapp.h ../envir/omnetapp.h tklib.h
-tkapp.o: tkinsp.h
+tkapp.o: ../sim/ctypes.h ../sim/cnetmod.h tkdefs.h tkapp.h
+tkapp.o: ../envir/omnetapp.h ../envir/args.h tklib.h tkinsp.h
 tkcmd.o: ../sim/cenvir.h ../sim/defs.h ../sim/carray.h ../sim/cobject.h
 tkcmd.o: ../sim/util.h ../sim/csimul.h ../sim/errmsg.h ../sim/chead.h
 tkcmd.o: ../sim/cmsgheap.h ../sim/coutvect.h ../sim/ccor.h ../sim/cmodule.h
 tkcmd.o: ../sim/cqueue.h ../sim/cgate.h ../sim/ctypes.h tkapp.h
-tkcmd.o: ../envir/omnetapp.h ../envir/envdefs.h tklib.h tkinsp.h
+tkcmd.o: ../envir/omnetapp.h ../envir/args.h ../envir/envdefs.h tklib.h
+tkcmd.o: tkinsp.h
 tklib.o: ../sim/cobject.h ../sim/defs.h ../sim/util.h ../sim/cmodule.h
 tklib.o: ../sim/ccor.h ../sim/chead.h ../sim/carray.h ../sim/cqueue.h
 tklib.o: ../sim/cgate.h ../sim/csimul.h ../sim/errmsg.h ../sim/cmsgheap.h
 tklib.o: ../sim/coutvect.h tklib.h tkinsp.h ../envir/omnetapp.h
-tklib.o: ../sim/cenvir.h ../envir/envdefs.h tkapp.h ../envir/patmatch.h
+tklib.o: ../sim/cenvir.h ../envir/args.h ../envir/envdefs.h tkapp.h
+tklib.o: ../envir/patmatch.h

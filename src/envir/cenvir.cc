@@ -118,7 +118,7 @@ void cEnvir::setup(int argc, char *argv[])
 
     // load shared libs given in [General]/load-libs=
     const char *libs = ini_file->getAsString( "General", "load-libs", "" );
-    if (libs)
+    if (libs && *libs)
     {
         // 'libs' contains several file names separated by whitespaces
         char *buf = opp_strdup(libs);
@@ -356,6 +356,9 @@ bool memoryIsLow()
 }
 
 //--------------------------------------------------------------
+#if HAVE_DLOPEN
+#include <dlfcn.h>
+#endif
 
 #include "envdefs.h"   // __WIN32__
 #ifdef __WIN32__

@@ -37,7 +37,7 @@ static char buffer[1024];
 //
 // Register the Cmdenv user interface
 //
-Register_OmnetApp(TCmdenvApp,false,10,"Cmdenv (command-line user interface)");
+Register_OmnetApp(Cmdenv,false,10,"Cmdenv (command-line user interface)");
 
 // Windows: Export at least one symbol so that an import lib can be created
 CMDENV_API void cmdenvDummy() {}

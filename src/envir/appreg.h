@@ -62,7 +62,7 @@ class ENVIR_API cOmnetAppRegistration : public cObject
     cOmnetAppRegistration(const char *name, bool isSlave, int score,
                           const char *description, AppCreatorFunc f) :
       cObject(name, (cObject *)&omnetapps),
-      isslave(isSlave), desc(description), scor(score), creatorfunc(f) {}
+      creatorfunc(f), desc(description), scor(score), isslave(isSlave) {}
     virtual ~cOmnetAppRegistration()  {}
 
     // redefined functions
