@@ -277,41 +277,49 @@ class SIM_API cSimpleChannel : public cChannel
     //@{
 
     /**
-     * Set the parameters of the link. Ownership of cPar objects
-     * are handled according to the ownership flag (that is set by takeOwnership()).
+     * Sets the delay parameter of the channel.
+     *
+     * Ownership of the cPar object is handled according to the
+     * takeOwnership flag.
      */
     virtual void setDelay(cPar *p);
 
     /**
-     * Set the parameters of the link. Ownership of cPar objects
-     * are handled according to the ownership flag (that is set by takeOwnership()).
+     * Sets the bit error rate parameter of the channel.
+     * When a message sent through the channel suffers at least
+     * one bit error, its bit error flag will be set.
+     *
+     * Ownership of the cPar object is handled according to the
+     * takeOwnership flag.
+     *
+     * @see cMessage::hasBitError()
      */
     virtual void setError(cPar *p);
 
     /**
-     * Set the parameters of the link. Ownership of cPar objects
-     * are handled according to the ownership flag (that is set by takeOwnership()).
+     * Sets the data rate parameter of the channel.
+     * This affects the transmission time of messages sent
+     * through the channel.
+     *
+     * Ownership of the cPar object is handled according to the
+     * takeOwnership flag.
+     *
+     * @see isBusy(), transmissionFinishes()
      */
     virtual void setDatarate(cPar *p);
 
     /**
-     * Return pointers to the delay, bit error rate and datarate parameters
-     * of the link. Links are one-directional; these parameters are only
-     * stored at their starting side.
+     * Returns the delay of the channel.
      */
     virtual cPar *delay() const     {return delayp;}
 
     /**
-     * Return pointers to the delay, bit error rate and datarate parameters
-     * of the link. Links are one-directional; these parameters are only
-     * stored at their starting side.
+     * Returns the bit error rate of the channel.
      */
     virtual cPar *error() const     {return errorp;}
 
     /**
-     * Return pointers to the delay, bit error rate and datarate parameters
-     * of the link. Links are one-directional; these parameters are only
-     * stored at their starting side.
+     * Returns the data rate of the channel.
      */
     virtual cPar *datarate() const  {return dataratep;}
     //@}
@@ -320,12 +328,12 @@ class SIM_API cSimpleChannel : public cChannel
     //@{
 
     /**
-     * Redefined to specially handle "disabled", "delay", "error" and "datarate".
+     * Redefined to specially handle "delay", "error" and "datarate".
      */
     virtual cPar& addPar(const char *s);
 
     /**
-     * Redefined to specially handle "disabled", "delay", "error" and "datarate".
+     * Redefined to specially handle "delay", "error" and "datarate".
      */
     virtual cPar& addPar(cPar *p);
     //@}
@@ -334,14 +342,20 @@ class SIM_API cSimpleChannel : public cChannel
     //@{
 
     /**
-     * Returns whether the gate is currently transmitting.
+     * Returns whether the sender gate is currently transmitting.
+     * Transmission time of a message depends on the message length
+     * and the data rate assigned to the channel.
+     *
+     * If no data rate is assigned to the channel, the result is false.
      */
     virtual bool isBusy() const;
 
     /**
-     * Returns the simulation time the gate is expected to finish transmitting.
-     * Note that additional messages send on the gate may prolong the time the gate
-     * will actually finish.
+     * Returns the simulation time the sender gate will finish transmitting.
+     * The return value is only meaningful if isBusy() is true.
+     *
+     * Transmission time of a message depends on the message length
+     * and the data rate assigned to the channel.
      */
     virtual simtime_t transmissionFinishes() const {return transm_finishes;}
     //@}

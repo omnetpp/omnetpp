@@ -243,7 +243,7 @@ class SIM_API cGate : public cObject
     //@{
 
     /**
-     * DEPRECATED! Use cChannel and setChannel() instead.
+     * DEPRECATED! Use cChannel/cSimpleChannel and setChannel() instead.
      *
      * Sets the parameters of the link to those specified by the link
      * type.
@@ -251,7 +251,7 @@ class SIM_API cGate : public cObject
     void setLink(cLinkType *l);
 
     /**
-     * DEPRECATED! Use cChannel and setChannel() instead.
+     * DEPRECATED! Use cSimpleChannel and setChannel() instead.
      *
      * Creates a channel (of class cSimpleChannel) if the gate does not have
      * one, and calls setDelay() on it. If the gate already has a channel, it must
@@ -260,7 +260,7 @@ class SIM_API cGate : public cObject
     void setDelay(cPar *p);
 
     /**
-     * DEPRECATED! Use cChannel and setChannel() instead.
+     * DEPRECATED! Use cSimpleChannel and setChannel() instead.
      *
      * Creates a channel (of class cSimpleChannel) if the gate does not have
      * one, and calls setError() on it. If the gate already has a channel, it must
@@ -269,7 +269,7 @@ class SIM_API cGate : public cObject
     void setError(cPar *p);
 
     /**
-     * DEPRECATED! Use cChannel and setChannel() instead.
+     * DEPRECATED! Use cSimpleChannel and setChannel() instead.
      *
      * Creates a channel (of class cSimpleChannel) if the gate does not have
      * one, and calls setDataRate() on it. If the gate already has a channel, it must
@@ -285,7 +285,7 @@ class SIM_API cGate : public cObject
     cLinkType *link() const;
 
     /**
-     * DEPRECATED! Use cChannel and channel() instead.
+     * DEPRECATED! Use channel() and cSimpleChannel::delay() instead.
      *
      * If the gate has a channel, calls delay() on it. The channel must
      * be of class cSimpleChannel or one subclassed from it. If the gate
@@ -294,7 +294,7 @@ class SIM_API cGate : public cObject
     cPar *delay() const;
 
     /**
-     * DEPRECATED! Use cChannel and channel() instead.
+     * DEPRECATED! Use channel() and cSimpleChannel::error() instead.
      *
      * If the gate has a channel, calls error() on it. The channel must
      * be of class cSimpleChannel or one subclassed from it. If the gate
@@ -303,7 +303,7 @@ class SIM_API cGate : public cObject
     cPar *error() const;
 
     /**
-     * DEPRECATED! Use cChannel and channel() instead.
+     * DEPRECATED! Use channel() and cSimpleChannel::datarate() instead.
      *
      * If the gate has a channel, calls datarate() on it. The channel must
      * be of class cSimpleChannel or one subclassed from it. If the gate
@@ -312,24 +312,20 @@ class SIM_API cGate : public cObject
     cPar *datarate() const;
     //@}
 
-    /** @name Transmission state. DEPRECATED methods. */
+    /** @name Transmission state. */
     //@{
 
     /**
-     * DEPRECATED! Use channel() and cChannel methods instead.
-     *
-     * If the gate has a channel, calls isBusy() on it. The channel must
-     * be of class cSimpleChannel or one subclassed from it. If the gate
-     * has no channel, the method returns false.
+     * If the gate has a channel subclassed from cSimpleChannel,
+     * the methods calls isBusy() on it and returns the result.
+     * Otherwise, it returns false.
      */
     bool isBusy() const;
 
     /**
-     * DEPRECATED! Use channel() and cChannel methods instead.
-     *
-     * If the gate has a channel, calls transmissionFinishes() on it. The channel
-     * must be of class cSimpleChannel or one subclassed from it. If the gate has
-     * no channel, the method returns the current simulation time.
+     * If the gate has a channel subclassed from cSimpleChannel,
+     * the methods calls transmissionFinishes() on it and returns
+     * the result. Otherwise, it returns 0.0.
      */
     simtime_t transmissionFinishes() const;
     //@}
