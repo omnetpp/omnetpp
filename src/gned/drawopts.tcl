@@ -83,12 +83,12 @@ proc editSubmoduleDrawOptions {key} {
     createOkCancelDialog .submopts "Submodule Drawing Options"
 
     # add entry fields and focus on first one
-    set icon  $ned($key,icon)
+    set icon  $ned($key,disp-icon)
     if {$icon == ""} {set gned(radio) rect} else {set gned(radio) icon}
 
 
     radiobutton .submopts.f.r1 -text "Icon" -value icon  -variable gned(radio)
-    label-iconchooser .submopts.f.icon "Selected icon:" $ned($key,icon)
+    label-iconchooser .submopts.f.icon "Selected icon:" $ned($key,disp-icon)
     radiobutton .submopts.f.r2 -text "Rectangle" -value rect -variable gned(radio)
     label-entry .submopts.f.thick "Line thickness:" $ned($key,disp-linethickness)
     label-colorchooser .submopts.f.fill "Fill Color:" fill $ned($key,disp-fillcolor)
@@ -112,9 +112,9 @@ proc editSubmoduleDrawOptions {key} {
         # icon
         set centsiz [_getCenterAndSize $c $key]
         if {$gned(radio)=="rect"} {
-           set ned($key,icon) ""
+           set ned($key,disp-icon) ""
         } else {
-           set ned($key,icon) [.submopts.f.icon.b cget -image]
+           set ned($key,disp-icon) [.submopts.f.icon.b cget -image]
         }
 
         # position and size

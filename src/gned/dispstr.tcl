@@ -130,7 +130,7 @@ proc parse_submod_dispstr {key} {
       set ned($key,disp-ysize) [lindex $tags(b) 1]
    }
    if [info exist tags(i)] {
-      set ned($key,icon) [lindex $tags(i) 0]
+      set ned($key,disp-icon) [lindex $tags(i) 0]
    }
    if [info exist tags(o)] {
       set ned($key,disp-fillcolor) [lindex $tags(o) 0]
@@ -227,7 +227,7 @@ proc update_submod_dispstr {key} {
    _setlistitem tags(o) 2 $ned($key,disp-linethickness)
 
    if ![info exist tags(i)] {set tags(i) {}}
-   _setlistitem tags(i) 0 $ned($key,icon)
+   _setlistitem tags(i) 0 $ned($key,disp-icon)
 
    set ned($key,displaystring) [assemble_dispstr tags $order]
 }

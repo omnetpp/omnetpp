@@ -19,7 +19,7 @@
 
 foreach i {label-cid icon-cid rect-cid rect2-cid arrow-cid background-cid
            dirty unnamed selected
-           icon
+           disp-icon
            disp-fillcolor disp-outlinecolor disp-linethickness
            disp-drawmode disp-src-anchor-x disp-src-anchor-y
            disp-dest-anchor-x disp-dest-anchor-y

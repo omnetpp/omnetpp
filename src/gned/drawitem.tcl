@@ -345,7 +345,7 @@ proc draw_module {c key} {
 proc draw_submod {c key} {
     global ned
 
-    set icon  [_getPar {} "$key,icon" ""]
+    set icon  [_getPar {} "$key,disp-icon" ""]
 
     set x  [_getPar {} "$key,disp-xpos" [expr 100+100*rand()]]
     set y  [_getPar {} "$key,disp-ypos" [expr 100+100*rand()]]
