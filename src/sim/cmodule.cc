@@ -280,13 +280,15 @@ cGate *cModule::createGateObject(const char *gname, char tp)
     return new cGate(gname,tp);
 }
 
-cGate *cModule::addGate(const char *gname, char tp)
+cGate *cModule::addGate(const char *gname, char tp, bool isvector)
 {
     if (findGate(gname)>=0)
        throw new cException(this, "addGate(): Gate %s.%s already present", fullPath(), gname);
 
      cGate *newg = createGateObject(gname, tp);
-     newg->setOwnerModule(this, gatev.add( newg ));
+     newg->setOwnerModule(this, gatev.add(newg));
+     if (isvector)
+         newg->setIndex(0,0);
      return newg;
 }
 
@@ -301,19 +303,37 @@ int cModule::setGateSize(const char *gname, int newsize)
        throw new cException(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gname);
 
     char tp = gate(pos)->type();
-    int size = gate(pos)->size();
+    int oldsize = gate(pos)->size();
+    if (oldsize==newsize)
+        return pos;
+    if (oldsize==0)
+        oldsize = 1;  // a zero-size vector is actually a single gate with vecsize=0
 
     // first see if gate vector has to be shrunk
     int i;
-    if (newsize<=size)
+    if (newsize<=oldsize)
     {
+        // shrink to zero vector size?
+        bool zerosize = false;
+        if (newsize==0)
+        {
+            // we need one gate to represent a zero-size vector
+            zerosize = true;
+            newsize = 1;
+        }
         // simply remove excess gates
-        for (i=newsize; i<size; i++)
+        for (i=newsize; i<oldsize; i++)
         {
             cGate *gate = (cGate *) gatev.remove(pos+i);
             if (gate->fromGate() || gate->toGate())
                 throw new cException(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->fullPath());
             delete gate;
+        }
+        // and tell remaining gates the new vector size
+        for (i=0; i<newsize; i++)
+        {
+            cGate *gate = (cGate *) gatev.get(pos+i);
+            gate->setIndex(i, zerosize ? 0 : newsize);
         }
         return pos;
     }
@@ -321,14 +341,14 @@ int cModule::setGateSize(const char *gname, int newsize)
     // OK, it'll be expand.
     // first, check if we have enough room in this id range
     bool hasroom = true;
-    for (i=size; i<newsize; i++)
+    for (i=oldsize; i<newsize; i++)
        if (gatev.exist(pos+i))
           {hasroom = false; break;}
 
     if (hasroom)
     {
         // just create additional gates
-        for (i=size; i<newsize; i++)
+        for (i=oldsize; i<newsize; i++)
         {
             cGate *gate = createGateObject(gname, tp);
             gate->setOwnerModule(this, pos+i);
@@ -336,7 +356,7 @@ int cModule::setGateSize(const char *gname, int newsize)
             gatev.addAt(pos+i, gate);
         }
         // and update vector size in the old gates as well
-        for (i=0; i<size; i++)
+        for (i=0; i<oldsize; i++)
         {
             cGate *gate = (cGate *) gatev.get(pos+i);
             gate->setIndex(i, newsize);
@@ -350,7 +370,7 @@ int cModule::setGateSize(const char *gname, int newsize)
         for (i=0; i<newsize; i++)
         {
             // if position free, go on to next one
-            if (!gatev.exist(newpos+i) || (newpos+i>=pos && newpos+i<pos+size))
+            if (!gatev.exist(newpos+i) || (newpos+i>=pos && newpos+i<pos+oldsize))
                continue;
 
             // position occupied -- must start over from a new position
@@ -361,16 +381,16 @@ int cModule::setGateSize(const char *gname, int newsize)
         // move existing gates from pos to newpos.
         // (note: it's always OK to begin copying from the beginning, because
         // we either move the vector backwards (newpos<pos) or to a completely new,
-        // non-overlapping region (newpos>=pos+size); the assert() below checks this.)
-        assert(newpos<pos || newpos>=pos+size);
-        for (i=0; i<size; i++)
+        // non-overlapping region (newpos>=pos+oldsize); the assert() below checks this.)
+        assert(newpos<pos || newpos>=pos+oldsize);
+        for (i=0; i<oldsize; i++)
         {
             cGate *gate = (cGate *) gatev.remove(pos+i);
             gatev.addAt(newpos+i,gate);
         }
 
         // and create additional gates
-        for (i=size; i<newsize; i++)
+        for (i=oldsize; i<newsize; i++)
         {
             cGate *gate = createGateObject(gname, tp);
             gatev.addAt(newpos+i, gate);
@@ -484,7 +504,7 @@ int cModule::findGate(const char *s, int sn) const
        if (!g)
           i++;
        else if (!g->isName(s))
-          i+=g->size();
+          i += g->size()==0 ? 1 : g->size();
        else
           break;
     }

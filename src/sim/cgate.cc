@@ -153,7 +153,11 @@ void cGate::info(char *buf)
         {arrow = "<-- "; g = fromgatep; conng = fromgatep;}
 
     // append useful info to buf
-    if (!g)
+    if (vectsize==0)
+    {
+        strcpy(b,"(placeholder for zero-size vector)");
+    }
+    else if (!g)
     {
         strcpy(b,"(not connected)");
     }
@@ -218,10 +222,14 @@ void cGate::setIndex(int sn, int vs)
 
 void cGate::connectTo(cGate *g, cChannel *chan)
 {
+    if (vectsize==0)
+        throw new cException(this, "connectTo(): gate vector size is zero");
     if (togatep)
         throw new cException(this, "connectTo(): gate already connected");
     if (!g)
         throw new cException(this, "connectTo(): destination gate cannot be NULL pointer");
+    if (g->vectsize==0)
+        throw new cException(this, "connectTo(): destination gate vector size is zero");
     if (g->fromgatep)
         throw new cException(this, "connectTo(): destination gate already connected");
 

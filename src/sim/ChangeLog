@@ -3,6 +3,12 @@
         * ctopo.cc: implemented 2 new extractByModuleType() functions, see
         include/ChangeLog.
 
+        * cmodule.cc: support for zero-sized module gates. A gate vector
+        is zero size right after creation, and if there's no gatesize declared 
+        in NED (and there's no manual setGateSize() call) it'll remain zero
+        size. A zero-sized gate vector is represented by a single gate object
+        whose size() method returns zero, and cannot be connected.
+
 2004-08-11   Andras Varga
 
         * cchannel.cc: added check for negative delays

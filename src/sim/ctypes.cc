@@ -202,19 +202,19 @@ void cModuleInterface::addParamDecl(const char *name, const char *types)
 }
 
 
-void cModuleInterface::addParametersGatesTo( cModule *module)
+void cModuleInterface::addParametersGatesTo(cModule *module)
 {
     int i;
     for (i=0;i<numgates;i++)
-       module->addGate( gatev[i].name, gatev[i].type );
+        module->addGate(gatev[i].name, gatev[i].type, gatev[i].vect);
     for (i=0;i<numparams;i++)
     {
-       module->addPar( paramv[i].name );
-       if (opp_strcmp(paramv[i].types,"S")==0)
-       {
-          module->par( paramv[i].name ) = "";
-          module->par( paramv[i].name ).setInput(true);
-       }
+        module->addPar(paramv[i].name);
+        if (opp_strcmp(paramv[i].types,"S")==0)
+        {
+            module->par(paramv[i].name) = "";
+            module->par(paramv[i].name).setInput(true);
+        }
     }
 }
 
