@@ -37,3 +37,8 @@ BLT graph: eliminate interference of crosshair zoom and active legend!
 Better handling of errors during file load
 
 Check compatibility with different BLT versions
+
+Mention Excel's Pivot Table and OpenOffice's Data Pilot functionality 
+in the documentation
+
+implement "Copy special"
