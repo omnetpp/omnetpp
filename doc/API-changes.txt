@@ -68,6 +68,25 @@ Simulation library:
 
 (+)  	cStatistic::recordScalar() added
 
+(+)  	New random number architecture: added cRNG interface and subclasses
+	cMersenneTwister and cLCG32; added cRNG *cEnvir::rng(k) and 
+	cRNG *Module::rng(k)
+
+(!)	New random number architecture. Following symbols/functions fell victim:
+	#define NUM_RANDOM_GENERATORS -- this is now an omnetpp.ini setting
+        #define INTRAND_MAX -- different for every RNG class; 
+                               cRNG::intRandMax() returns it
+	int testrand() -- see cRNG::selfTest()
+	long opp_nextrand(long& seed) -- no replacement
+	void opp_randomize() -- no replacement
+	long randseed() -- no replacement (Mersenne Twister state is >32 bits!)
+	long randseed(long seed) -- no replacement (seeding from C++ not supported)
+	long intrand() -- see cRNG::intRand()
+	void genk_opp_randomize(int gen_nr) -- no replacement (see above)
+	long genk_randseed(int gen_nr) -- no replacement (see above)
+	long genk_randseed(int gen_nr, long seed) -- no replacement (see above)
+	long genk_intrand(int gen_nr) -- see cRNG::intRand()
+
 ... FIXME TBD complete list
 
 
