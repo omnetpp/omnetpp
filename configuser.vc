@@ -3,25 +3,22 @@
 # for compiling with MSVC. You are free to edit the settings in here.
 #
 
-# Version. Should come from the 'Version' file.
+# Version. Should ideally come from the 'Version' file...
 OMNETPP_VERSION=omnetpp-2.0b3pre
 
 #
 # directories
 #
 OMNETPP_ROOT=d:/work/omnetpp
+TK_INCL_DIR=d:/tcl/tcl/include
+TK_LIB_DIR=d:/tcl/tcl/lib
 
 OMNETPP_SRC_DIR=$(OMNETPP_ROOT)/src
 OMNETPP_SAMPLES_DIR=$(OMNETPP_ROOT)/samples
-# OMNETPP_MODELS_DIR=$(OMNETPP_ROOT)/models
 
 OMNETPP_BIN_DIR=$(OMNETPP_ROOT)/bin
 OMNETPP_INCL_DIR=$(OMNETPP_SRC_DIR)/sim
 OMNETPP_LIB_DIR=$(OMNETPP_ROOT)/lib
-
-TK_INCL_DIR=d:/tcl/tcl/include
-TK_LIB_DIR=d:/tcl/tcl/lib
-
 
 #
 # tools
@@ -39,17 +36,15 @@ NEDC=$(OMNETPP_ROOT)/bin/nedc.exe
 # configuration
 #
 
-# Compiler optimization switches. First one is for debug, second one for release
+# Compiler optimization switches.
 CFLAGS=/nologo /MLd /W3 /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /GZ
-
 LDFLAGS=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 
-# LIB_SUFFIX is either .lib or .dll
+# LIB_SUFFIX is either .lib or .dll (at this point, only .lib is supported)
 LIB_SUFFIX=.lib
 
 HAVE_DLOPEN=0
 
-# use double backslashes here:
 OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
 OMNETPP_GNED_DIR=$(OMNETPP_ROOT)/src/gned
 OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
@@ -77,8 +72,8 @@ GNED_IF_POSSIBLE=gned
 #
 # This option is available at present for Tkenv and GNED.
 #
-# empty: no embedding
-# -e: embed
+# empty: don't embed
+# -e:    embed
 #
 TKENV_EMBED_SUFFIX=
 GNED_EMBED_SUFFIX=
