@@ -1,3 +1,8 @@
+2004-12-08  Andras Varga
+
+	* cenvir.h: added getParameterUseDefault() to support omnetpp.ini's
+	<paramname>.use-default=yes option
+
 2004-11-27  Andras Varga
 
 	* added cvisitor.h, nearly all files changed: old forEach(do_fn) 

@@ -132,7 +132,7 @@ ENVIR_API bool memoryIsLow();
  * default simulation application class.
  *
  * The default (src/envir) implementation of cEnvir can be customized
- * by subclassing the classes declared in the envirext.h header (e.g. 
+ * by subclassing the classes declared in the envirext.h header (e.g.
  * cConfiguration, cRNG, cOutputVectorManager, cOutputScalarManager),
  * and selecting the new classes from <tt>omnetpp.ini</tt>.
  *
@@ -301,10 +301,17 @@ class ENVIR_API cEnvir : public std::ostream
     //@{
 
     /**
-     * Called by the simulation kernel (cModulePar) to obtain value for an input
-     * module parameter.
+     * Called by the simulation kernel (cPar) to obtain value for an input
+     * module parameter. Returns NULL if the configuration doesn't specify
+     * a value for this parameter.
      */
     const char *getParameter(int run_no, const char *parname);
+
+    /**
+     * Called by the simulation kernel (cPar) to learn whether it should
+     * use the default value for a parameter if getParameter() fails.
+     */
+    bool getParameterUseDefault(int run_no, const char *parname);
 
     /**
      * Used for parallel distributed simulation. Returns true if a
