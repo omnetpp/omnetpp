@@ -363,7 +363,7 @@ NED compiler, compiled and linked into the simulation program.
 From {\opp} 3.0 up, one can use dynamic NED loading, which means
 that a simulation program can load NED files at runtime when it starts
 -- compiling NED files into the simulation program is no longer necessary.
-This gives one more flexibility, and can also save model development time.
+This results in more flexibility, and can also save model development time.
 
 The key is the \ttt{preload-ned-files=} configuration option in the
 \ttt{[General]} section of \fname{omnetpp.ini}. This option should
@@ -504,11 +504,12 @@ Pattern syntax:
   \item \ttt{?} : matches any character except dot (.)
   \item \ttt{*} : matches zero or more characters except dot (.)
   \item \ttt{**} : matches zero or more character (any character)
-  \item \ttt{\{a-f\}} (set): matches a character in the range a-f
-  \item \ttt{\{{\textasciicircum}a-f\}} (negated set): matches a character NOT in the range a-f
-  \item \ttt{\{38..150\}} (numeric range): any number (i.e. sequence of digits)
+  \item \ttt{\{a-f\}} : \textit{set}: matches a character in the range a-f
+  \item \ttt{\{{\textasciicircum}a-f\}}: \textit{negated set}: matches a character
+    NOT in the range a-f
+  \item \ttt{\{38..150\}} : \textit{numeric range}: any number (i.e. sequence of digits)
     in the range 38..150  (e.g. \ttt{99})
-  \item \ttt{[38..150]} (index range): any number in square brackets in the
+  \item \ttt{[38..150]} : \textit{index range}: any number in square brackets in the
     range 38..150 (e.g. \ttt{[99]})
   \item backslash ({\textbackslash}) : takes away the special meaning of the
     subsequent character
@@ -712,7 +713,7 @@ The mapping allows for great flexibility in RNG usage and random number
 streams configuration -- even for simulation models which were not
 written with RNG awareness.
 
-RNG mapping my be specified in \ttt{omnetpp.ini}. The syntax of
+RNG mapping may be specified in \ttt{omnetpp.ini}. The syntax of
 configuration entries is the following.
 
 \begin{verbatim}
