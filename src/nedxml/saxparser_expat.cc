@@ -20,7 +20,7 @@
 #include "saxparser.h"
 
 
-static bool hasDTD = false;
+static bool hasDTD;
 
 
 static void expatStartElementHandler(void *userData, const XML_Char *name, const XML_Char **atts)
@@ -112,7 +112,8 @@ bool SAXParser::parse(const char *filename)
     // read file chunk-by-chunk and parse it
     char buf[BUFSIZ];
     bool done;
-    bool err=false;
+    bool err = false;
+    hasDTD = false;
     do {
         size_t len = fread(buf, 1, sizeof(buf), f);
         done = len < sizeof(buf);
