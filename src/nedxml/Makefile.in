@@ -27,7 +27,7 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 COPTS=$(CPPFLAGS) $(CFLAGS) -I$(OMNETPP_INCL_DIR) -I.  -DBUILDING_SIM
 
-OBJS= nedelements.o nedelement.o nedstring.o nederror.o \
+OBJS= nedelements.o nedelement.o nederror.o \
      nedvalidator.o neddtdvalidator.o neddtdvalidator1.o \
      nedbasicvalidator.o nedsemanticvalidator.o nedcompiler.o \
      cppgenerator.o cppexprgenerator.o nedgenerator.o nedfilebuffer.o \
@@ -84,9 +84,6 @@ nedbasicvalidator.o : nedbasicvalidator.cc
 nedsemanticvalidator.o : nedsemanticvalidator.cc
 	$(CXX) -c $(COPTS) nedsemanticvalidator.cc
 
-nedstring.o : nedstring.cc
-	$(CXX) -c $(COPTS) nedstring.cc
-
 nederror.o : nederror.cc
 	$(CXX) -c $(COPTS) nederror.cc
 
@@ -142,13 +139,11 @@ clean:
 cppgenerator.o: cppgenerator.cc \
   nedelements.h \
   cppgenerator.h \
-  nedelement.h \
-  nedstring.h
+  nedelement.h
 nedbasicvalidator.o: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \
   nedelement.h \
-  nedstring.h \
   nedvalidator.h \
   nedelements.h
 nedcompiler.o: nedcompiler.cc \
@@ -159,7 +154,6 @@ nedcompiler.o: nedcompiler.cc \
   nedbasicvalidator.h \
   nedsemanticvalidator.h \
   nedelement.h \
-  nedstring.h \
   nedelements.h \
   nedgrammar.h \
   nedvalidator.h
@@ -167,75 +161,60 @@ neddtdvalidator.o: neddtdvalidator.cc \
   neddtdvalidator.h \
   nedelements.h \
   nedvalidator.h \
-  nedelement.h \
-  nedstring.h
+  nedelement.h
 neddtdvalidator1.o: neddtdvalidator1.cc \
   nederror.h \
   neddtdvalidator.h \
   nedelement.h \
-  nedstring.h \
   nedelements.h \
   nedvalidator.h
 nedelement.o: nedelement.cc \
-  nedelement.h \
-  nedstring.h
+  nedelement.h
 nedelements.o: nedelements.cc \
   nedelements.h \
-  nedelement.h \
-  nedstring.h
+  nedelement.h
 nederror.o: nederror.cc \
   nederror.h \
-  nedelement.h \
-  nedstring.h
+  nedelement.h
 nedfilebuffer.o: nedfilebuffer.cc \
   nedfilebuffer.h \
   nedparser.h \
   nedgrammar.h \
-  nedelement.h \
-  nedstring.h
+  nedelement.h
 nedgenerator.o: nedgenerator.cc \
   nedgenerator.h \
   nedelements.h \
-  nedelement.h \
-  nedstring.h
+  nedelement.h
 nedparser.o: nedparser.cc \
   nedparser.h \
   nedfilebuffer.h \
   nedelements.h \
   nederror.h \
   nedgrammar.h \
-  nedelement.h \
-  nedstring.h
+  nedelement.h
 nedsaxhandler.o: nedsaxhandler.cc \
   nedsaxhandler.h \
   nedelements.h \
   nedelement.h \
-  saxparser.h \
-  nedstring.h
+  saxparser.h
 nedsemanticvalidator.o: nedsemanticvalidator.cc \
   nederror.h \
   nedsemanticvalidator.h \
   nedcompiler.h \
   nedelement.h \
-  nedstring.h \
   nedvalidator.h \
   nedelements.h
-nedstring.o: nedstring.cc \
-  nedstring.h
 nedvalidator.o: nedvalidator.cc \
   nedvalidator.h \
   nedelements.h \
-  nedelement.h \
-  nedstring.h
+  nedelement.h
 nedxmlparser.o: nedxmlparser.cc \
   saxparser.h \
   nedsaxhandler.h \
-  nedelement.h \
-  nedstring.h
+  nedelement.h
 saxparser.o: saxparser.cc \
   saxparser.h
 xmlgenerator.o: xmlgenerator.cc \
   nedelements.h \
   xmlgenerator.h \
-  nedelement.h \
-  nedstring.h
+  nedelement.h

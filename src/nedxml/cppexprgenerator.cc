@@ -14,6 +14,7 @@
 *--------------------------------------------------------------*/
 
 
+#include <stdio.h>
 #include "cppexprgenerator.h"
 #include "nederror.h"
 
