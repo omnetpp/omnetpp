@@ -53,11 +53,16 @@ learn about that! Just send me a short mail. Thanks in advance!
 What you'll find in the OMNeT++ directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The omnetpp directory contains the following subdirectories.
+If you installed the source distribution, the omnetpp directory on your system
+should contain the following subdirectories. (If you installed a precompiled
+distribution, some of the directories may be missing, or there might be
+additional directories, e.g. containing software bundled with OMNeT++.)
+
 The simulation system itself:
 
 omnetpp/              OMNeT++ root directory
-   bin/               (soft links to) executables
+   bin/               executables
+   include/           header files for compiling simulations
    lib/               simulation library files
    doc/               readme, license etc.
    html/              manuals in HTML format
@@ -71,13 +76,12 @@ omnetpp/              OMNeT++ root directory
        envir/         common code for user interfaces
        cmdenv/        command-line user interface
        tkenv/         Tcl/Tk user interface
-       tvenv/         Turbo Vision user interface
        utils/         makefile-autocreator etc
 
 Sample simulations are within the samples directory.
 Each of the sample directories contain a network description
 (.ned file) and corresponding simple module code  (.h, .cc files).
-UNIX makefiles and Borland C++ 3.1 project files are included.
+Makefiles and project files are included.
 
 omnetpp/
    samples/           directories for sample simulations
@@ -115,15 +119,14 @@ simulations.
 
 Installation
 ~~~~~~~~~~~~
-
-For installation instructions, read one of these files, depending on your
-compiler:
+If you're installing from a source distribution, please read one of the
+following files for instructions, depending on your OS and compiler:
    Readme.Unix    -- generic Unix/Linux
    Readme.Cygwin  -- Cygwin on NT/W95 (www.cygnus.com)
    Readme.MSVC    -- Microsoft Visual C++ 6.0 on NT/W95
-   Readme.BC5     -- Borland C++ 5.0 on NT/W95
 For the first two, the process is not much different from the normal GNU build
-and install procedure, except that you may need to edit configure.user manually.
+and install procedure, except that you may need to edit the configure.user file
+manually.
 
 
 Authors and contributors
@@ -159,7 +162,7 @@ JAR support for distributed execution; also current user:
 Initial revision of PVM support (as final project), spring 1996:
         Zoltan Vass             BME-HIT
 
-I'm indebted to Gy”rgy Pongor for supporting my OMNeT++-related work at the
+I'm indebted to György Pongor for supporting my OMNeT++-related work at the
 university in many different ways, from organizing students to work on parts of
 OMNeT++ to providing web and ftp space at the university (although I'm no longer
 affiliated). Also, the original (1992) design of OMNeT++ was largely based on
