@@ -1,3 +1,5 @@
+2004-07-22  ------ omnetpp-3.0a6 released ------
+
 2004-07-17  Andras Varga
 
 	* tkapp.cc: enable output (set disable_tracing=false) before calling

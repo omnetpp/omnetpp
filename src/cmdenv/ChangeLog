@@ -1,3 +1,5 @@
+2004-07-22  ------ omnetpp-3.0a6 released ------
+
 2004-07-10  Andras Varga
 
 	* cmdenv.cc/h: now it's possible to control which modules' ev<< output

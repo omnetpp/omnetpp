@@ -15,7 +15,7 @@
 # C++ exceptions (throw/catch) are used together)!
 #
 #CFLAGS='-g -Wno-unused'
-FLAGS='-g -Wall'
+#CFLAGS='-g -Wall'
 #CFLAGS='-gstabs+3 -Wall'
 CFLAGS='-O3 -DNDEBUG=1'
 

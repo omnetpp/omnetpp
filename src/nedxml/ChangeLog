@@ -1,3 +1,5 @@
+2004-07-22  ------ omnetpp-3.0a6 released ------
+
 2004-07-20  Andras Varga
 
 	* ned.dtd, ned.y: added source-code attribute to ned-file element,

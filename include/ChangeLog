@@ -1,3 +1,5 @@
+2004-07-22  ------ omnetpp-3.0a6 released ------
+
 2004-07-10   Andras Varga
 
 	* cmodule.cc: added ev_enabled to cModule -- this makes it possible
