@@ -159,7 +159,7 @@ and also appear in error messages.
 \fname{name()} and \fname{fullName()} return \ttt{const char *} pointers,
 and \fname{fullPath()} returns \ttt{std::string}. This makes no difference
 with \ttt{ev<<}, but when \fname{fullPath()} is used as a \ttt{"\%s"} argument
-to \fname{sprintf()} you have to write \ttt{fullPath().c_str()}.
+to \fname{sprintf()} you have to write \ttt{fullPath().c\_str()}.
 
 \begin{verbatim}
 char buf[100];
@@ -2428,7 +2428,7 @@ of all methods discussed in the previous section.
 
 \begin{verbatim}
 //
-// file: newclass.h
+// file: NewClass.h
 //
 #include <omnetpp.h>
 
@@ -2448,10 +2448,7 @@ class NewClass : public cObject
     NewClass& operator=(const NewClass& other);
 
     virtual void forEachChild(cVisitor *v);
-
-    virtual void info(char *buf);
-    virtual void writeContents(ostream& os);
-    ...
+    virtual std::string info();
 };
 \end{verbatim}
 
@@ -2460,7 +2457,7 @@ Here's the top of the \ttt{.cc} file:
 
 \begin{verbatim}
 //
-// file: newclass.cc
+// file: NewClass.cc
 //
 #include <stdio.h>
 #include <string.h>
@@ -2555,7 +2552,7 @@ NewClass& NewClass::operator=(const NewClass& other)
 \end{verbatim}
 
 Complexity associated with copying and duplicating the object
-is centralized in the assignment operator, so it is usually
+is concentrated in the assignment operator, so it is usually
 the one that requires the most work from you of all methods
 required by \cclass{cObject}.
 
@@ -2602,42 +2599,22 @@ for each \ttt{obj} member of the class. See the API Reference for more
 information of \fname{forEachChild()}.
 
 \begin{verbatim}
-void NewClass::info(char *buf)
+std::string NewClass::info()
 {
-    cObject::info(buf);
-    sprintf(buf+strlen(buf), " data=%d, array[0]=%g, %s",
-            data, array[0], (msg ? "has msg" : "no msg"));
+    std::stringstream out;
+    out << "data=" << data << ", array[0]=" << array[0];
+    return out.str();
+
 }
 \end{verbatim}
 
-Here you should produce a concise, one-line info about the object.
-You should try not to exceed 40-80 characters, since the
-string will be shown in tooltips and listboxes. The length
-of the buffer is 500 bytes, so in any case you should not
-exceed that length. You can make use of \cclass{cObject}'s
-\ttt{info()} method that produces the class name and the object name.
+The \fname{info()} method should produce a concise, one-line string
+about the object. You should try not to exceed 40-80 characters, since the
+string will be shown in tooltips and listboxes.
 
-\begin{verbatim}
-void NewClass::writeContents(ostream& os)
-{
-    os << " data: " << data << endl;
-    os << " array: "
-    for (int i=0; i<10; i++)
-        os << array[i] << " ";
-    os << endl;
-}
-\end{verbatim}
-
-\fname{writecontents()} is expected to write values of all
-data members to the stream.  You do not need to include anything
-about contained \cclass{cObject}-based objects, because they
-will be included via \fname{forEachChild()}.
-
-
-See the virtual functions of \cclass{cObject} in the class library reference
-for more information. The sources of the Sim library (\ttt{include/},
-\ttt{src/sim/}) can serve as further examples.
-
+See the virtual functions of \cclass{cPolymorphic} and \cclass{cObject}
+in the class library reference for more information. The sources of the
+Sim library (\ttt{include/}, \ttt{src/sim/}) can serve as further examples.
 
 
 
