@@ -21,10 +21,10 @@ ev << msg.length() << endl;
 %exitcode: 1
 
 %contains-regex: stdout
-1
-101
-151
-141
+0
+100
+150
+140
 <!> Error .*length became negative
 
 

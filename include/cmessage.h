@@ -127,7 +127,7 @@ class SIM_API cMessage : public cObject
     /**
      * Constructor.
      */
-    explicit cMessage(const char *name=NULL, int k=0, long len=1, int pri=0, bool err=false);
+    explicit cMessage(const char *name=NULL, int k=0, long len=0, int pri=0, bool err=false);
 
     /**
      * Destructor.
