@@ -26,6 +26,9 @@ set config(editor-whole-words) 0
 set config(editor-regexp) 0
 set config(editor-backwards) 1
 set config(display-treeview) 1
+set config(filtobjlist-class)  ""
+set config(filtobjlist-name)   ""
+set config(filtobjlist-order)  "Class"
 
 #===================================================================
 #    MAIN OMNET++ WINDOW
@@ -134,7 +137,7 @@ proc create_omnetpp_window {} {
       {separator}
       {cascade -label {Available components} -underline 10 -menu .menubar.inspectmenu$m.components}
       {separator}
-      {command -command inspect_filteredobjectlist -label {Find/inspect objects...} -underline 0}
+      {command -command inspect_filteredobjectlist -label {Find/inspect objects...} -accel {Ctrl-S} -underline 0}
       {command -command inspect_bypointer -label {By pointer...} -underline 4}
       {separator}
       {command -command opp_updateinspectors -label {Refresh inspectors} -underline 0}
@@ -236,10 +239,10 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
     set help_tips(.toolbar.fes)     {Inspect scheduled events (Future Event Set)}
-    set help_tips(.toolbar.objs)    {Find/inspect objects}
+    set help_tips(.toolbar.objs)    {Find/inspect objects (Ctrl-S)}
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
-    set help_tips(.toolbar.find)    {Find string in main window}
+    set help_tips(.toolbar.find)    {Find string in main window (Ctrl-F)}
 
     #################################
     # Create status bars
@@ -367,6 +370,8 @@ proc bind_runcommands {w} {
     bind $w <F6> {run_fast}
     bind $w <F7> {run_express}
     bind $w <F8> {stop_simulation}
+    bind $w <Control-s> {inspect_filteredobjectlist}
+    bind $w <Control-S> {inspect_filteredobjectlist}
 }
 
 proc bind_findcommands_to_textwidget {txt} {

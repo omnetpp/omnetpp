@@ -17,6 +17,7 @@
 #
 #
 proc save_tkenvrc {{fname ".tkenvrc"}} {
+    global config
     
     if [catch {
         set fout [open $fname w]
@@ -38,7 +39,12 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
             bkpts_enabled
         } {
             set value [opp_getsimoption $key]
-            puts $fout "$key\t{$value}"
+            puts $fout "option $key\t{$value}"
+        }
+
+        foreach key [array names config] {
+            set value $config($key)
+            puts $fout "config $key\t{$value}"
         }
 
         puts $fout [inspectorlist_tkenvrc_get_contents]
@@ -56,7 +62,8 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
 #
 #
 proc load_tkenvrc {{fname ".tkenvrc"}} {
-
+    global config
+    
     if [catch {open $fname r} fin] {
         return
     }
@@ -69,15 +76,20 @@ proc load_tkenvrc {{fname ".tkenvrc"}} {
         if [string match {#*} $line] {incr lineno; continue}
 
         if [catch {
-            set key [lindex $line 0]
-            if {$key == "inspector"} {
+            set cat [lindex $line 0]
+            if {$cat == "inspector"} {
                 inspectorlist_tkenvrc_process_line $line
+            } elseif {$cat == "option"} {
+                set key [lindex $line 1]
+                set value [lindex $line 2]
+                opp_setsimoption $key $value
+            } elseif {$cat == "config"} {
+                set key [lindex $line 1]
+                set value [lindex $line 2]
+                set config($key) $value
             } elseif {[llength $line]==4} {
                 # old tkenvrc, patch it up
                 inspectorlist_tkenvrc_process_line [concat "inspector" $line]
-            } else {
-                set value [lindex $line 1]
-                opp_setsimoption $key $value
             }
         }] {
             tk_messageBox -icon warning -type ok -title {Error reading tkenvrc} -message "$fname line $lineno is invalid, ignoring"
@@ -88,6 +100,15 @@ proc load_tkenvrc {{fname ".tkenvrc"}} {
 
     opp_updateinspectors
     inspectorlist_openinspectors
+    reflectSettingsInGui
 }
 
+
+# reflectSettingsInGui --
+#
+#
+proc reflectSettingsInGui {} {
+   toggle_treeview
+   toggle_treeview
+}
 

@@ -517,8 +517,14 @@ proc _doFind {w findstring case words regexp backwards} {
 # Implements the "Find/inspect objects" dialog
 #
 proc filteredobjectlist_dialog {} {
+    global config tmp
+    
     set w .objdlg
     createCloseDialog $w "Find/inspect objects"
+
+    set tmp(class)  $config(filtobjlist-class)
+    set tmp(name)   $config(filtobjlist-name)
+    set tmp(order)  $config(filtobjlist-order)
 
     # two panels: $w.f.filter is the upper panel for filters, and
     # $w.f.main is the lower one with the listbox.
@@ -548,10 +554,12 @@ proc filteredobjectlist_dialog {} {
     pack $wfiltpars.order.label -anchor w -expand 0 -fill none -side top
 
     combo $wfiltpars.class.entry [concat {{}} [getClassNames]]
+    $wfiltpars.class.entry.entry config -textvariable tmp(class)
     pack $wfiltpars.class.entry -anchor w -expand 0 -fill x -side top
-    entry $wfiltpars.name.entry
+    entry $wfiltpars.name.entry -textvariable tmp(name)
     pack $wfiltpars.name.entry -anchor w -expand 0 -fill both -side top
-    combo $wfiltpars.order.entry {{Class} {Full name} {Name}}
+    combo $wfiltpars.order.entry {{Class} {Full name} {Name}} 
+    $wfiltpars.order.entry.entry config -textvariable tmp(order)
     pack $wfiltpars.order.entry -anchor w -expand 0 -fill x -side top
 
     set helptext "Class and object name accepts wildcards:\n\
@@ -604,6 +612,11 @@ proc filteredobjectlist_dialog {} {
     #if {$type == ""} return
 
     execCloseDialog $w
+
+    set config(filtobjlist-class)  $tmp(class)  
+    set config(filtobjlist-name)   $tmp(name)   
+    set config(filtobjlist-order)  $tmp(order)  
+
     destroy $w
 }
 
