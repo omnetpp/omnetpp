@@ -145,9 +145,36 @@ SOURCE=.\binarytree.ned
 
 !IF  "$(CFG)" == "topo - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\binarytree.ned
+InputName=binarytree
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\binarytree.ned
+InputName=binarytree
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
+
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\binarytree.ned
+InputName=binarytree
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -173,9 +200,36 @@ SOURCE=.\chain.ned
 
 !IF  "$(CFG)" == "topo - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\chain.ned
+InputName=chain
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\chain.ned
+InputName=chain
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
+
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\chain.ned
+InputName=chain
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -201,9 +255,36 @@ SOURCE=.\fullgraph.ned
 
 !IF  "$(CFG)" == "topo - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\fullgraph.ned
+InputName=fullgraph
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\fullgraph.ned
+InputName=fullgraph
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
+
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\fullgraph.ned
+InputName=fullgraph
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -229,9 +310,36 @@ SOURCE=.\hexgrid.ned
 
 !IF  "$(CFG)" == "topo - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\hexgrid.ned
+InputName=hexgrid
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\hexgrid.ned
+InputName=hexgrid
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
+
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\hexgrid.ned
+InputName=hexgrid
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -257,9 +365,36 @@ SOURCE=.\mesh.ned
 
 !IF  "$(CFG)" == "topo - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\mesh.ned
+InputName=mesh
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\mesh.ned
+InputName=mesh
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
+
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\mesh.ned
+InputName=mesh
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -289,9 +424,36 @@ SOURCE=.\randomgraph.ned
 
 !IF  "$(CFG)" == "topo - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\randomgraph.ned
+InputName=randomgraph
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\randomgraph.ned
+InputName=randomgraph
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
+
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\randomgraph.ned
+InputName=randomgraph
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
@@ -317,9 +479,36 @@ SOURCE=.\star.ned
 
 !IF  "$(CFG)" == "topo - Win32 Debug Tkenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\star.ned
+InputName=star
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Debug Cmdenv"
 
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\star.ned
+InputName=star
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
+
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Tkenv"
+
+# Begin Custom Build - NED Compiling $(InputPath)
+InputPath=.\star.ned
+InputName=star
+
+"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
+
+# End Custom Build
 
 !ELSEIF  "$(CFG)" == "topo - Win32 Release Cmdenv"
 
