@@ -36,7 +36,7 @@ cStringTokenizer::cStringTokenizer(const char *s, const char *delim)
 
 cStringTokenizer::~cStringTokenizer()
 {
-    delete str;
+    delete [] str;
 }
 
 void cStringTokenizer::setDelimiter(const char *delim)

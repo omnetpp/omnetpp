@@ -198,6 +198,9 @@ int TOmnetTkApp::run()
 
 void TOmnetTkApp::shutdown()
 {
+    if (!initialized)
+        return;
+        
     // close all inspectors before exiting
     for(;;)
     {

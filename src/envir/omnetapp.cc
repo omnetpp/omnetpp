@@ -301,6 +301,9 @@ int TOmnetApp::getParsimNumPartitions()
 
 void TOmnetApp::shutdown()
 {
+    if (!initialized)
+        return;
+    
     try
     {
         simulation.deleteNetwork();

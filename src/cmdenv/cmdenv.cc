@@ -173,6 +173,9 @@ void TCmdenvApp::setupSignals()
 
 void TCmdenvApp::shutdown()
 {
+    if (!initialized)
+        return;
+    
     TOmnetApp::shutdown();
     ::fflush(fout);
 }

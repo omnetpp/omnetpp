@@ -112,6 +112,8 @@ static void loadLibs(const char *libs)
 
 void cEnvir::setup(int argc, char *argv[])
 {
+    ArgList *args = NULL;
+    cIniFile *inifile = NULL;
     try
     {
         simulation.init();
@@ -120,7 +122,7 @@ void cEnvir::setup(int argc, char *argv[])
         ExecuteOnStartup::executeAll();
 
         // args
-        ArgList *args = new ArgList(argc,argv);
+        args = new ArgList(argc,argv);
 
         //
         // First, load the ini file. It might contain the name of the user interface
@@ -129,7 +131,7 @@ void cEnvir::setup(int argc, char *argv[])
         const char *fname = args->argValue('f',0);  // 1st '-f filename' option
         if (!fname) fname="omnetpp.ini";   // or default filename
 
-        cIniFile *inifile = new cIniFile();
+        inifile = new cIniFile();
         inifile->readFile(fname);
 
         // process additional '-f filename' options if there are any
@@ -222,6 +224,9 @@ void cEnvir::setup(int argc, char *argv[])
            delete app;
            app = NULL;
         }
+        delete args;
+        delete inifile;
+        delete e;
     }
 }
 

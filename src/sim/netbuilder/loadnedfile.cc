@@ -144,13 +144,14 @@ void loadNedFile(const char *fname, bool isXML)
             const char *name = simplemodulenode->getName();
 
             // throw exception if the code for the simple module is not present?
-            // it's enough if error occurs when module is actually needed
+            // it's better if error occurs when module is actually needed
             //cModuleType *modtype = findModuleType(name);
             //if (!modtype) throw new cRuntimeError("");
 
             // create module interface object
             cModuleInterface *modif = createModuleInterfaceFrom(node);
-
+            delete node; // no longer needed
+            
             // and replace existing one
             cModuleInterface *oldmodif = findModuleInterface(name);
             if (oldmodif)
