@@ -1,0 +1,10 @@
+Experimental message subclassing is currently documented in src/nedc/msgdoc.txt. 
+
+The message subclassing compiler is src/nedc/msgc.pl; msgtest.ned in the same
+directory is an example NED file that you can try to get an impression what
+the whole thing is about.
+
+Sorry, there's currently no support for this stuff -- use at your own risk
+if you find it useful!
+
+--Andras
