@@ -87,9 +87,7 @@ void TModuleWindow::update()
 {
    TInspector::update();
 
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    cModule *mod = (cModule *)object;
-
    setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 }
 
