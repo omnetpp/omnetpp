@@ -68,6 +68,30 @@ achieved by writing a C++ file txc1.cc:
 
 @include txc1.cc
 
+The Txc1 simple module type is represented by the C++ class Txc1, which
+has to be subclassed from cSimpleModule, and registered in OMNeT++ with the
+Define_Module() macro. We redefine two methods from cSimpleModule: initialize()
+and handleMessage(). They are invoked from the simulation kernel:
+the first one only once, and the second one whenever a message arrives at the module.
+
+In initialize() we create a message object (cMessage), and send it out
+on gate <tt>out</tt>. Since this gate in connected to the other module's
+input gate, the simulation kernel will deliver this message to the other module
+in the argument to handleMessage() -- after a 100ms propagation delay
+assigned to the link in the NED file. The other module just sends it back
+(another 100ms delay), so it will result in a contiuous ping-pong.
+
+Messages (packets, frames, jobs, etc) and events (timers, timeouts) are
+all represented by cMessage objects (or its subclasses) in OMNeT++.
+After you send or schedule them, they will be held by the simulation
+kernel in the "scheduled events" or "future events" list until
+their time comes and they are delivered to the modules via handleMessage().
+
+Note that there is no stopping condition built into this simulation:
+it would continue forever. You will be able to stop it from the GUI.
+(You could also specify a simulation time limit or CPU time limit
+in the configuration file, but we don't do that in the tutorial.)
+
 4. We now create the Makefile which will help us to compile and link our program
 to create the executable tictoc:
 
@@ -135,9 +159,12 @@ The main window toolbar displays the simulated time. This is virtual time, it
 has nothing to do with the actual (or wall-clock) time that the program takes to
 execute. Actually, how many seconds you can simulate in one real-world second
 depends highly on the speed of your hardware and even more on the nature and
-complexity of the simulation model itself (Exercise 2 will emphasize this issue).
-Note that the toolbar also contains a simsec/sec gauge which displays you this
-value.
+complexity of the simulation model itself. (The toolbar contains
+a simsec/sec gauge which displays you this value.)
+
+Note that it takes zero simulation time for a node to process the message.
+The only thing that makes the simulation time pass in this model is
+the propagation delay on the connections.
 
 9. You can exit the simulation program by clicking its Close icon or choosing File|Exit.
 
@@ -146,55 +173,117 @@ value.
 <hr>
 @section twonodes Enhancing the 2-node TicToc
 
-@subsection s2 Step 2: adding icons and debug output
+@subsection s2 Step 2: Refining the graphics, and adding debugging output
 
-// Here we make the model look a bit prettier in the GUI. We assign
-// the "proc1" icon (bitmaps/proc1.gif), and paint it cyan for `tic'
-// and yellow for `toc'.
+Here we make the model look a bit prettier in the GUI. We assign
+the "proc1" icon (the file <tt>bitmaps/proc1.gif</tt>), and paint it cyan for tic
+and yellow for toc. This is achieved by adding display strings to the
+NED file. The <tt>i=</tt> tag in the display string specifies the icon.
 
-In this step we add some debug messages to Txc1. When you run the
-simulation in the OMNeT++ GUI Tkenv, the output will appear in
-the main text window, and you can also open separate output windows
-for `tic' and `toc'.
+@dontinclude tictoc2.ned
+@skip submodules
+@until connections
 
-The main window behind displays text messages generated via the ev << ...
-lines from these modules. Observe that the messages "Hello World! I'm tic."
-and "Hello World! I'm toc." are only printed once at the beginning of the
-simulation.
+We also modify the C++ file to add some debug messages to Txc1 by
+writing to the OMNeT++ <tt>ev</tt> object like this:
+
+@dontinclude txc2.cc
+@skipline ev <<
+
+and
+
+@skipline ev <<
+
+When you run the simulation in the OMNeT++ GUI Tkenv, the following output
+will appear in the main text window:
+
+\code
+* Sending initial message
+* ** Event #0.  T=0.1000000000 (100ms).  Module #3 `tictoc2.toc'
+* Received message `tic', send it out again
+* ** Event #1.  T=0.2000000000 (200ms).  Module #2 `tictoc2.tic'
+* Received message `tic', send it out again
+* ** Event #2.  T=0.3000000000 (300ms).  Module #3 `tictoc2.toc'
+* Received message `tic', send it out again
+\endcode
+
+You can also open separate output windows for tic and toc. This feature
+will be useful when you have a large model and you experience the
+"fast scrolling logs syndrome".
 
 Sources: @ref tictoc2.ned, @ref txc2.cc, @ref omnetpp.ini
 
 
-@subsection s3 Step 3
+@subsection s3 Step 3: Adding state variables
 
-In this class we add a counter, and delete the message after ten exchanges.
+In this step we add a counter (<tt>int counter</tt>) to the class,
+and delete the message after ten exchanges. We set the variable to
+10 in initialize(), and decrement it with every message arrival,
+in handleMessage(). After it reaches zero, the simulation will
+run out of events and terminate.
 
 Sources: @ref tictoc3.ned, @ref txc3.cc, @ref omnetpp.ini
 
 
-@subsection s4 Step 4
+@subsection s4 Step 4: Adding parameters
 
 In this step you'll learn how to add input parameters to the simulation:
 we'll turn the "magic number" 10 into a parameter.
 
-For that, we need to declare the parameter in the NED file, and
-then to get its value from the C++ code.
+Module parameters have to be declared in the NED file.
+
+@dontinclude tictoc4.ned
+@skip simple
+@until gates
+
+Typically you'll want to assign values to them from omnetpp.ini, although you can also
+hardcode assignments in NED files. Here we do the latter.
+
+@skip module
+@until connections
+
+We also have to modify the C++ code to read the parameter in
+initialize(), and assign it to the counter.
+
+@dontinclude txc4.cc
+@skipline par(
 
 Sources: @ref tictoc4.ned, @ref txc4.cc, @ref omnetpp.ini
 
 
-@subsection s5 Step 5
+@subsection s5 Step 5: Modelling processing delay
 
-In the previous models, `tic' and `toc' immediately sent back the
+In the previous models, tic and toc immediately sent back the
 received message. Here we'll add some timing: tic and toc will hold the
 message for 1 simulated second before sending it back. In OMNeT++
 such timing is achieved by the module sending a message to itself.
 Such messages are called self-messages (but only because of the way they
-are used, otherwise they are completely ordinary messages) or events.
+are used, otherwise they are ordinary message objects).
 Self-messages can be "sent" with the scheduleAt() function, and you can
 specify when they should arrive back at the module.
 
-We leave out the counter, to keep the source code small.
+@dontinclude txc5.cc
+@skip ::handleMessage
+@skipline scheduleAt(
+
+Note that we added two cMessage* variables, <tt>event</tt> and <tt>tictocMsg</tt>
+to the class, to remember the message we use for timing and message whose
+processing delay we are simulating. In handleMessage() now we have to
+differentiate whether a new message has arrived via the input gate
+or the self-message came back (timer expired). Here we are using
+
+@dontinclude txc5.cc
+@skipline msg==
+
+but we could have written
+
+@code
+    if (msg->isSelfMessage())
+@endcode
+
+as well.
+
+We have left out the counter, to keep the source code small.
 
 Sources: @ref tictoc5.ned, @ref txc5.cc, @ref omnetpp.ini
 
