@@ -3792,6 +3792,9 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const 
     ps.storeSourceCode = storesrc;
     sourcefilename = sourcefname;
 
+    if (storesrc)
+        ps.nedfile->setSourceCode(np->nedsource->getFullText());
+
     try {
         return yyparse();
     } catch (NEDException *e) {

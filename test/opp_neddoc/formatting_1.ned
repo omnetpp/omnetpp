@@ -39,6 +39,9 @@
 // <center>^^^ line<br>this text should be centered.
 // </center>
 //
+// Several hyphens should also produce a divider line, like the one below:
+// -----------------
+//
 // Invalid HTML tags are not interpreted: <><x><yy><zzz>foo</zzz></yy>.
 //
 // The "nohtml" tag can be used to turn off interpreting html tags:
@@ -46,6 +49,13 @@
 // but <font color="red">this</font> <b>is</b>!
 //
 // Printing "nohtml" itself: <nohtml><nohtml></nohtml> or &lt;/nohtml>.
+//
+// Some @-tags (a`la Doxygen) are also supported:
+//
+// @author Andras @date 17/07/2004
+// @todo more testing
+// @bug so far none noticed
+// @see manual
 //
 // Preformatted text ("pre" tag, should ideally be displayed in fixed-width font):
 // <pre>
