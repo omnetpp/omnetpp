@@ -23,7 +23,10 @@
 #include "macros.h"
 #include "cqueue.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 using std::ostream;
 
@@ -72,9 +75,11 @@ void cQueue::forEach( ForeachFunc do_fn )
     do_fn(this,false);
 }
 
-#ifdef WITH_PARSIM
 void cQueue::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netPack(buffer);
 
     buffer->pack(n);
@@ -89,10 +94,14 @@ void cQueue::netPack(cCommBuffer *buffer)
             throw new cException(this,"netPack(): cannot transmit pointer to \"external\" object");
         packObject(iter(),buffer);
     }
+#endif
 }
 
 void cQueue::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netUnpack(buffer);
 
     buffer->unpack(n);
@@ -103,8 +112,8 @@ void cQueue::netUnpack(cCommBuffer *buffer)
         cObject *obj = unpackObject(buffer);
         insert(obj);
     }
-}
 #endif
+}
 
 void cQueue::clear()
 {

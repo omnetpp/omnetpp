@@ -26,7 +26,10 @@
 #include "csimplemodule.h"
 #include "cmessage.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 using std::ostream;
 
@@ -164,9 +167,11 @@ void cMessage::writeContents(ostream& os)
     }
 }
 
-#ifdef WITH_PARSIM
 void cMessage::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
 // FIXME what about refcount?
     cObject::netPack(buffer);
 
@@ -191,10 +196,14 @@ void cMessage::netPack(cCommBuffer *buffer)
 
     if (notNull(encapmsg, buffer))
         packObject(encapmsg,buffer);
+#endif
 }
 
 void cMessage::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
 // FIXME what about refcount?
     cObject::netUnpack(buffer);
 
@@ -221,8 +230,8 @@ void cMessage::netUnpack(cCommBuffer *buffer)
 
     if (checkFlag(buffer))
         take(encapmsg = (cMessage *) unpackObject(buffer));
-}
 #endif
+}
 
 cMessage& cMessage::operator=(const cMessage& msg)
 {

@@ -30,7 +30,10 @@
 #include "cgate.h"
 #include "cchannel.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 using std::ostream;
 
@@ -89,7 +92,6 @@ void cChannel::writeContents(ostream& os)
     }
 }
 
-#ifdef WITH_PARSIM
 void cChannel::netPack(cCommBuffer *buffer)
 {
     throw new cException(this,"netPack() not implemented");
@@ -99,7 +101,6 @@ void cChannel::netUnpack(cCommBuffer *buffer)
 {
     throw new cException(this,"netUnpack() not implemented");
 }
-#endif
 
 cChannel& cChannel::operator=(const cChannel& ch)
 {
@@ -223,7 +224,6 @@ void cSimpleChannel::writeContents(ostream& os)
     }
 }
 
-#ifdef WITH_PARSIM
 void cSimpleChannel::netPack(cCommBuffer *buffer)
 {
     throw new cException(this,"netPack() not implemented");
@@ -233,7 +233,6 @@ void cSimpleChannel::netUnpack(cCommBuffer *buffer)
 {
     throw new cException(this,"netUnpack() not implemented");
 }
-#endif
 
 cSimpleChannel& cSimpleChannel::operator=(const cSimpleChannel& ch)
 {

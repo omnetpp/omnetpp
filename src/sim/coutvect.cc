@@ -25,7 +25,10 @@
 #include "csimul.h"
 #include "cenvir.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 
 cOutVector::cOutVector(const char *nam, int tuple) : cObject(nam)
@@ -73,7 +76,6 @@ void cOutVector::info(char *buf)
         sprintf(buf, "(no values recorded yet)");
 }
 
-#ifdef WITH_PARSIM
 void cOutVector::netPack(cCommBuffer *buffer)
 {
     throw new cException(this, "netPack() not supported");
@@ -83,7 +85,6 @@ void cOutVector::netUnpack(cCommBuffer *buffer)
 {
     throw new cException(this, "netUnpack(): not supported");
 }
-#endif
 
 bool cOutVector::record(double value)
 {

@@ -31,7 +31,10 @@
 #include "cexception.h"
 #include "util.h"
 #include "cdefaultlist.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 using std::ostream;
 
@@ -252,19 +255,25 @@ void cObject::info(char *buf)
     buf[0] = '\0';
 }
 
-#ifdef WITH_PARSIM
 void cObject::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     buffer->pack(name());
+#endif
 }
 
 void cObject::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     opp_string tmp;
     buffer->unpack(tmp);
     setName(tmp.buffer());
-}
 #endif
+}
 
 const char *cObject::fullPath() const
 {

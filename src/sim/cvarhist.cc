@@ -29,7 +29,10 @@
 #include "distrib.h"
 #include "cvarhist.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 #define MAX(a,b) ((a)>(b) ? (a) : (b))
@@ -60,18 +63,24 @@ cVarHistogram::~cVarHistogram()
     delete [] bin_bounds;
 }
 
-#ifdef WITH_PARSIM
 void cVarHistogram::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cHistogramBase::netPack(buffer);
 
     buffer->pack(max_num_cells);
     if (notNull(bin_bounds, buffer))
         buffer->pack(bin_bounds, max_num_cells + 1);
+#endif
 }
 
 void cVarHistogram::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cHistogramBase::netUnpack(buffer);
 
     buffer->unpack(max_num_cells);
@@ -80,8 +89,8 @@ void cVarHistogram::netUnpack(cCommBuffer *buffer)
         bin_bounds = new double[max_num_cells + 1];
         buffer->unpack(bin_bounds, max_num_cells + 1);
     }
-}
 #endif
+}
 
 void cVarHistogram::addBinBound(double x) //--LG
 {

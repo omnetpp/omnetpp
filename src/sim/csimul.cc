@@ -33,7 +33,10 @@
 #include "cpar.h"
 #include "cstat.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 #ifdef WITH_NETBUILDER
 #include "netbuilder/loadnedfile.h"

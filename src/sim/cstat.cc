@@ -31,8 +31,11 @@
 #include "macros.h"
 #include "cdetect.h"  //NL
 #include "cexception.h"
-#include "parsim/ccommbuffer.h"
 #include "cenvir.h"
+
+#ifdef WITH_PARSIM
+#include "parsim/ccommbuffer.h"
+#endif
 
 using std::ostream;
 
@@ -66,9 +69,11 @@ cStatistic::~cStatistic()
     dropAndDelete(ra);
 }
 
-#ifdef WITH_PARSIM
 void cStatistic::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netPack(buffer);
 
     buffer->pack(genk);
@@ -77,10 +82,14 @@ void cStatistic::netPack(cCommBuffer *buffer)
         packObject(td, buffer);
     if (notNull(ra, buffer))
         packObject(ra, buffer);
+#endif
 }
 
 void cStatistic::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netUnpack(buffer);
 
     buffer->unpack(genk);
@@ -89,8 +98,8 @@ void cStatistic::netUnpack(cCommBuffer *buffer)
         take(td = (cTransientDetection *) unpackObject(buffer));
     if (checkFlag(buffer))
         take(ra = (cAccuracyDetection *) unpackObject(buffer));
-}
 #endif
+}
 
 cStatistic& cStatistic::operator=(const cStatistic& res)   //--VA
 {
@@ -168,27 +177,33 @@ void cStdDev::info(char *buf)
     sprintf(buf, "(n=%ld)", num_samples);
 }
 
-#ifdef WITH_PARSIM
 void cStdDev::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cStatistic::netPack(buffer);
     buffer->pack(num_samples);
     buffer->pack(min_samples);
     buffer->pack(max_samples);
     buffer->pack(sum_samples);
     buffer->pack(sqrsum_samples);
+#endif
 }
 
 void cStdDev::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cStatistic::netUnpack(buffer);
     buffer->unpack(num_samples);
     buffer->unpack(min_samples);
     buffer->unpack(max_samples);
     buffer->unpack(sum_samples);
     buffer->unpack(sqrsum_samples);
-}
 #endif
+}
 
 cStdDev& cStdDev::operator=(const cStdDev& res)
 {
@@ -301,19 +316,25 @@ void cStdDev::loadFromFile(FILE *f)
 //==========================================================================
 // cWeightedStdDev - member functions
 
-#ifdef WITH_PARSIM
 void cWeightedStdDev::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cStdDev::netPack(buffer);
     buffer->pack(sum_weights);
+#endif
 }
 
 void cWeightedStdDev::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cStdDev::netUnpack(buffer);
     buffer->unpack(sum_weights);
-}
 #endif
+}
 
 cWeightedStdDev& cWeightedStdDev::operator=(const cWeightedStdDev& res)
 {

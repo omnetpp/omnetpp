@@ -25,7 +25,10 @@
 #include "macros.h"
 #include "cdensity.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 using std::ostream;
 
@@ -52,9 +55,11 @@ cDensityEstBase::~cDensityEstBase()
     delete [] firstvals;
 }
 
-#ifdef WITH_PARSIM
 void cDensityEstBase::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cStdDev::netPack(buffer);
 
     buffer->pack(rangemin);
@@ -68,10 +73,14 @@ void cDensityEstBase::netPack(cCommBuffer *buffer)
 
     if (notNull(firstvals, buffer))
         buffer->pack(firstvals, num_firstvals);
+#endif
 }
 
 void cDensityEstBase::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cStdDev::netUnpack(buffer);
 
     buffer->unpack(rangemin);
@@ -88,8 +97,8 @@ void cDensityEstBase::netUnpack(cCommBuffer *buffer)
         firstvals = new double[num_firstvals];
         buffer->unpack(firstvals, num_firstvals);
     }
-}
 #endif
+}
 
 cDensityEstBase& cDensityEstBase::operator=(const cDensityEstBase& res)
 {

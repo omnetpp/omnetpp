@@ -32,7 +32,10 @@
 #include "csimul.h"   // for cModulePar
 #include "cenvir.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 using std::ostream;
 
@@ -218,9 +221,11 @@ void cPar::forEach(ForeachFunc do_fn)
     do_fn(this,false);
 }
 
-#ifdef WITH_PARSIM
 void cPar::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netPack(buffer);
 
     // For error checking & handling
@@ -292,10 +297,14 @@ void cPar::netPack(cCommBuffer *buffer)
             packObject(obj.obj,buffer);
         break;
     }
+#endif
 }
 
 void cPar::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     char *funcname;
     int argc;
 
@@ -364,8 +373,8 @@ void cPar::netUnpack(cCommBuffer *buffer)
             take(obj.obj = unpackObject(buffer));
         break;
     }
-}
 #endif
+}
 
 //-------------------------------------------------------------------------
 // set/get flags

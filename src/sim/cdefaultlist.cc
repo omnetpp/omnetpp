@@ -24,8 +24,11 @@
 #include "errmsg.h"
 #include "carray.h"
 #include "cexception.h"
-#include "parsim/ccommbuffer.h"
 #include "cdefaultlist.h"
+
+#ifdef WITH_PARSIM
+#include "parsim/ccommbuffer.h"
+#endif
 
 //=== Registration
 Register_Class(cDefaultList);
@@ -148,22 +151,28 @@ void cDefaultList::forEach(ForeachFunc do_fn)
     do_fn(this,false);
 }
 
-#ifdef WITH_PARSIM
 void cDefaultList::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netPack(buffer);
 
     if (count>0)
         throw new cException(this, "netPack() not supported (makes no sense)");
+#endif
 }
 
 void cDefaultList::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netUnpack(buffer);
     if (count>0)
         throw new cException(this, "netUnpack(): can only unpack into empty object");
-}
 #endif
+}
 
 void cDefaultList::take(cObject *obj)
 {

@@ -25,7 +25,10 @@
 #include "errmsg.h"
 #include "carray.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 //=== Registration
 Register_Class(cBag);
@@ -77,9 +80,11 @@ cBag& cBag::operator=(const cBag& bag)
     return *this;
 }
 
-#ifdef WITH_PARSIM
 void cBag::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netPack(buffer);
 
     buffer->pack(elemsize);
@@ -88,10 +93,14 @@ void cBag::netPack(cCommBuffer *buffer)
     buffer->pack(lastused);
     buffer->pack(firstfree);
     buffer->pack(vect, size * (sizeof(bool) + elemsize));
+#endif
 }
 
 void cBag::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netPack(buffer);
 
     buffer->unpack(elemsize);
@@ -100,8 +109,8 @@ void cBag::netUnpack(cCommBuffer *buffer)
     buffer->unpack(lastused);
     buffer->unpack(firstfree);
     buffer->unpack(vect, size * (sizeof(bool) + elemsize));
-}
 #endif
+}
 
 void cBag::setup(int esiz, int siz, int delt)
 {
@@ -358,9 +367,11 @@ void cArray::forEach( ForeachFunc do_fn )
     do_fn(this,false);
 }
 
-#ifdef WITH_PARSIM
 void cArray::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netPack(buffer);
 
     buffer->pack(size);
@@ -377,10 +388,14 @@ void cArray::netPack(cCommBuffer *buffer)
             packObject(vect[i], buffer);
         }
     }
+#endif
 }
 
 void cArray::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cObject::netUnpack(buffer);
 
     delete [] vect;
@@ -398,8 +413,8 @@ void cArray::netUnpack(cCommBuffer *buffer)
         else
             take(vect[i] = unpackObject(buffer));
     }
-}
 #endif
+}
 
 void cArray::clear()
 {

@@ -23,7 +23,10 @@
 #include "macros.h"
 #include "cllist.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 //=== Registration
 Register_Class(cLinkedList);
@@ -60,7 +63,6 @@ void cLinkedList::info(char *buf)
        sprintf(buf, "(length=%d)", n);
 }
 
-#ifdef WITH_PARSIM
 void cLinkedList::netPack(cCommBuffer *buffer)
 {
     throw new cException(this,"netPack() not supported -- don't know how to pack an item");
@@ -70,7 +72,6 @@ void cLinkedList::netUnpack(cCommBuffer *buffer)
 {
     throw new cException(this,"netUnpack() not supported");
 }
-#endif
 
 void cLinkedList::config( VoidDelFunc _delfunc, VoidDupFunc _dupfunc,
                           size_t _itemsize)

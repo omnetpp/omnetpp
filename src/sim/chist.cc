@@ -32,7 +32,10 @@
 #include "cdetect.h"
 #include "chist.h"
 #include "cexception.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
 #define MAX(a,b) ((a)>(b) ? (a) : (b))
@@ -58,18 +61,24 @@ cHistogramBase::~cHistogramBase()
     delete [] cellv;
 }
 
-#ifdef WITH_PARSIM
 void cHistogramBase::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cDensityEstBase::netPack(buffer);
     buffer->pack(num_cells);
 
     if (notNull(cellv, buffer))
         buffer->pack(cellv, num_cells);
+#endif
 }
 
 void cHistogramBase::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cDensityEstBase::netUnpack(buffer);
     buffer->pack(num_cells);
 
@@ -78,8 +87,8 @@ void cHistogramBase::netUnpack(cCommBuffer *buffer)
         cellv = new unsigned int[num_cells];
         buffer->unpack(cellv, num_cells);
     }
-}
 #endif
+}
 
 cHistogramBase& cHistogramBase::operator=(const cHistogramBase& res)
 {
@@ -163,19 +172,25 @@ cHistogramBase(name,numcells)
     cellsize=0;
 }
 
-#ifdef WITH_PARSIM
 void cEqdHistogramBase::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cHistogramBase::netPack(buffer);
     buffer->pack(cellsize);
+#endif
 }
 
 void cEqdHistogramBase::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cHistogramBase::netUnpack(buffer);
     buffer->unpack(cellsize);
-}
 #endif
+}
 
 cEqdHistogramBase& cEqdHistogramBase::operator=(const cEqdHistogramBase& res)
 {

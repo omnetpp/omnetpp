@@ -65,7 +65,6 @@ void cFSM::writeContents(ostream& os)
        os << "\n  State: " << _statename << " (" << _state << ")\n";
 }
 
-#ifdef WITH_PARSIM
 void cFSM::netPack(cCommBuffer *buffer)
 {
     throw new cException(this,"netPack() not implemented");
@@ -75,5 +74,4 @@ void cFSM::netUnpack(cCommBuffer *buffer)
 {
     throw new cException(this,"netUnpack() not implemented");
 }
-#endif
 

@@ -21,7 +21,10 @@
 #include <stdio.h>           // sprintf
 #include "macros.h"
 #include "cpacket.h"
+
+#ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
+#endif
 
 //=== registration
 Register_Class(cPacket);
@@ -49,22 +52,28 @@ void cPacket::info(char *buf)
     cMessage::info(buf);
 }
 
-#ifdef WITH_PARSIM
 void cPacket::netPack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cMessage::netPack(buffer);
 
     buffer->pack(_protocol);
     buffer->pack(_pdu);
+#endif
 }
 
 void cPacket::netUnpack(cCommBuffer *buffer)
 {
+#ifndef WITH_PARSIM
+    throw new cException(this,eNOPARSIM);
+#else
     cMessage::netUnpack(buffer);
 
     buffer->unpack(_protocol);
     buffer->unpack(_pdu);
-}
 #endif
+}
 
 
