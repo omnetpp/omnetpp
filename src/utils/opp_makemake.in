@@ -276,7 +276,7 @@ if [ "$cfgfile" != "" ]; then
 
   echo "# Import generic settings from $cfgfile"
   echo "include $cfgfile"
-  echo   
+  echo
 
 elif [ $makefilein = "n" ]; then
 # Makefile
@@ -292,6 +292,7 @@ AR=@AR@
 SHLIB_LD=@SHLIB_LD@
 MAKEDEPEND=@MAKEDEPEND@
 
+WITH_PARSIM=@WITH_PARSIM@
 CFLAGS=@CFLAGS@
 NEDCFLAGS=@NEDCFLAGS@
 LDFLAGS=@LDFLAGS@
@@ -321,6 +322,7 @@ AR=@${null}AR@
 SHLIB_LD=@${null}SHLIB_LD@
 MAKEDEPEND=@${null}MAKEDEPEND@
 
+WITH_PARSIM=@${null}WITH_PARSIM@
 CFLAGS=@${null}CFLAGS@
 NEDCFLAGS=@${null}NEDCFLAGS@
 LDFLAGS=@${null}LDFLAGS@
@@ -356,6 +358,9 @@ OMNETPP_LIBS=-L\$(OMNETPP_LIB_DIR) \$(USERIF_LIBS) \$(KERNEL_LIBS) \$(SYS_LIBS)
 COPTS=\$(CFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 NEDCOPTS=\$(CFLAGS) \$(NEDCFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 
+ifeq ($(WITH_NETBUILDER),yes)
+COPTS += -DWITH_PARSIM
+endif
 EOT
 fi
 

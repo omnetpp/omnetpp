@@ -210,14 +210,14 @@ cDefaultList *cObject::defaultOwner()
 }
 
 cObject& cObject::operator=(const cObject&)
-    {
+{
     // ownership not affected
     // name string is NOT copied from other object
     return *this;
-    }
+}
 
 void cObject::setName(const char *s)
-    {
+{
     // if name is "external" (p used), then deallocate it
     if (nameunion.chars[MAX_INTERNAL_NAME])
         delete [] nameunion.p;
