@@ -40,13 +40,13 @@ module HTTPNet
                 srvAddr = 0;
             display: "i=device/pc2;p=102,150,col";
     connections:
-        server.out --> delay 10ms --> cloud.in[0];
-        server.in <-- delay 10ms <-- cloud.out[0];
-        extClient.out --> delay 10ms --> cloud.in[1];
-        extClient.in <-- delay 10ms <-- cloud.out[1];
+        server.out --> cloud.in[0];
+        server.in <-- cloud.out[0];
+        extClient.out --> cloud.in[1];
+        extClient.in <-- cloud.out[1];
         for i=0..numClients-1 do
-            client[i].out --> delay 10ms --> cloud.in[i+2];
-            client[i].in <-- delay 10ms <-- cloud.out[i+2];
+            client[i].out --> cloud.in[i+2];
+            client[i].in <-- cloud.out[i+2];
         endfor;
 endmodule
 

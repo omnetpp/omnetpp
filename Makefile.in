@@ -35,7 +35,7 @@ components: libs progs samples
 
 LIBS=sim nedxml envir cmdenv tkenv
 PROGS=utils nedc gned scalars plove
-SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring
+SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring sockets
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs

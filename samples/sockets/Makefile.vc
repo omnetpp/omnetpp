@@ -9,7 +9,7 @@
 
 
 # Name of target to be created (-o option)
-TARGET = realtimeex.exe
+TARGET = sockets.exe
 
 # User interface (uncomment one) (-u option)
 # USERIF_LIBS=$(CMDENV_LIBS)
