@@ -31,7 +31,7 @@ components: all_libs all_progs all_models all_samples
 #=====================================================================
 
 
-all_libs: sim_std sim_pvm envir cmdenv tkenv tvenv
+all_libs: sim envir cmdenv tkenv tvenv
 
 all_progs: nedc gned plove utils
 
@@ -44,11 +44,8 @@ all_samples: dyna fddi fifo1 fifo2 hcube hist nim pvmex token
 # Libraries
 #
 
-sim_std:
-	cd $(OMNETPP_SRC_DIR)/sim; $(MAKE) sim_std
-
-sim_pvm:
-	cd $(OMNETPP_SRC_DIR)/sim; $(MAKE) sim_pvm
+sim:
+	cd $(OMNETPP_SRC_DIR)/sim; $(MAKE)
 
 envir:
 	cd $(OMNETPP_SRC_DIR)/envir; $(MAKE)

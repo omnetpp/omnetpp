@@ -11,30 +11,6 @@
 #
 
 #
-# Variables to be customized by the configure script
-#   Any changes made here will be lost when configure is run!
-#
-
-OMNETPP_ROOT="@OMNETPP_ROOT@"
-OMNETPP_SRC_DIR="@OMNETPP_SRC_DIR@"
-
-CXX="@CXX"
-NEDC="@NEDC@"
-LD="@LD@"
-AR="@AR@"
-MAKE_SO="@MAKE_SO@"
-
-OMNETPP_INCL_PATH="@OMNETPP_INCL_PATH@"
-OMNETPP_LIB_PATH="@OMNETPP_LIB_PATH@"
-
-OMNETPP_INCLUDES="@OMNETPP_INCLUDES@"
-
-TV_LIBS="@TV_LIBS@"
-TK_LIBS="@TK_LIBS@"
-PVM_LIBS="@PVM_LIBS@"
-SYS_LIBS="@SYS_LIBS@"
-
-#
 # process command line args
 #
 args="$*"
@@ -47,7 +23,7 @@ libs=""
 dirs=""
 xobjs=""
 fragments=""
-makefilein=no
+makefilein=n
 
 while [ ! $# = 0 ] ; do
     case "$1" in
@@ -56,7 +32,7 @@ while [ ! $# = 0 ] ; do
         cat <<EOT
 makemake: write OMNeT++ makefile based on source files in current directory
 
-makemake [-h] [-f] [-o make-target] [-t exe|so|o] [-u user-interface] [-p] 
+makemake [-h] [-f] [-m] [-o make-target] [-t exe|so|o] [-u user-interface] [-p] 
          [-Idir] [-llibrary] [-i makefile-fragment-file] 
          [directories, library and object files]...
     -h, --help            This help text
@@ -105,7 +81,7 @@ EOT
         ;;
 
         -m | --makefile-in)
-        makefilein=yes
+        makefilein=y
         ;;
 
         -u | --userinterface)
@@ -154,14 +130,20 @@ EOT
     shift
 done
 
-if [ -f makefile ]; then
-    if [ ! -s makefile ]; then
-        echo "makemake: synopsis changed (no longer needs '>makefile', type makemake -h)" 1>&2
-        rm makefile
+if [ $makefilein = "y" ]; then
+    outputfile="makefile.in"
+else
+    outputfile="makefile"
+fi
+
+if [ -f $outputfile ]; then
+    if [ ! -s $outputfile ]; then
+        echo "makemake: synopsis changed (no longer needs >$outputfile), type makemake -h" 1>&2
+        rm $outputfile
         exit
     fi
     if [ ! "$force" = "y" ]; then
-        echo "makemake: use -f to force overwrite existing makefile" 1>&2
+        echo "makemake: use -f to force overwrite existing $outputfile" 1>&2
         exit
     fi
 fi
@@ -183,7 +165,6 @@ objs=`echo *.ned *.cc | sed 's/\*[^ ]*//g; s/[^ ]*_n\.cc//g; s/\.ned/_n.o/g; s/\
 #
 # now the makefile creation
 #
-
 (
 
 cat <<EOT
@@ -245,12 +226,11 @@ LIBS = $libs
 #------------------------------------------------------------------------------
 EOT
 
-if [ $makefilein = no ]; then
+if [ $makefilein = "n" ]; then
 # makefile
 cat <<EOT
 
 OMNETPP_ROOT=@OMNETPP_ROOT@
-OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 
 CXX=     @CXX@
 NEDC=    @NEDC@
@@ -261,8 +241,6 @@ MAKE_SO= @MAKE_SO@
 OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
 OMNETPP_LIB_PATH=@OMNETPP_LIB_PATH@
 
-OMNETPP_INCLUDES="@OMNETPP_INCLUDES@"
-
 TV_LIBS=  @TV_LIBS@
 TK_LIBS=  @TK_LIBS@
 PVM_LIBS= @PVM_LIBS@
@@ -272,26 +250,24 @@ EOT
 else
 
 # makefile.in
+null=
 cat <<EOT
 
-OMNETPP_ROOT=@\OMNETPP_ROOT@
-OMNETPP_SRC_DIR=@\OMNETPP_SRC_DIR@
+OMNETPP_ROOT=@${null}OMNETPP_ROOT@
 
-CXX=     @\CXX@
-NEDC=    @\NEDC@
-LD=      @\LD@
-AR=      @\AR@
-MAKE_SO= @\MAKE_SO@
+CXX=     @${null}CXX@
+NEDC=    @${null}NEDC@
+LD=      @${null}LD@
+AR=      @${null}AR@
+MAKE_SO= @${null}MAKE_SO@
 
-OMNETPP_INCL_PATH=@\OMNETPP_INCL_PATH@
-OMNETPP_LIB_PATH=@\OMNETPP_LIB_PATH@
+OMNETPP_INCL_PATH=@${null}OMNETPP_INCL_PATH@
+OMNETPP_LIB_PATH=@${null}OMNETPP_LIB_PATH@
 
-OMNETPP_INCLUDES="@\OMNETPP_INCLUDES@"
-
-TV_LIBS=  @\TV_LIBS@
-TK_LIBS=  @\TK_LIBS@
-PVM_LIBS= @\PVM_LIBS@
-SYS_LIBS= @\SYS_LIBS@
+TV_LIBS=  @${null}TV_LIBS@
+TK_LIBS=  @${null}TK_LIBS@
+PVM_LIBS= @${null}PVM_LIBS@
+SYS_LIBS= @${null}SYS_LIBS@
 EOT
 
 fi
@@ -396,5 +372,5 @@ fi
 echo 'clean:'
 echo '	rm -f *.o *_n.cc $(TARGET)'
 
-) > makefile
+) > $outputfile
 

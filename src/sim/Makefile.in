@@ -157,7 +157,9 @@ pvm/pvmmod.o : pvm/pvmmod.cc
 	$(CXX) -c $(COPTS) $(PVM_INCL_PATH) pvm/pvmmod.cc -o pvm/pvmmod.o
 
 missing-library:
-	echo '*** No PVM installation found -- skipping sim_pvm'
+	@ echo
+	@ echo '  *** No PVM installation found -- skipping sim_pvm'
+	@ echo
 
 depend:
 	makedepend -Y -I. -- *.cc

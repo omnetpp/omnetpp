@@ -67,7 +67,9 @@ lex.yy.c: ebnf.lex
 	$(LEX) ebnf.lex
 
 missing-library:
-	echo '*** No Tk installation found -- skipping GNED'
+	@ echo
+	@ echo '  *** No Tk installation found -- skipping GNED'
+	@ echo
 
 depend:
 	makedepend -Y -I. -- *.c *.cc

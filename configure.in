@@ -226,6 +226,8 @@ AC_OUTPUT(
   samples/token/makefile
 )
 
+chmod +x src/utils/makemake
+
 #----------------------
 # Env. vars
 #----------------------

@@ -39,7 +39,7 @@ TKAPP=tkapp
 #
 default: @TKENV_IF_POSSIBLE@
 
-tkenv : libtkenv.$(LIB_SUFFIX)
+all : libtkenv.$(LIB_SUFFIX)
 
 libtkenv.a : $(OBJS)
 	$(AR) libtkenv.a $(OBJS)
@@ -81,7 +81,9 @@ tcl2c: tcl2c.c
 	$(CC) tcl2c.c -o tcl2c
 
 missing-library:
-	echo '*** No Tk installation found -- skipping TKEnv'
+	@ echo
+	@ echo '  *** No Tk installation found -- skipping TKEnv'
+	@ echo
 
 depend:
 	makedepend -Y -I. -I../envir -I../sim -- *.cc
