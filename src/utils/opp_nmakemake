@@ -590,11 +590,11 @@ $args1 = " $args ";
 $args1 =~ s/ -f / /g;
 
 # rule for clean and other recursive targets
-# note funky ``if not "$(SUBDIRS)"=="" for....'' -- it is necessary because
-# cmd.exe thinks that empty "( )" arg for "for" is an error (!?!?)
+# note funky `if not "$(SUBDIRS)"=="" ...' -- it is necessary because
+# cmd.exe thinks that no "for" args is an error (!?!?)
 print OUT "
 generateheaders: \$(GENERATEDHEADERS)
-\tif not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand generateheaders && cd .. || exit /b 1
+\t\@if not \"\$(SUBDIRS)\"==\"\" for %%i in ( \$(SUBDIRS) ) do \@cd %%i && $makecommand generateheaders && cd .. || exit /b 1
 
 clean:
 \t-del *.obj *.idb *.pdb \$(TARGET)\$(EXE_SUFFIX) .tstamp 2>NUL
