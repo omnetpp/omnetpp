@@ -20,7 +20,8 @@ Also, nearly all '-Wall' gcc warnings were eliminated from the source.
 Now it is possible to create DLLs from the libraries on Windows. This wasn't
 as easy as I thought, because there are fundamental conceptual differences
 between Windows DLLs and Unix shared objects. (For me it seems like the Unix
-approach is a lot more flexible.)
+approach is a lot more flexible.) The MSVC makefiles were further refined
+using a contribution from Balazs Kelemen.
 
 New feature in Envir: you may link more than one user interfaces into a
 simulation executable, and you can select the appropriate one at runtime
@@ -30,6 +31,11 @@ with the [General]/user-interface=Tkenv (or =Cmdenv) ini file option or the
 In NEDC (and GNED), fixed the ?: operator and changed its precedence to bind
 looser than || and &&. Changed nedc-generated code to suppress warnings about
 unused variables (which are normal anyway in machine-generated code).
+
+In Tkenv, setDisplayString() and module parameters in display strings are
+finally implemented...
+
+Makefiles change: install-local target eliminated...
 
 Several other smaller changes like fixed PVM execution; improved error handling,
 bugfix related to wrong transmissionFinishes() behavior, etc; see the
