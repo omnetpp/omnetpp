@@ -1584,13 +1584,7 @@ void TOmnetTkApp::puts(const char *str)
     }
 
     // we have to quote the string for Tcl in case it contains { or }.
-    // minimize heap usage: use local buffer whenever possible.
-    int flags;
-    char buf[128];
-    int quotedlen = Tcl_ScanElement(TCLCONST(str), &flags);
-    bool isshort = quotedlen<128;
-    char *quotedstr = isshort ? buf : Tcl_Alloc(quotedlen+1);
-    Tcl_ConvertElement(TCLCONST(str), quotedstr, flags);
+    TclQuotedString quotedstr(str);
 
     // output string into main window
     cModule *module = simulation.contextModule();
@@ -1598,7 +1592,7 @@ void TOmnetTkApp::puts(const char *str)
     if (!module || opt_use_mainwindow)
     {
         CHK(Tcl_VarEval(interp,
-            ".main.text insert end ",quotedstr," ", tag ,"\n"
+            ".main.text insert end ",quotedstr.get()," ", tag ,"\n"
             ".main.text see end", NULL));
     }
 
@@ -1610,15 +1604,11 @@ void TOmnetTkApp::puts(const char *str)
         if (insp)
         {
             CHK(Tcl_VarEval(interp,
-              insp->windowName(),".main.text insert end ",quotedstr," ", tag, "\n",
+              insp->windowName(),".main.text insert end ",quotedstr.get()," ", tag, "\n",
               insp->windowName(),".main.text see end", NULL));
         }
         mod = mod->parentModule();
     }
-
-    // dealloc buffer if necessary
-    if (!isshort)
-        Tcl_Free(quotedstr);
 }
 
 void TOmnetTkApp::flush()

@@ -44,8 +44,9 @@ void TStructPanel::flushIfNeeded(int limit)
     if (writeptr-buf>=limit)
     {
         Tcl_Interp *interp = getTkApplication()->getInterp();
-        CHK(Tcl_VarEval(interp, widgetname, ".txt insert insert {", buf, "}", NULL));
-        writeptr = buf; // reset buffer
+        TclQuotedString quotedstr(buf);
+        CHK(Tcl_VarEval(interp, widgetname, ".txt insert end ", quotedstr.get(), NULL));
+        writeptr = buf; // reset writeptr to beginning of buffer
     }
 }
 
@@ -100,8 +101,8 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                        sprintf(writeptr,"%*s    (no descriptor for %s)\n", indent, "", sd->getFieldTypeString(fld));
                        flushIfNeeded(FLUSHLIMIT);
                    }
-                   else 
-                   { 
+                   else
+                   {
                        displayStruct(sd1,level+1);
                        delete sd1;
                    }

@@ -47,6 +47,21 @@
 
 
 //
+// Quoting strings for Tcl_Eval
+//
+class TclQuotedString
+{
+  private:
+    char buf[80];
+    char *quotedstr;
+  public:
+    TclQuotedString(const char *str);
+    ~TclQuotedString();
+    const char *get() {return quotedstr;}
+    operator const char *() {return quotedstr;}
+};
+
+//
 // Utility functions:
 //
 
@@ -65,5 +80,6 @@ int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char 
 void inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry);
 
 #endif
+
 
 

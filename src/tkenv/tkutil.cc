@@ -25,6 +25,22 @@
 #include "visitor.h"
 #include "tkutil.h"
 
+
+
+TclQuotedString::TclQuotedString(const char *str)
+{
+    int flags;
+    int quotedlen = Tcl_ScanElement(TCLCONST(str), &flags);
+    quotedstr = quotedlen<80 ? buf : Tcl_Alloc(quotedlen+1);
+    Tcl_ConvertElement(TCLCONST(str), quotedstr, flags);
+}
+
+TclQuotedString::~TclQuotedString()
+{
+    if (quotedstr!=buf)
+        Tcl_Free(quotedstr);
+}
+
 //=======================================================================
 
 char *ptrToStr(void *ptr, char *buffer)
