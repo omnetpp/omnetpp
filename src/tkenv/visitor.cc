@@ -33,45 +33,6 @@
 
 
 
-bool cVisitor::do_foreach_child_call_visitor(cObject *obj, bool beg, cObject *_parent, cVisitor *_visitor)
-{
-    static cVisitor *visitor;
-    static cObject *parent;
-    if (!obj)
-    {
-         // setup
-         visitor = _visitor;
-         parent = _parent;
-         return false;
-    }
-    if (beg && obj==parent)
-        return true;
-    if (beg && obj!=parent)
-        visitor->visit(obj);
-    return false;
-}
-
-void cVisitor::traverseChildrenOf(cObject *obj)
-{
-    do_foreach_child_call_visitor(0,false,obj,this);
-    obj->forEach((ForeachFunc)do_foreach_child_call_visitor);
-}
-
-bool cVisitor::process(cObject *obj)
-{
-    try
-    {
-        visit(obj);
-    }
-    catch (EndTraversalException e)
-    {
-        return false;
-    }
-    return true;
-}
-
-//-----------------------------------------------------------------------
-
 cCollectObjectsVisitor::cCollectObjectsVisitor()
 {
     sizelimit = 0; // no limit by default

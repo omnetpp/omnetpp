@@ -337,6 +337,7 @@ structinsp.obj: structinsp.cc \
   ../../include/ctypes.h \
   ../../include/globals.h \
   tkutil.h
+tclcode.obj: tclcode.cc
 tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
@@ -348,6 +349,7 @@ tkapp.obj: tkapp.cc \
   inspector.h \
   inspfactory.h \
   modinsp.h \
+  tclcode.cc \
   ../../include/defs.h \
   ../../include/cmodule.h \
   ../../include/cobject.h \

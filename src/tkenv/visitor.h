@@ -16,50 +16,11 @@
 
 #include "cenvir.h"
 #include "cobject.h"
+#include "cvisitor.h"
 #include "tkapp.h"
 #include "patmatch.h"
 
 
-
-/**
- * cVisitor base class.
- */
-// FIXME after this class boils down, should be moved to sim/.
-class cVisitor
-{
-  private:
-     // wraps old cObject::foreach()
-     static bool do_foreach_child_call_visitor(cObject *obj, bool beg, cObject *_parent, cVisitor *_visitor);
-
-  protected:
-    /**
-     * Can be thrown to get out in the middle of the traversal process.
-     */
-     class EndTraversalException { public: EndTraversalException() {} };
-
-    /**
-     * Called on each immediate child object. Should be redefined by user.
-     */
-    virtual void visit(cObject *obj) = 0;
-
-    /**
-     * Emulate cObject::foreachChild() with the foreach() we have...
-     */
-    virtual void traverseChildrenOf(cObject *obj);
-
-  public:
-    /**
-     * Virtual destructor.
-     */
-    virtual ~cVisitor() {}
-
-    /**
-     * Starts the visiting process. This version simply calls visit(obj).
-     * It also catches EndTraversalException. Return value is true if
-     * traversal went through and false if EndTraversalException was caught.
-     */
-    virtual bool process(cObject *obj);
-};
 
 /**
  * Adds the capability of storing object pointers to cVisitor.
