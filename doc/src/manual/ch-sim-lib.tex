@@ -211,31 +211,9 @@ for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++)
 \end{verbatim}
 
 
-\subsection{Ownership control}
+\section{Logging from modules}
 
-
-By default, if a container object is destroyed, it destroys the
-contained objects too. If you call \fname{dup()}, the contained
-objects are duplicated too for the new container. This is done so
-because contained objects are owned by the container; ownership is
-defined as the right/duty of deallocation. However, there is a
-fine-grain ownership control\index{ownership} mechanism built
-in which allows you to specify on per-object basis whether you want
-objects to be owned by the container or not; by calling the
-\fname{takeOwnership()} member function with false, you tell the
-container that you don't want it to become the owner of objects that
-will be inserted in the future.
-
-The ownership mechanism is discussed in detail in section
-\ref{sec:ch-sim-lib:ownership-management}
-
-
-\section{Utilities}
-
-\subsection{Tracing}
-
-
-The tracing feature will be used extensively in the code examples,
+The logging feature will be used extensively in the code examples,
 so it is shortly introduced here. It will be covered in detail
 in a later section.
 
@@ -244,8 +222,7 @@ simulation.  You can send debugging output to \ttt{ev} with the C++-style
 output operators:
 
 \begin{verbatim}
-ev << "packet received, sequence number is "
-   << seqNum << endl;
+ev << "packet received, sequence number is " << seqNum << endl;
 \end{verbatim}
 
 An alternative solution is \fname{ev.printf()}:
@@ -254,13 +231,12 @@ An alternative solution is \fname{ev.printf()}:
 ev.printf("packet received, sequence number is %d\n", seqNum);
 \end{verbatim}
 
-\subsection{Simulation time conversion}
+\section{Simulation time conversion}
 
-
-There are utility functions which convert simulation
-time\index{simulation time} (\cclass{simtime\_t}) to a printable string
-(like \ttt{"3s 130ms 230us"}) and vica versa.
-
+Simulation time is represented by the type \ttt{simtime\_t}
+which is a typedef to \ttt{double}.
+{\opp} provides utility functions which convert \ttt{simtime\_t}
+to a printable string (\ttt{"3s 130ms 230us"}) and vica versa.
 
 The \fname{simtimeToStr()} function converts a \cclass{simtime\_t}
 (passed in the first arg) to textual form. The result is placed into
@@ -273,7 +249,6 @@ char buf[32];
 ev.printf("t1=%s, t2=%s\n", simtimeToStr(t1), simTimeToStr(t2,buf));
 \end{verbatim}
 
-
 The \fname{strToSimtime()} function parses a time specification passed
 in a string, and returns a \cclass{simtime\_t}. If the string cannot
 be entirely interpreted, -1 is returned.
@@ -283,17 +258,17 @@ simtime_t t = strToSimtime("30s 152ms");
 \end{verbatim}
 
 Another variant, \fname{strToSimtime0()} can be used if the time
-string is a substring in a larger string. Instead of taking a char*,
-it takes a reference to char* (char*\&) as the first argument.  The
+string is a substring in a larger string. Instead of taking a \ttt{char*},
+it takes a reference to \ttt{char*} (\ttt{char*\&}) as the first argument.  The
 function sets the pointer to the first character that could not be
 interpreted as part of the time string, and returns the value. It
 never returns -1; if nothing at the beginning of the string looked
 like simulation time, it returns 0.
 
 \begin{verbatim}
-const char *s = "30s 152ms and some rubbish";
+const char *s = "30s 152ms and something extra";
 
-simtime_t t = strToSimtime0(s); // now s points to "and some rubbish"
+simtime_t t = strToSimtime0(s); // now s points to "and something extra"
 \end{verbatim}
 
 \subsection{Utility \texttt{<string.h>} functions}
