@@ -1,3 +1,10 @@
+2002-02-21  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* cqueue.cc (operator=): Bugfix: iteration order changed from
+	head->tail to tail->head. Since unsorted insertion is performed at
+	the destination queue's head, this preserves element order. Fix
+	provided by José Afonso <jaa@dei.uminho.pt>
+
 2002-02-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* cmodule.cc (moduleByRelativePath): use explicit constructor
