@@ -27,7 +27,7 @@
 //==========================================================================
 // TSlaveApp: "slave" mode simulation application
 
-class TSlaveApp : public TOmnetApp
+class ENVIR_API TSlaveApp : public TOmnetApp
 {
    protected:
      bool opt_write_slavelog;

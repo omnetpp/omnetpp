@@ -42,7 +42,7 @@ extern long starting_seeds[NUM_STARTINGSEEDS];  // they are in seeds.cc
 //      it should create a "slave" application that can work with the "master"
 //      app that runs on the console.
 //
-class TOmnetApp
+class ENVIR_API TOmnetApp
 {
    protected:
      cIniFile *ini_file;

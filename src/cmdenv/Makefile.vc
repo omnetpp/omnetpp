@@ -10,6 +10,8 @@ COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "..\envir" /DBUILDING_CMDENV
 
 OBJS = cmdenv.obj enumstr.obj heap.obj
 
+LIBS = $(OMNETPP_SRC_DIR)/sim/sim_std.ilib $(OMNETPP_SRC_DIR)/envir/envir.ilib
+
 #
 # Targets
 #
@@ -19,7 +21,7 @@ cmdenv.lib : $(OBJS)
 	$(AR) /nologo /out:cmdenv.lib $(OBJS)
 
 cmdenv.dll : $(OBJS)
-	#FIXME $(SHLIB_LD) -o cmdenv.dll $(OBJS)
+	$(SHLIB_LD) /nologo /out:cmdenv.dll /implib:cmdenv.ilib $(OBJS) $(LIBS)
 
 cmdenv.obj : cmdenv.cc
 	$(CXX) $(COPTS) /c /Tp cmdenv.cc
@@ -34,7 +36,7 @@ depend:
 	@ echo *** make depend not (yet) supported with MSVC
 
 clean:
-	del *.obj cmdenv.lib cmdenv.dll
+	del *.obj cmdenv.lib cmdenv.dll cmdenv.ilib cmdenv.exp
 
 install-local: cmdenv$(LIB_SUFFIX)
 	copy cmdenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)

@@ -19,6 +19,6 @@
 #include "defs.h"
 #include "envdefs.h"
 
-bool transform_pattern(const char *from, short *topattern);
-bool stringmatch(const short *pattern, const char *line);
+ENVIR_API bool transform_pattern(const char *from, short *topattern);
+ENVIR_API bool stringmatch(const short *pattern, const char *line);
 

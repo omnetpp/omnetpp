@@ -28,8 +28,8 @@ LEX=flex.exe
 CXX=cl.exe
 LINK=link.exe
 AS=cl.exe
-AR=link.exe -lib
-SHLIB_LD=...
+AR=link.exe /lib
+SHLIB_LD=link.exe /dll
 NEDC=$(OMNETPP_ROOT)/bin/nedc.exe
 
 # Tk's wish application, used by Plove. You'll almost surely need to change this path!
@@ -44,7 +44,7 @@ CFLAGS=/nologo /MLd /W3 /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /GZ
 LDFLAGS=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 
 # LIB_SUFFIX is either .lib or .dll (at this point, only .lib is supported)
-LIB_SUFFIX=.lib
+LIB_SUFFIX=.dll
 
 HAVE_DLOPEN=0
 
@@ -67,7 +67,7 @@ SYS_LIBS=
 # missing-library below
 #
 TKENV_IF_POSSIBLE=tkenv
-SIM_PVM_IF_POSSIBLE=sim_pvm
+SIM_PVM_IF_POSSIBLE=missing-library
 GNED_IF_POSSIBLE=gned
 
 #

@@ -10,6 +10,8 @@ COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /DBUILDING_ENVIR
 
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj slaveapp.obj seeds.obj patmatch.obj
 
+LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
+
 #
 # Targets
 #
@@ -19,7 +21,7 @@ envir.lib : $(OBJS)
 	$(AR) /nologo /out:envir.lib $(OBJS)
 
 envir.dll : $(OBJS)
-	#FIXME $(SHLIB_LD) -o envir.dll $(OBJS)
+	$(SHLIB_LD) /nologo /out:envir.dll /implib:envir.ilib $(OBJS) $(LIBS)
 
 args.obj : args.cc args.h
 	$(CXX) $(COPTS) /c /Tp args.cc
@@ -49,7 +51,7 @@ depend:
 	@ echo *** make depend not (yet) supported with MSVC
 
 clean:
-	del *.obj envir.lib envir.dll
+	del *.obj envir.lib envir.dll envir.ilib envir.exp
 
 install-local: envir$(LIB_SUFFIX)
 	copy envir$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)

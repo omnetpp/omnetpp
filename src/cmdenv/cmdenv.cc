@@ -34,8 +34,11 @@
 static char buffer[1024];
 
 // dummy function to help cope with Unix linkers...
-void _dummy_for_env() {}
+//void _dummy_for_env() {}
 
+//
+// Register the Cmdenv user interface
+//
 Register_OmnetApp(TCmdenvApp,false,10,"Cmdenv (command-line user interface)");
 
 //==========================================================================

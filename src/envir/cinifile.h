@@ -37,7 +37,7 @@ class cIniFileIterator;
 #define MAX_INI_SECTIONS 110
 #define MAX_INI_ENTRIES  1000   // increase if necessary
 
-class cIniFile
+class ENVIR_API cIniFile
 {
   friend class cIniFileIterator;
   friend class cIniFileSectionIterator;
@@ -88,7 +88,7 @@ class cIniFile
 
 };
 
-class cIniFileIterator
+class ENVIR_API cIniFileIterator
 {
    private:
       cIniFile *ini;
@@ -104,7 +104,7 @@ class cIniFileIterator
       bool accessed()         {return ini->entry[idx].accessed;}
 };
 
-class cIniFileSectionIterator
+class ENVIR_API cIniFileSectionIterator
 {
    private:
       cIniFile *ini;
@@ -118,3 +118,4 @@ class cIniFileSectionIterator
 };
 
 #endif
+

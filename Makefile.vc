@@ -32,7 +32,7 @@ components: libs progs install-local
 #
 #=====================================================================
 
-LIBS=sim envir cmdenv tkenv
+LIBS=ilib sim envir cmdenv tkenv
 PROGS=utils nedc gned plove
 SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo
 
@@ -48,6 +48,10 @@ samples: $(SAMPLES)
 #
 # Libraries
 #
+
+# fixme: ilib only needed if dlls are to be built
+ilib:
+	cd /d $(OMNETPP_SRC_DIR:/=\)\sim && $(MAKE) $(MOPTS) $(MAKEFILE) sim_std.ilib
 
 sim:
 	cd /d $(OMNETPP_SRC_DIR:/=\)\sim && $(MAKE) $(MOPTS) $(MAKEFILE)

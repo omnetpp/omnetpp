@@ -58,9 +58,9 @@ class ENVIR_API cOmnetAppRegistration : public cObject
   public:
     cOmnetAppRegistration(const char *name, bool isSlave, int score,
                           const char *description, TOmnetApp *(*f)(int, char *[])) :
-      cObject(name,(cObject *)&omnetapps),
+      cObject(name, (cObject *)&omnetapps),
       isslave(isSlave), desc(description), scor(score), creatorfunc(f) {}
-    virtual ~cOmnetAppRegistration() {}
+    virtual ~cOmnetAppRegistration()  {}
 
     // redefined functions
     virtual const char *className()  {return "cOmnetAppRegistration";}
