@@ -1,5 +1,5 @@
 %description:
-Test channel delay and error rate in NED.
+Test channel bit error rate in NED by using messages of different lengths
 
 %file: {}.ned
 
@@ -10,14 +10,12 @@ endchannel
 
 simple {Node1}
     gates:
-        in: in;
         out: out;
 endsimple
 
 simple {Node2}
     gates:
         in: in;
-        out: out;
 endsimple
 
 module {MyNet}
@@ -26,7 +24,6 @@ module {MyNet}
         node2: {Node2};
     connections:
         node1.out --> {MyConn} --> node2.in;
-        node1.in  <-- {MyConn} <-- node2.out;
 endmodule
 
 network
@@ -36,6 +33,9 @@ endnetwork
 %file: {}.cc
 
 #include <omnetpp.h>
+
+#define NUM_MSGS         2000
+#define BIT_ERROR_RATE   0.1
 
 class {Node1} : public cSimpleModule
 {
@@ -47,12 +47,16 @@ Define_Module({Node1});
 
 void {Node1}::activity()
 {
-    for (int i=0; i<1000; i++)
+    // send packets with lengths 0,1,2,3,4
+    for (int len=0; len<5; len++)
     {
-        cMessage *msg = new cMessage();
-        msg->setLength(1);
-        send(msg, "out");
-        wait(exponential(1.0));
+        for (int i=0; i<NUM_MSGS; i++)
+        {
+            cMessage *msg = new cMessage();
+            msg->setLength(len);
+            send(msg, "out");
+            wait(exponential(1.0));
+        }
     }
 }
 
@@ -60,8 +64,7 @@ void {Node1}::activity()
 
 class {Node2} : public cSimpleModule
 {
-    int total;
-    int errors;
+    int errors[5];
 
     Module_Class_Members({Node2},cSimpleModule,16384)
     virtual void activity();
@@ -72,37 +75,38 @@ Define_Module({Node2});
 
 void {Node2}::activity()
 {
-    total = errors = 0;
+    for (int i=0; i<5; i++)
+        errors[i] = 0;
+
     for(;;)
     {
         cMessage *msg = receive();
-        total++;
-
         if (msg->hasBitError())
-            errors++;
-
-        double delay = simTime() - msg->sendingTime();
-        if (delay!=0.004)
-            ev << "wrong delay: " << delay << endl;
+            errors[msg->length()]++;
         delete msg;
     }
 }
 
 void {Node2}::finish()
 {
-    double errorrate = errors/total;
-    if (fabs(errorrate-0.1) > 0.02)
-        ev << "wrong error rate: " << errorrate << endl;
+    for (int len=0; len<5; len++)
+    {
+        double exp_erate = 1-pow(1-BIT_ERROR_RATE, len);
+        double erate = (double)errors[len] / (double)NUM_MSGS;
+        ev << "msg len: " << len << endl;
+        ev << "error rate: measured: " << erate << ", expected: " << exp_erate << endl;
+
+        if (fabs(erate-exp_erate) > exp_erate/10)
+            ev << "wrong error rate!" << endl;
+    }
 }
 
 %inifile: {}.ini
 [General]
 network={myNet}
-express-mode=no
-event-banners=no
 
-%not-contains: stdout
-wrong delay
+[Cmdenv]
+express-mode=yes
 
 %not-contains: stdout
 wrong error rate

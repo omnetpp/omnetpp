@@ -1,0 +1,89 @@
+%description:
+Test channel delay in NED.
+
+%file: {}.ned
+
+channel {MyConn}
+    delay 0.004;
+endchannel
+
+simple {Node1}
+    gates:
+        out: out;
+endsimple
+
+simple {Node2}
+    gates:
+        in: in;
+endsimple
+
+module {MyNet}
+    submodules:
+        node1: {Node1};
+        node2: {Node2};
+    connections:
+        node1.out --> {MyConn} --> node2.in;
+endmodule
+
+network
+     {myNet}: {MyNet};
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Node1} : public cSimpleModule
+{
+    Module_Class_Members({Node1},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Node1});
+
+void {Node1}::activity()
+{
+    for (int i=0; i<100; i++)
+    {
+        cMessage *msg = new cMessage();
+        msg->setLength(exponential(1000));  // delay should not depend on message length
+        send(msg, "out");
+        wait(exponential(1.0));
+    }
+}
+
+class {Node2} : public cSimpleModule
+{
+    int total;
+    int errors;
+
+    Module_Class_Members({Node2},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Node2});
+
+void {Node2}::activity()
+{
+    for(;;)
+    {
+        cMessage *msg = receive();
+        double delay = simTime() - msg->sendingTime();
+        ev << "delay=" << delay << ", (diff-0.004)=" << (delay-0.004) << endl;
+        if (fabs(delay-0.004) > 1e-14)
+            ev << "wrong delay" << endl;
+        delete msg;
+    }
+}
+
+%inifile: {}.ini
+[General]
+network={myNet}
+
+[Cmdenv]
+express-mode=no
+event-banners=no
+
+%not-contains: stdout
+wrong delay
+
