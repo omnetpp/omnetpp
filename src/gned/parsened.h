@@ -48,10 +48,10 @@ extern NEDParser *np;
 //
 // the parser interface
 //
-int parseNedFile(Tcl_Interp *interp, char *fname, int nedfilekey,
-                 char *nedarray, char *errorsarray);
-int parseNedText(Tcl_Interp *interp, char *nedtext, int nedfilekey,
-                 char *nedarray, char *errorsarray);
+int parseNedFile(Tcl_Interp *interp, const char *fname, int nedfilekey,
+                 const char *nedarray, const char *errorsarray);
+int parseNedText(Tcl_Interp *interp, const char *nedtext, int nedfilekey,
+                 const char *nedarray, const char *errorsarray);
 
 //
 // parser class
@@ -99,24 +99,24 @@ class NEDParser
     NEDFile *nedsource;
 
     // TCL array names; to be changed to TCL object references:
-    char *tmp_ned;
-    char *tmp_errors;
+    const char *tmp_ned;
+    const char *tmp_errors;
     int num_errors;
 
     char *tmpbuf;
     int tmpbuflen;
 
-    char *storeInTempBuf(char *s);
+    const char *storeInTempBuf(const char *s);
 
   public:
     NEDParser();
     ~NEDParser();
 
     // entry points:
-    int parseFile(Tcl_Interp *interp, char *fname, int nedfilekey,
-                  char *nedarray, char *errorsarray);
-    int parseText(Tcl_Interp *interp, char *nedtext, int nedfilekey,
-                  char *nedarray, char *errorsarray);
+    int parseFile(Tcl_Interp *interp, const char *fname, int nedfilekey,
+                  const char *nedarray, const char *errorsarray);
+    int parseText(Tcl_Interp *interp, const char *nedtext, int nedfilekey,
+                  const char *nedarray, const char *errorsarray);
 
     // create new item: returns item key
     int create(char *type, int parentkey);
@@ -125,7 +125,7 @@ class NEDParser
     void set(int key, char *attr, long value);
     void set(int key, char *attr, char *value);
     void set(int key, char *attr, YYLTYPE valuepos);
-    char *get(int key, char *attr);
+    const char *get(int key, char *attr);
     void swap(int key, char *attr1, char *attr2);
 
     // findChild: returns item key, -1 not found, -2 not unique

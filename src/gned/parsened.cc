@@ -40,8 +40,8 @@ NEDParser::~NEDParser()
     delete tmpbuf;
 }
 
-int NEDParser::parseFile(Tcl_Interp *intrp, char *fname, int nedfilekey,
-		  char *nedarray, char *errorsarray)
+int NEDParser::parseFile(Tcl_Interp *intrp, const char *fname, int nedfilekey,
+                         const char *nedarray, const char *errorsarray)
 {
     // init class members
     interp = intrp;
@@ -56,7 +56,7 @@ int NEDParser::parseFile(Tcl_Interp *intrp, char *fname, int nedfilekey,
     // cosmetics on file name: substitute "~"
     char newfilename[1000];
     if (fname[0]=='~') {
-	sprintf(newfilename,"%s%s",getenv("HOME"),fname+1);
+        sprintf(newfilename,"%s%s",getenv("HOME"),fname+1);
     } else {
         strcpy(newfilename,fname);
     }
@@ -72,7 +72,7 @@ int NEDParser::parseFile(Tcl_Interp *intrp, char *fname, int nedfilekey,
     yyout = stdout;
     yyin = fopen(newfilename,"r");
     if (!yyin)
-	{interp->result = "unable to open file";return TCL_ERROR;}
+        {interp->result = "unable to open file";return TCL_ERROR;}
     runparse();
     fclose(yyin);
 
@@ -82,8 +82,8 @@ int NEDParser::parseFile(Tcl_Interp *intrp, char *fname, int nedfilekey,
     return TCL_OK;
 }
 
-int NEDParser::parseText(Tcl_Interp *intrp, char *nedtext, int nedfilekey,
-		  char *nedarray, char *errorsarray)
+int NEDParser::parseText(Tcl_Interp *intrp, const char *nedtext, int nedfilekey,
+                         const char *nedarray, const char *errorsarray)
 {
     // init global vars
     interp = intrp;
@@ -106,7 +106,7 @@ int NEDParser::parseText(Tcl_Interp *intrp, char *nedtext, int nedfilekey,
     yyout = stdout;
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
-	{interp->result = "unable to allocate work memory";return TCL_ERROR;}
+        {interp->result = "unable to allocate work memory";return TCL_ERROR;}
     runparse();
     yy_delete_buffer(handle);
 
@@ -116,7 +116,7 @@ int NEDParser::parseText(Tcl_Interp *intrp, char *nedtext, int nedfilekey,
     return TCL_OK;
 }
 
-char *NEDParser::storeInTempBuf(char *s)
+const char *NEDParser::storeInTempBuf(const char *s)
 {
     int l = strlen(s)+1;
     if (l>=tmpbuflen)
@@ -160,7 +160,7 @@ void NEDParser::set(int key, char *attr, YYLTYPE valuepos)
     set(key,attr,nedsource->get(valuepos));
 }
 
-char *NEDParser::get(int key, char *attr)
+const char *NEDParser::get(int key, char *attr)
 {
     char tmp[64];
     sprintf(tmp,"%d,%s",key,attr);
@@ -173,8 +173,8 @@ void NEDParser::swap(int key, char *attr1, char *attr2)
     sprintf(tmp1, "%d,%s",key,attr1);
     sprintf(tmp2, "%d,%s",key,attr2);
 
-    char *oldv1 = Tcl_GetVar2(interp,tmp_ned,tmp1,TCL_GLOBAL_ONLY);
-    char *oldv2 = Tcl_GetVar2(interp,tmp_ned,tmp2,TCL_GLOBAL_ONLY);
+    const char *oldv1 = Tcl_GetVar2(interp,tmp_ned,tmp1,TCL_GLOBAL_ONLY);
+    const char *oldv2 = Tcl_GetVar2(interp,tmp_ned,tmp2,TCL_GLOBAL_ONLY);
     assert(oldv1!=0 && oldv2!=0);
 
     oldv1 = storeInTempBuf(oldv1);
@@ -204,7 +204,7 @@ int NEDParser::findChild(int parentkey, char *attr, char *value)
 
 //-----------
 
-static void _setVar(Tcl_Interp *interp, char *array, int key, char *attr, char *value)
+static void _setVar(Tcl_Interp *interp, const char *array, int key, char *attr, char *value)
 {
     char tmp[64];
     sprintf(tmp,"%d,%s",key,attr);
@@ -231,13 +231,14 @@ void NEDParser::dbg(YYLTYPE lc, char *what)
 {
     printf("%s: %d,%d,%d,%d=%s.\n",
             what,
-	          lc.first_line,lc.first_column,lc.last_line,lc.last_column,
-	          nedsource->get(lc));
+                  lc.first_line,lc.first_column,lc.last_line,lc.last_column,
+                  nedsource->get(lc));
 }
 
 //-----------------------------------------------------------------------
 
-int parseNedFile(Tcl_Interp *interp, char *fname, int nedfilekey, char *nedarray, char *errorsarray)
+int parseNedFile(Tcl_Interp *interp, const char *fname, int nedfilekey,
+                 const char *nedarray, const char *errorsarray)
 {
     NEDParser _np;
     np = &_np;
@@ -245,7 +246,8 @@ int parseNedFile(Tcl_Interp *interp, char *fname, int nedfilekey, char *nedarray
     return np->parseFile(interp, fname, nedfilekey, nedarray, errorsarray);
 }
 
-int parseNedText(Tcl_Interp *interp, char *nedtext, int nedfilekey, char *nedarray, char *errorsarray)
+int parseNedText(Tcl_Interp *interp, const char *nedtext, int nedfilekey,
+                 const char *nedarray, const char *errorsarray)
 {
     NEDParser _np;
     np = &_np;

@@ -26,7 +26,7 @@
 
 struct OmnetTclCommand {
     char *namestr;
-    int (*func)(ClientData, Tcl_Interp *, int, char **);
+    int (*func)(ClientData, Tcl_Interp *, int, const char **);
 };
 extern OmnetTclCommand tcl_commands[];
 

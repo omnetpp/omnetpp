@@ -34,9 +34,9 @@
 #include "parsened.h"
 #include "tklib.h"
 
-int exit_cmd(ClientData, Tcl_Interp *, int, char **);
-int arrowcoords_cmd(ClientData, Tcl_Interp *, int, char **);
-int parsened_cmd(ClientData, Tcl_Interp *, int, char **);
+int exit_cmd(ClientData, Tcl_Interp *, int, const char **);
+int arrowcoords_cmd(ClientData, Tcl_Interp *, int, const char **);
+int parsened_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 // command table
 OmnetTclCommand tcl_commands[] = {
@@ -302,18 +302,18 @@ int main(int argc, char *argv[])
 #endif //USE_WINMAIN
 
 
-int arrowcoords_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int arrowcoords_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     return arrowcoords(interp,argc,argv);
 }
 
-int parsened_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
+int parsened_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
     int nedfilekey = -1;
-    char *nedarray = NULL;
-    char *errorsarray = NULL;
-    char *filename = NULL;
-    char *nedtext = NULL;
+    const char *nedarray = NULL;
+    const char *errorsarray = NULL;
+    const char *filename = NULL;
+    const char *nedtext = NULL;
 
     for (int i=1; i<argc; i++)
     {

@@ -21,7 +21,8 @@
 
 enum {COMMENT_LINE, BLANK_LINE, CODE_LINE};
 
-class NEDFile {
+class NEDFile
+{
   private:
     char *wholeFile;
 
@@ -49,8 +50,8 @@ class NEDFile {
     NEDFile();
     ~NEDFile();
 
-    bool readFile(char *filename);
-    bool setData(char *data);
+    bool readFile(const char *filename);
+    bool setData(const char *data);
 
     char *get(YYLTYPE pos);
 

@@ -44,7 +44,7 @@ NEDFile::~NEDFile()
     delete commentBuf;
 }
 
-bool NEDFile::readFile(char *filename)
+bool NEDFile::readFile(const char *filename)
 {
     if (wholeFile) return false; // reinit not supported
 
@@ -66,7 +66,7 @@ bool NEDFile::readFile(char *filename)
     return indexLines();
 }
 
-bool NEDFile::setData(char *data)
+bool NEDFile::setData(const char *data)
 {
     if (wholeFile) return false;  // reinit not supported
 

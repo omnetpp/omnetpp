@@ -1,7 +1,7 @@
 //==========================================================================
 //  TKLIB.CC -
 //                graphical network editor for
-//			      OMNeT++
+//                            OMNeT++
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -40,7 +40,7 @@ int exit_omnetpp;
 //  {
 //    {"-display", TK_ARGV_STRING,   (char *)NULL, (char *)&display, "Display to use"},
 //    {"-debug",   TK_ARGV_CONSTANT, (char *)1,    (char *)&debug,   "Set things up for gdb-style debugging"},
-//    {"",	   TK_ARGV_END,},
+//    {"",         TK_ARGV_END,},
 //  };
 
 // Procedure to handle X errors
@@ -49,9 +49,9 @@ static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
     // Tk_Window w = (Tk_Window)data;
     fprintf(stderr, "X protocol error: ");
     fprintf(stderr, "error=%d request=%d minor=%d\n",
-		    errEventPtr->error_code,
-		    errEventPtr->request_code,
-		    errEventPtr->minor_code );
+                    errEventPtr->error_code,
+                    errEventPtr->request_code,
+                    errEventPtr->minor_code );
     return 0;  // claim to have handled the error
 }
 
@@ -72,14 +72,14 @@ int initTk(int argc, char **argv, Tcl_Interp *&interp )
 
     if (Tcl_Init(interp) != TCL_OK)
     {
-	fprintf(stderr, "Tcl_Init failed: %s\n", interp->result);
-	return TCL_ERROR;
+        fprintf(stderr, "Tcl_Init failed: %s\n", interp->result);
+        return TCL_ERROR;
     }
 
     if (Tk_Init(interp) != TCL_OK)
     {
-	fprintf(stderr, "Tk_Init failed: %s\n", interp->result);
-	return TCL_ERROR;
+        fprintf(stderr, "Tk_Init failed: %s\n", interp->result);
+        return TCL_ERROR;
     }
 
     // Make command-line arguments available in Tcl variables "argc" and "argv"
@@ -113,8 +113,8 @@ int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *commands)
 {
     for(;commands->namestr!=NULL; commands++)
     {
-	Tcl_CreateCommand( interp, commands->namestr, commands->func,
-			   (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
+        Tcl_CreateCommand( interp, commands->namestr, commands->func,
+                           (ClientData)NULL, (Tcl_CmdDeleteProc *)NULL);
     }
     return TCL_OK;
 }
@@ -123,7 +123,7 @@ int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *commands)
 int runTk( Tcl_Interp *)
 {
     // Custom event loop
-    //	the C++ variable exit_omnetpp is used for exiting
+    //  the C++ variable exit_omnetpp is used for exiting
     while (!exit_omnetpp)
     {
        Tk_DoOneEvent(TK_ALL_EVENTS);

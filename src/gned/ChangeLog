@@ -1,3 +1,7 @@
+2002-11-12 Andras Varga
+
+	* ported to Tk8.4 (several 'char *' to 'const char *' changes)
+
 2002-11-04  Andras Varga
 
 	* ebnf.y: synchronized with nedc
