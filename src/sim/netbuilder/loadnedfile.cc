@@ -92,7 +92,7 @@ void loadNedFile(const char *fname, bool isXML)
             // replace existing registration object
             cModuleType *oldmodtype = findModuleType(name);
             if (oldmodtype)
-                delete oldmodtype;
+                delete modtypes.instance()->remove(oldmodtype);
 
             // create dynamic module type object
             cModuleType *modtype = new cDynamicModuleType(name, compoundmodulenode);
@@ -107,7 +107,7 @@ void loadNedFile(const char *fname, bool isXML)
             // replace existing registration object
             cNetworkType *oldnetworktype = findNetwork(name);
             if (oldnetworktype)
-                delete oldnetworktype;
+                delete networks.instance()->remove(oldnetworktype);
 
             // create dynamic network type object
             cNetworkType *networktype = new cDynamicNetworkType(name, networknode);
