@@ -1,0 +1,15 @@
+This directory contains a dozen simulation models to demonstrate using the 
+simulation framework. These simulations are intentionally kept simple to 
+facilitate understanding, even at the cost of sacrificing some realistic 
+details.
+
+There is a step-by-step tutorial (TicToc), some queueing simulations (Fifo,
+Queueing, CQN), many which borrow their topic from the field of
+communication networks (Aloha, HCube, TokenRing, FDDI, P-to-P, etc.) and
+also some which show off certain features of the simulation framework (such
+as NEDDemo for topology description, and Hist for histograms).
+
+The source code for all models are provided for you to study. While we have
+done our best to comment the sources, it is probably necessary to browse
+through the Manual before you try to understand them. You might also find
+the simulation kernel API reference useful.
