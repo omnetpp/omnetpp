@@ -135,7 +135,7 @@ echo 'applying xslt stylesheet...'
 xsltproc --stringparam outputdir "$outdir" \
          --stringparam imagesxml "$imagesxml" \
          --stringparam document-unassigned-params "$unassignedpars" \
-         --stringparam have-dot "$have-dot" \
+         --stringparam have_dot "$have-dot" \
          --stringparam doxytagfile "$doxytagfile" \
          --stringparam doxyhtmldir "$doxyhtmldir" \
          $NEDDOC_XSL $TMPFILE >/dev/null || exit 1
@@ -146,8 +146,8 @@ if [ "$have_dot" = "yes" ]; then
        echo -n '#'
        gif=`echo $i | sed 's/dot$/gif/'`
        map=`echo $i | sed 's/dot$/map/'`
-       $DOT -Tgif <$i >$gif || exit 1
-       $DOT -Tcmap <$i >$map || exit 1
+       $DOT -Tgif  <$i >$gif 2>$outdir/dot.err || exit 1
+       $DOT -Tcmap <$i >$map 2>$outdir/dot.err || exit 1
        if [ -n "$GIFTRANS" ]; then
            mv $gif $gif.tmp || exit 1
            $GIFTRANS -t white $gif.tmp >$gif || exit 1
@@ -155,6 +155,7 @@ if [ "$have_dot" = "yes" ]; then
        fi
     done
     echo
+    echo 'see warnings from '$DOT' in '$outdir'/dot.err';
 fi
 
 echo 'formatting comments...'
