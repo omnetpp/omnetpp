@@ -1702,18 +1702,23 @@ and the simulation model is embedded into a larger program, e.g.
 a network design tool.
 
 
-\section{XML support}
+\section{XML binding for NED files}
 
-Future {\opp} versions will contain strong XML support.
-NED files will have XML representations, and the two forms
-can be freely converted to each other. XML is much more suited
-for machine processing, e.g. XSLT can be used to
-produce NED via XML, extract information from NED files,
-generating HTML documentation from NED, etc.
+To increase interoperability, NED files (and also message definition files)
+have an XML representation. Any NED file can be converted to XML, and
+any XML file which corresponds to the NED DTD can be converted to NED.
+  \footnote{DTD stands for Document Type Descriptor, and it defines
+  a "grammar" for XML files. More info can be found on the W3C web site,
+  www.w3.org.}
 
-The current version (2.3) contains an alpha version of
-these tools. \textit{nedtool} is going to replace nedc,
-and it offers much more functionality.
+XML is well suited for machine processing. For example, stylesheet
+transformations (XSLT) can be used to extract information from NED files,
+or the other way round, create NED files from external info present in
+XML form. One practical application of XML is the \fprog{opp\_neddoc}
+documentation generation tool which is described in Chapter \ref{cha:neddoc}.
+
+The \fprog{nedtool} program (which also translates NED to C++ code)
+can be used to convert between NED and XML.
 
 Converting a NED file to XML:
 
@@ -1741,7 +1746,8 @@ nedtool wireless.ned
 \end{verbatim}
 
 The resulting code is more compact and less redundant than the
-one created by nedc. As a result, nedtool-created \ttt{\_n.cc}
+one created by \fprog{nedtool}'s predecessor \fprog{nedc}.
+As a result, \fprog{nedtool}-created \ttt{\_n.cc}
 C++ files compile much faster.
 
 You can generate C++ code from the XML format, too:
@@ -1749,10 +1755,6 @@ You can generate C++ code from the XML format, too:
 \begin{verbatim}
 nedtool wireless.xml
 \end{verbatim}
-
-The opp\_neddoc command uses XSLT to produce HTML documentation
-from the given NED files, much like Javadoc or Doxygen.
-opp\_neddoc is documented in chapter \ref{cha:neddoc}.
 
 
 

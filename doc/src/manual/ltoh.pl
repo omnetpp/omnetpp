@@ -1211,7 +1211,8 @@ sub final_cleanup {
           # drop tildes (forced spaces in LaTeX).
         $line =~ s/\.[~]+/\. /og;
           # convert multiple dashes to a single dash.
-        $line =~ s/[-][-]+/-/og;
+          # this (next line) commented out by Andras: I have "-->" in NED!!!
+        #$line =~ s/[-][-]+/-/og;
 
 #       if (($i > 0) && ($lastline =~ /^\s*\n$/) && ($line =~ /[^\s]+/)) {
         if (($i>=2) && ($lastline =~ /^\s*\n$/) && ($arr->[$i-2] =~ /\n$/)) {

@@ -36,7 +36,7 @@ htmlfile_spec := $BASE.html
 :{}	:\texttt:<tt>:</>:
 :{}	:\textsf:<i>:</>:
 :{}	:\underline:<ul>:</>:
-:{}	:\chapter:<hr><H1>:</H1>:
+:{}	:\chapter:<hr><hr><H1>:</H1>:
 :{}	:\section:<hr><H2>:</H2>:
 :{}	:\subsection:<H3>:</H3>:
 :{}	:\subsubsection:<br><p class="subheading">:</p>:
@@ -98,7 +98,7 @@ htmlfile_spec := $BASE.html
 :{}     :\tilde:&:tilde;:
 :{}     :\label:<a name=":"></a>:
 :{}     :\ref:<a href="#:">[click]</a>:
-:{}     :\index:<!---:--->:
+:{}     :\index:<!--:-->:
 :{2}    :\href#1#2:<a href="#1">#2</a>::
 :{1}    :\cite#1:[<a href="#bib-#1">#1</a>]::
 @{}     @\caption@<center><i>Figure: @</i></center>@

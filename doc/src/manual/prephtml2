@@ -21,23 +21,14 @@ $template = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 </HEAD>
 
 <style type="text/css">
-
-H1 {
-color: #006f00;
+BODY,H1,H2,H3,H4,H5,H6,P,CENTER,TD,TH,UL,DL,DIV {
+   #font-family: Geneva, Arial, Helvetica, sans-serif;
 }
 
-H2 {
-color: #006f00;
-}
-
-H3 {
-color: #006f00;
-}
-
-.subheading {
-color: black;
-font-weight: bold;
-}
+H1 {color: #006f00;}
+H2 {color: #006f00;}
+H3 {color: #006f00;}
+.subheading {color: black; font-weight: bold;}
 
 </style>
 
