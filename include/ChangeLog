@@ -3,6 +3,9 @@
 	* cscheduler.h: added method executionResumed() to cScheduler and
 	cRealtimeScheduler
 
+	* cstruct.h, ctypes.h: constructor usage patches to satisfy gcc 3.3.5 
+	[reported by Tom Parker]
+
 2005-03-15  Andras Varga
 
 	* cexception.h: added cRuntimeError

@@ -205,7 +205,7 @@ class SIM_API cFSM : public cObject
     /**
      * Copy constructor.
      */
-    cFSM(const cFSM& vs) {setName(vs.name());operator=(vs);}
+    cFSM(const cFSM& vs) : cObject() {setName(vs.name());operator=(vs);}
 
     /**
      * Assignment operator. The name member doesn't get copied;

@@ -71,7 +71,7 @@ class SIM_API cOutVector : public cObject
     /**
      * Copy constructor.
      */
-    cOutVector(const cOutVector& r) : cObject(r) {setName(r.name());operator=(r);}
+    cOutVector(const cOutVector& r) : cObject() {setName(r.name());operator=(r);}
 
     /**
      * Destructor.

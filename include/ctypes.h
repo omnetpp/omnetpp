@@ -524,7 +524,7 @@ class SIM_API cNetworkType : public cObject
     /**
      * Copy constructor.
      */
-    cNetworkType(const cNetworkType& n)  {setName(n.name());operator=(n);}
+    cNetworkType(const cNetworkType& n) : cObject() {setName(n.name());operator=(n);}
 
     /**
      * Constructor. It takes pointer to a function that can build up a network.
@@ -571,7 +571,7 @@ class SIM_API cFunctionType : public cObject
     /**
      * Copy constructor.
      */
-    cFunctionType(const cFunctionType& ft)  {setName(ft.name());operator=(ft);}
+    cFunctionType(const cFunctionType& ft) : cObject() {setName(ft.name());operator=(ft);}
 
     /**
      * Constructor.
@@ -690,7 +690,7 @@ class SIM_API cClassRegister : public cObject
     /**
      * Copy constructor.
      */
-    cClassRegister(const cClassRegister& c)  {setName(c.name());operator=(c);}
+    cClassRegister(const cClassRegister& c) : cObject() {setName(c.name());operator=(c);}
 
     /**
      * Constructor.

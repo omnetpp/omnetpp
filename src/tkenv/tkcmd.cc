@@ -644,7 +644,7 @@ int hasChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    visitor.process(object);
    int count = visitor.getCount();
 
-   Tcl_SetResult(interp, (count==0 ? "0" : "1"), TCL_STATIC);
+   Tcl_SetResult(interp, TCLCONST(count==0 ? "0" : "1"), TCL_STATIC);
    return TCL_OK;
 }
 

@@ -93,7 +93,7 @@ class SIM_API cStructDescriptor : public cObject
     /**
      * Copy constructor.
      */
-    cStructDescriptor(const cStructDescriptor& cs)  {setName(cs.name());operator=(cs);}
+    cStructDescriptor(const cStructDescriptor& cs) : cObject() {setName(cs.name());operator=(cs);}
 
     /**
      * Destructor.

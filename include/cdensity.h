@@ -103,7 +103,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Copy constructor.
      */
-    cDensityEstBase(const cDensityEstBase& r) : cStdDev(r)
+    cDensityEstBase(const cDensityEstBase& r) : cStdDev()
             {setName(r.name());firstvals=NULL;operator=(r);}
 
     /**

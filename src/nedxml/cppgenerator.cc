@@ -479,7 +479,7 @@ void NEDCppGenerator::doChannel(ChannelNode *node, const char *indent, int mode,
     out << "{\n";
     out << "  public:\n";
     out << "    " << channelname << "(const char *name) : cChannelType(name) {}\n";
-    out << "    " << channelname << "(const " << channelname << "& n)  {setName(n.name());operator=(n);}\n";
+    out << "    " << channelname << "(const " << channelname << "& n) : cChannelType(n.name()) {operator=(n);}\n";
     out << "    virtual cChannel *create(const char *name);\n";
     out << "};\n\n";
 
@@ -520,7 +520,7 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     out << "{\n";
     out << "  public:\n";
     out << "    " << networkname << "(const char *name) : cNetworkType(name) {}\n";
-    out << "    " << networkname << "(const " << networkname << "& n)  {setName(n.name());operator=(n);}\n";
+    out << "    " << networkname << "(const " << networkname << "& n) : cNetworkType(n.name()) {operator=(n);}\n";
     out << "    virtual void setupNetwork();\n";
     out << "};\n\n";
 

@@ -275,7 +275,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Copy constructor.
      */
-    cStdDev(const cStdDev& r) : cStatistic(r) {setName(r.name());operator=(r);}
+    cStdDev(const cStdDev& r) : cStatistic() {setName(r.name());operator=(r);}
 
     /**
      * Constructor.
@@ -426,7 +426,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Constructors, destructor, duplication and assignment.
      */
-    cWeightedStdDev(const cWeightedStdDev& r) : cStdDev(r) {setName(r.name());operator=(r);}
+    cWeightedStdDev(const cWeightedStdDev& r) : cStdDev() {setName(r.name());operator=(r);}
 
     /**
      * Constructors, destructor, duplication and assignment.
