@@ -731,6 +731,10 @@ ac_env_XSLTPROC_set=${XSLTPROC+set}
 ac_env_XSLTPROC_value=$XSLTPROC
 ac_cv_env_XSLTPROC_set=${XSLTPROC+set}
 ac_cv_env_XSLTPROC_value=$XSLTPROC
+ac_env_CONVERT_set=${CONVERT+set}
+ac_env_CONVERT_value=$CONVERT
+ac_cv_env_CONVERT_set=${CONVERT+set}
+ac_cv_env_CONVERT_value=$CONVERT
 ac_env_GHOSTSCRIPT_set=${GHOSTSCRIPT+set}
 ac_env_GHOSTSCRIPT_value=$GHOSTSCRIPT
 ac_cv_env_GHOSTSCRIPT_set=${GHOSTSCRIPT+set}
@@ -839,7 +843,9 @@ Some influential environment variables:
   DOXYGEN     The Doxygen documentation tool
   PERL        The Perl interpreter
   XSLTPROC    A command line xslt processor
-  GHOSTSCRIPT Program to convert or rasterize Postscript files
+  CONVERT     convert (ImageMagick) is used for EPS-JPG conversion by
+              opp_neddoc
+  GHOSTSCRIPT Ghostscript is used for EPS-JPG conversion by opp_neddoc
   DOT         Graph drawing program from the Graphviz package
   GIFTRANS    Utility to make GIFs transparent
   CXXCPP      C++ preprocessor
@@ -3037,7 +3043,46 @@ echo "$as_me: WARNING: xsltproc is needed for opp_neddoc." >&2;}
 echo "$as_me: WARNING: You can get it from http://xmlsoft.org/XSLT/" >&2;}
 fi
 
+
 # "convert" from ImageMagick
+
+# Extract the first word of "convert", so it can be a program name with args.
+set dummy convert; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_CONVERT+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$CONVERT"; then
+  ac_cv_prog_CONVERT="$CONVERT" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_CONVERT="convert"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+CONVERT=$ac_cv_prog_CONVERT
+if test -n "$CONVERT"; then
+  echo "$as_me:$LINENO: result: $CONVERT" >&5
+echo "${ECHO_T}$CONVERT" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+
+# Ghostscript
 
 # Extract the first word of "gs", so it can be a program name with args.
 set dummy gs; ac_word=$2
@@ -3078,6 +3123,11 @@ fi
 if test "$GHOSTSCRIPT" = ""; then
    { echo "$as_me:$LINENO: WARNING: Ghostscript is needed by opp_neddoc to create diagrams." >&5
 echo "$as_me: WARNING: Ghostscript is needed by opp_neddoc to create diagrams." >&2;}
+else
+   if test "$CONVERT" = ""; then
+      { echo "$as_me:$LINENO: WARNING: ImageMagick not found -- opp_neddoc may export broken network diagrams due to a Ghostscript problem." >&5
+echo "$as_me: WARNING: ImageMagick not found -- opp_neddoc may export broken network diagrams due to a Ghostscript problem." >&2;}
+   fi
 fi
 
 # "dot" from Graphviz
@@ -5092,6 +5142,7 @@ ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefil
 
 
 
+
 #
 # Generate files
 #
@@ -5728,6 +5779,7 @@ s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@DOXYGEN@,$DOXYGEN,;t t
 s,@PERL@,$PERL,;t t
 s,@XSLTPROC@,$XSLTPROC,;t t
+s,@CONVERT@,$CONVERT,;t t
 s,@GHOSTSCRIPT@,$GHOSTSCRIPT,;t t
 s,@DOT@,$DOT,;t t
 s,@GIFTRANS@,$GIFTRANS,;t t
