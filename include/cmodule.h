@@ -303,7 +303,18 @@ class SIM_API cModule : public cDefaultList
     cGate *addGate(const char *s, char tp);
 
     /**
-     * Sets gate vector size.
+     * Sets gate vector size. If the vector size is increased, Ids of existing
+     * gates in the vector may change.
+     *
+     * Note: setGateSize() should not be called when Id change can cause problems:
+     * after initialize() of this module has been invoked, or when messages have
+     * been sent to this module. In general, setGateSize() should only be used during
+     * creation of the module.
+     *
+     * (Id changes cannot be avoided with the current Id allocation scheme: Ids are
+     * guaranteed to be contiguous within a gate vector, and we issue small numbers
+     * as Ids, thus if the vector would expand to already issued gate Ids, the
+     * whole vector must be moved to a different Id range.)
      */
     void setGateSize(const char *s, int size);
 

@@ -364,11 +364,11 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
         throw new cException("standard C++ exception %s: %s",
                              opp_typename(typeid(e)), e.what());
     }
-    catch (...)
-    {
-        deleteNetwork();
-        throw new cException("unknown exception occurred");
-    }
+    //catch (...) -- this is probably not a good idea because makes debugging difficult
+    //{
+    //    deleteNetwork();
+    //    throw new cException("unknown exception occurred");
+    //}
 }
 
 // FIXME change according to doc comment...

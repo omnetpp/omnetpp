@@ -115,11 +115,11 @@ void cSimpleModule::activate(void *p)
                                                opp_typename(typeid(e)), e.what());
         simulation.exception_type = 0;
     }
-    catch (...)
-    {
-        simulation.exception = new cException("unknown exception occurred");
-        simulation.exception_type = 0;
-    }
+    //catch (...) -- this is probably not a good idea because makes debugging difficult
+    //{
+    //    simulation.exception = new cException("unknown exception occurred");
+    //    simulation.exception_type = 0;
+    //}
 
     // The End
     simulation.transferToMain(); // send back exception -- will come back sometime for stack cleanup

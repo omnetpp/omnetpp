@@ -288,42 +288,98 @@ cGate *cModule::addGate(const char *gname, char tp)
      return newg;
 }
 
-void cModule::setGateSize(const char *gname, int size)
+void cModule::setGateSize(const char *gname, int newsize)
 {
     int pos = findGate(gname,-1);
     if (pos<0)
        pos = findGate(gname,0);
     if (pos<0)
        throw new cException(this,"setGateSize(): Gate %s[] not found", gname);
-    if (size<0)
-       throw new cException(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", size, gname);
+    if (newsize<0)
+       throw new cException(this,"setGateSize(): negative vector size (%d) requested for gate %s[]", newsize, gname);
 
     char tp = gate(pos)->type();
-    int oldsize = gate(pos)->size();
+    int size = gate(pos)->size();
 
-    // remove old vector
+    // first see if gate vector has to be shrunk
     int i;
-    for (i=0; i<oldsize; i++)
+    if (newsize<=size)
     {
-       cGate *g = (cGate *) gatev.remove( pos+i );
-       if (g->fromGate() || g->toGate())
-          throw new cException(this,"setGateSize(): Too late, gate %s already connected", g->fullPath());
-       delete g;
+        // simply remove excess gates
+        for (i=newsize; i<size; i++)
+        {
+            cGate *gate = (cGate *) gatev.remove(pos+i);
+            if (gate->fromGate() || gate->toGate())
+                throw new cException(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->fullPath());
+            delete gate;
+        }
+        return;
     }
 
-    // find `size' empty adjacent slots in the array
-    pos = 0;
-    for (i=0; i<size; i++)
+    // OK, it'll be expand.
+    // first, check if we have enough room in this id range
+    bool hasroom = true;
+    for (i=size; i<newsize; i++)
        if (gatev.exist(pos+i))
-          {pos+=i+1; i=-1;}
+          {hasroom = false; break;}
 
-    // add new vector starting from pos
-    for (i=0; i<size; i++)
+    if (hasroom)
     {
-        cGate *gate = createGateObject(gname, tp);
-        gate->setOwnerModule( this, pos+i );
-        gate->setIndex( i, size );
-        gatev.addAt( pos+i, gate );
+        // just create additional gates
+        for (i=size; i<newsize; i++)
+        {
+            cGate *gate = createGateObject(gname, tp);
+            gate->setOwnerModule(this, pos+i);
+            gate->setIndex(i, newsize);
+            gatev.addAt(pos+i, gate);
+        }
+        // and update vector size in the old gates as well
+        for (i=0; i<size; i++)
+        {
+            cGate *gate = (cGate *) gatev.get(pos+i);
+            gate->setIndex(i, newsize);
+        }
+    }
+    else
+    {
+        // find a new id range: newsize empty adjacent slots in the array
+        int newpos = 0;
+        for (i=0; i<newsize; i++)
+        {
+            // if position free, go on to next one
+            if (!gatev.exist(newpos+i) || (newpos+i>=pos && newpos+i<pos+size))
+               continue;
+
+            // position occupied -- must start over from a new position
+            newpos += i+1;
+            i=-1;
+        }
+
+        // move existing gates from pos to newpos.
+        // (note: it's always OK to begin copying from the beginning, because
+        // we either move the vector backwards (newpos<pos) or to a completely new,
+        // non-overlapping region (newpos>=pos+size); the assert() below checks this.)
+        assert(newpos<pos || newpos>=pos+size);
+        for (i=0; i<size; i++)
+        {
+            cGate *gate = (cGate *) gatev.remove(pos+i);
+            gatev.addAt(newpos+i,gate);
+        }
+
+        // and create additional gates
+        for (i=size; i<newsize; i++)
+        {
+            cGate *gate = createGateObject(gname, tp);
+            gatev.addAt(newpos+i, gate);
+        }
+
+        // let all gates know who they are again
+        for (i=0; i<newsize; i++)
+        {
+            cGate *gate = (cGate *) gatev.get(newpos+i);
+            gate->setOwnerModule(this, newpos+i);
+            gate->setIndex(i, newsize);
+        }
     }
 }
 
