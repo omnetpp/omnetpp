@@ -17,9 +17,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2002 Andras Varga
-  Technical University of Budapest, Dept. of Telecommunications,
-  Stoczek u.2, H-1111 Budapest, Hungary.
+  Copyright (C) 1992-2003 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
