@@ -72,6 +72,7 @@ class TOmnetTkApp : public TOmnetApp
       bool opt_anim_methodcalls;   // animate method calls
       bool opt_animation_msgnames; // msg animation: display message name or not
       bool opt_animation_msgcolors;// msg animation: display msg kind as color code or not
+      bool opt_penguin_mode;       // msg animation: message appearance
       double opt_animation_speed;  // msg animation speed: 0=slow 1=norm 2=fast
       long opt_stepdelay;          // Delay between steps in 100th seconds
       int  opt_updatefreq_fast;    // FastRun updates display every N events

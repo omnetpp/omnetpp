@@ -495,6 +495,7 @@ proc inspect_functions {} {
 
 proc simulation_options {} {
     options_dialog
+    opp_updateinspectors
 }
 
 proc save_inspectorlist {} {

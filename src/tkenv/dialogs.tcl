@@ -248,6 +248,7 @@ proc options_dialog {} {
     checkbutton $w.f.f3.animmeth -text {Animate method calls} -variable opp(animmeth)
     checkbutton $w.f.f3.msgnam -text {Message names during animation} -variable opp(msgnam)
     checkbutton $w.f.f3.msgcol -text {Coloring by message kind} -variable opp(msgcol)
+    checkbutton $w.f.f3.penguin -text {Penguin mode} -variable opp(penguin)
     commentlabel $w.f.f3.c {Color code (message->kind() mod 7):
      0=red 1=green 2=blue 3=white
      4=yellow 5=cyan 6=magenta 7=black}
@@ -260,6 +261,7 @@ proc options_dialog {} {
     pack $w.f.f3.animmeth -anchor w
     pack $w.f.f3.msgnam -anchor w
     pack $w.f.f3.msgcol -anchor w
+    pack $w.f.f3.penguin -anchor w
     pack $w.f.f3.c -anchor w
     pack $w.f.f3.speed -anchor c
 
@@ -279,6 +281,7 @@ proc options_dialog {} {
     set opp(animmeth)   [opp_getsimoption anim_methodcalls]
     set opp(msgnam)     [opp_getsimoption animation_msgnames]
     set opp(msgcol)     [opp_getsimoption animation_msgcolors]
+    set opp(penguin)    [opp_getsimoption penguin_mode]
     set opp(speed)      [opp_getsimoption animation_speed]
     set opp(bkpts)      [opp_getsimoption bkpts_enabled]
 
@@ -296,6 +299,7 @@ proc options_dialog {} {
         opp_setsimoption anim_methodcalls    $opp(animmeth)
         opp_setsimoption animation_msgnames  $opp(msgnam)
         opp_setsimoption animation_msgcolors $opp(msgcol)
+        opp_setsimoption penguin_mode        $opp(penguin)
         opp_setsimoption animation_speed     $opp(speed)
         opp_setsimoption bkpts_enabled       $opp(bkpts)
     }

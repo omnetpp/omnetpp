@@ -388,15 +388,18 @@ proc draw_message {c msgptr x y msgname msgkind} {
     global fonts
     set dispstr [opp_getobjectfield $msgptr displayString]
 
-    #FIXME: following lines are for testing only -- remove them!
-    #set dispstr "b=15,15,rect;o=white,kind,5"
-    #set dispstr "b="
-    #set dispstr "o=kind"
-    #set dispstr "b=15,15,oval;o=kind,white,6"
-    set dispstr "i=penguin"
-    #set dispstr "i=handset2_s"
+    if {$dispstr=="" && [opp_getsimoption penguin_mode]} {
+        # following lines were used for testing only...
+        #set dispstr "b=15,15,rect;o=white,kind,5"
+        #set dispstr "b="
+        #set dispstr "o=kind"
+        #set dispstr "b=15,15,oval;o=kind,white,6"
+        #set dispstr "i=handset2_s"
+        set dispstr "i=penguin"
+    }
 
     if {$dispstr==""} { 
+
         # default presentation: red or msgkind%8-colored ball  
         if [opp_getsimoption animation_msgcolors] {
             set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
@@ -959,9 +962,11 @@ proc graphmodwin_draw_nexteventmarker {c modptr type} {
     set y2 [expr [lindex $src 3]+2]
     # $type==1 compound module, $type==2 simple module
     if {$type==1} {
-        $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -dash {.}
+        #$c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -dash {.}
+        $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -width 1
     } else {
-        $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red 
+        #$c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red 
+        $c create rect $x1 $y1 $x2 $y2 -tags {nexteventmarker} -outline red -width 2
     }    
 }
 

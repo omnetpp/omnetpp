@@ -916,6 +916,7 @@ void TOmnetTkApp::readOptions()
     opt_anim_methodcalls = ini_file->getAsBool( "Tkenv", "anim-methodcalls", true );
     opt_animation_msgnames = ini_file->getAsBool( "Tkenv", "animation-msgnames", true );
     opt_animation_msgcolors = ini_file->getAsBool( "Tkenv", "animation-msgcolors", true );
+    opt_penguin_mode = ini_file->getAsBool( "Tkenv", "penguin-mode", false );
     opt_animation_speed = ini_file->getAsDouble( "Tkenv", "animation-speed", 1);
     if (opt_animation_speed<0) opt_animation_speed=0;
     if (opt_animation_speed>2) opt_animation_speed=3;
