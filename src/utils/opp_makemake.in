@@ -258,7 +258,7 @@ EOT
         dir=`echo $1 | sed 's/^-I//'`
         dir=`perl $abs2rel $dir $basedir`
         includes="$includes -I$dir"
-        if [ $tstamp = "y" ]; then
+        if [ $tstamp = "y" -a $dir != "." ]; then
             tstampdirs="$tstampdirs $dir"
         fi
         ;;

@@ -201,7 +201,7 @@ could not figure out.
         $dir =~ s/^-I//;
         $dir = abs2rel($dir, $basedir);
         $includes .= " -I".$dir;
-        if ($tstamp eq "y")
+        if ($tstamp eq "y" && $dir ne ".")
         {
             push(@tstampdirs, $dir);
         }
