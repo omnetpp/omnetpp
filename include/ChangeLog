@@ -2,6 +2,12 @@ FIXME todo: create parsim/ (and nedxml/?) subdirectories here
 std::string for info() and fullPath()
 cMessage: change prio() from int to short (2 bytes less)
 
+2004-05-10   Andras Varga
+
+	* carray.h,cllist.h: discouraged use of classes cBag and cLinkedList.
+	STL classes such as std::vector, std::list or std::deque are 
+	recommended instead.
+
 2004-04-20   Andras Varga
 
 	* cobject.h, cpolymorphic.h: moved createDescriptor() into cPolymorphic

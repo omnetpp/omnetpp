@@ -24,6 +24,9 @@
 
 
 /**
+ * Use of this class is STRONGLY DISCOURAGED, it is provided for backward 
+ * compatibility only. Use std::vector instead.
+ *
  * Container class to hold small non-class items (int, double, etc).
  * cBag stores full copy of each item inserted and NOT the pointer.
  *

@@ -24,6 +24,9 @@
 
 
 /**
+ * Use of this class is DISCOURAGED, it is provided for backward compatibility
+ * only. Use std::deque or std::list instead.
+ *
  * A double-linked list of non-cObject items. cLinkedList has a cQueue-like
  * interface.
  *
