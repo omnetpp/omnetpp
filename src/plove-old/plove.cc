@@ -56,12 +56,13 @@ int initPlove(Tcl_Interp *interp)
 
 
 #ifdef USE_WINMAIN
-/* setargv --
- *
- *	Parse the Windows command line string into argc/argv.
- *      Copied here from Tk source (win/winMain.c), appending the code
- *      to set argv[0].
- */
+//
+// setargv()
+//
+//  Parse the Windows command line string into argc/argv.
+//  Copied here from Tk source (win/winMain.c), appending the code
+//  to set argv[0].
+//
 static void setargv(int *argcPtr, char ***argvPtr)
 {
     char *cmdLine, *p, *arg, *argSpace;
@@ -77,15 +78,15 @@ static void setargv(int *argcPtr, char ***argvPtr)
      */
     size = 2;
     for (p = cmdLine; *p != '\0'; p++) {
-	if (isspace(*p)) {
-	    size++;
-	    while (isspace(*p)) {
-		p++;
-	    }
-	    if (*p == '\0') {
-		break;
-	    }
-	}
+        if (isspace(*p)) {
+            size++;
+            while (isspace(*p)) {
+                p++;
+            }
+            if (*p == '\0') {
+                break;
+            }
+        }
     }
 
     /*
@@ -96,7 +97,7 @@ static void setargv(int *argcPtr, char ***argvPtr)
     size++;
 
     argSpace = (char *) ckalloc((unsigned) (size * sizeof(char *)
-	    + strlen(cmdLine) + 1));
+            + strlen(cmdLine) + 1));
     argv = (char **) argSpace;
     argSpace += size * sizeof(char *);
     size--;
@@ -109,52 +110,52 @@ static void setargv(int *argcPtr, char ***argvPtr)
 
     p = cmdLine;
     for (argc = 0; argc < size; argc++) {
-	argv[argc] = arg = argSpace;
-	while (isspace(*p)) {
-	    p++;
-	}
-	if (*p == '\0') {
-	    break;
-	}
+        argv[argc] = arg = argSpace;
+        while (isspace(*p)) {
+            p++;
+        }
+        if (*p == '\0') {
+            break;
+        }
 
-	inquote = 0;
-	slashes = 0;
-	while (1) {
-	    copy = 1;
-	    while (*p == '\\') {
-		slashes++;
-		p++;
-	    }
-	    if (*p == '"') {
-		if ((slashes & 1) == 0) {
-		    copy = 0;
-		    if ((inquote) && (p[1] == '"')) {
-			p++;
-			copy = 1;
-		    } else {
-			inquote = !inquote;
-		    }
+        inquote = 0;
+        slashes = 0;
+        while (1) {
+            copy = 1;
+            while (*p == '\\') {
+                slashes++;
+                p++;
+            }
+            if (*p == '"') {
+                if ((slashes & 1) == 0) {
+                    copy = 0;
+                    if ((inquote) && (p[1] == '"')) {
+                        p++;
+                        copy = 1;
+                    } else {
+                        inquote = !inquote;
+                    }
                 }
                 slashes >>= 1;
             }
 
             while (slashes) {
-		*arg = '\\';
-		arg++;
-		slashes--;
-	    }
+                *arg = '\\';
+                arg++;
+                slashes--;
+            }
 
-	    if ((*p == '\0') || (!inquote && isspace(*p))) {
-		break;
-	    }
-	    if (copy != 0) {
-		*arg = *p;
-		arg++;
-	    }
-	    p++;
+            if ((*p == '\0') || (!inquote && isspace(*p))) {
+                break;
+            }
+            if (copy != 0) {
+                *arg = *p;
+                arg++;
+            }
+            p++;
         }
-	*arg = '\0';
-	argSpace = arg + 1;
+        *arg = '\0';
+        argSpace = arg + 1;
     }
     argv[argc] = NULL;
 
@@ -166,9 +167,9 @@ static void setargv(int *argcPtr, char ***argvPtr)
     GetModuleFileName(NULL, buffer, sizeof(buffer));
     argv[0] = buffer;
     for (p = buffer; *p != '\0'; p++) {
-	if (*p == '\\') {
-	    *p = '/';
-	}
+        if (*p == '\\') {
+            *p = '/';
+        }
     }
 
     /*
@@ -220,9 +221,9 @@ static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
     // Tk_Window w = (Tk_Window)data;
     fprintf(stderr, "X protocol error: ");
     fprintf(stderr, "error=%d request=%d minor=%d\n",
-		    errEventPtr->error_code,
-		    errEventPtr->request_code,
-		    errEventPtr->minor_code );
+                    errEventPtr->error_code,
+                    errEventPtr->request_code,
+                    errEventPtr->minor_code );
     return 0;  // claim to have handled the error
 }
 
@@ -242,14 +243,14 @@ int initTk(int argc, char **argv, Tcl_Interp *&interp )
 
     if (Tcl_Init(interp) != TCL_OK)
     {
-	fprintf(stderr, "Tcl_Init failed: %s\n", interp->result);
-	return TCL_ERROR;
+        fprintf(stderr, "Tcl_Init failed: %s\n", interp->result);
+        return TCL_ERROR;
     }
 
     if (Tk_Init(interp) != TCL_OK)
     {
-	fprintf(stderr, "Tk_Init failed: %s\n", interp->result);
-	return TCL_ERROR;
+        fprintf(stderr, "Tk_Init failed: %s\n", interp->result);
+        return TCL_ERROR;
     }
 
     // Make command-line arguments available in Tcl variables "argc" and "argv"
