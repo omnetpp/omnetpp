@@ -81,8 +81,9 @@ omnetpp/
        fifo1/         single-server queue
        fifo2/         another version of fifo, now with handleMessage() and FSM
 
-There is also material contributed by people in the OMNeT++ community. Please
-note that contributed material may fall under a license different from OMNeT++'s.
+There is also material contributed by people in the OMNeT++ community.
+Contributed material falls under a different license from that of OMNeT++
+(usually GPL).
 
 omnetpp/
    contrib/

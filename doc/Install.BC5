@@ -1,21 +1,21 @@
 OMNeT++ Installation on Windows 95/NT
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(last updated: August 12, 1998)
+(last updated: Sept, 1999)
 
 
 Necessary additional software
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Tcl/Tk libraries
-
-Gnuplot
-
-awk, grep
-  are also used by Plove. sed (although not needed by any OMNeT++ component)
-  might also be useful.
-
-bison/flex
-....
-
+bison and flex:
+  needed to build nedc and gned; you can find them e.g. in the Cygwin package
+Tcl/Tk libraries:
+  needed by tkenv, plove and gned; at least 8.0p1, preferably in source
+Gnuplot:
+  needed by plove; AFAIK latest version is 3.6 
+awk, grep:
+  needed by plove; you can find them e.g. in the Cygwin distribution
+octave:
+  a free matlab clone; not necessary, but might be very useful for processing
+  simulation results
 
 To install
 ~~~~~~~~~~
