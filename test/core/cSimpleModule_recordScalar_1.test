@@ -4,10 +4,10 @@ check that recordScalar() methods work OK.
 %activity:
 
 recordScalar("one", 24.2);
-recordScalar("two", "some text");
+recordScalar("two", -1.3);
 
 %contains: {}.sca
 run 1 "{}_network"
 scalar "{}_network" 	"one" 	24.2
-scalar "{}_network" 	"two" 	"some text"
+scalar "{}_network" 	"two" 	-1.3
 

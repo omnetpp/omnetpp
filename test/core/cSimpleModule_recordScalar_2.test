@@ -4,7 +4,7 @@ check that scalar file does not get deleted between runs.
 %activity:
 
 recordScalar("one", 24.2);
-recordScalar("two", "some text");
+recordScalar("two", -1.5);
 
 %inifile: {}.ini
 [General]
@@ -17,8 +17,8 @@ output-scalar-file = {}.sca
 %contains: {}.sca
 run 1 "{}_network"
 scalar "{}_network" 	"one" 	24.2
-scalar "{}_network" 	"two" 	"some text"
+scalar "{}_network" 	"two" 	-1.5
 run 2 "{}_network"
 scalar "{}_network" 	"one" 	24.2
-scalar "{}_network" 	"two" 	"some text"
+scalar "{}_network" 	"two" 	-1.5
 
