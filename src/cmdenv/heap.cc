@@ -36,8 +36,7 @@ bool cmdenvMemoryIsLow()  {return false;}
 #include <alloc.h>
 #endif
 
-#include <cstddef>
-#include <exception>
+#include <new>
 
 
 //=================================================================
