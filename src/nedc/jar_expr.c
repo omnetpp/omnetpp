@@ -311,7 +311,6 @@ char *do_addminus(char *expr)
 
 char *do_parname (char *namestr, int isanc, int byvalue)
 {
-    expr_type name2;
     expr_type temp_res;
 
     int isfor, /* index in loop connection */

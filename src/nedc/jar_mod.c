@@ -79,14 +79,11 @@ void do_simple (char *mname)
 
 void do_simp_or_comp (char *mname, int is_simple)
 {
-        char buf[256];
-
         jar_strcpy (module_name, mname);
 
         if (firstpass)
         {
              mdl_add_mod (mname);
-
              jar_free (mname);
              return;
         }
@@ -395,6 +392,17 @@ void do_sub_or_sys2 (char *smname, char *smcount, int issys, char *smtype, char 
         fprintf (tmp, "%sislocal = simulation.netInterface()==NULL ||\n"
                       "%s          simulation.netInterface()->isLocalMachineIn( machines );\n",
                       indent, indent );
+        if (issys)
+        {
+          fprintf (tmp, "%sif (!islocal)\n"
+                        "%s{\n"
+                        "%s    opp_error(\"Local machine is not among machines"
+                                           " specified for this network.\");\n"
+                        "%s    return;\n"
+                        "%s}\n",
+                        indent, indent, indent, indent, indent);
+        }
+
         fprintf (tmp, "%s%s = modtype->create( \"%s\", %s, islocal);\n",
                       indent, submodule_var, smname, issys?"NULL":"mod" );
 
@@ -453,7 +461,7 @@ void do_sub_or_sys2 (char *smname, char *smcount, int issys, char *smtype, char 
                 fprintf(tmp,
                   "%s%s->setMachinePar( \"%s\", ev.getPhysicalMachineFor(\"%s\") );\n",
                   indent, submodule_var, nl_retr_ith(machs,i+1)->namestr,
-                  nl_retr_ith(machs,i+1)->namestr );
+                  nl_retr_ith( /*machs*/ &cmd.submod_machs,i+1)->namestr );
               else
                 fprintf(tmp,
                   "%s%s->setMachinePar( \"%s\", ((cPar *)machines[%i])->stringValue() );\n",
@@ -528,7 +536,7 @@ void do_on_mach(char * maname)  /* --LG */
                phys_mach = nl_retr_ith( &machine_list, idx )->parstr;
 
             fprintf (tmp,  "%spar = new cPar();\n"
-                           "%s*par = \"%s\";\n"
+                           "%s*par = ev.getPhysicalMachineFor(\"%s\");\n"
                            "%smachines.add( par );\n",
                            indent, indent, phys_mach, indent );
         }

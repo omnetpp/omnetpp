@@ -245,3 +245,7 @@ Jan 4, 2000
 Jan 13, 2000
   - "-s" option (output file suffix) was added
 ------ omnetpp-2.0b3 released ------
+Mar 7, 2000
+  - bugfix for distributed execution: corrected handling of machine parameters
+    at network level
+  - changed test12.ned and test13.ned
