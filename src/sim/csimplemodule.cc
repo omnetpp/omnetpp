@@ -332,19 +332,19 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
     if (msg->owner()!=this)
     {
         if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
-            throw new cException("send()/sendDelayed(): cannot send message (%s)%s: it is "
+            throw new cException("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                  "currently scheduled as a self-message for this module",
                                  msg->className(), msg->name());
         else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage())
-            throw new cException("send()/sendDelayed(): cannot send message (%s)%s: it is "
+            throw new cException("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                  "currently scheduled as a self-message for ANOTHER module",
                                  msg->className(), msg->name());
         else if (msg->owner()==&simulation.msgQueue)
-            throw new cException("send()/sendDelayed(): cannot send message (%s)%s: it is "
+            throw new cException("send()/sendDelayed(): cannot send message (%s)%s, it is "
                                  "currently in scheduled-events, being underway between two modules",
                                  msg->className(), msg->name());
         else
-            throw new cException("send()/sendDelayed(): cannot send message (%s)%s: "
+            throw new cException("send()/sendDelayed(): cannot send message (%s)%s, "
                                  "it is currently contained/owned by (%s)%s",
                                  msg->className(), msg->name(), msg->owner()->className(),
                                  msg->owner()->fullPath().c_str());
@@ -409,19 +409,19 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
     if (msg->owner()!=this)
     {
         if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())
-            throw new cException("sendDirect(): cannot send message (%s)%s: it is "
+            throw new cException("sendDirect(): cannot send message (%s)%s, it is "
                                  "currently scheduled as a self-message for this module",
                                  msg->className(), msg->name());
         else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage())
-            throw new cException("sendDirect(): cannot send message (%s)%s: it is "
+            throw new cException("sendDirect(): cannot send message (%s)%s, it is "
                                  "currently scheduled as a self-message for ANOTHER module",
                                  msg->className(), msg->name());
         else if (msg->owner()==&simulation.msgQueue)
-            throw new cException("sendDirect(): cannot send message (%s)%s: it is "
+            throw new cException("sendDirect(): cannot send message (%s)%s, it is "
                                  "currently in scheduled-events, being underway between two modules",
                                  msg->className(), msg->name());
         else
-            throw new cException("sendDirect(): cannot send message (%s)%s: "
+            throw new cException("sendDirect(): cannot send message (%s)%s, "
                                  "it is currently contained/owned by (%s)%s",
                                  msg->className(), msg->name(), msg->owner()->className(),
                                  msg->owner()->fullPath().c_str());
@@ -459,16 +459,16 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
                                  "use cancelEvent() before rescheduling",
                                  msg->className(), msg->name());
         else if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage())
-            throw new cException("scheduleAt(): cannot schedule message (%s)%s: it is "
+            throw new cException("scheduleAt(): cannot schedule message (%s)%s, it is "
                                  "currently scheduled as self-message for ANOTHER module",
                                  msg->className(), msg->name());
 
          else if (msg->owner()==&simulation.msgQueue)
-            throw new cException("scheduleAt(): cannot schedule message (%s)%s: it is "
+            throw new cException("scheduleAt(): cannot schedule message (%s)%s, it is "
                                  "currently in scheduled-events, being underway between two modules",
                                  msg->className(), msg->name());
         else
-            throw new cException("scheduleAt(): cannot schedule message (%s)%s: "
+            throw new cException("scheduleAt(): cannot schedule message (%s)%s, "
                                  "it is currently contained/owned by (%s)%s",
                                  msg->className(), msg->name(), msg->owner()->className(),
                                  msg->owner()->fullPath().c_str());
