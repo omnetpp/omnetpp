@@ -20,11 +20,13 @@ if test ! -f doc/usman.pdf; then
         exit 1
 fi
 
-echo REMINDER:
-echo - you must have run '_tag' already.
-echo - make sure configure.user and configuser.vc contain the right CFLAGS
-ecgo   (must be *release* flags!)
-echo Press Enter if all this is OK!
+cat <<END
+REMINDER:
+ - you must have run '_tag' already.
+ - make sure configure.user and configuser.vc contain the right CFLAGS
+   (must be *release* flags!)
+Press Enter if all this is OK!
+END
 read
 
 rm -rf `find . -name CVS -type d`
