@@ -252,9 +252,9 @@ by the following lines:
 
 \begin{verbatim}
 [Partitioning]
-*.tandemQueue[0].partition-id = 0
-*.tandemQueue[1].partition-id = 1
-*.tandemQueue[2].partition-id = 2
+*.tandemQueue[0]**.partition-id = 0
+*.tandemQueue[1]**.partition-id = 1
+*.tandemQueue[2]**.partition-id = 2
 \end{verbatim}
 
 The numbers after the equal sign identify the LP.
@@ -298,7 +298,6 @@ EITs and EOTs can be inspected, etc.
 
 %Note that results might not be exactly the same, because with PDES,
 %random number generators are no longer shared between modules in LPs...
-
 
 
 \begin{figure}[htbp]
@@ -382,7 +381,7 @@ default: true
 parsim-mpicommunications-mpibuffer = <bytes>\linebreak
 default: 256K * (numPartitions-1) + 16K
 &
-Size of MPI send buffer to allocate; see MPI_Buffer_attach()
+Size of MPI send buffer to allocate; see MPI\_Buffer\_attach()
 MPI call. If the buffer is too small, a deadlock can occur.
 \\\hline
 
@@ -390,12 +389,12 @@ parsim-namedpipecommunications-prefix = <string>\linebreak
 default: "omnetpp" or "comm/"
 &
 Controls the naming of named pipes.
-Windows: default value is "omnetpp", which means that pipe names
-will be of the form "{\backslash}{\backslash}.{\backslash}pipe{\backslash}omnetpp-xx-yy"
+Windows: default value is "omnetpp", which means that pipe names will be of the form
+"{\textbackslash}{\textbackslash}.{\textbackslash}pipe{\textbackslash}omnetpp-xx-yy"
 (where xx and yy are numbers).
-Unix: default value is "comm/", which means that the named pipes
-will be created with the name "comm/pipe-xx-yy". The "comm/"
-subdirectory must already exist when the simulation is launched.
+Unix: default value is "comm/", which means that the named pipes will
+be created with the name "comm/pipe-xx-yy". The "comm/" subdirectory must
+already exist when the simulation is launched.
 \\\hline
 
 parsim-filecommunications-prefix = <string>\linebreak
@@ -449,6 +448,18 @@ memory)
 
 
 
+When you are using cross-mounted home directories (the simulation's
+directory is on a disk mounted on all nodes of the cluster),
+a useful configuration setting is
+
+\begin{verbatim}
+[General]
+fname-append-host=yes
+\end{verbatim}
+
+It will cause the host names to be appended to the names of
+all output vector files, so that partitions do not overwrite each other's
+output files. (See section \ref{sec:run-sim:using-shared-filesystems})
 
 
 

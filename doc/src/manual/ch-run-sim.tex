@@ -1414,10 +1414,9 @@ sent to the \ttt{akmaster} process, and when the required precision
 has been reached, \ttt{akmaster} tells the simulation processes to
 terminate. The results are written to the standard output.
 
-The above description is of course not detailed enough help you
+The above description is not detailed enough help you
 set up and successfully use Akaroa -- for that you need to read the
-Akaroa manual. The purpose was rather to give you the ``flavour''
-of using it.
+Akaroa manual.
 
 \subsubsection{Configuring {\opp} for Akaroa}
 
@@ -1425,7 +1424,7 @@ First of all, you have to compile {\opp} with Akaroa support enabled.
 
 The {\opp} simulation must be configured in \ttt{omnetpp.ini}
 so that it passes the observations to Akaroa. The simulation model itself does
-not need to be changed (except for RNGs, see later) -- it continues to write
+not need to be changed -- it continues to write
 the observations into output vectors (\cclass{cOutVector} objects,
 see chapter \ref{cha:the-simulation-library}). You can place some of
 the output vectors under Akaroa control.
@@ -1434,13 +1433,24 @@ You need to add the following to \ttt{omnetpp.ini}:
 
 \begin{verbatim}
 [General]
+rng-class="cAkaroaRNG"
 outputvectormanager-class="cAkOutputVectorManager"
 \end{verbatim}
 
-The above line replaces the normal output vector handler
-by its Akaroa-enabled version, using the Envir plugin interface.
+These lines cause the simulation to obtain random numbers from Akaroa,
+and allows data written to selected output vectors to be passed to Akaroa's
+global data analyser.
+    \footnote{For more details on the plugin mechanism these settings make use of,
+    see section \ref{FIXME}.}
 
-Also, you have to specify which output vectors you want to
+Akaroa's RNG is a Combined Multiple Recursive pseudorandom
+number generator (CMRG) with a period of approximately $2^{191}$
+random numbers, and provides a unique stream of random numbers
+for every simulation engine. It is vital to obtain random numbers
+from Akaroa: otherwise, all simulation processes would run with the same
+RNG seeds, and produce exactly the same results!
+
+Then you need to specify which output vectors you want to
 be under Akaroa control. By default, all output vectors are under Akaroa
 control; the
 
@@ -1449,23 +1459,27 @@ control; the
 \end{verbatim}
 
 setting can be used to make Akaroa ignore specific vectors.
-If you only want a few vectors be placed under Akaroa,
-you can use the following ``trick'':
+You can use the \ttt{*}, \ttt{**} wildcards here (see
+section \ref{FIXME-ini-pattern-rules}). For example,
+if you only want a few vectors be placed under Akaroa,
+you can use the following trick:
 
 \begin{verbatim}
 <modulename>.<vectorname1>.akaroa=true
 <modulename>.<vectorname2>.akaroa=true
 ...
-**.*.akaroa=false
+**.*.akaroa=false  # catches everything not matched above
 \end{verbatim}
 
 
 \subsubsection{Using shared file systems}
+\label{sec:run-sim:using-shared-filesystems}
 
 It is usually practical to have the same physical disk mounted (e.g. via NFS or Samba)
 on all computers in the cluster. However, because all {\opp} simulation
 processes run with the same settings, they would overwrite each other's
-output files. Your can prevent this from happening using the
+output files (e.g. \ttt{omnetpp.vec}, \ttt{omnetpp.sca}).
+Your can prevent this from happening using the
 \ttt{fname-append-host} ini file entry:
 
 \begin{verbatim}
@@ -1475,50 +1489,6 @@ fname-append-host=yes
 
 When turned on, it appends the host name to the names of the output
 files (output vector, output scalar, snapshot files).
-
-
-\subsubsection{Random number generation}
-
-Another important point is that you cannot use the random number
-generators provided by {\opp}, but rather you have to obtain
-random numbers from Akaroa.
-
-Unfortunately, {\opp}'s RNGs do not (yet) know anything about Akaroa.
-Remember, all simulation processes are run with exactly the same
-configuration -- including the same RNG seeds.
-That is, if you'd use {\opp}'s own RNGs,
-all simulation processes would use \textit{identical} random number streams,
-thus executing \textit{exactly the same sequence of events!}
-This is clearly not what you want or what Akaroa expects.
-
-Akaroa provides the following random number functions. The underlying
-RNG is a Combined Multiple Recursive pseudorandom
-number generator (CMRG) with a period of approximately $2^{191}$
-random numbers, and provides a unique stream of random numbers
-for every simulation engine.
-
-Future versions of {\opp} will wrap the random number functions
-of Akaroa, thus requiring no modifications to simulation programs.
-
-
-\begin{verbatim}
-#include <akaroa/distribution.H>
-
-real Uniform(real a, real b);
-long UniformInt(long n0, long n1);
-long Binomial(long n, real p);
-real Exponential(real m);
-real Erlang(real m, real s);
-real HyperExponential(real m, real s);
-real Normal(real m, real s);
-real LogNormal(real m, real s);
-long Geometric(real m);
-real HyperGeometric(real m, real s);
-long Poisson(real m);
-real Weibull(real alpha, real beta);
-\end{verbatim}
-
-
 
 
 

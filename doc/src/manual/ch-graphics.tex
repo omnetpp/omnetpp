@@ -485,7 +485,7 @@ by naming the subdirectory (subdirectories) as well:
 For compatibility, if the display string contains a icon without
 a category (i.e. subdirectory) name, {\opp} tries it as "old/icon" as well.
 
-If you create new or custom icons, you can put
+If you create new or custom icons, you can put FIXME
 
 \subsection{Icon size}
 
@@ -507,7 +507,7 @@ SpringEmbedder is a graph layouting algorithm based on a physical model.
 Graph nodes (modules) repent each other like electric charges
 of the same sign, and connections are sort of springs which try
 to contract and pull the nodes they're attached to. There is also friction
-built in to prevent oscillation of the nodes. The layouting algorithm
+built in, in order to prevent oscillation of the nodes. The layouting algorithm
 simulates this physical system until it reaches equilibrium
 (or times out). The physical rules above have been slightly tweaked
 to get better results.
@@ -666,7 +666,7 @@ cDisplayString *bgDispStr = parentModule()->backgroundDisplayString();
 cDisplayString *gateDispStr = gate("out")->displayString();
 \end{Verbatim}
 
-The \cclass{cDisplayString} utility class lets...
+The \cclass{cDisplayString} utility class lets... FIXME finish
 
 As far as \cclass{cDisplayString} is concerned, a display string
 (e.g. \ttt{"p=100,125;i=cloud"}) is a string that consist of several
@@ -684,7 +684,7 @@ as data elements separated by semicolons, equal signs and commas.
 An example:
 
 \begin{Verbatim}
-dispStr->>parse("a=1,2;p=alpha,,3");
+dispStr->parse("a=1,2;p=alpha,,3");
 dispStr->insertTag("x");
 dispStr->setTagArg("x",0,"joe");
 dispStr->setTagArg("x",2,"jim");
