@@ -210,7 +210,7 @@ void TStructPanel::update()
 
 void TStructPanel::writeBack()
 {
-   // TBD
+   // nothing to do here as long as GUI is a textfield
 }
 
 int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)

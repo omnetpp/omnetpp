@@ -33,11 +33,11 @@ proc create_objinspector {name geom} {
     }
 
     # page 1: info
-    label-sunkenlabel $nb.info.name {Name:}   ;# FIXME make it editfield
-    label-sunkenlabel $nb.info.fullpath {Full path:} ;# FIXME make it disabled editfield, and next ones too
+    label-sunkenlabel $nb.info.name {Name:}   ;# TBD make it editfield
+    label-sunkenlabel $nb.info.fullpath {Full path:} ;# TBD make it disabled editfield, and next ones too
     label-sunkenlabel $nb.info.class {C++ class:}
     label-sunkenlabel $nb.info.info {Info:}
-    label-message $nb.info.details {Detailed info:} ;# FIXME make it disabled text
+    label-message $nb.info.details {Detailed info:} ;# TBD make it disabled text
 
     pack $nb.info.name -fill x -side top
     pack $nb.info.fullpath -fill x -side top

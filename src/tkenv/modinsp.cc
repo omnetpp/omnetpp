@@ -1162,7 +1162,6 @@ int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, const c
 void TGraphicalGateWindow::displayStringChanged(cGate *gate)
 {
    // FIXME should defer redraw (via redraw_needed) to avoid "flickering"
-   // FIXME do something here!!!
 }
 
 

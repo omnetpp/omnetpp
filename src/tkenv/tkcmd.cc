@@ -69,6 +69,7 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectId_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getNumChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
+int hasChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -141,6 +142,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectfield",   getObjectField_cmd       }, // args: <pointer> <field>  ret: value of object field (if supported)
    { "opp_getchildobjects",  getChildObjects_cmd      }, // args: <pointer> ret: list with its child object ptrs
    { "opp_getnumchildobjects",getNumChildObjects_cmd  }, // args: <pointer> ret: length of child objects list
+   { "opp_haschildobjects",  hasChildObjects_cmd      }, // args: <pointer> ret: 0 or 1
    { "opp_getsubobjects",    getSubObjects_cmd        }, // args: <pointer> ret: list with all object ptrs in subtree
    { "opp_getsubobjectsfilt",getSubObjectsFilt_cmd    }, // args: <pointer> <args> ret: filtered list of object ptrs in subtree
    { "opp_getsimulationstate", getSimulationState_cmd }, // args: -  ret: NONET,READY,RUNNING,ERROR,TERMINATED,etc.
@@ -610,6 +612,21 @@ int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    char buf[20];
    sprintf(buf, "%d", count);
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int hasChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cObject *object = (cObject *)strToPtr( argv[1] );
+   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+
+   // TBD may be optimized, by exiting foreach on 1st child
+   cCountChildrenVisitor visitor(object);
+   visitor.process(object);
+   int count = visitor.getCount();
+
+   Tcl_SetResult(interp, (count==0 ? "0" : "1"), TCL_STATIC);
    return TCL_OK;
 }
 

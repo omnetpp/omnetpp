@@ -230,7 +230,7 @@ proc draw_submod {c submodptr x y name dispstr} {
            $c create image $x $y -image $img2 -anchor ne -tags "dx tooltip submod $submodptr"
        }
 
-       # text (t tag); FIXME refine feature!
+       # text (t tag)
        if {[info exists tags(t)]} {
            set txt [lindex $tags(t) 0]
            set pos [lindex $tags(t) 1]
