@@ -826,15 +826,17 @@ on the toolbar.
 
 <img src="plove1.gif">
 
+The graph is displayed in a separate window.
 
 <img src="plove2.gif">
 
+As in Scalars, you can customize the graph and export it in various formats.
+For the following screenshot we turned off connecting the data points.
+
 <img src="plove3.gif">
 
-Too much data, cannot see much.
-
-We can apply a filted which plots mean on [0,t). Right-click on the selected
-vectors, then choose Pre-plot filtering from the context menu.
+We can apply a filter which plots mean on [0,t). In the main window, right-click
+the selected vectors, then choose Pre-plot filtering from the context menu.
 
 <img src="plove4a.gif">
 
@@ -844,6 +846,9 @@ charts.
 
 <img src="plove4.gif">
 
+@section conclusion Conclusion
+
+UP: @ref contents
 */
 
 --------------------------------------------------------------------------
