@@ -14,8 +14,8 @@ Note: we could export WMF as well, but ImageMagick's WMF rasterizes sucks.
 It omits very thin lines altogether.
 
 Then:
+ - run figures-convert.bat to trim (crop) gifs
  - run figures-rename.bat to get normal filenames.
- - run figures-convert.bat to convert gifs to pdf.
 
 figures-convert.bat uses ImageMagick 6. 
 
