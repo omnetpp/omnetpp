@@ -1,3 +1,7 @@
+2003-01-29  Andras Varga
+
+	* Readme updated
+
 2002-12-08  Andras Varga
 
 	* dynapk.ned renamed to dynapacket.msg; makefiles adjusted/regenerated

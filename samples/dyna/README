@@ -20,8 +20,12 @@ connects to the server for data exchange. In each connection, the client
 sends a random number of "queries" then closes the connection.
 
 The server handles several incoming connections concurrently. Each
-connection is served by a separate process (i.e. a dynamically created
-simple module).
+connection is served by a separate process, which is implemented with
+a dynamically created simple module. These serverproc modules can
+be seen when you open an inspector for the "server" module (right click
+on the icon --> Inspect as object) and click on the "Submods" tab.
+They can also be seen in the object tree in the main window -- just
+open the "server" node in the tree.
 
 The module types are:
   Client:

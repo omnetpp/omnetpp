@@ -1,3 +1,7 @@
+2003-01-29  Andras Varga
+
+	* Readme updated
+
 2003-01-26  Andras Varga
 
 	* introduced max buffer length in MAC: if packets from app cannot be

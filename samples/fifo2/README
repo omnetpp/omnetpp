@@ -11,4 +11,6 @@ Demonstrates:
   - using simple statistics and output vectors
   - using finish()
 
-
+Fifo-2 implements the same functionality as Fifo-1, but using handleMessage()
+instead of activity(). handleMessage() is better suited for large-scale
+simulations, and many people also find it easier to understand than activity().

@@ -9,6 +9,20 @@ Demonstrates:
   - printing stack usage info to help optimize memory consumption
   - using finish()
 
+The model contains three modules. The "gen" module generates jobs, and
+sends them to the "fifo" module which is a single-server queue.
+The jobs are stored in a cQueue object until they are served -- this
+queue can be found and inspected in the graphical environment among the
+class members of the "fifo" module -- either in the object tree in the
+main window, or in the inspector of the "fifo" module (right-click 
+"fifo" icon --> inspect as object --> click "class members" tab).
+Processed jobs are disposed of in the "sink" module. The "sink" module
+collects statistics which can also be inspected.
+
+After running the simulation, fifo*.vec file will contain queueing time
+data collected via cOutVector objects during the simulation -- use the
+Plove program to view it.
+
 AbstractFifo can be used as a base class for modules implementing
 more sophisticated tasks. You can derive your simple module
 class from AbstractFifo and redefine the following member functions:
