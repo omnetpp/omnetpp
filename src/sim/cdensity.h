@@ -50,7 +50,7 @@ class cDensityEstBase : public cStdDev
 
   protected:
     double rangemin,rangemax;   // range for distribution density collection
-    unsigned num_firstvals;     // number of "precollected" samples
+    long num_firstvals;         // number of "precollected" samples
                                 // before transform() is performed.
     unsigned long cell_under,
                   cell_over;    // counting samples fall out of range
@@ -98,10 +98,10 @@ class cDensityEstBase : public cStdDev
     virtual bool transformed()   {return transfd;}
     virtual void transform() = 0; // must set transfd; probably needs to call setupRange()
 
-    virtual unsigned cells() = 0;
-    virtual double basepoint(unsigned k) = 0;
-    virtual double cell(unsigned k) = 0;
-    virtual double cellPDF(unsigned k);
+    virtual int cells() = 0;
+    virtual double basepoint(int k) = 0;
+    virtual double cell(int k) = 0;
+    virtual double cellPDF(int k);
 
     virtual double random() = 0;
 

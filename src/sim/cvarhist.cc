@@ -321,7 +321,7 @@ void cVarHistogram::clearResult() //--LG
 }
 
 // return kth basepoint
-double cVarHistogram::basepoint(unsigned k)
+double cVarHistogram::basepoint(int k)
 {
    if (k<num_cells+1)
        return bin_bounds[k];
@@ -329,7 +329,7 @@ double cVarHistogram::basepoint(unsigned k)
        {opp_error("(%s)%s: invalid basepoint index %u",isA(),fullName(),k);return 0;}
 }
 
-double cVarHistogram::cell(unsigned k)
+double cVarHistogram::cell(int k)
 {
    if (k<num_cells)
        return cellv[k];

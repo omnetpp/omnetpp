@@ -81,8 +81,8 @@ ostream& operator<<(ostream& os, struct tm d)
 cSimulation::cSimulation(char *namestr, cHead *h) :
  cObject(namestr, h),
  locals("simulation-locals"),
- msgQueue( "message-queue" ),
- runningmod_deleter()
+ runningmod_deleter(),
+ msgQueue( "message-queue" )
 {
      take( &locals );
      take( &msgQueue );

@@ -794,7 +794,7 @@ bool cPar::setFromText( char *text, char tp)
        else if (strspn(tmp,"+-0123456789")==strlen(tmp)) // long?
        {
            long num;
-           int len;
+           unsigned len;
            if (0==sscanf(tmp,"%ld%n",&num,&len)) goto error;
            if (len<strlen(tmp) || !strchr("?LD",tp)) goto error;
            setValue((tp=='?'?'L':tp), num);
@@ -802,7 +802,7 @@ bool cPar::setFromText( char *text, char tp)
        else if (strspn(tmp,"+-.eE0123456789")==strlen(tmp)) // double?
        {
            double num;
-           int len;
+           unsigned len;
            if (0==sscanf(tmp,"%lf%n",&num,&len)) goto error;
            if (len<strlen(tmp) || !strchr("?D",tp)) goto error;
            setValue('D', num);

@@ -510,13 +510,13 @@ void cKSplit::iteratorToCell(int cell_nr )
          (*iter)--;
 }
 
-unsigned cKSplit::cells()
+int cKSplit::cells()
 {
    if (!transformed()) return 0;
    return num_cells;
 }
 
-double cKSplit::cell(unsigned nr)
+double cKSplit::cell(int nr)
 {
   if (nr>=num_cells) return 0.0;
 
@@ -524,7 +524,7 @@ double cKSplit::cell(unsigned nr)
   return iter->cellValue();
 }
 
-double cKSplit::basepoint (unsigned nr)
+double cKSplit::basepoint (int nr)
 {
   if (nr>=num_cells) return rangemax;
 

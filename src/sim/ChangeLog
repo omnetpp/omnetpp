@@ -650,4 +650,7 @@ Sept 5, 1999
     Now a simple module can be created on the fly by simply saying:
        mod = modtype->createAndInit("name",this);
        mod->scheduleStart( simTime() );
+Sept 6, 1999
+  - a couple of unsigned<-->signed changes (mostly in the statistics classes)
+    to reduce the number of "gcc -Wall" warnings
 

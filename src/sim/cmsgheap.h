@@ -33,9 +33,9 @@ class cMessageHeap : public cObject
 {
         friend class cMessageHeapIterator;
     private:
-        cMessage **h;               // pointer to the 'heap'  (h[0] always empty)
-        unsigned n;             // number of elements in the heap
-        unsigned size;          // size of allocated h array
+        cMessage **h;             // pointer to the 'heap'  (h[0] always empty)
+        int n;                    // number of elements in the heap
+        int size;                 // size of allocated h array
         unsigned long insertcntr; // counts insertions
 
         void shiftup(int from=1);

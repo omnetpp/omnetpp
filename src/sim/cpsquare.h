@@ -32,13 +32,14 @@
 class cPSquare : public cDensityEstBase
 {
   protected:
-    unsigned numcells, numobs;  // number of cells, number of observations
-    int *n;                     // array of positions
-    double *q;                  // array of heights
+    int numcells;      // number of observations
+    long numobs;       // number of cells,
+    int *n;            // array of positions
+    double *q;         // array of heights
 
   public:
     cPSquare(cPSquare& r);
-    cPSquare (char *namestr=NULL, unsigned cells=10 );
+    cPSquare (char *namestr=NULL, int cells=10);
     virtual ~cPSquare();
 
      // redefined functions
@@ -64,9 +65,9 @@ class cPSquare : public cDensityEstBase
     virtual void collectTransformed(double val);
 
   public:
-    virtual unsigned cells();
-    virtual double basepoint(unsigned k);
-    virtual double cell(unsigned k);
+    virtual int cells();
+    virtual double basepoint(int k);
+    virtual double cell(int k);
 
     virtual double cdf(double x);
     virtual double pdf(double x);

@@ -42,7 +42,7 @@ cPSquare::cPSquare(cPSquare& r) : cDensityEstBase()
 }
 
 
-cPSquare::cPSquare (char *namestr, unsigned b) : cDensityEstBase( namestr )
+cPSquare::cPSquare (char *namestr, int b) : cDensityEstBase( namestr )
 {
     transfd = TRUE;
 
@@ -277,7 +277,7 @@ double cPSquare::random()
     return dblrand()*(q[k]-q[l])+q[l];
 }
 
-unsigned cPSquare::cells()
+int cPSquare::cells()
 {
     if (numobs<2)
        return 0;
@@ -287,12 +287,12 @@ unsigned cPSquare::cells()
        return numcells;
 }
 
-double cPSquare::basepoint(unsigned k)
+double cPSquare::basepoint(int k)
 {
     return q[k+1];
 }
 
-double cPSquare::cell(unsigned k)
+double cPSquare::cell(int k)
 {
     return n[k+2] - n[k+1] + (k==0);
 }
@@ -333,7 +333,7 @@ void cPSquare::saveToFile(FILE *f)
    cDensityEstBase::saveToFile(f);
 
    fprintf(f,"%u\t #= numcells\n",numcells);
-   fprintf(f,"%u\t #= numobs\n",numobs);
+   fprintf(f,"%ld\t #= numobs\n",numobs);
 
    int i;
    fprintf(f,"#= n[]\n");
@@ -348,7 +348,7 @@ void cPSquare::loadFromFile(FILE *f)
    cDensityEstBase::loadFromFile(f);
 
    freadvarsf(f,"%u\t #= numcells",&numcells);
-   freadvarsf(f,"%u\t #= numobs",&numobs);
+   freadvarsf(f,"%ld\t #= numobs",&numobs);
 
    int i;
    freadvarsf(f,"#= n[]");

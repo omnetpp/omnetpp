@@ -282,10 +282,12 @@ cModule *cModule::parentModule()
 
 int cModule::findGate(char *s, int sn)
 {
-    cGate *g;
-    int i, n = gates();
-    bool w = simulation.warnings(); simulation.setWarnings( FALSE );
-    for (i=0; i<n;  )
+    bool w = simulation.warnings();
+    simulation.setWarnings( FALSE );
+
+    cGate *g = 0; // initialize g to prevent compiler warnings
+    int i = 0, n = gates();
+    while (i<n)
     {
        g = gate(i);
        if (!g)
@@ -296,6 +298,7 @@ int cModule::findGate(char *s, int sn)
           break;
     }
     simulation.setWarnings( w );
+
     if (i>=n)
        return -1;
     else if (sn<0)
@@ -448,16 +451,16 @@ void cSimpleModule::activate(void *p)
         starter->setOwner(smod);
         starter->setKind(MK_TIMEOUT);
 
-        // call activity(). At this point, initialize() is already called from
-        // cSimulation::startRun(), or manually in the case of dynamically
+        // call activity(). At this point, initialize() has already been called
+        // from cSimulation::startRun(), or manually in the case of dynamically
         // created modules.
         smod->activity();
         smod->end();
 }
 
 cSimpleModule::cSimpleModule(cSimpleModule& mod ) :
-  cModule( mod.name(), mod.parentmodp ),
   cCoroutine(),
+  cModule( mod.name(), mod.parentmodp ),
   locals( NULL, NULL),
   putAsideQueue( NULL, NULL, FALSE )
 {
@@ -471,8 +474,8 @@ cSimpleModule::cSimpleModule(cSimpleModule& mod ) :
 }
 
 cSimpleModule::cSimpleModule(char *name, cModule *parentmod, unsigned stksize) :
-  cModule( name, parentmod ),
   cCoroutine(),
+  cModule( name, parentmod ),
   locals( "local-objects", NULL),
   putAsideQueue( "putaside-queue", cMessage::cmpbydelivtime, FALSE )
 {

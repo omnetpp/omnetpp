@@ -61,7 +61,7 @@ void cWatch::printTo(char *buf)
          case 'i':  sprintf(buf, "int %s = %d (%uU, 0x%x)", namestr,
                                  *(int *)ptr, *(int *)ptr, *(int *)ptr );
                     break;
-         case 'l':  sprintf(buf, "long %s = %dL (%uLU, 0x%x)", namestr,
+         case 'l':  sprintf(buf, "long %s = %ldL (%luLU, 0x%lx)", namestr,
                                  *(long *)ptr, *(long *)ptr, *(long *)ptr );
                     break;
          case 'd':  sprintf(buf, "double %s = %lf", namestr,

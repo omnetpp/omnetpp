@@ -48,7 +48,7 @@ class cHistogramBase : public cDensityEstBase
     // redefined cDensityEstBase functions
     virtual void clearResult();
     virtual void transform();
-    virtual unsigned cells();
+    virtual int cells();
 
     virtual void saveToFile(FILE *); //--LG
     virtual void loadFromFile(FILE *);  //--LG
@@ -79,8 +79,8 @@ class cEqdHistogramBase : public cHistogramBase //--LG
     virtual void collectTransformed(double val);
     virtual void setupRange(); // also calculates cellsize
   public:
-    virtual double basepoint(unsigned k);
-    virtual double cell(unsigned k);
+    virtual double basepoint(int k);
+    virtual double cell(int k);
 
     virtual double pdf(double x); // --LG
     virtual double cdf(double x); // --LG

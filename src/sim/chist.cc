@@ -92,7 +92,7 @@ void cHistogramBase::transform()
    transfd = TRUE;
 }
 
-unsigned cHistogramBase::cells()
+int cHistogramBase::cells()
 {
    if (!transformed()) return 0;
 
@@ -121,8 +121,8 @@ void cHistogramBase::writeContents(ostream& os)
    {
       const int picwidth=55;        // width of picture
       double most=0;                // biggest cell value
-      unsigned nc = cells();        // number of cells
-      unsigned k;
+      int nc = cells();             // number of cells
+      int k;
       double d;
       for (k=0; k<nc; k++)
          if ((d=cell(k))>most)
@@ -131,7 +131,7 @@ void cHistogramBase::writeContents(ostream& os)
 
       os << "\n  Distribution density function:\n";
       for (k=0; k<nc; k++)
-        plotline(os,"< ", basepoint(k), (unsigned) cell(k), a);
+        plotline(os,"< ", basepoint(k), (int) cell(k), a);
       plotline(os,">=",basepoint(nc),0,a);
       os << "\n";
    }
@@ -215,7 +215,7 @@ double cEqdHistogramBase::cdf(double)
 }
 
 // return kth basepoint
-double cEqdHistogramBase::basepoint(unsigned k)
+double cEqdHistogramBase::basepoint(int k)
 {
     //   k=0           : rangemin
     //   k=1,2,...     : rangemin + k*cellsize
@@ -231,7 +231,7 @@ double cEqdHistogramBase::basepoint(unsigned k)
       {opp_error("(%s)%s: invalid basepoint index %u",isA(),name(),k);return 0;}
 }
 
-double cEqdHistogramBase::cell(unsigned k)
+double cEqdHistogramBase::cell(int k)
 {
     if (k<num_cells)
       return cellv[k];

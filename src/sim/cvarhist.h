@@ -55,7 +55,7 @@ class cVarHistogram : public cHistogramBase //--LG
 {
   protected:
     int transform_type;     // one of the HIST_TR_xxx constants
-    unsigned max_num_cells; // the length of the allocated cellv
+    int max_num_cells;      // the length of the allocated cellv
     double *bin_bounds;     // bin/cell boundaries
 
     // the boundaries of the ordinary cells/bins are:
@@ -93,8 +93,8 @@ class cVarHistogram : public cHistogramBase //--LG
     virtual double pdf(double x); // --LG
     virtual double cdf(double x); // --LG
 
-    virtual double basepoint(unsigned k); // --LG
-    virtual double cell(unsigned k);
+    virtual double basepoint(int k); // --LG
+    virtual double cell(int k);
 
     virtual void saveToFile(FILE *); //--LG
     virtual void loadFromFile(FILE *);  //--LG

@@ -112,9 +112,9 @@ class cKSplit : public cDensityEstBase
   protected:
     virtual void collectTransformed(double val);
   public:
-    virtual unsigned cells();
-    virtual double basepoint(unsigned k);
-    virtual double cell(unsigned k);
+    virtual int cells();
+    virtual double basepoint(int k);
+    virtual double cell(int k);
 
     virtual double pdf(double x);
     virtual double cdf(double x);

@@ -84,9 +84,9 @@ class cSimulation : public cObject
      time_t simbegtime;         // real time when sim. started
      time_t simendtime;         // real time when sim. ended
      time_t laststarted;        // real time from where sim. was last cont'd
-     unsigned long elapsedtime; // in seconds
+     time_t elapsedtime;        // in seconds
+     time_t tmlimit;            // real time limit in seconds
      simtime_t simulatedtime;   // sim.time at after finishing simulation
-     long tmlimit;              // real time limit in seconds
      simtime_t simtmlimit;      // simulation time limit
      cSimpleModule *backtomod;  // used in cSimpleModule::wait/sendmsg
      cCoroutine runningmod_deleter; // used when a simple module deletes itself
@@ -159,7 +159,7 @@ class cSimulation : public cObject
      void deleteNetwork();       // delete modules, msg queue etc.
 
      // set...
-     void setTimeLimit(long t)         {tmlimit=t;}
+     void setTimeLimit(long t)         {tmlimit=(time_t)t;}
      void setSimTimeLimit(simtime_t t) {simtmlimit=t;}
      void incEventNumber()             {event_num++;}
      void setNetIfCheckFreq(int f)     {netif_check_freq=f;}
@@ -167,7 +167,7 @@ class cSimulation : public cObject
      // get...
      cNetworkType *networkType()     {return networktype;}
      int  runNumber()                {return run_number;}
-     long timeLimit()                {return tmlimit;}
+     long timeLimit()                {return (long)tmlimit;}
      simtime_t simTimeLimit()        {return simtmlimit;}
      long eventNumber()              {return event_num;}
 

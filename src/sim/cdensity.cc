@@ -198,7 +198,7 @@ void cDensityEstBase::collect(double val)
    }
 }
 
-double cDensityEstBase::cellPDF(unsigned k)
+double cDensityEstBase::cellPDF(int k)
 {
      if (num_samples==0) return 0.0;
      double cellsize = basepoint(k+1) - basepoint(k);
@@ -211,10 +211,10 @@ void cDensityEstBase::plotline( ostream& os, char *pref, double xval,
 {
    const int picwidth=54;           // width of picture
    char buf[101], *s;
-   unsigned int x,m,k;
+   int x,m,k;
    sprintf(buf, "   %s%12lf %5lg :", pref, xval, count);
    s = buf+strlen(buf);
-   x= (unsigned int) floor(a*count+.5);
+   x = (int) floor(a*count+.5);
    if (x<=picwidth)  k=x;  else k=picwidth;
    for (m=1;  m<=k;  m++)  *s++ = '-';
    if (x<=picwidth) strcpy(s,"*\n");  else strcpy(s,">\n");
@@ -243,8 +243,8 @@ void cDensityEstBase::writeContents(ostream& os)
    {
       const int picwidth=55;        // width of picture
       double most=0;                // biggest cell value
-      unsigned nc = cells();        // number of cells
-      unsigned k;
+      int nc = cells();        // number of cells
+      int k;
       double d;
       for (k=0; k<nc; k++)
          if ((d=cell(k))>most)
@@ -269,7 +269,7 @@ void cDensityEstBase::saveToFile(FILE *f)
    fprintf(f,"%lg\t #= range_ext_factor\n",range_ext_factor);
    fprintf(f,"%lg %lg\t #= range\n",rangemin,rangemax);
    fprintf(f,"%lu %lu\t #= cell_under, cell_over\n",cell_under,cell_over);
-   fprintf(f,"%u\t #= num_firstvals\n",num_firstvals);
+   fprintf(f,"%ld\t #= num_firstvals\n",num_firstvals);
 
    fprintf(f,"%d\t #= firstvals[] exists\n",firstvals!=NULL);
    if (firstvals) for (int i=0; i<num_firstvals; i++) fprintf(f," %lg\n",firstvals[i]);
@@ -284,7 +284,7 @@ void cDensityEstBase::loadFromFile(FILE *f)
    freadvarsf(f,"%lg\t #= range_ext_factor",&range_ext_factor);
    freadvarsf(f,"%lg %lg\t #= range",&rangemin,&rangemax);
    freadvarsf(f,"%lu %lu\t #= cell_under, cell_over",&cell_under,&cell_over);
-   freadvarsf(f,"%u\t #= num_firstvals",&num_firstvals);
+   freadvarsf(f,"%ld\t #= num_firstvals",&num_firstvals);
 
    int firstvals_exists;
    freadvarsf(f,"%d\t #= firstvals[] exists", &firstvals_exists);
