@@ -105,7 +105,7 @@ void cModuleInterface::setup( sDescrItem *descr_tab )
     }
     allocate( ngate, nparam); // allocate vectors of gates and params
 
-    int g=0, p=0, m=0;      // fill vector with data
+    int g=0, p=0;      // fill vector with data
     for (tab=descr_tab; tab->what!='E'; tab++)
     {
         bool v; int l; char *s;

@@ -230,6 +230,7 @@ double pareto_shifted(double a, double b, double c, int rng)
 //
 //----------------------------------------------------------------------------
 
+/*
 // helper function, needed for hypergeometric distribution
 static double _factorial(int n)
 {
@@ -241,6 +242,7 @@ static double _factorial(int n)
         fact *= n--;
     return fact;
 }
+*/
 
 
 int intuniform(int a, int b, int rng)

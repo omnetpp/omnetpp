@@ -44,7 +44,7 @@ void cSimpleModule::activate(void *p)
             simulation.transferTo(after_cleanup_transfer_to);
         else
             simulation.transferToMain();
-        assert(("invoking transferTo() on an already deleted module?",0));
+        assert(/*invoking transferTo() on an already deleted module?*/ 0);
     }
 
     cSimpleModule *mod = (cSimpleModule *)p;
@@ -63,7 +63,7 @@ void cSimpleModule::activate(void *p)
         simulation.transferToMain(); // send back exception
         assert(!after_cleanup_transfer_to);
         simulation.transferToMain(); // for stack_cleanup_requested
-        assert(("invoking transferTo() on an already deleted module?",0));
+        assert(/*invoking transferTo() on an already deleted module?*/ 0);
     }
 
     // rename message
@@ -88,7 +88,7 @@ void cSimpleModule::activate(void *p)
             simulation.transferTo(after_cleanup_transfer_to);
         else
             simulation.transferToMain();
-        assert(("invoking transferTo() on an already deleted module?",0));
+        assert(/*invoking transferTo() on an already deleted module?*/ 0);
     }
     catch (cEndModuleException *e)
     {
@@ -116,7 +116,7 @@ void cSimpleModule::activate(void *p)
         simulation.transferTo(after_cleanup_transfer_to);
     else
         simulation.transferToMain();
-    assert(("invoking transferTo() on an already deleted module?",0));
+    assert(/*invoking transferTo() on an already deleted module?*/ 0);
 }
 
 cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
