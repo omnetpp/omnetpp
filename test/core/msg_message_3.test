@@ -16,8 +16,8 @@ message {MyMessage}
 %activity:
 
 {MyMessage} x;
-ev << "s1:" << (x.getS1() ? x.getS1() : "(null)") << endl;
-ev << "s2:" << (x.getS2() ? x.getS2() : "(null)") << endl;
+ev << "s1:" << x.getS1() << endl;
+ev << "s2:" << x.getS2() << endl;
 
 char *p = "alice";
 x.setS1(p);
@@ -26,7 +26,7 @@ ev << "s1:" << x.getS1() << ":" << (x.getS1()==p ? "shallow" : "deep") << endl;
 ev << "s2:" << x.getS2() << ":" << (x.getS2()==p ? "shallow" : "deep") << endl;
 
 %contains: stdout
-s1:(null)
+s1:
 s2:test
 s1:alice:deep
 s2:alice:deep

@@ -87,7 +87,7 @@ x.getUii:10:0:16
 x.getLl:-10:0:17
 x.getUll:10:0:18
 x.getDd:3.14:0:19
-x.getStr:test:(null):20
+x.getStr:test::20
 --
 x.getBb:1:0:31
 x.getCc:a:z:32

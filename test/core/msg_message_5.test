@@ -49,5 +49,5 @@ x.getUii:10:0:41
 x.getLl:-10:0:50
 x.getUll:10:0:51
 x.getDd:3.14:0:60
-x.getStr:test:(null):60
+x.getStr:test::60
 
