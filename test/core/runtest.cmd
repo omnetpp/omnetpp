@@ -20,7 +20,7 @@ nmake -f makefile.vc || cd .. && goto end
 cd .. || goto end
 
 call opp_test -r -v %TESTFILES% || goto end
-:# call opp_test -N -r -v %TESTFILES% || goto end
+:#call opp_test -N -r -v %TESTFILES% || goto end
 
 echo.
 echo Results can be found in work/
