@@ -849,5 +849,5 @@ Apr 19, 2000
    one had to substract the propagation delay to get the correct number.
    Fixed in cGate::deliver(cMessage *msg): transmission delay calculation
    should be done _before_ propagation delay.
-
+ - in util.h, fastconcat() renamed to opp_concat(); compatibility #define added
 

@@ -435,7 +435,7 @@ bool opp_strmatch(const char *s1, const char *s2)
     }
 }
 
-char *fastconcat(const char *s1,
+char *opp_concat(const char *s1,
                  const char *s2,
                  const char *s3,
                  const char *s4)

@@ -38,7 +38,7 @@
 #define mystrcpy         opp_strcpy
 #define mystrcmp         opp_strcmp
 #define mystrmatch       opp_strmatch
-
+#define fastconcat       opp_concat
 
 //
 // Conversion between simtime_t (=double) and strings like "1s 34ms"
@@ -140,7 +140,7 @@ SIM_API bool opp_strmatch(const char *, const char *);
 
 // Fast string manipulation functions.
 // fastconcat() returns a pointer to a static buffer of length 256
-SIM_API char *fastconcat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
+SIM_API char *opp_concat(const char *s1, const char *s2, const char *s3=NULL, const char *s4=NULL);
 
 // indexedname() creates a string like "component[35]" into buf, the first argument.
 SIM_API char *indexedname(char *buf, const char *name, int index);
