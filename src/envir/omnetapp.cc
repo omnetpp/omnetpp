@@ -295,6 +295,15 @@ const char *TOmnetApp::getParameter(int run_no, const char *parname)
     return getConfig()->getAsCustom2(section,"Parameters",parname,NULL);
 }
 
+bool TOmnetApp::getParameterUseDefault(int run_no, const char *parname)
+{
+    char section[16];
+    sprintf(section,"Run %d",run_no);
+    std::string entry = parname;
+    entry += ".use-default";
+    return getConfig()->getAsBool2(section, "Parameters", entry.c_str(), false);
+}
+
 bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index)
 {
 #ifdef WITH_PARSIM

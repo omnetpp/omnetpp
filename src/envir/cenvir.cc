@@ -247,6 +247,11 @@ const char *cEnvir::getParameter(int run_no, const char *parname)
     return app->getParameter(run_no, parname);
 }
 
+bool cEnvir::getParameterUseDefault(int run_no, const char *parname)
+{
+    return app->getParameterUseDefault(run_no, parname);
+}
+
 bool cEnvir::isModuleLocal(cModule *parentmod, const char *modname, int index)
 {
     return app->isModuleLocal(parentmod, modname, index);
