@@ -282,6 +282,11 @@ bool cPatternMatcher::match(const char *s, int k)
 
 bool cPatternMatcher::matches(const char *s)
 {
+    // FIXME todo shortcut: omnetpp.ini keys often begin with "*" or "**"
+    // but end in a string literal. So it's usually a performance win to
+    // to first check that the last string literal of the pattern matches 
+    // the end of the string (unless doing substring search of course)
+    
     return match(s,0);
 }
 
