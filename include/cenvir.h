@@ -369,6 +369,7 @@ class ENVIR_API cEnvir : public std::ostream
      * Used internally: the streambuf underlying cEnvir's ostream base class
      * writes via this function.
      */
+    // FIXME why public?
     void sputn(const char *s, int n);
 
     /**
