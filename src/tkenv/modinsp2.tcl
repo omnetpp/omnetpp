@@ -200,7 +200,7 @@ proc draw_submod {c submodptr x y name dispstr} {
            set r [get_submod_coords $c $submodptr]
            set x [expr [lindex $r 2]+1]
            set y [lindex $r 1]
-           $c create text $x $y -text "?" -anchor nw -tags "qlen qlen-$submodptr"
+           $c create text $x $y -text "q:n/a" -anchor nw -tags "qlen qlen-$submodptr"
        }
 
        # r=<radius>,<fillcolor>,<color>,<width>
@@ -543,7 +543,8 @@ proc graphmodwin_rightclick {c X Y} {
    set ptr [lindex $ptr 0]
 
    if {$ptr!=""} {
-      popup_insp_menu $ptr $X $Y
+graphmodwin_bubble $c $ptr "?"
+      #popup_insp_menu $ptr $X $Y
    }
 }
 
@@ -935,14 +936,14 @@ proc graphmodwin_update_submod {c modptr} {
         #set qlen [opp_getobjectfield $qptr length]
         # TBD optimize -- maybe store and remember q pointer?
         set qlen [opp_inspectorcommand $win getsubmodqlen $modptr $qname]
-        $c itemconfig "qlen-$modptr" -text $qlen
+        $c itemconfig "qlen-$modptr" -text "q:$qlen"
     }
 }
 
 #
 # Helper proc.
 #
-proc graphmodwin_qlen_getqptr c {
+proc graphmodwin_qlen_getqptr {c} {
    set item [$c find withtag current]
    set tags [$c gettags $item]
 
@@ -974,6 +975,66 @@ proc graphmodwin_qlen_rightclick {c X Y} {
    if {$qptr!="" && $qptr!=[opp_object_nullpointer]} {
        popup_insp_menu $qptr $X $Y
    }
+}
+
+proc graphmodwin_bubble {c modptr txt} {
+    set r  [get_submod_coords $c $modptr]
+    set x [expr ([lindex $r 0]+[lindex $r 2])/2]
+    set y [expr (2*[lindex $r 1]+[lindex $r 3])/3]
+
+    while {[string length $txt]<7} {set txt " $txt "}
+    set txtid  [$c create text $x $y -text " $txt " -anchor c]
+    set color #F8F8D8
+    set bb [$c bbox $txtid]
+
+    set x1 [lindex $bb 0]
+    set y1 [lindex $bb 1]
+    set x2 [lindex $bb 2]
+    set y2 [lindex $bb 3]
+
+    set x1o [expr $x1-2]
+    set y1o [expr $y1-2]
+    set x2o [expr $x2+2]
+    set y2o [expr $y2+2]
+
+    set xm [expr ($x1+$x2)/2]
+    set ym [expr ($y1+$y2)/2]
+    set xme [expr $xm-10]
+    set yme [expr $y2o+15]
+
+    set pp [list $x1o $y1  \
+                 $x1  $y1o \
+                 $xm  $y1o \
+                 $xm  $y1o \
+                 $x2  $y1o \
+                 $x2o $y1  \
+                 $x2o $ym  \
+                 $x2o $ym  \
+                 $x2o $y2  \
+                 $x2  $y2o \
+                 $xm  $y2o \
+                 $xm  $y2o \
+                 \
+                 $xme $yme \
+                 $xme $yme \
+                 $xme $y2o \
+                 $xme $y2o \
+                 \
+                 $x1  $y2o \
+                 $x1o $y2  \
+                 $x1o $ym  \
+                 $x1o $ym ]
+
+    set bubbleid [$c create polygon $pp -outline black -fill $color -width 1 -smooth 1]
+    $c lower $bubbleid $txtid
+
+    set dx [expr $x-$xme]
+    set dy [expr $y-$yme]
+
+    $c move $bubbleid $dx $dy
+    $c move $txtid $dx $dy
+
+    after 1500 [list $c delete $txtid $bubbleid]
 }
 
 
