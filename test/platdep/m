@@ -1,0 +1,1 @@
+g++ -I../../include abspath.cc -o abspath
