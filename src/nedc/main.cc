@@ -137,8 +137,8 @@ void printUsage()
        "  -N: with -n: use new NED syntax (e.g. module Foo {...})\n"
        "  -s <suffix>: suffix for generated files\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
-       "  -y: do not load imports and also skip semantic validation\n"
-       "  -z: do not load imports\n"
+       "  -y: skip semantic validation (also skip processing imports)\n"
+       "  -z: skip processing imports\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
        "  -V: verbose\n"
        "Note: this program represents work in progress, parts of it are incomplete, and\n"
@@ -258,7 +258,7 @@ bool processFile(const char *fname)
         else if (opt_genned)
             generateNed(out, tree, opt_newsyntax);
         else
-            generateCpp(out, tree);
+            generateCpp(out, cout, tree); // FIXME cout must go!!!
         out.close();
 
         delete tree;
@@ -421,7 +421,7 @@ int main(int argc, char **argv)
         else if (opt_genned)
             generateNed(out, outputtree, opt_newsyntax);
         else
-            generateCpp(out, outputtree);
+            generateCpp(out, cout, outputtree); // FIXME cout must go!!!
         out.close();
 
         delete outputtree;
