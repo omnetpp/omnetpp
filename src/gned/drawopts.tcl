@@ -59,11 +59,11 @@ proc editModuleDrawOptions {key} {
         if {![regexp {^[0-9]*$} $thickness]} {set thickness ""}
         set ned($key,disp-linethickness) $thickness
 
-        # fill color
+        # fill color, outline color
         set ned($key,disp-fillcolor) [.modopts.f.fill.f.e get]
-
-        # outline color
+        if {![isValidColor $ned($key,disp-fillcolor)]} {set ned($key,disp-fillcolor) ""}
         set ned($key,disp-outlinecolor) [.modopts.f.outl.f.e get]
+        if {![isValidColor $ned($key,disp-outlinecolor)]} {set ned($key,disp-outlinecolor) ""}
 
         # redraw
         redrawItemOnAnyCanvas $key
@@ -146,8 +146,11 @@ proc editSubmoduleDrawOptions {key} {
 
         # icon color, fill color, outline color
         set ned($key,disp-iconcolor) [.submopts.f.icolor.f.e get]
+        if {![isValidColor $ned($key,disp-iconcolor)]} {set ned($key,disp-iconcolor) ""}
         set ned($key,disp-fillcolor) [.submopts.f.fill.f.e get]
+        if {![isValidColor $ned($key,disp-fillcolor)]} {set ned($key,disp-fillcolor) ""}
         set ned($key,disp-outlinecolor) [.submopts.f.outl.f.e get]
+        if {![isValidColor $ned($key,disp-outlinecolor)]} {set ned($key,disp-outlinecolor) ""}
 
         # icon color percentage
         set iconcolorpc [.submopts.f.icolorpc.e cget -value]
@@ -223,6 +226,7 @@ proc editConnectionDrawOptions {key} {
 
         # fill color
         set ned($key,disp-fillcolor) [.connopts.f.fill.f.e get]
+        if {![isValidColor $ned($key,disp-fillcolor)]} {set ned($key,disp-fillcolor) ""}
 
         redrawItemOnAnyCanvas $key
         markNedFileOfItemDirty $key
@@ -348,5 +352,11 @@ proc _iconSelected {select imgname frame} {
 
      $select configure -text $imgname
 
+}
+
+proc isValidColor {color} {
+     set res [expr ![catch {button .isValidColorTestButton -bg $color}]]
+     catch {destroy .isValidColorTestButton}
+     return $res
 }
 
