@@ -293,25 +293,25 @@ foreach $i (@linkdirs)
 }
 
 if ($ignorened eq "y") {
-    @objs = glob("*.msg *.$ccext");
+    $objpatt = "*.msg *.$ccext";
 } else {
-    @objs = glob("*.ned *.msg *.$ccext");
+    $objpatt = "*.ned *.msg *.$ccext";
 }
-foreach $i (@objs)
+foreach $i (glob($objpatt))
 {
-    # how does this work?
     $i =~ s/\*[^ ]*//g;
     $i =~ s/[^ ]*_n\.$ccext//g;
     $i =~ s/[^ ]*_m\.$ccext//g;
     $i =~ s/\.ned/_n.obj/g;
     $i =~ s/\.msg/_m.obj/g;
     $i =~ s/\.$ccext/.obj/g;
+    push(@objs, $i) if ($i ne '');
 }
 
-@generatedheaders = glob("*.msg");
-foreach $i (@generatedheaders)
+foreach $i (glob("*.msg"))
 {
     $i =~ s/\.msg/_m.h/g;
+    push(@generatedheaders, $i);
 }
 
 
@@ -505,7 +505,7 @@ if (@extdirtstamps != ()) {
     print OUT "\t\@echo This means that at least the above dependency directory has not been built.\n";
     print OUT "\t\@echo Maybe you need to do a top-level make?\n";
     print OUT "\t\@echo.\n";
-    print OUT "\t\@exit 1\n";
+    print OUT "\t\@exit /b 1\n";
     print OUT "\n";
 }
 
@@ -515,7 +515,7 @@ print OUT "subdirs: \$(SUBDIR_TARGETS)\n";
 print OUT "\n";
 
 print OUT "generateheaders: \$(GENERATEDHEADERS)\n";
-print OUT "\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand generateheaders && cd ..\n";
+print OUT "\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand generateheaders && cd .. || exit /b 1\n";
 print OUT "\n";
 
 foreach $i (@subdirs)
@@ -597,17 +597,17 @@ clean:
 \t-del *.obj *.idb *.pdb \$(TARGET)\$(EXE_SUFFIX) .tstamp 2>NUL
 \t-del *_n.$ccext *_n.h *_m.$ccext *_m.h 2>NUL
 \t-del *.vec *.sca 2>NUL
-\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand clean && cd ..
+\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand clean && cd .. || exit /b 1
 ";
 
 print OUT "
 depend:
 \t\$(MAKEDEPEND) \$(INCLUDE_PATH) -f $makefile -- *.$ccext
-\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand depend && cd ..
+\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand depend && cd .. || exit /b 1
 
 makefiles:
 \topp_nmakemake -f $args1
-\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand makefiles && cd ..
+\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand makefiles && cd .. || exit /b 1
 
 # \"re-makemake\" is a deprecated, historic name of the above target
 re-makemake: makefiles
