@@ -221,7 +221,7 @@ proc bltGraph_Properties {{what ""}} {
 }
 
 #FIXME to some better place
-set tmp(graphproperties-tab) 0
+set tmp(graphprops-last-open-tab) 0
 
 proc bltGraph_PropertiesDialog {graph {what ""}} {
     global tmp
@@ -239,7 +239,7 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
         set tabs($tab) [$nb insert end -text $title -window $nb.$tab  -fill both]
     }
     if {$what==""} {
-        $nb select $tmp(graphproperties-tab)
+        $nb select $tmp(graphprops-last-open-tab)
     } else {
         $nb select $tabs($what)
     }
@@ -337,7 +337,7 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
         $graph legend config -relief $tmp(legendrelief)
         $graph legend config -font $tmp(legendfont)
     }
-    set tmp(graphproperties-tab) [$nb index select]
+    set tmp(graphprops-last-open-tab) [$nb index select]
     destroy $w
 }
 
