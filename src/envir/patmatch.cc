@@ -260,7 +260,7 @@ bool cPatternMatcher::doMatch(const char *s, int k, int suffixlen)
                     return false;
                 break;
             case ANYSEQ:
-                // FIXME shortcut if pattern ends in ANYSEQ or ANYSEQ LITERALSTRING
+                // TBD shortcut if pattern ends in ANYSEQ or ANYSEQ LITERALSTRING
                 do {
                     if (doMatch(s,k+1,suffixlen))
                         return true;

@@ -420,7 +420,7 @@ void TOmnetApp::readOptions()
 
     // this must be the very first:
     opt_ini_warnings = cfg->getAsBool( "General", "ini-warnings", false );
-    //FIXME cfg->setWarnings(opt_ini_warnings);
+    //cfg->setWarnings(opt_ini_warnings);
 
     opt_total_stack_kb = cfg->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB);
     if (cfg->getAsBool("General", "distributed", false))
@@ -533,9 +533,6 @@ void TOmnetApp::processListFile(const char *listfilename)
     opp_string dir, fnameonly;
     splitFileName(listfilename, dir, fnameonly);
     PushDir d(dir.c_str());
-
-    // FIXME error handling is really poor here (what if can't cd, etc!)
-    // FIXME put this code into main.cc too!
 
     std::ifstream in(fnameonly.c_str(), std::ios::in);
     if (in.fail())

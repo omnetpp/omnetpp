@@ -87,7 +87,7 @@ class ENVIR_API cPatternMatcher
 
     struct Elem {
       ElemType type;
-      std::string literalstring; // FIXME use one string -- maybe opp_string (std:: is too big)!
+      std::string literalstring; // if type==LITERALSTRING
       std::string setchars; // SET/NEGSET: character pairs (0,1),(2,3) etc denote char ranges
       long fromnum, tonum; // NUMRANGE; -1 means "unset"
     };

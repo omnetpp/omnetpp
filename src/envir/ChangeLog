@@ -3,6 +3,9 @@
   	* on Mac OS/X, implement ftime() with gettimeofday() [patch from 
   	Michael Tuexen]
 
+  	* platdep.cc: load-libs= omnetpp.ini option now adds plaform-specific
+  	extension (.dll or .so) to library name
+
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
 2004-11-03  ------ omnetpp-3.0a9 released ------

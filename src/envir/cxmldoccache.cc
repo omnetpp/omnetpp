@@ -27,7 +27,7 @@
 
 
 // We depend on WITH_NETBUILDER because it brings the nedxml library which
-// contains the XML parser. FIXME: XML parser should be an independent library
+// contains the XML parser. TBD XML parser should be an independent library
 #ifdef WITH_NETBUILDER
 
 /**

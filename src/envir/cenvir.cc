@@ -88,6 +88,25 @@ cEnvir::~cEnvir()
 {
 }
 
+static void loadLibs(const char *libs)
+{
+    if (libs && libs[0])
+    {
+        // 'libs' contains several file names separated by whitespaces
+        char *buf = opp_strdup(libs);
+        char *lib, *s = buf;
+        while (isspace(*s)) s++;
+        while (*s)
+        {
+            lib = s;
+            while (*s && !isspace(*s)) s++;
+            if (*s) *s++ = 0;
+            opp_loadlibrary(lib);
+        }
+        delete buf;
+    }
+}
+
 void cEnvir::setup(int argc, char *argv[])
 {
     try
@@ -127,21 +146,7 @@ void cEnvir::setup(int argc, char *argv[])
 
         // load shared libs given in [General]/load-libs=
         const char *libs = inifile->getAsString( "General", "load-libs", NULL);
-        if (libs && libs[0])
-        {
-            // 'libs' contains several file names separated by whitespaces
-            char *buf = opp_strdup(libs);
-            char *lib, *s = buf;
-            while (isspace(*s)) s++;
-            while (*s)
-            {
-                lib = s;
-                while (*s && !isspace(*s)) s++;
-                if (*s) *s++ = 0;
-                opp_loadlibrary(lib);
-            }
-            delete buf;
-        }
+        loadLibs(libs);
 
         //
         // Create custom configuration object, if needed.
@@ -159,7 +164,9 @@ void cEnvir::setup(int argc, char *argv[])
             configobject->initializeFrom(inifile);
             delete inifile;
 
-            // FIXME do load-libs from this config as well
+            // load libs from this config as well
+            const char *libs = configobject->getAsString( "General", "load-libs", NULL);
+            loadLibs(libs);
         }
 
 

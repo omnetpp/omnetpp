@@ -18,9 +18,9 @@
 #include <sys/types.h>
 #include <sys/timeb.h>  // ftime(), timeb
 
+// load library. platform-specific extension (.so or .dll) is added by this function.
 ENVIR_API bool opp_loadlibrary(const char *libname);
 
-// TBD try and collect all similar platform dependencies here
 #ifdef __WIN32__
 #define ftime _ftime
 #define timeb _timeb
@@ -28,7 +28,7 @@ ENVIR_API bool opp_loadlibrary(const char *libname);
 
 // (t-t0) in milliseconds (t>=t0 is assumed; overflows only after 49.7 days).
 unsigned long opp_difftimebmillis(const struct timeb& t, const struct timeb& t0);
-struct timeb operator+(const struct timeb& a, const struct timeb& b); // FIXME to better place! (utils?)
+struct timeb operator+(const struct timeb& a, const struct timeb& b);
 struct timeb operator-(const struct timeb& a, const struct timeb& b);
 
 #endif
