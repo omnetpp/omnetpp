@@ -12,6 +12,119 @@
 #----------------------------------------------------------------#
 
 
+
+#===================================================================
+#    STARTUP PROCEDURES
+#===================================================================
+
+# checkTclTkVersion --
+#
+# Check required Tcl/Tk version
+#
+proc checkTclTkVersion {} {
+
+   global tk_version tk_patchLevel
+
+   catch {package require Tk}
+   if {$tk_version<8.0} {
+      wm deiconify .
+      wm title . "Bad news..."
+      frame .f
+      pack .f -expand 1 -fill both -padx 2 -pady 2
+      label .f.l1 -text "Your version of Tcl/Tk is too old!"
+      label .f.l2 -text "Tcl/Tk 8.0p1 or later required."
+      button .f.b -text "OK" -command {exit}
+      pack .f.l1 .f.l2 -side top -padx 5
+      pack .f.b -side top -pady 5
+      focus .f.b
+      wm protocol . WM_DELETE_WINDOW {exit}
+      tkwait variable ok
+   } elseif {[string match "8.0.*" $tk_patchLevel]} {
+      if {[string compare $tk_patchLevel "8.0.1"]<0} {
+         tk_messageBox -title {Warning} -type ok -icon warning \
+              -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
+      }
+   } elseif {$tk_version==8.0 && [string compare $tk_patchLevel "8.0p1"]<0} {
+      tk_messageBox -title {Warning} -type ok -icon warning \
+           -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
+   }
+}
+
+
+# setupTkOptions --
+#
+# Sets up fonts and various options in Tk in order to have consistent look
+# on Unix/Windows and across different Tk versions.
+#
+proc setupTkOptions {} {
+   global fonts tcl_platform tk_version
+
+   #
+   # fonts() array elements:
+   #  normal:  menus, labels etc
+   #  bold:    buttons
+   #  big:     STOP button
+   #  msgname: message name during animation
+   #  fixed:   text windows and listboxes
+   #
+
+   if {$tcl_platform(platform) == "unix"} {
+      set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
+      set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-*-120-*-*-*-*-*-*
+      set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
+      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
+      set fonts(fixed)   fixed
+      set fonts(balloon) -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
+   } else {
+      # Windows, Mac
+      if {$tk_version<8.2} {
+         set s 140
+      } else {
+         set s 110
+      }
+      font create opp_normal -family "MS Sans Serif" -size 8
+      font create opp_bold   -family "MS Sans Serif" -size 8 -weight bold
+      font create opp_balloon -family "MS Sans Serif" -size 8
+
+      set fonts(normal)  opp_normal
+      set fonts(bold)    opp_bold
+      set fonts(big)     -Adobe-Helvetica-Medium-R-Normal-*-*-180-*-*-*-*-*-*
+      set fonts(msgname) -Adobe-Helvetica-Medium-R-Normal-*-*-$s-*-*-*-*-*-*
+      set fonts(fixed)   FixedSys
+      set fonts(balloon) opp_balloon
+   }
+
+   if {$tcl_platform(platform) == "unix"} {
+       option add *Scrollbar.width  12
+       option add *Menubutton.font  $fonts(normal)
+       option add *Menu.font        $fonts(normal)
+       option add *Label.font       $fonts(normal)
+       option add *Entry.font       $fonts(normal)
+       option add *Listbox.font     $fonts(fixed)
+       option add *Text.font        $fonts(fixed)
+       option add *Button.font      $fonts(bold)
+
+       # make menus look more contemporary
+       menu .tmp
+       set activebg [.tmp cget -activebackground]
+       set activefg [.tmp cget -activeforeground]
+       destroy .tmp
+       option add *Menu.activeBorderWidth 0
+       option add *Menu.relief raised
+       option add *Menu.activeBackground #800000
+       option add *Menu.activeForeground white
+       option add *menubar.borderWidth 1
+       option add *menubar.activeBorderWidth 1
+       option add *menubar.activeBackground $activebg
+       option add *menubar.activeForeground $activefg
+   }
+}
+
+
+#===================================================================
+#    UTILITY PROCEDURES
+#===================================================================
+
 # wsize --
 #
 # Utility to set a widget's size to exactly width x height pixels.
@@ -39,7 +152,7 @@ proc iconbutton {w args} {
 
     if {$args=="-separator"} {
         # space between two buttons
-        frame $w -height 4 -width 4
+        frame $w -height 1 -width 4
     } {
         # button
         eval button $w -bd 1 $args
@@ -74,6 +187,16 @@ proc comboconfig {w list {cmd {}}} {
     }
     $w configure -command "$cmd ;#"
     return $w
+}
+
+proc combo-onchange {w cmd} {
+    # Tk sucks: no event is triggered when entry content changes.
+    # entry -validate is no better than bind <Key>,
+    # vtrace is too error-prone.
+    bind $w.entry <1> $cmd
+    bind $w.entry <Key> $cmd
+    bind $w.entry <FocusIn> $cmd
+    bind $w.entry <FocusOut> $cmd
 }
 
 proc label-entry {w label {text {}}} {
@@ -114,7 +237,7 @@ proc label-sunkenlabel {w label {text {}}} {
     # utility function: create a frame with a label+"readonly entry"
     frame $w
     label $w.l -anchor w -width 16 -text $label
-    label $w.e -relief groove -justify left
+    label $w.e -relief groove -justify left -anchor w
     pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
     $w.e config -text $text
@@ -153,6 +276,30 @@ proc label-scale {w label} {
     pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
 }
 
+proc label-button {w label {text {}}} {
+    # utility function: create a frame with label+button
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    button $w.e
+    pack $w.l -anchor center -expand 0 -fill none -padx 2 -pady 2 -side left
+    pack $w.e -anchor center -expand 1 -fill x -padx 2 -pady 2 -side right
+    $w.e config -text $text
+}
+
+proc label-check {w label first var} {
+    # utility function: create a frame with a label+radiobutton for choose
+    global gned
+
+    frame $w
+    label $w.l -anchor w -width 16 -text $label
+    frame $w.f
+    checkbutton $w.f.r1 -text $first -variable $var
+
+    pack $w.l -anchor w -expand 0 -fill none -side left
+    pack $w.f -anchor w -expand 0 -side left -fill x
+    pack $w.f.r1 -anchor w -expand 0 -side left
+}
+
 proc commentlabel {w text} {
     # utility function: create a frame with a message widget
     frame $w
@@ -161,6 +308,19 @@ proc commentlabel {w text} {
 }
 
 
+# noteboook --
+#
+# Create 'tabbed notebook' widget
+#
+# Usage example:
+#  notebook .x bottom
+#  notebook_addpage .x p1 Egy
+#  notebook_addpage .x p2 Ketto
+#  notebook_addpage .x p3 Harom
+#  pack .x -expand 1 -fill both
+#  label .x.p1.e -text "One"
+#  pack .x.p1.e
+#
 proc notebook {w {side top}} {
     #  utility function: create an empty notebook widget
     global nb
@@ -200,20 +360,11 @@ proc notebook_showpage {w name} {
     set nb($w) $name
 }
 
-proc label-check {w label first var} {
-    # utility function: create a frame with a label+radiobutton for choose
-    global gned
 
-    frame $w
-    label $w.l -anchor w -width 16 -text $label
-    frame $w.f
-    checkbutton $w.f.r1 -text $first -variable $var
-
-    pack $w.l -anchor w -expand 0 -fill none -side left
-    pack $w.f -anchor w -expand 0 -side left -fill x
-    pack $w.f.r1 -anchor w -expand 0 -side left
-}
-
+# vertResizeBar --
+#
+# Vertical 'resize bar' (divider)
+#
 proc vertResizeBar {w wToBeResized} {
     # create widget
     frame $w -width 5 -relief raised -borderwidth 1
@@ -349,16 +500,11 @@ proc tableEdit {w numlines columnlist} {
 }
 
 
-# notebook .x bottom
-# notebook_addpage .x p1 Egy
-# notebook_addpage .x p2 Ketto
-# notebook_addpage .x p3 Harom
-# pack .x -expand 1 -fill both
-# label .x.p1.e -text "One"
-# pack .x.p1.e
-
+# center --
+#
+# utility function: centers a dialog on the screen
+#
 proc center {w} {
-    # utility function: centers a dialog on the screen
 
     global tcl_platform
 
@@ -385,9 +531,13 @@ proc center {w} {
     focus $w
 }
 
+
+# createOkCancelDialog --
+#
+# creates dialog with OK and Cancel buttons
+# user's widgets can go into frame $w.f
+#
 proc createOkCancelDialog {w title} {
-    # creates dialog with OK and Cancel buttons
-    # user's widgets can go into frame $w.f
     global tk_version tcl_platform
 
     catch {destroy $w}
@@ -419,9 +569,13 @@ proc createOkCancelDialog {w title} {
     pack $w.buttons.okbutton  -anchor n -side right -padx 2
 }
 
+
+# execOkCancelDialog --
+#
+# Executes the dialog.
+# Returns 1 if Ok was pressed, 0 if Cancel was pressed.
+#
 proc execOkCancelDialog w {
-    # execs the dialog
-    # returns 1 if Ok was pressed, 0 if Cancel was pressed
 
     global opp
 
@@ -432,6 +586,9 @@ proc execOkCancelDialog w {
     bind $w <Escape> "set opp($w) 0"
 
     wm protocol $w WM_DELETE_WINDOW "set opp($w) 0"
+
+    # next line mysteriously solves "lost focus" problem of popup dialogs...
+    after 1 "wm deiconify $w"
 
     center $w
 
@@ -459,6 +616,11 @@ proc execOkCancelDialog w {
     return $opp($w)
 }
 
+
+# aboutDialog --
+#
+# Displays an About dialog.
+#
 proc aboutDialog {title contents} {
     catch {destroy .about}
     createOkCancelDialog .about $title

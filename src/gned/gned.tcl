@@ -77,8 +77,8 @@ proc start_gned {} {
    global argv config OMNETPP_BITMAP_PATH
 
    wm withdraw .
-   checkVersion
-   defaultBindings
+   checkTclTkVersion
+   setupTkOptions
    init_balloons
    createMainWindow
    loadBitmaps $OMNETPP_BITMAP_PATH

@@ -502,85 +502,6 @@ proc createMainWindow {{geom ""}} {
 }
 
 #===================================================================
-#    STARTUP PROCEDURES
-#===================================================================
-
-proc defaultBindings {} {
-   global fonts tcl_platform tk_version
-
-   if {$tcl_platform(platform) == "unix"} {
-      set fonts(normal)  -Adobe-Helvetica-Medium-R-Normal-*-*-120-*-*-*-*-*-*
-      set fonts(bold)    -Adobe-Helvetica-Bold-R-Normal-*-*-120-*-*-*-*-*-*
-      set fonts(fixed)   fixed
-      set fonts(balloon) -Adobe-Helvetica-Bold-R-Normal-*-*-120-*-*-*-*-*-*
-   } else {
-      # Windows, Mac
-      font create opp_normal -family "MS Sans Serif" -size 8
-      font create opp_bold   -family "MS Sans Serif" -size 8 -weight bold
-      font create opp_balloon -family "MS Sans Serif" -size 8
-
-      set fonts(normal)  opp_normal
-      set fonts(bold)    opp_bold
-      set fonts(fixed)   FixedSys
-      set fonts(balloon) opp_balloon
-   }
-
-   if {$tcl_platform(platform) == "unix"} {
-       option add *Scrollbar.width  12
-       option add *Menubutton.font  $fonts(normal)
-       option add *Menu.font        $fonts(normal)
-       option add *Label.font       $fonts(normal)
-       option add *Entry.font       $fonts(normal)
-       option add *Listbox.font     $fonts(fixed)
-       option add *Text.font        $fonts(fixed)
-       option add *Button.font      $fonts(bold)
-
-       # make menus look more contemporary
-       menu .tmp
-       set activebg [.tmp cget -activebackground]
-       set activefg [.tmp cget -activeforeground]
-       destroy .tmp
-       option add *Menu.activeBorderWidth 0
-       option add *Menu.relief raised
-       option add *Menu.activeBackground #800000
-       option add *Menu.activeForeground white
-       option add *menubar.borderWidth 1
-       option add *menubar.activeBorderWidth 1
-       option add *menubar.activeBackground $activebg
-       option add *menubar.activeForeground $activefg
-   }
-}
-
-proc checkVersion {} {
-
-   global tk_version tk_patchLevel
-
-   catch {package require Tk}
-   if {$tk_version<8.0} {
-      wm deiconify .
-      wm title . "Bad news..."
-      frame .f
-      pack .f -expand 1 -fill both -padx 2 -pady 2
-      label .f.l1 -text "Your version of Tcl/Tk is too old!"
-      label .f.l2 -text "Tcl/Tk 8.0 or later required."
-      button .f.b -text "OK" -command {exit}
-      pack .f.l1 .f.l2 -side top -padx 5
-      pack .f.b -side top -pady 5
-      focus .f.b
-      wm protocol . WM_DELETE_WINDOW {exit}
-      tkwait variable ok
-   } elseif {[string match "8.0.*" $tk_patchLevel]} {
-      if {[string compare $tk_patchLevel "8.0.1"]<0} {
-         tk_messageBox -title {Warning} -type ok -icon warning \
-              -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
-      }
-   } elseif {$tk_version==8.0 && [string compare $tk_patchLevel "8.0p1"]<0} {
-      tk_messageBox -title {Warning} -type ok -icon warning \
-           -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
-   }
-}
-
-#===================================================================
 #    MAIN PROGRAM
 #===================================================================
 
@@ -588,8 +509,8 @@ proc startPlove {argv} {
    global config
    global OMNETPP_PLOVE_DIR
 
-   checkVersion
-   defaultBindings
+   checkTclTkVersion
+   setupTkOptions
    init_balloons
    initFilters
    createMainWindow

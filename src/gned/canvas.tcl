@@ -98,7 +98,6 @@ proc openModuleOnNewCanvas {modkey} {
     # create widgets and register in $canvas()
     set canv .main.f.c$canv_id
     set txt  .main.f.t$canv_id
-    #set tab  .main.f.tabs.tab$canv_id
     set tab  .main.f.tabs.c.f.tab$canv_id
 
     set canvas($canv_id,canvas)      $canv
@@ -114,7 +113,7 @@ proc openModuleOnNewCanvas {modkey} {
 
     # create tab
     button $tab -command "switchToCanvas $canv_id" -relief ridge \
-                -bg wheat2 -highlightthickness 0 -height 1
+                -bg wheat2 -highlightthickness 0 -height 1 -pady 0
     pack $tab -expand 0 -fill none -side left
 
     # bindings for the canvas

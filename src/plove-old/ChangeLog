@@ -1,3 +1,8 @@
+2003-01-19  Andras Varga
+
+	* Cygwin fixes; put checkTckTkVersion and setupTkOptions (was generic_-
+	bindings) into widgets.tcl
+
 2003-01-11  Andras Varga
 
 	* titlefmt: variables must begin with "$": $NAME, $FILENAME, $ID, etc.

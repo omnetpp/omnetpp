@@ -53,11 +53,11 @@ proc create_inspector_toplevel {w geom} {
     set colorcode [choosecolorcode $ptr]
 
     frame $w.infobar -relief raised -bd 1
-    pack $w.infobar -anchor w -side top -fill x -expand 0
-    button $w.infobar.color -anchor w -relief raised -bd 1 -bg $colorcode -activebackground $colorcode -text {  } -command "inspect_this_as $w"
+    button $w.infobar.color -anchor w -relief raised -bd 1 -bg $colorcode -activebackground $colorcode -image $icons(1pixtransp) -width 8 -command "inspect_this_as $w"
     label $w.infobar.name -anchor w -relief flat -justify left
-    pack $w.infobar.color -anchor n -side left -expand 0 -fill none -pady 1
+    pack $w.infobar.color -anchor n -side left -expand 0 -fill y -pady 1
     pack $w.infobar.name -anchor n -side left -expand 1 -fill both -pady 1
+    pack $w.infobar -anchor w -side top -fill x -expand 0
 
     set help_tips($w.infobar.color) {Different inspectors of the same object have the same color}
 

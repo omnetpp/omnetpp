@@ -98,9 +98,9 @@ set icons(parent) [image create photo -data {
 }]
 
 set icons(redraw) [image create photo -data {
-    R0lGODlhFwATALMAAAAAADCADCZkCrW1tc7Ozt7e3uferefn5+/v7///////////////////
-    /////////yH5BAEAAAYALAAAAAAXABMAAARG0MhJq704X8S7R5rxIcGojUHpnWTqqtyZCrSQ
-    rlnb0Z/sCaYcDAXKfYYlVufGuSlbrwDwOasBi5jjFZf9bDuhUS9ELpsNEQA7
+    R0lGODlhFAATALMAAAAAADCADCZkCrW1tc7Ozt7e3uferefn5+/v7///////////////////
+    /////////yH5BAEAAAYALAAAAAAUABMAAARF0MhJq70Yo8070l7gfdYYiN21neyZlqcgCy6n
+    1ojs3Z0w8qMVqWLqiFRGFMKFXLViQ0pypotOQr5dyZN9bYObjHhMnkQAADs=
 }]
 
 set icons(fes) [image create photo -data {
@@ -232,5 +232,9 @@ set icons(unknown) [image create photo -data {
     wLLquXye7iGb6EUsroAPYbDIfP0IQcFQuXxJS62SlUS8krLUpMC7HJuyPitZRPHVzCakrLsW
     yVd0HW2uPkL5cFNsf3g2dTZOJ4QqfSM4OA9oKYZ1Ll5tblpkd0mQc5t7UYmZIHePU2FRdouq
     ZZVfrGKOY68jkrKkLLG5trGpmZy8dqHCJB4cGhXIG8vHyBEAADs=
+}]
+
+set icons(1pixtransp) [image create photo -data {
+    R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7
 }]
 

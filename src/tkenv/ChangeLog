@@ -1,3 +1,8 @@
+2003-01-19  Andras Varga
+
+	* Cygwin fixes; put checkTckTkVersion and setupTkOptions (was generic_-
+	bindings) into widgets.tcl
+
 2003-01-16  Andras Varga
 
 	* enhancement: inspectors: made buttons that open inspectors for other 
