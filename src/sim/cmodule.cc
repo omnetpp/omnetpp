@@ -562,6 +562,7 @@ void cSimpleModule::activate(void *p)
     {
         // hand exception to cSimulation::transferTo() and switch back
         simulation.exception = new cException("scheduleStart() should have been called for dynamically created module `%s'", smod->fullPath());
+        simulation.exception_type = 0;
         simulation.transferToMain();
     }
 
@@ -575,16 +576,28 @@ void cSimpleModule::activate(void *p)
     try
     {
         smod->activity();
+        smod->state = sENDED;
+    }
+    catch (cEndModuleException *e)
+    {
+        // simply ignore exception and let module finish
+        // smod->state was already set in cSimpleModule::end()
+        delete e;
+    }
+    catch (cTerminationException *e)
+    {
+        // hand exception to cSimulation::transferTo() and switch back
+        simulation.exception = e;
+        simulation.exception_type = 1;
+        simulation.transferToMain();
     }
     catch (cException *e)
     {
         // hand exception to cSimulation::transferTo() and switch back
         simulation.exception = e;
+        simulation.exception_type = 0;
         simulation.transferToMain();
     }
-
-    // set module state to 'ended', and exit this coroutine
-    smod->state = sENDED;
     simulation.transferToMain();
 }
 
@@ -690,9 +703,8 @@ void cSimpleModule::setId(int n)
 
 void cSimpleModule::end()
 {
-    // FIXME this is not handleMessage()-compliant!
     state = sENDED;
-    simulation.transferToMain();
+    throw new cEndModuleException;
 }
 
 void cSimpleModule::error(const char *fmt...) const
@@ -1307,7 +1319,7 @@ simtime_t cSimpleModule::simTime() const
 
 void cSimpleModule::endSimulation()
 {
-    opp_terminate(eENDSIM);
+    throw new cTerminationException(eENDSIM);
 }
 
 void cSimpleModule::breakpoint(const char *label)

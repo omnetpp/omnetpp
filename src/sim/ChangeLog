@@ -3,6 +3,9 @@
 	* cmodule.cc, ctypes.cc, csimul.cc: refactoring around buildInside(),
         cNetworkType and Define_Network(), see include/ChangeLog.
 
+	* cexception.cc, cmodule.cc, csimul.cc: introduced new cTermination-
+	Exception, cEndModuleException classes
+
 2002-10-09  Andras Varga
 
 	* refactoring (see include/ChangeLog), cosmetics

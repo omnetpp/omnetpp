@@ -4,8 +4,7 @@
 //                          OMNeT++
 //           Discrete System Simulation in C++
 //
-//   Exception class
-//
+//   Exception classes
 //
 //   Author: Andras Varga
 //=========================================================================
@@ -21,43 +20,52 @@
 
 #include <stdio.h>
 #include "cexception.h"
-#include "csimul.h" 
-#include "cmodule.h" 
+#include "csimul.h"
+#include "cmodule.h"
 #include "errmsg.h"
+
+
+cException::cException()
+{
+    errorcode = eCUSTOM;
+    storeCtx();
+    // 'message' remains empty
+}
 
 cException::cException(int errc...)
 {
     va_list va;
     va_start(va, errc);
-    char message[256];
-    vsprintf(message,emsg[errc],va);
+    init(NULL, errc, emsg[errc], va);
     va_end(va);
-
-    errorcode = errc;
-    msg = message;
-
-    if (!simulation.contextModule())
-    {
-        moduleid = -1;
-    }
-    else
-    {
-        moduleid = simulation.contextModule()->id();
-        modulefullpath = simulation.contextModule()->fullPath();
-    }
 }
 
 cException::cException(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
-    char message[256];
-    vsprintf(message,msgformat,va);
+    init(NULL, eCUSTOM, msgformat, va);
     va_end(va);
+}
 
-    errorcode = eCUSTOM;
-    msg = message;
+cException::cException(cObject *where, int errc...)
+{
+    va_list va;
+    va_start(va, errc);
+    init(where, errc, emsg[errc], va);
+    va_end(va);
+}
 
+cException::cException(cObject *where, const char *msgformat...)
+{
+    va_list va;
+    va_start(va, msgformat);
+    init(where, eCUSTOM, msgformat, va);
+    va_end(va);
+}
+
+void cException::storeCtx()
+{
     if (!simulation.contextModule())
     {
         moduleid = -1;
@@ -69,13 +77,36 @@ cException::cException(const char *msgformat...)
     }
 }
 
-bool cException::isNormalTermination() const
+void cException::init(cObject *where, int errc, const char *fmt, va_list va)
 {
-    return errorcode==eSTOPSIMRCVD // stopped by another PVM segment
-        || errorcode==eENDEDOK     // no more events
-        || errorcode==eFINISH      // 'finish simulation' was requested interactively
-        || errorcode==eENDSIM      // endSimulation() called
-        || errorcode==eREALTIME    // execution time limit
-        || errorcode==eSIMTIME;    // sim. time limit
+    // store error code
+    errorcode = errc;
+
+    // assemble message text
+    char message[256] = "\0";
+    if (where)
+        sprintf(message, "(%s)%s: ", where->className(), where->fullName());
+    vsprintf(message+strlen(message),fmt,va);
+    msg = message;
+
+    // store context
+    storeCtx();
 }
+
+cTerminationException::cTerminationException(int errc...)
+{
+    va_list va;
+    va_start(va, errc);
+    init(NULL, errc, emsg[errc], va);
+    va_end(va);
+}
+
+cTerminationException::cTerminationException(const char *msgformat...)
+{
+    va_list va;
+    va_start(va, msgformat);
+    init(NULL, eCUSTOM, msgformat, va);
+    va_end(va);
+}
+
 

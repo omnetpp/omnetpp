@@ -776,10 +776,10 @@ void cPvmMod::do_process_netmsg(int rbuff)
             //if (ev.runningMode()==MASTER_MODE)
             //{
                 hostname=upack_str(err);
-                opp_terminate(eSTOPSIMRCVD, hostname);
+                throw new cTerminationException(eSTOPSIMRCVD, hostname);
                    // CAUTION: The error code eSTOPSIMRCVD must be kept!
-                   //  (it is checked at other places in sim
-                delete [] hostname;
+                   //  (it is checked at other places in sim)
+                delete [] hostname; // FIXME memleak
             //}
             break;
 

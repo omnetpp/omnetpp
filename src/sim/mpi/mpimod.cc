@@ -713,10 +713,9 @@ void cMpiMod::do_process_netmsg(int tag)
 	    err|=pack->unpack_data((void*)&incomingRank, MPI_INT);
 	    // convert process ID into string
 	    sprintf(hostname, "%d", incomingRank);
-	    opp_terminate(eSTOPSIMRCVD, hostname);
+	    throw new cTerminationException(eSTOPSIMRCVD, hostname);
 	    // CAUTION: The error code eSTOPSIMRCVD must be kept!
-	    //  (it is checked at other places in sim
-            break;
+	    //  (it is checked at other places in sim)
 
         // A message or query to stop the simulation.
         case MPIMSG_REQUEST_STOPSIM:

@@ -478,7 +478,6 @@ cSimpleModule *cSimulation::selectNextModule()
         }
 
         // seems like really end of the simulation run
-        opp_terminate(eENDEDOK);
         return NULL;
     }
 
@@ -551,7 +550,13 @@ void cSimulation::transferTo(cSimpleModule *modp)
 
     // if exception occurred in activity(), take it from cSimpleModule::activate() and pass it up
     if (simulation.exception)
-        throw simulation.exception;
+    {
+        // alas, type info was lost, so we have to recover manually...
+        if (simulation.exception_type==0)
+            throw (cException *)simulation.exception;
+        else
+            throw (cTerminationException *)simulation.exception;
+    }
 
     // check stack overflow, but only if this module still exists
     //   (note: currentmod_was_deleted is set by runningmod_deleter)
@@ -586,6 +591,11 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
             // if there was an error during simulation, handleMessage() will come back
             // with an exception
             mod->handleMessage( msg );
+        }
+        catch (cEndModuleException *e)
+        {
+            // ignore this exception
+            delete e;
         }
         catch (cException *)
         {
