@@ -45,14 +45,40 @@ puts "dbg: openModuleOnCanvas returning $canv_id"
 proc openUnnamedCanvas {} {
     # Look for an unnamed, non-dirty ned file. Add a module to it
     # (if it doesn't already have one) and open it on a new canvas.
+    global ned
 
-puts "dbg: openUnnamedCanvas should reuse existing 'unnamed' modules"
-    if {1} {
+puts "dbg: openUnnamedCanvas: FIXME! should not find the currently open canvas!"
+
+    set nedfilekey ""
+    set modkey ""
+
+    # find file
+    foreach key $ned(0,childrenkeys) {
+        if {$ned($key,unnamed) && !$ned($key,dirty)} {
+            set nedfilekey $key
+        }
+    }
+
+    # now get a module
+    if {$nedfilekey!=""} {
+        foreach key $ned($nedfilekey,childrenkeys) {
+            if {$ned($key,type)=="module"} {
+                set modkey $key
+            }
+        }
+        if {$modkey==""} {
+            set modkey [addItem module $nedfilekey]
+        }
+    } else {
         set nedfilekey [addItem nedfile 0]
         set modkey [addItem module $nedfilekey]
     }
+
+puts "dbg: openUnnamedCanvas: file $nedfilekey, module $modkey"
+
     set canv_id [openModuleOnCanvas $modkey]
     return $canv_id
+
 }
 
 
@@ -253,6 +279,10 @@ puts "dbg: destroyCanvas $canv_id"
         set newid [openUnnamedCanvas]
     } else {
         switchToCanvas $newid
+    }
+
+    if {$canv_id==$newid} {
+        return
     }
 
     # destroy widgets and variables associated with old canvas

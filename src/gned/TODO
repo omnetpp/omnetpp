@@ -39,6 +39,8 @@ General:
 
 Manager:
 - local menu on components: Close canvas, Properties
+- reordering items (move up/down)
 
 Dialogs:
 - TBD
+
