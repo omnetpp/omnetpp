@@ -1,3 +1,8 @@
+2004-11-08  Andras Varga
+
+	* cmodule.cc: fix: checkInternalConnections() reported error on zero-
+	size gate vectors too
+
 2004-11-03  ------ omnetpp-3.0a9 released ------
 
 2004-10-27  Andras Varga

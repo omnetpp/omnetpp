@@ -438,7 +438,7 @@ bool cModule::checkInternalConnections() const
     for(j=0; j<gates(); j++)
     {
        const cGate *g = gate(j);
-       if (g && !g->isConnectedInside())
+       if (g && g->size()!=0 && !g->isConnectedInside())
             throw new cException(this,"Gate `%s' is not connected to submodule (or output gate of same module)", g->fullPath().c_str());
     }
 
@@ -449,7 +449,7 @@ bool cModule::checkInternalConnections() const
        for(j=0; j<m->gates(); j++)
        {
           cGate *g = m->gate(j);
-          if (g && !g->isConnectedOutside())
+          if (g && g->size()!=0 && !g->isConnectedOutside())
              throw new cException(this,"Gate `%s' is not connected to sibling or parent module", g->fullPath().c_str());
        }
     }
