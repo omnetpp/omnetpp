@@ -37,7 +37,6 @@
 #include "cmessage.h"
 #include "cpacket.h"
 #include "cmsgheap.h"
-#include "cstk.h"
 #include "cmodule.h"
 #include "cstat.h"
 #include "cdensity.h"

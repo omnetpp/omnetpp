@@ -267,7 +267,7 @@ class SIM_API cPar : public cObject
                 double p1,p2,p3;                } func; // F:math function
        struct { cStatistic *res;                } dtr;  // T:distribution
        struct { cDoubleExpression *expr;        } cexpr;// C:compiled expression
-       struct { ExprElem *xelem; int n;           } expr; // X:expression
+       struct { ExprElem *xelem; int n;         } expr; // X:expression
        struct { cPar *par;                      } ind;  // I:indirection
        struct { void *ptr;
                 VoidDelFunc delfunc;
@@ -368,6 +368,11 @@ class SIM_API cPar : public cObject
      * See cObject for more details.
      */
     virtual void writeContents(ostream& os);
+
+    /**
+     * Calls the given function for contained object, if there's any.
+     */
+    virtual void forEach(ForeachFunc f);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
