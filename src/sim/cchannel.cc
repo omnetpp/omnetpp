@@ -158,6 +158,7 @@ void cChannel::deliver(cMessage *msg, simtime_t t)
 cSimpleChannel::cSimpleChannel(const cSimpleChannel& ch) : cChannel()
 {
     disabledp = errorp = delayp = dataratep = NULL;
+    transm_finishes = 0.0;
 
     setName( ch.name() );
     operator=( ch );
@@ -166,6 +167,7 @@ cSimpleChannel::cSimpleChannel(const cSimpleChannel& ch) : cChannel()
 cSimpleChannel::cSimpleChannel(const char *name, cLinkType *linkp) : cChannel(name, linkp)
 {
     disabledp = errorp = delayp = dataratep = NULL;
+    transm_finishes = 0.0;
 
     // set up params using link
     if (linkp)

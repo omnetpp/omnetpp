@@ -267,24 +267,33 @@ void cGate::setDelay(cPar *p)
 {
     if (!channelp)
         setChannel(new cSimpleChannel("channel"));
-    // FIXME: check that channelp really points to a cSimpleChannel!
-    ((cSimpleChannel *)channelp)->setDelay(p);
+
+    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    if (!ch)
+        throw new cException(this, "setDataRate(): channel is not a cSimpleChannel");
+    ch->setDelay(p);
 }
 
 void cGate::setError(cPar *p)
 {
     if (!channelp)
         setChannel(new cSimpleChannel("channel"));
-    // FIXME: check that channelp really points to a cSimpleChannel!
-    ((cSimpleChannel *)channelp)->setError(p);
+
+    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    if (!ch)
+        throw new cException(this, "setDataRate(): channel is not a cSimpleChannel");
+    ch->setError(p);
 }
 
 void cGate::setDataRate(cPar *p)
 {
     if (!channelp)
         setChannel(new cSimpleChannel("channel"));
-    // FIXME: check that channelp really points to a cSimpleChannel!
-    ((cSimpleChannel *)channelp)->setDatarate(p);
+
+    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    if (!ch)
+        throw new cException(this, "setDataRate(): channel is not a cSimpleChannel");
+    ch->setDatarate(p);
 }
 
 cLinkType *cGate::link() const
@@ -294,20 +303,20 @@ cLinkType *cGate::link() const
 
 cPar *cGate::delay() const
 {
-    // FIXME: check that channelp really points to a cSimpleChannel!
-    return channelp ? ((cSimpleChannel *)channelp)->delay() : NULL;
+    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    return ch ? ch->delay() : NULL;
 }
 
 cPar *cGate::error() const
 {
-    // FIXME: check that channelp really points to a cSimpleChannel!
-    return channelp ? ((cSimpleChannel *)channelp)->error() : NULL;
+    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    return ch ? ch->error() : NULL;
 }
 
 cPar *cGate::datarate() const
 {
-    // FIXME: check that channelp really points to a cSimpleChannel!
-    return channelp ? ((cSimpleChannel *)channelp)->datarate() : NULL;
+    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    return ch ? ch->datarate() : NULL;
 }
 
 cGate *cGate::sourceGate() const
@@ -341,14 +350,14 @@ void cGate::deliver(cMessage *msg, simtime_t t)
 
 bool cGate::isBusy() const
 {
-    // FIXME: check that channelp really points to a cSimpleChannel!
-    return channelp ? ((cSimpleChannel *)channelp)->isBusy() : false;
+    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    return ch ? ch->isBusy() : false;
 }
 
 simtime_t cGate::transmissionFinishes() const
 {
-    // FIXME: check that channelp really points to a cSimpleChannel!
-    return channelp ? ((cSimpleChannel *)channelp)->transmissionFinishes() : simulation.simTime();
+    cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
+    return ch ? ch->transmissionFinishes() : 0.0;
 }
 
 int cGate::routeContains( cModule *mod, int gate )

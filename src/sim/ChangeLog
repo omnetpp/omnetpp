@@ -1,4 +1,9 @@
-2003-03-10
+2003-03-15  Andras Varga
+
+	* cchannel.cc, cgate.cc: refined channel attributes handling, isBusy(),
+	transmissionFinishes().
+
+2003-03-10  Andras Varga
 
 	* ctype.cc: fixed bug (introduced in 2.3b1) in cLinkType constructor 
 	which eventually caused NED channels not to work.
