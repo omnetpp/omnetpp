@@ -1,3 +1,9 @@
+2002-02-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* cmodule.cc (moduleByRelativePath): use explicit constructor
+	instead of copy constructor for pathbuf (gcc-3 patch)
+	* csimul.cc (moduleByPath): ditto
+
 2002-01-24  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* cenum.cc (insert): Bugfix: iterating to the next larger

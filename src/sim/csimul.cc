@@ -272,7 +272,7 @@ void cSimulation::del(int id)
 cModule *cSimulation::moduleByPath(const char *path) const
 {
     // start tokenizing the path (path format: "SysModule.DemandGen[2].Source")
-    opp_string pathbuf = path;
+    opp_string pathbuf(path);
     char *s = strtok(pathbuf.buffer(),".");
 
     // search starts from system module

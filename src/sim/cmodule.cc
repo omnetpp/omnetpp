@@ -301,7 +301,7 @@ cModule *cModule::submodule(const char *submodname, int idx)
 cModule *cModule::moduleByRelativePath(const char *path)
 {
     // start tokenizing the path (path format: "SysModule.DemandGen[2].Source")
-    opp_string pathbuf = path;
+    opp_string pathbuf(path);
     char *s = strtok(pathbuf.buffer(),".");
 
     // search starts from this module
