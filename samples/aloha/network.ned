@@ -43,12 +43,12 @@ module ALOHAnet
         server: AServer;
             parameters:
                 txRate = txRate;
-            display: "i=device/server";
+            display: "i=device/antennatower_l";
         host: AHost[numHosts];
             parameters:
                 txRate = txRate,
                 slotTime = slotTime;
-            display: "i=misc/node_vs";
+            display: "i=device/pc_s";
     connections nocheck:
 endmodule
 
