@@ -204,7 +204,7 @@ CFLAGS="$CFLAGS $CFLAGS_ARCH"
 
 AC_PROG_YACC
 if test "$YACC" = "yacc"; then
-   AC_MSG_WARN([neither bison nor byacc is found...])
+   AC_MSG_ERROR([Bison not found, needed to build OMNeT++ -- please install it!])
 fi
 AC_PROG_LEX
 # AC_PROG_CC -- these are needed at the top
@@ -229,7 +229,7 @@ AC_ARG_VAR(XSLTPROC, A command line xslt processor)
 AC_CHECK_PROG(XSLTPROC, xsltproc, xsltproc, not found)
 
 if test "$XSLTPROC" = "not found"; then
-   AC_MSG_WARN(xsltproc is needed for opp_neddoc.)
+   AC_MSG_WARN(xsltproc from the libxml/libxslt packages not found -- it is needed by opp_neddoc.)
    AC_MSG_WARN(You can get it from http://xmlsoft.org/XSLT/)
 fi
 
@@ -373,8 +373,11 @@ else
             AC_MSG_ERROR([cannot build Tcl/Tk apps, probably due to misconfigured or missing X11 headers or libs. Check config.log for more info!])
         fi
     else
-        AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts; version 8.4.0+ needed])
+        AC_MSG_ERROR([Tcl/Tk not found, needed for all GUI parts; version 8.4.0+ required])
     fi
+fi
+if echo 'catch {package require Tk 8.4; puts OK}; exit' | tclsh | grep OK >/dev/null; then :; else
+    AC_MSG_ERROR([Old Tcl/Tk version, 8.4.0+ required])
 fi
 
 #----------------------
@@ -383,6 +386,10 @@ fi
 OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $BLT_LIBS $TK_LIBS, blt_ok)
 if test $blt_ok = yes; then
     HAVE_BLT=yes
+    if echo 'catch {package require BLT 2.4; puts OK}; exit' | tclsh | grep OK >/dev/null; then :; else
+        AC_MSG_WARN([Tcl cannot load BLT, probably BLT not installed correctly.])
+        AC_MSG_WARN([Check your installation and try typing "package require BLT 2.4" on the wish prompt to verify!])
+    fi
 else
     AC_MSG_WARN([no BLT: Plove and Scalars will not build or work])
     HAVE_BLT=no
