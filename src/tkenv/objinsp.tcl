@@ -169,7 +169,7 @@ proc create_parinspector {name geom} {
 
 
 proc create_packetinspector {name geom} {
-    create_messageinspector $name
+    create_messageinspector $name $geom
 
     set w $name
     set nb $w.nb
