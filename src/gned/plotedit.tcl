@@ -287,7 +287,7 @@ proc deleteSelected {} {
 proc renameOnCanvas {key} {
     global gned canvas ned
 
-    puts "TBD: check if item is on currently open canvas"
+    # TBD assert that item is on currently open canvas
 
     set canv_id $gned(canvas_id)
     set c $canvas($canv_id,canvas)
@@ -457,10 +457,31 @@ proc selectOrMoveStart {c x y ctrl} {
            }
        }
 
+
        #
-       # submodule/parent module clicked?
+       # parent module clicked?
        #
-       if {$ned($key,type)=="module" || $ned($key,type)=="submod"} {
+       if {$ned($key,type)=="module"} {
+           set rectcid $ned($key,rect-cid)
+           set cc [_getCoords $c $rectcid]
+
+           # enlarge "handles" size by half-width of invisible border
+           set r [expr $r+3]
+
+           if {abs($x-[lindex $cc 2])<$r || abs($y-[lindex $cc 3])<$r} {
+               # bottom or right side
+               set mouse(mode) "resize"
+               set mouse(xside) 1
+               set mouse(yside) 1
+           } else {
+               set mouse(mode) "nothing"
+           }
+       }
+
+       #
+       # submodule clicked?
+       #
+       if {$ned($key,type)=="submod"} {
            set rectcid $ned($key,rect-cid)
            set cc [_getCoords $c $rectcid]
 
@@ -678,20 +699,22 @@ proc selectOrMoveEnd {c x y} {
 
        # update size and position data in ned()
        foreach key $mouse(tweaked-items) {
-          set centsiz [_getCenterAndSize $c $key]
 
           if {$ned($key,type)=="module"} {
-             # with the parent module, we store the top-left corner...
+             # parent module
              set cc [$c coords $ned($key,rect2-cid)]
-             set ned($key,disp-xpos)  [expr int([lindex $cc 0])]
-             set ned($key,disp-ypos)  [expr int([lindex $cc 1])]
+             #set ned($key,disp-xpos)  [expr int([lindex $cc 0])]
+             #set ned($key,disp-ypos)  [expr int([lindex $cc 1])]
+             set ned($key,disp-xsize) [expr int([lindex $cc 2])-int([lindex $cc 0])]
+             set ned($key,disp-ysize) [expr int([lindex $cc 3])-int([lindex $cc 1])]
           } else {
-             # ...in all other cases, the center
+             # submodules, connections
+             set centsiz [_getCenterAndSize $c $key]
              set ned($key,disp-xpos)  [expr int([lindex $centsiz 0])]
              set ned($key,disp-ypos)  [expr int([lindex $centsiz 1])]
+             set ned($key,disp-xsize) [expr int([lindex $centsiz 2])]
+             set ned($key,disp-ysize) [expr int([lindex $centsiz 3])]
           }
-          set ned($key,disp-xsize) [expr int([lindex $centsiz 2])]
-          set ned($key,disp-ysize) [expr int([lindex $centsiz 3])]
        }
 
        # refresh parent module as well
@@ -1054,7 +1077,7 @@ proc _adjustModule {c key} {
 
    eval $c coords $ned($key,rect2-cid) $cc2
    eval $c coords $ned($key,background-cid) $cc2
-   $c coords $ned($key,label-cid) [expr [lindex $cc 0]+3] [expr [lindex $cc 1]+3]
+   $c coords $ned($key,label-cid) [expr [lindex $cc 0]-3] [expr [lindex $cc 1]-3]
 }
 
 proc _getCenterAndSize {c key} {
