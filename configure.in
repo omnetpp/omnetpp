@@ -18,11 +18,15 @@ AC_CHECK_LIB(dl, dlsym)
 AC_CHECK_LIB(stdc++, some_func_in_stdCPP)
 AC_CHECK_LIB(pvm3, pvm_recv)
 AC_CHECK_LIB(gpvm3, pvm_joingroup)
+
 AC_CHECK_LIB(X11, XDrawLine)
+
 AC_CHECK_LIB(tcl, Tcl_Init)
 AC_CHECK_LIB(tcl8, Tcl_Init)
+
 AC_CHECK_LIB(tk, Tk_BindEvent,,, -lX11)
 AC_CHECK_LIB(tk8, Tk_BindEvent,,, -lX11)
+
 AC_CHECK_LIB(tv, some_cpp_func_in_TV)
 
 dnl ----------------------
