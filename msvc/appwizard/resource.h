@@ -23,6 +23,7 @@
 #define IDC_SIMPLE_HANDLEMESSAGE        1014
 #define IDC_SIMPLE_STACKSIZE            1015
 #define IDC_SIMPLE_DESCRIPTION          1017
+#define IDC_HOTKEY2                     1020
 
 // Next default values for new objects
 //
@@ -31,7 +32,7 @@
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        129
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
