@@ -23,6 +23,7 @@
 
 #include <stdlib.h> // atol, atof
 #include "defs.h"
+#include "cpar.h"
 
 
 class cObject;
