@@ -25,9 +25,7 @@
 #include "cpsquare.h"
 #include "cexception.h"
 
-#ifdef USE_STD_NAMESPACE
 using std::endl;
-#endif
 
 //=========================================================================
 //=== Registration
