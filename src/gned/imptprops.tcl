@@ -19,11 +19,12 @@ proc editImportProps {key} {
     global gned ned canvas
 
     # create dialog with OK and Cancel buttons
-    createOkCancelDialog .impprops "Import Properties"
-    wm geometry .impprops "380x260"
+    set w .impprops
+    createOkCancelDialog $w "Import Properties"
+    wm geometry $w "380x260"
 
     # add notebook pages
-    set nb .impprops.f.nb
+    set nb $w.f.nb
     notebook $nb
     pack $nb -expand 1 -fill both
     notebook_addpage $nb general "General"
@@ -53,13 +54,30 @@ proc editImportProps {key} {
     debug "editImportProps: strip/add quotes!"
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
-    if {[execOkCancelDialog .impprops] == 1} {
+    if {[execOkCancelDialog $w ImportProps:validate] == 1} {
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
         set ned($key,right-comment) [getCommentFromText $nb.general.rcomment.t]
         updateNedFromTableEdit $nb.imports.tbl $key import name
+
+        markNedfileOfItemDirty $key
+        updateTreeManager
     }
-    destroy .impprops
-    updateTreeManager
+    destroy $w
 }
 
+
+# ImportProps:validate --
+#
+# Validation proc, for use with execOKCancelDialog.
+#
+proc ImportProps:validate {w} {
+    set nb $w.f.nb
+    if [catch {
+        # FIXME validate tables
+    } message] {
+        tk_messageBox -parent $w -icon error -type ok -title "Error" -message $message
+        return 0
+    }
+    return 1
+}
 

@@ -254,6 +254,7 @@ proc moveUpItem {key} {
         # nedfile changed
         if {$parentkey!=0} {
             markNedfileOfItemDirty $parentkey
+            updateTreeManager
         }
     }
 }
@@ -275,6 +276,7 @@ proc moveDownItem {key} {
         # nedfile changed
         if {$parentkey!=0} {
             markNedfileOfItemDirty $parentkey
+            updateTreeManager
         }
     }
 }

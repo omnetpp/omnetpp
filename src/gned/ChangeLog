@@ -1,3 +1,16 @@
+TODO: save/restore size of dialogs
+
+2003-08-11  Andras Varga
+
+	* bugfix: using the Module/Submodule/Connection/Network/Channel/... 
+	Properties dialogs didn't make the NED file "dirty" (=with unsaved
+	changes) and didn't update the canvas (changing the name in the 
+	dialog didn't reflect on the canvas)
+
+	* enhancement: input in Properties dialogs are now (mostly) validated
+
+	* "Machines" pages removed from Module/Submodule dialogs (was obsolete).
+
 2003-08-04  Andras Varga
 
 	* bugfix: if a simple module was typed in the NED text, it was lost 

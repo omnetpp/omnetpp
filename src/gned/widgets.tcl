@@ -578,9 +578,14 @@ proc createOkCancelDialog {w title} {
 # execOkCancelDialog --
 #
 # Executes the dialog.
+# Optional validating proc may check if fields are correctly
+# filled in -- it should return 1 if dialog contents is valid,
+# 0 if there are invalid fields and OK button should not be
+# accepted.
+#
 # Returns 1 if Ok was pressed, 0 if Cancel was pressed.
 #
-proc execOkCancelDialog w {
+proc execOkCancelDialog {w {validating_proc {}}} {
 
     global opp
 
@@ -609,7 +614,14 @@ proc execOkCancelDialog w {
     # may take the focus away so we can't redirect it.  Finally,
     # restore any grab that was in effect.
 
-    tkwait variable opp($w)
+    if {$validating_proc==""} {
+        tkwait variable opp($w)
+    } else {
+        tkwait variable opp($w)
+        while {$opp($w)==1 && ![eval $validating_proc $w]} {
+            tkwait variable opp($w)
+        }
+    }
 
     if {$oldGrab != ""} {
         if {$grabStatus == "global"} {

@@ -291,6 +291,8 @@ proc resetModuleBounds {} {
     foreach key [connKeysOfItem $modkey] {
         _redrawArrow $c $key
     }
+
+    markCanvasDirty
 }
 
 # selectOrMoveStart --
@@ -794,8 +796,8 @@ proc drawEnd {c x y} {
           set ned($key,disp-ysize) [expr int($y2-$y1)]
 
           drawItem $key
-          updateTreeManager
           markCanvasDirty
+          updateTreeManager
        }
        $c delete $mouse(rect)
        set mouse(rect) ""
@@ -1025,7 +1027,7 @@ proc _doRenameItem {key name} {
         set size ""
         regexp -- {^(.*)\[(.*)\] *$} $name dummy name size
 
-        if {[isNameLegal $key $name]} {
+        if {[isNameLegalAndUnique $key $name]} {
            # rename item and set size
            set ned($key,name) $name
            set ned($key,vectorsize) $size
@@ -1035,7 +1037,7 @@ proc _doRenameItem {key name} {
         }
 
     } elseif {[info exist ned($key,name)]} {
-        if {[isNameLegal $key $name]} {
+        if {[isNameLegalAndUnique $key $name]} {
            set ned($key,name) $name
         } else {
            tk_messageBox -type ok -title GNED -icon warning \
@@ -1049,6 +1051,7 @@ proc _doRenameItem {key name} {
     if {$ned($key,type)=="module"} {
         adjustWindowTitle
     }
+    markCanvasDirty
     updateTreeManager
 
     # return current name
@@ -1064,12 +1067,13 @@ proc _doRenameItem {key name} {
 # markCanvasDirty --
 #
 # Mark the component (module) on the current canvas as changed.
+# If the file just became "dirty", reflect this in the tree manager.
 #
 proc markCanvasDirty {} {
     global canvas ned gned
 
     set modkey $canvas($gned(canvas_id),module-key)
-    markNedfileOfItemDirty $modkey
+    if [markNedfileOfItemDirty $modkey] {updateTreeManager}
 }
 
 

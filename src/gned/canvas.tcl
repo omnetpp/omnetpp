@@ -398,7 +398,6 @@ proc exportCanvasesToPostscript {dir imgxmlfile} {
         if {$submodskey!=""} {
             foreach submodkey [getChildren $submodskey] {
                 set bbox [$canv bbox $ned($submodkey,rect-cid)]
-                # set bbox [$canv bbox $ned($submodkey,icon-cid)]  ;# FIXME
                 set submodname $ned($submodkey,name)
                 set x1 [expr [lindex $bbox 0] - $bbx1]
                 set y1 [expr [lindex $bbox 1] - $bby1]

@@ -24,10 +24,11 @@ proc editSubmoduleProps {key} {
     #
 
     # create dialog with OK and Cancel buttons
-    createOkCancelDialog .submprops "Submodule Properties"
-    wm geometry .submprops "480x330"
+    set w .submprops
+    createOkCancelDialog $w "Submodule Properties"
+    wm geometry $w "480x330"
 
-    set nb .submprops.f.nb
+    set nb $w.f.nb
 
     # add notebook pages
     notebook $nb
@@ -35,7 +36,7 @@ proc editSubmoduleProps {key} {
     notebook_addpage $nb general "General"
     notebook_addpage $nb pars "Parameters"
     notebook_addpage $nb gates "Gate sizes"
-    notebook_addpage $nb on "Machines"
+    #notebook_addpage $nb on "Machines"
 
     # create "General" page
     label-entry $nb.general.name "Name:"
@@ -93,13 +94,13 @@ proc editSubmoduleProps {key} {
     pack $nb.gates.xcheck -side top -anchor w -padx 4 -pady 4
 
     # create "Machines" page
-    createSectionsComboAndTables $nb.on $key substmachines on  {
-      {{On machine} value  {entry $e -textvariable $v -width 16 -bd 1}}
-      {{End-line comment} right-comment {entry $e -textvariable $v -width 24 -bd 1}}
-      {{Doc. comment} banner-comment {entry $e -textvariable $v -width 30 -bd 1}}
-    }
-    button $nb.on.xcheck -text "Consult module declaration"
-    pack $nb.on.xcheck -side top -anchor w -padx 4 -pady 4
+    #createSectionsComboAndTables $nb.on $key substmachines on  {
+    #  {{On machine} value  {entry $e -textvariable $v -width 16 -bd 1}}
+    #  {{End-line comment} right-comment {entry $e -textvariable $v -width 24 -bd 1}}
+    #  {{Doc. comment} banner-comment {entry $e -textvariable $v -width 30 -bd 1}}
+    #}
+    #button $nb.on.xcheck -text "Consult module declaration"
+    #pack $nb.on.xcheck -side top -anchor w -padx 4 -pady 4
 
     focus $nb.general.name.e
 
@@ -112,7 +113,7 @@ proc editSubmoduleProps {key} {
     focus $nb.general.name.e
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
-    if {[execOkCancelDialog .submprops] == 1} {
+    if {[execOkCancelDialog $w SubmoduleProps:validate] == 1} {
 
         # process "General" page.
         set ned($key,name) [$nb.general.name.e get]
@@ -135,28 +136,65 @@ proc editSubmoduleProps {key} {
         updateNedFromSectionTables $nb.gates $key gatesizes gatesize name
 
         # process "Machines" page.
-        updateNedFromSectionTables $nb.on $key substmachines substmachine value
-
-        # destroy dialog here
-        destroy .submprops
+        #updateNedFromSectionTables $nb.on $key substmachines substmachine value
 
         # check if module type specified already exists...
-        if {$ned($key,like-name)!=""} {
-            set typename $ned($key,like-name)
-        } else {
-            # FIXME: check it's non-empty
-            set typename $ned($key,type-name)
-        }
-        if {[itemKeyFromName $typename module]=="" && [itemKeyFromName $typename simple]==""} {
-            if {"yes"==[tk_messageBox -type yesno -title GNED -icon question \
-                -message "Module type '$typename' is unknown to GNED. Create it in this file?"]
-            } {
-                tk_messageBox -type ok -title GNED -icon error -message "Not implemented yet :-)"
-            }
-        }
-    } else {
-        destroy .submprops
+        #if {$ned($key,like-name)!=""} {
+        #    set typename $ned($key,like-name)
+        #} else {
+        #    set typename $ned($key,type-name)
+        #}
+        #if {[itemKeyFromName $typename module]=="" && [itemKeyFromName $typename simple]==""} {
+        #    if {"yes"==[tk_messageBox -type yesno -title GNED -icon question \
+        #        -message "Module type '$typename' is unknown to GNED. Create it in this file?"]
+        #    } {
+        #        tk_messageBox -type ok -title GNED -icon error -message "Not implemented yet :-)"
+        #    }
+        #}
+
+        # redraw because name might have changed
+        redrawItemOnAnyCanvas $key
+        markNedfileOfItemDirty $key
+        updateTreeManager
     }
+    destroy $w
+}
+
+
+# editSubmoduleProps:validate --
+#
+# Validation proc, for use with execOKCancelDialog.
+#
+proc SubmoduleProps:validate {w} {
+    global tmp
+    set nb $w.f.nb
+    if [catch {
+        assertEntryFilledIn $nb.general.name.e "submodule name"
+        assertEntryIsValidName $nb.general.name.e "submodule name"
+        # FIXME assertUnique
+
+        if {!$tmp(uselike)} {
+            assertEntryFilledIn $nb.general.type.e "module type"
+            assertEntryIsValidName $nb.general.type.e "module type"
+        } else {
+            assertEntryFilledIn $nb.general.likepar.e "parameter name for module type"
+            assertEntryIsValidName $nb.general.likepar.e "parameter name for module type"
+
+            assertEntryFilledIn $nb.general.likemod.e "prototype module"
+            assertEntryIsValidName $nb.general.likemod.e "prototype module"
+        }
+
+        assertEntryIsValidName $nb.general.type.e "prototype ('like')"
+
+        # FIXME validate tables too
+
+        # FIXME assertUnique
+        # FIXME validate tables too
+    } message] {
+        tk_messageBox -parent $w -icon error -type ok -title "Error" -message $message
+        return 0
+    }
+    return 1
 }
 
 

@@ -202,4 +202,30 @@ proc validateAttrValue {key attr value} {
     return $value
 }
 
+# assertEntryFilledIn --
+#
+# Helper proc to be used from execOkCancelDialog validation procs
+#
+proc assertEntryFilledIn {w what} {
+    if {[$w get]==""} {
+        focus $w
+        error "Please fill in $what!"
+    }
+}
+
+# assertEntryIsValidName --
+#
+# Helper proc to be used from execOkCancelDialog validation procs
+#
+proc assertEntryIsValidName {w what} {
+    set value [$w get]
+    if ![isNameLegal $value] {
+        focus $w
+        error "Note: $what should be a legal identifier! \
+               (It may contain letters, digits and underscore, may not begin\
+               with a number and may not be a reserved word.)"
+    }
+}
+
+
 

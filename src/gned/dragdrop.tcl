@@ -192,6 +192,7 @@ proc createSubmoduleOnCanvas {typekey {canvx {}} {canvy {}}} {
     drawItem $key
     selectItem $key
     markCanvasDirty
+    updateTreeManager
 }
 
 

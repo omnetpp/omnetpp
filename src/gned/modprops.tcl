@@ -20,10 +20,11 @@ proc editModuleProps {key} {
     global gned ned
 
     # create dialog with OK and Cancel buttons
-    createOkCancelDialog .modprops "Module Properties"
-    wm geometry .modprops "480x300"
+    set w .modprops
+    createOkCancelDialog $w "Module Properties"
+    wm geometry $w "480x300"
 
-    set nb .modprops.f.nb
+    set nb $w.f.nb
 
     # add notebook pages
     notebook $nb
@@ -31,7 +32,7 @@ proc editModuleProps {key} {
     notebook_addpage $nb general "General"
     notebook_addpage $nb pars  "Parameters"
     notebook_addpage $nb gates "Gates"
-    notebook_addpage $nb mach  "Machines"
+    #notebook_addpage $nb mach  "Machines"
 
     # create "General" page
     label-entry $nb.general.name "Name:"
@@ -65,14 +66,14 @@ proc editModuleProps {key} {
     pack $nb.gates.tbl -side top
 
     # create "Machines" page
-    label $nb.mach.l -text  "Machines:"
-    tableEdit $nb.mach.tbl 10 {
-      {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
-      {{End-line comment} right-comment  {entry $e -textvariable $v -width 25 -bd 1}}
-      {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 26 -bd 1}}
-    }
-    pack $nb.mach.l -side top -anchor w
-    pack $nb.mach.tbl -side top
+    #label $nb.mach.l -text  "Machines:"
+    #tableEdit $nb.mach.tbl 10 {
+    #  {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
+    #  {{End-line comment} right-comment  {entry $e -textvariable $v -width 25 -bd 1}}
+    #  {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 26 -bd 1}}
+    #}
+    #pack $nb.mach.l -side top -anchor w
+    #pack $nb.mach.tbl -side top
 
     focus $nb.general.name.e
 
@@ -84,10 +85,10 @@ proc editModuleProps {key} {
     # fill tables
     ModProps:fillTableEditFromNed $nb.pars.tbl  $key params
     ModProps:fillTableEditFromNed $nb.gates.tbl $key gates
-    ModProps:fillTableEditFromNed $nb.mach.tbl  $key machines
+    #ModProps:fillTableEditFromNed $nb.mach.tbl  $key machines
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
-    if {[execOkCancelDialog .modprops] == 1} {
+    if {[execOkCancelDialog $w ModProps:validate] == 1} {
 
         set ned($key,name) [$nb.general.name.e get]
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
@@ -95,12 +96,34 @@ proc editModuleProps {key} {
 
         ModProps:updateNedFromTableEdit $nb.pars.tbl  $key params   param   name
         ModProps:updateNedFromTableEdit $nb.gates.tbl $key gates    gate    name
-        ModProps:updateNedFromTableEdit $nb.mach.tbl  $key machines machine name
+        #ModProps:updateNedFromTableEdit $nb.mach.tbl  $key machines machine name
 
+        # redraw because name might have changed
+        redrawItemOnAnyCanvas $key
+        markNedfileOfItemDirty $key
         updateTreeManager
         adjustWindowTitle
     }
-    destroy .modprops
+    destroy $w
+}
+
+
+# ModProps:validate --
+#
+# Validation proc, for use with execOKCancelDialog.
+#
+proc ModProps:validate {w} {
+    set nb $w.f.nb
+    if [catch {
+        assertEntryFilledIn $nb.general.name.e "module name"
+        assertEntryIsValidName $nb.general.name.e "module name"
+        # FIXME assertUnique
+        # FIXME validate tables too
+    } message] {
+        tk_messageBox -parent $w -icon error -type ok -title "Error" -message $message
+        return 0
+    }
+    return 1
 }
 
 proc ModProps:fillTableEditFromNed {w modkey sectiontype} {

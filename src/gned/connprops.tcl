@@ -22,11 +22,12 @@ proc editConnectionProps {key} {
     global tmp
 
     # create dialog with OK and Cancel buttons
-    createOkCancelDialog .connprops "Connection Properties"
-    wm geometry .connprops "490x380"
+    set w .connprops
+    createOkCancelDialog $w "Connection Properties"
+    wm geometry $w "490x380"
 
     # add notebook pages
-    set nb .connprops.f.nb
+    set nb $w.f.nb
     notebook $nb
     pack $nb -expand 1 -fill both
     notebook_addpage $nb general "General"
@@ -116,7 +117,7 @@ proc editConnectionProps {key} {
     focus $nb.gates.from.mod.name
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
-    if {[execOkCancelDialog .connprops] == 1} {
+    if {[execOkCancelDialog $w ConnProps:validate] == 1} {
         # "General" page
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
         set ned($key,right-comment) [getCommentFromText $nb.general.rcomment.t]
@@ -135,7 +136,7 @@ proc editConnectionProps {key} {
 
         set ned($key,arrowdir-l2r) $tmp(l2r)
 
-        puts "todo: 'for' to be handled!"
+        puts "FIXME todo: 'for' to be handled!"
 
         # 'Attributes' page
         foreach connattr_key [getChildren $key] {
@@ -157,8 +158,41 @@ proc editConnectionProps {key} {
             if {$error!=""} {ConnProps:addConnAttr $key error $error}
             if {$datarate!=""} {ConnProps:addConnAttr $key datarate $datarate}
         }
+
+        # well redraw is not explicitly needed now, but cannot hurt
+        redrawItemOnAnyCanvas $key
+        markNedfileOfItemDirty $key
+        updateTreeManager
     }
-    destroy .connprops
+    destroy $w
+}
+
+
+# ConnProps:validate --
+#
+# Validation proc, for use with execOKCancelDialog.
+#
+proc ConnProps:validate {w} {
+    global tmp
+    set nb $w.f.nb
+    if [catch {
+        assertEntryFilledIn $nb.gates.from.gate.name "source gate name"
+        assertEntryIsValidName $nb.gates.from.gate.name "source gate name"
+
+        assertEntryFilledIn $nb.gates.to.gate.name "destination gate name"
+        assertEntryIsValidName $nb.gates.to.gate.name "destination gate name"
+
+        if {$tmp(usechannel)} {
+            assertEntryFilledIn $nb.attrs.channel.e "channel type"
+            assertEntryIsValidName $nb.attrs.channel.e "channel type"
+        } else {
+            # cannot validate delay, error and data rate
+        }
+    } message] {
+        tk_messageBox -parent $w -icon error -type ok -title "Error" -message $message
+        return 0
+    }
+    return 1
 }
 
 

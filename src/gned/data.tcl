@@ -167,17 +167,10 @@ proc deleteItem {key} {
 
 # isNameLegal --
 #
-# Check that name string doesn't contain invalid chars and it is locally unique
-# Returns 0 or 1.
+# Check that name string doesn't contain invalid chars and is not
+# reserved word. Returns 0 or 1.
 #
-proc isNameLegal {key name} {
-    global ned
-
-    # check if item has a name at all
-    if ![info exist ned($key,name)] {
-        error "item $key has no name attribute"
-    }
-
+proc isNameLegal {name} {
     # check for invalid chars
     if ![regexp -- {^[a-zA-Z_][a-zA-Z0-9_]*$} $name] {
         # contains invalid chars
@@ -193,6 +186,26 @@ proc isNameLegal {key name} {
                   fields properties extends int long char unsigned}
     if {[lsearch $keywords $name]!=-1} {
         # reserved word
+        return 0
+    }
+    return 1
+}
+
+
+# isNameLegalAndUnique --
+#
+# Check that name string doesn't contain invalid chars and it is locally unique
+# Returns 0 or 1.
+#
+proc isNameLegalAndUnique {key name} {
+    global ned
+
+    if ![info exist ned($key,name)] {
+        error "item $key has no name attribute"
+    }
+
+    # check for invalid chars and reserved words
+    if ![isNameLegal $name] {
         return 0
     }
 
@@ -535,6 +548,11 @@ proc checkArray {} {
 }
 
 
+# markNedfileOfItemDirty --
+#
+# Returns 1 if the dirty bit was just set to true.
+# updateTreeManager must always be called after this!
+#
 proc markNedfileOfItemDirty {key} {
     global ned
 
@@ -546,8 +564,9 @@ proc markNedfileOfItemDirty {key} {
     # mark nedfile dirty
     if {$ned($key,aux-isdirty)==0} {
         set ned($key,aux-isdirty) 1
-        updateTreeManager
+        return 1
     }
+    return 0
 }
 
 

@@ -127,7 +127,8 @@ proc drawItem {key {canv_id {}}} {
 
 # redrawItem --
 #
-#   Redraw item given by key on the canvas
+#   Redraw item given by key. Assumes item is on given canvas, or on current
+#   if no canvas is specified.
 #
 proc redrawItem {key {canv_id {}}} {
     global ned gned canvas
@@ -144,6 +145,19 @@ proc redrawItem {key {canv_id {}}} {
     # redraw
     drawItem $key $canv_id
 }
+
+
+# redrawItemOnAnyCanvas --
+#
+#   Find which canvas the item is on, then call redrawItem with it
+#
+proc redrawItemOnAnyCanvas {key} {
+    global ned gned canvas
+
+    set canv_id [canvasIdFromItemKey $key]
+    redrawItem $key $canv_id
+}
+
 
 # selectItem --
 #

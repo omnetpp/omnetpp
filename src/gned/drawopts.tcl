@@ -74,7 +74,10 @@ proc editModuleDrawOptions {key} {
         }
 
         # redraw
-        redrawItem $key
+        redrawItemOnAnyCanvas $key
+        markNedfileOfItemDirty $key
+        updateTreeManager
+
     }
     destroy .modopts
 }
@@ -156,12 +159,14 @@ proc editSubmoduleDrawOptions {key} {
         }
 
         # redraw item and connections to/from it
-        redrawItem $key
+        redrawItemOnAnyCanvas $key
 
         # redraw connections to/from it
         foreach key [connKeysOfItem $key] {
            _redrawArrow $c $key
         }
+        markNedfileOfItemDirty $key
+        updateTreeManager
     }
     destroy .submopts
 }
@@ -226,7 +231,9 @@ proc editConnectionDrawOptions {key} {
            set ned($key,disp-fillcolor) [.connopts.f.fill.f.radio.r2f.b cget -bg]
         }
 
-        redrawItem $key
+        redrawItemOnAnyCanvas $key
+        markNedfileOfItemDirty $key
+        updateTreeManager
     }
     destroy .connopts
 }

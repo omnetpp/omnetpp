@@ -23,11 +23,12 @@ proc editChannelProps {key} {
 #    return
 
     # create dialog with OK and Cancel buttons
-    createOkCancelDialog .chanprops "Channel Properties"
-    wm geometry .chanprops "380x260"
+    set w .chanprops
+    createOkCancelDialog $w "Channel Properties"
+    wm geometry $w "380x260"
 
     # add notebook pages
-    set nb .chanprops.f.nb
+    set nb $w.f.nb
     notebook $nb
     pack $nb -expand 1 -fill both
     notebook_addpage $nb general "General"
@@ -83,7 +84,7 @@ proc editChannelProps {key} {
     # debug "editChannelProps: implement (Add standard attributes) button"
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
-    if {[execOkCancelDialog .chanprops] == 1} {
+    if {[execOkCancelDialog $w ChanProps:validate] == 1} {
         set ned($key,name) [$nb.general.name.e get]
         set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
         set ned($key,right-comment) [getCommentFromText $nb.general.rcomment.t]
@@ -100,9 +101,33 @@ proc editChannelProps {key} {
         if {$datarate!=""} {ChanProps:addChanAttr $key datarate $datarate}
 
         # updateNedFromTableEdit $nb.attrs.tbl $key chanattr name
+
+        markNedfileOfItemDirty $key
+        updateTreeManager
+
     }
-    destroy .chanprops
+    destroy $w
 }
+
+
+# ChanProps:validate --
+#
+# Validation proc, for use with execOKCancelDialog.
+#
+proc ChanProps:validate {w} {
+    set nb $w.f.nb
+    if [catch {
+        assertEntryFilledIn $nb.general.name.e "channel name"
+        assertEntryIsValidName $nb.general.name.e "channel name"
+        # FIXME assertUnique
+        # FIXME validate tables too
+    } message] {
+        tk_messageBox -parent $w -icon error -type ok -title "Error" -message $message
+        return 0
+    }
+    return 1
+}
+
 
 proc ChanProps:addChanAttr {chan_key attrname attrvalue} {
     global ned

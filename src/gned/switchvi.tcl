@@ -197,9 +197,7 @@ proc switchToGraphics {} {
     # graphics view
     setCanvasMode "graphics"
 
-    # markNedfileOfItemDirty $modkey wouldn't be good: it doesn't
-    # always call updateTreeManager
-    set ned($filekey,aux-isdirty) 1
+    makeNedFileOfItemDirty $key
     updateTreeManager
 
     #dbg: this not so good...
