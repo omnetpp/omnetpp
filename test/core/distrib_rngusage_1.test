@@ -6,66 +6,74 @@ Some functions are called with several different argument sets:
 this is because the impl. chooses different generation methods
 for different parameter values.
 
+No RNG mapping is set up for this test. (Module RNGs map one-to-one
+to physical RNGs).
+
 %global:
 
-// store seeds in array
-void storeSeeds(long *seeds)
+// store numDrawn in array
+void storeNumDrawn(unsigned long *numDrawn)
 {
-    for (int rng=0; rng<32; rng++)
+    for (int rng=0; rng<ev.numRNGs(); rng++)
     {
-        seeds[rng] = genk_randseed(rng);
+        numDrawn[rng] = rng(rng)->numbersDrawn();
     }
 }
 
-// check that only the given seed changed, others remained intact
-void checkSeeds(long *oldseeds, int usedrng, const char *label)
+// check that only the given RNG was used, others have remained intact
+void checkNumDrawn(unsigned long *oldnumDrawn, int usedrng, const char *label)
 {
-    for (int rng=0; rng<32; rng++)
+    for (int rng=0; rng<ev.numRNGs(); rng++)
     {
-        if (rng!=usedrng && oldseeds[rng]!=genk_randseed(rng))
+        if (rng!=usedrng && oldnumDrawn[rng]!=rng(rng)->numbersDrawn())
             ev.printf("ERROR: %s with rng=%d also changed rng=%d\n", label,usedrng,rng);
     }
-    if (oldseeds[usedrng]==genk_randseed(usedrng))
+    if (oldnumDrawn[usedrng]==rng(usedrng)->numbersDrawn())
         ev.printf("ERROR: %s with rng=%d did NOT change rng=%d\n", label,usedrng,usedrng);
 }
 
 %activity:
 
-#define CHECKSEEDS(f) ev.printf("checking %s\n",#f); storeSeeds(seeds); f; checkSeeds(seeds,rng,#f);
+#define CHECKNUMDRAWN(f) ev.printf("checking %s\n",#f); storeNumDrawn(numDrawn); f; checkNumDrawn(numDrawn,rng,#f);
 
-long seeds[32];
+unsigned long *numDrawn = new unsigned long[ev.numRNGs()];
 
 for (int rng=0; rng<=2; rng++)
 {
     ev.printf("RNG=%d:\n",rng);
 
-    CHECKSEEDS(uniform(1.0, 2.0, rng));
-    CHECKSEEDS(exponential(1.0, rng));
-    CHECKSEEDS(normal(1.0, 1.0, rng));
-    CHECKSEEDS(truncnormal(1.0, 1.0, rng));
-    CHECKSEEDS(gamma_d(0.5, 2.0, rng));
-    CHECKSEEDS(gamma_d(2.0, 2.0, rng));
-    CHECKSEEDS(beta(1.0, 1.0, rng));
-    CHECKSEEDS(erlang_k(1, 1.0, rng));
-    CHECKSEEDS(chi_square(1, rng));
-    CHECKSEEDS(chi_square(2, rng));
-    CHECKSEEDS(student_t(1, rng));
-    CHECKSEEDS(cauchy(1.0, 2.0, rng));
-    CHECKSEEDS(triang(1.0, 2.0, 3.0, rng));
-    CHECKSEEDS(lognormal(1.0, 1.0, rng));
-    CHECKSEEDS(weibull(1.0, 2.0, rng));
-    CHECKSEEDS(pareto_shifted(1.0, 2.0, 3.0, rng));
+    CHECKNUMDRAWN(uniform(1.0, 2.0, rng));
+    CHECKNUMDRAWN(exponential(1.0, rng));
+    CHECKNUMDRAWN(normal(1.0, 1.0, rng));
+    CHECKNUMDRAWN(truncnormal(1.0, 1.0, rng));
+    CHECKNUMDRAWN(gamma_d(0.5, 2.0, rng));
+    CHECKNUMDRAWN(gamma_d(2.0, 2.0, rng));
+    CHECKNUMDRAWN(beta(1.0, 1.0, rng));
+    CHECKNUMDRAWN(erlang_k(1, 1.0, rng));
+    CHECKNUMDRAWN(chi_square(1, rng));
+    CHECKNUMDRAWN(chi_square(2, rng));
+    CHECKNUMDRAWN(student_t(1, rng));
+    CHECKNUMDRAWN(cauchy(1.0, 2.0, rng));
+    CHECKNUMDRAWN(triang(1.0, 2.0, 3.0, rng));
+    CHECKNUMDRAWN(lognormal(1.0, 1.0, rng));
+    CHECKNUMDRAWN(weibull(1.0, 2.0, rng));
+    CHECKNUMDRAWN(pareto_shifted(1.0, 2.0, 3.0, rng));
 
-    CHECKSEEDS(intuniform(0, 10, rng));
-    CHECKSEEDS(bernoulli(0.3, rng));
-    CHECKSEEDS(binomial(10, 0.3, rng));
-    CHECKSEEDS(geometric(0.3, rng));
-    CHECKSEEDS(negbinomial(10, 0.3, rng));
-    //CHECKSEEDS(hypergeometric(1, 2, 2, rng));
-    CHECKSEEDS(poisson(1.0, rng));
-    CHECKSEEDS(poisson(35.0, rng));
+    CHECKNUMDRAWN(intuniform(0, 10, rng));
+    CHECKNUMDRAWN(bernoulli(0.3, rng));
+    CHECKNUMDRAWN(binomial(10, 0.3, rng));
+    CHECKNUMDRAWN(geometric(0.3, rng));
+    CHECKNUMDRAWN(negbinomial(10, 0.3, rng));
+    //CHECKNUMDRAWN(hypergeometric(1, 2, 2, rng));
+    CHECKNUMDRAWN(poisson(1.0, rng));
+    CHECKNUMDRAWN(poisson(35.0, rng));
 }
 ev << "finished\n";
+
+%inifile: {}.ini
+[General]
+network={}_network
+num-rngs=10
 
 %contains-regex: stdout
 checking uniform\(1.0, 2.0, rng\)
