@@ -840,7 +840,7 @@ sub generateClass
         }
         print H " *     $realmsgclass& operator=(const $realmsgclass& other) {$msgclass\:\:operator=(other); return *this;}\n";
         if ($classtype eq "cobject") {
-            print H " *     virtual cObject *dup() {return new $realmsgclass(*this);}\n";
+            print H " *     virtual cObject *dup() const {return new $realmsgclass(*this);}\n";
         }
         print H " *     // ADD CODE HERE to redefine and implement pure virtual functions from $msgclass\n";
         print H " * };\n";
