@@ -24,7 +24,7 @@
 cSingleton<cArray> networks("networks");
 cSingleton<cArray> modinterfaces("module-interfaces");
 cSingleton<cArray> modtypes("module-types");
-cSingleton<cArray> linktypes("link-types");
+cSingleton<cArray> channeltypes("channel-types");
 cSingleton<cArray> functions("functions");
 cSingleton<cArray> classes("classes");
 cSingleton<cArray> enums("enums");
@@ -45,9 +45,14 @@ cModuleInterface *findModuleInterface(const char *s)
     return (cModuleInterface *)modinterfaces.instance()->get(s);
 }
 
+cChannelType *findChannelType(const char *s)
+{
+    return (cChannelType *)channeltypes.instance()->get(s);
+}
+
 cLinkType *findLink(const char *s)
 {
-    return (cLinkType *)linktypes.instance()->get(s);
+    return (cLinkType *)channeltypes.instance()->get(s);
 }
 
 cEnum *findEnum(const char *s)

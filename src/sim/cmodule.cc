@@ -701,7 +701,7 @@ static void _connect(cModule *frm, int frg, cModule *tom, int tog)
 
 
 void connect(cModule *frm, int frg,
-             cLinkType *linkp,
+             cChannelType *linkp,
              cModule *tom, int tog)
 {
     _connect( frm, frg, tom, tog);

@@ -262,10 +262,13 @@ void cGate::setTo(cGate *g)
     togatep = g;
 }
 
-void cGate::setLink(cLinkType *lnk)
+void cGate::setLink(cChannelType *lnk)
 {
     if (lnk)
-        setChannel(new cSimpleChannel("channel",lnk));
+    {
+        cChannel *ch = lnk->create("channel");
+        setChannel(ch);
+    }
 }
 
 void cGate::setChannel(cChannel *ch)
@@ -290,7 +293,8 @@ void cGate::setDelay(cPar *p)
     cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
     if (!ch)
         throw new cException(this, "setDataRate(): channel is not a cSimpleChannel");
-    ch->setDelay(p);
+    p->setName("delay");
+    ch->addPar(p);
 }
 
 void cGate::setError(cPar *p)
@@ -301,7 +305,8 @@ void cGate::setError(cPar *p)
     cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
     if (!ch)
         throw new cException(this, "setDataRate(): channel is not a cSimpleChannel");
-    ch->setError(p);
+    p->setName("error");
+    ch->addPar(p);
 }
 
 void cGate::setDataRate(cPar *p)
@@ -312,12 +317,8 @@ void cGate::setDataRate(cPar *p)
     cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
     if (!ch)
         throw new cException(this, "setDataRate(): channel is not a cSimpleChannel");
-    ch->setDatarate(p);
-}
-
-cLinkType *cGate::link() const
-{
-    return channelp ? channelp->link() : NULL;
+    p->setName("datarate");
+    ch->addPar(p);
 }
 
 cPar *cGate::delay() const

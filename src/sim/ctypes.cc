@@ -9,7 +9,7 @@
 //   Member functions of
 //    cModuleInterface: module interface descriptor
 //    cModuleType     : module descriptor
-//    cLinkType       : channel type (propagation delay, error rate, data rate)
+//    cChannelType    : channel type (propagation delay, error rate, data rate)
 //    cNetworkType    : network initializer object
 //    cClassRegister  : class registration (supports createOne() factory)
 //
@@ -29,6 +29,7 @@
 #include <stdarg.h>          // va_list
 #include "cpar.h"
 #include "cmodule.h"
+#include "cchannel.h"
 #include "macros.h"
 #include "ctypes.h"
 #include "cenvir.h"
@@ -454,48 +455,60 @@ cModuleInterface *cModuleType::moduleInterface()
     return iface;
 }
 
+
+//=========================================================================
+//=== cChannelType - member functions
+
+cChannelType::cChannelType(const char *name) : cObject(name)
+{
+}
+
 //=========================================================================
 //=== cLinkType - member functions
 
 cLinkType::cLinkType(const char *name, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)()) :
-  cObject(name)
+  cChannelType(name)
 {
     delayfunc = d;
     errorfunc = e;
     dataratefunc = dr;
 }
 
-cLinkType::cLinkType(const cLinkType& li) : cObject()
+cLinkType::cLinkType(const cLinkType& li) : cChannelType()
 {
     setName(li.name());
-    operator=( li );
+    operator=(li);
 }
 
-cLinkType& cLinkType::operator=(const cLinkType& li)
+cChannel *cLinkType::create(const char *name)
 {
-    if (this==&li) return *this;
+    cSimpleChannel *channel = new cSimpleChannel(name);
 
-    cObject::operator=( li );
-    delayfunc = li.delayfunc;
-    errorfunc = li.errorfunc;
-    dataratefunc = li.dataratefunc;
-    return *this;
+    cPar *p;
+    p = delayfunc ? delayfunc() : NULL;
+    if (p)
+    {
+        p->setName("delay");
+        channel->addPar(p);
+    }
+
+    p = errorfunc ? errorfunc() : NULL;
+    if (p)
+    {
+        p->setName("error");
+        channel->addPar(p);
+    }
+
+    p = dataratefunc ? dataratefunc() : NULL;
+    if (p)
+    {
+        p->setName("datarate");
+        channel->addPar(p);
+    }
+
+    return channel;
 }
 
-cPar *cLinkType::createDelay() const
-{
-    return delayfunc==NULL ? NULL : delayfunc();
-}
-
-cPar *cLinkType::createError() const
-{
-    return errorfunc==NULL ? NULL : errorfunc();
-}
-
-cPar *cLinkType::createDataRate() const
-{
-    return dataratefunc==NULL ? NULL : dataratefunc();
-}
 
 //=========================================================================
 //=== cFunctionType - all functions inline

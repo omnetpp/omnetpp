@@ -1,3 +1,8 @@
+2004-02-20  Andras Varga
+
+	* ctype.cc, cchannel.cc, cgate.cc: introduced cChannelType which 
+	replaces cLinkType. See include/ChangeLog for more info.
+
 2004-02-12  Andras Varga
 
 	* cmodule.cc, cgate.cc, cchannel.cc: gave a bool return value to 

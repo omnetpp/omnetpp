@@ -47,18 +47,18 @@ Register_Class(cSimpleChannel);
 cChannel::cChannel(const cChannel& ch) : cObject()
 {
     parlistp = NULL;
-    linkp = NULL;
+    channeltypep = NULL;
     fromgatep = NULL;
 
     setName( ch.name() );
     operator=( ch );
 }
 
-cChannel::cChannel(const char *name, cLinkType *link) : cObject( name )
+cChannel::cChannel(const char *name, cChannelType *chantype) : cObject(name)
 {
     parlistp = NULL;
     fromgatep = NULL;
-    linkp = link;
+    channeltypep = chantype;
 }
 
 cChannel::~cChannel()
@@ -178,6 +178,12 @@ bool cChannel::deliver(cMessage *msg, simtime_t t)
 
 //=========================================================
 
+cSimpleChannel::cSimpleChannel(const char *name) : cChannel(name)
+{
+    disabledp = errorp = delayp = dataratep = NULL;
+    transm_finishes = 0.0;
+}
+
 cSimpleChannel::cSimpleChannel(const cSimpleChannel& ch) : cChannel()
 {
     disabledp = errorp = delayp = dataratep = NULL;
@@ -185,29 +191,6 @@ cSimpleChannel::cSimpleChannel(const cSimpleChannel& ch) : cChannel()
 
     setName( ch.name() );
     operator=( ch );
-}
-
-cSimpleChannel::cSimpleChannel(const char *name, cLinkType *linkp) : cChannel(name, linkp)
-{
-    disabledp = errorp = delayp = dataratep = NULL;
-    transm_finishes = 0.0;
-
-    // set up params using link
-    if (linkp)
-    {
-        cPar *p;
-        //p = linkp->createDisabled();
-        //if (p) setDisabled(p);
-
-        p = linkp->createDelay();
-        if (p) setDelay(p);
-
-        p = linkp->createError();
-        if (p) setError(p);
-
-        p = linkp->createDataRate();
-        if (p) setDatarate(p);
-    }
 }
 
 cSimpleChannel::~cSimpleChannel()
