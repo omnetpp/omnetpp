@@ -411,7 +411,6 @@ files\index{output!vector file} can easily reach a magnitude of
 several ten or hundred megabytes, but very often, only some of the
 recorded statistics are interesting to the analyst.
 
-
 In {\opp}, you can control how \cclass{cOutVector} objects record data
 to disk. You can turn output vectors on/off or you can assign a result
 collection interval. Output vector configuration is given in the
@@ -419,8 +418,7 @@ collection interval. Output vector configuration is given in the
   1]}, \texttt{[Run 2]} etc sections individually for each run. By
 default, all output vectors are turned on.
 
-
-Entries configuring output vectors can be like that:
+Output vectors can be configured with the following syntax:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \textit{module-pathname}.\textit{objectname}.enabled = yes/no
@@ -433,12 +431,11 @@ The object name is the string passed to \cclass{cOutVector} in its constructor
 or with the \fname{setName()} member function.
 
 \begin{verbatim}
-cOutVector eed("End-to-End Delay",1);
+cOutVector eed("End-to-End Delay");
 \end{verbatim}
 
 Start and stop values can be any time specification accepted
 in NED and config files (e.g. \textit{10h 30m 45.2s}).
-
 
 As with parameter names, wildcards are allowed in the object
 names and module path names.
@@ -451,47 +448,16 @@ An example:
 #
 
 [OutVectors]
-*.interval = 1s..60s
-*.End-to-End Delay.enabled = yes
-*.Router2.*.enabled = yes
-*.enabled = no
+**.interval = 1s..60s
+**.End-to-End Delay.enabled = yes
+**.Router2.**.enabled = yes
+**.enabled = no
 \end{verbatim}
 
 
 The above configuration limits collection of all output vectors
 to the 1s..60s interval, and disables collection of output vectors
 except all end-to-end delays and the ones in any module called Router2.
-
-%%
-%% NOTE: Module parameter logging not supported since 2.1.
-%%
-%
-% \subsection{Module parameter logging}
-%
-% It is possible to log all the changes to module parameters into a text
-% file\index{module!parameter logging}. This can be useful when the
-% simulation contains run-time tuning of one or more module parameters
-% and one wants to have the trajectory documented.
-%
-%
-% Module parameter logging must be explicitly enabled from the
-% header file if one wants to use it:
-%
-% begin{verbatim}
-% [General]
-% log-parchanges = yes
-% parchange-file = token.pch
-% end{verbatim}
-%
-%
-% The format of the parameter change file is similar to the that
-% of the output vector file.
-%
-% If a parameter is taken by reference\index{module!parameters!by reference} by
-% several modules, any change to the parameter will appear in the file
-% under the name of the top-level parameter, no matter which module
-% actually changed it and under what name.
-%
 
 
 \section{Configuring the random number generators}
@@ -501,8 +467,9 @@ The random number architecture of {\opp} was already outlined
 in section \ref{cha:sim-lib:generating-random-numbers}. Here
 we'll cover the configuration of RNGs in omnetpp.ini.
 
-\subsection{RNG choice and seed selection}
+\subsection{RNG choice and number of RNGs}
 
+%FIXME TBD -- finish this!!!
 New omnetpp.ini entries:
 
 \begin{verbatim}
@@ -551,14 +518,7 @@ This mapping allows variance reduction techniques to be applied to
 OMNeT++ models, without any model change or recompilation.
 
 
-In {\opp}, you have three choices:
-\begin{enumerate}
-  \item{Automatic seed selection.}
-  \item{Specify seeds in the ini file (with the help of the seedtool
-    program, see later)}
-\end{enumerate}
-
-\subsection{Manual seed configuration}
+\subsection{Automatic seed selection}
 
 If you decide for automatic seed selection\index{seed!automatic selection},
 do not specify any seed value in the ini file. For the
@@ -570,33 +530,34 @@ generation of new seed values is costly, {\opp} has a table of
 pre-calculated seeds (256 values); if they are all used up, {\opp}
 starts from the beginning of the table again.
 
+\subsection{Manual seed configuration}
 
-Automatic seed selection may not be appropriate for you for several
-reasons. First, you may need more than 256 seeds values; or, if you
-use variance reduction techniques, you may want to use the same seeds
-for several simulation runs. In this case, there is a standalone
-program to generate appropriate seed values (\fprog{seedtool} will be
-discussed in Section \ref{sec:ch-run-sim:seedtool}), and you
-can specify the seeds explicitly in the ini file.
+In some cases you may want manually configure seed values.
+Reasons for doing that may be that you want to use variance reduction
+techniques, or you may want to use the same seeds for several simulation
+runs.
 
+For the cLCG32 RNG, {\opp} provides a standalone program to generate
+seed values (\fprog{seedtool} is discussed in section
+\ref{sec:ch-run-sim:seedtool}), and you can specify those seeds explicitly
+in the ini file.
 
 The following ini file explicitly initializes two of the random
 number generators, and uses different seed values for each run:
 
 \begin{verbatim}
 [Run 1]
-gen0-seed = 1768507984
-gen1-seed = 33648008
+seed-0-lcg32 = 1768507984
+seed-1-lcg32 = 33648008
 
 [Run 2]
-gen0-seed = 1082809519
-gen1-seed = 703931312
+seed-0-lcg32 = 1082809519
+seed-1-lcg32 = 703931312
 ...
 \end{verbatim}
 
-
-If you want the same seed values for all runs, you will write
-something like this:
+To use a seed value for all runs, you have to put the necessary
+seed entries into the \ttt{[General]} section.
 
 \begin{verbatim}
 [General]
@@ -604,35 +565,34 @@ gen0-seed = 1768507984
 gen1-seed = 33648008
 \end{verbatim}
 
-
 All other random number generators (2,3,...) will have their seeds
-automatically assigned.  As a third way, you can also set the seed
-values from the code of a simple module using
-\fname{genk\_randseed()}, but I see no reason why you would want to do
-so.
+automatically assigned.
 
 
 \subsection{Choosing good seed values: the seedtool utility}
 \label{sec:ch-run-sim:seedtool}
 
-For selecting good seeds, the \fprog{seedtool} program can be used (it
-is in the utils directory). When started without command-line
+The \fprog{seedtool} program can be used for selecting
+seeds for the cLCG32 RNG. When started without command-line
 arguments, the program prints out the following help:
 
 \begin{verbatim}
-seedtool - part of OMNeT++, (c) 1992-2001 Andras Varga, TU Budapest
+seedtool - part of OMNeT++/OMNEST, (C) 1992-2004 Andras Varga
 See the license for distribution terms and warranty disclaimer.
 
-A tool to help select good random number generator seed values.
+Generates seeds for the LCG32 random number generator. This RNG has a
+period length of 2^31-2, which makes about 2,147 million random numbers.
+Note that Mersenne Twister is also available in OMNeT++, which has a
+practically infinite period length (2^19937).
+
 Usage:
-  seedtool i seed         - index of `seed' in cycle
-  seedtool s index        - seed at index `index' in cycle
-  seedtool d seed1 seed2  - distance of `seed1' and `seed2' in cycle
-  seedtool g seed0 dist   - generate seed `dist' away from `seed0'
-  seedtool g seed0 dist n - generate `n' seeds `dist' apart, starting
-                            at `seed0'
+  seedtool i seed         - index of 'seed' in cycle
+  seedtool s index        - seed at index 'index' in cycle
+  seedtool d seed1 seed2  - distance of 'seed1' and 'seed2' in cycle
+  seedtool g seed0 dist   - generate seed 'dist' away from 'seed0'
+  seedtool g seed0 dist n - generate 'n' seeds 'dist' apart, starting at 'seed0'
   seedtool t              - generate hashtable
-  seedtool p              - print out hashtable
+  seedtool p              - print hashtable
 \end{verbatim}
 
 
@@ -1470,7 +1430,7 @@ you can use the following ``trick'':
 <modulename>.<vectorname1>.akaroa=true
 <modulename>.<vectorname2>.akaroa=true
 ...
-*.*.akaroa=false
+**.*.akaroa=false
 \end{verbatim}
 
 
