@@ -1,3 +1,14 @@
+2004-10-20  Andras Varga
+
+	* main.tcl, modinsp2.tcl: preparations for new icons, categorized into 
+	several subdirs under bitmaps/. Current icons will be moved to
+	into the bitmaps/old subdirectory.
+	
+	Tkenv now loads icons from subdirectories of dirs in OMNETPP_BITMAP-
+	_PATH as well, and they can be referenced from display strings like 
+	"subdir/icon", "subdir/subsubdir/icon" , etc. If an icon "icon" in 
+	a display string is not found, it is tried as "old/icon" as well.
+
 2004-10-18  Andras Varga
 
 	* usability improvement: allowed user interactions during message

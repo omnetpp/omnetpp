@@ -63,8 +63,14 @@ proc dispstr_getimage {tags_i} {
     global icons bitmaps imagecache
 
     set imgname [lindex $tags_i 0]
-    if {$imgname=="" || [catch {set img $bitmaps($imgname)}] || [catch {image type $img}]} {
+    if {$imgname==""} {
         set img $icons(unknown)
+    } elseif {[catch {set img $bitmaps($imgname)}] && [catch {set img $bitmaps(old/$imgname)}]} {
+        set img $icons(unknown)
+    }
+
+    if {[catch {image type $img}]} {
+        error "internal error: image referred to in bitmaps() doesn't exist"
     }
 
     if {[llength $tags_i]>1} {

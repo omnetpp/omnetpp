@@ -422,41 +422,48 @@ proc load_bitmaps {path} {
        set sep {;}
    }
 
-   set files {}
    foreach dir [split $path $sep] {
-       if {$dir==""} continue
-       set files [concat $files \
-                     [glob -nocomplain -- [file join $dir {*.gif}]] \
-                     [glob -nocomplain -- [file join $dir {*.xpm}]] \
-                     [glob -nocomplain -- [file join $dir {*.xbm}]]]
-   }
-   if {[llength $files] == 0} {
-       puts "*** no bitmaps (gif,xpm,xbm) in $path"
-       return
+       if {$dir!=""} {
+           do_load_bitmaps $dir
+           puts -nonewline "; "
+       }
    }
 
+   if {$bitmap_ctr==0} {
+       puts "*** no bitmaps (gif) in $path"
+   }
+
+   puts ""
+   puts ""
+}
+
+proc do_load_bitmaps {dir {prefix ""}} {
+   global bitmaps bitmap_ctr
+
+   #puts "DBG: entering $dir"
+   set files [concat [glob -nocomplain -- [file join $dir {*.gif}]] \
+                     [glob -nocomplain -- [file join $dir {*.png}]]]
+
+   # load bitmaps from this directory
    foreach f $files {
-
-      set type ""
-      case [string tolower [file extension $f]] {
-        {.xbm} {set type bitmap}
-        {.xbm} {set type photo}
-        {.gif} {set type photo}
-      }
-      if {$type==""} {error "load_bitmaps: internal error"}
-
       set name [string tolower [file tail [file rootname $f]]]
+      set imgname "$prefix$name"
       set img "i[incr bitmap_ctr]$name"
       if [catch {
-         image create $type $img -file $f
-         puts -nonewline "$name "
-         set bitmaps($name) $img
+         image create photo $img -file $f
+         puts -nonewline "$imgname "
+         set bitmaps($imgname) $img
       } err] {
-         puts -nonewline "(*** $name is bad: $err ***) "
+         puts -nonewline "(*** $f is bad: $err ***) "
       }
    }
-   puts ""
-   puts ""
+
+   # recurse into subdirs
+   foreach f [glob -nocomplain -- [file join $dir {*}]] {
+      if [file isdirectory $f] {
+         do_load_bitmaps "$f" "$prefix[file tail $f]/"
+      }
+   }
 }
 
 
