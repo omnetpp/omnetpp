@@ -1,7 +1,7 @@
 #==========================================================================
 #  ICONS.TCL -
-#            part of the GNED, the Tcl/Tk graphical topology editor of
-#                            OMNeT++
+#            part of the OMNeT++ Discrete Event Simulation System
+#
 #   By Andras Varga
 #==========================================================================
 
@@ -143,7 +143,7 @@ set icons(net_vs) [image create photo -data {
 }]
 
 set icons(network) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISE/8bGxgCAgP//////////////////////////////////////
+    R0lGODlhFAATALMAAAAAAISE/8bGxsAAAP//////////////////////////////////////
     /////////yH5BAEAAAIALAAAAAAUABMAAARCUMhJqxUg342z5pWXDcPkXSJAkin6rS1IxTL8
     gWu51rtEbp4fRRgSXYgmUamCFAxSuSjzqYn+Tj5ZB6vd3rS0LjcCADs=
 }]

@@ -70,7 +70,7 @@ bool NEDFile::setData(char *data)
 {
     if (wholeFile) return false;  // reinit not supported
 
-    wholeFile = new char [strlen(data)+1];
+    wholeFile = new char [strlen(data)+2]; // +1 because last line may need an extra '\n'
     if (!wholeFile) return false;
     strcpy(wholeFile,data);
     return indexLines();
@@ -83,13 +83,13 @@ bool NEDFile::indexLines()
     for (s=d=wholeFile; *d; )
     {
         if (*s=='\r' && *(s+1)=='\n')  s++;
-        else if (*s=='\r') {s++; *d++=='\n';}
+        else if (*s=='\r') {s++; *d++ = '\n';}
         else *d++ = *s++;
     }
 
     // terminate last line if necessary
-    if (*d!='\n') *d++== '\n';
-    *d=='\0';
+    if (*d!='\n') *d++ = '\n';
+    *d = '\0';
 
     // count lines
     numLines = 1;

@@ -136,6 +136,6 @@ Aug 2, 1999
     separator char is ";" on Windows, and ":" or ";" on Unix.
 Aug 11, 1999
   - changed widget.tcl -- must be updated elsewhere!
+Aug 15, 1999
+  - fixed bugs in nedfile.cc (lines 86,91,92 contained "==" instead of "=")
 
-    BUG: nedfile.cc lines 86,91,92: contain "==" instead of "=". Correcting it
-         causes segfault --> investigate!

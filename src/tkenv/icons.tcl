@@ -112,8 +112,8 @@ set icons(fes) [image create photo -data {
 }]
 
 set icons(network) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISE/8bGxoAAAP//////////////////////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARCUMhJqxUg342z5pWXDcPkXSJAkin6rS1IxTL8
+    R0lGODlhFAATALMAAAAAAISE/8bGxsAAAP//////////////////////////////////////
+    /////////yH5BAEAAAIALAAAAAAUABMAAARCUMhJqxUg342z5pWXDcPkXSJAkin6rS1IxTL8
     gWu51rtEbp4fRRgSXYgmUamCFAxSuSjzqYn+Tj5ZB6vd3rS0LjcCADs=
 }]
 
