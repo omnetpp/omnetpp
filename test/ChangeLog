@@ -1,0 +1,4 @@
+2002-02-14  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* runtest: Create directory work if it doesn't exist.
+
