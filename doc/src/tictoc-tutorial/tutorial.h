@@ -12,6 +12,13 @@ OMNeT++ installation, so you can try out immediately how
 the examples work. However, you'll find the tutorial much more useful
 if you actually carry out at least the first steps described here.
 
+We assume here that you have a working OMNeT++ installation,
+you have a good C++ knowledge, and you are in general familiar with
+C/C++ development (editing source files, compiling, debugging etc.)
+on your operating system. (The latter two are out of our scope here --
+there are excellent books, tutorials on the web, etc. if you need
+to update your knowledge on that.)
+
 This document and the TicToc model are an expanded version of
 the original TicToc tutorial from Ahmet Sekercioglu (Monash University).
 
@@ -30,19 +37,20 @@ Here are the steps you take to implement your first simulation from scratch:
 
 2. Describe your example network by creating a topology file. A topology file is a
 text file that identifies the network's nodes and the links between them.
-Let's call this file tictoc.ned:
+You can create it with your favourite text editor.
+Let's call it tictoc.ned:
 
 tictoc1.ned: @include tictoc1.ned
 
 The file is best read from the bottom up. Here's what it says:
 
-   - we define a network called tictoc, which is an instance the
-     module type Tictoc (<tt>network..endnetwork</tt>);
-   - Tictoc is a compound module, which is assembled from two submodules,
+   - we define a network called tictoc1, which is an instance the
+     module type Tictoc1 (<tt>network..endnetwork</tt>);
+   - Tictoc1 is a compound module, which is assembled from two submodules,
      tic and toc. tic and toc are instances of the same module type
      called Txc1. We connect tic's output gate (named out) to toc's input
      gate (named in), and vice versa (<tt>module..endmodule</tt>);
-   - Txc1 is a simple module (which means it is atomic on NED level, and
+   - Txc1 is a simple module type (which means it is atomic on NED level, and
      will be implemented in C++). Txc1 has one input gate named in,
      and one output gate named out (<tt>simple..endsimple</tt>).
 
