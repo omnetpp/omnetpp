@@ -121,6 +121,7 @@ bool SAXParser::parse(const char *filename)
                        XML_PARSE_DTDATTR |  // complete default attributes from DTD
                        XML_PARSE_NOENT |    // substitute entities
                        XML_PARSE_NONET |    // forbid network access
+                       XML_PARSE_NOBLANKS | // discard ignorable white space
                        XML_PARSE_NOCDATA |  // merge CDATA as text nodes
                        XML_PARSE_NOERROR |  // suppress error reports
                        XML_PARSE_NOWARNING; // suppress warning reports
