@@ -1,8 +1,33 @@
 What's New
 ==========
 
-In version of Feb, 1999
------------------------
+In the OMNeT++ 1.2 version (Aug 1999)
+-------------------------------------
+
+License conditions have been alleviated: from this release on, one can elect
+to use GPL for a particular copy of OMNeT++.
+
+The configure script has been replaced by GNU Autoconf. The makefiles have been 
+brushed up (more standard symbol names, autodepend, version number in lib names,
+etc). Cygwin is now fully supported. DOS+BC3.1 support has been removed.
+File names are no longer restricted to 8+3 all lowercase.
+
+GNED...
+
+UI beautifying in Tkenv: icons, tooltips
+
+OMNETPP_BITMAP_PATH may now contain several directories; it includes . and
+./bitmaps by default so individual simulation models can have their own icons.
+
+Several bugfixes and smaller enhancements.
+
+internally, CVS
+
+contributed models...
+
+
+In version of Feb, 1999 (OMNeT++ 1.1)
+-------------------------------------
 
 handleMessage() support added as alternative to activity(). Finite
 State Machines (FSMs) are now also supported. They are demonstrated
@@ -25,8 +50,8 @@ from makefile.in files; wait(), receive() and surroundings were
 optimized; bug in GNED bug fixed etc.
 
 
-In version of Aug, 1998
------------------------
+In version of Aug, 1998 (OMNeT++ 1.0)
+-------------------------------------
 
 Data collection by output vectors can be configured in the ini file
 (ie. OPNET 'probes'). Display strings can now be specified in the ini file

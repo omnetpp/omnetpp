@@ -14,8 +14,8 @@ and Foobar.cc. This reduces coupling of module sources and makes your code more
 reusable. You may choose file names not longer than 8 chars and lower case, in
 case someone wants to look at your stuff on DOS.
 
-2. Please write a legible C++ code! Choose your favourite indentation style and
-keep to it consistently. (I would prefer the style in which the OMNeT++ sources
+2. Write a legible C++ code. Choose your favourite indentation style and keep
+to it consistently. (I would prefer the style in which the OMNeT++ sources
 are written.) Use // comments and never /* */ ones. Never write more than one
 statements on the same line. Avoid putting comments at the end of the line -
 place them above the code on a separate line instead! Always use blank lines to
@@ -109,4 +109,4 @@ timer is restarted. Look at the Fifo example about how to do it.
 
 
 ----
--VA
+Andras Varga

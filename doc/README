@@ -1,6 +1,17 @@
+OMNeT++ Discrete Event Simulation System
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Copyright (c) 1998, 1999 Andras Varga.
+
+OMNeT++ is subject to the license described in the "License" file.
+You may as a special exception elect to use the GNU General Public License
+(see the "GPLElect" file). Please contact me if you wish to negotiate
+an alternative license.
+
+
 What is OMNeT++?
 ~~~~~~~~~~~~~~~~
-(last updated: June 7, 1999)
+(last updated: Aug 7, 1999)
 
 OMNeT++ is an object-oriented modular discrete event simulator.
 An OMNeT++ model consists of hierarchically nested modules which
@@ -96,11 +107,12 @@ If you use OMNeT++ in any work, please mention OMNeT++ in the resulting
 document(s) (report, paper, article, book etc.), and let the authors know
 about your work.
 
-Authors
-~~~~~~~
 
-OMNeT++ has originally been developed at the Technical University of Budapest,
-Department of Telecommunications (BME-HIT). The primary author and
+Authors and contributors
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+OMNeT++ has originally been developed at the Technical University of Budapest
+(BME), Department of Telecommunications (BME-HIT). The primary author and
 maintainer is currently not affiliated with the University.
 
 Here's a list of the people who have or had anything to do with OMNeT++:
@@ -109,7 +121,10 @@ Primary author and maintainer:
         Andras Varga            vandras@sch.bme.hu,vargaa@hit.bme.hu
 Advisor:
         Gyorgy Pongor   BME-HIT : pongor@hit.bme.hu
-Old NeD compiler, until 1993:
+GNED contributions, 1998-99:
+        Istvan Pataki           BME
+        Gabor Vincze            BME
+Old NED compiler, until 1993:
         Akos Kun                BME
 Initial revision of JAR compiler, sample simulations; summer 1995:
         Jan Heijmans            TU Delft
@@ -124,12 +139,15 @@ JAR support for distributed execution; also current user:
 Initial revision of PVM support (as final project), spring 1996:
         Zoltan Vass             BME-HIT
 
+The author acknowledges the help of several people:
+Richard Lyon, Joel Sherill
 
-Feedback requested!
-~~~~~~~~~~~~~~~~~~~
 
-ANY note, opinion, suggestion, bug reports/bug fixes and contributions
-are the most WELCOME! We'd like to hear your reflections.
+Feedback requested
+~~~~~~~~~~~~~~~~~~
+
+Remarks, opinions, suggestions, bug reports/fixes and contributions are
+the most WELCOME!
 
 The authors can be contacted via e-mail: vandras@sch.bme.hu, vargaa@hit.bme.hu
 

@@ -74,7 +74,6 @@ documentation
 update exman.doc
 split html versions of manuals into chapters (that is, modify utils/prephtml)
 general polishing
-please send in what you miss from the docs!
 
 
 OMNeT++ community
