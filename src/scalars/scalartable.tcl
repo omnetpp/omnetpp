@@ -132,7 +132,7 @@ proc applyFilter {} {
     set maxcount 100000
     if {$num>$maxcount} {
         tk_messageBox -title "Selection too broad" -icon warning -type ok \
-                      -message "$num matching values, displaying first $maxcount only."
+                      -message "Selection too broad: $num matching values, displaying first $maxcount only. Choose a (stricter) filter get rid of this warning."
         set idlist [lreplace $idlist $maxcount end]
     }
 
