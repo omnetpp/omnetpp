@@ -13,10 +13,11 @@
 //
 simple Host
     parameters:
-        txRate: numeric const,
-        radioDelay: numeric const,
-        pkLenBits: numeric,
-        iaTime: numeric;
+        txRate: numeric const,  // transmission rate
+        radioDelay: numeric const,  // propagation delay of radio link
+        pkLenBits: numeric,  // packet length in bits
+        iaTime: numeric,  // packet interarrival time
+        slotTime: numeric const;  // zero means no slots (pure Aloha)
 endsimple
 
 //
@@ -24,15 +25,20 @@ endsimple
 //
 simple Server
     parameters:
-        txRate: numeric;
+        txRate: numeric const; // transmission rate (needed to calculate lengths of packet receptions)
     gates:
         in: in;
 endsimple
 
+//
+// ALOHAnet consists of hosts which talk to the central "server" via
+// Aloha or Slotted Aloha protocol
+//
 module ALOHAnet
     parameters:
-        numHosts: numeric,
-        txRate: numeric;
+        numHosts: numeric,  // number of hosts
+        txRate: numeric,  // transmission rate
+        slotTime: numeric const;  // zero means no slots (pure Aloha)
     submodules:
         server: Server;
             parameters:
@@ -40,7 +46,8 @@ module ALOHAnet
             display: "i=server1";
         host: Host[numHosts];
             parameters:
-                txRate = txRate;
+                txRate = txRate,
+                slotTime = slotTime;
             display: "i=ball_s";
 endmodule
 

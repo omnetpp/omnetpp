@@ -13,14 +13,19 @@
 class Host : public cSimpleModule
 {
   protected:
-    cModule *server;
-    cMessage *endTxEvent;
-    enum {IDLE=0, TRANSMIT=2} state;
-    int pkCounter;
+    // parameters
     double radioDelay;
     double txRate;
     cPar *iaTime;
     cPar *pkLenBits;
+    double slotTime;
+    bool isSlotted;
+
+    // state variables, event pointers etc
+    cModule *server;
+    cMessage *endTxEvent;
+    enum {IDLE=0, TRANSMIT=1} state;
+    int pkCounter;
 
   public:
     Module_Class_Members(Host,cSimpleModule,0);
@@ -42,6 +47,9 @@ void Host::initialize()
     radioDelay = par("radioDelay");
     iaTime = &par("iaTime");
     pkLenBits = &par("pkLenBits");
+
+    slotTime = part("slotTime");
+    isSlotted = slotTime>0;
 
     if (ev.isGUI())
     {
@@ -84,7 +92,17 @@ void Host::handleMessage(cMessage *msg)
         state = IDLE;
 
         // schedule next sending
-        scheduleAt(simTime()+iaTime->doubleValue(), endTxEvent);
+        if (!isSlotted)
+        {
+            scheduleAt(simTime()+iaTime->doubleValue(), endTxEvent);
+        }
+        else
+        {
+            // align time of next transmission to a slot boundary
+            simtime_t t = simTime()+iaTime->doubleValue();
+            t = slotTime * ceil(t/slotTime);
+            scheduleAt(t, endTxEvent);
+        }
 
         // update network graphics
         if (ev.isGUI())
