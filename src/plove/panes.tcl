@@ -227,13 +227,15 @@ proc delVectors {{lb {}}} {
     if {$sel == ""} {
         # delete filter and array elements
         set id [lindex [$g(listbox$lb) get active] end]
-        if {$vec($id,filter)!=""} {
-            opp_compoundfiltertype $vec($id,filter) delete
+        if {$id!=""} { 
+            if {$vec($id,filter)!=""} {
+                opp_compoundfiltertype $vec($id,filter) delete
+            }
+            foreach i [array names vec "$id,*"] {
+                unset vec($i)
+            }
+            $g(listbox$lb) delete active
         }
-        foreach i [array names vec "$id,*"] {
-            unset vec($i)
-        }
-        $g(listbox$lb) delete active
     } else {
         set sel [lsort -integer -decreasing $sel]
         foreach v $sel {

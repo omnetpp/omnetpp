@@ -3,8 +3,8 @@ Sockets (Hardware-in-the Loop Simulation Demo)
 
 This is an example how one can implement hardware-in-the-loop simulation
 with OMNeT++/OMNEST. Hardware-in-the-loop means that some external device
-is taking part in the simulation. (In other scenarios, the simulation may
-implement a device in a real system).
+is taking part in the simulation. (In other scenarios, the simulation 
+program may emulate a device in a real system).
 
 This example contains two simulation models:
  * HTTPNet models a network where several clients send HTTP requests to a
@@ -40,45 +40,16 @@ This example contains two simulation models:
      into the simulated network.
 
 Both simulations are executed in real-time, that is, simulation time is
-synchronized to real (wall clock) time. It is recommended that you set
-animation speed to near maximum (using the slider at the top of the graphics
-window) for the simulation to be able to keep up with real time (you can check
-on the performance gauge bar: the simsec/sec gauge should stay around 1.0).
+synchronized to real (wall clock) time. 
 
-How it works
-------------
-Hardware-in-the-loop simulation has two ingredients:
+It is recommended that you set animation speed to near maximum (using the 
+slider at the top of the graphics window) for the simulation to be able 
+to keep up with real time. You can check on the performance gauge bar: 
+the simsec/sec gauge should stay around 1.0.
 
- - the simulation has to be synchronized to real time;
-
- - there has to be a way the simulation can communicate with the real world:
-   it has to be able to receive external events, and possibly also to send
-   events out of the simulation. The implementation of this external
-   communication can be very different from one simulation scenario to another:
-   it can be as simple as TCP sockets (as here) or pipes, it can be raw
-   communication on an Ethernet NIC or an USB port, or communication with a
-   interface card via interrupts and DMA transfer. If you plan to do
-   hardware-in-the-loop simulation, you'll most like have to implement your
-   own external communication interface.
-
-The word "real-time" means that the simulation is executed in a way such that
-simulation time is synchronized to real time: simulating one second
-in the model will also take one "real" second. This is in contrast to
-"normal" simulation, when we want the simulation to run as fast as possible.
-Of course, the CPU has to be fast enough so that the simulation can keep up
-with real time.
-
-The external interface used in this example simulation is a single TCP socket.
-
-Hardware-in-the-loop simulation is enabled by the following omnetpp.ini entry:
-
-[General]
-scheduler-class = "cSocketRTScheduler"
-
-Interesting functionality is in the cSocketRTScheduler class. Its source code
-is in socketrtscheduler.h/cc. It combines synchronizing to real-time with
-socket communication.
-
-ExtHTTPClient....
+More detailed documentation is available in the htdocs/ subdirectory of the
+simulation. You can conveniently view it at the http://localhost:4242 URL
+while the HTTPNet simulation is running, or you can simply open index.html
+in that directory in the browser as a file.
 
 
