@@ -336,7 +336,7 @@ void opp_error(int errc...)
 {
     va_list va;
     va_start(va, errc);
-    char message[256];
+    char message[512];
     vsprintf(message,emsg[errc],va);
     va_end(va);
 
@@ -347,18 +347,18 @@ void opp_error(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
-    char message[256];
+    char message[512];
     vsprintf(message,msgformat,va);
     va_end(va);
 
-    throw new cException(eCUSTOM,message);
+    throw new cException(message);
 }
 
 void opp_warning(int errc...)
 {
     va_list va;
     va_start(va, errc);
-    char message[256];
+    char message[512];
     vsprintf(message,emsg[errc],va);
     va_end(va);
 
@@ -377,7 +377,7 @@ void opp_warning(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
-    char message[256];
+    char message[512];
     vsprintf(message,msgformat,va);
     va_end(va);
 
@@ -396,7 +396,7 @@ void opp_terminate(int errc...)
 {
     va_list va;
     va_start(va, errc);
-    char message[256];
+    char message[512];
     vsprintf(message,emsg[errc],va);
     va_end(va);
 
@@ -407,11 +407,11 @@ void opp_terminate(const char *msgformat...)
 {
     va_list va;
     va_start(va, msgformat);
-    char message[256];
+    char message[512];
     vsprintf(message,msgformat,va);
     va_end(va);
 
-    throw new cTerminationException(eCUSTOM,message);
+    throw new cTerminationException(message);
 }
 
 //==========================================================================
