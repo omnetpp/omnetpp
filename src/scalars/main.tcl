@@ -69,15 +69,6 @@ proc createMenubar {w} {
     } {
       eval $w.helpmenu$m add $i
     }
-
-    # Pack menu buttons on menubar
-    if {$tcl_version < 8.0} {
-        foreach i {
-          filemenu editmenu optionsmenu helpmenu
-        } {
-          pack $w.$i -anchor n -expand 0 -fill none -side left
-        }
-    }
 }
 
 proc createMainArea {w} {
@@ -188,15 +179,9 @@ proc createMainWindow {{geom ""}} {
     #################################
     # menu
     #################################
-    if {$tcl_version < 8.0} {
-        frame .menubar -borderwidth 1 -height 30 -relief raised -width 30
-        createMenubar .menubar
-        pack .menubar -expand 0 -fill x -side top
-    } else {
-        menu .menubar
-        createMenubar .menubar
-        . config -menu .menubar
-    }
+    menu .menubar
+    createMenubar .menubar
+    . config -menu .menubar
 
     #################################
     # toolbar

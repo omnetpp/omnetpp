@@ -26,27 +26,19 @@ proc checkTclTkVersion {} {
    global tk_version tk_patchLevel
 
    catch {package require Tk}
-   if {$tk_version<8.0} {
+   if {[string compare $tk_patchLevel "8.4.0"]<0} {
       wm deiconify .
       wm title . "Bad news..."
       frame .f
       pack .f -expand 1 -fill both -padx 2 -pady 2
-      label .f.l1 -text "Your version of Tcl/Tk is too old!"
-      label .f.l2 -text "Tcl/Tk 8.0p1 or later required."
-      button .f.b -text "OK" -command {exit}
+      label .f.l1 -text "Your version of Tcl/Tk is too old, please upgrade!"
+      label .f.l2 -text "Tcl/Tk 8.4.0 or later required."
+      button .f.b -text "  OK  " -command {exit}
       pack .f.l1 .f.l2 -side top -padx 5
       pack .f.b -side top -pady 5
       focus .f.b
       wm protocol . WM_DELETE_WINDOW {exit}
       tkwait variable ok
-   } elseif {[string match "8.0.*" $tk_patchLevel]} {
-      if {[string compare $tk_patchLevel "8.0.1"]<0} {
-         tk_messageBox -title {Warning} -type ok -icon warning \
-              -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
-      }
-   } elseif {$tk_version==8.0 && [string compare $tk_patchLevel "8.0p1"]<0} {
-      tk_messageBox -title {Warning} -type ok -icon warning \
-           -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
    }
 }
 

@@ -1,7 +1,11 @@
+2004-09-08  Andras Varga
+
+        * widgets.tcl: updated Tcl/Tk version check
+
 2004-09-06  Andras Varga
 
-	* enhanced Copy to clipboard functionality: different variables can
-	be put on different columns
+        * enhanced Copy to clipboard functionality: different variables can
+        be put on different columns
 
 2004-07-22  ------ omnetpp-3.0a6 released ------
 
@@ -11,5 +15,5 @@
 
 2004-05-05  Andras Varga
 
-	* Started out.
+        * Started out.
 

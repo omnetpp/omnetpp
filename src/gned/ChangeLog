@@ -1,12 +1,16 @@
+2004-09-08  Andras Varga
+
+        * widgets.tcl: updated Tcl/Tk version check
+
 2004-08-16  Andras Varga
 
-	* dispstr.tcl: fix: generate only either "i=" or "b=" tag in display
-	strings (TBD gned doesn't support using "i=" and "b=" together)
+        * dispstr.tcl: fix: generate only either "i=" or "b=" tag in display
+        strings (TBD gned doesn't support using "i=" and "b=" together)
 
 2004-07-27  Andras Varga
 
-	* ebnf.lex: fixed "`yytext_ptr' undeclared" error with some flex 
-	versions
+        * ebnf.lex: fixed "`yytext_ptr' undeclared" error with some flex 
+        versions
 
 2004-07-22  ------ omnetpp-3.0a6 released ------
 
@@ -21,10 +25,10 @@ internally, images must be named with "img:" prefix (otherwise exit.gif,
 proc.gif etc will overwrite the exit, proc Tcl commands!)
 
 2004-03-23  Andras Varga
-	
-	* menuproc.tcl: bugfix: in the treeview, right click + Save always
-	saved the file of the currently open canvas, not the right-clicked one.
-	[reported by V.T.Nguyen]
+        
+        * menuproc.tcl: bugfix: in the treeview, right click + Save always
+        saved the file of the currently open canvas, not the right-clicked one.
+        [reported by V.T.Nguyen]
 
 2004-03-22  ------ omnetpp-3.0a3 released ------
 
@@ -32,108 +36,108 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 
 2004-02-22  Andras Varga
 
-	* ebnf.lex,ebnf.y,makened.tcl,datadict.tcl: support for new "gate++"
-	NED construct (temporary, until gned gets ported to nedxml)
+        * ebnf.lex,ebnf.y,makened.tcl,datadict.tcl: support for new "gate++"
+        NED construct (temporary, until gned gets ported to nedxml)
 
 2004-02-11  Andras Varga
 
-	* fixed bug that caused Tk error when a display string contains
-	a paremeter reference, e.g. "o=$color"
+        * fixed bug that caused Tk error when a display string contains
+        a paremeter reference, e.g. "o=$color"
 
-	* implemented File|Export EPS... function
+        * implemented File|Export EPS... function
 
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-02-03  Andras Varga
 
-	* nedfile.cc fixes
+        * nedfile.cc fixes
 
 2003-11-29  Andras Varga
 
-	* widgets.tcl: added BLT support
+        * widgets.tcl: added BLT support
 
-	* gned.cc, tklib.cc, tkcmd.cc reorganized
+        * gned.cc, tklib.cc, tkcmd.cc reorganized
 
 2003-11-24  Andras Varga
 
-	* added Back and Forward toolbar icons; added "New component" toolbar
-	icon; improved icon selection dialog; etc.
+        * added Back and Forward toolbar icons; added "New component" toolbar
+        icon; improved icon selection dialog; etc.
 
 2003-10-24  Andras Varga
 
-	* usability improvements (tooltips wording change, some icons 
-	redesigned, opens Properties dialog when creating new simple module, 
-	import, network, etc.)
+        * usability improvements (tooltips wording change, some icons 
+        redesigned, opens Properties dialog when creating new simple module, 
+        import, network, etc.)
 
 2003-09-08  Andras Varga
 
-	* bugfix: textedits were not saved until you switched back to graphics
-	mode
+        * bugfix: textedits were not saved until you switched back to graphics
+        mode
 
 2003-09-04  Andras Varga
 
-	* implemented "Consult module declaration" button
+        * implemented "Consult module declaration" button
 
 2003-09-02  Andras Varga
 
-	* canvas.tcl, main.tcl: GUI layout rearranged a bit for usability 
-	reasons
+        * canvas.tcl, main.tcl: GUI layout rearranged a bit for usability 
+        reasons
 
-	* plotedit.tcl: cursor changes over canvas items
+        * plotedit.tcl: cursor changes over canvas items
 
 2003-09-01  Andras Varga
 
-	* canvas.tcl, widgets.tcl: turned on Undo/Redo feature in editor
-	also added to Edit menu and toolbar. Requires fairly recent Tcl/Tk.
+        * canvas.tcl, widgets.tcl: turned on Undo/Redo feature in editor
+        also added to Edit menu and toolbar. Requires fairly recent Tcl/Tk.
 
 2003-08-12  Andras Varga
 
-	* combobox.tcl: on FocusOut event, it always restored the old content
-	of the entry, so it wasn't possible to type something that was not
-	in the list
+        * combobox.tcl: on FocusOut event, it always restored the old content
+        of the entry, so it wasn't possible to type something that was not
+        in the list
 
 2003-08-12  Andras Varga
-	
-	* enhancement: in Submodule and Network Properties dialogs, choose 
-	module list from combobox.
-	
-	* enhancement: in Connection Properties dialogs, module and gate 
-	can be selected from combo, and channel also. Input is also fully 
-	validated. 
+        
+        * enhancement: in Submodule and Network Properties dialogs, choose 
+        module list from combobox.
+        
+        * enhancement: in Connection Properties dialogs, module and gate 
+        can be selected from combo, and channel also. Input is also fully 
+        validated. 
 
 2003-08-11  Andras Varga
 
-	* bugfix: using the Module/Submodule/Connection/Network/Channel/... 
-	Properties dialogs didn't make the NED file "dirty" (=with unsaved
-	changes) and didn't update the canvas (changing the name in the 
-	dialog didn't reflect on the canvas)
+        * bugfix: using the Module/Submodule/Connection/Network/Channel/... 
+        Properties dialogs didn't make the NED file "dirty" (=with unsaved
+        changes) and didn't update the canvas (changing the name in the 
+        dialog didn't reflect on the canvas)
 
-	* enhancement: input in Properties dialogs are now (mostly) validated
+        * enhancement: input in Properties dialogs are now (mostly) validated
 
-	* "Machines" pages removed from Module/Submodule dialogs (was obsolete).
+        * "Machines" pages removed from Module/Submodule dialogs (was obsolete).
 
 2003-08-04  Andras Varga
 
-	* bugfix: if a simple module was typed in the NED text, it was lost 
-	when switching back to graphics
+        * bugfix: if a simple module was typed in the NED text, it was lost 
+        when switching back to graphics
 
-	* bugfix: when a loop connection was deleted in graphics mode, 
-	empty for loop was left behind which is syntactically invalid in NED
+        * bugfix: when a loop connection was deleted in graphics mode, 
+        empty for loop was left behind which is syntactically invalid in NED
 
-	* bugfix: disallow reserved words as name for submodules, modules, etc.
-	TBD not checked for parameter names yet
+        * bugfix: disallow reserved words as name for submodules, modules, etc.
+        TBD not checked for parameter names yet
 
 2003-08-01  Andras Varga
 
-	* random submodule placement (used when display string doesn't contain
-	coordinates) changed to work identically to Tkenv: x is random and
-	y keeps growing
+        * random submodule placement (used when display string doesn't contain
+        coordinates) changed to work identically to Tkenv: x is random and
+        y keeps growing
 
 2003-07-28  Andras Varga
 
-	* canvas.tcl, gned.tcl: implemented "export postscript and exit" mode;
-	also exports images.xml that contains info for creating clickable image
-	maps
+        * canvas.tcl, gned.tcl: implemented "export postscript and exit" mode;
+        also exports images.xml that contains info for creating clickable image
+        maps
 
 2003-06-16  ------ omnetpp-2.3 released ------
 
@@ -141,75 +145,75 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 
 2003-03-15  Andras Varga
 
-	* fixed bug: gates added via the Properties dialog were generated
-	with wrong NED syntax
+        * fixed bug: gates added via the Properties dialog were generated
+        with wrong NED syntax
 
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
 2003-02-14  Andras Varga
 
-	* no limit on ned file line length
+        * no limit on ned file line length
 
 2003-01-30  Andras Varga
 
-	* changed connection drawing: now default mode is "auto", then if user
-	insists on exact placement by dragging the arrow, it changes to 
-	"manual" mode. 
-	
-	* fixed bug that it always created display strings for connections
-	[hint from Steffen Sroka].
+        * changed connection drawing: now default mode is "auto", then if user
+        insists on exact placement by dragging the arrow, it changes to 
+        "manual" mode. 
+        
+        * fixed bug that it always created display strings for connections
+        [hint from Steffen Sroka].
 
-	* double click on a submodule which is a simple module now opens 
-	module properties dialog
+        * double click on a submodule which is a simple module now opens 
+        module properties dialog
 
-	* increased default size of enclosing module rectangle
+        * increased default size of enclosing module rectangle
 
 2003-01-19  Andras Varga
 
-	* Cygwin fixes; put checkTckTkVersion and setupTkOptions (was generic_-
-	bindings) into widgets.tcl
+        * Cygwin fixes; put checkTckTkVersion and setupTkOptions (was generic_-
+        bindings) into widgets.tcl
 
 2003-01-12  Andras Varga
 
-	* tree view improved
+        * tree view improved
 
 2003-01-11  Andras Varga
 
-	* main.tcl: appearance of menus on Unix made more contemporary 
-	(via option add's)
+        * main.tcl: appearance of menus on Unix made more contemporary 
+        (via option add's)
 
 2003-01-04  Andras Varga
 
-	* props.tcl: Module/Submodule/etc Properties dialogs now validate 
-	values entered in the Parameters, Gates, Machines etc. tables, 
-	so that invalid values no longer cause errors. (new proc validate-
-	AttrValue)
+        * props.tcl: Module/Submodule/etc Properties dialogs now validate 
+        values entered in the Parameters, Gates, Machines etc. tables, 
+        so that invalid values no longer cause errors. (new proc validate-
+        AttrValue)
 
 2002-12-03  Andras Varga
 
-	* plotedit.tcl: bugfix: it was not possible to draw exactly horizontal 
-	or vertical connection arrows
+        * plotedit.tcl: bugfix: it was not possible to draw exactly horizontal 
+        or vertical connection arrows
 
-	* drawopts.tcl: bugfix: Tcl error when icon in loaded NED file was not 
-	found
+        * drawopts.tcl: bugfix: Tcl error when icon in loaded NED file was not 
+        found
 
 2002-11-28  Andras Varga
 
-	* drawopts.tcl: icon selection dialog improved
+        * drawopts.tcl: icon selection dialog improved
 
 2002-11-12 Andras Varga
 
-	* ported to Tk8.4 (several 'char *' to 'const char *' changes)
+        * ported to Tk8.4 (several 'char *' to 'const char *' changes)
 
 2002-11-04  Andras Varga
 
-	* ebnf.y: synchronized with nedc
+        * ebnf.y: synchronized with nedc
 
 2002-05-04  ------ omnetpp-2.2 released ------
 
 2002-04-06  Andras Varga
 
-	* main.tcl: Fix for Cygwin: checkVersion complained about tk_patchLevel
+        * main.tcl: Fix for Cygwin: checkVersion complained about tk_patchLevel
         '8.0.4'. (In earlier versions, tk_patchLevel had the format '8.0p4').
 
         * *.tcl: puts "dbg: ..." statements replaced by a debug procedure, with
@@ -217,267 +221,267 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 
 2002-02-29  Andras Varga
 
-	* findrepl.tcl: implemented backwards search/replace
+        * findrepl.tcl: implemented backwards search/replace
 
 2002-02-24  Andras Varga
 
-	* gned.cc: bugfix: gned.exe with WinMain() didn't accept command-line
+        * gned.cc: bugfix: gned.exe with WinMain() didn't accept command-line
         file arguments that contained backslashes
 
 2001-10-06  Andras Varga
 
-	* findrepl.tcl: regexp replace improved (\1,\2 in replace string now work
+        * findrepl.tcl: regexp replace improved (\1,\2 in replace string now work
         as expected)
 
 2001-09-01 Andras Varga
 
-	* CONST_CAST() replaced by const_cast<>()
+        * CONST_CAST() replaced by const_cast<>()
 
 2001-07-23  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	* parsened.cc (error): use macro CONST_CAST (defined at top of
-	file) to avoid compilation errors with gcc-2.95.3
-	* ebnf.y (addGate): CONST_CAST again
+        * parsened.cc (error): use macro CONST_CAST (defined at top of
+        file) to avoid compilation errors with gcc-2.95.3
+        * ebnf.y (addGate): CONST_CAST again
 
 2001-07-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
-	* Makefile.vc (ebnf.tab.cc) (lex.yy.cc): use "copy" and "del" instead of "mv"
+        * Makefile.vc (ebnf.tab.cc) (lex.yy.cc): use "copy" and "del" instead of "mv"
 
-	*  (Repository):
-	removed files: ebnf.tab.c lex.yy.c
-	new files: ebnf.tab.cc lex.yy.cc
+        *  (Repository):
+        removed files: ebnf.tab.c lex.yy.c
+        new files: ebnf.tab.cc lex.yy.cc
 
-	* Makefile.in
-	targets renamed:
-		ebnf.tab.c  ->  ebnf.tab.cc
-		lex.yy.c    ->  lex.yy.cc
-	(ebnf.tab.cc): mv ebnf.tab.c to ebnf.tab.cc
-	(lex.yy.cc): mv lex.yy.c to lex.yy.cc
-	(lex.yy.o): renamed lex.yy.c to lex.yy.cc
-	(ebnf.tab.o): renamed ebnf.tab.c to ebnf.tab.cc
+        * Makefile.in
+        targets renamed:
+                ebnf.tab.c  ->  ebnf.tab.cc
+                lex.yy.c    ->  lex.yy.cc
+        (ebnf.tab.cc): mv ebnf.tab.c to ebnf.tab.cc
+        (lex.yy.cc): mv lex.yy.c to lex.yy.cc
+        (lex.yy.o): renamed lex.yy.c to lex.yy.cc
+        (ebnf.tab.o): renamed ebnf.tab.c to ebnf.tab.cc
 
 
-	* Makefile.vc
-	targets renamed:
-		ebnf.tab.c  ->  ebnf.tab.cc
-		lex.yy.c    ->  lex.yy.cc
-	(ebnf.tab.cc): mv ebnf.tab.c to ebnf.tab.cc
-	(lex.yy.cc): mv lex.yy.c to lex.yy.cc
-	(lex.yy.obj): renamed lex.yy.c to lex.yy.cc
-	(ebnf.tab.obj): renamed ebnf.tab.c to ebnf.tab.cc
+        * Makefile.vc
+        targets renamed:
+                ebnf.tab.c  ->  ebnf.tab.cc
+                lex.yy.c    ->  lex.yy.cc
+        (ebnf.tab.cc): mv ebnf.tab.c to ebnf.tab.cc
+        (lex.yy.cc): mv lex.yy.c to lex.yy.cc
+        (lex.yy.obj): renamed lex.yy.c to lex.yy.cc
+        (ebnf.tab.obj): renamed ebnf.tab.c to ebnf.tab.cc
 
-	* Makefile.bc
-	(ebnf.tab.obj): renamed ebnf.tab.c to ebnf.tab.cc
-	(lex.yy.obj): renamed lex.yy.c to lex.yy.cc
+        * Makefile.bc
+        (ebnf.tab.obj): renamed ebnf.tab.c to ebnf.tab.cc
+        (lex.yy.obj): renamed lex.yy.c to lex.yy.cc
 
 2001-07-11 Andras Varga
 
-	* ebnf.y: Eric Wu's Tru64/MPI port. Tru64 needs extra #includes.
+        * ebnf.y: Eric Wu's Tru64/MPI port. Tru64 needs extra #includes.
 
 2001-05-18  Andras Varga
 
-	* ------ omnetpp-2.1 released ------
+        * ------ omnetpp-2.1 released ------
 
-	* Windows: added rc file with icon
+        * Windows: added rc file with icon
 
 2001-05-02  Andras Varga
 
-	* fixed Help|README when using compiled-in Tcl code
+        * fixed Help|README when using compiled-in Tcl code
 
 2001-04-20  Andras Varga
 
-	* bugfix in new WinMain() startup code
+        * bugfix in new WinMain() startup code
 
 2001-04-16  Andras Varga
 
-	* GNED can now be compiled as GUI application (not console app) on
-	Windows, setting USE_WINMAIN=yes in configuser.vc.  NOTE: main()
-	and WinMain() use completely different startup sequences.  The
-	reason: main()'s startup code with WinMain would result in an
-	"unknown channel stdout" error in the Tcl code (and it's not so
-	easy to create a dummy channel named stdout), while WinMain()'s
-	startup sequence with main() would result in a working command
-	prompt in the console window (!!!).  Pretty weird.
+        * GNED can now be compiled as GUI application (not console app) on
+        Windows, setting USE_WINMAIN=yes in configuser.vc.  NOTE: main()
+        and WinMain() use completely different startup sequences.  The
+        reason: main()'s startup code with WinMain would result in an
+        "unknown channel stdout" error in the Tcl code (and it's not so
+        easy to create a dummy channel named stdout), while WinMain()'s
+        startup sequence with main() would result in a working command
+        prompt in the console window (!!!).  Pretty weird.
 
-	* added gned.ico
+        * added gned.ico
 
 2001-03-27  Andras Varga
 
-	* Makefile.vc change: replaced $(GNED_EMBED_SUFFIX) with
-	$(GNED_EMBED_TCL).
+        * Makefile.vc change: replaced $(GNED_EMBED_SUFFIX) with
+        $(GNED_EMBED_TCL).
 
 2001-03-10  Andras Varga
 
-	* Borland C++ support removed: I deleted the project files
-	(*.ide). I added equivalent Makefile.bc files (generated from the
-	BC IDE), but they are completely unsupported at the moment. If
-	there's interest, it's possible that later I'll add makefiles for
-	the free command-line bc5.5 compiler.
+        * Borland C++ support removed: I deleted the project files
+        (*.ide). I added equivalent Makefile.bc files (generated from the
+        BC IDE), but they are completely unsupported at the moment. If
+        there's interest, it's possible that later I'll add makefiles for
+        the free command-line bc5.5 compiler.
 
 2001-02-13  Andras Varga
 
-	* ------ omnetpp-2.0p1 released ------
+        * ------ omnetpp-2.0p1 released ------
 
-	* ------ omnetpp-2.0 released ------
+        * ------ omnetpp-2.0 released ------
 
-	* fixed bug which caused the "Drawing options" dialog to go behind
-	the main app window after closing the color selection dialog
+        * fixed bug which caused the "Drawing options" dialog to go behind
+        the main app window after closing the color selection dialog
 
-	* fixed handling of comments in all "Properties" dialogs (messed
-	up newlines)
+        * fixed handling of comments in all "Properties" dialogs (messed
+        up newlines)
 
 2001-02-06  Andras Varga
 
-	* make clean didn't delete tclcode.cc
+        * make clean didn't delete tclcode.cc
 
 2001-01-21  Andras Varga
 
-	* fixed bug with Ctrl-N (Find next) binding
+        * fixed bug with Ctrl-N (Find next) binding
 
 2001-01-16  Andras Varga
 
-	* fix: added Tcl_FindExecutable(argv[0]) to Tcl initialization
-	code (needed by Cygwin 1.1)
+        * fix: added Tcl_FindExecutable(argv[0]) to Tcl initialization
+        code (needed by Cygwin 1.1)
 
 2001-01-02  Andras Varga
 
-	* cosmetic changes in plotedit.tcl
+        * cosmetic changes in plotedit.tcl
 
 2000-12-22  Andras Varga
 
-	* implemented scrolling for the tabs strip (the one with the names
-	of the open canvases) if there're too many tabs on it
+        * implemented scrolling for the tabs strip (the one with the names
+        of the open canvases) if there're too many tabs on it
 
 2000-12-18  Andras Varga
 
-	* implemented Channel Properties dialog
+        * implemented Channel Properties dialog
 
-	* old display string classes (disp.cc) removed
+        * old display string classes (disp.cc) removed
 
-	* small bugfix on comment handling in Properties dialogs (no
-	longer adds extra blank lines)
+        * small bugfix on comment handling in Properties dialogs (no
+        longer adds extra blank lines)
 
 2000-12-17  Andras Varga
 
-	* improvement: switching from text mode to graphics made faster:
-	now GNED won't parse the ned source if it hasn't been edited
+        * improvement: switching from text mode to graphics made faster:
+        now GNED won't parse the ned source if it hasn't been edited
 
-	* improvement: GNED will refuse to exit or close a NED file if
-	there are text mode canvases with edits. You'll have to switch
-	those canvases to graphics to get the NED source backparsed.
+        * improvement: GNED will refuse to exit or close a NED file if
+        there are text mode canvases with edits. You'll have to switch
+        those canvases to graphics to get the NED source backparsed.
 
-	* Connection Properties dialog implemented. (Cannot handle 'for'
-	loops yet.)
+        * Connection Properties dialog implemented. (Cannot handle 'for'
+        loops yet.)
 
 2000-11-20  Andras Varga
 
-	* improvement: File|Close and File|Exit made more graceful -- the
-	"Not saved, save?" dialog now has a Cancel button
+        * improvement: File|Close and File|Exit made more graceful -- the
+        "Not saved, save?" dialog now has a Cancel button
 
-	* improvement: implemented File|Save all
+        * improvement: implemented File|Save all
 
-	* bugfix: new submodules, modules, channels etc. now always get
-	unique names
-
-2000-11-19  Andras Varga
-
-	* bugfix: removed bogus asserts around parsened.cc#70 and #140
-	which caused the program to abort when NED code contained two
-	submodules with the same name when switching from text to
-	graphics.
+        * bugfix: new submodules, modules, channels etc. now always get
+        unique names
 
 2000-11-19  Andras Varga
 
-	* display string handling rewritten. Now GNED won't delete from
-	the display strings the tags it doesn't understand. New file:
-	dispstr.tcl.
+        * bugfix: removed bogus asserts around parsened.cc#70 and #140
+        which caused the program to abort when NED code contained two
+        submodules with the same name when switching from text to
+        graphics.
 
-	* XML support (experimental): GNED can now export and import XML
-	files.
-	(File|Import XML...,Export XML... menu items) New files in GNED:
-	genxml.tcl, parsexml.tcl.
+2000-11-19  Andras Varga
 
-	* IMPORTANT! XML SUPPORT REQUIRES THE TclXML PACKAGE, at least
-	version 1.2.
-	(The contents of TclXML-1.2.tgz should be extracted under the
-	tcl/lib/ dir.)  BUG in the TclXML-1.2 parser: it silently discards
-	attributes which contain '&' or '<' characters!!!!
+        * display string handling rewritten. Now GNED won't delete from
+        the display strings the tags it doesn't understand. New file:
+        dispstr.tcl.
+
+        * XML support (experimental): GNED can now export and import XML
+        files.
+        (File|Import XML...,Export XML... menu items) New files in GNED:
+        genxml.tcl, parsexml.tcl.
+
+        * IMPORTANT! XML SUPPORT REQUIRES THE TclXML PACKAGE, at least
+        version 1.2.
+        (The contents of TclXML-1.2.tgz should be extracted under the
+        tcl/lib/ dir.)  BUG in the TclXML-1.2 parser: it silently discards
+        attributes which contain '&' or '<' characters!!!!
 
 2000-09-30  Andras Varga
 
-	* improvement just for Cygwin: lexer now explicitly ignores '\r'
-	(=CR) chars
+        * improvement just for Cygwin: lexer now explicitly ignores '\r'
+        (=CR) chars
 
 2000-08-29  Andras Varga
 
-	* command-line arg handling improved
+        * command-line arg handling improved
 
 2000-08-27  Andras Varga
 
-	* drag&drop creation of submodules now creates unique names
-	(changed addItem, renameItem procs)
+        * drag&drop creation of submodules now creates unique names
+        (changed addItem, renameItem procs)
 
-	* deleteItem proc improved
+        * deleteItem proc improved
 
-	* renaming improved; "rename..." added to canvas popup menu
+        * renaming improved; "rename..." added to canvas popup menu
 
 2000-08-26  Andras Varga
 
-	* added .gnedrc
+        * added .gnedrc
 
-	* find/replace operation improved
+        * find/replace operation improved
 
-	* implemented "find next"
+        * implemented "find next"
 
-	* find/replace dialog contents is now preserved
+        * find/replace dialog contents is now preserved
 
-	* open/save dialogs now remember the directory
+        * open/save dialogs now remember the directory
 
 2000-08-07  Andras Varga
 
-	* makefile changes for RPM support
+        * makefile changes for RPM support
 
 2000-07-26  Andras Varga
 
-	* minor fixes on Edit|Find
+        * minor fixes on Edit|Find
 
 2000-07-17  Andras Varga
 
-	* accepts NED files on the command line
+        * accepts NED files on the command line
 
 2000-05-19  Andras Varga
 
-	* ------ omnetpp-2.0b5 released ------
+        * ------ omnetpp-2.0b5 released ------
 
-	* ------ omnetpp-2.0b4 released ------
+        * ------ omnetpp-2.0b4 released ------
 
-	* fixed <Ctrl-H> in text editor
+        * fixed <Ctrl-H> in text editor
 
 2000-05-07  Andras Varga
 
-	* Makefile.vc improvements from Balazs Kelemen
+        * Makefile.vc improvements from Balazs Kelemen
 
 2000-04-13  Andras Varga
 
-	* ebnf.y: changed operator precedence to bind ||,&& thighter than
-	?: [suggested by Niko]
+        * ebnf.y: changed operator precedence to bind ||,&& thighter than
+        ?: [suggested by Niko]
 
 2000-04-10  Andras Varga
 
-	* in the C++ sources, TRUE/FALSE (defines) replaced by true/false
-	(C++ keywords)
+        * in the C++ sources, TRUE/FALSE (defines) replaced by true/false
+        (C++ keywords)
 
-	* in printf() statements, all "%lf","%lg","%le" was replaced by
-	"%f","%g","%e"
+        * in printf() statements, all "%lf","%lg","%le" was replaced by
+        "%f","%g","%e"
 
 2000-03-27  Andras Varga
 
-	* bugfix: conditional (?:) operator caused parse error [reported
-	by Niko]
+        * bugfix: conditional (?:) operator caused parse error [reported
+        by Niko]
 
 1999-12-19  Andras Varga
 
-	* ------ omnetpp-2.0b3 released ------
+        * ------ omnetpp-2.0b3 released ------
 
         * wsize proc added to widgets.tcl
 
@@ -498,11 +502,11 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 1999-12-05  Andras Varga
 
         * compiled with MSVC. enbf.h added. Removed changing slashes to
-	backslashes in OMNETPP_GNED_DIR and ..BITMAP_PATH on Win32 because
-	Tcl/Tk accepts both.
+        backslashes in OMNETPP_GNED_DIR and ..BITMAP_PATH on Win32 because
+        Tcl/Tk accepts both.
 
         * added generated files enbf.tab.c and lex.yy.c to CVS to make it
-	possible to build GNED where flex/bison is not available
+        possible to build GNED where flex/bison is not available
 
 1999-12-02  Andras Varga
 
@@ -527,19 +531,19 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
         * changed appendTo to append in makened.tcl
 
         * renamed arrays: ddfields()-->ned_attlist(),
-	ddict()-->ned_attr(), ddesc-->ned_desc()
+        ddict()-->ned_attr(), ddesc-->ned_desc()
 
         * several bugs fixed
 
 1999-11-14  Andras Varga
 
         * submprops.tcl works; tbd comment handling; other dialogs;
-	efficiency
+        efficiency
 
 1999-11-13  Andras Varga
 
         * file props.tcl split to submprops.tcl, connprops.tcl,... (6
-	files)
+        files)
 
 1999-11-12  Andras Varga
 
@@ -555,8 +559,8 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 
         * fixes on comment parsing/generating:
 
-	eliminated space from "// ---" comments
-      	eliminated annoying generation of extra blank lines (except after "import")
+        eliminated space from "// ---" comments
+        eliminated annoying generation of extra blank lines (except after "import")
 
 1999-10-11  Andras Varga
 
@@ -564,9 +568,9 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 
 1999-08-30  Andras Varga
 
-	* ------ omnetpp-2.0b2 released ------
+        * ------ omnetpp-2.0b2 released ------
 
-	* ------ omnetpp-2.0b1 released ------
+        * ------ omnetpp-2.0b1 released ------
 
         * status bar added for text editor
 
@@ -585,7 +589,7 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 1999-08-15  Andras Varga
 
         * fixed bugs in nedfile.cc (lines 86,91,92 contained "==" instead
-	of "=")
+        of "=")
 
 1999-08-11  Andras Varga
 
@@ -594,15 +598,15 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 1999-08-02  Andras Varga
 
         * OMNETPP_BITMAP_PATH turned into real path (a list of
-	directories). The separator char is ";" on Windows, and ":" or ";"
-	on Unix.
+        directories). The separator char is ";" on Windows, and ":" or ";"
+        on Unix.
 
 1999-07-17  Andras Varga
 
         * fixed the bug with scrolled canvas
 
         * resizeBar implemented in widgets.tcl -- should be updated in
-	Tkenv and Plove too!
+        Tkenv and Plove too!
 
 1999-07-11  Andras Varga
 
@@ -613,164 +617,164 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
         * all sources checked in under CVS
 
         * makefile.in modified for use with GNU Autoconf; also renamed to
-	Makefile.in
+        Makefile.in
 
         * version.log renamed to ChangeLog
 
 1999-05-01  Andras Varga
 
-	* GNED 1.2 ALPHA 1 released
+        * GNED 1.2 ALPHA 1 released
 
 1999-04-01  Andras Varga
 
-	* DEVELOPMENT VERSIONS
+        * DEVELOPMENT VERSIONS
 
-	* parser and code generation rewritten
+        * parser and code generation rewritten
 
-	* data structures redesigned
+        * data structures redesigned
 
-	* made two-way tool
+        * made two-way tool
 
-	* user interface redesigned: place manager at left, toolbar icons,
-	tooltips etc.
+        * user interface redesigned: place manager at left, toolbar icons,
+        tooltips etc.
 
 1999-03-01  Andras Varga
 
-	* DEVELOPMENT VERSIONS:
+        * DEVELOPMENT VERSIONS:
 
-	* Pataki Istvan and Vincze Gabor -- added the parser and a
-	manager, .gnd files thrown out
+        * Pataki Istvan and Vincze Gabor -- added the parser and a
+        manager, .gnd files thrown out
 
 1998-12-30  Andras Varga
 
-	* makefile renamed to makefile.in
+        * makefile renamed to makefile.in
 
-	* bug with delete ('X') toolbar icon fixed
+        * bug with delete ('X') toolbar icon fixed
 
-	* changes in the About box
+        * changes in the About box
 
 1998-08-30  Andras Varga
 
-	* Second beta
+        * Second beta
 
 1998-08-28  Andras Varga
 
-	* first beta version. Still badly misses the capability of loading
-	NED files directly!
+        * first beta version. Still badly misses the capability of loading
+        NED files directly!
 
-	* TOTAL REWRITE!!!
+        * TOTAL REWRITE!!!
 
-	 internal data structure redesigned
-	 .gnd file format change (incompatible!)
-	 redesigned user interface
-	 arrow.cc rewritten
-	 display string format change:"p=m,50,50,50,50"
-	 ported to Windows (Borland C++ 5.0 project file included)
+         internal data structure redesigned
+         .gnd file format change (incompatible!)
+         redesigned user interface
+         arrow.cc rewritten
+         display string format change:"p=m,50,50,50,50"
+         ported to Windows (Borland C++ 5.0 project file included)
 
 1998-07-24  Andras Varga
 
-	* Pataki I. and Vincze G.' stuff
+        * Pataki I. and Vincze G.' stuff
 
 1998-07-20  Andras Varga
 
-	* intermediate version
+        * intermediate version
 
 1998-05-11  Andras Varga
 
-	* bugfixes on unfinished code...
+        * bugfixes on unfinished code...
 
 1998-05-04  Andras Varga
 
-	* grammar files and opp_parsened command added; not finished yet!
+        * grammar files and opp_parsened command added; not finished yet!
 
-	* grammar files are now shared with NEDC!
+        * grammar files are now shared with NEDC!
 
 1998-05-01  Andras Varga
 
-	* cc files added; GNED could now use the opp_arrowcoords command.
+        * cc files added; GNED could now use the opp_arrowcoords command.
 
 1998-04-26  Andras Varga
 
-	* dummy makefile added
+        * dummy makefile added
 
 1998-03-10  Andras Varga
 
-	* some improvements on appearance
+        * some improvements on appearance
 
-	* Tk8.0-style menu (native widgets)
+        * Tk8.0-style menu (native widgets)
 
-	* fixed bug which prevented gned from starting from outside its
-	dir.
-
-1997-12-14  Andras Varga
-
-	* improved file viewer; improved output NED quality
+        * fixed bug which prevented gned from starting from outside its
+        dir.
 
 1997-12-14  Andras Varga
 
-	* invalid file name bug on Windows fixed
+        * improved file viewer; improved output NED quality
+
+1997-12-14  Andras Varga
+
+        * invalid file name bug on Windows fixed
 
 1997-12-09  Andras Varga
 
-	* double-click bug fixed
+        * double-click bug fixed
 
-	* check for Tcl/Tk version added
-
-1997-12-07  Andras Varga
-
-	* misc improvements
-
-	* added demo files
+        * check for Tcl/Tk version added
 
 1997-12-07  Andras Varga
 
-	* right click on "name" tag brings up Properties dialog
+        * misc improvements
 
-	* file extension: .gnd
+        * added demo files
 
-	* improved on generated code
+1997-12-07  Andras Varga
 
-	* gndview, gndinfo, gnd2ned added
+        * right click on "name" tag brings up Properties dialog
+
+        * file extension: .gnd
+
+        * improved on generated code
+
+        * gndview, gndinfo, gnd2ned added
 
 1997-12-06  Andras Varga
 
        * done:
-	    excusing text in about box...
-	    added 'view generated NED' option
-	    added 'load background'
+            excusing text in about box...
+            added 'view generated NED' option
+            added 'load background'
 
        * still to do:
-	    don't load same file several times
-	    bug: after double-click a dot remains
-	    better auto naming of submods
-	    + ones in readme file
+            don't load same file several times
+            bug: after double-click a dot remains
+            better auto naming of submods
+            + ones in readme file
 
 1997-12-06  Andras Varga
 
-	* improvements on editor
+        * improvements on editor
 
-	* good statusbar
+        * good statusbar
 
-	* generate: use $want_info, $want_data, $want_drawing variables in saved file
+        * generate: use $want_info, $want_data, $want_drawing variables in saved file
 
 1997-12-06  Andras Varga
 
-	* put back 'Snap to grid'
+        * put back 'Snap to grid'
 
-	* fixed: resizing parent doesn't move connection arrows
+        * fixed: resizing parent doesn't move connection arrows
 
-	* file|close
+        * file|close
 
-	* ask to save before exit
+        * ask to save before exit
 
 1997-12-06  Andras Varga
 
        * done:
-	    parent module code generation
-	    added "Comments" entry to props dialogs
-	    improved dialogs
-	    improved generated code (indentation etc.)
-	    remove 'Print' toolbutton
+            parent module code generation
+            added "Comments" entry to props dialogs
+            improved dialogs
+            improved generated code (indentation etc.)
+            remove 'Print' toolbutton
 
 1997-12-05  Andras Varga
 
@@ -778,33 +782,33 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 
        * to do (cummulated):
 
-	right click on "name" tag should bring up Properties dialog don't
-	load same file several times bug: after double-click a dot remains
-	better auto naming of submods
+        right click on "name" tag should bring up Properties dialog don't
+        load same file several times bug: after double-click a dot remains
+        better auto naming of submods
 
 1997-12-05  Andras Varga
 
         * still to do: all the above plus:
 
-	file|close
+        file|close
 
-	ask to save before exit
+        ask to save before exit
 
-	right click on "name" tag should bring up Properties dialog
+        right click on "name" tag should bring up Properties dialog
 
-	one module == one file
+        one module == one file
 
 1997-12-04  Andras Varga
 
         * still to do:
 
-	excusing text in about box...
+        excusing text in about box...
 
-	some consistency check (arrows should start/end in the right modules)
+        some consistency check (arrows should start/end in the right modules)
 
-	parent module code generation
+        parent module code generation
 
-	good statusbar
+        good statusbar
 
 1997-12-04  Andras Varga
 
@@ -815,7 +819,7 @@ proc.gif etc will overwrite the exit, proc Tcl commands!)
 1997-12-03  Andras Varga
 
          * to do: some consistency check (arrows should start/end in the
-	 right modules), multiple canvases...
+         right modules), multiple canvases...
 
 1997-12-02  Andras Varga
 
