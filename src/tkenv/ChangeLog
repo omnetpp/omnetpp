@@ -1,3 +1,7 @@
+2003-05-26  Andras Varga
+
+	* cOutVector inspector: added "autoscale" checkbox to Options dialog
+
 2003-04-17  Andras Varga
 
 	* objinsp.tcl: fixed bug which prevented cPackets (or objects 

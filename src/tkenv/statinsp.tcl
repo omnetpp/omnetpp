@@ -68,17 +68,20 @@ proc create_histogramwindow {name geom} {
 }
 
 proc outvectorwindow_opt_update {w win} {
-        opp_inspectorcommand $win config \
-                         [$w.time.e get] \
-                         [$w.ymin.e get] \
-                         [$w.ymax.e get] \
-                         [$w.combo.e cget -value]
-        opp_updateinspector $win
+    global tmp
+    opp_inspectorcommand $win config \
+                     $tmp(autoscale) \
+                     [$w.time.e get] \
+                     [$w.ymin.e get] \
+                     [$w.ymax.e get] \
+                     [$w.combo.e cget -value]
+    opp_updateinspector $win
 }
 
 proc outvectorwindow_options {win} {
     set w .ov-options
     catch {destroy $w}
+    global tmp
 
     ###################
     # CREATING WIDGETS
@@ -94,9 +97,10 @@ proc outvectorwindow_options {win} {
     #bind $w <Visibility> "raise $w"  ;# Keep modal window on top
 
     label $w.msg -justify left -text {cOutVector window options:}
+    checkbutton $w.auto -text {Autoscale} -variable tmp(autoscale)
     label-entry $w.time {Time factor (sec/pixel):}
-    label-entry $w.ymin {Y min:}
-    label-entry $w.ymax {Y max:}
+    label-entry $w.ymin {Ymin:}
+    label-entry $w.ymax {Ymax:}
     label-combo $w.combo {Draw mode:} {dots pins bars sample-hold lines}
     frame $w.buttons
     button $w.buttons.okbutton -text {  OK  }
@@ -104,6 +108,7 @@ proc outvectorwindow_options {win} {
     button $w.buttons.cancelbutton -text {Cancel}
 
     pack $w.msg  -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top
+    pack $w.auto -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top
     pack $w.time -anchor center -expand 1 -fill x -padx 3m -pady 1m -side top
     pack $w.ymin -anchor center -expand 1 -fill x -padx 3m -pady 1m -side top
     pack $w.ymax -anchor center -expand 1 -fill x -padx 3m -pady 1m -side top
@@ -127,10 +132,11 @@ proc outvectorwindow_options {win} {
 
     # 3. set initial values
     set settings [opp_inspectorcommand $win config]
-    $w.time.e insert 0 [lindex $settings 0]
-    $w.ymin.e insert 0 [lindex $settings 1]
-    $w.ymax.e insert 0 [lindex $settings 2]
-    $w.combo.e configure -value [lindex $settings 3]
+    set tmp(autoscale) [lindex $settings 0]
+    $w.time.e insert 0 [lindex $settings 1]
+    $w.ymin.e insert 0 [lindex $settings 2]
+    $w.ymax.e insert 0 [lindex $settings 3]
+    $w.combo.e configure -value [lindex $settings 4]
 
     # 4. Set a grab and claim the focus too.
     set oldFocus [focus]

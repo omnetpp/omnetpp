@@ -601,13 +601,13 @@ void TOutVectorWindow::valueInfo( char *buf, int valueindex )
 
 void TOutVectorWindow::getConfig( char *buf )
 {
-   sprintf(buf,"%g %g %g %s", time_factor, miny, maxy, drawingmodes[drawing_mode] );
+   sprintf(buf,"%d %g %g %g %s", autoscale, time_factor, miny, maxy, drawingmodes[drawing_mode] );
 }
 
-void TOutVectorWindow::setConfig( double timefac, double min_y, double max_y, const char *mode)
+void TOutVectorWindow::setConfig( bool autosc, double timefac, double min_y, double max_y, const char *mode)
 {
    // store new parameters
-   autoscale = false;
+   autoscale = autosc;
    time_factor = timefac;
    miny = min_y;
    maxy = max_y;
@@ -647,7 +647,7 @@ int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char 
    }
    else if (strcmp(argv[0],"config")==0)  // 'opp_inspectorcommand <inspector> config ...'
    {
-      if (argc!=5 && argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      if (argc!=6 && argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
       // get/set configuration: "timefactor miny maxy drawingmode"
       if (argc==1)
@@ -658,7 +658,7 @@ int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char 
       }
       else
       {
-         setConfig( atof(argv[1]), atof(argv[2]), atof(argv[3]), argv[4] );
+         setConfig( atoi(argv[1]), atof(argv[2]), atof(argv[3]), atof(argv[4]), argv[5] );
       }
       return TCL_OK;
    }

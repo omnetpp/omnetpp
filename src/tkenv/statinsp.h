@@ -84,7 +84,7 @@ class TOutVectorWindow : public TInspector
 
       // configuration get (text form) / set
       void getConfig( char *buf );
-      void setConfig( double timef, double miny, double maxy, const char *mode);
+      void setConfig( bool autoscale, double timef, double miny, double maxy, const char *mode);
 };
 
 class TStatisticInspector: public TInspector
