@@ -94,7 +94,7 @@ htmlfile_spec := $BASE.html
 :{}     :\tbf:<b>:</b>:
 :{}     :\mathit:<i>:</i>:
 :{}     :\tilde:&:tilde;:
-:{}     :\label:<a name=":"/>:
+:{}     :\label:<a name=":"></a>:
 :{}     :\ref:<a href="#:">[click]</a>:
 :{1}    :\index:::
 :{2}    :\href#1#2:<a href="#1">#2</a>::
@@ -118,7 +118,7 @@ htmlfile_spec := $BASE.html
 :comm   :\new:[New!]::
 :comm   :\changed:[Changed!]::
 :comm   :\sloppy:::
-:comm   :\bibitem(\[(.*?)\])?{(.*?)}:<a name="bib-$3">[$2]&nbsp;&nbsp;::
+:comm   :\bibitem(\[(.*?)\])?{(.*?)}:<a name="bib-$3"></a>[$2]&nbsp;&nbsp;::
 :comm   :\newblock:::
 :comm   :\em:::
 :comm   :\fpar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
