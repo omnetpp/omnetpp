@@ -52,7 +52,7 @@
 2003-11-09  Andras Varga
 
 	* omnetapp.cc: added support for dynamic loading of NED files.
-	The new [General]/preload-nedfiles= omnetpp.ini entry may contain
+	The new [General]/preload-ned-files= omnetpp.ini entry may contain
 	a list of NED file names, separated by spaces. The NED files will
 	be loaded before the user interface is started.
 

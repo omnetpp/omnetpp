@@ -179,6 +179,23 @@ void TOmnetApp::setup()
              throw new cException("Envir library compiled without parallel simulation support, check WITH_PARSIM option");
 #endif
          }
+
+         // preload NED files
+         const char *nedfiles = ini_file->getAsString("General", "preload-ned-files", NULL);
+         if (nedfiles)
+         {
+             // iterate through file names
+             ev.printf("\n");
+             char *buf = opp_strdup(nedfiles);
+             char *fname = strtok(buf, " ");
+             while (fname!=NULL)
+             {
+                 ev.printf("Loading NED file: %s\n", fname);
+                 simulation.loadNedFile(fname);
+                 fname = strtok(NULL, " ");
+             }
+             delete [] buf;
+         }
      }
      catch (cException *e)
      {
