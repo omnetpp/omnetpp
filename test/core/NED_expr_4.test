@@ -68,55 +68,42 @@ Define_Module({Simple});
 void {Simple}::activity()
 {
     for (int i=0; i<params(); i++)
-        ev << par(i).name() << "=" << (double)par(i) << endl;
+        ev << fullName() << "." << par(i).name() << "=" << (double)par(i) << endl;
 }
 
-%contains-regex: stdout
-p00=-3
-p01=-5
-p02=0
-p03=1
-p04=1
-p05=0
-p06=[0-9eE+.]+
-p07=1728
-p08=36
-p09=4
-p10=2
-p11=15
-p12=9
-p13=40
-p14=2
-p15=2
-p16=11
-p17=9
-p18=0
-p19=1
-p20=1
-p21=0
-p22=1
-p23=0
-p24=0
-p25=1
-p26=0
-p27=1
-p28=0
-p29=1
-p30=0
-p31=0
-p32=1
-p33=1
-p34=1
-p35=0
-p36=0
-p37=0
-p38=1
-p39=1
-p40=1
-p41=0
-p42=0
-p43=1
-p44=1
-p45=0
-p46=5
-p47=2
+%contains: stdout
+sub[0].p0=0
+sub[0].p1=5
+sub[0].p2=8
+sub[0].p3=100
+sub[0].p4=105
+sub[0].p5=108
+sub[0].p6=5
+sub[0].p7=8
+sub[0].p8=105
+sub[0].p9=108
+
+%contains: stdout
+sub[1].p0=1
+sub[1].p1=5
+sub[1].p2=8
+sub[1].p3=101
+sub[1].p4=105
+sub[1].p5=108
+sub[1].p6=5
+sub[1].p7=8
+sub[1].p8=105
+sub[1].p9=108
+
+%contains: stdout
+sub[2].p0=2
+sub[2].p1=5
+sub[2].p2=8
+sub[2].p3=102
+sub[2].p4=105
+sub[2].p5=108
+sub[2].p6=5
+sub[2].p7=8
+sub[2].p8=105
+sub[2].p9=108
+
