@@ -6,6 +6,7 @@ CC=@CC@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
 
 COPTS=$(CFLAGS)
 
@@ -24,7 +25,7 @@ depend:
 	makedepend -Y -I. -fMakefile.in -- *.cc
 
 clean:
-	rm -f *.o seedtool tcl2c
+	rm -f *.o seedtool$(EXE_SUFFIX) tcl2c$(EXE_SUFFIX)
 
 install-local: seedtool
 	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
