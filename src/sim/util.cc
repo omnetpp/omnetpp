@@ -476,6 +476,7 @@ void cContextSwitcher::methodCall(const char *fmt,...)
 #include "cmersennetwister.h"
 #include "cksplit.h"
 #include "cpsquare.h"
+#include "cstrtokenizer.h"
 //void _dummy_for_env();
 void _sim_dummy_func()
 {
@@ -495,6 +496,8 @@ void _sim_dummy_func()
       ks.info();
       cPSquare ps;
       ps.info();
+      cStringTokenizer tok("");
+      tok.nextToken();
       //_dummy_for_env();
 }
 

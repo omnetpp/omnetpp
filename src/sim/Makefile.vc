@@ -19,7 +19,7 @@ CPPOBJS_STD= task.obj ccoroutine.obj ctypes.obj carray.obj cgate.obj \
          cmsgheap.obj coutvect.obj cqueue.obj globals.obj cwatch.obj \
          cpacket.obj cfsm.obj cstruct.obj cchannel.obj cenum.obj cexception.obj cdispstr.obj \
          cdefaultlist.obj cscheduler.obj onstartup.obj distrib.obj \
-         cxmlelement.obj cmersennetwister.obj clcg32.obj
+         cxmlelement.obj cmersennetwister.obj clcg32.obj cstrtokenizer.obj
 CPPOBJS_NETBUILDER= netbuilder\cdynamicmodule.obj netbuilder\cdynamicnetwork.obj \
                     netbuilder\cdynamicchannel.obj \
                     netbuilder\cnednetworkbuilder.obj netbuilder\loadnedfile.obj
@@ -238,6 +238,7 @@ cexception.obj: cexception.cc \
   ../../include/cmodule.h \
   ../../include/errmsg.h \
   ../../include/cenvir.h \
+  ../../include/cconfig.h \
   ../../include/defs.h \
   ../../include/opp_string.h \
   ../../include/util.h \
@@ -736,6 +737,8 @@ cstat.obj: cstat.cc \
   ../../include/cdefaultlist.h \
   ../../include/ctypes.h \
   ../../include/opp_string.h
+cstrtokenizer.obj: cstrtokenizer.cc \
+  ../../include/cstrtokenizer.h
 cstruct.obj: cstruct.cc \
   ../../include/cstruct.h \
   ../../include/carray.h \
@@ -840,8 +843,8 @@ cvarhist.obj: cvarhist.cc \
 cvisitor.obj: cvisitor.cc \
   ../../include/cvisitor.h \
   ../../include/cobject.h \
-  ../../include/cenvir.h \
   ../../include/defs.h \
+  ../../include/cenvir.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
@@ -924,6 +927,8 @@ util.obj: util.cc \
   ../../include/cpacket.h \
   clcg32.h \
   cmersennetwister.h \
+  ../../include/cksplit.h \
+  ../../include/cpsquare.h \
   ../../include/defs.h \
   ../../include/random.h \
   ../../include/csimul.h \
@@ -947,7 +952,9 @@ util.obj: util.cc \
   ../../include/cmessage.h \
   ../../include/cpar.h \
   ../../include/cconfig.h \
-  mersennetwister.h
+  mersennetwister.h \
+  ../../include/cdensity.h \
+  ../../include/cstat.h
 netbuilder/cdynamicchannel.obj: netbuilder/cdynamicchannel.cc \
   netbuilder/cdynamicchannel.h \
   netbuilder/cnednetworkbuilder.h \

@@ -1,3 +1,7 @@
+2005-03-18  Andras Varga
+
+	* added cstrtokenizer.cc
+
 2005-03-17  Andras Varga
 
 	* cscheduler.cc: implemented executionResumed() in cRealtimeScheduler
