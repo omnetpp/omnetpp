@@ -1,0 +1,47 @@
+%name: cModule_handleMessage_1
+
+%description:
+Basic test for cSimpleModule.handleMessage().
+
+%module: {Module}
+
+#include "omnetpp.h"
+
+class {Module} : public cSimpleModule
+{
+    Module_Class_Members({Module},cSimpleModule,0)
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    virtual void finish();
+};
+
+Define_Module({Module});
+
+void {Module}::initialize()
+{
+   ev << "initialize() at " << simTime() << endl;
+   cMessage *msg = new cMessage();
+   scheduleAt(15.0, msg);
+}
+
+void {Module}::handleMessage(cMessage *msg)
+{
+   ev << "handleMessage() at " << simTime() << endl;
+   delete msg;
+}
+
+void {Module}::finish()
+{
+   ev << "finish() at " << simTime() << endl;
+}
+
+%ignore-exitcode: 1
+
+%contains: stdout
+initialize\(\) at 0
+.*
+handleMessage\(\) at 15
+.*
+finish\(\) at 15
+
+

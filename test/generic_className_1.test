@@ -11,7 +11,7 @@ cEqdHistogramBase, cModule, cSimpleModule, cCompoundModule, cNetMod, cSimulation
 cStatistic, cModuleInterface, cModuleType, cLinkType, cNetworkType, cFunctionType,
 cClassRegister, cInspectorFactory, cWatch
 
-%source:
+%activity:
 
 #define PRINT_CLASSNAME(T) {T a##T; ev << #T ": " << a##T.className() << endl;}
 

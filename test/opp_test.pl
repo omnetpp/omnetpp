@@ -31,53 +31,23 @@ All files will be created in the working directory.
 
 ';
 
-#
-# templates, variables
-#
-$NEDTemplate = '
-simple @TNAME@
-endsimple
-
-network @TNAME@_network : @TNAME@
-endnetwork
-';
-
-$CPPTemplate = '
-#include "omnetpp.h"
-
-class @TNAME@ : public cSimpleModule
-{
-    Module_Class_Members(@TNAME@,cSimpleModule,16384)
-    virtual void activity();
-};
-
-Define_Module(@TNAME@);
-
-void @TNAME@::activity()
-{
-@TESTCODE@
-}
-';
-
-$INITemplate = '
-[General]
-network=@TNAME@_network
-output-vector-file = @TNAME@.vec
-output-scalar-file = @TNAME@.sca
-';
-
-
-# legend: 1=once, v=has value, b=has body, f=value is filename
+# .test file possible entries. legend: 1=once, v=has value, b=has body, f=value is filename
 %Entries = (
-    'name'             => '1v',
-    'description'      => '1b',
-    'source'           => '1b',
-    'file'             => 'vbf',
-    'inifile'          => '1vbf',
-    'contains'         => 'vbf',
-    'not-contains'     => 'vbf',
-    'exitcode'         => '1v',
-    'ignore-exitcode'  => '1v'
+    'name'               => '1v',
+    'description'        => '1b',
+
+    'activity'           => '1b',
+    'module'             => '1vb',
+    'module_a'           => '1vb',
+    'module_b'           => '1vb',
+
+    'file'               => 'vbf',
+    'inifile'            => '1vbf',
+
+    'contains'           => 'vbf',
+    'not-contains'       => 'vbf',
+    'exitcode'           => '1v',
+    'ignore-exitcode'    => '1v'
 );
 
 #
@@ -167,9 +137,11 @@ if ($testprogram eq '') {
 #
 if ($mode eq 'gen')
 {
+    define_templates();
+
     foreach $testfilename (@filenames)
     {
-        testcase_create($testfilename);
+        testcase_generatesources($testfilename);
     }
 }
 
@@ -252,17 +224,41 @@ sub parse_testfile
         }
     }
 
+    # additional manual tests
+    if (defined($bodies{'activity(1)'}) && (defined($bodies{'module(1)'}) ||
+        defined($bodies{'module_a(1)'}) || defined($bodies{'module_b(1)'})))
+    {
+        unresolved($testfilename, "error in test file: %activity excludes %module... entries"); return;
+    }
+    if (defined($bodies{'module(1)'}) &&
+        (defined($bodies{'module_a(1)'}) || defined($bodies{'module_b(1)'})))
+    {
+        unresolved($testfilename, "error in test file: %module excludes %module_[a|b] entries"); return;
+    }
+    if (defined($bodies{'module_a(1)'}) && !defined($bodies{'module_b(1)'}))
+    {
+        unresolved($testfilename, "error in test file: %module_a without %module_b"); return;
+    }
+    if (defined($bodies{'module_b(1)'}) && !defined($bodies{'module_a(1)'}))
+    {
+        unresolved($testfilename, "error in test file: %module_b without %module_a"); return;
+    }
+
     # substitute TNAME and other macros, kill comments
     $testname = $values{'name(1)'};
     foreach $key (keys(%values))
     {
+        $bodies{$key} =~ s/^%#.*?$//mg;
+
         $values{$key} =~ s/\@TNAME\@/$testname/g;
         $bodies{$key} =~ s/\@TNAME\@/$testname/g;
-        $bodies{$key} =~ s/^%#.*?$//mg;
+
+        $values{$key} =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
+        $bodies{$key} =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
     }
 }
 
-sub testcase_create
+sub testcase_generatesources
 {
     my $testfilename = shift;
 
@@ -281,21 +277,72 @@ sub testcase_create
         }
     }
 
-    # code fragment
-    $testcode = $bodies{'source(1)'};
-    if ($testcode ne '')
+    # 'activity' template
+    if (defined($bodies{'activity(1)'}))
     {
-        $testcode = $bodies{'source(1)'};
+        $activity = $bodies{'activity(1)'};
 
-        # generate wrapper simple module
-        $ned = $NEDTemplate;
+        # generate NED
+        $ned = $ModuleNEDTemplate;
         $ned =~ s/\@TNAME\@/$testname/g;
+        $ned =~ s/\@MODULE\@/$testname/g;
+        $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
         $nedfname = $workingdir."/".$testname.'.ned';
         writefile($nedfname, $ned);
 
-        $cpp = $CPPTemplate;
+        # generate C++
+        $cpp = $ActivityCPPTemplate;
         $cpp =~ s/\@TNAME\@/$testname/g;
-        $cpp =~ s/\@TESTCODE\@/$testcode/g;
+        $cpp =~ s/\@ACTIVITY\@/$activity/g;
+        $cpp =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
+        $cppfname = $workingdir."/".$testname.'.cc';
+        writefile($cppfname, $cpp);
+    }
+
+    # 'module' template
+    if (defined($bodies{'module(1)'}))
+    {
+        $module = $values{'module(1)'};
+        $module_src = $bodies{'module(1)'};
+
+        # generate NED
+        $ned = $ModuleNEDTemplate;
+        $ned =~ s/\@TNAME\@/$testname/g;
+        $ned =~ s/\@MODULE\@/$module/g;
+        $nedfname = $workingdir."/".$testname.'.ned';
+        writefile($nedfname, $ned);
+
+        # generate C++
+        $cpp = $ModuleCPPTemplate;
+        $cpp =~ s/\@MODULE\@/$module/g;
+        $cpp =~ s/\@MODULE_SRC\@/$module_src/g;
+        $cppfname = $workingdir."/".$testname.'.cc';
+        writefile($cppfname, $cpp);
+    }
+
+    # 'module_a' + 'module_b' template
+    if (defined($bodies{'module_a(1)'}))
+    {
+        $module_a = $values{'module_a(1)'};
+        $module_b = $values{'module_b(1)'};
+        $module_a_src = $bodies{'module_a(1)'};
+        $module_b_src = $bodies{'module_b(1)'};
+
+        # generate NED
+        $ned = $ModuleABNEDTemplate;
+        $ned =~ s/\@TNAME\@/$testname/g;
+        $ned =~ s/\@MODULE_A\@/$module_a/g;
+        $ned =~ s/\@MODULE_B\@/$module_b/g;
+        $nedfname = $workingdir."/".$testname.'.ned';
+        writefile($nedfname, $ned);
+
+        # generate C++
+        $cpp = $ModuleABCPPTemplate;
+        $cpp =~ s/\@TNAME\@/$testname/g;
+        $cpp =~ s/\@MODULE_A\@/$module_a/g;
+        $cpp =~ s/\@MODULE_B\@/$module_b/g;
+        $cpp =~ s/\@MODULE_A_SRC\@/$module_a_src/g;
+        $cpp =~ s/\@MODULE_B_SRC\@/$module_b_src/g;
         $cppfname = $workingdir."/".$testname.'.cc';
         writefile($cppfname, $cpp);
     }
@@ -312,6 +359,7 @@ sub testcase_create
     {
         $inifile = $INITemplate;
         $inifile =~ s/\@TNAME\@/$testname/g;
+        $inifile =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
     }
     writefile($inifname, $inifile);
 }
@@ -413,7 +461,7 @@ sub testcase_run()
 
             # check contains or not-contains
             if ($key =~ /^contains\b/) {
-                if (!($txt =~ /$pattern/m)) {
+                if (!($txt =~ /$pattern/s)) {
                    fail($testfilename, "$values{$key} fails %contains rule");
                    if (length($txt)<=8192) {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
@@ -424,7 +472,7 @@ sub testcase_run()
                 }
             }
             if ($key =~ /^not-contains\b/) {
-                if ($txt =~ /$pattern/m) {
+                if ($txt =~ /$pattern/s) {
                    fail($testfilename, "$values{$key} fails %not-contains rule");
                    if (length($txt)<=8192) {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
@@ -478,34 +526,108 @@ sub writefile()
 
     my $skipwrite = 0;
     if (-r $fname) {
-       if (!open(IN,$fname)) {
+        if (!open(IN,$fname)) {
             print stderr "error: cannot read file `$fname'\n";
             exit(1);
-       }
-       my $oldcontent = '';
-       while (<IN>)
-       {
+        }
+        my $oldcontent = '';
+        while (<IN>)
+        {
             s/[\r\n]*$//;
             $oldcontent.= $_."\n";
-       }
-       close(IN);
+        }
+        close(IN);
 
-       if ($content eq $oldcontent) {
+        if ($content eq $oldcontent) {
             $skipwrite = 1;
-       }
+        }
     }
 
     if ($skipwrite) {
-       print "  file `$fname' already exists with identical content\n" if ($debug);
+        print "  file `$fname' already exists with identical content\n" if ($debug);
     } else {
-       print "  writing `$fname'\n" if ($debug);
-       if (!open(OUT,">$fname")) {
-          print stderr "error: cannot write file `$fname'\n";
-          exit(1);
-       }
-       print OUT $content;
-       close OUT;
+        print "  writing `$fname'\n" if ($debug);
+        if (!open(OUT,">$fname")) {
+            print stderr "error: cannot write file `$fname'\n";
+            exit(1);
+        }
+        print OUT $content;
+        close OUT;
     }
 }
 
+sub define_templates()
+{
+    $ModuleNEDTemplate = '
+simple @MODULE@
+endsimple
+
+network @TNAME@_network : @MODULE@
+endnetwork
+';
+
+    $ModuleABNEDTemplate = '
+simple @MODULE_A@
+    gates:
+        in: in;
+        out: out;
+endsimple
+
+simple @MODULE_B@
+    gates:
+        in: in;
+        out: out;
+endsimple
+
+module @TNAME@
+    submodules:
+        the@MODULE_A@ : @MODULE_A@;
+        the@MODULE_B@ : @MODULE_B@;
+    connections:
+        the@MODULE_A@.out --> the@MODULE_B@.in;
+        the@MODULE_A@.in  <-- the@MODULE_B@.out;
+endmodule
+
+network @TNAME@_network : @TNAME@
+endnetwork
+';
+
+    $ActivityCPPTemplate = '
+#include "omnetpp.h"
+
+class @TNAME@ : public cSimpleModule
+{
+    Module_Class_Members(@TNAME@,cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module(@TNAME@);
+
+void @TNAME@::activity()
+{
+@ACTIVITY@
+}
+';
+
+    $ModuleCPPTemplate = '
+#include "omnetpp.h"
+
+@MODULE_SRC@
+';
+
+    $ModuleABCPPTemplate = '
+#include "omnetpp.h"
+
+@MODULE_A_SRC@
+
+@MODULE_B_SRC@
+';
+
+    $INITemplate = '
+[General]
+network=@TNAME@_network
+output-vector-file = @TNAME@.vec
+output-scalar-file = @TNAME@.sca
+';
+}
 

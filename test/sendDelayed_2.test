@@ -1,9 +1,34 @@
-%name: sendDelayed_1
+%name: sendDelayed_2
 
 %description:
 Basic test for cSimpleModule.sendDelayed().
 
-%module_a: {Sender}
+%file: {test}.ned
+
+simple {Sender}
+  gates:
+    out: out;
+endsimple
+
+simple {Receiver}
+  gates:
+    in: in;
+endsimple
+
+module {Net}
+  submodules:
+    sender : {Sender};
+    receiver : {Receiver};
+  connections:
+    sender.out --> receiver.in;
+endmodule
+
+network {net} : {Net}
+endnetwork
+
+%file: {modules}.cc
+
+#include "omnetpp.h"
 
 class {Sender} : public cSimpleModule
 {
@@ -11,7 +36,14 @@ class {Sender} : public cSimpleModule
     virtual void activity();
 };
 
+class {Receiver} : public cSimpleModule
+{
+    Module_Class_Members({Receiver},cSimpleModule,16384)
+    virtual void activity();
+};
+
 Define_Module({Sender});
+Define_Module({Receiver});
 
 void {Sender}::activity()
 {
@@ -19,22 +51,16 @@ void {Sender}::activity()
    sendDelayed(msg, 0.3456, "out");
 }
 
-%module_b: {Receiver}
-
-class {Receiver} : public cSimpleModule
-{
-    Module_Class_Members({Receiver},cSimpleModule,16384)
-    virtual void activity();
-};
-
-Define_Module({Receiver});
-
 void {Receiver}::activity()
 {
    cMessage *msg = receive();
    simtime_t diff = simTime() - msg->timestamp();
    ev << "diff: " << diff << endl;
 }
+
+%inifile: @TNAME@.ini
+[General]
+network={net}
 
 %ignore-exitcode: 1
 

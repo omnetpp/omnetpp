@@ -3,7 +3,7 @@
 %description:
 Test the exists() method of cArray.
 
-%source:
+%activity:
 %# following code will be run inside a simple module's activity()
 cArray arr;
 ev << "result:" << arr.exist(1) << endl;

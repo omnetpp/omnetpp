@@ -3,7 +3,7 @@
 %description:
 Tests cMessage.addLength().
 
-%source:
+%activity:
 cMessage msg("msg");
 
 ev << msg.length() << endl;

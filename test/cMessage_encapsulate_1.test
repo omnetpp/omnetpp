@@ -3,7 +3,7 @@
 %description:
 Tests cMessage.encapsulate().
 
-%source:
+%activity:
 cMessage *payload = new cMessage;
 payload->setLength(128);
 
