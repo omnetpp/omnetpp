@@ -1,9 +1,6 @@
 To be finished (top priority!):
 - improve comment handling in all dialogs!!!
 
-Misc:
-- with Tcl-embedding, cannot display README file
-
 Parse/Generate:
 - comments around display strings, channel attributes are lost
 - add default comments for newly created modules!
