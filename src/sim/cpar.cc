@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <string>
 #include "cpar.h"
 #include "cstat.h"
 #include "macros.h"
@@ -38,6 +39,7 @@
 #endif
 
 using std::ostream;
+using std::string;
 
 
 //==============================================
@@ -47,9 +49,11 @@ Register_Class(cPar);
 //==========================================================================
 //=== cDoubleExpression - member functions
 
-void cDoubleExpression::getAsText(char *buf, int maxlen)
+string cDoubleExpression::getAsText()
 {
+    char buf[40];
     sprintf(buf, "%g", evaluate());
+    return string(buf);
 }
 
 bool cDoubleExpression::parseText(const char *text)
@@ -218,7 +222,7 @@ void cPar::writeContents(ostream& os)
     else
     {
         os << "  Type:  " << typechar << '\n';
-        os << "  Value: " << (getAsText(buf,255), buf) << '\n';
+        os << "  Value: " << getAsText().c_str() << '\n';
     }
 }
 
@@ -925,15 +929,10 @@ void cPar::cancelRedirection()
     }
 }
 
-void cPar::getAsText(char *buf, int maxlen)
+string cPar::getAsText() const
 {
-    if (isRedirected()) {
-        ind.par->getAsText(buf, maxlen);
-        return;
-    }
-
-    buf[0] = 0;
-    if( maxlen<=1 ) return;
+    if (isRedirected())
+        return ind.par->getAsText();
 
     char bb[128];
     bb[0] = 0;
@@ -944,32 +943,30 @@ void cPar::getAsText(char *buf, int maxlen)
     switch (typechar)
     {
        case 'S': s = ls.sht ? ss.str:ls.str;
-                 buf[0]='\"';
-                 opp_strprettytrunc(buf+1,s,maxlen-3);
-                 strcat(buf,"\"");
-                 return;
-       case 'B': strcpy(bb,lng.val?"true":"false"); break;
-       case 'L': sprintf( bb,"%ld",lng.val); break;
-       case 'D': sprintf( bb,"%g",dbl.val); break;
+                 return string("\"")+s+"\"";
+       case 'B': return string(lng.val?"true":"false");
+       case 'L': sprintf(bb,"%ld",lng.val);
+                 return string(bb);
+       case 'D': sprintf(bb,"%g",dbl.val);
+                 return string(bb);
        case 'F': ff = findfunctionbyptr(func.f);
-                 if (ff) fn=ff->name(); else fn="unknown";
+                 fn = ff ? ff->name() : "unknown";
                  switch(func.argc) {
-                 case 0: sprintf(bb,"%s()",fn); break;
-                 case 1: sprintf(bb,"%s(%g)",fn,func.p1); break;
-                 case 2: sprintf(bb,"%s(%g,%g)",fn,func.p1,func.p2); break;
-                 case 3: sprintf(bb,"%s(%g,%g,%g)",fn,func.p1,func.p2,func.p3); break;
-                 case 4: sprintf(bb,"%s(%g,%g,%g,%g)",fn,func.p1,func.p2,func.p3,func.p4); break;
-                 default: sprintf(bb,"%s() with %d args",fn,func.argc); break;
+                 case 0: sprintf(bb,"()"); break;
+                 case 1: sprintf(bb,"(%g)",func.p1); break;
+                 case 2: sprintf(bb,"(%g,%g)",func.p1,func.p2); break;
+                 case 3: sprintf(bb,"(%g,%g,%g)",func.p1,func.p2,func.p3); break;
+                 case 4: sprintf(bb,"(%g,%g,%g,%g)",func.p1,func.p2,func.p3,func.p4); break;
+                 default: sprintf(bb,"() with %d args",func.argc); break;
                  };
-                 break;
-       case 'T': sprintf(bb,"distribution '%.99s'", dtr.res ? dtr.res->fullPath():""); break;
-       case 'P': sprintf(bb,"pointer %p", ptr.ptr); break;
-       case 'O': sprintf(bb,"object '%.99s'", obj.obj ? obj.obj->fullPath():""); break;
-       case 'C': sprintf(bb,"compiled expression"); break;
-       case 'X': sprintf(bb,"reverse Polish expression"); break;
-       default : bb[0]='?'; bb[1]=0; break;
+                 return string(fn)+bb;
+       case 'T': return string("distribution ")+(dtr.res?dtr.res->fullPath():"NULL");
+       case 'P': sprintf(bb,"pointer %p", ptr.ptr); return string(bb);
+       case 'O': return string("object ")+(obj.obj?obj.obj->fullPath():"NULL");
+       case 'C': return string("compiled expression ")+cexpr.expr->getAsText();
+       case 'X': return string("reverse Polish expression");
+       default : return string("???");
     }
-    opp_strprettytrunc(buf,bb,maxlen-1);
 }
 
 /*-------------------------------
@@ -1157,25 +1154,16 @@ cPar& cPar::read()
        return *this;
     }
 
-    // ask the user. FIXME: line length is limited to 255 here
-    char buf[256];
     bool success;
     do {
-        bool esc;
-        getAsText( buf, 255 );
+        string reply;
         if (!promptstr.empty())
-            esc = ev.gets(promptstr.c_str(),buf);
-        else if (name())
-            esc = ev.askf(buf,255, "Enter parameter `%s':",fullPath());
+            reply = ev.gets(promptstr.c_str(), getAsText().c_str());
         else
-            esc = ev.gets("Enter unnamed parameter:",buf);
-
-        if (esc)
-            throw new cException(eCANCEL);
-
-        success = setFromText(buf,'?');
+            reply = ev.gets((string("Enter parameter `")+fullPath()+"':").c_str(), getAsText().c_str());
+        success = setFromText(reply.c_str(),'?');
         if (!success)
-            ev.printfmsg( "Syntax error, try again." );
+            ev.printfmsg("Syntax error, try again.");
     } while (!success);
     return *this;
 }
@@ -1477,4 +1465,5 @@ cModulePar& cModulePar::operator=(const cModulePar& otherpar)
     cPar::operator=(otherpar);
     return *this;
 }
+
 

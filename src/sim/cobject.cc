@@ -408,3 +408,17 @@ static bool _do_list(cObject *obj, bool beg, ostream& s)
         return true;
 }
 
+
+ostream& operator<< (ostream& os, const cObject *p)
+{
+    if (!p)
+        return os << "(NULL)";
+    return os << "(" << p->className() << ")" << p->fullName();
+}
+
+ostream& operator<< (ostream& os, const cObject& o)
+{
+    return os << "(" << o.className() << ")" << o.fullName();
+}
+
+
