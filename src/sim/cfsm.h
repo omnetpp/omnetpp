@@ -29,8 +29,8 @@
 
 //
 // FSM_MAXT:
-//  after this many transitions without reaching stady state
-//  we assume the FSM is in infinite loop
+//  after this many transitions without reaching a steady state
+//  we assume the FSM is in an infinite loop
 //
 #define FSM_MAXT  64
 
@@ -44,7 +44,7 @@
 // - at __i=2,4,6,8,etc, FSM_Enter code is executed
 // - FSM_Enter code must not contain state change (this is verified)
 // - state changes should be encoded in FSM_Exit code
-// - infinite loops (when control never reaches steady state) are detected.
+// - infinite loops (when control never reaches steady state) are detected (FSM_MAXT)
 //
 #define FSM_Switch(fsm)  \
    for (int __i=1, __savedstate;  \
