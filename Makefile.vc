@@ -29,7 +29,7 @@ ENVIR_ILIB=
 
 all: check-env components reminder
 
-components: libs progs samples
+components: libs progs configsamples samples
 
 
 #=====================================================================
@@ -102,39 +102,39 @@ utils:
 
 dyna:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna && $(MAKE) $(MOPTS) -f $@.mak
 
 fddi:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fddi && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fddi && $(MAKE) $(MOPTS) -f $@.mak
 
 fifo1:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo1 && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo1 && $(MAKE) $(MOPTS) -f $@.mak
 
 fifo2:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo2 && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo2 && $(MAKE) $(MOPTS) -f $@.mak
 
 hcube:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hcube && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hcube && $(MAKE) $(MOPTS) -f $@.mak
 
 hist:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hist && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hist && $(MAKE) $(MOPTS) -f $@.mak
 
 nim:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\nim && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\nim && $(MAKE) $(MOPTS) -f $@.mak
 
 pvmex:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\pvmex && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\pvmex && $(MAKE) $(MOPTS) -f $@.mak
 
 token:
 	@echo ===== Compiling $@ ====
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\token && $(MAKE) $(MOPTS) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\token && $(MAKE) $(MOPTS) -f $@.mak
 
 demo:
 	@echo ===== Compiling $@ ====
@@ -156,6 +156,20 @@ check-env:
         @echo Checking if TCL_LIB/TCL_VER is correctly set...
 	@cd /d $(_TCL_LIBRARY:/=\) || echo ERROR: The directory $(_TCL_LIBRARY) does not exist. TK_DIR or TK_VER defined in configuser.vc might be wrong. && exit 1
 
+configsamples:
+	@echo ===== Configuring .dsp and .mak files for samples =====
+        cd $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
+	for %%i in ( $(SAMPLES) ) do \
+	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
+	    $(REPLACE:/=\) %%i.dsp.in - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
+	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
+	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIB@"      "$(TK_LIB)"
+	for %%i in ( $(SAMPLES) ) do \
+	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
+	    $(REPLACE:/=\) %%i.mak.in - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
+	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
+	    $(REPLACE:/=\) -    %%i.mak "@TK_LIB@"      "$(TK_LIB)"
+
 clean:
 	-for %%i in ( $(LIBS) $(PROGS) ) do \
 	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
@@ -170,11 +184,9 @@ clean:
 depend:
 	for %%i in ( $(LIBS) $(PROGS) ) do \
 	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
-#	for %%i in ( $(SAMPLES) ) do \
-#	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
+	@echo ### Dependencies for samples must be done by exporting makefiles from the IDE!
 
 reminder:
-	@echo ### Compilation finished
 !IF "$(TCL_LIBRARY)" == ""
 	@echo ###
 	@echo ### Don't forget to set the TCL_LIBRARY environment variable!

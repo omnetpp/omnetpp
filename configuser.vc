@@ -47,8 +47,9 @@ AS=cl.exe
 AR=link.exe /lib
 SHLIB_LD=link.exe /dll
 
-# OMNeT++ NED compiler
-NEDC=$(OMNETPP_ROOT)/bin/nedc.exe
+# OMNeT++ tools
+NEDC=$(OMNETPP_BIN_DIR)/nedc.exe
+REPLACE=$(OMNETPP_SRC_DIR)/utils/replace.exe
 
 # the Tcl/Tk interpreter, used by Plove
 WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
