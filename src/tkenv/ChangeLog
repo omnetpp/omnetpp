@@ -1,3 +1,7 @@
+2004-02-23  Andras Varga
+
+	* tkapp.cc/h: added moduleReparented() cEnvir method
+
 2004-02-18  Andras Varga 
 
         * tkapp.cc/h, menuproc.tcl: on-the-fly switching from one runmode to

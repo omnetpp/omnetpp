@@ -1201,6 +1201,19 @@ void TOmnetTkApp::moduleDeleted(cModule *module)
     modinsp->submoduleDeleted(module);
 }
 
+void TOmnetTkApp::moduleReparented(cModule *module, cModule *oldparent)
+{
+    // pretend it got deleted from under the 1st module, and got created under the 2nd
+    TInspector *insp = findInspector(oldparent,INSP_GRAPHICAL);
+    TGraphicalModWindow *modinsp = dynamic_cast<TGraphicalModWindow *>(insp);
+    if (modinsp) modinsp->submoduleDeleted(module);
+
+    cModule *mod = module->parentModule();
+    TInspector *insp2 = findInspector(mod,INSP_GRAPHICAL);
+    TGraphicalModWindow *modinsp2 = dynamic_cast<TGraphicalModWindow *>(insp2);
+    if (modinsp2) modinsp2->submoduleCreated(module);
+}
+
 void TOmnetTkApp::connectionCreated(cGate *srcgate)
 {
     // notify compound module where the connection (whose source is this gate) is displayed
