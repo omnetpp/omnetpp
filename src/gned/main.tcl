@@ -474,7 +474,7 @@ proc loadBitmaps {path} {
 proc do_load_bitmaps {dir prefix} {
    global bitmaps bitmap_ctr
 
-   #puts "DBG: entering $dir"
+   #debug "entering $dir"
    set files [concat [glob -nocomplain -- [file join $dir {*.gif}]] \
                      [glob -nocomplain -- [file join $dir {*.png}]]]
 

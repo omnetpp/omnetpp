@@ -103,7 +103,7 @@ proc editFilterForVector {ids} {
         }
 
         foreach id $ids {
-            #puts "DBG: vec$id --> \"$vec($id,filter)\""
+            #debug "vec$id --> \"$vec($id,filter)\""
         }
 
         #set title  ...

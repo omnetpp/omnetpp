@@ -41,6 +41,14 @@ set config(rununtil-event) ""
 
 set pluginlist {}
 
+#
+# simple debug-print procedure
+#
+proc debug {str} {
+   # uncomment the next line if you want debug messages
+   #puts "dbg: $str"
+}
+
 #===================================================================
 #    MAIN OMNET++ WINDOW
 #===================================================================
@@ -440,7 +448,7 @@ proc load_bitmaps {path} {
 proc do_load_bitmaps {dir prefix} {
    global bitmaps bitmap_ctr
 
-   #puts "DBG: entering $dir"
+   #debug "entering $dir"
    set files [concat [glob -nocomplain -- [file join $dir {*.gif}]] \
                      [glob -nocomplain -- [file join $dir {*.png}]]]
 
@@ -601,13 +609,13 @@ proc busy {{msg {}}} {
 proc registerPlugin {pluginname} {
     global pluginlist
     lappend pluginlist $pluginname
-    #puts "DBG: registered plugin \"$pluginname\""
+    #debug "registered plugin \"$pluginname\""
 }
 
 proc notifyPlugins {command args} {
     global pluginlist
     foreach pluginname $pluginlist {
-        #puts "DBG: invoking plugin callback $pluginname:$command"
+        #debug "invoking plugin callback $pluginname:$command"
         eval $pluginname:$command $args
     }
 }

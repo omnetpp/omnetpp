@@ -56,14 +56,14 @@ proc createChartWithModulesOnXAxis {graph idlist} {
     busyCursor "Generating chart..."
 
     # have to create series by grouping along (run,scalarname) pairs
-    puts "DBG: grouping and ordering data"
+    debug "grouping and ordering data"
     set idlists [opp_groupByRunAndName $idlist]
 
     set idlists [checkChartLimits $idlists]
 
     # now every idlist in $idlists is a series: same (run,scalarname) pairs,
     # aligned by moduleName; may contain holes of id=-1.
-    puts "DBG: adding series to chart"
+    debug "adding series to chart"
     set seriesnum 0
     foreach idlist $idlists {
         set data {}
@@ -121,14 +121,14 @@ proc createChartWithRunsOnXAxis {graph idlist} {
     busyCursor "Generating chart..."
 
     # have to create series by grouping along (module,scalarname) pairs.
-    puts "DBG: grouping and ordering data"
+    debug "grouping and ordering data"
     set idlists [opp_groupByModuleAndName $idlist]
 
     set idlists [checkChartLimits $idlists]
 
     # now every idlist in $idlists is a series: same (module,scalarname) pairs,
     # aligned by fileNumber+runNumber; may contain holes of id=-1.
-    puts "DBG: adding series to chart"
+    debug "adding series to chart"
     set seriesnum 0
     foreach idlist $idlists {
         set data {}
@@ -186,7 +186,7 @@ proc createScatterPlot {graph idlist modulename scalarname} {
     # X series is denoted by ($modulename, $scalarname).
     # Have to group data along (module,scalarname) pairs, and sort
     # everything by X coordinates
-    puts "DBG: grouping and ordering data"
+    debug "grouping and ordering data"
     set idlists [opp_prepareScatterPlot $idlist $modulename $scalarname]
 
     # X axis is the first idlist

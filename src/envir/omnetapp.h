@@ -84,7 +84,6 @@ class ENVIR_API TOmnetApp
 // WITH_PARSIM (note: no #ifdef to preserve class layout!)
     cParsimCommunications *parsimcomm;
     cParsimPartition *parsimpartition;
-    cParsimSynchronizer *parsimsynchronizer;
 // end
 
     cScheduler *scheduler;

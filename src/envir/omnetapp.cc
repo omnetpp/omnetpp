@@ -102,7 +102,6 @@ TOmnetApp::TOmnetApp(ArgList *arglist, cConfiguration *conf)
 #ifdef WITH_PARSIM
     parsimcomm = NULL;
     parsimpartition = NULL;
-    parsimsynchronizer = NULL;
 #endif
 
     initialized = false;
@@ -126,7 +125,6 @@ TOmnetApp::~TOmnetApp()
 #ifdef WITH_PARSIM
     delete parsimcomm;
     delete parsimpartition;
-    delete parsimsynchronizer;
 #endif
 }
 
@@ -177,12 +175,14 @@ void TOmnetApp::setup()
              // create components
              CREATE_BY_CLASSNAME(parsimcomm, opt_parsimcomm_class.c_str(), cParsimCommunications, "parallel simulation communications layer");
              parsimpartition = new cParsimPartition();
+             cParsimSynchronizer *parsimsynchronizer;
              CREATE_BY_CLASSNAME(parsimsynchronizer, opt_parsimsynch_class.c_str(), cParsimSynchronizer, "parallel simulation synchronization layer");
 
              // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
              parsimpartition->setContext(&simulation,parsimcomm,parsimsynchronizer);
              parsimsynchronizer->setContext(&simulation,parsimpartition,parsimcomm);
              simulation.setScheduler(parsimsynchronizer);
+             scheduler = parsimsynchronizer;
 
              // initialize them
              parsimcomm->init();
@@ -303,7 +303,7 @@ void TOmnetApp::shutdown()
 {
     if (!initialized)
         return;
-    
+
     try
     {
         simulation.deleteNetwork();

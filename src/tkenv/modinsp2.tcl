@@ -683,7 +683,7 @@ proc graphmodwin_rightclick {c X Y} {
 #
 proc graphmodwin_draw_message_on_gate {c gateptr msgptr} {
 
-    #puts "DBG: graphmodwin_draw_message_on_gate $msgptr"
+    #debug "graphmodwin_draw_message_on_gate $msgptr"
 
     global fonts
 
@@ -730,7 +730,7 @@ proc graphmodwin_draw_message_on_gate {c gateptr msgptr} {
 #
 proc graphmodwin_draw_message_on_module {c modptr msgptr} {
 
-    #puts "DBG: graphmodwin_draw_message_on_module $msgptr"
+    #debug "graphmodwin_draw_message_on_module $msgptr"
     set r  [get_submod_coords $c $modptr]
     set x [expr ([lindex $r 0]+[lindex $r 2])/2]
     set y [expr ([lindex $r 1]+[lindex $r 3])/2]
@@ -744,7 +744,7 @@ proc graphmodwin_draw_message_on_module {c modptr msgptr} {
 #
 proc graphmodwin_animate_on_conn {win gateptr msgptr mode} {
 
-    #puts "DBG: send $mode $msgptr"
+    #debug "send $mode $msgptr"
 
     set c $win.c
 
@@ -775,7 +775,7 @@ proc graphmodwin_animate_on_conn {win gateptr msgptr mode} {
 #
 proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr mode} {
 
-    #puts "DBG: senddirect horiz $mode $msgptr"
+    #debug "senddirect horiz $mode $msgptr"
 
     set c $win.c
     set src  [get_submod_coords $c $mod1ptr]
@@ -795,7 +795,7 @@ proc graphmodwin_animate_senddirect_horiz {win mod1ptr mod2ptr msgptr mode} {
 #
 proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr mode} {
 
-    #puts "DBG: senddirect ascent $mode $msgptr"
+    #debug "senddirect ascent $mode $msgptr"
 
     set c $win.c
     set src  [get_submod_coords $c $modptr]
@@ -814,7 +814,7 @@ proc graphmodwin_animate_senddirect_ascent {win parentmodptr modptr msgptr mode}
 #
 proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr mode} {
 
-    #puts "DBG: senddirect descent $mode $msgptr"
+    #debug "senddirect descent $mode $msgptr"
 
     set c $win.c
     set dest [get_submod_coords $c $modptr]
@@ -832,7 +832,7 @@ proc graphmodwin_animate_senddirect_descent {win parentmodptr modptr msgptr mode
 # Called from C++ code. $mode="beg"/"thru"/"end".
 #
 proc graphmodwin_animate_senddirect_delivery {win modptr msgptr} {
-    #puts "DBG: senddirect deliv $msgptr"
+    #debug "senddirect deliv $msgptr"
 
     set c $win.c
     set src  [get_submod_coords $c $modptr]

@@ -51,6 +51,15 @@ set config(vectorfile)       ""
 set config(configfile)       "~/.ploverc"
 
 
+#
+# simple debug-print procedure
+#
+proc debug {str} {
+   # uncomment the next line if you want debug messages
+   #puts "dbg: $str"
+}
+
+
 proc createMenubar {w} {
 
     global g tcl_version

@@ -74,7 +74,7 @@ proc inspectorlist_storename {w} {
 
     set insp_w2name($w) [opp_getobjectfullpath $object]
     set insp_w2class($w) [opp_getobjectclassname $object]
-    #puts "DBG: object and class name for $w stored"
+    #debug "object and class name for $w stored"
 }
 
 
@@ -103,7 +103,7 @@ proc inspectorlist_add {w} {
     set pil_class($key)  $classname
     set pil_type($key)   $type
     set pil_geom($key)   [wm geometry $w]
-    #puts "DBG: $key added to insp list"
+    #debug "$key added to insp list"
 }
 
 #
@@ -125,7 +125,7 @@ proc inspectorlist_remove {w} {
         unset pil_class($key)
         unset pil_type($key)
         unset pil_geom($key)
-        #puts "DBG: $key removed from insp list"
+        #debug "$key removed from insp list"
     }
 }
 

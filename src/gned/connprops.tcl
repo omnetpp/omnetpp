@@ -315,7 +315,7 @@ proc ConnProps:fillGateSpec {w key srcdest modkey} {
 
 proc ConnProps:refreshGateCombo {w modkey} {
     global ned
-    #puts "dbg: modkey=$modkey"
+    #debug "modkey=$modkey"
     #set submodname [$w.mod.name cget -text]
     set submodname [$w.mod.name get]
     if {$submodname=="" || $submodname=="<parent>"} {
@@ -327,7 +327,7 @@ proc ConnProps:refreshGateCombo {w modkey} {
         #
         set submodkey [findSubmodule $modkey $submodname]
         set submodkey [lindex $submodkey 0]; # to be safe
-        #puts "dbg: submodkey=$submodkey"
+        #debug "submodkey=$submodkey"
         if {$submodkey==""} {return}
         if {$ned($submodkey,like-name)!=""} {
             set modtypename $ned($submodkey,like-name)
@@ -336,11 +336,11 @@ proc ConnProps:refreshGateCombo {w modkey} {
         }
         set modtypekey [concat [itemKeyFromName $modtypename module] \
                                [itemKeyFromName $modtypename simple]]
-        #puts "dbg: modtypekey=$modtypekey"
+        #debug "modtypekey=$modtypekey"
         if {$modtypekey==""} {return}
         # if there are multiple definitions of this type, just take the first one
         set modtypekey [lindex $modtypekey 0]
-        #puts "dbg: modtypekey-2=$modtypekey"
+        #debug "modtypekey-2=$modtypekey"
         comboconfig $w.gate.name [getNameList $modtypekey gates]
     }
 }

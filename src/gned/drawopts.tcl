@@ -293,7 +293,7 @@ proc _chooseIcon {oldicon win {pwin {}}} {
      frame  $dlg.f.select
      pack   $dlg.f.select -side top -expand 0 -fill x
      label  $dlg.f.select.label -text "Icon selected:"
-     label  $dlg.f.select.name -text "$oldicon" -foreground #ff0000 -font bold
+     label  $dlg.f.select.name -text "$oldicon" -foreground #ff0000
      pack   $dlg.f.select.label  -side left
      pack   $dlg.f.select.name  -side left
 

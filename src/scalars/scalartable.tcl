@@ -23,24 +23,24 @@ proc loadScalarFile {fname} {
 
     busyCursor "Loading $fname..."
 
-    puts "DBG: loading file"
+    debug "loading file"
     if [catch {opp_loadScalar $fname} err] {
         idleCursor
         tk_messageBox -icon warning -type ok -title Error -message "Error reading $fname: $err"
         return
     }
 
-    puts "DBG: refreshing filter combos"
+    debug "refreshing filter combos"
     refreshFilters
 
     idleCursor
 
-    puts "DBG: applying filter"
+    debug "applying filter"
     applyFilter
 }
 
 proc refreshFilters {} {
-    puts "DBG:   getting lists"
+    debug "  getting lists"
     set filelist [lsort [opp_getFileAndRunList]]
     set modulelist [lsort [opp_getModuleList]]
     set namelist [lsort [opp_getScalarNameList]]
@@ -95,7 +95,7 @@ proc refreshFilters {} {
     set modulelist [concat "*" $modulewildcardwords $modulelist]
     set namelist [concat "*" $namewildcardwords $namelist]
 
-    puts "DBG:   updating combo boxes"
+    debug "  updating combo boxes"
     comboconfig .main.f.filter.pars.fileentry $filelist
     comboconfig .main.f.filter.pars.moduleentry $modulelist
     comboconfig .main.f.filter.pars.nameentry $namelist
@@ -125,7 +125,7 @@ proc applyFilter {} {
     busyCursor "Working..."
 
     # filter parameters
-    puts "DBG:   getting filtered list"
+    debug "  getting filtered list"
     set idlist [getFilteredList]
 
     # clear listbox
@@ -144,11 +144,11 @@ proc applyFilter {} {
     }
 
     # insert into listbox
-    puts "DBG:   inserting into table"
+    debug "  inserting into table"
     foreach id $idlist {
         multicolumnlistbox_insert $lb $id [opp_getListboxLine $id]
     }
-    puts "DBG:   done"
+    debug "  done"
 
     idleCursor
 

@@ -149,10 +149,10 @@ proc chartCreateBarChart {} {
 proc chartCreateScatterPlot {} {
 
     # collect data (we'll need it for X axis selection combo)
-    puts "DBG: getting filtered list"
+    debug "getting filtered list"
     set idlist [getFilteredList]
 
-    puts "DBG: getting module-scalar pairs for combo"
+    debug "getting module-scalar pairs for combo"
     set maxcount 100
     set idlistforcombo [opp_getModuleAndNamePairs $idlist $maxcount]
     if {[llength $idlistforcombo]==$maxcount} {
