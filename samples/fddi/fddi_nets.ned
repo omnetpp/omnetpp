@@ -47,7 +47,6 @@ network NRing : TUBNRing
         RingID = input (1, "RingID: "),
         FDDI_Generator_type = input ( "FDDI_GeneratorFromTraceFile",
                                               "FDDI SAS Generator type: "),
-        RingID = input (1, "RingID: "),
         TTRT = input (10 ms, "TTRT: "),
         LoadMultiplier = input (10, "Load multiplier: ");
 endnetwork
