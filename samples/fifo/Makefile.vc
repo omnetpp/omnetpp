@@ -117,4 +117,7 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+fifo.obj: fifo.cpp \
+  fifo.h
+gen.obj: gen.cpp
+sink.obj: sink.cpp

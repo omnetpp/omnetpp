@@ -117,4 +117,8 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+token.obj: token.cpp \
+  token.h \
+  token_m.h
+token_m.obj: token_m.cpp \
+  token_m.h

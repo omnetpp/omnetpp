@@ -117,4 +117,6 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+ppif.obj: ppif.cpp
+ppsink.obj: ppsink.cpp
+ppsource.obj: ppsource.cpp

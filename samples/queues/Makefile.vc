@@ -120,4 +120,10 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+distributions.obj: distributions.cpp
+fifo.obj: fifo.cpp \
+  fifo.h
+gen.obj: gen.cpp \
+  gen.h
+sink.obj: sink.cpp \
+  sink.h

@@ -114,4 +114,5 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+queue.obj: queue.cpp
+switch.obj: switch.cpp

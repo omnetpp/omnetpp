@@ -117,4 +117,14 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+fddi_mac.obj: fddi_mac.cpp \
+  fddi_def.h \
+  fddi_mac.h
+othermod.obj: othermod.cpp \
+  otherdef.h \
+  fddi_def.h \
+  othermod.h
+ssm_ifs.obj: ssm_ifs.cpp \
+  ssmifdef.h \
+  fddi_def.h \
+  ssm_ifs.h

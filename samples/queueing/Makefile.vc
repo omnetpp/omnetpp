@@ -126,4 +126,13 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+classifier.obj: classifier.cpp
+delay.obj: delay.cpp
+pqueue.obj: pqueue.cpp \
+  pqueue.h \
+  server.h
+server.obj: server.cpp \
+  server.h \
+  pqueue.h
+sink.obj: sink.cpp
+source.obj: source.cpp
