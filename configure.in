@@ -16,6 +16,9 @@ if test -n "$HOME"; then
         OMNETPP_ROOT=`pwd|sed "s|^$HOME|\\\${HOME}|"`
     fi
 fi
+if uname | grep "CYGWIN" >/dev/null; then
+    OMNETPP_ROOT=`cygpath -w $OMNETPP_ROOT | sed 's|\\\\|/|g'`
+fi
 
 OMNETPP_SRC_DIR="$OMNETPP_ROOT/src"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
