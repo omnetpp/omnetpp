@@ -2436,6 +2436,8 @@ SHLIB_LD="$CXX -shared -fPIC"
 SHLIB_CFLAGS="-fPIC"
 NEDC="nedc"
 MSGC="opp_msgc"
+NEDTOOL="nedtool"
+GNED="gned"
 MAKEDEPEND="opp_makedep -Y --objdirtree"
 
 if test "$cygwin" = yes; then
@@ -5071,6 +5073,8 @@ ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefil
 
 
 
+
+
 #
 # Generate files
 #
@@ -5722,6 +5726,8 @@ s,@OMNETPP_TEST_DIR@,$OMNETPP_TEST_DIR,;t t
 s,@MYPWD@,$MYPWD,;t t
 s,@NEDC@,$NEDC,;t t
 s,@MSGC@,$MSGC,;t t
+s,@NEDTOOL@,$NEDTOOL,;t t
+s,@GNED@,$GNED,;t t
 s,@NEDCFLAGS@,$NEDCFLAGS,;t t
 s,@AS@,$AS,;t t
 s,@AR@,$AR,;t t

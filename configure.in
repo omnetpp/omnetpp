@@ -113,6 +113,8 @@ SHLIB_LD="$CXX -shared -fPIC"
 SHLIB_CFLAGS="-fPIC"
 NEDC="nedc"
 MSGC="opp_msgc"
+NEDTOOL="nedtool"
+GNED="gned"
 MAKEDEPEND="opp_makedep -Y --objdirtree"
 
 if test "$cygwin" = yes; then
@@ -538,6 +540,8 @@ AC_SUBST(CPPFLAGS)
 AC_SUBST(MYPWD)
 AC_SUBST(NEDC)
 AC_SUBST(MSGC)
+AC_SUBST(NEDTOOL)
+AC_SUBST(GNED)
 AC_SUBST(NEDCFLAGS)
 AC_SUBST(AS)
 AC_SUBST(AR)
