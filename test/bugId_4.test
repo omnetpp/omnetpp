@@ -4,7 +4,7 @@ see bug id 4 at http://cvs-int.etec.uni-karlsruhe.de/bugtracker
 for more details.
 
 
-%file: {test}.ned
+%file: {}.ned
 
 simple {GenMod}
 endsimple
@@ -19,7 +19,7 @@ endmodule
 network {net} : {Net}
 endnetwork
 
-%inifile: @TNAME@.ini
+%inifile: {}.ini
 [General]
 network={net}
 warnings=yes

@@ -56,7 +56,7 @@ void {Receiver}::activity()
    ev << "diff: " << diff << endl;
 }
 
-%inifile: @TESTNAME@.ini
+%inifile: {test}.ini
 [General]
 network={net}
 
