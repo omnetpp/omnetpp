@@ -1678,16 +1678,11 @@ access SQL databases, so it can also be used if the network topology
 is stored in a database.
 
 The advantage is that the necessary \fprog{awk} or \fprog{perl}
-program can be written in a releatively short time, and it is
+program can be written in a relatively short time, and it is
 inexpensive to maintain afterwards: if the structure of the data files
 change, the NED-creating program can be easily modified. The
-disadvantage is that the resulting NED files are often quite big and
-the C++ compilation of the \texttt{*\_n.cc} files may take long.
-
-This method is best suited in the first phase of a simulation
-project when the topology, the format of the data files, etc.
-have not yet stabilized.
-
+resulting NED files can either be translated by \fprog{nedtool}
+into C++ and compiled in, or loaded dynamically.
 
 
 \subsection{Building the network from C++ code}
@@ -1697,8 +1692,8 @@ simulation executable. The code would read the topology data from data
 files or a database, and build the network directly, using
 dynamic module creation (to be described later, in section
 \ref{ch:simple-modules:dynamic-module-creation}).
-The code which builds the network would be similar to the \ttt{*\_n.cc}
-files output by nedc.
+The code which you need to write would be similar to the \ttt{*\_n.cc}
+files output by \fprog{nedtool}.
 
 Since writing such code is more complex than letting perl generate
 NED files, this method is recommended when the simulation program
