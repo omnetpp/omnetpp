@@ -56,7 +56,7 @@ foreach $fname (glob($fnamepatt))
               $comment = "\n\n".$comment."\n\n";
 
               # remove '//#' lines (those are comments to be ignored by documentation generation)
-              $comment =~ s|\n *//#.*?\n|\n|gs;
+              $comment =~ s|(?<=\n) *//#.*?\n||gs;
 
               # remove '//' from beginning of lines
               $comment =~ s|\n *// ?|\n|gs;
