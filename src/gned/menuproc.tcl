@@ -430,7 +430,7 @@ proc helpAbout {} {
 
     label .about.f.l -text \
 {
-GNED 2.1
+GNED 2.2
 Part of the OMNeT++ Discrete Event Simulator
 
 (C) 1997-2001 Andras Varga

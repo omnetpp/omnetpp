@@ -165,7 +165,7 @@ proc editConnectionProps {key} {
 
 
 proc ConnProps:forLoopEdit {w} {
-    puts "dbg: TODO: 'for' handling to be implemented!"
+    debug "TODO: 'for' handling to be implemented!"
 
     frame $w
     label $w.l -text "Handling of loop connections not implemented yet."

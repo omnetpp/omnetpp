@@ -66,7 +66,7 @@ proc switchToGraphics {} {
     set originalnedcode $canvas($canv_id,nedsource)
     if {[string compare $nedcode "$originalnedcode\n"]==0} {
         # no change, so simply switch back to original graphics
-        puts "dbg: source unchanged, switching back without parsing..."
+        debug "source unchanged, switching back without parsing..."
         setCanvasMode "graphics"
         return
     }
@@ -75,7 +75,7 @@ proc switchToGraphics {} {
     # parse it into tmp_ned() array, then merge into ned()
     #
 
-    puts "dbg: parsing and checking..."
+    debug "parsing and checking..."
 
     # parse NED file and fill the tmp_ned() array
     catch {unset tmp_ned}
@@ -110,7 +110,7 @@ proc switchToGraphics {} {
     # debug code:
     #set showkeys [lsort [array names tmp_ned "*"]]
     #foreach i $showkeys {
-    #  puts "DBG: tmp_ned($i)=\"$tmp_ned($i)\""
+    #  debug "tmp_ned($i)=\"$tmp_ned($i)\""
     #}
 
     # check what was in ned code actually
@@ -156,13 +156,13 @@ proc switchToGraphics {} {
     # OK! In the next lines we'll transfer the new stuff into ned()
     #
 
-    puts "dbg: deleting old stuff..."
+    debug "deleting old stuff..."
 
     # delete old stuff from ned() and add new stuff
     set origmodkey $canvas($canv_id,module-key)
     deleteModuleData $origmodkey
 
-    puts "dbg: pasting into ned..."
+    debug "pasting into ned..."
 
     # we're not supposed to overwrite the nedfile's properties in ned():
     foreach i [array names tmp_ned "$filekey,*"] {
@@ -182,7 +182,7 @@ proc switchToGraphics {} {
     # parse display strings
     parse_displaystrings $modkey
 
-    puts "dbg: drawing..."
+    debug "drawing..."
 
     # update canvas
     set canvas($canv_id,module-key) $modkey

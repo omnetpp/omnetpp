@@ -25,7 +25,7 @@
 proc generateNed {key} {
     update_displaystrings $key
 
-    puts "dbg: generating NED code..."
+    debug "generating NED code..."
     return [generateNedItem $key {} 0]
 }
 
@@ -519,15 +519,15 @@ proc appendRightComment {outvar comment} {
 
     regsub ".*\n" $out "" lastline
     regsub -all "." $lastline " " indent
-    #puts "dbg: lastline: ($lastline)"
-    #puts "dbg: indent:   ($indent)"
+    #debug "lastline: ($lastline)"
+    #debug "indent:   ($indent)"
 
-    #puts "dbg: rightcomment: (($comment))"
+    #debug "rightcomment: (($comment))"
     set comment " //$comment"
     regsub -all "\n" $comment "\n$indent //" comment
     regsub -all "//-\n" $comment "\n" comment
     regsub -all "$indent //$" $comment "" comment
-    #puts "dbg: turned into:  (($comment))"
+    #debug "turned into:  (($comment))"
 
     append out $comment
 }

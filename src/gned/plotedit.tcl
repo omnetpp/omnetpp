@@ -477,7 +477,7 @@ proc selectOrMoveStart {c x y ctrl} {
            set mouse(conns-to-redraw) {}
        }
        default {
-           puts "dbg: unknown mouse mode '$mouse(mode)'"
+           debug "unknown mouse mode '$mouse(mode)'"
        }
     }
 }
@@ -576,7 +576,7 @@ proc selectOrMoveDrag {c x y} {
     } elseif {$mouse(mode) == "nothing"} {
        # nothing
     } else {
-       puts "dbg: unknown mouse mode '$mouse(mode)'"
+       debug "unknown mouse mode '$mouse(mode)'"
     }
 
     foreach key $mouse(conns-to-redraw) {
@@ -645,7 +645,7 @@ proc selectOrMoveEnd {c x y} {
     } elseif {$mouse(mode) == "nothing"} {
        # nothing
     } else {
-       puts "dbg: unknown mouse mode '$mouse(mode)'"
+       debug "unknown mouse mode '$mouse(mode)'"
     }
 
     # label editing:

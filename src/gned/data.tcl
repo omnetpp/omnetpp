@@ -55,7 +55,7 @@ proc addItem {type parentkey} {
     # mark it "not selected" on canvas
     set ned($key,aux-isselected) 0
 
-    #puts "dbg: addItem: $type $key added to $parentkey (its children now: $ned($parentkey,childrenkeys))"
+    #debug "addItem: $type $key added to $parentkey (its children now: $ned($parentkey,childrenkeys))"
 
     return $key
 }
@@ -96,7 +96,7 @@ proc insertItem {key parentkey} {
 proc deleteItem {key} {
     global ned canvas ned_attlist
 
-    #puts "dbg: deleteItem $key entered"
+    #debug "deleteItem $key entered"
 
     # prevent race conditions...
     set ned($key,being-deleted) 1
@@ -110,7 +110,7 @@ proc deleteItem {key} {
 
     # delete non-child linked objects
     #   (e.g. connections when a submod is deleted)
-    puts "dbg: deleteItem: inefficient code ('foreach array names')"
+    debug "deleteItem: inefficient code ('foreach array names')"
     foreach i [array names ned "*,*ownerkey"] {
        if {[info exist ned($i)] && $ned($i)==$key} {
           regsub -- ",.*ownerkey" $i "" childkey

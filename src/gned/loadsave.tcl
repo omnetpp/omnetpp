@@ -37,7 +37,7 @@ proc makeFancyName {nedfile} {
 proc saveNED {nedfilekey} {
    global ned
 
-   puts "DBG: saving nedfilekey $nedfilekey"
+   debug "saving nedfilekey $nedfilekey"
 
    if [catch {
        set nedfile $ned($nedfilekey,filename)
@@ -117,7 +117,7 @@ proc loadNED {nedfile} {
     ## debug code:
     #set showkeys [lsort [array names tmp_ned "*"]]
     #foreach i $showkeys {
-    #    puts "DBG: tmp_ned($i)=\"$tmp_ned($i)\""
+    #    debug "tmp_ned($i)=\"$tmp_ned($i)\""
     #}
 
     # collect modules from code for further display
@@ -142,7 +142,7 @@ proc loadNED {nedfile} {
     parse_displaystrings $filekey
 
     # debug code
-    #puts "dbg: checkArray says:"
+    #debug "checkArray says:"
     #checkArray
 
     # update manager

@@ -52,7 +52,7 @@ proc editImportProps {key} {
     $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
     $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
     fillTableEditFromNed $nb.imports.tbl $key
-    puts "DBG: editImportProps: strip/add quotes!"
+    debug "editImportProps: strip/add quotes!"
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .impprops] == 1} {

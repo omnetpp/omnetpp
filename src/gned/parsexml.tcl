@@ -73,7 +73,7 @@ proc loadXML {xmlfile} {
     # debug code:
     # set showkeys [lsort [array names tmp_ned "*"]]
     # foreach i $showkeys {
-    #     puts "DBG: tmp_ned($i)=\"$tmp_ned($i)\""
+    #     debug "tmp_ned($i)=\"$tmp_ned($i)\""
     # }
 
     # collect modules from code for further display
@@ -98,7 +98,7 @@ proc loadXML {xmlfile} {
     parse_displaystrings $filekey
 
     # debug code
-    #puts "dbg: checkArray says:"
+    #debug "checkArray says:"
     #checkArray
 
     # update manager
@@ -117,7 +117,7 @@ proc loadXML {xmlfile} {
 proc doParseXML {xmlfile rootkey} {
     global tmp_ned tmp_errors tmp_idmap
 
-    puts "dbg: parsing XML file..."
+    debug "parsing XML file..."
 
     # handling of file errors left to the caller
     set fin [open $xmlfile r]
@@ -146,7 +146,7 @@ proc sax_elementstart {tag attlist} {
     global tmp_ned tmp_errors tmp_idmap
     global stack
 
-    # puts "DBG: elementstart $tag ($attlist)"
+    # debug "elementstart $tag ($attlist)"
 
     # verify type
     if ![info exist ned_desc($tag,parents)] {
@@ -188,7 +188,7 @@ proc sax_elementstart {tag attlist} {
 
 proc sax_elementend {tag} {
     global stack
-    # puts "DBG: elementend $tag"
+    # debug "elementend $tag"
     # remove last element from stack
     set stack [lreplace $stack end end]
     return 0

@@ -1,3 +1,11 @@
+2002-04-06  Andras Varga
+
+	* main.tcl: Fix for Cygwin: checkVersion complained about tk_patchLevel
+        '8.0.4'. (In earlier versions, tk_patchLevel had the format '8.0p4').
+
+        * *.tcl: puts "dbg: ..." statements replaced by a debug procedure, with
+        debugging currently turned off.
+
 2002-02-29  Andras Varga
 
 	* findrepl.tcl: implemented backwards search/replace

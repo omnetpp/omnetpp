@@ -288,7 +288,7 @@ proc textCanvasContainsChanges {canv_id} {
 proc destroyCanvas {canv_id} {
     global canvas gned
 
-    puts "dbg: destroyCanvas $canv_id"
+    debug "destroyCanvas $canv_id"
 
     # find canvas that will be current after closing this one
     # select previous one, then if it fails, try next one

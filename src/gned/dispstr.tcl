@@ -262,7 +262,7 @@ proc update_conn_dispstr {key} {
 # parse display strings in a whole NED tree
 #
 proc parse_displaystrings {key} {
-   puts "dbg: parsing display strings..."
+   debug "parsing display strings..."
    parse_displaystrings_rec $key
 }
 
@@ -291,7 +291,7 @@ proc parse_displaystrings_rec {key} {
 # update display strings in a whole NED tree
 #
 proc update_displaystrings {key} {
-   puts "dbg: updating display strings..."
+   debug "updating display strings..."
    update_displaystrings_rec $key
 }
 
