@@ -12,15 +12,15 @@ of the problems and methods of parallel
 discrete event simulation (PDES\index{PDES}). Interested readers are
 strongly encouraged to look into the literature.
 
-For parallel execution, the model is to be partitioned to several
-LPs that will be simulated independently on different hosts or
-processors. Each LP will have its own local Future Event Set,
-thus they will maintain their own local simulation times. The main issue with
-parallel simulations is keeping LPs synchronized in order to
-avoid violating the causality of events. Without synchronization, a
-message sent by one LP could arrive in another LP when the
-simulation time in the receiving LP has already passed the
-timestamp (arrival time) of the message. This would break
+For parallel execution, the model is to be partitioned into several
+LPs (logical processes) that will be simulated independently on 
+different hosts or processors. Each LP will have its own local 
+Future Event Set, thus they will maintain their own local simulation 
+times. The main issue with parallel simulations is keeping LPs 
+synchronized in order to avoid violating the causality of events.
+Without synchronization, a message sent by one LP could arrive in 
+another LP when the simulation time in the receiving LP has already 
+passed the timestamp (arrival time) of the message. This would break
 causality\index{event!causality} of events in the receiving LP.
 
 There are two broad categories of parallel simulation algorithms
@@ -30,15 +30,15 @@ above:
 \begin{enumerate}
   \item{\textbf{Conservative algorithms}\index{parallel simulation!conservative}
     prevents incausalities from happening. The Null Message Algorithm
-    exploits knowledge about when LPs send messages to other LPs,
-    and uses `null' messages to propagate this info to other LPs.
-    If a LP knows it won't receive any messages from other
+    exploits knowledge of the time when LPs send messages to other LPs,
+    and uses `null' messages to propagate this information to other LPs.
+    If an LP knows it won't receive any messages from other
     LPs until $t+\Delta t$ simulation time, it may advance until
     $t+\Delta t$ without the need for external synchronization.
     Conservative simulation tends to converge to sequential simulation
     (slowed down by communication between LPs) if there's not
     enough parallelism in the model, or parallelism is not exploited
-    by sending enough `null' messages.}
+    by sending a sufficient number of `null' messages.}
 
   \item{\textbf{Optimistic synchronization}\index{parallel simulation!optimistic}
     allows incausalities to occur, but detects and
@@ -151,7 +151,7 @@ topologies, using link delays as lookahead. The laziness of null message
 sending can be tuned. Also supported is the Ideal Simulation Protocol
 (ISP) introduced by Bagrodia in 2000 \cite{bagrodia00}. ISP is
 a powerful research vehicle to measure the efficiency of
-PDES algorithms, optimistic or conservative;
+PDES algorithms, both optimistic and conservative;
 more precisely, it helps determine the maximum speedup achievable
 by any PDES algorithm for a particular model and simulation environment.
 In {\opp}, ISP can be used for benchmarking the performance of the
@@ -188,7 +188,7 @@ PDES support in {\opp} follows a modular and extensible architecture.
 New communication mechanisms can be added by implementing a compact
 API (expressed as a C++ class) and registering the implementation --
 after that, the new communications mechanism can be selected for use
-from the configuration.
+in the configuration.
 
 New PDES synchronization algorithms can be added in a similar way.
 PDES algorithms are also represented by C++ classes that have
@@ -197,21 +197,21 @@ to integrate with the simulation kernel.
 Setting up the model on various LPs as well as relaying
 model messages across LPs is already taken care of and
 not something the implementation of the synchronization algorithm
-needs to worry about it (although it can intervene if needed,
-because the necessary hooks are present).
+needs to worry about (although it can intervene if needed,
+because the necessary hooks are provided).
 
 The implementation of the Null Message Algorithm is also
 modular in itself in that the lookahead discovery can be plugged
 in via a defined API. Currently implemented lookahead
 discovery uses link delays, but it is possible to
-implement more sophisticated ones and select them from the
+implement more sophisticated ones and select them in the
 configuration.
 
 
 
 \subsection{Parallel Simulation Example}
 
-Here we use the Parallel CQN example simulation for demonstrating the
+We will use the Parallel CQN example simulation for demonstrating the
 PDES capabilities of {\opp}.
 The model consists of $N$ tandem queues where each tandem consists
 of a switch and $k$ single-server queues with exponential service times
@@ -247,7 +247,7 @@ To run the CQN model in parallel, we have to configure it for parallel
 execution. In {\opp}, the configuration is in a text file called
 \texttt{omnetpp.ini}. For configuration, first we have to specify
 partitioning, that is, assign modules to processors. This is done
-with the following lines:
+by the following lines:
 
 \begin{verbatim}
 [Partitioning]
@@ -336,7 +336,7 @@ not present in the local LP.
 
 Instantiation of compound modules is slightly more complicated.
 Since submodules can be on different LPs, the compound module may
-not be ``fully present'' on any given LP, and it may forced to be
+not be ``fully present'' on any given LP, and it may have to be
 present on several LPs (wherever it has submodules instantiated).
 Thus, compound modules are instantiated wherever they have
 at least one submodule instantiated, and are represented by placeholders
@@ -380,7 +380,7 @@ if not needed. It consists of three layers, from the bottom up:
 communication layer, partitioning layer and synchronization layer.
 
 The purpose of the \textit{Communication layer} is to
-provide elementary messaging services between partitions for
+provide elementary messaging services between partitions for the
 upper layer. The services include send, blocking receive,
 nonblocking receive and broadcast. The send/receive operations
 work with \textit{buffers}, which encapsulate packing and unpacking
@@ -388,7 +388,7 @@ operations for primitive C++ types. The message class and
 other classes in the simulation library can pack and unpack
 themselves into such buffers. The Communications layer API
 is defined in the \texttt{cFileCommunications} interface
-(abstract class); concrete implementations like the MPI
+(abstract class); specific implementations like the MPI
 one (\texttt{cMPICommunications}) subclass from this,
 and encapsulate MPI send/receive calls. The matching buffer
 class \texttt{cMPICommBuffer} encapsulates MPI pack/unpack
@@ -401,8 +401,8 @@ During the simulation, this layer also ensures that cross-partition
 simulation messages reach their destinations. It intercepts messages
 that arrive at proxy gates and transmits them to the destination LP
 using the services of the communication layer. The receiving LP
-unpacks the message and injects it at the gate pointed to be the
-proxy gate. The implementation basically encapsulates the
+unpacks the message and injects it at the gate the proxy gate points at.
+The implementation basically encapsulates the
 \texttt{cParsimSegment}, \texttt{cPlaceHolderModule},
 \texttt{cProxyGate} classes.
 
