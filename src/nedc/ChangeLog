@@ -1,3 +1,7 @@
+2002-10-04  Andras Varga 
+
+	* nedc: changed opp_error() calls in generated code to throw new cException
+
 2002-06-09  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* Makefile.in (nedtool): use EXPAT_LIB when linking

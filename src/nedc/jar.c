@@ -88,44 +88,44 @@ void print_header (FILE *f)
         fprintf (f, "#include \"omnetpp.h\"\n\n" );
 
         fprintf (f, "#define check_error() \\\n"
-                    "    {if (!simulation.ok()) return;}\n");
+                    "    {(void)0;}\n"); // no need since exceptions
         fprintf (f, "#define check_memory() \\\n"
-                    "    {if (memoryIsLow()) {opp_error(eNOMEM); return;}}\n");
+                    "    {if (memoryIsLow()) {throw new cException(eNOMEM); }}\n");
         fprintf (f, "#define check_module_count(num, mod, parentmod) \\\n"
-                    "    {if ((int)num<0) {opp_error(\"Negative module vector size %%s[%%d] in compound module %%s\", \\\n"
-                    "                          mod,(int)num,parentmod);return;}}\n");
+                    "    {if ((int)num<0) {throw new cException(\"Negative module vector size %%s[%%d] in compound module %%s\", \\\n"
+                    "                          mod,(int)num,parentmod);}}\n");
         fprintf (f, "#define check_gate_count(num, mod, gate, parentmod) \\\n"
-                    "    {if ((int)num<0) {opp_error(\"Negative gate vector size %%s.%%s[%%d] in compound module %%s\", \\\n"
-                    "                          mod,gate,(int)num,parentmod);return;}}\n");
+                    "    {if ((int)num<0) {throw new cException(\"Negative gate vector size %%s.%%s[%%d] in compound module %%s\", \\\n"
+                    "                          mod,gate,(int)num,parentmod);}}\n");
         fprintf (f, "#define check_loop_bounds(lower, upper, parentmod) \\\n"
                     "    {if ((int)lower<0) \\\n"
-                    "        {opp_error(\"Bad loop bounds (%%d..%%d) in compound module %%s\", \\\n"
-                    "                 (int)lower,(int)upper,parentmod);return;}}\n");
+                    "        {throw new cException(\"Bad loop bounds (%%d..%%d) in compound module %%s\", \\\n"
+                    "                 (int)lower,(int)upper,parentmod);}}\n");
         fprintf (f, "#define check_module_index(index,modvar,modname,parentmod) \\\n"
-                    "    {if (index<0 || index>=modvar[0]->size()) {opp_error(\"Bad submodule index %%s[%%d] in compound module %%s\", \\\n"
-                    "          modname,(int)index,parentmod);return;}}\n");
+                    "    {if (index<0 || index>=modvar[0]->size()) {throw new cException(\"Bad submodule index %%s[%%d] in compound module %%s\", \\\n"
+                    "          modname,(int)index,parentmod);}}\n");
         fprintf (f, "#define check_channel_params(delay, err, channel) \\\n"
                     "    {if ((double)delay<0.0) \\\n"
-                    "        {opp_error(\"Negative delay value %%lf in channel %%s\",(double)delay,channel);return;} \\\n"
+                    "        {throw new cException(\"Negative delay value %%lf in channel %%s\",(double)delay,channel);} \\\n"
                     "     if ((double)err<0.0 || (double)err>1.0) \\\n"
-                    "        {opp_error(\"Incorrect error value %%lf in channel %%s\",(double)err,channel);return;}}\n");
+                    "        {throw new cException(\"Incorrect error value %%lf in channel %%s\",(double)err,channel);}}\n");
         fprintf (f, "#define check_modtype(modtype, modname) \\\n"
-                    "    {if ((modtype)==NULL) {opp_error(\"Simple module type definition %%s not found\", \\\n"
-                    "                                     modname);return;}}\n");
+                    "    {if ((modtype)==NULL) {throw new cException(\"Simple module type definition %%s not found\", \\\n"
+                    "                                     modname);}}\n");
         fprintf (f, "#define check_function(funcptr, funcname) \\\n"
-                    "    {if ((funcptr)==NULL) {opp_error(\"Function %%s not found\", \\\n"
-                    "                                     funcname);return;}}\n");
+                    "    {if ((funcptr)==NULL) {throw new cException(\"Function %%s not found\", \\\n"
+                    "                                     funcname);}}\n");
         fprintf (f, "#define check_function_retnull(funcptr, funcname) \\\n"
-                    "    {if ((funcptr)==NULL) {opp_error(\"Function %%s not found\", \\\n"
+                    "    {if ((funcptr)==NULL) {throw new cException(\"Function %%s not found\", \\\n"
                     "                                     funcname);return NULL;}}\n");
         fprintf (f, "#define check_gate(gateindex, modname, gatename) \\\n"
-                    "    {if ((int)gateindex==-1) {opp_error(\"Gate %%s.%%s not found\",modname,gatename);return;}}\n");
+                    "    {if ((int)gateindex==-1) {throw new cException(\"Gate %%s.%%s not found\",modname,gatename);}}\n");
         fprintf (f, "#define check_anc_param(ptr,parname,compoundmod) \\\n"
-                    "    {if ((ptr)==NULL) {opp_error(\"Unknown ancestor parameter named %%s in compound module %%s\", \\\n"
-                    "                                parname,compoundmod);return;}}\n");
+                    "    {if ((ptr)==NULL) {throw new cException(\"Unknown ancestor parameter named %%s in compound module %%s\", \\\n"
+                    "                                parname,compoundmod);}}\n");
         fprintf (f, "#define check_param(ptr,parname) \\\n"
-                    "    {if ((ptr)==NULL) {opp_error(\"Unknown parameter named %%s\", \\\n"
-                    "                                parname);return;}}\n");
+                    "    {if ((ptr)==NULL) {throw new cException(\"Unknown parameter named %%s\", \\\n"
+                    "                                parname);}}\n");
         fprintf (f, "#ifndef __cplusplus\n"
                     "#  error Compile as C++!\n"
                     "#endif\n"
@@ -404,8 +404,8 @@ int do_secondpass (char *root_fname)
                 {
                   fprintf(stderr, "Current working directory path exceeds %d when forming new new filename\n", sizeof(path));
                   return 1;
-	
-                }	
+
+                }
             }
           }
           else
@@ -414,7 +414,7 @@ int do_secondpass (char *root_fname)
             return 1;
           }
 #endif
-        
+
         /* create output file name */
         sprintf (cc_fname, "%s%s", root_fname, suffix);
         if (verbose) printf("target file: %s\n", cc_fname);

@@ -848,12 +848,12 @@ sub generateClass
                 print CC "}\n\n";
                 print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k) const\n";
                 print CC "{\n";
-                print CC "    if (k>=$farraysize{$fieldname}) opp_error(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
+                print CC "    if (k>=$farraysize{$fieldname}) throw new cException(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    return $var{$fieldname}\[k\];\n";
                 print CC "}\n\n";
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
-                print CC "    if (k>=$farraysize{$fieldname}) opp_error(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
+                print CC "    if (k>=$farraysize{$fieldname}) throw new cException(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    this->$var{$fieldname}\[k\] = $var{$fieldname};\n";
                 print CC "}\n\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
@@ -875,12 +875,12 @@ sub generateClass
                 print CC "}\n\n";
                 print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k) const\n";
                 print CC "{\n";
-                print CC "    if (k>=$varsize{$fieldname}) opp_error(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
+                print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
                 print CC "    return $var{$fieldname}\[k\];\n";
                 print CC "}\n\n";
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
-                print CC "    if (k>=$varsize{$fieldname}) opp_error(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
+                print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
                 print CC "    this->$var{$fieldname}\[k\]=$var{$fieldname};\n";
                 print CC "}\n\n";
             } else {
