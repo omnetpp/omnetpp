@@ -561,6 +561,7 @@ AC_CONFIG_FILES(
   src/utils/opp_makemake
   src/utils/opp_neddoc
   samples/dyna/Makefile
+  samples/dyna2/Makefile
   samples/fddi/Makefile
   samples/fifo1/Makefile
   samples/fifo2/Makefile

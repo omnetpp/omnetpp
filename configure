@@ -4934,7 +4934,7 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/dyna/Makefile samples/fddi/Makefile samples/fifo1/Makefile samples/fifo2/Makefile samples/hcube/Makefile samples/hist/Makefile samples/nim/Makefile samples/token/Makefile samples/topo/Makefile samples/demo/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
+ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake src/utils/opp_neddoc samples/dyna/Makefile samples/dyna2/Makefile samples/fddi/Makefile samples/fifo1/Makefile samples/fifo2/Makefile samples/hcube/Makefile samples/hist/Makefile samples/nim/Makefile samples/token/Makefile samples/topo/Makefile samples/demo/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
 
 #----------------------
 # Substitutions.
@@ -5286,6 +5286,7 @@ do
   "src/utils/opp_makemake" ) CONFIG_FILES="$CONFIG_FILES src/utils/opp_makemake" ;;
   "src/utils/opp_neddoc" ) CONFIG_FILES="$CONFIG_FILES src/utils/opp_neddoc" ;;
   "samples/dyna/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/dyna/Makefile" ;;
+  "samples/dyna2/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/dyna2/Makefile" ;;
   "samples/fddi/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/fddi/Makefile" ;;
   "samples/fifo1/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/fifo1/Makefile" ;;
   "samples/fifo2/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/fifo2/Makefile" ;;
@@ -5298,7 +5299,7 @@ do
   "tutorial/queues/Makefile" ) CONFIG_FILES="$CONFIG_FILES tutorial/queues/Makefile" ;;
   "include/Makefile" ) CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
-  *) { { echo "$as_me:5301: error: invalid argument: $ac_config_target" >&5
+  *) { { echo "$as_me:5302: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
   esac
@@ -5563,7 +5564,7 @@ done; }
   esac
 
   if test x"$ac_file" != x-; then
-    { echo "$as_me:5566: creating $ac_file" >&5
+    { echo "$as_me:5567: creating $ac_file" >&5
 echo "$as_me: creating $ac_file" >&6;}
     rm -f "$ac_file"
   fi
@@ -5581,7 +5582,7 @@ echo "$as_me: creating $ac_file" >&6;}
       -) echo $tmp/stdin ;;
       [\\/$]*)
          # Absolute (can't be DOS-style, as IFS=:)
-         test -f "$f" || { { echo "$as_me:5584: error: cannot find input file: $f" >&5
+         test -f "$f" || { { echo "$as_me:5585: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          echo $f;;
@@ -5594,7 +5595,7 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
            echo $srcdir/$f
          else
            # /dev/null tree
-           { { echo "$as_me:5597: error: cannot find input file: $f" >&5
+           { { echo "$as_me:5598: error: cannot find input file: $f" >&5
 echo "$as_me: error: cannot find input file: $f" >&2;}
    { (exit 1); exit 1; }; }
          fi;;
