@@ -417,3 +417,6 @@ Feb 6, 2001
  - make clean didn't delete tclcode.cc
 ------ omnetpp-2.0 released ------
 ------ omnetpp-2.0p1 released ------
+Mar 10, 2001
+ - bugfix: setDisplayString() crashed Tkenv after the network graphics window
+   was closed [reported by Stefan Geisler]

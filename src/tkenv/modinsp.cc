@@ -103,6 +103,13 @@ TGraphicalModWindow::TGraphicalModWindow(cObject *obj,int typ,void *dat) :
    mod->setDisplayStringNotify(dispStringCallback, this);
 }
 
+TGraphicalModWindow::~TGraphicalModWindow()
+{
+   // deregister a callback
+   cModule *mod = (cModule *)object;
+   mod->setDisplayStringNotify(NULL, NULL);
+}
+
 void TGraphicalModWindow::createWindow()
 {
    TInspector::createWindow(); // create window name etc.

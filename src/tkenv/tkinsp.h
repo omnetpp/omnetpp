@@ -218,6 +218,7 @@ class TGraphicalModWindow : public TInspector
       bool needs_redraw;
    public:
       TGraphicalModWindow(cObject *obj,int typ,void *dat=NULL);
+      ~TGraphicalModWindow();
       virtual void createWindow();
       virtual void update();
       virtual int inspectorCommand(Tcl_Interp *interp, int argc, char **argv);
