@@ -648,8 +648,7 @@ clean:
 
 print OUT "\t-del \$(TARGET)\$(EXE_SUFFIX) 2>NUL" if ($type eq "exe");
 
-print OUT "\
-\t-del *.obj *.idb *.pdb .tstamp 2>NUL
+print OUT "\t-del *.obj *.idb *.pdb .tstamp 2>NUL
 \t-del *_n.$ccext *_n.h *_m.$ccext *_m.h 2>NUL
 \t-del *.vec *.sca 2>NUL
 \t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand clean && cd .. || exit /b 1
