@@ -80,6 +80,7 @@ void TokenRingMAC::activity()
     dataRate = par("dataRate");     // 4 or 16 Mbit/s
     tokenHoldingTime = par("THT");   // typically 10ms
     myAddress = par("address");
+    queueMaxLen = par("queueMaxLen");
 
     debug = true;
     WATCH(debug);
@@ -90,6 +91,12 @@ void TokenRingMAC::activity()
     queueLenPackets.setName("Queue length (packets)");
     queueLenBytes.setName("Queue length (bytes)");
     queueingTime.setName("Queueing time (sec)");
+
+    numPacketsToSend = 0;
+    WATCH (numPacketsToSend);
+    numPacketsToSendDropped = 0;
+    WATCH (numPacketsToSendDropped);
+    queueDrops.setName("App data packets dropped");
 
     char msgname[30];
 
@@ -238,9 +245,28 @@ void TokenRingMAC::storeDataPacket(TRApplicationData *msg)
 {
     if (debug)
     {
-        ev << "App data received from higher layer, enqueueing: \"" << msg->name() << "\", "
+        ev << "App data received from higher layer: \"" << msg->name() << "\", "
               "length=" << msg->length()/8 << "bytes" << endl;
     }
+
+    // inc counter
+    numPacketsToSend++;
+
+    // if queue is full, we have to drop it
+    if (sendQueue.length() >= queueMaxLen)
+    {
+        if (debug)
+        {
+            ev << "Queue full, DROPPED!" << endl;
+        }
+        delete msg;
+        numPacketsToSendDropped++;
+        queueDrops.record(numPacketsToSendDropped);
+        return;
+    }
+
+    // mark enqeueing time, we'll need it for calculating time spent in queue
+    msg->setTimestamp();
 
     // insert message into send buffer
     sendQueue.insert( msg );
@@ -248,8 +274,11 @@ void TokenRingMAC::storeDataPacket(TRApplicationData *msg)
     queueLenPackets.record( sendQueue.length() );
     queueLenBytes.record(sendQueueBytes);
 
-    // mark enqeueing time, we'll need it for calculating time spent in queue
-    msg->setTimestamp();
+    if (debug)
+    {
+        ev << "Enqueued, queue length=" << sendQueue.length() << endl;
+    }
+
 }
 
 void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
@@ -338,6 +367,20 @@ void TokenRingMAC::endReceiveFrame(cMessage *data)
     }
     send(data, "to_hl");
 }
+
+void TokenRingMAC::finish()
+{
+    ev << "Module: " << fullPath() << endl;
+    ev << "Total packets received from higher layer: " << numPacketsToSend << endl;
+    ev << "Higher layer still in queue: " << sendQueue.length() << endl;
+    ev << "Higher layer packets dropped: " << numPacketsToSendDropped << endl;
+    if (numPacketsToSend>sendQueue.length())
+    {
+        ev << "Percentage dropped: " << (100*numPacketsToSendDropped/(numPacketsToSend-sendQueue.length())) << "%" << endl;
+    }
+    ev << endl;
+}
+
 
 void Sink::activity()
 {
