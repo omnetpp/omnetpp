@@ -1,17 +1,18 @@
 EXPERIMENTAL MESSAGE SUBCLASSING SUPPORT
 ========================================
 
-The message subclassing compiler is src/nedc/msgc.pl; msgtest.ned in the same
-directory is an example NED file that you can try to get an impression what
-the whole thing is about.
+The message subclassing compiler is opp_msgc (bin/). It processes .msg files;
+see test.msg for an example file.
 
-To try message subclassing, you have to re-run configure with the
-   --enable-nedc-subcl
-command-line argument.
+samples/dyna2 demonstrates the use of message subclassing:
+- dynapacket.msg defines DynaPacket and DynaDataPacket;
+- dynapacket_m.h and dynapacket_m.cc are produced by opp_msgc from it, and 
+  contain the generated DynaPacket and DynaDataPacket C++ classes (plus code 
+  for Tkenv inspectors);
+- other model files (client.cc, server.cc, ...) use the generated message
+  classes as any other C++ classes
 
-samples/dyna2 demonstrates the use of message subclassing.
-
-Message subclassing support is still experimental, any detail might change
+Message subclassing support is still experimental, details might change
 in future versions.
 
 Below you'll find documentation of current state.
@@ -97,11 +98,11 @@ The actual implementation is somewhat more complicated than this, but not
 much.
 
 To relieve the simulation programmer from having to write this extra code,
-message descriptions are moved into NED, and nedc will do the task of
-generating the necessary C++ code with subclasses of cMessage and cPacket.
-nedc can add the necessary data members and their get/set methods. nedc
-also generates the necessary reflection code which makes it possible
-to inspect message contents in Tkenv.
+messages are described in a higher-level syntax, and a compiler is used to
+generate the necessary C++ code with subclasses of cMessage and cPacket.
+The message compiler can add the necessary data members and their get/set 
+methods. It also generates the necessary reflection code which makes it 
+possible to inspect message contents in Tkenv.
 
 The original idea is described in:
   http://www.hit.bme.hu/phd/vargaa/omnetpp/subclass.htm
@@ -114,54 +115,19 @@ Experimental message subclassing
 ================================
 This is an experimental implementation of the message subclassing feature
 described above. "Experimental" means that:
- 1. The NED message description syntax and features may change in the future,
+ 1. The message description syntax and features may change in the future,
     based on feedback from the community;
- 2. The nedc extension that translates message descriptions into C++ is
-    implemented as a perl script (prototype implementation).
-
-
-Files
-=====
-msgc.pl         -- "message subclassing compiler"
-msgtest.ned     -- example NED source
-nedcwrapper.sh  -- 'glue' script to integrate message subclassing
-                   into the current OMNeT++ releases
-msgdoc.txt      -- this file
-
-
-How to try
-==========
-You place your message subclassing stuff into a file with .ned extension.
-This file is going to be processed with msgc.pl, the experimental
-"message subclassing compiler". Since msgc.pl doesn't understand
-"conventional" NED elements (i.e. modules, networks, channels), don't put
-any of them into a message subclassing .ned file! (Similarly, because
-old nedc doesn't understand message subclassing syntax, don't put any such
-elements into normal .ned files.)  The first line of your message subclassing
-ned files should be:
-  //--subclassing--
-You'll immediately see why.
-
-To enable this feature, you have to re-run configure with the
-   --enable-nedc-subcl
-command-line argument. This will replace the NEDC=nedc line in the makefiles
-and in opp_makemake with:
-  NEDC=$(HOME)/omnetpp/src/nedc/nedcwrapper.sh
-
-nedcwrapper.sh is a small script that peeks into the ned file looking
-for the '//--subclassing--' line, an depending on its presence, it invokes
-either msgc.pl or nedc to process it. nedcwrapper.sh as well as the msgc.pl
-script are a temporary solution until the new extended nedc becomes
-available.
+ 2. The compiler that translates message descriptions into C++ is a perl script 
+    (this is a temporary solution until nedtool becomes stable and tested)
 
 The task of the "message subclassing compiler" is to generate C++ classes
 you can use from your models as well as "reflection" classes that allow
-Tkenv to inspect these data stuctures. From a file called foo.ned,
-the compiler will generate the foo_n.h and foo_n.cc files. You'll need to
-#include foo_n.h into your C++ sources to be able to use the generated
-classes. The foo_n.cc file contains implementation of the generated classes
+Tkenv to inspect these data stuctures. From a file called foo.msg,
+the compiler will generate the foo_m.h and foo_m.cc files. You'll need to
+#include foo_m.h into your C++ sources to be able to use the generated
+classes. The foo_m.cc file contains implementation of the generated classes
 as well as "reflection" code that (at some point in the future) will allow
-you to inspect these data stuctures from the Tkenv GUI. The foo_n.cc file
+you to inspect these data stuctures from the Tkenv GUI. The foo_m.cc file
 should be compiled and linked into you simulation (the generated makefile
 will take care of this).
 
@@ -172,8 +138,8 @@ You're strongly advised to experiment with the source and always check out
 the generated code!!!
 
 For lack of time, syntax is not described here -- you should study the
-msgtest.ned file instead!  What you find here however is very brief
-explanations of certain keywords or features you find in msgtest.ned.
+test.msg file instead!  What you find here however is very brief
+explanations of certain keywords or features you find in test.msg
 
 1. cppinclude directive:
 Adds a C++ #include to the generated header file.
@@ -234,29 +200,24 @@ Example:
 
 
 9. enum declarations for fields:
-It is possible to tell nedc if an integral field will take values from an enum.
+It is possible to tell the message compiler if an integral field will take 
+values from an enum.
 Example:
    int p enum(ProtocolTypes);
 
 
 
 -----------------------------
-//--subclassing--
-// note: the above line is necessary for nedcwrapper.sh to work!
-
 //
 // An example to the experimental message subclassing support. This file has
 // to be processed by msgc.pl which generates C++ classes you can use from
 // your models as well as "reflection" classes that allow Tkenv to inspect
 // these data stuctures.
 //
-// Check msgdoc.txt for some more information.
+// Check msgsubclassing.txt for some more information.
 //
 // The syntax and features shown in this file are all experimental.
 // Feedback is welcome!
-//
-// msgc.pl is an intermediate solution until the new extended nedc
-// becomes available.
 //
 
 
@@ -264,14 +225,14 @@ Example:
 cppinclude <stdio.h>
 cppinclude "mystuff.h"
 
-// announce C++ types to nedc
+// announce types that come from included C++ code
 struct IPAddress;
 cobject BasicPacket;
 cobject PayloadPacket;
 noncobject mystringclass;
 
 // imports are not yet supported :-(
-import "othermsgs.ned";
+import "othermsgs.msg";
 
 // create an enum
 enum ProtocolTypes
