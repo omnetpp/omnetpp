@@ -396,9 +396,6 @@ bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
 
 void cSimulation::startRun()
 {
-    // temporarily disable warnings
-    bool w = warnings(); setWarnings(false);
-
     err = eOK;
     msgQueue.clear();
     resetClock();
@@ -439,8 +436,6 @@ void cSimulation::startRun()
     snapshotfilemgr.deleteFile();   // snapshot file manager
 
     scalarfile_header_written=false;
-
-    setWarnings(w);
 }
 
 void cSimulation::callFinish()
@@ -695,21 +690,31 @@ void cSimulation::error(int errc, const char *message)
 
 void cSimulation::warning(int errc, const char *message)
 {
+    // return if warnings are disabled (either globally or in the current module)
     if (!warnings() || (contextModule()!=NULL && !contextModule()->warnings()))
-        return;      // warnings are disabled
+        return;      
 
-    if (contextModule()==NULL)
+    if (!contextModule())
+    {
+        // we're called from global context
         ev.printfmsg( "%s.", message);
-    else if (contextModule()!=NULL && runningModule()==NULL)
+    }
+    else if (!runningModule())
+    {
+        // we're inside handleMessage(), initialize() or finish(): no chance to
+        // stop the simulation in a clean way, so no point in asking
         ev.printfmsg( "Module %s: %s.", contextModule()->fullPath(), message);
+    }
     else
     {
+        // we're inside activity()
         if(ev.askYesNo( "Module %s: %s. Continue?",
                          contextModule()->fullPath(), message) == false)
         {
+            // set error flag
             err = errc;
 
-            // If we run distributed, stop the other segments.
+            // if we run distributed, stop the other segments.
             if (netInterface())
                 netInterface()->stop_all_segments();
 

@@ -1,3 +1,7 @@
+2001-11-06 Andras Varga
+
+	* csimul.cc: bugfix: startRun() unnecessarily disabled warnings
+
 2001-10-28 Andras Varga
 
 	* util.cc: opp_strprettytrunc() added; indexedname() renamed to
