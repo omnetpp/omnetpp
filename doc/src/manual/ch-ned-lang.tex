@@ -43,12 +43,13 @@ number or order:
 The writer of the network description has to take care that no
 reserved words are used for names. The reserved words of the
 NED language are:
-\begin{verbatim}
-  import channel endchannel simple endsimple module endmodule
-  error delay datarate const parameters gates submodules connections
-  gatesizes if for do endfor network endnetwork nocheck
-  ref ancestor true false like input numeric string bool char xml xmldoc
-\end{verbatim}
+
+\ttt{
+import channel endchannel simple endsimple module endmodule
+error delay datarate const parameters gates submodules connections
+gatesizes if for do endfor network endnetwork nocheck
+ref ancestor true false like input numeric string bool char xml xmldoc
+}
 
 
 \subsection{Identifiers}
@@ -280,14 +281,14 @@ Elements of the vector are numbered from zero.
 Examples:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{simple} DataLink
+\tbf{simple} NetworkInterface
     \tbf{parameters}: //...
     \tbf{gates}:
         \tbf{in}:  fromPort, fromHigherLayer;
         \tbf{out}: toPort, toHigherLayer;
 \tbf{endsimple}
 
-\tbf{simple} RoutingModule
+\tbf{simple} RoutingUnit
     \tbf{parameters}: //...
     \tbf{gates}:
         \tbf{in}:  output[];
@@ -416,7 +417,7 @@ you have to specify their sizes.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} CompoundModuleName
+\tbf{module} CompoundModule
     //...
     \tbf{submodules}:
         submodule1: ModuleType1
@@ -445,7 +446,7 @@ to module parameters. A zero value as module count is also allowed.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} BigCompoundModule
+\tbf{module} CompoundModule
     \tbf{parameters}:
         size: \tbf{const};
     \tbf{submodules}:
@@ -610,24 +611,15 @@ a prompt text and a default value.
 The syntax is the following:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-    \textit{<paramname>} = \tbf{input}(\textit{<default-value>}, \textit{<prompt>})
-    \textit{<paramname>} = \tbf{input}(\textit{<default-value>})
-    \textit{<paramname>} = \tbf{input}
-\end{Verbatim}
-
-The third version is actually equivalent to simply and quietly
-leaving out the parameter from the list of assignments, but
-you can use it to make it explicit that you do not want to
-assign a value from within the NED file.
-
-Examples:
-
-\begin{Verbatim}[commandchars=\\\{\}]
    parameters:
-      numProc = \tbf{input}(10, "Number of processors?"),
-      processingTime = \tbf{input}(10ms);
+      numCPUs = \tbf{input}(10, "Number of processors?"), // default value, prompt
+      processingTime = \tbf{input}(10ms), // prompt text
+      cacheSize = input;
 \end{Verbatim}
 
+The third version is actually the same as leaving out the parameter
+from the list of assignments, but you can use it to make it explicit
+that you do not want to assign a value from the NED file.
 
 
 \subsection{Defining sizes of submodule gate vectors}
@@ -662,6 +654,16 @@ An example:
 \tbf{endmodule}
 \end{Verbatim}
 
+% TBD: show in[sizeof(in)] construct as well
+
+\ttt{gatesizes} is not mandatory.
+If you omit \ttt{gatesizes} for a gate vector, it will be created with zero size.
+
+One reason for omitting \ttt{gatesizes} is that you'll want to use
+the \ttt{gate++} (``extend gate vector with a new gate'') notation later in the
+\ttt{connections} section.
+
+
 
 \subsection{Conditional parameters and gatesizes sections}
 
@@ -674,7 +676,7 @@ conditions\index{gate!conditional}.
 Example:
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} Tandem
+\tbf{module} Chain
     \tbf{parameters}: count: \tbf{const};
     \tbf{submodules}:
         node : Node [count]
@@ -692,7 +694,6 @@ Example:
         //...
 \tbf{endmodule}
 \end{Verbatim}
-
 
 If the conditions are not disjoint and a parameter value or a
 gate size is defined twice, the last definition will take effect,
@@ -1314,6 +1315,7 @@ their definition is in a separate NED file which we will import.
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \tbf{import} "modules";
+
 \tbf{module} Router
     \tbf{parameters}:
         rteProcessingDelay, rteBuffersize,
@@ -1323,14 +1325,14 @@ their definition is in a separate NED file which we will import.
         \tbf{out}: outputPorts[];
     \tbf{submodules}:
         localUser: Application;
-        routing: RoutingModule
+        routing: RoutingUnit
             \tbf{parameters}:
                 processingDelay = rteProcessingDelay,
                 buffersize = rteBuffersize;
             \tbf{gatesizes}:
                 input[numOfPorts+1],
                 output[numOfPorts+1];
-        portIf: DataLink[numOfPorts]
+        portIf: PPPNetworkInterface[numOfPorts]
             \tbf{parameters}:
                 retryCount = 5,
                 windowSize = 2;
