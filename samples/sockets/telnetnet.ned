@@ -33,7 +33,7 @@ module TelnetNet
             parameters:
                 addr = 1,
                 srvAddr = 0;
-            display: "i=device/pc2,gold;p=102,80;t=Run the simulation, then start:\ntelnet localhost 4242\nThen if on Unix: Ctrl+] \"mode character\"";
+            display: "i=device/pc2,gold;p=102,80;t=Run the simulation\, then start:\ntelnet localhost 4242\nThen if on Unix\, type:\nCtrl+] ``mode character''";
         client: TelnetClient[numClients];
             parameters:
                 addr = 2+index,
