@@ -285,6 +285,8 @@ proc get_help_tip {w x y item} {
 
        if {[lsearch $tags "ptr*"] != -1} {
           regexp "ptr.*" $tags ptr
+       } elseif {[lsearch $tags "node-ptr*"] != -1} {
+          regexp "ptr.*" $tags ptr
        }
        set ptr [lindex $ptr 0]
 

@@ -159,3 +159,70 @@ set icons(finish) [image create photo -data {
     RwAAOw==
 }]
 
+set icons(chan_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAISEhP//////////////////////////////////////////////
+    /////////yH5BAEAAAIALAAAAAAQABAAAAQpUMhJq704A5Dn3oH2BQFnfQC5nWP5Uaj6ei1a
+    1fMtr5jLi6aOcEgkRgAAOw==
+}]
+
+set icons(cogwheel_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAISEAISEhMbGxv//////////////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAQABAAAARCkMhJq704680v+MQHWIAABIGgoqJ0okEFB6P5
+    wS99E2YwiMDUiQcY0FgDk3HY69FUp16oeKQlo6CQjQVtVVreTiUCADs=
+}]
+
+set icons(compound_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAACE/9zc3P//////////////////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAQABAAAAQ3cMhJq70U6M27FmAoit9ogqVnpkEbAAIXw7H7
+    1jfrbi2s9zgfDWATflKdFQ11Qi1jzZlnqsFgIgA7
+}]
+
+set icons(net_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAAAAhACE/8bGxv//AP//////////////////////////////////
+    /////////yH5BAEAAAUALAAAAAAQABAAAAQ3sMhJq704V8K759PnCYEAil4wBGgHvKQ5lq8H
+    iCor3rO8f7cXjxNzAYU5QrFVTLZ6z04oSpBEAAA7
+}]
+
+set icons(simple_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAACE////////////////////////////////////////////////
+    /////////yH5BAEAAAIALAAAAAAQABAAAAQsUMhJq704aw26/6AAjp8IBGiqBp25vm33rvE5
+    p/WNA67O8jJfjTQyEUMbSgQAOw==
+}]
+
+set icons(message_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAP8AAISEAISEhMbGxv//////////////////////////////////////
+    /////////yH5BAEAAAMALAAAAAAQABAAAAQecMhJq704602B3174YWJIlqaFptU6qmi2gi9n
+    33YEADs=
+}]
+
+set icons(queue_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAIAAAISEAMKOjtrS0v//////////////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAQABAAAARBkMhJq6Ugg6k76ZkEbkI2DJlwfcAgoS0RBDJt
+    cvFcs66Y07qbz6ULxoY7Y493EcJgnlILJoB6Rsum5rSanLjdVQQAOw==
+}]
+
+set icons(container_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAISEAISEhMbGxv//////////////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAQABAAAAQukMhJq70428C730MohgEYAoBYVl67UsE4vlN8
+    puTmdqY80BLbAKXS7YCapHIZAQA7
+}]
+
+set icons(stat_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAMAAAAAAAAAA/9rS0v//////QP//////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAQABAAAAQlkMhJq704620B4JK3ieJFfmeVptSKfu1LsJM7
+    w1Kg7/wO/kBMBAA7
+}]
+
+set icons(outvect_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAMAAAACAAAAA/9rS0v//////QP//////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAQABAAAAQykMhJq70438J7wV4oAcAUegRJCSzrqZPLtQUs
+    yZ5gUxzptyyKDyAKpkgnDuikaTqflwgAOw==
+}]
+
+set icons(tree) [image create photo -data {
+    R0lGODlhFAATALMAAEAAAMbGxoAAAP///8AAAAAAAICAgACAAP//////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARTMMhJq53mapr37t4FTkUBlEVlrCtVDDDKBdkI
+    wDjAsXxw4wMdhkYkAQcpTI9kQiVnIZGldCqplpJXzDqsUX65Ha8Fhgkl3pEW96RhA1RndE6f
+    RAAAOw==
+}]
+

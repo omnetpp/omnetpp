@@ -33,6 +33,9 @@ if [info exist OMNETPP_TKENV_DIR] {
    source [file join $dir statinsp.tcl]
    source [file join $dir menuproc.tcl]
    source [file join $dir main.tcl]
+   source [file join $dir tree.tcl]
+   source [file join $dir treemgr.tcl]
+
 }
 
 # hardcoded plugin path for now

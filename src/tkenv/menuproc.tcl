@@ -187,6 +187,22 @@ proc edit_findnext {} {
    findNext .main.text
 }
 
+proc toggle_treeview {} {
+   global config widgets
+
+   if {$config(display-treeview)==1} {
+       set config(display-treeview) 0
+       pack forget $widgets(manager)
+       .toolbar.tree config -relief raised
+   } else {
+       set config(display-treeview) 1
+       pack $widgets(manager) -before .main.text -expand 0 -fill y  -side left
+       .toolbar.tree config -relief sunken
+       updateTreeManager
+   }
+}
+
+
 proc one_step {} {
     # implements Simulate|One step
 

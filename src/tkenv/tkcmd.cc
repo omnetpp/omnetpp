@@ -19,6 +19,9 @@
 #include "carray.h"
 #include "csimul.h"
 #include "cmodule.h"
+#include "cmessage.h"
+#include "cchannel.h"
+#include "cwatch.h"
 #include "ctypes.h"
 #include "cstruct.h"
 #include "cinifile.h"
@@ -94,6 +97,7 @@ class cCollectObjectsVisitor : public cVisitor
     cCollectObjectsVisitor();
     ~cCollectObjectsVisitor();
     virtual void visit(cObject *obj);
+    void addPointer(cObject *obj);
     cObject **getArray()  {return arr;}
     int getArraySize()  {return firstfree;}
 };
@@ -110,7 +114,7 @@ cCollectObjectsVisitor::~cCollectObjectsVisitor()
     delete arr;
 }
 
-void cCollectObjectsVisitor::visit(cObject *obj)
+void cCollectObjectsVisitor::addPointer(cObject *obj)
 {
     // if array is full, reallocate
     if (size==firstfree)
@@ -124,9 +128,34 @@ void cCollectObjectsVisitor::visit(cObject *obj)
 
     // add pointer to array
     arr[firstfree++] = obj;
+}
+
+void cCollectObjectsVisitor::visit(cObject *obj)
+{
+    addPointer(obj);
 
     // go to children
     traverseChildrenOf(obj);
+}
+
+//----------------------------------------------------------------
+
+class cCollectChildrenVisitor : public cCollectObjectsVisitor
+{
+  private:
+    cObject *parent;
+  public:
+    cCollectChildrenVisitor(cObject *_parent) {parent = _parent;}
+    virtual void visit(cObject *obj);
+};
+
+void cCollectChildrenVisitor::visit(cObject *obj)
+{
+    if (obj==parent)
+        traverseChildrenOf(obj);
+    else
+        addPointer(obj);
+
 }
 
 //----------------------------------------------------------------
@@ -154,6 +183,7 @@ int getObjectFullName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectClassName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -210,6 +240,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectfullname",getObjectFullName_cmd}, // args: <pointer>  ret: fullName()
    { "opp_getobjectfullpath",getObjectFullPath_cmd}, // args: <pointer>  ret: fullPath()
    { "opp_getobjectclassname",getObjectClassName_cmd}, // args: <pointer>  ret: className()
+   { "opp_getobjectbaseclass",getObjectBaseClass_cmd}, // args: <pointer>  ret: a base class
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
    { "opp_getchildobjects",  getChildObjects_cmd    }, // args: <pointer> ret: list with its child object ptrs
    { "opp_getsubobjects",    getSubObjects_cmd    }, // args: <pointer> ret: list with all object ptrs in subtree
@@ -499,14 +530,63 @@ int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    return TCL_OK;
 }
 
+int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cObject *object = (cObject *)strToPtr( argv[1] );
+   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+
+   if (dynamic_cast<cSimpleModule *>(object))
+       Tcl_SetResult(interp, "cSimpleModule", TCL_STATIC);
+   else if (dynamic_cast<cCompoundModule *>(object))
+       Tcl_SetResult(interp, "cCompoundModule", TCL_STATIC);
+   else if (dynamic_cast<cMessage *>(object))
+       Tcl_SetResult(interp, "cMessage", TCL_STATIC);
+   else if (dynamic_cast<cArray *>(object))
+       Tcl_SetResult(interp, "cArray", TCL_STATIC);
+   else if (dynamic_cast<cQueue *>(object))
+       Tcl_SetResult(interp, "cQueue", TCL_STATIC);
+   else if (dynamic_cast<cGate *>(object))
+       Tcl_SetResult(interp, "cGate", TCL_STATIC);
+   else if (dynamic_cast<cPar *>(object))
+       Tcl_SetResult(interp, "cPar", TCL_STATIC);
+   else if (dynamic_cast<cChannel *>(object))
+       Tcl_SetResult(interp, "cChannel", TCL_STATIC);
+   else if (dynamic_cast<cOutVector *>(object))
+       Tcl_SetResult(interp, "cOutVector", TCL_STATIC);
+   else if (dynamic_cast<cMessageHeap *>(object))
+       Tcl_SetResult(interp, "cMessageHeap", TCL_STATIC);
+   else if (dynamic_cast<cWatch *>(object))
+       Tcl_SetResult(interp, "cWatch", TCL_STATIC);
+   else
+       Tcl_SetResult(interp, const_cast<char *>(object->className()), TCL_STATIC);
+   return TCL_OK;
+}
+
 int getChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
-   Tcl_SetResult(interp, "not implemented", TCL_STATIC); // TBD
-   return TCL_ERROR;
+   cCollectChildrenVisitor visitor(object);
+   visitor.visit(object);
+
+   const int ptrsize = 21; // one ptr should be max 20 chars (good for even 64bit-ptrs)
+   int n = visitor.getArraySize();
+   cObject **objs = visitor.getArray();
+   char *buf = Tcl_Alloc(ptrsize*n);
+   char *s=buf;
+   for (int i=0; i<n; i++)
+   {
+       ptrToStr(objs[i],s);
+       s+=strlen(s);
+       assert(strlen(s)<=20);
+       *s++ = ' ';
+   }
+   *s='\0';
+   Tcl_SetResult(interp, buf, TCL_DYNAMIC);
+   return TCL_OK;
 }
 
 int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)

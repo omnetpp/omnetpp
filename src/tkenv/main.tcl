@@ -25,7 +25,7 @@ set config(editor-case-sensitive) 0
 set config(editor-whole-words) 0
 set config(editor-regexp) 0
 set config(editor-backwards) 1
-
+set config(display-treeview) 1
 
 #===================================================================
 #    MAIN OMNET++ WINDOW
@@ -33,10 +33,10 @@ set config(editor-backwards) 1
 
 proc create_omnetpp_window {} {
 
-    global icons fonts tcl_version help_tips
+    global icons fonts tcl_version help_tips widgets config
 
     wm focusmodel . passive
-    wm geometry . 540x275
+    wm geometry . 640x350
     #wm maxsize . 1009 738
     wm minsize . 1 1
     wm overrideredirect . 0
@@ -235,6 +235,7 @@ proc create_omnetpp_window {} {
       {network  -image $icons(network) -command {inspect_systemmodule}}
       {fes      -image $icons(fes)     -command {inspect_messagequeue}}
       {sep6     -separator}
+      {tree     -image $icons(tree)    -command {toggle_treeview}}
       {options  -image $icons(config)  -command {simulation_options}}
       {sep7     -separator}
       {find     -image $icons(find)    -command {edit_find}}
@@ -319,15 +320,41 @@ proc create_omnetpp_window {} {
     #################################
     # Create main display area
     #################################
-
     frame .main -borderwidth 1 -height 30 -relief sunken -width 30
+
+    #
+    # Create manager (vert. tree view)
+    #
+    frame .main.mgr -relief flat -borderwidth 1
+
+    vertResizeBar .main.mgr.resize .main.mgr.tree
+
+    canvas .main.mgr.tree -width 140 -bg #ffffe0 -bd 0 -yscrollcommand ".main.mgr.sb set"
+    scrollbar .main.mgr.sb -command ".main.mgr.tree yview"
+    pack .main.mgr.resize -side right -fill y
+    pack .main.mgr.sb -side right -fill y
+    pack .main.mgr.tree -side left -fill y -padx 0 -pady 0 -ipadx 0 -ipady 0
+
+    set widgets(manager) .main.mgr
+    initTreeManager
+    pack .main.mgr -anchor center -expand 0 -fill y  -side left
+
+    if {$config(display-treeview)==0} {
+        .toolbar.tree config -relief raised
+    } else {
+        .toolbar.tree config -relief sunken
+    }
+
+    #
+    # Create main text window
+    #
     text .main.text -yscrollcommand ".main.sb set"
     scrollbar .main.sb -command ".main.text yview"
     .main.text tag configure event -foreground blue
     .main.text tag configure SELECT -back #808080 -fore #ffffff
 
     pack .main.sb -anchor center -expand 0 -fill y  -side right
-    pack .main.text -anchor center -expand 1 -fill both -side left
+    pack .main.text -anchor center -expand 1 -fill both -side right
 
     #################################
     # Pack everything

@@ -730,6 +730,9 @@ TInspector *TOmnetTkApp::findInspector(cObject *obj, int type)
 
 void TOmnetTkApp::updateInspectors()
 {
+    // update object tree
+    CHK(Tcl_VarEval(interp, "updateTreeManager",NULL));
+
     // update inspectors
     for (cIterator i(inspectors); !i.end(); i++)
     {
