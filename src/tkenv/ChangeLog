@@ -1,6 +1,26 @@
-FIXME: next event markers interfere with wait() operation!!!
-FIXME: auto position depends on size -- this shouldn't be so!
+FIXME: auto position depends on size -- this shouldn't be so! (?)
 
+2003-11-07  Andras Varga
+
+	* started working on a Tkenv plugin API. It's still in embryonal state. 
+	Plugins are any .tcl file found in directories of the plugin path
+	(OMNETPP_PLUGIN_PATH env.var, "./plugins" be default), and they are
+	loaded automatically when Tkenv starts. They may define Tcl procs,
+	create windows, widgets, meu items, etc.
+	   The plugin may invoke the registerPlugin <pluginname> Tcl function,
+	which arranges certain plugin functions to be called on different 
+	Tkenv events. As of now, the only such function is 
+	<pluginname>:newNetwork, called after a network got set up.
+	   As of now, plugins authors need to look at the Tkenv code to see 
+	what they can do and how they can do it from within a plugin. This is
+	not very good since it makes plugins dependent on Tkenv internals.
+	Some time in the future a well-defined Tkenv API will have to be 
+	created. Also, the plugin mechanism will probably be changed to 
+	make use of the namespace and package mechanisms of Tcl.
+	   An example plugin can be found in test/tkenv/plugin.
+
+	* tkcmd.cc: implemented opp_modulebypath, opp_getmodulepar, 
+	opp_setmodulepar commands (needed by Tkenv plugins)
 
 2003-10-19  Andras Varga
 

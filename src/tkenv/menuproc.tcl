@@ -139,6 +139,9 @@ proc new_network {} {
 
        if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
            opp_inspect [opp_object_systemmodule] (default)
+
+           # tell plugins about it
+           notifyPlugins newNetwork
        }
     }
 }
@@ -182,6 +185,9 @@ proc new_run {} {
 
        if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
            opp_inspect [opp_object_systemmodule] (default)
+
+           # tell plugins about it
+           notifyPlugins newNetwork
        }
     }
 }

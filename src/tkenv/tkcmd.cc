@@ -348,6 +348,9 @@ int setSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getStringHashCode_cmd(ClientData, Tcl_Interp *, int, const char **);
 int displayString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int hsbToRgb_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
+int setModulePar_cmd(ClientData, Tcl_Interp *, int, const char **);
+int moduleByPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -413,6 +416,9 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getstringhashcode",getStringHashCode_cmd}, // args: <string> ret: numeric hash code
    { "opp_displaystring",    displayString_cmd    }, // args: <displaystring> <command> <args>
    { "opp_hsb_to_rgb",       hsbToRgb_cmd             }, // args: <@hhssbb> ret: <#rrggbb>
+   { "opp_modulebypath",     moduleByPath_cmd         }, // args: <fullpath> ret: modptr
+   { "opp_getmodulepar",     getModulePar_cmd         }, // args: <modptr> <parname> ret: value
+   { "opp_setmodulepar",     setModulePar_cmd         }, // args: <modptr> <parname> <value>
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
@@ -437,6 +443,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_object_channeltypes", objectChannelTypes_cmd },
    { "opp_object_functions",    objectFunctions_cmd    },
    { "opp_object_classes",      objectClasses_cmd      },
+   // end of list
    { NULL, },
 };
 
@@ -1191,6 +1198,56 @@ int hsbToRgb_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
                 int(min(blue*256,255))
           );
    Tcl_SetResult(interp, rgb, TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int getModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cModule *mod = (cModule *)strToPtr( argv[1] );
+   if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   const char *parname = argv[2];
+   static char buf[2000]; // FIXME constant!
+   try
+   {
+       mod->par(parname).getAsText(buf,2000);
+   }
+   catch (cException *e)
+   {
+       Tcl_SetResult(interp, const_cast<char *>(e->message()), TCL_VOLATILE);
+       delete e;
+       return TCL_ERROR;
+   }
+   Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int setModulePar_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cModule *mod = (cModule *)strToPtr( argv[1] );
+   if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   const char *parname = argv[2];
+   const char *value = argv[3];
+   try
+   {
+       mod->par(parname).setFromText(value,'?');
+   }
+   catch (cException *e)
+   {
+       Tcl_SetResult(interp, const_cast<char *>(e->message()), TCL_VOLATILE);
+       delete e;
+       return TCL_ERROR;
+   }
+   return TCL_OK;
+}
+
+int moduleByPath_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   const char *path = argv[1];
+   cModule *mod = simulation.moduleByPath(path);
+   Tcl_SetResult(interp, ptrToStr(mod), TCL_VOLATILE);
    return TCL_OK;
 }
 

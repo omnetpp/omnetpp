@@ -30,6 +30,8 @@ set config(filtobjlist-class)  ""
 set config(filtobjlist-name)   ""
 set config(filtobjlist-order)  "Class"
 
+set pluginlist {}
+
 #===================================================================
 #    MAIN OMNET++ WINDOW
 #===================================================================
@@ -350,10 +352,11 @@ proc create_omnetpp_window {} {
     pack .statusbar3 -anchor center -expand 0 -fill x -side top
     pack .main       -anchor center -expand 1 -fill both -side top
 
-    global tcl_platform
-    if {$tcl_platform(platform) == "windows"} {
-        update
-    }
+    ## not sure why following lines were in, but removing it doesn't seem to harm
+    #global tcl_platform
+    #if {$tcl_platform(platform) == "windows"} {
+    #    update
+    #}
 
     focus .main.text
 
@@ -529,9 +532,29 @@ proc startup_commands {} {
         opp_newrun $run
         if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
             opp_inspect [opp_object_systemmodule] (default)
+            notifyPlugins newNetwork
         }
     } else {
         new_run
+    }
+}
+
+#------------------------------------------------------------------
+
+#
+# Plugin "API":
+#
+proc registerPlugin {pluginname} {
+    global pluginlist
+    lappend pluginlist $pluginname
+    #puts "DBG: registered plugin \"$pluginname\""
+}
+
+proc notifyPlugins {command args} {
+    global pluginlist
+    foreach pluginname $pluginlist {
+        #puts "DBG: invoking plugin callback $pluginname:$command"
+        eval $pluginname:$command $args
     }
 }
 

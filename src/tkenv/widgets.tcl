@@ -166,9 +166,13 @@ proc iconbutton {w args} {
     if {$args=="-separator"} {
         # space between two buttons
         frame $w -height 1 -width 4
+        #W2K: frame $w -height 23 -width 2 -bd 1 -relief groove
     } {
         # button
         eval button $w -bd 1 $args
+        #W2K: eval button $w -bd 1 -relief flat $args
+        #W2K: bind $w <Enter> [list $w config -relief raised]
+        #W2K: bind $w <Leave> [list $w config -relief flat]
     }
     return $w
 }
