@@ -19,6 +19,40 @@ Legend:
 (i)  	information
 
 
+OMNeT++ 3.0 (under development)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Simulation library:
+(x)	removed setOwner() with no replacement. Use take() from within 
+	objects, e.g. foo->setOwner(this) should be replaced with 
+	this->take(foo) or just take(foo).
+
+(x)	removed putAsideQueue, receiveOn(), receiveNewOn(), receiveNew(); 
+	only receive() remained.
+
+(!!!)	wait() throws an exception if a message arrives during the hold period.
+	If messages should be allowed, use waitAndEnqueue().
+
+(x)	removed cGate::link()
+
+(+) 	added cGate::disconnect()
+
+(!)	cGate::connect() semantics slightly changed (see API documentation)
+
+(-)	cDisplayStringParser renamed to cDisplayString (compatibility typedef
+	exists)
+
+(+)	displayString() methods of cModule and cGate return reference to
+	internally stored cDisplayString objects which can now be manipulated
+	directly (no need for setDisplayString(const char *)).
+
+(+)	ev.isGUI() added. Returns true if simulation runs under Tkenv.
+
+(+)	cModule::bubble() added. It displays a transient "bubble" over the
+	module icon in Tkenv, does nothing in Cmdenv.
+
+... FIXME TBD complete list
+
+
 OMNeT++ 2.3 (June 16, 2003)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Simulation library:
