@@ -42,8 +42,10 @@
 //
 Register_OmnetApp("Tkenv",TOmnetTkApp,false,20,"Tkenv (Tk-based graphical user interface)");
 
-// Windows: Export at least one symbol so that an import lib can be created
-TKENV_API void tkenvDummy() {}
+// some functions that can/should be called from Envir in order to force the
+// linker to include the Tkenv library into the executable:
+void tkenvDummy() {}
+void envirDummy() {}
 
 
 //=========================================================================

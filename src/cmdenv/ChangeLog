@@ -111,7 +111,10 @@ Mar 26, 2000
 April 4, 2000
  - dynamic registration of user interface (TOmnetApp) classes introduced:
    Register_OmnetApp() macro added to cmdenv.cc
-April 6, 2000
+April 6-10, 2000
  - changes to enable linking a Windows DLL from the library
-April 8, 2000
  - memoryIsLow() reorganized; cosmetic changes on heap.cc
+ - adjustments because of TOmnetApp constructor changes
+ - added cmdenvDummy()/envirDummy(): functions which can/should be called from
+   Envir in order to force the linker to include the Cmdenv library into the
+   executable. (These functions do absolutely nothing.)

@@ -39,8 +39,10 @@ static char buffer[1024];
 //
 Register_OmnetApp("Cmdenv",TCmdenvApp,false,10,"Cmdenv (command-line user interface)");
 
-// Windows: Export at least one symbol so that an import lib can be created
-CMDENV_API void cmdenvDummy() {}
+// some functions that can/should be called from Envir in order to force the
+// linker to include the Tkenv library into the executable:
+void cmdenvDummy() {}
+void envirDummy() {}
 
 // a function defined in heap.cc
 bool cmdenvMemoryIsLow();
