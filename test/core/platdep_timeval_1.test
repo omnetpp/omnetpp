@@ -53,16 +53,45 @@ PRINTL(timeval_msec(tval(123,789)));
 PRINTL(timeval_msec(tval(123,456789)));
 ev << "\n";
 
-PRINTL(timeval_diff_usec(a, tval(123,456), tval(123,456)));
-PRINTL(timeval_diff_usec(a, tval(123,456), tval(123,450)));
-ev << "\n";
-
-/*
-// User must take care that result doesn't overflow!
-inline long timeval_diff_usec(const timeval& t2, const timeval& t1)
-*/
+// timeval_diff_usec: User must take care that result doesn't overflow
+PRINTL(timeval_diff_usec(tval(123,456), tval(123,456)));
+PRINTL(timeval_diff_usec(tval(123,456), tval(123,450)));
+PRINTL(timeval_diff_usec(tval(123,456), tval(120,457)));
+ev << ".\n";
 
 %contains: stdout
-cObject
+a= 123s 456us
+
+timeval_add(a, 0)= 123s 456us
+timeval_add(a, 3*USEC)= 123s 459us
+timeval_add(a, 1)= 124s 456us
+timeval_add(a, 1-3*USEC)= 124s 453us
+timeval_add(a, 1-500*USEC)= 123s 999956us
+
+timeval_add(a, tval(0,0))= 123s 456us
+timeval_add(a, tval(0,3))= 123s 459us
+timeval_add(a, tval(1,0))= 124s 456us
+timeval_add(a, tval(0,SEC-3))= 124s 453us
+timeval_add(a, tval(0,SEC-500))= 123s 999956us
+
+timeval_substract(a, 0)= 123s 456us
+timeval_substract(a, 3*USEC)= 123s 453us
+timeval_substract(a, 1)= 122s 456us
+timeval_substract(a, 500*USEC)= 122s 999956us
+timeval_substract(a, 1+500*USEC)= 121s 999957us
+
+timeval_substract(a, tval(0,0))= 123s 456us
+timeval_substract(a, tval(0,3))= 123s 453us
+timeval_substract(a, tval(1,0))= 122s 456us
+timeval_substract(a, tval(0,500))= 122s 999956us
+timeval_substract(a, tval(1,500))= 121s 999956us
+
+timeval_msec(tval(123,789))= 123000
+timeval_msec(tval(123,456789))= 123456
+
+timeval_diff_usec(tval(123,456), tval(123,456))= 0
+timeval_diff_usec(tval(123,456), tval(123,450))= 6
+timeval_diff_usec(tval(123,456), tval(120,457))= 2999999
+.
 
 
