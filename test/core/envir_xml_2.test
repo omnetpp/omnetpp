@@ -12,4 +12,4 @@ else
 %exitcode: 1
 
 %contains: stdout
-Cannot open file
+Error reading `{}qwerty.xml'

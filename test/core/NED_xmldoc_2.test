@@ -55,5 +55,5 @@ network={Net}
 %exitcode: 1
 
 %contains: stdout
-Cannot open file 'nothing.xml'.
+Error reading `nothing.xml'
 
