@@ -55,7 +55,7 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= network_n.obj packet_m.obj app.obj   routing.obj
+OBJS= net60_n.obj node_n.obj routingdb_n.obj packet_m.obj app.obj   routing.obj
 
 # subdirectories to recurse into
 SUBDIRS= 
@@ -69,11 +69,23 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 
 subdirs: $(SUBDIR_TARGETS)
 
-network_n.obj: network_n.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp network_n.cpp
+net60_n.obj: net60_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp net60_n.cpp
 
-network_n.cpp: network.ned
-	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) network.ned
+net60_n.cpp: net60.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) net60.ned
+
+node_n.obj: node_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp node_n.cpp
+
+node_n.cpp: node.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) node.ned
+
+routingdb_n.obj: routingdb_n.cpp
+	$(CXX) -c $(NEDCOPTS) /Tp routingdb_n.cpp
+
+routingdb_n.cpp: routingdb.ned
+	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) routingdb.ned
 
 packet_m.obj: packet_m.cpp
 	$(CXX) -c $(NEDCOPTS) /Tp packet_m.cpp

@@ -7,75 +7,17 @@
 // `license' for details on this and other legal matters.
 //
 
-
-simple App
-    parameters:
-        destAddresses : string;
-    gates:
-        in: in;
-        out: out;
-endsimple
-
-simple RoutingDB
-    parameters:
-        nodeType: string;
-    gates:
-        in: in[];
-        out: out[];
-        in: localIn;
-        out: localOut;
-endsimple
-
-simple Routing
-    parameters:
-        routingDBPath: string;
-    gates:
-        in: in[];
-        out: out[];
-        in: localIn;
-        out: localOut;
-endsimple
-
-module Node
-    parameters:
-        address : numeric,
-        routingDBPath: string;
-    gates:
-        in: in[];
-        out: out[];
-    submodules:
-        app: App;
-            display: "p=90,56;i=browser";
-        routing: Routing;
-            parameters:
-                routingDBPath = routingDBPath;
-            gatesizes:
-                in[sizeof(in)],
-                out[sizeof(out)];
-            display: "p=90,132;i=xconn";
-    connections:
-        routing.localOut --> app.in;
-        routing.localIn <-- app.out;
-        for i=0..sizeof(in)-1 do
-            routing.out[i] --> out[i];
-            routing.in[i] <-- in[i];
-        endfor;
-endmodule
+import "node";
 
 module Net60
     submodules:
-        routingDB: RoutingDB;
-            parameters:
-                nodeType = "Node";
-            display: "i=cogwheel";
         rte: Node[57];
             parameters:
-                address = index,
-                routingDBPath = "routingDB";
+                address = index;
             gatesizes:
                 in[6],
                 out[6];
-            display: "i=ball2_vs,gold,100";
+            display: "i=ball_vs,gold,100";
     connections nocheck:
         rte[0].out[0] --> rte[1].in[0];
         rte[0].in[0] <-- rte[1].out[0];
