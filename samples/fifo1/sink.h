@@ -8,9 +8,9 @@
 
 #include "omnetpp.h"
 
-class Sink : public cSimpleModule
+class FF1Sink : public cSimpleModule
 {
-    Module_Class_Members(Sink,cSimpleModule,16384)
+    Module_Class_Members(FF1Sink,cSimpleModule,16384)
 
     cStdDev qstats; // needs to be accessed from finish() too
 

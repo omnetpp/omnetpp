@@ -6,9 +6,9 @@
 #include "gen.h"
 
 
-Define_Module( Generator )
+Define_Module( FF1Generator );
 
-void Generator::activity()
+void FF1Generator::activity()
 {
     // ia_time and msg_length are taken by reference,
     // because they can contain random values
@@ -23,7 +23,7 @@ void Generator::activity()
         sprintf( msgname, "job-%d", i);
 
         ev << "Generating " << msgname << endl;
-   
+
         cMessage *msg = new cMessage( msgname );
         msg->setLength( (long) msg_length );
         msg->setTimestamp();
@@ -34,7 +34,7 @@ void Generator::activity()
     }
 }
 
-void Generator::finish()
+void FF1Generator::finish()
 {
     ev << "*** Module: " << fullPath() << "***" << endl;
     ev << "Stack allocated:      " << stackSize() << " bytes";

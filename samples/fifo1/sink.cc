@@ -6,9 +6,9 @@
 #include "sink.h"
 
 
-Define_Module( Sink )
+Define_Module( FF1Sink );
 
-void Sink::activity()
+void FF1Sink::activity()
 {
     qstats.setName("queuing time stats");
     cOutVector qtime("queueing time vector");
@@ -23,7 +23,7 @@ void Sink::activity()
     }
 }
 
-void Sink::finish()
+void FF1Sink::finish()
 {
     ev << "*** Module: " << fullPath() << "***" << endl;
     ev << "Total jobs processed: " << qstats.samples() << endl;

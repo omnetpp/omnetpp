@@ -8,9 +8,9 @@
 
 #include "omnetpp.h"
 
-class Generator : public cSimpleModule
+class FF1Generator : public cSimpleModule
 {
-    Module_Class_Members(Generator,cSimpleModule,16384)
+    Module_Class_Members(FF1Generator,cSimpleModule,16384)
     virtual void activity();
     virtual void finish();
 };
