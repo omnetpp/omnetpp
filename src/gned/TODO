@@ -1,3 +1,18 @@
+From Daniel Willkomm, 18/12/2003:
+1. Moving Connection arrows with the mouse only works if you manually 
+added the display string already. I.e. if I take a ned file without 
+display strings for connections, I can click on the arrow (and it turns 
+red) but I can't move it.
+
+2. Using the $name notation does not work with gned, meaning:
+     "display: "p=10,10;b=170,140,rect;o=$color";"
+will cause gned to crash with
+     **** Error: unknown color name "$color"
+
+3. cut and paste and thelike does not work yet
+
+---
+
 To be finished (top priority!):
 - improve comment handling in all dialogs!!!
 
