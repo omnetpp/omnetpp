@@ -623,6 +623,9 @@ sub prepareForCodeGeneration
         if ($fenumname{$fieldname} ne '' && !grep(/^\Q$fenumname{$fieldname}\E$/,@enums)) {
             print STDERR "*** Error: undeclared enum '$fenumname{$fieldname}' used in '$msgname'\n"; $ret=1;
         }
+        if ($classtype{$ftype{$fieldname}} eq 'cobject' && ($classtype eq 'noncobject' || $classtype eq 'struct')) {
+            print STDERR "*** Error: cannot use cObject field '$ftype{$fieldname} $fieldname' in struct or non-cObject class '$msgname'\n"; $ret=1;
+        }
 
         # variable name
         if ($classtype eq 'struct') {
