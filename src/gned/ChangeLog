@@ -1,3 +1,8 @@
+2004-11-29  Andras Varga
+
+	* ebnf.y: malloc.h changed to stdlib.h. Change needed for Mac OS/X 
+	[patch from Michael Tuexen]
+
 2004-11-23  ------ omnetpp-3.0b1 released ------
 
 2004-11-03  ------ omnetpp-3.0a9 released ------

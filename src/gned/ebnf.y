@@ -111,7 +111,8 @@
 
 
 #include <stdio.h>
-#include <malloc.h>         /* for alloca() */
+#include <stdlib.h>
+#include <string.h>
 #include "ebnf.h"           /* selects between NEDC and GNED */
 #include "ebnfcfg.h"        /* selects between NEDC and GNED */
 
@@ -120,12 +121,6 @@
 
 #if YYDEBUG != 0
 #define YYERROR_VERBOSE     /* more detailed error messages */
-#include <string.h>         /* YYVERBOSE needs it */
-#ifdef CXX                  /* For TRU64 c++ compiler */
-#include <malloc.h>
-#include <stdlib.h>
-#include <alloca.h>
-#endif                      /* Required to compile ebnf.y derivatives */
 #endif
 
 

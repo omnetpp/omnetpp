@@ -91,7 +91,7 @@
 
 
 #include <stdio.h>
-#include <malloc.h>         /* for alloca() */
+#include <stdlib.h>
 #include "nedgrammar.h"
 #include "nederror.h"
 
