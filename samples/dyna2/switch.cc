@@ -3,7 +3,7 @@
 //        (part of DYNA - an OMNeT++ demo simulation)
 //-------------------------------------------------------------
 
-#include <omnetpp.h>
+#include "dynapacket_m.h"
 
 class Switch : public cSimpleModule
 {
@@ -23,21 +23,26 @@ void Switch::activity()
         // receive msg
         cMessage *msg;
         if (!queue.empty())
-            msg = queue.pop();
-        else 
+            msg = (cMessage *) queue.pop();
+        else
             msg = receive();
 
         // model processing delay; packets that arrive meanwhile are queued
-        waitAndEnqueue( pk_delay, queue );
+        waitAndEnqueue(pk_delay, &queue);
 
         // send msg to destination
-        int dest = msg->par("dest");
+        DynaPacket *pk = check_and_cast<DynaPacket *>(msg);
+        int dest = pk->getDestAddress();
         ev << "Relaying msg to addr=" << dest << '\n';
         send( msg, "out", dest);
 
         // model finite queue size
         while (queue.length() > queue_max_len)
+        {
+            ev << "Buffer overflow, discarding " << queue.tail()->name() << endl;
             delete queue.pop();
+        }
     }
 }
+
 
