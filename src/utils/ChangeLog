@@ -91,3 +91,4 @@ Oct 10, 1999
   - makemake: better error handling with recursive makefiles; EXE_SUFFIX added
   - tcl2c.c: encoding simplified (old one was unnecessarily complicated and
     didn't work under cygwin)
+------ omnetpp-2.0b2 released ------

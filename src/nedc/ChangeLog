@@ -1,10 +1,8 @@
 Modifications to the JAR/NEDC compiler
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 by Andras Varga, from March 1996
-
 Initial version was written on AIX by Alex Paalvast, Jan Heijmans and
 Robert van der Leij, during summer 1995.
-
 #1-9 Mar 8-15 1996:
  - begun porting to DOS/Borland C++
  - moved global variable definitions from jar.h to jar.c
@@ -226,4 +224,4 @@ July 17, 1999
 Aug 15, 1999
   - bugfix: with "like", simulation crashed if the actual module type didn't
     have all parameters. (Brent's bug)
-
+------ omnetpp-2.0b2 released ------

@@ -201,3 +201,4 @@ Aug 30, 1999
 ------ omnetpp-2.0b released ------
 Sept 20, 1999
  - typo fixed in Makefile.in: $(CLFAGS) --> $(CFLAGS)
+------ omnetpp-2.0b2 released ------

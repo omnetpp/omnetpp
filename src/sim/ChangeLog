@@ -427,7 +427,6 @@
     type: dispSUBMOD or dispENCLOSINGMOD
     cGate: setDisplayString(str) and displayString() correspond to the
     display string of the connection starting from that gate.
-
     The values of these strings will come from GNED through NED's
     "display:" phrases, and they will hold information about how the module
     should be displayed in Tkenv or other GUI animation/interactive
@@ -686,6 +685,5 @@ Oct 6, 1999
     went off and what to do then. The context pointer can be made to point
     at a data structure kept by the module which can carry enough "context"
     information about the event.
-
-
 Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.
+------ omnetpp-2.0b2 released ------

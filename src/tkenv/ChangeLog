@@ -245,7 +245,6 @@
 #73 August 13, 1998
   - support for compiled-in TCL code added.
     See the makefile for more info and to turn it on/off.
-
     Here's how it works: tcl2c.c generates tclcode.cc from  the .tcl files.
     tclcode.cc is in turn included into tkapp.cc. tkapp.cc includes tclcode.cc
     and uses compiled-in TCL code if OMNETPP_TKENV_DIR is undefined at
@@ -310,3 +309,4 @@ Aug 30, 1999
 Sept 5, 1999
   - main window renamed from ".omnetpp" to "."; now modal dialogs cannot go
     behind the main window (including the big red "STOP!" dialog).
+------ omnetpp-2.0b2 released ------
