@@ -264,11 +264,14 @@ else
 }
 
 @subdirs = ();
-foreach $i (glob("*"))
+if ($recursive eq 'y')
 {
-    if (-d $i && $i ne "CVS" && $i ne "backups" && $i ne "." && $i ne "..")
+    foreach $i (glob("*"))
     {
-        push(@subdirs, $i);
+        if (-d $i && $i ne "CVS" && $i ne "backups" && $i ne "." && $i ne "..")
+        {
+            push(@subdirs, $i);
+        }
     }
 }
 

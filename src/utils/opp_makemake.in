@@ -182,11 +182,13 @@ if [ -f $outputfile ]; then
 fi
 
 subdirs=
-for i in *; do
-    if [ -d $i -a $i != "CVS" -a $i != "backups" -a $i != "." -a $i != ".." ]; then
-        subdirs="$subdirs $i"
-    fi
-done
+if [ $recursive = "y" ]; then
+    for i in *; do
+        if [ -d $i -a $i != "CVS" -a $i != "backups" -a $i != "." -a $i != ".." ]; then
+            subdirs="$subdirs $i"
+        fi
+    done
+fi
 
 extdirobjs=
 if [ "$linkwithobjects" = "y" ]; then
