@@ -14,12 +14,17 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-
 set icons(bounds) [image create photo -data {
     R0lGODlhFAATALMAAAAAAISE/8bGxv///9ra2oCAgHV1dUFBQf//////////////////////
     /////////yH5BAEAAAIALAAAAAAUABMAAARbUMhJqzjH6oqp+WAogtJoiqUBrADhsm03fUAQ
     tK8dZ7OqwzqCLAVzEYpDwcfIPBqTSyaMBTU0azZd9ZrV8lLcLmAr7d7IxulKhvlg3vC4pG2I
     298ew2av1PMrEQA7
+}]
+
+set icons(chan_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAISEhP//////////////////////////////////////////////
+    /////////yH5BAEAAAIALAAAAAAQABAAAAQpUMhJq704A5Dn3oH2BQFnfQC5nWP5Uaj6ei1a
+    1fMtr5jLi6aOcEgkRgAAOw==
 }]
 
 set icons(channel) [image create photo -data {
@@ -38,6 +43,18 @@ set icons(close) [image create photo -data {
     R0lGODlhFAASALMAAAAAAISEhMbGxv////8AAP//////////////////////////////////
     /////////yH5BAEAAAQALAAAAAAUABIAAAROkMhJqw04641nGGAojoM3CGiqpp+5vmgrfSkA
     qHZczmd9CzmdC2f7CXmvIGtHoBGVAlmzhwoqpU6gUXucwl5Y6rf74ZjDpDTIwm6735IIADs=
+}]
+
+set icons(cogwheel_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAISEAISEhMbGxv//////////////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAQABAAAARCkMhJq704680v+MQHWIAABIGgoqJ0okEFB6P5
+    wS99E2YwiMDUiQcY0FgDk3HY69FUp16oeKQlo6CQjQVtVVreTiUCADs=
+}]
+
+set icons(compound_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAACE/9zc3P//////////////////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAQABAAAAQ3cMhJq70U6M27FmAoit9ogqVnpkEbAAIXw7H7
+    1jfrbi2s9zgfDWATflKdFQ11Qi1jzZlnqsFgIgA7
 }]
 
 set icons(copy) [image create photo -data {
@@ -71,6 +88,18 @@ set icons(drawopts) [image create photo -data {
     ADs=
 }]
 
+set icons(file_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAISEhMbGxv///4CA////////////////////////////////////
+    /////////yH5BAEAAAQALAAAAAAQABAAAARCkJBAq5V4js23CJnWccIAYsHIASyAqp3gSunQ
+    2oA3i/Agv7hWzrer9X60jZClAx6LymUz2SM6YciJYMvtZpdgFiECADs=
+}]
+
+set icons(folder_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAGNjY5ycY87OY+/nc/fvhPf394AAgP//////////////////////////
+    /////////yH5BAEAAAYALAAAAAAQABAAAAQ50MhJq71WaBGwFEM4cNhmnlonFGzrtgGwEnRt
+    0/F873mx8zLfz9YbEoPGWjFJyKGeMYB0Sq0CPJcIADs=
+}]
+
 set icons(graph) [image create photo -data {
     R0lGODlhFAATALMAAAAAAISE/8bGxv//////////////////////////////////////////
     /////////yH5BAEAAAIALAAAAAAUABMAAARCUMhJawU4Y6p7+CDAgSFAfp15YmcgTirJruOa
@@ -89,6 +118,12 @@ set icons(import) [image create photo -data {
     p938fXmL1x9aDjRyeVY/WdLEUzmfgQgAOw==
 }]
 
+set icons(incl_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAFpaWnt7e4SEhMbGxv////8AgP//////////////////////////
+    /////////yH5BAEAAAYALAAAAAAQABAAAARK0JhBq5V4ls03GZnGCYBQEAWIDR3gFq67dqTp
+    AXOnE7jEcoQAANgTwWLE3PF1Uy6TvhbzVPxtkM3oNTakKrld3opALpvFErBaFgEAOw==
+}]
+
 set icons(module) [image create photo -data {
     R0lGODlhFAATALMAAAAAAISE/8bGxv/Vqv//////////////////////////////////////
     /////////ywAAAAAFAATAAAETBDISasdOOud5bhd9QFfYAbWiY7lSXYq6QGxRrssiN2m/H6c
@@ -99,6 +134,12 @@ set icons(ned) [image create photo -data {
     R0lGODlhFAATALMAAAAAAMbGxv///+/brf//////////////////////////////////////
     /////////yH5BAEAAAEALAAAAAAUABMAAARFMMhJqx04650D/2C4AcBAil+JnaZJlu+asbAG
     1+uJy63q1rFWb/a6qY7Cns4m8xmTwt3RSE06f08oirm13bofD7hjKZcjADs=
+}]
+
+set icons(net_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAAAAhACE/8bGxv//AP//////////////////////////////////
+    /////////yH5BAEAAAUALAAAAAAQABAAAAQ3sMhJq704V8K759PnCYEAil4wBGgHvKQ5lq8H
+    iCor3rO8f7cXjxNzAYU5QrFVTLZ6z04oSpBEAAA7
 }]
 
 set icons(network) [image create photo -data {
@@ -148,5 +189,11 @@ set icons(simple) [image create photo -data {
     R0lGODlhFAATALMAAAAAAMbGxv///wCA////////////////////////////////////////
     /////////yH5BAEAAAMALAAAAAAUABMAAAQ5MMhJq7046wu6/yBAhaQ3AkOqrml3svDgTl3M
     zlJtq3ig7zIRDQUMvoq93y5JBDJLoRMUtKlar9UIADs=
+}]
+
+set icons(simple_vs) [image create photo -data {
+    R0lGODlhEAAQALMAAAAAAACE////////////////////////////////////////////////
+    /////////yH5BAEAAAIALAAAAAAQABAAAAQsUMhJq704aw26/6AAjp8IBGiqBp25vm33rvE5
+    p/WNA67O8jJfjTQyEUMbSgQAOw==
 }]
 

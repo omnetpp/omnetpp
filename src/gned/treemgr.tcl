@@ -16,19 +16,6 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-#-------------- temp solution: -----------------
-# FIXME: rather include new icons into icons.tcl
-set files [glob -nocomplain -- {icons/*_vs.gif}]
-foreach f $files {
-  set name [string tolower [file tail [file rootname $f]]]
-  if [catch {image type $name}] {
-     puts -nonewline "$name "
-     image create photo $name -file $f
-  }
-}
-puts ""
-
-#-----------------------------------------------
 
 # initTreeManager --
 #
@@ -100,7 +87,7 @@ proc updateTreeManager {} {
 # nodes, everything else comes from this function.
 #
 proc getNodeInfo {w op {key {}}} {
-    global ned ddesc
+    global ned ddesc icons
 
     switch $op {
 
@@ -131,9 +118,9 @@ proc getNodeInfo {w op {key {}}} {
       icon {
         set type $ned($key,type)
         if [info exist ddesc($type,treeicon)] {
-          return $ddesc($type,treeicon)
+          return $icons($ddesc($type,treeicon))
         } else {
-          return $ddesc(root,treeicon)
+          return $icons($ddesc(root,treeicon))
         }
       }
 
