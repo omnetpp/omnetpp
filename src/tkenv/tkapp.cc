@@ -939,7 +939,7 @@ void TOmnetTkApp::readOptions()
     opt_animation_msgnames = ini_file->getAsBool( "Tkenv", "animation-msgnames", true );
     opt_animation_msgcolors = ini_file->getAsBool( "Tkenv", "animation-msgcolors", true );
     opt_penguin_mode = ini_file->getAsBool( "Tkenv", "penguin-mode", false );
-    opt_showlayouting = ini_file->getAsBool( "Tkenv", "show-layouting", true );
+    opt_showlayouting = ini_file->getAsBool( "Tkenv", "show-layouting", false);
     opt_bubbles = ini_file->getAsBool( "Tkenv", "show-bubbles", true );
     opt_animation_speed = ini_file->getAsDouble( "Tkenv", "animation-speed", 1);
     if (opt_animation_speed<0) opt_animation_speed=0;
