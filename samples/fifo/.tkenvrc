@@ -34,8 +34,8 @@ config display-treeview	{1}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "fifonet2" "FifoNet2" "2" "330x292+76+381"
+inspector "fifonet2" "FifoNet2" "2" "407x292+265+139"
 inspector "fifonet" "FifoNet" "2" "349x232+8+6"
-inspector "fifonet.sink.queueing time vector" "cOutVector" "2" "353x177+9+467"
 inspector "fifonet.fifo.queue" "cQueue" "1" "351x164+8+268"
+inspector "fifonet.sink.queueing time vector" "cOutVector" "2" "353x177+9+467"
 

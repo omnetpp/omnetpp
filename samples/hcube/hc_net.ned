@@ -31,9 +31,11 @@ module HypercubeNode
                 num_stations = 2^dim,
                 address = address,
                 ia_time = input;
+            display: "p=82,82;i=block/source";
         sink: HCSink;
             parameters:
                 address = address;
+            display: "p=176,82;i=block/sink";
         rte: HCRouter;
             parameters:
                 address = address,
@@ -41,6 +43,7 @@ module HypercubeNode
             gatesizes:
                 in[dim],
                 out[dim];
+            display: "p=125,171;i=block/switch";
     connections:
         gen.out --> rte.from_gen;
         sink.in <-- rte.to_sink;

@@ -68,9 +68,9 @@ endsimple
 //
 module Computer
     parameters:
-        address : numeric const,     // MAC Address of this station.
-        dataRate : numeric const,    // Token Ring data rate in bps.
-        THT : numeric const,         // Token Holding Time, as defined in the protocol.
+        address : numeric const, // MAC Address of this station.
+        dataRate : numeric const, // Token Ring data rate in bps.
+        THT : numeric const, // Token Holding Time, as defined in the protocol.
         numStations : numeric const; // Number of stations. MAC addresses are
                                      // [0,numStatons-1] integers.
     gates:
@@ -82,14 +82,14 @@ module Computer
                 address = address,
                 dataRate = dataRate,
                 THT = THT;
-            display: "p=105,126;i=block/queue;q=sendQueue";
+            display: "p=137,166;i=block/queue;q=sendQueue";
         gen: Generator;
             parameters:
                 numStations = numStations,
                 address = address;
             display: "p=79,60;i=block/source";
         sink: Sink;
-            display: "p=132,60;i=block/sink";
+            display: "p=196,60;i=block/sink";
     connections:
         in --> mac.phy_in;
         mac.phy_out --> out;
@@ -104,9 +104,9 @@ endmodule
 module TokenRing
     parameters:
         numStations : numeric const, // Number of stations in the ring.
-        THT : numeric const,         // Token Holding Time, as defined in the protocol
-        dataRate : numeric const,    // Token Ring data rate in bps
-        cableDelay : numeric const;  // Delay of the cable connecting adjacent stations
+        THT : numeric const, // Token Holding Time, as defined in the protocol
+        dataRate : numeric const, // Token Ring data rate in bps
+        cableDelay : numeric const; // Delay of the cable connecting adjacent stations
     submodules:
         comp: Computer[numStations];
             parameters:
@@ -114,7 +114,7 @@ module TokenRing
                 THT = THT,
                 dataRate = dataRate,
                 numStations = numStations;
-            display: "i=device/pc2;q=sendQueue;p=,,ring";
+            display: "i=device/pc4;q=sendQueue;p=183,88,ring";
     connections:
         comp[numStations - 1].out --> delay cableDelay --> comp[0].in;
 

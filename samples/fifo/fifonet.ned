@@ -20,14 +20,11 @@ import
 module FifoNet2
     submodules:
         gen: FFGenerator;
-            parameters:
-            display: "p=76,68;i=block/source";
+            display: "p=89,100;i=block/source";
         fifo: FFBitFifo;
-            parameters:
-                bitsPerSec = input;
-            display: "p=164,68;i=block/queue;q=queue";
+            display: "p=209,100;i=block/queue;q=queue";
         sink: FFSink;
-            display: "p=252,68;i=block/sink";
+            display: "p=329,100;i=block/sink";
     connections:
         gen.out --> fifo.in;
         fifo.out --> sink.in;
