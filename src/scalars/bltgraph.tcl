@@ -38,7 +38,7 @@ proc createBltGraph {graphtype {graphname ""}} {
           {sep0    -separator}
           {copy    -image $icons(copy)     -command bltGraph_Copy}
           {savepic -image $icons(savepic)  -command bltGraph_SavePicture}
-          {saveps  -image $icons(savepic)  -command bltGraph_SavePostscript}
+          {saveps  -image $icons(saveps)   -command bltGraph_SavePostscript}
           {sep1    -separator}
           {zoomout -image $icons(find)     -command bltGraph_ZoomOut}
           {sep2    -separator}

@@ -209,8 +209,8 @@ proc createMainWindow {{geom ""}} {
       {sep1  -separator}
       {copy  -image $icons(copy)     -command editCopy}
       {sep2  -separator}
-      {chart -image $icons(plotopt)  -command chartCreateBarChart}
-      {plot -image $icons(plotopt)   -command chartCreateScatterPlot}
+      {chart -image $icons(barchart) -command chartCreateBarChart}
+      {plot -image $icons(xyplot)    -command chartCreateScatterPlot}
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2

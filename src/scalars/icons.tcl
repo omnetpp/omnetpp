@@ -6,11 +6,18 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2003 Andras Varga
+#  Copyright (C) 1992-2004 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
+
+set icons(open) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAISEAMbGxv//AP//////////////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAAQ+UMhJq704X8C1BRMIet9I
+    cWaFqsRAoHAGuHTbpmxd4+cO/7lXYEgk4mbCYpEHSCqHPAHnacT8rqSsdsvlRgAA
+    Ow==
+}]
 
 set icons(copy) [image create photo -data {
     R0lGODlhFAATALMAAAAAAAAAhMbGxv//////////////////////////////////
@@ -26,98 +33,73 @@ set icons(close) [image create photo -data {
     6rf74ZjDpDTIwm6735IIADs=
 }]
 
-set icons(open) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISEAMbGxv//AP//////////////////////////////////////
-    /////////yH5BAEAAAIALAAAAAAUABMAAAQ+UMhJq704X8C1BRMIet9IcWaFqsRAoHAGuHTb
-    pmxd4+cO/7lXYEgk4mbCYpEHSCqHPAHnacT8rqSsdsvlRgAAOw==
-}]
-
-set icons(del) [image create photo -data {
-    R0lGODlhFAATALMAAIQAAOferf//////////////////////////////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAAQtMMhJq704aww6B1fnVWMoUmV2Bqkmttu6TS84
-    syNsybgL2x8gyqW6GY/IZCYCADs=
-}]
-
-set icons(dup) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAAAAhMbGxv////8AAP//////////////////////////////////
-    /////////yH5BAEAAAIALAAAAAAUABMAAAROUMhJq7046wp6x0EYSsBgAqA5BKQ6oBIxBS5b
-    lu9EyAKN2y7UbtirCW43wXBX7KyOQR2PpgI6YcrZqwRUYSlUk83zsYhEm7R6zW6735UIADs=
-}]
-
-set icons(info) [image create photo -data {
-    R0lGODlhFAATALMAALZvAP97Mf+EMf+EOf+tUv+1Vv+1Y/+9Wv/GY/+9a//Ga//Oa//Oc//W
-    e//nhOferSH5BAEAAA8ALAAAAAAUABMAAASI8MlJq62NpZ1Yu5PDGEFpGoxzZcNgFMdRGK1X
-    iW6iUEpCpxRGbgIATHwDxqRBS1CKlITr82AEUCDJKKB8JK5PKIXk9AbKRGP0LPkaKuIJWXvt
-    SuJVUpc5QD/wUgZUVUN/RWpIdg84BgkIFAiJKhQsAwUEBZcFNYMUIiQmJSiTIBkcHZ1ZqhMR
-    AAA7
-}]
-
 set icons(find) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAAAAhAD//4SEhOferf//////////////////////////////////
-    /////////yH5BAEAAAQALAAAAAAUABMAAARCkMhJq6Ugg3sz3pwEDEU5DSAHlIKAhVvhWmkV
-    z7YaEvUL/7SebTAU2lKjgHIn0gQIyieT8oxOqdDlVVKVbrPf8DYCADs=
+    R0lGODlhFAATALMAAAAAAAAAhAD//4SEhOferf//////////////////////////
+    /////////////////yH5BAEAAAQALAAAAAAUABMAAARCkMhJq6Ugg3sz3pwEDEU5
+    DSAHlIKAhVvhWmkVz7YaEvUL/7SebTAU2lKjgHIn0gQIyieT8oxOqdDlVVKVbrPf
+    8DYCADs=
 }]
 
 set icons(findrepl) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAAAAhAD//4QAhISEhOferf//////////////////////////////
-    /////////yH5BAEAAAUALAAAAAAUABMAAARJsMhJq7114C2H5pnngdM3kl2KASxQggAhEe71
-    SbFhzLV6Fy6DYNI7/XoSQ010IsqStNKPEisYaAHKlNoKeFEVbxY8+ZLP6LQkAgA7
-}]
-
-set icons(plot) [image create photo -data {
-    R0lGODlhHgATALMAAEAAAMDAAIAAAP///8AAAAAAAJ2bm///////////////////////////
-    /////////yH5BAEAAAEALAAAAAAeABMAAARMMMhJq704S0K0v4QgfOQmjqUXnqm2si14wjH1
-    ikBd3blunz1fRRC8FAqGQEFiOBqaTknRqGxKlsprK4rtalPYrNgLnjihSbFwzW6TIgA7
+    R0lGODlhFAATALMAAAAAAAAAhAD//4QAhISEhOferf//////////////////////
+    /////////////////yH5BAEAAAUALAAAAAAUABMAAARJsMhJq7114C2H5pnngdM3
+    kl2KASxQggAhEe71SbFhzLV6Fy6DYNI7/XoSQ010IsqStNKPEisYaAHKlNoKeFEV
+    bxY8+ZLP6LQkAgA7
 }]
 
 set icons(plotopt) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxgAA/0AAAIAAAAAA/+HXjv8AAP//AMDAwAGFAf//////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARQMMhJq70Ym837vl7IWaJIcsfRpZsgUJzAoupb
-    tVvB6a5BCh2drkNxAT2z0S2U/EwUik0qijwoLFAWdKW6wkJbAzXglZTEVN/prM643/D4JQIA
-    Ow==
+    R0lGODlhFAATALMAAAAAAMbGxgAA/0AAAIAAAAAA/+HXjv8AAP//AMDAwAGFAf//
+    /////////////////yH5BAEAAAEALAAAAAAUABMAAARQMMhJq70Ym837vl7IWaJI
+    csfRpZsgUJzAoupbtVvB6a5BCh2drkNxAT2z0S2U/EwUik0qijwoLFAWdKW6wkJb
+    AzXglZTEVN/prM643/D4JQIAOw==
 }]
 
 set icons(save) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISEAMbGxv//////////////////////////////////////////
-    /////////yH5BAEAAAIALAAAAAAUABMAAARBUMhJq734gs17t0AAYONYhSa4gSLZni+bTqg7
-    S7UW04Hobb2bINQrGoMs3y9HIf5wO6iSAxU6PVXNEpvper/gSwQAOw==
+    R0lGODlhFAATALMAAAAAAISEAMbGxv//////////////////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAARBUMhJq734gs17t0AAYONY
+    hSa4gSLZni+bTqg7S7UW04Hobb2bINQrGoMs3y9HIf5wO6iSAxU6PVXNEpvper/g
+    SwQAOw==
 }]
 
 set icons(config) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxkZJuQAAwACA/8PDw25ubp6enkAAAIAAAP//////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARCMMhJq704a2y6/59lCGRpkoZ4rkJaGUUsz7FL
-    wQWg6zFvTzga7SfB7QA9n0goJAaMx2PBGWTWRKBsZ8Pter/gcCUCADs=
+    R0lGODlhFAATALMAAFBQUGUpHUBAQG5ubkZJuaAAAMAAAP9BQYCAgJiYl8PDw+/v
+    0QAAAAAAAEBAQAAAACH5BAEAAAsALAAAAAAUABMAAARmcC1jjrw4S0qt/hznfVgR
+    dsugrqtUmGGxEHRND9fLvZZd4zmTrvIBBmGojDHlQhoWjKhkaRwmNNRSAYG4SpkX
+    4HfBvYYxS0z5zI66JeVrlkReo1n4BYDbpX/2CAAAfhqCg4SFFxEAADs=
 }]
 
 set icons(load) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISEAMbGxv//AP///4AAAP//////////////////////////////
-    /////////yH5BAEAAAIALAAAAAAUABMAAARGUMhJq704X8C1BRMIet9IcWaFqsRAoHAGuHTb
-    pmztkrO9FkAMwBcoCoAFoQsQoCCFLyNyGjwxpdSn9ZetkrSkCTh89JIxEQA7
+    R0lGODlhFAATALMAAAAAAISEAMbGxv//AP///4AAAP//////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAARGUMhJq704X8C1BRMIet9I
+    cWaFqsRAoHAGuHTbpmztkrO9FkAMwBcoCoAFoQsQoCCFLyNyGjwxpdSn9ZetkrSk
+    CTh89JIxEQA7
 }]
 
 set icons(savepic) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISEAMbGxv////8AAAAA/wCAAP//////////////////////////
-    /////////yH5BAEAAAIALAAAAAAUABMAAARTUMhJq734gs17t0AAYONYhSa4gSLZni+bTqg7
-    S3WmBeLqfTSeUAAYGI+DWahXOhYKRiWPQxw8r0nKkgp4OgtSJpFARt48VbKacAMhj+3Tb6XT
-    RQAAOw==
+    R0lGODlhFAATALMAAAAAAISEAMbGxv////8AAAAA/wCAAP//////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAARTUMhJq734gs17t0AAYONY
+    hSa4gSLZni+bTqg7S3WmBeLqfTSeUAAYGI+DWahXOhYKRiWPQxw8r0nKkgp4OgtS
+    JpFARt48VbKacAMhj+3Tb6XTRQAAOw==
 }]
 
-set icons(opencfg) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISEAMbGxv//AP///4CAgP//////////////////////////////
-    /////////yH5BAEAAAIALAAAAAAUABMAAARSUMhJq704X8C1BRMIet9IcWaFqsRAoHAGuDQp
-    AW0uwPxJv7uCECAspHAuQCA4LB6TgSWO8HKeXlGpkwoMKbNMo9UbIzaHHrORm9qw2WneynaJ
-    AAA7
+set icons(saveps) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAAgDQ2h1ddplVbr4SEAIKFyrO108bGxgAAAAAAAAAA
+    AAAAAAAAAAAAAAAAACH5BAEAAAgALAAAAAAUABMAAARXEMlJq73Ygs171wWAiWIF
+    hOMGlmt7newEj6hZZ2BYBnxwHL2DrEAsSHo8AXKoOwYQSZ+tCX3yCLyBUHKiIgcI
+    A/bJJaqqvG2V8lk7ezjeBBggqHH4fCUCADs=
 }]
 
-set icons(savecfg) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISEAMbGxv///4CAgP//////////////////////////////////
-    /////////yH5BAEAAAIALAAAAAAUABMAAAROUMhJq734gs17t0AAYONYhSa4gSLZni+bTmjm
-    zt5HB+IKEMBfkBLi8QRCQhLH4yAH0CWx6QMqoQNmr2SV7rbIbvf0WWJnmvPZhsyt2JkIADs=
+set icons(barchart) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAMbGxgAA/0AAAIAAAAAA/+HXjv8AAP//AMDAwAGFAf//
+    /////////////////yH5BAEAAAEALAAAAAAUABMAAARLMMhJq70Ym837vp4ieoYV
+    jp7ZiQqpcqwhzF91trNQU8bhG7HcbtL7BWklm+8AHAmTvGUThzRJjzpoAMDter9d
+    HmkMGncy6LR6nYkAADs=
 }]
 
-set icons(savescript) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISEAMbGxv///wAAgIGCl///////////////////////////////
-    /////////yH5BAEAAAIALAAAAAAUABMAAARPUMhJq734gs17t0AAYONYhSa4gSLZni+bTqg7
-    S7UW04H4UTdBqEcMCAqEwkTJ83EEBKiEEG16jklo1fqbbrk/KsljEiOZGe9UmsYus+1MBAA7
+set icons(xyplot) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAA/j4AwXl8+fsFBvojF+RdXe9vSeyLXOqUYuauc9iG
+    hs+lpdClpeHWjcbFxSH5BAEAAA8ALAAAAAAUABMAAARV8MlJq70Yu837lkMweeQW
+    BsNYJodyptRKEAXqVADg5DtwzATEp1JSFGiKYcwTCCgQSaWK09zoOJZO1drJbrYl
+    L5iLJY7JUsk5XAmUduUMTk6vWwCXCAA7
 }]
 
