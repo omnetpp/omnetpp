@@ -499,6 +499,7 @@ clean:
 depend:
 	\$(MAKEDEPEND) \$(INCLUDE_PATH) -- *.cc
 	# \$(MAKEDEPEND) \$(INCLUDE_PATH) -fMakefile.in -- *.cc
+	for i in \$(SUBDIRS); do (cd \$\$i && \$(MAKE) depend); done
 
 re-makemake:
 	opp_makemake -f $args1  #recreate Makefile

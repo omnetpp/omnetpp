@@ -347,7 +347,7 @@ proc get_help_tip {w x y item} {
        set ptr [lindex $ptr 0]
 
        if {$ptr!=""} {
-          set tip "[opp_getobjectfullname $ptr] [opp_getobjectinfostring $ptr]"
+          set tip "([opp_getobjectclassname $ptr]) [opp_getobjectfullname $ptr] [opp_getobjectinfostring $ptr]"
           regsub {  +} $tip {  } tip
           return $tip
        }

@@ -550,6 +550,7 @@ clean:
 print OUT "
 depend:
 \t\$(MAKEDEPEND) \$(INCLUDE_PATH) -f $makefile -- *.$ccext
+\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand depend && cd ..
 
 re-makemake:
 \topp_nmakemake -f $args  #recreate Makefile

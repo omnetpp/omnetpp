@@ -16,6 +16,12 @@
 #-----------------------------------------------------------------
 
 
+#
+# Note: tooltips on canvas come from the proc whose name is stored in
+# $help_tips(helptip_proc). This is currently get_help_tip.
+#
+
+
 # split_dispstr --
 #
 # Split up display string into an array.
