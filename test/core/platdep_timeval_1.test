@@ -6,7 +6,8 @@ Test functions in include/platdep/timeval.h
 #define  SEC    1000000
 #define  USEC   1e-6
 
-#define PRINT(x)  ev << #x << "= " << (x).tv_sec << "s " << (x).tv_usec << "us\n";
+#define PRINT(x)   ev << #x << "= " << (x).tv_sec << "s " << (x).tv_usec << "us\n";
+#define PRINTL(x)  ev << #x << "= " << (x) << "\n";
 
 timeval tval(long sec, long usec) {
     timeval t;
@@ -48,9 +49,15 @@ PRINT(timeval_substract(a, tval(0,500)));
 PRINT(timeval_substract(a, tval(1,500)));
 ev << "\n";
 
-/*
-inline unsigned long timeval_msec(const timeval& a)
+PRINTL(timeval_msec(tval(123,789)));
+PRINTL(timeval_msec(tval(123,456789)));
+ev << "\n";
 
+PRINTL(timeval_diff_usec(a, tval(123,456), tval(123,456)));
+PRINTL(timeval_diff_usec(a, tval(123,456), tval(123,450)));
+ev << "\n";
+
+/*
 // User must take care that result doesn't overflow!
 inline long timeval_diff_usec(const timeval& t2, const timeval& t1)
 */
