@@ -20,12 +20,12 @@
 proc editProps {key} {
     global ned
 
-    tk_messageBox -icon warning -type ok -title GNED \
+    # tk_messageBox -icon warning -type ok -title GNED \
        -message "Editing dialogs not ready yet. Sorry!\
                  Until I finish updating the TCL code to work with the new\
                  internal data structure, you can use the NED source view\
                  if you want to edit module parameters, gates etc."
-    return
+    # return
 
     if {$ned($key,type)=="module"} {
        editModuleProps $key
@@ -51,35 +51,39 @@ proc editModuleProps {key} {
     notebook_addpage .modprops.f.nb gates "Gates"
     notebook_addpage .modprops.f.nb mach  "Machines"
 
-    # add entry fields
+    # create "General" page
     label-entry .modprops.f.nb.general.name "Name:"
     label-text  .modprops.f.nb.general.comment "Comments:" 5
     pack .modprops.f.nb.general.name  -expand 0 -fill x -side top
     pack .modprops.f.nb.general.comment -expand 1 -fill both -side top
 
-    label-text  .modprops.f.nb.pars.pars "Parameters:" 7
-    pack .modprops.f.nb.pars.pars  -expand 1 -fill both -side top
+    # create "Parameters" page
+    #label-text  .modprops.f.nb.pars.pars "Parameters:" 7
+    #pack .modprops.f.nb.pars.pars  -expand 1 -fill both -side top
 
-    label-text  .modprops.f.nb.gates.gates "Gates:" 7
-    pack .modprops.f.nb.gates.gates -expand 1 -fill both -side top
+    # create "Gates" page
+    #label-text  .modprops.f.nb.gates.gates "Gates:" 7
+    #pack .modprops.f.nb.gates.gates -expand 1 -fill both -side top
 
-    label-entry .modprops.f.nb.mach.name "Host:"
-    pack .modprops.f.nb.mach.name  -expand 0 -fill x -side top
+    # create "Machines" page
+    #label-entry .modprops.f.nb.mach.name "Host:"
+    #pack .modprops.f.nb.mach.name  -expand 0 -fill x -side top
 
     focus .modprops.f.nb.general.name.e
 
     .modprops.f.nb.general.name.e insert 0 $ned($key,name)
-    .modprops.f.nb.general.comment.t insert 1.0 $ned($key,comment)
-    .modprops.f.nb.pars.pars.t insert 1.0 $ned($key,parameters)
-    .modprops.f.nb.gates.gates.t insert 1.0 $ned($key,gates)
-    .modprops.f.nb.mach.name.e insert 0 $ned($key,machines)
+    .modprops.f.nb.general.comment.t insert 1.0 $ned($key,banner-comment)
+
+    #.modprops.f.nb.pars.pars.t insert 1.0 $ned($key,parameters)
+    #.modprops.f.nb.gates.gates.t insert 1.0 $ned($key,gates)
+    #.modprops.f.nb.mach.name.e insert 0 $ned($key,machines)
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .modprops] == 1} {
-        set ned($key,comment) [.modprops.f.nb.general.comment.t get 1.0 end]
-        set ned($key,parameters) [.modprops.f.nb.pars.pars.t get 1.0 end]
-        set ned($key,gates) [.modprops.f.nb.gates.gates.t get 1.0 end]
-        set ned($key,machines) [.modprops.f.nb.mach.name.e get]
+        set ned($key,banner-comment) [getCommentFromText .modprops.f.nb.general.comment.t]
+        #set ned($key,parameters) [.modprops.f.nb.pars.pars.t get 1.0 end]
+        #set ned($key,gates) [.modprops.f.nb.gates.gates.t get 1.0 end]
+        #set ned($key,machines) [.modprops.f.nb.mach.name.e get]
 
         if {$ned($key,name)!=[.modprops.f.nb.general.name.e get]} {
            foreach i [array names ned "*,is-submod"] {
@@ -96,7 +100,7 @@ proc editModuleProps {key} {
         $gned(tab) config -text $ned($key,name)
         $gned(canvas) itemconfigure $ned($key,label-cid) -text $ned($key,name)
         adjustWindowTitle
-   }
+    }
     destroy .modprops
 }
 
@@ -112,14 +116,14 @@ proc editSubmoduleProps {key} {
     notebook_addpage .submprops.f.nb general "General"
     notebook_addpage .submprops.f.nb pars "Parameters"
     notebook_addpage .submprops.f.nb gates "Gate sizes"
+    notebook_addpage .submprops.f.nb on "Machines"
 
-    # add entry fields and focus on first one
+    # create "General" page
     label-entry .submprops.f.nb.general.name "Name:"
     label-entry .submprops.f.nb.general.type "Type:"
     label-entry .submprops.f.nb.general.like "Like:"
     label-check .submprops.f.nb.general.link "Type link:"  "Define type if not exist" def
     label-entry .submprops.f.nb.general.vs "Vector size:"
-    label-entry .submprops.f.nb.general.on "On:"
     label-text  .submprops.f.nb.general.comment "Comments:" 4
 
     pack .submprops.f.nb.general.name  -expand 0 -fill x -side top
@@ -127,37 +131,46 @@ proc editSubmoduleProps {key} {
     pack .submprops.f.nb.general.like  -expand 0 -fill x -side top
     pack .submprops.f.nb.general.link -expand 0 -fill x -side top
     pack .submprops.f.nb.general.vs  -expand 0 -fill x -side top
-    pack .submprops.f.nb.general.on  -expand 0 -fill x -side top
     pack .submprops.f.nb.general.comment -expand 1 -fill both -side top
 
-    label-text  .submprops.f.nb.pars.pars "Parameters:" 7
-    pack .submprops.f.nb.pars.pars  -expand 1 -fill both -side top
+    # create "Parameters" page
+    # label-text  .submprops.f.nb.pars.pars "Parameters:" 7
+    # pack .submprops.f.nb.pars.pars  -expand 1 -fill both -side top
 
-    label-text  .submprops.f.nb.gates.gsiz "Gate sizes:" 7
-    pack .submprops.f.nb.gates.gsiz -expand 1 -fill both -side top
+    # create "Gate sizes" page
+    # label-text  .submprops.f.nb.gates.gsiz "Gate sizes:" 7
+    # pack .submprops.f.nb.gates.gsiz -expand 1 -fill both -side top
+
+    # create "Machines" page
+    # label-text  .submprops.f.nb.gates.gsiz "Gate sizes:" 7
+    # pack .submprops.f.nb.gates.gsiz -expand 1 -fill both -side top
 
     focus .submprops.f.nb.general.name.e
 
+    # what is this?
     set typename $ned($key,type-name)
-
     if {$ned($key,like-name)!=""} {
         if {[itemKeyFromName $ned($key,like-name) module]==""} {
             set ned(def) 0
-        } else { set ned(def) 1}
+        } else {
+            set ned(def) 1
+        }
     } else {
        if {$typename!="" && [itemKeyFromName $typename module]==""} {
-         set ned(def) 0
-       } else {set ned(def) 1}
+           set ned(def) 0
+       } else {
+           set ned(def) 1
+       }
     }
 
     .submprops.f.nb.general.name.e insert 0 $ned($key,name)
     .submprops.f.nb.general.type.e insert 0 $ned($key,type-name)
     .submprops.f.nb.general.like.e insert 0 $ned($key,like-name)
     .submprops.f.nb.general.vs.e insert 0 $ned($key,vectorsize)
-    .submprops.f.nb.general.on.e insert 0 $ned($key,on)
-    .submprops.f.nb.general.comment.t insert 1.0 $ned($key,comment)
-    .submprops.f.nb.pars.pars.t insert 1.0 $ned($key,parameters)
-    .submprops.f.nb.gates.gsiz.t insert 1.0 $ned($key,gatesizes)
+    .submprops.f.nb.general.comment.t insert 1.0 $ned($key,banner-comment)
+
+    # .submprops.f.nb.pars.pars.t insert 1.0 $ned($key,parameters)
+    # .submprops.f.nb.gates.gsiz.t insert 1.0 $ned($key,gatesizes)
 
     focus .submprops.f.nb.general.name.e
 
@@ -167,10 +180,11 @@ proc editSubmoduleProps {key} {
         set typename [.submprops.f.nb.general.type.e get]
         set likename [.submprops.f.nb.general.like.e get]
         set ned($key,vectorsize) [.submprops.f.nb.general.vs.e get]
-        set ned($key,on) [.submprops.f.nb.general.on.e get]
-        set ned($key,comment) [.submprops.f.nb.general.comment.t get 1.0 end]
-        set ned($key,parameters) [.submprops.f.nb.pars.pars.t get 1.0 end]
-        set ned($key,gatesizes) [.submprops.f.nb.gates.gsiz.t get 1.0 end]
+        # set ned($key,on) [.submprops.f.nb.general.on.e get]
+        set ned($key,banner-comment) [getCommentFromText .submprops.f.nb.general.comment.t]
+        # set ned($key,parameters) [.submprops.f.nb.pars.pars.t get 1.0 end]
+        # set ned($key,gatesizes) [.submprops.f.nb.gates.gsiz.t get 1.0 end]
+
         $gned(canvas) itemconfigure $ned($key,label-cid) -text $ned($key,name)
 
         if {$likename!=""} {
@@ -504,5 +518,17 @@ proc editChannelProps {key} {
        set ned($key,comment)    [.chanprops.f.nb.general.comment.t get 1.0 end]
     }
     destroy .chanprops
+}
+
+proc getCommentFromText {w} {
+    set comment [$w get 1.0 end]
+    if {$comment=="\n"} {
+        set comment {}
+    }
+    # kill lines with single '-' (would mean a blank line in comment)
+    regsub -all "\n-\n" $comment "\n\n" comment
+    regsub -all "^-\n" $comment "\n" comment
+    regsub -all "\n-$" $comment "\n\n" comment
+    return $comment
 }
 

@@ -146,6 +146,7 @@ Aug 28, 1999
   - ddfields() array introduced for performance reasons
 Aug 30, 1999
   - status bar added for text editor
+------ omnetpp-2.0b1 released ------
 ------ omnetpp-2.0b2 released ------
 Oct 11, 1999
   - fixed problem with resizing parent module
@@ -154,3 +155,6 @@ Oct 12, 1999
   - fixes on comment parsing/generating:
       eliminated space from "// ---" comments
       eliminated annoying generation of extra blank lines (except after "import")
+Nov 11, 1999
+  - begun writing Properties dialogs
+
