@@ -18,9 +18,20 @@
 #include "inspector.h"
 #include "omnetapp.h"
 
+class cStructDescriptor;
+
+#define BUFSIZE     2048           /* buffer size */
+#define FLUSHLIMIT  (BUFSIZE-256)  /* one sprintf() should be less than 256 chars */
 
 class TStructPanel : public TInspectorPanel
 {
+   protected:
+      char buf[BUFSIZE];
+      char *writeptr;
+
+      void flushIfNeeded(int limit);
+      void displayStruct(cStructDescriptor *sd, int level);
+
    public:
       TStructPanel(const char *widgetname, cObject *obj);
       virtual void update();

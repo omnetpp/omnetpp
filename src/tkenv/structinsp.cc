@@ -29,50 +29,42 @@
 void _dummy_for_structinsp() {}
 
 
+
 TStructPanel::TStructPanel(const char *widgetname, cObject *obj) :
     TInspectorPanel(widgetname,obj)
 {
 }
 
-static void flush_if_needed(char *buf, char *&s, int limit, Tcl_Interp *interp, const char *widgetname)
+void TStructPanel::flushIfNeeded(int limit)
 {
-    // if there are more than limit chars in the buffer
-    if (s-buf>=limit)
+    // bump write pointer
+    writeptr += strlen(writeptr);
+
+    // flush if there are more than limit chars in the buffer
+    if (writeptr-buf>=limit)
     {
+        Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
         CHK(Tcl_VarEval(interp, widgetname, ".txt insert insert {", buf, "}", NULL));
-        s = buf; // reset buffer
+        writeptr = buf; // reset buffer
     }
 }
 
-void TStructPanel::update()
+
+void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
 {
-   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
-
-   // delete display
-   CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));
-
-   // get descriptor object
-   cStructDescriptor *sd = cStructDescriptor::createDescriptorFor( object );
-   if (!sd)
-   {
-       CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {No cStructDescriptor registered for this class!}", NULL));
-   }
-
    // print everything in a buffer, and periodically display it as the buffer gets full.
    // this is a temporary solution, should be replaced by something more professional!
 
-   const int bufsize = 2048;     // buffer size
-   const int flushlimit = bufsize-256; // one sprintf() should be less than 256 chars
-   char buf[bufsize];
-
    char val[128];
-   char *s = buf;
+   int indent = level*4;
+
    for (int fld=0; fld<sd->getFieldCount(); fld++)
    {
        int type = sd->getFieldType(fld);
        bool isarray = type==cStructDescriptor::FT_BASIC_ARRAY ||
                       type==cStructDescriptor::FT_SPECIAL_ARRAY ||
                       type==cStructDescriptor::FT_STRUCT_ARRAY;
+       cStructDescriptor *sd1;
 
        if (!isarray)
        {
@@ -90,25 +82,33 @@ void TStructPanel::update()
                            sprintf(val, "%d (%s)", key, enm->stringFor(key));
                        }
                    }
-                   sprintf(s,"%s\t%s = \t%s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
-                   s+=strlen(s);
-                   flush_if_needed(buf, s, flushlimit, interp, widgetname);
-
+                   sprintf(writeptr,"%*s%s\t%s = \t%s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
+                   flushIfNeeded(FLUSHLIMIT);
                    break;
                case cStructDescriptor::FT_SPECIAL:
-                   sprintf(s,"%s\t%s = \t...\n", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
-                   s+=strlen(s);
-                   flush_if_needed(buf, s, flushlimit, interp, widgetname);
+                   sprintf(writeptr,"%*s%s\t%s = \t...\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
+                   flushIfNeeded(FLUSHLIMIT);
                    break;
                case cStructDescriptor::FT_STRUCT:
-                   sprintf(s,"%s\t%s = \t{...}\n", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
-                   s+=strlen(s);
-                   flush_if_needed(buf, s, flushlimit, interp, widgetname);
+                   sprintf(writeptr,"%*s%s\t%s = {\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld));
+                   flushIfNeeded(FLUSHLIMIT);
+
+                   sd1 = cStructDescriptor::createDescriptorFor(sd->getFieldStructName(fld),
+                                                                sd->getFieldStructPointer(fld,0));
+                   if (!sd1)
+                   {
+                       sprintf(writeptr,"%*s    (no descriptor for %s)\n", indent, "", sd->getFieldTypeString(fld));
+                       flushIfNeeded(FLUSHLIMIT);
+                   }
+                   displayStruct(sd1,level+1);
+                   delete sd1;
+
+                   sprintf(writeptr,"}\n");
+                   flushIfNeeded(FLUSHLIMIT);
                    break;
                default:
-                   sprintf(s,"%s\t%s = \t(unknown type)\n", sd->getFieldTypeString(fld), sd->getFieldName(fld));
-                   s+=strlen(s);
-                   flush_if_needed(buf, s, flushlimit, interp, widgetname);
+                   sprintf(writeptr,"%*s%s\t%s = \t(unknown type)\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld));
+                   flushIfNeeded(FLUSHLIMIT);
            }
        }
        else
@@ -131,32 +131,61 @@ void TStructPanel::update()
                                sprintf(val, "%d (%s)", key, enm->stringFor(key));
                            }
                        }
-                       sprintf(s,"%s\t%s[%d] = \t%s\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, val);
-                       s+=strlen(s);
-                       flush_if_needed(buf, s, flushlimit, interp, widgetname);
+                       sprintf(writeptr,"%*s%s\t%s[%d] = \t%s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, val);
+                       flushIfNeeded(FLUSHLIMIT);
                        break;
                    case cStructDescriptor::FT_SPECIAL_ARRAY:
-                       sprintf(s,"%s\t%s[%d] = \t...\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
-                       s+=strlen(s);
-                       flush_if_needed(buf, s, flushlimit, interp, widgetname);
+                       sprintf(writeptr,"%*s%s\t%s[%d] = \t...\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
+                       flushIfNeeded(FLUSHLIMIT);
                        break;
                    case cStructDescriptor::FT_STRUCT_ARRAY:
-                       sprintf(s,"%s\t%s[%d] = \t{...}\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
-                       s+=strlen(s);
-                       flush_if_needed(buf, s, flushlimit, interp, widgetname);
+                       sprintf(writeptr,"%*s%s\t%s[%d] = {\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
+                       flushIfNeeded(FLUSHLIMIT);
+
+                       sd1 = cStructDescriptor::createDescriptorFor(sd->getFieldStructName(fld),
+                                                                    sd->getFieldStructPointer(fld,i));
+                       if (!sd1)
+                       {
+                           sprintf(writeptr,"%*s    (no descriptor for %s)\n", indent, "", sd->getFieldTypeString(fld));
+                           flushIfNeeded(FLUSHLIMIT);
+                       }
+                       displayStruct(sd1,level+1);
+                       delete sd1;
+
+                       sprintf(writeptr,"}\n");
+                       flushIfNeeded(FLUSHLIMIT);
                        break;
                    default:
-                       sprintf(s,"%s\t%s[%d] = \t(unknown type)\n", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
-                       s+=strlen(s);
-                       flush_if_needed(buf, s, flushlimit, interp, widgetname);
+                       sprintf(writeptr,"%*s%s\t%s[%d] = \t(unknown type)\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
+                       flushIfNeeded(FLUSHLIMIT);
                }
            }
        }
    }
+}
+
+void TStructPanel::update()
+{
+   Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
+
+   // delete display
+   CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));
+
+   // get descriptor object
+   cStructDescriptor *sd = cStructDescriptor::createDescriptorFor( object );
+   if (!sd)
+   {
+       CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {No cStructDescriptor registered for this class!}", NULL));
+   }
+
+   // display object and delete descriptor
+   writeptr = buf;
+   *writeptr = '\0';
+   displayStruct(sd,0);
    delete sd;
 
    // flush the rest
-   flush_if_needed(buf, s, 0, interp, widgetname);
+   flushIfNeeded(0);
 }
 
 void TStructPanel::writeBack()

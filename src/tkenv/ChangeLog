@@ -1,3 +1,8 @@
+2003-07-22  Andras Varga
+
+	* structinsp.cc/h: "Fields" tab in message inspector now recursively 
+	displays embedded structs (so far it only displayed "{...}")
+
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-05-26  Andras Varga
