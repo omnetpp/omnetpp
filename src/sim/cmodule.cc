@@ -586,8 +586,10 @@ void cSimpleModule::activate(void *p)
     // cSimpleModule. If not, then something is wrong...
     cMessage *starter = simulation.msgQueue.getFirst();
     if (starter!=smod->timeoutmsg)
-        opp_error("scheduleStart() should have been called for dynamically created"
-                  " module `%s'", smod->fullPath());  // this call won't return
+    {
+        opp_error("scheduleStart() should have been called for dynamically created module `%s'", smod->fullPath());
+        simulation.transferToMain();
+    }
 
     // give back the message to the module
     starter->setOwner(smod);
@@ -600,12 +602,14 @@ void cSimpleModule::activate(void *p)
         smod->activity();
     }
     catch (cException *e) {
-        opp_error(e->errorMessage()); // FIXME set error code! needs new opp_error()
+//FIXME add error back -- but it should not call transferToMain() not throw exception...
+//        opp_error(e->errorMessage()); // FIXME set error code! needs new opp_error()
         delete e;
     }
 
-    // set module state to 'ended'
+    // set module state to 'ended', and exit this coroutine
     smod->end();
+    simulation.transferToMain();
 }
 
 cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
