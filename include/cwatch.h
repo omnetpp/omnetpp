@@ -178,12 +178,12 @@ class SIM_API cWatch : public cObject
      * The return value is 'c','i','l','d','s','o' for char, int, long,
      * double, string, cObject pointer, respectively.
      */
-    char typeChar() {return type;}
+    char typeChar() _CONST {return type;}
 
     /**
      * Returns pointer to the referenced variable.
      */
-    void *pointer() {return ptr;}
+    void *pointer() _CONST {return ptr;}
     //@}
 };
 

@@ -172,22 +172,22 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x); // --LG
+    virtual double pdf(double x) _CONST; // --LG
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x); // --LG
+    virtual double cdf(double x) _CONST; // --LG
 
     /**
      * Returns the kth cell boundary.
      */
-    virtual double basepoint(int k); // --LG
+    virtual double basepoint(int k) _CONST; // --LG
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k);
+    virtual double cell(int k) _CONST;
 
     /**
      * Writes the contents of the object into a text file.

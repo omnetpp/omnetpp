@@ -183,7 +183,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns highest used module ID.
      */
-    int lastModuleIndex()    {return last_id;}
+    int lastModuleIndex() _CONST    {return last_id;}
 
     /**
      * Finds a module by its path.
@@ -226,7 +226,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns network interface module.
      */
-    cNetMod *netInterface()     {return netmodp;}
+    cNetMod *netInterface() _CONST     {return netmodp;}
 
     /**
      * MISSINGDOC: cSimulation:void resetClock()
@@ -290,32 +290,32 @@ class SIM_API cSimulation : public cObject
     /**
      * FIXME: get...
      */
-    cNetworkType *networkType()     {return networktype;}
+    cNetworkType *networkType() _CONST     {return networktype;}
 
     /**
      * MISSINGDOC: cSimulation:int runNumber()
      */
-    int  runNumber()                {return run_number;}
+    int  runNumber() _CONST           {return run_number;}
 
     /**
      * Returns CPU time limit for the current simulation run.
      */
-    long timeLimit()                {return (long)tmlimit;}
+    long timeLimit() _CONST                {return (long)tmlimit;}
 
     /**
      * Returns simulation time limit for the current simulation run.
      */
-    simtime_t simTimeLimit()        {return simtmlimit;}
+    simtime_t simTimeLimit() _CONST   {return simtmlimit;}
 
     /**
      * Returns current simulation time.
      */
-    simtime_t simTime()            {return sim_time;}
+    simtime_t simTime() _CONST       {return sim_time;}
 
     /**
      * Returns sequence number of current event.
      */
-    long eventNumber()              {return event_num;}
+    long eventNumber() _CONST         {return event_num;}
     //@}
 
     /** @name Scheduling and context switching during simulation. */
@@ -369,12 +369,12 @@ class SIM_API cSimulation : public cObject
     /**
      * MISSINGDOC: cSimulation:cSimpleModule*runningModule()
      */
-    cSimpleModule *runningModule()      {return runningmodp;}
+    cSimpleModule *runningModule() _CONST {return runningmodp;}
 
     /**
      * MISSINGDOC: cSimulation:cModule*contextModule()
      */
-    cModule       *contextModule()      {return contextmodp;}
+    cModule       *contextModule() _CONST {return contextmodp;}
 
     /**
      * MISSINGDOC: cSimulation:cSimpleModule*contextSimpleModule()
@@ -384,7 +384,7 @@ class SIM_API cSimulation : public cObject
     /**
      * MISSINGDOC: cSimulation:cHead*localList()
      */
-    cHead *localList()                  {return locallistp==NULL?(&locals):locallistp;}
+    cHead *localList()                   {return locallistp==NULL?(&locals):locallistp;}
     //@}
 
     /** @name Statistics, snapshots. */
@@ -417,7 +417,7 @@ class SIM_API cSimulation : public cObject
     /**
      * Return true if warnings are globally enabled.
      */
-    bool warnings()          {return warn;}
+    bool warnings() _CONST  {return warn;}
 
     /**
      * Globally disable/enable warnings.
@@ -442,12 +442,12 @@ class SIM_API cSimulation : public cObject
     /**
      * Returns true if no errors happened (ie. error code is zero, eOK).
      */
-    bool ok()         {return err==eOK;}
+    bool ok() _CONST        {return err==eOK;}
 
     /**
      * Returns current error code.
      */
-    int errorCode()   {return err;}
+    int errorCode() _CONST  {return err;}
 
     /**
      * Sets error code without giving error message.

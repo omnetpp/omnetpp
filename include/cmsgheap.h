@@ -145,12 +145,12 @@ class SIM_API cMessageHeap : public cObject
     /**
      * Returns the number of messages in the heap.
      */
-    int length() {return n;}
+    int length() _CONST {return n;}
 
     /**
      * Returns true if the heap is empty.
      */
-    bool empty() {return n==0;}
+    bool empty() _CONST {return n==0;}
     //@}
 };
 
@@ -192,7 +192,7 @@ class SIM_API cMessageHeapIterator
     /**
      * Returns true if the iterator has reached the end of the list.
      */
-    bool end()                  {return (bool)(pos>q->n);}
+    bool end() _CONST                  {return (bool)(pos>q->n);}
 };
 
 #endif

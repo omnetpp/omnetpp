@@ -113,6 +113,10 @@ class SIM_API cCoroutine
      * Constructor.
      */
     cCoroutine();
+
+    /**
+     * Destructor.
+     */
     ~cCoroutine();
 
     /**
@@ -140,28 +144,28 @@ class SIM_API cCoroutine
     /**
      * MISSINGDOC: cCoroutine:bool stackOverflow()
      */
-    bool stackOverflow();
+    bool stackOverflow() _CONST;
 
     /**
      * MISSINGDOC: cCoroutine:unsigned stackSize()
      */
-    unsigned stackSize();
+    unsigned stackSize() _CONST;
 
     /**
      * MISSINGDOC: cCoroutine:unsigned stackUsage()
      */
-    unsigned stackUsage();
+    unsigned stackUsage() _CONST;
 
 
     /**
      * MISSINGDOC: cCoroutine:int stackLeft()
      */
-    int stackLeft(); // obsolete
+    int stackLeft() _CONST; // obsolete
 
     /**
      * MISSINGDOC: cCoroutine:bool stackLow()
      */
-    bool stackLow(); // obsolete
+    bool stackLow() _CONST; // obsolete
 
     /**
      * MISSINGDOC: cCoroutine:static int*getMainSP()
@@ -170,13 +174,13 @@ class SIM_API cCoroutine
 };
 
 #ifdef PORTABLE_COROUTINES
-inline int cCoroutine::stackLeft() {return 0;}
-inline bool cCoroutine::stackLow() {return false;}
-//inline int *cCoroutine::getSP()    {return NULL;}
+inline int cCoroutine::stackLeft() _CONST {return 0;}
+inline bool cCoroutine::stackLow() _CONST {return false;}
+//inline int *cCoroutine::getSP() _CONST    {return NULL;}
 #else /* nonportable coroutines */
-inline int cCoroutine::stackLeft() {return (char *)sp - (char *)stkbeg;}
-inline bool cCoroutine::stackLow() {return sp<stklow;}
-//inline int *cCoroutine::getSP()    {return sp;}
+inline int cCoroutine::stackLeft() _CONST {return (char *)sp - (char *)stkbeg;}
+inline bool cCoroutine::stackLow() _CONST {return sp<stklow;}
+//inline int *cCoroutine::getSP() _CONST    {return sp;}
 #endif
 
 #endif

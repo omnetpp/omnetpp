@@ -100,7 +100,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Returns the number of histogram cells used.
      */
-    virtual int cells();
+    virtual int cells() _CONST;
 
     /**
      * Writes the contents of the object into a text file.
@@ -190,22 +190,22 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     /**
      * Returns the kth cell boundary.
      */
-    virtual double basepoint(int k);
+    virtual double basepoint(int k) _CONST;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k);
+    virtual double cell(int k) _CONST;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x); // --LG
+    virtual double pdf(double x) _CONST; // --LG
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x); // --LG
+    virtual double cdf(double x) _CONST; // --LG
 
     /**
      * Writes the contents of the object into a text file.

@@ -94,7 +94,7 @@ void cHistogramBase::transform()
     transfd = true;
 }
 
-int cHistogramBase::cells()
+int cHistogramBase::cells() _CONST
 {
     if (!transformed()) return 0;
 
@@ -160,7 +160,7 @@ void cEqdHistogramBase::collectTransformed (double val)
         cellv[unsigned((val-rangemin)/cellsize)]++;
 }
 
-double cEqdHistogramBase::pdf(double x)
+double cEqdHistogramBase::pdf(double x) _CONST
 {
     if (!transformed())
     {
@@ -174,14 +174,14 @@ double cEqdHistogramBase::pdf(double x)
     return cellv[(unsigned)((x-rangemin)/cellsize)]/cellsize/num_samples;
 }
 
-double cEqdHistogramBase::cdf(double)
+double cEqdHistogramBase::cdf(double) _CONST
 {
     opp_error("(%s)%s: cdf() not implemented",className(), name());
     return 0.0;
 }
 
 // return kth basepoint
-double cEqdHistogramBase::basepoint(int k)
+double cEqdHistogramBase::basepoint(int k) _CONST
 {
     //   k=0           : rangemin
     //   k=1,2,...     : rangemin + k*cellsize
@@ -197,7 +197,7 @@ double cEqdHistogramBase::basepoint(int k)
         {opp_error("(%s)%s: invalid basepoint index %u",className(),name(),k);return 0;}
 }
 
-double cEqdHistogramBase::cell(int k)
+double cEqdHistogramBase::cell(int k) _CONST
 {
     if (k<num_cells)
         return cellv[k];

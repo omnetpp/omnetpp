@@ -279,7 +279,7 @@ double cPSquare::random()
     return dblrand()*(q[k]-q[l])+q[l];
 }
 
-int cPSquare::cells()
+int cPSquare::cells() _CONST
 {
     if (numobs<2)
        return 0;
@@ -289,12 +289,12 @@ int cPSquare::cells()
        return numcells;
 }
 
-double cPSquare::basepoint(int k)
+double cPSquare::basepoint(int k) _CONST
 {
     return q[k+1];
 }
 
-double cPSquare::cell(int k)
+double cPSquare::cell(int k) _CONST
 {
     return n[k+2] - n[k+1] + (k==0);
 }
@@ -312,7 +312,7 @@ void cPSquare::writeContents(ostream& os)
 
 }
 
-double cPSquare::cdf(double x)
+double cPSquare::cdf(double x) _CONST
 {
    // returns 0..1; uses linear approximation between two markers
    for (int i=1; i<numcells+2 ; i++)
@@ -321,7 +321,7 @@ double cPSquare::cdf(double x)
    return 1.0;
 }
 
-double cPSquare::pdf(double x)
+double cPSquare::pdf(double x) _CONST
 {
    // returns 0..1; assumes constant PDF within a cell
    for (int i=1 ; i<numcells+2 ; i++)

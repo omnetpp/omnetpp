@@ -205,7 +205,7 @@ void cModuleInterface::addParametersGatesTo( cModule *module)
 
 void cModuleInterface::checkParametersOf( cModule *mod )
 {
-    // check parameter types and convert CONST parameters to constant
+    // check parameter types and convert _CONST parameters to constant
     for (int i=0;i<nparam;i++)
     {
         cPar *par = &(mod->par( paramv[i].name ));

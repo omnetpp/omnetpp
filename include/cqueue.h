@@ -73,7 +73,7 @@ class SIM_API cQueue : public cObject
 
   protected:
     // internal functions
-    sQElem *find_qelem(cObject *obj);
+    sQElem *find_qelem(cObject *obj) _CONST;
     void insbefore_qelem(sQElem *p, cObject *obj);
     void insafter_qelem(sQElem *p, cObject *obj);
     cObject *remove_qelem(sQElem *p);
@@ -213,28 +213,28 @@ class SIM_API cQueue : public cObject
      * Returns pointer to the object at the head of the queue.
      * Returns NULL if the queue is empty.
      */
-    virtual cObject *head();
+    virtual cObject *head() _CONST;
 
     /**
      * Returns pointer to the last (tail) object in the queue.
      * Returns NULL if the queue is empty.
      */
-    virtual cObject *tail();
+    virtual cObject *tail() _CONST;
 
     /**
      * Returns the number of objects contained in the queue.
      */
-    virtual int length();
+    virtual int length() _CONST;
 
     /**
      * Returns true if the queue is empty.
      */
-    bool empty() {return length()==0;}
+    bool empty() _CONST {return length()==0;}
 
     /**
      * Returns true if the queue contains the passed object.
      */
-    virtual bool contains(cObject *obj);
+    virtual bool contains(cObject *obj) _CONST;
     //@}
 };
 
@@ -278,7 +278,7 @@ class SIM_API cQueueIterator
     /**
      * Returns true if the iterator has reached either end of the queue.
      */
-    bool end()                {return (bool)(p==NULL);}
+    bool end() _CONST                {return (bool)(p==NULL);}
 
     /**
      * Returns the current object, then moves the iterator to the next item.

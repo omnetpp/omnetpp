@@ -211,28 +211,28 @@ class SIM_API cGate : public cObject
     /**
      * Returns the link type of the gate, if it has one.
      */
-    cLinkType *link()      {return linkp;}
+    cLinkType *link() _CONST {return linkp;}
 
     /**
      * Return pointers to the delay, bit error rate and datarate parameters
      * of the link. Links are one-directional; these parameters are only
      * stored at their starting side.
      */
-    cPar *delay()          {return delayp;}
+    cPar *delay() _CONST     {return delayp;}
 
     /**
      * Return pointers to the delay, bit error rate and datarate parameters
      * of the link. Links are one-directional; these parameters are only
      * stored at their starting side.
      */
-    cPar *error()          {return errorp;}
+    cPar *error() _CONST     {return errorp;}
 
     /**
      * Return pointers to the delay, bit error rate and datarate parameters
      * of the link. Links are one-directional; these parameters are only
      * stored at their starting side.
      */
-    cPar *datarate()       {return dataratep;}
+    cPar *datarate() _CONST  {return dataratep;}
     //@}
 
     /** @name Information about the gate. */
@@ -285,7 +285,7 @@ class SIM_API cGate : public cObject
      * Note that additonal messages send on the gate may prolong the time the gate
      * will actually finish.
      */
-    simtime_t transmissionFinishes() {return transm_finishes;}
+    simtime_t transmissionFinishes() _CONST {return transm_finishes;}
     //@}
 
     /** @name Gate connectivity. */

@@ -45,12 +45,12 @@ Register_Class( cKSplit )
 
 double critdata_default[] = {20, 4, 2};
 
-int critfunc_const(cKSplit&, sGrid& g, int i, double *c)
+int critfunc_const(_CONST cKSplit&, sGrid& g, int i, double *c)
 {
      return g.cells[i] >= c[0];
 }
 
-int critfunc_depth(cKSplit& ks, sGrid& g, int i, double *c)
+int critfunc_depth(_CONST cKSplit& ks, sGrid& g, int i, double *c)
 {
      int depth = g.reldepth - ks.rootGrid().reldepth;
      return g.cells[i] >= c[1]*pow(c[2],depth);
@@ -58,12 +58,12 @@ int critfunc_depth(cKSplit& ks, sGrid& g, int i, double *c)
 
 double divdata_default[] = {0.5};
 
-double divfunc_const(cKSplit&, sGrid&, double, double *d)
+double divfunc_const(_CONST cKSplit&, sGrid&, double, double *d)
 {
      return d[0]; // lambda=constant
 }
 
-double divfunc_babak(cKSplit&, sGrid& g, double mother, double *d)
+double divfunc_babak(_CONST cKSplit&, sGrid& g, double mother, double *d)
 {
      int newobs = g.total-g.mother;
      double lambda = newobs / (d[1]*mother);
@@ -409,7 +409,7 @@ void cKSplit::expandGridVector()
    gridv = newgridv;
 }
 
-double cKSplit::realCellValue (sGrid& grid, int i)
+double cKSplit::realCellValue (sGrid& grid, int i) _CONST
 {
    // returns the actual amount of observations in cell 'i' of 'grid'
 
@@ -448,12 +448,12 @@ double cKSplit::realCellValue (sGrid& grid, int i)
    return cell_mot + (1-lambda)*even + lambda*prop;
 }
 
-int cKSplit::treeDepth()
+int cKSplit::treeDepth() _CONST
 {
    return treeDepth( gridv[rootgrid] );
 }
 
-int cKSplit::treeDepth(sGrid& grid)
+int cKSplit::treeDepth(sGrid& grid) _CONST
 {
    int d, maxd=0;
    double c;
@@ -469,7 +469,7 @@ int cKSplit::treeDepth(sGrid& grid)
    return maxd+1;
 }
 
-void cKSplit::printGrids()
+void cKSplit::printGrids() _CONST
 {
    if (!transformed())
    {
@@ -493,9 +493,10 @@ void cKSplit::printGrids()
    }
 }
 
-void cKSplit::iteratorToCell(int cell_nr )
+void cKSplit::iteratorToCell(int cell_nr) _CONST
 {
    // create iterator or reinit if it is stale
+   iter=0;
    if (!iter)
       {iter=new cKSplitIterator(*this); iter_num_samples=num_samples;}
    else if (num_samples!=iter_num_samples)
@@ -510,13 +511,13 @@ void cKSplit::iteratorToCell(int cell_nr )
          (*iter)--;
 }
 
-int cKSplit::cells()
+int cKSplit::cells() _CONST
 {
    if (!transformed()) return 0;
    return num_cells;
 }
 
-double cKSplit::cell(int nr)
+double cKSplit::cell(int nr) _CONST
 {
   if (nr>=num_cells) return 0.0;
 
@@ -524,7 +525,7 @@ double cKSplit::cell(int nr)
   return iter->cellValue();
 }
 
-double cKSplit::basepoint (int nr)
+double cKSplit::basepoint (int nr) _CONST
 {
   if (nr>=num_cells) return rangemax;
 
@@ -619,7 +620,7 @@ double cKSplit::random()
 //  CODE NOT CLEANED UP BY VA YET!
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-double cKSplit::pdf (double x)
+double cKSplit::pdf (double x) _CONST
 {
    if (!transformed())
      return 0;
@@ -658,7 +659,7 @@ double cKSplit::pdf (double x)
    return realCellValue(lp,i) / pow (K, dpth - cdpth);
 }
 
-double cKSplit::cdf (double /*x*/)
+double cKSplit::cdf (double) _CONST
 {
    opp_error("(%s)%s: cdf() not implemented",className(), fullName());
    return 0;
@@ -727,14 +728,14 @@ void cKSplit::loadFromFile(FILE *f)
 
 //========================================================================
 
-cKSplitIterator::cKSplitIterator(cKSplit& _ks, int _beg)
+cKSplitIterator::cKSplitIterator(_CONST cKSplit& _ks, int _beg)
 {
    init(_ks,_beg);
 }
 
-void cKSplitIterator::init(cKSplit& _ks, int _beg)
+void cKSplitIterator::init(_CONST cKSplit& _ks, int _beg)
 {
-   ks = &_ks;
+   ks = CONSTCAST(cKSplit*,&_ks);
    grid = ks->rootgrid;
    cellnum = _beg ? 0 : ks->num_cells-1;
    cell = _beg ? 0 : K-1;

@@ -199,7 +199,7 @@ const void *cBag::get(int m) const
 }
 
 
-bool cBag::isUsed(int m)
+bool cBag::isUsed(int m) _CONST
 {
     if (m>=0 && m<=lastused)
         return USED(m);

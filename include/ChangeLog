@@ -1,3 +1,10 @@
+2001-07-29 Andras Varga
+
+	* made a lot of methods const (only experimental for now).
+        Used a _CONST macro defined in defs.h; _CONST has to be explicitly
+        enabled from the makefile (-D_CONST=const). After testing, _CONST
+        macros will be replaced by ordinary 'const'. Affects nearly all files.
+
 2001-07-27 Andras Varga
 
 	* cenum.h cfsm.h cnetmod.h cpar.h cstruct.h cwatch.h macros.h util.h:

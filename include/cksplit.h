@@ -34,16 +34,16 @@ class cKSplitIterator;
 // K: the grid size of the algorithm
 #define K 2
 
-typedef int (*KSplitCritFunc)(cKSplit&, sGrid&, int, double *);
-typedef double (*KSplitDivFunc)(cKSplit&, sGrid&, double, double *);
+typedef int (*KSplitCritFunc)(_CONST cKSplit&, sGrid&, int, double *);
+typedef double (*KSplitDivFunc)(_CONST cKSplit&, sGrid&, double, double *);
 
 // cell split criteria
-int critfunc_const(cKSplit&, sGrid&, int, double *);
-int critfunc_depth(cKSplit&, sGrid&, int, double *);
+int critfunc_const(_CONST cKSplit&, sGrid&, int, double *);
+int critfunc_depth(_CONST cKSplit&, sGrid&, int, double *);
 
 // cell division criteria
-double divfunc_const(cKSplit&, sGrid&, double, double *);
-double divfunc_babak(cKSplit&, sGrid&, double, double *);
+double divfunc_const(_CONST cKSplit&, sGrid&, double, double *);
+double divfunc_babak(_CONST cKSplit&, sGrid&, double, double *);
 
 //==========================================================================
 
@@ -87,8 +87,8 @@ class SIM_API cKSplit : public cDensityEstBase
     KSplitDivFunc divfunc;    // function to calc. lambda for cell division
     double *divdata;          // data array to pass to div. function
 
-    cKSplitIterator *iter;    // iterator used by basepoint(), cell() etc.
-    long iter_num_samples;    // num_samples when iterator was created
+    mutable cKSplitIterator *iter; // iterator used by basepoint(), cell() etc.
+    mutable long iter_num_samples; // num_samples when iterator was created
 
   protected:
     // internal:
@@ -113,7 +113,7 @@ class SIM_API cKSplit : public cDensityEstBase
     void expandGridVector();
 
     // internal: helper for basepoint(), cell()
-    void iteratorToCell(int cell_nr);
+    void iteratorToCell(int cell_nr) _CONST;
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -194,27 +194,27 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Returns the number of histogram cells used.
      */
-    virtual int cells();
+    virtual int cells() _CONST;
 
     /**
      * Returns the kth cell boundary.
      */
-    virtual double basepoint(int k);
+    virtual double basepoint(int k) _CONST;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k);
+    virtual double cell(int k) _CONST;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x);
+    virtual double pdf(double x) _CONST;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x);
+    virtual double cdf(double x) _CONST;
 
     /**
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
@@ -259,33 +259,33 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Returns the depth of the k-split tree.
      */
-    int treeDepth();
+    int treeDepth() _CONST;
 
     /**
      * Returns the depth of the k-split tree measured from the specified grid.
      */
-    int treeDepth(sGrid& grid);
+    int treeDepth(sGrid& grid) _CONST;
 
     /**
      * Returns the actual amount of observations in cell 'cell' of 'grid'.
      * This is not necessarily an integer value because of previous cell splits.
      */
-    double realCellValue(sGrid& grid, int cell);
+    double realCellValue(sGrid& grid, int cell) _CONST;
 
     /**
      * Dumps the contents of the k-split data structure to ev.
      */
-    void printGrids();
+    void printGrids() _CONST;
 
     /**
      * Returns the kth grid in the k-split data structure.
      */
-    sGrid& grid(int k) {return gridv[k];}
+    sGrid& grid(int k) _CONST {return gridv[k];}
 
     /**
      * Returns the root grid of the k-split data structure.
      */
-    sGrid& rootGrid()  {return gridv[rootgrid];}
+    sGrid& rootGrid() _CONST {return gridv[rootgrid];}
     //@}
 };
 
@@ -309,12 +309,12 @@ class SIM_API cKSplitIterator
     /**
      * Constructor.
      */
-    cKSplitIterator(cKSplit& _ks, int _beg=1);
+    cKSplitIterator(_CONST cKSplit& _ks, int _beg=1);
 
     /**
      * Reinitializes the iterator.
      */
-    void init(cKSplit& _ks, int _beg=1);
+    void init(_CONST cKSplit& _ks, int _beg=1);
 
     /**
      * Moves the iterator to the next cell.
@@ -329,27 +329,27 @@ class SIM_API cKSplitIterator
     /**
      * Returns true if the iterator has reached either end of the cell sequence.
      */
-    bool end()           {return grid==0;}
+    bool end() _CONST           {return grid==0;}
 
     /**
      * Returns the index of the current cell.
      */
-    int cellNumber()     {return cellnum;}
+    int cellNumber() _CONST     {return cellnum;}
 
     /**
      * Returns the upper lower of the current cell.
      */
-    double cellMin()     {return gridmin+cell*cellsize;}
+    double cellMin() _CONST     {return gridmin+cell*cellsize;}
 
     /**
      * Returns the upper bound of the current cell.
      */
-    double cellMax()     {return gridmin+(cell+1)*cellsize;}
+    double cellMax() _CONST     {return gridmin+(cell+1)*cellsize;}
 
     /**
      * Returns the size of the current cell.
      */
-    double cellSize()    {return cellsize;}
+    double cellSize() _CONST    {return cellsize;}
 
     /**
      * Returns the actual amount of observations in current cell.

@@ -164,7 +164,7 @@ class SIM_API cModule : public cObject
      * number of initialization stages required. This default implementation
      * does single-stage init, that is, returns 1.
      */
-    virtual int  numInitStages()       {return 1;}
+    virtual int  numInitStages() _CONST  {return 1;}
 
     /**
      * Single-stage initialization hook. This default implementation
@@ -302,24 +302,24 @@ class SIM_API cModule : public cObject
      * redefined in <tt>cSimpleModule</tt> to return true and in <tt>cCompoundModule</tt>
      * to return false.
      */
-    virtual bool isSimple() = 0;
+    virtual bool isSimple() _CONST = 0;
 
     /**
      * MISSINGDOC: cModule:cModuleType*moduleType()
      */
-    cModuleType *moduleType()   {return mod_type;}
+    cModuleType *moduleType() _CONST  {return mod_type;}
 
     /**
      * Returns the index of the module in the module vector
-     * (#cSimulation simulation#).
+     * (cSimulation simulation).
      */
-    int id()                    {return mod_id;}
+    int id() _CONST               {return mod_id;}
 
     /**
      * Returns the module's parent module. For the system module, it returns
      * <tt>NULL</tt>.
      */
-    cModule *parentModule()     {return parentmodp;}
+    cModule *parentModule() _CONST     {return parentmodp;}
 
     /**
      * Used with parallel execution: determines if the module is on the
@@ -425,7 +425,7 @@ class SIM_API cModule : public cObject
     /**
      * Returns total number of the module's parameters.
      */
-    int params() {return paramv.items();}
+    int params() _CONST {return paramv.items();}
 
     /**
      * Returns reference to the module parameter identified with its
@@ -443,7 +443,7 @@ class SIM_API cModule : public cObject
      * Returns index of the module parameter specified with its name.
      * Returns -1 if the object doesn't exist.
      */
-    int findPar(const char *parname);
+    int findPar(const char *parname) _CONST;
 
     /**
      * Searches for the parameter in the parent modules, up to the system
@@ -454,7 +454,7 @@ class SIM_API cModule : public cObject
     /**
      * Check if a parameter exists.
      */
-    bool hasPar(const char *s) {return findPar(s)>=0;}
+    bool hasPar(const char *s) _CONST {return findPar(s)>=0;}
     //@}
 
     /** @name Machine parameters (used by parallel execution). */
@@ -463,7 +463,7 @@ class SIM_API cModule : public cObject
     /**
      * FIXME: machine parameters
      */
-    int machinePars()  {return machinev.items();}    // NET
+    int machinePars() _CONST  {return machinev.items();}    // NET
 
     /**
      * MISSINGDOC: cModule:char*machinePar(int)
@@ -527,7 +527,7 @@ class SIM_API cModule : public cObject
      * module. This function returns the warning status for this module:
      * <tt>true</tt>=enabled, <tt>false</tt>=disabled.
      */
-    bool warnings()            {return warn;}
+    bool warnings() _CONST       {return warn;}
 
     /**
      * Enables or disables warnings for this module: <tt>true</tt>=enable, <tt>false</tt>=disable.
@@ -702,7 +702,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * Returns true.
      */
-    virtual bool isSimple() {return true;}
+    virtual bool isSimple() _CONST {return true;}
 
     /**
      * FIXME: interface for calling initialize() and finish() from outside
@@ -732,7 +732,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * Returns event handling scheme.
      */
-    bool usesActivity()  {return usesactivity;}
+    bool usesActivity() _CONST  {return usesactivity;}
     //@}
 
     /** @name Simulation time. */
@@ -760,7 +760,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * Returns pointer to the current phase string.
      */
-    const char *phase()  {return correct(phasestr);}
+    const char *phase() _CONST  {return correct(phasestr);}
 
     /**
      * To be called from module functions. Outputs textual information
@@ -1065,7 +1065,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * FIXME: Return module state.
      */
-    int moduleState() {return state;}
+    int moduleState() _CONST {return state;}
 };
 
 //==========================================================================
@@ -1143,7 +1143,7 @@ class SIM_API cCompoundModule : public cModule
     /**
      * Redefined cModule method. Returns false.
      */
-    virtual bool isSimple()  {return false;}
+    virtual bool isSimple() _CONST  {return false;}
 
     /**
      * Redefined cModule method.
@@ -1206,7 +1206,7 @@ class SIM_API cSubModIterator
     /**
      * MISSINGDOC: cSubModIterator:bool end()
      */
-    bool end()                   {return (i==-1);}
+    bool end() _CONST                   {return (i==-1);}
 
     /**
      * MISSINGDOC: cSubModIterator:cModule*operator++()

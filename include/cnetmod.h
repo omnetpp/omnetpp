@@ -109,7 +109,7 @@ class SIM_API cNetMod : public cModule
     /**
      * FIXME: redefined cModule functions
      */
-    virtual bool isSimple() {return false;}
+    virtual bool isSimple() _CONST {return false;}
 
     /**
      * MISSINGDOC: cNetMod:void scheduleStart(simtime_t)

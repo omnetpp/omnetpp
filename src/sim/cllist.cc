@@ -117,7 +117,7 @@ cLinkedList& cLinkedList::operator=(cLinkedList& llist)
 //==  'headp' and 'tailp' point to the ends of the list (NULL if it is empty).
 //==  The list is double-linked, but 'headp->prev' and 'tailp->next' are NULL.
 
-sLLElem *cLinkedList::find_llelem(void *item)
+sLLElem *cLinkedList::find_llelem(void *item) _CONST
 {
     sLLElem *p = headp;
     while( p && p->item!=item )

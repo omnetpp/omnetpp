@@ -322,7 +322,7 @@ void cVarHistogram::clearResult() //--LG
 }
 
 // return kth basepoint
-double cVarHistogram::basepoint(int k)
+double cVarHistogram::basepoint(int k) _CONST
 {
     if (k<num_cells+1)
         return bin_bounds[k];
@@ -330,7 +330,7 @@ double cVarHistogram::basepoint(int k)
         {opp_error("(%s)%s: invalid basepoint index %u",className(),fullName(),k);return 0;}
 }
 
-double cVarHistogram::cell(int k)
+double cVarHistogram::cell(int k) _CONST
 {
     if (k<num_cells)
         return cellv[k];
@@ -367,7 +367,7 @@ double cVarHistogram::random() //--LG
     }
 }
 
-double cVarHistogram::pdf(double x) // --LG
+double cVarHistogram::pdf(double x) _CONST // --LG
 {
     if (!num_samples)
         return 0.0;
@@ -402,7 +402,7 @@ double cVarHistogram::pdf(double x) // --LG
     return cellv[lower_index]/(bin_bounds[lower_index+1]-bin_bounds[lower_index])/num_samples;
 }
 
-double cVarHistogram::cdf(double)
+double cVarHistogram::cdf(double) _CONST
 {
     opp_error("(%s)%s: cdf(x) not implemented", className(),name());
     return 0.0;

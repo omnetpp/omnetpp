@@ -154,29 +154,29 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * Returns the number of cells used.
      */
-    virtual int cells();
+    virtual int cells() _CONST;
 
     /**
      * Returns the kth cell boundary. Note that because of the P2 algoritm,
      * cell boundaries are shifting during data collection, thus cell() and
      * other methods based on cell() and basepoint() return approximate values.
      */
-    virtual double basepoint(int k);
+    virtual double basepoint(int k) _CONST;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      */
-    virtual double cell(int k);
+    virtual double cell(int k) _CONST;
 
     /**
      * Returns the value of the Cumulated Density Function at a given x.
      */
-    virtual double cdf(double x);
+    virtual double cdf(double x) _CONST;
 
     /**
      * Returns the value of the Probability Density Function at a given x.
      */
-    virtual double pdf(double x);
+    virtual double pdf(double x) _CONST;
 
     /**
      * Generates a random number based on the collected data. Uses the random number generator set by setGenK().

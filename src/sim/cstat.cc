@@ -169,7 +169,7 @@ void cStdDev::collect(double val)
     if (accuracyDetectionObject()) ra->collect(val);   //NL
 }
 
-double cStdDev::variance()
+double cStdDev::variance() _CONST
 {
     if (num_samples<=1)
         return 0.0;
@@ -183,7 +183,7 @@ double cStdDev::variance()
     }
 }
 
-double cStdDev::stddev()
+double cStdDev::stddev() _CONST
 {
     return sqrt( variance() );
 }
@@ -260,7 +260,7 @@ void cWeightedStdDev::clearResult()
     sum_weights=0.0;
 }
 
-double cWeightedStdDev::variance()
+double cWeightedStdDev::variance() _CONST
 {
     opp_error("(%s)%s: variance()/stddev() not implemented",
                       className(), fullName());

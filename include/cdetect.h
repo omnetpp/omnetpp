@@ -129,7 +129,7 @@ class SIM_API cTransientDetection : public cObject
     /**
      * MISSINGDOC: cTransientDetection:cStatistic*hostObject()
      */
-    virtual cStatistic *hostObject()  {return back;}
+    virtual cStatistic *hostObject() _CONST  {return back;}
 };
 
 //===NL=====================================================================
@@ -218,7 +218,7 @@ class SIM_API cAccuracyDetection : public cObject
     /**
      * MISSINGDOC: cAccuracyDetection:cStatistic*hostObject()
      */
-    virtual cStatistic *hostObject()  {return back;}
+    virtual cStatistic *hostObject() _CONST  {return back;}
 };
 
 //===NL======================================================================
@@ -299,7 +299,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     /**
      * MISSINGDOC: cTDExpandingWindows:bool detected()
      */
-    virtual bool detected() {return transval;}
+    virtual bool detected() _CONST {return transval;}
 
     /**
      * MISSINGDOC: cTDExpandingWindows:void reset()
@@ -404,7 +404,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     /**
      * MISSINGDOC: cADByStddev:bool detected()
      */
-    virtual bool detected() {return resaccval;}
+    virtual bool detected() _CONST {return resaccval;}
 
     /**
      * MISSINGDOC: cADByStddev:void reset()

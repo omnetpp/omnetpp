@@ -192,7 +192,7 @@ class SIM_API cBag : public cObject
      * Returns true if the mth position exists and
      * an item was inserted there.
      */
-    bool isUsed(int m);
+    bool isUsed(int m) _CONST;
 
     /**
      * FIXME: Remove item at position m and return its pointer. (???)
@@ -339,7 +339,7 @@ class SIM_API cArray : public cObject
      * the index of the first match. If the object wasn't found, -1 is
      * returned.
      */
-    int find(cObject *obj)const ;
+    int find(cObject *obj) const;
 
     /**
      * Returns the index of the first item in the array that has the
@@ -403,14 +403,14 @@ class SIM_API cArray : public cObject
     /**
      * Returns true if position m is used in the array, otherwise false.
      */
-    bool exist(int m)
+    bool exist(int m) _CONST
       {return m>=0 && m<=last && vect[m]!=NULL;}
 
     /**
      * Returns true if the array contains an object with the given name,
      * otherwise false.
      */
-    bool exist(const char *objname)
+    bool exist(const char *objname) _CONST
       {return find(objname)!=-1;}
 
     /**

@@ -592,7 +592,7 @@ cObject *cPar::objectValue()
         {opp_error(eBADCAST,className(),name(),typechar,'O'); return NULL;}
 }
 
-bool cPar::isNumeric()
+bool cPar::isNumeric() _CONST
 {
     // returns true if it is safe to call doubleValue()/longValue()/boolValue()
     if (isRedirected())

@@ -106,12 +106,12 @@ class SIM_API cPacket : public cMessage
     /**
      * Returns the protocol ID.
      */
-    short protocol()          {return _protocol;}
+    short protocol() _CONST     {return _protocol;}
 
     /**
      * Returns the PDU type.
      */
-    short pdu()               {return _pdu;}
+    short pdu() _CONST          {return _pdu;}
 
     /**
      * Sets the protocol ID.

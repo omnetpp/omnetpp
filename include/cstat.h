@@ -133,55 +133,55 @@ class SIM_API cStatistic : public cObject
      * Returns the number of samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual long samples() = 0;
+    virtual long samples() _CONST = 0;
 
     /**
      * Returns the sum of weights of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double weights() = 0;
+    virtual double weights() _CONST = 0;
 
     /**
      * Returns the sum of samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double sum() = 0;
+    virtual double sum() _CONST = 0;
 
     /**
      * Returns the the squared sum of the collected data.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double sqrSum() = 0;
+    virtual double sqrSum() _CONST = 0;
 
     /**
      * Returns the minimum of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double min() = 0;
+    virtual double min() _CONST = 0;
 
     /**
      * Returns the maximum of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double max() = 0;
+    virtual double max() _CONST = 0;
 
     /**
      * Returns the mean of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double mean() = 0;
+    virtual double mean() _CONST = 0;
 
     /**
      * Returns the standard deviation of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double stddev() = 0;
+    virtual double stddev() _CONST = 0;
 
     /**
      * Returns the variance of the samples collected.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double variance() = 0;
+    virtual double variance() _CONST = 0;
     //@}
 
     /** @name Transient and result accuracy detection. */
@@ -202,12 +202,12 @@ class SIM_API cStatistic : public cObject
     /**
      * Returns the assigned transient and accuracy detection objects.
      */
-    cTransientDetection *transientDetectionObject()  {return td;}
+    cTransientDetection *transientDetectionObject() _CONST  {return td;}
 
     /**
      * Returns the assigned transient and accuracy detection objects.
      */
-    cAccuracyDetection  *accuracyDetectionObject()   {return ra;}
+    cAccuracyDetection  *accuracyDetectionObject() _CONST   {return ra;}
     //@}
 
     /** @name Generating random numbers based on the collected data */
@@ -335,47 +335,47 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Returns the number of samples collected.
      */
-    virtual long samples()   {return num_samples;}
+    virtual long samples() _CONST   {return num_samples;}
 
     /**
      * Returns the sum of weights of the samples collected.
      */
-    virtual double weights() {return num_samples;}
+    virtual double weights() _CONST {return num_samples;}
 
     /**
      * Returns the sum of samples collected.
      */
-    virtual double sum()     {return sum_samples;}
+    virtual double sum() _CONST     {return sum_samples;}
 
     /**
      * Returns the the squared sum of the collected data.
      */
-    virtual double sqrSum()  {return sqrsum_samples;}
+    virtual double sqrSum() _CONST  {return sqrsum_samples;}
 
     /**
      * Returns the minimum of the samples collected.
      */
-    virtual double min()     {return min_samples;}
+    virtual double min() _CONST     {return min_samples;}
 
     /**
      * Returns the maximum of the samples collected.
      */
-    virtual double max()     {return max_samples;}
+    virtual double max() _CONST     {return max_samples;}
 
     /**
      * Returns the mean of the samples collected.
      */
-    virtual double mean()    {return num_samples ? sum_samples/num_samples : 0.0;}
+    virtual double mean() _CONST    {return num_samples ? sum_samples/num_samples : 0.0;}
 
     /**
      * Returns the standard deviation of the samples collected.
      */
-    virtual double stddev();
+    virtual double stddev() _CONST;
 
     /**
      * Returns the variance of the samples collected.
      */
-    virtual double variance();
+    virtual double variance() _CONST;
 
     /**
      * Returns numbers from a normal distribution with the current mean and
@@ -489,17 +489,17 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Returns the sum of weights of the samples collected.
      */
-    virtual double weights() {return sum_weights;}
+    virtual double weights() _CONST {return sum_weights;}
 
     /**
      * Returns the mean of the samples collected.
      */
-    virtual double mean()    {return sum_weights!=0 ? sum_samples/sum_weights : 0.0;}
+    virtual double mean() _CONST    {return sum_weights!=0 ? sum_samples/sum_weights : 0.0;}
 
     /**
      * Returns the variance of the samples collected.
      */
-    virtual double variance();
+    virtual double variance() _CONST;
 
     /**
      * Writes the contents of the object into a text file.

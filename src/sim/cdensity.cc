@@ -200,7 +200,7 @@ void cDensityEstBase::collect(double val)
     }
 }
 
-double cDensityEstBase::cellPDF(int k)
+double cDensityEstBase::cellPDF(int k) _CONST
 {
     if (num_samples==0) return 0.0;
     double cellsize = basepoint(k+1) - basepoint(k);

@@ -440,14 +440,14 @@ class SIM_API cPar : public cObject
     /**
      * Returns value as a boolean. The cPar type must be bool (B) or long (L).
      */
-    bool   boolValue();
+    bool boolValue();
 
     /**
      * Returns value as long. The cPar type must be types long (L),
      * double (D), Boolean (B), function (F), distribution (T) or
      * expression (X).
      */
-    long   longValue();
+    long longValue();
 
     /**
      * Returns value as const char *. Only for string (S) type.
@@ -487,7 +487,7 @@ class SIM_API cPar : public cObject
     /**
      * Returns true if this object is redirected to another cPar.
      */
-    bool isRedirected() {return typechar=='I';}
+    bool isRedirected() _CONST {return typechar=='I';}
 
     /**
      * Returns NULL if the cPar's value is not redirected to another cPar;
@@ -517,12 +517,12 @@ class SIM_API cPar : public cObject
     /**
      * Returns true if the stored value is of a numeric type.
      */
-    bool isNumeric();
+    bool isNumeric() _CONST;
 
     /**
      * Returns the prompt text or NULL.
      */
-    const char *prompt();
+    const char *prompt() ;
 
     /**
      * Sets the prompt text.
@@ -828,7 +828,7 @@ class SIM_API cModulePar : public cPar
     /**
      * Returns a pointer to the module which has this cPar as module parameter.
      */
-    cModule *ownerModule()             {return omodp;}
+    cModule *ownerModule() _CONST        {return omodp;}
     //@}
 };
 

@@ -1,3 +1,7 @@
+2001-07-29 Andras Varga
+
+	* added a bunch of _CONSTs (see changelog entry in include/)
+
 2001-07-11 Andras Varga
 
 	* mpi/* added, Makefile.in: Eric Wu's Tru64/MPI port

@@ -270,17 +270,17 @@ class SIM_API cFSM : public cObject
     /**
      * Returns the state the FSM is currently in.
      */
-    int state()  {return _state;}
+    int state() _CONST  {return _state;}
 
     /**
      * Returns the name of the state the FSM is currently in.
      */
-    const char *stateName() {return _statename?_statename:"";}
+    const char *stateName() _CONST {return _statename?_statename:"";}
 
     /**
      * Returns true if the FSM is currently in a transient state.
      */
-    int inTransientState()  {return _state<0;}
+    int inTransientState() _CONST  {return _state<0;}
 
     /**
      * Sets the state of the FSM. This method is usually invoked through

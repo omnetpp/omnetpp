@@ -488,7 +488,7 @@ class SIM_API cClassRegister : public cObject
     /**
      * FIXME: new functions
      */
-    cObject *createOne()  {return creatorfunc();}
+    cObject *createOne() _CONST  {return creatorfunc();}
     //@}
 };
 

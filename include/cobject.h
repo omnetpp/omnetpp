@@ -268,7 +268,7 @@ class SIM_API cObject
      * should automatically take ownership of the objects that are inserted
      * into it.
      */
-    bool takeOwnership()        {return tkownership;}
+    bool takeOwnership() _CONST   {return tkownership;}
     //@}
 
     /**@name Reflection, support for debugging and snapshots.
@@ -397,7 +397,7 @@ class SIM_API cObject
      * The return value is one of the characters S/A/D which stand for
      * static, auto and dynamic, respectively.
      */
-    char storage()              {return stor;}
+    char storage() _CONST         {return stor;}
 
     /**
      * cObject's operator new does more than the global

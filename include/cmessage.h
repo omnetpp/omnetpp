@@ -238,37 +238,37 @@ class SIM_API cMessage : public cObject
     /**
      * Returns message kind.
      */
-    int  kind()     {return msgkind;}
+    int  kind() _CONST     {return msgkind;}
 
     /**
      * Returns message priority.
      */
-    int  priority() {return prior;}
+    int  priority() _CONST {return prior;}
 
     /**
      * Returns message length.
      */
-    long length()   {return len;}
+    long length() _CONST   {return len;}
 
     /**
      * Returns true if bit error flag is set, false otherwise.
      */
-    bool hasBitError() {return error;}
+    bool hasBitError() _CONST {return error;}
 
     /**
      * Returns the message's time stamp.
      */
-    simtime_t timestamp() {return tstamp;}
+    simtime_t timestamp() _CONST {return tstamp;}
 
     /**
      * FIXME: INTERNAL: Used by cMessageHeap.
      */
-    unsigned long insertOrder() {return insertordr;}
+    unsigned long insertOrder() _CONST {return insertordr;}
 
     /**
      * Returns the context pointer.
      */
-    void *contextPointer() {return contextptr;}
+    void *contextPointer() _CONST {return contextptr;}
     //@}
 
     /** @name Parameter list. */
@@ -319,7 +319,7 @@ class SIM_API cMessage : public cObject
     /**
      * Check if a parameter exists.
      */
-    bool hasPar(const char *s) {return findPar(s)>=0;}
+    bool hasPar(const char *s) _CONST {return findPar(s)>=0;}
     //@}
 
     /** @name Message encapsulation. */
@@ -341,7 +341,7 @@ class SIM_API cMessage : public cObject
     /**
      * Returns a pointer to the encapsulated message, or NULL.
      */
-    cMessage *encapsulatedMsg() {return encapmsg;}
+    cMessage *encapsulatedMsg() _CONST {return encapmsg;}
     //@}
 
     /** @name Sending/arrival information. */
@@ -350,12 +350,12 @@ class SIM_API cMessage : public cObject
     /**
      * Return true if message was posted by scheduleAt().
      */
-    bool isSelfMessage() {return togate==-1;}
+    bool isSelfMessage() _CONST {return togate==-1;}
 
     /**
      * Return true if message is among future events.
      */
-    bool isScheduled() {return heapindex!=-1;}
+    bool isScheduled() _CONST {return heapindex!=-1;}
 
     /**
      * Returns pointers to the gate from which the message was sent and
@@ -460,7 +460,7 @@ class SIM_API cMessage : public cObject
      * simulation. May be useful for detecting memory leaks caused
      * by forgetting to delete messages.
      */
-    static unsigned long liveMessageCount()  {return live_msgs;}
+    static unsigned long liveMessageCount() {return live_msgs;}
 
     /**
      * Reset counters used by totalMessageCount() and liveMessageCount().

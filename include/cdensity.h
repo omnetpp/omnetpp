@@ -268,7 +268,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Returns whether the object is transformed. See transform().
      */
-    virtual bool transformed()   {return transfd;}
+    virtual bool transformed() _CONST   {return transfd;}
 
     /**
      * Transforms the table of precollected values into an internal
@@ -286,7 +286,7 @@ class SIM_API cDensityEstBase : public cStdDev
      * Returns the number of histogram cells used.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual int cells() = 0;
+    virtual int cells() _CONST = 0;
 
     /**
      * Returns the kth cell boundary. Legal values for k are 0 through cells(),
@@ -295,14 +295,14 @@ class SIM_API cDensityEstBase : public cStdDev
      * returns the high end of the last histogram cell.
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double basepoint(int k) = 0;
+    virtual double basepoint(int k) _CONST = 0;
 
     /**
      * Returns the number of observations that fell into the kth histogram cell.
      * Before transformation, this method may return zero. See transform().
      * This method is pure virtual, implementation is provided in subclasses.
      */
-    virtual double cell(int k) = 0;
+    virtual double cell(int k) _CONST = 0;
 
     /**
      * Returns the estimated value of the Probability Density Function
@@ -311,19 +311,19 @@ class SIM_API cDensityEstBase : public cStdDev
      * Note that before transformation, cell() and also this method may return zero.
      * See transform().
      */
-    virtual double cellPDF(int k);
+    virtual double cellPDF(int k) _CONST;
 
     /**
      * Returns number of observations that, being too small, fell out of the histogram
      * range.
      */
-    virtual unsigned long underflowCell() {return cell_under;}
+    virtual unsigned long underflowCell() _CONST {return cell_under;}
 
     /**
      * Returns number of observations that, being too large, fell out of the histogram
      * range.
      */
-    virtual unsigned long overflowCell() {return cell_over;}
+    virtual unsigned long overflowCell() _CONST {return cell_over;}
     //@}
 
     /** @name Density and cumulated density approximation functions. */
@@ -334,14 +334,14 @@ class SIM_API cDensityEstBase : public cStdDev
      * This is a pure virtual function, implementation is provided
      * in subclasses implementing concrete histogram types.
      */
-    virtual double pdf(double x) = 0;
+    virtual double pdf(double x) _CONST = 0;
 
     /**
      * Returns the estimated value of the Cumulated Density Function at a given x.
      * This is a pure virtual function, implementation is provided
      * in subclasses implementing concrete histogram types.
      */
-    virtual double cdf(double x) = 0;
+    virtual double cdf(double x) _CONST = 0;
     //@}
 };
 

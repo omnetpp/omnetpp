@@ -69,7 +69,7 @@ class SIM_API cLinkedList : public cObject
     // internal use.
     // if both dupfunc and itemsize are 0, we do no memory management
     // (we treat pointers as mere pointers)
-    sLLElem *find_llelem(void *item);
+    sLLElem *find_llelem(void *item) _CONST;
 
     // internal use
     void insbefore_llelem(sLLElem *p, void *item);
@@ -198,13 +198,13 @@ class SIM_API cLinkedList : public cObject
      * Returns the first item in the list or NULL pointer if the list
      * is empty.
      */
-    void *head()  {return n!=0 ? headp->item : NULL;}
+    void *head() _CONST  {return n!=0 ? headp->item : NULL;}
 
     /**
      * Returns the last item in the list or NULL pointer if the list
      * is empty.
      */
-    void *tail()  {return n!=0 ? tailp->item : NULL;}
+    void *tail() _CONST  {return n!=0 ? tailp->item : NULL;}
 
     /**
      * Unlinks and returns the given item. If the item is not in the list,
@@ -221,17 +221,17 @@ class SIM_API cLinkedList : public cObject
     /**
      * Returns the number of items contained in the list.
      */
-    int length() {return n;}
+    int length() _CONST {return n;}
 
     /**
      * Returns true if the list is empty.
      */
-    bool empty() {return n==0;}
+    bool empty() _CONST {return n==0;}
 
     /**
      * Returns true if the list contains the given pointer.
      */
-    bool contains(void *item)  {return find_llelem(item)!=NULL;}
+    bool contains(void *item) _CONST  {return find_llelem(item)!=NULL;}
 
     /**
      * As a result, the container will be empty. Contained items will
@@ -276,13 +276,13 @@ class SIM_API cLinkedListIterator
     /**
      * Returns the current item.
      */
-    void *operator()()        {return p->item;}
+    void *operator()() _CONST        {return p->item;}
 
     /**
      * Returns true if we have reached the end (with operator++) or the beginning
      * (with operator--) of the list.
      */
-    bool end()                {return (bool)(p==NULL);}
+    bool end() _CONST                {return (bool)(p==NULL);}
 
     /**
      * Returns the current item and steps to the next one.

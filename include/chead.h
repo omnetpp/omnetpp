@@ -156,12 +156,12 @@ class SIM_API cIterator
     /**
      * Returns a pointer to the current object.
      */
-    cObject *operator()()    {return p;}
+    cObject *operator()() _CONST    {return p;}
 
     /**
      * Returns true if the iterator reached the end of the list.
      */
-    bool end()               {return (bool)(p==NULL);}
+    bool end() _CONST               {return (bool)(p==NULL);}
 
     /**
      * Returns the current item, then moves the iterator to the next one.

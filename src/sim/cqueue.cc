@@ -127,7 +127,7 @@ void cQueue::setup(CompareFunc cmp, bool a)
 //==  'headp' and 'tailp' point to the ends of the list (NULL if it is empty).
 //==  The list is double-linked, but 'headp->prev' and 'tailp->next' are NULL.
 
-sQElem *cQueue::find_qelem(cObject *obj)
+sQElem *cQueue::find_qelem(cObject *obj) _CONST
 {
     sQElem *p = headp;
     while( p && p->obj!=obj )
@@ -253,12 +253,12 @@ void cQueue::insertAfter(cObject *where, cObject *obj)
     insafter_qelem(p,obj);
 }
 
-cObject *cQueue::head()
+cObject *cQueue::head() _CONST
 {
     return n!=0 ? headp->obj : NO(cObject);
 }
 
-cObject *cQueue::tail()
+cObject *cQueue::tail() _CONST
 {
     return n!=0 ? tailp->obj : NO(cObject);
 }
@@ -285,12 +285,12 @@ cObject *cQueue::pop()
     return remove_qelem( tailp );
 }
 
-int cQueue::length()
+int cQueue::length() _CONST
 {
     return n;
 }
 
-bool cQueue::contains(cObject *obj)
+bool cQueue::contains(cObject *obj) _CONST
 {
    return find_qelem(obj)!=NULL;
 }

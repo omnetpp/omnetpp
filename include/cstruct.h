@@ -140,7 +140,7 @@ class cStructDescriptor : public cObject
     /**
      * Returns client object.
      */
-    void *getStruct()  {return p;}
+    void *getStruct() _CONST  {return p;}
     //@}
 
     /** @name Querying and setting fields of the client object. */
@@ -238,7 +238,7 @@ class sFieldWrapper
 {
   public:
     /**
-     * Constructor. In subclasses, the constructor will need to take 
+     * Constructor. In subclasses, the constructor will need to take
      * a pointer to actual object or member it is wrapping, and store
      * it in a private data member (also to be added in subclasses).
      */

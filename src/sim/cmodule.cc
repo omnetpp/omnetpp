@@ -382,7 +382,7 @@ const cGate *cModule::gate(const char *s, int sn) const
     return gate(i);
 }
 
-int cModule::findPar(const char *s)
+int cModule::findPar(const char *s) _CONST
 {
     return paramv.find(s);
 }
