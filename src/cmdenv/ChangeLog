@@ -11,7 +11,7 @@ otherwise one doesn't know total duration and number of processed events!
 
 	* cmdenv.cc: new omnetpp.ini option:
 	    event-banner-details= true/false (default: false).
-	It is in effect with normal mode (express-run=false), and causes
+	It is in effect with normal mode (express-mode=false), and causes
         elapsed time and number of messages (created,present, in FES) to be 
         printed in a second line below the event banner. Format:
            Elapsed: 131s (2m 11s)   Clock: 131830   Messages: created: 45  
