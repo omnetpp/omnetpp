@@ -81,4 +81,9 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
-
+arrow.o: arrow.h
+disp.o: disp.h
+gned.o: arrow.h parsened.h tklib.h
+nedfile.o: nedfile.h parsened.h
+parsened.o: parsened.h nedfile.h disp.h tklib.h
+tklib.o: tklib.h

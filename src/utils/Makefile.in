@@ -22,5 +22,3 @@ clean:
 	rm -f *.o seedtool
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-
