@@ -1,0 +1,84 @@
+%description:
+Basic test for multi-stage initialization.
+
+Tests that:
+- a compound module has its initialize() function called before all its submodules have.
+- initialize(0) is called for all modules, then initialize(1), initialize(2), etc.
+
+%file: {}.ned
+
+simple {Module}
+endsimple
+
+module {A}
+    submodules:
+        a1: {Module};
+        a2: {Module};
+endmodule
+
+module {B}
+    submodules:
+        b1: {A};
+        b2: {Module};
+        b3: {A};
+endmodule
+
+network {network} : {B}
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Module} : public cSimpleModule
+{
+    Module_Class_Members({Module},cSimpleModule,0)
+    virtual void initialize(int stage);
+    virtual int numInitStages() const; // NOTE THE const MODIFIER!!!
+
+    virtual void handleMessage(cMessage *msg);
+};
+
+Define_Module({Module});
+
+int {Module}::numInitStages() const
+{
+   return 3;
+}
+
+void {Module}::initialize(int stage)
+{
+   ev << fullPath() << ": initialize stage=" << stage << " called" << endl;
+   cMessage *msg = new cMessage();
+   scheduleAt(1.0, msg);
+}
+
+void {Module}::handleMessage(cMessage *msg)
+{
+   ev << "handleMessage() at " << simTime() << endl;
+   delete msg;
+}
+
+%contains: stdout
+{network}.b1.a1: initialize stage=0 called
+{network}.b1.a2: initialize stage=0 called
+{network}.b2: initialize stage=0 called
+{network}.b3.a1: initialize stage=0 called
+{network}.b3.a2: initialize stage=0 called
+{network}.b1.a1: initialize stage=1 called
+{network}.b1.a2: initialize stage=1 called
+{network}.b2: initialize stage=1 called
+{network}.b3.a1: initialize stage=1 called
+{network}.b3.a2: initialize stage=1 called
+{network}.b1.a1: initialize stage=2 called
+{network}.b1.a2: initialize stage=2 called
+{network}.b2: initialize stage=2 called
+{network}.b3.a1: initialize stage=2 called
+{network}.b3.a2: initialize stage=2 called
+
+%not-contains: stdout
+stage=3
+
+%contains: stdout
+handleMessage() at 1
+
