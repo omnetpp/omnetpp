@@ -71,11 +71,7 @@ clean:
 	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)
 
 install-local: libenvir$(LIB_SUFFIX)
-	rm -f $(OMNETPP_LIB_DIR)/libenvir$(A_LIB_SUFFIX)*
-	rm -f $(OMNETPP_LIB_DIR)/libenvir$(SO_LIB_SUFFIX)*
-	cp libenvir$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/libenvir$(LIB_SUFFIX).$(OMNETPP_VERSION)
-	(cd $(OMNETPP_LIB_DIR); \
-         ln -s libenvir$(LIB_SUFFIX).$(OMNETPP_VERSION) libenvir$(LIB_SUFFIX))
+	../utils/install-lib libenvir$(LIB_SUFFIX) $(OMNETPP_LIB_DIR) libenvir$(LIB_SUFFIX).$(OMNETPP_VERSION)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

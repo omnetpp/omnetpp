@@ -8,6 +8,6 @@ depend:
 clean:
 
 install-local: plove
-	(dir=`pwd`; cd $(OMNETPP_BIN_DIR); ln -s $$dir/plove .)
+	(dir=`pwd`; cd $(OMNETPP_BIN_DIR); rm -f plove; ln -s $$dir/plove .)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -26,7 +26,7 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I../envir $(TK_CFLAGS)
 
-OMNETPP_TKENV_DIR=$(OMNETPP_SRC_DIR)/tkenv
+OMNETPP_TKENV_DIR=`pwd`
 
 OBJS = $(TKAPP).o tkcmd.o tklib.o objinsp.o modinsp.o statinsp.o inspect.o arrow.o
 
@@ -96,11 +96,8 @@ depend:
 clean:
 	rm -f *.o libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX) tcl2c
 
-install-local: libtkenv$(LIB_SUFFIX)
-	rm -f $(OMNETPP_LIB_DIR)/libtkenv$(A_LIB_SUFFIX)*
-	rm -f $(OMNETPP_LIB_DIR)/libtkenv$(SO_LIB_SUFFIX)*
-	cp libtkenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/libtkenv$(LIB_SUFFIX).$(OMNETPP_VERSION)
-	(cd $(OMNETPP_LIB_DIR); ln -s libtkenv$(LIB_SUFFIX).$(OMNETPP_VERSION) libtkenv$(LIB_SUFFIX))
+install-local: @TKENV_IF_POSSIBLE@
+	../utils/install-lib libtkenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR) libtkenv$(LIB_SUFFIX).$(OMNETPP_VERSION)
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

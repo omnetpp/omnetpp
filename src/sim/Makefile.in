@@ -178,11 +178,8 @@ install-local: libsim_std$(LIB_SUFFIX) @SIM_PVM_IF_POSSIBLE@
 	rm -f $(OMNETPP_LIB_DIR)/libsim_std$(SO_LIB_SUFFIX)*
 	rm -f $(OMNETPP_LIB_DIR)/libsim_pvm$(A_LIB_SUFFIX)*
 	rm -f $(OMNETPP_LIB_DIR)/libsim_pvm$(SO_LIB_SUFFIX)*
-	cp libsim_std$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/libsim_std$(LIB_SUFFIX).$(OMNETPP_VERSION)
-	cp libsim_pvm$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/libsim_pvm$(LIB_SUFFIX).$(OMNETPP_VERSION)
-	cd $(OMNETPP_LIB_DIR); \
-	ln -s libsim_std$(LIB_SUFFIX).$(OMNETPP_VERSION) libsim_std$(LIB_SUFFIX); \
-	ln -s libsim_pvm$(LIB_SUFFIX).$(OMNETPP_VERSION) libsim_pvm$(LIB_SUFFIX)
+	../utils/install-lib libsim_std$(LIB_SUFFIX) $(OMNETPP_LIB_DIR) libsim_std$(LIB_SUFFIX).$(OMNETPP_VERSION)
+	../utils/install-lib libsim_pvm$(LIB_SUFFIX) $(OMNETPP_LIB_DIR) libsim_pvm$(LIB_SUFFIX).$(OMNETPP_VERSION)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

@@ -54,10 +54,7 @@ clean:
 	rm -f *.o libcmdenv$(A_LIB_SUFFIX) libcmdenv$(SO_LIB_SUFFIX)
 
 install-local: libcmdenv$(LIB_SUFFIX)
-	rm -f $(OMNETPP_LIB_DIR)/libcmdenv$(A_LIB_SUFFIX)*
-	rm -f $(OMNETPP_LIB_DIR)/libcmdenv$(SO_LIB_SUFFIX)*
-	cp libcmdenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/libcmdenv$(LIB_SUFFIX).$(OMNETPP_VERSION)
-	(cd $(OMNETPP_LIB_DIR); ln -s libcmdenv$(LIB_SUFFIX).$(OMNETPP_VERSION) libcmdenv$(LIB_SUFFIX))
+	../utils/install-lib libcmdenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR) libcmdenv$(LIB_SUFFIX).$(OMNETPP_VERSION)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
