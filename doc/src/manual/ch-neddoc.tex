@@ -113,6 +113,7 @@ and lines beginning with `\ttt{-\#}' into numbered lists.
 Example:
 
 \begin{verbatim}
+//
 // Ethernet MAC layer. MAC performs transmission and reception of frames.
 //
 // Processing of frames received from higher layers:
@@ -126,6 +127,21 @@ Example:
 // -# Ethernet-II
 //
 \end{verbatim}
+
+
+\subsection{Special tags}
+
+\fname{\opp_neddoc} will understand the following tags and render them accordingly:
+\ttt{@author}, \ttt{@date}, \ttt{@todo}, \ttt{@bug}, \ttt{@see}, \ttt{@since},
+\ttt{@warning}, \ttt{@version}. An example usage:
+
+\begin{verbatim}
+//
+// @author Jack Foo
+// @date 2005-02-11
+//
+\end{verbatim}
+
 
 \subsection{Additional text formatting using HTML}
 

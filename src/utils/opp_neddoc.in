@@ -130,7 +130,7 @@ while (@ARGV)
 if ($do_help)
 {
     print "opp_neddoc - NED and MSG documentation tool, part of OMNeT++\n";
-    print "(c) 2003 Andras Varga\n\n";
+    print "(c) 2003-2004 Andras Varga\n\n";
     print "Generates HTML model documentation from .ned and .msg files.\n\n";
     if ($GHOSTSCRIPT eq "" && $CONVERT eq "")
     {
