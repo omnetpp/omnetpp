@@ -294,7 +294,7 @@ proc create_omnetpp_window {} {
     set help_tips(.statusbar.nextlabel)     {Module where next event will occur}
 
     set help_tips(.statusbar2.feslength)    {Number of events (messages) currently scheduled}
-    set help_tips(.statusbar2.totalmsgs)    {Number of message created since start of the simulation}
+    set help_tips(.statusbar2.totalmsgs)    {Total number of messages created since start of the simulation}
     set help_tips(.statusbar2.livemsgs)     {Number of existing message objects, including scheduled ones}
 
     set help_tips(.statusbar3.eventspersec)    {Performance: events processed per second}

@@ -50,7 +50,26 @@ proc messagebox {title msg icon type} {
     return [tk_messageBox -title $title -message $msg -icon $icon -type $type]
 }
 
-proc selectfromlistbox {title text list} {
+proc comboSelectionDialog {title text variable list} {
+    set w .combodialog
+    createOkCancelDialog $w $title
+
+    upvar $variable var
+
+    label-combo $w.f.c $text $list $var
+    pack $w.f.c -fill x -padx 2 -pady 2 -side top
+    focus $w.f.c.e
+
+    if [execOkCancelDialog $w] {
+        set var [$w.f.c.e cget -value]
+        destroy $w
+        return 1
+    }
+    destroy $w
+    return 0
+}
+
+proc listboxSelectionDialog {title text list} {
 
     set w .listdialog
     createOkCancelDialog $w $title
@@ -472,4 +491,5 @@ proc _doFind {w findstring case words regexp backwards} {
 
     return $length
 }
+
 

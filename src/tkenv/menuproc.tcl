@@ -114,10 +114,18 @@ proc new_network {} {
 
     if [check_running] return
 
-    set network_name [opp_getnetworktype]
-    set ok [inputbox {Set Up Network} {Enter network name to set up:} network_name]
+    # get list of network names; FIXME should call opp_getchildobjects when it gets implemented
+    set networks [lreplace [opp_getsubobjects [opp_object_networks]] 0 0]
+    set netnames {}
+    foreach net $networks {
+        lappend netnames [opp_getobjectfullname $net]
+    }
+
+    # pop up dialog, with current network as default
+    set netname [opp_getnetworktype]
+    set ok [comboSelectionDialog "Set up network" "Select network to set up:" netname $netnames]
     if {$ok == 1} {
-       opp_newnetwork $network_name
+       opp_newnetwork $netname
 
        if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
            opp_inspect [opp_object_systemmodule] (default)
@@ -130,10 +138,28 @@ proc new_run {} {
 
     if [check_running] return
 
-    set run_number 1
-    set ok [inputbox {Set Up New Run} {Set up a Run described in omnetpp.ini:} run_number]
+    # compile list of runs
+    set sectionlist [opp_getinisectionnames]
+    set runlist {General}
+    foreach section $sectionlist {
+       if {[regexp -nocase -- {^(Run *)?([0-9]+) *$} $section dummy dummy1 runno]} {
+           lappend runlist "Run $runno"
+       }
+    }
+    set run "Run [opp_getrunnumber]"
+
+    # pop up selection dialog
+    set ok [comboSelectionDialog "Set up new omnetpp.ini Run" {Select run:} run $runlist]
     if {$ok == 1} {
-       opp_newrun $run_number
+       if {$run == "General"} {
+           set runno "-1"
+       } elseif {[regexp -nocase -- {^(Run *)?([0-9]+) *$} $run dummy dummy1 runno]} {
+           # OK -- regexp matched
+       } else {
+           messagebox "Error" "Which run do you mean by '$run'?" info ok
+           return;
+       }
+       opp_newrun $runno
 
        if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
            opp_inspect [opp_object_systemmodule] (default)
@@ -301,9 +327,9 @@ proc module_windows {} {
     if {[network_present] == 0} return
     inspectfromlistbox \
          "Open module windows" \
-         "Open trace window for simple modules:" \
+         "Open trace window for modules:" \
          {Module output} \
-         "modules [opp_object_systemmodule] deep simpleonly"
+         "modules [opp_object_systemmodule] deep"
     # set w [opp_inspect [opp_object_systemmodule] {(default)} ds]
     # $w.buttons.type config -text modulewindow
 }
@@ -345,13 +371,13 @@ proc inspect_matching {} {
                              Do you really want to inspect them all?" \
                             question yesno]
         if {$ans == "yes"} {
-           set type [selectfromlistbox {Choose Type...} {Select inspector type.} \
+           set type [listboxSelectionDialog {Choose Type...} {Select inspector type.} \
                          [opp_inspectortype all]]
            if {$type == ""} return
            opp_inspect_matching $pattern $type
         }
     } else {
-        set type [selectfromlistbox {Choose Type...} {Select inspector type.} \
+        set type [listboxSelectionDialog {Choose Type...} {Select inspector type.} \
                          [opp_inspectortype all]]
         if {$type == ""} return
         opp_inspect_matching $pattern $type

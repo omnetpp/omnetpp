@@ -221,16 +221,18 @@ void THistogramWindow::cellInfo( char *buf, int cell )
 
 int THistogramWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<1) {interp->result="wrong argcount"; return TCL_ERROR;}
+   if (argc<1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
    if (strcmp(argv[0],"cell")==0)   // 'opp_inspectorcommand <inspector> cell ...'
    {
-      if (argc>2) {interp->result="wrong argcount"; return TCL_ERROR;}
+      if (argc>2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
+      char buf[128];
       if (argc==1)
-         generalInfo( interp->result );
+         generalInfo(buf);
       else
-         cellInfo( interp->result, atoi(argv[1]) );
+         cellInfo(buf, atoi(argv[1]) );
+      Tcl_SetResult(interp,buf,TCL_VOLATILE);
       return TCL_OK;
    }
    return TCL_ERROR;
@@ -625,33 +627,41 @@ void TOutVectorWindow::setConfig( double timefac, double min_y, double max_y, co
    for (i=0; i<NUM_DRAWINGMODES; i++)
        if (0==strcmp(mode,drawingmodes[i]))
            break;
-   if (i!=NUM_DRAWINGMODES) 
+   if (i!=NUM_DRAWINGMODES)
        drawing_mode = i;
 }
 
 int TOutVectorWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<1) {interp->result="wrong argcount"; return TCL_ERROR;}
+   if (argc<1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
    if (strcmp(argv[0],"value")==0)   // 'opp_inspectorcommand <inspector> value ...'
    {
-      if (argc>2) {interp->result="wrong argcount"; return TCL_ERROR;}
+      if (argc>2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
+      char buf[128];
       if (argc==1)
-         generalInfo( interp->result );
+         generalInfo(buf);
       else
-         valueInfo( interp->result, atoi(argv[1]) );
+         valueInfo(buf, atoi(argv[1]));
+      Tcl_SetResult(interp,buf,TCL_VOLATILE);
       return TCL_OK;
    }
    else if (strcmp(argv[0],"config")==0)  // 'opp_inspectorcommand <inspector> config ...'
    {
-      if (argc!=5 && argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
+      if (argc!=5 && argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
       // get/set configuration: "timefactor miny maxy drawingmode"
       if (argc==1)
-         getConfig( interp->result );
+      {
+         char buf[128];
+         getConfig(buf);
+         Tcl_SetResult(interp, buf, TCL_VOLATILE);
+      }
       else
+      {
          setConfig( atof(argv[1]), atof(argv[2]), atof(argv[3]), argv[4] );
+      }
       return TCL_OK;
    }
    return TCL_ERROR;

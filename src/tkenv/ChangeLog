@@ -1,3 +1,11 @@
+2002-12-07  Andras Varga
+
+	* File|New network and File|New run dialogs now correctly offer choices
+	of all available networks and all available run numbers
+
+	* tkcmd.cc and other files: most direct assignments to interp->result 
+	changed to Tcl_SetResult(); the ones left are tagged with FIXME comments
+
 2002-12-06  Andras Varga
 
 	* main.tcl: added tooltips for gauges on toolbar

@@ -112,7 +112,7 @@ static void clip_line_to_rect(
 
 int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
 {
-      if (argc!=18) {interp->result="17 args expected"; return TCL_ERROR;}
+      if (argc!=18) {Tcl_SetResult(interp, "17 args expected", TCL_STATIC); return TCL_ERROR;}
 
       // args 1..4: coords of source module rectangle
       double src_x1 = atof(argv[1]),
@@ -145,7 +145,7 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
 
       // error checks
       if (!strchr("amnews",mode)) {
-          interp->result="mode must be one of (a,m,n,e,w,s)";
+          Tcl_SetResult(interp, "mode must be one of (a,m,n,e,w,s)", TCL_STATIC);
           return TCL_ERROR;
       }
 
@@ -363,8 +363,9 @@ int arrowcoords(Tcl_Interp *interp, int argc, const char **argv)
          }
       }
 
-      sprintf(interp->result, "%g %g %g %g",
-                             src_x, src_y, dest_x, dest_y);
+      char buf[60];
+      sprintf(buf, "%g %g %g %g", src_x, src_y, dest_x, dest_y);
+      Tcl_SetResult(interp, buf, TCL_VOLATILE);
       return TCL_OK;
 }
 

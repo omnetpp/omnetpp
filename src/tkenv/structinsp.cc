@@ -170,91 +170,91 @@ int TStructPanel::inspectorCommand(Tcl_Interp *interp, int argc, const char **ar
 {
    // a Tcl-based struct inspector might use this...
 
-   if (argc<1) {interp->result="wrong argcount"; return TCL_ERROR;}
+   if (argc<1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
    cStructDescriptor *sd = cStructDescriptor::createDescriptorFor( object ); // FIXME: not very effective!
 
    if (strcmp(argv[0],"count")==0)   // 'opp_inspectorcommand <inspector> fieldcount ...'
    {
-      if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
-      sprintf(interp->result, "%d", sd->getFieldCount());
+      if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+      sprintf(interp->result, "%d", sd->getFieldCount()); // FIXME use Tcl_SetResult()
       return TCL_OK;
    }
 
    if (strcmp(argv[0],"type")==0)   // 'opp_inspectorcommand <inspector> fieldtype ...'
    {
-      if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
+      if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
       int type = sd->getFieldType(fld);
       switch(type)
       {
           case cStructDescriptor::FT_BASIC:
-              interp->result = "basic"; break;
+              Tcl_SetResult(interp, "basic", TCL_STATIC); break;
           case cStructDescriptor::FT_SPECIAL:
-              interp->result = "special"; break;
+              Tcl_SetResult(interp, "special", TCL_STATIC); break;
           case cStructDescriptor::FT_STRUCT:
-              interp->result = "struct"; break;
+              Tcl_SetResult(interp, "struct", TCL_STATIC); break;
           case cStructDescriptor::FT_BASIC_ARRAY:
-              interp->result = "basic array"; break;
+              Tcl_SetResult(interp, "basic array", TCL_STATIC); break;
           case cStructDescriptor::FT_SPECIAL_ARRAY:
-              interp->result = "special array"; break;
+              Tcl_SetResult(interp, "special array", TCL_STATIC); break;
           case cStructDescriptor::FT_STRUCT_ARRAY:
-              interp->result = "struct array"; break;
+              Tcl_SetResult(interp, "struct array", TCL_STATIC); break;
           default:
-              interp->result = "invalid";
+              Tcl_SetResult(interp, "invalid", TCL_STATIC);
       }
       return TCL_OK;
    }
 
    if (strcmp(argv[0],"name")==0)   // 'opp_inspectorcommand <inspector> fieldname <fldid> ...'
    {
-      if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
+      if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      strcpy(interp->result, sd->getFieldName(fld));
+      strcpy(interp->result, sd->getFieldName(fld)); // FIXME use Tcl_SetResult()
       return TCL_OK;
    }
 
    if (strcmp(argv[0],"typename")==0)   // 'opp_inspectorcommand <inspector> fieldtypename <fldid> ...'
    {
-      if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
+      if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      strcpy(interp->result, sd->getFieldTypeString(fld));
+      strcpy(interp->result, sd->getFieldTypeString(fld)); // FIXME use Tcl_SetResult()
       return TCL_OK;
    }
 
    if (strcmp(argv[0],"arraysize")==0)   // 'opp_inspectorcommand <inspector> fieldarraysize <fldid> ...'
    {
-      if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
+      if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      sprintf(interp->result, "%d", sd->getArraySize(fld));
+      sprintf(interp->result, "%d", sd->getArraySize(fld)); // FIXME use Tcl_SetResult()
       return TCL_OK;
    }
 
    if (strcmp(argv[0],"value")==0)   // 'opp_inspectorcommand <inspector> fieldvalue <fldid> ?index?...'
    {
-      if (argc!=2 && argc!=3) {interp->result="wrong argcount"; return TCL_ERROR;}
+      if (argc!=2 && argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
       int i=0;
       if (argc==4)
          i = atoi(argv[2]);
-      if (!sd->getFieldAsString(fld, i, interp->result, 128))
+      if (!sd->getFieldAsString(fld, i, interp->result, 128))  // FIXME use Tcl_SetResult()
          return TCL_ERROR;
       return TCL_OK;
    }
 
    if (strcmp(argv[0],"enumname")==0)   // 'opp_inspectorcommand <inspector> fieldenumname <fldid> ?index?...'
    {
-      if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
+      if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      strcpy(interp->result, sd->getFieldEnumName(fld));
+      strcpy(interp->result, sd->getFieldEnumName(fld));   // FIXME use Tcl_SetResult()
       return TCL_OK;
    }
 
    if (strcmp(argv[0],"structname")==0)   // 'opp_inspectorcommand <inspector> fieldenumname <fldid> ?index?...'
    {
-      if (argc!=2) {interp->result="wrong argcount"; return TCL_ERROR;}
+      if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
       int fld = atoi(argv[1]);
-      strcpy(interp->result, sd->getFieldStructName(fld));
+      strcpy(interp->result, sd->getFieldStructName(fld));   // FIXME use Tcl_SetResult()
       return TCL_OK;
    }
 

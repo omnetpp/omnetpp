@@ -357,7 +357,7 @@ void TGraphicalModWindow::displayStringChange(cModule *, bool immediate)
 
 int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<1) {interp->result="wrong number of args"; return TCL_ERROR;}
+   if (argc<1) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
 
    // supported commands:
    //   arrowcoords, redraw, modpar
@@ -380,10 +380,12 @@ int TGraphicalModWindow::inspectorCommand(Tcl_Interp *interp, int argc, const ch
 int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const char **argv)
 {
    // args: <module ptr> <parname> <searchparent>
-   if (argc!=4) {interp->result="wrong number of args"; return TCL_ERROR;}
+   if (argc!=4) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
 
    bool searchparents = atoi(argv[3])!=0;
    cModule *mod = (cModule *)strToPtr( argv[1] );
+   if (!mod) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+
    int k;
    cPar *par = 0;
 
@@ -400,7 +402,7 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
 
    if (!par)
    {
-      sprintf(interp->result,
+      sprintf(interp->result, // FIXME use Tcl_SetResult()
               (!searchparents ? "module '%s' has no '%s' parameter" :
                "module '%s' and its parent have no '%s' parameter"),
               mod->fullPath(), argv[2]);
@@ -408,9 +410,9 @@ int TGraphicalModWindow::getDisplayStringPar(Tcl_Interp *interp, int argc, const
    }
 
    if (par->type()=='S')
-     interp->result = const_cast<char*>(par->stringValue());
+     Tcl_SetResult(interp, const_cast<char*>(par->stringValue()), TCL_VOLATILE);
    else
-     sprintf(interp->result, "%g", par->doubleValue());
+     sprintf(interp->result, "%g", par->doubleValue()); // FIXME use Tcl_SetResult()
 
    return TCL_OK;
 }
@@ -767,7 +769,7 @@ void TGraphicalGateWindow::update()
 
 int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc<1) {interp->result="wrong number of args"; return TCL_ERROR;}
+   if (argc<1) {Tcl_SetResult(interp, "wrong number of args", TCL_STATIC); return TCL_ERROR;}
 
    // supported commands:
    //   redraw
@@ -777,7 +779,7 @@ int TGraphicalGateWindow::inspectorCommand(Tcl_Interp *interp, int argc, const c
       return redraw(interp,argc,argv);
    }
 
-   interp->result="invalid arg: must be 'redraw'";
+   Tcl_SetResult(interp, "invalid arg: must be 'redraw'", TCL_STATIC);
    return TCL_ERROR;
 }
 

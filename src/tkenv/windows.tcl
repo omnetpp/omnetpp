@@ -36,18 +36,18 @@ proc create_messagewindow {name} {
     wm resizable $w 1 1
     wm title $w "Sent/Delivered Messages"
 
-    frame $w.statusbar
-    label $w.statusbar.frommodule -justify left -relief groove -text {From: any module}
-    label $w.statusbar.tomodule -justify left -relief groove -text {To: any module}
+    #frame $w.statusbar
+    #label $w.statusbar.frommodule -justify left -relief groove -text {From: any module}
+    #label $w.statusbar.tomodule -justify left -relief groove -text {To: any module}
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 88 -height 15
     scrollbar $w.main.sb -command "$w.main.text yview"
     $w.main.text tag configure event -foreground blue
 
     # setting geometry
-    pack $w.statusbar  -anchor center -expand 0 -fill x -side top
-    pack $w.statusbar.frommodule -anchor n -expand 1 -fill x -side left
-    pack $w.statusbar.tomodule -anchor n -expand 1 -fill x -side left
+    #pack $w.statusbar  -anchor center -expand 0 -fill x -side top
+    #pack $w.statusbar.frommodule -anchor n -expand 1 -fill x -side left
+    #pack $w.statusbar.tomodule -anchor n -expand 1 -fill x -side left
     pack $w.main -anchor center -expand 1 -fill both -side top
     pack $w.main.sb -anchor center -expand 0 -fill y -ipadx 0 -ipady 0 -padx 0 -pady 0 -side right
     pack $w.main.text -anchor center -expand 1 -fill both -side left

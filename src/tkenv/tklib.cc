@@ -44,6 +44,9 @@ char *ptrToStr(void *ptr, char *buffer)
 
 void *strToPtr(const char *s)
 {
+    if (s[0]!='p' || s[1]!='t' || s[2]!='r')
+       return NULL;
+
     void *ptr;
     sscanf(s+3,"%p",&ptr);
     return ptr;
