@@ -239,9 +239,9 @@ const char *cModule::fullName() const
     return fullname;
 }
 
-const char *cModule::fullPath() const
+std::string cModule::fullPath() const
 {
-    return fullPath(fullpathbuf,MAX_OBJECTFULLPATH);
+    return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
 }
 
 const char *cModule::fullPath(char *buffer, int bufsize) const
@@ -250,7 +250,7 @@ const char *cModule::fullPath(char *buffer, int bufsize) const
     if (!buffer || bufsize<4)
     {
         if (buffer) buffer[0]='\0';
-        return "(fullPath(): no or too small buffer)";
+        return "(fullPath(): no buffer or buffer too small)";
     }
 
     // append parent path + "."
@@ -283,7 +283,7 @@ cGate *cModule::createGateObject(const char *gname, char tp)
 cGate *cModule::addGate(const char *gname, char tp, bool isvector)
 {
     if (findGate(gname)>=0)
-       throw new cException(this, "addGate(): Gate %s.%s already present", fullPath(), gname);
+       throw new cException(this, "addGate(): Gate %s.%s already present", fullPath().c_str(), gname);
 
      cGate *newg = createGateObject(gname, tp);
      newg->setOwnerModule(this, gatev.add(newg));
@@ -326,7 +326,7 @@ int cModule::setGateSize(const char *gname, int newsize)
         {
             cGate *gate = (cGate *) gatev.remove(pos+i);
             if (gate->fromGate() || gate->toGate())
-                throw new cException(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->fullPath());
+                throw new cException(this,"setGateSize(): Cannot shrink gate vector, gate %s already connected", gate->fullPath().c_str());
             delete gate;
         }
         // and tell remaining gates the new vector size
@@ -411,7 +411,7 @@ cPar *cModule::addPar(const char *pname)
 {
     int i = findPar(pname);
     if (i!=-1)
-       throw new cException(this,"addPar(): Parameter %s.%s already present",fullPath(), pname);
+       throw new cException(this,"addPar(): Parameter %s.%s already present",fullPath().c_str(), pname);
 
     i = paramv.add( new cModulePar(pname) );
     cModulePar *p = (cModulePar *) &par(i);
@@ -431,7 +431,7 @@ bool cModule::checkInternalConnections() const
     {
        const cGate *g = gate(j);
        if (g && !g->isConnectedInside())
-            throw new cException(this,"Gate `%s' is not connected to submodule (or output gate of same module)", g->fullPath());
+            throw new cException(this,"Gate `%s' is not connected to submodule (or output gate of same module)", g->fullPath().c_str());
     }
 
     // check submodules
@@ -442,7 +442,7 @@ bool cModule::checkInternalConnections() const
        {
           cGate *g = m->gate(j);
           if (g && !g->isConnectedOutside())
-             throw new cException(this,"Gate `%s' is not connected to sibling or parent module", g->fullPath());
+             throw new cException(this,"Gate `%s' is not connected to sibling or parent module", g->fullPath().c_str());
        }
     }
     return true;
@@ -790,7 +790,7 @@ void cCompoundModule::arrived(cMessage *msg, int g, simtime_t)
 {
     throw new cException("Message (%s)`%s' arrived at COMPOUND module gate `%s' "
                          "(which is not further connected)",
-                         msg->className(), msg->name(), gate(g)->fullPath());
+                         msg->className(), msg->name(), gate(g)->fullPath().c_str());
 }
 
 void cCompoundModule::scheduleStart(simtime_t t)
@@ -810,10 +810,10 @@ static void _connect(cModule *frm, int frg, cModule *tom, int tog)
     cGate *destgate = tom->gate(tog);
 
     if (srcgate->toGate()!=NULL)
-       throw new cException( "connect(): gate %s already connected", srcgate->fullPath() );
+       throw new cException( "connect(): gate %s already connected", srcgate->fullPath().c_str() );
 
     if (destgate->fromGate()!=NULL)
-       throw new cException( "connect(): gate %s already connected", destgate->fullPath() );
+       throw new cException( "connect(): gate %s already connected", destgate->fullPath().c_str() );
 
     srcgate->connectTo( destgate );
 }

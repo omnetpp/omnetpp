@@ -244,7 +244,7 @@ void cStdDev::collect(double val)
     if (++num_samples <= 0)
     {
         // FIXME: num_samples overflow: issue warning and must stop collecting!
-        ev.printf("\a\nWARNING: (%s)%s: observation count overflow!\n\n",className(),fullPath());
+        ev.printf("\a\nWARNING: (%s)%s: observation count overflow!\n\n",className(),fullPath().c_str());
     }
     sum_samples+=val;
     sqrsum_samples+=val*val;
@@ -316,7 +316,7 @@ double cStdDev::random() const
 
 void cStdDev::saveToFile(FILE *f) const
 {
-    fprintf(f,"\n#\n# (%s) %s\n#\n", className(), fullPath());
+    fprintf(f,"\n#\n# (%s) %s\n#\n", className(), fullPath().c_str());
     fprintf(f,"%ld\t #= num_samples\n",num_samples);
     fprintf(f,"%g %g\t #= min, max\n", min_samples, max_samples);
     fprintf(f,"%g\t #= sum\n", sum_samples);

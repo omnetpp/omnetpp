@@ -56,7 +56,7 @@ void cSimpleModule::activate(void *p)
     if (starter!=mod->timeoutmsg)
     {
         // hand exception to cSimulation::transferTo() and switch back
-        simulation.exception = new cException("scheduleStart() should have been called for dynamically created module `%s'", mod->fullPath());
+        simulation.exception = new cException("scheduleStart() should have been called for dynamically created module `%s'", mod->fullPath().c_str());
         simulation.exception_type = 0;
         mod->state = sENDED;
 
@@ -157,7 +157,7 @@ cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stks
        coroutine = new cCoroutine;
        if (!coroutine->setup(cSimpleModule::activate, this, stksize+ev.extraStackForEnvir()))
            throw new cException("Cannot create coroutine with %d+%d bytes of stack space for module `%s'",
-                             stksize,ev.extraStackForEnvir(),fullPath());
+                             stksize,ev.extraStackForEnvir(),fullPath().c_str());
     }
 }
 
@@ -201,7 +201,7 @@ cSimpleModule& cSimpleModule::operator=(const cSimpleModule& other)
     coroutine = new cCoroutine();
     if (!coroutine->setup(cSimpleModule::activate, this, other.coroutine->stackSize()))
         throw new cException("Cannot allocate stack for module `%s' (increase total stack size!)",
-                  ev.extraStackForEnvir(),fullPath());
+                  ev.extraStackForEnvir(),fullPath().c_str());
     return *this;
 }
 
@@ -258,7 +258,7 @@ void cSimpleModule::scheduleStart(simtime_t t)
         return;
 
     if (timeoutmsg!=NULL)
-        throw new cException("scheduleStart(): module `%s' already started",fullPath());
+        throw new cException("scheduleStart(): module `%s' already started",fullPath().c_str());
 
     // create timeoutmsg, used as internal timeout message
     char buf[24];
@@ -329,7 +329,7 @@ int cSimpleModule::sendDelayed(cMessage *msg, double delay, cGate *outgate)
         throw new cException("send()/sendDelayed(): message pointer is NULL");
     if (msg->owner()!=this)
         throw new cException("send()/sendDelayed(): not owner of message (%s)%s; owner is (%s)%s",
-                             msg->className(), msg->name(), msg->owner()->className(), msg->owner()->fullPath());
+                             msg->className(), msg->name(), msg->owner()->className(), msg->owner()->fullPath().c_str());
     if (delay<0.0)
         throw new cException("sendDelayed(): negative delay %g",delay);
 
@@ -357,7 +357,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cModule *mod, int
 {
     cGate *togate = mod->gate(g);
     if (togate==NULL)
-        throw new cException("sendDirect(): module `%s' has no gate #%d",mod->fullPath(),g);
+        throw new cException("sendDirect(): module `%s' has no gate #%d",mod->fullPath().c_str(),g);
 
     return sendDirect(msg, propdelay, togate);
 }
@@ -371,7 +371,7 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay,
     if (togate==NULL)
         throw new cException(sn<0 ? "sendDirect(): module `%s' has no gate `%s'":
                          "sendDirect(): module `%s' has no gate `%s[%d]'",
-                         mod->fullPath(),gatename,sn);
+                         mod->fullPath().c_str(),gatename,sn);
     return sendDirect(msg, propdelay, togate);
 }
 
@@ -383,13 +383,13 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
         throw new cException("sendDirect(): destination gate pointer is NULL");
     if (togate->fromGate())
         throw new cException("sendDirect(): module must have dedicated gate(s) for receiving via sendDirect()"
-                             " (\"from\" side of dest. gate `%s' should NOT be connected)",togate->fullPath());
+                             " (\"from\" side of dest. gate `%s' should NOT be connected)",togate->fullPath().c_str());
 
     if (msg==NULL)
         throw new cException("sendDirect(): message pointer is NULL");
     if (msg->owner()!=this)
         throw new cException("sendDirect(): not owner of message (%s)%s; owner is (%s)%s",
-                             msg->className(), msg->name(), msg->owner()->className(), msg->owner()->fullPath());
+                             msg->className(), msg->name(), msg->owner()->className(), msg->owner()->fullPath().c_str());
 
     // to help debugging, switch back to main for a moment
     if (pause_in_sendmsg && usesactivity)
@@ -418,7 +418,7 @@ int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
         throw new cException("scheduleAt(): message pointer is NULL");
     if (msg->owner()!=this)
         throw new cException("scheduleAt(): not owner of message (%s)%s; owner is (%s)%s",
-                             msg->className(), msg->name(), msg->owner()->className(), msg->owner()->fullPath());
+                             msg->className(), msg->name(), msg->owner()->className(), msg->owner()->fullPath().c_str());
 
     // to help debugging, switch back to main for a moment
     if (pause_in_sendmsg && usesactivity)
@@ -453,11 +453,11 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
 void cSimpleModule::arrived( cMessage *msg, int ongate, simtime_t t)
 {
     if (state==sENDED)
-        throw new cException(eMODFIN,fullPath());
+        throw new cException(eMODFIN,fullPath().c_str());
     if (t<simTime())
         throw new cException("causality violation: message `%s' arrival time %s at module `%s' "
                              "is earlier than current simulation time",
-                             msg->name(), simtimeToStr(t), fullPath());
+                             msg->name(), simtimeToStr(t), fullPath().c_str());
     msg->setArrival(this, ongate, t);
     simulation.msgQueue.insert( msg );
 }

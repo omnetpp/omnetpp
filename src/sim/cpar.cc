@@ -194,9 +194,9 @@ std::string cPar::info() const
         case 'D': out << dbl.val << " (D)"; break;
         case 'C': out << "compiled expression"; break;
         case 'X': out << "reverse Polish expression"; break;
-        case 'T': out << (dtr.res ? dtr.res->fullPath():"null") << " (T)"; break;
+        case 'T': out << (dtr.res ? dtr.res->fullPath().c_str():"null") << " (T)"; break;
         case 'P': out << ptr.ptr << " (P)"; break;
-        case 'O': out << (obj.obj ? obj.obj->fullPath():"null") << " (O)"; break;
+        case 'O': out << (obj.obj ? obj.obj->fullPath().c_str():"null") << " (O)"; break;
         case 'F': ff = findfunctionbyptr(func.f);
                   out << (ff ? ff->name() : "unknown") << "(";
                   switch(func.argc) {
@@ -999,9 +999,9 @@ string cPar::getAsText() const
                  default: sprintf(bb,"() with %d args",func.argc); break;
                  };
                  return string(fn)+bb;
-       case 'T': return string("distribution ")+(dtr.res?dtr.res->fullPath():"NULL");
+       case 'T': return string("distribution ")+(dtr.res?dtr.res->fullPath().c_str():"NULL");
        case 'P': sprintf(bb,"pointer %p", ptr.ptr); return string(bb);
-       case 'O': return string("object ")+(obj.obj?obj.obj->fullPath():"NULL");
+       case 'O': return string("object ")+(obj.obj?obj.obj->fullPath().c_str():"NULL");
        case 'C': return string("compiled expression ")+cexpr.expr->getAsText();
        case 'X': return string("reverse Polish expression");
        case 'M': if (xmlp.node)
@@ -1233,12 +1233,12 @@ bool cPar::setfunction(char *text)
 cPar& cPar::read()
 {
     // get it from ini file
-    const char *s = ev.getParameter(simulation.runNumber(), fullPath());
+    const char *s = ev.getParameter(simulation.runNumber(), fullPath().c_str());
     if (s!=NULL)
     {
        bool success = setFromText(s,'?');
        if (!success)
-             throw new cException("Wrong value `%s' for parameter `%s'",s, fullPath());
+             throw new cException("Wrong value `%s' for parameter `%s'", s, fullPath().c_str());
        return *this;
     }
 
@@ -1521,9 +1521,9 @@ cModulePar::~cModulePar()
 
 // other member functions
 
-const char *cModulePar::fullPath() const
+std::string cModulePar::fullPath() const
 {
-    return fullPath(fullpathbuf,MAX_OBJECTFULLPATH);
+    return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
 }
 
 const char *cModulePar::fullPath(char *buffer, int bufsize) const
@@ -1532,7 +1532,7 @@ const char *cModulePar::fullPath(char *buffer, int bufsize) const
     if (!buffer || bufsize<4)
     {
         if (buffer) buffer[0]='\0';
-        return "(fullPath(): no or too small buffer)";
+        return "(fullPath(): no buffer or buffer too small)";
     }
 
     // follows module hierarchy instead of ownership hierarchy

@@ -117,7 +117,7 @@ void cAdvancedLinkDelayLookahead::startRun()
                     cPar *delaypar = simplechan ? simplechan->delay() : NULL;
                     double linkDelay = delaypar ? delaypar->doubleValue() : 0;
                     if (linkDelay<=0.0)
-                        throw new cException("cAdvancedLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->fullPath());
+                        throw new cException("cAdvancedLinkDelayLookahead: zero delay on link from gate `%s', no lookahead for parallel simulation", fromg->fullPath().c_str());
 
                     // store
                     int procId = pg->getRemoteProcId();

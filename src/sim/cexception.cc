@@ -104,7 +104,7 @@ void cException::storeCtx()
     {
         moduleid = simulation.contextModule()->id();
         moduleclassname = simulation.contextModule()->className();
-        modulefullpath = simulation.contextModule()->fullPath();
+        modulefullpath = simulation.contextModule()->fullPath().c_str();
     }
 }
 
@@ -121,9 +121,9 @@ void cException::init(const cObject *where, int errc, const char *fmt, va_list v
     if (where && where!=simulation.contextModule())
     {
         // try: if module's fullpath is same as module fullpath + object fullname, no need to print path
-        sprintf(buffer2,"%s.%s",(simulation.contextModule()?simulation.contextModule()->fullPath():""), where->fullName());
-        bool needpath = strcmp(buffer2,where->fullPath())!=0;
-        sprintf(buffer, "(%s)%s: ", where->className(), needpath ? where->fullPath() : where->fullName());
+        sprintf(buffer2,"%s.%s",(simulation.contextModule()?simulation.contextModule()->fullPath().c_str():""), where->fullName());
+        bool needpath = strcmp(buffer2,where->fullPath().c_str())!=0;
+        sprintf(buffer, "(%s)%s: ", where->className(), needpath ? where->fullPath().c_str() : where->fullName());
     }
 
     vsprintf(buffer+strlen(buffer),fmt,va);

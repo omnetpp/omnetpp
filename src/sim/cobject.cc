@@ -159,7 +159,7 @@ void cObject::ownedObjectDeleted(cObject *obj)
                          "to call drop() before it can delete that object. "
                          "If this error occurs inside %s's destructor and %s is a class member, "
                          "%s needs to call drop() in the destructor",
-                         obj->fullName(), className(), fullPath(),
+                         obj->fullName(), className(), fullPath().c_str(),
                          className(),
                          className(), obj->fullName(),
                          className());
@@ -170,7 +170,7 @@ void cObject::yieldOwnership(cObject *obj, cObject *newowner)
     char buf[120];
     throw new cException("(%s)%s is currently in (%s)%s, it cannot be inserted into (%s)%s",
                          obj->className(), obj->fullName(),
-                         className(), fullPath(),
+                         className(), fullPath().c_str(),
                          newowner->className(), newowner->fullPath(buf,120));
 }
 
@@ -191,7 +191,7 @@ void cObject::drop(cObject *obj)
 {
     if (obj->ownerp!=this)
         throw new cException(this,"drop(): not owner of object (%s)%s",
-                             obj->className(), obj->fullPath());
+                             obj->className(), obj->fullPath().c_str());
     defaultowner->doInsert(obj);
 }
 
@@ -201,7 +201,7 @@ void cObject::dropAndDelete(cObject *obj)
         return;
     if (obj->ownerp!=this)
         throw new cException(this,"dropAndDelete(): not owner of object (%s)%s",
-                             obj->className(), obj->fullPath());
+                             obj->className(), obj->fullPath().c_str());
     obj->ownerp = NULL;
     delete obj;
 }
@@ -276,9 +276,9 @@ void cObject::netUnpack(cCommBuffer *buffer)
 #endif
 }
 
-const char *cObject::fullPath() const
+std::string cObject::fullPath() const
 {
-    return fullPath(fullpathbuf,MAX_OBJECTFULLPATH);
+    return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
 }
 
 const char *cObject::fullPath(char *buffer, int bufsize) const
@@ -287,7 +287,7 @@ const char *cObject::fullPath(char *buffer, int bufsize) const
     if (!buffer || bufsize<4)
     {
         if (buffer) buffer[0]='\0';
-        return "(fullPath(): no or too small buffer)";
+        return "(fullPath(): no buffer or buffer too small)";
     }
 
     // append parent path + "."

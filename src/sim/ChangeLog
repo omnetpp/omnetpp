@@ -1,6 +1,7 @@
 2004-10-25  Andras Varga
 	
-	* all files: info() signature change (see include/ChangeLog)
+	* all files: info() and fullPath() signature change (see 
+	include/ChangeLog)
 
 2004-10-10  Andras Varga
 

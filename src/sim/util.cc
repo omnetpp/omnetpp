@@ -372,7 +372,7 @@ void opp_warning(int errc...)
     }
     else
     {
-        ev.printfmsg( "Module %s: %s.", simulation.contextModule()->fullPath(), message);
+        ev.printfmsg( "Module %s: %s.", simulation.contextModule()->fullPath().c_str(), message);
     }
 }
 
@@ -391,7 +391,7 @@ void opp_warning(const char *msgformat...)
     }
     else
     {
-        ev.printfmsg( "Module %s: %s.", simulation.contextModule()->fullPath(), message);
+        ev.printfmsg( "Module %s: %s.", simulation.contextModule()->fullPath().c_str(), message);
     }
 }
 

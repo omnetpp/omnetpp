@@ -48,7 +48,7 @@ cOutVector::cOutVector(const char *nam, int tuple) : cObject(nam)
 
     // register early if possible (only needed for Akaroa...)
     if (nam)
-        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tupl);
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath().c_str(), name(), tupl);
 }
 
 cOutVector::~cOutVector()
@@ -65,7 +65,7 @@ void cOutVector::setName(const char *nam)
 
     // register early (only needed for Akaroa...)
     if (nam)
-        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tupl);
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath().c_str(), name(), tupl);
 }
 
 std::string cOutVector::info() const
@@ -104,7 +104,7 @@ bool cOutVector::record(double value)
 
     // initialize if not yet done
     if (!handle)
-        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tupl);
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath().c_str(), name(), tupl);
 
     // pass data to envir for storage
     bool stored = ev.recordInOutputVector(handle, simulation.simTime(), value);
@@ -129,7 +129,7 @@ bool cOutVector::record(double value1, double value2)
 
     // initialize if not yet done
     if (!handle)
-        handle = ev.registerOutputVector(simulation.contextModule()->fullPath(), name(), tupl);
+        handle = ev.registerOutputVector(simulation.contextModule()->fullPath().c_str(), name(), tupl);
 
     // pass data to envir for storage
     bool stored = ev.recordInOutputVector(handle, simulation.simTime(), value1, value2);

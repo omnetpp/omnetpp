@@ -100,9 +100,9 @@ const char *cGate::fullName() const
     return fullname;
 }
 
-const char *cGate::fullPath() const
+std::string cGate::fullPath() const
 {
-    return fullPath(fullpathbuf,MAX_OBJECTFULLPATH);
+    return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
 }
 
 const char *cGate::fullPath(char *buffer, int bufsize) const
@@ -111,7 +111,7 @@ const char *cGate::fullPath(char *buffer, int bufsize) const
     if (!buffer || bufsize<4)
     {
         if (buffer) buffer[0]='\0';
-        return "(fullPath(): no or too small buffer)";
+        return "(fullPath(): no buffer or buffer too small)";
     }
 
     // hide gate vector: skip directly to owner module
@@ -137,8 +137,8 @@ void cGate::writeContents(ostream& os)
     os << "  type:  " <<  (typ=='I' ? "input" : "output") << '\n';
     cGate *inside = (typ=='I') ? togatep : fromgatep;
     cGate *outside = (typ=='I') ? fromgatep : togatep;
-    os << "  inside connection:  " << (inside?inside->fullPath():"(not connected)") << '\n';
-    os << "  outside connection: " << (outside?outside->fullPath():"(not connected)") << '\n';
+    os << "  inside connection:  " << (inside?inside->fullPath().c_str():"(not connected)") << '\n';
+    os << "  outside connection: " << (outside?outside->fullPath().c_str():"(not connected)") << '\n';
 }
 
 std::string cGate::info() const

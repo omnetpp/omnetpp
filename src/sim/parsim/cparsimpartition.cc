@@ -100,7 +100,7 @@ void cParsimPartition::connectRemoteGates()
                     buffer->pack(ing->ownerModule()->id());
                     buffer->pack(ing->id());
                     // pack gate name
-                    buffer->pack(ing->ownerModule()->fullPath());
+                    buffer->pack(ing->ownerModule()->fullPath().c_str());
                     buffer->pack(ing->name());
                     buffer->pack(ing->index());
                 }

@@ -228,7 +228,7 @@ void cModuleInterface::checkParametersOf( cModule *mod )
         if (!strchr(paramv[i].types, '*') && !strchr(paramv[i].types, par->type()))
         {
            throw new cException("Module declaration doesn't allow type `%c' for parameter `%s'",
-                                par->type(), par->fullPath());
+                                par->type(), par->fullPath().c_str());
         }
 
         if (strchr(paramv[i].types,'#'))

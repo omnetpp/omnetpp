@@ -187,7 +187,7 @@ void cDefaultList::drop(cObject *obj)
 {
     if (obj->ownerp!=this)
         throw new cException(this,"drop(): not owner of object (%s)%s",
-                             obj->className(), obj->fullPath());
+                             obj->className(), obj->fullPath().c_str());
     // the following 2 lines are actually the same as defaultOwner->take(obj);
     yieldOwnership(obj, defaultowner);
     defaultowner->doInsert(obj);

@@ -92,7 +92,7 @@ std::string cMessage::info() const
     const char *deletedstr = "<deleted module>";
     out << "T=" << simtimeToStr(delivd);
 
-#define MODNAME(modp) ((modp) ? (modp)->fullPath() : deletedstr)
+#define MODNAME(modp) ((modp) ? (modp)->fullPath().c_str() : deletedstr)
     if (kind()==MK_STARTER)
     {
         cModule *tomodp = simulation.module(tomod);
@@ -297,7 +297,7 @@ void cMessage::encapsulate(cMessage *msg)
         if (msg->owner()!=simulation.contextSimpleModule())
             throw new cException(this,"encapsulate(): not owner of message (%s)%s, owner is (%s)%s",
                                  msg->className(), msg->fullName(),
-                                 msg->owner()->className(), msg->owner()->fullPath());
+                                 msg->owner()->className(), msg->owner()->fullPath().c_str());
         take( encapmsg = msg );
         len += encapmsg->len;
     }

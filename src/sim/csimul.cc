@@ -144,9 +144,9 @@ void cSimulation::forEach( ForeachFunc do_fn )
     do_fn(this,false);
 }
 
-const char *cSimulation::fullPath() const
+std::string cSimulation::fullPath() const
 {
-    return fullPath(fullpathbuf,MAX_OBJECTFULLPATH);
+    return std::string(fullPath(fullpathbuf,MAX_OBJECTFULLPATH));
 }
 
 const char *cSimulation::fullPath(char *buffer, int bufsize) const
@@ -155,7 +155,7 @@ const char *cSimulation::fullPath(char *buffer, int bufsize) const
     if (!buffer || bufsize<4)
     {
         if (buffer) buffer[0]='\0';
-        return "(fullPath(): no or too small buffer)";
+        return "(fullPath(): no buffer or buffer too small)";
     }
 
     // add our own name
@@ -478,7 +478,7 @@ cSimpleModule *cSimulation::selectNextModule()
     {
         if (!msg->isSelfMessage())
             throw new cException("Destination module of message `%s' (module `%s', id=%d) "
-                                 "already terminated", msg->name(), modp->fullPath(), modp->id());
+                                 "already terminated", msg->name(), modp->fullPath().c_str(), modp->id());
 
         // self-messages are OK, ignore them
         delete msgQueue.getFirst();
@@ -549,7 +549,7 @@ void cSimulation::transferTo(cSimpleModule *modp)
     }
 
     if (modp->stackOverflow())
-        throw new cException("Stack violation in module `%s' (%s stack too small?)", modp->fullPath(), modp->className());
+        throw new cException("Stack violation in module `%s' (%s stack too small?)", modp->fullPath().c_str(), modp->className());
 }
 
 void cSimulation::doOneEvent(cSimpleModule *mod)
