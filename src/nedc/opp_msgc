@@ -808,28 +808,28 @@ sub generateClass
         }
     }
     print CC "{\n";
-    print CC "    int i;\n";
+    print CC "    unsigned int i;\n";
     foreach $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 if ($fval{$fieldname} ne '') {
                     print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
-                    print CC "        $var{$fieldname}\[i\] = 0;\n";
+                    print CC "        this->$var{$fieldname}\[i\] = 0;\n";
                 }
                 if ($classtype{$ftype{$fieldname}} eq 'cobject') {
                   print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
-                  print CC "        $var{$fieldname}\[i\].setOwner(this);\n";
+                  print CC "        this->$var{$fieldname}\[i\].setOwner(this);\n";
                 }
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "    $varsize{$fieldname} = 0;\n";
-                print CC "    $var{$fieldname} = 0;\n";
+                print CC "    this->$var{$fieldname} = 0;\n";
             } else {
                 if ($fval{$fieldname} ne '') {
-                  print CC "    $var{$fieldname} = $fval{$fieldname};\n";
+                  print CC "    this->$var{$fieldname} = $fval{$fieldname};\n";
                 }
                 if ($classtype{$ftype{$fieldname}} eq 'cobject') {
-                  print CC "    $var{$fieldname}.setOwner(this);\n";
+                  print CC "    this->$var{$fieldname}.setOwner(this);\n";
                 }
               }
           }
@@ -841,7 +841,7 @@ sub generateClass
         print CC "$msgclass\:\:$msgclass(const $msgclass& other) : $msgbaseclass()\n";
     }
     print CC "{\n";
-    print CC "    int i;\n";
+    print CC "    unsigned int i;\n";
     if ($classtype eq "cobject") {
         print CC "    setName(other.name());\n";
     }
@@ -851,13 +851,13 @@ sub generateClass
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
           if ($classtype{$ftype{$fieldname}} eq 'cobject') {
             print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
-            print CC "        $var{$fieldname}\[i\].setOwner(this);\n";
+            print CC "        this->$var{$fieldname}\[i\].setOwner(this);\n";
           }
         } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
           print CC "    $varsize{$fieldname} = 0;\n";
-          print CC "    $var{$fieldname} = 0;\n";
+          print CC "    this->$var{$fieldname} = 0;\n";
         } elsif (!$fisarray{$fieldname} && $classtype{$ftype{$fieldname}} eq 'cobject') {
-          print CC "    $var{$fieldname}.setOwner(this);\n";
+          print CC "    this->$var{$fieldname}.setOwner(this);\n";
         }
       }
     }
@@ -877,7 +877,7 @@ sub generateClass
     print CC "$msgclass& $msgclass\:\:operator=(const $msgclass& other)\n";
     print CC "{\n";
     print CC "    if (this==&other) return *this;\n";
-    print CC "    int i;\n";
+    print CC "    unsigned int i;\n";
     if ($msgbaseclass ne "") {
         print CC "    $msgbaseclass\:\:operator=(other);\n";
     }
@@ -886,15 +886,15 @@ sub generateClass
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
-                print CC "        $var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
+                print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                print CC "    delete [] $var{$fieldname};\n";
-                print CC "    $var{$fieldname} = new $datatype{$fieldname}\[other.$varsize{$fieldname}\];\n";
+                print CC "    delete [] this->$var{$fieldname};\n";
+                print CC "    this->$var{$fieldname} = new $datatype{$fieldname}\[other.$varsize{$fieldname}\];\n";
                 print CC "    $varsize{$fieldname} = other.$varsize{$fieldname};\n";
-                print CC "    for (unsigned int i=0; i<$varsize{$fieldname}; i++)\n";
-                print CC "        $var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
+                print CC "    for (i=0; i<$varsize{$fieldname}; i++)\n";
+                print CC "        this->$var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
             } else {
-                print CC "    $var{$fieldname} = other.$var{$fieldname};\n";
+                print CC "    this->$var{$fieldname} = other.$var{$fieldname};\n";
             }
         }
     }
@@ -928,14 +928,15 @@ sub generateClass
                 print CC "void $msgclass\:\:$alloc{$fieldname}(unsigned int size)\n";
                 print CC "{\n";
                 print CC "    $datatype{$fieldname} *$var{$fieldname}2 = new $datatype{$fieldname}\[size\];\n";
-                print CC "    unsigned int sz = $varsize{$fieldname} > size ? $varsize{$fieldname} : size;\n";
-                print CC "    for (unsigned int i=0; i<sz; i++)\n";
-                print CC "        $var{$fieldname}2\[i\] = $var{$fieldname}\[i\];\n";
-                print CC "    for (unsigned int i=sz; i<size; i++)\n";
+                print CC "    unsigned int sz = $varsize{$fieldname} < size ? $varsize{$fieldname} : size;\n";
+                print CC "    unsigned int i;\n";
+                print CC "    for (i=0; i<sz; i++)\n";
+                print CC "        $var{$fieldname}2\[i\] = this->$var{$fieldname}\[i\];\n";
+                print CC "    for (i=sz; i<size; i++)\n";
                 print CC "        $var{$fieldname}2\[i\] = 0;\n";
                 print CC "    $varsize{$fieldname} = size;\n";
-                print CC "    delete [] $var{$fieldname};\n";
-                print CC "    $var{$fieldname} = $var{$fieldname}2;\n";
+                print CC "    delete [] this->$var{$fieldname};\n";
+                print CC "    this->$var{$fieldname} = $var{$fieldname}2;\n";
                 print CC "}\n\n";
                 print CC "unsigned int $msgclass\:\:$getsize{$fieldname}() const\n";
                 print CC "{\n";
@@ -943,12 +944,12 @@ sub generateClass
                 print CC "}\n\n";
                 print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k)$getterconst\n";
                 print CC "{\n";
-                print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
+                print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size $varsize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    return $var{$fieldname}\[k\];\n";
                 print CC "}\n\n";
                 print CC "void $msgclass\:\:$setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})\n";
                 print CC "{\n";
-                print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
+                print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size $varsize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    this->$var{$fieldname}\[k\]=$var{$fieldname};\n";
                 print CC "}\n\n";
             } else {

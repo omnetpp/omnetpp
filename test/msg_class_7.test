@@ -1,0 +1,107 @@
+%description:
+Check dynamic arrays in classes
+
+FIXME TBD: test6 should be index out of bounds with static arrays
+FIXME TBD: test7 should be dynamic arrays
+FIXME TBD: test8 should be index out of bounds with dynamic arrays
+FIXME TBD: op= should be tested for all cases
+
+%file: {}.msg
+
+class {MyClass}
+{
+    fields:
+        bool bb[];
+        char cc[];
+        short ss[];
+        unsigned short uss[];
+        int ii[];
+        unsigned int uii[];
+        long ll[];
+        unsigned long ull[];
+        double dd[];
+        string str[];
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+#define PRINTA(X) ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
+
+{MyClass} x;
+
+// default array sizes should be zero
+PRINT(x.getBbArraySize());
+PRINT(x.getCcArraySize());
+PRINT(x.getSsArraySize());
+PRINT(x.getUssArraySize());
+PRINT(x.getIiArraySize());
+PRINT(x.getUiiArraySize());
+PRINT(x.getLlArraySize());
+PRINT(x.getUllArraySize());
+PRINT(x.getDdArraySize());
+PRINT(x.getStrArraySize());
+ev << "--" << endl;
+
+// allocate array, fill in element 0 (element 1 must be zero from initialization)
+x.setBbArraySize(11);  x.setBb(0,true); PRINTA(x.getBb);
+x.setCcArraySize(12);  x.setCc(0,'a');  PRINTA(x.getCc);
+x.setSsArraySize(13);  x.setSs(0,10);   PRINTA(x.getSs);
+x.setUssArraySize(14); x.setUss(0,10);  PRINTA(x.getUss);
+x.setIiArraySize(15);  x.setIi(0,-10);  PRINTA(x.getIi);
+x.setUiiArraySize(16); x.setUii(0,10);  PRINTA(x.getUii);
+x.setLlArraySize(17);  x.setLl(0,-10);  PRINTA(x.getLl);
+x.setUllArraySize(18); x.setUll(0,10);  PRINTA(x.getUll);
+x.setDdArraySize(19);  x.setDd(0,3.14); PRINTA(x.getDd);
+x.setStrArraySize(20); x.setStr(0,"test"); PRINTA(x.getStr);
+ev << "--" << endl;
+
+// reallocate array, fill in element 1 -- element 0 should be preserved
+x.setBbArraySize(31);  x.setBb(1,false); PRINTA(x.getBb);
+x.setCcArraySize(32);  x.setCc(1,'z');  PRINTA(x.getCc);
+x.setSsArraySize(33);  x.setSs(1,-7);   PRINTA(x.getSs);
+x.setUssArraySize(34); x.setUss(1,6);  PRINTA(x.getUss);
+x.setIiArraySize(35);  x.setIi(1,-5);  PRINTA(x.getIi);
+x.setUiiArraySize(36); x.setUii(1,5);  PRINTA(x.getUii);
+x.setLlArraySize(37);  x.setLl(1,-6);  PRINTA(x.getLl);
+x.setUllArraySize(38); x.setUll(1,4);  PRINTA(x.getUll);
+x.setDdArraySize(39);  x.setDd(1,1.41); PRINTA(x.getDd);
+x.setStrArraySize(40); x.setStr(1,"2nd"); PRINTA(x.getStr);
+
+%contains: stdout
+x.getBbArraySize():0
+x.getCcArraySize():0
+x.getSsArraySize():0
+x.getUssArraySize():0
+x.getIiArraySize():0
+x.getUiiArraySize():0
+x.getLlArraySize():0
+x.getUllArraySize():0
+x.getDdArraySize():0
+x.getStrArraySize():0
+--
+x.getBb:1:0:11
+x.getCc:a::12
+x.getSs:10:0:13
+x.getUss:10:0:14
+x.getIi:-10:0:15
+x.getUii:10:0:16
+x.getLl:-10:0:17
+x.getUll:10:0:18
+x.getDd:3.14:0:19
+x.getStr:test:(null):20
+--
+x.getBb:1:0:31
+x.getCc:a:z:32
+x.getSs:10:-7:33
+x.getUss:10:6:34
+x.getIi:-10:-5:35
+x.getUii:10:5:36
+x.getLl:-10:-6:37
+x.getUll:10:4:38
+x.getDd:3.14:1.41:39
+x.getStr:test:2nd:40
+

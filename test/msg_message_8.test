@@ -1,0 +1,66 @@
+%description:
+Dynamic array out of bounds test for messages
+
+%file: {}.msg
+
+message {MyMessage}
+{
+    fields:
+        int aa[];
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define TRYPRINT(X)  try { \
+                       ev << #X << ":";  ev << X << endl; \
+                     } catch (cException *e) { \
+                       ev << "OOPS!" << endl; delete e; \
+                     }
+#define TRY(X)       try { \
+                       ev << #X << ":";  X;  ev << "OK" << endl; \
+                     } catch (cException *e) { \
+                       ev << "OOPS!" << endl; delete e; \
+                     }
+
+{MyMessage} x;
+
+// default array sizes should be zero
+TRYPRINT(x.getAaArraySize());
+TRYPRINT(x.getAa(0));
+
+x.setAaArraySize(3);
+TRYPRINT(x.getAaArraySize());
+TRYPRINT(x.getAa(-1));
+TRYPRINT(x.getAa(0));
+TRYPRINT(x.getAa(1));
+TRYPRINT(x.getAa(2));
+TRYPRINT(x.getAa(3));
+TRYPRINT(x.getAa(4));
+
+TRY(x.setAa(-1,23));
+TRY(x.setAa(0,12));
+TRY(x.setAa(1,55));
+TRY(x.setAa(2,83));
+TRY(x.setAa(3,87));
+TRY(x.setAa(4,26));
+
+%contains: stdout
+x.getAaArraySize():0
+x.getAa(0):OOPS!
+x.getAaArraySize():3
+x.getAa(-1):OOPS!
+x.getAa(0):0
+x.getAa(1):0
+x.getAa(2):0
+x.getAa(3):OOPS!
+x.getAa(4):OOPS!
+x.setAa(-1,23):OOPS!
+x.setAa(0,12):OK
+x.setAa(1,55):OK
+x.setAa(2,83):OK
+x.setAa(3,87):OOPS!
+x.setAa(4,26):OOPS!
+

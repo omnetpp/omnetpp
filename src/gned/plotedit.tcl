@@ -216,11 +216,15 @@ proc openSubmodule c {
          set modkey [itemKeyFromName $typename module]
          openModuleOnCanvas $modkey
       } elseif {[itemKeyFromName $typename simple]!=""} {
-         set modkey [itemKeyFromName $typename simple]
-         editModuleProps $key
+         if {[tk_messageBox -title GNED -icon question -type yesno \
+             -message "This is a simple module of type \"$typename\". Do you want to open the type declaration?"]=="yes"
+         } {
+            set modkey [itemKeyFromName $typename simple]
+            editModuleProps $modkey
+         }
       } else {
          tk_messageBox -title "Error" -icon warning -type ok \
-              -message "Module type '$typename' unknown to GNED -- none of the open NED files contain its definition."
+              -message "Module type \"$typename\" unknown to GNED -- none of the open NED files contain its definition."
       }
    }
 }

@@ -174,6 +174,9 @@ User interfaces:
 	       printing module ev<< output on/off (as before)
 	  event-banners=yes/no (default: yes)
 	       printing event banners on/off; replaces verbose-simulation=
+	  message-trace=yes/no (default: no)
+	        log message sending (by send(),scheduleAt(), etc) and delivery
+                on standard output
 
 (+)	Cmdenv: in express mode, following new entries are supported:
 	  status-frequency=<integer> (default: 100000)

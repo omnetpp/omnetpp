@@ -28,11 +28,11 @@ class {MyClass}
 
 %activity:
 
-// 0th element we set explicitly, 1st element must stay zero from initialization
 #define PRINTA(X) ev << #X << ":" << X(0) << ":" << X(1) << ":" << X ## ArraySize() << endl;
 
 {MyClass} x;
 
+// fill in element 0 (element 1 must be zero from initialization)
 x.setBb(0,true); PRINTA(x.getBb);
 x.setCc(0,'a');  PRINTA(x.getCc);
 x.setSs(0,10);   PRINTA(x.getSs);
@@ -55,3 +55,4 @@ x.getLl:-10:0:50
 x.getUll:10:0:51
 x.getDd:3.14:0:60
 x.getStr:test:(null):60
+

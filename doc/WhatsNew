@@ -1,8 +1,8 @@
 What's New
 ==========
 
-In the OMNeT++ 2.3 release (January 2003)
-------------------------------------------
+In the OMNeT++ 2.3b1 release (February 2003)
+--------------------------------------------
 Licensing change: The license used in previous versions has been replaced
 with a new "Academic Public License" (doc/License). This license gives
 noncommercial users rights to use, modify and distribute copies of OMNeT++.
@@ -10,74 +10,77 @@ The possibility of using OMNeT++ under the GPL has been removed. Commercial
 users of OMNeT++ should obtain a commercial license.
 
 Major changes of this release in nutshell:
-- Tkenv GUI has been polished -- both functionality and usability has been
-  greatly improved. Plove GUI was also redesigned.
-
-- The "message subclassing" feature has been officially introduced. It is now
-  documented in the manual, and used by several sample simulations.
-
 - The simulation kernel has been ported to use C++ exceptions and RTTI
   (Run-time Type Information) and on Windows, the Fiber API. Also, there
   has been extensive internal refactoring and refinement of the APIs.
 
+- The "message subclassing" feature has been officially introduced. It is now
+  documented in the manual, and used by several sample simulations.
+
 - Added the implementation of several distributions: continuous distributions
-  gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(), triang(),
-  lognormal(), weibull() and pareto_shifted(); and discrete distributions
-  bernoulli(), binomial(), geometric(), negbinomial(), hypergeometric() and
-  poisson(). [contributed by Werner Sandmann]
+  gamma, beta, Erlang, chi^2, student-t, Cauchy, triangular, lognormal, Weibull
+  and Pareto; discrete distributions Bernoulli, binomial, geometric, negbino-
+  mial, hypergeometric and Poisson [contributed by Werner Sandmann and Kay
+  Michael Masslow].
 
 - Contains an alpha version of the new NED compiler architecture,
   built upon XML foundations. This includes a tool for generating
   documentation from NED files.
 
+- Akaroa support. Akaroa does MRIP (multiple replications in parallel).
+
+- Tkenv GUI has been polished -- both functionality and usability has been
+  greatly improved. Plove GUI was also redesigned.
+
 For the list of changes that affect portability of simulation models,
-see the doc/API-Changes.txt file. More detailed info in the ChangeLogs.
+see the new doc/API-Changes.txt file. You can find even more detailed
+information in the ChangeLogs of the respective source directories.
 
 A more detailed list of changes follows:
 
 Simulation kernel refactoring:
-- on Windows, now Win32 native coroutines are used (Fibers API). This change
-  made introduction of C++ exceptions possible, see next item.
+- On Windows, now Win32 native coroutines are used (Fibers API). This change
+  made it possible to introduce the use of C++ exceptions.
 
-- error handling in simulation kernel (and in other libs too) changed to C++
-  exceptions. This not only resulted in cleaner kernel code, but also has
-  benefits for you:
-  * you can now use try...catch for better error handling. The API documen-
-    tation describes which methods throw exceptions. (Common exception class
-    is cException.)
+- Error handling in simulation kernel (and in other libs too) has been ported
+  to C++ exceptions. This not only resulted in cleaner kernel code, but also
+  has benefits for you:
+  * you can now use try-catch for better error handling. The API documentation
+    describes which methods throw exceptions. The common exception class
+    is cException.
   * methods like end(), endSimulation(), deleteModule() terminate the module
-    immediately even when called from handleMessage(). (In earlier versions,
-    handleMessage() had to go through in any case.)
+    immediately even when called from handleMessage(). In earlier versions,
+    handleMessage() had to go through in any case.
   * you can now safely use C++ libraries that throw exceptions, e.g. STL.
-  Methods like cSimpleModule::error() and opp_error() remained for backwards
-  compatibility (deprecated), but they simply throw cException. opp_warning()
-  remained but its use is discouraged, see src/sim/ChangeLog for details.
+  Methods like cSimpleModule::error() and opp_error() are remained for backward
+  compatibility, but they simply throw cException. opp_warning() remained but
+  its use is discouraged.
 
-- use of C++ RTTI (Run-time Type Information). From now on, you can
-  use dynamic_cast<> in your code, and you don't need to provide a className()
-  method in your classes (because the kernel can figure it out using typeid in the
-  base class, cObject).
+- Use of C++ RTTI (Run-time Type Information). From now on, you can use
+  dynamic_cast<> in your code, and you don't need to provide a className()
+  method in your classes (because the kernel can figure it out using typeid
+  in the base class, cObject).
 
-- eliminated gcc 3.0.x warnings
+- Eliminated gcc 3.0.x warnings, and changed to the I/O headers <iostream>, etc.
 
-- several smaller auxiliary classes were made inner classes to their 'main'
-  classes. (Examples: cQueueIterator --> cQueue::Iterator, sTopoNode -->
-  cTopology::Node, etc; full list in include/ChangeLog.) Compatibility typedefs
-  exist for old names.
+- Several smaller auxiliary classes have been turned into inner classes of
+  their respective 'main' classes. (For example, cQueueIterator became
+  cQueue::Iterator, sTopoNode became cTopology::Node, etc; full list in
+  include/ChangeLog.) Compatibility typedefs exist for the old names.
 
-- several internally used methods in cObject and cSimulation eliminated, or
-  moved to better places. (E.g. inspector-related methods cObject::inspector()
-  and cObject::inspectorFactoryName() were removed, and inspectors are now fully
-  internal matter of Tkenv.)
+- Cleanup in cObject and cSimulation: several internally used methods have been
+  eliminated or moved to better places. (For example, inspector-related methods
+  cObject::inspector() and cObject::inspectorFactoryName() have been removed,
+  and inspectors are now fully internal matter of Tkenv.)
 
-- refactoring on dynamic module creation: instead of modtype->buildInside(mod),
+- Refactoring on dynamic module creation: instead of modtype->buildInside(mod),
   one should now write mod->buildInside(), which is more natural.
-  (Former syntax still works -- a cModuleType::buildInside() is still provided
-  for backward compatibility). buildInside() delegates task to doBuildInside()
-  (a new method), so it's doBuildInside() which should be redefined in
-  subclasses, and also nedc generates now doBuildInside() code.
+  (The former syntax still works -- a cModuleType::buildInside() is still
+  provided for backward compatibility). buildInside() delegates task to
+  doBuildInside() (a new method), so it's doBuildInside() which should be
+  redefined in subclasses, and also nedc generates now doBuildInside() code.
 
-- container objects are now more consistent in what they do when the requested
+- Container classes are now more consistent in what they do when the requested
   object doesn't exist:
   * Convention 1: methods returning an object reference (e.g. cPar&) now
     always throw an exception if the object is not found. (Until now, some
@@ -87,23 +90,23 @@ Simulation kernel refactoring:
     a warning and returned NULL pointer.)
   These conventions necessitated the following changes:
   * par() of cModule and cMessage now throws an exception if parameter was not
-    found. (Check for existence of a parameter before accessing it can now be
-    replaced with try..catch if you want!)
-  * cModule: cGate *gate() methods no longer issue a warning if the
-    gate is not found, just return NULL.
+    found. (In simple module code, check for existence of a parameter before
+    accessing it can now be replaced with try-catch.)
+  * cModule: cGate *gate() methods no longer issue a warning if the gate is
+    not found, just return NULL.
   * cArray::remove(cObject *) and cQueue::remove(cObject *) methods
     now return NULL instead of the original pointer if the object was
     not found.
 
 - cPar can now use compiled expressions subclassed from cDoubleExpression (a
-  new class). This is needed for code generated by the new, nedxml-based nedc.
+  new class). This is needed for code generated by the new nedtool.
 
 - cSimulation changes:
   * lastModuleIndex() renamed to lastModuleId();
   * operator[] deprecated (use module(int) method instead)
   * del() renamed to deleteModule(); add() renamed to addModule()
 
-- channels are now represented by real objects (subclassed from cChannel)
+- Channels are now represented by real objects (subclassed from cChannel)
   rather than parameters in cGate. Channels can be assigned to connections
   via cGate's setChannel() method; at the same time, DEPRECATED cGate's
   setDelay(), setError(), setDatarate(), setLink() methods (these attributes
@@ -115,144 +118,157 @@ Simulation kernel refactoring:
   see include/ChangeLog and src/sim/ChangeLog.
 
 Simulation kernel new features:
-- added convenience functions to cGate, cMessage, and cArray.
+- Added convenience functions to cGate, cMessage, and cArray (see
+  API-Changes.txt for details).
 
-- new utility class cDisplayString to let you easily manipulate display strings
+- A new utility class cDisplayString lets you easily manipulate display strings.
 
-New NED compiler architecture:
-- experimental perl-based message compiler msgc now available in bin/
+Message subclassing, new NED compiler architecture:
+- The Perl-based message compiler opp_msgc is now available in bin/. Message
+  subclassing is documented in the manual, and it is demonstrated by several
+  sample simulations. About 30 test cases deal with testing the generated code.
 
-- added nedtool, the new NED and message compiler (alpha). nedtool converts
+- Added nedtool, the new NED and message compiler (alpha). nedtool converts
   NED from/to XML, providing much better integration possibilities (for example
   it is now possible to use XML/XSLT to generate NED topologies from external
   data sources -- or to extract NED info to arbitrary XML format.)
 
-- added nedxml library (the library under nedtool) to src/, and its API-doc
-  to doc/nedxml-api
+- Added nedxml library (the library under nedtool) to src/, and its API-doc
+  to doc/nedxml-api.
+
+Manual:
+- Manual source has been converted from Word to Latex [thanks to Ulrich Kaage
+  for this non-trivial and time consuming task!]. He also added an Index.
+  HTML conversion (using L2H, by myself) is not 100% yet, you should regard
+  the PDF as the authoritative form.
+
+- New chapter about message subclassing, plus various updates, fixes and
+  clarifications [thanks to Phillip Feldman for his comments]
 
 Build:
-- MinGW is also supported in Windows; Cygwin 2.95.x compiler cannot be used
-  any more, use 3.2 or later instead.
-- changed MSVC flags!!!
-   Tested with MSVC 6.0 and Cygwin/gcc-2.95.3-5. With MSVC, one needs
-   to compile every source using /GR, otherwise Tkenv crashes (RTTI
-   exception)!
+- In addition to Cygwin, the MinGW compiler is now also supported in Windows.
+  Older Cygwin versions with the 2.95.x compiler cannot be used any more.
 
-- new utilities: opp_nmakemake creates MSVC makefiles; opp_neddoc creates
-  HTML documentation for NED files; opp_neddocall creates HTML documentation
-  for all nedfiles in a directory tree; opp_stacktool display maximum allowed
-  stack size for Windows programs; opp_test (and test/runtest) now work
-  on Windows too; splitvec to split output vector files
+- Improved MSVC support: opp_nmakemake creates MSVC makefiles; running the
+  test suite now works smoothly with with MSVC; opp_stacktool displays reserved
+  stack size for executables.
+
+- MSVC projects now need *different* flags! Every source should be compiled
+  with exceptions enabled and using /GR, otherwise there will be RTTI
+  exceptions. Because of the Fiber API, reserved stack size should be set to
+  a low value, 64K.
+
+- New utilities (Unix, MSVC): opp_neddoc creates HTML documentation for NED
+  files; opp_neddocall creates HTML documentation for all nedfiles in a
+  directory tree; splitvec to split output vector files.
 
 - There are new targets in Makefiles that are generated by opp_makemake:
   Target neddoc.html generates a file named neddoc.html by using the
   opp_neddoc tool on all NED files. Target htmldocs generates HTML
   documentation of all source files (*.h and *.cc) using Doxygen. The
-  HTML files are placed into the sub-directory ./htmldoc.
+  HTML files are placed into the sub-directory ./htmldoc. Also, Makefile
+  now generates ../doc/api/tags. This tag file can be included when generating
+  model documentation.
 
-- makefile now generates ../doc/api/tags. This tag file can be included
-  when generating model documentation.
+- Improved configure script. Now we support Tk8.4, and also optional packages
+  like Akaroa.
 
-- now we support Tk8.4 (several 'char *' to 'const char *' changes)
+- Test suite: the number of test cases has grown from 19 to ~100 since
+  omnetpp-2.2; now it covers a bigger part of the core functionality (modules,
+  messages, queues, parameter) as well as message subclassing and some aspects
+  of NED and Cmdenv.
 
-GNED:
-- improved icon selector dialog
+GNED, Plove:
+- The Plove GUI has been redesigned, with focus on intuitiveness and usability.
+  It also features icon toolbars, tooltips and more self-explanatory dialogs.
 
-Plove:
-- redesigned user interface, now with icon toolbars and tooltips
+- The number of module icons available for simulations has grown from 41 to ~90
+  since the 2.2 release. GNED also has an improved icon selector dialog now.
 
-Cmdenv:
-- the -h command-line switch now lists linked-in networks and modules
+- There have been other small fixes and improvements in GNED, e.g. fixed the
+  bug which caused display strings always being added to connections.
 
-- Cmdenv can now display event/sec, event/simsec, simsec/sev, no. of message
-  objects, etc. during execution, and omnetpp.ini entries that control how
-  much info Cmdenv prints when running were made easier to use.
+- All Tk GUIs now make use of the combobox widget from Bryan Oakley.
 
-- introduced express-mode=yes/no (default: no) switch, with meaning similar
-  to Tkenv (non-express mode: detailed information printed; express mode:
-  only periodic status updates)
-
-- in normal mode (express-mode=no), the following ini file entries are
-  taken into account:
-  * module-messages=yes/no (default: yes)
-       printing module ev<< output on/off (as before)
-  * event-banners=yes/no (default: yes)
-       printing event banners on/off; replaces verbose-simulation=
-
-- in express mode, following entries are used:
-  * status-frequency=<integer> (default: 100000)
-        print status update every n events (on today's computers, and for a
-        typical simulation model, this will produce an update perhaps in every
-        few seconds)
-  * performance-display=yes/no (default: yes)
-        print detailed (2-line) performance status
-- obsoleted omnetpp.ini entries: display-update=, verbose-simulation=.
-
-Tkenv:
-- inspector windows are now restored from a ./.tkenvrc file if you restart the
-  simulation (as soon as an inspected object gets created in the simulation,
-  its window pops up -- objects must have unique names for this to work
-  properly!)
-
-- added Object Tree view on the left of the main window
-
-- several other GUI improvements: File|New run and New network dialogs offer
-  selection; axis labelling added to output vector inspectors; clear main
-  window when simulation is restarted; more tooltips & toolbar icons;
-  better output in message sending trace window; increased event number
-  status bar field width by 3 digits (it was limited in size to 1.000.000
-  events); on very long connection arrows, message animation could take
-  forever -- now an upper bound is set; color coding to make different
-  inspectors of the same object easier to match visually
-
-- with "ring" layout, changed display order of modules from clockwise to the
-  more natural counter-clockwise
-
-- extensive internal refactoring (inspector registration and creation
-  rewritten; code split to several more source files; method renamings, etc)
-
-Envir:
-- filemgrs.cc: added fname-append-host=true/false ini file setting.
-  When turned on, appends the host name to the names of the output
-  files (output vector, output scalar, snapshot files). This is
-  useful when the simulation is run on multiple machines concurrently
-  (parallel independent runs (Akaroa) or parallel/distributed simulation),
-  and all running instances write to the same directory (e.g. shared
-  via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
-
-- integrated Steffen Sroka's Akaroa extension that supports multiple
+Envir changes (apply both to Cmdenv and Tkenv):
+- Integrated Steffen Sroka's Akaroa extension that supports multiple
   independent replicated simulation runs.
   Akaroa can be activated by specifying
       [General]
       outputvectormanager-class=AkOutputVectorManager
   in the ini file. By default, all output vectors are under Akaroa
   control; the <modulename>.<vectorname>.akaroa=false setting can be used
-  to make Akaroa ignore specific vectors.
-  For more info see the Akaroa home page and the OMNeT++ documentation.
+  to make Akaroa ignore specific vectors. For more info see the Akaroa
+  home page and the OMNeT++ documentation.
+
+- Added fname-append-host=yes/no ini file setting. When turned on, appends
+  the host name to the names of the output
+  files (output vector, output scalar, snapshot files). This is
+  useful when the simulation is run on multiple machines concurrently
+  (parallel independent runs (Akaroa) or parallel/distributed simulation),
+  and all running instances write to the same directory (e.g. shared
+  via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
 
 - 2 bugfixes: (1) output scalar file did not get opened sometimes; (2) output
   scalar file got removed between runs
 
-Other:
-- use combobox widget of Bryan Oakley in Plove, Tkenv, GNED
+Cmdenv:
+- Cmdenv can now display various performance measures like event/sec,
+  event/simsec, simsec/sev, number of message objects, etc. during execution,
+  so you can compare Tkenv and Cmdenv performances.
 
-- test suite: number of test cases grew from 19 to 52 since omnetpp-2.2;
-  covers a bigger part of the core functionality (modules, messages, queues)
-  now; tests can be run with MSVC too
+- The omnetpp.ini entries that control Cmdenv execution mode and amount of
+  printed info have been changed. An express-mode=yes/no (default: no) switch
+  has been introduced, with a meaning similar to Tkenv. Normal mode
+  (express-mode=no) can be controlled with the module-messages=yes/no,
+  event-banners=yes/no, and message-trace=yes/no entries (the third adds new
+  functionality), while express mode is affected by the status-frequency=
+  <num-events>, performance-display=yes/no entries. autoflush=yes/no has
+  also been added. The display-update=, verbose-simulation= entries are now
+  obsolete.
+
+- The -h command-line switch now lists all networks and modules linked into
+  the executable.
+
+Tkenv:
+- Inspector windows are now restored from a ./.tkenvrc file if you restart the
+  simulation. More precisely: as soon as an inspected object (identified by
+  fullpath and classname) gets created in the simulation, its window pops up.
+  Objects must have unique names for this to work properly! [Thanks to Nicky
+  Van Foreest for the idea]
+
+- For better navigation of simulation objects, an object tree view has been
+  added to the left side of the main window. It can be turned off from the
+  toolbar for performance.
+
+- Inspector windows have been re-though to make them more intuitive, consistent
+  and informative. All inspector windows now feature an inspector bar with
+  object fullpath, classname and pointer value (useful for debugging), and a
+  color code to make it easier to match different inspectors of the same
+  object. Axis labelling have been added to output vector inspectors.
+  Added tooltips to graphical module inspectors, speeded up animation of on
+  very long connection arrows, and refined functionality of the Step icon
+  into 3 distinct icons ("Run until next local event", "Fast", "Stop").
+
+- Improved File|New run and New network dialogs (now also available from the
+  toolbar) offer choice from a combobox. Other improvements: main text window
+  is now cleared when simulation is restarted; more tooltips & toolbar icons;
+  better output in Message Trace window; increased event number status bar
+  field width by 3 digits (it was limited in size to 1.000.000 events);
+
+- With "ring" layout, changed display order of modules from clockwise to the
+  more natural counter-clockwise.
+
+- Extensive internal refactoring mostly because of the introduction exception
+  handling and reorganization of inspector registration and creation.
 
 Sample simulations:
-- Topo (samples/topo) was created to demonstrate NED features. Currently it
-  shows how to build various topologies (chain, mesh, ring, star, random graph,
-  binary tree, hexagonal grid, etc.)
+- HCube, Token Ring and Dyna2 now use message subclassing. Token Ring has
+  also been significantly revised. The PVMEx example has been removed.
 
-- HCube was changed to use message subclassing.
-
-- PVMEx removed. It didn't really fulfill its purpose of meaningfully
-  demonstrating parallel execution.
-
-Manual:
-- various fixes and clarifications (thanks to Phillip Feldman for his numerous
-  comments!)
+- A new example simulation Topo has been created to demonstrate NED features.
+  Currently it shows how to build various parametric topologies (chain, mesh,
+  ring, star, random graph, binary tree, hexagonal grid) using NED.
 
 
 In the OMNeT++ 2.2 release (May 2002)
