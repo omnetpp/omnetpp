@@ -1,3 +1,7 @@
+2002-02-22  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* cllist.h (cLinkedList): Doc-fix for cLinkedList::insert()
+
 2002-02-21  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* cobject.h: extended description of CompareFunc regarding return values

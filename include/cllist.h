@@ -178,7 +178,7 @@ class SIM_API cLinkedList : public cObject
     void config( VoidDelFunc _delfunc, VoidDupFunc _dupfunc, size_t _itemsize=0);
 
     /**
-     * Inserts the given object into the list, maintaining the sorting order.
+     * Inserts the given object at the head of the list.
      */
     void insert(void *item);
 
