@@ -9,6 +9,15 @@
 //
 //==========================================================================
 
+/*--------------------------------------------------------------*
+  Copyright (C) 1992,99 Andras Varga
+  Technical University of Budapest, Dept. of Telecommunications,
+  Stoczek u.2, H-1111 Budapest, Hungary.
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
 #ifndef __CDENSITY_H
 #define __CDENSITY_H
 
