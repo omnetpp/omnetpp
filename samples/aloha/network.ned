@@ -49,6 +49,7 @@ module ALOHAnet
                 txRate = txRate,
                 slotTime = slotTime;
             display: "i=place/circle_vs";
+    connections nocheck:
 endmodule
 
 network alohaNet : ALOHAnet
