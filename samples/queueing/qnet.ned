@@ -1,3 +1,12 @@
+//
+// This file is part of an OMNeT++ simulation example.
+//
+// Copyright (C) 1992-2003 Andras Varga
+//
+// This file is distributed WITHOUT ANY WARRANTY. See the file
+// `license' for details on this and other legal matters.
+//
+
 import "classifier.ned";
 import "delay.ned";
 import "source.ned";
@@ -25,9 +34,9 @@ module QNet
             gatesizes:
                 in[3];
             display: "p=443,130;i=queue";
-        leave: QSink;
+        leave2: QSink;
             display: "p=546,130;i=sink";
-        drop: QSink;
+        leave1: QSink;
             display: "p=160,200;i=sink";
     connections:
         enter.out --> classifier.in;
@@ -36,8 +45,8 @@ module QNet
             delay_[i].out --> passiveq[i].in;
             passiveq[i].out[0] --> qserver.in[i];
         endfor;
-        qserver.out --> leave.in;
-        classifier.other --> drop.in;
+        qserver.out --> leave2.in;
+        classifier.other --> leave1.in;
 endmodule
 
 network qnet : QNet
