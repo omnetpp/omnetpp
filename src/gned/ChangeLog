@@ -1,5 +1,11 @@
 
 2003-08-12  Andras Varga
+
+	* combobox.tcl: on FocusOut event, it always restored the old content
+	of the entry, so it wasn't possible to type something that was not
+	in the list
+
+2003-08-12  Andras Varga
 	
 	* enhancement: in Submodule and Network Properties dialogs, choose 
 	module list from combobox.
