@@ -174,9 +174,9 @@ proc validateAttrValue {key attr value} {
 
     if {$attr=="gatetype"} {
         if [string match "i*" $value] {
-            set value "input"
+            set value "in"
         } else {
-            set value "output"
+            set value "out"
         }
         return $value
     }

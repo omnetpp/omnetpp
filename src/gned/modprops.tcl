@@ -56,7 +56,7 @@ proc editModuleProps {key} {
     label $nb.gates.l -text  "Gates:"
     tableEdit $nb.gates.tbl 10 {
       {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
-      {Direction          gatetype       {entry $e -textvariable $v -width 10  -bd 1}}
+      {Direction          gatetype       {entry $e -textvariable $v -width 10 -bd 1}}
       {Vector?            isvector       {entry $e -textvariable $v -width 8  -bd 1}}
       {{End-line comment} right-comment  {entry $e -textvariable $v -width 15 -bd 1}}
       {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 16 -bd 1}}

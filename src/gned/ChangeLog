@@ -1,3 +1,8 @@
+2003-03-15  Andras Varga
+
+	* fixed bug: gates added via the Properties dialog were generated
+	with wrong NED syntax
+
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
 2003-02-14  Andras Varga

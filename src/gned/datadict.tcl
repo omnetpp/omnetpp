@@ -208,7 +208,7 @@ set ned_desc(gate,parents)          {gates}
 set ned_attr(gate,banner-comment)   {}
 set ned_attr(gate,right-comment)    {}
 set ned_attr(gate,name)             {out}
-set ned_attr(gate,gatetype)         {output}
+set ned_attr(gate,gatetype)         {out}
 set ned_attr(gate,isvector)         {0}
 
 #
