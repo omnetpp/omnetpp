@@ -19,16 +19,13 @@
 /**
  * @mainpage OMNeT++ NEDXML API Reference
  *
- * This documentation can be browsed in several views (see links
- * at top of this page):
+ * This reference documents NEDXML -- a library for parsing NED and MSG files,
+ * and much more. The result of parsing is a DOM-like object tree, which
+ * you can export as an XML file (and import it back as well), generate C++
+ * code from it (a la nedc), or -- possibly after modifying it -- convert
+ * it back to the original NED/MSG format.
  *
- *   - <b>Modules</b> -- the most important classes, organized by topic
- *   - <b>Class Hierarchy</b> -- inheritance tree of all classes
- *   - <b>Compound List</b> -- alphabetic list of classes
- *   - <b>File List</b> -- header file listings (hyperlinked)
- *   - <b>Compound Members</b> -- methods in alphabetic order
- *
- * For a start, read the <a href="group__Overview.html">Modules/Overview</a> page.
+ * For a start, read the @ref Overview.
  */
 
 /**
@@ -111,9 +108,9 @@
  *      validators consist of several stages which can check the tree up to the level
  *      required by nedc.
  *
- * An exciting output filter is still to be implemented: a <b>network builder</b>,
- * which, linked with the simulation kernel and necessary simple modules, can build up a
- * network on the fly, without having to generate C++ (plus compile and link it) first.
+ * An exciting "output filter", <b>network builder</b> is implemented as an optional
+ * part of the simulation library. Network builder can set up a simulation model
+ * on the fly, provided that all simple modules are present in the executable.
  *
  * Based on the infrastructure, a NED compiler can be assembled from a NED
  * parser and a C++ code generator component. GNED can utilize the NED parser
