@@ -52,20 +52,22 @@ parsened.obj: parsened.cc
 nedfile.obj: nedfile.cc
 	$(CXX) $(COPTS) /c /Tp nedfile.cc
 
-lex.yy.obj: lex.yy.c
-	$(CXX) /I "." $(COPTS) /c /Tp lex.yy.c
+lex.yy.obj: lex.yy.cc
+	$(CXX) /I "." $(COPTS) /c /Tp lex.yy.cc
 
-ebnf.tab.obj: ebnf.tab.c
-	$(CXX) $(COPTS) /c /Tp ebnf.tab.c
+ebnf.tab.obj: ebnf.tab.cc
+	$(CXX) $(COPTS) /c /Tp ebnf.tab.cc
 
 ebnf.tab.h: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
 
-ebnf.tab.c: ebnf.y
+ebnf.tab.cc: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
+	mv ebnf.tab.c ebnf.tab.cc
 
-lex.yy.c: ebnf.lex
+lex.yy.cc: ebnf.lex
 	$(LEX) ebnf.lex
+	mv lex.yy.c lex.yy.cc
 
 gned.res: gned.rc gned.ico
 	$(RC) -fo gned.res -r gned.rc
@@ -84,7 +86,7 @@ clean:
 	-del *.ilk *.idb *.pdb 2> nul
 
 realclean: clean
-	-del lex.yy.c ebnf.tab.c ebnf.tab.h
+	-del lex.yy.cc ebnf.tab.cc ebnf.tab.h
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
