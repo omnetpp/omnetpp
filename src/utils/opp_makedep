@@ -175,7 +175,7 @@ while (@ARGV)
     }
     elsif ($arg =~ /^-/)
     {
-        print STDERR "opp_makedep: ignoring unknown option $arg (--help prints valid options)\n";
+        print STDERR "opp_makedep: warning: ignoring unknown option $arg (--help prints valid options)\n";
     }
     else
     {
@@ -190,8 +190,8 @@ while (@ARGV)
 #
 if ($#CFileList == -1)
 {
-    print STDERR "opp_makedep: no input files\n";
-    exit(1);
+    print STDERR "opp_makedep: warning: no input files\n";
+    exit(0);
 }
 
 #
@@ -294,7 +294,7 @@ sub scan {
             }
             else
             {
-               print STDERR "opp_makedep: file not in include path: $included (use -Y to ignore this error)\n";
+               print STDERR "opp_makedep: file not in include path: $included (use -Y to turn off this error)\n";
                exit(1);
             }
          }

@@ -366,6 +366,16 @@ echo '# Object files from this directory to link'
 echo "OBJS= $objs"
 echo
 
+# include external Makefile fragments here, so that they can override
+# the default target if they want
+if [ ! "$fragments" = "" ]; then
+    cat $fragments
+else
+    if [ -f makefrag ]; then
+        cat makefrag
+    fi
+fi
+
 case "$type" in
 exe)
     echo '$(TARGET): $(OBJS) $(EXRA_OBJS) Makefile '$subdirsphony
@@ -443,14 +453,6 @@ do
         echo '	$(CXX) -c $(COPTS) '$i
         echo
 done
-
-if [ ! "$fragments" = "" ]; then
-    cat $fragments
-else
-    if [ -f makefrag ]; then
-        cat makefrag
-    fi
-fi
 
 args1=`echo " $args " | sed 's/	/ /g;s/ -f / /g;s/ -m / /g'`
 

@@ -2,6 +2,6 @@ WISH=@WISH@
 OMNETPP_SAMPLES_DIR=@OMNETPP_SAMPLES_DIR@
 
 default: $(TARGET)
-	echo "$(WISH) -f $(OMNETPP_SAMPLES_DIR)/demo/rundemo.tcl` $$*" > rundemo
+	echo "$(WISH) -f $(OMNETPP_SAMPLES_DIR)/demo/rundemo.tcl $$*" > rundemo
 	chmod +x rundemo
 
