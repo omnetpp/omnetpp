@@ -58,7 +58,9 @@ TOmnetApp *TOmnetApp::createSlave(int argc, char *argv[])
 //--------------------------------------------------------------------------
 //=== TOmnet member functions
 
-TOmnetTkApp::TOmnetTkApp(int argc, char *argv[]) : TOmnetApp( argc, argv )
+TOmnetTkApp::TOmnetTkApp(int argc, char *argv[]) :
+  TOmnetApp( argc, argv),
+  inspectors("inspectors", NULL)
 {
     is_running = FALSE;
     // opt_* vars will be set by readOptions()

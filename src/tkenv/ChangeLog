@@ -320,3 +320,5 @@ Dec 5,1999
   - Makefile.vc added
   - prints a banner line into main window before calling finish() on modules
     TBD: should print it into per-module windows too
+Jan 9,2000
+  - small modification to TOmnetTkApp's constructor

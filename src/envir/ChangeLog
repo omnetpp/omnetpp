@@ -208,3 +208,5 @@ Dec 4,1999
     for compiling (ren *.cc *.cpp)!
 Dec 5,1999
   - Makefile.vc added
+Jan 9,2000
+  - bugfix: TOmnetApp's destructor made virtual

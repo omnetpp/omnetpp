@@ -19,18 +19,21 @@ OMNETPP_BIN_DIR=$(OMNETPP_ROOT)/bin
 OMNETPP_INCL_DIR=$(OMNETPP_SRC_DIR)/sim
 OMNETPP_LIB_DIR=$(OMNETPP_ROOT)/lib
 
+TK_INCL_DIR=d:/tcl/tcl/include
+TK_LIB_DIR=d:/tcl/tcl/lib
+
 
 #
 # tools
 #
-YACC=bison.bat
-LEX=flex.bat
+YACC=bison.exe
+LEX=flex.exe
 CXX=cl.exe
 LINK=link.exe
 AS=cl.exe
 AR=link.exe -lib
 SHLIB_LD=...
-NEDC=nedc.exe
+NEDC=$(OMNETPP_ROOT)/bin/nedc.exe
 
 #
 # configuration
@@ -47,16 +50,16 @@ LIB_SUFFIX=.lib
 HAVE_DLOPEN=0
 
 # use double backslashes here:
-OMNETPP_TKENV_DIR=d:/work/omnetpp/src/tkenv
-OMNETPP_GNED_DIR=d:/work/omnetpp/src/gned
+OMNETPP_TKENV_DIR=$(OMNETPP_ROOT)/src/tkenv
+OMNETPP_GNED_DIR=$(OMNETPP_ROOT)/src/gned
 OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
 
 #
 # Compile switches (e.g. -Ixxx) and linker switches
 # necessary to build an app with PVM or Tcl/Tk.
 #
-TK_CFLAGS=/I "d:/tcl/tcl/include"
-TK_LIBS=tcl82.lib tk82.lib /libpath:"d:/tcl/tcl/lib"
+TK_CFLAGS=/I "$(TK_INCL_DIR)"
+TK_LIBS=tcl82.lib tk82.lib /libpath:"$(TK_LIB_DIR)"
 PVM_INCL_DIR=
 PVM_LIBS=
 SYS_LIBS=

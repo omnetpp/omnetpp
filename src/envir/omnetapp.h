@@ -80,7 +80,7 @@ class TOmnetApp
      static TOmnetApp *createSlave(int argc, char *argv[]);
 
      TOmnetApp(int argc, char *argv[]);
-     ~TOmnetApp();
+     virtual ~TOmnetApp();
 
      // functions called from cEnvir's similar functions
      virtual void setup(int argc, char *argv[]);
