@@ -1,4 +1,18 @@
-2002-09-07 Andras Varga
+2002-10-04  Andras Varga
+
+	* csimul.h: incEventCount() removed, incrementing event count
+	was moved into doOneEvent()
+
+	* csimul.h: responsibilities of startRun() and endRun() changed, 
+	see doc comment.
+
+	* csimul.h: several methods removed from cSimulation and moved
+	into the Envir library: timeLimit(), simTimeLimit(), startClock(),
+        stopClock(), resetClock(), checkTimes().
+
+	* cexception.h changed
+
+2002-09-07  Andras Varga
 
 	* added cchannel.h: cChannel, cSimpleChannel introduced
 
@@ -21,7 +35,7 @@
 	behaviour to cArray: this method replaces the object with the same 
 	name in the array with the object passed.
 
-	* cArray: commened out opp_warning() calls from all remove() methods.
+	* cArray: commented out opp_warning() calls from all remove() methods.
 	TBD: opp_warning() to be eliminated from EVERY class!!!
 
 2002-07-04  Andras Varga

@@ -23,7 +23,6 @@
 
 #include "defs.h"
 
-#include <time.h>     // time_t, clock_t in cSimulation
 #include "util.h"
 #include "errmsg.h"
 #include "chead.h"
@@ -97,13 +96,6 @@ class SIM_API cSimulation : public cObject
 
     cNetworkType *networktype; // ptr to network creator object
     int run_number;            // which simulation run
-    time_t simbegtime;         // real time when sim. started
-    time_t simendtime;         // real time when sim. ended
-    time_t laststarted;        // real time from where sim. was last cont'd
-    time_t elapsedtime;        // in seconds
-    time_t tmlimit;            // real time limit in seconds
-    simtime_t simulatedtime;   // sim.time at after finishing simulation
-    simtime_t simtmlimit;      // simulation time limit
     cSimpleModule *backtomod;  // used in cSimpleModule::wait/sendmsg
     cCoroutine runningmod_deleter; // used when a simple module deletes itself
     cException *exception;     // helper variable to get exceptions back from activity()
@@ -242,22 +234,6 @@ class SIM_API cSimulation : public cObject
     cNetMod *netInterface() const  {return netmodp;}
 
     /**
-     * Resets the clock measuring the elapsed (real) time spent in this
-     * simulation run.
-     */
-    void resetClock();
-
-    /**
-     * Start measuring elapsed (real) time spent in this simulation run.
-     */
-    void startClock();
-
-    /**
-     * Stop measuring elapsed (real) time spent in this simulation run.
-     */
-    void stopClock();
-
-    /**
      * Builds a new network and initializes it. With distributed simulation,
      * also sets up network on other segments.
      */
@@ -291,18 +267,6 @@ class SIM_API cSimulation : public cObject
     void deleteNetwork();
 
     /**
-     * Sets an execution time limit for the current simulation run.
-     * The value is understood in seconds.
-     */
-    // FIXME: do time limits really belong to the simulation kernel??? why not in Envir?
-    void setTimeLimit(long t)         {tmlimit=(time_t)t;}
-
-    /**
-     * Sets a simulation time limit for the current simulation run.
-     */
-    void setSimTimeLimit(simtime_t t) {simtmlimit=t;}
-
-    /**
      * Used with distributed simulation, sets the frequency of checking
      * messages arriving from other segments. This setting is mostly
      * useful for performance tuning. The meaning of the value is:
@@ -329,16 +293,6 @@ class SIM_API cSimulation : public cObject
     int  runNumber() const           {return run_number;}
 
     /**
-     * Returns CPU time limit for the current simulation run.
-     */
-    long timeLimit() const                {return (long)tmlimit;}
-
-    /**
-     * Returns simulation time limit for the current simulation run.
-     */
-    simtime_t simTimeLimit() const   {return simtmlimit;}
-
-    /**
      * Returns current simulation time.
      */
     simtime_t simTime() const       {return sim_time;}
@@ -362,21 +316,10 @@ class SIM_API cSimulation : public cObject
      * Executes one event. The argument should be the module
      * returned by selectNextModule(); that is, the module
      * to which the next event (lowest timestamp event in
-     * the FES) belongs.
+     * the FES) belongs. Also increments the event number
+     * (returned by eventNumber()).
      */
     void doOneEvent(cSimpleModule *m);
-
-    /**
-     * Increments the event number.
-     */
-    void incEventNumber()             {event_num++;}
-
-    /**
-     * Checks if the current simulation has reached the simulation
-     * or real time limits, and if so, stops the simulation with the
-     * appropriate message.
-     */
-    void checkTimes();
 
     /**
      * Switches to simple module's coroutine. This method is invoked
