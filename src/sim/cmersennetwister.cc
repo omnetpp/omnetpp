@@ -46,7 +46,7 @@ void cMersenneTwister::selfTest()
     rng.seed(1);
     for (int i=0; i<10000; i++)
         intRand();
-    if (intRand()!=2915232614L)
+    if (intRand()!=2915232614UL)
         throw new cException("cMersenneTwister: selfTest() failed, please report this problem!");
 }
 
