@@ -107,7 +107,6 @@ htmlfile_spec := $BASE.htm
 :comm   :\textbar:|::
 :comm   :\textasciicircum:^::
 :comm   :\textbackslash:\::
-:comm   :\Delta:delta::
 :comm   :\sim:~::
 :comm   :\dots:...::
 :comm   :\cdots:..::

@@ -52,7 +52,7 @@ channeldefinition ::=
     \textbf{channel} \textit{channeltype}
      [ \textbf{delay} numericvalue ]
      [ \textbf{error} numericvalue ]
-     [ \textbf{datarate} numericvalue ] $^{******}$
+     [ \textbf{datarate} numericvalue ]
     \textbf{endchannel}
 
 simpledefinition ::=
@@ -64,7 +64,6 @@ simpledefinition ::=
 
 moduledefinition ::=
     \textbf{module} \textit{compoundmoduletype}\index{module!compound}
-     [ machineblock$^{*}$ ]
      [ paramblock ]
      [ gateblock ]
      [ submodblock ]
@@ -100,16 +99,11 @@ submodblock ::=
 
 submodule ::=
     \{ \textit{submodulename} : \textit{moduletype} [ vector ]
-     [ on\_block$^{*}$... ]
      [ substparamblock... ]
      [ gatesizeblock... ] \}
   | \{ \textit{submodulename} : \textit{parametername} [ vector ] \textbf{like} \textit{moduletype}
-     [ on\_block$^{*}$... ]
      [ substparamblock... ]
      [ gatesizeblock... ] \}
-
-on\_block$^{*}$ ::=
-    \textbf{on} [ \textbf{if} expression ]\textbf{:} \{ \textit{on\_machine} ,,, \} ;
 
 substparamblock    ::=
     \textbf{parameters} [ \textbf{if} expression ]\textbf{:}
@@ -145,7 +139,7 @@ normalconnection ::=
 channel ::=
      \textit{channeltype}
     | [ \textbf{delay} expression ] [ \textbf{error} expression ] [ \textbf{datarate} expression ]
-        $^{******}$
+
 
 gate ::=
     [ \textit{modulename} [vector]. ] \textit{gatename} [vector]
@@ -179,13 +173,13 @@ expression    ::=
     | expression \textbf{or} expression
     | \textbf{not} expression
     | '(' expression ')'
-    | \textit{functionname} '(' [ expression ,,, ] ')' $^{***}$
+    | \textit{functionname} '(' [ expression ,,, ] ')'
     | - expression
     | numconstvalue
     | inputvalue
     | [ \textbf{ancestor} ] [ \textbf{ref} ] \textit{parametername}
-    | \textbf{sizeof}$^{****}$ '(' \textit{gatename} ')'
-    | \textbf{index}$^{*****}$
+    | \textbf{sizeof} '(' \textit{gatename} ')'
+    | \textbf{index}
 
 numconstvalue ::=
     \textit{integerconstant} | \textit{realconstant} | \textit{timeconstant}
@@ -202,18 +196,6 @@ inputvalue ::=
 default ::=
     expression | otherconstvalue
 \end{Verbatim}
-
-
-$^{*}$ used with distributed execution
-
-
-$^{**}$ used with the statistical synchronization method\\
-$^{***}$ max. three arguments. The function name must be declared
-in the C++ sources with the Define\_Function macro.\\
-$^{****}$ Size of a vector gate.\\
-$^{*****}$ Index in submodule vector.\\
-$^{******}$ Can appear in any order.
-
 
 
 %%% Local Variables:
