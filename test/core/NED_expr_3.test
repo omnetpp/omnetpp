@@ -1,15 +1,15 @@
 %description:
-Test operators in NED, with non-const parameters.
+Test operators in NED, with const parameters.
 
 %file: {}.ned
 
 simple {Simple}
    parameters:
-      p00, p01, p02, p03, p04, p05, p06, p07, p08, p09,
-      p10, p11, p12, p13, p14, p15, p16, p17, p18, p19,
-      p20, p21, p22, p23, p24, p25, p26, p27, p28, p29,
-      p30, p31, p32, p33, p34, p35, p36, p37, p38, p39,
-      p40, p41, p42, p43, p44, p45, p46, p47;
+      p00:const, p01:const, p02:const, p03:const, p04:const, p05:const, p06:const, p07:const, p08:const, p09:const,
+      p10:const, p11:const, p12:const, p13:const, p14:const, p15:const, p16:const, p17:const, p18:const, p19:const,
+      p20:const, p21:const, p22:const, p23:const, p24:const, p25:const, p26:const, p27:const, p28:const, p29:const,
+      p30:const, p31:const, p32:const, p33:const, p34:const, p35:const, p36:const, p37:const, p38:const, p39:const,
+      p40:const, p41:const, p42:const, p43:const, p44:const, p45:const, p46:const, p47:const;
 endsimple
 
 network {network}: {Simple}
