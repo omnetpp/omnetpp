@@ -374,3 +374,5 @@ May 21, 2000
 Jun 2, 2000
  - minor fix in tkcmd.cc [reported by Richard Lyon]
 ------ omnetpp-2.0b5 released ------
+July 17, 2000
+ - fixed bug in splitInspectorName()  [reported by Ulrich Kaage]

@@ -137,13 +137,12 @@ void splitInspectorName(char *namestr, cObject *&object,int& type)
    // find '-' and replace it with EOS
    char *s;
    for (s=namestr; *s!='-' && *s!='\0'; s++);
-   assert(*s=='-'); // there must be a '-' in the string
+   assert(*s=='-');  // there must be a '-' in the string
    *s = '\0';
-   s++;
 
    object = (cObject *)strToPtr( namestr+1 );
-   type = atoi( s );
-
+   type = atoi( s+1 );
+   *s = '-';  // restore '-'
    assert(object!=0);
 }
 
