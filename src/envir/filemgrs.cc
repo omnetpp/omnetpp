@@ -72,7 +72,7 @@ void cFileOutputVectorManager::initVector(sVectorData *vp)
     }
 
     CHECK(fprintf(f,"vector %ld  \"%s\"  \"%s\"  %d\n",
-                  vp->id, (const char *)vp->modulename, (const char *)vp->vectorname, vp->tuple));
+                  vp->id, (const char *)vp->modulename, (const char *) vp->vectorname? (const char*) vp->vectorname : "(null)", vp->tuple));
     vp->initialised = true;
 }
 
@@ -220,7 +220,7 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 
     if (!f) return;
 
-    fprintf(f,"scalar \"%s\" \t\"%s\" \t%.9g\n", module->fullPath(), name, value);
+    fprintf(f,"scalar \"%s\" \t\"%s\" \t%.9g\n", module->fullPath(), name? name : "(null)", value);
 }
 
 void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, const char *text)
@@ -230,7 +230,7 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, c
 
     if (!f) return;
 
-    fprintf(f,"scalar \"%s\" \t\"%s\" \t\"%s\"\n", module->fullPath(), name, text);
+    fprintf(f,"scalar \"%s\" \t\"%s\" \t\"%s\"\n", module->fullPath(), name? name : "(null)", text);
 }
 
 void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *stats)
@@ -240,7 +240,7 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, c
 
     if (!f) return;
 
-    fprintf(f,"statistics \"%s\" \t\"%s\" \t\"%s\"\n", module->fullPath(), name, stats->className());
+    fprintf(f,"statistics \"%s\" \t\"%s\" \t\"%s\"\n", module->fullPath(), name? name : "(null)", stats->className());
     stats->saveToFile( f );
 }
 
