@@ -1,4 +1,6 @@
+#
 # Definitions to be customized by 'configure'
+#
 CXX=@CXX@
 LD=@LD@
 YACC=@YACC@
@@ -14,39 +16,43 @@ TK_INCL_PATH=@TK_INCL_PATH@
 TK_LIBS=@TK_LIBS@
 SYS_LIBS=@SYS_LIBS@
 
-GNED_INCLUDES=arrow.h parsened.h tklib.h
-
+#
+# Local definitions
+#
 COPTS=-fwritable-strings $(CFLAGS) $(TK_INCL_PATH)
 
 OMNETPP_GNED_DIR=$(OMNETPP_SRC_DIR)/gned
 
 OBJS = gned.o tklib.o arrow.o ebnf.tab.o lex.yy.o parsened.o disp.o nedfile.o
 
+#
+# Targets
+#
 gned : $(OBJS)
 	$(LD) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
 
-gned.o : gned.cc $(INCLUDES)
+gned.o : gned.cc
 	$(CXX) -c $(COPTS) -DOMNETPP_GNED_DIR=\"$(OMNETPP_GNED_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" gned.cc
 
-tklib.o : tklib.cc $(INCLUDES)
+tklib.o : tklib.cc
 	$(CXX) -c $(COPTS) tklib.cc
 
-arrow.o: arrow.cc arrow.h
+arrow.o: arrow.cc
 	$(CXX) -c $(COPTS) arrow.cc
 
-parsened.o: parsened.cc parsened.h disp.h
+parsened.o: parsened.cc
 	$(CXX) -c $(COPTS) parsened.cc
 
-nedfile.o: nedfile.cc nedfile.h
+nedfile.o: nedfile.cc
 	$(CXX) -c $(COPTS) nedfile.cc
 
-disp.o: disp.h disp.cc
+disp.o: disp.cc
 	$(CXX) -c $(COPTS) disp.cc
 
-lex.yy.o: parsened.h lex.yy.c
+lex.yy.o: lex.yy.c
 	$(CXX) -c $(COPTS) lex.yy.c
 
-ebnf.tab.o: parsened.h ebnf.tab.h ebnf.tab.c
+ebnf.tab.o: ebnf.tab.c
 	$(CXX) -c $(COPTS) ebnf.tab.c
 
 ebnf.tab.h: ebnf.y
@@ -57,4 +63,14 @@ ebnf.tab.c: ebnf.y
 
 lex.yy.c: ebnf.lex
 	$(LEX) ebnf.lex
+
+depend:
+	makedepend -Y -I. -- *.c *.cc
+
+clean:
+	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
 

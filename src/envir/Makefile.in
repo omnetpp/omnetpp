@@ -1,20 +1,30 @@
+#
 # Definitions to be customized by 'configure'
+#
 CXX=@CXX@
-AS=gcc -g -c
 AR=@AR@
 MAKE_SO=@MAKE_SO@
 
 OMNETPP_ROOT=@OMNETPP_ROOT@
 OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
-OMNETPP_INCLUDES=@OMNETPP_INCLUDES@
-USE_DLOPEN=1
-LIB_SUFFIX=so
 
+USE_DLOPEN=@USE_DLOPEN@
+
+LIB_SUFFIX=@LIB_SUFFIX@
+
+CFLAGS=@CFLAGS@
+
+#
 # Local definitions
-ENVIR_INCLUDES=args.h cinifile.h omnetapp.h slaveapp.h patmatch.h
+#
+COPTS=$(CLFAGS) $(OMNETPP_INCL_PATH)
+
 OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o
 
+#
+# Targets
+#
 all : libenvir.$(LIB_SUFFIX)
 
 libenvir.a : $(OBJS)
@@ -24,27 +34,36 @@ libenvir.so : $(OBJS)
 	$(MAKE_SO) libenvir.so $(OBJS)
 
 args.o : args.cc args.h
-	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) args.cc
+	$(CXX) -c $(COPTS) args.cc
+
+cenvir.o : cenvir.cc
+	$(CXX) -c $(COPTS) cenvir.cc
+
+cinifile.o : cinifile.cc
+	$(CXX) -c $(COPTS) cinifile.cc
+
+main.o : main.cc
+	$(CXX) -c $(COPTS) main.cc
+
+omnetapp.o : omnetapp.cc
+	$(CXX) -c $(COPTS) -DDYNAMIC_LINKAGE=$(DYNAMIC_LINKAGE) omnetapp.cc
+
+slaveapp.o : slaveapp.cc
+	$(CXX) -c $(COPTS) slaveapp.cc
+
+seeds.o : seeds.cc
+	$(CXX) -c $(COPTS) seeds.cc
+
+patmatch.o : patmatch.cc
+	$(CXX) -c $(COPTS) patmatch.cc
+
+depend:
+	makedepend -Y -I. -I../sim -- *.cc
+
+clean:
+	rm -f *.o libenvir.a libenvir.so
 
 
-cenvir.o : cenvir.cc $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) cenvir.cc
+# DO NOT DELETE THIS LINE -- make depend depends on it.
 
-cinifile.o : cinifile.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) cinifile.cc
-
-main.o : main.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) main.cc
-
-omnetapp.o : omnetapp.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) -DDYNAMIC_LINKAGE=$(DYNAMIC_LINKAGE) omnetapp.cc
-
-slaveapp.o : slaveapp.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) slaveapp.cc
-
-seeds.o : seeds.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) seeds.cc
-
-patmatch.o : patmatch.cc  $(OMNETPP_INCLUDES) $(ENVIR_INCLUDES)
-	$(CXX) -c $(COPTS) $(OMNETPP_INCL_PATH) patmatch.cc
 

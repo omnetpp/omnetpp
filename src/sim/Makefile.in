@@ -1,4 +1,6 @@
+#
 # Definitions to be customized by 'configure'
+#
 CXX=@CXX@
 AS=@AS@
 AR=@AR@
@@ -9,14 +11,18 @@ CFLAGS=@CFLAGS@
 OMNETPP_ROOT=@OMNETPP_ROOT@
 OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
-OMNETPP_INCLUDES=@OMNETPP_INCLUDES@
+
 PVM_INCL_PATH=@PVM_INCL_PATH@
+
 LIB_SUFFIX=@LIB_SUFFIX@
 
-COPTS=$(CFLAGS) $(INCL_PATH) $(OMNETPP_INCL_PATH)
-
+#
 # Local definitions
-INCL_PATH=-Istd -Ipvm
+#
+SIM_INCL_PATH=-Istd -Ipvm
+
+COPTS=$(CFLAGS) $(SIM_INCL_PATH) $(OMNETPP_INCL_PATH)
+
 CPPOBJS= ccor.o ctypes.o carray.o cgate.o cmodule.o csimul.o cobject.o cpar.o \
 	 cstat.o chist.o cdensity.o cvarhist.o cpsquare.o cksplit.o \
          cmessage.o cdetect.o cstk.o util.o cllist.o ctopo.o errmsg.o \
@@ -27,6 +33,9 @@ CPPOBJS_PVM= pvm/pvmmod.o pvm/pvmpack.o
 ASMOBJS=
 # ASMOBJS=stjpower.o swpower.o	   # uncomment this on RS/6000
 
+#
+# Targets
+#
 all : sim_std sim_pvm
 
 sim_std : libsim_std.$(LIB_SUFFIX)
@@ -45,91 +54,91 @@ libsim_pvm.a : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 libsim_pvm.so : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 	$(MAKE_SO) libsim_pvm.so $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 
-ccor.o : ccor.cc $(OMNETPP_INCLUDES)
+ccor.o : ccor.cc
 	$(CXX) -c $(COPTS) ccor.cc
 
-ctypes.o : ctypes.cc $(OMNETPP_INCLUDES)
+ctypes.o : ctypes.cc
 	$(CXX) -c $(COPTS) ctypes.cc
 
-carray.o : carray.cc $(OMNETPP_INCLUDES)
+carray.o : carray.cc
 	$(CXX) -c $(COPTS) carray.cc
 
-cqueue.o : cqueue.cc $(OMNETPP_INCLUDES)
+cqueue.o : cqueue.cc
 	$(CXX) -c $(COPTS) cqueue.cc
 
-chead.o : chead.cc $(OMNETPP_INCLUDES)
+chead.o : chead.cc
 	$(CXX) -c $(COPTS) chead.cc
 
-cwatch.o : cwatch.cc $(OMNETPP_INCLUDES)
+cwatch.o : cwatch.cc
 	$(CXX) -c $(COPTS) cwatch.cc
 
-cmodule.o : cmodule.cc $(OMNETPP_INCLUDES)
+cmodule.o : cmodule.cc
 	$(CXX) -c $(COPTS) cmodule.cc
 
-csimul.o : csimul.cc $(OMNETPP_INCLUDES)
+csimul.o : csimul.cc
 	$(CXX) -c $(COPTS) csimul.cc
 
-cgate.o : cgate.cc $(OMNETPP_INCLUDES)
+cgate.o : cgate.cc
 	$(CXX) -c $(COPTS) cgate.cc
 
-cmessage.o : cmessage.cc $(OMNETPP_INCLUDES)
+cmessage.o : cmessage.cc
 	$(CXX) -c $(COPTS) cmessage.cc
 
-cpacket.o : cpacket.cc $(OMNETPP_INCLUDES)
+cpacket.o : cpacket.cc
 	$(CXX) -c $(COPTS) cpacket.cc
 
-cfsm.o : cfsm.cc $(OMNETPP_INCLUDES)
+cfsm.o : cfsm.cc
 	$(CXX) -c $(COPTS) cfsm.cc
 
-cobject.o : cobject.cc $(OMNETPP_INCLUDES)
+cobject.o : cobject.cc
 	$(CXX) -c $(COPTS) cobject.cc
 
-cpar.o : cpar.cc $(OMNETPP_INCLUDES)
+cpar.o : cpar.cc
 	$(CXX) -c $(COPTS) cpar.cc
 
-cstat.o : cstat.cc $(OMNETPP_INCLUDES)
+cstat.o : cstat.cc
 	$(CXX) -c $(COPTS) cstat.cc
 
-cdensity.o : cdensity.cc $(OMNETPP_INCLUDES)
+cdensity.o : cdensity.cc
 	$(CXX) -c $(COPTS) cdensity.cc
 
-chist.o : chist.cc $(OMNETPP_INCLUDES)
+chist.o : chist.cc
 	$(CXX) -c $(COPTS) chist.cc
 
-cvarhist.o : cvarhist.cc $(OMNETPP_INCLUDES)
+cvarhist.o : cvarhist.cc
 	$(CXX) -c $(COPTS) cvarhist.cc
 
-cdetect.o : cdetect.cc $(OMNETPP_INCLUDES)
+cdetect.o : cdetect.cc
 	$(CXX) -c $(COPTS) cdetect.cc
 
-cpsquare.o : cpsquare.cc $(OMNETPP_INCLUDES)
+cpsquare.o : cpsquare.cc
 	$(CXX) -c $(COPTS) cpsquare.cc
 
-cksplit.o : cksplit.cc $(OMNETPP_INCLUDES)
+cksplit.o : cksplit.cc
 	$(CXX) -c $(COPTS) cksplit.cc
 
-cmsgheap.o : cmsgheap.cc $(OMNETPP_INCLUDES)
+cmsgheap.o : cmsgheap.cc
 	$(CXX) -c $(COPTS) cmsgheap.cc
 
-cnetmod.o : cnetmod.cc $(OMNETPP_INCLUDES)
+cnetmod.o : cnetmod.cc
 	$(CXX) -c $(COPTS) cnetmod.cc
 
-cllist.o : cllist.cc $(OMNETPP_INCLUDES)
+cllist.o : cllist.cc
 	$(CXX) -c $(COPTS) cllist.cc
 
-ctopo.o : ctopo.cc $(OMNETPP_INCLUDES)
+ctopo.o : ctopo.cc
 	$(CXX) -c $(COPTS) ctopo.cc
 
-coutvect.o : coutvect.cc $(OMNETPP_INCLUDES)
+coutvect.o : coutvect.cc
 	$(CXX) -c $(COPTS) coutvect.cc
 
 cstk.o : cstk.cc ccor.h cstk.h
 	$(CXX) -c $(COPTS) cstk.cc
 
-util.o : util.cc $(OMNETPP_INCLUDES)
+util.o : util.cc
 	$(CXX) -c $(COPTS) util.cc
 
-errmsg.o : errmsg.cc $(OMNETPP_INCLUDES)
+errmsg.o : errmsg.cc
 	$(CXX) -c $(COPTS) errmsg.cc
 
 stjpower.o : stjpower.s
@@ -138,12 +147,22 @@ stjpower.o : stjpower.s
 swpower.o : swpower.s
 	$(AS) swpower.s
 
-std/netpack.o : std/netpack.cc $(OMNETPP_INCLUDES)
+std/netpack.o : std/netpack.cc
 	$(CXX) -c $(COPTS) std/netpack.cc -o std/netpack.o
 
-pvm/pvmpack.o : pvm/pvmpack.cc $(OMNETPP_INCLUDES)
+pvm/pvmpack.o : pvm/pvmpack.cc
 	$(CXX) -c $(COPTS) $(PVM_INCL_PATH) pvm/pvmpack.cc -o pvm/pvmpack.o
 
-pvm/pvmmod.o : pvm/pvmmod.cc $(OMNETPP_INCLUDES)
+pvm/pvmmod.o : pvm/pvmmod.cc
 	$(CXX) -c $(COPTS) $(PVM_INCL_PATH) pvm/pvmmod.cc -o pvm/pvmmod.o
+
+depend:
+	makedepend -Y -I. -- *.cc
+
+clean:
+	rm -f *.o libsim_std.a libsim_std.so libsim_pvm.a libsim_pvm.so
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
 

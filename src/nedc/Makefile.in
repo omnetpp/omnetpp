@@ -1,14 +1,6 @@
-#*************************************************#
-#	   OMNET++ NEDC				  #
-#						  #
-#    Originally by:                               #
-#	 Jan Heijmans 				  #
-#	 Alex Paalvast				  #
-#	 Robert van der Leij			  #
-#    Maintained by: Andras Varga 1996-99	  #
-#*************************************************#
-
+#
 # Definitions to be customized by configure
+#
 CXX=@CXX@
 LD=@LD@
 YACC=@YACC@
@@ -18,6 +10,9 @@ CFLAGS=@CFLAGS@
 
 COPTS=$(CFLAGS)
 
+#
+# Targets
+#
 nedc: ebnf.tab.o lex.yy.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o
 	$(LD) lex.yy.o ebnf.tab.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o -o nedc
 
@@ -50,4 +45,14 @@ jar_expr.o: jar_lib.h jar_func.h jar_expr.c
 
 jar_mem.o: jar_func.h jar_mem.c
 	$(CXX) -c $(COPTS) jar_mem.c
+
+depend:
+	makedepend -Y -I. -- *.c
+
+clean:
+	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc *_n.cc
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
 

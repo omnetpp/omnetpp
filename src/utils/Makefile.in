@@ -1,7 +1,12 @@
+#
 # variables set by `configure':
+#
 CXX=@CXX@
 LD=@LD@
-COPTS=
+
+CFLAGS=@CFLAGS@
+
+COPTS=$(CFLAGS)
 
 seedtool : seedtool.o
 	$(LD) seedtool.o -o seedtool
@@ -9,6 +14,12 @@ seedtool : seedtool.o
 seedtool.o : seedtool.cc
 	$(CXX) -c $(COPTS) seedtool.cc
 
+depend:
+	makedepend -Y -I. -- *.cc
+
 clean:
 	rm -f *.o seedtool
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
 

@@ -1,6 +1,7 @@
+#
 # Definitions to be customized by 'configure'
+#
 CXX=@CXX@
-AS=@AS@
 AR=@AR@
 MAKE_SO=@MAKE_SO@
 
@@ -9,19 +10,21 @@ CFLAGS=@CFLAGS@
 OMNETPP_ROOT=@OMNETPP_ROOT@
 OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
-OMNETPP_INCLUDES=@OMNETPP_INCLUDES@
+
 LIB_SUFFIX=@LIB_SUFFIX@
 
+#
 # Local definitions
-ENVIR_INCLUDES=../envir/args.h ../envir/cinifile.h ../envir/omnetapp.h ../envir/slaveapp.h
-CMDENV_INCLUDES=cmdenv.h enumstr.h
-INCL_PATH=-I../envir
+#
+ENVIR_INCL_PATH=-I../envir
 
-INCLUDES=$(OMNETPP_INCLUDES) $(ENVIR_INCLUDES) $(CMDENV_INCLUDES)
-COPTS=$(CLFAGS) $(OMNETPP_INCL_PATH) $(INCL_PATH)
+COPTS=$(CLFAGS) $(OMNETPP_INCL_PATH) $(ENVIR_INCL_PATH)
 
 OBJS = cmdenv.o enumstr.o heap.o
 
+#
+# Targets
+#
 all : libcmdenv.$(LIB_SUFFIX)
 
 libcmdenv.a : $(OBJS)
@@ -30,12 +33,21 @@ libcmdenv.a : $(OBJS)
 libcmdenv.so : $(OBJS)
 	$(MAKE_SO) libcmdenv.so $(OBJS)
 
-cmdenv.o : cmdenv.cc $(INCLUDES)
+cmdenv.o : cmdenv.cc
 	$(CXX) -c $(COPTS) cmdenv.cc
 
-enumstr.o : enumstr.cc $(INCLUDES)
+enumstr.o : enumstr.cc
 	$(CXX) -c $(COPTS) enumstr.cc
 
-heap.o : heap.cc $(INCLUDES)
+heap.o : heap.cc
 	$(CXX) -c $(COPTS) heap.cc
+
+depend:
+	makedepend -Y -I. -I../envir -I../sim -- *.cc
+
+clean:
+	rm -f *.o libcmdenv.a libcmdenv.so
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
 
