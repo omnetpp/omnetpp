@@ -131,7 +131,7 @@ value.
 
 @subsection s2 Step 2: adding icons and debug output
 
-@ref f2
+Complete sources: @ref f2
 
 // Here we make the model look a bit prettier in the GUI. We assign
 // the "proc1" icon (bitmaps/proc1.gif), and paint it cyan for `tic'
@@ -151,14 +151,12 @@ simulation.
 
 @subsection s3 Step 3
 
-@ref f3
-
 In this class we add a counter, and delete the message after ten exchanges.
+
+Complete sources: @ref f3
 
 
 @subsection s4 Step 4
-
-@ref f4
 
 In this step you'll learn how to add input parameters to the simulation:
 we'll turn the "magic number" 10 into a parameter.
@@ -166,10 +164,10 @@ we'll turn the "magic number" 10 into a parameter.
 For that, we need to declare the parameter in the NED file, and
 then to get its value from the C++ code.
 
+Complete sources: @ref f4
+
 
 @subsection s5 Step 5
-
-@ref f5
 
 In the previous models, `tic' and `toc' immediately sent back the
 received message. Here we'll add some timing: tic and toc will hold the
@@ -182,10 +180,10 @@ specify when they should arrive back at the module.
 
 We leave out the counter, to keep the source code small.
 
+Complete sources: @ref f5
+
 
 @subsection s6 Step 6
-
-@ref f6
 
 In this step we'll introduce random numbers. We change the delay from 1s
 to a random value which can be set from the NED file or from omnetpp.ini.
@@ -196,10 +194,10 @@ For tic, we hardcode the delayTime parameter into the NED file.
 For `toc', we leave the delayTime parameter unassigned in the NED file,
 and put the value into omnetpp.ini instead, to make it easier to change.
 
+Complete sources: @ref f6
 
-@subsection s7 Files: Step 7
 
-@ref f7
+@subsection s7 Step 7
 
 Let us take a step back, and remove random delaying from the code.
 We'll leave in, however, losing the packet with a small probability.
@@ -208,16 +206,17 @@ if the packet doesn't arrive within a certain period, we'll assume it
 was lost and create another one. The timeout will be handled using
 (what else?) a self-message.
 
+Complete sources: @ref f7
+
 
 @subsection s8 Step 8
-
-@ref f8
 
 In the previous model we just created another packet if we needed to
 retransmit. This is OK because the packet didn't contain much, but
 in real life it's usually more practical to keep a copy of the original
 packet so that we can re-send it without the need to build it again.
 
+Complete sources: @ref f8
 
 
 <hr>
@@ -225,8 +224,6 @@ packet so that we can re-send it without the need to build it again.
 
 
 @subsection s9 Step 9
-
-@ref f9
 
 Let's make it more interesting by using several (n) `tic' modules,
 and connecting every module to every other. For now, let's keep it
@@ -238,10 +235,10 @@ NED file is completely different:
 
 tictoc9.ned: @include tictoc9.ned
 
+Complete sources: @ref f9
+
 
 @subsection s10 Step 10
-
-@ref f10
 
 In this step the destination address is no longer node 2 -- we draw a
 random destination, and we'll add the destination address to the message.
@@ -256,10 +253,10 @@ To make the model execute longer, after a message arrives to its destination
 the destination node will generate another message with a random destination
 address, and so forth.
 
+Complete sources: @ref f10
+
 
 @subsection s11 Step 11
-
-@ref f11
 
 This model is exciting enough so that we can collect some statistics.
 We'll record in output vectors the hop count of every message upon arrival.
@@ -268,6 +265,8 @@ with the Plove program.
 
 We also collect basic statistics (min, max, mean, std.dev.) and histogram
 about the hop count which we'll print out at the end of the simulation.
+
+Complete sources: @ref f11
 
 */
 
