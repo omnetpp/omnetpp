@@ -501,7 +501,12 @@ void NEDBasicValidator::validateElement(ParamRefNode *node)
 void NEDBasicValidator::validateElement(IdentNode *node)
 {
     // make sure ident (loop variable) exists
-    //FIXME
+    const char *name = node->getName();
+    NEDElement *forloop = node->getParentWithTag(NED_FOR_LOOP);
+    if (!forloop)
+        INTERNAL_ERROR1(node,"loop variable '%s' occurs outside for loop", name);
+    if (forloop->getFirstChildWithAttribute(NED_LOOP_VAR, "name", name)==NULL)
+        NEDError(node, "no loop variable named '%s' in enclosing for loop", name);
 }
 
 void NEDBasicValidator::validateElement(ConstNode *node)
@@ -600,8 +605,7 @@ void NEDBasicValidator::validateElement(FieldsNode *node)
 
 void NEDBasicValidator::validateElement(FieldNode *node)
 {
-    // FIXME check syntax of default value
-    // FIXME check type of default value agrees with field type
+    // TBD check syntax of default value, and that its type agrees with field type
 }
 
 void NEDBasicValidator::validateElement(PropertiesNode *node)
@@ -610,7 +614,7 @@ void NEDBasicValidator::validateElement(PropertiesNode *node)
 
 void NEDBasicValidator::validateElement(PropertyNode *node)
 {
-    // FIXME check syntax of value
+    // TBD check syntax of value
 }
 
 
