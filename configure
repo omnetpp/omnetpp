@@ -2260,6 +2260,7 @@ fi
 
 
 
+
 #----------------------
 # Generate files.
 #----------------------
@@ -2445,6 +2446,7 @@ s%@OMNETPP_LIB_DIR@%$OMNETPP_LIB_DIR%g
 s%@OMNETPP_BITMAP_PATH@%$OMNETPP_BITMAP_PATH%g
 s%@OMNETPP_SRC_DIR@%$OMNETPP_SRC_DIR%g
 s%@OMNETPP_SAMPLES_DIR@%$OMNETPP_SAMPLES_DIR%g
+s%@OMNETPP_TUTORIAL_DIR@%$OMNETPP_TUTORIAL_DIR%g
 s%@MYPWD@%$MYPWD%g
 s%@NEDC@%$NEDC%g
 s%@AS@%$AS%g
