@@ -294,8 +294,8 @@ proc createMainWindow {} {
       pack $b -anchor w -expand 0 -fill y -side left -padx 0 -pady 2
     }
 
-    set help_tips($gned(graphics-toolbar).draw)   {Switch to submodule/connection drawing mode}
-    set help_tips($gned(graphics-toolbar).select) {Switch to select/resize mode}
+    set help_tips($gned(graphics-toolbar).draw)   {Draw submodules and connections}
+    set help_tips($gned(graphics-toolbar).select) {Select/Resize items}
     set help_tips($gned(graphics-toolbar).delete) {Delete selected items}
     set help_tips($gned(graphics-toolbar).grid)   {Snap to grid on/off}
     set help_tips($gned(graphics-toolbar).bounds) {Fit parent module size}
@@ -343,9 +343,9 @@ proc createMainWindow {} {
 
     frame .main.f.switcher
     pack .main.f.switcher -expand 0 -fill x -side top -ipadx 0 -ipady 0 -padx 0 -pady 0
-    button .main.f.switcher.graphics -text {Graphics view} -command {switchToGraphics} \
+    button .main.f.switcher.graphics -text {Graphics} -command {switchToGraphics} \
            -relief flat -highlightthickness 0 -pady 1
-    button .main.f.switcher.textedit -text {NED source view} -command {switchToNED} \
+    button .main.f.switcher.textedit -text {NED source} -command {switchToNED} \
            -relief flat -highlightthickness 0 -pady 1
     pack .main.f.switcher.graphics .main.f.switcher.textedit -expand 0 -fill none -side left  
 
