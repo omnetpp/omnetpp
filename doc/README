@@ -1,41 +1,9 @@
 OMNeT++ Discrete Event Simulation System
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Copyright (c) 1998-2001 Andras Varga.
+Copyright (c) 1998-2004 Andras Varga.
 
 OMNeT++ is subject to the license described in the "License" file.
-You may as a special exception elect to use the GNU General Public License
-(see the "GPLElect" file). Please contact me if you wish to negotiate an
-alternative license.
-
-
-What is OMNeT++?
-~~~~~~~~~~~~~~~~
-
-OMNeT++ is an object-oriented modular discrete event simulator.
-An OMNeT++ model consists of hierarchically nested modules which
-communicate though gates and connections. The user defines the
-module structure in the NED language.
-
-The modules on the lowest level (termed "simple modules") contain
-the algorithms. Those are written in C++ and use the simulation
-object library. Simple modules appear to execute as something like
-threads within a simulation. (In fact they use non-preemptive
-scheduling; they are implemented as coroutines).
-
-OMNeT++ is written in C++ and it is portable: it runs on any platform
-where there's a C++ compiler. It has a Tcl/Tk user interface which is
-supported on under Unix/X and Win32 platforms. There's also a platform-
-independent command-line user interface for batch execution.
-
-OMNeT++ has a graphical topology editor called GNED and also a tool
-called Plove for analyzing and plotting simulation output. Both tools
-are written using Tcl/Tk.
-
-OMNeT++ contains a flexible parallel distributed simulation framework. 
-It can use MPI or alternative means (e.g. named pipe) for communication
-between LPs, and it support the Null Message Algorithm (Chandy-Misra-Bryant)
-and Ideal Simulation Protocol (Bagrodia).
 
 OMNeT++ Home Page: www.omnetpp.org
 
@@ -46,7 +14,6 @@ form, please include a reference to OMNeT++ and let me know.
 
 In any case, if you find OMNeT++ useful for your work, I'd be more than happy
 learn about that.
-
 
 What you'll find in the OMNeT++ directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -120,7 +87,7 @@ The example programs
 
 The example programs are designed to demonstrate as many of the features of
 OMNeT++ as possible. (See README file in samples/ for more info.)
-I recommend the following order to try them out:
+We recommend the following order to try them out:
       nim - fifo1 - token - hist - hcube - dyna - fifo2 - fddi
 It's best to begin by running Demo, which is a tour of the other sample
 simulations.
@@ -149,7 +116,6 @@ Here's a list of the people who have or had anything to do with OMNeT++:
 
 Principal author:
         Andras Varga            andras@whale.hit.bme.hu
-                                http://www.hit.bme.hu/phd/vargaa
 
 Advisor:
         Gyorgy Pongor           BME-HIT, pongor@hit.bme.hu
@@ -196,17 +162,4 @@ GNED, and to Victor Wagner for balloon.tcl.
 
 Thanks to Justin Frankel at Nullsoft for creating NSIS, the Nullsoft Installer,
 which is extremely handy for creating installers on Windows. NSIS is small,
-fast, flexible, and does its job very well. Without NSIS, probably there
-wouldn't be an installer version of OMNeT++.
-
-
-Feedback requested
-~~~~~~~~~~~~~~~~~~
-
-Remarks, opinions, suggestions, bug reports/fixes and contributions are
-WELCOME! They drive OMNeT++ towards new and better releases...
-
-Andras Varga, andras@whale.hit.bme.hu
-
-
-
+fast, flexible, and does its job very well.
