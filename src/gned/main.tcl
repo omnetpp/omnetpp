@@ -571,9 +571,11 @@ and you can also find it in the in the object tree on the left, where you
 can edit its parameters and gates. You can also drag it into another compound module\
 on the canvas to create an instance.}
 #----------------
-set hints(insert-network)  {You are creating a new "network", which is an instance\
-of a compound (or simple) module type, which you can simulate in itself. You'll have\
-to specify the module type, and you can set its parameters.
+set hints(insert-network)  {You are creating a new NED "network". Networks are used\
+to define simulations that can be executed in themselves. Networks are\
+defined as an instance of a module type (e.g. of a compound module type named\
+MyQueueingNetwork). You can create several networks for the same module,\
+all with different parameter settings.
 
 For further editing, you'll find this "network" component in the object tree on the left.}
 #----------------
