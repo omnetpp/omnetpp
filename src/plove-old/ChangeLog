@@ -81,6 +81,9 @@ Apr 16, 2001
  - added plove.ico
  - window title
 Apr 19, 2001
- - defaultconfigfile added
+ - default config file added: before processing $HOME/.ploverc, also reads
+   .ploverc from the Plove program dir
 Apr 20, 2001
  - bugfix in new WinMain() startup code
+Apr 28, 2001
+ - bugfix in .ploverc handling
