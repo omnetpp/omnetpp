@@ -1,37 +1,23 @@
-To Do until final release:
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-finish bugfixes...
-
-
 Further plans...
 ~~~~~~~~~~~~~~~~
 (things that just came to my mind, in no particular order)
 
-Aug 25, 1998, somewhat updated June 5, 1999
+Aug 25, 1998, somewhat updated in Aug 1999
 
 
-add more simulation models
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-most important: TCP and IP models
-
-
-in usman.doc
-~~~~~~~~~~~~
-message subclassing
-cPacket
+improve the simulation core
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+direct support for message subclassing (1st priority but takes time)
+proper connection objects
+more flexible connections
+bidirectional gates (?)
+propagate state info over connections ("statistic wires")
+multi-thread simple modules
 
 
 develop GNED
 ~~~~~~~~~~~~
-load available module declarations and if someone creates a 
-submodule, check its gates and parameters against the loaded
-declarations. Make checks and suggestions for module parameter
-and gate usage etc.
-
-make GNED a two-way tool: one could edit both the graphics and
-the textual NED descriptions, and they are automatically kept 
-cosistent (like Borland Delphi).
+GNED's TODO file has a nice list, plus some very remote plans:
 
 support for module/gate vectors, conditional sections and 
 other NED niceties.
@@ -42,13 +28,11 @@ resulting simulation program etc.)
 
 find out the possibility of integrating GNED with Tkenv 
 
-further ideas in GNED's readme file
-
 
 NED, nedc
 ~~~~~~~~~
-add inheritance to the NED language. A derived module could add 
-new parameters and gates, give values to parameters, fix gate vector sizes.
+add inheritance to the NED language. A derived module could add new
+parameters and gates, give values to parameters, fix gate vector sizes.
 This would allow NED descriptions to follow simple module inheritance tree.
 
 
@@ -65,16 +49,6 @@ They could serve as skeletons for development (one could use them
 by deriving new simple module classes from them).
 
  
-implement Dario's suggestions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bidirectional gates
-proper connection objects
-more flexible connections
-propagate state info over connections ("statistic wires")
-multi-thread simple modules
-...
-
-
 documentation
 ~~~~~~~~~~~~~
 update exman.doc
@@ -82,8 +56,14 @@ split html versions of manuals into chapters (that is, modify utils/prephtml)
 general polishing
 
 
+add more simulation models
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+most important: TCP and IP models
+
+
 OMNeT++ community
 ~~~~~~~~~~~~~~~~~
 maintain FAQ
 set up and maintain a repository for contributed models/utilities
 advertise request for contributions
+
