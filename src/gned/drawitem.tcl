@@ -367,7 +367,7 @@ proc draw_module {c key} {
     set y2 [expr $y1+$sy]
 
     # now: draw it!
-    set fill    [resolveDispStrColor $ned($key,disp-fillcolor) #c0c0c0]
+    set fill    [resolveDispStrColor $ned($key,disp-fillcolor) #d0d0d0]
     set outline [resolveDispStrColor $ned($key,disp-outlinecolor) #000000]
     set thickness [resolveDispStrArg $ned($key,disp-linethickness) 2]
 

@@ -1424,6 +1424,7 @@ void swapConnection(int conn_key)
    np->swap(conn_key, "srcgate", "destgate");
    np->swap(conn_key, "src-mod-index", "dest-mod-index");
    np->swap(conn_key, "src-gate-index", "dest-gate-index");
+   np->swap(conn_key, "src-gate-plusplus", "dest-gate-plusplus");
 }
 
 void setDisplayString(int key, YYLTYPE dispstrpos)
