@@ -249,6 +249,14 @@ class cXMLElement
      */
     //FIXME get rid of spaces around "*" in the above doc somehow (without creating /*, or */)
     cXMLElement *getElementByPath(const char *pathexpression);
+
+    /**
+     * Dumps tree content to ev in a XML-like format. This method is only 
+     * useful for debugging, because it does not perform necessary escaping 
+     * in text nodes and attribute values, so the output is not necessarily 
+     * valid XML.
+     */
+    void debugDump(int depth=0) const;
     //@}
 };
 

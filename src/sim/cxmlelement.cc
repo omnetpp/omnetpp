@@ -26,6 +26,7 @@
 #include <string>
 #include "cxmlelement.h"
 #include "cexception.h"
+#include "cenvir.h"
 
 #ifdef _MSC_VER
 #define strcasecmp  stricmp
@@ -199,7 +200,7 @@ cXMLElementList cXMLElement::getChildrenByTagName(const char *tagname) const
     return list;
 }
 
-cXMLElementList cXMLElement::getElementsByTagName(const char *tagname) 
+cXMLElementList cXMLElement::getElementsByTagName(const char *tagname)
 {
     cXMLElementList list;
     if (!strcasecmp(getTagName(),tagname))
@@ -445,5 +446,26 @@ cXMLElement *cXMLElement::getElementByPath(const char *pathexpr)
         throw new cException("cXMLElement::getElementByPath(): paths beginning with `/' "
                              "not supported by getElementByPath() (path expression: `%s')", pathexpr);
     return matchPathExpression(this, pathexpr);
+}
+
+void cXMLElement::debugDump(int depth) const
+{
+    int i;
+    for (i=0; i<depth; i++) ev << "  ";
+    ev << "<" << getTagName();
+    cXMLAttributeMap map = getAttributes();
+    for (cXMLAttributeMap::iterator it=map.begin(); it!=map.end(); it++)
+        ev << " " << it->first << "=\"" << it->second << "\"";
+    if (!*getNodeValue() && !getFirstChild())
+        {ev << "/>\n"; return;}
+    ev << ">";
+    ev << getNodeValue();
+    if (!getFirstChild())
+        {ev << "</" << getTagName() << ">\n"; return;}
+    ev << "\n";
+    for (cXMLElement *child=getFirstChild(); child; child=child->getNextSibling())
+        child->debugDump(depth+1);
+    for (i=0; i<depth; i++) ev << "  ";
+    ev << "</" << getTagName() << ">\n";
 }
 
