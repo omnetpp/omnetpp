@@ -1,0 +1,14 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+depend:
+
+clean:
+
+install-local: plove
+	rem (dir=`pwd`; cd $(OMNETPP_BIN_DIR); rm -f plove; ln -s $$dir/plove .)
+        @ echo *** Plove installation: TBD
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -23,9 +23,10 @@ OMNETPP_LIB_DIR=$(OMNETPP_ROOT)/lib
 #
 # tools
 #
-YACC=
-LEX=
+YACC=bison.bat
+LEX=flex.bat
 CXX=cl.exe
+LINK=link.exe
 AS=cl.exe
 AR=link.exe -lib
 SHLIB_LD=...
@@ -38,6 +39,8 @@ NEDC=nedc.exe
 # Compiler optimization switches. First one is for debug, second one for release
 CFLAGS=/nologo /MLd /W3 /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /GZ
 
+LDFLAGS=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
+
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
 
@@ -49,18 +52,11 @@ OMNETPP_GNED_DIR=d:/work/omnetpp/src/gned
 OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
 
 #
-# Here you may help 'configure' to determine which compile switches (e.g. -Ixxx)
-# and which linker switches (e.g. -Lxxx -ltk80 -ltcl80 -lX11) are needed
-# to build an app with PVM, Tcl/Tk or Turbo Vision.
+# Compile switches (e.g. -Ixxx) and linker switches
+# necessary to build an app with PVM or Tcl/Tk.
 #
-# Normally these settings are autodetected by 'configure', so you only need to
-# edit here if autodetection doesn't work.
-#
-# If you set TK_CFLAGS here, remember to include -fwritable-strings (or the
-# equivalent switch for your compiler).
-#
-TK_CFLAGS=/I "d:/tcl/tcl8.2.1/generic" /I "d:/tcl/tk8.2.1/generic" /I "d:/tcl/tk8.2.1/xlib"
-TK_LIBS=
+TK_CFLAGS=/I "d:/tcl/tcl/include"
+TK_LIBS=tcl82.lib tk82.lib /libpath:"d:/tcl/tcl/lib"
 PVM_INCL_DIR=
 PVM_LIBS=
 SYS_LIBS=
@@ -83,4 +79,5 @@ GNED_IF_POSSIBLE=gned
 #
 TKENV_EMBED_SUFFIX=
 GNED_EMBED_SUFFIX=
+
 

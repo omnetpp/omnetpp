@@ -29,7 +29,8 @@ components: libs progs install-local samples
 #
 #=====================================================================
 
-LIBS=sim envir cmdenv tkenv tvenv
+LIBS=sim envir cmdenv tkenv
+# tvenv removed
 PROGS=utils nedc gned plove
 SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo
 
@@ -73,7 +74,7 @@ gned:
 	cd /d $(OMNETPP_SRC_DIR:/=\)\gned && $(MAKE) $(MAKEFILE)
 
 plove:
-	@ # needs no build
+	@ rem needs no build
 
 utils:
 	cd /d $(OMNETPP_SRC_DIR:/=\)\utils &&  $(MAKE) $(MAKEFILE)

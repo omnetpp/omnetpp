@@ -19,7 +19,7 @@ depend:
 clean:
 	del *.obj seedtool.exe tcl2c.exe
 
-install-local: seedtool
+install-local: seedtool.exe
 	copy seedtool.exe $(OMNETPP_BIN_DIR:/=\)
 	@rem (dir=`pwd`;cd $(OMNETPP_BIN_DIR);del makemake;ln -s $$dir/makemake .)
 	@rem (dir=`pwd`;cd $(OMNETPP_BIN_DIR);del splitvec;ln -s $$dir/splitvec .)
