@@ -3,9 +3,14 @@ Upgrading your sources from OMNeT++ 2.0b2 or earlier to 2.0b3
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Jan 18, 2000
 
-There were some incompatible changes in the simulation library.
-See src/sim/ChangeLog for more info about them (rationale, details...)
-Read on to learn what you should do to upgrade your code...
+In OMNeT++ 2.0b3, some changes were made to the simulation library which
+are not compatible with previous versions. These changes are believed to
+improve the quality of the simulation library, and I apologize for the 
+inconvenience...
+
+You can check src/sim/ChangeLog for more explanation on these changes;
+otherwise, just read on to learn what you should do to upgrade your existing
+code.
 
 Find/replace (case sensitive, whole words only):
   isA --> className  (cObject method)
@@ -57,7 +62,5 @@ cArray functions now take and return cObject _pointers_ instead of references.
 Remember to re-generate the *_n.cc files from the .ned files!
   Type make clean; make ...
 
-
-Apologies for the API changes...
 
 --Andras

@@ -29,8 +29,10 @@ You'll probably need to correct the paths in the following lines:
   OMNETPP_ROOT=c:\omnetpp-2.0
   TK_INCL_DIR=c:\tcl\include
   TK_LIB_DIR=c:\tcl\lib
-and maybe also the .lib file names in the definition of TK_LIBS a few lines
-further below.
+and maybe also the file names in the definition a few lines further below:
+  WISH=$(TK_LIB_DIR)/../bin/wish82.exe
+  ...
+  TK_LIBS=tcl82.lib tk82.lib /libpath:"$(TK_LIB_DIR)"
 
 Then type
     nmake -f Makefile.vc
