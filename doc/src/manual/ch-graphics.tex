@@ -176,25 +176,6 @@ with the \ttt{"i=\textit{<iconname>}\_\textit{<size>}"} notation.}\\\hline
 
 \end{longtable}
 
-%-----
-%       * main.tcl, modinsp2.tcl: created display string tag for icon size:
-%       "is=" (can be "vl", "l", "n", "s", "vs" for very large, large, normal,
-%       small, very small). Similarly, tag "is2=" sets size of auxiliary icon
-%       ("i2=" tag). The underscore notation ("i=penguin_s") also still exists.
-%-----
-%       * main.tcl, modinsp2.tcl: preparations for new icons, categorized into
-%       several subdirs under bitmaps/. Current icons will be moved to
-%       into the bitmaps/old subdirectory.
-%
-%       Tkenv now loads icons from subdirectories of dirs in OMNETPP_BITMAP-
-%       _PATH as well, and they can be referenced from display strings like
-%       "subdir/icon", "subdir/subsubdir/icon" , etc. If an icon "icon" in
-%       a display string is not found, it is tried as "old/icon" as well.
-%-----
-%        * modinsp2.tcl: "t=" tag: center text by default
-%-----
-
-
 Examples:
 
 \begin{verbatim}
@@ -290,6 +271,79 @@ Examples:
 \begin{verbatim}
   "m=a;o=blue,3"
 \end{verbatim}
+
+
+\subsection{Message display strings}
+
+Message objects do not store a display string by default, but you can redefine
+the \cclass{cMessage}'s \fname{displayString()} method and make it return
+one.
+
+\begin{verbatim}
+const char *CustomPacket::displayString() const
+{
+    return "i=msg/packet_vs";
+}
+\end{verbatim}
+
+This display string affects how messages are shown during animation.
+By default, they are displayed as a small filled circle, in one of
+8 basic colors (the color is determined as \textit{message kind modulo 8}),
+and with the message class and/or name displayed under it
+The latter is configurable in the Tkenv Options dialog, and message kind
+dependent coloring can also be turned off there.
+
+The following tags can be used in message display strings:
+
+\begin{longtable}{|p{6cm}|p{8cm}|}
+\hline
+% ROW 1
+\tabheadcol
+\tbf{Tag} & \tbf{Meaning} \\\hline
+% ROW 2
+\tbf{b=}\textit{width},\textit{height},\tbf{oval}
+&
+{\raggedright Ellipse with the given \textit{height} and \textit{width}.
+
+Defaults: \textit{width}=10, \textit{height}=10}\\\hline
+% ROW 3
+\tbf{b=}\textit{width},\textit{height},\tbf{rect}
+&
+{\raggedright Rectangle with the given \textit{height} and \textit{width}.
+
+Defaults: \textit{width}=10, \textit{height}=10}\\\hline
+% ROW 4
+\tbf{o=}\textit{fillcolor},\textit{outlinecolor},\textit{borderwidth}
+&
+{\raggedright Specifies options for the rectangle or oval. Any valid Tk color
+specification is accepted: English color names or \textit{\#rgb}, \textit{\#rrggbb}
+format (where \textit{r},\textit{g},\textit{b} are hex digits).
+
+Defaults: \textit{fillcolor}=red, \textit{outlinecolor}=black,
+\textit{borderwidth}=1}\\\hline
+% ROW 5
+\tbf{i=}\textit{iconname},\textit{color},\textit{percentage}
+&
+{\raggedright Use the named icon. It can be colorized, and percentage
+specifies the amount of colorization. If color name is \ttt{"kind"},
+a message kind dependent colors is used (like default behaviour).
+
+Defaults: \textit{iconname}: no default -- if no icon name is present, a small
+red solid circle will be used;
+\textit{color}: no coloring; \textit{percentage}: 30\%}\\\hline
+
+\end{longtable}
+
+Examples:
+
+\begin{verbatim}
+   "i=penguin"
+\end{verbatim}
+
+\begin{verbatim}
+   "b=15,15,rect;o=white,kind,5"
+\end{verbatim}
+
 
 %FIXME more examples
 
