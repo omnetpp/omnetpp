@@ -520,15 +520,38 @@ OMNeT++ models, without any model change or recompilation.
 
 \subsection{Automatic seed selection}
 
-If you decide for automatic seed selection\index{seed!automatic selection},
-do not specify any seed value in the ini file. For the
-random number generators, {\opp} will automatically select seeds that
-are 1,000,000 values apart in the sequence. If you have several runs,
-each run is started with a fresh set of seeds that are 1,000,000
-values apart from the seeds used for previous runs. Since the
-generation of new seed values is costly, {\opp} has a table of
-pre-calculated seeds (256 values); if they are all used up, {\opp}
-starts from the beginning of the table again.
+Automatic seed selection gets used for an RNG if you don't explicitly
+specify seeds in omnetpp.ini. Automatic and manual seed selection can
+co-exist: for a particular simulation, some RNGs can be configured
+manually, and some automatically.
+
+The automatic seed selection mechanism uses two inputs: the \textit{run number}
+(i.e. the number in the \ttt{[Run 1]}, \ttt{[Run 2]}, etc. section names),
+and the \textit{RNG number}. For the same the run number and RNG number,
+{\opp} always selects the same seed value for any simulation model.
+If the run number or the RNG number is different, {\opp} does its best
+to choose different seeds which are also sufficiently apart in the RNG's sequence
+so that the generated sequences don't overlap.
+
+For the \ttt{cMersenneTwister} random number generator, fullfilling the latter
+condition is easy, due to the extreme long sequence of the RNG.
+The RNG is initialized from the 32-bit seed value $seed = runNumber*numRngs + rngNumber$.
+(This implies that simulation runs participating in the study should have
+the same number of RNGs set).
+    \footnote{While (to our knowledge) no one has proven that the seeds 0,1,2,...
+    are well apart in the sequence, this is probably true, due to the extremely
+    long sequence of MT. The author would however be interested in papers
+    published about seed selection for MT.}
+
+For the \ttt{cLCG32} random number generator, the situation is more difficult,
+because the range of this RNG is rather short ($2^31-1$, about 2 billion).
+For this RNG, {\opp} uses a table of 256 pre-generated seeds, equally spaced
+in the RNG's sequence. Index into the table is calculated with the
+$runNumber*numRngs + rngNumber$ formula. Care should be taken that
+one doesn't exceed 256 with the index, or it will wrap and the
+same seeds will be used again. It is best not to use the \ttt{cLCG32}
+at all -- \ttt{cMersenneTwister} is superior in every respect.
+
 
 \subsection{Manual seed configuration}
 
