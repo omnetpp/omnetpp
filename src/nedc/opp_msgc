@@ -127,6 +127,7 @@ print CC "#endif\n\n";
 print CC "#include <iostream>\n";
 print CC "#include <sstream>\n";
 print CC "#include \"$hfile\"\n\n";
+print CC "#include <ccommbuffer.h>\n\n";
 
 print CC "// Template rule which fires if a struct or class doesn't have operator<<\n";
 print CC "template<typename T>\n";
