@@ -166,13 +166,14 @@ const char *cModule::fullPath(char *buffer, int bufsize) const
     return buffer;
 }
 
-void cModule::addGate(const char *gname, char tp)
+cGate *cModule::addGate(const char *gname, char tp)
 {
     if (findGate(gname)>=0)
        throw new cException(this, "addGate(): Gate %s.%s already present", fullPath(), gname);
 
      cGate *newg = new cGate( gname, tp );
      newg->setOwnerModule(this, gatev.add( newg ));
+     return newg;
 }
 
 void cModule::setGateSize(const char *gname, int size)
@@ -212,7 +213,7 @@ void cModule::setGateSize(const char *gname, int size)
     }
 }
 
-void cModule::addPar(const char *pname)
+cPar *cModule::addPar(const char *pname)
 {
     int i = findPar(pname);
     if (i!=-1)
@@ -222,6 +223,7 @@ void cModule::addPar(const char *pname)
     cModulePar *p = (cModulePar *) &par(i);
     p->setOwnerModule( this );
     p->setInput( true );
+    return p;
 }
 
 bool cModule::checkInternalConnections() const

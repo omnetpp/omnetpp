@@ -1,3 +1,8 @@
+2003-06-14  Andras Varga
+
+	* cmodule.cc: cModule's addGate(), addPar() return type changed from
+	void to cGate*/cPar*.
+
 2003-04-15  Andras Varga
 
 	* csimplemodule.cc: fixed bug introduced in 2.3b1 in deleteModule() 

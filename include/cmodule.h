@@ -297,7 +297,7 @@ class SIM_API cModule : public cObject
      * Adds a gate. The type character tp can be <tt>'I'</tt> or <tt>'O'</tt> for input
      * and output, respectively.
      */
-    void addGate(const char *s, char tp);
+    cGate *addGate(const char *s, char tp);
 
     /**
      * Sets gate vector size.
@@ -307,7 +307,7 @@ class SIM_API cModule : public cObject
     /**
      * Adds a parameter to the module.
      */
-    void addPar(const char *s);
+    cPar *addPar(const char *s);
 
     /**
      * Adds a machine parameter to the module.

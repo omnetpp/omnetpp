@@ -1,3 +1,8 @@
+2003-06-14  Andras Varga
+
+	* cmodule.h: cModule's addGate(), addPar() return type changed from
+	void to cGate*/cPar*.
+
 2003-05-29  Andras Varga
 
 	* cfsm.h: FSM_Print(): improved output
