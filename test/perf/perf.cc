@@ -55,6 +55,40 @@ void Queue_1::finish()
     ev << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
 }
 
+//---------------
+
+class SelectNextModule_1 : public cSimpleModule
+{
+  protected:
+    int repCount;
+    Timer tmr;
+  public:
+    Module_Class_Members(SelectNextModule_1,cSimpleModule,32768);
+    virtual void activity();
+    virtual void finish();
+};
+
+Define_Module(SelectNextModule_1);
+
+void SelectNextModule_1::activity()
+{
+    cQueue q;
+    repCount = par("repCount");
+
+    q.insert(new cMessage());
+
+    tmr.start();
+    for (int i=0; i<repCount; i++)
+    {
+        simulation.selectNextModule();
+    }
+    tmr.stop();
+}
+
+void SelectNextModule_1::finish()
+{
+    ev << "T=" << 1000000*tmr.get()/repCount << " us per cycle\n";
+}
 
 //---------------
 
@@ -83,7 +117,7 @@ void Schedule_1::initialize()
 
 void Schedule_1::handleMessage(cMessage *msg)
 {
-    if (--count)
+    if (--count>0)
         scheduleAt(0.0, msg);
 }
 

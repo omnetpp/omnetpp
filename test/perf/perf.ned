@@ -9,6 +9,15 @@ network queue_1 : Queue_1
 endnetwork
 
 
+simple SelectNextModule_1
+    parameters:
+        repCount: numeric;
+endsimple
+
+network selectNextModule_1 : SelectNextModule_1
+endnetwork
+
+
 simple Schedule_1
     parameters:
         repCount: numeric;
