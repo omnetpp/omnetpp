@@ -137,6 +137,6 @@ htmlfile_spec := $BASE.html
 :b/e	:\begin{equation}:<blockquote>:</blockquote>:
 :b/e	:\begin{Verbatim}(\[.*?\])?:<pre>:</pre>:
 :b/e	:\begin{sloppypar}:<p>:</p>:
-:b/e	:\begin{thebibliography}(\{.*?\})?:<H1>Bibliography</H1>::
+:b/e	:\begin{thebibliography}(\{.*?\})?:<H1>References</H1>::
 
 
