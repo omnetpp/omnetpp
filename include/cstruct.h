@@ -22,7 +22,7 @@
 #define __CSTRUCT_H
 
 #include "cobject.h"
-
+#include "cenum.h"
 class sFieldWrapper;
 
 
