@@ -1130,27 +1130,30 @@ size of a vector gate\index{gate!vector}. The \fname{index}
 operator\index{ned!index operator} gives the index of the current
 submodule in its module vector.
 
-An example for both:
+The following example describes a router with several ports and one routing unit.
+We assume that gate vectors \ttt{in[]} and \ttt{out[]} have the same size.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\tbf{module} Compound
-    \tbf{gates}: \tbf{in}: fromgens[];
+\tbf{module} Router
+    \tbf{gates}:
+        \tbf{in}: in[];
+        \tbf{out}: out[];
     \tbf{submodules}:
-        proc: Processor[ \tbf{sizeof}(fromgens) ];
-            \tbf{parameters}: address = 10*(1+\tbf{index});
+        port: PPPInterface[\tbf{sizeof}(in)]; // one PPP for each input gate
+            \tbf{parameters}: interfaceId = 1+\tbf{index}; // 1,2,3...
+        routing: RoutingUnit;
+            \tbf{gatesizes}:
+                in[\tbf{sizeof}(in)];  // one gate pair for each port
+                out[\tbf{sizeof}(in)];
     \tbf{connections}:
-        \tbf{for} i = 0.. \tbf{sizeof}(fromgens)-1 \tbf{do}
-            in[i] --> proc[i].input;
+        \tbf{for} i = 0..\tbf{sizeof}(in)-1 \tbf{do}
+            in[i] --> port[i].in;
+            out[i] <-- port[i].out;
+            port[i].out --> routing.in[i];
+            port[i].in <-- routing.out[i];
         \tbf{endfor};
 \tbf{endmodule}
 \end{Verbatim}
-
-
-Here, we create as many processors as there are input gates for
-this compound module in the network. The address parameters of
-the processors are 10, 20, 30 etc.
-
-
 
 
 \subsection{Functions}
