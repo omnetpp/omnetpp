@@ -4,6 +4,24 @@
 
 	* index.h: cOutVector doc moved from group 'SimSupport' to 'Statistics'
 
+	* cmodule.h: new method waitAndEnqueue() added to cSimpleModule.
+
+	* cmodule.h: putAsideQueue was DEPRECATED. putAsideQueue is currently 
+	used implicitly by the methods wait(), receiveOn() and receiveNewOn()
+	to insert messages that arrive during the wait period or not on the 
+	specified gate. The receive() functions look first on the 
+	putAsideQueue and only then at the future events.
+
+	As practice has shown, the purpose of the putAsideQueue was very
+	often misunderstood, and its implicit use by wait() and the message
+	receiving functions was highly error-prone. On the other hand,
+	it is easy to emulate with waitAndEnqueue(), or a loop with receive(). 
+	putAsideQueue will be removed at some point in the future. 
+	Be prepared: use wait() and receiveOn()	if you do not expect other 
+	messages to arrive at the module; use waitAndEnqueue() where you 
+	mean it; do not use the receiveNew..() functions as they will be made 
+	redundant when putAsideQueue goes away.
+
 2003-01-07  Andras Varga
 
 	* cenvir.h: added ev.flush()
@@ -27,8 +45,8 @@
 
 2002-12-02  Andras Varga
 
-	* cmessage.h: added convenience methods: addObject(), getObject(), 
-	hasObject(), removeObject(). Refined related documentation and 
+	* cmessage.h: added convenience methods: addObject(), getObject(),
+	hasObject(), removeObject(). Refined related documentation and
 	added hint to message subclassing to class description.
 
 2002-11-03  Andras Varga

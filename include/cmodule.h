@@ -696,6 +696,25 @@ class SIM_API cSimpleModule : public cModule
 
   public:
     cHead locals;           // list of local variables of module function
+
+    /**
+     * DEPRECATED. putAsideQueue will be removed at some point in the
+     * future, and this will affect the message receiving functions.
+     * Details below.
+     *
+     * putAsideQueue is used implicitly by the methods wait(), receiveOn()
+     * and receiveNewOn() to insert messages that arrive during the wait
+     * period or not on the specified gate. The receive() functions
+     * looked first on the putAsideQueue and only then at the future events.
+     *
+     * As practice has shown, the purpose of the putAsideQueue was very
+     * often misunderstood, and its implicit use by wait() and the message
+     * receiving functions was highly error-prone. It will be removed
+     * at some point in the future. Be prepared: use wait() and receiveOn()
+     * if you do not expect other messages to arrive at the module;
+     * use waitAndEnqueue() where you mean it; do not use the receiveNew..()
+     * functions as they will be made redundant when putAsideQueue goes away.
+     */
     cQueue putAsideQueue;   // put-aside queue
 
   protected:
@@ -832,7 +851,7 @@ class SIM_API cSimpleModule : public cModule
 
     /**
      * DEPRECATED.
-     * Sets the phase string which can be displayed as some kind of status. 
+     * Sets the phase string which can be displayed as some kind of status.
      * The module creates its own copy of the string.
      */
     void setPhase(const char *phase)  {phasestr=phase;}
@@ -946,7 +965,7 @@ class SIM_API cSimpleModule : public cModule
     int scheduleAt(simtime_t t, cMessage *msg);
 
     /**
-     * Removes the given message from the message queue. The message
+     * Removes the given message from the future events. The message
      * needs to have been sent using the scheduleAt() function.
      * This function can be used to cancel a timer implemented with scheduleAt().
      */
@@ -989,6 +1008,8 @@ class SIM_API cSimpleModule : public cModule
     //@{
 
     /**
+     * DEPRECATED.
+     *
      * Tells if the next message in the event queue is for the same module
      * and has the same arrival time. (Returns true only if
      * two or more messages arrived to the module at the same time.)
@@ -1016,6 +1037,19 @@ class SIM_API cSimpleModule : public cModule
      * to return a message from the event queue with the given timeout.
      * Note that the arrival time of the message returned by receive()
      * can be earlier than the current simulation time.
+     *
+     * <b>IMPORTANT</b>: The put-aside queue has been deprecated,
+     * and the semantics of this function will be changed in the future.
+     * It will be intended for use only if you do not expect other messages
+     * to arrive at the module on other gates than the specified one.
+     * To assert this, it will throw an exception if an inappropriate message
+     * arrives, as it will probably signal a logic error in the model.
+     * On the other hand, if you <i>do</i> expect to receive other messages
+     * during the call, you should not use receiveOn() but implement
+     * similar functionality using a loop (for() or while()) and receive(),
+     * which will make your intent more conspicuous to the reader of your
+     * source code.
+     * See the API-doc on putAsideQueue for more explanation.
      */
     cMessage *receiveOn(const char *gatename, int sn=-1, simtime_t timeout=MAXTIME);
 
@@ -1024,12 +1058,31 @@ class SIM_API cSimpleModule : public cModule
      * with its index in the gate array. Using this function instead
      * the previous one may speed up the simulation if the function is
      * called frequently.
+     *
+     * <b>IMPORTANT</b>: The put-aside queue has been deprecated,
+     * and the semantics of this function will be changed in the future.
+     * It will be intended for use only if you do not expect other messages
+     * to arrive at the module on other gates than the specified one.
+     * To assert this, it will throw an exception if an inappropriate message
+     * arrives, as it will probably signal a logic error in the model.
+     * On the other hand, if you <i>do</i> expect to receive other messages
+     * during the call, you should not use receiveOn() but implement
+     * similar functionality using a loop (for() or while()) and receive(),
+     * which will make your intent more conspicuous to the reader of your
+     * source code.
+     * See the API-doc on putAsideQueue for more explanation.
      */
     cMessage *receiveOn(int gateid, simtime_t timeout=MAXTIME);
 
     /**
      * Remove the next message from the event queue and return a pointer
      * to it. Ignores put-aside queue.
+     *
+     * <b>IMPORTANT</b>: This function should not be used. As putAsideQueue is
+     * deprecated, it will be removed at some point in the future.
+     * This means that then the receive() method will act exactly as this one,
+     * and this method will no longer be needed.
+     * See the API-doc on putAsideQueue, wait() and waitAndEnqueue() for more explanation.
      */
     cMessage *receiveNew();
 
@@ -1039,6 +1092,12 @@ class SIM_API cSimpleModule : public cModule
      * queue, the function waits with t timeout until a message will be
      * available. If the timeout expires and there is still no message
      * in the queue, the function returns NULL.
+     *
+     * <b>IMPORTANT</b>: This function should not be used. As putAsideQueue is
+     * deprecated, it will be removed at some point in the future.
+     * This means that then the receive() method will act exactly as this one,
+     * and this method will no longer be needed.
+     * See the API-doc on putAsideQueue, wait() and waitAndEnqueue() for more explanation.
      */
     cMessage *receiveNew(simtime_t timeout);
 
@@ -1052,6 +1111,12 @@ class SIM_API cSimpleModule : public cModule
      * In order to process messages that may have been put in the put-aside
      * queue, the user is expected to call receive() or receiveOn(),
      * or to examine the put-aside queue directly sometime.
+     *
+     * <b>IMPORTANT</b>: This function should not be used. As putAsideQueue is
+     * deprecated, it will be removed at some point in the future.
+     * This means that then the receiveOn() method will act exactly as this one,
+     * and this method will no longer be needed.
+     * See the API-doc on putAsideQueue, wait() and waitAndEnqueue() for more explanation.
      */
     cMessage *receiveNewOn(const char *gatename, int sn=-1, simtime_t timeout=MAXTIME);
 
@@ -1060,6 +1125,12 @@ class SIM_API cSimpleModule : public cModule
      * with its index in the gate array. Using this function instead
      * the previous one may speed up the simulation if the function is
      * called frequently.
+     *
+     * <b>IMPORTANT</b>: This function should not be used. As putAsideQueue is
+     * deprecated, it will be removed at some point in the future.
+     * This means that then the receiveOn() method will act exactly as this one,
+     * and this method will no longer be needed.
+     * See the API-doc on putAsideQueue, wait() and waitAndEnqueue() for more explanation.
      */
     cMessage *receiveNewOn(int gateid, simtime_t timeout=MAXTIME);
     //@}
@@ -1069,11 +1140,36 @@ class SIM_API cSimpleModule : public cModule
 
     /**
      * Waits for the given interval. (Some other simulators call this
-     * functionality hold()). This function can only be used with
-     * activity(), but not with handleMessage(). The messages received
-     * meanwhile are inserted into the put-aside queue.
+     * functionality hold()). The messages received meanwhile are inserted
+     * into the put-aside queue, but if you expect to receive messages
+     * during the call, you should use the waitAndEnqueue() method
+     * instead (see the following note).
+     *
+     * This function can only be used with activity(), but not with
+     * handleMessage().
+     *
+     * <b>IMPORTANT</b>: The put-aside queue has been deprecated,
+     * and the semantics of this function will be changed in the future.
+     * It will be intended for use only if you do not expect other messages
+     * to arrive at the module during the wait period. To assert this,
+     * it will throw an exception if a message arrives during the wait,
+     * as it will probably signal a logic error in the model.
+     * On the other hand, if you <i>do</i> expect to receive messages
+     * during the call, you should use waitAndEnqueue(), which makes
+     * this assumption much more conspicuous to the reader of your source
+     * code than the old wait() method with its implicit putAsideQueue
+     * would. See the API-doc on putAsideQueue for more explanation.
      */
     void wait(simtime_t time);
+
+    /**
+     * Waits for the given interval. The messages received during the wait
+     * period are inserted into the queue passed as argument.
+     *
+     * This function can only be used with activity(), but not with
+     * handleMessage().
+     */
+    void waitAndEnqueue(simtime_t time, cQueue *queue);
     //@}
 
     /** @name Stopping the module or the simulation. */
