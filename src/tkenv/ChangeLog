@@ -2,6 +2,9 @@
 
 	* added "Finish" to main toolbar
 
+	* known bug: if one sets up the Token Ring sample with 120 nodes
+	(other numbers work as well), displayed ring will be broken at places.
+
 2003-01-23  Andras Varga
 
 	* "Step" button in module inspectors replaced with 3 buttons ("Run 
