@@ -177,7 +177,7 @@ LIBXML_LIBS="-lxml2 -liconv"
 
 # for Akaroa
 AKAROA_CFLAGS=
-AKAROA_LIBS="-lakaroa"
+AKAROA_LIBS="-lakaroa -lfl"
 
 
 #----------------------
@@ -187,6 +187,13 @@ AC_MSG_NOTICE(-----------------------------------------------)
 AC_MSG_NOTICE(reading configure.user for your custom settings)
 AC_MSG_NOTICE(-----------------------------------------------)
 . ./configure.user
+
+#----------------------
+# check Cygwin
+#----------------------
+if test "$WITH_PARSIM" = "yes" -a "$cygwin" = "yes"; then
+   AC_MSG_ERROR([WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!])
+fi
 
 #----------------------
 # set arch specific flags
@@ -300,7 +307,7 @@ if test "$WISH" = nope -a ! "$EMBED_TCL_CODE" = yes; then
 fi
 
 #----------------------
-# Check for Tcl/Tk (version 8.4 required).
+# Check for Tcl/Tk.
 #----------------------
 OPP_CHECK_LIB(Tcl/Tk, tk.h, Tk_MainLoop(), $TK_CFLAGS, $TK_LIBS, tcltk_ok)
 if test $tcltk_ok = no; then
@@ -329,6 +336,26 @@ fi
 if test $tcltk_ok = no -a "$cygwin" = yes; then
     OPP_CHECK_LIB(Tcl/Tk 8.4, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk84 -lcygtcl84,
                   tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk84 -lcygtcl84")
+fi
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk 8.3, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk83 -ltcl83,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk83 -ltcl83")
+fi
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk 8.3, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.3 -ltcl8.3,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.3 -ltcl8.3")
+fi
+if test $tcltk_ok = no -a "$cygwin" = yes; then
+    OPP_CHECK_LIB(Tcl/Tk 8.3, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -lcygtk83 -lcygtcl83,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -lcygtk83 -lcygtcl83")
+fi
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk 8.2, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk82 -ltcl82,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk82 -ltcl82")
+fi
+if test $tcltk_ok = no; then
+    OPP_CHECK_LIB(Tcl/Tk 8.2, tk.h, Tk_MainLoop(), $opp_x11inc $TK_CFLAGS, $opp_x11lib -ltk8.2 -ltcl8.2,
+                  tcltk_ok, TK_LIBS="$opp_x11lib -ltk8.2 -ltcl8.2")
 fi
 if test $tcltk_ok = yes; then
     TKENV_IF_POSSIBLE=tkenv

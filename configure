@@ -2677,7 +2677,7 @@ LIBXML_LIBS="-lxml2 -liconv"
 
 # for Akaroa
 AKAROA_CFLAGS=
-AKAROA_LIBS="-lakaroa"
+AKAROA_LIBS="-lakaroa -lfl"
 
 
 #----------------------
@@ -2690,6 +2690,15 @@ echo "$as_me: reading configure.user for your custom settings" >&6;}
 { echo "$as_me:$LINENO: -----------------------------------------------" >&5
 echo "$as_me: -----------------------------------------------" >&6;}
 . ./configure.user
+
+#----------------------
+# check Cygwin
+#----------------------
+if test "$WITH_PARSIM" = "yes" -a "$cygwin" = "yes"; then
+   { { echo "$as_me:$LINENO: error: WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!" >&5
+echo "$as_me: error: WITH_PARSIM=yes not supported with Cygwin -- please edit configure.user!" >&2;}
+   { (exit 1); exit 1; }; }
+fi
 
 #----------------------
 # set arch specific flags
