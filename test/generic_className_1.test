@@ -1,0 +1,70 @@
+%name: generic_className_1
+
+%description:
+Test the className() methods of several classes.
+
+The following classes cannot be tested because they're abstract (instantiation
+not possible) or internally used classes:
+
+cDensityEstBase, cTransientDetection, cAccuracyDetection, cGate, cHistogramBase,
+cEqdHistogramBase, cModule, cSimpleModule, cCompoundModule, cNetMod, cSimulation,
+cStatistic, cModuleInterface, cModuleType, cLinkType, cNetworkType, cFunctionType,
+cClassRegister, cInspectorFactory, cWatch
+
+%source:
+
+#define PRINT_CLASSNAME(T) {T a##T; ev << #T ": " << a##T.className() << endl;}
+
+PRINT_CLASSNAME( cBag )
+PRINT_CLASSNAME( cArray )
+PRINT_CLASSNAME( cTDExpandingWindows )
+PRINT_CLASSNAME( cADByStddev )
+PRINT_CLASSNAME( cFSM )
+PRINT_CLASSNAME( cHead )
+PRINT_CLASSNAME( cLongHistogram )
+PRINT_CLASSNAME( cDoubleHistogram )
+PRINT_CLASSNAME( cKSplit )
+PRINT_CLASSNAME( cLinkedList )
+PRINT_CLASSNAME( cMessage )
+PRINT_CLASSNAME( cMessageHeap )
+PRINT_CLASSNAME( cObject )
+PRINT_CLASSNAME( cOutFileMgr )
+PRINT_CLASSNAME( cOutVector )
+PRINT_CLASSNAME( cPacket )
+PRINT_CLASSNAME( cPar )
+PRINT_CLASSNAME( cModulePar )
+PRINT_CLASSNAME( cPSquare )
+PRINT_CLASSNAME( cQueue )
+PRINT_CLASSNAME( cStdDev )
+PRINT_CLASSNAME( cWeightedStdDev )
+PRINT_CLASSNAME( cTopology )
+PRINT_CLASSNAME( cVarHistogram )
+
+%exitcode: 19
+
+%contains: stdout
+cBag: cBag
+cArray: cArray
+cTDExpandingWindows: cTDExpandingWindows
+cADByStddev: cADByStddev
+cFSM: cFSM
+cHead: cHead
+cLongHistogram: cLongHistogram
+cDoubleHistogram: cDoubleHistogram
+cKSplit: cKSplit
+cLinkedList: cLinkedList
+cMessage: cMessage
+cMessageHeap: cMessageHeap
+cObject: cObject
+cOutFileMgr: cOutFileMgr
+cOutVector: cOutVector
+cPacket: cPacket
+cPar: cPar
+cModulePar: cModulePar
+cPSquare: cPSquare
+cQueue: cQueue
+cStdDev: cStdDev
+cWeightedStdDev: cWeightedStdDev
+cTopology: cTopology
+cVarHistogram: cVarHistogram
+

@@ -1,0 +1,34 @@
+%name: cMessage_properties_1
+
+%description:
+Tests the following properties of cMessage:
+message kind, priority, length, bit error, timestamp, context pointer
+
+%source:
+cMessage msg("msg");
+int dummy;
+
+msg.setKind(10);
+msg.setPriority(3);
+msg.setLength(456);
+msg.setBitError(true);
+msg.setTimestamp(2.434);
+msg.setContextPointer(&dummy);
+
+ev << "kind: " << msg.kind() << endl;
+ev << "priority: " << msg.priority() << endl;
+ev << "length: " << msg.length() << endl;
+ev << "bitError: " << msg.hasBitError() << endl;
+ev << "timestamp: " << msg.timestamp() << endl;
+ev << "contextPointer ok: " << (msg.contextPointer() == &dummy) << endl;
+
+%exitcode: 19
+
+%contains: stdout
+kind: 10
+priority: 3
+length: 456
+bitError: 1
+timestamp: 2.434
+contextPointer ok: 1
+

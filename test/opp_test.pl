@@ -35,25 +35,25 @@ All files will be created in the working directory.
 # templates, variables
 #
 $NEDTemplate = '
-simple @TESTNAME@
+simple @TNAME@
 endsimple
 
-network @TESTNAME@_network : @TESTNAME@
+network @TNAME@_network : @TNAME@
 endnetwork
 ';
 
 $CPPTemplate = '
 #include "omnetpp.h"
 
-class @TESTNAME@ : public cSimpleModule
+class @TNAME@ : public cSimpleModule
 {
-    Module_Class_Members(@TESTNAME@,cSimpleModule,16384)
+    Module_Class_Members(@TNAME@,cSimpleModule,16384)
     virtual void activity();
 };
 
-Define_Module(@TESTNAME@);
+Define_Module(@TNAME@);
 
-void @TESTNAME@::activity()
+void @TNAME@::activity()
 {
 @TESTCODE@
 }
@@ -61,9 +61,9 @@ void @TESTNAME@::activity()
 
 $INITemplate = '
 [General]
-network=@TESTNAME@_network
-output-vector-file = @TESTNAME@.vec
-output-scalar-file = @TESTNAME@.sca
+network=@TNAME@_network
+output-vector-file = @TNAME@.vec
+output-scalar-file = @TNAME@.sca
 ';
 
 
@@ -86,11 +86,10 @@ output-scalar-file = @TESTNAME@.sca
 @filenames = ();
 $mode='';
 $workingdir = 'work';
-
 $shell='/bin/sh';
-$pathsep='/';
-$exesuffix='.exe';
 $testprogram='';
+$verbose=0;
+$debug=0;
 
 if ($#ARGV == -1)
 {
@@ -150,7 +149,15 @@ if (! -d $workingdir) {
     exit(1);
 }
 
+# produce name of test program
 if ($testprogram eq '') {
+
+    if ($ENV{'OS'} =~ /windows/i) {
+      $exesuffix='.exe';
+    } else {
+      $exesuffix='';
+    }
+
     $workingdir =~ /([^\/\\]*)$/;
     $testprogram = $1.$exesuffix;
 }
@@ -160,9 +167,9 @@ if ($testprogram eq '') {
 #
 if ($mode eq 'gen')
 {
-    foreach $filename (@filenames)
+    foreach $testfilename (@filenames)
     {
-        testcase_create($filename);
+        testcase_create($testfilename);
     }
 }
 
@@ -175,9 +182,9 @@ if ($mode eq 'run')
     $num_fail=0;
     $num_unresolved=0;
 
-    foreach $filename (@filenames)
+    foreach $testfilename (@filenames)
     {
-        testcase_run($filename);
+        testcase_run($testfilename);
     }
 
     print "========================================\n";
@@ -186,17 +193,17 @@ if ($mode eq 'run')
 
 sub parse_testfile
 {
-    my $filename = shift;
+    my $testfilename = shift;
 
     undef %bodies;
     undef %values;
     undef %count;
 
-    print "  parsing $filename\n" if ($debug);
+    print "  parsing $testfilename\n" if ($debug);
 
     # read test file
-    if (!open(IN,$filename)) {
-        unresolved($filename,"cannot open test file `$filename'");
+    if (!open(IN,$testfilename)) {
+        unresolved($testfilename,"cannot open test file `$testfilename'");
         return;
     }
     $txt = '';
@@ -229,39 +236,39 @@ sub parse_testfile
         $index = $2;
         $desc = $Entries{$key};
         if ($desc eq '') {
-            unresolved($filename, "error in test file: invalid entry %$key"); return;
+            unresolved($testfilename, "error in test file: invalid entry %$key"); return;
         }
         if ($desc =~ /1/ && $index>1) {
-            unresolved($filename, "error in test file: entry %$key should occur only once."); return;
+            unresolved($testfilename, "error in test file: entry %$key should occur only once."); return;
         }
         if ($desc =~ /v/ && $values{$key_index} =~ /^\s*$/) {
-            unresolved($filename, "error in test file: entry %$key expects value after ':'"); return;
+            unresolved($testfilename, "error in test file: entry %$key expects value after ':'"); return;
         }
         if (!$desc =~ /v/ && !$values{$key_index} =~ /\s*/) {
-            unresolved($filename, "error in test file: entry %$key expects nothing after ':'"); return;
+            unresolved($testfilename, "error in test file: entry %$key expects nothing after ':'"); return;
         }
         if (!$desc =~ /b/ && !$bodies{$key_index} =~ /\s*/) {
-            unresolved($filename, "error in test file: entry %$key expects no body"); return;
+            unresolved($testfilename, "error in test file: entry %$key expects no body"); return;
         }
     }
 
-    # substitute TESTNAME and other macros, kill comments
+    # substitute TNAME and other macros, kill comments
     $testname = $values{'name(1)'};
     foreach $key (keys(%values))
     {
-        $values{$key} =~ s/\@TESTNAME\@/$testname/g;
-        $bodies{$key} =~ s/\@TESTNAME\@/$testname/g;
+        $values{$key} =~ s/\@TNAME\@/$testname/g;
+        $bodies{$key} =~ s/\@TNAME\@/$testname/g;
         $bodies{$key} =~ s/^%#.*?$//mg;
     }
 }
 
 sub testcase_create
 {
-    my $filename = shift;
+    my $testfilename = shift;
 
-    parse_testfile($filename);
+    parse_testfile($testfilename);
 
-    print "  generating files for `$filename':\n" if ($debug);
+    print "  generating files for `$testfilename':\n" if ($debug);
 
     # source files
     foreach $key (keys(%values))
@@ -282,12 +289,12 @@ sub testcase_create
 
         # generate wrapper simple module
         $ned = $NEDTemplate;
-        $ned =~ s/\@TESTNAME\@/$testname/g;
+        $ned =~ s/\@TNAME\@/$testname/g;
         $nedfname = $workingdir."/".$testname.'.ned';
         writefile($nedfname, $ned);
 
         $cpp = $CPPTemplate;
-        $cpp =~ s/\@TESTNAME\@/$testname/g;
+        $cpp =~ s/\@TNAME\@/$testname/g;
         $cpp =~ s/\@TESTCODE\@/$testcode/g;
         $cppfname = $workingdir."/".$testname.'.cc';
         writefile($cppfname, $cpp);
@@ -304,16 +311,16 @@ sub testcase_create
     if ($inifile =~ /^\s*$/s)
     {
         $inifile = $INITemplate;
-        $inifile =~ s/\@TESTNAME\@/$testname/g;
+        $inifile =~ s/\@TNAME\@/$testname/g;
     }
     writefile($inifname, $inifile);
 }
 
 sub testcase_run()
 {
-    my $filename = shift;
+    my $testfilename = shift;
 
-    parse_testfile($filename);
+    parse_testfile($testfilename);
 
     $outfname = $workingdir.'/'.$testname.'.out';
     $errfname = $workingdir.'/'.$testname.'.err';
@@ -352,7 +359,7 @@ sub testcase_run()
     $status = system ("$shell -c 'cd $workingdir && $testprogram -f $inifname' >$outfname 2>$errfname");
     if ($status ne '0') {
         if (256*int($status/256) != $status) {
-            unresolved($filename, "could not execute test program, exit code: $status");
+            unresolved($testfilename, "could not execute test program, exit code: $status");
             return;
         } else {
             $status = $status/256;
@@ -361,10 +368,10 @@ sub testcase_run()
             } elsif ($status == $values{'exitcode(1)'}) {
                 print "  exitcode ok ($status)\n" if ($debug);
             } elsif ($values{'exitcode(1)'} ne '') {
-                fail($filename, "test program returned exit code $status instead of $values{'exitcode(1)'}");
+                fail($testfilename, "test program returned exit code $status instead of $values{'exitcode(1)'}");
                 return;
             } else {
-                fail($filename, "test program returned nonzero exit code: $status");
+                fail($testfilename, "test program returned nonzero exit code: $status");
                 return;
             }
         }
@@ -389,13 +396,14 @@ sub testcase_run()
             print "  checking $infname\n" if ($debug);
 
             if (!open(IN,"$infname")) {
-                fail($filename, "cannot read test case output file `$infname'");
+                fail($testfilename, "cannot read test case output file `$infname'");
                 return;
             }
             $txt = '';
             while (<IN>)
             {
-                $txt.= $_;
+                s/[\r\n]*$//;
+                $txt.= $_."\n";
             }
             close IN;
 
@@ -406,30 +414,29 @@ sub testcase_run()
             # check contains or not-contains
             if ($key =~ /^contains\b/) {
                 if (!($txt =~ /$pattern/m)) {
-                   fail($filename, "$values{$key} fails %contains rule");
-                   # print_file($txt) if ($verbose);
+                   fail($testfilename, "$values{$key} fails %contains rule");
+                   if (length($txt)<=8192) {
+                      print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
+                   } else {
+                      print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K)\n" if ($verbose);
+                   }
                    return;
                 }
             }
             if ($key =~ /^not-contains\b/) {
                 if ($txt =~ /$pattern/m) {
-                   fail($filename, "$values{$key} fails %not-contains rule");
-                   # print_file($txt) if ($verbose);
+                   fail($testfilename, "$values{$key} fails %not-contains rule");
+                   if (length($txt)<=8192) {
+                      print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
+                   } else {
+                      print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K)\n" if ($verbose);
+                   }
                    return;
                 }
             }
         }
     }
-    pass($filename);
-}
-
-sub print_file()
-{
-    my $txt = shift;
-    print "file contents:\n";
-    print "--------\n";
-    print "$txt\n";
-    print "--------\n";
+    pass($testfilename);
 }
 
 sub unresolved()

@@ -1,66 +1,66 @@
 %name: sendDelayed_1
 
 %description:
-Test sendDelayed().
+Basic test for cSimpleModule.sendDelayed().
 
-%file: @TESTNAME@.ned
+%file: @TNAME@.ned
 
-simple @TESTNAME@_Sender
+simple @TNAME@_Sender
   gates:
     out: out;
 endsimple
 
-simple @TESTNAME@_Receiver
+simple @TNAME@_Receiver
   gates:
     in: in;
 endsimple
 
-module @TESTNAME@_Net
+module @TNAME@_Net
   submodules:
-    sender : @TESTNAME@_Sender;
-    receiver : @TESTNAME@_Receiver;
+    sender : @TNAME@_Sender;
+    receiver : @TNAME@_Receiver;
   connections:
     sender.out --> receiver.in;
 endmodule
 
-network @TESTNAME@_net : @TESTNAME@_Net
+network @TNAME@_net : @TNAME@_Net
 endnetwork
 
-%file: @TESTNAME@.cc
+%file: @TNAME@.cc
 
 #include "omnetpp.h"
 
-class @TESTNAME@_Sender : public cSimpleModule
+class @TNAME@_Sender : public cSimpleModule
 {
-    Module_Class_Members(@TESTNAME@_Sender,cSimpleModule,16384)
+    Module_Class_Members(@TNAME@_Sender,cSimpleModule,16384)
     virtual void activity();
 };
 
-class @TESTNAME@_Receiver : public cSimpleModule
+class @TNAME@_Receiver : public cSimpleModule
 {
-    Module_Class_Members(@TESTNAME@_Receiver,cSimpleModule,16384)
+    Module_Class_Members(@TNAME@_Receiver,cSimpleModule,16384)
     virtual void activity();
 };
 
-Define_Module(@TESTNAME@_Sender);
-Define_Module(@TESTNAME@_Receiver);
+Define_Module(@TNAME@_Sender);
+Define_Module(@TNAME@_Receiver);
 
-void @TESTNAME@_Sender::activity()
+void @TNAME@_Sender::activity()
 {
    cMessage *msg = new cMessage();
    sendDelayed(msg, 0.3456, "out");
 }
 
-void @TESTNAME@_Receiver::activity()
+void @TNAME@_Receiver::activity()
 {
    cMessage *msg = receive();
    simtime_t diff = simTime() - msg->timestamp();
    ev << "diff: " << diff << endl;
 }
 
-%inifile: @TESTNAME@.ini
+%inifile: @TNAME@.ini
 [General]
-network=@TESTNAME@_net
+network=@TNAME@_net
 
 %ignore-exitcode: 1
 

@@ -1,0 +1,32 @@
+%name: cMessage_addLength_1
+
+%description:
+Tests cMessage.addLength().
+
+%source:
+cMessage msg("msg");
+
+ev << msg.length() << endl;
+
+msg.addLength(100);
+ev << msg.length() << endl;
+
+msg.addLength(50);
+ev << msg.length() << endl;
+
+msg.addLength(-10);
+ev << msg.length() << endl;
+
+msg.addLength(-300);
+ev << msg.length() << endl;
+
+%ignore-exitcode: 1
+
+%contains: stdout
+1
+101
+151
+141
+<!> Error .*length became negative
+
+
