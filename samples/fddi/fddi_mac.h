@@ -106,7 +106,7 @@ class FDDI_MAC : public cSimpleModule // Media Access Control sublayer for FDDI
 
   public:
   FDDI_MAC(const char *namestr, cModule *parentmod);
-  virtual const char *className()  {return "FDDI_MAC";}
+  virtual const char *className() const {return "FDDI_MAC";}
   };
 
 class FDDI_MAC4Ring : public FDDI_MAC
@@ -124,7 +124,7 @@ class FDDI_MAC4Sniffer : public FDDI_MAC
   public:
   FDDI_MAC4Sniffer(const char *namestr, cModule *parentmod):
     FDDI_MAC(namestr, parentmod) { }
-  virtual const char *className()  {return "FDDI_MAC4Sniffer";}
+  virtual const char *className() const {return "FDDI_MAC4Sniffer";}
   };
 
 #endif
