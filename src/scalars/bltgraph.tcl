@@ -11,8 +11,6 @@
 #----------------------------------------------------------------#
 
 
-#FIXME add "close" icon to plove incons in _icons!!!!!
-
 set graphnumber 0
 
 proc createBltGraph {graphtype {graphname ""}} {
@@ -118,10 +116,11 @@ proc createBltGraphPopup {} {
     foreach i {
       {command -label {Zoom out} -underline 0 -command bltGraph_ZoomOut}
       {separator}
-      {command -label {Titles...} -underline 0    -command {bltGraph_Properties titles} }
+      {command -label {Title...} -underline 0    -command {bltGraph_Properties titles} }
       {command -label {Axes...} -underline 0      -command {bltGraph_Properties axes} }
       {command -label {Gridlines...} -underline 0 -command {bltGraph_Properties gridlines} }
       {command -label {Lines...} -underline 0     -command {bltGraph_Properties lines} }
+      {command -label {Bars...} -underline 0     -command {bltGraph_Properties bars} }
       {command -label {Legend...} -underline 1    -command {bltGraph_Properties legend} }
       {separator}
       {command -label {Copy to clipboard} -underline 0  -command bltGraph_Copy}
@@ -253,9 +252,43 @@ proc bltGraph_Properties {{what ""}} {
 #FIXME to some better place
 set tmp(graphprops-last-open-tab) 0
 
-proc bltGraph_PropertiesDialog {graph {what ""}} {
+proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     global tmp
 
+    # fill dialog with data
+    # this must be done before widget creations, otherwise combo doesn't obey the settings
+    set tmp(graphtitle) [$graph cget -title]
+    set tmp(titlefont) [$graph cget -font]
+
+    set tmp(axisxlabel) [$graph axis cget x -title]
+    set tmp(axisylabel) [$graph axis cget y -title]
+    set tmp(axistitlefont) [$graph axis cget x -titlefont]
+    set tmp(axistickfont) [$graph axis cget x -tickfont]
+    set tmp(axisxrotate) [$graph axis cget x -rotate]
+    set tmp(axisxdiv) [$graph axis cget x -subdivisions]
+    set tmp(axisydiv) [$graph axis cget y -subdivisions]
+
+    if {[$graph element names]=={}} {
+        set tmp(showsymbols) "yes"
+        set tmp(symbolsize)  5
+        set tmp(showlines)   "yes"
+        set tmp(linesmooth)  "linear"
+    } else {
+        set e [lindex [$graph element names] 0]
+        set tmp(showsymbols) [expr [$graph element cget $e -pixels]==0 ? "no" : "yes"]
+        set tmp(symbolsize)  [$graph element cget $e -pixels]
+        if {$tmp(symbolsize)==0} {set tmp(symbolsize) 5}
+        set tmp(showlines)   [expr [$graph element cget $e -linewidth]==0 ? "no" : "yes"]
+        set tmp(linesmooth)  [$graph element cget $e -smooth]
+    }
+
+    set tmp(legendshow) [expr [$graph legend cget -hide]==0]
+    set tmp(legendpos) [$graph legend cget -position]
+    set tmp(legendanchor) [$graph legend cget -anchor]
+    set tmp(legendrelief) [$graph legend cget -relief]
+    set tmp(legendfont) [$graph legend cget -font]
+
+    # create the dialog
     set w .bltwin.graphprops
     createOkCancelDialog $w "Graph Properties"
     wm geometry $w 360x300
@@ -264,14 +297,14 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
     set nb $w.f.nb
     blt::tabnotebook $nb -tearoff no -relief flat
     pack $nb -expand 1 -fill both
-    foreach {tab title} {titles "Title" axes "Axes" gridlines "Gridlines" lines "Lines" legend "Legend"} {
+    foreach {tab title} {titles "Title" axes "Axes" gridlines "Gridlines" lines "Lines" bars "Bars" legend "Legend"} {
         frame $nb.$tab
         set tabs($tab) [$nb insert end -text $title -window $nb.$tab  -fill both]
     }
-    if {$what==""} {
+    if {$tabtoopen==""} {
         $nb select $tmp(graphprops-last-open-tab)
     } else {
-        $nb select $tabs($what)
+        $nb select $tabs($tabtoopen)
     }
 
     # Titles page
@@ -309,16 +342,22 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
     pack $f.display -side top -anchor w -expand 0 -fill x
     #FIXME todo
 
-    # Lines page -- all elements together?
+    # Lines page -- all elements together
+    # only if {[winfo class $graph]=="Graph"} ?
     set f $nb.lines
-    # FIXME this for
-    label-combo $f.elem "Configure line:" [$graph element names]
-    # [$graph element type] would say "bar" or "line"
-    label-combo $f.smooth "Lines between points" {linear step natural quadratic}
-    label-combo $f.symbols "Show symbols" {no yes}
-    pack $f.elem $f.smooth $f.symbols -side top -anchor w -expand 0 -fill x
+    label-combo $f.showsym "Display symbols" {yes no}
+    label-combo $f.symsize "Symbol size" {3 5 7 9 11}
+    label-combo $f.showlin "Connect points" {yes no}
+    label-combo $f.smooth "Line type" {linear step natural}
+    pack $f.showsym $f.symsize $f.showlin $f.smooth -side top -expand 0 -fill x
+    $f.showsym.e configure -textvariable tmp(showsymbols)
+    $f.symsize.e configure -textvariable tmp(symbolsize)
+    $f.showlin.e configure -textvariable tmp(showlines)
     $f.smooth.e configure -textvariable tmp(linesmooth)
-    #FIXME todo
+
+    # Bars page -- all elements together
+    # only if {[winfo class $graph]=="Barchart"} ?
+    set f $nb.bars
 
     # Legend page
     set f $nb.legend
@@ -334,25 +373,6 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
     pack $f.show -side top -anchor w
     pack $f.pos $f.anchor $f.relief $f.font -side top -anchor w -fill x
 
-    # fill dialog with data
-    # FIXME bring this *before* widget creations, because combo doesn't obey settings!
-    set tmp(graphtitle) [$graph cget -title]
-    set tmp(titlefont) [$graph cget -font]
-
-    set tmp(axisxlabel) [$graph axis cget x -title]
-    set tmp(axisylabel) [$graph axis cget y -title]
-    set tmp(axistitlefont) [$graph axis cget x -titlefont]
-    set tmp(axistickfont) [$graph axis cget x -tickfont]
-    set tmp(axisxrotate) [$graph axis cget x -rotate]
-    set tmp(axisxdiv) [$graph axis cget x -subdivisions]
-    set tmp(axisydiv) [$graph axis cget y -subdivisions]
-
-    set tmp(legendshow) [expr [$graph legend cget -hide]==0]
-    set tmp(legendpos) [$graph legend cget -position]
-    set tmp(legendanchor) [$graph legend cget -anchor]
-    set tmp(legendrelief) [$graph legend cget -relief]
-    set tmp(legendfont) [$graph legend cget -font]
-
     # execute dialog
     if {[execOkCancelDialog $w] == 1} {
         $graph config -title $tmp(graphtitle)
@@ -367,6 +387,16 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
         $graph axis config x -rotate $tmp(axisxrotate)
         $graph axis config x -subdivisions $tmp(axisxdiv)
         $graph axis config y -subdivisions $tmp(axisydiv)
+
+        foreach i [$graph element names] {
+            set pixels $tmp(symbolsize)
+            if {$tmp(showsymbols)=="no"} {set pixels 0}
+            $graph element configure $i -pixels $pixels
+            set linewidth 1
+            if {$tmp(showlines)=="no"} {set linewidth 0}
+            $graph element configure $i -linewidth $linewidth
+            $graph element configure $i -smooth $tmp(linesmooth)
+        }
 
         $graph legend config -hide [expr !$tmp(legendshow)]
         $graph legend config -position $tmp(legendpos)
