@@ -37,6 +37,7 @@ class TCmdenvApp : public TOmnetApp
      int opt_helponly;
      opp_string opt_runstoexec;
      unsigned opt_extrastack;
+     opp_string opt_outputfile;
 
      bool opt_expressmode;
      bool opt_autoflush; // all modes
@@ -50,6 +51,9 @@ class TCmdenvApp : public TOmnetApp
      // set to true on SIGINT/SIGTERM signals
      static bool sigint_received;
 
+     // stream to write output to
+     FILE *fout;
+
    public:
      TCmdenvApp(ArgList *args, cIniFile *inifile);
      ~TCmdenvApp();
@@ -57,7 +61,7 @@ class TCmdenvApp : public TOmnetApp
      // redefined virtual funcs:
      virtual void setup();
      virtual int run();
-     //virtual void shutdown();
+     virtual void shutdown();
 
      virtual void messageSent(cMessage *msg, cGate *directToGate);
      virtual void messageDelivered(cMessage *msg);
@@ -72,10 +76,13 @@ class TCmdenvApp : public TOmnetApp
      void simulate();
 
      // redefined I/O functions:
-     //virtual void putmsg(const char *s);
+     virtual void putmsg(const char *s);
      virtual void puts(const char *s);
-     //virtual bool gets(const char *promptstr, char *buf, int len=255);
-     //virtual bool askYesNo(const char *question);
+     virtual void flush();
+     virtual bool gets(const char *promptstr, char *buf, int len=255);
+     virtual int  askYesNo(const char *question);
+
+     virtual bool idle();
 
      virtual unsigned extraStackForEnvir();
 

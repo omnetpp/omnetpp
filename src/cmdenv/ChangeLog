@@ -1,3 +1,14 @@
+FIXME PARSIM-----------------------
+003-04-18  Andras Varga
+
+	* new ini file option: 
+	  output-file=<filename>
+	If present, output will be redirected to the given file. If the 
+	[General]/fname-append-host setting is turned on, the the host
+	name and pid (process id) will be appended to the file name.
+	Particularly useful when a parallel simulation is run from a shared 
+	directory.
+------------------------------~^^^^^^^^^^^
 2003-10-02  Andras Varga
 
 	* cmdenv.cc/h: added new method cEnvir::moduleMethodCalled()

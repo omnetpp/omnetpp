@@ -32,6 +32,7 @@
 
 bool opp_loadlibrary(const char *libname)
 {
+// TBD add extension: .so or .dll
 #if HAVE_DLOPEN
      if (!dlopen(libname,RTLD_NOW))
          throw new cException("Cannot load library '%s': %s",libname,dlerror());

@@ -1,3 +1,35 @@
+FIXME PARSIM stuff:---------------------------
+2003-05-12  Andras Varga
+
+	* speedmtr.cc: changed so that if measurement interval (clocks) or
+	number of events are small, it refuses to give results (ie. returns 
+	all zeroes). I had some weird readings other before that...
+
+2003-04-18  Andras Varga
+
+	* omnetapp.cc: fname-append-host setting now also appends pid (process
+	id) to the file names
+
+2003-03-31  Andras Varga
+
+	* omnetapp.cc/h: parallel simulation ini file options changed.
+	New options, with their default values:
+          [General]
+          scheduler-class="cSequentialScheduler" (only used when par-sim=false)
+          parallel-simulation=false
+          parsim-communications-class="cFileCommunications"
+          parsim-syncronization-class= "cNullMessageProtocol"
+	Old, obsoleted options:
+	  [General]
+	  distributed=...
+	  parallel-system=...
+
+2003-03-23  Andras Varga
+
+	* omnetapp.cc: install scheduler into 'simulation' object on startup --
+	see comments in include/ChangeLog about cScheduler
+-------------------------------------------------------
+
 2003-11-09  Andras Varga
 
 	* omnetapp.cc: added support for dynamic loading of NED files.

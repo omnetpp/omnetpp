@@ -11,9 +11,13 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 # Local definitions
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN)
-OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj slaveapp.obj \
+OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj \
      seeds.obj patmatch.obj platdep.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
+
+!if "$(WITH_PARSIM)"=="yes"
+COPTS= $(COPTS) /I "../sim" /DWITH_PARSIM
+!endif
 
 #
 # Targets
@@ -48,9 +52,6 @@ main.obj : main.cc
 
 omnetapp.obj : omnetapp.cc
 	$(CXX) $(COPTS) /c /Tp omnetapp.cc
-
-slaveapp.obj : slaveapp.cc
-	$(CXX) $(COPTS) /c /Tp slaveapp.cc
 
 seeds.obj : seeds.cc
 	$(CXX) $(COPTS) /c /Tp seeds.cc
@@ -118,8 +119,6 @@ cenvir.obj: cenvir.cc \
   omnetapp.h \
   appreg.h \
   ../../include/cmodule.h \
-  ../../include/cnetmod.h \
-  slaveapp.h \
   speedmtr.h \
   filemgrs.h \
   envdefs.h \
@@ -200,9 +199,10 @@ omnetapp.obj: omnetapp.cc \
   ../../include/ctypes.h \
   ../../include/ccoroutine.h \
   ../../include/csimul.h \
+  ../../include/cscheduler.h \
   ../../include/cpar.h \
-  ../../include/cnetmod.h \
   ../../include/random.h \
+  ../../include/cmodule.h \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \
@@ -215,7 +215,6 @@ omnetapp.obj: omnetapp.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
-  ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h
 patmatch.obj: patmatch.cc \
@@ -242,32 +241,6 @@ seeds.obj: seeds.cc \
   ../../include/util.h \
   ../../include/defs.h \
   ../../include/cpar.h
-slaveapp.obj: slaveapp.cc \
-  slaveapp.h \
-  cinifile.h \
-  ../../include/csimul.h \
-  ../../include/cnetmod.h \
-  appreg.h \
-  envdefs.h \
-  omnetapp.h \
-  ../../include/defs.h \
-  ../../include/carray.h \
-  ../../include/chead.h \
-  ../../include/cenvir.h \
-  ../../include/cexception.h \
-  args.h \
-  ../../include/envirext.h \
-  ../../include/cobject.h \
-  ../../include/util.h \
-  ../../include/cpar.h \
-  ../../include/errmsg.h \
-  ../../include/cmsgheap.h \
-  ../../include/ccoroutine.h \
-  ../../include/coutvect.h \
-  ../../include/cmodule.h \
-  ../../include/cqueue.h \
-  ../../include/cgate.h \
-  ../../include/onstartup.h
 speedmtr.obj: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \

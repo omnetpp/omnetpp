@@ -27,10 +27,17 @@
 #include "ctypes.h"
 #include "ccoroutine.h"
 #include "csimul.h"
+#include "cscheduler.h"
 #include "cpar.h"
-#include "cnetmod.h"
 #include "random.h"
+#include "cmodule.h"
 
+#ifdef WITH_PARSIM
+#include "parsim/cparsimcomm.h"
+#include "parsim/cparsimpartition.h"
+#include "parsim/cparsimsynchr.h"
+#include "parsim/creceivedexception.h"
+#endif
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 
@@ -45,34 +52,72 @@
 #endif
 
 
+// heuristic upper limits for various strings: obj->className(), obj->fullPath(), obj->info()
+#define MAX_CLASSNAME       100
+#define MAX_OBJECTFULLPATH  500
+#define MAX_OBJECTINFO      500
+
+
+// some platform dependency
+#if defined(_WIN32) && !defined(__CYGWIN32__)
+#include <process.h>
+#define getpid() _getpid()
+#else
+#include <sys/types.h>
+#include <unistd.h>  // getpid()
+#endif
+
+
 // This variable could really be a local var inside the functions where it is
 // used; it was only made a static to reduce per-module stack size with activity().
 static char buffer[1024];
 
 
+#define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
+     baseclass *var ## _tmp = (baseclass *) createOne(classname); \
+     var = dynamic_cast<baseclass *>(var ## _tmp); \
+     if (!var) \
+         throw new cException("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
+
+
+
 TOmnetApp::TOmnetApp(ArgList *arglist, cIniFile *inifile)
 {
-     args = arglist;
-     ini_file = inifile;
-     opt_genk_randomseed = new long[NUM_RANDOM_GENERATORS];
-     next_startingseed = 0;
+    args = arglist;
+    ini_file = inifile;
+    opt_genk_randomseed = new long[NUM_RANDOM_GENERATORS];
+    next_startingseed = 0;
 
-     outvectmgr = NULL;
-     outscalarmgr = NULL;
-     snapshotmgr = NULL;
+    outvectmgr = NULL;
+    outscalarmgr = NULL;
+    snapshotmgr = NULL;
 
-     initialized = false;
+    scheduler = NULL;
+#ifdef WITH_PARSIM
+    parsimcomm = NULL;
+    parsimpartition = NULL;
+    parsimsynchronizer = NULL;
+#endif
+
+    initialized = false;
 }
 
 TOmnetApp::~TOmnetApp()
 {
-     delete [] opt_genk_randomseed;
-     delete args;
-     delete ini_file;
+    delete [] opt_genk_randomseed;
+    delete args;
+    delete ini_file;
 
-     delete outvectmgr;
-     delete outscalarmgr;
-     delete snapshotmgr;
+    delete outvectmgr;
+    delete outscalarmgr;
+    delete snapshotmgr;
+
+    delete scheduler;
+#ifdef WITH_PARSIM
+    delete parsimcomm;
+    delete parsimpartition;
+    delete parsimsynchronizer;
+#endif
 }
 
 void TOmnetApp::setup()
@@ -98,68 +143,39 @@ void TOmnetApp::setup()
          simulation.init();
 
          // install output vector manager
-         cOutputVectorManager *ovm = (cOutputVectorManager *)createOne(opt_outputvectormanager_class);
-         if (!ovm)
-             throw new cException("Could not create output vector manager class \"%s\"", (const char *)opt_outputvectormanager_class);
-         outvectmgr = ovm;
+         CREATE_BY_CLASSNAME(outvectmgr, opt_outputvectormanager_class, cOutputVectorManager, "output vector manager");
 
          // install output scalar manager
-         cOutputScalarManager *osm = (cOutputScalarManager *)createOne(opt_outputscalarmanager_class);
-         if (!osm)
-             throw new cException("Could not create output scalar manager class \"%s\"", (const char *)opt_outputscalarmanager_class);
-         outscalarmgr = osm;
+         CREATE_BY_CLASSNAME(outscalarmgr, opt_outputscalarmanager_class, cOutputScalarManager, "output scalar manager");
 
          // install snapshot manager
-         cSnapshotManager *snsm = (cSnapshotManager *)createOne(opt_snapshotmanager_class);
-         if (!snsm)
-             throw new cException("Could not create snapshot manager class \"%s\"", (const char *)opt_snapshotmanager_class);
-         snapshotmgr = snsm;
+         CREATE_BY_CLASSNAME(snapshotmgr, opt_snapshotmanager_class, cSnapshotManager, "snapshot manager");
 
          // set up for distributed execution
-         if (opt_distributed)
+         if (!opt_parsim)
          {
-             if (ev.runningMode()==NONPARALLEL_MODE)
-                 throw new cException("Support for parallel execution not linked");
-             if (ev.runningMode()==STARTUPERROR_MODE)
-                 throw new cException("There was an error at startup, unable to run in parallel");
-
-             const char *libname = NULL;
-             if (strcmp(opt_parallel_env, "PVM")==0)
-                 libname = "cPvmMod";
-             else if (strcmp(opt_parallel_env, "MPI")==0)
-                 libname = "cMpiMod";
-             else
-                 throw new cException("Unknown parallel simulation library '%s', should be 'PVM' or 'MPI'", (const char *)opt_parallel_env);
-
-             cNetMod *netmod = (cNetMod *)createOne(libname);
-             if (!netmod)
-                 throw new cException("Could not create parallel simulation library \"%s\"", (const char *)opt_parallel_env);
-             try
-             {
-                 netmod->init();
-             }
-             catch (cException *e)
-             {
-                 throw new cException("Network interface did not initialize properly: %s", e->message());
-             }
-             simulation.setNetInterface( netmod );
+             CREATE_BY_CLASSNAME(scheduler, opt_scheduler_class, cScheduler, "event scheduler");
+             scheduler->setSimulation(&simulation);
+             simulation.setScheduler(scheduler);
          }
-
-         // preload NED files
-         const char *nedfiles = ini_file->getAsString("General", "preload-nedfiles", NULL);
-         if (nedfiles)
+         else
          {
-             // iterate through file names
-             ev.printf("\n");
-             char *buf = opp_strdup(nedfiles);
-             char *fname = strtok(buf, " ");
-             while (fname!=NULL)
-             {
-                 ev.printf("Loading NED file: %s\n", fname);
-                 simulation.loadNedFile(fname);
-                 fname = strtok(NULL, " ");
-             }
-             delete [] buf;
+#ifdef WITH_PARSIM
+             // create components
+             CREATE_BY_CLASSNAME(parsimcomm, opt_parsimcomm_class, cParsimCommunications, "parallel simulation communications layer");
+             parsimpartition = new cParsimPartition();
+             CREATE_BY_CLASSNAME(parsimsynchronizer, opt_parsimsynch_class, cParsimSynchronizer, "parallel simulation synchronization layer");
+
+             // wire them together (note: 'parsimsynchronizer' is also the scheduler for 'simulation')
+             parsimpartition->setContext(&simulation,parsimcomm,parsimsynchronizer);
+             parsimsynchronizer->setContext(&simulation,parsimpartition,parsimcomm);
+             simulation.setScheduler(parsimsynchronizer);
+
+             // initialize them
+             parsimcomm->init();
+#else
+             throw new cException("Envir library compiled without parallel simulation support, check WITH_PARSIM option");
+#endif
          }
      }
      catch (cException *e)
@@ -176,6 +192,10 @@ void TOmnetApp::shutdown()
     try
     {
         simulation.deleteNetwork();
+#ifdef WITH_PARSIM
+        if (opt_parsim && parsimcomm)
+            parsimcomm->shutdown();
+#endif
     }
     catch (cException *e)
     {
@@ -190,12 +210,27 @@ void TOmnetApp::startRun()
     outvectmgr->startRun();
     outscalarmgr->startRun();
     snapshotmgr->startRun();
+    if (opt_parsim)
+    {
+#ifdef WITH_PARSIM
+        parsimpartition->startRun();
+        parsimsynchronizer->startRun();
+#endif
+    }
     simulation.startRun();
 }
 
 void TOmnetApp::endRun()
 {
+    // reverse order as startRun()
     simulation.endRun();
+    if (opt_parsim)
+    {
+#ifdef WITH_PARSIM
+        parsimsynchronizer->endRun();
+        parsimpartition->endRun();
+#endif
+    }
     snapshotmgr->endRun();
     outscalarmgr->endRun();
     outvectmgr->endRun();
@@ -212,19 +247,36 @@ const char *TOmnetApp::getParameter(int run_no, const char *parname)
     return ini_file->getRaw2(section,"Parameters",parname,NULL);
 }
 
-const char *TOmnetApp::getPhysicalMachineFor(const char *logical_mach)
+bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index)
 {
-    if (!opt_distributed)
-    {
-       return "default";
-    }
+#ifdef WITH_PARSIM
+    if (!opt_parsim)
+       return true;
+
+    // toplevel module is local everywhere
+    if (!parentmod)
+       return true;
+
+    // find out if this module is (or has any submodules that are) on this partition
+    char section[16];
+    sprintf(section,"Run %d",1 /*run_no*/); // FIXME get run_no from somewhere!!!
+
+    ini_file->error(); // clear error flag
+    char parname[MAX_OBJECTFULLPATH];
+    if (index<0)
+        sprintf(parname,"%s.%s.partition-id", parentmod->fullPath(), modname);
     else
-    {
-       const char *mach = ini_file->getAsString("Machines", logical_mach, NULL);
-       if (mach==NULL)
-           throw new cException("No mapping for logical machine `%s'",logical_mach);
-       return mach;
-    }
+        sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath(), modname, index);
+    int procId = ini_file->getAsInt2(section,"Partitioning",parname,-1);
+    if (procId<0 || procId>=parsimcomm->getNumPartitions())
+        throw new cException("incomplete partitioning: missing or invalid value for '%s'",parname);
+    // FIXME this solution isn't good!!! has to check if myProcId is CONTAINED
+    // in the set of procIds defined for the children of this module
+    int myProcId = parsimcomm->getProcId();
+    return procId==myProcId;
+#else
+    return true;
+#endif
 }
 
 void TOmnetApp::getOutVectorConfig(int run_no, const char *modname,const char *vecname, /*input*/
@@ -281,6 +333,28 @@ cIniFile *TOmnetApp::getIniFile()
 
 //-------------------------------------------------------------
 
+void TOmnetApp::processFileName(opp_string& fname)
+{
+    if (opt_fname_append_host)
+    {
+        const char *hostname=getenv("HOST");
+        if (!hostname)
+            hostname=getenv("HOSTNAME");
+        if (!hostname)
+            hostname=getenv("COMPUTERNAME");
+        if (!hostname)
+            throw new cException("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
+                                 "or COMPUTERNAME (Windows) environment variable",
+                                 (const char *)fname);
+        int pid = getpid();
+
+        // add ".<hostname>.<pid>" to fname
+        opp_string origfname = fname;
+        fname.allocate(strlen(origfname)+1+strlen(hostname)+10+1);
+        sprintf(fname.buffer(),"%s.%s.%d", origfname.buffer(), hostname, pid);
+    }
+}
+
 void TOmnetApp::readOptions()
 {
     ini_file->error(); // clear error flag
@@ -290,14 +364,30 @@ void TOmnetApp::readOptions()
     ini_file->warnings = opt_ini_warnings;
 
     opt_total_stack_kb = ini_file->getAsInt( "General", "total-stack-kb", TOTAL_STACK_KB );
-    opt_distributed = ini_file->getAsBool( "General", "distributed", false );
-    if(opt_distributed)
-        opt_parallel_env = ini_file->getAsString( "General", "parallel-system", "MPI" );
+    if (ini_file->getAsBool("General", "distributed", false))
+         ev.printfmsg("Warning: ini file entry distributed= is obsolete (parallel simulation support was reimplemented in version 2.4)");
+    opt_parsim = ini_file->getAsBool("General", "parallel-simulation", false);
+    if (!opt_parsim)
+    {
+        opt_scheduler_class = ini_file->getAsString("General", "scheduler-class", "cSequentialScheduler");
+    }
+    else
+    {
+#ifdef WITH_PARSIM
+        opt_parsimcomm_class = ini_file->getAsString("General", "parsim-communications-class", "cFileCommunications");
+        opt_parsimsynch_class = ini_file->getAsString("General", "parsim-synchronization-class", "cNullMessageProtocol");
+#else
+        throw new cException("Envir library compiled without parallel simulation support, check WITH_PARSIM option");
+#endif
+    }
     opt_load_libs = ini_file->getAsString( "General", "load-libs", "" );
 
     opt_outputvectormanager_class = ini_file->getAsString( "General", "outputvectormanager-class", "cFileOutputVectorManager" );
     opt_outputscalarmanager_class = ini_file->getAsString( "General", "outputscalarmanager-class", "cFileOutputScalarManager" );
     opt_snapshotmanager_class = ini_file->getAsString( "General", "snapshotmanager-class", "cFileSnapshotManager" );
+
+    opt_fname_append_host = ini_file->getAsBool("General","fname-append-host",false);
+
     // other options are read on per-run basis
 }
 
@@ -308,6 +398,7 @@ void TOmnetApp::readPerRunOptions(int run_nr)
 
     // get options from ini file
     opt_network_name = ini_file->getAsString2( section, "General", "network", "default" );
+::printf("FIXME !!!DBG:%s\n", (const char *)opt_network_name);
     opt_pause_in_sendmsg = ini_file->getAsBool2( section, "General", "pause-in-sendmsg", false );
     opt_warnings = ini_file->getAsBool2( section, "General", "warnings", true );
     opt_simtimelimit = ini_file->getAsTime2( section, "General", "sim-time-limit", 0.0 );
@@ -357,74 +448,9 @@ void TOmnetApp::readPerRunOptions(int run_nr)
 void TOmnetApp::makeOptionsEffective()
 {
      cModule::pause_in_sendmsg = opt_pause_in_sendmsg;
-     simulation.setNetIfCheckFreq( opt_netifcheckfreq );
 
      for(int i=0;i<NUM_RANDOM_GENERATORS;i++)
          genk_randseed( i, opt_genk_randomseed[i] );
-}
-
-//--------------------------------------------------------------------
-// default, stdio versions of input/output functions
-
-void TOmnetApp::putmsg(const char *s)
-{
-     ::printf( "<!> %s\n", s);
-     ::fflush(stdout);
-}
-
-void TOmnetApp::puts(const char *s)
-{
-     ::printf( "%s", s);
-}
-
-void TOmnetApp::flush()
-{
-     ::fflush(stdout);
-}
-
-bool TOmnetApp::gets(const char *promptstr, char *buf, int len)
-{
-    ::printf("%s", promptstr);
-    if (buf[0]) ::printf("(default: %s) ",buf);
-
-    ::fgets(buffer,512,stdin);
-    buffer[strlen(buffer)-1] = '\0'; // chop LF
-
-    if( buffer[0]=='\x1b' ) // ESC?
-       return true;
-    else
-    {
-       if( buffer[0] )
-          strncpy(buf, buffer, len);
-       return false;
-    }
-}
-
-int TOmnetApp::askYesNo(const char *question )
-{
-    // should also return -1 (==CANCEL)
-    for(;;)
-    {
-        ::printf("%s (y/n) ", question);
-        ::fgets(buffer,512,stdin);
-        buffer[strlen(buffer)-1] = '\0'; // chop LF
-        if (toupper(buffer[0])=='Y' && !buffer[1])
-           return 1;
-        else if (toupper(buffer[0])=='N' && !buffer[1])
-           return 0;
-        else
-           putmsg("Please type 'y' or 'n'!\n");
-    }
-}
-
-void TOmnetApp::foreignPuts(const char *hostname, const char *mod, const char *str)
-{
-    if (!mod || !*mod)
-        sprintf(buffer,"<host %s:>", hostname);
-    else
-        sprintf(buffer,"<%s on host %s:>", mod, hostname);
-    puts(buffer);
-    puts(str);
 }
 
 //-------------------------------------------------------------
@@ -510,6 +536,10 @@ void TOmnetApp::displayMessage(cException *e)
         ev.printfmsg("Module %s: %s.", e->moduleFullPath(), e->message());
 }
 
+bool TOmnetApp::idle()
+{
+    return false;
+}
 
 //-------------------------------------------------------------
 
@@ -534,7 +564,6 @@ void TOmnetApp::stopClock()
 time_t TOmnetApp::totalElapsed()
 {
     return elapsedtime + time(0) - laststarted;
-
 }
 
 void TOmnetApp::checkTimeLimits()
@@ -545,3 +574,22 @@ void TOmnetApp::checkTimeLimits()
          throw new cTerminationException(eREALTIME);
 }
 
+void TOmnetApp::stoppedWithTerminationException(cTerminationException *e)
+{
+    // if we're running in parallel and this exception is NOT one we received
+    // from other partitions, then notify other partitions
+#ifdef WITH_PARSIM
+    if (opt_parsim && !dynamic_cast<cReceivedTerminationException *>(e))
+        parsimpartition->broadcastTerminationException(e);
+#endif
+}
+
+void TOmnetApp::stoppedWithException(cException *e)
+{
+    // if we're running in parallel and this exception is NOT one we received
+    // from other partitions, then notify other partitions
+#ifdef WITH_PARSIM
+    if (opt_parsim && !dynamic_cast<cReceivedException *>(e))
+        parsimpartition->broadcastException(e);
+#endif
+}

@@ -30,18 +30,16 @@
 // Windows without having to know in which dll (cmdenv, tkenv) TOmnetApp's
 // appropriate subclass will come from. (On Unix, this was no problem anyway...)
 //
-//  isslave: true for slave applications, used by distributed execution
-//           false for normal user interfaces
-//  score:   by default, OMNeT++ will choose the user inteface with the
+//  score:   by default, OMNeT++ will choose the user interface with the
 //           highest score when it starts
 //  desc:    textual description of the user interface
 //
 
 
 // the macro
-#define Register_OmnetApp(UINAME,CLASSNAME,ISSLAVE,SCORE,DESCR) \
+#define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
   TOmnetApp *CLASSNAME##__create(ArgList *args, cIniFile *inifile) {return new CLASSNAME(args, inifile);} \
-  EXECUTE_ON_STARTUP(__##CLASSNAME##_ui, (new cOmnetAppRegistration(UINAME,ISSLAVE,SCORE,DESCR,CLASSNAME##__create))->setOwner(&omnetapps);)
+  EXECUTE_ON_STARTUP(__##CLASSNAME##_ui, (new cOmnetAppRegistration(UINAME,SCORE,DESCR,CLASSNAME##__create))->setOwner(&omnetapps);)
 
 class TOmnetApp;
 class ArgList;
@@ -56,12 +54,11 @@ class ENVIR_API cOmnetAppRegistration : public cObject
     AppCreatorFunc creatorfunc;
     opp_string desc;
     int scor;
-    bool isslave;
   public:
-    cOmnetAppRegistration(const char *name, bool isSlave, int score,
+    cOmnetAppRegistration(const char *name, int score,
                           const char *description, AppCreatorFunc f) :
       cObject(name),
-      creatorfunc(f), desc(description), scor(score), isslave(isSlave) {}
+      creatorfunc(f), desc(description), scor(score) {}
     virtual ~cOmnetAppRegistration()  {}
 
     // redefined functions
@@ -71,7 +68,6 @@ class ENVIR_API cOmnetAppRegistration : public cObject
     TOmnetApp *createOne(ArgList *args, cIniFile *inifile)  {return creatorfunc(args,inifile);}
     const char *description()  {return desc;}
     int score()  {return scor;}
-    bool isSlave()  {return isslave;}
 };
 
 #endif

@@ -26,9 +26,8 @@
 #include "enumstr.h"
 #include "appreg.h"
 #include "cinifile.h"
-#include "cmodule.h"
+#include "csimplemodule.h"
 #include "cmessage.h"
-#include "cnetmod.h"
 #include "args.h"
 #include "speedmtr.h"
 
@@ -38,7 +37,7 @@ static char buffer[1024];
 //
 // Register the Cmdenv user interface
 //
-Register_OmnetApp("Cmdenv",TCmdenvApp,false,10,"Cmdenv (command-line user interface)");
+Register_OmnetApp("Cmdenv",TCmdenvApp,10,"Cmdenv (command-line user interface)");
 
 // some functions that can/should be called from Envir in order to force the
 // linker to include the Tkenv library into the executable:
@@ -72,6 +71,9 @@ char *timeToStr(time_t t, char *buf=NULL)
 
 TCmdenvApp::TCmdenvApp(ArgList *args, cIniFile *inifile) : TOmnetApp(args, inifile)
 {
+    // initialize fout to stdout, then we'll replace it if redirection is
+    // requested in the ini file
+    fout = stdout;
 }
 
 TCmdenvApp::~TCmdenvApp()
@@ -84,6 +86,17 @@ void TCmdenvApp::readOptions()
 
     opt_runstoexec = ini_file->getAsString("Cmdenv", "runs-to-execute", "");
     opt_extrastack = ini_file->getAsInt("Cmdenv", "extra-stack", CMDENV_EXTRASTACK);
+    opt_outputfile = ini_file->getAsString("Cmdenv", "output-file", "");
+
+    if (opt_outputfile.buffer()!=NULL)
+    {
+        processFileName(opt_outputfile);
+        ::printf("Cmdenv: redirecting output to file `%s'...\n",(const char *)opt_outputfile);
+        FILE *out = fopen(opt_outputfile, "w");
+        if (!out)
+            throw new cException("Cannot open output file `%s'",(const char *)opt_outputfile);
+        fout = out;
+    }
 }
 
 void TCmdenvApp::readPerRunOptions( int run_nr )
@@ -160,6 +173,12 @@ void TCmdenvApp::setupSignals()
     signal(SIGTERM, signalHandler);
 }
 
+void TCmdenvApp::shutdown()
+{
+    TOmnetApp::shutdown();
+    ::fflush(fout);
+}
+
 int TCmdenvApp::run()
 {
     if (!initialized)
@@ -190,8 +209,8 @@ int TCmdenvApp::run()
         bool startrun_done = false;
         try
         {
-            printf("\nPreparing for Run #%d...\n", run_nr());
-            fflush(stdout);
+            ::fprintf(fout, "\nPreparing for Run #%d...\n", run_nr());
+            ::fflush(fout);
 
             readPerRunOptions(run_nr());
 
@@ -201,38 +220,42 @@ int TCmdenvApp::run()
                 throw new cException("Network `%s' not found, check .ini and .ned files", (const char *)opt_network_name);
 
             // set up network
-            printf("Setting up network `%s'...\n", (const char *)opt_network_name);
-            fflush(stdout);
+            ::fprintf(fout, "Setting up network `%s'...\n", (const char *)opt_network_name);
+            ::fflush(fout);
 
             simulation.setupNetwork(network, run_nr());
             setupnetwork_done = true;
 
             makeOptionsEffective();
 
-            // run the simulation
-            printf("Running simulation...\n");
-            fflush(stdout);
+            // prepare for simulation run
+            ::fprintf(fout, "Initializing...\n");
+            ::fflush(fout);
 
-            // start execution on other segments too
             startRun();
             startrun_done = true;
+
+            // run the simulation
+            ::fprintf(fout, "Running simulation...\n");
+            ::fflush(fout);
 
             // simulate() should only throw exception if error occurred and
             // finish() should not be called.
             simulate();
 
-            printf("\nCalling finish() at end of Run #%d...\n", run_nr());
-            fflush(stdout);
+            ::fprintf(fout, "\nCalling finish() at end of Run #%d...\n", run_nr());
+            ::fflush(fout);
             simulation.callFinish();
         }
         catch (cException *e)
         {
             had_error = true;
+            stoppedWithException(e);
             displayError(e);
             delete e;
         }
 
-        // stop run on other segments
+        // stop run on other partitions
         if (startrun_done)
         {
             try
@@ -298,7 +321,7 @@ void TCmdenvApp::simulate()
                // print event banner if neccessary
                if (opt_eventbanners)
                {
-                   printf( "** Event #%ld  T=%s.  (%s) %s (id=%d)\n",
+                   ::fprintf(fout, "** Event #%ld  T=%s.  (%s) %s (id=%d)\n",
                            simulation.eventNumber(),
                            simtimeToStr( simulation.simTime() ),
                            mod->className(),
@@ -310,7 +333,7 @@ void TCmdenvApp::simulate()
                // flush *between* printing event banner and event processing, so that
                // if event processing crashes, it can be seen which event it was
                if (opt_autoflush)
-                   fflush(stdout);
+                   ::fflush(fout);
 
                // execute event
                simulation.doOneEvent( mod );
@@ -335,23 +358,23 @@ void TCmdenvApp::simulate()
                {
                    if (opt_perfdisplay)
                    {
-                       printf( "** Event #%ld   T=%s    Elapsed: %s\n",
+                       ::fprintf(fout, "** Event #%ld   T=%s    Elapsed: %s\n",
                                simulation.eventNumber(),
                                simtimeToStr(simulation.simTime()),
                                timeToStr(totalElapsed()));
-                       printf( "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
+                       ::fprintf(fout, "     Speed:     ev/sec=%g   simsec/sec=%g   ev/simsec=%g\n",
                                speedometer.eventsPerSec(),
                                speedometer.simSecPerSec(),
                                speedometer.eventsPerSimSec());
 
-                       printf( "     Messages:  created: %ld   present: %ld   in FES: %d\n",
+                       ::fprintf(fout, "     Messages:  created: %ld   present: %ld   in FES: %d\n",
                                cMessage::totalMessageCount(),
                                cMessage::liveMessageCount(),
                                simulation.msgQueue.length());
                    }
                    else
                    {
-                       printf( "** Event #%ld   T=%s   Elapsed: %s   ev/sec=%g\n",
+                       ::fprintf(fout, "** Event #%ld   T=%s   Elapsed: %s   ev/sec=%g\n",
                                simulation.eventNumber(),
                                simtimeToStr(simulation.simTime()),
                                timeToStr(totalElapsed()),
@@ -360,7 +383,7 @@ void TCmdenvApp::simulate()
                    speedometer.beginNewInterval();
 
                    if (opt_autoflush)
-                       fflush(stdout);
+                       ::fflush(fout);
                }
 
                // execute event
@@ -377,7 +400,7 @@ void TCmdenvApp::simulate()
     {
         ev.disable_tracing = false;
         stopClock();
-
+        stoppedWithTerminationException(e);
         displayMessage(e);
         delete e;
         return;
@@ -392,16 +415,80 @@ void TCmdenvApp::simulate()
     stopClock();
 }
 
+//-----------------------------------------------------
+
+void TCmdenvApp::putmsg(const char *s)
+{
+    ::fprintf(fout, "<!> %s\n", s);
+    ::fflush(fout);
+}
+
+void TCmdenvApp::puts(const char *s)
+{
+    if (opt_modulemsgs || simulation.contextModule()==NULL)
+    {
+        ::fprintf(fout, "%s", s);
+        if (opt_autoflush)
+            ::fflush(fout);
+    }
+}
+
+
+void TCmdenvApp::flush()
+{
+    ::fflush(fout);
+}
+
+bool TCmdenvApp::gets(const char *promptstr, char *buf, int len)
+{
+    ::fprintf(fout, "%s", promptstr);
+    if (buf[0]) ::fprintf(fout, "(default: %s) ",buf);
+
+    ::fgets(buffer,512,stdin);
+    buffer[strlen(buffer)-1] = '\0'; // chop LF
+
+    if( buffer[0]=='\x1b' ) // ESC?
+       return true;
+    else
+    {
+       if( buffer[0] )
+          strncpy(buf, buffer, len);
+       return false;
+    }
+}
+
+int TCmdenvApp::askYesNo(const char *question )
+{
+    // should also return -1 (==CANCEL)
+    for(;;)
+    {
+        ::fprintf(fout, "%s (y/n) ", question);
+        ::fgets(buffer,512,stdin);
+        buffer[strlen(buffer)-1] = '\0'; // chop LF
+        if (toupper(buffer[0])=='Y' && !buffer[1])
+           return 1;
+        else if (toupper(buffer[0])=='N' && !buffer[1])
+           return 0;
+        else
+           putmsg("Please type 'y' or 'n'!\n");
+    }
+}
+
+bool TCmdenvApp::idle()
+{
+    return sigint_received;
+}
+
 void TCmdenvApp::messageSent(cMessage *msg, cGate *)
 {
     if (!opt_expressmode && opt_messagetrace)
     {
         static char buf[1000];
         msg->info( buf );
-        printf("SENT:   %s\n", buf);
+        ::fprintf(fout, "SENT:   %s\n", buf);
 
         if (opt_autoflush)
-            fflush(stdout);
+            ::fflush(fout);
     }
 }
 
@@ -411,10 +498,10 @@ void TCmdenvApp::messageDelivered(cMessage *msg)
     {
         static char buf[1000];
         msg->info( buf );
-        printf("DELIVD: %s\n", buf);
+        ::fprintf(fout, "DELIVD: %s\n", buf);
 
         if (opt_autoflush)
-            fflush(stdout);
+            ::fflush(fout);
     }
 }
 
@@ -452,17 +539,6 @@ void TCmdenvApp::help()
     for (; iter3(); iter3++)
         ev << "  " << ((cLinkType *)iter3())->name() << '\n';
     ev << "\n";
-}
-
-void TCmdenvApp::puts(const char *s)
-{
-    if (opt_modulemsgs || simulation.contextModule()==NULL)
-    {
-        TOmnetApp::puts( s );
-        if (opt_autoflush)
-            fflush(stdout);
-
-    }
 }
 
 unsigned TCmdenvApp::extraStackForEnvir()

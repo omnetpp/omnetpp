@@ -53,14 +53,23 @@ void Speedometer::beginNewInterval()
 {
     clock_t now = clock();
     long elapsed_clocks = now - intvstart_clock;
-    if (elapsed_clocks==0) elapsed_clocks=1; // avoid division by zero
-    double elapsed_sec = (double)elapsed_clocks / CLOCKS_PER_SEC;
-    simtime_t elapsed_simsec = current_simtime-intvstart_simtime;
+    if (elapsed_clocks<10 || events<10)
+    {
+        // if we're called too often, refuse to give readings as probably
+        // they'd be very misleading
+        last_eventspersec = 0;
+        last_simsecpersec = 0;
+        last_eventspersimsec = 0;
+    }
+    else
+    {
+        double elapsed_sec = (double)elapsed_clocks / CLOCKS_PER_SEC;
+        simtime_t elapsed_simsec = current_simtime-intvstart_simtime;
 
-    last_eventspersec = events / elapsed_sec;  // elapsed_sec is never zero here
-    last_simsecpersec = elapsed_simsec / elapsed_sec;
-    last_eventspersimsec = (elapsed_simsec==0) ? 0 : (events / elapsed_simsec);
-
+        last_eventspersec = events / elapsed_sec;
+        last_simsecpersec = elapsed_simsec / elapsed_sec;
+        last_eventspersimsec = (elapsed_simsec==0) ? 0 : (events / elapsed_simsec);
+    }
     events = 0;
     intvstart_clock = now;
     intvstart_simtime = current_simtime;

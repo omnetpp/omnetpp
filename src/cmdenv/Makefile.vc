@@ -49,9 +49,8 @@ cmdenv.obj: cmdenv.cc \
   cmddefs.h \
   cmdenv.h \
   enumstr.h \
-  ../../include/cmodule.h \
+  ../../include/csimplemodule.h \
   ../../include/cmessage.h \
-  ../../include/cnetmod.h \
   ../../include/defs.h \
   ../../include/ctypes.h \
   ../../include/csimul.h \
@@ -63,6 +62,7 @@ cmdenv.obj: cmdenv.cc \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
+  ../../include/cmodule.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \

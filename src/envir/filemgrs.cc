@@ -40,30 +40,15 @@ Register_Class(cFileOutputVectorManager);
 #define CHECK(fprintf)    if (fprintf<0) throw new cException(eOUTVECT)
 
 // helper function
-static void createFileName(opp_string& fname, cIniFile *inifile, int run_no, const char *configentry, const char *defaultval)
+static void createFileName(opp_string& fname, int run_no, const char *configentry, const char *defaultval)
 {
     // get file name from ini file
     char section[16];
     sprintf(section,"Run %d",run_no);
-    const char *basefname = inifile->getAsString2(section,"General",configentry,defaultval);
 
-    // append host name if necessary
-    if (!inifile->getAsBool2(section,"General","fname-append-host",false))
-    {
-        fname = basefname;
-    }
-    else
-    {
-        const char *hostname=getenv("HOST");
-        if (!hostname)
-            throw new cException("Cannot append hostname to file name `%s': no HOST environment variable", basefname);
-
-        // add ".<hostname>" to fname
-        fname.allocate(strlen(basefname)+1+strlen(hostname)+1);
-        sprintf(fname.buffer(),"%s.%s", (const char *)basefname, hostname);
-    }
+    fname = ev.app->getIniFile()->getAsString2(section,"General",configentry,defaultval);
+    ev.app->processFileName(fname);
 }
-
 
 
 cFileOutputVectorManager::cFileOutputVectorManager()
@@ -110,7 +95,7 @@ void cFileOutputVectorManager::startRun()
 {
     // clean up file from previous runs
     closeFile();
-    createFileName(fname, ev.app->getIniFile(), simulation.runNumber(), "output-vector-file", "omnetpp.vec");
+    createFileName(fname, simulation.runNumber(), "output-vector-file", "omnetpp.vec");
     remove(fname);
 }
 
@@ -222,7 +207,7 @@ void cFileOutputScalarManager::startRun()
 {
     // clean up file from previous runs
     closeFile();
-    createFileName(fname, ev.app->getIniFile(), simulation.runNumber(), "output-scalar-file", "omnetpp.sca");
+    createFileName(fname, simulation.runNumber(), "output-scalar-file", "omnetpp.sca");
     initialized = false;
 }
 
@@ -297,7 +282,7 @@ cFileSnapshotManager::~cFileSnapshotManager()
 void cFileSnapshotManager::startRun()
 {
     // clean up file from previous runs
-    createFileName(fname, ev.app->getIniFile(), simulation.runNumber(), "snapshot-file", "omnetpp.sna");
+    createFileName(fname, simulation.runNumber(), "snapshot-file", "omnetpp.sna");
     remove(fname);
 }
 

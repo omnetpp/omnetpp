@@ -30,6 +30,12 @@
 
 
 class cIniFile;
+class cScheduler;
+#ifdef WITH_PARSIM
+class cParsimCommunications;
+class cParsimPartition;
+class cParsimSynchronizer;
+#endif
 
 #define NUM_STARTINGSEEDS  256
 extern long starting_seeds[NUM_STARTINGSEEDS];  // they are in seeds.cc
@@ -40,9 +46,6 @@ extern long starting_seeds[NUM_STARTINGSEEDS];  // they are in seeds.cc
 //      Tkenv's app classes) should be derived from this class, and
 //      the create() static function must be written to create an object
 //      of the desired type (ie.TOmnetCmdApp, TOmnetWindowsApp etc.)
-//      The createSlave() function is used when doing distributed simulation:
-//      it should create a "slave" application that can work with the "master"
-//      app that runs on the console.
 //
 class ENVIR_API TOmnetApp
 {
@@ -57,13 +60,18 @@ class ENVIR_API TOmnetApp
     int opt_total_stack_kb;
 
     bool opt_ini_warnings;
-    bool opt_distributed; // NET
-    opp_string opt_parallel_env; // PVM, MPI or something else?
+    opp_string opt_scheduler_class;
+    bool opt_parsim;
+#ifdef WITH_PARSIM
+    opp_string opt_parsimcomm_class; // if opt_parsim: cParsimCommunications class to use
+    opp_string opt_parsimsynch_class; // if opt_parsim: cParsimSynchronizer class to use
+#endif
     opp_string opt_load_libs;
     opp_string opt_network_name;
     opp_string opt_outputvectormanager_class;
     opp_string opt_outputscalarmanager_class;
     opp_string opt_snapshotmanager_class;
+    bool opt_fname_append_host;
 
     bool opt_pause_in_sendmsg;
     bool opt_warnings;
@@ -76,6 +84,14 @@ class ENVIR_API TOmnetApp
     int opt_netifcheckfreq;
 
     int next_startingseed;  // index of next seed to use
+
+#ifdef WITH_PARSIM
+    cParsimCommunications *parsimcomm;
+    cParsimPartition *parsimpartition;
+    cParsimSynchronizer *parsimsynchronizer;
+#endif
+
+    cScheduler *scheduler;
 
     cOutputVectorManager *outvectmgr;
     cOutputScalarManager *outscalarmgr;
@@ -117,6 +133,11 @@ class ENVIR_API TOmnetApp
     virtual void readPerRunOptions(int run_nr);
 
     /**
+     * Utility function: optionally appends host name to fname
+     */
+    virtual void processFileName(opp_string& fname);
+
+    /**
      * Used internally to make options effective in cSimulation
      * and other places
      */
@@ -127,11 +148,8 @@ class ENVIR_API TOmnetApp
      */
     virtual const char *getParameter(int run_nr, const char *parname);
 
-    /**
-     * Called from nedc-generated network setup function to get
-     * logical machine --> physical machine mapping
-     */
-    virtual const char *getPhysicalMachineFor(const char *logical_mach);
+    virtual bool isModuleLocal(cModule *parentmod, const char *modname, int index);
+
     virtual void getOutVectorConfig(int run_no, const char *modname, /*input*/
                                     const char *vecname,
                                     bool& enabled, /*output*/
@@ -155,12 +173,11 @@ class ENVIR_API TOmnetApp
      * Default versions use standard I/O.
      */
     //@{
-    virtual void putmsg(const char *s);
-    virtual void puts(const char *s);
-    virtual void flush();
-    virtual bool gets(const char *promptstr, char *buf, int len=255);  // 0==OK 1==CANCEL
-    virtual int  askYesNo(const char *question); //0==NO 1==YES -1==CANCEL
-    virtual void foreignPuts(const char *hostname, const char *mod, const char *str);
+    virtual void putmsg(const char *s) = 0;
+    virtual void puts(const char *s) = 0;
+    virtual void flush() = 0;
+    virtual bool gets(const char *promptstr, char *buf, int len=255) = 0;  // 0==OK 1==CANCEL
+    virtual int  askYesNo(const char *question) = 0; //0==NO 1==YES -1==CANCEL
     //@}
 
     /** @name Methods for recording data from output vectors; called by cEnvir's similar functions */
@@ -213,6 +230,10 @@ class ENVIR_API TOmnetApp
      */
     virtual void displayMessage(cException *e);
 
+    /**
+     * Called from cEnvir::idle().
+     */
+    virtual bool idle();
     //@}
 
     /** @name Measuring elapsed time. */
@@ -243,7 +264,20 @@ class ENVIR_API TOmnetApp
      * Elapsed time
      */
     time_t totalElapsed();
+    //@}
 
+    //@{
+    /**
+     * Hook called when the simulation terminates normally.
+     * Its current use is to notify parallel simulation part.
+     */
+    void stoppedWithTerminationException(cTerminationException *e);
+
+    /**
+     * Hook called when the simulation is stopped with an error.
+     * Its current use is to notify parallel simulation part.
+     */
+    void stoppedWithException(cException *e);
     //@}
 };
 

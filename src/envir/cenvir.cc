@@ -27,10 +27,8 @@
 #include "omnetapp.h"
 #include "appreg.h"
 #include "cmodule.h"
-#include "cnetmod.h"
-#include "slaveapp.h"   // tslave_dummy_function()
-#include "speedmtr.h"   // tslave_dummy_function()
-#include "filemgrs.h"   // tslave_dummy_function()
+#include "speedmtr.h"   // env_dummy_function()
+#include "filemgrs.h"   // env_dummy_function()
 
 
 //=== Global objects:
@@ -59,29 +57,28 @@ void dummyDummy() {envirDummy();}
 //void dummyDummy() {cmdenvDummy();tkenvDummy();}
 //#endif
 
-// A dummy function to force UNIX linkers collect TSlaveApp, Speedometer
+// A dummy function to force UNIX linkers collect Speedometer
 // and cFileOutputVectorManager as linker symbols. Otherwise we'd get
 // "undefined symbol" messages...
-void tslave_dummy_function() {
+void env_dummy_function() {
     exponential(1.0);
-    TSlaveApp x(0,NULL);
     Speedometer a;
     cFileOutputVectorManager o;
-    printf("%p%p%p",&x,&a,&o); // eliminate 'unused var' warning
+    printf("%p%p",&a,&o); // eliminate 'unused var' warning
 }
 
 //========================================================================
 
 // User interface factory functions.
-cOmnetAppRegistration *chooseBestOmnetApp(bool slave)
+cOmnetAppRegistration *chooseBestOmnetApp()
 {
     cOmnetAppRegistration *best_appreg = NULL;
 
-    // choose the one with appropriate slave flag and highest score.
+    // choose the one with highest score.
     for (cIterator i(omnetapps); !i.end(); i++)
     {
         cOmnetAppRegistration *appreg = (cOmnetAppRegistration*) i();
-        if (appreg->isSlave()==slave && (!best_appreg || appreg->score()>best_appreg->score()))
+        if (!best_appreg || appreg->score()>best_appreg->score())
             best_appreg = appreg;
     }
     return best_appreg;
@@ -161,14 +158,6 @@ void cEnvir::setup(int argc, char *argv[])
         }
 
         //
-        // Determine if this is a distributed simulation, and if so, whether we run
-        // as master (=console) or slave. This also affects which user interface
-        // to set up.
-        // ==> MASTER_MODE, SLAVE_MODE, NONPARALLEL_MODE or STARTUPERROR_MODE
-        //
-        running_mode = is_started_as_master();
-
-        //
         // Choose and set up user interface (TOmnetApp subclass). Everything else
         // will be done by the user interface class.
         //
@@ -199,8 +188,7 @@ void cEnvir::setup(int argc, char *argv[])
         else
         {
             // user interface not explicitly selected: pick one from what we have
-            bool slave = (running_mode==SLAVE_MODE); // slave or normal app?
-            appreg = chooseBestOmnetApp(slave);
+            appreg = chooseBestOmnetApp();
             if (!appreg)
                 throw new cException("No appropriate user interface (Cmdenv,Tkenv,etc.) found");
         }
@@ -215,6 +203,11 @@ void cEnvir::setup(int argc, char *argv[])
     catch (cException *e)
     {
         printfmsg("Error during startup: %s", e->message());
+        if (app)
+        {
+           delete app;
+           app = NULL;
+        }
     }
 }
 
@@ -240,9 +233,9 @@ const char *cEnvir::getParameter(int run_no, const char *parname)
     return app->getParameter(run_no, parname);
 }
 
-const char *cEnvir::getPhysicalMachineFor(const char *logical_mach)
+bool cEnvir::isModuleLocal(cModule *parentmod, const char *modname, int index)
 {
-    return app->getPhysicalMachineFor(logical_mach);
+    return app->isModuleLocal(parentmod, modname, index);
 }
 
 const char *cEnvir::getDisplayString(int run_no,const char *name)
@@ -371,11 +364,6 @@ bool cEnvir::askYesNo(const char *msgfmt,...)
     return ret!=0;
 }
 
-void cEnvir::foreignPuts(const char *hostname, const char *mod, const char *str)
-{
-    app->foreignPuts(hostname,mod,str);
-}
-
 //---------------------------------------------------------
 
 void *cEnvir::registerOutputVector(const char *modulename, const char *vectorname, int tuple)
@@ -442,6 +430,11 @@ int cEnvir::argCount()
 char **cEnvir::argVector()
 {
     return app->argList()->argVector();
+}
+
+bool cEnvir::idle()
+{
+    return app->idle();
 }
 
 bool memoryIsLow()
