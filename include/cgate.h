@@ -26,7 +26,7 @@ class  cGate;
 class  cModule;
 class  cPar;
 class  cMessage;
-class  cLinkType;
+class  cChannelType;
 class  cChannel;
 class  cDisplayString;
 
@@ -268,10 +268,9 @@ class SIM_API cGate : public cObject
     /**
      * DEPRECATED! Use cChannel/cSimpleChannel and setChannel() instead.
      *
-     * Sets the parameters of the link to those specified by the link
-     * type.
+     * Sets the parameters of the link to those specified by the link type.
      */
-    void setLink(cLinkType *l);
+    void setLink(cChannelType *l);
 
     /**
      * DEPRECATED! Use cSimpleChannel and setChannel() instead.
@@ -299,13 +298,6 @@ class SIM_API cGate : public cObject
      * be of class cSimpleChannel or one subclassed from it.
      */
     void setDataRate(cPar *p);
-
-    /**
-     * DEPRECATED! Use cChannel and channel() instead.
-     *
-     * Returns the link type of the gate, if it has one.
-     */
-    cLinkType *link() const;
 
     /**
      * DEPRECATED! Use channel() and cSimpleChannel::delay() instead.

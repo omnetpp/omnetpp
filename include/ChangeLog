@@ -1,5 +1,14 @@
 2004-02-12  Andras Varga
 
+	* ctype.h, cchannel.h, cgate.h: introduced cChannelType which replaces
+	cLinkType. cChannelType is a lot more flexible since its factory
+	method create() allows creating channels of any class, not just 
+	cSimpleChannel. Custom channel behaviour can thus be implemented
+	by authoring an own channel class and registering it via an
+	appropriate cChannelType and the Define_Channel() macro.
+
+2004-02-12  Andras Varga
+
 	* cgate.h, cchannel.h: gave a bool return value to deliver(), "false" 
 	meaning that message object should be deleted.
 

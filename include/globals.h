@@ -21,6 +21,7 @@
 //=== classes mentioned
 class  cModuleInterface;
 class  cModuleType;
+class  cChannelType;
 class  cLinkType;
 class  cFunctionType;
 class  cNetworkType;
@@ -35,7 +36,7 @@ SIM_API extern cDefaultList defaultList;
 SIM_API extern cSingleton<cArray> networks;       ///< List of available networks.
 SIM_API extern cSingleton<cArray> modinterfaces;  ///< List of all module interfaces.
 SIM_API extern cSingleton<cArray> modtypes;       ///< List of all module types.
-SIM_API extern cSingleton<cArray> linktypes;      ///< List of link types.
+SIM_API extern cSingleton<cArray> channeltypes;   ///< List of channel types.
 SIM_API extern cSingleton<cArray> functions;      ///< List of function types.
 SIM_API extern cSingleton<cArray> classes;        ///< List of cClassRegister objects.
 SIM_API extern cSingleton<cArray> enums;          ///< List of cEnum objects.
@@ -56,7 +57,10 @@ cModuleType *findModuleType(const char *s);
 /** Find a cModuleInterface. */
 cModuleInterface *findModuleInterface(const char *s);
 
-/** Find a cLinkType. */
+/** Find a cChannelType. */
+cChannelType *findChannelType(const char *s);
+
+/** DEPRECATED. */
 cLinkType *findLink(const char *s);
 
 /** Find a cFunctionType. */

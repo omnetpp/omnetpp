@@ -9,7 +9,7 @@
 //  Declaration of the following classes:
 //    cModuleInterface: defines a module interface (gates+parameters)
 //    cModuleType     : module class + interface pairs
-//    cLinkType       : channel type (propagation delay, error rate, data rate)
+//    cChannelType    : channel type (propagation delay, error rate, data rate)
 //    cNetworkType    : network
 //    cClassRegister  : creates an object of a specific type
 //    cInspectorFactory : inspector creation
@@ -36,7 +36,7 @@
 //=== classes declared here
 class  cModuleInterface;
 class  cModuleType;
-class  cLinkType;
+class  cChannelType;
 class  cNetworkType;
 class  cFunctionType;
 class  cInspectorFactory;
@@ -44,8 +44,9 @@ class  cInspectorFactory;
 //=== class mentioned
 class  cModule;
 class  cPar;
+class  cChannel;
 
-//=== function types used by cModuleType & cLinkType
+//=== function types used by cModuleType & cChannelType
 
 /**
  * Prototype for functions that are called by cModuleType objects
@@ -55,7 +56,7 @@ class  cPar;
 typedef cModule *(*ModuleCreateFunc)(const char *, cModule *);
 
 /**
- * Prototype for functions that are called by cLinkType objects
+ * DEPRECATED. Prototype for functions that are called by cLinkType objects
  * to create parameter objects for a link of a specific type.
  * @ingroup EnumsTypes
  */
@@ -347,15 +348,55 @@ class SIM_API cModuleType : public cObject
 //==========================================================================
 
 /**
- * Represents a connection type: name, delay, bit error rate, data rate.
- * An instance knows how to create delay, bit error rate and data rate
- * objects (cPars) for a given channel.
- *
- * Objects of this class are usually created via the Define_Channel() macro.
+ * Abstract base class for channel types. One is expected to redefine the
+ * create() method to construct and return a channel object (cChannel subclass)
+ * of the appropriate type and attributes set. The class has to be registered
+ * via the Define_Channel() macro.
  *
  * @ingroup Internals
  */
-class SIM_API cLinkType : public cObject
+class SIM_API cChannelType : public cObject
+{
+  public:
+    /** @name Constructors, destructor, assignment */
+    //@{
+
+    /**
+     * Constructor.
+     */
+    cChannelType(const char *name=NULL);
+
+    /**
+     * Destructor.
+     */
+    virtual ~cChannelType() {}
+
+    /**
+     * Assignment is not supported by this class: this method throws a cException when called.
+     */
+    cChannelType& operator=(const cChannelType&)  {copyNotSupported();return *this;}
+    //@}
+
+    /** @name Channel object creation */
+    //@{
+
+    /**
+     * Factory method to create a channel object.
+     */
+    virtual cChannel *create(const char *name) = 0;
+    //@}
+};
+
+
+/**
+ * DEPRECATED.
+ *
+ * A channel type for backward compatibility. Objects of this class are
+ * created via the Define_Link() macro.
+ *
+ * @ingroup Internals
+ */
+class SIM_API cLinkType : public cChannelType
 {
   private:
     cPar *(*delayfunc)();     // delay
@@ -371,7 +412,7 @@ class SIM_API cLinkType : public cObject
      * functions should be 'factory' functions that create the delay,
      * bit error rate and data rate objects (cPars) for this channel type.
      */
-    cLinkType(const char *name, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)() );
+    cLinkType(const char *name, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)());
 
     /**
      * Copy constructor.
@@ -381,12 +422,12 @@ class SIM_API cLinkType : public cObject
     /**
      * Destructor.
      */
-    virtual ~cLinkType()    {}
+    virtual ~cLinkType() {}
 
     /**
-     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     * Assignment is not supported by this class: this method throws a cException when called.
      */
-    cLinkType& operator=(const cLinkType& o);
+    cLinkType& operator=(const cLinkType&)  {copyNotSupported();return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -396,29 +437,16 @@ class SIM_API cLinkType : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() const     {return new cLinkType(*this);}
+    virtual cObject *dup() const  {return new cLinkType(*this);}
     //@}
 
-    /** @name Channel properties. */
+    /** @name Channel object creation */
     //@{
 
     /**
-     * Creates a cPar object, representing the delay of this channel.
-     * Returns NULL if the channel has no associated delay.
+     * Creates a channel object.
      */
-    cPar *createDelay() const;
-
-    /**
-     * Creates a cPar object, representing the bit error rate of this channel.
-     * Returns NULL if the channel has no associated bit error rate.
-     */
-    cPar *createError() const;
-
-    /**
-     * Creates a cPar object, representing the data rate of this channel.
-     * Returns NULL if the channel has no associated data rate.
-     */
-    cPar *createDataRate() const;
+    virtual cChannel *create(const char *name);
     //@}
 };
 

@@ -48,14 +48,24 @@
   EXECUTE_ON_STARTUP(NAME##__net, networks.instance()->add(new NAME(#NAME));)
 
 /**
- * Link type definition. The macro expands to the definition of a cLinkType object;
+ * Registers a channel type definition (cChannelType object).
+ *
+ * @hideinitializer
+ */
+#define Define_Channel(NAME) \
+  EXECUTE_ON_STARTUP(NAME##__channelt, channeltypes.instance()->add(new NAME(#NAME));)
+
+/**
+ * DEPRECATED. This macro will only be used as long as nedc exists.
+ *
+ * Link type definition. The macro expands to the definition of a cChannelType object;
  * the last three arguments are pointers to functions which dynamically create cPar
- * objects an return their pointers.
+ * objects and return their pointers.
  *
  * @hideinitializer
  */
 #define Define_Link(NAME,DELAY,ERROR,DATARATE) \
-  EXECUTE_ON_STARTUP(NAME##__linkt, linktypes.instance()->add(new cLinkType(#NAME, DELAY, ERROR, DATARATE));)
+  EXECUTE_ON_STARTUP(NAME##__channelt, channeltypes.instance()->add(new cLinkType(#NAME, DELAY, ERROR, DATARATE));)
 
 /**
  * Registers a mathematical function that takes 0, 1, 2 or 3 double arguments

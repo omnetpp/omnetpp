@@ -26,7 +26,7 @@
 //=== classes mentioned:
 class cPar;
 class cGate;
-class cLinkType;
+class cChannelType;
 class cArray;
 class cMessage;
 
@@ -41,9 +41,9 @@ class SIM_API cChannel : public cObject
 {
     friend class cGate; // to call setFromGate()
   protected:
-    cLinkType *linkp;   // link prototype or NULL
-    cArray *parlistp;   // ptr to list of all parameters
-    cGate *fromgatep;   // gate the channel is attached to
+    cChannelType *channeltypep;  // channel type object or NULL
+    cArray *parlistp;            // ptr to list of all parameters
+    cGate *fromgatep;            // gate the channel is attached to
     // TBD: add on/off modelling? or to cGate?
 
   protected:
@@ -64,7 +64,7 @@ class SIM_API cChannel : public cObject
     /**
      * Constructor.
      */
-    explicit cChannel(const char *name=NULL, cLinkType *l=NULL);
+    explicit cChannel(const char *name=NULL, cChannelType *l=NULL);
 
     /**
      * Destructor.
@@ -129,9 +129,9 @@ class SIM_API cChannel : public cObject
     cGate *fromGate() const {return fromgatep;}
 
     /**
-     * Returns the link type of the gate, if it has one.
+     * Returns the channel type of the channel, if it has one.
      */
-    cLinkType *link() const {return linkp;}
+    cChannelType *channelType() const {return channeltypep;}
     //@}
 
     /** @name Parameter list. TBD needs remove, etc. operators too! */
@@ -211,14 +211,14 @@ class SIM_API cSimpleChannel : public cChannel
     //@{
 
     /**
+     * Constructor.
+     */
+    explicit cSimpleChannel(const char *name=NULL);
+
+    /**
      * Copy constructor.
      */
     cSimpleChannel(const cSimpleChannel& ch);
-
-    /**
-     * Constructor.
-     */
-    explicit cSimpleChannel(const char *name=NULL, cLinkType *l=NULL);
 
     /**
      * Destructor.
@@ -274,7 +274,7 @@ class SIM_API cSimpleChannel : public cChannel
     virtual void netUnpack(cCommBuffer *buffer);
     //@}
 
-    /** @name Setting and getting link attributes. */
+    /** @name Setting and getting channel attributes. */
     //@{
 
     /**

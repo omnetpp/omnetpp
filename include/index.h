@@ -230,7 +230,7 @@
  *   - cModuleInterface stores the list of gates and parameters
  *     declared for a module type
  *   - cModuleType can instantiate a module type
- *   - cLinkType can instantiate a channel type
+ *   - cChannelType can instantiate a channel type
  *   - cNetworkType can instantiate a network type (build up a network)
  *   - cFunctionType stores a pointer to a math function accessible from NED
  *   - cClassRegister can instantiate an object type (it is the class behind

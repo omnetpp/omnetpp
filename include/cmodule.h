@@ -67,7 +67,7 @@ class  cModuleType;
  * Connects two gates.
  */
 SIM_API void connect(cModule *frm, int frg,
-                     cLinkType *linkp,
+                     cChannelType *linkp,
                      cModule *tom, int tog);
 
 /**
