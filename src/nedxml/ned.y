@@ -132,6 +132,7 @@ NEDParser *np;
 struct ParserState
 {
     bool parseExpressions;
+    bool storeSourceCode;
     bool inLoop;
     bool inNetwork;
 
@@ -241,24 +242,38 @@ somedefinitions
 
 definition
         : import
+
         | channeldefinition
+                { if (ps.storeSourceCode) ps.channel->setSourceCode(toString(@1)); }
         | simpledefinition
+                { if (ps.storeSourceCode) ((SimpleModuleNode *)ps.module)->setSourceCode(toString(@1)); }
         | moduledefinition
+                { if (ps.storeSourceCode) ((CompoundModuleNode *)ps.module)->setSourceCode(toString(@1)); }
         | networkdefinition
+                { if (ps.storeSourceCode) ps.network->setSourceCode(toString(@1)); }
 
         | channeldefinition_old
+                { if (ps.storeSourceCode) ps.channel->setSourceCode(toString(@1)); }
         | simpledefinition_old
+                { if (ps.storeSourceCode) ((SimpleModuleNode *)ps.module)->setSourceCode(toString(@1)); }
         | moduledefinition_old
+                { if (ps.storeSourceCode) ((CompoundModuleNode *)ps.module)->setSourceCode(toString(@1)); }
         | networkdefinition_old
+                { if (ps.storeSourceCode) ps.network->setSourceCode(toString(@1)); }
 
         | cppinclude
         | cppstruct
         | cppcobject
         | cppnoncobject
+
         | enum
+                { if (ps.storeSourceCode) ps.enump->setSourceCode(toString(@1)); }
         | message
+                { if (ps.storeSourceCode) ps.messagep->setSourceCode(toString(@1)); }
         | class
+                { if (ps.storeSourceCode) ps.classp->setSourceCode(toString(@1)); }
         | struct
+                { if (ps.storeSourceCode) ps.structp->setSourceCode(toString(@1)); }
         ;
 
 /*
@@ -2370,7 +2385,7 @@ extern int yydebug; /* needed if compiled with yacc --VA */
 
 extern char textbuf[];
 
-int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, const char *sourcefname)
+int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, bool storesrc, const char *sourcefname)
 {
 #if YYDEBUG != 0      /* #if added --VA */
     yydebug = YYDEBUGGING_ON;
@@ -2387,6 +2402,7 @@ int runparse (NEDParser *p,NedFileNode *nf,bool parseexpr, const char *sourcefna
     np = p;
     ps.nedfile = nf;
     ps.parseExpressions = parseexpr;
+    ps.storeSourceCode = storesrc;
     sourcefilename = sourcefname;
 
     try {

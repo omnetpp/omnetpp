@@ -1,7 +1,7 @@
 //==========================================================================
 // Part of the OMNeT++ Discrete System Simulation System
 //
-// GENERATED FILE.
+// Generated from ned.dtd by dtdclassgen.pl
 //
 //==========================================================================
 
@@ -15,6 +15,7 @@
 //
 // THIS IS A GENERATED FILE, DO NOT EDIT!
 //
+
 
 #ifndef __NEDELEMENTS_H
 #define __NEDELEMENTS_H
@@ -336,6 +337,7 @@ class ImportedFileNode : public NEDElement
  * <!ELEMENT channel (channel-attr*, display-string?)>
  * <!ATTLIST channel
  *      name                NMTOKEN   #REQUIRED
+ *      source-code         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
@@ -347,6 +349,7 @@ class ChannelNode : public NEDElement
 {
   private:
     std::string name;
+    std::string sourceCode;
     std::string bannerComment;
     std::string rightComment;
     std::string trailingComment;
@@ -369,6 +372,8 @@ class ChannelNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
+    const char * getSourceCode() const  {return sourceCode.c_str();}
+    void setSourceCode(const char * val)  {sourceCode = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
@@ -443,6 +448,7 @@ class ChannelAttrNode : public NEDElement
  *      name                NMTOKEN   #REQUIRED
  *      type-name           NMTOKEN   #REQUIRED
  *      like-name           NMTOKEN   #IMPLIED
+ *      source-code         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
@@ -456,6 +462,7 @@ class NetworkNode : public NEDElement
     std::string name;
     std::string typeName;
     std::string likeName;
+    std::string sourceCode;
     std::string bannerComment;
     std::string rightComment;
     std::string trailingComment;
@@ -482,6 +489,8 @@ class NetworkNode : public NEDElement
     void setTypeName(const char * val)  {typeName = val;}
     const char * getLikeName() const  {return likeName.c_str();}
     void setLikeName(const char * val)  {likeName = val;}
+    const char * getSourceCode() const  {return sourceCode.c_str();}
+    void setSourceCode(const char * val)  {sourceCode = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
@@ -502,6 +511,7 @@ class NetworkNode : public NEDElement
  * <!ELEMENT simple-module (machines?, params?, gates?, display-string?)>
  * <!ATTLIST simple-module
  *      name                NMTOKEN   #REQUIRED
+ *      source-code         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
@@ -513,6 +523,7 @@ class SimpleModuleNode : public NEDElement
 {
   private:
     std::string name;
+    std::string sourceCode;
     std::string bannerComment;
     std::string rightComment;
     std::string trailingComment;
@@ -535,6 +546,8 @@ class SimpleModuleNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
+    const char * getSourceCode() const  {return sourceCode.c_str();}
+    void setSourceCode(const char * val)  {sourceCode = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
@@ -558,6 +571,7 @@ class SimpleModuleNode : public NEDElement
  *                   submodules?, connections?, display-string?)>
  * <!ATTLIST compound-module
  *      name                NMTOKEN   #REQUIRED
+ *      source-code         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
@@ -569,6 +583,7 @@ class CompoundModuleNode : public NEDElement
 {
   private:
     std::string name;
+    std::string sourceCode;
     std::string bannerComment;
     std::string rightComment;
     std::string trailingComment;
@@ -591,6 +606,8 @@ class CompoundModuleNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
+    const char * getSourceCode() const  {return sourceCode.c_str();}
+    void setSourceCode(const char * val)  {sourceCode = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
@@ -2125,6 +2142,7 @@ class CppNoncobjectNode : public NEDElement
  * <!ATTLIST enum
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
+ *      source-code         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
@@ -2137,6 +2155,7 @@ class EnumNode : public NEDElement
   private:
     std::string name;
     std::string extendsName;
+    std::string sourceCode;
     std::string bannerComment;
     std::string rightComment;
     std::string trailingComment;
@@ -2161,6 +2180,8 @@ class EnumNode : public NEDElement
     void setName(const char * val)  {name = val;}
     const char * getExtendsName() const  {return extendsName.c_str();}
     void setExtendsName(const char * val)  {extendsName = val;}
+    const char * getSourceCode() const  {return sourceCode.c_str();}
+    void setSourceCode(const char * val)  {sourceCode = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
@@ -2276,6 +2297,7 @@ class EnumFieldNode : public NEDElement
  * <!ATTLIST message
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
+ *      source-code         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
@@ -2288,6 +2310,7 @@ class MessageNode : public NEDElement
   private:
     std::string name;
     std::string extendsName;
+    std::string sourceCode;
     std::string bannerComment;
     std::string rightComment;
     std::string trailingComment;
@@ -2312,6 +2335,8 @@ class MessageNode : public NEDElement
     void setName(const char * val)  {name = val;}
     const char * getExtendsName() const  {return extendsName.c_str();}
     void setExtendsName(const char * val)  {extendsName = val;}
+    const char * getSourceCode() const  {return sourceCode.c_str();}
+    void setSourceCode(const char * val)  {sourceCode = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
@@ -2333,6 +2358,7 @@ class MessageNode : public NEDElement
  * <!ATTLIST class
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
+ *      source-code         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
@@ -2345,6 +2371,7 @@ class ClassNode : public NEDElement
   private:
     std::string name;
     std::string extendsName;
+    std::string sourceCode;
     std::string bannerComment;
     std::string rightComment;
     std::string trailingComment;
@@ -2369,6 +2396,8 @@ class ClassNode : public NEDElement
     void setName(const char * val)  {name = val;}
     const char * getExtendsName() const  {return extendsName.c_str();}
     void setExtendsName(const char * val)  {extendsName = val;}
+    const char * getSourceCode() const  {return sourceCode.c_str();}
+    void setSourceCode(const char * val)  {sourceCode = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
@@ -2390,6 +2419,7 @@ class ClassNode : public NEDElement
  * <!ATTLIST struct
  *      name                NMTOKEN   #REQUIRED
  *      extends-name        NMTOKEN   #IMPLIED
+ *      source-code         CDATA     #IMPLIED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
@@ -2402,6 +2432,7 @@ class StructNode : public NEDElement
   private:
     std::string name;
     std::string extendsName;
+    std::string sourceCode;
     std::string bannerComment;
     std::string rightComment;
     std::string trailingComment;
@@ -2426,6 +2457,8 @@ class StructNode : public NEDElement
     void setName(const char * val)  {name = val;}
     const char * getExtendsName() const  {return extendsName.c_str();}
     void setExtendsName(const char * val)  {extendsName = val;}
+    const char * getSourceCode() const  {return sourceCode.c_str();}
+    void setSourceCode(const char * val)  {sourceCode = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}

@@ -1,7 +1,7 @@
 //==========================================================================
 // Part of the OMNeT++ Discrete System Simulation System
 //
-// GENERATED FILE.
+// Generated from ned.dtd by dtdclassgen.pl
 //
 //==========================================================================
 
@@ -15,6 +15,7 @@
 //
 // THIS IS A GENERATED FILE, DO NOT EDIT!
 //
+
 
 #include <string.h>
 #include "nederror.h"
@@ -303,16 +304,17 @@ ImportedFileNode *ImportedFileNode::getNextImportedFileNodeSibling() const
 
 int ChannelNode::getNumAttributes() const
 {
-    return 4;
+    return 5;
 }
 
 const char *ChannelNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        case 3: return "trailing-comment";
+        case 1: return "source-code";
+        case 2: return "banner-comment";
+        case 3: return "right-comment";
+        case 4: return "trailing-comment";
         default: return 0;
     }
 }
@@ -321,9 +323,10 @@ const char *ChannelNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        case 3: return trailingComment.c_str();
+        case 1: return sourceCode.c_str();
+        case 2: return bannerComment.c_str();
+        case 3: return rightComment.c_str();
+        case 4: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -332,9 +335,10 @@ void ChannelNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        case 3: trailingComment = val; break;
+        case 1: sourceCode = val; break;
+        case 2: bannerComment = val; break;
+        case 3: rightComment = val; break;
+        case 4: trailingComment = val; break;
         default: ;
     }
 }
@@ -344,8 +348,9 @@ const char *ChannelNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "";
-        case 2: return "\n";
+        case 2: return "";
         case 3: return "\n";
+        case 4: return "\n";
         default: return 0;
     }
 }
@@ -426,7 +431,7 @@ ExpressionNode *ChannelAttrNode::getFirstExpressionChild() const
 
 int NetworkNode::getNumAttributes() const
 {
-    return 6;
+    return 7;
 }
 
 const char *NetworkNode::getAttributeName(int k) const
@@ -435,9 +440,10 @@ const char *NetworkNode::getAttributeName(int k) const
         case 0: return "name";
         case 1: return "type-name";
         case 2: return "like-name";
-        case 3: return "banner-comment";
-        case 4: return "right-comment";
-        case 5: return "trailing-comment";
+        case 3: return "source-code";
+        case 4: return "banner-comment";
+        case 5: return "right-comment";
+        case 6: return "trailing-comment";
         default: return 0;
     }
 }
@@ -448,9 +454,10 @@ const char *NetworkNode::getAttribute(int k) const
         case 0: return name.c_str();
         case 1: return typeName.c_str();
         case 2: return likeName.c_str();
-        case 3: return bannerComment.c_str();
-        case 4: return rightComment.c_str();
-        case 5: return trailingComment.c_str();
+        case 3: return sourceCode.c_str();
+        case 4: return bannerComment.c_str();
+        case 5: return rightComment.c_str();
+        case 6: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -461,9 +468,10 @@ void NetworkNode::setAttribute(int k, const char *val)
         case 0: name = val; break;
         case 1: typeName = val; break;
         case 2: likeName = val; break;
-        case 3: bannerComment = val; break;
-        case 4: rightComment = val; break;
-        case 5: trailingComment = val; break;
+        case 3: sourceCode = val; break;
+        case 4: bannerComment = val; break;
+        case 5: rightComment = val; break;
+        case 6: trailingComment = val; break;
         default: ;
     }
 }
@@ -475,8 +483,9 @@ const char *NetworkNode::getAttributeDefault(int k) const
         case 1: return "";
         case 2: return "";
         case 3: return "";
-        case 4: return "\n";
+        case 4: return "";
         case 5: return "\n";
+        case 6: return "\n";
         default: return 0;
     }
 }
@@ -498,16 +507,17 @@ SubstparamsNode *NetworkNode::getFirstSubstparamsChild() const
 
 int SimpleModuleNode::getNumAttributes() const
 {
-    return 4;
+    return 5;
 }
 
 const char *SimpleModuleNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        case 3: return "trailing-comment";
+        case 1: return "source-code";
+        case 2: return "banner-comment";
+        case 3: return "right-comment";
+        case 4: return "trailing-comment";
         default: return 0;
     }
 }
@@ -516,9 +526,10 @@ const char *SimpleModuleNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        case 3: return trailingComment.c_str();
+        case 1: return sourceCode.c_str();
+        case 2: return bannerComment.c_str();
+        case 3: return rightComment.c_str();
+        case 4: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -527,9 +538,10 @@ void SimpleModuleNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        case 3: trailingComment = val; break;
+        case 1: sourceCode = val; break;
+        case 2: bannerComment = val; break;
+        case 3: rightComment = val; break;
+        case 4: trailingComment = val; break;
         default: ;
     }
 }
@@ -539,8 +551,9 @@ const char *SimpleModuleNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "";
-        case 2: return "\n";
+        case 2: return "";
         case 3: return "\n";
+        case 4: return "\n";
         default: return 0;
     }
 }
@@ -572,16 +585,17 @@ DisplayStringNode *SimpleModuleNode::getFirstDisplayStringChild() const
 
 int CompoundModuleNode::getNumAttributes() const
 {
-    return 4;
+    return 5;
 }
 
 const char *CompoundModuleNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        case 3: return "trailing-comment";
+        case 1: return "source-code";
+        case 2: return "banner-comment";
+        case 3: return "right-comment";
+        case 4: return "trailing-comment";
         default: return 0;
     }
 }
@@ -590,9 +604,10 @@ const char *CompoundModuleNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        case 3: return trailingComment.c_str();
+        case 1: return sourceCode.c_str();
+        case 2: return bannerComment.c_str();
+        case 3: return rightComment.c_str();
+        case 4: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -601,9 +616,10 @@ void CompoundModuleNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        case 3: trailingComment = val; break;
+        case 1: sourceCode = val; break;
+        case 2: bannerComment = val; break;
+        case 3: rightComment = val; break;
+        case 4: trailingComment = val; break;
         default: ;
     }
 }
@@ -613,8 +629,9 @@ const char *CompoundModuleNode::getAttributeDefault(int k) const
     switch (k) {
         case 0: return "";
         case 1: return "";
-        case 2: return "\n";
+        case 2: return "";
         case 3: return "\n";
+        case 4: return "\n";
         default: return 0;
     }
 }
@@ -2422,7 +2439,7 @@ CppNoncobjectNode *CppNoncobjectNode::getNextCppNoncobjectNodeSibling() const
 
 int EnumNode::getNumAttributes() const
 {
-    return 5;
+    return 6;
 }
 
 const char *EnumNode::getAttributeName(int k) const
@@ -2430,9 +2447,10 @@ const char *EnumNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "extends-name";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        case 4: return "trailing-comment";
+        case 2: return "source-code";
+        case 3: return "banner-comment";
+        case 4: return "right-comment";
+        case 5: return "trailing-comment";
         default: return 0;
     }
 }
@@ -2442,9 +2460,10 @@ const char *EnumNode::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return extendsName.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        case 4: return trailingComment.c_str();
+        case 2: return sourceCode.c_str();
+        case 3: return bannerComment.c_str();
+        case 4: return rightComment.c_str();
+        case 5: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -2454,9 +2473,10 @@ void EnumNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: extendsName = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        case 4: trailingComment = val; break;
+        case 2: sourceCode = val; break;
+        case 3: bannerComment = val; break;
+        case 4: rightComment = val; break;
+        case 5: trailingComment = val; break;
         default: ;
     }
 }
@@ -2467,8 +2487,9 @@ const char *EnumNode::getAttributeDefault(int k) const
         case 0: return "";
         case 1: return "";
         case 2: return "";
-        case 3: return "\n";
+        case 3: return "";
         case 4: return "\n";
+        case 5: return "\n";
         default: return 0;
     }
 }
@@ -2590,7 +2611,7 @@ EnumFieldNode *EnumFieldNode::getNextEnumFieldNodeSibling() const
 
 int MessageNode::getNumAttributes() const
 {
-    return 5;
+    return 6;
 }
 
 const char *MessageNode::getAttributeName(int k) const
@@ -2598,9 +2619,10 @@ const char *MessageNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "extends-name";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        case 4: return "trailing-comment";
+        case 2: return "source-code";
+        case 3: return "banner-comment";
+        case 4: return "right-comment";
+        case 5: return "trailing-comment";
         default: return 0;
     }
 }
@@ -2610,9 +2632,10 @@ const char *MessageNode::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return extendsName.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        case 4: return trailingComment.c_str();
+        case 2: return sourceCode.c_str();
+        case 3: return bannerComment.c_str();
+        case 4: return rightComment.c_str();
+        case 5: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -2622,9 +2645,10 @@ void MessageNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: extendsName = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        case 4: trailingComment = val; break;
+        case 2: sourceCode = val; break;
+        case 3: bannerComment = val; break;
+        case 4: rightComment = val; break;
+        case 5: trailingComment = val; break;
         default: ;
     }
 }
@@ -2635,8 +2659,9 @@ const char *MessageNode::getAttributeDefault(int k) const
         case 0: return "";
         case 1: return "";
         case 2: return "";
-        case 3: return "\n";
+        case 3: return "";
         case 4: return "\n";
+        case 5: return "\n";
         default: return 0;
     }
 }
@@ -2658,7 +2683,7 @@ FieldsNode *MessageNode::getFirstFieldsChild() const
 
 int ClassNode::getNumAttributes() const
 {
-    return 5;
+    return 6;
 }
 
 const char *ClassNode::getAttributeName(int k) const
@@ -2666,9 +2691,10 @@ const char *ClassNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "extends-name";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        case 4: return "trailing-comment";
+        case 2: return "source-code";
+        case 3: return "banner-comment";
+        case 4: return "right-comment";
+        case 5: return "trailing-comment";
         default: return 0;
     }
 }
@@ -2678,9 +2704,10 @@ const char *ClassNode::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return extendsName.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        case 4: return trailingComment.c_str();
+        case 2: return sourceCode.c_str();
+        case 3: return bannerComment.c_str();
+        case 4: return rightComment.c_str();
+        case 5: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -2690,9 +2717,10 @@ void ClassNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: extendsName = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        case 4: trailingComment = val; break;
+        case 2: sourceCode = val; break;
+        case 3: bannerComment = val; break;
+        case 4: rightComment = val; break;
+        case 5: trailingComment = val; break;
         default: ;
     }
 }
@@ -2703,8 +2731,9 @@ const char *ClassNode::getAttributeDefault(int k) const
         case 0: return "";
         case 1: return "";
         case 2: return "";
-        case 3: return "\n";
+        case 3: return "";
         case 4: return "\n";
+        case 5: return "\n";
         default: return 0;
     }
 }
@@ -2726,7 +2755,7 @@ FieldsNode *ClassNode::getFirstFieldsChild() const
 
 int StructNode::getNumAttributes() const
 {
-    return 5;
+    return 6;
 }
 
 const char *StructNode::getAttributeName(int k) const
@@ -2734,9 +2763,10 @@ const char *StructNode::getAttributeName(int k) const
     switch (k) {
         case 0: return "name";
         case 1: return "extends-name";
-        case 2: return "banner-comment";
-        case 3: return "right-comment";
-        case 4: return "trailing-comment";
+        case 2: return "source-code";
+        case 3: return "banner-comment";
+        case 4: return "right-comment";
+        case 5: return "trailing-comment";
         default: return 0;
     }
 }
@@ -2746,9 +2776,10 @@ const char *StructNode::getAttribute(int k) const
     switch (k) {
         case 0: return name.c_str();
         case 1: return extendsName.c_str();
-        case 2: return bannerComment.c_str();
-        case 3: return rightComment.c_str();
-        case 4: return trailingComment.c_str();
+        case 2: return sourceCode.c_str();
+        case 3: return bannerComment.c_str();
+        case 4: return rightComment.c_str();
+        case 5: return trailingComment.c_str();
         default: return 0;
     }
 }
@@ -2758,9 +2789,10 @@ void StructNode::setAttribute(int k, const char *val)
     switch (k) {
         case 0: name = val; break;
         case 1: extendsName = val; break;
-        case 2: bannerComment = val; break;
-        case 3: rightComment = val; break;
-        case 4: trailingComment = val; break;
+        case 2: sourceCode = val; break;
+        case 3: bannerComment = val; break;
+        case 4: rightComment = val; break;
+        case 5: trailingComment = val; break;
         default: ;
     }
 }
@@ -2771,8 +2803,9 @@ const char *StructNode::getAttributeDefault(int k) const
         case 0: return "";
         case 1: return "";
         case 2: return "";
-        case 3: return "\n";
+        case 3: return "";
         case 4: return "\n";
+        case 5: return "\n";
         default: return 0;
     }
 }

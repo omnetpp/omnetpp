@@ -1,7 +1,7 @@
 //==========================================================================
 // Part of the OMNeT++ Discrete System Simulation System
 //
-// GENERATED FILE.
+// Generated from ned.dtd by dtdclassgen.pl
 //
 //==========================================================================
 
@@ -12,7 +12,10 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***
+//
+// THIS IS A GENERATED FILE, DO NOT EDIT!
+//
+
 
 #ifndef __NEDVALIDATOR_H
 #define __NEDVALIDATOR_H

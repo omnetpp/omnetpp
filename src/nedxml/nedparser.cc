@@ -31,6 +31,9 @@ NEDParser::NEDParser()
 {
     tree = 0;
     nedsource = 0;
+
+    parseexpr = true;
+    storesrc = false;
 }
 
 NEDParser::~NEDParser()
@@ -38,7 +41,7 @@ NEDParser::~NEDParser()
     delete tree;
 }
 
-bool NEDParser::parseFile(const char *fname, bool parseexpr)
+bool NEDParser::parseFile(const char *fname)
 {
     // init class members
     NEDFileBuffer nf;
@@ -69,14 +72,14 @@ bool NEDParser::parseFile(const char *fname, bool parseexpr)
     yyin = fopen(newfilename,"r");
     if (!yyin)
         {NEDError(NULL, "cannot read %s", fname); return false;}
-    runparse(this,nedfile,parseexpr,fname);
+    runparse(this,nedfile,parseexpr,storesrc,fname);
     fclose(yyin);
 
     // num_errors contains number of parse errors
     return true;
 }
 
-bool NEDParser::parseText(const char *nedtext,bool parseexpr)
+bool NEDParser::parseText(const char *nedtext)
 {
     // init global vars
     NEDFileBuffer nf;
@@ -99,7 +102,7 @@ bool NEDParser::parseText(const char *nedtext,bool parseexpr)
     struct yy_buffer_state *handle = yy_scan_string(nedtext);
     if (!handle)
         {NEDError(NULL, "unable to allocate work memory"); return false;}
-    runparse(this,nedfile,parseexpr,"generated-code");
+    runparse(this,nedfile,parseexpr,storesrc,"generated-code");
     yy_delete_buffer(handle);
 
     // num_errors contains number of parse errors

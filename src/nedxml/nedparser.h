@@ -46,8 +46,11 @@ class NEDParser
     NEDFileBuffer *nedsource;  // NED File object
 
   protected:
-    const char *filename;  // file being parsed
-    int num_errors;        // number of errors so far
+    bool parseexpr;            // whether to parse expressions or not
+    bool storesrc;             // whether to fill in sourceCode attributes
+
+    const char *filename;      // file being parsed
+    int num_errors;            // number of errors so far
 
   public:
     /**
@@ -61,16 +64,28 @@ class NEDParser
     ~NEDParser();
 
     /**
-     * Parse the given file. Bool argument specifies if expressions
-     * should be parsed or not. Result can be obtained from getTree().
+     * Affects operation of parseFile() and parseText(), specifies whether
+     * expressions should be parsed or not.
+     * Default is true.
      */
-    bool parseFile(const char *fname,bool parseexpr);
+    void setParseExpressions(bool b) {parseexpr = b;}
 
     /**
-     * Parse the given NED text. Bool argument specifies if expressions
-     * should be parsed or not. Result can be obtained from getTree().
+     * Affects operation of parseFile() and parseText(), specifies whether
+     * sourceCode attributes in NEDElements should be filled out.
+     * Default is false.
      */
-    bool parseText(const char *nedtext,bool parseexpr);
+    void setStoreSource(bool b) {storesrc = b;}
+
+    /**
+     * Parse the given file. Result can be obtained from getTree().
+     */
+    bool parseFile(const char *fname);
+
+    /**
+     * Parse the given NED text. Result can be obtained from getTree().
+     */
+    bool parseText(const char *nedtext);
 
     /**
      * Returns the object tree which is the result of the parsing.
