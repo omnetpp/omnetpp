@@ -89,7 +89,7 @@ proc label-entry-chooser {w label text chooserproc} {
 # private proc for label-entry-chooser
 proc chooser:choose {w chooserproc} {
     set current [$w get]
-    set new [eval $chooserproc $current]
+    set new [eval $chooserproc \"$current\"]
     if {$new!=""} {
        $w delete 0 end
        $w insert end $new

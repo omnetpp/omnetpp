@@ -28,10 +28,6 @@ set keywords {include|import|network|module|simple|channel|delay|error|datarate|
 #
 proc configureEditor {w} {
 
-    $w tag configure KEYWORD -foreground #a00000
-    $w tag configure STRING  -foreground #008000
-    $w tag configure COMMENT -foreground #808080
-
     $w tag configure SELECT -back #808080 -fore #ffffff
 
     bind $w <Key> {
@@ -67,6 +63,13 @@ proc syntaxHighlight {w startpos endpos} {
     #
     global keywords
 
+    # setting up tags here is slightly redundant, but the advantage is to be
+    # able to call syntaxHighlight on any text widget without any preparation
+    $w tag configure KEYWORD -foreground #a00000
+    $w tag configure STRING  -foreground #008000
+    $w tag configure COMMENT -foreground #808080
+
+    # remove existing tags...
     $w tag remove KEYWORD $startpos $endpos
     $w tag remove COMMENT $startpos $endpos
     $w tag remove STRING  $startpos $endpos

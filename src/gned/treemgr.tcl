@@ -323,8 +323,8 @@ proc displayCodeForItem {key} {
     frame $w.main
     scrollbar $w.main.sb -borderwidth 1 -command "$w.main.text yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -side right
-    text $w.main.text -width 60 -height 20 -yscrollcommand "$w.main.sb set" \
-         -wrap none -font $fonts(normal) -relief groove
+    text $w.main.text -yscrollcommand "$w.main.sb set" \
+         -wrap none -font $fonts(fixed) -relief sunken -bg #a0e0a0
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     frame $w.butt
@@ -339,9 +339,17 @@ proc displayCodeForItem {key} {
     set nedcode [generateNed $key]
     $w.main.text insert end $nedcode
     $w.main.text mark set insert 1.0
+    syntaxHighlight $w.main.text 1.0 end
 
-    # must be left last because one can't insert text into a disabled widget even from program
-    $w.main.text config -state disabled
+    # set dimensions and disable widget (one can't insert text into a disabled
+    # widget even from program)
+    set numlines [lindex [split [$w.main.text index end] "."] 0]
+    set height [expr $numlines>28 ? 30 : $numlines+2]
+    $w.main.text config -state disabled -height $height -width 60
+
+    # bindings
+    bind $w <Key-Escape> "destroy $w"
+    focus $w.butt.close
 }
 
 

@@ -206,7 +206,7 @@ proc ConnProps:gateSpec {w} {
 
     # add "Gate ... index [...]" line
     label $w.gate.l1 -text  "  Gate:" -anchor w -width 8
-    entry $w.gate.name -width 17
+    entry $w.gate.name -width 14
     button $w.gate.c -text "..." -width 3
     label $w.gate.lb -text  "  index \["
     entry $w.gate.index -width 8
@@ -227,5 +227,21 @@ proc ConnProps:fillGateSpec {w key srcdest} {
     $w.mod.index insert 0 $ned($key,${srcdest}_index)
     $w.gate.name insert 0 $ned($key,${srcdest}gate)
     $w.gate.index insert 0 $ned($key,${srcdest}_gate_index)
+
+    $w.gate.c config -command "ConnProps:chooseGate $modkey $w.gate.name"
+}
+
+proc ConnProps:chooseGate {modkey w} {
+
+    notImplemented
+    return
+
+    set current [$w get]
+    set new [...]
+
+    if {$new!=""} {
+       $w delete 0 end
+       $w insert end $new
+    }
 }
 

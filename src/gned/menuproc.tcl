@@ -317,7 +317,7 @@ proc helpAbout {} {
 
     label .about.f.l -text \
 {
-GNED 1.2 Beta 2
+GNED 2.0 Beta 2
 Part of the OMNeT++ Discrete Event Simulator
 
 (C) 1997-99 Andras Varga
@@ -336,4 +336,9 @@ proc helpRelNotes {} {
     createFileViewer [file join $OMNETPP_GNED_DIR "README"]
 }
 
-
+proc notImplemented {args} {
+    # the most versatile function :-)
+    set parent [winfo toplevel [focus]]
+    tk_messageBox -type ok -icon info -parent $parent \
+          -title "GNED" -message "Not implemented yet :-("
+}
