@@ -34,9 +34,13 @@ Simulation library:
 
 (x)	removed cGate::link()
 
+(+)	added cChannelType class and finChannelType() function
+
 (+) 	added cGate::disconnect()
 
 (!)	cGate::connect() semantics slightly changed (see API documentation)
+
+(+) 	added cModule::gateSize()
 
 (-)	cDisplayStringParser renamed to cDisplayString (compatibility typedef
 	exists)
