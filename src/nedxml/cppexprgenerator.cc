@@ -177,6 +177,12 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr, NEDEleme
     if (tag==NED_PARAM_REF && !((ParamRefNode *)node)->getIsRef())
         return false;
 
+    // a single parameter as expression doesn't need expression class, except "ancestor ref param"
+    if (tag==NED_PARAM_REF && node->getParent()==expr &&
+        (!((ParamRefNode *)node)->getIsRef() || !((ParamRefNode *)node)->getIsAncestor())
+       )
+        return false;
+
     // special functions (INPUT, INDEX, SIZEOF) may also go without expression classes
     if (tag==NED_FUNCTION)
     {
@@ -223,7 +229,7 @@ void CppExpressionGenerator::doExtractArgs(ExpressionInfo& info, NEDElement *nod
         bool isctorarg = false, iscachedvar = false;
         int tag = child->getTagCode();
         if (tag==NED_IDENT && !isSizeofOp(node))
-            isctorarg = true;
+             isctorarg = true;
         else if (isIndexOp(child))
              isctorarg = true;
         else if (isSizeofOp(child))
@@ -648,12 +654,16 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
     {
         if (node->getIsAncestor())
         {
-            // TBD distinguish ref and non-ref
+            if (node->getIsRef())
+                out << "cPar().setRedirection(&(";
             out << "mod->ancestorPar(\"" << node->getParamName() << "\")";
+            if (node->getIsRef())
+                out << "))";
         }
         else
         {
-            // TBD handle node->getIsRef(), if ever needed with inline expressions(?)
+            if (node->getIsRef())
+                out << "cPar().setRedirection(&(";
             if (strnotnull(node->getModule()))
             {
                 out << node->getModule() << "_p";
@@ -669,6 +679,8 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
                 out << "mod->";
             }
             out << "par(\"" << node->getParamName() << "\")";
+            if (node->getIsRef())
+                out << "))";
         }
     }
 }
