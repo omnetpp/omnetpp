@@ -1,0 +1,151 @@
+# Microsoft Developer Studio Generated Dependency File, included by dyna.mak
+
+.\client.cpp : \
+	"..\..\include\carray.h"\
+	"..\..\include\ccor.h"\
+	"..\..\include\cdensity.h"\
+	"..\..\include\cdetect.h"\
+	"..\..\include\cenvir.h"\
+	"..\..\include\cfsm.h"\
+	"..\..\include\cgate.h"\
+	"..\..\include\chead.h"\
+	"..\..\include\chist.h"\
+	"..\..\include\cksplit.h"\
+	"..\..\include\cllist.h"\
+	"..\..\include\cmessage.h"\
+	"..\..\include\cmodule.h"\
+	"..\..\include\cmsgheap.h"\
+	"..\..\include\cnetmod.h"\
+	"..\..\include\cobject.h"\
+	"..\..\include\coutvect.h"\
+	"..\..\include\cpacket.h"\
+	"..\..\include\cpar.h"\
+	"..\..\include\cpsquare.h"\
+	"..\..\include\cqueue.h"\
+	"..\..\include\csimul.h"\
+	"..\..\include\cstat.h"\
+	"..\..\include\cstk.h"\
+	"..\..\include\ctopo.h"\
+	"..\..\include\ctypes.h"\
+	"..\..\include\cvarhist.h"\
+	"..\..\include\cwatch.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\errmsg.h"\
+	"..\..\include\macros.h"\
+	"..\..\include\omnetpp.h"\
+
+
+!IF  "$(CFG)" == "dyna - Win32 Debug Tkenv"
+
+!ELSEIF  "$(CFG)" == "dyna - Win32 Debug Cmdenv"
+
+!ELSEIF  "$(CFG)" == "dyna - Win32 Release Tkenv"
+
+!ELSEIF  "$(CFG)" == "dyna - Win32 Release Cmdenv"
+
+!ENDIF
+
+.\server.cpp : \
+	"..\..\include\carray.h"\
+	"..\..\include\ccor.h"\
+	"..\..\include\cdensity.h"\
+	"..\..\include\cdetect.h"\
+	"..\..\include\cenvir.h"\
+	"..\..\include\cfsm.h"\
+	"..\..\include\cgate.h"\
+	"..\..\include\chead.h"\
+	"..\..\include\chist.h"\
+	"..\..\include\cksplit.h"\
+	"..\..\include\cllist.h"\
+	"..\..\include\cmessage.h"\
+	"..\..\include\cmodule.h"\
+	"..\..\include\cmsgheap.h"\
+	"..\..\include\cnetmod.h"\
+	"..\..\include\cobject.h"\
+	"..\..\include\coutvect.h"\
+	"..\..\include\cpacket.h"\
+	"..\..\include\cpar.h"\
+	"..\..\include\cpsquare.h"\
+	"..\..\include\cqueue.h"\
+	"..\..\include\csimul.h"\
+	"..\..\include\cstat.h"\
+	"..\..\include\cstk.h"\
+	"..\..\include\ctopo.h"\
+	"..\..\include\ctypes.h"\
+	"..\..\include\cvarhist.h"\
+	"..\..\include\cwatch.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\errmsg.h"\
+	"..\..\include\macros.h"\
+	"..\..\include\omnetpp.h"\
+
+
+.\servproc.cpp : \
+	"..\..\include\carray.h"\
+	"..\..\include\ccor.h"\
+	"..\..\include\cdensity.h"\
+	"..\..\include\cdetect.h"\
+	"..\..\include\cenvir.h"\
+	"..\..\include\cfsm.h"\
+	"..\..\include\cgate.h"\
+	"..\..\include\chead.h"\
+	"..\..\include\chist.h"\
+	"..\..\include\cksplit.h"\
+	"..\..\include\cllist.h"\
+	"..\..\include\cmessage.h"\
+	"..\..\include\cmodule.h"\
+	"..\..\include\cmsgheap.h"\
+	"..\..\include\cnetmod.h"\
+	"..\..\include\cobject.h"\
+	"..\..\include\coutvect.h"\
+	"..\..\include\cpacket.h"\
+	"..\..\include\cpar.h"\
+	"..\..\include\cpsquare.h"\
+	"..\..\include\cqueue.h"\
+	"..\..\include\csimul.h"\
+	"..\..\include\cstat.h"\
+	"..\..\include\cstk.h"\
+	"..\..\include\ctopo.h"\
+	"..\..\include\ctypes.h"\
+	"..\..\include\cvarhist.h"\
+	"..\..\include\cwatch.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\errmsg.h"\
+	"..\..\include\macros.h"\
+	"..\..\include\omnetpp.h"\
+
+
+.\switch.cpp : \
+	"..\..\include\carray.h"\
+	"..\..\include\ccor.h"\
+	"..\..\include\cdensity.h"\
+	"..\..\include\cdetect.h"\
+	"..\..\include\cenvir.h"\
+	"..\..\include\cfsm.h"\
+	"..\..\include\cgate.h"\
+	"..\..\include\chead.h"\
+	"..\..\include\chist.h"\
+	"..\..\include\cksplit.h"\
+	"..\..\include\cllist.h"\
+	"..\..\include\cmessage.h"\
+	"..\..\include\cmodule.h"\
+	"..\..\include\cmsgheap.h"\
+	"..\..\include\cnetmod.h"\
+	"..\..\include\cobject.h"\
+	"..\..\include\coutvect.h"\
+	"..\..\include\cpacket.h"\
+	"..\..\include\cpar.h"\
+	"..\..\include\cpsquare.h"\
+	"..\..\include\cqueue.h"\
+	"..\..\include\csimul.h"\
+	"..\..\include\cstat.h"\
+	"..\..\include\cstk.h"\
+	"..\..\include\ctopo.h"\
+	"..\..\include\ctypes.h"\
+	"..\..\include\cvarhist.h"\
+	"..\..\include\cwatch.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\errmsg.h"\
+	"..\..\include\macros.h"\
+	"..\..\include\omnetpp.h"\
+
