@@ -460,6 +460,7 @@ exit $ret;
 #  %fkind{fieldname}
 #  %datatype{fieldname}
 #  %argtype{fieldname}
+#  %rettype{fieldname}
 #  %var{fieldname}
 #  %varsize{fieldname}
 #  %getter{fieldname}
@@ -587,6 +588,7 @@ sub prepareForCodeGeneration
         if ($fkind{$fieldname} eq 'struct') {
             $datatype{$fieldname} = $ftype;
             $argtype{$fieldname} = "const $ftype&";
+            $rettype{$fieldname} = "$ftype&";
             $tostring{$fieldname} = "${ftype}2string";
             $fromstring{$fieldname} = "string2${ftype}";
             #$fval{$fieldname} = '' unless ($fval{$fieldname} ne '');
@@ -594,66 +596,77 @@ sub prepareForCodeGeneration
             if ($ftype eq "bool") {
                 $datatype{$fieldname} = "bool";
                 $argtype{$fieldname} = "bool";
+                $rettype{$fieldname} = "bool";
                 $tostring{$fieldname} = "bool2string";
                 $fromstring{$fieldname} = "string2bool";
                 $fval{$fieldname} = 'false' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "char") {
                 $datatype{$fieldname} = "char";
                 $argtype{$fieldname} = "char";
+                $rettype{$fieldname} = "char";
                 $tostring{$fieldname} = "long2string";
                 $fromstring{$fieldname} = "string2long";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "unsigned char") {
                 $datatype{$fieldname} = "unsigned char";
                 $argtype{$fieldname} = "unsigned char";
+                $rettype{$fieldname} = "unsigned char";
                 $tostring{$fieldname} = "long2string";
                 $fromstring{$fieldname} = "string2long";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "short") {
                 $datatype{$fieldname} = "short";
                 $argtype{$fieldname} = "short";
+                $rettype{$fieldname} = "short";
                 $tostring{$fieldname} = "long2string";
                 $fromstring{$fieldname} = "string2long";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "unsigned short") {
                 $datatype{$fieldname} = "unsigned short";
                 $argtype{$fieldname} = "unsigned short";
+                $rettype{$fieldname} = "unsigned short";
                 $tostring{$fieldname} = "long2string";
                 $fromstring{$fieldname} = "string2long";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "int") {
                 $datatype{$fieldname} = "int";
                 $argtype{$fieldname} = "int";
+                $rettype{$fieldname} = "int";
                 $tostring{$fieldname} = "long2string";
                 $fromstring{$fieldname} = "string2long";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "unsigned int") {
                 $datatype{$fieldname} = "unsigned int";
                 $argtype{$fieldname} = "unsigned int";
+                $rettype{$fieldname} = "unsigned int";
                 $tostring{$fieldname} = "long2string";
                 $fromstring{$fieldname} = "string2long";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "long") {
                 $datatype{$fieldname} = "long";
                 $argtype{$fieldname} = "long";
+                $rettype{$fieldname} = "long";
                 $tostring{$fieldname} = "long2string";
                 $fromstring{$fieldname} = "string2long";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "unsigned long") {
                 $datatype{$fieldname} = "unsigned long";
                 $argtype{$fieldname} = "unsigned long";
+                $rettype{$fieldname} = "unsigned long";
                 $tostring{$fieldname} = "long2string";
                 $fromstring{$fieldname} = "string2long";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "double") {
                 $datatype{$fieldname} = "double";
                 $argtype{$fieldname} = "double";
+                $rettype{$fieldname} = "double";
                 $tostring{$fieldname} = "double2string";
                 $fromstring{$fieldname} = "string2double";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             } elsif ($ftype eq "string") {
                 $datatype{$fieldname} = "opp_string";
                 $argtype{$fieldname} = "const char *";
+                $rettype{$fieldname} = "const char *";
                 $tostring{$fieldname} = "oppstring2string";
                 $fromstring{$fieldname} = "opp_string";
                 $fval{$fieldname} = '""' unless ($fval{$fieldname} ne '');
@@ -661,6 +674,7 @@ sub prepareForCodeGeneration
                 print STDERR "*** unknown data type '$ftype' (is it struct?)\n"; $ret=1;
                 $datatype{$fieldname} = $ftype;
                 $argtype{$fieldname} = $ftype;
+                $rettype{$fieldname} = $ftype;
                 $tostring{$fieldname} = "";
                 $fromstring{$fieldname} = "";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
@@ -727,17 +741,22 @@ sub generateClass
         } else {
             $pure = '';
         }
+        if ($fkind{$fieldname} eq 'struct') {
+            $getterconst = '';
+        } else {
+            $getterconst = ' const';
+        }
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
             print H "    virtual unsigned int $getsize{$fieldname}() const$pure;\n";
-            print H "    virtual $argtype{$fieldname} $getter{$fieldname}(unsigned int k) const$pure;\n";
+            print H "    virtual $rettype{$fieldname} $getter{$fieldname}(unsigned int k)$getterconst$pure;\n";
             print H "    virtual void $setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
         } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
             print H "    virtual void $alloc{$fieldname}(unsigned int size)$pure;\n";
             print H "    virtual unsigned int $getsize{$fieldname}() const$pure;\n";
-            print H "    virtual $argtype{$fieldname} $getter{$fieldname}(unsigned int k) const$pure;\n";
+            print H "    virtual $rettype{$fieldname} $getter{$fieldname}(unsigned int k)$getterconst$pure;\n";
             print H "    virtual void $setter{$fieldname}(unsigned int k, $argtype{$fieldname} $var{$fieldname})$pure;\n";
         } else {
-            print H "    virtual $argtype{$fieldname} $getter{$fieldname}() const$pure;\n";
+            print H "    virtual $rettype{$fieldname} $getter{$fieldname}()$getterconst$pure;\n";
             print H "    virtual void $setter{$fieldname}($argtype{$fieldname} $var{$fieldname})$pure;\n";
         }
     }
@@ -880,12 +899,17 @@ sub generateClass
     foreach $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
+            if ($fkind{$fieldname} eq 'struct') {
+                $getterconst = '';
+            } else {
+                $getterconst = ' const';
+            }
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 print CC "unsigned int $msgclass\:\:$getsize{$fieldname}() const\n";
                 print CC "{\n";
                 print CC "    return $farraysize{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k) const\n";
+                print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k)$getterconst\n";
                 print CC "{\n";
                 print CC "    if (k>=$farraysize{$fieldname}) throw new cException(\"Array of size $farraysize{$fieldname} indexed by \%d\", k);\n";
                 print CC "    return $var{$fieldname}\[k\];\n";
@@ -912,7 +936,7 @@ sub generateClass
                 print CC "{\n";
                 print CC "    return $varsize{$fieldname};\n";
                 print CC "}\n\n";
-                print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k) const\n";
+                print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}(unsigned int k)$getterconst\n";
                 print CC "{\n";
                 print CC "    if (k>=$varsize{$fieldname}) throw new cException(\"Array of size $varsize{$fieldname} indexed by \%d, k\");\n";
                 print CC "    return $var{$fieldname}\[k\];\n";
@@ -923,7 +947,7 @@ sub generateClass
                 print CC "    this->$var{$fieldname}\[k\]=$var{$fieldname};\n";
                 print CC "}\n\n";
             } else {
-                print CC "$argtype{$fieldname} $msgclass\:\:$getter{$fieldname}() const\n";
+                print CC "$rettype{$fieldname} $msgclass\:\:$getter{$fieldname}()$getterconst\n";
                 print CC "{\n";
                 print CC "    return $var{$fieldname};\n";
                 print CC "}\n\n";
@@ -1269,9 +1293,9 @@ sub generateDescriptorClass
         if ($fkind{$fieldlist[$i]} eq 'struct') {
             if ($classtype eq 'struct') {
                 if ($fisarray{$fieldlist[$i]}) {
-                    print CC "        case $i: return (void *)&$var{$fieldlist[$i]}\[i\]; break;\n";
+                    print CC "        case $i: return (void *)&pp->$var{$fieldlist[$i]}\[i\]; break;\n";
                 } else {
-                    print CC "        case $i: return (void *)&$var{$fieldlist[$i]}; break;\n";
+                    print CC "        case $i: return (void *)&pp->$var{$fieldlist[$i]}; break;\n";
                 }
             } else {
                 if ($fisarray{$fieldlist[$i]}) {
