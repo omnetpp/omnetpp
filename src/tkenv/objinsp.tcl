@@ -17,10 +17,10 @@
 # Misc inspectors: cObject, container, cPar, cMessage, cPacket, cWatch
 #
 
-proc create_objinspector {name} {
+proc create_objinspector {name geom} {
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     set nb $w.nb
     notebook $nb
@@ -51,12 +51,12 @@ proc create_objinspector {name} {
     }
 }
 
-proc create_containerinspector {name args} {
+proc create_containerinspector {name geom args} {
     # create a list window
 
     set w $name
     set typelist $args
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     # Create buttons at the bottom of the dialog.
     frame $w.buttons
@@ -69,11 +69,11 @@ proc create_containerinspector {name args} {
     create_inspector_listbox $w
 }
 
-proc create_messageinspector {name} {
+proc create_messageinspector {name geom} {
     global fonts
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     set nb $w.nb
     notebook $nb
@@ -132,11 +132,11 @@ proc create_messageinspector {name} {
     create_inspector_listbox $nb.params
 }
 
-proc create_watchinspector {name} {
+proc create_watchinspector {name geom} {
     global fonts
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     frame $w.main
     pack $w.main -anchor center -expand 0 -fill both -side top
@@ -147,11 +147,11 @@ proc create_watchinspector {name} {
     pack $w.main.name -anchor center -expand 1 -fill x -side top
 }
 
-proc create_parinspector {name} {
+proc create_parinspector {name geom} {
     global fonts
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     frame $w.main
     frame $w.bot
@@ -175,7 +175,7 @@ proc create_parinspector {name} {
 }
 
 
-proc create_packetinspector {name} {
+proc create_packetinspector {name geom} {
     create_messageinspector $name
 
     set w $name

@@ -32,12 +32,12 @@ proc histogramwindow_mouse {w x y on} {
     }
 }
 
-proc create_histogramwindow {name} {
+proc create_histogramwindow {name geom} {
     global icons help_tips
 
     # create histogram inspector
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     # make the window respond to resize events
     bind $w <Configure> "opp_updateinspector $w"
@@ -193,10 +193,10 @@ proc outvectorwindow_mouse {w x y on} {
     }
 }
 
-proc create_outvectorwindow {name} {
+proc create_outvectorwindow {name geom} {
     # create histogram inspector
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     # make the window respond to resize events
     bind $w <Configure> "opp_updateinspector $w"
@@ -223,11 +223,11 @@ proc create_outvectorwindow {name} {
     update idletasks
 }
 
-proc create_statisticinspector {name} {
+proc create_statisticinspector {name geom} {
     global icons help_tips
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     iconbutton $w.toolbar.graph -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
     foreach i {graph} {

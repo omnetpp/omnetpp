@@ -17,11 +17,11 @@
 #  non-graphical module inspectors etc.
 #
 
-proc create_compoundmodinspector {name} {
+proc create_compoundmodinspector {name geom} {
     global icons help_tips
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     iconbutton $w.toolbar.graph  -image $icons(asgraphics) -command "inspect_this $w {As Graphics}"
     iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
@@ -61,11 +61,11 @@ proc create_compoundmodinspector {name} {
     create_inspector_listbox $nb.gates
 }
 
-proc create_simplemodinspector {name} {
+proc create_simplemodinspector {name geom} {
     global icons help_tips
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     iconbutton $w.toolbar.win    -image $icons(asoutput) -command "inspect_this $w {Module output}"
     iconbutton $w.toolbar.sep1   -separator
@@ -136,11 +136,11 @@ proc create_compoundmodulewindow {name} {
     _create_modulewindow $name 1
 }
 
-proc _create_modulewindow {name iscompound} {
+proc _create_modulewindow {name geom iscompound} {
     global icons help_tips
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     # Add icons
     if {$iscompound} {

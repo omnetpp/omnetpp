@@ -460,16 +460,16 @@ proc load_plugins {path} {
              puts -nonewline "$name "
          }
       }
+      if {$dllfiles!=0} {puts ""}
    }
+   if {$tclfiles!=0 || $dllfiles!=0} {puts ""}
+
    if {$tclfiles==0} {
-      puts ""
-      puts "*** no *.tcl file in $path"
+      puts "  no *.tcl file in $path"
    }
    if {$dllfiles==0} {
-      puts ""
-      puts "*** no $dllpattern file in $path"
+      puts "  no $dllpattern file in $path"
    }
-   puts ""
 }
 
 #===================================================================

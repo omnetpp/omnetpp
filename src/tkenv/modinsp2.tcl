@@ -357,11 +357,11 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
     }
 }
 
-proc create_graphicalmodwindow {name} {
+proc create_graphicalmodwindow {name geom} {
     global icons help_tips
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     # create toolbar
     iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"

@@ -546,7 +546,7 @@ proc load_tkenvrc {} {
   if [catch {
       if [catch {open ".tkenvrc" r} f] {
       } else {
-          puts "Loading .tkenvrc..."
+          puts "Loading .tkenvrc"
           inspectorlist_load $f
           close $f
       }

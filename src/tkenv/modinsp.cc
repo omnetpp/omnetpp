@@ -61,7 +61,7 @@ void TModuleWindow::createWindow()
    cModule *mod = (cModule *)object;
    const char *createcommand = mod->isSimple() ?
             "create_simplemodulewindow " : "create_compoundmodulewindow ";
-   CHK(Tcl_VarEval(interp, createcommand, windowname, NULL ));
+   CHK(Tcl_VarEval(interp, createcommand, windowname, " \"", geometry, "\"", NULL ));
 }
 
 void TModuleWindow::update()
@@ -119,7 +119,7 @@ void TGraphicalModWindow::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "create_graphicalmodwindow ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "create_graphicalmodwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 void TGraphicalModWindow::update()
@@ -391,7 +391,7 @@ void TCompoundModInspector::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "create_compoundmodinspector ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "create_compoundmodinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 void TCompoundModInspector::update()
@@ -430,7 +430,7 @@ void TSimpleModInspector::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "create_simplemodinspector ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "create_simplemodinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 void TSimpleModInspector::update()
@@ -493,7 +493,7 @@ void TGateInspector::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "create_gateinspector ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "create_gateinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 void TGateInspector::update()
@@ -545,7 +545,7 @@ void TGraphicalGateWindow::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "create_graphicalgatewindow ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "create_graphicalgatewindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 int TGraphicalGateWindow::redraw(Tcl_Interp *interp, int, char **)

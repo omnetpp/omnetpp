@@ -640,7 +640,8 @@ TInspector *TOmnetTkApp::inspect(cObject *obj, int type, void *dat, const char *
     }
 
     // create inspector
-    TInspector *insp = obj->inspector(type,dat);
+//FIXME: we discard the "dat" pointer and use geometry instead. This is a hack.
+    TInspector *insp = obj->inspector(type,(void *)geometry);
     if (!insp)
     {
         // message: object has no such inspector

@@ -25,7 +25,7 @@
 #
 # gets called from concrete inspector subtypes
 #
-proc create_inspector_toplevel {w {geom ""}} {
+proc create_inspector_toplevel {w geom} {
 
     # create toplevel inspector window
 

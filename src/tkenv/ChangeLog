@@ -1,3 +1,12 @@
+2002-10-26  Andras Varga
+
+	* sticky inspectors; automatically save/load .tkenvrc in the current
+	directory.
+
+2002-10-04  Andras Varga
+
+	* error handling changed from simulation.ok() to exceptions.
+
 2002-07-03  Andras Varga
 
 	* modinsp2.tcl (graphmodwin_animate): set upper limit to animation 

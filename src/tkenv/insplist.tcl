@@ -143,6 +143,14 @@ proc inspectorlist_save {f} {
 proc inspectorlist_load {f} {
     global pil_name pil_class pil_type pil_geom
 
+    # delete old array
+    catch {
+       unset pil_name
+       unset pil_class
+       unset pil_type
+       unset pil_geom
+    }
+
     # read file line by line
     set lineno 1
     while {[gets $f line] >= 0} {

@@ -49,6 +49,7 @@ class TInspector : public cObject
       void *data;
       char windowname[24];    // Tk inspector window variable
       char windowtitle[128];  // window title string
+      char geometry[64];      // X-window geometry string (window pos + size)
    public:
       TInspector(cObject *obj, int typ, void *dat=NULL);
       ~TInspector();

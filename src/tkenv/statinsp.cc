@@ -47,7 +47,7 @@ void TStatisticInspector::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "create_statisticinspector ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "create_statisticinspector ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 void TStatisticInspector::update()
@@ -78,7 +78,7 @@ void THistogramWindow::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "create_histogramwindow ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "create_histogramwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 void THistogramWindow::update()
@@ -257,7 +257,7 @@ void TOutVectorWindow::createWindow()
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->interp;
-   CHK(Tcl_VarEval(interp, "create_outvectorwindow ", windowname, NULL ));
+   CHK(Tcl_VarEval(interp, "create_outvectorwindow ", windowname, " \"", geometry, "\"", NULL ));
 }
 
 void TOutVectorWindow::update()

@@ -18,11 +18,11 @@
 #  gate inspector
 #-----------------------------------------------------------------
 
-proc create_gateinspector {name} {
+proc create_gateinspector {name geom} {
     global fonts icons help_tips
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     iconbutton $w.toolbar.sep1 -separator
     iconbutton $w.toolbar.mod  -image $icons(parent) ;#command assigned from C++
@@ -60,11 +60,11 @@ proc create_gateinspector {name} {
 #  Graphical gate/path window stuff
 #-----------------------------------------------------------------
 
-proc create_graphicalgatewindow {name} {
+proc create_graphicalgatewindow {name geom} {
     global icons help_tips
 
     set w $name
-    create_inspector_toplevel $w
+    create_inspector_toplevel $w $geom
 
     # create toolbar
     iconbutton $w.toolbar.ascont -image $icons(asobject) -command "inspect_this $w {As Object}"
