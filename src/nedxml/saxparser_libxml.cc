@@ -50,19 +50,40 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
             for (attr = node->properties; attr; attr = (xmlAttr *)attr->next)
                 numAttrs++;
             const char **attrs = new const char *[2*(numAttrs+1)];
-            int k = 0;
-            for (attr = node->properties; attr; attr = (xmlAttr *)attr->next)
+            int k;
+            for (attr = node->properties, k=0; attr; attr = (xmlAttr *)attr->next, k+=2)
             {
-                attrs[k] = (const char *) attr->name;
+                // ignore namespaces: pass "prefix:name" to SAX handler
+                if (attr->ns) {
+                    attrs[k] = new char [strlen((const char *)attr->name)+strlen((const char *)attr->ns->prefix)+2];
+                    sprintf((char *)attrs[k], "%s:%s", attr->ns->prefix, attr->name);
+                } else {
+                    attrs[k] = (const char *) attr->name;
+                }
                 attrs[k+1] = (const char *) attr->children->content; // first text node within attr
-                k += 2;
             }
             attrs[k] = NULL;
             attrs[k+1] = NULL;
 
+            // element name. ignore namespaces: pass "prefix:name" to SAX handler
+            char *nodename;
+            if (node->ns) {
+                nodename = new char [strlen((const char *)node->name)+strlen((const char *)node->ns->prefix)+2];
+                sprintf(nodename, "%s:%s", node->ns->prefix, node->name);
+            } else {
+                nodename = (char *) node->name;
+            }
+
             // invoke startElement()
-            sh->startElement((const char *)node->name, attrs);
+            sh->startElement(nodename, attrs);
+
+            // dealloc prefixed attr names and element name
+            for (attr = node->properties, k=0; attr; attr = (xmlAttr *)attr->next, k+=2)
+                if (attr->ns)
+                    delete [] (char *)attrs[k];
             delete [] attrs;
+            if (node->ns)
+                delete [] nodename;
 
             // recursive processing of children
             xmlNode *child;
@@ -113,7 +134,7 @@ bool SAXParser::parse(const char *filename)
     if (!ctxt)
     {
         strcpy(errortext, "Failed to allocate parser context");
-	return false;
+        return false;
     }
 
     // parse the file
@@ -136,7 +157,7 @@ bool SAXParser::parse(const char *filename)
         sprintf(errortext, "Parse error: %s at line %s:%d",
                 ctxt->lastError.message, ctxt->lastError.file, ctxt->lastError.line);
         xmlFreeParserCtxt(ctxt);
-	return false;
+        return false;
     }
 
     // handle validation errors.
@@ -151,8 +172,8 @@ bool SAXParser::parse(const char *filename)
         sprintf(errortext, "Validation error: %s at line %s:%d",
                 ctxt->lastError.message, ctxt->lastError.file, ctxt->lastError.line);
         xmlFreeParserCtxt(ctxt);
-	xmlFreeDoc(doc);
-	return false;
+        xmlFreeDoc(doc);
+        return false;
     }
 
     // traverse tree and generate SAX events

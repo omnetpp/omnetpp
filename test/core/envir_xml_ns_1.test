@@ -1,0 +1,21 @@
+%description:
+Tests namespaces in XML documents.
+
+%file: {}.xml
+<?xml version="1.0" ?>
+<foo xmlns:z="http://www.zzz.com/zzz">
+    <bar one="X"/>
+    <z:bar one="X"/>
+    <bar z:one="X"/>
+</foo>
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("{}.xml");
+node->debugDump();
+
+%contains: stdout
+<foo>
+  <bar one="X"/>
+  <z:bar one="X"/>
+  <bar z:one="X"/>
+</foo>
