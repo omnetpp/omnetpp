@@ -1306,6 +1306,9 @@ case $host in
   *-*-cygwin*)
     cygwin=yes
     ;;
+  *-hp-hpux*)
+    SO_LIB_SUFFIX=".sl"
+    ;;
   *)
     ;;
 esac
@@ -1335,6 +1338,7 @@ OMNETPP_DOC_DIR="$OMNETPP_ROOT/doc"
 OMNETPP_SAMPLES_DIR="$OMNETPP_ROOT/samples"
 OMNETPP_TUTORIAL_DIR="$OMNETPP_ROOT/tutorial"
 # OMNETPP_MODELS_DIR="$OMNETPP_ROOT/models"
+OMNETPP_TEST_DIR="$OMNETPP_ROOT/test"
 OMNETPP_BITMAP_PATH=".;./bitmaps;$OMNETPP_ROOT/bitmaps"
 
 OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
@@ -3491,7 +3495,8 @@ fi
 # FIXME: the following lines will need some check
 AS="as"
 AR="ar cr"
-SHLIB_LD="$CXX -shared"
+SHLIB_LD="$CXX -shared -fPIC"
+SHLIB_CFLAGS="-fPIC"
 # NEDC default - maybe overwritten by feature nedc-subcl
 NEDC="nedc"
 MAKEDEPEND="perl `pwd`/src/utils/makedep.pl -Y --objdirtree"
@@ -3511,8 +3516,12 @@ else
     MYPWD=pwd
 fi
 
-A_LIB_SUFFIX=".a"
-SO_LIB_SUFFIX=".so"
+#
+# set default library suffixes. May be already defined
+# with system/arch specific values
+#
+A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
+SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
 
 if test "$cygwin" = yes; then
     EXE_SUFFIX=".exe"
@@ -5217,6 +5226,8 @@ if test "$build_shared_libs" = yes; then
     LIB_SUFFIX='$(SO_LIB_SUFFIX)'
     if test "$cygwin" = yes; then
         CFLAGS="$CFLAGS -DWIN32_DLL"
+    else
+	CFLAGS="$CFLAGS $SHLIB_CFLAGS"
     fi
 else
     LIB_SUFFIX='$(A_LIB_SUFFIX)'
@@ -5371,7 +5382,7 @@ fi
 # Generate files.
 #----------------------
 
-ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake samples/dyna/Makefile samples/fddi/Makefile samples/fifo1/Makefile samples/fifo2/Makefile samples/hcube/Makefile samples/hist/Makefile samples/nim/Makefile samples/pvmex/Makefile samples/token/Makefile samples/demo/Makefile samples/demo/Makefile tutorial/queues/Makefile doc/api/Makefile"
+ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake samples/dyna/Makefile samples/fddi/Makefile samples/fifo1/Makefile samples/fifo2/Makefile samples/hcube/Makefile samples/hist/Makefile samples/nim/Makefile samples/pvmex/Makefile samples/token/Makefile samples/demo/Makefile samples/demo/Makefile tutorial/queues/Makefile doc/api/Makefile test/Makefile"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -5891,6 +5902,7 @@ do
   "samples/demo/Makefile" ) CONFIG_FILES="$CONFIG_FILES samples/demo/Makefile" ;;
   "tutorial/queues/Makefile" ) CONFIG_FILES="$CONFIG_FILES tutorial/queues/Makefile" ;;
   "doc/api/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/api/Makefile" ;;
+  "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   *) { { echo "$as_me:$LINENO: error: invalid argument: $ac_config_target" >&5
 echo "$as_me: error: invalid argument: $ac_config_target" >&2;}
    { (exit 1); exit 1; }; };;
