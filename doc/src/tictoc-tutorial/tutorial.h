@@ -292,10 +292,22 @@ Sources: @ref tictoc5.ned, @ref txc5.cc, @ref omnetpp.ini
 
 In this step we'll introduce random numbers. We change the delay from 1s
 to a random value which can be set from the NED file or from omnetpp.ini.
-In addition, we'll "lose" (delete) the packet with a small probability.
+Module parameters are able to return random variates; however, to make
+use of this feature we have to read the parameter in handleMessage()
+every time we use it.
+
+@dontinclude txc6.cc
+@skip double delay
+@until scheduleAt(
+
+In addition, we'll "lose" (delete) the packet with a small (hardcoded) probability.
+
+@dontinclude txc6.cc
+@skip uniform(
+@until }
+
 
 For tic, we hardcode the <tt>delayTime</tt> parameter into the NED file.
-
 For toc, we leave the <tt>delayTime</tt> parameter unassigned in the NED file,
 and put the value into omnetpp.ini instead, to make it easier to change.
 It is done by the following line in omnetpp.ini (truncnormal returns nonnegative
@@ -341,14 +353,23 @@ a dot and ** will.)
 Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
 
 
-@subsection s7 Step 7
+@subsection s7 Step 7: Timeout, cancelling timers
 
-Let us take a step back, and remove random delaying from the code.
+Let us take a step back, and remove the random processing delay from the code.
 We'll leave in, however, losing the packet with a small probability.
 And, we'll we do something very common in telecommunication networks:
 if the packet doesn't arrive within a certain period, we'll assume it
 was lost and create another one. The timeout will be handled using
 (what else?) a self-message.
+
+Note that if the packet does arrive in time, we need to cancel
+the time. This is done with the cancelEvent() call. However,
+this does not prevent us from being able to reuse the same
+timeout message over and over.
+
+@dontinclude txc7.cc
+@skip ::handleMessage
+@skipline cancelEvent(
 
 Sources: @ref tictoc7.ned, @ref txc7.cc, @ref omnetpp.ini
 
