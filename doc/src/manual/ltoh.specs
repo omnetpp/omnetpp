@@ -27,8 +27,8 @@ htmlfile_spec := $BASE.htm
 #     b/e = begin/end delimited command \begin{xxx} ... \end{xxx}
 #
 
-:comm   :\opp:OMNEST::
-#:comm   :\opp:OMNeT++::
+#:comm   :\opp:OMNEST::
+:comm   :\opp:OMNeT++::
 
 
 :{}     :\textbf:<b>:</>:
