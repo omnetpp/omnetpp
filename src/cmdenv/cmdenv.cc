@@ -530,14 +530,14 @@ void TCmdenvApp::help()
         ev << "  " << iter()->name() << '\n';
     ev << "\n";
 
-    ev << "Available modules:\n";
+    ev << "Available modules types:\n";
     cArray::Iterator iter2(*modtypes.instance());
     for (; iter2(); iter2++)
         ev << "  " << iter2()->name() << '\n';
     ev << "\n";
 
-    ev << "Available channels:\n";
-    cArray::Iterator iter3(*linktypes.instance());
+    ev << "Available channel types:\n";
+    cArray::Iterator iter3(*channeltypes.instance());
     for (; iter3(); iter3++)
         ev << "  " << iter3()->name() << '\n';
     ev << "\n";

@@ -1264,7 +1264,7 @@ int objectModuleTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 int objectChannelTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char **)
 {
    if (argc!=1) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   Tcl_SetResult(interp, ptrToStr( linktypes.instance() ), TCL_VOLATILE);
+   Tcl_SetResult(interp, ptrToStr( channeltypes.instance() ), TCL_VOLATILE);
    return TCL_OK;
 }
 
