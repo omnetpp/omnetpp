@@ -44,7 +44,6 @@ proc createMenubar {w} {
     # Edit menu
     foreach i {
       {command -command editCopy -label {Copy} -underline 0}
-      {command -command editCopySpecial -label {Copy special...} -underline 5}
     } {
       eval $w.editmenu$m add $i
     }

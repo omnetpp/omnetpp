@@ -99,3 +99,39 @@ proc createScatterPlotDialog {idlistforcombo} {
     destroy $w
     return $ret
 }
+
+
+
+proc copyToClipboardDialog {} {
+
+    global tmp
+
+    # create dialog with OK and Cancel buttons
+    set w .dlg
+    createOkCancelDialog $w "Copy to clipboard"
+
+    # add entry fields and focus on first one
+    labelframe $w.f.f2 -relief groove -border 2 -text "Select format"
+    radiobutton $w.f.f2.r1 -text "with Name and Value columns" -value "namevalue" -variable tmp(clipboardformat)
+    radiobutton $w.f.f2.r2 -text "separate columns for each variable" -value "vars" -variable tmp(clipboardformat)
+    set tmp(clipboardformat) "vars"
+
+    label $w.f.l -justify left -text \
+        "Hint: explore the PivotTable or DataPilot functionality of your\
+         \nspreadsheet program (MS Excel or OpenOffice Calc).\
+         \nIt can help you get further insight into your simulation results."
+
+    pack $w.f.f2.r1 -anchor w -expand 0 -fill none -side top
+    pack $w.f.f2.r2 -anchor w -expand 0 -fill none -side top
+    pack $w.f.f2 -expand 0 -fill x -side top
+    pack $w.f.l -expand 0 -fill x -side top
+
+    # exec the dialog, extract its contents if OK was pressed, then delete dialog
+    set ret {}
+    if {[execOkCancelDialog $w] == 1} {
+        lappend ret $tmp(clipboardformat)
+    }
+    destroy $w
+    return $ret
+}
+

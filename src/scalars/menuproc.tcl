@@ -38,11 +38,19 @@ proc fileExit {} {
     exit
 }
 
+proc editCopy {} {
+    set fmt [copyToClipboardDialog]
+    if {$fmt=="vars"} {
+        editCopy2
+    } else {
+        editCopy1
+    }
+}
 
 #
-# Copy table contents to clipboard (tab-separated)
+# Copy table contents to clipboard (tab-separated), with "Name" and "Value" columns
 #
-proc editCopy {} {
+proc editCopy1 {} {
     # FIXME doesn't obey current listbox sorting -- manybe should get IDs from listbox?
     # should maybe also obey listbox selection?
     set idlist [getFilteredList]
@@ -54,6 +62,56 @@ proc editCopy {} {
     clipboard append -displayof . $data
 }
 
+#
+# Copy table contents to clipboard (tab-separated), every scalar variable on its own column
+#
+proc editCopy2 {} {
+    set idlist [getFilteredList]
+
+    set matrix [opp_prepareCopyToClipboard $idlist]
+    set header "Directory\tFile\tRun#\tModule\t"
+
+    # get table heading
+    set row [lindex $matrix 0]
+    for {set pos 0} {$pos<[llength $row]} {incr pos} {
+        # find a row which has something at position $pos
+        set id -1
+        foreach row $matrix {
+            if {[lindex $row $pos]!=-1} {
+                set id [lindex $row $pos]
+                break
+            }
+        }
+        if {$id!=-1} {
+            append header "[opp_getNameOf $id]\t"
+        } else {
+            append header "?\t"
+        }
+    }
+
+    set data "$header\n"
+
+    # get table data
+    foreach row $matrix {
+        set id [lindex $row 0]
+
+        set fileRunModule ""
+        set values ""
+        foreach id $row {
+            if {$id==-1} {
+                append values "\t"
+            } else {
+                append values "[opp_getValueOf $id]\t"
+                if {$fileRunModule==""} {
+                    set fileRunModule "[opp_getDirectoryOf $id]\t[opp_getFileNameOf $id]\t[opp_getRunNoOf $id]\t[opp_getModuleOf $id]"
+                }
+            }
+        }
+        append data "$fileRunModule\t$values\n"
+    }
+    clipboard clear -displayof .
+    clipboard append -displayof . $data
+}
 
 #
 # Copy table contents to clipboard. User can choose columns and separator
