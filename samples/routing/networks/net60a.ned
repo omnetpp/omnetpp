@@ -22,7 +22,7 @@ module Net60a
             gatesizes:
                 in[6],
                 out[6];
-            display: "i=misc/node_vs,gold,100";
+            display: "i=misc/node_vs,gold";
     connections nocheck:
         rte[0].out[0] --> rte[1].in[0];
         rte[0].in[0] <-- rte[1].out[0];
