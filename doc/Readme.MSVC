@@ -4,30 +4,24 @@ Using OMNeT++ with Microsoft Visual C++
 Part of this documentation comes from a readme written by Balazs
 KELEMEN (kelemen@sch.bme.hu) in March 2000.
 
-*** IMPORTANT CHANGES ***
-  Change in OMNeT++2.3b1: you have to compile both OMNeT++ and model files
+*** IMPORTANT ***
+  Since OMNeT++2.3b1, you have to compile both OMNeT++ and model files
   with exception handling and RTTI turned ON! Especially, if RTTI is not
   enabled, simulations will crash in the className() method.
 
-  Another change is that to run big simulations that use activity(),
-  you should set a LOW (!) reserved stack size in the linker options:
-  64K (/stack:65536 linker flag) will do. This is because the Win32 Fiber API
-  uses this number as coroutine stack size, and with the 1MB default,
-  it is easy to run out of the 4GB possible address space (4GB/1MB=4096).
-
-*** END IMPORTANT CHANGES ***
+  To run big simulations that use activity(), you should set a LOW (!)
+  reserved stack size in the linker options: 64K (/stack:65536 linker
+  flag) will do. This is because the Win32 Fiber API uses this number
+  as coroutine stack size, and with the 1MB default, it is easy to run
+  out of the 4GB possible address space (4GB/1MB=4096).
+*** END ***
 
 
 1. Prerequisites
 ~~~~~~~~~~~~~~~~
-o  Windows XP, Windows 2000, NT4.0 or other NT-derivative.
-
-   OMNET++ IS NOT SUPPORTED, MOREOVER IT WON'T EVEN WORK ON WIN95/98/ME,
-   because it uses the Win32 Fiber API which is only available on NT systems.
-   Moreover, the makefiles and some batch (.cmd) files use syntax which
-   is not supported by the old command.com. Besides the above "hard"
-   prohibitive factors, it is anyway advisable to use a more stable operating
-   system.
+o  Windows XP, Windows 2000, NT 4.0 or other Windows versions which build
+   on NT technology are required. (OMNeT++ is not supported and will not
+   work on Win95, Win98 or ME.)
 
 o  Visual C++ 7.0 (which is part of Visual Studio .NET) or Microsoft Visual
    Studio 6.0 with Service Pack 6 installed (the SP can be downloaded from
@@ -46,18 +40,18 @@ package contains and the installer installs all other necessary software.
 
 First download the following packages:
  - Tcl/Tk
+ - BLT 2.4z
  - bison/flex (only if you want to modify nedc or gned)
  - Perl (used by some tools)
- - Gnuplot (used by Plove)
- - awk, grep (used by Plove)
- - recommended: LibXML, LibXSLT (for nedtool and opp_neddoc). For nedtool
-   you can also use Expat.
+ - libxml, libxslt
 
-Appendix C (at the end of this file) and 3rdparty.txt contains some sites
-where all this stuff can be found.
+Appendix C (at the end of this file) and 3rdparty.txt lists additional
+optional packages that can be useful, and sites where the packages can be
+downloaded from.
 
 To unpack .tgz or .tar.gz (gzipped, tar packed) files you can use gzip and tar,
-or WinZip.
+or ALZip or other archivers. Some versions of WinZip have been reported to
+have difficulties with tgz files.
 
 After installation, check if you have the necessary environment variables set.
 These variables should be set by the install program of the related package.
