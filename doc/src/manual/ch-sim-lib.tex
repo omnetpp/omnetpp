@@ -1845,45 +1845,54 @@ void setParameters(double acc=0.1, int reps=3);
 
 Objects of type \cclass{cOutVector} are responsible for writing time series
 data (referred to as \textit{output vectors}) to a file. The \fname{record()}
-member is used to output a value (or a value pair) with a timestamp.
+method is used to output a value (or a value pair) with a timestamp.
+The object name will serve as the name of the output vector.
 
-It can be used like this:
+The vector name can be passed in the constructor,
 
 \begin{verbatim}
-cOutVector respV("response time");
+cOutVector responseTimeVec("response time");
+\end{verbatim}
 
-while (...)
+but in the usual arrangement you'd make the \cclass{cOutVector} a member
+of the module class and set the name in \fname{initialize()}. You'd
+record values from \fname{handleMessage()} or from a function called from
+\fname{handleMessage()}.
+
+The following example is a \ttt{Sink} module which records the lifetime
+of every message that arrives to it.
+
+\begin{verbatim}
+class Sink : public cSimpleModule
 {
-  double responseTime;
-  //...
-  respV.record( responseTime );
-  //...
+  protected:
+    cOutVector endToEndDelayVec;
+  public:
+    Module_Class_Members(Sink,cSimpleModule,0)
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+void Sink::initialize()
+{
+    endToEndDelayVec.setName("End-to-End Delay");
+}
+
+void Sink::handleMessage(cMessage *msg)
+{
+    simtime_t eed = simTime() - msg->creationTime();
+    endToEndDelayVec.record(eed);
+    delete msg;
 }
 \end{verbatim}
 
 
-All \cclass{cOutVector} objects write to the same, common file. The
-file is textual; each \fname{record()} call generates a line in the
-file. The output file can be processed using Plove, but otherwise its
-simple format allows it to be easily processed with \fprog{sed},
-\fprog{awk}, \fprog{grep} and the like, and it can be imported by
-spreadsheet programs.  The file format is described later in this
-manual (in the section about simulation execution).
-
-You can disable the output vector\index{output!vector} or specify a
-simulation time interval for recording either from the ini file or
-directly from program code:
-
-\begin{verbatim}
-cOutVector v("v");
-simtime_t t =...;
-
-v.enable();
-v.disable();
-v.setStartTime( t );
-v.setStopTime( t+100.0 );
-\end{verbatim}
-
+All \cclass{cOutVector} objects write to a single \textit{output vector file}
+named \ttt{omnetpp.vec} by default.
+You can configure output vectors from \ttt{omnetpp.ini}:
+you can disable writing to the file, or limit it to a certain
+simulation time interval for recording (section
+\ref{sec:ch-run-sim:outvectors}).
 
 If the output vector object is disabled or the simulation time is
 outside the specified interval, \fname{record()} doesn't write
@@ -1891,8 +1900,6 @@ anything to the output file. However, if you have a Tkenv inspector
 window open for the output vector object\index{output!vector object},
 the values will be displayed there, regardless of the state of the
 output vector object.
-
-
 
 
 
