@@ -42,30 +42,29 @@ proc create_inspector_toplevel {w geom} {
     inspectorlist_storename $w
 
     # add the "Inspect As.." icon at the top
-    frame $w.toolbar -relief raised -borderwidth 1
+    frame $w.toolbar -relief raised -bd 1
     pack $w.toolbar -anchor w -side top -fill x -expand 0
 
     iconbutton $w.toolbar.sep0 -separator
-    iconbutton $w.toolbar.inspect -image $icons(as) -command "inspect_this_as $w"
-    foreach i {sep0 inspect} {
-       pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    }
+    pack $w.toolbar.sep0 -anchor n -side left -padx 0 -pady 2
+    #iconbutton $w.toolbar.inspect -image $icons(as) -command "inspect_this_as $w"
+    #foreach i {inspect} {
+    #   pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
+    #}
 
     # add object type-and-name bar with color codes
     regexp {\.(ptr.*)-[0-9]+} $w match ptr
     set colorcode [choosecolorcode $ptr]
-    frame $w.color1 -relief flat -bd 0 -height 3 -bg $colorcode
-    pack $w.color1 -anchor w -side top -fill x -expand 0 -pady 1
 
-    frame $w.infobar -relief flat -bd 0
+    frame $w.infobar -relief raised -bd 1
     pack $w.infobar -anchor w -side top -fill x -expand 0
+    button $w.infobar.color -anchor w -relief raised -bd 1 -bg $colorcode -activebackground $colorcode -text {  } -command "inspect_this_as $w"
     label $w.infobar.name -anchor w -relief flat -justify left
-    pack $w.infobar.name -anchor n -side left -expand 1 -fill x -pady 0
+    pack $w.infobar.color -anchor n -side left -expand 0 -fill none -pady 1
+    pack $w.infobar.name -anchor n -side left -expand 1 -fill both -pady 1
 
-    frame $w.color2 -relief flat -bd 0 -height 3 -bg $colorcode
-    pack $w.color2 -anchor w -side top -fill x -expand 0 -pady 1
-
-    set help_tips($w.toolbar.inspect) {Open another inspector for this object}
+    #set help_tips($w.toolbar.inspect) {Open another inspector for this object}
+    set help_tips($w.infobar.color) {Different inspectors of the same object have the same color}
 
     # Keyboard bindings
     bind $w <Escape>     "catch {.popup unpost}"
