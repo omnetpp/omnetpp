@@ -959,12 +959,12 @@ Here, \ttt{WirelessLAN} is the name of previously defined
 compound module type, which presumably contains further
 compound modules of types \ttt{WirelessHost}, \ttt{WirelessHub}, etc.
 
-Naturally, only compound module types without gates can
+Naturally, only module types without gates can
 be used in network definitions.
 
 Just as for submodules, you do not need to assign values to all
-parameters. Unassigned parameters will get their values from the
-config file (\ttt{omnetpp.ini}) or interactively prompted for.
+parameters. Unassigned parameters can get their values from the
+config file (\ttt{omnetpp.ini}) or will be interactively prompted for.
 
 
 
@@ -1026,13 +1026,13 @@ The following units\index{time units} can be used:
 \hline
 \tabheadcol
 \tbf{Unit} & \tbf{Meaning} \\\hline
-\ttt{ns} & nanoseconds (10$^-9$s) \\\hline
-\ttt{us} & microseconds (10$^-6$s) \\\hline
-\ttt{ms} & milliseconds (10$^-3$) \\\hline
-\ttt{s}  & seconds \\\hline
-\ttt{m}  & minutes (60s) \\\hline
-\ttt{h}  & hours (3600s) \\\hline
-\ttt{d}  & days (86400s) \\\hline
+\ttt{ns}   & nanoseconds (10$^-9$s) \\\hline
+\ttt{us}   & microseconds (10$^-6$s) \\\hline
+\ttt{ms}   & milliseconds (10$^-3$s) \\\hline
+\ttt{s}    & seconds \\\hline
+\ttt{m}    & minutes (60s) \\\hline
+\ttt{h}    & hours (3600s) \\\hline
+\ttt{d}    & days (86400s) \\\hline
 \end{longtable}
 
 
@@ -1042,41 +1042,23 @@ Expressions can use the parameters of the enclosing compound module
 (the one being defined) and of submodules defined earlier in NED file.
 The syntax for the latter is \ttt{submod.param} or \ttt{submod[index].param}.
 
-You can refer to a compound module parameter called \ttt{param}
-in several ways: as \ttt{param}, \ttt{\textbf{ref} param},
-\ttt{\textbf{ancestor} param}, or \ttt{\textbf{ref} \textbf{ancestor} param}.
-They all have different semantics.
+There are two keywords that you can use with a parameter name:
+\ttt{ancestor} and \ttt{ref}.  The first one (\ttt{ancestor} \textit{param})
+means that if compound module doesn't have such parameter,
+further modules up in the module hierarchy will be searched for the parameter.
+\ttt{ancestor} is considered evil because it violates the encapsulation
+principle and can only be checked at runtime. It is provided for the
+rare case when it's really needed.
 
-The first two variations, \ttt{param} and \ttt{\textbf{ref} param}
-lets you access the parameters of the compound module being
-defined. In the third and fourth versions, the keyword
-\ttt{ancestor} means that the parameter will be searched for upwards,
-in the module nesting hierarchy. Naturally, this kind of reference can
-only be resolved at runtime, when the whole network has been built up.
-The parameter which is found first is used. If no such parameter can be
-found in any of the enclosing modules, it is a runtime error.
-
-The \ttt{ref} and \ttt{ref}-less versions differ in how the parameter
-is taken: by value or by reference. If you take a parameter by reference,
-then runtime changes to that parameter will be reflected in the
-assigned parameter: each time a simple module reads the parameter
-value, the expression is evaluated, and you may get a different value.
-In contrast, if you take the parameter by value, then runtime changes
-do not affect the assigned parameter.
-  \footnote{This also means that if an expression doesn't contain any parameter
-  taken by reference, the NED compiler may have the possibility to evaluate
-  the expression only once, at compile time. If an expression refers
-  to parameters taken by reference, only runtime evaluation can be used.}
-
-Reference parameters open up interesting possibilities for the modeler.
-For example, you can define a parameter that at the highest level
-of the model, and let other modules take it by reference --
+\ttt{ref} \textit{param} takes the parameter by reference, meaning that
+runtime changes to the parameter will propagate to all modules which
+take that parameter by reference. Like \ttt{ancestor}, \ttt{ref}
+should also be used very sparingly. One possible use is tuning a model
+at runtime, in search for an optimum: one defines a parameter
+at the highest level of the model, and lets other modules take it by reference --
 then if you change the parameter value at runtime
 (manually or from a simple module), it will affect the whole model.
-You can use this arrangement to ``tune'' model parameters at runtime,
-in search for an optimal setting.
-
-In another setup, reference parameters can be used by to propagate
+In another setup, reference parameters may be used to propagate
 status values to neighbouring modules.
 
 
