@@ -218,6 +218,10 @@ int yywrap(void)
 #ifdef __cplusplus
 #define input  yyinput
 #endif
+
+/* the following #define is needed for broken flex versions */
+#define yytext_ptr yytext
+
 void comment(void)
 {
         int c;
@@ -294,8 +298,7 @@ void extendCount(void)
 void jar_yyrestart(FILE *_yyin)
 {
 #ifdef FLEX_SCANNER
-        if (yy_current_buffer)
-              yyrestart( _yyin );
+    yyrestart( _yyin );
 #endif
 }
 

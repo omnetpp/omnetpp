@@ -1882,7 +1882,7 @@ YY_BUFFER_STATE b;
 
 #ifndef YY_ALWAYS_INTERACTIVE
 #ifndef YY_NEVER_INTERACTIVE
-#include<unistd.h>
+extern int isatty YY_PROTO(( int ));
 #endif
 #endif
 
@@ -2228,6 +2228,10 @@ int yywrap(void)
 #ifdef __cplusplus
 #define input  yyinput
 #endif
+
+/* the following #define is needed for broken flex versions */
+#define yytext_ptr yytext
+
 void comment(void)
 {
         int c;
@@ -2287,8 +2291,7 @@ void count(void)
 void jar_yyrestart(FILE *_yyin)
 {
 #ifdef FLEX_SCANNER
-        if (yy_current_buffer)
-              yyrestart( _yyin );
+        yyrestart( _yyin );
 #endif
 }
 
