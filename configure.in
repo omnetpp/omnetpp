@@ -162,7 +162,12 @@ else
    TK_CFLAGS=
 fi
 TK_LIBS=
-BLT_LIBS="-lBLT24"
+
+if test "$cygwin" = yes; then
+    BLT_LIBS="-lBLT24 -mwindows -lwinspool"
+else
+    BLT_LIBS="-lBLT24"
+fi
 
 # for MPI
 MPI_CFLAGS=
