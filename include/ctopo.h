@@ -338,11 +338,6 @@ class SIM_API cTopology : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cTopology".
-     */
-    virtual const char *className() const {return "cTopology";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */

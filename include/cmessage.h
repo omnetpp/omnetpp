@@ -132,11 +132,6 @@ class SIM_API cMessage : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cMessage".
-     */
-    virtual const char *className() const {return "cMessage";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */

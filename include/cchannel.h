@@ -84,11 +84,6 @@ class SIM_API cChannel : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cChannel".
-     */
-    virtual const char *className() const {return "cChannel";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
@@ -246,11 +241,6 @@ class SIM_API cSimpleChannel : public cChannel
 
     /** @name Redefined cObject functions. */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cSimpleChannel".
-     */
-    virtual const char *className() const {return "cSimpleChannel";}
 
     /**
      * Creates and returns an exact copy of this object.

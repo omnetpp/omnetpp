@@ -92,11 +92,6 @@ class SIM_API cTransientDetection : public cObject
     /** @name Redefined cObject member functions. */
     //@{
 
-    /**
-     * Returns pointer to a string containing the class name, "cTransientDetection".
-     */
-    virtual const char *className() const  {return "cTransientDetection";}
-
     /* No dup() because this is an abstract class. */
 
     /**
@@ -200,11 +195,6 @@ class SIM_API cAccuracyDetection : public cObject
 
     /** @name Redefined cObject member functions. */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cAccuracyDetection".
-     */
-    virtual const char *className() const {return "cAccuracyDetection";}
 
     /* No dup() because this is an abstract class. */
 
@@ -331,11 +321,6 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cTDExpandingWindows".
-     */
-    virtual const char *className() const {return "cTDExpandingWindows";}
-
-    /**
      * Dupping is not implemented for this class. This function
      * gives an error (throws cException) when called.
      */
@@ -449,11 +434,6 @@ class SIM_API cADByStddev : public cAccuracyDetection
 
     /** @name Redefined cObject member functions. */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cADByStddev".
-     */
-    virtual const char *className() const {return "cADByStddev";}
 
     /**
      * Dupping is not implemented for this class. This function

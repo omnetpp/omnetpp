@@ -241,11 +241,6 @@ class SIM_API cModule : public cObject
     /** @name Redefined cObject functions. */
     //@{
 
-    /**
-     * Returns pointer to a string containing the class name, "cModule".
-     */
-    virtual const char *className() const {return "cModule";}
-
     /* No dup() because this is an abstract class. */
 
     /**
@@ -762,11 +757,6 @@ class SIM_API cSimpleModule : public cModule
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cSimpleModule".
-     */
-    virtual const char *className() const {return "cSimpleModule";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
@@ -1103,12 +1093,12 @@ class SIM_API cSimpleModule : public cModule
     /**
      * Ends the run of the simple module. The simulation is not stopped
      * (unless this is the last running module.) The implementation simply
-     * throws a cEndModuleException. 
+     * throws a cEndModuleException.
      *
      * Note that end() does NOT delete the module; its state is simply
      * set to Ended and it won't take part in further simulation.
      * If you also want to delete the module, use deleteModule(); however,
-     * this implies that the module's finish() method won't be called 
+     * this implies that the module's finish() method won't be called
      * at the end of the simulation.
      */
     void end();
@@ -1255,11 +1245,6 @@ class SIM_API cCompoundModule : public cModule
 
     /** @name Redefined cObject functions. */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cCompoundModule".
-     */
-    virtual const char *className() const {return "cCompoundModule";}
 
     /**
      * Creates and returns an exact copy of this object.

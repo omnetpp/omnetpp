@@ -153,11 +153,6 @@ class SIM_API cKSplit : public cDensityEstBase
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cKSplit".
-     */
-    virtual const char *className() const {return "cKSplit";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */

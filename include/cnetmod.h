@@ -98,11 +98,6 @@ class SIM_API cNetMod : public cModule
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cNetMod".
-     */
-    virtual const char *className() const {return "cNetMod";}
-
-    /**
      * Returns the name of the inspector factory class associated with this class.
      * See cObject for more details.
      */

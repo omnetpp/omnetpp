@@ -29,6 +29,8 @@ using std::ostream;
 #include <iostream.h>
 #endif
 
+#include <typeinfo>
+
 #define FULLPATHBUF_SIZE  1024
 
 //=== classes declared here
@@ -36,7 +38,6 @@ class  cObject;
 class  cStaticFlag;
 
 //=== classes mentioned
-class  TInspector;
 class  cIterator;
 class  cHead;
 
@@ -47,7 +48,6 @@ SIM_API extern cHead modtypes;            ///< List of all module types.
 SIM_API extern cHead linktypes;           ///< List of link types.
 SIM_API extern cHead functions;           ///< List of function types.
 SIM_API extern cHead classes;             ///< List of cClassRegister objects.
-SIM_API extern cHead inspectorfactories;  ///< List of cInspectorFactory objects.
 SIM_API extern cHead enums;               ///< List of cEnum objects.
 
 
@@ -390,10 +390,11 @@ class SIM_API cObject
     //@{
 
     /**
-     * Returns a pointer to the class name string, "cObject".
-     * In derived classes, usual implementation is <tt>{return "classname";}</tt>.
+     * Returns a pointer to the class name string. Since OMNeT++ 2.3, this method
+     * uses typeid (C+ RTTI) and it no longer needs to be redefined in each class
+     * to return a string literal.
      */
-    virtual const char *className() const {return "cObject";}
+    virtual const char *className() const;
 
     /**
      * Produces a one-line description of object into `buf'.
@@ -401,14 +402,6 @@ class SIM_API cObject
      * also <I>Functions supporting snapshots</I>.
      */
     virtual void info(char *buf);
-
-    /**
-     * Create an inspector window.
-     * Used internally. As of Jan 1999, this function should not be used
-     * directly any more; see inspectorFactoryName() and
-     * Register_InspectorFactory() instead.
-     */
-    virtual TInspector *inspector(int type, void *data);
 
     /**
      * Returns the name of the inspector factory class associated with this class.

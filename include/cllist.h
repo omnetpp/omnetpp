@@ -116,11 +116,6 @@ class SIM_API cLinkedList : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cLinkedList".
-     */
-    virtual const char *className() const  {return "cLinkedList";}
-
-    /**
      * Duplication and assignment work all right with cLinkedList.
      * Contained items are treated as configured with configPointer().
      * By default, only pointers are copied.

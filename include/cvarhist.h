@@ -127,11 +127,6 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cVarHistogram".
-     */
-    virtual const char *className() const {return "cVarHistogram";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */

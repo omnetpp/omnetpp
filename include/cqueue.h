@@ -114,11 +114,6 @@ class SIM_API cQueue : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cQueue".
-     */
-    virtual const char *className() const {return "cQueue";}
-
-    /**
      * Duplication and assignment work all right with cQueue.
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.

@@ -127,11 +127,6 @@ class SIM_API cSimulation : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cSimulation".
-     */
-    virtual const char *className() const {return "cSimulation";}
-
-    /**
      * Dupping is not implemented for this class. This function
      * gives an error (throws cException) via operator= when called.
      */

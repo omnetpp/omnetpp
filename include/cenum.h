@@ -76,11 +76,6 @@ class SIM_API cEnum : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cEnum".
-     */
-    virtual const char *className() const  {return "cEnum";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */

@@ -221,11 +221,6 @@ class SIM_API cFSM : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cFSM".
-     */
-    virtual const char *className() const {return "cFSM";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */

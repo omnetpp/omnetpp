@@ -98,11 +98,6 @@ class SIM_API cStructDescriptor : public cObject
     /** @name Redefined cObject member functions. */
     //@{
 
-    /**
-     * Returns pointer to a string containing the class name, "cStructDescriptor".
-     */
-    virtual const char *className() const {return "cStructDescriptor";}
-
     /* No dup() because this is an abstract class. */
     //@}
 

@@ -69,11 +69,6 @@ class SIM_API cPacket : public cMessage
     virtual cObject *dup() const {return new cPacket(*this);}
 
     /**
-     * Returns pointer to a string containing the class name, "cPacket".
-     */
-    virtual const char *className() const {return "cPacket";}
-
-    /**
      * Returns the name of the inspector factory class associated with this class.
      * See cObject for more details.
      */

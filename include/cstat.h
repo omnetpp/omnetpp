@@ -83,11 +83,6 @@ class SIM_API cStatistic : public cObject
     /** @name Redefined cObject member functions. */
     //@{
 
-    /**
-     * Returns pointer to a string containing the class name, "cStatistic".
-     */
-    virtual const char *className() const {return "cStatistic";}
-
     /* Note: No dup() because this is an abstract class! */
 
     /**
@@ -299,11 +294,6 @@ class SIM_API cStdDev : public cStatistic
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cStdDev".
-     */
-    virtual const char *className() const {return "cStdDev";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
@@ -453,11 +443,6 @@ class SIM_API cWeightedStdDev : public cStdDev
 
     /** @name Redefined cObject member functions. */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cWeightedStdDev".
-     */
-    virtual const char *className() const {return "cWeightedStdDev";}
 
     /**
      * Creates and returns an exact copy of this object.

@@ -85,11 +85,6 @@ class SIM_API cBag : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cBag".
-     */
-    virtual const char *className() const {return "cBag";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
@@ -259,11 +254,6 @@ class SIM_API cArray : public cObject
 
     /** @name Redefined cObject member functions */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cArray".
-     */
-    virtual const char *className() const {return "cArray";}
 
     /**
      * Duplication and assignment work all right with cArray.

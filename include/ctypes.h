@@ -177,11 +177,6 @@ class SIM_API cModuleInterface : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cModuleInterface".
-     */
-    virtual const char *className() const {return "cModuleInterface";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
@@ -259,11 +254,6 @@ class SIM_API cModuleType : public cObject
 
     /** @name Redefined cObject member functions. */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cModuleType".
-     */
-    virtual const char *className() const {return "cModuleType";}
 
     /**
      * Creates and returns an exact copy of this object.
@@ -366,11 +356,6 @@ class SIM_API cLinkType : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cLinkType".
-     */
-    virtual const char *className() const {return "cLinkType";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
@@ -440,15 +425,6 @@ class SIM_API cNetworkType : public cObject
     cNetworkType& operator=(const cNetworkType&)  {copyNotSupported();return *this;}
     //@}
 
-    /** @name Redefined cObject member functions. */
-    //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cNetworkType".
-     */
-    virtual const char *className() const {return "cNetworkType";}
-    //@}
-
     /**
      * Network setup function. This is redefined in subclasses.
      */
@@ -497,11 +473,6 @@ class SIM_API cFunctionType : public cObject
 
     /** @name Redefined cObject member functions. */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cFunctionType".
-     */
-    virtual const char *className() const {return "cFunctionType";}
 
     /**
      * Creates and returns an exact copy of this object.
@@ -557,11 +528,6 @@ class SIM_API cClassRegister : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cClassRegister".
-     */
-    virtual const char *className() const {return "cClassRegister";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
@@ -606,71 +572,6 @@ SIM_API void *createOne(const char *classname);
 //@}
 
 //==========================================================================
-
-/**
- * Internal class. Serves as a base class for inspector factories of
- * specific classes. Inspector factories are implemented as part of
- * user interface libraries, and really belong there.
- *
- * @ingroup Internals
- */
-class SIM_API cInspectorFactory : public cObject
-{
-    TInspector *(*inspFactoryFunc)(cObject *,int,void *);
-
-  public:
-    /** @name Constructors, destructor, assignment. */
-    //@{
-
-    /**
-     * Copy constructor.
-     */
-    cInspectorFactory(const cInspectorFactory& ifc)  {setName(ifc.name());operator=(ifc);}
-
-    /**
-     * Constructor.
-     */
-    cInspectorFactory(const char *name, TInspector *(*f)(cObject *,int,void *));
-
-    /**
-     * Destructor.
-     */
-    virtual ~cInspectorFactory() {}
-
-    /**
-     * Assignment is not supported by this class: this method throws a cException when called.
-     */
-    cInspectorFactory& operator=(const cInspectorFactory&)  {copyNotSupported();return *this;}
-    //@}
-
-    /** @name Redefined cObject member functions. */
-    //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cInspectorFactory".
-     */
-    virtual const char *className() const {return "cInspectorFactory";}
-
-    /**
-     * Creates and returns an exact copy of this object.
-     * See cObject for more details.
-     */
-    virtual cObject *dup() const  {return new cInspectorFactory(*this);}
-    //@}
-
-    /** @name Inspector creation. */
-    //@{
-
-    /**
-     * Creates an inspector for the object passed. The type and data
-     * arguments influence the type of inspector created. These parameters
-     * as well as the created inspector object only make sense in the
-     * context of the user interface library (e.g.Tkenv)
-     */
-    TInspector *createInspectorFor(cObject *object,int type,void *data);
-    //@}
-};
-
 
 #endif
 

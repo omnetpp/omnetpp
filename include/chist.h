@@ -70,11 +70,6 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /** @name Redefined cObject member functions. */
     //@{
 
-    /**
-     * Returns pointer to a string containing the class name, "cHistogramBase".
-     */
-    virtual const char *className() const {return "cHistogramBase";}
-
     /* No dup() because this is an abstract class. */
 
     /**
@@ -158,11 +153,6 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
 
     /** @name Redefined cObject member functions. */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cEqdHistogramBase".
-     */
-    virtual const char *className() const {return "cEqdHistogramBase";}
 
     /* No dup() because this is an abstract class. */
 
@@ -283,11 +273,6 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cLongHistogram".
-     */
-    virtual const char *className() const {return "cLongHistogram";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
@@ -372,11 +357,6 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
 
     /** @name Redefined cObject member functions. */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cDoubleHistogram".
-     */
-    virtual const char *className() const  {return "cDoubleHistogram";}
 
     /**
      * Creates and returns an exact copy of this object.

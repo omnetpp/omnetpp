@@ -94,11 +94,6 @@ class SIM_API cOutVector : public cObject
     virtual void setName(const char *name);
 
     /**
-     * Returns pointer to a string containing the class name, "cOutVector".
-     */
-    virtual const char *className() const {return "cOutVector";}
-
-    /**
      * Dupping is not implemented for cOutVector. This function
      * gives an error (throws cException) when called.
      */

@@ -34,7 +34,6 @@ class  cModuleType;
 class  cLinkType;
 class  cFunctionType;
 class  cNetworkType;
-class  cInspectorFactory;
 class  cEnum;
 
 //==========================================================================
@@ -98,12 +97,6 @@ class SIM_API cHead : public cObject
 
     /** @name Redefined cObject member functions. */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cHead".
-     */
-    virtual const char *className() const {return "cHead";}
-
     /**
      * Dupping is not implemented for this class. This function
      * gives an error (throws cException) when called.
@@ -241,10 +234,6 @@ inline cLinkType *findLink(const char *s)
 /** Find a cFunctionType. */
 inline cFunctionType *findFunction(const char *s)
   {return (cFunctionType *)functions.find(s);}
-
-/** Find a cInspectorFactory. */
-inline cInspectorFactory *findInspectorFactory(const char *s)
-  {return (cInspectorFactory *)inspectorfactories.find(s);}
 
 /** Find a cEnum. */
 inline cEnum *findEnum(const char *s)

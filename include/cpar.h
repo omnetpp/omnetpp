@@ -359,11 +359,6 @@ class SIM_API cPar : public cObject
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cPar".
-     */
-    virtual const char *className() const {return "cPar";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
@@ -860,11 +855,6 @@ class SIM_API cModulePar : public cPar
 
     /** @name Redefined cObject member functions */
     //@{
-
-    /**
-     * Returns pointer to a string containing the class name, "cModulePar".
-     */
-    virtual const char *className() const {return "cModulePar";}
 
     /**
      * Creates and returns an exact copy of this object.

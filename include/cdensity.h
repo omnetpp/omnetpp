@@ -127,11 +127,6 @@ class SIM_API cDensityEstBase : public cStdDev
     /** @name Redefined cObject member functions. */
     //@{
 
-    /**
-     * Returns pointer to a string containing the class name, "cDensityEstBase".
-     */
-    virtual const char *className() const {return "cDensityEstBase";}
-
     /* No dup() because this is an abstract class. */
 
     /**

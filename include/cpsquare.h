@@ -69,11 +69,6 @@ class SIM_API cPSquare : public cDensityEstBase
     //@{
 
     /**
-     * Returns pointer to a string containing the class name, "cPSquare".
-     */
-    virtual const char *className() const {return "cPSquare";}
-
-    /**
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */

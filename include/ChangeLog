@@ -1,3 +1,18 @@
+2002-10-27  Andras Varga
+
+	* Started to use C++ RTTI. It is no longer necessary to redefine
+	className() in every cObject subclass. The class name string is now
+	produced in the base class (cObject::className()) using the typeid 
+	operator. 
+	
+	Tested with MSVC 6.0 and Cygwin/gcc-2.95.3-5. With MSVC, one needs 
+	to compile every source using /GR, otherwise Tkenv crashes (RTTI 
+	exception)!
+
+	* cobject.h, ctypes.h, macros.h: removed TInspector, inspector() method
+	from cObject and the inspectorfactory stuff (they didn't really belong
+	here). The whole stuff was moved to Tkenv.
+
 2002-10-20  Andras Varga
 
 	* cgate.h: added isConnectedOutside() and isConnectedInside() 
