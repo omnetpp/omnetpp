@@ -46,11 +46,9 @@ void Txc9::initialize()
 void Txc9::forwardMessage(cMessage *msg)
 {
     // In this example, we just pick a random gate to send it on.
-    // We draw a random number between 0 and the size of gate `out[]',
-    // avoiding our own address.
+    // We draw a random number between 0 and the size of gate `out[]'.
     int n = gate("out")->size();
-    int k = intuniform(0,n-2);
-    if (k==index()) k++;
+    int k = intuniform(0,n-1);
 
     ev << "Forwarding message " << msg << " on port out[" << k << "]\n";
     send(msg, "out", k);
@@ -58,7 +56,7 @@ void Txc9::forwardMessage(cMessage *msg)
 
 void Txc9::handleMessage(cMessage *msg)
 {
-    if (index()==2)
+    if (index()==3)
     {
         // Message arrived.
         ev << "Message " << msg << " arrived.\n";

@@ -70,8 +70,7 @@ void Txc11::forwardMessage(TicTocMsg11 *msg)
 
     // Same routing as before: random gate.
     int n = gate("out")->size();
-    int k = intuniform(0,n-2);
-    if (k==index()) k++;
+    int k = intuniform(0,n-1);
 
     ev << "Forwarding message " << msg << " on port out[" << k << "]\n";
     send(msg, "out", k);

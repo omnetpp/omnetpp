@@ -15,18 +15,24 @@ simple Txc9
 endsimple
 
 module Tictoc9
-    parameters:
-        n: numeric const;
     submodules:
-        tic: Txc9[n];  // we'll have n tic modules as well
-            gatesizes:
-                in[n], out[n];  // set the size of in[] and out[]
-            display: "i=proc1;p=,,ring";  // arrange them in a ring
-    connections nocheck:
-        for i=0..n-2, j=i+1..n-1 do   // connect every tic to every other
-            tic[i].out[j] --> delay 100ms --> tic[j].in[i];
-            tic[i].in[j] <-- delay 100ms <-- tic[j].out[i];
-        endfor;
+        tic: Txc9[6];   // we'll have 6 Txc modules
+            display: "i=proc1";
+    connections:
+        tic[0].out++ --> delay 100ms --> tic[1].in++;
+        tic[0].in++ <-- delay 100ms <-- tic[1].out++;
+
+        tic[1].out++ --> delay 100ms --> tic[2].in++;
+        tic[1].in++ <-- delay 100ms <-- tic[2].out++;
+
+        tic[1].out++ --> delay 100ms --> tic[4].in++;
+        tic[1].in++ <-- delay 100ms <-- tic[4].out++;
+
+        tic[3].out++ --> delay 100ms --> tic[4].in++;
+        tic[3].in++ <-- delay 100ms <-- tic[4].out++;
+
+        tic[4].out++ --> delay 100ms --> tic[5].in++;
+        tic[4].in++ <-- delay 100ms <-- tic[5].out++;
 endmodule
 
 network tictoc9 : Tictoc9

@@ -20,7 +20,7 @@
 
 
 /**
- * In this step the destination address is no longer node 2 -- we draw a 
+ * In this step the destination address is no longer node 2 -- we draw a
  * random destination, and we'll add the destination address to the message.
  *
  * The best way is to subclass cMessage and add destination as a data member.
@@ -70,8 +70,7 @@ void Txc10::forwardMessage(TicTocMsg10 *msg)
 
     // Same routing as before: random gate.
     int n = gate("out")->size();
-    int k = intuniform(0,n-2);
-    if (k==index()) k++;
+    int k = intuniform(0,n-1);
 
     ev << "Forwarding message " << msg << " on port out[" << k << "]\n";
     send(msg, "out", k);
