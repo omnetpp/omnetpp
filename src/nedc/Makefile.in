@@ -62,7 +62,7 @@ clean:
 	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc *_n.cc
 
 install-local: nedc
-	cp nedc $(OMNETPP_BIN_DIR)
+	../utils/install-prog nedc $(OMNETPP_BIN_DIR)
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

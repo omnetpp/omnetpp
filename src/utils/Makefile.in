@@ -27,7 +27,7 @@ clean:
 	rm -f *.o seedtool
 
 install-local: seedtool
-	cp seedtool $(OMNETPP_BIN_DIR)
+	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
 	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);rm -f makemake;ln -s $$dir/makemake .)
 	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);rm -f splitvec;ln -s $$dir/splitvec .)
 

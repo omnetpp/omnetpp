@@ -85,8 +85,8 @@ depend:
 clean:
 	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned
 
-install-local: gned
-	cp gned $(OMNETPP_BIN_DIR)
+install-local: default
+	../utils/install-prog gned $(OMNETPP_BIN_DIR)
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
