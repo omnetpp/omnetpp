@@ -353,12 +353,8 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "{\n";
     out << "    int n = mod->params();\n";
     out << "    for (int k=0; k<n; k++)\n";
-    out << "    {\n";
     out << "        if (mod->par(k).isInput())\n";
-    out << "        {\n";
     out << "            mod->par(k).read();\n";
-    out << "        }\n";
-    out << "    }\n";
     out << "}\n";
     out << "\n";
 
@@ -410,7 +406,7 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    for (int i=0; i<n; i++)\n";
     out << "        if (!mod->gate(baseId+i)->isConnectedOutside())\n";
     out << "            return mod->gate(baseId+i);\n";
-    out << "    const int delta = 1; // can be increased\n";
+    out << "    const int delta = 1;\n";
     out << "    mod->setGateSize(gatename,n+delta);\n";
     out << "    return mod->gate(baseId+n);\n";
     out << "}\n";
@@ -425,11 +421,11 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "}\n";
     out << "\n";
 
-    out << "static cChannel *_createChannel(const char *name)\n";
+    out << "static cChannel *_createChannel(const char *channeltypename)\n";
     out << "{\n";
-    out << "    cChannelType *chantype = findChannelType(name);\n";
+    out << "    cChannelType *chantype = findChannelType(channeltypename);\n";
     out << "    if (!chantype)\n";
-    out << "        throw new cException(\"Channel type %s not found\", name);\n";
+    out << "        throw new cException(\"Channel type %s not found\", channeltypename);\n";
     out << "    cChannel *channel = chantype->create(\"channel\");\n";
     out << "    return channel;\n";
     out << "}\n";
@@ -915,41 +911,41 @@ void NEDCppGenerator::doConnections(ConnectionsNode *node, const char *indent, i
 
 void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex, const char *gatename, ExpressionNode *gateindex, bool isplusplus)
 {
-   if (isplusplus && gateindex)
-       INTERNAL_ERROR0(NULL,"resolveGate(): \"++\" and gate index expression cannot exist together");
+    if (isplusplus && gateindex)
+        INTERNAL_ERROR0(NULL,"resolveGate(): \"++\" and gate index expression cannot exist together");
 
-   // wrap
-   if (isplusplus && !strnotnull(modname))
-       out << "_getFirstUnusedParentModGate(";
-   else if (isplusplus)
-       out << "_getFirstUnusedSubmodGate(";
-   else
-       out << "_checkGate(";
+    // wrap
+    if (isplusplus && !strnotnull(modname))
+        out << "_getFirstUnusedParentModGate(";
+    else if (isplusplus)
+        out << "_getFirstUnusedSubmodGate(";
+    else
+        out << "_checkGate(";
 
-   // module
-   if (!strnotnull(modname))
-   {
-       out << "mod";
-   }
-   else
-   {
-       out << modname << "_p";
-       if (modindex)
-       {
-            out << "[_checkModuleIndex((int)(";
-            generateItem(modindex,  "        ");
-            out << ")," << modname << "_size,\"" << modname << "\")]";
-       }
-   }
+    // module
+    if (!strnotnull(modname))
+    {
+        out << "mod";
+    }
+    else
+    {
+        out << modname << "_p";
+        if (modindex)
+        {
+             out << "[_checkModuleIndex((int)(";
+             generateItem(modindex,  "        ");
+             out << ")," << modname << "_size,\"" << modname << "\")]";
+        }
+    }
 
-   // gate
-   out << ", \"" << gatename << "\"";
-   if (gateindex)
-   {
-       out << ", ";
-       generateItem(gateindex, "        ");
-   }
-   out << ")";
+    // gate
+    out << ", \"" << gatename << "\"";
+    if (gateindex)
+    {
+        out << ", ";
+        generateItem(gateindex, "        ");
+    }
+    out << ")";
 }
 
 void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const char *indent, int mode)

@@ -46,11 +46,13 @@ class cNEDNetworkBuilder
     virtual void assignSubmoduleParams(cModule *submodp, NEDElement *submod);
     virtual void setupGateVectors(cModule *submodp, NEDElement *submod);
     virtual void readInputParams(cModule *submodp);
+    virtual cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
+    virtual cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
     virtual void addLoopConnection(cModule *modp, ForLoopNode *forloop);
     virtual void doLoopVar(cModule *modp, LoopVarNode *loopvar);
     virtual void addConnection(cModule *modp, ConnectionNode *conn);
     virtual cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
-                               const char *gatename, ExpressionNode *gateindex);
+                               const char *gatename, ExpressionNode *gateindex, bool isplusplus);
     virtual cChannel *createChannel(ConnectionNode *conn);
     virtual ExpressionNode *findExpression(NEDElement *node, const char *exprname);
 
