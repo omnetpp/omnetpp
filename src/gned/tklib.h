@@ -8,8 +8,11 @@
   Copyright (C) 1992-2003 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
-  `terms' for details on this and other legal matters.
+  `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+#ifndef _TKLIB_H_
+#define _TKLIB_H_
 
 #include <tk.h>
 
@@ -22,6 +25,9 @@
   } while(0)
 #endif
 
+char *ptrToStr(void *ptr, char *buffer=NULL);
+void *strToPtr(const char *s );
+
 struct OmnetTclCommand {
     char *namestr;
     int (*func)(ClientData, Tcl_Interp *, int, const char **);
@@ -30,7 +36,13 @@ extern OmnetTclCommand tcl_commands[];
 
 extern int exit_omnetpp;
 
-int initTk(int argc, char **argv, Tcl_Interp *&interp );
+#ifdef USE_WINMAIN
+void setargv(int *argcPtr, char ***argvPtr);
+#endif
+void printTclError(const char *fmt,...);
+int runTkApplication(int argc, const char **argv, Tcl_AppInitProc initApp);
 int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *tcl_commands );
-int runTk( Tcl_Interp *interp );
+
+#endif
+
 

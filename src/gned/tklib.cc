@@ -1,6 +1,6 @@
 //==========================================================================
 //  TKLIB.CC -
-//                graphical network editor for
+//            for the Tcl/Tk windowing environment of
 //                            OMNeT++
 //==========================================================================
 
@@ -8,7 +8,7 @@
   Copyright (C) 1992-2003 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
-  `terms' for details on this and other legal matters.
+  `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -17,22 +17,179 @@
 #include <assert.h>
 #include <tk.h>
 
+#ifdef USE_WINMAIN
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#undef WIN32_LEAN_AND_MEAN
+#endif
+
+
 #include "tklib.h"
 
-//=== the following lines come from a sample tclApp.c
-/*
- * The following variable is a special hack that is needed in order for
- * Sun shared libraries to be used for Tcl.
- */
-//extern int matherr();
-//int *tclDummyMathPtr = (int *) matherr;
 
-//=== Following source based on:
-//  Brent Welch: Practical Programming in Tcl and Tk
-//  Chapter 30: C programming and Tk; A Custom Main Program
-//
+char *ptrToStr(void *ptr, char *buffer)
+{
+    static char staticbuf[20];
+    if (buffer==NULL)
+           buffer = staticbuf;
+
+    if (ptr==0)
+           strcpy(buffer,"ptr0");  // GNU C++'s sprintf() says "nil"
+    else
+           sprintf(buffer,"ptr%p", ptr );
+    return buffer;
+}
+
+void *strToPtr(const char *s)
+{
+    if (s[0]!='p' || s[1]!='t' || s[2]!='r')
+       return NULL;
+
+    void *ptr;
+    sscanf(s+3,"%p",&ptr);
+    return ptr;
+}
+
 
 int exit_omnetpp;
+
+
+#ifdef USE_WINMAIN
+/* setargv --
+ *
+ *      Parse the Windows command line string into argc/argv.
+ *      Copied here from Tk source (win/winMain.c), appending the code
+ *      to set argv[0].
+ */
+void setargv(int *argcPtr, char ***argvPtr)
+{
+    char *cmdLine, *p, *arg, *argSpace;
+    char **argv;
+    int argc, size, inquote, copy, slashes;
+    char buffer[MAX_PATH];
+
+    cmdLine = GetCommandLine();
+
+    /*
+     * Precompute an overly pessimistic guess at the number of arguments
+     * in the command line by counting non-space spans.
+     */
+    size = 2;
+    for (p = cmdLine; *p != '\0'; p++) {
+        if (isspace(*p)) {
+            size++;
+            while (isspace(*p)) {
+                p++;
+            }
+            if (*p == '\0') {
+                break;
+            }
+        }
+    }
+
+    /*
+     * We must add '--' as the first command-line arg. Therefore we increment
+     * size by 1.
+     * --Andras
+     */
+    size++;
+
+    argSpace = (char *) ckalloc((unsigned) (size * sizeof(char *)
+            + strlen(cmdLine) + 1));
+    argv = (char **) argSpace;
+    argSpace += size * sizeof(char *);
+    size--;
+
+    /*
+     * We must make room for the '--', so shift argv[] by one
+     * --Andras
+     */
+    argv++;
+
+    p = cmdLine;
+    for (argc = 0; argc < size; argc++) {
+        argv[argc] = arg = argSpace;
+        while (isspace(*p)) {
+            p++;
+        }
+        if (*p == '\0') {
+            break;
+        }
+
+        inquote = 0;
+        slashes = 0;
+        while (1) {
+            copy = 1;
+            while (*p == '\\') {
+                slashes++;
+                p++;
+            }
+            if (*p == '"') {
+                if ((slashes & 1) == 0) {
+                    copy = 0;
+                    if ((inquote) && (p[1] == '"')) {
+                        p++;
+                        copy = 1;
+                    } else {
+                        inquote = !inquote;
+                    }
+                }
+                slashes >>= 1;
+            }
+
+            while (slashes) {
+                *arg = '\\';
+                arg++;
+                slashes--;
+            }
+
+            if ((*p == '\0') || (!inquote && isspace(*p))) {
+                break;
+            }
+            if (copy != 0) {
+                *arg = *p;
+                arg++;
+            }
+            p++;
+        }
+        *arg = '\0';
+        argSpace = arg + 1;
+    }
+    argv[argc] = NULL;
+
+    /*
+     * Replace argv[0] with full pathname of executable.
+     * --Andras
+     */
+    GetModuleFileName(NULL, buffer, sizeof(buffer));
+    argv[0] = buffer;
+
+    /* Replace all backslashes with forward slashes.
+     * --Andras
+     */
+    for (int i=0; i<argc; i++) {
+        for (p = argv[i]; *p != '\0'; p++) {
+            if (*p == '\\') {
+                *p = '/';
+            }
+        }
+    }
+
+    /*
+     * Insert the '--' arg.
+     * --Andras
+     */
+    argv--;
+    argc++;
+    argv[0] = argv[1];
+    argv[1] = "--";
+
+    *argcPtr = argc;
+    *argvPtr = argv;
+
+}
+#endif
+
 
 //static Tk_ArgvInfo argTable[] =
 //  {
@@ -53,32 +210,13 @@ static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
     return 0;  // claim to have handled the error
 }
 
-// initialize Tcl/Tk and return a pointer to the interpreter
-int initTk(int argc, char **argv, Tcl_Interp *&interp )
+int runTkApplication(int argc, const char *argv[], Tcl_AppInitProc initApp)
 {
     // create interpreter
-    interp = Tcl_CreateInterp();
+    Tcl_Interp *interp = Tcl_CreateInterp();
 
     // pass application name to interpreter
     Tcl_FindExecutable(argv[0]);
-
-    //if (Tk_ParseArgv(interp,(Tk_Window)NULL, &argc,argv,argTable,0)!=TCL_OK)
-    //{
-    //    fprintf(stderr, "%s\n", interp->result);
-    //    return TCL_ERROR;
-    //}
-
-    if (Tcl_Init(interp) != TCL_OK)
-    {
-        fprintf(stderr, "Tcl_Init failed: %s\n", interp->result);
-        return TCL_ERROR;
-    }
-
-    if (Tk_Init(interp) != TCL_OK)
-    {
-        fprintf(stderr, "Tk_Init failed: %s\n", interp->result);
-        return TCL_ERROR;
-    }
 
     // Make command-line arguments available in Tcl variables "argc" and "argv"
     char buf[16];
@@ -89,19 +227,23 @@ int initTk(int argc, char **argv, Tcl_Interp *&interp )
     Tcl_SetVar(interp, "argc", buf, TCL_GLOBAL_ONLY);
     Tcl_SetVar(interp, "argv0", argv[0], TCL_GLOBAL_ONLY);
 
+    // load packages
+    if (initApp(interp)!=TCL_OK)
+        return TCL_ERROR;
 
-    Tcl_StaticPackage(interp, "Tk", Tk_Init, (Tcl_PackageInitProc *) NULL);
-
+    // some Tk stuff
     Tk_Window mainWindow = Tk_MainWindow(interp);
-
     Tk_SetAppName( mainWindow, "omnetpp" );
     Tk_SetClass( mainWindow, "Omnetpp" );
 
     // Register X error handler and ask for synchr. protocol to help debugging
     Tk_CreateErrorHandler( Tk_Display(mainWindow), -1,-1,-1, XErrorProc, (ClientData)mainWindow );
 
-    // Grab initial size and background
-    Tk_GeometryRequest(mainWindow,200,200);
+    // Custom event loop -- the C++ variable exit_omnetpp is used for exiting
+    while (!exit_omnetpp)
+    {
+       Tk_DoOneEvent(TK_ALL_EVENTS);
+    }
 
     return TCL_OK;
 }
@@ -111,24 +253,28 @@ int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *commands)
 {
     for(;commands->namestr!=NULL; commands++)
     {
-        Tcl_CreateCommand( interp, commands->namestr, 
-                           (Tcl_CmdProc *)commands->func,
-                           (ClientData)NULL, 
-                           (Tcl_CmdDeleteProc *)NULL);
+        Tcl_CreateCommand( interp, commands->namestr,
+                                   (Tcl_CmdProc *)commands->func,
+                                   (ClientData)NULL,
+                                   (Tcl_CmdDeleteProc *)NULL);
     }
     return TCL_OK;
 }
 
-// run the Tk application
-int runTk( Tcl_Interp *)
+void printTclError(const char *fmt, ...)
 {
-    // Custom event loop
-    //  the C++ variable exit_omnetpp is used for exiting
-    while (!exit_omnetpp)
-    {
-       Tk_DoOneEvent(TK_ALL_EVENTS);
-    }
-
-    return TCL_OK;
+    va_list va;
+    va_start(va, fmt);
+#ifdef USE_WINMAIN
+    //char messagebuf[1024];
+    //strcpy(messagebuf, "Tcl error: ");
+    //vsprintf(messagebuf+strlen(messagebuf),fmt,va);
+    //MessageBox(0, messagebuf, "Error", MB_OK|MB_ICONERROR);
+#else
+    fprintf(stderr, "<!> Tcl error: ");
+    vfprintf(stderr,fmt,va);
+    fprintf(stderr, "\n");
+#endif
+    va_end(va);
 }
 

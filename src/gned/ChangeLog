@@ -3,6 +3,12 @@ FIXME!!! when submodule has random placement, strange thing happens
 after OK'ing Props dialog
 GNED not compatible with new Tkenv mode of using "i=" and "b=" together
 
+2003-11-29  Andras Varga
+
+	* widgets.tcl: added BLT support
+
+	* gned.cc, tklib.cc, tkcmd.cc reorganized
+
 2003-11-24  Andras Varga
 
 	* added Back and Forward toolbar icons; added "New component" toolbar

@@ -73,8 +73,8 @@ if [info exist OMNETPP_GNED_DIR] {
 #
 # Exec startup code
 #
-proc start_gned {} {
-   global argv config OMNETPP_BITMAP_PATH
+proc startGNED {argv} {
+   global config OMNETPP_BITMAP_PATH
 
    wm withdraw .
    checkTclTkVersion

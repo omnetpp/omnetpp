@@ -6,7 +6,7 @@
 #
 # Local setup
 #
-!if "$(GNED_EMBED_TCL)"=="yes"
+!if "$(EMBED_TCL_CODE)"=="yes"
 GNED_EMBED_SUFFIX=-e
 !else
 GNED_EMBED_SUFFIX=
@@ -21,7 +21,8 @@ LDFLAGS=$(LDFLAGS) /SUBSYSTEM:WINDOWS
 # Local definitions
 #
 COPTS=$(CFLAGS) $(TK_CFLAGS) /I.
-OBJS = gned$(GNED_EMBED_SUFFIX).obj tklib.obj arrow.obj ebnf.tab.obj lex.yy.obj parsened.obj nedfile.obj
+OBJS = gned$(GNED_EMBED_SUFFIX).obj tklib.obj tkcmd.obj arrow.obj \
+       ebnf.tab.obj lex.yy.obj parsened.obj nedfile.obj
 
 #
 # Automatic rules
