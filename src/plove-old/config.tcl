@@ -113,7 +113,6 @@ proc editGnuplotOptions {} {
 }
 
 proc editExtProgs {} {
-catch {
     global config tcl_platform tmp
 
     # create dialog with OK and Cancel buttons
@@ -163,8 +162,6 @@ catch {
         set config(tmp)     [.ize.f.f1.tmp.e get]
     }
     destroy .ize
-} err
-puts $err
 }
 
 proc saveConfig {{fname {}}} {

@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 {
     cStaticFlag dummy;
 
-    printf("\nOMNeT++ Discrete Event Simulation  (c) 1992,99 Andras Varga, TU Budapest\n");
+    printf("OMNeT++ Discrete Event Simulation  (c) 1992,99 Andras Varga, TU Budapest\n");
     printf("See the license for distribution terms and warranty disclaimer\n");
 
     if (!simulation.ok())

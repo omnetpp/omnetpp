@@ -6,7 +6,8 @@ Aug 25, 1998, somewhat updated in Aug 1999
 improve the simulation core
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 direct support for message subclassing (1st priority but takes time)
-"generation gap" oo design pattern for the generated code (modules, channels etc).
+use "generation gap" oo design pattern for the generated code (modules, 
+  channels etc).
 proper connection objects
 more flexible connections
 --

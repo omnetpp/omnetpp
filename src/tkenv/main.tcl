@@ -149,7 +149,7 @@ proc create_omnetpp_window {} {
     # View menu
     foreach i {
       {command -label {Ini file} -underline 0 -command {view_file [opp_getfilename ini]}}
-      {command -label {README} -underline 0 -command {view_file readme}}
+      {command -label {README} -underline 0 -command {view_file README}}
       {separator}
       {command -label {Snapshot file} -underline 0 -command {view_file [opp_getfilename snapshot]}}
       {command -label {Output vector file} -underline 0 -command {view_file [opp_getfilename outvector]}}
