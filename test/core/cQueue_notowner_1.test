@@ -1,5 +1,5 @@
 %description:
-cQueue.insert(): what if object is inserted into another queue.
+cQueue.insert(): what if object is currently scheduled.
 Here we realy test cObject::take() (nothing cQueue specific)
 
 %activity:
