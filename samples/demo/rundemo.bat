@@ -12,4 +12,4 @@ rem  You should also manually correct the location of the "demo" file below
 rem  according to your OMNeT++ installation directory.
 rem
 
-c:\tk80\win\wish80.exe -f d:\work\omnetpp\samples\demo\demo
+c:\tk80\win\wish80.exe -f d:\work\omnetpp\samples\demo\rundemo

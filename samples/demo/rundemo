@@ -1,7 +1,8 @@
+#!/usr/bin/wish
+
 #==========================================================================
-#  DEMO.TCL -
-#            part of the Tcl/Tk windowing environment of
-#                            OMNeT++
+#  DEMO
+#  part of OMNeT++
 #==========================================================================
 
 #----------------------------------------------------------------#
@@ -153,7 +154,10 @@ proc loadFile {t filename} {
 proc runSample {sample} {
    global samples dir name
 
-   exec ./demo -f "$dir($sample)/omnetpp.ini" &
+   if [catch {exec ./demo -f "$dir($sample)/omnetpp.ini" &}] {
+      tk_messageBox -title {OMNeT++ Demo} -type ok -icon error \
+                    -message {Error running demo executable. Is it compiled?}
+   }
 }
 
 #===================================================================

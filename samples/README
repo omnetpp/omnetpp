@@ -8,6 +8,12 @@ D: which OMNeT++ features it demonstrates
 
 ----
 
+Demo
+====
+T: tour of the other sample simulations
+D: several models in one executable
+   makefile for models built from sources in several directories
+
 Nim
 ===
 T: a simple two-player game
