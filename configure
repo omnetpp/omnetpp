@@ -3056,7 +3056,7 @@ SHLIB_LD="$CXX -shared -fPIC"
 SHLIB_CFLAGS="-fPIC"
 # NEDC default - maybe overwritten by feature nedc-subcl
 NEDC="nedc"
-MAKEDEPEND="perl `pwd`/src/utils/makedep.pl -Y --objdirtree"
+MAKEDEPEND="opp_makedep -Y --objdirtree"
 
 case "$CXX" in
    "cxx") # Tru64 machine

@@ -59,7 +59,7 @@ RC=rc.exe
 PERL=perl.exe
 
 # dependency generator (needs Perl!)
-MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/makedep.pl -Y --objsuffix .obj --objdirtree
+MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
 
 # OMNeT++ tools
 NEDC=$(OMNETPP_BIN_DIR)/nedc.exe
