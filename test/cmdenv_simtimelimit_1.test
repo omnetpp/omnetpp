@@ -1,0 +1,40 @@
+%description:
+Tests if [General]/sim-time-limit= ini file setting works in Cmdenv.
+
+%module: {Module}
+
+#include "omnetpp.h"
+
+class {Module} : public cSimpleModule
+{
+    Module_Class_Members({Module},cSimpleModule,32768)
+    virtual void activity();
+    virtual void finish();
+};
+
+Define_Module({Module});
+
+void {Module}::activity()
+{
+   for(int i=1; i<100; i++) 
+   {
+      wait(0.1);
+      ev << "time: " << simTime() << endl;
+   }
+}
+
+void {Module}::finish()
+{
+   ev << "finish() at: " << simTime() << endl;
+}
+
+%inifile: {}.ini
+[General]
+network={}_network
+sim-time-limit=5s
+
+%contains: stdout
+time: 5.1
+.*finish\(\) at 5.1
+
+
