@@ -4,6 +4,9 @@
 
 	* cmessage.cc: foreach(): include encapsulated msg in traversal
 
+	* cmodule.h: implemented cSimpleModule::waitAndEnqueue(); putAsideQueue
+	(deprecated) prevented from being displayed in Tkenv.
+
 2002-12-21  Andras Varga
 
 	* cwatch.cc: for 'char *' and 'cObject *' types, cWatch::info() 
