@@ -159,11 +159,21 @@ format (where \textit{r},\textit{g},\textit{b} are hex digits).
 Defaults: \textit{fillcolor}=\#8080ff (a lightblue), \textit{outlinecolor}=black,
 \textit{borderwidth}=2}\\\hline
 % ROW 11
-\tbf{i=}\textit{iconname}
+\tbf{i=}\textit{iconname},\textit{<color>},\textit{<percentage>}
 &
-{\raggedright Use the named icon.
+{\raggedright Use the named icon. It can be colorized, and percentage
+specifies the amount of colorization.
 
-No default. If no icon name is present, \textit{box} is used.}\\\hline
+Defaults: \textit{iconname}: no default -- if no icon name is present, \textit{box} is used;
+\textit{color}: no coloring; \textit{percentage}: 30\%}\\\hline
+%%
+\tbf{is=}\textit{size}
+&
+{\raggedright Specifies the size of the icon. \textit{size} can be one of
+\ttt{l}, \ttt{vl}, \ttt{s} and \ttt{vs} (for large, very large, small, very small).
+If this option is present, size cannot be included in the icon name (\ttt{"i="} tag)
+with the \ttt{"i=\textit{<iconname>}\_\textit{<size>}"} notation.}\\\hline
+
 \end{longtable}
 
 %-----
