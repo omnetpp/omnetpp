@@ -1,3 +1,5 @@
+FIXME: input() with expression as default value is handled wrong
+
 2004-03-06  Andras Varga
 
 	* added support for enum declarations <enum-decl>
