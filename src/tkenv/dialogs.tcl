@@ -33,6 +33,7 @@ proc inputbox {title msg variable} {
     pack $w.f.l -anchor w -expand 0 -fill none -padx 2 -pady 2 -side top
     pack $w.f.e -anchor w -expand 1 -fill x -padx 2 -pady 2 -side top
     $w.f.e insert 0 $var
+    $w.f.e selection range 0 end
     focus $w.f.e
 
     if [execOkCancelDialog $w] {
