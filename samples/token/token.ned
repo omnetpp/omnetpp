@@ -110,12 +110,12 @@ endmodule
 // 
 network token : TokenRing 
     parameters: 
-        num_stations = input( 5, "Number of stations:" ), 
-        ia_time = input(truncnormal(0.020, 0.006),"Frame generation inter-arrival time:"), 
+        num_stations = input(5, "Number of stations:"), 
+        ia_time = input(truncnormal(0.025, 0.006),"Frame generation inter-arrival time:"), 
         THT = 10ms, 
         data_rate = 4000000, // 4 Mbit/s
         cable_delay = 1 us, 
-        num_messages = input( 2000 ); 
+        num_messages = input(1000000); 
 endnetwork 
 
 

@@ -139,15 +139,16 @@ LINK32=link.exe
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+
 # Begin Source File
 
-SOURCE=.\tknmods.ned
+SOURCE=.\token.ned
 
 !IF  "$(CFG)" == "token - Win32 Debug Tkenv"
 
 # Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\tknmods.ned
-InputName=tknmods
+InputPath=.\token.ned
+InputName=token
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
@@ -157,8 +158,8 @@ InputName=tknmods
 !ELSEIF  "$(CFG)" == "token - Win32 Debug Cmdenv"
 
 # Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\tknmods.ned
-InputName=tknmods
+InputPath=.\token.ned
+InputName=token
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
@@ -168,8 +169,8 @@ InputName=tknmods
 !ELSEIF  "$(CFG)" == "token - Win32 Release Tkenv"
 
 # Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\tknmods.ned
-InputName=tknmods
+InputPath=.\token.ned
+InputName=token
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
@@ -179,8 +180,8 @@ InputName=tknmods
 !ELSEIF  "$(CFG)" == "token - Win32 Release Cmdenv"
 
 # Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\tknmods.ned
-InputName=tknmods
+InputPath=.\token.ned
+InputName=token
 
 "$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
@@ -192,62 +193,7 @@ InputName=tknmods
 # End Source File
 # Begin Source File
 
-SOURCE=.\tknmods_n.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\tknring.ned
-
-!IF  "$(CFG)" == "token - Win32 Debug Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\tknring.ned
-InputName=tknring
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "token - Win32 Debug Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\tknring.ned
-InputName=tknring
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "token - Win32 Release Tkenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\tknring.ned
-InputName=tknring
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "token - Win32 Release Cmdenv"
-
-# Begin Custom Build - NED Compiling $(InputPath)
-InputPath=.\tknring.ned
-InputName=tknring
-
-"$(InputName)_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	@OMNETPP_BIN_DIR@\nedc.exe -s _n.cpp $(InputName).ned
-
-# End Custom Build
-
-!ENDIF
-
-# End Source File
-# Begin Source File
-
-SOURCE=.\tknring_n.cpp
+SOURCE=.\token_n.cpp
 # End Source File
 # Begin Source File
 
