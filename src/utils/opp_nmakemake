@@ -130,6 +130,7 @@ could not figure out.
     elsif ($arg eq '-o' || $arg eq '--outputfile')
     {
         $outfile = shift @ARGV;
+        $outfile = abs2rel($outfile,$basedir);
     }
     elsif ($arg eq '-N' || $arg eq '--ignore-ned')
     {

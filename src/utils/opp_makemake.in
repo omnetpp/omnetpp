@@ -30,12 +30,74 @@ fragments=""
 makefilein=n
 doxyconf="doxy.cfg"
 cfgfile=""
+basedir=""
 generatecfgfile=""
 linkwithobjects=n
 ignorened=n
 force=n
 tstamp=y
 tstampdirs=""
+
+
+# save a temporary Perl script, for conversion of absolute paths to relative
+abs2rel=/tmp/abs2rel.$$.$RANDOM
+(umask 077 && cat >$abs2rel <<EOT
+
+$abs = shift @ARGV;
+$base = shift @ARGV;
+$cur = shift @ARGV;
+print abs2rel($abs, $base, $cur);
+
+sub abs2rel($;$;$;)
+{
+    my($abs, $base, $cur) = @_;
+
+    if ($base eq '') {
+        return $abs;
+    }
+    if ($cur eq '') {
+        $cur = cwd;
+    }
+
+    # some normalization
+    $abs  =~ s|/./|/|g;
+    $cur  =~ s|/./|/|g;
+    $base =~ s|/./|/|g;
+
+    $cur  =~ s|/*$|/|;
+    $base =~ s|/*$|/|;
+
+    if (!($abs =~ /^$base/ && $cur =~ /^$base/)) {
+        return $abs;
+    }
+
+    while (1)
+    {
+       # keep cutting off common prefixes until we can
+       $abs =~ m|^(.*?/)|;
+       my $prefix = $1;
+       last if ($prefix eq '');
+       if ($cur =~ /^$prefix/) {
+           $abs =~ s/^$prefix//;
+           $cur =~ s/^$prefix//;
+       } else {
+           last;
+       }
+    }
+
+
+    # assemble relative path: change every directory name in $cur to "..",
+    # then add $abs to it.
+    $cur =~ s|[^/]+|..|g;
+    my $rel = $cur.$abs;
+
+    return $rel;
+}
+
+EOT
+)
+
+END)
 
 while [ ! $# = 0 ] ; do
     case "$1" in
@@ -53,17 +115,24 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
                           you want to load all .ned files dynamically (see
                           preload-ned-files omnetpp.ini option).
     -m, --makefile-in     Create Makefile.in instead of Makefile
-    -c cfgfile,           Omit variable definitions from generated Makefile,
-    --configfile cfgfile  and let the Makefile include the given config file
+    -c cfgfile, --configfile cfgfile
+                          Omit variable definitions from generated Makefile,
+                          and let the Makefile include the given config file
                           instead (see --genconfig option).
     --genconfig cfgfile   Creates a config file for use with the -c option.
                           Does not create a Makefile, so all other options
                           except -f are ignored. Recommended file name is
                           omnetppconfig.
-    -o, --outputfile      Name of simulation executable or library
+    -o filename, --outputfile filename
+                          Name of simulation executable or library
     -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
                           cies in the makefrag file.
+    -b directory, --basedir directory
+                          Project base (root) directory; all absolute paths
+                          (-I, -L, object file names, etc.) which point into
+                          this directory will be converted to relative, to
+                          ease compiling the project in a different directory.
     -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several dirs.
     -s, --make-so         Make shared library. Useful if you want to load the
@@ -76,11 +145,13 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
     -x, --notstamp        Do not require a .tstamp file to be present in the
                           link directories and (if -w option is present)
                           -I directories after this option.
-    -u, --userinterface   Use Cmdenv or Tkenv. Defaults to Tkenv.
+    -u name, --userinterface name
+                          Use Cmdenv or Tkenv. Defaults to Tkenv.
     -Idir                 Additional NED and C++ include directory
     -Llibrary-path        Additional library path
     -llibrary             Additional library to link against
-    -i, --includefragment Append file to near end of Makefile. The file makefrag
+    -i filename, --includefragment filename
+                          Append file to near end of Makefile. The file makefrag
                           is appended implicitly if no -i options are given.
     directory             Link with object files in that directory. Dependencies
                           between directories have to be added manually. See also
@@ -101,17 +172,17 @@ EOT
 
         -c | --configfile)
         shift
-        cfgfile=$1
+        cfgfile=`perl $abs2rel $1 $basedir`
         ;;
 
         --genconfig)
         shift
-        generatecfgfile=$1
+        generatecfgfile=`perl $abs2rel $1 $basedir`
         ;;
 
         -o | --outputfile)
         shift
-        outfile=$1
+        outfile=`perl $abs2rel $1 $basedir`
         ;;
 
         -N | --ignore-ned)
@@ -120,6 +191,11 @@ EOT
 
         -r | --recurse)
         recursive=y
+        ;;
+
+        -b | --basedir)
+        shift
+        basedir=$1
         ;;
 
         -n | --nolink)
@@ -157,18 +233,23 @@ EOT
 
         -i | --includefragment)
         shift
-        fragments="$fragments $1"
+        frag=`perl $abs2rel $1 $basedir`
+        fragments="$fragments $frag"
         ;;
 
         -I*)
-        includes="$includes $1"
+        dir=`echo $1 | sed 's/^-I//'`"
+        dir=`perl $abs2rel $dir $basedir`
+        includes="$includes -I$dir"
         if [ $tstamp = "y" ]; then
-            tstampdirs="$tstampdirs `echo $1 | sed 's/^-I//'`"
+            tstampdirs="$tstampdirs $dir"
         fi
         ;;
 
         -L*)
-        libpath="$libpath $1"
+        dir=`echo $1 | sed 's/^-L//'`"
+        dir=`perl $abs2rel $dir $basedir`
+        libpath="$libpath $dir"
         ;;
 
         -l*)
@@ -177,22 +258,26 @@ EOT
 
         *)
         if [ -d $1 ]; then
-            linkdirs="$linkdirs $1"
+            dir=`perl $abs2rel $1 $basedir`
+            linkdirs="$linkdirs $dir"
             if [ $tstamp = "y" ]; then
-                tstampdirs="$tstampdirs $1"
+                tstampdirs="$tstampdirs $dir"
             fi
         else
             if [ ! -f $1 ]; then
                 echo "opp_makemake: $1 is neither an existing file/dir nor a valid option" 1>&2
                 exit 1
             fi
-            xobjs="$xobjs $1"
+            file=`perl $abs2rel $1 $basedir`
+            xobjs="$xobjs $file"
         fi
         ;;
 
     esac
     shift
 done
+
+rm $abs2rel
 
 # handle generating a config file first
 if [ "$generatecfgfile" != "" ]; then
@@ -671,4 +756,5 @@ if ! $MAKEDEPEND $includes -f$outputfile -- *.cc; then
 else
     echo "Done."
 fi
+
 
