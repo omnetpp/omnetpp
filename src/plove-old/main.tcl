@@ -75,7 +75,7 @@ set gp(yrange)  ""
 set gp(xtics)   ""
 set gp(ytics)   ""
 set gp(before)  \
-"# place for gnuplot commands like:
+"## place for gnuplot commands like:
 # set logscale y
 # set noxtics
 # set tics out

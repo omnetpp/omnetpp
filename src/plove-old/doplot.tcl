@@ -12,16 +12,27 @@
 #  `license' for details on this and other legal matters.
 #----------------------------------------------------------------#
 
-proc file_join {args} {
+proc adjustfname {fname} {
+    global tcl_platform
+
+    if {$tcl_platform(platform) == "windows"} {
+        regsub -all -- "/" $fname "\\" fname
+    }
+    return $fname
+}
+
+proc adjustfname_gnuplot {fname} {
+    # some gnuplots on Windows want "/", others want "\"
     global tcl_platform config
 
-    set f [eval file join $args]
-
-    # Windows: transform "/" to "\" if needed
-    if {$tcl_platform(platform) == "windows" && !$config(gp-slash)} {
-        regsub -all -- "/" $f "\\" f
+    if {$tcl_platform(platform) == "windows"} {
+        if {$config(gp-slash)} {
+            regsub -all -- "\\\\" $fname "/" fname
+        } else {
+            regsub -all -- "/" $fname "\\" fname
+        }
     }
-    return $f
+    return $fname
 }
 
 proc write_tempfile {fname contents} {
@@ -33,8 +44,7 @@ proc write_tempfile {fname contents} {
        puts $fout $contents
        close $fout
     } err] {
-       tk_messageBox -icon warning -type ok \
-              -message "Error writing temp file: $err"
+       tk_messageBox -icon warning -type ok -message "Error writing temp file: $err"
        return
     }
 }
@@ -45,6 +55,20 @@ proc add_tempfile {fname} {
     if {[lsearch $fname $g(tempfiles)] == -1} {
         lappend g(tempfiles) $fname
     }
+}
+
+proc makeEchoScript_windows {text fname} {
+    # create a batch file that echos $text into $fname
+    set bat $text
+    regsub -all -- "%" $bat "%%" bat
+    regsub -all -- "<" $bat "^<" bat
+    regsub -all -- ">" $bat "^>" bat
+    regsub -all -- "\\&" $bat "^&" bat
+    regsub -all -- "\\|" $bat "^|" bat
+    regsub -all -- "\n" $bat " >>$fname\necho " bat
+    set bat "echo $bat"
+    set bat "rem *** the following echo commands will only work on NT/Win2K!\ndel $fname\n$bat"
+    return $bat
 }
 
 proc browsePicFile {w} {
@@ -99,26 +123,35 @@ proc savePicture {} {
 proc saveScript {} {
     global g vec gp config tcl_platform
 
-    set fname $config(scriptfile)
+    if {$tcl_platform(platform) == "windows"} {
+        set ext ".bat"
+    } else {
+        set ext ".sh"
+    }
 
+    set fname $config(scriptfile)
     catch {cd [file dirname $fname]}
     set fname [file tail $fname]
-    set fname [tk_getSaveFile -defaultextension ".sh" \
+    set fname [tk_getSaveFile -defaultextension $ext \
               -initialdir [pwd] -initialfile $fname \
-              -filetypes { {{Unix script} {*.sh}} {{All files} {*}}
+              -filetypes { {{Unix script} {*.sh}} {{Windows batch file} {*.bat}} {{All files} {*}}
                          }]
 
     if {$fname != ""} {
 
-        busy "Preparing commands..."
+        busy "Writing script..."
         if [catch {
-
-           set fout [open $fname w]
-           puts $fout [makeScript "unix"]
-           close $fout
-
-           if {$tcl_platform(platform) == "unix"} {
-               exec chmod a+x $fname
+           if [string match -nocase "*.bat" $fname]  {
+               set fout [open $fname w]
+               puts $fout [makeScript windows]
+               close $fout
+           } else {
+               set fout [open $fname w]
+               puts $fout [makeScript unix]
+               close $fout
+               if {$tcl_platform(platform) == "unix"} {
+                   exec chmod a+x $fname
+               }
            }
         } errmsg] {
            tk_messageBox -icon warning -type ok -message "Error: $errmsg"
@@ -129,8 +162,34 @@ proc saveScript {} {
     }
 }
 
-proc makeGnuplotConfigCmd {} {
 
+proc getVectorsToPlot {} {
+    global g
+
+    # listbox empty?
+    if {[$g(listbox2) index end]==0} {
+       return {}
+    }
+
+    # if no selection, select current item
+    set sel [$g(listbox2) curselection]
+    if {$sel == ""} {
+         set sel [$g(listbox2) index active]
+         $g(listbox2) selection set $sel
+    }
+
+    # collect ids of selected vectors
+    set idlist {}
+    foreach i $sel {
+        set line [$g(listbox2) get $i]
+        set id [lindex $line end]
+        lappend idlist $id
+    }
+    return $idlist
+}
+
+
+proc makeGnuplotConfigCmd {} {
     global gp
 
     set gnuplotcmd ""
@@ -146,10 +205,48 @@ proc makeGnuplotConfigCmd {} {
     return $gnuplotcmd
 }
 
-proc makeGrepCmd {platform id pipei {log {}}} {
+proc makeGnuplotScript {pipebasefname idlist platform {pic {}}} {
+    global vec gp
+
+    # create configuration commands
+    set gnuplotcmd [makeGnuplotConfigCmd]
+    if {$pic != ""} {
+        append gnuplotcmd "set terminal $gp(picterm)\n"
+        append gnuplotcmd "set output   '$gp(picfile)'\n"
+    }
+
+    # append plot command
+    append gnuplotcmd "plot"
+    set comma ""
+    foreach id $idlist {
+        append gnuplotcmd "$comma \"$pipebasefname-$id\" using 2:3 \
+                   title \"$vec($id,title)\" with $vec($id,style)"
+        set comma ","
+    }
+    append gnuplotcmd "\n"
+
+    # append post-plot command
+    if {$gp(after) != ""} {
+        append gnuplotcmd "$gp(after)\n"
+    }
+
+    # append pause command if necessary
+    if {$pic == ""} {
+        if {$platform == "unix"} {
+            append gnuplotcmd "pause 1000\n"
+        } else {
+            append gnuplotcmd "pause -1 \"Press a key\"\n"
+        }
+    }
+    return $gnuplotcmd
+}
+
+
+proc makeGrepCommand {platform id pipefname {log {}}} {
 
     global vec config
 
+    # grep
     if {$platform == "unix"} {
         if {$vec($id,zipped)} {
             set grepcmd "$config(zcat) \"$vec($id,fname)\" | $config(grep) \"^$vec($id,vecid)\\>\""
@@ -157,13 +254,15 @@ proc makeGrepCmd {platform id pipei {log {}}} {
             set grepcmd "$config(grep) \"^$vec($id,vecid)\\>\" '$vec($id,fname)'"
         }
     } else {
+        set vecfname [adjustfname $vec($id,fname)]
         if {$vec($id,zipped)} {
-            set grepcmd "$config(zcat) $vec($id,fname) | $config(grep) \"^$vec($id,vecid) \""
+            set grepcmd "$config(zcat) $vecfname | $config(grep) \"^$vec($id,vecid)\\>\""
         } else {
-            set grepcmd "$config(grep) \"^$vec($id,vecid) \" $vec($id,fname)"
+            set grepcmd "$config(grep) \"^$vec($id,vecid)\\>\" $vecfname"
         }
     }
 
+    # filters
     if {$vec($id,filter) != "none"} {
         set filtcmd [filterCommand $platform $id $vec($id,filter) $vec($id,filtpars)]
         append grepcmd " | $filtcmd"
@@ -172,213 +271,221 @@ proc makeGrepCmd {platform id pipei {log {}}} {
     # redirection
     if {$platform == "unix"} {
         if {$log != ""} {
-            append grepcmd " > $pipei 2>>'$log' &\n"
+            append grepcmd " > $pipefname 2>>'$log' &\n"
         } else {
-            append grepcmd " > $pipei &\n"
+            append grepcmd " > $pipefname &\n"
         }
     } else {
-        append grepcmd " > $pipei\n"
+        append grepcmd " > $pipefname\n"
     }
     return $grepcmd
 }
 
-proc makeGnuplotCmd {id pipei} {
 
-    global vec
+proc createPipe_unix {pipe} {
+    # create named pipe
+    global config
 
-    set gnuplotcmd "\"$pipei\" using 2:3 \
-                   title \"$vec($id,title)\" \
-                   with $vec($id,style)"
-
-    return $gnuplotcmd
+    if [file exists $pipe] {
+        if {[file type $pipe] != "fifo"} {
+            tk_messageBox -icon warning -type ok -title Warning \
+               -message "Cannot create named pipe $pipe, file name already exists!"
+        }
+    } else {
+        if [catch {exec $config(mknod) $pipe p} errmsg] {
+            tk_messageBox -icon warning -type ok -title Warning \
+               -message "Cannot create named pipe $pipe: $errmsg"
+        }
+    }
 }
 
-proc makeScript {platform} {
-    global g vec gp config
 
-    if {[$g(listbox2) index end]==0} {
-       busy
-       return
+proc doPlot {{pic {}}} {
+    global tcl_platform config
+
+    set platform $tcl_platform(platform)
+
+    # vectors to plot
+    set idlist [getVectorsToPlot]
+    if {$idlist == ""} {
+        return
     }
 
-    set pipe [file_join $config(tmp) pipe]
+    # call platform-specific plotting routine
+    if {$tcl_platform(platform) == "unix"} {
+        doPlot_unix $idlist $pic
+    } elseif {$tcl_platform(platform) == "windows"} {
+        doPlot_windows $idlist $pic
+    } else {
+        tk_messageBox -icon error -type ok -title Error -message "Unsupported platform!"
+    }
+}
 
+proc doPlot_unix {idlist pic} {
+    global config
+
+    # hourglass...
+    busy "Running greps and gnuplot..."
+
+    # generate pipe file name
+    set pipebasefname [file join $config(tmp) "pipe[pid]"]
+    set pipebasefname_gp $pipebasefname
+    set log [file join $config(tmp) log[pid]]
+
+    # gnuplot command
+    set gnuplotcmd [makeGnuplotScript $pipebasefname_gp $idlist unix $pic]
+
+    # make all necessary pipes
+    foreach id $idlist {
+        createPipe_unix $pipebasefname-$id
+    }
+
+    # launch grep and filter commands
+    foreach id $idlist {
+        set grepcmd [makeGrepCommand unix $id $pipebasefname-$id $log]
+        if [catch {exec $config(sh) << $grepcmd 2>> $log-$id &} errmsg] {
+            busy
+            tk_messageBox -icon warning -type ok -title Error \
+                  -message "Error spawning sh with greps and filters: $errmsg"
+            return
+        }
+    }
+
+    # launch gnuplot
+    if [catch {exec $config(gnuplot) << $gnuplotcmd > $log 2>> $log &} errmsg] {
+        busy
+        tk_messageBox -icon warning -type ok -title Error \
+                      -message "Error spawning gnuplot: $errmsg"
+        return
+    }
+
+    busy
+}
+
+proc doPlot_windows {idlist pic} {
+    global config
+
+    # hourglass...
+    busy "Running greps and gnuplot..."
+
+    # generate temp file name
+    set pipebasefname [adjustfname [file join $config(tmp) "tmp"]]
+    set pipebasefname_gp [adjustfname_gnuplot $pipebasefname]
+    set log [adjustfname [file join $config(tmp) log]]
+
+    # generate gnuplot command
+    set gnuplotcmd [makeGnuplotScript $pipebasefname_gp $idlist windows $pic]
+
+    # create command file for gnuplot
+    set gpfile [adjustfname [file join $config(tmp) "gnuplot.plt"]]
+    add_tempfile $gpfile
+    write_tempfile $gpfile $gnuplotcmd
+
+    # write grep, filter and gnuplot commands into a batch file
     set grepcmd ""
-    set gnuplotcmd [makeGnuplotConfigCmd]
-    append gnuplotcmd "# uncomment this for file output:\n"
+    foreach id $idlist {
+        append grepcmd [makeGrepCommand windows $id $pipebasefname-$id $log]
+    }
+    append grepcmd "$config(gnuplot) $gpfile\n"
+    foreach id $idlist {
+        append grepcmd "del $pipebasefname-$id\n"
+    }
+
+    # write temp batch file and launch it
+    set bat [adjustfname [file join $config(tmp) "plotvectors.bat"]]
+    add_tempfile $bat
+    write_tempfile $bat "$grepcmd"
+    if [catch {exec $bat} errmsg] {
+        busy
+        tk_messageBox -icon warning -type ok -title Error \
+             -message "Error running greps and filters: $errmsg"
+        return
+    }
+    busy
+}
+
+
+proc makeScript {platform} {
+
+    # vectors to plot
+    set idlist [getVectorsToPlot]
+    if {$idlist == ""} {
+        return
+    }
+
+    # call platform-specific script generator code
+    if {$platform == "unix"} {
+        makeScript_unix $idlist
+    } elseif {$platform == "windows"} {
+        makeScript_windows $idlist
+    } else {
+        tk_messageBox -icon error -type ok -title Error -message "Unsupported platform!"
+    }
+}
+
+proc makeScript_windows {idlist} {
+    global vec gp config
+
+    # generate temp file name
+    set pipebasefname [adjustfname [file join $config(tmp) "tmp"]]
+    set pipebasefname_gp [adjustfname_gnuplot $pipebasefname]
+    set log [adjustfname [file join $config(tmp) log]]
+
+    # generate gnuplot command
+    append gnuplotcmd "## uncomment this for file output:\n"
     append gnuplotcmd "# set terminal $gp(picterm)\n"
     append gnuplotcmd "# set output   '$gp(picfile)'\n"
-    append gnuplotcmd "plot "
+    append gnuplotcmd [makeGnuplotScript $pipebasefname_gp $idlist windows ""]
 
-    set comma ""
-    set sel [$g(listbox2) curselection]
-    if {$sel == ""} {
-         set sel [$g(listbox2) index active]
-         $g(listbox2) selection set $sel
+    set gpfile [adjustfname [file join $config(tmp) "gnuplot.plt"]]
+    set grepcmd [makeEchoScript_windows $gnuplotcmd $gpfile]
+
+    # write grep, filter and gnuplot commands into a batch file
+    foreach id $idlist {
+        append grepcmd [makeGrepCommand windows $id $pipebasefname-$id $log]
+    }
+    append grepcmd "$config(gnuplot) $gpfile\n"
+    foreach id $idlist {
+        append grepcmd "del $pipebasefname-$id\n"
     }
 
-    foreach i $sel {
-        set line [$g(listbox2) get $i]
-        set id [lindex $line end]
+    return $grepcmd
+}
 
-        if {$platform == "unix"} {
-            append pipecmd "rm -f $pipe.$i; mknod $pipe.$i p\n"
-        }
-        append grepcmd [makeGrepCmd $platform $id $pipe.$i]
-        append gnuplotcmd "$comma [makeGnuplotCmd $id $pipe.$i]"
-        set comma ","
+proc makeScript_unix {idlist} {
+    global g vec gp config
+
+    set pipebasefname [file join $config(tmp) pipe[pid]]
+    set log [file join $config(tmp) log[pid]]
+
+    # gnuplot command
+    set gnuplotcmd ""
+    append gnuplotcmd "## uncomment this for file output:\n"
+    append gnuplotcmd "# set terminal $gp(picterm)\n"
+    append gnuplotcmd "# set output   '$gp(picfile)'\n"
+    append gnuplotcmd [makeGnuplotScript $pipebasefname $idlist unix ""]
+
+    # pipes
+    set pipecmd ""
+    foreach id $idlist {
+        append pipecmd "rm -f $pipebasefname-$id; mknod $pipebasefname-$id p\n"
     }
-    append gnuplotcmd "\n"
-    if {$gp(after) != ""} {append gnuplotcmd "$gp(after)\n"}
 
-    if {$platform == "unix"} {
-        append gnuplotcmd "pause 1000\n"
-    } else {
-        append gnuplotcmd "pause -1 \"Press a key\"\n"
+    # grep and filter commands
+    set grepcmd ""
+    foreach id $idlist {
+        append grepcmd [makeGrepCommand unix $id $pipebasefname-$id $log]
     }
 
+    # assemble script
     set script "#\n# This file was generated by Plove\n#\n"
-    append script "$pipecmd\n$grepcmd\n"
+    append script "$pipecmd\n"
+    append script "$grepcmd\n"
     append script "$config(gnuplot) << END\n$gnuplotcmd\nEND\n"
 
     return $script
 }
 
-proc createPipe {pipe} {
-
-    # create named pipe
-
-    global tcl_platform config
-
-    if {$tcl_platform(platform) == "unix"} {
-        if [file exists $pipe] {
-            if {[file type $pipe] != "fifo"} {
-                tk_messageBox -icon warning -type ok -title Warning \
-                   -message "Cannot create named pipe $pipe, already exists as file!"
-            }
-        } else {
-            if [catch {exec $config(mknod) $pipe p} errmsg] {
-                tk_messageBox -icon warning -type ok -title Warning \
-                   -message "Cannot create named pipe $pipe: $errmsg"
-            }
-        }
-    } else {
-        # on Windows, just use plain files...
-
-        if [catch {open $pipe w} fout] {
-           tk_messageBox -icon warning -type ok \
-                         -message "Error opening temporary file $pipe: $fout"
-           return
-        } else {
-           close $fout
-        }
-    }
-}
-
-proc doPlot {{pic {}}} {
-    global g vec gp config tcl_platform
-
-    if {[$g(listbox2) index end]==0} {
-       busy
-       return
-    }
-
-    busy "Preparing commands..."
-
-    set platform $tcl_platform(platform)
-
-    if {$platform == "unix"} {set pid [pid]} else {set pid ""}
-    set pipe [file_join $config(tmp) pipe$pid]
-    set log  [file_join $config(tmp) log$pid]
-
-    add_tempfile $log
-
-    set grepcmd ""
-    set gnuplotcmd [makeGnuplotConfigCmd]
-    if {$pic != ""} {
-        append gnuplotcmd "set terminal $gp(picterm)\n"
-        append gnuplotcmd "set output   '$gp(picfile)'\n"
-    }
-    append gnuplotcmd "plot "
-
-    set comma ""
-    set sel [$g(listbox2) curselection]
-    if {$sel == ""} {
-         set sel [$g(listbox2) index active]
-         $g(listbox2) selection set $sel
-    }
-
-    foreach i $sel {
-        set line [$g(listbox2) get $i]
-        set id [lindex $line end]
-
-        add_tempfile $pipe.$i
-        createPipe $pipe.$i
-
-        append grepcmd [makeGrepCmd $platform $id $pipe.$i $log]
-        append gnuplotcmd "$comma [makeGnuplotCmd $id $pipe.$i]"
-        set comma ","
-    }
-    append gnuplotcmd "\n"
-    if {$gp(after) != ""} {append gnuplotcmd "$gp(after)\n"}
-
-    if {$platform == "unix"} {
-        set pausecmd "pause 1000\n"
-    } else {
-        set pausecmd "pause -1 \"Press a key\"\n"
-    }
-
-    if {$pic == ""} {append gnuplotcmd $pausecmd}
-
-    runPrograms $grepcmd $gnuplotcmd $log
-
-    busy
-}
-
-proc runPrograms {grepcmd gnuplotcmd log} {
-
-    global config tcl_platform
-
-    # must be a better way than this... maybe expect?
-
-    busy "Running greps and gnuplot..."
-
-    # puts $grepcmd
-    # puts $gnuplotcmd
-
-    catch {file delete $log}
-
-    if {$tcl_platform(platform) == "unix"} {
-        if [catch {exec $config(sh) << $grepcmd 2>> $log &} errmsg] {
-            tk_messageBox -icon warning -type ok -title Error \
-                  -message "Error spawning sh with greps and filters: $errmsg"
-            return
-        }
-        if [catch {exec $config(gnuplot) << $gnuplotcmd > $log 2>> $log &} errmsg] {
-            tk_messageBox -icon warning -type ok -title Error \
-                          -message "Error spawning gnuplot: $errmsg"
-            return
-        }
-    } else {
-        set bat [file_join $config(tmp) "greps.bat"]
-        add_tempfile $bat
-        write_tempfile $bat $grepcmd
-        if [catch {exec $bat} errmsg] {
-            tk_messageBox -icon warning -type ok -title Error \
-                  -message "Error running greps and filters: $errmsg"
-            return
-        }
-
-        set gpfile [file_join $config(tmp) "gnuplot.tmp"]
-        add_tempfile $gpfile
-        write_tempfile $gpfile $gnuplotcmd
-        if [catch {exec $config(gnuplot) $gpfile} errmsg] {
-            tk_messageBox -icon warning -type ok -title Error \
-                          -message "Error spawning gnuplot: $errmsg"
-            return
-        }
-    }
-}
 
 proc exitCleanup {} {
 
@@ -388,3 +495,4 @@ proc exitCleanup {} {
         catch {file delete $f}
     }
 }
+

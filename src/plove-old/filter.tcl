@@ -130,7 +130,7 @@ proc filterCommand {platform id name varlist} {
         if {$platform == "unix"} {
             set filtcmd "$config(awk) '$filtexpr'"
         } else {
-            set awkprog [file_join $config(tmp) "filt$id.awk"]
+            set awkprog [adjustfname [file join $config(tmp) "filt$id.awk"]]
             add_tempfile $awkprog
             write_tempfile $awkprog $filtexpr
             set filtcmd "$config(awk) -f $awkprog"

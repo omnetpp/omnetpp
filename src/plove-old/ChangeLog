@@ -1,3 +1,10 @@
+2001-08-29  Andras Varga
+
+	* doplot.tcl rewritten to handle Windows better. Fixed bugs associated
+        with slashes/backslashes in filenames in batch files and tabs/spaces
+        in vector files. New feature: can write Windows .bat file also, not
+        only Unix shell script. (Restriction: awk-based filters aren't added
+        correctly to the .bat files.)
 
 2001-05-18  Andras Varga
 
