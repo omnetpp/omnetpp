@@ -25,6 +25,17 @@
 #define MAX(a,b) ((a)<(b) ? (b) : (a))
 
 
+#define GLRAND_MAX  0x7ffffffeL  /* = 2**31-2 */
+
+double GraphLayouter::privRand01()
+{
+    const long int a=16807, q=127773, r=2836;
+    rndseed=a*(rndseed%q) - r*(rndseed/q);
+    if (rndseed<=0) rndseed+=GLRAND_MAX+1;
+
+    return rndseed/(double)(GLRAND_MAX+1);
+}
+
 
 GraphLayouter::GraphLayouter()
 {
@@ -193,14 +204,17 @@ void BasicSpringEmbedderLayout::execute()
     if (nodes.empty() || allNodesAreFixed)
         return;
 
-    srand(rndseed);
+    // consume a some values (manually given seeds are usually small!)
+    privRand01();
+    privRand01();
+    privRand01();
 
     // initialize variables (also randomize start positions)
     for (AnchorList::iterator l=anchors.begin(); l!=anchors.end(); ++l)
     {
         Anchor& a = *(*l);
-        a.x = 100 * rand() / (double)RAND_MAX;
-        a.y = 100 * rand() / (double)RAND_MAX;
+        a.x = 100 * privRand01();
+        a.y = 100 * privRand01();
         a.dx = a.dy = 0;
     }
     for (NodeList::iterator k=nodes.begin(); k!=nodes.end(); ++k)
@@ -217,8 +231,8 @@ void BasicSpringEmbedderLayout::execute()
         }
         else // movable
         {
-            n.x = 100 * rand() / (double)RAND_MAX;
-            n.y = 100 * rand() / (double)RAND_MAX;
+            n.x = 100 * privRand01();
+            n.y = 100 * privRand01();
         }
         n.dx = n.dy = 0;
     }
@@ -427,8 +441,8 @@ double BasicSpringEmbedderLayout::relax()
                 }
                 else if (lensq <= 1.0)
                 {
-                    fx += rand() / (double)RAND_MAX;
-                    fy += rand() / (double)RAND_MAX;
+                    fx += privRand01();
+                    fy += privRand01();
                 }
                 else
                 {
@@ -444,8 +458,8 @@ double BasicSpringEmbedderLayout::relax()
                 }
                 else if (lensq <= 1.0)
                 {
-                    fx += rand() / (double)RAND_MAX;
-                    fy += rand() / (double)RAND_MAX;
+                    fx += privRand01();
+                    fy += privRand01();
                 }
                 else
                 {
@@ -785,8 +799,8 @@ double AdvSpringEmbedderLayout::relax()
             // force weakens proportional to the inverse of the square of the distance
             if (len == 0)
             {
-                dx += rand() / (double)RAND_MAX;
-                dy += rand() / (double)RAND_MAX;
+                dx += privRand01();
+                dy += privRand01();
             }
             else if (len < 1000.0)
             {

@@ -34,7 +34,6 @@ class cModule;
 class GraphLayouter
 {
   protected:
-    unsigned long rndseed;
     int defaultEdgeLen;
 
     int width, height, border;
@@ -42,6 +41,11 @@ class GraphLayouter
 
     Tcl_Interp *interp;
     const char *canvas;
+
+    // internal: our RNG on [0,1) -- C's rand() is not to be trusted
+    long rndseed;
+    double privRand01();
+
   public:
     /**
      * Ctor, dtor
