@@ -2,18 +2,17 @@
 OMNeT++
 =======
 
-   is a feature-rich C++-based object-oriented discrete event simulation
-framework, primarily targeted at the simulation of communication networks
+OMNeT++ is a feature-rich C++-based object-oriented discrete event simulation
+framework, primarily targeted at the simulation of communication networks and
 other parallel/distributed systems. OMNeT++ includes a graphical network
 editor, a network topology description language, a rich simulation class
 library, multiple execution environments (both GUI and command line),
 a result plotting tool, good documentation, many sample simulations and
-much more...
-And it is OPEN SOURCE!
+much more... And it is open source!
 
 Please look into the doc/ subdirectory where you'll find README files,
-installation instructions, license, the manual in PDF, etc. The HTML version
-of the manual is in the (won't guess!) html/ subdirectory.
+installation instructions, license, the manual in PDF, etc. The html/
+subdirectory contains the HTML version of the manual.
 
 Enjoy!
 

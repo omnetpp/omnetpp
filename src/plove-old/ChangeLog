@@ -64,6 +64,8 @@ Aug 29, 2000
    to Plove
 ------ omnetpp-2.0 released ------
 ------ omnetpp-2.0p1 released ------
-March 24, 2001
+Mar 24, 2001
  - now you can build a single Plove executable, with all Tcl code compiled in.
    This made it necessary to reorganize the makefiles too.
+Apr 3, 2001
+ - fix: the ap window didn't acquire focus on startup (added deiconify command)
