@@ -156,7 +156,16 @@ proc new_run {} {
            lappend runlist "Run $runno"
        }
     }
+
+    # determine detault run to be offered
     set run "Run [opp_getrunnumber]"
+    if {$run=="Run 0"} {
+        if {[llength $runlist]>1} {
+            set run [lindex $runlist 1]
+        } else {
+            set run "General"
+        }
+    }
 
     # pop up selection dialog
     set ok [comboSelectionDialog "Set up new Run" "Set up one of the runs described in omnetpp.ini." {Select run:} run $runlist]
@@ -311,14 +320,21 @@ proc call_finish {} {
 
     # check state is not SIM_FINISHCALLED
     if {[opp_getsimulationstate] == "SIM_FINISHCALLED"} {
-       messagebox {Error} {finish() has been run already.} info ok
+       messagebox {Error} {finish() has been invoked already.} info ok
        return
     }
 
     # check state is not SIM_ERROR
     if {[opp_getsimulationstate] == "SIM_ERROR"} {
        set ans [messagebox {Warning} \
-                  {Simulation was stopped with error, calling finish() might produce unexpected results. Call it anyway?} \
+                  {Simulation was stopped with error, calling finish() might produce unexpected results. Proceed anyway?} \
+                  question yesno]
+       if {$ans == "no"} {
+           return
+       }
+    } else {
+       set ans [messagebox {Question} \
+                  {Do you want to conclude this simulation run and invoke finish() on all modules?} \
                   question yesno]
        if {$ans == "no"} {
            return

@@ -166,10 +166,11 @@ set icons(restart) [image create photo -data {
 }]
 
 set icons(finish) [image create photo -data {
-    R0lGODlhFAATALMAAEAAAMbGxoAAAP///8AAAAAAAICAgACAAP//////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARTMMhJq704BzHGOd3XCRRBSJwHqmMpkILIquRE
-    vKSsH7V04xlAL/ADXoQu3Os4LL4AzOQTg7ThoNTmdEip+gRQpMEilgCwwjFZoK6cqViNfE6v
-    RwAAOw==
+    R0lGODlhFAATALMAAAAAABAMBCYgFT48O29SGnNlTIN/eqmgkff3Y7W1rb21rbW1tcXFxd7c
+    2vPz8////yH5BAEAAAgALAAAAAAUABMAAASSEMlJq6WFmMtlHoLQVQlBAGgzTgchDMDgqMti
+    NIxlPvzQPAWUgeeglAqLhgNgcIQEhYTjQWmFAgPY4HB4BAKF4iQTECaYvAcKUGARCspG95Et
+    OxaCjcRAmB8EBwtrAjwqYwQNSkEDBi8FUQ5iCAomCDkGZTU/IAeGCBkHFAthM3ICAVVRFgw5
+    HgMrsLGys7QSEQAAOw==
 }]
 
 set icons(chan_vs) [image create photo -data {

@@ -200,7 +200,6 @@ proc create_omnetpp_window {} {
 
     frame .toolbar -relief raised -borderwidth 1
 
-    #  {finish   -image $icons(finish)  -command {call_finish}}
     #  {restart  -image $icons(restart) -command {rebuild}}
 
     foreach i {
@@ -218,6 +217,8 @@ proc create_omnetpp_window {} {
       {until    -image $icons(until)   -command {run_until}}
       {sep3     -separator}
       {stop     -image $icons(stop)    -command {stop_simulation}}
+      {sep4     -separator}
+      {finish   -image $icons(finish)  -command {call_finish}}
       {sep5     -separator}
       {network  -image $icons(network) -command {inspect_systemmodule}}
       {fes      -image $icons(fes)     -command {inspect_messagequeue}}
