@@ -1,11 +1,11 @@
 #!/bin/sh
-# opp_makemake (formerly jar_mkmk)
+# opp_makemake
 #
-#  Creates a makefile for a given OMNeT++ model.
+#  Creates a makefile for a given OMNeT++/OMNEST model.
 #  Assumes that .ned, .msg, .cc and .h files are in one directory.
 #  The name of the program defaults to the name of the directory ('myproject').
 #
-#  Original script written by Jan Heijmans et al.
+#  Original script (jar_mkmk) written by Jan Heijmans et al.
 #
 #  --VA
 #
@@ -109,7 +109,8 @@ while [ ! $# = 0 ] ; do
 
         -h | --help)
         cat <<EOT
-opp_makemake: generate OMNeT++ Makefile based on contents of current directory
+opp_makemake: generate OMNeT++/OMNEST Makefile based on contents of current
+directory
 
 opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
         [-c configfile] [-p] [-w] [-x] [-Idir] [-Llibrary-path] [-llibrary]

@@ -1,8 +1,8 @@
 //=========================================================================
 //
 //  TCL2C.C - part of
-//			    OMNeT++
-//	     Discrete System Simulation in C++
+//                  OMNeT++/OMNEST
+//        Discrete System Simulation in C++
 //
 //   Utility for embedding TCL code into C/C++ as large string constant.
 //   Output is somewhat scrambled so that the TCL code is not readable
@@ -11,7 +11,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2003 Andras Varga
+  Copyright (C) 1992-2005 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.

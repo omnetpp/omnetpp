@@ -6,7 +6,7 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 #
 # opp_nmakemake
 #
-#  Creates an MSVC makefile for a given OMNeT++ model.
+#  Creates an MSVC makefile for a given OMNeT++/OMNEST model.
 #  Assumes that .ned, .msg, .cc and .h files are in one directory.
 #  The name of the program defaults to the name of the directory ('myproject').
 #
@@ -55,8 +55,8 @@ while (@ARGV)
     if ($arg eq '-h' || $arg eq '--help')
     {
         print '
-opp_nmakemake: create MSVC makefile for an OMNeT++ model, based on source
-files in current directory
+opp_nmakemake: create MSVC makefile for an OMNeT++/OMNEST model, based on
+source files in current directory
 
 opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
               [-w] [-x] [-p] [-M] [-Idir] [-Ldir] [-llibrary] [-c configdir]

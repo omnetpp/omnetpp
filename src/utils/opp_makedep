@@ -15,7 +15,7 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 #
 
 $Usage =
-'Dependency Generator for OMNeT++, (c) 2001-2002 Andras Varga
+'Dependency Generator for OMNeT++/OMNEST, (c) 2001-2005 Andras Varga
 Updates dependencies in a makefile for a C/C++ program.
 
 Usage: opp_makedep [options] [--] <file_list>
