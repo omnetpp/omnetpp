@@ -49,18 +49,18 @@ TKENV_API void envirDummy() {}
 
 
 // widgets in the Tk user interface
-#define NETWORK_LABEL   ".statusbar.networklabel"
-#define EVENT_LABEL     ".statusbar.eventlabel"
-#define TIME_LABEL      ".statusbar.timelabel"
-#define NEXT_LABEL      ".statusbar.nextlabel"
+#define NETWORK_LABEL         ".statusbar.networklabel"
+#define EVENT_LABEL           ".statusbar.eventlabel"
+#define TIME_LABEL            ".statusbar.timelabel"
+#define NEXT_LABEL            ".statusbar.nextlabel"
 
-#define FESLENGTH_LABEL ".statusbar2.feslength"
-#define TOTALMSGS_LABEL ".statusbar2.totalmsgs"
-#define LIVEMSGS_LABEL  ".statusbar2.livemsgs"
+#define FESLENGTH_LABEL       ".statusbar2.feslength"
+#define TOTALMSGS_LABEL       ".statusbar2.totalmsgs"
+#define LIVEMSGS_LABEL        ".statusbar2.livemsgs"
 
-#define SIMSECPERSEC_LABEL    ".statusbar2.simsecpersec"
-#define EVENTSPERSEC_LABEL    ".statusbar2.eventspersec"
-#define EVENTSPERSIMSEC_LABEL ".statusbar2.eventspersimsec"
+#define SIMSECPERSEC_LABEL    ".statusbar3.simsecpersec"
+#define EVENTSPERSEC_LABEL    ".statusbar3.eventspersec"
+#define EVENTSPERSIMSEC_LABEL ".statusbar3.eventspersimsec"
 
 
 //

@@ -237,6 +237,7 @@ proc create_omnetpp_window {} {
 
     frame .statusbar
     frame .statusbar2
+    frame .statusbar3
 
     label .statusbar.networklabel \
         -relief groove -text {(no network set up)} -width 18 -anchor w
@@ -247,13 +248,6 @@ proc create_omnetpp_window {} {
     label .statusbar.nextlabel \
         -relief groove -text {Next:} -width 26 -anchor w
 
-    label .statusbar2.simsecpersec \
-        -relief groove -text {simsec/sec: n/a} -width 20 -anchor w
-    label .statusbar2.eventspersec \
-        -relief groove -text {ev/sec: n/a} -width 20 -anchor w
-    label .statusbar2.eventspersimsec \
-        -relief groove -text {ev/simsec: n/a} -width 20 -anchor w
-
     label .statusbar2.feslength \
         -relief groove -text {Msgs in FES: 0} -width 20 -anchor w
     label .statusbar2.totalmsgs \
@@ -261,18 +255,25 @@ proc create_omnetpp_window {} {
     label .statusbar2.livemsgs \
         -relief groove -text {Live msgs: 0} -width 20 -anchor w
 
+    label .statusbar3.simsecpersec \
+        -relief groove -text {simsec/sec: n/a} -width 20 -anchor w
+    label .statusbar3.eventspersec \
+        -relief groove -text {ev/sec: n/a} -width 20 -anchor w
+    label .statusbar3.eventspersimsec \
+        -relief groove -text {ev/simsec: n/a} -width 20 -anchor w
+
     pack .statusbar.networklabel -anchor n -expand 1 -fill x -side left
     pack .statusbar.eventlabel -anchor n -expand 1 -fill x -side left
     pack .statusbar.timelabel -anchor n -expand 1 -fill x -side left
     pack .statusbar.nextlabel -anchor n -expand 1 -fill x -side right
 
-    pack .statusbar2.simsecpersec -anchor n -expand 1 -fill x -side left
-    pack .statusbar2.eventspersec -anchor n -expand 1 -fill x -side left
-    pack .statusbar2.eventspersimsec -anchor n -expand 1 -fill x -side left
-
     pack .statusbar2.feslength -anchor n -expand 1 -fill x -side left
     pack .statusbar2.totalmsgs -anchor n -expand 1 -fill x -side left
     pack .statusbar2.livemsgs -anchor n -expand 1 -fill x -side left
+
+    pack .statusbar3.simsecpersec -anchor n -expand 1 -fill x -side left
+    pack .statusbar3.eventspersec -anchor n -expand 1 -fill x -side left
+    pack .statusbar3.eventspersimsec -anchor n -expand 1 -fill x -side left
 
 
     #################################
@@ -297,6 +298,7 @@ proc create_omnetpp_window {} {
     pack .toolbar    -anchor center -expand 0 -fill x -side top
     pack .statusbar  -anchor center -expand 0 -fill x -side top
     pack .statusbar2 -anchor center -expand 0 -fill x -side top
+    pack .statusbar3 -anchor center -expand 0 -fill x -side top
     pack .main       -anchor center -expand 1 -fill both -side top
 
     global tcl_platform

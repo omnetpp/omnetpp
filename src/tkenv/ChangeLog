@@ -399,4 +399,4 @@ Jan 13, 2000
  TBD:
       add Speedometer calls to all necessary places;
       time-driven intervals;
-      events/simsec calculation
+      configurable toolbars;
