@@ -20,7 +20,8 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
-#include <stdio.h>           // sprintf
+#include <stdio.h>           // sprintf, fprintf
+#include <stdlib.h>          // EXIT_FAILURE
 #include <string.h>          // memcmp, memcpy, memset
 #include "macros.h"
 #include "ctypes.h"
@@ -127,10 +128,21 @@ void cEnum::insert(int key, const char *str)
     while (vect[k].string && vect[k].key!=key)
 	k = (k+1)%size;
 
-    // ...and insert there
-    vect[k].key = key;
-    vect[k].string = opp_strdup(str);
-    items++;
+    // consistency check
+    if (vect[k].key == key && vect[k].string && strcmp(vect[k].string, str))
+      {
+        // oops same keys different for strings!
+        fprintf(stderr, "Key mismatch for enum %s: %s and %s have the same value (%d)\n",
+                name(), vect[k].string, str, key);
+        exit (EXIT_FAILURE);
+      }
+    else if (vect[k].key != key)
+      {
+        // ...and insert there
+        vect[k].key = key;
+        vect[k].string = opp_strdup(str);
+        items++;
+      }
 }
 
 const char *cEnum::stringFor(int key)
