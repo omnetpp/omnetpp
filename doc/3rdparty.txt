@@ -56,6 +56,13 @@ opp_neddoc also uses the little program giftrans, attributed to Andreas Ley
 <ley@rz.uni-karlsruhe.de> on the page http://www.gsp.com/cgi-bin/man.cgi?
 section=1&topic=giftrans, along with a BSD-like license.
 
+Ghostscript
+
+For completeness, opp_neddoc uses Ghostscript as well. Ghostscript is not 
+bundled with the OMNeT++ Win32 binary distribution: you have to download
+and install Ghostscript before OMNeT++. We recommend a recent version of 
+AFPL Ghostscript (GNU Ghostscript is a bit behind with versions.)
+
 UnxUtils
 
 Several GNU Unix tools have been included: grep, gawk, pwd, sed, gzip, gunzip,
