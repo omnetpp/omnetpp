@@ -26,12 +26,13 @@ EXRA_OBJS=
 # object files in subdirectories
 SUBDIR_OBJS=
 
-# Additional libraries (-l option)
+# Additional libraries (-L option -l option)
 LIBS=
 
 #------------------------------------------------------------------------------
 
 NEDC=@NEDC@
+MSGC=@MSGC@
 CXX=@CXX@
 CC=@CC@
 AR=@AR@
@@ -39,8 +40,8 @@ SHLIB_LD=@SHLIB_LD@
 MAKEDEPEND=@MAKEDEPEND@
 
 CFLAGS=@CFLAGS@
-LDFLAGS=@LDFLAGS@
 NEDCFLAGS=@NEDCFLAGS@
+LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
@@ -70,7 +71,7 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 #------------------------------------------------------------------------------
 
 # Object files from this directory to link
-OBJS= token_n.o token.o
+OBJS= token_n.o token_m.o token.o 
 
 $(TARGET): $(OBJS) $(EXRA_OBJS) Makefile 
 	$(CXX) $(LDFLAGS) $(OBJS) $(EXRA_OBJS) $(SUBDIR_OBJS) $(LIBS) $(OMNETPP_LIBS) -o $(TARGET)
@@ -84,16 +85,47 @@ token_n.o: token_n.cc
 token_n.cc: token.ned
 	$(NEDC) $(INCLUDE_PATH) token.ned
 
+token_m.o: token_m.cc
+	$(CXX) -c $(NEDCOPTS) token_m.cc
+
+token_m.cc: token.msg
+	$(MSGC) $(INCLUDE_PATH) token.msg
+
 token.o: token.cc
 	$(CXX) -c $(COPTS) token.cc
 
+
+doc: neddoc.html htmldocs
+
+neddoc.html:  token.ned
+	@opp_neddoc  token.ned > neddoc.html
+	@echo File neddoc.html generated.
+
+htmldocs:
+	@doxygen -g- | sed "s/^PROJECT_NAME.*/PROJECT_NAME = token/;\
+	s|^INPUT *=.*|INPUT = . |;\
+	s/^EXTRACT_ALL *=.*/EXTRACT_ALL = yes/;\
+	s/^EXTRACT_PRIVATE *=.*/EXTRACT_PRIVATE = yes/;\
+	s/^EXCLUDE_PATTERNS *=.*/EXCLUDE_PATTERNS = *_n.cc *_n.h/;\
+	s/^ALPHABETICAL_INDEX *=.*/ALPHABETICAL_INDEX = yes/;\
+	s/^HTML_OUTPUT *=.*/HTML_OUTPUT = htmldoc/;\
+	s/^GENERATE_LATEX *=.*/GENERATE_LATEX = no/;\
+	s/^GENERATE_TREEVIEW *=.*/GENERATE_TREEVIEW = yes/;\
+	s/^HIDE_UNDOC_RELATIONS *=.*/HIDE_UNDOC_RELATIONS = no/;\
+	s|^TAGFILES *=.*|TAGFILES = d:/home/omnetpp/doc/api/opptags.xml=d:/home/omnetpp/doc/api|;\
+	s|^GENERATE_TAGFILE *=.*|GENERATE_TAGFILE = htmldoc/tags.xml|;\
+	s/^QUIET *=.*/QUIET = yes/" > doxy.cfg
+	@doxygen doxy.cfg
+	@echo Code documentation generated. Now, point your web browser to ./htmldoc/index.html.
+
 clean:
-	rm -f *.o *_n.cc $(TARGET)$(EXE_SUFFIX)
+	rm -f *.o *_n.cc *_n.h $(TARGET)$(EXE_SUFFIX)
 	rm -f *.vec *.sca
+	rm -rf neddoc.html htmldoc
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -- *.cc
-	$(MAKEDEPEND) $(INCLUDE_PATH) -fMakefile.in -- *.cc
+	# $(MAKEDEPEND) $(INCLUDE_PATH) -fMakefile.in -- *.cc
 
 re-makemake:
 	opp_makemake -f    #recreate Makefile
@@ -101,7 +133,6 @@ re-makemake:
 re-makemake-m:
 	opp_makemake -f -m    #recreate Makefile.in
 
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-token_n.o: token_n.cc
-token.o: token.cc \
-  token.h
+

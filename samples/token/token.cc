@@ -5,20 +5,13 @@
 //
 // Authors: Gabor Lencse, Andras Varga (TU Budapest)
 // Based on the code by:
-//          Maurits Andr‚, George van Montfort,
+//          Maurits Andre, George van Montfort,
 //          Gerard van de Weerd (TU Delft)
 //-------------------------------------------------------------
 
 #include <stdio.h>
-#include "omnetpp.h"
 #include "token.h"
-
-// Turn on code that prints debug messages
-#define TRACE_MSG
-
-// Message kind values
-#define DATA_FRAME   0
-#define TOKEN        1
+#include "token_m.h"
 
 // Module registration:
 Define_Module( Sink );
@@ -26,72 +19,90 @@ Define_Module( Generator );
 Define_Module( TokenRingMAC );
 
 
+// Token length is 3 octets (24 bits)
+#define TR_TOKEN_BITS  24
+
+// Frame header and trailer are 21 octets (168 bits), with the following
+// frame layout (lengths in parens):
+//   SD(1), AC(1), FC(1), DEST(6), SOURCE(6), DATA(n), CS(4), ED(1), FS(1)
+#define TR_HEADER_BITS 168
+
 //
 // Activities of the simple modules
 //
 void Generator::activity()
 {
+    int numMessages = par("numMessages");
+    int numStations = par("numStations");
+    cPar& interArrivalTime = par("interArrivalTime"); // take by ref since it can be random
+    cPar& messageLength = par("messageLength"); // take by ref since it can be random
+    int myAddress = par("address");
+
+    bool debug=true;
+    WATCH(debug);
+
     char msgname[30];
 
-    int num_messages = par("num_messages");
-    int num_stations = par("num_stations");
-    cPar& ia_time = par("ia_time"); // take by ref since it can be random
-
-    int my_address = parentModule()->index();
-
-    for (int i = 0; i < num_messages; i++)
+    for (int i=0; i<numMessages; i++)
     {
-        // select destination randomly (but not the local station)
-        int dest = intrand(num_stations-1);
-        if (dest>=my_address) dest++;
+        // select length of data (bytes)
+        int length = (int)messageLength;
 
-        // select packet length
-        //
-        // Fields of a Token Ring data frame are (field lengths given in octets):
-        //   SD(1), AC(1), FC(1), DEST(6), SOURCE(6), DATA(n), CS(4), ED(1), FS(1)
-        // Length of DATA field (n) is bounded only by the Token Holding Time.
-        // Typical THT value is 10ms, thus
-        //       length [bits] <= THT*DATARATE = 10ms*4Mbit/s = 5000 bytes
-        long length = (long) intuniform(21, 5000);
+        // select a destination randomly (but not the local station)
+        int dest = intrand(numStations-1);
+        if (dest>=myAddress) dest++;
 
         // create message
-        sprintf(msgname, "%d-->%d", my_address,dest);
-        cMessage *msg = new cMessage(msgname, DATA_FRAME);
-        msg->addPar("dest") = (long) dest;
-        msg->addPar("source") = (long) my_address;
-        msg->setLength(8*length); // the length is measured in bits
+        sprintf(msgname, "app%d-data%d", myAddress, i);
+        TRApplicationData *msg = new TRApplicationData(msgname);
+        msg->setDestination(dest);
+        msg->setLength(8*length); // length is measured in bits
+        msg->setData("here's some application data...");
 
-        // pass down the message for Token Ring MAC
-#ifdef TRACE_MSG
-        ev.printf("gen[%d]: Generated new msg: ",my_address);
-        ev.printf("         Name: %s\n",msg->name());
-#endif
+        // send message on gate "out", which is connected to the Token Ring MAC
+        if (debug)
+        {
+            ev << "Generated application data to send: \"" << msgname << "\", "
+                  "length=" << length << " bytes, dest=" << dest << endl;
+        }
         send(msg, "out");
 
-        // wait between messages
-        //
-        // Note that ia_time is a reference to the module parameter "ia_time"
-        // that will be evaluated here. The module parameter can also be a random
-        // value (for example: truncnormal(0.5,0.1) ).
-        wait( ia_time );
+        // wait between messages. Note that interArrivalTime is a reference to the module
+        // parameter "interArrivalTime" which will be evaluated here. The module parameter
+        // can be set to a random variate (for example: truncnormal(0.5,0.1)),
+        // and then we'll get random delay here.
+        wait( interArrivalTime );
     }
 }
 
 void TokenRingMAC::activity()
 {
-    cQueue send_queue("send-queue");
-    int my_address = parentModule()->index();
-    cOutVector sendqueue_len("sendqueue-length",1);
+    dataRate = par("dataRate");     // 4 or 16 Mbit/s
+    tokenHoldingTime = par("THT");   // typically 10ms
+    myAddress = par("address");
 
-    long datarate = par("data_rate");   // 4 or 16 Mbit/s
-    double THT = par("THT");            // Token Holding Time: typically 10ms
+    debug = true;
+    WATCH(debug);
+
+    sendQueue.setName("sendQueue");
+    sendQueueBytes = 0;
+    WATCH (sendQueueBytes);
+    queueLenPackets.setName("Queue length (packets)");
+    queueLenBytes.setName("Queue length (bytes)");
+    queueingTime.setName("Queueing time (sec)");
+
+    char msgname[30];
+
+    transmEnd = new cMessage("transmEnd");
+    recvEnd = new cMessage("recvEnd");
 
     // station 0 issues the token
-    if (my_address == 0)
+    if (myAddress == 0)
     {
-        cMessage *token = new cMessage("token", TOKEN);
-        token->setLength(8*3);   //IEEE 802.5: token length is 3 bytes
-        send( token, "phy_out");
+        TRToken *token = new TRToken("token");
+        token->setKind(TR_TOKEN);
+        token->setLength(TR_TOKEN_BITS);
+        send(token, "phy_out");
     }
 
     // enter token ring protocol
@@ -99,151 +110,264 @@ void TokenRingMAC::activity()
     {
         cMessage *msg = receive();
 
-        // new message from the generator
-        if ( msg->arrivedOn("from_gen") ) // DATA_FRAME
+        // data from higher layer?
+        if (dynamic_cast<TRApplicationData *>(msg)!=NULL)
         {
-#ifdef TRACE_MSG
-            ev.printf("MAC[%d]: New msg from higher layer: ",my_address);
-            ev.printf("         Name: %s\n",msg->name());
-            ev.printf("MAC[%d]:   - adding to send-queue\n",my_address);
-#endif
-
-            // insert message into send buffer
-            send_queue.insert( msg );
-            sendqueue_len.record( send_queue.length() );
+            // store packet in queue and update statistics
+            storeDataPacket((TRApplicationData *)msg);
         }
-
-        // token arrived from network
-        else if ( msg->arrivedOn("phy_in") && msg->kind()==TOKEN )
+        // token arrived?
+        else if (dynamic_cast<TRToken *>(msg)!=NULL)
         {
-#ifdef TRACE_MSG
-            ev.printf("MAC[%d]: Token arrived: ",my_address);
-            ev.printf("         Name: %s\n",msg->name());
-#endif
-
-            // if we have messages to send, send them now, within the THT
-            //
-            // We'll use wait() for modelling the transmission time. This means
-            // that we do not process messages that arrive in the meanwhile;
-            // they accumulate in the putaside-queue and will be retrieved
-            // by subsequent receive() calls.
-            //
-            // The exactness of the simulation is not compromised this way,
-            // because these messages can be of two kind:
-            //  1. new messages from the generator. They will be sent with the
-            //     next token.
-            //  2. our frames that travelled around the ring and arrived back to us.
-            //     We'll have to strip them out from the ring anyway so they
-            //     can wait a little.
-            simtime_t tht_expires = simTime()+THT;
-            while (!send_queue.empty())
+            TRToken *token = (TRToken *)msg;
+            if (debug)
             {
-                // peek at next message and see if it is within the THT
-                cMessage *m = (cMessage *) send_queue.tail();
-                simtime_t transmission_time = m->length()/(double)datarate;
-                if (simTime()+transmission_time > tht_expires)
-                  break; // no time left for this packet
+                ev << "Token arrived (we can keep it for THT=" << simtimeToStr(tokenHoldingTime) << ")" << endl;
+            }
 
-                // remove message from the send buffer
-                send_queue.pop();
-                sendqueue_len.record( send_queue.length() );
+            // if we have messages to send, send them now, within the tokenHoldingTime
+            simtime_t tokenHoldingTime_expires = simTime()+tokenHoldingTime;
+            while (!sendQueue.empty())
+            {
+                // peek at next data packet and see if it can be sent within the tokenHoldingTime
+                TRApplicationData *data = (TRApplicationData *) sendQueue.tail();
+                simtime_t transmission_time = (TR_HEADER_BITS+data->length())/(double)dataRate;
+                if (simTime()+transmission_time > tokenHoldingTime_expires)
+                {
+                    // no time left for this packet
+                    if (debug)
+                    {
+                        ev << "Data packet \"" << data->name() << "\" cannot be sent within THT, skipping" << endl;
+                    }
+                    break;
+                }
 
-                // add delivery time and send it
-                m->addPar("sendtime") = (double) simTime();
-#ifdef TRACE_MSG
-                ev.printf("MAC[%d]: Sending frame from send-queue: ",my_address);
-                ev.printf("         Name: %s\n", m->name());
-                ev.printf("MAC[%d]:  - transmission time: %s. (During transm, messages\n",
-                          my_address, simtimeToStr(transmission_time));
-                ev.printf("MAC[%d]:    from higher layer are temporarily stored in the putaside-queue)\n",
-                          my_address);
-#endif
-                send( m, "phy_out");
-                wait( transmission_time );
+                // remove data packet from the send buffer
+                sendQueue.pop();
+                sendQueueBytes -= data->length()/8;
+                queueLenPackets.record(sendQueue.length());
+                queueLenBytes.record(sendQueueBytes);
+
+                // write queueing time statistics
+                queueingTime.record(simTime() - data->timestamp());
+
+                // create Token Ring frame, and send data in it
+                sprintf(msgname, "%d-->%d", myAddress, data->getDestination());
+                TRFrame *frame = new TRFrame(msgname);
+                token->setKind(TR_TOKEN);
+                frame->setLength(TR_HEADER_BITS);
+                frame->setSource(myAddress);
+                frame->setDestination(data->getDestination());
+                frame->encapsulate(data);
+
+                if (debug)
+                {
+                    ev << "Begun transmitting \"" << data->name() << "\""
+                          " in frame \"" << frame->name() << "\"" << endl;
+                }
+                send(frame, "phy_out");
+
+                simtime_t transmStartTime = simTime();
+
+                // we're busy until we finished transmission
+                scheduleAt(simTime()+transmission_time, transmEnd);
+                while ((msg = receive())!=transmEnd)
+                {
+                    // while we are transmitting, a token cannot arrive (because
+                    // we hold it), but any of the other events may occur:
+
+                    // data from higher layer
+                    if (dynamic_cast<TRApplicationData *>(msg)!=NULL)
+                    {
+                        // store packet in queue and update statistics
+                        storeDataPacket((TRApplicationData *)msg);
+                    }
+                    // frame from network (must be one of our own frames)
+                    else if (dynamic_cast<TRFrame *>(msg)!=NULL)
+                    {
+                        TRFrame *frame = (TRFrame *)msg;
+                        beginReceiveFrame(frame);
+                    }
+                    // end receiving a packet (if we sent a frame to ourselves,
+                    // its receival may end while we're still transmitting)
+                    else if (msg==recvEnd)
+                    {
+                        cMessage *data = (cMessage *) recvEnd->contextPointer();
+                        endReceiveFrame(data);
+                    }
+                    else
+                    {
+                        throw new cException("unexpected message arrived: (%s)%s", msg->className(), msg->name());
+                    }
+                }
+
+                if (debug)
+                {
+                    ev << "End transmission started at " << simtimeToStr(transmStartTime) << endl;
+                }
             }
 
             // release token
-#ifdef TRACE_MSG
-            ev.printf("MAC[%d]: Releasing token.\n",my_address);
-#endif
-            send( msg, "phy_out");
+            if (debug)
+            {
+                ev << "Releasing token." << endl;
+            }
+            send(token, "phy_out");
         }
 
-        // frame arrived from network
-        else if ( msg->arrivedOn("phy_in") && msg->kind() == DATA_FRAME )
+        // frame arrived from network?
+        else if (dynamic_cast<TRFrame *>(msg)!=NULL)
         {
-#ifdef TRACE_MSG
-            ev.printf("MAC[%d]: Frame from network: ",my_address);
-            ev.printf("         Name: %s\n",msg->name());
-#endif
-
-            // extract source and destination
-            int dest = (long) msg->par ("dest");
-            int source = (long) msg->par ("source");
-
-            // is this station the addressee?
-            if (dest == my_address)
-            {
-                // The arrival of a message in the model represents the arrival
-                // of the first bit of the packet. It has to be completely received
-                // before we can pass it up to the higher layer. This delay is
-                // implemented here with a delayed send.
-                //
-                // create a copy and send it up
-                cMessage *m = (cMessage *) msg->dup();
-#ifdef TRACE_MSG
-                ev.printf("MAC[%d]:  - we are the destination, pass up a copy to higher layer.\n",my_address);
-#endif
-                sendDelayed( m,m->length()/(double)datarate,"to_sink");
-            }
-
-            // In the Token Ring protocol, a frame is stripped out from the ring
-            // by the source of the frame when the frame arrives back to its
-            // originating station. The addresse just repeats the frame, like
-            // any other station in the ring.
-            if (source == my_address)
-            {
-#ifdef TRACE_MSG
-                ev.printf("MAC[%d]:  - arrived back to sender, strip it out of the ring.\n",my_address);
-#endif
-                delete msg;
-            }
-            else
-            {
-#ifdef TRACE_MSG
-                ev.printf("MAC[%d]:  - forward it to next station.\n",my_address);
-#endif
-                send( msg, "phy_out");
-            }
+            TRFrame *frame = (TRFrame *)msg;
+            beginReceiveFrame(frame);
+        }
+        // end receiving a packet?
+        else if (msg==recvEnd)
+        {
+            cMessage *data = (cMessage *) recvEnd->contextPointer();
+            endReceiveFrame(data);
+        }
+        else
+        {
+            throw new cException("unexpected message arrived: (%s)%s", msg->className(), msg->name());
         }
     }
 }
 
+void TokenRingMAC::storeDataPacket(TRApplicationData *msg)
+{
+    if (debug)
+    {
+        ev << "App data received from higher layer, enqueueing: \"" << msg->name() << "\", "
+              "length=" << msg->length()/8 << "bytes" << endl;
+    }
+
+    // insert message into send buffer
+    sendQueue.insert( msg );
+    sendQueueBytes += msg->length()/8;
+    queueLenPackets.record( sendQueue.length() );
+    queueLenBytes.record(sendQueueBytes);
+
+    // mark enqeueing time, we'll need it for calculating time spent in queue
+    msg->setTimestamp();
+}
+
+void TokenRingMAC::beginReceiveFrame(TRFrame *frame)
+{
+    if (debug)
+    {
+        ev << "Received beginning of frame \"" << frame->name() << "\"" << endl;
+    }
+
+    // extract source and destination
+    int dest = frame->getDestination();
+    int source = frame->getSource();
+
+    // is this station the addressee?
+    if (dest == myAddress)
+    {
+        if (debug)
+        {
+            ev << "We are the destination: as soon as we fully received the frame," << endl;
+            ev << "we'll pass up a copy of the payload \"" <<
+                  frame->encapsulatedMsg()->name() << "\" to the higher layer." << endl;
+            ev << "Frame will be extracted from the ring by the sender." << endl;
+        }
+
+        // some sanity check: because of rounding errors in double arithmetic,
+        // it is possible that the "beginning of a frame" event arrives earlier
+        // than the "end of receiving the previous frame" (recvEnd) event.
+        // In this case, we do as if we've'd just received the recvEnd event
+        // (as we should have, ideally).
+        if (recvEnd->isScheduled())
+        {
+            // make sure our assumption is right
+            ASSERT(fabs(recvEnd->arrivalTime()-simTime())<1e-10);
+
+            if (debug)
+            {
+                ev << "'recvEnd' event should have occurred already, do it now" << endl;
+            }
+
+            // then remedy the situation
+            cancelEvent(recvEnd);
+            cMessage *data = (cMessage *) recvEnd->contextPointer();
+            endReceiveFrame(data);
+        }
+
+        // make a copy of the payload in the frame -- we'll send this one
+        // to the higher layer
+        cMessage *data2 = (cMessage *) frame->encapsulatedMsg()->dup();
+
+        // The arrival of a message in the model represents the arrival
+        // of the first bit of the packet. It has to be completely received
+        // before we can pass it up to the higher layer. So here we compute
+        // when receiving will finish, and schedule an event for that time.
+        //
+        recvEnd->setContextPointer(data2);
+        scheduleAt(simTime()+frame->length()/(double)dataRate, recvEnd);
+    }
+
+    // In the Token Ring protocol, a frame is stripped out from the ring
+    // by the source of the frame when the frame arrives back to its
+    // originating station. The addresse just repeats the frame, like
+    // any other station in the ring.
+    if (source == myAddress)
+    {
+        if (debug)
+        {
+            ev << "Arrived back to sender, stripping it out of the ring" << endl;
+        }
+        delete frame;
+    }
+    else
+    {
+        if (debug)
+        {
+            ev << "Forwarding to next station" << endl;
+        }
+        send(frame, "phy_out");
+    }
+}
+
+void TokenRingMAC::endReceiveFrame(cMessage *data)
+{
+    if (debug)
+    {
+        ev << "End receiving frame containing \"" << data->name() << "\", passing up to higher layer." << endl;
+    }
+    send(data, "to_hl");
+}
+
 void Sink::activity()
 {
-    int my_address = parentModule()->index();
+    // output vector to record statistics
+    cOutVector endToEndDelay("End-to-End Delay",1);
 
-    cOutVector queuing_time("queuing-time",1);
-    cOutVector transm_time("transmission-time",1);
+    // collect histogram
+    cKSplit endToEndDelayKS("End-to-End Delay histogram (K-split)");
+    endToEndDelayKS.setRangeAuto(100, 2.0);
+    cPSquare endToEndDelayPS("End-to-End Delay histogram (P2)");
+
+    bool debug=true;
+    WATCH(debug);
 
     for(;;)
     {
         // receive a message
         cMessage *msg = receive();
+        simtime_t eed = simTime() - msg->creationTime();
+        if (debug)
+        {
+            ev << "Received app. data: \"" << msg->name() << "\", "
+                  "length=" << msg->length()/8 << "bytes, " <<
+                  "end-to-end delay=" << simtimeToStr(eed) << endl;
+        }
 
-        // extract statistics and write out to vector file
-        simtime_t created = msg->creationTime(),
-                  sent    = msg->par("sendtime"),
-                  arrived = msg->arrivalTime();
-        queuing_time.record( sent - created );
-        transm_time.record( arrived - sent );
-
-#ifdef TRACE_MSG
-        ev.printf("sink[%d]: Message received: ",my_address);
-        ev.printf("          Name: %s\n",msg->name());
-        ev.printf("sink[%d]:   - time between creation and arrival: %lf\n",
-                  my_address, arrived-created);
-#endif
+        // record statistics to output vector file
+        endToEndDelay.record(eed);
+        endToEndDelayKS.collect(eed);
+        endToEndDelayPS.collect(eed);
 
         // message no longer needed
         delete msg;
