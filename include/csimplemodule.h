@@ -33,7 +33,7 @@
  *    - void activity()
  *    - void finish()
  *
- * initialize() is called after OMNeT++ created the module.
+ * initialize() is called after @opp created the module.
  *
  * One has to redefine either handleMessage() to contain
  * the internal logic of the module. handleMessage() is called

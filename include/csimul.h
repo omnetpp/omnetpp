@@ -51,12 +51,12 @@ SIM_API extern cSimulation simulation;
 
 
 /**
- * Simulation manager class.  cSimulation is the central class in OMNeT++, and
+ * Simulation manager class.  cSimulation is the central class in @opp, and
  * it has only one instance, the global variable <tt>simulation</tt>.
  * It holds the modules, manages setting up a simulation, running and
  * finishing it, etc.
  *
- * Most cSimulation methods are used internally (e.g. by the user interface 
+ * Most cSimulation methods are used internally (e.g. by the user interface
  * libraries (Envir, Cmdenv, Tkenv) to set up and run simulations).
  *
  * Some methods which can be of interest when programming simple modules:

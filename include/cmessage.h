@@ -40,7 +40,7 @@ class cMessageHeap;
  * Predefined message kind values (values for cMessage's kind(),
  * setKind() methods).
  *
- * Negative values are reserved for the OMNeT++ system and its
+ * Negative values are reserved for the @opp system and its
  * standard libraries. Zero and positive values can be freely used
  * by simulation models.
  */
@@ -57,26 +57,26 @@ enum eMessageKind
 //==========================================================================
 
 /**
- * The message class in OMNeT++. cMessage objects may represent events,
+ * The message class in @opp. cMessage objects may represent events,
  * messages, packets (frames, cells, etc) or other entities in a simulation.
  *
  * Messages may be: scheduled (to arrive back at the same module at a later
  * time), cancelled, sent out on a gate, or sent directly to another module;
- * all via methods of cSimpleModule. 
+ * all via methods of cSimpleModule.
  *
  * cMessage can be assigned a name (a property inherited from cObject);
  * other attributes include message kind, length, priority,
  * error flag and time stamp. Arrival time and gate is also stored.
- * cMessage supports encapsulation, and messages may be cloned with the 
- * dup() function. The control info field facilitates modelling communication 
- * between protocol layers. The context pointer field makes it easier to 
+ * cMessage supports encapsulation, and messages may be cloned with the
+ * dup() function. The control info field facilitates modelling communication
+ * between protocol layers. The context pointer field makes it easier to
  * work with several timers (self-messages) at a time.
  * A useful method is isSelfMessage() which tells apart self-messages from
  * messages received from other modules.
  *
- * Further fields can be added to cMessage via message declarations (.msg files) 
+ * Further fields can be added to cMessage via message declarations (.msg files)
  * which are translated into C++ classes. An example message declaration:
- * 
+ *
  * \code
  * message NetwPkt
  * {
@@ -241,8 +241,8 @@ class SIM_API cMessage : public cObject
      * Sets the context pointer. This pointer may store an arbitrary value.
      * It is useful when managing several timers (self-messages): when
      * scheduling the message one can set the context pointer to the data
-     * structure the timer corresponds to (e.g. the buffer whose timeout 
-     * the message represents), so that when the self-message arrives it is 
+     * structure the timer corresponds to (e.g. the buffer whose timeout
+     * the message represents), so that when the self-message arrives it is
      * easier to identify where it belongs.
      */
     void setContextPointer(void *p) {contextptr=p;}

@@ -36,11 +36,11 @@
  *
  * This is an abstract base class, which means functionality is provided by
  * subclasses. The subclass used by default is cInifile which reads config
- * files in the omnetpp.ini format. One can create other subclasses which use 
+ * files in the omnetpp.ini format. One can create other subclasses which use
  * different data sources (e.g. database) or different data format (e.g. XML).
  *
- * To switch to your own configuration storage (e.g. database or XML files) 
- * from omnetpp.ini, subclass cConfiguration, register your new class with 
+ * To switch to your own configuration storage (e.g. database or XML files)
+ * from omnetpp.ini, subclass cConfiguration, register your new class with
  * the Register_Class() macro, then create the following <tt>omnetpp.ini</tt>:
  *
  * <pre>
@@ -48,7 +48,7 @@
  * configuration-class="MyClass"
  * </pre>
  *
- * OMNeT++ will get the rest of the configuration from your configuration
+ * @opp will get the rest of the configuration from your configuration
  * class.
  *
  * See also: cEnvir::config()

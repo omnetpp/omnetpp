@@ -24,7 +24,7 @@
 /**
  * Allows code fragments to be collected in global scope which will
  * then be executed from main() right after program startup. This is
- * used by in OMNeT++ for building global registration lists of
+ * used by in @opp for building global registration lists of
  * module types, network types, etc. Registration lists in fact
  * are a simple substitute for Java's Class.forName() method...
  *

@@ -17,9 +17,9 @@
 
 
 /**
- * @mainpage OMNeT++ API Reference
+ * @mainpage @opp API Reference
  *
- * If you are new to OMNeT++, a good starting point for browsing the
+ * If you are new to @opp, a good starting point for browsing the
  * documentation is cSimpleModule.
  *
  * Otherwise, pick one of the following categories, or choose from the
@@ -38,7 +38,7 @@
  * - @ref EnvirExtensions
  * - @ref ParsimBrief
  *
- * If you have used OMNeT++ before:
+ * If you have used @opp before:
  * - @ref APIChanges
  */
 
@@ -54,7 +54,7 @@
  *
  * Simulation core classes:       <!-- blank line needed for autobrief=yes -->
  *
- *    - cObject is the base class for most OMNeT++ classes
+ *    - cObject is the base class for most @opp classes
  *    - cModule, cCompoundModule and cSimpleModule represent modules
  *      in the simulation. The user implements new models by subclassing
  *      cSimpleModule and overriding at least its activity() or
@@ -62,7 +62,7 @@
  *    - cMessage represents events, and also messages sent among modules
  *    - cGate represents module gates
  *    - cPar represents module and message parameters
- *    - cSimulation stores all modules of the network and the 
+ *    - cSimulation stores all modules of the network and the
  *      data structure for scheduled events (the <i>future event set</i>)
  *      Most methods are used internally, but some are useful for model
  *      developers as well.
@@ -82,9 +82,9 @@
  *
  * You can also use other container classes (such as STL's vector or map),
  * especially for structs or classes not derived from cObject.
- * For cMessage (and other cObject-rooted classes) the disadvantage of 
- * STL is that those container objects will not appear and will not be 
- * inspectable under graphical user interfaces like Tkenv. To make them 
+ * For cMessage (and other cObject-rooted classes) the disadvantage of
+ * STL is that those container objects will not appear and will not be
+ * inspectable under graphical user interfaces like Tkenv. To make them
  * inspectable, you have to wrap them into a class derived from cObject.
  *
  * Some other classes, closely related to the above ones (for example their
@@ -117,19 +117,19 @@
  *
  * <b>Random number generators</b>
  *
- * OMNeT++ provides several random number generators (streams) and several
+ * @opp provides several random number generators (streams) and several
  * random number generator algorithms (default is cMersenneTwister).
  * RNGs can be configured in omnetpp.ini.
  *
  * RNGs are made available via the cRNG interface, and the cModule::rng()
- * method. All functions returning random variates, etc. internally  
+ * method. All functions returning random variates, etc. internally
  * call cModule::rng() and cRNG::intRand(), cRNG::doubleRand().
  */
 
 /**
  * @defgroup Statistics  Statistical data collection
  *
- * OMNeT++ provides a variety of statistical classes. There are basic classes
+ * @opp provides a variety of statistical classes. There are basic classes
  * which compute basic statistics like mean and standard deviation,
  * some classes deal with density estimation, and other classes support
  * automatic detection of the end of a transient, and automatic detection
@@ -227,15 +227,15 @@
  *   - cWatch is the class behind the WATCH() and LWATCH() macros
  *
  * Registration classes are listed below. They play the role of a central
- * registry in OMNeT++ -- each instance holds some specific piece of (static)
- * information or serves as a factory object for other objects. 
+ * registry in @opp -- each instance holds some specific piece of (static)
+ * information or serves as a factory object for other objects.
  *
  * Registration objects play an important role at network build time (they
  * store information about available module, channel, etc. types and can
  * instantiate them), and for inspectors in graphical user interfaces like
  * Tkenv.
  *
- *   - cModuleInterface stores the list of gates and parameters declared for a 
+ *   - cModuleInterface stores the list of gates and parameters declared for a
  *     module type
  *   - cModuleType can instantiate a module type
  *   - cChannelType can instantiate a channel type
@@ -260,8 +260,8 @@
  * (and also Cmdenv and Tkenv, because they build on Envir).
  *
  * To customize, subclass from the classes below, and select the new class
- * in <tt>omnetpp.ini</tt>, using the <tt>rng-class=</tt>, 
- * <tt>outputvectormanager-class=</tt>, <tt>outputscalarmanager-class=</tt>, 
+ * in <tt>omnetpp.ini</tt>, using the <tt>rng-class=</tt>,
+ * <tt>outputvectormanager-class=</tt>, <tt>outputscalarmanager-class=</tt>,
  * etc. config entries.
  */
 
@@ -270,6 +270,6 @@
  *
  * These classes are used with the parallel simulation feature.
  * For more information, please see the separate Parallel Simulation API
- * which is generated from the source files in <tt>src/sim/parsim</tt> 
+ * which is generated from the source files in <tt>src/sim/parsim</tt>
  * directory.
  */
