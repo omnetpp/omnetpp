@@ -74,10 +74,7 @@
 %{
 
 #include <stdio.h>
-
-#ifndef _WIN32
 #include <malloc.h>  /* for alloca() */
-#endif
 
 #include "ebnfcfg.h"  /* for NEDC() or GNED() */
 
