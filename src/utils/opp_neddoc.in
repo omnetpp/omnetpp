@@ -15,8 +15,12 @@ if [ ! -d $OUTDIR ]; then
   mkdir $OUTDIR || exit -1
 fi
 rm -f $OUTDIR/*
+echo transforming to xml...
 nedtool -x -e -t -y -m -o $TMPFILE $* || exit 1
+echo applying xslt stylesheet...
 xsltproc  --stringparam outputdir $OUTDIR $NEDDOC_XSL $TMPFILE || exit 1
+echo formatting comments...
 perl $NEDDOC_PL $OUTDIR/*.html || exit 1
+echo documentation created in $OUTDIR/ -- start page is index.html
 cleanup
 
