@@ -394,7 +394,7 @@ args1=`echo " $args " | sed 's/	/ /g;s/ -f / /g;s/ -m / /g'`
 
 cat <<EOT
 clean:
-	rm -f *.o *_n.cc \$(TARGET)\$(EXE_SUFFIX)
+	rm -f *.o *_n.cc *_n.h \$(TARGET)\$(EXE_SUFFIX)
 	rm -f *.vec *.sca
 
 depend:

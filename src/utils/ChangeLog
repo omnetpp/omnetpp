@@ -1,3 +1,7 @@
+2002-01-23  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* opp_makemake.in (clean): remove also *_n.h files.
+
 2001-10-18  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* opp_makemake.in: introduced NEDCFLAGS and NEDCOPTS so that
