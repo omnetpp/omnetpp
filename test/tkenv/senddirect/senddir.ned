@@ -9,6 +9,18 @@ simple Sink
         in: in2; 
 endsimple 
 
+module BoxedSink 
+    gates: 
+        in: directIn; 
+        in: in; 
+    submodules: 
+        sink: Sink; 
+            display: "b=32,30;p=70,57;i=sink";
+    connections nocheck: 
+        directIn --> sink.in; 
+        in --> sink.in2; 
+endmodule 
+
 module BoxedGen 
     gates: 
         out: out1; 
@@ -20,18 +32,6 @@ module BoxedGen
             display: "p=164,97;b=40,28";
         sink: Sink; 
             display: "b=32,30;p=161,37;i=sink";
-endmodule 
-
-module BoxedSink 
-    gates: 
-        in: directIn; 
-        in: in; 
-    submodules: 
-        sink: Sink; 
-            display: "b=32,30;p=70,57;i=sink";
-    connections nocheck: 
-        directIn --> sink.in; 
-        in --> sink.in2; 
 endmodule 
 
 module Dummy 
