@@ -104,3 +104,4 @@ Apr 19, 2000
  - added some Purify support to makemake [from Ulrich Kaage]
 Apr 30, 2000
  - TVEnv support removed from makemake [suggested by Niko]
+ - prephtml now puts a version number into the html file
