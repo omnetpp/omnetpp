@@ -97,7 +97,7 @@ USE_WINMAIN=no
 #
 # Set to "yes" to enable simulation executables load NED files dynamically.
 #
-WITH_NETBUILDER=no
+WITH_NETBUILDER=yes
 
 #
 # Set to "yes" to enable the parallel distributed simulation feature.
@@ -112,9 +112,11 @@ LDFLAGS=$(LDFLAGS_DEBUG)
 #CFLAGS=$(CFLAGS_RELEASE)
 #LDFLAGS=$(LDFLAGS_RELEASE)
 
-#
-#========= You probably won't need to change anything below this line ========
-#
+
+#==============================================================================
+#====== !!!         Try not to change anything below this line       !!! ======
+#==============================================================================
+
 
 #
 # Other directories & files based on the base dirs
