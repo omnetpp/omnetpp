@@ -673,5 +673,19 @@ Sept 23, 1999
     to support send()/scheduleAt() in initialize() to modules with activity().
   - same change made to createInitStart(), and it was renamed to
     createScheduleInit() to reflect the new order of what it does.
+Oct 6, 1999
+  - isSelfMessage() member function added to cMessage. It tells if the message
+    was sent (using a send..() function) or posted by a scheduleAt() call.
+  - a new void* pointer was added to cMessage. The pointer is set/returned by
+    the setContextPtr(void *p) and contextPtr() functions, and it can be used
+    for any purpose by the simulation programmer. It is not used by the
+    simulation kernel, and it is treated as a mere pointer (no memory mgmt is
+    done on it). Intended purpose: a module which schedules several
+    self-messages (timers) will need to identify a self-message when it arrives
+    back to the module, ie. the module will have to determine which timer
+    went off and what to do then. The context pointer can be made to point
+    at a data structure kept by the module which can carry enough "context"
+    information about the event.
+
 
 Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.

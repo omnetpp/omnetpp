@@ -56,7 +56,7 @@ enum {
 };
 
 //==========================================================================
-// cMessage: the message object
+// cMessage: the message class
 
 class cMessage : public cObject
 {
@@ -75,6 +75,7 @@ class cMessage : public cObject
         simtime_t tstamp;       // time stamp -- user-defined meaning
         cArray *parlistp;       // ptr to list of parameters
         cMessage *encapmsg;     // ptr to encapsulated msg
+        void *contextptr;       // a stored pointer -- user-defined meaning
 
         int frommod,fromgate;   // source module and gate IDs -- set internally
         int tomod,togate;       // dest. module and gate IDs -- set internally
@@ -109,10 +110,9 @@ class cMessage : public cObject
         void setLength(long l);                 // set message length
         void addLength(long l);                 // change message length
         void setError(bool err) {error=err;}    // set error flag
-        void setTimestamp()                     // set time stamp to current time
-                                {tstamp=simulation.simTime();}
-        void setTimestamp(simtime_t t)
-                                {tstamp=t;}     // set time stamp to given value
+        void setTimestamp() {tstamp=simulation.simTime();} // set time stamp to current time
+        void setTimestamp(simtime_t t) {tstamp=t;}  // set time stamp to given value
+        void setContextPtr(void *p) {contextptr=p;} // set context pointer
 
         int  kind()     {return msgkind;}       // get msg kind
         int  priority() {return prior;}         // get priority
@@ -121,7 +121,9 @@ class cMessage : public cObject
         bool isgood()   {return !error;}
         simtime_t timestamp() {return tstamp;}  // get time stamp
         unsigned long insertOrder() {return insertordr;} // used by cMessageHeap
+        void *contextPtr() {return contextptr;} // get context pointer
 
+        bool isSelfMessage() {return togate==-1;}  // tell if message was posted by scheduleAt()
         bool isScheduled() {return heapindex!=-1;} // tell if message is among future events
 
         // parameter list

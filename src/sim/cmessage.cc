@@ -47,6 +47,7 @@ cMessage::cMessage(char *namestr, int k, long ln, int pri, bool err) : cObject( 
         msgkind=k; len=ln; prior=pri; error=err;
         parlistp = NULL;
         encapmsg = NULL;
+        contextptr = NULL;
         frommod=fromgate=-1;
         tomod=togate=-1;
         created=simulation.simTime();
@@ -125,6 +126,8 @@ cMessage& cMessage::operator=(cMessage& msg)
            take( encapmsg = (cMessage *)msg.encapmsg->dup() );
         else
            encapmsg = msg.encapmsg;
+
+        contextptr = msg.contextptr;
 
         frommod = msg.frommod;
         fromgate = msg.fromgate;
