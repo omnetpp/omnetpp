@@ -151,7 +151,7 @@ puts "dbg: parsing and checking..."
 puts "dbg: deleting old stuff..."
 
     # delete old stuff from ned() and add new stuff
-    deleteItem $origmodkey
+    deleteModuleData $origmodkey
 
 puts "dbg: pasting into ned..."
 
@@ -177,8 +177,6 @@ puts "dbg: drawing..."
     # maybe the module name has changed
     updateTreeManager
 
-puts "DBG:dispsel"
-dispsel
 }
 
 # okToLoseChanges --
@@ -194,6 +192,52 @@ proc okToLoseChanges {msg} {
     if {$ans=="cancel"} {return "no"}
 
     return "yes"
+}
+
+
+# deleteModuleData --
+#
+# Private proc for switchToGraphics.
+#
+# $key must be a top-level item. This proc is a simplified version
+# of deleteItem. Here we don't care about deleting graphics stuff
+# from the canvas (because the whole canvas will be cleared anyway),
+# and recursive deletion of data is also simplified (we don't need to
+# care about deleting 'related items' (ned(*,*-ownerkey)) because
+# such relations only occur within a module.
+#
+proc deleteModuleData {key} {
+   global ned
+
+   # unlink from parent
+   set parentkey $ned($key,parentkey)
+   set pos [lsearch -exact $ned($parentkey,childrenkeys) $key]
+   set ned($parentkey,childrenkeys) [lreplace $ned($parentkey,childrenkeys) $pos $pos]
+
+   deleteModuleDataProc $key
+}
+
+# deleteModuleDataProc --
+#
+# private proc for deleteModuleData
+#
+proc deleteModuleDataProc {key} {
+   global ned
+
+   # delete children recursively
+   foreach childkey $ned($key,childrenkeys) {
+      deleteModuleDataProc $childkey
+   }
+
+   # - deleting non-child linked objects omitted
+   # - deleting item from canvas is omitted
+   # - potentially closing the canvas is omitted
+   # - unlink from parent omitted
+
+   # delete from array
+   foreach i [array names ned "$key,*"] {
+      unset ned($i)
+   }
 }
 
 

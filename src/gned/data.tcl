@@ -106,7 +106,7 @@ proc insertItem {key parentkey} {
 proc deleteItem {key} {
    global ned canvas
 
-puts "dbg: deleteItem $key entered (ROUTINE TO BE COMPLETED!)"
+puts "dbg: deleteItem $key entered"
 
    # delete children recursively
    foreach childkey $ned($key,childrenkeys) {
@@ -115,21 +115,26 @@ puts "dbg: deleteItem $key entered (ROUTINE TO BE COMPLETED!)"
 
    # delete non-child linked objects
    #   (e.g. connections when a submod is deleted)
-   #FIXME: code comes here
-
-   # delete item from canvas (if it's there)
-   set canv_id [canvasIdFromItemKey $key]
-   if {$canv_id!=""} {
-      set c $canvas($canv_id,canvas)
-      foreach i [array names ned "$key,*-cid"] {
-         $c delete $ned($i)
+   foreach i [array names ned "*,*ownerkey"] {
+      if {[info exist ned($i)] && $ned($i)==$key} {
+         regsub -- ",.*ownerkey" $i "" childkey
+         deleteItem $childkey
       }
    }
 
+   # delete item from canvas (if it's there)
    # if a canvas displayed exactly this item, close that canvas
    set canv_id [canvasIdFromItemKey $key]
-   if {$canv_id!="" && $canvas($canv_id,module-key)==$key} {
-      destroyCanvas $canv_id
+   if {$canv_id!=""} {
+
+      if {$canvas($canv_id,module-key)==$key} {
+          destroyCanvas $canv_id
+      } else {
+          set c $canvas($canv_id,canvas)
+          foreach i [array names ned "$key,*-cid"] {
+             $c delete $ned($i)
+          }
+      }
    }
 
    # unlink from parent

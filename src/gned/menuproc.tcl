@@ -27,7 +27,7 @@ proc fileNewNedfile {} {
    updateTreeManager
 }
 
-proc fileNewModule {} {
+proc fileNewComponent {type} {
    global gned ned canvas
 
    # get nedfile of module on current canvas,
@@ -36,9 +36,11 @@ proc fileNewModule {} {
    set curmodkey $canvas($canv_id,module-key)
    set nedfilekey $ned($curmodkey,parentkey)
 
-   set modkey [addItem module $nedfilekey]
+   set key [addItem $type $nedfilekey]
 
-   openModuleOnNewCanvas $modkey
+   if {$type=="module"} {
+       openModuleOnNewCanvas $key
+   }
 
    updateTreeManager
 }
@@ -137,7 +139,7 @@ puts "proc fileCloseNedfile: to be checked!!!"
    updateTreeManager
 }
 
-proc fileCloseModule {} {
+proc fileCloseCanvas {} {
    closeCurrentCanvas
    updateTreeManager
 }

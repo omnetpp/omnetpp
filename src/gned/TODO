@@ -31,7 +31,6 @@ Text editor:
 - make status line: line number etc.
 
 General:
-- solve "what to do when there's no open canvas" problem
 - display string: numeric parameters must be checked!!!
 - cut,copy,paste should work everywhere (menu,toolbar,keys),
   for both text and graphics
@@ -39,9 +38,7 @@ General:
 - different vertical toolbar when changing from graphics to NED view
 
 Manager:
-- don't allow opening the same module twice
-- local menu on nedfile: Expand/Collapse, Save, Save As, Close; 
-- local menu on components: Open on canvas, Close canvas, Properties
+- local menu on components: Close canvas, Properties
 
 Dialogs:
 - TBD

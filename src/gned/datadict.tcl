@@ -353,6 +353,8 @@ set ddesc(conn,parents)         {conns forloop}
 set ddict(conn,type)            {conn}
 set ddict(conn,banner-comment)  {}
 set ddict(conn,right-comment)   {}
+set ddict(conn,src-ownerkey)    {}
+set ddict(conn,dest-ownerkey)   {}
 set ddict(conn,src_index)       {}
 set ddict(conn,dest_index)      {}
 set ddict(conn,srcgate)         {out}

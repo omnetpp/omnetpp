@@ -70,48 +70,49 @@ proc create_omnetpp_window {} {
     #################################
     # Menu bar
     #################################
-    if {$tcl_version < 8.0} {
-        frame $w.menubar -borderwidth 1 -height 30 -relief raised
-        pack $w.menubar -expand 0 -fill x -side top
-    } else {
-        menu $w.menubar
-        $w config -menu $w.menubar
-    }
+    menu $w.menubar
+    $w config -menu $w.menubar
 
     # Create menus
     foreach i {
-       {filemenu     -$label_opt File -underline 0}
-       {editmenu     -$label_opt Edit -underline 0}
-       {viewmenu     -$label_opt View -underline 0}
-       {drawmenu     -$label_opt Draw -underline 0}
-       {optionsmenu  -$label_opt Options -underline 0}
-       {helpmenu     -$label_opt Help -underline 0}
+       {filemenu     -label File -underline 0}
+       {editmenu     -label Edit -underline 0}
+       {viewmenu     -label View -underline 0}
+       {drawmenu     -label Draw -underline 0}
+       {optionsmenu  -label Options -underline 0}
+       {helpmenu     -label Help -underline 0}
     } {
-       if {$tcl_version < 8.0} {
-           set label_opt "text"; set m ".m"
-           set mb [eval menubutton $w.menubar.$i -padx 4 -pady 3]
-           menu $mb.m -tearoff 0
-           $mb config -menu $mb.m
-       } else {
-           set label_opt "label"; set m ""
-           eval $w.menubar add cascade -menu $w.menubar.$i
-           menu "$w.menubar.[lindex $i 0]" -tearoff 0
-       }
+       eval $w.menubar add cascade -menu $w.menubar.$i
+       menu "$w.menubar.[lindex $i 0]" -tearoff 0
     }
 
     # File menu
     foreach i {
-      {command -command fileNewNedfile   -label {New NED File} -underline 0}
-      {command -command fileNewModule    -label {New Module} -underline 0}
+      {command -command fileNewNedfile   -label {New NED file} -underline 0}
+      {cascade -menu $w.menubar.filemenu.newmenu -label {New component} -underline 1}
+      {separator}
       {command -command fileOpen         -label {Open...} -underline 0}
       {command -command fileSave         -label {Save} -underline 0}
       {command -command fileSaveAs       -label {Save As...} -underline 5}
-      {command -command fileCloseNedfile -label {Close NED File} -underline 0}
-      {command -command fileCloseModule  -label {Close Module} -underline 0}
+      {separator}
+      {command -command fileCloseNedfile -label {Close NED file} -underline 0}
+      {command -command fileCloseCanvas  -label {Close component} -underline 1}
       {separator}
       {command -command fileExit -label Exit -underline 1}
     } {
-      eval $w.menubar.filemenu$m add $i
+      eval $w.menubar.filemenu add $i
+    }
+
+    # File menu, New component... submenu
+    menu $w.menubar.filemenu.newmenu -tearoff 0
+    foreach i {
+      {command -command {fileNewComponent imports} -label {imports} -underline 0}
+      {command -command {fileNewComponent channel} -label {channel} -underline 0}
+      {command -command {fileNewComponent simple}  -label {simple}  -underline 0}
+      {command -command {fileNewComponent module}  -label {module}  -underline 0}
+      {command -command {fileNewComponent network} -label {network} -underline 0}
+    } {
+       eval $w.menubar.filemenu.newmenu add $i
     }
 
     # Edit menu
@@ -124,7 +125,7 @@ proc create_omnetpp_window {} {
       {separator}
       {command -command editCheck    -label {Check consistency} -underline 0}
     } {
-      eval $w.menubar.editmenu$m add $i
+      eval $w.menubar.editmenu add $i
     }
 
     # View menu
@@ -132,7 +133,7 @@ proc create_omnetpp_window {} {
       {command -command switchToGraphics -label {As Graphics} -underline 3}
       {command -command switchToNED      -label {As NED source} -underline 3}
     } {
-      eval $w.menubar.viewmenu$m add $i
+      eval $w.menubar.viewmenu add $i
     }
 
     # Draw menu
@@ -145,7 +146,7 @@ proc create_omnetpp_window {} {
       {command -command {propertiesSelected $gned(canvas)} -label {Properties of selected item...}}
       {command -command {drawOptionsSelected $gned(canvas)} -label {Appearance of selected item...}}
     } {
-      eval $w.menubar.drawmenu$m add $i
+      eval $w.menubar.drawmenu add $i
     }
 
     # Options menu
@@ -157,7 +158,7 @@ proc create_omnetpp_window {} {
       {command -command optionsViewFile -label {View/edit file...} -underline 0}
       {command -command optionsTCLConsole -label {TCL console} -underline 0}
     } {
-      eval $w.menubar.optionsmenu$m add $i
+      eval $w.menubar.optionsmenu add $i
     }
 
     # Help menu
@@ -166,34 +167,18 @@ proc create_omnetpp_window {} {
       {separator}
       {command -command {helpRelNotes} -label {Release notes} -underline 0}
     } {
-      eval $w.menubar.helpmenu$m add $i
+      eval $w.menubar.helpmenu add $i
     }
 
-    # Pack menu buttons on menubar
-    if {$tcl_version < 8.0} {
-        foreach i {
-          filemenu editmenu viewmenu optionsmenu drawmenu helpmenu
-        } {
-          pack $w.menubar.$i -anchor n -expand 0 -fill none -side left
-        }
-    }
 
     #################################
     # Create horiz. toolbar
     #################################
 
-    ## load gifs from files
-    #foreach i {
-    #    copy cut delete draw graph drawopts grid ned new open
-    #    paste props save select check close
-    #} {
-    #    set icons($i) [image create photo -file icons/$i.gif]
-    #}
-
     frame $w.toolbar -relief raised -borderwidth 1
     foreach i {
       {space    0}
-      {new     -image $icons(new)   -command {fileNewModule}}
+      {new     -image $icons(new)   -command {fileNewComponent module}}
       {open    -image $icons(open)  -command {fileOpen}}
       {save    -image $icons(save)  -command {fileSave}}
       {space    1}
@@ -216,7 +201,7 @@ proc create_omnetpp_window {} {
     $w.toolbar.graph config -relief sunken
 
     # close button
-    set b [button $w.toolbar.close -image $icons(close) -command fileCloseModule -relief flat]
+    set b [button $w.toolbar.close -image $icons(close) -command fileCloseCanvas -relief flat]
     pack $b -anchor n -expand 0 -fill none -side right -padx 0 -pady 2
 
     set gned(horiz-toolbar) $w.toolbar
