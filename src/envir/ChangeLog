@@ -198,3 +198,6 @@ Aug 13, 1999
 Aug 30, 1999
   - Fixed a bug in omnetapp.cc which caused bogus reporting in the number
     of random number generators initialized from table and from ini file
+------ omnetpp-2.0b released ------
+Sept 20, 1999
+ - typo fixed in Makefile.in: $(CLFAGS) --> $(CFLAGS)

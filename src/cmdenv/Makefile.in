@@ -21,7 +21,7 @@ SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 #
 # Local definitions
 #
-COPTS=$(CLFAGS) -I$(OMNETPP_INCL_DIR) -I../envir
+COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I../envir
 
 OBJS = cmdenv.o enumstr.o heap.o
 

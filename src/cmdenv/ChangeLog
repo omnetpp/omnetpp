@@ -94,3 +94,6 @@
   - removed support for DOS with BC3.1
 Aug 13, 1999
   - _dummy_for_tkenv_inspect() bug fixed
+------ omnetpp-2.0b released ------
+Sept 20, 1999
+ - typo fixed in Makefile.in: $(CLFAGS) --> $(CFLAGS)
