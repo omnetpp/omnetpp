@@ -152,18 +152,17 @@
  */
 #define FSM_Goto(fsm,state)   (fsm).setState(state,#state)
 
+#ifdef FSM_DEBUG
 /**
  * #define FSM_DEBUG before #including "omnetpp.h" to enable reporting
  * all state changes to ev.
  *
- * FIXME: refine doc! this doc belongs to FSM_Print!
  * @hideinitializer
  * @see FSM_Switch
  */
-#ifdef FSM_DEBUG
 #define FSM_Print(fsm,exiting) \
     (ev << "FSM " << (fsm).name() \
-        << ((exiting) ? ": exiting " : ": entering ") \
+        << ((exiting) ? ": leaving state  " : ": entering state ") \
         << (fsm).stateName() << endl)
 // this may also be useful as third line:
 //      << ((fsm).inTransientState() ? "transient state " : "steady state ")
