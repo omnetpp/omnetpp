@@ -24,7 +24,7 @@
 
 /**
  * GENERATED CLASS. Abtract base class for NED validators.
- *
+ * 
  * @ingroup Validation
  */
 class NEDValidatorBase

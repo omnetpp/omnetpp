@@ -25,7 +25,7 @@
 
 /**
  * GENERATED CLASS. Validates a NEDElement tree by the DTD.
- *
+ * 
  * @ingroup Validation
  */
 class NEDDTDValidator : public NEDValidatorBase

@@ -1,3 +1,5 @@
+2004-02-04  ------ omnetpp-3.0pre1 released ------
+
 2004-01-09  Andras Varga
 
 	* cmodule.cc: implemented bubble()

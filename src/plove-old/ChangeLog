@@ -1,3 +1,5 @@
+2004-02-04  ------ omnetpp-3.0pre1 released ------
+
 2003-08-30 Andras Varga
 
 	* Makefile.in: fixed bug which prevented plove from getting 
