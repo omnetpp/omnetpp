@@ -73,7 +73,8 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
            switch(type)
            {
                case cStructDescriptor::FT_BASIC:
-                   sd->getFieldAsString(fld, 0, val, 128); // FIXME: error handling!
+                   val[0]='\0';
+                   sd->getFieldAsString(fld, 0, val, 128);
                    if (sd->getFieldEnumName(fld))
                    {
                        // display enum value as int and as string
@@ -84,22 +85,24 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                            sprintf(val, "%d (%s)", key, enm->stringFor(key));
                        }
                    }
-                   sprintf(writeptr,"%*s%s\t%s = \t%s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
+                   sprintf(writeptr,"%*s%s %s  =  %s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
                    flushIfNeeded(FLUSHLIMIT);
                    break;
                case cStructDescriptor::FT_SPECIAL:
-                   sprintf(writeptr,"%*s%s\t%s = \t...\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
+                   sprintf(writeptr,"%*s%s %s  =  ...\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld)); //FIXME
                    flushIfNeeded(FLUSHLIMIT);
                    break;
                case cStructDescriptor::FT_STRUCT:
-                   sprintf(writeptr,"%*s%s\t%s = ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld));
+                   val[0]='\0';
+                   sd->getFieldAsString(fld, 0, val, 128);
+                   sprintf(writeptr,"%*s%s %s  =  %s ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), val);
                    flushIfNeeded(FLUSHLIMIT);
 
                    sd1 = cStructDescriptor::createDescriptorFor(sd->getFieldStructName(fld),
                                                                 sd->getFieldStructPointer(fld,0));
                    if (!sd1)
                    {
-                       sprintf(writeptr,"{...}  (details unknown)\n");
+                       sprintf(writeptr, (val[0] ? "\n" : "{...}\n"));
                        flushIfNeeded(FLUSHLIMIT);
                    }
                    else
@@ -113,7 +116,7 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                    }
                    break;
                default:
-                   sprintf(writeptr,"%*s%s\t%s = \t(unknown type)\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld));
+                   sprintf(writeptr,"%*s%s %s  =  (unknown type)\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld));
                    flushIfNeeded(FLUSHLIMIT);
            }
        }
@@ -136,22 +139,24 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                                sprintf(val, "%d (%s)", key, enm->stringFor(key));
                            }
                        }
-                       sprintf(writeptr,"%*s%s\t%s[%d] = \t%s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, val);
+                       sprintf(writeptr,"%*s%s %s[%d]  =  %s\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, val);
                        flushIfNeeded(FLUSHLIMIT);
                        break;
                    case cStructDescriptor::FT_SPECIAL_ARRAY:
-                       sprintf(writeptr,"%*s%s\t%s[%d] = \t...\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
+                       sprintf(writeptr,"%*s%s %s[%d]  =  ...\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i); //FIXME
                        flushIfNeeded(FLUSHLIMIT);
                        break;
                    case cStructDescriptor::FT_STRUCT_ARRAY:
-                       sprintf(writeptr,"%*s%s\t%s[%d] = ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
+                       val[0]='\0';
+                       sd->getFieldAsString(fld, i, val, 128);
+                       sprintf(writeptr,"%*s%s %s[%d]  =  %s ", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i, val);
                        flushIfNeeded(FLUSHLIMIT);
 
                        sd1 = cStructDescriptor::createDescriptorFor(sd->getFieldStructName(fld),
                                                                     sd->getFieldStructPointer(fld,i));
                        if (!sd1)
                        {
-                           sprintf(writeptr,"{...}  (details unknown)\n");
+                           sprintf(writeptr, (val[0] ? "\n" : "{...}\n"));
                            flushIfNeeded(FLUSHLIMIT);
                        }
                        else
@@ -165,7 +170,7 @@ void TStructPanel::displayStruct(cStructDescriptor *sd, int level)
                        }
                        break;
                    default:
-                       sprintf(writeptr,"%*s%s\t%s[%d] = \t(unknown type)\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
+                       sprintf(writeptr,"%*s%s %s[%d]  =  (unknown type)\n", indent, "", sd->getFieldTypeString(fld), sd->getFieldName(fld), i);
                        flushIfNeeded(FLUSHLIMIT);
                }
            }

@@ -1,12 +1,15 @@
 FIXME make inspectors more consistent:
-ObjectInspector's "info" page should appear also in ContainerInspector
-  (and maybe other inspectors as well)
-ObjectInspector (and all inspectors) should allow name change
-info() and detailedInfo() should appear in all inspectors somewhere
-cWatchInspector: if cPolymorphic is watched, display its info() and detailedInfo()
-
+  ObjectInspector's "info" page should appear also in ContainerInspector (and maybe other inspectors as well)
+  ObjectInspector (and all inspectors) should allow name change
+  info() and detailedInfo() should appear in all inspectors somewhere
+  cWatchInspector: if cPolymorphic is watched, display its info() and detailedInfo()
+  cWatchInspector probably not needed (cObjectInspector will do)
 FIXME cGate inspectors have now two "up" buttons!!!
 
+2004-03-18  Andras Varga
+
+	* structinsp.cc: display getFieldsAsString() also for structs (that is,
+	its operator<< is used to display a one-line brief of the struct)
 
 2004-03-03  ------ omnetpp-3.0a2 released ------
 
