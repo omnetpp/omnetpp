@@ -86,11 +86,12 @@ class SIM_API cMessage : public cObject
     friend class cMessageHeap;
 
   private:
-    int msgkind;            // message kind -- meaning is user-defined
+    int msgkind;               // message kind -- <0 reserved, 0>= user-defined meaning
     int prior;              // priority -- used for scheduling msgs with equal times
     long len;               // length of message -- used for bit errors and transm.delay
-    bool error;             // bit error occurred during transmission
-    simtime_t tstamp;       // time stamp -- user-defined meaning
+    bool error : 1;            // bit error occurred during transmission
+    unsigned refcount : 7;     // reference count for encapsulated message (0: not encapsulated, max 127)
+    unsigned char srcprocid;   // reserved for use by parallel execution: id of source partition 
     cArray *parlistp;       // ptr to list of parameters
     cMessage *encapmsg;     // ptr to encapsulated msg
     void *contextptr;       // a stored pointer -- user-defined meaning
@@ -99,10 +100,10 @@ class SIM_API cMessage : public cObject
     int tomod,togate;       // dest. module and gate IDs -- set internally
     simtime_t created;      // creation time -- set be constructor
     simtime_t sent,delivd;  // time of sending & delivery -- set internally
+    simtime_t tstamp;          // time stamp -- user-defined meaning
 
     int heapindex;             // used by cMessageHeap (-1 if not on heap)
     unsigned long insertordr;  // used by cMessageHeap
-
 
     // helper function
     void _createparlist();
@@ -555,6 +556,16 @@ class SIM_API cMessage : public cObject
      * returned by the arrivalTime() method.
      */
     virtual void setArrivalTime(simtime_t t);
+
+    /**
+     * Used internally by the parallel simulation kernel.
+     */
+    void setSrcProcId(unsigned char procId) {srcprocid=procId;}
+
+    /**
+     * Used internally by the parallel simulation kernel.
+     */
+    unsigned char srcProcId() {return srcprocid;}
     //@}
 
     /** @name Miscellaneous. */
