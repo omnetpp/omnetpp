@@ -39,12 +39,12 @@
 #ifdef PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 
 # define TOTAL_STACK_KB     2048
-# define MAIN_STACK_KB        64  // 32K is not enough
+# define MAIN_STACK_KB       128  // for MSVC+Tkenv, 64K is not enough
 
 #else /* nonportable coroutines, stacks are allocated on heap */
 
-# define TOTAL_STACK_KB         0  // value won't be used
-# define MAIN_STACK_KB          0  // value won't be used
+# define TOTAL_STACK_KB         0  // dummy value
+# define MAIN_STACK_KB          0  // dummy value
 
 #endif
 

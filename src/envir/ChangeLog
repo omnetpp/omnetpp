@@ -203,9 +203,7 @@ Sept 20, 1999
  - typo fixed in Makefile.in: $(CLFAGS) --> $(CFLAGS)
 ------ omnetpp-2.0b2 released ------
 Dec 4,1999
-  - compiled with MSVC. Minor changes: changed int to bool in some places.
-    envir.dsp added. NOTE: one has to rename all .cc files  to .cpp
-    for compiling (ren *.cc *.cpp)!
+  - first compile with MSVC. Minor changes: changed int to bool in some places
 Dec 5,1999
   - Makefile.vc added
 Jan 9,2000
@@ -214,3 +212,5 @@ Jan 15,2000
   - MSDOS #defines removed from the code (omnetapp.cc)
 Jan 16,2000
   - improvements in cinifile.cc
+Jan 28,2000
+ -  main stack size increased to 128K (omnetapp.cc)
