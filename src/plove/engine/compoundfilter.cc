@@ -99,21 +99,21 @@ int CompoundFilterType::numSubfilters() const
 
 CompoundFilterType::Subfilter& CompoundFilterType::subfilter(int pos)
 {
-    if (pos<0 || pos>=_subfilters.size())
+    if (pos<0 || (unsigned)pos>=_subfilters.size())
         throw new Exception("%s: invalid subfilter index %d", name(), pos);
     return _subfilters[pos];
 }
 
 void CompoundFilterType::insertSubfilter(int pos, const Subfilter& f)
 {
-    if (pos<0 || pos>_subfilters.size())
+    if (pos<0 || (unsigned)pos>_subfilters.size())
         throw new Exception("%s: invalid subfilter insert index %d", name(), pos);
     _subfilters.insert(_subfilters.begin()+pos, f);
 }
 
 void CompoundFilterType::removeSubfilter(int pos)
 {
-    if (pos<0 || pos>=_subfilters.size())
+    if (pos<0 || (unsigned)pos>=_subfilters.size())
         throw new Exception("%s: invalid subfilter index %d", name(), pos);
     _subfilters.erase(_subfilters.begin()+pos);
 }

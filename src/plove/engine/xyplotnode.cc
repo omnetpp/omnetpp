@@ -22,9 +22,9 @@
 
 Port *XYPlotNode::portY(int k)
 {
-    if (k<0 || yin.size()<k)
+    if (k<0 || yin.size()< (unsigned)k)
         throw new Exception("XYPlotNode::portY(k): k=%d out of range, size of yin[] is %d",k,yin.size());
-    if (yin.size()==k)
+    if (yin.size()==(unsigned)k)
     {
         yin.push_back(Port(this));
         out.push_back(Port(this));
@@ -34,7 +34,7 @@ Port *XYPlotNode::portY(int k)
 
 Port *XYPlotNode::portOut(int k)
 {
-    if (k<0 || out.size()<=k)
+    if (k<0 || out.size()<=(unsigned)k)
         throw new Exception("XYPlotNode::portOut(k): k=%d out of range, size of out[] is %d",k,out.size());
     return &out[k];
 }
@@ -61,7 +61,7 @@ void XYPlotNode::process()
     Datum xd;
     xin()->read(&xd,1);
 
-    for (int i=0; i<yin.size(); i++)
+    for (unsigned int i=0; i<yin.size(); i++)
     {
         Channel *ychan = yin[i]();
         ASSERT(ychan->eof() || ychan->length()>0);

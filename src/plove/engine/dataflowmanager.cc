@@ -29,7 +29,7 @@ DataflowManager::DataflowManager()
 
 DataflowManager::~DataflowManager()
 {
-    int i;
+    unsigned int i;
     for (i=0; i<nodes.size(); i++)
         delete nodes[i];
     for (i=0; i<channels.size(); i++)
@@ -89,7 +89,7 @@ void DataflowManager::execute()
     DBG(("execute: processing finished\n"));
 
     // propagate finished state to all nodes (transitive closure)
-    int i=0;
+    unsigned int i=0;
     while (i<nodes.size())
     {
         if (nodes[i]->alreadyFinished())
@@ -107,9 +107,9 @@ void DataflowManager::execute()
                                 nodes[i]->nodeType()->name());
 
     // check all channel buffers are empty
-    for (int j=0; j<channels.size(); j++)
-        if (!channels[j]->eof())
-            throw new Exception("execute: all nodes finished but channel %d not at eof", j);
+    for (i=0; i<channels.size(); i++)
+        if (!channels[i]->eof())
+            throw new Exception("execute: all nodes finished but channel %d not at eof", i);
 }
 
 bool DataflowManager::nodeFinished(Node *node)

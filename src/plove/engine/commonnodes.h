@@ -18,8 +18,6 @@
 #include "node.h"
 #include "nodetype.h"
 
-#pragma warning(disable:4355)
-
 
 /**
  * Base class for one-port producer nodes.
