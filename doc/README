@@ -61,23 +61,24 @@ additional directories, e.g. containing software bundled with OMNeT++.)
 The simulation system itself:
 
 omnetpp/              OMNeT++ root directory
-   bin/               executables
-   include/           header files for compiling simulations
-   lib/               simulation library files
+   bin/               OMNeT++ executables (GNED, nedc, etc.)
+   include/           header files for simulation models
+   lib/               library files
    bitmaps/           icons that can be used in network graphics
-   doc/               readme, license etc.
-   html/              manuals in HTML format
-   src/
-       nedc/          system description compiler
-       gned/          graphical NED editor
-       plove/         output vector analyzer and plotting tool
+   doc/               manual (PDF), readme, license, etc.
+       html/          manual in HTML
+       api/           API reference in HTML
+   src/               OMNeT++ sources
+       nedc/          NED compiler
        sim/           simulation kernel
             std/      files for non-distributed execution
             pvm/      files for distributed execution over PVM
        envir/         common code for user interfaces
        cmdenv/        command-line user interface
-       tkenv/         Tcl/Tk user interface
-       utils/         makefile-autocreator etc.
+       tkenv/         Tcl/Tk-based user interface
+       gned/          graphical NED editor
+       plove/         output vector analyzer and plotting tool
+       utils/         makefile-autocreator etc
 
 There is a tutorial, contributed by Nick van Foreest:
 

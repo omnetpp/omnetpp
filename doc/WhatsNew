@@ -1,16 +1,35 @@
 What's New
 ==========
 
-In the future OMNeT++ 2.2 beta1 (Sept 2001?)
+In the future OMNeT++ 2.2 beta1 (Dec 2001?)
 --------------------------------------------
-new ChangeLog format (Ulrich Kaage)
-const patches (Roland Bless)
-refman was replaced by generated API doc, using DOC++ (easier to search, always up-to-date)
-MPI support (Eric Wu)
-windows installer supports win95/98/me (TBD!!!)
-support for message subclassing (TBD!!!)
-bugfixes (TBD!!!)
+This release adds a beautiful, up-to-date, fully hyperlinked, detailed,
+HTML-based API Reference, which documents the simulation kernel in detail.
+It is generated from header files using Doxygen (great tool!). At the same
+time, the Reference chapter in the manual ceased to exist.
+
+The whole simulation kernel was revised to add 'const' modifiers wherever
+possible. This may affect portability of older code, especially where one
+didn't use the Module_Class_Members() macro to define module classes. Changes
+include patches from Roland Bless.
+
+Parallel simulation now might use the MPI library (code by Eric Wu).
+
+Implementation of the feature known as 'message subclassing' has begun.
+There is an experimental Perl-base message subclassing compiler.
+
+A number of other changes:
+The opp_nextrand(long& seed) function was added to the simulation kernel.
+cModule's display string methods were reorganized.
+The ini file reader can now digest files of any size (no more built-in limits,
+only for line size [must be < 1K]).
+Fixed Plove's problems with tabs/spaces in vector files and slashes/backslashes on Windows.
+In GNED, regexp find/replace now understands the \1,\2,... notation in replace strings.
+ChangeLog files were turned upside down: most recent entry is now at the top.
+The makefiles now use a new Perl-based dependency generator which works on all platforms.
+
 RPM (TBD!!!)
+windows installer supports win95/98/me (TBD!!!)
 
 
 In the OMNeT++ 2.1 release (May 2001)
