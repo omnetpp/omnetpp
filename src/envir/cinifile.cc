@@ -106,7 +106,7 @@ void cIniFile::_readFile(char *fname, char *sect)
             s+=7;
             while (*s==' ' || *s=='\t') s++;  // skip spaces after 'include'
             char *e=s;                        // find end of fname
-            while (*e!=' ' && *e!='\t' && e!='\0') e++;
+            while (*e!=' ' && *e!='\t' && *e!='\0') e++;
             *e = '\0';
 
             _readFile( s, sect );    // process included inifile
@@ -116,8 +116,8 @@ void cIniFile::_readFile(char *fname, char *sect)
         {
            // section header text into s:
            char *e=++s;
-           while (*e!=']' && e!=0) e++;      // find closing brace
-           if (*e!=']') SYNTAX_ERROR("no ']'");
+           while (*e!=']' && *e!=0) e++;      // find closing brace
+           if (*e!=']') SYNTAX_ERROR("missing ']'");
            *e=0;
 
            // maybe already exists
