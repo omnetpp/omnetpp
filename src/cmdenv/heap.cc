@@ -351,7 +351,7 @@ void *operator new(size_t m)
          exit(1);
 #else
          printf("\n[NEW (%lu) FAILED,throwing bad::alloc!]\n", (long)m );
-         throw std::bad_alloc;
+         throw std::bad_alloc();
 #endif
       }
 }
