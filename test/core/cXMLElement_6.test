@@ -18,20 +18,21 @@ Check cXMLElement attributes and node content
     <bar color="  red" weight="12  "/>
     <bar att=""/>
     <bar att="  "/>
-    <bar att="&amp;&gt;&lt;&quot"/>
+    <bar att="&amp;&gt;&lt;&quot;"/>
 </foo>
 
 %global:
 
 static void printNode(cXMLElement *node)
 {
-    ev << node->getTagName() << ": ";
-    ev << "value:\"" << node->getNodeValue() << "\",";
+    ev << node->getTagName() << ":";
+    ev << "\"" << node->getNodeValue() << "\",";
     ev << (node->hasAttributes() ? "has attrs" : "no attrs") << ",";
     cXMLAttributeMap map = node->getAttributes();
     for (cXMLAttributeMap::iterator i=map.begin(); i!=map.end(); i++)
         ev << " " << i->first << "=\"" << i->second << "\"/\""
            << node->getAttribute(i->first.c_str()) << "\"";
+    ev << " nothing=" << (!node->getAttribute("nothing") ? "NULL" : node->getAttribute("nothing"));
     ev << ".\n";
 }
 
@@ -41,5 +42,19 @@ for (cXMLElement *child=root->getFirstChild(); child; child=child->getNextSiblin
     printNode(child);
 
 %contains: stdout
-foo: 2 6.
+bar:"",no attrs, nothing=NULL.
+bar:"some  text",no attrs, nothing=NULL.
+bar:"  some  text",no attrs, nothing=NULL.
+bar:"some  text  ",no attrs, nothing=NULL.
+bar:"  ",no attrs, nothing=NULL.
+bar:"
+    ",no attrs, nothing=NULL.
+bar:"&><"",no attrs, nothing=NULL.
+bar:"",has attrs, id="15"/"15" nothing=NULL.
+bar:"",has attrs, color="red"/"red" weight="12"/"12" nothing=NULL.
+bar:"",has attrs, color="  red"/"  red" weight="12  "/"12  " nothing=NULL.
+bar:"",has attrs, att=""/"" nothing=NULL.
+bar:"",has attrs, att="  "/"  " nothing=NULL.
+bar:"",has attrs, att="&><""/"&><"" nothing=NULL.
+
 
