@@ -104,10 +104,10 @@ class cPvmMod : public cNetMod
          virtual bool askyesno_onconsole(char *question);
 
          // new functions: handling gates
-         cGate *ingate(int g) {return (cNetGate*)&gatev[g];}      // find input gate by num.
+         cGate *ingate(int g) {return (cNetGate*)gatev[g];}      // find input gate by num.
          cGate *ingate(char *s);                                  // input gate name
          int findingate(char *s);                                 // input gate num. by name
-         cGate *outgate(int g) {return (cNetGate*)&out_gatev[g];} // output gate by num.
+         cGate *outgate(int g) {return (cNetGate*)out_gatev[g];} // output gate by num.
          cGate *outgate(char *s);                                 // output gate by name
          int findoutgate(char *s);                                // output gate num by name
          virtual void clear();
@@ -129,3 +129,4 @@ class cPvmMod : public cNetMod
 
 };
 #endif
+

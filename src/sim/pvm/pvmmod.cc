@@ -44,8 +44,6 @@
 //#define PVM_DEBUG
 
 
-Register_Class( cPvmMod )
-
 extern int pack_str(char * str);
 extern char *upack_str(int& err);
 extern cObject *upack_object(int& err);
@@ -184,7 +182,7 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
         for (i=0;i<host_list.items();i++)
         {
             // one host we need
-            act_host = ((cPar&)host_list[i]).stringValue();
+            act_host = ((cPar *)host_list[i])->stringValue();
             ev.printf("  %s\n",act_host);
 
             // is it in the hosts[] array returned by PVM?
@@ -225,11 +223,11 @@ short cPvmMod::start_segments(cArray& host_list,int argc,char * argv[])
         for(i=0;i<host_list.items();i++)
         {
            // pick host i
-           act_host = ((cPar&)host_list[i]).stringValue();
+           act_host = ((cPar *)host_list[i])->stringValue();
 
            // check if it is a duplicate
            for(j=0; j<i; j++)
-               if (opp_strcmp(act_host,((cPar&)host_list[j]).stringValue())==0)
+               if (opp_strcmp(act_host,((cPar *)host_list[j])->stringValue())==0)
                   break;
 
            if (i!=j)
@@ -363,7 +361,7 @@ void cPvmMod::setup_connections()
            for (int j=0;j<segm_numgates[i];j++)
            {
               if ((sernum=gatev.find(temp_link_table[i][j]))>=0)
-                  ((cNetGate&)gatev[sernum]).settarget(segm_tids[i],j);
+                  ((cNetGate *)gatev[sernum])->settarget(segm_tids[i],j);
            }
         }
 
@@ -415,7 +413,7 @@ void cPvmMod::arrived(cMessage *msg,int ongate)
 //-------------------------------------------------------------------------
 // net_addgate:
 //   When a new network connection is encountered during the
-//   net creation, the PVM modul creates a new gate for it.
+//   net creation, the PVM module creates a new gate for it.
 //   The input and output gates are in separate lists.
 
 int cPvmMod::net_addgate(cModule * mod,int gate, char tp)
@@ -424,12 +422,12 @@ int cPvmMod::net_addgate(cModule * mod,int gate, char tp)
         cNetGate *newg = new cNetGate( mod->gate(gate)->fullPath(), tp);
         if (tp=='I')   // 'I': input gate
         {
-           retval=gatev.add( *newg);
+           retval=gatev.add( newg );
            num_ingates++;
         }
         else           // 'O': output gate
         {
-           retval=out_gatev.add(newg);
+           retval=out_gatev.add( newg );
            num_outgates++;
         }
         newg->setOwnerModule(this, retval);
@@ -443,8 +441,8 @@ int cPvmMod::net_addgate(cModule * mod,int gate, char tp)
 
 void cPvmMod::net_sendmsg(cMessage *msg,int ongate)
 {
-        int gate_num = ((cNetGate&)gatev[ongate]).t_gate();
-        int pvm_dest = ((cNetGate&)gatev[ongate]).t_proc();
+        int gate_num = ((cNetGate *)gatev[ongate])->t_gate();
+        int pvm_dest = ((cNetGate *)gatev[ongate])->t_proc();
 
         int err=0;
         pvm_initsend(PvmDataDefault);
@@ -758,8 +756,8 @@ void cPvmMod::do_process_netmsg(int rbuff)
 
 void cPvmMod::send_syncpoint( simtime_t t, int ongate)
 {
-        int pvm_dest = ((cNetGate&)gatev[ongate]).t_proc();
-        int gate_num = ((cNetGate&)gatev[ongate]).t_gate();
+        int pvm_dest = ((cNetGate *)gatev[ongate])->t_proc();
+        int gate_num = ((cNetGate *)gatev[ongate])->t_gate();
 
 #ifdef PVM_DEBUG
         ev.printf("Sending SYNCPOINT to 0x%x: gate=%d  t=%lf\n",pvm_dest,gate_num,t);
@@ -780,8 +778,8 @@ void cPvmMod::send_syncpoint( simtime_t t, int ongate)
 
 void cPvmMod::send_cancelsyncpoint( simtime_t t, int ongate)
 {
-        int pvm_dest = ((cNetGate&)gatev[ongate]).t_proc();
-        int gate_num = ((cNetGate&)gatev[ongate]).t_gate();
+        int pvm_dest = ((cNetGate *)gatev[ongate])->t_proc();
+        int gate_num = ((cNetGate *)gatev[ongate])->t_gate();
 
 #ifdef PVM_DEBUG
         ev.printf("Sending CANCELSYNCPOINT to 0x%x: gate=%d\n",pvm_dest,gate_num);
@@ -953,7 +951,7 @@ cGate *cPvmMod::ingate(char *s)
         if (i==-1)
            {opp_warning(eNULLREF,className(),fullPath()); return NO(cNetGate);}
         else
-           return (cNetGate *)&gatev.get(i);
+           return (cNetGate *)gatev.get(i);
 }
 
 //--------------------------------------------------------------------------

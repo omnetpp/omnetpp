@@ -263,7 +263,7 @@ int cQueue::netPack()
         err|=cObject::netPack();
         err|=pvm_pkint(&n,1,1);
         err|=pvm_pkbyte((char*)&asc,1,1);
-        for (sQElem * pt=head;pt!=NULL;pt=pt->next)
+        for (sQElem * pt=headp;pt!=NULL;pt=pt->next)
             if (notnull(pt->obj,err)) {
                 if (pt->obj->owner()!=this)
                     {opp_error("cQueue::netPack(): cannot transmit pointer"
@@ -280,8 +280,8 @@ int cQueue::netUnpack()
         err|=pvm_upkint(&n,1,1);
         err|=pvm_upkbyte((char*)&asc,1,1);
         if (n)  {
-                head = new sQElem;
-                sQElem * pt1=head;
+                headp = new sQElem;
+                sQElem * pt1=headp;
                 sQElem * pt2;
                 pt1->prev=NULL;
                 take( pt1->obj = upack_object(err) );
@@ -293,7 +293,7 @@ int cQueue::netUnpack()
                         take( pt1->obj = upack_object(err) );
                         }
                 pt1->next=NULL;
-                tail=pt1;
+                tailp=pt1;
                 }
         return err;
 }
@@ -418,7 +418,7 @@ int cTransientDetection::netUnpack()
 
 int cAccuracyDetection::netPack()
 {
-        int err;
+        int err=0;
         return err||cObject::netPack();
 }
 
@@ -499,7 +499,7 @@ int cDensityEstBase::netPack()
         err|=cStdDev::netPack();
         err|=pvm_pkdouble(&rangemin,1,1);
         err|=pvm_pkdouble(&rangemax,1,1);
-        err|=pvm_pkuint(&num_firstvals,1,1);
+        err|=pvm_pklong(&num_firstvals,1,1);
         err|=pvm_pkulong(&cell_under,1,1);
         err|=pvm_pkulong(&cell_over,1,1);
         err|=pvm_pkdouble(&range_ext_factor,1,1);
@@ -517,12 +517,12 @@ int cDensityEstBase::netUnpack()
         err=cStdDev::netUnpack();
         err|=pvm_upkdouble(&rangemin,1,1);
         err|=pvm_upkdouble(&rangemax,1,1);
-        err|=pvm_upkuint(&num_firstvals,1,1);
+        err|=pvm_upklong(&num_firstvals,1,1);
         err|=pvm_upkulong(&cell_under,1,1);
         err|=pvm_upkulong(&cell_over,1,1);
         err|=pvm_upkdouble(&range_ext_factor,1,1);
         err|=pvm_upkint(&range_mode,1,1);
-        int t; err|=pvm_upkint(&t,1,1); transfd=t;
+        int t; err|=pvm_upkint(&t,1,1); transfd=(t!=0);
         if (chkflag(err))
            err|=pvm_upkdouble(firstvals=new double[num_firstvals],num_firstvals,1);
         return err;
@@ -596,7 +596,7 @@ int cVarHistogram::netPack()
 {
         int err=0;
         err|=cHistogramBase::netPack();
-        err|=pvm_pkuint(&max_num_cells,1,1);
+        err|=pvm_pkint(&max_num_cells,1,1);
         if (notnull(cellv,err))
            err|=pvm_pkuint(cellv,max_num_cells,1);
         if (notnull(bin_bounds,err))
@@ -608,7 +608,7 @@ int cVarHistogram::netUnpack()
 {
         int err=0;
         err=cHistogramBase::netUnpack();
-        err|=pvm_upkuint(&max_num_cells,1,1);
+        err|=pvm_upkint(&max_num_cells,1,1);
         delete cellv; cellv=NULL; // must recreate with different size
         if (chkflag(err))
            err|=pvm_upkuint(cellv=new unsigned[max_num_cells],max_num_cells,1);
@@ -622,8 +622,8 @@ int cPSquare::netPack()
 {
         int err=0;
         err|=cDensityEstBase::netPack();
-        err|=pvm_pkuint(&numcells,1,1);
-        err|=pvm_pkuint(&numobs,1,1);
+        err|=pvm_pkint(&numcells,1,1);
+        err|=pvm_pklong(&numobs,1,1);
         if (notnull(n,err))
            err|=pvm_pkint(n,numcells+2,1);
         if (notnull(q,err))
@@ -635,8 +635,8 @@ int cPSquare::netUnpack()
 {
         int err=0;
         err=cDensityEstBase::netUnpack();
-        err|=pvm_upkuint(&numcells,1,1);
-        err|=pvm_upkuint(&numobs,1,1);
+        err|=pvm_upkint(&numcells,1,1);
+        err|=pvm_upklong(&numobs,1,1);
         if (chkflag(err))
            err|=pvm_upkint(n=new int[numcells+2],numcells+2,1);
         if (chkflag(err))

@@ -74,6 +74,8 @@ class cNetMod : public cModule
          virtual bool isSimple() {return FALSE;}
          virtual void scheduleStart(simtime_t t) {}
          virtual void deleteModule() {}
+         virtual void callInitialize() {initialize();}
+         virtual void callFinish() {finish();}
 
          // new functions
          int isLocalMachineIn(cArray& m);   // is local host in 'm' list?
