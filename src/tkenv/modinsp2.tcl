@@ -57,6 +57,9 @@ proc split_dispstr {str array w modptr parent} {
 }
 
 
+#
+# helper function
+#
 proc get_submod_coords {c tag} {
 
    set id [$c find withtag $tag]
@@ -368,6 +371,104 @@ proc draw_connection {c gateptr dispstr srcptr destptr src_i src_n dest_i dest_n
     }
 }
 
+
+# draw_message --
+#
+# This function is invoked from the message animation code.
+#
+proc draw_message {c msgptr x y msgname msgkind} {
+    global fonts
+    set dispstr [opp_getobjectfield $msgptr displayString]
+
+    #FIXME: following lines are for testing only -- remove them!
+    #set dispstr "b=15,15,rect;o=white,kind,5"
+    #set dispstr "b="
+    #set dispstr "o=kind"
+    #set dispstr "b=15,15,oval;o=kind,white,6"
+    set dispstr "i=penguin"
+    #set dispstr "i=handset2_s"
+
+    if {$dispstr==""} { 
+        # default presentation: red or msgkind%8-colored ball  
+        if [opp_getsimoption animation_msgcolors] {
+            set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
+        } else {
+            set color red
+        }
+        set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "tooltip msg $msgptr"]
+        $c move $ball $x $y
+
+        if [opp_getsimoption animation_msgnames] {
+            $c create text $x $y -text $msgname -anchor n -font $fonts(msgname) -tags "tooltip msgname $msgptr"
+        }
+
+    } else {
+        # use display string
+
+        # supports "b","i" and "o" tags, they work just as with submodules only default
+        # is different (small red ball), plus special color "kind" is supported which
+        # gives the original, message kind dependent colors
+        split_dispstr $dispstr tags [winfo toplevel $c] {} 1
+
+        # set sx and sy
+        if [info exists tags(i)] {
+            set img [lindex $tags(i) 0]
+            if {$img=="" || [catch {image type $img}]} {
+                # using default."
+                set img $icons(unknown)
+            }
+            set sx [image width $img]
+            set sy [image height $img]
+        } elseif [info exists tags(b)] {
+            set sx [lindex $tags(b) 0]
+            if {$sx==""} {set sx 10}
+            set sy [lindex $tags(b) 1]
+            if {$sy==""} {set sy $sx}
+        } else {
+            set tags(b) {10 10 oval}
+            set sx 10
+            set sy 10
+        }
+
+        if [info exists tags(i)] {
+
+            $c create image $x $y -image $img -anchor center -tags "tooltip msg $msgptr"
+            if [opp_getsimoption animation_msgnames] {
+                $c create text $x [expr $y+$sy/2+3] -text $msgname -anchor n -tags "tooltip msgname $msgptr"
+            }
+
+        } elseif [info exists tags(b)] {
+
+            set x1 [expr $x - $sx/2]
+            set y1 [expr $y - $sy/2]
+            set x2 [expr $x + $sx/2]
+            set y2 [expr $y + $sy/2]
+
+            set sh [lindex $tags(b) 2]
+            if {$sh == ""} {set sh oval}
+
+            if {![info exists tags(o)]} {set tags(o) {}}
+            set fill [lindex $tags(o) 0]
+            if {$fill == ""} {set fill red}
+            if {$fill == "kind"} {
+                set fill [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
+            }
+            set outline [lindex $tags(o) 1]
+            if {$outline == ""} {set outline ""}
+            if {$outline == "kind"} {
+                set outline [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
+            }
+            set width [lindex $tags(o) 2]
+            if {$width == ""} {set width 1}
+
+            $c create $sh $x1 $y1 $x2 $y2 -fill $fill -width $width -outline $outline -tags "tooltip msg $msgptr"
+            if [opp_getsimoption animation_msgnames] {
+                $c create text $x [expr $y2+$width/2+3] -text $msgname -anchor n -tags "tooltip msgname $msgptr"
+            }
+        }
+    }
+}
+
 proc create_graphicalmodwindow {name geom} {
     global icons help_tips
 
@@ -527,20 +628,11 @@ proc graphmodwin_draw_message_on_gate {c gateptr msgptr msgname msgkind} {
     set dx [expr ($x2-$x1)/$steps]
     set dy [expr ($y2-$y1)/$steps]
 
-    if [opp_getsimoption animation_msgcolors] {
-        set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
-    } else {
-        set color red
-    }
-
     set steps [expr $steps<6 ? 0 : $steps-6]
     set xx [expr $x1+$dx*$steps]
     set yy [expr $y1+$dy*$steps]
-    set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "tooltip msg $msgptr"]
-    $c move $ball $xx $yy
-    if [opp_getsimoption animation_msgnames] {
-        $c create text $xx $yy -text $msgname -anchor n -font $fonts(msgname) -tags "tooltip msgname $msgptr"
-    }
+
+    draw_message $c $msgptr $xx $yy $msgname $msgkind
 }
 
 # graphmodwin_draw_message_on_module --
@@ -551,24 +643,11 @@ proc graphmodwin_draw_message_on_gate {c gateptr msgptr msgname msgkind} {
 proc graphmodwin_draw_message_on_module {c modptr msgptr msgname msgkind} {
 
     #puts "DBG: graphmodwin_draw_message_on_module $msgptr"
-    
-    global fonts
-
     set r  [get_submod_coords $c $modptr]
     set x [expr ([lindex $r 0]+[lindex $r 2])/2]
     set y [expr ([lindex $r 1]+[lindex $r 3])/2]
 
-    if [opp_getsimoption animation_msgcolors] {
-        set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
-    } else {
-        set color red
-    }
-
-    set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "tooltip msg $msgptr"]
-    $c move $ball $x $y
-    if [opp_getsimoption animation_msgnames] {
-        $c create text $x $y -text $msgname -anchor n -font $fonts(msgname) -tags "tooltip msgname $msgptr"
-    }
+    draw_message $c $msgptr $x $y $msgname $msgkind
 }
 
 
@@ -730,20 +809,10 @@ proc graphmodwin_do_animate {win x1 y1 x2 y2 msgptr msgname msgkind {mode thru}}
     set dx [expr ($x2-$x1)/$steps]
     set dy [expr ($y2-$y1)/$steps]
 
-    if [opp_getsimoption animation_msgcolors] {
-        set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
-    } else {
-        set color red
-    }
-
     switch $mode {
        beg - 
        thru {
-          set ball [$c create oval -5 -5 5 5 -fill $color -outline $color -tags "tooltip msg $msgptr"]
-          $c move $ball $x1 $y1
-          if [opp_getsimoption animation_msgnames] {
-              $c create text $x1 $y1 -text $msgname -anchor n -font $fonts(msgname) -tags "msgname $msgptr"
-          }
+          draw_message $c $msgptr $x1 $y1 $msgname $msgkind
        }
        end {}
     }
@@ -825,10 +894,7 @@ proc animate2 {c tag} {
     set dx [expr ($x2-$x1)/$steps]
     set dy [expr ($y2-$y1)/$steps]
 
-    set color [lindex {red green blue white yellow cyan magenta black} [expr $msgkind % 8]]
-
-    set ball [$c create oval -5 -5 5 5 -fill $color -outline $color]
-    $c move $ball $x1 $y1
+    draw_message $c $msgptr $x1 $y1 $msgname $msgkind
 
     global done$c$ball
     update idletasks

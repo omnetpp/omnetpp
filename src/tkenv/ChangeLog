@@ -6,6 +6,15 @@
 	wireless nodes. Syntax: "r=<radius>,<fillcolor>,<color>,<width>",
 	the default is unfilled black circle with radius=100.
 
+        * modinsp2.tcl: implemented message display strings. You can redefine
+        the displayString() method of cMessage, and make it return a display
+        string. Supported tags are: "b","i" and "o" tags which work just as 
+        with submodules, with two exceptions:
+        - if color name is "kind", a message kind dependent colors is used 
+          (like default behaviour)
+        - defaults are different: small red ball with size of 10 points
+        Try "i=penguin" or "b=15,15,rect;o=white,kind,5"
+
 2003-09-22  Andras Varga
 	* tkapp.cc, modinsp.cc, modinsp2.tcl: implemented animation of
 	sendDirect().

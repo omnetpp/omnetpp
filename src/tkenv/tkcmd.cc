@@ -324,6 +324,7 @@ int getObjectFullName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectClassName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectField_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectId_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -388,6 +389,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectbaseclass",getObjectBaseClass_cmd  }, // args: <pointer>  ret: a base class
    { "opp_getobjectid",      getObjectId_cmd          }, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
+   { "opp_getobjectfield",   getObjectField_cmd       }, // args: <pointer> <field>  ret: value of object field (if supported)
    { "opp_getchildobjects",  getChildObjects_cmd      }, // args: <pointer> ret: list with its child object ptrs
    { "opp_getnumchildobjects",getNumChildObjects_cmd  }, // args: <pointer> ret: length of child objects list
    { "opp_getsubobjects",    getSubObjects_cmd        }, // args: <pointer> ret: list with all object ptrs in subtree
@@ -681,6 +683,51 @@ int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    return TCL_OK;
 }
 
+int getObjectField_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cObject *object = (cObject *)strToPtr( argv[1] );
+   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   const char *field = argv[2]; 
+
+   static char buf[MAX_OBJECTINFO];
+   if (!strcmp(field,"fullName")) {
+       Tcl_SetResult(interp, const_cast<char*>(object->fullName()), TCL_VOLATILE);
+   } else if (!strcmp(field,"fullPath")) {
+       Tcl_SetResult(interp, const_cast<char*>(object->fullPath()), TCL_VOLATILE);
+   } else if (!strcmp(field,"className")) {
+       Tcl_SetResult(interp, const_cast<char*>(object->className()), TCL_VOLATILE);
+   } else if (!strcmp(field,"info")) {
+       object->info(buf);
+       Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   } else if (!strcmp(field,"displayString")) {
+       if (dynamic_cast<cModule *>(object)) {
+           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cModule *>(object)->displayString()), TCL_VOLATILE);
+       } else if (dynamic_cast<cMessage *>(object)) {
+           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cMessage *>(object)->displayString()), TCL_VOLATILE);
+       } else {    
+           Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
+       }
+   } else if (!strcmp(field,"displayStringAsParent")) {
+       if (dynamic_cast<cModule *>(object)) {
+           Tcl_SetResult(interp, const_cast<char*>(dynamic_cast<cModule *>(object)->displayStringAsParent()), TCL_VOLATILE);
+       } else {    
+           Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
+       }
+   } else if (!strcmp(field,"kind")) {
+       if (dynamic_cast<cMessage *>(object)) {
+           char buf[20];
+           sprintf(buf,"%d", dynamic_cast<cMessage *>(object)->kind());
+           Tcl_SetResult(interp, buf, TCL_VOLATILE);
+       } else {    
+           Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
+       }
+   } else {
+       Tcl_SetResult(interp, "no such field in this object", TCL_STATIC); return TCL_ERROR;
+   }    
+   return TCL_OK;
+}
+
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
@@ -763,7 +810,6 @@ int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
-
 
 int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
