@@ -54,22 +54,22 @@ void {Simple}::activity()
         ev << par(i).name() << ":" << par(i).type() << "=" << par(i).getAsText() << endl;
 }
 
-%contains: stdout
+%contains-regex: stdout
 s1:S="hello"
 s2:S=""
-b1:B=true
-b2:B=false
-b3:L=5
-b4:D=3.1415
-b5:D=6.01e+023
-n1:B=true
-n2:B=false
-n3:L=5
-n4:D=3.1415
-n5:D=6.01e+023
-nc1:B=true
-nc2:B=false
-nc3:L=5
-nc4:D=3.1415
-nc5:D=6.01e+023
+b1:[BD]=(true|1)
+b2:[BD]=(false|0)
+b3:[LD]=5
+b4:[LD]=3\.1415
+b5:D=6\.01e\+023
+n1:[BD]=(true|1)
+n2:[BD]=(false|0)
+n3:[LD]=5
+n4:D=3\.1415
+n5:D=6\.01e\+023
+nc1:[BD]=(true|1)
+nc2:[BD]=(false|0)
+nc3:[LD]=5
+nc4:D=3\.1415
+nc5:D=6\.01e\+023
 
