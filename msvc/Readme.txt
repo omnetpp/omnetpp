@@ -1,7 +1,7 @@
 OMNeT++ Integration Macros (AddNedFile)
 =======================================
 
-Requirements: MSVC 6.0.SP1 Without SP1, AddNedFile may crash the IDE due to 
+Requirements: MSVC 6.0.SP1. Without SP1, AddNedFile may crash the IDE due to 
 bugs in the Visual Studio Scripting Host.
 
 Installation:
@@ -30,24 +30,12 @@ Usage:
 Possible caveat:
   - the nedtool compiler is referred to as 'nedtool' in the project file, which
     means the omnetpp bin directrory should be in the path. Or, you can
-    substitute the full path of nedtool (e.g. c:\omnetpp\bin\ned.exe), either
-    in the Custom Build Step for the NED files, or by find/replace in
-    the dsp file.
+    substitute the full path of nedtool (e.g. c:\omnetpp\bin\nedtool.exe), 
+    either in the Custom Build Step page of the Settings dialog for the NED 
+    files, or by find/replace in the dsp file.
 
-
-OMNeT++ AppWizard for MSVC
-==========================
-
-Installation:
-Copy the binary (OmnetppWizard.awx) into following directory:
-  C:\Program Files\Microsoft Visual Studio\Common\MSDev98\Template
-(This step is done automatically by the OMNet++ install program.)
-
-Usage:
-  Start MSVC, select File|New... from the menu, choose "OMNeT++
-  AppWizard" from the list. Then enjoy...
-
-Tested with MSVC 6.0, NT4.0.
-
-Copyright (C) 2002 Andras Varga
+AddMSGFile macro:
+-----------------
+Purpose: adds a message definition file (.msg) to the project. It is very
+similar to the AddNedFile macro; see above.
 

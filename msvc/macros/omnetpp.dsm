@@ -104,3 +104,90 @@ Sub addNEDfileToProject()
     end if
 
 End Sub
+
+
+Sub addMSGfileToProject()
+'DESCRIPTION: Adds a MSG file to the current project
+
+    ' Possible runtime errors:
+    '   - no project open
+    '   - msgfname or cppfname already exists in project
+
+    ' check if there's a project open
+    on error resume next
+    set dummy = application.activeProject
+    if err then
+        msgbox "A project must be open!"
+        exit sub
+    end if
+    on error goto 0
+
+    ' ask MSG file name
+    msgfname = inputbox("Name of MSG file to add: (new or existing file in project directory) ", _
+                        "Add MSG file to project","untitled.msg")
+    if msgfname="" then
+        exit sub
+    end if
+
+    ' ensure msg file name ends in .msg
+    if lcase(right(msgfname,4))<>".msg" then
+        msgfname = msgfname & ".msg"
+    end if
+
+    ' msg file name should not contain a path
+    if instr(msgfname,"\") > 0 then
+        msgbox "MSG file name must be given without pathname!"
+        exit sub
+    end if
+
+    ' produce _m.cpp file name
+    basefname = left(msgfname,len(msgfname)-4)
+    cppfname = basefname & "_m.cpp"
+
+    ' add .msg and _m.cpp files to project
+    set proj = application.ActiveProject
+    on error resume next
+    proj.addFile cppfname
+    proj.addFile msgfname
+    for each cfg in proj.configurations
+        cfg.addCustomBuildStepToFile msgfname, _
+               "call opp_msgc -s _m.cpp $(InputPath)", _
+               "$(InputName)_m.cpp", _
+               "Generating C++ from $(InputPath)"
+    next
+    if err then
+        msgbox "Couldn't add "&msgfname&" or "&cppfname& _
+               " to project. Maybe it has been added already?"
+        exit sub
+    end if
+    on error goto 0
+
+    ' get project directory
+    projfname = proj.fullname
+    lastsep = 0
+    do while instr(mid(projfname,lastsep+1),"\") > 0
+        lastsep = lastsep+instr(mid(projfname,lastsep+1),"\")
+    loop
+    projdirprefix = left(projfname,lastsep)
+
+    ' open or create MSG file in editor
+    on error resume next
+    msgfileexists = 1
+    documents.Open projdirprefix & msgfname, "text"
+    if err then
+        msgfileexists = 0
+    end if
+    on error goto 0
+
+    if msgfileexists=0 then
+        documents.add "Text"
+        set doc = application.activeDocument
+        doc.selection = "//-------------------------------" & vbLF
+        doc.selection = "// File: " & msgfname & vbLF
+        doc.selection = "//-------------------------------" & vbLF
+        doc.selection = vbLF
+        doc.Save projdirprefix & msgfname
+    end if
+
+End Sub
+
