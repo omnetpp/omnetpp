@@ -757,7 +757,12 @@ proc filteredobjectlist_refresh {w} {
 
     # get list
     set maxcount $config(filtobjlist-maxcount)
-    set objlist [opp_getsubobjectsfilt [opp_object_simulation] $tmp(category) $class $name $maxcount $order]
+    if [catch {
+        set objlist [opp_getsubobjectsfilt [opp_object_simulation] $tmp(category) $class $name $maxcount $order]
+    } err] {
+        tk_messageBox -title "Error" -icon error -type ok -parent $w -message "Error: $err."
+        set objlist {}
+    }
     set num [llength $objlist]
 
     # ask user if too many...

@@ -666,8 +666,7 @@ int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
    // get filtered list
    cFilteredCollectObjectsVisitor visitor;
    visitor.setSizeLimit(maxcount);
-   if (!visitor.setFilterPars(category, classnamepattern, objfullpathpattern))
-       {Tcl_SetResult(interp, "invalid syntax in pattern", TCL_STATIC); return TCL_ERROR;}
+   TRY(visitor.setFilterPars(category, classnamepattern, objfullpathpattern));
 
    visitor.process(object);
 

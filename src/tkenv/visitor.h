@@ -82,7 +82,7 @@ class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
      * Category is the binary OR'ed value of CATEGORY_... constants.
      * The other two are glob-style patterns.
      */
-    bool setFilterPars(unsigned int category,
+    void setFilterPars(unsigned int category,
                        const char *classnamepattern,
                        const char *objfullpathpattern);
 };

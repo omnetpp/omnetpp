@@ -93,22 +93,22 @@ cFilteredCollectObjectsVisitor::~cFilteredCollectObjectsVisitor()
     delete objfullpathpattern;
 }
 
-bool cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
+void cFilteredCollectObjectsVisitor::setFilterPars(unsigned int cat,
                                                    const char *classnamepatt,
                                                    const char *objfullpathpatt)
 {
+    // Note: pattern matcher will throw exception on pattern syntax error
     category = cat;
     if (classnamepatt && classnamepatt[0])
     {
         classnamepattern = new cPatternMatcher();
-        classnamepattern->setPattern(classnamepatt, false, true, false); // FIXME exception?
+        classnamepattern->setPattern(classnamepatt, false, true, false);
     }
     if (objfullpathpatt && objfullpathpatt[0])
     {
         objfullpathpattern = new cPatternMatcher();
-        objfullpathpattern->setPattern(objfullpathpatt, false, true, false); // FIXME exception?
+        objfullpathpattern->setPattern(objfullpathpatt, false, true, false);
     }
-    return true;
 }
 
 void cFilteredCollectObjectsVisitor::visit(cObject *obj)
