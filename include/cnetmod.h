@@ -85,7 +85,7 @@ class SIM_API cNetMod : public cModule
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    virtual cNetMod& operator=(cNetMod& other);
+    virtual cNetMod& operator=(_CONST cNetMod& other);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -101,52 +101,73 @@ class SIM_API cNetMod : public cModule
      * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cNetModIFC";}
+    //FIXME: dup missing!
     //@}
 
     /** @name Redefined cModule member functions. */
     //@{
 
     /**
-     * FIXME: redefined cModule functions
+     * Returns false.
      */
     virtual bool isSimple() _CONST {return false;}
 
     /**
-     * MISSINGDOC: cNetMod:void scheduleStart(simtime_t)
+     * Not used, implemented because it could not remain pure virtual.
+     * This dummy implementation does nothing.
      */
     virtual void scheduleStart(simtime_t t) {}
 
     /**
-     * MISSINGDOC: cNetMod:void deleteModule()
+     * Not used, implemented because it could not remain pure virtual.
+     * This dummy implementation does nothing.
      */
     virtual void deleteModule() {}
 
     /**
-     * MISSINGDOC: cNetMod:bool callInitialize(int)
+     * Not used, implemented because it could not remain pure virtual.
+     * The implementation was copied from cSimpleModule.
      */
     virtual bool callInitialize(int stage);
 
     /**
-     * MISSINGDOC: cNetMod:void callFinish()
+     * Not used, implemented because it could not remain pure virtual.
+     * The implementation was copied from cSimpleModule.
      */
     virtual void callFinish();
     //@}
 
-    /** @name FIXME: new functions. */
+    /** @name Information about the local segment. */
     //@{
 
     /**
-     * FIXME: is local host in 'm' list?
+     * Returns the name of the local host.
      */
-    int isLocalMachineIn(_CONST cArray& m);
+    virtual const char *localhost()=0;
 
     /**
-     * MISSINGDOC: cNetMod:cGate*ingate(int)
+     * Returns true if the name of the local machine is in the
+     * array passed as argument. The array should contain
+     * string-valued cPar objects.
+     */
+    int isLocalMachineIn(_CONST cArray& m);
+    //@}
+
+    /** @name Gates. */
+    //@{
+
+    /**
+     * FIXME: Adds a gate.
+     */
+    virtual int net_addgate(cModule *mod, int gate, char tp) {return 0;}
+
+    /**
+     * Returns the input gate identified by its index.
      */
     virtual cGate *ingate(int g)=0;
 
     /**
-     * MISSINGDOC: cNetMod:cGate*ingate(char*)
+     * Returns the input gate identified by its name.
      */
     virtual cGate *ingate(const char *s)=0;
 
@@ -169,54 +190,14 @@ class SIM_API cNetMod : public cModule
      * MISSINGDOC: cNetMod:int findoutgate(char*)
      */
     virtual int findoutgate(const char *s)=0;
-
-    /**
-     * MISSINGDOC: cNetMod:char*localhost()
-     */
-    virtual const char *localhost()=0;
-
-    /**
-     * MISSINGDOC: cNetMod:void restart()
-     */
-    virtual void restart() {}
-
-    /**
-     * MISSINGDOC: cNetMod:void sync_after_modinits()
-     */
-    virtual void sync_after_modinits()=0; // sync before processing first 'real' event
-
-    /**
-     * MISSINGDOC: cNetMod:void process_netmsgs()
-     */
-    virtual void process_netmsgs()=0;
-
-    /**
-     * MISSINGDOC: cNetMod:void process_netmsg_blocking()
-     */
-    virtual void process_netmsg_blocking()=0;
-
-    /**
-     * MISSINGDOC: cNetMod:void send_syncpoint(simtime_t,int)
-     */
-    virtual void send_syncpoint(simtime_t t, int gate) = 0;
-
-    /**
-     * MISSINGDOC: cNetMod:void send_cancelsyncpoint(simtime_t,int)
-     */
-    virtual void send_cancelsyncpoint(simtime_t t, int gate) = 0;
-
-    /**
-     * MISSINGDOC: cNetMod:bool block_on_syncpoint(simtime_t)
-     */
-    virtual bool block_on_syncpoint(simtime_t t) = 0;
-
-    /**
-     * MISSINGDOC: cNetMod:int net_addgate(cModule*,int,char)
-     */
-    virtual int net_addgate(cModule *mod, int gate, char tp) {return 0;}
     //@}
 
-    /** @name Functions to be called from the simulation application (=cEnvir implementation). */
+    /** @name Sending output to the console.
+     *
+     * These functions are called on backgound (non-console) segments
+     * by the simulation application (i.e. the cEnvir implementation),
+     * to send output to the console.
+     */
     //@{
 
     /**
@@ -240,11 +221,11 @@ class SIM_API cNetMod : public cModule
     virtual bool askyesno_onconsole(const char *question) = 0;
     //@}
 
-    /** @name Controlling parallel execution. */
+    /** @name Setting up and stopping a parallel simulation run. */
     //@{
 
     /**
-     * FIXME: control functions
+     * Called on the controlling segment, starts all other segments.
      */
     virtual short start_segments(cArray& host_list, int ac, char *av[]) = 0;
 
@@ -277,6 +258,48 @@ class SIM_API cNetMod : public cModule
      * MISSINGDOC: cNetMod:void send_runnumber(int)
      */
     virtual void send_runnumber(int run_nr) = 0;
+    //@}
+
+    /** @name Executing a parallel simulation run. */
+    //@{
+
+    /**
+     * MISSINGDOC: cNetMod:void restart()
+     */
+    virtual void restart() {}
+
+    /**
+     * MISSINGDOC: cNetMod:void sync_after_modinits()
+     */
+    virtual void sync_after_modinits()=0; // sync before processing first 'real' event
+
+    /**
+     * Process messages arriving from other segments. This call should block
+     * if there's no message available at the time of calling.
+     */
+    virtual void process_netmsgs()=0;
+
+    /**
+     * Process messages arriving from other segments. This call should
+     * return immediately if there's no message available at the time
+     * of calling.
+     */
+    virtual void process_netmsg_blocking()=0;
+
+    /**
+     * MISSINGDOC: cNetMod:void send_syncpoint(simtime_t,int)
+     */
+    virtual void send_syncpoint(simtime_t t, int gate) = 0;
+
+    /**
+     * MISSINGDOC: cNetMod:void send_cancelsyncpoint(simtime_t,int)
+     */
+    virtual void send_cancelsyncpoint(simtime_t t, int gate) = 0;
+
+    /**
+     * MISSINGDOC: cNetMod:bool block_on_syncpoint(simtime_t)
+     */
+    virtual bool block_on_syncpoint(simtime_t t) = 0;
     //@}
 };
 

@@ -62,7 +62,7 @@ class SIM_API cTransientDetection : public cObject
     /**
      * Copy constructor.
      */
-    cTransientDetection(cTransientDetection& r) : cObject() {setName(r.name());operator=(r);}
+    cTransientDetection(_CONST cTransientDetection& r) : cObject() {setName(r.name());operator=(r);}
 
     /**
      * Constructor.
@@ -103,27 +103,29 @@ class SIM_API cTransientDetection : public cObject
     //@{
 
     /**
-     * collect a value
+     * Should be redefined to update the detection algorithm with a value.
      */
     virtual void collect(double val)=0;
 
     /**
-     * transient period over
+     * Should be redefined to return true if end of transient has been detected.
      */
     virtual bool detected()=0;
 
     /**
-     * reset detection
+     * Should be redefined to reset detection algoritm.
      */
     virtual void reset()=0;
 
     /**
-     * stop detection
+     * Should be redefined to stop detection (further calls to collect()
+     * should be ignored.)
      */
     virtual void stop()=0;
 
     /**
-     * start detection
+     * Should be redefined to start detection (further calls to collect()
+     * should update the detection algoritm.)
      */
     virtual void start()=0;
     //@}
@@ -163,7 +165,7 @@ class SIM_API cAccuracyDetection : public cObject
     /**
      * Copy constructor.
      */
-    cAccuracyDetection(cAccuracyDetection& r) : cObject() {setName(r.name());operator=(r);}
+    cAccuracyDetection(_CONST cAccuracyDetection& r) : cObject() {setName(r.name());operator=(r);}
 
     /**
      * Constructor.
@@ -204,29 +206,31 @@ class SIM_API cAccuracyDetection : public cObject
     //@{
 
     /**
-     * FIXME: new functions
+     * Should be redefined to update the detection algorithm with a value.
      */
-    virtual void collect(double val)=0;  // collect a value
+    virtual void collect(double val)=0;
 
     /**
-     * MISSINGDOC: cAccuracyDetection:bool detected()
+     * Should be redefined to return true if required accuracy has been reached.
      */
-    virtual bool detected()=0;           // transient period over
+    virtual bool detected()=0;
 
     /**
-     * MISSINGDOC: cAccuracyDetection:void reset()
+     * Should be redefined to reset detection algoritm.
      */
-    virtual void reset()=0;              // reset detection
+    virtual void reset()=0;
 
     /**
-     * MISSINGDOC: cAccuracyDetection:void stop()
+     * Should be redefined to stop detection (further calls to collect()
+     * should be ignored).
      */
-    virtual void stop()=0;               // stop detection
+    virtual void stop()=0;
 
     /**
-     * MISSINGDOC: cAccuracyDetection:void start()
+     * Should be redefined to start detection (further calls to collect()
+     * will update the detection algoritm).
      */
-    virtual void start()=0;              // start detection
+    virtual void start()=0;
     //@}
 
     /** @name Host object. */
@@ -281,7 +285,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     /**
      * Copy constructor.
      */
-    cTDExpandingWindows(cTDExpandingWindows& r);
+    cTDExpandingWindows(_CONST cTDExpandingWindows& r);
 
     /**
      * Constructor.
@@ -299,7 +303,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
      * Assignment operator. The name member doesn't get copied; see cObject's
      * operator=() for more details.
      */
-    cTDExpandingWindows& operator=(cTDExpandingWindows& res);
+    cTDExpandingWindows& operator=(_CONST cTDExpandingWindows& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -315,27 +319,28 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     //@{
 
     /**
-     * MISSINGDOC: cTDExpandingWindows:void collect(double)
+     * Updates the detection algorithm with a value.
      */
     virtual void collect(double val);
 
     /**
-     * MISSINGDOC: cTDExpandingWindows:bool detected()
+     * Returns true if end of transient has been detected.
      */
     virtual bool detected() _CONST {return transval;}
 
     /**
-     * MISSINGDOC: cTDExpandingWindows:void reset()
+     * Resets detection algoritm.
      */
     virtual void reset();
 
     /**
-     * MISSINGDOC: cTDExpandingWindows:void stop()
+     * Stop detection; further calls to collect() will be ignored.
      */
     virtual void stop()      {go = false;}
 
     /**
-     * MISSINGDOC: cTDExpandingWindows:void start()
+     * Start detection; further calls to collect() will update the
+     * detection algoritm.
      */
     virtual void start()     {go = true;}
     //@}
@@ -394,7 +399,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     /**
      * Copy constructor.
      */
-    cADByStddev(cADByStddev& r);
+    cADByStddev(_CONST cADByStddev& r);
 
     /**
      * Constructor.
@@ -412,7 +417,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cADByStddev& operator=(cADByStddev& res);
+    cADByStddev& operator=(_CONST cADByStddev& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -428,27 +433,28 @@ class SIM_API cADByStddev : public cAccuracyDetection
     //@{
 
     /**
-     * MISSINGDOC: cADByStddev:void collect(double)
+     * Updates the detection algorithm with a value.
      */
     virtual void collect(double val);
 
     /**
-     * MISSINGDOC: cADByStddev:bool detected()
+     * Returns true if required accuracy has been reached.
      */
     virtual bool detected() _CONST {return resaccval;}
 
     /**
-     * MISSINGDOC: cADByStddev:void reset()
+     * Resets detection algoritm.
      */
     virtual void reset();
 
     /**
-     * MISSINGDOC: cADByStddev:void stop()
+     * Stop detection; further calls to collect() will be ignored.
      */
     virtual void stop()   {go=false;}
 
     /**
-     * MISSINGDOC: cADByStddev:void start()
+     * Start detection; further calls to collect() will update the
+     * detection algoritm.
      */
     virtual void start()  {go=true;}
     //@}

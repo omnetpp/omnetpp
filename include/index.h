@@ -30,8 +30,9 @@
  *   - Compound Members
  *   - Compounds
  *
- * If you are just browsing the documentation to get familiar with
- * OMNeT++ in general, you should start from \b Modules.
+ * If you are browsing the documentation to get familiar with
+ * OMNeT++ in general, you should start from <b>Modules -->
+ * Simulation core classes --> cSimplemodule</b>.
  */
 
 
@@ -40,7 +41,10 @@
  *
  * Simulation core classes:
  *    - cObject is the base class for most OMNeT++ classes
- *    - cModule, cCompoundModule and cSimpleModule represent modules in the simulation
+ *    - cModule, cCompoundModule and cSimpleModule represent modules
+ *      in the simulation. The user implements new models by subclassing
+ *      cSimpleModule and overriding at least its activity() or
+ *      handleMessage() member function.
  *    - cMessage represents events, and also messages sent among modules
  *    - cGate represents module gates
  *    - cPar represents module and message parameters
@@ -96,7 +100,7 @@
  * of accuracy of collected statistics.
  *
  * The two main abstact base classes are cStatistic and cDensityEstBase.
- * Most other classes are mostly polimporphic on these two, which means
+ * Most other classes are mostly polimorphic on these two, which means
  * most functionality in subclasses is available via virtual functions
  * defined in cStatistic and cDensityEstBase.
  * The transient detection and result accuracy classes are derived from

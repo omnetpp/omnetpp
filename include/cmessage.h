@@ -113,7 +113,7 @@ class SIM_API cMessage : public cObject
     /**
      * Copy constructor, creates an exact copy of the argument msg.
      */
-    cMessage(cMessage& msg);
+    cMessage(_CONST cMessage& msg);
 
     /**
      * Constructor.
@@ -129,7 +129,7 @@ class SIM_API cMessage : public cObject
      * Assignment operator. Duplication and the assignment operator work all right with cMessage.
      * The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cMessage& operator=(cMessage& msg);
+    cMessage& operator=(_CONST cMessage& msg);
     //@}
 
     /** @name Redefined cObject functions. */
@@ -144,7 +144,7 @@ class SIM_API cMessage : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()  {return new cMessage(*this);}
+    virtual cObject *dup() _CONST  {return new cMessage(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

@@ -155,7 +155,7 @@ class SIM_API cOutVector : public cObject
     /**
      * Copy constructor.
      */
-    cOutVector(cOutVector& r) : cObject(r) {setName(r.name());operator=(r);}
+    cOutVector(_CONST cOutVector& r) : cObject(r) {setName(r.name());operator=(r);}
 
     /**
      * Constructor. Accepts the object name and the multiplicity of the
@@ -190,7 +190,7 @@ class SIM_API cOutVector : public cObject
      * Dupping is not implemented for cOutVector. This function
      * gives an error when called.
      */
-    virtual cObject *dup()    {return new cOutVector(*this);}
+    virtual cObject *dup() _CONST    {return new cOutVector(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

@@ -93,7 +93,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     /**
      * Copy constructor.
      */
-    cVarHistogram(cVarHistogram& r) : cHistogramBase(r)
+    cVarHistogram(_CONST cVarHistogram& r) : cHistogramBase(r)
        {setName(r.name());bin_bounds=NULL;operator=(r);}
 
     /**
@@ -112,7 +112,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cVarHistogram& operator=(cVarHistogram& res);
+    cVarHistogram& operator=(_CONST cVarHistogram& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -127,7 +127,7 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()    {return new cVarHistogram(*this);}
+    virtual cObject *dup() _CONST    {return new cVarHistogram(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

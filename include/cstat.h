@@ -51,7 +51,7 @@ class SIM_API cStatistic : public cObject
     /**
      * Copy constructor.
      */
-    cStatistic(cStatistic& r);
+    cStatistic(_CONST cStatistic& r);
 
     /**
      * Constructor, creates an object with the given name
@@ -67,7 +67,7 @@ class SIM_API cStatistic : public cObject
      * Assignment operator. It is present since descendants may refer to it.
      * The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cStatistic& operator=(cStatistic& res);
+    cStatistic& operator=(_CONST cStatistic& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -265,7 +265,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Copy constructor.
      */
-    cStdDev(cStdDev& r) : cStatistic(r) {setName(r.name());operator=(r);}
+    cStdDev(_CONST cStdDev& r) : cStatistic(r) {setName(r.name());operator=(r);}
 
     /**
      * Constructor.
@@ -280,7 +280,7 @@ class SIM_API cStdDev : public cStatistic
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cStdDev& operator=(cStdDev& res);
+    cStdDev& operator=(_CONST cStdDev& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -295,7 +295,7 @@ class SIM_API cStdDev : public cStatistic
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() {return new cStdDev(*this);}
+    virtual cObject *dup() _CONST {return new cStdDev(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -421,7 +421,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Constructors, destructor, duplication and assignment.
      */
-    cWeightedStdDev(cWeightedStdDev& r) : cStdDev(r) {setName(r.name());operator=(r);}
+    cWeightedStdDev(_CONST cWeightedStdDev& r) : cStdDev(r) {setName(r.name());operator=(r);}
 
     /**
      * Constructors, destructor, duplication and assignment.
@@ -436,7 +436,7 @@ class SIM_API cWeightedStdDev : public cStdDev
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cWeightedStdDev& operator=(cWeightedStdDev& res);
+    cWeightedStdDev& operator=(_CONST cWeightedStdDev& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -451,7 +451,7 @@ class SIM_API cWeightedStdDev : public cStdDev
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() {return new cWeightedStdDev(*this);}
+    virtual cObject *dup() _CONST {return new cWeightedStdDev(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

@@ -135,7 +135,7 @@ class SIM_API cCoroutine
     /**
      * Assignment is not implemented for coroutines.
      */
-    cCoroutine& operator=(cCoroutine& cor);
+    cCoroutine& operator=(_CONST cCoroutine& cor);
 
     /**
      * Sets up a coroutine. The arguments are the function that should be

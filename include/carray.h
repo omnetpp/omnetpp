@@ -60,7 +60,7 @@ class SIM_API cBag : public cObject
     /**
      * Copy constructor.
      */
-    cBag(cBag& bag);
+    cBag(_CONST cBag& bag);
 
     /**
      * Constructor. Parameters are: name, the size of elements in bytes,
@@ -78,7 +78,7 @@ class SIM_API cBag : public cObject
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      * Duplication and assignment work all right with cBag.
      */
-    cBag& operator=(cBag& bag);
+    cBag& operator=(_CONST cBag& bag);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -93,7 +93,7 @@ class SIM_API cBag : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()  {return new cBag(*this);}
+    virtual cObject *dup() _CONST  {return new cBag(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -233,7 +233,7 @@ class SIM_API cArray : public cObject
      * be duplicated so that the new cArray will have its own
      * copy of them.
      */
-    cArray(cArray& list);
+    cArray(_CONST cArray& list);
 
     /**
      * Constructor. The initial size of the container and the delta
@@ -254,7 +254,7 @@ class SIM_API cArray : public cObject
      * Contained objects that are owned by cArray will be duplicated
      * so that the new cArray will have its own copy of them.
      */
-    cArray& operator=(cArray& list);
+    cArray& operator=(_CONST cArray& list);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -270,7 +270,7 @@ class SIM_API cArray : public cObject
      * Contained objects that are owned by cArray will be duplicated
      * so that the new cArray will have its own copy of them.
      */
-    virtual cObject *dup()  {return new cArray(*this);}
+    virtual cObject *dup() _CONST  {return new cArray(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

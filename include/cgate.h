@@ -73,7 +73,7 @@ class SIM_API cGate : public cObject
     /**
      * Copy constructor.
      */
-    cGate(cGate& gate);
+    cGate(_CONST cGate& gate);
 
     /**
      * Constructor.
@@ -89,7 +89,7 @@ class SIM_API cGate : public cObject
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cGate& operator=(cGate& gate);
+    cGate& operator=(_CONST cGate& gate);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -104,7 +104,7 @@ class SIM_API cGate : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()  {return new cGate(*this);}
+    virtual cObject *dup() _CONST  {return new cGate(*this);}
 
     /**
      * Returns the name of the inspector factory class associated with this class.

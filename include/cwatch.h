@@ -93,7 +93,7 @@ class SIM_API cWatch : public cObject
     /**
      * Copy constructor.
      */
-    cWatch(cWatch& vs);
+    cWatch(_CONST cWatch& vs);
 
     /**
      * Initialize the shell to hold the given variable.
@@ -128,7 +128,7 @@ class SIM_API cWatch : public cObject
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cWatch& operator=(cWatch& vs)     {ptr=vs.ptr;type=vs.type;return *this;}
+    cWatch& operator=(_CONST cWatch& vs)     {ptr=vs.ptr;type=vs.type;return *this;}
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -143,7 +143,7 @@ class SIM_API cWatch : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()   {return new cWatch(*this);}
+    virtual cObject *dup() _CONST   {return new cWatch(*this);}
 
     /**
      * Produces a one-line information abou the object.

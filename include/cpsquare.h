@@ -48,7 +48,7 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cPSquare(cPSquare& r);
+    cPSquare(_CONST cPSquare& r);
 
     /**
      * Constructor.
@@ -63,7 +63,7 @@ class SIM_API cPSquare : public cDensityEstBase
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cPSquare& operator=(cPSquare& res);
+    cPSquare& operator=(_CONST cPSquare& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -78,7 +78,7 @@ class SIM_API cPSquare : public cDensityEstBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()   {return new cPSquare(*this);}
+    virtual cObject *dup() _CONST   {return new cPSquare(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

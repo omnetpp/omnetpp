@@ -90,7 +90,7 @@ class SIM_API cLinkedList : public cObject
      * so that the new list will have its own copy of them. By default,
      * there's no duplication function so only the pointers are copied.
      */
-    cLinkedList(cLinkedList& llist);
+    cLinkedList(_CONST cLinkedList& llist);
 
     /**
      * Constructor. It accepts the object name.
@@ -109,7 +109,7 @@ class SIM_API cLinkedList : public cObject
      * Contained items are treated as configured with configPointer().
      * By default, only pointers are copied.
      */
-    cLinkedList& operator=(cLinkedList& queue);
+    cLinkedList& operator=(_CONST cLinkedList& queue);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -125,7 +125,7 @@ class SIM_API cLinkedList : public cObject
      * Contained items are treated as configured with configPointer().
      * By default, only pointers are copied.
      */
-    virtual cObject *dup()  {return new cLinkedList(*this);}
+    virtual cObject *dup() _CONST  {return new cLinkedList(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -264,13 +264,13 @@ class SIM_API cLinkedListIterator
      * The current item will be the first (if athead==1, default) or the last
      * (if athead==0) item in the list.
      */
-    cLinkedListIterator(cLinkedList& q, int athead=1)
+    cLinkedListIterator(_CONST cLinkedList& q, int athead=1)  //FIXME: make bool!
             {p=&q ? (athead ? q.headp : q.tailp) : NO(sLLElem);}
 
     /**
      * Reinitializes the iterator object.
      */
-    void init(cLinkedList& q, int athead=1)
+    void init(_CONST cLinkedList& q, int athead=1)
             {p=&q ? (athead ? q.headp : q.tailp) : NO(sLLElem);}
 
     /**

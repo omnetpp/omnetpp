@@ -87,7 +87,7 @@ class SIM_API cQueue : public cObject
      * will be duplicated so that the new queue will have its own copy
      * of them.
      */
-    cQueue(cQueue& queue);
+    cQueue(_CONST cQueue& queue);
 
     /**
      * Constructor. It accepts the object name, the address of the comparing
@@ -107,7 +107,7 @@ class SIM_API cQueue : public cObject
      *
      * The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cQueue& operator=(cQueue& queue);
+    cQueue& operator=(_CONST cQueue& queue);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -123,7 +123,7 @@ class SIM_API cQueue : public cObject
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
      */
-    virtual cObject *dup()  {return new cQueue(*this);}
+    virtual cObject *dup() _CONST  {return new cQueue(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -256,13 +256,13 @@ class SIM_API cQueueIterator
      * as argument. The current object will be the first (if a==1) or
      * the last (a==0) object in the queue.
      */
-    cQueueIterator(cQueue& q, int athead=1)
+    cQueueIterator(_CONST cQueue& q, int athead=1)  //FIXME: make bool!
             {p=&q ? (athead ? q.headp : q.tailp) : NO(sQElem);}
 
     /**
      * Reinitializes the iterator object.
      */
-    void init(cQueue& q, int athead=1)
+    void init(_CONST cQueue& q, int athead=1)
             {p=&q ? (athead ? q.headp : q.tailp) : NO(sQElem);}
 
     /**

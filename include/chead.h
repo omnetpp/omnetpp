@@ -146,7 +146,7 @@ class SIM_API cIterator
     /**
      * Constructor.
      */
-    cIterator(cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
+    cIterator(_CONST cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
 
     /**
      * Reinitialize the iterator.
@@ -212,20 +212,34 @@ class SIM_API const_cIterator
  * @ingroup Functions
  */
 //@{
-/// Find a cNetworkType.
-inline cNetworkType *findNetwork(const char *s)    {return (cNetworkType *)networks.find(s);}
-/// Find a cModuleType.
-inline cModuleType *findModuleType(const char *s)  {return (cModuleType *)modtypes.find(s);}
-/// Find a cModuleInterface.
-inline cModuleInterface *findModuleInterface(const char *s) {return (cModuleInterface *)modinterfaces.find(s);}
-/// Find a cLinkType.
-inline cLinkType *findLink(const char *s)          {return (cLinkType *)linktypes.find(s);}
-/// Find a cFunctionType.
-inline cFunctionType *findFunction(const char *s)  {return (cFunctionType *)functions.find(s);}
-/// Find a cInspectorFactory.
-inline cInspectorFactory *findInspectorFactory(const char *s) {return (cInspectorFactory *)inspectorfactories.find(s);}
-/// Find a cEnum.
-inline cEnum *findEnum(const char *s)              {return (cEnum *)enums.find(s);}
+
+/** Find a cNetworkType. */
+inline cNetworkType *findNetwork(const char *s)
+  {return (cNetworkType *)networks.find(s);}
+
+/** Find a cModuleType. */
+inline cModuleType *findModuleType(const char *s)
+  {return (cModuleType *)modtypes.find(s);}
+
+/** Find a cModuleInterface. */
+inline cModuleInterface *findModuleInterface(const char *s)
+  {return (cModuleInterface *)modinterfaces.find(s);}
+
+/** Find a cLinkType. */
+inline cLinkType *findLink(const char *s)
+  {return (cLinkType *)linktypes.find(s);}
+
+/** Find a cFunctionType. */
+inline cFunctionType *findFunction(const char *s)
+  {return (cFunctionType *)functions.find(s);}
+
+/** Find a cInspectorFactory. */
+inline cInspectorFactory *findInspectorFactory(const char *s)
+  {return (cInspectorFactory *)inspectorfactories.find(s);}
+
+/** Find a cEnum. */
+inline cEnum *findEnum(const char *s)
+  {return (cEnum *)enums.find(s);}
 //@}
 
 #endif

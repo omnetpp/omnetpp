@@ -40,7 +40,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cHistogramBase(cHistogramBase& r) : cDensityEstBase(r)
+    cHistogramBase(_CONST cHistogramBase& r) : cDensityEstBase(r)
         {setName(r.name());cellv=NULL;operator=(r);}
 
     /**
@@ -56,7 +56,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cHistogramBase& operator=(cHistogramBase& res);
+    cHistogramBase& operator=(_CONST cHistogramBase& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -133,7 +133,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     /**
      * Copy constructor.
      */
-    cEqdHistogramBase(cEqdHistogramBase& r) : cHistogramBase(r)
+    cEqdHistogramBase(_CONST cEqdHistogramBase& r) : cHistogramBase(r)
         {setName(r.name());operator=(r);}
 
     /**
@@ -144,7 +144,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cEqdHistogramBase& operator=(cEqdHistogramBase& res);
+    cEqdHistogramBase& operator=(_CONST cEqdHistogramBase& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -249,7 +249,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     /**
      * Copy constructor.
      */
-    cLongHistogram(cLongHistogram& r) : cEqdHistogramBase(r)
+    cLongHistogram(_CONST cLongHistogram& r) : cEqdHistogramBase(r)
         {setName(r.name());operator=(r);}
 
     /**
@@ -277,7 +277,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()    {return new cLongHistogram(*this);}
+    virtual cObject *dup() _CONST    {return new cLongHistogram(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -337,7 +337,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     /**
      * Copy constructor
      */
-    cDoubleHistogram(cDoubleHistogram& r) : cEqdHistogramBase(r)
+    cDoubleHistogram(_CONST cDoubleHistogram& r) : cEqdHistogramBase(r)
           {setName(r.name());operator=(r);}
 
     /**
@@ -366,7 +366,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()  {return new cDoubleHistogram(*this);}
+    virtual cObject *dup() _CONST  {return new cDoubleHistogram(*this);}
 
     /**
      * Serializes the object into a PVM or MPI send buffer.

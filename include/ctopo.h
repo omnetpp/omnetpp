@@ -320,7 +320,7 @@ class SIM_API cTopology : public cObject
     /**
      * Copy constructor.
      */
-    cTopology(cTopology& topo);
+    cTopology(_CONST cTopology& topo);
 
     /**
      * Destructor.
@@ -330,7 +330,7 @@ class SIM_API cTopology : public cObject
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cTopology& operator=(cTopology& topo);
+    cTopology& operator=(_CONST cTopology& topo);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -345,7 +345,7 @@ class SIM_API cTopology : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()     {return new cTopology(*this);}
+    virtual cObject *dup() _CONST     {return new cTopology(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

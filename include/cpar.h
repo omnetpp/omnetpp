@@ -258,7 +258,7 @@ class SIM_API cPar : public cObject
     /**
      * Copy constructor, creates an exact copy of the argument.
      */
-    cPar(cPar& other);
+    cPar(_CONST cPar& other);
 
     /**
      * Constructor, creates a cPar with the given name and long
@@ -281,7 +281,7 @@ class SIM_API cPar : public cObject
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      * The assignment operator works with cPar objects.
      */
-    cPar& operator=(cPar& otherpar);
+    cPar& operator=(_CONST cPar& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -296,7 +296,7 @@ class SIM_API cPar : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()   {return new cPar(*this);}
+    virtual cObject *dup() _CONST   {return new cPar(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -757,7 +757,7 @@ class SIM_API cModulePar : public cPar
     /**
      * Constructor.
      */
-    cModulePar(cPar& other);
+    cModulePar(_CONST cPar& other);
 
     /**
      * Constructor.
@@ -778,7 +778,7 @@ class SIM_API cModulePar : public cPar
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cModulePar& operator=(cModulePar& otherpar);
+    cModulePar& operator=(_CONST cModulePar& otherpar);
     //@}
 
     /** @name Redefined cObject member functions */
@@ -793,7 +793,7 @@ class SIM_API cModulePar : public cPar
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()  {return new cPar(*this);}
+    virtual cObject *dup() _CONST  {return new cPar(*this);}
 
     /**
      * Returns the name of the inspector factory class associated with this class.

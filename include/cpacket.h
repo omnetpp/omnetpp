@@ -50,13 +50,13 @@ class SIM_API cPacket : public cMessage
     /**
      * Copy constructor.
      */
-    cPacket (cPacket& m);
+    cPacket(_CONST cPacket& m);
 
     /**
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cPacket& operator=(cPacket& m);
+    cPacket& operator=(_CONST cPacket& m);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -66,7 +66,7 @@ class SIM_API cPacket : public cMessage
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup() {return new cPacket(*this);}
+    virtual cObject *dup() _CONST {return new cPacket(*this);}
 
     /**
      * Returns pointer to a string containing the class name, "cPacket".

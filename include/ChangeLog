@@ -1,3 +1,8 @@
+2001-08-11 Andras Varga
+
+	* added _CONSTs to all copy constructors, operator=()'s and dup()'s
+        * improved doc comments in cnetmod.h, cdetect.h, index.h
+
 2001-08-05 Andras Varga
 
 	* added a few dozen new _CONSTs; affects nearly all files

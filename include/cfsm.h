@@ -208,13 +208,13 @@ class SIM_API cFSM : public cObject
     /**
      * Copy constructor.
      */
-    cFSM(cFSM& vs) {setName(vs.name());operator=(vs);}
+    cFSM(_CONST cFSM& vs) {setName(vs.name());operator=(vs);}
 
     /**
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cFSM& operator=(cFSM& vs);
+    cFSM& operator=(_CONST cFSM& vs);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -229,7 +229,7 @@ class SIM_API cFSM : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()   {return new cFSM(*this);}
+    virtual cObject *dup() _CONST   {return new cFSM(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

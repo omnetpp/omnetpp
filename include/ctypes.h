@@ -123,13 +123,13 @@ class SIM_API cModuleInterface : public cObject
 
   private:
     // internal
-    void allocate(int ngte, int npram, int nmach );
+    void allocate(int ngte, int npram, int nmach);
 
     // internal
     void check_consistency();
 
     // internal
-    void setup(sDescrItem *descr_table );
+    void setup(sDescrItem *descr_table);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -138,12 +138,12 @@ class SIM_API cModuleInterface : public cObject
     /**
      * Constructor.
      */
-    cModuleInterface(const char *name, sDescrItem *descr_table );
+    cModuleInterface(const char *name, sDescrItem *descr_table);
 
     /**
      * Copy constructor.
      */
-    cModuleInterface(cModuleInterface& mi );
+    cModuleInterface(_CONST cModuleInterface& mi);
 
     /**
      * Destructor.
@@ -153,7 +153,7 @@ class SIM_API cModuleInterface : public cObject
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cModuleInterface& operator=(cModuleInterface& mi);
+    cModuleInterface& operator=(_CONST cModuleInterface& mi);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -168,7 +168,7 @@ class SIM_API cModuleInterface : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()  {return new cModuleInterface(*this);}
+    virtual cObject *dup() _CONST  {return new cModuleInterface(*this);}
     //@}
 
     /** @name Applying the interface to modules. */
@@ -226,7 +226,7 @@ class SIM_API cModuleType : public cObject
     /**
      * Copy constructor.
      */
-    cModuleType(cModuleType& mi );
+    cModuleType(_CONST cModuleType& mi);
 
     /**
      * Destructor.
@@ -236,7 +236,7 @@ class SIM_API cModuleType : public cObject
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cModuleType& operator=(cModuleType& mi);
+    cModuleType& operator=(_CONST cModuleType& mi);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -251,7 +251,7 @@ class SIM_API cModuleType : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()     {return new cModuleType(*this);}
+    virtual cObject *dup() _CONST     {return new cModuleType(*this);}
     //@}
 
     /** @name FIXME */
@@ -315,7 +315,7 @@ class SIM_API cLinkType : public cObject
     /**
      * Copy constructor.
      */
-    cLinkType(cLinkType& li );
+    cLinkType(_CONST cLinkType& li);
 
     /**
      * Destructor.
@@ -325,7 +325,7 @@ class SIM_API cLinkType : public cObject
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cLinkType& operator=(cLinkType& o);
+    cLinkType& operator=(_CONST cLinkType& o);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -340,7 +340,7 @@ class SIM_API cLinkType : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()     {return new cLinkType(*this);}
+    virtual cObject *dup() _CONST     {return new cLinkType(*this);}
     //@}
 
     /** @name Channel properties. */

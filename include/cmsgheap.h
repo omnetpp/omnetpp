@@ -53,7 +53,7 @@ class SIM_API cMessageHeap : public cObject
     /**
      * Copy constructor.
      */
-    cMessageHeap(cMessageHeap& msgq);
+    cMessageHeap(_CONST cMessageHeap& msgq);
 
     /**
      * Constructor.
@@ -69,7 +69,7 @@ class SIM_API cMessageHeap : public cObject
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cMessageHeap& operator=(cMessageHeap& msgqueue);
+    cMessageHeap& operator=(_CONST cMessageHeap& msgqueue);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -84,7 +84,7 @@ class SIM_API cMessageHeap : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()  {return new cMessageHeap(*this);}
+    virtual cObject *dup() _CONST  {return new cMessageHeap(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -171,12 +171,12 @@ class SIM_API cMessageHeapIterator
     /**
      * Constructor.
      */
-    cMessageHeapIterator(cMessageHeap& mh)  {q=&mh;pos=1;}
+    cMessageHeapIterator(_CONST cMessageHeap& mh)  {q=CONSTCAST(cMessageHeap*,&mh);pos=1;} //FIXME: not correct?
 
     /**
      * Reinitializes the iterator object.
      */
-    void init(cMessageHeap& mh) {q=&mh;pos=1;}
+    void init(_CONST cMessageHeap& mh) {q=CONSTCAST(cMessageHeap*,&mh);pos=1;}
 
     /**
      * Returns the current object.

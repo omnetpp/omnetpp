@@ -186,7 +186,7 @@ class SIM_API cModule : public cObject
     /**
      * Copy constructor.
      */
-    cModule(cModule& mod);
+    cModule(_CONST cModule& mod);
 
     /**
      * Constructor.
@@ -201,7 +201,7 @@ class SIM_API cModule : public cObject
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cModule& operator=(cModule& mod);
+    cModule& operator=(_CONST cModule& mod);
     //@}
 
     /** @name Redefined cObject functions. */
@@ -216,7 +216,7 @@ class SIM_API cModule : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup();
+    virtual cObject *dup() _CONST;
 
     /**
      * Call the passed function for each contained object.
@@ -657,7 +657,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * Copy constructor.
      */
-    cSimpleModule(cSimpleModule& mod);
+    cSimpleModule(_CONST cSimpleModule& mod);
 
     /**
      * Constructor.
@@ -672,7 +672,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cSimpleModule& operator=(cSimpleModule& mod);
+    cSimpleModule& operator=(_CONST cSimpleModule& mod);
     //@}
 
     /** @name Redefined cObject functions. */
@@ -687,7 +687,7 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()  {return new cSimpleModule(*this);}
+    virtual cObject *dup() _CONST  {return new cSimpleModule(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.
@@ -1110,7 +1110,7 @@ class SIM_API cCompoundModule : public cModule
     /**
      * Copy constructor.
      */
-    cCompoundModule(cCompoundModule& mod);
+    cCompoundModule(_CONST cCompoundModule& mod);
 
     /**
      * Constructor.
@@ -1125,7 +1125,7 @@ class SIM_API cCompoundModule : public cModule
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cCompoundModule& operator=(cCompoundModule& mod);
+    cCompoundModule& operator=(_CONST cCompoundModule& mod);
     //@}
 
     /** @name Redefined cObject functions. */
@@ -1140,7 +1140,7 @@ class SIM_API cCompoundModule : public cModule
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()   {return new cCompoundModule(*this);}
+    virtual cObject *dup() _CONST   {return new cCompoundModule(*this);}
 
     /**
      * Produces a one-line description of object contents into the buffer passed as argument.

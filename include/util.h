@@ -504,7 +504,7 @@ class SIM_API opp_string
     /**
      * Assignment.
      */
-    opp_string& operator=(opp_string& s)
+    opp_string& operator=(_CONST opp_string& s)
                                {delete str;str=opp_strdup(s.str);return *this;}
 };
 

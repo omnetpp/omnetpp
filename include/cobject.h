@@ -178,7 +178,7 @@ class SIM_API cObject
      * In derived classes, it is usually implemented as
      * <tt>return new cObject(*this)</tt>.
      */
-    virtual cObject *dup()    {return new cObject(*this);}
+    virtual cObject *dup() _CONST    {return new cObject(*this);}
 
     /**
      * Direct call to the virtual destructor. This function is used
@@ -195,7 +195,7 @@ class SIM_API cObject
      * If you want to copy the name string, you can do it by hand:
      * <tt>setName(o.name()</tt>).
      */
-    cObject& operator=(const cObject& o);
+    cObject& operator=(_CONST cObject& o);
     //@}
 
     /** @name Handling the name string.

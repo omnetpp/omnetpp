@@ -106,7 +106,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Copy constructor.
      */
-    cDensityEstBase(cDensityEstBase& r) : cStdDev(r)
+    cDensityEstBase(_CONST cDensityEstBase& r) : cStdDev(r)
             {setName(r.name());firstvals=NULL;operator=(r);}
 
     /**
@@ -122,7 +122,7 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cDensityEstBase& operator=(cDensityEstBase& res);
+    cDensityEstBase& operator=(_CONST cDensityEstBase& res);
     //@}
 
     /** @name Redefined cObject member functions. */

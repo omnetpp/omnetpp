@@ -82,7 +82,7 @@ class cStructDescriptor : public cObject
     /**
      * Copy constructor.
      */
-    cStructDescriptor(cStructDescriptor& cs);
+    cStructDescriptor(_CONST cStructDescriptor& cs);
 
     /**
      * Destructor.
@@ -93,7 +93,7 @@ class cStructDescriptor : public cObject
      * Assignment operator. The name member doesn't get copied;
      * see cObject's operator=() for more details.
      */
-    cStructDescriptor& operator=(cStructDescriptor& cs);
+    cStructDescriptor& operator=(_CONST cStructDescriptor& cs);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -108,7 +108,7 @@ class cStructDescriptor : public cObject
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup();
+    virtual cObject *dup() _CONST;
     //@}
 
     /** @name Getting descriptor for an object or a struct. */

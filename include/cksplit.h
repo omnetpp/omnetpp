@@ -122,7 +122,7 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Copy constructor.
      */
-    cKSplit(cKSplit& r);
+    cKSplit(_CONST cKSplit& r);
 
     /**
      * Constructor.
@@ -137,7 +137,7 @@ class SIM_API cKSplit : public cDensityEstBase
     /**
      * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
-    cKSplit& operator=(cKSplit& res);
+    cKSplit& operator=(_CONST cKSplit& res);
     //@}
 
     /** @name Redefined cObject member functions. */
@@ -152,7 +152,7 @@ class SIM_API cKSplit : public cDensityEstBase
      * Creates and returns an exact copy of this object.
      * See cObject for more details.
      */
-    virtual cObject *dup()   {return new cKSplit (*this);}
+    virtual cObject *dup() _CONST   {return new cKSplit (*this);}
 
     /**
      * Writes textual information about this object to the stream.
