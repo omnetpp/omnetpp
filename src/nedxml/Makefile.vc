@@ -66,6 +66,7 @@ clean:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 cppexprgenerator.obj: cppexprgenerator.cc \
+  nedcompiler.h \
   cppexprgenerator.h \
   nederror.h \
   nedelements.h \

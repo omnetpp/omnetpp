@@ -70,6 +70,7 @@ akaroarng.obj: akaroarng.cc \
   ../../include/ctypes.h \
   ../../include/cobject.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/globals.h
 akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cenvir.h \
@@ -91,6 +92,7 @@ akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
@@ -126,6 +128,7 @@ cenvir.obj: cenvir.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   envdefs.h \
   ../../include/random.h \
@@ -185,6 +188,7 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
@@ -208,6 +212,7 @@ main.obj: main.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h
 omnetapp.obj: omnetapp.cc \
   args.h \
@@ -237,6 +242,7 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/onstartup.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \

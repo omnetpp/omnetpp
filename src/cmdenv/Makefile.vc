@@ -61,6 +61,7 @@ cmdenv.obj: cmdenv.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \

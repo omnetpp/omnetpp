@@ -128,6 +128,7 @@ inspector.obj: inspector.cc \
   ../../include/ccommbuffer.h \
   ../../include/crng.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
   tkutil.h
 inspfactory.obj: inspfactory.cc \
@@ -186,6 +187,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/ccommbuffer.h \
   ../../include/crng.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
   tkutil.h
 modinsp.obj: modinsp.cc \
@@ -216,6 +218,7 @@ modinsp.obj: modinsp.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
@@ -280,6 +283,7 @@ objinsp.obj: objinsp.cc \
   ../../include/ccommbuffer.h \
   ../../include/crng.h \
   ../../include/cpolymorphic.h \
+  ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
   inspector.h \
   tkutil.h \
@@ -308,6 +312,7 @@ statinsp.obj: statinsp.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
@@ -329,6 +334,7 @@ structinsp.obj: structinsp.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/macros.h \
   inspector.h \
@@ -363,6 +369,7 @@ tkapp.obj: tkapp.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/onstartup.h \
   ../../include/errmsg.h \
@@ -393,6 +400,7 @@ tkcmd.obj: tkcmd.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/errmsg.h \
   ../../include/globals.h \
@@ -423,6 +431,7 @@ tkutil.obj: tkutil.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
@@ -452,6 +461,7 @@ visitor.obj: visitor.cc \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
   ../../include/cexception.h \
+  ../../include/cvisitor.h \
   ../../include/opp_string.h \
   ../../include/ccoroutine.h \
   ../../include/globals.h \
