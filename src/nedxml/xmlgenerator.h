@@ -40,11 +40,39 @@ class NEDXMLGenerator
     int indentsize;
     virtual void printAttrValue(ostream& out, const char *s);
     virtual void doGenerate(ostream& out, NEDElement *node, int level);
+
   public:
+    /**
+     * Constructor
+     */
     NEDXMLGenerator();
+
+    /**
+     * Destructor
+     */
     virtual ~NEDXMLGenerator();
+
+    /**
+     * Enable or disable generation of src-loc attributes in the output XML.
+     * src-loc attributes contain filename-line-column information that refers
+     * to the original document. For example, if the NEDElement tree was
+     * produced by parsing a NED file, src-loc attributes refer to locations
+     * in the NED file.
+     */
     virtual void setSourceLocationAttributes(bool srcloc);
+
+    /**
+     * Set indent size in the output XML.
+     */
     virtual void setIndentSize(int indentsize);
+
+    /**
+     * Serialize the object tree as XML. The XML declaration will be:
+     * <pre>
+     * <?xml version="1.0"?>
+     * </pre>
+     * I.e. unspecified encoding, and no document type will be included.
+     */
     virtual void generate(ostream& out, NEDElement *tree);
 };
 

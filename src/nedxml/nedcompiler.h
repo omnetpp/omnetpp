@@ -66,6 +66,10 @@ class NEDSymbolTable
     NEDMap modules;
     NEDMap networks;
 
+    // subclassing: enums, classes, messages, objects
+    NEDMap enums;
+    NEDMap classes;
+
   public:
     NEDSymbolTable();
     ~NEDSymbolTable();
@@ -74,6 +78,8 @@ class NEDSymbolTable
     NEDElement *getChannelDeclaration(const char *name);
     NEDElement *getModuleDeclaration(const char *name);
     NEDElement *getNetworkDeclaration(const char *name);
+    NEDElement *getEnumDeclaration(const char *name);
+    NEDElement *getClassDeclaration(const char *name);
 };
 
 

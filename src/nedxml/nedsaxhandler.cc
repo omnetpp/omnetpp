@@ -41,7 +41,7 @@ void NEDSAXHandler::startElement(const char *name, const char **atts)
 {
     // initialize node
     NEDElement *node = NEDElementFactory::getInstance()->createNodeWithTag(name);
-    //FIXME: what if no such element????
+//FIXME: what if no such element????
 
     // "debug info"
     char buf[200];

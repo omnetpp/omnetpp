@@ -15,7 +15,6 @@
 -->
 
 <!ELEMENT ned-files ((ned-files|ned-file)*)>
-<!ATTLIST ned-files >
 
 <!ELEMENT ned-file ((import|channel|simple-module|compound-module|network|
                      cppinclude|cpp-struct|cpp-cobject|cpp-noncobject|
@@ -26,7 +25,7 @@
      banner-comment      CDATA     #IMPLIED >
 
 <!--
-  --  NED-I.
+  **  NED-I.
   -->
 
 <!ELEMENT import (imported-file*)>
@@ -218,7 +217,7 @@
 
 
 <!--
-  -- Expressions
+  **  Expressions
   -->
 
 <!ELEMENT expression ((operator|function|param-ref|ident|const))>
@@ -254,7 +253,7 @@
      value               CDATA     #REQUIRED >
 
 <!--
-  -- NED-II: message subclassing part
+  **  NED-II: message subclassing part
   -->
 <!ELEMENT cppinclude EMPTY>
 <!ATTLIST cppinclude
@@ -364,7 +363,7 @@
      right-comment       CDATA     "&#10;" >
 
 <!--
-  -- 'unknown' is used internally to represent elements not in this NED DTD
+  **  'unknown' is used internally to represent elements not in this NED DTD
   -->
 <!ELEMENT unknown        ANY>
 <!ATTLIST unknown

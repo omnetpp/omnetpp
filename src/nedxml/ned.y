@@ -29,7 +29,7 @@
 
 
 %token INCLUDE SIMPLE
-%token CHANNEL DELAY ERROR DATARATE
+%token CHANNEL /*DELAY ERROR DATARATE are no longer tokens*/
 %token MODULE PARAMETERS GATES GATESIZES SUBMODULES CONNECTIONS DISPLAY
 %token IN OUT
 %token NOCHECK LEFT_ARROW RIGHT_ARROW
@@ -177,14 +177,14 @@ void setTrailingComment(NEDElement *node, YYLTYPE tokenpos);
 void setComments(NEDElement *node, YYLTYPE pos);
 void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos);
 
-ChannelAttrNode *addChanAttr(NEDElement *channel, char *attrname);
+ChannelAttrNode *addChanAttr(NEDElement *channel, const char *attrname);
 ParamNode *addParameter(NEDElement *params, YYLTYPE namepos, int type);
 GateNode *addGate(NEDElement *gates, YYLTYPE namepos, int is_in, int is_vector );
 SubmoduleNode *addSubmodule(NEDElement *submods, YYLTYPE namepos, YYLTYPE typepos,YYLTYPE likepos);
 GatesizeNode *addGateSize(NEDElement *gatesizes, YYLTYPE namepos);
 SubstparamNode *addSubstparam(NEDElement *substparams, YYLTYPE namepos);
 SubstmachineNode *addSubstmachine(NEDElement *substmachines, YYLTYPE namepos);
-ConnAttrNode *addConnAttr(NEDElement *conn, char *attrname);
+ConnAttrNode *addConnAttr(NEDElement *conn, const char *attrname);
 LoopVarNode *addLoopVar(NEDElement *forloop, YYLTYPE varnamepos);
 NetworkNode *addNetwork(NEDElement *nedfile, YYLTYPE namepos, YYLTYPE typepos, YYLTYPE likepos);
 DisplayStringNode *addDisplayString(NEDElement *parent, YYLTYPE dispstrpos);
@@ -229,7 +229,12 @@ definition
         | channeldefinition
         | simpledefinition
         | moduledefinition
-        | network
+        | networkdefinition
+
+        | channeldefinition_old
+        | simpledefinition_old
+        | moduledefinition_old
+        | networkdefinition_old
 
         | cppinclude
         | cppstruct
@@ -267,40 +272,18 @@ filename
                 }
         ;
 
-channeldefinition
-        : channelheader endchannel
-        | channelheader chdelay endchannel
-        | channelheader cherror endchannel
-        | channelheader chdatarate endchannel
-        | channelheader chdelay cherror endchannel
-        | channelheader chdelay chdatarate endchannel
-        | channelheader cherror chdatarate endchannel
-        | channelheader cherror chdelay endchannel
-        | channelheader chdatarate chdelay endchannel
-        | channelheader chdatarate cherror endchannel
-        | channelheader chdelay cherror chdatarate endchannel
-        | channelheader chdelay chdatarate cherror endchannel
-        | channelheader cherror chdelay chdatarate endchannel
-        | channelheader cherror chdatarate chdelay endchannel
-        | channelheader chdatarate chdelay cherror endchannel
-        | channelheader chdatarate cherror chdelay endchannel
 
-        | channelheader '{' braceendchannel
-        | channelheader '{' chdelay braceendchannel
-        | channelheader '{' cherror braceendchannel
-        | channelheader '{' chdatarate braceendchannel
-        | channelheader '{' chdelay cherror braceendchannel
-        | channelheader '{' chdelay chdatarate braceendchannel
-        | channelheader '{' cherror chdatarate braceendchannel
-        | channelheader '{' cherror chdelay braceendchannel
-        | channelheader '{' chdatarate chdelay braceendchannel
-        | channelheader '{' chdatarate cherror braceendchannel
-        | channelheader '{' chdelay cherror chdatarate braceendchannel
-        | channelheader '{' chdelay chdatarate cherror braceendchannel
-        | channelheader '{' cherror chdelay chdatarate braceendchannel
-        | channelheader '{' cherror chdatarate chdelay braceendchannel
-        | channelheader '{' chdatarate chdelay cherror braceendchannel
-        | channelheader '{' chdatarate cherror chdelay braceendchannel
+channeldefinition_old
+        : channelheader opt_channelattrblock_old endchannel
+        ;
+
+channeldefinition
+        : channelheader '{'
+            opt_channelattrblock
+          '}' opt_semicolon
+                {
+                  setTrailingComment(ps.channel,@4);
+                }
         ;
 
 channelheader
@@ -312,6 +295,45 @@ channelheader
                 }
         ;
 
+opt_channelattrblock
+        :
+        | channelattrblock
+        ;
+
+channelattrblock
+        : NAME '=' expression ';' channelattrblock
+                {
+                  ps.chanattr = addChanAttr(ps.channel,toString(@1));
+                  addExpression(ps.chanattr, "value",@3,$3);
+                  setComments(ps.channel,@1,@3);
+                }
+        | NAME '=' expression ';'
+                {
+                  ps.chanattr = addChanAttr(ps.channel,toString(@1));
+                  addExpression(ps.chanattr, "value",@3,$3);
+                  setComments(ps.channel,@1,@3);
+                }
+        ;
+
+opt_channelattrblock_old
+        :
+        | channelattrblock_old
+        ;
+
+channelattrblock_old
+        : NAME expression ';' channelattrblock_old
+                {
+                  ps.chanattr = addChanAttr(ps.channel,toString(@1));
+                  addExpression(ps.chanattr, "value",@2,$2);
+                  setComments(ps.channel,@1,@2);
+                }
+        | NAME expression ';'
+                {
+                  ps.chanattr = addChanAttr(ps.channel,toString(@1));
+                  addExpression(ps.chanattr, "value",@2,$2);
+                  setComments(ps.channel,@1,@2);
+                }
+        ;
 
 endchannel
         : ENDCHANNEL NAME opt_semicolon
@@ -324,48 +346,16 @@ endchannel
                 }
         ;
 
-
-braceendchannel
-        : '}' opt_semicolon
-                {
-                  setTrailingComment(ps.channel,@1);
-                }
-        ;
-
-cherror
-        : ERROR expression opt_semicolon
-                {
-                  ps.chanattr = addChanAttr(ps.channel,"error");
-                  addExpression(ps.chanattr, "value",@2,$2);
-                  setComments(ps.channel,@1,@3);
-                }
-        ;
-
-chdelay
-        : DELAY expression opt_semicolon
-                {
-                  ps.chanattr = addChanAttr(ps.channel,"delay");
-                  addExpression(ps.chanattr, "value",@2,$2);
-                  setComments(ps.channel,@1,@3);
-                }
-        ;
-
-chdatarate
-        : DATARATE expression opt_semicolon
-                {
-                  ps.chanattr = addChanAttr(ps.channel,"datarate");
-                  addExpression(ps.chanattr, "value",@2,$2);
-                  setComments(ps.channel,@1,@3);
-                }
-        ;
-
-simpledefinition
+simpledefinition_old
         : simpleheader
             opt_machineblock
             opt_paramblock
             opt_gateblock
           endsimple
-        | simpleheader '{'
+        ;
+
+simpledefinition
+        : simpleheader '{'
             opt_machineblock
             opt_paramblock
             opt_gateblock
@@ -395,7 +385,7 @@ endsimple
                 }
         ;
 
-moduledefinition
+moduledefinition_old
         : moduleheader
             opt_machineblock
             opt_paramblock
@@ -404,7 +394,10 @@ moduledefinition
             opt_connblock
             opt_displayblock
           endmodule
-        | moduleheader '{'
+        ;
+
+moduledefinition
+        : moduleheader '{'
             opt_machineblock
             opt_paramblock
             opt_gateblock
@@ -1047,65 +1040,32 @@ parentgate_R
 
 
 channeldescr
-        :
-        | cdname
-        | cddelay
-        | cderror
-        | cddatarate
-
-        | cddelay cderror
-        | cddelay cddatarate
-        | cderror cddatarate
-        | cderror cddelay
-        | cddatarate cddelay
-        | cddatarate cderror
-
-        | cddelay cderror cddatarate
-        | cddelay cddatarate cderror
-        | cderror cddelay cddatarate
-        | cderror cddatarate cddelay
-        | cddatarate cddelay cderror
-        | cddatarate cderror cddelay
-        ;
-
-cdname
-        : expression
+        : NAME
                 {
                   ps.connattr = addConnAttr(ps.conn,"channel");
-                  addExpression(ps.connattr, "value",@1,$1);
+                  addExpression(ps.connattr, "value",@1,createExpression(createConst(NED_CONST_STRING, toString(@1))));
                 }
-        ;
-
-cddelay
-        : DELAY expression
+        | NAME expression
                 {
-                  ps.connattr = addConnAttr(ps.conn,"delay");
+                  ps.connattr = addConnAttr(ps.conn,toString(@1));
+                  addExpression(ps.connattr, "value",@2,$2);
+                }
+        | NAME expression channeldescr
+                {
+                  ps.connattr = addConnAttr(ps.conn,toString(@1));
                   addExpression(ps.connattr, "value",@2,$2);
                 }
         ;
 
-cderror
-        : ERROR expression
-                {
-                  ps.connattr = addConnAttr(ps.conn,"error");
-                  addExpression(ps.connattr, "value",@2,$2);
-                }
-        ;
-
-cddatarate
-        : DATARATE expression
-                {
-                  ps.connattr = addConnAttr(ps.conn,"datarate");
-                  addExpression(ps.connattr, "value",@2,$2);
-                }
-        ;
-
-network
+networkdefinition_old
         : networkheader
             opt_on_blocks
             opt_substparamblocks
           endnetwork
-        | networkheader '{'
+        ;
+
+networkdefinition
+        : networkheader '{'
             opt_on_blocks
             opt_substparamblocks
           '}' opt_semicolon
@@ -1746,7 +1706,7 @@ void setComments(NEDElement *node, YYLTYPE firstpos, YYLTYPE lastpos)
     setRightComment(node, pos);
 }
 
-ChannelAttrNode *addChanAttr(NEDElement *channel, char *attrname)
+ChannelAttrNode *addChanAttr(NEDElement *channel, const char *attrname)
 {
     ChannelAttrNode *chanattr = (ChannelAttrNode *)createNodeWithTag(NED_CHANNEL_ATTR, channel );
     chanattr->setName( attrname );
@@ -1819,7 +1779,7 @@ LoopVarNode *addLoopVar(NEDElement *forloop, YYLTYPE varnamepos)
    return loopvar;
 }
 
-ConnAttrNode *addConnAttr(NEDElement *conn, char *attrname)
+ConnAttrNode *addConnAttr(NEDElement *conn, const char *attrname)
 {
     ConnAttrNode *connattr = (ConnAttrNode *)createNodeWithTag(NED_CONN_ATTR,conn);
     connattr->setName( attrname );

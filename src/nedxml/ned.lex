@@ -70,9 +70,6 @@ char textbuf[256], lasttextbuf[256] = "";
 "module"                { count(); return MODULE; }
 "simple"                { count(); return SIMPLE; }
 "channel"               { count(); return CHANNEL; }
-"delay"                 { count(); return DELAY; }
-"error"                 { count(); return ERROR; }
-"datarate"              { count(); return DATARATE; }
 "for"                   { count(); return FOR; }
 "do"                    { count(); return DO; }
 "true"                  { count(); return _TRUE; }
@@ -139,7 +136,7 @@ char textbuf[256], lasttextbuf[256] = "";
 
 \"[^\"]*\"              { count(); return STRINGCONSTANT; }
 \'[^\']\'               { count(); return CHARCONSTANT; }
-"<"[^\>]*">"            { count(); return SYSINCFILENAME; }
+"<"[^ \t\n\>]*">"       { count(); return SYSINCFILENAME; }
 
 ";"                     { count(); return (';'); }
 ","                     { count(); return (','); }

@@ -22,13 +22,15 @@
 #include "iostream.h"
 #include "nedelements.h"
 #include "cppexprgenerator.h"
+#include "nedcompiler.h" // for NEDSymbolTable
+
 
 /**
  * Simple front-end to NEDCppGenerator.
  *
  * @ingroup CppGenerator
  */
-void generateCpp(ostream& out, ostream& outh, NEDElement *node);
+void generateCpp(ostream& out, ostream& outh, NEDElement *node, NEDSymbolTable *symtab);
 
 
 /**
@@ -57,8 +59,10 @@ class NEDCppGenerator
 
     CppExpressionGenerator exprgen;
 
+    NEDSymbolTable *symboltable;
+
   public:
-    NEDCppGenerator(ostream& out, ostream& outh);
+    NEDCppGenerator(ostream& out, ostream& outh, NEDSymbolTable *symtab);
     ~NEDCppGenerator();
     void setIndentSize(int indentsize);
     void generate(NEDElement *node);

@@ -82,6 +82,20 @@ NEDElement *NEDSymbolTable::getNetworkDeclaration(const char *name)
     return i==networks.end() ? NULL : (*i).second;
 }
 
+NEDElement *NEDSymbolTable::getEnumDeclaration(const char *name)
+{
+    // find name in hash table
+    NEDMap::iterator i = enums.find(name);
+    return i==enums.end() ? NULL : (*i).second;
+}
+
+NEDElement *NEDSymbolTable::getClassDeclaration(const char *name)
+{
+    // find name in hash table
+    NEDMap::iterator i = classes.find(name);
+    return i==classes.end() ? NULL : (*i).second;
+}
+
 void NEDSymbolTable::add(NEDElement *node)
 {
     int tag = node->getTagCode();
@@ -101,6 +115,17 @@ void NEDSymbolTable::add(NEDElement *node)
         // add to networks table
         NetworkNode *net = (NetworkNode *)node;
         networks[net->getName()] = net;
+    }
+    else if (tag==NED_ENUM)
+    {
+        // add to enums table
+        EnumNode *e = (EnumNode *)node;
+        enums[e->getName()] = e;
+    }
+    else if (tag==NED_STRUCT || tag==NED_CLASS || tag==NED_MESSAGE)
+    {
+        // add to classes table
+        classes[node->getAttribute("name")] = node;
     }
     else
     {

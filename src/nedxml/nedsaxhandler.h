@@ -26,6 +26,17 @@
  * Elements of the tree are subclassed from NEDElement;
  * NEDElementFactory is used to actually create the objects.
  *
+ * Usage:
+ * <pre>
+ *    NEDSAXHandler nedsaxhandler(filename);
+ *    SAXParser parser;
+ *
+ *    parser.setHandler(&nedsaxhandler);
+ *    parser.parse(f);
+ *
+ *    NEDElement *result = nedsaxhandler.getTree();
+ * </pre>
+ *
  * @ingroup XMLParser
  */
 class NEDSAXHandler : public SAXHandler
@@ -33,10 +44,25 @@ class NEDSAXHandler : public SAXHandler
     NEDElement *root;
     NEDElement *current;
     const char *sourcefilename;
+
   public:
+    /**
+     * Constructor. Filename is necessary to create correct src-loc info.
+     */
     NEDSAXHandler(const char *filename);
+
+    /**
+     * Destructor
+     */
     virtual ~NEDSAXHandler();
+
+    /**
+     * Returns the object tree that was built up during XML parsing.
+     */
     virtual NEDElement *getTree();
+
+    /** @name SAX event handlers */
+    //@{
     virtual void startElement(const char *name, const char **atts);
     virtual void endElement(const char *name);
     virtual void characterData(const char *s, int len);
@@ -44,6 +70,7 @@ class NEDSAXHandler : public SAXHandler
     virtual void comment(const char *data);
     virtual void startCdataSection();
     virtual void endCdataSection();
+    //@}
 };
 
 #endif

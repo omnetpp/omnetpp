@@ -124,6 +124,7 @@ struct NEDCppGenerator::FieldDesc
     bool fisarray;
     std::string farraysize;
     std::string fenumname;
+    bool fispointer;
 
     int fkind;                  // FIELDTYPE_BASIC, FIELDTYPE_STRUCT, FIELDTYPE_SPECIAL
     int classtype; // if fkind==FIELDTYPE_STRUCT
@@ -175,10 +176,9 @@ void NEDCppGenerator::doStruct(StructNode *node, const char *, int, const char *
 
 void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator::ClassDesc& cld, NEDCppGenerator::FieldDesc *&fld, int& numfields)
 {
-#if 0
     cld.keyword = node->getTagName();     // "message", "class", "struct"
-    cld.cld.msgname = node->getName();
-    cld.msgbase = node->getExtendsName();
+    cld.msgname = node->getAttribute("name");
+    cld.msgbase = node->getAttribute("extends-name");
 
     // check base class and determine type of object
     if (cld.msgbase == "")
@@ -197,25 +197,30 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
         }
         else
         {
-            die "internal error";
+            INTERNAL_ERROR0(node, "prepareForCodeGeneration(): cannot determine classtype");
         }
     }
     else
     {
+#if 0
+        // FIXME use symboltable here!
         cld.classtype = cld.classtype[[cld.msgbase]]; //FIXME!
+#endif
+        cld.classtype = CLASSTYPE_COBJECT;
     }
 
+#if 0
     // check earlier declarations and register this class
     if (grep(/^\Qmsgname \ E /, @classes))  //FIXME!
     {
         if (hasdescriptor[[cld.msgname]])  //FIXME!
         {
-            INTERNAL_ERROR1(NULL, "attempt to redefine 'cld.msgname'\n");
+            INTERNAL_ERROR2(node, "attempt to redefine '%s'", cld.msgname.c_str());
             ret = 1;
         }
         else if (cld.classtype[[cld.msgname]] ne cld.classtype)
         {
-            INTERNAL_ERROR1(NULL, "definition of 'cld.msgname' inconsistent with earlier declaration(s)\n");
+            INTERNAL_ERROR2(node, "definition of '%s' inconsistent with earlier declaration(s)", cld.msgname.c_str());
             ret = 1;
         }
         else
@@ -230,6 +235,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
         cld.classtype[[cld.msgname]] = cld.classtype;
         hasdescriptor[[cld.msgname]] = 1;
     }
+#endif
 
     //
     // produce all sorts of derived names
@@ -264,7 +270,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
         }
         else
         {
-            die "internal error";
+            INTERNAL_ERROR0(node, "internal error");
         }
     }
     else
@@ -272,7 +278,7 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
         cld.msgbaseclass = cld.msgbase;
     }
 
-    cld.hasbasedescriptor = hasdescriptor[[cld.msgbaseclass]];
+    cld.hasbasedescriptor = false; // FIXME should be hasdescriptor[[cld.msgbaseclass]];
     if (cld.hasbasedescriptor)
     {
         cld.msgbasedescclass = cld.msgbaseclass + "Descriptor";
@@ -286,202 +292,208 @@ void NEDCppGenerator::prepareForCodeGeneration(NEDElement *node, NEDCppGenerator
     //
     // process fields
     //
-    int numfields = ...;         // count fields
-    fld = new FieldDesc[numfields];
-
-    for (int i=0; i<numfields; i++)
+    numfields = 0;
+    FieldsNode *fieldsnode = (FieldsNode *)node->getFirstChildWithTag(NED_FIELDS);
+    if (fieldsnode && fieldsnode->getFirstFieldChild())
     {
-/*
-        if (fld[i].fisvirtual && !cld.usegap)
-        {
-            INTERNAL_ERROR1(NULL, "virtual fields assume 'customize=true' property in 'cld.msgname'\n");
-            ret = 1;
-        }
-        if (fld[i].fval != "" && cld.classtype == CLASSTYPE_STRUCT)
-        {
-            INTERNAL_ERROR1(NULL, "default values not possible with structs (no constructor is generated!) in 'cld.msgname'\n");
-            ret = 1;
-        }
-        if (fld[i].fenumname != "" && !grep(/^\Qfld[i].fenumname \ E /, @enums))
-        {
-            INTERNAL_ERROR1(NULL, "undeclared enum 'fld[i].fenumname' used in 'cld.msgname'\n");
-            ret = 1;
-        }
-*/
+        // count fields
+        FieldNode *field;
+        for (field=fieldsnode->getFirstFieldChild(); field; field=field->getNextFieldNodeSibling())
+            numfields++;
 
-        // variable name
-        fld[i].var = fieldname;
-        fld[i].varsize = fld[i].var + "_arraysize";
-
-        // method names
-        if (cld.classtype != CLASSTYPE_STRUCT)
+        // allocate array and fill fld[] array
+        fld = new FieldDesc[numfields];
+        int i;
+        for (field=fieldsnode->getFirstFieldChild(),i=0; field; field=field->getNextFieldNodeSibling(),i++)
         {
-            capfieldname = fieldname;
-            capfieldname = ~s / (.)(.*) / uc(1) .2 / e;
-            fld[i].getter = "get" + capfieldname;
-            fld[i].setter = "set" + capfieldname;
-            fld[i].alloc = "set" + capfieldname + "ArraySize";
-            fld[i].getsize = "get" + capfieldname + "ArraySize";
+            fld[i].fieldname = field->getName();
+            fld[i].ftype = field->getDataType();
+            fld[i].fval = field->getDefaultValue();
+            fld[i].fisvirtual = field->getIsVirtual();
+            fld[i].fisarray = field->getIsVector();
+            fld[i].farraysize = field->getVectorSize();
+            fld[i].fenumname = field->getEnumName();
         }
 
-        // pointer
-        if (0 /*FIXME: fld[i].ftype contains '*' */ )
+        for (i=0; i<numfields; i++)
         {
-            fld[i].ftype = 1;
-            fpointer = 1;
-            INTERNAL_ERROR1(NULL, "pointers not supported yet in 'cld.msgname'\n");
-            ret = 1;
-        }
-        else
-        {
-            fpointer = 0;
-        }
+#if 0
+            if (fld[i].fisvirtual && !cld.usegap)
+                INTERNAL_ERROR0(NULL, "virtual fields assume 'customize=true' property in 'cld.msgname'");
+            if (fld[i].fval != "" && cld.classtype == CLASSTYPE_STRUCT)
+                INTERNAL_ERROR0(NULL, "default values not possible with structs (no constructor is generated!) in 'cld.msgname'");
+            if (fld[i].fenumname != "" && !grep(/^\Qfld[i].fenumname \ E /, @enums))
+                INTERNAL_ERROR0(NULL, "undeclared enum 'fld[i].fenumname' used in 'cld.msgname'");
+#endif
 
-        // data type, argument type, conversion to/from string...
-        if (1 /*FIXME: grep(/^\Qfld[i].ftype\E/,@classes)  */ )
-        {
-            fld[i].fkind = FIELDTYPE_STRUCT;
-        }
-        else
-        {
-            fld[i].fkind = FIELDTYPE_BASIC;
-        }
-        if (fld[i].fkind == FIELDTYPE_STRUCT)
-        {
-            fld[i].datatype = fld[i].ftype;
-            fld[i].argtype = "const " + fld[i].ftype + "&";
-            fld[i].tostring = fld[i].ftype + "2string";
-            fld[i].fromstring = "string2" + fld[i].ftype;
-            //fld[i].fval = "" unless (fld[i].fval!="");
-        }
-        else if (fld[i].fkind == FIELDTYPE_BASIC)
-        {
-            if (fld[i].ftype == "bool")
+            // variable name
+            fld[i].var = fld[i].fieldname;
+            fld[i].varsize = fld[i].var + "_arraysize";
+
+            // method names
+            if (cld.classtype != CLASSTYPE_STRUCT)
             {
-                fld[i].datatype = "bool";
-                fld[i].argtype = "bool";
-                fld[i].tostring = "bool2string";
-                fld[i].fromstring = "string2bool";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "false";
+                std::string capfieldname = fld[i].fieldname;
+                capfieldname[0] = toupper(capfieldname[0]);
+                fld[i].getter = "get" + capfieldname;
+                fld[i].setter = "set" + capfieldname;
+                fld[i].alloc = "set" + capfieldname + "ArraySize";
+                fld[i].getsize = "get" + capfieldname + "ArraySize";
             }
-            else if (fld[i].ftype == "char")
+
+            // pointer
+            fld[i].fispointer = false;
+            if (strchr(fld[i].ftype.c_str(), '*'))  // fld[i].ftype contains '*'
             {
-                fld[i].datatype = "char";
-                fld[i].argtype = "char";
-                fld[i].tostring = "long2string";
-                fld[i].fromstring = "string2long";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "0";
+                // FIXME todo: cut trailing '*' from fld[i].ftype
+                fld[i].fispointer = true;
+                INTERNAL_ERROR1(node, "pointers not supported yet in '%s'", cld.msgname.c_str()); // FIXME
             }
-            else if (fld[i].ftype == "unsigned char")
+
+            // data type, argument type, conversion to/from string...
+            if (1 /*FIXME: grep(/^\Qfld[i].ftype\E/,@classes)  */ )
             {
-                fld[i].datatype = "unsigned char";
-                fld[i].argtype = "unsigned char";
-                fld[i].tostring = "long2string";
-                fld[i].fromstring = "string2long";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "0";
-            }
-            else if (fld[i].ftype == "short")
-            {
-                fld[i].datatype = "short";
-                fld[i].argtype = "short";
-                fld[i].tostring = "long2string";
-                fld[i].fromstring = "string2long";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "0";
-            }
-            else if (fld[i].ftype == "unsigned short")
-            {
-                fld[i].datatype = "unsigned short";
-                fld[i].argtype = "unsigned short";
-                fld[i].tostring = "long2string";
-                fld[i].fromstring = "string2long";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "0";
-            }
-            else if (fld[i].ftype == "int")
-            {
-                fld[i].datatype = "int";
-                fld[i].argtype = "int";
-                fld[i].tostring = "long2string";
-                fld[i].fromstring = "string2long";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "0";
-            }
-            else if (fld[i].ftype == "unsigned int")
-            {
-                fld[i].datatype = "unsigned int";
-                fld[i].argtype = "unsigned int";
-                fld[i].tostring = "long2string";
-                fld[i].fromstring = "string2long";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "0";
-            }
-            else if (fld[i].ftype == "long")
-            {
-                fld[i].datatype = "long";
-                fld[i].argtype = "long";
-                fld[i].tostring = "long2string";
-                fld[i].fromstring = "string2long";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "0";
-            }
-            else if (fld[i].ftype == "unsigned long")
-            {
-                fld[i].datatype = "unsigned long";
-                fld[i].argtype = "unsigned long";
-                fld[i].tostring = "long2string";
-                fld[i].fromstring = "string2long";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "0";
-            }
-            else if (fld[i].ftype == "double")
-            {
-                fld[i].datatype = "double";
-                fld[i].argtype = "double";
-                fld[i].tostring = "double2string";
-                fld[i].fromstring = "string2double";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "0";
-            }
-            else if (fld[i].ftype == "string")
-            {
-                fld[i].datatype = "opp_string";
-                fld[i].argtype = "const char *";
-                fld[i].tostring = "oppstring2string";
-                fld[i].fromstring = "opp_string";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "\"\"";
+                fld[i].fkind = FIELDTYPE_STRUCT;
             }
             else
             {
-                INTERNAL_ERROR1(NULL, "unknown data type 'fld[i].ftype' (is it struct?)\n");
-                ret = 1;
+                fld[i].fkind = FIELDTYPE_BASIC;
+            }
+            if (fld[i].fkind == FIELDTYPE_STRUCT)
+            {
                 fld[i].datatype = fld[i].ftype;
-                fld[i].argtype = fld[i].ftype;
-                fld[i].tostring = "";
-                fld[i].fromstring = "";
-                if (strnotnull(fld[i].fval))
-                    fld[i].fval = "0";
+                fld[i].argtype = "const " + fld[i].ftype + "&";
+                fld[i].tostring = fld[i].ftype + "2string";
+                fld[i].fromstring = "string2" + fld[i].ftype;
+                //fld[i].fval = "" unless (fld[i].fval!="");
+            }
+            else if (fld[i].fkind == FIELDTYPE_BASIC)
+            {
+                if (fld[i].ftype == "bool")
+                {
+                    fld[i].datatype = "bool";
+                    fld[i].argtype = "bool";
+                    fld[i].tostring = "bool2string";
+                    fld[i].fromstring = "string2bool";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "false";
+                }
+                else if (fld[i].ftype == "char")
+                {
+                    fld[i].datatype = "char";
+                    fld[i].argtype = "char";
+                    fld[i].tostring = "long2string";
+                    fld[i].fromstring = "string2long";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "0";
+                }
+                else if (fld[i].ftype == "unsigned char")
+                {
+                    fld[i].datatype = "unsigned char";
+                    fld[i].argtype = "unsigned char";
+                    fld[i].tostring = "long2string";
+                    fld[i].fromstring = "string2long";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "0";
+                }
+                else if (fld[i].ftype == "short")
+                {
+                    fld[i].datatype = "short";
+                    fld[i].argtype = "short";
+                    fld[i].tostring = "long2string";
+                    fld[i].fromstring = "string2long";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "0";
+                }
+                else if (fld[i].ftype == "unsigned short")
+                {
+                    fld[i].datatype = "unsigned short";
+                    fld[i].argtype = "unsigned short";
+                    fld[i].tostring = "long2string";
+                    fld[i].fromstring = "string2long";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "0";
+                }
+                else if (fld[i].ftype == "int")
+                {
+                    fld[i].datatype = "int";
+                    fld[i].argtype = "int";
+                    fld[i].tostring = "long2string";
+                    fld[i].fromstring = "string2long";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "0";
+                }
+                else if (fld[i].ftype == "unsigned int")
+                {
+                    fld[i].datatype = "unsigned int";
+                    fld[i].argtype = "unsigned int";
+                    fld[i].tostring = "long2string";
+                    fld[i].fromstring = "string2long";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "0";
+                }
+                else if (fld[i].ftype == "long")
+                {
+                    fld[i].datatype = "long";
+                    fld[i].argtype = "long";
+                    fld[i].tostring = "long2string";
+                    fld[i].fromstring = "string2long";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "0";
+                }
+                else if (fld[i].ftype == "unsigned long")
+                {
+                    fld[i].datatype = "unsigned long";
+                    fld[i].argtype = "unsigned long";
+                    fld[i].tostring = "long2string";
+                    fld[i].fromstring = "string2long";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "0";
+                }
+                else if (fld[i].ftype == "double")
+                {
+                    fld[i].datatype = "double";
+                    fld[i].argtype = "double";
+                    fld[i].tostring = "double2string";
+                    fld[i].fromstring = "string2double";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "0";
+                }
+                else if (fld[i].ftype == "string")
+                {
+                    fld[i].datatype = "opp_string";
+                    fld[i].argtype = "const char *";
+                    fld[i].tostring = "oppstring2string";
+                    fld[i].fromstring = "opp_string";
+                    if (fld[i].fval=="")
+                        fld[i].fval = "\"\"";
+                }
+                else
+                {
+                    INTERNAL_ERROR1(node, "unknown data type '%s' (is it struct?)", fld[i].ftype.c_str());
+                    // FIXME is following needed here?
+                    fld[i].datatype = fld[i].ftype;
+                    fld[i].argtype = fld[i].ftype;
+                    fld[i].tostring = "";
+                    fld[i].fromstring = "";
+                    if (fld[i].fval != "")
+                        fld[i].fval = "0";
+                }
+            }
+            else if (fld[i].fkind == FIELDTYPE_SPECIAL)
+            {
+                // ***********FIXME******  ???
+            }
+            else
+            {
+                INTERNAL_ERROR1(node,"prepareForCodeGeneration(): invalid fieldtype %d", fld[i].fkind);
             }
         }
-        else if (fld[i].fkind == FIELDTYPE_SPECIAL)
-        {
-            // ***********FIXME******  ???
-        }
-        else
-        {
-            INTERNAL_ERROR1(NULL,"prepareForCodeGeneration(): invalid fieldtype %d", fld[i].fkind);
-        }
-    }
-#endif
+    } // if (fieldsnode)
 }
 
 void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGenerator::FieldDesc *&fld, int numfields)
 {
-    // FIXME add "(classname)objectname:" prefix to exception texts everywhere
     int i;
 
     //
@@ -747,12 +759,12 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
                 out << "}\n\n";
                 out << fld[i].argtype << " " << cld.msgclass << "::" << fld[i].getter << "(unsigned int k) const\n";
                 out << "{\n";
-                out << "    if (k>=" << fld[i].farraysize << ") throw new cException(\"Array of size " << fld[i].farraysize << " indexed by %d\", k);\n";
+                out << "    if (k>=" << fld[i].farraysize << ") opp_error(\"Array of size " << fld[i].farraysize << " indexed by %d\", k);\n";
                 out << "    return " << fld[i].var << "[k];\n";
                 out << "}\n\n";
                 out << "void " << cld.msgclass << "::" << fld[i].setter << "(unsigned int k, " << fld[i].argtype << " " << fld[i].var << ")\n";
                 out << "{\n";
-                out << "    if (k>=" << fld[i].farraysize << ") throw new cException(\"Array of size " << fld[i].farraysize << " indexed by %d\", k);\n";
+                out << "    if (k>=" << fld[i].farraysize << ") opp_error(\"Array of size " << fld[i].farraysize << " indexed by %d\", k);\n";
                 out << "    this->" << fld[i].var << "[k] = " << fld[i].var << ";\n";
                 out << "}\n\n";
             }
@@ -776,12 +788,12 @@ void NEDCppGenerator::generateClass(NEDCppGenerator::ClassDesc& cld, NEDCppGener
                 out << "}\n\n";
                 out << fld[i].argtype << " " << cld.msgclass << "::" << fld[i].getter << "(unsigned int k) const\n";
                 out << "{\n";
-                out << "    if (k>=" << fld[i].varsize << ") throw new cException(\"Array of size " << fld[i].varsize << " indexed by %d, k\");\n";
+                out << "    if (k>=" << fld[i].varsize << ") opp_error(\"Array of size " << fld[i].varsize << " indexed by %d, k\");\n";
                 out << "    return " << fld[i].var << "[k];\n";
                 out << "}\n\n";
                 out << "void " << cld.msgclass << "::" << fld[i].setter << "(unsigned int k, " << fld[i].argtype << " " << fld[i].var << ")\n";
                 out << "{\n";
-                out << "    if (k>=" << fld[i].varsize << ") throw new cException(\"Array of size " << fld[i].varsize << " indexed by %d, k\");\n";
+                out << "    if (k>=" << fld[i].varsize << ") opp_error(\"Array of size " << fld[i].varsize << " indexed by %d, k\");\n";
                 out << "    this->" << fld[i].var << "[k]=" << fld[i].var << ";\n";
                 out << "}\n\n";
             }

@@ -138,7 +138,7 @@ enum {NED_CONST_BOOL, NED_CONST_INT, NED_CONST_REAL, NED_CONST_STRING, NED_CONST
  * 
  * <pre>
  * <!ELEMENT ned-files ((ned-files|ned-file)*)>
- * <!ATTLIST ned-files >
+ * 
  * </pre>
  * 
  * @ingroup Data
