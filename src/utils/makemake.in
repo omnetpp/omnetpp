@@ -47,6 +47,7 @@ libs=""
 dirs=""
 xobjs=""
 fragments=""
+makefilein=no
 
 while [ ! $# = 0 ] ; do
     case "$1" in
@@ -71,10 +72,11 @@ makemake [-h] [-f] [-o make-target] [-t exe|so|o] [-u user-interface] [-p]
     -llibrary             Additional library to link against
     -i, --includefragment Append file to near end of makefile. The file makefrag
                           is appended implicitly if no -i options are given.
+    -m, --makefile-in     Create makefile.in instead of makefile
     directory             Recursive make in that dir. Makemake will need 
                           to call make there to see what object files to
                           include in the makefile.
-    library or object     Link with that file.
+    library or object     Link with that file
 
 With -n and -s options, -u, -p and -l have no effect.
 If you have a source tree instead of a single directory, run makemake -n
@@ -100,6 +102,10 @@ EOT
 
         -s | --make-so)
         type="so"
+        ;;
+
+        -m | --makefile-in)
+        makefilein=yes
         ;;
 
         -u | --userinterface)
@@ -237,6 +243,11 @@ SUBDIR_OBJS = $sobjs
 LIBS = $libs
 
 #------------------------------------------------------------------------------
+EOT
+
+if [ $makefilein = no ]; then
+# makefile
+cat <<EOT
 
 OMNETPP_ROOT=@OMNETPP_ROOT@
 OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
@@ -256,7 +267,36 @@ TV_LIBS=  @TV_LIBS@
 TK_LIBS=  @TK_LIBS@
 PVM_LIBS= @PVM_LIBS@
 SYS_LIBS= @SYS_LIBS@
+EOT
 
+else
+
+# makefile.in
+cat <<EOT
+
+OMNETPP_ROOT=@\OMNETPP_ROOT@
+OMNETPP_SRC_DIR=@\OMNETPP_SRC_DIR@
+
+CXX=     @\CXX@
+NEDC=    @\NEDC@
+LD=      @\LD@
+AR=      @\AR@
+MAKE_SO= @\MAKE_SO@
+
+OMNETPP_INCL_PATH=@\OMNETPP_INCL_PATH@
+OMNETPP_LIB_PATH=@\OMNETPP_LIB_PATH@
+
+OMNETPP_INCLUDES="@\OMNETPP_INCLUDES@"
+
+TV_LIBS=  @\TV_LIBS@
+TK_LIBS=  @\TK_LIBS@
+PVM_LIBS= @\PVM_LIBS@
+SYS_LIBS= @\SYS_LIBS@
+EOT
+
+fi
+
+cat <<EOT
 
 # User interface libs
 CMDENV_LIBS = -lenvir -lcmdenv
