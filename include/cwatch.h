@@ -26,8 +26,14 @@
 //=== classes declared here
 class  cWatch;
 
-
+/**
+ * MISSINGDOC:
+ */
 #define WATCH(var)   new cWatch( #var, var );
+
+/**
+ * MISSINGDOC:
+ */
 #define LWATCH(var)  cWatch var##__varshell( #var, var );
 
 
@@ -45,7 +51,10 @@ class SIM_API cWatch : public cObject
   private:
     void *ptr;
     char type;
+
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Copy constructor.
@@ -83,6 +92,15 @@ class SIM_API cWatch : public cObject
     cWatch(const char *name, cObject* &o) : cObject(name) {ptr=&o; type='o';}
 
     /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cWatch& operator=(cWatch& vs)     {ptr=vs.ptr;type=vs.type;return *this;}
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
+
+    /**
      * Returns pointer to a string containing the class name, "cWatch".
      */
     virtual const char *className() const {return "cWatch";}
@@ -94,7 +112,7 @@ class SIM_API cWatch : public cObject
     virtual cObject *dup()   {return new cWatch(*this);}
 
     /**
-     * These functions are redefined to display the value of the variable.
+     * Produces a one-line information abou the object.
      * Output is like this: "int samples = 12 (12U, 0xC)"
      */
     virtual void info(char *buf);
@@ -106,32 +124,34 @@ class SIM_API cWatch : public cObject
     virtual const char *inspectorFactoryName() const {return "cWatchIFC";}
 
     /**
-     * MISSINGDOC: cWatch:cWatch&operator=(cWatch&)
-     */
-    cWatch& operator=(cWatch& vs)
-          {ptr=vs.ptr;type=vs.type;return *this;}
-
-    /**
-     * These functions are redefined to display the value of the variable.
-     * Output is like this: "int samples = 12 (12U, 0xC)"
+     * Writes the value of the variable to the output stream.
+     * The output looks like this: "int samples = 12 (12U, 0xC)".
      */
     virtual void writeContents(ostream& os);
+    //@}
 
+    /** @name Accessing the stored variable reference. */
+    //@{
 
     /**
      * Does actual work for info() and writeContents().
+     * The output looks like this: "int samples = 12 (12U, 0xC)".
      */
-    virtual void printTo(char *s);
+    virtual void printTo(char *s);  //FIXME: why public?
 
     /**
-     * MISSINGDOC: cWatch:char typeChar()
+     * Returns the type of the referenced variable.
+     * The return value is 'c','i','l','d','s','o' for char, int, long,
+     * double, string, cObject pointer, respectively.
      */
     char typeChar() {return type;}
 
     /**
-     * MISSINGDOC: cWatch:void*pointer()
+     * Returns pointer to the referenced variable.
      */
     void *pointer() {return ptr;}
+    //@}
 };
 
 #endif
+

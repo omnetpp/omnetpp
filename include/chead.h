@@ -68,6 +68,9 @@ class SIM_API cHead : public cObject
     friend class cObject;
 
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
+
     /**
      * Constructor.
      */
@@ -84,7 +87,11 @@ class SIM_API cHead : public cObject
      */
     virtual ~cHead()  {deleteChildren();}
 
-    // redefined functions
+    //FIXME: copy constructor, op=, dup() missing
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cHead".
@@ -102,8 +109,10 @@ class SIM_API cHead : public cObject
      * in the list.
      */
     virtual void forEach(ForeachFunc f);
+    //@}
 
-       // new functions
+    /** @name Container methods. */
+    //@{
 
     /**
      * Searches the list for an object with the given name and returns
@@ -115,6 +124,7 @@ class SIM_API cHead : public cObject
      * Returns the number of objects in the list.
      */
     int count();
+    //@}
 };
 
 //==========================================================================
@@ -136,7 +146,7 @@ class SIM_API cIterator
     cIterator(cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
 
     /**
-     * MISSINGDOC: cIterator:void init(cObject&)
+     * Reinitialize the iterator.
      */
     void init(cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
 
@@ -146,12 +156,12 @@ class SIM_API cIterator
     cObject *operator()()    {return p;}
 
     /**
-     * Returns true if we reach the end of the list.
+     * Returns true if the iterator reached the end of the list.
      */
     bool end()               {return (bool)(p==NULL);}
 
     /**
-     * MISSINGDOC: cIterator:cObject*operator++()
+     * Returns the current item, then moves the iterator to the next one.
      */
     cObject *operator++(int) {cObject *t=p; if(p) p=p->nextp; return t;}
 };
@@ -167,27 +177,27 @@ class SIM_API const_cIterator
 
   public:
     /**
-     * MISSINGDOC: const_cIterator:_cIterator(cObject&)
+     * Constructor.
      */
     const_cIterator(const cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
 
     /**
-     * MISSINGDOC: const_cIterator:void init(cObject&)
+     * Reinitialize the iterator.
      */
     void init(const cObject& h)    {p = &h ? h.firstchildp : NO(cObject);}
 
     /**
-     * MISSINGDOC: const_cIterator:cObject*operator()()
+     * Returns a pointer to the current object.
      */
     const cObject *operator()() const {return p;}
 
     /**
-     * MISSINGDOC: const_cIterator:bool end()
+     * Returns true if the iterator reached the end of the list.
      */
     bool end() const               {return (bool)(p==NULL);}
 
     /**
-     * MISSINGDOC: const_cIterator:cObject*operator++()
+     * Returns the current item, then moves the iterator to the next one.
      */
     const cObject *operator++(int) {const cObject *t=p; if(p) p=p->nextp; return t;}
 };

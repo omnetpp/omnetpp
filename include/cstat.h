@@ -39,12 +39,12 @@ class SIM_API cStatistic : public cObject
 
   protected:
 
-    /**
-     * MISSINGDOC: cStatistic:void freadvarsf(FILE*,char*,...)
-     */
-    void freadvarsf (FILE *f,  const char *fmt, ...); // for loadFromFile()
+    // internal: utility function for implementing loadFromFile() functions
+    void freadvarsf (FILE *f,  const char *fmt, ...);
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -61,18 +61,20 @@ class SIM_API cStatistic : public cObject
      */
     virtual ~cStatistic()  {}
 
-    // redefined functions
+    /**
+     * Assignment operator. It is present since descendants may refer to it.
+     * The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cStatistic& operator=(cStatistic& res);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cStatistic".
      */
     virtual const char *className() const {return "cStatistic";}
-
-    /**
-     * The assignment operator is present since descendants may refer
-     * to it.
-     */
-    cStatistic& operator=(cStatistic& res);
 
     /**
      * Returns the name of the inspector factory class associated with this class.
@@ -93,98 +95,95 @@ class SIM_API cStatistic : public cObject
      * See cObject for more details.
      */
     virtual int netUnpack();
+    //@}
 
-    // new functions
-
-    // collect a value
+    /** @name Collecting values. */
+    //@{
 
     /**
-     * Collect one value.
+     * Collects one value.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual void collect(double val) = 0;
 
     /**
-     * MISSINGDOC: cStatistic:void collect2(double,double)
+     * Collects one value with a given weight.
      */
     virtual void collect2(double val, double weight);
 
     /**
-     * MISSINGDOC: cStatistic:void operator+)
+     * Same as the collect(double) method.
      */
     void operator+= (double val) {collect(val);}
 
-    // number of samples, minimum, maximum, mean, standard deviation:
+    /**
+     * This function should be redefined in derived classes to clear
+     * the results collected so far.
+     * This method is pure virtual, implementation is provided in subclasses.
+     */
+    virtual void clearResult() = 0;
+    //@}
+
+    /** @name Statistics of collected data. */
+    //@{
 
     /**
-     * In derived classes, these functions return the number of values
-     * collected, the smallest/largest value, the mean, the standard
-     * deviation, the sum and the squared sum of the collected data,
-     * respectively.
+     * Returns the number of samples collected.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual long samples() = 0;
 
     /**
-     * MISSINGDOC: cStatistic:double weights()
+     * Returns the sum of weights of the samples collected.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double weights() = 0;
 
     /**
-     * In derived classes, these functions return the number of values
-     * collected, the smallest/largest value, the mean, the standard
-     * deviation, the sum and the squared sum of the collected data,
-     * respectively.
+     * Returns the sum of samples collected.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double sum() = 0;
 
     /**
-     * In derived classes, these functions return the number of values
-     * collected, the smallest/largest value, the mean, the standard
-     * deviation, the sum and the squared sum of the collected data,
-     * respectively.
+     * Returns the the squared sum of the collected data.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double sqrSum() = 0;
 
     /**
-     * In derived classes, these functions return the number of values
-     * collected, the smallest/largest value, the mean, the standard
-     * deviation, the sum and the squared sum of the collected data,
-     * respectively.
+     * Returns the minimum of the samples collected.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double min() = 0;
 
     /**
-     * In derived classes, these functions return the number of values
-     * collected, the smallest/largest value, the mean, the standard
-     * deviation, the sum and the squared sum of the collected data,
-     * respectively.
+     * Returns the maximum of the samples collected.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double max() = 0;
 
     /**
-     * In derived classes, these functions return the number of values
-     * collected, the smallest/largest value, the mean, the standard
-     * deviation, the sum and the squared sum of the collected data,
-     * respectively.
+     * Returns the mean of the samples collected.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double mean() = 0;
 
     /**
-     * In derived classes, these functions return the number of values
-     * collected, the smallest/largest value, the mean, the standard
-     * deviation, the sum and the squared sum of the collected data,
-     * respectively.
+     * Returns the standard deviation of the samples collected.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double stddev() = 0;
 
     /**
-     * In derived classes, these functions return the number of values
-     * collected, the smallest/largest value, the mean, the standard
-     * deviation, the sum and the squared sum of the collected data,
-     * respectively.
+     * Returns the variance of the samples collected.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double variance() = 0;
+    //@}
 
-    // end of transient and result accuracy detection on inserted samples
+    /** @name Transient and result accuracy detection. */
+    //@{
 
     /**
      * Assigns transient and accuracy detection objects to the statistic
@@ -207,43 +206,40 @@ class SIM_API cStatistic : public cObject
      * Returns the assigned transient and accuracy detection objects.
      */
     cAccuracyDetection  *accuracyDetectionObject()   {return ra;}
+    //@}
 
-    // generate random numbers based on the collected data:
+    /** @name Generating random numbers based on the collected data */
+    //@{
 
     /**
      * Sets the index of the random number generator to use when the
      * object has to generate a random number based on the statistics
      * stored.
      */
-    void setGenK(int gen_nr)   {genk=gen_nr;}  // random num. generator to use
+    void setGenK(int gen_nr)   {genk=gen_nr;}
 
     /**
-     * The function generates a random number based on the collected
-     * data.
+     * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double random() = 0;
+    //@}
 
-    // clear result
-
-    /**
-     * This function should be redefined in derived classes to clear
-     * the results collected so far.
-     */
-    virtual void clearResult() = 0;
-
-    // write to text file, read from text file
+    /** @name Writing to text file, reading from text file. */
+    //@{
 
     /**
      * Writes the contents of the object into a text file.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual void saveToFile(FILE *) = 0;
 
     /**
-     * Reads the object data from a file written out by saveToFile()(or
-     * written "by hand")
+     * Reads the object data from a file written out by saveToFile().
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual void loadFromFile(FILE *) = 0;
-
+    //@}
 };
 
 //==========================================================================
@@ -259,23 +255,32 @@ class SIM_API cStdDev : public cStatistic
     double sum_samples,sqrsum_samples;
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
-     * Constructors, destructor, duplication and assignment.
+     * Copy constructor.
      */
     cStdDev(cStdDev& r) : cStatistic(r) {setName(r.name());operator=(r);}
 
     /**
-     * Constructors, destructor, duplication and assignment.
+     * Constructor.
      */
     explicit cStdDev(const char *name=NULL);
 
     /**
-     * Constructors, destructor, duplication and assignment.
+     * Destructor.
      */
     virtual ~cStdDev() {}
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cStdDev& operator=(cStdDev& res);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cStdDev".
@@ -293,11 +298,6 @@ class SIM_API cStdDev : public cStatistic
      * See cObject for more details.
      */
     virtual void info(char *buf);
-
-    /**
-     * Constructors, destructor, duplication and assignment.
-     */
-    cStdDev& operator=(cStdDev& res);
 
     /**
      * Writes textual information about this object to the stream.
@@ -318,81 +318,83 @@ class SIM_API cStdDev : public cStatistic
      * See cObject for more details.
      */
     virtual int netUnpack();
+    //@}
 
-    // redefined cStatistic functions
+    /** @name Redefined cStatistic functions. */
+    //@{
 
     /**
-     * Redefined cStatistic functions.
+     * Collects one value.
      */
     virtual void collect(double val);
 
     /**
-     * Redefined cStatistic functions.
+     * Returns the number of samples collected.
      */
     virtual long samples()   {return num_samples;}
 
     /**
-     * MISSINGDOC: cStdDev:double weights()
+     * Returns the sum of weights of the samples collected.
      */
     virtual double weights() {return num_samples;}
 
     /**
-     * MISSINGDOC: cStdDev:double sum()
+     * Returns the sum of samples collected.
      */
     virtual double sum()     {return sum_samples;}
 
     /**
-     * MISSINGDOC: cStdDev:double sqrSum()
+     * Returns the the squared sum of the collected data.
      */
     virtual double sqrSum()  {return sqrsum_samples;}
 
     /**
-     * Redefined cStatistic functions.
+     * Returns the minimum of the samples collected.
      */
     virtual double min()     {return min_samples;}
 
     /**
-     * Redefined cStatistic functions.
+     * Returns the maximum of the samples collected.
      */
     virtual double max()     {return max_samples;}
 
     /**
-     * Redefined cStatistic functions.
+     * Returns the mean of the samples collected.
      */
     virtual double mean()    {return num_samples ? sum_samples/num_samples : 0.0;}
 
     /**
-     * Redefined cStatistic functions.
+     * Returns the standard deviation of the samples collected.
      */
     virtual double stddev();
 
     /**
-     * Redefined cStatistic functions.
+     * Returns the variance of the samples collected.
      */
     virtual double variance();
 
     /**
-     * Redefined cStatistic function. cStdDev's random
-     * number generator returns numbers of normal distribution with the
-     * current mean and standard deviation.
+     * Returns numbers from a normal distribution with the current mean and
+     * standard deviation.
      */
     virtual double random();
 
     /**
-     * Redefined cStatistic functions.
+     * Clears the results collected so far.
      */
     virtual void clearResult();
 
     /**
-     * Redefined cStatistic functions.
+     * Writes the contents of the object into a text file.
      */
     virtual void saveToFile(FILE *);
 
     /**
-     * Redefined cStatistic functions.
+     * Reads the object data from a file written out by saveToFile()
+     * (or written by hand)
      */
     virtual void loadFromFile(FILE *);
-
+    //@}
 };
 
 //==========================================================================
@@ -407,6 +409,8 @@ class SIM_API cWeightedStdDev : public cStdDev
     double sum_weights;
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Constructors, destructor, duplication and assignment.
@@ -423,7 +427,14 @@ class SIM_API cWeightedStdDev : public cStdDev
      */
     virtual ~cWeightedStdDev() {}
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cWeightedStdDev& operator=(cWeightedStdDev& res);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cWeightedStdDev".
@@ -435,11 +446,6 @@ class SIM_API cWeightedStdDev : public cStdDev
      * See cObject for more details.
      */
     virtual cObject *dup() {return new cWeightedStdDev(*this);}
-
-    /**
-     * Constructors, destructor, duplication and assignment.
-     */
-    cWeightedStdDev& operator=(cWeightedStdDev& res);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -454,49 +460,51 @@ class SIM_API cWeightedStdDev : public cStdDev
      * See cObject for more details.
      */
     virtual int netUnpack();
+    //@}
 
-    // redefined cStatistic functions
+    /** @name Redefined cStatistic functions. */
+    //@{
 
     /**
-     * FIXME: redefined cStatistic functions
+     * Collects one value.
      */
     virtual void collect(double val)  {collect2(val,1.0);}
 
     /**
-     * New member function.
+     * Collects one value with a given weight.
      */
     virtual void collect2(double val, double weight);
 
     /**
-     * Redefined cStdDev functions.
+     * Clears the results collected so far.
      */
     virtual void clearResult();
 
     /**
-     * MISSINGDOC: cWeightedStdDev:double weights()
+     * Returns the sum of weights of the samples collected.
      */
     virtual double weights() {return sum_weights;}
 
     /**
-     * Redefined cStdDev functions.
+     * Returns the mean of the samples collected.
      */
     virtual double mean()    {return sum_weights!=0 ? sum_samples/sum_weights : 0.0;}
 
     /**
-     * Redefined cStdDev functions.
+     * Returns the variance of the samples collected.
      */
     virtual double variance();
 
     /**
-     * Redefined cStdDev functions.
+     * Writes the contents of the object into a text file.
      */
     virtual void saveToFile(FILE *);
 
     /**
-     * Redefined cStdDev functions.
+     * Reads the object data from a file, in the format written out by saveToFile().
      */
     virtual void loadFromFile(FILE *);
-
+    //@}
 };
 
 #endif

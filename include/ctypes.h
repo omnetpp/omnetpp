@@ -120,25 +120,20 @@ class SIM_API cModuleInterface : public cObject
     sParamInfo *paramv;
     int nmachine;            // NET
     sMachineInfo *machinev;  // NET
-  private:
 
-    /**
-     * FIXME: structures used in a cModuleInterface
-     */
+  private:
+    // internal
     void allocate(int ngte, int npram, int nmach );
 
-    /**
-     * MISSINGDOC: cModuleInterface:void check_consistency()
-     */
+    // internal
     void check_consistency();
 
-
-    /**
-     * MISSINGDOC: cModuleInterface:void setup(sDescrItem*)
-     */
+    // internal
     void setup(sDescrItem *descr_table );
 
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Constructor.
@@ -155,7 +150,14 @@ class SIM_API cModuleInterface : public cObject
      */
     virtual ~cModuleInterface();
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cModuleInterface& operator=(cModuleInterface& mi);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cModuleInterface".
@@ -167,23 +169,23 @@ class SIM_API cModuleInterface : public cObject
      * See cObject for more details.
      */
     virtual cObject *dup()  {return new cModuleInterface(*this);}
+    //@}
+
+    /** @name Applying the interface to modules. */
+    //@{
 
     /**
-     * MISSINGDOC: cModuleInterface:cModuleInterface&operator=(cModuleInterface&)
+     * Adds parameters and gates specified by the interface to the given module.
      */
-    cModuleInterface& operator=(cModuleInterface& mi);
-
-    // the important functions
+    void addParametersGatesTo(cModule *module);
 
     /**
-     * FIXME: the important functions
+     * Checks that the types of the module's parameters comply to the interface,
+     * and calls convertToConst() on the parameters declared as const in the
+     * interface.
      */
-    void addParametersGatesTo( cModule *module);
-
-    /**
-     * MISSINGDOC: cModuleInterface:void checkParametersOf(cModule*)
-     */
-    void checkParametersOf( cModule *module );
+    void checkParametersOf(cModule *module);
+    //@}
 };
 
 //==========================================================================
@@ -211,7 +213,10 @@ class SIM_API cModuleType : public cObject
     char *interface_name;
     cModuleInterface *interface;
     ModuleCreateFunc create_func;
+
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Constructor.
@@ -228,7 +233,14 @@ class SIM_API cModuleType : public cObject
      */
     virtual ~cModuleType();
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cModuleType& operator=(cModuleType& mi);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cModuleType".
@@ -240,29 +252,42 @@ class SIM_API cModuleType : public cObject
      * See cObject for more details.
      */
     virtual cObject *dup()     {return new cModuleType(*this);}
+    //@}
+
+    /** @name FIXME */
+    //@{
 
     /**
-     * MISSINGDOC: cModuleType:cModuleType&operator=(cModuleType&)
-     */
-    cModuleType& operator=(cModuleType& mi);
-
-
-    /**
-     * MISSINGDOC: cModuleType:cModule*create(char*,cModule*,bool)
+     * Creates a module. In addition to creating an object of the correct type,
+     * this function inserts it into cSimulation's module vector and adds the
+     * parameters and gates specified in the interface description.
      */
     cModule *create(const char *name, cModule *parentmod, bool local=true);
 
     /**
-     * MISSINGDOC: cModuleType:void buildInside(cModule*)
+     * Builds adds submodules and internal connections to the empty compound
+     * module passed.
      */
     void buildInside(cModule *mod);
 
-    // convenience function: create()+buildInside()+scheduleStart(now)+callInitialize()
-
     /**
-     * FIXME: convenience function: create()+buildInside()+scheduleStart(now)+callInitialize()
+     * This is a convenience function to get a module up and running in one step.
+     *
+     * First, the module is created using create() and buildInside(), then
+     * starter messages are created (using mod->scheduleStart(simulation.simTime())),
+     * then initialize() is called (mod->callInitialize()). It is important that
+     * scheduleStart() be called before initialize(), because because initialize()
+     * functions might contain scheduleAt() calls which could otherwise insert
+     * a message BEFORE the starter messages for module.
+     *
+     * This method works for simple and compound modules alike. Not applicable
+     * if the module:
+     *  - has parameters to be set
+     *  - gate vector sizes to be set
+     *  - gates to be connected before initialize()
      */
     cModule *createScheduleInit(char *name, cModule *parentmod);
+    //@}
 };
 
 
@@ -274,22 +299,13 @@ class SIM_API cModuleType : public cObject
 class SIM_API cLinkType : public cObject
 {
   private:
-
-    /**
-     * MISSINGDOC: cLinkType:cPar*(*)()
-     */
     cPar *(*delayfunc)();     // delay
-
-    /**
-     * MISSINGDOC: cLinkType:cPar*(*)()
-     */
     cPar *(*errorfunc)();     // bit error rate
-
-    /**
-     * MISSINGDOC: cLinkType:cPar*(*)()
-     */
     cPar *(*dataratefunc)();  // data rate
+
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Constructor.
@@ -306,7 +322,14 @@ class SIM_API cLinkType : public cObject
      */
     virtual ~cLinkType()    {}
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cLinkType& operator=(cLinkType& o);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cLinkType".
@@ -318,28 +341,29 @@ class SIM_API cLinkType : public cObject
      * See cObject for more details.
      */
     virtual cObject *dup()     {return new cLinkType(*this);}
+    //@}
+
+    /** @name Channel properties. */
+    //@{
 
     /**
-     * MISSINGDOC: cLinkType:cLinkType&operator=(cLinkType&)
-     */
-    cLinkType& operator=(cLinkType& o);
-
-    // new functions
-
-    /**
-     * FIXME: new functions
+     * Creates a cPar object, representing the delay of this channel.
+     * Returns NULL if the channel has no associated delay.
      */
     cPar *createDelay();
 
     /**
-     * MISSINGDOC: cLinkType:cPar*createError()
+     * Creates a cPar object, representing the bit error rate of this channel.
+     * Returns NULL if the channel has no associated bit error rate.
      */
     cPar *createError();
 
     /**
-     * MISSINGDOC: cLinkType:cPar*createDataRate()
+     * Creates a cPar object, representing the data rate of this channel.
+     * Returns NULL if the channel has no associated data rate.
      */
     cPar *createDataRate();
+    //@}
 };
 
 //==========================================================================
@@ -349,22 +373,17 @@ class SIM_API cLinkType : public cObject
  */
 class SIM_API cNetworkType : public cObject
 {
-  public:
-
-    /**
-     * MISSINGDOC: cNetworkType:void(*)()
-     */
+  public:  //FIXME: ????
     void (*setupfunc)();
 
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
+
     /**
      * Constructor.
      */
     cNetworkType(const char *name, void (*f)()) :
-
-    /**
-     * Constructor.
-     */
       cObject(name,(cObject *)&networks), setupfunc(f) {}
 
     /**
@@ -372,12 +391,17 @@ class SIM_API cNetworkType : public cObject
      */
     virtual ~cNetworkType() {}
 
-    // redefined functions
+    //FIXME: op= missing! dup missing! copy constructor missing
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cNetworkType".
      */
     virtual const char *className() const {return "cNetworkType";}
+    //@}
 };
 
 //==========================================================================
@@ -388,18 +412,16 @@ class SIM_API cNetworkType : public cObject
 class SIM_API cFunctionType : public cObject
 {
   public:
-    MathFunc f;
+    MathFunc f;   //FIXME: add getter funcs!!!
     int argcount;
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Constructor.
      */
     cFunctionType(const char *name, MathFunc f0, int argc) :
-
-    /**
-     * Constructor.
-     */
       cObject(name,(cObject *)&functions) {f=f0;argcount=argc;}
 
     /**
@@ -407,12 +429,17 @@ class SIM_API cFunctionType : public cObject
      */
     virtual ~cFunctionType() {}
 
-    // redefined functions
+    //FIXME: op= missing! dup missing! copy constructor missing
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cFunctionType".
      */
     virtual const char *className() const {return "cFunctionType";}
+    //@}
 };
 
 cFunctionType *findfunctionbyptr(MathFunc f);
@@ -426,21 +453,16 @@ cFunctionType *findfunctionbyptr(MathFunc f);
  */
 class SIM_API cClassRegister : public cObject
 {
-
-    /**
-     * MISSINGDOC: cClassRegister:cObject*(*)()
-     */
     cObject *(*creatorfunc)();
+
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
 
     /**
      * Constructor.
      */
     cClassRegister(const char *name, cObject *(*f)()) :
-
-    /**
-     * Constructor.
-     */
       cObject(name,(cObject *)&classes), creatorfunc(f) {}
 
     /**
@@ -448,19 +470,26 @@ class SIM_API cClassRegister : public cObject
      */
     virtual ~cClassRegister() {}
 
-    // redefined functions
+    //FIXME: op= missing! dup missing! copy constructor missing
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cClassRegister".
      */
     virtual const char *className() const {return "cClassRegister";}
+    //@}
 
-    // new functions
+    /** @name FIXME */
+    //@{
 
     /**
      * FIXME: new functions
      */
     cObject *createOne()  {return creatorfunc();}
+    //@}
 };
 
 SIM_API cObject *createOne(const char *type);
@@ -473,12 +502,12 @@ SIM_API cObject *createOne(const char *type);
  */
 class SIM_API cInspectorFactory : public cObject
 {
-    /**
-     * MISSINGDOC: cInspectorFactory:TInspector*(*)(cObject*,,void*)
-     */
     TInspector *(*inspFactoryFunc)(cObject *,int,void *);
 
   public:
+    /** @name Constructors, destructor, assignment */
+    //@{
+
     /**
      * Constructor.
      */
@@ -489,19 +518,26 @@ class SIM_API cInspectorFactory : public cObject
      */
     virtual ~cInspectorFactory() {}
 
-    // redefined functions
+    //FIXME: op= missing! dup missing! copy constructor missing
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cInspectorFactory".
      */
     virtual const char *className() const {return "cInspectorFactory";}
+    //@}
 
-    // new functions;
+    /** @name Inspector creation. */
+    //@{
 
     /**
      * FIXME: new functions;
      */
     TInspector *createInspectorFor(cObject *object,int type,void *data);
+    //@}
 };
 
 

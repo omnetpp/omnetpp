@@ -37,7 +37,7 @@
  *
  * Automatic range estimation works in the following way:
  * <OL>
- *   <LI>The first <I>num_firstvals<I> observations are stored.
+ *   <LI>The first <I>num_firstvals</I> observations are stored.
  *   <LI>After having collected a given number of samples, the actual
  *   histogram is set up. The range (<I>min</I>, <I>max</I>) of the
  *   initial values is expanded <I>range_ext_factor</I> times, and
@@ -98,6 +98,9 @@ class SIM_API cDensityEstBase : public cStdDev
                           double count, double a);
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
+
     /**
      * Copy constructor.
      */
@@ -107,24 +110,26 @@ class SIM_API cDensityEstBase : public cStdDev
     /**
      * Constructor.
      */
-    explicit cDensityEstBase(const char *name=NULL);    // name of collected data
+    explicit cDensityEstBase(const char *name=NULL);
 
     /**
      * Destructor.
      */
     virtual ~cDensityEstBase();
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cDensityEstBase& operator=(cDensityEstBase& res);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cDensityEstBase".
      */
     virtual const char *className() const {return "cDensityEstBase";}
-
-    /**
-     * Constructors, destructor, assignment.
-     */
-    cDensityEstBase& operator=(cDensityEstBase& res);
 
     /**
      * Writes textual information about this object to the stream.
@@ -151,125 +156,191 @@ class SIM_API cDensityEstBase : public cStdDev
      * See cObject for more details.
      */
     virtual int netUnpack();
-    // dup() and inspector(..) not needed
 
-    // redefined cStat functions & new ones
+    // FIXME: dup() not needed???
+    //@}
+
+    /** @name Redefined cStatistic member functions. */
+    //@{
 
     /**
-     *
+     * Collects one value. Before the histogram was transformed, this method
+     * simply adds the value to the table of precollected values.
+     * When the number of precollected samples reaches a limit, the transform()
+     * method is called. After transformation, it calls collectTransformed()
+     * to update the stored statistics with this value.
+     */
+    virtual void collect(double val);
+
+    /**
+     * Clears the results collected so far.
      */
     virtual void clearResult();
 
     /**
-     * Range setting.
+     * Generates a random number based on the collected data. Uses the random number
+     * generator set by setGenK().
+     *
+     * This is a pure virtual function; it must be redefined in subclasses.
+     */
+    virtual double random() = 0;  // FIXME: redundant!!!
+
+    /**
+     * Writes the contents of the object into a text file.
+     */
+    virtual void saveToFile(FILE *);
+
+    /**
+     * Reads the object data from a file, in the format written out by saveToFile().
+     */
+    virtual void loadFromFile(FILE *);
+    //@}
+
+    /** @name Selecting the method of setting up the histogram range. */
+    //@{
+
+    /**
+     * Sets the histogram range explicitly to [lower, upper]. When this method is
+     * used, setNumFirstVals() is not needed.
      */
     virtual void setRange(double lower, double upper);
 
     /**
-     * Range setting.
+     * Selects a histogram range setup method where the range will be determined
+     * entirely from a set of precollected values.
+     *
+     * When called, the histogram range will be determined from the first
+     * num_firstvals values, extending their range symmetrically by
+     * range_ext_fact. For example, after a call to setRangeAuto(100, 1.3),
+     * the histogram will be set up after precollecting 100 values, the range
+     * being the range of the 100 precollected values extended 1.3 times
+     * symmetrically.
      */
     virtual void setRangeAuto(int num_firstvals, double range_ext_fact);
 
     /**
-     * Range setting.
+     * Selects a histogram range setup method where the upper bound of the range
+     * is fixed and the lower bound is determined from a set of precollected values.
+     *
+     * FIXME: details!
      */
     virtual void setRangeAutoLower(double upper, int num_firstvals, double range_ext_fact);
 
     /**
-     * Range setting.
+     * Selects a histogram range setup method where the lower bound of the range
+     * is fixed and the upper bound is determined from a set of precollected values.
+     *
+     * FIXME: details!
      */
     virtual void setRangeAutoUpper(double lower, int num_firstvals, double range_ext_fact);
 
     /**
-     * Range setting.
+     * Sets the number of values to be precollected before transformation takes
+     * place. See transform().
      */
     virtual void setNumFirstVals(int num_firstvals);
-
-    /**
-     *
-     */
-    virtual void collect(double val);
+    //@}
 
   protected:
     /**
-     * MISSINGDOC: cDensityEstBase:void setupRange()
+     * Called internally by transform(), this method should determine and set up
+     * the histogram range, based on the precollected data and the range setup
+     * method selected by calls to the setRange(), setRangeAuto(), setRangeAutoLower(),
+     * setRangeAutoUpper() methods.
      */
     virtual void setupRange();
 
     /**
-     * MISSINGDOC: cDensityEstBase:void collectTransformed(double)
+     * Called internally by collect(), this method collects a value
+     * after the histogram has been transformed.
+     * Updating the underflow/overflow cells must be handled within this function.
+     * This is a pure virtual function; it must be redefined in subclasses.
      */
-    virtual void collectTransformed(double val) = 0; // must maintain underflow/overflow cells
+    virtual void collectTransformed(double val) = 0;
+
   public:
 
+    /** @name Transformation. */
+    //@{
+
     /**
-     * First one returns whether the object is transformed or not; second
-     * one forces a transformation.
+     * Returns whether the object is transformed. See transform().
      */
     virtual bool transformed()   {return transfd;}
 
     /**
-     * First one returns whether the object is transformed or not; second
-     * one forces a transformation.
+     * Transforms the table of precollected values into an internal
+     * histogram structure. This is a pure virtual function. Implementations
+     * of transform() are expected to call setupRange(), and set the
+     * transfd flag when transformation was successfully done.
      */
-    virtual void transform() = 0; // must set transfd; probably needs to call setupRange()
+    virtual void transform() = 0;
+    //@}
+
+    /** @name Accessing histogram cells. */
+    //@{
 
     /**
-     * MISSINGDOC: cDensityEstBase:int cells()
+     * Returns the number of histogram cells used.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual int cells() = 0;
 
     /**
-     * MISSINGDOC: cDensityEstBase:double basepoint(int)
+     * Returns the kth cell boundary. Legal values for k are 0 through cells(),
+     * that is, there' one more basepoint than the number of cells.
+     * Basepoint(0) returns the low end of the first cell, and basepoint(cells())
+     * returns the high end of the last histogram cell.
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double basepoint(int k) = 0;
 
     /**
-     * MISSINGDOC: cDensityEstBase:double cell(int)
+     * Returns the number of observations that fell into the kth histogram cell.
+     * Before transformation, this method may return zero. See transform().
+     * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual double cell(int k) = 0;
 
     /**
-     * MISSINGDOC: cDensityEstBase:double cellPDF(int)
+     * Returns the estimated value of the Probability Density Function
+     * within the kth cell. This method simply divides the number of observations
+     * in cell k with the cell size and the number of total observations collected.
+     * Note that before transformation, cell() and also this method may return zero.
+     * See transform().
      */
     virtual double cellPDF(int k);
 
     /**
-     * MISSINGDOC: cDensityEstBase:double random()
-     */
-    virtual double random() = 0;
-
-    /**
-     * Density function and cumulated density function at a given <I>x</I>.
-     */
-    virtual double pdf(double x) = 0;
-
-    /**
-     * Density function and cumulated density function at a given <I>x</I>.
-     */
-    virtual double cdf(double x) = 0;
-
-    /**
-     * Returns number of observations that fall out of the histogram
+     * Returns number of observations that, being too small, fell out of the histogram
      * range.
      */
     virtual unsigned long underflowCell() {return cell_under;}
 
     /**
-     * Returns number of observations that fall out of the histogram
+     * Returns number of observations that, being too large, fell out of the histogram
      * range.
      */
     virtual unsigned long overflowCell() {return cell_over;}
+    //@}
+
+    /** @name Density and cumulated density approximation functions. */
+    //@{
 
     /**
-     *
+     * Returns the estimated value of the Probability Density Function at a given x.
+     * This is a pure virtual function, implementation is provided
+     * in subclasses implementing concrete histogram types.
      */
-    virtual void saveToFile(FILE *);
+    virtual double pdf(double x) = 0;
 
     /**
-     *
+     * Returns the estimated value of the Cumulated Density Function at a given x.
+     * This is a pure virtual function, implementation is provided
+     * in subclasses implementing concrete histogram types.
      */
-    virtual void loadFromFile(FILE *);
+    virtual double cdf(double x) = 0;
+    //@}
 };
 
 #endif

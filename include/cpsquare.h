@@ -40,6 +40,8 @@ class SIM_API cPSquare : public cDensityEstBase
     double *q;         // array of heights
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -56,7 +58,14 @@ class SIM_API cPSquare : public cDensityEstBase
      */
     virtual ~cPSquare();
 
-     // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cPSquare& operator=(cPSquare& res);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cPSquare".
@@ -68,11 +77,6 @@ class SIM_API cPSquare : public cDensityEstBase
      * See cObject for more details.
      */
     virtual cObject *dup()   {return new cPSquare(*this);}
-
-    /**
-     * MISSINGDOC: cPSquare:cPSquare&operator=(cPSquare&)
-     */
-    cPSquare& operator=(cPSquare& res);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -93,97 +97,100 @@ class SIM_API cPSquare : public cDensityEstBase
      * See cObject for more details.
      */
     virtual void writeContents(ostream& os);
+    //@}
 
-    // redefined cStdDev functions
-
-    /**
-     * FIXME: redefined cStdDev functions
-     */
-    virtual void transform() {}  // not used, but cannot remain pure virtual
-
-
-    /**
-     * MISSINGDOC: cPSquare:void setRange(,)
-     */
-    virtual void setRange(double,double) {giveError();}
-
-    /**
-     * MISSINGDOC: cPSquare:void setRangeAuto(,)
-     */
-    virtual void setRangeAuto(int,double) {giveError();}
-
-    /**
-     * MISSINGDOC: cPSquare:void setRangeAutoLower(,,)
-     */
-    virtual void setRangeAutoLower(double,int,double) {giveError();}
-
-    /**
-     * MISSINGDOC: cPSquare:void setRangeAutoUpper(,,)
-     */
-    virtual void setRangeAutoUpper(double,int,double) {giveError();}
-
-    /**
-     * MISSINGDOC: cPSquare:void setNumFirstVals()
-     */
-    virtual void setNumFirstVals(int) {giveError();}
   private:
-
-    /**
-     * MISSINGDOC: cPSquare:void giveError()
-     */
-    void giveError(); // issues error message
+    // internal: issues error message
+    void giveError();
 
   protected:
-
     /**
-     * MISSINGDOC: cPSquare:void collectTransformed(double)
+     * Called internally by collect(), this method updates the P2 data structure
+     * with the new value.
      */
     virtual void collectTransformed(double val);
 
   public:
+    /** @name Redefined member functions from cStatistic and its subclasses. */
+    //@{
 
     /**
-     * MISSINGDOC: cPSquare:int cells()
+     * This method is not used with cPSquare, but it could not remain pure virtual.
+     */
+    virtual void transform() {}
+
+    /**
+     * setRange() and setNumFirstVals() methods are not used with cPSquare
+     * (the algorithm doesn't require them), but they could not remain pure virtual.
+     */
+    virtual void setRange(double,double) {giveError();}
+
+    /**
+     * setRange() and setNumFirstVals() methods are not used with cPSquare
+     * (the algorithm doesn't require them), but they could not remain pure virtual.
+     */
+    virtual void setRangeAuto(int,double) {giveError();}
+
+    /**
+     * setRange() and setNumFirstVals() methods are not used with cPSquare
+     * (the algorithm doesn't require them), but they could not remain pure virtual.
+     */
+    virtual void setRangeAutoLower(double,int,double) {giveError();}
+
+    /**
+     * setRange() and setNumFirstVals() methods are not used with cPSquare
+     * (the algorithm doesn't require them), but they could not remain pure virtual.
+     */
+    virtual void setRangeAutoUpper(double,int,double) {giveError();}
+
+    /**
+     * setRange() and setNumFirstVals() methods are not used with cPSquare
+     * (the algorithm doesn't require them), but they could not remain pure virtual.
+     */
+    virtual void setNumFirstVals(int) {giveError();}
+
+    /**
+     * Returns the number of cells used.
      */
     virtual int cells();
 
     /**
-     * MISSINGDOC: cPSquare:double basepoint(int)
+     * Returns the kth cell boundary. Note that because of the P2 algoritm,
+     * cell boundaries are shifting during data collection, thus cell() and
+     * other methods based on cell() and basepoint() return approximate values.
      */
     virtual double basepoint(int k);
 
     /**
-     * MISSINGDOC: cPSquare:double cell(int)
+     * Returns the number of observations that fell into the kth histogram cell.
      */
     virtual double cell(int k);
 
-
     /**
-     * MISSINGDOC: cPSquare:double cdf(double)
+     * Returns the value of the Cumulated Density Function at a given x.
      */
     virtual double cdf(double x);
 
     /**
-     * MISSINGDOC: cPSquare:double pdf(double)
+     * Returns the value of the Probability Density Function at a given x.
      */
     virtual double pdf(double x);
 
-
     /**
-     * MISSINGDOC: cPSquare:double random()
+     * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      */
     virtual double random();
 
-
     /**
-     * MISSINGDOC: cPSquare:void saveToFile(FILE*)
+     * Writes the contents of the object into a text file.
      */
     virtual void saveToFile(FILE *);
 
     /**
-     * MISSINGDOC: cPSquare:void loadFromFile(FILE*)
+     * Reads the object data from a file, in the format written out by saveToFile().
      */
     virtual void loadFromFile(FILE *);
+    //@}
 };
 
 #endif

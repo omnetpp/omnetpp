@@ -48,7 +48,8 @@ double divfunc_babak(cKSplit&, sGrid&, double, double *);
 //==========================================================================
 
 /**
- * Supporting struct for cKSplit.
+ * Supporting struct for cKSplit. Represents one grid in the k-split
+ * data structure.
  */
 struct sGrid
 {
@@ -87,52 +88,33 @@ class SIM_API cKSplit : public cDensityEstBase
     long iter_num_samples;    // num_samples when iterator was created
 
   protected:
-    // operations during inserting an observation
-
-    /**
-     * FIXME: operations during inserting an observation
-     */
+    // internal:
     void resetGrids(int grid);
 
-    /**
-     * MISSINGDOC: cKSplit:void createRootGrid()
-     */
+    // internal:
     void createRootGrid();
 
-    /**
-     * MISSINGDOC: cKSplit:void newRootGrids(double)
-     */
+    // internal:
     void newRootGrids(double x);
 
-    /**
-     * MISSINGDOC: cKSplit:void insertIntoGrids(double,int)
-     */
+    // internal:
     void insertIntoGrids(double x, int enable_splits);
 
-    /**
-     * MISSINGDOC: cKSplit:void splitCell(int,int)
-     */
+    // internal:
     void splitCell(int grid, int cell);
 
-    /**
-     * MISSINGDOC: cKSplit:void distributeMotherObservations(int)
-     */
+    // internal:
     void distributeMotherObservations(int grid);
 
-    /**
-     * MISSINGDOC: cKSplit:void expandGridVector()
-     */
+    // internal:
     void expandGridVector();
 
-    // helper for basepoint(), cell():
-
-    /**
-     * FIXME: helper for basepoint(), cell():
-     */
+    // internal: helper for basepoint(), cell()
     void iteratorToCell(int cell_nr);
 
   public:
-
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -149,7 +131,14 @@ class SIM_API cKSplit : public cDensityEstBase
      */
     virtual ~cKSplit();
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cKSplit& operator=(cKSplit& res);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cKSplit".
@@ -161,11 +150,6 @@ class SIM_API cKSplit : public cDensityEstBase
      * See cObject for more details.
      */
     virtual cObject *dup()   {return new cKSplit (*this);}
-
-    /**
-     * MISSINGDOC: cKSplit:cKSplit&operator=(cKSplit&)
-     */
-    cKSplit& operator=(cKSplit& res);
 
     /**
      * Writes textual information about this object to the stream.
@@ -181,75 +165,82 @@ class SIM_API cKSplit : public cDensityEstBase
     virtual int netPack();
 
     /**
-     * Deserializes the object from a PVM or MPI receive buffer
+     * Deserializes the object from a PVM or MPI receive buffer.
      * Used by the simulation kernel for parallel execution.
      * See cObject for more details.
      */
     virtual int netUnpack();
+    //@}
 
-    // redefined cDensityEstBase functions
-
-    /**
-     * FIXME: redefined cDensityEstBase functions
-     */
-    virtual void transform();
   protected:
-
     /**
-     * MISSINGDOC: cKSplit:void collectTransformed(double)
+     * Called internally by collect(), this method updates the k-split
+     * data structure with the new value.
      */
     virtual void collectTransformed(double val);
+
   public:
+    /** @name Redefined member functions from cStatistic and its subclasses. */
+    //@{
 
     /**
-     * MISSINGDOC: cKSplit:int cells()
+     * Transforms the table of precollected values into the k-split data structure.
+     */
+    virtual void transform();
+
+    /**
+     * Returns the number of histogram cells used.
      */
     virtual int cells();
 
     /**
-     * MISSINGDOC: cKSplit:double basepoint(int)
+     * Returns the kth cell boundary.
      */
     virtual double basepoint(int k);
 
     /**
-     * MISSINGDOC: cKSplit:double cell(int)
+     * Returns the number of observations that fell into the kth histogram cell.
      */
     virtual double cell(int k);
 
     /**
-     * MISSINGDOC: cKSplit:double pdf(double)
+     * Returns the value of the Probability Density Function at a given x.
      */
     virtual double pdf(double x);
 
     /**
-     * MISSINGDOC: cKSplit:double cdf(double)
+     * Returns the value of the Cumulated Density Function at a given x.
      */
     virtual double cdf(double x);
 
     /**
-     * MISSINGDOC: cKSplit:double random()
+     * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      */
     virtual double random();
 
     /**
-     * MISSINGDOC: cKSplit:void saveToFile(FILE*)
+     * Writes the contents of the object into a text file.
      */
     virtual void saveToFile(FILE *);
 
     /**
-     * MISSINGDOC: cKSplit:void loadFromFile(FILE*)
+     * Reads the object data from a file, in the format written out by saveToFile().
      */
     virtual void loadFromFile(FILE *);
+    //@}
 
-    // new functions
+    /** @name Configuring the k-split algoritm. */
+    //@{
 
     /**
-     * FIXME: new functions
+     * Configures the k-split algorithm by supplying a custom split
+     * criterion function.
      */
     void setCritFunc(KSplitCritFunc _critfunc, double *_critdata);
 
     /**
-     * MISSINGDOC: cKSplit:void setDivFunc(KSplitDivFunc,double*)
+     * Configures the k-split algorithm by supplying a custom cell division
+     * function.
      */
     void setDivFunc(KSplitDivFunc _divfunc, double *_divdata);
 
@@ -257,37 +248,42 @@ class SIM_API cKSplit : public cDensityEstBase
      * MISSINGDOC: cKSplit:void rangeExtension(bool)
      */
     void rangeExtension( bool enabled );
+    //@}
 
+    /** @name Querying the k-split data structure. */
+    //@{
 
     /**
-     * MISSINGDOC: cKSplit:int treeDepth()
+     * Returns the depth of the k-split tree.
      */
     int treeDepth();
 
     /**
-     * MISSINGDOC: cKSplit:int treeDepth(sGrid&)
+     * Returns the depth of the k-split tree measured from the specified grid.
      */
     int treeDepth(sGrid& grid);
 
     /**
-     * MISSINGDOC: cKSplit:double realCellValue(sGrid&,int)
+     * Returns the actual amount of observations in cell 'cell' of 'grid'.
+     * This is not necessarily an integer value because of previous cell splits.
      */
     double realCellValue(sGrid& grid, int cell);
 
     /**
-     * MISSINGDOC: cKSplit:void printGrids()
+     * Dumps the contents of the k-split data structure to ev.
      */
     void printGrids();
 
     /**
-     * MISSINGDOC: cKSplit:sGrid&grid(int)
+     * Returns the kth grid in the k-split data structure.
      */
     sGrid& grid(int k) {return gridv[k];}
 
     /**
-     * MISSINGDOC: cKSplit:sGrid&rootGrid()
+     * Returns the root grid of the k-split data structure.
      */
     sGrid& rootGrid()  {return gridv[rootgrid];}
+    //@}
 };
 
 
@@ -303,59 +299,58 @@ class SIM_API cKSplitIterator
     double gridmin;          // left edge of current grid
     double cellsize;         // cell width on current grid
 
-    /**
-     * MISSINGDOC: cKSplitIterator:void dive(int)
-     */
+    // internal
     void dive(int where);
-  public:
 
+  public:
     /**
      * Constructor.
      */
     cKSplitIterator(cKSplit& _ks, int _beg=1);
 
     /**
-     * MISSINGDOC: cKSplitIterator:void init(cKSplit&,int)
+     * Reinitializes the iterator.
      */
     void init(cKSplit& _ks, int _beg=1);
 
     /**
-     * MISSINGDOC: cKSplitIterator:void operator++()
+     * Moves the iterator to the next cell.
      */
     void operator++(int);
 
     /**
-     * MISSINGDOC: cKSplitIterator:void operator--()
+     * Moves the iterator to the previous cell.
      */
     void operator--(int);
 
     /**
-     * MISSINGDOC: cKSplitIterator:bool end()
+     * Returns true if the iterator has reached either end of the cell sequence.
      */
     bool end()           {return grid==0;}
 
     /**
-     * MISSINGDOC: cKSplitIterator:int cellNumber()
+     * Returns the index of the current cell.
      */
     int cellNumber()     {return cellnum;}
 
     /**
-     * MISSINGDOC: cKSplitIterator:double cellMin()
+     * Returns the upper lower of the current cell.
      */
     double cellMin()     {return gridmin+cell*cellsize;}
 
     /**
-     * MISSINGDOC: cKSplitIterator:double cellMax()
+     * Returns the upper bound of the current cell.
      */
     double cellMax()     {return gridmin+(cell+1)*cellsize;}
 
     /**
-     * MISSINGDOC: cKSplitIterator:double cellSize()
+     * Returns the size of the current cell.
      */
     double cellSize()    {return cellsize;}
 
     /**
-     * MISSINGDOC: cKSplitIterator:double cellValue()
+     * Returns the actual amount of observations in current cell.
+     * This is not necessarily an integer value because of previous cell splits.
      */
     double cellValue();
 };

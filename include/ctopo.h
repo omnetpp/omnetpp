@@ -197,68 +197,84 @@ class SIM_API sTopoLink
 
 
 /**
- * Supporting class for cTopology. sTopoLinkIn, sTopoLinkOut are two different
- * 'user interfaces' for sTopoLink.
+ * Supporting class for cTopology.
+ *
+ * While navigating the graph stored in a cTopology, sTopoNode's methods return
+ * sTopoLinkIn and sTopoLinkOut objects, which are 'aliases' to sTopoLink objects.
+ * sTopoLinkIn and sTopoLinkOut provide convenience functions that return the
+ * 'local' and 'remote' end of the connection when traversing the topology.
  */
 class SIM_API sTopoLinkIn : public sTopoLink
 {
   public:
     /**
-     * MISSINGDOC: sTopoLinkIn:sTopoNode*remoteNode()
+     * Returns the node at the remote end of this connection.
+     *
+     * Note: There's no corresponding localNode() method: the local node of
+     * this connection is the sTopoNode object whose method returned
+     * this sTopoLinkIn object.
      */
     sTopoNode *remoteNode()  {return src_node;}
 
     /**
-     * MISSINGDOC: sTopoLinkIn:int remoteGateId()
+     * Returns the gate ID at the remote end of this connection.
      */
     int remoteGateId()       {return src_gate;}
 
     /**
-     * MISSINGDOC: sTopoLinkIn:int localGateId()
+     * Returns the gate ID at the local end of this connection.
      */
     int localGateId()        {return dest_gate;}
 
     /**
-     * MISSINGDOC: sTopoLinkIn:cGate*remoteGate()
+     * Returns the gate at the remote end of this connection.
      */
     cGate *remoteGate()      {return src_node->module()->gate(src_gate);}
 
     /**
-     * MISSINGDOC: sTopoLinkIn:cGate*localGate()
+     * Returns the gate at the local end of this connection.
      */
     cGate *localGate()       {return dest_node->module()->gate(dest_gate);}
 };
 
 
 /**
- * Supporting class for cTopology. sTopoLinkIn, sTopoLinkOut are two different
- * 'user interfaces' for sTopoLink.
+ * Supporting class for cTopology.
+ *
+ * While navigating the graph stored in a cTopology, sTopoNode's methods return
+ * sTopoLinkIn and sTopoLinkOut objects, which are 'aliases' to sTopoLink objects.
+ * sTopoLinkIn and sTopoLinkOut provide convenience functions that return the
+ * 'local' and 'renote' end of the connection when traversing the topology.
  */
 class SIM_API sTopoLinkOut : public sTopoLink
 {
   public:
     /**
-     * MISSINGDOC: sTopoLinkOut:sTopoNode*remoteNode()
+     * Returns the node at the remote end of this connection.
+     *
+     * Note: There's no corresponding localNode() method: the local node of
+     * this connection is the sTopoNode object whose method returned
+     * this sTopoLinkIn object.
      */
     sTopoNode *remoteNode()  {return dest_node;}
 
     /**
-     * MISSINGDOC: sTopoLinkOut:int remoteGateId()
+     * Returns the gate ID at the remote end of this connection.
      */
     int remoteGateId()       {return dest_gate;}
 
     /**
-     * MISSINGDOC: sTopoLinkOut:int localGateId()
+     * Returns the gate ID at the local end of this connection.
      */
     int localGateId()        {return src_gate;}
 
     /**
-     * MISSINGDOC: sTopoLinkOut:cGate*remoteGate()
+     * Returns the gate at the remote end of this connection.
      */
     cGate *remoteGate()      {return dest_node->module()->gate(dest_gate);}
 
     /**
-     * MISSINGDOC: sTopoLinkOut:cGate*localGate()
+     * Returns the gate at the local end of this connection.
      */
     cGate *localGate()       {return src_node->module()->gate(src_gate);}
 };
@@ -309,7 +325,7 @@ class SIM_API cTopology : public cObject
     virtual ~cTopology();
 
     /**
-     * MISSINGDOC: cTopology:cTopology&operator=(cTopology&)
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
      */
     cTopology& operator=(cTopology& topo);
     //@}
@@ -356,6 +372,7 @@ class SIM_API cTopology : public cObject
     //@}
 
     /** @name Extracting the topology from a network.
+     *
      * extract...() functions build topology from the model.
      * User can select which modules to include. All connections
      * between those modules will be in the topology. Connections can
@@ -389,8 +406,10 @@ class SIM_API cTopology : public cObject
     void clear();
     //@}
 
-    /** @name Functions to examine topology by hand. Users also need to rely on
-     * sTopoNode and sTopoLink member functions.
+    /** @name Functions to examine topology by hand.
+     *
+     * Users also need to rely on sTopoNode and sTopoLink member functions
+     * to explore the graph stored in the object.
      */
     //@{
 
@@ -418,9 +437,9 @@ class SIM_API cTopology : public cObject
     /** @name Algorithms to find shortest paths.
      *
      * To be implemented:
-     *   void unweightedMultiShortestPathsTo(sTopoNode *target); <br>
-     *   void weightedSingleShortestPathsTo(sTopoNode *target);  <br>
-     *   void weightedMultiShortestPathsTo(sTopoNode *target);   <br>
+     *    -  void unweightedMultiShortestPathsTo(sTopoNode *target);
+     *    -  void weightedSingleShortestPathsTo(sTopoNode *target);
+     *    -  void weightedMultiShortestPathsTo(sTopoNode *target);
      */
     //@{
 

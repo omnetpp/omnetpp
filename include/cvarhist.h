@@ -79,15 +79,14 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     // consequence: sizeof(binbounds)=sizeof(cellv)+1
 
   protected:
-
     /**
-     * FIXME: the boundaries of the ordinary cells/bins are:
-     * rangemin=bin_bounds[0], bin_bounds[1], ... bin_bounds[num_cells]=rangemax
-     * consequence: sizeof(binbounds)=sizeof(cellv)+1
+     * FIXME:
      */
     void createEquiProbableCells();
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -108,7 +107,14 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
      */
     virtual ~cVarHistogram();
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cVarHistogram& operator=(cVarHistogram& res);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cVarHistogram".
@@ -120,11 +126,6 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
      * See cObject for more details.
      */
     virtual cObject *dup()    {return new cVarHistogram(*this);}
-
-    /**
-     * MISSINGDOC: cVarHistogram:cVarHistogram&operator=(cVarHistogram&)
-     */
-    cVarHistogram& operator=(cVarHistogram& res);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -139,68 +140,75 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
      * See cObject for more details.
      */
     virtual int netUnpack();
+    //@}
 
-    // new functions:
-
-    /**
-     * If HIST_TR_NO_TRANSFORM was passed in the constructor
-     * call, you may specify cell (bin) bounds manually before collection
-     * starts.
-     */
-    virtual void addBinBound(double x); // adds a new bin boundary (keeping the right order)
-
-    // redefined cHistogramBase functions
+    /** @name Redefined member functions from cStatistic and its subclasses. */
+    //@{
 
     /**
-     * FIXME: redefined cHistogramBase functions
+     * Clears the results collected so far.
      */
     virtual void clearResult();
 
     /**
-     * MISSINGDOC: cVarHistogram:void transform()
+     * Transforms the table of precollected values into an internal
+     * histogram structure.
      */
     virtual void transform();
 
     /**
-     * MISSINGDOC: cVarHistogram:void collectTransformed(double)
+     * Called internally by collect(), this method collects a value
+     * after the histogram has been transformed.
      */
     virtual void collectTransformed(double val);
 
     /**
-     * MISSINGDOC: cVarHistogram:double random()
+     * Generates a random number based on the collected data. Uses the random number generator set by setGenK().
      */
     virtual double random();
 
     /**
-     * MISSINGDOC: cVarHistogram:double pdf(double)
+     * Returns the value of the Probability Density Function at a given x.
      */
     virtual double pdf(double x); // --LG
 
     /**
-     * MISSINGDOC: cVarHistogram:double cdf(double)
+     * Returns the value of the Cumulated Density Function at a given x.
      */
     virtual double cdf(double x); // --LG
 
     /**
-     * MISSINGDOC: cVarHistogram:double basepoint(int)
+     * Returns the kth cell boundary.
      */
     virtual double basepoint(int k); // --LG
 
     /**
-     * MISSINGDOC: cVarHistogram:double cell(int)
+     * Returns the number of observations that fell into the kth histogram cell.
      */
     virtual double cell(int k);
 
     /**
-     * MISSINGDOC: cVarHistogram:void saveToFile(FILE*)
+     * Writes the contents of the object into a text file.
      */
     virtual void saveToFile(FILE *); //--LG
 
     /**
-     * MISSINGDOC: cVarHistogram:void loadFromFile(FILE*)
+     * Reads the object data from a file, in the format written out by saveToFile().
      */
     virtual void loadFromFile(FILE *);  //--LG
+    //@}
 
+    /** @name Setting up the histogram. */
+    //@{
+
+    /**
+     * FIXME: Adds a new bin boundary (keeping the right order).
+     * If HIST_TR_NO_TRANSFORM was passed in the constructor
+     * call, you may specify cell (bin) bounds manually before collection
+     * starts.
+     */
+    virtual void addBinBound(double x);
+    //@}
 };
 
 #endif

@@ -67,26 +67,12 @@ class SIM_API cQueue : public cObject
     int n;                          // number of items in queue
     CompareFunc compare;            // compare function
     bool asc;                       // order: true=ascending
+
   protected:
-
-    /**
-     * MISSINGDOC: cQueue:sQElem*find_qelem(cObject*)
-     */
+    // internal functions
     sQElem *find_qelem(cObject *obj);
-
-    /**
-     * MISSINGDOC: cQueue:void insbefore_qelem(sQElem*,cObject*)
-     */
     void insbefore_qelem(sQElem *p, cObject *obj);
-
-    /**
-     * MISSINGDOC: cQueue:void insafter_qelem(sQElem*,cObject*)
-     */
     void insafter_qelem(sQElem *p, cObject *obj);
-
-    /**
-     * MISSINGDOC: cQueue:cObject*remove_qelem(sQElem*)
-     */
     cObject *remove_qelem(sQElem *p);
 
   public:
@@ -112,14 +98,16 @@ class SIM_API cQueue : public cObject
     virtual ~cQueue();
 
     /**
-     * Duplication and assignment work all right with cQueue.
+     * Assignment operator. Duplication and assignment work all right with cQueue.
      * Contained objects that are owned by the queue will be duplicated
      * so that the new queue will have its own copy of them.
+     *
+     * The name member doesn't get copied; see cObject's operator=() for more details.
      */
     cQueue& operator=(cQueue& queue);
     //@}
 
-    /** @name Redefined cObject member functions */
+    /** @name Redefined cObject member functions. */
     //@{
 
     /**
@@ -167,73 +155,84 @@ class SIM_API cQueue : public cObject
     virtual int netUnpack();
     //@}
 
-    // new functions
+    /** @name Setup, insertion and removal functions. */
+    //@{
 
     /**
      * Changes the sort function and the sorting order. Doesn't re-sort
      * the contents of the queue!
      */
-    virtual void setup(CompareFunc cmp=NULL, bool a=false);  // reconfig (without reordering!)
-
+    virtual void setup(CompareFunc cmp, bool a=false);
 
     /**
      * Inserts the given object into the queue, maintaining the sorting
-     * order.
+     * order. Trying to insert a NULL pointer is an error.
      */
-    virtual void insert(cObject *obj);                       // insert from head using cmpfunc
+    virtual void insert(cObject *obj);
 
     /**
-     * Inserts exactly before and after the given object.
+     * Inserts exactly before the given object. If the given position
+     * does not exist, an error is raised. Trying to insert a NULL pointer
+     * is also an error.
      */
-    virtual void insertBefore(cObject *where, cObject *obj); // insert at specific place
+    virtual void insertBefore(cObject *where, cObject *obj);
 
     /**
-     * Inserts exactly before and after the given object.
+     * Inserts exactly after the given object.  If the given position
+     * does not exist, an error is raised. Trying to insert a NULL pointer
+     * is also an error.
      */
-    virtual void insertAfter(cObject *where, cObject *obj);  // insert at specific place
+    virtual void insertAfter(cObject *where, cObject *obj);
 
     /**
-     * MISSINGDOC: cQueue:cObject*head()
+     * Unlinks and returns the object given. If the object is not in the
+     * queue, a warning is issued and the same pointer is returned.
      */
-    virtual cObject *head();                                 // peek head item
+    virtual cObject *remove(cObject *obj);
 
     /**
-     * Returns pointer to the last object in the queue or NULL
-     * if the queue is empty.
+     * Unlinks and returns the last (tail) object in the queue. If the queue
+     * was empty, an error is raised.
      */
-    virtual cObject *tail();                                 // peek tail item
-
-    /**
-     * Unlinks and returns the object given.
-     */
-    virtual cObject *remove(cObject *obj);                   // remove item from queue
-
-    /**
-     * Unlinks and returns the last object in the queue.
-     */
-    virtual cObject *pop();                                  // remove item at tail
-
-    /**
-     * Returns the number of objects contained in the queue.
-     */
-    virtual int length();                   // number of items
-
-    /**
-     * Returns true if the queue is empty.
-     */
-    bool empty() {return length()==0;}      // check whether queue is empty
-
-    /**
-     * MISSINGDOC: cQueue:bool contains(cObject*)
-     */
-    virtual bool contains(cObject *obj);    // check whether queue contains an object
-    // bool isEnqueued(cObject *obj)        -- obsolete, use contains() instead!
+    virtual cObject *pop();
 
     /**
      * As a result, the container will be empty. Contained objects that
      * were owned by the queue will be deleted.
      */
-    virtual void clear();                   // delete whole contents
+    virtual void clear();
+    //@}
+
+    /** @name Query functions. */
+    //@{
+
+    /**
+     * Returns pointer to the object at the head of the queue.
+     * Returns NULL if the queue is empty.
+     */
+    virtual cObject *head();
+
+    /**
+     * Returns pointer to the last (tail) object in the queue.
+     * Returns NULL if the queue is empty.
+     */
+    virtual cObject *tail();
+
+    /**
+     * Returns the number of objects contained in the queue.
+     */
+    virtual int length();
+
+    /**
+     * Returns true if the queue is empty.
+     */
+    bool empty() {return length()==0;}
+
+    /**
+     * Returns true if the queue contains the passed object.
+     */
+    virtual bool contains(cObject *obj);
+    //@}
 };
 
 //==========================================================================
@@ -250,7 +249,7 @@ class SIM_API cQueueIterator
 
   public:
     /**
-     * Constructor, cIterator will walk on the queue passed
+     * Constructor. cQueueIterator will walk on the queue passed
      * as argument. The current object will be the first (if a==1) or
      * the last (a==0) object in the queue.
      */
@@ -264,9 +263,9 @@ class SIM_API cQueueIterator
             {p=&q ? (athead ? q.headp : q.tailp) : NO(sQElem);}
 
     /**
-     * MISSINGDOC: cQueueIterator:cObject&operator[]()
+     * OBSOLETE. Use operator () instead.
      */
-    cObject& operator[](int)  {return *p->obj;} //OBSOLETE
+    cObject& operator[](int)  {return *p->obj;}
 
     /**
      * Returns the current object.
@@ -279,14 +278,18 @@ class SIM_API cQueueIterator
     bool end()                {return (bool)(p==NULL);}
 
     /**
-     * MISSINGDOC: cQueueIterator:cObject*operator++()
+     * Returns the current object, then moves the iterator to the next item.
+     * If the iterator has reached either end of the queue, nothing happens;
+     * you have to call init() again to restart iterating.
      */
-    cObject *operator++(int)  {sQElem *t=p; if(p) p=p->next; return t->obj;}
+    cObject *operator++(int)  {sQElem *t=p; if(p) p=p->next; return t->obj;} // FIXME: fails if p=NULL!!!
 
     /**
-     * MISSINGDOC: cQueueIterator:cObject*operator--()
+     * Returns the current object, then moves the iterator to the previous item.
+     * If the iterator has reached either end of the queue, nothing happens;
+     * you have to call init() again to restart iterating.
      */
-    cObject *operator--(int)  {sQElem *t=p; if(p) p=p->prev; return t->obj;}
+    cObject *operator--(int)  {sQElem *t=p; if(p) p=p->prev; return t->obj;} // FIXME: fails if p=NULL!!!
 };
 
 #endif

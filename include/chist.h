@@ -32,6 +32,9 @@ class SIM_API cHistogramBase : public cDensityEstBase
     unsigned *cellv;      // array of counters
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
+
     /**
      * Copy constructor.
      */
@@ -48,17 +51,19 @@ class SIM_API cHistogramBase : public cDensityEstBase
      */
     virtual ~cHistogramBase();
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cHistogramBase& operator=(cHistogramBase& res);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cHistogramBase".
      */
     virtual const char *className() const {return "cHistogramBase";}
-
-    /**
-     * MISSINGDOC: cHistogramBase:cHistogramBase&operator=(cHistogramBase&)
-     */
-    cHistogramBase& operator=(cHistogramBase& res);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -74,34 +79,37 @@ class SIM_API cHistogramBase : public cDensityEstBase
      */
     virtual int netUnpack();
     // dup() and inspector(..) not needed
+    //@}
 
-    // redefined cDensityEstBase functions
+    /** @name Redefined member functions from cStatistic and its subclasses. */
+    //@{
 
     /**
-     * FIXME: dup() and inspector(..) not needed
-     * redefined cDensityEstBase functions
+     * Clears the results collected so far.
      */
     virtual void clearResult();
 
     /**
-     * MISSINGDOC: cHistogramBase:void transform()
+     * Transforms the table of precollected values into an internal
+     * histogram structure.
      */
     virtual void transform();
 
     /**
-     * MISSINGDOC: cHistogramBase:int cells()
+     * Returns the number of histogram cells used.
      */
     virtual int cells();
 
     /**
-     * MISSINGDOC: cHistogramBase:void saveToFile(FILE*)
+     * Writes the contents of the object into a text file.
      */
     virtual void saveToFile(FILE *); //--LG
 
     /**
-     * MISSINGDOC: cHistogramBase:void loadFromFile(FILE*)
+     * Reads the object data from a file, in the format written out by saveToFile().
      */
     virtual void loadFromFile(FILE *);  //--LG
+    //@}
 };
 
 //==========================================================================
@@ -115,6 +123,8 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     double cellsize;            // cell/category  sizes
 
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -127,17 +137,19 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
      */
     explicit cEqdHistogramBase(const char *name=NULL, int numcells=10);
 
-    // redefined functions
+    /**
+     * Assignment operator. The name member doesn't get copied; see cObject's operator=() for more details.
+     */
+    cEqdHistogramBase& operator=(cEqdHistogramBase& res);
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cEqdHistogramBase".
      */
     virtual const char *className() const {return "cEqdHistogramBase";}
-
-    /**
-     * MISSINGDOC: cEqdHistogramBase:cEqdHistogramBase&operator=(cEqdHistogramBase&)
-     */
-    cEqdHistogramBase& operator=(cEqdHistogramBase& res);
 
     /**
      * Serializes the object into a PVM or MPI send buffer.
@@ -152,54 +164,55 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
      * See cObject for more details.
      */
     virtual int netUnpack();
-    // dup() not needed
+    //@}
 
-    // redefined cDensityEstBase functions
   protected:
-
     /**
-     * FIXME: dup() not needed
-     * redefined cDensityEstBase functions
+     * Called internally by collect(), this method collects a value
+     * after the histogram has been transformed.
      */
     virtual void collectTransformed(double val);
 
     /**
-     * MISSINGDOC: cEqdHistogramBase:void setupRange()
+     * Called internally by transform(), this method should determine and set up
+     * the histogram range. It also calculates the cell size.
      */
-    virtual void setupRange(); // also calculates cellsize
+    virtual void setupRange();
+
   public:
+    /** @name Redefined member functions from cStatistic and its subclasses. */
+    //@{
 
     /**
-     * MISSINGDOC: cEqdHistogramBase:double basepoint(int)
+     * Returns the kth cell boundary.
      */
     virtual double basepoint(int k);
 
     /**
-     * MISSINGDOC: cEqdHistogramBase:double cell(int)
+     * Returns the number of observations that fell into the kth histogram cell.
      */
     virtual double cell(int k);
 
-
     /**
-     * MISSINGDOC: cEqdHistogramBase:double pdf(double)
+     * Returns the value of the Probability Density Function at a given x.
      */
     virtual double pdf(double x); // --LG
 
     /**
-     * MISSINGDOC: cEqdHistogramBase:double cdf(double)
+     * Returns the value of the Cumulated Density Function at a given x.
      */
     virtual double cdf(double x); // --LG
 
-
     /**
-     * MISSINGDOC: cEqdHistogramBase:void saveToFile(FILE*)
+     * Writes the contents of the object into a text file.
      */
     virtual void saveToFile(FILE *); //--LG
 
     /**
-     * MISSINGDOC: cEqdHistogramBase:void loadFromFile(FILE*)
+     * Reads the object data from a file, in the format written out by saveToFile().
      */
     virtual void loadFromFile(FILE *);  //--LG
+    //@}
 };
 
 //==========================================================================
@@ -224,6 +237,8 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
 class SIM_API cLongHistogram : public cEqdHistogramBase
 {
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor.
@@ -241,7 +256,11 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      */
     virtual ~cLongHistogram();
 
-    // redefined functions
+    // FIXME: assignment????
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cLongHistogram".
@@ -267,22 +286,23 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      * See cObject for more details.
      */
     virtual int netUnpack();
-    // base class' op=() is OK
+    //@}
 
-    // redefined cEqdHistogramBase functions
   protected:
-
     /**
-     * FIXME: base class' op=() is OK
-     * redefined cEqdHistogramBase functions
+     * Called internally by transform(), this method should determine and set up
+     * the histogram range
      */
     virtual void setupRange();
+
   public:
+    /** @name Redefined member functions from cStatistic and its subclasses. */
+    //@{
 
     /**
-     * MISSINGDOC: cLongHistogram:void collect(double)
+     * Collects one value. FIXME: truncates + collects
      */
-    virtual void collect(double val);  // truncates + collects
+    virtual void collect(double val);
 
     /**
      * Returns a random number based on the distribution collected. If
@@ -291,6 +311,7 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
      * has been set up, a random integer is returned.
      */
     virtual double random();
+    //@}
 };
 
 //==========================================================================
@@ -302,6 +323,8 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
 class SIM_API cDoubleHistogram : public cEqdHistogramBase
 {
   public:
+    /** @name Constructors, destructor, assignment. */
+    //@{
 
     /**
      * Copy constructor
@@ -319,7 +342,12 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      */
     virtual ~cDoubleHistogram();
 
-    // redefined functions
+    // FIXME: assignment???
+
+    //@}
+
+    /** @name Redefined cObject member functions. */
+    //@{
 
     /**
      * Returns pointer to a string containing the class name, "cDoubleHistogram".
@@ -345,9 +373,10 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      * See cObject for more details.
      */
     virtual int netUnpack();
-    // base class' op=() is OK
+    //@}
 
-    // redefined cHistogramBase functions
+    /** @name Redefined member functions from cStatistic and its subclasses. */
+    //@{
 
     /**
      * Returns a random number based on the distribution collected. If
@@ -356,6 +385,7 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
      * has been set up, a random integer is returned.
      */
     virtual double random();
+    //@}
 };
 
 #endif

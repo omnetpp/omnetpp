@@ -1,3 +1,8 @@
+2001-07-19 Andras Varga
+
+	* cdensity.h chist.h cksplit.h cpsquare.h cqueue.h cstat.h ctopo.h
+        cvarhist.h chead.h ctypes.h cwatch.h: added/cleaned up DOC++ comments 
+
 2001-07-15 Andras Varga
 
 	* added documentation for redefined cObject methods. Affects nearly all
