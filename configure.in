@@ -1,18 +1,35 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(include/omnetpp.h)
+AC_CONFIG_AUX_DIR(src/utils)
+AC_CANONICAL_HOST()
 
 #
 # OMNeT++ version number
 #
 OMNETPP_VERSION=`cat Version | sed 's/omnetpp-//'`
 
-#
-# Detect platform...
-#
-if uname | grep "CYGWIN" >/dev/null; then
+dnl -------------------------------------------------------------
+dnl  Set system/arch specific values
+dnl -------------------------------------------------------------
+dnl
+case $host in
+  sparc-sun-*)
+    CFLAGS_ARCH="-DSUNSPARC"
+    ;;
+  *-*-cygwin*)
     cygwin=yes
-fi
+    ;;
+  *)
+    ;;
+esac
+
+#
+# replaced by scanning $host
+#
+#if uname | grep "CYGWIN" >/dev/null; then
+#    cygwin=yes
+#fi
 
 #
 # Location of various components. Can be overridden in configure.user.
@@ -66,6 +83,7 @@ LDFLAGS=
 
 # total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
 CYGWIN_STACKSIZE=134217728
+
 
 
 dnl -------------------------------------------------------------
@@ -171,6 +189,10 @@ fi
 #----------------------
 . ./configure.user
 
+#----------------------
+# set arch specific flags
+#----------------------
+CFLAGS="$CFLAGS $CFLAGS_ARCH"
 
 #----------------------
 # Checks for standard libraries.
