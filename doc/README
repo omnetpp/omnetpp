@@ -100,13 +100,14 @@ omnetpp/
        demo/          a tour of the sample simulations
        nim/           a simple two-player game
        hcube/         hypercube network with deflection routing
-       token/         Token-Ring network
+       token/         Token Ring network
        fddi/          an accurate FDDI MAC simulation
        hist/          demo of the histogram classes
        dyna/          dynamic module creation (client-server network)
        dyna2/         variant of Dyna, using the experimental message subclassing
        fifo1/         single-server queue
        fifo2/         another version of fifo, now with handleMessage() and FSM
+       topo/          demonstrates creating various topologies
 
 Some tools to make it easier using MSVC with OMNeT++.
 
