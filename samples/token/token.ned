@@ -22,7 +22,9 @@ simple TokenRingMAC
         // Token Holding Time, as defined in the protocol.
         THT : numeric const,
         // MAC address of this station, modeled with an integer.
-        address : numeric const;
+        address : numeric const,
+        // Max queue size in packets.
+        queueMaxLen : numeric const;
     gates:
         in: phy_in;
         in: from_hl;
@@ -87,10 +89,7 @@ module Computer
         gen: Generator;
             parameters:
                 numStations = numStations,
-                address = address,
-                numMessages = input,
-                messageLength = input,
-                interArrivalTime = input;
+                address = address;
             display: "p=79,60;i=gen;b=32,30";
         sink: Sink;
             display: "p=132,60;i=sink;b=32,30";
@@ -136,7 +135,7 @@ endmodule
 network token : TokenRing
     parameters:
         numStations = input(5, "Number of stations in the ring:"),
-        THT = input(10ms,"Token Holding Time (s):"),
+        THT = input(20ms,"Token Holding Time (s):"),
         dataRate = 4000000, // 4 Mbit/s
         cableDelay = 1us;
 endnetwork

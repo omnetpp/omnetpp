@@ -23,12 +23,16 @@ class TokenRingMAC : public cSimpleModule
     int myAddress;
     long dataRate;
     double tokenHoldingTime;
+    int queueMaxLen;
 
     cQueue sendQueue;
     int sendQueueBytes;
     cOutVector queueLenPackets;
     cOutVector queueLenBytes;
     cOutVector queueingTime;
+    int numPacketsToSend;
+    int numPacketsToSendDropped;
+    cOutVector queueDrops;
 
     cMessage *transmEnd;
     cMessage *recvEnd;
@@ -36,6 +40,7 @@ class TokenRingMAC : public cSimpleModule
     bool debug;
 
     virtual void activity();
+    virtual void finish();
     virtual void storeDataPacket(TRApplicationData *data);
     virtual void beginReceiveFrame(TRFrame *frame);
     virtual void endReceiveFrame(cMessage *data);
