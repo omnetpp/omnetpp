@@ -115,77 +115,35 @@ simple module are called \textit{routes}.  Compound modules act as
 between their inside and their outside world.
 
 
-\subsection{Link characteristics}
+\subsection{Modeling of packet transmissions}
 
 Connections can be assigned three parameters which facilitate
 the modeling of communication networks, but can be useful for
-other models too:
-\begin{itemize}
-  \item{propagation delay (sec)\index{channel!propagation delay}}
-  \item{bit error rate (errors/bit)\index{channel!bit error rate}}
-  \item{data rate (bits/sec)\index{channel!data rate}}
-\end{itemize}
+other models too: \textit{propagation delay}, \textit{bit error rate}
+and \textit{data rate}, all three being optional. One can specify
+link parameters individually for each connection, or define link types
+and use them throughout the whole model.
 
-
-Each of these parameters is optional. One can specify link parameters
-individually for each connection, or define link types (also
-called \textit{channel} \textit{types}) once and use them throughout the
-whole model.
-
-The \textit{propagation delay} is the amount of time the arrival of
+Propagation delay is the amount of time the arrival of
 the message is delayed by when it travels through the channel.
-Propagation delay is specified in seconds.
 
-The \textit{bit error rate} has influence on the transmission of messages
-through the channel. The bit error rate is the probability that
-a bit is incorrectly transmitted. Thus, the probability that
-a message of \textit{n} bits length is transferred correctly is:\\
+Bit error rate speficifies the probability that a bit is incorrectly
+transmitted, and allows for simple noisy channel modelling.
 
+Data rate is specified in bits/second, and it is used for calculating
+transmission time of a packet.
 
-$P( \textit{sent message received properly} ) = (1 - \textit{ber})^{\mathit{n}}$\\
-where \textit{ber} = bit error rate and \textit{n} = number of bits in message.\\
+When data rates are in use, the sending of the message in the model
+corresponds to the transmission of the first bit, and
+the arrival of the message corresponds to the reception
+of the last bit. This model is not always applicable,
+for example protocols like Token Ring and FDDI do not wait
+for the frame to arrive in its entirety, but rather start repeating
+its first bits soon after they arrive -- in other words,
+frames ``flow through'' the stations, being delayed only a few bits.
+If you want to model such networks, the data rate modeling feature
+of {\opp} cannot be used.
 
-
-The message has an error flag which is set in case of transmission
-errors.
-
-The \textit{data rate} is specified in bits/second, and it is used
-for transmission delay calculation. The sending time of the message
-normally corresponds to the transmission of the first bit, and
-the arrival time of the message corresponds to the reception
-of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=4.301in, height=2.417in]{figures/usmanFig4}
-\caption{Message transmission}
-\label{fig:ch-overview:message-transm}
-\end{center}
-\end{figure}
-
-The above model is not applicable for modeling some protocols like
-Token Ring and FDDI where the stations repeat the bits of a frame that
-arrives on the ring immediately, without waiting for the whole frame
-to arrive; in other words, frames ``flow through'' the stations, being
-delayed only a few bits. If you want to model such networks, the data
-rate modeling feature of {\opp} cannot be used.
-
-If a message travels along a route, through successive links and
-compound modules, the model behaves as if each module waited until the
-last bit of the message arrives and only start its transmission then
-(Fig. \ref{fig:ch-overview:msg-multiple-ch}).
-
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[width=3.330in, height=2.692in]{figures/usmanFig5}
-\caption{Message sending over multiple channels}
-\label{fig:ch-overview:msg-multiple-ch}
-\end{center}
-\end{figure}
-
-Since the above effect is usually not the desired one, typically
-you will want to assign data rate to only one connection in the
-route.
 
 
 \subsection{Parameters}
@@ -380,7 +338,7 @@ all C++ sources are compiled and linked with the simulation kernel and
 a user interface to form a simulation executable.
 
 
-\textbf{Running the simulation and analyzing the results}
+\subsubsection{Running the simulation and analyzing the results}
 
 The simulation executable is a standalone program,
 thus it can be run on other machines without {\opp} or the model files
@@ -407,7 +365,7 @@ does not try to duplicate their efforts. This manual briefly describes
 some data plotting programs and how to use them with {\opp}.
 
 
-\textbf{User interfaces}
+\subsubsection{User interfaces}
 \index{simulation!user interface}
 
 The primary purpose of user interfaces is to make the inside
@@ -427,7 +385,7 @@ graphical user interface, and finally run it with a simple and
 fast user interface that supports batch execution.
 
 
-\textbf{Component libraries}
+\subsubsection{Component libraries}
 \index{module!libraries}
 
 Module types can be stored in files separately from the place
@@ -435,7 +393,7 @@ of their actual usage. This means that the user can group existing
 module types and create component libraries.
 
 
-\textbf{Universal standalone simulation programs}
+\subsubsection{Universal standalone simulation programs}
 
 
 A simulation executable can store several independent models

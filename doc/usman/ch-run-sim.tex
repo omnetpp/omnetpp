@@ -13,8 +13,8 @@ Currenly, two user interfaces are supported:
 
 
 You would typically test and debug your simulation under Tkenv,
-then do actual simulation experiments with Cmdenv which supports
-batch execution. Tkenv is also better suited for educational or
+then run actual simulation experiments from the command line or
+shell script, using Cmdenv. Tkenv is also better suited for educational or
 demonstration purposes.
 
 Both Tkenv and Cmdenv are provided in the form of a library, and
@@ -79,7 +79,9 @@ for 500,000 simulated seconds, and vector results should be written into the
 Cmdenv to run the simulation at full speed and print periodic updates
 about the progress of the simulation. The \ttt{[Parameters]} section assigns
 values to parameters that did not get a value (or got \fname{input} value)
-inside the NED files. Lines that start with "\#" or ";" are comments.
+inside the NED files.
+
+Lines that start with ``\#'' or ``;'' are comments.
 
 When you build the Fifo1 sample with Cmdenv and you run it by typing \fname{fifo1}
 (or on Unix, \fname{./fifo1}) on the command prompt, you should see
@@ -123,7 +125,7 @@ second; the first two values are 0 because there wasn't enough data
 for it to calculate yet). At the end of the simulation, the \fname{finish()}
 methods of the simple modules are run, and the output from them are displayed.
 On my machine this run took 34 seconds. This Cmdenv output can be
-customized via other \fname{omnetpp.ini} entries. The output file \fname{fifo1.vec}
+customized via \fname{omnetpp.ini} entries. The output file \fname{fifo1.vec}
 contains vector data recorded during simulation (here, queueing times),
 and it can be processed using Plove or other tools.
 
@@ -135,13 +137,54 @@ selected, option settings and parameter values can be given either
 individually for each run, or together for all runs, depending in
 which section the option or parameter appears.
 
-\subsection{Sections and entries}
+\subsection{File syntax}
 
-The ini file is a text file consisting of entries grouped
-into different sections.
+The ini file is a text file consisting of entries grouped into different sections.
+The order of the sections doesn't matter. Also, if you have two sections
+with the same name (e.g. \ttt{[General]} occurs twice in the file),
+they will be merged.
 
-Lines that start with "\#" or ";" are comments, and will be ignore during
+Lines that start with "\#" or ";" are comments, and will be ignored during
 processing.
+
+Long lines can be broken up using the backslash notation: if the last character
+of a line is "\textbackslash", it will be merged with the next line.
+
+The size of the ini file (the number of sections and entries) is not limited.
+Currently there is a 1024-character limit on the line length,
+which \textit{cannot} be increased by breaking up the line using backslashes.
+This limit might be lifted in future releases.
+
+Example:
+
+\begin{verbatim}
+[General]
+# this is a comment
+foo="this is a single value \
+for the foo parameter"
+
+[General]  # duplicate sections are merged
+bar="belongs to the same section as foo"
+\end{verbatim}
+
+\subsection{File inclusion}
+
+{\opp} supports including an ini file in another\index{ini file!file inclusion},
+via the \ttt{include} keyword. This feature allows you to partition large ini
+files into logical units, fixed and varying part etc.
+
+An example:
+
+\begin{verbatim}
+# omnetpp.ini
+...
+include parameters.ini
+include per-run-pars.ini
+...
+\end{verbatim}
+
+
+\subsection{Sections}
 
 The following sections can exist:
 
@@ -155,7 +198,7 @@ and all user interfaces. For details, see section \ref{sec:ch-run-sim:general-se
 \\\hline
 \ttt{[Run 1]}, \ttt{[Run 2]}, ...  & Contains per-run settings.
 These sections may contain any entries that are accepted in other
-sections (except \ttt{[Machines]}).
+sections.
 \\\hline
 %%
 \ttt{[Cmdenv]} & Contains Cmdenv-specific settings.
@@ -180,34 +223,8 @@ For details, see section \ref{sec:ch-run-sim:outvectors-section}
 For details, see section \ref{sec:ch-run-sim:displaystrings-section}
 \\\hline
 %%
-\ttt{[Machines]} & Used with distributed execution, describes logical - physical
-machine mapping.
-For details, see section \ref{sec:ch-parallel-exec:machine-mapping}
-\\\hline
-%%
-\ttt{[Slaves]} & Used with distributed execution, contains settings
-for slave processes.
-For details, see section \ref{sec:ch-run-sim:slaves-section}
-\\\hline
-%%
 \end{longtable}
 
-
-\subsection{File inclusion}
-
-{\opp} supports including an ini file in another\index{ini file!file inclusion},
-via the \ttt{include} keyword. This feature allows you to partition large ini
-files into logical units, fixed and varying part etc.
-
-An example:
-
-\begin{verbatim}
-# omnetpp.ini
-...
-include parameters.ini
-include per-run-pars.ini
-...
-\end{verbatim}
 
 
 \subsection{The [General] section}
@@ -244,10 +261,6 @@ read but they were not in the ini file.\\\hline
 %%
 \fpar{network} = & The name of the network to be simulated. \\\hline
 %%
-\fpar{distributed} = no & Parallel execution or not. \\\hline
-%%
-\fpar{parallel-system} = MPI & MPI or PVM. Defaults to MPI.\\\hline
-%%
 \fpar{snapshot-file} = omnetpp.sna & Name of the snapshot file. The result of
 each \fname{snapshot()} call will be appended to this file. \\\hline
 %%
@@ -274,9 +287,9 @@ in kilobytes. You need to increase this value if you get the
 ``Cannot allocate coroutine stack...'' error.\\\hline
 %%
 \fpar{load-libs} = & {\raggedright Name of shared libraries (.so files) to load after startup.
-You can use it to load simple module code etc.\\
-Example:\\
-\fpar{load-libs} =../x25/x25.so../lapb/lapb.so}\\\hline
+You can use it to load simple module code etc. Example:
+
+\fpar{load-libs} = \ttt{../x25/x25.so ../lapb/lapb.so}}\\\hline
 %%
 \fpar{netif-check-freq} = & Used with parallel execution.\\\hline
 %%
@@ -457,8 +470,13 @@ number of messages created/still present/currently scheduled in FES.
 simple module when the simulation is linked with Cmdenv. \\\hline
 \end{longtable}
 
-Sample output when the simulation is running in ``express'' mode,
-with detailed performance display:
+\subsection{Interpreting Cmdenv output}
+\label{sec:ch-run-sim:interpreting-cmdenv-output}
+
+When the simulation is running in ``express'' mode with detailed
+performance display enabled, Cmdenv periodically outputs a three-line
+status info about the progress of the simulation.
+The output looks like this:
 
 \begin{verbatim}
 ...
@@ -471,9 +489,76 @@ with detailed performance display:
 ...
 \end{verbatim}
 
+The first line of the status display (beginning with \ttt{**})
+contains:
+
+\begin{itemize}
+   \item{how many events have been processed so far}
+   \item{the current simulation time (T), and}
+   \item{the elapsed time (wall clock time) since the beginning of the simulation run.}
+\end{itemize}
+
+The second line displays info about simulation performance:
+
+\begin{itemize}
+   \item{\ttt{ev/sec} indicates \textit{performance}: how many events are processed
+     in one real-time second.  On one hand it depends on your hardware
+     (faster CPUs process more events per second), and on the other hand
+     it depends on the complexity (amount of calculations) associated
+     with processing one event. For example, protocol simulations tend to require
+     more processing per event than e.g. queueing networks, thus
+     the latter produce higher ev/sec values.
+     In any case, this value is independent of the size (number of modules) in your model.}
+   \item{\ttt{simsec/sec} shows \textit{relative speed} of the simulation, that is,
+     how fast the simulation is progressing compared to real time, how many
+     simulated seconds can be done in one real second. This value virtuall depends
+     on everything: on the hardware, on the size of the simulation model,
+     on the complexity of events, and the average simulation time between events as well.}
+   \item{\ttt{ev/simsec} is the \textit{event density}: how many events are
+     there per simulated second. Event density only depends on the simulation model,
+     regardless of the hardware used to simulate it: in a cell-level ATM simulation
+     you'll have very hight values ($10^9$), while in a bank teller simulation
+     this value is probably well under 1. It also depends on the size of your
+     model: if you double the number of modules in your model, you can expect
+     the event density double, too.}
+\end{itemize}
+
+The third line displays the number of messages, and it is important
+because it may indicate the `health' of your simulation.
+
+\begin{itemize}
+   \item{\ttt{Created}: total number of message objects created since the
+     beginning of the simulation run. This does not mean that this many message
+     object actually exist, because some (many) of them may have been deleted
+     since then. It also does not mean that \textit{you} created all those
+     messages -- the simulation kernel also creates messages for its own use
+     (e.g. to implement \ttt{wait()} in an \ttt{activity()} simple module).}
+   \item{\ttt{Present}: the number of message objects currently present
+     in the simulation model, that is, the number of messages created (see above)
+     minus the number of messages already deleted. This number includes
+     the messages in the FES.}
+   \item{\ttt{In FES}: the number of messages currently scheduled in the
+     Future Event Set.}
+\end{itemize}
+
+
+The second value, the number of messages present is more useful than
+perhaps one would initially think. It can indicator of the `health' of the simulation:
+if it is growing steadily, then either you have a memory leak and losing
+messages (which indicates a programming error), or the network you simulate is
+overloaded and queues are steadily filling up (which might indicate wrong input
+parameters).
+
+Of course, if the number of messages does not increase, it does not mean
+that you do \textit{not} have a memory leak (other memory leaks are also
+possible). Nevertheless the value is still useful, because by far the
+most common way of leaking memory in a simulation is by not deleting messages.
+
+
+
 \section{Tkenv: the graphical user interface}
 
-\tbf{Features}
+\subsubsection{Features}
 
 Tkenv\index{Tkenv} is a portable graphical windowing user interface.
 Tkenv supports interactive execution of the simulation, tracing and
@@ -523,7 +608,7 @@ switches\index{command line switches}:
   The program prints a short help message and the networks
   contained in the executable, then exits.\\
 
-  \ttt{-f} \texttt{<}\textit{fileName\texttt{>}}
+  \ttt{-f }\textit{<fileName>}
   &
   Specify the name of the configuration file.
   The default is \texttt{omnetpp.ini}\index{omnetpp.ini}.
@@ -532,7 +617,7 @@ switches\index{command line switches}:
   settings, another one most of the module parameters, another one the
   module parameters you change often.\\
 
-  \ttt{-l} \texttt{<}\textit{fileName\texttt{>}}
+  \ttt{-l }\textit{<fileName>}
   &
   Load a shared object\index{shared objects} (\texttt{.so} file on Unix).
   Multiple \ttt{-l} switches are accepted. Your \texttt{.so} files may contain module
@@ -555,7 +640,6 @@ via menu items and dialogs.
 \hline
 \tabheadcol
 \tbf{Entry and default value} & \tbf{Description}\\\hline
-\multicolumn{2}{c}{}\\\hline
 \multicolumn{2}{|c|}{\tbf{[Tkenv]}}\\\hline
 %%
 \fpar{default-run} = 1 & Specifies which run Tkenv should set up
@@ -598,7 +682,7 @@ Tkenv. \\\hline
 
 \subsection{Using the graphical environment}
 
-\tbf{Simulation running modes in Tkenv}
+\subsubsection{Simulation running modes in Tkenv}
 
 
 Tkenv has the following modes for running the simulation :
@@ -617,7 +701,6 @@ toolbar.
 
 In \tbf{Step} mode, you can execute the simulation event-by-event.
 
-
 In \tbf{Run} mode, the simulation runs with all tracing aids on.
 Message animation is active and inspector windows are updated
 after each event. Output messages are displayed in the main window
@@ -625,7 +708,6 @@ and module output windows. You can stop the simulation with the
 Stop button on the toolbar. You can fully interact with the user
 interface while the simulation is running: you can open inspectors
 etc.
-
 
 In \tbf{Fast} mode, animation is turned off. The inspectors and
 the message output windows are updated after each 10 events (the
@@ -642,8 +724,12 @@ thus the run-time overhead of the user interface is minimal.
 You have to explicitly push the Update inspectors button if you
 want an update.
 
+Tkenv has a status bar which is regularly updated while the simulation
+is running. The gauges displayed are similar to those in Cmdenv,
+described in section \ref{sec:ch-run-sim:interpreting-cmdenv-output}.
 
-\tbf{Inspectors}
+
+\subsubsection{Inspectors}
 
 
 In Tkenv, objects can be viewed through inspectors. To start, choose
@@ -661,7 +747,7 @@ you can paste the object pointer into the debugger and have closer look
 at the data structures.
 
 
-\tbf{Configuring Tkenv}
+\subsubsection{Configuring Tkenv}
 
 
 In case of nonstandard installation, it may be necessary to set the
@@ -675,7 +761,7 @@ semicolon-separated list of directories and defaults to
 ``\textit{omnetpp-dir}/bitmaps;.;./bitmaps''.
 \end{sloppypar}
 
-\tbf{Embedding Tcl code into the executable}
+\subsubsection{Embedding Tcl code into the executable}
 
 A significant part of Tkenv is written in Tcl, in several
 \texttt{.tcl} script files. The default location of the scripts is
@@ -710,33 +796,6 @@ from the distribution:
 
 
 \section{More about omnetpp.ini}
-
-\subsection{The [Slaves] section}
-\label{sec:ch-run-sim:slaves-section}
-
-\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
-\hline
-\tabheadcol
-\tbf{Entry and default value} & \tbf{Description}\\\hline
-\multicolumn{2}{|c|}{\tbf{[Slaves]}}\\\hline
-%%
-\fpar{write-slavelog} = yes & Enables/disables writing to the slave.log file\\\hline
-%%
-\fpar{slavelog-file} = slave.log & Specifies an alternative filename for slave.log. \\\hline
-%%
-\fpar{module-messages} = yes & Specifies whether module messages are printed or not. \\\hline
-%%
-\fpar{errmsgs-to-console} = yes & Specifies whether error messages should be
-sent to and displayed at the `console' segment. \\\hline
-%%
-\fpar{infomsgs-to-console} = no & Specifies whether info messages
-should be sent to and displayed at the `console' segment. \\\hline
-%%
-\fpar{modmsgs-to-console} = no & Specifies whether module \textit{ev}
-output should be sent to and displayed at the `console'
-segment.\\\hline
-\end{longtable}
-
 
 
 \subsection{Module parameters in the configuration file}
@@ -876,8 +935,8 @@ assigned to modules, submodules and gates (a connection's display
 string is stored in its ``from'' gate). Display strings can be
 hardcoded into the NED file or specified in the configuration file.
 (Hardcoded display strings take precedence over the ones given in ini
-files.) Format of display string are documented in the Display String
-section (~\ref{sec:ch-ned-lang:display-strings}).
+files.) Format of display string are documented in section
+\ref{sec:ch-ned-lang:display-strings}).
 
 Display strings can appear in the \texttt{[DisplayStrings]} section of
 the ini file. They are expected as entries in one of the following
@@ -911,8 +970,8 @@ In {\opp}, you have three choices:
   \item{Manually set the seed from within the program.}
 \end{enumerate}
 
-If you decide for automatic seed selection\index{seed, automatic
-  selection}, do not specify any seed value in the ini file. For the
+If you decide for automatic seed selection\index{seed!automatic selection},
+do not specify any seed value in the ini file. For the
 random number generators, {\opp} will automatically select seeds that
 are 1,000,000 values apart in the sequence. If you have several runs,
 each run is started with a fresh set of seeds that are 1,000,000
@@ -920,6 +979,16 @@ values apart from the seeds used for previous runs. Since the
 generation of new seed values is costly, {\opp} has a table of
 pre-calculated seeds (256 values); if they are all used up, {\opp}
 starts from the beginning of the table again.
+
+\textbf{Warning!} Be aware that each time the simulation program
+is started, {\opp} starts assigning seeds from the beginning
+of the table. That is, if you execute Run 1, Run 2, Run 3 one
+at a time (e.g. from a shell script, using the Cmdenv -r command-line
+flag), all your runs will be executed using the \textit{same} seeds!
+This behavior is almost surely not what you want, and it will be
+fixed in future versions of {\opp}. Until then, it is a good
+idea to stick to manually generating seeds and explicitly adding them
+to the ini file.
 
 
 Automatic seed selection may not be appropriate for you for several
@@ -1021,27 +1090,126 @@ You would specify these seed values in the ini file.
 
 \section{Repeating or iterating simulation runs}
 
-%
-% TBD Intro, and multiple simulation runs in \texttt{omnetpp.ini} vs
-% controlling script.
-%
+Once your model works reliably, you'll usually want to run several
+simulations. You may want to run the model with various
+parameter settings, or you may want \textit{(should want?)} to
+run the same model with the same parameter settings but with
+different random number generator seeds, to achieve statistically
+more reliable results.
 
-\tbf{Variations over parameter values}
+Running a simulation several times by hand can easily become tedious,
+and then a good solution is to write a control script that
+takes care of the task automatically. Unix shell is
+a natural language choice to write the control script in,
+but other languages like Perl, Matlab/Octave, Tcl, Ruby might also have
+justification for this purpose.
+
+The next sections are only for Unix users. We'll use the
+Unix `Bourne' shell (\ttt{sh}, \ttt{bash}) to write the control script.
+If you'd prefer Matlab/Octave, the \ttt{contrib/octave/} directory
+contains example scripts (contributed by Richard Lyon).
 
 
-You don't need to generate the whole \texttt{omnetpp.ini} from program if you
-use include files\index{ini file!include files}. You can have a fixed
-\texttt{omnetpp.ini} which contains the line
+\subsection{Executing several runs}
+
+In simple cases, you may define all simulation runs needed in the
+\ttt{[Run 1]}, \ttt{[Run 2]}, etc. sections of \ttt{omnetpp.ini},
+and invoke your simulation with the -r flag each time.
+The -f flag lets you use a file name different from \ttt{omnetpp.ini}.
+
+The following script executes a simulation named \ttt{wireless}
+several times, with parameters for the different runs
+given in the \ttt{runs.ini} file.
 
 \begin{verbatim}
-include parameters.ini
+#! /bin/sh
+./wireless -f runs.ini -r 1
+./wireless -f runs.ini -r 2
+./wireless -f runs.ini -r 3
+./wireless -f runs.ini -r 4
+...
+./wireless -f runs.ini -r 10
 \end{verbatim}
 
-and then generate parameters.ini by program for each run.
+To run the above script, type it in a text file called e.g. \ttt{run},
+give it \ttt{x} (executable) permission using \ttt{chmod},
+then you can execute it by typing \ttt{./run}:
+
+\begin{verbatim}
+% chmod +x run
+% ./run
+\end{verbatim}
+
+You can simplify the above script by using a \textit{for} loop.
+In the example below, the variable \ttt{i} iterates through
+the values of list given after the \ttt{in} keyword.
+It is very practical, since you can leave out or add runs,
+or change the order of runs by simply editing the list --
+to demonstrate this, we skip run 6, and include run 15 instead.
+
+\begin{verbatim}
+#! /bin/sh
+for i in 3 2 1 4 5 7 15 8 9 10; do
+   ./wireless -f runs.ini -r $i
+done
+\end{verbatim}
+
+If you have many runs, you can use a C-style loop:
+
+\begin{verbatim}
+#! /bin/sh
+for ((i=1; $i<50; i++)); do
+   ./wireless -f runs.ini -r $i
+done
+\end{verbatim}
 
 
-Here's the ``runall'' script of Joel Sherrill's \textit{File
-System Simulator} as an example:
+\subsection{Variations over parameter values}
+
+It may not be practical to hand-write descriptions of all runs
+in an ini file, especially if there are many parameter
+settings to try, or you want to try all possible
+combinations of two or more parameters.
+The solution might be to generate only a small fraction
+of the ini file with the variable parameters, and
+use it via ini file inclusion. For example, you might
+write your \ttt{omnetpp.ini} like this:
+
+\begin{verbatim}
+[General]
+network = Wireless
+
+[Parameters]
+Wireless.n = 10
+...   # other fixed parameters
+include params.ini  # include variable part
+\end{verbatim}
+
+And have the following as control script. It uses two nested loops to explore
+all possible combinations of the \textit{alpha} and \textit{beta} parameters.
+Note that \ttt{params.ini} is created by redirecting the \ttt{echo}
+output into file, using the \ttt{>} and \ttt{>>} operators.
+
+\begin{verbatim}
+#! /bin/sh
+for alpha in 1 2 5 10 20 50; do
+   for beta in 0.1 0.2 0.3 0.4 0.5; do
+       echo "Wireless.alpha=$alpha" > params.ini
+       echo "Wireless.beta=$beta" >> params.ini
+       ./wireless
+   done
+done
+\end{verbatim}
+
+
+As a heavy-weight example, here's the ``runall'' script of
+Joel Sherrill's \textit{File System Simulator}. It also demonstrates
+that loops can iterate over string values too, not just numbers.
+(\texttt{omnetpp.ini} includes the generated \texttt{algorithms.ini}.)
+
+Note that instead of redirecting every \ttt{echo} command to file,
+they are grouped using parentheses, and redirected together.
+The net effect is the same, but you can spare some typing this way.
 
 \begin{verbatim}
 #! /bin/bash
@@ -1071,22 +1239,24 @@ for c in ${all_cache_managers}; do
 done
 \end{verbatim}
 
-And \texttt{omnetpp.ini} includes \texttt{algorithms.ini}.
 
 
-\tbf{Variations over seed value (multiple independent runs)}
+\subsection{Variations over seed value (multiple independent runs)}
 
+The same kind of control script can be used if you want to execute
+several runs with different random seeds\index{random!seeds}.
+The following code does 500 runs with independent seeds.
+(\texttt{omnetpp.ini} should include \ttt{parameters.ini}.)
 
-The same technique can be used if you want several runs with different
-random seeds\index{random!seeds}. This code should do 500 runs with
-independent seeds (suppose one run doesn't use more than 10 million
-random values):
+The seeds are 10 million numbers apart in the sequence (\ttt{seedtool}
+parameter), so one run should not use more random numbers than this,
+otherwise there will be overlaps in the sequences and the runs
+will not be independent.
 
 \begin{verbatim}
-#! /bin/bash
-
-for seed in `seedtool g 1 10000000 500`
-do
+#! /bin/sh
+seedtool g 1 10000000 500 > seeds.txt
+for seed in `cat seeds.txt`; do
    (
      echo "[General]"
      echo "random-seed = ${seed}"
@@ -1097,38 +1267,232 @@ done
 \end{verbatim}
 
 
-\texttt{omnetpp.ini} should include parameters.ini.
 
 
-\tbf{Other languages for writing the control script}
 
+\section{Akaroa support: Multiple Replications in Parallel}
 
-The above examples use the Unix shell, but you have quite a number
-of options in what language to implement the controlling script.
-Some ideas:
+\subsection{Introduction}
+
+Typical simulations are Monte-Carlo simulations: they use
+(pseudo-)random numbers to drive the simulation model.
+For the simulation to produce statistically reliable results,
+one has to carefully consider the following:
+
 \begin{itemize}
-  \item{shell (mentioned above)}
-  \item{Perl}
-  \item{Tcl}
-  \item{Octave (suggested by Richard Lyon, see the contrib/octave
-    directory for examples)}
+  \item{When is the initial transient over, when can we start
+    collecting data? We usually do not want to include the
+    initial transient when the simulation is still ``warming up.''}
+  \item{When can we stop the simulation? We want to wait long enough
+    so that the statistics we are collecting can ``stabilize'',
+    can reach the required sample size to be statistically trustable.}
 \end{itemize}
+
+Neither questions are trivial to answer. One might just suggest
+to wait ``very long'' or ``long enough''. However, this is neither
+simple (how do you know what is ``long enough''?) nor practical
+(even with today's high speed processors simulations of modest complexity
+can take hours, and one may not afford multiplying runtimes by,
+say, 10, ``just to be safe.'') If you need further convincing,
+please read \cite{Pawlikowsky02} and be horrified.
+
+A possible solution is to look at the statistics while the simulation
+is running, and decide at runtime when enough data have been
+collected for the results to have reached the required accuracy.
+One possible criterion is given by the confidence level,
+more precisely, by its width relative to the mean.
+But ex ante it is unknown how many observations have to be collected
+to achieve this level -- it must be determined runtime.
+
+
+\subsection{What is Akaroa}
+
+Akaroa \cite{Akaroa99} addresses the above problem.
+According to its authors, Akaroa (Akaroa2) is a ``fully automated
+simulation tool designed for running distributed stochastic simulations
+in MRIP scenario'' in a cluster computing environment.
+
+MRIP stands for \textit{Multiple Replications in Parallel}.
+In MRIP, the computers of the cluster run independent replications
+of the whole simulation process (i.e. with the same parameters but
+different seed for the RNGs (random number generators)),
+generating statistically equivalent streams of simulation output data.
+These data streams are fed to a global data analyser responsible for
+analysis of the final results and for stopping the simulation
+when the results reach a satisfactory accuracy.
+
+The independent simulation processes run independently of one another
+and continuously send their observations to the central analyser
+and control process. This process \textit{combines} the independent data streams,
+and calculates from these observations an overall estimate of the mean value
+of each parameter.
+Akaroa2 decides by a given confidence level and precision
+whether it has enough observations or not. When it judges that is
+has enough observations it halts the simulation.
+
+If \textit{n} processors are used, the needed simulation execution time
+is usually \textit{n} times smaller compared to a one-processor
+simulation (the required number of observations are produced sooner).
+Thus, the simulation would be sped up approximately in proportion
+to the number of processors used and sometimes even more.
+
+Akaroa was designed at the University of Canterbury in Christchurch, New Zealand
+and can be used free of charge for teaching and non-profit research activities.
+
+
+\subsection{Using Akaroa with {\opp}}
+
+\subsubsection{Akaroa}
+
+Before the simulation can be run in parallel under Akaroa, you have to
+start up the system:
+
+\begin{itemize}
+  \item{Start \ttt{akmaster} running in the background on some host.}
+  \item{On each host where you want to run a simulation engine,
+     start \ttt{akslave} in the background.}
+\end{itemize}
+
+Each \ttt{akslave} establishes a connection with the \ttt{akmaster}.
+
+Then you use \ttt{akrun} to start a simulation. \ttt{akrun} waits
+for the simulation to complete, and writes a report of the results
+to the standard output. The basic usage of the \ttt{akrun} command is:
+
+\begin{verbatim}
+akrun -n num_hosts command [argument..]
+\end{verbatim}
+
+where \textit{command} is the name of the simulation you want to start.
+Parameters for Akaroa are read from the file named \ttt{Akaroa} in
+the working directory. Collected data from the processes are
+sent to the \ttt{akmaster} process, and when the required precision
+has been reached, \ttt{akmaster} tells the simulation processes to
+terminate. The results are written to the standard output.
+
+The above description is of course not detailed enough help you
+set up and successfully use Akaroa -- for that you need to read the
+Akaroa manual. The purpose was rather to give you the ``flavour''
+of using it.
+
+\subsubsection{Configuring {\opp} for Akaroa}
+
+The {\opp} simulation must be configured so that it passes
+the observations to Akaroa. The simulation model itself does
+not need to be changed at all -- it should normally write
+the observations into output vectors (\cclass{cOutVector} objects,
+see chapter \ref{cha:the-simulation-library}).
+
+You need to add the following to \ttt{omnetpp.ini}:
+
+\begin{verbatim}
+[General]
+outputvectormanager-class="AkOutputVectorManager"
+\end{verbatim}
+
+The above line replaces the normal output vector handler
+by its Akaroa-enabled version, using the Envir plugin interface.
+
+Also, you have to specify which output vectors you want to
+be under Akaroa control. By default, all output vectors are under Akaroa
+control; the
+
+\begin{verbatim}
+<modulename>.<vectorname>.akaroa=false
+\end{verbatim}
+
+setting can be used to make Akaroa ignore specific vectors.
+If you only want a few vectors be placed under Akaroa,
+you can use the following ``trick'':
+
+\begin{verbatim}
+<modulename>.<vectorname1>.akaroa=true
+<modulename>.<vectorname2>.akaroa=true
+...
+*.*.akaroa=false
+\end{verbatim}
+
+
+\subsubsection{Using shared file systems}
+
+It is usually practical if the same directory is mounted (e.g. via NFS or Samba)
+on all computers in the cluster. However, because all {\opp} simulation
+processes run with the same settings, they would overwrite each other's
+output files. Your can prevent this from happening using the
+\ttt{fname-append-host} ini file entry:
+
+\begin{verbatim}
+[General]
+fname-append-host=yes
+\end{verbatim}
+
+When turned on, it appends the host name to the names of the output
+files (output vector, output scalar, snapshot files).
+
+
+\subsubsection{Random number generation}
+
+Another important point is that you cannot use the random number
+generators provided by {\opp}, but rather you have to obtain
+random numbers from Akaroa.
+
+Unfortunately, {\opp}'s RNGs do not (yet) know anything about Akaroa.
+Remember, all simulation processes are run with exactly the same
+configuration -- including the same RNG seeds.
+That is, if you'd use {\opp}'s own RNGs,
+all simulation processes would use \textit{identical} random number streams,
+thus executing \textit{exactly the same sequence of events!}
+This is clearly not what you want or what Akaroa expects.
+
+Akaroa provides the following random number functions. The underlying
+RNG is a Combined Multiple Recursive pseudorandom
+number generator (CMRG) with a period of approximately $2^{191}$
+random numbers, and provides a unique stream of random numbers
+for every simulation engine.
+
+Future versions of {\opp} will wrap the random number functions
+of Akaroa, thus requiring no modifications to simulation programs.
+
+
+\begin{verbatim}
+#include <akaroa/distribution.H>
+
+real Uniform(real a, real b);
+long UniformInt(long n0, long n1);
+long Binomial(long n, real p);
+real Exponential(real m);
+real Erlang(real m, real s);
+real HyperExponential(real m, real s);
+real Normal(real m, real s);
+real LogNormal(real m, real s);
+long Geometric(real m);
+real HyperGeometric(real m, real s);
+long Poisson(real m);
+real Weibull(real alpha, real beta);
+\end{verbatim}
+
+
+
 
 
 \section{Typical problems}
 
 \subsection{Stack problems}
 
-\tbf{''Stack violation (\textit{FooModule} stack too
-  small?\index{stack!too small}) in module \textit{bar.foo}''}
+\subsubsection{``Stack violation (\textit{FooModule} stack too small?) in module \textit{bar.foo}''}
+\index{stack!too small}
 
 {\opp} detected that the module has used more stack space than it has
 allocated. You should increase the stack for that module type. You can call
 the \fname{stackUsage()} from \fname{finish()} to find out actually
 how much stack the module used.
 
-\tbf{''Error: Cannot allocate \textit{nn} bytes stack for module \textit{foo.bar''}}
 
+\subsubsection{``Error: Cannot allocate \textit{nn} bytes stack for module \textit{foo.bar''}}
+
+The resolution depends on whether you are using {\opp} on Unix or on Windows.
+
+\textbf{Unix.}
 If you get the above message, you have to increase the total stack
 size\index{stack!size} (the sum of all coroutine stacks). You can do
 so in \texttt{omnetpp.ini}:
@@ -1138,34 +1502,83 @@ so in \texttt{omnetpp.ini}:
 total-stack-kb = 2048 # 2MB
 \end{verbatim}
 
-
 There is no penalty if you set \fpar{total-stack-kb} too high. I
 recommend to set it to a few K less than the maximum process stack
 size allowed by the operating system (\fprog[ulimit]{ulimit -s}; see
 next section).
 
 
-\tbf{''Segmentation fault''}
+\textbf{Windows.}
+You need to set a \textit{low} (!) ``reserved stack size''
+in the linker options, for example 64K (/stack:65536 linker flag) will do.
+The ``reserved stack size'' is an attribute in the Windows exe
+files' internal header. It can be set from the linker, or with
+the \ttt{editbin} Microsoft utility. You can use the \ttt{opp\_stacktool}
+program (which relies on another Microsoft utility called \ttt{dumpbin})
+to display reserved stack size for executables.
 
+You need a low reserved stack size because the Win32 Fiber API
+which is the mechanism underlying \fname{activity()} uses
+this number as coroutine stack size, and with 1MB being the default,
+it is easy to run out of the 2GB possible address space (2GB/1MB=2048).
+
+A more detailed explanation follows.
+Each fiber has its own stack, by default 1MB (this is the ``reserved''
+stack space -- i.e. reserved in the address space, but not the full
+1MB is actually ``committed'', i.e. has physical memory assigned to it).
+This means that a 2GB address space will run out after 2048 fibers,
+which is way too few. (In practice, you won't even be able to create
+this many fibers, because physical memory is also a limiting factor).
+Therefore, the 1MB reserved stack size (RSS) must be set to a smaller
+value: the coroutine stack size requested for the module, plus
+extra-stack-for-envir, the sum of the two typically around 32K.
+Unfortunately, the CreateFiber() Win32 API doesn't allow the RSS to be
+specified. The more advanced CreateFiberEx() API which accepts RSS as
+parameter is unfortunately only available from Windows XP.
+
+The alternative is the stacksize parameter stored in the EXE header,
+which can be set
+via the STACKSIZE .def file parameter, via the /stack linker option,
+or on an existing executable using the editbin /stack utility.
+This parameter specifies a common RSS for the main program stack,
+fiber and thread stacks. 64K should be enough. This is the way
+simulation executable should be created: linked with the /stack:65536
+option, or the /stack:65536 parameter applied using editbin later.
+For example, after applying the editbin /stacksize:65536 command to
+dyna.exe, I was able to successfully run the Dyna sample with 8000
+Client modules on my Win2K PC with 256M RAM (that means about 12000
+modules at runtime, including about 4000 dynamically created modules.)
+
+
+\subsubsection{``Segmentation fault''}
 
 On Unix, if you set the total stack size higher, you may get a
 segmentation fault during network setup\index{segmentation fault} (or
 during execution if you use dynamically created modules) for exceeding
 the operating system limit for maximum stack size. For example, in
-Linux 2.0.x, the stack can be at most 8192K (that is, 8MB). The
-\fprog{ulimit} syscall and utility program can be used to modify the
-resource limits, but you can only increase if you're root.
-Furthermore, resource limits are inherited by child processes. The
-following statement worked out for me under Linux to get a shell with
-a 64M stack limit:
+Linux 2.4.x, the default stack limit is 8192K (that is, 8MB). The
+\fprog{ulimit} shell command can be used to modify the
+resource limits, and you can raise the allowed maximum stack size
+up to 64M.
+
+\begin{verbatim}
+$ ulimit -s 65500
+$ ulimit -s
+65500
+\end{verbatim}
+
+Further increase is only possible if you're root.
+Resource limits are inherited by child processes.
+The following sequence can be used under Linux to get a shell with
+256M stack limit:
 
 \begin{verbatim}
 $ su root
 Password:
-# ulimit -s 65536
+# ulimit -s 262144
 # su andras
 $ ulimit -s
-65536
+262144
 \end{verbatim}
 
 If you do not want to go through the above process at each login, you
@@ -1196,12 +1609,78 @@ simple module's context can be safely executed.
 Cmdenv does not need that much extra stack.
 
 
+\subsubsection{Eventually...}
+
+Once you get to the point where you have to adjust the total stack size
+to get your program running,
+you should probably consider transforming (some of) your \fname{activity()}
+simple modules to \fname{handleMessage()}. \fname{activity()} does not
+scale well for large simulations.
 
 
-\subsection{Memory allocation problems}
 
-If you suspect that you may have memory allocation problems,
-it is best to use tools like Purify to track them down.
+\subsection{Memory leaks and crashes}
+
+The most common problems in C++ are associated with memory allocation
+(usage of \ttt{new} and \ttt{delete}):
+
+\begin{itemize}
+   \item{\textit{memory leaks,} that is, forgetting to delete objects
+     or memory blocks no longer used;}
+   \item{\textit{crashes,} usually due to referring to an already deleted
+     object or memory block, or trying to delete one for a second time;}
+   \item{\textit{heap corruption} (enventually leading to crash) due to
+     overrunning allocated blocks, i.e. writing past the end of an allocated
+     array.}
+\end{itemize}
+
+By far the most common ways leaking memory in simulation programs
+is by not deleting messages (\cclass{cMessage} objects or subclasses).
+Both Tkenv and Cmdenv are able to display the number of messages
+currently in the simulation,
+see e.g. section \ref{sec:ch-run-sim:interpreting-cmdenv-output}.
+If you find that the number of messages is steadily increasing,
+you need to find where the message objects are. You can do so
+by selecting \textit{Inspect|From list of all objects...} from
+the Tkenv menu, and reviewing the list in the dialog that pops up.
+(If the model is large, it may take a while for the dialog to appear.)
+
+If the number of messages is stable, it's still possible
+you're leaking other \cclass{cObject}-based objects. You can
+also find them using Tkenv's \textit{Inspect|From list of all objects...}
+function.
+
+If you're leaking non-\cclass{cObject}-based objects or just
+memory blocks (\ttt{struct}s, \ttt{int}/\ttt{double}/\ttt{struct} arrays,
+etc, allocated by \ttt{new}), you cannot find them via Tkenv.
+You'll probably need a specialized memory debugging tool like
+the ones described below.
+
+\subsubsection{Memory debugging tools}
+
+If you suspect that you may have memory allocation problems
+(crashes associated with double-deletion or accessing already
+deleted block, or memory leaks), you can use specialized tools
+to track them down.
+  \footnote{Alternatively, you can go through the full code,
+  review it looking for bugs. In my experience, the latter one
+  has proved to be far more efficient than using any kind
+  of memory debugger.}
+
+The number one of these tools is \textit{Purify} from Rational Software.
+This is a commercial tool. Not particularly cheap, but it has
+very good reputation and proved its usefulness many times.
+
+There are several open source tools you can try. The best seems
+to be \textit{Valgrind} used by the KDE people.
+Other good ones are \textit{NJAMD}, \textit{MemProf}, \textit{MPatrol}
+and \textit{dmalloc}, while \textit{ElectricFence} seems
+to be included in most Linux distributions.
+Most of the above tools support tracking down memory leaks as well as
+detecting double deletion, writing past the end of an allocated block, etc.
+
+
+\subsubsection{Poor man's memory leak debugger}
 
 However, if you don't have such tools, you can use the basic
 heap debugging code in Cmdenv. It is disabled by default;

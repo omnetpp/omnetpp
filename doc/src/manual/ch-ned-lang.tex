@@ -4,8 +4,9 @@
 
 \section{NED overview}
 
-The description of model topology\index{topology} is given in the NED
-language\index{ned!language}. The NED language supports modular
+The topology\index{topology} of a model is specified using
+the NED language\index{ned!language}.
+The NED language supports modular
 description of a network. This means that a network
 description\index{network!description} consists of a number of
 component descriptions (channels\index{channel},
@@ -51,11 +52,30 @@ NED language are:
 \end{verbatim}
 
 
+\subsection{Identifiers}
+\index{ned!identifiers}
+
+Identifiers are the names of modules, channels, networks,
+submodules, parameters, gates, channel attributes and functions.
+
+Identifiers must be composed of letters of the English alphabet (a-z, A-Z),
+numbers (0-9) and the underscore ``\_''.
+Identifiers may only begin with a letter or the underscore.
+If you want to begin an identifier with a digit, prefix the name
+you'd like to have with an underscore, e.g. \ttt{\_3Com}.
+
+If you have identifiers that are composed of several words, the convention
+is to capitalize the beginning of every word. Also, it is recommended
+that you begin the names of modules, channels and networks with
+a capital letter, and the names of parameters, gates and submodules
+with a lower-case letter. Underscores are rarely used.
+
 
 \subsection{Case sensitivity}
 \index{ned!case sensitivity}
 
 The network description and all identifiers in it are case sensitive.
+For example, \ttt{TCP} and \ttt{Tcp} are two different names.
 
 
 \subsection{Comments}
@@ -80,9 +100,11 @@ is used to import declarations from another network description file.
 After importing a network description, one can use the components
 (channels\index{channel}, simple/compound module types) defined in it.
 
-From the imported files, only the declaration information is used, but
-\textit{no C++ code is generated}: you have to compile and link each
-network description\index{network!description}, not only the top-level ones.
+When a file is imported, only the declaration information is used.
+Also, importing a \ttt{.ned} file does not cause that file to be compiled
+with the NED compiler when the parent file is NEDC compiled, i.e.,
+one must compile and link all network description files --
+not only the top-level ones.
 
 You can specify the name of the files with or without the
 \texttt{.ned} extension. You can also include a path in the
@@ -111,6 +133,28 @@ A channel definition specifies a connection type of given characteristics.
 The channel name can be used later in the NED description to
 create connections with these parameters.
 
+The syntax:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{channel} ChannelName
+    //...
+\tbf{endchannel}
+\end{Verbatim}
+
+Three attributes can be assigned values in the body of the channel declaration,
+all of them optional: \ttt{delay}, \ttt{error} and \ttt{datarate}.
+\ttt{delay} is the propagation delay in (simulated) seconds;
+\ttt{error} is the bit error rate that speficifies the probability
+that a bit is incorrectly transmitted; and \ttt{datarate}
+is the channel bandwidth in bits/second, used for calculating
+transmission time of a packet. The attributes can appear
+in any order.
+
+The values must be constants, or expressions that do not contain
+external references (e.g. names of module parameters).
+If you assign a random-valued expression (e.g. \ttt{truncnormal(0.005,0.001)}),
+it will be evaluated and a new random number generated for each
+packet transmission.
 
 Example:
 
@@ -121,13 +165,6 @@ Example:
     \tbf{datarate} 14400
 \tbf{endchannel}
 \end{Verbatim}
-
-Any of the \fvar{delay}, \fvar{error} and \fvar{datarate} parameters
-are optional and they can appear in any order. The values are NED
-expressions\index{ned!expressions}.  This means that they can be
-constants (integer or real), random values from various distributions,
-etc.
-
 
 
 
@@ -199,7 +236,7 @@ is used as a building block of a compound module type or as a system
 module.
 
 
-\textbf{Const parameters}
+\subsubsection{Const parameters}
 \label{sec:ch-ned-lang:const}
 \index{const}
 \index{module!parameters!const}
@@ -275,7 +312,7 @@ the module can have gate vectors of different sizes.
 Compound modules are modules composed of one or more submodules.
 Any module type (simple or compound module) can be used as a submodule.
 Like simple modules, compound modules can also have gates and parameters,
-and they can be used wherever simple modules can.
+and they can be used wherever simple modules can be used.
 
 It is useful to think about compound modules as ``cardboard boxes''
 that help you organize your simulation model and bring structure into
@@ -399,7 +436,7 @@ Example:
 \end{Verbatim}
 
 
-\tbf{Module vectors}
+\subsubsection{Module vectors}
 
 
 It is possible to create an array\index{module!array} of
@@ -430,9 +467,8 @@ Example:
 \label{sec:ch-ned-lang:like}
 \index{module!as parameter}
 
-Sometimes it is convenient to make the type of a submodule
-to be a parameter, so that you can easily ``plug in''
-any module type there.
+Sometimes it is convenient to make the name of a submodule type a parameter,
+so that one can easily `plug in' any module there.
 
 For example, assume the purpose of your simulation study is
 to compare different routing algorithms. Suppose you programmed
@@ -452,7 +488,7 @@ parameter. That's all -- now you are free to assign any of
 the \texttt{"DistVecRoutingNode"}, \texttt{"AntNetRouting1Node"} or
 \texttt{"AntNetRouting2Node"} string constants to this parameter
 (you can do that in NED, in the config file (\ttt{omnetpp.ini}),
-or even enter in interactively),
+or even enter it interactively),
 and your network will use the routing algorithm you chose.
 
 If you specify a wrong value, say \texttt{"FooBarRoutingNode"}
@@ -464,7 +500,7 @@ Inside the \ttt{RoutingTestNetwork} module you assign parameter values
 and connect the gates of the routing modules. To provide some degree
 of type safety, NED wants to make sure you didn't misspell
 parameter or gate names and you used them correctly.
-To be able to do such checks, NED requires some help from you: 
+To be able to do such checks, NED requires some help from you:
 you have to name an existing module type (say \ttt{RoutingNode})
 and promise NED that all modules you're going you specify
 in the \ttt{routingNodeType} parameter will have (at least) the same
@@ -565,7 +601,7 @@ with the syntax \ttt{submodule.parametername}
 Expressions are described in detail in section \ref{ch-ned-lang:sec:expressions}.
 
 
-\textbf{The \ttt{input} keyword}
+\subsubsection{The \ttt{input} keyword}
 \label{sec:ch-ned-lang:input}
 
 When a parameter does not receive a value inside NED files or in
@@ -729,7 +765,7 @@ Each connection can be:
 These connection types are described in the following sections.
 
 
-\tbf{Single connections and channels}
+\subsubsection{Single connections and channels}
 
 \index{ned!connections}
 \index{connection}
@@ -765,7 +801,7 @@ Either of the parameters can be omitted and they can be in any
 order.
 
 
-\tbf{Loop connections}
+\subsubsection{Loop connections}
 
 
 If submodule or gate vectors are used, it is possible to create
@@ -817,7 +853,7 @@ of the subsequent indices:
 \end{Verbatim}
 
 
-\tbf{Conditional connections}
+\subsubsection{Conditional connections}
 
 \index{connection!conditional}
 
@@ -840,7 +876,7 @@ second gate. Conditions may also use random variables, as
 shown in the next section.
 
 
-\tbf{The nocheck modifier}
+\subsubsection{The nocheck modifier}
 
 By default, NED requires that all gates be connected. Since this
 check can be inconvenient at times, it can be turned off
@@ -933,20 +969,20 @@ are evaluated only once.
 
 \subsection{Constants}
 
-\textbf{Numeric and string constants}
+\subsubsection{Numeric and string constants}
 
 Numeric constants are accepted in their usual decimal or
 scientific notations.
 
 %% FIXME Only decimal notation is accepted!!! no hex, octal or binary...
 
-\textbf{String constants}
+\subsubsection{String constants}
 
 String constants use double quotes.
 
 %% FIXME no escape character sequences are accepted!!!
 
-\textbf{Time constants}
+\subsubsection{Time constants}
 
 Anywhere you would put numeric constants\index{numeric constants}
 (integer or real) to mean time in seconds, you can also specify the
@@ -1033,7 +1069,7 @@ with the following differences:
   \item{\# is used for logical XOR (same as != between logical values), and
         \#\# is used for bitwise XOR}
   \item{the precedence of bitwise operators (\&, |, \#) have been raised
-        to bind stronger than relational operations. This precedence is usually 
+        to bind stronger than relational operations. This precedence is usually
         more convenient than the C/C++ one.}
 \end{itemize}
 
@@ -1515,7 +1551,7 @@ create complex topologies.
 
 \subsection{Examples}
 
-\tbf{Example 1: Router}
+\subsubsection{Example 1: Router}
 
 The following example contains a router module with the number of
 ports taken as parameter. The compound module is built using three
@@ -1557,7 +1593,7 @@ their definition is in a separate NED file which we will import.
 \end{Verbatim}
 
 
-\tbf{Example 2: Chain}
+\subsubsection{Example 2: Chain}
 
 
 For example, one can create a chain\index{chain} of modules like this:
@@ -1580,7 +1616,7 @@ For example, one can create a chain\index{chain} of modules like this:
 \end{Verbatim}
 
 
-\tbf{Example 3: Binary Tree}
+\subsubsection{Example 3: Binary Tree}
 
 
 One can use conditional connections to build a binary tree\index{binary tree}.
@@ -1636,7 +1672,7 @@ so we can use a single loop to create the connections.
 
 
 
-\tbf{Example 4: Random graph}
+\subsubsection{Example 4: Random graph}
 
 Conditional connections can also be used to generate random
 topologies\index{topology!random}.  The following code generates a
@@ -1673,7 +1709,7 @@ topologies which have a regular structure; three of them are
 described below.
 
 
-\tbf{`Subgraph of a Full Graph' }
+\subsubsection{`Subgraph of a Full Graph'}
 
 
 This pattern takes a subset of the connections of a full graph.  A
@@ -1699,7 +1735,7 @@ much fewer connections that \textit{N}$^{\mathit{2}}$). The following
 two patterns do not suffer from this drawback.
 
 
-\tbf{`Connections of Each Node'}
+\subsubsection{`Connections of Each Node'}
 
 The pattern loops through all nodes and creates the necessary
 connections for each one. It can be generalized like this:
@@ -1719,7 +1755,7 @@ The applicability of this pattern depends on how easily the \textit{rightNodeInd
 function can be formulated.
 
 
-\tbf{`Enumerate All Connections' }
+\subsubsection{`Enumerate All Connections'}
 
 
 A third pattern is to list all connections within a loop:
@@ -1750,7 +1786,7 @@ would do it in most existing simulators.
 \label{sec:ch-ned-lang:topology-templates}
 
 
-\tbf{Overview}
+\subsubsection{Overview}
 
 
 Topology templates are nothing more than compound modules where one or
@@ -1766,7 +1802,7 @@ templates\index{topology!templates}, you can reuse
 
 
 
-\tbf{An example: hypercube}
+\subsubsection{An example: hypercube}
 
 
 The concept is demonstrated on a network with hypercube interconnection.
@@ -1844,7 +1880,137 @@ different values to nodetype, such as \ttt{"WormholeRoutingNode"},
 
 
 
+\section{Large networks}
 
+There are situations when using hand-written NED files to describe
+network topology is inconvenient, for example when
+the topology information comes from
+an external source\index{topology!external source} like
+a network management program.
+
+In such case, you have two possibilities:
+
+\begin{enumerate}
+  \item{generating NED files from data files}
+  \item{building the network from C++ code}
+\end{enumerate}
+
+The two solutions have different advantages and disadvantages.
+The first is more useful in the model development phase, while
+the second one is better for writing larger scale, more productized
+simulation programs. In the next sections we examine both methods.
+
+
+
+\subsection{Generating NED files}
+
+
+Text processing programs like \fprog{awk} or \fprog{perl} are
+excellent tools to read in textual data files and generate NED files
+from them\index{ned!file generation}.  Perl also has extensions to
+access SQL databases, so it can also be used if the network topology
+is stored in a database.
+
+The advantage is that the necessary \fprog{awk} or \fprog{perl}
+program can be written in a releatively short time, and it is
+inexpensive to maintain afterwards: if the structure of the data files
+change, the NED-creating program can be easily modified. The
+disadvantage is that the resulting NED files are often quite big and
+the C++ compilation of the \texttt{*\_n.cc} files may take long.
+
+This method is best suited in the first phase of a simulation
+project when the topology, the format of the data files, etc.
+have not yet stabilized.
+
+
+
+\subsection{Building the network from C++ code}
+
+Another alternative is to write C++ code which becomes part of the
+simulation executable. The code would read the topology data from data
+files or a database, and build the network directly, using
+dynamic module creation (to be described later, in section
+\ref{ch:simple-modules:dynamic-module-creation}).
+The code which builds the network would be similar to the \ttt{*\_n.cc}
+files output by nedc.
+
+Since writing such code is more complex than letting perl generate
+NED files, this method is recommended when the simulation program
+has to be somewhat more productized, for example when {\opp}
+and the simulation model is embedded into a larger program, e.g.
+a network design tool.
+
+
+\section{XML support}
+
+Future {\opp} versions will contain strong XML support.
+NED files will have XML representations, and the two forms
+can be freely converted to each other. XML is much more suited
+for machine processing, e.g. XSLT can be used to
+produce NED via XML, extract information from NED files,
+generating HTML documentation from NED, etc.
+
+The current version (2.3) contains an alpha version of
+these tools. \textit{nedtool} is going to replace nedc,
+and it offers much more functionality.
+
+Converting a NED file to XML:
+
+\begin{verbatim}
+nedtool -x wireless.ned
+\end{verbatim}
+
+It generates \ttt{wireless\_n.xml}.
+Several switches control the exact content and details
+of the resulting XML as well as the amount of checks
+made on the input.
+
+Converting the XML representation back to NED:
+
+\begin{verbatim}
+nedtool -n wireless.xml
+\end{verbatim}
+
+The result is \ttt{wireless\_n.ned}.
+
+Using nedtool as nedc to generate C++ code:
+
+\begin{verbatim}
+nedtool wireless.ned
+\end{verbatim}
+
+The resulting code is more compact and less redundant than the
+one created by nedc. As a result, nedtool-created \ttt{\_n.cc}
+C++ files compile much faster.
+
+You can generate C++ code from the XML format, too:
+
+\begin{verbatim}
+nedtool wireless.xml
+\end{verbatim}
+
+The opp\_nedtool command uses XSLT to produce HTML documentation
+from the given NED files, much like Javadoc or Doxygen.
+   \footnote{You're going to need xsltproc (part of libxml/libxslt)
+   installed on your system. Since Gnome and KDE also heavily rely
+   on these components, there's a good chance it is already present
+   on your system.}
+
+\begin{verbatim}
+opp_neddoc *.ned
+\end{verbatim}
+
+The output file is called \ttt{neddoc.html}. opp\_nedtool can be
+very useful in discovering and understanding the structure
+of large models like the IP-Suite. On Unix, you'd use it like this:
+
+\begin{verbatim}
+cd IPSuite
+opp_neddoc `find . -name *.ned`
+\end{verbatim}
+
+The HTML output is currently rather plain,
+but it is going to be improved.
 
 
 \section{GNED -- Graphical NED Editor}
@@ -1882,7 +2048,7 @@ and bugs, but overall it should be fairly reliable. See the TODO
 file in the GNED source directory for problems and missing features.
 
 
-\tbf{Comment parsing:}
+\subsection{Comment parsing}
 
 
 It is useful to know how exactly GNED identifies the comments
@@ -1931,7 +2097,7 @@ endmodule
 \end{verbatim}
 
 
-\tbf{Key/mouse bindings:}
+\subsection{Keyboard and mouse bindings}
 
 \index{gned!mouse bindings}
 

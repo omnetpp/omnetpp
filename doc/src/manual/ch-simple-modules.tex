@@ -204,8 +204,7 @@ Due to finite machine precision, two doubles calculated in two
 different ways do not always compare equal even if they mathematically
 should be. For example, addition is not an associative operation
 when it comes to floating point calculations: $(x+y)+z != x+(y+z)$!
-  \footnote{see also \textit{``What Every Computer Scientist Should
-  Know About Floating-Point Arithmetic''} by David Goldberg, 1991}
+(See~\cite{Goldberg91what}).
 This means that if you want to explicitly rely on the
 arrival times of two events being the same, you should take care that
 they are calculated in exactly the same way.
@@ -234,6 +233,193 @@ algorithm we know, although exotic data structures like
 cases. In case you're interested, the FES implementation is in the
 \cclass{cMessageHeap} class, but as a simulation programmer you won't
 ever need to care about it.
+
+
+
+
+
+\section{Packet transmission modeling}
+\label{ch:simple-modules:packet-transmission}
+
+\subsection{Delay, bit error rate, data rate}
+
+Connections can be assigned three parameters which facilitate
+the modeling of communication networks, but can be useful for
+other models too:
+\begin{itemize}
+  \item{propagation delay (sec)\index{channel!delay}}
+  \item{bit error rate (errors/bit)\index{channel!error}}
+  \item{data rate (bits/sec)\index{channel!datarate}}
+\end{itemize}
+
+
+Each of these parameters is optional. One can specify link parameters
+individually for each connection, or define link types (also
+called \textit{channel} \textit{types}) once and use them throughout the
+whole model.
+
+The \textit{propagation delay} is the amount of time the arrival of
+the message is delayed by when it travels through the channel.
+Propagation delay is specified in seconds.
+
+The \textit{bit error rate} has influence on the transmission of messages
+through the channel. The bit error rate is the probability that
+a bit is incorrectly transmitted. Thus, the probability that
+a message of \textit{n} bits length is transferred correctly is:\\
+
+
+$P( \textit{sent message received properly} ) = (1 - \textit{ber})^{\mathit{n}}$\\
+where \textit{ber} = bit error rate and \textit{n} = number of bits in message.\\
+
+
+The message has an error flag which is set in case of transmission
+errors.
+
+The \textit{data rate} is specified in bits/second, and it is used
+for transmission delay calculation. The sending time of the message
+normally corresponds to the transmission of the first bit, and
+the arrival time of the message corresponds to the reception
+of the last bit (Fig. \ref{fig:ch-overview:message-transm}).
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=4.301in, height=2.417in]{figures/usmanFig4}
+\caption{Message transmission}
+\label{fig:ch-overview:message-transm}
+\end{center}
+\end{figure}
+
+The above model is not applicable for modeling some protocols like
+Token Ring and FDDI where the stations repeat the bits of a frame that
+arrives on the ring immediately, without waiting for the whole frame
+to arrive; in other words, frames ``flow through'' the stations, being
+delayed only a few bits. If you want to model such networks, the data
+rate modeling feature of {\opp} cannot be used.
+
+If a message travels along a route, through successive links and
+compound modules, the model behaves as if each module waited until the
+last bit of the message arrives and only start its transmission then
+(Fig. \ref{fig:ch-overview:msg-multiple-ch}).
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=3.330in, height=2.692in]{figures/usmanFig5}
+\caption{Message sending over multiple channels}
+\label{fig:ch-overview:msg-multiple-ch}
+\end{center}
+\end{figure}
+
+Since the above effect is usually not the desired one, typically
+you will want to assign data rate to only one connection in the
+route.
+
+
+
+\subsection{Multiple transmissions on links}
+
+
+If data rate\index{data rate} is specified for a connection, a message
+will have a certain nonzero transmission time\index{transmission
+  time}, depending on its length.  This means that when a message is
+sent out through an output gate, the message ``reserves'' the gate for
+a given period (``it is being transmitted'').
+
+\begin{figure}[htbp]
+  \begin{center}
+    \includegraphics[width=2.315in, height=1.015in]{figures/usmanFig9}
+    \caption{Connection with a data rate}
+    \label{fig:ch-simple-modules:conn-w-data-rate}
+  \end{center}
+\end{figure}
+
+While a message is under transmission, other messages have to wait
+until the transmission finishes. You can still send messages
+while the gate is busy, but the beginning of the modelled
+message transmission will be delayed, just like the gate had
+an internal queue for the messages waiting to be transmitted.
+
+The {\opp} class library provides you with functions to check
+whether a certain output gate is transmitting or to learn when
+it finishes transmission.
+
+If the connection with a data rate is not the immediate one connected
+to the simple module's output gate but the second
+one in the route, you have to check the second gate's busy
+condition\index{gate!busy condition}.
+
+
+\subsubsection{Implementation of message sending}
+
+
+Message sending is implemented in the following way: the arrival
+time\index{arrival time} and the bit error\index{bit error} flag of a
+message are calculated at once, when the \fname{send()} (or similar)
+function is invoked. That is, if the message travels through several
+links until it reaches its destination, it is \textit{not} scheduled
+individually for each link, but rather, every calculation is done
+once, within the \fname{send()} call. This implementation was chosen
+because of its run-time efficiency.
+
+In the actual implementation of queuing the messages at busy gates and
+modeling the transmission delay, messages do not actually queue up in
+gates; gates do not have internal queues. Instead, as the time when
+each gate will finish transmission is known at the time of sending the
+message, the arrival time\index{arrival time} of the message can be
+calculated in advance. Then the message will be stored in the event
+queue (FES)\index{FES} until the simulation time advances to its
+arrival time and it is retrieved by its destination module.
+
+%
+% TBD add pseudocode
+%
+
+
+\subsubsection{Consequence}
+
+
+The implementation has the following consequence. If you change the
+delay (or the bit error rate, or the data rate) of a link\index{link
+  delay} during simulation, the modeling of messages sent ``just
+before'' the parameter change will not be accurate. Namely, if link
+parameters change while a message is ``under way'' in the model, that
+message will not be affected by the parameter change, although it
+should. However, all subsequent messages will be modelled correctly.
+Similar for data rate: if a data rate changes during the simulation,
+the change will affect only the messages that are \textit{sent} after
+the change.
+
+If it is important to model gates and channels with changing
+properties, you can go two ways:
+\begin{itemize}
+  \item{write sender module such that they schedule events for when the
+    gate finishes its current transmission and send then;}
+  \item{alternatively, you can implement channels with
+    simple modules (``active channels'').}
+\end{itemize}
+
+
+\subsubsection{The approach of some other simulators}
+
+
+Note that some simulators (e.g. OPNET) assign \textit{packet queues}
+to input gates (ports), and messages sent are buffered at the
+destination module (or the remote end of the link) until received by
+the destination module. With that approach, events and messages are
+separate entities, that is, a \textit{send} operation includes placing
+the message in the packet queue \textit{and} scheduling an event which
+will signal the arrival of the packet. In some implementations, also
+output gates have packet queues where packets wait until the channel
+becomes free (available for transmission).
+
+{\opp} gates\index{gate} don't have associated queues. The place
+where the sent but not yet received messages are buffered is the
+FES\index{FES}.  {\opp}'s approach is potentially faster
+than the above mentioned solution because it doesn't have the
+enqueue/dequeue overhead and also spares an event creation. The
+drawback is, as mentioned above, that changes to channel parameters do
+not take effect immediately.
+
+
 
 
 \section{Defining simple module types}
@@ -304,7 +490,7 @@ The module declaration
 \item{associates the module class with an interface declared in NED}
 \end{itemize}
 
-\textbf{Forms of module declaration}
+\subsubsection{Forms of module declaration}
 
 
 Module declarations can take two forms:
@@ -335,7 +521,7 @@ same interface. This feature will be discussed in detail in the next
 section.
 
 
-\textbf{Header files}
+\subsubsection{Header files}
 
 
 Module declarations should not be put into header files\index{header
@@ -343,7 +529,7 @@ Module declarations should not be put into header files\index{header
 compiler generates code.
 
 
-\textbf{Compound modules}
+\subsubsection{Compound modules}
 
 All module types (including compound\index{module!compound} modules)
 need to have module declarations\index{module!declaration}. For all
@@ -353,7 +539,7 @@ However, it is your responsibility to put Define\_Module(..) lines into
 one of the C++ sources for all your simple module types.
 
 
-\textbf{Implementation}
+\subsubsection{Implementation}
 
 
 Unless you are dying to learn about the dirty internals, you may just
@@ -455,7 +641,7 @@ class declaration, you have two choices:
 \item{or write them yourself.}
 \end{enumerate}
 
-\textbf{Using macro to declare the constructor}
+\subsubsection{Using macro to declare the constructor}
 
 If you choose the first solution, you use the
 \fmac{Module\_Class\_Members()} macro:
@@ -493,10 +679,10 @@ class SlidingWindow : public cSimpleModule
 };
 \end{verbatim}
 
-\textbf{Expanded form of the constructor}
+\subsubsection{Expanded form of the constructor}
 
 If you have data members in the class that you want to initialize in the
-constructor, you cannot use the \ttt{Module_Class_Members()} macro.
+constructor, you cannot use the \ttt{Module\_Class\_Members()} macro.
 Then you have to write the constructor yourself.
 
 The constructor\index{module!constructor} should take the following
@@ -533,7 +719,7 @@ TokenRingMAC(const char *name, cModule *parentmodule,
 \end{verbatim}
 
 
-\textbf{Stack size decides between activity() and handleMessage()}
+\subsubsection{Stack size decides between activity() and handleMessage()}
 
 \begin{itemize}
 \item{if the specified stack size is zero, \fname{handleMessage()} will be used;}
@@ -549,7 +735,7 @@ functions issue error messages telling you what is the problem.
 
 
 
-\subsection{Decomposing activity()/handleMessage() and inheritance}
+\subsection{Decomposing activity()/handleMessage()}
 
 It is usually a good idea to decompose a \fname{activity()} or
 \fname{handleMessage()} function when it grows too large. ``Too
@@ -605,16 +791,24 @@ void TransportProtocol::activity()
 \end{verbatim}
 
 \begin{sloppypar}
-  Note that you may have to use the expanded form of the
-  constructor\index{module!constructor} (instead of
-  \fmac{Module\_Class\_Members()}) to pass arguments to the constructors
-  of member objects like eedVector and eedStats. But most often you
-  don't need to go as far as that; for example, you can set parameters
-  later from \fname{activity()}, as shown in the example above.
+Note that you may have to use the expanded form of the
+constructor\index{module!constructor} (instead of
+\fmac{Module\_Class\_Members()}) to pass arguments to the constructors
+of member objects like eedVector and eedStats. But most often you
+don't need to go as far as that; for example, you can set parameters
+later from \fname{activity()}, as shown in the example above.
 \end{sloppypar}
 
-To implement another variant of the Transport Protocol which uses a
-different timeout scheme, you could simply subclass TransportProtocol:
+
+
+\subsection{Using inheritance}
+
+It is often needed to have several variants of a simple module.
+A good design strategy is to create a simple module class with
+the common functionality, then subclass from it to create the
+specific simple module types.
+
+An example:
 
 \begin{verbatim}
 class AdvancedTransportProtocol : public TransportProtocol
@@ -634,6 +828,23 @@ void AdvancedTransportProtocol::recalculateTimeout()
 \end{verbatim}
 
 
+\subsection{Global variables}
+\index{global variables}
+
+If possible, avoid them. Do not use global variables, including
+static class members. There are several problems with them.
+
+First, they are not reset to their initial values (to zero)
+when you rebuild the simulation in Tkenv, or start another run
+in Cmdenv. This may produce surprising results.
+
+Second, they prevent you from running your simulation in parallel.
+When using parallel simulation, each partition of your model
+(may) run in a separate process, having its own copy of the
+global variables. This is usually not what you want.
+
+
+
 
 
 \section{Adding functionality to cSimpleModule}
@@ -646,7 +857,7 @@ mentioned member functions, intended to be redefined by the user:
 
 \subsection{activity()}
 
-\textbf{Process-style description}
+\subsubsection{Process-style description}
 
 With \fname{activity()}, you can code the simple
 module much like you would code an operating system process or a
@@ -660,7 +871,7 @@ which can run.)
 The most important functions you can use in \fname{activity()} are
 (they will be discussed in detail later):
 \begin{itemize}
-\item{\fname[receive()]{receive..()} family of functions -- to receive messages (events)}
+\item{\fname{receive()} -- to receive messages (events)}
 \item{\fname{wait()} -- to suspend execution\index{suspend execution}
     for some time (model time)}
 \item{\fname{send()} family of functions -- to send messages to other
@@ -678,7 +889,7 @@ with at least a \fname{wait()} or \fname{receive()} call in its body.
 
 
 
-\textbf{Application area}
+\subsubsection{Application area}
 
 
 One area where the process-style description\index{process-style
@@ -735,7 +946,7 @@ module above as needed. Dynamic module creation will be discussed
 later.
 
 
-\textbf{Activity() is run as a coroutine}
+\subsubsection{Activity() is run as a coroutine}
 
 
 \fname[activity()]{Activity()} is run in a coroutine\index{coroutine}.
@@ -793,7 +1004,7 @@ start of the simulation.
 How does the coroutine know it has ``finished processing the event''?
 The answer: \textit{when it requests another event}.  The functions
 which request events from the simulation kernel are the
-\fname[receive()]{receive..()} family and \fname{wait()}, so their
+\fname{receive()} and \fname{wait()}, so their
 implementations contain a \fname[transferTo()]{transferTo(main)} call
 somewhere.
 
@@ -802,7 +1013,7 @@ Their pseudocode, as implemented in {\opp}:
 
 
 \begin{Verbatim}[commandchars=\\\{\}]
-\textit{receiveNew() // other receive...() variations are similar}
+receive()
 \{
     transferTo(main)
     retrieve current event
@@ -811,33 +1022,31 @@ Their pseudocode, as implemented in {\opp}:
 
 wait()
 \{
-    create an event e and schedule it at (current sim. time +
-                                          wait interval)
-    while(true) \{
-        transferTo(main)
-        retrieve current event
-        if (current event is e)
-            break from loop
-        else
-            store current event for later use (in the "put-aside queue")
+    create event e
+    schedule it at (current sim. time + wait interval)
+    transferTo(main)
+    retrieve current event
+    if (current event is not e) \{
+        error
     \}
-    delete event e
+    delete e  // note: actual impl. reuses events
     return
 \}
 \end{Verbatim}
 
 
 
-Thus, the \fname[receive()]{receive...()} and \fname{wait()} calls are
+Thus, the \fname{receive()} and \fname{wait()} calls are
 special points in the \fname{activity()} function, because that's
 where:
+
 \begin{itemize}
-\item{simulation time elapses in the module, and}
-\item{other modules get a chance to execute.}
+  \item{simulation time elapses in the module, and}
+  \item{other modules get a chance to execute.}
 \end{itemize}
 
 
-\textbf{Starter messages}
+\subsubsection{Starter messages}
 
 
 Modules written with \fname{activity()} need starter
@@ -847,7 +1056,7 @@ beginning of the simulation, even before the \fname{initialize()}
 functions are called.
 
 
-\textbf{Coroutine stack size}
+\subsubsection{Coroutine stack size}
 
 
 All the simulation programmer needs to care about coroutines is to
@@ -864,7 +1073,7 @@ stack space a module actually uses\index{stack!usage}, so you can find
 it out if you overestimated the stack needs.
 
 
-\textbf{initialize() and finish() with activity()}
+\subsubsection{initialize() and finish() with activity()}
 
 
 Because local variables of \fname{activity()} are preserved across
@@ -913,7 +1122,7 @@ MySimpleModule::finish()
 
 
 
-\textbf{Advantages and drawbacks of \fname{activity()} vs \fname{handleMessage()}}
+\subsubsection{Advantages and drawbacks of \fname{activity()} vs \fname{handleMessage()}}
 
 Advantages:
 \begin{itemize}
@@ -933,7 +1142,7 @@ Drawbacks:
 \end{itemize}
 
 
-\textbf{Other simulators}
+\subsubsection{Other simulators}
 
 
 Coroutines are used by a number of other simulation packages:
@@ -955,7 +1164,7 @@ Coroutines are used by a number of other simulation packages:
 
 \subsection{handleMessage()}
 
-\textbf{Function called for each event}
+\subsubsection{Function called for each event}
 
 
 The idea is that at each event\index{event} we simply call a
@@ -999,7 +1208,7 @@ simple module to start working ``by itself'', without first receiving
 a message from other modules.
 
 
-\textbf{Programming with handleMessage()}
+\subsubsection{Programming with handleMessage()}
 
 
 To use the \fname{handleMessage()} mechanism in a
@@ -1016,7 +1225,7 @@ Message/event related functions you can use in \fname{handleMessage()}:
   \item{\fname{cancelEvent()} -- to delete an event scheduled with \fname{scheduleAt()}}
 \end{itemize}
 
-You cannot use the \fname[receive()]{receive...()} family and
+You cannot use the \fname{receive()} family and
 \fname{wait()} functions in \fname{handleMessage()}, because they are
 coroutine-based by nature, as explained in the section about
 \fname{activity()}.
@@ -1061,7 +1270,7 @@ other modules.
 accumulated in data members of the class at the end of the simulation.
 
 
-\textbf{Application area}
+\subsubsection{Application area}
 
 
 \fname{handleMessage()} is definately a better choice than \fname{activity()}
@@ -1121,7 +1330,7 @@ handleMessage( msg )
 
 
 
-\textbf{Example 1: Simple traffic generators and sinks}
+\subsubsection{Example 1: Simple traffic generators and sinks}
 
 
 The code for simple packet generators and sinks programmed with \fname{handleMessage()} might
@@ -1179,7 +1388,7 @@ void Generator::handleMessage(cMessage *msg)
 
 
 
-\textbf{Example 2: Bursty traffic generator}
+\subsubsection{Example 2: Bursty traffic generator}
 
 
 A bit more realistic example is to rewrite our Generator to create
@@ -1240,7 +1449,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 %%FIXME: in html rendering of the above, "--" becomes "-"
 
 
-\textbf{Advantages and drawbacks of \fname{handleMessage()} vs \fname{activity()}}
+\subsubsection{Advantages and drawbacks of \fname{handleMessage()} vs \fname{activity()}}
 
 
 Advantages:
@@ -1258,7 +1467,7 @@ Drawbacks:
 \item{programming model is inconvenient in some cases}
 \end{itemize}
 
-\textbf{Other simulators}
+\subsubsection{Other simulators}
 
 
 Many simulation packages use a similar approach, often topped with
@@ -1280,7 +1489,7 @@ systems are:
 
 \subsection{initialize() and finish()}
 
-\textbf{Purpose}
+\subsubsection{Purpose}
 
 
 \fname{initialize()} -- to provide place for any user setup code
@@ -1289,7 +1498,7 @@ systems are:
 after the simulation has completed
 
 
-\textbf{When and how they are called}
+\subsubsection{When and how they are called}
 
 
 The \fname{initialize()} functions of the modules are invoked
@@ -1349,7 +1558,7 @@ callFinish()
 
 
 
-\textbf{initialize() vs. constructor}
+\subsubsection{initialize() vs. constructor}
 
 
 Usually you should not put simulation-related code into the
@@ -1361,7 +1570,7 @@ into the constructor since the network is still being set up when the
 constructor is called.
 
 
-\textbf{finish() vs. destructor}
+\subsubsection{finish() vs. destructor}
 
 
 Keep in mind that \fname{finish()} is not always called, so it isn't a
@@ -1380,7 +1589,7 @@ is discussed in more detail in section \ref{sec:ch-sim-lib:garbage-collection}.
 
 
 
-\textbf{Multi-stage initialization}
+\subsubsection{Multi-stage initialization}
 
 
 In simulation models, when one-stage
@@ -1391,7 +1600,6 @@ functions which can be redefined by the user:
 
 \begin{verbatim}
 void initialize(int stage);
-
 int numInitStages() const;
 \end{verbatim}
 
@@ -1403,7 +1611,10 @@ initialization takes place in several ``waves''. For each module,
 stages required, e.g. for a two-stage init, \fname{numInitStages()}
 should return 2, and \fname{initialize(int stage)} must be implemented to
 handle the \textit{stage=0} and \textit{stage=1} cases.
-
+  \footnote{Note \ttt{const} in the \ttt{numInitStages()} declaration.
+  If you forget it, by C++ rules you create a \textit{different} function
+  instead of redefining the existing one in the base class, thus the
+  existing one will remain if effect and return 1.}
 
 The \fname{callInitialize()} function performs the full multi-stage initialization
 for that module and all its submodules.
@@ -1414,21 +1625,21 @@ default behavior is single-stage initialization: the default
 stage)} simply calls \fname{initialize()}.
 
 
-\textbf{''end-of-simulation event''}
+\subsubsection{``End-of-Simulation'' event}
 
 
 The task of \fname{finish()} is solved in many simulators (e.g. OPNET)
 by introducing a special
 \textit{end-of-simulation}\index{end-of-simulation} event. This is not
 a very good practice because the simulation programmer has to code the
-algorithms (often FSMs) so that they can \textit{always} properly
+models (often represented as FSMs) so that they can \textit{always} properly
 respond to end-of-simulation events, in whichever state they are. This
 often makes program code unnecessarily complicated.
 
 This fact is also evidenced in the design of the PARSEC\index{PARSEC}
 simulation language (UCLA). Its predecessor Maisie used
 end-of-simulation events, but -- as documented in the PARSEC manual --
-this has led to awkward programming in many cases, so for PARSEC,
+this has led to awkward programming in many cases, so for PARSEC
 end-of-simulation events were dropped in favour of \fname{finish()}
 (called \fname{finalize()} in PARSEC).
 
@@ -1438,7 +1649,7 @@ end-of-simulation events were dropped in favour of \fname{finish()}
 
 \section{Finite State Machines in {\opp}}
 
-\textbf{Overview}
+\subsubsection{Overview}
 
 
 Finite State Machines\index{finite state machine} (FSMs)\index{FSM}
@@ -1476,7 +1687,7 @@ to introduce sub-states and thereby bring some structure into the
 state space if it would become too large.
 
 
-\textbf{The FSM API}
+\subsubsection{The FSM API}
 
 
 FSM state is stored in an object of type \cclass{cFSM}. The possible states
@@ -1534,7 +1745,7 @@ The FSM starts from the state with the numeric code 0; this state
 is conventionally named INIT.
 
 
-\textbf{Debugging FSMs}
+\subsubsection{Debugging FSMs}
 
 FSMs can log their state transitions \ttt{ev}\index{ev},
 with the output looking like this:
@@ -1564,7 +1775,7 @@ before including \ttt{omnetpp.h}.
 
 The actual logging is done via the \fmac{FSM\_Print()} macro.
 It is currently defined as follows, but you can change the
-output format by undefining \ttt{FSM_Print()} after including
+output format by undefining \ttt{FSM\_Print()} after including
 \ttt{omnetpp.ini} and providing a new definition instead.
 
 \begin{verbatim}
@@ -1575,7 +1786,7 @@ output format by undefining \ttt{FSM_Print()} after including
 \end{verbatim}
 
 
-\textbf{Implementation}
+\subsubsection{Implementation}
 
 
 The \fmac{FSM\_Switch()} is a macro. It expands to a \fname{switch()}
@@ -1588,7 +1799,7 @@ an FSM goes through 64 transitions without reaching a steady
 state, the simulation will terminate with an error message.
 
 
-\textbf{An example}
+\subsubsection{An example}
 
 
 Let us write another flavour of a bursty generator. It has two
@@ -1708,340 +1919,1187 @@ void BurstyGenerator::handleMessage(cMessage *msg)
 
 
 
+\section{Sending and receiving messages}
+\label{ch:simple-modules:sending-and-receiving}
 
-\section{Message transmission modeling}
+On an abstract level, an {\opp} simulation model is a set of
+simple modules that communicate with each other via message passing.
+The essence of simple modules is that they create, send, receive,
+store, modify, schedule and destroy messages -- everything else
+is supposed to facilitate this task, and collect statistics
+about what was going on.
 
-\textbf{Data rate modeling}
+Messages in {\opp} are instances of the \ttt{cMessage} class or
+one of its subclasses. Message objects are created using the C++
+\ttt{new} operator and destroyed using the \ttt{delete} operator
+when they are no longer needed. During their lifetimes,
+messages travel between modules via gates and connections
+(or are sent directly, bypassing the connections), or
+they are scheduled by and delivered to modules,
+representing internal events of that module.
 
-
-If data rate\index{data rate} is specified for a connection, a message
-will have a certain nonzero transmission time\index{transmission
-  time}, depending on its length.  This means that when a message is
-sent out through an output gate, the message ``reserves'' the gate for
-a given period (''it is being transmitted'').
-
-\begin{figure}[htbp]
-  \begin{center}
-    \includegraphics[width=2.315in, height=1.015in]{figures/usmanFig9}
-    \caption{Connection with a data rate}
-    \label{fig:ch-simple-modules:conn-w-data-rate}
-  \end{center}
-\end{figure}
-
-While a message is under transmission, other messages have to wait
-until the transmission finishes. You can still use \fname{send()}
-while the gate is busy, but the message's arrival will be delayed;
-just like the gate had an internal queue for the messages waiting to
-be transmitted.
-
-
-The {\opp} class library provides you with functions to check
-whether a certain output gate is transmitting or to learn when
-it finishes transmission.
+Messages are described in detail in chapter \ref{cha:messages}.
+At this point, all we need to know about them is that they are
+referred to as \ttt{cMessage *} pointers. Message objects
+can be given descriptive names (a \ttt{const char *} string)
+that often helps in debugging the simulation. The message
+name string can be specified in the constructor, so it
+should not surprise you if you see something like
+\ttt{new cMessage("token")} in the examples below.
 
 
-If the connection with a data rate is not the immediate one connected
-to the simple module's output gate but the second
-one in the route, you have to check the second gate's busy
-condition\index{gate!busy condition}.
+
+\subsection{Sending messages}
+
+Once created, a message object can be sent through an
+output gate\index{output!gate} using one of the following functions:
+
+\begin{verbatim}
+send(cMessage *msg, const char *gateName, int index=0);
+send(cMessage *msg, int gateId);
+\end{verbatim}
+
+In the first function, the argument \ttt{gateName} is the name of
+the gate the message has to be sent through. If this gate is
+a vector gate, \ttt{index} determines though which particular output
+gate this has to be done; otherwise, the \ttt{index} argument is not
+needed.
+
+The second function uses the gate Id, and because it does
+not have to search through the gate array, it is faster than
+the first one.
+
+Examples:
+
+\begin{verbatim}
+send(msg, "outGate");
+send(msg, "outGates", i); // send via outGates[i]
+\end{verbatim}
+
+The following code example creates and sends messages
+every 5 simulated seconds:
+
+\begin{verbatim}
+int outGateId = findGate("outGate");
+while(true)
+{
+  send(new cMessage("packet"), outGateId);
+  wait(5);
+}
+\end{verbatim}
 
 
-\textbf{Implementation of message sending}
+\subsubsection{Modeling packet transmissions}
+
+If you're sending messages over a link that has (nonzero) data rate,
+it is modeled in the way that has been described earlier in this
+manual, in section \ref{ch:simple-modules:packet-transmission}.
+
+If you want to have full control over the transmission process,
+you'll probably need the \fname{isBusy()} and \fname{transmissionFinishes()}
+member functions of \cclass{cGate}. They are described in section
+\ref{ch:simple-modules:cgate-transmission-state}.
 
 
-Message sending is implemented in the following way: the arrival
-time\index{arrival time} and the bit error\index{bit error} flag of a
-message are calculated at once, when the \fname{send()} (or similar)
-function is invoked. That is, if the message travels through several
-links until it reaches its destination, it is \textit{not} scheduled
-individually for each link, but rather, every calculation is done
-once, within the \fname{send()} call. This implementation was chosen
-because of its run-time efficiency.
 
-In the actual implementation of queuing the messages at busy gates and
-modeling the transmission delay, messages do not actually queue up in
-gates; gates do not have internal queues. Instead, as the time when
-each gate will finish transmission is known at the time of sending the
-message, the arrival time\index{arrival time} of the message can be
-calculated in advance. Then the message will be stored in the event
-queue (FES)\index{FES} until the simulation time advances to its
-arrival time and it is retrieved by its destination module.
+\subsection{Broadcasts and retransmissions}
+
+When you implement broadcasts or retransmissions, two frequently
+occurring tasks in protocol simulation, you might feel tempted
+to use the same message in multiple \fname{send()} operations.
+Do not do it -- you cannot send the same message object multiple times.
+The solution in such cases is duplicating the message.
+
+\subsubsection{Broadcasting messages}
+
+In your model, you may need to broadcast a message to several destinations.
+Broadcast can be implemented in a simple module by sending out copies
+of the same message, for example on every gate of a gate vector.
+As described above, you cannot use the same message pointer for
+in all \fname{send()} calls -- what you have to do instead is
+create copies (duplicates) of the message object and send them.
+
+Example:
+
+\begin{verbatim}
+for (int i=0; i<n; i++)
+{
+    cMessage *copy = (cMessage *) msg->dup();
+    send(copy, "out", i);
+}
+delete msg;
+\end{verbatim}
+
+You might have noticed that copying the message for the last gate is
+redundant (we could send out the original message),
+so it can be optimized out like this:
+
+\begin{verbatim}
+for (int i=0; i<n-1; i++)   // note n-1 instead of n
+{
+    cMessage *copy = (cMessage *) msg->dup();
+    send(copy, "out", i);
+}
+send(msg, "out", n-1);  // send original on last gate
+\end{verbatim}
+
+
+\subsubsection{Retransmissions}
+
+Many communication protocols involve retransmissions of packets (frames).
+When implementing retransmissions, you cannot just hold a pointer
+to the same message object and send it again and again -- you'd get
+the \textit{not owner of message} error on the first resend.
+
+Instead, whenever it comes to (re)transmission, you should create and
+send copies of message, and retain the original.
+When you're sure there won't be any more retransmission,
+you can delete the original message.
+
+Creating and sending a copy:
+
+\begin{verbatim}
+// (re)transmit packet:
+cMessage *copy = (cMessage *) packet->dup();
+send(copy, "out");
+\end{verbatim}
+
+and finally (when no more retransmissions will occur):
+
+\begin{verbatim}
+delete packet;
+\end{verbatim}
+
+
+\subsubsection{Why?}
+
+A message is like any real world object -- it cannot be at two places
+at the same time. Once you've sent it, the message object
+no longer belongs to the module: it is taken over by the simulation kernel,
+and will eventually be delivered to the destination module.
+The sender module should not even refer to its pointer any more.
+Once the message arrived in the destination module, that module
+will has full authority over it -- it can send it further,
+destroy it immediately, or store it for further handling.
+The same applies to messages that have been scheduled -- they
+belong to the simulation kernel until they are delivered back to
+the module.
+
+To enforce the rules above, all message sending functions
+check that you actually own the message you are about to send.
+If the message is with another module, it is currently scheduled or
+in a queue etc., you'll get a runtime error: \textit{not owner of message}.
+  \footnote{The feature does not increase runtime overhead significantly, because
+  it uses the object ownership\index{ownership} management (described in
+  Section \ref{sec:ch-sim-lib:ownership-management});
+  it merely checks that the owner of the message is the module that
+  wants to send it.}
+
+
+
+\subsection{Delayed sending}
+
+It is often needed to model a delay (processing time, etc.) immediately
+followed by message sending. In {\opp}, it is possible to implement
+it like this:
+
+\begin{verbatim}
+wait( some_delay );
+send( msg, "outgate" );
+\end{verbatim}
+
+
+If the module needs to react to messages that arrive during the delay,
+\fname{wait()} cannot be used and the timer mechanism described in
+Section \ref{sec:ch-sim-lib:self-messages}, ``Self-messages'', would
+need to be employed.
+
+
+However, there is a more straightforward method than the above two,
+and this is delayed sending\index{delayed sending}. Delayed sending
+can be done with one of these functions:
+
+\fname[sendDelayed()]{sendDelayed(cMessage *msg, double delay, const char *gate\_name, int index);}\\
+\fname[sendDelayed()]{sendDelayed(cMessage *msg, double delay, int gate\_id);}
+
+
+The arguments are the same as for \fname{send()}, except for the extra \textit{delay}
+parameter. The effect of the function is the same as if the module
+had kept the message for the delay interval and sent it afterwards.
+That is, the sending time of the message will be the current
+simulation time (time at the \fname{sendDelayed()} call) plus the delay.
+The delay value must be nonnegative.
+
+Example:
+
+\begin{verbatim}
+sendDelayed(msg, 0.005, "outGate");
+\end{verbatim}
+
+
+
+\subsection{Direct message sending}
+
+Sometimes it is necessary or convenient to ignore gates/connections
+and send a message directly to a remote destination module. The \fname{sendDirect()}
+function does that, and it takes the pointer of the remote module
+(\cclass{cModule} *). You can also specify a delay and an input gate of
+the destination module.
+
+\begin{verbatim}
+cModule *destinationmodule =...;
+double delay = truncnormal(0.005, 0.0001);
+sendDirect( new cMessage, delay, destinationmodule, "in" );
+\end{verbatim}
+
+The destination module receives the message as if it was sent
+``normally''.
+
+
+
+\subsection{Receiving messages}
+
+\textbf{With activity() only!} The message receiving functions can
+only be used in the \fname{activity()} function,
+\fname{handleMessage()} gets received messages in its argument list.
+
+Messages are received using the \fname{receive()} function.
+\fname{receive()} is a member of \cclass{cSimpleModule}.
+
+\begin{verbatim}
+cMessage *msg = receive();
+\end{verbatim}
+
+The \fname{receive()} function accepts an optional \textit{timeout}
+parameter\index{receive!timeout}. (This is a \textit{delta}, not an
+absolute simulation time.) If an appropriate message doesn't arrive
+within the timeout period, the function returns a NULL pointer.
+
+\begin{verbatim}
+simtime_t timeout = 3.0;
+cMessage *msg = receive( timeout );
+
+if (msg==NULL)
+{
+    ...   // handle timeout
+}
+else
+{
+    ...  // process message
+}
+\end{verbatim}
+
+
+\subsubsection{Deprecated functionality: putaside-queue}
+\label{ch:simple-modules:putaside-queue}
+
+Earlier versions of {\opp} supported something called \textit{putaside-queue}
+which stored messages that arrived while the module was waiting for
+something else. For example, a function called \ttt{receiveOn()} waited
+for a message to arrive on a specific gate, and messages that actually
+arrived on another gate were inserted in the putaside-queue.
+\ttt{receive()} returned messages from the putaside-queue first,
+and it waited for new messages to arrive only if putaside-queue
+was empty.
+
+Practice has shown that putaside-queue and associated functionality
+bore little usefulness, and at the same time it was very confusing
+to people. Therefore putaside-queue, \ttt{receiveOn()}, \ttt{receiveNew()},
+and \ttt{receiveNewOn()} have been deprecated in OMNeT++ 2.3, and
+will be entirely removed from further releases.
+
+
+
+\subsection{The wait() function}
+
+\textbf{With activity() only!} The \fname{wait()} function's implementation
+contains a \fname{receive()} call which cannot be used in \fname{handleMessage()}.
+
+The \fname{wait()} function suspends the execution of the module for
+a given amount of simulation time (a \textit{delta}).
+
+\begin{verbatim}
+wait( delay );
+\end{verbatim}
+
+In other simulation software, \fname{wait()} is often called \textit{hold}.
+Internally, the \fname{wait()} function is implemented by a
+\fname{scheduleAt()} followed by a \fname{receive()}.
+The \fname{wait()} function is very convenient in modules that do not need
+to be prepared for arriving messages, for example message generators.
+An example:
+
+\begin{verbatim}
+for(;;)
+{
+  // wait for a (potentially random amount of) time, specified
+  // in the interArrivalTime module parameter
+  wait( par("interArrivalTime") );
+
+  // generate and send message
+  ...
+}
+\end{verbatim}
+
+If you expect messages to arrive during the wait period, you can
+use the \fname{waitAndEnqueue()} function. It takes a pointer to a queue object
+(of class \cclass{cQueue}, described in chapter \ref{cha:the-simulation-library})
+in addition to the wait interval. Messages that arrive during the
+wait interval will be accumulated in the queue, so you can
+process them after the \fname{wait()} call has returned.
+
+\begin{verbatim}
+cQueue queue("queue");
+...
+waitAndEnqueue(waitTime, &queue);
+if (!queue.empty())
+{
+  // process messages arrived during wait interval
+  ...
+}
+\end{verbatim}
+
+
+\subsubsection{Change in wait() semantics}
+
+The semantics of \fname{wait()} has slightly changed after OMNeT++ 2.3,
+due to the deprecation of the putaside-queue
+(see section \ref{ch:simple-modules:putaside-queue}).
+Up to release 2.3, messages that arrived during the wait interval
+were accumulated in the putaside-queue. In later releases,
+it will be a runtime error if a message arrives during the wait interval --
+if you want to allow such messages, you should use \fname{waitAndEnqueue()}.
+
+
+
+\subsection{Modeling events using self-messages}
+\label{sec:ch-sim-lib:self-messages}
+
+In most simulation models it is necessary to implement timers,
+or schedule events that occur at some point in the future.
+For example, when a packet is sent by a communications protocol model,
+it has to schedule an event that would occur when a timeout expires,
+because it will have to resent the packet then.
+As another example, suppose you want to write a model of a server which
+processes jobs from a queue. Whenever it begins processing
+a job, the server model will want to schedule an event to occur
+when the job finishes processing, so that it can begin processing
+the next job.
+
+In {\opp} you solve such tasks by letting the simple module
+sending a message to itself; the message would be delivered
+to the simple module at a later point of time. Messages used
+this way are called self-messages\index{self-message}.
+Self-messages are used to model events which occur within the module.
+
+\subsubsection{Scheduling an event}
+
+The module can send a message to itself using the \fname{scheduleAt()} function.
+\fname{scheduleAt()} accepts an \textit{absolute} simulation time,
+usually calculated as \fname{simTime()}+\textit{delta}:
+
+\begin{verbatim}
+scheduleAt(absoluteTime, msg);
+scheduleAt(simtime()+delta, msg);
+\end{verbatim}
+
+Self-messages are delivered to the module in the same way as other
+messages (via the usual receive calls or \fname{handleMessage()});
+the module may call the \fname{isSelfMessage()} member of any received
+message to determine if it is a self-message.
+
+As an example, here's how you could implement your own \fname{wait()}
+function in an \fname{activity()} simple module, if the simulation kernel
+didn't provide it already:
+
+\begin{verbatim}
+cMessage *msg = new cMessage();
+scheduleAt(simtime()+waitTime, msg);
+cMessage *recvd = receive();
+if (recvd!=msg)
+   // hmm, some other event occurred meanwhile: error!
+...
+\end{verbatim}
+
+You can determine if a message is currently in the FES\index{FES}
+by calling its \fname{isScheduled()} member:
+
+\begin{verbatim}
+if (msg->isScheduled())
+  // currently scheduled
+else
+  // not scheduled
+\end{verbatim}
+
+
+\subsubsection{Re-scheduling an event}
+
+If you want to reschedule an event which is currently scheduled to a different
+simulation time, first you have to cancel it using \fname{cancelEvent()}.
+
+
+\subsubsection{Cancelling an event}
+
+Scheduled self-messages can be cancelled\index{self-message!cancelling}
+\index{message!cancelling} (removed from the FES).
+This is particularly useful because self-messages are often used
+to model timers.
+
+\begin{verbatim}
+cancelEvent( msg );
+\end{verbatim}
+
+The \fname{cancelEvent()} function takes a pointer to the message to
+be cancelled, and also returns the same pointer. After having it
+cancelled, you may delete the message or reuse it in the next
+\fname{scheduleAt()} calls. \fname{cancelEvent()} gives an error if
+the message is not in the FES\index{FES}.
+
+
+\subsubsection{Implementing timers}
+
+The following example shows how to implement timers:
+
+\begin{verbatim}
+cMessage *timeoutEvent = new cMessage("timeout");
+
+scheduleAt(simTime()+10.0, timeoutEvent);
+//...
+
+cMessage *msg = receive();
+if (msg == timeoutEvent)
+{
+  // timeout expired
+}
+else
+{
+  // other message has arrived, timer can be cancelled now:
+  delete cancelEvent(timeoutEvent);
+}
+\end{verbatim}
+
+
+
+
+
+\subsection{Stopping the simulation}
+
+\subsubsection{Normal termination}
+
+
+You can finish the simulation with the \fname{endSimulation()} function:
+
+
+\fname{endSimulation()};
+
+
+However, typically you don't need \fname{endSimulation()} because you
+can specify simulation time and CPU time limits\index{simulation time
+  limits} in the ini file (see later).
+
+
+\subsubsection{Stopping on errors}
+
+
+If your simulation detects an error condition and wants to stop
+the simulation, you can do it with the \fname{error()} member function
+of \cclass{cModule}. It is used like \fname{printf()}:
+
+\begin{verbatim}
+if (windowSize<1)
+  error("Invalid window size %d; must be >=1", windowSize);
+\end{verbatim}
+
+
+Do not include a newline (``{\textbackslash}n'') or punctuation (period
+or exclamation mark) in the error text, as it will be added by {\opp}.
+
+
+
+
+
+\section{Accessing module parameters}
+\label{ch:simple-modules:parameters}
+
+Module parameters can be accessed\index{module!accessing parameters}
+with the \fname{par()} member function of \cclass{cModule}:
+
+\begin{verbatim}
+cPar& delay_par = par("delay");
+\end{verbatim}
+
+The \cclass{cPar} class is a general value-storing object. It supports
+type casts to numeric types, so parameter values can be read
+like this:
+
+\begin{verbatim}
+int num_tasks = par("num_tasks");
+double proc_delay = par("proc_delay");
+\end{verbatim}
+
+If the parameter is a random variable or its value can change
+during execution, it is best to store a reference to it and re-read
+the value each time it is needed:
+
+\begin{verbatim}
+cPar& wait_time = par("wait_time");
+for(;;)
+{
+  //...
+  wait( (simtime_t)wait_time );
+}
+\end{verbatim}
+
+If the wait\_time parameter was given a random value (e.g. \ttt{exponential(1.0)})
+in the NED source or the ini file, the above code results in
+a different delay each time.
+
+Parameter values can also be changed from the program, during
+execution. If the parameter was taken by reference
+\index{module!parameters!by reference} (with a
+\fpar[ned!keywords!ref]{ref} modifier in the NED file), other modules
+will also see the change.  Thus, parameters taken by reference can be
+used as a means of module communication\index{module!communication}.
+
+
+An example:
+
+\begin{verbatim}
+par("wait_time") = 0.12;
+\end{verbatim}
+
+Or:
+
+\begin{verbatim}
+cPar& wait_time = par("wait_time");
+wait_time = 0.12;
+\end{verbatim}
+
+
+See \cclass{cPar} explanation later in this manual for further information
+on how to change a \cclass{cPar}'s value.
+
+
+\section{Accessing gates and connections}
+\label{ch:simple-modules:gates}
+
+\subsection{Gate objects}
+
+
+Module gates\index{gate} are \cclass{cGate} objects. Gate objects
+know whether and to which gate they are connected, and they can be
+asked about the parameters of the link (delay, data rate, etc.)
+
+The \fname{gate()} member function of \cclass{cModule} returns a
+pointer to a \cclass{cGate} object, and an overloaded form of the
+function lets you to access elements of a vector gate:
+
+\begin{verbatim}
+cGate *outgate = gate("out");
+cGate *outvec5gate = gate("outvec",5);
+\end{verbatim}
+
+
+For gate vectors\index{gate!vector}, the first form returns the first gate in the
+vector (at index 0).
+
+
+The \fname{isVector()} member function can be used to determine if a
+gate belongs to a gate vector or not. But this is almost insignificant,
+because non-vector gates are treated as vectors with size 1.
+
+
+Given a gate pointer, you can use the \fname{size()} and
+\fname{index()} member functions of \cclass{cGate} to determine the
+size of the gate vector\index{gate!vector size} and the
+index\index{gate!vector index} of the gate within the vector:
+
+\begin{verbatim}
+int size2 = outvec5gate->size(); // --> size of outvec[]
+int index = outvec5gate->index(); // --> 5 (it is gate 5 in the vector)
+\end{verbatim}
+
+
+For non-vector gates, \fname{size()} returns 1 and \fname{index()} returns 0.
+
+The \fname{type()} member function returns a character, 'I' for input
+gates and 'O' for output gates:
+
+\begin{verbatim}
+char type = outgate->type() // --> 'O'
+\end{verbatim}
+
+\subsubsection{Gate IDs}
+
+
+Module gates (input and output, single and vector) are stored in an
+array within their modules. The gate's position in the array is called
+the \textit{gate ID}. The gate ID\index{gate!id} is returned by the \fname{id()}
+member function:
+
+
+\begin{verbatim}
+int id = outgate->id();
+\end{verbatim}
+
+For a module with input gates from\_app and in[3] and output gates
+of to\_app and status, the array may look like this:
+
+
+\begin{longtable}{|c|c|c|}
+\hline
+% ROW 1
+\tabheadcol
+\textbf{ID} & \textbf{dir} & \textbf{name[index]}\\\hline
+% ROW 2
+0 & \textit{input} & \ttt{from\_app} \\\hline
+% ROW 3
+1 & \textit{output} & \ttt{to\_app} \\\hline
+% ROW 4
+2 & \multicolumn{2}{c|}{\textit{empty}}\\\hline
+% ROW 5
+3 & \textit{input} & \ttt{in[0]}\\\hline
+% ROW 6
+4 & \textit{input} & \ttt{in[1]}\\\hline
+% ROW 7
+5 & \textit{input} & \ttt{in[2]}\\\hline
+% ROW 8
+6 & \textit{output} & \ttt{status}\\\hline
+\end{longtable}
+
+
+
+The array may have empty slots. Gate vectors are guaranteed to
+occupy contiguous IDs, thus it is legal to calculate the
+ID of \textit{gate[k]} as \ttt{gate("gate",0).id()+k}.
+
+Message sending and receiving functions accept both gate names
+and gate IDs; the functions using gate IDs are a bit faster.
+Gate IDs do not change during execution, so it is often worth
+retrieving them in advance and using them instead of gate names.
+
+You can also obtain gate IDs with the \fname{findGate()}
+member of \cclass{cModule}:
+
+\begin{verbatim}
+int id1 = findGate("out");
+int id2 = findGate("outvect",5);
+\end{verbatim}
+
+
+\subsection{Link parameters}
+
+
+The following member functions return the link attributes:
+
+\begin{verbatim}
+cLinkType *link = outgate->link();
+cPar *d = outgate->delay();
+cPar *e = outgate->error();
+cPar *r = outgate->datarate();
+\end{verbatim}
+
+
+\subsection{Transmission state}
+\label{ch:simple-modules:cgate-transmission-state}
+
+The \fname{isBusy()} member function returns whether the gate
+is currently transmitting, and if so, the
+\fname{transmissionFinishes()} member function
+returns the simulation time when the gate is going to finish
+transmitting. (If the gate in not currently transmitting,
+\fname{transmissionFinishes()} returns the simulation time
+when it finished its last transmission.)
+
+The semantics has been described in section
+\ref{ch:simple-modules:packet-transmission}.
+
+An example:
+
+\begin{verbatim}
+cMessage *packet = new cMessage("DATA");
+packet->setLength( 1000 );
+
+if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
+{                             // becomes free
+  wait( gate("TxGate")->transmissionFinishes() - simTime());
+}
+send( packet, "TxGate");
+\end{verbatim}
+
+If the connection with a data rate is not immediately the one
+connected to the simple module's output gate but
+the second one in the route, you have to check the second gate's busy
+condition.  You would use the following code:
+
+\begin{verbatim}
+if (gate("mygate")->toGate()->isBusy())
+  //...
+\end{verbatim}
+
+Note that if data rates change\index{data rate change} during the
+simulation, the changes will affect only the messages that are
+\textit{sent} after the change.
+
+
+
+\subsection{Connectivity}
+
+The \fname{isConnected()} member function returns whether
+the gate is connected. If the gate is an output gate, the gate to
+which it is connected is obtained by the \fname{toGate()}
+member function. For input gates, the function is
+\fname{fromGate()}.
 
 %
-% TBD add pseudocode
+% TBD figure
+%
+
+\begin{verbatim}
+cGate *gate = gate("somegate");
+if (gate->isConnected())
+{
+  cGate *othergate = (gate->type()=='O') ?
+                     gate->toGate() : gate->fromGate();
+
+  ev << "gate is connected to: " << othergate->fullPath() << endl;
+}
+else
+{
+  ev << "gate not connected" << endl;
+}
+\end{verbatim}
+
+
+An alternative to \fname{isConnected()} is to check the return value
+of \fname{toGate()} or \fname{fromGate()}. The following code is fully equivalent
+to the one above:
+
+\begin{verbatim}
+cGate *gate = gate("somegate");
+cGate *othergate = (gate->type()=='O') ?
+                   gate->toGate() : gate->fromGate();
+if (othergate)
+  ev << "gate is connected to: " << othergate->fullPath() << endl;
+else
+  ev << "gate not connected" << endl;
+\end{verbatim}
+
+To find out to which simple module a given output
+gate leads finally\index{gate!destination}, you would have to walk
+along the path like this (the \fname{ownerModule()} member function
+returns the module to which the gate belongs):
+
+\begin{verbatim}
+cGate *gate = gate("out");
+while (gate->toGate()!=NULL)
+{
+  gate = gate->toGate();
+}
+
+cModule *destmod = gate->ownerModule();
+\end{verbatim}
+
+
+but luckily, there are two convenience functions which do that:
+\fname{sourceGate()} and
+\fname{destinationGate()}.
+
+
+
+
+
+\section{Walking the module hierarchy}
+\label{ch:simple-modules:walking-module-hieararchy}
+
+\subsubsection{Module vectors}
+
+
+If a module is part of a module vector\index{module!vector}, the
+\fname{index()} and \fname{size()} member functions can be used to
+query its index and the vector size:
+
+\begin{verbatim}
+ev << "This is module [" << module->index() <<
+      "] in a vector of size [" << module->size() << "].\n";
+\end{verbatim}
+
+
+\subsubsection{Module IDs}
+
+
+Each module in the network has a unique ID that is returned by the
+\fname{id()} member function. The module ID\index{module!id} is used
+internally by the simulation kernel to identify modules.
+
+\begin{verbatim}
+int myModuleId = id();
+\end{verbatim}
+
+If you know the module ID, you can ask the simulation object
+(a global variable) to get back the module pointer:
+
+\begin{verbatim}
+int id = 100;
+cModule *mod = simulation.module( id );
+\end{verbatim}
+
+
+Module IDs are guaranteed to be unique, even when modules are
+created and destroyed dynamically. That is, an ID which once
+belonged to a module which was deleted is never issued to another
+module later.
+
+
+\subsubsection{Walking up and down the module hierarchy}
+
+
+The surrounding compound module can be accessed by the
+\fname{parentModule()} member function:
+
+\begin{verbatim}
+cModule *parent = parentModule();
+\end{verbatim}
+
+For example, the parameters of the parent module are accessed
+like this:
+
+\begin{verbatim}
+double timeout = parentModule()->par( "timeout" );
+\end{verbatim}
+
+
+\cclass{cModule}'s \fname{findSubmodule()} and \fname{submodule()}
+member functions make it possible to look up the module's submodules
+by name\index{module!submodule!lookup} (or name+index if the submodule
+is in a module vector). The first one returns the numeric module ID of
+the submodule, and the latter returns the module pointer.  If the
+submodule is not found, they return -1 or NULL, respectively.
+
+\begin{verbatim}
+int submodID = compoundmod->findSubmodule("child",5);
+cModule *submod = compoundmod->submodule("child",5);
+\end{verbatim}
+
+
+The \fname{moduleByRelativePath()} member function can be used to find
+a submodule nested deeper than one level below. For example,
+
+\begin{verbatim}
+compoundmod->moduleByRelativePath("child[5].grandchild");
+\end{verbatim}
+
+would give the same results as
+
+\begin{verbatim}
+compoundmod->submodule("child",5)->submodule("grandchild");
+\end{verbatim}
+
+(Provided that child[5] does exist, because otherwise the second
+version will crash with an access violation because of the NULL
+pointer.)
+
+
+The \cclass{cSimulation}::\fname{moduleByPath()} function is similar
+to \cclass{cModule}'s \fname{moduleByRelative\-Path()} function, and it
+starts the search at the top-level module.
+
+
+\subsubsection{Iterating over submodules}
+
+
+To access all modules within a compound module,
+use \cclass{cSubModIterator}.
+
+For example:
+
+\begin{verbatim}
+for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
+{
+  ev << iter()->fullName();
+}
+\end{verbatim}
+
+(\fname{iter()} is pointer to the current module the iterator is at.)
+
+
+The above method can also be used to iterate along a module
+vector\index{module!vector!iteration}, since the \fname{name()}
+function returns the same for all modules:
+
+\begin{verbatim}
+for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
+{
+  if (iter()->isName(name())) // if iter() is in the same
+                              // vector as this module
+  {
+    int its_index = iter()->index();
+    // do something to it
+  }
+}
+\end{verbatim}
+
+
+\subsubsection{Walking along links}
+
+
+To determine the module at the other end of a connection, use
+\cclass{cGate}'s \fname{fromGate()}, \fname{toGate()} and
+\fname{ownerModule()} functions. For example:
+
+\begin{verbatim}
+cModule *neighbour = gate( "outputgate" )->toGate()->ownerModule();
+\end{verbatim}
+
+
+For input gates, you would use \fname{fromGate()} instead of \fname{toGate()}.
+
+
+
+
+
+\section{Dynamic module creation}
+\label{ch:simple-modules:dynamic-module-creation}
+\index{module!dynamic creation}
+
+\subsection{When do you need dynamic module creation}
+
+In some situations you need to dynamically create and maybe destroy
+modules. For example, when simulating a mobile network,
+you may create a new module whenever a new user enters
+the simulated area, and dispose of them when they leave the area.
+
+As another example, when implementing a server or a transport
+protocol, it might be convenient to dymically create modules
+to serve new connections, and dispose of them when the connection
+is closed. (You would write a manager module that receives connection
+requests and creates a module for each connection.
+The Dyna example simulation does something like this.)
+
+Both simple and compound modules can be created dynamically.
+If you create a compound module, all its submodules will be created
+recursively.
+
+It is often convenient to use direct message sending with dynamically
+created modules.
+
+
+\subsection{Overview}
+
+
+To understand how dynamic module creation works, you have to know a
+bit about how normally {\opp} instantiates modules. Each module type
+(class) has a corresponding factory object of the class
+\cclass{cModuleType}. This object is created under the hood by the
+\fmac{Define\_Module()} macro, and it has a factory
+function\index{factory function} which can instantiate the module
+class (this function basically only consists of a \ttt{return new
+\textit{module-class}(...)} statement).
+
+The \cclass{cModuleType} object can be looked up by its name
+string (which is the same as the module class name). Once you have its
+pointer, it's possible to call its factory method and create an
+instance of the corresponding module class -- without having to
+include the C++ header file containing module's class declaration
+into your source file.
+
+The \cclass{cModuleType} object also knows what gates and
+parameters the given module type has to have. (This info comes from
+compiled NED code.)
+
+Simple modules can be created in one step. For a compound module, the
+situation is more complicated, because its internal structure
+(submodules, connections) may depend on parameter values and gate
+vector sizes. Thus, for compound modules it is generally required to
+first create the module itself, second, set parameter values and gate
+vector sizes, and then call the method that creates its submodules and
+internal connections.
+
+As you know already, simple modules with \fname{activity()} need a
+starter message\index{starter messages}. For statically created
+modules, this message is created automatically by {\opp}, but for
+dynamically created modules, you have to do this explicitly by calling
+the appropriate functions.
+
+
+Calling \fname{initialize()} has to take place after insertion of the
+starter messages, because the initializing code may insert new messages
+into the FES\index{FES}, and these messages should be processed
+\textit{after} the starter message.
+
+%
+% TBD
 %
 
 
-\textbf{Consequence}
+\subsection{Creating modules}
+
+The first step, finding the factory object:
+
+\begin{verbatim}
+cModuleType *moduleType = findModuleType("TCPConnectionHandler");
+\end{verbatim}
+
+\subsubsection{Simplified form}
+
+\cclass{cModuleType} has
+\fname[createScheduleInit()]{createScheduleInit(const char *name,
+  cModule *parentmod)} convenience function to get a module up and
+running in one step.
+
+\begin{verbatim}
+mod = modtype->createScheduleInit("name",this);
+\end{verbatim}
+
+It does \fname{create()} + \fname{buildInside()} + \fname{callInitialize()} +
+\fname[scheduleStart()]{scheduleStart(now)}.
+
+This method can be used for both simple and compound modules.
+However, its applicability is somewhat limited:
+because it does everything in one step,
+you do not have the chance to set parameters or gate sizes,
+and to connect gates before \fname{initialize()} is called.
+(\fname{initialize()} expects all parameters and gates to
+be in place and the network fully built when it is called.)
+Because of the above limitation, this function is mainly useful
+for creating basic simple modules.
+
+%
+% Example:
+% TBD
+%
+
+\subsubsection{Expanded form}
 
 
-The implementation has the following consequence. If you change the
-delay (or the bit error rate, or the data rate) of a link\index{link
-  delay} during simulation, the modeling of messages sent ``just
-before'' the parameter change will not be accurate. Namely, if link
-parameters change while a message is ``under way'' in the model, that
-message will not be affected by the parameter change, although it
-should. However, all subsequent messages will be modelled correctly.
-Similar for data rate: if a data rate changes during the simulation,
-the change will affect only the messages that are \textit{sent} after
-the change.
-
-If it is important to model gates and channels with changing
-properties, you can go two ways:
-\begin{itemize}
-  \item{write sender module such that they schedule events for when the
-    gate finishes its current transmission and send then;}
-  \item{alternatively, you can implement channels with
-    simple modules (``active channels'').}
-\end{itemize}
-
-\textbf{The approach of some other simulators}
-
-
-Note that some simulators (e.g. OPNET) assign \textit{packet queues}
-to input gates (ports), and messages sent are buffered at the
-destination module (or the remote end of the link) until received by
-the destination module. With that approach, events and messages are
-separate entities, that is, a \textit{send} operation includes placing
-the message in the packet queue \textit{and} scheduling an event which
-will signal the arrival of the packet. In some implementations, also
-output gates have packet queues where packets wait until the channel
-becomes free (available for transmission).
-
-{\opp} gates\index{gate} don't have associated queues. The place
-where the sent but not yet received messages are buffered is the
-\textit{FES}\index{FES}.  {\opp}'s approach is potentially faster
-than the above mentioned solution because it doesn't have the
-enqueue/dequeue overhead and also spares an event creation. The
-drawback is, as mentioned above, that changes to channel parameters do
-not take effect immediately.
-
-
-
-
-
-\section{Coding conventions}
-
-Here's a bunch of advice on how to write {\opp} models. Some
-of them are ``rules of thumb'', saying if you program like that,
-you're likely to have less trouble; other conventions are aimed
-at making the models produced by the {\opp} community more consistent.
-
-
-Conventions for writing simple\index{module!simple} modules:
-\index{module!conventions}
+If the previous simple form cannot be used. There are 5 steps:
 \begin{enumerate}
-\item{Put the NED description, the C++ class declaration and the
-    implementation into three separate files. Do not put two or more
-    modules' code into the same file unless they are build upon one
-    another - don't be afraid of small files! Thus, for a
-    simple module called Foobar, you should have
-    Foobar.ned, Foobar.h and Foobar.cc. This reduces coupling of
-    module sources and makes your code more reusable.}
-\item{Adopt a good coding style. Some hints: Choose your favourite
-    indentation style and keep to that consistently. I recommend
-    four-space indents and the brace placement style in which the
-    {\opp} sources are written. Write only one statement per line.
-    Avoid putting comments at the end of the line - place them
-    \textit{above} the code on a separate line instead! Use blank
-    lines to break the code into not-very-long logical blocks, and put
-    a few-word comment above each block what that block does. Leave at
-    least two blank lines between two (member) functions. The purpose
-    of all that is that the structure of your code be obvious at the
-    first glance!}
-\item{Identifiers: Begin module type names with a capital letter, and
-    capitalize the beginning of each word, like in \ttt{TokenRingMAC}.  Do
-    not use underscore `\_' in module names. Use the C++-style naming
-    on member functions: beginning of each word is capitalized (except
-    for the first one) and no underscores: sendUnnumberedFrame().}
-\item{Make the functions virtual. Maybe someone who reuses your code
-    will need a different behavior than what you thought of.}
-\item{Use inheritance\index{inheritance} if you're writing a very complex
-    simple module: create a basic
-    simple module class and build upon it
-    deriving new module classes. This will make your code more
-    readable and easier to manage/reuse. Unfortunately, inheritance is
-    not supported in NED so you actually have to make distinct NED
-    descriptions for each simple module class.
-    Even if you have an abstract classes, prepare a NED description
-    for it: it is useful as a reference to others who might derive a
-    different simple module class from your
-    abstract class. Inheritance in NED\index{ned!inheritance} is
-    planned in later releases of {\opp}.}
-\item{Avoid global variables\index{global variables} (and what's the
-    same, static class members).  They are not reset to their initial
-    value (zero) when you run the simulation, stop it and rebuild the
-    network. This can cause several problems when you use Cmdenv to
-    execute several runs one after another, or in Tkenv when you
-    rebuild the network from the menu.}
-\item{Query the values of parameters into state variables
-    (--\texttt{>}class members) of the \textit{same} name at the top
-    of the \fname{activity()} function.  If you know the value of a
-    parameter is a random value (like uniform 0..10) or it can change
-    during simulation, then to avoid having to look it up by name each
-    time (like \ttt{d=par(''delay'')}) you may query its pointer into a
-    \cclass[cPar]{cPar*} state variable with the same name prepended with
-    `p' (like \ttt{pDelay=\&par(''delay'')}).}
-  \item{Use \fname{ev.printf()} and \texttt{ev <}\texttt{<}... (see
-    later) to print out information on what the module is doing. Doing
-    so will pay out several times when it comes to debugging. Use a
-    parameter and a state variable called debug. Surround your
-    debugging output (\texttt{ev <}\texttt{<}... and
-    \fname{ev.printf()} calls) with \texttt{if(debug)}.  You may
-    introduce more specific debug switches (like debug\_queuing etc.)}
+  \item{find factory object}
+  \item{create module}
+  \item{set up parameters and gate sizes (if needed)}
+  \item{call function that builds out submodules and finalizes the
+    module}
+  \item{call function that creates activation message(s) for the new
+    simple module(s)}
 \end{enumerate}
+Each step (except for Step 3.) can be done with one line of code.
 
 
 
-\section{Some simulation techniques}
+See the following example, where Step 3 is omitted:
 
-\subsection{Modeling computer networks}
+\begin{verbatim}
+// find factory object
+cModuleType *moduleType = findModuleType("TCPConnectionHandler");
 
-The hierarchical module structure of {\opp} allows you to organize
-the model around different levels:
+// create (possibly compound) module and build its submodules (if any)
+cModule *module = moduleType->create( "TCPconn", this );
+module->buildInside();
 
-Physical topology:
-\begin{enumerate}
-  \item{Top-level network}
-  \item{Subnetwork (site)}
-  \item{LAN}
-  \item{node}
-\end{enumerate}
+// create activation message
+module->scheduleStart( simTime() );
+\end{verbatim}
 
-Within a node:
-\begin{enumerate}
-  \item{OSI layers. The Data-Link, Network, Transport, Application layers
-        are of greater importance.}
-  \item{Applications/protocols within a layer.}
-\end{enumerate}
+If you want to set up parameter values or gate vector sizes (Step 3.),
+the code goes between the \fname{create()} and
+\fname{buildInside()} calls:
 
-The advantage of {\opp} over many existing simulators is that the
-depth of the module nesting\index{module!nesting depth} is not
-limited, and, what is in connection with the previous one, that a
-simple module can be transformed into a
-compound\index{module!compound} module by splitting the code into
-several simple\index{module!simple} modules \textit{without affecting
-  existing users} of the module and vice versa. The latter means that
-the programmer of the model is not under pressure from possibly
-incorrect early design decisions about what to implement with a single
-module and what with a compound\index{module!compound} module.
+\begin{verbatim}
+cModuleType *moduleType = findModuleType("TCP-conn-handler");
+cModule *module = moduleType->create( "TCPconn", this );
+// set up parameters and gate sizes before we set up its submodules
+module->par("window-size") = 4096;
+module->setGateSize("to-apps", 3);
+module->buildInside();
+module->scheduleStart( simTime() );
+\end{verbatim}
 
 
-
-\subsection{Modeling multiprocessor systems}
-
-One can make use of flexible model topologies. It is straightforward
-to create ring, mesh, butterfly, torus, hypercube, tree, fat tree and
-other topologies with conditional loop
-connections\index{connection!loop}.
+\subsection{Deleting modules}
 
 
-Furthermore, general \textit{topology
-  templates}\index{topology!templates} (e.g. mesh or hypercube) can be
-created, where the types of the actual nodes are left as parameters.
-The actual node types are substituted as parameter values for each
-concrete simulation. Topology templates could be placed in a library
-and imported from there if needed.
+To delete a module dynamically\index{module!dynamic deletion}:
+
+\begin{verbatim}
+module->deleteModule();
+\end{verbatim}
 
 
 
+If the module was a compound module, this involves recursively
+destroying all its submodules. A simple module can also delete itself;
+in this case, if the module was implemented using \fname{activity()},
+the \fname{deleteModule()} call does not return to the caller (the
+reason is that deleting the module also deletes the CPU stack of the
+coroutine\index{coroutine}).
+
+Currently, you cannot safely delete a
+compound\index{module!compound!deletion} module from a simple module
+in it; you must delegate the job to a module outside the compound
+module.
 
 
-\subsection{Parameter tuning}
+\subsection{Creating connections}
 
-Tuning means finding the parameter values which produce optimal
-operation of the system. In {\opp}, you can tune the model during
-runtime. The code that monitors performance and changes parameter
-values can be placed:
-\begin{itemize}
-\item{inside the model. In this case, the code does not necessarily
-    form separate module(s); you can add the extra code to any already
-    existing module.}
-\item{outside the model of the actual system. If you choose this
-    method, you will create new modules that monitor and control the
-    model.}
-\end{itemize}
+Connections can be created using \cclass{cGate}'s \fname{connectTo()}
+method.
+  \footnote{The earlier \fname{connect()} global functions that
+  accepted two gates have been deprecated, and may be removed
+  from further {\opp} releases.}
+\fname{connectTo()} should be invoked on the source gate
+of the connection, and expects the destination gate pointer as
+an argument:
 
-{\opp} supports the model tuning\index{model!tuning} concept by
-providing reference parameters. Parameters that influence the model
-performance and need to be tuned will be declared at the highest layer
-and taken by both the model and the monitor part.
+\begin{verbatim}
+srcGate->connectTo(destGate);
+\end{verbatim}
 
+The \textit{source} and \textit{destination} words correspond
+to the direction of the arrow in NED files and which is the same,
+the direction of messages. That is,
+you connect an output gate \textit{to} another submodule's input gate;
+you connect a submodule's output gate \textit{to} the output gate
+of its parent module; and an input gate of a compound module
+\textit{to} the input gate of its submodule.
 
-An example of model tuning is how one can determine the critical
-throughput of a communication network by changing the offered
-load according to performance measures of the network (queuing
-times etc.)
+As an example, we create two modules and connect them in both directions:
 
+\begin{verbatim}
+cModuleType *moduleType = findModuleType("TicToc");
+cModule *a = modtype->createScheduleInit("a",this);
+cModule *b = modtype->createScheduleInit("b",this);
 
+a->gate("out")->connectTo(b->gate("in"));
+b->gate("out")->connectTo(a->gate("in"));
+\end{verbatim}
 
+\fname{connectTo()} also accepts a channel object as an
+additional, optional argument. Channels are subclassed from
+\cclass{cChannel}. Almost always you'll want use an instance of
+\cclass{cSimpleChannel} as channel -- this is the one that supports
+delay\index{channel!delay}, bit error rate \index{channel!error}
+and data rate\index{channel!datarate}. The channel object will
+be owned by the source gate of the connection, and you cannot
+reuse the same channel object with several connections.
 
+\cclass{cSimpleChannel} has \fname{setDelay()}, \fname{setError()}
+and \fname{setDatarate()} methods to set up the channel attributes.
+These functions accept pointer to dynamically allocated
+\cclass{cPar} objects. \cclass{cPar} will be covered in detail
+in chapter \ref{cha:the-simulation-library}.
 
-\subsection{Multiple experiments within one simulation run}
+An example that sets up a channel with a delay:
 
-One might need to perform a large number of simulation runs where
-the model parameters are not known in advance. This can be the
-case when one wants to optimize a system and parameter tuning
-cannot be used because
-\begin{enumerate}
-\item{for each experiment, he wants to start the model from a
-    well-defined initial state, or}
-\item{he wants to change the model topology from one simulation run to
-    the other}
-\end{enumerate}
+\begin{verbatim}
+cSimpleChannel *channel = new cSimpleChannel("channel");
 
-In this case, the following solution be followed. The network would
-consist of only one simple module that would
-organize the simulation runs by creating, running and destroying the
-actual models with each experiment. The simple
-module's code would look like this:
+cPar *d = new cPar("delay");
+d->setDoubleValue(0.001);
+channel->setDelay(d);
 
+a->gate("out")->connectTo(b->gate("in"), channel); // a,b are modules
+\end{verbatim}
 
-\begin{Verbatim}[commandchars=\\\{\}]
-\textit{SimulationManager::activity()}
-\{
-    determine parameters for the first run
-    while(true)
-    \{
-        create the model (a compound module) with the current
-          run parameters schedule
-        wait( some time) // while the model runs
-        delete future events that belong to the model
-        get statistics out of the model
-        destroy the model
-        if (simulation is done)
-            break
-        calculate parameters for the next run
-    \}
-    write out results
-\}
-\end{Verbatim}
-
-
-The solutions built into {\opp} (flexible module topologies, dynamic
-creation of compound modules etc.) strongly
-support this concept.
-
-
-
-
-
-\subsection{Dynamic topology optimization}
-
-Dynamic topology optimization\index{topology!dynamic optimization} is
-the generalization of the ``parameter tuning'' and ``multiple
-experiments within one simulation run'' concepts. If one wants to
-simulate large systems, it is possible that one part of the model
-needs its topology to be optimized (optimal number of servers, optimal
-interconnection etc.) while other parts of the model have reached
-their steady state and should not be bothered.
-
-
-This can be achieved by modifying the previous scheme. Parts
-of the model that do not need topology optimization can be created
-once and left running for the whole duration of the simulation;
-other parts are examined and their structure is modified from
-time to time.
 
 
 

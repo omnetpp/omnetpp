@@ -10,6 +10,9 @@
 \usepackage{fancyvrb}   %% source code listings
 \usepackage{fancyhdr}   %% custom headers and footers
 
+%% try to cure overfull hboxes
+%% \tolerance=500
+
 %% for navigation in dvi files, only needed by old teTeX versions
 %%\usepackage{srcltx}
 
@@ -169,10 +172,10 @@
 \include{ch-simple-modules}
 \cleardoublepage
 
-\include{ch-sim-lib}
+\include{ch-messages}
 \cleardoublepage
 
-\include{ch-msg-subcl}
+\include{ch-sim-lib}
 \cleardoublepage
 
 \include{ch-build-sim-progs}
@@ -205,8 +208,10 @@
 
 \end{appendix}
 
-\include{references}
-\cleardoublepage
+\nocite{*}
+\bibliographystyle{alpha}
+%% \bibliographystyle{ieeetr}
+\bibliography{usman-bibl}
 
 \phantomsection
 \addcontentsline{toc}{chapter}{\indexname}

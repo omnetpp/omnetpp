@@ -2,6 +2,25 @@
 \label{cha:analyzing-simulation-results}
 
 
+\section{Output vectors}
+
+Output vectors are time series data: values with timestamps.
+You can use output vectors to record end-to-end delays or
+round trip times of packets, queue lengths, queueing times,
+link utilization, the number of dopped packets, etc. --
+anything that's useful to get a full picture of what happened
+in the model during the simulation run.
+
+Output vectors are recorded from simple modules, by \cclass{cOutVector} objects
+(see section \ref{sec:ch-sim-lib:cOutVector}). Since output vectors usually
+record a large amount of data, in \ttt{omnetpp.ini} you can disable vectors
+or specify a simulation time interval for recording
+(see section \ref{sec:ch-run-sim:outvectors-section}).
+
+All \cclass{cOutVector} objects write to the same, common file.
+The following sections describe the format of the file, and
+how you can process them.
+
 
 \section{Plotting output vectors with Plove}
 
@@ -47,12 +66,7 @@ Plove never modifies the output vector files themselves.
 
 On startup, Plove automatically reads the \texttt{.ploverc} file in
 your home directory. The file contains general gnuplot settings, the
-filter configuration etc.  (that is, the stuff from the Options menu).
-
-
-{\underline {Portability:}} Plove works fine on Unix and (with some
-limitations) on Win95/NT.
-
+filter configuration etc. (that is, the stuff from the Options menu).
 
 
 
@@ -150,7 +164,7 @@ To plot the mean on \textit{(0,t)}, you'd write
 Do not forget the print statement, or your filter will not output
 anything and the gnuplot graph will be empty.
 
-Filters are automatically saved into and loaded from the \ttt{$\tilde{~}$/.ploverc}
+Filters are automatically saved into and loaded from the \ttt{~/.ploverc}
 file.
 
 %%
@@ -171,7 +185,7 @@ looks like this:
 vector 1   "subnet[4].term[12]"  "response time"  1
 1  12.895  2355.66666666
 1  14.126  4577.66664666
-vector 2   "subnet[4].srvr"  "queuelen+queuingtime"  2
+vector 2   "subnet[4].srvr"  "queue length"  1
 2  16.960  2.00000000000.63663666
 1  23.086  2355.66666666
 2  24.026  8.00000000000.44766536
@@ -201,7 +215,7 @@ vector. You can find the appropriate vector line with a text editor or
 you can use \fprog{grep} for this purpose:
 
 \begin{verbatim}
-% grep "queuelen+queuingtime" vector.vec
+% grep "queue length" vector.vec
 \end{verbatim}
 
 Or, you can get the list of all vectors in the file by typing:
@@ -213,7 +227,7 @@ Or, you can get the list of all vectors in the file by typing:
 This will output the appropriate vector line:
 
 \begin{verbatim}
-vector 6  "subnet[4].srvr"  "queuelen+queuingtime"  2
+vector 6  "subnet[4].srvr"  "queue length"  1
 \end{verbatim}
 
 Pick the vector ID, which is 6 in this case, and grep the file
@@ -254,7 +268,7 @@ creates several files: mysim1.vec, mysim2.vec etc.
 23.086  2355.66666666
 
 \textbf{mysim2.vec:}
-# vector 2  "subnet[4].srvr"  "queuelen+queuingtime"  2
+# vector 2  "subnet[4].srvr"  "queue length"  1
 16.960  2.00000000000.63663666
 24.026  8.00000000000.44766536
 \end{Verbatim}

@@ -1,38 +1,42 @@
 \chapter{The Simulation Library}
 \label{cha:the-simulation-library}
 
-{\opp} has a rich C++ class library which you can use when implementing
-simple modules. A quick overview of the areas supported by the
-simulation library:
+{\opp} has an extensive C++ class library which you can use when implementing
+simple modules. Some areas of class librar have already been covered in the
+previous chapters:
+
 \begin{itemize}
+  \item{events, messages, network packets: the \cclass{cMessage} and
+    \cclass{cPacket} classes (chapter \ref{cha:messages})}
   \item{sending and receiving messages, scheduling and cancelling
-    events, terminating the module or the simulation: member functions
-    of \cclass{cSimpleModule}}
-  \item{events, messages, network packets: the
-    \cclass{cMessage} and \cclass{cPacket} classes}
+    events, terminating the module or the simulation
+    (section \ref{ch:simple-modules:sending-and-receiving})}
+  \item{access to module gates and parameters via \cclass{cModule} member functions
+    (sections \ref{ch:simple-modules:parameters} and \ref{ch:simple-modules:gates})}
+  \item{accessing other modules in the network (section \ref{ch:simple-modules:walking-module-hieararchy})}
+  \item{dynamic module creation (section \ref{ch:simple-modules:dynamic-module-creation})}
+\end{itemize}
+
+This chapter discusses the rest of the simulation library:
+
+\begin{itemize}
   \item{random number generation: \fname{normal()},
     \fname{exponential()}, etc.}
-  \item{access to module gates and parameters: member functions of
-    \cclass{cModule} (base class for
-    \cclass{cSimpleModule}); \cclass{cPar} and
-    \cclass{cGate} classes}
-  \item{accessing other modules in the network: member functions of \cclass{cModule}
-    and \cclass{cGate}}
+  \item{module parameters: \cclass{cPar} class}
   \item{storing data in containers: \cclass{cArray},
     \cclass{cQueue}, \cclass{cBag} and
     \cclass{cLinkedList} classes}
-  \item{discovering network topology and support routing: \cclass{cTopology} class}
+  \item{routing support and discovery of network topology: \cclass{cTopology} class}
   \item{recording statistics into file: \cclass{cOutVector} class}
   \item{collecting simple statistics: \cclass{cStdDev} and
     \cclass{cWeightedStddev} classes}
   \item{distribution estimation: \cclass{cLongHistogram},
-    \cclass{cDoubleHistogram},
-    \cclass{cVarHistogram}, \cclass{cPSquare},
+    \cclass{cDoubleHistogram}, \cclass{cVarHistogram}, \cclass{cPSquare},
     \cclass{cKSplit} classes}
   \item{making variables inspectable in the graphical user interface
     (Tkenv): the \fmac{WATCH()} macro (\cclass{cWatch} class)}
   \item{sending debug output to and prompting for user input in the graphical
-    user interface (Tkenv\index{Tkenv}): the ev\index{ev} object (\cclass{cEnvir} class)}
+    user interface (Tkenv\index{Tkenv}): the \ttt{ev}\index{ev} object (\cclass{cEnvir} class)}
 \end{itemize}
 
 
@@ -41,7 +45,8 @@ simulation library:
 
 \section{Class library conventions}
 
-\textbf{Base class}
+\subsubsection{Base class}
+\label{sec:ch-sim-lib:cObject}
 
 
 Classes in the {\opp} simulation library are derived from \cclass{cObject}.
@@ -65,7 +70,7 @@ in the following we'll discuss some of the practically important
 ones.
 
 
-\textbf{Setting and getting attributes}
+\subsubsection{Setting and getting attributes}
 
 
 Member functions that set and query object attributes follow
@@ -81,7 +86,7 @@ length = msg->length();
 \end{verbatim}
 
 
-\textbf{className()}
+\subsubsection{className()}
 
 
 For each class, the \fname{className()} member function returns the class
@@ -91,7 +96,7 @@ name as a string:
 const char *classname = msg->className(); // returns "cMessage"
 \end{verbatim}
 
-\textbf{Name attribute}
+\subsubsection{Name attribute}
 
 
 An object can be assigned a name (a character string). The name
@@ -134,7 +139,7 @@ const char *str = msg->name(); // --> returns ptr to  ""
 \end{verbatim}
 
 
-\textbf{fullName() and fullPath()}
+\subsubsection{fullName() and fullPath()}
 
 
 Objects have two more member functions which return other sort
@@ -185,7 +190,7 @@ ev.printf("object1 is '%s', object2 is '%s'\n",
 \end{verbatim}
 
 
-\textbf{Copying and duplicating objects}
+\subsubsection{Copying and duplicating objects}
 
 
 The \fname{dup()} member function creates an exact copy of the
@@ -208,7 +213,7 @@ various reasons, \fname{operator=()} does not copy the name string;
 the copy constructor\index{copy constructor} does it.
 
 
-\textbf{Iterators}
+\subsubsection{Iterators}
 
 
 There are several container classes in the library (\cclass{cQueue},
@@ -222,14 +227,14 @@ For example:
 cQueue queue;
 
 //..
-for (cQueueIterator queueIter(queue); !queueIter.end(); queueIter++)
+for (cQueue::Iterator queueIter(queue); !queueIter.end(); queueIter++)
 {
     cObject *containedObject = queueIter();
 }
 \end{verbatim}
 
 
-\textbf{Ownership control}
+\subsubsection{Ownership control}
 
 
 By default, if a container object is destroyed, it destroys the
@@ -244,21 +249,21 @@ objects to be owned by the container or not; by calling the
 container that you don't want it to become the owner of objects that
 will be inserted in the future.
 
-The ownership mechanism is discussed in detail in
+The ownership mechanism is discussed in detail in section
 \ref{sec:ch-sim-lib:ownership-management}
 
 
 \section{Utilities}
 
-\textbf{Tracing}
+\subsubsection{Tracing}
 
 
 The tracing feature will be used extensively in the code examples,
 so it is shortly introduced here. It will be covered in detail
 in a later section.
 
-The ev\index{ev} object represents the user interface of the
-simulation.  You can send debugging output to ev with the C++-style
+The \ttt{ev}\index{ev} object represents the user interface of the
+simulation.  You can send debugging output to \ttt{ev} with the C++-style
 output operators:
 
 \begin{verbatim}
@@ -272,12 +277,12 @@ An alternative solution is \fname{ev.printf()}:
 ev.printf("packet received, sequence number is %d\n", seq_num);
 \end{verbatim}
 
-\textbf{Simulation time conversion}
+\subsubsection{Simulation time conversion}
 
 
 There are utility functions which convert simulation
 time\index{simulation time} (\cclass{simtime\_t}) to a printable string
-(like ``3s 130ms 230us'') and vica versa.
+(like \ttt{"3s 130ms 230us"}) and vica versa.
 
 
 The \fname{simtimeToStr()} function converts a \cclass{simtime\_t}
@@ -294,7 +299,7 @@ ev.printf("t1=%s, t2=%s\n", simtimeToStr(t1), simTimeToStr(t2,buf));
 
 The \fname{strToSimtime()} function parses a time specification passed
 in a string, and returns a \cclass{simtime\_t}. If the string cannot
-be entirely interpreted, -1 is returned:
+be entirely interpreted, -1 is returned.
 
 \begin{verbatim}
 simtime_t t = strToSimtime("30s 152ms");
@@ -314,1765 +319,63 @@ const char *s = "30s 152ms and some rubbish";
 simtime_t t = strToSimtime0(s); // now s points to "and some rubbish"
 \end{verbatim}
 
-\textbf{Utility \texttt{<}string.h\texttt{>} functions}
+\subsubsection{Utility \texttt{<string.h>} functions}
 
 \begin{sloppypar}
 The \fname{opp\_strdup()}, \fname{opp\_strcpy()}, \fname{opp\_strcmp()}
 functions are the same as their \texttt{<string.h>} equivalents,
-except that they treat NULL and the empty string ('''') as identical,
-and \fname{opp\_str\-dup()} uses operator new instead of
-\fname{malloc()}.
+except that they treat NULL and the empty string (\ttt{""}) as identical,
+and \fname{opp\_str\-dup()} uses operator new instead of \fname{malloc()}.
 \end{sloppypar}
 
 The \fname{opp\_concat()} function might also be useful, for example
-in constructing object names. It takes up to four const char *
+in constructing object names. It takes up to four \ttt{const char *}
 pointers, concatenates them in a static buffer and returns a pointer
 to the result. The result's length shouldn't exceed 255 characters.
 
 
 
-
-
-\section{Messages and packets}
-
-\subsection{The cMessage class}
-
-\cclass{cMessage} is a central class in {\opp}. Objects of \cclass{cMessage} and
-subclasses may model a number of things: events\index{events};
-messages\index{message}; packets\index{packets},
-frames\index{frames}, cells\index{cells}, bits or signals travelling
-in a network; entities travelling in a system and so on.
-
-
-\textbf{Attributes}
-
-
-A \cclass{cMessage} object has number of attributes. Some are used by
-the simulation kernel, others are provided just for the convenience
-of the simulation programmer. A more-or-less complete list:
-\begin{itemize}
-  \item{The \textit{name} attribute is inherited from \cclass{cObject}.}
-  \item{The \textit{message kind} attribute is supposed to carry some message
-    type information. Zero and positive values can be freely used
-    for any purpose. Negative values are reserved for use by the
-    {\opp} simulation library; especially, MK\_PACKET (-1) and MK\_INFO
-    (-2) are used to denote that the message is a network packet
-    (see the \cclass{cPacket} class later).}
-  \item{The \textit{length} attribute (understood in bits) is used to compute
-    transmission delay when the message travels through a connection
-    that has an assigned data rate.}
-  \item{The \textit{bit error flag} attribute is set to true by the simulation
-    kernel with a probability of $1-(1-\textit{ber})^{\mathit{length}}$ when the
-    message is sent through a connection that has an assigned bit
-    error rate (\textit{ber}).}
-  \item{The \textit{priority} attribute is used by the simulation kernel to
-    order messages in the message queue (FES) that have the same
-    arrival time values.}
-  \item{The \textit{time stamp} attribute is not used by the simulation kernel;
-    you can use it for purposes like remembering the time when the
-    message was enqueued or re-sent.}
-  \item{Other attributes and data members make simulation programming
-    easier, they will be discussed later: \textit{parameter list}, \textit{encapsulated
-      message}, \textit{context pointer}.}
-  \item{A number of read-only attributes store information about the
-    message's (last) sending/scheduling: \textit{source/destination module
-      and gate}, \textit{sending (scheduling) and arrival time}. They are
-    mostly used by the simulation kernel while the message is in
-    the FES, but the information is still in the message object when
-    a module receives the message.}
-\end{itemize}
-
-
-\textbf{Basic usage}
-
-
-A \cclass{cMessage} object can be created in the following way:
-
-\begin{verbatim}
-cMessage *msg = new cMessage("msg-name", kind, length,
-                             priority, errorflag);
-\end{verbatim}
-
-\index{message!data members}
-
-The kind, length, and priority are integers, and errorflag is boolean.
-All arguments have default values, so the following initializations
-are also valid:
-
-\begin{verbatim}
-cMessage *msg1 = new cMessage;
-cMessage *msg2 = new cMessage("data-packet", DATAPACKET_KIND, 8*1500 );
-\end{verbatim}
-
-
-Once a message has been created, its data members can be changed by the following functions:
-
-\begin{verbatim}
-msg->setKind( kind );
-msg->setLength( length );
-msg->setPriority( priority );
-msg->setBitError( err );
-msg->setTimestamp();
-msg->setTimestamp( simtime );
-\end{verbatim}
-
-
-With these functions the user can set the message
-kind\index{message!kind}, the message length\index{message@length},
-the priority\index{message!priority}, the error
-flag\index{message!error flag} and the time stamp\index{message!time
-  stamp}. The \fname{setTimeStamp()} function without any argument
-sets the time stamp to the current simulation time.
-
-
-The values can be obtained by the following functions:
-
-\begin{verbatim}
-int k       = msg->kind();
-int p       = msg->priority();
-int l       = msg->length();
-bool b      = msg->hasBitError();
-simtime_t t = msg->timestamp();
-\end{verbatim}
-
-
-\textbf{Duplicating messages}
-
-\index{message!duplication}
-
-It is often needed to duplicate a message (for example, send
-one and keep a copy). This can be done in the standard ways as
-for any other {\opp} object:
-
-\begin{verbatim}
-cMessage *copy1 = (cMessage *) msg->dup();
-cMessage *copy2 = new cMessage( *msg );
-\end{verbatim}
-
-
-The two are equivalent. The resulting message is an exact copy
-of the original, including message parameters (\cclass{cPar} or other
-object types) and encapsulated messages.
-
-
-
-
-\subsection{Message encapsulation}
-
-It is often necessary to encapsulate a
-message\index{message!encapsulation} into another when you're modeling
-layered protocols of computer networks. Although you can encapsulate
-messages by adding them to the parameter list, there's a better way.
-
-
-The \fname{encapsulate()} function encapsulates a message
-into another one. The length of the message will grow by the length of
-the encapsulated message. An exception: when the encapsulating (outer)
-message has zero length, {\opp} assumes it is not a real packet but
-some out-of-band signal, so its length is left at zero.
-
-\begin{verbatim}
-cMessage *userdata = new cMessage("userdata");
-
-userdata->setLength(8*2000);
-cMessage *tcpseg = new cMessage("tcp");
-tcpseg->setLength(8*24);
-tcpseg->encapsulate(userdata);
-ev << tcpseg->length() << endl; // --> 8*2024 = 16192
-\end{verbatim}
-
-
-A message can only hold one encapsulated message at a time. The
-second \fname{encapsulate()} call will result in an error. It is also
-an error if the message to be encapsulated isn't owned by the
-module.
-
-You can get back the encapsulated message by \fname{decapsulate()}:
-
-\begin{verbatim}
-cMessage *userdata = tcpseg->decapsulate();
-\end{verbatim}
-
-\fname{decapsulate()} will decrease the length of the message accordingly,
-except if it was zero. If the length would become negative, an
-error occurs.
-
-
-The \fname{encapsulatedMsg()} function returns a pointer to the encapsulated
-message, or NULL if no message was encapsulated.
-
-
-
-
-
-\subsection{Information about the last sending}
-
-There are several variables in \cclass{cMessage} that store
-information about the last time the message was sent or
-scheduled. These variables can only be read.
-
-\fname{isSelfMessage()} returns true if the message has been scheduled
-(\fname{scheduleAt()}) as opposed to being sent with one of the
-\fname{send...()} methods.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-bool \fname{isSelfMessage()}
-\end{Verbatim}
-
-The following methods can tell where the message came from and
-where it arrived (will arrive).
-
-\begin{Verbatim}[commandchars=\\\{\}]
-int \fname{senderModuleId()};
-int \fname{senderGateId()};
-int \fname{arrivalModuleId()};
-int \fname{arrivalGateId()};
-\end{Verbatim}
-
-The following two methods are just convenience functions that
-combine module id and gate id into a gate object pointer.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-cGate *\fname{senderGate()};
-cGate *\fname{arrivalGate()};
-\end{Verbatim}
-
-And there are further convenience functions to tell whether
-the message arrived on a specific gate given with id or
-name+index.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-bool \fname[arrivedOn()]{arrivedOn}(int id);
-bool \fname{arrivedOn}(const char *gname, int gindex=0);
-\end{Verbatim}
-
-The following methods return message creation time and the last sending
-and arrival times.
-
-\begin{Verbatim}[commandchars=\\\{\}]
-simtime_t \fname{creationTime()}
-simtime_t \fname{sendingTime()};
-simtime_t \fname{arrivalTime()};
-\end{Verbatim}
-
-
-
-
-\subsection{Context pointer}
-
-\cclass{cMessage} contains a void* pointer which is
-set/returned by the \fname{setContextPointer()} and
-\fname{contextPointer()} functions:
-
-\begin{verbatim}
-void *context =...;
-msg->setContextPointer( context );
-void *context2 = msg->contextPointer();
-\end{verbatim}
-
-
-It can be used for any purpose by the simulation programmer.
-It is not used by the simulation kernel, and it is treated as
-a mere pointer (no memory management is done on it).
-
-Intended purpose: a module which schedules several self-messages
-(timers) will need to identify a self-message when it arrives back to
-the module, ie. the module will have to determine which timer went off
-and what to do then. The context pointer\index{context pointer} can be
-made to point at a data structure kept by the module which can carry
-enough ``context'' information about the event.
-
-
-
-
-
-\subsection{The cPacket class}
-
-
-The \cclass{cPacket} class is derived from \cclass{cMessage}. It is intended as
-a base for all messages that model packets or frames in a telecommunications
-network.
-
-\cclass{cPacket} adds two new data members to \cclass{cMessage}:
-\textit{protocol} and \textit{PDU} type (packet, frame or event type).
-Both are short integers, and are handled by the following member
-functions:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-short \fname{protocol()};
-short \fname{pdu()};
-setProtocol(short p);
-setPdu(short p);
-\end{Verbatim}
-
-Acceptable message kind values are:
-\begin{itemize}
-\item{MK\_PACKET}\index{MK\_PACKET}
-\item{MK\_INFO}\index{MK\_INFO}
-\end{itemize}
-
-The \cclass{cPacket} constructor sets the message kind to \fname{MK\_PACKET}.
-Both \fname{MK\_PACKET} and \fname{MK\_INFO} are defined as negative integers.
-(Remember, negative message kind values are reserved for the simulation library.)
-
-The protocol and PDU fields would ideally take a value from the \fname{protocol.h}
-header in the simulation library. The contents of \fname{protocol.h}
-is currently experimental; comments and contributions are welcome.
-
-
-
-\subsection{Attaching parameters and objects}
-
-If you want to add parameters or objects to a message, the preferred
-way to do that is via message definitions, described in chapter
-\ref{cha:message-definitions}.
-
-\textbf{Attaching objects}
-
-The \cclass{cMessage} class has an internal \cclass{cArray} object which can
-carry objects\index{message!attaching objects}. Only objects
-that are derived from \cclass{cObject} (most {\opp} classes are so) can be attached.
-The \fname{addObject()}, \fname{getObject()}, \fname{hasObject()},
-\fname{removeObject()} methods use the object name
-as the key to the array. An example:
-
-\begin{verbatim}
-cLongHistogram *pklen_distr = new cLongHistogram("pklen_distr");
-msg->addObject( pklen_distr );
-...
-if (msg->hasObject("pklen_distr"))
-{
-   cLongHistogram *pklen_distr =
-       (cLongHistogram *) msg->getObject("pklen_distr");
-   ...
-}
-\end{verbatim}
-
-You should take care that names of the attached objects do not
-clash with each other or with \cclass{cPar} parameter names
-(see next section).
-If you do not attach anything to the message and do not call the
-\fname{parList()} function, the internal \cclass{cArray} object
-will not be created.
-This saves both storage and execution time.
-
-You can attach non-object types (or non-\cclass{cObject} objects) to
-the message\index{message!attaching non-object types} by using
-\cclass{cPar}'s void* pointer 'P') type (see later in the description
-of \cclass{cPar}). An example:
-
-\begin{verbatim}
-struct conn_t *conn = new conn_t; // conn_t is a C struct
-msg->addPar("conn") = (void *) conn;
-msg->par("conn").configPointer(NULL,NULL,sizeof(struct conn_t));
-\end{verbatim}
-
-
-
-\textbf{Attaching parameters}
-
-The old way of attaching parameters is adding \cclass{cPar} objects.
-There are several downsides of this approach, the most notable ones
-being large memory and runtime overhead. It has been reported that
-using \cclass{cPar} message parameters might account for a large
-part of execution time, sometimes as much as 80\%. (This depends
-on how many parameters you use.) Therefore it is recommended
-that you use message definitions \ref{cha:message-definitions}
-which adds the required parameters to the new message class
-as \ttt{int}, \ttt{long}, \ttt{bool} etc. class members, via
-subclassing.
-
-However, if you still need to use cPars, here's a short summary
-how you can do it.
-You add a new parameter to the message with the
-\fname{addPar()} member function, and get back a reference
-to the parameter object with the \fname{par()} member function.
-\fname{hasPar()} tells you if the message has a
-given parameter or not.
-
-Examples:
-
-\begin{verbatim}
-msg->addPar("dest_addr");
-msg->par("dest_addr") = 168;
-
-if (msg->hasPar("dest_addr")) {
-   long dest_addr = msg->par("dest_addr");
-   ...
-}
-\end{verbatim}
-
-Message parameters can be accessed also by index in the parameter
-array. The \fname{findPar()} function returns the index of a parameter
-or -1 if the parameter cannot be found. The parameter can then be
-accessed using an overloaded \fname{par()} function.
-
-\begin{verbatim}
-int index = msg->findPar("dest_addr");
-long dest_addr = msg->par(index);
-\end{verbatim}
-
-
-\section{Sending and receiving messages}
-
-\subsection{Sending messages}
-
-Once the message has been created, it can be sent through an
-output gate\index{output!gate} using one of these functions:
-
-\fname[send()]{send(cMessage *msg, const char *gate\_name, int index);}\\
-\fname[send()]{send(cMessage *msg, int gate)};
-
-
-
-For the first function, the argument \fname{gate\_name} is the name of
-the gate the message has to be sent through. If this gate is
-a vector gate, index determines though which particular output
-gate this has to be done; otherwise, the index argument is not
-needed.
-
-The second function uses the gate number and because it does
-not have to search through the gate array, it is faster than
-the first one.
-
-
-Examples:
-
-\begin{verbatim}
-send( new cMessage("token"), "out-gate");
-send( new cMessage("token"), "vectorgate", i);
-
-int out_gate_id = findGate("out-gate");
-for (i=0; i<n; i++)
-{
-  send( new cMessage("packet"), out_gate_id);
-  wait(in_time);
-}
-\end{verbatim}
-
-
-All message sending functions check that you actually own the message
-you are about to send. If the message is with another module,
-currently scheduled or in a queue etc., you'll get a runtime error.
-(The feature does not increase runtime overhead significantly, because
-it uses the object ownership\index{ownership} management (described in
-Section \ref{sec:ch-sim-lib:ownership-management});
-it merely checks that the owner of the message is the module which
-wants to send it.)
-
-
-
-
-
-\subsection{Delayed sending}
-
-It is often needed to model a delay (processing time, etc.) immediately
-followed by message sending. In {\opp}, it is possible to implement
-it like this:
-
-\begin{verbatim}
-wait( some_delay );
-send( msg, "outgate" );
-\end{verbatim}
-
-
-If the module needs to react to messages that arrive during the delay,
-\fname{wait()} cannot be used and the timer mechanism described in
-Section \ref{sec:ch-sim-lib:self-messages}, ``Self-messages'', would
-need to be employed.
-
-
-However, there is a more straightforward method than the above two,
-and this is delayed sending\index{delayed sending}. Delayed sending
-can be done with one of these functions:
-
-\fname[sendDelayed()]{sendDelayed(cMessage *msg, double delay, const char *gate\_name, int index);}\\
-\fname[sendDelayed()]{sendDelayed(cMessage *msg, double delay, int gate\_id);}
-
-
-The arguments are the same as for \fname{send()}, except for the extra \textit{delay}
-parameter. The effect of the function is the same as if the module
-had kept the message for the delay interval and sent it afterwards.
-That is, the sending time of the message will be the current
-simulation time (time at the \fname{sendDelayed()} call) plus the delay.
-The delay value must be nonnegative.
-
-Example:
-
-\begin{verbatim}
-sendDelayed( new cMessage("token"), 0.005, "out-gate");
-\end{verbatim}
-
-
-
-
-
-
-\subsection{Direct message sending}
-
-Sometimes it is necessary or convenient to ignore gates/connections
-and send a message directly to a remote destination module. The \fname{sendDirect()}
-function does that, and it takes the pointer of the remote module
-(\cclass{cModule} *). You can also specify a delay and an input gate of
-the destination module.
-
-\begin{verbatim}
-cModule *destinationmodule =...;
-double delay = truncnormal(0.005, 0.0001);
-sendDirect( new cMessage, delay, destinationmodule, "in" );
-\end{verbatim}
-
-The destination module receives the message as if it was sent
-``normally''.
-
-
-
-\subsection{Receiving messages}
-
-\textbf{With activity() only!} The message receiving functions can
-only be used in the \fname{activity()} function,
-\fname{handleMessage()} gets the messages in its argument list.
-
-A message can be received by a number of functions, the most
-general one is the \fname{receive()} function:
-
-\begin{verbatim}
-cMessage *msg = receive();
-\end{verbatim}
-
-Simple module objects contain a built-in queue object called
-putAsideQueue\index{putAsideQueue}. The put-aside queue is used by
-some of the message-receiving functions.
-
-There are two groups of functions that receive messages:
-\begin{itemize}
-\item{\fname{receive()}, \fname{receiveOn()}}
-\item{\fname{receiveNew()}, \fname{receiveNewOn()}}
-\end{itemize}
-
-The functions \fname{receive()}/\fname{receiveOn()}check the put-aside queue
-first and try to return a message from it. Only if they do not
-find an appropriate message in the put-aside queue, will wait
-for new messages.
-
-The functions \fname{receiveNew()}/\fname{receiveNewOn()} wait for new messages,
-ignoring the put-aside queue.
-
-Furthermore, the ...On() functions expect messages to arrive on a
-specific gate. Messages that arrive on another gate are inserted into
-the put-aside queue. The On-less versions accept any message.
-
-Since the \fname{receive()} and \fname{receiveOn()} return messages
-also from the put-aside queue, the arrival times of messages they
-return can be less than the current simulation time. A naive (and also
-incorrect) approach to check whether a message is a new one or it has
-been retrieved from the putaside-queue could be the following:
-
-\begin{verbatim}
-cMessage *msg = receive();
-
-if (msg->arrivalTime()<simTime()) // not correct! several events may
-                                  // occur at the same simulation time
-{
-  // handle msg as an old message
-}
-\end{verbatim}
-
-
-The correct way to do this is to check the putaside-queue:
-
-\begin{verbatim}
-bool queue_was_empty = putAsideQueue.empty();
-cMessage *msg = receive();
-
-if (!queue_was_empty)
-{
-  // handle msg as an old message
-}
-\end{verbatim}
-
-
-To discard the contents of the put-aside queue, one could use
-the following code:
-
-\begin{verbatim}
-while (!putAsideQueue.empty())
-  delete receive();
-\end{verbatim}
-
-
-To demonstrate \fname{receiveOn()}, the following code fragment waits
-for a message on one specific input gate and discards all messages
-that arrived on other gates in the meanwhile:
-
-\begin{verbatim}
-cMessage *msg = receiveNewOn("important_input_gate");
-while (!putAsideQueue.empty())
-  delete receive();
-\end{verbatim}
-
-
-The above code is almost equivalent to the following, except
-that it preserves the previous contents of the put-aside queue:
-
-\begin{verbatim}
-cMessage *msg;
-for(;;)
-{
-  msg = receiveNew();
-  if (msg->arrivedOn("important_input_gate"))
-    break;
-  delete msg;
-}
-\end{verbatim}
-
-
-All message receiving functions can be given a timeout
-value\index{message!timeout value}. (This is a \textit{delta}, not an
-absolute simulation time.) If an appropriate message doesn't arrive
-within the timeout period, the function returns a NULL pointer. An
-example:
-
-\begin{verbatim}
-simtime_t timeout = 3.0;
-cMessage *msg = receive( timeout );
-
-if (msg=NULL)
-  // timeout expired without any messages
-else
-  // process message
-\end{verbatim}
-
-
-
-\subsection{The wait() function}
-
-\textbf{With activity() only!} The \fname{wait()} function's implementation
-contains a \fname{receive()} call which cannot be used in \fname{handleMessage()}.
-
-The \fname{wait()} function suspends the execution of the module for
-a given amount of simulation time (a \textit{delta}), regardless whether
-messages arrive at the module in the meanwhile or not:
-
-\begin{verbatim}
-wait( delay_interval );
-\end{verbatim}
-
-In other simulation software, \fname{wait()} is often called hold.
-Internally, the \fname{wait()} function is implemented by a
-\fname{scheduleAt()} followed by a \fname{receive()}. The
-\fname{wait()} function is very convenient in modules that do not need
-to be prepared for arriving messages, for example message generators.
-An example:
-
-\begin{verbatim}
-for(;;)
-{
-  wait( par("interarrival-time") );
-  // generate and send message
-}
-\end{verbatim}
-
-The messages that arrived during the \fname{wait()} call will
-accumulate in the putaside-queue. The putaside-queue can be examined
-directly (an example was shown in the previous section), and its
-contents is also retrieved by the \fname{receive()} or
-\fname{receiveOn()} functions.
-
-
-
-
-\subsection{Self-messages}
-\label{sec:ch-sim-lib:self-messages}
-
-The module can send a message to itself\index{self-message} using the
-\fname{scheduleAt()} function:
-
-\begin{verbatim}
-scheduleAt( time, msg );
-\end{verbatim}
-
-\fname{scheduleAt()} accepts an \textit{absolute} simulation time
-(usually \fname{simTime()}+\textit{something}).  Messages sent via
-\fname{scheduleAt()} are called \textit{self-messages}, and in {\opp}
-they are used to model events which occur within the module.
-Self-messages are delivered to the module in the same way as other
-messages (via the usual receive calls or \fname{handleMessage()}); the
-module may call the \fname{isSelfMessage()} member of any received
-message to determine if it is a self-message.
-
-
-Before self-messages are delivered, they can be
-cancelled\index{self-message!cancelling}\index{message!cancelling}
-(removed from the FES). This is particularly useful because
-self-messages are often used to model timers.
-
-\begin{verbatim}
-cancelEvent( msg );
-\end{verbatim}
-
-
-The \fname{cancelEvent()} function takes a pointer to the message to
-be cancelled, and also returns the same pointer. After having it
-cancelled, you may delete the message or reuse it in the next
-\fname{scheduleAt()} calls. \fname{cancelEvent()} gives an error if
-the message is not in the FES\index{FES}.
-
-The following example shows how to implement timers:
-
-\begin{verbatim}
-cMessage *timeout_msg = new cMessage;
-
-scheduleAt( simTime()+10.0, timeout_msg );
-//...
-
-cMessage *msg = receive();
-if (msg == timeout_msg)
-{
-  // timeout expired
-}
-else
-{
-  // other message has arrived, timer can be cancelled now:
-  delete cancelEvent( timeout_msg );
-}
-\end{verbatim}
-
-You can determine if a message is currently in the FES by calling
-its \fname{isScheduled()} member:
-
-\begin{verbatim}
-if (msg->isScheduled())
-  delete cancelEvent(msg);
-else
-  ...
-\end{verbatim}
-
-An advanced version of the above code which also checks the put-aside
-queue:
-
-\begin{verbatim}
-if (msg->isScheduled())
-  delete cancelEvent(msg);
-else if (putAsideQueue.contains(msg))
-  delete putAsideQueue.remove(msg);
-else
-  ...
-\end{verbatim}
-
-
-
-
-\subsection{Querying the state of an output gate}
-
-You may have reasons to check whether a certain output gate is
-transmitting or to learn when it will finish
-transmission\index{gate!finish transmission}. This is done with gate
-object's \fname{isBusy()} and \fname{transmissionFinishes()} member
-functions.  The latter function, \fname{transmissionFinishes()} returns the
-time when the gate will finish its current transmission or (if it is
-currently free) when it finished its last transmission.
-
-
-An example:
-
-\begin{verbatim}
-cMessage *packet = new cMessage("DATA");
-packet->setLength( 1000 );
-
-if (gate("TxGate")->isBusy()) // if gate is busy, wait until it
-{                             // becomes free
-  wait( gate("TxGate")->transmissionFinishes() - simTime());
-}
-send( packet, "TxGate");
-\end{verbatim}
-
-
-If the connection with a data rate is not immediately the one
-connected to the simple module's output gate but
-the second one in the route, you have to check the second gate's busy
-condition.  You would use the following code:
-
-\begin{verbatim}
-if (gate("mygate")->toGate()->isBusy())
-  //...
-\end{verbatim}
-
-
-Note that if data rates change\index{data rate change} during the
-simulation, the changes will affect only the messages that are
-\textit{sent} after the change.
-
-
-
-\subsection{Stopping the simulation}
-
-\textbf{Normal termination}
-
-
-You can finish the simulation with the \fname{endSimulation()} function:
-
-
-\fname{endSimulation()};
-
-
-However, typically you don't need \fname{endSimulation()} because you
-can specify simulation time and CPU time limits\index{simulation time
-  limits} in the ini file (see later).
-
-
-\textbf{Stopping on errors}
-
-
-If your simulation detects an error condition and wants to stop
-the simulation, you can do it with the \fname{error()} member function
-of \cclass{cModule}. It is used like \fname{printf()}:
-
-\begin{verbatim}
-if (windowSize<1)
-  error("Invalid window size %d; must be >=1", windowSize);
-\end{verbatim}
-
-
-Do not include a newline (''{\textbackslash}n'') or punctuation (period
-or exclamation mark) in the printed-out text, it will be added
-by {\opp}.
-
-
-
-
-
-\section{Accessing module parameters and gates}
-
-\subsection{Module parameters}
-
-Module parameters can be accessed\index{module!accessing parameters}
-with the \fname{par()} member function of \cclass{cModule}:
-
-\begin{verbatim}
-cPar& delay_par = par("delay");
-\end{verbatim}
-
-The \cclass{cPar} class is a general value-storing object. It supports
-type casts to numeric types, so parameter values can be read
-like this:
-
-\begin{verbatim}
-int num_tasks = par("num_tasks");
-double proc_delay = par("proc_delay");
-\end{verbatim}
-
-If the parameter is a random variable or its value can change
-during execution, it is best to store a reference to it and re-read
-the value each time it is needed:
-
-\begin{verbatim}
-cPar& wait_time = par("wait_time");
-for(;;)
-{
-  //...
-  wait( (simtime_t)wait_time );
-}
-\end{verbatim}
-
-If the wait\_time parameter was given a random value (e.g. exponential(1.0))
-in the NED source or the ini file, the above code results in
-a different delay each time.
-
-Parameter values can also be changed from the program, during
-execution. If the parameter was taken by reference
-\index{module!parameters!by reference} (with a
-\fpar[ned!keywords!ref]{ref} modifier in the NED file), other modules
-will also see the change.  Thus, parameters taken by reference can be
-used as a means of module communication\index{module!communication}.
-
-
-An example:
-
-\begin{verbatim}
-par("wait_time") = 0.12;
-\end{verbatim}
-
-Or:
-
-\begin{verbatim}
-cPar& wait_time = par("wait_time");
-wait_time = 0.12;
-\end{verbatim}
-
-
-See \cclass{cPar} explanation later in this manual for further information
-on how to change a \cclass{cPar}'s value.
-
-
-
-\subsection{Gates and links}
-
-\textbf{Gate objects}
-
-
-Module gates\index{gate} are \cclass{cGate} objects. Gate objects
-know whether and to which gate they are connected, and they can be
-asked about the parameters of the link (delay, data rate, etc.)
-
-The \fname{gate()} member function of \cclass{cModule} returns a
-pointer to a \cclass{cGate} object, and an overloaded form of the
-function lets you to access elements of a vector gate:
-
-\begin{verbatim}
-cGate *outgate = gate("out");
-cGate *outvec5gate = gate("outvec",5);
-\end{verbatim}
-
-
-For gate vectors\index{gate!vector}, the first form returns the first gate in the
-vector (at index 0).
-
-
-The \fname{isVector()} member function can be used to determine if a
-gate belongs to a gate vector or not. But this is almost insignificant,
-because non-vector gates are treated as vectors with size 1.
-
-
-Given a gate pointer, you can use the \fname{size()} and
-\fname{index()} member functions of \cclass{cGate} to determine the
-size of the gate vector\index{gate!vector size} and the
-index\index{gate!vector index} of the gate within the vector:
-
-\begin{verbatim}
-int size2 = outvec5gate->size(); // --> size of outvec[]
-int index = outvec5gate->index(); // --> 5 (it is gate 5 in the vector)
-\end{verbatim}
-
-
-For non-vector gates, \fname{size()} returns 1 and \fname{index()} returns 0.
-
-The \fname{type()} member function returns a character, 'I' for input
-gates and 'O' for output gates:
-
-\begin{verbatim}
-char type = outgate->type() // --> 'O'
-\end{verbatim}
-
-\textbf{Gate IDs}
-
-
-Module gates (input and output, single and vector) are stored in an
-array within their modules. The gate's position in the array is called
-the \textit{gate ID}. The gate ID\index{gate!id} is returned by the \fname{id()}
-member function:
-
-
-\begin{verbatim}
-int id = outgate->id();
-\end{verbatim}
-
-For a module with input gates from\_app and in[3] and output gates
-of to\_app and status, the array may look like this:
-
-
-\begin{longtable}{|c|c|c|}
-\hline
-% ROW 1
-\tabheadcol
-\textbf{ID} & \textbf{dir} & \textbf{name[index]}\\\hline
-% ROW 2
-0 & \textit{input} & \ttt{from\_app} \\\hline
-% ROW 3
-1 & \textit{output} & \ttt{to\_app} \\\hline
-% ROW 4
-2 & \multicolumn{2}{c|}{\textit{empty}}\\\hline
-% ROW 5
-3 & \textit{input} & \ttt{in[0]}\\\hline
-% ROW 6
-4 & \textit{input} & \ttt{in[1]}\\\hline
-% ROW 7
-5 & \textit{input} & \ttt{in[2]}\\\hline
-% ROW 8
-6 & \textit{output} & \ttt{status}\\\hline
-\end{longtable}
-
-
-
-The array may have empty slots. Gate vectors are guaranteed to
-occupy contiguous IDs, that is, it is legal to calculate the
-ID of \textit{gate[k]} as \ttt{gate(''gate'',0).id()+k}.
-
-Message sending and receiving functions accept both gate names
-and gate IDs; the functions using gates IDs are a bit faster.
-Gate IDs do not change during execution, so it is often worth
-retrieving them in advance and using them instead of gate names.
-
-
-Gate IDs can also be determined with the \fname{findGate()}
-member of \cclass{cModule}:
-
-\begin{verbatim}
-int id1 = findGate("out");
-int id2 = findGate("outvect",5);
-\end{verbatim}
-
-
-\textbf{Link parameters}
-
-
-The following member functions return the link attributes:
-
-\begin{verbatim}
-cLinkType *link = outgate->link();
-cPar *d = outgate->delay();
-cPar *e = outgate->error();
-cPar *r = outgate->datarate();
-\end{verbatim}
-
-\textbf{Transmission state}
-
-
-The \fname{isBusy()} member function returns whether the gate
-is currently transmitting, and if so, the
-\fname{transmissionFinishes()} member function
-returns the simulation time when the gate is going to finish
-transmitting.
-
-
-\textbf{Connectivity}
-
-%
-% TBD figure
-%
-
-The \fname{isConnected()} member function returns whether
-the gate is connected. If the gate is an output gate, the gate to
-which it is connected is obtained by the \fname{toGate()}
-member function. For input gates, the function is
-\fname{fromGate()}.
-
-\begin{verbatim}
-cGate *gate = gate("somegate");
-if (gate->isConnected())
-{
-  cGate *othergate = (gate->type()=='O') ?
-                     gate->toGate() : gate->fromGate();
-
-  ev << "gate is connected to: " << othergate->fullPath() << endl;
-}
-else
-{
-  ev << "gate not connected" << endl;
-}
-\end{verbatim}
-
-
-An alternative to \fname{isConnected()} is to check the return value
-of \fname{toGate()} or \fname{fromGate()}. The following code is fully equivalent
-to the one above:
-
-\begin{verbatim}
-cGate *gate = gate("somegate");
-cGate *othergate = (gate->type()=='O') ?
-                   gate->toGate() : gate->fromGate();
-if (othergate)
-  ev << "gate is connected to: " << othergate->fullPath() << endl;
-else
-  ev << "gate not connected" << endl;
-\end{verbatim}
-
-To find out to which simple module a given output
-gate leads finally\index{gate!destination}, you would have to walk
-along the path like this (the \fname{ownerModule()} member function
-returns the module to which the gate belongs):
-
-\begin{verbatim}
-cGate *gate = gate("out");
-while (gate->toGate()!=NULL)
-{
-  gate = gate->toGate();
-}
-
-cModule *destmod = gate->ownerModule();
-\end{verbatim}
-
-
-but luckily, there are two convenience functions which do that:
-\fname{sourceGate()} and
-\fname{destinationGate()}.
-
-
-
-
-
-\section{Walking the module hierarchy}
-
-\textbf{Module vectors}
-
-
-If a module is part of a module vector\index{module!vector}, the
-\fname{index()} and \fname{size()} member functions can be used to
-query its index and the vector size:
-
-\begin{verbatim}
-ev << "This is module [" << module->index() <<
-      "] in a vector of size [" << module->size() << "].\n";
-\end{verbatim}
-
-
-\textbf{Module IDs}
-
-
-Each module in the network has a unique ID that is returned by the
-\fname{id()} member function. The module ID\index{module!id} is used
-internally by the simulation kernel to identify modules.
-
-\begin{verbatim}
-int myModuleId = id();
-\end{verbatim}
-
-If you know the module ID, you can ask the simulation object
-(a global variable) to get back the module pointer:
-
-\begin{verbatim}
-int id = 100;
-cModule *mod = simulation.module( id );
-\end{verbatim}
-
-
-Module IDs are guaranteed to be unique, even when modules are
-created and destroyed dynamically. That is, an ID which once
-belonged to a module which was deleted is never issued to another
-module later.
-
-
-\textbf{Walking up and down the module hierarchy}
-
-
-The surrounding compound module can be accessed by the
-\fname{parentModule()} member function:
-
-\begin{verbatim}
-cModule *parent = parentModule();
-\end{verbatim}
-
-For example, the parameters of the parent module are accessed
-like this:
-
-\begin{verbatim}
-double timeout = parentModule()->par( "timeout" );
-\end{verbatim}
-
-
-\cclass{cModule}'s \fname{findSubmodule()} and \fname{submodule()}
-member functions make it possible to look up the module's submodules
-by name\index{module!submodule!lookup} (or name+index if the submodule
-is in a module vector). The first one returns the numeric module ID of
-the submodule, and the latter returns the module pointer.  If the
-submodule is not found, they return -1 or NULL, respectively.
-
-\begin{verbatim}
-int submodID = compoundmod->findSubmodule("child",5);
-cModule *submod = compoundmod->submodule("child",5);
-\end{verbatim}
-
-
-The \fname{moduleByRelativePath()} member function can be used to find
-a submodule nested deeper than one level below. For example,
-
-\begin{verbatim}
-compoundmod->moduleByRelativePath("child[5].grandchild");
-\end{verbatim}
-
-would give the same results as
-
-\begin{verbatim}
-compoundmod->submodule("child",5)->submodule("grandchild");
-\end{verbatim}
-
-(Provided that child[5] does exist, because otherwise the second
-version will crash with an access violation because of the NULL
-pointer.)
-
-
-The \cclass{cSimulation}::\fname{moduleByPath()} function is similar
-to \cclass{cModule}'s \fname{moduleByRelative\-Path()} function, and it
-starts the search at the top-level module.
-
-
-\textbf{Iterating over submodules}
-
-
-To access all modules within a compound module,
-use \cclass{cSubModIterator}.
-
-For example:
-
-\begin{verbatim}
-for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
-{
-  ev << iter()->fullName();
-}
-\end{verbatim}
-
-(\fname{iter()} is pointer to the current module the iterator is at.)
-
-
-The above method can also be used to iterate along a module
-vector\index{module!vector!iteration}, since the \fname{name()}
-function returns the same for all modules:
-
-\begin{verbatim}
-for (cSubModIterator iter(*parentModule()); !iter.end(); iter++)
-{
-  if (iter()->isName(name())) // if iter() is in the same
-                              // vector as this module
-  {
-    int its_index = iter()->index();
-    // do something to it
-  }
-}
-\end{verbatim}
-
-
-\textbf{Walking along links}
-
-
-To determine the module at the other end of a connection, use
-\cclass{cGate}'s \fname{fromGate()}, \fname{toGate()} and
-\fname{ownerModule()} functions. For example:
-
-\begin{verbatim}
-cModule *neighbour = gate( "outputgate" )->toGate()->ownerModule();
-\end{verbatim}
-
-
-For input gates, you would use \fname{fromGate()} instead of \fname{toGate()}.
-
-
-
-
-
-\section{Dynamic module creation}
-
-\textbf{Why}
-
-
-If you do not know how many modules you'll need, you can create
-modules dynamically\index{module!dynamic creation} and dispose of them
-when they are no longer needed. Both simple and compound modules
-can be created this way. If you create a compound module dynamically,
-all its submodules will be recursively built.
-
-
-Let's suppose you are implementing a transport protocol for a
-computer network model. It is convenient to have a separate module
-to handle each connection. However, there's no way to know how
-many connections there'll be simultaneously. The solution is
-to create a manager module which receives connection requests
-and creates a module for each connection. The Dyna example simulation
-does something like this.
-
-It is often convenient to use direct message sending with dynamically
-created modules.
-
-
-\textbf{Overview }
-
-
-To understand how dynamic module creation works, you have to know a
-bit about how normally {\opp} instantiates modules. Each module type
-(class) has a corresponding description object of the class
-\cclass{cModuleType}. This object is created under the hood by the
-\fmac{Define\_Module()} macro, and it has a factory
-function\index{factory function} which can instantiate the module
-class (this function basically only consists of a return new
-\textit{module-class}(...)  statement).
-
-The \cclass{cModuleType} object can be looked up by its name
-string (which is the same as the module class name). Once you have its
-pointer, it's possible to call its factory method and create an
-instance of the corresponding module class -- without having to
-include the module's class declaration into your C++ file.
-
-
-The \cclass{cModuleType} object also knows what gates and
-parameters the given module type has to have. (This info comes from
-compiled NED code.)
-
-
-Simple modules can be created in one step. For a compound module, the
-situation is more complicated, because its internal structure
-(submodules, connections) may depend on parameter values and gate
-vector sizes. Thus, for compound modules it is generally required to
-set parameter values and gate vector sizes after creation of the
-module itself, but before creating its submodules and internal
-connections.
-
-
-As you know already, simple modules with \fname{activity()} need a
-starter message\index{starter messages}. For statically created
-modules, this message is created automatically by {\opp}, but for
-dynamically created modules, you have to do this explicitly by calling
-the appropriate functions.
-
-
-Calling \fname{initialize()} has to take place after insertion of the
-stater messages, because the initializing code may insert new messages
-into the FES\index{FES}, and these messages should be processed
-\textit{after} the starter message.
-
-%
-% TBD
-%
-
-\begin{verbatim}
-cModuleType *moduleType = findModuleType("TCPConnectionHandler");
-\end{verbatim}
-
-
-\textbf{Simple form}
-
-
-Mainly for creating simple modules.
-
-%
-% TBD
-%
-
-\cclass{cModuleType} has
-\fname[createScheduleInit()]{createScheduleInit(const char *name,
-  cModule *parentmod)} convenience function to get a module up and
-running in one step.
-
-\begin{verbatim}
-mod = modtype->createScheduleInit("name",this);
-\end{verbatim}
-
-It does \fname{create()} + \fname{buildInside()} + \fname{callInitialize()} +
-\fname[scheduleStart()]{scheduleStart(now)}.
-
-
-Should work for both simple and compound modules.
-
-This method is not applicable if the module:
-\begin{itemize}
-  \item{has parameters to be set}
-  \item{has gate vector sizes to be set}
-  \item{has gates to be connected before \fname{initialize()}}
-\end{itemize}
-
-%
-% Example:
-% TBD
-%
-
-\textbf{Expanded form}
-
-
-If the previous simple form cannot be used. There are 5 steps:
-\begin{enumerate}
-  \item{find descriptor object}
-  \item{create module}
-  \item{set up parameters and gate sizes (if needed)}
-  \item{call function that builds out submodules and finalizes the
-    module}
-  \item{call function that creates activation message(s) for the new
-    simple module(s)}
-\end{enumerate}
-Each step (except for Step 3.) can be done with one line of code.
-
-
-
-See the following example where Step 3. is omitted:
-
-\begin{verbatim}
-// find descriptor object
-cModuleType *moduleType = findModuleType("TCPConnectionHandler");
-// create (possibly compound) module and build its submodules (if any)
-cModule *module = moduleType->create( "TCPconn", this );
-module->buildInside();
-// create activation message
-module->scheduleStart( simTime() );
-\end{verbatim}
-
-If you want to set up parameter values or gate vector sizes (Step 3.),
-the code goes between the \fname{create()} and
-\fname{buildInside()} calls:
-
-\begin{verbatim}
-cModuleType *moduleType = findModuleType("TCP-conn-handler");
-cModule *module = moduleType->create( "TCPconn", this );
-// set up parameters and gate sizes before we set up its submodules
-module->par("window-size") = 4096;
-module->setGateSize("to-apps", 3);
-module->buildInside();
-module->scheduleStart( simTime() );
-\end{verbatim}
-
-
-\textbf{Deleting}
-
-
-To delete a module dynamically\index{module!dynamic deletion}:
-
-\begin{verbatim}
-module->deleteModule();
-\end{verbatim}
-
-
-
-If the module was a compound module, this involves recursively
-destroying all its submodules. A simple module can also delete itself;
-in this case, if the module was implemented using \fname{activity()},
-the \fname{deleteModule()} call does not return to the caller (the
-reason is that deleting the module also deletes the CPU stack of the
-coroutine\index{coroutine}).
-
-Currently, you cannot safely delete a
-compound\index{module!compound!deletion} module from a simple module
-in it; you must delegate the job to a module outside the compound
-module.
-
-
-\textbf{Creating connections}
-
-
-There are two \fname{connect()}-functions that you can use to connect
-gates. For a normal user, they are useful for creating connections to
-dynamically created modules\index{connection!dynamic creation}.
-
-\begin{verbatim}
-connect( cModule *src_module, int src_gatenumber,
-         cLinkType *channeltype,
-         cModule *dest_module, int dest_gatenumber );
-
-connect( cModule *src_module, int src_gatenumber,
-         cPar *delay, cPar *error, cPar *datarate,
-         cModule *dest_module, int dest_gatenumber );
-\end{verbatim}
-
-
-Any of the channeltype, delay, error and datarate pointers can
-be NULL.
-
-An example:
-
-\begin{verbatim}
-connect( this, findGate("out"),
-         (cLinkType *)NULL,
-         module, module->findGate("in",0) );
-\end{verbatim}
-
-
-
-
-
-\section{Routing support: cTopology}
-
-\subsection{Overview}
-
-The \cclass{cTopology} class was designed primarily to support
-routing\index{routing support} in telecommunication or multiprocessor
-networks.
-
-A \cclass{cTopology} object stores an abstract representation of the
-network in graph form:
-\begin{itemize}
-  \item{each \cclass{cTopology} node corresponds to a \textit{module}
-    (simple or compound), and}
-  \item{each \cclass{cTopology} edge corresponds to a \textit{link} or
-    \textit{series of connecting links}.}
-\end{itemize}
-
-You can specify which modules (either simple or compound) you want to
-include in the graph. The graph will include all connections among the
-selected modules. In the graph, all nodes are at the same level,
-there's no submodule nesting.  Connections which span across compound
-module boundaries are also represented as one graph edge. Graph edges
-are directed, just as module gates are.
-
-
-If you're writing a router or switch model, the \cclass{cTopology}
-graph can help you determine what nodes are available through which
-gate and also to find optimal routes\index{optimal routes}. The
-\cclass{cTopology} object can calculate shortest paths\index{shortest
-  path} between nodes for you.
-
-The mapping between the graph (nodes, edges) and network model
-(modules, gates, connections) is preserved: you can easily find
-the corresponding module for a \cclass{cTopology} node and vica versa.
-
-
-
-
-
-\subsection{Basic usage}
-
-You can extract the network topology into a \cclass{cTopology}
-object by a single function call. You have several ways to select
-which modules you want to include in the topology:
-\begin{itemize}
-  \item{by module type}
-  \item{by a parameter's presence and its value}
-  \item{with a user-supplied boolean function}
-\end{itemize}
-
-First, you can specify which node types you want to include. The
-following code extracts all modules of type Router or User. (Router
-and User can be both simple and compound module types.)
-
-\begin{verbatim}
-cTopology topo;
-topo.extractByModuleType( "Router", "User", NULL );
-\end{verbatim}
-
-
-Any number of module types (up to 32) can be supplied; the list
-must be terminated by NULL.
-
-Second, you can extract all modules which have a certain parameter:
-
-\begin{verbatim}
-topo.extractByParameter( "ip_address" );
-\end{verbatim}
-
-
-You can also specify that the parameter must have a certain value
-for the module to be included in the graph:
-
-\begin{verbatim}
-cPar yes = "yes";
-topo.extractByParameter( "include_in_topo", &yes );
-\end{verbatim}
-
-The third form allows you to pass a function which can determine for
-each module whether it should or should not be included.  You can have
-\cclass{cTopology} pass supplemental data to the function through a
-void* pointer. An example which selects all top-level modules (and
-does not use the void* pointer):
-
-\begin{verbatim}
-int select_function(cModule *mod, void *)
-{
-  return mod->parentModule() == simulation.systemModule();
-}
-
-topo.extractFromNetwork( select_function, NULL );
-\end{verbatim}
-
-%
-% TBD one more example which \textit{does use} the void* ptr.
-%
-
-A \cclass{cTopology} object uses two types: \cclass{sTopoNode} for
-nodes and \cclass{sTopoLink} for edges. (\cclass{sTopo\-Link\-In} and
-\cclass{sTopoLinkOut} are `aliases' for \cclass{sTopoLink}; we'll
-speak about them later.)
-
-Once you have the topology extracted, you can start exploring
-it. Consider the following code (we'll explain it shortly):
-
-\begin{verbatim}
-for (int i=0; i<topo.nodes(); i++)
-{
-  sTopoNode *node = topo.node(i);
-  ev << "Node i=" << i << " is " << node->module()->fullPath() << endl;
-  ev << " It has " << node->outLinks() << " conns to other nodes\n";
-  ev << " and " << node->inLinks() << " conns from other nodes\n";
-
-  ev << " Connections to other modules are:\n";
-  for (int j=0; j<node->outLinks(); j++)
-  {
-    sTopoNode *neighbour = node->out(j)->remoteNode();
-    cGate *gate = node->out(j)->localGate();
-    ev << " " << neighbour->module()->fullPath()
-       << " through gate " << gate->fullName() << endl;
-  }
-}
-\end{verbatim}
-
-The \fname{nodes()} member function (1st line) returns the number of
-nodes in the graph, and node(i) returns a pointer to the \textit{i}th
-node, an \cclass{sTopoNode} structure.
-
-
-The correspondence between a graph node and a module can be obtained
-by:
-
-\begin{verbatim}
-sTopoNode *node = topo.nodeFor( module );
-cModule *module = node->module();
-\end{verbatim}
-
-
-The \fname{nodeFor()} member function returns a pointer to the graph
-node for a given module. (If the module is not in the graph, it
-returns NULL). \fname{nodeFor()} uses binary search within the
-\cclass{cTopology} object so it is fast enough.
-
-
-\cclass{sTopoNode}'s other member functions let you determine the
-connections of this node: \fname{inLinks()}, \fname{outLinks()} return
-the number of connections, \fname[in()]{in(i)} and
-\fname[out()]{out(i)} return pointers to graph edge objects.
-
-
-By calling member functions of the graph edge object, you can
-determine the modules and gates involved. The \fname{remoteNode()}
-function returns the other end of the connection, and
-\fname{localGate()}, \fname{remoteGate()}, \fname{localGateId()} and
-\fname{remoteGateId()} return the gate pointers and ids of the gates
-involved. (Actually, the implementation is a bit tricky here: the same
-graph edge object \cclass{sTopoLink} is returned either as
-\cclass{sTopoLinkIn} or as \cclass{sTopoLinkOut} so that ``remote''
-and ``local'' can be correctly interpreted for edges of both
-directions.)
-
-
-
-
-
-\subsection{Shortest paths}
-
-The real power of \cclass{cTopology} is in finding shortest
-paths\index{topology!shortest path} in the network to support optimal
-routing\index{optimal routing}. \cclass{cTopology} finds shortest paths
-from \textit{all} nodes \textit{to} a target node. The algorithm is
-computationally inexpensive. In the simplest case, all edges are
-assumed to have the same weight.
-
-A real-life example when we have the target module pointer, finding
-the shortest path looks like this:
-
-\begin{verbatim}
-cModule *targetmodulep =...;
-sTopoNode *targetnode = topo.nodeFor( targetmodulep );
-topo.unweightedSingleShortestPathsTo( targetnode );
-\end{verbatim}
-
-
-This performs the Dijkstra algorithm\index{Dijkstra algorithm} and
-stores the result in the \cclass{cTopology} object. The result can
-then be extracted using \cclass{cTopology} and
-sTopoNode\index{sTopoNode} methods.  Naturally, each call to
-\fname{unweightedSingleShortestPathsTo()} overwrites the results of
-the previous call.
-
-Walking along the path from our module to the target node:
-
-\begin{verbatim}
-sTopoNode *node = topo.nodeFor( this );
-
-if (node == NULL)
-{
-  ev < "We (" << fullPath() << ") are not included in the topology.\n";
-}
-else if (node->paths()==0)
-{
-  ev << "No path to destination.\n";
-}
-else
-{
-  while (node != topo.targetNode())
-  {
-    ev << "We are in " << node->module()->fullPath() << endl;
-    ev << node->distanceToTarget() << " hops to go\n";
-    ev << "There are " << node->paths()
-       << " equally good directions, taking the first one\n";
-    sTopoLinkOut *path = node-\texttt{>}path(0);
-    ev << "Taking gate " << path->localGate()->fullName()
-       << " we arrive in " << path->remoteNode()->module()->fullPath()
-       << " on its gate " << path->remoteGate()->fullName() << endl;
-    node = path->remoteNode();
-  }
-}
-\end{verbatim}
-
-
-The purpose of the \fname{distanceToTarget()} member function of a
-node is self-explanatory. In the unweighted case, it returns the
-number of hops. The \fname{paths()} member function returns the number
-of edges which are part of a shortest path, and
-\fname[path()]{path(i)} returns the \textit{i}th edge of them as
-\cclass{sTopoLinkOut}. If the shortest paths were created by the
-\fname[SingleShortestPaths()]{...SingleShortestPaths()} function,
-\fname{paths()} will always return 1 (or 0 if the target is not
-reachable), that is, only one of the several possible shortest paths
-are found.  The
-\fname[MultiShortestPathsTo()]{...MultiShortestPathsTo()} functions
-find all paths, at increased run-time cost. The \cclass{cTopology}'s
-\fname{targetNode()} function returns the target node of the last
-shortest path search.
-
-You can enable/disable nodes or edges in the graph. This is done by
-calling their \fname{enable()} or \fname{disable()} member functions.
-Disabled nodes or edges are ignored by the shortest paths calculation
-algorithm. The \fname{enabled()} member function returns the state of
-a node or edge in the topology graph.
-
-One usage of \fname{disable()} is when you want to determine in how many
-hops the target node can be reached from our node \textit{through
-a particular output gate}. To calculate this, you calculate the
-shortest paths to the target \textit{from the neighbor node}, but
-you must disable the current node to prevent the shortest paths
-from going through it:
-
-\begin{verbatim}
-sTopoNode *thisnode = topo.nodeFor( this );
-thisnode->disable();
-topo.unweightedSingleShortestPathsTo( targetnode );
-thisnode->enable();
-
-for (int j=0; j<thisnode->outLinks(); j++)
-{
-  sTopoLinkOut *link = thisnode->out(i);
-  ev << "Through gate " << link->localGate()->fullName() << " : "
-     << 1 + link->remoteNode()->distanceToTarget() << " hops" << endl;
-}
-\end{verbatim}
-
-In the future, other shortest path algorithms will also be implemented:
-
-\begin{verbatim}
-unweightedMultiShortestPathsTo(sTopoNode *target);
-weightedSingleShortestPathsTo(sTopoNode *target);
-weightedMultiShortestPathsTo(sTopoNode *target);
-\end{verbatim}
-
-
-
 \section{Generating random numbers}
+
+Random numbers in simulation are never random. Rather, they are
+produced using deteministic algorithms. Algorithms take a \textit{seed} value
+and perform some deterministic calculations on them to produce
+a ``random'' number and the next seed. Such algorithms and their
+implementations are called \textit{random number generators} or RNGs,
+or sometimes pseudo random number generators or PRNGs to highlight
+their deterministic nature.
+  \footnote{There exist real random numbers too, see e.g.
+  http://www.random.org/, http://www.comscire.com, or the Linux
+  /dev/random device.}
+
+Starting from the same seed, RNGs always produce the same sequence
+of random numbers. This is a useful property and of great importance,
+because it makes simulation runs repeatable.
+
+RNGs produce uniformly distributed integers in some range,
+usually between 0 or 1 and $2^{32}$ or so. Matematical transformations
+are used to produce random variates from them that correspond to
+specific distributions.
 
 \subsection{Random number generators}
 
-Having high quality random numbers\index{random!numbers} is usually
-very important in simulation programs. The random number generator
-used in {\opp} is a linear congruential generator\index{linear
-  congruential generator} (LCG) with a cycle length of $2^{31}-2$. The
-startup code of {\opp} contains code that checks if the random number
+\subsubsection{The current RNG}
+
+The currently used random number generator in {\opp} is
+a linear congruential generator\index{linear congruential generator}
+(LCG) with a cycle length of $2^{31}-2$.
+The startup code of {\opp} contains code that checks if the random number
 generator works OK, so you do not have to worry about this if you port
 the simulator to a new architecture or use a different compiler.
 
-
-If a simulation program uses random numbers for more than one purpose,
-the numbers should come from different random number generators.
-{\opp} provides several independent random number generators (by
-default 32; this number is \#defined as
-\fmac{NUM\_RANDOM\_GE\-NE\-RA\-TORS} in utils.h).
-
-
-To avoid unwanted correlation, it is also important that different
-simulation runs and different random number sources within one
-simulation run use non-overlapping series of random numbers,
-so the generators should be started with seeds well apart. For
-selecting good seeds, the seedtool\index{seedtool} program can be used (it is
-documented later).
-
-The random number generator was taken from [JAIN91, pp. 441-444,455].
+The random number generator was taken from \cite{Jain91}, pp. 441-444,455.
 It has the following properties:
 \begin{itemize}
-\item{Range: $1... 2^{31}-2$}
-\item{Period length: $2^{31}-2$}
-\item{Method: $x := (x * 7^{5}) mod (2^{31}-1)$}
-\item{To check: if $x[0]=1$ then $x[10000]=1,043,618,065$}
-\item{Required hardware: exactly 32-bit integer arithmetics}
+   \item{Range: $1... 2^{31}-2$}
+   \item{Period length: $2^{31}-2$}
+   \item{Method: $x := (x * 7^{5}) mod (2^{31}-1)$}
+   \item{Verification: if $x[0] = 1$ then $x[10000] = 1,043,618,065$ }
+   \item{Required hardware: exactly 32-bit integer arithmetics}
 \end{itemize}
 
 The concrete implementation:
@@ -2088,10 +391,47 @@ long intrand()
 \end{verbatim}
 
 
-The generator is directly accessible through the \fname{intrand()} function:
+\subsubsection{Caution!}
+
+The above ``minimal standard'' RNG is only suitable for small-scale
+simulation studies. As shown by Karl Entacher et al. in \cite{Entacher02},
+the cycle length of about $2^{31}$ is too small (on todays
+fast computers it is easy to exhaust all random numbers), and
+the structure of the generated ``random'' points is too regular.
+The \cite{Hellekalek98} paper gives you a broader overview of issues
+associated with RNGs used for simulation, and it's well worth reading.
+It also gives you useful links and references to further reading
+on the topic.
+
+Work is underway to create a flexible and extensible
+random number architecture in future versions of {\opp},
+and to integrate modern RNGs such as L'Ecuyer's CMRG \cite{LEcuyer02}
+with a period of about $2^{191}$ and/or
+Mersenne Twister \cite{Matsumoto98}.
+
+
+\subsubsection{Multiple RNGs}
+
+If a simulation program uses random numbers for more than one purpose,
+the numbers should come from different random number generators.
+{\opp} provides several independent random number generators (by
+default 32; this number is \#defined as
+\fmac{NUM\_RANDOM\_GENE\-RATORS} in \ttt{utils.h}).
+
+To avoid unwanted correlation, it is also important that different
+simulation runs and different random number sources within one
+simulation run use non-overlapping series of random numbers,
+so the generators should be started with seeds well apart. For
+selecting good seeds, the seedtool\index{seedtool} program can be used (it is
+documented later).
+
+
+\subsubsection{Accessing RNGs}
+
+Integers can be generated via the \fname{intrand()} function:
 
 \begin{verbatim}
-long rnd = intrand();   // in the range 1..INTRAND\_MAX-1
+long rnd = intrand();   // in the range 1..INTRAND_MAX-1
 \end{verbatim}
 
 The random number seed can be specified in the ini file
@@ -2104,9 +444,7 @@ randseed( 10 );         // set seed to 10
 long seed = randseed(); // current seed value
 \end{verbatim}
 
-
 Zero is not allowed as a seed.
-
 
 The \fname{intrand()} and \fname{randseed()} functions use generator 0. They have
 another variant which uses a specified generator:
@@ -2129,7 +467,7 @@ double prob = dblrand();   // dblrand() produces numbers in [0,1)
 \end{verbatim}
 
 
-They also have their counterparts that use generator $k$:
+They also have their counterparts that use generator \textit{k}:
 
 \begin{verbatim}
 int dice = 1 + genk_intrand(k,6); // uses generator k
@@ -2212,7 +550,7 @@ the statistical classes.
 
 \subsection{Queue class: cQueue}
 
-\textbf{Basic usage}
+\subsubsection{Basic usage}
 
 
 \cclass{cQueue} is a container class that acts as a queue.
@@ -2220,12 +558,6 @@ the statistical classes.
 (almost all classes from the {\opp} library), such as
 \cclass{cMessage}, \cclass{cPar}, etc. Internally, \cclass{cQueue}
 uses a double-linked list to store the elements.
-
-As an example of use, the simple modules'
-put-aside queues (\cclass{putAsideQueue} member) are \cclass{cQueues}
-which store \cclass{cMessage} objects. (However, the Future Event Set
-[FES]\index{FES} is not a \cclass{cQueue}; it is implemented with heap
-[class \cclass{cMessageHeap}] because it is a lot more efficient.)
 
 A queue object has a head and a tail. Normally, new elements
 are inserted at its head and elements are removed at its tail.
@@ -2285,7 +617,7 @@ used to remove any item known by its pointer from the queue:
 
 
 
-\textbf{Priority queue}
+\subsubsection{Priority queue}
 
 
 By default, \cclass{cQueue} implements a FIFO, but it can also act as
@@ -2308,14 +640,14 @@ from the head until it reaches the position where the new item
 needs to be inserted, and inserts it there.
 
 
-\textbf{Iterators}
+\subsubsection{Iterators}
 
 
 Normally, you can only access the objects at the head or tail of the
-queue. However, if you use an iterator class, \cclass{cQueueIterator},
+queue. However, if you use an iterator class, \cclass{cQueue::Iterator},
 you can examine each object in the queue\index{queue!iteration}.
 
-The \cclass{cQueueIterator} constructor takes two arguments, the first
+The \cclass{cQueue::Iterator} constructor takes two arguments, the first
 is the queue object and the second one specifies the initial position
 of the iterator: 0=tail, 1=head. Otherwise it acts as any other
 {\opp} iterator class: you can use the ++ and -- operators to advance
@@ -2327,7 +659,7 @@ beginning) of the queue.
 An example:
 
 \begin{verbatim}
-for( cQueueIterator iter(queue,1); !iter.end(), iter++)
+for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 {
   cMessage *msg = (cMessage *) iter();
   //...
@@ -2339,7 +671,7 @@ for( cQueueIterator iter(queue,1); !iter.end(), iter++)
 
 \subsection{Expandable array: cArray}
 
-\textbf{Basic usage}
+\subsubsection{Basic usage}
 
 
 \cclass{cArray} is a container class that holds objects derived from
@@ -2416,7 +748,7 @@ write:
 delete array.remove( index );
 \end{verbatim}
 
-\textbf{Iteration}
+\subsubsection{Iteration}
 
 
 \cclass{cArray} has no iterator, but it's easy to loop through all the
@@ -2632,8 +964,9 @@ destructed, and it will use new char[size] followed by a
 \fname{memcpy()} to duplicate the memory area whenever the
 \cclass{cPar} object is duplicated. If you need more sophisticated
 memory management, you can supply your own deallocation and
-duplication functions.  All this is documented in detail in the class
-library reference.  An example for simple memory management:
+duplication functions.
+
+An example for simple memory management:
 
 \begin{verbatim}
 double *mem = new double[15];
@@ -2677,7 +1010,7 @@ be given in reversed Polish form\index{reversed polish notation}. An
 example:
 
 \begin{verbatim}
-sXElem *expression = new sXElem[5];
+cPar::XElem *expression = new cPar::XElem[5];
 expression[0] = &par("count"); // pointer to
 module parameter
 expression[1] = 1;
@@ -2702,7 +1035,7 @@ Another example is a distribution\index{distribution} with mean and
 standard deviation given by module parameters:
 
 \begin{verbatim}
-sXElem *expression = new sXElem[3];
+cPar::XElem *expression = new cPar::XElem[3];
 expression[0] = &par("mean");
 expression[1] = &par("stddev");
 expression[2] = normal; // pointer to the normal(double,double) func.
@@ -2880,7 +1213,7 @@ and returns random variable of a certain distribution.\\\hline
 %% ROW 7
 X & expr. &
 \ttt{setDoubleValue( \linebreak
-\hspace*{0.3cm} sXElem*,int); \linebreak
+\hspace*{0.3cm} cPar::XElem*,int); \linebreak
 double \fname{doubleValue()}; \linebreak
 op \fname{double()};}
 &
@@ -2888,7 +1221,7 @@ Reverse Polish expression. Expression can contain constants,
 \cclass{cPar} objects, refer to other \cclass{cPars} (e.g. module parameters),
 can use many math operators (+-*/{\textasciicircum}\% etc), function calls
 (function must take 0,1,2 or 3 doubles and return a double).
-The expression must be given is in an sXElem array (see later).\\\hline
+The expression must be given is in an cPar::XElem array (see later).\\\hline
 %% ROW 8
 T & distrib. &
 \ttt{setDoubleValue( \linebreak
@@ -2914,7 +1247,7 @@ cObject *\fname{objectValue()}; \linebreak
 op cObject *(); \linebreak
 op=(cObject *);}
 &
-{\raggedright pointer to an object derived from \cclass{cObject}.\\
+{\raggedright pointer to an object derived from \cclass{cObject}.
 Ownership management is done through \fname{takeOwnership()}.}\\\hline
 %% ROW 11
 I & indirect value &
@@ -2927,10 +1260,284 @@ cPar *\fname{redirection()}; \linebreak
 and reading operates on the other \cclass{cPar}; even the \fname{type()} function
 will return the type in the other \cclass{cPar} (so you'll never get 'I'
 as the type). This redirection can only be broken with the \fname{cancelRedirection()}
-member function.\\
-Module parameters taken by REF use this mechanism.}\\\hline
+member function. Module parameters taken by REF use this mechanism.}\\\hline
 \end{longtable}
 
+
+
+
+
+\section{Routing support: cTopology}
+
+\subsection{Overview}
+
+The \cclass{cTopology} class was designed primarily to support
+routing\index{routing support} in telecommunication or multiprocessor
+networks.
+
+A \cclass{cTopology} object stores an abstract representation of the
+network in graph form:
+\begin{itemize}
+  \item{each \cclass{cTopology} node corresponds to a \textit{module}
+    (simple or compound), and}
+  \item{each \cclass{cTopology} edge corresponds to a \textit{link} or
+    \textit{series of connecting links}.}
+\end{itemize}
+
+You can specify which modules (either simple or compound) you want to
+include in the graph. The graph will include all connections among the
+selected modules. In the graph, all nodes are at the same level,
+there's no submodule nesting.  Connections which span across compound
+module boundaries are also represented as one graph edge. Graph edges
+are directed, just as module gates are.
+
+
+If you're writing a router or switch model, the \cclass{cTopology}
+graph can help you determine what nodes are available through which
+gate and also to find optimal routes\index{optimal routes}. The
+\cclass{cTopology} object can calculate shortest paths\index{shortest
+  path} between nodes for you.
+
+The mapping between the graph (nodes, edges) and network model
+(modules, gates, connections) is preserved: you can easily find
+the corresponding module for a \cclass{cTopology} node and vica versa.
+
+
+
+
+
+\subsection{Basic usage}
+
+You can extract the network topology into a \cclass{cTopology}
+object by a single function call. You have several ways to select
+which modules you want to include in the topology:
+\begin{itemize}
+  \item{by module type}
+  \item{by a parameter's presence and its value}
+  \item{with a user-supplied boolean function}
+\end{itemize}
+
+First, you can specify which node types you want to include. The
+following code extracts all modules of type Router or User. (Router
+and User can be both simple and compound module types.)
+
+\begin{verbatim}
+cTopology topo;
+topo.extractByModuleType( "Router", "User", NULL );
+\end{verbatim}
+
+
+Any number of module types (up to 32) can be supplied; the list
+must be terminated by NULL.
+
+Second, you can extract all modules which have a certain parameter:
+
+\begin{verbatim}
+topo.extractByParameter( "ip_address" );
+\end{verbatim}
+
+
+You can also specify that the parameter must have a certain value
+for the module to be included in the graph:
+
+\begin{verbatim}
+cPar yes = "yes";
+topo.extractByParameter( "include_in_topo", &yes );
+\end{verbatim}
+
+The third form allows you to pass a function which can determine for
+each module whether it should or should not be included.  You can have
+\cclass{cTopology} pass supplemental data to the function through a
+void* pointer. An example which selects all top-level modules (and
+does not use the void* pointer):
+
+\begin{verbatim}
+int select_function(cModule *mod, void *)
+{
+  return mod->parentModule() == simulation.systemModule();
+}
+
+topo.extractFromNetwork( select_function, NULL );
+\end{verbatim}
+
+%
+% TBD one more example which \textit{does use} the void* ptr.
+%
+
+A \cclass{cTopology} object uses two types: \cclass{sTopoNode} for
+nodes and \cclass{sTopoLink} for edges. (\cclass{sTopo\-Link\-In} and
+\cclass{sTopoLinkOut} are `aliases' for \cclass{sTopoLink}; we'll
+talk about them later.)
+
+Once you have the topology extracted, you can start exploring
+it. Consider the following code (we'll explain it shortly):
+
+\begin{verbatim}
+for (int i=0; i<topo.nodes(); i++)
+{
+  sTopoNode *node = topo.node(i);
+  ev << "Node i=" << i << " is " << node->module()->fullPath() << endl;
+  ev << " It has " << node->outLinks() << " conns to other nodes\n";
+  ev << " and " << node->inLinks() << " conns from other nodes\n";
+
+  ev << " Connections to other modules are:\n";
+  for (int j=0; j<node->outLinks(); j++)
+  {
+    sTopoNode *neighbour = node->out(j)->remoteNode();
+    cGate *gate = node->out(j)->localGate();
+    ev << " " << neighbour->module()->fullPath()
+       << " through gate " << gate->fullName() << endl;
+  }
+}
+\end{verbatim}
+
+The \fname{nodes()} member function (1st line) returns the number of
+nodes in the graph, and node(i) returns a pointer to the \textit{i}th
+node, an \cclass{sTopoNode} structure.
+
+
+The correspondence between a graph node and a module can be obtained
+by:
+
+\begin{verbatim}
+sTopoNode *node = topo.nodeFor( module );
+cModule *module = node->module();
+\end{verbatim}
+
+
+The \fname{nodeFor()} member function returns a pointer to the graph
+node for a given module. (If the module is not in the graph, it
+returns NULL). \fname{nodeFor()} uses binary search within the
+\cclass{cTopology} object so it is fast enough.
+
+
+\cclass{sTopoNode}'s other member functions let you determine the
+connections of this node: \fname{inLinks()}, \fname{outLinks()} return
+the number of connections, \fname[in()]{in(i)} and
+\fname[out()]{out(i)} return pointers to graph edge objects.
+
+
+By calling member functions of the graph edge object, you can
+determine the modules and gates involved. The \fname{remoteNode()}
+function returns the other end of the connection, and
+\fname{localGate()}, \fname{remoteGate()}, \fname{localGateId()} and
+\fname{remoteGateId()} return the gate pointers and ids of the gates
+involved. (Actually, the implementation is a bit tricky here: the same
+graph edge object \cclass{sTopoLink} is returned either as
+\cclass{sTopoLinkIn} or as \cclass{sTopoLinkOut} so that ``remote''
+and ``local'' can be correctly interpreted for edges of both
+directions.)
+
+
+
+
+
+\subsection{Shortest paths}
+
+The real power of \cclass{cTopology} is in finding shortest
+paths\index{topology!shortest path} in the network to support optimal
+routing\index{optimal routing}. \cclass{cTopology} finds shortest paths
+from \textit{all} nodes \textit{to} a target node. The algorithm is
+computationally inexpensive. In the simplest case, all edges are
+assumed to have the same weight.
+
+A real-life example when we have the target module pointer, finding
+the shortest path looks like this:
+
+\begin{verbatim}
+cModule *targetmodulep =...;
+sTopoNode *targetnode = topo.nodeFor( targetmodulep );
+topo.unweightedSingleShortestPathsTo( targetnode );
+\end{verbatim}
+
+
+This performs the Dijkstra algorithm\index{Dijkstra algorithm} and
+stores the result in the \cclass{cTopology} object. The result can
+then be extracted using \cclass{cTopology} and
+\ttt{sTopoNode}\index{sTopoNode} methods.  Naturally, each call to
+\fname{unweightedSingleShortestPathsTo()} overwrites the results of
+the previous call.
+
+Walking along the path from our module to the target node:
+
+\begin{verbatim}
+sTopoNode *node = topo.nodeFor( this );
+
+if (node == NULL)
+{
+  ev < "We (" << fullPath() << ") are not included in the topology.\n";
+}
+else if (node->paths()==0)
+{
+  ev << "No path to destination.\n";
+}
+else
+{
+  while (node != topo.targetNode())
+  {
+    ev << "We are in " << node->module()->fullPath() << endl;
+    ev << node->distanceToTarget() << " hops to go\n";
+    ev << "There are " << node->paths()
+       << " equally good directions, taking the first one\n";
+    sTopoLinkOut *path = node->path(0);
+    ev << "Taking gate " << path->localGate()->fullName()
+       << " we arrive in " << path->remoteNode()->module()->fullPath()
+       << " on its gate " << path->remoteGate()->fullName() << endl;
+    node = path->remoteNode();
+  }
+}
+\end{verbatim}
+
+
+The purpose of the \fname{distanceToTarget()} member function of a
+node is self-explanatory. In the unweighted case, it returns the
+number of hops. The \fname{paths()} member function returns the number
+of edges which are part of a shortest path, and
+\fname[path()]{path(i)} returns the \textit{i}th edge of them as
+\cclass{sTopoLinkOut}. If the shortest paths were created by the
+\fname[SingleShortestPaths()]{...SingleShortestPaths()} function,
+\fname{paths()} will always return 1 (or 0 if the target is not
+reachable), that is, only one of the several possible shortest paths
+are found.  The
+\fname[MultiShortestPathsTo()]{...MultiShortestPathsTo()} functions
+find all paths, at increased run-time cost. The \cclass{cTopology}'s
+\fname{targetNode()} function returns the target node of the last
+shortest path search.
+
+You can enable/disable nodes or edges in the graph. This is done by
+calling their \fname{enable()} or \fname{disable()} member functions.
+Disabled nodes or edges are ignored by the shortest paths calculation
+algorithm. The \fname{enabled()} member function returns the state of
+a node or edge in the topology graph.
+
+One usage of \fname{disable()} is when you want to determine in how many
+hops the target node can be reached from our node \textit{through
+a particular output gate}. To calculate this, you calculate the
+shortest paths to the target \textit{from the neighbor node}, but
+you must disable the current node to prevent the shortest paths
+from going through it:
+
+\begin{verbatim}
+sTopoNode *thisnode = topo.nodeFor( this );
+thisnode->disable();
+topo.unweightedSingleShortestPathsTo( targetnode );
+thisnode->enable();
+
+for (int j=0; j<thisnode->outLinks(); j++)
+{
+  sTopoLinkOut *link = thisnode->out(i);
+  ev << "Through gate " << link->localGate()->fullName() << " : "
+     << 1 + link->remoteNode()->distanceToTarget() << " hops" << endl;
+}
+\end{verbatim}
+
+In the future, other shortest path algorithms will also be implemented:
+
+\begin{verbatim}
+unweightedMultiShortestPathsTo(sTopoNode *target);
+weightedSingleShortestPathsTo(sTopoNode *target);
+weightedMultiShortestPathsTo(sTopoNode *target);
+\end{verbatim}
 
 
 
@@ -2939,8 +1546,7 @@ Module parameters taken by REF use this mechanism.}\\\hline
 
 \section{Statistics and distribution estimation}
 
-\subsection{
-cStatistic and descendants}
+\subsection{cStatistic and descendants}
 
 There are several statistic and result collection classes:
 \cclass{cStdDev}, \cclass{cWeightedStdDev}, \cclass{Long\-Histogram},
@@ -2965,19 +1571,14 @@ There are several statistic and result collection classes:
     created where each bin has the same number of observations (or as
     close to that as possible).}
   \item{\cclass{cPSquare} is a class that uses the $P^{2}$ algorithm
-    described in [JCH85]. The algorithm calculates quantiles without
+    described in \cite{JCh85}. The algorithm calculates quantiles without
     storing the observations; one can also think of it as a histogram
     with equiprobable cells\index{histogram!equiprobable-cells}.}
   \item{\cclass{cKSplit} uses a novel, experimental method, based on an
-    adaptive histogram-like algorithm. (Published papers about
-    \textit{k-split}\index{k-split} can be downloaded from the {\opp}
-    Web site; just go one level up in the directories:
-    http://www.hit.bme.hu/phd/vargaa). Because k-split is not very
-    well known, we'll devote a section to it.}
+    adaptive histogram-like algorithm.}
 \end{itemize}
 
-\textbf{Basic usage}
-
+\subsubsection{Basic usage}
 
 One can insert an observation into a statistic object with the
 \fname{collect()} function or the \texttt{+=} operator (they are
@@ -2989,16 +1590,17 @@ usage for \cclass{cStdDev}:
 
 \begin{verbatim}
 cStdDev stat("stat");
+
 for (int i=0; i<10; i++)
   stat.collect( normal(0,1) );
-long num_samples = stat.samples();
-double smallest = stat.min(),
-largest = stat.max();
-double mean = stat.mean(),
-standard_deviation = stat.stddev(),
-variance = stat.variance();
-\end{verbatim}
 
+long numSamples = stat.samples();
+double smallest = stat.min(),
+       largest = stat.max();
+double mean = stat.mean(),
+       standardDeviation = stat.stddev(),
+       variance = stat.variance();
+\end{verbatim}
 
 
 
@@ -3006,7 +1608,7 @@ variance = stat.variance();
 
 \subsection{Distribution estimation}
 
-\textbf{Initialization and usage}
+\subsubsection{Initialization and usage}
 
 
 The distribution estimation\index{distribution!estimation} classes (the histogram classes,
@@ -3016,8 +1618,11 @@ The distribution estimation\index{distribution!estimation} classes (the histogra
 You may specify the range explicitly (based on some a-priori info
 about the distribution) or you may let the object collect the first
 few observations and determine the range from them. Methods which let
-you specify range settings are part of \cclass{cDensityEstBase}. The
-following member functions exist:
+you specify range settings are part of \cclass{cDensityEstBase}.
+
+The following member functions exist for setting up the range
+and to specify how many observations should be used for
+automatically determining the range.
 
 \begin{verbatim}
 setRange(lower,upper);
@@ -3026,8 +1631,9 @@ setRangeAutoLower(upper, num_firstvals, range_ext_factor);
 setRangeAutoUpper(lower, num, range_ext_factor);
 \end{verbatim}
 
-\textbf{setNumFirstVals(num\_firstvals);}
-
+\begin{verbatim}
+setNumFirstVals(num_firstvals);
+\end{verbatim}
 
 The following example creates a histogram with 20 cells and automatic
 range estimation\index{histogram!range estimation}:
@@ -3082,7 +1688,7 @@ Afterwards, a \cclass{cPSquare} can be used with the same member functions
 as a histogram.
 
 
-\textbf{Getting histogram data}
+\subsubsection{Getting histogram data}
 
 
 There are three member functions to explicitly return cell boundaries
@@ -3121,7 +1727,7 @@ return the value of the probability density function and the cumulated
 density function at a given \textit{x}, respectively.
 
 
-\textbf{Random number generation from distributions}
+\subsubsection{Random number generation from distributions}
 
 
 The \fname{random()} member function generates random
@@ -3151,7 +1757,7 @@ function:
 double rnd = (double)rnd_par; // random number from the cPSquare
 \end{verbatim}
 
-\textbf{Storing/loading distributions}
+\subsubsection{Storing/loading distributions}
 
 
 The statistic classes have \fname{loadFromFile()} member functions
@@ -3176,7 +1782,7 @@ fclose( f2 );
 \end{verbatim}
 
 
-\textbf{Histogram with custom cells}
+\subsubsection{Histogram with custom cells}
 
 
 The \cclass{cVarHistogram} class can be used to create
@@ -3224,7 +1830,7 @@ boundaries when the histogram has already been transformed.
 
 \subsection{The k-split algorithm}
 
-\textbf{Purpose}
+\subsubsection{Purpose}
 
 
 The \textit{k}-split algorithm is an on-line distribution
@@ -3239,7 +1845,7 @@ distributions\index{distribution!multi-dimensional}, but here we deal
 with the one-dimensional version only.
 
 
-\textbf{The algorithm}
+\subsubsection{The algorithm}
 
 
 The \textit{k-split} algorithm is an adaptive histogram-type estimate which
@@ -3349,7 +1955,7 @@ algorithm, the \cclass{cKSplit} class. Research on \textit{k}-split is
 still under way.
 
 
-\textbf{The cKSplit class}
+\subsubsection{The cKSplit class}
 
 The \cclass{cKSplit} class is an implementation of the \textit{k-split} method.
 Member functions:
@@ -3420,7 +2026,7 @@ detection and result accuracy detection algorithms are:
 \end{itemize}
 
 
-\textbf{Basic usage}
+\subsubsection{Basic usage}
 
 %
 % TBD comments
@@ -3444,7 +2050,7 @@ Detecting the end of the period:
 \end{itemize}
 
 
-\textbf{Transient detection}
+\subsubsection{Transient detection}
 
 
 Currently one transient detection\index{transient detection} algorithm
@@ -3460,7 +2066,7 @@ void setParameters(int reps=3,
                    double acc=0.3);
 \end{verbatim}
 
-\textbf{Accuracy detection}
+\subsubsection{Accuracy detection}
 
 
 Currently one accuracy detection\index{accuracy detection} algorithm
@@ -3480,6 +2086,7 @@ void setParameters(double acc=0.1,
 \section{Recording simulation results}
 
 \subsection{Output vectors: cOutVector}
+\label{sec:ch-sim-lib:cOutVector}
 
 Objects of type \cclass{cOutVector} are responsible for writing time series
 data (referred to as \textit{output vectors}) to a file. The \fname{record()}
@@ -3557,7 +2164,6 @@ double avg_throughput = total_bits / simTime();
 recordScalar("Average throughput", avg_throughput);
 \end{verbatim}
 
-
 You can record whole statistics objects by calling \fname{recordStats()}:
 
 \begin{verbatim}
@@ -3566,123 +2172,15 @@ cStdDev *eedstats = new cStdDev;
 recordStats("End-to-end Statistics", eedstats);
 \end{verbatim}
 
-
-
 Calls to \fname{recordScalar()} and \fname{recordStats()} are usually
 placed in the redefined \fname{finish()} member function of a
 simple module.
-
 
 The above calls write into the (textual) output scalar file.  The
 output scalar file is preserved across simulation runs (unlike the
 output vector file is, scalar files are not deleted at the beginning
 of each run). Data are always appended at the end of the file, and
 output from different simulation runs are separated by special lines.
-
-
-
-
-
-\section{Deriving new classes}
-
-Nearly all classes in the simulation class library are descendants of
-\cclass{cObject}. If you want to derive a new class from
-\cclass{cObject} or a \cclass{cObject} descendant, you must redefine
-some member functions so that objects of the new type can fully
-co-operate with other parts of the simulation system. A more-or-less
-complete list of these functions are presented here. Do not be
-embarrassed at the length of the list: most functions are not
-absolutely necessary to implement. For example, you do not need to
-redefine \fname{forEach()} unless your class is a container class.
-
-\begin{itemize}
-  \item{default constructor, copy constructor. The copy constructor
-    can simply call the assignment operator.}
-  \item{\fname{operator=()}: the assignment operator (copies object
-    contents from another object)}
-  \item{\fname{dup()}: duplicates the object by creating an exact copy
-    (uses copy constructor\index{copy constructor})}
-  \item{\fname{info()}: returns a one-line info about object contents}
-  \item{\fname{writeContents()}: write a more detailed report about the
-    object into a file}
-  \item{\fname{forEach()}: iterates through all contained objects if
-    any}
-  \item{\fname{netPack()}, \fname{netUnpack()}: they are needed only if
-    objects of this type will be sent over
-    PVM\index{PVM}/MPI\index{MPI} from one segment to another.  The
-    \fname{netPack()},\fname{netUnpack()}functions of the library
-    classes are in the sim/pvm (sim/mpi) directory.}
-\end{itemize}
-
-One should also use the \fmac{Register\_Class()} macro to register the
-new class. It is used by the \fname{createOne()} function and the
-PVM/MPI extension of {\opp}.
-
-Let us see a simple example. The header file:
-
-\begin{verbatim}
-// File: cmyclass.h
-#include <omnetpp.h>
-
-class cMyClass : public cObject
-{
- public:
-  int samples;
-
-  cMyClass(const cMyClass& myclass);
-  cMyClass(const char *name=NULL, int k=0);
-  virtual ~cMyClass() {}
-  virtual cObject *dup() const {return new cMyClass(*this);}
-  virtual void info(char *buf);
-  virtual void writeContents(ostream& os);
-  cMyClass& operator=(const cMyClass& myclass);
-};
-\end{verbatim}
-
-The corresponding .cc file:
-
-\begin{verbatim}
-// File: cmyclass.cc
-#include <stdio.h>
-#include <string.h>
-#include <iostream.h>
-#include "cmyclass.h"
-
-Register_Class( cMyClass );
-
-cMyClass::cMyClass(const cMyClass& myclass) : cObject()
-{
-  setName( myclass.name() );
-  operator=( myclass );
-}
-
-cMyClass::cMyClass(const char *name, int k) : cObject( name )
-{
-  samples = k;
-}
-
-void cMyClass::info(char *buf)
-{
-  cObject::info( buf );
-  sprintf( buf+strlen(buf), " samples=%d", samples);
-}
-
-void cMyClass::writeContents(ostream& os)
-{
-  os << " samples: " << samples << '\n';
-}
-
-cMyClass& cMyClass::operator=(const cMyClass& myclass)
-{
-  cObject::operator=(myclass);
-  samples = myclass.samples;
-}
-\end{verbatim}
-
-
-See the virtual functions of \cclass{cObject} in the class library reference
-for more information.
-
 
 
 
@@ -3694,8 +2192,8 @@ for more information.
 You can have simple modules print textual output for
 debugging\index{debugging} purposes.
 
-The global object called ev represents the user interface of the
-simulation program. You can send data to ev\index{ev} using the
+The global object called \ttt{ev} represents the user interface of the
+simulation program. You can send data to \ttt{ev}\index{ev} using the
 C++-style I/O operator (\ttt{<}\ttt{<}).
 
 \begin{verbatim}
@@ -3764,7 +2262,7 @@ WATCH( lapbconfig.timeout );
 \end{verbatim}
 
 
-\textbf{Placement of WATCHes}
+\subsubsection{Placement of WATCHes}
 
 
 Be careful not to execute a \fmac{WATCH()} statement more than once,
@@ -3779,6 +2277,7 @@ called.
 
 
 \subsection{Snapshots}
+\label{sec:ch-sim-lib:snapshots}
 
 The \fname{snapshot()} function outputs textual information about all
 or selected objects of the simulation (including the objects created
@@ -3794,13 +2293,12 @@ The function can be called from module functions, like this:
 \begin{verbatim}
 snapshot();     // dump the whole network
 snapshot(this); // dump this simple module and all its objects
-snapshot(&putAsideQueue);       // dump queue contents
 snapshot(&simulation.msgQueue); // dump future events
 \end{verbatim}
 
 This will append snapshot information to the end of the snapshot file.
-(The snapshot file name has an extension of .sna, default is
-omnetpp.sna\index{omnetpp.sna}. Actual file name can be set in the
+(The snapshot file name has an extension of \ttt{.sna}, default is
+\ttt{omnetpp.sna}\index{omnetpp.sna}. Actual file name can be set in the
 config file.)
 
 
@@ -3920,7 +2418,6 @@ end
   gates         (cArray) (n=4)
   local-objects (cHead)
   class-data-members (cHead)
-  putaside-queue (cQueue) (empty)
 end
 
 \textit{[...comp[0].mac parameters stuff deleted from here...]}
@@ -3982,9 +2479,6 @@ end
 (cHead) `token.comp[0].mac.class-data-members' begin
 end
 
-(cQueue) `token.comp[0].mac.putaside-queue' begin
-end
-
 \textit{[...comp[0].gen and comp[0].sink stuff deleted from here...]}
 \textit{[...whole comp[1] and comp[2] stuff deleted from here...]}
 
@@ -3999,14 +2493,6 @@ end
 
 \textit{[...detailed list of message queue contents deleted from here...]}
 \end{Verbatim}
-
-To reduce the size of the file, you may well decide to make a snapshot
-only of a part of the model\index{snapshot, partial}. This example
-reports only about the current simple module's put-aside queue:
-
-\begin{verbatim}
-snapshot(&putAsideQueue);
-\end{verbatim}
 
 
 
@@ -4101,8 +2587,8 @@ The value includes the extra stack added by the user interface library
 (see \textit{extraStackforEnvir}\index{extraStackforEnvir} in
 envir/omnetapp.h), which is currently 8K for Cmdenv and at least 16K
 for Tkenv.
-  \footnote{the actual value is dependent on the operating
-  system, e.g. SUN Solaris needs more space}
+  \footnote{The actual value is dependent on the operating
+  system, e.g. SUN Solaris needs more space.}
 
 \fname{stackUsage()}also works by checking the existence of predefined
 byte patterns in the stack area, so it is also subject to the above
@@ -4123,6 +2609,8 @@ strings\index{display strings}. Display strings (e.g. \ttt{"p=100,10;i=pc"})
 are initially taken from the NED description.
 You can change the display string of a module or connection arrow
 at run-time by calling methods named \fname{setDisplayString()}.
+The \cclass{cDisplayStringParser} class (discussed in the following sections)
+might be useful for manipulating the display string.
 
 Setting the module's appearance when it is displayed as a component
 within a compound module:
@@ -4190,64 +2678,366 @@ ev << dispstr.getString();  // result: "x=joe,,jim;a=1,2;p=beta,,3"
 
 
 
-\section{Building large networks}
-
-There are situations when using NED files to describe network topology
-is inconvenient, for example because the topology information comes
-from an external source\index{topology!external source} (e.g. it is
-exported from a network management program). In such case, you have
-two possibilities to avoid writing NED files by hand:
-\begin{enumerate}
-\item{generating NED files from data files}
-\item{building the network from C++ code}
-\end{enumerate}
-
-The two solutions have different advantages and disadvantages.
-The first is more useful in the model development phase, while
-the second one is better for writing larger scale, more productized
-simulation programs. In the next sections we examine both methods.
 
 
+\section{Deriving new classes}
+
+\subsection{cObject or not?}
+
+If you plan to implement a completely new class (as opposed to
+subclassing something already present in {\opp}), you have
+to ask yourself whether you want the new class to be based
+on \cclass{cObject} or not.
+Note that we're \textit{not} saying you should always
+subclass from \cclass{cObject}.
+Both solutions have advantages and disadvantages which you
+have to consider individually for each class.
+
+\cclass{cObject} already carries (or provides framework for)
+significant functionality that are either important for
+your particular purpose or not. Subclassing \cclass{cObject}
+generally means you have more code to write (as you \textit{have to}
+redefine certain virtual functions and adopt to conventions)
+and your class will be a bit more heavy-weight.
+In turn, it will integrate into OMNeT++ better, for example
+it will be more visible in Tkenv and can be automatically
+garbage-collected (this will be discussed later). If you
+need to store your objects in {\opp} objects like \cclass{cQueue},
+or you'll want to store {\opp} classes in your object,
+then you \textit{must} subclass from \cclass{cObject}.
+  \footnote{For simplicity, in the these sections ``{\opp} object''
+  should be understood as ``object of a class subclassed from
+  \cclass{cObject}''}
+
+The most significant features \cclass{cObject} has is
+the name string (which has to be stored somewhere, so it has
+its overhead) and ownership management (see section
+\ref{sec:ch-sim-lib:ownership-management}) which
+also has the advantages but also some costs.
+
+As a general rule, small \ttt{struct}-like classes like \ttt{IPAddress},
+\ttt{MACAddress}, \ttt{RoutingTableEntry}, \ttt{TCPConnectionDescriptor}, etc.
+are better \textit{not} sublassed from \cclass{cObject}.
+On the other hand, if you want to store your objects in {\opp} objects
+like \cclass{cQueue}, or you'll want to store {\opp} classes in your object,
+then you \textit{must} subclass from \cclass{cObject}.
+If your class fits neither category, you'll need to
+see if \cclass{cObject} brings any benefit for you, and
+decide accordingly.
 
 
-\subsection{Generating NED files}
+\subsection{cObject virtual methods}
+
+Most classes in the simulation class library are descendants of
+\cclass{cObject}. If you want to derive a new class from
+\cclass{cObject} or a \cclass{cObject} descendant, you must redefine
+some member functions so that objects of the new type can fully
+co-operate with other parts of the simulation system. A more or less
+complete list of these functions is presented here. Do not be
+embarrassed at the length of the list: most functions are not
+absolutely necessary to implement. For example, you do not need to
+redefine \fname{forEach()} unless your class is a container class.
+
+The following methods \textbf{must} be implemented:
+
+\begin{itemize}
+  \item{\textit{Constructor}. At least two constructors should be provided:
+        one that takes the object name string as \ttt{const char *}
+        (recommended by convention), and another one with no arguments
+        (must be present). The two are usually implemented as a single
+        method, with \ttt{NULL} as default name string.}
+  \item{\textit{Copy constructor}, which must have the following signature
+        for a class \ttt{X}: \ttt{X(const X\&)}. The copy constructor is used
+        whenever an object is duplicated. The usual implementation of
+        the copy constructor is to initialize the base class with the
+        name (\fname{name()}) of the other object it receives, then call the
+        assignment operator (see below).}
+  \item{\textit{Destructor}. Any good-tempered class has a destructor.}
+  \item{\textit{Duplication function,} \fname{cObject *dup() const}.
+        It should create and return an exact duplicate of the object.
+        It is usually a one-line function, implemented with the help
+        of the \ttt{new} operator and the copy constructor.}
+  \item{\textit{Assigment operator}, that is, \ttt{X\& operator=(const X\&)}
+        for a class \ttt{X}. It should copy the contents of the other
+        object into this one, except the name string. See later what to do
+        if the object contains pointers to other objects.}
+\end{itemize}
+
+The following function \textbf{should} be implemented if your class contains
+via pointers or as data member) other object subclassed from \cclass{cObject}.
+
+\begin{itemize}
+  \item{\textit{Iteration function,} \ttt{void forEach(ForeachFunc f)}.
+        The implementation should call the function passed
+        for each object it contains via pointer or
+        as data member; see the API Reference on \cclass{cObject} on how to
+        implement \ttt{foreach()}. \fname{foreach()} is used by Tkenv and
+        \fname{snapshot()} to navigate, search or display the object tree.}
+\end{itemize}
+
+The following methods are \textbf{recommended} to implement:
+
+\begin{itemize}
+  \item{\textit{Object info,} \fname{void info(char *)}. The \ttt{info()} function
+        should print a one-line info about object contents into the given
+        buffer -- usually the class name, the object name, important state variables, etc.
+        This is used when Tkenv displays list of objects (in the object tree
+        or in listboxes). The length of the info should not exceed 500 chars.}
+  \item{\textit{Detailed object info,} \fname{void writeContents(ostream\&)}.
+        It should write a detailed multi-line report about the object contents
+        into the stream provided. This is currently only used by \fname{snapshot()}.}
+\end{itemize}
+
+%% FIXME todo
+%%
+%% Necessary for parallel execution:
+%%
+%% \begin{itemize}
+%%  \item{\fname{netPack()}, \fname{netUnpack()}: they are needed only if
+%%        objects of this type will be transmitted over LPs.}
+%% \end{itemize}
 
 
-Text processing programs like \fprog{awk} or \fprog{perl} are
-excellent tools to read in textual data files and generate NED files
-from them\index{ned!file generation}.  Perl also has extensions to
-access SQL databases, so it can also be used if the network topology
-is stored in a database.
 
-The advantage is that the necessary \fprog{awk} or \fprog{perl}
-program can be written in a releatively short time, and it is
-inexpensive to maintain afterwards: if the structure of the data files
-change, the NED-creating program can be easily modified. The
-disadvantage is that the resulting NED files are often quite big and
-the C++ compilation of the \texttt{*\_n.cc} files take too long.
+\subsection{Class registration}
 
-This method is best suited in the first phase of a simulation
-project when the topology, the format of the data files, etc.
-have not yet settled down.
+You should also use the \fmac{Register\_Class()} macro to register the
+new class. It is used by the \fname{createOne()} function.
 
 
 
+\subsection{Details}
+
+We'll go through the details using an example. We create a new
+class \ttt{NewClass}, redefine all above mentioned \cclass{cObject}
+member functions, and explain the conventions, rules and tips
+associated with them.
+To demonstrate as much as possible, the class will contain
+an \ttt{int} data member, dynamically allocated non-\cclass{cObject} data
+(an array of \cclass{double}s),
+an {\opp} object as data member (a \ttt{cQueue}), and
+a dynamically allocated {\opp} object (a \ttt{cMessage}).
+
+The class declaration is the following. It contains the declarations
+of all methods discussed in the previous section.
+
+\begin{verbatim}
+//
+// file: newclass.h
+//
+#include <omnetpp.h>
+
+class NewClass : public cObject
+{
+  protected:
+    int data;
+    double *array;
+    cQueue queue;
+    cMessage *msg;
+    ...
+  public:
+    NewClass(const char *name=NULL, int d=0);
+    NewClass(const NewClass& other);
+    virtual ~NewClass();
+    virtual cObject *dup() const;
+    NewClass& operator=(const NewClass& other);
+
+    virtual void foreach(ForeachFunc f);
+
+    virtual void info(char *buf);
+    virtual void writeContents(ostream& os);
+    ...
+};
+\end{verbatim}
+
+We'll discuss the implementation method by method.
+Here's the top of the \ttt{.cc} file:
+
+\begin{verbatim}
+//
+// file: newclass.cc
+//
+#include <stdio.h>
+#include <string.h>
+#include <iostream.h>
+#include "newclass.h"
+
+Register_Class( NewClass );
 
 
-\subsection{Building the network from C++ code}
+NewClass::NewClass(const char *name, int d) : cObject(name)
+{
+    data = d;
+    array = new double[10];
+    queue.setOwner(NULL);
+    msg = NULL;
+}
+\end{verbatim}
 
-Another alternative is to write C++ code which becomes part of the
-simulation executable. The code would read the topology data from data
-files or a database, and build the network directly.  The code which
-builds the network would be quite similar to the \ttt{*\_n.cc} files output
-by nedc.
+The constructor (above) calls the base class constructor with
+the name of the object, then initializes its own data members.
+\cclass{cObject}-based data members should have their
+owners explicitly set to NULL.
 
 
-Since writing such code is more complex than letting perl generate
-NED files, this method is recommended when the simulation program
-has to be somewhat more productized, for example when {\opp}
-and the simulation model is embedded into a larger program, e.g.
-a network design tool.
+\begin{verbatim}
+NewClass::NewClass(const NewClass& other) : cObject(name())
+{
+    array = new double[10];
+    msg = NULL;
+    queue.setOwner(NULL);
+    operator=(other);
+}
+\end{verbatim}
+
+The copy constructor relies on the assignment operator. Because
+by convention the assignment operator does not copy the
+name member, it is passed here to the base class constructor.
+(Alternatively, we could have written \ttt{setName(other.name())}
+into the function body.)
+
+Note that pointer members have to be initialized (to \ttt{NULL} or to an
+allocated object/memory) before calling the assignment operator,
+to avoid crashes.
+
+\cclass{cObject}-based data members should have their
+owners explicitly set to NULL.
+
+\begin{verbatim}
+NewClass::~NewClass()
+{
+    delete [] array;
+    if (msg->owner()==this)
+        delete msg;
+}
+\end{verbatim}
+
+The destructor should delete all data structures the object allocated.
+\cclass{cObject}-based objects should \textit{only} be deleted if they
+are owned by the object -- details will be covered in section
+\ref{sec:ch-sim-lib:ownership-management}.
+
+\begin{verbatim}
+cObject *NewClass::dup() const
+{
+    return new NewClass(*this);
+}
+\end{verbatim}
+
+The \ttt{dup()} functions is usually just one line, like the one above.
+
+\begin{verbatim}
+NewClass& NewClass::operator=(const NewClass& other)
+{
+    if (&other==this)
+        return *this;
+    cObject::operator=(other);
+
+    data = other.data;
+
+    for (int i=0; i<10; i++)
+        array[i] = other.array[i];
+
+    queue = other.queue;
+    queue.setName(other.queue.name());
+
+    if (msg && msg->owner()==this)
+        delete msg;
+    if (other.msg && other.msg->owner()==const_cast<cMessage*>(&other))
+        take(msg = (cMessage *)other.msg->dup());
+    else
+        msg = other.msg;
+    return *this;
+}
+\end{verbatim}
+
+Complexity associated with copying and duplicating the object
+is centralized in the assignment operator, so it is usually
+the one that requires the most work from you of all methods
+required by \cclass{cObject}.
+
+If you do not want to implement object copying and duplication,
+you should implement the assigment operator to call
+\fname{copyNotSupported()} -- it'll throw an exception that
+stops the simulation with an error message if this function
+is called.
+
+The assignment operator copies contents of the \ttt{other} object
+to this one, except the name string. It should always return
+\ttt{*this}.
+
+First, we should make sure we're not trying to copy the object
+to itself, because it might be disastrous. If so (that is,
+\ttt{\&other==this}), we return immediately without doing anything.
+
+The base class part is copied via invoking the assignment operator of
+the base class.
+
+New data members are copied in the normal C++ way. If the class
+contains pointers, you'll most probably want to make a deep copy of
+the data where they point, and not just copy the pointer values.
+
+If the class contains pointers to {\opp} objects, you need
+to take ownership into account. If the contained object is \textit{not owned}
+then we assume it is a pointer to an ``external'' object, consequently
+we only copy the pointer. If it is \textit{owned}, we duplicate
+it and become the owner of the new object. Details of ownership
+management will be covered in section \ref{sec:ch-sim-lib:ownership-management}.
+
+
+\begin{verbatim}
+void NewClass::forEach(ForeachFunc f)
+{
+    if (f(this,true))
+    {
+        queue->forEach(f);
+        if (msg)
+            msg->forEach(f);
+    }
+    f(this,false);
+}
+\end{verbatim}
+
+The \fname{foreach()} function should be called for each {\opp}
+member of the class. See the API Reference for more information
+of \fname{foreach()}.
+
+\begin{verbatim}
+void NewClass::info(char *buf)
+{
+    cObject::info(buf);
+    sprintf(buf+strlen(buf), " data=%d, array[0]=%g, %s",
+            data, array[0], (msg ? "has msg" : "no msg"));
+}
+\end{verbatim}
+
+Here you should produce a concise, one-line info about the object.
+You should try not to exceed 40-80 characters, since the
+string will be shown in tooltips and listboxes. The length
+of the buffer is 500 bytes, so in any case you should not
+exceed that length. You can make use of \cclass{cObject}'s
+\ttt{info()} method that produces the class name and the object name.
+
+\begin{verbatim}
+void NewClass::writeContents(ostream& os)
+{
+    os << " data: " << data << endl;
+    os << " array: "
+    for (int i=0; i<10; i++)
+        os << array[i] << " ";
+    os << endl;
+}
+\end{verbatim}
+
+\fname{writecontents()} is expected to write values of all
+data members to the stream.  You do not need to include anything
+about contained \cclass{cObject}-based objects, because they
+will be included via \fname{foreach()}.
+
+
+See the virtual functions of \cclass{cObject} in the class library reference
+for more information. The sources of the Sim library (\ttt{include/},
+\ttt{src/sim/}) can serve as further examples.
 
 
 
@@ -4262,10 +3052,10 @@ It usually works transparently, but it is useful to know
 what it does exactly so that it doesn't interfere
 with the cleanup code and destructors you write.
 
-If you plan to program basic simple modules only, you can probably
+If you plan to program small simple modules only, you can probably
 safely skip this section. But if your simple module code
-is getting more complex and you're getting seemingly unexplicable
-segmentation faults because of double deletion of objects,
+is getting more complex and you're getting memory leaks or seemingly
+unexplicable segmentation faults because of double deletion of objects,
 it is probably time to read the following discussion.
 
 
@@ -4275,25 +3065,13 @@ Any \cclass{cObject}-based object can be both \textit{owner} of other
 objects and can at the same time be \textit{owned} by another object.
 For example, a message object (\fname{cMessage}) may reside
 in a queue (\cclass{cQueue}) and be owned by that queue, while it
-may own attached \fname{cPar} objects, or another message
+may own attached \fname{cPar} objects or another message
 (added to it via \fname{encapsulate()}).
 
 From an object you can navigate to its owner by calling the \fname{owner()}
 method, defined in \cclass{cObject}. The other direction, enumerating the
-objects owned is not this straightforward, but it's also possible
-using the \fname{cIterator} class.
-
-The data structure used to maintain this ownership tree consists of
-4 pointers in \cclass{cObject}. \textit{ownerp} points to the owner,
-\textit{firstchildp} points to the first owned object, while
-\textit{prevp}, \textit{nextp} are used to build a doubly linked list
-of objects held by the same owner. These pointers are private data
-members, they cannot be accessed directly, only via certain
-member functions. Changing the owner of an object
-(\fname{setOwner()} method in \cclass{cObject})
-can be done in constant time, and involves about 8-9 pointer
-assignments (i.e., \textit{ownerp}, \textit{prevp}, \textit{nextp} and
-\textit{firstchildp} in the object, in its owner and siblings).
+objects owned can be done via \fname{foreach()} that loops through all
+contained objects and checking the owner of each object.
 
 
 \subsection{Purpose}
@@ -4337,35 +3115,27 @@ which has been sent to (and so currently kept by) another module.
 
 \subsection{Objects are deleted by their owners}
 
-The concept of \fname{ownership} means that \textit{owner has the
-exclusive right and duty to delete the object it owns}.
+The concept of \fname{ownership} is that \textit{the owner has the
+exclusive right and duty to delete the objects it owns}.
 
 As an example, this means if you delete a message, its encapsulated
 message (see \fname{encapsulate()} method) and attached
 \fname{cPar} objects are also deleted. If you delete a queue,
-all messages it contains and owns will also be deleted.
-  \footnote{note that it's not necessary for a container object like
+all messages it contains and also owns will also be deleted.
+  \footnote{Note that it's not necessary for a container object like
   a queue to actually own all inserted objects. This behavior
   can be controlled via the \textit{takeownership} flag,
   as explained later.}
 
-The ownership principle is enforced in \cclass{cObject}:
-\textbf{\cclass{cObject}'s destructor deletes all owned objects}.
-This is also the reason why there are so few \fname{delete} calls
-in the simulation kernel sources:
-container classes like \cclass{cArray} or \cclass{cQueue}
-usually leave the task of deleting the contained objects they own
-to the \cclass{cObject} destructor.
-
-If an owned object is deleted earlier than its owner's destructor
-call, it is not a problem: the destructor of any object also
-removes it from its owner's list, so there's no danger of double
-deletion here.
+If you create a new class, you should implement it so that
+it deletes the \textit{owned} objects in the destructor --
+that is, you have to check \fname{owner()} of each object
+before you delete it.
 
 
 \subsection{Ownership is managed transparently}
 
-\textbf{Automatic transfer of ownership}
+\subsubsection{Automatic transfer of ownership}
 
 Ownership is usually established and managed automatically.
 It is not hard to guess that objects (i.e. messages) inserted
@@ -4377,15 +3147,14 @@ will also become owned by the message object (again, this can be
 changed), and they are deallocated automatically when the
 message object is deleted.
 
-\textbf{The \textit{local objects} list}
+\subsubsection{The \textit{local objects} list}
 
 But objects which, not being stored in another object, appear not to
 have owners usually have one as well. If you just create a
 message object inside a simple module (e.g. from \fname{activity()},
 \fname{handleMessage()} or any function called from them), it will
 be \textit{owned by simple module}, or more precisely, by
-its \textit{``local objects list''} (an object data member of
-\fname{cSimpleModule}).
+its \textit{``local objects list''} (a member of \cclass{cSimpleModule}).
 
 So the following line:
 
@@ -4395,7 +3164,7 @@ cMessage *msg = new cMessage("HELLO");
 
 actually creates the message object and automatically adds it
 to the module's local objects list.
-  \footnote{more precisely: to the \textit{currently executing} module's
+  \footnote{More precisely: to the \textit{currently executing} module's
   local object list, because that's the best guess a \fname{cMessage}
   constructor can do.}
 
@@ -4403,9 +3172,10 @@ The local objects list also plays a role when an object is
 removed from a container object (e.g. when a message is removed
 from a queue).
 In that case, the container object ``drops'' the ownership of the
-object, and the object will ``join'' the local objects list
-of the simple module (again, to the \textit{currently active} simple
-module's list). Thus, an innocent-looking
+object, and the object will ``join'' its default owner,
+the local objects list of the simple module (again, to the
+\textit{currently active} simple module's list).
+Thus, an innocent-looking
 
 \begin{verbatim}
 cMessage *msg = queue.pop();
@@ -4417,7 +3187,7 @@ The same thing happens when a message is decapsulated from another message,
 when \fname{cPar}'s are removed from a \cclass{cArray}, and in many more cases.
 
 
-\textbf{Sanity checks}
+\subsubsection{Sanity checks}
 
 The \fname{send()} and \fname{scheduleAt()} functions make use
 of the ownership mechanism to do some sanity check:
@@ -4426,17 +3196,17 @@ by module's local objects list.
 If it is not, then it's an error, because then the message is
 probably with another module (i.e. already sent), or
 currently scheduled, or inside a queue, a message or some
-other object -- in either case, we do not have any authority
+other object -- in either case, you do not have any authority
 to send it. When you get this error message (\ttt{"not owner of object"}),
 you might feel tempted to forcibly take ownership of the message object
-by means of \fname{setOwner()}, but note that it would be
+by means of \fname{setOwner()}. Note that it would be
 entirely wrong, and would probably lead to crash further on in
 your program. Instead, you need to carefully examine who
 has the ownership of the message, why's that, and then
-probably you'll need to change some logic somewhere
+probably you'll need to fix the logic somewhere
 in your program.
 
-\textbf{The \textit{class members} list}
+\subsubsection{The \textit{class members} list}
 
 For completeness, it should also be mentioned that class
 members of a simple module are collected on a \textit{``class members list''}.
@@ -4450,7 +3220,7 @@ the class members list in simple module inspectors.
 \subsection{Garbage collection}
 \label{sec:ch-sim-lib:garbage-collection}
 
-\textbf{How it's done}
+\subsubsection{How it's done}
 
 The local objects list is also the reason why you rarely need to
 put delete statements in your simple module destructors.
@@ -4463,20 +3233,23 @@ Modules (both simple and compound) can also be dynamically deleted
 during simulation (deleting a compound module just consists
 of recursively deleting all submodules). At that time,
 one expects all dynamically allocated objects to be properly
-destructed and memory released. Here's how that happens.
+destructed and memory released, which is not trivial since the
+simulation kernel does not know what objects have been created
+by simple modules. Here's how it is done in the simulation kernel.
 
 When a simple module gets deleted, the local objects list is also
 deleted in addition to the module's gates and parameters.
 This means that all objects on the module's local objects list
 (i.e. objects you allocated and need to be garbage collected)
-will also be deleted, and this is exactly what we need.
+will also be deleted, and this is exactly what we need as garbage
+collection.
 
 The result is that as long as you only have dynamically allocated
 memory as (or within) \cclass{cObject}-based objects,
 you don't have to worry about writing module destructors:
 everything is taken care of automatically.
 
-\textbf{Garbage collection and your destructors}
+\subsubsection{Garbage collection and your module destructors}
 
 Note that this garbage collection can nicely co-exist with module destructors
 you write. If you delete an object explicitly, it is redundant
@@ -4547,7 +3320,7 @@ is that whenever your simulation stops with an error (or
 you just stop it within Tkenv), the \fname{finish()} functions
 will not be called and thus, memory will be leaked.
 
-\textbf{Can it crash?}
+\subsubsection{Can it crash?}
 
 A potential crash scenario is when the object ownership
 mechanism deletes objects before your code does, and \textit{your code,
@@ -4570,7 +3343,7 @@ one must work hard to add a nonstandard way of storing objects in a message.
 This situation will be discussed later in more detail, after we've discussed
 how containers like \cclass{cQueue} and \cclass{cArray} work.
 
-\textbf{Garbage collection of activity() simple modules}
+\subsubsection{Garbage collection of activity() simple modules}
 
 Another interesting aspect is what happens when an \fname{activity()}
 simple module is deleted. Objects that were local variables
@@ -4585,7 +3358,7 @@ invokes either the \fname{delete} operator (if the object was allocated
 dynamically) or directly the object's destructor (if the object was
 a local variable in \fname{activity()} or a function called from
 \fname{activity()}). In future releases, the implementation might
-be changed to rely on exception handling (stack unwinding) for proper
+be changed to rely on C++ exceptions (stack unwinding) for proper
 cleanup.
 
 
@@ -4597,19 +3370,17 @@ because they might give you a hint what behavior you need
 to implement when you want to use non-{\opp} container classes
 to store messages or other \cclass{cObject}-based objects.
 
-\textbf{Insertion}
+\subsubsection{Insertion}
 
-\cclass{cArray} and \cclass{cQueue} use their own internal data structures
+\cclass{cArray} and \cclass{cQueue} have internal data structures
 (array and linked list) to store the objects which are inserted
-into them. This storage is independent of the infrastructure used
-by the ownership mechanism -- \cclass{cQueue} and \cclass{cArray}
-may store objects they do not own, and may own objects
-they do not store (i.e. objects not actually inserted into them).
-This allows additional flexibility.
+into them. However, they do \textit{not} necessarily own all of these
+objects.  (Whether they own an object or not can be determined
+from that object's \fname{owner()} pointer.)
 
-As it was mentioned before, the default behaviour of \cclass{cQueue} and
-\cclass{cArray} is to take ownership of the objects inserted.
-However, this behavior can be changed via the \textit{takeOwnership} flag.
+The default behaviour of \cclass{cQueue} and \cclass{cArray} is
+to take ownership of the objects inserted.
+This behavior can be changed via the \textit{takeOwnership} flag.
 The flag is part of \cclass{cObject} so that every container object
 can make use of it, and can be get/set via the
 \fname{takeOwnership()} and \fname{setTakeOwnership()} methods.
@@ -4638,7 +3409,7 @@ void cQueue::insert(cObject *obj)
 \end{verbatim}
 
 
-\textbf{Removal}
+\subsubsection{Removal}
 
 Here's what the \textit{remove} family of operations in \cclass{cQueue}
 (or \cclass{cArray}) does:
@@ -4665,7 +3436,7 @@ simple module's local object list.
 
 As an example, the \fname{remove()} method of \cclass{cQueue} is
 implemented like this:
-  \footnote{actual code in \texttt{src/sim} is structured somewhat
+  \footnote{Actual code in \texttt{src/sim} is structured somewhat
   differently, but the meaning is the same.}
 
 \begin{verbatim}
@@ -4683,16 +3454,14 @@ cObject *cQueue::remove(cObject *obj)
 \end{verbatim}
 
 
-\textbf{Destructor}
+\subsubsection{Destructor}
 
-The \cclass{cQueue}/\cclass{cArray} destructors do \textit{not}
-delete the contained objects.
-They only deallocate the data structures they use to store the objects
-(e.g. array or linked list elements), and they leave deletion
-of the owned objects to the \cclass{cObject} destructor.
+The destructor should delete all data structures the object allocated.
+From the contained objects, only the owned ones are deleted -- that is,
+where \ttt{obj->owner()==this}.
 
 
-\textbf{Object copying}
+\subsubsection{Object copying}
 
 The ownership mechanism also has to be taken into consideration
 when a \cclass{cArray} or \cclass{cQueue} object is duplicated.
@@ -4708,15 +3477,16 @@ left unchanged.
 
 In fact, the same question arises at three places:
 the assignment operator \fname{operator=()}, the copy constructor
-(e.g. \fname{cArray(const cArray\&)}) and the \fname{dup()} method.
+and the \fname{dup()} method.
 In {\opp}, the convention is that copying is implemented
-in the assignment operator. (The copy constructor just constructs
-an empty object and invokes assigment, while \fname{dup()}
+in the assignment operator, and the other two just rely on it.
+(The copy constructor just constructs an empty object and
+invokes assigment, while \fname{dup()}
 is implemented as \fname{new cArray(*this)}).
 
 % FIXME finish this!
 %
-% \textbf{Another example: cMessage's encapsulation feature}
+% \subsubsection{Another example: cMessage's encapsulation feature}
 %
 % This template should be followed in other places too. Like cMessage's
 % encapsulation...
@@ -4747,25 +3517,62 @@ is implemented as \fname{new cArray(*this)}).
 %also from Tkenv), but this is very rarely needed.
 %
 
+\subsection{Change of implementation}
+
+In the current release (version 2.3), the data structure
+used to maintain the ownership tree is in \cclass{cObject}.
+The ownership principle is also enforced in \cclass{cObject},
+so it is the \cclass{cObject} destructor that deletes all owned objects.
+  \footnote{This is also the reason why there are currently so few
+  \fname{delete} calls in the simulation kernel sources:
+  container classes like \cclass{cArray} or \cclass{cQueue}
+  leave the task of deleting the contained objects they own to the
+  \cclass{cObject} destructor.}
+
+This behaviour will probably be changed in the next major release,
+and every class will be made responsible for deleting its own owned
+objects. This will be closer to the usual C++ practice and will
+make the {\opp} simulation library easier to understand. Also, it
+will be more efficient with both memory and execution time, without
+losing significant functionality.
+
+The change will be transparent to simulations, unless you implemented
+a container class which relies on \cclass{cObject}'s destructor
+to destroy owned objects.
+
+
+As of the 2.3 release, \cclass{cObject} contains 4 pointers.
+\textit{ownerp} points to the owner, \textit{firstchildp}
+points to the first owned object,
+while \textit{prevp}, \textit{nextp} are used to build a doubly linked list
+of objects held by the same owner. These pointers are private data
+members, they cannot be accessed directly, only via certain
+member functions. Changing the owner of an object
+(\fname{setOwner()} method in \cclass{cObject})
+involves about 8-9 pointer assignments (i.e., \textit{ownerp},
+\textit{prevp}, \textit{nextp} and \textit{firstchildp} in the object,
+in its owner and siblings).
+
+This data structure is likely to change: \textit{firstchildp},
+\textit{prevp} and \textit{nextp} will be removed from \cclass{cObject},
+and only \textit{ownerp} will remain. Call to \fname{setOwner()}
+will be restricted to implementations of container classes.
+
 
 \section{Tips for speeding up the simulation}
 
 Here are a few tips that can help you make the simulation faster:
 \begin{itemize}
   \item{Use message subclassing instead of adding \fname{cPar}'s to messages.}
+  \item{Try to minimize message creations and deletions. Reuse
+    messages if possible.}
   \item{Turn off the display of screen messages when you run the
     simulation.  You can do this in the ini file. Alternatively, you
-    can place \#ifdefs around your ev\texttt{<<} and
+    can place \#ifdefs around your \texttt{ev<<} and
     \index{ev.printf()} calls and turn off the define when compiling
     the simulation for speed.}
   \item{Store the module parameters in local variables to avoid
     calling \cclass{cPar} member functions every time.}
-  \item{Use gate numbers instead of gate names.}
-  \item{Try to minimize message creations and deletions. Reuse
-    messages if possible.}
-  \item{Do not give name strings to objects that are created and
-    deleted many times (pass NULL pointer as name).}
-  \item{Use numeric index to get an object from a \cclass{cArray}}
 \end{itemize}
 
 

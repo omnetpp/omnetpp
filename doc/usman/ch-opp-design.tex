@@ -1,9 +1,10 @@
-\chapter{The Design of {\opp}}
+\chapter{Customization and Embedding}
 \label{cha:the-design-of-omnet}
 
-\section{Structure of an {\opp} executable}
+\section{Architecture}
 
-Consider the following diagram:
+{\opp} has a modular architecture. The following diagram shows the
+high-level architecture of {\opp} simulations:
 
 \begin{figure}[htbp]
   \begin{center}
@@ -12,47 +13,104 @@ Consider the following diagram:
   \end{center}
 \end{figure}
 
-A simulation program contains the simulated network (with its
-simple\index{module!simple} and compound\index{module!compound}
-modules etc.), SIM, ENVIR and exactly one of CMDENV and TKENV. SIM
-contains the simulation class library\index{simulation!class library}
-and the simulation kernel. The model only interacts with
-SIM.
-  \footnote{the only exception is textual module output: it is sent
-  directly to ENVIR: \texttt{ev<<"hello"; ev.printf("world");}}
-ENVIR contains code that is common for all user
-interfaces, and provides infrastructure like ini file handling for
-them. \fname{main()} is also in ENVIR. Specific user interface code is
-contained in CMDENV and TKENV. The above components are also
-physically separated: they are in separate source directories and form
-separate library files (\ttt{libsim\_std.a}, \ttt{libenvir.a} etc.)
+The rectangles in the picture represent functional blocks:
 
-The simulation program may contain several linked-in model
-components\index{model!components}: networks,
-simple\index{module!simple} module types,
-compound module types, channel types etc. Any
-network (but only one at a time) can be set up for simulation which
-has all necessary components linked in.
+\begin{itemize}
+  \item{\textbf{Sim} is the simulation kernel and class
+    library\index{simulation!kernel}. Sim exists as a library you link
+    your simulation program with.
+       \footnote{Use of dynamic (shared) libraries is also possible, but
+       for simplicity we'll use the word \textit{linking} here.}
+    }
+  \item{\textbf{Envir} is another library which contains all code
+    that is common for all user interfaces. \fname{main()} is also in Envir.
+    Envir provides services like ini file handling for specific user interface
+    implementations. Envir presents itself towards Sim and the executing model
+    via the \ttt{ev} facade object, hiding all other user interface internals.
+    Some aspects of Envir can be customized\index{customization} via plugin
+    interfaces. Embedding {\opp} into applications\index{embedding} can
+    be achieved implementing a new user interface in addition to Cmdenv and Tkev,
+    or by replacing Envir with another implementation of \ttt{ev}
+    (see sections \ref{sec:ch-opp-design:customization} and
+    \ref{sec:ch-opp-design:embedding}.)}
+  \item{\textbf{Cmdenv and Tkenv} are specific user interface
+    implementations. A concrete simulation is linked with
+    either Cmdenv or Tkenv.}
+  \item{The \textbf{Model Component Library} is the simple module definitions and
+    their C++ implementations, compound module types, channels, networks,
+    message types and in general everything that belong to models and
+    has been linked into the simulation program. A simulation program is
+    able to run any model that has all necessary components linked in.}
+  \item{The \textbf{Executing Model} is the model that has been set up
+    for simulation. It contains objects (modules, channels, etc.) that
+    are all instances of components in the model component library.}
+\end{itemize}
 
+The arrows in the figure show how functional blocks interact with
+each other:
 
-
+\begin{itemize}
+  \item{\textbf{Executing Model vs Sim}. The simulation kernel
+    manages the future events and invokes modules in the executing model
+    as events occur. The modules of the executing model are stored
+    in the main object of Sim, \fvar{simulation} (of class \cclass{cSimulation}).
+    In turn, the executing model calls functions in the
+    simulation kernel and uses classes in the Sim library.}
+  \item{\textbf{Sim vs Model Component Library}. The simulation kernel
+    instantiates simple modules and other components when the simulation model
+    is set up at the beginning of the simulation run. It also refers
+    to the component library when dynamic module creation is used.
+    The machinery for registering and looking up components in the model
+    component library is implemented as part of Sim.}
+  \item{\textbf{Executing Model vs Envir}. The \ttt{ev} object, logically
+    part of Envir, is the facade of the user interface towards the executing model.
+    The model uses \ttt{ev} for writing debug logs (\ttt{ev<<}, \ttt{ev.printf()}).}
+  \item{\textbf{Sim vs Envir}. Envir is in full command of what
+    happens in the simulation program. Envir contains the \ttt{main()} function
+    where execution begins. Envir determines which models should be set up
+    for simulation, and instructs Sim to do so. Envir contains the main
+    simulation loop (\textit{determine-next-event}, \textit{execute-event}
+    sequence) and invokes the simulation kernel for the necessary
+    functionality (event scheduling and event execution are implemented in Sim).
+    Envir catches and handles errors and exceptions that occur
+    in the simulation kernel or in the library
+    classes during execution. Envir presents a single facade object (\ttt{ev})
+    that represents the environment (user interface) toward Sim -- no Envir
+    internals are visible to Sim or the executing model.
+    During simulation model setup, Envir supplies parameter values for
+    Sim when Sim asks for them. Sim writes output vectors via Envir,
+    so one can redefine the output vector storing mechanism by changing Envir.
+    Sim and its classes use Envir to print debug information.}
+  \item{\textbf{Envir vs Tkenv and Cmdenv}. Envir defines \cclass{TOmnetApp}
+    as a base class for user interfaces, and Tkenv and Cmdenv both subclass
+    from \cclass{TOmnetApp}. The \ttt{main()} function provided as part of Envir
+    determines the appropriate user interface class (subclassed from
+    \cclass{TOmnetApp}), creates an instance and runs it -- whatever
+    happens next (opening a GUI window or running as a command-line program)
+    is decided in the \ttt{run()} method of the appropriate \cclass{TOmnetApp}
+    subclass. Sim's or the model's calls on the \ttt{ev} object are
+    simply forwarded to the \cclass{TOmnetApp} instance. Envir presents
+    a framework and base functionality to Tkenv and Cmdenv via the methods of
+     \cclass{TOmnetApp} and some other classes.)}
+\end{itemize}
 
 
 \section{Embedding {\opp}}
+\label{sec:ch-opp-design:embedding}
 
 Embedding is a special issue\index{simulation!embedding}. You probably
 do not want to keep the appearance of the simulation program, so you
-do not want Cmdenv and Tkenv. You may or may not want to keep ENVIR.
+do not want Cmdenv and Tkenv. You may or may not want to keep Envir.
 
-What you'll absolutely need for a simulation to run is the SIM
-package. You can keep ENVIR if its philosophy and the infrastructure
+What you'll absolutely need for a simulation to run is the Sim
+library. You can keep Envir if its philosophy and the infrastructure
 it provides (\ttt{omnetpp.ini}, certain command-line options etc.)
-fit into your design. Then the embedding program will take the
-place of Cmdenv and Tkenv.
+fit into your design. Then your application, the embedding program
+will take the place of Cmdenv and Tkenv.
 
-If ENVIR does not fit your needs (for example, you want the model
+If Envir does not fit your needs (for example, you want the model
 parameters to come from a database not from \ttt{omnetpp.ini}), then you
-have to replace it. Your ENVIR replacement (the embedding program,
+have to replace it. Your Envir replacement (the embedding application,
 practically) must implement the \cclass{cEnvir} member functions from
 \ttt{envir/cenvir.h}, but you have full control over the simulation.
 
@@ -71,162 +129,33 @@ linkage.
 
 
 
-\section{The simulation kernel}
+\section{Sim: the simulation kernel and class library}
 
-The source code for the simulation kernel\index{simulation!kernel} of
-{\opp} and the library classes reside in the sim directory.
+There is little to say about Sim here, since chapters
+\ref{cha:simple-modules} and \ref{cha:the-simulation-library},
+and part of chapter \ref{cha:messages} are all on
+this topic. Classes covered in those chapters are documented
+in more detail in the API Reference generated by Doxygen.
+What we can do here is documenting some internals
+that were not appropriate to be treated in the general
+chapters.
 
-Almost all objects are derived from \cclass{cObject} which
-provides a common interface for them.
+The source code for the simulation kernel\index{simulation!kernel}
+and class library reside in the \ttt{src/sim/} subdirectory.
 
 
+\subsection{The global simulation object}
 
+The global \ttt{simulation} object is an instance of \cclass{cSimulation}.
+It stores the model, and encapsulated much of the functionality
+of setting up and running a simulation model.
 
+\ttt{simulation} has two basic roles:
 
-\subsection{The central object: cSimulation simulation}
-
-The \cclass{cSimulation} class stores a network and manages simulation.
-There is only one instance, a global object called \ttt{simulation}.
-The object has two basic roles:
 \begin{itemize}
-  \item{as a vector of modules}
-  \item{holds global variables (for example, the message queue).}
+  \item{stores modules of the executing model}
+  \item{holds the future event set (FES) object}
 \end{itemize}
-
-
-
-
-
-\subsection{Module classes}
-
-Base class for module classes: \cclass{cModule}. Two derived classes:
-\cclass{cCompoundModule}, \cclass{cSimpleModule}.  User simple
-modules\index{module!simple} are derived from \cclass{cSimpleModule}.
-
-A \cclass{cModule} has: array of parameters, array of gates + member
-functions to set up and query parameters and gates.
-
-\cclass{cSimpleModule} adds: put-aside queue, list of local objects + the
-virtual function \fname{activity()} + member functions like
-\fname{send()}, \fname{receive()} etc.
-
-Gates are represented by the \cclass{cGate} objects.
-Connections are not real objects: their attributes (delay, error,
-datarate) are managed by the connection's source gate.
-
-
-
-
-
-\subsection{Global registration lists}
-
-There are global objects holding lists of components available
-in an {\opp} executable. These lists are:
-
-
-\begin{longtable}{|p{2cm}|p{4,3cm}|p{7.3cm}|}
-\hline
-%% ROW 1
-\tabheadcol
-\textbf{List object}
-&
-\textbf{\mbox{Macro that creates a}}\linebreak
-\textbf{member.} \linebreak\linebreak
-\textbf{Class of members}
-&
-\textbf{Function} \\\hline
-%% ROW 2
-\ttt{\cclass{cHead}}  \linebreak
-\ttt{ networks;}
-&
-\ttt{\fmac{Define\_Network()}} \linebreak
-\linebreak
-\ttt{\cclass{cNetworkType}}
-&
-{\raggedright List of available networks\index{network!list of}.\\
-A \cclass{cNetworkType} object holds a pointer to a function that can
-build up the network.\\
-\fmac{Define\_Network()} macros occur in the code generated by the NEDC
-compiler.}\\\hline
-% ROW 3
-\ttt{\cclass{cHead}} \linebreak
-\ttt{ modtypes;}
-&
-\ttt{\fmac{Define\_Module()},} \linebreak
-\ttt{\fmac{Define\_Module\_Like()},}  \linebreak
-\linebreak
-\ttt{\cclass{cModuleType}}
-&
-{\raggedright List of available module types.\\
-A \cclass{cModuleType} object knows how to create a module of a specific
-type. If it is compound, it holds a pointer to a function that can
-build up the inside.\\
-Usually, \fmac{Define\_Module()} macros for compound modules occur in
-the code generated by the NEDC compiler; for simple modules,
-the \fmac{Define\_Module()} lines are added by the user.}\\\hline
-%% ROW 4
-\ttt{\cclass{cHead}} \linebreak
-\ttt{ classes;}
-&
-\fmac{Register\_Class()} \linebreak
-\linebreak
-\ttt{ClassRegister}
-&
-{\raggedright List of available classes of which the user can create
-  an instance.\\
-A \cclass{cClassRegister} object knows how to create an (empty) object of a specific class.\\
-The list is used by the \fname{createOne()} function that can create an
-object of any (registered) type from a string containing the class
-name. (E.g. \ttt{ptr = createOne( ``cArray'')} creates an empty
-array.)\\
-\fname{createOne()} is used by the PVM extension.\\
-\fmac{Register\_Class()} macros are present in the simulation source
-files for existing classes; has to be written by the user for new
-classes.}\\\hline
-%% ROW 5
-\cclass{cHead} \linebreak
-\ttt{ functions;}
-&
-\ttt{\fmac{Define\_Function()}} \linebreak
-\linebreak
-\ttt{\cclass{cFunctionType}}
-&
-{\raggedright List of mathematical functions.\\
-A \cclass{cFunctionType} object holds a pointer to the function and knows
-how many arguments it takes.}\\\hline
-%% ROW 6
-\cclass{cHead} \linebreak
-\ttt{ linktypes;}
-&
-\fmac{Define\_Link()} \linebreak
-\linebreak
-\cclass{cLinkType}
-&
-{\raggedright List of link types.\\
-A \cclass{cLinkType} object knows how to create \cclass{cPar} objects representing
-the delay\index{channel!delay}, error\index{channel!error} and datarate\index{channel!datarate} attributes for a channel.\\
-\fmac{Define\_Link()} macros occur in the code generated by the NEDC
-compiler, one for each channel definition.} \\\hline
-%% ROW 7
-\ttt{\cclass{cHead}} \linebreak
-\ttt{ locals;}
-&
-\ttt{-} \linebreak
-\linebreak
-\ttt{any object}
-&
-This is only `dummy' object, it stands for the current module's
-local object list\\\hline
-%% ROW 8
-\ttt{\cclass{cHead}} \linebreak
-\ttt{ superhead;}
-&
-\ttt{-} \linebreak
-\linebreak
-\ttt{\cclass{cHead}}
-&
-List of all other lists. \\\hline
-\end{longtable}
 
 
 
@@ -237,8 +166,8 @@ packages\index{coroutine}:
 
 \begin{itemize}
   \item Portable coroutine package creates all coroutine stacks
-     inside the main stack. It was taken from [KOF85]. It
-     allocates stack by deep-deep recursions and then plays with
+     inside the main stack. It is based on Kofoed's solution\cite{Kofoed95}.
+     It allocates stack by deep-deep recursions and then plays with
      \fname{setjmp()} and \fname{longjmp()} to switch from one another.
 
   \item On Windows, the Fiber functions (\fname{CreateFiber()},
@@ -252,73 +181,152 @@ base class.
 
 
 
+\section{The Model Component Library}
+
+All model components (simple module definitions and their C++
+implementations, compound module types, channels, networks,
+message types, etc.) that you compile and link into a simulation
+program are registered in the Model Component Library.
+Any model that has all its necessary components in the
+component library of simulation program can be run by that
+simulation program.
+
+If your simulation program is linked with Cmdenv or Tkenv,
+you can have the contents of its component library printed,
+using the -h switch.
+
+\begin{verbatim}
+% ./fddi -h
+
+OMNeT++ Discrete Event Simulation  (C) 1992-2003 Andras Varga
+...
+Available networks:
+  FDDI1
+  NRing
+  TUBw
+  TUBs
+
+Available modules:
+  FDDI_MAC
+  FDDI_MAC4Ring
+  ...
+
+Available channels:
+  ...
+End run of OMNeT++
+\end{verbatim}
+
+Information on components are kept on registration lists.
+There are macros for registering components (that is, for adding
+them to the registeration lists):
+\ttt{\fmac{Define\_Module()}}, \ttt{\fmac{Define\_Module\_Like()}},
+\ttt{\fmac{Define\_Network()}}, \ttt{\fmac{Define\_Function()}},
+\fmac{Register\_Class()}, and a few others. For components defined
+in NED files, the macro calls are generated by the NED compiler;
+in other cases you have to write them in your C++ source.
+
+The machinery for managing the registrations lists are part
+of the Sim library. Registration lists are implemented
+as global objects.
+
+The registration lists are:
+
+\begin{longtable}{|p{2cm}|p{4,3cm}|p{7.3cm}|}
+\hline
+%% ROW 1
+\tabheadcol
+\textbf{List object}
+&
+\textbf{\mbox{Macro that creates a member;}}\linebreak
+\textbf{Class of members}
+&
+\textbf{Function} \\\hline
+%% ROW 2
+\ttt{\cclass{cHead}}  \linebreak
+\ttt{ networks;}
+&
+\ttt{\fmac{Define\_Network()}} \linebreak
+\linebreak
+\ttt{\cclass{cNetworkType}}
+&
+{\raggedright List of available networks\index{network!list of}.
+A \cclass{cNetworkType} object holds a pointer to a function that can
+build up the network.
+\fmac{Define\_Network()} macros occur in the code generated by the NEDC
+compiler.}\\\hline
+% ROW 3
+\ttt{\cclass{cHead}} \linebreak
+\ttt{ modtypes;}
+&
+\ttt{\fmac{Define\_Module()},} \linebreak
+\ttt{\fmac{Define\_Module\_Like()},}  \linebreak
+\linebreak
+\ttt{\cclass{cModuleType}}
+&
+{\raggedright List of available module types.
+A \cclass{cModuleType} object knows how to create a module of a specific
+type. If it is compound, it holds a pointer to a function that can
+build up the inside.
+Usually, \fmac{Define\_Module()} macros for compound modules occur in
+the code generated by the NEDC compiler; for simple modules,
+the \fmac{Define\_Module()} lines are added by the user.}\\\hline
+%% ROW 4
+\ttt{\cclass{cHead}} \linebreak
+\ttt{ classes;}
+&
+\fmac{Register\_Class()} \linebreak
+\linebreak
+\ttt{cClassRegister}
+&
+{\raggedright List of available classes of which the user can create
+an instance.
+A \cclass{cClassRegister} object knows how to create an (empty) object
+of a specific class. The list is used by the \fname{createOne()} function
+that can create an object of any (registered) type from a string
+containing the class name.
+(E.g. \ttt{ptr = createOne("cArray")} creates an empty \ttt{cArray}.)
+\fmac{Register\_Class()} macros are present in the simulation source
+files for existing classes; has to be written by the user for new
+classes.}\\\hline
+%% ROW 5
+\cclass{cHead} \linebreak
+\ttt{ functions;}
+&
+\ttt{\fmac{Define\_Function()}} \linebreak
+\linebreak
+\ttt{\cclass{cFunctionType}}
+&
+{\raggedright List of functions taking \ttt{double}s and returning a \ttt{double}
+(see type \ttt{MathFuncNoArg}...\ttt{MathFunc3Args}).
+A \cclass{cFunctionType} object holds a pointer to the function and knows
+how many arguments it takes.}\\\hline
+%% ROW 6
+\cclass{cHead} \linebreak
+\ttt{ linktypes;}
+&
+\fmac{Define\_Link()} \linebreak
+\linebreak
+\cclass{cLinkType}
+&
+{\raggedright List of link types.
+A \cclass{cLinkType} object knows how to create \cclass{cPar} objects representing
+the delay\index{channel!delay}, error\index{channel!error} and datarate\index{channel!datarate} attributes for a channel.
+\fmac{Define\_Link()} macros occur in the code generated by the NEDC
+compiler, one for each channel definition.} \\\hline
+\end{longtable}
 
 
-\subsection{Object ownership/contains relationships}
-
-\textbf{Ownership:} Exclusive right and duty to delete the child
-objects.  Ownership\index{ownership} works through \cclass{cObject}'s
-ownerp/prevp/nextp and firstchildp/lastchildp pointers.
-
-
-\textbf{'Contains' relationship:\index{contains relationship}} Only
-for container classes, e. g.  \cclass{cArray} or \cclass{cQueue}.
-Keeping track of contained objects works with another mechanism,
-\textit{not} the previously mentioned ptrs. (E.g., \cclass{cArray}
-uses a vector, \cclass{cQueue} uses a separate list).
-
-The two mechanisms are \textit{independent}.
-
-\textbf{What \cclass{cObject} does:}
-\begin{itemize}
-  \item{Owner of a new object can be explicitly given; if omitted,
-    \fname{defaultOwner()} will be used.}
-  \item{An object created through the copy
-    constructor\index{ownership!copy constructor} will have the same
-    owner as original and does not \fname{dup()} or take objects owned
-    by the original.}
-  \item{Destructor calls \fname{free()} for owned objects (see later)}
-\end{itemize}
-
-
-\textbf{Rules for derived classes:}
-\begin{itemize}
-  \item{Objects contained as data members: the enclosing object should
-    own them.}
-\end{itemize}
-
-\textbf{Rules for container objects derived from cObject:}
-\begin{itemize}
-  \item{they use the functions: \fname[take()]{take(obj)},
-    \fname[drop()]{drop(obj)}, \fname[free()]{free(obj)}}
-  \item{when an object is inserted, if \fname{takeOwnership()} is
-    true, should take ownership of object by calling
-    \fname[take()]{take(obj)}. \fname{takeOwnership()} defaults to
-    true!}
-  \item{when an object is removed, they should call
-    \fname[drop()]{drop(obj)} for it if they were the owner.}
-  \item{copy constructor copies should \fname{dup()} and take
-    ownership of objects that were owned by the original.}
-  \item{destructor doesn't need not call \fname{free()} for objects:
-    this will be done in \cclass{cObject}'s destructor.}
-\end{itemize}
-
-The class \cclass{cHead} is special case: it behaves as a container,
-displaying objects it owns as contents.
 
 
 
-
-\section{The user interface}
+\section{Envir, Tkenv and Cmdenv}
 
 The source code for the user interface of {\opp} resides in the
-\texttt{envir} directory (common part) and in the \texttt{cmdenv},
-\texttt{tkenv} directories.
+\texttt{src/envir/} directory (common part) and in the \texttt{src/cmdenv/},
+\texttt{src/tkenv/} directories.
 
 The classes in the user interface are \textit{not} derived from \cclass{cObject},
-they are completely separated form the simulation kernel.
-
-
+they are completely separated from the simulation kernel.
 
 
 
@@ -327,8 +335,6 @@ they are completely separated form the simulation kernel.
 The \fname{main()} function of {\opp} simply sets up the user
 interface and runs it. Actual simulation is done in
 \fname{cEnvir::run()} (see later).
-
-
 
 
 
@@ -341,8 +347,8 @@ called \fvar{ev}:
 cEnvir ev;
 \end{verbatim}
 
-\cclass{cEnvir} basically is only an interface, its member functions
-hardly contain any code. \cclass{cEnvir} maintains a pointer to a
+\cclass{cEnvir} basically a facade, its member functions
+contain little code. \cclass{cEnvir} maintains a pointer to a
 dynamically allocated simulation application object (derived from
 \cclass{TOmnetApp}, see later) which does all actual work.
 
@@ -353,9 +359,9 @@ dynamically allocated simulation application object (derived from
     for each user interface (e.g. stdin/stdout for Cmdenv, windowing
     in Tkenv)}
   \item{setting up and running the simulation application}
-  \item{provides functions called by simulation kernel objects to get
-    information (for example, get module parameter settings from the
-    configuration file)}
+  \item{provides functions called by simulation kernel objects to
+    get information (for example, get module parameter settings
+    from the configuration file)}
   \item{provides functions called by simulation kernel objects to
     notify the user interface of some events. This is especially
     important for windowing user interfaces (Tkenv), because the
@@ -364,6 +370,38 @@ dynamically allocated simulation application object (derived from
     displayed; a breakpoint was hit.}
 \end{itemize}
 
+
+\subsection{Customizing Envir}
+\label{sec:ch-opp-design:customization}
+
+Certain aspects of Envir can be customized via plugin interfaces.
+Plugin interfaces are presented in the form of C++ abstract classes
+that you have to implement, register via the \fmac{Register\_Class()}
+macro, and finally tell Envir to use them via \ttt{omnetpp.ini} entries.
+
+The following plugin interfaces are supported:
+
+\begin{itemize}
+   \item{\cclass{cOutputScalarManager}. It handles recording the scalar output data,
+     output via the cModule::recordScalar() family of functions.
+     The default output scalar manager is \cclass{cFileOutputScalarManager},
+     defined in the Envir library.}
+   \item{\cclass{cOutputVectorManager}. It handles recording the output
+     for \cclass{cOutVector} objects.
+     The default output vector manager is \cclass{cFileOutputVectorManager},
+     defined in the Envir library.}
+   \item{\cclass{cSnapshotManager}. It provides an output stream to which
+     snapshots are written (see section \ref{sec:ch-sim-lib:snapshots}).
+     The default snapshot manager is \cclass{cFileSnapshotManager},
+     defined in the Envir library.}
+\end{itemize}
+
+The above interfaces are documented in the API Reference, generated by Doxygen.
+
+The corresponding ini file entries that allow you to select your
+plugin classes are \fpar{outputvectormanager-class},
+\fpar{outputscalarmanager-class} and \fpar{snapshotmanager-class},
+documented in section \ref{sec:ch-run-sim:general-section}.
 
 
 
