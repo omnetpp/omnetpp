@@ -9,10 +9,9 @@ since the 2.0b5 release have largely been fixed. All those who cared to
 report bugs and suggested features -- thanks!
 
 In cQueue, a number of methods were made virtual to enable customizing the
-class (e.g. adding statistics for maintaining average queue length, etc.),
-and also in cQueue, a bug associated with object ownership management was
-fixed. I also added the OMNETPP_VERSION symbol to the sim header files
-(currently #defined as 0x0200). 
+class (e.g. adding statistics for maintaining average queue length, etc.).
+Some bugfixes on cQueue, cArray and cBag. I also added the OMNETPP_VERSION
+symbol to the sim header files (currently #defined as 0x0200). 
 
 Tkenv was enhanced quite a bit. Now you can now open module output windows for
 all modules (not only for simple modules), and the window will accumulate
@@ -21,13 +20,13 @@ useful for tracing dynamically created modules). Now you can search for text
 in all module windows (^F Find, F3/^N Find next). Hotkeys were assigned to the
 run commands too (F4 Step, F5 Run, F6 Fast, F7 Express, F8 Stop), and the
 behaviour of the "step within module" command (^F4) was refined. I added a
-Performance status bar for the sake of the impatient (it displays events/sec,
-simulated sec/sec, events/simulated sec readings). Another toolbar shows (among
-others) the number of message objects currently in existence -- this feature
-may help you discover the most common kind of memory leaks. Display string
-handling was improved: modules in a module vector may now be positioned
-individually, and submodule display strings may use the parent module's
-parameters, too. See src/tkenv/ChangeLog for details.
+Performance status bar (it displays events/sec, simulated sec/sec,
+events/simulated sec readings). Another toolbar shows (among others) the number
+of message objects currently in existence -- this feature may help you discover
+the most common kind of memory leaks. Display string handling was improved:
+modules in a module vector may now be positioned individually, and submodule
+display strings may use the parent module's parameters, too.
+See src/tkenv/ChangeLog for details.
 
 The most important addition to GNED is its new, experimental XML support (needs
 the TclXML-1.2 package). XML will play a much more significant role in future
