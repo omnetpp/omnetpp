@@ -27,7 +27,13 @@
 #define strnicmp my_strnicmp
 static int my_strnicmp(const char *a, const char *b, size_t len)
 {
-    return strncasecmp(a,b,len); //FIXME this is Linux-specific!
+    while (len-->0 && *a && (tolower(*(const unsigned char *)a)==tolower(*(const unsigned char *)b)))
+    {
+        a++;
+        b++;
+    }
+    return tolower(*(const unsigned char *)a) - tolower(*(const unsigned char *)b);
+    //return strncasecmp(a,b,len); //FIXME this is Linux-specific!
 }
 #endif
 
