@@ -1260,6 +1260,8 @@ void cSimpleModule::callFinish()
 
 void cSimpleModule::pause(const char *phase)
 {
+    if (!usesactivity) {opp_error("pause() is not supported for modules using handleMessage()"); return;}
+
     if (phase)
         phasestr = phase;
     simulation.backtomod = this;
