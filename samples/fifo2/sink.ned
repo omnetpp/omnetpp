@@ -3,9 +3,13 @@
 //        (part of Fifo2 - an OMNeT++ demo simulation)
 //-------------------------------------------------------------
 
-// Sink: destroys the packets and keeps statistics
 
+// Sink --
+//
+// destroys the packets and creates statistics
+//
 simple Sink
-  gates:
-    in: in;
+    gates:
+      in: in;
 endsimple
+
