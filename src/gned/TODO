@@ -1,6 +1,5 @@
 Bugs:
 - module name mismatch in the submods and conns sections ==> sometimes "assert failed"
-- resize-bar: right-click while resizing leaves the bar on screen
 - resizing the parent module is difficult: you must hit the _inner_
   (invisible) border
 - connection drawing doesn't work sometimes (reproduce!)
