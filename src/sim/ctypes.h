@@ -149,6 +149,7 @@ class cModuleType : public cObject
         friend class cModule;
   private:
         char *interface_name;
+        cModuleInterface *interface;
         ModuleCreateFunc create_func;
   public:
         cModuleType( char *classname, char *interf_name, ModuleCreateFunc cf);

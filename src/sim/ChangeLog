@@ -616,6 +616,20 @@ Aug 30, 1999
              delete putAsideQueue.get(msg);
   - cQueue::isEnqueued(cObject *) renamed to cQueue::contains(cObject *)
   - cLinkedList::isInList(void *) renamed to cLinkedList::contains(void *)
+Sept 1, 1999
+  - behavior of scheduleStart() changed: now it can be called (and does nothing)
+    for modules using handleMessage(). The benefit is that this way code that
+    creates simple modules dynamically doesn't have to know whether the module
+    is using activity() or handleMessage(); the same code (which contains a
+    call to scheduleStart()) can be used for both.
+  - activate() [the boot procedure for simple module activity()] now checks if
+    the message that starts the module is really a starter message (and not
+    some other msg). This way, bugs caused by leaving out scheduleStart()
+    for dynamically created modules can be detected.
+  - wait() now makes sure it is called for a module using activity() and not
+    handleMessage().
+  - cModuleType now caches the cModuleInterface pointer. (Before it looked
+    up the interface each time, based on the interface name.)
 
   KNOWN BUGS:
      cModule::initialize() doesn't get called with dynamic modules

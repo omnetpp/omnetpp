@@ -437,17 +437,21 @@ static void activate( void *p )
 {
         cSimpleModule *smod = (cSimpleModule *)p;
 
-        // the starter message is the same as the timeoutmsg member of
-        // cSimpleModule; give it to the module
-        //
+        // The starter message should be the same as the timeoutmsg member of
+        // cSimpleModule. If not, then something is wrong...
         cMessage *starter = simulation.msgQueue.getFirst();
+        if (starter!=smod->timeoutmsg)
+            // the following opp_error() won't return
+            opp_error("scheduleStart() not called for dynamically allocated simple module `%s'",
+                      smod->fullPath());
+
+        // give back the message to the module
         starter->setOwner(smod);
         starter->setKind(MK_TIMEOUT);
 
-        // call activity()
-        //
-        // (initialize() is already called from cSimulation::startRun())
-        //
+        // call activity(). At this point, initialize() is already called from
+        // cSimulation::startRun(), or manually in the case of dynamically
+        // created modules.
         smod->activity();
         smod->end();
 }
@@ -500,7 +504,7 @@ cSimpleModule::cSimpleModule(char *name, cModule *parentmod, unsigned stksize) :
            // timeoutmsg->delivd set in scheduleStart()
 
            // allocate stack
-           if( cCoroutine::setup( activate, this, stksize+ev.extraStackForEnvir() )==FALSE )
+           if (!cCoroutine::setup(activate, this, stksize+ev.extraStackForEnvir()))
                opp_error("Cannot allocate %d+%d bytes of stack for module `%s'",
                                  stksize,ev.extraStackForEnvir(),fullPath());
         }
@@ -611,11 +615,22 @@ void cSimpleModule::clearHeap()
         }
 }
 
+//---------
+
 void cSimpleModule::scheduleStart(simtime_t t)
 {
-        // use timeoutmsg as activation message
-        if (!timeoutmsg)
-            {opp_error("scheduleStart(): cannot use for non-activity() module `%s'",fullPath());return;}
+        // Note: Simple modules using handleMessage() don't need starter
+        // messages, but nevertheless, we still define scheduleStart()
+        // for them. The benefit is that this way code that creates simple
+        // modules dynamically doesn't have to know whether the module is
+        // using activity() or handleMessage(); the same code (which
+        // contains a call to scheduleStart()) can be used for both.
+
+        // ignore for simple modules using handleMessage()
+        if (!usesactivity)
+            return;
+
+        // we'll use timeoutmsg as the activation message
         if (timeoutmsg->kind()!=MK_STARTER)
             {opp_error("scheduleStart(): module `%s' already started",fullPath());return;}
 
@@ -884,7 +899,9 @@ void cSimpleModule::arrived( cMessage *msg, int ongate )
 
 void cSimpleModule::wait(simtime_t t)
 {
+        if (!usesactivity) {opp_error(eNORECV); return;}
         if (t<0) {opp_error(eNEGTIME); t=0;}
+
         timeoutmsg->delivd = simTime()+t;
         simulation.msgQueue.insert( timeoutmsg );
 
@@ -1054,6 +1071,8 @@ void cSimpleModule::handleMessage(cMessage *)
     // this is the default version
     opp_error("You should redefine handleMessage() if you specify zero stack size");
 }
+
+//-------------
 
 void cSimpleModule::pause(char *s)
 {

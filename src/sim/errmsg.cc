@@ -33,7 +33,7 @@ char *emsg[] = {
   "(%s)%s: Cannot cast from type `%c' to `%c'",          // eBADCAST
   "(%s)%s: Indirection would create circular reference", // eCIRCREF
   "(%s)%s: Bad number of arguments, %d expected",        // eNUMARGS
-  "",                                                    // eBADTYPE
+  "Cannot find module interface `%s' needed to create module of type `%s'", // eNOMODIF
   "",                                                    // eBANNEDTYPE
   "Simulation stopped by segment on host `%s'",          // eSTOPSIMRCVD
   "No such module or module finished already",           // eNOMOD
@@ -46,7 +46,7 @@ char *emsg[] = {
   "Transfer to nonexistent, finished or compound module",// eBADTRANSF
   "(%s)%s: setValue(): Type `%c' does not suit arg types", // eBADINIT
   "Something unexpected happened (internal error)",      // eUNEXP
-  "Cannot use receive..() with handleMessage()",         // eNORECV
+  "Cannot use receive..() or wait() with handleMessage()", // eNORECV
   "",                                                    // eSTKLOW
   "No more events -- simulation ended",                  // eENDEDOK
   "Module initialization error",                         // eMODINI

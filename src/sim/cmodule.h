@@ -215,6 +215,7 @@ class cSimpleModule : public cCoroutine, public cModule
 {
         friend class cModule;
         friend class TSimpleModInspector;
+        friend void activate( void *p );
       private:
         bool usesactivity;      // uses activity() or handleMessage()
         int state;              // ended/ready/waiting for msg

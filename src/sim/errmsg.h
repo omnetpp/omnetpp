@@ -29,7 +29,7 @@ enum {
         eBADCAST     =  1,
         eCIRCREF     =  2,
         eNUMARGS     =  3,
-        eBADTYPE     =  4,
+        eNOMODIF     =  4,
         eBANNEDTYPE  =  5,
         eSTOPSIMRCVD =  6,
         eNOMOD       =  7,

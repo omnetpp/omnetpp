@@ -315,6 +315,7 @@ cModuleType::cModuleType( char *classname, char *interf_name, ModuleCreateFunc c
      // We cannot find() the interface object (and store its pointer) yet,
      // because it might not have been created yet.
      interface_name = opp_strdup(interf_name);
+     interface = NULL;
 }
 
 
@@ -333,6 +334,8 @@ cModuleType::~cModuleType()
 cModuleType& cModuleType::operator=(cModuleType& mt)
 {
     create_func = mt.create_func;
+    interface_name = opp_strdup(mt.interface_name);
+    interface = mt.interface;
     return *this;
 }
 
@@ -346,20 +349,19 @@ cModule *cModuleType::create(char *namestr, cModule *parentmod, bool local)
 
     cModule *mod;
 
-    //  Object members of the new module class are collected to
-    //  the temporary list classmembers.
+    // Object members of the new module class are collected to
+    // the temporary list classmembers.
     cHead classmembers;
     cHead *oldl = simulation.localList();
     simulation.setLocalList( &classmembers );
 
-    // Create the new module object
+    // create the new module object
     if (local)
         mod = create_func(namestr, parentmod);
     else
         mod = new cCompoundModule(namestr, parentmod);
 
-    //  Put the object members of the new module class to their place,
-    //  mod->members.
+    // put the object members of the new module to their place, mod->members
     cObject *p;
     cIterator i(classmembers);
     while ((p=i())!=NULL)  {i++; p->setOwner( &(mod->members) );}
@@ -379,14 +381,13 @@ cModule *cModuleType::create(char *namestr, cModule *parentmod, bool local)
          simulation.setSystemModule( mod );
     }
 
-    cModuleInterface *interface = findModuleInterface( interface_name );
+    // find the module interface
     if (!interface)
-    {
-        opp_error("Cannot find module interface `%s',"
-                         " needed to create module of type `%s'",
-                         interface_name, name() );
-        return mod;
-    }
+        interface = findModuleInterface( interface_name );
+    if (!interface)
+        {opp_error(eNOMODIF, interface_name, name()); return mod;}
+
+    // add parameters and gates to the new module
     interface->addParametersGatesTo( mod );
     return mod;
 }
@@ -396,14 +397,13 @@ void cModuleType::buildInside(cModule *mod)
     cModule *oldcontext = simulation.contextModule();
     simulation.setContextModule( mod );
 
-    cModuleInterface *interface = findModuleInterface( interface_name );
     if (!interface)
-    {
-        opp_error("Cannot find module interface `%s',"
-                         " needed to create module of type `%s'",
-                         interface_name, name() );
-    }
+        interface = findModuleInterface( interface_name );
+    if (!interface)
+        {opp_error(eNOMODIF, interface_name, name()); return;}
+
     interface->checkParametersOf( mod );
+    if (!simulation.ok()) return;
 
     mod->buildInside();
 
