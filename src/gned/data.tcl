@@ -106,6 +106,7 @@ proc deleteItem {key} {
 
     # delete non-child linked objects
     #   (e.g. connections when a submod is deleted)
+puts "deleteItem: inefficient code ('foreach array names')"
     foreach i [array names ned "*,*ownerkey"] {
        if {[info exist ned($i)] && $ned($i)==$key} {
           regsub -- ",.*ownerkey" $i "" childkey
@@ -122,6 +123,7 @@ proc deleteItem {key} {
            destroyCanvas $canv_id
        } else {
            set c $canvas($canv_id,canvas)
+puts "deleteItem: inefficient code2 ('foreach array names') -- easy to rewrite!"
            foreach i [array names ned "$key,*-cid"] {
               $c delete $ned($i)
            }
