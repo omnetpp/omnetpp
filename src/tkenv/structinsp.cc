@@ -31,7 +31,7 @@ void _dummy_for_structinsp() {}
 
 
 
-TStructPanel::TStructPanel(const char *widgetname, cObject *obj) :
+TStructPanel::TStructPanel(const char *widgetname, cPolymorphic *obj) :
     TInspectorPanel(widgetname,obj)
 {
 }
@@ -184,6 +184,12 @@ void TStructPanel::update()
 
    // delete display
    CHK(Tcl_VarEval(interp, widgetname, ".txt delete 1.0 end", NULL));
+
+   if (!object)
+   {
+       CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {<none>}", NULL));
+       return;
+   }
 
    // get descriptor object
    cStructDescriptor *sd = object->createDescriptor();

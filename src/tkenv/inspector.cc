@@ -297,10 +297,15 @@ void TInspector::fillModuleListbox(const char *listbox, cModule *parent,bool sim
 
 //=======================================================================
 
-TInspectorPanel::TInspectorPanel(const char *widgetname, cObject *obj)
+TInspectorPanel::TInspectorPanel(const char *widgetname, cPolymorphic *obj)
 {
    strcpy(this->widgetname, widgetname);
    object = obj;
+}
+
+void TInspectorPanel::setObject(cPolymorphic *obj)
+{
+   object=obj;
 }
 
 

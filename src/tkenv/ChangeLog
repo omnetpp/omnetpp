@@ -12,7 +12,11 @@ accidentally opening thousand windows with objects of identical names
 Need display string option to turn off module labels
 TODO: need <Copy> icon on module output window toolbars
 TODO: treeview into eacgh object inspector!
-TODO: controlInfo page into cMessage inspector
+
+2004-04-20  Andras Varga
+
+	* added "Control Info" page into cMessage inspector.
+TODO: page should also display className(), info() etc of control info object
 
 2004-03-18  Andras Varga
 

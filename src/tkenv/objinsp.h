@@ -48,6 +48,7 @@ class TMessageInspector: public TInspector
 {
    protected:
       TStructPanel *fieldspage;
+      TStructPanel *controlinfopage;
    public:
       TMessageInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
       ~TMessageInspector();

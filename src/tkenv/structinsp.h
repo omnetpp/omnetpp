@@ -33,7 +33,7 @@ class TStructPanel : public TInspectorPanel
       void displayStruct(cStructDescriptor *sd, int level);
 
    public:
-      TStructPanel(const char *widgetname, cObject *obj);
+      TStructPanel(const char *widgetname, cPolymorphic *obj);
       virtual void update();
       virtual void writeBack();
       virtual int inspectorCommand(Tcl_Interp *, int, const char **);

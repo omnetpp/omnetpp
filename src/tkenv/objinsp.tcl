@@ -95,7 +95,8 @@ proc create_messageinspector {name geom} {
     if {$fieldspage_needed} {
         notebook_addpage $nb fields {Fields}
     }
-    notebook_addpage $nb params   {Params}
+    notebook_addpage $nb params      {Params}
+    notebook_addpage $nb controlinfo {Control Info}
 
     # page 1: info
     label-entry $nb.info.name Name:
@@ -136,6 +137,9 @@ proc create_messageinspector {name geom} {
 
     # page 4: params
     create_inspector_listbox $nb.params
+
+    # page 5: control info
+    create_structpanel $nb.controlinfo
 }
 
 proc create_watchinspector {name geom} {

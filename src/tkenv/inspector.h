@@ -93,9 +93,10 @@ class TInspectorPanel
 {
    protected:
       char widgetname[80];
-      cObject *object;
+      cPolymorphic *object;
    public:
-      TInspectorPanel(const char *widgetname, cObject *obj);
+      TInspectorPanel(const char *widgetname, cPolymorphic *obj);
+      virtual void setObject(cPolymorphic *obj);
       virtual void update() = 0;
       virtual void writeBack() = 0;
       virtual int inspectorCommand(Tcl_Interp *, int, const char **) = 0;

@@ -187,6 +187,7 @@ TMessageInspector::TMessageInspector(cObject *obj,int typ,const char *geom,void 
     TInspector(obj,typ,geom,dat)
 {
    fieldspage = NULL;
+   controlinfopage = NULL;
 }
 
 void TMessageInspector::createWindow()
@@ -207,6 +208,11 @@ void TMessageInspector::createWindow()
        sprintf(fieldspagewidget, "%s.nb.fields", windowname);
        fieldspage = new TStructPanel(fieldspagewidget, object);
    }
+
+   char controlinfopagewidget[256];
+   sprintf(controlinfopagewidget, "%s.nb.controlinfo", windowname);
+   controlinfopage = new TStructPanel(controlinfopagewidget, NULL);
+
 }
 
 void TMessageInspector::update()
@@ -233,6 +239,9 @@ void TMessageInspector::update()
    if (fieldspage)
        fieldspage->update();
 
+   controlinfopage->setObject(msg->controlInfo());
+   controlinfopage->update();
+
    deleteInspectorListbox( ".nb.params" );
    fillInspectorListbox(".nb.params", &msg->parList(), false);
 }
@@ -251,6 +260,8 @@ void TMessageInspector::writeBack()
    if (fieldspage)
        fieldspage->writeBack();
 
+   controlinfopage->writeBack();
+
    TInspector::writeBack();    // must be there after all changes
 }
 
@@ -264,6 +275,7 @@ int TMessageInspector::inspectorCommand(Tcl_Interp *interp, int argc, const char
 TMessageInspector::~TMessageInspector()
 {
    delete fieldspage;
+   delete controlinfopage;
 }
 
 
