@@ -189,6 +189,7 @@ proc bltGraph_Copy {} {
 
     bltGraph_SetWhiteBg $graph
     if [catch {$graph snap -format emf CLIPBOARD}] {
+        bltGraph_RestoreBg $graph
         tk_messageBox -parent $w -icon error -type ok -title Error \
              -message "Sorry, copying the graph to the clipboard only works on Windows."
     }
@@ -238,6 +239,7 @@ proc bltGraph_SavePostscript {} {
         if [catch {
             $graph postscript output $fname
         } err] {
+            bltGraph_RestoreBg $graph
             tk_messageBox -icon error -type ok  -parent .bltwin -message "Error: $err"
             return
         }
