@@ -375,7 +375,7 @@ bool cSimulation::setupNetwork(cNetworkType *network, int run_num)
       // set cNetworkType pointer
       networktype = network;
 
-      // call JAR-generated network setup function (with warnings turned off)
+      // call NEDC-generated network setup function (with warnings turned off)
       bool w=warnings();setWarnings(FALSE);// temporarily turn off warnings
       networktype->setupfunc();
       setWarnings( w );
@@ -437,11 +437,16 @@ void cSimulation::startRun()
      backtomod = NULL;
      netif_check_cntr = 0;
 
-     // call initialize() and create starter message for all modules, recursively
+     // prepare simple modules for simulation run:
+     //    1. create starter message for all modules,
+     //    2. then call initialize() for them (recursively)
+     //  This order is important because initialize() functions might contain
+     //  send() calls which could otherwise insert msgs BEFORE starter messages
+     //  for the destination module and cause trouble in cSimpleMod's activate().
      if (systemmodp)
      {
-         systemmodp->callInitialize();
          systemmodp->scheduleStart(0.0);
+         systemmodp->callInitialize();
      }
 
      // distributed execution:

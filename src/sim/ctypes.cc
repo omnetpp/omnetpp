@@ -413,19 +413,25 @@ void cModuleType::buildInside(cModule *mod)
         simulation.setGlobalContext();
 }
 
-cModule *cModuleType::createInitStart(char *namestr, cModule *parentmod)
+cModule *cModuleType::createScheduleInit(char *namestr, cModule *parentmod)
 {
-    // This is a convenience function to get a module up and running in one step...
+    // This is a convenience function to get a module up and running in one step.
+    //
     // Should work for simple and compound modules alike.
     // Not applicable if the module:
     //  - has parameters to be set
     //  - gate vector sizes to be set
     //  - gates to be connected before initialize()
-
+    //
+    // First creates starter message for the new module(s), then calls
+    // initialize() for it (them). This order is important because initialize()
+    // functions might contain scheduleAt() calls which could otherwise insert
+    // a message BEFORE the starter messages for module...
+    //
     cModule *mod = create(namestr, parentmod);
     mod->buildInside();
-    mod->callInitialize();
     mod->scheduleStart( simulation.simTime() );
+    mod->callInitialize();
     return mod;
 }
 

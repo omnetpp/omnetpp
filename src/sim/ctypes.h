@@ -164,8 +164,8 @@ class cModuleType : public cObject
         cModule *create(char *namestr, cModule *parentmod, bool local=TRUE);
         void buildInside(cModule *mod);
 
-        // convenience function: create()+buildInside()+callInitialize()+scheduleStart()
-        cModule *createInitStart(char *namestr, cModule *parentmod);
+        // convenience function: create()+buildInside()+scheduleStart(now)+callInitialize()
+        cModule *createScheduleInit(char *namestr, cModule *parentmod);
 };
 
 

@@ -668,5 +668,10 @@ Sept 20, 1999
     function
   - cOutVector::record() corrected: it should update the inspector even
     if it doesn't write to file
+Sept 23, 1999
+  - callInitialize() and scheduleStart() swapped in cSimulation's startRun()
+    to support send()/scheduleAt() in initialize() to modules with activity().
+  - same change made to createInitStart(), and it was renamed to
+    createScheduleInit() to reflect the new order of what it does.
 
 Remaining -Wall warnings: "%lf", "%lg", "%le" in printf format strings.
