@@ -76,7 +76,14 @@ omnetpp/              OMNeT++ root directory
        envir/         common code for user interfaces
        cmdenv/        command-line user interface
        tkenv/         Tcl/Tk user interface
-       utils/         makefile-autocreator etc
+       utils/         makefile-autocreator etc.
+
+There is a tutorial, contributed by Nick van Foreest:
+
+omnetpp/
+   tutorial/          the tutorial document
+       queues/        sample simulation that supports the tutorial
+       doc_src/       the Latex sources for the tutorial doc
 
 Sample simulations are within the samples directory.
 Each of the sample directories contain a network description
@@ -95,6 +102,13 @@ omnetpp/
        pvmex/         demonstrates distributed execution
        fifo1/         single-server queue
        fifo2/         another version of fifo, now with handleMessage() and FSM
+
+Some tools to make it easier using MSVC with OMNeT++.
+
+omnetpp/
+   msvc/
+       appwizard/     Custom AppWizard for Visual Studio (appears in File|New)
+       macros/        macros like AddNEDFileToProject
 
 There is also material contributed by people in the OMNeT++ community.
 Contributed material falls under a different license from that of OMNeT++
