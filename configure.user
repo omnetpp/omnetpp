@@ -16,6 +16,7 @@ CFLAGS='-O3 -DNDEBUG=1'
 
 #
 # Select here whether you want to build static or shared libraries.
+# On CYGWIN, only static libraries can be used.
 #
 build_shared_libs=yes
 #build_shared_libs=no
