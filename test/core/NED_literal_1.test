@@ -5,7 +5,7 @@ Test literals in NED.
 
 simple {Simple}
    parameters:
-      s: string,
+      s1:string, s2:string,
       b1:bool, b2:bool, b3:bool, b4:bool, b5:bool,
       n1:numeric, n2:numeric, n3:numeric, n4:numeric, n5:numeric,
       nc1:numeric const, nc2:numeric const, nc3:numeric const, nc4:numeric const, nc5:numeric const;
@@ -13,7 +13,8 @@ endsimple
 
 network {network}: {Simple}
    parameters:
-      s = "hello",
+      s1 = "hello",
+      s2 = "",
 
       b1 = true,
       b2 = false,
@@ -54,7 +55,8 @@ void {Simple}::activity()
 }
 
 %contains-regex: stdout
-s:S="hello"
+s1:S="hello"
+s2:S=""
 b1:B=true
 b2:B=false
 b3:L=5
