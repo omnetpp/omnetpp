@@ -29,7 +29,7 @@ class cStatistic;
 class cPar;
 
 /**
- * Abstract class for output vector managers for cEnvir.
+ * Abstract base class for output vector managers for cEnvir.
  * cOutputVectorManagers are plugins into the Envir user
  * interface library (src/envir) that handle recording the output for
  * cOutVectors.
@@ -123,12 +123,13 @@ class cOutputVectorManager : public cPolymorphic
 
 
 /**
- * Abstract class. cOutputScalarManagers are plugins into the Envir user interface
- * library (src/envir) that handle recording the scalar output data,
- * output via the cModule::recordScalar() family of functions.
+ * Abstract base class for handling recording of output scalar data.
+ * cOutputScalarManagers are plugins into the Envir user interface
+ * library (src/envir) that ultimately handle calls to the 
+ * cModule::recordScalar() family of functions.
  *
- * The default output scalar manager is cFileOutputScalarManager, defined in the
- * Envir library.
+ * The default output scalar manager is cFileOutputScalarManager, defined 
+ * in the Envir library.
  *
  * To change the way scalar results are recorded, subclass cOutputScalarManager,
  * register your new class with the Register_Class() macro, then select it
@@ -195,9 +196,9 @@ class cOutputScalarManager : public cPolymorphic
 
 
 /**
- * Abstract class. cSnapshotManagers are plugins into the Envir user interface
- * library (src/envir) that provide an output stream into which snapshots
- * are written (see cSimulation::snapshot()).
+ * Abstract base class for snapshot managers. cSnapshotManagers are plugins 
+ * into the Envir user interface library (src/envir) that provide an output 
+ * stream into which snapshots are written (see cSimulation::snapshot()).
  *
  * The default output snapshot manager is cFileSnapshotManager, defined in the
  * Envir library.

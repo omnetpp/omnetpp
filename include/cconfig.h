@@ -26,6 +26,7 @@
 
 
 /**
+ * Abstract base class for representing the configuration (omnetpp.ini).
  * This class logically belongs to the cEnvir facade. (cEnvir presents
  * to the simulation kernel the UI, or generally, the program which embeds
  * the simulation.) This class provides access to configuration data for
@@ -35,8 +36,8 @@
  *
  * This is an abstract base class, which means functionality is provided by
  * subclasses. The subclass used by default is cInifile which reads config
- * files in the omnetpp.ini format. Other subclasses which use different data
- * sources (e.g. database) can be created and plugged in for flexibility.
+ * files in the omnetpp.ini format. One can create other subclasses which use 
+ * different data sources (e.g. database) or different data format (e.g. XML).
  *
  * To switch to your own configuration storage (e.g. database or XML files) 
  * from omnetpp.ini, subclass cConfiguration, register your new class with 
