@@ -15,7 +15,7 @@ call opp_test -g -v %TESTFILES% || goto end
 
 cd work || goto end
 call opp_nmakemake -f -e cc -u cmdenv || goto end
-nmake -f makefile.vc || goto end
+nmake -f makefile.vc || cd .. && goto end
 cd .. || goto end
 
 call opp_test -r -v %TESTFILES% || goto end
