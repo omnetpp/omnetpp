@@ -308,7 +308,7 @@ class SIM_API cObject
     const char *name() const     {return namestr ? namestr : "";}
 
     /**
-     * Returns true if the object's name is identical with the
+     * Returns true if the object's name is identical to the
      * string passed.
      */
     bool isName(const char *s) const {return !opp_strcmp(namestr,s);}
