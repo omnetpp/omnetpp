@@ -497,7 +497,10 @@ proc animcontrol {w} {
 
     scale $w -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
     $w config -from .5 -to 3 -resolution 0.01 -variable priv(animspeed)
-    trace add variable priv(animspeed) write animSpeedChanged
+
+    # following line is too new (Tcl8.4) -- not understood by Tcl8.3
+    #trace add variable priv(animspeed) write animSpeedChanged
+    trace variable priv(animspeed) w animSpeedChanged
 }
 
 proc create_graphicalmodwindow {name geom} {
