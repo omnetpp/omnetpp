@@ -43,7 +43,7 @@ SAMPLES=dyna dyna2 fddi fifo1 fifo2 hcube hist nim token topo demo
 # because tcl2c might be needed to build tkenv or gned.
 #
 libs: utils $(LIBS)
-progs: $(PROGS)
+progs: libs $(PROGS)
 samples: libs progs $(SAMPLES)
 docs: api nedxml-api manual
 
