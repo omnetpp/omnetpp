@@ -497,13 +497,8 @@ or the \ttt{"is}" (\textit{icon size}) display string tag ("i=device/router;is=l
 
 {\opp} implements an automatic layouting feature, using
 a variation of the SpringEmbedder algorithm. Modules which have
-no explicit positions assigned (first two args of the "p=" tag
-are missing) will be placed by the algorithm. Modules with fixed
-coordinates will not be moved.
-
-Predefined row, matrix, ring or other arrangements (defined
-via the 3rd and further args of the "p=" tag) will be moved as one unit
-(the full row/matrix/ring will be moved to an optimal place.)
+not been assigned explicit positions via the \ttt{"p="} tag will be
+automatically placed by the algorithm.
 
 SpringEmbedder is a graph layouting algorithm based on a physical model.
 Graph nodes (modules) repent each other like electric charges
@@ -514,10 +509,17 @@ simulates this physical system until it reaches equilibrium
 (or times out). The physical rules above have been slightly tweaked
 to get better results.
 
+The algorithm doesn't move any module which has fixed coordinates.
+Predefined row, matrix, ring or other arrangements (defined
+via the 3rd and further args of the "p=" tag) will be preserved --
+one can think about them as if the those modules were attached
+to a wooden framework so that they can only move as one unit.
+
 If the full graph is too big after layouting, it is scaled back so that
-it fits on the screen, UNLESS IT CONTAINS
-ANY FIXED-POSITION MODULE. (For obvious reasons: if there's a module
+it fits on the screen, \textit{unless it contains
+any fixed-position module}. (For obvious reasons: if there's a module
 with manually specified position, we don't want to move that one).
+
 - Size is ignored by the present layouter, so longish modules (such as
 an Ethernet segment) may produce funny results.
 - Parameters to the layouter algoritm (repulsive/attractive forces,
