@@ -1,3 +1,7 @@
+2004-10-27  Andras Varga
+
+	* tkapp.cc: fix: readPerRunOptions() was not protected by try/catch
+
 2004-10-25  Andras Varga
 	
 	* tkapp.cc, tkcmd.cc, etc: updated for info() and fullPath()

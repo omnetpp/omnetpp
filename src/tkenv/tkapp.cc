@@ -625,31 +625,21 @@ void TOmnetTkApp::newRun(int run)
             simulation.deleteNetwork();
             simstate = SIM_NONET;
         }
-    }
-    catch (cException *e)
-    {
-        displayError(e);
-        delete e;
-        simstate = SIM_ERROR;
-        return;
-    }
 
-    // set up new network
-    run_nr = run;
-    readPerRunOptions( run_nr );
-    makeOptionsEffective();
+        // set up new network
+        run_nr = run;
+        readPerRunOptions( run_nr );
+        makeOptionsEffective();
 
-    cNetworkType *network = findNetwork(opt_network_name.c_str());
-    if (!network)
-    {
-        CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", opt_network_name.c_str(), "' not found.} info ok",NULL));
-        return;
-    }
+        cNetworkType *network = findNetwork(opt_network_name.c_str());
+        if (!network)
+        {
+            CHK(Tcl_VarEval(interp,"messagebox {Confirm} {Network '", opt_network_name.c_str(), "' not found.} info ok",NULL));
+            return;
+        }
 
-    CHK(Tcl_VarEval(interp, "clear_windows", NULL));
+        CHK(Tcl_VarEval(interp, "clear_windows", NULL));
 
-    try
-    {
         simulation.setupNetwork(network, run_nr);
         startRun();
         simstate = SIM_NEW;
