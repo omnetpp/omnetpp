@@ -328,3 +328,6 @@ Jan 17-18,2000
   - bugfix in OmnetTkApp::objectDeleted() (tkapp.cc)
   - edited error msgs in tkapp.cc
   - font settins updated for Tk8.2/Win in main.tcl
+  - in dialogs.tcl, added back the grab for the STOP dialog of Express Run mode.
+    (Those lines got commented out long ago for some reason...) Under win32,
+    the app menu is still accessible despite the grab (Tk bug?).

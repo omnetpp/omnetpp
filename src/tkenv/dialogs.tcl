@@ -165,11 +165,8 @@ proc display_stopdialog {mode} {
     # 3. Set a grab and claim the focus too.
 
     set opp(oldFocus) [focus]
-#    set opp(oldGrab) [grab current $w]
-#    if {$opp(oldGrab) != ""} {
-#        set opp(grabStatus) [grab status $opp(oldGrab)]
-#    }
-#    grab $w
+    set opp(oldGrab) [grab current $w]
+    grab $w
     focus $w.stopbutton
 }
 
@@ -185,13 +182,9 @@ proc remove_stopdialog {} {
 
     catch {focus $opp(oldFocus)}
     destroy $w
-#    if {$opp(oldGrab) != ""} {
-#        if {$opp(grabStatus) == "global"} {
-#            grab -global $opp(oldGrab)
-#        } else {
-#            grab $opp(oldGrab)
-#        }
-#    }
+    if {$opp(oldGrab) != ""} {
+        grab $opp(oldGrab)
+    }
 }
 
 proc options_dialog {} {
