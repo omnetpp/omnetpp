@@ -12,9 +12,9 @@ OMNeT++ installation, so you can try out immediately how
 the examples work. However, you'll find the tutorial much more useful
 if you actually carry out at least the first steps described here.
 
-@attention We assume here that you have a working OMNeT++ installation,
-you have a good C++ knowledge, and you are in general familiar with
-C/C++ development (editing source files, compiling, debugging etc.)
+@attention We assume here that you have a working OMNeT++ installation.
+We also assume that you have a good C++ knowledge, and you are in general
+familiar with C/C++ development (editing source files, compiling, debugging etc.)
 on your operating system. (The latter two are out of our scope here --
 there are excellent books, tutorials on the web, etc. if you need
 to update your knowledge on that.)
