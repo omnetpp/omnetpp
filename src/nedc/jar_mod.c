@@ -103,12 +103,10 @@ void do_simp_or_comp (char *mname, int is_simple)
                   "      cCompoundModule(name, parentmod) {}\n",
                   mname,mname);
              fprintf (tmp,
-                  "    virtual const char *className() const {return \"%s\";}\n"
-                  "\n"
                   "  protected:\n"
                   "    virtual void doBuildInside();\n"
-                  "};\n\n",
-                  mname);
+                  "};\n\n"
+                  );
 
              fprintf (tmp, "Define_Module( %s );\n\n", mname);
 

@@ -64,10 +64,12 @@ class TOmnetTkApp : public TOmnetApp
       unsigned opt_extrastack;     // per-module extra stack
 
       Tcl_Interp *interp;      // TCL interpreter
+
+   protected:
       opp_string tkenv_dir;    // directory of Tkenv's *.tcl files
       opp_string bitmap_dir;   // directory of icon files
 
-      eState state;            // state of the simulation run
+      eState simstate;         // state of the simulation run
       int   run_nr;            // number of current simulation run
       bool  animation_ok;      // while execution, do message animation or not
       bool  bkpt_hit;          // flag to signal that a breakpoint was hit and sim. must be stopped
@@ -124,6 +126,9 @@ class TOmnetTkApp : public TOmnetApp
       void updateInspectors();
       TInspector *inspect(cObject *obj, int type, const char *geometry, void *dat);
       TInspector *findInspector(cObject *obj, int type);
+
+      int getSimulationState() {return simstate;}
+      void setStopSimulationFlag() {stop_simulation = true;}
 
       // small functions:
       void updateNetworkRunDisplay();

@@ -35,7 +35,7 @@ class TModuleWindow : public TInspector
 
 class TGraphicalModWindow : public TInspector
 {
-   public:
+   protected:
       char canvas[128];
       bool needs_redraw;
       int random_seed;
@@ -55,7 +55,7 @@ class TGraphicalModWindow : public TInspector
 
 class TCompoundModInspector: public TInspector
 {
-   public:
+   protected:
       bool deep;
       bool simpleonly;
    public:
@@ -85,7 +85,7 @@ class TGateInspector: public TInspector
 
 class TGraphicalGateWindow : public TInspector
 {
-   public:
+   protected:
       char canvas[128];
    public:
       TGraphicalGateWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);

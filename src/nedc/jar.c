@@ -269,9 +269,8 @@ void do_system (char *stname )
              stname);
         fprintf (yyout,
              "    %s(const char *name) : cNetworkType(name) {}\n"
-             "    %s(const %s& n)  {setName(n.name());operator=(n);}\n"
-             "    virtual const char *className() const {return \"%s\";}\n\n",
-             stname, stname, stname, stname);
+             "    %s(const %s& n)  {setName(n.name());operator=(n);}\n",
+             stname, stname, stname);
         fprintf (yyout,
              "    virtual void setupNetwork();\n"
              "};\n\n");

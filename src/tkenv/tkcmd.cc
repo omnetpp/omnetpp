@@ -330,7 +330,7 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   switch (app->state)
+   switch (app->getSimulationState())
    {
        case TOmnetTkApp::SIM_NONET: interp->result = "SIM_NONET"; break;
        case TOmnetTkApp::SIM_NEW: interp->result = "SIM_NEW"; break;
@@ -408,7 +408,7 @@ int stopSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) {interp->result="wrong argcount"; return TCL_ERROR;}
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   app->stop_simulation = true;
+   app->setStopSimulationFlag();
    return TCL_OK;
 }
 

@@ -37,7 +37,7 @@ class TObjInspector : public TInspector
 
 class TContainerInspector : public TInspector
 {
-   public:
+   protected:
       InfoFunc infofunc;
       bool deep;
       char listbox[64];

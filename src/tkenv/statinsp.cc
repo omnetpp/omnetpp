@@ -254,10 +254,10 @@ class TOutVectorWindowFactory : public cInspectorFactory
 Register_InspectorFactory(TOutVectorWindowFactory);
 
 
-CircBuffer::CircBuffer(int siz)
+CircBuffer::CircBuffer(int size)
 {
-   size = siz;
-   buf = new CBEntry[size];
+   siz = size;
+   buf = new CBEntry[siz];
    n = 0;
    head = 0;
 }
@@ -269,12 +269,12 @@ CircBuffer::~CircBuffer()
 
 void CircBuffer::add(simtime_t t, double value1, double value2)
 {
-   head = (head+1)%size;
+   head = (head+1)%siz;
    CBEntry& p = buf[head];
    p.t = t;
    p.value1 = value1;
    p.value2 = value2;
-   if (n<size) n++;
+   if (n<siz) n++;
 }
 
 static void record_in_insp(void *data, double val1, double val2)
@@ -326,7 +326,7 @@ void TOutVectorWindow::update()
    generalInfo( buf );
    setLabel(".bot.info",buf);
 
-   if (circbuf.n==0) return;
+   if (circbuf.items()==0) return;
 
    int tuple = ((cOutVector *)object)->tuple;
 
@@ -339,12 +339,12 @@ void TOutVectorWindow::update()
    if (!canvasheight) canvasheight=1;
 
    simtime_t tbase = simulation.simTime();
-   // simtime_t tbase = circbuf.buf[circbuf.head].t;
+   // simtime_t tbase = circbuf.entry[circbuf.headPos()].t;
 
    if (autoscale)
    {
        // adjust time_factor if it's too far from the optimal value
-       simtime_t firstt = circbuf.buf[circbuf.tail()].t;
+       simtime_t firstt = circbuf.entry(circbuf.tailPos()).t;
        double dt = tbase - firstt;
        if (dt>0)
        {
@@ -360,11 +360,11 @@ void TOutVectorWindow::update()
        }
 
        // determine miny and maxy
-       int pos = circbuf.head;
-       miny = maxy = circbuf.buf[circbuf.head].value1;
-       for(int i=0;i<circbuf.n;i++)
+       int pos = circbuf.headPos();
+       miny = maxy = circbuf.entry(circbuf.headPos()).value1;
+       for(int i=0;i<circbuf.items();i++)
        {
-           CircBuffer::CBEntry& p = circbuf.buf[pos];
+           CircBuffer::CBEntry& p = circbuf.entry(pos);
            if (p.value1<miny) miny = p.value1;
            if (p.value1>maxy) maxy = p.value1;
            if (tuple==2)
@@ -372,7 +372,7 @@ void TOutVectorWindow::update()
                if (p.value2<miny) miny = p.value2;
                if (p.value2>maxy) maxy = p.value2;
            }
-           pos=(pos-1+circbuf.size)%circbuf.size;
+           pos=(pos-1+circbuf.size())%circbuf.size();
        }
        if (miny==maxy)
        {
@@ -402,22 +402,22 @@ void TOutVectorWindow::update()
    int next_y1=0, next_y2=0; // values won't be used (they're there just to prevent warning)
    int x, y1, y2;
    int pos;
-   int next_pos = (circbuf.head-circbuf.n+circbuf.size)%circbuf.size;
-   for(int i=0;i<=circbuf.n;i++)
+   int next_pos = (circbuf.headPos()-circbuf.items()+circbuf.size())%circbuf.size();
+   for(int i=0;i<=circbuf.items();i++)
    {
        x  = next_x;
        y1 = next_y1;
        y2 = next_y2;
        pos = next_pos;
 
-       if (i==circbuf.n)
+       if (i==circbuf.items())
        {
            next_x = X(simulation.simTime());
        }
        else
        {
-           next_pos=(next_pos+1)%circbuf.size;
-           CircBuffer::CBEntry& p = circbuf.buf[next_pos];
+           next_pos=(next_pos+1)%circbuf.size();
+           CircBuffer::CBEntry& p = circbuf.entry(next_pos);
            next_x =  X(p.t);
            next_y1 = Y(p.value1);
            next_y2 = Y(p.value2);
@@ -562,7 +562,7 @@ static char *drawingmodes[] = {
 
 void TOutVectorWindow::generalInfo( char *buf )
 {
-   if (circbuf.n==0)
+   if (circbuf.items()==0)
    {
         strcpy(buf,"(no write since opening window)");
         return;
@@ -570,13 +570,13 @@ void TOutVectorWindow::generalInfo( char *buf )
 
 /*
    simtime_t tbase = simulation.simTime();
-   simtime_t firstt = circbuf.buf[circbuf.tail()].t;
+   simtime_t firstt = circbuf.entry(circbuf.tailPos()).t;
    char buf1[32], buf2[32];
    sprintf(buf, "t=%s .. %s  value=%g .. %g", simtimeToStr(firstt,buf1),
                 simtimeToStr(tbase,buf2), miny, maxy);
 */
    int tuple = ((cOutVector *)object)->tuple;
-   CircBuffer::CBEntry& p = circbuf.buf[ circbuf.head ];
+   CircBuffer::CBEntry& p = circbuf.entry(circbuf.headPos());
    if (tuple==1)
      sprintf(buf, "Last value: t=%s  value=%g",
                    simtimeToStr(p.t), p.value1);
@@ -588,7 +588,7 @@ void TOutVectorWindow::generalInfo( char *buf )
 void TOutVectorWindow::valueInfo( char *buf, int valueindex )
 {
    int tuple = ((cOutVector *)object)->tuple;
-   CircBuffer::CBEntry& p = circbuf.buf[ valueindex ];
+   CircBuffer::CBEntry& p = circbuf.entry(valueindex);
    if (tuple==1)
      sprintf(buf, "t=%s  value=%g",
                   simtimeToStr(p.t), p.value1);

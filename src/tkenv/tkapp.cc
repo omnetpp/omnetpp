@@ -98,7 +98,7 @@ TOmnetTkApp::TOmnetTkApp(ArgList *args, cIniFile *inifile) :
   inspectors("inspectors")
 {
     interp = 0;  // Tcl/Tk not set up yet
-    state = SIM_NONET;
+    simstate = SIM_NONET;
 
     // The opt_* vars will be set by readOptions()
 }
@@ -200,6 +200,16 @@ int TOmnetTkApp::run()
 
 void TOmnetTkApp::shutdown()
 {
+    // close all inspectors before exiting
+    for(;;)
+    {
+        cIterator i(inspectors);
+        if (i.end())
+            break;
+        TInspector *insp = (TInspector *) i();
+        delete insp;
+    }
+
     TOmnetApp::shutdown();
 }
 
@@ -219,7 +229,7 @@ void TOmnetTkApp::rebuildSim()
 
 void TOmnetTkApp::doOneStep()
 {
-    ASSERT(state==SIM_NEW || state==SIM_READY);
+    ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
     clearNextModuleDisplay();
     clearPerformanceDisplay();
@@ -228,7 +238,7 @@ void TOmnetTkApp::doOneStep()
     bkpt_hit = false;
     animation_ok = true;
 
-    state = SIM_RUNNING;
+    simstate = SIM_RUNNING;
     startClock();
     try
     {
@@ -244,23 +254,23 @@ void TOmnetTkApp::doOneStep()
         updateNextModuleDisplay();
         updateInspectors();
 
-        state = SIM_READY;
+        simstate = SIM_READY;
     }
     catch (cTerminationException *e)
     {
-        state = SIM_TERMINATED;
+        simstate = SIM_TERMINATED;
         displayMessage(e);
         delete e;
     }
     catch (cException *e)
     {
-        state = SIM_ERROR;
+        simstate = SIM_ERROR;
         displayError(e);
         delete e;
     }
     stopClock();
 
-    if (state==SIM_TERMINATED)
+    if (simstate==SIM_TERMINATED)
     {
         // call wrapper around simulation.callFinish() and simulation.endRun()
         finishSimulation();
@@ -271,7 +281,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
                                  bool slowexec, bool fastexec,
                                  cSimpleModule *stepwithinmodule)
 {
-    ASSERT(state==SIM_NEW || state==SIM_READY);
+    ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
     bkpt_hit = false;
     stop_simulation = false;
@@ -282,7 +292,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
     updateSimtimeDisplay();
     Tcl_Eval(interp, "update");
 
-    state = SIM_RUNNING;
+    simstate = SIM_RUNNING;
     startClock();
     Speedometer speedometer;
 
@@ -345,23 +355,23 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 
             checkTimeLimits();
         }
-        state = SIM_READY;
+        simstate = SIM_READY;
     }
     catch (cTerminationException *e)
     {
-        state = SIM_TERMINATED;
+        simstate = SIM_TERMINATED;
         displayMessage(e);
         delete e;
     }
     catch (cException *e)
     {
-        state = SIM_ERROR;
+        simstate = SIM_ERROR;
         displayError(e);
         delete e;
     }
     stopClock();
 
-    if (state==SIM_TERMINATED)
+    if (simstate==SIM_TERMINATED)
     {
         // call wrapper around simulation.callFinish() and simulation.endRun()
         finishSimulation();
@@ -376,7 +386,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 void TOmnetTkApp::runSimulationExpress(simtime_t until_time,long until_event)
 {
     // implements 'express run'
-    ASSERT(state==SIM_NEW || state==SIM_READY);
+    ASSERT(simstate==SIM_NEW || simstate==SIM_READY);
 
     ev.disable_tracing = true;
     bkpt_hit = false;
@@ -388,7 +398,7 @@ void TOmnetTkApp::runSimulationExpress(simtime_t until_time,long until_event)
     updateSimtimeDisplay();
     Tcl_Eval(interp, "update");
 
-    state = SIM_RUNNING;
+    simstate = SIM_RUNNING;
     startClock();
     Speedometer speedometer;
 
@@ -419,24 +429,24 @@ void TOmnetTkApp::runSimulationExpress(simtime_t until_time,long until_event)
                 (until_time<=0 || simulation.simTime()<until_time) &&
                 (until_event<=0 || simulation.eventNumber()<until_event)
              );
-        state = SIM_READY;
+        simstate = SIM_READY;
     }
     catch (cTerminationException *e)
     {
-        state = SIM_TERMINATED;
+        simstate = SIM_TERMINATED;
         displayMessage(e);
         delete e;
     }
     catch (cException *e)
     {
-        state = SIM_ERROR;
+        simstate = SIM_ERROR;
         displayError(e);
         delete e;
     }
     stopClock();
     ev.disable_tracing = false;
 
-    if (state==SIM_TERMINATED)
+    if (simstate==SIM_TERMINATED)
     {
         // call wrapper around simulation.callFinish() and simulation.endRun()
         finishSimulation();
@@ -456,7 +466,7 @@ void TOmnetTkApp::startAll()
 void TOmnetTkApp::finishSimulation()
 {
     // hmm... after SIM_ERROR, we shouldn't allow callFinish() in theory..
-    ASSERT(state==SIM_NEW || state==SIM_READY || state==SIM_TERMINATED || state==SIM_ERROR);
+    ASSERT(simstate==SIM_NEW || simstate==SIM_READY || simstate==SIM_TERMINATED || simstate==SIM_ERROR);
 
     // print banner into main window
     if (opt_use_mainwindow)
@@ -488,7 +498,7 @@ void TOmnetTkApp::finishSimulation()
         displayError(e);
         delete e;
     }
-    state = SIM_FINISHCALLED;
+    simstate = SIM_FINISHCALLED;
 
     updateSimtimeDisplay();
     updateNextModuleDisplay();
@@ -507,11 +517,11 @@ void TOmnetTkApp::newNetwork(const char *network_name)
     try
     {
         // finish & cleanup previous run if we haven't done so yet
-        if (state!=SIM_NONET)
+        if (simstate!=SIM_NONET)
         {
             simulation.endRun();
             simulation.deleteNetwork();
-            state = SIM_NONET;
+            simstate = SIM_NONET;
         }
 
         // set up new network
@@ -524,13 +534,13 @@ void TOmnetTkApp::newNetwork(const char *network_name)
         simulation.setupNetwork(network, 0);
         startRun();
 
-        state = SIM_NEW;
+        simstate = SIM_NEW;
     }
     catch (cException *e)
     {
         displayError(e);
         delete e;
-        state = SIM_ERROR;
+        simstate = SIM_ERROR;
     }
 
     // update GUI
@@ -545,18 +555,18 @@ void TOmnetTkApp::newRun(int run)
     try
     {
         // finish & cleanup previous run if we haven't done so yet
-        if (state!=SIM_NONET)
+        if (simstate!=SIM_NONET)
         {
             simulation.endRun();
             simulation.deleteNetwork();
-            state = SIM_NONET;
+            simstate = SIM_NONET;
         }
     }
     catch (cException *e)
     {
         displayError(e);
         delete e;
-        state = SIM_ERROR;
+        simstate = SIM_ERROR;
         return;
     }
 
@@ -576,13 +586,13 @@ void TOmnetTkApp::newRun(int run)
     {
         simulation.setupNetwork(network, run_nr);
         startRun();
-        state = SIM_NEW;
+        simstate = SIM_NEW;
     }
     catch (cException *e)
     {
         displayError(e);
         delete e;
-        state = SIM_ERROR;
+        simstate = SIM_ERROR;
     }
 
     // update GUI
@@ -772,7 +782,7 @@ void TOmnetTkApp::updateNextModuleDisplay()
     const char *modulename;
     cSimpleModule *mod;
 
-    if (state!=SIM_NEW && state!=SIM_READY && state!=SIM_RUNNING)
+    if (simstate!=SIM_NEW && simstate!=SIM_READY && simstate!=SIM_RUNNING)
     {
         modulename = "n/a";
         subsc[0]=0;
@@ -913,7 +923,8 @@ void TOmnetTkApp::objectDeleted( cObject *object )
     while (!i.end())
     {
         TInspector *insp = (TInspector *) i();
-        if (insp->getObject() == object)
+        // beware because inspectors are also cObjects...
+        if (insp!=object && insp->getObject()==object)
         {
             insp->hostObjectDeleted();
             delete insp;

@@ -23,7 +23,7 @@
 
 class THistogramWindow : public TInspector
 {
-   public:
+   protected:
       char canvas[64];
    public:
       THistogramWindow(cObject *obj,int typ,const char *geom,void *dat=NULL);
@@ -44,19 +44,26 @@ class CircBuffer
         simtime_t t;
         double value1, value2;
       };
+   protected:
       CBEntry *buf;
-      int size, n, head;
-   CircBuffer( int size );
-   ~CircBuffer();
-   void add(simtime_t t, double value1, double value2);
-   int tail() {return (head-n+1+size)%size;}
+      int siz, n, head;
+   public:
+      CircBuffer( int size );
+      ~CircBuffer();
+      void add(simtime_t t, double value1, double value2);
+      int headPos() {return head;}
+      int tailPos() {return (head-n+1+siz)%siz;}
+      int items() {return n;}
+      int size() {return siz;}
+      CBEntry& entry(int k) {return buf[k];}
 };
 
 class TOutVectorWindow : public TInspector
 {
    public:
+      CircBuffer circbuf;     // buffer to store values
+   protected:
       char canvas[64];        // widget namestr
-      CircBuffer circbuf;    // buffer to store values
 
       // configuration
       enum {DRAW_DOTS, DRAW_BARS, DRAW_PINS, DRAW_SAMPLEHOLD, DRAW_LINES, NUM_DRAWINGMODES};
