@@ -265,13 +265,15 @@ unlink("$outdir/filelist.tmp") if (!debug);
 # now start the real job
 #
 print "transforming to xml...\n" if $verbose;
-runprog("$NEDTOOL -x -e -t -y -m -o $outdir/inputfiles.xml \@$outdir/filelist.txt")==0 || error("error");
+if ($NEDTOOL eq "") {error("nedtool not configured");}
+runprog("$NEDTOOL -x -e -t -y -m -o $outdir/inputfiles.xml \@$outdir/filelist.txt")==0 || error("error invoking nedtool");
 
 if ($screenshots)
 {
     if ($GHOSTSCRIPT ne "")
     {
         print "exporting screenshots in Postscript using GNED...\n" if $verbose;
+        if ($GNED eq "") {error("gned not configured");}
         runprog("$GNED -- -c $outdir -e jpg \@$outdir/filelist.txt >nul")==0 || error("error invoking GNED");
         print "converting Postscript to JPG with Ghostscript...\n" if $verbose;
         foreach $i (glob("$outdir/*.eps"))
@@ -306,6 +308,7 @@ if ($doxytagfile ne "") {
 }
 
 print "applying XSLT stylesheet...\n" if $verbose;
+if ($XSLTPROC eq "") {error("xsltproc not configured");}
 $xsltcommand = "$XSLTPROC".
                " --stringparam outputdir \"".toslash($outdir)."\"".
                " --stringparam imagesxml \"".toslash($imagesxml)."\"".
