@@ -77,6 +77,17 @@ installation. Setup will ask:
    in files that have really CR/LFs on the disk. I recommend you use
    DOS file type.
 
+When selection packages to install, be sure to include the following ones:
+   gcc-g++
+   make
+   bison
+   flex
+   tcltk
+   xorg-x11-base (FIXME is that enough?)
+
+Also, download the BLT source from Sourceforge, untar, build (./configure;make)
+and install (make install) it. FIXME refine description!
+
 The installer will create a `Cygwin bash shell' entry in a folder
 called `Cygnus Solutions' and also a desktop icon called `Cygwin'.
 
