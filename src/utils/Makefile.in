@@ -17,7 +17,7 @@ all: seedtool tcl2c
 	cp opp_makemake $(OMNETPP_BIN_DIR)
 	cp splitvec $(OMNETPP_BIN_DIR)
 	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
-	cd $(OMNETPP_BIN_DIR); ln -s opp_makemake makemake
+	cd $(OMNETPP_BIN_DIR); ln -sf opp_makemake makemake
 
 seedtool : seedtool.cc
 	$(CXX) seedtool.cc -o seedtool
