@@ -511,26 +511,36 @@ to get better results.
 
 The algorithm doesn't move any module which has fixed coordinates.
 Predefined row, matrix, ring or other arrangements (defined
-via the 3rd and further args of the "p=" tag) will be preserved --
-one can think about them as if the those modules were attached
+via the 3rd and further args of the \ttt{"p="} tag) will be preserved --
+you can think about them as if those modules were attached
 to a wooden framework so that they can only move as one unit.
 
-If the full graph is too big after layouting, it is scaled back so that
-it fits on the screen, \textit{unless it contains
-any fixed-position module}. (For obvious reasons: if there's a module
-with manually specified position, we don't want to move that one).
+Caveats:
 
-- Size is ignored by the present layouter, so longish modules (such as
-an Ethernet segment) may produce funny results.
-- Parameters to the layouter algoritm (repulsive/attractive forces,
-number of iterations,random number seed) can be specified in the "l="
-tag to the parent module, but this is experimental and may change.
-Currently parameters (with their default values):
-"l=<repulsion=10>,<attraction=0.3>,<edgelen=40>,<maxiter=200>,<seed>"
-- Tip: to present rescaling, specify a bounding box for the parent
-module module that is large enough, e.g. "b=2000,3000"
+\begin{itemize}
+  \item If the full graph is too big after layouting, it is scaled
+    back so that it fits on the screen, \textit{unless it contains
+    any fixed-position module}. (For obvious reasons: if there's a module
+    with manually specified position, we don't want to move that one).
+    To prevent rescaling, you can specify a sufficiently large bounding
+    box in the background display string, e.g. \ttt{"b=2000,3000"}.
+  \item Size is ignored by the present layouter, so longish modules
+    (such as an Ethernet segment) may produce funny results.
+  \item The algorithm is prone to produce erratic results, especially
+    when the number of submodules is small, or when using predefined
+    (matrix, row, ring, etc) layouts. The "Re-layout" toobar button
+    can then be very useful. Larger networks usually produce
+    satisfactory results.
+\end{itemize}
 
-%FIXME displayString().setTagArg(), bubble() etc here!
+Parameters to the layouter algoritm (repulsive/attractive forces,
+number of iterations,random number seed) can be specified via the
+\ttt{"l="} background display string tag. Its current arguments are
+(with default values):
+\ttt{"l=\textit{<repulsion>}=10,\textit{<attraction>}=0.3,
+\textit{<edgelen>}=40,\textit{<maxiter>}=500,\textit{<rng-seed>}"}.
+The \ttt{"l="} tag is somewhat experimental and its arguments
+may change in further releases.
 
 
 \section{GNED -- Graphical NED Editor}
@@ -618,6 +628,8 @@ create a submodule of that type \\\hline
 \section{Changing the network graphics at run-time}
 
 %FIXME update
+%displayString().setTagArg(), bubble() etc here!
+
 \subsection{Setting display strings}
 
 Sometimes it is useful to change the appearance or position of
