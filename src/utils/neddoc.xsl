@@ -922,6 +922,13 @@
                         <xsl:otherwise><xsl:value-of select="$submodtype1"/></xsl:otherwise>
                      </xsl:choose>
                   </xsl:variable>
+                  <xsl:variable name="alt">
+                     <xsl:choose>
+                        <xsl:when test="$submodtype2"><xsl:value-of select="concat($submodname,': ',$submodtype1,' like ',$submodtype2)"/></xsl:when>
+                        <xsl:otherwise><xsl:value-of select="concat($submodname,': ',$submodtype1)"/></xsl:otherwise>
+                     </xsl:choose>
+                  </xsl:variable>
+
                   <xsl:for-each select="$inputdoc">
                      <xsl:variable name="submodtypenode" select="key('module',$submodtype)"/>
                      <xsl:variable name="url">
@@ -929,7 +936,7 @@
                            <xsl:with-param name="module" select="$submodtypenode"/>
                         </xsl:call-template> 
                      </xsl:variable>
-                     <area shape="rect" coords="{$coords}" href="{$url}" alt="{$submodname}: {$submodtype}"/>
+                     <area shape="rect" coords="{$coords}" href="{$url}" alt="{$alt}"/>
                   </xsl:for-each>
                </xsl:for-each>
             </map>
@@ -942,13 +949,13 @@
    <xsl:param name="module"/>
    <xsl:choose>
       <xsl:when test="count($module)>1">
-         ambiguous-module.html
+         <xsl:text>ambiguous-module.html</xsl:text>
       </xsl:when>
       <xsl:when test="$module">
          <xsl:value-of select="concat($module/@name,'-',generate-id($module),'.html')"/>
       </xsl:when>
       <xsl:otherwise>
-         unknown-module.html
+         <xsl:text>unknown-module.html</xsl:text>
       </xsl:otherwise>
    </xsl:choose>   
 </xsl:template>
