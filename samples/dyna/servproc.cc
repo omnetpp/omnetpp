@@ -87,7 +87,6 @@ void ServerProcess::activity()
     sendDirect(pk, 0, serverOutGate);
 
     ev << "exiting\n";
-    pk->setName("DYNA_DISC_ACK" );
     deleteModule();
 }
 
