@@ -423,7 +423,7 @@ cModuleInterface *cModuleType::moduleInterface()
 //=== cLinkType - member functions
 
 cLinkType::cLinkType(const char *name, cPar *(*d)(), cPar *(*e)(), cPar *(*dr)()) :
-  cObject()
+  cObject(name)
 {
     delayfunc = d;
     errorfunc = e;

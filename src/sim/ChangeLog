@@ -1,3 +1,8 @@
+2003-03-10
+
+	* ctype.cc: fixed bug (introduced in 2.3b1) in cLinkType constructor 
+	which eventually caused NED channels not to work.
+
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
 2003-02-15  Andras Varga
@@ -56,7 +61,7 @@
 	For example, after applying the editbin /stacksize:65536 command to
 	dyna.exe, I was able to successfully run the Dyna sample with 8000
 	Client modules on my Win2K PC with 256M RAM (that means about 12000
-	modules at runtime, inluding about 4000 dynamically created modules.)
+	modules at runtime, including about 4000 dynamically created modules.)
 
 2003-01-22  Andras Varga
 
