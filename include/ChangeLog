@@ -1,3 +1,8 @@
+2004-12-10  Andras Varga
+
+	* csimul.h: added getUniqueNumber(), for generating unique IDs for
+	models
+
 2004-12-08  Andras Varga
 
 	* cenvir.h: added getParameterUseDefault() to support omnetpp.ini's
