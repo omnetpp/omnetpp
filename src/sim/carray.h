@@ -75,8 +75,6 @@ class cBag : public cObject {
 //    By default, cArray stores the pointers of the objects.
 //    If you want it to make an own copy, set takeOwnership().
 
-#define TMPRETT cObject *
-
 class cArray : public cObject {
    private:
         cObject **vect;   // vector of objects
@@ -109,12 +107,12 @@ class cArray : public cObject {
 
         int find(cObject *obj);         // index of an item (-1 if not found)
         int find(char *s);              // index of an item (-1 if not found)
-        TMPRETT get(int m);             // get item by index
-        TMPRETT get(char *s);           // get item by name
+        cObject *get(int m);             // get item by index
+        cObject *get(char *s);           // get item by name
 
-        TMPRETT operator[](int m)      // act as a vector
+        cObject *operator[](int m)      // act as a vector
            {return get(m);}
-        TMPRETT operator[](char *s)    // indexable with name, too
+        cObject *operator[](char *s)    // indexable with name, too
            {return get(s);}
 
         bool exist(int m)               // see if slot m used or not
@@ -122,8 +120,8 @@ class cArray : public cObject {
         bool exist(char *s)             // see if item s exists or not
           {return find(s)!=-1;}
 
-        TMPRETT remove(int m);         // remove item from list
-        TMPRETT remove(char *s);
+        cObject *remove(int m);         // remove item from list
+        cObject *remove(char *s);
 
 };
 
