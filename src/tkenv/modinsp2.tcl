@@ -474,44 +474,6 @@ proc draw_message {c gateptr msgptr msgname {msgkind {}}} {
     }
 }
 
-proc calibrate_animdelay {} {
-
-   # animdelay: holds upper limit for delay `for' loop
-   global animdelay
-
-   # 100ms should be 100000 ticks on a PC -- verify that
-   set t0 [clock clicks]
-   after 100
-   set t1 [clock clicks]
-   set ms100 [expr $t1-$t0]
-   if {$ms100>80000 && $ms100<120000} {set ms100 100000}
-
-
-   # test proc speed: how many "clock clicks" does an empty 4000 loop take?
-   set repeatcount 10
-   while {1} {
-      #puts "dbg: repeatcount=$repeatcount"
-      set ad [expr 4000*$repeatcount]
-      set t0 [clock clicks]
-      for {set i 0} {$i<$ad} {incr i} {}
-      set t1 [clock clicks]
-      #puts "dbg: t0=$t0, t1=$t1"
-      if {$t1!=$t0} break
-      set repeatcount [expr 5*$repeatcount]
-   }
-   set loopticks [expr ($t1-$t0)/$repeatcount]
-   #puts "dbg: loopticks=$loopticks"
-
-   # calc preliminary animdelay from loopticks
-   set animdelay [expr 100*$ms100/$loopticks]
-
-   # empirical correction
-   set animdelay [expr int($animdelay * sqrt($animdelay/100))]
-
-   puts ""
-   puts "Anim-speed calibrated: $animdelay"
-}
-
 proc graphmodwin_animate {win gateptr msgptr msgname msgkind {mode {}}} {
 
     global animdelay fonts
@@ -524,9 +486,14 @@ proc graphmodwin_animate {win gateptr msgptr msgname msgkind {mode {}}} {
     set y1 [lindex $coords 1]
     set x2 [lindex $coords 2]
     set y2 [lindex $coords 3]
-    set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
 
+    # msg will travel at constant speed: $steps proportional to length
+    set len [expr sqrt(($x2-$x1)*($x2-$x1)+($y2-$y1)*($y2-$y1))]
     set steps [expr int($len/2)]
+
+    # alternative approach: fix number of steps. Would this be better?
+    #set steps 20
+
     if {$steps==0} {set steps 1}
 
     set dx [expr ($x2-$x1)/$steps]
@@ -565,6 +532,44 @@ proc graphmodwin_animate {win gateptr msgptr msgname msgkind {mode {}}} {
     if {$mode!="beg"} {
        $c delete $msgptr
     }
+}
+
+proc calibrate_animdelay {} {
+
+   # animdelay: holds upper limit for delay `for' loop
+   global animdelay
+
+   # 100ms should be 100000 ticks on a PC -- verify that
+   set t0 [clock clicks]
+   after 100
+   set t1 [clock clicks]
+   set ms100 [expr $t1-$t0]
+   if {$ms100>80000 && $ms100<120000} {set ms100 100000}
+
+
+   # test proc speed: how many "clock clicks" does an empty 4000 loop take?
+   set repeatcount 10
+   while {1} {
+      #puts "dbg: repeatcount=$repeatcount"
+      set ad [expr 4000*$repeatcount]
+      set t0 [clock clicks]
+      for {set i 0} {$i<$ad} {incr i} {}
+      set t1 [clock clicks]
+      #puts "dbg: t0=$t0, t1=$t1"
+      if {$t1!=$t0} break
+      set repeatcount [expr 5*$repeatcount]
+   }
+   set loopticks [expr ($t1-$t0)/$repeatcount]
+   #puts "dbg: loopticks=$loopticks"
+
+   # calc preliminary animdelay from loopticks
+   set animdelay [expr 100*$ms100/$loopticks]
+
+   # empirical correction
+   set animdelay [expr int($animdelay * sqrt($animdelay/100))]
+
+   puts ""
+   puts "Anim-speed calibrated: $animdelay"
 }
 
 # animate2 is not currently used
