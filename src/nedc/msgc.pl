@@ -730,7 +730,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     print CC "class $msgdescclass : public $msgbasedescclass\n";
     print CC "{\n";
     print CC "  public:\n";
-    print CC "    $msgdescclass(void *p);\n";
+    print CC "    $msgdescclass(void *p=NULL);\n";
     print CC "    virtual ~$msgdescclass();\n";
     print CC "    virtual const char *className() const {return \"$msgdescclass\";}\n";
     print CC "    $msgdescclass& operator=(const $msgdescclass& other);\n";
@@ -750,6 +750,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     print CC "\n";
     print CC "    virtual const char *getFieldStructName(int field);\n";
     print CC "    virtual void *getFieldStructPointer(int field, int i);\n";
+    print CC "    virtual sFieldWrapper *getFieldWrapper(int field, int i);\n";
     print CC "};\n\n";
 
     # register class
@@ -873,12 +874,13 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
         print CC "        return $msgbasedescclass\:\:getArraySize(field);\n";
         print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
     }
+    print CC "    $msgclass *pp = ($msgclass *)p;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++) {
         if ($fisarray{$fieldlist[$i]} && $farraysize{$fieldlist[$i]} ne '') {
             print CC "        case $i: return $farraysize{$fieldlist[$i]};\n";
         } elsif ($fisarray{$fieldlist[$i]} && $farraysize{$fieldlist[$i]} eq '') {
-            print CC "        case $i: return $varsize{$fieldlist[$i]};\n";
+            print CC "        case $i: return pp->$getsize{$fieldlist[$i]}();\n";
         }
     }
     print CC "        default: return 0;\n";
@@ -886,6 +888,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     print CC "}\n";
     print CC "\n";
 
+    # getFieldAsString()
     print CC "bool $msgdescclass\:\:getFieldAsString(int field, int i, char *resultbuf, int bufsize)\n";
     print CC "{\n";
     if ($hasbasedescriptor) {
@@ -916,6 +919,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     print CC "}\n";
     print CC "\n";
 
+    # setFieldAsString()
     print CC "bool $msgdescclass\:\:setFieldAsString(int field, int i, const char *value)\n";
     print CC "{\n";
     if ($hasbasedescriptor) {
@@ -929,7 +933,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     {
         if ($fkind{$fieldlist[$i]} eq 'basic') {
             if ($fisarray{$fieldlist[$i]}) {
-                print CC "        case $i: pp->$setter{$fieldlist[$i]}($fromstring{$fieldlist[$i]}(value),i); return true;\n";
+                print CC "        case $i: pp->$setter{$fieldlist[$i]}(i,$fromstring{$fieldlist[$i]}(value)); return true;\n";
             } else {
                 print CC "        case $i: pp->$setter{$fieldlist[$i]}($fromstring{$fieldlist[$i]}(value)); return true;\n";
             }
@@ -946,6 +950,7 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     print CC "}\n";
     print CC "\n";
 
+    # getFieldStructName()
     print CC "const char *$msgdescclass\:\:getFieldStructName(int field)\n";
     print CC "{\n";
     if ($hasbasedescriptor) {
@@ -965,11 +970,12 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     print CC "}\n";
     print CC "\n";
 
+    # getFieldStructPointer()
     print CC "void *$msgdescclass\:\:getFieldStructPointer(int field, int i)\n";
     print CC "{\n";
     if ($hasbasedescriptor) {
         print CC "    if (field < $msgbasedescclass\:\:getFieldCount())\n";
-        print CC "        return $msgbasedescclass\:\:getFieldStructPointer(field, int i);\n";
+        print CC "        return $msgbasedescclass\:\:getFieldStructPointer(field, i);\n";
         print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
     }
     print CC "    switch (field) {\n";
@@ -988,6 +994,11 @@ while ($msg =~ s/(message|class|struct)\s+(.+?)\s*{(.*?)};?//s)
     print CC "}\n";
     print CC "\n";
 
+    # getFieldWrapper()
+    print CC "sFieldWrapper *$msgdescclass\:\:getFieldWrapper(int field, int i)\n";
+    print CC "{\n";
+    print CC "    return NULL;\n";
+    print CC "}\n";
 }
 
 $crap = $msg;

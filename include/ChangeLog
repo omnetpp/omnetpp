@@ -1,3 +1,8 @@
+2001-10-06 Andras Varga
+
+	* cstruct.h: fixed bugs that came up while testing experimental msg
+        subclassing
+
 2001-09-14 Andras Varga
 
 	* utils.h: added opp_nextrand(long& seed)

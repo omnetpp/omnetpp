@@ -40,6 +40,7 @@ class sFieldWrapper;
  */
 class SIM_API cStructDescriptor : public cObject
 {
+  public:
     /// Field types.
     enum {
         FT_BASIC,         ///< int, long, double, bool, char*, char[]
@@ -50,8 +51,10 @@ class SIM_API cStructDescriptor : public cObject
         FT_STRUCT_ARRAY,  ///< array of FT_STRUCT
         FT_INVALID        ///< invalid type (signals error condition)
     };
-  private:
+
+  protected:
     void *p;
+
   protected:
     // utility functions for converting from/to strings
     static void long2string(long l, char *buf, int bufsize);
@@ -64,20 +67,17 @@ class SIM_API cStructDescriptor : public cObject
     static double string2double(const char *s);
     static void enum2string(long e, const char *enumname, char *buf, int bufsize);
     static long string2enum(const char *s, const char *enumname);
+    static void oppstring2string(const opp_string& str, char *buf, int bufsize);
+    static void string2opp_string(const char *s, opp_string& str);
 
   public:
     /** @name Constructors, destructor, assignment. */
     //@{
 
     /**
-     * Constructor.
-     */
-    cStructDescriptor() {}
-
-    /**
      * Constructor. The argument is the client object.
      */
-    cStructDescriptor(void *_p) {p=_p;}
+    cStructDescriptor(void *_p=NULL) {p=_p;}
 
     /**
      * Copy constructor.
@@ -170,6 +170,15 @@ class SIM_API cStructDescriptor : public cObject
     virtual const char *getFieldTypeString(int field) = 0;
 
     /**
+     * Returns the enum name associated with the field. This makes only
+     * sense with integer-type fields (short, int, long, etc.). 
+     * Returns NULL if there's no associated enum.
+     *
+     * @see cEnum
+     */
+    virtual const char *getFieldEnumName(int field) = 0;
+
+    /**
      * Must be redefined in subclasses to return the array size of a field
      * in the client object. If the field is not an array, it should return 0.
      */
@@ -178,30 +187,27 @@ class SIM_API cStructDescriptor : public cObject
     /**
      * Must be redefined in subclasses to return the value of a basic field
      * (of type FT_BASIC(_ARRAY)) in the client object as a string.
+     * Returns true if no error occurred, false otherwise.
      * FIXME: what if called for non-basic fields?
      */
-    virtual void getFieldAsString(int field, int i, char *buf, int bufsize) = 0;
+    virtual bool getFieldAsString(int field, int i, char *buf, int bufsize) = 0;
 
     /**
      * Must be redefined in subclasses to set the value of a basic field
      * (of type FT_BASIC(_ARRAY)) in the client object as a string.
-     * .
+     * Returns true if no error occurred, false otherwise.
      * FIXME: what if called for non-basic fields?
      */
-    virtual void setFieldAsString(int field, int i, char *buf) = 0;
+    virtual bool setFieldAsString(int field, int i, const char *value) = 0;
 
     /**
      * Must be redefined in subclasses to return a wrapper for an
-     * FT_SPECIAL(_ARRAY) field in the client object.
+     * FT_SPECIAL(_ARRAY) field in the client object. There's no corresponding
+     * setFieldWrapper() method -- setting the field value should can take
+     * place via the wrapper object returned here.                              *
+     * Returns NULL if no associated wrapper is defined for this field.
      */
     virtual sFieldWrapper *getFieldWrapper(int field, int i) = 0;
-
-    /**
-     * Must be redefined in subclasses to set an FT_SPECIAL(_ARRAY) field
-     * in the client object via a wrapper.
-     */
-    // FIXME: remove this method? setting can happen via the wrapper!
-    virtual void setFieldWrapper(int field, int i, sFieldWrapper *w) = 0;
 
     /**
      * Must be redefined in subclasses to return the type name of an
@@ -266,7 +272,7 @@ class SIM_API sFieldWrapper
      * Other (more specific) set..() methods will typically need to be added
      * to the class to make it useful.
      */
-    virtual void setAsString(const char *buf) = 0;
+    virtual void setAsString(const char *value) = 0;
 };
 
 #endif

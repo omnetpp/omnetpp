@@ -52,5 +52,7 @@
 #include "cfsm.h"
 #include "protocol.h"
 #include "cenvir.h"
+#include "cenum.h"
+#include "cstruct.h"
 
 #endif
