@@ -219,10 +219,21 @@ void NEDGenerator::doNedfile(NedFileNode *node, const char *indent, bool, const 
 
 void NEDGenerator::doImports(ImportNode *node, const char *indent, bool islast, const char *)
 {
+    // things would probably get simpler if we allowed one filename per "import" directive only...
     appendBannerComment(node->getBannerComment(), indent);
     out << indent << "import ";
-    appendRightComment(node->getRightComment(), indent);
-    generateChildren(node, increaseIndent(indent));
+
+    if (node->getNumChildrenWithTag(NED_IMPORTED_FILE)==1)
+    {
+        ImportedFileNode *importedFile = dynamic_cast<ImportedFileNode *>(node->getFirstChildWithTag(NED_IMPORTED_FILE));
+        out << indent << "\"" << importedFile->getFilename() << "\";";
+        appendRightComment(importedFile->getRightComment(), indent);
+    }
+    else
+    {
+        appendRightComment(node->getRightComment(), indent);
+        generateChildren(node, increaseIndent(indent));
+    }
 }
 
 void NEDGenerator::doImport(ImportedFileNode *node, const char *indent, bool islast, const char *)
@@ -315,7 +326,7 @@ void NEDGenerator::doParams(ParamsNode *node, const char *indent, bool islast, c
 void NEDGenerator::doParam(ParamNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
-    out << indent << node->getName() << " : " << node->getDataType();
+    out << indent << node->getName() << ": " << node->getDataType();
     if (islast || newsyntax) {
         out << ";";
     } else {
