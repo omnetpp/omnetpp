@@ -349,6 +349,7 @@ EOT
 
 fi
 
+if [ "$cfgfile" = "" ]; then
 cat <<EOT
 
 # User interface libs
@@ -369,6 +370,7 @@ NEDCOPTS=\$(CFLAGS) \$(NEDCFLAGS) \$(INCLUDE_PATH) -I\$(OMNETPP_INCL_DIR)
 #------------------------------------------------------------------------------
 
 EOT
+fi
 
 if [ "$dirs" != "" ]; then
     subdirsphony=subdirs-phony
