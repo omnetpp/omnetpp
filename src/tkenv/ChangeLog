@@ -20,7 +20,7 @@
 	Added [Tkenv]/show-bubbles=true/false omnetpp.ini entry.
 	TBD bubble() drawing could be a bit faster (too much Tcl code)
 
-	* added anum speed slider in main dialog and graphical module inspector
+	* added anim speed slider in main dialog and graphical module inspector
 
 2004-01-06  Andras Varga
 

@@ -7,9 +7,6 @@
 
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
-TBD break up ctypes.cc?
-TBD cGate::disconnect()
-
 2004-01-09  Andras Varga
 
 	* cenvir.h: added bubble() to cEnvir
