@@ -308,6 +308,13 @@ foreach $i (@objs)
     $i =~ s/\.$ccext/.obj/g;
 }
 
+@generatedheaders = glob("*.msg");
+foreach $i (@generatedheaders)
+{
+    $i =~ s/\.msg/_m.h/g;
+}
+
+
 #
 # now the Makefile creation
 #
@@ -413,6 +420,12 @@ $objs = join(" ", @objs);
 print OUT "# object files in this directory\n";
 print OUT "OBJS= $objs\n";
 print OUT "\n";
+
+$generatedheaders = join(" ", @generatedheaders);
+print OUT "# header files generated (from msg files)\n";
+print OUT "GENERATEDHEADERS= $generatedheaders\n";
+print OUT "\n";
+
 $subdirs = join(" ", @subdirs);
 print OUT "# subdirectories to recurse into\n";
 print OUT "SUBDIRS= $subdirs\n";
@@ -475,6 +488,12 @@ elsif ($type eq 'o')
 }
 print OUT "\n";
 
+if (@objs != ())
+{
+    print OUT "\$(OBJS) : \$(GENERATEDHEADERS)\n";
+    print OUT "\n";
+}
+
 # rule for Purify
 print OUT "# purify: \$(OBJS) \$(EXTRA_OBJS) $subdirs_target $makefile\n";
 print OUT "# \tpurify \$(CXX) \$(LDFLAGS) \$(OBJS) \$(EXTRA_OBJS) \$(EXT_DIR_OBJS) \$(LIBS) -L\$(OMNETPP_LIB_DIR) \$(KERNEL_LIBS) \$(USERIF_LIBS) \$(SYS_LIBS_PURE) -o \$(TARGET).pure\n";
@@ -492,8 +511,13 @@ if (@extdirtstamps != ()) {
 
 # rules for recursive build
 # simplified because @#$!? microsoft doesn't know about phony targets
-print OUT "subdirs: \$(SUBDIR_TARGETS)";
-print OUT "\n\n";
+print OUT "subdirs: \$(SUBDIR_TARGETS)\n";
+print OUT "\n";
+
+print OUT "generateheaders: \$(GENERATEDHEADERS)\n";
+print OUT "\t-for %%i in ( \$(SUBDIRS) ) do cd %%i && $makecommand generateheaders && cd ..\n";
+print OUT "\n";
+
 foreach $i (@subdirs)
 {
    print OUT "${i}_dir:\n";

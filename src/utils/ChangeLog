@@ -1,3 +1,18 @@
+2004-03-04  Andras Varga
+
+	* opp_makemake, opp_nmakemake: improved dealing with .msg files.
+	To deal with dependencies within a single directory, an
+	   $(OBJS) : $(GENERATEDHEADERS)
+	dependency was added which forces opp_msgc run first. For dealing
+	with multi-directory models, there's a "generateheaders" target
+	which the toplevel makefile can depend on, forcing to generate
+	all _m.h files before actual compilation begins. The toplevel
+	makefile should contain the following dependency then:
+	   subdirs $(OBJS) : generateheaders
+	(It is not good to add this to every makefile, because it'll
+	run too many times, cascading...)
+
+
 2004-03-03  ------ omnetpp-3.0a2 released ------
 
 2004-03-03  Andras Varga

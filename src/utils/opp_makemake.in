@@ -215,6 +215,8 @@ else
 fi
 objs=`echo $objs | sed 's/\*[^ ]*//g; s/[^ ]*_n\.cc//g; s/[^ ]*_m\.cc//g; s/\.ned/_n.o/g; s/\.msg/_m.o/g; s/\.cc/.o/g'`
 
+generatedheaders=`echo *.msg | sed 's/\.msg/_m.h/g'`
+
 #
 # now the Makefile creation
 #
@@ -380,6 +382,10 @@ echo '# object files in this directory'
 echo "OBJS= $objs"
 echo
 
+echo '# header files generated (from msg files)'
+echo "GENERATEDHEADERS= $generatedheaders"
+echo
+
 # include external Makefile fragments here, so that they can override
 # the default target if they want
 if [ ! "$fragments" = "" ]; then
@@ -424,6 +430,12 @@ o)
     echo '	'
     ;;
 esac
+
+if [ "$objs" != "" ]; then
+    echo '$(OBJS) : $(GENERATEDHEADERS)'
+    echo
+fi
+
 echo
 echo 'purify: $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_TSTAMPS)' $subdirs_target 'Makefile'
 echo '	purify $(CXX) $(LDFLAGS) $(OBJS) $(EXTRA_OBJS) $(EXT_DIR_OBJS) $(LIBS) -L$(OMNETPP_LIB_DIR) $(KERNEL_LIBS) $(USERIF_LIBS) $(SYS_LIBS_PURE) -o $(TARGET).pure'
@@ -441,10 +453,15 @@ if [ "$extdirtstamps" != "" ]; then
 fi
 
 # rules for recursive build
-echo ".PHONY: subdirs \$(SUBDIRS)"
+echo '.PHONY: subdirs $(SUBDIRS)'
 echo
 echo 'subdirs: $(SUBDIRS)'
 echo
+
+echo 'generateheaders: $(GENERATEDHEADERS)'
+echo '	for i in $(SUBDIRS); do (cd $$i && $(MAKE) generateheaders); done'
+echo
+
 for i in $subdirs; do
      echo "$i:"
      echo '	cd' $i '&& $(MAKE)'
