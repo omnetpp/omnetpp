@@ -93,7 +93,7 @@ foreach $fnamepatt (@ARGV)
               $comment =~ s|&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gse;
 
               # decode certain HTML tags: <i>,<b>,<br>,...
-              $tags="a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|small|strong|sub|sup|table|td|th|tr|tt|kbd|ul|var";
+              $tags="a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|font|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|small|span|strong|sub|sup|table|td|th|tr|tt|kbd|ul|var";
               $comment =~ s!&lt;(($tags)( [^\n]*?)?)&gt;!<\1>!gsi;
               $comment =~ s!&lt;(/($tags))&gt;!<\1>!gsi;
 
