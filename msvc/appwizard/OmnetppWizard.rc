@@ -104,7 +104,7 @@ END
 
 IDD_CUSTOM1 DIALOGEX 0, 0, 304, 199
 STYLE DS_CONTROL | WS_CHILD | WS_BORDER
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     GROUPBOX        "",IDC_STATIC,100,0,204,196,BS_FLAT
     LTEXT           "Enter description for this project, and add simple modules.",
@@ -122,24 +122,24 @@ BEGIN
     LTEXT           "Description:",IDC_STATIC,111,41,38,8
 END
 
-IDD_EDIT DIALOG DISCARDABLE  0, 0, 186, 151
+IDD_EDIT DIALOG DISCARDABLE  0, 0, 186, 166
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Edit simple module"
 FONT 8, "MS Sans Serif"
 BEGIN
+    LTEXT           "Simple module &name:",IDC_STATIC,7,7,97,8
     EDITTEXT        IDC_SIMPLE_NAME,7,18,104,14,ES_AUTOHSCROLL
-    LTEXT           "Simple module name:",IDC_STATIC,7,7,97,8
+    LTEXT           "&Description:",IDC_STATIC,7,35,38,8
     EDITTEXT        IDC_SIMPLE_DESCRIPTION,7,46,172,52,ES_MULTILINE | 
                     ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN
-    LTEXT           "Description:",IDC_STATIC,7,35,38,8
-    CONTROL         "activity()",IDC_SIMPLE_ACTIVITY,"Button",
-                    BS_AUTORADIOBUTTON,13,116,42,10
-    GROUPBOX        "Use",IDC_STATIC,7,107,85,37
-    CONTROL         "handleMessage()",IDC_SIMPLE_HANDLEMESSAGE,"Button",
-                    BS_AUTORADIOBUTTON,13,128,70,10
-    EDITTEXT        IDC_SIMPLE_STACKSIZE,103,124,76,14,ES_AUTOHSCROLL | 
+    CONTROL         "&activity()",IDC_SIMPLE_ACTIVITY,"Button",
+                    BS_AUTORADIOBUTTON,14,118,42,10
+    GROUPBOX        "Use",IDC_STATIC,7,106,172,53
+    CONTROL         "&handleMessage()",IDC_SIMPLE_HANDLEMESSAGE,"Button",
+                    BS_AUTORADIOBUTTON,13,143,70,10
+    LTEXT           "&Stack size in bytes:",IDC_STATIC,29,129,62,8
+    EDITTEXT        IDC_SIMPLE_STACKSIZE,95,127,76,14,ES_AUTOHSCROLL | 
                     ES_NUMBER
-    LTEXT           "Stack size in bytes:",IDC_STATIC,103,113,62,8
     DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
 END
@@ -208,7 +208,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 179
         TOPMARGIN, 7
-        BOTTOMMARGIN, 144
+        BOTTOMMARGIN, 159
     END
 END
 #endif    // APSTUDIO_INVOKED
