@@ -43,12 +43,13 @@ int newRun_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getIniSectionNames_cmd(ClientData, Tcl_Interp *, int, const char **);
 int createSnapshot_cmd(ClientData, Tcl_Interp *, int, const char **);
 int exitOmnetpp_cmd(ClientData, Tcl_Interp *, int, const char **);
+
 int oneStep_cmd(ClientData, Tcl_Interp *, int, const char **);
 int run_cmd(ClientData, Tcl_Interp *, int, const char **);
+int oneStepInModule_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setRunMode_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setRunUntil_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setRunUntilModule_cmd(ClientData, Tcl_Interp *, int, const char **);
-int oneStepInModule_cmd(ClientData, Tcl_Interp *, int, const char **);
 int rebuild_cmd(ClientData, Tcl_Interp *, int, const char **);
 int startAll_cmd(ClientData, Tcl_Interp *, int, const char **);
 int finishSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -115,10 +116,10 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_exitomnetpp",      exitOmnetpp_cmd    }, // args: -
    { "opp_onestep",          oneStep_cmd        }, // args: -
    { "opp_run",              run_cmd            }, // args: ?fast? ?timelimit?
+   { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <inspectorwindow>
    { "opp_set_run_mode",     setRunMode_cmd     }, // args: fast|normal|slow|express
    { "opp_set_run_until",    setRunUntil_cmd    }, // args: <timelimit> <eventlimit>
    { "opp_set_run_until_module",setRunUntilModule_cmd}, // args: <inspectorwindow>
-   { "opp_onestepinmodule",  oneStepInModule_cmd}, // args: <inspectorwindow>
    { "opp_rebuild",          rebuild_cmd        }, // args: -
    { "opp_start_all",        startAll_cmd       }, // args: -
    { "opp_finish_simulation",finishSimulation_cmd}, // args: -
@@ -752,6 +753,8 @@ int getSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       sprintf(buf,"%u", app->opt_updatefreq_fast);
    else if (0==strcmp(argv[1], "updatefreq_express"))
       sprintf(buf,"%u", app->opt_updatefreq_express);
+   else if (0==strcmp(argv[1], "expressmode_autoupdate"))
+      sprintf(buf,"%d", app->opt_expressmode_autoupdate);
    else
       return TCL_ERROR;
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
@@ -801,6 +804,8 @@ int setSimOption_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv
       app->opt_updatefreq_fast = atoi(argv[2]);
    else if (0==strcmp(argv[1], "updatefreq_express"))
       app->opt_updatefreq_express = atoi(argv[2]);
+   else if (0==strcmp(argv[1], "expressmode_autoupdate"))
+      app->opt_expressmode_autoupdate = (argv[2][0]!='0');
    else
       return TCL_ERROR;
    return TCL_OK;

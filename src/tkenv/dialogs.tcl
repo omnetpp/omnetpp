@@ -163,7 +163,7 @@ proc inspectfromlistbox {title text type fillistbox_args} {
     destroy $w
 }
 
-proc display_stopdialog {mode} {
+proc display_stopdialog {} {
     # Create a dialog that can be used to stop a running simulation
     global opp fonts
 
@@ -178,23 +178,23 @@ proc display_stopdialog {mode} {
     wm protocol $w WM_DELETE_WINDOW {opp_stopsimulation}
     # bind $w <Visibility> "raise $w"  ;# Keep modal window on top -- not good! (obscures error dialogs)
 
-    button $w.stopbutton  -text {STOP!} -background red -activebackground red \
-          -borderwidth 6 \
-          -font $fonts(big)  \
-          -command {opp_stopsimulation}
-    if {$mode == "with_update"} {
-       button $w.updatebutton  -text {Update object inspectors} \
-          -borderwidth 3 \
-          -command {opp_updateinspectors}
-       pack $w.stopbutton -fill both -expand 1 -side top
-       pack $w.updatebutton -fill x -side bottom
-    } else {
-       pack $w.stopbutton -fill both -expand 1
-    }
+    button $w.stopbutton  -text "STOP!" -background red -activebackground red \
+          -borderwidth 6 -font $fonts(big) -command {opp_stopsimulation}
+    checkbutton $w.autoupdate -text "auto-update inspectors" -variable opp(autoupdate) -command "stopdialog_autoupdate $w"
+    button $w.updatebutton  -text "  Update now  " -borderwidth 1 -command {opp_updateinspectors}
+    #grid $w.stopbutton  -               -sticky news -padx 4 -pady 3
+    #grid $w.autoupdate  $w.updatebutton -sticky news -padx 4 -pady 3
+
+    grid $w.stopbutton   -sticky news -padx 4 -pady 3
+    grid $w.autoupdate   -sticky nes -padx 4 -pady 0
+    grid $w.updatebutton -sticky nes -padx 4 -pady 3
 
     bind $w <Return> "opp_stopsimulation"
     bind $w <Escape> "opp_stopsimulation"
     bind $w <F8>     "opp_stopsimulation"
+
+    set opp(autoupdate) [opp_getsimoption expressmode_autoupdate]
+    stopdialog_autoupdate $w
 
     # 2. Center window
     center $w
@@ -205,6 +205,17 @@ proc display_stopdialog {mode} {
     set opp(oldGrab) [grab current $w]
     grab $w
     focus $w.stopbutton
+}
+
+proc stopdialog_autoupdate {w} {
+    global opp
+    if {$opp(autoupdate)} {
+        opp_setsimoption expressmode_autoupdate 1
+        $w.updatebutton config -state disabled
+    } else {
+        opp_setsimoption expressmode_autoupdate 0
+        $w.updatebutton config -state normal
+    }
 }
 
 proc remove_stopdialog {} {

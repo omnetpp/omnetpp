@@ -40,6 +40,7 @@ proc save_tkenvrc {{fname ".tkenvrc"}} {
             bubbles
             animation_speed
             bkpts_enabled
+            expressmode_autoupdate
         } {
             set value [opp_getsimoption $key]
             puts $fout "option $key\t{$value}"

@@ -92,6 +92,7 @@ class TOmnetTkApp : public TOmnetApp
       int  opt_updatefreq_fast;    // FastRun updates display every N events
       int  opt_updatefreq_express; // RunExpress updates display every N events
       unsigned opt_extrastack;     // per-module extra stack
+      bool opt_expressmode_autoupdate;// update inspectors at every display refresh in EXPRESS mode or not
 
       // state variables
       bool animating;              // while execution, do message animation or not

@@ -6,6 +6,8 @@
 	* menuproc.tcl,dialogs.tcl: added [x] Confirm exit checkbox to 
 	Simulation options dialog
 
+	* dialogs.tcl: express mode "STOP" dialog refined
+
 	* dialogs.tcl: Find dialog improved
 
 2004-02-11  Andras Varga 

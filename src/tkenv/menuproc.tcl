@@ -296,7 +296,7 @@ proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
             .toolbar.fastrun config -relief sunken
         } elseif {$mode=="express"} {
             .toolbar.exprrun config -relief sunken
-            display_stopdialog with_update
+            display_stopdialog
         } elseif {$mode=="notrunning"} {
             .toolbar.until config -relief raised
         } else {
@@ -310,7 +310,7 @@ proc set_gui_for_runmode {mode {modinspwin ""} {untilmode ""}} {
             $w.toolbar.mfast config -relief sunken
             set opp(sunken-run-button) $w.toolbar.mfast
         } elseif {$mode=="express"} {
-            display_stopdialog with_update
+            display_stopdialog
         } elseif {$mode=="notrunning"} {
             .toolbar.until config -relief raised
         } else {

@@ -446,6 +446,7 @@ bool TOmnetTkApp::doRunSimulationExpress()
     // during Tcl_Eval("update"):
     //  - runmode, rununtil_time, rununtil_event, rununtil_module;
     //  - breakpointhit_flag, stopsimulation_flag
+    //  - opt_expressmode_autoupdate
     //
     // EXPRESS does not support rununtil_module!
     //
@@ -470,6 +471,8 @@ bool TOmnetTkApp::doRunSimulationExpress()
                 speedometer.beginNewInterval();
                 updatePerformanceDisplay(speedometer);
             }
+            if (opt_expressmode_autoupdate)
+                updateInspectors();
             Tcl_Eval(interp, "update");
             if (runmode!=RUNMODE_EXPRESS)
                 return true;  // should continue, but in a different mode
@@ -960,6 +963,7 @@ void TOmnetTkApp::readOptions()
     if (opt_animation_speed>2) opt_animation_speed=3;
     opt_print_banners = ini_file->getAsBool( "Tkenv", "print-banners", true );
     opt_use_mainwindow = ini_file->getAsBool( "Tkenv", "use-mainwindow", true );
+    opt_expressmode_autoupdate = ini_file->getAsBool( "Tkenv", "expressmode-autoupdate", true );
 }
 
 void TOmnetTkApp::readPerRunOptions(int run_nr)
