@@ -4,6 +4,7 @@
 // Author: Andras Varga
 //-------------------------------------------------------------
 
+#include <string>
 #include <ctype.h>
 #include <string.h>
 #include <omnetpp.h>
@@ -27,8 +28,7 @@ void Dist::activity()
     const char *excel = par("excel");
     const char *filename = par("file");
 
-    char distname[50];
-    variate.getAsText(distname,50);
+    std::string distname = variate.getAsText();
     ev << "running: " << distname << endl;
 
     // generate histogram
@@ -50,7 +50,7 @@ void Dist::activity()
     char buf[500];
     if (filename[0]=='\0')
     {
-        strcpy(buf, distname);
+        strcpy(buf, distname.c_str());
         for (char *s=buf; *s; s++)
            if (!isalnum(*s) && *s!='(' && *s!=')' && *s!=',' && *s!='-' && *s!='+')
                *s='_';
@@ -74,7 +74,7 @@ void Dist::activity()
 
     // next line is for Tkenv, so that one can inspect the histogram
     wait(1.0);
-    
+
     delete h;
 }
 
