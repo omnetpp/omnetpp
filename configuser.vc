@@ -16,7 +16,7 @@
 OMNETPP_ROOT=d:/home/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-2.3
+OMNETPP_VERSION=omnetpp-3.0pre1
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
