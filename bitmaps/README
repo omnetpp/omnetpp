@@ -1,0 +1,4 @@
+This directory MUST NOT contain a file named 'proc.gif' or 'proc.xbm'!
+
+The existence of an image named 'proc' apparently screws up the 
+tk_messageBox function somehow (Tk8.0p2).
