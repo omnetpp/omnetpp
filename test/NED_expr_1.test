@@ -1,6 +1,5 @@
 %description:
-**EXPERIMENTAL TEST**
-Test oparators and precedence in NED.
+Test oparators in NED.
 
 %file: {}.ned
 
@@ -27,7 +26,7 @@ network {net}: {Simple}
       p07 = 12 ^ 3,  // power of
       p08 = 12 * 3,  // multiply
       p09 = 12 / 3,  // divide
-      p10 = 12 % 3,  // modulus
+      p10 = 12 % 5,  // modulus
       p11 = 12 + 3,  // add
       p12 = 12 - 3,  // subtract
 
@@ -95,7 +94,7 @@ Define_Module({Simple});
 void {Simple}::activity()
 {
     for (int i=0; i<params(); i++)
-        ev << par(i).name() << "=" << par(i) << endl;
+        ev << par(i).name() << "=" << (double)par(i) << endl;
 }
 
 %inifile: {}.ini
@@ -103,4 +102,51 @@ void {Simple}::activity()
 network={net}
 
 %contains: stdout
-
+p00=-3
+p01=-5
+p02=0
+p03=1
+p04=1
+p05=0
+p06=-4
+p07=1728
+p08=36
+p09=4
+p10=2
+p11=15
+p12=9
+p13=40
+p14=2
+p15=2
+p16=11
+p17=9
+p18=0
+p19=1
+p20=1
+p21=0
+p22=1
+p23=0
+p24=0
+p25=1
+p26=0
+p27=1
+p28=0
+p29=1
+p30=0
+p31=0
+p32=1
+p33=1
+p34=1
+p35=0
+p36=0
+p37=0
+p38=1
+p39=1
+p40=1
+p41=0
+p42=0
+p43=1
+p44=1
+p45=0
+p46=5
+p47=2
