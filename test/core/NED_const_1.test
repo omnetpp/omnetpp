@@ -1,0 +1,42 @@
+%description:
+Test that const parameters in NED are really converted to constant.
+
+%file: {}.ned
+
+simple {Simple}
+   parameters:
+      p0:const, p1:const, p2:const, p3:const;
+endsimple
+
+network {network}: {Simple}
+   parameters:
+      p0 = truncnormal(10,3),
+      p1 = 1+truncnormal(10,3),
+      p2 = exponential(1),
+      p3 = 1+exponential(1);
+endnetwork
+
+%file: {}.cc
+
+#include <omnetpp.h>
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+void {Simple}::activity()
+{
+    for (int i=0; i<params(); i++)
+        ev << par(i).name() << ":" << par(i).type() << endl;
+}
+
+%contains: stdout
+p0:D
+p1:D
+p2:D
+p3:D
+
