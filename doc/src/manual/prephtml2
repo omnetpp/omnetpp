@@ -130,6 +130,19 @@ for ($i=0; $i<$nheadings; $i++)
 }
 
 #
+# find cross-references and associate them with the section
+#
+$html =~ s|(\<A HREF=\"#(.*?)\"\>\[click\]\</A\>)|fix_cross_reference($2)|sgei;
+
+sub fix_cross_reference ()
+{
+      my $txt = shift @_;
+      #$txt =~ s/\<p\>//sg;
+      return "<a href=\"#$txt\">$txt</a>";
+}
+
+
+#
 # create 'chapters' table
 #
 print "creating Topics and TOC tables\n" unless $quiet;
