@@ -5,12 +5,15 @@ Entities are substituted.
 <!ENTITY xrul "xml rulez">
 <!ELEMENT foo ANY>
 <!ELEMENT bar ANY>
+<!ATTLIST bar
+   att   CDATA  #IMPLIED
+>
 
 %file: {}.xml
 <?xml version="1.0" ?>
 <!DOCTYPE foo SYSTEM "./{}.dtd">
 <foo>
-    <bar>Hey, &xrul;!</bar>
+    <bar att="&xrul;!">Hey, &xrul;!</bar>
 </foo>
 
 %activity:
@@ -18,4 +21,4 @@ cXMLElement *node = ev.getXMLDocument("{}.xml");
 node->debugDump();
 
 %contains: stdout
-<bar>Hey, xml rulez!</bar>
+<bar att="xml rulez!">Hey, xml rulez!</bar>
