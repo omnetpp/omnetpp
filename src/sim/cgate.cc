@@ -347,7 +347,7 @@ bool cGate::isRouteOK()
 
 const char *cGate::displayString()
 {
-    if (!dispstr.isEmpty())
+    if ((const char *)dispstr == NULL)
         return dispstr;
 
     // no hardcoded display string -- try to get it from Envir

@@ -172,19 +172,12 @@ void opp_terminate(const char *msg,...); // same w/ custom message
 //   Recommended use: as class member, where otherwise the class members
 //   would have to call opp_strdup() and 'delete' for a 'char *' ptr.
 //
-//   It is intentionally kept very simple: it is usable wherever char* is
-//   needed. Moreover, only the char* is stored so opp_string is even
-//   'binary compatible' with a char*.
-//
-//   To keep this property, DO NOT add any other DATA members or
-//   any VIRTUAL functions.
-//
 //   Example usage:
 //      opp_string a, opp_string b("foo");
 //      a = "bar";
 //      a = b;
-//      char *s = a;
-//      printf("string: `%s'\n", (char *)a );
+//      const char *s = a;
+//      printf("string: `%s'\n", (const char *)a );
 //
 class opp_string
 {
@@ -199,7 +192,6 @@ class opp_string
                                {delete str;str=opp_strdup(s);return str;}
     opp_string& operator=(opp_string& s)
                                {delete str;str=opp_strdup(s.str);return *this;}
-    bool isEmpty()             {return str!=0;}
 };
 
 //==========================================================================

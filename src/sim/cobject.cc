@@ -113,11 +113,11 @@ cObject::cObject()
           firstchildp = NULL;
 }
 
-cObject::cObject(const char *name_str)
+cObject::cObject(const char *name)
 {
     DETERMINE_STORAGE();
     tkownership = TRUE;
-    namestr = opp_strdup( name_str );
+    namestr = opp_strdup( name );
 
     ownerp = NULL;
     setOwner( defaultOwner() );
@@ -125,10 +125,10 @@ cObject::cObject(const char *name_str)
           firstchildp = NULL;
 }
 
-cObject::cObject(const char *name_str, cObject *ownerobj)
+cObject::cObject(const char *name, cObject *ownerobj)
 {
     DETERMINE_STORAGE();
-    namestr = opp_strdup( name_str );
+    namestr = opp_strdup( name );
     tkownership = TRUE;
 
     ownerp = NULL;
@@ -230,7 +230,7 @@ void cObject::destructChildren()
 
 const char *cObject::fullPath()
 {
-     static char buf[512]; // should be enough because there's no check!!!
+     static char buf[1024]; // should be enough because there's no check!!!
      if (owner()==NULL)
         strcpy( buf, fullName() );
      else
