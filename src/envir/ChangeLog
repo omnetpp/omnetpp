@@ -1,0 +1,186 @@
+#72  Dec 1, 1996
+   - fixed linker problem (undefined symbol `TSlaveApp::TSlaveApp(...)'
+   - changed copyright message
+#79  Feb 28, 1997
+  - adopted to sim105 & 'multiple runs' bug fixed
+  - ini file warning changed from ev.printfmsg() to ev.printf()
+#80  Mar 6, 1997
+  - new cInifile members: getAs..2()
+  - better ini file warnings
+  - gen1_seed=, gen2_seed= etc entries added; not complete
+#81  Mar 6, 1997
+  - gen1_seed=, gen2_seed= etc entries finished;
+  - starting_seeds table added
+  - TOmnetApp::setOptions() renamed to makeOptionsEffective()
+#82  Mar 8, 1997
+#83  Mar 10, 1997
+  - small modifications
+#84  Mar 15, 1997
+  - pvm stuff (cSlaveApp) modified
+#85  Mar 16, 1997
+  - Style of ini file [Machines] section changed from:
+      whale.hit.bme.hu = node1, node2
+      dolphin.hit.bme.hu = node3
+    to:
+      node1 = whale.hit.bme.hu
+      node2 = whale.hit.bme.hu
+      node3 = dolphin.hit.bme.hu
+#86  Mar 21, 1997
+  - changes on PVM stuff. *** COMPATIBLE WITH SIM122 OR UP ***
+     '-s' flag replaced with call to is_started_as_master()
+     more error checks
+  - copyright msg modified
+#87  Mar 24, 1997
+  - file logging added to TSlaveApp ("slaveapp.log")
+  - bugfixes
+#87a Apr 1, 1997
+  - fmt of ini file warnings changed
+#88 Apr 6, 1997
+  - cEnvir::messagedelivered() added
+  - STARTUPERROR_MODE stuff added
+  - compatible with: sim127
+#89 Apr 11, 1997
+  - opt_helponly stuff (-h command-line option) moved to cmdenv package
+#90 Apr 22, 1997
+  - stepmode renamed to pause_in_sendmsg (compatibility: sim130 and above)
+#91 Jun 26, 1997
+  - enable_modmsgs flag added. If set to FALSE, makes ev.printf() and
+    ev.puts() return immediately without doing anything.
+    Motivation was to decrease overhead when running the simulation
+    at full speed and module messages are not needed.
+#92 Jun 27, 1997
+  - enable_modmsgs changed to disable_tracing
+  - main stack enlarged from 16K to 32K (cenvir.cc)
+#93 Jul 1, 1997
+  - printing tons of "genXX-seed=..." ini warnings suppressed
+  - handling of boolean ini file entries improved
+#94 Jul 6, 1997
+  - fixed a bug that caused segmentation fault if there was an error during
+    system setup
+#95 Jul 10, 1997
+  - makefile hacked upon to make it edible for Cygnus gcc
+#96 Jul 20, 1997
+  Ini file reader improved; '#' as well as ';' can be used for comments
+  Improvements on distributed execution:
+  - ini file options added to enable logging of messages produced by slaves:
+       [Slaves]
+       write-slavelog = true/false
+       slavelog-file = slave.log
+    Output between TSlaveApp creation and ini file processing is written in
+    the file "slave.log".
+  - changed TOmnetApp::foreignputs()
+#97 Jul 31, 1997
+  - a bug introduced in #96 fixed
+  - [General]/number-of-runs= ini file setting was removed; its place is
+    taken by [Cmdenv]/runs-to-execute=
+  - added: cInifileSectionIterator
+  - compatible with: cmdenv87 and up
+#98 Aug 4, 1997
+  - fixed a bug with reporting how many rnd gens were initialized from table
+  - [Slaves]/module-messages= flag added; works similarly to Cmdenv's.
+    Default value is NO: module messages from slaves do not appear on console.
+#99 Aug 7, 1997
+  - omnetapp.cc: cNetSimpleMod corrected to cNetMod
+  - compatibility: sim144a or later
+#100 Aug 8, 1997
+  - other [Slaves] options added that control whether different kinds of
+    textual messages should be routed to the console:
+       errmsgs-to-console=
+       infomsgs-to-console=
+       modmsgs-to-console=
+  - updated for sim144c
+#101 Aug 17, 1997
+  - TOTAL_STACK increased to 2Mb
+  - extrastack() support added
+  - new ini file entry: [General]/netif-check-freq=  (default:1)
+  - compatibility: sim146a
+#102 Aug 17, 1997
+  - small bug in ini file reader fixed
+  - readPerRunOptions(1) in TOmnetApp::setup() commented out
+#103 Oct 2, 1997
+  - cleaned up & renamed several member functions; compatible with sim147
+#104 Oct 6, 1997
+  - further renaming; compatible with sim148
+#105 Oct 10, 1997
+  - added endl to cenvir.h. Example: ev << "Hello!" << endl;
+#106 Dec 13, 1997
+  - for clarity, section name [All runs] changed to [Parameters]
+#107 Feb 15, 1998
+  - makefile made compatible with configure script; envir.a-->libenvir.a
+#108 March 26, 1998
+  - use of gets() eliminated
+#109 April 27, 1998
+  - new ini file option: [General] / total-stack-kb=
+    Holds the total stack size (in KB) needed by module coroutines.
+  - makefile can now create shared object (libenvir.so)
+  - support for dynamic loading of libraries: -l command line option.
+    `foo -l ./token.so' (if `foo' is an OMNeT++ executable) will now
+    load the token.so file at startup.
+#110 May 11, 1998
+  - multiple -f and -l options: several ini files and libraries can be loaded
+    (If you want to do several simulation runs with their parameters
+     in separate files, multiple -f will be very useful!)
+  - ini files can include each other. Syntax:
+      ...
+      include second.ini
+      ...
+  - wildcard parameters in ini files. Like:
+      [Parameters]
+      net.station[*].gen_rate=100
+    Wildcard characters are: * ?, and {} for range (using the conventional
+    [] would be very inconvenient because they would interfere with vector
+    indices).
+#111 May 12, 1998
+  - bugfixes
+#112 May 20, 1998
+  - `ev << ..' conversions for doubles changed
+#113 June 9, 1998
+  - new ini file option: output-scalar-file= (in [General] or [Run-nn] section)
+    (supported from sim162 up)
+#114 June 18, 1998
+  - opt_inifile_name bug fixed
+#115 June 19,1998
+  - call to simulation.setup() added to TOmnetApp.setup()
+#116 June 24,1998
+  - modifications to cinifile.cc
+  - return value of TOmnetApp::askYesNo changed from bool to int (-1==cancel)
+  - other small fixes
+#117 July 10, 1998
+  - main stack size increased to 64K
+  - new ini file option: [General]/load-libs=
+#118 July 15, 1998
+  - small fixes
+#119 July 20, 1998
+  Improved cIniFile: wildcards understood in keys; keys may contain whitespace
+  Support for output vector configuration from ini file
+  - getOutVectorConfig() added to cEnvir and TOmnetApp classes
+  - output vector config is taken from [OutVectors] or [Run nn] section.
+    Syntax:
+      module.vectorname.enabled=yes/no
+      module.vectorname.interval=10s..30s
+    Output vectors are enabled by default.
+#120 July 24, 1998
+  - getDisplayString() added to cEnvir and TOmnetApp classes
+  - display strings now can be taken from [DisplayStrings] or [Run nn]
+    section of the ini file (hardcoded display strings take precendence
+    over the ones in the ini file)
+  - cIniFile edited -- getRaw() added
+#121 August 12, 1998
+  - Borland C++ 5.0 project file added
+  - cenvir.h move to sim/
+  - small fixes
+#122 August 14, 1998
+  - makefile fix
+#123 August 17, 1998
+  - fixed a bug with output vector config
+#123 August 17, 1998
+  - fixed a bug with output vector config
+#124 Dec 27, 1998
+  - fixed bug in inifile reader
+  - DYNAMIC_LINKAGE config flag renamed to USE_DLOPEN
+  - makefile renamed to makefile.in
+  - runningModule() corrected to contextModule in slaveapp.cc
+#125 Jan 25, 1999
+  - updated for sim172d
+#126 Feb 9, 1999
+  - updated for sim174
