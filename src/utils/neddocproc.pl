@@ -39,9 +39,9 @@ foreach $fnamepatt (@ARGV)
         #
         # process comments
         #
-        while ($html =~ s|\<pre class="(comment)">(.*?)\</pre\>|@bingo@|s ||
-               $html =~ s|\<span class="(comment)">(.*?)\</span\>|@bingo@|s ||
-               $html =~ s|\<span class="(briefcomment)">(.*?)\</span\>|@bingo@|s)
+        while ($html =~ s|\<pre class="(comment)">(.*?)\</pre\>|\@bingo\@|s ||
+               $html =~ s|\<span class="(comment)">(.*?)\</span\>|\@bingo\@|s ||
+               $html =~ s|\<span class="(briefcomment)">(.*?)\</span\>|\@bingo\@|s)
         {
               # process comment
               $class = $1;
@@ -106,13 +106,13 @@ foreach $fnamepatt (@ARGV)
               $comment =~ s!\b($names)\b!'<a href="'.$htmlfile{$1}.'">'.$1.'</a>'!gse;
 
               # put comment back
-              $html =~ s/@bingo@/$comment/s;
+              $html =~ s/\@bingo\@/$comment/s;
         }
 
         #
         # syntax-highlight source
         #
-        while ($html =~ s|\<pre class="src">(.*?)\</pre\>|@bingo@|s)
+        while ($html =~ s|\<pre class="src">(.*?)\</pre\>|\@bingo\@|s)
         {
               # process comment
               $src = $1;
@@ -158,7 +158,7 @@ foreach $fnamepatt (@ARGV)
               #$src =~ s|\<span.*?</?span|span|g;
 
               # put comment back
-              $html =~ s|@bingo@|\<pre\>$src\</pre\>|s;
+              $html =~ s|\@bingo\@|\<pre\>$src\</pre\>|s;
         }
 
         #
