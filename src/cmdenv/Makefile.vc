@@ -20,7 +20,7 @@ all: cmdenv$(LIB_SUFFIX)
 cmdenv.lib : $(OBJS)
 	$(AR) /nologo /out:cmdenv.lib $(OBJS)
 
-cmdenv.dll : $(OBJS)
+cmdenv.dll : $(OBJS) $(LIBS)
 	$(SHLIB_LD) /nologo /out:cmdenv.dll /implib:cmdenv.ilib $(OBJS) $(LIBS)
 
 cmdenv.obj : cmdenv.cc

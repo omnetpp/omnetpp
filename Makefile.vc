@@ -51,7 +51,7 @@ samples: $(SAMPLES)
 
 # fixme: ilib only needed if dlls are to be built
 ilib:
-	cd /d $(OMNETPP_SRC_DIR:/=\)\sim && $(MAKE) $(MOPTS) $(MAKEFILE) sim_std.ilib
+	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE) envir.ilib
 
 sim:
 	cd /d $(OMNETPP_SRC_DIR:/=\)\sim && $(MAKE) $(MOPTS) $(MAKEFILE)

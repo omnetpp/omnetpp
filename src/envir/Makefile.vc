@@ -20,7 +20,10 @@ all : envir$(LIB_SUFFIX)
 envir.lib : $(OBJS)
 	$(AR) /nologo /out:envir.lib $(OBJS)
 
-envir.dll : $(OBJS)
+envir.ilib : $(OBJS) 
+	- $(SHLIB_LD) /nologo /implib:envir.ilib $(OBJS) 
+
+envir.dll : $(OBJS) $(LIBS)
 	$(SHLIB_LD) /nologo /out:envir.dll /implib:envir.ilib $(OBJS) $(LIBS)
 
 args.obj : args.cc args.h
