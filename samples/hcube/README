@@ -46,5 +46,5 @@ the same gate, then one is deflected: it is sent out thru another gate.
 Packets from the local user (traffic source or generator) can only be
 accepted if there is a free gate left in the given time slot, that is,
 less than d packets need to be routed. The hc_rte.cc file contains the
-HypercubeRte simple module which implements a simple deflection routing
+HCRouter simple module which implements a simple deflection routing
 scheme.
