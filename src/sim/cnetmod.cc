@@ -57,3 +57,40 @@ cNetMod& cNetMod::operator=(cNetMod& other)
     return *this;
 }
 
+bool cNetMod::callInitialize(int stage)
+{
+    // code copied from cSimpleModule...
+
+    int numStages = numInitStages();
+    if (stage < numStages)
+    {
+        // switch to the module's context for the duration of the initialize() call.
+        cModule *oldcontext = simulation.contextModule();
+        simulation.setContextModule( this );
+
+        initialize( stage );
+
+        if (oldcontext)
+            simulation.setContextModule( oldcontext );
+        else
+            simulation.setGlobalContext();
+    }
+    return stage < numStages-1;  // return true if there's more stages to do
+}
+
+void cNetMod::callFinish()
+{
+    // code copied from cSimpleModule...
+
+    cModule *oldcontext = simulation.contextModule();
+    simulation.setContextModule( this );
+
+    finish();
+
+    if (oldcontext)
+        simulation.setContextModule( oldcontext );
+    else
+        simulation.setGlobalContext();
+}
+
+

@@ -939,3 +939,5 @@ Feb 5, 2001
 Feb 6, 2001
  - fix: Makefile.vc: 'clean' target didn't delete object files in std/ and pvm/
 ------ omnetpp-2.0 released ------
+Feb 27, 2001
+ - fixed bug which prevented compiling with PVM
