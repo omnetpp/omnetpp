@@ -38,21 +38,22 @@ puts "DBG: editConnectionProps: dialog doesn't work yet!"
 
     # create "General" page
     label-text  $nb.general.comment "Doc. comments:" 6
-    label-text  $nb.general.rcomment "End-of-line comments:" 2
+    label-text  $nb.general.rcomment "End-line comments:" 2
     pack $nb.general.comment -expand 0 -fill x -side top
     pack $nb.general.rcomment -expand 0 -fill x -side top
 
     # create "Gates" page
+    ConnProps:forLoopEdit $nb.gates.for
     label $nb.gates.lfrom -text  "From:"
     ConnProps:gateSpec $nb.gates.from
     label $nb.gates.lto -text  "To:"
     ConnProps:gateSpec $nb.gates.to
-    label $nb.gates.ldir -text  "Arrow direction in NED:"
+    label $nb.gates.ldir -text  "Arrow direction in NED source:"
     radiobutton $nb.gates.r1 -text "src --> dest" -value 0 -variable tmp(l2r)
     radiobutton $nb.gates.r2 -text "dest <-- src" -value 1 -variable tmp(l2r)
-
     label-entry $nb.gates.condition "Condition:"
 
+    pack $nb.gates.for -expand 0 -fill x -side top
     pack $nb.gates.lfrom  -expand 0 -fill none -side top -anchor w
     pack $nb.gates.from  -expand 0 -fill x -side top
     pack $nb.gates.lto  -expand 0 -fill none -side top -anchor w
@@ -64,13 +65,13 @@ puts "DBG: editConnectionProps: dialog doesn't work yet!"
 
     # create "Attributes" page
     radiobutton $nb.attrs.r1 -text "Predefined channel:" -value 1 -variable tmp(usechannel)
-    label-entry $nb.attrs.channel "Channel name:"
+    label-entry $nb.attrs.channel "  Channel name:"
     radiobutton $nb.attrs.r2 -text "Custom:" -value 0  -variable tmp(usechannel)
-    label-entry $nb.attrs.delay "Prop. delay:"
-    label-entry $nb.attrs.datarate "Data Rate:"
-    label-entry $nb.attrs.error "Bit error rate:"
+    label-entry $nb.attrs.delay "  Prop. delay:"
+    label-entry $nb.attrs.datarate "  Data Rate:"
+    label-entry $nb.attrs.error "  Bit error rate:"
 
-    label $nb.attrs.l -text  "Additional attributes:"
+    label $nb.attrs.l -text  "  Additional attributes:"
     tableEdit $nb.attrs.tbl 10 {
       {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
       {Value              value          {entry $e -textvariable $v -width 20 -bd 1}}
@@ -89,15 +90,9 @@ puts "DBG: editConnectionProps: dialog doesn't work yet!"
     pack $nb.attrs.tbl -side top -pady 4
 
     # fill "Gates" page
-if 0 {
-    $nb.gates.srcgate.e insert 0 $ned($key,srcgate)
-    $nb.gates.destgate.e insert 0 $ned($key,destgate)
+    ConnProps:fillGateSpec $nb.gates.from $key src
+    ConnProps:fillGateSpec $nb.gates.to $key dest
     $nb.gates.condition.e  insert 0 $ned($key,condition)
-    $nb.gates.src_index.e  insert 0 $ned($key,src_index)
-    $nb.gates.dest_index.e  insert 0 $ned($key,dest_index)
-    $nb.gates.src_gate_index.e  insert 0 $ned($key,src_gate_index)
-    $nb.gates.dest_gate_index.e insert 0 $ned($key,dest_gate_index)
-}
 
     # fill "Attributes" page
 if 0 {
@@ -177,27 +172,60 @@ if 0 {
     destroy .connprops
 }
 
+
+proc ConnProps:forLoopEdit {w} {
+    set list {{i=0..1,j=1..5} {i=0..10}}
+    frame $w
+    label $w.l -text "For loop around connection:"
+    combo $w.e $list
+    button $w.c -text "Edit..."
+    pack $w.l -expand 0 -fill none -padx 2 -pady 2 -side left
+    pack $w.e -expand 1 -fill x -padx 2 -pady 2 -side left
+    pack $w.c -expand 0 -fill none -padx 2 -pady 2 -side left
+    $w.e config -text [lindex $list 0]
+}
+
 proc ConnProps:gateSpec {w} {
     frame $w
-    frame $w.m
-    frame $w.g
-    pack $w.m -expand 0 -fill x -side top
-    pack $w.g -expand 0 -fill x -side top
+    frame $w.mod
+    frame $w.gate
+    pack $w.mod -expand 0 -fill x -side top
+    pack $w.gate -expand 0 -fill x -side top
 
     # add "Module ... index [...]" line
-    label $w.m.l1 -text  "   Module "
-    entry $w.m.name -width 20
-    label $w.m.lb -text  " index \["
-    entry $w.m.index -width 8
-    label $w.m.rb -text  "\]"
-    pack $w.m.l1 $w.m.name $w.m.lb $w.m.index $w.m.rb -expand 0 -side left
+    label $w.mod.l1 -text  "  Module:" -anchor w -width 8
+    label $w.mod.name -width 20 -relief sunken -anchor w
+    label $w.mod.lb -text  "  index \["
+    entry $w.mod.index -width 8
+    label $w.mod.rb -text  "\]   "
+    pack $w.mod.l1 -expand 0 -side left -padx 2 -pady 2
+    pack $w.mod.name  -expand 1 -fill x -side left -padx 2 -pady 2
+    pack $w.mod.lb -expand 0 -side left -padx 2 -pady 2
+    pack $w.mod.index -expand 1 -fill x -side left -padx 2 -pady 2
+    pack $w.mod.rb -expand 0 -side left -padx 2 -pady 2
 
     # add "Gate ... index [...]" line
-    label $w.g.l1 -text  "   Gate "
-    entry $w.g.name -width 20
-    button $w.g.gates -text "..."
-    label $w.g.lb -text  " index \["
-    entry $w.g.index -width 8
-    label $w.g.rb -text  "\]"
-    pack $w.g.l1 $w.g.name $w.g.gates $w.g.lb $w.g.index $w.g.rb -expand 0 -side left
+    label $w.gate.l1 -text  "  Gate:" -anchor w -width 8
+    entry $w.gate.name -width 17
+    button $w.gate.c -text "..." -width 3
+    label $w.gate.lb -text  "  index \["
+    entry $w.gate.index -width 8
+    label $w.gate.rb -text  "\]   "
+    pack $w.gate.l1 -expand 0 -side left -padx 2 -pady 2
+    pack $w.gate.name  -expand 1 -fill x -side left -padx 2 -pady 2
+    pack $w.gate.c -expand 0 -side left -padx 0 -pady 2
+    pack $w.gate.lb -expand 0 -side left -padx 2 -pady 2
+    pack $w.gate.index -expand 1 -fill x -side left -padx 2 -pady 2
+    pack $w.gate.rb -expand 0 -side left -padx 2 -pady 2
 }
+
+proc ConnProps:fillGateSpec {w key srcdest} {
+    global ned
+
+    set modkey $ned($key,${srcdest}-ownerkey)
+    $w.mod.name config -text $ned($modkey,name)
+    $w.mod.index insert 0 $ned($key,${srcdest}_index)
+    $w.gate.name insert 0 $ned($key,${srcdest}gate)
+    $w.gate.index insert 0 $ned($key,${srcdest}_gate_index)
+}
+
