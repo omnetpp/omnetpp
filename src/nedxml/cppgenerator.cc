@@ -749,9 +749,9 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
         std::string submodulesize_var = node->getName();
         submodulesize_var += "_size";
 
-        out << indent << "int " << submodulesize_var.c_str() << " = ";
+        out << indent << "int " << submodulesize_var.c_str() << " = (int)(";
         generateItem(vectorsize, indent, mode);
-        out << ";\n";
+        out << ");\n";
 
         out << indent << "_checkModuleVectorSize(" << submodulesize_var.c_str() << ",\"" << submodule_name << "\");\n";
         out << indent << "cModule **" << submodule_var.c_str() << " = new cModule *[" << submodulesize_var.c_str() << "];\n\n";
@@ -929,10 +929,10 @@ void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex,
     out << ", \"" << gatename << "\"";
     if (gateindex)
     {
-        out << ", ";
+        out << ", (int)(";
         generateItem(gateindex, "        ");
     }
-    out << ")";
+    out << "))";
 }
 
 void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const char *indent, int mode)
@@ -1080,14 +1080,13 @@ void NEDCppGenerator::doLoopvar(LoopVarNode *node, const char *indent, int mode,
     ExpressionNode *fromvalue = findExpression(node, "from-value");
     ExpressionNode *tovalue = findExpression(node, "to-value");
 
-    out << indent << "long start = ";
+    out << indent << "long start = (long)(";
     generateItem(fromvalue, indent, mode);
-    out << ";\n";
-    out << indent << "long end = ";
+    out << ");\n";
+    out << indent << "long end = (long)(";
     generateItem(tovalue, indent, mode);
-    out << ";\n";
-    out << indent << "long " << node->getParamName() << "_var;\n";
-    out << indent << "for (" << node->getParamName() << "_var=start; " << node->getParamName() << "_var<=end; " << node->getParamName() << "_var++)\n";
+    out << ");\n";
+    out << indent << "for (long " << node->getParamName() << "_var=start; " << node->getParamName() << "_var<=end; " << node->getParamName() << "_var++)\n";
 }
 
 void NEDCppGenerator::doDisplayString(DisplayStringNode *node, const char *indent, int mode, const char *)

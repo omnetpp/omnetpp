@@ -542,10 +542,10 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
                 ExpressionNode *modindex = (ExpressionNode *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");
                 if (modindex)
                 {
-                    out << "[_checkModuleIndex(";
+                    out << "[_checkModuleIndex((int)(";
                     generateExpressionUsage(modindex,indent);
                     // FIXME modname_size will be undefined here........
-                    out << "," << node->getModule() << "_size,\"" << node->getModule() << "\")]";
+                    out << ")," << node->getModule() << "_size,\"" << node->getModule() << "\")]";
                 }
             }
             out << "->par(\"" << node->getParamName() << "\")";
@@ -567,9 +567,9 @@ void CppExpressionGenerator::doParamref(ParamRefNode *node, const char *indent, 
                 ExpressionNode *modindex = (ExpressionNode *) node->getFirstChildWithAttribute(NED_EXPRESSION,"target","vector-size");
                 if (modindex)
                 {
-                    out << "[_checkModuleIndex(";
+                    out << "[_checkModuleIndex((int)(";
                     generateExpressionUsage(modindex,indent);
-                    out << "," << node->getModule() << "_size,\"" << node->getModule() << "\")]";
+                    out << ")," << node->getModule() << "_size,\"" << node->getModule() << "\")]";
                 }
                 out << "->";
             } else {
