@@ -16,11 +16,11 @@ OMNETPP_VERSION=omnetpp-2.2
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=d:/home/omnetpp
-TK_DIR=d:/tcl
+OMNETPP_ROOT=c:/omnetpp-2.2
+TK_DIR=c:/tcl
 TK_VER=8.2
-PVM_DIR=d:/home/pvm3
-MPI_DIR=d:/home/mpi
+PVM_DIR=c:/pvm3
+MPI_DIR=c:/mpi
 
 #
 # other directories & files based on the base dirs
@@ -84,10 +84,10 @@ LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /inc
 CFLAGS_RELEASE=/nologo /ML /O2 /D "NDEBUG" /FD /Zm150
 LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
 
-CFLAGS=$(CFLAGS_DEBUG)
-LDFLAGS=$(LDFLAGS_DEBUG)
-# CFLAGS=$(CFLAGS_RELEASE)
-# LDFLAGS=$(LDFLAGS_RELEASE)
+#CFLAGS=$(CFLAGS_DEBUG)
+#LDFLAGS=$(LDFLAGS_DEBUG)
+CFLAGS=$(CFLAGS_RELEASE)
+LDFLAGS=$(LDFLAGS_RELEASE)
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
