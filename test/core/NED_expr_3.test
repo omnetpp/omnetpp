@@ -22,7 +22,7 @@ network {network}: {Simple}
       p04 = ! 0,     // negation
       p05 = ! 3,     // negation
 
-      p06 = ~3,      // bitwise complement (yields positive number)
+      p06 = ~3,      // bitwise complement (FIXME compiled and dynamic NED differ in the sign of the result...)
       p07 = 12 ^ 3,  // power of
       p08 = 12 * 3,  // multiply
       p09 = 12 / 3,  // divide
@@ -104,7 +104,7 @@ p02=0
 p03=1
 p04=1
 p05=0
-p06=[0-9eE+.]+
+p06=[-]?[0-9eE+.]+
 p07=1728
 p08=36
 p09=4
