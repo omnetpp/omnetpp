@@ -2,8 +2,8 @@
 #
 # Toplevel makefile for OMNeT++ libraries and programs
 #
-# platform: Windows NT, Windows 2000
-# compiler: MSVC 6.0
+# platform: Windows NT, Windows 2000, XP
+# compiler: MSVC 6.0/7.0
 #
 #=====================================================================
 
