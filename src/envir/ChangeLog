@@ -195,4 +195,6 @@ Aug 13, 1999
     the current section header in the including file.
     BUT: section headers in the included file are not propagated back to the
     including file because it could lead to nasty behaviour.
-
+Aug 30, 1999
+  - Fixed a bug in omnetapp.cc which caused bogus reporting in the number
+    of random number generators initialized from table and from ini file

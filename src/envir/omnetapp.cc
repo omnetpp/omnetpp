@@ -297,11 +297,12 @@ void TOmnetApp::readPerRunOptions(int run_nr)
     {
         opt_genk_randomseed[0] = ini_file->getAsInt2( section, "General", "gen0-seed",
                                           starting_seeds[next_startingseed] );
-         // if default value was used, increment next_startingseed
+        // if default value was used, increment next_startingseed
         if (ini_file->error())
+        {
              next_startingseed = (next_startingseed+1)%NUM_STARTINGSEEDS;
-        else
              fromtable++;
+        }
     }
 
     for(int i=1;i<NUM_RANDOM_GENERATORS;i++)
