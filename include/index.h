@@ -122,25 +122,14 @@
  * I have also found the web site
  * <a href="http://www.xycoon.com">http://www.xycoon.com</a> extremely useful.
  *
- * <b>Random number generator</b>
+ * <b>Random number generators</b>
  *
- * OMNeT++ currently has a 31-bit built-in pseudo random number generator (RNG)
- * that gives long int (32-bit) values in the range 1...2^31-2, with
- * a period length of 2^31-2.
+ * OMNeT++ provides several random number generators (streams) and several
+ * random number generator algorithms (default is cMersenneTwister).
+ * RNGs can be configured in omnetpp.ini.
  *
- * The generator is a linear congruential generator (LCG), and uses the method
- * x=(x * 75) mod (2^31-1). The testrand() method can be used
- * to check if the generator works correctly. Required hardware is exactly
- * 32-bit integer arithmetics.
- *
- * OMNeT++ provides several independent random number generators
- * (by default 32; this number is #defined as NUM_RANDOM_GENERATORS in
- * utils.h), identified by numbers. The generator number is usually the gen_nr
- * argument to functions beginning with genk_.
- *
- * Source: Raj Jain: The Art of Computer Systems Performance Analysis
- * (John Wiley & Sons, 1991), pages 441-444, 455.
- *
+ * RNGs are made available via the cRNG interface, and the cModule::rng()
+ * method.
  */
 
 /**

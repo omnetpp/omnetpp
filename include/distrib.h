@@ -22,9 +22,6 @@
 /**
  * @name Continuous distributions
  *
- * Docs is in the group documentation in index.h. Whatever you type here is
- * ignored by Doxygen :-(
- *
  * @ingroup RandomNumbers
  */
 //@{
@@ -244,9 +241,6 @@ SIM_API double pareto_shifted(double a, double b, double c, int rng=0);
 
 /**
  * @name Discrete distributions
- *
- * Docs is in the group documentation in index.h. Whatever you type here is
- * ignored by Doxygen :-(
  *
  * @ingroup RandomNumbers
  */

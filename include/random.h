@@ -27,9 +27,6 @@
 /**
  * @name Random number generation.
  *
- * Docs is in the group documentation in index.h. Whatever you type here is
- * ignored by Doxygen :-(
- *
  * @ingroup RandomNumbers
  */
 //@{

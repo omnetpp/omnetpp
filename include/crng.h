@@ -25,7 +25,11 @@ class cConfiguration;
 
 
 /**
- * Interface for random number generator classes
+ * Interface for random number generator classes.
+ * 
+ * See also cModule::rng().
+ *
+ * @ingroup RandomNumbers
  */
 class SIM_API cRNG : public cPolymorphic
 {
