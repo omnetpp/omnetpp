@@ -159,10 +159,7 @@ else
    TK_CFLAGS=
 fi
 TK_LIBS=
-
-#
-# FIXME add BLT!!!!!
-#
+BLT_LIBS="-lBLT24"
 
 # for MPI
 MPI_CFLAGS=
@@ -388,7 +385,16 @@ else
     fi
 fi
 
-
+#----------------------
+# Check for BLT. $TK_CFLAGS and $TK_LIBS plus $BLT_LIBS should be enough
+#----------------------
+OPP_CHECK_LIB(BLT 2.4, blt.h, Blt_NameOfVector(0), $TK_CFLAGS, $BLT_LIBS $TK_LIBS, blt_ok)
+if test $blt_ok = yes; then
+    HAVE_BLT=yes
+else
+    AC_MSG_WARN([no BLT: Plove and Scalars will not build or work])
+    HAVE_BLT=no
+fi
 
 #----------------------
 # Check for MPI.
@@ -587,7 +593,6 @@ AC_SUBST(HAVE_DLOPEN)
 AC_SUBST(TK_CFLAGS)
 AC_SUBST(TK_LIBS)
 AC_SUBST(HAVE_BLT)
-AC_SUBST(BLT_CFLAGS)
 AC_SUBST(BLT_LIBS)
 AC_SUBST(HAVE_MPI)
 AC_SUBST(MPI_CFLAGS)

@@ -88,19 +88,12 @@ WITH_PARSIM=yes
 #TK_LIBS=
 
 #
-# Compiler and linker options for the BLT extension for Tcl/Tk.
-# BLT is needed by the Scalars, Plove and Tkenv components of OMNeT++.
-# BLT 2.4z is required.
+# BLT is a Tcl/Tk extension needed by the Scalars, Plove and Tkenv components
+# of OMNeT++. BLT 2.4z is required. BLT_LIBS should contain the -l flag
+# for BLT. Default setting is:
+#  BLT_LIBS="-lBLT24"
 #
-# You can explicitly tell 'configure' which compile switches (BLT_CFLAGS)
-# and linker switches (BLT_LIBS) are needed to build an application that
-# links to BLT. Normally these settings are autodetected by 'configure', 
-# so you only need to edit here if autodetection doesn't work.
-#
-# If commented out, the configure script will try to autodetect it
-#
-BLT_CFLAGS=
-BLT_LIBS=-lBLT
+#BLT_LIBS=
 
 #
 # Compiler and linker options for MPI (optional component).

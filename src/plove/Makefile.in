@@ -12,13 +12,11 @@ CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
 
-HAVE_BLT=@HAVE_BLT@
-
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 
 TK_CFLAGS=@TK_CFLAGS@
 TK_LIBS=@TK_LIBS@
-BLT_CFLAGS=@BLT_CFLAGS@
+HAVE_BLT=@HAVE_BLT@
 BLT_LIBS=@BLT_LIBS@
 SYS_LIBS=@SYS_LIBS@
 
@@ -29,8 +27,7 @@ PLOVE_EMBED_SUFFIX=@PLOVE_EMBED_SUFFIX@
 
 ifeq ($(HAVE_BLT),no)
 error: 
-	@echo "*** error: Plove needs BLT -- install it and re-run configure"
-	@exit 1
+	@echo "*** Warning: cannot build Plove -- install BLT and re-run configure!"
 endif
 
 
