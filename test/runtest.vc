@@ -9,10 +9,8 @@ if [ ! -d work ];  then mkdir work; fi
 perl ../bin/opp_test -g -v $TESTFILES || exit 1
 echo
 (
-cd work && \
-perl ../../src/utils/opp_makemake_vc.pl -f -e cc -u cmdenv && \
-cmd /c "..\\make_vc.bat"
-# cmd /c "call ..\\vcvars32.bat && nmake -f makefile.vc" -- this doesn't work for some reason
+(cd work && perl ../../src/utils/opp_makemake_vc.pl -f -e cc -u cmdenv) &&
+cmd /c "vcvars32.bat && cd work && nmake -f makefile.vc"
 ) || exit 1
 echo
 perl ../bin/opp_test -r -v $TESTFILES || exit 1

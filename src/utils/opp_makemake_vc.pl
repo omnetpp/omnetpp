@@ -85,6 +85,10 @@ from other files.
     {
         $outfile = shift @ARGV;
     }
+    elsif ($arg eq '-c' || $arg eq '--configdir')
+    {
+        $cfgdir = shift @ARGV;
+    }
     elsif ($arg eq '-n' || $arg eq '--nolink')
     {
         $type = "o";
@@ -365,7 +369,7 @@ foreach $i (glob("*.ned"))
     print OUT "\n";
 
     print OUT "$c: $i\n";
-    print OUT "\t\$(NEDC) -s _n.$ccext \$(INCLUDE_PATH) $i\n";
+    print OUT "\t\$(NEDC:/=\\) -s _n.$ccext \$(INCLUDE_PATH) $i\n";
     print OUT "\n";
 }
 
