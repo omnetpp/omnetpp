@@ -33,7 +33,7 @@ NO WARRANTY -- see license.\
 proc helpReadme {} {
     global plove_dir
 
-    set fname [file join $plove_dir readme]
+    set fname [file join $plove_dir README]
     if [catch {
         set f [open $fname r]
         set contents [read $f]
