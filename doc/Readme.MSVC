@@ -1,8 +1,7 @@
 Using OMNeT++ with Microsoft Visual C++
 =======================================
 
-This is a HOWTO for OMNeT++ for Microsoft Visual C++.
-This specification is written for Visual C++ 6.0 and OMNeT++ 2.0b4.
+This is a HOWTO for OMNeT++ for Microsoft Visual C++ version 6.0.
 
 Part of this documentation comes from a readme written by Balazs
 KELEMEN (kelemen@sch.bme.hu) in March 2000.
@@ -12,15 +11,21 @@ KELEMEN (kelemen@sch.bme.hu) in March 2000.
 ~~~~~~~~~~~~~~~
 
 You need to have Microsoft Visual Studio, Microsoft Visual C++ 6.0 installed
-your Windows NT 4.0 (or higher).
-  The minimal install requires about 30 Mbytes free space on your hard disk
-to compile OMNeT++ and to install all related packages. (And about +20MB
-temporary space for the downloaded packages and documentations.)
+your system. The minimal install requires about 30 Mbytes free space on your
+hard disk to compile OMNeT++ and to install all related packages.
+(And about +20MB temporary space for the downloaded packages and documentations.)
 
-Win95/98 users:
----------------
-The makefiles don't work on these systems! You have to patch them, see
-Appendix C at the end of this file!
+Win95/98/ME users:
+------------------
+The Makefile.vc file mentioned at several places in this doc is only meant for
+NT4.0 and Win2000.
+
+ *** IF YOU HAVE WIN95/98/ME, YOU SHOULD USE MAKEFILE.98! ***
+
+The reason is that on the latter systems, the shell lacks the power needed to
+write robust makefiles -- Makefile.98 is a dumb version of Makefile.vc, but at
+least it works everywhere. If you're interested in the details, see Appendix C
+at the end of this file!
 
 
 2. Packages to download and install
@@ -73,6 +78,7 @@ You'll probably have to correct the following settings in it:
 
 Then type
     nmake -f Makefile.vc
+(NT/Win2000 only; if you have Win95/98/ME, type nmake -f Makefile.98.)
 This should build the executables and the libraries and copy them to the bin
 and lib subdirectories within the top-level omnetpp directory.
 
