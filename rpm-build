@@ -1,6 +1,23 @@
+#! /bin/sh
+#
+# Script to build OMNeT++ to run in a place different from the build dir.
+#
+
+# make sure we're in the right directory
+if [ ! -f configure ]; then
+    echo '$0: Must be started in the omnetpp directory!" 2>&1
+    exit 1
+fi
+
+# installation dir
+export OMNETPP_INSTALL_ROOT="/usr/local/`cat Version`"
+
+# configure for build local & run in installation dir
 cp rpm-build-cfg configure.user
 ./configure
 make
+
+# reconfigure for final location (installation dir)
 cp rpm-install-cfg configure.user
 ./configure
 
