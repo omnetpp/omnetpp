@@ -55,7 +55,7 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= network_n.obj packet_m.obj app.obj routing.obj
+OBJS= network_n.obj packet_m.obj app.obj   routing.obj
 
 # subdirectories to recurse into
 SUBDIRS= 
@@ -105,7 +105,7 @@ depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
 
 re-makemake:
-	opp_nmakemake_vc -f   #recreate Makefile
+	opp_nmakemake -f -f  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

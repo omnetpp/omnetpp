@@ -55,7 +55,7 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= fddi_mac_n.obj fddi_nets_n.obj fddi_nodes_n.obj fddi_rings_n.obj othermod_n.obj ssm_ifs_n.obj fddi_mac.obj othermod.obj ssm_ifs.obj
+OBJS= fddi_mac_n.obj fddi_nets_n.obj fddi_nodes_n.obj fddi_rings_n.obj othermod_n.obj ssm_ifs_n.obj fddi_mac.obj     othermod.obj  ssm_ifs.obj 
 
 # subdirectories to recurse into
 SUBDIRS= 
@@ -69,50 +69,50 @@ $(TARGET): $(OBJS) $(EXTRA_OBJS)  Makefile.vc
 
 subdirs: $(SUBDIR_TARGETS)
 
-fddi_mac_n.obj: fddi_mac_n.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp fddi_mac_n.cpp
+fddi_mac_n.obj: fddi_mac_n.cc
+	$(CXX) -c $(NEDCOPTS) /Tp fddi_mac_n.cc
 
-fddi_mac_n.cpp: fddi_mac.ned
-	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) fddi_mac.ned
+fddi_mac_n.cc: fddi_mac.ned
+	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) fddi_mac.ned
 
-fddi_nets_n.obj: fddi_nets_n.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp fddi_nets_n.cpp
+fddi_nets_n.obj: fddi_nets_n.cc
+	$(CXX) -c $(NEDCOPTS) /Tp fddi_nets_n.cc
 
-fddi_nets_n.cpp: fddi_nets.ned
-	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) fddi_nets.ned
+fddi_nets_n.cc: fddi_nets.ned
+	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) fddi_nets.ned
 
-fddi_nodes_n.obj: fddi_nodes_n.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp fddi_nodes_n.cpp
+fddi_nodes_n.obj: fddi_nodes_n.cc
+	$(CXX) -c $(NEDCOPTS) /Tp fddi_nodes_n.cc
 
-fddi_nodes_n.cpp: fddi_nodes.ned
-	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) fddi_nodes.ned
+fddi_nodes_n.cc: fddi_nodes.ned
+	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) fddi_nodes.ned
 
-fddi_rings_n.obj: fddi_rings_n.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp fddi_rings_n.cpp
+fddi_rings_n.obj: fddi_rings_n.cc
+	$(CXX) -c $(NEDCOPTS) /Tp fddi_rings_n.cc
 
-fddi_rings_n.cpp: fddi_rings.ned
-	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) fddi_rings.ned
+fddi_rings_n.cc: fddi_rings.ned
+	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) fddi_rings.ned
 
-othermod_n.obj: othermod_n.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp othermod_n.cpp
+othermod_n.obj: othermod_n.cc
+	$(CXX) -c $(NEDCOPTS) /Tp othermod_n.cc
 
-othermod_n.cpp: othermod.ned
-	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) othermod.ned
+othermod_n.cc: othermod.ned
+	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) othermod.ned
 
-ssm_ifs_n.obj: ssm_ifs_n.cpp
-	$(CXX) -c $(NEDCOPTS) /Tp ssm_ifs_n.cpp
+ssm_ifs_n.obj: ssm_ifs_n.cc
+	$(CXX) -c $(NEDCOPTS) /Tp ssm_ifs_n.cc
 
-ssm_ifs_n.cpp: ssm_ifs.ned
-	$(NEDC:/=\) -s _n.cpp $(INCLUDE_PATH) ssm_ifs.ned
+ssm_ifs_n.cc: ssm_ifs.ned
+	$(NEDC:/=\) -s _n.cc $(INCLUDE_PATH) ssm_ifs.ned
 
-fddi_mac.obj: fddi_mac.cpp
-	$(CXX) -c $(COPTS) /Tp fddi_mac.cpp
+fddi_mac.obj: fddi_mac.cc
+	$(CXX) -c $(COPTS) /Tp fddi_mac.cc
 
-othermod.obj: othermod.cpp
-	$(CXX) -c $(COPTS) /Tp othermod.cpp
+othermod.obj: othermod.cc
+	$(CXX) -c $(COPTS) /Tp othermod.cc
 
-ssm_ifs.obj: ssm_ifs.cpp
-	$(CXX) -c $(COPTS) /Tp ssm_ifs.cpp
+ssm_ifs.obj: ssm_ifs.cc
+	$(CXX) -c $(COPTS) /Tp ssm_ifs.cc
 
 
 #doc: neddoc doxy
@@ -124,15 +124,15 @@ ssm_ifs.obj: ssm_ifs.cpp
 #	@doxygen doxy.cfg
 
 clean:
-	-del *.obj *_n.cpp *_n.h *_m.cpp *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
+	-del *.obj *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX) 2>NUL
 	-del *.vec *.sca 2>NUL
 	-for %%i in ( $(SUBDIRS) ) do cd %%i && nmake /nologo /f Makefile.vc clean && cd ..
 
 depend:
-	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cpp
+	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
 
 re-makemake:
-	opp_nmakemake_vc -f   #recreate Makefile
+	opp_nmakemake -f -f  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

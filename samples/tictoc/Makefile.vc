@@ -55,7 +55,7 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 
 #------------------------------------------------------------------------------
 # object files in this directory
-OBJS= tictoc10_n.obj tictoc11_n.obj tictoc8_n.obj tictoc9_n.obj tictoc10_m.obj tictoc11_m.obj txc10.obj txc11.obj txc8.obj txc9.obj
+OBJS= tictoc10_n.obj tictoc11_n.obj tictoc8_n.obj tictoc9_n.obj tictoc10_m.obj tictoc11_m.obj       txc10.obj txc11.obj txc8.obj txc9.obj
 
 # subdirectories to recurse into
 SUBDIRS= 
@@ -135,7 +135,7 @@ depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile.vc -- *.cc
 
 re-makemake:
-	opp_nmakemake_vc -f   #recreate Makefile
+	opp_nmakemake -f -f  #recreate Makefile
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
