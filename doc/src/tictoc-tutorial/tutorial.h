@@ -14,7 +14,7 @@ Here are the steps you take to implement your first simulation:
 text file that identifies the network's nodes and the links between them. Let's call
 this file tictoc.ned:
 
-@include tictoc1.ned
+tictoc1.ned: @include tictoc1.ned
 
 In this file, we define a network called tictoc, which consists of a compound
 module Tictoc. The compound module, in turn, consists of submodules tic and toc.
@@ -25,12 +25,12 @@ gate to toc's input gate, and vice versa.
 We now need to implement the functionality of the simple module Txc. This is
 achieved by writing two C++ files: txc.h and txc.cc:
 
-@include txc1.cc
+txc1.cc: @include txc1.cc
 
 Then, we need to write the file omnetpp.ini which will tell the simulation tool
 what to do:
 
-@include omnetpp.ini
+omnetpp.ini: @include omnetpp.ini
 
 We now create the Makefile which will help us to compile and link our program
 to create the executable tictoc:
@@ -72,4 +72,129 @@ complexity of the simulation model itself (Exercise 2 will emphasize this issue)
 Note that the toolbar also contains a simsec/sec gauge which displays you this
 value.
 
+
+@section steps Adding more
+
+@subsection s2 Step 2: adding icons and debug output
+
+@ref f2
+
+
+@subsection s3 Step 3
+
+@ref f3
+
+
+@subsection s4 Step 4
+
+@ref f4
+
+
+@subsection s5 Step 5
+
+@ref f5
+
+
+@subsection s6 Step 6
+
+@ref f6
+
+
+@subsection s7 Files: Step 7
+
+@ref f7
+
+
+@subsection s8 Step 8
+
+@ref f8
+
+
+@subsection s9 Step 9
+
+@ref f9
+
+
+@subsection s10 Step 10
+
+@ref f10
+
+
+@subsection s11 Step 11
+
+@ref f11
 */
+
+
+/**
+@page f2 Tictoc2 files
+
+tictoc2.ned: @include tictoc2.ned
+txc2.cc: @include txc2.cc
+*/
+
+/**
+@page f3 Tictoc3 files
+
+tictoc3.ned: @include tictoc3.ned
+txc3.cc: @include txc3.cc
+*/
+
+/**
+@page f4 Tictoc4 files
+
+tictoc4.ned: @include tictoc4.ned
+txc4.cc: @include txc4.cc
+*/
+
+/**
+@page f5 Tictoc5 files
+
+tictoc5.ned: @include tictoc5.ned
+txc5.cc: @include txc5.cc
+*/
+
+/**
+@page f6 Tictoc6 files
+
+tictoc6.ned: @include tictoc6.ned
+txc6.cc: @include txc6.cc
+*/
+
+/**
+@page f7 Tictoc7 files
+
+tictoc7.ned: @include tictoc7.ned
+txc7.cc: @include txc7.cc
+*/
+
+/**
+@page f8 Tictoc8 files
+
+tictoc8.ned: @include tictoc8.ned
+txc8.cc: @include txc8.cc
+*/
+
+/**
+@page f9 Tictoc9 files
+
+tictoc9.ned: @include tictoc9.ned
+txc9.cc: @include txc9.cc
+*/
+
+/**
+@page f10 Tictoc10 files
+
+tictoc10.ned: @include tictoc10.ned
+txc10.cc: @include txc10.cc
+tictoc10.msg: @include tictoc10.msg
+*/
+
+/**
+@page f11 Tictoc11 files
+
+tictoc11.ned: @include tictoc11.ned
+txc11.cc: @include txc11.cc
+tictoc11.msg: @include tictoc11.msg
+*/
+
