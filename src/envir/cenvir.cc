@@ -28,9 +28,11 @@
 #include "omnetapp.h"
 #include "appreg.h"
 #include "cmodule.h"
-#include "speedmtr.h"   // env_dummy_function()
-#include "filemgrs.h"   // env_dummy_function()
 
+#include "speedmtr.h"       // env_dummy_function()
+#include "filemgrs.h"       // env_dummy_function()
+#include "akaroarng.h"      // env_dummy_function()
+#include "akoutvectormgr.h" // env_dummy_function()
 
 using std::ostream;
 
@@ -44,38 +46,13 @@ cSingleton<cArray> omnetapps("omnetapps");
 #define ENVIR_TEXTBUF_LEN 1024
 static char buffer[ENVIR_TEXTBUF_LEN];
 
-
+// helper macro
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
      var = dynamic_cast<baseclass *>(var ## _tmp); \
      if (!var) \
          throw new cException("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
-
-//=== The DUMMY SECTION -- a tribute to smart linkers
-// force the linker to include the user interface library into the executable.
-// dummyDummy() can't be static or very smart linkers will leave it out...
-#ifndef WIN32_DLL
-void envirDummy();
-void dummyDummy() {envirDummy();}
-#endif
-
-// another dummy variant in case you want to have both Cmdenv and Tkenv in
-//#ifndef WIN32_DLL
-//OPP_DLLIMPORT void cmdenvDummy();
-//OPP_DLLIMPORT void tkenvDummy();
-//void dummyDummy() {cmdenvDummy();tkenvDummy();}
-//#endif
-
-// A dummy function to force UNIX linkers collect Speedometer
-// and cFileOutputVectorManager as linker symbols. Otherwise we'd get
-// "undefined symbol" messages...
-void env_dummy_function() {
-    exponential(1.0);
-    Speedometer a;
-    cFileOutputVectorManager o;
-    printf("%p%p",&a,&o); // eliminate 'unused var' warning
-}
 
 //========================================================================
 
@@ -365,7 +342,7 @@ void cEnvir::printfmsg(const char *fmt,...)
     va_end(va);
 
     if (app)
-       app->putmsg( buffer );
+       app->putmsg(buffer);
     else
        ::printf("<!> %s\n", buffer);
 }
@@ -543,5 +520,36 @@ bool cEnvir::idle()
 bool memoryIsLow()
 {
     return ev.app->memoryIsLow();
+}
+
+
+//=== The DUMMY SECTION -- a tribute to "smart" linkers
+// force the linker to include the user interface library into the executable.
+// dummyDummy() can't be static or very smart linkers will leave it out...
+#ifndef WIN32_DLL
+void envirDummy();
+void dummyDummy() {envirDummy();}
+#endif
+
+// another dummy variant in case you want to have both Cmdenv and Tkenv in
+//#ifndef WIN32_DLL
+//OPP_DLLIMPORT void cmdenvDummy();
+//OPP_DLLIMPORT void tkenvDummy();
+//void dummyDummy() {cmdenvDummy();tkenvDummy();}
+//#endif
+
+// A dummy function to force UNIX linkers collect Speedometer
+// and cFileOutputVectorManager as linker symbols. Otherwise we'd get
+// "undefined symbol" messages...
+void env_dummy_function() {
+    exponential(1.0);
+    Speedometer a;
+    cFileOutputVectorManager o;
+    printf("%p%p",&a,&o); // eliminate 'unused var' warning
+#ifdef WITH_AKAROA
+    cAkOutputVectorManager ao;
+    cAkaroaRNG ar;
+    printf("%p%p",&ap,&ar); // eliminate 'unused var' warning
+#endif
 }
 
