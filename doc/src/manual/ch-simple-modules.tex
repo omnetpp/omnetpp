@@ -479,45 +479,27 @@ look like this:
 \subsection{The module type registration}
 \index{module!declaration}
 
-The module type registration
-\begin{itemize}
-\item{announces that you're going to use the class as a
-    simple module type}
-\item{associates the module class with an interface declared in NED}
-\end{itemize}
-
-
-Module declarations can take two forms:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-Define_Module(\textit{classname});
-Define_Module_Like(\textit{classname}, \textit{neddeclname});
-\end{Verbatim}
-
-The first form associates the class (subclassed from
-\cclass{cSimpleModule}) with the NED simple
-module declaration of the same name. For example, the
+The above example contained the following module type declaration:
 
 \begin{verbatim}
 Define_Module(SlidingWindowProtocol);
 \end{verbatim}
 
-line would ensure that when you create an instance of SlidingWindowProtocol in
-your NED files, the module has the parameters and gates given in the
-\ttt{SlidingWindowProtocol} NED declaration, and the implementation will be
-an instance of the \ttt{SlidingWindowProtocol} C++ class.
+This line tells {\opp} that you want to use the \ttt{SlidingWindowProtocol}
+C++ class as a simple module type, and that it should look for an associated
+NED simple module declaration with the same name (\ttt{simple SlidingWindowProtocol
+... endsimple}) to determine what gates and parameters this module should have.
 
-The second form associates the class with a NED
-simple module declaration of a different name.
-You can use this form when you have several modules which share the
-same interface. This feature will be discussed in detail in the next
-section.
-
-Module declarations should not be put into header files, because they
-are macros expanding to lines for which the compiler generates code.
+\fmac{Define\_Module()} should not be put into header files, because the compiler
+generates code from it which should only appear in one \ttt{.cc} file.
 
 
 \subsection{Several modules, single NED interface}
+
+An alternative form of the module type registration, the \fmac{Define\_Module\_Like()}
+macro takes two arguments and associates the class with a NED simple module
+declaration of a different name. You can use this form when you have several
+modules which share the same interface.
 
 To support submodule types defined as parameters in
 NED files (see section \ref{sec:ch-ned-lang:like}),
