@@ -39,7 +39,7 @@
  * direct string manipulation.
  *
  * The object doesn't try to interpret the display string in any way,
- * not doesn't it know the meaning of the different tags; it merely
+ * nor does it know the meaning of the different tags; it merely
  * parses the string as data elements separated by semicolons, equal
  * signs and commas.
  *

@@ -81,8 +81,8 @@ SIM_API double truncnormal(double mean, double stddev, int rng=0);
  * k values, which becomes the alpha parameter. The chi-square distribution
  * is a special case of the gamma distribution.
  *
- * The mean of this distribution is alpha*beta; for special case alpha=1,
- * it becomes the exponential distribution with mean=beta.
+ * The expected value of this distribution is beta/alpha; for special case
+ * alpha=1, it becomes the exponential distribution with mean=beta.
  *
  * Generation method depends on the value of alpha:
  *
@@ -123,6 +123,9 @@ SIM_API double beta(double alpha1, double alpha2, int rng=0);
  * exponential distribution. Thus, the kth arrival time
  * in the Poisson process follows the Erlang distribution.
  *
+ * Erlang with parameters m and k is gamma-distributed with alpha=k
+ * and beta=m/k.
+ *
  * Generation makes use of the fact that exponential distributions
  * sum up to Erlang.
  *
@@ -138,6 +141,9 @@ SIM_API double erlang_k(unsigned int k, double mean, int rng=0);
  * in statistics. If Yi are k independent random variates from the normal
  * distribution with unit variance, then the sum-of-squares (sum(Yi^2))
  * has a chi-square distribution with k degrees of freedom.
+ *
+ * The expected value of this distribution is k. Chi_square with parameter
+ * k is gamma-distributed with alpha=k/2, beta=2.
  *
  * Generation is using relationship to gamma distribution.
  *
@@ -203,15 +209,21 @@ inline double lognormal(double m, double s, int rng=0)
 
 /**
  * Returns a random variate from the Weibull distribution with parameters
- * a, b > 0.
+ * a, b > 0, where a is the "scale" parameter and b is the "shape" parameter.
+ * Sometimes Weibull is given with alpha and beta parameters, then alpha=b
+ * and beta=a.
  *
  * The Weibull distribution gives the distribution of lifetimes of objects.
  * It was originally proposed to quantify fatigue data, but it is also used
- * in analysis of systems involving a "weakest link."
+ * in reliability analysis of systems involving a "weakest link," e.g.
+ * in calculating a device's mean time to failure.
+ *
+ * When b=1, Weibull(a,b) is exponential with mean a.
  *
  * Generation uses inverse transform.
  *
- * @param a, b  > 0
+ * @param a  the "scale" parameter, a>0
+ * @param b  the "shape" parameter, b>0
  * @param rng the underlying random number generator
  */
 SIM_API double weibull(double a, double b, int rng=0);
