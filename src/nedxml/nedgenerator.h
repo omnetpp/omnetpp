@@ -68,19 +68,38 @@ class NEDGenerator
     void generate(NEDElement *node, const char *indent);
 
   protected:
+    /** @name Change indentation level */
+    //@{
     const char *increaseIndent(const char *indent);
     const char *decreaseIndent(const char *indent);
+    //@}
+
+    /** Dispatch to various doXXX() methods according to node type */
     void generateNedItem(NEDElement *node, const char *indent, bool islast, const char *arg=NULL);;
+
+    /** Invoke generateNedItem() with all children */
     void generateChildren(NEDElement *node, const char *indent, const char *arg=NULL);
+
+    /** Invoke generateNedItem() with all children of the given tagcode */
     void generateChildrenWithType(NEDElement *node, int tagcode, const char *indent, const char *arg=0);
+
+    /** @name Utilities */
+    //@{
     void printExpression(NEDElement *node, const char *attr, const char *indent);
     void printVector(NEDElement *node, const char *attr, const char *indent);
     void printIfExpression(NEDElement *node, const char *attr, const char *indent);
+    //@}
+
+    /** @name Format and write comments to the output */
+    //@{
     void appendBannerComment(const char *comment, const char *indent);
     void appendRightComment(const char *comment, const char *indent);
     void appendInlineRightComment(const char *comment, const char *indent);
     void appendTrailingComment(const char *comment, const char *indent);
+    //@}
 
+    /** @name Generate NED code from the given element */
+    //@{
     void doNedfiles(NedFilesNode *node, const char *indent, bool islast, const char *);
     void doNedfile(NedFileNode *node, const char *indent, bool islast, const char *);
     void doImports(ImportNode *node, const char *indent, bool islast, const char *);
@@ -136,7 +155,7 @@ class NEDGenerator
     void doField(FieldNode *node, const char *indent, bool islast, const char *);
     void doProperties(PropertiesNode *node, const char *indent, bool islast, const char *);
     void doProperty(PropertyNode *node, const char *indent, bool islast, const char *);
-
+    //@}
 };
 
 #endif
