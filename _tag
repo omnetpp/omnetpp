@@ -1,6 +1,6 @@
 @echo off
 rem 
-rem Tag format: omnetpp-2.0b1
+rem Tag format: omnetpp-2_0b1
 rem
 echo %1 > Version
 cvs commit -m "by _tag.bat" Version
