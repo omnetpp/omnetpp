@@ -509,6 +509,12 @@ void TOmnetApp::stopClock()
     simulatedtime = simulation.simTime();
 }
 
+time_t TOmnetApp::totalElapsed()
+{
+    return elapsedtime + time(0) - laststarted;
+
+}
+
 void TOmnetApp::checkTimeLimits()
 {
     if (opt_simtimelimit!=0 && simulation.simTime()>=opt_simtimelimit)

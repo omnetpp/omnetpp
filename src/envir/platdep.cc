@@ -52,10 +52,10 @@ bool opp_loadlibrary(const char *libname)
                         (LPTSTR) &lpMsgBuf,
                         0,
                         NULL );
-         opp_string msg=(char *)lpMsgBuf;
+         opp_string msg; msg=(const char *)lpMsgBuf;
          LocalFree( lpMsgBuf );
          msg.buffer()[strlen(msg)-3] = '\0';  // chop ".\r\n"
-         throw new cException("Cannot load library '%s': %s",libname,msg);
+         throw new cException("Cannot load library '%s': %s",libname,(const char *)msg);
      }
      return true;
 #else

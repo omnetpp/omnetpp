@@ -101,6 +101,8 @@ class ENVIR_API TOmnetApp
     virtual ~TOmnetApp();
 
     /** @name Functions called from cEnvir's similar functions */
+    //@{
+
     virtual void setup();
     virtual int run() = 0;
     virtual void shutdown();
@@ -108,24 +110,36 @@ class ENVIR_API TOmnetApp
     virtual void startRun();
     virtual void endRun();
 
-    // called by cPar::read() to get param value from the ini file
+    virtual cIniFile *getIniFile();
+
+    /** 
+     * Used internally to read opt_xxxxx setting from ini file 
+     */
+    virtual void readOptions();
+    virtual void readPerRunOptions(int run_nr);
+
+    /** 
+     * Used internally to make options effective in cSimulation 
+     * and other places 
+     */
+    virtual void makeOptionsEffective();
+
+    /**
+     * Called by cPar::read() to get param value from the ini file
+     */
     virtual const char *getParameter(int run_nr, const char *parname);
-    // called from nedc-generated network setup function to get logical machine --> physical machine mapping
+
+    /**
+     * Called from nedc-generated network setup function to get 
+     * logical machine --> physical machine mapping
+     */
     virtual const char *getPhysicalMachineFor(const char *logical_mach);
     virtual void getOutVectorConfig(int run_no, const char *modname, /*input*/
                                     const char *vecname,
                                     bool& enabled, /*output*/
                                     double& starttime, double& stoptime);
     virtual const char *getDisplayString(int run_no,const char *name);
-
-    virtual cIniFile *getIniFile();
-
-    /** @name Used internally to read opt_xxxxx setting from ini file */
-    virtual void readOptions();
-    virtual void readPerRunOptions(int run_nr);
-
-    /** @name Used internally to make options effective in cSimulation and other places */
-    virtual void makeOptionsEffective();
+    //@}
 
     /** @name Functions called from the objects of the simulation kernel
      *  to notify the application about certain events.
@@ -224,6 +238,12 @@ class ENVIR_API TOmnetApp
      * Stop measuring elapsed (real) time spent in this simulation run.
      */
     void stopClock();
+
+    /**
+     * Elapsed time
+     */
+    time_t totalElapsed();
+
     //@}
 };
 
