@@ -504,7 +504,7 @@ NEXT: @ref part3
 
 PREV: @ref part2 UP: @ref contents
 
-@section s9 Step 9
+@section s9 Step 9: More than two nodes
 
 Now we'll make a big step: create several tic modules and connect
 them into a network. For now, we'll keep it simple what they do:
@@ -560,7 +560,7 @@ a self-message, then arrivalGate() returns NULL.
 Sources: @ref tictoc9.ned, @ref txc9.cc, @ref omnetpp.ini
 
 
-@section s10 Step 10: Defining message classes
+@section s10 Step 10: Defining our message class
 
 In this step the destination address is no longer hardcoded tic[3] -- we draw a
 random destination, and we'll add the destination address to the message.
@@ -600,7 +600,15 @@ Then, handleMessage() begins like this:
 In the argument to handleMessage(), we get the message as a cMessage * pointer.
 However, we can only access its fields defined in TicTocMsg10 if we cast
 msg to TicTocMsg10 *. Plain C-style cast (<code>(TicTocMsg10 *)msg</code>)
-is not safe because
+is not safe because if the message is <i>not</i> a TicTocMsg10 after all
+the program will just crash, causing an error which is difficult to explore.
+
+C++ offers a solution which is called dynamic_cast. Here we use check_and_cast<>()
+which is provided by OMNeT++: it tries to cast the pointer via dynamic_cast,
+and if it fails it stops the simulation with an error message, similar to the
+following:
+
+<img src="step10e.gif">
 
 To make the model execute longer, after a message arrives to its destination
 the destination node will generate another message with a random destination
