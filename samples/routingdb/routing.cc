@@ -13,6 +13,11 @@
 #include <omnetpp.h>
 #include "packet_m.h"
 
+
+/**
+ * Central database of routing information. The model should contain
+ * exactly one RoutingDB module.
+ */
 class RoutingDB : public cSimpleModule
 {
   public:
@@ -33,7 +38,12 @@ class RoutingDB : public cSimpleModule
     Module_Class_Members(RoutingDB,cSimpleModule,0);
     virtual void initialize();
     virtual void handleMessage(cMessage *msg);
-    virtual int nextHopGateId(int atAddress, int destAddress);
+
+    /**
+     * Returns the next hop for routing a packet at given node towards the
+     * given destination address. Return value: the gate id.
+     */
+    virtual int getNextHop(int atAddress, int destAddress);
 };
 
 
@@ -76,9 +86,9 @@ void RoutingDB::initialize()
     delete topo;
 }
 
-int RoutingDB::nextHopGateId(int atAddress, int destAddress)
+int RoutingDB::getNextHop(int atAddress, int destAddress)
 {
-    Enter_Method("nextHopGateId(at=%d,dest=%d)",atAddress,destAddress);
+    Enter_Method("getNextHop(at=%d,dest=%d)",atAddress,destAddress);
 
     RTEntry key;
     key.atAddress = atAddress;
@@ -99,6 +109,10 @@ void RoutingDB::handleMessage(cMessage *msg)
 
 //----
 
+/**
+ * Performs next-hop routing of packets. Relies on the routing database
+ * (RoutingDB) for doing that.
+ */
 class Routing : public cSimpleModule
 {
   protected:
@@ -133,7 +147,7 @@ void Routing::handleMessage(cMessage *msg)
         return;
     }
 
-    int parentGateId = routingDB->nextHopGateId(myAddress, destAddr);
+    int parentGateId = routingDB->getNextHop(myAddress, destAddr);
     if (parentGateId==-1)
     {
         ev << "address " << destAddr << " unreachable, discarding packet " << pk->name() << endl;
