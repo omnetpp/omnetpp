@@ -9,7 +9,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2003 Andras Varga
+  Copyright (C) 1992-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -107,7 +107,7 @@
  *
  * Banks: J. Banks: Handbook of Simulation, Wiley, 1998.
  *
- * I have also found the web site 
+ * I have also found the web site
  * <a href="http://www.xycoon.com">http://www.xycoon.com</a> extremely useful.
  *
  * <b>Random number generator</b>

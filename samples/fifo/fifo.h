@@ -1,7 +1,7 @@
 //
 // This file is part of an OMNeT++ simulation example.
 //
-// Copyright (C) 1992-2003 Andras Varga
+// Copyright (C) 1992-2004 Andras Varga
 //
 // This file is distributed WITHOUT ANY WARRANTY. See the file
 // `license' for details on this and other legal matters.
@@ -46,7 +46,7 @@ class FFPacketFifo : public FFAbstractFifo
     virtual void endService(cMessage *msg);
 };
 
-/** 
+/**
  * Single-server queue with service time based on message length.
  */
 class FFBitFifo : public FFAbstractFifo

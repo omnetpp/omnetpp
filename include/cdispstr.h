@@ -10,7 +10,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992-2003 Andras Varga
+  Copyright (C) 1992-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -71,7 +71,7 @@ class cDisplayString
     int numtags;        // number of tags
 
     mutable char *dispstr; // cached copy of assembled display string
-    mutable bool needsassemble; // if dispstr is up-to-date 
+    mutable bool needsassemble; // if dispstr is up-to-date
 
     // needed to notify Envir
     cObject *object;     // a cModule or cGate pointer

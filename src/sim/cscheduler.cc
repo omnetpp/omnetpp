@@ -9,7 +9,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2003 Andras Varga
+  Copyright (C) 2004 Andras Varga
   Monash University, Dept. of Electrical and Computer Systems Eng.
   Melbourne, Australia
 
@@ -24,12 +24,12 @@
 #include "macros.h"
 
 
-cScheduler::cScheduler() 
+cScheduler::cScheduler()
 {
     sim = NULL;
 }
 
-cScheduler::~cScheduler() 
+cScheduler::~cScheduler()
 {
 }
 

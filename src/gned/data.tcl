@@ -9,7 +9,7 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2003 Andras Varga
+#  Copyright (C) 1992-2004 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
@@ -100,7 +100,7 @@ proc deleteItem {key} {
     if {[info exist ned($key,being-deleted)]} {
        # we were here already
        return
-    }   
+    }
     set ned($key,being-deleted) 1
 
     # delete children recursively
@@ -763,7 +763,7 @@ proc findSubmodule {modkey submodname} {
 #
 # doesn't work yet
 #
-proc nedClipboard:cut {} {       
+proc nedClipboard:cut {} {
        tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
        return
        editCopy
@@ -775,7 +775,7 @@ proc nedClipboard:cut {} {
 #
 # doesn't work yet
 #
-proc nedClipboard:copy {} {       
+proc nedClipboard:copy {} {
        tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
        return
 
@@ -807,7 +807,7 @@ proc nedClipboard:copy {} {
 #
 # doesn't work yet
 #
-proc nedClipboard:paste {} {       
+proc nedClipboard:paste {} {
        tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
        return
 

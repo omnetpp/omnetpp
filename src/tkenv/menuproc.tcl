@@ -5,7 +5,7 @@
 #==========================================================================
 
 #----------------------------------------------------------------#
-#  Copyright (C) 1992-2003 Andras Varga
+#  Copyright (C) 1992-2004 Andras Varga
 #
 #  This file is distributed WITHOUT ANY WARRANTY. See the file
 #  `license' for details on this and other legal matters.
@@ -77,7 +77,7 @@ proc about {} {
     aboutDialog "About OMNeT++/Tkenv" {\
 OMNeT++/Tkenv
 
-(c) Andras Varga, 1992-2003
+(c) Andras Varga, 1992-2004
 
 NO WARRANTY -- see license for details.
 }

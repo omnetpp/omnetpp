@@ -1,7 +1,7 @@
 //
 // This file is part of an OMNeT++ simulation example.
 //
-// Copyright (C) 1992-2003 Andras Varga
+// Copyright (C) 1992-2004 Andras Varga
 //
 // This file is distributed WITHOUT ANY WARRANTY. See the file
 // `license' for details on this and other legal matters.
@@ -14,10 +14,10 @@
 // on gate "other".
 //
 simple QClassifier
-    gates: 
+    gates:
         in: in;
         out: out[];
         out: other;
-endsimple 
+endsimple
 
 

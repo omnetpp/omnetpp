@@ -1,7 +1,7 @@
 //
 // This file is part of an OMNeT++ simulation example.
 //
-// Copyright (C) 1998-2003 Andras Varga
+// Copyright (C) 1998-2004 Andras Varga
 // Copyright (C) 1996-97 Gabor Lencse, T.U.Budapest, Dept. of Telecommunications
 //
 // This file is distributed WITHOUT ANY WARRANTY. See the file

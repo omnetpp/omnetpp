@@ -5,7 +5,7 @@
 //==========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2002-2003 Andras Varga
+  Copyright (C) 2002-2004 Andras Varga
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
   `license' for details on this and other legal matters.
@@ -383,7 +383,7 @@ void NEDGenerator::doSubmodule(SubmoduleNode *node, const char *indent, bool isl
     {
         out << node->getTypeName();
         printVector(node, "vector-size",indent);
-    }    
+    }
     out << ";";
     appendRightComment(node->getRightComment(), indent);
 
