@@ -142,6 +142,15 @@ WITH_PARSIM=yes
 #OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
 
 #
+# Some more OMNeT++ variables. They select the programs opp_makemake-generated
+# makefiles will use. (They get default values if commented out.)
+#
+#NEDC="$OMNETPP_BIN_DIR/nedc"
+NEDC="$OMNETPP_BIN_DIR/nedtool"
+#MSGC="$OMNETPP_BIN_DIR/opp_msgc"
+
+#
+#
 # Override the following setting if you have additional icons somewhere else.
 #
 #OMNETPP_BITMAP_PATH=".;./bitmaps;$OMNETPP_ROOT/bitmaps"
