@@ -63,6 +63,14 @@ static void expatEndCdataSectionHandler(void *userData)
     sh->endCdataSection();
 }
 
+static void expatStartDoctypeDeclHandler(void *userData,
+                                         const XML_Char *, // doctypeName
+                                         const XML_Char *, // sysid
+                                         const XML_Char *, // pubid
+                                         int)              // has_internal_subset
+{
+    // FIXME error!!!
+}
 
 SAXParser::SAXParser()
 {
@@ -95,6 +103,7 @@ bool SAXParser::parse(const char *filename)
     XML_SetCommentHandler(parser, expatCommentHandler);
     XML_SetStartCdataSectionHandler(parser, expatStartCdataSectionHandler);
     XML_SetEndCdataSectionHandler(parser, expatEndCdataSectionHandler);
+    XML_SetStartDoctypeDeclHandler(parser, expatStartDoctypeDeclHandler);
     currentparser = &parser;
 
     // read file chunk-by-chunk and parse it
