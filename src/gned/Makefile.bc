@@ -80,14 +80,14 @@ nedfile.obj :  nedfile.cc
  $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ nedfile.cc
 |
 
-ebnf.tab.obj :  ebnf.tab.c
+ebnf.tab.obj :  ebnf.tab.cc
   $(BCC32) -c @&&|
- $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ ebnf.tab.c
+ $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ ebnf.tab.cc
 |
 
-lex.yy.obj :  lex.yy.c
+lex.yy.obj :  lex.yy.cc
   $(BCC32) -c @&&|
- $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ lex.yy.c
+ $(CompOptsAt_gneddexe) $(CompInheritOptsAt_gneddexe) -o$@ lex.yy.cc
 |
 
 tklib.obj :  tklib.cc
