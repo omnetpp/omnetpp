@@ -1,6 +1,6 @@
 //==========================================================================
-//   INDEX.H - header for
-//                             OMNeT++
+//  INDEX.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //  Defines modules for documentation generation. Nothing useful for the
@@ -17,9 +17,9 @@
 
 
 /**
- * @mainpage OMNeT++ API Reference
+ * @mainpage \opp API Reference
  *
- * If you are new to OMNeT++, a good starting point for browsing the
+ * If you are new to \opp, a good starting point for browsing the
  * documentation is cSimpleModule.
  *
  * Otherwise, pick one of the following categories, or choose from the
@@ -38,7 +38,7 @@
  * - @ref EnvirExtensions
  * - @ref ParsimBrief
  *
- * If you have used OMNeT++ before:
+ * If you have used the \opp before:
  * - @ref APIChanges
  */
 
@@ -54,7 +54,7 @@
  *
  * Simulation core classes:       <!-- blank line needed for autobrief=yes -->
  *
- *    - cObject is the base class for most OMNeT++ classes
+ *    - cObject is the base class for most \opp classes
  *    - cModule, cCompoundModule and cSimpleModule represent modules
  *      in the simulation. The user implements new models by subclassing
  *      cSimpleModule and overriding at least its activity() or
@@ -117,7 +117,7 @@
  *
  * <b>Random number generators</b>
  *
- * OMNeT++ provides several random number generators (streams) and several
+ * \opp provides several random number generators (streams) and several
  * random number generator algorithms (default is cMersenneTwister).
  * RNGs can be configured in omnetpp.ini.
  *
@@ -129,7 +129,7 @@
 /**
  * @defgroup Statistics  Statistical data collection
  *
- * OMNeT++ provides a variety of statistical classes. There are basic classes
+ * \opp provides a variety of statistical classes. There are basic classes
  * which compute basic statistics like mean and standard deviation,
  * some classes deal with density estimation, and other classes support
  * automatic detection of the end of a transient, and automatic detection
@@ -227,7 +227,7 @@
  *   - cWatch is the class behind the WATCH() and LWATCH() macros
  *
  * Registration classes are listed below. They play the role of a central
- * registry in OMNeT++ -- each instance holds some specific piece of (static)
+ * registry in \opp -- each instance holds some specific piece of (static)
  * information or serves as a factory object for other objects.
  *
  * Registration objects play an important role at network build time (they

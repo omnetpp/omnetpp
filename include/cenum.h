@@ -1,6 +1,7 @@
 //==========================================================================
-//   CENUM.H  - header for
-//                             OMNeT++
+//  CENUM.H - part of
+//
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

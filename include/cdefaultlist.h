@@ -1,6 +1,7 @@
 //==========================================================================
-//   CDEFAULTLIST.H  - header for
-//                             OMNeT++
+//  CDEFAULTLIST.H - part of
+//
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

@@ -1,6 +1,6 @@
 //==========================================================================
-//   CVISITOR.H - header for
-//                             OMNeT++
+//  CVISITOR.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //  Declaration of the following classes:

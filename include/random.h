@@ -1,6 +1,6 @@
 //==========================================================================
-//   RANDOM.H - header for
-//                             OMNeT++
+//  RANDOM.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

@@ -1,6 +1,6 @@
 //==========================================================================
-//   OPP_STRING.H - header for
-//                             OMNeT++
+//   OPP_STRING.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
@@ -23,7 +23,7 @@
 #include "util.h"
 
 /**
- * Lightweight string class, used internally in some parts of OMNeT++.
+ * Lightweight string class, used internally in some parts of \opp.
  * In simulation models it is better to use std::string or const char *
  * instead.
  *

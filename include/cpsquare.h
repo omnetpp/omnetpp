@@ -1,6 +1,6 @@
 //==========================================================================
-//   CPSQUARE.H - header for
-//                             OMNeT++
+//  CPSQUARE.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

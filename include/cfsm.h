@@ -1,6 +1,6 @@
 //==========================================================================
 //   CFSM.H  -  header for
-//                             OMNeT++
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //  Contents:

@@ -1,7 +1,7 @@
 //=========================================================================
+//  CSCHEDULER.H - part of
 //
-// CSCHEDULER.H - part of
-//                          OMNeT++
+//                  OMNeT++/OMNEST
 //           Discrete System Simulation in C++
 //
 //   Written by:  Andras Varga, 2003
@@ -9,7 +9,7 @@
 //=========================================================================
 
 /*--------------------------------------------------------------*
-  Copyright (C) 2004 Andras Varga
+  Copyright (C) 2003-2004 Andras Varga
   Monash University, Dept. of Electrical and Computer Systems Eng.
   Melbourne, Australia
 
@@ -31,10 +31,10 @@ class cMessage;
  * of getNextEvent() for more info.
  *
  * To switch to your own scheduler class (reasons you'd like to do that
- * include real-time simulation, hardware-in-the-loop simulation, 
+ * include real-time simulation, hardware-in-the-loop simulation,
  * distributed (federated) simulation, parallel distributed simulation),
- * subclass cScheduler, register your new class with 
- * the Register_Class() macro, then add the following to 
+ * subclass cScheduler, register your new class with
+ * the Register_Class() macro, then add the following to
  * <tt>omnetpp.ini</tt>:
  *
  * <pre>
@@ -72,11 +72,11 @@ class cScheduler : public cPolymorphic
      * returns msgQueue.peekFirst(). With parallel and/or real-time
      * simulation, it is also the scheduler's task to synchronize
      * with real time and/or with other partitions.
-     * 
+     *
      * If there's no more event, it throws cTerminationException.
      *
      * A NULL return value means that there's no error but execution
-     * was stopped by the user (e.g. with STOP button on the GUI) 
+     * was stopped by the user (e.g. with STOP button on the GUI)
      * while getNextEvent() was waiting for external synchronization.
      */
     virtual cMessage *getNextEvent() = 0;

@@ -1,6 +1,6 @@
 //==========================================================================
-//   ERRMSG.H - header for
-//                             OMNeT++
+//  ERRMSG.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

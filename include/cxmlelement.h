@@ -1,6 +1,6 @@
 //==========================================================================
-//  CXMLELEMENT.H - header for
-//                             OMNeT++
+//  CXMLELEMENT.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 // Contents:
@@ -48,7 +48,7 @@ typedef std::map<std::string,std::string> cXMLAttributeMap;
  * Features: only readonly (getter) methods; represents only elements
  * and text (entities, processing instructions, comments are ignored);
  * attributes are presented as part of an element node (not as separate
- * attribute nodes as in DOM); mixed content model not supported 
+ * attribute nodes as in DOM); mixed content model not supported
  * (element body cannot mix text with further elements);
  * text is represented as a property of its enclosing element (and not
  * as separate node as in DOM); CDATA sections are also represented as

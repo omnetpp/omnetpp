@@ -1,6 +1,6 @@
 //==========================================================================
 //   CMODULE.H  -  header for
-//                             OMNeT++
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
@@ -94,10 +94,10 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
 
 /**
  * Common base for cSimpleModule and cCompoundModule.
- * cModule provides gates, parameters, RNG mapping, display strings, 
+ * cModule provides gates, parameters, RNG mapping, display strings,
  * and a set of virtual methods.
  *
- * For navigating around in the module tree, see: 
+ * For navigating around in the module tree, see:
  * parentModule(), submodule(), cSubModIterator, moduleByRelativePath(),
  * cSimulation::moduleByPath().
  *
@@ -465,7 +465,7 @@ class SIM_API cModule : public cDefaultList
     const cGate *gate(int g) const {return (const cGate*)gatev[g];}
 
     /**
-     * Looks up a gate by its name and index. Returns NULL if the gate does 
+     * Looks up a gate by its name and index. Returns NULL if the gate does
      * not exist.
      */
     cGate *gate(const char *gatename,int sn=-1);
@@ -635,7 +635,7 @@ class SIM_API cModule : public cDefaultList
     void setBackgroundDisplayString(const char *dispstr, bool immediate=true);
 
     /**
-     * DEPRECATED. Use displayString() or backgroundDisplayString(), plus 
+     * DEPRECATED. Use displayString() or backgroundDisplayString(), plus
      * cDisplayString methods instead.
      */
     const char *displayString(int type);

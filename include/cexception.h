@@ -1,6 +1,6 @@
 //==========================================================================
-//   CEXCEPTION.H - header for
-//                             OMNeT++
+//  CEXCEPTION.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
@@ -127,7 +127,7 @@ class SIM_API cException
 };
 
 /**
- * Thrown when the simulation is completed. 
+ * Thrown when the simulation is completed.
  * For example, cSimpleModule::endSimulation() throws this exception.
  * Statistics object may also throw this exception to
  * signal that accuracy of simulation results has reached the desired level.
@@ -176,8 +176,8 @@ class SIM_API cEndModuleException : public cException
 
 /**
  * Used internally when deleting an activity() simple module.
- * Then, the coroutine running activity() is "asked" to throw a 
- * cStackCleanupException to achieve stack unwinding, a side effect of 
+ * Then, the coroutine running activity() is "asked" to throw a
+ * cStackCleanupException to achieve stack unwinding, a side effect of
  * exceptions, in order to properly clean up activity()'s local variables.
  *
  * @ingroup Internals

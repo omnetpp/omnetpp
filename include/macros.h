@@ -1,6 +1,6 @@
 //==========================================================================
-//   MACROS.H  - header for
-//                             OMNeT++
+//  MACROS.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //  Definition of the following macros:
@@ -72,7 +72,7 @@
  * and returns a double. The use of this macro allows the function to be used
  * in expressions inside NED network descriptions.
  *
- * Commonly used <math.h> functions have Define_Function() lines in the OMNeT++
+ * Commonly used <math.h> functions have Define_Function() lines in the \opp
  * simulation kernel.
  *
  * @hideinitializer
@@ -113,7 +113,7 @@
 //@{
 
 /**
- * Announces the class as a module to OMNeT++ and couples it with the
+ * Announces the class as a module to \opp and couples it with the
  * NED interface of the same name. The macro expands to the definition
  * a cModuleType object.
  *

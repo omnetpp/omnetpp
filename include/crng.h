@@ -1,6 +1,6 @@
 //==========================================================================
-//   CRNG.H   - header for
-//                             OMNeT++
+//   CRNG.H  - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
@@ -26,12 +26,12 @@ class cConfiguration;
 
 /**
  * Abstract interface for random number generator classes.
- * Some known implementations are <tt>cMersenneTwister</tt>, 
+ * Some known implementations are <tt>cMersenneTwister</tt>,
  * <tt>cLCG32</tt> and <tt>cAkaroaRNG</tt>. The actual RNG class
- * to be used in simulations can be configured (a feature of the 
+ * to be used in simulations can be configured (a feature of the
  * Envir library).
- * 
- * To switch to your own RNG, subclass cRNG, register your new class 
+ *
+ * To switch to your own RNG, subclass cRNG, register your new class
  * with the Register_Class() macro, then select it
  * by adding the following to <tt>omnetpp.ini</tt>:
  *

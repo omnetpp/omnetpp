@@ -1,6 +1,6 @@
 //==========================================================================
 //   CCOROUTINE.H  -  header for
-//                             OMNeT++
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //  Declarations:
@@ -65,7 +65,7 @@ typedef void (*CoroutineFnp)( void * );
  * for a better reference). It creates all coroutine stacks within the main
  * stack, and uses setjmp()/longjmp() for context switching. This
  * implies that the maximum stack space allowed by the operating system
- * for the OMNeT++ process must be sufficiently high (several,
+ * for the \opp process must be sufficiently high (several,
  * maybe several hundred megabytes), otherwise a segmentation fault
  * will occur.
  *

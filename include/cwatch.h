@@ -1,6 +1,6 @@
 //==========================================================================
-//   CWATCH.H  - header for
-//                             OMNeT++
+//  CWATCH.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
@@ -70,7 +70,7 @@ class  cWatch;
 //==========================================================================
 
 /**
- * Utility class to make int, long, double, char, etc. variables 
+ * Utility class to make int, long, double, char, etc. variables
  * to be inspectable in Tkenv.
  *
  * Users rarely need to create cWatch objects directly, they rather use

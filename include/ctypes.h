@@ -1,6 +1,6 @@
 //==========================================================================
-//   CTYPES.H  - header for
-//                             OMNeT++
+//  CTYPES.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //  Declaration of the following functions:

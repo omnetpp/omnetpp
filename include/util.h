@@ -1,6 +1,6 @@
 //==========================================================================
-//   UTIL.H - header for
-//                             OMNeT++
+//  UTIL.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

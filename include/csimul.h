@@ -1,6 +1,6 @@
 //==========================================================================
 //   CSIMUL.H  -  header for
-//                             OMNeT++
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
@@ -51,7 +51,7 @@ SIM_API extern cSimulation simulation;
 
 
 /**
- * Simulation manager class.  cSimulation is the central class in OMNeT++, and
+ * Simulation manager class.  cSimulation is the central class in \opp, and
  * it has only one instance, the global variable <tt>simulation</tt>.
  * It holds the modules, manages setting up a simulation, running and
  * finishing it, etc.

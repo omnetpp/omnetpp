@@ -1,6 +1,7 @@
 //==========================================================================
-//   CCONFIG.H - header for
-//                             OMNeT++
+//  CCONFIG.H - part of
+//
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
@@ -48,7 +49,7 @@
  * configuration-class="MyClass"
  * </pre>
  *
- * OMNeT++ will get the rest of the configuration from your configuration
+ * \opp will get the rest of the configuration from your configuration
  * class.
  *
  * See also: cEnvir::config()

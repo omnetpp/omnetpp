@@ -1,6 +1,7 @@
 //==========================================================================
-//   CENVIR.H - header for
-//                             OMNeT++
+//  CENVIR.H - part of
+//
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

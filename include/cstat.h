@@ -1,6 +1,6 @@
 //==========================================================================
-//   CSTAT.H - header for
-//                             OMNeT++
+//  CSTAT.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

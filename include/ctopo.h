@@ -1,6 +1,6 @@
 //==========================================================================
-//   CTOPO.H  - header for
-//                             OMNeT++
+//  CTOPO.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

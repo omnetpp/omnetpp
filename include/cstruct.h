@@ -1,6 +1,6 @@
 //==========================================================================
-//   CSTRUCT.H  - header for
-//                             OMNeT++
+//  CSTRUCT.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //

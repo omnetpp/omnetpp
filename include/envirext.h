@@ -1,6 +1,6 @@
 //==========================================================================
-//   ENVIREXT.H - header for
-//                             OMNeT++
+//  ENVIREXT.H - part of
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
@@ -125,10 +125,10 @@ class cOutputVectorManager : public cPolymorphic
 /**
  * Abstract base class for handling recording of output scalar data.
  * cOutputScalarManagers are plugins into the Envir user interface
- * library (src/envir) that ultimately handle calls to the 
+ * library (src/envir) that ultimately handle calls to the
  * cModule::recordScalar() family of functions.
  *
- * The default output scalar manager is cFileOutputScalarManager, defined 
+ * The default output scalar manager is cFileOutputScalarManager, defined
  * in the Envir library.
  *
  * To change the way scalar results are recorded, subclass cOutputScalarManager,
@@ -196,8 +196,8 @@ class cOutputScalarManager : public cPolymorphic
 
 
 /**
- * Abstract base class for snapshot managers. cSnapshotManagers are plugins 
- * into the Envir user interface library (src/envir) that provide an output 
+ * Abstract base class for snapshot managers. cSnapshotManagers are plugins
+ * into the Envir user interface library (src/envir) that provide an output
  * stream into which snapshots are written (see cSimulation::snapshot()).
  *
  * The default output snapshot manager is cFileSnapshotManager, defined in the

@@ -1,6 +1,6 @@
 //==========================================================================
 //   CMESSAGE.H  -  header for
-//                             OMNeT++
+//                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
 //
 //
@@ -40,7 +40,7 @@ class cMessageHeap;
  * Predefined message kind values (values for cMessage's kind(),
  * setKind() methods).
  *
- * Negative values are reserved for the OMNeT++ system and its
+ * Negative values are reserved for the \opp system and its
  * standard libraries. Zero and positive values can be freely used
  * by simulation models.
  */
@@ -57,7 +57,7 @@ enum eMessageKind
 //==========================================================================
 
 /**
- * The message class in OMNeT++. cMessage objects may represent events,
+ * The message class in \opp. cMessage objects may represent events,
  * messages, packets (frames, cells, etc) or other entities in a simulation.
  *
  * Messages may be: scheduled (to arrive back at the same module at a later
