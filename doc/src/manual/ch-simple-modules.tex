@@ -2399,14 +2399,13 @@ gates and 'O' for output gates:
 char type = outgate->type() // --> 'O'
 \end{verbatim}
 
-\subsubsection{Gate IDs}
 
+\subsubsection{Gate IDs}
 
 Module gates (input and output, single and vector) are stored in an
 array within their modules. The gate's position in the array is called
 the \textit{gate ID}. The gate ID\index{gate!id} is returned by the \fname{id()}
 member function:
-
 
 \begin{verbatim}
 int id = outgate->id();
@@ -2414,7 +2413,6 @@ int id = outgate->id();
 
 For a module with input gates fromApp and in[3] and output gates
 of toApp and status, the array may look like this:
-
 
 \begin{longtable}{|c|c|c|}
 \hline
@@ -2437,8 +2435,6 @@ of toApp and status, the array may look like this:
 6 & \textit{output} & \ttt{status}\\\hline
 \end{longtable}
 
-
-
 The array may have empty slots. Gate vectors are guaranteed to
 occupy contiguous IDs, thus it is legal to calculate the
 ID of \textit{gate[k]} as \ttt{gate("gate",0).id()+k}.
@@ -2457,17 +2453,34 @@ int id2 = findGate("outvect",5);
 \end{verbatim}
 
 
-\subsection{Link parameters}
 
+\subsection{Connection parameters}
 
-The following member functions return the link attributes:
+Connection attributes (propagation delay, transmission data rate,
+bit error rate) are represented by the channel object, which
+is available via the source gate of the connection.
 
 \begin{verbatim}
-cLinkType *link = outgate->link();
-cPar *d = outgate->delay();
-cPar *e = outgate->error();
-cPar *r = outgate->datarate();
+cChannel *chan = outgate->channel();
 \end{verbatim}
+
+\cclass{cChannel} is a small base class. All interesting attributes are
+part of its subclass \cclass{cBasicChannel}, so you have to cast the pointer
+before getting to the delay, error and data rate values.
+
+\begin{verbatim}
+cBasicChannel *chan = check_and_cast<cBasicChannel *>(outgate->channel());
+double d = chan->delay();
+double e = chan->error();
+double r = chan->datarate();
+\end{verbatim}
+
+You can also change the channel attributes with the corresponding
+\ttt{setXXX()} functions. Note, however, that (as it was explained in
+section \ref{ch:simple-modules:packet-transmission})
+changes will not affect messages already sent, even if they have not
+begun transmission yet.
+
 
 
 \subsection{Transmission state}
@@ -2665,9 +2678,9 @@ would give the same results as
 compoundmod->submodule("child",5)->submodule("grandchild");
 \end{verbatim}
 
-(Provided that child[5] does exist, because otherwise the second
-version will crash with an access violation because of the NULL
-pointer.)
+(Provided that \ttt{child[5]} does exist, because otherwise the second
+version would crash with an access violation because of the NULL
+pointer dereference.)
 
 
 The \cclass{cSimulation}::\fname{moduleByPath()} function is similar
@@ -2973,13 +2986,13 @@ b->gate("out")->connectTo(a->gate("in"));
 \fname{connectTo()} also accepts a channel object as an
 additional, optional argument. Channels are subclassed from
 \cclass{cChannel}. Almost always you'll want use an instance of
-\cclass{cSimpleChannel} as channel -- this is the one that supports
+\cclass{cBasicChannel} as channel -- this is the one that supports
 delay\index{channel!delay}, bit error rate \index{channel!error}
 and data rate\index{channel!datarate}. The channel object will
 be owned by the source gate of the connection, and you cannot
 reuse the same channel object with several connections.
 
-\cclass{cSimpleChannel} has \fname{setDelay()}, \fname{setError()}
+\cclass{cBasicChannel} has \fname{setDelay()}, \fname{setError()}
 and \fname{setDatarate()} methods to set up the channel attributes.
 These functions accept pointer to dynamically allocated
 \cclass{cPar} objects. \cclass{cPar} will be covered in detail
@@ -2988,7 +3001,7 @@ in chapter \ref{cha:the-simulation-library}.
 An example that sets up a channel with a delay:
 
 \begin{verbatim}
-cSimpleChannel *channel = new cSimpleChannel("channel");
+cBasicChannel *channel = new cBasicChannel("channel");
 
 cPar *d = new cPar("delay");
 d->setDoubleValue(0.001);
