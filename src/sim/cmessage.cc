@@ -45,6 +45,7 @@ long cMessage::live_msgs = 0;
 
 cMessage::cMessage(const cMessage& msg) : cObject()
 {
+    refcount = 0;
     parlistp = NULL;
     encapmsg = NULL;
     ctrlp = NULL;
