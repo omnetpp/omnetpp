@@ -1,0 +1,1238 @@
+\chapter{Running The Simulation}
+\label{cha:running-the-simulation}
+
+
+\section{Command line switches}
+
+An {\opp} executable accepts the following command line
+switches\index{command line switches}:
+
+\begin{longtable}{lp{12cm}}
+  -h & The program prints a short help message and the networks
+  contained  in the executable and exits.\\
+  
+  -f\texttt{<}\textit{fileName\texttt{>}} & Specify the name of the
+  configuration file. The default is \texttt{omnetpp.ini}\index{omnetpp.ini}.
+  Multiple -f switches can be given; this allows you to partition your
+  configuration file.  For example, one file can contain your general
+  settings, another one most of the module parameters, another one the
+  module parameters you change often.\\
+  
+  -l\texttt{<}\textit{fileName\texttt{>}} & Load a shared
+  object\index{shared objects} (\texttt{.so} file on Unix).  Multiple
+  -l switches are accepted. Your \texttt{.so} files may contain module
+  code etc. By dynamically loading all simple
+  module code and compiled network description (\texttt{\_n.o} files
+  on Unix) you can even eliminate the need to re-link the simulation
+  program after each change in a source file.  (Shared objects can be
+  created with \texttt{gcc -shared...})\\
+  
+  -r\texttt{<}\textit{runs\texttt{>}} & Only recognized by simulations
+  linked with Cmdenv. It specifies which runs should be executed (e.g.
+  -r2,4,6-8). This option overrides the \texttt{runs-to-execute=}
+  option in the \texttt{[Cmdenv]} section of the ini file\index{ini file} (see later).\\
+\end{longtable}
+
+All other options are read from the configuration file.
+
+An example of running an {\opp} executable with the -h flag:
+
+\begin{Verbatim}
+C:\OMNETPP\PROJECTS\FDDI>fddi.exe  -h
+
+OMNeT++ Discrete Simulation, TUB Dept. of Telecommunications,  1990-97
+
+Networks in this program:
+ 1. NRing
+ 2. FDDI1
+
+End run of OMNeT++
+\end{Verbatim}
+
+
+
+
+\section{The configuration file: omnetpp.ini\index{omnetpp.ini}}
+
+\subsection{Sections and entries}
+
+The configuration file (also called ini file\index{ini file}, because
+it has an \texttt{.ini} extension) contains options that control how
+the simulation is executed and can also contain settings of model
+parameters.  The ini file is a text file consisting of entries grouped
+into different sections. The following sections can exist:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{[General]}
+\tbf{[Cmdenv], [Tkenv],...}
+\tbf{[Parameters]}
+\tbf{[OutVectors]}
+\tbf{[DisplayStrings]}
+\tbf{[Machines]}
+\tbf{[Slaves]}
+\tbf{[Run 1], [Run 2], [Run 3],...}
+\end{Verbatim}
+
+'\#' and ';' denote comments. A sample ini file:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+# omnetpp.ini
+
+\tbf{[General]}
+ini-warnings = false
+network = token
+distributed = no
+snapshot-file = token.sna
+output-vector-file = token.vec
+log-parchanges = no
+parchange-file = token.pch
+random-seed = 1
+sim-time-limit = 1000ms
+cpu-time-limit = 180s
+total-stack-kb = 2048
+
+\tbf{[Cmdenv]}
+runs-to-execute = 1-3,5
+module-messages = yes
+verbose-simulation = no
+display-update = 100ms
+
+\tbf{[Parameters]}
+token.num_stations = 3
+token.num_messages = 10000
+
+\tbf{[Run 1]}
+token.wait_time = 10ms
+
+\tbf{[Run 2]}
+token.wait_time = 30ms
+\end{Verbatim}
+
+
+Parameters that were set to input value in the
+NED\index{ned!parameters} file are searched for in the ini file.
+
+{\opp} can execute several simulation runs automatically one after
+another. If multiple runs\index{simulation!multiple runs} are
+selected, option settings and parameter values can be given either
+individually for each run, or together for all runs, depending in
+which section the option or parameter appears.
+
+
+This is summarized in the following table:
+
+\begin{longtable}{|p{4,5cm}|l|l|l|}
+\hline
+%% ROW 1
+\tabheadcol
+\tbf{What} & \tbf{If set for all runs together} & \tbf{If set for individual runs}\\\hline
+%% ROW 2
+general settings & \ttt{[General]} & \ttt{[Run 1]}, \ttt{[Run 2]} etc.\\\hline
+%% ROW 3
+user interface-specific settings & \ttt{[Cmdenv]}, \ttt{[Tkenv]} etc.
+& \ttt{[Run 1]}, \ttt{[Run 2]} etc.\\\hline
+%% ROW 4
+module parameter values & \ttt{[Parameters]} & \ttt{[Run 1]}, \ttt{[Run 2]} etc.\\\hline
+%% ROW 5
+output vector configuration & \ttt{[OutVectors]} & \ttt{[Run 1]}, \ttt{[Run 2]} etc.\\\hline
+%% ROW 6
+graphical appearance & \ttt{[DisplayStrings]} & \ttt{[Run 1]}, \ttt{[Run 2]} etc.\\\hline
+%% ROW 7
+\mbox{logical - physical machine} \linebreak
+mappings & \ttt{[Machines]} & not possible\\\hline
+%% ROW 8
+\mbox{with distributed execution}\linebreak
+settings for slave processes & \ttt{[Slaves]} & \ttt{[Run 1]}, \ttt{[Run 2]} etc.\\\hline
+\end{longtable}
+
+
+
+The most important options of the \texttt{[General]} section are the
+following.
+\begin{itemize}
+\item{The \fpar{ini-warnings} option can be used for ''debugging'' ini
+    files: if enabled, it lists which options were searched for but
+    not found.}
+  \item{The \fpar{network} option selects the model to be set up and run.}
+  \item{The length of the simulation can be set with the
+      \fpar{sim-time-limit} and the \fpar{cpu-time-limit} options (the
+      usual time units such as ms, s, m, h, etc. can be used).}
+  \item{The \fpar{warnings} option enables/disables run-time warnings;
+      it is recommended to be turned on while debugging.}
+  \item{The \fpar{distributed} flag selects between normal and parallel
+    execution.}
+\item{The output file names can be set with the following options:
+    \fpar{snapshot-file}, \fpar{output-vector-file},
+    \fpar{output-scalar-file}, \fpar{parchange-file}. (For the last
+    file to be written, one must explicitly enable parameter change
+    logging with the \fpar{log-parchanges} option).}
+\item{The \fpar{load-libs} entry can be used to load shared
+    objects\index{shared objects} (containing
+    simple modules, compiled
+    NED\index{ned!loading code} code etc) at run-time.  Each setting
+    has a meaningful default value.}
+\end{itemize}
+
+
+Almost any of the above options can also be specified individually 
+for each run. Per-run settings (if they exist) have priority 
+over globally set one.
+
+
+
+
+
+\subsection{Splitting up the configuration file}
+
+{\opp} supports file inclusion in ini files\index{ini file!file
+  inclusion}. This feature allows you to partition large ini files to
+logical units, fixed and varying part etc.
+
+An example:
+
+\begin{Verbatim}
+# omnetpp.ini
+...
+include parameters.ini
+include per-run-pars.ini
+...
+\end{Verbatim}
+
+
+
+
+\subsection{Module parameters in the configuration file}
+\index{module!parameters}
+
+Values for module parameters go into the \texttt{[Parameters]} or the
+\texttt{[Run 1]}, \texttt{[Run 2]} etc. sections of the ini file. The
+run-specific settings take precedence over the overall settings.
+Parameters that were assigned a (non-input) value in the NED file are
+not influenced by ini file settings.
+
+Wildcards (*,?)\index{ini file!wildcards} can be used to supply values
+to several model parameters at a time. Filename-style (glob) and not
+regex-style pattern matching is used. Character ranges use curly
+braces instead of square brackets to avoid interference with the
+notation of module vectors: \{a-zA-Z\}. If a parameter name matches
+several wildcards-patterns, the first matching occurrence is used.
+
+
+An example ini file:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+# omnetpp.ini
+
+\tbf{[Parameters]}
+token.num_stations = 3
+token.num_messages = 10000
+
+\tbf{[Run 1]}
+token.stations[*].wait_time = 10ms
+
+\tbf{[Run 2]}
+token.stations[0].wait_time = 5ms
+token.stations[*].wait_time = 1000ms
+\end{Verbatim}
+
+
+
+
+
+
+\subsection{Configuring output vectors}
+
+As a simulation program is evolving, it is becoming capable of
+collecting more and more statistics. The size of output vector
+files\index{output!vector file} can easily reach a magnitude of
+several ten or hundred megabytes, but very often, only some of the
+recorded statistics are interesting to the analyst.
+
+
+In {\opp}, you can control how \cclass{cOutVector} objects record data
+to disk. You can turn output vectors on/off or you can assign a result
+collection interval. Output vector configuration is given in the
+\texttt{[OutVectors]} section of the ini file, or in the \texttt{[Run
+  1]}, \texttt{[Run 2]} etc sections individually for each run. By
+default, all output vectors are turned on.
+
+
+Entries configuring output vectors can be like that:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\textit{module-pathname}.\textit{objectname}.enabled = yes/no
+\textit{module-pathname}.\textit{objectname}.interval = \textit{start}..\textit{stop}
+\textit{module-pathname}.\textit{objectname}.interval = ..\textit{stop}
+\textit{module-pathname}.\textit{objectname}.interval = \textit{start}..
+\end{Verbatim}
+
+The object name is the string passed to \cclass{cOutVector} in its constructor 
+or with the \fname{setName()} member function.
+
+\begin{Verbatim}
+cOutVector eed("End-to-End Delay",1);
+\end{Verbatim}
+
+Start and stop values can be any time specification accepted 
+in NED and config files (e.g. \textit{10h 30m 45.2s}). 
+
+
+As with parameter names, wildcards are allowed in the object 
+names and module path names.
+
+An example:
+
+\begin{Verbatim}
+#
+# omnetpp.ini
+#
+
+[OutVectors]
+*.interval = 1s..60s
+*.End-to-End Delay.enabled = yes
+*.Router2.*.enabled = yes
+*.enabled = no
+\end{Verbatim}
+
+
+The above configuration limits collection of all output vectors 
+to the 1s..60s interval, and disables collection of output vectors 
+except all end-to-end delays and the ones in any module called Router2.
+
+
+
+\subsection{Module parameter logging}
+
+It is possible to log all the changes to module parameters into a text
+file\index{module!parameter logging}. This can be useful when the
+simulation contains run-time tuning of one or more module parameters
+and one wants to have the trajectory documented.
+
+
+Module parameter logging must be explicitly enabled from the 
+header file if one wants to use it:
+
+\begin{Verbatim}
+[General]
+log-parchanges = yes
+parchange-file = token.pch
+\end{Verbatim}
+
+
+The format of the parameter change file is similar to the that 
+of the output vector file.
+
+If a parameter is taken by reference\index{module!parameters!by reference} by
+several modules, any change to the parameter will appear in the file
+under the name of the top-level parameter, no matter which module
+actually changed it and under what name.
+
+
+
+
+
+\subsection{Display strings}
+
+Display strings\index{display strings} control the modules' graphical
+appearance in the Tkenv user interface. Display strings can be
+assigned to modules, submodules and gates (a connection's display
+string is stored in its ''from'' gate). Display strings can be
+hardcoded into the NED file or specified in the configuration file.
+(Hardcoded display strings take precedence over the ones given in ini
+files.) Format of display string are documented in the Display String
+section (~\ref{sec:ch-ned-lang:display-strings}).
+
+Display strings can appear in the \texttt{[DisplayStrings]} section of 
+the ini file. They are expected as entries in one of the following 
+forms:
+
+\begin{Verbatim}
+moduletype = "..."
+moduletype.submodulename = "..."
+
+moduletype.inputgatename = "..."
+moduletype.submodulename.outputgatename = "..."
+\end{Verbatim}
+
+As with parameter names, wildcards\index{display strings!wildcards}
+are allowed in module types, submodule and gate names.
+
+
+
+
+
+\subsection{Specifying seed values}
+
+As is was pointed out earlier, it is of great importance that 
+different simulation runs and different random number sources 
+within one simulation run use non-overlapping sequences of random 
+numbers\index{random!numbers}.
+
+
+In {\opp}, you have three choices:
+\begin{enumerate}
+  \item{Automatic seed selection.}
+  \item{Specify seeds in the ini file (with the help of the seedtool
+    program, see later)}
+  \item{Manually set the seed from within the program.}
+\end{enumerate}
+
+If you decide for automatic seed selection\index{seed, automatic
+  selection}, do not specify any seed value in the ini file. For the
+random number generators, {\opp} will automatically select seeds that
+are 1,000,000 values apart in the sequence. If you have several runs,
+each run is started with a fresh set of seeds that are 1,000,000
+values apart from the seeds used for previous runs. Since the
+generation of new seed values is costly, {\opp} has a table of
+pre-calculated seeds (256 values); if they are all used up, {\opp}
+starts from the beginning of the table again.
+
+
+Automatic seed selection may not be appropriate for you for several
+reasons. First, you may need more than 256 seeds values; or, if you
+use variance reduction techniques, you may want to use the same seeds
+for several simulation runs. In this case, there is a standalone
+program to generate appropriate seed values (\fprog{seedtool} will be
+discussed in Section \ref{sec:ch-run-sim:choosing-good-seed}), and you
+can specify the seeds explicitly in the ini file.
+
+
+The following ini file explicitly initializes two of the random 
+number generators, and uses different seed values for each run:
+
+\begin{Verbatim}
+[Run 1]
+gen0-seed = 1768507984
+gen1-seed = 33648008
+
+[Run 2]
+gen0-seed = 1082809519
+gen1-seed = 703931312
+...
+\end{Verbatim}
+
+
+If you want the same seed values for all runs, you will write 
+something like this:
+
+\begin{Verbatim}
+[General]
+gen0-seed = 1768507984
+gen1-seed = 33648008
+\end{Verbatim}
+
+
+All other random number generators (2,3,...) will have their seeds
+automatically assigned.  As a third way, you can also set the seed
+values from the code of a simple module using
+\fname{genk\_randseed()}, but I see no reason why you would want to do
+so.
+
+
+
+
+
+\subsection{List of all ini file options}
+
+The exact meaning of the different entries are:
+
+
+\begin{longtable}{|p{6.5cm}|p{7.5cm}|}
+\hline
+\tabheadcol
+\tbf{Entry} & \tbf{Description}\\\hline
+
+%%
+%% General
+%%
+
+\multicolumn{2}{|c|}{\tbf{[General]}} \\\hline
+%%
+\fpar{ini-warnings} = yes & Helps debugging of the ini file. If turned
+on, {\opp} prints out the name of the entries it that it wanted to
+read but they were not in the ini file.\\\hline
+%% 
+\fpar{network} = & The name of the network to be simulated. \\\hline
+%%
+\fpar{distributed} = no & Parallel execution or not. \\\hline
+%%
+\fpar{parallel-system} = MPI & MPI or PVM. Defaults to MPI.\\\hline
+%%
+\fpar{snapshot-file} = omnetpp.sna & Name of the snapshot file. The result of
+each \fname{snapshot()} call will be appended to this file. \\\hline
+%%
+\fpar{output-vector-file} = omnetpp.vec & Name of output vector file. \\\hline
+%%
+\fpar{output-scalar-file} = omnetpp.sca & Name of output scalar file. \\\hline
+%%
+\fpar{pause-in-sendmsg} = no & Only makes sense with step-by-step execution.
+If enabled, {\opp} will split \fname{send()} calls to two steps.\\\hline
+%%
+\fpar{warnings} = yes & Globally turns on/off simulation runtime warnings. It is advisable 
+to leave this turned on. \\\hline
+%%
+\fpar{log-parchanges} = no & Specifies whether changes of module parameters should be logged 
+to file. \textit{Not supported after {\opp} 2.1.}\\\hline
+%%
+\fpar{parchange-file} = omnetpp.pch & File to save parameter changes to.
+\textit{Not supported after {\opp} 2.1.}\\\hline
+%%
+\fpar{sim-time-limit} = 1000ms & Duration of the simulation in simulation time.\\\hline
+%%
+\fpar{cpu-time-limit} = 180s & Duration of the simulation in real time.\\\hline
+%%
+\fpar{random-seed} = 542 & Random number seed for generator 0. Should not be zero.\\\hline
+%%
+\fpar{total-stack-kb} = 8192 & Specifies the total stack size (sum of all coroutine stacks) 
+in kilobytes. You need to increase this value if you get the 
+''Cannot allocate coroutine stack...'' error.\\\hline
+%%
+\fpar{load-libs} =  & {\raggedright Name of shared libraries (.so files) to load after startup. 
+You can use it to load simple module code etc.\\
+Example:\\
+\fpar{load-libs} =../x25/x25.so../lapb/lapb.so}\\\hline
+%%
+\fpar{netif-check-freq} = & Used with parallel execution.\\\hline
+%%
+\mbox{\fpar{gen0-seed} = 3567} \linebreak
+\mbox{\fpar{gen1-seed} = 4535} \linebreak
+\mbox{...} & Seeds for the given random number generator. They should be 
+nonzero. \\\hline
+%%
+\mbox{\fpar{outputvectormanager-class} =} \linebreak
+\cclass{cFileOutputVectorManager}
+&
+Part of the Envir\index{Envir} plugin mechanism: defines the name of
+the output vector manager class to be used to record data from output
+vectors\index{output!vector}.  The class has to implement the
+\cclass{cOutputVectorManager} interface defined in envirext.h.\\\hline
+%%
+\mbox{\fpar{outputscalarmanager-class} =} \linebreak
+\cclass{cFileOutputScalarManager}
+&
+Part of the Envir plugin mechanism: defines the name of the output
+scalar manager class to be used to record data passed to
+\fname{recordScalar()}. The class has to implement the
+\cclass{cOutputScalarManager} interface defined in envirext.h.
+\\\hline
+%%
+\mbox{\fpar{snapshotmanager-class} =} \linebreak
+\cclass{cFileSnapshotManager}
+&
+Part of the Envir plugin mechanism: defines the name of the class to
+handle streams to which \fname{snapshot()} writes its output.  The
+class has to implement the \cclass{cSnapshotManager} interface defined
+in envirext.h.\\\hline
+
+%%
+%% Cmdenv
+%%
+\multicolumn{2}{c}{}\\\hline
+\multicolumn{2}{|c|}{\tbf{[Cmdenv]}}\\\hline
+%%
+\fpar{runs-to-execute} =1,3-4,6 & Specifies which simulation runs should be executed\\\hline
+%%
+\fpar{module-messages} = yes/no & Globally enables/disables ev-style messages in simple modules 
+(e.g. ev \texttt{<}\texttt{<} ''sending{\textbackslash}n'';). \\\hline
+%%
+\fpar{verbose-simulation} = yes/no & {\raggedright Enables/disables printing banners for each event\\
+(''Event \#1234, T=...'' stuff.)}\\\hline
+%%
+\fpar{display-update} = 100ms & If there was no display from the
+simulation execution (both the above options are disabled), {\opp} can
+print out regular messages of the progress. The interval is understood
+in simulation time.\\\hline
+%%
+\fpar{extra-stack} = 16384 & Specifies the extra amount of stack
+(bytes) that is reserved for each \textit{\fname{activity()}}
+simple module when the simulation is linked with
+Cmdenv. \\\hline
+
+%%
+%% Tkenv
+%%
+\multicolumn{2}{c}{}\\\hline
+\multicolumn{2}{|c|}{\tbf{[Tkenv]}}\\\hline
+%%
+\fpar{default-run} = 1 & Specifies which run Tkenv should set up
+automatically after startup. If there's no default-run= entry or the
+value is 0, Tkenv will ask which run to set up. \\\hline
+%%
+\fpar{use-mainwindow} = yes & Enables/disables writing \textit{ev} output to the Tkenv main window. \\\hline
+%%
+\fpar{print-banners} = yes & Enables/disables printing banners for
+each event.\\\hline
+%%
+\fpar{breakpoints-enabled} = yes & Specifies whether the simulation
+should be stopped at each \fname{breakpoint()} call in the
+simple modules. \\\hline
+%%
+\fpar{update-freq-fast} = 10 & Number of events executed between two
+display updates when in \textit{Fast} execution mode. \\\hline
+%%
+\fpar{update-freq-express} = 500 & Number of events executed between
+two display updates when in \textit{Express} execution mode. \\\hline
+%%
+\fpar{animation-delay} = 0.3s & Delay between steps when you slow-execute the simulation. \\\hline
+%%
+\fpar{animation-enabled} = yes & Enables/disables message flow animation. \\\hline
+%%
+\fpar{animation-msgnames} = yes & Enables/disables displaying message names during message flow 
+animation. \\\hline
+%%
+\fpar{animation-msgcolors} = yes & Enables/disables using different colors
+for each message kind during message flow animation. \\\hline
+%%
+\fpar{animation-speed} = 1.0 & Specifies the speed of message flow animation. \\\hline
+%%
+\fpar{extra-stack} = 32768 & Specifies the extra amount of stack
+(bytes) that is reserved for each \textit{\fname{activity()}}
+simple module when the simulation is linked with
+Tkenv. \\\hline
+
+%%
+%% Slaves
+%%
+\multicolumn{2}{c}{}\\\hline
+\multicolumn{2}{|c|}{\tbf{[Slaves]}}\\\hline
+%%
+\fpar{write-slavelog} = yes & Enables/disables writing to the slave.log file\\\hline
+%%
+\fpar{slavelog-file} = slave.log & Specifies an alternative filename for slave.log. \\\hline
+%%
+\fpar{module-messages} = yes & Specifies whether module messages are printed or not. \\\hline
+%%
+\fpar{errmsgs-to-console} = yes & Specifies whether error messages should be
+sent to and displayed at the 'console' segment. \\\hline
+%%
+\fpar{infomsgs-to-console} = no & Specifies whether info messages
+should be sent to and displayed at the 'console' segment. \\\hline
+%%
+\fpar{modmsgs-to-console} = no & Specifies whether module \textit{ev}
+output should be sent to and displayed at the 'console'
+segment.\\\hline
+\end{longtable}
+
+
+
+\section{Choosing good seed values: the seedtool utility}
+\label{sec:ch-run-sim:choosing-good-seed}
+
+For selecting good seeds, the \fprog{seedtool} program can be used (it
+is in the utils directory). When started without command-line
+arguments, the program prints out the following help:
+
+\begin{Verbatim}
+seedtool - part of OMNeT++, (c) 1992-2001 Andras Varga, TU Budapest
+See the license for distribution terms and warranty disclaimer.
+
+A tool to help select good random number generator seed values.
+Usage: 
+  seedtool i seed         - index of 'seed' in cycle
+  seedtool s index        - seed at index 'index' in cycle
+  seedtool d seed1 seed2  - distance of 'seed1' and 'seed2' in cycle
+  seedtool g seed0 dist   - generate seed 'dist' away from 'seed0'
+  seedtool g seed0 dist n - generate 'n' seeds 'dist' apart, starting
+                            at 'seed0'
+  seedtool t              - generate hashtable
+  seedtool p              - print out hashtable
+\end{Verbatim}
+
+
+The last two options, p and t were used internally to generate 
+a hash table of pre-computed seeds that greatly speeds up the 
+tool. For practical use, the g option is the most important. 
+Suppose you have 4 simulation runs that need two independent 
+random number generators each and you want to start their seeds 
+at least 10,000,000 values apart. The first seed value can be 
+simply 1. You would type the following command:
+
+\begin{Verbatim}
+C:\OMNETPP\UTILS> seedtool g 1 10000000 8
+\end{Verbatim}
+
+
+The program outputs 8 numbers that can be used as random number 
+seeds:
+
+\begin{Verbatim}
+1768507984
+33648008
+1082809519
+703931312
+1856610745
+784675296
+426676692
+1100642647
+\end{Verbatim}
+
+
+You would specify these seed values in the ini file.
+
+
+
+
+
+\section{Repeating or iterating simulation runs}
+
+TBD Intro, and multiple simulation runs in \texttt{omnetpp.ini} vs
+controlling script.
+
+
+\tbf{Variations over parameter values}
+
+
+You don't need to generate the whole \texttt{omnetpp.ini} from program if you
+use include files\index{ini file!include files}. You can have a fixed
+\texttt{omnetpp.ini} which contains the line
+
+\begin{Verbatim}
+include parameters.ini
+\end{Verbatim}
+
+and then generate parameters.ini by program for each run.
+
+
+Here's the ''runall'' script of Joel Sherrill's \textit{File 
+System Simulator} as an example:
+
+\begin{Verbatim}
+#! /bin/bash
+#
+# This script runs multiple variations of the file system simulator.
+#
+all_cache_managers="NoCache FIFOCache LRUCache PriorityLRUCache..."
+all_schedulers="FIFOScheduler SSTFScheduler CScanScheduler..."
+
+for c in ${all_cache_managers}; do 
+  for s in ${all_schedulers}; do 
+  ( 
+    echo "[Parameters]" 
+    echo "filesystem.generator_type = \"GenerateFromFile\"" 
+    echo "filesystem.iolibrary_type = \"PassThroughIOLibrary\"" 
+    echo "filesystem.syscalliface_type = \"PassThroughSysCallIface\"" 
+    echo "filesystem.filesystem_type = \"PassThroughFileSystem\"" 
+    echo "filesystem.cache_type = \"${c}\"" 
+    echo "filesystem.blocktranslator_type = \"NoTranslation\"" 
+    echo "filesystem.diskscheduler_type = \"${s}\"" 
+    echo "filesystem.accessmanager_type = \"MutexAccessManager\"" 
+    echo "filesystem.physicaldisk_type = \"HP97560Disk\"" 
+  ) >algorithms.ini
+
+  ./filesystem 
+  done
+done
+\end{Verbatim}
+
+And \texttt{omnetpp.ini} includes \texttt{algorithms.ini}.
+
+
+\tbf{Variations over seed value (multiple independent runs)}
+
+
+The same technique can be used if you want several runs with different
+random seeds\index{random!seeds}. This code should do 500 runs with
+independent seeds (suppose one run doesn't use more than 10 million
+random values):
+
+\begin{Verbatim}
+#! /bin/bash
+
+for seed in `seedtool g 1 10000000 500`
+do
+   (
+     echo "[General]"
+     echo "random-seed = ${seed}"
+     echo "output-vector-file = xcube-${seed}.vec"
+   ) > parameters.ini
+   ./xcube
+done
+\end{Verbatim}
+
+
+\texttt{omnetpp.ini} should include parameters.ini.
+
+
+\tbf{Other languages for writing the control script}
+
+
+The above examples use the Unix shell, but you have quite a number 
+of options in what language to implement the controlling script. 
+Some ideas:
+\begin{itemize}
+  \item{shell (mentioned above)}
+  \item{Perl}
+  \item{Tcl}
+  \item{Octave (suggested by Richard Lyon, see the contrib/octave
+    directory for examples)}
+  \item{DOS/Win32 batch (maybe this is not such a good idea...)}
+\end{itemize}
+
+
+
+
+
+
+\section{User interfaces of simulation executables}
+
+The user interface\index{user interface} is separated from the
+simulation kernel; the two parts interact through a well-defined
+interface. This construction makes it possible to implement several
+types of user interfaces, without changing the simulation kernel.
+Also, the same simulation model can be executed with different user
+interfaces, without any change in the model files themselves. The user
+would test and debug the simulation with a powerful graphical user
+interface, and finally run it with a simple and fast user interface
+that supports batch execution.
+
+
+User interfaces takes the form of libraries (\texttt{.a} file or
+\texttt{.so} on UNIX, \texttt{.lib} or \texttt{.dll} file on NT). The
+libraries are interchangeable. When the user creates a simulation
+executable, he can pick one of the user interface libraries that he
+links in.
+
+
+Two user interfaces have been implemented:
+\begin{itemize}
+\item{Cmdenv: command-line user interface for batch execution}
+\item{Tkenv: graphical, windowing user interface (Tcl/Tk)}
+\end{itemize}
+
+The following sections contain more detailed descriptions about 
+each user interface.
+
+
+
+
+
+\subsection{Cmdenv: the command-line user interface}
+
+The command line user interface\index{command line user interface} is
+a small, portable and fast user interface that compiles and runs on
+all platforms whether it is UNIX, DOS, or WinNT console.
+Cmdenv\index{Cmdenv} is designed primarily for batch execution.
+
+Cmdenv uses simply executes all simulation runs that are described 
+in the configuration file. If one run stops with an error message, 
+subsequent ones will still be executed.
+
+
+Cmdenv recognizes the following ini file options:
+
+\begin{Verbatim}
+[Cmdenv]
+runs-to-execute = 1,4-6,8
+module-messages = no
+verbose-simulation = no
+display-update = 100ms
+\end{Verbatim}
+
+
+The first one specifies which runs (described in the \texttt{[Run 1]},
+\texttt{[Run 2]} etc. sections) should be executed. If the value is
+missing, Cmdenv executes all runs that have ini file sections; if no
+runs are specified in the ini file, Cmdenv does one run. The -r
+command line option overrides this ini file setting.
+
+
+The second and the third are yes/no settings and control the 
+amount of screen output during simulation. The fourth one is 
+in effect when the other two are disabled (that is, there would 
+be no display at all from the simulation execution); it prints 
+out progress messages at the specified frequency.
+
+{\underline {Portability:}} all platforms.
+
+
+
+\subsection{Tkenv: graphical user interface on Unix/NT}
+
+\tbf{Features}
+
+
+Tkenv\index{Tkenv} is a portable graphical windowing user interface.
+Tkenv supports interactive execution of the simulation, tracing and
+debugging\index{simulation!debugging}. Tkenv is recommended in the
+development stage of a simulation or for presentation and educational
+purposes, since it allows one to get a detailed picture of the state
+of simulation at any point of execution and to follow what happens
+inside the network. The most important feaures are:
+\begin{itemize}
+  \item{message flow animation}
+  \item{graphical display of statistics (histograms etc.) and output
+    vectors during simulation execution}
+  \item{separate window for each module's text output}
+  \item{scheduled messages can be watched in a window as simulation
+    progresses}
+  \item{event-by-event, normal and fast execution}
+  \item{labeled breakpoints}
+  \item{inspector windows to examine and alter objects and variables
+    in the model}
+  \item{simulation can be restarted}
+  \item{snapshots (detailed report about the model: objects, variables
+    etc.)}
+\end{itemize}
+
+
+Tkenv makes it possible to view simulation results (output vectors
+etc.) during execution. Results can be displayed as histograms and
+time-series diagrams. This can speed up the process of verifying the
+correct operation of the simulation program and provides a good
+environment for experimenting with the model during execution.  When
+used together with \fprog{gdb} or \fprog{xxgdb}, Tkenv can speed up
+debugging a lot.
+
+
+{\underline {Portability:}} Tkenv is built with Tcl/Tk. Tkenv should 
+work on all platforms that Tcl/Tk has been ported to: Unix/X, 
+Win32, Macintosh.
+
+
+You can get more information about Tcl/Tk in the Web pages listed 
+in the Reference.
+
+
+\tbf{Simulation running modes in Tkenv}
+
+
+Tkenv has the following modes for running the simulation :
+\begin{itemize}
+\item{Step}
+\item{Run}
+\item{Fast run}
+\item{Express run}
+\end{itemize}
+
+
+The running modes have their corresponding buttons on Tkenv's 
+toolbar.
+
+
+In \tbf{Step} mode, you can execute the simulation event-by-event.
+
+
+In \tbf{Run} mode, the simulation runs with all tracing aids on. 
+Message animation is active and inspector windows are updated 
+after each event. Output messages are displayed in the main window 
+and module output windows. You can stop the simulation with the 
+Stop button on the toolbar. You can fully interact with the user 
+interface while the simulation is running: you can open inspectors 
+etc.
+
+
+In \tbf{Fast} mode, animation is turned off. The inspectors and 
+the message output windows are updated after each 10 events (the 
+actual number can be set in Options{\textbar}Simulation options and 
+also in the ini file). Fast mode is several times faster than 
+the Run mode; the speedup can get close to 10 (or the configured 
+event count).
+
+In \tbf{Express} mode, the simulation runs at about the same speed 
+as with Cmdenv, all tracing disabled. Module output is not recorded 
+in the output windows any more. You can interact with the simulation 
+only once in a while (1000 events is the default as I recall), 
+thus the run-time overhead of the user interface is minimal. 
+You have to explicitly push the Update inspectors button if you 
+want an update.
+
+
+\tbf{Inspectors}
+
+
+In Tkenv, objects can be viewed through inspectors. To start, choose
+Inspect{\textbar}Network from the menu. Usage should be obvious; just
+use double-clicks and popup menus that are brought up by
+right-clicking. In Step, Run and Fast Run modes, inspectors are
+updated automatically as the simulation progresses. To make ordinary
+variables (int, double, char etc.) appear in Tkenv, use the
+\fname{WATCH()} macro in the C++ code.
+
+In list dialogs, entries begin with text like ''ptr0x8000ab7e''. 
+Yes, it is really the object pointer; knowing it is extremely 
+useful if you're running the simulation under a debugger such 
+as gdb.
+
+
+\tbf{Configuring Tkenv}
+
+
+In case of nonstandard installation, it may be necessary to set the
+\fvar{OMNETPP\_TKENV\_DIR} environment variable so that Tkenv can find
+its parts written in Tcl script.
+
+\begin{sloppypar}
+The default path from where the icons are loaded can be changed with
+the \fvar{OMNETPP\_BITMAP\_PATH} variable, which is a
+semicolon-separated list of directories and defaults to
+''\textit{omnetpp-dir}/bitmaps;.;./bitmaps''.
+\end{sloppypar}
+
+The ini file options accepted by Tkenv are:
+
+\begin{Verbatim}
+[Tkenv]
+use-mainwindow = yes
+print-banners = yes
+breakpoints-enabled = yes
+update-freq-fast = 10
+update-freq-express = 500
+animation-delay = 0.3s
+\end{Verbatim}
+
+The above options can also be set from within Tkenv itself, from 
+a configuration dialog box.
+
+\tbf{Embedding TCL code into the executable}
+
+A significant part of Tkenv is written in TCL, in several
+\texttt{.tcl} script files. The default location of the scripts is
+passed compile-time to \texttt{tkapp.cc}, and it can be overridden at
+run-time by the \fvar{OMNETPP\_TKENV\_DIR} environment variable. The
+existence of a separate script library can be inconvenient if you want
+to carry standalone simulation executables to different machines. To
+solve the problem, there is a possibility to compile the script parts
+into Tkenv as a large string constant.
+
+The details: the \fprog{tcl2c} program (its C source is there in the
+Tkenv directory) is used to translate the \texttt{.tcl} files into C
+code (\texttt{tclcode.cc}), which gets included into
+\texttt{tkapp.cc}. On Unix, this feature is enabled in Tkenv's
+makefile; it is documented there exactly how. On Win95/NT, one has to
+manually compile \texttt{tcl2c.c} into \fprog{tcl2c.exe}, run it to
+produce \texttt{tclcode.cc} and then compile \texttt{tkapp.cc} without
+providing the \fvar{OMNETPP\_TKENV\_DIR} external define. The latter
+will cause \texttt{tkapp.cc} to include and use \texttt{tclcode.cc}.
+
+
+
+
+\subsection{In Memoriam\dots }
+
+There used to be other user interfaces which have been removed 
+from the distribution.
+\begin{itemize}
+  \item{\tbf{TVEnv}. A Turbo Vision-based user interface, the first
+    interactive UI for {\opp}. (Turbo Vision was an excellent
+    character-graphical windowing environment, originally shipped with
+    Borland C++ 3.1.)}
+  \item{\tbf{XEnv}. A GUI written in pure X/Motif. It was an
+    experiment, written before I stumbled into Tcl/Tk and discovered
+    its immense productivity in GUI building. XEnv never got too far
+    because it was really very-very slow to program in Motif\dots}
+\end{itemize}
+
+
+
+
+\section{Typical problems}
+
+\subsection{Stack problems}
+
+\tbf{''Stack violation (\textit{FooModule} stack too
+  small?\index{stack!too small}) in module \textit{bar.foo}''}
+
+{\opp} detected that the module has used more stack space than it has
+allocated. You should increase the stack for FooModule. You can call
+the \fname{stackUsage()} from \fname{finish()} to find out actually
+how much stack the module used.
+
+\tbf{''Error: Cannot allocate \textit{nn} bytes stack for module \textit{foo.bar''}}
+
+If you get the above message, you have to increase the total stack
+size\index{stack!size} (the sum of all coroutine stacks). You can do
+so in \texttt{omnetpp.ini}:
+
+\begin{Verbatim}
+[General]
+total-stack-kb = 2048 # 2MB
+\end{Verbatim}
+
+
+There is no penalty if you set \fpar{total-stack-kb} too high. I
+recommend to set it to a few K less than the maximum process stack
+size allowed by the operating system (\fprog[ulimit]{ulimit -s}; see
+next section).
+
+
+\tbf{''Segmentation fault''}
+
+
+On Unix, if you set the total stack size higher, you may get a
+segmentation fault during network setup\index{segmentation fault} (or
+during execution if you use dynamically created modules) for exceeding
+the operating system limit for maximum stack size. For example, in
+Linux 2.0.x, the stack can be at most 8192K (that is, 8MB). The
+\fprog{ulimit} syscall and utility program can be used to modify the
+resource limits, but you can only increase if you're root.
+Furthermore, resource limits are inherited by child processes. The
+following statement worked out for me under Linux to get a shell with
+a 64M stack limit:
+
+\begin{Verbatim}
+$ su root
+Password:
+# ulimit -s 65536
+# su andras
+$ ulimit -s
+65536 
+\end{Verbatim}
+
+If you do not want to go through the above process at each login, you
+can change the limit in the PAM configuration files. In Redhat Linux
+(maybe other systems too), add the following line to
+\ttt{/etc/pam.d/login}:
+
+\begin{Verbatim}
+session    required    /lib/security/pam_limits.so
+\end{Verbatim}
+
+and the following line to \ttt{/etc/security/limits.conf}:
+
+\begin{Verbatim}
+*    hard    stack    65536
+\end{Verbatim}
+
+\begin{sloppypar}
+A more drastic solution is to recompile the kernel with a larger stack
+limit. Edit \ttt{/usr/src/linux/include/linux/sched.h} and increase
+\ttt{\_STK\_LIM} from \ttt{(8*1024*1024)} to \ttt{(64*1024*1024)}.
+\end{sloppypar}
+
+Finally, it you're tight with memory, you can switch to Cmdenv. Tkenv
+increases the stack size of each module by about 32K\index{stack!for
+  Tkenv} so that user interface code that is called from a
+simple module's context can be safely executed.
+Cmdenv does not need that much extra stack.
+
+
+
+
+\subsection{Memory allocation problems}
+
+For investigating memory allocation problems, try using Cmdenv, 
+and uncomment the \ttt{\#defines} in \ttt{src/envir/cmdenv/heap.cc}:
+
+\begin{longtable}{l@{\qquad}p{10cm}}
+\fmac{HEAPCHECK} & checks heap on new/delete\\
+\fmac{COUNTBLOCKS} & counts blocks on heap and tells it if none left\\
+\fmac{ALLOCTABLE} & remembers pointers and reports heap contents if only LASTN 
+blocks remained\\
+\fmac{DISPLAYALL} & reports every new/delete\\
+\fmac{DISPSTRAYS} & reports deleting of pointers that were not registered 
+by operator new or that were deleted since then\\
+\fmac{BKPT} &  calls a function at a specified new/delete; you can set a 
+breakpoint to that function\\
+\end{longtable}
+
+
+If \fmac{COUNTBLOCKS} is turned on, you should see the
+\texttt{[heap.cc-DEBUG:ALL BLOCKS FREED OK]} message at the end of the
+simulation. If you do not see it, it means that some blocks have not
+been freed up properly, that is, your simulation program is likely to
+have memory leaks\index{memory leaks}.
+
+
+
+
+
+\section{Execution speed}
+
+If your simulation program is tested and runs OK, you'll probably want
+to run it as fast as possible. Here's a table that could help where to
+begin optimizing\index{simulation!optimizing for speed}.
+
+
+The measurements were made on one version of the FDDI model (you can
+find it in the samples directory); we simulated 10 milliseconds.  We
+used Cmdenv. The machine was a 100Mhz Intel Pentium with 32MB RAM. The
+simulation program was compiled with Borland C++ 3.1 (no particular
+optimization) and run on DOS 6.22. Disk caching was installed
+(SmartDrive read/write caching, 8MB cache).
+
+\begin{longtable}{|p{3cm}|p{2cm}|p{8cm}|}
+\hline
+%% ROW 1
+\tabheadcol
+\tbf{Settings} & \tbf{Execution time} & \tbf{Details}\\\hline
+%%
+{\raggedright all screen output on;\\
+  full heapcheck}
+&
+7 min 50 sec
+&
+{\raggedright Setting in \texttt{omnetpp.ini}:\\
+\texttt{verbose-simulation = yes}\\
+\texttt{module-messages = yes}\\
+The \ttt{\#defines} in \ttt{envir/cmdenv/heap.cc} were all enabled. This means 
+full heapcheck with each allocation, tracking of all allocated 
+blocks etc.}\\\hline
+%%
+{\raggedright no screen output at all;\\
+  full heapcheck}
+&
+5 min 50 sec
+&
+{\raggedright All screen output were \#ifdef'ed out from source; also, the \texttt{omnetpp.ini} 
+contained the\\
+\texttt{verbose-simulation = no}\\
+line. The heapcheck defines were turned on.}\\\hline
+%%
+{\raggedright all screen output on;\\
+  no heapcheck}
+&
+2 min
+&
+We turned off heapcheck (we commented out the defines in heap.cc) 
+and turned back on the screen output. We used the same \texttt{omnetpp.ini}: 
+setting as with first case.\\\hline
+%%
+{\raggedright screen output redirected to file;\\
+  no heapcheck}
+&
+15.5 sec
+&
+{\raggedright Same as previous configuration, except that we run the program 
+with\\
+\texttt{fddi > output.txt}} \\\hline
+%%
+{\raggedright screen output redirected to NUL;\\
+  no heapcheck}
+&
+13 sec
+&
+{\raggedright Same as previous configuration, except that we run the program 
+with\\
+\texttt{fddi > NUL}}\\\hline
+%%
+{\raggedright screen output turned off from ini file;\\
+  no heapcheck}
+&
+7.5 sec
+&
+{\raggedright We did not only redirect but also disabled screen output. Setting 
+in \texttt{omnetpp.ini}:\\
+\texttt{verbose-simulation = no}\\
+\texttt{module-messages = no}}\\\hline
+%%
+{\raggedright no screen output generation;\\
+  no heapcheck}
+&
+4.5 sec
+&
+We \#ifdef'ed out all printouts from the simple module sources 
+and also turned off any messages from \texttt{omnetpp.ini}.\\\hline
+\end{longtable}
+
+
+
+The moral is that heap checks\index{head checks} and screen output
+greatly influences speed, so once you do not need them (debugging is
+over), throw them out. You also gain a lot by putting \texttt{\#ifdef}
+lines around your debugging code. And of course, program with care.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "usman"
+%%% End: 

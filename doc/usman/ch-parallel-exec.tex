@@ -1,0 +1,455 @@
+\chapter{Parallel Execution}
+\label{cha:parallel-execution}
+
+\section{{\opp} support for parallel execution}
+
+\subsection{Introduction to Parallel Discrete Event Simulation}
+
+{\opp} supports parallel execution\index{parallel execution} of large
+simulations. The following paragraphs provide a very brief (and thus
+not very accurate) picture of the problems and methods of parallel
+discrete event simulation (PDES\index{PDES}). Interested readers --
+and those who are thinking about doing PDES with {\opp} -- are
+strongly encouraged to look into the literature.
+
+
+For parallel execution, the model is to be partitioned to several
+segments that will be simulated independently on different hosts or
+processors. Each segment will have its own local Future Event Set,
+thus they will maintain local simulation times. The main issue with
+parallel simulations is keeping segments synchronized in order to
+avoid violating causality of events. Without synchronization, a
+message sent by one segment could arrive in another segment when the
+simulation time in the receiving segment has already passed the
+timestamp (arrival time) of the message. This would break
+causality\index{event!causality} of events in the receiving segment.
+
+There are mainly three different methods used for synchronizing 
+segments:
+\begin{enumerate}
+  \item{\textbf{Conservative synchronization}\index{conservative
+      synchronization} exploits knowledge about when segments send
+    messages to other segments, and uses 'null' messages to propagate
+    this info to other segments. This may speed up simulation, since
+    e.g. if a segment knows it won't receive any messages from other
+    segments until $t+\Delta t$ simulation time, it may advance until
+    $t+\Delta t$ without the need for external synchronization.
+    Conservative syncronization requires modifications to existing
+    models, i.e., inserting code which sends out the 'null' messages.
+    Conservative simulation tends to converge to sequential simulation
+    (slowed down by communication between segments) if there's not
+    enough parallelism in the model, or parallelism is not exploited
+    by sending enough 'null' messages.}
+  
+  \item{\textbf{Optimistic synchronization}\index{optimistic
+      synchronization} allows incausalities to occur, but detects and
+    repairs them. Repairing involves rollbacks to a previous state,
+    sending out anti-messages to cancel messages sent out during the
+    period that is being rolled back, etc.  Optimistic synchronization
+    is extremely difficult to implement, because it requires periodic
+    state saving and the ability to restore previous states. In any
+    case, implementing optimistic synchronization in {\opp} would
+    require -- in addition to a more complicated simulation kernel --
+    writing significantly more complex simple\index{module!simple}
+    module code from the user.  Optimistic synchronization may be slow
+    in cases of excessive rollbacks.}
+  
+  \item{\textbf{Statistical synchronization}\index{statistical
+      synchronization} is a compromise where segments do not exchange
+    individual messages but distributions of the traffic flow
+    characteristics. While conservative and optimistic synchronization
+    are exact methods (they produce exactly the same results as the
+    corresponding sequential simulation would), this is certainly not
+    true for statistical synchronization where the results may contain
+    error introduced by the statistical nature of the synchronization.
+    Statistical synchronization does not require changes to existing
+    models, only the insertion of extra modules, called
+    \textit{''statistical interfaces''}, therefore it is significantly
+    easier to implement than either conservative or optimistic. In
+    addition to easier implementation, there is a potential for much
+    larger speedup than with conservative or optimistic, because the
+    method is much less sensitive to communication delay between
+    processors running the segments. Therefore, for parallel
+    simulation on a cluster of workstations, statistical
+    synchronisation may be the only feasible method.}
+\end{enumerate}
+
+
+
+
+
+\subsection{{\opp} support for parallel simulation}
+
+The simulation kernel makes it possible to send messages from one
+segment to another. A message can contain arbitrarily complex data
+structures; these are transferred transparently, even between hosts of
+different architectures. The simulation kernel provides a simple
+synchronization mechanism (\textit{syncpoints}, available through the
+\fname{syncpoint()} call) that can ensure that causality is kept when
+sending messages between segments. Syncpoints correspond to
+\textit{null messages} found in the literature.
+
+Message sending and syncpoints enable one to implement conservative 
+PDES and also Statistical Synchronization. The simulation class 
+library contains objects that explicitly support the implementation 
+of models using Statistical Synchronization.
+
+
+High level debugging is supported by saving the textual output 
+from remote segments to a log file and/or relaying them to a 
+single console.
+
+{\opp} supports flexible partitioning of the
+model\index{model!partitioning}. In the NED language, by using
+\textit{machine parameters} you can specify \textit{logical
+  hosts}\index{logical hosts} for different modules at any level of
+the module hierarchy of the network. You map logical hosts to physical
+ones in the ini file; if you map several logical hosts into the same
+physical machine, they will be merged into a single {\opp} process.
+
+
+One may choose between using the MPI\index{MPI} (Message Passing
+Interface) and the PVM3\index{PVM} (Parallel Virtual Machine Version
+3) libraries for communication between hosts. Both libraries are
+portable and widely used in university and research environments. MPI
+is newer though and considered to be the successor of PVM. You can
+find MPI and PVM readings in the Reference.
+
+
+
+
+
+\subsection{Syncpoints}
+
+\textbf{Overview}
+
+
+When running a simulation in parallel, different segments of 
+the model execute as independent UNIX processes, typically on 
+separate hosts. Since the hosts can be of different speed and 
+the simulated model segments can be of different complexity, 
+at a given moment the model times of different segments will 
+differ: some segments are ahead of the others and some lag behind. 
+Suppose that a message is sent from segment A to segment B which 
+is ahead of A in model time. If B processed the message, causality 
+would break. This should never happen.
+
+
+The solution built in {\opp} is the following. Segment A must know in
+advance when it will send the next message to segment B and announce
+it with the \fname{syncpoint()} call. The simulation kernel sends the
+syncpoint to segment B. When segment B's model time reaches the
+specified time, segment B's simulation kernel blocks execution until
+the promised message arrives from A. Then the simulation continues,
+typically but not necessarily with the message that has just been
+received from A.
+
+In the reverse case when A is ahead of B, A's message arrived at B
+before it has reached the syncpoint. In this case, there is no problem
+and the syncpoint is just an unnecessary precaution. B just inserts
+the message in its future event set, clears the syncpoint and
+continues execution.
+
+
+\textbf{The syncpoint API}
+
+
+The \fname{syncpoint()} call takes two arguments. The first is the
+model time when (or more precisely: when of after when) the simple
+module will send a message to another simple module in a different
+segment. The second argument is a gate given with its number or its
+name. The gate implicitly specifies the destination segment to
+synchronize with.
+
+\begin{Verbatim}
+syncpoint(t, "outgate");
+\end{Verbatim}
+
+
+\textbf{Details of the syncpoint implementation}
+
+
+If the destination module is in the same segment, the call is ignored.
+(This makes it possible to run models designed to execute in parallel
+as a single process, without any modification.) Each segment keeps a
+list of syncpoints sent to it (time + gate), ordered by time.
+Simulation executes normally until it comes to an event that has a
+time \textit{definitely past} the first syncpoint in the list. That
+event is not processed, but the segment goes into a blocked state.
+While the segment is blocked, it listens for messages arriving from
+other segments. (In the actual implementation, passive wait is used so
+a blocked segment doesn't use much CPU time.) Each message that
+arrives deletes the first syncpoint in the list that matches its gate.
+The segment goes out of the blocked state when -- because of deletions
+-- the first syncpoint in the list is no longer past the event in
+question. Then the simulation goes on normally, either with the newly
+arrived message (or the earliest of them) or the original event. A
+message that arrives outside of the blocked state also causes deletion
+of the first matching syncpoint in the list; this case corresponds to
+the reverse case when the sender segment is ahead of the receiving
+segment in model time.
+
+
+\textbf{Deadlock}
+
+
+It is possible to cause deadlock\index{parallel simulation!deadlock}
+with carelessly placed syncpoints.  Suppose that segment A declares a
+syncpoint at 10s with segment B, but it will actually send a message
+only at 10.5s. If segment B does the same to segment A, a nice
+deadlock is created. {\opp} makes no effort to detect or prevent such
+deadlocks; it is entirely the simulation programmer's task to take
+care that deadlocks do not occur.
+
+
+
+
+\section{Configuring a simulation for parallel execution}
+
+\subsection{Configuring {\opp}}
+
+\subsubsection{Choosing between MPI and PVM}
+
+
+You have let {\opp} know if you want to use MPI\index{MPI} or
+PVM\index{PVM}. This can be configured in the \texttt{[General]}
+section of the ini file, via te
+\fpar[parallel-system]{parallel-system=} entry. Its value can be
+''PVM'' or ''MPI''; it defaults to ''MPI''.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+; file: omnetpp.ini
+;...
+\textbf{[General]}
+parallel-system = MPI
+\end{Verbatim}
+
+
+\subsubsection{Mapping logical machines to physical ones}
+
+The \fpar[ned!keywords!on]{on:} phrases in the NED descriptions
+specify the logical machine(s) on which the module is run. The machine
+parameters are mapped to physical machines in the \texttt{[Machines]}
+section of the configuration file:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+; file: omnetpp.ini
+;...
+\tbf{[Machines]}
+node1 = whale.hit.bme.hu
+node4 = whale.hit.bme.hu
+node2 = puppis.hit.bme.hu
+node3 = dolphin.hit.bme.hu
+;...
+\end{Verbatim}
+
+
+\subsubsection{Configuration of the slaves}
+
+Slave processes can be configured in the \texttt{[Slaves]} section of
+the configuration file:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+; file: omnetpp.ini
+\textbf{[Slaves]}
+write-slavelog=
+slavelog-file=
+module-messages=
+errmsgs-to-console=
+infomsgs-to-console=
+modmsgs-to-console=
+\end{Verbatim}
+
+Screen input/output of the slaves is re-routed to the console.
+However, any file I/O is done in the local file system of each host.
+
+
+
+\subsection{Setting up PVM}
+
+\subsubsection{The PVM virtual machine}
+
+
+The \ttt{pvmhosts} file is used by PVM to describe what computers will
+participate in the virtual machine, where the executables (in our
+case, the {\opp} programs) are located on each computer, what working
+directories should be set etc.
+
+
+It is advisable to have a common, shared directory mounted on all
+participating hosts; this eliminates the tedious work of having to
+copy files to all hosts again and again.
+
+
+If using {\opp}, it is a good idea to write separate \texttt{pvmhosts}
+files for each simulation program. Since simulation programs are
+typically in separate directories, the \texttt{pvmhosts} file in each
+directory can name that directory as executables directory and working
+directory for each host. This way, there is no need to create soft
+links or explicitly name directories in the {\opp} ini files.
+
+
+Each line in the \texttt{pvmhosts} file describes one host. An example
+line (this all should be a \textit{single line}!):
+
+\begin{Verbatim}
+whale ip=whale.hit.bme.hu lo=andras
+   dx=/home/andras/pvm/pvm
+   ep=/home/andras/omnetpp/projects/fddi
+   wd=/home/andras/omnetpp/projects/fddi
+\end{Verbatim}
+
+To start PVM with this configuration:
+
+\begin{Verbatim}
+cd ~/omnetpp/projects/fddi
+pvm pvmhosts
+\end{Verbatim}
+
+\subsubsection{Configuration and running}
+
+The user must have PVM installed on the hosts he is going to 
+run segments on.
+
+
+To set up a simulation for distributed execution, the user must:
+\begin{enumerate}
+\item{set the \fvar{PVM\_ROOT} environment variable}
+\item{link the simulation executable with \ttt{sim\_pvm} instead of
+  \ttt{sim\_std} (You can do it by setting \fvar{PVM\_SUPPORT} to
+  \ttt{yes} in a \fprog{opp\_makemake}-generated makefile.)}
+\item{set \ttt{distributed=true} in the \ttt{[General]} section of the
+  configuration file.}
+\item{specify the logical-hosts-to-physical-machines mapping in the
+  \ttt{[Machines]} section}
+\item{copy the simulation executable and the configuration file to
+  each host if they have physically different disks}
+\item{start \ttt{pvm} with an appropriate \ttt{pvmhosts} file}
+\item{start the simulation executable on the host which is supposed to
+  be the console. That process will start up the program on the other
+  hosts too and do the simulation.}
+\end{enumerate}
+
+The first machine is called ''console'' or ``master'', the 
+others are called ``slaves''.
+
+
+\subsubsection{If there are problems...}
+
+
+PVM programs in general are more difficult to get running than 
+ordinary programs. Wrong settings in the PVM configuration files 
+can cause various problems, for example. Also, parallel programs 
+are a lot harder to test and debug.
+
+
+What can you do if your distributed {\opp} simulation won't 
+work?
+\begin{itemize}
+  \item{First of all, check the \ttt{pvmhosts} file to see if PVM
+    looks for the executables in the right directories on all hosts
+    and the working directories are right (typically, the same
+    directory as the executable's).}
+  \item{In the ini file, enable writing the \ttt{slave.log} files for
+    the slave processes and check what is written into them.}
+  \item{You can try enabling the \fdef{SINGLE\_HOST} define in the
+    \ttt{sim/pvm/pvmmod.cc} source file. This will make {\opp} run all
+    segments of the distributed simulation on the local host, making
+    things a lot easier to manage. }
+  \item{Also, try the defining \fdef{PVM\_DEBUG} at the same place: it
+    enables a lot of \fname{ev.printf()}s in the code interfacing with
+    PVM, so it is easier to spot where the problems are.}
+  \item{PVM itself also has an environment variable which, if set,
+    causes the PVM library to print out debugging information.
+    However, this is very low-level information, it will rarely be
+    useful.}
+\end{itemize}
+
+
+
+
+\subsection{Setting up MPI}
+
+TBD\dots \\
+
+
+
+
+
+\section{Statistical synchronization}
+\begin{sloppypar}
+\subsection{The description of the Statistical Synchronization Method (SSM)}
+\end{sloppypar}
+
+Similarly to other parallel discrete event simulation methods, the
+model to be simulated - which is more or less a precise representation
+of a real system - is divided into segments, where the segments
+usually describe the behaviour of functional units of the real system.
+The communication of the segments can be represented by sending and
+receiving various messages. The simulators of the segments are
+executed by separate processors.
+
+
+The communication of these segments is simulated with appropriate
+interfaces. The messages generated in a given segment and to be
+processed in a different segment are not transmitted there, but the
+output interfaces collect the statistical data of them.  If the input
+interfaces generate messages for the segments according to the
+statistical characteristics of the messages collected by the proper
+output interfaces, the segments with their input- and output
+interfaces can be simulated separately, giving statistically correct
+results. The events in one segment have not the same effect in other
+segments as in the original model, so the results collected during the
+SSM\index{SSM} are not exact. The precision depends on the
+segmentation, on the accuracy of statistics collection and
+regeneration, and on the frequency of the statistics exchange among
+the processors.
+
+
+\textbf{Segmentation}
+
+
+The segments of the simulator\index{simulation!parallel segments} are
+executed by separate processors, they have their own, independent
+virtual times. Because the interactions among segments are performed
+by the statistical parameters of these interactions, the segmentation
+should be done so, that the overwhelming majority of the interactions
+should happen within the segments and not among them. This speeds up
+the so-called inter-segment transients\index{inter-segment transients}
+and improves the accuracy as well.
+
+
+\textbf{Timing of statistics exchange}
+
+
+Asynchronous statistics exchange\index{statistic!asynchronous
+  exchange} means, that whenever a statistical result collection in an
+output interface is ready, it is applied - after mapping and
+correction - in the proper input interface.  This is clearly more
+efficient, than the so-called synchronous statistics
+exchange\index{statistic!synchronous exchange}, which means, that we
+delay the application of collected values until all the output
+interfaces get ready with the result collection. Frequent statistics
+exchange makes the inter-segment transient faster, but the lower
+sample numbers makes the estimation - and the whole simulation - less
+precise.
+
+
+To learn more about SSM, see [PON92] and [PON93].
+
+
+
+
+
+\subsection{Using SSM in {\opp}}
+
+{\opp} directly supports the implementation of statistical
+interface\index{statistical interface} with the following classes:
+
+\cclass{cLongHistogram}, \cclass{cDoubleHistogram}, \cclass{cPSquare}, \cclass{cPar}.
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "usman"
+%%% End: 

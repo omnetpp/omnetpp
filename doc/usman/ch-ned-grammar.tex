@@ -1,0 +1,222 @@
+\chapter{NED Language Grammar}
+\label{cha:ned-language-grammar}
+
+The NED language\index{ned!language}, the network topology description language of 
+{\opp} will be given using the extended BNF notation.
+
+Space, horizontal tab and new line characters counts as delimiters, 
+so one or more of them is required between two elements of the 
+description which would otherwise be unseparable. '//' (two slashes) 
+may be used to write comments that last to the end of the line. 
+The language only distinguishes between lower and upper case 
+letters in names, but not in keywords.
+
+
+In this description, the \{xxx...\} notation stands for one or 
+more xxx's separated with spaces, tabs or new line characters, 
+and \{xxx,,,\} stands for one or more xxx's, separated with a 
+comma and (optionally) spaces, tabs or new line characters.
+
+
+For ease of reading, in some cases we use textual definitions. 
+The \textit{networkdescription} symbol is the sentence symbol of the 
+grammar.
+
+
+\begin{Verbatim}[commandchars=\\\{\}]
+        \textbf{notation    meaning}
+        [a]         0 or 1 time a
+        \{a\}         a
+        \{a,,,\}      1 or more times a, separated by commas
+        \{a...\}      1 or more times a, separated by spaces
+        a|b         a or b
+        `a'         the character a
+        \textbf{bold}        keyword
+        \textit{italic}      identifier
+
+
+networkdescription ::=
+    \{ definition... \}
+
+definition    ::=
+      include
+    | channeldefinition
+    | simpledefinition
+    | moduledefinition
+    | networkdefinition
+
+include ::=
+    \textbf{INCLUDE} \{ fileName ,,, \} ;
+
+channeldefinition ::=
+    \textbf{CHANNEL} \textit{channeltype} 
+     [ \textbf{DELAY} numericvalue ] 
+     [ \textbf{ERROR} numericvalue ] 
+     [ \textbf{DATARATE} numericvalue ] $^{******}$
+    \textbf{ENDCHANNEL}
+
+simpledefinition ::= 
+    \textbf{SIMPLE} \textit{simplemoduletype}\index{module!simple}
+     [ machineblock ] 
+     [ paramblock ]
+     [ gateblock ]
+    \textbf{ENDSIMPLE} [ \textit{simplemoduletype} ]
+
+moduledefinition ::= 
+    \textbf{MODULE} \textit{compoundmoduletype}\index{module!compound}
+     [ machineblock$^{*}$ ] 
+     [ paramblock ]
+     [ gateblock ]
+     [ submodblock ]
+     [ connblock ]
+    \textbf{ENDSIMPLE} [ \textit{compoundmoduletype} ]
+
+moduletype ::=
+    \textit{simplemoduletype} | \textit{compoundmoduletype}
+
+machineblock ::= 
+    \textbf{MACHINES:} \{ \textit{machine} ,,, \} ;
+
+paramblock ::=
+    \textbf{PARAMETERS:} \{ parameter ,,, \} ;
+
+parameter ::=
+    \textit{parametername}
+    | \textit{parametername} : \textbf{CONST} [ \textbf{NUMERIC} ] 
+    | \textit{parametername} \textbf{: STRING} 
+    | \textit{parametername} \textbf{: BOOL} 
+    | \textit{parametername} \textbf{: CHAR} 
+    | \textit{parametername} \textbf{: ANYTYPE}
+
+gateblock ::=
+    \textbf{GATES:} 
+     [ \textbf{IN:} \{ gate ,,, \} ; ]
+     [ \textbf{OUT:} \{ gate ,,, \} ; ]
+gate ::=
+    \textit{gatename} [ '[]' ]
+
+submodblock ::=
+    \textbf{SUBMODULES:} \{ submodule... \}
+
+submodule ::=
+    \{ \textit{submodulename} : \textit{moduletype} [ vector ]
+     [ on\_block$^{*}$... ] 
+     [ substparamblock... ]
+     [ gatesizeblock... ] \} 
+  | \{ \textit{submodulename} : \textit{parametername} [ vector ] \textbf{LIKE} \textit{moduletype}
+     [ on\_block$^{*}$... ] 
+     [ substparamblock... ]
+     [ gatesizeblock... ] \} 
+
+on\_block$^{*}$ ::= 
+    \textbf{ON} [ \textbf{IF} expression ]\textbf{:} \{ \textit{on\_machine} ,,, \} ;
+
+substparamblock    ::= 
+    \textbf{PARAMETERS} [ \textbf{IF} expression ]\textbf{:} 
+      \{ \textit{substparamname} = substparamvalue,,, \} ;
+
+substparamvalue ::=
+    ( [ \textbf{ANCESTOR} ] [ \textbf{REF} ] \textit{name} )
+    | parexpression
+
+gatesizeblock ::= 
+    \textbf{GATESIZES} [ \textbf{IF} expression ]\textbf{:} 
+      \{ \textit{gatename} vector ,,, \} ;
+
+connblock ::= 
+    \textbf{CONNECTIONS} [ \textbf{NOCHECK} ]\textbf{:} \{ connection ,,, \} ;
+
+connection ::= 
+     normalconnection | loopconnection
+
+loopconnection ::= 
+    \textbf{FOR} \{ index... \} \textbf{DO} 
+      \{ normalconnection ,,, \} ;
+    \textbf{ENDFOR}
+
+index ::= 
+    \textit{indexvariable} '=' expression ``...'' expression
+
+normalconnection ::= 
+     \{ gate \{ --> | <-- \} gate [ \textbf{IF} expression ]\}
+   | \{gate --> channel --> gate [ \textbf{IF} expression ]\}
+   | \{gate <-- channel <-- gate [ \textbf{IF} expression ]\}
+
+channel ::=
+     \textit{channeltype}
+    | [ \textbf{DELAY} expression ] [ \textbf{ERROR} expression ] [ \textbf{DATARATE} expression ]  
+        $^{******}$
+
+gate ::= 
+    [ \textit{modulename} [vector]. ] \textit{gatename} [vector]
+
+networkdefinition ::=
+    \textbf{NETWORK} \textit{networkname} : \textit{moduletype}
+     [ on\_block ]
+     [ substparamblock ]
+    \textbf{ENDNETWORK}
+
+vector ::=    '[' expression ']'
+
+parexpression ::=
+    expression | otherconstvalue
+
+expression    ::= 
+      expression + expression
+    | expression - expression
+    | expression * expression
+    | expression / expression
+    | expression \% expression
+    | expression {\textasciicircum} expression
+    | expression == expression
+    | expression != expression
+    | expression \texttt{<} expression
+    | expression \texttt{<}= expression
+    | expression \texttt{>} expression
+    | expression \texttt{>}= expression
+    | expression ? expression : expression
+    | expression \textbf{AND} expression
+    | expression \textbf{OR} expression
+    | \textbf{NOT} expression
+    | '(' expression ')'
+    | \textit{functionname} '(' [ expression ,,, ] ')' $^{***}$
+    | - expression
+    | numconstvalue
+    | inputvalue
+    | [ \textbf{ANCESTOR} ] [ \textbf{REF} ] \textit{parametername}
+    | \textbf{SIZEOF}$^{****}$ '(' \textit{gatename} ')'
+    | \textbf{INDEX}$^{*****}$
+
+numconstvalue ::=
+    \textit{integerconstant} | \textit{realconstant} | \textit{timeconstant}
+
+otherconstvalue ::= 
+      '\textit{characterconstant'}
+    | ''\textit{stringconstant}''
+    | \textbf{TRUE} 
+    | \textbf{FALSE}
+
+inputvalue ::= 
+    \textbf{INPUT} '(' default , ''\textit{prompt-string''} ')'
+
+default ::= 
+    expression | otherconstvalue
+\end{Verbatim}
+
+
+$^{*}$ used with distributed execution
+
+
+$^{**}$ used with the statistical synchronization method\\
+$^{***}$ max. three arguments. The function name must be declared 
+in the C++ sources with the Define\_Function macro.\\
+$^{****}$ Size of a vector gate.\\
+$^{*****}$ Index in submodule vector.\\
+$^{******}$ Can appear in any order.
+
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "usman"
+%%% End: 

@@ -1,0 +1,212 @@
+\documentclass{book}
+\usepackage{a4wide}
+%%\usepackage{times}
+\usepackage{newcent}
+\usepackage[T1]{fontenc}
+\usepackage{setspace}
+\usepackage{makeidx}
+\usepackage{longtable}  %% page wrapping table environment
+\usepackage{colortbl}   %% colors for tables
+\usepackage{fancyvrb}   %% source code listings
+\usepackage{fancyhdr}   %% custom headers and footers
+
+%% for navigation in dvi files, only needed by old teTeX versions
+%%\usepackage{srcltx}
+
+
+%%
+%% PDF Header
+%%
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+  \pdffalse
+\else
+  \pdfoutput=1
+  \pdftrue
+\fi
+%% PDF-Info
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+  \usepackage[plainpages=false,linktocpage,pdftex]{hyperref}   %% automatic hyperlinking
+  \pdfcompresslevel=9
+  \pdfinfo{/Author (Andras Varga)
+    /Title (OMNeT++ User Manual)
+    /Subject ()
+    /Keywords (OMNeT++ manual)}
+\else
+  \usepackage{graphicx}
+  \usepackage[plainpages=false]{hyperref}   %% automatic hyperlinking
+\fi
+
+%%
+%% Generate Index
+%%
+\makeindex
+
+%%
+%% OMNeT++ logo, use as {\opp}
+%%
+\makeatletter
+\DeclareRobustCommand{\opp}{OM\-NeT\kern-.18em++\@}
+\makeatother
+
+
+%%
+%% Heading and Footer
+%%
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\footrulewidth}{0.5pt}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\lhead{{\opp} Manual \leftmark}
+\rhead{\thepage}
+\lfoot{Budapest University of Technology and Economics, Dept. of Telecommunications}
+\fancypagestyle{plain}{%
+  \lhead{{\opp} Manual}
+  \rhead{\thepage}
+  \lfoot{Budapest University of Technology and Economics, Dept. of Telecommunications}
+}
+
+
+%%
+%% some customization
+%%
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1ex}
+
+%%
+%% Shortcuts
+%%
+\newcommand{\tbf}{\textbf} %% bold faced text
+\newcommand{\ttt}{\texttt} %% type writer font text
+
+\newcommand{\tab}{\hspace*{5mm}} %% tabulator settings
+
+%% Colordefinition for table header rows (requires package colortbl) 
+\newcommand{\tabheadcol}{\rowcolor[gray]{0.8}}
+
+%%
+%% Function/Class/Macro/Variable/Program/Parameter/Define names
+%%
+%% Write the names in type writer font and do an index entry
+%% Allows word wrap by automatic hyphenation
+%%
+%% Usage: \fname{take()}
+%%    or: \fname[take()]{take(obj)}
+%% the second form uses the bracketed word for the index entry
+%%
+
+%% Function names
+\newcommand{\fname}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
+  \index{#1}%
+  \texttt{\hyphenchar\font=`\-\relax#2}}
+%% Class names
+\newcommand{\cclass}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
+  \index{#1}%
+  \texttt{\hyphenchar\font=`\-\relax#2}}
+%% Macro names
+\newcommand{\fmac}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
+  \index{#1}%
+  \texttt{\hyphenchar\font=`\-\relax#2}}
+%% Variable names
+\newcommand{\fvar}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
+  \index{#1}%
+  \texttt{\hyphenchar\font=`\-\relax#2}}
+%% Program names
+\newcommand{\fprog}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
+  \index{#1}%
+  \texttt{\hyphenchar\font=`\-\relax#2}}
+%% Parameter names
+\newcommand{\fpar}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
+  \index{#1}%
+  \texttt{\hyphenchar\font=`\-\relax#2}}
+%% Defines
+\newcommand{\fdef}[2][\DefaultOpt]{\def\DefaultOpt{#2}%
+  \index{#1}%
+  \texttt{\hyphenchar\font=`\-\relax#2}}
+
+%%
+%% Start of document
+%%
+\begin{document}
+
+\pagestyle{empty}
+\pagenumbering{roman}
+\include{title}
+\cleardoublepage
+
+%%\thispagestyle{empty}
+\pagestyle{fancy}
+\include{history}
+\cleardoublepage
+
+%%\setcounter{page}{1}
+%\newpage
+%%\pagenumbering{roman}
+\tableofcontents
+\cleardoublepage
+
+%%\pagestyle{fancy}
+\pagenumbering{arabic}
+
+\include{ch-introduction}
+\cleardoublepage
+
+\include{ch-overview}
+\cleardoublepage
+
+\include{ch-example-nim}
+\cleardoublepage
+
+\include{ch-ned-lang}
+\cleardoublepage
+
+\include{ch-simple-modules}
+\cleardoublepage
+
+\include{ch-sim-lib}
+\cleardoublepage
+
+\include{ch-build-sim-progs}
+\cleardoublepage
+
+\include{ch-run-sim}
+\cleardoublepage
+
+\include{ch-ana-sim}
+\cleardoublepage
+
+\include{ch-parallel-exec}
+\cleardoublepage
+
+\include{ch-opp-design}
+\cleardoublepage
+
+%% Indexing continues here
+
+\begin{appendix}
+
+  \include{ch-opnet}
+  \cleardoublepage
+  
+  \include{ch-parsec}
+  \cleardoublepage
+
+  \include{ch-ned-grammar}
+  \cleardoublepage
+
+\end{appendix}
+
+\include{references}
+\cleardoublepage
+
+\phantomsection
+\addcontentsline{toc}{chapter}{\indexname}
+\printindex
+
+\end{document}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
