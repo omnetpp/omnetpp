@@ -109,7 +109,7 @@ void Server::handleMessage(cMessage *msg)
             if (ev.isGUI())
             {
                 displayString().setTagArg("i2",0,"x_yellow");
-                displayString().setTagArg("t",0,"RECEIVING");
+                displayString().setTagArg("t",0,"RECEIVE");
                 displayString().setTagArg("t",2,"#808000");
             }
         }

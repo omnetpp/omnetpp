@@ -53,7 +53,7 @@ void Host::initialize()
     endTxEvent = new cMessage("endTxEvent");
     state = IDLE;
     pkCounter = 0;
-    WATCH(state);
+    WATCH((int&)state);
     WATCH(pkCounter)
 
     if (ev.isGUI())
