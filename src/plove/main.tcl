@@ -263,17 +263,15 @@ proc createMainArea {w} {
     #
     # Pane 4
     #
-    frame $w.f4.dum1
-    button $w.f4.plot -text {  PLOT!  } -command createVectorPlot -height 2
-    frame $w.f4.dum2
-    frame $w.f4.dum3
-
-    pack $w.f4.dum1 -anchor center -fill x -expand 1
-    pack $w.f4.plot -anchor center -fill x -expand 0 -pady 8
-    pack $w.f4.dum2 -anchor center -fill x -expand 1
-    pack $w.f4.dum3 -anchor center -fill x -expand 1
-
-    set help_tips($w.f4.plot)    {Plot selected vectors}
+    #frame $w.f4.dum1
+    #button $w.f4.plot -text {  PLOT!  } -command createVectorPlot -height 2
+    #frame $w.f4.dum2
+    #frame $w.f4.dum3
+    #pack $w.f4.dum1 -anchor center -fill x -expand 1
+    #pack $w.f4.plot -anchor center -fill x -expand 0 -pady 8
+    #pack $w.f4.dum2 -anchor center -fill x -expand 1
+    #pack $w.f4.dum3 -anchor center -fill x -expand 1
+    #set help_tips($w.f4.plot)    {Plot selected vectors}
 
     #
     # Popup menus
@@ -400,12 +398,12 @@ proc createMainWindow {{geom ""}} {
       {sel   -image $icons(find)     -command selectVectors}
       {repl  -image $icons(findrepl) -command replaceInTitles}
       {opt   -image $icons(info)     -command vectorInfo}
-      {fil   -image $icons(plotopt)  -command editVectorFilters}
+      {fil   -image $icons(filter)   -command editVectorFilters}
       {sep3  -separator}
       {config -image $icons(config)  -command filterListDialog}
       {sep4  -separator}
-      {plot  -image $icons(plot)     -command createVectorPlot}
-      {scat  -image $icons(xyplot)   -command createVectorScatterPlot}
+      {plot  -image $icons(plotopt)     -command createVectorPlot}
+      {xyplot -image $icons(xyplot)  -command createVectorScatterPlot}
 
     } {
       set b [eval iconbutton .toolbar.$i]
@@ -425,6 +423,7 @@ proc createMainWindow {{geom ""}} {
     set help_tips(.toolbar.dup)   {Duplicate selected vectors}
     set help_tips(.toolbar.config) {Create/edit custom filters}
     set help_tips(.toolbar.plot)  {Plot selected vectors in RIGHT panel}
+    set help_tips(.toolbar.xyplot) {Scatter (x-y) plot from selected vectors in RIGHT panel}
 
 
     ##########################################

@@ -123,7 +123,7 @@ proc createVectorScatterPlot {{idlist {}}} {
 
     if {[llength $idlist]==1} {
         tk_messageBox -icon info -type ok -title "Scatter Plot" \
-            -message "You need at least two vectors for scatter (x-y) plots: one for the X coordinate plus one or more for Y."
+            -message "You need at least two vectors for scatter (x-y) plots: one for the x coordinate plus one or more for y."
         return
     }
 
