@@ -42,19 +42,21 @@
 #          gate
 #        params
 #          param
-#        submod
-#          substmachines
-#            substmachine
-#          substparams
-#            substparam
-#          gatesizes
-#            gatesize
-#        conn
-#          chanattr
-#        forloop
-#          loopvar
+#        submods
+#          submod
+#            substmachines
+#              substmachine
+#            substparams
+#              substparam
+#            gatesizes
+#              gatesize
+#        conns
 #          conn
 #            chanattr
+#          forloop
+#            loopvar
+#            conn
+#              chanattr
 #------------------------------------------------
 
 

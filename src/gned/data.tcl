@@ -145,6 +145,24 @@ proc deleteItem {key} {
     foreach field $ned_attlist(common) {
         catch {unset ned($key,$field)}
     }
+
+    # delete empty for-loop, conns, etc
+    if {![info exist ned($key,being-deleted)]} {
+        if {$ned($parentkey,childrenkeys)==""} {
+            if {[lsearch {gates params submods substmachines substparams gatesizes conns} $ned($parentkey,type)]!=-1} {
+                tk_messageBox -message "deleting $parentkey $ned($parentkey,type)"
+                deleteItem $parentkey
+            }
+        } elseif {$ned($parentkey,type)=="forloop"} {
+            set hasconn 0
+            foreach tmpkey $ned($parentkey,childrenkeys) {
+                if {$ned($tmpkey,type)=="conn"} {set hasconn 1}
+            }
+            if {$hasconn==0} {
+                deleteItem $parentkey
+            }
+        }
+    }
 }
 
 
