@@ -10,6 +10,10 @@ opp_neddoc tool on all NED files. Target htmldocs generates HTML
 documentation of all source files (*.h and *.cc) using Doxygen. The
 HTML files are placed into the sub-directory ./htmldoc.
 
+PVMEx removed.
+
+
+
 In the OMNeT++ 2.2 release (May 2002)
 -------------------------------------
 It's almost a year since the last, 2.1 release, and that's why this change

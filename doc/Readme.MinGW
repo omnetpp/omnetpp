@@ -45,85 +45,56 @@ of them. I found the UnxUtils package (http://unxutils.sourceforge.net/)
 just right.
 
 
-1. Installing required software
+1. Prerequisites
+
+Windows NT compatible system is required: NT4.0, Windows 2000 or XP.
+Windows 95/98/ME won't do (they don't support the Win32 fiber API used
+by OMNeT++.)
+
+
+2. Installing the compiler environment
 
 MSYS and MinGW must be installed before OMNeT++. The MinGW team provides
 detailed installation instructions which I won't replicate here.
 
-
--------rewrite from here------
- First you should download
-setup.exe which is then used to download and install the packages.
-When you start setup.exe, it offers 3 possibilities:
- (1) install from internet
- (2) download from internet
- (3) install from local directory
-I suggest you first download the packages and then install them from
-the local directory.
-
-You will need to be logged into the Administrator account before starting the
-installation. Setup will ask:
-
- - the root directory. Enter the directory where you want Cygwin to be
-   installed. The installer will create a Unix-like file system in this
-   directory, with the familiar bin/, etc/, home/, lib/, usr/, var/
-   directories.
-
- - install for all users/just me. This affects visibility of environment
-   variables and Start Menu icons.
-
- - default text file type DOS/Unix. If you select DOS, the Cygwin DLL
-   (the layer between the Windows API and the Cygwin programs) will
-   transparently convert text files between CR/LF and LF line terminators
-   for Cygwin programs, allowing these programs to 'see' LF line endings
-   in files that have really CR/LFs on the disk. I recommend you use
-   DOS file type.
-
-The installer will create a `Cygwin bash shell' entry in a folder
-called `Cygnus Solutions' and also a desktop icon called `Cygwin'.
+The installer will create an `MinGW' / `MSYS' entry in the Start menu
+and also a desktop icon called `MSYS'. In the following description
+I'll assume you installed MinGW into C:\MinGW and MSYS to C:\MinGW\MSYS.
 
 If you should ever want to uninstall the tools, you may do so via the
 "Add/Remove Programs" control panel.
 
-Starting Cygwin will pop up a bash shell with all special environment
-variables set up for you.  If you are running Windows 95 or 98 and are faced
-with the error message "Out of environment space", you need to increase the
-amount of environment space in your config.sys and try again.  Adding the
-line `shell=C:\command.com /e:4096 /p' should do the trick if `C:' is your
-system drive letter.
+Starting MSYS will pop up a bash shell with all special environment
+variables set up for you. Within the bash shell, the MSYS directory
+(C:\MinGW\MSYS) will appear as "/". Your Windows drives will appear
+as /c/, /d/, etc., but MinGW understands the Windows notation too,
+only with slashes instead backslashes (C:/, D:/, etc.). Typing
+`pwd -W' always tells you the Windows name of the current directory.
 
-Within the bash shell, the installation directory will appear as "/".
-Your Windows drives will appear as /cygdrive/c/, /cygdrive/d/, etc.
-(Don't be surprised when you don't see a /cygdrive directory in the
-file system though!) The cygpath program allows you to convert between
-Cygwin-style and Windows style directory names.
+It is a good idea to create a .bash_profile. This should be stored
+in each users home directory (/home/you, or C:/mingw/msys/home/you;
+typing `cd' takes you there.) For example, my .bash_profile contains:
 
-It is a good idea to create a .bash_profile for each user who will use Cygwin.
-This should be stored in each users home directory (i.e. /home/<you>).
-For example, an initial .bash_profile may contain:
+   export PS1='\w$ '
+   export PATH=/c/OMNeT++/bin:$PATH:/c/Unxutils/usr/local/wbin
+   export BISON_SIMPLE=c:/Unxutils/usr/local/share/bison.simple
+   alias ls='ls -aF'
+   alias ll='ls -l'
 
-export PS1='\w$ '
-export PATH=/d/omnetpp/bin:$PATH:/d/Unxutils/usr/local/wbin
-export BISON_SIMPLE=d:/Unxutils/usr/local/share/bison.simple
-alias ls='ls -aF'
-alias ll='ls -l'
-
-cd /d/omnetpp
-echo Welcome!
+   cd /c/OMNeT++
+   echo Welcome!
 
 TCL_LIBRARY is necessary to allow tcl/tk to operate correctly.
 
 An editor will be required during the installation. For Unix diehards,
 Cygwin contains vi, or you can download emacs. A good NT port of emacs
-is available from:
-
-http://www.cs.washington.edu/homes/voelker/ntemacs.html
-
+is available from http://www.cs.washington.edu/homes/voelker/ntemacs.html.
 
 -------------
 download and install tcl/tk, expat and other libs
-edit configure.user, put windows-style path names into it
+edit configure.user, put **WINDOWS**-style path names into it
 -------------
+
 
 3. Getting Tcl/Tk to work
 
@@ -132,12 +103,6 @@ be sure to use a Windows-style directory name, e.g. use
    TCL_LIBRARY=c:/cygwin11/usr/share/tcl8.0
 and not
    TCL_LIBRARY=/usr/share/tcl8.0     ;# WRONG!
-
-Another issue is that Cygwin misses X11 headers that are normally required
-to build programs with Tcl/Tk. If you're getting compilation errors like
-    /usr/include/tk.h:77: X11/Xlib.h: No such file or directory
-while building Tkenv, download X11inc.zip from the OMNeT++ site, and extract
-it to your /usr/include/X11 directory.
 
 
 4. Installing OMNeT++
@@ -177,7 +142,7 @@ Then the usual GNU-like stuff:
 You should now test all samples and check they run correctly. As an
 example, the dyna example is started by entering the following commands:
 
-    cd ~/omnetpp/samples/dyna
+    cd c:/OMNeT++/samples/dyna
     ./dyna
 
 By default the samples will run using the Tcl/Tk environment. You should see
@@ -200,18 +165,13 @@ of the library and type:
     make clean
     make
 
-NOTE: the 'install-local' make target found in earlier OMNeT++ versions
-was removed in 2.0beta4. The built libraries and programs are immediately
-copied to the lib/ and bin/ subdirs.
-
-
 6. Comments
 
-Any questions concerning the use of Cygwin should be directed to the Cygwin
-mail list at gnu-win32@cygnus.com. OMNeT++ specific questions should be
-directed to the mail list at omnetpp-l@ecselists.eng.monash.edu.au.
+Any questions concerning the use of MinGW should be directed to the MinGW
+mailing list. OMNeT++ specific questions should be directed to the mailing
+list at omnetpp-l@ecselists.eng.monash.edu.au.
 
 If you find any errors in this document please let me know.
 
-
-
+--
+Andras
