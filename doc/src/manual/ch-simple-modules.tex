@@ -2048,8 +2048,8 @@ double delay = truncnormal(0.005, 0.0001);
 sendDirect(new cMessage("packet"), delay, destinationModule, "inputGate");
 \end{verbatim}
 
-At the destination module there's no difference between messages received
-via directly and those received over connections.
+At the destination module, there is no difference between messages received
+directly and those received over connections.
 
 
 
@@ -2378,8 +2378,7 @@ For gate vectors\index{gate!vector}, the first form returns the first gate in th
 vector (at index 0).
 
 The \fname{isVector()} member function can be used to determine if a
-gate belongs to a gate vector or not. But this is almost insignificant,
-because non-vector gates are treated as vectors with size 1.
+gate belongs to a gate vector or not.
 
 Given a gate pointer, you can use the \fname{size()} and
 \fname{index()} member functions of \cclass{cGate} to determine the
@@ -2389,6 +2388,13 @@ index\index{gate!vector index} of the gate within the vector:
 \begin{verbatim}
 int size2 = outvec5gate->size(); // --> size of outvec[]
 int index = outvec5gate->index(); // --> 5 (it is gate 5 in the vector)
+\end{verbatim}
+
+Instead of \ttt{gate->size()}, you can also call the \fname{gateSize()}
+method of \cclass{cModule}, which does the same:
+
+\begin{verbatim}
+int size2 = gateSize("out");
 \end{verbatim}
 
 For non-vector gates, \fname{size()} returns 1 and \fname{index()} returns 0.
@@ -2743,6 +2749,65 @@ cModule *neighbour = gate( "outputgate" )->toGate()->ownerModule();
 For input gates, you would use \fname{fromGate()} instead of \fname{toGate()}.
 
 
+\section{Direct method calls between modules}
+\label{ch:simple-modules:direct-method-calls}
+\index{method calls!between modules}
+
+In some simulation models, there might be modules which are too
+tightly coupled for message-based communication to be efficient.
+In such cases, the solution might be calling one simple module's public
+C++ methods from another module.
+
+Simple modules are C++ classes, so normal C++ method calls will
+work. Two issues need to be mentioned, however:
+
+\begin{itemize}
+  \item how to get a pointer to the object representing the module;
+  \item how to let the simulation kernel know that a method call across modules
+     is taking place.
+\end{itemize}
+
+Typically, the called module is in the same compound module as the caller,
+so the \fname{parentModule()} and \fname{submodule()} methods of
+\cclass{cModule} can be used to get a \ttt{cModule*} pointer to the
+called module. (Further ways to obtain the pointer are described
+in the section \ref{ch:simple-modules:walking-module-hieararchy}.)
+The \ttt{cModule*} pointer then has to be cast to the actual C++ class
+of the module, so that its methods become visible.
+
+This makes the following code:
+
+\begin{verbatim}
+cModule *calleeModule = parentModule()->submodule("callee");
+Callee *callee = check_and_cast<Callee *>(calleeModule);
+callee->doSomething();
+\end{verbatim}
+
+The \fname{check\_and\_cast<>()} template function on the second line
+is part of {\opp}. It does a standard C++ \ttt{dynamic_cast},
+and checks the result: if it is NULL, \ttt{check\_and\_cast} raises an {\opp} error.
+Using \ttt{check\_and\_cast} saves you from writing error checking
+code: if \ttt{calleeModule} from the first line is NULL because
+the submodule named \ttt{"callee"} was not found, or if that
+module is actually not of type \ttt{Callee}, an error gets thrown
+from \ttt{check\_and\_cast}.
+
+The second issue is how to let the simulation kernel know that
+a method call across modules is taking place. Why is this necessary
+in the first place? If the simulation FIXME
+
+The solution is to add the \ttt{Enter\_Method()} or \ttt{Enter\_Method\_Silent()}
+macro at the top of the methods that may be invoked from other
+modules. These calls perform context switching, and notify the simulation
+GUI so that animation of the method call can take place.
+
+\begin{verbatim}
+void Callee::doSomething()
+{
+    Enter_Method("doSomething()");
+    ...
+}
+\end{verbatim}
 
 
 
@@ -2959,6 +3024,7 @@ mod->deleteModule();
 
 
 \subsection{Creating connections}
+\index{connection!creating}
 
 Connections can be created using \cclass{cGate}'s \fname{connectTo()}
 method.
@@ -2974,19 +3040,7 @@ srcGate->connectTo(destGate);
 \end{verbatim}
 
 The \textit{source} and \textit{destination} words correspond
-to the direction of the arrow in NED files and messages also travel in
-the same direction. That is, you connect an output gate \textit{to}
-another submodule's input gate; you connect a submodule's output gate \textit{to} the
-output gate of its parent module; and an input gate of a compound module
-\textit{to} the input gate of its submodule.
-
-%
-%TBD
-%Unless you find a better way of writing this, it will remain very hard to
-%understand...
-%I have edited it, but it is still too complex to be intuitive...
-%Gabor
-%
+to the direction of the arrow in NED files.
 
 As an example, we create two modules and connect them in both directions:
 
@@ -3010,23 +3064,28 @@ reuse the same channel object with several connections.
 
 \cclass{cBasicChannel} has \fname{setDelay()}, \fname{setError()}
 and \fname{setDatarate()} methods to set up the channel attributes.
-These functions accept pointer to dynamically allocated
-\cclass{cPar} objects. \cclass{cPar} will be covered in detail
-in chapter \ref{cha:the-simulation-library}.
 
 An example that sets up a channel with a delay:
 
 \begin{verbatim}
 cBasicChannel *channel = new cBasicChannel("channel");
-
-cPar *d = new cPar("delay");
-d->setDoubleValue(0.001);
-channel->setDelay(d);
+channel->setDelay(0.001);
 
 a->gate("out")->connectTo(b->gate("in"), channel); // a,b are modules
 \end{verbatim}
 
 
+\subsection{Removing connections}
+\index{connection!removing}
+
+The \fname{disconnect()} method of \cclass{cGate} can be
+used to remove connections. This method has to be invoked
+on the \textit{source} side of the connection. It also destroys
+the channel object associated with the connection, if one has been set.
+
+\begin{verbatim}
+srcGate->disconnect();
+\end{verbatim}
 
 
 %%% Local Variables:
