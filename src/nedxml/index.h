@@ -17,7 +17,7 @@
 
 
 /**
- * @mainpage OMNeT++/OMNEST NEDXML API Reference
+ * @mainpage \opp NEDXML API Reference
  *
  * This reference documents NEDXML -- a library for parsing NED and MSG files,
  * and much more. The result of parsing is a DOM-like object tree, which

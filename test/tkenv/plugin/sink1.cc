@@ -1,7 +1,8 @@
-//-------------------------------------------------------------
-// file: sink1.cc
-//        (part of Fifo1 - an OMNeT++ demo simulation)
-//-------------------------------------------------------------
+//
+// sink1.cc
+//
+// This file is part of an OMNeT++/OMNEST demo simulation.
+//
 
 #include "sink1.h"
 

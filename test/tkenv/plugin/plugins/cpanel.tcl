@@ -1,7 +1,8 @@
 #
 # The registerPlugin function below arranges certain plugin functions to be
-# called on different Tkenv events. As of now, the only such function is
-# $pluginname:newNetwork, called after a network got set up.
+# called on different Tkenv events. As of now, the only such functions are
+# $pluginname:newNetwork, called after a network got set up, and 
+# $pluginname:inspectorUpdate, called when inspectors should be updated.
 #
 registerPlugin "cpanel"
 

@@ -1,7 +1,8 @@
-//-------------------------------------------------------------
-// file: fifo1.h
-//        (part of Fifo1 - an OMNeT++ demo simulation)
-//-------------------------------------------------------------
+//
+// fifo1.h
+//
+// This file is part of an OMNeT++/OMNEST demo simulation.
+//
 
 #ifndef __FIFO_H
 #define __FIFO_H

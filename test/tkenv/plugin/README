@@ -8,5 +8,5 @@ Tests the plugin feature of Tkenv:
   accessing/changing parameters, running/stopping the simulation, 
   hiding the main window, etc. 
   
-TODO: create a well-defined API plugins to use!!! (otherwise Tkenv changes will
+TODO: create a well-defined API plugins to use (otherwise Tkenv changes will
 affect plugins)

@@ -1,7 +1,8 @@
-//-------------------------------------------------------------
-// file: sink1.h
-//        (part of Fifo1 - an OMNeT++ demo simulation)
-//-------------------------------------------------------------
+//
+// sink1.h
+//
+// This file is part of an OMNeT++/OMNEST demo simulation.
+//
 
 #ifndef __SINK_H
 #define __SINK_H
