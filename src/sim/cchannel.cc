@@ -249,6 +249,38 @@ cSimpleChannel& cSimpleChannel::operator=(const cSimpleChannel& ch)
     return *this;
 }
 
+
+void cSimpleChannel::setDelay(double d)
+{
+    if (!delayp)
+    {
+        delayp = new cPar("delay");
+        _parList().set(delayp);
+    }
+    delayp->setDoubleValue(d);
+}
+
+void cSimpleChannel::setError(double d)
+{
+    if (!errorp)
+    {
+        delayp = new cPar("error");
+        _parList().set(errorp);
+    }
+    errorp->setDoubleValue(d);
+}
+
+void cSimpleChannel::setDatarate(double d)
+{
+    if (!dataratep)
+    {
+        delayp = new cPar("datarate");
+        _parList().set(dataratep);
+    }
+    dataratep->setDoubleValue(d);
+}
+
+
 /*
 void cSimpleChannel::setDisabled(cPar *p)
 {

@@ -326,19 +326,19 @@ cLinkType *cGate::link() const
 cPar *cGate::delay() const
 {
     cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
-    return ch ? ch->delay() : NULL;
+    return ch ? &(ch->par("delay")) : NULL;
 }
 
 cPar *cGate::error() const
 {
     cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
-    return ch ? ch->error() : NULL;
+    return ch ? &(ch->par("error")) : NULL;
 }
 
 cPar *cGate::datarate() const
 {
     cSimpleChannel *ch = dynamic_cast<cSimpleChannel *>(channelp);
-    return ch ? ch->datarate() : NULL;
+    return ch ? &(ch->par("datarate")) : NULL;
 }
 
 cGate *cGate::sourceGate() const

@@ -278,41 +278,59 @@ class SIM_API cSimpleChannel : public cChannel
 
     /**
      * Sets the delay parameter of the channel.
+     * An alternative way of accessing this values is by par("delay").
      */
-    virtual void setDelay(cPar *p);
+    virtual void setDelay(double d);
 
     /**
      * Sets the bit error rate parameter of the channel.
+     * An alternative way of accessing this values is by par("error").
      * When a message sent through the channel suffers at least
      * one bit error, its bit error flag will be set.
      *
      * @see cMessage::hasBitError()
      */
-    virtual void setError(cPar *p);
+    virtual void setError(double d);
 
     /**
      * Sets the data rate parameter of the channel.
-     * This affects the transmission time of messages sent
-     * through the channel.
+     * An alternative way of accessing this values is by par("datarate").
+     * This value affects the transmission time of messages sent through
+     * the channel.
      *
      * @see isBusy(), transmissionFinishes()
+     */
+    virtual void setDatarate(double d);
+
+    /**
+     * DEPRECATED.
+     */
+    virtual void setDelay(cPar *p);
+
+    /**
+     * DEPRECATED.
+     */
+    virtual void setError(cPar *p);
+
+    /**
+     * DEPRECATED.
      */
     virtual void setDatarate(cPar *p);
 
     /**
      * Returns the delay of the channel.
      */
-    virtual cPar *delay() const     {return delayp;}
+    virtual double delay() const     {return !delayp ? 0.0 : delayp->doubleValue();}
 
     /**
      * Returns the bit error rate of the channel.
      */
-    virtual cPar *error() const     {return errorp;}
+    virtual double error() const     {return !errorp ? 0.0 : errorp->doubleValue();}
 
     /**
      * Returns the data rate of the channel.
      */
-    virtual cPar *datarate() const  {return dataratep;}
+    virtual double datarate() const  {return !dataratep ? 0.0 : dataratep->doubleValue();}
     //@}
 
     /** @name Redefined cChannel methods. */

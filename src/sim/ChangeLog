@@ -2,6 +2,9 @@
 
 	* cgate.cc: implemented cGate::disconnect(); revised cGate::connectTo()
 
+	* cchannel.cc: added setDelay(double), setError(double), 
+	setDatarate(double) to cSimpleChannel
+
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2004-01-09  Andras Varga

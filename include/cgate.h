@@ -168,14 +168,25 @@ class SIM_API cGate : public cObject
     //@{
 
     /**
-     * Connect the a gate to another gate, optionally using the given
-     * channel object. This methods can e.g. be used to manually create
-     * connections for dynamically created modules.
+     * Connects the gate to another gate, optionally using the given
+     * channel object. This method can be used to manually create
+     * connections for dynamically created modules. If no channel object
+     * is specified (or NULL pointer is passed), the existing channel
+     * object (assigned via setChannel()) is preserved.
      *
-     * The channel already belonging to the gate will either be be deleted
-     * (if chan is NULL) or replaced with the one you specify here.
+     * If the gate is already connected, an error will occur.
+     * The g argument cannot be NULL, that is, you cannot use
+     * this function to disconnect a gate. Use disconnect() instead.
      */
     void connectTo(cGate *g, cChannel *chan=NULL);
+
+    /**
+     * Disconnects the gate. It also destroys the associated channel object
+     * if one has been set (see setChannel()).
+     *
+     * The method has no effect if the gate is not connected.
+     */
+    void disconnect();
 
     /**
      * DEPRECATED - use connectTo() instead!
@@ -198,7 +209,10 @@ class SIM_API cGate : public cObject
     //@{
 
     /**
-     * Assigns the given channel to this gate.
+     * Assigns a channel object to this gate. The channel object stores
+     * connection attributes such as delay, bit error rate or data rate.
+     *
+     * See also connectTo().
      */
     void setChannel(cChannel *ch);
 
