@@ -118,7 +118,6 @@ proc createBltGraphPopup {} {
       {separator}
       {command -label {Title...} -underline 0    -command {bltGraph_Properties titles} }
       {command -label {Axes...} -underline 0      -command {bltGraph_Properties axes} }
-      {command -label {Gridlines...} -underline 0 -command {bltGraph_Properties gridlines} }
       {command -label {Lines...} -underline 0     -command {bltGraph_Properties lines} }
       {command -label {Bars...} -underline 0     -command {bltGraph_Properties bars} }
       {command -label {Legend...} -underline 1    -command {bltGraph_Properties legend} }
@@ -301,7 +300,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     set nb $w.f.nb
     blt::tabnotebook $nb -tearoff no -relief flat
     pack $nb -expand 1 -fill both
-    foreach {tab title} {titles "Title" axes "Axes" gridlines "Gridlines" lines "Lines" bars "Bars" legend "Legend"} {
+    foreach {tab title} {titles "Title" axes "Axes" lines "Lines" bars "Bars" legend "Legend"} {
         frame $nb.$tab
         set tabs($tab) [$nb insert end -text $title -window $nb.$tab  -fill both]
     }
@@ -328,6 +327,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     label-combo $f.xrotate "Rotate X labels by" {0 30 45 60 90}
     label-combo $f.xdiv "X axis subdivisions" {1 2 4 5 10}
     label-combo $f.ydiv "Y axis subdivisions" {1 2 4 5 10}
+    #label-combo $f.display "Grid lines" {off {at major ticks} {at all ticks}}
     # FIXME axis min, max, logarithmic; x labels off (for bar charts); -invertxy
     $f.xlabel.e configure -textvariable tmp(axisxlabel)
     $f.ylabel.e configure -textvariable tmp(axisylabel)
@@ -339,12 +339,6 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     pack $f.xlabel $f.ylabel $f.titlefont $f.tickfont $f.xrotate -side top -anchor w -expand 0 -fill x
     #FIXME "axis -subdivisions" doesn't seem to work in BLT
     #pack $f.xdiv $f.ydiv -side top -anchor w -expand 0 -fill x
-
-    # Gridlines page
-    set f $nb.gridlines
-    label-combo $f.display "Grid lines" {off {at major ticks} {at all ticks}}
-    pack $f.display -side top -anchor w -expand 0 -fill x
-    #FIXME todo
 
     # Lines page -- all elements together
     # only if {[winfo class $graph]=="Graph"} ?
@@ -373,7 +367,7 @@ proc bltGraph_PropertiesDialog {graph {tabtoopen ""}} {
     checkbutton $f.show -text "show legend" -variable tmp(legendshow)
     label-combo $f.pos "Position" {plotarea leftmargin rightmargin topmargin bottommargin}
     label-combo $f.anchor "Anchor" {n s e w ne nw se sw}
-    label-combo $f.relief "Relief" {none solid raised sunken groove}
+    label-combo $f.relief "Relief" {flat solid raised sunken}
     label-entry $f.font "Font"
     $f.pos.e configure -textvariable tmp(legendpos)
     $f.anchor.e configure -textvariable tmp(legendanchor)
