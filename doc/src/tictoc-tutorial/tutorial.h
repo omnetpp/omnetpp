@@ -729,7 +729,23 @@ with an error).
 
 <img src="step12b.gif">
 
+Select Simulate|Call finish() from the menu (or click the corresponding
+toolbar button) before exiting! This will cause the above finish() functions
+to run, and data to be written into omnetpp.sca.
+
+Unlike omnetpp.vec, omnetpp.sca is <i>not</i> deleted between
+simulation runs. Instead, new data are just appended to it. The idea is
+that you can collect output from several simulation runs (i.e. with
+different input parameters), and analyse them together.
+
 Sources: @ref tictoc12.ned, @ref tictoc12.msg, @ref txc12.cc, @ref omnetpp.ini
+
+
+@section scalars Scalar statistics
+
+<img src="sca1.gif">
+
+<img src="sca2.gif">
 
 
 @section plove Plotting the output vectors
@@ -740,14 +756,18 @@ Sources: @ref tictoc12.ned, @ref tictoc12.msg, @ref txc12.cc, @ref omnetpp.ini
 
 <img src="plove3.gif">
 
+Too much data, cannot see much.
+
+We can apply a filted which plots mean on [0,t). Right-click on the selected
+vectors, then choose Pre-plot filtering from the context menu.
+
+<img src="plove4a.gif">
+
+Once in the dialog, choose 'mean' from the filter dropdown list and click OK.
+Next time you click the Plot button on the toolbar, you'll get the filtered
+charts.
+
 <img src="plove4.gif">
-
-
-@section scalars Scalar statistics
-
-<img src="sca1.gif">
-
-<img src="sca2.gif">
 
 */
 
