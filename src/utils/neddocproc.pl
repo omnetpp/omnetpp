@@ -5,6 +5,25 @@
 
 $verbose = 0;
 
+# parse tags.xml
+$tagfile = "html/tags.xml";
+print "reading $tagfile...\n" if ($verbose);
+open(INFILE, $tagfile) || die "cannot open $tagfile";
+read(INFILE, $tags, 1000000) || die "cannot read $tagfile";
+$components = ();
+while ($tags =~ s|(\<tag .*?/\>)||s)
+{
+      $tag = $1;
+      if ($tag =~ m|name="(.*?)"|)     {$name = $1; push(@components,$name);} else {next;}
+      if ($tag =~ m|type="(.*?)"|)     {$type{$name} = $1;}
+      if ($tag =~ m|htmlfile="(.*?)"|) {$htmlfile{$name} = $1;}
+      if ($tag =~ m|nedfile="(.*?)"|)  {$nedfile{$name} = $1;}
+      if ($tag =~ m|comment="(.*?)"|)  {$comment{$name} = $1;}
+      #print "DBG: $name, $type{$name}, $htmlfile{$name}, $nedfile{$name}, $comment{$name}\n";
+}
+#print join(' ', @components);
+
+
 foreach $fnamepatt (@ARGV)
 {
     foreach $fname (glob($fnamepatt))
@@ -29,6 +48,9 @@ foreach $fnamepatt (@ARGV)
 
               # add sentries to facilitate processing
               $comment = "\n\n".$comment."\n\n";
+
+              # remove '//-' lines (those are comments to be ignored by documentation generation)
+              $comment =~ s|^ *//-.*||gm;
 
               # remove '//' from beginning of lines
               $comment =~ s|^ *// ?||gm;
@@ -67,10 +89,20 @@ foreach $fnamepatt (@ARGV)
               # restore " from &quot; (important for attrs of html tags, see below)
               $comment =~ s|&quot;|"|gsi;
 
+              # extract <nohtml> sections to prevent substituting inside them
+              $comment =~ s|&lt;nohtml&gt;(.*?)&lt;/nohtml&gt;|$nohtml{++$ctr}=$1;"<nohtml$ctr>"|gse;
+
               # decode certain HTML tags: <i>,<b>,<br>,...
-              $tags="a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|small|strong|sub|sup|table|td|tr|tt|kbd|ul|var";
+              $tags="a|b|body|br|center|caption|code|dd|dfn|dl|dt|em|form|hr|h1|h2|h3|i|input|img|li|meta|multicol|ol|p|small|strong|sub|sup|table|td|th|tr|tt|kbd|ul|var";
               $comment =~ s!&lt;(($tags)( [^\n]*?)?)&gt;!<\1>!gsi;
               $comment =~ s!&lt;(/($tags))&gt;!<\1>!gsi;
+
+              # put back <nohtml> sections
+              $comment =~ s|\<nohtml(\d+)\>|$nohtml{$1}|gse;
+
+              # put hyperlinks on module names, etc.
+              $names = join('|',@components);
+              $comment =~ s!\b($names)\b!'<a href="'.$htmlfile{$1}.'">'.$1.'</a>'!gse;
 
               # put comment back
               $html =~ s/@bingo@/$comment/s;
