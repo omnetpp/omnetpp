@@ -7,7 +7,7 @@ framework, primarily targeted at the simulation of communication networks
 other parallel/distributed systems. OMNeT++ includes a graphical network
 editor, a network topology description language, a rich simulation class
 library, multiple execution environments (both GUI and command line),
-result plotting tool, good documentation, sample simulations and
+result plotting tool, good documentation, many sample simulations and
 much more...
 And it is OPEN SOURCE!
 
