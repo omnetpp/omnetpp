@@ -10,6 +10,7 @@ HTM_FILES = history.htm \
             ch-messages.htm \
             ch-sim-lib.htm \
             ch-build-sim-progs.htm \
+            ch-neddoc.htm \
             ch-run-sim.htm \
             ch-ana-sim.htm \
             ch-parallel-exec.htm \

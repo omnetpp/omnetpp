@@ -55,7 +55,7 @@ endsimple
 \end{verbatim}
 
 If you want a comment line \textit{not} to appear in the documentation,
-begin it with \texttt{//#}. Those lines will be ignored by the
+begin it with \texttt{//\#}. Those lines will be ignored by the
 documentation generation, and can be used to comment out
 unused NED code or to make ``private'' comments like \texttt{FIXME} or
 \texttt{TBD}.
@@ -86,7 +86,7 @@ special commands, and use HTML for more fancy formatting.
 
 Paragraphs are separated by empty lines, like in Latex. Lines beginning with `\ttt{-}'
 will be turned into bulleted lists, and lines beginning with
-`\ttt{-#}' into numbered lists.
+`\ttt{-\#}' into numbered lists.
 
 Example:
 
@@ -133,9 +133,9 @@ will be rendered literally as ``<what>bar</what>'' (unlike HTML where
 unknown tags are simply ignored, i.e. HTML would display ``bar'').
 
 If you insert links to external pages (web sites), its useful to add
-the \ttt{target="_blank"} attribute to ensure pages come up in a new
+the \ttt{target="\_blank"} attribute to ensure pages come up in a new
 browser window and not just in the current frame which looks awkward.
-(Alternatively, you can use the \ttt{target="_top"} attribute
+(Alternatively, you can use the \ttt{target="\_top"} attribute
 which replaces all frames in the current browser).
 
 Examples:
@@ -170,9 +170,9 @@ Example:
 // <pre>
 // // my preferred way of indentation in C/C++ is this:
 // <b>for</b> (<b>int</b> i=0; i<10; i++)
-// \{
+// {
 //     printf(<i>"%d\n"</i>, i);
-// \}
+// }
 // </pre>
 \end{verbatim}
 
@@ -181,9 +181,9 @@ will be rendered as
 \begin{Verbatim}[commandchars=\\\{\}]
 // my preferred way of indentation in C/C++ is this:
 \textbf{for} (\textbf{int} i=0; i<10; i++)
-{
-    printf(\textit{"%d\n"}, i);
-}
+\{
+    printf(\textit{"%d{\textbackslash}n"}, i);
+\}
 \end{Verbatim}
 
 HTML is also the way to create tables. The example below
@@ -204,7 +204,7 @@ will be rendered approximately as:
 \begin{longtable}{|l|l|}
 \hline
 \tabheadcol
-\tbf{#} & \tbf{number} \\\hline
+\tbf{\#} & \tbf{number} \\\hline
 1 & one \\\hline
 2 & two \\\hline
 3 & three \\\hline
@@ -300,7 +300,7 @@ appear in any file-level comment (see above).
 The syntax of the \ttt{@page} directive is the following:
 
 \begin{verbatim}
-// @title filename.html, Title of the Page
+// @page filename.html, Title of the Page
 \end{verbatim}
   
 Please choose a file name that doesn't collide with the files generated

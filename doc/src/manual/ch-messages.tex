@@ -1204,7 +1204,7 @@ This is possible using abstract fields. After all, \ttt{vector} and \ttt{stack}
 are representations of a \textit{sequence} -- same abstraction as dynamic-size vectors.
 That is, you can declare the field as \ttt{abstract T fld[]}, and provide
 an underlying implementation using \ttt{vector<T>}. You can also add methods
-to the message class that invoke \ttt{push_back()}, \ttt{push()}, \ttt{pop()}, etc.
+to the message class that invoke \ttt{push\_back()}, \ttt{push()}, \ttt{pop()}, etc.
 on the underlying STL object.
 
 See the following message declaration:
@@ -1288,13 +1288,13 @@ Some additional notes:
      It could still be implemented in a less efficient way using STL iterators,
      and efficiency does not seem to be major problem because only Tkenv
      is going to invoke this function.}
-  \item{\ttt{setBar(int k, const Item&)} could not be implemented, but this
+  \item{\ttt{setBar(int k, const Item\&)} could not be implemented, but this
      is not particularly a problem. The exception will materialize in a
      Tkenv error dialog when you try to change the field value.}
 \end{enumerate}
 
 You may regret that the STL \ttt{vector}/\ttt{stack} are not directly exposed.
-Well you could expose them (by adding a \ttt{vector<Item>& getFoo() \{return foo;\}}
+Well you could expose them (by adding a \ttt{vector<Item>\& getFoo() \{return foo;\}}
 method to the class) but this is probably not a good idea.
 STL itself was purposefully designed with a low-level approach, to provide
 ``nuts and bolts'' for C++ programming, and STL is better used in other classes

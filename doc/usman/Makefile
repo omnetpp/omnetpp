@@ -1,6 +1,6 @@
 
 TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex \
-         ch-build-sim-progs.tex ch-ned-grammar.tex \
+         ch-build-sim-progs.tex ch-ned-grammar.tex ch-neddoc.tex \
          ch-opp-design.tex ch-simple-modules.tex title.tex ch-example-nim.tex \
          ch-ned-lang.tex ch-overview.tex ch-run-sim.tex history.tex usman.tex
 
