@@ -19,12 +19,14 @@ seedtool.o : seedtool.cc
 
 depend:
 	makedepend -Y -I. -- *.cc
-	makedepend -Y -I. -fmakefile.in -- *.cc
+	makedepend -Y -I. -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o seedtool
 
 install-local: seedtool
 	cp seedtool $(OMNETPP_BIN_DIR)
+	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);rm -f makemake;ln -s $$dir/makemake .)
+	(dir=`pwd`;cd $(OMNETPP_BIN_DIR);rm -f splitvec;ln -s $$dir/splitvec .)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

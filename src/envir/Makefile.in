@@ -65,13 +65,13 @@ patmatch.o : patmatch.cc
 
 depend:
 	makedepend -Y -I. -I../sim -- *.cc
-	makedepend -Y -I. -I../sim -fmakefile.in -- *.cc
+	makedepend -Y -I. -I../sim -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)
 
 install-local: libenvir$(LIB_SUFFIX)
-	../utils/install-lib libenvir$(LIB_SUFFIX) $(OMNETPP_LIB_DIR) libenvir$(LIB_SUFFIX).$(OMNETPP_VERSION)
+	../utils/install-lib libenvir$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libenvir$(LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

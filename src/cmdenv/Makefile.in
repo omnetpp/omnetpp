@@ -48,13 +48,13 @@ heap.o : heap.cc
 
 depend:
 	makedepend -Y -I. -I../envir -I../sim -- *.cc
-	makedepend -Y -I. -I../envir -I../sim -fmakefile.in -- *.cc
+	makedepend -Y -I. -I../envir -I../sim -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o libcmdenv$(A_LIB_SUFFIX) libcmdenv$(SO_LIB_SUFFIX)
 
 install-local: libcmdenv$(LIB_SUFFIX)
-	../utils/install-lib libcmdenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR) libcmdenv$(LIB_SUFFIX).$(OMNETPP_VERSION)
+	../utils/install-lib libcmdenv$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libcmdenv$(LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

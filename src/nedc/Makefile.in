@@ -56,7 +56,7 @@ jar_mem.o: jar_func.h jar_mem.c
 
 depend:
 	makedepend -Y -I. -- *.c
-	makedepend -Y -I. -fmakefile.in -- *.c
+	makedepend -Y -I. -fMakefile.in -- *.c
 
 clean:
 	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h nedc *_n.cc

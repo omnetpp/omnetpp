@@ -85,19 +85,17 @@ tcl2c: tcl2c.c
 	$(CC) tcl2c.c -o tcl2c
 
 missing-library:
-	@ echo
-	@ echo '  *** No Tk installation found -- skipping TKEnv'
-	@ echo
+	@ echo '  *** No Tk installation found -- skipping Tkenv'
 
 depend:
 	makedepend -Y -I. -I../envir -I../sim -- *.cc
-	makedepend -Y -I. -I../envir -I../sim -fmakefile.in -- *.cc
+	makedepend -Y -I. -I../envir -I../sim -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX) tcl2c
 
 install-local: @TKENV_IF_POSSIBLE@
-	../utils/install-lib libtkenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR) libtkenv$(LIB_SUFFIX).$(OMNETPP_VERSION)
+	../utils/install-lib libtkenv$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libtkenv$(LIB_SUFFIX)
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

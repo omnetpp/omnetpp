@@ -162,24 +162,18 @@ pvm/pvmmod.o : pvm/pvmmod.cc
 	$(CXX) -c $(COPTS) -I$(PVM_INCL_DIR) pvm/pvmmod.cc -o pvm/pvmmod.o
 
 missing-library:
-	@ echo
 	@ echo '  *** No PVM installation found -- skipping sim_pvm'
-	@ echo
 
 depend:
 	makedepend -Y -I. -- *.cc
-	makedepend -Y -I. -fmakefile.in -- *.cc
+	makedepend -Y -I. -fMakefile.in -- *.cc
 
 clean:
 	rm -f *.o libsim_std$(A_LIB_SUFFIX) libsim_std$(SO_LIB_SUFFIX) libsim_pvm$(A_LIB_SUFFIX) libsim_pvm$(SO_LIB_SUFFIX)
 
 install-local: libsim_std$(LIB_SUFFIX) @SIM_PVM_IF_POSSIBLE@
-	rm -f $(OMNETPP_LIB_DIR)/libsim_std$(A_LIB_SUFFIX)*
-	rm -f $(OMNETPP_LIB_DIR)/libsim_std$(SO_LIB_SUFFIX)*
-	rm -f $(OMNETPP_LIB_DIR)/libsim_pvm$(A_LIB_SUFFIX)*
-	rm -f $(OMNETPP_LIB_DIR)/libsim_pvm$(SO_LIB_SUFFIX)*
-	../utils/install-lib libsim_std$(LIB_SUFFIX) $(OMNETPP_LIB_DIR) libsim_std$(LIB_SUFFIX).$(OMNETPP_VERSION)
-	../utils/install-lib libsim_pvm$(LIB_SUFFIX) $(OMNETPP_LIB_DIR) libsim_pvm$(LIB_SUFFIX).$(OMNETPP_VERSION)
+	../utils/install-lib libsim_std$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_std$(LIB_SUFFIX)
+	../utils/install-lib libsim_pvm$(LIB_SUFFIX).$(OMNETPP_VERSION) $(OMNETPP_LIB_DIR) libsim_pvm$(LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

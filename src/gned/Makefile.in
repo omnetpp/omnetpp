@@ -67,13 +67,11 @@ lex.yy.c: ebnf.lex
 	$(LEX) ebnf.lex
 
 missing-library:
-	@ echo
 	@ echo '  *** No Tk installation found -- skipping GNED'
-	@ echo
 
 depend:
 	makedepend -Y -I. -- *.c *.cc
-	makedepend -Y -I. -fmakefile.in -- *.c *.cc
+	makedepend -Y -I. -fMakefile.in -- *.c *.cc
 
 clean:
 	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned
@@ -84,6 +82,8 @@ install-local: gned
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
+ebnf.tab.o: ebnfcfg.h parsened.h nedfile.h disp.h
+lex.yy.o: ebnf.tab.h ebnfcfg.h parsened.h
 arrow.o: arrow.h
 disp.o: disp.h
 gned.o: arrow.h parsened.h tklib.h
