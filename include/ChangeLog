@@ -1,3 +1,8 @@
+2002-10-20  Andras Varga
+
+	* cgate.h: added isConnectedOutside() and isConnectedInside() 
+	utility methods.
+
 2002-10-19  Andras Varga
 
 	* cmodule.h, ctype.h: refactoring on dynamic module creation: instead of

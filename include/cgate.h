@@ -204,7 +204,7 @@ class SIM_API cGate : public cObject
     /**
      * Assigns the given channel to this gate.
      */
-    void cGate::setChannel(cChannel *ch);
+    void setChannel(cChannel *ch);
 
     /**
      * Returns the channel object attached to this gate, or NULL if there's no channel.
@@ -379,11 +379,27 @@ class SIM_API cGate : public cObject
     int routeContains(cModule *m, int g=-1);
 
     /**
-     * Returns true if the gate is connected. A simple module output gate is
-     * connected if toGate() is not NULL, and a simple module input gate is
-     * connected if fromGate() is not NULL. For a compound module gate to be
-     * connected, it should be connected both from "inside" and "outside",
-     * that is, both fromGate() and toGate() should be non-NULL.
+     * Returns true if the gate is connected outside (i.e. to one of its
+     * sibling modules or to the parent module).
+     *
+     * This means that for an input gate, fromGate() must be non-NULL; for an output
+     * gate, toGate() must be non-NULL.
+     */
+    bool isConnectedOutside() const;
+
+    /**
+     * Returns true if the gate (of a compound module) is connected inside
+     * (i.e. to one of its submodules).
+     *
+     * This means that for an input gate, toGate() must be non-NULL; for an output
+     * gate, fromGate() must be non-NULL.
+     */
+    bool isConnectedInside() const;
+
+    /**
+     * Returns true if the gate fully connected. For a compound module gate
+     * this means both isConnectedInside() and isConnectedOutside() are true;
+     * for a simple module, only isConnectedOutside() is checked.
      */
     bool isConnected() const;
 
