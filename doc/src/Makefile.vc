@@ -6,7 +6,7 @@
 #
 # Targets
 #
-all: api nedxml-api parsim-api do-tictoc-tutorial do-manual
+all: api nedxml-api parsim-api do-tictoc-tutorial do-queues-tutorial do-manual
 
 api:
 	$(DOXYGEN:/=\) api.doxyfile
@@ -23,3 +23,5 @@ do-manual:
 do-tictoc-tutorial:
 	cd tictoc-tutorial && $(MAKE) -f Makefile.vc
 
+do-queues-tutorial:
+	cd queues-tutorial && $(MAKE) -f Makefile.vc
