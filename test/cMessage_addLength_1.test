@@ -18,7 +18,7 @@ ev << msg.length() << endl;
 msg.addLength(-300);
 ev << msg.length() << endl;
 
-%ignore-exitcode: 1
+%exitcode: 1
 
 %contains: stdout
 1

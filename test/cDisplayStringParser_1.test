@@ -1,0 +1,31 @@
+%description:
+basic cDisplayString functionality: parse and regenerate
+
+%activity:
+cDisplayStringParser ds;
+const char *s;
+
+s="a=foo"; 
+ds.parse(s); ev << ds.getString() << endl;
+
+s="a=foo;b=22"; 
+ds.parse(s); ev << ds.getString() << endl;
+
+s="a=,foo,22;;b=,bar,,453"; 
+ds.parse(s); ev << ds.getString() << endl;
+
+s="a=;b="; 
+ds.parse(s); ev << ds.getString() << endl;
+
+s=""; 
+ds.parse(s); ev << ds.getString() << endl;
+
+ev << ".\n";
+
+%contains: stdout
+a=foo
+a=foo;b=22
+a=,foo,22;;b=,bar,,453
+a=;b=
+
+.
