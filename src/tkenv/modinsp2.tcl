@@ -382,7 +382,7 @@ proc create_graphicalmodwindow {name} {
     set help_tips($w.toolbar.ascont)  {Inspect as object}
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
-    set help_tips($w.toolbar.step)    {Execute until next event in this module}
+    set help_tips($w.toolbar.step)    {Stop at events in this module}
     set help_tips($w.toolbar.params)  {Inspect parameters}
     set help_tips($w.toolbar.gates)   {Inspect gates}
     set help_tips($w.toolbar.redraw)  {Rearrange randomly placed submodules}

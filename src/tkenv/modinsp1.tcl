@@ -36,7 +36,7 @@ proc create_compoundmodinspector {name} {
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
-    set help_tips($w.toolbar.step)    {Execute until next event in this module}
+    set help_tips($w.toolbar.step)    {Stop at events in this module}
 
     set nb $w.nb
     notebook $nb
@@ -77,7 +77,7 @@ proc create_simplemodinspector {name} {
 
     set help_tips($w.toolbar.win)    {See module output}
     set help_tips($w.toolbar.parent) {Inspect parent module}
-    set help_tips($w.toolbar.step)   {Execute until next event in this module}
+    set help_tips($w.toolbar.step)   {Stop at events in this module}
 
     set nb $w.nb
     notebook $nb
@@ -144,7 +144,7 @@ proc create_simplemodulewindow {name} {
 
     set help_tips($w.toolbar.obj)    {Inspect as object}
     set help_tips($w.toolbar.parent) {Inspect parent module}
-    set help_tips($w.toolbar.step)   {Execute until next event in this module}
+    set help_tips($w.toolbar.step)   {Stop at events in this module}
 
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15
@@ -176,7 +176,7 @@ proc create_compoundmodulewindow {name} {
 
     set help_tips($w.toolbar.obj)    {Inspect as object}
     set help_tips($w.toolbar.parent) {Inspect parent module}
-    set help_tips($w.toolbar.step)   {Execute until next event in this module}
+    set help_tips($w.toolbar.step)   {Stop at events in this module}
 
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15
