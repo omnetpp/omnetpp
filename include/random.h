@@ -24,6 +24,11 @@
 #include "crng.h"
 
 
+// helper: return the "current" RNG.
+inline cRNG *__contextModuleRNG(int k) {
+    return simulation.contextModule() ? simulation.contextModule()->rng(k) : ev.rng(k);
+}
+
 /**
  * @name Random number generation.
  *
@@ -34,22 +39,22 @@
 /**
  * Produces random integer in range [0,r) using generator 0.
  */
-inline long intrand(long r)  {return simulation.contextModule()->rng(0)->intRand(r);}
+inline long intrand(long r)  {return __contextModuleRNG(0)->intRand(r);}
 
 /**
  * Produces random double in range [0,1) using generator 0.
  */
-inline double dblrand()  {return simulation.contextModule()->rng(0)->doubleRand();}
+inline double dblrand()  {return __contextModuleRNG(0)->doubleRand();}
 
 /**
  * Produces random integer in range [0,r) using generator k.
  */
-inline long genk_intrand(int k,long r)  {return simulation.contextModule()->rng(k)->intRand(r);}
+inline long genk_intrand(int k,long r)  {return __contextModuleRNG(k)->intRand(r);}
 
 /**
  * Produces random double in range [0,1) using generator k.
  */
-inline double genk_dblrand(int k)  {return simulation.contextModule()->rng(k)->doubleRand();}
+inline double genk_dblrand(int k)  {return __contextModuleRNG(k)->doubleRand();}
 //@}
 
 #endif
