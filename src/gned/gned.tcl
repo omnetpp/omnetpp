@@ -50,6 +50,7 @@ if [info exist OMNETPP_GNED_DIR] {
      source [file join $dir fileview.tcl]
      source [file join $dir loadsave.tcl]
      source [file join $dir makened.tcl]
+     source [file join $dir genxml.tcl]
      source [file join $dir parsened.tcl]
      source [file join $dir menuproc.tcl]
      source [file join $dir switchvi.tcl]

@@ -105,6 +105,8 @@ proc createMainWindow {} {
       {command -command fileCloseNedfile -label {Close NED file} -underline 0}
       {command -command fileCloseCanvas  -label {Close component} -underline 1}
       {separator}
+      {command -command exportXML        -label {Export XML...} -underline 2}
+      {separator}
       {command -command fileExit -label Exit -underline 1}
     } {
       eval .menubar.filemenu add $i
