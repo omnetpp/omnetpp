@@ -104,7 +104,7 @@ void cMPICommunications::send(cCommBuffer *buffer, int tag, int destination)
     // cause deadlock
     int status = MPI_Bsend(b->getBuffer(), b->getMessageSize(),
                                  MPI_PACKED, destination, tag, MPI_COMM_WORLD);
-    if (status != MPI_SUCCESS)
+    if (status!=MPI_SUCCESS)
         throw new cException("cMPICommunications::send(): MPI error %d", status);
 }
 
@@ -116,16 +116,17 @@ void cMPICommunications::broadcast(cCommBuffer *buffer, int tag)
             send(buffer, tag, i);
 }
 
-bool cMPICommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cMPICommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
     // use MPI_Probe() to determine message size, then receive it
     cMPICommBuffer *b = (cMPICommBuffer *)buffer;
     MPI_Status status;
     int msgsize;
-    MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+    if (filtTag==PARSIM_ANY_TAG) filtTag=MPI_ANY_TAG;
+    MPI_Probe(MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &status);
     MPI_Get_count(&status, MPI_PACKED, &msgsize);
     b->allocateAtLeast(msgsize);
-    int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+    int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &status);
     if (err!=MPI_SUCCESS)
         throw new cException("cMPICommunications::receiveBlocking(): MPI error %d", err);
     b->setMessageSize(msgsize);
@@ -134,13 +135,14 @@ bool cMPICommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, 
     return true;
 }
 
-bool cMPICommunications::receiveNonblocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cMPICommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
     // probe if we have something to receive ...
     cMPICommBuffer *b = (cMPICommBuffer *)buffer;
     MPI_Status status;
     int flag;
-    MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &flag, &status);
+    if (filtTag==PARSIM_ANY_TAG) filtTag=MPI_ANY_TAG;
+    MPI_Iprobe(MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &flag, &status);
 
     // ... and receive it if we do
     if (flag)
@@ -148,8 +150,8 @@ bool cMPICommunications::receiveNonblocking(cCommBuffer *buffer, int& receivedTa
         int msgsize;
         MPI_Get_count(&status, MPI_PACKED, &msgsize);
         b->allocateAtLeast(msgsize);
-        int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        if (err != MPI_SUCCESS)
+        int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, MPI_ANY_SOURCE, filtTag, MPI_COMM_WORLD, &status);
+        if (err!=MPI_SUCCESS)
             throw new cException("cMPICommunications::receiveNonBlocking(): MPI error %d", err);
         b->setMessageSize(msgsize);
         receivedTag = status.MPI_TAG;
@@ -162,7 +164,7 @@ bool cMPICommunications::receiveNonblocking(cCommBuffer *buffer, int& receivedTa
 void cMPICommunications::synchronize()
 {
     int status = MPI_Barrier(MPI_COMM_WORLD);
-    if (status != MPI_SUCCESS)
+    if (status!=MPI_SUCCESS)
         throw new cException("cMPICommunications::synchronize(): MPI error %d", status);
 }
 

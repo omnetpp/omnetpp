@@ -3,6 +3,10 @@
 	* receiveNonblocking() changed to return false if it was interrupted;
 	now it's possible to stop (and resume) parallel simulation in Tkenv.
 
+	* implemented message filtering by tag in the communications classes
+	(cParsimCommunications subclasses) -- needed to handle race conditions
+	in connectRemoteGates()
+
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2003-11-13  Andras Varga

@@ -60,7 +60,7 @@ class cNamedPipeCommunications : public cParsimCommunications
 
   protected:
     // common impl. for receiveBlocking() and receiveNonblocking()
-    bool receive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking);
+    bool receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking);
 
   public:
     /**
@@ -119,14 +119,14 @@ class cNamedPipeCommunications : public cParsimCommunications
      * Receives packed data, and also returns tag and source procId.
      * Normally returns true; false is returned if blocking was interrupted by the user.
      */
-    virtual bool receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId);
+    virtual bool receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId);
 
     /**
      * Receives packed data, and also returns tag and source procId.
      * Call is non-blocking -- it returns true if something has been
      * received, false otherwise.
      */
-    virtual bool receiveNonblocking(cCommBuffer *buffer,  int& receivedTag, int& sourceProcId);
+    virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer,  int& receivedTag, int& sourceProcId);
 
     /**
      * Blocks until all partitions call the same method. This is not implemented,

@@ -191,9 +191,9 @@ void cFileCommunications::broadcast(cCommBuffer *buffer, int tag)
             send(buffer, tag, i);
 }
 
-bool cFileCommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cFileCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
-    while (!receiveNonblocking(buffer, receivedTag, sourceProcId))
+    while (!receiveNonblocking(filtTag, buffer, receivedTag, sourceProcId))
     {
         if (ev.idle())
             return false;
@@ -202,14 +202,17 @@ bool cFileCommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag,
     return true;
 }
 
-bool cFileCommunications::receiveNonblocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cFileCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
     cFileCommBuffer *b = (cFileCommBuffer *)buffer;
     b->reset();
 
     char fmask[100];
     char fname2[100];
-    sprintf(fmask,"%s#*-s*-d%d-t*.msg", commDirPrefix.buffer(), myProcId);
+    if (filtTag==PARSIM_ANY_TAG)
+        sprintf(fmask,"%s#*-s*-d%d-t*.msg", commDirPrefix.buffer(), myProcId);
+    else
+        sprintf(fmask,"%s#*-s*-d%d-t%d.msg", commDirPrefix.buffer(), myProcId, filtTag);
 
     bool ret = false;
     const char *fname = findFirstFile(fmask);

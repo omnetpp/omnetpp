@@ -196,10 +196,12 @@ void cNamedPipeCommunications::broadcast(cCommBuffer *buffer, int tag)
             send(buffer, tag, i);
 }
 
-bool cNamedPipeCommunications::receive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
+bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
 {
     cMemCommBuffer *b = (cMemCommBuffer *)buffer;
     b->reset();
+
+    // FIXME handle "filtTag" -- problem: where to put buffers with wrong tag? use a deque?
 
     // create file descriptor set for select() call
     int i;
@@ -243,9 +245,10 @@ bool cNamedPipeCommunications::receive(cCommBuffer *buffer, int& receivedTag, in
     return false;
 }
 
-bool cNamedPipeCommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cNamedPipeCommunications::receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
-    while (!receive(buffer, receivedTag, sourceProcId, true))
+    // FIXME active wait :-(
+    while (!receive(filtTag, buffer, receivedTag, sourceProcId, true))
     {
         if (ev.idle())
             return false;
@@ -253,9 +256,9 @@ bool cNamedPipeCommunications::receiveBlocking(cCommBuffer *buffer, int& receive
     return true;
 }
 
-bool cNamedPipeCommunications::receiveNonblocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cNamedPipeCommunications::receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
-    return receive(buffer, receivedTag, sourceProcId, false);
+    return receive(filtTag, buffer, receivedTag, sourceProcId, false);
 }
 
 void cNamedPipeCommunications::synchronize()

@@ -25,6 +25,9 @@
 class cCommBuffer;
 
 
+#define PARSIM_ANY_TAG  -1
+
+
 /**
  * Basic communications layer for parallel simulation. It provides an
  * abstraction layer above MPI, PVM, shared-memory communications, etc.
@@ -98,14 +101,14 @@ class cParsimCommunications
      * Receives packed data with given tag from given destination.
      * Normally returns true; false is returned if blocking was interrupted by the user.
      */
-    virtual bool receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId) = 0;
+    virtual bool receiveBlocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId) = 0;
 
     /**
      * Receives packed data with given tag from given destination.
      * Call is non-blocking -- it returns true if something has been
      * received, false otherwise.
      */
-    virtual bool receiveNonblocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId) = 0;
+    virtual bool receiveNonblocking(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId) = 0;
 
     /**
      * Blocks until all partitions call the same method.
