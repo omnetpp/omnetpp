@@ -114,10 +114,10 @@ proc createMenubar {w} {
 
     # File menu
     foreach i {
-      {command -command fileOpen -label {Load vector...} -underline 0}
+      {command -command fileOpen -label {Load vec file...} -underline 0}
       {separator}
-      {command -command loadVectorConfig -label {Open vector config...} -underline 0}
-      {command -command saveVectorConfig -label {Save vector config...} -underline 0}
+      {command -command loadVectorConfig -label {Load panel contents...} -underline 0}
+      {command -command saveVectorConfig -label {Save panel contents...} -underline 0}
       {separator}
       {command -command saveScript -label {Save shell script or batch file...} -underline 6}
       {command -command savePicture -label {Save picture...} -underline 5}
@@ -141,7 +141,7 @@ proc createMenubar {w} {
       {command -command {moveVectors} -label {Move  F5} -underline 0}
       {command -command {copyVectors} -label {Copy  F6} -underline 0}
       {command -command {dupVectors} -label {Duplicate} -underline 1}
-      {command -command {delVectors} -label {Delete  Del,F8} -underline 0}
+      {command -command {delVectors} -label {Remove  Del,F8} -underline 0}
     } {
       eval $w.editmenu$m add $i
     }
@@ -200,7 +200,7 @@ proc createMainArea {w} {
     #button $w.f1.but.load -text {Load...} -command fileOpen
     #button $w.f1.but.sel  -text {Sel...}  -command {selectVectors 1}
     #button $w.f1.but.repl -text {Repl...} -command {replaceInTitles 1}
-    #button $w.f1.but.del  -text {Delete}  -command {delVectors 1}
+    #button $w.f1.but.del  -text {Remove}  -command {delVectors 1}
 
     #pack $w.f1.but -expand 0 -fill x -side bottom
     #pack $w.f1.but.load -side left -expand 1 -fill x
@@ -211,7 +211,7 @@ proc createMainArea {w} {
     #set help_tips($w.f1.but.load) {Load vectors and add them to left panel}
     #set help_tips($w.f1.but.sel)  {Select vectors by title}
     #set help_tips($w.f1.but.repl) {Find/replace in vector titles}
-    #set help_tips($w.f1.but.del)  {Delete selected vectors from panel}
+    #set help_tips($w.f1.but.del)  {Remove selected vectors from panel}
 
     label $w.f1.status -relief groove
     pack $w.f1.status -expand 0 -fill x -side bottom
@@ -271,7 +271,7 @@ proc createMainArea {w} {
     #frame $w.f3.but
     #button $w.f3.but.opt -text {Info...} -command {vectorInfo 2}
     #button $w.f3.but.fil -text {Options...} -command {editVectorFilters 2}
-    #button $w.f3.but.del -text {Delete} -command {delVectors 2}
+    #button $w.f3.but.del -text {Remove} -command {delVectors 2}
     #button $w.f3.but.dup -text {Dup} -command {dupVectors 2}
 
     #pack $w.f3.but -expand 0 -fill x -side bottom
@@ -282,7 +282,7 @@ proc createMainArea {w} {
 
     #set help_tips($w.f3.but.opt)  {Vector info}
     #set help_tips($w.f3.but.fil)  {Set filters and plotting options}
-    #set help_tips($w.f3.but.del)  {Delete selected vectors from panel}
+    #set help_tips($w.f3.but.del)  {Remove selected vectors from panel}
     #set help_tips($w.f3.but.dup)  {Duplicate selected vectors}
 
     label $w.f3.status -relief groove
@@ -306,25 +306,27 @@ proc createMainArea {w} {
     #
     frame $w.f4.dum1
     #button $w.f4.opt  -text {Options...} -command editGnuplotOptions
-    button $w.f4.plot -text {PLOT!} -command doPlot -height 2
+    button $w.f4.plot -text {    PLOT!    } -command doPlot -height 2
     button $w.f4.pic -text {Save picture...} -command savePicture
-    button $w.f4.script -text {Save script...} -command saveScript
-    button $w.f4.conf -text {Save vec cfg...} -command saveVectorConfig
+    #button $w.f4.script -text {Save script...} -command saveScript
+    #button $w.f4.conf -text {Save vec cfg...} -command saveVectorConfig
     frame $w.f4.dum2
+    frame $w.f4.dum3
 
     pack $w.f4.dum1 -anchor center -fill x -expand 1
     #pack $w.f4.opt -anchor center -fill x -expand 0
     pack $w.f4.plot -anchor center -fill x -expand 0 -pady 8
     pack $w.f4.pic -anchor center  -fill x -expand 0
-    pack $w.f4.script -anchor center -fill x -expand 0
-    pack $w.f4.conf -anchor center  -fill x -expand 0 -pady 8
+    #pack $w.f4.script -anchor center -fill x -expand 0
+    #pack $w.f4.conf -anchor center  -fill x -expand 0 -pady 8
     pack $w.f4.dum2 -anchor center -fill x -expand 1
+    pack $w.f4.dum3 -anchor center -fill x -expand 1
 
     #set help_tips($w.f4.opt)     {Global GnuPlot options}
     set help_tips($w.f4.plot)    {Plot selected vectors}
-    set help_tips($w.f4.pic)     {Save picture}
-    set help_tips($w.f4.script)  {Save shell script that can reproduce plot}
-    set help_tips($w.f4.conf)    {Save vector selection, their options and filter settings}
+    set help_tips($w.f4.pic)     {Save plot as picture}
+    #set help_tips($w.f4.script)  {Save shell script or batch file that can reproduce plot}
+    #set help_tips($w.f4.conf)    {Save vector selection, their options and filter settings}
 
     #
     # Popup menus
@@ -339,7 +341,7 @@ proc createMainArea {w} {
       {command -command {moveVectors 1 2} -label {Move  F5} -underline 0}
       {command -command {copyVectors 1 2} -label {Copy  F6} -underline 0}
       {command -command {dupVectors 1} -label {Duplicate} -underline 1}
-      {command -command {delVectors 1} -label {Delete  F8} -underline 0}
+      {command -command {delVectors 1} -label {Remove  F8} -underline 0}
     } {
        eval .left_popup add $i
     }
@@ -356,7 +358,7 @@ proc createMainArea {w} {
       {command -command {moveVectors 2 1} -label {Move  F5} -underline 0}
       {command -command {copyVectors 2 1} -label {Copy  F6} -underline 0}
       {command -command {dupVectors 2} -label {Duplicate} -underline 1}
-      {command -command {delVectors 2} -label {Delete  F8} -underline 0}
+      {command -command {delVectors 2} -label {Remove  F8} -underline 0}
     } {
        eval .right_popup add $i
     }
@@ -443,7 +445,9 @@ proc createMainWindow {{geom ""}} {
     frame .toolbar -relief raised -borderwidth 1
     foreach i {
       {sep0  -separator}
-      {load  -image $icons(open)     -command fileOpen}
+      {load  -image $icons(load)     -command fileOpen}
+      {opcfg -image $icons(opencfg)  -command loadVectorConfig}
+      {svcfg -image $icons(savecfg)  -command saveVectorConfig}
       {sep1  -separator}
       {dup   -image $icons(dup)      -command dupVectors}
       {del   -image $icons(del)      -command delVectors}
@@ -455,22 +459,29 @@ proc createMainWindow {{geom ""}} {
       {sep3  -separator}
       {conf  -image $icons(config)   -command editGnuplotOptions}
       {sep4  -separator}
-
       {plot  -image $icons(plot)     -command doPlot}
+      {sep5  -separator}
+      {svpic -image $icons(savepic)  -command savePicture}
+      {svsh  -image $icons(savescript) -command saveScript}
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
 
-    set help_tips(.toolbar.load) {Open file and add vectors in it to LEFT panel}
-    set help_tips(.toolbar.sel)  {Select vectors by title}
-    set help_tips(.toolbar.repl) {Find/replace in vector titles}
-    set help_tips(.toolbar.del)  {Delete selected vectors from panel}
-    set help_tips(.toolbar.opt)  {Vector info}
-    set help_tips(.toolbar.fil)  {Filters and plotting options for selected vectors}
-    set help_tips(.toolbar.dup)  {Duplicate selected vectors}
-    set help_tips(.toolbar.plot) {Plot selected vectors in RIGHT panel}
-    set help_tips(.toolbar.conf) {Global Gnuplot options}
+    set help_tips(.toolbar.load)  {Load .vec file -- grep "vector..." lines from it and add them to LEFT panel}
+    set help_tips(.toolbar.opcfg) {Load panel contents and options}
+    set help_tips(.toolbar.svcfg) {Save panel contents and options}
+    set help_tips(.toolbar.sel)   {Select vectors by title}
+    set help_tips(.toolbar.repl)  {Find/replace in vector titles}
+    set help_tips(.toolbar.del)   {Remove selected vectors from panel}
+    set help_tips(.toolbar.opt)   {Vector info}
+    set help_tips(.toolbar.fil)   {Filters and plotting options for selected vectors}
+    set help_tips(.toolbar.dup)   {Duplicate selected vectors}
+    set help_tips(.toolbar.plot)  {Plot selected vectors in RIGHT panel}
+    set help_tips(.toolbar.conf)  {Global Gnuplot options}
+    set help_tips(.toolbar.svpic) {Save plot as picture}
+    set help_tips(.toolbar.svsh)  {Save shell script or batch file that can reproduce plot}
+
 
     ##########################################
     # status bar
