@@ -1,4 +1,4 @@
-for i in `find . -name 'Makefile*' -o -name '*.h' -o -name '*.cc' -o -name '*.c' -o -name '*.ned' -o -name '*.y' -o -name '*.lex' -o -name src/utils/install-prog -o -name src/utils/install-lib`
+for i in `find . -name 'Makefile*' -o -name '*.h' -o -name '*.cc' -o -name '*.c' -o -name '*.ned' -o -name '*.y' -o -name '*.lex' -o -name install-prog -o -name install-lib`
 do
     echo Removing ^M, $i
     cp $i $i.b
