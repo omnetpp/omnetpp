@@ -22,6 +22,20 @@
 #include <time.h>
 #include <string>
 
+#ifdef __APPLE__
+#include <sys/time.h>
+static int ftime(struct timeb *tp)
+{
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+    tp->time = tv.tv_sec;
+    tp->millitm = tv.tv_usec / 1000;
+    tp->timezone = 0;
+    tp->dstflag = 0;
+}
+#endif
+
 #include "appreg.h"
 #include "cenvir.h"
 #include "csimplemodule.h"
@@ -112,7 +126,7 @@ void TOmnetTkApp::setup()
 #endif
 
     // path for icon directories
-	const char *bitmap_path_env = getenv("OMNETPP_BITMAP_PATH");
+    const char *bitmap_path_env = getenv("OMNETPP_BITMAP_PATH");
     std::string bitmap_path = bitmap_path_env ? bitmap_path_env : OMNETPP_BITMAP_PATH;
     if (!opt_bitmap_path.empty())
         bitmap_path = std::string(opt_bitmap_path.c_str()) + ";" + bitmap_path;
