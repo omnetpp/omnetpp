@@ -465,12 +465,32 @@ You can read Tic's full source in @ref txc7.cc.
 Sources: @ref tictoc7.ned, @ref txc7.cc, @ref omnetpp.ini
 
 
-@section s8 Step 8
+@section s8 Step 8: Retransmitting the same message
 
-In the previous model we just created another packet if we needed to
+In this step we refine the previous model.
+There we just created another packet if we needed to
 retransmit. This is OK because the packet didn't contain much, but
 in real life it's usually more practical to keep a copy of the original
 packet so that we can re-send it without the need to build it again.
+
+What we do here is keep the orignal packet and send only copies of it.
+We delete the original when toc's acknowledgement arrives.
+To make it easier to visually verify the model, we'll include a message
+sequence number the message names.
+
+In order to avoid handleMessage() growing too large, we'll put the
+corresponding code into two new functions, generateNewMessage()
+and sendCopyOf() and call them from handleMessage().
+
+The functions:
+
+@dontinclude txc8.cc
+@skip Tic8::generateNewMessage
+@until }
+
+@dontinclude txc8.cc
+@skip Tic8::sendCopyOf
+@until }
 
 Sources: @ref tictoc8.ned, @ref txc8.cc, @ref omnetpp.ini
 
