@@ -1,3 +1,8 @@
+2004-02-11  Andras Varga
+
+	* receiveNonblocking() changed to return false if it was interrupted;
+	now it's possible to stop (and resume) parallel simulation in Tkenv.
+
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 
 2003-11-13  Andras Varga

@@ -265,13 +265,14 @@ bool cNamedPipeCommunications::receive(cCommBuffer *buffer, int& receivedTag, in
 
 }
 
-void cNamedPipeCommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cNamedPipeCommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
     while (!receive(buffer, receivedTag, sourceProcId, true))
     {
         if (ev.idle())
-            throw new cException("Blocking receive aborted");
+            return false;
     }
+    return true;
 }
 
 bool cNamedPipeCommunications::receiveNonblocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)

@@ -86,16 +86,22 @@ void cParsimProtocolBase::receiveNonblocking()
     comm->recycleCommBuffer(buffer);
 }
 
-void cParsimProtocolBase::receiveBlocking()
+bool cParsimProtocolBase::receiveBlocking()
 {
     cCommBuffer *buffer = comm->createCommBuffer();
 
     int tag, sourceProcId;
-    comm->receiveBlocking(buffer, tag, sourceProcId);
+    if (!comm->receiveBlocking(buffer, tag, sourceProcId))
+    {
+        comm->recycleCommBuffer(buffer);
+        return false;
+    }
+
     processReceivedBuffer(buffer, tag, sourceProcId);
     while (comm->receiveNonblocking(buffer, tag, sourceProcId))
         processReceivedBuffer(buffer, tag, sourceProcId);
 
     comm->recycleCommBuffer(buffer);
+    return true;
 }
 

@@ -245,7 +245,8 @@ cMessage *cNullMessageProtocol::getNextEvent()
         {
             // wait until it gets out of the way (i.e. we get a higher EIT)
             {if (debug) ev.printf("blocking on EIT event `%s'\n", msg->name());}
-            receiveBlocking();
+            if (!receiveBlocking())
+                return NULL;
         }
         else
         {

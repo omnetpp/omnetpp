@@ -38,7 +38,8 @@ class cParsimProtocolBase : public cParsimSynchronizer
     virtual void receiveNonblocking();
 
     // process whatever comes from other partitions -- blocking
-    virtual void receiveBlocking();
+    // (normally returns true; false is returned if blocking was interrupted by the user)
+    virtual bool receiveBlocking();
 
     // process buffers coming from other partitions
     virtual void processReceivedBuffer(cCommBuffer *buffer, int tag, int sourceProcId);

@@ -117,8 +117,9 @@ class cNamedPipeCommunications : public cParsimCommunications
 
     /**
      * Receives packed data, and also returns tag and source procId.
+     * Normally returns true; false is returned if blocking was interrupted by the user.
      */
-    virtual void receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId);
+    virtual bool receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId);
 
     /**
      * Receives packed data, and also returns tag and source procId.

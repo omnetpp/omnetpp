@@ -107,7 +107,8 @@ void cParsimPartition::connectRemoteGates()
     {
         // receive:
         int tag, remoteProcId;
-        comm->receiveBlocking(buffer, tag, remoteProcId);
+        if (!comm->receiveBlocking(buffer, tag, remoteProcId))
+            throw new cException("connectRemoteGates() interrupted by user");
         if (tag!=TAG_SETUP_LINKS)
             throw new cException("connectRemoteGates(): wrong message tag %d received from procId=%d", tag, remoteProcId);
 

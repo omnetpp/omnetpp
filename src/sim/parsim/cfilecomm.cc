@@ -191,14 +191,15 @@ void cFileCommunications::broadcast(cCommBuffer *buffer, int tag)
             send(buffer, tag, i);
 }
 
-void cFileCommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cFileCommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
     while (!receiveNonblocking(buffer, receivedTag, sourceProcId))
     {
         if (ev.idle())
-            throw new cException("cFileCommunications: blocking receive aborted");
+            return false;
         usleep(100000); // be nice and polite: wait 0.1s
     }
+    return true;
 }
 
 bool cFileCommunications::receiveNonblocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)

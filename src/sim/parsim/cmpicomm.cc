@@ -116,7 +116,7 @@ void cMPICommunications::broadcast(cCommBuffer *buffer, int tag)
             send(buffer, tag, i);
 }
 
-void cMPICommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
+bool cMPICommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)
 {
     // use MPI_Probe() to determine message size, then receive it
     cMPICommBuffer *b = (cMPICommBuffer *)buffer;
@@ -126,11 +126,12 @@ void cMPICommunications::receiveBlocking(cCommBuffer *buffer, int& receivedTag, 
     MPI_Get_count(&status, MPI_PACKED, &msgsize);
     b->allocateAtLeast(msgsize);
     int err = MPI_Recv(b->getBuffer(), b->getBufferLength(), MPI_PACKED, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-    if (err != MPI_SUCCESS)
+    if (err!=MPI_SUCCESS)
         throw new cException("cMPICommunications::receiveBlocking(): MPI error %d", err);
     b->setMessageSize(msgsize);
     receivedTag = status.MPI_TAG;
     sourceProcId = status.MPI_SOURCE;
+    return true;
 }
 
 bool cMPICommunications::receiveNonblocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId)

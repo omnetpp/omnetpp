@@ -53,10 +53,14 @@ cMessage *cNoSynchronization::getNextEvent()
 {
     // if no more local events, wait for something to come from other partitions
     if (sim->msgQueue.empty())
-        receiveBlocking();
+    {
+        if (!receiveBlocking())
+            return NULL;
+    }
     else
+    {
         receiveNonblocking();
-
+    }
     cMessage *msg = sim->msgQueue.peekFirst();
     return msg;
 }

@@ -85,7 +85,8 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
 {
     // if no more local events, wait for something to come from other partitions
     while (sim->msgQueue.empty())
-        receiveBlocking();
+        if (!receiveBlocking())
+            return NULL;
 
     cMessage *msg = sim->msgQueue.peekFirst();
     simtime_t t = msg->arrivalTime();
@@ -101,25 +102,27 @@ cMessage *cIdealSimulationProtocol::getNextEvent()
     if (t==nextExternalEvent.t)
     {
         if (isExternalMessage(msg))
-    {
+        {
             if (debug) ev << "expected external event for " << simtimeToStr(nextExternalEvent.t)
                           << " already here (arrived earlier), good!"<< endl;
             readNextRecordedEvent();
-    }
+        }
         return msg;
     }
 
     // t>nextExternalEvent -- here we have to wait until external event arrives
     if (debug)
     {
-    ev << "next local event at " << simtimeToStr(t);
+        ev << "next local event at " << simtimeToStr(t);
         ev << " is PAST external event expected at " << simtimeToStr(nextExternalEvent.t);
         ev << " -- waiting..." << endl;
-ev.printf("DBG:next external event: %.30g, next local event: %.30g\n", nextExternalEvent.t, t);
+        ev.printf("DBG:next external event: %.30g, next local event: %.30g\n", nextExternalEvent.t, t);
     }
+
     do
     {
-        receiveBlocking();
+        if (!receiveBlocking())
+            return NULL;
         msg = sim->msgQueue.peekFirst();
     }
     while (msg->arrivalTime()>nextExternalEvent.t || !isExternalMessage(msg));

@@ -91,8 +91,9 @@ class cMPICommunications : public cParsimCommunications
 
     /**
      * Receives packed data with given tag from given destination.
+     * Normally returns true; false is returned if blocking was interrupted by the user.
      */
-    virtual void receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId);
+    virtual bool receiveBlocking(cCommBuffer *buffer, int& receivedTag, int& sourceProcId);
 
     /**
      * Receives packed data with given tag from given destination.
