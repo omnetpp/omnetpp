@@ -83,25 +83,19 @@ proc createBltGraph {graphtype {graphname ""}} {
     set graph $page.g
 
     if {$graphtype=="graph"} {
-
         blt::graph $graph
-
         $graph pen configure "activeLine" -color navy -linewidth 1 -symbol none
-        $graph crosshairs configure -dashes {1 1}
-        $graph legend configure -position right
-        #$graph legend configure -position bottom
-        $graph legend configure -font {"Small Fonts" 7}
-
     } elseif {$graphtype=="barchart"} {
-
         blt::barchart $graph
-
-        $graph crosshairs configure -dashes {1 1}
-        $graph legend configure -position right
-        #$graph legend configure -position bottom
-        $graph legend configure -font {"Small Fonts" 7}
         $graph configure -barmode aligned
     }
+    $graph crosshairs configure -dashes {1 1}
+    $graph legend configure -position right
+    $graph legend configure -anchor ne
+    $graph legend configure -relief solid
+    $graph legend configure -borderwidth 1
+    $graph legend configure -font {"Small Fonts" 7}
+
     pack $graph -expand 1 -fill both
 
     Blt_ActiveLegend $graph
@@ -227,6 +221,8 @@ proc bltGraph_Properties {{what "lines"}} {
 }
 
 proc bltGraph_PropertiesDialog {graph {what "lines"}} {
+    global tmp
+
     set w .bltwin.graphprops
     createOkCancelDialog $w "Graph Properties"
     wm geometry $w 360x300
@@ -244,15 +240,20 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
     # Titles page
     set f $nb.titles
     label-entry $f.title "Graph title"
-    pack $f.title -side top -anchor w -expand 0 -fill x
-    #...
+    label-entry $f.font "Font"
+    $f.title.e config -textvariable tmp(graphtitle)
+    $f.font.e configure -textvariable tmp(titlefont)
+    pack $f.title $f.font -side top -anchor w -expand 0 -fill x
 
     # Axes page
     set f $nb.axes
     label-entry $f.xlabel "X axis label"
     label-entry $f.ylabel "Y axis label"
-    pack $f.xlabel $f.ylabel -side top -anchor w -expand 0 -fill x
-    #...
+    label-combo $f.xrotate "Rotate X axis labels by" {0 30 45 60 90}
+    $f.xlabel.e configure -textvariable tmp(xlabel)
+    $f.ylabel.e configure -textvariable tmp(ylabel)
+    $f.xrotate.e configure -textvariable tmp(xrotate)
+    pack $f.xlabel $f.ylabel $f.xrotate -side top -anchor w -expand 0 -fill x
 
     # Gridlines page
     set f $nb.gridlines
@@ -261,18 +262,51 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
 
     # Lines page
     set f $nb.lines
-    #...
 
     # Legend page
     set f $nb.legend
-    label-combo $f.pos "Position" {left right top bottom}
+    checkbutton $f.show -text "show legend" -variable tmp(legendshow)
+    label-combo $f.pos "Position" {plotarea leftmargin rightmargin topmargin bottommargin}
     label-combo $f.anchor "Anchor" {n s e w ne nw se sw}
-    pack $f.pos $f.anchor -side top -anchor w -expand 0 -fill x
-    #...
+    label-combo $f.relief "Relief" {none solid raised sunken groove}
+    label-entry $f.font "Font"
+    $f.pos.e configure -textvariable tmp(legendpos)
+    $f.anchor.e configure -textvariable tmp(legendanchor)
+    $f.relief.e configure -textvariable tmp(legendrelief)
+    $f.font.e configure -textvariable tmp(legendfont)
+    pack $f.show -side top -anchor w
+    pack $f.pos $f.anchor $f.relief $f.font -side top -anchor w -fill x
+
+    # fill dialog with data
+    set graph [.bltwin.nb tab cget select -window].g
+
+    set tmp(graphtitle) [$graph cget -title]
+    set tmp(titlefont) [$graph cget -font]
+
+    set tmp(xlabel) [$graph axis cget x -title]
+    set tmp(ylabel) [$graph axis cget y -title]
+    set tmp(xrotate) [$graph axis cget x -rotate]
+
+    set tmp(legendshow) [expr [$graph legend cget -hide]==0]
+    set tmp(legendpos) [$graph legend cget -position]
+    set tmp(legendanchor) [$graph legend cget -anchor]
+    set tmp(legendrelief) [$graph legend cget -relief]
+    set tmp(legendfont) [$graph legend cget -font]
 
     # execute dialog
     if {[execOkCancelDialog $w] == 1} {
-        #...
+        $graph config -title $tmp(graphtitle)
+        $graph config -font $tmp(titlefont)
+
+        $graph axis config x -title $tmp(xlabel)
+        $graph axis config y -title $tmp(ylabel)
+        $graph axis config x -rotate $tmp(xrotate)
+
+        $graph legend config -hide [expr !$tmp(legendshow)]
+        $graph legend config -position $tmp(legendpos)
+        $graph legend config -anchor $tmp(legendanchor)
+        $graph legend config -relief $tmp(legendrelief)
+        $graph legend config -font $tmp(legendfont)
         puts "OK!"
     }
     destroy $w
