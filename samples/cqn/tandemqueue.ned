@@ -26,14 +26,14 @@ module TandemQueue
         switch: Switch;
             gatesizes:
                 out[sizeof(in)];
-            display: "p=60,60;i=block/switch";
+            display: "p=60,80;i=block/switch";
 
         queue: Queue[numQueues];
             gatesizes if index==0:
                 in[sizeof(in)];
             gatesizes if index!=0:
                 in[1];
-            display: "p=60,110,row;i=block/queue;q=queue";
+            display: "p=60,160,row,80;i=block/queue;q=queue";
 
     connections nocheck:
         // connect switch outputs outside
