@@ -509,7 +509,8 @@ proc checkVersion {} {
 #===================================================================
 
 proc startPlove {argv} {
-   global config argv0
+   global config
+   global OMNETPP_PLOVE_DIR
 
    checkVersion
    defaultBindings
@@ -517,7 +518,7 @@ proc startPlove {argv} {
    createMainWindow
 
    set origconfigfile $config(configfile)
-   set defaultconfigfile [file join [file dirname $argv0] .ploverc]
+   set defaultconfigfile [file join $OMNETPP_PLOVE_DIR .ploverc]
    if [file readable $defaultconfigfile] {
        loadConfig $defaultconfigfile
    }
