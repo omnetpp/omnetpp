@@ -16,7 +16,7 @@
 OMNETPP_ROOT=d:/home/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-2.3
+OMNETPP_VERSION=omnetpp-2.3b1
 
 #
 # Location of Tcl/Tk, PVM, MPI, Expat
@@ -106,10 +106,10 @@ LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /inc
 CFLAGS_RELEASE=/nologo /GX /GR /FD /Zm180 /ML /O2 /D "NDEBUG"
 LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no
 
-CFLAGS=$(CFLAGS_DEBUG)
-LDFLAGS=$(LDFLAGS_DEBUG)
-#CFLAGS=$(CFLAGS_RELEASE)
-#LDFLAGS=$(LDFLAGS_RELEASE)
+#CFLAGS=$(CFLAGS_DEBUG)
+#LDFLAGS=$(LDFLAGS_DEBUG)
+CFLAGS=$(CFLAGS_RELEASE)
+LDFLAGS=$(LDFLAGS_RELEASE)
 
 # LIB_SUFFIX is either .lib or .dll
 LIB_SUFFIX=.lib
@@ -162,3 +162,4 @@ PLOVE_EMBED_TCL=yes
 # GUI apps.
 #
 USE_WINMAIN=yes
+

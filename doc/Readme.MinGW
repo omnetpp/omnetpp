@@ -3,21 +3,22 @@ Using OMNeT++ on Windows with the MinGW compiler
 
 QUICKSTART
 
-For the experienced and impatient, here's a short summary of the installation
-process. If you're not sure what the following steps mean, you should
-probably read the following long instructions.
+If you're familiar with MinGW and eager to begin installation right now,
+here're instructions in nutshell. Otherwise, skip this section and
+continue reading from Introduction.
 
-  1. Install required software: MSYS and MinGW; Windows ports of bison and flex
-     (UnxUtils versions are fine); Tcl/Tk; Perl. Optional packages: Expat; 
-     Akaroa; PVM or MPI. 
-  2. Make sure bison, flex, and Tcl/Tk are in the PATH, and the following 
+  1. Install required software: MSYS and MinGW; Windows ports of bison and
+     flex (UnxUtils versions are fine); Tcl/Tk; Perl; Gnuplot. LibXML/LibXSLT
+     or at least Expat is also recommended. Optionally you can install
+     Akaroa, PVM or MPI.
+  2. Make sure bison, flex, and Tcl/Tk are in the PATH, and the following
      variables are set correctly: BISON_SIMPLE, TCL_LIBRARY.
   3. Download OMNeT++ source package and unpack it (say into c:\omnetpp).
   4. Add c:\omnetpp\bin your PATH.
   5. Edit c:\omnetpp\configure.user according to your system. Use Windows-style
      path names with *forward* slashes (/). If a directory name contains space,
      use the short name (like C:/PROGRA~1).
-  6. Then fire up the MSYS shell and type the usual GNU stuff: ./configure, 
+  6. Then fire up the MSYS shell and type the usual GNU stuff: ./configure,
      make. If make goes through, you made it!
   7. Try that sample simulations, gned, nedc and opp_makemake work.
 
@@ -26,7 +27,7 @@ If you get stuck at some step, refer to the detailed instructions below.
 
 0. Introduction: About MinGW
 
-MinGW (http://www.mingw.org) is a Win32 port of the GNU compiler toolset. 
+MinGW (http://www.mingw.org) is a Win32 port of the GNU compiler toolset.
 It is distributed in two packages:
 
   MinGW: A collection of freely available and freely distributable Windows
@@ -51,21 +52,32 @@ just right.
 1. Prerequisites
 
 Windows NT compatible system is required: NT4.0, Windows 2000 or XP.
-Windows 95/98/ME won't do (they don't support the Win32 fiber API used
+Windows 95/98/ME won't do (they don't support the Win32 Fiber API used
 by OMNeT++.)
 
 
 2. Installing the compiler environment
 
 MSYS and MinGW must be installed before OMNeT++. The MinGW team provides
-detailed instructions for that -- read them before installation.
+detailed instructions for that.
 
-The installer will create an MinGW submenu in the Start menu, and also 
-a desktop icon called `MSYS'. In the following description I'll assume 
+The installer will create an MinGW submenu in the Start menu, and also
+a desktop icon called `MSYS'. In the following description I'll assume
 you installed MinGW into c:\MinGW and MSYS to c:\MinGW\MSYS.
 
-If you should ever want to uninstall the tools, you may do so via the
-"Add/Remove Programs" Control Panel.
+You'll need to install Windows versions of the bison and flex Unix tools
+(UnxUtils versions are fine); Tcl/Tk binaries; Perl. It is
+also recommended that you install LibXML and LibXSLT, or at least Expat.
+Optionally you can install Akaroa, PVM or MPI. The file 3rdparty.txt file
+contains more info about these packages. Installing them in a directory
+whose name doesn't contain space will save you trouble.
+
+---
+IMPORTANT:
+The TCL_LIBRARY environment variable is necessary for Tcl/Tk to operate
+correctly. If the Tcl/Tk installer doesn't set this variable, you have to
+do it manually.
+---
 
 Starting MSYS will pop up a bash shell with all special environment
 variables set up for you. Within the bash shell, the MSYS directory
@@ -75,7 +87,7 @@ type it with *slashes* instead backslashes (c:/, d:/, etc.). Typing
 `pwd -W' will tell you the Windows name of the current directory.
 
 An editor will be required during the installation. For Unix diehards,
-MSYS contains vi, or you can download emacs. A good NT port of emacs
+MSYS contains vi or you can download emacs. A good NT port of emacs
 is available from http://www.cs.washington.edu/homes/voelker/ntemacs.html.
 
 It is a good idea to create a .bash_profile. This should be stored
@@ -91,27 +103,15 @@ typing `cd' takes you right there.) For example, my .bash_profile contains:
    cd /c/omnetpp
    echo Welcome!
 
-Install:
- UnxUtils
- Tcl/Tk
- Perl
- Expat
- Akaroa
- PVM or MPI.
-
 ---
-IMPORTANT: 
-  The TCL_LIBRARY environment variable is necessary for Tcl/Tk to operate 
-  correctly.
+IMPORTANT:
+If you set TCL_LIBRARY from your .bash_profile, use a *Windows-style*
+directory name in it (ie. c:/... and not /c/...)!
+   TCL_LIBRARY=c:/Tcl/lib  # good
+   TCL_LIBRARY=/c/Tcl/lib  # WRONG!!!
+This variable must be understood by the Tcl/Tk libraries which know
+nothing about the MinGW magic.
 ---
-
-Use a *Windows-style* directory name for TCL_LIBRARY, because it must be 
-understood by the Tcl/Tk libraries which know nothing about the MinGW magic.
-E.g. write 
-   TCL_LIBRARY=c:/Tcl/lib
-and not
-   TCL_LIBRARY=/c/Tcl/lib  # WRONG!
-
 
 3. Installing OMNeT++
 
@@ -136,14 +136,14 @@ For the variables to be included in the bash environment you will need to
 restart the bash shell before proceeding. All following commands in this
 section are entered on the bash command line.
 
-First you should check the configure.user file to make sure it contains the 
+First you should check the configure.user file to make sure it contains the
 settings you need.
 
 ---
-IMPORTANT: 
-  Use Windows-style path names in configure.user! Use forward slashes (/) 
-  instead of backslashes. If a directory name contains space, use the short 
-  name (like C:/PROGRA~1).
+IMPORTANT:
+Use Windows-style path names in configure.user! Use forward slashes (/)
+instead of backslashes. If a directory name contains space, use the short
+name (like C:/PROGRA~1).
 ---
 
 Note that currently you cannot build dynamic libraries (DLLs) from OMNeT++
@@ -152,6 +152,11 @@ sources.
 Then the usual GNU-like stuff:
     ./configure
     make
+
+---
+IMPORTANT:
+Your PATH *must* contain /c/omnetpp/bin for the compilation to be successful!
+---
 
 You should now test all samples and check they run correctly. As an
 example, the dyna example is started by entering the following commands:

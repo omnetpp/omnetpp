@@ -3,28 +3,37 @@ What's New
 
 In the OMNeT++ 2.3 release (January 2003)
 ------------------------------------------
-Licensing change: The license used in previous versions has been replaced 
-with a new "Academic Public License". This license gives noncommercial users 
-rights to use, modify and distribute copies of OMNeT++, provided that modified
-copies are distributed under the same license. See doc/License for details.
-At the same time, the possibility of using OMNeT++ under the GPL (which has 
-been present since 2.0 beta versions) has been removed; please read 
-doc/GPLElect for the background of these changes.
+Licensing change: The license used in previous versions has been replaced
+with a new "Academic Public License" (doc/License). This license gives
+noncommercial users rights to use, modify and distribute copies of OMNeT++.
+The possibility of using OMNeT++ under the GPL has been removed. Commercial
+users of OMNeT++ should obtain a commercial license.
 
-Major archievements of this release are:
-- message subclassing made first-class citizen
+Major changes of this release in nutshell:
+- Tkenv GUI has been polished -- both functionality and usability has been
+  greatly improved. Plove GUI was also redesigned.
 
-- extensive refactoring of the simulation kernel (backward compatibility
-  was no.1 concern, so very few models will have to be changed to work
-  with 2.3);
+- The "message subclassing" feature has been officially introduced. It is now
+  documented in the manual, and used by several sample simulations.
 
-- alpha version of the new NED compiler architecture, built upon XML
-  foundations;
+- The simulation kernel has been ported to use C++ exceptions and RTTI
+  (Run-time Type Information) and on Windows, the Fiber API. Also, there
+  has been extensive internal refactoring and refinement of the APIs.
 
-- more complete support for MSVC
+- Added the implementation of several distributions: continuous distributions
+  gamma_d(), beta(), erlang_k(), chi_square(), student_t(), cauchy(), triang(),
+  lognormal(), weibull() and pareto_shifted(); and discrete distributions
+  bernoulli(), binomial(), geometric(), negbinomial(), hypergeometric() and
+  poisson(). [contributed by Werner Sandmann]
 
-In addition to those above, many big and small changes have been done to 
-improve usability of the toolkit:
+- Contains an alpha version of the new NED compiler architecture,
+  built upon XML foundations. This includes a tool for generating
+  documentation from NED files.
+
+For the list of changes that affect portability of simulation models,
+see the doc/API-Changes.txt file. More detailed info in the ChangeLogs.
+
+A more detailed list of changes follows:
 
 Simulation kernel refactoring:
 - on Windows, now Win32 native coroutines are used (Fibers API). This change
@@ -34,7 +43,7 @@ Simulation kernel refactoring:
   exceptions. This not only resulted in cleaner kernel code, but also has
   benefits for you:
   * you can now use try...catch for better error handling. The API documen-
-    tation describes which methods throw exceptions. (Common exception class 
+    tation describes which methods throw exceptions. (Common exception class
     is cException.)
   * methods like end(), endSimulation(), deleteModule() terminate the module
     immediately even when called from handleMessage(). (In earlier versions,
@@ -46,7 +55,7 @@ Simulation kernel refactoring:
 
 - use of C++ RTTI (Run-time Type Information). From now on, you can
   use dynamic_cast<> in your code, and you don't need to provide a className()
-  method in your classes (because the kernel can figure it out using typeid in the 
+  method in your classes (because the kernel can figure it out using typeid in the
   base class, cObject).
 
 - eliminated gcc 3.0.x warnings
@@ -94,10 +103,10 @@ Simulation kernel refactoring:
   * operator[] deprecated (use module(int) method instead)
   * del() renamed to deleteModule(); add() renamed to addModule()
 
-- channels are now represented by real objects (subclassed from cChannel) 
-  rather than parameters in cGate. Channels can be assigned to connections 
-  via cGate's setChannel() method; at the same time, DEPRECATED cGate's 
-  setDelay(), setError(), setDatarate(), setLink() methods (these attributes 
+- channels are now represented by real objects (subclassed from cChannel)
+  rather than parameters in cGate. Channels can be assigned to connections
+  via cGate's setChannel() method; at the same time, DEPRECATED cGate's
+  setDelay(), setError(), setDatarate(), setLink() methods (these attributes
   should be set on the channel object).
 
 - cSubModIterator: operator[] deprecated (use operator()(int) method instead)
@@ -106,15 +115,7 @@ Simulation kernel refactoring:
   see include/ChangeLog and src/sim/ChangeLog.
 
 Simulation kernel new features:
-- cGate: added isConnectedOutside() and isConnectedInside() utility methods;
-  added connectTo() method, and DEPRECATED setFrom() and setTo()
-
-- cMessage: added convenience methods for attaching objects to a message:
-  addObject(), getObject(), hasObject(), removeObject(). 
-
-- cArray: created set(cObject*) method to add optional hashtable-like
-  behaviour to cArray: this method replaces the object with the same
-  name in the array with the object passed.
+- added convenience functions to cGate, cMessage, and cArray.
 
 - new utility class cDisplayString to let you easily manipulate display strings
 
@@ -130,10 +131,8 @@ New NED compiler architecture:
   to doc/nedxml-api
 
 Build:
-- unfortunately Cygwin cannot be used any more to compile OMNeT++ -- its 
-  exception handling code turned out to crash when used with coroutines.
-  MinGW is recommended instead -- see instructions in doc/Readme.MinGW.
-
+- MinGW is also supported in Windows; Cygwin 2.95.x compiler cannot be used
+  any more, use 3.2 or later instead.
 - changed MSVC flags!!!
    Tested with MSVC 6.0 and Cygwin/gcc-2.95.3-5. With MSVC, one needs
    to compile every source using /GR, otherwise Tkenv crashes (RTTI
@@ -182,8 +181,8 @@ Cmdenv:
 
 - in express mode, following entries are used:
   * status-frequency=<integer> (default: 100000)
-        print status update every n events (on today's computers, and for a 
-        typical simulation model, this will produce an update perhaps in every 
+        print status update every n events (on today's computers, and for a
+        typical simulation model, this will produce an update perhaps in every
         few seconds)
   * performance-display=yes/no (default: yes)
         print detailed (2-line) performance status
@@ -191,17 +190,19 @@ Cmdenv:
 
 Tkenv:
 - inspector windows are now restored from a ./.tkenvrc file if you restart the
-  simulation (as soon as an inspected object gets created in the simulation, 
-  its window pops up -- objects must have unique names for this to work 
+  simulation (as soon as an inspected object gets created in the simulation,
+  its window pops up -- objects must have unique names for this to work
   properly!)
 
-- several GUI improvements: File|New run and New network dialogs offer 
-  selection; axis labelling added to output vector inspectors; clear main 
+- added Object Tree view on the left of the main window
+
+- several other GUI improvements: File|New run and New network dialogs offer
+  selection; axis labelling added to output vector inspectors; clear main
   window when simulation is restarted; more tooltips & toolbar icons;
-  better output in message sending trace window; increased event number 
-  status bar field width by 3 digits (it was limited in size to 1.000.000 
-  events); on very long connection arrows, message animation could take 
-  forever -- now an upper bound is set; color coding to make different 
+  better output in message sending trace window; increased event number
+  status bar field width by 3 digits (it was limited in size to 1.000.000
+  events); on very long connection arrows, message animation could take
+  forever -- now an upper bound is set; color coding to make different
   inspectors of the same object easier to match visually
 
 - with "ring" layout, changed display order of modules from clockwise to the
@@ -219,15 +220,15 @@ Envir:
   and all running instances write to the same directory (e.g. shared
   via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
 
-	* added akoutvectormgr.h/cc: integrated Steffen Sroka's Akaroa
-	extension that supports multiple independent replicated simulation runs.
-	Akaroa can be activated by specifying
-	  [General]
-	  outputvectormanager-class=AkOutputVectorManager
-	in the ini file. By default, all output vectors are under Akaroa
-	control; the <modulename>.<vectorname>.akaroa=false setting can be used
-	to make Akaroa ignore specific vectors.
-	For more info see the Akaroa home page and the OMNeT++ documentation.
+- integrated Steffen Sroka's Akaroa extension that supports multiple
+  independent replicated simulation runs.
+  Akaroa can be activated by specifying
+      [General]
+      outputvectormanager-class=AkOutputVectorManager
+  in the ini file. By default, all output vectors are under Akaroa
+  control; the <modulename>.<vectorname>.akaroa=false setting can be used
+  to make Akaroa ignore specific vectors.
+  For more info see the Akaroa home page and the OMNeT++ documentation.
 
 - 2 bugfixes: (1) output scalar file did not get opened sometimes; (2) output
   scalar file got removed between runs
@@ -236,11 +237,11 @@ Other:
 - use combobox widget of Bryan Oakley in Plove, Tkenv, GNED
 
 - test suite: number of test cases grew from 19 to 52 since omnetpp-2.2;
-  covers a bigger part of the core functionality (modules, messages, queues) 
+  covers a bigger part of the core functionality (modules, messages, queues)
   now; tests can be run with MSVC too
 
 Sample simulations:
-- Topo (samples/topo) was created to demonstrate NED features. Currently it 
+- Topo (samples/topo) was created to demonstrate NED features. Currently it
   shows how to build various topologies (chain, mesh, ring, star, random graph,
   binary tree, hexagonal grid, etc.)
 

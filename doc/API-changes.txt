@@ -1,11 +1,12 @@
-Compatibility Notes
-===================
+API-Changes
+===========
 
 This file summarizes the changes in OMNeT++ across releases that affect
 backwards compatibility, to help you port models to more recent versions
 of OMNeT++.
 
-NEW FEATURES ARE NOT COVERED HERE -- SEE WHATSNEW INSTEAD.
+This file only describes changes that affect compiling and running models;
+for other changes or new features see WhatsNew.
 
 Legend:
 (+)  	new feature
@@ -21,16 +22,40 @@ Legend:
 OMNeT++ 2.3b1 (Jan 13, 2003)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Simulation library:
-(+)	exceptions are used throughout the simulation library to signal
-	errors
-
 (+)	new distributions: continuous distributions gamma_d(), beta(),
  	erlang_k(), chi_square(), student_t(), cauchy(), triang(),
  	lognormal(), weibull(), pareto_shifted(); discrete distributions
  	bernoulli(), binomial(), geometric(), negbinomial(), hypergeometric(),
  	poisson(). [contributed by Werner Sandmann]
-	
-(-)	deprecated genk_* functions.
+
+(+)	exceptions are used throughout the simulation library to signal
+	errors. You can also use try...catch in your code.
+
+(+)	RTTI (Run-time Type Information) is also turned on, so you can use
+	dynamic_cast in your code.
+
+(+)	added check_and_cast<T>(cObject *p) template function --
+	it can be used to assert that a pointer is of the given T type.
+	It does dynamic_cast<T> and throws exception if the result is NULL
+	(ie. pointer types are incompatible). Useful with message subclassing.
+
+(!!!)	MSVC compile flags change: exception handling and RTTI MUST be ON 
+	from now. You must compile EVERY source flie using /GR, otherwise 
+	simulations will crash with RTTI exception!
+
+(!) 	redefining className() in your classes is now not necessary (because 
+	the simulation kernel can figure it out in cObject::className()).
+
+(+)	because of the introduction of C++ exception handling, methods like end(), 
+	endSimulation() and deleteModule() as well as any runtime error cause
+	handleMessage() to exit immediately. (In earlier versions, handleMessage() 
+	went through in any case.)
+
+(-)	deprecated genk_* functions. The RNG should be given as an extra
+	optional attribute of "genk"-less functions instead.
+
+(-)	rarely-used methods cSimpleModule::error(), opp_error() and opp_warning()
+	were deprecated; they will be removed at some point in the future.
 
 (+)	cWatch now supports 'bool'
 
@@ -71,27 +96,6 @@ Simulation library:
 
 (+)	added macro Define_Function2
 
-(+)	added check_and_cast<T>(cObject *p) template function --
-	it can be used to assert that a pointer is of the given T type.
-	It does dynamic_cast<T> and throws exception if the result is NULL
-	(ie. pointer types are incompatible). Useful with message subclassing.
-
-(+)	because of the introduction of C++ exception handling, methods like end(), 
-	endSimulation() and deleteModule() as well as any runtime error cause
-	handleMessage() to exit immediately. (In earlier versions, handleMessage() 
-	went through in any case.)
-
-(-)	rarely-used methods cSimpleModule::error(), opp_error() and opp_warning()
-	were deprecated; they will be removed at some point in the future.
-
-(!!!)	MSVC compile flags change: exception handling and RTTI MUST be ON from now.
-	You must compile EVERY source using /GR, otherwise Tkenv will crash
-	with RTTI exception!
-
-(!) 	redefining className() in your classes is now not necessary (because the 
-	simulation kernel is now compiled with C++ RTTI turned on, and so 
-	cObject::className() can do the job).
-
 (!)	several smaller auxiliary classes were made inner classes to their 'main'
   	classes. (Examples: cQueueIterator --> cQueue::Iterator, sTopoNode -->
 	cTopology::Node, etc; full list in include/ChangeLog.) Compatibility
@@ -125,6 +129,10 @@ Simulation library:
 (!)	cArray::remove(cObject *) and cQueue::remove(cObject *) methods now
 	return NULL instead of the original pointer if the object was
 	not found.
+
+(+)	cArray: new set(cObject*) method adds optional hashtable-like
+	behaviour to cArray: this method replaces the object with the same
+	name in the array.
 
 (!)	cSimulation changes: lastModuleIndex() renamed to lastModuleId();
 	del() renamed to deleteModule(); add() renamed to addModule()
@@ -183,26 +191,6 @@ User interfaces:
 	This causes logging each message sending (by send(),scheduleAt(), etc)
 	and message delivery on the standard output; effective only in normal mode.
 
-(i)	Tkenv: with "ring" layout, changed display order of modules from
-	clockwise to the more natural counter-clockwise
-
-(!)	changed positioning of vector modules with display string "p=x,y"
-	(that is, with position, but no explicit layout parameter).
-	"p=x,y" now ALWAYS means "p=x,y,exact", that is, the module is placed
-	at (x,y). Before, "p=x,y" meant "p=x,y,row" or "p=x,y,ring" (where "row
-	or ring" is a default layout) if the module was in a vector, and this
-	caused counterintuitive	displacements if a module was placed individually,
-	because a (dx,dy) shift coming from the layout was superponed onto the
-	position (x,y)).
-
-(+)	Envir (Cmdenv+Tkenv): added fname-append-host=true/false ini file setting.
-	When turned on, appends the host name to the names of the output
-	files (output vector, output scalar, snapshot files). This is
-	useful when the simulation is run on multiple machines concurrently
-	(parallel independent runs (Akaroa) or parallel/distributed simulation),
-	and all running instances write to the same directory (e.g. shared
-	via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
-
 (+)	Envir (Cmdenv+Tkenv): integrated Steffen Sroka's Akaroa	extension
 	that supports multiple independent simulation runs.
 	Akaroa can be activated by specifying
@@ -213,6 +201,28 @@ User interfaces:
 	to make Akaroa ignore specific vectors.
 	For more info see the Akaroa home page and the OMNeT++ documentation.
 
+(+)	Envir (Cmdenv+Tkenv): added fname-append-host=true/false ini file setting.
+	When turned on, appends the host name to the names of the output
+	files (output vector, output scalar, snapshot files). This is
+	useful when the simulation is run on multiple machines concurrently
+	(parallel independent runs (Akaroa) or parallel/distributed simulation),
+	and all running instances write to the same directory (e.g. shared
+	via NFS mount). [Idea from Steffen Sroka's Akaroa extension]
+
+(i)	Tkenv: with "ring" layout, changed display order of modules from
+	clockwise to the more natural counter-clockwise
+
+(!)	Tkenv: changed positioning of vector modules with display string "p=x,y"
+	(that is, with position, but no explicit layout parameter).
+	"p=x,y" now ALWAYS means "p=x,y,exact", that is, the module is placed
+	at (x,y). Before, "p=x,y" meant "p=x,y,row" or "p=x,y,ring" (where "row
+	or ring" is a default layout) if the module was in a vector, and this
+	caused counterintuitive	displacements if a module was placed individually,
+	because a (dx,dy) shift coming from the layout was superponed onto the
+	position (x,y)).
+
+
+
 
 OMNeT++ 2.2 (May 2002)
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -222,9 +232,9 @@ OMNeT++ 2.2 (May 2002)
 	
 (!)	cModule's display string methods were reorganized:
 	the displayString(int type) method was split into displayString()
-	and displayStringAsParent(), eliminating the type parameter. Similar change
-	was made to the set...() methods. (Old methods remained but are now
-	deprecated.)
+	and displayStringAsParent(), eliminating the type parameter. Similar 
+	change was made to the set...() methods. (Old methods remained but are 
+	now deprecated.)
 
 (+)	New methods: opp_nextrand(long& seed); opp_strlen(..);
 	opp_strprettytrunc(..); opp_mkindexedname(..) (the latter was formerly

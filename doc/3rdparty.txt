@@ -53,7 +53,7 @@ Several utilities and also Plove use some of the GNU Unix tools: grep, gawk,
 pwd, sed, gzip, gunzip, zcat. These programs fall under the GNU General
 Public License, and the source is available from http://www.gnu.org.
 OMNeT++ is bundled with binaries from UnxUtils, a package which contains
-Win32 binary ports of these tools. UnxUtils is maintained at sourceforge.org,
+Win32 binary ports of these tools. UnxUtils is maintained at sourceforge.net,
 and available from http://unxutils.sourceforge.net.
 
 

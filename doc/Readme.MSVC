@@ -39,12 +39,16 @@ OMNeT++.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 First download the following packages:
- - OMNeT++
  - Tcl/Tk
- - Gnuplot
  - bison/flex (only if you want to modify nedc or gned)
-Some sites where all this stuff can be found are listed at the end of
-this file (Appendix B).
+ - Perl (used by some tools)
+ - Gnuplot (used by Plove)
+ - awk, grep (used by Plove)
+ - recommended: LibXML,LibXSLT (for nedtool and opp_neddoc). If LibXML is 
+   not available, you can use Expat
+
+Appendix B (at the end of this file) and 3rdparty.txt contains some sites 
+where all this stuff can be found.
 
 To unpack .tgz or .tar.gz (gzipped, tar packed) files you can use gzip and tar,
 or WinZip.

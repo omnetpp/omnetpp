@@ -1,5 +1,6 @@
 
-OMNeT++ 2.1 is known to compile and work under Solaris 7 and 8.
+OMNeT++ 2.2 is known to compile and work under Solaris 7 and 8.
+As of the time of writing, OMNeT++ 2.3 hasn't been tested on Solaris.
 
 You will need the following additional packages:
 
@@ -10,6 +11,10 @@ You will need the following additional packages:
     - bison
     - tcl/tk
 
+  * RECOMMENDED (needed by nedtool and opp_neddoc)
+    - libXML, libXSLT
+    - if libXML is not available, you can use Expat
+
   * OPTIONAL (needed for parallel simulation only)
     - PVM (available at http://www.sunfreeware.com/)
     - MPI (available at http://www-unix.mcs.anl.gov/mpi/mpich/)
@@ -18,3 +23,4 @@ If you have installed these packages, please proceed with Readme.Unix
 for installation instructions on OMNeT++.
 
 2002/04/12, Ulrich Kaage <kaage@int.uni-karlsruhe.de>
+updated 2003/01/21, Andras Varga

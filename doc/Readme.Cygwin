@@ -1,38 +1,24 @@
-
-IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT 
-
-CYGWIN NOT SUPPORTED.
-
-Unfortunately Cygwin cannot be used any more (in OMNeT++ 2.3 and later) 
-to compile OMNeT++ -- its exception handling code turned out to crash when 
-used with coroutines. MinGW is recommended instead, see instructions in 
-doc/Readme.MinGW. Or you might try recompiling the Cygwin gcc binaries
-with --disable-shared --enable-threads (I found the hint on the Net in a
-maillist archive, but never tried it myself).
-
-
-IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT 
-
-
-
 Using OMNeT++ on Windows with the Cygwin platform
 =================================================
 
 Based on a description from Richard Lyon (rlyon01@ozemail.com.au)
 
+IMPORTANT: Do not use the Cygwin gcc 2.95.x compiler, as it generates flawed
+exception handling code (will crash when used with coroutines/threads).
+Later Cygwin gcc versions (3.2 or later) should be fine.
 
 0. QUICKSTART
 
 Note: If you're unsure what the following steps mean, you should probably
 read the long description...
 
-So:
  1. install Cygwin (DOS file mode will be fine)
  2. download X11inc.zip from the OMNeT++ site then extract it to /usr/include/X11
  3. download and extract OMNeT++ (the .tgz bundle)
  4. add omnetpp/bin to the PATH
  5. do the usual GNU stuff: ./configure, make
  6. make sure nedc, gned, opp_makemake and the sample simulations work
+
 There you go!
 
 1. Introduction
@@ -117,7 +103,7 @@ For example, an initial .bash_profile may contain:
     export PS1='# '
     alias ls='ls -aF'
     alias ll='ls -l'
-    export TCL_LIBRARY=c:/cygwin/usr/share/tcl8.0
+    export TCL_LIBRARY=c:/cygwin/usr/share/tcl8.3
 
 TCL_LIBRARY is necessary to allow tcl/tk to operate correctly.
 
@@ -132,9 +118,9 @@ http://www.cs.washington.edu/homes/voelker/ntemacs.html
 
 The Tcl/Tk libs seemingly don't recognize Cygwin paths. For TCL_LIBRARY,
 be sure to use a Windows-style directory name, e.g. use
-   TCL_LIBRARY=c:/cygwin11/usr/share/tcl8.0
+   TCL_LIBRARY=c:/cygwin11/usr/share/tcl8.3
 and not
-   TCL_LIBRARY=/usr/share/tcl8.0     ;# WRONG!
+   TCL_LIBRARY=/usr/share/tcl8.3     ;# WRONG!
 
 Another issue is that Cygwin misses X11 headers that are normally required
 to build programs with Tcl/Tk. If you're getting compilation errors like
