@@ -153,6 +153,11 @@ void cNamedPipeCommunications::init()
 
 void cNamedPipeCommunications::shutdown()
 {
+    for (int i=0; i<numPartitions; i++)
+    {
+        close(rpipes[i]);
+        close(wpipes[i]);
+    }
 }
 
 int cNamedPipeCommunications::getNumPartitions()
