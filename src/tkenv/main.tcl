@@ -32,6 +32,7 @@ set config(filtobjlist-order)  "Class"
 set config(filtobjlist-maxcount) 100000
 set config(filtobjlist-category) "mqsgvo"
 set config(last-nedfile) ""
+set config(confirm-exit) 1
 
 set pluginlist {}
 

@@ -26,7 +26,7 @@ proc check_running {} {
        return 1
     }
     if {[opp_getsimulationstate] == "SIM_BUSY"} {
-       messagebox {Warning} {The simulation is currently busy -- press STOP to abort it.} info ok
+       messagebox {Warning} {The simulation is waiting for external synchronization -- press STOP to interrupt it.} info ok
        return 1
     }
     return 0
@@ -84,14 +84,28 @@ NO WARRANTY -- see license for details.
 }
 
 proc exit_omnetpp {} {
+    global config
 
-    if [check_running] return
+    set isrunning 0
+    if {[opp_getsimulationstate]=="SIM_RUNNING" || [opp_getsimulationstate]=="SIM_BUSY"} {
+        set isrunning 1
+    }
 
-    if {[opp_object_systemmodule] != [opp_object_nullpointer]} {
-        set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
-        if {$ans == "no"} {
-            return
+    if {$config(confirm-exit)} {
+        if {[opp_object_systemmodule]!=[opp_object_nullpointer]} {
+            if {$isrunning} {
+                set ans [messagebox {Warning} {The simulation is currently running. Do you really want to quit?} warning yesno]
+            } else {
+                set ans [messagebox {Warning} {Do you really want to quit?} warning yesno]
+            }
+            if {$ans == "no"} {
+                return
+            }
         }
+    }
+
+    if {$isrunning} {
+       opp_stopsimulation
     }
 
     save_tkenvrc
@@ -403,8 +417,6 @@ proc stop_simulation {} {
 
     if {[opp_getsimulationstate] == "SIM_RUNNING" || [opp_getsimulationstate] == "SIM_BUSY"} {
        opp_stopsimulation
-    } else {
-       #messagebox {Error} {Simulation is not running.} info ok
     }
 }
 

@@ -222,8 +222,7 @@ proc remove_stopdialog {} {
 }
 
 proc options_dialog {} {
-
-    global opp
+    global opp config
 
     set w .optionsdialog
 
@@ -270,6 +269,7 @@ proc options_dialog {} {
     checkbutton $w.f.f3.penguin -text {Penguin mode} -variable opp(penguin)
     checkbutton $w.f.f3.layouting -text {Show layouting process} -variable opp(layouting)
     checkbutton $w.f.f3.bubbles -text {Show bubbles (bubble() calls)} -variable opp(bubbles)
+    checkbutton $w.f.f3.confirmexit -text {Confirm exit when simulation is in progress} -variable opp(confirmexit)
     pack $w.f.f3.anim -anchor w
     pack $w.f.f3.speed -anchor w -expand 0 -fill x
     pack $w.f.f3.nextev -anchor w
@@ -282,6 +282,7 @@ proc options_dialog {} {
     pack $w.f.f3.penguin -anchor w
     pack $w.f.f3.layouting -anchor w
     pack $w.f.f3.bubbles -anchor w
+    pack $w.f.f3.confirmexit -anchor w
 
     pack $w.f.f2 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 10 -side top
     pack $w.f.f3 -anchor center -expand 1 -fill both -ipadx 0 -ipady 0 -padx 10 -pady 10 -side top
@@ -306,6 +307,7 @@ proc options_dialog {} {
     set opp(bubbles)    [opp_getsimoption bubbles]
     set opp(speed)      [opp_getsimoption animation_speed]
     set opp(bkpts)      [opp_getsimoption bkpts_enabled]
+    set opp(confirmexit) $config(confirm-exit)
 
     focus $w.f.f2.usemainwin
 
@@ -328,6 +330,7 @@ proc options_dialog {} {
         opp_setsimoption bubbles             $opp(bubbles)
         opp_setsimoption animation_speed     $opp(speed)
         opp_setsimoption bkpts_enabled       $opp(bkpts)
+        set config(confirm-exit) $opp(confirmexit)
     }
     destroy $w
 }

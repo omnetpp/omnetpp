@@ -1,3 +1,8 @@
+2004-02-18  Andras Varga 
+
+	* menuproc.tcl,dialogs.tcl: added [x] Confirm exit checkbox to 
+	Simulation options dialog
+
 2004-02-11  Andras Varga 
 
 	* tkapp.cc: propagated semantic change in getNextEvent()'s and
