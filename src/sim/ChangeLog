@@ -1,3 +1,7 @@
+2002-07-04  Andras Varga
+
+	* cdispstr.h added: utility class cDisplayString
+
 2002-07-03  Andras Varga
 
 	* csimul.cc (doOneEvent()): bugfix: added missing ev.messageDelivered()

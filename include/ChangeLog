@@ -1,3 +1,7 @@
+2002-07-04  Andras Varga
+
+	* cdispstr.h added: utility class cDisplayString
+
 2002-06-27  Andras Varga
 
 	* cexception.h added; methods that formerly called opp_error() now
