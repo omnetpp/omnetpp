@@ -124,7 +124,12 @@ print CC "#  pragma warning(disable:4101)\n";
 print CC "#  pragma warning(disable:4065)\n";
 print CC "#endif\n\n";
 
+print CC "#include <iostream>\n";
+print CC "#include <sstream>\n";
 print CC "#include \"$hfile\"\n\n";
+
+print CC "// Template rule which fires if a struct or class doesn't have operator<<\n";
+print CC "template<typename T> std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n\n";
 
 # pre-register some OMNeT++ classes so that one doesn't need to announce them
 @classes = ('cPolymorphic', 'cObject', 'cMessage', 'cPacket');
@@ -663,8 +668,8 @@ sub prepareForCodeGeneration
             $datatype{$fieldname} = $ftype;
             $argtype{$fieldname} = "const $ftype&";
             $rettype{$fieldname} = "$ftype&";
-            $tostring{$fieldname} = "${ftype}2string";
-            $fromstring{$fieldname} = "string2${ftype}";
+            $tostring{$fieldname} = "";
+            $fromstring{$fieldname} = "";
             #$fval{$fieldname} = '' unless ($fval{$fieldname} ne '');
         } elsif ($fkind{$fieldname} eq 'basic') {
             if ($ftype eq "bool") {
@@ -757,12 +762,12 @@ sub prepareForCodeGeneration
                 $datatype{$fieldname} = $ftype;
                 $argtype{$fieldname} = $ftype;
                 $rettype{$fieldname} = $ftype;
-                $tostring{$fieldname} = "";
+                $tostring{$fieldname} = "";  # means op<<
                 $fromstring{$fieldname} = "";
                 $fval{$fieldname} = '0' unless ($fval{$fieldname} ne '');
             }
         } elsif ($fkind{$fieldname} eq 'special') {
-            # ***********FIXME******  ???
+            # FIXME TBD
         } else {
             die 'internal error';
         }
@@ -1358,9 +1363,13 @@ sub generateDescriptorClass
                 }
             }
         } elsif ($fkind{$fieldlist[$i]} eq 'struct') {
-            print CC "        case $i: return false;\n";
+            if ($fisarray{$fieldlist[$i]}) {
+                print CC "        case $i: {std::stringstream out; out << pp->$getter{$fieldlist[$i]}(i); opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+            } else {
+                print CC "        case $i: {std::stringstream out; out << pp->$getter{$fieldlist[$i]}(); opp_strprettytrunc(resultbuf,out.str().c_str(),bufsize-1); return true;}\n";
+            }
         } elsif ($fkind{$fieldlist[$i]} eq 'special') {
-            print CC "        case $i: return false; //TBD!!!\n";
+            print CC "        case $i: return false; // TBD\n";
         } else {
             die 'internal error';
         }
