@@ -30,7 +30,7 @@ CPPOBJS_PARSIM= parsim\ccommbuffer.obj parsim\cmemcommbuffer.obj \
          parsim\cidealsimulationprot.obj parsim\cispeventlogger.obj \
          parsim\cparsimcomm.obj \
          parsim\ccommbufferbase.obj parsim\cfilecomm.obj parsim\cfilecommbuffer.obj \
-         parsim\cnamedpipecomm-win.obj \
+         parsim\cnamedpipecomm-win.obj parsim\parsimutil.obj \
          parsim\creceivedexception.obj
 CPPOBJS_MPI= parsim\cmpicomm.obj parsim\cmpicommbuffer.obj
 

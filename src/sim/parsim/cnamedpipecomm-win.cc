@@ -32,6 +32,7 @@
 #include "macros.h"
 #include "cenvir.h"
 #include "cconfig.h"
+#include "parsimutil.h"
 
 #include <windows.h>
 
@@ -90,29 +91,11 @@ cNamedPipeCommunications::~cNamedPipeCommunications()
 void cNamedPipeCommunications::init()
 {
     // get numPartitions and myProcId from "-p" command-line option
-    // TBD this is the same code as in cFileCommunications and the Unix version -- should go into common base class?
-    int argc = ev.argCount();
-    char **argv = ev.argVector();
-    int i;
-    for (i=1; i<argc; i++)
-        if (argv[i][0]=='-' && argv[i][1]=='p')
-            break;
-    if (i==argc)
-        throw new cException("cNamedPipeCommunications: missing -p<procId>,<numPartitions> switch on the command line");
-
-    char *parg = argv[i];
-    myProcId = atoi(parg+2);
-    char *s = parg;
-    while (*s!=',' && *s) s++;
-    numPartitions = (*s) ? atoi(s+1) : 0;
-    if (myProcId<0 || numPartitions<=0 || myProcId>=numPartitions)
-        throw new cException("cNamedPipeCommunications: invalid switch '%s' -- "
-                             "should have the format -p<procId>,<numPartitions>",
-                             parg);
-
+    getProcIdFromCommandLineArgs(myProcId, numPartitions, "cNamedPipeCommunications");
     ev.printf("cNamedPipeCommunications: started as process %d out of %d.\n", myProcId, numPartitions);
 
     // create and open pipes for read
+    int i;
     rpipes = new HANDLE[numPartitions];
     for (i=0; i<numPartitions; i++)
     {

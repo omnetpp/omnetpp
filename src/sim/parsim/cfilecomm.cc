@@ -28,6 +28,7 @@
 #include "cfilecommbuffer.h"
 #include "macros.h"
 #include "cenvir.h"
+#include "parsimutil.h"
 
 Register_Class(cFileCommunications);
 
@@ -97,7 +98,7 @@ void findCleanup()
 
 cFileCommunications::cFileCommunications()
 {
-    commDirPrefix = "comm/";
+    commDirPrefix = "comm/"; //FIXME 3 config options!!!
     preserveReadFiles = false;
     readDirPrefix = "comm/read/";
     seqNum = 0;
@@ -110,25 +111,7 @@ cFileCommunications::~cFileCommunications()
 void cFileCommunications::init()
 {
     // get numPartitions and myProcId from "-p" command-line option
-    int argc = ev.argCount();
-    char **argv = ev.argVector();
-    int i;
-    for (i=1; i<argc; i++)
-        if (argv[i][0]=='-' && argv[i][1]=='p')
-            break;
-    if (i==argc)
-        throw new cException("cFileCommunications: missing -p<procId>,<numPartitions> switch on the command line");
-
-    char *parg = argv[i];
-    myProcId = atoi(parg+2);
-    char *s = parg;
-    while (*s!=',' && *s) s++;
-    numPartitions = (*s) ? atoi(s+1) : 0;
-    if (myProcId<0 || numPartitions<=0 || myProcId>=numPartitions)
-        throw new cException("cFileCommunications: invalid switch '%s' -- "
-                             "should have the format -p<procId>,<numPartitions>",
-                             parg);
-
+    getProcIdFromCommandLineArgs(myProcId, numPartitions, "cFileCommunications");
     ev.printf("cFileCommunications: started as process %d out of %d.\n", myProcId, numPartitions);
 
     // We cannot check here that the communications directory is empty, because
