@@ -101,7 +101,7 @@
 
 #define CONST_CAST(x)  (char *)(x)
 
-//=== experimental 'const' -- can be enabled from the makefile, with -DCONST=const in CCFLAGS
+//=== experimental 'const' -- can be enabled from the makefile, with -D_CONST=const in CCFLAGS
 #ifndef _CONST
 #define _CONST
 #define CONSTCAST(T,x) x
