@@ -161,12 +161,18 @@ configsamples:
         cd $(OMNETPP_SAMPLES_DIR:/=\) && cc2cpp.bat
 	for %%i in ( $(SAMPLES) ) do \
 	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
-	    $(REPLACE:/=\) %%i.dsp.in - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
+	    $(REPLACE:/=\) %%i.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
+	    $(REPLACE:/=\) -          - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
+	    $(REPLACE:/=\) -          - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
+	    $(REPLACE:/=\) -          - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
 	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
 	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIB@"      "$(TK_LIB)"
 	for %%i in ( $(SAMPLES) ) do \
 	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && \
-	    $(REPLACE:/=\) %%i.mak.in - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
+	    $(REPLACE:/=\) %%i.mak.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
+	    $(REPLACE:/=\) -          - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
+	    $(REPLACE:/=\) -          - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
+	    $(REPLACE:/=\) -          - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
 	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
 	    $(REPLACE:/=\) -    %%i.mak "@TK_LIB@"      "$(TK_LIB)"
 
