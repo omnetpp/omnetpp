@@ -62,9 +62,13 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  * architecture) with many virtual functions that need to be redefined.
  * You may consider choosing cPolymorphic instead as a base class.
  *
- * The two main areas covered by cObject are:
+ * The main areas covered by cObject are:
  *    -# storage of a name string via name() and setName()
- *    -# ownership management
+ *    -# providing a mechanism to recursively traverse all simulation objects
+ *       (forEachChild() method and cVisitor class). This mechanism constitutes
+ *       the foundation Tkenv, the simulation GUI.
+ *    -# ownership management, to safeguard against common programming errors.
+ *       Owner pointer also enables navigating the object tree upwards.
  *
  * When subclassing cObject, some virtual member functions are expected to be
  * redefined: dup() are mandatory to be redefined, and often

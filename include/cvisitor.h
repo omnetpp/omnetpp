@@ -23,10 +23,34 @@ class cObject;
 
 
 /**
- * Enables traversing an object tree. Should be subclassed and the visit()
- * method redefined according to your needs.
+ * Enables traversing the tree of (cObject-rooted) simulation objects.
+ * Should be subclassed and the visit() method redefined according 
+ * to your needs.
+ *
+ * An example: the cRecursiveObjectFinderVisitor class (internal) has been
+ * created to find an object of the given name. The constructor accepts
+ * the name of the object to search for, and visit() has been redefined
+ * to perform recursive traversal, and to throw EndTraversalException
+ * if it finds the given object. The class can be used like this:
+ *
+ * \code
+ * cRecursiveObjectFinderVisitor v(objectName);
+ * v.process(root);
+ * cObject *result = v.getResult();
+ * \endcode
+ *
+ * The above code will find the root object as well, if its name matches.
+ * The second version (below) starts the traversal at the children,
+ * so the root object is ignored.
+ *
+ * \code
+ * cRecursiveObjectFinderVisitor v(objectName);
+ * root->forEachChild(&v);
+ * cObject *result = v.getResult();
+ * \endcode
  *
  * @ingroup SimCore
+ * @ingroup SimSupport
  */
 class cVisitor
 {
@@ -50,9 +74,14 @@ class cVisitor
     virtual bool process(cObject *obj);
 
     /**
-     * Should be redefined by user to encapsulate the operation to be performed
-     * on the object. If you want recursively traversal, call 
-     * obj->forearchChild(this) from here.
+     * Method called from the forEachChild() methods of every class derived
+     * from cObject, for each contained object. visit() should be
+     * redefined by user to encapsulate the operation to be performed
+     * on the object. If you want recursively traversal, call
+     * obj->forEachChild(this) from here.
+     *
+     * This method should NOT be called to to initiate the traversal -- use
+     * process() for that.
      */
     virtual void visit(cObject *obj) = 0;
 };

@@ -26,10 +26,10 @@
  * links at the top of this page:
  *
  * - @ref SimCore
- * - @ref SimSupport
  * - @ref Containers
  * - @ref RandomNumbers
  * - @ref Statistics
+ * - @ref SimSupport
  * - @ref Envir
  * - @ref EnumsTypes
  * - @ref Functions
@@ -66,21 +66,6 @@
  *      data structure for scheduled events (the <i>future event set</i>)
  *      Most methods are used internally, but some are useful for model
  *      developers as well.
- *
- * Many other classes closely related to the above ones are not listed
- * here explicitly, but you can find them via 'See also' links from their
- * main classes.
- */
-
-/**
- * @defgroup SimSupport  Simulation supporting classes
- *
- * Classes that make it easier to write simulation models: <!-- blank line needed for autobrief=yes -->
- *
- *    - cXMLElement makes XML configuration available for simple modules
- *    - cTopology supports routing in telecommunication or multiprocessor networks.
- *    - cFSM is used to build Final State Machines
- *    - cWatch makes variables visible (inspectable) in Tkenv
  *
  * Many other classes closely related to the above ones are not listed
  * here explicitly, but you can find them via 'See also' links from their
@@ -191,6 +176,22 @@
  */
 
 /**
+ * @defgroup SimSupport  Utility classes
+ *
+ * Classes that make it easier to write simulation models: <!-- blank line needed for autobrief=yes -->
+ *
+ *    - cXMLElement makes XML configuration available for simple modules
+ *    - cTopology supports routing in telecommunication or multiprocessor networks.
+ *    - cFSM is used to build Final State Machines
+ *    - cWatch makes variables visible (inspectable) in Tkenv
+ *    - cVisitor: subclass from this to traverse the tree of simulation objects
+ *
+ * Many other classes closely related to the above ones are not listed
+ * here explicitly, but you can find them via 'See also' links from their
+ * main classes.
+ */
+
+/**
  * @defgroup Envir  User interface: cEnvir and ev
  */
 
@@ -219,9 +220,9 @@
  * Classes associated with simulation execution:
  *   - cSimulation has a single instance. It stores the network and
  *     manages simulation runs.
+ *   - cScheduler is a base class for schedulers (see in @ref EnvirExtensions
+ *     as well)
  *   - cMessageHeap is used internally by cSimulation as FES (Future Event Set)
- *   - cOutVectorMgr is used internally by cSimulation to manage opening and
- *     closing of result files
  *   - cCoroutine is the engine behind activity()-based simple modules
  *   - cWatch is the class behind the WATCH() and LWATCH() macros
  *
@@ -242,8 +243,6 @@
  *   - cFunctionType stores a pointer to a math function accessible from NED
  *   - cClassRegister can instantiate an object type (it is the class behind
  *     the createOne() function)
- *   - cInspectorFactory can create an inspector object for a class
- *     (See inspector concept in graphical user interfaces.)
  *   - cStructDescriptor provides a generic way to access data in a struct
  *     or class (somewhat analogous to Java reflection)
  *   - cEnum maps enum values to their string representations and vica versa
