@@ -898,7 +898,7 @@ class FooProtocol : public cSimpleModule
 
 // ...
 
-void FooProtocol handleMessage(cMessage *msg)
+void FooProtocol::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage())
         processTimer(msg);
@@ -975,7 +975,6 @@ void Generator::handleMessage(cMessage *msg)
 
 A bit more realistic example is to rewrite our Generator to create
 packet bursts, each consisting of \ttt{burstLength} packets.
-
 
 We add some data members to the class:
 \begin{itemize}
