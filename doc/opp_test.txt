@@ -169,9 +169,15 @@ Conditions for PASS:
    %ignore-exitcode: 1
 
    %contains: <output-file-to-check>
+   <substring>
+
+   %contains-regex: <output-file-to-check>
    <regexp-pattern>
 
    %not-contains: <output-file-to-check>
+   <substring>
+
+   %not-contains-regex: <output-file-to-check>
    <regexp-pattern>
 
 Enjoy!

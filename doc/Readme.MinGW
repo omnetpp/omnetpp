@@ -19,8 +19,8 @@ continue reading from Introduction.
      path names with *forward* slashes (/). If a directory name contains space,
      use the short name (like C:/PROGRA~1).
   6. Then fire up the MSYS shell and type the usual GNU stuff: ./configure,
-     make. If make goes through, you made it!
-  7. Try that sample simulations, gned, nedc and opp_makemake work.
+     make. If make goes through, you've made it!
+  7. Try that the sample simulations, gned, nedc and opp_makemake work.
 
 If you get stuck at some step, refer to the detailed instructions below.
 
@@ -38,10 +38,11 @@ It is distributed in two packages:
   MSYS: A Minimal SYStem to allow the typical POSIX/Bourne configure script
   to execute to create a Makefile so that you can execute make.
 
-At the time of writing, MinGW is more up-to-date then Cygwin (it contains
-gcc 3.2 instead if Cygwin's gcc 2.95.3-5). An additional advantage is that
-one can link against ordinary Windows libraries and DLLs (no need for special,
-MinGW-compiled copies.)
+MinGW is integrates better with Windows than Cygwin: the libraries you
+link with and the programs it produces are ordinary Windows libraries and
+programs, there is no "emulation layer" needed. On the other hand, MSYS
+does not provide such a complete Unix environment as Cygwin. OMNeT++ supports
+both -- choose which you like.
 
 MSYS doesn't contain all the utilities needed for compiling OMNeT++
 (namely, Bison and Flex are not included), so you'll need Windows ports
@@ -72,12 +73,10 @@ Optionally you can install Akaroa, PVM or MPI. The file 3rdparty.txt file
 contains more info about these packages. Installing them in a directory
 whose name doesn't contain space will save you trouble.
 
----
-IMPORTANT:
-The TCL_LIBRARY environment variable is necessary for Tcl/Tk to operate
-correctly. If the Tcl/Tk installer doesn't set this variable, you have to
-do it manually.
----
+*** IMPORTANT ***
+  The TCL_LIBRARY environment variable is necessary for Tcl/Tk to operate
+  correctly. If the Tcl/Tk installer doesn't set this variable, you have to
+  do it manually.
 
 Starting MSYS will pop up a bash shell with all special environment
 variables set up for you. Within the bash shell, the MSYS directory
@@ -103,15 +102,14 @@ typing `cd' takes you right there.) For example, my .bash_profile contains:
    cd /c/omnetpp
    echo Welcome!
 
----
-IMPORTANT:
-If you set TCL_LIBRARY from your .bash_profile, use a *Windows-style*
-directory name in it (ie. c:/... and not /c/...)!
-   TCL_LIBRARY=c:/Tcl/lib  # good
-   TCL_LIBRARY=/c/Tcl/lib  # WRONG!!!
-This variable must be understood by the Tcl/Tk libraries which know
-nothing about the MinGW magic.
----
+*** IMPORTANT ***
+  If you set TCL_LIBRARY from your .bash_profile, use a *Windows-style*
+  directory name in it (ie. c:/... and not /c/...)!
+     TCL_LIBRARY=c:/Tcl/lib  # good
+     TCL_LIBRARY=/c/Tcl/lib  # WRONG!!!
+  This variable must be understood by the Tcl/Tk libraries which know
+  nothing about the MinGW magic.
+
 
 3. Installing OMNeT++
 
@@ -139,12 +137,10 @@ section are entered on the bash command line.
 First you should check the configure.user file to make sure it contains the
 settings you need.
 
----
-IMPORTANT:
-Use Windows-style path names in configure.user! Use forward slashes (/)
-instead of backslashes. If a directory name contains space, use the short
-name (like C:/PROGRA~1).
----
+*** IMPORTANT ***
+  Use Windows-style path names in configure.user! Use forward slashes (/)
+  instead of backslashes. If a directory name contains space, use the short
+  name (like C:/PROGRA~1).
 
 Note that currently you cannot build dynamic libraries (DLLs) from OMNeT++
 sources.
@@ -153,10 +149,8 @@ Then the usual GNU-like stuff:
     ./configure
     make
 
----
-IMPORTANT:
-Your PATH *must* contain /c/omnetpp/bin for the compilation to be successful!
----
+*** IMPORTANT ***
+  Your PATH *must* contain /c/omnetpp/bin for the compilation to be successful!
 
 You should now test all samples and check they run correctly. As an
 example, the dyna example is started by entering the following commands:
@@ -186,6 +180,7 @@ of the library and type:
 
     make clean
     make
+
 
 6. Comments
 

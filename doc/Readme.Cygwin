@@ -189,9 +189,8 @@ of the library and type:
     make clean
     make
 
-NOTE: the 'install-local' make target found in earlier OMNeT++ versions
-was removed in 2.0beta4. The built libraries and programs are immediately
-copied to the lib/ and bin/ subdirs.
+The built libraries and programs are immediately copied to the lib/ and 
+bin/ subdirs.
 
 
 6. Comments

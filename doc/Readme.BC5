@@ -5,12 +5,13 @@ Using OMNeT++ on Windows with Borland C++
 BORLAND C++ IS NO LONGER SUPPORTED!!!
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Beginning with the version 2.1, OMNeT++ doesn't officially support Borland C++
-any more. I deleted the project files (*.ide) from the distribution. This
-doesn't mean that OMNeT++ wouldn't compile with BC++ -- most probably it would, --
+any more. The project files (*.ide) have been deleted from the distribution.
+This doesn't necessarily mean that OMNeT++ wouldn't compile with BC++,
 I just don't see much point managing binary project files for an old IDE.
 
-However, if you really want BC++, I added makefiles (Makefile.bc, generated
-from the BC++ IDE), you can try them at your own risk.
+However, if you really want BC++, there are some makefiles (Makefile.bc,
+generated from the BC++ IDE), you can try them at your own risk.
+They are well out of date by now.
 
 If there's enough interest, it's possible that at some point in the future
 I'll add makefiles for the free command-line bc5.5 compiler. If you'd like to
