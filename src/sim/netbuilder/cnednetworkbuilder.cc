@@ -220,7 +220,7 @@ void cNEDNetworkBuilder::setupGateVectors(cModule *submodp, NEDElement *submod)
                 const char *gatename = gate->getName();
                 int vectorsize = (int) evaluate(modp, findExpression(gate, "vector-size"), submodp);
                 submodp->setGateSize(gatename, vectorsize);
-                printf("DBG: gatesize: %s.%s[%d]\n", submodp->fullPath(), gatename, vectorsize);
+                //printf("DBG: gatesize: %s.%s[%d]\n", submodp->fullPath(), gatename, vectorsize);
             }
         }
     }
@@ -773,9 +773,11 @@ void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule
     if (pnode)
     {
         cPar *par = resolveParamRef(pnode, parentmodp, submodp);
-        char buf[512]; // FIXME dbg code only (2 lines)
-        par->info(buf);
-        printf("DBG: param assignment: %s = %s = %s\n", p.fullPath(), par->fullName(), buf);
+
+        //char buf[512];
+        //par->info(buf);
+        //printf("DBG: param assignment: %s = %s = %s\n", p.fullPath(), par->fullName(), buf);
+
         if (pnode->getIsRef())
             p.setRedirection(par);
         else
@@ -803,7 +805,7 @@ void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule
 
         char buf[1000];
         printXElems(buf, xelems, n);
-        printf("dbg: compiled expression: %s = %s\n", p.fullPath(), buf);
+        //printf("dbg: compiled expression: %s = %s\n", p.fullPath(), buf);
     }
 }
 
