@@ -441,11 +441,10 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
     // make sure we really have the message and it is scheduled
     if (msg==NULL)
         throw new cException("cancelEvent(): message pointer is NULL");
-    if (!msg->isScheduled())
-        throw new cException("cancelEvent(): message `%s' is currently not scheduled",msg->name());
 
     // now remove it from future events and return pointer
-    simulation.msgQueue.get( msg );
+    if (msg->isScheduled())
+        simulation.msgQueue.get( msg );
     return msg;
 }
 
