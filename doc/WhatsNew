@@ -4,8 +4,10 @@ What's New
 OMNeT++ 3.0 beta 1 (Nov 24 2004)
 --------------------------------
 - added new TicToc tutorial
-- nedtool: implemented -h option (place output into current dir, not source
+- nedtool: implemented -h option (put output files into current dir, not source
   file's dir) [patch from Johnny Lai]
+- Windows binary release contains 4 sets of libs now: vc6-debug, vc6-release,
+  vc7-debug, vc7-release.
 - several fixes and improvements
 
 
