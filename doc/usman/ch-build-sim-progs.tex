@@ -14,7 +14,7 @@ the following parts:
 \item{Simple modules. These are C++ files, with .cc suffix.}
 \end{itemize}
 
-Model files are usually placed in the projects/modelname subdirectory 
+Model files are usually placed in the projects/modelname subdirectory
 of the main {\opp} directory.
 
 
@@ -48,7 +48,7 @@ and linked with the simulation kernel\index{simulation!kernel} and a
 user interface to form a simulation executable.
 
 
-The following figure gives an overview of the process of building 
+The following figure gives an overview of the process of building
 and running simulation programs.
 
 
@@ -60,13 +60,11 @@ and running simulation programs.
 \end{figure}
 
 
-This section discusses how to use the simulation system on the 
+This section discusses how to use the simulation system on the
 following platforms:
 \begin{itemize}
-  \item{Unix with gcc installed (and which is similar, Cygwin on Windows 
-    NT)}
-  \item{MSVC 6.0 on Windows NT}
-  \item{Borland C++ 5.0 on Windows NT}
+  \item{Unix with gcc (also Windows with Cygwin or MinGW)}
+  \item{MSVC 6.0 on Windows}
 \end{itemize}
 
 
@@ -74,39 +72,46 @@ following platforms:
 
 \section{Using Unix and gcc}
 
+This section applies to using {\opp} on Linux, Solaris, FreeBSD and
+other Unix derivatives, and also more or less to Cygwin and MinGW
+on Windows.
+
+Here in the manual we can give a rough overview only.
+The \ttt{doc/} directory of your {\opp} installation contains
+\ttt{Readme.}\textit{<platform>} files that provide
+up-to-date, more detailed and more precise instructions.
+
+
 \subsection{Installation}
 
-The installation process depends on what distribution you take 
-(source, precompiled RPM, etc.) and it may change from release 
-to release. The readme files in the distribution should give 
-you enough (and up-to-date) guidance to go through the installation.
+The installation process depends on what distribution you take
+(source, precompiled RPM, etc.) and it may change from release
+to release, so it is better to refer to the readme files.
+If you compile from source, you can expect the usual GNU
+procedure: \ttt{./configure}, \ttt{make}.
 
 
-
-
-
-\subsection{Producing a Makefile with the opp\_makemake script}
+\subsection{Building simulation models}
 
 The \fprog{opp\_makemake} script can automatically generate the
-\texttt{Makefile} for your simulation program, based on the source files it
-finds in your directory. \fprog{opp\_makemake} has several options,
-the following command will display a summary:
-
-\begin{Verbatim}
-opp_makemake -h
-\end{Verbatim}
-
-To be able to use \fprog{opp\_makemake}, you have to collect all your 
-sources (.ned, .cc, .h files) in one directory. (Large models 
-which spread across several directories are covered later in 
+\texttt{Makefile} for your simulation program, based on the source files
+in the current directory. (It can also handle large models
+which are spread across several directories; this is covered later in
 this section.)
 
+\fprog{opp\_makemake} has several options, with the \ttt{-h}
+option it displays a summary.
 
-Then type 
+\begin{verbatim}
+% opp_makemake -h
+\end{verbatim}
 
-\begin{Verbatim}
-opp_makemake
-\end{Verbatim}
+Once you have the source files (\ttt{*.ned}, \ttt{*.msg}, \ttt{*.cc},
+\ttt{*.h}) in a directory, cd there then type:
+
+\begin{verbatim}
+% opp_makemake
+\end{verbatim}
 
 This will create a file named \texttt{Makefile}\index{Makefile}. Thus if you
 simply type \fprog{make}, your simulation program should build. The name of
@@ -140,9 +145,9 @@ If you already had a \texttt{Makefile} in that directory, \fprog{opp\_makemake}
 will refuse overwriting it. You can force overwriting the old \texttt{Makefile}
 with the -f option:
 
-\begin{Verbatim}
-opp_makemake -f
-\end{Verbatim}
+\begin{verbatim}
+% opp_makemake -f
+\end{verbatim}
 
 If you have problems, check the path definitions (locations of include
 files and libraries etc.) in the configure script\index{configure
@@ -154,16 +159,16 @@ etc.
 You can specify the user interface (Cmdenv/Tkenv) with the -u option
 (with no -u, Tkenv is the default):
 
-\begin{Verbatim}
-opp_makemake -u Tkenv
-\end{Verbatim}
+\begin{verbatim}
+% opp_makemake -u Tkenv
+\end{verbatim}
 
 The name of the output file\index{output!file} is set with the -o
 option (the default is the name of the directory):
 
-\begin{Verbatim}
-opp_makemake -o fddi-net
-\end{Verbatim}
+\begin{verbatim}
+% opp_makemake -o fddi-net
+\end{verbatim}
 
 If some of your source files are generated from other files (for
 example, you use machine-generated NED files), write your make rules
@@ -181,7 +186,6 @@ the \texttt{Makefile}.
 
 
 
-
 \subsection{Multi-directory models}
 
 In the case of a large project, your source files may be spread across
@@ -192,22 +196,22 @@ libraries\index{shared libraries}. Here we discuss static linking.
 
 In each subdirectory (say trafgen/ and router/), run
 
-\begin{Verbatim}
+\begin{verbatim}
 opp_makemake -n
-\end{Verbatim}
+\end{verbatim}
 
-The -n option means no linking is necessary, only compiling has 
+The -n option means no linking is necessary, only compiling has
 to be done.
 
 
 In your toplevel source directory, run
 
-\begin{Verbatim}
+\begin{verbatim}
 opp_makemake trafgen/ router/
-\end{Verbatim}
+\end{verbatim}
 
-This results in recursive makefiles: when you build the simulation, make 
-will descend into trafgen/ and router/, run make in both, then 
+This results in recursive makefiles: when you build the simulation, make
+will descend into trafgen/ and router/, run make in both, then
 it will link an executable with the object files in the two directories.
 
 
@@ -215,9 +219,9 @@ You may need to use the -I option if you include files from other
 directories. The -I option is for both C++ and NED
 files\index{ned!include path}. In our example, you could run
 
-\begin{Verbatim}
+\begin{verbatim}
 opp_makemake -n -I../router
-\end{Verbatim}
+\end{verbatim}
 
 in the trafgen/ directory and vice versa.
 
@@ -243,244 +247,212 @@ of the directory where the {\opp} shared libraries are).
 
 If you want static linking\index{static linking}, find the
 
-\begin{Verbatim}
+\begin{verbatim}
 build_shared_libs=yes
-\end{Verbatim}
+\end{verbatim}
 
 
 line in the configure.user script and change it to
 
-\begin{Verbatim}
+\begin{verbatim}
 build_shared_libs=no
-\end{Verbatim}
+\end{verbatim}
 
 Then you have to re-run the configure script and rebuild everything:
 
-\begin{Verbatim}
+\begin{verbatim}
 ./configure
 make clean
 make
-\end{Verbatim}
+\end{verbatim}
 
 
 
-\section{Using Win32 with MSVC}
+\section{Using Windows and Microsoft Visual C++}
 
-\subsection{Prerequisite: install Tcl/Tk}
-
-Download and install Tcl/Tk. You need at least version 8.0p1, 
-but it's better to download the latest version.
-
+This is only a rough overview. Up-to-date, more detailed and more
+precise instructions can be found in the \ttt{doc/} directory
+of your {\opp} installation, in the file \ttt{Readme.MSVC}.
 
 
+\subsection{Installation}
 
+It is easiest to start with the binary, autoinstaller version.
+It contains all necessary software except MSVC\index{MSVC},
+and you can get a working system up and running very fast.
 
-\subsection{Installing {\opp}}
+Later you'll probably want to download and build the source
+distribution too. Reasons for that might be to compile the libraries
+with different flags, to debug into them, or to recompile
+with support for additional packages (e.g. Akaroa, MPI).
+Compilation should be painless (it takes a single
+\ttt{nmake -f Makefile.vc} command) after you get the different
+component directories right in \ttt{configuser.vc}.
+Additional software needed for the compilation is also described
+in \ttt{doc/}.
 
-The installation process is not described here in detail. The 
-readme files in the distribution should give you enough (and 
-up-to-date) guidance to go through the installation.
+\subsection{Building simulation models}
 
-What's important is that as the result of the installation, you 
-should get the executables and the libraries in the bin/ and lib/ 
-subdirectories within the top-level {\opp} directory.
+Now {\opp} has an automatic MSVC makefile creator named \ttt{opp\_nmakemake}
+which is probably the easier way to go. Its usage is very similar
+to the similarly named tool for Unix.
 
+However, if you like the MSVC IDE, you can also use it.
+There is an MSVC wizard which will create project files for you,
+or you can start by copying one of the sample simulations.
+There is also an AddNEDFileToProject macro that can, well, add
+NED files to your project with the necessary custom build step
+(invoke nedc, etc.)
 
+Some caveats (please read \ttt{doc/Readme.MSVC} for more!):
 
+\begin{itemize}
+ \item \tbf{how to get the graphical environment}. By default,
+   the sample simulations link with Cmdenv if you rebuild them
+   from the IDE. To change to Tkenv, choose Build{\textbar}Set
+   active configuration from the menu, select ``Debug-Tkenv''
+   or ``Release-Tkenv'', then re-link the executable.
 
+ \item \tbf{can't find a usable init.tcl}. If you get this message,
+   Tcl/Tk is missing the \fvar{TCL\_LIBRARY} environment variable
+   which is normally set by the installer. If you see this message,
+   you need to set this variable yourself to the Tcl \ttt{lib/} directory.
 
-\subsection{Building the samples from the MSVC IDE}
+ \item \tbf{changed compiler settings}. Changes since {\opp} 2.2:
+   You'll need exception handling and RTTI turned ON, and
+   stack size set to as low as 64K.
+   See the readme file for rationale and more hints.
 
-Unfortunately MSVC\index{MSVC} doesn't like the \texttt{.cc} extension, so first
-you have to rename the \texttt{.cc} files to \texttt{.cpp}. You can do
-that with samples/cc2cpp.bat.
+ \item \tbf{adding NED files}. After you added a \texttt{.ned} file
+   to the project, you also have to add a \ttt{\_n.cpp} file, and set a
+   \textit{Custom Build Step} for them:
 
-
-Start the MSVC IDE and open the workspace (\texttt{.dsw}) file. Then
-if you choose Build from the menu, the simulation executable should
-build. If you encounter any problems, read the MSVC-related readme
-file in the distribution -- it should contain more up-to-date
-information than this manual.
-
-\begin{sloppypar}
-To change from Tkenv to Cmdenv or vica versa, choose Build{\textbar}Set 
-active configuration from the menu and select one of 'Debug-Tkenv', 
-'Release-Tkenv', 'Debug-Cmdenv', 'Release-Cmdenv', then re-link 
-the executable.
-\end{sloppypar}
-
-If you have big models, you'll probably have to increase the stack
-size. You'll find the setting under Project{\textbar}Settings
---\texttt{>} 'Link' tab --\texttt{>} choose 'Output' from combo
---\texttt{>} Stack allocations, Reserve. Be aware that if you don't
-specify anything here, MSVC defaults to 1MB -- way too small.\\
-If you need to modify the names of the Tcl/Tk libs (because you
-installed a Tcl/Tk version other than 8.2), see
-Project{\textbar}Settings --\texttt{>} 'Link' tab --\texttt{>} choose
-'Input' from combo --\texttt{>} Libraries.
-
-The Tcl/Tk install program normally sets the \fvar{TCL\_LIBRARY}
-environment variable needed by Tcl applications. However, if you see
-the ''can't find a usable init.tcl...'' error message when you start a
-simulation program (or Gned or Plove), then that didn't happen and you
-have to set the variable yourself.
-
-
-
-
-\subsection{Creating project files for your simulations}
-
-\begin{enumerate}
-\item{Start by copying \& renaming one of the \texttt{.dsp} files from
-    the samples directory. It already contains the Tkenv/Cmdenv
-    configurations, etc.}
-\item{ Rename all \texttt{.cc} files to \texttt{.cpp} (\texttt{ren
-      *.cc *.cpp}) and add them to the project.}
-\item{Add the \texttt{.ned} files to the project and set custom build
-    option for them:
-
-\begin{Verbatim}
-Description: NED Compiling $(InputPath) 
+\begin{verbatim}
+Description: NED Compiling $(InputPath)
 Command: nedc -s _n.cpp $(InputPath)
-Outputs: $(InputPath)_n.cpp
-\end{Verbatim}
-%% $
+Outputs: $(InputName)_n.cpp
+\end{verbatim}
 
+   For msg files you need an analogous procedure.
 
-\textit{Hint: you can select all \texttt{.ned} files together, and
-  'All configurations' from the combo at the left of the Settings
-  dialog, and then you have to type this settings only once.}}
+ \item \tbf{file name extension}: as a gesture toward the free software
+   community, MSVC refuses to treat \texttt{.cc} files as C++ sources,
+   so first you have to rename them to \texttt{.cpp}.
+   For the sample simulations this is done by \ttt{samples/cc2cpp.bat}.
 
-
-\item{For each \texttt{.ned} file, add a corresponding
-    \texttt{\_n.cpp} file.
-    
-    \textit{Hint: if you compile the \texttt{.ned} files (choose
-      'Compile' from the menu), the} \texttt{\_n.cpp} \textit{files will be
-      created, and you can select them all at once in the 'Add files'
-      dialog.}}
-\item{Make sure to turn off exception handling\index{exception
-      handling} and RTTI\index{RTTI} (they interfere with the
-    coroutine library), and set the necessary reserved stack size.}
-\item{Note: for Tkenv, link with \texttt{sim\_std.lib},
-    \texttt{envir.lib}, \texttt{tkenv.lib} and the Tcl/Tk libraries
-    (link as Win32 Console app...). For Cmdenv, you need to link with \texttt{sim\_std.lib}, \texttt{envir.lib}, and \texttt{cmdenv.lib}.\\
-    It is planned to create wizards in the future to ease some of
-    these steps.}
-\end{enumerate}
-
-
-
-
-\subsection{Using Plove}
-
-If you want to use Plove\index{Plove}, you should download and install
-Gnuplot\index{Gnuplot}.  You'll also need a couple of Unix tools like
-\fprog{grep} and \fprog{awk}, the easiest way to get them is to
-download and install the Cygwin package from
-\href{http://www.cygnus.com}{www.cygnus.com}.  When you have
-everything installed, start Plove and set the appropriate
-configuration in Options{\textbar}External programs. If you entered
-everything correctly, Plove should work.
-
-
-A usual caveat is that Gnuplot expects forward slashes in filenames
-and Plove supplies backslashes or vica versa (there are multiple
-incompatible builds of Gnuplot on NT); if you suspect this might be
-the problem, reverse the slash/backslash setting in
-Options{\textbar}External programs.
-
-
-
-
-
-\section{Hints for using Borland C++ and other compilers}
-
-\subsection{Building {\opp}}
-
-{\opp} currently doesn't support the Borland C++\index{Borland C++}.
-This doesn't mean that the sources won't build (most probably they
-will), but I am unable to maintain the respective makefiles.
-
-
-However, the next sections contain some hints how to build simulation 
-programs once you got the libraries compiled.
-
-
-
-
-
-\subsection{Setting up a project file}
-
-What you will need to have in your project file:
-\begin{itemize}
-  \item{your simple module C++ sources;}
-  \item{your NED files\index{ned!files};}
-  \item{for each NED file, the C++ file it will compile into (the
-      \texttt{\_n.cc} file). Place the \texttt{.ned} file under the
-      \texttt{\_n.cc} file in the project tree hierarchy.}
-  \item{the {\opp} libraries: \texttt{sim\_std.lib},
-      \texttt{envir.lib}, plus \texttt{cmdenv.lib} or
-      \texttt{tkenv.lib}, depending on which user interface you want
-      to link in. You also need the Tcl and Tk libraries if you're
-      using Tkenv.}
 \end{itemize}
 
 
-The project options have to be set up like this:
-\begin{itemize}
-\item{Compile as a 32-bit flat console application. None of the
-    special libraries (OWL, MFC, Class Library, OCF etc) are needed.}
-\item{You have to turn off exception handling\index{exception
-      handling}, it conflicts with the coroutine
-    library\index{coroutine library} somehow. In the IDE:
-    Options{\textbar}Project --\texttt{>} C++ Options --\texttt{>}
-    Exception Handling/RTTI --\texttt{>} clear [ ] Enable exceptions.
-    It must be done both when compiling the libraries and when
-    compiling simulation applications.}
-\item{Borland C++ does not recognize the \texttt{.cc} extension as
-    C++. You have to teach it: Options{\textbar}Tools --\texttt{>}
-    select CppCompile --\texttt{>} Edit --\texttt{>} Advanced
-    --\texttt{>} add the \texttt{.cc} extension to the Translate From
-    and Default For entries. Do the same with the EditText tool.}
-\item{You also have to teach Borland C++ how to handle \texttt{.ned}
-    files.  Select Options{\textbar}Tools --\texttt{>} New. Fill in
-    the dialog as follows:
-\begin{Verbatim}
-  Name: NEDCompile
-
-  Path: ..\..\src\nedc\nedc.exe
-
-  Command Line: $NOSWAP $CAP MSG(BORL2MSG) $EDNAME
-
-  Menu Text: NED Compile
-
-  Help Hint: OMNeT++ NED compiler
-\end{Verbatim}
-%%$
-  Select Advanced, and fill in the dialog:
-\begin{Verbatim}
-  Type: Translator
-  Translate From:.ned
-  Translate To:.cc
-  Default For:.ned
-  
-\end{Verbatim}
-}
-
-\sloppy
-\item{If you're going to build a LARGE model, be sure to
-  increase the stack size\index{stack!size} in
-  Options{\textbar}Project options{\textbar}Linker{\textbar}32-bit
-  Linker{\textbar}Reserved stack size. The default is 0x1000000 (1MB),
-  which is hardly enough for {\opp} simulations. Increase it to 64MB
-  for example: 0x40000000. If the simulation exceeds the stack size
-  configured here, you'll get nice exceptions, General Protection
-  Faults and the like.}
-\end{itemize}
+%
+% \subsection{Using Plove}
+%
+% If you want to use Plove\index{Plove}, you should download and install
+% Gnuplot\index{Gnuplot}.  You'll also need a couple of Unix tools like
+% \fprog{grep} and \fprog{awk}, the easiest way to get them is to
+% download and install the Cygwin package from
+% \href{http://www.cygnus.com}{www.cygnus.com}.  When you have
+% everything installed, start Plove and set the appropriate
+% configuration in Options{\textbar}External programs. If you entered
+% everything correctly, Plove should work.
+%
+%
+% A usual caveat is that Gnuplot expects forward slashes in filenames
+% and Plove supplies backslashes or vica versa (there are multiple
+% incompatible builds of Gnuplot on NT); if you suspect this might be
+% the problem, reverse the slash/backslash setting in
+% Options{\textbar}External programs.
+%
 
 
-%%% Local Variables: 
+%%
+%% Following section is obsolete and out of date, removed:
+%%
+
+%
+% \section{Hints for using Borland C++ and other compilers}
+%
+% \subsection{Building {\opp}}
+%
+% {\opp} currently doesn't support the Borland C++\index{Borland C++}.
+% This doesn't mean that the sources won't build (most probably they
+% will), but I am unable to maintain the respective makefiles.
+%
+%
+% However, the next sections contain some hints how to build simulation
+% programs once you got the libraries compiled.
+%
+%
+%
+%
+%
+% \subsection{Setting up a project file}
+%
+% What you will need to have in your project file:
+% \begin{itemize}
+%   \item{your simple module C++ sources;}
+%   \item{your NED files\index{ned!files};}
+%   \item{for each NED file, the C++ file it will compile into (the
+%       \texttt{\_n.cc} file). Place the \texttt{.ned} file under the
+%       \texttt{\_n.cc} file in the project tree hierarchy.}
+%   \item{the {\opp} libraries: \texttt{sim\_std.lib},
+%       \texttt{envir.lib}, plus \texttt{cmdenv.lib} or
+%       \texttt{tkenv.lib}, depending on which user interface you want
+%       to link in. You also need the Tcl and Tk libraries if you're
+%       using Tkenv.}
+% \end{itemize}
+%
+%
+% The project options have to be set up like this:
+% \begin{itemize}
+% \item{Compile as a 32-bit flat console application. None of the
+%     special libraries (OWL, MFC, Class Library, OCF etc) are needed.}
+% \item{You have to turn off exception handling\index{exception
+%       handling}, it conflicts with the coroutine
+%     library\index{coroutine library} somehow. In the IDE:
+%     Options{\textbar}Project --\texttt{>} C++ Options --\texttt{>}
+%     Exception Handling/RTTI --\texttt{>} clear [ ] Enable exceptions.
+%     It must be done both when compiling the libraries and when
+%     compiling simulation applications.}
+% \item{Borland C++ does not recognize the \texttt{.cc} extension as
+%     C++. You have to teach it: Options{\textbar}Tools --\texttt{>}
+%     select CppCompile --\texttt{>} Edit --\texttt{>} Advanced
+%     --\texttt{>} add the \texttt{.cc} extension to the Translate From
+%     and Default For entries. Do the same with the EditText tool.}
+% \item{You also have to teach Borland C++ how to handle \texttt{.ned}
+%     files.  Select Options{\textbar}Tools --\texttt{>} New. Fill in
+%     the dialog as follows:
+%
+% begin{verbatim}
+%   Name: NEDCompile
+%   Path: ..\..\src\nedc\nedc.exe
+%   Command Line: $NOSWAP $CAP MSG(BORL2MSG) $EDNAME
+%   Menu Text: NED Compile
+%   Help Hint: OMNeT++ NED compiler
+% end{verbatim}
+%
+%   Select Advanced, and fill in the dialog:
+% begin{verbatim}
+%   Type: Translator
+%   Translate From:.ned
+%   Translate To:.cc
+%   Default For:.ned
+% end{verbatim}
+% }
+%
+% \sloppy
+% \item{If you're going to build a LARGE model, be sure to
+%   increase the stack size\index{stack!size} in
+%   Options{\textbar}Project options{\textbar}Linker{\textbar}32-bit
+%   Linker{\textbar}Reserved stack size. The default is 0x1000000 (1MB),
+%   which is hardly enough for {\opp} simulations. Increase it to 64MB
+%   for example: 0x40000000. If the simulation exceeds the stack size
+%   configured here, you'll get nice exceptions, General Protection
+%   Faults and the like.}
+% \end{itemize}
+%
+
+
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "usman"
-%%% End: 
+%%% End:
