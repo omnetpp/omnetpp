@@ -6,10 +6,12 @@ CC=@CC@
 YACC=@YACC@
 LEX=@LEX@
 WISH=@WISH@
+MAKEDEPEND=@MAKEDEPEND@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
+DEPFLAGS=@DEPFLAGS@
 
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
 
@@ -59,8 +61,8 @@ missing-library:
 	@ echo '*** No Tk installation found -- skipping Plove'
 
 depend:
-	makedepend -Y -I. -- *.c *.cc
-	makedepend -Y -I. -fMakefile.in -- *.c *.cc
+	$(MAKEDEPEND) $(DEPFLAGS) -I. -- *.c *.cc
+	$(MAKEDEPEND) $(DEPFLAGS) -I. -fMakefile.in -- *.c *.cc
 
 clean:
 	rm -f tclcode.cc *.o plove$(EXE_SUFFIX) plove

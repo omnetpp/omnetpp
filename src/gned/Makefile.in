@@ -5,10 +5,12 @@ CXX=@CXX@
 CC=@CC@
 YACC=@YACC@
 LEX=@LEX@
+MAKEDEPEND=@MAKEDEPEND@
 
 CFLAGS=@CFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
+DEPFLAGS=@DEPFLAGS@
 
 OMNETPP_BITMAP_PATH=@OMNETPP_BITMAP_PATH@
 OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
@@ -78,8 +80,8 @@ missing-library:
 	@ echo '  *** No Tk installation found -- skipping GNED'
 
 depend:
-	makedepend -Y -I. -- *.c *.cc
-	makedepend -Y -I. -fMakefile.in -- *.c *.cc
+	$(MAKEDEPEND) $(DEPFLAGS) -I. -- *.c *.cc
+	$(MAKEDEPEND) $(DEPFLAGS) -I. -fMakefile.in -- *.c *.cc
 
 clean:
 	rm -f tclcode.cc *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned$(EXE_SUFFIX)
