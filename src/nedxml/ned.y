@@ -1369,7 +1369,7 @@ connblock_old
         : CONNECTIONS NOCHECK ':'
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
-                  ps.conns->setCheckUnconnected( "false" );
+                  ps.conns->setCheckUnconnected(false);
                   setComments(ps.conns,@1,@3);
                 }
           opt_connections_old
@@ -1378,7 +1378,7 @@ connblock_old
         | CONNECTIONS ':'
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
-                  ps.conns->setCheckUnconnected( "yes" );
+                  ps.conns->setCheckUnconnected(true);
                   setComments(ps.conns,@1,@2);
                 }
           opt_connections_old
@@ -1598,7 +1598,7 @@ connblock
         : CONNECTIONS NOCHECK ':'
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
-                  ps.conns->setCheckUnconnected( "false" );
+                  ps.conns->setCheckUnconnected(false);
                   setComments(ps.conns,@1,@3);
                 }
           opt_connections
@@ -1607,7 +1607,7 @@ connblock
         | CONNECTIONS ':'
                 {
                   ps.conns = (ConnectionsNode *)createNodeWithTag(NED_CONNECTIONS, ps.module );
-                  ps.conns->setCheckUnconnected( "yes" );
+                  ps.conns->setCheckUnconnected(true);
                   setComments(ps.conns,@1,@2);
                 }
           opt_connections
@@ -2005,24 +2005,24 @@ parameter_expr
         | REF NAME
                 {
                   $$ = createParamRef(toString(@2));
-                  ((ParamRefNode *)$$)->setIsRef("true");
+                  ((ParamRefNode *)$$)->setIsRef(true);
                 }
         | REF ANCESTOR NAME
                 {
                   $$ = createParamRef(toString(@3));
-                  ((ParamRefNode *)$$)->setIsRef("true");
-                  ((ParamRefNode *)$$)->setIsAncestor("true");
+                  ((ParamRefNode *)$$)->setIsRef(true);
+                  ((ParamRefNode *)$$)->setIsAncestor(true);
                 }
         | ANCESTOR REF NAME
                 {
                   $$ = createParamRef(toString(@3));
-                  ((ParamRefNode *)$$)->setIsRef("true");
-                  ((ParamRefNode *)$$)->setIsAncestor("true");
+                  ((ParamRefNode *)$$)->setIsRef(true);
+                  ((ParamRefNode *)$$)->setIsAncestor(true);
                 }
         | ANCESTOR NAME
                 {
                   $$ = createParamRef(toString(@2));
-                  ((ParamRefNode *)$$)->setIsAncestor("true");
+                  ((ParamRefNode *)$$)->setIsAncestor(true);
                 }
         ;
 
