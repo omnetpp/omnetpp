@@ -1,0 +1,68 @@
+This graph shows the CVS branch history.
+
+
+
+
+
+
+  Main Trunk            Branches
+
+        ^
+        |
+        |
+  merge-omnetpp-2_2_2 <-----------------omnetpp-2_2_2
+        |                                     |
+        |                                     |
+        |                               std-namespace-start
+        |                                     |
+        |                                     |
+        |                               omnetpp-2_2_1
+        |                                     |
+        |                                     |
+  omnetpp-2_2 >---------omnetpp-2_2-patches---|  
+        |
+        |
+        |>--------------mpi-patches-------- (dead)
+        |
+        |
+  const-patches-applied    
+  docpp-start  
+  karlsruhe-initial-checkin
+  omnetpp-2_1  
+  omnetpp-2_0p1
+  omnetpp-2_0  
+  before_modular_scheduler 
+  omnetpp-2_0b5
+  omnetpp-2_0b4
+  omnetpp-2_0b3
+  omnetpp-2_0b2
+  omnetpp-2_0b1
+
+
+---------------------------------------------------------
+---------------------------------------------------------
+
+Legend:
+
+- Tags:
+            |
+           bla
+            |
+
+- Branches:
+
+         --bla--
+
+
+- A branch that starts or ends in a tag:
+
+            |
+           tag-------branch
+            |
+
+- A branch that starts or ends somewhere in the development line:
+
+            |
+            |--------branch
+            |
+
