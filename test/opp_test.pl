@@ -155,6 +155,9 @@ if ($mode eq 'run')
     $num_fail=0;
     $num_unresolved=0;
 
+    @unresolved_tests = ();
+    @failed_tests = ();
+
     foreach $testfilename (@filenames)
     {
         testcase_run($testfilename);
@@ -162,6 +165,13 @@ if ($mode eq 'run')
 
     print "========================================\n";
     print "PASS: $num_pass   FAIL: $num_fail   UNRESOLVED: $num_unresolved\n";
+
+    if ($num_fail>0 && $verbose) {
+        print "FAILED tests: ".join(' ', @failed_tests)."\n";
+    }
+    if ($num_unresolved>0 && $verbose) {
+        print "UNRESOLVED tests: ".join(' ', @unresolved_tests)."\n";
+    }
 }
 
 sub parse_testfile
@@ -432,9 +442,13 @@ sub testcase_run()
                 print "  exitcode ok ($status)\n" if ($debug);
             } elsif ($values{'exitcode(1)'} ne '') {
                 fail($testfilename, "test program returned exit code $status instead of $values{'exitcode(1)'}");
+                print_tail("stdout", $outfname) if ($verbose);
+                print_tail("stderr", $errfname) if ($verbose);
                 return;
             } else {
                 fail($testfilename, "test program returned nonzero exit code: $status");
+                print_tail("stdout", $outfname) if ($verbose);
+                print_tail("stderr", $errfname) if ($verbose);
                 return;
             }
         }
@@ -502,11 +516,40 @@ sub testcase_run()
     pass($testfilename);
 }
 
+sub print_tail()
+{
+    my $label = shift;
+    my $fname = shift;
+
+    if (!open(IN,"$fname")) {
+        unresolved($testfilename, "cannot read file `$fname'");
+        return;
+    }
+    seek(IN,-500,2);
+    $istail=0;
+    if (tell(IN)>0) {
+         $istail=1;
+         <IN>;  # skip incomplete line
+    }
+    $txt = '';
+    while (<IN>)
+    {
+        $txt .= $_;
+    }
+    close IN;
+
+    if ($txt ne '') {
+        print ($istail ? "tail of $label:\n" : "$label:\n");
+        print ">>>>$txt<<<<\n";
+    }
+}
+
 sub unresolved()
 {
     my $testname = shift;
     my $reason = shift;
     $num_unresolved++;
+    push (@unresolved_tests, $testname);
     $result{$testname} = 'UNRESOLVED';
     $reason{$testname} = $reason;
     print "*** $testname: UNRESOLVED ($reason)\n";
@@ -517,6 +560,7 @@ sub fail()
     my $testname = shift;
     my $reason = shift;
     $num_fail++;
+    push (@failed_tests, $testname);
     $result{$testname} = 'FAIL';
     $reason{$testname} = $reason;
     print "*** $testname: FAIL ($reason)\n";
