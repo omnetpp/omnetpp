@@ -106,9 +106,6 @@ xsltproc --stringparam outputdir "$outdir" --stringparam imagesxml "$imagesxml" 
          --stringparam document-unassigned-params "$unassignedpars" \
          $NEDDOC_XSL $TMPFILE >/dev/null || exit 1
 
-echo 'formatting comments...'
-perl $NEDDOC_PL $outdir || exit 1
-
 if [ "$have_dot" = "yes" ]; then
     echo 'generating diagrams via '$DOT'...'
     for i in $outdir/*.dot; do
@@ -120,6 +117,9 @@ if [ "$have_dot" = "yes" ]; then
     done
     echo
 fi
+
+echo 'formatting comments...'
+perl $NEDDOC_PL $outdir || exit 1
  
 echo 'documentation created in '$outdir'/ -- start page is index.html'
 cleanup

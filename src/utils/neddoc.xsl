@@ -167,7 +167,7 @@
                <xsl:call-template name="extract-titlepage"/>
             </xsl:when>
             <xsl:otherwise>   
-         <center><h1>OMNeT++ Model Documentation</h1></center>
+               <center><h1>OMNeT++ Model Documentation</h1></center>
                <center><i>Generated from NED and MSG files</i></center>
                <p>This documentation has been generated from NED and MSG files. 
                Use the links in the left frames to navigate around.</p>
@@ -206,7 +206,8 @@
             <h2 class="comptitle">Module Hierarchy</h2>
             <p>The following diagram shows what other modules compound modules are composed of.
             Unresolved module types are missing from the diagram.</p>
-            <img src="module-diagram.gif" ismap="yes" usemap="module-diagram.map"/>
+            <img src="module-diagram.gif" ismap="yes" usemap="#module-diagram"/>
+            <map name="module-diagram">@INSERTFILE(module-diagram.map)</map>
          </xsl:with-param>
       </xsl:call-template>
 
@@ -219,7 +220,8 @@
          <xsl:with-param name="content">
             <h2 class="comptitle">Class Inheritance Diagram</h2>
             <p>The following diagram shows the class hierarchy.</p>
-            <img src="class-inheritance-diagram.gif" ismap="yes" usemap="class-inheritance-diagram.map"/>
+            <img src="class-inheritance-diagram.gif" ismap="yes" usemap="#class-inheritance-diagram"/>
+            <map name="class-inheritance-diagram">@INSERTFILE(class-inheritance-diagram.map)</map>
          </xsl:with-param>
       </xsl:call-template>
 

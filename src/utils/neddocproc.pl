@@ -169,12 +169,24 @@ foreach $fname (glob($fnamepatt))
               $html =~ s|\@bingo\@|\<pre\>$src\</pre\>|s;
         }
 
+        $html =~ s|\@INSERTFILE\((.*?)\)|load_file($1)|gse;
+
         #
         # save file
         #
         open(FILE,">$fname");
         print FILE $html;
         close FILE;
+}
+
+sub load_file ()
+{
+    my $fname = shift;
+    my $content;
+    open FILE, "$dir/$fname";
+    read(FILE, $content, 1000000) || die "cannot read $dir/$fname";
+    close FILE;
+    $content;
 }
 
 # export_file('html/pccard.gif',
