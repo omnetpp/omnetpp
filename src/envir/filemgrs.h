@@ -169,16 +169,6 @@ class cFileOutputScalarManager : public cOutputScalarManager
     void recordScalar(cModule *module, const char *name, double value);
 
     /**
-     * Records a string result into the scalar result file.
-     */
-    void recordScalar(cModule *module, const char *name, const char *text);
-
-    /**
-     * Records a statistics object into the scalar result file.
-     */
-    void recordScalar(cModule *module, const char *name, cStatistic *stats);
-
-    /**
      * Returns the file name.
      */
     const char *fileName() const;

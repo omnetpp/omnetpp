@@ -241,27 +241,6 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
     fprintf(f,"scalar \"%s\" \t\"%s\" \t%.9g\n", module->fullPath(), name? name : "(null)", value);
 }
 
-void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, const char *text)
-{
-    if (!initialized)
-        init();
-
-    if (!f) return;
-
-    fprintf(f,"scalar \"%s\" \t\"%s\" \t\"%s\"\n", module->fullPath(), name? name : "(null)", text);
-}
-
-void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, cStatistic *stats)
-{
-    if (!initialized)
-        init();
-
-    if (!f) return;
-
-    fprintf(f,"statistics \"%s\" \t\"%s\" \t\"%s\"\n", module->fullPath(), name? name : "(null)", stats->className());
-    stats->saveToFile( f );
-}
-
 const char *cFileOutputScalarManager::fileName() const
 {
     return fname.c_str();

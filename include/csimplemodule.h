@@ -21,9 +21,6 @@
 
 #include "cmodule.h"
 
-// classes mentioned here
-class cStatistic;
-
 
 /**
  * cSimpleModule is the base class for all simple module classes.
@@ -422,19 +419,13 @@ class SIM_API cSimpleModule : public cModule
     //@{
 
     /**
-     * Records a double into the scalar result file.
+     * Records a double into the scalar result file. Statistics objects
+     * (ones subclassed from cStatistic, e.g. cStdDev) can be recorded
+     * by calling their recordScalar() methods).
+     *
+     * @see cStatistic::recordScalar()
      */
     void recordScalar(const char *name, double value);
-
-    /**
-     * Records a string into the scalar result file.
-     */
-    void recordScalar(const char *name, const char *text);
-
-    /**
-     * Records a statistics object into the scalar result file.
-     */
-    void recordStats(const char *name, cStatistic *stats);
     //@}
 
     /** Coroutine stack info. Useful only if module uses activity(). */

@@ -616,16 +616,6 @@ void cSimpleModule::recordScalar(const char *name, double value)
     ev.recordScalar(this, name, value);
 }
 
-void cSimpleModule::recordScalar(const char *name, const char *text)
-{
-    ev.recordScalar(this, name, text);
-}
-
-void cSimpleModule::recordStats(const char *name, cStatistic *stats)
-{
-    ev.recordScalar(this, name, stats);
-}
-
 bool cSimpleModule::stackOverflow() const
 {
     return coroutine ? coroutine->stackOverflow() : false;

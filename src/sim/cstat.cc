@@ -25,11 +25,14 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#include <string>
+
 #include "cstat.h"
 #include "random.h"
 #include "distrib.h"
 #include "macros.h"
 #include "cdetect.h"  //NL
+#include "csimplemodule.h"
 #include "cexception.h"
 #include "cenvir.h"
 #include "errmsg.h"
@@ -140,6 +143,19 @@ void cStatistic::addAccuracyDetection(cAccuracyDetection *obj)  //NL
 void cStatistic::collect2(double, double)
 {
     throw new cException(this, "collect2() not implemented");
+}
+
+void cStatistic::recordScalar(const char *scalarname)
+{
+    cSimpleModule *mod = dynamic_cast<cSimpleModule *>(simulation.contextModule());
+    if (!mod)
+        throw new cException(this,"recordScalar() may only be invoked from within a simple module");
+    std::string n = scalarname ? scalarname : fullName();
+    mod->recordScalar((n+".samples").c_str(), samples());
+    mod->recordScalar((n+".mean").c_str(), mean());
+    mod->recordScalar((n+".stddev").c_str(), stddev());
+    mod->recordScalar((n+".min").c_str(), min());
+    mod->recordScalar((n+".max").c_str(), max());
 }
 
 void cStatistic::freadvarsf (FILE *f,  const char *fmt, ...)

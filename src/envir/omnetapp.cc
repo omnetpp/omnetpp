@@ -365,7 +365,7 @@ cXMLElement *TOmnetApp::getXMLDocument(const char *filename, const char *path)
     assert(documentnode);
     if (path)
         return cXMLElement::getDocumentElementByPath(documentnode, path);
-    else 
+    else
         return documentnode->getFirstChild();
 }
 
@@ -586,18 +586,6 @@ void TOmnetApp::recordScalar(cModule *module, const char *name, double value)
 {
     assert(outscalarmgr);
     outscalarmgr->recordScalar(module, name, value);
-}
-
-void TOmnetApp::recordScalar(cModule *module, const char *name, const char *text)
-{
-    assert(outscalarmgr);
-    outscalarmgr->recordScalar(module, name, text);
-}
-
-void TOmnetApp::recordScalar(cModule *module, const char *name, cStatistic *stats)
-{
-    assert(outscalarmgr);
-    outscalarmgr->recordScalar(module, name, stats);
 }
 
 //-------------------------------------------------------------

@@ -1,3 +1,11 @@
+2004-07-05   Andras Varga
+
+	* csimplemodule.h, cenvir.h, envirext.h: recordScalar() functions for
+	text and cStatistic data removed. A cStatistic object can be recorded
+	into the scalar file by calling its recordScalar() method (below).
+
+	* cstat.h: added recordScalar() method.
+
 2004-06-24  Andras Varga
 
 	* cpar.h: added type M (XML element) to cPar. New methods:
@@ -8,7 +16,7 @@
 
 	* added cxmlelement.cc
 
-2004-06-17   Andras Varga
+2004-06-17  Andras Varga
 
 	* added cconfig.h: contains cConfiguration, an abstract base class
 	for configuration managers. cConfiguration makes it possible to
@@ -30,7 +38,7 @@ add deleteGate()
 2004-05-10   Andras Varga
 
 	* carray.h,cllist.h: discouraged use of classes cBag and cLinkedList.
-	STL classes such as std::vector, std::list or std::deque are 
+	STL classes such as std::vector, std::list or std::deque are
 	recommended instead.
 
 2004-04-20   Andras Varga
@@ -42,15 +50,15 @@ add deleteGate()
 	* cenvir.h: added method bool cEnvir::disabled(); returns true when
 	ev<< output is disabled (e.g. Express mode) so executing ev<< is
 	a waste of CPU cycles. To save CPU cycles, one can write code like:
-	   if (!ev.disabled())  
+	   if (!ev.disabled())
 	       ev << "Packet " << msg->name() << " received\n";
 	or (not that ?: binds looser than <<!!!):
 	   #define EV  ev.disabled()?ev:ev
 	   EV << "Packet " << msg->name() << " received\n";
 
-	* cmessage.h: added possibility to attach a "control info" object 
+	* cmessage.h: added possibility to attach a "control info" object
 	(cPolymorphic*) to cMessage. Purpose: communication between protocol
-	layers. New methods: setControlInfo(), removeControlInfo(), 
+	layers. New methods: setControlInfo(), removeControlInfo(),
 	controlInfo().
 
 2004-03-22  ------ omnetpp-3.0a3 released ------
@@ -61,12 +69,12 @@ add deleteGate()
 
 2004-03-10   Andras Varga
 
-	* cenvir.h: use std::ostream as base class for cEnvir. ev<< works 
+	* cenvir.h: use std::ostream as base class for cEnvir. ev<< works
 	exactly as with any C++ stream now (stream manipulators can be used,
 	etc). Also, there are no bounded buffers along the data path, so
-	outputting arbitrarily long strings are supported. (Except in 
-	ev.printf(), but as of 2004, one shouldn't feel much temptation to 
-	use it.)  
+	outputting arbitrarily long strings are supported. (Except in
+	ev.printf(), but as of 2004, one shouldn't feel much temptation to
+	use it.)
 
 	Users should change custom << operators written for cEnvir to use
 	std::ostream instead. Leaving cEnvir<< will continue to work,
@@ -76,14 +84,14 @@ add deleteGate()
 	askf(), prompt(), setprompt(). gets() was retained for now, but added
 	an overloaded equivalent which stores input in std::string.
 
-	cpar.h: changed void getAsText(char *buf, int bufsize) functions to 
+	cpar.h: changed void getAsText(char *buf, int bufsize) functions to
 	std::string getAsText().
 
 2004-03-08   Andras Varga
 
 	* cobject.h, cpolymorphic.h: defined fullName() and fullPath() in
-	cPolymorhpic as empty virtual functions (return "") which cObject 
-	redefines. check_and_cast<> argument type changed from cObject* to 
+	cPolymorhpic as empty virtual functions (return "") which cObject
+	redefines. check_and_cast<> argument type changed from cObject* to
 	cPolymorphic*.
 
 2004-03-06   Andras Varga
@@ -308,7 +316,7 @@ add deleteGate()
 
 2003-11-13  Andras Varga
 
-	* Merged parallel simulation brach that was developed March-May 2003, 
+	* Merged parallel simulation brach that was developed March-May 2003,
 	during my stay at Monash University. Changes in that branch:
 
 	2003-05-21  Andras Varga

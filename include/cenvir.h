@@ -460,10 +460,9 @@ class ENVIR_API cEnvir : public std::ostream
 
     /** @name Scalar statistics.
      *
-     * These are the functions the cSimpleModule::recordScalar() functions internally
-     * rely on.
+     * The method cSimpleModule::recordScalar() function internally relies on.
      *
-     * The behavior of these functions can be changed by plugging in a different
+     * The behavior of this function can be changed by plugging in a different
      * cOutputScalarManager object into the user interface library. (Or alternatively,
      * by reimplementing the whole cEnvir of course).
      */
@@ -473,16 +472,6 @@ class ENVIR_API cEnvir : public std::ostream
      * Records a double scalar result, in a default configuration into the scalar result file.
      */
     void recordScalar(cModule *module, const char *name, double value);
-
-    /**
-     * Records a string result, in a default configuration into the scalar result file.
-     */
-    void recordScalar(cModule *module, const char *name, const char *text);
-
-    /**
-     * Records a statistics object, in a default configuration into the scalar result file.
-     */
-    void recordScalar(cModule *module, const char *name, cStatistic *stats);
     //@}
 
     /** @name Management of streams where snapshots can be written.

@@ -1,3 +1,8 @@
+2004-07-05   Andras Varga
+
+	* cenvir.cc,omnetapp.cc/h,filemgrs.cc/h: recordScalar() functions for
+	text and cStatistic data removed. (See also include/ChangeLog)
+
 2004-06-22   Andras Varga
 
 	* cenvir.cc, omnetapp.cc/h: added new cEnvir method getXMLDocument().

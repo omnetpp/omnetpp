@@ -226,7 +226,7 @@ class SIM_API cStatistic : public cObject
     virtual double random() const = 0;
     //@}
 
-    /** @name Writing to text file, reading from text file. */
+    /** @name Writing to text file, reading from text file, recording to scalar file. */
     //@{
 
     /**
@@ -240,6 +240,17 @@ class SIM_API cStatistic : public cObject
      * This method is pure virtual, implementation is provided in subclasses.
      */
     virtual void loadFromFile(FILE *) = 0;
+
+    /**
+     * Records basic statistics (number of observations, mean, standard
+     * deviation, min, max) into the scalar output file by performing
+     * several calls to the current module's recordScalar() function.
+     * The values will be written under the name "name.samples",
+     * "name.mean", "name.stddev", "name.min", "name.max". If name is NULL
+     * or missing, the object name (name()) is used.
+     * This method may be overridden in subclasses.
+     */
+    virtual void recordScalar(const char *name=NULL);
     //@}
 };
 

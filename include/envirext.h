@@ -166,16 +166,6 @@ class cOutputScalarManager : public cPolymorphic
     virtual void recordScalar(cModule *module, const char *name, double value) = 0;
 
     /**
-     * Records a string result, in a default configuration into the scalar result file.
-     */
-    virtual void recordScalar(cModule *module, const char *name, const char *text) = 0;
-
-    /**
-     * Records a statistics object, in a default configuration into the scalar result file.
-     */
-    virtual void recordScalar(cModule *module, const char *name, cStatistic *stats) = 0;
-
-    /**
      * Returns the output scalar file name. Returns NULL if this object is not
      * producing file output.
      */
