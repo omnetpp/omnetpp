@@ -13,7 +13,7 @@
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=d:/home/omnetpp-work
+OMNETPP_ROOT=c:/home/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
 OMNETPP_VERSION=omnetpp-2.3b1
@@ -21,12 +21,12 @@ OMNETPP_VERSION=omnetpp-2.3b1
 #
 # Location of Tcl/Tk, PVM, MPI, Expat
 #
-TK_DIR=d:/home/tools/Tcl-8.4.1
+TK_DIR=c:/home/tools/Tcl-8.4.2
 TK_VER=8.4
-PVM_DIR=d:/home/tools/pvm3
-MPI_DIR=d:/home/tools/mpi
-EXPAT_DIR=d:/home/tools/expat-1.95.2
-DOXYGEN_DIR=d:/home/tools/doxygen
+PVM_DIR=c:/home/tools/pvm3
+MPI_DIR=c:/home/tools/mpi
+EXPAT_DIR=c:/home/tools/expat-1.95.6
+DOXYGEN_DIR=c:/home/tools/doxygen
 
 #
 # Choice of XML parser. Possible choices: expat or none (perhaps libxml in the
@@ -59,7 +59,7 @@ MPI_INCL_DIR=$(MPI_DIR)/include
 
 EXPAT_INCL_DIR=$(EXPAT_DIR)/source/lib
 EXPAT_LIB_DIR=$(EXPAT_DIR)/libs
-EXPAT_LIB=expat.lib
+EXPAT_LIB=libexpat.lib
 
 #
 # tools
@@ -81,6 +81,7 @@ MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --o
 
 # OMNeT++ tools
 NEDC=$(OMNETPP_BIN_DIR)/nedc
+#NEDC=$(OMNETPP_BIN_DIR)/nedtool
 MSGC=$(OMNETPP_BIN_DIR)/opp_msgc
 REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
 
