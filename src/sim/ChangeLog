@@ -1,3 +1,7 @@
+2004-12-19  Andras Varga
+
+	* cstruct.cc: added baseclassname, baseclassdesc
+
 2004-12-16  Andras Varga
 
 	* cgate.cc, cmodule.cc: removed ev.getDisplayString() and support 

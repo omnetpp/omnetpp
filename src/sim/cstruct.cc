@@ -133,19 +133,32 @@ void cStructDescriptor::string2oppstring(const char *s, opp_string& str)
 
 //-----------------------------------------------------------
 
+cStructDescriptor::cStructDescriptor(const char *_baseclassname)
+{
+    p = NULL;
+    baseclassname = _baseclassname;
+    baseclassdesc = _baseclassname ? createDescriptorFor(_baseclassname, NULL) : NULL;
+}
+
 cStructDescriptor::~cStructDescriptor()
 {
+    delete baseclassdesc;
+}
+
+void cStructDescriptor::setStruct(void *_p)
+{
+    p = _p;
+    if (baseclassdesc)
+        baseclassdesc->setStruct(p);
 }
 
 cStructDescriptor *cStructDescriptor::createDescriptorFor(const char *classname, void *p)
 {
     // produce name of struct descriptor class
-    char sdclass[80];
-    strcpy(sdclass,classname);
-    strcat(sdclass,"Descriptor");
+    std::string sdclass = std::string(classname) + "Descriptor";
 
     // create and initialize a structure descriptor object
-    cStructDescriptor *sd = (cStructDescriptor *) createOneIfClassIsKnown(sdclass);
+    cStructDescriptor *sd = (cStructDescriptor *) createOneIfClassIsKnown(sdclass.c_str());
     if (!sd)
         return NULL;
     sd->setStruct(p);
