@@ -102,8 +102,7 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3,char *p4)
                 "%sfunctype = findFunction(\"%s\",%d);\n"
                 "%scheck_function%s( functype, \"%s\");\n",
                 indent, fname, args,
-                indent, (inside_nonvoid_function ? "_retnull" : ""), fname,
-                indent);
+                indent, (inside_nonvoid_function ? "_retnull" : ""), fname);
         switch (args)
         {
             case 0: func = "functype->mathFuncNoArg()"; break;
