@@ -5,7 +5,7 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 # Tool for testing error-detection capabilities in nedtool
 #
 
-$nedtool='..\\nedtool.exe';
+$nedtool='nedtool';
 $num_fail=0;
 $num_unresolved=0;
 $num_pass=0;
