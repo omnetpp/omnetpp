@@ -80,30 +80,28 @@ char *my_itol(long l, char *buf)
 
 //-----------------------------------------------------------------------
 
-static void insert_into_inspectorlistbox(Tcl_Interp *interp, const char *listbox, cObject *obj)
+static void insert_into_inspectorlistbox(Tcl_Interp *interp, const char *listbox, cObject *obj, bool fullpath)
 {
     const char *ptr = ptrToStr(obj);
     static char buf[MAX_OBJECTINFO];
     obj->info(buf);
     CHK(Tcl_VarEval(interp, "multicolumnlistbox_insert ",listbox," ",ptr," {"
                             "ptr {",ptr,"} "
-                            "name {",obj->fullName(),"} "
+                            "name {",(fullpath ? obj->fullPath() : obj->fullName()),"} "
                             "class {",obj->className(),"} "
                             "info {",buf,"}"
                             "}",NULL));
 }
 
-static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, const char *lstbox, InfoFunc f, bool dp)
+static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, const char *lstbox, bool dp)
 {
     static const char *listbox;
     static Tcl_Interp *interp;
-    static InfoFunc infofunc;
     static bool deep;
     static int ctr;
     if (!obj) {       // setup
          listbox = lstbox;
          interp = intrp;
-         infofunc = f;
          deep = dp;
          ctr  = 0;
          return false;
@@ -111,21 +109,21 @@ static bool do_fill_listbox( cObject *obj, bool beg, Tcl_Interp *intrp, const ch
     if( !beg ) return false;
     if( (deep || ctr>0) && !memoryIsLow() ) // if deep=false, exclude owner object
     {
-        insert_into_inspectorlistbox(interp, listbox, obj);
+        insert_into_inspectorlistbox(interp, listbox, obj, deep);
     }
     return deep || ctr++ == 0;
 }
 
-int fillListboxWithChildObjects( cObject *object, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool deep)
+int fillListboxWithChildObjects( cObject *object, Tcl_Interp *interp, const char *listbox, bool deep)
 {
     // feeds all children of 'object' into the listbox
     // CHK(Tcl_VarEval(interp, listbox, " delete 0 end", NULL ));
-    do_fill_listbox(NULL,false, interp, listbox, infofunc, deep);
+    do_fill_listbox(NULL,false, interp, listbox, deep);
     object->forEach( (ForeachFunc)do_fill_listbox );
     return 0; //FIXME!!!!!!!!!
 }
 
-static void do_fill_module_listbox(cModule *parent, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
+static void do_fill_module_listbox(cModule *parent, Tcl_Interp *interp, const char *listbox, bool simpleonly, bool deep)
 {
     // loop through module vector
     for (int i=0; i<=simulation.lastModuleId() && !memoryIsLow(); i++ )
@@ -134,57 +132,24 @@ static void do_fill_module_listbox(cModule *parent, Tcl_Interp *interp, const ch
         if (mod && mod!=simulation.systemModule() && mod->parentModule()==parent)
         {
            if (!simpleonly || mod->isSimple())
-              insert_into_inspectorlistbox(interp, listbox, mod);
+              insert_into_inspectorlistbox(interp, listbox, mod, deep);
 
            // handle 'deep' option using recursivity
            if (deep)
-              do_fill_module_listbox(mod,interp,listbox,infofunc,simpleonly,deep);
+              do_fill_module_listbox(mod,interp,listbox,simpleonly,deep);
         }
     }
 }
 
-int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool simpleonly, bool deep )
+int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, bool simpleonly, bool deep)
 {
-    // CHK(Tcl_VarEval(interp, listbox, " delete 0 end", NULL ));
     if (deep)
     {
         if (!simpleonly || parent->isSimple())
-            insert_into_inspectorlistbox(interp, listbox, parent);
+            insert_into_inspectorlistbox(interp, listbox, parent,deep);
     }
-    do_fill_module_listbox(parent,interp,listbox,infofunc,simpleonly,deep);
+    do_fill_module_listbox(parent,interp,listbox,simpleonly,deep);
     return 0; //FIXME!!!!!!!!!
-}
-
-//-----------------------------------------------------------------------
-
-char *printptr(cObject *object, char *buf)
-{
-    // produces string like: "ptr80004e1f  ".
-    // returns a pointer to terminating '\0' char
-    ptrToStr(object, buf);
-    char *s = buf+strlen(buf);
-    s[0]=' '; s[1]=' '; s[2]='\0'; // append two spaces
-    return s+2;
-}
-
-char *infofunc_infotext( cObject *object)
-{
-    static char buf[MAX_OBJECTINFO];
-    char *d = printptr(object,buf);
-    object->info( d );
-    return buf;
-}
-
-char *infofunc_module( cObject *object)
-{
-    static char buf[128];
-    char *d = printptr(object,buf);
-    cModule *mod = (cModule *)object;
-    const char *path = mod->fullPath();
-    const char *clname = mod->className();
-    int padding = 16-strlen(clname); if (padding<1) padding=1;
-    sprintf(d, "(%s)%*s %.80s (id=%d)", clname, padding,"", path, mod->id());
-    return buf;
 }
 
 //----------------------------------------------------------------------

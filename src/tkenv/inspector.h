@@ -78,10 +78,8 @@ class TInspector : public cObject
       void setToolbarInspectButton(const char *button, cObject *object, int inspectortype);
 
       void deleteInspectorListbox(const char *listbox);
-      void fillInspectorListbox(const char *listbox, cObject *object,
-                                InfoFunc infofunc,bool deep);
-      void fillModuleListbox(const char *listbox, cModule *parent,
-                             InfoFunc infofunc, bool simpleonly, bool deep);
+      void fillInspectorListbox(const char *listbox, cObject *object, bool deep);
+      void fillModuleListbox(const char *listbox, cModule *parent, bool simpleonly, bool deep);
 
 };
 

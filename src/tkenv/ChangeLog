@@ -1,9 +1,13 @@
 2003-11-29  Andras Varga
 
-	* widgets.tcl: added BLT support
-
 	* insplist.tcl: added <pluginname>:inspectorUpdate Tkenv plugin 
 	callback
+
+	* widgets.tcl: added BLT support
+
+	* inspector listboxes changed to multicolumn listboxes from BLT
+
+	* .cc/.h files: some refactoring and cleanup
 
 2003-11-13  Andras Varga
 

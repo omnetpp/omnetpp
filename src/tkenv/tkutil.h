@@ -36,11 +36,8 @@ void *strToPtr(const char *s );
 void setObjectListResult(Tcl_Interp *interp, cCollectObjectsVisitor *visitor);
 char *my_itol(long l, char *buf);
 
-int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool deep);
-int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, InfoFunc infofunc, bool simpleonly, bool deep);
-
-char *infofunc_infotext(cObject *object);
-char *infofunc_module(cObject *object);
+int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
+int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, bool simpleonly, bool deep);
 
 int inspectMatchingObjects(cObject *object, Tcl_Interp *interp, char *pattern, int type, bool countonly);
 void inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry);

@@ -289,7 +289,7 @@ int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int ac, const char **
    redrawNextEventMarker();
    redrawMessages();
    updateSubmodules();
-   
+
    return TCL_OK;
 }
 
@@ -298,12 +298,12 @@ void TGraphicalModWindow::redrawMessages()
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    cModule *mod = (cModule *)object;
 
-   // refresh & cleanup from prev. events 
+   // refresh & cleanup from prev. events
    setToolbarInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
    CHK(Tcl_VarEval(interp, canvas, " delete msg msgname", NULL));
 
    // this thingy is only needed if animation is going on
-   if (!((TOmnetTkApp *)ev.app)->animating) 
+   if (!((TOmnetTkApp *)ev.app)->animating)
        return;
 
    // loop through all messages in the event queue and display them
@@ -355,12 +355,12 @@ void TGraphicalModWindow::redrawNextEventMarker()
    CHK(Tcl_VarEval(interp, canvas, " delete nexteventmarker", NULL));
 
    // this thingy is only needed if animation is going on
-   if (!((TOmnetTkApp *)ev.app)->animating || !((TOmnetTkApp *)ev.app)->opt_nexteventmarkers) 
+   if (!((TOmnetTkApp *)ev.app)->animating || !((TOmnetTkApp *)ev.app)->opt_nexteventmarkers)
        return;
 
    // if any parent of the module containing the next event is on this canvas, draw marker
    cModule *nextmod = simulation.guessNextModule();
-   cModule *nextmodparent = nextmod; 
+   cModule *nextmodparent = nextmod;
    while (nextmodparent && nextmodparent->parentModule()!=mod)
        nextmodparent = nextmodparent->parentModule();
    if (nextmodparent)
@@ -370,7 +370,7 @@ void TGraphicalModWindow::redrawNextEventMarker()
                        ptrToStr(nextmodparent), " ",
                        (nextmod==nextmodparent ? "2" : "1"),
                        NULL));
-   }    
+   }
 }
 
 void TGraphicalModWindow::updateSubmodules()
@@ -382,7 +382,7 @@ void TGraphicalModWindow::updateSubmodules()
                        canvas, " ",
                        ptrToStr(submod()),
                        NULL));
-   }                   
+   }
 }
 
 
@@ -505,7 +505,7 @@ int TGraphicalModWindow::getSubmodQ(Tcl_Interp *interp, int argc, const char **a
    ptrToStr(q,buf);
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
-}   
+}
 
 int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char **argv)
 {
@@ -521,7 +521,7 @@ int TGraphicalModWindow::getSubmodQLen(Tcl_Interp *interp, int argc, const char 
    sprintf(buf, "%d", q->length());
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
-}   
+}
 
 
 //=======================================================================
@@ -573,13 +573,13 @@ void TCompoundModInspector::update()
    setEntry(".nb.info.dispstrpt.e", mod->displayStringAsParent());
 
    deleteInspectorListbox( ".nb.submods" );
-   fillModuleListbox(".nb.submods", mod, infofunc_module, false, false);
+   fillModuleListbox(".nb.submods", mod, false, false);
 
    deleteInspectorListbox( ".nb.params" );
-   fillInspectorListbox(".nb.params", &mod->paramv, infofunc_infotext, false);
+   fillInspectorListbox(".nb.params", &mod->paramv, false);
 
    deleteInspectorListbox( ".nb.gates" );
-   fillInspectorListbox(".nb.gates", &mod->gatev, infofunc_infotext, false);
+   fillInspectorListbox(".nb.gates", &mod->gatev, false);
 }
 
 void TCompoundModInspector::writeBack()
@@ -658,20 +658,20 @@ void TSimpleModInspector::update()
    }
 
    deleteInspectorListbox( ".nb.params" );
-   fillInspectorListbox(".nb.params", &mod->paramv, infofunc_infotext, false);
+   fillInspectorListbox(".nb.params", &mod->paramv, false);
 
    deleteInspectorListbox( ".nb.gates" );
-   fillInspectorListbox(".nb.gates", &mod->gatev, infofunc_infotext, false);
+   fillInspectorListbox(".nb.gates", &mod->gatev, false);
 
    deleteInspectorListbox( ".nb.vars" );
-   fillInspectorListbox(".nb.vars", &mod->members, infofunc_infotext, false);
-   fillInspectorListbox(".nb.vars", &mod->locals, infofunc_infotext, false);
+   fillInspectorListbox(".nb.vars", &mod->members, false);
+   fillInspectorListbox(".nb.vars", &mod->locals, false);
 
    deleteInspectorListbox( ".nb.paq" );
-   fillInspectorListbox(".nb.paq", &mod->putAsideQueue, infofunc_infotext, false);
+   fillInspectorListbox(".nb.paq", &mod->putAsideQueue, false);
 
    deleteInspectorListbox( ".nb.submods" );
-   fillModuleListbox(".nb.submods", mod, infofunc_module, false, false);
+   fillModuleListbox(".nb.submods", mod, false, false);
 }
 
 void TSimpleModInspector::writeBack()

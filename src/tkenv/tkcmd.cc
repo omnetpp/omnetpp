@@ -621,11 +621,11 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    // Example:
-   //   opp_fill_listbox .dialog.frame.listbox objects ptr80004a72 fullpath
+   //   opp_fill_listbox .dialog.frame.listbox objects ptr80004a72 deep
    // 1st arg: listbox variable
    // 2nd arg: "modules" or "objects"
    // 3rd arg: pointer ("ptr80004ab1")
-   // rest:    options: deep, nameonly etc.
+   // rest:    options: deep, simpleonly etc.
 
    if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
 
@@ -646,7 +646,6 @@ int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    // set defaults & process options
-   InfoFunc f = modulelist ? infofunc_module : infofunc_infotext;
    bool deep = false;
    bool simpleonly = false;
    for(int i=4; i<argc; i++)
@@ -659,17 +658,15 @@ int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
         simpleonly = false;
      else if (0==strcmp(argv[i],"simpleonly"))
         simpleonly = true;
-     else if (0==strcmp(argv[i],"infotext"))
-        f = infofunc_infotext;
      else
         {Tcl_SetResult(interp, "unrecognized option", TCL_STATIC);return TCL_ERROR;}
    }
 
    // do the job
    if (modulelist)
-        fillListboxWithChildModules( (cModule *)object, interp, listbox, f, simpleonly, deep );
+        fillListboxWithChildModules( (cModule *)object, interp, listbox, simpleonly, deep );
    else
-        fillListboxWithChildObjects( object, interp, listbox, f, deep);
+        fillListboxWithChildObjects( object, interp, listbox, deep);
    return TCL_OK;
 }
 

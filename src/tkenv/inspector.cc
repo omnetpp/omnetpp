@@ -264,13 +264,12 @@ void TInspector::deleteInspectorListbox( const char *listbox)
    CHK(Tcl_VarEval(interp, "multicolumnlistbox_deleteall ", windowname,listbox,".main.list",NULL));
 }
 
-void TInspector::fillInspectorListbox(const char *listbox, cObject *object,
-                             InfoFunc infofunc,bool deep)
+void TInspector::fillInspectorListbox(const char *listbox, cObject *object, bool deep)
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char w[256], buf[256];
    sprintf(w, "%s%s.main.list", windowname,listbox);
-   int n = fillListboxWithChildObjects(object, interp, w, infofunc, deep);
+   int n = fillListboxWithChildObjects(object, interp, w, deep);
 
    // set "number of items" display
    sprintf(w, "%s.label", listbox);
@@ -278,13 +277,12 @@ void TInspector::fillInspectorListbox(const char *listbox, cObject *object,
    setLabel(w, buf);
 }
 
-void TInspector::fillModuleListbox(const char *listbox, cModule *parent,
-                                InfoFunc infofunc,bool simpleonly,bool deep )
+void TInspector::fillModuleListbox(const char *listbox, cModule *parent,bool simpleonly,bool deep)
 {
    Tcl_Interp *interp = ((TOmnetTkApp *)ev.app)->getInterp();
    char w[256], buf[256];
    sprintf(w, "%s%s.main.list", windowname,listbox);
-   int n = fillListboxWithChildModules(parent, interp, w, infofunc, simpleonly, deep);
+   int n = fillListboxWithChildModules(parent, interp, w, simpleonly, deep);
 
    // set "number of items" display
    sprintf(w, "%s.label", listbox);

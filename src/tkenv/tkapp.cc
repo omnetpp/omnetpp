@@ -968,10 +968,10 @@ void TOmnetTkApp::messageSent( cMessage *msg, cGate *directToGate)
 {
     // display in message window
     static char buf[MAX_OBJECTINFO];
-    msg->info( buf );
+    msg->info(buf);
     CHK(Tcl_VarEval(interp, "catch {\n"
                             " .messagewindow.main.text insert end"
-                            "    {SENT:\t ",buf,"\n}\n"
+                            "    {SENT:\t (",msg->className(),")",msg->fullName(),"  ",buf,"\n}\n"
                             " .messagewindow.main.text see end\n"
                             "}\n",
                             NULL));
@@ -997,10 +997,10 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
 {
     // display in message window
     static char buf[MAX_OBJECTINFO];
-    msg->info( buf );
+    msg->info(buf);
     CHK(Tcl_VarEval(interp, "catch {\n"
                             " .messagewindow.main.text insert end"
-                            "    {DELIVD:\t ",buf,"\n}\n"
+                            "    {DELIVD:\t (",msg->className(),")",msg->fullName(),"  ",buf,"\n}\n"
                             " .messagewindow.main.text see end\n"
                             "}\n",
                             NULL));

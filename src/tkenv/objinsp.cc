@@ -133,16 +133,11 @@ class TContainerInspectorFactory : public cInspectorFactory
 Register_InspectorFactory(TContainerInspectorFactory);
 
 
-TContainerInspector::TContainerInspector(cObject *obj,int typ,const char *geom,void *dat,InfoFunc f) :
+TContainerInspector::TContainerInspector(cObject *obj,int typ,const char *geom,void *dat) :
     TInspector(obj,typ,geom,dat)
 {
    char *opt = (char *)dat;
    deep = opt && opt[0]=='d';
-
-   infofunc = f;
-   if (!infofunc)
-       // infofunc = deep ? infofunc_typeandfullpath : infofunc_infotext;
-       infofunc = infofunc_infotext;   // FIXME if deep, should display fullpath
 }
 
 void TContainerInspector::createWindow()
@@ -162,7 +157,7 @@ void TContainerInspector::update()
    TInspector::update();
 
    deleteInspectorListbox( "" );
-   fillInspectorListbox("", object, infofunc, deep);
+   fillInspectorListbox("", object, deep);
 }
 
 //=======================================================================
@@ -232,7 +227,7 @@ void TMessageInspector::update()
        fieldspage->update();
 
    deleteInspectorListbox( ".nb.params" );
-   fillInspectorListbox(".nb.params", &msg->parList(), infofunc_infotext, false);
+   fillInspectorListbox(".nb.params", &msg->parList(), false);
 }
 
 void TMessageInspector::writeBack()

@@ -36,11 +36,10 @@ class TObjInspector : public TInspector
 class TContainerInspector : public TInspector
 {
    protected:
-      InfoFunc infofunc;
       bool deep;
       char listbox[64];
    public:
-      TContainerInspector(cObject *obj,int typ,const char *geom,void *dat=NULL,InfoFunc f=NULL);
+      TContainerInspector(cObject *obj,int typ,const char *geom,void *dat=NULL);
       virtual void createWindow();
       virtual void update();
 };
