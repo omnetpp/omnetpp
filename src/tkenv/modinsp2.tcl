@@ -522,6 +522,7 @@ proc graphmodwin_animate {win gateptr msgptr msgname msgkind {mode {}}} {
     # alternative approach: fix number of steps. Would this be better?
     #set steps 20
 
+    if {$steps>100} {set steps 100}
     if {$steps==0} {set steps 1}
 
     set dx [expr ($x2-$x1)/$steps]

@@ -1,3 +1,9 @@
+2002-07-03  Andras Varga
+
+	* modinsp2.tcl (graphmodwin_animate): set upper limit to animation 
+	steps (100) so that animation of a message sending finishes in 
+	tolerable time period even on very long connections.
+
 2002-05-27  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* main.tcl (create_omnetpp_window): increased event number status

@@ -119,7 +119,6 @@ inspect.o: inspect.cc \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
   ../../include/cstk.h \
-  ../../include/ccoroutine.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -134,6 +133,10 @@ inspect.o: inspect.cc \
   ../../include/cfsm.h \
   ../../include/protocol.h \
   ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h \
+  ../../include/envirext.h \
+  ../../include/ccoroutine.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h
@@ -150,20 +153,21 @@ modinsp.o: modinsp.cc \
   tklib.h \
   tkinsp.h \
   arrow.h \
+  ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
-  ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../envir/omnetapp.h \
   ../../include/cenvir.h \
   ../envir/args.h \
-  ../envir/envdefs.h
+  ../envir/envdefs.h \
+  ../../include/envirext.h
 objinsp.o: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -188,7 +192,6 @@ objinsp.o: objinsp.cc \
   ../../include/cpacket.h \
   ../../include/cmsgheap.h \
   ../../include/cstk.h \
-  ../../include/ccoroutine.h \
   ../../include/cmodule.h \
   ../../include/cstat.h \
   ../../include/cdensity.h \
@@ -203,6 +206,10 @@ objinsp.o: objinsp.cc \
   ../../include/cfsm.h \
   ../../include/protocol.h \
   ../../include/cenvir.h \
+  ../../include/cenum.h \
+  ../../include/cstruct.h \
+  ../../include/envirext.h \
+  ../../include/ccoroutine.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
   ../envir/envdefs.h
@@ -219,21 +226,38 @@ statinsp.o: statinsp.cc \
   tklib.h \
   tkinsp.h \
   arrow.h \
+  ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
-  ../../include/defs.h \
   ../../include/util.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../envir/omnetapp.h \
   ../../include/cenvir.h \
   ../envir/args.h \
-  ../envir/envdefs.h
-tclcode.o: tclcode.cc
+  ../envir/envdefs.h \
+  ../../include/envirext.h
+structinsp.o: structinsp.cc \
+  ../../include/cstruct.h \
+  tkapp.h \
+  tklib.h \
+  tkinsp.h \
+  ../../include/cobject.h \
+  ../../include/cenum.h \
+  ../../include/util.h \
+  ../../include/defs.h \
+  ../envir/omnetapp.h \
+  ../../include/carray.h \
+  ../../include/chead.h \
+  ../../include/cenvir.h \
+  ../envir/args.h \
+  ../envir/envdefs.h \
+  ../../include/envirext.h \
+  ../../include/cpar.h
 tkapp.o: tkapp.cc \
   ../envir/appreg.h \
   ../envir/cinifile.h \
@@ -248,11 +272,10 @@ tkapp.o: tkapp.cc \
   tkapp.h \
   tklib.h \
   tkinsp.h \
-  tclcode.cc \
   ../../include/chead.h \
   ../../include/cobject.h \
-  ../../include/defs.h \
   ../../include/util.h \
+  ../../include/defs.h \
   ../envir/envdefs.h \
   ../../include/cpar.h \
   ../../include/ccoroutine.h \
@@ -264,13 +287,15 @@ tkapp.o: tkapp.cc \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
   ../envir/omnetapp.h \
-  ../envir/args.h
+  ../envir/args.h \
+  ../../include/envirext.h
 tkcmd.o: tkcmd.cc \
   ../../include/cenvir.h \
   ../../include/carray.h \
   ../../include/csimul.h \
   ../../include/cmodule.h \
   ../../include/ctypes.h \
+  ../../include/cstruct.h \
   tkapp.h \
   tklib.h \
   tkinsp.h \
@@ -281,13 +306,15 @@ tkcmd.o: tkcmd.cc \
   ../../include/errmsg.h \
   ../../include/chead.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h \
   ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/cenum.h \
   ../envir/omnetapp.h \
   ../envir/args.h \
-  ../envir/envdefs.h
+  ../envir/envdefs.h \
+  ../../include/envirext.h
 tklib.o: tklib.cc \
   ../../include/cobject.h \
   ../../include/cmodule.h \
@@ -296,8 +323,8 @@ tklib.o: tklib.cc \
   tkinsp.h \
   tkapp.h \
   ../envir/patmatch.h \
-  ../../include/defs.h \
   ../../include/util.h \
+  ../../include/defs.h \
   ../../include/ccoroutine.h \
   ../../include/chead.h \
   ../../include/carray.h \
@@ -310,4 +337,5 @@ tklib.o: tklib.cc \
   ../../include/cenvir.h \
   ../envir/args.h \
   ../envir/envdefs.h \
+  ../../include/envirext.h \
   ../../include/cpar.h
