@@ -16,6 +16,21 @@
 *--------------------------------------------------------------*/
 
 #include <assert.h>
+
+#ifdef __APPLE__
+#include <sys/time.h>
+static int ftime(struct timeb *tp)
+{
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+    tp->time = tv.tv_sec;
+    tp->millitm = tv.tv_usec / 1000;
+    tp->timezone = 0;
+    tp->dstflag = 0;
+}
+#endif
+
 #include "speedmtr.h"
 
 
