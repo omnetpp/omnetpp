@@ -53,7 +53,7 @@ class CppExpressionGenerator
         ExpressionNode *expr;
         int ctxtype; // tagcode of toplevel element which contains this expr.
         NEDElement *submoduleTypeDecl; // if submodule or network, the type decl.
-        std::string name;
+        std::string name; // generated expression class name (Expr0, Expr1, etc)
         NEDElementVector ctorargs;
         NEDElementVector cachedvars;
     };

@@ -117,6 +117,18 @@ void CppExpressionGenerator::collectExpressions(NEDElement *node)
 
 void CppExpressionGenerator::doCollectExpressions(NEDElement *node, NEDElement *currentSubmodTypeDecl)
 {
+    // find out declaration of module we're using for this network/submodule
+    // (we need it for expression generation)
+    if (node->getTagCode()==NED_SUBMODULE || node->getTagCode()==NED_NETWORK)
+    {
+        const char *typeName = node->getAttribute("type-name");
+        NEDElement *typeDecl = symboltable->getModuleDeclaration(typeName);
+        if (!typeDecl)
+            INTERNAL_ERROR1(node,"doCollectExpressions(): module type not found: %s", typeName);
+        currentSubmodTypeDecl = typeDecl;
+    }
+
+    // collect expressions from this subtree
     for (NEDElement *child=node->getFirstChild(); child; child = child->getNextSibling())
     {
         if (child->getTagCode()==NED_EXPRESSION)
@@ -125,21 +137,18 @@ void CppExpressionGenerator::doCollectExpressions(NEDElement *node, NEDElement *
             if (needsExpressionClass((ExpressionNode *)child, currentSubmodTypeDecl))
                 collectExpressionInfo((ExpressionNode *)child, currentSubmodTypeDecl);
         }
-        else if (child->getTagCode()==NED_SUBMODULE)
-        {
-            // get submodule's type decl from symbol table -- we need it for expression generation
-            const char *typeName = ((SubmoduleNode *)child)->getTypeName();
-            NEDElement *thisSubmodTypeDecl = symboltable->getModuleDeclaration(typeName);
-            if (!thisSubmodTypeDecl)
-                INTERNAL_ERROR1(node,"doCollectExpressions(): module type not found: %s", typeName);
-
-            doCollectExpressions(child, thisSubmodTypeDecl);
-        }
         else
         {
             doCollectExpressions(child, currentSubmodTypeDecl);
         }
     }
+
+    // restore currentSubmodTypeDecl
+    if (node->getTagCode()==NED_SUBMODULE || node->getTagCode()==NED_NETWORK)
+    {
+        currentSubmodTypeDecl = NULL;
+    }
+
 }
 
 bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr, NEDElement *currentSubmodTypeDecl)
@@ -170,17 +179,12 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr, NEDEleme
     if (tag==NED_FUNCTION)
     {
         const char *funcname = ((FunctionNode *)node)->getName();
+        if (!strcmp(funcname,"input"))
+            return false; // we MUST NOT generate expression class
         if (!strcmp(funcname,"index"))
             return false;
         if (!strcmp(funcname,"sizeof"))
             return false;
-        if (!strcmp(funcname,"input"))
-        {
-            NEDElement *op1 = node->getFirstChild();
-            NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-            if ((!op1 || op1->getTagCode()==NED_CONST) && (!op2 || op2->getTagCode()==NED_CONST))
-                return false;
-        }
         if (!strcmp(funcname,"xmldoc"))
             return false;
     }
@@ -545,38 +549,24 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     }
     else if (!strcmp(funcname,"input"))
     {
+        if (mode!=MODE_INLINE_EXPRESSION)
+            INTERNAL_ERROR0(node, "input() must be generated inline, i.e. without expression class");
+
         NEDElement *op1 = node->getFirstChild();
         NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
 
-        if (mode==MODE_INLINE_EXPRESSION)
-        {
-            out << "(tmpval=";
-            if (op1) {
-                generateItem(op1,indent,mode);
-            } else {
-                out << "0L";
-            }
-            if (op2) {
-                out << ", tmpval.setPrompt(";
-                generateItem(op2,indent,mode);
-                out << ")";
-            }
-            out << ", tmpval.setInput(true), tmpval)";
+        out << "(tmpval=";
+        if (op1) {
+            generateItem(op1,indent,mode);
+        } else {
+            out << "0L";
         }
-        else
-        {
-            // FIXME: NOT GOOD THIS WAY! if inside expression, input cpar must become member of the expr class...
-            out << "(p=new cPar(), (*p)=";
-            if (op1) {
-                generateItem(op1,indent,mode);
-            }
-            if (op2) {
-                out << ", p->setPrompt(";
-                generateItem(op2,indent,mode);
-                out << ")";
-            }
-            out << ", p->setInput(true), (*p))";
+        if (op2) {
+            out << ", tmpval.setPrompt(";
+            generateItem(op2,indent,mode);
+            out << ")";
         }
+        out << ", tmpval.setInput(true), tmpval)";
         return;
     }
     else if (!strcmp(funcname,"xmldoc"))

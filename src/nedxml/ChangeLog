@@ -6,6 +6,8 @@
 	* cppexprgenerator.cc/h: generate inline expression (not expression 
 	class) for const parameters
 
+	* cppexprgenerator.cc/h: fixed handling of index, sizeof(), input()
+
 2004-11-29  Andras Varga
 
 	* ned.y: malloc.h changed to stdlib.h. Change needed for Mac OS/X 
