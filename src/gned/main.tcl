@@ -218,7 +218,6 @@ proc createMainWindow {} {
       {check   -image $icons(check) -command {editCheck}}
       {sep5    -separator}
       {sep6    -separator}
-      {sep7    -separator}
     } {
       set b [eval iconbutton $gned(horiz-toolbar).$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
@@ -232,11 +231,11 @@ proc createMainWindow {} {
     set help_tips($gned(horiz-toolbar).open)  {Open NED file}
     set help_tips($gned(horiz-toolbar).save)  {Save NED file of current canvas}
     set help_tips($gned(horiz-toolbar).check) {Check module consistency}
-    set help_tips($gned(horiz-toolbar).cut)   {Cut to clipboard}
-    set help_tips($gned(horiz-toolbar).copy)  {Copy to clipboard}
-    set help_tips($gned(horiz-toolbar).paste) {Paste from clipbard}
-    set help_tips($gned(horiz-toolbar).undo)  {Undo editing}
-    set help_tips($gned(horiz-toolbar).redo)  {Redo editing}
+    set help_tips($gned(horiz-toolbar).cut)   {Cut to clipboard (ctrl-X)}
+    set help_tips($gned(horiz-toolbar).copy)  {Copy to clipboard (ctrl-C)}
+    set help_tips($gned(horiz-toolbar).paste) {Paste from clipbard (ctrl-V)}
+    set help_tips($gned(horiz-toolbar).undo)  {Undo editing (ctrl-Z)}
+    set help_tips($gned(horiz-toolbar).redo)  {Redo editing (ctrl-Y)}
     set help_tips($gned(horiz-toolbar).close) {Close current canvas}
 
     # check if undo works
@@ -299,7 +298,7 @@ proc createMainWindow {} {
     set help_tips($gned(graphics-toolbar).select) {Switch to select/resize mode}
     set help_tips($gned(graphics-toolbar).delete) {Delete selected items}
     set help_tips($gned(graphics-toolbar).grid)   {Snap to grid on/off}
-    set help_tips($gned(graphics-toolbar).bounds) {"Natural" parent module size}
+    set help_tips($gned(graphics-toolbar).bounds) {Fit parent module size}
     set help_tips($gned(graphics-toolbar).props)  {Properties of selected item}
     set help_tips($gned(graphics-toolbar).opts)   {Appearance of selected item}
 
@@ -321,8 +320,8 @@ proc createMainWindow {} {
       pack $b -anchor w -expand 0 -fill y -side left -padx 0 -pady 2
     }
 
-    set help_tips($gned(textedit-toolbar).find)  {Find text}
-    set help_tips($gned(textedit-toolbar).repl)  {Replace text}
+    set help_tips($gned(textedit-toolbar).find)  {Find text (ctrl-F)}
+    set help_tips($gned(textedit-toolbar).repl)  {Replace text (ctrl-H)}
 
 
     #################################
