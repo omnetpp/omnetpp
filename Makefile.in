@@ -121,10 +121,10 @@ token:
 #=====================================================================
 
 check-env:
-	if echo $$PATH | grep -q "@OMNETPP_BIN_DIR@"; then :; else \
+	@ if echo $$PATH | grep -q "@OMNETPP_BIN_DIR@"; then :; else \
 	  echo ' *** Error: @OMNETPP_BIN_DIR@ is not in the path!'; exit 1; \
 	fi
-	if echo $$LD_LIBRARY_PATH | grep -q "@OMNETPP_LIB_DIR@"; then :; else \
+	@ if echo $$LD_LIBRARY_PATH | grep -q "@OMNETPP_LIB_DIR@"; then :; else \
 	  echo ' *** Warning: @OMNETPP_LIB_DIR@ is not in LD_LIBRARY_PATH!'; \
 	fi
 
