@@ -13,7 +13,6 @@
 //
 simple QSource
     parameters:
-        msgKindProbabilities: string,
         sendIATime : numeric;
     gates:
         out: out;

@@ -35,7 +35,7 @@ void QSource::handleMessage(cMessage *msg)
     ASSERT(msg==sendMessage);
 
     cMessage *m = new cMessage("job");
-    m->setKind(intrand(4));  // FIXME use msgKindProbabilities
+    m->setKind(intrand(4));
 
     send(m, "out");
 
