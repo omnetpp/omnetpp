@@ -42,13 +42,9 @@ int Channel::read(Datum *a, int max)
 
 void Channel::write(Datum *a, int n)
 {
-    ASSERT(!eofreached);
+    ASSERT(!nomorewrites);
     for (int i=0; i<n; i++)
         buffer.push_back(a[i]);
 }
 
-int Channel::length()
-{
-    return buffer.size();
-}
 

@@ -59,7 +59,7 @@ void FileWriterNode::process()
 
 bool FileWriterNode::finished() const
 {
-    return in()->closing() && in()->length()==0;
+    return in()->eof();
 }
 
 //--------

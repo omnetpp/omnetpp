@@ -30,11 +30,11 @@ class Channel
     private:
         // note: a Channel should *never* have pointer back to its Ports
         // because VectorFileReader stores ports in a vector and might realloc!
-        bool eofreached;
+        bool nomorewrites;
         std::deque<Datum> buffer;
         Node *consumernode;
     public:
-        Channel() {eofreached=false;}
+        Channel() {nomorewrites=false;}
         ~Channel() {}
 
         Node *consumerNode() const {return consumernode;}
@@ -43,11 +43,12 @@ class Channel
         const Datum *peek() const;
         void write(Datum *a, int n);
         int read(Datum *a, int max);
-        bool closing()  {return eofreached;}
-        void close()  {eofreached=true;}
+        bool closing()  {return nomorewrites;}
+        bool eof()  {return nomorewrites && length()==0;}
+        void close()  {nomorewrites=true;}
 
         /** Number of buffered items */
-        int length();
+        int length() {return buffer.size();}
 };
 
 #endif

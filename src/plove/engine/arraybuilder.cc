@@ -71,7 +71,7 @@ void ArrayBuilderNode::process()
 
 bool ArrayBuilderNode::finished() const
 {
-    return in()->closing() && in()->length()==0;
+    return in()->eof();
 }
 
 void ArrayBuilderNode::extractVector(double *&x, double *&y, size_t& len)

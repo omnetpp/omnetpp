@@ -78,7 +78,7 @@ void PrinterNode::process()
 
 bool PrinterNode::finished() const
 {
-    return in()->closing() && in()->length()==0;
+    return in()->eof();
 }
 
 main()

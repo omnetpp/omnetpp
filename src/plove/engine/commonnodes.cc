@@ -38,7 +38,7 @@ Port *SingleSinkNodeType::getPort(Node *node, const char *name) const
 
 void FilterNode::closeAtEof()
 {
-    if (in()->length()==0 && in()->closing())
+    if (in()->eof())
     {
         out()->close();
         DBG(("%s: closing output\n", nodeType()->name()));
@@ -47,7 +47,7 @@ void FilterNode::closeAtEof()
 
 bool FilterNode::finished() const
 {
-    return in()->closing() && in()->length()==0;
+    return in()->eof();
 }
 
 Port *FilterNodeType::getPort(Node *node, const char *name) const

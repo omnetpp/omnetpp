@@ -29,8 +29,7 @@ Port *XYPlotNode::addYPort()
 
 bool XYPlotNode::isReady() const
 {
-    // every input port must have data available (or already have reached EOF)
-    if (xin()->length()==0 && !xin()->closing())
+    if (xin()->length()==0 || xin()->closing())
         return false;
     for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
         if ((*it)()->length()==0 && !(*it)()->closing())
@@ -44,6 +43,20 @@ void XYPlotNode::process()
     // return ty>tx values (where tx is timestamp of the "x" value). Meanwhile,
     // if we find ty==tx values, output the (x,y) pair. If a port has reached
     // EOF, skip it.
+    if (xin()->length()==0)
+    {
+         ASSERT(xin()->closing()); // isReady guarantees this
+         {
+             // "x" at EOF
+             //FIXME read & discard all "y" values
+         }
+         else
+         {
+             // no "x" yet
+             return; // FIXME this may cause
+         }
+    }
+
     Datum xd;
     xin()->read(&xd,1);
 
