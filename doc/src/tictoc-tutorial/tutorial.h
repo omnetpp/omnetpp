@@ -738,6 +738,10 @@ Sources: @ref tictoc12.ned, @ref tictoc12.msg, @ref txc12.cc, @ref omnetpp.ini
 
 <img src="plove2.gif">
 
+<img src="plove3.gif">
+
+<img src="plove4.gif">
+
 
 @section scalars Scalar statistics
 
