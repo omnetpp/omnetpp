@@ -12,17 +12,15 @@ the algorithms. Those are written in C++ and use the simulation
 object library. The simple modules execute as different processes,
 quasi in parallel (they are implemented as coroutines).
 
-OMNeT++ is written in C++ (would you guess so?) and it is portable:
-it runs on any platform where there's a C++ compiler. However, it can
-make use of the strengths of different platforms: under DOS, it
-has a text-mode windowing user interface (written in Turbo Vision)
-and under Unix/X-windows, there's a Tcl/Tk user interface which also works
-on Win95/NT. There's also a platform-independent command-line user
-interface for batch execution.
+OMNeT++ is written in C++ and it is portable: it runs on any platform
+where there's a C++ compiler. It has a Tcl/Tk user interface which is
+supported on under Unix/X and NT/Win95/Win98. There's also a platform-
+independent command-line user interface for batch execution.
+There is also a text-mode windowing user interface (Turbo Vision).
 
 OMNeT++ has a graphical topology editor called GNED and also a tool
-called Plove for analyzing and plotting simulation output. Both GNED
-and Plove are written in pure Tcl/Tk.
+called Plove for analyzing and plotting simulation output. Plove is
+written in pure Tcl/Tk.
 
 We have extended OMNeT++ to execute in parallel using the popular
 PVM library (Parallel Virtual Machine), for studying different
@@ -38,21 +36,21 @@ The omnetpp directory contains the following subdirectories.
 The simulation system itself:
 
 omnetpp/              OMNeT++ root directory
-   bin/               soft links to executables in src/
-   lib/               soft links to sim. library files in src/
-   doc/               readmes, license etc.
-       html/          manuals in HTML format
+   bin/               (soft links to) executables
+   lib/               simulation library files
+   doc/               readme, license etc.
+   html/              manuals in HTML format
    src/
        nedc/          system description compiler
+       gned/          graphical NED editor
+       plove/         output vector analyzer and plotting tool
        sim/           simulation kernel
             std/      files for non-distributed execution
             pvm/      files for distributed execution over PVM
        envir/         common code for user interfaces
-            cmdenv/   command-line user interface
-            tkenv/    Tcl/Tk user interface
-            tvenv/    Turbo Vision (DOS) user interface
-       gned/          graphical NED editor written in Tcl/Tk
-       plove/         output vector analyzer and plotting tool
+       cmdenv/        command-line user interface
+       tkenv/         Tcl/Tk user interface
+       tvenv/         Turbo Vision user interface
        utils/         makefile-autocreator etc
 
 Sample simulations are within the samples directory.
@@ -71,11 +69,6 @@ omnetpp/
        pvmex/         demonstrates distributed execution
        fifo1/         single-server queue
        fifo2/         another version of fifo, now with handleMessage() and FSM
-
-DOS package contains another directory:
-
-omnetpp/
-   gnu/               DOS version of bison and flex
 
 
 The example programs
@@ -105,14 +98,15 @@ about your work.
 Authors
 ~~~~~~~
 
-OMNeT++ was/is currently developed at the Technical University of Budapest,
-Department of Telecommunications (BME-HIT).
+OMNeT++ has originally been developed at the Technical University of Budapest,
+Department of Telecommunications (BME-HIT). The primary author and
+maintainer is currently not affiliated with the University.
 
 Here's a list of the people who have or had anything to do with OMNeT++:
 
-Primary author:
-        Andras Varga            BME-HIT : vandras@sch.bme.hu,vargaa@hit.bme.hu
-Advisor/contributor:
+Primary author and maintainer:
+        Andras Varga            vandras@sch.bme.hu,vargaa@hit.bme.hu
+Advisor:
         Gyorgy Pongor   BME-HIT : pongor@hit.bme.hu
 Old NeD compiler, until 1993:
         Akos Kun                BME
