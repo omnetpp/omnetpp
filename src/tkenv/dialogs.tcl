@@ -111,37 +111,46 @@ proc comboSelectionDialog {title text label variable list} {
 #    return ""
 #}
 
-proc inspectfromlistbox_insp {lb type} {
-    set sel [$lb curselection]
-    if {$sel != ""} {
-        set ptr [lindex [$lb get $sel] 0]
-        opp_inspect $ptr $type
-    }
-}
-
 proc inspectfromlistbox {title text type fillistbox_args} {
 
     set w .listdialog
-    createOkCancelDialog $w $title
+    createCloseDialog $w $title
 
     label $w.f.label -text $text -justify left
     pack $w.f.label -anchor w -expand 0 -fill none -padx 3m -pady 3m -side top
 
     frame $w.f.main
-    scrollbar $w.f.main.sb -command "$w.f.main.list yview"
-    listbox $w.f.main.list  -height 10 -yscrollcommand "$w.f.main.sb set" -width 60
-    pack $w.f.main.sb -anchor center -expand 0 -fill y -side right
-    pack $w.f.main.list  -anchor center -expand 1 -fill both  -side left
+    scrollbar $w.f.main.vsb -command "$w.f.main.list yview"
+    scrollbar $w.f.main.hsb -command "$w.f.main.list xview" -orient horiz
+    multicolumnlistbox $w.f.main.list {
+        {class   Class}
+        {name    Name  160}
+        {info    Info}
+        {ptr     Pointer}
+    } -height 200 -yscrollcommand "$w.f.main.vsb set" -xscrollcommand "$w.f.main.hsb set"
+
+    grid $w.f.main.list $w.f.main.vsb -sticky news
+    grid $w.f.main.hsb  x             -sticky news
+    grid rowconfig $w.f.main 0 -weight 1
+    grid columnconfig $w.f.main 0 -weight 1
+
     pack $w.f.main  -anchor center -expand 1 -fill both -side top
 
     set lb $w.f.main.list
-    eval opp_fill_listbox $lb $fillistbox_args
-    $lb selection set 0
 
-    button $w.buttons.inspect -text "Open inspector" -command "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
+    # execute query
+    set objlist [opp_getsubobjectsfilt [opp_object_systemmodule] "" "" "Full name"]
+    #set num [llength $objlist]
+    #$w.f.numobj config -text "Found $num objects"
+
+    # insert into listbox
+    foreach ptr $objlist {
+        multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]]
+    }
+    #$lb selection set 0  FIXME what's this?
+
+    button $w.buttons.inspect -text "Open inspector" -command "inspect_item_in $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
     pack $w.buttons.inspect -side top -anchor e -padx 2
-
-    $w.buttons.okbutton config -text "Close"
 
     # Configure dialog
     bind $lb <Double-Button-1> "$w.buttons.inspect invoke"
@@ -149,7 +158,7 @@ proc inspectfromlistbox {title text type fillistbox_args} {
 
     focus $lb
 
-    execOkCancelDialog $w
+    execCloseDialog $w
     destroy $w
 }
 
@@ -518,7 +527,7 @@ proc _doFind {w findstring case words regexp backwards} {
 #
 proc filteredobjectlist_dialog {} {
     global config tmp
-    
+
     set w .objdlg
     createCloseDialog $w "Find/inspect objects"
 
@@ -558,7 +567,7 @@ proc filteredobjectlist_dialog {} {
     pack $wfiltpars.class.entry -anchor w -expand 0 -fill x -side top
     entry $wfiltpars.name.entry -textvariable tmp(name)
     pack $wfiltpars.name.entry -anchor w -expand 0 -fill both -side top
-    combo $wfiltpars.order.entry {{Class} {Full name} {Name}} 
+    combo $wfiltpars.order.entry {{Class} {Full name} {Name}}
     $wfiltpars.order.entry.entry config -textvariable tmp(order)
     pack $wfiltpars.order.entry -anchor w -expand 0 -fill x -side top
 
@@ -573,9 +582,8 @@ proc filteredobjectlist_dialog {} {
 
     frame $w.f.filter.buttons
     pack $w.f.filter.buttons -anchor center -expand 1 -fill x -side top
-    button $w.f.filter.buttons.refresh -text Refresh -command "filteredobjectlist_refresh $w"
+    button $w.f.filter.buttons.refresh -text "Refresh" -width 10 -command "filteredobjectlist_refresh $w"
     pack $w.f.filter.buttons.refresh -anchor e -expand 0 -fill none -side top
-
 
     # number of objects
     label $w.f.numobj -text "Found 0 objects" -justify left -anchor w
@@ -583,10 +591,20 @@ proc filteredobjectlist_dialog {} {
 
     # panel for listbox
     frame $w.f.main
-    scrollbar $w.f.main.sb -command "$w.f.main.list yview"
-    listbox $w.f.main.list  -height 10 -yscrollcommand "$w.f.main.sb set" -width 60
-    pack $w.f.main.sb -anchor center -expand 0 -fill y -side right
-    pack $w.f.main.list  -anchor center -expand 1 -fill both  -side left
+    scrollbar $w.f.main.vsb -command "$w.f.main.list yview"
+    scrollbar $w.f.main.hsb -command "$w.f.main.list xview" -orient horiz
+    multicolumnlistbox $w.f.main.list {
+        {class   Class}
+        {name    Name  160}
+        {info    Info}
+        {ptr     Pointer}
+    } -height 200 -yscrollcommand "$w.f.main.vsb set" -xscrollcommand "$w.f.main.hsb set"
+
+    grid $w.f.main.list $w.f.main.vsb -sticky news
+    grid $w.f.main.hsb  x             -sticky news
+    grid rowconfig $w.f.main 0 -weight 1
+    grid columnconfig $w.f.main 0 -weight 1
+
     pack $w.f.main  -anchor center -expand 1 -fill both -side top
 
     set lb $w.f.main.list
@@ -601,21 +619,18 @@ proc filteredobjectlist_dialog {} {
     bind $wfiltpars.class.entry.entry <Return> "$w.f.filter.buttons.refresh invoke"
     bind $wfiltpars.name.entry <Return> "$w.f.filter.buttons.refresh invoke"
     bind $wfiltpars.order.entry.entry <Return> "$w.f.filter.buttons.refresh invoke"
-    bind $lb <Double-Button-1> "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
-    bind $lb <Key-Return> "inspectfromlistbox_insp $lb \{$type\}; after 500 \{raise $w; focus $lb\}"
-    bind $lb <Button-3> "filteredobjectlist_popup $w \[lindex \[$lb get @%x,%y\] 0\] %X %Y"
+
+    bind $lb <Double-Button-1> "inspect_item_in $lb; after 500 \{raise $w; focus $lb\}"
+    bind $lb <Key-Return> "inspect_item_in $lb; after 500 \{raise $w; focus $lb\}"
+    bind $lb <Button-3> "filteredobjectlist_popup \[lindex \[multicolumnlistbox_curselection $lb\] 0\] %X %Y"
 
     focus $wfiltpars.name.entry
 
-    ## potentially useful stuff:
-    #set type [listboxSelectionDialog {Choose Type...} {Select inspector type.} [opp_inspectortype all]]
-    #if {$type == ""} return
-
     execCloseDialog $w
 
-    set config(filtobjlist-class)  $tmp(class)  
-    set config(filtobjlist-name)   $tmp(name)   
-    set config(filtobjlist-order)  $tmp(order)  
+    set config(filtobjlist-class)  $tmp(class)
+    set config(filtobjlist-name)   $tmp(name)
+    set config(filtobjlist-order)  $tmp(order)
 
     destroy $w
 }
@@ -653,7 +668,7 @@ proc filteredobjectlist_refresh {w} {
 
     # get list
     set objlist [opp_getsubobjectsfilt [opp_object_systemmodule] $class $name $orderby]
-    set num [llength $objlist];
+    set num [llength $objlist]
 
     # ask user if too many...
     set viewall "yes"
@@ -661,42 +676,29 @@ proc filteredobjectlist_refresh {w} {
         set viewall [tk_messageBox -message "Your query matched $num objects. \
                      Do you want to display all of them (it might take a while)? \
                      Clicking \"No\" will display the first 100,000 only." \
-                       -title "Too many hits" -icon question -type yesno -parent $w]
+                       -title "Too many hits" -icon warning -type yesno -parent $w]
     }
-    
+
     # clear listbox
     set lb $w.f.main.list
-    $lb delete 0 end
+    multicolumnlistbox_deleteall $lb
 
     # insert into listbox
-    # FIXME meanwhile, doctor the info string -- cut off object name and class if exists...
     if {$viewall == "yes"} {
         $w.f.numobj config -text "Found $num objects"
         foreach ptr $objlist {
-            # FIXME doctor the info string -- cut off object name and class if exists...
-            set classname [opp_getobjectclassname $ptr]
-            set fullpath [opp_getobjectfullpath $ptr]
-            set infostr0 [opp_getobjectinfostring $ptr]
-            regsub "^.*\\($classname\\)" $infostr0 "" infostr
-
-            $lb insert end "$ptr ($classname)  $fullpath    $infostr"
+            multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]]
         }
-    } else {    
+    } else {
         set i 0
         $w.f.numobj config -text "Found $num objects, first 100,000 displayed"
         foreach ptr $objlist {
-            set classname [opp_getobjectclassname $ptr]
-            set fullpath [opp_getobjectfullpath $ptr]
-            set infostr0 [opp_getobjectinfostring $ptr]
-            regsub "^.*\\($classname\\)" $infostr0 "" infostr
-
-            $lb insert end "$ptr ($classname)  $fullpath    $infostr"
-
+            multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]]
             incr i
             if {$i > 100000} {break}
         }
     }
-    $lb selection set 0
+    #$lb selection set 0
 }
 
 # filteredobjectlist_popup --

@@ -202,10 +202,10 @@ proc create_inspector_listbox {w} {
     pack $w.main -expand 1 -fill both -side top
 
     multicolumnlistbox $w.main.list {
-       {ptr    Pointer}
        {class  Class}
        {name   Name}
        {info   Info}
+       {ptr    Pointer}
     } -width 400 -yscrollcommand "$w.main.sb set"
     scrollbar $w.main.sb  -command "$w.main.list yview"
     pack $w.main.sb -anchor center -expand 0 -fill y -side right

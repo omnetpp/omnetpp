@@ -605,7 +605,7 @@ proc _focusTableEntry {e c} {
 proc multicolumnlistbox {w columnlist args} {
     global HAVE_BLT
     if {$HAVE_BLT} {
-        blt::treeview $w -font "arial 8"
+        blt::treeview $w -font "arial 8" -allowduplicates yes
         $w column configure treeView -hide yes
         if {$args!=""} {
              eval $w config $args
@@ -615,7 +615,7 @@ proc multicolumnlistbox {w columnlist args} {
             set name [lindex $i 0]
             set label [lindex $i 1]
             set width [lindex $i 2]
-            $w column insert end $name -text $label -justify left -edit no
+            $w column insert end $name -text $label -justify left -edit no -pad 8
             if {$width!=""} {
                  $w column config $name -width $width
             }
