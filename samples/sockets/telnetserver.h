@@ -8,13 +8,13 @@
 //
 
 
-#ifndef __FIFO_H
-#define __FIFO_H
+#ifndef __TELNETSERVER_H
+#define __TELNETSERVER_H
 
 #include "queuebase.h"
 
 /**
- * Simple model of an Telnet server.
+ * Simple model of a Telnet server.
  */
 class TelnetServer : public QueueBase
 {

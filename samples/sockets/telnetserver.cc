@@ -9,7 +9,7 @@
 
 
 #include "telnetserver.h"
-#include "telnetmsg_m.h"
+#include "telnetpkt_m.h"
 
 
 Define_Module( TelnetServer );
@@ -24,7 +24,7 @@ void TelnetServer::endService(cMessage *msg)
 {
     ev << "Completed service of " << msg->name() << endl;
 
-    TelnetMsg *telnetMsg = check_and_cast<TelnetMsg *>(msg);
+    TelnetPkt *telnetMsg = check_and_cast<TelnetPkt *>(msg);
 
     std::string reply = processChars(telnetMsg->getPayload());
     telnetMsg->setPayload(reply.c_str());
@@ -39,5 +39,7 @@ void TelnetServer::endService(cMessage *msg)
 
 std::string TelnetServer::processChars(const char *chars)
 {
+    return "";
 }
+
 

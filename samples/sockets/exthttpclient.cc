@@ -13,6 +13,9 @@
 #include "csocketrtscheduler.h"
 
 
+/**
+ * Simple model of a Telnet client.
+ */
 class ExtHTTPClient : public cSimpleModule
 {
   public:

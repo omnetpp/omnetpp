@@ -8,8 +8,8 @@
 //
 
 
-#ifndef __FIFO_H
-#define __FIFO_H
+#ifndef __HTTPSERVER_H
+#define __HTTPSERVER_H
 
 #include "queuebase.h"
 

@@ -11,6 +11,9 @@
 #include <omnetpp.h>
 
 
+/**
+ * Simple model of a Telnet client.
+ */
 class TelnetClient : public cSimpleModule
 {
   public:
