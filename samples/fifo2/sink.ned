@@ -4,11 +4,11 @@
 //-------------------------------------------------------------
 
 
-// Sink --
+// FF2Sink --
 //
 // destroys the packets and creates statistics
 //
-simple Sink
+simple FF2Sink
     gates:
       in: in;
 endsimple

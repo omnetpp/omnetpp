@@ -6,10 +6,10 @@
 #include "omnetpp.h"
 
 
-class Sink : public cSimpleModule
+class FF2Sink : public cSimpleModule
 {
   public:
-    Module_Class_Members(Sink,cSimpleModule,0)
+    Module_Class_Members(FF2Sink,cSimpleModule,0)
 
     cStdDev qstats;
     cOutVector qtime;
@@ -19,15 +19,15 @@ class Sink : public cSimpleModule
     virtual void finish();
 };
 
-Define_Module( Sink )
+Define_Module( FF2Sink );
 
-void Sink::initialize()
+void FF2Sink::initialize()
 {
     qstats.setName("queuing time stats");
     qtime.setName("queueing time vector");
 }
 
-void Sink::handleMessage(cMessage *msg)
+void FF2Sink::handleMessage(cMessage *msg)
 {
     double d = simTime()-msg->timestamp();
     ev << "Received " << msg->name() << ", queueing time: " << d << "sec" << endl;
@@ -36,7 +36,7 @@ void Sink::handleMessage(cMessage *msg)
     delete msg;
 }
 
-void Sink::finish()
+void FF2Sink::finish()
 {
     ev << "Total jobs processed: " << qstats.samples() << endl;
     ev << "Avg queueing time:    " << qstats.mean() << endl;

@@ -7,10 +7,10 @@
 #include "omnetpp.h"
 
 
-class BurstyGenerator : public cSimpleModule
+class FF2BurstyGenerator : public cSimpleModule
 {
   public:
-    Module_Class_Members(BurstyGenerator,cSimpleModule,0)
+    Module_Class_Members(FF2BurstyGenerator,cSimpleModule,0)
 
     // parameters
     double sleepTimeMean;
@@ -37,9 +37,9 @@ class BurstyGenerator : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 };
 
-Define_Module( BurstyGenerator )
+Define_Module( FF2BurstyGenerator );
 
-void BurstyGenerator::initialize()
+void FF2BurstyGenerator::initialize()
 {
     fsm.setName("fsm");
 
@@ -48,7 +48,7 @@ void BurstyGenerator::initialize()
     sendIATime = par("send_ia_time");
     msgLength = &par("msg_length");
 
-    i = 0; 
+    i = 0;
     WATCH(i); // always put watches in initialize(), NEVER in handleMessage()
     startStopBurst = new cMessage("startStopBurst");
     sendMessage = new cMessage("sendMessage");
@@ -56,7 +56,7 @@ void BurstyGenerator::initialize()
     scheduleAt(0.0,startStopBurst);
 }
 
-void BurstyGenerator::handleMessage(cMessage *msg)
+void FF2BurstyGenerator::handleMessage(cMessage *msg)
 {
     FSM_Switch(fsm)
     {
@@ -105,7 +105,7 @@ void BurstyGenerator::handleMessage(cMessage *msg)
         job->setLength( (long) *msgLength );
         job->setTimestamp();
         send( job, "out" );
-        
+
         // return to ACTIVE
         FSM_Goto(fsm,ACTIVE);
         break;
