@@ -7,49 +7,49 @@
 
 class Server : public cSimpleModule
 {
-        Module_Class_Members(Server,cSimpleModule,16384)
-        virtual void activity();
+    Module_Class_Members(Server,cSimpleModule,16384)
+    virtual void activity();
 };
 
-Define_Module( Server )
+Define_Module( Server );
 
 void Server::activity()
 {
-        cModuleType *srvproc_type = findModuleType( "ServerProcess" );
+    cModuleType *srvproc_type = findModuleType( "ServerProcess" );
 
-        for(;;)
+    for(;;)
+    {
+        cMessage *msg = receive();
+        int type = msg->kind();
+
+        int serverproc_id;
+        cModule *mod;
+
+        switch( type )
         {
-             cMessage *msg = receive();
-             int type = msg->kind();
+          case CONN_REQ:
+            mod = srvproc_type->createScheduleInit("serverproc",this);
 
-             int serverproc_id;
-             cModule *mod;
+            ev << "CONN_REQ: Created process ID=" << mod->id() << endl;
 
-             switch( type )
-             {
-                 case CONN_REQ:
-                    mod = srvproc_type->createScheduleInit("serverproc",this);
+            mod->gate("out")->setTo( gate("out") );
 
-                    ev << "CONN_REQ: Created process ID=" << mod->id() << endl;
+            sendDirect( msg, 0.0, mod, "in" );
+            break;
 
-                    mod->gate("out")->setTo( gate("out") );
-
-                    sendDirect( msg, 0.0, mod, "in" );
-                    break;
-
-                 default:
-                    serverproc_id = msg->par("serverproc_id");
-                    ev << "Redirecting msg to process ID=" 
-                       << serverproc_id << endl;
-                    mod = simulation.module( serverproc_id );
-                    if (!mod) {
-                         ev << " That process already exited, deleting msg\n";
-                         delete msg;
-                    } else {
-                         sendDirect( msg, 0.0, mod, "in" );
-                    }
-                    break;
-             }
+          default:
+            serverproc_id = msg->par("serverproc_id");
+            ev << "Redirecting msg to process ID="
+               << serverproc_id << endl;
+            mod = simulation.module( serverproc_id );
+            if (!mod) {
+                ev << " That process already exited, deleting msg\n";
+                delete msg;
+            } else {
+                sendDirect( msg, 0.0, mod, "in" );
+            }
+            break;
         }
+    }
 }
 

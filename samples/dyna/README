@@ -8,5 +8,40 @@ Demonstrates:
  - using WATCH()
  - star topology with the number of modules as parameters
 
-See the source and the Example Models Manual for more info!
+Dyna is a model of a simple client-server network. The network contains
+serveral clients and one server, connected in star topology:
+
+   client  <--->
+   client  <--->  switch  <--->  server
+   client  <--->
+
+The number of clients is configurable. Each client computer periodically
+connects to the server for data exchange. In each connection, the client
+sends a random number of "queries" then closes the connection.
+
+The server handles several incoming connections concurrently. Each connection
+is served by a separate process (i.e. a dynamically created simple module).
+
+The module types are:
+  Client:
+    A client computer which periodically connects to the
+    server for data exchange.
+
+  Switch:
+    A very simple module which models the network between
+    the server and the clients.
+
+  Server:
+    Models a simple server which accepts connections from the
+    client computers. It serves multiple connections at a time;
+    each connection is handled by a ServerProcess module, created
+    on demand.
+
+  ServerProcess:
+    Handles one connection in the server.
+
+  ClientServer:
+    Model of the network, consisting of several clients, a server
+    and a switch. The number of clients is a parameter.
+
 

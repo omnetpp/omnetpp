@@ -7,26 +7,27 @@
 
 class Switch : public cSimpleModule
 {
-        Module_Class_Members(Switch,cSimpleModule,16384)
-        virtual void activity();
+    Module_Class_Members(Switch,cSimpleModule,16384)
+    virtual void activity();
 };
 
-Define_Module( Switch )
+Define_Module( Switch );
 
 void Switch::activity()
 {
-        double pk_delay = 1.0 / par( "pk_rate" );
-        for(;;)
-        {
-            /* receive msg (implicit queueing!) */
-            cMessage *msg = receive();
+    double pk_delay = 1.0 / par( "pk_rate" );
+    for(;;)
+    {
+        // receive msg (implicit queueing!)
+        cMessage *msg = receive();
 
-            /* processing delay */
-            wait( pk_delay );
+        // processing delay
+        wait( pk_delay );
 
-            /* send msg to destination */
-            int dest = msg->par("dest");
-            ev << "Relaying msg to addr=" << dest << '\n';
-            send( msg, "out", dest);
-        }
+        // send msg to destination
+        int dest = msg->par("dest");
+        ev << "Relaying msg to addr=" << dest << '\n';
+        send( msg, "out", dest);
+    }
 }
+
