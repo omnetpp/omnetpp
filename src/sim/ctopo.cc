@@ -133,17 +133,42 @@ static int selectByModuleType(cModule *mod, void *data)
 
 void cTopology::extractByModuleType(const char *type1,...)
 {
-    const char *data[32];
-    int k=0;
-    data[k++] = type1;
-
+    // parse arg list into null-terminated char *[] array
+    int n = 0;
     va_list va;
     va_start(va,type1);
-    while ((data[k++]=va_arg(va, char *))!=NULL);
+    while (va_arg(va, char *)!=NULL) n++;
     va_end(va);
 
-    extractFromNetwork( selectByModuleType, (void *)data );
+    char **types = new char *[n+2];
+
+    int k=0;
+    types[k++] = const_cast<char *>(type1);
+
+    va_start(va,type1);
+    while ((types[k++]=va_arg(va, char *))!=NULL);
+    va_end(va);
+
+    extractFromNetwork(selectByModuleType, (void *)types);
+
+    delete [] types;
 }
+
+void cTopology::extractByModuleType(const char **types)
+{
+    extractFromNetwork(selectByModuleType, (void *)types);
+}
+
+void cTopology::extractByModuleType(const std::vector<std::string> v)
+{
+    const char **types = new const char *[v.size()+1];
+    for (int i=0; i<v.size(); i++)
+        types[i] = v[i].c_str();
+    types[v.size()] = NULL;
+    extractFromNetwork(selectByModuleType, (void *)types);
+    delete [] types;
+}
+
 
 void cTopology::extractFromNetwork(int (*selfunc)(cModule *,void *), void *data)
 {
