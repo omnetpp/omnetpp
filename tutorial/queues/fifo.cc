@@ -93,7 +93,7 @@ void Fifo::finish()
             ev << "\t" << jobDist->cellPDF(i) << endl;
         }
     }
-    recordStats("Job Distribution Statistics", jobDist);
+    jobDist->recordScalar("Job Distribution Statistics");
 }
 
 

@@ -421,7 +421,7 @@ bool TOmnetTkApp::doRunSimulation()
         {
             struct timeb start, now;
             ftime(&start);
-            while ((ftime(&now), opp_difftimebmillis(now,start)<opt_stepdelay) && !stopsimulation_flag)
+            while ((ftime(&now), opp_difftimebmillis(now,start)<(unsigned long)opt_stepdelay) && !stopsimulation_flag)
                 Tcl_Eval(interp, "update");
         }
 
