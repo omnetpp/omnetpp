@@ -1,17 +1,13 @@
-2002-12-04  Andras Varga
-
-	* opp_test: due to problems with cwd/chdir on windows, working dir
-	must always be the work/ directory
-
-2002-12-02  Andras Varga
+2002-12-06  Andras Varga
 
         * added opp_neddocall: it documents all ned files in the current 
         directory and subdirectories.
 
         * opp_makemake_vc.pl renamed to opp_nmakemake
 
-	* use runperl.bat (from ActivePerl distribution) to run opp_test,
-	opp_makedep, opp_nmakemake from Windows command prompt
+	* use .cmd files with NT command line extensions (%~ notation)
+	to run opp_test, opp_makedep, opp_nmakemake and splitvec from Windows 
+	command prompt
 
 	* removed 'require Cwd' from perl scripts: we don't want to use any
 	Perl modules, to avoid having to bundle a full Perl distribution into
