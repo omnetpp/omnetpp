@@ -230,8 +230,6 @@ if [ $makefilein = "n" ]; then
 # makefile
 cat <<EOT
 
-OMNETPP_ROOT=@OMNETPP_ROOT@
-
 NEDC=    @NEDC@
 CXX=     @CXX@
 CC=      @CC@
@@ -255,8 +253,6 @@ else
 # makefile.in
 null=
 cat <<EOT
-
-OMNETPP_ROOT=@${null}OMNETPP_ROOT@
 
 NEDC=    @${null}NEDC@
 CXX=     @${null}CXX@
@@ -292,7 +288,7 @@ PVM_KERNEL_LIBS = -lsim_pvm \$(PVM_LIBS)
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = \$(OMNETPP_LIB_PATH) \$(KERNEL_LIBS) \$(USERIF_LIBS) \$(SYS_LIBS)
 
-COPTS=$(CFLAGS) $(INCLUDE_PATH) $(OMNETPP_INCL_PATH)
+COPTS=\$(CFLAGS) \$(INCLUDE_PATH) \$(OMNETPP_INCL_PATH)
 
 #------------------------------------------------------------------------------
 

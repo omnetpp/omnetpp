@@ -42,8 +42,10 @@ AC_PROG_LEX
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
+AS="as"
 AR="ar cr"
 SHLIB_LD="gcc -shared"
+NEDC=nedc
 
 A_LIB_SUFFIX='.a'
 SO_LIB_SUFFIX='.so'
@@ -119,7 +121,7 @@ AC_CHECK_FUNCS(select strdup strspn strstr)
 OMNETPP_ROOT=`pwd`
 
 OMNETPP_BIN_DIR='$(OMNETPP_ROOT)/bin'
-OMNETPP_SRC_LIB='$(OMNETPP_ROOT)/lib'
+OMNETPP_LIB_DIR='$(OMNETPP_ROOT)/lib'
 OMNETPP_SRC_DIR='$(OMNETPP_ROOT)/src'
 OMNETPP_SAMPLES_DIR='$(OMNETPP_ROOT)/samples'
 OMNETPP_MODELS_DIR='$(OMNETPP_ROOT)/models'
@@ -132,6 +134,7 @@ OMNETPP_LIB_PATH='-L$(OMNETPP_ROOT)/lib'
 # (or at least the soft links from lib/).
 LIB_SUFFIX='$(A_LIB_SUFFIX)'
 #LIB_SUFFIX='$(SO_LIB_SUFFIX)'
+
 
 #----------------------
 # Compile options. Use -g for debugging, -O3... for speed.
@@ -216,6 +219,7 @@ AC_OUTPUT(
   src/tvenv/makefile
   src/utils/makefile
   src/utils/makemake
+  models/support/makefile
   samples/dyna/makefile
   samples/fddi/makefile
   samples/fifo1/makefile

@@ -71,7 +71,7 @@ gned:
 	cd $(OMNETPP_SRC_DIR)/gned; $(MAKE)
 
 plove:
-	cd $(OMNETPP_SRC_DIR)/plove; $(MAKE)
+	@ # needs no build
 
 utils:
 	cd $(OMNETPP_SRC_DIR)/utils; $(MAKE)

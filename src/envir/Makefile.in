@@ -4,6 +4,7 @@
 CXX=@CXX@
 AR=@AR@
 SHLIB_LD=@SHLIB_LD@
+RANLIB=@RANLIB@
 
 OMNETPP_ROOT=@OMNETPP_ROOT@
 OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
@@ -29,7 +30,7 @@ OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o
 #
 # Targets
 #
-all : libenvir.$(LIB_SUFFIX)
+all : libenvir$(LIB_SUFFIX)
 
 libenvir$(A_LIB_SUFFIX) : $(OBJS)
 	$(AR) libenvir$(A_LIB_SUFFIX) $(OBJS)

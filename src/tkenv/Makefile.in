@@ -4,6 +4,7 @@
 CXX=@CXX@
 AR=@AR@
 SHLIB_LD=@SHLIB_LD@
+RANLIB=@RANLIB@
 
 CFLAGS=@CFLAGS@
 
@@ -43,7 +44,7 @@ TKAPP=tkapp
 #
 default: @TKENV_IF_POSSIBLE@
 
-all : libtkenv.$(LIB_SUFFIX)
+all : libtkenv$(LIB_SUFFIX)
 
 libtkenv$(A_LIB_SUFFIX) : $(OBJS)
 	$(AR) libtkenv$(A_LIB_SUFFIX) $(OBJS)

@@ -4,6 +4,7 @@
 CXX=@CXX@
 AR=@AR@
 SHLIB_LD=@SHLIB_LD@
+RANLIB=@RANLIB@
 
 CFLAGS=@CFLAGS@
 
@@ -29,7 +30,7 @@ OBJS = cmdenv.o enumstr.o heap.o
 #
 # Targets
 #
-all: libcmdenv.$(LIB_SUFFIX)
+all: libcmdenv$(LIB_SUFFIX)
 
 libcmdenv$(A_LIB_SUFFIX) : $(OBJS)
 	$(AR) libcmdenv$(A_LIB_SUFFIX) $(OBJS)
