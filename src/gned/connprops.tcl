@@ -63,9 +63,9 @@ proc editConnectionProps {key} {
     pack $nb.gates.condition  -expand 0 -fill x -side top
 
     # create "Attributes" page
-    radiobutton $nb.attrs.r1 -text "Predefined channel:" -value 1 -variable tmp(usechannel)
+    radiobutton $nb.attrs.r1 -text "Predefined channel:" -value 1 -variable tmp(usechannel) -command "ConnProps:useChannel $w"
     label-entry $nb.attrs.channel "  Channel name:"
-    radiobutton $nb.attrs.r2 -text "Custom:" -value 0  -variable tmp(usechannel)
+    radiobutton $nb.attrs.r2 -text "Custom:" -value 0  -variable tmp(usechannel) -command "ConnProps:notUseChannel $w"
     label-entry $nb.attrs.delay "  Prop. delay:"
     label-entry $nb.attrs.datarate "  Data Rate:"
     label-entry $nb.attrs.error "  Bit error rate:"
@@ -100,12 +100,13 @@ proc editConnectionProps {key} {
 
     # fill "Attributes" page
     set tmp(usechannel) 0
-    foreach connattr_key [getChildren $key] {
+    ConnProps:notUseChannel $w
+     foreach connattr_key [getChildren $key] {
         if {$ned($connattr_key,type)!="connattr"} {error "non-connattr child of conn!"}
         set attrname  $ned($connattr_key,name)
         set attrvalue $ned($connattr_key,value)
         switch $attrname {
-            channel   {set tmp(usechannel) 1; $nb.attrs.channel.e insert 0 $attrvalue}
+            channel   {set tmp(usechannel) 1; ConnProps:useChannel $w; $nb.attrs.channel.e insert 0 $attrvalue}
             delay     {$nb.attrs.delay.e insert 0 $attrvalue}
             error     {$nb.attrs.error.e insert 0 $attrvalue}
             datarate  {$nb.attrs.datarate.e insert 0 $attrvalue}
@@ -167,6 +168,24 @@ proc editConnectionProps {key} {
     destroy $w
 }
 
+
+# helper proc
+proc ConnProps:notUseChannel {w} {
+    set nb $w.f.nb
+    $nb.attrs.channel.e  config  -state disabled
+    $nb.attrs.delay.e  config  -state normal
+    $nb.attrs.error.e  config  -state normal
+    $nb.attrs.datarate.e  config  -state normal
+}
+
+# helper proc
+proc ConnProps:useChannel {w} {
+    set nb $w.f.nb
+    $nb.attrs.channel.e  config  -state normal
+    $nb.attrs.delay.e  config  -state disabled
+    $nb.attrs.error.e  config  -state disabled
+    $nb.attrs.datarate.e  config  -state disabled
+}
 
 # ConnProps:validate --
 #
