@@ -159,7 +159,7 @@ int cBag::addAt(int m, void *obj) // --LG
    }
 }
 
-int cBag::find(void *obj)
+int cBag::find(void *obj) const
 {
     int i;
     for (i=0; i<=lastused; i++)
@@ -183,6 +183,21 @@ void *cBag::get(int m)
         return NULL;
     }
 }
+
+const void *cBag::get(int m) const
+{
+  if( m>=0 && m<=lastused && USED(m) )
+    {
+      return ELEM(m);
+    }
+  else
+    {
+      opp_warning("(%s)%s: slot #%d empty, returning NULL",
+                  +                    className(),fullName(),m);
+      return NULL;
+    }
+}
+
 
 bool cBag::isUsed(int m)
 {
@@ -377,7 +392,7 @@ int cArray::addAt(int m, cObject *obj)
     return m;
 }
 
-int cArray::find(cObject *obj)
+int cArray::find(cObject *obj) const
 {
     int i;
     for (i=0; i<=last; i++)
@@ -389,7 +404,7 @@ int cArray::find(cObject *obj)
          return -1;
 }
 
-int cArray::find(const char *objname)
+int cArray::find(const char *objname) const
 {
     int i;
     for (i=0; i<=last; i++)
@@ -409,7 +424,25 @@ cObject *cArray::get(int m)
         {opp_warning(eNULLPTR,className(),fullName(),m);return NO(cObject);}
 }
 
+const cObject *cArray::get(int m) const
+{
+  if (m>=0 && m<=last && vect[m])
+    return vect[m];
+  else
+    {opp_warning(eNULLPTR,className(),fullName(),m);return NO(cObject);}
+}
+
 cObject *cArray::get(const char *objname)
+{
+  int m = find( objname );
+  if (m==-1) {
+    opp_warning("(%s)%s: get(): no object called `%s'",className(),fullName(),objname);
+    return NO(cObject);
+  }
+  return get(m);
+}
+
+const cObject *cArray::get(const char *objname) const
 {
     int m = find( objname );
     if (m==-1) {
