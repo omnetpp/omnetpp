@@ -1,0 +1,15 @@
+Implement selection sets: 
+- turn main window into tabbed pane, each page a selection set. 
+  First, unclosable page: "All". 
+- after filtering, one can click a "Create selection set" icon
+- selection sets can be deleted (closing the tab); shrunk to current
+  filtering or selection; selected items removed.
+- another toolbar button: "Add listed/selected scalars to another selction set"
+- MAIN USE: "Create chart" dialog should use selection sets as input.
+  "Use selections sets as input:" listbox -- by default it'd say 
+  "current selection set". "Add/Remove selection sets" buttons.
+
+Matching: do SUBSTRING search by default, and have a checkbox to select 
+full string search
+
+Toolbar icons

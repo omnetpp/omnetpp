@@ -1,0 +1,43 @@
+#
+# Sample output scalar file. All numbers are completely made up!
+#
+run 1 "largeNet"
+scalar "largeNet.switchA.relayUnit" 	"processed frames" 	100
+scalar "largeNet.switchA.relayUnit" 	"dropped frames" 	10
+scalar "largeNet.switchA.mac[0]" 	"simulated time" 	1.111
+scalar "largeNet.switchA.mac[0]" 	"frames sent" 	41
+scalar "largeNet.switchA.mac[0]" 	"frames rcvd" 	21
+scalar "largeNet.switchA.mac[1]" 	"simulated time" 	1.111
+scalar "largeNet.switchA.mac[1]" 	"frames sent" 	21
+scalar "largeNet.switchA.mac[1]" 	"frames rcvd" 	11
+
+run 2 "largeNet"
+scalar "largeNet.switchA.relayUnit" 	"processed frames" 	76
+scalar "largeNet.switchA.relayUnit" 	"dropped frames" 	6
+scalar "largeNet.switchA.mac[0]" 	"simulated time" 	2.222
+scalar "largeNet.switchA.mac[0]" 	"frames sent" 	52
+scalar "largeNet.switchA.mac[0]" 	"frames rcvd" 	12
+scalar "largeNet.switchA.mac[1]" 	"simulated time" 	2.222
+scalar "largeNet.switchA.mac[1]" 	"frames sent" 	22
+scalar "largeNet.switchA.mac[1]" 	"frames rcvd" 	12
+
+run 3 "largeNet"
+scalar "largeNet.switchA.relayUnit" 	"processed frames" 	92
+scalar "largeNet.switchA.relayUnit" 	"dropped frames" 	16
+scalar "largeNet.switchA.mac[0]" 	"simulated time" 	3.333
+scalar "largeNet.switchA.mac[0]" 	"frames sent" 	53
+scalar "largeNet.switchA.mac[0]" 	"frames rcvd" 	13
+scalar "largeNet.switchA.mac[1]" 	"simulated time" 	3.333
+scalar "largeNet.switchA.mac[1]" 	"frames sent" 	23
+scalar "largeNet.switchA.mac[1]" 	"frames rcvd" 	13
+
+run 4 "largeNet"
+scalar "largeNet.switchA.relayUnit" 	"processed frames" 	270
+scalar "largeNet.switchA.relayUnit" 	"dropped frames" 	64
+scalar "largeNet.switchA.mac[0]" 	"simulated time" 	2.354
+scalar "largeNet.switchA.mac[0]" 	"frames sent" 	122
+scalar "largeNet.switchA.mac[0]" 	"frames rcvd" 	131
+scalar "largeNet.switchA.mac[1]" 	"simulated time" 	2.354
+scalar "largeNet.switchA.mac[1]" 	"frames sent" 	45
+scalar "largeNet.switchA.mac[1]" 	"frames rcvd" 	34
+

@@ -1,0 +1,72 @@
+#
+# Definitions to be customized by 'configure'
+#
+CXX=@CXX@
+CC=@CC@
+YACC=@YACC@
+LEX=@LEX@
+WISH=@WISH@
+MAKEDEPEND=@MAKEDEPEND@
+
+CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
+EXE_SUFFIX=@EXE_SUFFIX@
+
+OMNETPP_BIN_DIR=@OMNETPP_BIN_DIR@
+
+TK_CFLAGS=@TK_CFLAGS@
+TK_LIBS=@TK_LIBS@
+SYS_LIBS=@SYS_LIBS@
+
+OMNETPP_SCALARS_DIR=@OMNETPP_SCALARS_DIR@
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) $(TK_CFLAGS)
+
+SCALARS_OBJS = scalars.o \
+               tklib.o \
+               tkcmd.o \
+               tkutil.o
+ENGINE_OBJS =  engine/scalarmanager.o \
+               engine/filtering.o \
+               engine/patmatch.o \
+               engine/texception.o
+
+
+OBJS = $(SCALARS_OBJS) $(ENGINE_OBJS)
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.o:
+	$(CXX) -c $(COPTS) -o $@ $<
+
+#
+# Targets
+#
+all: scalars
+	rm -f $(OMNETPP_BIN_DIR)/scalars$(EXE_SUFFIX)
+	cp scalars$(EXE_SUFFIX) $(OMNETPP_BIN_DIR)
+
+scalars: $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o scalars
+
+tclcode.cc: *.tcl
+	../utils/tcl2c tclcode.cc *.tcl
+
+missing-library:
+	@ echo '*** No Tk installation found -- skipping Scalars'
+
+depend:
+	$(MAKEDEPEND) -I. -- *.cc
+	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc
+
+clean:
+	rm -f tclcode.cc *.o scalars$(EXE_SUFFIX)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+scalars.o: scalars.cc

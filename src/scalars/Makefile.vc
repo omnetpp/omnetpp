@@ -1,0 +1,90 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+#FIXME remove next lines!
+OMNETPP_SCALARS_DIR=.
+HAVE_BLT=yes
+
+#
+# Local setup
+#
+!if "$(SCALARS_EMBED_TCL)"=="yes"
+SCALARS_EMBED_SUFFIX=-e
+!else
+SCALARS_EMBED_SUFFIX=
+!endif
+
+!if "$(USE_WINMAIN)"=="yes"
+CFLAGS=$(CFLAGS) /DUSE_WINMAIN
+LDFLAGS=$(LDFLAGS) /SUBSYSTEM:WINDOWS user32.lib
+!endif
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) $(TK_CFLAGS)
+
+!if "$(HAVE_BLT)"=="yes"
+COPTS=$(COPTS) /DHAVE_BLT
+TK_LIBS=$(TK_LIBS) blt24.lib
+!endif
+
+SCALARS_OBJS = scalars.obj \
+               tklib.obj \
+               tkcmd.obj \
+               tkutil.obj
+ENGINE_OBJS =  engine/scalarmanager.obj \
+               engine/filtering.obj \
+               engine/patmatch.obj \
+               engine/texception.obj
+
+OBJS = $(SCALARS_OBJS) $(ENGINE_OBJS)
+
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
+
+.cc.obj:
+	$(CXX) /Fo"$@" $(COPTS) /c /Tp $<
+
+#
+# Targets
+#
+default : scalars
+
+scalars : scalars.exe
+
+scalars.exe : $(OBJS) scalars.res
+	$(LINK) /out:"scalars.exe" scalars.res $(OBJS) $(LDFLAGS) $(TK_LIBS) $(SYS_LIBS)
+	copy scalars.exe $(OMNETPP_BIN_DIR:/=\)
+
+
+scalars.obj : scalars.cc
+	$(CXX) /DOMNETPP_SCALARS_DIR="\"$(OMNETPP_SCALARS_DIR)\"" $(COPTS) /c /Tp scalars.cc
+
+scalars-e.obj : scalars.cc tclcode.cc
+	$(CXX) /Fo"scalars-e.obj" $(COPTS) /c /Tp scalars.cc
+
+tclcode.cc: *.tcl
+	..\omnetpp\src\utils\tcl2c tclcode.cc *.tcl
+
+scalars.res: scalars.rc scalars.ico
+	rc -fo scalars.res -r scalars.rc
+
+depend:
+	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc
+
+clean:
+	-del tclcode.cc *.obj engine\*.obj scalars.exe 2> nul
+	-del *.ilk *.idb *.pdb *.pch 2> nul
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+scalars.obj: scalars.cc \
+  tklib.h
+tkcmd.obj: tkcmd.cc \
+  tklib.h
+tklib.obj: tklib.cc \
+  tklib.h
