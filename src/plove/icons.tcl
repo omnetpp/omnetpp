@@ -19,10 +19,31 @@ set icons(open) [image create photo -data {
     Ow==
 }]
 
+set icons(copy) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAAhMbGxv//////////////////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAARGUMhJq734gs1zBUM4bN4E
+    iiBQCmkavDB2ioE4vNrI1fRtzaHa5hajtDY8m8+oFHJAgc8TkLRFPU7OMlOllWBg
+    3GpMLptLEQA7
+}]
+
 set icons(del) [image create photo -data {
     R0lGODlhFAATALMAAIQAAOferf//////////////////////////////////////
     /////////////////yH5BAEAAAEALAAAAAAUABMAAAQtMMhJq704aww6B1fnVWMo
     UmV2Bqkmttu6TS84syNsybgL2x8gyqW6GY/IZCYCADs=
+}]
+
+set icons(copyspec) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAAhMbGxv//////////////////////////////////
+    /////////////////yH5BAEAAAIALAAAAAAUABMAAARHUMhJq73Ygs1zBUM4bN4E
+    iiBQCmkavDB2ioE4vFe71fSt2bcRCBb4CHfAUJEyUx43PiYHGVpRairrpMZkeTE4
+    kzerLZvP5wgAOw==
+}]
+
+set icons(close) [image create photo -data {
+    R0lGODlhFAASALMAAAAAAISEhMbGxv////8AAP//////////////////////////
+    /////////////////yH5BAEAAAQALAAAAAAUABIAAAROkMhJqw04641nGGAojoM3
+    CGiqpp+5vmgrfSkAqHZczmd9CzmdC2f7CXmvIGtHoBGVAlmzhwoqpU6gUXucwl5Y
+    6rf74ZjDpDTIwm6735IIADs=
 }]
 
 set icons(dup) [image create photo -data {
@@ -122,6 +143,13 @@ set icons(savescript) [image create photo -data {
     /////////////////yH5BAEAAAIALAAAAAAUABMAAARPUMhJq734gs17t0AAYONY
     hSa4gSLZni+bTqg7S7UW04H4UTdBqEcMCAqEwkTJ83EEBKiEEG16jklo1fqbbrk/
     KsljEiOZGe9UmsYus+1MBAA7
+}]
+
+set icons(barchart) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAMbGxgAA/0AAAIAAAAAA/+HXjv8AAP//AMDAwAGFAf//
+    /////////////////yH5BAEAAAEALAAAAAAUABMAAARLMMhJq70Ym837vp4ieoYV
+    jp7ZiQqpcqwhzF91trNQU8bhG7HcbtL7BWklm+8AHAmTvGUThzRJjzpoAMDter9d
+    HmkMGncy6LR6nYkAADs=
 }]
 
 set icons(xyplot) [image create photo -data {

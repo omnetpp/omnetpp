@@ -403,7 +403,7 @@ proc createMainWindow {{geom ""}} {
       {config -image $icons(config)  -command filterListDialog}
       {sep4  -separator}
       {plot  -image $icons(plotopt)     -command createVectorPlot}
-      {xyplot -image $icons(xyplot)  -command createVectorScatterPlot}
+      {xyplot -image $icons(xyplot)  -command plotVectorScatterPlot}
 
     } {
       set b [eval iconbutton .toolbar.$i]

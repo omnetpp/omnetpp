@@ -113,22 +113,12 @@ proc createVectorPlot {{idlist {}}} {
 }
 
 
-proc createVectorScatterPlot {{idlist {}}} {
+proc createVectorScatterPlot {idlist xid chartname} {
     global config vec elemcounter
 
-    if {$idlist==""} {
-        set idlist [getVectorsToPlot]
-        if {$idlist == ""} return
+    if {[llength $idlist]<2} {
+        error "needs at least two vectors for scatter plot"
     }
-
-    if {[llength $idlist]==1} {
-        tk_messageBox -icon info -type ok -title "Scatter Plot" \
-            -message "You need at least two vectors for scatter (x-y) plots: one for the x coordinate plus one or more for y."
-        return
-    }
-
-    #FIXME ask which one should be the X axis
-    set xid [lindex $idlist 0]
 
     if [catch {
         # hourglass...
@@ -179,7 +169,7 @@ proc createVectorScatterPlot {{idlist {}}} {
         busyCursor "Building graph..."
         update idletasks
 
-        set graph [createBltGraph graph]
+        set graph [createBltGraph graph $chartname]
 
         $graph axis configure x -title $vec($xid,title)
 

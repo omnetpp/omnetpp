@@ -27,6 +27,8 @@ if [info exist OMNETPP_PLOVE_DIR] {
    source [file join $dir filterlist.tcl]
    source [file join $dir filteredit.tcl]
    source [file join $dir config.tcl]
+   source [file join $dir dialogs.tcl]
+   source [file join $dir menuproc.tcl]
    source [file join $dir doplot.tcl]
    source [file join $dir vectorcfg.tcl]
    source [file join $dir bltgraph.tcl]
