@@ -244,7 +244,7 @@ if test ! -n "$TK_LIBS"; then
     fi
 
     if test "$tcltk_found" != "yes"; then
-       AC_MSG_WARN([no Tcl/Tk libraries found, needed for GNED,Tkenv and Plove!])
+       AC_MSG_WARN([no Tcl/Tk libraries found, needed for GNED, Tkenv and Plove!])
        AC_MSG_WARN([if you *do* have Tcl/Tk then edit TK_CFLAGS and TK_LIBS...])
        AC_MSG_WARN([...in configure.user and re-run configure!])
        TK_LIBS="-ltk -ltcl $TK_LIBS"
