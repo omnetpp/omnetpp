@@ -1,9 +1,39 @@
 #! /bin/sh
-OUTDIR=html
-FIGURES=yes
+PS2GIF=@PS2GIF@
 NEDDOC_XSL=`dirname $0`/neddoc.xsl
 NEDDOC_PL=`dirname $0`/neddocproc.pl
 TMPFILE=/tmp/opp_neddoc.tmp.$$
+
+# process command-line options
+outdir=html
+while [ $# -gt 0 ]; do
+    case "$1" in
+    -o)       shift ; outdir=$1 ;;
+    -n)       no_screenshots=y ;;
+    --nofig)  no_screenshots=y ;;
+    -a)       all_files=y ;;
+    --all)    all_files=y ;;
+    -h)       do_help=y ;;
+    --help)   do_help=y ;;
+    -*)       echo "opp_neddoc: ${1}: invalid option, try -h for help" >&2
+              exit 2 ;;
+    *)        break ;;
+    esac
+    shift
+done
+
+if [ -n "$do_help" ]; then
+    echo "opp_neddoc - NED and MSG documentation tool, part of OMNeT++"
+    echo "(c) 2003 Andras Varga"
+    echo ""
+    echo "Usage: opp_neddoc [-o <dir>] [-n] [-a] file1 file2 ..."
+    echo " -o <dir>      output directory, defaults to ./html"
+    echo " -n, --nofig   do not generate screenshots"
+    echo " -a, --all     process all *.ned and *.msg files recursively"
+    echo " -h, --help    this help text"
+    echo ""
+    exit
+fi
 
 cleanup()
 {
@@ -12,38 +42,54 @@ cleanup()
 
 trap cleanup HUP INT QUIT TERM
 
-if [ ! -d $OUTDIR ]; then
-  mkdir $OUTDIR || exit -1
+if [ ! -d $outdir ]; then
+    mkdir $outdir || exit 1
 fi
-rm -f $OUTDIR/*
+rm -f $outdir/* || exit 1
+
+if [ -n "$all_files" ]; then
+    echo collecting files...
+    files=`find . -name '*.ned' -o -name '*.msg'` || exit 1
+else
+    if [ $# -eq 0 ]; then
+        echo "opp_neddoc: no input files, try -a for all *.ned and *.msg files" >&2
+        exit 2
+    fi
+    files=$*
+fi
 
 echo transforming to xml...
-nedtool -x -e -t -y -m -o $TMPFILE $* || exit 1
+nedtool -x -e -t -y -m -o $TMPFILE $files || exit 1
 
-if [ $FIGURES = 'yes' ]; then
+if [ -n "$PS2GIF" ]; then
     echo exporting screenshots (Postscript) using GNED...
-    # FIXME it always exports to html/!!!
-    gned -- -c $* || exit 1
+    gned -- -c $outdir $files || exit 1
     echo converting Postscript to GIF using ImageMagick...
-    for i in $OUTDIR/*.eps; do
+    for i in $outdir/*.eps; do
        gif=`echo $i | sed 's/eps$/gif/'`
-       convert -delay 1000 $i $gif
+       $PS2GIF $i $gif || exit 1
        echo -n #
     done
     echo
-    imagesxml=`pwd`/'html/images.xml'
+    # hack: must convert $outdir to absolute path, otherwise xslt will take it
+    # as relative to the sylesheet (@#$#@$!!)
+    imagesxml=$outdir/images.xml
+    case $imagesxml in
+      /*) : ;;
+      *) imagesxml=`pwd`/$imagesxml ;;
+    esac
 else
     echo exporting screenshots using GNED... skipped
     imagesxml=
 fi
 
 echo applying xslt stylesheet...
-xsltproc  --stringparam outputdir "$OUTDIR" --stringparam imagesxml "$imagesxml" $NEDDOC_XSL $TMPFILE || exit 1
+xsltproc  --stringparam outputdir "$outdir" --stringparam imagesxml "$imagesxml" $NEDDOC_XSL $TMPFILE || exit 1
 
 echo formatting comments...
-perl $NEDDOC_PL $OUTDIR/*.html || exit 1
+perl $NEDDOC_PL $outdir/*.html || exit 1
 
-echo documentation created in $OUTDIR/ -- start page is index.html
+echo documentation created in $outdir/ -- start page is index.html
 cleanup
 
 
