@@ -38,6 +38,7 @@ $ccext = "";  # we'll try to autodetect it
 $cfgfile="";
 $linkwithobjects="n";
 
+$ignorened="n";
 $force="n";
 $pvm="n";
 $mpi="n";
@@ -65,6 +66,9 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
     -e, --ext             C++ source file extension, usually "cc" or "cpp".
                           By default, this is decided by looking at existing
                           files in the directory.
+    -N, --ignore-ned      Leave out .ned files from the makefile. Useful when
+                          you want to load all .ned files dynamically (see
+                          preload-ned-files omnetpp.ini option).
     -o, --outputfile      Name of simulation executable/library
     -r, --recurse         Call make recursively in all subdirectories. If you
                           need to maintain a specific order, declare dependen-
@@ -89,9 +93,9 @@ opp_nmakemake [-h] [-f] [-e ext] [-o make-target] [-n] [-u user-interface]
                           if no -i options are given. This option is useful
                           if a source file (.ned, .msg or .cc) is to be
                           generated from other files.
-    directory             Link with object files in that directory. Dependencies
-                          between directories have to be added manually. See also
-                          -w option.
+    directory             Link with all object files in that directory.
+                          Dependencies between directories have to be added
+                          manually. See also -w option.
     library or object     Link with that file
 
 Default output is Makefile.vc, which you can invoke by typing
@@ -114,6 +118,10 @@ could not figure out.
     elsif ($arg eq '-o' || $arg eq '--outputfile')
     {
         $outfile = shift @ARGV;
+    }
+    elsif ($arg eq '-N' || $arg eq '--ignore-ned')
+    {
+        $ignorened = "y";
     }
     elsif ($arg eq '-r' || $arg eq '--recurse')
     {
@@ -290,10 +298,14 @@ foreach $i (@linkdirs)
     push(@extdirobjs, "$i/*.obj");
 }
 
-@objs = glob("*.ned *.msg *.$ccext");
+if ($ignorened eq "y") {
+    @objs = glob("*.msg *.$ccext");
+} else {
+    @objs = glob("*.ned *.msg *.$ccext");
+}
 foreach $i (@objs)
 {
-
+    #FIXME what the hell's this???
     $i =~ s/\*[^ ]*//g;
     $i =~ s/[^ ]*_n\.$ccext//g;
     $i =~ s/[^ ]*_m\.$ccext//g;
@@ -478,20 +490,23 @@ foreach $i (@subdirs)
 }
 
 # rules for ned files
-foreach $i (glob("*.ned"))
+if ($ignorened eq "n")
 {
-    $obj = $i;
-    $obj =~ s/\.ned/_n.obj/g;
-    $c = $i;
-    $c =~ s/\.ned/_n.$ccext/g;
+    foreach $i (glob("*.ned"))
+    {
+        $obj = $i;
+        $obj =~ s/\.ned/_n.obj/g;
+        $c = $i;
+        $c =~ s/\.ned/_n.$ccext/g;
 
-    print OUT "$obj: $c\n";
-    print OUT "\t\$(CXX) -c \$(NEDCOPTS) /Tp $c\n";
-    print OUT "\n";
+        print OUT "$obj: $c\n";
+        print OUT "\t\$(CXX) -c \$(NEDCOPTS) /Tp $c\n";
+        print OUT "\n";
 
-    print OUT "$c: $i\n";
-    print OUT "\t\$(NEDC:/=\\) -s _n.$ccext \$(INCLUDE_PATH) $i\n";
-    print OUT "\n";
+        print OUT "$c: $i\n";
+        print OUT "\t\$(NEDC:/=\\) -s _n.$ccext \$(INCLUDE_PATH) $i\n";
+        print OUT "\n";
+    }
 }
 
 # rules for msg files

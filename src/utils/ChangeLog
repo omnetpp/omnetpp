@@ -1,3 +1,11 @@
+2004-02-09  Andras Varga
+
+    	* opp_nmakemake: added -N, --ignore-ned option which leaves out .ned 
+    	files from the makefile. Useful when you want to load all .ned files 
+    	dynamically instead of linking them into the simulation program
+    	(see preload-ned-files omnetpp.ini option).
+FIXME todo: add to opp_makemake.in too
+
 2004-02-06  Andras Varga
 
 	* opp_makemake.in,opp_nmakemake: 'depend' target made recursive
