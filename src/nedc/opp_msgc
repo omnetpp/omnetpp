@@ -128,9 +128,6 @@ print CC "#include <iostream>\n";
 print CC "#include <sstream>\n";
 print CC "#include \"$hfile\"\n\n";
 
-print CC "#ifndef MSGC_TEMPLATES_DECLARED\n";
-print CC "#define MSGC_TEMPLATES_DECLARED\n";
-print CC "\n";
 print CC "// Template rule which fires if a struct or class doesn't have operator<<\n";
 print CC "template<typename T>\n";
 print CC "std::ostream& operator<<(std::ostream& out,const T&) {return out;}\n";
@@ -156,7 +153,31 @@ print CC "void doUnpacking(cCommBuffer *b, T *t, int n) {\n";
 print CC "    for (int i=0; i<n; i++)\n";
 print CC "        doUnpacking(b,t[i]);\n";
 print CC "}\n";
-print CC "#endif\n\n";
+print CC "\n";
+print CC "#define DOPACKING(T) \\\n";
+print CC "    inline void doPacking(cCommBuffer *b, T a) {b->pack(a);}  \\\n";
+print CC "    inline void doPacking(cCommBuffer *b, T *a, int n) {b->pack(a,n);}  \\\n";
+print CC "    inline void doUnpacking(cCommBuffer *b, T& a) {b->unpack(a);}  \\\n";
+print CC "    inline void doUnpacking(cCommBuffer *b, T *a, int n) {b->unpack(a,n);}\n";
+print CC "DOPACKING(char)\n";
+print CC "DOPACKING(unsigned char)\n";
+print CC "DOPACKING(bool)\n";
+print CC "DOPACKING(short)\n";
+print CC "DOPACKING(unsigned short)\n";
+print CC "DOPACKING(int)\n";
+print CC "DOPACKING(unsigned int)\n";
+print CC "DOPACKING(long)\n";
+print CC "DOPACKING(unsigned long)\n";
+print CC "DOPACKING(float)\n";
+print CC "DOPACKING(double)\n";
+print CC "DOPACKING(long double)\n";
+print CC "DOPACKING(char *)\n";
+print CC "DOPACKING(const char *)\n";
+print CC "//DOPACKING(opp_string)\n";
+#FIXME add it after cCommBuffer support is done -- using const std::string&!
+print CC "//DOPACKING(std::string)\n";
+print CC "#undef DOPACKING\n";
+print CC "\n\n";
 
 # pre-register some OMNeT++ classes so that one doesn't need to announce them
 @classes = ('cPolymorphic', 'cObject', 'cMessage', 'cPacket');
@@ -1087,26 +1108,16 @@ sub generateClass
         #FIXME todo: doPacking() for structs/noncobjects
         foreach $fieldname (@fieldlist)
         {
-            if (!$fisabstract{$fieldname}) {
-                if ($fkind{$fieldname} eq 'basic') {
-                    if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                        print CC "    b->pack(this->$var{$fieldname},$farraysize{$fieldname});\n";
-                    } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                        print CC "    b->pack($varsize{$fieldname});\n";
-                        print CC "    b->pack(this->$var{$fieldname},$varsize{$fieldname});\n";
-                    } else {
-                        print CC "    b->pack(this->$var{$fieldname});\n";
-                    }
+            if ($fisabstract{$fieldname}) {
+                print CC "    // field $fieldname is abstract -- please do packing in customized class\n";
+            } else {
+                if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+                    print CC "    doPacking(b,this->$var{$fieldname},$farraysize{$fieldname});\n";
+                } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+                    print CC "    b->pack($varsize{$fieldname});\n";
+                    print CC "    doPacking(b,this->$var{$fieldname},$varsize{$fieldname});\n";
                 } else {
-                    # $fkind='struct', $classtype='struct'/'noncobject'/'cobject'
-                    if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                        print CC "    doPacking(b,this->$var{$fieldname},$farraysize{$fieldname});\n";
-                    } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                        print CC "    b->pack($varsize{$fieldname});\n";
-                        print CC "    doPacking(b,this->$var{$fieldname},$varsize{$fieldname});\n";
-                    } else {
-                        print CC "    doPacking(b,this->$var{$fieldname});\n";
-                    }
+                    print CC "    doPacking(b,this->$var{$fieldname});\n";
                 }
             }
         }
@@ -1117,38 +1128,22 @@ sub generateClass
         #FIXME todo: doUnpacking() for structs/noncobjects
         foreach $fieldname (@fieldlist)
         {
-            if (!$fisabstract{$fieldname}) {
-                if ($fkind{$fieldname} eq 'basic') {
-                    if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                        print CC "    b->unpack(this->$var{$fieldname},$farraysize{$fieldname});\n";
-                    } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                        print CC "    delete [] this->$var{$fieldname};\n";
-                        print CC "    b->unpack($varsize{$fieldname});\n";
-                        print CC "    if ($varsize{$fieldname}==0) {\n";
-                        print CC "        this->$var{$fieldname} = 0;\n";
-                        print CC "    } else {\n";
-                        print CC "        this->$var{$fieldname} = new $datatype{$fieldname}\[$varsize{$fieldname}\];\n";
-                        print CC "        b->unpack(this->$var{$fieldname},$varsize{$fieldname});\n";
-                        print CC "    }\n";
-                    } else {
-                        print CC "    b->unpack(this->$var{$fieldname});\n";
-                    }
+            if ($fisabstract{$fieldname}) {
+                print CC "    // field $fieldname is abstract -- please do unpacking in customized class\n";
+            } else {
+                if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+                    print CC "    doUnpacking(b,this->$var{$fieldname},$farraysize{$fieldname});\n";
+                } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+                    print CC "    delete [] this->$var{$fieldname};\n";
+                    print CC "    b->unpack($varsize{$fieldname});\n";
+                    print CC "    if ($varsize{$fieldname}==0) {\n";
+                    print CC "        this->$var{$fieldname} = 0;\n";
+                    print CC "    } else {\n";
+                    print CC "        this->$var{$fieldname} = new $datatype{$fieldname}\[$varsize{$fieldname}\];\n";
+                    print CC "        doUnpacking(b,this->$var{$fieldname},$varsize{$fieldname});\n";
+                    print CC "    }\n";
                 } else {
-                    # $fkind='struct', $classtype='struct'/'noncobject'/'cobject'
-                    if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                        print CC "    doUnpacking(b,this->$var{$fieldname},$farraysize{$fieldname});\n";
-                    } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
-                        print CC "    delete [] this->$var{$fieldname};\n";
-                        print CC "    b->unpack($varsize{$fieldname});\n";
-                        print CC "    if ($varsize{$fieldname}==0) {\n";
-                        print CC "        this->$var{$fieldname} = 0;\n";
-                        print CC "    } else {\n";
-                        print CC "        this->$var{$fieldname} = new $datatype{$fieldname}\[$varsize{$fieldname}\];\n";
-                        print CC "        doUnpacking(b,this->$var{$fieldname},$varsize{$fieldname});\n";
-                        print CC "    }\n";
-                    } else {
-                        print CC "    doUnpacking(b,this->$var{$fieldname});\n";
-                    }
+                    print CC "    doUnpacking(b,this->$var{$fieldname});\n";
                 }
             }
         }
