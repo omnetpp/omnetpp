@@ -839,31 +839,23 @@ rnd2.setDoubleValue(hist);
 % These section got dumped in 3.0, they can be digged out from the CVS if needed.
 %
 
-\subsection{Type characters}
+\subsection{cPar data types}
 
-Internally, \cclass{cPar} objects identify the types of the stored values
-by type characters. The type character\index{type character} is returned by the \fname{type()}
-member function:
+\cclass{cPar} supports several data types. Data types are internally
+identified by type characters. The type character is
+returned by the \fname{type()} member function.
+
+Example:
 
 \begin{verbatim}
 cPar par = 10L;
 char typechar = par.type(); // returns 'L'
 \end{verbatim}
 
-The full table of type characters is presented in the \textit{Summary}
-section below.
-
+The all \cclass{cPar} data types and are summarized in the table below.
 The \fname{isNumeric()} function tells whether the object
-stores one of the numeric types, so that e.g. \fname{asDoubleValue()}
-can be invoked on it.
-
-
-
-\subsection{Summary}
-
-The various \cclass{cPar} types and the member functions\index{cPar
-  types and member functions} used to manipulate them are summarized
-in the following table:
+stores a data types which allows the \fname{doubleValue()} method
+to be called.
 
 \begin{longtable}{|p{0.7cm}|p{1.2cm}|p{5.2cm}|p{6cm}|}
 \hline
