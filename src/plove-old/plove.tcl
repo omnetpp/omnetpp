@@ -32,6 +32,7 @@ if [info exist OMNETPP_PLOVE_DIR] {
    source [file join $dir main.tcl]
    set OMNETPP_PLOVE_README [file join $OMNETPP_PLOVE_DIR README]
 } else {
-   set OMNETPP_PLOVE_README [file join [file dirname $argv0] .. doc Readme-Plove.txt]
+   set OMNETPP_PLOVE_DIR [file dirname $argv0]
+   set OMNETPP_PLOVE_README [file join $OMNETPP_PLOVE_DIR .. doc Readme-Plove.txt]
 }
 

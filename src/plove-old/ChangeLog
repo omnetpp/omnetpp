@@ -90,3 +90,5 @@ Apr 28, 2001
 May 2, 2001
  - fixed Help|README when using compiled-in Tcl code
  - geometry management improved
+May 18,2001
+ - fixed a bug in startup code
