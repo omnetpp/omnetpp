@@ -7,12 +7,13 @@
 #
 
 #
-# Compiler optimization switches. Choose -O3 for speed, -g for debugging
-# the libraries.
+# Compiler optimization switches. Choose -O3 for speed, -g for debugging the libs.
+# (Note: -Wno-unused is there to suppress the 'unused variable' warnings in the 
+# nedc-generated _n.cc files)
 #
-#CFLAGS='-g'
-CFLAGS='-g -Wall'
-#CFLAGS='-O3 -DNDEBUG=1'
+#CFLAGS='-g -Wno-unused'
+CFLAGS='-g -Wall -Wno-unused'
+#CFLAGS='-O3 -DNDEBUG=1 -Wno-unused'
 
 #
 # Select here whether you want to build static or shared libraries.
