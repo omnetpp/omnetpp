@@ -44,7 +44,7 @@ SAMPLES=dyna dyna2 fddi fifo1 fifo2 hcube hist nim token topo demo
 #
 libs: utils $(LIBS)
 progs: $(PROGS)
-samples: $(SAMPLES)
+samples: libs progs $(SAMPLES)
 docs: api nedxml-api manual
 
 #
