@@ -11,7 +11,7 @@ pre { margin-left:8pt; background:#fffff4; padding:5pt; border:1px solid; border
 Hardware-in-the-loop simulation has two ingredients:
 
 <ul>
- <li> the simulation has to be synchronized to real time;
+ <li> the simulation has to be synchronized to <a href="realtime.html">real time</a>;
 
  <li> there has to be a way the simulation can communicate with the real world:
    it has to be able to receive external events, and possibly also to send
@@ -23,21 +23,6 @@ Hardware-in-the-loop simulation has two ingredients:
    hardware-in-the-loop simulation, you'll most like have to implement your
    own external communication interface.
 </ul>
-
-<p>
-The word "real-time" means that the simulation is executed in a way such that
-simulation time is synchronized to real time: simulating one second
-in the model will also take one "real" second. This is in contrast to
-"normal" simulation, when we want the simulation to run as fast as possible.
-Of course, the CPU has to be fast enough so that the simulation can keep up
-with real time.
-
-<p>
-The external interface used in this example simulation is a single TCP socket.
-Interesting functionality is in the <tt>cSocketRTScheduler</tt> class.
-Its source code is in socketrtscheduler.h/cc.
-<tt>cSocketRTScheduler</tt> combines synchronizing to real-time with
-socket communication.
 
 <p>
 <a href="index.html>Back</a>

@@ -25,10 +25,11 @@ This example contains two simulation models:
 </ul>
 
 <p>
-Both simulations are executed in real-time, that is, simulation time is
-synchronized to real (wall clock) time. Then you can connect into the
-simulation with the web browser or the telnet program, and generate
-traffic on the simulated network.
+Both simulations are executed in <a href="realtime.html">real-time</a>,
+that is, simulation time is synchronized to real (wall clock) time.
+Then you can connect into the simulation with the web browser or
+the telnet program, and generate traffic on the simulated network.
+Read more about the principle <a href="hwintheloop.html">here</a>.
 
 <p>
 It is recommended that you set animation speed to near maximum (using the
@@ -52,9 +53,7 @@ which OMNeT++/OMNEST was <a href="config.html">configured</a> to use
 as scheduler. The "external client" simple modules (<tt>ExtHTTPClient</tt>,
 <tt>ExtTelnetClient</tt>) then rely on <tt>cSocketRTScheduler</tt>
 for keeping in touch with the external process (browser or telnet).
-
-<p>
-Read about <a href="how.html">how it works</a>.
+Read about the <a href="implementation.html">implementation</a>.
 
 </body>
 </html>
