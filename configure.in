@@ -20,6 +20,9 @@ case $host in
   *-*-cygwin*)
     cygwin=yes
     ;;
+  *-hp-hpux*)
+    SO_LIB_SUFFIX=".sl"
+    ;;
   *)
     ;;
 esac
@@ -144,7 +147,8 @@ AC_PATH_PROG(PERL, perl)
 # FIXME: the following lines will need some check
 AS="as"
 AR="ar cr"
-SHLIB_LD="$CXX -shared"
+SHLIB_LD="$CXX -shared -fPIC"
+SHLIB_CFLAGS="-fPIC"
 # NEDC default - maybe overwritten by feature nedc-subcl
 NEDC="nedc"
 MAKEDEPEND="perl `pwd`/src/utils/makedep.pl -Y --objdirtree"
@@ -164,8 +168,12 @@ else
     MYPWD=pwd
 fi
 
-A_LIB_SUFFIX=".a"
-SO_LIB_SUFFIX=".so"
+#
+# set default library suffixes. May be already defined
+# with system/arch specific values
+#
+A_LIB_SUFFIX=${A_LIB_SUFFIX:-".a"}
+SO_LIB_SUFFIX=${SO_LIB_SUFFIX:-".so"}
 
 if test "$cygwin" = yes; then
     EXE_SUFFIX=".exe"
@@ -370,6 +378,8 @@ if test "$build_shared_libs" = yes; then
     LIB_SUFFIX='$(SO_LIB_SUFFIX)'
     if test "$cygwin" = yes; then
         CFLAGS="$CFLAGS -DWIN32_DLL"
+    else
+	CFLAGS="$CFLAGS $SHLIB_CFLAGS"
     fi
 else
     LIB_SUFFIX='$(A_LIB_SUFFIX)'
