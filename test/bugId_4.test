@@ -1,0 +1,34 @@
+%name: bugId_4
+
+%description:
+simulation crashes while starting if module type is set as parameter 
+see bug id 4 at http://cvs-int.etec.uni-karlsruhe.de/bugtracker
+for more details.
+
+
+%file: {test}.ned
+
+simple {GenMod}
+endsimple
+
+module {Net}
+  parameters:
+//    mod_type : string;
+  submodules:
+    specMod: mod_type like {GenMod};
+endmodule
+
+network {net} : {Net}
+endnetwork
+
+%inifile: @TNAME@.ini
+[General]
+network={net}
+warnings=yes
+[Parameters]
+#*.mod_type = "GenMod"
+
+%ignore-exitcode: 1
+
+%contains: stdout
+<!> Module ned_genericModuleType_1_net: No module parameter called `mod_type'.
