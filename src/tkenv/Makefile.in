@@ -10,6 +10,8 @@ CFLAGS=@CFLAGS@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_BITMAP_PATH=@OMNETPP_BITMAP_PATH@
+OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
+OMNETPP_VERSION=@OMNETPP_VERSION@
 
 TK_CFLAGS=@TK_CFLAGS@
 
@@ -93,6 +95,12 @@ depend:
 
 clean:
 	rm -f *.o libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX) tcl2c
+
+install-local: libtkenv$(LIB_SUFFIX)
+	rm -f $(OMNETPP_LIB_DIR)/libtkenv$(A_LIB_SUFFIX)*
+	rm -f $(OMNETPP_LIB_DIR)/libtkenv$(SO_LIB_SUFFIX)*
+	cp libtkenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/libtkenv$(LIB_SUFFIX).$(OMNETPP_VERSION)
+	(cd $(OMNETPP_LIB_DIR); ln -s libtkenv$(LIB_SUFFIX).$(OMNETPP_VERSION) libtkenv$(LIB_SUFFIX))
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

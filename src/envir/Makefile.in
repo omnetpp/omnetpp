@@ -7,6 +7,8 @@ SHLIB_LD=@SHLIB_LD@
 RANLIB=@RANLIB@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
+OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
+OMNETPP_VERSION=@OMNETPP_VERSION@
 
 CFLAGS=@CFLAGS@
 
@@ -68,6 +70,12 @@ depend:
 clean:
 	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)
 
+install-local: libenvir$(LIB_SUFFIX)
+	rm -f $(OMNETPP_LIB_DIR)/libenvir$(A_LIB_SUFFIX)*
+	rm -f $(OMNETPP_LIB_DIR)/libenvir$(SO_LIB_SUFFIX)*
+	cp libenvir$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/libenvir$(LIB_SUFFIX).$(OMNETPP_VERSION)
+	(cd $(OMNETPP_LIB_DIR); \
+         ln -s libenvir$(LIB_SUFFIX).$(OMNETPP_VERSION) libenvir$(LIB_SUFFIX))
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

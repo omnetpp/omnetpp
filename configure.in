@@ -38,7 +38,7 @@ fi
 # Version info.
 #----------------------
 
-VERSION="1.2"
+OMNETPP_VERSION="1.2"
 
 #----------------------
 # Checks for programs.
@@ -56,8 +56,8 @@ AR="ar cr"
 SHLIB_LD="gcc -shared"
 NEDC=nedc
 
-A_LIB_SUFFIX=".a.$VERSION"
-SO_LIB_SUFFIX=".so.$VERSION"
+A_LIB_SUFFIX=".a"
+SO_LIB_SUFFIX=".so"
 
 #----------------------
 # Checks for standard libraries.
@@ -252,6 +252,8 @@ AC_SUBST(PVM_INCL_DIR)
 AC_SUBST(PVM_LIBS)
 AC_SUBST(SYS_LIBS)
 
+AC_SUBST(OMNETPP_VERSION)
+
 AC_SUBST(OMNETPP_BIN_DIR)
 AC_SUBST(OMNETPP_INCL_DIR)
 AC_SUBST(OMNETPP_LIB_DIR)
@@ -276,6 +278,7 @@ AC_OUTPUT(
   src/envir/makefile
   src/gned/makefile
   src/nedc/makefile
+  src/plove/makefile
   src/sim/makefile
   src/tkenv/makefile
   src/tvenv/makefile

@@ -20,7 +20,7 @@ OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 
 all: components
 
-components: all_libs all_progs all_models all_samples
+components: all_libs all_progs install-local all_models all_samples
 
 
 #=====================================================================
@@ -140,5 +140,10 @@ depend:
 	done
 	for i in `echo $(OMNETPP_SAMPLES_DIR)/*`; do \
 	    (cd $$i; $(MAKE) depend); \
+	done
+
+install-local:
+	for i in sim envir tkenv tvenv cmdenv nedc gned plove utils; do \
+	    (cd $(OMNETPP_SRC_DIR)/$$i; $(MAKE) install-local); \
 	done
 

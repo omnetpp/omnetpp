@@ -10,6 +10,8 @@ SHLIB_LD=@SHLIB_LD@
 CFLAGS=@CFLAGS@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
+OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
+OMNETPP_VERSION=@OMNETPP_VERSION@
 
 PVM_INCL_DIR=@PVM_INCL_DIR@
 
@@ -171,6 +173,16 @@ depend:
 clean:
 	rm -f *.o libsim_std$(A_LIB_SUFFIX) libsim_std$(SO_LIB_SUFFIX) libsim_pvm$(A_LIB_SUFFIX) libsim_pvm$(SO_LIB_SUFFIX)
 
+install-local: libsim_std$(LIB_SUFFIX) @SIM_PVM_IF_POSSIBLE@
+	rm -f $(OMNETPP_LIB_DIR)/libsim_std$(A_LIB_SUFFIX)*
+	rm -f $(OMNETPP_LIB_DIR)/libsim_std$(SO_LIB_SUFFIX)*
+	rm -f $(OMNETPP_LIB_DIR)/libsim_pvm$(A_LIB_SUFFIX)*
+	rm -f $(OMNETPP_LIB_DIR)/libsim_pvm$(SO_LIB_SUFFIX)*
+	cp libsim_std$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/libsim_std$(LIB_SUFFIX).$(OMNETPP_VERSION)
+	cp libsim_pvm$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)/libsim_pvm$(LIB_SUFFIX).$(OMNETPP_VERSION)
+	cd $(OMNETPP_LIB_DIR); \
+	ln -s libsim_std$(LIB_SUFFIX).$(OMNETPP_VERSION) libsim_std$(LIB_SUFFIX); \
+	ln -s libsim_pvm$(LIB_SUFFIX).$(OMNETPP_VERSION) libsim_pvm$(LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
