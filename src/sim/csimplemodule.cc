@@ -448,10 +448,10 @@ int cSimpleModule::sendDirect(cMessage *msg, double propdelay, cGate *togate)
 
 int cSimpleModule::scheduleAt(simtime_t t, cMessage *msg)
 {
-    if (t<simTime())
-        throw new cException(eBACKSCHED);
     if (msg==NULL)
         throw new cException("scheduleAt(): message pointer is NULL");
+    if (t<simTime())
+        throw new cException(eBACKSCHED, msg->className(), msg->name(), (double)t);
     if (msg->owner()!=this)
     {
         if (msg->owner()==&simulation.msgQueue && msg->isSelfMessage() && msg->arrivalModuleId()==id())

@@ -34,4 +34,4 @@ Define_Module({Receiver});
 %exitcode: 1
 
 %contains-regex: stdout
-Error in module .*: scheduleAt\(\): cannot schedule message \(cMessage\)one: it is currently scheduled as self-message for ANOTHER module
+Error in module .*: scheduleAt\(\): cannot schedule message \(cMessage\)one, it is currently scheduled as self-message for ANOTHER module

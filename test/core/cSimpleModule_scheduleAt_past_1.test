@@ -9,5 +9,5 @@ scheduleAt(9, new cMessage("one"));
 %exitcode: 1
 
 %contains-regex: stdout
-Error in module .*: Cannot schedule message .* to the past (t=...)
+Error in module .*: Cannot schedule message .* to the past
 

@@ -78,7 +78,7 @@ char *emsg[] = {
   "",                                                    // eNOSUCHNET
   "Simulation kernel was compiled without parallel simulation support (WITH_PARSIM=no)", // eNOPARSIM
   "Bad command line argument",                           // eBADARGS
-  "Cannot schedule a message to the past",               // eBACKSCHED
+  "Cannot schedule message (%s)%s to the past, t=%lg",   // eBACKSCHED
   "receiveOn(): gate %d is output gate",                 // eOUTGATE
   "Channel error out of range [0..1]",                   // NL eCHERROR
   "Delay time less than zero",                           // NL eCHDELAY
