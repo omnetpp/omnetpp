@@ -253,8 +253,8 @@ class SIM_API cQueueIterator
   public:
     /**
      * Constructor. cQueueIterator will walk on the queue passed
-     * as argument. The current object will be the first (if a==1) or
-     * the last (a==0) object in the queue.
+     * as argument. The current object will be the first (if athead==true) or
+     * the last (athead==false) object in the queue.
      */
     cQueueIterator(const cQueue& q, bool athead=true)
             {p=&q ? (athead ? q.headp : q.tailp) : NULL;}
@@ -268,31 +268,31 @@ class SIM_API cQueueIterator
     /**
      * DEPRECATED. Use operator () instead.
      */
-    cObject& operator[](int)  {return *p->obj;}
+    cObject& operator[](int)  {return p ? *(p->obj) : *(cObject *)NULL;}
 
     /**
      * Returns the current object.
      */
-    cObject *operator()()     {return p->obj;}
+    cObject *operator()()  {return p ? p->obj : NULL;}
 
     /**
      * Returns true if the iterator has reached either end of the queue.
      */
-    bool end() const                {return (bool)(p==NULL);}
+    bool end() const   {return (bool)(p==NULL);}
 
     /**
      * Returns the current object, then moves the iterator to the next item.
      * If the iterator has reached either end of the queue, nothing happens;
      * you have to call init() again to restart iterating.
      */
-    cObject *operator++(int)  {sQElem *t=p; if(p) p=p->next; return t->obj;} // FIXME: fails if p=NULL!!!
+    cObject *operator++(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->next; return r;}
 
     /**
      * Returns the current object, then moves the iterator to the previous item.
      * If the iterator has reached either end of the queue, nothing happens;
      * you have to call init() again to restart iterating.
      */
-    cObject *operator--(int)  {sQElem *t=p; if(p) p=p->prev; return t->obj;} // FIXME: fails if p=NULL!!!
+    cObject *operator--(int)  {if (!p) return NULL; cObject *r=p->obj; p=p->prev; return r;}
 };
 
 #endif
