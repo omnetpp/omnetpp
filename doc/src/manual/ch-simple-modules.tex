@@ -2008,8 +2008,8 @@ can be done with one of these functions:
 \begin{verbatim}
 sendDelayed(cMessage *msg, double delay, const char *gateName, int index);
 sendDelayed(cMessage *msg, double delay, int gateId);
+sendDelayed(cMessage *msg, double delay, cGate *gate);
 \end{verbatim}
-
 
 The arguments are the same as for \fname{send()}, except for the extra \textit{delay}
 parameter. The effect of the function is the same as if the module
@@ -2030,18 +2030,28 @@ sendDelayed(msg, 0.005, "outGate");
 
 Sometimes it is necessary or convenient to ignore gates/connections
 and send a message directly to a remote destination module. The \fname{sendDirect()}
-function does that, and it takes the pointer of the remote module
-(\cclass{cModule} *). You can also specify a delay and an input gate of
-the destination module.
+function does that:
 
 \begin{verbatim}
-cModule *destinationmodule =...;
-double delay = truncnormal(0.005, 0.0001);
-sendDirect( new cMessage, delay, destinationmodule, "in" );
+sendDirect(cMessage *msg, double delay, cModule *mod, int gateId)
+sendDirect(cMessage *msg, double delay, cModule *mod, const char *gateName, int index=-1)
+sendDirect(cMessage *msg, double delay, cGate *gate)
 \end{verbatim}
 
-The destination module receives the message as if it was sent
-``normally''.
+In addition to the message and a delay, it also takes the destination module
+and gate. The gate should be an \textit{input} gate and should not be connected
+(that is, the module needs dedicated gates for receiving via \ttt{sendDirect()}).
+
+An example:
+
+\begin{verbatim}
+cModule *destinationModule = parentModule()->submodule("node2");
+double delay = truncnormal(0.005, 0.0001);
+sendDirect(new cMessage("packet"), delay, destinationModule, "inputGate");
+\end{verbatim}
+
+At the destination module there's no difference between messages received
+via directly and those received over connections.
 
 
 
@@ -2062,6 +2072,9 @@ The \fname{receive()} function accepts an optional \textit{timeout}
 parameter\index{receive!timeout}. (This is a \textit{delta}, not an
 absolute simulation time.) If an appropriate message doesn't arrive
 within the timeout period, the function returns a NULL pointer.
+    \footnote{Putaside-queue and the functions \ttt{receiveOn()},
+    \ttt{receiveNew()}, and \ttt{receiveNewOn()} were deprecated
+    in {\opp} 2.3 and removed in {\opp} 3.0.}
 
 \begin{verbatim}
 simtime_t timeout = 3.0;
@@ -2076,25 +2089,6 @@ else
     ...  // process message
 }
 \end{verbatim}
-
-
-\subsubsection{Deprecated functionality: putaside-queue}
-\label{ch:simple-modules:putaside-queue}
-
-Earlier versions of {\opp} supported something called \textit{putaside-queue}
-which stored messages that arrived while the module was waiting for
-something else. For example, a function called \ttt{receiveOn()} waited
-for a message to arrive on a specific gate, and messages that actually
-arrived on another gate were inserted in the putaside-queue.
-\ttt{receive()} returned messages from the putaside-queue first,
-and it waited for new messages to arrive only if putaside-queue
-was empty.
-
-Practice has shown that putaside-queue and associated functionality
-bore little usefulness, and at the same time it was very confusing
-to people. Therefore putaside-queue, \ttt{receiveOn()}, \ttt{receiveNew()},
-and \ttt{receiveNewOn()} have been deprecated in OMNeT++ 2.3, and
-will be entirely removed from further releases.
 
 
 
@@ -2129,12 +2123,13 @@ for(;;)
 }
 \end{verbatim}
 
+It is a runtime error if a message arrives during the wait interval.
 If you expect messages to arrive during the wait period, you can
 use the \fname{waitAndEnqueue()} function. It takes a pointer to a queue object
 (of class \cclass{cQueue}, described in chapter \ref{cha:the-simulation-library})
 in addition to the wait interval. Messages that arrive during the
 wait interval will be accumulated in the queue, so you can
-process them after the \fname{wait()} call has returned.
+process them after the \fname{waitAndEnqueue()} call returned.
 
 \begin{verbatim}
 cQueue queue("queue");
@@ -2146,18 +2141,6 @@ if (!queue.empty())
   ...
 }
 \end{verbatim}
-
-
-\subsubsection{Change in wait() semantics}
-
-The semantics of \fname{wait()} has slightly changed after OMNeT++ 2.3,
-due to the deprecation of the putaside-queue
-(see section \ref{ch:simple-modules:putaside-queue}).
-Up to release 2.3, messages that arrived during the wait interval
-were accumulated in the putaside-queue. In later releases,
-it will be a runtime error if a message arrives during the wait interval --
-if you want to allow such messages, you should use \fname{waitAndEnqueue()}.
-
 
 
 \subsection{Modeling events using self-messages}
@@ -2387,15 +2370,12 @@ cGate *outgate = gate("out");
 cGate *outvec5gate = gate("outvec",5);
 \end{verbatim}
 
-
 For gate vectors\index{gate!vector}, the first form returns the first gate in the
 vector (at index 0).
-
 
 The \fname{isVector()} member function can be used to determine if a
 gate belongs to a gate vector or not. But this is almost insignificant,
 because non-vector gates are treated as vectors with size 1.
-
 
 Given a gate pointer, you can use the \fname{size()} and
 \fname{index()} member functions of \cclass{cGate} to determine the
@@ -2407,8 +2387,10 @@ int size2 = outvec5gate->size(); // --> size of outvec[]
 int index = outvec5gate->index(); // --> 5 (it is gate 5 in the vector)
 \end{verbatim}
 
-
 For non-vector gates, \fname{size()} returns 1 and \fname{index()} returns 0.
+
+Zero-size gate vectors are represented with a placeholder gate whose
+\fname{size()} method returns zero and cannot be connected.
 
 The \fname{type()} member function returns a character, 'I' for input
 gates and 'O' for output gates:
