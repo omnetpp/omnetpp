@@ -3,8 +3,17 @@ Sockets (Hardware-in-the Loop Simulation Demo)
 
 This is an example how one can implement hardware-in-the-loop simulation
 with OMNeT++/OMNEST. Hardware-in-the-loop means that some external device
-is taking part in the simulation. (In other scenarios, the simulation 
+is taking part in the simulation. (In other scenarios, the simulation
 program may emulate a device in a real system).
+
+ | *** ATTENTION Windows XP users ***
+ |
+ | This program will open a socket for incoming TCP connections. If
+ | Windows Firewall is turned on, it may ask you if you want to block
+ | "sockets" from accepting connections -- say no ([Unblock] button).
+ | If you already clicked [Keep blocking], it won't ask you any more --
+ | then you'll have to go to the Windows Firewall Options dialog,
+ | Exceptions tab, and select the "sockets" checkbox.
 
 This example contains two simulation models:
  * HTTPNet models a network where several clients send HTTP requests to a
@@ -40,11 +49,11 @@ This example contains two simulation models:
      into the simulated network.
 
 Both simulations are executed in real-time, that is, simulation time is
-synchronized to real (wall clock) time. 
+synchronized to real (wall clock) time.
 
-It is recommended that you set animation speed to near maximum (using the 
-slider at the top of the graphics window) for the simulation to be able 
-to keep up with real time. You can check on the performance gauge bar: 
+It is recommended that you set animation speed to near maximum (using the
+slider at the top of the graphics window) for the simulation to be able
+to keep up with real time. You can check on the performance gauge bar:
 the simsec/sec gauge should stay around 1.0.
 
 More detailed documentation is available in the htdocs/ subdirectory of the
