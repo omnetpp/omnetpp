@@ -81,13 +81,13 @@ set icons(asoutput) [image create photo -data {
 }]
 
 set icons(gates) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxv//AEqAtf//////////////////////////////////////
+    R0lGODlhFAATALMAAAAAAMbGxv//AJc+Pv//////////////////////////////////////
     /////////yH5BAEAAAEALAAAAAAUABMAAAQ+MMhJq60g63zr+OAAdFS4caQprMJIBiDAtq/0
     yayb3rPexada6FaDATe7WO+lyiV5zl9z5fOYgs9Y7YQseiMAOw==
 }]
 
 set icons(params) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxv+GAEqAtf//AP//////////////////////////////////
+    R0lGODlhFAATALMAAAAAAMbGxv+GAJc+Pv//AP//////////////////////////////////
     /////////yH5BAEAAAEALAAAAAAUABMAAARXMMhJq5Ug630nGGAoDt03npd5jpZJECHxvaDs
     1QD86vN7D69ZDigk/GSgjzI5APxUKxAFGpVOa7Ss9krk4YhcmQ5GBNowoUzTxM78qqEKNdra
     2DmdfCUCADs=
@@ -100,9 +100,9 @@ set icons(parent) [image create photo -data {
 }]
 
 set icons(redraw) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxsAAAGdnZ4AAAP//////////////////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARIMMhJq70U4B3AEAJXeSAIECJZngShXarZulgs
-    sDT8rfNr2TjfqMNrCTMFDeDWqxWeyqbzmezkplSlqEOFbiWA7HcCKI/P6EsEADs=
+    R0lGODlhFAATALMAAAAAAMbGxsAAAIWFhYAAAFAAAKysrP//////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARDMMhJq72zhGEwFhrnUQIRdqNUmhvqraz4EnRw
+    pmpN32kp0TEXqRYA8iqrYnBGUB4/tecIJp0ucYFOqXoBtbASLpgSAQA7
 }]
 
 set icons(fes) [image create photo -data {
@@ -112,8 +112,8 @@ set icons(fes) [image create photo -data {
 }]
 
 set icons(network) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAISE/8bGxgCAgP//////////////////////////////////////
-    /////////yH5BAEAAAIALAAAAAAUABMAAARCUMhJqxUg342z5pWXDcPkXSJAkin6rS1IxTL8
+    R0lGODlhFAATALMAAAAAAISE/8bGxoAAAP//////////////////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARCUMhJqxUg342z5pWXDcPkXSJAkin6rS1IxTL8
     gWu51rtEbp4fRRgSXYgmUamCFAxSuSjzqYn+Tj5ZB6vd3rS0LjcCADs=
 }]
 
