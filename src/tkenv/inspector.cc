@@ -130,14 +130,14 @@ void TInspector::update()
    }
 
    // update object type and name info
-   char newname[300];
+   char newname[MAX_OBJECTFULLPATH+MAX_CLASSNAME+40];
    char buf[30];
    cModule *mod = dynamic_cast<cModule *>(object);
    if (mod)
-       sprintf(newname, "(%.40s) %.250s  (id=%d)  (%s)",object->className(),
+       sprintf(newname, "(%s) %s  (id=%d)  (%s)",object->className(),
                         object->fullPath(), mod->id(), ptrToStr(object,buf));
    else
-       sprintf(newname, "(%.40s) %.250s  (%s)",object->className(),
+       sprintf(newname, "(%s) %s  (%s)",object->className(),
                         object->fullPath(), ptrToStr(object,buf));
    CHK(Tcl_VarEval(interp, windowname,".infobar.name config -text {",newname,"}",NULL));
 }
@@ -235,7 +235,7 @@ void TInspector::fillInspectorListbox(const char *listbox, cObject *object,
    // set "number of items" display
    CHK(Tcl_VarEval(interp,w," index end",NULL));
    sprintf(w, "%s.label", listbox);
-   sprintf(buf,"%s objects in (%s) %s:", interp->result,object->className(),object->fullPath());
+   sprintf(buf,"%s objects", interp->result);
    setLabel(w, buf);
 }
 

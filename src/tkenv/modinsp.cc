@@ -91,16 +91,6 @@ void TModuleWindow::update()
    cModule *mod = (cModule *)object;
 
    setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
-
-   // char id[32];
-   // sprintf(id," (id=%d)",mod->id());
-   // CHK(Tcl_VarEval(interp, modulename, " config -text {",mod->fullPath(),id,"}", NULL));
-   // if (mod->isSimple())
-   // {
-   //     CHK(Tcl_VarEval(interp, phase, " config -text {Phase: ",
-   //                          ((cSimpleModule *)mod)->phase(),"}", NULL));
-   // }
-
 }
 
 //=======================================================================

@@ -135,7 +135,7 @@ char *infofunc_nameonly( cObject *object)
 
 char *infofunc_infotext( cObject *object)
 {
-    static char buf[128];
+    static char buf[MAX_OBJECTINFO];
     char *d = printptr(object,buf);
     object->info( d );
     return buf;
@@ -143,7 +143,7 @@ char *infofunc_infotext( cObject *object)
 
 char *infofunc_fullpath( cObject *object)
 {
-    static char buf[128];
+    static char buf[MAX_OBJECTFULLPATH];
     char *d = printptr(object,buf);
     const char *s = object->fullPath();
     strcpy(d, (s && s[0]) ? s : "<noname>" );
@@ -353,9 +353,9 @@ int createTkCommands( Tcl_Interp *interp, OmnetTclCommand *commands)
 {
     for(;commands->namestr!=NULL; commands++)
     {
-        Tcl_CreateCommand( interp, commands->namestr, 
+        Tcl_CreateCommand( interp, commands->namestr,
                                    (Tcl_CmdProc *)commands->func,
-                                   (ClientData)NULL, 
+                                   (ClientData)NULL,
                                    (Tcl_CmdDeleteProc *)NULL);
     }
     return TCL_OK;

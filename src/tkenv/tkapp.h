@@ -27,6 +27,11 @@
 class Speedometer;
 class TInspector;
 
+// heuristic upper limits for various strings: obj->className(), obj->fullPath(), obj->info()
+#define MAX_CLASSNAME       100
+#define MAX_OBJECTFULLPATH  500
+#define MAX_OBJECTINFO      500
+
 //=========================================================================
 // TOmnetTkApp: Tcl/Tk-based user interface.
 

@@ -77,7 +77,7 @@ void TObjInspector::update()
    setLabel(".nb.info.fullpath.e",object->fullPath());
    setLabel(".nb.info.class.e",object->className());
 
-   char buf[129];
+   static char buf[MAX_OBJECTINFO];
    object->info(buf);
    setLabel(".nb.info.info.e",buf);
 
@@ -239,11 +239,11 @@ void TMessageInspector::update()
 
    cModule *mod;
    setInspectButton(".nb.send.src",mod=simulation.module(msg->senderModuleId()), INSP_DEFAULT);
-   if (mod) sprintf(buf,"Src: #%d %.50s", mod->id(), mod->fullPath());
+   if (mod) sprintf(buf,"Src: %.50s (id=%d)", mod->fullPath(), mod->id());
        else strcpy(buf,"Src: n/a");
    setButtonText(".nb.send.src", buf);
    setInspectButton(".nb.send.dest",mod=simulation.module(msg->arrivalModuleId()), INSP_DEFAULT);
-   if (mod) sprintf(buf,"Dest: #%d %.50s", mod->id(), mod->fullPath());
+   if (mod) sprintf(buf,"Dest: %.50s (id=%d)", mod->fullPath(), mod->id());
        else strcpy(buf,"Dest: n/a");
    setButtonText(".nb.send.dest", buf);
 
@@ -448,7 +448,7 @@ void TParInspector::update()
 
    cObject *obj;
    setInspectButton(".bot.indirection",obj=p->redirection(),INSP_DEFAULT);
-   if (obj) sprintf(buf,"Value taken from: %.30s",obj->fullPath());
+   if (obj) sprintf(buf,"Value taken from: %.50s",obj->fullPath());
    setButtonText(".bot.indirection", obj ? buf : "-not redirected-");
 }
 

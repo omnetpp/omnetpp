@@ -622,7 +622,7 @@ void TOmnetTkApp::stopAtBreakpoint(const char *label, cSimpleModule *mod)
     updateSimtimeDisplay();
 
     // pop up a dialog
-    char buf[256];
+    static char buf[MAX_OBJECTFULLPATH+100];
     sprintf(buf, (mod->usesActivity() ?
                     "Breakpoint \"%s\" hit in module %s (id=%d)." :
                     "Breakpoint \"%s\" hit in module %s (id=%d). "
@@ -870,7 +870,7 @@ void TOmnetTkApp::clearPerformanceDisplay()
 
 void TOmnetTkApp::printEventBanner(cSimpleModule *module)
 {
-    char banner[256];
+    char banner[MAX_OBJECTFULLPATH+60];
     if (module->phase()[0]==0)
     {
         sprintf(banner,"** Event #%ld.  T=%s.  Module #%u `%s'\n",
@@ -970,7 +970,7 @@ void TOmnetTkApp::objectDeleted( cObject *object )
 void TOmnetTkApp::messageSent( cMessage *msg )
 {
     // display in message window
-    static char buf[1000]; // module names might be very long
+    static char buf[MAX_OBJECTINFO];
     msg->info( buf );
     CHK(Tcl_VarEval(interp, "catch {\n"
                             " .messagewindow.main.text insert end"
@@ -1015,7 +1015,7 @@ void TOmnetTkApp::messageSent( cMessage *msg )
 void TOmnetTkApp::messageDelivered( cMessage *msg )
 {
     // display in message window
-    static char buf[1000]; // module names might be very long
+    static char buf[MAX_OBJECTINFO];
     msg->info( buf );
     CHK(Tcl_VarEval(interp, "catch {\n"
                             " .messagewindow.main.text insert end"

@@ -527,7 +527,7 @@ int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
-   char buf[1024];
+   static char buf[MAX_OBJECTINFO];
    object->info(buf);
    Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
