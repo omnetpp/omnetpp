@@ -214,13 +214,16 @@ proc bltGraph_SavePostscript {} {
     }
 }
 
-proc bltGraph_Properties {{what "lines"}} {
+proc bltGraph_Properties {{what ""}} {
     set w .bltwin
     set graph [$w.nb tab cget select -window].g
     bltGraph_PropertiesDialog $graph $what
 }
 
-proc bltGraph_PropertiesDialog {graph {what "lines"}} {
+#FIXME to some better place
+set tmp(graphproperties-tab) 0
+
+proc bltGraph_PropertiesDialog {graph {what ""}} {
     global tmp
 
     set w .bltwin.graphprops
@@ -231,12 +234,14 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
     set nb $w.f.nb
     blt::tabnotebook $nb -tearoff no -relief flat
     pack $nb -expand 1 -fill both
-    foreach {tab title} {titles "Titles" axes "Axes" gridlines "Gridlines" lines "Lines" legend "Legend"} {
+    foreach {tab title} {titles "Title" axes "Axes" gridlines "Gridlines" lines "Lines" legend "Legend"} {
         frame $nb.$tab
         set tabs($tab) [$nb insert end -text $title -window $nb.$tab  -fill both]
     }
+    if {$what==""} {
+        set what $tmp(graphproperties-tab)
+    }
     $nb select $tabs($what)
-    #FIXME preserve last open tab
 
     # Titles page
     set f $nb.titles
@@ -255,7 +260,7 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
     label-combo $f.xrotate "Rotate X labels by" {0 30 45 60 90}
     label-combo $f.xdiv "X axis subdivisions" {1 2 4 5 10}
     label-combo $f.ydiv "Y axis subdivisions" {1 2 4 5 10}
-    # FIXME axis min, max, logarithmic
+    # FIXME axis min, max, logarithmic; x labels off (for bar charts)
     $f.xlabel.e configure -textvariable tmp(axisxlabel)
     $f.ylabel.e configure -textvariable tmp(axisylabel)
     $f.titlefont.e configure -textvariable tmp(axistitlefont)
@@ -291,8 +296,6 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
 
     # fill dialog with data
     # FIXME bring this *before* widget creations, because combo doesn't obey settings!
-    set graph [.bltwin.nb tab cget select -window].g
-
     set tmp(graphtitle) [$graph cget -title]
     set tmp(titlefont) [$graph cget -font]
 
@@ -331,6 +334,7 @@ proc bltGraph_PropertiesDialog {graph {what "lines"}} {
         $graph legend config -relief $tmp(legendrelief)
         $graph legend config -font $tmp(legendfont)
     }
+    set tmp(graphproperties-tab) [$nb index -index select]
     destroy $w
 }
 

@@ -14,4 +14,8 @@ full string search
 
 Toolbar icons
 
-Handle command-line args, save rc file
+Save rc file
+
+Display basic statistics of variables displayed: mean, stddev, maybe histogram?
+
+Filter: values between [...] and [...]
