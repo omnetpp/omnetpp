@@ -151,12 +151,16 @@ fi
 sobjs=""
 for i in $dirs; do
     echo "*** Running make in $i to see object file names"
-    (cd $i; make)
-    o=`echo $i/*.o`
-    if [ "$o" = "$i/*.o" ]; then
-         echo "makemake: warning: no object files in $i" 1>&2
+    if (cd $i && make); then
+        o=`echo $i/*.o`
+        if [ "$o" = "$i/*.o" ]; then
+            echo "makemake: warning: no object files in $i" 1>&2
+        else
+            sobjs="$sobjs $o"
+        fi
     else
-         sobjs="$sobjs $o"
+        echo "makemake: make in $i failed, exiting" 1>&2
+        exit
     fi
 done
 
@@ -325,7 +329,7 @@ if [ "$type" != "o" ]; then
         echo 'subdirs-phony:'
         for i in $dirs
         do
-           echo "	(cd $i; make)"
+           echo "	(cd $i && make)"
         done
         echo
     fi
