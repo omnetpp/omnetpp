@@ -833,8 +833,8 @@ sub generateClass
         } else {
             print H "    virtual cObject *dup() const {return new $msgclass(*this);}\n";
         }
-        print H "    virtual void netPack(cCommBuffer *buffer);\n";
-        print H "    virtual void netUnpack(cCommBuffer *buffer);\n";
+        print H "    virtual void netPack(cCommBuffer *b);\n";
+        print H "    virtual void netUnpack(cCommBuffer *b);\n";
     }
     print H "\n";
     print H "    // field getter/setter methods\n";
@@ -928,9 +928,9 @@ sub generateClass
     {
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                if ($fkind{$fieldname} eq 'basic' && $fval{$fieldname} ne '') {
+                if ($fkind{$fieldname} eq 'basic') {
                     print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
-                    print CC "        this->$var{$fieldname}\[i\] = 0;\n";
+                    print CC "        this->$var{$fieldname}\[i\] = $fval{$fieldname};\n";
                 }
                 if ($classtype{$ftype{$fieldname}} eq 'cobject') {
                   print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
@@ -1044,14 +1044,51 @@ sub generateClass
     print CC "}\n\n";
 
     if ($classtype eq "cobject") {
-        print CC "void $msgclass\:\:netPack(cCommBuffer *buffer)\n";
+        print CC "void $msgclass\:\:netPack(cCommBuffer *b)\n";
         print CC "{\n";
-        print CC "    // for parallel simulation: set customize=true in the msg file, and redefine netPack() like e.g. in src/sim/cmessage.cc\n";
-        print CC "    throw new cException(this, \"Cannot serialize object -- please customize class $msgclass and write a netPack() method for it\");\n";
+        foreach $fieldname (@fieldlist)
+        {
+            if (!$fisabstract{$fieldname}) {
+                if ($fkind{$fieldname} eq 'basic') {
+                    if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+                        print CC "    b->pack(this->$var{$fieldname},$farraysize{$fieldname});\n";
+                    } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+                        print CC "    b->pack($varsize{$fieldname});\n";
+                        print CC "    b->pack(this->$var{$fieldname},$varsize{$fieldname});\n";
+                    } else {
+                        print CC "    b->pack(this->$var{$fieldname});\n";
+                    }
+                } else {
+                    # $fkind='struct', $classtype='struct'/'noncobject'/'cobject'
+                    #FIXME todo
+                    print CC "    throw new cException(this, \"Serialization for class/struct field `$fieldname' not yet supported by opp_msgc\");\n";
+                }
+            }
+        }
         print CC "}\n\n";
-        print CC "void $msgclass\:\:netUnpack(cCommBuffer *buffer)\n";
+        print CC "void $msgclass\:\:netUnpack(cCommBuffer *b)\n";
         print CC "{\n";
-        print CC "    throw new cException(this, \"Cannot deserialize object -- please customize class $msgclass and write a netUnpack() method for it\");\n";
+        foreach $fieldname (@fieldlist)
+        {
+            if (!$fisabstract{$fieldname}) {
+                if ($fkind{$fieldname} eq 'basic') {
+                    if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
+                        print CC "    b->unpack(this->$var{$fieldname},$farraysize{$fieldname});\n";
+                    } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
+                        print CC "    delete [] this->$var{$fieldname};\n";
+                        print CC "    b->unpack($varsize{$fieldname});\n";
+                        print CC "    this->$var{$fieldname} = new $datatype{$fieldname}\[$varsize{$fieldname}\];\n";
+                        print CC "    b->unpack(this->$var{$fieldname},$varsize{$fieldname});\n";
+                    } else {
+                        print CC "    b->unpack(this->$var{$fieldname});\n";
+                    }
+                } else {
+                    # $fkind='struct', $classtype='struct'/'noncobject'/'cobject'
+                    #FIXME todo
+                    print CC "    throw new cException(this, \"Deserialization for class/struct field `$fieldname' not yet supported by opp_msgc\");\n";
+                }
+            }
+        }
         print CC "}\n\n";
     }
 

@@ -3,8 +3,8 @@
 	* opp_msgc: prohibit using cObject fields in structs and non-cObject
 	classes (ownership issues)
 
-	* opp_msgc: generate dummy netPack() and netUnpack() that throw
-	exceptions telling the user to redefine them.
+	* opp_msgc: partial implementation of netPack()/netUnpack():
+	handles primitive types only, for struct/class it throws exception
 
 2004-05-16  Andras Varga
 
