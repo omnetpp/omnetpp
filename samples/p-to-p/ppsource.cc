@@ -18,9 +18,9 @@ class PPSource : public cSimpleModule
     Module_Class_Members(PPSource,cSimpleModule,0)
 
     // parameters
-    double sleepTimeMean;
-    double burstTimeMean;
-    double sendIATime;
+    cPar *sleepTime;
+    cPar *burstTime;
+    cPar *sendIATime;
     cPar *msgLength;
 
     // FSM and its states
@@ -48,9 +48,9 @@ void PPSource::initialize()
 {
     fsm.setName("fsm");
 
-    sleepTimeMean = par("sleepTimeMean");
-    burstTimeMean = par("burstTimeMean");
-    sendIATime = par("sendIaTime");
+    sleepTime = &par("sleepTime");
+    burstTime = &par("burstTime");
+    sendIATime = &par("sendIaTime");
     msgLength = &par("msgLength");
 
     i = 0;
@@ -63,6 +63,7 @@ void PPSource::initialize()
 
 void PPSource::handleMessage(cMessage *msg)
 {
+    simtime_t d;
     FSM_Switch(fsm)
     {
       case FSM_Exit(INIT):
@@ -72,12 +73,25 @@ void PPSource::handleMessage(cMessage *msg)
 
       case FSM_Enter(SLEEP):
         // schedule end of sleep period (start of next burst)
-        scheduleAt(simTime()+exponential(sleepTimeMean), startStopBurst);
+        d = sleepTime->doubleValue();
+        scheduleAt(simTime() + d, startStopBurst);
+
+        // display message, restore normal icon color
+        ev << "sleeping for " << d << "s\n";
+        bubble("burst ended, sleeping");
+        displayString().setTagArg("i",1,"");
         break;
 
       case FSM_Exit(SLEEP):
         // schedule end of this burst
-        scheduleAt(simTime()+exponential(burstTimeMean), startStopBurst);
+        d = burstTime->doubleValue();
+        scheduleAt(simTime() + d, startStopBurst);
+
+        // display message, turn icon yellow
+        ev << "starting burst of duration " << d << "s\n";
+        bubble("burst started");
+        displayString().setTagArg("i",1,"yellow");
+
         // transition to ACTIVE state:
         if (msg!=startStopBurst)
             error("invalid event in state ACTIVE");
@@ -86,7 +100,9 @@ void PPSource::handleMessage(cMessage *msg)
 
       case FSM_Enter(ACTIVE):
         // schedule next sending
-        scheduleAt(simTime()+exponential(sendIATime), sendMessage);
+        d = sendIATime->doubleValue();
+        ev << "next sending in " << d << "s\n";
+        scheduleAt(simTime() + d, sendMessage);
         break;
 
       case FSM_Exit(ACTIVE):
@@ -110,6 +126,11 @@ void PPSource::handleMessage(cMessage *msg)
         frame->setLength( (long) *msgLength );
         frame->setTimestamp();
         send(frame, "out" );
+
+        // update status string above icon
+        char txt[32];
+        sprintf(txt, "sent: %d", i);
+        displayString().setTagArg("t",0, txt);
 
         // return to ACTIVE
         FSM_Goto(fsm,ACTIVE);

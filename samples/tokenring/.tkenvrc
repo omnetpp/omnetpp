@@ -30,7 +30,7 @@ config editor-whole-words	{0}
 config filtobjlist-order	{Class}
 inspector "token" "TokenRing" "2" "268x353+11+3"
 inspector "token.comp[0]" "Computer" "2" "229x257+37+389"
-inspector "token.comp[4].sink.local-objects.End-to-End Delay histogram (K-split)" "cKSplit" "2" "309x210+289+450"
-inspector "token.comp[0].mac.class-members.Queueing time (sec)" "cOutVector" "2" "379x201+289+220"
-inspector "token.comp[0].mac.class-members.sendQueue" "cQueue" "1" "379x186+289+5"
+inspector "token.comp[4].sink.End-to-End Delay histogram (K-split)" "cKSplit" "2" "309x210+289+450"
+inspector "token.comp[0].mac.Queueing time (sec)" "cOutVector" "2" "379x201+289+220"
+inspector "token.comp[0].mac.sendQueue" "cQueue" "1" "379x186+289+5"
 

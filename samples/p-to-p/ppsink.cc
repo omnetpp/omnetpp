@@ -34,11 +34,17 @@ void PPSink::initialize()
 
 void PPSink::handleMessage(cMessage *msg)
 {
+    // update statistics and delete message
     double d = simTime()-msg->timestamp();
     ev << "Received " << msg->name() << ", queueing time: " << d << "sec" << endl;
     qstats.collect( d );
     qtime.record( d );
     delete msg;
+
+    // update status string above icon
+    char txt[32];
+    sprintf(txt, "received: %d", qstats.samples());
+    displayString().setTagArg("t",0, txt);
 }
 
 void PPSink::finish()

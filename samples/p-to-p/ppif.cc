@@ -34,6 +34,8 @@ class PointToPointIF : public cSimpleModule
     virtual void handleMessage(cMessage *msg);
 
     virtual void startTransmitting(cMessage *msg);
+
+    virtual void displayStatus(bool isBusy);
 };
 
 Define_Module(PointToPointIF);
@@ -46,7 +48,7 @@ void PointToPointIF::initialize()
     frameCapacity = par("frameCapacity"); // FIXME implement, via cMessageQueue!!
     bitCapacity = par("bitCapacity");
 
-    gateToWatch = gate("lineOut"); // FIXME the one with 1st transmissionfinishes
+    gateToWatch = gate("lineOut");
 
     // check that we're really connected to a gate with data rate
     cSimpleChannel *chan = check_and_cast<cSimpleChannel*>(gate("lineOut")->channel());
@@ -57,7 +59,7 @@ void PointToPointIF::initialize()
 
 void PointToPointIF::startTransmitting(cMessage *msg)
 {
-    if (ev.isGUI()) displayString().setTagArg("i",1, queue.length()>=3 ? "red" : "yellow");
+    if (ev.isGUI()) displayStatus(true);
 
     ev << "Starting transmission of " << msg << endl;
     send(msg, "lineOut");
@@ -73,7 +75,7 @@ void PointToPointIF::handleMessage(cMessage *msg)
     {
         // Transmission finished, we can start next one.
         ev << "Transmission finished.\n";
-        if (ev.isGUI()) displayString().setTagArg("i",1,"");
+        if (ev.isGUI()) displayStatus(false);
         if (!queue.empty())
         {
             msg = (cMessage *) queue.getTail();
@@ -100,5 +102,11 @@ void PointToPointIF::handleMessage(cMessage *msg)
             startTransmitting(msg);
         }
     }
+}
+
+void PointToPointIF::displayStatus(bool isBusy)
+{
+    displayString().setTagArg("t",0, isBusy ? "transmitting" : "idle");
+    displayString().setTagArg("i",1, isBusy ? (queue.length()>=3 ? "red" : "yellow") : "");
 }
 
