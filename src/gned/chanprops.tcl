@@ -20,6 +20,10 @@
 proc editChannelProps {key} {
     global gned ned canvas
 
+    tk_messageBox -title "GNED" -icon warning -type ok \
+                 -message "Dialog implementation not finished yet"
+    return
+
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .chanprops "Channel Properties"
     wm geometry .chanprops "380x260"

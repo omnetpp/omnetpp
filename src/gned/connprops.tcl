@@ -21,7 +21,9 @@
 proc editConnectionProps {key} {
     global gned ned canvas
 
-puts "DBG: editConnectionProps: dialog doesn't work yet!"
+    tk_messageBox -title "GNED" -icon warning -type ok \
+                 -message "Dialog implementation not finished yet"
+    return
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .connprops "Connection Properties"

@@ -250,4 +250,5 @@ proc updateNedFromSectionTables {frame submodkey sectiontype itemtype keyattr} {
 
 proc chooseModuleType {preferred} {
     notImplemented
+    return ""
 }
