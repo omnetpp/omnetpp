@@ -49,13 +49,14 @@ proc configureEditor {w} {
     #   'break' is needed below because
     #      ^H is originally bound to Backspace ('Text' tag), and
     #      ^F is originally bound to 1 char right
+    #      ^N is originally bound to 1 line down
     bind $w <Control-f> {editFind;break}
     bind $w <Control-F> {editFind;break}
     bind $w <Control-h> {editReplace;break}
     bind $w <Control-H> {editReplace;break}
     bind $w <F3>        {editFindNext}
-    bind $w <Control-n> {editFindNext}
-    bind $w <Control-N> {editFindNext}
+    bind $w <Control-n> {editFindNext;break}
+    bind $w <Control-N> {editFindNext;break}
 }
 
 # syntaxHighlight --
