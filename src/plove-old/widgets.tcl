@@ -58,6 +58,17 @@ proc checkTclTkVersion {} {
 #
 proc setupTkOptions {} {
    global fonts tcl_platform tk_version
+   global tcl_wordchars tcl_nonwordchars
+
+   catch {tcl_wordBreakAfter}; # work around Tcl bug: these vars got reset when words.tcl was autoloaded
+   set tcl_wordchars {\w}
+   set tcl_nonwordchars {\W}
+
+   # by default, undo/redo bindings are platform-specific -- change it:
+   event add <<Undo>> <Control-Key-z>
+   event add <<Undo>> <Control-Key-Z>
+   event add <<Redo>> <Control-Key-y>
+   event add <<Redo>> <Control-Key-Y>
 
    #
    # fonts() array elements:
@@ -257,11 +268,17 @@ proc label-combo {w label list {text {}} {cmd {}}} {
     }
 }
 
+proc label-combo2 {w label list {text {}} {cmd {}}} {
+    # start with empty combo box
+    label-combo $w $label $list $text $cmd
+    $w.e delete 0 end
+}
+
 proc label-text {w label height {text {}}} {
     # utility function: create a frame with a label+text
     frame $w
     label $w.l -anchor w -width 16 -text $label
-    text $w.t -highlightthickness 0 -height $height -width 40
+    text $w.t -undo true -maxundo 1000 -highlightthickness 0 -height $height -width 40
     pack $w.l -anchor n -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.t -anchor center -expand 1 -fill both -padx 2 -pady 2 -side right
     $w.t insert 1.0 $text
@@ -573,9 +590,14 @@ proc createOkCancelDialog {w title} {
 # execOkCancelDialog --
 #
 # Executes the dialog.
+# Optional validating proc may check if fields are correctly
+# filled in -- it should return 1 if dialog contents is valid,
+# 0 if there are invalid fields and OK button should not be
+# accepted.
+#
 # Returns 1 if Ok was pressed, 0 if Cancel was pressed.
 #
-proc execOkCancelDialog w {
+proc execOkCancelDialog {w {validating_proc {}}} {
 
     global opp
 
@@ -583,6 +605,93 @@ proc execOkCancelDialog w {
     catch {$w.buttons.cancelbutton configure -command "set opp($w) 0"}
 
     bind $w <Return> "if {\[winfo class \[focus\]\]!=\"Text\"} {set opp($w) 1}"
+    bind $w <Escape> "set opp($w) 0"
+
+    wm protocol $w WM_DELETE_WINDOW "set opp($w) 0"
+
+    # next line mysteriously solves "lost focus" problem of popup dialogs...
+    after 1 "wm deiconify $w"
+
+    center $w
+
+    set oldGrab [grab current $w]
+    if {$oldGrab != ""} {
+        set grabStatus [grab status $oldGrab]
+    }
+    grab $w
+
+    # Wait for the user to respond, then restore the focus and
+    # return the index of the selected button.  Restore the focus
+    # before deleting the window, since otherwise the window manager
+    # may take the focus away so we can't redirect it.  Finally,
+    # restore any grab that was in effect.
+
+    if {$validating_proc==""} {
+        tkwait variable opp($w)
+    } else {
+        tkwait variable opp($w)
+        while {$opp($w)==1 && ![eval $validating_proc $w]} {
+            tkwait variable opp($w)
+        }
+    }
+
+    if {$oldGrab != ""} {
+        if {$grabStatus == "global"} {
+            grab -global $oldGrab
+        } else {
+            grab $oldGrab
+        }
+    }
+    return $opp($w)
+}
+
+# createCloseDialog --
+#
+# Creates dialog with a Close button.
+# User's widgets can go into frame $w.f, and extra buttons can go into frame $w.buttons.
+#
+proc createCloseDialog {w title} {
+    global tk_version tcl_platform
+
+    catch {destroy $w}
+    toplevel $w -class Toplevel
+    if {$tk_version<8.2 || $tcl_platform(platform)!="windows"} {
+        wm transient $w [winfo toplevel [winfo parent $w]]
+    }
+    wm title $w $title
+    wm iconname $w Dialog
+    wm focusmodel $w passive
+    wm overrideredirect $w 0
+    wm resizable $w 1 1
+    wm deiconify $w
+    wm protocol $w WM_DELETE_WINDOW { }
+
+    # preliminary placement (assumes 350x250 dialog)...
+    set pre_x [expr ([winfo screenwidth $w]-350)/2-[winfo vrootx [winfo parent $w]]]
+    set pre_y [expr ([winfo screenheight $w]-250)/2-[winfo vrooty [winfo parent $w]]]
+    wm geom $w +$pre_x+$pre_y
+
+    frame $w.f
+    frame $w.buttons
+    button $w.buttons.closebutton  -text {Close}
+
+    pack $w.buttons -expand 0 -fill x -padx 5 -pady 5 -side bottom
+    pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top
+    pack $w.buttons.closebutton  -anchor n -side right -padx 2
+}
+
+
+# execCloseDialog --
+#
+# Executes the dialog.
+#
+proc execCloseDialog w {
+
+    global opp
+
+    $w.buttons.closebutton configure -command "set opp($w) 1"
+
+    #bind $w <Return> "if {\[winfo class \[focus\]\]!=\"Text\"} {set opp($w) 1}"
     bind $w <Escape> "set opp($w) 0"
 
     wm protocol $w WM_DELETE_WINDOW "set opp($w) 0"
@@ -630,3 +739,5 @@ proc aboutDialog {title contents} {
     execOkCancelDialog .about
     destroy .about
 }
+
+
