@@ -26,6 +26,10 @@ if [ -n "$do_help" ]; then
     echo "opp_neddoc - NED and MSG documentation tool, part of OMNeT++"
     echo "(c) 2003 Andras Varga"
     echo ""
+    if [ ! -n "$PS2GIF" ]; then
+    echo "(Note: generating figures not possible -- ImageMagick's 'convert' is not present.)"
+    echo ""
+    fi
     echo "Usage: opp_neddoc [-o <dir>] [-n] [-a] file1 file2 ..."
     echo " -o <dir>      output directory, defaults to ./html"
     echo " -n, --nofig   do not generate screenshots"
@@ -64,7 +68,7 @@ nedtool -x -e -t -y -m -o $TMPFILE $files || exit 1
 if [ -n "$PS2GIF" ]; then
     echo exporting screenshots (Postscript) using GNED...
     gned -- -c $outdir $files || exit 1
-    echo converting Postscript to GIF using ImageMagick...
+    echo converting Postscript to GIF using $PS2GIF...
     for i in $outdir/*.eps; do
        gif=`echo $i | sed 's/eps$/gif/'`
        $PS2GIF $i $gif || exit 1
