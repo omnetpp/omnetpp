@@ -54,7 +54,7 @@ struct sQElem
  * inserted (that is, takeOwnership(true)).
  *
  * The sorting function should look like:
- * int CompareFunc(cObject& a, cObject& b);
+ * int CompareFunc(cObject* a, cObject* b);
  *
  * They must return a negative value if a&lt;b, 0 if a==b and a positive value
  * if a&gt;b.
