@@ -31,6 +31,7 @@ Drawing:
   on the canvas
 - drag&drop doesn't obey "snap to grid" setting
 - rename: cannot delete "1" from "Module1" if there's a "Module2"
+- add 'rename' to popup menu
 
 Load/save:
 - SaveAll feature [from Niko]
