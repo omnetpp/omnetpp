@@ -1130,7 +1130,7 @@ int runparse ()
         strcpy (lasttextbuf, "");
         strcpy (yyfailure, "");
 
-        if (yyin)
+//        if (yyin)
             yyrestart( yyin );
 
         return yyparse();
