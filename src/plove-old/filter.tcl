@@ -164,7 +164,7 @@ proc filterSelected {} {
 
     global filt global tmp
 
-    set name [.ize.f.filt.e cget -value]
+    set name [.ize.f.f1.filt.e cget -value]
 
     if {[lsearch -exact $filt(names) $name] == -1} {
         tk_messageBox -title Error -icon warning -message "No filter named $name." -type ok
@@ -172,7 +172,7 @@ proc filterSelected {} {
     }
 
     # adjust filter prefix
-    set tit [.ize.f.title.e get]
+    set tit [.ize.f.f0.title.e get]
     set tit [cut_prefix $tit $tmp(prefix)]
 
     if {$filt($name,prefix) == ""} {
@@ -181,22 +181,22 @@ proc filterSelected {} {
         set tmp(prefix) "$filt($name,prefix) "
     }
     set tit "$tmp(prefix)$tit"
-    .ize.f.title.e delete 0 end
-    .ize.f.title.e insert 0 $tit
+    .ize.f.f0.title.e delete 0 end
+    .ize.f.f0.title.e insert 0 $tit
 
-    .ize.f.descr.e config -text $filt($name,descr)
+    .ize.f.f1.descr.e config -text $filt($name,descr)
 
     # refresh frame with parameters
-    destroy .ize.f.ff
-    frame .ize.f.ff -border 0 -relief groove
+    destroy .ize.f.f1.ff
+    frame .ize.f.f1.ff -border 0 -relief groove
 
     set parlist [getFilterParList $name]
 
     if {$parlist != ""} {
 
-        label .ize.f.ff.lab -text "Parameters:"
-        pack .ize.f.ff -anchor center -expand 0 -fill x -side top
-        pack .ize.f.ff.lab -anchor center -expand 0 -fill none -side top -anchor w
+        label .ize.f.f1.ff.lab -text "Parameters:"
+        pack .ize.f.f1.ff -anchor center -expand 0 -fill x -side top
+        pack .ize.f.f1.ff.lab -anchor center -expand 0 -fill none -side top -anchor w
         set i 0
         foreach par $parlist {
             set val "0"
@@ -205,8 +205,8 @@ proc filterSelected {} {
                     set val [lindex $tmp_par 1]
                 }
             }
-            label-entry .ize.f.ff.p$i $par $val
-            pack .ize.f.ff.p$i -anchor center -expand 0 -fill x -side top
+            label-entry .ize.f.f1.ff.p$i $par $val
+            pack .ize.f.f1.ff.p$i -anchor center -expand 0 -fill x -side top
             incr i
         }
     }
@@ -226,7 +226,7 @@ proc same {ids field default} {
 
 proc filterParDialog {ids} {
 
-    global filt vec
+    global filt vec gp
 
     if {[llength $ids]!=1} {
         set vectitle    {(several vectors)}
@@ -247,56 +247,69 @@ proc filterParDialog {ids} {
     global tmp  ; #for use by filterSelected
     set tmp(pars)   $vecfiltpars
     set tmp(prefix) $vecprefix
+    set tmp(setdefstyle) 0
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .ize "Vector plotting options"
 
-    label .ize.f.lbl -text "\nSee also Options|Gnuplot options for global settings.\n" -anchor w
+    label .ize.f.lbl -text "See also Options|Gnuplot options for global settings." -anchor w
+    pack .ize.f.lbl -anchor center -expand 0 -fill x -side top -pady 3
 
     # add entry fields and focus on first one
-    label-entry       .ize.f.title "Vector title:" $vectitle
-    label-combo       .ize.f.style "Style:" $plotstyles $vecstyle
-    label-combo       .ize.f.filt  "Filter:" $filt(names) $vecfilt
-    label-sunkenlabel .ize.f.descr "Filter descr:"
-    frame .ize.f.ff
+    frame .ize.f.f0 -relief groove -border 2
+    pack .ize.f.f0 -expand 1 -fill both -side top -pady 3
 
-    pack .ize.f.lbl -anchor center -expand 0 -fill x -side top
-    pack .ize.f.title -anchor center -expand 0 -fill x -side top
-    pack .ize.f.style -anchor center -expand 0 -fill x -side top
-    pack .ize.f.filt -anchor center -expand 0 -fill x -side top
-    pack .ize.f.descr -anchor center -expand 0 -fill x -side top
+    label-entry .ize.f.f0.title "Vector title:" $vectitle
+    label-combo .ize.f.f0.style "Style:" $plotstyles $vecstyle
+    label-check .ize.f.f0.setdefstyle "" "set default style (current is $gp(defaultstyle))" tmp(setdefstyle)
+    pack .ize.f.f0.title -anchor center -expand 0 -fill x -side top
+    pack .ize.f.f0.style -anchor center -expand 0 -fill x -side top
+    pack .ize.f.f0.setdefstyle -anchor e -expand 0 -fill x -side top
 
-    .ize.f.descr.e config -width 40
-    .ize.f.title.e config -width 40
+    frame .ize.f.f1 -relief groove -border 2
+    pack .ize.f.f1 -expand 1 -fill both -side top -pady 3
+
+    label-combo .ize.f.f1.filt  "Filter:" $filt(names) $vecfilt
+    label-sunkenlabel .ize.f.f1.descr "Filter descr:"
+    frame .ize.f.f1.ff
+
+    button .ize.f.f1.filtcfg -text "  Manage filters...  " \
+       -command "editFilterConfig; comboconfig .ize.f.f1.filt.e \$filt(names) \"filterSelected\""
+    pack .ize.f.f1.filt -anchor center -expand 0 -fill x -side top
+    pack .ize.f.f1.descr -anchor center -expand 0 -fill x -side top
+    pack .ize.f.f1.filtcfg -anchor e -expand 0 -fill none -side top -padx 2 -pady 2
+
+    .ize.f.f0.title.e config -width 40
+    .ize.f.f1.descr.e config -width 40
     if {$vecfilt!="-"} filterSelected
 
-    button .ize.buttons.filtcfg -text "Edit filters..." \
-       -command "editFilterConfig; comboconfig .ize.f.filt.e \$filt(names) \"filterSelected\""
-    pack .ize.buttons.filtcfg -anchor n -side right
+    focus .ize.f.f0.title.e
 
-    focus .ize.f.title.e
-
-    .ize.f.filt.e configure -command "filterSelected ;#"
+    .ize.f.f1.filt.e configure -command "filterSelected ;#"
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .ize] == 1} {
-        set vectitle [.ize.f.title.e get]
+        set vectitle [.ize.f.f0.title.e get]
         set titbase [cut_prefix $vectitle $tmp(prefix)]
         set titbase [regexp_to_stringmatch $titbase]
         if {![regsub -- $titbase $vectitle "" vecprefix]} {set vecprefix ""}
 
-        set vecstyle [.ize.f.style.e cget -value]
+        set vecstyle [.ize.f.f0.style.e cget -value]
         if {$vecstyle=="-"} {
            set vecstyle ""
         }
-        set vecfilt  [.ize.f.filt.e cget -value]
+        if {$vecstyle!="" && $vecstyle!="default" && $tmp(setdefstyle)} {
+           set gp(defaultstyle) $vecstyle
+        }
+
+        set vecfilt  [.ize.f.f1.filt.e cget -value]
         if {$vecfilt=="-"} {
            set vecfilt ""
            set vecfiltpars ""
         } else {
            set vecfiltpars ""
-           foreach w [winfo children .ize.f.ff] {
-               if {$w != ".ize.f.ff.lab"} {
+           foreach w [winfo children .ize.f.f1.ff] {
+               if {$w != ".ize.f.f1.ff.lab"} {
                   set pname [$w.l cget -text]
                   set pval  [$w.e get]
                   lappend vecfiltpars "$pname $pval"

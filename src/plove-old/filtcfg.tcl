@@ -75,7 +75,7 @@ proc editFilterConfig {} {
     set w .filtcfg
 
     toplevel $w -class Toplevel
-    wm title $w "Filter List"
+    wm title $w "Filter management"
     wm iconname $w Dialog
     wm focusmodel $w passive
     wm overrideredirect $w 0
@@ -85,15 +85,15 @@ proc editFilterConfig {} {
     #
     # listbox
     #
-    label $w.l -text "Filters:"
+    label $w.l -anchor w -justify left -text "Here you can view, modify or create filters that can be used with any vector.\n\nAvailable filters:"
     frame $w.f
     listbox $w.f.list -width 50 -yscrollcommand "$w.f.sby set"
     scrollbar $w.f.sby -borderwidth 1 -command "$w.f.list yview"
 
     set lb $w.f.list
 
-    pack $w.l -anchor w -side top
-    pack $w.f -anchor center -expand 1 -fill both -side top -padx 5 -pady 5
+    pack $w.l -anchor w -side top -pady 3
+    pack $w.f -anchor center -expand 1 -fill both -side top -padx 10 -pady 5
     pack $w.f.sby -anchor s -expand 0 -fill y -side right
     pack $w.f.list  -anchor center -expand 1 -fill both -side left
 
@@ -101,17 +101,16 @@ proc editFilterConfig {} {
     # buttons
     #
     frame $w.b -width 40
-    pack $w.b -expand 0 -fill x -side bottom -padx 5 -pady 5
-    foreach i {
-       {close -text Close   -command "set tmp(butt) 1"}
-       {del   -text Del     -command "filtCfgDel $lb" }
-       {edit  -text Edit... -command "filtCfgEdit $lb"}
-       {dup   -text Dup     -command "filtCfgDup $lb" }
-       {new   -text New...  -command "filtCfgNew $lb" }
-    } {
-       set b [eval button $w.b.$i]
-       pack $b -side right -expand 0 -fill none
-    }
+    pack $w.b -expand 0 -anchor e -side bottom -padx 5 -pady 5
+    button $w.b.new   -text New...  -command "filtCfgNew $lb"   -width 7
+    button $w.b.dup   -text Clone   -command "filtCfgDup $lb"   -width 7
+    button $w.b.edit  -text Edit... -command "filtCfgEdit $lb"  -width 7
+    button $w.b.del   -text Remove  -command "filtCfgDel $lb"   -width 7
+    button $w.b.close -text Close   -command "set tmp(butt) 1"  -width 7
+
+    grid $w.b.new $w.b.dup $w.b.edit  $w.b.del  -padx 2 -pady 3
+    grid x        x         x        $w.b.close -padx 2 -pady 3
+    #pack $b -side right -expand 0 -fill none -padx 2
 
     #
     # fill dialog

@@ -60,7 +60,7 @@ proc editGnuplotOptions {} {
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .ize "Gnuplot configuration"
 
-    label .ize.f.f0 -text "\nSee also Edit|Vector plotting options for additional, per-vector settings.\n" -anchor w
+    label .ize.f.f0 -text "See also Edit|Vector plotting options for additional, per-vector settings." -anchor w
 
     # add entry fields and focus on first one
     frame .ize.f.f1 -relief groove -border 2
@@ -86,7 +86,7 @@ proc editGnuplotOptions {} {
     label-text  .ize.f.f5.bef "Before 'plot...':" 4 $gp(before)
     label-text  .ize.f.f5.aft "After 'plot...':" 2 $gp(after)
 
-    pack .ize.f.f0 .ize.f.f1 .ize.f.f2 .ize.f.f3 .ize.f.f4 -expand 0 -fill x -side top
+    pack .ize.f.f0 .ize.f.f1 .ize.f.f2 .ize.f.f3 .ize.f.f4 -expand 0 -fill x -side top -pady 3
     pack .ize.f.f5 -expand 1 -fill both -side top
     pack .ize.f.f1.title  -anchor center -expand 0 -fill x -side top
     pack .ize.f.f2.style  -anchor center -expand 0 -fill x -side top
