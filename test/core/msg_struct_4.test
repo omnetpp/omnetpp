@@ -1,0 +1,50 @@
+%description:
+Check simple field type initializers in structs
+
+%file: {}.msg
+
+struct {MyStruct}
+{
+    fields:
+        bool b = true;
+        char c = 'C';
+        short s = -273;
+        unsigned short us = 100;
+        int i = -18;
+        unsigned int ui = 34;
+        long l = -3;
+        unsigned long ul = 256;
+        double d = 3.1415927;
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+{MyStruct} x;
+
+// scalars
+PRINT(x.b);
+PRINT(x.c);
+PRINT(x.s);
+PRINT(x.us);
+PRINT(x.i);
+PRINT(x.ui);
+PRINT(x.l);
+PRINT(x.ul);
+PRINT(x.d);
+
+%contains: stdout
+x.b:1
+x.c:C
+x.s:-273
+x.us:100
+x.i:-18
+x.ui:34
+x.l:-3
+x.ul:256
+x.d:3.14159
+
