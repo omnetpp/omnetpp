@@ -131,7 +131,7 @@ void TOmnetTkApp::setup()
 
     Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", TCLCONST(bitmap_path.c_str()), TCL_GLOBAL_ONLY);
 
-    // eval Tcl sources: either from .tcl files or from compiler-in string
+    // eval Tcl sources: either from .tcl files or from compiled-in string
     // literal (tclcode.cc)...
 
 #ifdef OMNETPP_TKENV_DIR
@@ -960,7 +960,12 @@ void TOmnetTkApp::readOptions()
     cConfiguration *cfg = getConfig();
 
     opt_extrastack_kb = cfg->getAsInt("Tkenv", "extra-stack-kb", TKENV_EXTRASTACK_KB);
-    opt_default_run = cfg->getAsInt( "Tkenv", "default-run", 0);
+
+    char *r = args->argValue('r');
+    if (r)
+        opt_default_run = atoi(r);
+    else
+        opt_default_run = cfg->getAsInt( "Tkenv", "default-run", 0);
 
     // Note: most entries below should be obsoleted (with .tkenvrc taking over)
     opt_stepdelay = long(1000*cfg->getAsTime( "Tkenv", "slowexec-delay", 0.3 )+.5);

@@ -1,3 +1,9 @@
+2005-03-07  Andras Varga
+
+	* tkapp.cc: added support for -r <run-number> command-line option, 
+	which has the same effect as (but takes priority over) [Tkenv]/
+	default-run ini file entry.
+
 2005-03-03  Andras Varga
 
 	* structinsp.cc: fix: Tkenv crashed if control info object didn't have
