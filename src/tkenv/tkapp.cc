@@ -1018,6 +1018,7 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
     findDirectPath(from, to, pathvec);
 
     PathVec::iterator i;
+    int numinsp = 0;
     for (i=pathvec.begin(); i!=pathvec.end(); i++)
     {
         if (i->to==NULL)
@@ -1030,6 +1031,7 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
+                numinsp++;
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
@@ -1052,6 +1054,7 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
+                numinsp++;
                 char parentptr[30], modptr[30];
                 strcpy(parentptr,ptrToStr(enclosingmod));
                 strcpy(modptr,ptrToStr(mod));
@@ -1069,6 +1072,7 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
             TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
             if (insp)
             {
+                numinsp++;
                 char fromptr[30], toptr[30];
                 strcpy(fromptr,ptrToStr(i->from));
                 strcpy(toptr,ptrToStr(i->to));
@@ -1082,22 +1086,25 @@ void TOmnetTkApp::moduleMethodCalled(cModule *from, cModule *to, const char *met
         }
     }    
 
-    // leave it there for a while
-    CHK(Tcl_Eval(interp, "graphmodwin_animate_methodcall_wait"));
-
-    // then remove all arrows
-    for (i=pathvec.begin(); i!=pathvec.end(); i++)
+    if (numinsp>0)
     {
-        cModule *mod= i->from ? i->from : i->to;
-        cModule *enclosingmod = mod->parentModule();
-        TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
-        if (insp)
+        // leave it there for a while
+        CHK(Tcl_Eval(interp, "graphmodwin_animate_methodcall_wait"));
+
+        // then remove all arrows
+        for (i=pathvec.begin(); i!=pathvec.end(); i++)
         {
-            CHK(Tcl_VarEval(interp, "graphmodwin_animate_methodcall_cleanup ",
-                                    insp->windowName(),
-                                    NULL));
-        }
-    }        
+            cModule *mod= i->from ? i->from : i->to;
+            cModule *enclosingmod = mod->parentModule();
+            TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
+            if (insp)
+            {
+                CHK(Tcl_VarEval(interp, "graphmodwin_animate_methodcall_cleanup ",
+                                        insp->windowName(),
+                                        NULL));
+            }
+        }        
+    }
 }
 
 void TOmnetTkApp::animateSend(cMessage *msg, cGate *fromgate, cGate *togate)
