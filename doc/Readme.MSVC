@@ -33,9 +33,6 @@ o  Microsoft Visual Studio 6.0, with at least Service Pack 1 installed.
    I recommend Service Pack 5 which can be downloaded from Microsoft's site
    under the name vs6sp5.exe.
 
-o  About 40MB free space on your hard disk. If your want to compile from
-   source, you'll need about 20MB more.
-
 
 2. Packages to download and install
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
