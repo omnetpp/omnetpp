@@ -5,8 +5,6 @@ simple Gen
 endsimple
 
 module Module
-   parameters:
-      x: numeric;
    submodules:
       gen: Gen;
           parameters:
