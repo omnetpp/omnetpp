@@ -82,8 +82,8 @@ proc create_omnetpp_window {} {
 
     # File menu
     foreach i {
-      {command -command new_run -label {Select Run #...} -underline 7}
-      {command -command new_network -label {Select network...} -underline 7}
+      {command -command new_run -label {Set up a run...} -underline 7}
+      {command -command new_network -label {Set up a network...} -underline 7}
       {command -command create_snapshot -label {Create snapshot...} -underline 7}
       {separator}
       {command -command exit_omnetpp -label Exit -underline 1}
@@ -212,7 +212,15 @@ proc create_omnetpp_window {} {
     #################################
 
     frame .toolbar -relief raised -borderwidth 1
+
+    #  {finish   -image $icons(finish)  -command {call_finish}}
+    #  {restart  -image $icons(restart) -command {rebuild}}
+
     foreach i {
+      {sep01    -separator}
+      {newrun   -image $icons(newrun)  -command {new_run}}
+      {newnet   -image $icons(newnet)  -command {new_network}}
+
       {sep0     -separator}
       {step     -image $icons(step)    -command {one_step}}
       {sep1     -separator}
@@ -223,24 +231,28 @@ proc create_omnetpp_window {} {
       {until    -image $icons(until)   -command {run_until}}
       {sep3     -separator}
       {stop     -image $icons(stop)    -command {stop_simulation}}
-      {sep4     -separator}
+      {sep5     -separator}
       {network  -image $icons(network) -command {inspect_systemmodule}}
       {fes      -image $icons(fes)     -command {inspect_messagequeue}}
-      {sep5     -separator}
-      {options  -image $icons(config)  -command {simulation_options}}
       {sep6     -separator}
+      {options  -image $icons(config)  -command {simulation_options}}
+      {sep7     -separator}
       {find     -image $icons(find)    -command {edit_find}}
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
 
+    set help_tips(.toolbar.newrun)  {Set up a run}
+    set help_tips(.toolbar.newnet)  {Set up a network}
     set help_tips(.toolbar.step)    {Execute one event (F4)}
     set help_tips(.toolbar.run)     {Run with full animation (F5)}
     set help_tips(.toolbar.fastrun) {Run faster: no animation and rare inspector updates (F6)}
     set help_tips(.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates (F7)}
     set help_tips(.toolbar.until)   {Run until time or event number}
     set help_tips(.toolbar.stop)    {Stop simulation if running (F8)}
+    set help_tips(.toolbar.restart) {Rebuild network}
+    set help_tips(.toolbar.finish)  {Call finish()}
     set help_tips(.toolbar.network) {Inspect network}
     set help_tips(.toolbar.fes)     {Inspect scheduled events (Future Event Set)}
     set help_tips(.toolbar.options) {Simulation options}

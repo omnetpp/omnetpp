@@ -71,8 +71,8 @@ TModuleWindow::TModuleWindow(cObject *obj,int typ,const char *geom,void *dat) :
 void TModuleWindow::createWindow()
 {
    TInspector::createWindow(); // create window name etc.
-   strcpy(modulename,windowname); strcat(modulename,".statusbar.name");
-   strcpy(phase,windowname); strcat(phase,".statusbar.phase");
+   //strcpy(modulename,windowname); strcat(modulename,".statusbar.name");
+   //strcpy(phase,windowname); strcat(phase,".statusbar.phase");
 
    // create inspector window by calling the specified proc with
    // the object's pointer. Window name will be like ".ptr80003a9d-1"
@@ -92,14 +92,15 @@ void TModuleWindow::update()
 
    setInspectButton(".toolbar.parent", mod->parentModule(),INSP_DEFAULT);
 
-   char id[32];
-   sprintf(id," (id=%d)",mod->id());
-   CHK(Tcl_VarEval(interp, modulename, " config -text {",mod->fullPath(),id,"}", NULL));
-   if (mod->isSimple())
-   {
-       CHK(Tcl_VarEval(interp, phase, " config -text {Phase: ",
-                            ((cSimpleModule *)mod)->phase(),"}", NULL));
-   }
+   // char id[32];
+   // sprintf(id," (id=%d)",mod->id());
+   // CHK(Tcl_VarEval(interp, modulename, " config -text {",mod->fullPath(),id,"}", NULL));
+   // if (mod->isSimple())
+   // {
+   //     CHK(Tcl_VarEval(interp, phase, " config -text {Phase: ",
+   //                          ((cSimpleModule *)mod)->phase(),"}", NULL));
+   // }
+
 }
 
 //=======================================================================

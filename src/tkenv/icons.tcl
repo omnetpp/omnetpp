@@ -98,9 +98,9 @@ set icons(parent) [image create photo -data {
 }]
 
 set icons(redraw) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAMbGxsAAAIWFhYAAAFAAAKysrP//////////////////////////
-    /////////yH5BAEAAAEALAAAAAAUABMAAARDMMhJq72zhGEwFhrnUQIRdqNUmhvqraz4EnRw
-    pmpN32kp0TEXqRYA8iqrYnBGUB4/tecIJp0ucYFOqXoBtbASLpgSAQA7
+    R0lGODlhFwATALMAAAAAADCADCZkCrW1tc7Ozt7e3uferefn5+/v7///////////////////
+    /////////yH5BAEAAAYALAAAAAAXABMAAARG0MhJq704X8S7R5rxIcGojUHpnWTqqtyZCrSQ
+    rlnb0Z/sCaYcDAXKfYYlVufGuSlbrwDwOasBi5jjFZf9bDuhUS9ELpsNEQA7
 }]
 
 set icons(fes) [image create photo -data {
@@ -125,5 +125,37 @@ set icons(config) [image create photo -data {
     R0lGODlhFAATALMAAAAAAMbGxkZJuQAAwACA/8PDw25ubp6enkAAAIAAAP//////////////
     /////////yH5BAEAAAEALAAAAAAUABMAAARCMMhJq704a2y6/59lCGRpkoZ4rkJaGUUsz7FL
     wQWg6zFvTzga7SfB7QA9n0goJAaMx2PBGWTWRKBsZ8Pter/gcCUCADs=
+}]
+
+set icons(newnet) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAMbGxv///wAAAMAAAP//////////////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARYMMhJq70Yg815loAgjsIHkiIIZCEacIOGlsAw
+    rFc7SkRNEDkSD8jbVHSlH2VjW6YCymUtNgmpKL8etUq7rbI8i3UKiEKJUonNDDVNwEb32xaX
+    v+j2SVMSAQA7
+}]
+
+set icons(newrun) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAMbGxv///8AAAP//////////////////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARCMMhJq70Yg813noAgjt4XjmIImGjKZWebwvIH
+    ttIw6VYs7MAeKjAoGovCUS6YVPKIGtzzWXkxqZnj0bbscqHebyYCADs=
+}]
+
+set icons(rearrange) [image create photo -data {
+    R0lGODlhFAATALMAAAAAANbXm8AAAIWFhYAAAFAAAKysrP//////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARIMMhJq704B8HFBIaBAUDnfaBlgKa0kimVtqsY
+    T6ua3p9Y8bIAQEhp6Ug+iVGXVHYyTSdHgxtSK7nJ8ggrPaFW6Qms/V7PaEoEADs=
+}]
+
+set icons(restart) [image create photo -data {
+    R0lGODlhFAATALMAAEAAAMbGxoAAAP///8AAAAAAAICAgP//////////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAAQ+MMhJq70YEyEsAdnWURuocSRnXuUkCqulSi+c
+    zbWNzVyvX7OA7yf7+WKVoKSHpCiXxApgaqFmrtisdsvtUiIAOw==
+}]
+
+set icons(finish) [image create photo -data {
+    R0lGODlhFAATALMAAEAAAMbGxoAAAP///8AAAAAAAICAgACAAP//////////////////////
+    /////////yH5BAEAAAEALAAAAAAUABMAAARTMMhJq704BzHGOd3XCRRBSJwHqmMpkILIquRE
+    vKSsH7V04xlAL/ADXoQu3Os4LL4AzOQTg7ThoNTmdEip+gRQpMEilgCwwjFZoK6cqViNfE6v
+    RwAAOw==
 }]
 

@@ -181,9 +181,9 @@ proc _create_modulewindow {name geom iscompound} {
         set help_tips($w.toolbar.find)   {Find string in window}
     }
 
-    frame $w.statusbar
-    label $w.statusbar.name -anchor w -relief groove -text {(unknown module)}
-    label $w.statusbar.phase -anchor w -relief groove -text {Phase: -}
+    #frame $w.statusbar
+    #label $w.statusbar.name -anchor w -relief groove -text {(unknown module)}
+    #label $w.statusbar.phase -anchor w -relief groove -text {Phase: -}
 
     frame $w.main
     text $w.main.text -yscrollcommand "$w.main.sb set" -width 80 -height 15
@@ -191,9 +191,9 @@ proc _create_modulewindow {name geom iscompound} {
     $w.main.text tag configure event -foreground blue
     $w.main.text tag configure SELECT -back #808080 -fore #ffffff
 
-    pack $w.statusbar -anchor center -expand 0 -fill x -side top
-    pack $w.statusbar.name -anchor n -expand 1 -fill x -side left
-    pack $w.statusbar.phase   -anchor n -expand 1 -fill x -side right
+    #pack $w.statusbar -anchor center -expand 0 -fill x -side top
+    #pack $w.statusbar.name -anchor n -expand 1 -fill x -side left
+    #pack $w.statusbar.phase   -anchor n -expand 1 -fill x -side right
     pack $w.main -anchor center -expand 1 -fill both -side top
     pack $w.main.sb -anchor center -expand 0 -fill y -side right
     pack $w.main.text -anchor center -expand 1 -fill both -side left

@@ -48,13 +48,16 @@ proc messagebox {title msg icon type} {
     return [tk_messageBox -title $title -message $msg -icon $icon -type $type]
 }
 
-proc comboSelectionDialog {title text variable list} {
+proc comboSelectionDialog {title text label variable list} {
     set w .combodialog
     createOkCancelDialog $w $title
 
     upvar $variable var
 
-    label-combo $w.f.c $text $list $var
+
+    label $w.f.m -text $text -anchor w -justify left
+    label-combo $w.f.c $label $list $var
+    pack $w.f.m -fill x -padx 2 -pady 2 -side top
     pack $w.f.c -fill x -padx 2 -pady 2 -side top
     focus $w.f.c.e
 
