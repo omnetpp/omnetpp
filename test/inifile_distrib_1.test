@@ -1,0 +1,140 @@
+%description:
+check the distributions are properly accessible from an ini file via NED
+
+related test: NED_distrib_1.test
+
+%file: {}.ned
+
+simple {Simple}
+    parameters:
+        uniform_par,
+        exponential_par,
+        normal_par,
+        truncnormal_par,
+        // gamma_d_par,
+        // beta_par,
+        erlang_k_par,
+        // chi_square_par,
+        // student_t_par,
+        cauchy_par,
+        triang_par,
+        lognormal_par,
+        weibull_par,
+        pareto_shifted_par,
+
+        intuniform_par,
+        bernoulli_par,
+        binomial_par,
+        geometric_par,
+        negbinomial_par,
+        // hypergeometric_par,
+        poisson_par;
+endsimple
+
+network {Net}: {Simple}
+    parameters:
+        uniform_par = input,
+        exponential_par = input,
+        normal_par = input,
+        truncnormal_par = input,
+        // gamma_d_par = input,
+        // beta_par = input,
+        erlang_k_par = input,
+        // chi_square_par = input,
+        // student_t_par = input,
+        cauchy_par = input,
+        triang_par = input,
+        lognormal_par = input,
+        weibull_par = input,
+        pareto_shifted_par = input,
+
+        intuniform_par = input,
+        bernoulli_par = input,
+        binomial_par = input,
+        geometric_par = input,
+        negbinomial_par = input,
+        // hypergeometric_par = input,
+        poisson_par = input;
+endnetwork
+
+%file: {}.cc
+
+#include "omnetpp.h"
+
+class {Simple} : public cSimpleModule
+{
+    Module_Class_Members({Simple},cSimpleModule,16384)
+    virtual void activity();
+};
+
+Define_Module({Simple});
+
+#define PAR_MEAN_AND_VARIANCE(PARNAME) \
+ {\
+   cPar& PARNAME = par(#PARNAME); cStdDev s; \
+   for (int i=0; i<numrepl; i++) s.collect((double)PARNAME); \
+   ev.printf("%s: m=%lg v=%lg\n", #PARNAME, s.mean(), s.variance()); \
+ }
+
+void {Simple}::activity()
+{
+    int numrepl=100000;
+
+    PAR_MEAN_AND_VARIANCE(uniform_par);
+    PAR_MEAN_AND_VARIANCE(exponential_par);
+    PAR_MEAN_AND_VARIANCE(normal_par);
+    PAR_MEAN_AND_VARIANCE(truncnormal_par);
+    // PAR_MEAN_AND_VARIANCE(gamma_d_par);
+    // PAR_MEAN_AND_VARIANCE(beta_par);
+    PAR_MEAN_AND_VARIANCE(erlang_k_par);
+    // PAR_MEAN_AND_VARIANCE(chi_square_par);
+    // PAR_MEAN_AND_VARIANCE(student_t_par);
+    PAR_MEAN_AND_VARIANCE(cauchy_par);
+    PAR_MEAN_AND_VARIANCE(triang_par);
+    PAR_MEAN_AND_VARIANCE(lognormal_par);
+    PAR_MEAN_AND_VARIANCE(weibull_par);
+    PAR_MEAN_AND_VARIANCE(pareto_shifted_par);
+
+    PAR_MEAN_AND_VARIANCE(intuniform_par);
+    PAR_MEAN_AND_VARIANCE(bernoulli_par);
+    PAR_MEAN_AND_VARIANCE(binomial_par);
+    PAR_MEAN_AND_VARIANCE(geometric_par);
+    PAR_MEAN_AND_VARIANCE(negbinomial_par);
+    // PAR_MEAN_AND_VARIANCE(hypergeometric_par);
+    PAR_MEAN_AND_VARIANCE(poisson_par);
+}
+
+%inifile: {}.ini
+[General]
+network={Net}
+
+[Parameters]
+{Net}.uniform_par =         uniform(1.0, 2.0)
+{Net}.exponential_par =     exponential(1.0)
+{Net}.normal_par =          normal(1.0, 1.0)
+{Net}.truncnormal_par =     truncnormal(1.0, 1.0)
+# {Net}.gamma_d_par =         gamma_d(2.0 2.0)
+# {Net}.beta_par =            beta(1.0, 1.0)
+{Net}.erlang_k_par =        erlang_k(1, 1.0)
+# {Net}.chi_square_par =      chi_square(2)
+# {Net}.student_t_par =       student_t(1)
+{Net}.cauchy_par =          cauchy(1.0, 2.0)
+{Net}.triang_par =          triang(1.0, 2.0, 3.0)
+{Net}.lognormal_par =       lognormal(1.0, 1.0)
+{Net}.weibull_par =         weibull(1.0, 2.0)
+{Net}.pareto_shifted_par =  pareto_shifted(1.0, 2.0, 3.0)
+
+{Net}.intuniform_par =      intuniform(0, 10)
+{Net}.bernoulli_par =       bernoulli(0.3)
+{Net}.binomial_par =        binomial(10, 0.3)
+{Net}.geometric_par =       geometric(0.3)
+{Net}.negbinomial_par =     negbinomial(10, 0.3)
+# {Net}.hypergeometric_par =  hypergeometric(1, 2, 2)
+{Net}.poisson_par =         poisson(1.0)
+
+%contains: stdout
+
+
+
+
+
