@@ -16,6 +16,9 @@
 	* cexception.h: introduced cTerminationException, cEndModuleException;
 	added 2 new ctors to cException
 
+	* cenvir.h: return type of run() changed from void to int; now the
+	return value can be used in main() as application exit code.
+
 2002-10-16  Andras Varga
 
 	* csimul.h: cSimulation: methods warning(), setWarnings(bool), 

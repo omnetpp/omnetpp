@@ -1,0 +1,39 @@
+%description:
+tests that deleteModule() works from handleMessage(), and finish() gets called
+
+%module: {Module}
+
+class {Module} : public cSimpleModule
+{
+    Module_Class_Members({Module},cSimpleModule,0);
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+    virtual void finish();
+};
+
+Define_Module({Module});
+
+void {Module}::initialize()
+{
+    scheduleAt(1.0, new cMessage("msg"));
+}
+
+void {Module}::handleMessage(cMessage *msg)
+{
+    scheduleAt(simTime()+1.0, msg);
+    deleteModule();
+    ev << "after deleteModule\n";
+}
+
+void {Module}::finish()
+{
+    // this shouldn't be called because the module got deleted
+    ev << "finish called\n";
+}
+
+%not-contains: stdout
+after deleteModule
+
+%not-contains: stdout
+finish called
+

@@ -140,19 +140,28 @@ class SIM_API cTerminationException : public cException
 };
 
 /**
- * This exception is only thrown from cModule::end(), to exit that module
- * immediately. The exception is simply ignored in the even loop,
+ * This exception is only thrown from cModule::end(), and from deleteModule()
+ * if the current module is to be deleted, in order to exit that module
+ * immediately. The exception is simply ignored in the event loop,
  * and simulation continues.
  *
  * @ingroup Internals
  */
 class SIM_API cEndModuleException : public cException
 {
+  private:
+    bool del; // if true, this module should be deleted
+
   public:
     /**
      * Constructor.
      */
-    cEndModuleException() {}
+    cEndModuleException(bool moduleToBeDeleted=false) {}
+
+    /**
+     * If true, the module should be deleted.
+     */
+    bool moduleToBeDeleted() {return del;}
 };
 
 #endif

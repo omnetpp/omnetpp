@@ -1,0 +1,47 @@
+%description:
+tests that deleteModule() works from activity()
+
+TODO:
+- test that simulation of other modules goes on
+- test that deletion of another module is possible
+- test that deletion of compound modules is possible
+
+%module: {Module}
+
+class {Module} : public cSimpleModule
+{
+    Module_Class_Members({Module},cSimpleModule,32768);
+    virtual void activity();
+    virtual void finish();
+};
+
+Define_Module({Module});
+
+void {Module}::activity()
+{
+    wait(1.0);
+    wait(1.0);
+
+    deleteModule();
+
+    ev << "after deleteModule\n";
+
+    wait(1.0);
+    ev << "event after deleteModule\n";
+}
+
+void {Module}::finish()
+{
+    // this shouldn't be called because the module got deleted
+    ev << "finish called\n";
+}
+
+%not-contains: stdout
+finish called
+
+%not-contains: stdout
+after deleteModule
+
+%not-contains: stdout
+event after deleteModule
+

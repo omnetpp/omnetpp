@@ -82,8 +82,6 @@ void cChannel::forEach( ForeachFunc do_fn )
 
 void cChannel::writeContents(ostream& os)
 {
-    char buf[128];
-
     if (parlistp)
     {
         os << "  parameter list:\n";

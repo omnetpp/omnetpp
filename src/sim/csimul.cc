@@ -478,7 +478,7 @@ cSimpleModule *cSimulation::selectNextModule()
         }
 
         // seems like really end of the simulation run
-        return NULL;
+        throw new cTerminationException(eENDEDOK); //FIXME change doc comment!
     }
 
     // we're about to return this message's destination module:
