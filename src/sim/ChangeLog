@@ -1,5 +1,7 @@
 2001-06-20  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
+	* Makefile.in (depend): added -I../../include
+
 	* carray.cc (): const patches
 	added functions:
 		const void *cBag::get(int m) const
