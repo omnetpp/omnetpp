@@ -1,8 +1,12 @@
 
 Upgrading your sources from OMNeT++ 2.0b2 or earlier to 2.0b3
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Jan 18, 2000
 
-See src/sim/ChangeLog to read about why the changes were necessary...
+There were some incompatible changes in the simulation library.
+See src/sim/ChangeLog for more info about them (rationale, details...)
+Read on to learn what you should do to upgrade your code...
+
 
 Find/replace (case sensitive, whole words only):
   isA --> className  (cObject method)
@@ -27,7 +31,7 @@ If you used cPar's indirection functions:
   isRedirected(), cPar* redirection(), cancelRedirection().
   You have to update the code.
 
-You might rewrite your code to use new convenience functions:
+You might rewrite your code to use the new convenience functions:
   cMessage::hasPar(char*), cModule::hasPar(char*), cModule::hasGate(char*,int)
 
 If you used cPar constructors which assign an initial value:
@@ -43,29 +47,17 @@ If you used cPar constructors which assign an initial value:
   or better like
            msg->addPar("dest") = dest;
 
-cPar caveat discovered!
-  Beware of constructs like
-      cPar p = "foo";  // probably wrong!
-  It does NOT compile as you would expect!!! It doesn't compile as
-      cPar p;
-      p="foo";
-  but rather as
-      cPar p("foo");
-  That is, "foo" becomes the object's NAME instead of its value!
-  This is one of the quirks of C++...  The solution is to use explicit parens
-  to denote the constructor call:
-      cPar p() = "foo";  // good!
-  This is a hint that it might be ALWAYS a good idea to write empty parens
-  in constructor calls (like 'new cMessage()' instead of 'new cMessage') to
-  avoid such surprises. Java does that too.
+Math expressions using cPar now need explicit casts:
+  Expressions like
+     msg->par("count")+1
+  which used to compile now cause error ("too many possible conversions")
+  and must be disabiguated by adding explicit casts like this:
+     (int)msg->par("count")+1.
+
+Remember to re-generate the *_n.cc files from the .ned files!
+  Type make clean; make ...
 
 
-You must also re-generate the *_n.cc files from the .ned files!
-(e.g.: make clean; make)
-
-
-HOPE THE API CHANGES DON'T CAUSE TOO MUCH INCONVENIENCE. I believe the changes
-are not too serious and make the library better. I don't plan to make any
-further incompatible changes in the future...
+HOPEFULLY THE API CHANGES DON'T CAUSE TOO MUCH INCONVENIENCE...
 
 --Andras
