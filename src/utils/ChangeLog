@@ -3,7 +3,9 @@
 	* opp_makemake.in (htmldocs): Target htmldoc renamed to
 	htmldocs. Now, creates directory htmldoc instead of html
 	(clean): remove automatically generated documentation
-	
+	(htmldocs): use | instead of / as sed separator where file pathes
+	can occur
+
 2002-06-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* opp_makemake.in (doxyconf): new variable; names the doxygen

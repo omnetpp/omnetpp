@@ -177,7 +177,7 @@ for i in $dirs; do
 	# Use only those that don't contain experimental
 	# message subclassing
 	nedf=`echo $i/*.ned`
-	if [ ! "$nedf" = "$ned/*.ned" ]; then
+	if [ ! "$nedf" = "$i/*.ned" ]; then
 	  for i in $nedf; do
 	    grep '^//--subclassing--' $i >/dev/null
 	    if [ "$?" != "0" ]; then 
@@ -432,7 +432,7 @@ neddoc.html: $nedfiles
 
 htmldocs:
 	@doxygen -g - | sed "s/^PROJECT_NAME.*/PROJECT_NAME = $outfile/;\\
-	s/^INPUT *=.*/INPUT = . $dirs/;\\
+	s|^INPUT *=.*|INPUT = . $dirs|;\\
 	s/^EXTRACT_ALL *=.*/EXTRACT_ALL = yes/;\\
 	s/^EXTRACT_PRIVATE *=.*/EXTRACT_PRIVATE = yes/;\\
 	s/^EXCLUDE_PATTERNS *=.*/EXCLUDE_PATTERNS = *_n.cc *_n.h/;\\
