@@ -191,6 +191,7 @@ proc createSubmoduleOnCanvas {typekey {canvx {}} {canvy {}}} {
 
     # draw on canvas
     drawItem $key
+    selectItem $key
     markCanvasDirty
 }
 

@@ -70,7 +70,7 @@ set ddict(common,ownedkeys)       {}
 #
 set ddesc(root,parents)           {}
 set ddesc(root,treeicon)          {cogwheel_vs}
-set ddict(root,type)              {root}
+
 
 #
 # nedfile
@@ -78,7 +78,6 @@ set ddict(root,type)              {root}
 set ddesc(nedfile,plusindent)      {}
 set ddesc(nedfile,parents)         {root}
 set ddesc(nedfile,treeicon)        {file_vs}
-set ddict(nedfile,type)            {nedfile}
 set ddict(nedfile,name)            {Untitled}
 set ddict(nedfile,filename)        {untitled}
 set ddict(nedfile,banner-comment)  {}
@@ -91,7 +90,6 @@ set ddict(nedfile,dirty)           {0}
 set ddesc(imports,plusindent)       {}
 set ddesc(imports,parents)          {nedfile}
 set ddesc(imports,treeicon)         {incl_vs}
-set ddict(imports,type)             {imports}
 set ddict(imports,banner-comment)   {}
 set ddict(imports,right-comment)    {}
 set ddict(imports,trailing-comment) {}
@@ -101,7 +99,6 @@ set ddict(imports,trailing-comment) {}
 #
 set ddesc(import,plusindent)       {    }
 set ddesc(import,parents)          {imports}
-set ddict(import,type)             {import}
 set ddict(import,name)             {}
 set ddict(import,banner-comment)   {}
 set ddict(import,right-comment)    {}
@@ -112,7 +109,6 @@ set ddict(import,right-comment)    {}
 set ddesc(channel,plusindent)       {}
 set ddesc(channel,parents)          {nedfile}
 set ddesc(channel,treeicon)         {chan_vs}
-set ddict(channel,type)             {channel}
 set ddict(channel,name)             {Channel}
 set ddict(channel,banner-comment)   {}
 set ddict(channel,right-comment)    {}
@@ -123,7 +119,6 @@ set ddict(channel,trailing-comment) {}
 #
 set ddesc(chanattr,plusindent)       {    }
 set ddesc(chanattr,parents)          {channel}
-set ddict(chanattr,type)             {chanattr}
 set ddict(chanattr,banner-comment)   {}
 set ddict(chanattr,right-comment)    {}
 set ddict(chanattr,name)             {}
@@ -135,7 +130,6 @@ set ddict(chanattr,value)            {}
 set ddesc(network,plusindent)       {}
 set ddesc(network,parents)          {nedfile}
 set ddesc(network,treeicon)         {net_vs}
-set ddict(network,type)             {network}
 set ddict(network,name)             {Network}
 set ddict(network,banner-comment)   {}
 set ddict(network,right-comment)    {}
@@ -149,7 +143,6 @@ set ddict(network,like-name)        {}
 set ddesc(simple,plusindent)       {}
 set ddesc(simple,parents)          {nedfile}
 set ddesc(simple,treeicon)         {simple_vs}
-set ddict(simple,type)             {simple}
 set ddict(simple,name)             {Simple}
 set ddict(simple,banner-comment)   {}
 set ddict(simple,right-comment)    {}
@@ -161,7 +154,6 @@ set ddict(simple,trailing-comment) {}
 set ddesc(module,plusindent)       {}
 set ddesc(module,parents)          {nedfile}
 set ddesc(module,treeicon)         {compound_vs}
-set ddict(module,type)             {module}
 set ddict(module,name)             {Module}
 set ddict(module,banner-comment)   {}
 set ddict(module,right-comment)    {}
@@ -184,7 +176,6 @@ set ddict(module,selected)         {0}
 #
 set ddesc(params,plusindent)       {    }
 set ddesc(params,parents)          {simple module}
-set ddict(params,type)             {params}
 set ddict(params,banner-comment)   {}
 set ddict(params,right-comment)    {}
 
@@ -193,7 +184,6 @@ set ddict(params,right-comment)    {}
 #
 set ddesc(param,plusindent)       {    }
 set ddesc(param,parents)          {params}
-set ddict(param,type)             {param}
 set ddict(param,banner-comment)   {}
 set ddict(param,right-comment)    {}
 set ddict(param,name)             {param}
@@ -204,7 +194,6 @@ set ddict(param,datatype)         {numeric}
 #
 set ddesc(gates,plusindent)       {    }
 set ddesc(gates,parents)          {simple module}
-set ddict(gates,type)             {gates}
 set ddict(gates,banner-comment)   {}
 set ddict(gates,right-comment)    {}
 
@@ -213,7 +202,6 @@ set ddict(gates,right-comment)    {}
 #
 set ddesc(gate,plusindent)       {    }
 set ddesc(gate,parents)          {gates}
-set ddict(gate,type)             {gate}
 set ddict(gate,banner-comment)   {}
 set ddict(gate,right-comment)    {}
 set ddict(gate,name)             {out}
@@ -225,7 +213,6 @@ set ddict(gate,isvector)         {0}
 #
 set ddesc(machines,plusindent)       {    }
 set ddesc(machines,parents)          {simple module}
-set ddict(machines,type)             {machines}
 set ddict(machines,banner-comment)   {}
 set ddict(machines,right-comment)    {}
 
@@ -234,7 +221,6 @@ set ddict(machines,right-comment)    {}
 #
 set ddesc(machine,plusindent)       {    }
 set ddesc(machine,parents)          {machines}
-set ddict(machine,type)             {machine}
 set ddict(machine,banner-comment)   {}
 set ddict(machine,right-comment)    {}
 set ddict(machine,name)             {machine}
@@ -244,7 +230,6 @@ set ddict(machine,name)             {machine}
 #
 set ddesc(submods,plusindent)       {    }
 set ddesc(submods,parents)          {module}
-set ddict(submods,type)             {submods}
 set ddict(submods,banner-comment)   {}
 set ddict(submods,right-comment)    {}
 
@@ -253,7 +238,6 @@ set ddict(submods,right-comment)    {}
 #
 set ddesc(submod,plusindent)       {    }
 set ddesc(submod,parents)          {submods}
-set ddict(submod,type)             {submod}
 set ddict(submod,name)             {submod}
 set ddict(submod,banner-comment)   {}
 set ddict(submod,right-comment)    {}
@@ -278,7 +262,6 @@ set ddict(submod,selected)         {0}
 #
 set ddesc(substparams,plusindent)       {    }
 set ddesc(substparams,parents)          {submod}
-set ddict(substparams,type)             {substparams}
 set ddict(substparams,banner-comment)   {}
 set ddict(substparams,right-comment)    {}
 set ddict(substparams,condition)        {}
@@ -288,7 +271,6 @@ set ddict(substparams,condition)        {}
 #
 set ddesc(substparam,plusindent)       {    }
 set ddesc(substparam,parents)          {substparams}
-set ddict(substparam,type)             {substparam}
 set ddict(substparam,banner-comment)   {}
 set ddict(substparam,right-comment)    {}
 set ddict(substparam,name)             {}
@@ -299,7 +281,6 @@ set ddict(substparam,value)            {}
 #
 set ddesc(gatesizes,plusindent)       {    }
 set ddesc(gatesizes,parents)          {submod}
-set ddict(gatesizes,type)             {gatesizes}
 set ddict(gatesizes,banner-comment)   {}
 set ddict(gatesizes,right-comment)    {}
 set ddict(gatesizes,condition)        {}
@@ -309,7 +290,6 @@ set ddict(gatesizes,condition)        {}
 #
 set ddesc(gatesize,plusindent)       {    }
 set ddesc(gatesize,parents)          {gatesizes}
-set ddict(gatesize,type)             {gatesize}
 set ddict(gatesize,banner-comment)   {}
 set ddict(gatesize,right-comment)    {}
 set ddict(gatesize,name)             {}
@@ -320,7 +300,6 @@ set ddict(gatesize,size)             {}
 #
 set ddesc(substmachines,plusindent)       {    }
 set ddesc(substmachines,parents)          {submod}
-set ddict(substmachines,type)             {substmachines}
 set ddict(substmachines,banner-comment)   {}
 set ddict(substmachines,right-comment)    {}
 set ddict(substmachines,condition)        {}
@@ -330,7 +309,6 @@ set ddict(substmachines,condition)        {}
 #
 set ddesc(substmachine,plusindent)       {    }
 set ddesc(substmachine,parents)          {substmachines}
-set ddict(substmachine,type)             {substmachine}
 set ddict(substmachine,banner-comment)   {}
 set ddict(substmachine,right-comment)    {}
 set ddict(substmachine,value)            {}
@@ -340,7 +318,6 @@ set ddict(substmachine,value)            {}
 #
 set ddesc(conns,plusindent)       {    }
 set ddesc(conns,parents)          {module}
-set ddict(conns,type)             {conns}
 set ddict(conns,banner-comment)   {}
 set ddict(conns,right-comment)    {}
 set ddict(conns,nocheck)          {0}
@@ -350,7 +327,6 @@ set ddict(conns,nocheck)          {0}
 #
 set ddesc(conn,plusindent)      {    }
 set ddesc(conn,parents)         {conns forloop}
-set ddict(conn,type)            {conn}
 set ddict(conn,banner-comment)  {}
 set ddict(conn,right-comment)   {}
 set ddict(conn,src-ownerkey)    {}
@@ -378,7 +354,6 @@ set ddict(conn,selected)        {0}
 #
 set ddesc(connattr,plusindent)       {    }
 set ddesc(connattr,parents)          {conn}
-set ddict(connattr,type)             {connattr}
 set ddict(connattr,banner-comment)   {}
 set ddict(connattr,right-comment)    {}
 set ddict(connattr,name)             {}
@@ -389,7 +364,6 @@ set ddict(connattr,value)            {}
 #
 set ddesc(forloop,plusindent)       {    }
 set ddesc(forloop,parents)          {conns}
-set ddict(forloop,type)             {forloop}
 set ddict(forloop,banner-comment)   {}
 set ddict(forloop,right-comment)    {}
 set ddict(forloop,trailing-comment) {}
@@ -399,10 +373,9 @@ set ddict(forloop,trailing-comment) {}
 #
 set ddesc(loopvar,plusindent)       {    }
 set ddesc(loopvar,parents)          {forloop}
-set ddict(loopvar,type)             {loopvar}
 set ddict(loopvar,banner-comment)   {}
 set ddict(loopvar,right-comment)    {}
-set ddict(loopvar,name)          {}
+set ddict(loopvar,name)             {}
 set ddict(loopvar,fromvalue)        {}
 set ddict(loopvar,tovalue)          {}
 

@@ -203,19 +203,22 @@ proc openSubmodule c {
    set cid [$c find withtag current]
    set key [itemKeyFromCid $cid]
 
-   if {$ned($key,type)=="submod"} {
+   if {$key==""} {
+      return
+   }
 
-     set typename $ned($key,type-name)
-     if {$typename==""} {
-        tk_messageBox -title "Error" -icon warning -type ok \
-             -message "Module type for this submodule is blank."
-     } elseif {[itemKeyFromName $typename module]==""} {
-        tk_messageBox -title "Error" -icon warning -type ok \
-             -message "Module type '$typename' unknown to GNED (Not loaded?)"
-     } else {
-        set modkey [itemKeyFromName $typename module]
-        openModuleOnCanvas $modkey
-     }
+   if {$ned($key,type)=="submod"} {
+      set typename $ned($key,type-name)
+      if {$typename==""} {
+         tk_messageBox -title "Error" -icon warning -type ok \
+              -message "Module type for this submodule is blank."
+      } elseif {[itemKeyFromName $typename module]==""} {
+         tk_messageBox -title "Error" -icon warning -type ok \
+              -message "Module type '$typename' unknown to GNED (Not loaded?)"
+      } else {
+         set modkey [itemKeyFromName $typename module]
+         openModuleOnCanvas $modkey
+      }
    }
 }
 

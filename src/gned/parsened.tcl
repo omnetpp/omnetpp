@@ -41,6 +41,7 @@ proc NedParser_createNedElement {nedarrayname type parentkey} {
    foreach field $ddfields($type) {
       set nedarray($key,$field) $ddict($type,$field)
    }
+   set nedarray($key,type) $type
 
    # set parent
    set nedarray($key,parentkey) $parentkey

@@ -45,6 +45,7 @@ proc addItem {type parentkey} {
       regsub -- "$type," $i "" field
       set ned($key,$field) $ddict($i)
    }
+   set ned($key,type) $type
 
    # set parent  (everyone has one except root)
    set ned($key,parentkey) $parentkey
@@ -67,7 +68,7 @@ proc addItem {type parentkey} {
    # mark it "not selected" on canvas
    set ned($key,selected) 0
 
-puts "dbg: addItem: $type $key added to $parentkey (its chilren now: $ned($parentkey,childrenkeys))"
+   puts "dbg: addItem: $type $key added to $parentkey (its children now: $ned($parentkey,childrenkeys))"
 
    return $key
 }
@@ -92,7 +93,7 @@ proc insertItem {key parentkey} {
 proc deleteItem {key} {
     global ned canvas ddfields
 
-puts "dbg: deleteItem $key entered"
+    puts "dbg: deleteItem $key entered"
 
     # prevent race conditions...
     set ned($key,being-deleted) 1

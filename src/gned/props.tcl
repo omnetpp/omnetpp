@@ -86,41 +86,47 @@ proc updateNedFromTableEdit {w parentkey itemtype keyattr} {
     global ned ddfields tablePriv
 
     # count lines in table
-    set n 0
+    set tblN 0
     for {set li 0} {[info exist tablePriv($w,$li,$keyattr)]} {incr li} {
         if {$tablePriv($w,$li,$keyattr)!=""} {
-            incr n
+            incr tblN
         }
     }
-    set nch [llength [getChildren $parentkey]]
-    if {$nch>$n} {
-        # delete $nch-$n
-    } else {
-        # add $n-$nch
+
+    # add or delete $itemtype items to match count in table
+    set needN [expr $tblN-[llength [getChildren $parentkey]]]
+    if {$needN<0} {
+        # delete $needN items
+        foreach key [lrange [getChildren $parentkey] 0 [expr -$needN-1]] {
+            deleteItem $key
+        }
+    } elseif {$needN>0} {
+        # add $needN items
+        for {set i 0} {$i<$needN} {incr i} {
+            addItem $itemtype $parentkey
+        }
     }
 
-puts "DBG: updateNedFromTableEdit: TBD more efficiently! overwrite existing instead of delete/reinsert!"
-    # delete old stuff in ned(): OBSOLETE
-    foreach key [getChildren $parentkey] {
-        deleteItem $key
-    }
-
-    # add items from tablePriv() to ned()
-    set isempty 1
+    # copy item attributes from tablePriv() to ned()
+    set items [getChildren $parentkey]
+    set i 0
     for {set li 0} {[info exist tablePriv($w,$li,$keyattr)]} {incr li} {
         if {$tablePriv($w,$li,$keyattr)!=""} {
-            set isempty 0
-            set key [addItem $itemtype $parentkey]
+            set key [lindex $items $i]
             foreach attr $ddfields($itemtype) {
-                # catch is because maybe only the attrs actually in the table are in the array
-                # FIXME: if we reuse items, set attr to "" if catch fails...
-                catch {set ned($key,$attr) $tablePriv($w,$li,$attr)}
+                # set attrs not in tablePriv() to ""
+                if [catch {
+                   set ned($key,$attr) $tablePriv($w,$li,$attr)
+                }] {
+                   set ned($key,$attr) ""
+                }
             }
+            incr i
         }
     }
 
-    # return if section was empty
-    return $isempty
+    # return true if section was empty
+    return [expr $tblN==0]
 }
 
 
