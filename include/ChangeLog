@@ -1,5 +1,7 @@
 2002-02-21  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
+	* cobject.h: extended description of CompareFunc regarding return values
+
 	* cqueue.h (cQueue): fixed CompareFunc arguments in Queue class description
 
 2001-10-28 Andras Varga

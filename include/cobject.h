@@ -48,9 +48,13 @@ SIM_API extern cHead enums;               ///< List of cEnum objects.
 /**
  * Prototype for functions that can be used by cQueue objects configured as
  * priority queues to compare two objects.
+ * Return values of CompareFunc should be
+ * - greater than zero if a > b
+ * - smaller than zero if a < b
+ * 
  * @ingroup EnumsTypes
  */
-typedef int (*CompareFunc)(cObject *, cObject *);
+typedef int (*CompareFunc)(cObject *a, cObject *b);
 
 /**
  * Prototype for functions that can be used with the foreach() mechanism
