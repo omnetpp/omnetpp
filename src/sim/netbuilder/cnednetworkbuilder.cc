@@ -328,7 +328,7 @@ cChannel *cNEDNetworkBuilder::createChannel(ConnectionNode *conn)
     if (!strcmp(connattr->getName(),"channel"))
     {
         // create channel
-	cLinkType *linkp = findLink(connattr->getValue());
+	//cLinkType *linkp = findLink(connattr->getValue());
         throw new cException("channel support not implemented yet"); // FIXME
     }
 

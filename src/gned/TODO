@@ -47,7 +47,6 @@ General:
 Dialogs:
 - remove "doc comments" from tables, and replace with "..." button
 - replace param type, gate dir, etc entries with combo boxes
-- check data entered in dialogs (nonempty, legal chars, unique etc.)
 - process comments (add newlines, etc.)
 - process imports: strip/add quotes -- maybe quotes should be stripped/added
   during parsing/NED generation??

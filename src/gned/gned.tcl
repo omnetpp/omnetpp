@@ -173,7 +173,7 @@ proc processCommandline {argv _convertandexit _imgsuffix _outdir _files} {
        } else {
            # expand wildcards (on Windows, the shell doesn't do it for us)
            if [catch {
-               set files [glob $arg]
+               glob $arg
            }] {
                # probably a new file that should be created
                lappend files $arg

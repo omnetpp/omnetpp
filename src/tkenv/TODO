@@ -1,10 +1,17 @@
+FIXME name implies "i3", "i4" etc might be introduced sometime. 
+      if not, change name to "mi"?
+FIXME internally, images must be named with "img:" prefix! (otherwise exit.gif, 
+      proc.gif etc will overwrite the exit, proc Tcl commands!)
+FIXME bold text? make it more flexible with position? 
+FIXME add "t2", "t3" etc too?
+FIXME doesn't interpret "\n"!
+
+FIXME print banners on initialize() and finish()!!!
+
+FIXME: module name changes don't propagate to graphics!
+
 General:
- - autolayout (like in ns2's nam or the applets/Graphlayout JDK demo)
  - with Tcl-embedding, cannot display README file
- - .tkenvrc to store options
- - rearrange modules with mouse (problem: where to save positions? .tkenvrc?)
- - display strings to configure animated message objects
- - outvect inspector options dialog, new checkbox: [ ] automatic settings
  - graphical FES inspector
  - CDF display for histogram classes
  - plugins should be loaded from a path

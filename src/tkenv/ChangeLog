@@ -10,15 +10,8 @@
 	- "i2=" tag (with similar syntax to "i=") displays a small "modifier"
 	icon on top of the original one. Suggested icons are x_check, x_down,
 	x_up, x_exclamation, x_question, etc. 
-FIXME name implies "i3", "i4" etc might be introduced sometime. if not, change
-name to "mi"?
 	- "t=" tag displays a status string. t=<text>,<pos>,<color>. 
 	<pos> is "l", "r" or "t" for left, right and top.
-FIXME bold text? make it more flexible with position? 
-FIXME add "t2", "t3" etc too?
-FIXME doesn't interpret "\n"!
-
-FIXME print banners on initialize() and finish()!!!
 
 2004-01-09  Andras Varga
 
@@ -28,7 +21,6 @@ FIXME print banners on initialize() and finish()!!!
 	TBD bubble() drawing could be a bit faster (too much Tcl code)
 
 	* added anum speed slider in main dialog and graphical module inspector
-FIXME: module name changes don't propagate to graphics!
 
 2004-01-06  Andras Varga
 
