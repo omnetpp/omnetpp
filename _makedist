@@ -3,7 +3,7 @@
 #
 
 # version must be the same here and in configure.in!
-version=2.0b2
+version=`cat Version | sed 's/omnetpp-//'`
 
 if test -f Makefile; then
 	echo Start with a clean page by doing 'cvs checkout omnetpp'!!!
