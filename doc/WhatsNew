@@ -5,13 +5,19 @@ In the OMNeT++ 2.0 beta 3 version (Jan 2000)
 --------------------------------------------
 License change: you can now elect to use GPL for the whole OMNeT++ package.
 
-GNED has been further enhanced: drag&drop, in-place editing, dialogs...
+GNED has been further enhanced: you can create submodules by dragging a module
+type from the tree view to the canvas; submodule names can be edited in-place;
+there are dialogs to edit submodule, connection, channel, etc. specifications
+directly.
 
-Indentation of samples cleaned up. Renamed classes to allow link all samples
-into a single executable. Demo added....
+A new sample called Demo was added which works as a GUI shell to the other
+sample simulations, and also demonstrates how you can link several simulation
+models into a single executable. The other samples were cleaned up a bit too
+(e.g. indentation & commenting made more consistent).
 
-Experimental support for MSVC. Makefile.vc files added. No DLL support or 
-makemake equivalent yet.
+Support for MSVC. Makefile.vc files added for system components and project
+files for sample simulatons. No DLL support yet. MSVC support required a number
+or small changes in the sources too.
 
 Some API changes to improve the clarity of the code...
 
@@ -19,8 +25,7 @@ The documentation was reorganized and expanded. Comparison with other
 simulators,... in-depth description analyis of handleMessage()
 and activity()... The reference manual was merged into the User Manual...
 
-TVEnv was removed from the sources and from the documentation too; nobody used
-it for a long time.
+TVEnv was removed from the distribution.
 
 
 
