@@ -1,3 +1,7 @@
+2003-07-28  Andras Varga
+
+	* canvas.tcl, gned.tcl: implemented "export postscript and exit" mode
+
 2003-06-16  ------ omnetpp-2.3 released ------
 
 2003-03-15  ------ omnetpp-2.3b2 released ------

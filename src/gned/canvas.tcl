@@ -344,3 +344,37 @@ proc adjustWindowTitle {} {
 }
 
 
+# exportCanvasesToPostscript --
+#
+# Loops through all open canvases and saves the pictures into postscript files
+# in the given directory. Used for a command-line option.
+#
+proc exportCanvasesToPostscript {dir} {
+    global canvas ned
+    foreach i [array names canvas "*,canvas"] {
+        regsub -- ",canvas" $i "" loop_canvid
+        set loop_modkey $canvas($loop_canvid,module-key)
+        set loop_nedfilekey $ned($loop_modkey,parentkey)
+
+        set modname $ned($loop_modkey,name)
+        set nedfilename $ned($loop_nedfilekey,filename)
+
+        puts "saving $modname from $nedfilename..."
+        switchToCanvas $loop_canvid
+        set canv $canvas($i)
+        set bbox [$canv bbox all]
+        set x1 [lindex $bbox 0]
+        set y1 [lindex $bbox 1]
+        set x2 [lindex $bbox 2]
+        set y2 [lindex $bbox 3]
+        #$canv config -width [expr $x2-$x1]
+        #$canv config -height [expr $y2-$y1]
+        update idletasks
+
+        regsub -- {[./\\]} $nedfilename "_" tmp
+        set psfile [file join $dir "${modname}__${tmp}.eps"]
+        $canv postscript -file $psfile -x $x1 -y $y1 -width [expr $x2-$x1] -height [expr $y2-$y1]
+    }
+}
+
+

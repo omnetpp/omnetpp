@@ -90,11 +90,31 @@ proc start_gned {} {
    }
    reflectConfigInGUI
 
+   set convertandexit 0
    foreach arg $argv {
+       if {$arg == "--"} {
+           continue
+       }
+       if {$arg == "-c"} {
+           # FIXME: gned has to be invoked like gned -- -c *.ned, 
+           # otherwise Tcl tries to interpret the "-c" :-(
+           set convertandexit 1
+           # FIXME as option!
+           set psdir "html"
+           continue
+       }
+
        # on Windows, we have to expand wildcards manually
        foreach fname [glob -nocomplain $arg] {
            loadNED $fname
        }
+   }
+
+   # implement the -c option
+   if {$convertandexit} {
+       # just save the canvases to file, and exit
+       exportCanvasesToPostscript $psdir
+       fileExit
    }
 }
 
