@@ -48,7 +48,7 @@
  * configuration-class="MyClass"
  * </pre>
  *
- * @opp will get the rest of the configuration from your configuration
+ * OMNeT++ will get the rest of the configuration from your configuration
  * class.
  *
  * See also: cEnvir::config()

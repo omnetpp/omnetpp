@@ -26,12 +26,12 @@ class cStructDescriptor;
 
 /**
  * Ultimate base class for cObject, and thus for nearly all
- * @opp classes. cPolymorphic is a <b>lightweight common base class</b>:
+ * OMNeT++ classes. cPolymorphic is a <b>lightweight common base class</b>:
  * it only contains virtual member functions but NO DATA MEMBERS at all.
  *
  * It is recommended to use cPolymorphic as a base class for any class
  * that has at least one virtual member function. This makes the class more
- * interoperable with @opp, and causes no extra overhead at all.
+ * interoperable with OMNeT++, and causes no extra overhead at all.
  * sizeof(cPolymorphic) should yield 4 on a 32-bit architecture (4-byte
  * <i>vptr</i>), and using cPolymorphic as a base class doesn't add anything
  * to the size because a class with a virtual function already has a vptr.
@@ -43,7 +43,7 @@ class cStructDescriptor;
  * Using cPolymorphic also strengthens type safety. <tt>cPolymorphic *</tt>
  * pointers should replace <tt>void *</tt> in most places where you need
  * pointers to "any data structure". Using cPolymorphic will allow safe
- * downcasts using <tt>dynamic_cast</tt> and also @opp's
+ * downcasts using <tt>dynamic_cast</tt> and also OMNeT++'s
  * <tt>check_and_cast</tt>.
  *
  * @ingroup SimCore

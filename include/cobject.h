@@ -54,7 +54,7 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
 
 
 /**
- * Base class for almost all classes in the @opp library.
+ * Base class for almost all classes in the OMNeT++ library.
  *
  * It is usually NOT a good idea to subclass your own classes
  * (esp. data storage classes) from cObject,
@@ -74,7 +74,7 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
  * redefined: dup() are mandatory to be redefined, and often
  * you'll want to redefine info() and writeContents() as well.
  *
- * <b>Ownership management</b> helps @opp catch common programming
+ * <b>Ownership management</b> helps OMNeT++ catch common programming
  * errors. As a definition, <i>ownership means the exclusive right and duty
  * to delete owned objects.</i>
  *

@@ -16,10 +16,10 @@
 *--------------------------------------------------------------*/
 
 /**
- * @mainpage @opp Parallel simulation support
+ * @mainpage OMNeT++ Parallel simulation support
  *
  * This documentation describes the architecture of the distributed
- * parallel simulation implementation in @opp.
+ * parallel simulation implementation in OMNeT++.
  *
  * All classes documented here are used internally -- if you're into
  * writing simulation models, there's nothing interesting for you here.

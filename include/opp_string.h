@@ -23,7 +23,7 @@
 #include "util.h"
 
 /**
- * Lightweight string class, used internally in some parts of @opp.
+ * Lightweight string class, used internally in some parts of OMNeT++.
  * In simulation models it is better to use std::string or const char *
  * instead.
  *
