@@ -305,12 +305,12 @@ static yyconst short int yy_accept[356] =
        65,   65,   65,   65,   65,   65,   65,   65,   65,   65,
        13,   65,   65,   65,   65,   65,   65,    0,   68,   65,
        65,   65,   44,   65,   57,   65,   65,   65,   65,   65,
-       65,   65,   65,   65,   65,   65,   65,   65,   65,   50,
+       65,   65,   65,   65,   65,   65,   65,   65,   65,   52,
        65,   65,   65,   65,   65,   65,   65,   65,   65,   32,
 
        60,   65,   65,   65,   65,   65,   65,   65,   27,   65,
        65,   65,   65,   65,   65,   65,   65,   11,   65,   65,
-       65,   65,   53,   65,   65,   16,   65,   65,   62,   65,
+       65,   65,   51,   65,   65,   16,   65,   65,   62,   65,
        65,   65,   65,   65,   65,   65,   63,   65,   12,   65,
        24,   65,   65,   40,   15,   65,   65,   65,   65,   65,
        65,   65,   65,   65,   58,   65,   65,   65,   65,   65,
@@ -319,8 +319,8 @@ static yyconst short int yy_accept[356] =
        65,   65,    6,   65,   65,   65,   65,   65,   65,    7,
        17,   43,   47,   65,   65,   65,   45,    8,   48,   65,
 
-       65,   65,   30,   65,   65,   65,   65,   51,   65,    3,
-       65,   52,    5,   41,   65,   42,   65,   65,   65,   56,
+       65,   65,   30,   65,   65,   65,   65,   53,   65,    3,
+       65,   50,    5,   41,   65,   42,   65,   65,   65,   56,
        14,   65,   65,   64,   65,   65,   65,   65,   65,   33,
        65,   65,   65,   65,   65,   65,   65,   19,   65,   18,
        25,   65,   65,   65,   65,   65,   46,   20,   21,   49,
@@ -875,32 +875,32 @@ YY_RULE_SETUP
 case 3:
 YY_RULE_SETUP
 #line 63 "ned.lex"
-{ count(); return INCLUDE; }
+{ count(); use_chanattrname_token = 0; return INCLUDE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 64 "ned.lex"
-{ count(); return INCLUDE; }
+{ count(); use_chanattrname_token = 0; return INCLUDE; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 65 "ned.lex"
-{ count(); return NETWORK; }
+{ count(); use_chanattrname_token = 0; return NETWORK; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 66 "ned.lex"
-{ count(); return MODULE; }
+{ count(); use_chanattrname_token = 0; return MODULE; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 67 "ned.lex"
-{ count(); return SIMPLE; }
+{ count(); use_chanattrname_token = 0; return SIMPLE; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 68 "ned.lex"
-{ count(); return CHANNEL; }
+{ count(); use_chanattrname_token = 1; return CHANNEL; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
@@ -1090,42 +1090,42 @@ YY_RULE_SETUP
 case 46:
 YY_RULE_SETUP
 #line 108 "ned.lex"
-{ count(); return CPPINCLUDE; }
+{ count(); use_chanattrname_token = 0; return CPPINCLUDE; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
 #line 109 "ned.lex"
-{ count(); return STRUCT; }
+{ count(); use_chanattrname_token = 0; return STRUCT; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
 #line 110 "ned.lex"
-{ count(); return COBJECT; }
+{ count(); use_chanattrname_token = 0; return COBJECT; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
 #line 111 "ned.lex"
-{ count(); return NONCOBJECT; }
+{ count(); use_chanattrname_token = 0; return NONCOBJECT; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
 #line 112 "ned.lex"
-{ count(); return ENUM; }
+{ count(); use_chanattrname_token = 0; return MESSAGE; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
 #line 113 "ned.lex"
-{ count(); return EXTENDS; }
+{ count(); use_chanattrname_token = 0; return CLASS; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
 #line 114 "ned.lex"
-{ count(); return MESSAGE; }
+{ count(); use_chanattrname_token = 0; return ENUM; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
 #line 115 "ned.lex"
-{ count(); return CLASS; }
+{ count(); return EXTENDS; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP

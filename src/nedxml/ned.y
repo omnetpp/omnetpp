@@ -300,7 +300,6 @@ channeldefinition_old
 channelheader_old
         : CHANNEL NAME
                 {
-                  use_chanattrname_token = 1;
                   ps.channel = (ChannelNode *)createNodeWithTag(NED_CHANNEL, ps.nedfile );
                   ps.channel->setName(toString(@2));
                   setComments(ps.channel,@1,@2);
@@ -429,7 +428,6 @@ simpledefinition
 simpleheader
         : SIMPLE NAME
                 {
-                  use_chanattrname_token = 0;
                   ps.module = (SimpleModuleNode *)createNodeWithTag(NED_SIMPLE_MODULE, ps.nedfile );
                   ((SimpleModuleNode *)ps.module)->setName(toString(@2));
                   setComments(ps.module,@1,@2);
@@ -492,7 +490,6 @@ moduledefinition
 moduleheader
         : MODULE NAME
                 {
-                  use_chanattrname_token = 0;
                   ps.module = (CompoundModuleNode *)createNodeWithTag(NED_COMPOUND_MODULE, ps.nedfile );
                   ((CompoundModuleNode *)ps.module)->setName(toString(@2));
                   setComments(ps.module,@1,@2);

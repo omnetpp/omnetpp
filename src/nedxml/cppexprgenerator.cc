@@ -358,23 +358,9 @@ void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, 
     {
         // binary.
         const char *name = node->getName();
-        const char *funcname = NULL;
         if (!strcmp(name,"^"))
-            funcname = "pow";
-        else if (!strcmp(name,"#"))
-            funcname = "bin_xor";
-        else if (!strcmp(name,"&"))
-            funcname = "bin_and";
-        else if (!strcmp(name,"|"))
-            funcname = "bin_or";
-        else if (!strcmp(name,"<<"))
-            funcname = "shift_left";
-        else if (!strcmp(name,">>"))
-            funcname = "shift_right";
-
-        if (funcname)
         {
-            out << funcname << "(";
+            out << "pow(";
             generateItem(op1,indent,mode);
             out << ",";
             generateItem(op2,indent,mode);
@@ -382,11 +368,27 @@ void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, 
         }
         else
         {
+            // determine name of C/C++ operator
+            const char *clangoperator = name;
+            if (!strcmp(name,"#"))
+                clangoperator = "^";
+            if (!strcmp(name,"##"))
+                clangoperator = "!=";  // use "!=" on bools for logical xor
+
+            // we may need to cast operands to bool or long
+            bool boolcast = !strcmp(name,"&&") || !strcmp(name,"||") || !strcmp(name,"##");
+            bool ulongcast = !strcmp(name,"&") || !strcmp(name,"|") || !strcmp(name,"#") ||
+                             !strcmp(name,"<<") || !strcmp(name,">>") || !strcmp(name,"~");
+
             // always put parens to force NED precedence (might be different from C++'s)
             out << "(";
+            out << (boolcast ? "(bool)(" : ulongcast ? "(unsigned long)(" : "");
             generateItem(op1,indent,mode);
-            out << name;
+            out << (boolcast || ulongcast ? ")" : "");
+            out << clangoperator;
+            out << (boolcast ? "(bool)(" : ulongcast ? "(unsigned long)(" : "");
             generateItem(op2,indent,mode);
+            out << (boolcast || ulongcast ? ")" : "");
             out << ")";
         }
     }

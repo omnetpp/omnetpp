@@ -60,12 +60,12 @@ char textbuf[TEXTBUF_LEN];
 "//"                    { comment(); }
 "--"                    { comment(); }
 
-"include"               { count(); return INCLUDE; }
-"import"                { count(); return INCLUDE; }
-"network"               { count(); return NETWORK; }
-"module"                { count(); return MODULE; }
-"simple"                { count(); return SIMPLE; }
-"channel"               { count(); return CHANNEL; }
+"include"               { count(); use_chanattrname_token = 0; return INCLUDE; }
+"import"                { count(); use_chanattrname_token = 0; return INCLUDE; }
+"network"               { count(); use_chanattrname_token = 0; return NETWORK; }
+"module"                { count(); use_chanattrname_token = 0; return MODULE; }
+"simple"                { count(); use_chanattrname_token = 0; return SIMPLE; }
+"channel"               { count(); use_chanattrname_token = 1; return CHANNEL; }
 "for"                   { count(); return FOR; }
 "do"                    { count(); return DO; }
 "true"                  { count(); return TRUE_; }
@@ -105,14 +105,14 @@ char textbuf[TEXTBUF_LEN];
 "bool"                  { count(); return BOOLTYPE; }
 "anytype"               { count(); return ANYTYPE; }
 
-"cppinclude"            { count(); return CPPINCLUDE; }
-"struct"                { count(); return STRUCT; }
-"cobject"               { count(); return COBJECT; }
-"noncobject"            { count(); return NONCOBJECT; }
-"enum"                  { count(); return ENUM; }
+"cppinclude"            { count(); use_chanattrname_token = 0; return CPPINCLUDE; }
+"struct"                { count(); use_chanattrname_token = 0; return STRUCT; }
+"cobject"               { count(); use_chanattrname_token = 0; return COBJECT; }
+"noncobject"            { count(); use_chanattrname_token = 0; return NONCOBJECT; }
+"message"               { count(); use_chanattrname_token = 0; return MESSAGE; }
+"class"                 { count(); use_chanattrname_token = 0; return CLASS; }
+"enum"                  { count(); use_chanattrname_token = 0; return ENUM; }
 "extends"               { count(); return EXTENDS; }
-"message"               { count(); return MESSAGE; }
-"class"                 { count(); return CLASS; }
 "fields"                { count(); return FIELDS; }
 "properties"            { count(); return PROPERTIES; }
 "abstract"              { count(); return ABSTRACT; }
