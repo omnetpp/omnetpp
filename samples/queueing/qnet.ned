@@ -11,7 +11,6 @@ import "classifier.ned";
 import "delay.ned";
 import "source.ned";
 import "pqueue.ned";
-import "qnet.ned";
 import "server.ned";
 import "sink.ned";
 
