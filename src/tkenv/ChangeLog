@@ -1,3 +1,9 @@
+2001-07-23  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* tkcmd.cc (simulationOk_cmd): use macro CONST_CAST (defined at top of
+	file) to avoid compilation errors with gcc-2.95.3
+	(isRunning_cmd): CONST_CAST like above
+
 2001-07-11 Andras Varga
 
 	* tkapp.cc: Eric Wu's Tru64/MPI port. Added a few const_cast<>s because

@@ -26,6 +26,9 @@
 #include "tklib.h"
 #include "tkinsp.h"
 
+/* CONST_CAST */
+#include "defs.h"
+
 // Command functions:
 int newNetwork_cmd(ClientData, Tcl_Interp *, int, char **);
 int newRun_cmd(ClientData, Tcl_Interp *, int, char **);
@@ -314,7 +317,7 @@ int getObjectFullpath_cmd(ClientData, Tcl_Interp *interp, int argc, char **argv)
 int simulationOk_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
-   interp->result = simulation.ok() ? "1" : "0";
+   interp->result = CONST_CAST (simulation.ok() ? "1" : "0");
    return TCL_OK;
 }
 
@@ -322,7 +325,7 @@ int isRunning_cmd(ClientData, Tcl_Interp *interp, int argc, char **)
 {
    if (argc!=1) return TCL_ERROR;
    TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
-   interp->result = app->is_running ? "1" : "0";
+   interp->result = CONST_CAST(app->is_running ? "1" : "0");
    return TCL_OK;
 }
 
