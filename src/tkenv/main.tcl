@@ -26,6 +26,7 @@ set config(editor-findstring) ""
 set config(editor-case-sensitive) 0
 set config(editor-whole-words) 0
 set config(editor-regexp) 0
+set config(editor-backwards) 0
 
 
 #===================================================================

@@ -337,6 +337,9 @@ proc findDialog {w} {
     checkbutton $dlg.f.words -text {whole words only} -variable tmp(whole-words)
     pack $dlg.f.words  -anchor w -side top
 
+    checkbutton $dlg.f.backwards -text {search backwards} -variable tmp(backwards)
+    pack $dlg.f.backwards  -anchor w -side top
+
     $dlg.f.find.e insert 0 $config(editor-findstring)
     $dlg.f.find.e select range 0 end
 
@@ -349,14 +352,16 @@ proc findDialog {w} {
         set case $tmp(case-sensitive)
         set words $tmp(whole-words)
         set regexp $tmp(regexp)
+        set backwards $tmp(backwards)
 
         set config(editor-findstring) $findstring
         set config(editor-case-sensitive) $case
         set config(editor-whole-words) $words
         set config(editor-regexp) $regexp
+        set config(editor-backwards) $backwards
 
         destroy $dlg
-        doFind $w $findstring $case $words $regexp
+        doFind $w $findstring $case $words $regexp $backwards
    }
    catch {destroy $dlg}
 }
@@ -373,16 +378,17 @@ proc findNext {w} {
     set case         $config(editor-case-sensitive)
     set words        $config(editor-whole-words)
     set regexp       $config(editor-regexp)
+    set backwards    $config(editor-backwards)
 
-    doFind $w $findstring $case $words $regexp
+    doFind $w $findstring $case $words $regexp $backwards
 }
 
 
 # doFind --
 #
 #
-proc doFind {w findstring case words regexp} {
-    if {[_doFind $w $findstring $case $words $regexp] == ""} {
+proc doFind {w findstring case words regexp backwards} {
+    if {[_doFind $w $findstring $case $words $regexp $backwards] == ""} {
         tk_messageBox -parent [winfo toplevel $w] -title "Find" -icon warning \
                       -type ok -message "'$findstring' not found."
     }
@@ -395,34 +401,61 @@ proc doFind {w findstring case words regexp} {
 # Finds the given string, positions the cursor after its last char,
 # and returns the length. Returns empty string if not found.
 #
-proc _doFind {w findstring case words regexp} {
+proc _doFind {w findstring case words regexp backwards} {
 
     # remove previous highlights
     $w tag remove SELECT 0.0 end
 
     # find the string
     set cur "insert"
+    set initialcur $cur
     while 1 {
-        if {$case && $regexp} {
-            set cur [$w search -count length -regexp -- $findstring $cur end]
-        } elseif {$case} {
-            set cur [$w search -count length -- $findstring $cur end]
-        } elseif {$regexp} {
-            set cur [$w search -count length -nocase -regexp -- $findstring $cur end]
+        # do search
+        if {$backwards} {
+            if {$case && $regexp} {
+                set cur [$w search -count length -backwards -regexp -- $findstring $cur 1.0]
+            } elseif {$case} {
+                set cur [$w search -count length -backwards -- $findstring $cur 1.0]
+            } elseif {$regexp} {
+                set cur [$w search -count length -backwards -nocase -regexp -- $findstring $cur 1.0]
+            } else {
+                set cur [$w search -count length -backwards -nocase -- $findstring $cur 1.0]
+            }
         } else {
-            set cur [$w search -count length -nocase -- $findstring $cur end]
+            if {$case && $regexp} {
+                set cur [$w search -count length -regexp -- $findstring $cur end]
+            } elseif {$case} {
+                set cur [$w search -count length -- $findstring $cur end]
+            } elseif {$regexp} {
+                set cur [$w search -count length -nocase -regexp -- $findstring $cur end]
+            } else {
+                set cur [$w search -count length -nocase -- $findstring $cur end]
+            }
         }
+
+        # exit if not found
         if {$cur == ""} {
             break
         }
-        if {!$words} {
-            break
+
+        # allow exit loop only if we moved from initial cursor position
+        if {![$w compare "$cur  + $length chars" == $initialcur]} {
+            # if 'whole words' and we are not at beginning of a word, continue searching
+            if {!$words} {
+                break
+            }
+            if {[$w compare $cur == "$cur wordstart"] && \
+                [$w compare "$cur + $length char" == "$cur wordend"]} {
+                break
+            }
         }
-        if {[$w compare $cur == "$cur wordstart"] && \
-            [$w compare "$cur + $length char" == "$cur wordend"]} {
-            break
+
+        # move cur so that we find next/prev occurrence
+        if {$backwards} {
+            set cur "$cur - 1 char"
+        } else {
+            set cur "$cur + 1 char"
         }
-        set cur "$cur + 1 char"
     }
 
     # check if found
@@ -437,5 +470,4 @@ proc _doFind {w findstring case words regexp} {
 
     return $length
 }
-
 
