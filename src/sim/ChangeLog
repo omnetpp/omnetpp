@@ -1,3 +1,38 @@
+2002-10-27  Andras Varga
+
+	* object.cc: className() implemented using typeid (C++ RTTI)
+
+	* chead.cc, ctypes.cc: inspectorfactory stuff moved to Tkenv from here
+
+	* CRASH on Cygwin (gcc 2.95.3-5): if we transfer out (ie. by calling
+	transferToMain()) from a try{..} block inside a coroutine, the
+	program will crash during exiting (ie sometime on leaving main()).
+	This is kind of bad, because that's the way activity() can be handled
+	inside the simulation kernel, in cSimpleModule::activate()...
+
+	To produce the bug, link with Tkenv any simulation that uses
+	activity() (I tried with Fifo1 and Token). Do one (or more) events
+	in Tkenv, then exit. Tkenv will crash right after printing
+	"End run of OMNeT++". Then try the same without doing an event,
+	or with pure handleMessage() simulation (ie Fifo2): neither will crash.
+	Strangely enough, there is also no immediate crash if you do
+	"Rebuild network" in Tkenv several times, crash is always delayed
+	until program exit.
+
+	To test it's really caused by the try block, modify cSimpleModule::
+	activate(void *p), around cmodule.cc#575:
+	    try
+	    {
+	        smod->activity();
+	Insert simulation.transferToMain() just before the try block and
+	try to reproduce the bug (one step in Tkenv, then exit). Simulation
+	won't work, but no crash. Then move simulation.transferToMain()
+	just inside the try block: simulation will (not) work same way
+	as before, but no crash on exit.
+
+	I only saw this on Cygwin, MSVC and gcc on Linux are OK. Ideas,
+	anybody?
+
 2002-10-20  Andras Varga
 
 	* cgate.cc: added isConnectedOutside() and isConnectedInside() methods.
@@ -16,8 +51,8 @@
 
 2002-10-07  Andras Varga
 
-	* cobject.cc, ctypes.cc, added onstartup.cc: refactoring: global 
-	registration lists now use EXECUTE_ON_STARTUP macro, see 
+	* cobject.cc, ctypes.cc, added onstartup.cc: refactoring: global
+	registration lists now use EXECUTE_ON_STARTUP macro, see
 	include/ChangeLog for more info.
 
 2002-10-04  Andras Varga
@@ -33,16 +68,16 @@
 
 2002-09-07 Andras Varga
 
-	* added cchannel.cc, modified carray.cc, cgate.cc, cmessage.cc, 
+	* added cchannel.cc, modified carray.cc, cgate.cc, cmessage.cc,
 	cmodule.cc, csimul.cc, mpimod.cc, mpipack.cc, netpack.cc, pvmmod.cc,
         pvmpack.cc: introduced channel objects -- see include/ChangeLog for
         more details
 
 2002-07-08  Andras Varga
 
-	* coutvect.cc (cOutVector methods): register vector as early as 
+	* coutvect.cc (cOutVector methods): register vector as early as
 	possible. This is needed by the Akaroa output vector manager because
-	Akaroa needs to know the total number of parameters before recording 
+	Akaroa needs to know the total number of parameters before recording
 	the first value. (This change has the side effect that empty vectors
 	also get declared in the output vector file, which is redundant.)
 
@@ -58,11 +93,11 @@
 
 2002-06-27  Andras Varga
 
-	* cexception.cc/h added; most opp_error() calls replaced with 
-	throw new cException(...). Exceptions are caught in 
+	* cexception.cc/h added; most opp_error() calls replaced with
+	throw new cException(...). Exceptions are caught in
 	cSimpleModule::activate() (for activity()-based modules) and
 	in cSimulation::doOneEvent() (for handleMessage()-based modules),
-	and converted to 'conventional' opp_error(). 
+	and converted to 'conventional' opp_error().
 
 	* TBD: rethink error handling wrt exceptions!
 
@@ -72,9 +107,9 @@
 
 2002-06-17  Andras Varga
 
-	* cpar.cc: new feature: cPar can use compiled expressions subclassed 
+	* cpar.cc: new feature: cPar can use compiled expressions subclassed
 	from cDoubleExpression (new class). This is needed for code generated
-	by the new, nedxml-based nedc. 
+	by the new, nedxml-based nedc.
 
 2002-05-28  Frank Paehlke  <paehlke@tm.uni-karlsruhe.de>
 
@@ -82,7 +117,7 @@
 	cpar.cc, cpsquare.cc, csimul.cc, cstat.cc, ctypes.cc, cvarhist.cc:
 	do not include iostream.h et.al. directly (already included by
 	header files)
-	
+
 	* cmessage.cc (decapsulate): added check for encapmsg==0 before
 	accessing encapmsg->len
 
@@ -104,7 +139,7 @@
 2002-03-05  Andras Varga
 
 	* cgate.cc (setDisplayString): connection display string changes now
-        take effect immediately. Implementation: notify parent module's 
+        take effect immediately. Implementation: notify parent module's
         inspector. (This is should not be the final solution though; it would
         be better to add displayStringChanged() methods to cEnvir...)
 

@@ -568,6 +568,7 @@ void cSimpleModule::activate(void *p)
     starter->setOwner(smod);
     starter->setKind(MK_TIMEOUT);
 
+
     // call activity(). At this point, initialize() has already been called
     // from cSimulation::startRun(), or manually in the case of dynamically
     // created modules.

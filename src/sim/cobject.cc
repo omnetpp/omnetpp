@@ -122,8 +122,12 @@ void cObject::copyNotSupported() const
 const char *cObject::className() const 
 {
     const char *s = typeid(*this).name();
+
     // correct gcc 2.9x bug: it prepends the type name with its length
     while (*s>='0' && *s<='9') s++;
+
+    // and MSVC prepends "class "...
+    if (s[0]=='c' && s[1]=='l' && s[2]=='a' && s[3]=='s' && s[4]=='s' && s[5]==' ') s+=6;
     return s;
 }
 
