@@ -226,3 +226,11 @@ set icons(tree) [image create photo -data {
     RAAAOw==
 }]
 
+set icons(unknown) [image create photo -data {
+    R0lGODlhIAAgALMAAAAAAP8AAIAAAICAgP///4D///+A/wCAgADAAP//wID/gP//wICA/wAA
+    /4CAgMDAwCH5BAEAAA8ALAAAAAAgACAAAASrkEhAgZz1YqpJfmAojmQJWmaqhigYBGt8Am4g
+    wLLquXye7iGb6EUsroAPYbDIfP0IQcFQuXxJS62SlUS8krLUpMC7HJuyPitZRPHVzCakrLsW
+    yVd0HW2uPkL5cFNsf3g2dTZOJ4QqfSM4OA9oKYZ1Ll5tblpkd0mQc5t7UYmZIHePU2FRdouq
+    ZZVfrGKOY68jkrKkLLG5trGpmZy8dqHCJB4cGhXIG8vHyBEAADs=
+}]
+

@@ -1,3 +1,8 @@
+2003-01-14  Andras Varga
+
+	* graphical module inspector: don't bug the user with error dialogs if 
+	icon for a module is not found; just only display the 'unknown' icon.
+
 2003-01-12  Andras Varga
 
 	* fixes on the inspector type selection dialog
