@@ -141,7 +141,7 @@ void cNamedPipeCommunications::init()
             sleep(1);
         }
         if (wpipes[i] == INVALID_HANDLE_VALUE)
-            throw new cException("cNamedPipeCommunications: CreateFile operation failed: %s", getWindowsError());
+            throw new cException("cNamedPipeCommunications: CreateFile operation failed: %s", getWindowsError().c_str());
     }
 
     // now wait until everybody else also opens the pipes for write
@@ -151,7 +151,7 @@ void cNamedPipeCommunications::init()
             continue;
         ev.printf("cNamedPipeCommunications: opening pipe from procId=%d for read...\n", i);
         if (!ConnectNamedPipe(rpipes[i], NULL) && GetLastError()!=ERROR_PIPE_CONNECTED)
-            throw new cException("cNamedPipeCommunications: ConnectNamedPipe operation failed: %s", getWindowsError());
+            throw new cException("cNamedPipeCommunications: ConnectNamedPipe operation failed: %s", getWindowsError().c_str());
     }
 
 }
@@ -191,9 +191,9 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
 
     unsigned long bytesWritten;
     if (!WriteFile(h, &ph, sizeof(ph), &bytesWritten, 0))
-        throw new cException("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, getWindowsError());
+        throw new cException("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, getWindowsError().c_str());
     if (!WriteFile(h, b->getBuffer(), ph.contentLength, &bytesWritten, 0))
-        throw new cException("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, getWindowsError());
+        throw new cException("cNamedPipeCommunications: cannot write pipe to procId=%d: %s", destination, getWindowsError().c_str());
 }
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
@@ -222,7 +222,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
         unsigned long bytesAvail, bytesLeft;
         if (!PeekNamedPipe(rpipes[i], NULL, 0, NULL, &bytesAvail, &bytesLeft))
             throw new cException("cNamedPipeCommunications: cannot peek pipe to procId=%d: %s",
-                                 i, getWindowsError());
+                                 i, getWindowsError().c_str());
         if (bytesAvail>0)
             break;
     }
@@ -238,7 +238,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
     struct PipeHeader ph;
     if (!ReadFile(h, &ph, sizeof(ph), &bytesRead, NULL))
         throw new cException("cNamedPipeCommunications: cannot read from pipe to procId=%d: %s",
-                             sourceProcId, getWindowsError());
+                             sourceProcId, getWindowsError().c_str());
     if (bytesRead<sizeof(ph))
         throw new cException("cNamedPipeCommunications: ReadFile returned less data than expected");
 
@@ -248,7 +248,7 @@ bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, 
 
     if (!ReadFile(h, b->getBuffer(), ph.contentLength, &bytesRead, NULL))
         throw new cException("cNamedPipeCommunications: cannot read from pipe to procId=%d: %s",
-                              sourceProcId, getWindowsError());
+                              sourceProcId, getWindowsError().c_str());
     if (bytesRead<ph.contentLength)
         throw new cException("cNamedPipeCommunications: ReadFile returned less data than expected");
     return true;

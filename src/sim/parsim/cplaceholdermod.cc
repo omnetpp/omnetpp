@@ -77,6 +77,7 @@ cGate *cPlaceHolderModule::createGateObject(const char *gname, char tp)
 #include "cnosynchronization.h"
 #include "cnullmessageprot.h"
 #include "cidealsimulationprot.h"
+#include "clinkdelaylookahead.h"
 #include <stdio.h>
 void parsim_dummy()
 {
@@ -86,6 +87,7 @@ void parsim_dummy()
     cNoSynchronization ns;
     cNullMessageProtocol np;
     cIdealSimulationProtocol ip;
+    cLinkDelayLookahead ldla;
     // prevent "unused variable" warnings:
-    printf("%p%p%p%p%p",&fc,&npc,&ns,&np,&ip);
+    printf("%p%p%p%p%p%p",&fc,&npc,&ns,&np,&ip,&ldla);
 }
