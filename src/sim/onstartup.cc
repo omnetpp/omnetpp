@@ -51,6 +51,9 @@ void ExecuteOnStartup::executeAll()
         p->execute();
         p = p->next;
     }
+
+    // null out list to prevent double execution on subsequent calls (e.g. after dll loading)
+    ExecuteOnStartup::head = NULL;
 }
 
 

@@ -43,7 +43,7 @@
 //
 // Register the Tkenv user interface
 //
-Register_OmnetApp("Tkenv",TOmnetTkApp,20,"Tkenv (Tk-based graphical user interface)");
+Register_OmnetApp("Tkenv",TOmnetTkApp,20,"graphical user interface)");
 
 // some functions that can/should be called from Envir in order to force the
 // linker to include the Tkenv library into the executable:

@@ -37,10 +37,10 @@ static char buffer[1024];
 //
 // Register the Cmdenv user interface
 //
-Register_OmnetApp("Cmdenv",TCmdenvApp,10,"Cmdenv (command-line user interface)");
+Register_OmnetApp("Cmdenv",TCmdenvApp,10,"command-line user interface");
 
 // some functions that can/should be called from Envir in order to force the
-// linker to include the Tkenv library into the executable:
+// linker to include the Cmdenv library into the executable:
 CMDENV_API void cmdenvDummy() {}
 CMDENV_API void envirDummy() {}
 

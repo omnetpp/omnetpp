@@ -29,7 +29,7 @@
 #include "omnetapp.h"
 #include "appreg.h"
 #include "cmodule.h"
-#include "platdep/loadlib.h"
+#include "fsutils.h"
 
 #include "speedmtr.h"       // env_dummy_function()
 #include "filemgrs.h"       // env_dummy_function()
@@ -103,11 +103,7 @@ static void loadLibs(const char *libs)
             lib = s;
             while (*s && !isspace(*s)) s++;
             if (*s) *s++ = 0;
-            try {
-                opp_loadlibrary(lib);
-            } catch (std::runtime_error e) {
-                throw new cException(e.what());
-            }
+            loadExtensionLibrary(lib);
         }
         delete buf;
     }
@@ -148,7 +144,7 @@ void cEnvir::setup(int argc, char *argv[])
         // load shared libraries given with '-l' option(s)
         const char *libname;
         for (k=0; (libname=args->argValue('l',k))!=NULL; k++)
-            opp_loadlibrary(libname);
+            loadExtensionLibrary(libname);
 
         // load shared libs given in [General]/load-libs=
         const char *libs = inifile->getAsString( "General", "load-libs", NULL);
@@ -194,15 +190,12 @@ void cEnvir::setup(int argc, char *argv[])
             appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->get(appname));
             if (!appreg)
             {
-                // try to load it dynamically
-                // TBD add extension: .so or .dll
-                if (opp_loadlibrary(appname))
-                {
-                    appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->get(appname));
-                }
-            }
-            if (!appreg)
+                ::printf("User interface %s not found, available ones are:\n", appname);
+                for (cArray::Iterator iter(*omnetapps.instance()); iter(); iter++)
+                    ::printf("  '%s' : %s\n", iter()->name(), iter()->info().c_str());
+
                 throw new cException("Could not start user interface '%s'",appname);
+            }
         }
         else
         {
@@ -215,7 +208,7 @@ void cEnvir::setup(int argc, char *argv[])
         //
         // Finally, set up user interface object. All the rest will be done there.
         //
-        ::printf("Setting up %s...\n", appreg->description());
+        ::printf("Setting up %s...\n", appname);
         app = appreg->createOne(args, configobject);
         app->setup();
         isgui = app->isGUI();
@@ -552,11 +545,13 @@ void dummyDummy() {envirDummy();}
 #endif
 
 // another dummy variant in case you want to have both Cmdenv and Tkenv in
-//#ifndef WIN32_DLL
-//OPP_DLLIMPORT void cmdenvDummy();
-//OPP_DLLIMPORT void tkenvDummy();
-//void dummyDummy() {cmdenvDummy();tkenvDummy();}
-//#endif
+/*
+#ifndef WIN32_DLL
+OPP_DLLIMPORT void cmdenvDummy();
+OPP_DLLIMPORT void tkenvDummy();
+void dummyDummy() {cmdenvDummy();tkenvDummy();}
+#endif
+*/
 
 // A dummy function to force UNIX linkers collect Speedometer
 // and cFileOutputVectorManager as linker symbols. Otherwise we'd get

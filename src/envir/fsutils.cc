@@ -20,9 +20,10 @@
 #include <string.h>
 #include <assert.h>
 
-#include "platdep/misc.h"
 #include "fsutils.h"
-
+#include "platdep/misc.h"
+#include "platdep/loadlib.h"
+#include "onstartup.h"
 #include "cexception.h"
 
 void splitFileName(const char *pathname, opp_string& dir, opp_string& fnameonly)
@@ -70,6 +71,18 @@ PushDir::~PushDir()
 {
     if (chdir(olddir.c_str()))
         throw new cException("Cannot change back to directory `%s'", olddir.c_str());
+}
+
+//------------
+
+void loadExtensionLibrary(const char *lib)
+{
+    try {
+        opp_loadlibrary(lib);
+        ExecuteOnStartup::executeAll();
+    } catch (std::runtime_error e) {
+        throw new cException(e.what());
+    }
 }
 
 

@@ -1,3 +1,8 @@
+2005-02-24  Andras Varga
+
+	* cenvir.cc: fix: simple modules etc in dynamically loaded dlls/so's
+	([General]/load-libs=, -l command-line option) didn't get registered
+
 2005-02-18  Andras Varga
 
 	* cenvir.cc: ev.printf() fixed: it printed the buffer pointer value 

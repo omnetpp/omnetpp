@@ -40,5 +40,15 @@ class PushDir
     ~PushDir();
 };
 
+/**
+ * Utility function: dynamically loads a DLL (Windows) or shared object
+ * (.so, on Unix systems) and registers the module types, channel types,
+ * networks etc. in it. The file name should be given without extension;
+ * ".dll" or ".so" will be appended, depending on the platform.
+ *
+ * On failure, cException will be thrown.
+ */
+void loadExtensionLibrary(const char *lib);
+
 #endif
 

@@ -52,7 +52,7 @@ class ENVIR_API cOmnetAppRegistration : public cObject
 {
     typedef TOmnetApp *(*AppCreatorFunc)(ArgList *,cConfiguration *);
     AppCreatorFunc creatorfunc;
-    opp_string desc;
+    std::string desc;
     int scor;
   public:
     cOmnetAppRegistration(const char *name, int score,
@@ -66,7 +66,7 @@ class ENVIR_API cOmnetAppRegistration : public cObject
 
     // new functions
     TOmnetApp *createOne(ArgList *args, cConfiguration *config)  {return creatorfunc(args,config);}
-    const char *description()  {return desc.c_str();}
+    std::string info() const {return desc;}
     int score()  {return scor;}
 };
 
