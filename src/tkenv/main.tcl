@@ -230,6 +230,8 @@ proc create_omnetpp_window {} {
       {sep4     -separator}
       {network  -image $icons(network) -command {inspect_systemmodule}}
       {fes      -image $icons(fes)     -command {inspect_messagequeue}}
+      {sep5     -separator}
+      {find     -image $icons(find)    -command {edit_find}}
     } {
       set b [eval iconbutton .toolbar.$i]
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
@@ -243,6 +245,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.stop)    {Stop simulation if running (F8)}
     set help_tips(.toolbar.network) {Inspect network}
     set help_tips(.toolbar.fes)     {Inspect scheduled events (Future Event Set)}
+    set help_tips(.toolbar.find)    {Find string in main window}
 
     #################################
     # Create status bars
@@ -337,18 +340,7 @@ proc create_omnetpp_window {} {
     ###############################
     # Hotkeys
     ###############################
-    bind .main.text <Key> {%W tag remove SELECT 0.0 end}
-
-    # bindings for find
-    #   'break' is needed below because
-    #      ^F is originally bound to 1 char right
-    #      ^N is originally bound to 1 line down
-    bind .main.text <Control-f> {findDialog .main.text;break}
-    bind .main.text <Control-F> {findDialog .main.text;break}
-    bind .main.text <Control-n> {findNext .main.text;break}
-    bind .main.text <Control-N> {findNext .main.text;break}
-    bind .main.text <F3> {findNext .main.text}
-
+    bind_findcommands_to_textwidget .main.text
     bind_runcommands .
 }
 
@@ -360,6 +352,18 @@ proc bind_runcommands {w} {
     bind $w <F8> {stop_simulation}
 }
 
+proc bind_findcommands_to_textwidget {txt} {
+    # bindings for find
+    #   'break' is needed below because
+    #      ^F is originally bound to 1 char right
+    #      ^N is originally bound to 1 line down
+    bind $txt <Key> {%W tag remove SELECT 0.0 end}
+    bind $txt <Control-f> "findDialog $txt;break"
+    bind $txt <Control-F> "findDialog $txt;break"
+    bind $txt <Control-n> "findNext $txt;break"
+    bind $txt <Control-N> "findNext $txt;break"
+    bind $txt <F3> "findNext $txt"
+}
 
 #===================================================================
 #    LOAD BITMAPS

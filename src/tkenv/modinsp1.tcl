@@ -151,7 +151,9 @@ proc _create_modulewindow {name geom iscompound} {
         iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
         iconbutton $w.toolbar.sep2   -separator
         iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
-        foreach i {obj graph sep1 parent sep2 step} {
+        iconbutton $w.toolbar.sep3   -separator
+        iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+        foreach i {obj graph sep1 parent sep2 step sep3 find} {
            pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
         }
         bind $w <Control-F4> "one_step_in_module $w"
@@ -160,6 +162,7 @@ proc _create_modulewindow {name geom iscompound} {
         set help_tips($w.toolbar.graph)  {Inspect as network graphics}
         set help_tips($w.toolbar.parent) {Inspect parent module}
         set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F4)}
+        set help_tips($w.toolbar.find)   {Find string in window}
     } else {
         # for simple module
         iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
@@ -167,7 +170,9 @@ proc _create_modulewindow {name geom iscompound} {
         iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
         iconbutton $w.toolbar.sep2   -separator
         iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
-        foreach i {obj sep1 parent sep2 step} {
+        iconbutton $w.toolbar.sep3   -separator
+        iconbutton $w.toolbar.find   -image $icons(find) -command "findDialog $w.main.text"
+        foreach i {obj sep1 parent sep2 step sep3 find} {
            pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
         }
         bind $w <Control-F4> "one_step_in_module $w"
@@ -175,6 +180,7 @@ proc _create_modulewindow {name geom iscompound} {
         set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.parent) {Inspect parent module}
         set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F4)}
+        set help_tips($w.toolbar.find)   {Find string in window}
     }
 
     frame $w.statusbar
@@ -195,15 +201,7 @@ proc _create_modulewindow {name geom iscompound} {
     pack $w.main.text -anchor center -expand 1 -fill both -side left
 
     # bindings for find
-    #   'break' is needed below because
-    #      ^F is originally bound to 1 char right
-    #      ^N is originally bound to 1 line down
-    set txt $w.main.text
-    bind $txt <Control-f> "findDialog $txt;break"
-    bind $txt <Control-F> "findDialog $txt;break"
-    bind $txt <Control-n> "findNext $txt;break"
-    bind $txt <Control-N> "findNext $txt;break"
-    bind $txt <F3> "findNext $txt"
+    bind_findcommands_to_textwidget $w.main.text
 }
 
 

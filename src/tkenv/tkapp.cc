@@ -954,11 +954,12 @@ void TOmnetTkApp::objectDeleted( cObject *object )
 
 void TOmnetTkApp::messageSent( cMessage *msg )
 {
-    char buf[256];
+    // display in message window
+    static char buf[1000]; // module names might be very long
     msg->info( buf );
     CHK(Tcl_VarEval(interp, "catch {\n"
                             " .messagewindow.main.text insert end"
-                            "    {SENT\t ",buf,"\n}\n"
+                            "    {SENT:\t ",buf,"\n}\n"
                             " .messagewindow.main.text see end\n"
                             "}\n",
                             NULL));
@@ -998,11 +999,12 @@ void TOmnetTkApp::messageSent( cMessage *msg )
 
 void TOmnetTkApp::messageDelivered( cMessage *msg )
 {
-    char buf[256];
+    // display in message window
+    static char buf[1000]; // module names might be very long
     msg->info( buf );
     CHK(Tcl_VarEval(interp, "catch {\n"
                             " .messagewindow.main.text insert end"
-                            "    {DELIVD\t ",buf,"\n}\n"
+                            "    {DELIVD:\t ",buf,"\n}\n"
                             " .messagewindow.main.text see end\n"
                             "}\n",
                             NULL));

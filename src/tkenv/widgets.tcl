@@ -435,6 +435,9 @@ proc execOkCancelDialog w {
 
     wm protocol $w WM_DELETE_WINDOW "set opp($w) 0"
 
+    # next line mysteriously solves "lost focus" problem of popup dialogs...
+    after 1 "wm deiconify $w"
+
     center $w
 
     set oldGrab [grab current $w]
