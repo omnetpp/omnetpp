@@ -138,7 +138,14 @@ re-makemake-m:
 	opp_makemake -f -m    #recreate Makefile.in
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-fddi_mac.o: fddi_def.h fddi_mac.h
-othermod.o: otherdef.h fddi_def.h othermod.h
-ssm_ifs.o: ssmifdef.h fddi_def.h ssm_ifs.h
+fddi_mac.o: fddi_mac.cc \
+  fddi_def.h \
+  fddi_mac.h
+othermod.o: othermod.cc \
+  otherdef.h \
+  fddi_def.h \
+  othermod.h
+ssm_ifs.o: ssm_ifs.cc \
+  ssmifdef.h \
+  fddi_def.h \
+  ssm_ifs.h
