@@ -1,3 +1,5 @@
+FIXME: comment parsing broken (leaves out comments from index.ned!!!)
+
 2003-10-19  Andras Varga
 
 	* nedelement.cc/h: added userdata field which makes it possible
