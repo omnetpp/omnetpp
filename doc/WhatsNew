@@ -5,7 +5,7 @@ In the OMNeT++ 2.0 version (Sep 1999)
 -------------------------------------
 
 License conditions have been alleviated: from this release on, one can elect
-to use GPL for a particular copy of the base components of OMNeT++.
+to use GPL for the base components of OMNeT++.
 
 The configure script has been replaced by GNU Autoconf. The makefiles have been 
 brushed up (more standard symbol names, autodepend, version number in lib names,

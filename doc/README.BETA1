@@ -1,5 +1,7 @@
-To Do until final release:
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+To do until final 2.0 release:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
++  brush up configure script and toplevel makefile
 
 +  update the documentation (usman and refman haven't been touched since
    the last (1.1) release
