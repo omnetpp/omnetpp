@@ -453,7 +453,7 @@ int do_secondpass (char *root_fname)
 int compilefile (char *root_fname)
 {
         int perr;
-        name_type root_fname2, ned_fname, cc_fname;
+        name_type root_fname2;
 
         /* root_fname2: root_fname without .ned extension */
         jar_strcpy( root_fname2, root_fname);
@@ -476,7 +476,6 @@ int main (int argc, char *argv [])
 {
         int i;
         int perr, nexterr;
-        int ispath;
 
         nl_init (&include_list);
         nl_init (&channel_list);
