@@ -42,8 +42,8 @@ MPI_DIR=
 # If set to 'none', nedtool will compile but won't support XML input,
 # and NED parameters of type xml cannot be used.
 #
-#XMLPARSER=libxml
-XMLPARSER=expat
+XMLPARSER=libxml
+#XMLPARSER=expat
 #XMLPARSER=none
 
 #
