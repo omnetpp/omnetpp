@@ -78,7 +78,7 @@ plove-e.obj : plove.cc tclcode.cc
 	$(CXX) /Fo"plove-e.obj" $(COPTS) /c /Tp plove.cc
 
 tclcode.cc: *.tcl
-	..\omnetpp\src\utils\tcl2c tclcode.cc *.tcl
+	..\utils\tcl2c tclcode.cc *.tcl
 
 plove.res: plove.rc plove.ico
 	rc -fo plove.res -r plove.rc

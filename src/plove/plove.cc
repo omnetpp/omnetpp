@@ -76,7 +76,7 @@ int loadPlove(Tcl_Interp *interp)
     // The tclcode.cc file must be generated from the TCL scripts
     // with the tcl2c program (to be compiled from tcl2c.c).
     //
-#include "clcode.cc"
+#include "tclcode.cc"
     if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR)
     {
          printTclError(Tcl_GetStringResult(interp));
