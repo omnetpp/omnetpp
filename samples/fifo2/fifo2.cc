@@ -41,7 +41,7 @@ void FF2AbstractFifo::handleMessage(cMessage *msg)
     else
     {
         arrival( msg );
-        queue.insertHead( msg );
+        queue.insert( msg );
     }
 }
 

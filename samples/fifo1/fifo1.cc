@@ -23,7 +23,7 @@ void FF1AbstractFifo::activity()
             }
             else
             {
-                msgServiced = (cMessage *) queue.getTail();
+                msgServiced = (cMessage *) queue.pop();
                 simtime_t serviceTime = startService( msgServiced );
                 scheduleAt( simTime()+serviceTime, endServiceMsg );
             }
@@ -39,7 +39,7 @@ void FF1AbstractFifo::activity()
         else
         {
             arrival( msg );
-            queue.insertHead( msg );
+            queue.insert( msg );
         }
     }
 }

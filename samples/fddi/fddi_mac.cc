@@ -355,7 +355,7 @@ void FDDI_MAC::PlayTTRP() // Play the Timed Token Ring Protocol
   {
   if ( !SyncFinished && !sync_buf.empty() )
     { // try to ransmit the first sync. packet
-    cMessage *m=(cMessage *)sync_buf.getTail();
+    cMessage *m=(cMessage *)sync_buf.pop();
     int length = m->length();
     if ( AllocatedSyncBandwidth >= UsedSyncBandwidth+length )
       { // this packet can be transmitted
@@ -384,7 +384,7 @@ void FDDI_MAC::PlayTTRP() // Play the Timed Token Ring Protocol
   if ( EarlyToken && !async_buf.empty() &&
        (!RestrictedToken || IAmRestrictedOwner) && ((double)THT)>0 )
     { // the 1st packet can be transmitted
-    cMessage *m = (cMessage *)async_buf.getTail();
+    cMessage *m = (cMessage *)async_buf.pop();
     m->addPar("sendtime") = simTime();
     send(m,"out");
     State |= TRANSMIT_OWN;
@@ -466,7 +466,7 @@ void FDDI_MAC::activity()
     #endif
 
     if ( msg->arrivedOn("from_LLC") ) // new message from the generator
-      async_buf.insertHead( msg ); // insert message into the asynchronous send buffer
+      async_buf.insert( msg ); // insert message into the asynchronous send buffer
     else
       {
       int msgkind = msg->kind();

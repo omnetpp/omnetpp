@@ -208,3 +208,5 @@ May 7, 2000
 Jun 2, 2000
   - fix in MSVC makefile; warning eliminated in othermod.cc
 ------ omnetpp-2.0b5 released ------
+Jul 1, 2000
+ - calls to obsolete cQueue functions upgraded to new functions (insert(),pop())
