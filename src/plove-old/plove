@@ -18,3 +18,4 @@ source [file join $plove_dir widgets.tcl]
 source [file join $plove_dir help.tcl]
 source [file join $plove_dir main.tcl]
 
+startPlove $argv

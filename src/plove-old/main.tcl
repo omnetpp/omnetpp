@@ -503,16 +503,20 @@ proc checkVersion {} {
 #    MAIN PROGRAM
 #===================================================================
 
-checkVersion
-defaultBindings
-initFilters
-createMainWindow
+proc startPlove {argv} {
+   global config
 
-if [file readable $config(configfile)] {
-   loadConfig $config(configfile)
-}
+   checkVersion
+   defaultBindings
+   initFilters
+   createMainWindow
 
-foreach f $argv {
-   loadVectorFile $f
+   if [file readable $config(configfile)] {
+       loadConfig $config(configfile)
+   }
+
+   foreach f $argv {
+       loadVectorFile $f
+   }
 }
 

@@ -1,1 +1,1 @@
-@e:\tcl\bin\wish82.exe -f d:/work/omnetpp/src/plove/plove 
+@e:\tcl\bin\wish82.exe -f e:/home/omnetpp/src/plove/plove 
