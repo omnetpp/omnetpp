@@ -138,20 +138,6 @@ cStructDescriptor::~cStructDescriptor()
 {
 }
 
-bool cStructDescriptor::hasDescriptor(const char *classname)
-{
-    // check if there's a classnameDescriptor class registered (on the classes list)
-    char sdclass[80];
-    strcpy(sdclass,classname);
-    strcat(sdclass,"Descriptor");
-    return classes.instance()->find(sdclass)!=-1;
-}
-
-cStructDescriptor *cStructDescriptor::createDescriptorFor(cObject *obj)
-{
-    return createDescriptorFor(obj->className(), (void *)obj);
-}
-
 cStructDescriptor *cStructDescriptor::createDescriptorFor(const char *classname, void *p)
 {
     // produce name of struct descriptor class

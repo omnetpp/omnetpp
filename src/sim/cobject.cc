@@ -31,6 +31,7 @@
 #include "cexception.h"
 #include "util.h"
 #include "cdefaultlist.h"
+#include "cstruct.h"
 
 #ifdef WITH_PARSIM
 #include "parsim/ccommbuffer.h"
@@ -210,6 +211,11 @@ void cObject::setDefaultOwner(cDefaultList *list)
 cDefaultList *cObject::defaultOwner()
 {
     return defaultowner;
+}
+
+cStructDescriptor *cObject::createDescriptor()
+{
+    return cStructDescriptor::createDescriptorFor(className(), (void *)this);
 }
 
 cObject& cObject::operator=(const cObject&)
