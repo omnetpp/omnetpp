@@ -30,7 +30,7 @@ enum {ANY=-2,    // ?
       ENDSET=-6  // }   (end set)
 };
 
-bool transform_pattern(char *from, short *to)
+bool transform_pattern(const char *from, short *to)
 {
     //DEBUG:printf(" ******** patt=%s",from);
     // Prepares pattern for the match function.
@@ -75,7 +75,7 @@ bool transform_pattern(char *from, short *to)
     return 1;
 }
 
-static short *ismatch(short *pat, short c)
+static const short *ismatch(const short *pat, short c)
 {
     // Matches one character on the beginning of the pattern.
     // Retval: NULL:doesn't match, Other pointer:rest of pattern
@@ -101,11 +101,11 @@ static short *ismatch(short *pat, short c)
     }
 }
 
-bool stringmatch(short *pat, char *line)
+bool stringmatch(const short *pat, const char *line)
 {
     short c;
-    short *p;
-    char *lnext;
+    const short *p;
+    const char *lnext;
     // fixed match (no '*') as far as it goes
     while (*pat != ANYCL)
     {
@@ -132,3 +132,4 @@ bool stringmatch(short *pat, char *line)
     }
     return 1;
 }
+

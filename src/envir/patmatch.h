@@ -18,6 +18,6 @@
 
 #include "defs.h"
 
-bool transform_pattern(char *from, short *to);
-bool stringmatch(short *pat, char *line);
+bool transform_pattern(const char *from, short *topattern);
+bool stringmatch(const short *pattern, const char *line);
 

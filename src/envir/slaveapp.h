@@ -48,10 +48,10 @@ class TSlaveApp : public TOmnetApp
 
      virtual void readOptions();
 
-     virtual void putmsg(char *s);
-     virtual void puts(char *s);
-     virtual bool gets(char *promptstr, char *buf, int len=255);
-     virtual int  askYesNo(char *question );
+     virtual void putmsg(const char *s);
+     virtual void puts(const char *s);
+     virtual bool gets(const char *promptstr, char *buf, int len=255);
+     virtual int  askYesNo(const char *question);
 
      // new functions:
      void simulate();

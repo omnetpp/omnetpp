@@ -60,11 +60,11 @@ void TSlaveApp::run()
      cNetworkType *network = findNetwork( opt_network_name );
      if (!network)
      {
-         opp_error("Network `%s' not found", (char *)opt_network_name);
+         opp_error("Network `%s' not found", (const char *)opt_network_name);
          return;
      }
 
-     ev.printf("Setting up network `%s'...\n", (char *)opt_network_name);
+     ev.printf("Setting up network `%s'...\n", (const char *)opt_network_name);
      simulation.setupNetwork( network, run_nr );
      if (simulation.ok())
      {
@@ -115,7 +115,7 @@ void TSlaveApp::readOptions()
 }
 
 
-void TSlaveApp::putmsg(char *str)
+void TSlaveApp::putmsg(const char *str)
 {
      if (opt_write_slavelog)
      {
@@ -128,7 +128,7 @@ void TSlaveApp::putmsg(char *str)
          simulation.netInterface()->putmsg_onconsole( str );
 }
 
-void TSlaveApp::puts(char *str)
+void TSlaveApp::puts(const char *str)
 {
      int is_modmsg = simulation.contextModule()!=NULL;
      if (is_modmsg && !opt_module_msgs)
@@ -145,7 +145,7 @@ void TSlaveApp::puts(char *str)
          simulation.netInterface()->puts_onconsole( str );
 }
 
-bool TSlaveApp::gets(char *promptstr, char *buf, int len)
+bool TSlaveApp::gets(const char *promptstr, char *buf, int len)
 {
      if (opt_write_slavelog)
      {
@@ -160,7 +160,7 @@ bool TSlaveApp::gets(char *promptstr, char *buf, int len)
         return FALSE;
 }
 
-int TSlaveApp::askYesNo(char *question )
+int TSlaveApp::askYesNo(const char *question)
 {
      if (opt_write_slavelog)
      {

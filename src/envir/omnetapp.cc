@@ -158,7 +158,7 @@ void TOmnetApp::shutdown()
 {
 }
 
-char *TOmnetApp::getParameter(int run_no, char *parname)
+const char *TOmnetApp::getParameter(int run_no, const char *parname)
 {
     char section[16];
     sprintf(section,"Run %d",run_no);
@@ -167,7 +167,7 @@ char *TOmnetApp::getParameter(int run_no, char *parname)
     return ini_file->getRaw2(section,"Parameters",parname,NULL);
 }
 
-char *TOmnetApp::getPhysicalMachineFor(char *logical_mach)
+const char *TOmnetApp::getPhysicalMachineFor(const char *logical_mach)
 {
     if (!opt_distributed)
     {
@@ -175,13 +175,13 @@ char *TOmnetApp::getPhysicalMachineFor(char *logical_mach)
     }
     else
     {
-       char *mach = ini_file->getAsString( "Machines",logical_mach, NULL);
+       const char *mach = ini_file->getAsString("Machines", logical_mach, NULL);
        if (mach==NULL) opp_error("No mapping for logical machine `%s'",logical_mach);
        return mach;
     }
 }
 
-void TOmnetApp::getOutVectorConfig(char *modname,char *vecname, /*input*/
+void TOmnetApp::getOutVectorConfig(const char *modname,const char *vecname, /*input*/
                                    bool& enabled, /*output*/
                                    double& starttime, double& stoptime)
 {
@@ -198,7 +198,7 @@ void TOmnetApp::getOutVectorConfig(char *modname,char *vecname, /*input*/
 
     // get 'module.vector.interval=' entry
     strcpy(end,"interval");
-    char *s = ini_file->getAsString2(section,"OutVectors",buffer,NULL);
+    const char *s = ini_file->getAsString2(section,"OutVectors",buffer,NULL);
     if (!s)
     {
        starttime = 0;
@@ -215,8 +215,8 @@ void TOmnetApp::getOutVectorConfig(char *modname,char *vecname, /*input*/
         return;
     }
 
-    char *startstr = s;
-    char *stopstr = ellipsis+2;
+    const char *startstr = s;
+    const char *stopstr = ellipsis+2;
     starttime = strToSimtime0(startstr);
     stoptime = strToSimtime0(stopstr);
 
@@ -230,7 +230,7 @@ void TOmnetApp::getOutVectorConfig(char *modname,char *vecname, /*input*/
 
 }
 
-char *TOmnetApp::getDisplayString(int run_no, char *name)
+const char *TOmnetApp::getDisplayString(int run_no, const char *name)
 {
     char section[16];
     sprintf(section,"Run %d",run_no);
@@ -329,7 +329,7 @@ void TOmnetApp::makeOptionsEffective()
          genk_randseed( i, opt_genk_randomseed[i] );
 }
 
-void TOmnetApp::loadLibrary(char *libname)
+void TOmnetApp::loadLibrary(const char *libname)
 {
 #if HAVE_DLOPEN
      if (!dlopen(libname,RTLD_NOW))
@@ -342,17 +342,17 @@ void TOmnetApp::loadLibrary(char *libname)
 //--------------------------------------------------------------------
 // default, stdio version of input/output function
 
-void TOmnetApp::putmsg(char *s)
+void TOmnetApp::putmsg(const char *s)
 {
      ::printf( "<!> %s\n", s);
 }
 
-void TOmnetApp::puts(char *s)
+void TOmnetApp::puts(const char *s)
 {
      ::printf( "%s", s);
 }
 
-bool TOmnetApp::gets(char *promptstr, char *buf, int len)
+bool TOmnetApp::gets(const char *promptstr, char *buf, int len)
 {
     ::printf("%s", promptstr);
     if (buf[0]) ::printf("(default: %s) ",buf);
@@ -370,7 +370,7 @@ bool TOmnetApp::gets(char *promptstr, char *buf, int len)
     }
 }
 
-int TOmnetApp::askYesNo(char *question )
+int TOmnetApp::askYesNo(const char *question )
 {
     // should also return -1 (==CANCEL)
     for(;;)
@@ -387,7 +387,7 @@ int TOmnetApp::askYesNo(char *question )
     }
 }
 
-void TOmnetApp::foreignPuts(char *hostname, char *mod, char *str)
+void TOmnetApp::foreignPuts(const char *hostname, const char *mod, const char *str)
 {
     if (!mod || !*mod)
         sprintf(buffer,"<%s:>", hostname, str);

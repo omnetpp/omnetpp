@@ -56,34 +56,34 @@ class cIniFile
     sEntry entry[MAX_INI_ENTRIES];   //array of entries
     int _error;   //OK=0, ERROR=1
 
-    char *_getValue(char *section, char *key,int raw);
-    void _readFile(char *fname, char *sectionptr);
+    const char *_getValue(const char *section, const char *key,int raw);
+    void _readFile(const char *fname, const char *sectionptr);
   public:
 
-    cIniFile(char *fname);
+    cIniFile(const char *fname);
     ~cIniFile();
 
-    void readFile(char *fname);
+    void readFile(const char *fname);
     void clearContents();
 
     int error();    // TRUE if there was an error
     bool warnings;  // enable/disable warnings
 
     // get an entry from [section]
-    char *getRaw(char *section, char *key, char *defaultval=NULL); // with quotes (if any)
-    bool getAsBool(char *section, char *key, bool defaultval=FALSE);
-    long getAsInt(char *section, char *key, long defaultval=0);
-    double getAsDouble(char *section, char *key, double defaultval=0.0);
-    char *getAsString(char *section, char *key, char *defaultval=""); // quotes stripped (if any)
-    double getAsTime(char *sect, char *key, double defaultval=0.0);
+    const char *getRaw(const char *section, const char *key, const char *defaultval=NULL); // with quotes (if any)
+    bool getAsBool(const char *section, const char *key, bool defaultval=FALSE);
+    long getAsInt(const char *section, const char *key, long defaultval=0);
+    double getAsDouble(const char *section, const char *key, double defaultval=0.0);
+    const char *getAsString(const char *section, const char *key, const char *defaultval=""); // quotes stripped (if any)
+    double getAsTime(const char *sect, const char *key, double defaultval=0.0);
 
     // get an entry from [sect1] or if it isn't there, from [sect2]
-    char *getRaw2(char *sect1, char *sect2, char *key, char *defaultval=NULL);
-    bool getAsBool2(char *sect1, char *sect2, char *key, bool defaultval=FALSE);
-    long getAsInt2(char *sect1, char *sect2, char *key, long defaultval=0);
-    double getAsDouble2(char *sect1, char *sect2, char *key, double defaultval=0.0);
-    char *getAsString2(char *sect1, char *sect2, char *key, char *defaultval="");
-    double getAsTime2(char *sect1, char *sect2, char *key, double defaultval=0.0);
+    const char *getRaw2(const char *sect1, const char *sect2, const char *key, const char *defaultval=NULL);
+    bool getAsBool2(const char *sect1, const char *sect2, const char *key, bool defaultval=FALSE);
+    long getAsInt2(const char *sect1, const char *sect2, const char *key, long defaultval=0);
+    double getAsDouble2(const char *sect1, const char *sect2, const char *key, double defaultval=0.0);
+    const char *getAsString2(const char *sect1, const char *sect2, const char *key, const char *defaultval="");
+    double getAsTime2(const char *sect1, const char *sect2, const char *key, double defaultval=0.0);
 
 };
 
@@ -94,13 +94,13 @@ class cIniFileIterator
       int idx;
    public:
       cIniFileIterator(cIniFile *i)  {ini=i; idx=0;}
-      void reset()                   {idx=0;}
-      bool end()                     {return (bool)(idx>=ini->num_entries);}
-      void operator++(int)           {if (idx<ini->num_entries) idx++;}
-      char *section()                {return ini->entry[idx].section;}
-      char *entry()                  {return ini->entry[idx].key;}
-      char *value()                  {return ini->entry[idx].value;}
-      bool accessed()                {return ini->entry[idx].accessed;}
+      void reset()            {idx=0;}
+      bool end()              {return (bool)(idx>=ini->num_entries);}
+      void operator++(int)    {if (idx<ini->num_entries) idx++;}
+      const char *section()   {return ini->entry[idx].section;}
+      const char *entry()     {return ini->entry[idx].key;}
+      const char *value()     {return ini->entry[idx].value;}
+      bool accessed()         {return ini->entry[idx].accessed;}
 };
 
 class cIniFileSectionIterator
@@ -109,11 +109,11 @@ class cIniFileSectionIterator
       cIniFile *ini;
       int idx;
    public:
-      cIniFileSectionIterator(cIniFile *i)  {ini=i; idx=0;}
-      void reset()                   {idx=0;}
-      bool end()                     {return (bool)(idx>=ini->num_sections);}
-      void operator++(int)           {if (idx<ini->num_sections) idx++;}
-      char *section()                {return ini->section[idx];}
+      cIniFileSectionIterator(cIniFile *i) {ini=i; idx=0;}
+      void reset()            {idx=0;}
+      bool end()              {return (bool)(idx>=ini->num_sections);}
+      void operator++(int)    {if (idx<ini->num_sections) idx++;}
+      const char *section()   {return ini->section[idx];}
 };
 
 #endif

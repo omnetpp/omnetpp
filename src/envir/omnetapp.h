@@ -88,14 +88,15 @@ class TOmnetApp
      virtual void shutdown();
 
      // called by cPar::read() to get param value from the ini file
-     virtual char *getParameter(int run_nr, char *parname);
+     virtual const char *getParameter(int run_nr, const char *parname);
      // called from JAR-generated network setup function to get
      //  logical machine --> physical machine mapping
-     virtual char *getPhysicalMachineFor(char *logical_mach);
-     virtual void getOutVectorConfig(char *modname,char *vecname, /*input*/
+     virtual const char *getPhysicalMachineFor(const char *logical_mach);
+     virtual void getOutVectorConfig(const char *modname, /*input*/
+                                     const char *vecname,
                                      bool& enabled, /*output*/
                                      double& starttime, double& stoptime);
-     virtual char *getDisplayString(int run_no,char *name);
+     virtual const char *getDisplayString(int run_no,const char *name);
 
      // used internally to read opt_xxxxx setting from ini file
      virtual void readOptions();
@@ -105,23 +106,23 @@ class TOmnetApp
      virtual void makeOptionsEffective();
 
      // dynamically load a library (uses dlopen())
-     virtual void loadLibrary(char *libname);
+     virtual void loadLibrary(const char *libname);
 
      // functions called from the objects of the simulation kernel
      // to notify application of certain events
      virtual void objectDeleted(cObject *object) {}
      virtual void messageSent(cMessage *msg) {}
      virtual void messageDelivered(cMessage *msg) {}
-     virtual void breakpointHit(char *lbl, cSimpleModule *mod) {}
+     virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}
 
      // functions called by cEnvir's similar functions
      // provide I/O for simple module activity functions and the sim. kernel
      // default versions use standard I/O
-     virtual void putmsg(char *s);
-     virtual void puts(char *s);
-     virtual bool gets(char *promptstr, char *buf, int len=255);  // 0==OK 1==CANCEL
-     virtual int  askYesNo(char *question); //0==NO 1==YES -1==CANCEL
-     virtual void foreignPuts(char *hostname, char *mod, char *str);
+     virtual void putmsg(const char *s);
+     virtual void puts(const char *s);
+     virtual bool gets(const char *promptstr, char *buf, int len=255);  // 0==OK 1==CANCEL
+     virtual int  askYesNo(const char *question); //0==NO 1==YES -1==CANCEL
+     virtual void foreignPuts(const char *hostname, const char *mod, const char *str);
 
      // extraStackForEnvir() is called from cSimpleModule; returns how much extra
      // stack space the user interface recommends for the simple modules

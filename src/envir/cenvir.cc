@@ -83,31 +83,31 @@ void cEnvir::shutdown()
 
 //-----------------------------------------------------------------
 
-char *cEnvir::getParameter(int run_no, char *parname)
+const char *cEnvir::getParameter(int run_no, const char *parname)
 {
     return app->getParameter(run_no, parname);
 }
 
-char *cEnvir::getPhysicalMachineFor(char *logical_mach)
+const char *cEnvir::getPhysicalMachineFor(const char *logical_mach)
 {
     return app->getPhysicalMachineFor(logical_mach);
 }
 
-void cEnvir::getOutVectorConfig(char *modname,char *vecname,
+void cEnvir::getOutVectorConfig(const char *modname,const char *vecname,
                                 bool& enabled,
                                 double& starttime, double& stoptime)
 {
     app->getOutVectorConfig(modname,vecname,  enabled,starttime,stoptime);
 }
 
-char *cEnvir::getDisplayString(int run_no,char *name)
+const char *cEnvir::getDisplayString(int run_no,const char *name)
 {
     return app->getDisplayString(run_no,name);
 }
 
 //-----------------------------------------------------------------
 
-cEnvir& cEnvir::setPrompt(char *s)
+cEnvir& cEnvir::setPrompt(const char *s)
 {
     strncpy(prmpt,s,80);
     prmpt[80] = '\0';
@@ -131,14 +131,14 @@ void cEnvir::objectDeleted( cObject *obj )
     if (app) app->objectDeleted( obj );
 }
 
-void cEnvir::breakpointHit( char *label, cSimpleModule *module )
+void cEnvir::breakpointHit( const char *label, cSimpleModule *module )
 {
     app->breakpointHit( label, module );
 }
 
 //-----------------------------------------------------------------
 
-void cEnvir::printfmsg(char *fmt,...)
+void cEnvir::printfmsg(const char *fmt,...)
 {
     va_list va;
     va_start(va, fmt);
@@ -151,7 +151,7 @@ void cEnvir::printfmsg(char *fmt,...)
        ::printf("<!> %s\n", buffer);
 }
 
-void cEnvir::printf(char *fmt,...)
+void cEnvir::printf(const char *fmt,...)
 {
     if (disable_tracing) return;
 
@@ -166,7 +166,7 @@ void cEnvir::printf(char *fmt,...)
         ::printf("%s", buffer);
 }
 
-void cEnvir::puts(char *str)
+void cEnvir::puts(const char *str)
 {
     if (disable_tracing) return;
 
@@ -176,14 +176,14 @@ void cEnvir::puts(char *str)
         ::printf("%s", buffer);
 }
 
-bool cEnvir::gets(char *promptstr, char *buf, int len)
+bool cEnvir::gets(const char *promptstr, char *buf, int len)
 {
     bool esc = app->gets( promptstr, buf, len );
     if (esc) opp_error(eCANCEL);
     return (bool)esc;
 }
 
-bool cEnvir::askf(char *buf, int len, char *promptfmt,...)
+bool cEnvir::askf(char *buf, int len, const char *promptfmt,...)
 {
     va_list va;
     va_start(va, promptfmt);
@@ -195,7 +195,7 @@ bool cEnvir::askf(char *buf, int len, char *promptfmt,...)
     return (bool)esc;
 }
 
-bool cEnvir::askYesNo(char *msgfmt,...)
+bool cEnvir::askYesNo(const char *msgfmt,...)
 {
     va_list va;
     va_start(va, msgfmt);
@@ -207,7 +207,7 @@ bool cEnvir::askYesNo(char *msgfmt,...)
     return ret!=0;
 }
 
-void cEnvir::foreignPuts(char *hostname, char *mod, char *str)
+void cEnvir::foreignPuts(const char *hostname, const char *mod, const char *str)
 {
     app->foreignPuts(hostname,mod,str);
 }

@@ -202,16 +202,19 @@ Aug 30, 1999
 Sept 20, 1999
  - typo fixed in Makefile.in: $(CLFAGS) --> $(CFLAGS)
 ------ omnetpp-2.0b2 released ------
-Dec 4,1999
+Dec 4, 1999
   - first compile with MSVC. Minor changes: changed int to bool in some places
-Dec 5,1999
+Dec 5, 1999
   - Makefile.vc added
-Jan 9,2000
+Jan 9, 2000
   - bugfix: TOmnetApp's destructor made virtual
-Jan 15,2000
+Jan 15, 2000
   - MSDOS #defines removed from the code (omnetapp.cc)
-Jan 16,2000
+Jan 16, 2000
   - improvements in cinifile.cc
-Jan 28,2000
+Jan 28, 2000
  -  main stack size increased to 128K (omnetapp.cc)
 ------ omnetpp-2.0b3 released ------
+Mar 26, 2000
+ - 'char *' pointers made const-correct (lots of 'char *' --> 'const char *'
+   replacements throughout the code)

@@ -31,7 +31,7 @@
 //==========================================================================
 //=== cIniFile - member functions
 //
-cIniFile::cIniFile(char *fname)
+cIniFile::cIniFile(const char *fname)
 {
     warnings=FALSE;
     num_sections = num_entries = 0;
@@ -50,12 +50,12 @@ cIniFile::~cIniFile()
             ev.printfmsg("Error reading `%s', line %d: %s",fname,line,txt);\
             return; }
 
-void cIniFile::readFile(char *fname)
+void cIniFile::readFile(const char *fname)
 {
     _readFile(fname,0);
 }
 
-void cIniFile::_readFile(char *fname, char *sect)
+void cIniFile::_readFile(const char *fname, const char *sect)
 {
     FILE *file;
     char buf[MAX_LINE];
@@ -128,7 +128,7 @@ void cIniFile::_readFile(char *fname, char *sect)
                if (strcmp(section[i],s)==0)
                    break;
            if (i==num_sections)
-               section[num_sections++] = sect = opp_strdup(s);
+               sect = section[num_sections++] = opp_strdup(s);
            else
                sect = section[i];
         }
@@ -171,7 +171,7 @@ void cIniFile::_readFile(char *fname, char *sect)
            }
 
            // fill in the entry
-           entry[num_entries].section = sect;
+           entry[num_entries].section = CONST_CAST(sect);
            entry[num_entries].key = opp_strdup(s);
            if (*e=='"') {
               entry[num_entries].rawvalue = opp_strdup(e);
@@ -216,7 +216,7 @@ void cIniFile::clearContents()
 {
     int i;
     for (i=0; i<num_sections; i++)
-       delete section[i];
+       delete [] section[i];
     for (i=0; i<num_entries; i++)
     {
        delete entry[i].key;
@@ -226,7 +226,7 @@ void cIniFile::clearContents()
     num_sections = num_entries = 0;
 }
 
-char *cIniFile::_getValue(char *sect, char *ent, int raw)
+const char *cIniFile::_getValue(const char *sect, const char *ent, int raw)
 {
     _error=FALSE;  // clear error flag
     int i;
@@ -277,9 +277,9 @@ int cIniFile::error()
 
 //-----------
 
-char *cIniFile::getRaw(char *sect, char *ent, char *defaultval)
+const char *cIniFile::getRaw(const char *sect, const char *ent, const char *defaultval)
 {
-    char *s = _getValue(sect, ent, 1);
+    const char *s = _getValue(sect, ent, 1);
     if (s==0)
     {
        if (warnings)
@@ -291,9 +291,9 @@ char *cIniFile::getRaw(char *sect, char *ent, char *defaultval)
     return s;
 }
 
-bool cIniFile::getAsBool(char *sect, char *ent, bool defaultval)
+bool cIniFile::getAsBool(const char *sect, const char *ent, bool defaultval)
 {
-    char *s = _getValue(sect, ent, 1);
+    const char *s = _getValue(sect, ent, 1);
     if (s==0 || *s==0)
     {
        if (warnings)
@@ -320,9 +320,9 @@ bool cIniFile::getAsBool(char *sect, char *ent, bool defaultval)
     return val;
 }
 
-long cIniFile::getAsInt(char *sect, char *ent, long defaultval)
+long cIniFile::getAsInt(const char *sect, const char *ent, long defaultval)
 {
-    char *s = _getValue(sect, ent, 1);
+    const char *s = _getValue(sect, ent, 1);
     if (s==0 || *s==0)
     {
        if (warnings)
@@ -339,9 +339,9 @@ long cIniFile::getAsInt(char *sect, char *ent, long defaultval)
     return val;
 }
 
-double cIniFile::getAsDouble(char *sect, char *ent, double defaultval)
+double cIniFile::getAsDouble(const char *sect, const char *ent, double defaultval)
 {
-    char *s = _getValue(sect, ent, 1);
+    const char *s = _getValue(sect, ent, 1);
     if (s==0 || *s==0)
     {
        if (warnings)
@@ -355,9 +355,9 @@ double cIniFile::getAsDouble(char *sect, char *ent, double defaultval)
     return val;
 }
 
-char *cIniFile::getAsString(char *sect, char *ent, char *defaultval)
+const char *cIniFile::getAsString(const char *sect, const char *ent, const char *defaultval)
 {
-    char *s = _getValue(sect, ent, 0);
+    const char *s = _getValue(sect, ent, 0);
     if (s==0)
     {
        if (warnings)
@@ -369,9 +369,9 @@ char *cIniFile::getAsString(char *sect, char *ent, char *defaultval)
     return s;
 }
 
-double cIniFile::getAsTime(char *sect, char *ent, double defaultval)
+double cIniFile::getAsTime(const char *sect, const char *ent, double defaultval)
 {
-    char *s = _getValue(sect, ent, 1);
+    const char *s = _getValue(sect, ent, 1);
     if (s==0)
     {
        if (warnings)
@@ -385,10 +385,10 @@ double cIniFile::getAsTime(char *sect, char *ent, double defaultval)
 
 //-----------
 
-char *cIniFile::getRaw2(char *sect1, char *sect2, char *key, char *defaultval)
+const char *cIniFile::getRaw2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
 {
     bool w = warnings; warnings = FALSE;
-    char *a = getRaw(sect1,key,defaultval);
+    const char *a = getRaw(sect1,key,defaultval);
     if (_error)
          a = getRaw(sect2,key,defaultval);
     warnings = w;
@@ -398,7 +398,7 @@ char *cIniFile::getRaw2(char *sect1, char *sect2, char *key, char *defaultval)
     return a;
 }
 
-bool cIniFile::getAsBool2(char *sect1, char *sect2, char *key, bool defaultval)
+bool cIniFile::getAsBool2(const char *sect1, const char *sect2, const char *key, bool defaultval)
 {
     bool w = warnings; warnings = FALSE;
     bool a = getAsBool(sect1,key,defaultval);
@@ -411,7 +411,7 @@ bool cIniFile::getAsBool2(char *sect1, char *sect2, char *key, bool defaultval)
     return a;
 }
 
-long cIniFile::getAsInt2(char *sect1, char *sect2, char *key, long defaultval)
+long cIniFile::getAsInt2(const char *sect1, const char *sect2, const char *key, long defaultval)
 {
     bool w = warnings; warnings = FALSE;
     long a = getAsInt(sect1,key,defaultval);
@@ -424,7 +424,7 @@ long cIniFile::getAsInt2(char *sect1, char *sect2, char *key, long defaultval)
     return a;
 }
 
-double cIniFile::getAsDouble2(char *sect1, char *sect2, char *key, double defaultval)
+double cIniFile::getAsDouble2(const char *sect1, const char *sect2, const char *key, double defaultval)
 {
     bool w = warnings; warnings = FALSE;
     double a = getAsDouble(sect1,key,defaultval);
@@ -437,10 +437,10 @@ double cIniFile::getAsDouble2(char *sect1, char *sect2, char *key, double defaul
     return a;
 }
 
-char *cIniFile::getAsString2(char *sect1, char *sect2, char *key, char *defaultval)
+const char *cIniFile::getAsString2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
 {
     bool w = warnings; warnings = FALSE;
-    char *a = getAsString(sect1,key,defaultval);
+    const char *a = getAsString(sect1,key,defaultval);
     if (_error)
          a = getAsString(sect2,key,defaultval);
     warnings = w;
@@ -450,7 +450,7 @@ char *cIniFile::getAsString2(char *sect1, char *sect2, char *key, char *defaultv
     return a;
 }
 
-double cIniFile::getAsTime2(char *sect1, char *sect2, char *key, double defaultval)
+double cIniFile::getAsTime2(const char *sect1, const char *sect2, const char *key, double defaultval)
 {
     bool w = warnings; warnings = FALSE;
     double a = getAsTime(sect1,key,defaultval);
