@@ -1,3 +1,9 @@
+2002-12-20  Andras Varga
+
+	* added tooltips to graphical inspectors. I.e. if you position the 
+	mouse over a module icon, its name, type and id will appear in a 
+	tooltip.
+
 2002-12-07  Andras Varga
 
 	* File|New network and File|New run dialogs now correctly offer choices

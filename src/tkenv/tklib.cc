@@ -169,7 +169,7 @@ char *infofunc_module( cObject *object)
     const char *path = mod->fullPath();
     const char *clname = mod->className();
     int padding = 16-strlen(clname); if (padding<1) padding=1;
-    sprintf(d, "#%-3d (%s)%*s %.80s", mod->id(), clname, padding,"", path);
+    sprintf(d, "(%s)%*s %.80s (id=%d)", clname, padding,"", path, mod->id());
     return buf;
 }
 

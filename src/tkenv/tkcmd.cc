@@ -65,9 +65,9 @@ static bool do_foreach_child_call_visitor(cObject *obj, bool beg, cObject *_pare
          return false;
     }
     if (beg && obj==parent)
-	     return true;
+        return true;
     if (beg && obj!=parent)
-	     visitor->visit(obj);
+        visitor->visit(obj);
     return false;
 }
 
@@ -153,6 +153,7 @@ int getFileName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectClassName_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -208,6 +209,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectfullname",getObjectFullName_cmd}, // args: <pointer>  ret: fullName()
    { "opp_getobjectfullpath",getObjectFullPath_cmd}, // args: <pointer>  ret: fullPath()
    { "opp_getobjectclassname",getObjectClassName_cmd}, // args: <pointer>  ret: className()
+   { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
    { "opp_getchildobjects",  getChildObjects_cmd    }, // args: <pointer> ret: list with its child object ptrs
    { "opp_getsubobjects",    getSubObjects_cmd    }, // args: <pointer> ret: list with all object ptrs in subtree
    { "opp_getsimulationstate", getSimulationState_cmd }, // args: -  ret: NONET,READY,RUNNING,ERROR,TERMINATED,etc.
@@ -471,6 +473,18 @@ int getObjectClassName_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    Tcl_SetResult(interp, const_cast<char*>(object->className()), TCL_VOLATILE);
+   return TCL_OK;
+}
+
+int getObjectInfoString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cObject *object = (cObject *)strToPtr( argv[1] );
+   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+
+   char buf[1024];
+   object->info(buf);
+   Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
 

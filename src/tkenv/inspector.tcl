@@ -180,6 +180,33 @@ proc inspect_this {win type} {
 }
 
 
+#
+# Called from balloon.tcl, supposed to return tooltip for a widget (or item 
+# in a widget). Installed via: set help_tips(helptip_proc) get_help_tip
+#
+# Here we produce help text for canvas items that represent simulation 
+# objects.
+#
+proc get_help_tip {w x y item} {
+   if {[winfo class $w]=="Canvas" && $item!=""} {
+
+       # if this is a simulation object, get its pointer
+       set ptr ""
+       set tags [$w gettags $item]
+       if {[lsearch $tags "ptr*"] != -1} {
+          regexp "ptr.*" $tags ptr
+       }
+       set ptr [lindex $ptr 0]
+
+       if {$ptr!=""} {
+          set tip [opp_getobjectinfostring $ptr]
+          regsub {  +} $tip {  } tip
+          return "$tip ($ptr)"
+       }
+   }
+   return ""
+}
+
 #===================================================================
 #    STRUCT (FIELDS) PANEL
 #===================================================================

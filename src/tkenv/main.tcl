@@ -492,6 +492,9 @@ proc load_plugins {path} {
 #===================================================================
 
 proc generic_bindings {} {
+   global help_tips
+   set help_tips(helptip_proc) get_help_tip
+
    bind Button <Return> {tkButtonInvoke %W}
 }
 
