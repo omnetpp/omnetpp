@@ -1,0 +1,49 @@
+%description:
+basic test for waitAndEnqueue(), using self-messages.
+
+TODO: other test cases should test with messages sent from other modules, too.
+
+%activity:
+
+// schedule a few events
+scheduleAt(1, new cMessage("one"));
+scheduleAt(2, new cMessage("two"));
+scheduleAt(3, new cMessage("three"));
+scheduleAt(4, new cMessage("four"));
+scheduleAt(5, new cMessage("five"));
+
+// wait 3 seconds, with queue
+cQueue queue("queue");
+waitAndEnqueue(3, &queue);
+
+// dump queue
+ev << "queue contents after waitAndEnqueue:\n";
+cMessage *msg;
+while (!queue.empty())
+{
+    msg = (cMessage *) queue.pop();
+    ev << "  " << msg->name() << endl;
+    delete msg;
+}
+
+// receive remaining messages
+ev << "receiving further messages:\n";
+msg = receive();
+ev << "  " << msg->name() << endl;
+delete msg;
+
+msg = receive();
+ev << "  " << msg->name() << endl;
+delete msg;
+
+%contains: stdout
+queue contents after waitAndEnqueue:
+  one
+  two
+  three
+receiving further messages:
+.*
+  four
+.*
+  five
+
