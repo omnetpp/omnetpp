@@ -583,13 +583,11 @@ proc startup_commands {} {
 #===================================================================
 proc busy {{msg {}}} {
     if {$msg != ""} {
-        puts "BUSY: $msg"
-        #$gned(statusbar).mode config -text $msg
+        #$statusbar.mode config -text $msg
         update idletasks
         . config -cursor watch
     } else {
-        puts "IDLE"
-        #$gned(statusbar).mode config -text "Ready"
+        #$statusbar.mode config -text "Ready"
         update idletasks
         . config -cursor ""
     }

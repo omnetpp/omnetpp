@@ -25,12 +25,12 @@ module DisplayStringTest
         saturation: Gen;
             parameters:
                 what = "saturation",
-                startTime = 300;
+                startTime = 400;
             display: "p=135,51;b=40,24";
         brightness: Gen;
             parameters:
                 what = "brightness",
-                startTime = 300;
+                startTime = 500;
             display: "p=229,51;b=40,24";
         icons: Gen;
             parameters:
