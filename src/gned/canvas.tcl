@@ -119,12 +119,6 @@ proc openModuleOnNewCanvas {modkey} {
                 -bg wheat2 -highlightthickness 0 -height 1
     pack $tab -expand 0 -fill none -side left
 
-    # very dirty code to update scrollbar to scroll the 'tabs' strip
-    update idletasks
-    .main.f.tabs.c config -height [winfo height .main.f.tabs.c.f]
-    .main.f.tabs.c config -scrollregion "0 0 [winfo width .main.f.tabs.c.f] 0"
-    .main.f.tabs.c xview moveto 1.0
-
     # bindings for the canvas
     selectOrMoveBindings $canv
     bind $canv <Control-x> editCut
@@ -140,8 +134,16 @@ proc openModuleOnNewCanvas {modkey} {
     # draw the module on the canvas
     drawItemRecursive $modkey $canv_id
 
-    # show the canvas -- must be the last one because it needs the module name
+    # show the canvas -- must be near the end because it needs the module name
     switchToCanvas $canv_id
+
+    # some dirty code to update "<" ">" buttons that scroll the 'tabs' strip
+    # (must be done after the switchToCanvas call that sets the tab label!)
+    update idletasks
+    .main.f.tabs.c config -height [winfo height .main.f.tabs.c.f]
+    .main.f.tabs.c config -scrollregion "0 0 [winfo width .main.f.tabs.c.f] 0"
+    .main.f.tabs.c xview moveto 1.0
+
     return $canv_id
 }
 
