@@ -108,12 +108,14 @@ foreach $class (@classes) {
 # parse cppincludes
 while ($msg =~ s/cppinclude\s+(["\<].*?["\>])//s)
 {
-    print STDERR "*** warning: cppinclude is deprecated, use cplusplus {{ ... }}; syntax instead\n";
+    print STDERR "*** warning: cppinclude is deprecated, use cplusplus {{ ... }} syntax instead\n";
     print H "#include $1\n";
 }
-while ($msg =~ s/cplusplus\s+{{(.*?)}};//s)
+while ($msg =~ s/cplusplus\s+{{(.*?)}};?//s)
 {
-    print H "$1\n";
+    print H "// cplusplus {{ ... }} section:\n";
+    print H "$1";
+    print H "// end cplusplus\n\n";
 }
 print H "\n";
 
@@ -806,16 +808,17 @@ sub generateClass
         }
     }
     print CC "{\n";
+    print CC "    int i;\n";
     foreach $fieldname (@fieldlist)
     {
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
                 if ($fval{$fieldname} ne '') {
-                    print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
+                    print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
                     print CC "        $var{$fieldname}\[i\] = 0;\n";
                 }
                 if ($classtype{$ftype{$fieldname}} eq 'cobject') {
-                  print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
+                  print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
                   print CC "        $var{$fieldname}\[i\].setOwner(this);\n";
                 }
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
@@ -838,6 +841,7 @@ sub generateClass
         print CC "$msgclass\:\:$msgclass(const $msgclass& other) : $msgbaseclass()\n";
     }
     print CC "{\n";
+    print CC "    int i;\n";
     if ($classtype eq "cobject") {
         print CC "    setName(other.name());\n";
     }
@@ -846,7 +850,7 @@ sub generateClass
       if (!$fisabstract{$fieldname}) {
         if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
           if ($classtype{$ftype{$fieldname}} eq 'cobject') {
-            print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
+            print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
             print CC "        $var{$fieldname}\[i\].setOwner(this);\n";
           }
         } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
@@ -873,6 +877,7 @@ sub generateClass
     print CC "$msgclass& $msgclass\:\:operator=(const $msgclass& other)\n";
     print CC "{\n";
     print CC "    if (this==&other) return *this;\n";
+    print CC "    int i;\n";
     if ($msgbaseclass ne "") {
         print CC "    $msgbaseclass\:\:operator=(other);\n";
     }
@@ -880,7 +885,7 @@ sub generateClass
     {
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                print CC "    for (int i=0; i<$farraysize{$fieldname}; i++)\n";
+                print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
                 print CC "        $var{$fieldname}\[i\] = other.$var{$fieldname}\[i\];\n";
             } elsif ($fisarray{$fieldname} && $farraysize{$fieldname} eq '') {
                 print CC "    delete [] $var{$fieldname};\n";
