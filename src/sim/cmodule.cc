@@ -565,7 +565,9 @@ void cSimpleModule::activate(void *p)
     // give back the message to the module
     starter->setOwner(smod);
     starter->setKind(MK_TIMEOUT);
-    starter->setName("timeout");
+    char buf[24];
+    sprintf(buf,"timeout-%d", smod->id());
+    starter->setName(buf);
 
     // call activity(). At this point, initialize() has already been called
     // from cSimulation::startRun(), or manually in the case of dynamically
@@ -796,7 +798,9 @@ void cSimpleModule::scheduleStart(simtime_t t)
         throw new cException("scheduleStart(): module `%s' already started",fullPath());
 
     // create timeoutmsg, used as internal timeout message
-    timeoutmsg = new cMessage("starter",MK_STARTER);
+    char buf[24];
+    sprintf(buf,"starter-%d", id());
+    timeoutmsg = new cMessage(buf,MK_STARTER);
     take( timeoutmsg );
 
     // initialize message fields
