@@ -70,6 +70,16 @@
   EXECUTE_ON_STARTUP(NAME##__func, (new cFunctionType(#NAME,(MathFunc)NAME,ARGCOUNT))->setOwner(&functions);)
 
 /**
+ * Like Define_Function(), but takes three arguments, the second one being the
+ * pointer to the function. This macro allows registering a function with a
+ * different name than its implementation.
+ *
+ * @hideinitializer
+ */
+#define Define_Function2(NAME,FUNCTION,ARGCOUNT) \
+  EXECUTE_ON_STARTUP(NAME##__func, (new cFunctionType(#NAME,(MathFunc)FUNCTION,ARGCOUNT))->setOwner(&functions);)
+
+/**
  * Register class. This defines a factory object which makes it possible
  * to create an object by the passing class name to the createOne() function.
  *
