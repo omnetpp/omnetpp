@@ -1,7 +1,6 @@
 #! /bin/sh
 PS2GIF=@PS2GIF@
-#FIXME into configure:
-GIFTRANS=giftrans
+GIFTRANS=@GIFTRANS@
 DOT=@DOT@
 NEDDOC_XSL=`dirname $0`/neddoc.xsl
 NEDDOC_PL=`dirname $0`/neddocproc.pl
@@ -155,7 +154,9 @@ if [ "$have_dot" = "yes" ]; then
        fi
     done
     echo
-    echo 'see warnings from '$DOT' in '$outdir'/dot.err';
+    if [ -s $outdir/dot.err ]; then
+       echo 'see warnings from '$DOT' in '$outdir'/dot.err'
+    fi
 fi
 
 echo 'formatting comments...'
