@@ -56,6 +56,7 @@ void cLCG32::selfTest()
 
 unsigned long cLCG32::intRand()
 {
+    numDrawn++;
     const long int a=16807, q=127773, r=2836;
     seed=a*(seed%q) - r*(seed/q);
     if (seed<=0) seed+=LCG32_MAX+1;
@@ -69,10 +70,11 @@ unsigned long cLCG32::intRandMax()
 
 unsigned long cLCG32::intRand(unsigned long n)
 {
-    // code from MersenneTwister.h, Richard J. Wagner rjwagner@writeme.com
+    if (n>LCG32_MAX)
+        throw new cException("cLCG32: intRand(%d): argument out of range 1..2^31-2");
 
+    // code from MersenneTwister.h, Richard J. Wagner rjwagner@writeme.com
     // Find which bits are used in n
-    // Optimized by Magnus Jonsson (magnus@smartelectronix.com)
     unsigned long used = n-1;
     used |= used >> 1;
     used |= used >> 2;
@@ -156,3 +158,5 @@ long cLCG32::autoSeeds[] = {
     1883864564L, 1709982325L, 251608257L, 1171967839L, 642486710L,
     1358844649L, 1115145546L, 1398997376L, 1021484058L, 2035865982L,
 };
+
+

@@ -52,6 +52,7 @@ void cMersenneTwister::selfTest()
 
 unsigned long cMersenneTwister::intRand()
 {
+    numDrawn++;
     return rng.randInt();
 }
 
@@ -62,21 +63,25 @@ unsigned long cMersenneTwister::intRandMax()
 
 unsigned long cMersenneTwister::intRand(unsigned long n)
 {
+    numDrawn++;
     return rng.randInt(n-1);
 }
 
 double cMersenneTwister::doubleRand()
 {
+    numDrawn++;
     return rng.randExc();
 }
 
 double cMersenneTwister::doubleRandNonz()
 {
+    numDrawn++;
     return rng.randDblExc();
 }
 
 double cMersenneTwister::doubleRandIncl1()
 {
+    numDrawn++;
     return rng.rand();
 }
 
