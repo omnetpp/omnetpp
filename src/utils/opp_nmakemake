@@ -37,11 +37,8 @@ $doxyconf = "doxy.cfg";
 $ccext = "";  # we'll try to autodetect it
 $cfgfile="";
 $linkwithobjects="n";
-
 $ignorened="n";
 $force="n";
-$pvm="n";
-$mpi="n";
 
 $makecommand = 'nmake /nologo /f Makefile.vc';
 
@@ -152,14 +149,6 @@ could not figure out.
             print STDERR "opp_nmakemake: -u: valid user interface names are Cmdenv or Tkenv";
             exit(1);
         }
-    }
-    elsif ($arg eq '-M' || $arg eq '--mpi')
-    {
-        $mpi = "y";
-    }
-    elsif ($arg eq '-p' || $arg eq '--pvm')
-    {
-        $pvm = "y";
     }
     elsif ($arg eq '-i' || $arg eq '--includefragment')
     {

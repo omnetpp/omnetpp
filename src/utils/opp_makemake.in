@@ -31,6 +31,8 @@ makefilein=n
 doxyconf="doxy.cfg"
 cfgfile=""
 linkwithobjects=n
+ignorened=n
+force=n
 
 while [ ! $# = 0 ] ; do
     case "$1" in
@@ -44,6 +46,9 @@ opp_makemake [-h] [-f] [-m] [-o make-target] [-r] [-n] [-s] [-u userinterface]
         [-i makefile-fragment-file] [directories, library and object files]...
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
+    -N, --ignore-ned      Leave out .ned files from the makefile. Useful when
+                          you want to load all .ned files dynamically (see
+                          preload-ned-files omnetpp.ini option).
     -m, --makefile-in     Create Makefile.in instead of Makefile
     -c, --configfile      Omit variable definitions from generated Makefile,
                           and let the Makefile include the given config file
@@ -94,6 +99,10 @@ EOT
         outfile=$1
         ;;
 
+        -N | --ignore-ned)
+        ignorened=y
+        ;;
+
         -r | --recurse)
         recursive=y
         ;;
@@ -125,14 +134,6 @@ EOT
             exit
             ;;
         esac
-        ;;
-
-        -M | --mpi)
-        mpi=y
-        ;;
-
-        -p | --pvm)
-        pvm=y
         ;;
 
         -i | --includefragment)
@@ -202,7 +203,12 @@ for i in $linkdirs; do
     extdirobjs="$extdirobjs $i/*.o"
 done
 
-objs=`echo *.ned *.msg *.cc | sed 's/\*[^ ]*//g; s/[^ ]*_n\.cc//g; s/[^ ]*_m\.cc//g; s/\.ned/_n.o/g; s/\.msg/_m.o/g; s/\.cc/.o/g'`
+if [ "$ignorened" = "y" ]; then
+    objs=`echo *.msg *.cc`
+else
+    objs=`echo *.ned *.msg *.cc`
+fi
+objs=`echo $objs | sed 's/\*[^ ]*//g; s/[^ ]*_n\.cc//g; s/[^ ]*_m\.cc//g; s/\.ned/_n.o/g; s/\.msg/_m.o/g; s/\.cc/.o/g'`
 
 #
 # now the Makefile creation
@@ -232,16 +238,6 @@ case "$userif" in
     TKENV)
     c_cmd='# '; c_tk=''; ;;
 esac
-
-c_std=''; c_pvm='# '; c_mpi='# ';
-
-if [ "$pvm" = "y" ]; then
-    c_std='# '; c_pvm=''; c_mpi='#';
-fi
-
-if [ "$mpi" = "y" ]; then
-    c_std='# '; c_pvm='#'; c_mpi='';
-fi
 
 cat <<EOT
 
@@ -435,7 +431,8 @@ for i in $subdirs; do
 done
 
 # rules for ned files
-for i in *.ned; do
+if [ "$ignorened" = "n" ]; then
+    for i in *.ned; do
         if [ "$i" = "*.ned" ]; then break; fi;
 
         obj=`echo $i | sed 's/\.ned/_n.o/g'`
@@ -448,7 +445,8 @@ for i in *.ned; do
         echo "$c: $i"
         echo '	$(NEDC) $(INCLUDE_PATH) '$i
         echo
-done
+    done
+fi
 
 # rules for msg files
 for i in *.msg; do
