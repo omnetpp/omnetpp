@@ -1,3 +1,8 @@
+2001-07-30  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* cenvir.h: operator<< definitions were broken. Introduced with
+	revision nr. 1.5. Reverted according to rev. 1.4
+
 2001-07-29 Andras Varga
 
 	* made a lot of methods const (only experimental for now).
