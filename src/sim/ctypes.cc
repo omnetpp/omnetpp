@@ -504,6 +504,16 @@ cFunctionType::cFunctionType(const char *name, MathFunc3Args f, int ac) : cObjec
                              "number of arguments %d, should be 3", name, ac);
 }
 
+cFunctionType::cFunctionType(const char *name, MathFunc4Args f, int ac) : cObject(name)
+{
+    this->f = (MathFunc)f;
+    argc = 4;
+    if (ac!=-1 && ac!=4)
+        throw new cException("Register_Function() or cFunctionType: "
+                             "attempt to register function \"%s\" with wrong "
+                             "number of arguments %d, should be 4", name, ac);
+}
+
 MathFuncNoArg cFunctionType::mathFuncNoArg()  
 {
     if (argc!=0)
@@ -530,6 +540,13 @@ MathFunc3Args cFunctionType::mathFunc3Args()
     if (argc!=3)
         throw new cException(this,"mathFunc3Args(): arg count mismatch (argc=%d)",argc);
     return (MathFunc3Args)f;
+}
+
+MathFunc4Args cFunctionType::mathFunc4Args()  
+{
+    if (argc!=4)
+        throw new cException(this,"mathFunc4Args(): arg count mismatch (argc=%d)",argc);
+    return (MathFunc4Args)f;
 }
 
 cFunctionType *findfunctionbyptr(MathFunc f)

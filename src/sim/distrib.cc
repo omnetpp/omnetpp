@@ -28,12 +28,6 @@
 #define M_E     2.718281828
 #endif
 
-//
-// FIXME TBD:
-//   add asserts for parameters
-//   find a way to verify/test distributions
-//
-
 
 //----------------------------------------------------------------------------
 //
@@ -72,10 +66,6 @@ double gamma_d(double alpha, double beta, int rng)
         throw new cException("gamma(): alpha and beta params must be positive "
                              "(alpha=%lg, beta=%lg)", alpha, beta);
 
-    // FIXME: temporarily disabled because of compile warning:
-    // "not all control paths return a value"
-    throw new cException("gamma_d() incomplete!");
-
     if (fabs(alpha - 1.0) <= DBL_EPSILON)
         return exponential(beta);
 
@@ -83,39 +73,27 @@ double gamma_d(double alpha, double beta, int rng)
     {
         double b, U1, U2, P, Y;
 
-        unsigned int step = 1;
-
         b = (M_E + alpha) / M_E;
         for (;;)
         {
-            switch (step)
+            // step 1
+            U1 = normal(0, 1);
+            P = b * U1;
+            if (P > 1)
             {
-            case 1:
-                U1 = normal(0, 1);
-                P = b * U1;
-                if (P > 1)
-                    step = 3;
-                else
-                    step = 2;
-                break;
-
-            case 2:
-                Y = pow(P, (1 / alpha));
-                U2 = normal(0, 1);
-                if (U2 <= exp(-Y))
-                    return Y;
-                else
-                    step = 1;
-                break;
-
-            case 3:
+                // step 3
                 Y = -log((b - P) / alpha);
                 U2 = normal(0, 1);
                 if (U2 <= pow(Y, alpha - 1.0))
                     return Y;
-                else
-                    step = 1;
-                break;
+            }
+            else
+            {
+                // step 2
+                Y = pow(P, (1 / alpha));
+                U2 = normal(0, 1);
+                if (U2 <= exp(-Y))
+                    return Y;
             }
         }
     }
@@ -128,41 +106,27 @@ double gamma_d(double alpha, double beta, int rng)
         double theta = 4.5;
         double d = 1 + log(theta);
 
-        unsigned int step = 1;
         for (;;)
         {
             double U1, U2, V, Y, Z, W;
 
-            switch (step)
-            {
-            case 1:
-                U1 = genk_dblrand(rng);
-                U2 = genk_dblrand(rng);
-                step = 2;
-                break;
+            // step 1
+            U1 = genk_dblrand(rng);
+            U2 = genk_dblrand(rng);
 
-            case 2:
-                V = a * log(U1 / (1.0 - U1));
-                Y = alpha * exp(V);
-                Z = U1 * U1 * U2;
-                W = b + q * V - Y;
-                step = 3;
-                break;
+            // step 2
+            V = a * log(U1 / (1.0 - U1));
+            Y = alpha * exp(V);
+            Z = U1 * U1 * U2;
+            W = b + q * V - Y;
 
-            case 3:
-                if (W + d - theta * Z >= .0)
-                    return Y;
-                else
-                    step = 4;
-                break;
+            // step 3
+            if (W + d - theta * Z >= .0)
+                return Y;
 
-            case 4:
-                if (W >= log(Z))
-                    return Y;
-                else
-                    step = 1;
-                break;
-            }
+            // step 4
+            if (W >= log(Z))
+                return Y;
         }
     }
 }
@@ -425,12 +389,12 @@ static double _wrap_erlang_k(double k, double m)
     return erlang_k( (unsigned int) k, m);
 }
 
-static double _wrap_chi_square( double k )
+static double _wrap_chi_square(double k)
 {
     return chi_square( (unsigned int) k);
 }
 
-static double _wrap_student_t( double i )
+static double _wrap_student_t(double i)
 {
     return student_t( (unsigned int) i);
 }
@@ -482,12 +446,12 @@ static double _wrap_geometric(double p)
     return (double) geometric(p);
 }
 
-static double _wrap_negbinomial( double n, double p)
+static double _wrap_negbinomial(double n, double p)
 {
     return (double) negbinomial( (int)n, p);
 }
 
-static double _wrap_hypergeometric( double a, double b, double n)
+static double _wrap_hypergeometric(double a, double b, double n)
 {
     return (double) hypergeometric( (int)a, (int)b, (int)n);
 }
@@ -522,6 +486,140 @@ Define_Function2(hypergeometric, _wrap_hypergeometric, 3);
 Define_Function2(poisson, _wrap_poisson, 1);
 
 
+// continuous, rng versions
+
+static double _wrap_uniform_with_rng(double a, double b, double rng)
+{
+    return uniform(a, b, (int)rng);
+}
+
+static double _wrap_exponential_with_rng(double p, double rng)
+{
+    return exponential(p, (int)rng);
+}
+
+static double _wrap_normal_with_rng(double m, double d, double rng)
+{
+    return normal(m, d, (int)rng);
+}
+
+static double _wrap_truncnormal_with_rng(double m, double d, double rng)
+{
+    return truncnormal(m, d, (int)rng);
+}
+
+static double _wrap_gamma_d_with_rng(double alpha, double beta, double rng)
+{
+    return gamma_d(alpha, beta, (int)rng);
+}
+
+static double _wrap_beta_with_rng(double alpha1, double alpha2, double rng)
+{
+    return beta(alpha1, alpha2, (int)rng);
+}
+
+static double _wrap_erlang_k_with_rng(double k, double m, double rng)
+{
+    return erlang_k( (unsigned int) k, m, (int)rng);
+}
+
+static double _wrap_chi_square_with_rng(double k, double rng)
+{
+    return chi_square( (unsigned int) k, (int)rng);
+}
+
+static double _wrap_student_t_with_rng(double i, double rng)
+{
+    return student_t( (unsigned int) i, (int)rng);
+}
+
+static double _wrap_cauchy_with_rng(double a, double b, double rng)
+{
+    return cauchy(a, b, (int)rng);
+}
+
+static double _wrap_triang_with_rng(double a, double b, double c, double rng)
+{
+    return triang(a, b, c, (int)rng);
+}
+
+static double _wrap_lognormal_with_rng(double m, double d, double rng)
+{
+    return lognormal(m, d, (int)rng);
+}
+
+static double _wrap_weibull_with_rng(double a, double b, double rng)
+{
+    return weibull(a, b, (int)rng);
+}
+
+static double _wrap_pareto_shifted_with_rng(double a, double b, double c, double rng)
+{
+    return pareto_shifted(a, b, c, (int)rng);
+}
+
+// discrete, rng versions
+
+static double _wrap_intuniform_with_rng(double a, double b, double rng)
+{
+    return (double) intuniform((int)a, (int)b, (int)rng);
+}
+
+static double _wrap_bernoulli_with_rng(double p, double rng)
+{
+    return (double) bernoulli(p, (int)rng);
+}
+
+static double _wrap_binomial_with_rng(double n, double p, double rng)
+{
+    return (double) binomial( (int)n, p, (int)rng);
+}
+
+static double _wrap_geometric_with_rng(double p, double rng)
+{
+    return (double) geometric(p, (int)rng);
+}
+
+static double _wrap_negbinomial_with_rng(double n, double p, double rng)
+{
+    return (double) negbinomial( (int)n, p, (int)rng);
+}
+
+static double _wrap_hypergeometric_with_rng(double a, double b, double n, double rng)
+{
+    return (double) hypergeometric( (int)a, (int)b, (int)n, (int)rng);
+}
+
+static double _wrap_poisson_with_rng(double lambda, double rng)
+{
+    return (double) poisson(lambda, (int)rng);
+}
+
+
+Define_Function2(uniform, _wrap_uniform_with_rng, 3);
+Define_Function2(exponential, _wrap_exponential_with_rng, 2);
+Define_Function2(normal, _wrap_normal_with_rng, 3);
+Define_Function2(truncnormal, _wrap_truncnormal_with_rng, 3);
+Define_Function2(gamma_d, _wrap_gamma_d_with_rng, 3);
+Define_Function2(beta, _wrap_beta_with_rng, 3);
+Define_Function2(erlang_k, _wrap_erlang_k_with_rng, 3);
+Define_Function2(chi_square, _wrap_chi_square_with_rng, 2);
+Define_Function2(student_t, _wrap_student_t_with_rng, 2);
+Define_Function2(cauchy, _wrap_cauchy_with_rng, 3);
+Define_Function2(triang, _wrap_triang_with_rng, 4);
+Define_Function2(lognormal, _wrap_lognormal_with_rng, 3);
+Define_Function2(weibull, _wrap_weibull_with_rng, 3);
+Define_Function2(pareto_shifted, _wrap_pareto_shifted_with_rng, 4);
+
+Define_Function2(intuniform, _wrap_intuniform_with_rng, 3);
+Define_Function2(bernoulli, _wrap_bernoulli_with_rng, 2);
+Define_Function2(binomial, _wrap_binomial_with_rng, 3);
+Define_Function2(geometric, _wrap_geometric_with_rng, 2);
+Define_Function2(negbinomial, _wrap_negbinomial_with_rng, 3);
+Define_Function2(hypergeometric, _wrap_hypergeometric_with_rng, 4);
+Define_Function2(poisson, _wrap_poisson_with_rng, 2);
+
+
 // compatibility genk_ versions:
 
 double genk_uniform(double rng, double a, double b)
@@ -531,7 +629,7 @@ double genk_uniform(double rng, double a, double b)
 
 double genk_intuniform(double rng, double a, double b)
 {
-    return uniform((int)a, (int)b, (int)rng);
+    return intuniform((int)a, (int)b, (int)rng);
 }
 
 double genk_exponential(double rng, double p)

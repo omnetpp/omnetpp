@@ -177,6 +177,8 @@ void cPar::info( char *buf )
                   case 1: sprintf(b,"%s(%g) (F)",fn,func.p1); break;
                   case 2: sprintf(b,"%s(%g,%g) (F)",fn,func.p1,func.p2); break;
                   case 3: sprintf(b,"%s(%g,%g,%g) (F)",fn,func.p1,func.p2,func.p3); break;
+                  case 4: sprintf(b,"%s(%g,%g,%g,%g) (F)",fn,func.p1,func.p2,func.p3,func.p4); break;
+                  default: sprintf(b,"%s() with %d args (F)",fn,func.argc); break;
                   };
                   break;
         case 'B': sprintf(b,"%s (B)", lng.val?"true":"false"); break;
@@ -394,6 +396,25 @@ cPar& cPar::setDoubleValue(MathFunc3Args f, double p1, double p2, double p3)
     func.p1 = p1;
     func.p2 = p2;
     func.p3 = p3;
+    typechar = 'F';
+    inputflag=false;
+    afterChange();
+    return *this;
+}
+
+cPar& cPar::setDoubleValue(MathFunc4Args f, double p1, double p2, double p3, double p4)
+{
+    if (isRedirected())
+        return ind.par->setDoubleValue(f,p1,p2,p3,p4);
+
+    beforeChange();
+    deleteold();
+    func.f = (MathFunc)f;
+    func.argc=4;
+    func.p1 = p1;
+    func.p2 = p2;
+    func.p3 = p3;
+    func.p4 = p4;
     typechar = 'F';
     inputflag=false;
     afterChange();
@@ -626,7 +647,8 @@ double cPar::doubleValue()
         return func.argc==0 ? ((MathFuncNoArg)func.f)() :
                func.argc==1 ? ((MathFunc1Arg) func.f)(func.p1) :
                func.argc==2 ? ((MathFunc2Args)func.f)(func.p1,func.p2) :
-                              ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3);
+               func.argc==3 ? ((MathFunc3Args)func.f)(func.p1,func.p2,func.p3) :
+                              ((MathFunc4Args)func.f)(func.p1,func.p2,func.p3,func.p4);
     else
         throw new cException(this,eBADCAST,typechar,'D');
 }
@@ -683,6 +705,7 @@ bool cPar::equalsTo(cPar *par)
         case 'D': return dbl.val == par->dbl.val;
         case 'F': if (func.f!=par->func.f) return 0;
                   switch(func.argc) {
+                      case 4: if (func.p4!=par->func.p4) return 0; // no break
                       case 3: if (func.p3!=par->func.p3) return 0; // no break
                       case 2: if (func.p2!=par->func.p2) return 0; // no break
                       case 1: if (func.p1!=par->func.p1) return 0; // no break
@@ -759,6 +782,8 @@ void cPar::getAsText(char *buf, int maxlen)
                  case 1: sprintf(bb,"%s(%g)",fn,func.p1); break;
                  case 2: sprintf(bb,"%s(%g,%g)",fn,func.p1,func.p2); break;
                  case 3: sprintf(bb,"%s(%g,%g,%g)",fn,func.p1,func.p2,func.p3); break;
+                 case 4: sprintf(bb,"%s(%g,%g,%g,%g)",fn,func.p1,func.p2,func.p3,func.p4); break;
+                 default: sprintf(bb,"%s() with %d args",fn,func.argc); break;
                  };
                  break;
        case 'T': sprintf(bb,"distribution %.99s", dtr.res ? dtr.res->fullPath():"nil"); break;
@@ -900,7 +925,7 @@ bool cPar::setfunction(char *text)
 
     // now `args' points to something like '(10,1.5E-3)', without spaces
     s = args;
-    double p1,p2,p3;
+    double p1,p2,p3,p4;
     switch(ff->argCount())
     {
        case 0: if (strcmp(s,"()")!=0) return false;
@@ -926,6 +951,17 @@ bool cPar::setfunction(char *text)
                p3 = strToSimtime0(s);
                if (*s++!=')') return false;
                setDoubleValue(ff->mathFunc3Args(), p1,p2,p3);
+               return true;
+       case 4: if (*s++!='(') return false;
+               p1 = strToSimtime0(s);
+               if (*s++!=',') return false;
+               p2 = strToSimtime0(s);
+               if (*s++!=',') return false;
+               p3 = strToSimtime0(s);
+               if (*s++!=',') return false;
+               p4 = strToSimtime0(s);
+               if (*s++!=')') return false;
+               setDoubleValue(ff->mathFunc4Args(), p1,p2,p3,p4);
                return true;
        default:
                return false; // invalid argcount
@@ -1016,6 +1052,11 @@ double cPar::evaluate()
              if(!e.f3 || tos<2) throw new cException(this,eBADEXP);
              stk[tos-2] = e.f3( stk[tos-2], stk[tos-1], stk[tos] );
              tos-=2;
+             break;
+           case '4':
+             if(!e.f4 || tos<3) throw new cException(this,eBADEXP);
+             stk[tos-3] = e.f4( stk[tos-3], stk[tos-2], stk[tos-1], stk[tos] );
+             tos-=3;
              break;
            case '@':
              if(!e.f2 || tos<1) throw new cException(this,eBADEXP);
