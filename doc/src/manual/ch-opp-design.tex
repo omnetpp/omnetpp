@@ -395,10 +395,6 @@ dynamically allocated simulation application object (derived from
 \label{sec:ch-opp-design:customization}
 
 Certain aspects of Envir can be customized via plugin interfaces.
-Plugin interfaces are presented in the form of C++ abstract classes
-that you have to implement, register via the \fmac{Register\_Class()}
-macro, and finally tell Envir to use them via \ttt{omnetpp.ini} entries.
-
 The following plugin interfaces are supported:
 
 \begin{itemize}
@@ -424,9 +420,26 @@ The following plugin interfaces are supported:
      defined in the Envir library.}
 \end{itemize}
 
-The above interfaces are documented in the API Reference.
+The classes (\cclass{cRNG}, \cclass{cScheduler}, etc.) are documented in
+the API Reference.
 
-The corresponding ini file entries that allow you to select your
+To actually implement and select a plugin for use:
+
+\begin{enumerate}
+   \item Subclass the given interface class (e.g. for a custom RNG, \cclass{cRNG})
+     to create your own version.
+   \item Register the class by putting the \fmac{Register\_Class(MyRNGClass)}
+     line into the C++ source.
+   \item Compile and link your interface class into the {\opp} simulation
+     executable. IMPORTANT: make sure the executable actually contains
+     the code of your class! Over-optimizing linkers (esp. on Unix)
+     tend to leave out code to which there seem to be no external reference.
+   \item Add an entry to \ttt{omnetpp.ini} to tell Envir use your class
+     instead of the default one. For RNGs, this setting is \ttt{rng-class}
+     in the \ttt{[General]} section.
+\end{enumerate}
+
+Ini file entries that allow you to select your
 plugin classes are \fpar{configuration-class}, \fpar{scheduler-class},
 \fpar{rng-class}, \fpar{outputvectormanager-class},
 \fpar{outputscalarmanager-class} and \fpar{snapshotmanager-class},
