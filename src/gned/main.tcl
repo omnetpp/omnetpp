@@ -139,7 +139,7 @@ proc create_omnetpp_window {} {
       {command -command {drawBindings $gned(canvas)} -label {Submodule/connection drawing mode}}
       {command -command {selectOrMoveBindings $gned(canvas)} -label {Select/resize mode}}
       {separator}
-      {command -command {resetModuleBounds}  -label {Reset parent module bounds} -underline 0}
+      {command -command {resetModuleBounds}  -label {"Natural" parent module size} -underline 0}
       {separator}
       {command -command {propertiesSelected $gned(canvas)} -label {Properties of selected item...}}
       {command -command {drawOptionsSelected $gned(canvas)} -label {Appearance of selected item...}}
@@ -266,7 +266,7 @@ proc create_omnetpp_window {} {
     set help_tips($gned(toolbar).select) {Switch to select/resize mode}
     set help_tips($gned(toolbar).delete) {Delete selected items}
     set help_tips($gned(toolbar).grid)   {Snap to grid on/off}
-    set help_tips($gned(toolbar).bounds) {Reset parent module bounds}
+    set help_tips($gned(toolbar).bounds) {"Natural" parent module size}
     set help_tips($gned(toolbar).props)  {Properties of selected item}
     set help_tips($gned(toolbar).opts)   {Appearance of selected item}
 

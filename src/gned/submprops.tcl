@@ -27,6 +27,7 @@ proc editSubmoduleProps {key} {
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .submprops "Submodule Properties"
+    wm geometry .submprops "480x300"
 
     set nb .submprops.f.nb
 
@@ -72,15 +73,15 @@ proc editSubmoduleProps {key} {
     createSectionsComboAndTables $nb.gates $key gatesizes gatesizes  {
       {Gate   name     {entry $e -textvariable $v -width 16 -bd 1}}
       {Size   size     {entry $e -textvariable $v -width 20 -bd 1}}
-      {{End-line comment} right-comment {entry $e -textvariable $v -width 15 -bd 1}}
-      {{Doc. comment} banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
+      {{End-line comment} right-comment {entry $e -textvariable $v -width 16 -bd 1}}
+      {{Doc. comment} banner-comment {entry $e -textvariable $v -width 18 -bd 1}}
     }
 
     # create "Machines" page
     createSectionsComboAndTables $nb.on $key substmachines on  {
       {{On machine} value  {entry $e -textvariable $v -width 16 -bd 1}}
-      {{End-line comment} right-comment {entry $e -textvariable $v -width 15 -bd 1}}
-      {{Doc. comment} banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
+      {{End-line comment} right-comment {entry $e -textvariable $v -width 24 -bd 1}}
+      {{Doc. comment} banner-comment {entry $e -textvariable $v -width 30 -bd 1}}
     }
 
     focus $nb.general.name.e

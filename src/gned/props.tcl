@@ -77,10 +77,10 @@ proc fillTableEditFromNed {w parentkey} {
 
 # updateNedFromTableEdit --
 #
-# w: table widget
+# w:         table widget
 # parentkey: key of the params,gates,substparams,gatesizes etc. item
-# itemtype: param, substparam, gatesize etc.
-# keyattr:
+# itemtype:  param, substparam, gatesize etc.
+# keyattr:   if this attr!="", table line will be added to ned()
 #
 proc updateNedFromTableEdit {w parentkey itemtype keyattr} {
     global ned ddfields tablePriv

@@ -23,6 +23,7 @@ Drawing:
   a connection, you click the righ mouse button and release both mouse buttons
   over the menu that popped up, the half-cooked connection arrow will stay
   on the canvas
+- rename on canvas: with module vectors it's a catastrophe now...
 
 Load/save:
 - refuse to load the same file twice
@@ -60,7 +61,6 @@ Longer-term plans:
 - general improvement (see all the above)
 - opening simple modules, networks, channels, etc. on canvas
 - do Properties dialogs
-- drag&drop simple/compound module types onto a compound module canvas
 - autoload a NED library on startup (sets of simple module,s etc.)
 - consistency checks (params, gates etc.)
 

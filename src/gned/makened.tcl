@@ -23,10 +23,7 @@
 # Entry point of NED code generation: return the code as a single big string
 #
 proc generateNed {key} {
-puts "DBG: replace appendTo with append in makened.tcl!"
-    puts [time {set res [generateNedItem $key {} 0]}]
-    return $res
-    # return [generateNedItem $key {} 0]
+    return [generateNedItem $key {} 0]
 }
 
 proc generateNedItem {key indent islast} {

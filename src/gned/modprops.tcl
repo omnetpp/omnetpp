@@ -23,66 +23,99 @@ proc editModuleProps {key} {
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .modprops "Module Properties"
+    wm geometry .modprops "480x300"
+
+    set nb .modprops.f.nb
 
     # add notebook pages
-    notebook .modprops.f.nb
-    pack .modprops.f.nb -expand 1 -fill both
-    notebook_addpage .modprops.f.nb general "General"
-    notebook_addpage .modprops.f.nb pars  "Parameters"
-    notebook_addpage .modprops.f.nb gates "Gates"
-    notebook_addpage .modprops.f.nb mach  "Machines"
+    notebook $nb
+    pack $nb -expand 1 -fill both
+    notebook_addpage $nb general "General"
+    notebook_addpage $nb pars  "Parameters"
+    notebook_addpage $nb gates "Gates"
+    notebook_addpage $nb mach  "Machines"
 
     # create "General" page
-    label-entry .modprops.f.nb.general.name "Name:"
-    label-text  .modprops.f.nb.general.comment "Comments:" 5
-    pack .modprops.f.nb.general.name  -expand 0 -fill x -side top
-    pack .modprops.f.nb.general.comment -expand 1 -fill both -side top
+    label-entry $nb.general.name "Name:"
+    label-text  $nb.general.comment "Comments:" 5
+    pack $nb.general.name  -expand 0 -fill x -side top
+    pack $nb.general.comment -expand 1 -fill both -side top
 
     # create "Parameters" page
-    #label-text  .modprops.f.nb.pars.pars "Parameters:" 7
-    #pack .modprops.f.nb.pars.pars  -expand 1 -fill both -side top
+    label $nb.pars.l -text  "Parameters:"
+    tableEdit $nb.pars.tbl 10 {
+      {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
+      {Type               datatype       {entry $e -textvariable $v -width 20 -bd 1}}
+      {{End-line comment} right-comment  {entry $e -textvariable $v -width 15 -bd 1}}
+      {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
+    }
+    pack $nb.pars.l -side top -anchor w
+    pack $nb.pars.tbl -side top
 
     # create "Gates" page
-    #label-text  .modprops.f.nb.gates.gates "Gates:" 7
-    #pack .modprops.f.nb.gates.gates -expand 1 -fill both -side top
+    label $nb.gates.l -text  "Gates:"
+    tableEdit $nb.gates.tbl 10 {
+      {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
+      {Direction          gatetype       {entry $e -textvariable $v -width 10  -bd 1}}
+      {Vector?            isvector       {entry $e -textvariable $v -width 8  -bd 1}}
+      {{End-line comment} right-comment  {entry $e -textvariable $v -width 15 -bd 1}}
+      {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 16 -bd 1}}
+    }
+    pack $nb.gates.l -side top -anchor w
+    pack $nb.gates.tbl -side top
 
     # create "Machines" page
-    #label-entry .modprops.f.nb.mach.name "Host:"
-    #pack .modprops.f.nb.mach.name  -expand 0 -fill x -side top
+    label $nb.mach.l -text  "Machines:"
+    tableEdit $nb.mach.tbl 10 {
+      {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
+      {{End-line comment} right-comment  {entry $e -textvariable $v -width 25 -bd 1}}
+      {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 26 -bd 1}}
+    }
+    pack $nb.mach.l -side top -anchor w
+    pack $nb.mach.tbl -side top
 
-    focus .modprops.f.nb.general.name.e
+    focus $nb.general.name.e
 
-    .modprops.f.nb.general.name.e insert 0 $ned($key,name)
-    .modprops.f.nb.general.comment.t insert 1.0 $ned($key,banner-comment)
+    # fill "General" page
+    $nb.general.name.e insert 0 $ned($key,name)
+    $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
 
-    #.modprops.f.nb.pars.pars.t insert 1.0 $ned($key,parameters)
-    #.modprops.f.nb.gates.gates.t insert 1.0 $ned($key,gates)
-    #.modprops.f.nb.mach.name.e insert 0 $ned($key,machines)
+    # fill tables
+    ModProps:fillTableEditFromNed $nb.pars.tbl  $key params
+    ModProps:fillTableEditFromNed $nb.gates.tbl $key gates
+    ModProps:fillTableEditFromNed $nb.mach.tbl  $key machines
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .modprops] == 1} {
-        set ned($key,banner-comment) [getCommentFromText .modprops.f.nb.general.comment.t]
-        #set ned($key,parameters) [.modprops.f.nb.pars.pars.t get 1.0 end]
-        #set ned($key,gates) [.modprops.f.nb.gates.gates.t get 1.0 end]
-        #set ned($key,machines) [.modprops.f.nb.mach.name.e get]
 
-        if {$ned($key,name)!=[.modprops.f.nb.general.name.e get]} {
-           foreach i [array names ned "*,is-submod"] {
-             regsub -- ",is-submod" $i "" mkey
-             if {$ned($mkey,type-name)== $ned($key,name)} {
-                if {$ned($ned($mkey,module-ownerkey),parentkey) == $ned($key,parentkey)} {
-                   set ned($mkey,type-name) [.modprops.f.nb.general.name.e get]
-                }
-             }
-           }
-        }
-        redrawItem $key
-        set ned($key,name) [.modprops.f.nb.general.name.e get]
-        $gned(tab) config -text $ned($key,name)
-        $gned(canvas) itemconfigure $ned($key,label-cid) -text $ned($key,name)
+        set ned($key,name) [$nb.general.name.e get]
+        set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
+
+        ModProps:updateNedFromTableEdit $nb.pars.tbl  $key params   param   name
+        ModProps:updateNedFromTableEdit $nb.gates.tbl $key gates    gate    name
+        ModProps:updateNedFromTableEdit $nb.mach.tbl  $key machines machine name
+
+        updateTreeManager
         adjustWindowTitle
     }
     destroy .modprops
 }
 
+proc ModProps:fillTableEditFromNed {w modkey sectiontype} {
+    set sectionkey [getChildrenWithType $modkey $sectiontype]
+    if {[llength $sectionkey]!=0} {
+        fillTableEditFromNed $w $sectionkey
+    }
+}
+
+proc ModProps:updateNedFromTableEdit {w modkey sectiontype itemtype keyattr} {
+    set sectionkey [getChildrenWithType $modkey $sectiontype]
+    if {[llength $sectionkey]==0} {
+        set sectionkey [addItem $sectiontype $modkey]
+    }
+    set isempty [updateNedFromTableEdit $w $sectionkey $itemtype $keyattr]
+    if {$isempty} {
+        deleteItem $sectionkey
+    }
+}
 

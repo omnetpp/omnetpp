@@ -91,18 +91,25 @@ proc dragAndDropFinish {x y} {
     }
 
     # create module
-    set modkey $canvas($gned(canvas_id),module-key)
     set typekey $mouse(typekey)
     set canvx [expr $x - [winfo rootx $w]]
     set canvy [expr $y - [winfo rooty $w]]
 
-    insertSubmodule $modkey $typekey $canvx $canvy
+    createSubmoduleOnCanvas $typekey $canvx $canvy
 }
 
 
-proc insertSubmodule {modkey typekey canvx canvy} {
+# createSubmoduleOnCanvas --
+#
+# Create a new submodule on the current canvas.
+# Called when the user drags a module type on the canvas
+# (dragAndDropFinish).
+#
+proc createSubmoduleOnCanvas {typekey canvx canvy} {
+    global ned defaultparvalue gned canvas
 
-    global ned defaultparvalue
+    # find parent module key
+    set modkey $canvas($gned(canvas_id),module-key)
 
     # find submods
     set submodskey [getChildrenWithType $modkey submods]
@@ -133,29 +140,46 @@ proc insertSubmodule {modkey typekey canvx canvy} {
             set sparkey [addItem substparam $sparskey]
             set ned($sparkey,name) $ned($parkey,name)
             catch {set ned($sparkey,value) $defaultparvalue($ned($parkey,datatype))}
+            set ned($sparkey,right-comment) " TBD\n"
             # copy over comments too?
         }
     }
 
-    # add gates
+    # add gatesizes
     set gateskey [getChildrenWithType $typekey gates]
     if {$gateskey!=""} {
         set gsizkey {}
-#        foreach parkey [getChildrenWithType $parskey param] {
-#            if {vector gate}
-#            set sparkey [addItem substparam $sparskey]
-#            set ned($sparkey,name) $ned($parkey,name)
-#            # copy over comments too?
-#        }
+        foreach gkey [getChildrenWithType $gateskey gate] {
+            if {$ned($gkey,isvector)} {
+                if {$gsizkey==""} {
+                   set gsizkey [addItem gatesizes $key]
+                }
+                set gskey [addItem gatesize $gsizkey]
+                set ned($gskey,name) $ned($gkey,name)
+                set ned($gskey,size) 1
+                set ned($gskey,right-comment) " TBD\n"
+                # copy over comments too?
+            }
+        }
     }
 
     # add machines
+    set machskey [getChildrenWithType $typekey machines]
+    if {$machskey!=""} {
+        set smachskey [addItem substmachines $key]
+        foreach machkey [getChildrenWithType $machskey machine] {
+            set smachkey [addItem substmachine $smachskey]
+            set ned($smachkey,value) $ned($machkey,name)
+            set ned($smachkey,right-comment) " TBD\n"
+            # copy over comments too?
+        }
+    }
 
     # set coords
-    set x1 [expr $canvx-30]
-    set y1 [expr $canvy-20]
-    set x2 [expr $canvx+30]
-    set y2 [expr $canvy+20]
+    set x1 [expr $canvx-20]
+    set y1 [expr $canvy-14]
+    set x2 [expr $canvx+20]
+    set y2 [expr $canvy+14]
 
     set ned($key,x-pos)  [expr int(($x1+$x2)/2)]
     set ned($key,y-pos)  [expr int(($y1+$y2)/2)]
@@ -163,9 +187,7 @@ proc insertSubmodule {modkey typekey canvx canvy} {
     set ned($key,y-size) [expr int($y2-$y1)]
 
     # draw on canvas
-    # FIXME: IF modkey is on canvas, then...
     drawItem $key
-
     markCanvasDirty
 }
 

@@ -145,6 +145,11 @@ puts "dbg: deleteItem $key entered"
 # renameItem --
 #
 # Rename the item if possible and return the new name.
+# Note: the canvas, the window caption or the tree view is NOT updated!
+#
+# Adjusts the name string to kill invalid chars and to make it locally unique.
+#
+# Returns the new name.
 #
 proc renameItem {key name} {
     global ned
@@ -154,7 +159,7 @@ proc renameItem {key name} {
        error "item $key has no name attribute"
     }
 
-    # adjust name string if needed
+    # adjust name string: kill invalid chars and make it begin with letter
     regsub -all -- {[^a-zA-Z0-9_]} $name {} name
     regsub -- {^[0-9]} $name {_\0} name
     if {$name==""} {
@@ -167,10 +172,6 @@ proc renameItem {key name} {
     # rename
     set ned($key,name) $name
 
-    # FIXME: mark file dirty
-    # FIXME: update drawing, tree manager, tabs...
-    puts "DBG: renameItem: key='$key' name='$name'"
-    puts "DBG: FIXME: update drawing, mark dirty etc!"
     return $name
 }
 

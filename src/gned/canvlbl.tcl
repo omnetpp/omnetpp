@@ -22,6 +22,10 @@
 # editCanvasLabel --
 #
 # Start editing a text item on a canvas. Uses an entry widget.
+#
+# This is a general-purpose proc, it doesn't know anything
+# about internal GNED's data structures.
+#
 #  c    canvas
 #  id   tag or id of text item
 #  cmd  command to eval (with the edited string as extra arg)
@@ -57,8 +61,11 @@ proc editCanvasLabel {c id cmd} {
 # Private proc for editCanvasLabel
 #
 proc resizeCanvasEntry {w} {
-    set txt [$w get]
-    $w config -width [expr [string length $txt]+1]
+    # winfo exists is needed because TAB key takes away focus and destroys $w
+    if [winfo exists $w] {
+       set txt [$w get]
+       $w config -width [expr [string length $txt]+1]
+    }
 }
 
 

@@ -644,7 +644,7 @@ proc selectOrMoveEnd {c x y} {
           set cid [$c find withtag current]
           if {$cid==$ned($key,label-cid)} {
              # FIXME: probably we shouldn't call renameItem directly
-             editCanvasLabel $c $cid "renameItem $key"
+             editCanvasLabel $c $cid "_renameOnCanvas $key"
           }
        }
     }
@@ -776,7 +776,7 @@ proc drawEnd {c x y} {
           set ned($key,y-size) [expr int($y2-$y1)]
 
           drawItem $key
-
+          updateTreeManager
           markCanvasDirty
        }
        $c delete $mouse(rect)
@@ -847,6 +847,7 @@ proc drawEnd {c x y} {
                }
 
                drawItem $key
+               updateTreeManager
           }
        }
        $c delete $mouse(arrow)
@@ -992,6 +993,26 @@ proc _getCenterAndSize {c key} {
     }
     return {}
 }
+
+
+# _renameOnCanvas --
+#
+# Called when the user renames an item on the canvas.
+#
+proc _renameOnCanvas {key name} {
+    global ned
+
+    # rename item
+    set name [renameItem $key $name]
+
+    # update all display elements
+    if {$ned($key,type)=="module"} {
+        adjustWindowTitle
+    }
+    updateTreeManager
+    return $name
+}
+
 
 # markCanvasDirty --
 #

@@ -42,7 +42,7 @@ proc schedule_balloon {window x y {item {}}} {
         set index $window
     }
     if [info exists help_tips($index)] {
-        set balloon_after_ID [after $help_tips(delay) "create_balloon \"$help_tips($index)\" $x $y"]
+        set balloon_after_ID [after $help_tips(delay) [list create_balloon $help_tips($index) $x $y]]
     }
 }
 

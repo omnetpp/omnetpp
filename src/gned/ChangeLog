@@ -163,6 +163,8 @@ Nov 13, 1999
   - file props.tcl split to submprops.tcl, connprops.tcl,... (6 files)
 Nov 14, 1999
   - submprops.tcl works; tbd comment handling; other dialogs; efficiency
-Nov 20, 1999
+Nov 20-21, 1999
   - implemented direct editing of module/submod names on the canvas
-    (new file: canvlbl.tcl; renameItem to be finished!)
+  - implemented drag&drop of modules from the tree to the canvas
+  - implemented module properties dialog
+  - TBD: comment handling in properties dialogs!!!
