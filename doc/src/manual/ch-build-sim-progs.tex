@@ -21,7 +21,7 @@ the following parts:
 To build an executable simulation program,
 you first need to translate the NED files\index{ned!files}
 and the message files into C++, using the NED compiler\index{ned!compiler}
-(\ttt{nedc}) and the message compiler (\ttt{opp\_msgc}).
+(\ttt{nedtool}) and the message compiler (\ttt{opp\_msgc}).
 After this step, the process is the same as building any C/C++
 program from source: all C++ sources need to be compiled into object files
 (\ttt{.o} files on Unix/Linux, and \ttt{.obj} on Windows),
@@ -376,7 +376,7 @@ Some caveats (please read \ttt{doc/Readme.MSVC} for more!):
 
 \begin{verbatim}
 Description: NED Compiling $(InputPath)
-Command: nedc -s _n.cpp $(InputPath)
+Command: nedtool -s _n.cpp $(InputPath)
 Outputs: $(InputName)_n.cpp
 \end{verbatim}
 
@@ -389,114 +389,6 @@ Outputs: $(InputName)_n.cpp
 
 \end{itemize}
 
-
-%
-% \subsection{Using Plove}
-%
-% If you want to use Plove\index{Plove}, you should download and install
-% Gnuplot\index{Gnuplot}.  You'll also need a couple of Unix tools like
-% \fprog{grep} and \fprog{awk}, the easiest way to get them is to
-% download and install the Cygwin package from
-% \href{http://www.cygnus.com}{www.cygnus.com}.  When you have
-% everything installed, start Plove and set the appropriate
-% configuration in Options{\textbar}External programs. If you entered
-% everything correctly, Plove should work.
-%
-%
-% A usual caveat is that Gnuplot expects forward slashes in filenames
-% and Plove supplies backslashes or vica versa (there are multiple
-% incompatible builds of Gnuplot on NT); if you suspect this might be
-% the problem, reverse the slash/backslash setting in
-% Options{\textbar}External programs.
-%
-
-
-%%
-%% Following section is obsolete and out of date, removed:
-%%
-
-%
-% \section{Hints for using Borland C++ and other compilers}
-%
-% \subsection{Building {\opp}}
-%
-% {\opp} currently doesn't support the Borland C++\index{Borland C++}.
-% This doesn't mean that the sources won't build (most probably they
-% will), but I am unable to maintain the respective makefiles.
-%
-%
-% However, the next sections contain some hints how to build simulation
-% programs once you got the libraries compiled.
-%
-%
-%
-%
-%
-% \subsection{Setting up a project file}
-%
-% What you will need to have in your project file:
-% \begin{itemize}
-%   \item{your simple module C++ sources;}
-%   \item{your NED files\index{ned!files};}
-%   \item{for each NED file, the C++ file it will compile into (the
-%       \texttt{\_n.cc} file). Place the \texttt{.ned} file under the
-%       \texttt{\_n.cc} file in the project tree hierarchy.}
-%   \item{the {\opp} libraries: \texttt{sim\_std.lib},
-%       \texttt{envir.lib}, plus \texttt{cmdenv.lib} or
-%       \texttt{tkenv.lib}, depending on which user interface you want
-%       to link in. You also need the Tcl and Tk libraries if you're
-%       using Tkenv.}
-% \end{itemize}
-%
-%
-% The project options have to be set up like this:
-% \begin{itemize}
-% \item{Compile as a 32-bit flat console application. None of the
-%     special libraries (OWL, MFC, Class Library, OCF etc) are needed.}
-% \item{You have to turn off exception handling\index{exception
-%       handling}, it conflicts with the coroutine
-%     library\index{coroutine library} somehow. In the IDE:
-%     Options{\textbar}Project --\texttt{>} C++ Options --\texttt{>}
-%     Exception Handling/RTTI --\texttt{>} clear [ ] Enable exceptions.
-%     It must be done both when compiling the libraries and when
-%     compiling simulation applications.}
-% \item{Borland C++ does not recognize the \texttt{.cc} extension as
-%     C++. You have to teach it: Options{\textbar}Tools --\texttt{>}
-%     select CppCompile --\texttt{>} Edit --\texttt{>} Advanced
-%     --\texttt{>} add the \texttt{.cc} extension to the Translate From
-%     and Default For entries. Do the same with the EditText tool.}
-% \item{You also have to teach Borland C++ how to handle \texttt{.ned}
-%     files.  Select Options{\textbar}Tools --\texttt{>} New. Fill in
-%     the dialog as follows:
-%
-% begin{verbatim}
-%   Name: NEDCompile
-%   Path: ..\..\src\nedc\nedc.exe
-%   Command Line: $NOSWAP $CAP MSG(BORL2MSG) $EDNAME
-%   Menu Text: NED Compile
-%   Help Hint: OMNeT++ NED compiler
-% end{verbatim}
-%
-%   Select Advanced, and fill in the dialog:
-% begin{verbatim}
-%   Type: Translator
-%   Translate From:.ned
-%   Translate To:.cc
-%   Default For:.ned
-% end{verbatim}
-% }
-%
-% \sloppy
-% \item{If you're going to build a LARGE model, be sure to
-%   increase the stack size\index{stack!size} in
-%   Options{\textbar}Project options{\textbar}Linker{\textbar}32-bit
-%   Linker{\textbar}Reserved stack size. The default is 0x1000000 (1MB),
-%   which is hardly enough for {\opp} simulations. Increase it to 64MB
-%   for example: 0x40000000. If the simulation exceeds the stack size
-%   configured here, you'll get nice exceptions, General Protection
-%   Faults and the like.}
-% \end{itemize}
-%
 
 
 %%% Local Variables:

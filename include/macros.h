@@ -56,18 +56,6 @@
   EXECUTE_ON_STARTUP(NAME##__channelt, channeltypes.instance()->add(new NAME(#NAME));)
 
 /**
- * DEPRECATED. This macro will only be used as long as nedc exists.
- *
- * Link type definition. The macro expands to the definition of a cChannelType object;
- * the last three arguments are pointers to functions which dynamically create cPar
- * objects and return their pointers.
- *
- * @hideinitializer
- */
-#define Define_Link(NAME,DELAY,ERROR,DATARATE) \
-  EXECUTE_ON_STARTUP(NAME##__channelt, channeltypes.instance()->add(new cLinkType(#NAME, DELAY, ERROR, DATARATE));)
-
-/**
  * Registers a mathematical function that takes 0, 1, 2 or 3 double arguments
  * and returns a double. The use of this macro allows the function to be used
  * in expressions inside NED network descriptions.

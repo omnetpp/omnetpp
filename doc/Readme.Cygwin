@@ -17,7 +17,7 @@ read the long description...
  3. download and extract OMNeT++ (the .tgz bundle)
  4. add omnetpp/bin to the PATH
  5. do the usual GNU stuff: ./configure, make
- 6. make sure nedc, gned, opp_makemake and the sample simulations work
+ 6. make sure nedtool, gned, opp_makemake and the sample simulations work
 
 There you go!
 

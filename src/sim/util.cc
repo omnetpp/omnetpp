@@ -32,7 +32,7 @@
 
 
 //==========================================================================
-// functions to support expressions compiled by nedc
+// functions to support expressions compiled by nedtool
 
 double min(double a, double b)      {return a<b ? a : b;}
 double max(double a, double b)      {return a<b ? b : a;}

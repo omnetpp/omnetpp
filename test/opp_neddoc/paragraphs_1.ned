@@ -6,7 +6,7 @@
 
 //
 // This NED files tests if paragraph boundaries are recognised properly
-// by opp_nedc.
+// by opp_neddoc.
 //
 // Paragraphs are
 // separated by

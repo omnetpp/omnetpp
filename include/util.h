@@ -81,7 +81,7 @@ SIM_API char *simtimeToStr(simtime_t t, char *dest=NULL);
 
 
 /**
- * @name Utility functions to support nedc-compiled expressions.
+ * @name Utility functions to support nedtool-compiled expressions.
  * @ingroup Functions
  */
 //@{

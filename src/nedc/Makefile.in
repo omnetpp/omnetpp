@@ -21,7 +21,7 @@ COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR)
 #
 # Targets
 #
-all: nedc nedtool
+all: nedtool
 	chmod +x opp_msgc
 	cp opp_msgc $(OMNETPP_BIN_DIR)
 

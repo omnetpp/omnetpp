@@ -114,7 +114,7 @@ AS="as"
 AR="ar cr"
 SHLIB_LD="$CXX -shared -fPIC"
 SHLIB_CFLAGS="-fPIC"
-NEDC="nedc"
+NEDC="nedtool"
 MSGC="opp_msgc"
 NEDTOOL="nedtool"
 GNED="gned"
@@ -228,7 +228,7 @@ if test "$DOXYGEN" = "not found"; then
    AC_MSG_WARN(It is available from http://www.doxygen.org/)
 fi
 
-# perl is needed for experimental nedc message subclassing
+# perl is needed for opp_msgc
 AC_ARG_VAR(PERL, The Perl interpreter)
 AC_CHECK_PROG(PERL, perl, perl, not found)
 

@@ -81,7 +81,7 @@ typedef cPar *(*ParCreateFunc)();
  *        endsimple
  *     </pre>
  *
- *  2) the nedc compiler translates the NED declaration into a
+ *  2) the nedtool compiler translates the NED declaration into a
  *     ModuleInterface...End macro and places it into the _n.cc file.
  *     <pre>
  *        ModuleInterface(Generator)
@@ -292,8 +292,8 @@ class SIM_API cModuleInterface : public cObject
  *
  * Define_Module( MySimpleModule );
  *
- * nedc automatically generates Define_Module for compound modules, but the
- * user is responsible for writing it for each simple module type.
+ * nedtool automatically generates Define_Module for compound modules, but the
+ * user is responsible for adding one for each simple module type.
  *
  * @ingroup Internals
  */

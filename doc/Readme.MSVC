@@ -41,7 +41,7 @@ package contains and the installer installs all other necessary software.
 First download the following packages:
  - Tcl/Tk
  - BLT 2.4z
- - bison/flex (only if you want to modify nedc or gned)
+ - bison/flex (only if you want to modify nedxml/nedtool or gned)
  - Perl (used by some tools)
  - libxml, libxslt
 
@@ -111,7 +111,7 @@ To delete all built files, type
 
 As the result of the compilation the following files should have been created:
 In the bin directory:
-    seedtool.exe nedc.exe gned.exe nedtool.exe, ...
+    gned.exe nedtool.exe plove.exe scalars.exe ...
 
 In the lib directory:
     sim_std.lib envir.lib cmdenv.lib tkenv.lib nedxml.lib

@@ -52,7 +52,7 @@ class SIM_API cExpression
 
 /**
  * Abstract base class for double-valued expressions. Currently
- * used by the new, nedxml-based nedc, which generates
+ * used by nedtool-generated C++ code, which contains
  * cDoubleExpression-based compiled expressions (used via cPar)
  * for e.g. submodule parameters.
  *

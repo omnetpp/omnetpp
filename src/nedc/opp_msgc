@@ -7,8 +7,6 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 # opp_msgc: supports message subclassing: compiles NED files with message
 # declarations into C++ code.
 #
-# This perl script is a temporary solution until new nedc is ready.
-#
 
 #
 # If no args, print usage

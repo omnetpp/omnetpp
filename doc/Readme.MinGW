@@ -19,7 +19,7 @@ continue reading from Introduction.
      use the short name (like C:/PROGRA~1).
   6. Then fire up the MSYS shell and type the usual GNU stuff: ./configure,
      make. If make goes through, you've made it!
-  7. Try that the sample simulations, gned, nedc and opp_makemake work.
+  7. Try that the sample simulations, gned, nedtool and opp_makemake work.
 
 If you get stuck at some step, refer to the detailed instructions below.
 

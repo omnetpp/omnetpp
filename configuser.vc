@@ -97,7 +97,7 @@ SCALARS_IF_POSSIBLE=scalars
 # This option is available at present for Tkenv, GNED, Scalars and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-EMBED_TCL_CODE=yes
+EMBED_TCL_CODE=no
 
 #
 # It is possible to compile GNED, Scalars and Plove as Windows GUI apps
@@ -207,7 +207,6 @@ RC=rc.exe
 MAKEDEPEND=$(PERL) $(OMNETPP_ROOT)/src/utils/opp_makedep -Y --objsuffix .obj --objdirtree
 
 # OMNeT++ tools
-#NEDC=$(OMNETPP_BIN_DIR)/nedc
 NEDC=$(OMNETPP_BIN_DIR)/nedtool
 MSGC=$(OMNETPP_BIN_DIR)/opp_msgc
 REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace

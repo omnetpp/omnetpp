@@ -28,7 +28,7 @@ additional directories, e.g. containing software bundled with OMNeT++.)
 The simulation system itself:
 
   omnetpp/         OMNeT++ root directory
-    bin/           OMNeT++ executables (GNED, nedc, etc.)
+    bin/           OMNeT++ executables (GNED, nedtool, etc.)
     include/       header files for simulation models
     lib/           library files
     bitmaps/       icons that can be used in network graphics

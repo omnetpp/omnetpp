@@ -1,5 +1,5 @@
 %description:
-check that nedc accepts arbitrarily long lines
+check that nedtool accepts arbitrarily long lines
 
 %file: {}.ned
 
