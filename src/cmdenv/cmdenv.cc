@@ -100,30 +100,28 @@ void TCmdenvApp::readOptions()
     }
 }
 
-void TCmdenvApp::readPerRunOptions( int run_nr )
+void TCmdenvApp::readPerRunOptions(int run_nr)
 {
-    TOmnetApp::readPerRunOptions( run_nr);
+    TOmnetApp::readPerRunOptions(run_nr);
 
     cConfiguration *cfg = getConfig();
+    const char *section = getRunSectionName(run_nr);
 
-    char section[16];
-    sprintf(section,"Run %d",run_nr);
-
-    opt_expressmode = cfg->getAsBool2( section,"Cmdenv", "express-mode", false);
-    opt_autoflush = cfg->getAsBool2( section,"Cmdenv", "autoflush", false);
-    opt_modulemsgs = cfg->getAsBool2( section,"Cmdenv", "module-messages", true );
-    opt_eventbanners = cfg->getAsBool2( section,"Cmdenv", "event-banners", true );
-    opt_eventbanner_details = cfg->getAsBool2( section,"Cmdenv", "event-banner-details", false);
-    opt_messagetrace = cfg->getAsBool2( section,"Cmdenv", "message-trace", false );
-    opt_status_frequency_ev = cfg->getAsInt2( section,"Cmdenv", "status-frequency", 100000 );
-    //opt_status_frequency_sec = cfg->getAsTime2( section,"Cmdenv", "status-frequency-interval", 5.0 );
-    opt_perfdisplay = cfg->getAsBool2( section,"Cmdenv", "performance-display", true);
+    opt_expressmode = cfg->getAsBool2(section,"Cmdenv", "express-mode", false);
+    opt_autoflush = cfg->getAsBool2(section,"Cmdenv", "autoflush", false);
+    opt_modulemsgs = cfg->getAsBool2(section,"Cmdenv", "module-messages", true);
+    opt_eventbanners = cfg->getAsBool2(section,"Cmdenv", "event-banners", true);
+    opt_eventbanner_details = cfg->getAsBool2(section,"Cmdenv", "event-banner-details", false);
+    opt_messagetrace = cfg->getAsBool2(section,"Cmdenv", "message-trace", false);
+    opt_status_frequency_ev = cfg->getAsInt2(section,"Cmdenv", "status-frequency", 100000);
+    //opt_status_frequency_sec = cfg->getAsTime2(section,"Cmdenv", "status-frequency-interval", 5.0);
+    opt_perfdisplay = cfg->getAsBool2(section,"Cmdenv", "performance-display", true);
 
     // warnings on old entries
-    if (cfg->exists2( section,"Cmdenv", "display-update"))
+    if (cfg->exists2(section,"Cmdenv", "display-update"))
          ev.printfmsg("Warning: ini file entry display-update= is obsolete, "
                       "use status-frequency= instead!");
-    if (cfg->exists2( section,"Cmdenv", "verbose-simulation"))
+    if (cfg->exists2(section,"Cmdenv", "verbose-simulation"))
          ev.printfmsg("Warning: ini file entry verbose-simulation= is obsolete, use event-banners= instead!");
 }
 
