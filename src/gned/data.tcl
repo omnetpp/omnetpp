@@ -28,7 +28,7 @@
 # addItem --
 #
 # Create an item with the given type and add it to ned().
-# Doesn't care about the 'name' attribute! Use renameItem to change that.
+# Doesn't care about the 'name' attribute!
 #
 proc addItem {type parentkey} {
     global ned ned_attr ned_attlist
@@ -134,16 +134,48 @@ puts "deleteItem: inefficient code ('foreach array names')"
 }
 
 
-# renameItem --
+# isNameLegal --
 #
-# Rename the item if possible and return the new name.
-# Note: the canvas, the window caption or the tree view is NOT updated!
+# Check that name string doesn't contain invalid chars and it is locally unique
+# Returns 0 or 1.
 #
-# Adjusts the name string to kill invalid chars and to make it locally unique.
+proc isNameLegal {key name} {
+    global ned
+
+    # check if item has a name at all
+    if ![info exist ned($key,name)] {
+        error "item $key has no name attribute"
+    }
+
+    # check for invalid chars
+    if ![regexp -- {^[a-zA-Z_][a-zA-Z0-9_]*$} $name] {
+        # contains invalid chars
+        return 0
+    }
+
+    # check if name is unique among all siblings
+    foreach siblingkey [getChildren $ned($key,parentkey)] {
+        if {$siblingkey!=$key && [info exist ned($siblingkey,name)]} {
+            if {[string compare $ned($siblingkey,name) $name]==0} {
+                # name not unique
+                return 0
+            }
+        }
+    }
+
+    # ok
+    return 1
+}
+
+
+# makeUniqueName --
+#
+# Adjusts the passed name string by killing invalid chars and making it
+# locally unique, and returns the new name.
 #
 # Returns the new name.
 #
-proc renameItem {key name} {
+proc makeUniqueName {key name} {
     global ned
 
     # check if item has a name at all
@@ -176,12 +208,7 @@ proc renameItem {key name} {
         }
     }
 
-    # rename
-    set ned($key,name) "$name$suffixneeded"
-
-    #puts "dbg: renameItem: name=$ned($key,name)"
-
-    return $ned($key,name)
+    return "$name$suffixneeded"
 }
 
 

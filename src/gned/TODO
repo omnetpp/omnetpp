@@ -30,8 +30,6 @@ Drawing:
   over the menu that popped up, the half-cooked connection arrow will stay
   on the canvas
 - drag&drop doesn't obey "snap to grid" setting
-- rename: cannot delete "1" from "Module1" if there's a "Module2"
-- add 'rename' to popup menu
 
 Load/save:
 - SaveAll feature [from Niko]
@@ -65,7 +63,6 @@ General:
 - different vertical toolbar when changing from graphics to NED view;
   on that toolbar: Find, Replace
 - scrollbar for the tabs below if there are too many windows open
-- speed up data structure, get rid of "foreach i [array names ned ...]" statements...
 - it's possible to exit GNED while editing canvas(es) in text mode which have
   unsaved changes!!!
 - open/save dialog should remember the directory ***DONE***

@@ -221,3 +221,5 @@ Aug 27, 2000
  - drag&drop creation of submodules now creates unique names (changed addItem,
    renameItem procs)
  - deleteItem proc improved
+ - renaming improved; "rename..." added to canvas popup menu
+

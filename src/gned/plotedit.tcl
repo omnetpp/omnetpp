@@ -146,6 +146,7 @@ proc popupMenu {c x y} {
       {command -command "editDrawOptions $key" -label {Drawing options...} -underline 0}
       {command -command "displayCodeForItem $key" -label {Show NED code...} -underline 0}
       {separator}
+      {command -command "renameOnCanvas $key" -label {Rename...} -underline 0}
       {command -command "deleteItem $key" -label {Delete} -underline 1}
     } {
        eval .popup add $i
@@ -241,6 +242,24 @@ proc deleteSelected {} {
         }
     }
 }
+
+
+# renameOnCanvas --
+#
+# Called when the user renames an item on the canvas.
+#
+proc renameOnCanvas {key} {
+    global gned canvas ned
+
+    puts "TBD: check if item is on currently open canvas"
+
+    set canv_id $gned(canvas_id)
+    set c $canvas($canv_id,canvas)
+    set cid $ned($key,label-cid)
+
+    editCanvasLabel $c $cid "_doRenameItem $key"
+}
+
 
 # resetModuleBounds --
 #
@@ -647,8 +666,7 @@ proc selectOrMoveEnd {c x y} {
        if {$ned($key,type)=="module" || $ned($key,type)=="submod"} {
           set cid [$c find withtag current]
           if {$cid==$ned($key,label-cid)} {
-             # FIXME: probably we shouldn't call renameItem directly
-             editCanvasLabel $c $cid "_renameOnCanvas $key"
+             editCanvasLabel $c $cid "_doRenameItem $key"
           }
        }
     }
@@ -999,34 +1017,36 @@ proc _getCenterAndSize {c key} {
 }
 
 
-# _renameOnCanvas --
+# _doRenameItem --
 #
 # Called when the user renames an item on the canvas.
 #
-proc _renameOnCanvas {key name} {
+proc _doRenameItem {key name} {
     global ned
 
     if {$ned($key,type)=="submod"} {
         # parse name: maybe looks like name[size]
         set size ""
-        set newname $name
-        regexp -- {(.*)\[(.*)\] *} $newname dummy newname size
+        regexp -- {^(.*)\[(.*)\] *$} $name dummy name size
 
-        # rename item and set size
-        set newname [renameItem $key $newname]
-        set ned($key,vectorsize) $size
-        if {$size!=""} {
-            set newname "$newname\[$size\]"
+        if {[isNameLegal $key $name]} {
+           # rename item and set size
+           set ned($key,name) $name
+           set ned($key,vectorsize) $size
+        } else {
+           tk_messageBox -type ok -title GNED -icon warning \
+               -message "'$name' is not a legal or unique name."
         }
-    } elseif {$ned($key,type)=="module"} {
-        set newname [renameItem $key $name]
-    } else {
-        error "unexpected type $ned($key,type)"
-    }
 
-    if [string compare $name $newname] {
-        tk_messageBox -type ok -title GNED -icon warning \
-            -message "The name you typed was modified to '$newname' to make it legal and unique."
+    } elseif {[info exist ned($key,name)]} {
+        if {[isNameLegal $key $name]} {
+           set ned($key,name) $name
+        } else {
+           tk_messageBox -type ok -title GNED -icon warning \
+               -message "'$name' is not a legal or unique name."
+        }
+    } else {
+        error "item doesn't have a name attribute"
     }
 
     # update all display elements
@@ -1034,6 +1054,13 @@ proc _renameOnCanvas {key name} {
         adjustWindowTitle
     }
     updateTreeManager
+
+    # return current name
+    if {$ned($key,type)=="submod" && $ned($key,vectorsize)!=""} {
+        set newname "$ned($key,name)\[$ned($key,vectorsize)\]"
+    } else {
+        set newname $ned($key,name)
+    }
     return $newname
 }
 

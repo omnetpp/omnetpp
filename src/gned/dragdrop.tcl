@@ -133,7 +133,8 @@ proc createSubmoduleOnCanvas {typekey {canvx {}} {canvy {}}} {
     if [regexp {^[A-Z][a-z0-9_]} $name] {
         set name "[string tolower [string range $name 0 0]][string range $name 1 end]"
     }
-    renameItem $key $name
+    set newname [makeUniqueName $key $name]
+    set ned($key,name) $newname
 
     # add parameters
     set parskey [getChildrenWithType $typekey params]
