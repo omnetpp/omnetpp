@@ -1058,7 +1058,6 @@ int getStringHashCode_cmd(ClientData, Tcl_Interp *interp, int argc, const char *
 int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   TOmnetTkApp *app = (TOmnetTkApp *)ev.app;
 
    const char *dispstr = argv[1];
    if (0==strcmp(argv[2], "getTagArg"))
