@@ -173,7 +173,7 @@ void TCmdenvApp::run()
             makeOptionsEffective();
             if (simulation.ok())
             {
-               simulation.startRun();
+               startRun();
 
                if (simulation.ok())
                {
@@ -181,7 +181,7 @@ void TCmdenvApp::run()
                    simulate();
                }
                if (simulation.normalTermination() || sigint_recv) simulation.callFinish();
-               simulation.endRun();
+               endRun();
             }
          }
 
