@@ -116,6 +116,9 @@ proc create_omnetpp_window {} {
       {command -command editCopy   -label {Copy} -accel {Ctrl-C}  -underline 0}
       {command -command editPaste  -label {Paste} -accel {Ctrl-V}  -underline 0}
       {separator}
+      {command -command editFind    -label {Find...} -accel {Ctrl-F} -underline 0}
+      {command -command editReplace -label {Find/Replace...} -accel {Ctrl-H} -underline 5}
+      {separator}
       {command -command editDelete -label {Delete}  -accel {Delete} -underline 0}
       {separator}
       {command -command editCheck    -label {Check consistency} -underline 0}

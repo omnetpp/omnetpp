@@ -38,6 +38,7 @@ files1=parsened.tcl
 files1=Plotedit.tcl
 files1=props.tcl
 files1=Switchvi.tcl
+files1=textedit.tcl
 files1=tree.tcl
 files1=treemgr.tcl
 files1=Widgets.tcl

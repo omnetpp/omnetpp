@@ -173,6 +173,22 @@ proc fileExit {} {
    opp_exit
 }
 
+proc editFind {} {
+   global gned canvas
+
+   set canv_id $gned(canvas_id)
+   if {$canvas($canv_id,mode)=="graphics"} return
+   findReplaceDialog $canvas($canv_id,textedit) find
+}
+
+proc editReplace {} {
+   global gned canvas
+
+   set canv_id $gned(canvas_id)
+   if {$canvas($canv_id,mode)=="graphics"} return
+   findReplaceDialog $canvas($canv_id,textedit) replace
+}
+
 proc editCut {} {
 
    tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
