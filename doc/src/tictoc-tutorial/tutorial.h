@@ -27,6 +27,7 @@ the original TicToc tutorial from Ahmet Sekercioglu (Monash University).
   - @ref part2
   - @ref part3
   - @ref part4
+  - @ref part5
 
 NEXT: @ref part1
 */
@@ -640,6 +641,16 @@ The interval between messages should be a module parameter, returning
 exponentially distributed random numbers.
 </i>
 
+NEXT: @ref part4
+*/
+
+--------------------------------------------------------------------------
+
+/**
+@page part4 4. Adding statistics collection
+
+PREV: @ref part3 UP: @ref contents
+
 
 @section s11 Step 11: Displaying the number of packets sent/received
 
@@ -681,15 +692,6 @@ And the result looks like this:
 
 Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
 
-NEXT: @ref part4
-*/
-
---------------------------------------------------------------------------
-
-/**
-@page part4 4. Collecting and analysing statistics
-
-PREV: @ref part3 UP: @ref contents
 
 @section s12 Step 12: Adding statistics collection
 
@@ -763,8 +765,30 @@ the finish() functions to run and data to be written into omnetpp.sca.
 
 Sources: @ref tictoc12.ned, @ref tictoc12.msg, @ref txc12.cc, @ref omnetpp.ini
 
+NEXT: @ref part5
+*/
+
+--------------------------------------------------------------------------
+
+/**
+@page part5 5. Visualizing the results with Plove and Scalars
+
+PREV: @ref part4 UP: @ref contents
+
 
 @section scalars Scalar statistics
+
+The Scalars tool can be used to visualize the contents of the omnetpp.sca file.
+It can draw bar charts, x-y plots (e.g. throughput vs offered load), or
+export data via the clipboard for more detailed analysis into spreadsheets
+or other programs.
+
+\code
+$ scalars omnetpp.sca
+\endcode
+
+By default
+
 
 <img src="sca1.gif">
 
@@ -772,6 +796,12 @@ Sources: @ref tictoc12.ned, @ref tictoc12.msg, @ref txc12.cc, @ref omnetpp.ini
 
 
 @section plove Plotting the output vectors
+
+Output vector files can be visualized with Plove. Try the following:
+
+\code
+$ plove omnetpp.vec
+\endcode
 
 <img src="plove1.gif">
 
