@@ -759,7 +759,7 @@ cMessage *cSimpleModule::cancelEvent(cMessage *msg)
             {opp_error("cancelEvent(): message pointer is NULL");return NO(cMessage);}
         if (!msg->isScheduled())
         {
-            if (putAsideQueue->contains(msg))
+            if (putAsideQueue.contains(msg))
                 {opp_error("cancelEvent(): message `%s' is in the put-aside queue",
                  msg->name());return NULL;}
             else
