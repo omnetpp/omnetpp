@@ -533,14 +533,6 @@ double cNEDNetworkBuilder::evalFunction(FunctionNode *node, cModule *parentmodp,
         ASSERT(op1);
         const char *name = op1->getName();
 
-        // find among local module gates
-        if (submodp)
-        {
-            cGate *g = submodp->gate(name);
-            if (g)
-                return g->size();
-        }
-
         if (parentmodp)  // in network params, parentmodp==NULL
         {
             // if not found, find among submodules

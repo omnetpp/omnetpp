@@ -476,7 +476,8 @@ void cSimpleModule::wait(simtime_t t)
     cMessage *newmsg = simulation.msgQueue.getFirst();
 
     if (newmsg!=timeoutmsg)
-        throw new cException("wait(): message arrived during wait: (%s)%s",
+        throw new cException("wait(): message arrived during wait: (%s)%s; "
+                             "if this is not an error, use waitAndEnqueue() instead of wait()",
                              newmsg->className(), newmsg->fullName());
 }
 
