@@ -64,9 +64,8 @@ proc get_submod_coords {c tag} {
 
    set id [$c find withtag $tag]
    if {$id==""} {error "$tag not found"}
-   return [$c bbox $id]
+   #return [$c bbox $id]  -- this could be faster, but somehow doesn't work properly with senddirect animation
 
-   # original code was as below, but bbox seems to work OK, too
    if {[$c type $id]=="image"} {
        set pos [$c coords $id]
        set x [lindex $pos 0]
