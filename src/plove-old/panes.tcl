@@ -110,6 +110,12 @@ proc loadVectorFile {fname} {
 
     global g vec config vec
 
+    if {![file readable $fname] || [file type $fname]=="directory"} {
+        tk_messageBox -icon warning -type ok -title Error \
+             -message "File $fname doesn't exist or there's no read permission."
+        return
+    }
+
     busy "Running: grep \"^vector \" \"$fname\""
 
     set zipped [string match "*.gz" $fname]

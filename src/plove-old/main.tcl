@@ -120,7 +120,7 @@ proc createMenubar {w} {
       {command -command loadVectorConfig -label {Open vector config...} -underline 0}
       {command -command saveVectorConfig -label {Save vector config...} -underline 0}
       {separator}
-      {command -command saveScript -label {Save shell script...} -underline 6}
+      {command -command saveScript -label {Save shell script or batch file...} -underline 6}
       {command -command savePicture -label {Save picture...} -underline 5}
       {separator}
       {command -command fileExit -label Exit -underline 1}
@@ -181,7 +181,8 @@ proc createMenubar {w} {
 
     # Help menu
     foreach i {
-      {command -command helpAbout -label {About OMNeT++ Plove...} -underline 0}
+      {command -command helpAbout -label {About Plove...} -underline 0}
+      {separator}
       {command -command helpReadme -label {README...} -underline 0}
     } {
       eval $w.helpmenu$m add $i

@@ -18,14 +18,12 @@ proc helpAbout {} {
     tk_messageBox -title {About Plove} \
                   -icon info -type ok \
                   -message {
-OMNeT++ Plove
+Plove 2.1p1
+Part of the OMNeT++ Discrete Event Simulator
 
-(c) Andras Varga, 1992-2001
+(C) 1997-2001 Andras Varga
 
-Tech. Univ. Budapest
-Dept. of Telecommunications\
-
-NO WARRANTY -- see license.\
+NO WARRANTY. See Help|Release notes and the 'license' file for details.
     }
 }
 
