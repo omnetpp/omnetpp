@@ -27,11 +27,14 @@ E                       [Ee][+-]?{D}+
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+/*
+ * IMPORTANT: This file is shared between NEDC and GNED.
+ * The two copies must be kept identical!
+ */
+
 
 #if defined(__BORLANDC__) && !defined(__cplusplus)
 #error Compile as C++ source!
-/*-- You'll also need to remove the stupid '#include <osfcn.h>' line from
-     the generated lexyy.c --VA */
 #endif
 
 #include <string.h>
@@ -41,20 +44,25 @@ E                       [Ee][+-]?{D}+
 #pragma warn -rch  /*turn off tons of 'Unreachable code' warnings --VA */
 #endif
 
-/* define YYSTYPE to 'char *'; must be consistent in ebnf.lex/ebnf.y --VA */
-#define YYSTYPE   char *
-
-#ifdef __MSDOS__
-#include "ebnf_tab.h"
-#else
-#include "ebnf.tab.h"
+#ifdef _MSC_VER
+#include <io.h>
+#define isatty _isatty
 #endif
+
+#include "ebnf.h"
+#include "ebnf.tab.h"
+#include "ebnfcfg.h"  /* for NEDC() or GNED() */
 
 #ifdef DOING_NEDC
 #include "jar_func.h"
 #endif
+#ifdef DOING_GNED
+#include "parsened.h"
+#endif
+
 
 extern YYSTYPE yylval;
+extern YYLTYPE yylloc;
 
 void comment (void);
 void count (void);
@@ -63,9 +71,6 @@ void count (void);
         sprintf (yyfailure, "! %s", m); \
         yyerror (""); \
         yyfailure [0] = 0;
-
-/* beware: this typedef is replicated in ebnf.y */
-typedef struct {int li; int co;} LineColumn;
 
 /* Vars updated by count(): */
 LineColumn pos,prevpos;
@@ -133,20 +138,25 @@ char textbuf[256], lasttextbuf[256] = "";
 
 
 {L}({L}|{D})*           { count();
-                                yylval = strdup (yytext);
+                                NEDC(yylval = strdup(yytext);)
+                                GNED(yylval = 0;)
                                 return (NAME); }
 {D}+                    { count();
-                                yylval = strdup (yytext);
+                                NEDC(yylval = strdup(yytext);)
+                                GNED(yylval = 0;)
                                 return (INTCONSTANT); }
 {D}+{E}                 { count();
-                                yylval = strdup (yytext);
+                                NEDC(yylval = strdup(yytext);)
+                                GNED(yylval = 0;)
                                 return (REALCONSTANT); }
 {D}*"."{D}+({E})?       { count();
-                                yylval = strdup (yytext);
+                                NEDC(yylval = strdup(yytext);)
+                                GNED(yylval = 0;)
                                 return (REALCONSTANT); }
 
 \"[^\"]*\"              { count();
-                                yylval = strdup (yytext);
+                                NEDC(yylval = strdup(yytext);)
+                                GNED(yylval = 0;)
                                 return (STRING); }
 
 ";"                     { count(); return (';'); }
@@ -216,7 +226,7 @@ int yywrap(void)
 void comment(void)
 {
         char c;
-        while ((c = input()) != '\n' && c != 0);
+        while ((c = input())!='\n' && c!=0);
         unput(c);
 }
 
@@ -251,6 +261,11 @@ void count(void)
                 }
         }
         /* printf("li=%d co=%d\n", pos.li, pos.co); good for debugging... */
+        yylloc.first_line   = prevpos.li;
+        yylloc.first_column = prevpos.co;
+        yylloc.last_line    = pos.li;
+        yylloc.last_column  = pos.co;
+
 }
 
 /***************************************************
@@ -263,3 +278,4 @@ void jar_yyrestart(FILE *_yyin)
               yyrestart( _yyin );
 #endif
 }
+

@@ -13,11 +13,13 @@ OBJS=ebnf.tab.obj lex.yy.obj jar.obj jar_lib.obj jar_mod.obj jar_expr.obj jar_me
 #
 # Targets
 #
+nedc : nedc.exe
+
 nedc.exe: $(OBJS)
-	$(CC) /Fo"nedc.exe" $(LDFLAGS) $(OBJS)
+	$(LINK) /out:"nedc.exe" $(OBJS) $(LDFLAGS)
 
 lex.yy.obj: jar_func.h lex.yy.c
-	$(CXX) $(COPTS) /c /Tp lex.yy.c
+	$(CXX) /I "." $(COPTS) /c /Tp lex.yy.c
 
 ebnf.tab.obj: jar_func.h ebnf.tab.h ebnf.tab.c
 	$(CXX) $(COPTS) /c /Tp ebnf.tab.c

@@ -10,19 +10,27 @@
 /*      Jan Heijmans                               */
 /*      Alex Paalvast                              */
 /*      Robert van der Leij                        */
+/*        (JAR = Jan Alex Robert)                  */
 /*  Rewritten                                      */
-/*      Andras Varga 1996-97                       */
+/*      Andras Varga 1996-99                       */
+/*  Modifications                                  */
+/*      Lencse Gabor 1998                          */
 /*                                                 */
 /***************************************************/
 
 /*--------------------------------------------------------------*
-  Copyright (C) 1992,98 Andras Varga
+  Copyright (C) 1992,99 Andras Varga
   Technical University of Budapest, Dept. of Telecommunications,
   Stoczek u.2, H-1111 Budapest, Hungary.
 
   This file is distributed WITHOUT ANY WARRANTY. See the file
-  `terms' for details on this and other legal matters.
+  `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
+
+/*
+ * IMPORTANT: This file is shared between NEDC and GNED.
+ * The two copies must be kept identical!
+ */
 
 %token INCLUDE SIMPLE
 %token CHANNEL DELAY ERROR DATARATE
@@ -104,6 +112,7 @@
 
 #include <stdio.h>
 #include <malloc.h>         /* for alloca() */
+#include "ebnf.h"           /* selects between NEDC and GNED */
 #include "ebnfcfg.h"        /* selects between NEDC and GNED */
 
 #define YYDEBUG 1           /* allow debugging */
@@ -114,14 +123,6 @@
 #include <string.h>         /* YYVERBOSE needs it */
 #endif
 
-
-/* define YYSTYPE to 'char *'; must be consistent in ebnf.lex/ebnf.y --VA */
-#define YYSTYPE   char *
-
-/* beware: this typedef is replicated in ebnf.lex */
-typedef struct {int li; int co;} LineColumn;
-
-extern LineColumn pos,prevpos;
 
 int yylex (void);
 void yyrestart(FILE *);
@@ -231,7 +232,8 @@ import
                 {GNED( IMPORTS_KEY = np->create("imports",NEDFILE_KEY);
                        setComments(IMPORTS_KEY,@1); )}
           filenames
-                {GNED( setTrailingComment(IMPORTS_KEY,@3); )}
+                {/* GNED( setTrailingComment(IMPORTS_KEY,@3); )
+                  * comment already stored with last filename */}
         ;
 
 filenames
@@ -748,7 +750,7 @@ loopconnection
                        in_loop=1; setComments(FORLOOP_KEY,@1); )}
           loopvarlist DO notloopconnections ENDFOR /* --LG*/
                 {NEDC( end_for (); ) 
-                 GNED( in_loop=0; setTrailingComment(FORLOOP_KEY,@7); )}
+                 GNED( in_loop=0; setTrailingComment(FORLOOP_KEY,@6); )}
         ;
 
 loopvarlist
