@@ -95,7 +95,7 @@ std::string HTTPServer::getContentFor(const char *uri)
     // not in cache -- load and cache it
     std::string fname = std::string("htdocs/")+(strcmp(uri,"/")==0 ? "index.html" : uri);
 #ifdef _MSC_VER
-    for (int i=0; i<fname.length(); i++)
+    for (unsigned int i=0; i<fname.length(); i++)
         if (fname.at(i)=='/')
             fname.at(i) = '\\';
 #endif
