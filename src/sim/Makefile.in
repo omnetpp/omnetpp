@@ -4,7 +4,7 @@
 CXX=@CXX@
 AS=@AS@
 AR=@AR@
-MAKE_SO=@MAKE_SO@
+SHLIB_LD=@SHLIB_LD@
 
 CFLAGS=@CFLAGS@
 
@@ -14,7 +14,11 @@ OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
 
 PVM_INCL_PATH=@PVM_INCL_PATH@
 
+# LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
 LIB_SUFFIX=@LIB_SUFFIX@
+
+A_LIB_SUFFIX=@A_LIB_SUFFIX@
+SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 
 #
 # Local definitions
@@ -42,17 +46,19 @@ sim_std : libsim_std.$(LIB_SUFFIX)
 
 sim_pvm : libsim_pvm.$(LIB_SUFFIX)
 
-libsim_std.a : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
-	$(AR) libsim_std.a $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+libsim_std$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+	$(AR) libsim_std$(A_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+	$(RANLIB) libsim_std$(A_LIB_SUFFIX)
 
-libsim_std.so : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
-	$(MAKE_SO) libsim_std.so $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+libsim_std$(SO_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+	$(SHLIB_LD) -o libsim_std$(SO_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 
-libsim_pvm.a : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
-	$(AR) libsim_pvm.a $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+libsim_pvm$(A_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+	$(AR) libsim_pvm$(A_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+	$(RANLIB) libsim_pvm$(A_LIB_SUFFIX)
 
-libsim_pvm.so : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
-	$(MAKE_SO) libsim_pvm.so $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+libsim_pvm$(SO_LIB_SUFFIX) : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+	$(SHLIB_LD) -o libsim_pvm$(SO_LIB_SUFFIX) $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 
 ccor.o : ccor.cc
 	$(CXX) -c $(COPTS) ccor.cc
@@ -166,7 +172,7 @@ depend:
 	makedepend -Y -I. -fmakefile.in -- *.cc
 
 clean:
-	rm -f *.o libsim_std.a libsim_std.so libsim_pvm.a libsim_pvm.so
+	rm -f *.o libsim_std$(A_LIB_SUFFIX) libsim_std$(SO_LIB_SUFFIX) libsim_pvm$(A_LIB_SUFFIX) libsim_pvm$(SO_LIB_SUFFIX)
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -7,6 +7,7 @@ YACC=@YACC@
 LEX=@LEX@
 
 CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
 
 OMNETPP_ROOT=@OMNETPP_ROOT@
 OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
@@ -31,7 +32,7 @@ OBJS = gned.o tklib.o arrow.o ebnf.tab.o lex.yy.o parsened.o disp.o nedfile.o
 default: @GNED_IF_POSSIBLE@
 
 gned : $(OBJS)
-	$(LD) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
+	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
 
 gned.o : gned.cc
 	$(CXX) -c $(COPTS) -DOMNETPP_GNED_DIR=\"$(OMNETPP_GNED_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" gned.cc

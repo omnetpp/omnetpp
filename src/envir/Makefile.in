@@ -3,17 +3,21 @@
 #
 CXX=@CXX@
 AR=@AR@
-MAKE_SO=@MAKE_SO@
+SHLIB_LD=@SHLIB_LD@
 
 OMNETPP_ROOT=@OMNETPP_ROOT@
 OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
 
-USE_DLOPEN=@USE_DLOPEN@
+CFLAGS=@CFLAGS@
 
+# LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
 LIB_SUFFIX=@LIB_SUFFIX@
 
-CFLAGS=@CFLAGS@
+A_LIB_SUFFIX=@A_LIB_SUFFIX@
+SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
+
+USE_DLOPEN=@USE_DLOPEN@
 
 #
 # Local definitions
@@ -27,11 +31,12 @@ OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o slaveapp.o seeds.o patmatch.o
 #
 all : libenvir.$(LIB_SUFFIX)
 
-libenvir.a : $(OBJS)
-	$(AR) libenvir.a $(OBJS)
+libenvir$(A_LIB_SUFFIX) : $(OBJS)
+	$(AR) libenvir$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) libenvir$(A_LIB_SUFFIX)
 
-libenvir.so : $(OBJS)
-	$(MAKE_SO) libenvir.so $(OBJS)
+libenvir$(SO_LIB_SUFFIX) : $(OBJS)
+	$(SHLIB_LD) -o libenvir$(SO_LIB_SUFFIX) $(OBJS)
 
 args.o : args.cc args.h
 	$(CXX) -c $(COPTS) args.cc
@@ -62,7 +67,7 @@ depend:
 	makedepend -Y -I. -I../sim -fmakefile.in -- *.cc
 
 clean:
-	rm -f *.o libenvir.a libenvir.so
+	rm -f *.o libenvir$(A_LIB_SUFFIX) libenvir$(SO_LIB_SUFFIX)
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

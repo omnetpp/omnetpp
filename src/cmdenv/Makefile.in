@@ -3,7 +3,7 @@
 #
 CXX=@CXX@
 AR=@AR@
-MAKE_SO=@MAKE_SO@
+SHLIB_LD=@SHLIB_LD@
 
 CFLAGS=@CFLAGS@
 
@@ -11,7 +11,11 @@ OMNETPP_ROOT=@OMNETPP_ROOT@
 OMNETPP_SRC_DIR=@OMNETPP_SRC_DIR@
 OMNETPP_INCL_PATH=@OMNETPP_INCL_PATH@
 
+# LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
 LIB_SUFFIX=@LIB_SUFFIX@
+
+A_LIB_SUFFIX=@A_LIB_SUFFIX@
+SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 
 #
 # Local definitions
@@ -27,11 +31,12 @@ OBJS = cmdenv.o enumstr.o heap.o
 #
 all: libcmdenv.$(LIB_SUFFIX)
 
-libcmdenv.a : $(OBJS)
-	$(AR) libcmdenv.a $(OBJS)
+libcmdenv$(A_LIB_SUFFIX) : $(OBJS)
+	$(AR) libcmdenv$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) libcmdenv$(A_LIB_SUFFIX)
 
-libcmdenv.so : $(OBJS)
-	$(MAKE_SO) libcmdenv.so $(OBJS)
+libcmdenv$(SO_LIB_SUFFIX) : $(OBJS)
+	$(SHLIB_LD) -o libcmdenv$(SO_LIB_SUFFIX) $(OBJS)
 
 cmdenv.o : cmdenv.cc
 	$(CXX) -c $(COPTS) cmdenv.cc
@@ -47,7 +52,7 @@ depend:
 	makedepend -Y -I. -I../envir -I../sim -fmakefile.in -- *.cc
 
 clean:
-	rm -f *.o libcmdenv.a libcmdenv.so
+	rm -f *.o libcmdenv$(A_LIB_SUFFIX) libcmdenv$(SO_LIB_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

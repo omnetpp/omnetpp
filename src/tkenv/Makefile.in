@@ -3,7 +3,7 @@
 #
 CXX=@CXX@
 AR=@AR@
-MAKE_SO=@MAKE_SO@
+SHLIB_LD=@SHLIB_LD@
 
 CFLAGS=@CFLAGS@
 
@@ -14,7 +14,11 @@ OMNETPP_BITMAP_PATH=@OMNETPP_BITMAP_PATH@
 
 TK_INCL_PATH=@TK_INCL_PATH@
 
+# LIB_SUFFIX is either A_LIB_SUFFIX or SO_LIB_SUFFIX
 LIB_SUFFIX=@LIB_SUFFIX@
+
+A_LIB_SUFFIX=@A_LIB_SUFFIX@
+SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 
 #
 # Local definitions
@@ -41,11 +45,12 @@ default: @TKENV_IF_POSSIBLE@
 
 all : libtkenv.$(LIB_SUFFIX)
 
-libtkenv.a : $(OBJS)
-	$(AR) libtkenv.a $(OBJS)
+libtkenv$(A_LIB_SUFFIX) : $(OBJS)
+	$(AR) libtkenv$(A_LIB_SUFFIX) $(OBJS)
+	$(RANLIB) libtkenv$(A_LIB_SUFFIX)
 
-libtkenv.so : $(OBJS)
-	$(MAKE_SO) libtkenv.so $(OBJS)
+libtkenv$(SO_LIB_SUFFIX) : $(OBJS)
+	$(SHLIB_LD) -o libtkenv$(SO_LIB_SUFFIX) $(OBJS)
 
 tkapp.o : tkapp.cc
 	$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR=\"$(OMNETPP_TKENV_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc
@@ -90,7 +95,7 @@ depend:
 	makedepend -Y -I. -I../envir -I../sim -fmakefile.in -- *.cc
 
 clean:
-	rm -f *.o libtkenv.a libtkenv.so tcl2c
+	rm -f *.o libtkenv$(A_LIB_SUFFIX) libtkenv$(SO_LIB_SUFFIX) tcl2c
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

@@ -42,10 +42,11 @@ AC_PROG_LEX
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_RANLIB
+AR="ar cr"
+SHLIB_LD="gcc -shared"
 
-MAKE_SO="gcc -shared -o"
-LD=gcc
-AR="ar rs"
+A_LIB_SUFFIX='.a'
+SO_LIB_SUFFIX='.so'
 
 #----------------------
 # Checks for libraries.
@@ -127,13 +128,10 @@ OMNETPP_BITMAP_PATH='$(OMNETPP_ROOT)/bitmaps'
 OMNETPP_INCL_PATH='-I$(OMNETPP_SRC_DIR)/sim'
 OMNETPP_LIB_PATH='-L$(OMNETPP_ROOT)/lib'
 
-#
-# a=static, so=shared libraries.
-#  If you change this setting, remember to delete the other set of libraries
-#  (or at least the soft links from lib/).
-#
-# LIB_SUFFIX='so'
-LIB_SUFFIX='a'
+# If you change this setting, remember to delete the other set of libraries
+# (or at least the soft links from lib/).
+LIB_SUFFIX='$(A_LIB_SUFFIX)'
+#LIB_SUFFIX='$(SO_LIB_SUFFIX)'
 
 #----------------------
 # Compile options. Use -g for debugging, -O3... for speed.
@@ -175,10 +173,13 @@ AC_SUBST(CXX)
 AC_SUBST(NEDC)
 AC_SUBST(AS)
 AC_SUBST(AR)
-AC_SUBST(MAKE_SO)
-AC_SUBST(LD)
+AC_SUBST(RANLIB)
+AC_SUBST(SHLIB_LD)
 
+AC_SUBST(A_LIB_SUFFIX)
+AC_SUBST(SO_LIB_SUFFIX)
 AC_SUBST(LIB_SUFFIX)
+
 AC_SUBST(USE_DLOPEN)
 AC_SUBST(TV_INCL_PATH)
 AC_SUBST(TV_LIBS)

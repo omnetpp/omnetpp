@@ -2,14 +2,15 @@
 # variables set by `configure':
 #
 CXX=@CXX@
-LD=@LD@
+CC=@CC@
 
 CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
 
 COPTS=$(CFLAGS)
 
 seedtool : seedtool.o
-	$(LD) seedtool.o -o seedtool
+	$(CC) $(LDFLAGS) seedtool.o -o seedtool
 
 seedtool.o : seedtool.cc
 	$(CXX) -c $(COPTS) seedtool.cc

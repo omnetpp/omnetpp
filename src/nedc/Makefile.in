@@ -7,14 +7,20 @@ YACC=@YACC@
 LEX=@LEX@
 
 CFLAGS=@CFLAGS@
+LDFLAGS=@LDFLAGS@
 
+#
+# Local definitions
+#
 COPTS=$(CFLAGS)
+
+OBJS=ebnf.tab.o lex.yy.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o
 
 #
 # Targets
 #
-nedc: ebnf.tab.o lex.yy.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o
-	$(LD) lex.yy.o ebnf.tab.o jar.o jar_lib.o jar_mod.o jar_expr.o jar_mem.o -o nedc
+nedc: $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) -o nedc
 
 lex.yy.o: jar_func.h lex.yy.c
 	$(CXX) -c $(COPTS) lex.yy.c
