@@ -158,6 +158,7 @@ pvm/pvmmod.o : pvm/pvmmod.cc
 
 depend:
 	makedepend -Y -I. -- *.cc
+	makedepend -Y -I. -fmakefile.in -- *.cc
 
 clean:
 	rm -f *.o libsim_std.a libsim_std.so libsim_pvm.a libsim_pvm.so

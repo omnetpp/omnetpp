@@ -66,6 +66,7 @@ lex.yy.c: ebnf.lex
 
 depend:
 	makedepend -Y -I. -- *.c *.cc
+	makedepend -Y -I. -fmakefile.in -- *.c *.cc
 
 clean:
 	rm -f *.o lex.yy.c ebnf.tab.c ebnf.tab.h gned

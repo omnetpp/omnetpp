@@ -16,6 +16,7 @@ seedtool.o : seedtool.cc
 
 depend:
 	makedepend -Y -I. -- *.cc
+	makedepend -Y -I. -fmakefile.in -- *.cc
 
 clean:
 	rm -f *.o seedtool

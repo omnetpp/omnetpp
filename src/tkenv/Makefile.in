@@ -80,6 +80,7 @@ tcl2c: tcl2c.c
 
 depend:
 	makedepend -Y -I. -I../envir -I../sim -- *.cc
+	makedepend -Y -I. -I../envir -I../sim -fmakefile.in -- *.cc
 
 clean:
 	rm -f *.o libtkenv.a libtkenv.so tcl2c

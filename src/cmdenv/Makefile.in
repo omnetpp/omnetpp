@@ -44,6 +44,7 @@ heap.o : heap.cc
 
 depend:
 	makedepend -Y -I. -I../envir -I../sim -- *.cc
+	makedepend -Y -I. -I../envir -I../sim -fmakefile.in -- *.cc
 
 clean:
 	rm -f *.o libcmdenv.a libcmdenv.so

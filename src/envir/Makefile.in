@@ -59,6 +59,7 @@ patmatch.o : patmatch.cc
 
 depend:
 	makedepend -Y -I. -I../sim -- *.cc
+	makedepend -Y -I. -I../sim -fmakefile.in -- *.cc
 
 clean:
 	rm -f *.o libenvir.a libenvir.so
