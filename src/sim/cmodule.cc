@@ -634,8 +634,12 @@ cSimpleModule::~cSimpleModule()
     // the `members' list should be empty by the time we get here
     // timeoutmsg is deleted from cObject destructor (or by the message queue)
 
+    // delete putaside queue
     putAsideQueue.clear();
-    locals.destructChildren();
+
+    // clean up user's objects: dispose of all objects in 'locals' list.
+    discardLocals();
+
     clearHeap();
     delete coroutine;
 }
@@ -698,6 +702,30 @@ void cSimpleModule::error(const char *fmt...) const
     va_end(va);
 
     throw new cException(eUSER,buf);
+}
+
+void cSimpleModule::discardLocals()
+{
+    // Called when cleaning up a simple module after simulation. Its job is
+    // to delete objects (now garbage) owned by the simple module, and destruct
+    // (via calling dtor) objects left on the coroutine stack.
+    //
+    // Actual method of "disposing of" an object depends on the storage class of the object:
+    // - dynamic (allocated on the heap): operator delete
+    // - auto (allocated on the stack, i.e. it is a local variable of activity()): direct destructor call
+    // - static (global variable): setOwner(NULL) which makes the object join its default owner
+    //
+    while (cIterator(locals)())
+    {
+       cObject *obj = cIterator(locals)();
+       stor = obj->storage();
+       if (stor == 'D')
+          delete obj;
+       else if (stor == 'A')
+          obj->destruct();
+       else  /* stor == 'S' */
+          obj->setOwner( NULL );
+    }
 }
 
 void *cSimpleModule::memAlloc(size_t m)

@@ -295,7 +295,7 @@ void cArray::clear()
     for (int i=0; i<=last; i++)
     {
         if (vect[i] && vect[i]->owner()==this)
-           dealloc( vect[i] );
+           discard( vect[i] );
         vect[i] = NULL;  // this is not strictly necessary
     }
     firstfree = 0;
@@ -381,7 +381,7 @@ int cArray::set(cObject *obj)
     }
     else
     {
-        if (vect[i]->owner()==this) dealloc(vect[i]);
+        if (vect[i]->owner()==this) discard(vect[i]);
         vect[i] = obj;
         if (takeOwnership()) take(obj);
         return i;

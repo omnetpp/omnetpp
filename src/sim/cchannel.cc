@@ -104,7 +104,7 @@ cChannel& cChannel::operator=(const cChannel& ch)
     fromgatep = NULL;
 
     if (parlistp && parlistp->owner()==this)
-        dealloc(parlistp);
+        discard(parlistp);
     parlistp = ch.parlistp;
     if (parlistp->owner()==const_cast<cChannel*>(&ch))
         take(parlistp = (cArray *)parlistp->dup());

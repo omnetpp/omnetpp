@@ -68,11 +68,11 @@ char cObject::fullpathbuf[FULLPATHBUF_SIZE];
       - an object created thru the copy constructor:
           - will have the same owner as original;
           - does not dup() or take objects owned by the original.
-      - destructor calls dealloc() for owned objects (see later).
+      - destructor calls discard() for owned objects (see later).
    Objects contained as data members:
       the enclosing object should own them.
    What container objects derived from cObject should do:
-      - they use the functions: take(obj), drop(obj), dealloc(obj)
+      - they use the functions: take(obj), drop(obj), discard(obj)
       - when an object is inserted, if takeOwnership() is true, should
         take ownership of object by calling take(obj).
         TAKEOWNERSHIP() DEFAULTS TO true.
@@ -80,7 +80,7 @@ char cObject::fullpathbuf[FULLPATHBUF_SIZE];
         they were the owner.
       - copy constructor copies should dup() and take ownership of objects
         that were owned by the original.
-      - destructor doesn't need not call dealloc() for objects: this will be
+      - destructor doesn't need not call discard() for objects: this will be
         done in cObject's destructor.
    cHead:
       special case: behaves as a container, displaying objects it owns as
@@ -133,7 +133,7 @@ cObject::~cObject()
 
     /* delete owned objects */
     while (firstchildp!=NULL)
-        dealloc( firstchildp );
+        discard( firstchildp );
     ev.objectDeleted( this );
 }
 
@@ -190,35 +190,6 @@ void cObject::setOwner(cObject *newowner)
 cObject *cObject::defaultOwner() const
 {
     return simulation.localList();
-}
-
-void cObject::deleteChildren()
-{
-    bool nothing;                           // a bit difficult, because
-    do {                                    // deleting a container object
-         nothing = true;                    // may add new items
-         cObject *t, *p = firstchildp;
-         while (p)
-         {
-             t=p; p=p->nextp;
-             if (t->storage()=='D')
-                {delete t; nothing = false;}
-         }
-    } while (!nothing);
-}
-
-void cObject::destructChildren()
-{
-    while (firstchildp)
-    {
-       stor = firstchildp->storage();
-       if (stor == 'D')
-          delete firstchildp;
-       else if (stor == 'A')
-          firstchildp->destruct();
-       else  /* stor == 'S' */
-          firstchildp->setOwner( NULL );
-    }
 }
 
 const char *cObject::fullPath() const

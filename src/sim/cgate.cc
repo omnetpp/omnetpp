@@ -99,7 +99,7 @@ cGate& cGate::operator=(const cGate& gate)
     vectsize = gate.vectsize;
 
     if (channelp && channelp->owner()==const_cast<cGate*>(&gate))
-        dealloc(channelp);
+        discard(channelp);
     channelp = gate.channelp;
     if (channelp->owner()==const_cast<cGate*>(&gate))
         channelp = (cChannel *)channelp->dup();
@@ -245,7 +245,7 @@ void cGate::setLink(cLinkType *lnk)
 void cGate::setChannel(cChannel *ch)
 {
     if (channelp && channelp->owner()==this)
-        dealloc(channelp);
+        discard(channelp);
 
     channelp = ch;
     channelp->setFromGate(this);

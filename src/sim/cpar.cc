@@ -104,7 +104,7 @@ void cPar::deleteold()
     else if (typechar=='T')
     {
         if (dtr.res->owner()==this)
-            dealloc( dtr.res );
+            discard( dtr.res );
     }
     else if (typechar=='C')
     {
@@ -123,13 +123,13 @@ void cPar::deleteold()
     else if (typechar=='O')
     {
         if (obj.obj->owner()==this)
-            dealloc( obj.obj );
+            discard( obj.obj );
     }
     else if (typechar=='X')
     {
         for(int i=0; i<expr.n; i++)
             if (expr.xelem[i].type=='R')  // should be ours
-                dealloc( expr.xelem[i].p );
+                discard( expr.xelem[i].p );
         delete [] expr.xelem;
     }
     typechar = 'L';

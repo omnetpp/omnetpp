@@ -460,9 +460,6 @@ void cSimulation::deleteNetwork()
     setGlobalContext();
 
     networktype = NULL;
-
-    modtypes.deleteChildren();
-    linktypes.deleteChildren();
 }
 
 cSimpleModule *cSimulation::selectNextModule()

@@ -86,7 +86,7 @@ void cQueue::clear()
     {
         tmp = headp->next;
         if (headp->obj->owner()==this)
-            dealloc( headp->obj );
+            discard( headp->obj );
         delete headp;
         headp=tmp;
     }
