@@ -47,22 +47,18 @@ typedef int (*CompareFunc)(cObject *, cObject *);
 typedef bool (*ForeachFunc)(cObject *,bool);
 
 
-//==========================================================================
-// cObject: base class for other objects
-//         name string
-//         ownership control
-//         virtual functions for derived classes
-
-
 /**
- * FIXME: //=== classes declared here
- * //=== classes mentioned
- * //=== Global objects:
- * 
- * cObject: base class for other objects
- *         name string
- *         ownership control
- *         virtual functions for derived classes
+ * cObject is the base class for almost all classes in the OMNeT++ library.
+ *
+ * cObject provides a name member (a dynamically allocated string) and
+ * a number of virtual functions. These functions either provide a default
+ * behaviour (mostly good for all derived classes), or they are expected
+ * to be redefined in all derived classes.
+ *
+ * Some of the features provided by cObject:
+ *  - name string
+ *  - ownership control
+ *  - virtual functions for derived classes
  */
 class SIM_API cObject
 {
@@ -83,14 +79,15 @@ class SIM_API cObject
     static int heapflag;              // to determine 'storage' (1 immediately after 'new')
 
   protected:
-    //
-    // take(), drop(), free():
-    //  intended to be used by derived container classes
-    //
-
-    // become the owner of `object':
+    /**@name Ownership control
+     * The following functions are intended to be used by derived container
+     * classes to manage ownership of their contained objects.
+     */
+    //@{
 
     /**
+     * Become the owner of 'object'.
+     *
      * The function called by the container object when it takes ownership
      * of the obj object that is inserted into it. Implementation:
      * obj->setOwner( this ).
@@ -98,9 +95,9 @@ class SIM_API cObject
     void take(cObject *object)
         {object->setOwner( this );}
 
-    // give ownership of `object' to its default owner
-
     /**
+     * Give ownership of `object' to its default owner.
+     *
      * The function called by the container object when obj
      * is removed from the container -- releases the ownership of the
      * object and hands it over to its default owner. Implementation:
@@ -110,9 +107,9 @@ class SIM_API cObject
     void drop(cObject *object)
         {object->setOwner( object->defaultOwner() );}
 
-    // dispose of `object'; it MUST be owned by this object
-
     /**
+     * Dispose of `object'; it MUST be owned by this object.
+     *
      * The function is called when the container object has to delete
      * the contained object obj. It the object was dynamically
      * allocated (by new), it is deleted, otherwise (e.g., if
@@ -123,12 +120,12 @@ class SIM_API cObject
     void free(cObject *object)
         {if(object->storage()=='D') delete object; else object->setOwner(NULL);}
 
-  public:
-    //
-    // Creation, destruction, copying
-    //
+    //@}
 
-    // create a copy of `obj':
+  public:
+    /**@name Creation, destruction, copying
+     */
+    //@{
 
     /**
      * Copy constructor. In derived classes, it is usually implemented
@@ -136,71 +133,69 @@ class SIM_API cObject
      */
     cObject(const cObject& obj);
 
-    // create object with no name and default owner:
-
     /**
-     * FIXME: create object with no name and default owner:
+     * Create object with no name and default owner.
      */
     cObject();
 
-    // create object with given name and default owner:
-
     /**
-     * FIXME: create object with given name and default owner:
+     * Create object with given name and default owner.
      */
     explicit cObject(const char *name);
 
-    // create object with given name and specified owner:
-
     /**
+     * Create object with given name and specified owner.
+     *
      * Creates a cObject with the given name. The owner will
      * be the h object (if the pointer is not NULL),
      * that is, the constructor contains a setOwner( h ) call.
      */
     cObject(const char *name, cObject *ownerobj);
 
-    // virtual destructor:
-
     /**
-     * Virtual destructor. Deletes the name and notifies the user interface
+     * Virtual destructor.
+     *
+     * Deletes the name and notifies the user interface
      * that the object has been destructed.
      */
     virtual ~cObject();
 
-    // duplicates this object; must be redefined in derived classes!
-
     /**
-     * Duplicates the object and returns a pointer to the new one. In
-     * derived classes, it is usually implemented as {return new
+     * Duplicates this object.
+     *
+     * Duplicates the object and returns a pointer to the new one.
+     * Must be redefined in derived classes!
+     * In derived classes, it is usually implemented as {return new
      * cObject(*this);}.
      */
     virtual cObject *dup()    {return new cObject(*this);}
 
-    // virtual destructor call (used for disposing of objects on module stacks)
-
     /**
      * Direct call to the virtual destructor.
+     *
+     * This function is used internally at cleanup (e.g. at the end of
+     * the simulation) for disposing of objects left on module stacks
+     * of activity() modules.
      */
     void destruct() {this->~cObject();}
-
-    // copies the object EXCEPT for the NAME string;
-    //  derived classes are expected to define similar functions (e.g.cPar::operator=(cPar&))
 
     /**
      * The assignment operator. Most derived classes contain a cSomeClass&<I>
      * </I>cSomeClass:: operator=(cSomeClass&) function.
-     * The assignment operators do not copy the object name. If you want
-     * to do so, you can copy it be hand: setName(o.name());
+     * Copies the object EXCEPT for the NAME string; derived classes are
+     * expected to define similar functions (e.g.cPar::operator=(cPar&))
+     * If you want to copy the name string, you can do it by hand:
+     * setName(o.name()).
      */
     cObject& operator=(const cObject& o);
+    //@}
 
-    //
-    // Handling the name string member
-    //
-    // "" and NULL are treated liberally:
-    //   "" is stored as NULL and NULL is returned as ""
-    //
-
+    /**@name Handling the name string.
+     *
+     * Note: "" and NULL are treated liberally: "" is stored as NULL and
+     * NULL is returned as "".
+     */
+    //@{
 
     /**
      * Sets object's name. The object creates its own copy of the string.
@@ -220,54 +215,54 @@ class SIM_API cObject
      */
     bool isName(const char *s) const {return !opp_strcmp(namestr,s);}
 
-    // longer names composed of name()
-
     /**
+     * Returns a name that includes the object 'index' (e.g. in a module vector),
+     * like "modem[5]".
      * To be redefined in descendants. E.g., see cModule::fullName().
      */
-    virtual const char *fullName() const  // "name[index]", e.g. "modem[5]"
+    virtual const char *fullName() const
         {return name();}
 
     /**
-     * MISSINGDOC: cObject:char*fullPath()
+     * Returns the full path of the object in the object hieararchy,
+     * like "comp.modem[5].baud-rate". Note: the returned pointer points
+     * into a static buffer, which is overwritten by subsequent calls!
      */
-    virtual const char *fullPath() const; // "comp.modem[5].baud-rate"
+    virtual const char *fullPath() const;
+    //@}
 
-    //
-    // Object ownership
-    //
-
-    // returns the owner of this object
+    /**@name Object ownership.
+     */
+    //@{
 
     /**
      * Returns pointer to the owner of the object.
      */
     cObject *owner() const {return ownerp;}
 
-    // make `newowner' the owner of this object
-
     /**
-     * Sets the owner pointer of the object. See documentation of cHead
+     * Sets the owner of the object. See documentation of cHead
      * for more information.
      */
     void setOwner(cObject *newowner);
 
-    // returns pointer to a default owner:
-
     /**
+     * Returns pointer to a default owner.
+     *
      * This function should return a pointer to the default owner of
-     * the object. The function is used by the drop()<I> </I>member
+     * the object. The function is used by the drop() member
      * function, redefined in cObject-descendant container classes.
      */
     virtual cObject *defaultOwner();
+    //@}
 
-    //
-    // Ownership control
-    //
-    // The ownership control flag is to be used by derived container classes.
-    // If the flag is set, the container should take() any object that is
-    // inserted into it.
-    //
+    /**@name Ownership control flag.
+     *
+     * The ownership control flag is to be used by derived container classes.
+     * If the flag is set, the container should take() any object that is
+     * inserted into it.
+     */
+    //@{
 
     /**
      * Sets/returns the flag which determines whether the container object
@@ -282,12 +277,11 @@ class SIM_API cObject
      * into it.
      */
     bool takeOwnership()        {return tkownership;}
+    //@}
 
-    //
-    // Support for debugging, snapshots etc.
-    //
-
-    // return pointer to type string; must be redefined in derived classes!
+    /**@name Reflection, support for debugging and snapshots.
+     */
+    //@{
 
     /**
      * Returns a pointer to the class name string, "cObject".
@@ -295,35 +289,30 @@ class SIM_API cObject
      */
     virtual const char *className() const {return "cObject";}
 
-    // put a one-line description of object into `buf':
-
     /**
+     * Produce one-line description of object into `buf'.
+     *
      * Copies a short description of the object into buf. This
      * function is used by the graphical user interface (TkEnv). See
      * also <I>Functions supporting snapshots</I>.
      */
     virtual void info(char *buf);
 
-    // create an inspector window. As of Jan 1999. this function should
-    // not be used directly any more; see inspectorFactoryName() and
-    // Register_InspectorFactory() instead.
-
     /**
-     * FIXME: create an inspector window. As of Jan 1999. this function should
-     * not be used directly any more; see inspectorFactoryName() and
+     * Create an inspector window.
+     * Used internally. As of Jan 1999, this function should not be used
+     * directly any more; see inspectorFactoryName() and
      * Register_InspectorFactory() instead.
      */
     virtual TInspector *inspector(int type, void *data);
 
-    // return name of inspector factory object
-
     /**
+     * Return inspector factory class name.
+     *
      * Returns the name of the class which can create inspector windows
      * for objects of this class (e.g. in Tkenv).
      */
     virtual const char *inspectorFactoryName() const {return "cObjectIFC";}
-
-    // write out header + call writeContents():
 
     /**
      * This function is called internally by cSimpleModule::snapshot().
@@ -333,8 +322,6 @@ class SIM_API cObject
      */
     virtual void writeTo(ostream& os);
 
-    // write contained objects as default:
-
     /**
      * This function is called by internally writeTo(). It is
      * expected to write textual information about the object and other
@@ -343,52 +330,53 @@ class SIM_API cObject
      * as needed.
      */
     virtual void writeContents(ostream& os);
+    //@}
 
-    //
-    // Support for parallel execution
-    //   (pack/unpack object from/to PVM send buffer)
-    //
-
-    /**
-     * FIXME: 
-     * Support for parallel execution
-     *   (pack/unpack object from/to PVM send buffer)
-     * 
-     */
-    virtual int netPack();
-
-    /**
+    /**@name Support for parallel execution.
+     *
+     * Pack/unpack object from/to PVM send buffer.
      * These functions are expected to be redefined in all derived objects.
      * In OMNeT++'s PVM interface, they call pvm_pkint(), pvm_upkint()
      * etc. functions.
      */
-    virtual int netUnpack();
-
-    //
-    // Miscellaneous functions
-    //
-
-    // call function `f' for each contained object:
+    //@{
 
     /**
+     * Serialize object to PVM send buffer.
+     */
+    virtual int netPack();
+
+    /**
+     * Deserialize object from PVM receive buffer.
+     */
+    virtual int netUnpack();
+    //@}
+
+    /**@name Miscellaneous functions.
+     */
+    //@{
+
+    /**
+     * Call f for each contained object.
+     *
      * Makes sense with container objects derived from cObject.
      * Calls the <I>f</I> function recursively for each object contained
      * in this object.
-     * 
+     *
      * <U><B>The </B></U><U><B>forEach()</B></U><U><B>
      * mechanism</B></U>
-     * 
+     *
      * The forEach() mechanism implemented in OMNeT++ is very
      * special and slightly odd. The passed function is called for each
      * object twice: once on entering and once on leaving the object.
      * In addition, after the first ('entering') call to the function,
      * it signals with its return value whether it wants to go deeper
      * in the contained objects or not.
-     * 
+     *
      * Functions passed to forEach() will use static variables
      * to store other necessary information. (Yes, this limits their
      * recursive use :-( ).
-     * 
+     *
      * forEach() takes a function do_fn (of ForeachFunc
      * type) with 2 arguments: a cObject* and a bool.
      * First, forEach() should call do_fn(this,true)
@@ -396,7 +384,7 @@ class SIM_API cObject
      * call returned true, it must call forEach(do_fn)
      * for every contained object. Finally, it must call do_fn(this,false)
      * to let do_fn know that there's no more contained object.
-     * 
+     *
      * Functions using forEach() work in the following way:
      * they call do_fn(NULL, false, <additional args>)
      * to initialize the static variables inside the function with the
@@ -405,23 +393,20 @@ class SIM_API cObject
      * false, <additional args>), where additional args can
      * be pointers where the result should be stored. ForeachFuncs
      * mustn't call themselves recursively!
-     * 
+     *
      * <I>(I know this all is kind of weird, but I wrote it a long ago.
      * Changing it now would take quite some work, and after all, it
      * works..)</I>
      */
     virtual void forEach(ForeachFunc f);
 
-    // storage class: S/D/A
-
     /**
-     * Returns the storage class of the object. The return value is one
-     * of the characters S/A/D which stand for static, auto
-     * and dynamic, respectively.
+     * Returns the storage class of the object.
+     *
+     * The return value is one of the characters S/A/D which stand for
+     * static, auto and dynamic, respectively.
      */
     char storage()              {return stor;}
-
-    // memory management
 
     /**
      * cObject's operator new does more than the global
@@ -429,7 +414,7 @@ class SIM_API cObject
      * to determine the storage class of the object (static, auto or
      * dynamic).
      */
-    void *operator new(size_t m);   // extra: sets 'storage'
+    void *operator new(size_t m);
 
     /**
      * MISSINGDOC: cObject:void deleteChildren()
@@ -441,24 +426,23 @@ class SIM_API cObject
      */
     void destructChildren();
 
-    // find an object by name through recursive forEach() calls
-
     /**
+     * Finds the object with the given name.
+     *
      * Finds the object with the given name in a container object and
      * returns a pointer to it or NULL if the object hasn't
      * been found. If deep is false, only objects directly
      * contained will be searched, otherwise the function searches the
-     * whole subtree for the object.
+     * whole subtree for the object. Uses the forEach() meachanism.
      */
     cObject *findObject(const char *name, bool deep=true);
-
-    // sorting function for cQueue
 
     /**
      * This function compares to objects by name. It can be used in a
      * priority queue (class cQueue) as a sorting criterion.
      */
     static int cmpbyname(cObject *one, cObject *other);
+    //@}
 };
 
 
