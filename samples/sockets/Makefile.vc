@@ -144,4 +144,28 @@ makefiles:
 re-makemake: makefiles
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+cloud.obj: cloud.cc \
+  netpkt_m.h
+csocketrtscheduler.obj: csocketrtscheduler.cc \
+  csocketrtscheduler.h
+exthttpclient.obj: exthttpclient.cc \
+  httpmsg_m.h \
+  csocketrtscheduler.h \
+  netpkt_m.h
+httpclient.obj: httpclient.cc
+httpmsg_m.obj: httpmsg_m.cc \
+  httpmsg_m.h \
+  netpkt_m.h
+httpserver.obj: httpserver.cc \
+  httpserver.h \
+  httpmsg_m.h \
+  queuebase.h \
+  netpkt_m.h
+netpkt_m.obj: netpkt_m.cc \
+  netpkt_m.h
+queuebase.obj: queuebase.cc \
+  queuebase.h
+telnetclient.obj: telnetclient.cc
+telnetserver.obj: telnetserver.cc \
+  telnetserver.h \
+  queuebase.h

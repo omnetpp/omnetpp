@@ -131,6 +131,7 @@ inspector.obj: inspector.cc \
   ../../include/cpolymorphic.h \
   ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
+  ../../include/platdep/time.h \
   tkutil.h
 inspfactory.obj: inspfactory.cc \
   ../../include/omnetpp.h \
@@ -190,6 +191,7 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cpolymorphic.h \
   ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
+  ../../include/platdep/time.h \
   tkutil.h
 modinsp.obj: modinsp.cc \
   ../../include/csimplemodule.h \
@@ -286,6 +288,7 @@ objinsp.obj: objinsp.cc \
   ../../include/cpolymorphic.h \
   ../../include/cvisitor.h \
   ../../include/ccoroutine.h \
+  ../../include/platdep/time.h \
   inspector.h \
   tkutil.h \
   structinsp.h

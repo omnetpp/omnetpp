@@ -18,10 +18,6 @@
 #ifndef __XMLDOCCACHE_H
 #define __XMLDOCCACHE_H
 
-#ifdef _MSC_VER
-#pragma warning(disable:4786)
-#endif
-
 #include <map>
 #include <string>
 #include "defs.h"

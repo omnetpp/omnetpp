@@ -632,13 +632,16 @@ cscheduler.obj: cscheduler.cc \
   ../../include/csimul.h \
   ../../include/cmsgheap.h \
   ../../include/macros.h \
+  ../../include/cenvir.h \
+  ../../include/cconfig.h \
+  ../../include/platdep/misc.h \
   ../../include/cpolymorphic.h \
+  ../../include/platdep/time.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cobject.h \
   ../../include/carray.h \
   ../../include/cpar.h \
-  ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/cvisitor.h \
   ../../include/opp_string.h \
@@ -701,6 +704,7 @@ csimul.obj: csimul.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
+  ../../include/platdep/time.h \
   ../../include/opp_string.h
 cstat.obj: cstat.cc \
   ../../include/cstat.h \
@@ -933,6 +937,7 @@ util.obj: util.cc \
   ../../include/onstartup.h \
   ../../include/cpolymorphic.h \
   ../../include/cvisitor.h \
+  ../../include/platdep/time.h \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -1095,6 +1100,7 @@ parsim/cadvlinkdelaylookahead.obj: parsim/cadvlinkdelaylookahead.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
+  ../../include/platdep/time.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -1194,6 +1200,7 @@ parsim/cidealsimulationprot.obj: parsim/cidealsimulationprot.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
+  ../../include/platdep/time.h \
   ../../include/ctypes.h
 parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   parsim/cispeventlogger.h \
@@ -1207,6 +1214,7 @@ parsim/cispeventlogger.obj: parsim/cispeventlogger.cc \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
   ../../include/cpolymorphic.h \
+  ../../include/platdep/time.h \
   ../../include/defs.h \
   ../../include/util.h \
   ../../include/cobject.h \
@@ -1258,6 +1266,7 @@ parsim/clinkdelaylookahead.obj: parsim/clinkdelaylookahead.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
+  ../../include/platdep/time.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -1390,6 +1399,7 @@ parsim/cnosynchronization.obj: parsim/cnosynchronization.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
+  ../../include/platdep/time.h \
   ../../include/ctypes.h
 parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   ../../include/cmessage.h \
@@ -1428,6 +1438,7 @@ parsim/cnullmessageprot.obj: parsim/cnullmessageprot.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
+  ../../include/platdep/time.h \
   parsim/cnmplookahead.h \
   ../../include/ctypes.h
 parsim/cparsimcomm.obj: parsim/cparsimcomm.cc \
@@ -1474,6 +1485,7 @@ parsim/cparsimpartition.obj: parsim/cparsimpartition.cc \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
   ../../include/cscheduler.h \
+  ../../include/platdep/time.h \
   ../../include/ctypes.h
 parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/cmessage.h \
@@ -1504,7 +1516,8 @@ parsim/cparsimprotocolbase.obj: parsim/cparsimprotocolbase.cc \
   ../../include/cqueue.h \
   ../../include/cdefaultlist.h \
   parsim/cparsimsynchr.h \
-  ../../include/cscheduler.h
+  ../../include/cscheduler.h \
+  ../../include/platdep/time.h
 parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   parsim/cplaceholdermod.h \
   parsim/cproxygate.h \
@@ -1538,6 +1551,7 @@ parsim/cplaceholdermod.obj: parsim/cplaceholdermod.cc \
   parsim/cparsimprotocolbase.h \
   parsim/cparsimsynchr.h \
   ../../include/cscheduler.h \
+  ../../include/platdep/time.h \
   ../../include/cmessage.h \
   ../../include/cpar.h \
   parsim/cnmplookahead.h
