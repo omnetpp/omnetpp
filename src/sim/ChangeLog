@@ -1,3 +1,5 @@
+FIXME: cStdDev: info() should print mean(), stdDev() too!
+
 2004-04-16  Andras Varga
 
 	* cpar.cc, cenum.cc: fixed two possible bugs after Johnny's valgrinding
