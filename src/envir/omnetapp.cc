@@ -35,7 +35,7 @@
 #include "cmodule.h"
 
 #ifdef WITH_PARSIM
-#include "parsim/cparsimcomm.h"
+#include "cparsimcomm.h"
 #include "parsim/cparsimpartition.h"
 #include "parsim/cparsimsynchr.h"
 #include "parsim/creceivedexception.h"

@@ -36,8 +36,8 @@
 #include "cexception.h"
 
 #ifdef WITH_PARSIM
+#include "ccommbuffer.h"
 #include "parsim/cplaceholdermod.h"
-#include "parsim/ccommbuffer.h"
 #endif
 
 //=== Functions  (register them for findFunction())

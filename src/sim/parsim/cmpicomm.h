@@ -18,7 +18,7 @@
 *--------------------------------------------------------------*/
 
 
-#include "parsim/cparsimcomm.h"
+#include "cparsimcomm.h"
 
 #ifndef __CMPICOMM_H__
 #define __CMPICOMM_H__

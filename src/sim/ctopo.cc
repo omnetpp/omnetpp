@@ -31,7 +31,7 @@
 #include "cexception.h"
 
 #ifdef WITH_PARSIM
-#include "parsim/ccommbuffer.h"
+#include "ccommbuffer.h"
 #endif
 
 //=== Registration

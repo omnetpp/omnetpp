@@ -35,7 +35,7 @@
 #include "cexception.h"
 
 #ifdef WITH_PARSIM
-#include "parsim/ccommbuffer.h"
+#include "ccommbuffer.h"
 #endif
 
 #ifdef WITH_NETBUILDER
@@ -352,7 +352,7 @@ void cSimulation::setupNetwork(cNetworkType *network, int run_num)
     catch (cException *)
     {
         // we could clean up the whole stuff before passing the exception back,
-        // but it is dangerous. Module destructors may try to delete 
+        // but it is dangerous. Module destructors may try to delete
         // uninitialized pointers and crash. (Often ptrs get initialized in
         // initialize() not in the constructor.)
         //deleteNetwork();

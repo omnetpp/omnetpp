@@ -35,7 +35,7 @@
 #include "errmsg.h"
 
 #ifdef WITH_PARSIM
-#include "parsim/ccommbuffer.h"
+#include "ccommbuffer.h"
 #endif
 
 #define MIN(a,b) ((a)<(b) ? (a) : (b))

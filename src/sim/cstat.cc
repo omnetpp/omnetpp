@@ -35,7 +35,7 @@
 #include "errmsg.h"
 
 #ifdef WITH_PARSIM
-#include "parsim/ccommbuffer.h"
+#include "ccommbuffer.h"
 #endif
 
 using std::ostream;

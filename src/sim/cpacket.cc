@@ -23,7 +23,7 @@
 #include "cpacket.h"
 
 #ifdef WITH_PARSIM
-#include "parsim/ccommbuffer.h"
+#include "ccommbuffer.h"
 #endif
 
 //=== registration

@@ -32,7 +32,7 @@
 
 #include "util.h"
 #include "opp_string.h"
-#include "parsim/cparsimcomm.h"
+#include "cparsimcomm.h"
 
 
 // decide platform

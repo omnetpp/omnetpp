@@ -18,7 +18,7 @@
 *--------------------------------------------------------------*/
 
 
-#include "parsim/cparsimcomm.h"
+#include "cparsimcomm.h"
 #include "util.h"
 
 #ifndef __CFILECOMM_H__
