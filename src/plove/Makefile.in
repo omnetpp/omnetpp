@@ -20,51 +20,71 @@ SYS_LIBS=@SYS_LIBS@
 
 OMNETPP_PLOVE_DIR=@OMNETPP_PLOVE_DIR@
 
-# The following is either 'plove-exe' (embedded Tcl code) or 'plove-sh' (no embedding)
-PLOVE_VARIANT=@PLOVE_VARIANT@
+# The following is either '-e' (embedded Tcl code) or '' (no embedding)
+PLOVE_EMBED_SUFFIX=@PLOVE_EMBED_SUFFIX@
 
 #
 # Local definitions
 #
 COPTS=$(CFLAGS) $(TK_CFLAGS)
-OBJS=plove.o
 
-all: plove
-	rm -f $(OMNETPP_BIN_DIR)/plove $(OMNETPP_BIN_DIR)/plove.exe $(OMNETPP_BIN_DIR)/plove.bat
-	if test -f plove; then cp plove $(OMNETPP_BIN_DIR); fi
-	if test -f plove.bat; then cp plove.bat $(OMNETPP_BIN_DIR); fi
-	if test -f plove.exe; then cp plove.exe $(OMNETPP_BIN_DIR); fi
+PLOVE_OBJS = plove$(PLOVE_EMBED_SUFFIX).o \
+               tklib.o \
+               tkcmd.o \
+               tkutil.o
+ENGINE_OBJS =  engine/exception.o \
+               engine/commonnodes.o \
+               engine/nodetype.o \
+               engine/channel.o \
+               engine/dataflowmanager.o \
+               engine/windowavg.o \
+               engine/arraybuilder.o \
+               engine/filewriter.o \
+               engine/vectorfilereader.o \
+               engine/vectorfilewriter.o \
+               engine/nodetyperegistry.o \
+               engine/getvectors.o \
+               engine/filternodes.o \
+               engine/mergernodes.o \
+               engine/compoundfilter.o
 
-plove: $(PLOVE_VARIANT)
-	@echo '' # NOP to prevent automatic rules from firing
+OBJS = $(PLOVE_OBJS) $(ENGINE_OBJS)
 
-plove-sh:
-	echo "$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh "'$$*' > plove
-	chmod +x plove
+#
+# Automatic rules
+#
+.SUFFIXES : .cc
 
-plove-cyg:
-	echo "@$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh %1 %2 %3 %4 %5 %6 %7 %8 %9" > plove.bat
-	echo "$(WISH) -f $(OMNETPP_PLOVE_DIR)/plove.sh "'$$*' > plove
-	chmod +x plove
+.cc.o:
+	$(CXX) -c $(COPTS) -o $@ $<
 
-plove-exe: $(OBJS)
+#
+# Targets
+#
+default: @PLOVE_IF_POSSIBLE@
+
+plove: $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o plove
+	../utils/install-prog plove $(OMNETPP_BIN_DIR)
 
-plove.o: plove.cc tclcode.cc
-	$(CXX) -c $(COPTS) plove.cc
+plove.o : plove.cc
+	$(CXX) -c $(COPTS) -DOMNETPP_PLOVE_DIR="\"$(OMNETPP_PLOVE_DIR)\"" -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" plove.cc
+
+plove-e.o : plove.cc tclcode.cc
+	$(CXX) -c $(COPTS) -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" plove.cc -o plove-e.o
 
 tclcode.cc: *.tcl
 	../utils/tcl2c tclcode.cc *.tcl
 
 missing-library:
-	@ echo '*** No Tk installation found -- skipping Plove'
+	@ echo '*** No Tk installation found -- skipping Scalars'
 
 depend:
 	$(MAKEDEPEND) -I. -- *.cc
 	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc
 
 clean:
-	rm -f tclcode.cc *.o plove$(EXE_SUFFIX) plove
+	rm -f tclcode.cc *.o plove$(EXE_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 plove.o: plove.cc
