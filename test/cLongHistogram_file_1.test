@@ -1,0 +1,95 @@
+%description:
+test saveToFile()/loadFromFile() for cLongHistogram
+
+%activity:
+
+cLongHistogram h;
+
+h.setNumCells(10);   // 10 cells
+h.setRangeAuto(2,1); // range set up after 2 observations, no range extension
+
+h.collect(10);
+h.collect(19);
+
+h.collect(9);
+h.collect(10);
+h.collect(12);
+h.collect(12);
+h.collect(20);
+
+// save it
+FILE *f=fopen("{}_h.dat","w");
+h.saveToFile(f);
+fclose(f);
+
+// load it back to another histogram, then save again so that we can verify
+// if it was correctly loaded
+cLongHistogram h2;
+
+FILE *f2=fopen("{}_h.dat","r");
+h2.loadFromFile(f2);
+fclose(f2);
+
+FILE *f3=fopen("{}_h2.dat","w");
+h2.saveToFile(f3);
+fclose(f3);
+
+%contains: {}_h.dat
+#
+# (cLongHistogram) cLongHistogram_file_1_network.local-objects.
+#
+7	 #= num_samples
+9 20	 #= min, max
+92	 #= sum
+1330	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+9.5 19.5	 #= range
+1 1	 #= cell_under, cell_over
+2	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= num_cells
+1	 #= cellv[] exists
+ 2
+ 0
+ 2
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 1
+1	 #= cellsize
+
+%contains: {}_h2.dat
+#
+# (cLongHistogram) cLongHistogram_file_1_network.local-objects.
+#
+7	 #= num_samples
+9 20	 #= min, max
+92	 #= sum
+1330	 #= square sum
+1	 #= transformed
+2	 #= range_mode
+1	 #= range_ext_factor
+9.5 19.5	 #= range
+1 1	 #= cell_under, cell_over
+2	 #= num_firstvals
+0	 #= firstvals[] exists
+10	 #= num_cells
+1	 #= cellv[] exists
+ 2
+ 0
+ 2
+ 0
+ 0
+ 0
+ 0
+ 0
+ 0
+ 1
+1	 #= cellsize
+
+
