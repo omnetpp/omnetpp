@@ -37,6 +37,7 @@ proc findReplaceDialog {w mode} {
     label-entry .dlg.f.find "Find string:"
     pack .dlg.f.find  -expand 0 -fill x -side top
     .dlg.f.find.e insert 0 $config(editor-findstring)
+    .dlg.f.find.e select range 0 end
 
     if {$mode == "replace"} {
         label-entry .dlg.f.repl "Replace with:"
@@ -114,7 +115,7 @@ proc doFind {w findstring case words regexp} {
 
     # find the string
     #   start at insert+1 so that "find next" can advance
-    set cur "insert + 1 char"
+    set cur "insert"
     while 1 {
         if {$case && $regexp} {
             set cur [$w search -count length -regexp -- $findstring $cur end]
@@ -146,7 +147,7 @@ proc doFind {w findstring case words regexp} {
 
     # highlight it and return length
     $w tag add SELECT $cur "$cur + $length chars"
-    $w mark set insert "$cur + $length chars - 1 char"
+    $w mark set insert "$cur + $length chars"
     $w see insert
 
     return $length
@@ -225,13 +226,13 @@ proc doReplace {w findstring replstring case words regexp} {
 
         case $action in {
             yes {
-                $w delete "insert - $length char + 1 char" "insert + 1 char"
+                $w delete "insert - $length char" "insert"
                 $w insert insert $replstring
                 syntaxHighlight $w "insert linestart" "insert lineend"
             }
             all {
                 while 1 {
-                    $w delete "insert - $length char + 1 char" "insert + 1 char"
+                    $w delete "insert - $length char" "insert"
                     $w insert insert $replstring
                     set length [doFind $w $findstring $case $words $regexp]
                     if {$length == ""} {
