@@ -5319,13 +5319,14 @@ fi
 #----------------------
 # Files to be generated
 #----------------------
-ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake samples/dyna/Makefile samples/fddi/Makefile samples/fifo1/Makefile samples/fifo2/Makefile samples/hcube/Makefile samples/hist/Makefile samples/nim/Makefile samples/pvmex/Makefile samples/token/Makefile samples/demo/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
+ac_config_files="$ac_config_files Makefile src/cmdenv/Makefile src/envir/Makefile src/gned/Makefile src/nedxml/Makefile src/nedc/Makefile src/plove/Makefile src/sim/Makefile src/tkenv/Makefile src/utils/Makefile src/utils/opp_makemake samples/dyna/Makefile samples/fddi/Makefile samples/fifo1/Makefile samples/fifo2/Makefile samples/hcube/Makefile samples/hist/Makefile samples/nim/Makefile samples/pvmex/Makefile samples/token/Makefile samples/demo/Makefile tutorial/queues/Makefile include/Makefile test/Makefile"
 
 
 
 #----------------------
 # Subtitutions.
 #----------------------
+
 
 
 
@@ -5891,6 +5892,7 @@ do
   "src/cmdenv/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/cmdenv/Makefile" ;;
   "src/envir/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/envir/Makefile" ;;
   "src/gned/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/gned/Makefile" ;;
+  "src/nedxml/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/nedxml/Makefile" ;;
   "src/nedc/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/nedc/Makefile" ;;
   "src/plove/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/plove/Makefile" ;;
   "src/sim/Makefile" ) CONFIG_FILES="$CONFIG_FILES src/sim/Makefile" ;;
