@@ -312,6 +312,7 @@ are used to produce random variates from them that correspond to
 specific distributions.
 
 \subsection{Random number generators}
+\label{sec:sim-lib:rngs}
 \index{random number generator}
 
 \subsubsection{Mersenne Twister}
@@ -354,7 +355,7 @@ which has a period of about $2^{191}$ and can provide a large
 number of \textit{guaranteed} independent streams.
 
 
-\subsection{Streams and RNG mapping}
+\subsection{Random number streams, RNG mapping}
 
 Simulation programs may consume random numbers from several streams,
 that is, from several independent RNG instances. For example, if a

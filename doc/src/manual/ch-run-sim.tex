@@ -684,38 +684,36 @@ except all end-to-end delays and the ones in any module called Router2.
 
 The random number architecture of {\opp} was already outlined
 in section \ref{cha:sim-lib:generating-random-numbers}. Here
-we'll cover the configuration of RNGs in omnetpp.ini.
+we'll cover the configuration of RNGs in \ttt{omnetpp.ini}.
 
-\subsection{RNG choice and number of RNGs}
+\subsection{Number of RNGs}
 
-%FIXME TBD -- finish this!!!
-New \ttt{omnetpp.ini} entries:
+The \ttt{num-rngs=} configuration entry sets the number of
+random number generator instances (i.e. random number streams)
+available for the simulation model (see \ref{cha:sim-lib:generating-random-numbers}).
+Referencing an RNG number greater or equal to this number
+(from a simple module or NED file) will cause a runtime error.
 
-\begin{verbatim}
-[General]
-num-rngs=n  (default:1)
-rng-class="classname"  (default:cMersenneTwister)
-\end{verbatim}
 
-classes accepted: "cMersenneTwister", "cLCG32"
-cAkaroaRNG. Akaroa's RNG has some limitations, see class
-doc for details.
+\subsection{RNG choice}
 
-per-run settings:
-
-\begin{verbatim}
-[General] or [Run n]
-seed-N-mt=seedvalue  (for MT; default: auto seed selection)
-seed-N-lcg32=seedvalue  (for cLCG32; default: auto seed selection)
-\end{verbatim}
-
-N can be 0..num-rngs; see sim/cmersennetwister.cc and clcg32.cc for
-exact auto-seeding procedure
-
+The \ttt{rng-class=} configuration entry sets the random number
+generator class to be used. It defaults to \ttt{"cMersenneTwister"},
+the Mersenne Twister RNG. Other available classes are \ttt{"cLCG32"}
+(the "legacy" RNG of {\opp} 2.3 and earlier versions, with a cycle length
+of $2^31-2$), and \ttt{"cAkaroaRNG"} (Akaroa's random number generator,
+see section \ref{sec:ch-run-sim:akaroa}).
 
 \subsection{RNG mapping}
 
-RNG mapping implemented. New ini file entries:
+The RNG numbers used in simple modules may be arbitrarily mapped to the
+actual random number streams (actual RNG instances) from \ttt{omnetpp.ini}.
+The mapping allows for great flexibility in RNG usage and random number
+streams configuration -- even for simulation models which were not
+written with RNG awareness.
+
+RNG mapping my be specified in \ttt{omnetpp.ini}. The syntax of
+configuration entries is the following.
 
 \begin{verbatim}
 [General]
@@ -723,18 +721,18 @@ RNG mapping implemented. New ini file entries:
 \end{verbatim}
 
 This maps module-local RNG N to physical RNG M. The following
-example maps all "gen" module's default (N=0) RNG to physical RNG 1,
-and all "noisychannel" module's default (N=0) RNG to physical RNG 2.
+example maps all  \ttt{gen} module's default (N=0) RNG to physical RNG 1,
+and all  \ttt{noisychannel} module's default (N=0) RNG to physical RNG 2.
 
 \begin{verbatim}
 [General]
-num-rngs=3
-**.gen[*].rng-0=1
-**.noisychannel[*].rng-0=2
+num-rngs = 3
+**.gen[*].rng-0 = 1
+**.noisychannel[*].rng-0 = 2
 \end{verbatim}
 
 This mapping allows variance reduction techniques to be applied to
-OMNeT++ models, without any model change or recompilation.
+{\opp} models, without any model change or recompilation.
 
 
 \subsection{Automatic seed selection}
