@@ -63,11 +63,13 @@ ebnf.tab.h: ebnf.y
 
 ebnf.tab.cc: ebnf.y
 	$(YACC) -b ebnf -d ebnf.y
-	mv ebnf.tab.c ebnf.tab.cc
+	copy ebnf.tab.c ebnf.tab.cc
+	del ebnf.tab.c
 
 lex.yy.cc: ebnf.lex
 	$(LEX) ebnf.lex
-	mv lex.yy.c lex.yy.cc
+	copy lex.yy.c lex.yy.cc
+	del lex.yy.c
 
 gned.res: gned.rc gned.ico
 	$(RC) -fo gned.res -r gned.rc

@@ -1,5 +1,7 @@
 2001-07-11  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
+	* Makefile.vc (ebnf.tab.cc) (lex.yy.cc): use "copy" and "del" instead of "mv"
+
 	*  (Repository):
 	removed files: ebnf.tab.c lex.yy.c
 	new files: ebnf.tab.cc lex.yy.cc
