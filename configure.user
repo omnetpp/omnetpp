@@ -97,7 +97,7 @@ PLOVE_EMBED_TCL=no
 #
 # If commented out, the configure script will try to autodetect it
 #
-#MPI_CFLAGS=
+#MPI_CFLAGS="-I /usr/include/mpi2c++"
 #MPI_LIBS=
 
 #

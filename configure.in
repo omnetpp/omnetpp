@@ -40,6 +40,7 @@ AC_LANG(C++)
 AC_CONFIG_AUX_DIR(src/utils)
 AC_CANONICAL_HOST()
 # figure out here if we have gcc or not -- we'll need it soon
+#FIXME: skip if CC var already exists
 AC_PROG_CC
 AC_PROG_CXX
 
