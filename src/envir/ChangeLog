@@ -2,7 +2,9 @@
 
 	* omnetapp.cc/h: preload-ned-files= omnetpp.ini option now supports
 	list files (@nedfiles.lst), even recursive ones (list files may refer
-	to other list files).
+	to other list files). Relative or absolute file name paths are also
+	allowed in list files; relative paths are relative from the location
+	of the list file.
 
 2004-02-04  ------ omnetpp-3.0pre1 released ------
 

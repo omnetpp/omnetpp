@@ -62,11 +62,15 @@
 // some platform dependency
 #if defined(_WIN32) && !defined(__CYGWIN32__)
 #include <process.h>
-#define getpid() _getpid()
+#include <direct.h>
+#define getpid _getpid
+#define getcwd _getcwd
+#define chdir  _chdir
 #else
 #include <sys/types.h>
-#include <unistd.h>  // getpid()
+#include <unistd.h>  // getpid(), getcwd(), etc
 #endif
+
 
 using std::ostream;
 
@@ -83,6 +87,67 @@ static char buffer[1024];
          throw new cException("Class \"%s\" is not subclassed from " #baseclass, (const char *)classname);
 
 
+/**
+ * Utility file for temporary change of directory
+ */
+class PushDir
+{
+  private:
+    opp_string olddir;
+  public:
+    PushDir(const char *changetodir);
+    ~PushDir();
+};
+
+PushDir::PushDir(const char *changetodir)
+{
+    // FIXME error handling
+    olddir.allocate(1024);
+    getcwd(olddir.buffer(),1024);
+    chdir(changetodir);
+}
+
+PushDir::~PushDir()
+{
+    // FIXME error handling
+    chdir((const char *)olddir);
+}
+
+/**
+ * Utility function to split a file path into directory and file name parts.
+// FIXME put it somewhere else (a utils.cc?)
+ */
+void splitFileName(const char *pathname, opp_string& dir, opp_string& fnameonly)
+{
+    if (!pathname || !*pathname)
+    {
+         dir = "";
+         fnameonly = "";
+         return;
+    }
+
+    dir = pathname;
+
+    // find last "/" or "\"
+    char *dirbeg = dir.buffer();
+    char *s = dirbeg + strlen(dirbeg) - 1;
+    while (s>=dirbeg && *s!='\\' && *s!='/') s--;
+
+    // split along that
+    if (s<dirbeg)
+    {
+        fnameonly = dirbeg;
+        dir = ".";
+    }
+    else
+    {
+        fnameonly = s+1;
+        *(s+1) = '\0';
+    }
+
+}
+
+//-------------------------------------------------------------
 
 TOmnetApp::TOmnetApp(ArgList *arglist, cIniFile *inifile)
 {
@@ -485,19 +550,23 @@ void TOmnetApp::makeOptionsEffective()
 
 void TOmnetApp::processListFile(const char *listfilename)
 {
-    const int maxline=1024;
-    char line[maxline];
+    // files should be relative to list file, so try cd into list file's directory
+    opp_string dir, fnameonly;
+    splitFileName(listfilename, dir, fnameonly);
+    PushDir d(dir);
 
-    // FIXME try cd into this directory (files should be relative to list file)
-    // FIXME error handling is really poor here
+    // FIXME error handling is really poor here (what if can't cd, etc!)
+    // FIXME put this code into main.cc too!
 
-    std::ifstream in(listfilename, std::ios::in);
+    std::ifstream in(fnameonly, std::ios::in);
     if (in.fail())
     {
         ev.printfmsg("cannot open list file '%s'",listfilename);
         return;
     }
 
+    const int maxline=1024;
+    char line[maxline];
     while (in.getline(line, maxline))
     {
         int len = in.gcount();
