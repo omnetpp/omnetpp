@@ -214,6 +214,7 @@ proc createOkCancelDialog {w title} {
     catch {destroy $w}
 
     toplevel $w -class Toplevel
+    wm transient $w [winfo toplevel [winfo parent $w]]
     wm title $w $title
     wm iconname $w Dialog
     wm focusmodel $w passive
@@ -221,7 +222,6 @@ proc createOkCancelDialog {w title} {
     wm resizable $w 1 1
     wm deiconify $w
     wm protocol $w WM_DELETE_WINDOW { }
-    #bind $w <Visibility> "raise $w"  ;# Keep modal window on top
 
     frame $w.f
     frame $w.buttons

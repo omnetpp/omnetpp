@@ -162,14 +162,14 @@ proc notebook_showpage {w name} {
     set nb($w) $name
 }
 
-proc label-check {w label first var } {
+proc label-check {w label first var} {
     # utility function: create a frame with a label+radiobutton for choose
     global gned
 
     frame $w
     label $w.l -anchor w -width 16 -text $label
     frame $w.f
-    checkbutton $w.f.r1 -text $first -variable ned($var)
+    checkbutton $w.f.r1 -text $first -variable $var
 
     pack $w.l -anchor w -expand 0 -fill none -side left
     pack $w.f -anchor w -expand 0 -side left -fill x
@@ -258,6 +258,7 @@ proc createOkCancelDialog {w title} {
     catch {destroy $w}
 
     toplevel $w -class Toplevel
+    wm transient $w [winfo toplevel [winfo parent $w]]
     wm title $w $title
     wm iconname $w Dialog
     wm focusmodel $w passive
@@ -265,7 +266,6 @@ proc createOkCancelDialog {w title} {
     wm resizable $w 1 1
     wm deiconify $w
     wm protocol $w WM_DELETE_WINDOW { }
-    #bind $w <Visibility> "raise $w"  ;# Keep modal window on top
 
     frame $w.f
     frame $w.buttons

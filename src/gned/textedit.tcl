@@ -124,7 +124,6 @@ proc findReplaceDialog {w mode} {
         set title "Find/Replace"
     }
     createOkCancelDialog .dlg $title
-    wm transient .dlg [winfo toplevel [winfo parent .dlg]]
 
     # add entry fields
     label-entry .dlg.f.find "Find string:"
