@@ -1,3 +1,5 @@
+2005-03-31  ------ omnetpp-3.1 released ------
+
 2005-03-19  Andras Varga
 
 	* cnednetworkbuilder.cc: didn't handle connection display strings

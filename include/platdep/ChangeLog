@@ -1,3 +1,5 @@
+2005-03-31  ------ omnetpp-3.1 released ------
+
 2005-01-10  Andras Varga
 
 	* created platdep/ subdirectory, and factored out most platform 

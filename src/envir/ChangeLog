@@ -1,3 +1,5 @@
+2005-03-31  ------ omnetpp-3.1 released ------
+
 2005-03-22  Andras Varga
 
 	* omnetapp.cc/h, cenvir.cc: cEnvir::getParameter() return type changed

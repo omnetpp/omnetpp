@@ -1,3 +1,5 @@
+2005-03-31  ------ omnetpp-3.1 released ------
+
 2005-03-22  Andras Varga
 
 	* cpar.cc: updated for changed cEnvir::getParameter() return type, see

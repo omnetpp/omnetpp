@@ -1,3 +1,5 @@
+2005-03-31  ------ omnetpp-3.1 released ------
+
 2005-03-03  Andras Varga
 
 	* opp_makemake, opp_nmakemake: implemented -X (ignore subdirectory) option
