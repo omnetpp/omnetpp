@@ -1,6 +1,39 @@
 What's New
 ==========
 
+2004 January Snapshot
+---------------------
+NED documentation tool: opp_neddoc. It works both on Unix and Windows (only
+on Windows you have to install a lot of additional software).
+
+Several Tkenv network animation enhancements: next event marker, animation
+of sendDirect() and method calls, message icons, auto-layouting, icon coloring,
+module "bubbles" (callouts), queue length display, display of a status string
+above module icon, optional modifier icon on top of submodule icon, submodule
+icon optionally on top of a rect/oval, display of "transmission range",
+colors accepted in HSB too.
+
+Changing display strings was made more comfortable from simple modules.
+
+Other Tkenv enhancements: object search dialog; enhanced plugin support
+(see test/tkenv/plugin); better tabnotebook and multi-column listbox widgets
+via BLT; all settings restored from .tkenvrc now.
+
+New sample simulations: Tictoc (a step-by-step tutorial), Aloha, CQN (Closed
+Queueing Network), Queueing, Routing, RoutingDB, Point-to-Point Transmitter.
+Nim was removed, Dyna and Dyna2, Fifo and Fifo2 merged, Topo renamed to
+NEDDemo and Token renamed to TokenRing.
+
+Simulation kernel: redesigned object ownership handling, etc.....
+
+Dynamic loading of NED files (i.e. without nedc and C++ compilation),
+via omnetpp.ini entry or Tkenv toolbar icon. (alpha!)
+
+Distributed simulation support rewritten, currently experimental. (alpha!)
+
+Several new tests in test suite, also for testing opp_neddoc and Tkenv.
+
+
 OMNeT++ 2.3 release (June 2003)
 -------------------------------
 A major revision of the User Manual has taken place. In addition to
