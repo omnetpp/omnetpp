@@ -32,9 +32,10 @@ OMNeT++ has a graphical topology editor called GNED and also a tool
 called Plove for analyzing and plotting simulation output. Both tools
 are written using Tcl/Tk.
 
-We have extended OMNeT++ to execute in parallel using the popular
-PVM library (Parallel Virtual Machine), for studying different
-synchronisation methods.
+OMNeT++ contains support for parallel simulation, using either
+Conservative or Statistical Synchronization. Communication can use
+the MPI (Message Passing Interface) or the PVM (Parallel Virtual
+Machine) libraries.
 
 OMNeT++ Home Page: http://www.hit.bme.hu/phd/vargaa/omnetpp.htm
 
@@ -72,6 +73,7 @@ omnetpp/              OMNeT++ root directory
        nedc/          NED compiler
        sim/           simulation kernel
             std/      files for non-distributed execution
+            mpi       files for distributed execution using MPI
             pvm/      files for distributed execution over PVM
        envir/         common code for user interfaces
        cmdenv/        command-line user interface
@@ -192,6 +194,9 @@ OMNeT++ better and more useful for the Internet community: Richard Lyon,
 Joel Sherrill, Nimrod Mesika, Dan Talayco, Y. Ahmet Sekercioglu, Brent Weech,
 Ulrich Kaage, Balazs Kelemen, Alan Kennington, Niko De Bruyne, Mark Rahner,
 Robert Boxall, Kontogiannis Theophanis, Dario Mariani and many others.
+
+Thanks for Eric Wu (team of Y. Ahmet Sekercioglu, Monash University, Au.)
+for creating and contributing the MPI-based parallel simulation support!
 
 I'd also like to thank John Ousterhout and other developers for Tcl and Tk
 which proved to be an extemely productive environment to build user interfaces;
