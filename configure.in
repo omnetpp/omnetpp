@@ -49,7 +49,7 @@ CFLAGS='-g'
 LDFLAGS=
 
 # total stack size on NT defaults to 128MB (will be added to LDFLAGS later):
-CYGWIN_STACKSIZE= 134217728
+CYGWIN_STACKSIZE=134217728
 
 #----------------------
 # Read in user settings
