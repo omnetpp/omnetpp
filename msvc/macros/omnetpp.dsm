@@ -65,7 +65,7 @@ Sub addNEDfileToProject()
     proj.addFile nedfname
     for each cfg in proj.configurations
         cfg.addCustomBuildStepToFile nedfname, _
-               "nedc -s _n.cpp $(InputPath)", _
+               "nedtool -s _n.cpp $(InputPath)", _
                "$(InputName)_n.cpp", _
                "NED Compiling $(InputPath)"
     next
