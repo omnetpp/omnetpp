@@ -48,7 +48,9 @@ class PushDir
 struct GlobPrivateData;
 
 /**
- * Utility for resolving wildcards in file names
+ * Utility for resolving wildcards in file names. If the pattern doesn't contain
+ * a wildcard, it is returned as it is, regardless whether such file exists
+ * or not.
  */
 class Globber
 {

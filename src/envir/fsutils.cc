@@ -21,6 +21,7 @@
 #include <assert.h>
 
 #include "fsutils.h"
+#include "cexception.h"
 
 #if defined(_WIN32) && !defined(__CYGWIN32__)
 #include <process.h>
@@ -84,16 +85,17 @@ void splitFileName(const char *pathname, opp_string& dir, opp_string& fnameonly)
 
 PushDir::PushDir(const char *changetodir)
 {
-    // FIXME error handling
     olddir.allocate(1024);
-    getcwd(olddir.buffer(),1024);
-    chdir(changetodir);
+    if (!getcwd(olddir.buffer(),1024))
+        throw new cException("Cannot get the name of current directory");
+    if (chdir(changetodir))
+        throw new cException("Cannot temporarily change to directory `%s' (does it exist?)", changetodir);
 }
 
 PushDir::~PushDir()
 {
-    // FIXME error handling
-    chdir((const char *)olddir);
+    if (chdir((const char *)olddir))
+        throw new cException("Cannot change back to directory `%s'", (const char *)olddir);
 }
 
 //-----------
@@ -103,6 +105,7 @@ PushDir::~PushDir()
 
 struct GlobPrivateData
 {
+    bool nowildcard;
     long handle;
     struct _finddata_t fdata;
     char dir[_MAX_PATH];
@@ -126,12 +129,13 @@ const char *Globber::getNext()
     {
         // first call
         data = new GlobPrivateData();
-        data->handle = _findfirst((const char *)fnamepattern, &data->fdata);
-        if (data->handle<0)
+        if (!strchr((const char *)fnamepattern,'*') && !strchr((const char *)fnamepattern,'?'))
         {
-            _findclose(data->handle);
-            return NULL;
+            data->nowildcard = true;
+            return (const char *)fnamepattern;
         }
+
+        data->nowildcard = false;
 
         // remember directory in data->dir
         strcpy(data->dir,(const char *)fnamepattern);
@@ -141,6 +145,17 @@ const char *Globber::getNext()
                 break;
         *(s+1)='\0';  // points (s+1) points either after last "/" or at beg of string.
 
+        if (strchr(data->dir,'*') || strchr(data->dir,'?'))
+            throw new cException("Wildcard characters in directory names are not allowed: `%s'", data->dir);
+
+        // get first file
+        data->handle = _findfirst((const char *)fnamepattern, &data->fdata);
+        if (data->handle<0)
+        {
+            _findclose(data->handle);
+            return NULL;
+        }
+
         // concat file name on directory
         strcpy(data->tmpfname,data->dir);
         strcat(data->tmpfname,data->fdata.name);
@@ -149,6 +164,8 @@ const char *Globber::getNext()
     else
     {
         // subsequent calls
+        if (data->nowildcard)
+            return NULL;
         int done=_findnext(data->handle, &data->fdata);
         if (done)
         {
@@ -166,6 +183,7 @@ const char *Globber::getNext()
 
 struct GlobPrivateData
 {
+    bool nowildcard;
     glob_t globdata;
     int globpos;
 };
@@ -187,6 +205,13 @@ const char *Globber::getNext()
     if (!data)
     {
         data = new GlobPrivateData();
+        if (!strchr((const char *)fnamepattern,'*') && !strchr((const char *)fnamepattern,'?'))
+        {
+            data->nowildcard = true;
+            return (const char *)fnamepattern;
+        }
+
+        data->nowildcard = false;
         if (glob((const char *)fnamepattern, 0, NULL, &data->globdata)!=0)
             return NULL;
         data->globpos = 0;
@@ -194,6 +219,8 @@ const char *Globber::getNext()
     }
     else
     {
+        if (data->nowildcard)
+            return NULL;
         return data->globdata.gl_pathv[data->globpos++];
     }
 }

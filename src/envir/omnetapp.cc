@@ -507,7 +507,6 @@ void TOmnetApp::globAndLoadListFile(const char *fnamepattern)
     const char *fname;
     while ((fname=glob.getNext())!=NULL)
     {
-        ev.printf("Processing listfile: %s\n", fname);
         processListFile(fname);
     }
 }
@@ -524,10 +523,9 @@ void TOmnetApp::processListFile(const char *listfilename)
 
     std::ifstream in(fnameonly, std::ios::in);
     if (in.fail())
-    {
-        ev.printfmsg("cannot open list file '%s'",listfilename);
-        return;
-    }
+        throw new cException("Cannot open list file '%s'",listfilename);
+
+    ev.printf("Processing listfile: %s\n", listfilename);
 
     const int maxline=1024;
     char line[maxline];
@@ -545,9 +543,7 @@ void TOmnetApp::processListFile(const char *listfilename)
     }
 
     if (in.bad())
-    {
-        ev.printfmsg("error reading list file '%s'",listfilename);
-    }
+        throw new cException("Error reading list file '%s'",listfilename);
     in.close();
 }
 
