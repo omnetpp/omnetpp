@@ -120,6 +120,11 @@ TOmnetApp::~TOmnetApp()
 
     delete [] rngs;
 
+    for (int i = 0; i < num_rngs; i++)
+    {
+         delete rngs[i];
+    }
+
     delete scheduler;
 #ifdef WITH_PARSIM
     delete parsimcomm;

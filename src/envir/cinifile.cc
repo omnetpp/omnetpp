@@ -61,7 +61,7 @@ void cIniFile::_readFile(const char *fname, int section_id)
 {
     files.push_back(sFile());
     int file_id = files.size()-1;
-    files[file_id].fname = opp_strdup(absolutePath(fname).c_str());
+    files[file_id].fname = opp_strdup(tidyFilename(absolutePath(fname).c_str()).c_str());
     files[file_id].directory = opp_strdup(directoryOf(files[file_id].fname).c_str());
 
     const int bufsize = MAX_LINE+2; // +2 for CR (or LF) + EOS
@@ -416,7 +416,7 @@ std::string cIniFile::getAsFilenames(const char *sect, const char *key, const ch
     sEntry *entry = _findEntry(sect, key);
     if (!entry)
     {
-       if (!defaultval) 
+       if (!defaultval)
           defaultval = "";
        if (warnings)
           ev.printf("Entry [%s]/%s= not in ini file, \"%s\" used as default\n",
@@ -431,7 +431,7 @@ std::string cIniFile::getAsFilenames(const char *sect, const char *key, const ch
     cStringTokenizer tokenizer(entry->value);
     const char *token;
     while ((token = tokenizer.nextToken())!=NULL)
-        result += concatDirAndFile(baseDir, token) + " ";
+        result += tidyFilename(concatDirAndFile(baseDir, token).c_str()) + " ";
     return result;
 }
 

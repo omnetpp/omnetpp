@@ -1,3 +1,9 @@
+2005-03-21  Andras Varga
+
+	* omnetapp.cc: fixed memory leak in shutdown code: RNG objects 
+	didn't get freed in TOmnetApp destructor. [discovered and patch 
+	provided by Nigel Sheridan-Smith]
+
 2005-03-18  Andras Varga
 
 	* cinifile.h/cc: implemented getAsFilenames(), getBaseDirectoryFor(),
