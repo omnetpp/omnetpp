@@ -76,22 +76,25 @@ while (@ARGV)
 # parse file
 #
 $filename =~ /./ || die "*** no file name given\n";
-$filename =~ /\.[^\/]*$/ || die "*** file name must contain a dot\n";
+$filename =~ /\.[^\\\/]*$/ || die "*** file name must contain a dot\n";
+$filename =~ s|\\|/|g;
 $hfile = $filename;
-$hfile =~ s/\.[^.]*$/$hsuffix/;
+$hfile =~ s|\.[^.]*$|$hsuffix|;
 if ($here eq "true")
 {
-    $hfile =~ s/^.*[\\\/]//;
+    $hfile =~ s|^.*/||;
 }
-$hdef = '_'.$hfile;
-$hdef =~ s/\.[^.]*$/_H_/;
+$hdef = $hfile;
+$hdef =~ s|^.*/||;
+$hdef =~ s|\.[^.]*$|_H_|;
+$hdef = '_'.$hdef;
 $hdef =~ tr/[a-z]/[A-Z]/;
-$hdef =~ tr/[\/]/\_/;
+$hdef =~ s/[^a-zA-Z0-9]/_/g;
 $ccfile = $filename;
-$ccfile =~ s/\.[^.]*$/$ccsuffix/;
+$ccfile =~ s|\.[^.]*$|$ccsuffix|;
 if ($here eq "true")
 {
-    $ccfile =~ s/^.*[\\\/]//;
+    $ccfile =~ s|^.*/||;
 }
 
 $ret = 0;
