@@ -1,0 +1,69 @@
+//==========================================================================
+// Part of the OMNeT++ Discrete System Simulation System
+//
+// GENERATED FILE -- DO NOT EDIT!
+//
+//==========================================================================
+
+/*--------------------------------------------------------------*
+  Copyright (C) 2002 Andras Varga
+
+  This file is distributed WITHOUT ANY WARRANTY. See the file
+  `license' for details on this and other legal matters.
+*--------------------------------------------------------------*/
+
+// *** THIS IS A GENERATED FILE, HAND-EDITING IT IS USELESS! ***
+
+#include <stdio.h>
+#include "nedvalidator.h"
+
+void  NEDValidatorBase::validate(NEDElement *node)
+{
+    validateElement(node);
+    for (NEDElement *child=node->getFirstChild(); child; child=child->getNextSibling())
+        validate(child);
+}
+
+void  NEDValidatorBase::validateElement(NEDElement *node)
+{
+    switch (node->getTagCode()) {
+        case NED_NED_FILES: validateElement((NedFilesNode *) node); break;
+        case NED_NED_FILE: validateElement((NedFileNode *) node); break;
+        case NED_IMPORT: validateElement((ImportNode *) node); break;
+        case NED_IMPORTED_FILE: validateElement((ImportedFileNode *) node); break;
+        case NED_CHANNEL: validateElement((ChannelNode *) node); break;
+        case NED_CHANNEL_ATTR: validateElement((ChannelAttrNode *) node); break;
+        case NED_NETWORK: validateElement((NetworkNode *) node); break;
+        case NED_SIMPLE_MODULE: validateElement((SimpleModuleNode *) node); break;
+        case NED_COMPOUND_MODULE: validateElement((CompoundModuleNode *) node); break;
+        case NED_PARAMS: validateElement((ParamsNode *) node); break;
+        case NED_PARAM: validateElement((ParamNode *) node); break;
+        case NED_GATES: validateElement((GatesNode *) node); break;
+        case NED_GATE: validateElement((GateNode *) node); break;
+        case NED_MACHINES: validateElement((MachinesNode *) node); break;
+        case NED_MACHINE: validateElement((MachineNode *) node); break;
+        case NED_SUBMODULES: validateElement((SubmodulesNode *) node); break;
+        case NED_SUBMODULE: validateElement((SubmoduleNode *) node); break;
+        case NED_SUBSTPARAMS: validateElement((SubstparamsNode *) node); break;
+        case NED_SUBSTPARAM: validateElement((SubstparamNode *) node); break;
+        case NED_GATESIZES: validateElement((GatesizesNode *) node); break;
+        case NED_GATESIZE: validateElement((GatesizeNode *) node); break;
+        case NED_SUBSTMACHINES: validateElement((SubstmachinesNode *) node); break;
+        case NED_SUBSTMACHINE: validateElement((SubstmachineNode *) node); break;
+        case NED_CONNECTIONS: validateElement((ConnectionsNode *) node); break;
+        case NED_CONNECTION: validateElement((ConnectionNode *) node); break;
+        case NED_CONN_ATTR: validateElement((ConnAttrNode *) node); break;
+        case NED_FOR_LOOP: validateElement((ForLoopNode *) node); break;
+        case NED_LOOP_VAR: validateElement((LoopVarNode *) node); break;
+        case NED_DISPLAY_STRING: validateElement((DisplayStringNode *) node); break;
+        case NED_EXPRESSION: validateElement((ExpressionNode *) node); break;
+        case NED_OPERATOR: validateElement((OperatorNode *) node); break;
+        case NED_FUNCTION: validateElement((FunctionNode *) node); break;
+        case NED_PARAM_REF: validateElement((ParamRefNode *) node); break;
+        case NED_IDENT: validateElement((IdentNode *) node); break;
+        case NED_CONST: validateElement((ConstNode *) node); break;
+        case NED_UNKNOWN: validateElement((UnknownNode *) node); break;
+        default: ; // FIXME internal error
+    }
+}
+

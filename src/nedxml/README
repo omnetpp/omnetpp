@@ -1,0 +1,68 @@
+NEDXML sources
+==============
+
+NEDXML is an XML-based NED handling library. Handles parsing (NED,XML), 
+validation, compilation, code generation (C++,NED,XML).
+
+The interface files in each group marked with *.
+
+API documentation generation is supported (Doxygen, see doxy.cfg).
+
+Data classes:
+    ned.dtd
+    dtdclassgen.pl
+    nedelement.cc
+  * nedelement.h
+    nedelements.cc (generated from DTD)
+  * nedelements.h (generated from DTD)
+    nedstring.cc
+    nedstring.h
+
+Util:
+    nederror.cc
+  * nederror.h
+
+Validation (DTD, basic, semantic):
+    nedvalidator.cc (generated from DTD)
+  * nedvalidator.h (generated from DTD)
+    neddtdvalidator.cc (generated from DTD)
+  * neddtdvalidator.h (generated from DTD)
+    neddtdvalidator1.cc
+    nedbasicvalidator.cc
+  * nedbasicvalidator.h
+    nedsemanticvalidator.cc
+  * nedsemanticvalidator.h
+
+Load imports and do semantic validation:
+    nedcompiler.cc
+  * nedcompiler.h
+
+NED parser:
+    nedparser.cc
+  * nedparser.h
+    nedgrammar.h
+    ned.lex
+    ned.y
+    nedfilebuffer.cc
+    nedfilebuffer.h
+
+NED code generator:
+    nedgenerator.cc
+  * nedgenerator.h
+
+XML parser (uses expat):
+    nedxmlparser.cc
+  * nedxmlparser.h
+    nedsaxhandler.cc
+    nedsaxhandler.h
+    saxparser.cc
+    saxparser.h
+
+XML generator:
+    xmlgenerator.cc
+  * xmlgenerator.h
+
+C++ code generator:
+    cppgenerator.cc
+  * cppgenerator.h
+

@@ -1,0 +1,207 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS)
+OBJS=nedelements.obj nedelement.obj nedstring.obj nederror.obj \
+     nedvalidator.obj neddtdvalidator.obj neddtdvalidator1.obj \
+     nedbasicvalidator.obj nedsemanticvalidator.obj nedcompiler.obj \
+     cppgenerator.obj nedgenerator.obj nedfilebuffer.obj \
+     nedparser.obj ned.tab.obj lex.yy.obj \
+     xmlgenerator.obj nedxmlparser.obj nedsaxhandler.obj saxparser.obj \
+
+
+#
+# Targets
+#
+all : nedxml.lib
+
+nedxml.lib : $(OBJS)
+        $(AR) /nologo /out:nedxml.lib $(OBJS)
+
+nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned.dtd
+        perl dtdclassgen.pl ned.dtd
+
+cppgenerator.obj : cppgenerator.cc
+        $(CXX) $(COPTS) /c /Tp cppgenerator.cc
+
+nedelements.obj : nedelements.cc
+        $(CXX) $(COPTS) /c /Tp nedelements.cc
+
+nedelement.obj : nedelement.cc
+        $(CXX) $(COPTS) /c /Tp nedelement.cc
+
+nedvalidator.obj : nedvalidator.cc
+        $(CXX) $(COPTS) /c /Tp nedvalidator.cc
+
+neddtdvalidator.obj : neddtdvalidator.cc
+        $(CXX) $(COPTS) /c /Tp neddtdvalidator.cc
+
+neddtdvalidator1.obj : neddtdvalidator1.cc
+        $(CXX) $(COPTS) /c /Tp neddtdvalidator1.cc
+
+nedcompiler.obj : nedcompiler.cc
+        $(CXX) $(COPTS) /c /Tp nedcompiler.cc
+
+nedbasicvalidator.obj : nedbasicvalidator.cc
+        $(CXX) $(COPTS) /c /Tp nedbasicvalidator.cc
+
+nedsemanticvalidator.obj : nedsemanticvalidator.cc
+        $(CXX) $(COPTS) /c /Tp nedsemanticvalidator.cc
+
+nedstring.obj : nedstring.cc
+        $(CXX) $(COPTS) /c /Tp nedstring.cc
+
+nederror.obj : nederror.cc
+	$(CXX) $(COPTS) /c /Tp nederror.cc
+
+lex.yy.obj: lex.yy.c
+        $(CXX) /I "." $(COPTS) /c /Tp lex.yy.c
+
+ned.tab.obj: ned.tab.h ned.tab.c
+        $(CXX) $(COPTS) /c /Tp ned.tab.c
+
+ned.tab.h: ned.y
+        $(YACC) -b ned -d ned.y
+
+ned.tab.c: ned.y
+        $(YACC) -b ned -d ned.y
+
+lex.yy.c: ned.lex
+        $(LEX) ned.lex
+
+nedgenerator.obj : nedgenerator.cc
+        $(CXX) $(COPTS) /c /Tp nedgenerator.cc
+
+nedfilebuffer.obj : nedfilebuffer.cc
+        $(CXX) $(COPTS) /c /Tp nedfilebuffer.cc
+
+nedparser.obj : nedparser.cc
+        $(CXX) $(COPTS) /c /Tp nedparser.cc
+
+xmlgenerator.obj : xmlgenerator.cc
+        $(CXX) $(COPTS) /c /Tp xmlgenerator.cc
+
+nedxmlparser.obj : nedxmlparser.cc
+        $(CXX) $(COPTS) /c /Tp nedxmlparser.cc
+
+nedsaxhandler.obj : nedsaxhandler.cc
+        $(CXX) $(COPTS) /c /Tp nedsaxhandler.cc
+
+saxparser.obj : saxparser.cc
+        $(CXX) $(COPTS) /c /Tp saxparser.cc
+
+
+depend:
+        $(MAKEDEPEND) -I. -fMakefile.vc -- *.cc
+
+clean:
+        - del *.obj neddata.lib 2> nul
+        - del *.ilk *.idb *.pdb 2> nul
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+cppgenerator.obj: cppgenerator.cc \
+  nedelements.h \
+  cppgenerator.h \
+  nedelement.h \
+  nedstring.h
+nedbasicvalidator.obj: nedbasicvalidator.cc \
+  nederror.h \
+  nedbasicvalidator.h \
+  nedelement.h \
+  nedstring.h \
+  nedvalidator.h \
+  nedelements.h
+nedcompiler.obj: nedcompiler.cc \
+  nederror.h \
+  nedcompiler.h \
+  nedparser.h \
+  neddtdvalidator.h \
+  nedbasicvalidator.h \
+  nedsemanticvalidator.h \
+  nedelement.h \
+  nedstring.h \
+  nedelements.h \
+  nedgrammar.h \
+  nedvalidator.h
+neddtdvalidator.obj: neddtdvalidator.cc \
+  neddtdvalidator.h \
+  nedelements.h \
+  nedvalidator.h \
+  nedelement.h \
+  nedstring.h
+neddtdvalidator1.obj: neddtdvalidator1.cc \
+  nederror.h \
+  neddtdvalidator.h \
+  nedelement.h \
+  nedstring.h \
+  nedelements.h \
+  nedvalidator.h
+nedelement.obj: nedelement.cc \
+  nedelement.h \
+  nedstring.h
+nedelements.obj: nedelements.cc \
+  nedelements.h \
+  nedelement.h \
+  nedstring.h
+nederror.obj: nederror.cc \
+  nederror.h \
+  nedelement.h \
+  nedstring.h
+nedfilebuffer.obj: nedfilebuffer.cc \
+  nedfilebuffer.h \
+  nedparser.h \
+  nedgrammar.h \
+  nedelement.h \
+  nedstring.h
+nedgenerator.obj: nedgenerator.cc \
+  nedgenerator.h \
+  nedelements.h \
+  nedelement.h \
+  nedstring.h
+nedparser.obj: nedparser.cc \
+  nedparser.h \
+  nedfilebuffer.h \
+  nedelements.h \
+  nederror.h \
+  nedgrammar.h \
+  nedelement.h \
+  nedstring.h
+nedsaxhandler.obj: nedsaxhandler.cc \
+  nedsaxhandler.h \
+  nedelements.h \
+  nedelement.h \
+  saxparser.h \
+  nedstring.h
+nedsemanticvalidator.obj: nedsemanticvalidator.cc \
+  nederror.h \
+  nedsemanticvalidator.h \
+  nedcompiler.h \
+  nedelement.h \
+  nedstring.h \
+  nedvalidator.h \
+  nedelements.h
+nedstring.obj: nedstring.cc \
+  nedstring.h
+nedvalidator.obj: nedvalidator.cc \
+  nedvalidator.h \
+  nedelements.h \
+  nedelement.h \
+  nedstring.h
+nedxmlparser.obj: nedxmlparser.cc \
+  saxparser.h \
+  nedsaxhandler.h \
+  nedelement.h \
+  nedstring.h
+saxparser.obj: saxparser.cc \
+  saxparser.h
+xmlgenerator.obj: xmlgenerator.cc \
+  nedelements.h \
+  xmlgenerator.h \
+  nedelement.h \
+  nedstring.h
