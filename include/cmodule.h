@@ -97,6 +97,10 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
  * cModule provides gates, parameters, RNG mapping, display strings, 
  * and a set of virtual methods.
  *
+ * For navigating around in the module tree, see: 
+ * parentModule(), submodule(), cSubModIterator, moduleByRelativePath(),
+ * cSimulation::moduleByPath().
+ *
  * @ingroup SimCore
  */
 class SIM_API cModule : public cDefaultList
@@ -457,8 +461,8 @@ class SIM_API cModule : public cDefaultList
     const cGate *gate(int g) const {return (const cGate*)gatev[g];}
 
     /**
-     * Looks up a gate by its name and index. A scalar gate is treated same
-     * as a vector gate with size=1. Returns NULL if the gate does not exist.
+     * Looks up a gate by its name and index. Returns NULL if the gate does 
+     * not exist.
      */
     cGate *gate(const char *gatename,int sn=-1);
 
@@ -720,6 +724,15 @@ class SIM_API cCompoundModule : public cModule
 
 /**
  * Iterates through submodules of a compound module.
+ *
+ * Example:
+ * \code
+ * for (cSubModIterator i(*modp); !i.end(); i++)
+ * {
+ *     cModule *submodp = i();
+ *     ...
+ * }
+ * \endcode
  */
 class SIM_API cSubModIterator
 {
