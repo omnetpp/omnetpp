@@ -113,7 +113,7 @@ MemManager::MemManager(int mps)
 {
     maxpoolsize = mps;
     safetypool = malloc(maxpoolsize);
-    lowmem = (safetypool!=NULL);
+    lowmem = (safetypool==NULL);
 }
 
 MemManager::~MemManager()
