@@ -4,10 +4,10 @@
 
 \section{What is {\opp}?}
 
-{\opp} is an object-oriented modular discrete event simulator.
+{\opp} is an object-oriented modular discrete event simulator
+written by Andras Varga.
 The name itself stands for Objective Modular Network Testbed
-in C++. {\opp} has its distant roots in OMNeT, a simulator written
-in Object Pascal by dr. Gy\"{o}rgy Pongor.
+in C++.
 
 The simulator can be used for:
 \begin{itemize}
@@ -239,6 +239,10 @@ The manual is organized around the following topics:
 
 \section{History}
 
+\tbf{The early days: 1992-1997}
+
+{\opp} has its distant roots in OMNeT, a simulator written
+in Object Pascal by dr. Gy\"{o}rgy Pongor.
 The development of {\opp} started as a semester's programming
 assignment at the Technical University of Budapest (BME) in 1992.
 The assignment (``creation of an object-oriented discrete event
@@ -280,6 +284,16 @@ Vass as diploma work
 
 1997 Dec: added GNED
 
+FIXME
+
+\tbf{Regular open-source releases: 1997-2003}
+
+Until 1997, some people occasionally contributed to {\opp}.
+Since 1997, all development is done entirely by Andras;
+independent of the University since 1998. (He leaves
+the University in 1998, and is no longer affiliated with it
+since then.)
+
 1997 Sept: web site set up, first public release
 
 1997 Feb-1998 Sept: simulation projects for a small company in
@@ -299,6 +313,12 @@ Hungary. We used a version of {\opp}.
 
 2001 June: the CVS is hosted in Karlsruhe
 
+FIXME
+
+\tbf{}
+
+FIXME
+
 \dots
 
 
@@ -307,39 +327,46 @@ Hungary. We used a version of {\opp}.
 
 \section{Authors}
 
-{\opp} has been developed mostly by Andr\'{a}s Varga at the Technical
-University of Budapest, Department of Telecommunications (BME-HIT).
+{\opp} has been created and developed by Andr\'{a}s Varga.
 
-\tab Andr\'{a}s Varga\tab \tab BME-HIT, andras@whale.hit.bme.hu
+\tab Andr\'{a}s Varga\tab \tab Omnest Global Inc, andras.varga@omnest.com
 
+In the early history of {\opp} (1992-1996), several people have
+contributed some amount of code to {\opp}.
+Credit for organizing goes to Dr. Gy\"{o}rgy Pongor (BME-HIT,
+\href{mailto:pongor@hit.bme.hu}{pongor@hit.bme.hu}),
+my advisor at the University. Below is a more-or-less complete list of people.
 
-Since leaving the university in 1998, I've been doing the development
-in my free time.
+As of today, hardly any code written by these people
+is actually part of the current codebase -- 98% percent of the
+code has been discarded because of quality problems or complete
+redesign, and replaced by Andr\'{a}s's code.
 
-Several people have worked for shorter periods (1..3 months)
-on different topics within {\opp}. Credit for organizing this
-goes to Dr. Gy\"{o}rgy Pongor (BME-HIT, \href{mailto:pongor@hit.bme.hu}{pongor@hit.bme.hu}), my
-advisor at the University. Here is a more-or-less complete list
-of people:
+Since 1997, development is entirely done by Andr\'{a}as. He is
+not associated with the Technical University of Budapest.
 
 Old NED compiler, 1992-93:\\
 \tab \'{A}kos Kun\tab \tab BME
+This code was never released.
 
-JAR compiler (now called NEDC), sample simulations; summer 1995:\\
+JAR compiler (later renamed nedc), sample simulations; summer 1995:\\
 \tab Jan Heijmans\tab \tab TU Delft\\
 \tab Alex Paalvast\tab \tab TU Delft\\
 \tab Robert van der Leij\tab TU Delft
+nedc was superseded by nedtool in OMNeT++ 3.0.
 
-New feaures, testing, new examples; fall 1995:\\
+Some new feaures, testing, new examples; fall 1995:\\
 \tab Maurits Andr\'{e}\tab \tab TU Delft, M.J.A.Andre@twi.tudelft.nl\\
 \tab George van Montfort\tab TU Delft, G.P.R.vanMontfort@twi.tudelft.nl\\
 \tab Gerard van de Weerd\tab TU Delft, G.vandeweerd@twi.tudelft.nl
 
 JAR (NEDC) support for distributed execution:\\
 \tab G\'{a}bor Lencse\tab \tab BME-HIT, lencse@hit.bme.hu
+Removed in OMNeT++ 3.0.
 
 PVM support (as final project), spring 1996:\\
 \tab Zolt\'{a}n Vass\tab \tab BME-HIT
+Removed and replaced with different codebase in OMNeT++ 3.0.
 
 P$^{2}$, k-split algorithms and more, from fall 1996:\\
 \tab Babak Fakhamzadeh\tab TU Delft
