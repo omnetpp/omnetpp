@@ -85,8 +85,7 @@ clean:
 	rm -f *.vec *.sca
 
 depend:
-	$(MAKEDEPEND) -Y $(INCLUDE_PATH) -- *.cc
-	$(MAKEDEPEND) -Y $(INCLUDE_PATH) -fMakefile.in -- *.cc
+
 
 re-makemake:
 	opp_makemake -f  ../dyna ../fddi ../fifo1 ../fifo2 ../hcube ../hist ../nim ../pvmex ../token   #recreate Makefile
