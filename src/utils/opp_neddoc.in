@@ -1,7 +1,15 @@
 #! /bin/sh
 NEDDOC_XSL=@OMNETPP_UTILS_DIR@/neddoc.xsl
+TMPFILE=/tmp/opp_neddoc.tmp.$$
 
-nedtool -x -e -y -m -o /tmp/xxx $*
-xsltproc $NEDDOC_XSL /tmp/xxx
-rm -f /tmp/xxx
+cleanup()
+{
+    rm $TMPFILE
+}
+
+trap cleanup HUP INT QUIT TERM
+
+nedtool -x -e -y -m -o $TMPFILE $*
+xsltproc $NEDDOC_XSL $TMPFILE
+cleanup
 
