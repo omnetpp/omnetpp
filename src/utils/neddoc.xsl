@@ -219,7 +219,7 @@
          <xsl:with-param name="content">
             <h2 class="comptitle">Class Inheritance Diagram</h2>
             <p>The following diagram shows the class hierarchy.</p>
-            <img src="class-interitance-diagram.gif" ismap="yes" usemap="class-interitance-diagram.map"/>
+            <img src="class-inheritance-diagram.gif" ismap="yes" usemap="class-inheritance-diagram.map"/>
          </xsl:with-param>
       </xsl:call-template>
 
@@ -249,6 +249,7 @@
       <li><a href="overview.html" target="mainframe">HOME</a></li>
       <xsl:if test="$have-dot='yes'">
          <li><a href="module-diagram.html" target="mainframe">Module Hierarchy</a></li>
+         <li><a href="class-inheritance-diagram.html" target="mainframe">Class Inheritance Diagram</a></li>
       </xsl:if>
       <xsl:for-each select="//ned-file/@banner-comment[contains(.,'@page')]">
          <xsl:call-template name="do-extract-pageindex">
@@ -1224,8 +1225,8 @@
       node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#fffcaf"];
       <xsl:for-each select="//simple-module|//compound-module">
          <xsl:sort select="@name"/>
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
          <xsl:variable name="modname" select="@name"/>
-         <xsl:value-of select="$modname"/>;
          <xsl:for-each select="key('module',submodules/submodule/@type-name)">
             <xsl:value-of select="$modname"/> -> <xsl:value-of select="@name"/>; 
          </xsl:for-each>
@@ -1238,11 +1239,13 @@
       node [fontsize=10,fontname=helvetica,shape=box,height=.25,style=filled,fillcolor="#fffcaf"];
       edge [arrowhead=none,arrowtail=empty];
       <xsl:for-each select="//class">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
          <xsl:if test="@extends-name">
              <xsl:value-of select="@extends-name"/> -> <xsl:value-of select="@name"/>;
          </xsl:if>
       </xsl:for-each>
       <xsl:for-each select="//message">
+         <xsl:value-of select="@name"/> [URL="<xsl:value-of select="concat(@name,'-',generate-id(.),'.html')"/>"];
          <xsl:choose>
             <xsl:when test="@extends-name">
                 <xsl:value-of select="@extends-name"/> -> <xsl:value-of select="@name"/>;
