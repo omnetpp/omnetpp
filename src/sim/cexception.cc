@@ -103,6 +103,7 @@ void cException::storeCtx()
     else
     {
         moduleid = simulation.contextModule()->id();
+        moduleclassname = simulation.contextModule()->className();
         modulefullpath = simulation.contextModule()->fullPath();
     }
 }

@@ -1,3 +1,8 @@
+2004-02-10  Andras Varga
+
+	* omnetapp.cc: error messages to display module class name (NED type)
+	of current module
+		
 2004-02-09  Andras Varga
 
 	* omnetapp.cc/h: preload-ned-files= omnetpp.ini option now supports

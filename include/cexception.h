@@ -35,6 +35,7 @@ class SIM_API cException
   protected:
     int errorcode;
     opp_string msg;
+    opp_string moduleclassname;
     opp_string modulefullpath;
     int moduleid;
 
@@ -104,6 +105,12 @@ class SIM_API cException
     const char *message() {return msg;}
 
     /**
+     * Returns the class name (NED type name) of the module where the 
+     * exception occurred.
+     */
+    const char *moduleClassName() {return moduleclassname;}
+
+    /**
      * Returns the full path of the module where the exception
      * occurred.
      */
@@ -116,11 +123,6 @@ class SIM_API cException
      * during network setup, the network is cleaned up immediately).
      */
     int moduleID() {return moduleid;}
-
-//    /**
-//     * Tell if this exception signalled an error or a normal termination.
-//     */
-//    bool isNormalTermination() const;
     //@}
 };
 

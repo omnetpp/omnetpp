@@ -62,7 +62,7 @@ void cNEDNetworkBuilder::setupNetwork(NetworkNode *networknode)
                              modtypename, modname);
 
     cModule *networkp = modtype->create(modname, NULL);
-    assignSubmoduleParams(networkp, networknode->getFirstSubstparamsChild());
+    assignSubmoduleParams(networkp, networknode);
     networkp->buildInside();
 }
 
@@ -118,8 +118,8 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
     {
         cModule *submodp = modtype->create(modname, modp);
         setDisplayString(submodp, submod);
-        assignSubmoduleParams(submodp, submod->getFirstSubstparamsChild());
-        setupGateVectors(submodp, submod->getFirstGatesizesChild());
+        assignSubmoduleParams(submodp, submod);
+        setupGateVectors(submodp, submod);
         submodp->buildInside();
     }
     else
@@ -129,8 +129,8 @@ void cNEDNetworkBuilder::addSubmodule(cModule *modp, SubmoduleNode *submod)
         {
             cModule *submodp = modtype->create(modname, modp, vectorsize, i);
             setDisplayString(submodp, submod);
-            assignSubmoduleParams(submodp, submod->getFirstSubstparamsChild());
-            setupGateVectors(submodp, submod->getFirstGatesizesChild());
+            assignSubmoduleParams(submodp, submod);
+            setupGateVectors(submodp, submod);
             submodp->buildInside();
         }
     }
@@ -146,33 +146,50 @@ void cNEDNetworkBuilder::setDisplayString(cModule *submodp, SubmoduleNode *submo
     }
 }
 
-void cNEDNetworkBuilder::assignSubmoduleParams(cModule *submodp, SubstparamsNode *substparams)
+void cNEDNetworkBuilder::assignSubmoduleParams(cModule *submodp, NEDElement *submod)
 {
-    // assign parameters
-    if (substparams && substparams->getNextSubstparamsNodeSibling())
-        throw new cException("dynamic module builder: multiple parameters sections are not supported");
-    if (substparams)
+    SubstparamsNode *substparams = (SubstparamsNode *) submod->getFirstChildWithTag(NED_SUBSTPARAMS);
+    cModule *modp = submodp->parentModule();
+    for (; substparams; substparams = substparams->getNextSubstparamsNodeSibling())
     {
-        for (SubstparamNode *par=substparams->getFirstSubstparamChild(); par; par=par->getNextSubstparamNodeSibling())
+        // evaluate condition
+        ExpressionNode *condexpr = getExpr(substparams, "condition");
+        bool cond = !condexpr || evaluate(modp, condexpr, submodp)!=0;
+
+        // process section
+        if (cond)
         {
-            const char *parname = par->getName();
-            cPar& p = submodp->par(parname);
-            assignParamValue(p, getExpr(par,"value"),submodp->parentModule());
+            for (SubstparamNode *par=substparams->getFirstSubstparamChild(); par; par=par->getNextSubstparamNodeSibling())
+            {
+                // assign param value
+                const char *parname = par->getName();
+                cPar& p = submodp->par(parname);
+                assignParamValue(p, getExpr(par,"value"),modp);
+            }
         }
     }
 }
 
-void cNEDNetworkBuilder::setupGateVectors(cModule *submodp, GatesizesNode *gates)
+void cNEDNetworkBuilder::setupGateVectors(cModule *submodp, NEDElement *submod)
 {
-    if (gates && gates->getNextGatesizesNodeSibling())
-        throw new cException("dynamic module builder: multiple gatesizes sections are not supported");
-    if (gates)
+    GatesizesNode *gatesizes = (GatesizesNode *) submod->getFirstChildWithTag(NED_GATESIZES);
+    cModule *modp = submodp->parentModule();
+    for (; gatesizes; gatesizes = gatesizes->getNextGatesizesNodeSibling())
     {
-        for (GatesizeNode *gate=gates->getFirstGatesizeChild(); gate; gate=gate->getNextGatesizeNodeSibling())
+        // evaluate condition
+        ExpressionNode *condexpr = getExpr(gatesizes, "condition");
+        bool cond = !condexpr || evaluate(modp, condexpr, submodp)!=0;
+
+        // process section
+        if (cond)
         {
-            const char *gatename = gate->getName();
-            int vectorsize = (int) evaluate(submodp->parentModule(), getExpr(gate, "vector-size"));
-            submodp->setGateSize(gatename, vectorsize);
+            for (GatesizeNode *gate=gatesizes->getFirstGatesizeChild(); gate; gate=gate->getNextGatesizeNodeSibling())
+            {
+                // set gate vector size
+                const char *gatename = gate->getName();
+                int vectorsize = (int) evaluate(modp, getExpr(gate, "vector-size"), submodp);
+                submodp->setGateSize(gatename, vectorsize);
+            }
         }
     }
 }
@@ -469,16 +486,18 @@ double cNEDNetworkBuilder::evalFunction(FunctionNode *node, cModule *parentmodp,
                 return g->size();
         }
 
-        // if not found, find among submodules
-        cModule *m = parentmodp->submodule(name);
-        if (m)
-            return m->size();
+        if (parentmodp)  // in network params, parentmodp==NULL
+        {
+            // if not found, find among submodules
+            cModule *m = parentmodp->submodule(name);
+            if (m)
+                return m->size();
 
-        // if not found, find among gates of parent module
-        cGate *g = parentmodp->gate(name);
-        if (g)
-            return g->size();
-
+            // if not found, find among gates of parent module
+            cGate *g = parentmodp->gate(name);
+            if (g)
+                return g->size();
+        }
         throw new cException("dynamic module builder: evaluate: sizeof(%s) failed -- no such gate or module", name);
     }
     else if (!strcmp(funcname,"input"))
@@ -517,6 +536,8 @@ double cNEDNetworkBuilder::evalParamref(ParamRefNode *node, cModule *parentmodp,
 {
     // Note: the getIsRef() modifier can be ignored, because this expression
     // is evaluated once (and not stored)
+
+// FIXME parentmodp may be NULL!!!!!!
 
     if (node->getIsAncestor())
     {
@@ -851,6 +872,7 @@ void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *x
 
         // if not found, find among submodules
         cModule *parentmodp = submodp->parentModule();
+        // FIXME submodp may be network module, then parentmodp==NULL?
         cModule *m = parentmodp->submodule(name);
         if (!m) m = parentmodp->submodule(name,0);
         if (m)
@@ -892,6 +914,7 @@ void cNEDNetworkBuilder::addXElemsFunction(FunctionNode *node, cPar::ExprElem *x
 
 void cNEDNetworkBuilder::addXElemsParamref(ParamRefNode *node, cPar::ExprElem *xelems, int& pos, cModule *submodp)
 {
+    // FIXME submodp may be network module, then parentmodp==NULL?
     const char *paramname = node->getParamName();
     cModule *parentmodp = submodp->parentModule();
     cPar *par;
@@ -912,7 +935,7 @@ void cNEDNetworkBuilder::addXElemsParamref(ParamRefNode *node, cPar::ExprElem *x
         {
             const char *modname = node->getModule();
             ExpressionNode *modindexp = getExpr(node, "module-index");
-            int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp);
+            int modindex = !modindexp ? 0 : (int) evaluate(parentmodp, modindexp); // FIXME ",modp" needed?
             modp = parentmodp->submodule(modname,modindex);
             if (!modp)
             {

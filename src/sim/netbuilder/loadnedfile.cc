@@ -194,9 +194,7 @@ void loadNedFile(const char *fname, bool isXML)
         else
         {
             delete tree;
-            throw new cException("error loading `%s': only compund modules and networks are "
-                                 "supported in dynamically loaded NED files, they may not contain "
-                                 "simple modules, channels, etc.", fname);
+            throw new cException("error loading `%s': channels not yet supported in dynamically loaded NED files", fname);
         }
     }
 

@@ -1,3 +1,8 @@
+2004-02-10  Andras Varga
+
+	* cnednetworkbuilder.cc: support for multiple conditional gatesizes and
+	parameters sections; fixes in expr handling
+
 2004-02-09  Andras Varga
 
 	* loading of simple module interfaces from NED files made possible

@@ -42,8 +42,8 @@ class cNEDNetworkBuilder
   protected:
     virtual void addSubmodule(cModule *modp, SubmoduleNode *submod);
     virtual void setDisplayString(cModule *submodp, SubmoduleNode *submod);
-    virtual void assignSubmoduleParams(cModule *submodp, SubstparamsNode *substparams);
-    virtual void setupGateVectors(cModule *submodp, GatesizesNode *gatesizes);
+    virtual void assignSubmoduleParams(cModule *submodp, NEDElement *submod);
+    virtual void setupGateVectors(cModule *submodp, NEDElement *submod);
     virtual void addLoopConnection(cModule *modp, ForLoopNode *forloop);
     virtual void doLoopVar(cModule *modp, LoopVarNode *loopvar);
     virtual void addConnection(cModule *modp, ConnectionNode *conn);
