@@ -44,7 +44,10 @@ Register_Class(cSequentialScheduler);
 
 cMessage *cSequentialScheduler::getNextEvent()
 {
-    return sim->msgQueue.peekFirst();
+    cMessage *msg = sim->msgQueue.peekFirst();
+    if (!msg)
+        throw new cTerminationException(eENDEDOK);
+    return msg;
 }
 
 

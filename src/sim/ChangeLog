@@ -1,3 +1,8 @@
+2004-02-11  Andras Varga 
+
+	* csimul.cc, cscheduler.cc: semantic change of getNextEvent()'s and
+	selectNextModule()'s return value (see include/ChangeLog)
+
 2004-02-10  Andras Varga 
 
 	* cexception.cc: added storage of module class name (NED type name)

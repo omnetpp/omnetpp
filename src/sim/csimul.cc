@@ -448,7 +448,7 @@ cSimpleModule *cSimulation::selectNextModule()
     // the scheduler just returns msgQueue->peekFirst().
     cMessage *msg = schedulerp->getNextEvent();
     if (!msg)
-        throw new cTerminationException(eENDEDOK); //FIXME change doc comment!
+        return NULL; // scheduler got interrupted while waiting
 
     // check if dest module exists and still running
     cSimpleModule *modp = (cSimpleModule *)vect[msg->arrivalModuleId()];
