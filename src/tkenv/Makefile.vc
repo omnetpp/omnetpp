@@ -63,7 +63,7 @@ clean:
 	del *.obj tkenv.lib tkenv.dll
 
 install-local: $(TKENV_IF_POSSIBLE)
-	copy tkenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+	copy tkenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

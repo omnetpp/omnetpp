@@ -37,7 +37,7 @@ clean:
 	del *.obj cmdenv.lib cmdenv.dll
 
 install-local: cmdenv$(LIB_SUFFIX)
-	copy cmdenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+	copy cmdenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

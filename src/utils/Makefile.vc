@@ -9,7 +9,7 @@
 all: seedtool.exe tcl2c.exe
 
 seedtool.exe : seedtool.cc
-	$(CXX) /Tp seedtool.cc 
+	$(CXX) /Tp seedtool.cc
 
 tcl2c.exe: tcl2c.c
 	$(CC) tcl2c.c
@@ -20,7 +20,7 @@ clean:
 	del *.obj seedtool.exe tcl2c.exe
 
 install-local: seedtool
-	copy seedtool.exe $(OMNETPP_BIN_DIR)
+	copy seedtool.exe $(OMNETPP_BIN_DIR:/=\)
 	@rem (dir=`pwd`;cd $(OMNETPP_BIN_DIR);del makemake;ln -s $$dir/makemake .)
 	@rem (dir=`pwd`;cd $(OMNETPP_BIN_DIR);del splitvec;ln -s $$dir/splitvec .)
 

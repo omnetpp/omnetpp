@@ -15,8 +15,8 @@ OBJS = gned$(GNED_EMBED_SUFFIX).obj tklib.obj arrow.obj ebnf.tab.obj lex.yy.obj 
 #
 default: $(GNED_IF_POSSIBLE)
 
-gned : $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
+gned.exe : $(OBJS)
+	$(CC) /Fo"gned.exe" $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS)
 
 gned.obj : gned.cc
 	$(CXX) /DOMNETPP_GNED_DIR="\"$(OMNETPP_GNED_DIR)\"" /DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" $(COPTS) /c /Tp  gned.cc
@@ -67,7 +67,7 @@ clean:
 	del *.obj lex.yy.c ebnf.tab.c ebnf.tab.h gned.exe
 
 install-local: default
-	copy gned.exe $(OMNETPP_BIN_DIR)
+	copy gned.exe $(OMNETPP_BIN_DIR:/=\)
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.

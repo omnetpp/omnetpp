@@ -150,8 +150,8 @@ clean:
 	del *.obj sim_std.lib sim_std.dll sim_pvm.lib sim_pvm.dll
 
 install-local: sim_std$(LIB_SUFFIX) $(SIM_PVM_IF_POSSIBLE)
-	copy sim_std$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)
-	copy sim_pvm$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+	copy sim_std$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
+	copy sim_pvm$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

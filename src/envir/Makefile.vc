@@ -52,7 +52,7 @@ clean:
 	del *.obj envir.lib envir.dll
 
 install-local: envir$(LIB_SUFFIX)
-	copy envir$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+	copy envir$(LIB_SUFFIX) $(OMNETPP_LIB_DIR:/=\)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 

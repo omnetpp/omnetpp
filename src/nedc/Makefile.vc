@@ -13,8 +13,8 @@ OBJS=ebnf.tab.obj lex.yy.obj jar.obj jar_lib.obj jar_mod.obj jar_expr.obj jar_me
 #
 # Targets
 #
-nedc: $(OBJS)
-	$(CC) $(LDFLAGS) $(OBJS) -o nedc
+nedc.exe: $(OBJS)
+	$(CC) /Fo"nedc.exe" $(LDFLAGS) $(OBJS)
 
 lex.yy.obj: jar_func.h lex.yy.c
 	$(CXX) $(COPTS) /c /Tp lex.yy.c
@@ -52,8 +52,8 @@ depend:
 clean:
 	del *.obj lex.yy.c ebnf.tab.c ebnf.tab.h nedc.exe *_n.cc
 
-install-local: nedc
-	..\utils/install-prog nedc $(OMNETPP_BIN_DIR)
+install-local: nedc.exe
+	copy nedc.exe $(OMNETPP_BIN_DIR:/=\)
 
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
