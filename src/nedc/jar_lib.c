@@ -839,7 +839,7 @@ void print_temp_vars (FILE *f)
 {
         print_remark (f, "temporary variables:");
         fprintf (f, "\tcPar value, *par;\n");
-        fprintf (f, "\tsXElem *expr_tab; int k;\n");
+        fprintf (f, "\tcPar::ExprElem *expr_tab; int k;\n");
         fprintf (f, "\tMathFunc func;\n");
         fprintf (f, "\tconst char *type_name;\n");
         fprintf (f, "\tchar b1[64], b2[64];\n");

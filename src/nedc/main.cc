@@ -18,7 +18,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef USE_STD_NAMESPACE
+#include <fstream>
+using std::ofstream;
+#else
 #include <fstream.h>
+#endif
 
 #include "nedparser.h"
 #include "nederror.h"
@@ -41,10 +47,8 @@
 const char *findFirstFile(const char *mask);
 const char *findNextFile();
 
-#if defined(_MSC_VER)
-
 //
-// code for MSVC
+// code for Windows/MSVC
 //
 #include <io.h>
 long handle;
@@ -71,10 +75,10 @@ const char *findNextFile()
     return _ff_fname;
 }
 
-#else
+/*
 
 //
-// code for Borland C++
+// code for Borland C++ -- currently not used
 //
 #include <dir.h>
 struct ffblk ffblk;
@@ -89,7 +93,7 @@ const char *findNextFile()
     return done ? NULL : ffblk.ff_name;
 }
 
-#endif
+*/
 
 #endif /* _WIN32 */
 

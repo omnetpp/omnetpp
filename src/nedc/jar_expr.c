@@ -504,7 +504,7 @@ char *end_expr (char *expr)
            s++;
         }
         sprintf(temp_res,EXPR_PREFIX
-                         "%sexpr_tab = new sXElem[%d]; k=0;\n"
+                         "%sexpr_tab = new cPar::ExprElem[%d]; k=0;\n"
                          "%s"
                          "%svalue.cancelRedirection();\n" /* I-bug */
                          "%svalue.setDoubleValue(expr_tab,k);\n",
