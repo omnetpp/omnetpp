@@ -9,6 +9,10 @@ $quiet = 0;
 $singlePage = 1;
 $ext = "html";
 $opp_version = "3.0";
+$tagfile = "../../api/opptags.xml";
+
+#$apidir = "../api";
+$apidir = "../../api";
 
 #
 # general template for our output HTML pages; real contents will go to __BODY__
@@ -21,10 +25,7 @@ $template = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 </HEAD>
 
 <style type="text/css">
-h1,h2,h3,h4,h5,h6,.subheading {
-   font-family: Geneva, Arial, Helvetica, sans-serif;
-}
-
+h1,h2,h3,h4,h5,h6,.subheading {font-family: Geneva, Arial, Helvetica, sans-serif;}
 h1 {color: #006f00;}
 h2 {color: #006f00;}
 h3 {color: #006f00;}
@@ -32,7 +33,9 @@ pre { margin-left:8pt; font-size:8pt; background:#fffff4; padding:5pt; border:1p
 table {background:#fffff4; margin-left:8pt; border-collapse:collapse; border: 2px solid}
 td,th {text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000}
 .subheading {color: black; font-weight: bold;}
-
+a {text-decoration: none;}
+a:visited {text-decoration: none;}
+# a:hover {text-decoration: underline;}
 </style>
 
 <BODY TEXT="#000000" BGCOLOR="#FFFFE8" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
@@ -40,10 +43,6 @@ td,th {text-align:left; vertical-align:top; border:1px solid; padding:3pt; borde
 <P><FONT COLOR="#FF0000"><B><FONT SIZE=+4>OMNeT++ </FONT></B>
 <I><FONT SIZE=+1>Discrete Event Simulation System</FONT></I></FONT></P>
 
-<!--
-<br>
-<P><FONT SIZE=-1>Note: HTML rendering of this manual is not 100% -- use PDF when in doubt</FONT></P>
--->
 __BODY__
 
 <HR>
@@ -170,6 +169,34 @@ for ($i=0; $i<$nheadings; $i++)
            $chapters .= "$entry\n";
       }
 }
+
+#
+# load Doxygen tags.xml...
+#
+# <compound kind="class">
+#    <name>cAccuracyDetection</name>
+#    <filename>classcAccuracyDetection.html</filename>
+# </compound>
+#
+print "adding hyperlinks on class names (tagfile=$tagfile)\n" unless $quiet;
+open(INFILE, $tagfile) || die "cannot open $tagfile";
+read(INFILE, $tags, 1000000) || die "cannot read $tagfile";
+$components = ();
+while ($tags =~ s|\<compound +kind="class".*?\>(.*?)\</compound\>||s)
+{
+      $tag = $1;
+      $tag =~ s|\<member .*?\>(.*?)\</member\>||sg;
+      if ($tag =~ m|\<name\>(.*?)\</name\>|) {$name = $1; push(@components,$name);} else {next;}
+      if ($tag =~ m|\<filename\>(.*?)\</filename\>|)  {$htmlfile{$name} = $1;}
+      #print "DBG: $name, $htmlfile{$name}\n";
+}
+#print join(' ', @components);
+
+#
+# ...and put hyperlinks on class names
+#
+$names = join('|',@components);
+$html =~ s!\b($names)\b!'<a href="'.$apidir.'/'.$htmlfile{$1}.'">'.$1.'</a>'!gse unless($names eq '');
 
 #
 # create table of contents
