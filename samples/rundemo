@@ -35,12 +35,12 @@ set first ""
 foreach line {
    {"About..."         "README"}
    {"Tictoc"           "tictoc"           "./tictoc"    "tictoc.exe"}
+   {"NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
+   {"Hist"             "hist"             "./hist"      "hist.exe"}
    {"Fifo"             "fifo"             "./fifo"      "fifo.exe"}
    {"Queues"           "queues"           "./queues"    "queues.exe"}
    {"CQN"              "cqn"              "./cqn"       "cqn.exe"}
-   {"Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
    {"Queueing"         "queueing"         "./queueing"  "queueing.exe"}
-   {"Hist"             "hist"             "./hist"      "hist.exe"}
    {"P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
    {"Aloha"            "aloha"            "./aloha"     "aloha.exe"}
    {"Dyna"             "dyna"             "./dyna"      "dyna.exe"}
@@ -49,7 +49,7 @@ foreach line {
    {"Routing"          "routing"          "./routing"   "routing.exe"}
    {"Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
    {"TokenRing"        "tokenring"        "./tokenring" "tokenring.exe"}
-   {"NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
+   {"Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
    {"Dyna in real-time" "dyna/realtime"   "../dyna"     "..\\dyna.exe"}
    {"Sockets/HTTP"     "sockets"          "./sockets -r 1"  "sockets.exe -r 1"}
    {"Sockets/Telnet"   "sockets"          "./sockets -r 2"  "sockets.exe -r 2"}
