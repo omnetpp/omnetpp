@@ -44,6 +44,23 @@ proc regexp_to_stringmatch {expr} {
     return $expr
 }
 
+proc focusOnPanel {n} {
+    global g;
+    if {$n=="1"} {
+        focus $g(listbox1)
+        $g(title1) config -relief solid -bd 1
+        $g(title2) config -relief flat -bd 1
+        #$g(title1) config -bg #e0e080
+        #$g(title2) config -bg #e0e0e0
+    } else {
+        focus $g(listbox2)
+        $g(title2) config -relief solid -bd 1
+        $g(title1) config -relief flat -bd 1
+        #$g(title2) config -bg #e0e080
+        #$g(title1) config -bg #e0e0e0
+    }
+}
+
 proc getfocusedpane {} {
     global g
 

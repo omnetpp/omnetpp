@@ -218,7 +218,7 @@ proc createMainArea {w} {
 
     frame $w.f1.main
     listbox $w.f1.main.list -width 20 -selectmode extended -exportselection 0 \
-        -yscrollcommand "$w.f1.main.sby set"
+        -yscrollcommand "$w.f1.main.sby set" -highlightthickness 1
     scrollbar $w.f1.main.sby -borderwidth 1 -command "$w.f1.main.list yview"
 
     pack $w.f1.main.sby -anchor s -expand 0 -fill y -side right
@@ -226,7 +226,8 @@ proc createMainArea {w} {
     pack $w.f1.main -anchor center -expand 1 -fill both -side top
 
     set g(listbox1) $w.f1.main.list
-    set g(status1) $w.f1.status
+    set g(title1)   $w.f1.tit
+    set g(status1)  $w.f1.status
 
     #
     # Pane 2
@@ -289,7 +290,7 @@ proc createMainArea {w} {
 
     frame $w.f3.main
     listbox $w.f3.main.list -width 20 -selectmode extended -exportselection 0 \
-        -yscrollcommand "$w.f3.main.sby set"
+        -yscrollcommand "$w.f3.main.sby set"  -highlightthickness 1
     scrollbar $w.f3.main.sby -borderwidth 1 -command "$w.f3.main.list yview"
 
     pack $w.f3.main.sby -anchor s -expand 0 -fill y -side right
@@ -297,7 +298,8 @@ proc createMainArea {w} {
     pack $w.f3.main -anchor center -expand 1 -fill both -side top
 
     set g(listbox2) $w.f3.main.list
-    set g(status2) $w.f3.status
+    set g(title2)   $w.f3.tit
+    set g(status2)  $w.f3.status
 
     #
     # Pane 4
@@ -366,7 +368,7 @@ proc createMainArea {w} {
     bind .            <Escape>      {.left_popup unpost; .right_popup unpost}
     bind $g(listbox1) <Any-Key>     {after 1 {status 1}}
     bind $g(listbox1) <Any-ButtonRelease>  {status 1}
-    bind $g(listbox1) <Tab>         {after 1 {focus $g(listbox2)}}
+    bind $g(listbox1) <Tab>         {after 1 {focusOnPanel 2}}
     bind $g(listbox1) <Return>      {moveOrCopyVectors 1 2}
     bind $g(listbox1) <Delete>      {delVectors 1}
     bind $g(listbox1) *             {invertSelection 1}
@@ -378,14 +380,14 @@ proc createMainArea {w} {
     bind $g(listbox1) <F5>          {copyVectors 1 2}
     bind $g(listbox1) <F6>          {moveVectors 1 2}
     bind $g(listbox1) <F8>          {delVectors 1}
-    bind $g(listbox1) <1>           {focus $g(listbox1)}
-    bind $g(listbox1) <Double-1>    {focus $g(listbox1); moveOrCopyVectors 1 2}
-    bind $g(listbox1) <3>           {focus $g(listbox1); $g(listbox1) activate @%x,%y; .left_popup post %X %Y}
+    bind $g(listbox1) <1>           {focusOnPanel 1}
+    bind $g(listbox1) <Double-1>    {focusOnPanel 1; moveOrCopyVectors 1 2}
+    bind $g(listbox1) <3>           {focusOnPanel 1; $g(listbox1) activate @%x,%y; .left_popup post %X %Y}
 
     bind $g(listbox2) <Any-Key>     {after 1 {status 2}}
     bind $g(listbox2) <Any-ButtonRelease>  {status 2}
     bind $g(listbox2) <Return>      {doPlot}
-    bind $g(listbox2) <Tab>         {after 1 {focus $g(listbox1)}}
+    bind $g(listbox2) <Tab>         {after 1 {focusOnPanel 1}}
     bind $g(listbox2) <Delete>      {delVectors 2}
     bind $g(listbox2) *             {invertSelection 2}
     bind $g(listbox2) +             {selectVectors 2}
@@ -396,13 +398,13 @@ proc createMainArea {w} {
     bind $g(listbox2) <F5>          {copyVectors 2 1}
     bind $g(listbox2) <F6>          {moveVectors 2 1}
     bind $g(listbox2) <F8>          {delVectors 2}
-    bind $g(listbox2) <1>           {focus $g(listbox2)}
-    bind $g(listbox2) <Double-1>    {focus $g(listbox2); doPlot}
-    bind $g(listbox2) <3>           {focus $g(listbox2); .right_popup post %X %Y}
+    bind $g(listbox2) <1>           {focusOnPanel 2}
+    bind $g(listbox2) <Double-1>    {focusOnPanel 2; doPlot}
+    bind $g(listbox2) <3>           {focusOnPanel 2; .right_popup post %X %Y}
 
     status 1
     status 2
-    focus $g(listbox1)
+    focusOnPanel 1
 }
 
 proc createMainWindow {{geom ""}} {
@@ -583,5 +585,7 @@ proc startPlove {argv} {
    foreach f $argv {
        loadVectorFile $f
    }
+
+   wm deiconify .
 }
 
