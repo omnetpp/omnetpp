@@ -294,9 +294,9 @@ bool TOmnetApp::isModuleLocal(cModule *parentmod, const char *modname, int index
 
     char parname[MAX_OBJECTFULLPATH];
     if (index<0)
-        sprintf(parname,"%s.%s.partition-id", parentmod->fullPath(), modname);
+        sprintf(parname,"%s.%s.partition-id", parentmod->fullPath().c_str(), modname);
     else
-        sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath(), modname, index);
+        sprintf(parname,"%s.%s[%d].partition-id", parentmod->fullPath().c_str(), modname, index);
     int procId = getConfig()->getAsInt2(section,"Partitioning",parname,-1);
     if (procId<0)
         throw new cException("incomplete or wrong partitioning: missing or invalid value for '%s'",parname);

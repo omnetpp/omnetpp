@@ -238,7 +238,7 @@ void cFileOutputScalarManager::recordScalar(cModule *module, const char *name, d
 
     if (!f) return;
 
-    fprintf(f,"scalar \"%s\" \t\"%s\" \t%.9g\n", module->fullPath(), name? name : "(null)", value);
+    fprintf(f,"scalar \"%s\" \t\"%s\" \t%.9g\n", module->fullPath().c_str(), name? name : "(null)", value);
 }
 
 const char *cFileOutputScalarManager::fileName() const
