@@ -318,32 +318,39 @@ class SIM_API cTopology : public cObject
     //@{
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cTopology".
      */
     virtual const char *className() const {return "cTopology";}
 
     /**
-     * MISSINGDOC: cTopology:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()     {return new cTopology(*this);}
 
     /**
-     * MISSINGDOC: cTopology:void info(char*)
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
     /**
-     * MISSINGDOC: cTopology:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cTopologyIFC";}
 
     /**
-     * MISSINGDOC: cTopology:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cTopology:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     //@}

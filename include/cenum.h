@@ -59,17 +59,19 @@ class cEnum : public cObject
     virtual ~cEnum();
 
     /**
-     * Class name string.
+     * Returns pointer to a string containing the class name, "cEnum".
      */
-    virtual const char *className()  {return "cEnum";}
+    virtual const char *className() const  {return "cEnum";}
 
     /**
-     * Duplicate object.
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()  {return new cEnum(*this);}
 
     /**
-     *
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 

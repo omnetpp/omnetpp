@@ -158,12 +158,13 @@ class SIM_API cModuleInterface : public cObject
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cModuleInterface".
      */
     virtual const char *className() const {return "cModuleInterface";}
 
     /**
-     * MISSINGDOC: cModuleInterface:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()  {return new cModuleInterface(*this);}
 
@@ -230,12 +231,13 @@ class SIM_API cModuleType : public cObject
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cModuleType".
      */
     virtual const char *className() const {return "cModuleType";}
 
     /**
-     * MISSINGDOC: cModuleType:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()     {return new cModuleType(*this);}
 
@@ -307,12 +309,13 @@ class SIM_API cLinkType : public cObject
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cLinkType".
      */
     virtual const char *className() const {return "cLinkType";}
 
     /**
-     * MISSINGDOC: cLinkType:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()     {return new cLinkType(*this);}
 
@@ -372,7 +375,7 @@ class SIM_API cNetworkType : public cObject
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cNetworkType".
      */
     virtual const char *className() const {return "cNetworkType";}
 };
@@ -407,7 +410,7 @@ class SIM_API cFunctionType : public cObject
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cFunctionType".
      */
     virtual const char *className() const {return "cFunctionType";}
 };
@@ -448,7 +451,7 @@ class SIM_API cClassRegister : public cObject
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cClassRegister".
      */
     virtual const char *className() const {return "cClassRegister";}
 
@@ -489,7 +492,7 @@ class SIM_API cInspectorFactory : public cObject
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cInspectorFactory".
      */
     virtual const char *className() const {return "cInspectorFactory";}
 

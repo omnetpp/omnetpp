@@ -1,3 +1,8 @@
+2001-07-15 Andras Varga
+
+	* added documentation for redefined cObject methods. Affects nearly all
+        headers.
+
 2001-07-13 Andras Varga
 
 	* switched to DoxyGen for generating documentation: doxy.cfg added

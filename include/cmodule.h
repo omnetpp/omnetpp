@@ -206,22 +206,25 @@ class SIM_API cModule : public cObject
     //@{
 
     /**
-     * Returns pointer to the class name string, "cModule".
+     * Returns pointer to a string containing the class name, "cModule".
      */
     virtual const char *className() const {return "cModule";}
 
     /**
-     * MISSINGDOC: cModule:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup();
 
     /**
-     * MISSINGDOC: cModule:void forEach(ForeachFunc)
+     * Call the passed function for each contained object.
+     * See cObject for more details.
      */
     virtual void forEach(ForeachFunc f);
 
     /**
-     * Redefined.
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cModuleIFC";}
 
@@ -655,27 +658,31 @@ class SIM_API cSimpleModule : public cCoroutine, public cModule
     //@{
 
     /**
-     * Returns pointer to the class name string, "cSimpleModule".
+     * Returns pointer to a string containing the class name, "cSimpleModule".
      */
     virtual const char *className() const {return "cSimpleModule";}
 
     /**
-     * MISSINGDOC: cSimpleModule:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()  {return new cSimpleModule(*this);}
 
     /**
-     * Redefined.
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
     /**
-     * Redefined.
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cSimpleModuleIFC";}
 
     /**
-     * MISSINGDOC: cSimpleModule:void forEach(ForeachFunc)
+     * Call the passed function for each contained object.
+     * See cObject for more details.
      */
     virtual void forEach(ForeachFunc f);
     //@}
@@ -1101,22 +1108,25 @@ class SIM_API cCompoundModule : public cModule
     //@{
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cCompoundModule".
      */
     virtual const char *className() const {return "cCompoundModule";}
 
     /**
-     * MISSINGDOC: cCompoundModule:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()   {return new cCompoundModule(*this);}
 
     /**
-     * MISSINGDOC: cCompoundModule:void info(char*)
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
     /**
-     * MISSINGDOC: cCompoundModule:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cCompoundModuleIFC";}
     //@}

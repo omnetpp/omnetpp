@@ -59,12 +59,13 @@ class SIM_API cPSquare : public cDensityEstBase
      // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cPSquare".
      */
     virtual const char *className() const {return "cPSquare";}
 
     /**
-     * MISSINGDOC: cPSquare:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()   {return new cPSquare(*this);}
 
@@ -74,17 +75,22 @@ class SIM_API cPSquare : public cDensityEstBase
     cPSquare& operator=(cPSquare& res);
 
     /**
-     * MISSINGDOC: cPSquare:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cPSquare:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
 
     /**
-     * MISSINGDOC: cPSquare:void writeContents(ostream&)
+     * Writes textual information about this object to the stream.
+     * See cObject for more details.
      */
     virtual void writeContents(ostream& os);
 

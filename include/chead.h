@@ -87,17 +87,19 @@ class SIM_API cHead : public cObject
     // redefined functions
 
     /**
-     * Returns the pointer to the class name string, "cHead".
+     * Returns pointer to a string containing the class name, "cHead".
      */
     virtual const char *className() const {return "cHead";}
 
     /**
-     * MISSINGDOC: cHead:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cHeadIFC";}
 
     /**
-     * Calls the function passed for each object in the list.
+     * Calls the function passed for each object
+     * in the list.
      */
     virtual void forEach(ForeachFunc f);
 

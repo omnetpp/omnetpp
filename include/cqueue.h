@@ -123,7 +123,7 @@ class SIM_API cQueue : public cObject
     //@{
 
     /**
-     * Returns pointer to the class name string,"cQueue".
+     * Returns pointer to a string containing the class name, "cQueue".
      */
     virtual const char *className() const {return "cQueue";}
 
@@ -135,27 +135,34 @@ class SIM_API cQueue : public cObject
     virtual cObject *dup()  {return new cQueue(*this);}
 
     /**
-     * Redefined.
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
     /**
-     * Redefined.
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cQueueIFC";}
 
     /**
-     * Calls the given function for each object contained.
+     * Calls the given function for each contained
+     * object.
      */
     virtual void forEach(ForeachFunc f);
 
     /**
-     * MISSINGDOC: cQueue:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cQueue:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     //@}
@@ -205,7 +212,6 @@ class SIM_API cQueue : public cObject
      * Unlinks and returns the last object in the queue.
      */
     virtual cObject *pop();                                  // remove item at tail
-
 
     /**
      * Returns the number of objects contained in the queue.

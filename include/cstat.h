@@ -64,7 +64,7 @@ class SIM_API cStatistic : public cObject
     // redefined functions
 
     /**
-     * Returns a pointer to the class name string, "cStatistic".
+     * Returns pointer to a string containing the class name, "cStatistic".
      */
     virtual const char *className() const {return "cStatistic";}
 
@@ -75,17 +75,22 @@ class SIM_API cStatistic : public cObject
     cStatistic& operator=(cStatistic& res);
 
     /**
-     * MISSINGDOC: cStatistic:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cStatisticIFC";}
 
     /**
-     * MISSINGDOC: cStatistic:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cStatistic:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
 
@@ -273,17 +278,19 @@ class SIM_API cStdDev : public cStatistic
     // redefined functions
 
     /**
-     * Returns a pointer to the class name string, "cStdDev".
+     * Returns pointer to a string containing the class name, "cStdDev".
      */
     virtual const char *className() const {return "cStdDev";}
 
     /**
-     * Constructors, destructor, duplication and assignment.
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup() {return new cStdDev(*this);}
 
     /**
-     * Redefined cObject functions.
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
@@ -293,17 +300,22 @@ class SIM_API cStdDev : public cStatistic
     cStdDev& operator=(cStdDev& res);
 
     /**
-     * Redefined cObject functions.
+     * Writes textual information about this object to the stream.
+     * See cObject for more details.
      */
     virtual void writeContents(ostream& os);
 
     /**
-     * MISSINGDOC: cStdDev:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cStdDev:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
 
@@ -414,12 +426,13 @@ class SIM_API cWeightedStdDev : public cStdDev
     // redefined functions
 
     /**
-     * Returns a pointer to the class name string, "cWeightedStdDev".
+     * Returns pointer to a string containing the class name, "cWeightedStdDev".
      */
     virtual const char *className() const {return "cWeightedStdDev";}
 
     /**
-     * Constructors, destructor, duplication and assignment.
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup() {return new cWeightedStdDev(*this);}
 
@@ -429,12 +442,16 @@ class SIM_API cWeightedStdDev : public cStdDev
     cWeightedStdDev& operator=(cWeightedStdDev& res);
 
     /**
-     * MISSINGDOC: cWeightedStdDev:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cWeightedStdDev:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
 

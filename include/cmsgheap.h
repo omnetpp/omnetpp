@@ -72,27 +72,31 @@ class SIM_API cMessageHeap : public cObject
     //@{
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cMessageHeap".
      */
     virtual const char *className() const {return "cMessageHeap";}
 
     /**
-     * MISSINGDOC: cMessageHeap:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()  {return new cMessageHeap(*this);}
 
     /**
-     * MISSINGDOC: cMessageHeap:void info(char*)
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
     /**
-     * MISSINGDOC: cMessageHeap:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cMessageHeapIFC";}
 
     /**
-     * MISSINGDOC: cMessageHeap:void forEach(ForeachFunc)
+     * Call the passed function for each contained object.
+     * See cObject for more details.
      */
     virtual void forEach(ForeachFunc f);
 

@@ -117,7 +117,7 @@ class SIM_API cDensityEstBase : public cStdDev
     // redefined functions
 
     /**
-     *
+     * Returns pointer to a string containing the class name, "cDensityEstBase".
      */
     virtual const char *className() const {return "cDensityEstBase";}
 
@@ -127,22 +127,28 @@ class SIM_API cDensityEstBase : public cStdDev
     cDensityEstBase& operator=(cDensityEstBase& res);
 
     /**
-     *
+     * Writes textual information about this object to the stream.
+     * See cObject for more details.
      */
     virtual void writeContents(ostream& os);
 
     /**
-     * MISSINGDOC: cDensityEstBase:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cDensityEstBaseIFC";}
 
     /**
-     * MISSINGDOC: cDensityEstBase:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cDensityEstBase:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     // dup() and inspector(..) not needed

@@ -82,12 +82,13 @@ class cStructDescriptor : public cObject
     virtual ~cStructDescriptor();
 
     /**
-     * MISSINGDOC: xxx
+     * Returns pointer to a string containing the class name, "cStructDescriptor".
      */
-    virtual const char *className() {return "cStructDescriptor";}
+    virtual const char *className() const {return "cStructDescriptor";}
 
     /**
-     * MISSINGDOC: xxx
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup();
 

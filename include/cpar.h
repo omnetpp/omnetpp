@@ -286,37 +286,45 @@ class SIM_API cPar : public cObject
     //@{
 
     /**
-     * Returns pointer to the class name string, "cPar".
+     * Returns pointer to a string containing the class name, "cPar".
      */
     virtual const char *className() const {return "cPar";}
 
     /**
-     * Duplicates the object and returns a pointer to the new one.
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()   {return new cPar(*this);}
 
     /**
-     * MISSINGDOC: cPar:void info(char*)
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
     /**
-     * MISSINGDOC: cPar:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cParIFC";}
 
     /**
-     * MISSINGDOC: cPar:void writeContents(ostream&)
+     * Writes textual information about this object to the stream.
+     * See cObject for more details.
      */
     virtual void writeContents(ostream& os);
 
     /**
-     * MISSINGDOC: cPar:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cPar:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     //@}
@@ -754,17 +762,19 @@ class SIM_API cModulePar : public cPar
     //@{
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cModulePar".
      */
     virtual const char *className() const {return "cModulePar";}
 
     /**
-     * MISSINGDOC: cModulePar:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()  {return new cPar(*this);}
 
     /**
-     * MISSINGDOC: cModulePar:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cModuleParIFC";}
 

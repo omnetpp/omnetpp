@@ -83,12 +83,13 @@ class SIM_API cWatch : public cObject
     cWatch(const char *name, cObject* &o) : cObject(name) {ptr=&o; type='o';}
 
     /**
-     * All usual virtual functions redefined.
+     * Returns pointer to a string containing the class name, "cWatch".
      */
     virtual const char *className() const {return "cWatch";}
 
     /**
-     * All usual virtual functions redefined.
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()   {return new cWatch(*this);}
 
@@ -99,7 +100,8 @@ class SIM_API cWatch : public cObject
     virtual void info(char *buf);
 
     /**
-     * MISSINGDOC: cWatch:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cWatchIFC";}
 

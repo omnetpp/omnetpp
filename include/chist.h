@@ -51,7 +51,7 @@ class SIM_API cHistogramBase : public cDensityEstBase
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cHistogramBase".
      */
     virtual const char *className() const {return "cHistogramBase";}
 
@@ -61,12 +61,16 @@ class SIM_API cHistogramBase : public cDensityEstBase
     cHistogramBase& operator=(cHistogramBase& res);
 
     /**
-     * MISSINGDOC: cHistogramBase:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cHistogramBase:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     // dup() and inspector(..) not needed
@@ -126,7 +130,7 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cEqdHistogramBase".
      */
     virtual const char *className() const {return "cEqdHistogramBase";}
 
@@ -136,12 +140,16 @@ class SIM_API cEqdHistogramBase : public cHistogramBase //--LG
     cEqdHistogramBase& operator=(cEqdHistogramBase& res);
 
     /**
-     * MISSINGDOC: cEqdHistogramBase:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cEqdHistogramBase:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     // dup() not needed
@@ -236,22 +244,27 @@ class SIM_API cLongHistogram : public cEqdHistogramBase
     // redefined functions
 
     /**
-     * Returns a pointer to the class name string, "cLongHistogram".
+     * Returns pointer to a string containing the class name, "cLongHistogram".
      */
     virtual const char *className() const {return "cLongHistogram";}
 
     /**
-     * Duplication and assignment work all right with cLongHistogram.
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()    {return new cLongHistogram(*this);}
 
     /**
-     * MISSINGDOC: cLongHistogram:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cLongHistogram:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     // base class' op=() is OK
@@ -309,22 +322,27 @@ class SIM_API cDoubleHistogram : public cEqdHistogramBase
     // redefined functions
 
     /**
-     * Returns a pointer to the class name string, "cDoubleHistogram".
+     * Returns pointer to a string containing the class name, "cDoubleHistogram".
      */
     virtual const char *className() const  {return "cDoubleHistogram";}
 
     /**
-     * Duplication and assignment work all right with cDoubleHistogram.
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()  {return new cDoubleHistogram(*this);}
 
     /**
-     * MISSINGDOC: cDoubleHistogram:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cDoubleHistogram:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     // base class' op=() is OK

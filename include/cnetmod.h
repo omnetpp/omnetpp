@@ -80,12 +80,13 @@ class SIM_API cNetMod : public cModule
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cNetMod".
      */
     virtual const char *className() const {return "cNetMod";}
 
     /**
-     * MISSINGDOC: cNetMod:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cNetModIFC";}
 

@@ -54,7 +54,7 @@ class SIM_API cOutFileMgr : public cObject
     //@{
 
     /**
-     * Returns a pointer to the class name "cOutFileMgr".
+     * Returns pointer to a string containing the class name, "cOutFileMgr".
      */
     virtual const char *className() const {return "cOutFileMgr";}
     //@}
@@ -177,22 +177,25 @@ class SIM_API cOutVector : public cObject
     virtual void setName(const char *name);
 
     /**
-     * Returns a pointer to the class name "cOutVector".
+     * Returns pointer to a string containing the class name, "cOutVector".
      */
     virtual const char *className() const {return "cOutVector";}
 
     /**
-     * Dupping does not make much sense, not implemented.
+     * Dupping is not implemented for cOutVector. This function
+     * gives an error when called.
      */
     virtual cObject *dup()    {return new cOutVector(*this);}
 
     /**
-     * Redefined.
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
     /**
-     * MISSINGDOC: cOutVector:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cOutVectorIFC";}
     //@}

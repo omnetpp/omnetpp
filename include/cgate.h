@@ -93,27 +93,31 @@ class SIM_API cGate : public cObject
     //@{
 
     /**
-     * Returns pointer to the class name string, "cGate".
+     * Returns pointer to a string containing the class name, "cGate".
      */
     virtual const char *className() const {return "cGate";}
 
     /**
-     * MISSINGDOC: cGate:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()  {return new cGate(*this);}
 
     /**
-     * MISSINGDOC: cGate:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cGateIFC";}
 
     /**
-     * MISSINGDOC: cGate:void forEach(ForeachFunc)
+     * Call the passed function for each contained object.
+     * See cObject for more details.
      */
     virtual void forEach(ForeachFunc f);
 
     /**
-     * MISSINGDOC: cGate:void info(char*)
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
@@ -128,7 +132,8 @@ class SIM_API cGate : public cObject
     virtual const char *fullPath() const;
 
     /**
-     * MISSINGDOC: cGate:void writeContents(ostream&)
+     * Writes textual information about this object to the stream.
+     * See cObject for more details.
      */
     virtual void writeContents(ostream& os);
     //@}

@@ -127,23 +127,26 @@ class SIM_API cFSM : public cObject
     cFSM(cFSM& vs) {setName(vs.name());operator=(vs);}
 
     /**
-     * MISSINGDOC: cFSM:char*className()
+     * Returns pointer to a string containing the class name, "cFSM".
      */
     virtual const char *className() const {return "cFSM";}
 
     /**
-     * MISSINGDOC: cFSM:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()   {return new cFSM(*this);}
 
     /**
-     * MISSINGDOC: cFSM:void info(char*)
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
 
     /**
-     * MISSINGDOC: cFSM:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cFSMIFC";}
 
@@ -153,17 +156,22 @@ class SIM_API cFSM : public cObject
     cFSM& operator=(cFSM& vs);
 
     /**
-     * MISSINGDOC: cFSM:void writeContents(ostream&)
+     * Writes textual information about this object to the stream.
+     * See cObject for more details.
      */
     virtual void writeContents(ostream& os);
 
     /**
-     * MISSINGDOC: cFSM:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cFSM:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
 

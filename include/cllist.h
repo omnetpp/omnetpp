@@ -112,7 +112,7 @@ class SIM_API cLinkedList : public cObject
     //@{
 
     /**
-     * Returns pointer to the class name string,"cLinkedList".
+     * Returns pointer to a string containing the class name, "cLinkedList".
      */
     virtual const char *className() const  {return "cLinkedList";}
 
@@ -124,22 +124,28 @@ class SIM_API cLinkedList : public cObject
     virtual cObject *dup()  {return new cLinkedList(*this);}
 
     /**
-     * Redefined.
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
     /**
-     * Redefined.
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cLinkedListIFC";}
 
     /**
-     * MISSINGDOC: cLinkedList:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cLinkedList:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     //@}

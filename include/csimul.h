@@ -131,22 +131,25 @@ class SIM_API cSimulation : public cObject
     //@{
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cSimulation".
      */
     virtual const char *className() const {return "cSimulation";}
 
     /**
-     * MISSINGDOC: cSimulation:char*inspectorFactoryName()
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cSimulationIFC";}
 
     /**
-     * MISSINGDOC: cSimulation:void forEach(ForeachFunc)
+     * Call the passed function for each contained object.
+     * See cObject for more details.
      */
     virtual void forEach(ForeachFunc f);
 
     /**
-     * MISSINGDOC: cSimulation:void writeContents(ostream&)
+     * Writes textual information about this object to the stream.
+     * See cObject for more details.
      */
     virtual void writeContents(ostream& os);
 

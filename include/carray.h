@@ -82,32 +82,39 @@ class SIM_API cBag : public cObject
     //@{
 
     /**
-     * Returns a pointer to the class name string, "cBag".
+     * Returns pointer to a string containing the class name, "cBag".
      */
     virtual const char *className() const {return "cBag";}
 
     /**
-     * Duplication and assignment work all right with cBag.
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()  {return new cBag(*this);}
 
     /**
-     * Redefined.
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
     /**
-     * Redefined.
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cBagIFC";}
 
     /**
-     * MISSINGDOC: cBag:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cBag:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     //@}
@@ -247,7 +254,7 @@ class SIM_API cArray : public cObject
     //@{
 
     /**
-     * Returns pointer to the class name string,"cArray".
+     * Returns pointer to a string containing the class name, "cArray".
      */
     virtual const char *className() const {return "cArray";}
 
@@ -259,27 +266,34 @@ class SIM_API cArray : public cObject
     virtual cObject *dup()  {return new cArray(*this);}
 
     /**
-     * Redefined.
+     * Produces a one-line description of object contents into the buffer passed as argument.
+     * See cObject for more details.
      */
     virtual void info(char *buf);
 
     /**
-     * Redefined.
+     * Returns the name of the inspector factory class associated with this class.
+     * See cObject for more details.
      */
     virtual const char *inspectorFactoryName() const {return "cArrayIFC";}
 
     /**
-     * Calls the given function for each object contained.
+     * Calls the given function for each object
+     * contained.
      */
     virtual void forEach(ForeachFunc f);
 
     /**
-     * MISSINGDOC: cArray:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cArray:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
     //@}

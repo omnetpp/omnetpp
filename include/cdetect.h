@@ -73,17 +73,21 @@ class SIM_API cTransientDetection : public cObject
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cTransientDetection".
      */
     virtual const char *className() const {return "cTransientDetection";}
 
     /**
-     * MISSINGDOC: cTransientDetection:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cTransientDetection:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
 
@@ -156,17 +160,21 @@ class SIM_API cAccuracyDetection : public cObject
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cAccuracyDetection".
      */
     virtual const char *className() const {return "cAccuracyDetection";}
 
     /**
-     * MISSINGDOC: cAccuracyDetection:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cAccuracyDetection:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
 
@@ -261,7 +269,7 @@ class SIM_API cTDExpandingWindows : public cTransientDetection
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cTDExpandingWindows".
      */
     virtual const char *className() const {return "cTDExpandingWindows";}
 
@@ -363,7 +371,7 @@ class SIM_API cADByStddev : public cAccuracyDetection
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cADByStddev".
      */
     virtual const char *className() const {return "cADByStddev";}
 

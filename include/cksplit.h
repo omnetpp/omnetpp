@@ -152,12 +152,13 @@ class SIM_API cKSplit : public cDensityEstBase
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cKSplit".
      */
     virtual const char *className() const {return "cKSplit";}
 
     /**
-     * MISSINGDOC: cKSplit:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()   {return new cKSplit (*this);}
 
@@ -167,17 +168,22 @@ class SIM_API cKSplit : public cDensityEstBase
     cKSplit& operator=(cKSplit& res);
 
     /**
-     * MISSINGDOC: cKSplit:void writeContents(ostream&)
+     * Writes textual information about this object to the stream.
+     * See cObject for more details.
      */
     virtual void writeContents(ostream& os);
 
     /**
-     * MISSINGDOC: cKSplit:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cKSplit:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
 

@@ -111,12 +111,13 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     // redefined functions
 
     /**
-     * FIXME: redefined functions
+     * Returns pointer to a string containing the class name, "cVarHistogram".
      */
     virtual const char *className() const {return "cVarHistogram";}
 
     /**
-     * MISSINGDOC: cVarHistogram:cObject*dup()
+     * Creates and returns an exact copy of this object.
+     * See cObject for more details.
      */
     virtual cObject *dup()    {return new cVarHistogram(*this);}
 
@@ -126,12 +127,16 @@ class SIM_API cVarHistogram : public cHistogramBase //--LG
     cVarHistogram& operator=(cVarHistogram& res);
 
     /**
-     * MISSINGDOC: cVarHistogram:int netPack()
+     * Serializes the object into a PVM or MPI send buffer.
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netPack();
 
     /**
-     * MISSINGDOC: cVarHistogram:int netUnpack()
+     * Deserializes the object from a PVM or MPI receive buffer
+     * Used by the simulation kernel for parallel execution.
+     * See cObject for more details.
      */
     virtual int netUnpack();
 
