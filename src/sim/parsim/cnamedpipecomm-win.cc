@@ -64,7 +64,7 @@ const char *getWindowsError()
 struct PipeHeader
 {
     int tag;
-    int contentLength;
+    unsigned long contentLength;
 };
 
 cNamedPipeCommunications::cNamedPipeCommunications()
@@ -88,7 +88,6 @@ void cNamedPipeCommunications::init()
     // FIXME this is the same as in cFileCommunications -- should go into common base class?
     int argc = ev.argCount();
     char **argv = ev.argVector();
-    int errcode;
     int i;
     for (i=1; i<argc; i++)
         if (argv[i][0]=='-' && argv[i][1]=='p')
@@ -124,7 +123,7 @@ void cNamedPipeCommunications::init()
 
         int openMode = PIPE_ACCESS_INBOUND;
         int pipeMode = PIPE_TYPE_BYTE | PIPE_READMODE_BYTE | PIPE_WAIT;
-        rpipes[i] = CreateNamedPipe(fname, openMode, pipeMode, 1, 0, PIPE_INBUFFERSIZE, NMPWAIT_WAIT_FOREVER, NULL);
+        rpipes[i] = CreateNamedPipe(fname, openMode, pipeMode, 1, 0, PIPE_INBUFFERSIZE, ~0UL, NULL);
         if (rpipes[i] == INVALID_HANDLE_VALUE)
             throw new cException("cNamedPipeCommunications: CreateNamedPipe operation failed: %s", getWindowsError());
     }
@@ -221,14 +220,14 @@ bool cNamedPipeCommunications::receive(cCommBuffer *buffer, int& receivedTag, in
     // FIXME handle "blocking"
 
     // select pipe to read
-    int i;
-    for (int k=0; k<numPartitions; k++)
+    int i, k;
+    for (k=0; k<numPartitions; k++)
     {
         i = (rrBase+k)%numPartitions; // shift by rrBase for Round-Robin query
         if (i==myProcId)
             continue;
         unsigned long bytesAvail, bytesLeft;
-        if (!PeekNamedPipe(rpipes[i], NULL, NULL, NULL, &bytesAvail, &bytesLeft))
+        if (!PeekNamedPipe(rpipes[i], NULL, 0, NULL, &bytesAvail, &bytesLeft))
             throw new cException("cNamedPipeCommunications: cannot peek pipe to procId=%d: %s",
                                  i, getWindowsError());
         if (bytesAvail>0)
