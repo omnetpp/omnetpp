@@ -92,7 +92,7 @@ class SIM_API cMessage : public cObject
     int prior;                 // priority -- used for scheduling msgs with equal times
     long len;                  // length of message -- used for bit errors and transm.delay
     bool error : 1;            // bit error occurred during transmission
-    unsigned refcount : 7;     // reference count for encapsulated message (0: not encapsulated, max 127)
+    unsigned char refcount : 7;// reference count for encapsulated message (0: not encapsulated, max 127)
     unsigned char srcprocid;   // reserved for use by parallel execution: id of source partition
     cArray *parlistp;          // ptr to list of parameters
     cMessage *encapmsg;        // ptr to encapsulated msg
