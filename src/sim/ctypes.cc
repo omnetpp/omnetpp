@@ -37,7 +37,7 @@
 Define_Function( acos,  1 )
 Define_Function( asin,  1 )
 Define_Function( atan,  1 )
-Define_Function( atan2, 1 )
+Define_Function( atan2, 2 )
 
 Define_Function( sin,  1 )
 Define_Function( cos,  1 )
@@ -464,10 +464,72 @@ cPar *cLinkType::createDataRate() const
 
 //=========================================================================
 //=== cFunctionType - all functions inline
-cFunctionType::cFunctionType(const char *name, MathFunc f0, int argc) : cObject(name)
+cFunctionType::cFunctionType(const char *name, MathFuncNoArg f, int ac) : cObject(name)
 {
-    f=f0;
-    argcount=argc;
+    this->f = (MathFunc)f;
+    argc = 0;
+    if (ac!=-1 && ac!=0)
+        throw new cException("Register_Function() or cFunctionType: "
+                             "attempt to register function \"%s\" with wrong "
+                             "number of arguments %d, should be 0", name, ac);
+}
+
+cFunctionType::cFunctionType(const char *name, MathFunc1Arg f, int ac) : cObject(name)
+{
+    this->f = (MathFunc)f;
+    argc = 1;
+    if (ac!=-1 && ac!=1)
+        throw new cException("Register_Function() or cFunctionType: "
+                             "attempt to register function \"%s\" with wrong "
+                             "number of arguments %d, should be 1", name, ac);
+}
+
+cFunctionType::cFunctionType(const char *name, MathFunc2Args f, int ac) : cObject(name)
+{
+    this->f = (MathFunc)f;
+    argc = 2;
+    if (ac!=-1 && ac!=2)
+        throw new cException("Register_Function() or cFunctionType: "
+                             "attempt to register function \"%s\" with wrong "
+                             "number of arguments %d, should be 2", name, ac);
+}
+
+cFunctionType::cFunctionType(const char *name, MathFunc3Args f, int ac) : cObject(name)
+{
+    this->f = (MathFunc)f;
+    argc = 3;
+    if (ac!=-1 && ac!=3)
+        throw new cException("Register_Function() or cFunctionType: "
+                             "attempt to register function \"%s\" with wrong "
+                             "number of arguments %d, should be 3", name, ac);
+}
+
+MathFuncNoArg cFunctionType::mathFuncNoArg()  
+{
+    if (argc!=0)
+        throw new cException(this,"mathFuncNoArg(): arg count mismatch (argc=%d)",argc);
+    return (MathFuncNoArg)f;
+}
+
+MathFunc1Arg cFunctionType::mathFunc1Arg()
+{
+    if (argc!=1)
+        throw new cException(this,"mathFunc1Arg(): arg count mismatch (argc=%d)",argc);
+    return (MathFunc1Arg)f;
+}
+
+MathFunc2Args cFunctionType::mathFunc2Args()  
+{
+    if (argc!=2)
+        throw new cException(this,"mathFunc2Args(): arg count mismatch (argc=%d)",argc);
+    return (MathFunc2Args)f;
+}
+
+MathFunc3Args cFunctionType::mathFunc3Args()  
+{
+    if (argc!=3)
+        throw new cException(this,"mathFunc3Args(): arg count mismatch (argc=%d)",argc);
+    return (MathFunc3Args)f;
 }
 
 cFunctionType *findfunctionbyptr(MathFunc f)
@@ -476,7 +538,7 @@ cFunctionType *findfunctionbyptr(MathFunc f)
     while( !i.end() )
     {
         cFunctionType *ff = (cFunctionType *) i++;
-        if (ff->f == f)
+        if (ff->mathFunc() == f)
             return ff;
     }
     return NULL;

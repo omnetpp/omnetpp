@@ -1,3 +1,8 @@
+2003-01-22  Andras Varga
+
+	* ctypes.cc: increased type safety of Register_Function() and 
+	cFunctionType.
+
 2003-01-20  Andras Varga
 
 	* removed obsolete file cstk.cc

@@ -440,9 +440,9 @@ class SIM_API cNetworkType : public cObject
  */
 class SIM_API cFunctionType : public cObject
 {
-  public:
-    MathFunc f;   //FIXME: add getter funcs!!!
-    int argcount;
+  private:
+    MathFunc f;
+    int argc;
   public:
     /** @name Constructors, destructor, assignment */
     //@{
@@ -455,7 +455,23 @@ class SIM_API cFunctionType : public cObject
     /**
      * Constructor.
      */
-    cFunctionType(const char *name, MathFunc f0, int argc);
+    cFunctionType(const char *name, MathFuncNoArg f, int argc=-1);
+
+    /**
+     * Constructor.
+     */
+    cFunctionType(const char *name, MathFunc1Arg f, int argc=-1);
+
+    /**
+     * Constructor.
+     */
+
+    cFunctionType(const char *name, MathFunc2Args f, int argc=-1);
+
+    /**
+     * Constructor.
+     */
+    cFunctionType(const char *name, MathFunc3Args f, int argc=-1);
 
     /**
      * Destructor.
@@ -477,6 +493,45 @@ class SIM_API cFunctionType : public cObject
      */
     virtual cObject *dup() const  {return new cFunctionType(*this);}
     //@}
+
+    /** @name Member access. */
+    //@{
+    /**
+     * Argument count to function.
+     */
+    int argCount() {return argc;}
+
+    /**
+     * Returns function pointer as double function with unchecked arg list
+     * (no type safety!)
+     */
+    MathFunc mathFunc()  {return f;}
+
+    /**
+     * Returns function pointer as double function with no args.
+     * Throws exception is actual arg count is different.
+     */
+    MathFuncNoArg mathFuncNoArg();
+
+    /**
+     * Returns function pointer as double function with 1 double arg.
+     * Throws exception is actual arg count is different.
+     */
+    MathFunc1Arg mathFunc1Arg();
+
+    /**
+     * Returns function pointer as double function with 2 double args.
+     * Throws exception is actual arg count is different.
+     */
+    MathFunc2Args mathFunc2Args();
+
+    /**
+     * Returns function pointer as double function with 3 double args.
+     * Throws exception is actual arg count is different.
+     */
+    MathFunc3Args mathFunc3Args();
+    //@}
+
 };
 
 cFunctionType *findfunctionbyptr(MathFunc f);

@@ -518,7 +518,7 @@ Define_Function2(bernoulli, _wrap_bernoulli, 1);
 Define_Function2(binomial, _wrap_binomial, 2);
 Define_Function2(geometric, _wrap_geometric, 1);
 Define_Function2(negbinomial, _wrap_negbinomial, 2);
-Define_Function2(hypergeometric, _wrap_hypergeometric, 2);
+Define_Function2(hypergeometric, _wrap_hypergeometric, 3);
 Define_Function2(poisson, _wrap_poisson, 1);
 
 

@@ -889,22 +889,22 @@ bool cPar::setfunction(char *text)
     // now `args' points to something like '(10,1.5E-3)', without spaces
     s = args;
     double p1,p2,p3;
-    switch(ff->argcount)
+    switch(ff->argCount())
     {
        case 0: if (strcmp(s,"()")!=0) return false;
-               setDoubleValue((MathFuncNoArg)ff->f);
+               setDoubleValue(ff->mathFuncNoArg());
                return true;
        case 1: if (*s++!='(') return false;
                p1 = strToSimtime0(s);
                if (*s++!=')') return false;
-               setDoubleValue((MathFunc1Arg)ff->f, p1);
+               setDoubleValue(ff->mathFunc1Arg(), p1);
                return true;
        case 2: if (*s++!='(') return false;
                p1 = strToSimtime0(s);
                if (*s++!=',') return false;
                p2 = strToSimtime0(s);
                if (*s++!=')') return false;
-               setDoubleValue((MathFunc2Args)ff->f, p1,p2);
+               setDoubleValue(ff->mathFunc2Args(), p1,p2);
                return true;
        case 3: if (*s++!='(') return false;
                p1 = strToSimtime0(s);
@@ -913,7 +913,7 @@ bool cPar::setfunction(char *text)
                if (*s++!=',') return false;
                p3 = strToSimtime0(s);
                if (*s++!=')') return false;
-               setDoubleValue((MathFunc3Args)ff->f, p1,p2,p3);
+               setDoubleValue(ff->mathFunc3Args(), p1,p2,p3);
                return true;
        default:
                return false; // invalid argcount

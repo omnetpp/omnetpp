@@ -67,7 +67,7 @@
  * @hideinitializer
  */
 #define Define_Function(NAME,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(NAME##__func, (new cFunctionType(#NAME,(MathFunc)NAME,ARGCOUNT))->setOwner(&functions);)
+  EXECUTE_ON_STARTUP(NAME##__func, (new cFunctionType(#NAME,NAME,ARGCOUNT))->setOwner(&functions);)
 
 /**
  * Like Define_Function(), but takes three arguments, the second one being the
@@ -77,7 +77,7 @@
  * @hideinitializer
  */
 #define Define_Function2(NAME,FUNCTION,ARGCOUNT) \
-  EXECUTE_ON_STARTUP(NAME##__func, (new cFunctionType(#NAME,(MathFunc)FUNCTION,ARGCOUNT))->setOwner(&functions);)
+  EXECUTE_ON_STARTUP(NAME##__func, (new cFunctionType(#NAME,FUNCTION,ARGCOUNT))->setOwner(&functions);)
 
 /**
  * Register class. This defines a factory object which makes it possible
