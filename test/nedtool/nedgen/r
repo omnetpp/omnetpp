@@ -1,0 +1,2 @@
+rm *_n.ned
+perl nedgentest.pl $*
