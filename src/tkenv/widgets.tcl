@@ -621,7 +621,7 @@ proc multicolumnlistbox {w columnlist args} {
             }
         }
         # eliminate "last column quirk" by adding a very wide dummy column:
-        $w column insert end "dummy" -text "" -edit no -width 5000
+        $w column insert end "dummy" -text "" -edit no -width 1000
         bind $w <3> {%W selection clearall; %W select set [%W nearest %x %y]}
         #bind $w <Motion> {puts "[%W nearest %x %y] of [%W index view.top]..[%W index view.bottom] -- [%W find view.top view.bottom]"}
     } else {

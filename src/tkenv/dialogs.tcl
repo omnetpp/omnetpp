@@ -523,7 +523,8 @@ proc _doFind {w findstring case words regexp backwards} {
 
 # filteredobjectlist_dialog --
 #
-# Implements the "Find/inspect objects" dialog
+# Implements the "Find/inspect objects" dialog.
+# Currently only used to open module windows.
 #
 proc filteredobjectlist_dialog {} {
     global config tmp
@@ -660,23 +661,22 @@ proc getClassNames {} {
 # helper proc for filteredobjectlist_dialog
 #
 proc filteredobjectlist_refresh {w} {
+    global config
+
     set class [$w.f.filter.pars.class.entry get]
     set name [$w.f.filter.pars.name.entry get]
     set orderby [$w.f.filter.pars.order.entry get]
 
-    # tk_messageBox -type ok -title INFO -icon info -message "$class:$name:$orderby"
-
     # get list
-    set objlist [opp_getsubobjectsfilt [opp_object_systemmodule] $class $name $orderby]
+    set maxcount $config(filtobjlist-maxcount)
+    set objlist [opp_getsubobjectsfilt [opp_object_systemmodule] $class $name $maxcount $orderby]
     set num [llength $objlist]
 
     # ask user if too many...
-    set viewall "yes"
-    if {$num > 100000} {
-        set viewall [tk_messageBox -message "Your query matched $num objects. \
-                     Do you want to display all of them (it might take a while)? \
-                     Clicking \"No\" will display the first 100,000 only." \
-                       -title "Too many hits" -icon warning -type yesno -parent $w]
+    set viewall "ok"
+    if {$num==$maxcount} {
+        set viewall [tk_messageBox -title "Too many objects" -icon warning -type okcancel -parent $w \
+        -message "Your query matched at least $num objects, click OK to display them."]
     }
 
     # clear listbox
@@ -684,21 +684,17 @@ proc filteredobjectlist_refresh {w} {
     multicolumnlistbox_deleteall $lb
 
     # insert into listbox
-    if {$viewall == "yes"} {
-        $w.f.numobj config -text "Found $num objects"
+    if {$viewall=="ok"} {
+        if {$num==$maxcount} {
+            $w.f.numobj config -text "The first $num objects found:"
+        } else {
+            $w.f.numobj config -text "Found $num objects:"
+        }
         foreach ptr $objlist {
             multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]]
         }
-    } else {
-        set i 0
-        $w.f.numobj config -text "Found $num objects, first 100,000 displayed"
-        foreach ptr $objlist {
-            multicolumnlistbox_insert $lb $ptr [list ptr $ptr class [opp_getobjectclassname $ptr] name [opp_getobjectfullpath $ptr] info [opp_getobjectinfostring $ptr]]
-            incr i
-            if {$i > 100000} {break}
-        }
+        #$lb selection set 0 FIXME what's this?
     }
-    #$lb selection set 0
 }
 
 # filteredobjectlist_popup --

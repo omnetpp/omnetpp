@@ -119,6 +119,7 @@ proc getNodeInfo {w op {key {}}} {
       }
 
       haschildren {
+        # FIXME this could be optimized by introducing an opp_haschildobjects command
         return [expr [opp_getnumchildobjects $ptr]!=0]
       }
 

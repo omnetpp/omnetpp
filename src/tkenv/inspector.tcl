@@ -206,10 +206,13 @@ proc create_inspector_listbox {w} {
        {name   Name}
        {info   Info}
        {ptr    Pointer}
-    } -width 400 -yscrollcommand "$w.main.sb set"
-    scrollbar $w.main.sb  -command "$w.main.list yview"
-    pack $w.main.sb -anchor center -expand 0 -fill y -side right
-    pack $w.main.list -expand 1 -fill both  -side left
+    } -width 400 -yscrollcommand "$w.main.vsb set" -xscrollcommand "$w.main.hsb set"
+    scrollbar $w.main.hsb  -command "$w.main.list xview" -orient horiz
+    scrollbar $w.main.vsb  -command "$w.main.list yview"
+    grid $w.main.list $w.main.vsb -sticky news
+    grid $w.main.hsb  x           -sticky news
+    grid rowconfig    $w.main 0 -weight 1 -minsize 0
+    grid columnconfig $w.main 0 -weight 1 -minsize 0
 
     bind $w.main.list <Double-Button-1> "inspect_item_in $w.main.list"
     bind $w.main.list <Button-3> "popup_insp_menu \[lindex \[multicolumnlistbox_curselection $w.main.list\] 0\] %X %Y"

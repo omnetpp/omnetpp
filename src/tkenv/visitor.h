@@ -20,18 +20,24 @@
 #include "patmatch.h"
 
 
-// FIXME temporary place for visitor stuff -- after it boils down, should be moved to sim/
 
 /**
  * cVisitor base class
+ *
+ * FIXME after this class boils down, should be moved to sim/.
  */
 class cVisitor
 {
-  public:
+  private:
+     // ugly hack to wrap old cObject::foreach()
+     static bool do_foreach_child_call_visitor(cObject *obj, bool beg, cObject *_parent, cVisitor *_visitor);
+
+  protected:
     /**
-     * Virtual destructor.
+     * Can be thrown to get out in the middle of the traversal process.
      */
-    virtual ~cVisitor() {}
+     class EndTraversalException { public: EndTraversalException() {} };
+
     /**
      * Called on each immediate child object. Should be redefined by user.
      */
@@ -41,6 +47,19 @@ class cVisitor
      * Emulate cObject::foreachChild() with the foreach() we have...
      */
     virtual void traverseChildrenOf(cObject *obj);
+
+  public:
+    /**
+     * Virtual destructor.
+     */
+    virtual ~cVisitor() {}
+
+    /**
+     * Starts the visiting process. This version simply calls visit(obj).
+     * It also catches EndTraversalException. Return value is true if
+     * traversal went through and false if EndTraversalException was caught.
+     */
+    virtual bool process(cObject *obj);
 };
 
 
@@ -53,16 +72,22 @@ class cVisitor
 class cCollectObjectsVisitor : public cVisitor
 {
   private:
+    int sizelimit;
     cObject **arr;
-    int firstfree;
+    int count;
     int size;
-  public:
-    cCollectObjectsVisitor();
-    ~cCollectObjectsVisitor();
+
+  protected:
+    // Used during visiting process
     virtual void visit(cObject *obj);
     void addPointer(cObject *obj);
+
+  public:
+    cCollectObjectsVisitor();
+    virtual ~cCollectObjectsVisitor();
+    void setSizeLimit(int limit);
     cObject **getArray()  {return arr;}
-    int getArraySize()  {return firstfree;}
+    int getArraySize()  {return count;}
 };
 
 
@@ -74,11 +99,12 @@ class cFilteredCollectObjectsVisitor : public cCollectObjectsVisitor
   private:
     short *classnamepatterntf;
     short *objfullpathpatterntf;
+  protected:
+    virtual void visit(cObject *obj);
   public:
     cFilteredCollectObjectsVisitor();
     ~cFilteredCollectObjectsVisitor();
     bool setFilterPars(const char *classnamepattern, const char *objfullpathpattern);
-    virtual void visit(cObject *obj);
 };
 
 /**
@@ -88,9 +114,10 @@ class cCollectChildrenVisitor : public cCollectObjectsVisitor
 {
   private:
     cObject *parent;
+  protected:
+    virtual void visit(cObject *obj);
   public:
     cCollectChildrenVisitor(cObject *_parent) {parent = _parent;}
-    virtual void visit(cObject *obj);
 };
 
 /**
@@ -101,9 +128,10 @@ class cCountChildrenVisitor : public cVisitor
   private:
     cObject *parent;
     int count;
+  protected:
+    virtual void visit(cObject *obj);
   public:
     cCountChildrenVisitor(cObject *_parent) {parent = _parent; count=0;}
-    virtual void visit(cObject *obj);
     int getCount() {return count;}
 };
 

@@ -22,11 +22,13 @@
 
 
 
-static bool do_foreach_child_call_visitor(cObject *obj, bool beg, cObject *_parent, cVisitor *_visitor)
+bool cVisitor::do_foreach_child_call_visitor(cObject *obj, bool beg, cObject *_parent, cVisitor *_visitor)
 {
     static cVisitor *visitor;
     static cObject *parent;
-    if (!obj) {       // setup
+    if (!obj)
+    {
+         // setup
          visitor = _visitor;
          parent = _parent;
          return false;
@@ -44,13 +46,27 @@ void cVisitor::traverseChildrenOf(cObject *obj)
     obj->forEach((ForeachFunc)do_foreach_child_call_visitor);
 }
 
+bool cVisitor::process(cObject *obj)
+{
+    try
+    {
+        visit(obj);
+    }
+    catch (EndTraversalException e)
+    {
+        return false;
+    }
+    return true;
+}
+
 //-----------------------------------------------------------------------
 
 cCollectObjectsVisitor::cCollectObjectsVisitor()
 {
-    size=16;
+    sizelimit = 0; // no limit by default
+    size = 16;
     arr = new cObject *[size];
-    firstfree=0;
+    count = 0;
 }
 
 cCollectObjectsVisitor::~cCollectObjectsVisitor()
@@ -58,20 +74,28 @@ cCollectObjectsVisitor::~cCollectObjectsVisitor()
     delete arr;
 }
 
+void cCollectObjectsVisitor::setSizeLimit(int limit)
+{
+    sizelimit = limit;
+}
+
 void cCollectObjectsVisitor::addPointer(cObject *obj)
 {
+    if (sizelimit && count==sizelimit)
+        throw EndTraversalException();
+
     // if array is full, reallocate
-    if (size==firstfree)
+    if (count==size)
     {
         cObject **arr2 = new cObject *[2*size];
-        for (int i=0; i<firstfree; i++) arr2[i] = arr[i];
+        for (int i=0; i<count; i++) arr2[i] = arr[i];
         delete [] arr;
         arr = arr2;
         size = 2*size;
     }
 
     // add pointer to array
-    arr[firstfree++] = obj;
+    arr[count++] = obj;
 }
 
 void cCollectObjectsVisitor::visit(cObject *obj)

@@ -154,50 +154,6 @@ int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char 
 
 //----------------------------------------------------------------------
 
-static int inspmatch_ctr;
-static bool do_inspect_matching( cObject *obj, bool beg, short *patt, int typ, bool co)
-{
-    static bool deep;
-    static bool countonly;
-    static short *pattern;
-    static int type;
-    static int ctr;
-    if (!obj) {       // setup
-         pattern = patt;
-         type = typ;
-         deep = true;
-         countonly=co;
-         ctr  = 0;
-         return false;
-    }
-    if( !beg ) return false;
-    if( (deep || ctr>0) && !memoryIsLow() ) // if deep=false, exclude owner object
-    {
-         const char *fullpath = obj->fullPath();
-         if (stringmatch(pattern,fullpath))
-         {
-           if (!countonly)
-               ((TOmnetTkApp *)(ev.app))->inspect(obj,type,"",NULL);
-           inspmatch_ctr++;
-         }
-    }
-    return deep || ctr++ == 0;
-}
-
-int inspectMatchingObjects(cObject *object, Tcl_Interp *, char *pattern, int type, bool countonly)
-{
-    // open inspectors for children of 'object' whose fullpath matches pattern
-    short trf_pattern[512];
-    if (transform_pattern(pattern, trf_pattern)==false)
-       return 0; // bad pattern: unmatched '{'
-    inspmatch_ctr=0;
-    do_inspect_matching(NULL,false, trf_pattern, type, countonly);
-    object->forEach( (ForeachFunc)do_inspect_matching );
-    return inspmatch_ctr;
-}
-
-//----------------------------------------------------------------------
-
 static bool do_inspect_by_name( cObject *obj, bool beg, const char *_fullpath, const char *_classname,
                                 int _insptype, const char *_geometry)
 {

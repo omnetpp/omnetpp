@@ -943,14 +943,16 @@ bool TOmnetTkApp::idle()
     return stop;
 }
 
-void TOmnetTkApp::objectDeleted( cObject *object )
+void TOmnetTkApp::objectDeleted(cObject *object)
 {
     cIterator i(inspectors);
     while (!i.end())
     {
-        TInspector *insp = (TInspector *) i();
         // beware because inspectors are also cObjects...
-        if (insp!=object && insp->getObject()==object)
+        if (i()==object) {i++; continue;}
+
+        TInspector *insp = (TInspector *) i();
+        if (insp->getObject()==object)
         {
             insp->hostObjectDeleted();
             delete insp;
@@ -959,6 +961,10 @@ void TOmnetTkApp::objectDeleted( cObject *object )
         }
         else
         {
+            // notify the inspector, maybe it's interested in learning that
+            insp->objectDeleted(object);
+
+            // go to next one...
             i++;
         }
     }

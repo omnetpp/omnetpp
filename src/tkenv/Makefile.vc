@@ -116,7 +116,8 @@ inspector.obj: inspector.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
-  ../../include/ccoroutine.h
+  ../../include/ccoroutine.h \
+  tkutil.h
 inspfactory.obj: inspfactory.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -163,7 +164,8 @@ inspfactory.obj: inspfactory.cc \
   ../../include/cchannel.h \
   ../../include/cdispstr.h \
   ../../include/envirext.h \
-  ../../include/ccoroutine.h
+  ../../include/ccoroutine.h \
+  tkutil.h
 modinsp.obj: modinsp.cc \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
@@ -192,7 +194,8 @@ modinsp.obj: modinsp.cc \
   ../../include/macros.h \
   inspector.h \
   ../../include/onstartup.h \
-  ../../include/ctypes.h
+  ../../include/ctypes.h \
+  tkutil.h
 objinsp.obj: objinsp.cc \
   ../../include/omnetpp.h \
   tkapp.h \
@@ -241,6 +244,7 @@ objinsp.obj: objinsp.cc \
   ../../include/envirext.h \
   ../../include/ccoroutine.h \
   inspector.h \
+  tkutil.h \
   structinsp.h
 statinsp.obj: statinsp.cc \
   ../../include/cmodule.h \
@@ -268,7 +272,8 @@ statinsp.obj: statinsp.cc \
   ../../include/macros.h \
   inspector.h \
   ../../include/onstartup.h \
-  ../../include/ctypes.h
+  ../../include/ctypes.h \
+  tkutil.h
 structinsp.obj: structinsp.cc \
   ../../include/cstruct.h \
   tkapp.h \
@@ -284,7 +289,8 @@ structinsp.obj: structinsp.cc \
   inspector.h \
   ../../include/onstartup.h \
   ../../include/ctypes.h \
-  ../../include/chead.h
+  ../../include/chead.h \
+  tkutil.h
 tkapp.obj: tkapp.cc \
   ../../include/cenvir.h \
   ../../include/csimplemodule.h \
@@ -311,6 +317,7 @@ tkapp.obj: tkapp.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
+  tkutil.h \
   ../../include/macros.h \
   ../../include/onstartup.h
 tkcmd.obj: tkcmd.cc \
@@ -329,6 +336,7 @@ tkcmd.obj: tkcmd.cc \
   tklib.h \
   inspector.h \
   inspfactory.h \
+  visitor.h \
   ../../include/defs.h \
   ../../include/cpar.h \
   ../../include/cobject.h \
@@ -343,15 +351,19 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/cenum.h \
+  tkutil.h \
   ../../include/macros.h \
   ../../include/onstartup.h
 tklib.obj: tklib.cc \
+  tklib.h \
+  tkapp.h
+tkutil.obj: tkutil.cc \
   ../../include/cobject.h \
   ../../include/cmodule.h \
   ../../include/csimul.h \
-  tklib.h \
-  inspector.h \
   tkapp.h \
+  visitor.h \
+  tkutil.h \
   ../../include/util.h \
   ../../include/cexception.h \
   ../../include/defs.h \
@@ -362,4 +374,15 @@ tklib.obj: tklib.cc \
   ../../include/cgate.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
-  ../../include/coutvect.h
+  ../../include/coutvect.h \
+  ../../include/cenvir.h \
+  ../../include/cpar.h
+visitor.obj: visitor.cc \
+  ../../include/cenvir.h \
+  ../../include/cobject.h \
+  visitor.h \
+  ../../include/defs.h \
+  ../../include/cpar.h \
+  ../../include/util.h \
+  ../../include/cexception.h \
+  tkapp.h

@@ -57,12 +57,12 @@ proc create_containerinspector {name geom args} {
     create_inspector_toplevel $w $geom
 
     # Create buttons at the bottom of the dialog.
-    frame $w.buttons
-    pack $w.buttons -expand 0 -fill x -side bottom -padx 5 -pady 5
-    button $w.buttons.inspect -text {Inspect} -command "inspect_item_in $w.main.list"
-    button $w.buttons.inspectas -text {Inspect As...} -command "inspectas_item_in $w.main.list"
-    pack $w.buttons.inspectas -side right -expand 0
-    pack $w.buttons.inspect -side right -expand 0
+    #frame $w.buttons
+    #pack $w.buttons -expand 0 -fill x -side bottom -padx 5 -pady 5
+    #button $w.buttons.inspect -text {Inspect} -command "inspect_item_in $w.main.list"
+    #button $w.buttons.inspectas -text {Inspect As...} -command "inspectas_item_in $w.main.list"
+    #pack $w.buttons.inspectas -side right -expand 0
+    #pack $w.buttons.inspect -side right -expand 0
 
     create_inspector_listbox $w
 }

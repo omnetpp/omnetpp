@@ -56,7 +56,8 @@ class TInspector : public cObject
 
       virtual void hostObjectDeleted();
 
-      // virtual functions to be redefined in descendants:
+      /** @name Virtual functions to be redefined in subclasses */
+      //@{
       virtual void createWindow();
       bool windowExists();
       void showWindow();
@@ -66,7 +67,11 @@ class TInspector : public cObject
 
       virtual int inspectorCommand(Tcl_Interp *interp, int, const char **) {return TCL_ERROR;}
 
-      // utility functions:
+      virtual void objectDeleted(cObject *) {}
+      //@}
+
+      /** @name Utility functions */
+      //@{
       void setEntry(const char *entry, const char *val);
       void setEntry(const char *entry, long l);
       void setEntry(const char *entry, double d);
@@ -80,7 +85,7 @@ class TInspector : public cObject
       void deleteInspectorListbox(const char *listbox);
       void fillInspectorListbox(const char *listbox, cObject *object, bool deep);
       void fillModuleListbox(const char *listbox, cModule *parent, bool simpleonly, bool deep);
-
+      //@}
 };
 
 // this defines a panel that can be inserted into any inspector

@@ -67,7 +67,6 @@ int getNumChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
-int fillListbox_cmd(ClientData, Tcl_Interp *, int, const char **);
 int stopSimulation_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
 int setSimOption_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -80,7 +79,6 @@ int moduleByPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 
 int inspect_cmd(ClientData, Tcl_Interp *, int, const char **);
 int supportedInspTypes_cmd(ClientData, Tcl_Interp *, int, const char **);
-int inspectMatching_cmd(ClientData, Tcl_Interp *, int, const char **);
 int inspectByName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int updateInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
 int writeBackInspector_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -137,7 +135,6 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getsubobjects",    getSubObjects_cmd        }, // args: <pointer> ret: list with all object ptrs in subtree
    { "opp_getsubobjectsfilt",getSubObjectsFilt_cmd    }, // args: <pointer> <args> ret: filtered list of object ptrs in subtree
    { "opp_getsimulationstate", getSimulationState_cmd }, // args: -  ret: NONET,READY,RUNNING,ERROR,TERMINATED,etc.
-   { "opp_fill_listbox",     fillListbox_cmd          }, // args: <listbox> <ptr> <options>
    { "opp_stopsimulation",   stopSimulation_cmd   }, // args: -
    { "opp_getsimoption",     getSimOption_cmd     }, // args: <option-namestr>
    { "opp_setsimoption",     setSimOption_cmd     }, // args: <option-namestr> <value>
@@ -150,7 +147,6 @@ OmnetTclCommand tcl_commands[] = {
    // Inspector stuff
    { "opp_inspect",           inspect_cmd           }, // args: <ptr> <type> <opt> ret: window
    { "opp_supported_insp_types",supportedInspTypes_cmd}, // args: <ptr>  ret: insp type list
-   { "opp_inspect_matching",  inspectMatching_cmd   }, // args: <pattern>  FIXME probably obsolete
    { "opp_inspectbyname",     inspectByName_cmd     }, // args: <objfullpath> <classname> <insptype> <geom>
    { "opp_updateinspector",   updateInspector_cmd   }, // args: <window>
    { "opp_writebackinspector",writeBackInspector_cmd}, // args: <window>
@@ -531,7 +527,7 @@ int getChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **a
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    cCollectChildrenVisitor visitor(object);
-   visitor.visit(object);
+   visitor.process(object);
 
    setObjectListResult(interp, &visitor);
    return TCL_OK;
@@ -544,7 +540,7 @@ int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
 
    cCountChildrenVisitor visitor(object);
-   visitor.visit(object);
+   visitor.process(object);
    int count = visitor.getCount();
 
    char buf[20];
@@ -555,12 +551,16 @@ int getNumChildObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   // args: <ptr> <maxcount>
+   if (argc!=3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+   int maxcount = atoi(argv[2]);
+   if (!maxcount) {Tcl_SetResult(interp, "maxcount must be a nonzero integer", TCL_STATIC); return TCL_ERROR;}
 
    cCollectObjectsVisitor visitor;
-   visitor.visit(object);
+   visitor.setSizeLimit(maxcount);
+   visitor.process(object);
 
    setObjectListResult(interp, &visitor);
    return TCL_OK;
@@ -568,18 +568,23 @@ int getSubObjects_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 
 int getSubObjectsFilt_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-   // args: <ptr> <class> <fullpath> <orderby>, where <class> and <fullpath> may contain wildcards
-   if (argc!=5) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   // args: <ptr> <class> <fullpath> <maxcount> <orderby>, where <class> and <fullpath> may contain wildcards
+   if (argc!=6) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
    cObject *object = (cObject *)strToPtr( argv[1] );
    if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
    const char *classnamepattern = argv[2];
    const char *objfullpathpattern = argv[3];
-   const char *orderby = argv[4];
+   int maxcount = atoi(argv[4]);
+   if (!maxcount) {Tcl_SetResult(interp, "maxcount must be a nonzero integer", TCL_STATIC); return TCL_ERROR;}
+   const char *orderby = argv[5];
 
    // get filtered list
    cFilteredCollectObjectsVisitor visitor;
-   visitor.setFilterPars(classnamepattern, objfullpathpattern);  // FIXME check return value!
-   visitor.visit(object);
+   visitor.setSizeLimit(maxcount);
+   if (!visitor.setFilterPars(classnamepattern, objfullpathpattern))
+       {Tcl_SetResult(interp, "invalid syntax in pattern", TCL_STATIC); return TCL_ERROR;}
+
+   visitor.process(object);
 
    // order it
    if (!strcmp(orderby,"Name"))
@@ -615,58 +620,6 @@ int getSimulationState_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        default: Tcl_SetResult(interp, "invalid simulation state", TCL_STATIC); return TCL_ERROR;
    }
    Tcl_SetResult(interp, statename, TCL_STATIC);
-   return TCL_OK;
-}
-
-int fillListbox_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
-{
-   // Example:
-   //   opp_fill_listbox .dialog.frame.listbox objects ptr80004a72 deep
-   // 1st arg: listbox variable
-   // 2nd arg: "modules" or "objects"
-   // 3rd arg: pointer ("ptr80004ab1")
-   // rest:    options: deep, simpleonly etc.
-
-   if (argc<3) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-
-   // listbox
-   const char *listbox = argv[1];
-
-   // argv[2]: "objects" or "modules"
-   bool modulelist;
-   if (strcmp(argv[2],"modules")==0)
-       modulelist=true;
-   else if (strcmp(argv[2],"objects")==0)
-       modulelist=false;
-   else
-       return TCL_ERROR;
-
-   // argv[3]: pointer
-   cObject *object = (cObject *)strToPtr( argv[3] );
-   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
-
-   // set defaults & process options
-   bool deep = false;
-   bool simpleonly = false;
-   for(int i=4; i<argc; i++)
-   {
-     if (0==strcmp(argv[i],"deep"))
-        deep = true;
-     else if (0==strcmp(argv[i],"notdeep"))
-        deep = false;
-     else if (0==strcmp(argv[i],"allmodules"))
-        simpleonly = false;
-     else if (0==strcmp(argv[i],"simpleonly"))
-        simpleonly = true;
-     else
-        {Tcl_SetResult(interp, "unrecognized option", TCL_STATIC);return TCL_ERROR;}
-   }
-
-   // do the job
-   if (modulelist)
-        fillListboxWithChildModules( (cModule *)object, interp, listbox, simpleonly, deep );
-   else
-        fillListboxWithChildObjects( object, interp, listbox, deep);
    return TCL_OK;
 }
 
@@ -801,10 +754,12 @@ int displayString_cmd(ClientData, Tcl_Interp *interp, int argc, const char **arg
 }
 
 
+//
 // HSB-to-RGB conversion
 // source: http://nuttybar.drama.uga.edu/pipermail/dirgames-l/2001-March/006061.html
 // Input:   hue, saturation, and brightness as floats scaled from 0.0 to 1.0
 // Output:  red, green, and blue as floats scaled from 0.0 to 1.0
+//
 static void hsbToRgb(double hue, double saturation, double brightness,
                      double& red, double& green, double &blue)
 {
@@ -1009,35 +964,6 @@ int supportedInspTypes_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
       strcat(buf, "} " );
    }
    Tcl_SetResult(interp, buf, TCL_DYNAMIC);
-   return TCL_OK;
-}
-
-int inspectMatching_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
-{
-   // expected args: pattern type [countonly]
-   if (argc!=3 && argc!=4) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-
-   char pattern[64];
-   strncpy(pattern,argv[1],64); pattern[63]='\0';
-
-   int type;
-   if (argv[2][0]>='0' && argv[2][0]<='9')
-        type = atoi( argv[2] );
-   else if ((type=insptypeCodeFromName(argv[2])) < 0)
-        {Tcl_SetResult(interp, "unrecognized inspector type", TCL_STATIC);return TCL_ERROR;}
-
-   bool countonly=false;
-   if (argc==4)
-   {
-      if (strcmp(argv[3],"countonly")==0)
-         countonly=true;
-      else
-         return TCL_ERROR;
-   }
-   int count = inspectMatchingObjects(&simulation, interp, pattern, type, countonly); // FIXME was 'superhead'!
-   char buf[20];
-   sprintf(buf,"%d", count);
-   Tcl_SetResult(interp, buf, TCL_VOLATILE);
    return TCL_OK;
 }
 

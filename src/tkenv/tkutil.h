@@ -39,7 +39,6 @@ char *my_itol(long l, char *buf);
 int fillListboxWithChildObjects(cObject *object, Tcl_Interp *interp, const char *listbox, bool deep);
 int fillListboxWithChildModules(cModule *parent, Tcl_Interp *interp, const char *listbox, bool simpleonly, bool deep);
 
-int inspectMatchingObjects(cObject *object, Tcl_Interp *interp, char *pattern, int type, bool countonly);
 void inspectObjectByName(const char *fullpath, const char *classname, int insptype, const char *geometry);
 
 #endif
