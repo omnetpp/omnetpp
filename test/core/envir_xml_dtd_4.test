@@ -1,0 +1,24 @@
+%description:
+If document has DTD, parser must use it for validation and attribute completion.
+Syntax error in DTD -- should produce an error
+
+%file: {}.dtd
+<!ELEMENT foo ( bar )>
+<!ATTLIST foo
+            one      CDATA "F1"
+
+%file: {}.xml
+<?xml version="1.0" ?>
+<!DOCTYPE foo SYSTEM "./{}.dtd">
+<foo>
+    <bar one="X"/>
+</foo>
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("{}.xml");
+node->debugDump();
+
+%exitcode: 1
+
+%contains: stdout
+Parse error

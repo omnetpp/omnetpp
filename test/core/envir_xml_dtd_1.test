@@ -1,0 +1,31 @@
+%description:
+If document has DTD, parser must use it for validation and attribute completion.
+Test that completion takes place.
+
+%file: {}.dtd
+<!ELEMENT foo ( bar )>
+<!ATTLIST foo
+            one      CDATA "F1"
+>
+
+<!ELEMENT bar EMPTY>
+<!ATTLIST bar
+            one      CDATA "B1"
+            two      CDATA "B2"
+>
+
+%file: {}.xml
+<?xml version="1.0" ?>
+<!DOCTYPE foo SYSTEM "./{}.dtd">
+<foo>
+    <bar one="X"/>
+</foo>
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("{}.xml");
+node->debugDump();
+
+%contains: stdout
+<foo one="F1">
+  <bar one="X" two="B2"/>
+</foo>

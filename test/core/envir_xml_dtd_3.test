@@ -1,0 +1,19 @@
+%description:
+If document has DTD, parser must use it for validation and attribute completion.
+DOCTYPE refers to nonexisting DTD.
+
+%file: {}.xml
+<?xml version="1.0" ?>
+<!DOCTYPE foo SYSTEM "./no-such-file.dtd">
+<foo>
+    <bar one="X"/>
+</foo>
+
+%activity:
+cXMLElement *node = ev.getXMLDocument("{}.xml");
+node->debugDump();
+
+%exitcode: 1
+
+%contains: stdout
+Validation error
