@@ -275,12 +275,13 @@ static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
 }
 
 // initialize Tcl/Tk and return a pointer to the interpreter
-Tcl_Interp *initTk(int, char **)
+Tcl_Interp *initTk(int argc, char **argv)
 {
-    // 1st two args: argc, argv
-
-    // Create interpreter
+    // create interpreter
     Tcl_Interp *interp = Tcl_CreateInterp();
+
+    // pass application name to interpreter
+    Tcl_FindExecutable(argv[0]);
 
     // Tcl/Tk args interfere with OMNeT++'s own command-line args
     //if (Tk_ParseArgv(interp, (Tk_Window)NULL, &argc, argv, argTable, 0)!=TCL_OK)

@@ -260,7 +260,8 @@ Dec 18, 2000
 Dec 18-22, 2000
  - implemented scrolling for the tabs strip (the one with the names of the open
    canvases) if there're too many tabs on it
-Jan 2, 2000
+Jan 2, 2001
  - cosmetic changes in plotedit.tcl
-
- `
+Jan 16, 2001
+ - fix: added Tcl_FindExecutable(argv[0]) to Tcl initialization code (needed by
+   Cygwin 1.1)

@@ -58,8 +58,11 @@ static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
 // initialize Tcl/Tk and return a pointer to the interpreter
 int initTk(int argc, char **argv, Tcl_Interp *&interp )
 {
-    // Create interpreter
-    interp = Tcl_CreateInterp();
+    // create interpreter
+    Tcl_Interp *interp = Tcl_CreateInterp();
+
+    // pass application name to interpreter
+    Tcl_FindExecutable(argv[0]);
 
     //if (Tk_ParseArgv(interp,(Tk_Window)NULL, &argc,argv,argTable,0)!=TCL_OK)
     //{

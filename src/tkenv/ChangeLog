@@ -404,3 +404,6 @@ Jan 15, 2001
    *before* and *after* events in that module, and events in that module are
    done with "normal execution" (animation, etc), while intervening events are
    done with "fast execution" (rare inspector updates, animation disabled)
+Jan 16, 2001
+ - fix: added Tcl_FindExecutable(argv[0]) to Tcl initialization code (needed by
+   Cygwin 1.1)
