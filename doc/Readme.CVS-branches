@@ -7,7 +7,10 @@ This graph shows the CVS branch history.
 
   Main Trunk            Branches
 
-        ^
+        ^                                     ^
+        |                                     |
+        |                                     |
+      mpi-2 >-----------mpi-2-branch----------|
         |
         |
   merge-omnetpp-2_2_2 <-----------------omnetpp-2_2_2
