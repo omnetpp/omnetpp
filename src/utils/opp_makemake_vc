@@ -1,5 +1,8 @@
+eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $argv:q'
+  if 0;
+
 #
-# opp_makemake_vc (formerly jar_mkmk)
+# opp_makemake_vc
 #
 #  Creates an MSVC makefile for a given OMNeT++ model.
 #  Assumes that .ned, .cc and .h files are in one directory.

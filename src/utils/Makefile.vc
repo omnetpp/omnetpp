@@ -7,6 +7,7 @@
 # Targets
 #
 all: seedtool.exe tcl2c.exe opp_replace.exe
+	copy opp_makemake_vc $(OMNETPP_BIN_DIR:/=\)
 
 seedtool.exe : seedtool.cc
 	$(CXX) /Tp seedtool.cc
