@@ -13,7 +13,7 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 #
 # If no args, print usage
 #
-$Usage = 'opp_msgc - part of OMNeT++. (c) 1992-2002 Andras Varga
+$Usage = 'opp_msgc - part of OMNeT++. (c) 2002-2003 Andras Varga
 Message subclassing compiler (experimental prototype, written in Perl)
 
 usage: opp_msgc [-s <cc-file-suffix>] [-t <h-file-suffix>] <nedfile>
@@ -42,6 +42,15 @@ while (@ARGV)
     elsif ($arg eq "-t")
     {
         $hsuffix = shift @ARGV;
+    }
+    elsif ($arg eq "-I")
+    {
+        # import not supported: just ignore -I <dir> for now
+        shift @ARGV;
+    }
+    elsif ($arg =~ /^-I/)
+    {
+        # import not supported: just ignore -I<dir> for now
     }
     elsif ($filename eq '')
     {
