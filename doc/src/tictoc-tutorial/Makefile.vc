@@ -1,0 +1,11 @@
+#
+# Global definitions
+#
+!include ..\..\..\configuser.vc
+
+#
+# Targets
+#
+all: 
+	$(DOXYGEN:/=\) doxy.cfg
+	copy tictoc.gif ..\..\tictoc-tutorial

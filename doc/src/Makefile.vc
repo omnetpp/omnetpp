@@ -1,0 +1,25 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+#
+# Targets
+#
+all: api nedxml-api parsim-api do-tictoc-tutorial do-manual
+
+api:
+	$(DOXYGEN:/=\) api.doxyfile
+
+nedxml-api:
+	$(DOXYGEN:/=\) nedxml.doxyfile
+
+parsim-api:
+	$(DOXYGEN:/=\) parsim.doxyfile
+
+do-manual:
+	cd manual && $(MAKE) $(MOPTS) $(MAKEFILE)
+
+do-tictoc-tutorial:
+	cd tictoc-tutorial && $(MAKE) $(MOPTS) $(MAKEFILE)
+
