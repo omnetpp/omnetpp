@@ -29,6 +29,8 @@
  *
  * - then we can instantiate _any_ network: it may contain module types that were
  *   read in dynamically, it'll work without problem.
+
+  FIXME put this comment somewhere...
  */
 
 /**
@@ -65,6 +67,7 @@ class cDynamicModuleType : public cModuleType
  */
 class cDynamicCompoundModule : public cCompoundModule
 {
+    friend cDynamicModuleType;
   protected:
     /**
      * FIXME comment

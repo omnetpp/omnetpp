@@ -38,7 +38,7 @@ cDynamicModuleType::cDynamicModuleType(const char *name, CompoundModuleNode *mod
 
 cModule *cDynamicModuleType::create(const char *name, cModule *parentmod, bool)
 {
-    cModule *mod = new cDynamicCompoundModule(name, parentmod);
+    cDynamicCompoundModule *mod = new cDynamicCompoundModule(name, parentmod);
     mod->setModuleType( this );
     simulation.addModule(mod);
 
