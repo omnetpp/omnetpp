@@ -36,6 +36,14 @@ proc enable_balloon {name_to_bind {script {}}} {
 proc schedule_balloon {window x y {item {}}} {
     global use_balloons help_tips balloon_after_ID
     if !$use_balloons return
+
+    if [info exists help_tips(helptip_proc)] {
+        set tip [$help_tips(helptip_proc) $window $x $y $item]
+        if [string length $tip] {
+            set balloon_after_ID [after $help_tips(delay) [list create_balloon $tip $x $y]]
+            return
+        }
+    }
     if [string length $item] {
         set index "$window,$item"
     } else {
@@ -75,7 +83,7 @@ proc create_balloon {text x y} {
 
 proc init_balloons {args} {
     global help_tips use_balloons fonts
-    set help_tips(width) 500
+    set help_tips(width) 300
     set help_tips(color) #f0f0d0
     set help_tips(delay) 500
     set help_tips(font)  $fonts(balloon)
@@ -84,6 +92,7 @@ proc init_balloons {args} {
     enable_balloon Menubutton
     enable_balloon Label
     enable_balloon Menu "%W index active"
+    enable_balloon Canvas "%W find withtag current"
 }
 
 #package provide balloon 1.0
