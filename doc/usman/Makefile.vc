@@ -1,22 +1,41 @@
 
-TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-opnet.tex ch-parallel-exec.tex ch-sim-lib.tex references.tex ch-build-sim-progs.tex ch-ned-grammar.tex ch-opp-design.tex ch-parsec.tex ch-simple-modules.tex title.tex ch-example-nim.tex ch-ned-lang.tex ch-overview.tex ch-run-sim.tex history.tex usman.tex
+PERL=c:\perl\bin\perl.exe
 
-PSPICS = figures/*.eps
-PDFPICS = figures/*.pdf
+HTM_FILES = history.htm \
+            ch-introduction.htm \
+            ch-overview.htm \
+            ch-example-nim.htm \
+            ch-ned-lang.htm \
+            ch-simple-modules.htm \
+            ch-messages.htm \
+            ch-sim-lib.htm \
+            ch-build-sim-progs.htm \
+            ch-run-sim.htm \
+            ch-ana-sim.htm \
+            ch-parallel-exec.htm \
+            ch-opp-design.htm \
+            ch-ned-grammar.htm \
+            usman-bibl.htm
 
-default: usman.dvi usman.pdf
+.SUFFIXES : .tex .bbl
 
-usman.dvi: $(TEXSRC) $(PSPICS)
-	latex usman.tex
-	makeindex usman
-	latex usman.tex
-	latex usman.tex
+.bbl.htm:
+	copy $< $(<:.bbl=.tex)
+	$(PERL) ltoh.pl $(<:.bbl=.tex)
+	move $@l $@
+	del $(<:.bbl=.tex)
 
-usman.pdf: $(TEXSRC) $(PDFPICS)
-	pdflatex usman.tex
-	makeindex usman
-	pdflatex usman.tex
-	pdflatex usman.tex
+.tex.htm:
+	$(PERL) ltoh.pl $<
+	move $@l $@
+
+usman.html : $(HTM_FILES)
+	@echo. > usman.tmp
+	for %%i in ($(HTM_FILES)) do type %i >> usman.tmp
+	$(PERL) prephtml2 usman.tmp
+	del usman.tmp
 
 clean:
-	-del usman.dvi usman.pdf *.aux *.idx *.ilg *.ind *.log *.out *.toc 2 >nul
+	-del *.htm
+	-del usman.tmp
+	-del usman.html

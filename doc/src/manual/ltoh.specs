@@ -34,12 +34,13 @@ htmlfile_spec := $BASE.html
 :{}	:\texttt:<SAMP>:</>:
 :{}	:\textsf:<EM>:</>:
 :{}	:\underline:<EM>:</>:
-:{}	:\chapter:<hr><H1><FONT color=green>:</>:
-:{}	:\section:<hr><H2><FONT color=blue>:</>:
-:{}	:\subsection:<H3><FONT color=teal>:</>:
-:{}	:\subsubsection:<H4><FONT color=teal>:</>:
+:{}	:\chapter:<hr><H1>:</H1>:
+:{}	:\section:<hr><H2>:</H2>:
+:{}	:\subsection:<H3>:</H3>:
+:{}	:\subsubsection:<br><P class="subheading">:</P>:
 :{}	:\centerline:<P align=center>:</>:
-:{}	:\footnote:<font size=-1>[:]</>:
+:{}	:\footnote:<br><ul><font size=-1>[:]</font></ul>:
+:{}	:\mbox:::
 :{}	:\ensuremath:<IT>:</>:
 :{2}	:\renewcommand#1#2:::
 :{1}	:\makebox[^{]*#1:#1::
@@ -97,6 +98,7 @@ htmlfile_spec := $BASE.html
 :{}     :\ref:<a href="#:">[click]</a>:
 :{1}    :\index:::
 :{2}    :\href#1#2:<a href="#1">#2</a>::
+:{1}    :\cite#1:[<a href="#bib-#1">#1</a>]::
 @{}     @\caption@<center><i>Figure: @</i></center>@
 :comm   :\opp:OMNeT++::
 :comm   :\textbar:|::
@@ -116,6 +118,9 @@ htmlfile_spec := $BASE.html
 :comm   :\new:[New!]::
 :comm   :\changed:[Changed!]::
 :comm   :\sloppy:::
+:comm   :\bibitem(\[(.*?)\])?{(.*?)}:<a name="bib-$3">[$2]&nbsp;&nbsp;::
+:comm   :\newblock:::
+:comm   :\em:::
 :comm   :\fpar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fdef(\[.*?\])?{(.*?)}:<tt>$2</tt>::
 :comm   :\fvar(\[.*?\])?{(.*?)}:<tt>$2</tt>::
@@ -132,5 +137,6 @@ htmlfile_spec := $BASE.html
 :b/e	:\begin{equation}:<blockquote>:</blockquote>:
 :b/e	:\begin{Verbatim}(\[.*?\])?:<pre>:</pre>:
 :b/e	:\begin{sloppypar}:<p>:</p>:
+:b/e	:\begin{thebibliography}(\{.*?\})?:<H1>Bibliography</H1>::
 
 

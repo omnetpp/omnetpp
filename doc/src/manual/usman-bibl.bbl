@@ -1,0 +1,175 @@
+\begin{thebibliography}{MvMvdW95}
+
+\bibitem[EHW02]{Entacher02}
+K.~Entacher, B.~Hechenleitner, and S.~Wegenkittl.
+\newblock A simple {OMNeT++} queuing experiment using parallel streams.
+\newblock {\em PARALLEL NUMERICS'02 - Theory and Applications}, pages 89--105,
+  2002.
+\newblock Editors: R. Trobec, P. Zinterhof, M. Vajtersic and A. Uhl.
+
+\bibitem[EPM99]{Akaroa99}
+G.~Ewing, K.~Pawlikowski, and D.~McNickle.
+\newblock {Akaroa2}: Exploiting network computing by distributing stochastic
+  simulation.
+\newblock In {\em Proceedings of the European Simulation Multiconference
+  ESM'99, Warsaw, June 1999}, pages 175--181. International Society for
+  Computer Simulation, 1999.
+
+\bibitem[Gol91]{Goldberg91what}
+David Goldberg.
+\newblock What every computer scientist should know about floating-point
+  arithmetic.
+\newblock {\em ACM Computing Surveys}, 23(1):5--48, 1991.
+
+\bibitem[Hel98]{Hellekalek98}
+P.~Hellekalek.
+\newblock Don't trust parallel {Monte Carlo}.
+\newblock {\em ACM SIGSIM Simulation Digest}, 28(1):82--89, jul 1998.
+\newblock Author's page is a great source of information, see
+  http://random.mat.sbg.ac.at/.
+
+\bibitem[HPvdL95]{JAR}
+Jan Heijmans, Alex Paalvast, and Robert van~der Leij.
+\newblock Network simulation using the {JAR} compiler for the {OMNeT++}
+  simulation system.
+\newblock Technical report, Technical University of Budapest, Dept. of
+  Telecommunications, 1995.
+
+\bibitem[Jai91]{Jain91}
+Raj Jain.
+\newblock {\em The Art of Computer Systems Performance Analysis}.
+\newblock Wiley, New York, 1991.
+
+\bibitem[JC85]{JCh85}
+Raj Jain and Imrich Chlamtac.
+\newblock The {$P^2$} algorithm for dynamic calculation of quantiles and
+  histograms without storing observations.
+\newblock {\em Communications of the ACM}, 28(10):1076--1085, 1985.
+
+\bibitem[Kof95]{Kofoed95}
+Stig Kofoed.
+\newblock Portable multitasking in {C++}.
+\newblock {\em Dr. Dobb's Journal}, November 1995.
+\newblock Download sorce from http://www.ddj.com/ftp/1995/1995.11/mtask.zip/.
+
+\bibitem[Len94]{LGThesis}
+G\'{a}bor Lencse.
+\newblock Graphical network editor for {OMNeT++}.
+\newblock Master's thesis, Technical University of Budapest, 1994.
+\newblock In Hungarian.
+
+\bibitem[LSCK02]{LEcuyer02}
+P.~L'Ecuyer, R.~Simard, E.~J. Chen, and W.~D. Kelton.
+\newblock An objected-oriented random-number package with many long streams and
+  substreams.
+\newblock {\em Operations Research}, 50(6):1073--1075, 2002.
+\newblock Source code can be downloaded from
+  http://www.iro.umontreal.ca/~lecuyer/papers.html.
+
+\bibitem[MN98]{Matsumoto98}
+M.~Matsumoto and T.~Nishimura.
+\newblock {Mersenne Twister}: A 623-dimensionally equidistributed uniform
+  pseudorandom number generator.
+\newblock {\em ACM Trans. on Modeling and Computer Simulation}, 8(1):3--30,
+  1998.
+\newblock Source code can be downloaded from
+  http://www.math.keio.ac.jp/~matumoto/emt.html.
+
+\bibitem[MvMvdW95]{OMNeTExamples}
+Andr\'{e} Maurits, George van Montfort, and Gerard van~de Weerd.
+\newblock {OMNeT++} extensions and examples.
+\newblock Technical report, Technical University of Budapest, Dept. of
+  Telecommunications, 1995.
+
+\bibitem[PFS86]{BFS86}
+Bratley P., B.~L. Fox, and L.~E. Schrage.
+\newblock {\em A Guide to Simulation}.
+\newblock Springer-Verlag, New York, 1986.
+
+\bibitem[PJL02]{Pawlikowsky02}
+K.~Pawlikowski, H.~Jeong, and J.~Lee.
+\newblock On credibility of simulation studies of telecommunication networks.
+\newblock {\em IEEE Communications Magazine}, pages 132--139, jan 2002.
+
+\bibitem[Pon91]{PongorOmnet}
+Gy\"{o}rgy Pongor.
+\newblock {OMNET}: An object-oriented network simulator.
+\newblock Technical report, Technical University of Budapest, Dept. of
+  Telecommunications, 1991.
+
+\bibitem[Pon92]{PongorSSM92}
+Gy\"{o}rgy Pongor.
+\newblock {Statistical Synchronization}: A different approach of parallel
+  discrete event simulation.
+\newblock Technical report, University of Technology, Data Communications
+  Laboratory, Lappeenranta, Finland, 1992.
+
+\bibitem[Pon93]{PongorSSM93}
+Gy\"{o}rgy Pongor.
+\newblock On the efficiency of the {Statistical Synchronization Method}.
+\newblock In {\em Proceedings of the European Simulation Symposium (ESS'93),
+  Delft, The Netherlands, Oct. 25-28, 1993}. International Society for Computer
+  Simulation, 1993.
+
+\bibitem[Var92]{AVTDK}
+Andr\'{a}s Varga.
+\newblock {OMNeT++} - portable simulation environment in {C++}.
+\newblock In {\em Proceedings of the Annual Students' Scientific Conference
+  (TDK), 1992}. Technical University of Budapest, 1992.
+\newblock In Hungarian.
+
+\bibitem[Var94]{AVThesis}
+Andr\'{a}s Varga.
+\newblock Portable user interface for the {OMNeT++} simulation system.
+\newblock Master's thesis, Technical University of Budapest, 1994.
+\newblock In Hungarian.
+
+\bibitem[Var98a]{KSplit98}
+Andr\'{a}s Varga.
+\newblock {K-split} -- on-line density estimation for simulation result
+  collection.
+\newblock In {\em Proceedings of the European Simulation Symposium (ESS'98),
+  Nottingham, UK, October 26-28}. International Society for Computer
+  Simulation, 1998.
+
+\bibitem[Var98b]{Paramtop98}
+Andr\'{a}s Varga.
+\newblock Parameterized topologies for simulation programs.
+\newblock In {\em Proceedings of the Western Multiconference on Simulation
+  (WMC'98) / Communication Networks and Distributed Systems (CNDS'98), San
+  Diego, CA, January 11-14}. International Society for Computer Simulation,
+  1998.
+
+\bibitem[Var99]{Edu99}
+Andr\'{a}s Varga.
+\newblock Using the {OMNeT++} discrete event simulation system in education.
+\newblock {\em IEEE Transactions on Education}, 42(4):372, November 1999.
+\newblock on CD-ROM issue; journal contains abstract.
+
+\bibitem[Vas96]{VZThesis}
+Zolt\'{a}n Vass.
+\newblock {PVM} extension of {OMNeT++} to support {Statistical
+  Synchronization}.
+\newblock Master's thesis, Technical University of Budapest, 1996.
+\newblock In Hungarian.
+
+\bibitem[VF97]{KSplit97}
+Andr\'{a}s Varga and Babak Fakhamzadeh.
+\newblock The {K-Split} algorithm for the {PDF} approximation of
+  multi-dimensional empirical distributions without storing observations.
+\newblock In {\em Proceedings of the 9th European Simulation Symposium
+  (ESS'97), Passau, Germany, October 19-22, 1997}, pages 94--98. International
+  Society for Computer Simulation, 1997.
+
+\bibitem[VP97]{Flex97}
+Andr\'{a}s Varga and Gy\"{o}rgy Pongor.
+\newblock Flexible topology description language for simulation programs.
+\newblock In {\em Proceedings of the 9th European Simulation Symposium
+  (ESS'97), Passau, Germany, October 19-22, 1997}, pages 225--229, 1997.
+
+\bibitem[Wel95]{WelchBook}
+Brent Welch.
+\newblock {\em Practical Programming in {Tcl} and {Tk}}.
+\newblock Prentice-Hall, 1995.
+
+\end{thebibliography}
