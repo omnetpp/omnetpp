@@ -424,4 +424,5 @@ Mar 10, 2001
    equivalent Makefile.bc files (generated from the BC IDE), but they are
    completely unsupported at the moment. If there's interest, it's possible
    that later I'll add makefiles for the free command-line bc5.5 compiler.
-
+Mar 27, 2001
+ - Makefile.vc change: replaced $(TKENV_EMBED_SUFFIX) with $(TKENV_EMBED_TCL).

@@ -282,6 +282,7 @@ Jan 16, 2001
  - added version mismatch check to generated _n.cc files
 ------ omnetpp-2.0 released ------
 ------ omnetpp-2.0p1 released ------
+Mar 10, 2001
  - Borland C++ support removed: I deleted the project files (*.ide). I added
    equivalent Makefile.bc files (generated from the BC IDE), but they are
    completely unsupported at the moment. If there's interest, it's possible

@@ -275,8 +275,11 @@ Feb 13, 2001
  - fixed handling of comments in all "Properties" dialogs (messed up newlines)
 ------ omnetpp-2.0 released ------
 ------ omnetpp-2.0p1 released ------
+Mar 10, 2001
  - Borland C++ support removed: I deleted the project files (*.ide). I added
    equivalent Makefile.bc files (generated from the BC IDE), but they are
    completely unsupported at the moment. If there's interest, it's possible
    that later I'll add makefiles for the free command-line bc5.5 compiler.
+Mar 27, 2001
+ - Makefile.vc change: replaced $(GNED_EMBED_SUFFIX) with $(GNED_EMBED_TCL).
 
