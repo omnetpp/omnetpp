@@ -2030,8 +2030,10 @@ sendDirect(cMessage *msg, double delay, cGate *gate)
 \end{verbatim}
 
 In addition to the message and a delay, it also takes the destination module
-and gate. The gate should be an \textit{input} gate and should not be connected
-(that is, the module needs dedicated gates for receiving via \ttt{sendDirect()}).
+and gate. The gate should be an \textit{input} gate and should not be connected.
+In other words, the module needs dedicated gates for receiving via \ttt{sendDirect()}.
+(Note: For leaving a gate unconnected in a compound module, you'll need to specify
+\ttt{connections nocheck:} instead of plain \ttt{connections:} in the NED file.)
 
 An example:
 
