@@ -22,25 +22,25 @@ The simulator can be used for:
 An {\opp} model consists of hierarchically nested modules. The
 depth of module nesting is not limited, which allows the user
 to reflect the logical structure of the actual system in the
-model structure. Modules communicate with message passing. Messages
+model structure. Modules communicate through message passing. Messages
 can contain arbitrarily complex data structures. Modules can
 send messages either directly to their destination or along a
 predefined path, through gates and connections.
 
 
-Modules can have parameters. Parameters can be used to customize
-module behaviour and to parameterize the model topology.
+Modules can have their own parameters. Parameters can be used to customize
+module behaviour and to parameterize the model's topology.
 
 Modules at the lowest level of the module hierarchy encapsulate
 behaviour. These modules are termed simple modules, and they are
 programmed in C++ using the simulation library.
 
-{\opp} simulations can feature different user interfaces for
+{\opp} simulations can feature varying user interfaces for
 different purposes: debugging, demonstration and batch execution.
 Advanced user interfaces make the inside of the model visible
-to the user, allow him/her to start/stop simulation execution
+to the user, allow control over simulation execution
 and to intervene by changing variables/objects inside the model.
-This is very important in the development/debugging phase
+This is very useful in the development/debugging phase
 of the simulation project. User interfaces also facilitate demonstration
 of how a model works.
 
@@ -56,7 +56,7 @@ ones plugged in. Models do not need any special instrumentation
 to be run in parallel -- it is just a matter of configuration.
 {\opp} can even be used for classroom presentation of parallel
 simulation algorithms, because simulations can be run in parallel
-even under the GUI which provides detailed feedback what's going on.
+even under the GUI which provides detailed feedback on what's going on.
 
 
 
@@ -224,7 +224,7 @@ The manual is organized the following way:
     like building and running simulations and analyzing results, and
     present the tools {\opp} has to support these tasks.}
   \item{Chapter \ref{cha:parallel-execution} is devoted to the support
-    for distributed execution.}
+    of distributed execution.}
   \item{Finally, Chapter \ref{cha:opp-design} explains the
     architecture and the internals of {\opp}. This chapter will be
     useful to those who want to extend the capabilities of the

@@ -41,7 +41,7 @@ of the simulation programmer. A more-or-less complete list:
     order messages in the message queue (FES) that have the same
     arrival time values.}
   \item{The \textit{time stamp} attribute is not used by the simulation kernel;
-    you can use it for purposes like remembering the time when the
+    you can use it for purposes such as noting the time when the
     message was enqueued or re-sent.}
   \item{Other attributes and data members make simulation programming
     easier, they will be discussed later: \textit{parameter list}, \textit{encapsulated
@@ -128,13 +128,18 @@ simtime_t t = msg->timestamp();
 
 \index{message!duplication}
 
-It is often needed to duplicate a message (for example, send
-one and keep a copy). This can be done in the standard ways as
+It is often necessary to duplicate a message (for example, sending
+one and keeping a copy). This can be done in the same way as
 for any other {\opp} object:
 
 \begin{verbatim}
-cMessage *copy1 = (cMessage *) msg->dup();
-cMessage *copy2 = new cMessage( *msg );
+cMessage *copy = (cMessage *) msg->dup();
+\end{verbatim}
+
+or
+
+\begin{verbatim}
+cMessage *copy = new cMessage( *msg );
 \end{verbatim}
 
 
@@ -406,7 +411,7 @@ message definitions (see section \ref{ch:messages:message-definitions}).
 The old, deprecated way of adding new fields to messages is via
 attaching \cclass{cPar} objects.
 There are several downsides of this approach, the worst being
-being large memory and execution time overhead. \fname{cPar}'s are
+large memory and execution time overhead. \fname{cPar}'s are
 heavy-weight and fairly complex objects themselves.
 It has been reported that using \cclass{cPar} message parameters
 might account for a large part of execution time, sometimes as much as 80\%.
@@ -551,7 +556,7 @@ to generate your makefiles, the latter will be automatically taken care of.)
 
 \subsubsection{What is message subclassing \textit{not?}}
 
-There's might be some misunderstanding around the purpose and
+There might be some confusion around the purpose and
 concept of message definitions, so it seems to be a good idea
 to deal with them right here.
 
@@ -846,7 +851,7 @@ more complex models, you'll probably need to:
     compiler so that you can benefit from Tkenv inspectors.
 \end{itemize}
 
-The following section describes how to do these tasks.
+The following section describes how to do this.
 
 
 \subsubsection{Inheritance among message classes}
@@ -862,7 +867,7 @@ explicitly specify the base class using the \fname{extends} keyword:
 \};
 \end{Verbatim}
 
-For the above example, the generated C++ code will look like:
+For the example above, the generated C++ code will look like:
 
 \begin{verbatim}
 class FooPacket : public FooBase { ... };
@@ -908,7 +913,7 @@ To create a class with those methods, you have to explicitly write
 
 You can define C-style structs to be used as fields in message classes,
 ``C-style'' meaning ``containing only data and no methods''.
-(Actually, in the C++ language a struct can have methods,
+(Actually, in the C++ a struct can have methods,
 and in general it can do anything a class can.)
 
 The syntax is similar to that of defining messages:
@@ -924,7 +929,7 @@ The syntax is similar to that of defining messages:
 
 However, the generated code is different. The generated struct has
 no getter or setter methods, instead the fields are represented
-by public data members. For the above definition, the
+by public data members. For the definition above, the
 following code is generated:
 
 \begin{verbatim}
@@ -936,7 +941,7 @@ struct MyStruct
 };
 \end{verbatim}
 
-A struct can have primitive types or other structs are fields. It cannot
+A struct can have primitive types or other structs as fields. It cannot
 have string or class as field.
 
 Inheritance is supported for structs:
@@ -1059,7 +1064,7 @@ keyword should be used:
 The distinction between classes derived and not derived from \fname{cObject}
 is important because the generated code differs at places.
 The generated code is set up so that if you incidentally
-forget the \fname{noncobject} keyword (and so you mislead the
+forget the \fname{noncobject} keyword (and thereby mislead the
 message compiler into thinking that your class is rooted in
 \fname{cObject} when in fact it is not), you'll get a C++ compiler
 error in the generated header file.
@@ -1071,7 +1076,7 @@ error in the generated header file.
 
 \subsubsection{The Generation Gap pattern}
 
-Sometimes you need the generated code to something
+Sometimes you need the generated code to do something
 more or do something differently than the version generated
 by the message compiler.
 For example, when setting a integer field named \fname{payloadLength},
@@ -1490,7 +1495,7 @@ use message definitions. For example, in Dyna you'll find this:
 In addition to the message class and its implementation,
 the message compiler also generates reflection code which makes it
 possible to inspect message contents in Tkenv.
-To illustrate the why this is necessary, suppose you manually subclass
+To illustrate why this is necessary, suppose you manually subclass
 \cclass{cMessage} to get a new message class. You could write the following:
   \footnote{Note that the code is only for illustration.
   In real code, \fname{freq} and \fname{power} should be private members,
@@ -1522,8 +1527,8 @@ Tkenv for debugging. While \fname{cPar}-based message parameters can be viewed i
 message inspector windows, fields added via subclassing do not appear
 there. The reason is that Tkenv, being just another C++ library in your
 simulation program, doesn't know about your C++ instance variables.
-The problem cannot be solved entirely within Tkenv, because the C++ language
-does not support ``reflection'' (extracting class information at runtime)
+The problem cannot be solved entirely within Tkenv, because C++ does not 
+support ``reflection'' (extracting class information at runtime)
 like for example Java does.
 
 There is a solution however: one can supply Tkenv with missing ``reflection''
