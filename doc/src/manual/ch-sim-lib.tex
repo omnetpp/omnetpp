@@ -369,14 +369,10 @@ generator works OK, so you do not have to worry about this if you port
 the simulator to a new architecture or use a different compiler.
 
 The random number generator was taken from \cite{Jain91}, pp. 441-444,455.
-It has the following properties:
-\begin{itemize}
-   \item{Range: $1... 2^{31}-2$}
-   \item{Period length: $2^{31}-2$}
-   \item{Method: $x := (x * 7^{5}) mod (2^{31}-1)$}
-   \item{Verification: if $x[0] = 1$ then $x[10000] = 1,043,618,065$ }
-   \item{Required hardware: exactly 32-bit integer arithmetics}
-\end{itemize}
+Its period length is $2^{31}-2$ with range $1...2^{31}-2$. The
+formula is $x := (x * 7^{5}) mod (2^{31}-1)$, to be performed in
+exactly 32-bit integer arithmetics, and one can verify the implementation
+by asserting that if $x[0] = 1$ then $x[10000] = 1,043,618,065$.
 
 The concrete implementation:
 
@@ -1883,6 +1879,7 @@ this purpose, mother observations in each internal node of the
 tree must be distributed among its child cells and propagated
 up to the leaves.
 
+% careful with reformatting! $..$ MUST NOT BE BROKEN TO SEVERAL LINES!
 
 Let $n_{...,i}$ be the (mother) observation count for a cell,
 $s_{...,i}$ be the total observation count in a cell $n_{...,i}$ plus
@@ -1891,28 +1888,28 @@ $m_{...,i}$ the mother observations propagated to the cell. We are
 interested in the $\tilde{n}_{...,i} = n_{...,i} + m_{...,i}$
 estimated amount of observations in the tree nodes, especially in the
 leaves. In other words, if we have $\tilde{n}_{...,i}$ estimated
-observation amount in a cell, how to divide it to obtain $m_{...,i,1},
-m_{...,i,2} \cdots m_{...,i,k}$ that can be propagated to child cells.
-Naturally, $m_{...,i,1} + m_{...,i,2} + \cdots + m_{...,i,k} =
-\tilde{n}_{...,i}$.
+observation amount in a cell, how to divide it to obtain
+$m_{...,i,1}, m_{...,i,2} \cdots m_{...,i,k}$
+that can be propagated to child cells. Naturally,
+$m_{...,i,1} + m_{...,i,2} + \cdots + m_{...,i,k} = \tilde{n}_{...,i}$.
 
+% careful with reformatting! $..$ MUST NOT BE BROKEN TO SEVERAL LINES!
 
 Two natural distribution methods are even
-distribution\index{distribution!even} (when $m_{...,i,1} = m_{...,i,2}
-= \cdots = m_{...,i,k}$) and proportional
-distribution\index{distribution!proportional} (when $m_{...,i,1} :
-m_{...,i,2} : \cdots : m_{...,i,k} = s_{...,i,1} : s_{...,i,2} :
-\cdots : s_{...,i,k}$). Even distribution is optimal when the
+distribution\index{distribution!even} (when
+$m_{...,i,1} = m_{...,i,2} = \cdots = m_{...,i,k}$) and proportional
+distribution\index{distribution!proportional} (when
+$m_{...,i,1} : m_{...,i,2} : \cdots : m_{...,i,k} = s_{...,i,1} : s_{...,i,2} : \cdots : s_{...,i,k}$).
+Even distribution is optimal when the
 $s_{...,i,j}$ values are very small, and proportional distribution is
 good when the $s_{...,i,j}$ values are large compared to
 $m_{...,i,j}$. In practice, a linear combination of them seems
 appropriate, where $\lambda=0$ means even and $\lambda=1$ means
 proportional distribution:
 
+% careful with reformatting! $..$ MUST NOT BE BROKEN TO SEVERAL LINES!
 
-\begin{equation}
-m_{\cdots,i,j}=(1-\lambda )\frac{\tilde{n}_{\cdots,i}}{k} + \lambda \tilde{n}_{\cdots,i} \frac{s_{...,i,j}}{s_{\cdots,i}}, {\lambda}\in[0,1]
-\end{equation}
+$m_{\cdots,i,j}=(1-\lambda )\frac{\tilde{n}_{\cdots,i}}{k} + \lambda \tilde{n}_{\cdots,i} \frac{s_{...,i,j}}{s_{\cdots,i}}, {\lambda}\in[0,1]$
 
 \begin{figure}[htbp]
   \begin{center}
@@ -1922,6 +1919,8 @@ m_{\cdots,i,j}=(1-\lambda )\frac{\tilde{n}_{\cdots,i}}{k} + \lambda \tilde{n}_{\
       evenly.}
   \end{center}
 \end{figure}
+
+% careful with reformatting! $..$ MUST NOT BE BROKEN TO SEVERAL LINES!
 
 Note that while $n_{...,i}$ are integers, $m_{...,i}$ and thus
 $\tilde{n}_{...,i}$ are typically real numbers. The histogram estimate

@@ -888,6 +888,9 @@ sub do_tex_comms {
         if ($line ne $arr->[$i]) {
             warning(8, "regex: $arr->[$i] ==> $line");
         }
+
+        # attempt math formatting. --Andras Varga
+        $line =~ s/\$([^\n]+?)\$/formatmath($1)/gse;
         $arr->[$i] = $line;
     }
 }
@@ -1164,6 +1167,38 @@ sub do_complicated_latex_defs {
         }
         $arr->[$i] = $line;
     }
+}
+
+#
+# Simplistic $math$ formatter. By Andras Varga
+#
+sub formatmath ()
+{
+      my $txt = shift @_;
+
+      # ugly heuristics: last character should be letter, number, ], ) or }, otherwise
+      # this is probably not a math formula...
+      return "\$$txt\$" unless ($txt =~ /[]a-zA-Z0-9\)}]$/);
+
+      print "  math: \$$txt\$ --> ";
+
+      # convert greek letters
+      $txt =~ s!\\(Alpha|Beta|Gamma|Delta|Epsilon|Zeta|Eta|Theta|Iota|Kappa|Lambda|Mu|Nu|Xi|Omicron|Pi|Rho|Sigma|Tau|Upsilon|Phi|Chi|Psi|Omega|alpha|beta|gamma|delta|epsilon|zeta|eta|theta|iota|kappa|lambda|mu|nu|xi|omicron|pi|rho|sigmaf|sigma|tau|upsilon|phi|chi|psi|omega)!&$1;!g;
+
+      # convert \tilde{n}, N, a, A (other letters don't have tilde versions in HTML)
+      $txt =~ s!\\tilde{(n|N|a|A)}!&$1tilde;!g;
+
+      # convert ^ and _ without braces
+      $txt =~ s!\^([a-zA-Z0-9]+)!<sup>$1</sup>!g;
+      $txt =~ s!\_([a-zA-Z0-9]+)!<sub>$1</sub>!g;
+
+      # convert ^{} and _{}
+      $txt =~ s!\^{(.*?)}!<sup>$1</sup>!g;
+      $txt =~ s!\_{(.*?)}!<sub>$1</sub>!g;
+
+      print "<i>$txt</i>\n";
+
+      return "<i>$txt</i>";
 }
 
 sub final_cleanup {

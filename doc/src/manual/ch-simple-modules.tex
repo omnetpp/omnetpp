@@ -267,14 +267,11 @@ the message is delayed by when it travels through the channel.
 Propagation delay is specified in seconds.
 
 The \textit{bit error rate} has influence on the transmission of messages
-through the channel. The bit error rate is the probability that
+through the channel. The bit error rate (\textit{ber}) is the probability that
 a bit is incorrectly transmitted. Thus, the probability that
-a message of \textit{n} bits length is transferred correctly is:\\
+a message of \textit{n} bits length is transferred without bit errors is:\\
 
-
-$P( \textit{sent message received properly} ) = (1 - \textit{ber})^{\mathit{n}}$\\
-where \textit{ber} = bit error rate and \textit{n} = number of bits in message.\\
-
+$P_{no bit error} = (1 - ber)^length$
 
 The message has an error flag which is set in case of transmission
 errors.
@@ -1477,7 +1474,7 @@ something like a state machine\index{finite state machine}
 (FSM\index{FSM}) which hides the underlying function calls. Such
 systems are:
 \begin{itemize}
-  \item{OPNET$^{(TM)}$ (MIL3, Inc.) which uses FSM's designed using a graphical editor;}
+  \item{OPNET{$^{(TM)}$ (MIL3, Inc.) which uses FSM's designed using a graphical editor;}
   \item{NetSim++ clones OPNET's approach;}
   \item{SMURPH (University of Alberta) defines a (somewhat eclectic)
       language to describe FSMs, and uses a precompiler to turn it
