@@ -11,7 +11,7 @@ How to run tests:
 
 1. write the *.test files
 
-  The syntax of test files will be descibed below.
+  The syntax of test files is described in a later section of this doc.
 
 2. export all source and other files to a working directory
 
@@ -72,7 +72,8 @@ only the 'runtest' script contains settings that need to
 be configured.
 
 Let us see a small test file:
-  %name: cMessage_properties_1
+
+file cMessage_properties_1.test:
 
   %description:
   Test the name and length properties of cMessage.
@@ -117,12 +118,13 @@ There are three other ways to proceed:
 Note that since all source is combined into a single test executable,
 actions have to be taken to prevent accidental name clashes among test
 cases. One has two choices to achieve this:
- - the string @TNAME@ will be replaced with the test case name everywhere
-   in the sources, so if you use names like @TNAME@_Module, they will be
+ - the string @TESTNAME@ will be replaced with the test case name everywhere
+   in the sources, so if you use names like @TESTNAME@_Module, they will be
    unique;
  - words enclosed in curly braces (like {Module}) will be automatically
-   prefixed by the test tool.
-Thus, you can use @TNAME@_Module and {Module} are roughly the same results.
+   prefixed with the test name, so {Module} and @TESTNAME@_Module yield the
+   same results.
+ - {} is a shorthand for @TESTNAME@.
 
 What needs to be prefixed?
  - module name, channel names, network names (but not submodule names)
@@ -133,8 +135,6 @@ What needs to be prefixed?
 The full list of possible % entries in a test file:
 
 Generic entries:
-   %name: <test-case-name>
-
    %description:
    <test-description-lines>
 

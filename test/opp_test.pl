@@ -4,20 +4,20 @@
 
 #
 # TODO/FIXME:
-#  - some errors are handled with exit(), others with unresolved() :-(((
 #  - more powerful tests, not only %contains and %not-contains
+#  - %contains --> %check-output:
 #
 
 #
 # If no args, print usage
 #
 $Usage = 'OMNeT++ Regression Test Tool, 2002
-Syntax: opp_test [-g|-r] [-v] [-V] [-d <dir>] <testfile> ...
-  -g         generate files
-  -r         run test
+Syntax: opp_test [-g|-r] [-v] [-d] [-w <dir>] <testfile> ...
+  -g         generate (export) source files from test case files
+  -r         run test (expects pre-built test executable)
   -v         verbose
-  -V         very verbose (debug)
-  -d <dir>   working directory (defaults to `work\')
+  -d         very verbose (debug)
+  -w <dir>   working directory (defaults to `work\')
   -s <prog>  shell to use to run test program
   -p <prog>  name of test program (defaults to name of working directory)
 
@@ -33,7 +33,6 @@ All files will be created in the working directory.
 
 # .test file possible entries. legend: 1=once, v=has value, b=has body, f=value is filename
 %Entries = (
-    'name'               => '1v',
     'description'        => '1b',
 
     'activity'           => '1b',
@@ -61,6 +60,8 @@ $testprogram='';
 $verbose=0;
 $debug=0;
 
+$arg0 = "opp_test";
+
 if ($#ARGV == -1)
 {
     print $Usage;
@@ -74,10 +75,10 @@ while (@ARGV)
     if ($arg eq "-v") {
         $verbose=1;
     }
-    elsif ($arg eq "-V") {
+    elsif ($arg eq "-d") {
         $debug=1;
     }
-    elsif ($arg eq "-d") {
+    elsif ($arg eq "-w") {
         $workingdir = shift @ARGV;
     }
     elsif ($arg eq "-s") {
@@ -115,7 +116,7 @@ if ($mode eq '')
 
 # test existence of working directory
 if (! -d $workingdir) {
-    print stderr "error: working directory `$workingdir' does not exist\n";
+    print stderr "$arg0: error: working directory `$workingdir' does not exist\n";
     exit(1);
 }
 
@@ -173,32 +174,44 @@ sub parse_testfile
 
     print "  parsing $testfilename\n" if ($debug);
 
+    # assign a test name (filename without extension, special chars removed)
+    $testfilename =~ /([^\/\\]*)$/;
+    $testname = $1;
+    $testname =~ s/\.[^.]*$//;
+    $testname =~ s/[^A-Za-z0-9_]/_/g;
+    print "  testname for `$testfilename' is $testname\n" if ($debug);
+
     # read test file
     if (!open(IN,$testfilename)) {
-        unresolved($testfilename,"cannot open test file `$testfilename'");
-        return;
+        print stderr "$arg0: error: cannot open test file `$testfilename'\n"; exit(1);
     }
-    $txt = '';
+
+    $body='';
+    $key_index='';
     while (<IN>)
     {
         s/[\r\n]*$//;
-        $txt.= $_."\n";
+        if (/^%#/) {
+            # ignore
+        } elsif (/^%/) {
+            $bodies{$key_index}=$body;
+            $body='';
+
+            /^%([^:]*):?(.*?)$/;
+            $key = $1;
+            $value =$2;
+            $key =~ s/^\s*(.*?)\s*$/\1/;
+            $value =~ s/^\s*(.*?)\s*$/\1/;
+
+            $count{$key}++;
+            $key_index = $key.'('.$count{$key}.')';
+            $values{$key_index}=$value;
+        } else {
+            $body.= $_."\n";
+        }
     }
+    $bodies{$key_index}=$body;
     close(IN);
-
-    # parse along "%foo:" lines
-    $txt .= "\n\%:\n";  # add sentry
-    while ($txt =~ s/%([^\s]*):[ \t]*(.*?)[ \t]*\n(.*?\n)(%[^\s]*:)/\4/s)
-    {
-        $key = $1;
-        $value =$2;
-        $body = $3;
-
-        $count{$key}++;
-        $key_index = $key.'('.$count{$key}.')';
-        $values{$key_index}=$value;
-        $bodies{$key_index}=$body;
-    }
 
     # check entries
     foreach $key_index (keys(%values))
@@ -208,19 +221,19 @@ sub parse_testfile
         $index = $2;
         $desc = $Entries{$key};
         if ($desc eq '') {
-            unresolved($testfilename, "error in test file: invalid entry %$key"); return;
+            print stderr "$arg0: error in test file `$testfilename': invalid entry `%$key'\n"; exit(1);
         }
         if ($desc =~ /1/ && $index>1) {
-            unresolved($testfilename, "error in test file: entry %$key should occur only once."); return;
+            print stderr "$arg0: error in test file `$testfilename': entry `%$key' should occur only once.\n"; exit(1);
         }
         if ($desc =~ /v/ && $values{$key_index} =~ /^\s*$/) {
-            unresolved($testfilename, "error in test file: entry %$key expects value after ':'"); return;
+            print stderr "$arg0: error in test file `$testfilename': entry `%$key' expects value after ':'\n"; exit(1);
         }
         if (!$desc =~ /v/ && !$values{$key_index} =~ /\s*/) {
-            unresolved($testfilename, "error in test file: entry %$key expects nothing after ':'"); return;
+            print stderr "$arg0: error in test file `$testfilename': entry `%$key' expects nothing after ':'\n"; exit(1);
         }
         if (!$desc =~ /b/ && !$bodies{$key_index} =~ /\s*/) {
-            unresolved($testfilename, "error in test file: entry %$key expects no body"); return;
+            print stderr "$arg0: error in test file `$testfilename': entry `%$key' expects no body\n"; exit(1);
         }
     }
 
@@ -228,33 +241,35 @@ sub parse_testfile
     if (defined($bodies{'activity(1)'}) && (defined($bodies{'module(1)'}) ||
         defined($bodies{'module_a(1)'}) || defined($bodies{'module_b(1)'})))
     {
-        unresolved($testfilename, "error in test file: %activity excludes %module... entries"); return;
+        print stderr "$arg0: error in test file `$testfilename': %activity excludes %module... entries\n"; exit(1);
     }
     if (defined($bodies{'module(1)'}) &&
         (defined($bodies{'module_a(1)'}) || defined($bodies{'module_b(1)'})))
     {
-        unresolved($testfilename, "error in test file: %module excludes %module_[a|b] entries"); return;
+        print stderr "$arg0: error in test file `$testfilename': %module excludes %module_[a|b] entries\n"; exit(1);
     }
     if (defined($bodies{'module_a(1)'}) && !defined($bodies{'module_b(1)'}))
     {
-        unresolved($testfilename, "error in test file: %module_a without %module_b"); return;
+        print stderr "$arg0: error in test file `$testfilename': %module_a without %module_b\n"; exit(1);
     }
     if (defined($bodies{'module_b(1)'}) && !defined($bodies{'module_a(1)'}))
     {
-        unresolved($testfilename, "error in test file: %module_b without %module_a"); return;
+        print stderr "$arg0: error in test file `$testfilename': %module_b without %module_a\n"; exit(1);
     }
 
-    # substitute TNAME and other macros, kill comments
-    $testname = $values{'name(1)'};
+    # substitute TESTNAME and other macros, kill comments
     foreach $key (keys(%values))
     {
         $bodies{$key} =~ s/^%#.*?$//mg;
 
-        $values{$key} =~ s/\@TNAME\@/$testname/g;
-        $bodies{$key} =~ s/\@TNAME\@/$testname/g;
+        $values{$key} =~ s/\@TESTNAME\@/$testname/g;
+        $bodies{$key} =~ s/\@TESTNAME\@/$testname/g;
 
         $values{$key} =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
         $bodies{$key} =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
+
+        $values{$key} =~ s/{}/${testname}/g;
+        $bodies{$key} =~ s/{}/${testname}/g;
     }
 }
 
@@ -284,7 +299,7 @@ sub testcase_generatesources
 
         # generate NED
         $ned = $ModuleNEDTemplate;
-        $ned =~ s/\@TNAME\@/$testname/g;
+        $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$testname/g;
         $ned =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
         $nedfname = $workingdir."/".$testname.'.ned';
@@ -292,7 +307,7 @@ sub testcase_generatesources
 
         # generate C++
         $cpp = $ActivityCPPTemplate;
-        $cpp =~ s/\@TNAME\@/$testname/g;
+        $cpp =~ s/\@TESTNAME\@/$testname/g;
         $cpp =~ s/\@ACTIVITY\@/$activity/g;
         $cpp =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
         $cppfname = $workingdir."/".$testname.'.cc';
@@ -307,7 +322,7 @@ sub testcase_generatesources
 
         # generate NED
         $ned = $ModuleNEDTemplate;
-        $ned =~ s/\@TNAME\@/$testname/g;
+        $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE\@/$module/g;
         $nedfname = $workingdir."/".$testname.'.ned';
         writefile($nedfname, $ned);
@@ -330,7 +345,7 @@ sub testcase_generatesources
 
         # generate NED
         $ned = $ModuleABNEDTemplate;
-        $ned =~ s/\@TNAME\@/$testname/g;
+        $ned =~ s/\@TESTNAME\@/$testname/g;
         $ned =~ s/\@MODULE_A\@/$module_a/g;
         $ned =~ s/\@MODULE_B\@/$module_b/g;
         $nedfname = $workingdir."/".$testname.'.ned';
@@ -338,7 +353,7 @@ sub testcase_generatesources
 
         # generate C++
         $cpp = $ModuleABCPPTemplate;
-        $cpp =~ s/\@TNAME\@/$testname/g;
+        $cpp =~ s/\@TESTNAME\@/$testname/g;
         $cpp =~ s/\@MODULE_A\@/$module_a/g;
         $cpp =~ s/\@MODULE_B\@/$module_b/g;
         $cpp =~ s/\@MODULE_A_SRC\@/$module_a_src/g;
@@ -358,7 +373,7 @@ sub testcase_generatesources
     if ($inifile =~ /^\s*$/s)
     {
         $inifile = $INITemplate;
-        $inifile =~ s/\@TNAME\@/$testname/g;
+        $inifile =~ s/\@TESTNAME\@/$testname/g;
         $inifile =~ s/{([a-zA-Z0-9_]+)}/${testname}_\1/g;
     }
     writefile($inifname, $inifile);
@@ -444,7 +459,7 @@ sub testcase_run()
             print "  checking $infname\n" if ($debug);
 
             if (!open(IN,"$infname")) {
-                fail($testfilename, "cannot read test case output file `$infname'");
+                unresolved($testfilename, "cannot read test case output file `$infname'");
                 return;
             }
             $txt = '';
@@ -466,7 +481,7 @@ sub testcase_run()
                    if (length($txt)<=8192) {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
-                      print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K)\n" if ($verbose);
+                      print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in working directory\n" if ($verbose);
                    }
                    return;
                 }
@@ -477,7 +492,7 @@ sub testcase_run()
                    if (length($txt)<=8192) {
                       print "expected pattern:\n>>>>$pattern<<<<\nactual output:\n>>>>$txt<<<<\n" if ($verbose);
                    } else {
-                      print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K)\n" if ($verbose);
+                      print "expected pattern:\n>>>>$pattern<<<<\nactual output too big to dump (>8K), see file in working directory\n" if ($verbose);
                    }
                    return;
                 }
@@ -527,7 +542,7 @@ sub writefile()
     my $skipwrite = 0;
     if (-r $fname) {
         if (!open(IN,$fname)) {
-            print stderr "error: cannot read file `$fname'\n";
+            print stderr "$arg0: error: cannot read file `$fname'\n";
             exit(1);
         }
         my $oldcontent = '';
@@ -548,7 +563,7 @@ sub writefile()
     } else {
         print "  writing `$fname'\n" if ($debug);
         if (!open(OUT,">$fname")) {
-            print stderr "error: cannot write file `$fname'\n";
+            print stderr "$arg0: error: cannot write file `$fname'\n";
             exit(1);
         }
         print OUT $content;
@@ -562,7 +577,7 @@ sub define_templates()
 simple @MODULE@
 endsimple
 
-network @TNAME@_network : @MODULE@
+network @TESTNAME@_network : @MODULE@
 endnetwork
 ';
 
@@ -579,7 +594,7 @@ simple @MODULE_B@
         out: out;
 endsimple
 
-module @TNAME@
+module @TESTNAME@
     submodules:
         the@MODULE_A@ : @MODULE_A@;
         the@MODULE_B@ : @MODULE_B@;
@@ -588,22 +603,22 @@ module @TNAME@
         the@MODULE_A@.in  <-- the@MODULE_B@.out;
 endmodule
 
-network @TNAME@_network : @TNAME@
+network @TESTNAME@_network : @TESTNAME@
 endnetwork
 ';
 
     $ActivityCPPTemplate = '
 #include "omnetpp.h"
 
-class @TNAME@ : public cSimpleModule
+class @TESTNAME@ : public cSimpleModule
 {
-    Module_Class_Members(@TNAME@,cSimpleModule,16384)
+    Module_Class_Members(@TESTNAME@,cSimpleModule,16384)
     virtual void activity();
 };
 
-Define_Module(@TNAME@);
+Define_Module(@TESTNAME@);
 
-void @TNAME@::activity()
+void @TESTNAME@::activity()
 {
 @ACTIVITY@
 }
@@ -625,9 +640,9 @@ void @TNAME@::activity()
 
     $INITemplate = '
 [General]
-network=@TNAME@_network
-output-vector-file = @TNAME@.vec
-output-scalar-file = @TNAME@.sca
+network=@TESTNAME@_network
+output-vector-file = @TESTNAME@.vec
+output-scalar-file = @TESTNAME@.sca
 ';
 }
 
