@@ -38,6 +38,19 @@
  * files in the omnetpp.ini format. Other subclasses which use different data
  * sources (e.g. database) can be created and plugged in for flexibility.
  *
+ * To switch to your own configuration storage (e.g. database or XML files) 
+ * from omnetpp.ini, subclass cConfiguration, register your new class with 
+ * the Register_Class() macro, then create the following to 
+ * <tt>omnetpp.ini</tt>:
+ *
+ * <pre>
+ * [General]
+ * configuration-class="MyClass"
+ * </pre>
+ *
+ * OMNeT++ will get the rest of the configuration from your configuration
+ * class.
+ *
  * @ingroup EnvirExtensions
  */
 class ENVIR_API cConfiguration : public cPolymorphic

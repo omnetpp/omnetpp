@@ -100,7 +100,6 @@ typedef basic_evbuf<char> evbuf;
  * the simulation kernel and the environment.
  *
  * @ingroup Envir
- * @ingroup EnvirExtensions
  */
 ENVIR_API extern cEnvir ev;
 
@@ -132,13 +131,13 @@ ENVIR_API bool memoryIsLow();
  * internal "simulation application" object. Cmdenv and Tkenv inherit from the
  * default simulation application class.
  *
- * The default (src/envir) implementation of cEnvir can be customized without
- * changing the via classes
- * declared in the envirext.h header (e.g. cOutputVectorManager, cOutputScalarManager).
+ * The default (src/envir) implementation of cEnvir can be customized
+ * by subclassing the classes declared in the envirext.h header (e.g. 
+ * cConfiguration, cRNG, cOutputVectorManager, cOutputScalarManager),
+ * and selecting the new classes from <tt>omnetpp.ini</tt>.
  *
- * @see cOutputVectorManager class
- * @see cOutputScalarManager class
  * @ingroup Envir
+ * @ingroup EnvirExtensions
  */
 class ENVIR_API cEnvir : public std::ostream
 {

@@ -29,11 +29,22 @@ class cStatistic;
 class cPar;
 
 /**
- * Abstract class. cOutputVectorManagers are plugins into the Envir user interface
- * library (src/envir) that handle recording the output for cOutVectors.
+ * Abstract class for output vector managers for cEnvir.
+ * cOutputVectorManagers are plugins into the Envir user
+ * interface library (src/envir) that handle recording the output for
+ * cOutVectors.
  *
  * The default output vector manager is cFileOutputVectorManager, defined in the
  * Envir library.
+ *
+ * To change the way output vectors are written, subclass cOutputVectorManager,
+ * register your new class with the Register_Class() macro, then select it
+ * by adding the following to <tt>omnetpp.ini</tt>:
+ *
+ * <pre>
+ * [General]
+ * outputvectormanager-class="MyClass"
+ * </pre>
  *
  * @ingroup EnvirExtensions
  */
@@ -119,6 +130,15 @@ class cOutputVectorManager : public cPolymorphic
  * The default output scalar manager is cFileOutputScalarManager, defined in the
  * Envir library.
  *
+ * To change the way scalar results are recorded, subclass cOutputScalarManager,
+ * register your new class with the Register_Class() macro, then select it
+ * by adding the following to <tt>omnetpp.ini</tt>:
+ *
+ * <pre>
+ * [General]
+ * outputscalarmanager-class="MyClass"
+ * </pre>
+ *
  * @ingroup EnvirExtensions
  */
 class cOutputScalarManager : public cPolymorphic
@@ -181,6 +201,15 @@ class cOutputScalarManager : public cPolymorphic
  *
  * The default output snapshot manager is cFileSnapshotManager, defined in the
  * Envir library.
+ *
+ * To create your own snaphot manager class, subclass cSnapshotManager,
+ * register your new class with the Register_Class() macro, then select it
+ * by adding the following to <tt>omnetpp.ini</tt>:
+ *
+ * <pre>
+ * [General]
+ * snapshotmanager-class="MyClass"
+ * </pre>
  *
  * @ingroup EnvirExtensions
  */

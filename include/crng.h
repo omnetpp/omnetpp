@@ -31,6 +31,15 @@ class cConfiguration;
  * to be used in simulations can be configured (a feature of the 
  * Envir library).
  * 
+ * To switch to your own RNG, subclass cRNG, register your new class 
+ * with the Register_Class() macro, then select it
+ * by adding the following to <tt>omnetpp.ini</tt>:
+ *
+ * <pre>
+ * [General]
+ * rng-class="MyClass"
+ * </pre>
+ *
  * See also cModule::rng().
  *
  * @ingroup RandomNumbers

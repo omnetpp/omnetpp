@@ -253,5 +253,10 @@
  * Classes in this group provide a plugin mechanism that can be used to
  * customize the functionality of the Envir user interface library
  * (and also Cmdenv and Tkenv, because they build on Envir).
+ *
+ * To customize, subclass from the classes below, and select the new class
+ * in <tt>omnetpp.ini</tt>, using the <tt>rng-class=</tt>, 
+ * <tt>outputvectormanager-class=</tt>, <tt>outputscalarmanager-class=</tt>, 
+ * etc. config entries.
  */
 
