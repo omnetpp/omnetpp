@@ -362,7 +362,7 @@ void TMessageInspector::writeBack()
    msg->setKind( atol(getEntry(".nb.info.kind.e")) );
    msg->setLength( atol( getEntry(".nb.info.length.e")) );
    msg->setPriority( atol( getEntry(".nb.info.prio.e")) );
-   msg->setError( atol( getEntry(".nb.info.error.e")) );
+   msg->setError( atol( getEntry(".nb.info.error.e"))!=0 );
    msg->setTimestamp( atof( getEntry(".nb.send.tstamp.e")) );
 
    TInspector::writeBack();    // must be there after all changes

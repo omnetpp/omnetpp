@@ -712,7 +712,7 @@ void TOmnetTkApp::messageSent( cMessage *msg )
     if (animation_ok && opt_animation_enabled)
     {
         // find suitable inspectors and do animate the message...
-        int w = simulation.warnings(); simulation.setWarnings( FALSE );
+        bool w = simulation.warnings(); simulation.setWarnings( FALSE );
         char msgptr[32], msgkind[16];
         ptrToStr(msg,msgptr);
         sprintf(msgkind,"%d",msg->kind());
@@ -758,7 +758,7 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
     if (animation_ok && opt_animation_enabled)
     {
         // find suitable inspectors and do animate the message...
-        int w = simulation.warnings(); simulation.setWarnings( FALSE );
+        bool w = simulation.warnings(); simulation.setWarnings( FALSE );
         char msgptr[32], msgkind[16];
         ptrToStr(msg,msgptr);
         sprintf(msgkind,"%d",msg->kind());
@@ -782,8 +782,8 @@ void TOmnetTkApp::messageDelivered( cMessage *msg )
                                         " end",
                                         NULL));
             }
-            simulation.setWarnings( w );
         }
+        simulation.setWarnings( w );
     }
 }
 

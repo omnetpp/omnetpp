@@ -165,9 +165,9 @@ int TGraphicalModWindow::redraw(Tcl_Interp *interp, int, char **)
 
    // loop through all submodules and enclosing module & draw their connections
    int parent=0;
-   for (cSubModIterator submod(*(cModule *)object); !parent; submod++)
+   for (cSubModIterator submod2(*(cModule *)object); !parent; submod2++)
    {
-      cModule *mod = !submod.end() ? submod() : (parent=1,(cModule *)object);
+      cModule *mod = !submod2.end() ? submod2() : (parent=1,(cModule *)object);
 
       int n = mod->gates();
       for (int i=0; i<n; i++)

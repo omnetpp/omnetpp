@@ -96,7 +96,7 @@ void THistogramWindow::update()
    if (!distr->transformed() || distr->cells()==0) return;
 
    long num_samples = distr->samples();
-   unsigned basepts = distr->cells()+1;
+   int basepts = distr->cells()+1;
    int cell;
    double cell_lower, cell_upper;
 

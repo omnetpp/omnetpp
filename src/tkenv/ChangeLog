@@ -312,3 +312,7 @@ Sept 5, 1999
 ------ omnetpp-2.0b2 released ------
 Oct 12, 1999
   - bugfix in balloon.tcl
+Dec 4,1999
+  - compiled with MSVC. Minor changes: changed int to bool in some places.
+    tkenv.dsp added. NOTE: one has to rename all .cc files  to .cpp
+    for compiling (ren *.cc *.cpp)!
