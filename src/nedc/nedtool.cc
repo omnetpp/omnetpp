@@ -1,5 +1,5 @@
 //==========================================================================
-//  MAIN.CC - part of
+//  NEDTOOL.CC - part of
 //
 //                     OMNeT++/OMNEST
 //            Discrete System Simulation in C++
@@ -269,21 +269,7 @@ bool processListFile(const char *listfilename)
 
     if (opt_verbose) fprintf(stderr,"processing list file '%s'...\n",listfilename);
 
-    // files should be relative to list file, so try cd into list file's directory
-    std::string dir, fnameonly;
-    splitFileName(listfilename, dir, fnameonly);
-    char olddir[1024];
-    if (!getcwd(olddir,1024))
-    {
-        fprintf(stderr,"nedtool: cannot get the name of current directory\n");
-        return false;
-    }
-    if (chdir(dir.c_str()))
-    {
-        fprintf(stderr,"nedtool: cannot temporarily change to directory `%s' (does it exist?)\n", dir.c_str());
-        return false;
-    }
-    ifstream in(fnameonly.c_str(), ios::in);
+    ifstream in(listfilename, ios::in);
     if (in.fail())
     {
         fprintf(stderr,"nedtool: cannot open list file '%s'\n",listfilename);
@@ -298,7 +284,10 @@ bool processListFile(const char *listfilename)
         const char *fname = line;
         if (fname[0]=='@')
         {
-            if (!processListFile(fname+1))
+            // included list files are relative to this list file
+            std::string dir = directoryOf(listfilename);
+            std::string newlistfile = tidyFilename(concatDirAndFile(dir.c_str(), fname+1).c_str());
+            if (!processListFile(newlistfile.c_str()))
             {
                 in.close();
                 return false;
@@ -320,12 +309,6 @@ bool processListFile(const char *listfilename)
         return false;
     }
     in.close();
-
-    if (chdir(olddir))
-    {
-        fprintf(stderr,"nedtool: cannot change back to directory `%s'\n", olddir);
-        return false;
-    }
     return true;
 }
 

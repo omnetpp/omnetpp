@@ -1,3 +1,10 @@
+2005-04-04  Andras Varga
+
+	* nedtool.cc: fixed a bug introduced in 3.1: while it's true that 
+	name of an included list file should be understood as relative to 
+	location of list file which includes it, but names of NED files 
+	in them should be relative to current working directory.
+
 2005-03-31  ------ omnetpp-3.1 released ------
 
 2005-03-23  Andras Varga
