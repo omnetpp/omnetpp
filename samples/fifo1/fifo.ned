@@ -3,8 +3,11 @@
 //        (part of Fifo1 - an OMNeT++ demo simulation)
 //-------------------------------------------------------------
 
-// ACPFifo, ACBFifo: single-server queues in two flavours
 
+// ACPFifo --
+//
+// single-server queue
+//
 simple ACPFifo
   parameters:
     service_time;
@@ -13,6 +16,11 @@ simple ACPFifo
     out: out;
 endsimple
 
+
+// ACPFifo --
+//
+// single-server queues in another flavour
+//
 simple ACBFifo
   parameters:
     bits_per_sec;
