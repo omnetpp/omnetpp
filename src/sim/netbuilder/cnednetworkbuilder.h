@@ -40,34 +40,34 @@ class cNEDNetworkBuilder
     int loopVarSP;
 
   protected:
-    virtual void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
-    virtual void addSubmodule(cModule *modp, SubmoduleNode *submod);
-    virtual void setDisplayString(cModule *submodp, SubmoduleNode *submod);
-    virtual void assignSubmoduleParams(cModule *submodp, NEDElement *submod);
-    virtual void setupGateVectors(cModule *submodp, NEDElement *submod);
-    virtual void readInputParams(cModule *submodp);
-    virtual cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
-    virtual cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
-    virtual void addLoopConnection(cModule *modp, ForLoopNode *forloop);
-    virtual void doLoopVar(cModule *modp, LoopVarNode *loopvar);
-    virtual void addConnection(cModule *modp, ConnectionNode *conn);
-    virtual cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
-                               const char *gatename, ExpressionNode *gateindex, bool isplusplus);
-    virtual cChannel *createChannel(ConnectionNode *conn);
-    virtual ExpressionNode *findExpression(NEDElement *node, const char *exprname);
+    void addChannelAttr(cChannel *chanp, ChannelAttrNode *channelattr);
+    void addSubmodule(cModule *modp, SubmoduleNode *submod);
+    void setDisplayString(cModule *submodp, SubmoduleNode *submod);
+    void assignSubmoduleParams(cModule *submodp, NEDElement *submod);
+    void setupGateVectors(cModule *submodp, NEDElement *submod);
+    void readInputParams(cModule *submodp);
+    cGate *getFirstUnusedParentModGate(cModule *mod, const char *gatename);
+    cGate *getFirstUnusedSubmodGate(cModule *mod, const char *gatename);
+    void addLoopConnection(cModule *modp, ForLoopNode *forloop);
+    void doLoopVar(cModule *modp, LoopVarNode *loopvar);
+    void addConnection(cModule *modp, ConnectionNode *conn);
+    cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
+                       const char *gatename, ExpressionNode *gateindex, bool isplusplus);
+    cChannel *createChannel(ConnectionNode *conn);
+    ExpressionNode *findExpression(NEDElement *node, const char *exprname);
 
-    virtual double evaluate(cModule *modp, ExpressionNode *expr, cModule *submodp=NULL);
+    double evaluate(cModule *modp, ExpressionNode *expr, cModule *submodp=NULL);
 
-    virtual cPar *resolveParamRef(ParamRefNode *node, cModule *parentmodp, cModule *submodp);
+    cPar *resolveParamRef(ParamRefNode *node, cModule *parentmodp, cModule *submodp);
 
-    virtual double evaluateNode(NEDElement *node, cModule *parentmodp, cModule *submodp);
-    virtual double evalOperator(OperatorNode *node, cModule *parentmodp, cModule *submodp);
-    virtual double evalFunction(FunctionNode *node, cModule *parentmodp, cModule *submodp);
-    virtual double evalParamref(ParamRefNode *node, cModule *parentmodp, cModule *submodp);
-    virtual double evalIdent(IdentNode *node, cModule *parentmodp, cModule *submodp);
-    virtual double evalConst(ConstNode *node, cModule *parentmodp, cModule *submodp);
+    double evaluateNode(NEDElement *node, cModule *parentmodp, cModule *submodp);
+    double evalOperator(OperatorNode *node, cModule *parentmodp, cModule *submodp);
+    double evalFunction(FunctionNode *node, cModule *parentmodp, cModule *submodp);
+    double evalParamref(ParamRefNode *node, cModule *parentmodp, cModule *submodp);
+    double evalIdent(IdentNode *node, cModule *parentmodp, cModule *submodp);
+    double evalConst(ConstNode *node, cModule *parentmodp, cModule *submodp);
 
-    virtual void assignParamValue(cPar& p, ExpressionNode *expr, cModule *parentmodp);
+    void assignParamValue(cPar& p, ExpressionNode *expr, cModule *parentmodp);
 
     bool needsDynamicExpression(ExpressionNode *expr);
     void addXElems(NEDElement *node, cPar::ExprElem *xelems, int& pos, cModule *submodp);
@@ -86,23 +86,23 @@ class cNEDNetworkBuilder
     /**
      * Destructor.
      */
-    virtual ~cNEDNetworkBuilder();
+    ~cNEDNetworkBuilder();
 
     /**
      * Creates the toplevel module, based on the info in the passed NEDElement tree.
      */
-    virtual void setupNetwork(NetworkNode *networknode);
+    void setupNetwork(NetworkNode *networknode);
 
     /**
      * Builds submodules and internal connections, based on the info in the
      * passed NEDElement tree.
      */
-    virtual void buildInside(cModule *module, CompoundModuleNode *modulenode);
+    void buildInside(cModule *module, CompoundModuleNode *modulenode);
 
     /**
      * Creates a channel object, based on the info in the passed NEDElement tree.
      */
-    virtual cChannel *createChannel(const char *name, ChannelNode *channelnode);
+    cChannel *createChannel(const char *name, ChannelNode *channelnode);
 
 };
 
