@@ -58,6 +58,17 @@ proc checkTclTkVersion {} {
 #
 proc setupTkOptions {} {
    global fonts tcl_platform tk_version
+   global tcl_wordchars tcl_nonwordchars
+
+   catch {tcl_wordBreakAfter}; # work around Tcl bug: these vars got reset when words.tcl was autoloaded
+   set tcl_wordchars {\w}
+   set tcl_nonwordchars {\W}
+
+   # by default, undo/redo bindings are platform-specific -- change it:
+   event add <<Undo>> <Control-Key-z>
+   event add <<Undo>> <Control-Key-Z>
+   event add <<Redo>> <Control-Key-y>
+   event add <<Redo>> <Control-Key-Y>
 
    #
    # fonts() array elements:
@@ -257,11 +268,17 @@ proc label-combo {w label list {text {}} {cmd {}}} {
     }
 }
 
+proc label-combo2 {w label list {text {}} {cmd {}}} {
+    # start with empty combo box
+    label-combo $w $label $list $text $cmd
+    $w.e delete 0 end
+}
+
 proc label-text {w label height {text {}}} {
     # utility function: create a frame with a label+text
     frame $w
     label $w.l -anchor w -width 16 -text $label
-    text $w.t -highlightthickness 0 -height $height -width 40
+    text $w.t -undo true -maxundo 1000 -highlightthickness 0 -height $height -width 40
     pack $w.l -anchor n -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.t -anchor center -expand 1 -fill both -padx 2 -pady 2 -side right
     $w.t insert 1.0 $text
@@ -534,8 +551,8 @@ proc center {w} {
 
 # createOkCancelDialog --
 #
-# Creates dialog with OK and Cancel buttons.
-# User's widgets can go into frame $w.f, and extra buttons can go into frame $w.buttons.
+# creates dialog with OK and Cancel buttons
+# user's widgets can go into frame $w.f
 #
 proc createOkCancelDialog {w title} {
     global tk_version tcl_platform
@@ -573,9 +590,14 @@ proc createOkCancelDialog {w title} {
 # execOkCancelDialog --
 #
 # Executes the dialog.
+# Optional validating proc may check if fields are correctly
+# filled in -- it should return 1 if dialog contents is valid,
+# 0 if there are invalid fields and OK button should not be
+# accepted.
+#
 # Returns 1 if Ok was pressed, 0 if Cancel was pressed.
 #
-proc execOkCancelDialog w {
+proc execOkCancelDialog {w {validating_proc {}}} {
 
     global opp
 
@@ -604,7 +626,14 @@ proc execOkCancelDialog w {
     # may take the focus away so we can't redirect it.  Finally,
     # restore any grab that was in effect.
 
+    if {$validating_proc==""} {
     tkwait variable opp($w)
+    } else {
+        tkwait variable opp($w)
+        while {$opp($w)==1 && ![eval $validating_proc $w]} {
+            tkwait variable opp($w)
+        }
+    }
 
     if {$oldGrab != ""} {
         if {$grabStatus == "global"} {
