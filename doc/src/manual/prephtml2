@@ -123,10 +123,10 @@ for ($i=0; $i<$nheadings; $i++)
 #
 print "creating Topics and TOC tables\n" unless $quiet;
 if ($singlePage) {
-      $chapters = "<H1>Chapters</H1>\n";
+      $chapters = "<H1>Chapters</H1>\n<p>\n";
 } else {
       $navbar="<p><b><hr><A HREF=\"toc.$ext\">[Table of Contents]</a><hr></b></p>";
-      $chapters = $navbar . "<H1>OMNeT++ User Manual -- Chapters</H1>\n";
+      $chapters = $navbar . "<H1>OMNeT++ User Manual -- Chapters</H1>\n<p>\n";
 }
 for ($i=0; $i<$nheadings; $i++)
 {
@@ -137,15 +137,16 @@ for ($i=0; $i<$nheadings; $i++)
            $chapters .= "$entry\n";
       }
 }
+$chapters .= "</p>";
 
 #
 # create table of contents
 #
 if ($singlePage) {
-      $toc = "<H1>Table of Contents</H1>\n";
+      $toc = "<H1>Table of Contents</H1>\n<p>\n";
 } else {
-      $navbar="<p><b><hr><A HREF=\"usman.$ext\">[Chapters]</a><hr></b></p>";
-      $toc = $navbar . "<H1>Table of Contents</H1>\n";
+      $navbar="<p><b><hr><A HREF=\"usman.$ext\">[Chapters]</a><hr></b>\n</p>";
+      $toc = $navbar . "<H1>Table of Contents</H1><p>\n";
 }
 for ($i=0; $i<$nheadings; $i++)
 {
@@ -156,6 +157,7 @@ for ($i=0; $i<$nheadings; $i++)
       elsif ($level[$i]==2) {$entry = "<B>$entry</B>";}
       $toc .= "$entry<BR>\n";
 }
+$toc .= "</p>";
 
 #
 # load Doxygen tags.xml...
