@@ -138,16 +138,20 @@ void CppExpressionGenerator::doExtractArgs(ExpressionInfo& info, NEDElement *nod
 {
     for (NEDElement *child=node->getFirstChild(); child; child = child->getNextSibling())
     {
-        bool pushit = false;
+        bool isctorarg = false, iscachedvar = false;
         int tag = child->getTagCode();
         if (tag==NED_IDENT)
-            pushit = true;
-        else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"index"))
-            pushit = true;
-        else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"sizeof"))
-            pushit = true;
-        if (pushit)
-            info.args.push_back(child);
+            isctorarg = true;
+        //else if (tag==NED_FUNCTION && !strcmp(((FunctionNode *)child)->getName(),"index"))
+        //     isctorarg = true;
+        //else if (tag==NED_FUNCTION && !strcmp(((FunctionNode *)child)->getName(),"sizeof"))
+        //     isctorarg = true;
+        else if (tag==NED_FUNCTION)
+             iscachedvar = true;
+        if (isctorarg)
+            info.ctorargs.push_back(child);
+        if (iscachedvar)
+            info.cachedvars.push_back(child);
         doExtractArgs(info, child);
     }
 }
@@ -168,8 +172,10 @@ void CppExpressionGenerator::generateExpressionClass(ExpressionInfo& info)
     else if (info.ctxtype==NED_CHANNEL)
         out << "    // cChannel *channel;\n";
     // variables to hold arguments (external references) for the expression
-    for (i=info.args.begin(); i!=info.args.end(); ++i)
-        out << "    " << getTypeForArg(*i) << getNameForArg(*i) << ";\n";
+    for (i=info.ctorargs.begin(); i!=info.ctorargs.end(); ++i)
+        out << "    " << getTypeForArg(*i) << " " << getNameForArg(*i) << ";\n";
+    for (i=info.cachedvars.begin(); i!=info.cachedvars.end(); ++i)
+        out << "    " << getTypeForArg(*i) << " " << getNameForArg(*i) << ";\n";
     out << "  public:\n";
 
     // constructor:
@@ -178,14 +184,20 @@ void CppExpressionGenerator::generateExpressionClass(ExpressionInfo& info)
         out << "cModule *mod";
     else
         out << "void *";
-    for (i=info.args.begin(); i!=info.args.end(); ++i)
-        out << ", " << getTypeForArg(*i) << getNameForArg(*i);
-    out << ")  {";
+    for (i=info.ctorargs.begin(); i!=info.ctorargs.end(); ++i)
+        out << ", " << getTypeForArg(*i) << " " << getNameForArg(*i);
+    out << ")  {\n";
     if (info.ctxtype==NED_SIMPLE_MODULE || info.ctxtype==NED_COMPOUND_MODULE)
-        out << "this->mod=mod; ";
-    for (i=info.args.begin(); i!=info.args.end(); ++i)
-        out << "this->" << getNameForArg(*i) << "=" << getNameForArg(*i) << "; ";
-    out << "}\n";
+        out << "        this->mod=mod;";
+    for (i=info.ctorargs.begin(); i!=info.ctorargs.end(); ++i)
+        out << "        this->" << getNameForArg(*i) << "=" << getNameForArg(*i) << ";\n";
+    for (i=info.cachedvars.begin(); i!=info.cachedvars.end(); ++i)
+    {
+        out << "        this->" << getNameForArg(*i) << "=";
+        doValueForCachedVar(*i);
+        out << ";\n";
+    }
+    out << "    }\n";
 
     // dup()
     out << "    cExpression *dup()  {return new " << classname << "(";
@@ -193,7 +205,7 @@ void CppExpressionGenerator::generateExpressionClass(ExpressionInfo& info)
         out << "mod";
     else
         out << "NULL";
-    for (i=info.args.begin(); i!=info.args.end(); ++i)
+    for (i=info.ctorargs.begin(); i!=info.ctorargs.end(); ++i)
         out << ", " << getNameForArg(*i);
     out << ");}\n";
 
@@ -207,11 +219,18 @@ void CppExpressionGenerator::generateExpressionClass(ExpressionInfo& info)
 const char *CppExpressionGenerator::getTypeForArg(NEDElement *node)
 {
     if (node->getTagCode()==NED_IDENT)
-        return "long ";
+        return "long";
     else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"index"))
-        return "long ";
+        return "long";
     else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"sizeof"))
-        return "???? "; // FIXME
+        return "????"; // FIXME
+    else if (node->getTagCode()==NED_FUNCTION)
+    {
+        const char *types[] = {"MathFuncNoArg", "MathFunc1Arg", "MathFunc2Args",
+                               "MathFunc3Args", "MathFunc4Args"};
+        int argcount = node->getNumChildren();
+        return types[argcount];
+    }
     else
         {INTERNAL_ERROR1(node, "getTypeForArg(): unexpected tag '%s'", node->getTagName());return NULL;}
 }
@@ -232,6 +251,20 @@ void CppExpressionGenerator::doValueForArg(NEDElement *node)
         out << ((IdentNode *)node)->getName() << "_var";
     else if (node->getTagCode()==NED_FUNCTION)
         out << "fixme:" << ((FunctionNode *)node)->getName(); //FIXME!!!
+    else
+        {INTERNAL_ERROR1(node, "doValueForArg(): unexpected tag '%s'", node->getTagName());}
+}
+
+void CppExpressionGenerator::doValueForCachedVar(NEDElement *node)
+{
+    if (node->getTagCode()==NED_FUNCTION)
+    {
+        const char *funcname = ((FunctionNode *)node)->getName();
+        int argcount = ((FunctionNode *)node)->getNumChildren();
+        const char *methods[] = {"mathFuncNoArg()", "mathFunc1Arg()", "mathFunc2Args()",
+                                 "mathFunc3Args()", "mathFunc4Args()"};
+        out << "_getFunction(\"" << funcname << "\"," << argcount << ")->" << methods[argcount];
+    }
     else
         {INTERNAL_ERROR1(node, "doValueForArg(): unexpected tag '%s'", node->getTagName());}
 }
@@ -266,7 +299,7 @@ void CppExpressionGenerator::generateExpressionUsage(ExpressionNode *expr, const
             out << "mod";
         else
             out << "NULL";
-        for (NEDElementVector::iterator i=info.args.begin(); i!=info.args.end(); ++i)
+        for (NEDElementVector::iterator i=info.ctorargs.begin(); i!=info.ctorargs.end(); ++i)
         {
             out << ", ";
             doValueForArg((*i));
@@ -376,8 +409,6 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     NEDElement *op3 = op2 ? op2->getNextSibling() : NULL;
     NEDElement *op4 = op3 ? op3->getNextSibling() : NULL;
 
-    // both modes seem to be the same...
-
     // operators should be handled specially
     if (!strcmp(funcname,"index"))
     {
@@ -437,25 +468,18 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     }
 
     // normal function: emit function call code
+    if (mode==MODE_EXPRESSION_CLASS)
+    {
+        out << getNameForArg(node);
+    }
+    else // MODE_INLINE_EXPRESSION
+    {
+        const char *methods[] = {"mathFuncNoArg()", "mathFunc1Arg()", "mathFunc2Args()",
+                                 "mathFunc3Args()", "mathFunc4Args()"};
+        out << "_getFunction(\"" << funcname << "\"," << argcount << ")->" << methods[argcount];
+    }
 
-    // // do we know this function?
-    // int i;
-    // for (i=0; known_funcs[i].fname!=NULL;i++)
-    //     if (!strcmp(funcname,known_funcs[i].fname))
-    //         break;
-    // if (known_funcs[i].fname!=NULL) // found
-    // {
-    //     out << funcname;
-    // }
-    // else // unknown
-    // {
-    //       ... _getFunction stuff, see below
-    // }
-
-    const char *methods[] = {"mathFuncNoArg()", "mathFunc1Arg()", "mathFunc2Args()",
-                             "mathFunc3Args()", "mathFunc4Args()"};
-    out << "_getFunction(\"" << funcname << "\"," << argcount << ")->" << methods[argcount];
-
+    // arglist is the same for both modes
     out << "(";
     for (NEDElement *child=node->getFirstChild(); child; child = child->getNextSibling())
     {

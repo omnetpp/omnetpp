@@ -51,7 +51,8 @@ class CppExpressionGenerator
         ExpressionNode *expr;
         int ctxtype; // tagcode of toplevel element which contains this expr.
         std::string name;
-        NEDElementVector args;
+        NEDElementVector ctorargs;
+        NEDElementVector cachedvars;
     };
     typedef std::map<ExpressionNode *,ExpressionInfo> NEDExpressionMap;
 
@@ -71,6 +72,7 @@ class CppExpressionGenerator
     const char *getTypeForArg(NEDElement *node);
     const char *getNameForArg(NEDElement *node);
     void doValueForArg(NEDElement *node);
+    void doValueForCachedVar(NEDElement *node);
 
     void generateChildren(NEDElement *node, const char *indent, int mode);
     void generateItem(NEDElement *node, const char *indent, int mode);
