@@ -53,7 +53,7 @@ class cNEDNetworkBuilder
     void addConnection(cModule *modp, ConnectionNode *conn);
     cGate *resolveGate(cModule *modp, const char *modname, ExpressionNode *modindex,
                        const char *gatename, ExpressionNode *gateindex, bool isplusplus);
-    cChannel *createChannel(ConnectionNode *conn);
+    cChannel *createChannelForConnection(ConnectionNode *conn, cModule *parentmodp);
     ExpressionNode *findExpression(NEDElement *node, const char *exprname);
 
     double evaluate(cModule *modp, ExpressionNode *expr, cModule *submodp=NULL);
@@ -90,17 +90,19 @@ class cNEDNetworkBuilder
 
     /**
      * Creates the toplevel module, based on the info in the passed NEDElement tree.
+     * Invoked from cDynamicNetwork.
      */
     void setupNetwork(NetworkNode *networknode);
 
     /**
      * Builds submodules and internal connections, based on the info in the
-     * passed NEDElement tree.
+     * passed NEDElement tree. Invoked from cDynamicModule.
      */
     void buildInside(cModule *module, CompoundModuleNode *modulenode);
 
     /**
      * Creates a channel object, based on the info in the passed NEDElement tree.
+     * Invoked from cDynamicChannel.
      */
     cChannel *createChannel(const char *name, ChannelNode *channelnode);
 

@@ -419,14 +419,6 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    return channel;\n";
     out << "}\n";
     out << "\n";
-
-    out << "static int _gateVectorSize(cModule *mod, const char *gatename)\n";
-    out << "{\n";
-    out << "    cGate *g = mod->gate(gatename);\n";
-    out << "    return g ? g->size() : 0;\n";
-    out << "}\n";
-    out << "\n";
-
 }
 
 // generators

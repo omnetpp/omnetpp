@@ -516,7 +516,7 @@ const cGate *cModule::gate(const char *s, int sn) const
 
 int cModule::gateSize(const char *gatename) const
 {
-    int i = findGate(s,sn);
+    int i = findGate(gatename);
     if (i==-1)
         return 0;
     return gate(i)->size();

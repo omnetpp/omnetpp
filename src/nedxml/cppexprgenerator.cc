@@ -452,7 +452,7 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
         // generate code
         if (isgate)
         {
-            out << "_gateVectorSize(mod,\"" << name << "\")";
+            out << "mod->gateSize(\"" << name << "\")";
         }
         else if (issubmod)
         {
