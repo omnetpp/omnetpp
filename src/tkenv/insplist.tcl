@@ -172,6 +172,8 @@ proc inspectorlist_tkenvrc_process_line {line} {
     set type [lindex $line 3]
     set geom [lindex $line 4]
 
+    if [catch {opp_inspectortype $type}] {return}  ;# ignore obsolete inspector types
+
     set key "$objname:$class:$type"
 
     set pil_name($key)   $objname

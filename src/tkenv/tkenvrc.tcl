@@ -95,7 +95,7 @@ proc load_tkenvrc {{fname ".tkenvrc"}} {
                 inspectorlist_tkenvrc_process_line [concat "inspector" $line]
             }
         }] {
-            tk_messageBox -icon warning -type ok -title {Error reading tkenvrc} -message "$fname line $lineno is invalid, ignoring"
+            tk_messageBox -icon warning -type ok -title {Error reading .tkenvrc} -message "$fname line $lineno is invalid, ignoring"
         }
         incr lineno
     }
