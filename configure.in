@@ -237,6 +237,14 @@ if test "$PS2GIF" = ""; then
    AC_MSG_WARN(The convert program from ImageMagick is needed by opp_neddoc to convert Postscript images to GIF.)
 fi
 
+# "dot" from Graphviz
+AC_ARG_VAR(DOT, Graph drawing program from the Graphviz package)
+AC_CHECK_PROG(DOT, dot, dot,)
+
+if test "$DOT" = ""; then
+   AC_MSG_WARN(The dot program from Graphviz is needed by opp_neddoc to generate diagrams.)
+fi
+
 #----------------------
 # Checks for standard libraries.
 #----------------------
@@ -537,6 +545,7 @@ AC_SUBST(SHLIB_LD)
 AC_SUBST(WISH)
 AC_SUBST(MAKEDEPEND)
 AC_SUBST(PS2GIF)
+AC_SUBST(DOT)
 
 AC_SUBST(DOXYGEN)
 

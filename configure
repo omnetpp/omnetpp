@@ -271,7 +271,7 @@ PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
 ac_unique_file="include/omnetpp.h"
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB DOXYGEN PERL XSLTPROC PS2GIF WISH CXXCPP OMNETPP_VERSION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TUTORIAL_DIR OMNETPP_TEST_DIR MYPWD NEDC MSGC NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX HAVE_DLOPEN TK_CFLAGS TK_LIBS MPI_CFLAGS MPI_LIBS PVM_CFLAGS PVM_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE PLOVE_IF_POSSIBLE SIM_PVM_IF_POSSIBLE SIM_MPI_IF_POSSIBLE TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX PLOVE_VARIANT OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_PLOVE_DIR LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT CXX CXXFLAGS ac_ct_CXX YACC LEX LEXLIB LEX_OUTPUT_ROOT RANLIB ac_ct_RANLIB DOXYGEN PERL XSLTPROC PS2GIF DOT WISH CXXCPP OMNETPP_VERSION OMNETPP_BIN_DIR OMNETPP_INCL_DIR OMNETPP_LIB_DIR OMNETPP_BITMAP_PATH OMNETPP_SRC_DIR OMNETPP_UTILS_DIR OMNETPP_DOC_DIR OMNETPP_SAMPLES_DIR OMNETPP_TUTORIAL_DIR OMNETPP_TEST_DIR MYPWD NEDC MSGC NEDCFLAGS AS AR SHLIB_LD MAKEDEPEND A_LIB_SUFFIX SO_LIB_SUFFIX LIB_SUFFIX EXE_SUFFIX HAVE_DLOPEN TK_CFLAGS TK_LIBS MPI_CFLAGS MPI_LIBS PVM_CFLAGS PVM_LIBS SYS_LIBS XMLPARSER XML_CFLAGS XML_LIBS AKAROA_CFLAGS AKAROA_LIBS TKENV_IF_POSSIBLE GNED_IF_POSSIBLE PLOVE_IF_POSSIBLE SIM_PVM_IF_POSSIBLE SIM_MPI_IF_POSSIBLE TKENV_EMBED_SUFFIX GNED_EMBED_SUFFIX PLOVE_VARIANT OMNETPP_TKENV_DIR OMNETPP_GNED_DIR OMNETPP_PLOVE_DIR LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -752,6 +752,10 @@ ac_env_PS2GIF_set=${PS2GIF+set}
 ac_env_PS2GIF_value=$PS2GIF
 ac_cv_env_PS2GIF_set=${PS2GIF+set}
 ac_cv_env_PS2GIF_value=$PS2GIF
+ac_env_DOT_set=${DOT+set}
+ac_env_DOT_value=$DOT
+ac_cv_env_DOT_set=${DOT+set}
+ac_cv_env_DOT_value=$DOT
 ac_env_CXXCPP_set=${CXXCPP+set}
 ac_env_CXXCPP_value=$CXXCPP
 ac_cv_env_CXXCPP_set=${CXXCPP+set}
@@ -849,6 +853,7 @@ Some influential environment variables:
   PERL        The Perl interpreter
   XSLTPROC    A command line xslt processor
   PS2GIF      Program to convert Postscript images to GIF
+  DOT         Graph drawing program from the Graphviz package
   CXXCPP      C++ preprocessor
 
 Use these variables to override the choices made by `configure' or to help
@@ -3237,6 +3242,49 @@ if test "$PS2GIF" = ""; then
 echo "$as_me: WARNING: The convert program from ImageMagick is needed by opp_neddoc to convert Postscript images to GIF." >&2;}
 fi
 
+# "dot" from Graphviz
+
+# Extract the first word of "dot", so it can be a program name with args.
+set dummy dot; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_prog_DOT+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  if test -n "$DOT"; then
+  ac_cv_prog_DOT="$DOT" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_DOT="dot"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+fi
+fi
+DOT=$ac_cv_prog_DOT
+if test -n "$DOT"; then
+  echo "$as_me:$LINENO: result: $DOT" >&5
+echo "${ECHO_T}$DOT" >&6
+else
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
+fi
+
+
+if test "$DOT" = ""; then
+   { echo "$as_me:$LINENO: WARNING: The dot program from Graphviz is needed by opp_neddoc to generate diagrams." >&5
+echo "$as_me: WARNING: The dot program from Graphviz is needed by opp_neddoc to generate diagrams." >&2;}
+fi
+
 #----------------------
 # Checks for standard libraries.
 #----------------------
@@ -5171,6 +5219,7 @@ fi
 
 
 
+
 #
 # Generate files
 #
@@ -5860,6 +5909,7 @@ s,@DOXYGEN@,$DOXYGEN,;t t
 s,@PERL@,$PERL,;t t
 s,@XSLTPROC@,$XSLTPROC,;t t
 s,@PS2GIF@,$PS2GIF,;t t
+s,@DOT@,$DOT,;t t
 s,@WISH@,$WISH,;t t
 s,@CXXCPP@,$CXXCPP,;t t
 s,@OMNETPP_VERSION@,$OMNETPP_VERSION,;t t
