@@ -109,7 +109,7 @@ void cIniFile::_readFile(char *fname, char *sect)
             while (*e!=' ' && *e!='\t' && e!='\0') e++;
             *e = '\0';
 
-            readFile( s );    // process included inifile
+            _readFile( s, sect );    // process included inifile
         }
         // process section heading '[new section]'
         else if (*s=='[')
