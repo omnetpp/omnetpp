@@ -32,6 +32,7 @@
 
 #if defined __GNUC__ || defined CXX
 #include <unistd.h> //getcwd
+#include <stdlib.h> //mkstemp
 #endif
 
 #define NEDC_VERSION      "2.3"
@@ -429,10 +430,30 @@ int do_secondpass (char *root_fname)
         sprintf (cc_fname, "%s%s", root_fname, suffix);
         if (verbose) printf("target file: %s\n", cc_fname);
 
+#if defined __GNUC__ || defined CXX
+        const char name_template[7] = "XXXXXX";
+        name_type oldfname;
+        strncpy(oldfname, cc_fname, strlen(cc_fname) + 1);
+        if (strlen(oldfname) + strlen(name_template) > sizeof(oldfname) - 1)
+        {
+          fprintf(stderr, "Path name exceeding size of buffer %d", sizeof(oldfname));
+          return -1;
+        }
+        strncat(cc_fname, name_template, strlen(name_template) + 1);
+        int yyoutfd = mkstemp(cc_fname); 
+        if (yyoutfd == -1)
+        {
+          fprintf(stderr, "Can't create file %s", cc_fname);
+          return -1;
+        }
+        yyout = fdopen(yyoutfd, "w");
+#else        
         /*
          * open .cc file for output
          */
         yyout = fopen (cc_fname, "w");
+#endif
+
         if (yyout == NULL)
         {
                 fprintf(stderr, "Can't open file for write: %s\n", cc_fname);
@@ -494,6 +515,14 @@ int do_secondpass (char *root_fname)
         }
         fclose (yyout);
 
+#if defined __GNUC__ || defined CXX
+        if (rename(cc_fname, oldfname) == -1)
+        {
+          fprintf(stderr, "rename failed for src=%s dest=%s", cc_fname, oldfname);
+          return -1;
+        }
+#endif
+        
         /*
         * cleanup
         */
