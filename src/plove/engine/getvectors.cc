@@ -46,7 +46,7 @@ void getVectors(const char *fname, OutVectorArray& array)
 {
     //const int buffersize = 64*1024;  // 64K buffer
     const int buffersize = 200;
-    char *buffer = new char[buffersize+100];  // +1 for EOS ; FIXME 100!
+    char *buffer = new char[buffersize+100];  // +1 for EOS, +100 for MSVC hack (see later)
     int bufferused = 0;
     FILE *f = NULL;
     bool eofreached = false;
@@ -100,9 +100,11 @@ void getVectors(const char *fname, OutVectorArray& array)
                 VecData vecdata;
 
                 // parse line
-                //char old = *(s+50); // FIXME msvc bug!
-                //char *olds = s;
-                //*(s+50) = 0;
+
+                // MSVC hack: their strtol() calls strlen() first (!!!), so we have to shorten the string somewhat
+                char oldchar = *(s+60);
+                char *olds = s;
+                *(s+60) = 0;
 
                 // vectorId
                 char *e;
@@ -111,7 +113,7 @@ void getVectors(const char *fname, OutVectorArray& array)
                     throw new Exception("invalid vector file syntax: invalid vector id in vector definition");
                 s = e;
 
-                //*(olds+50) = old;
+                *(olds+60) = oldchar; // MSVC hack
 
                 DBG(("getvectors: seen vector %d\n", vecdata.vectorId));
 

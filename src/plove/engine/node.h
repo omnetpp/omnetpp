@@ -71,6 +71,7 @@ class Node
     private:
         DataflowManager *mgr;
         NodeType *nodetype;
+        bool alreadyfinished;
 
     protected:
         /**
@@ -82,7 +83,7 @@ class Node
         /**
          * Constructor
          */
-        Node() {mgr=NULL; nodetype=NULL;}
+        Node() {mgr=NULL; nodetype=NULL; alreadyfinished=false;}
 
         /**
          * Virtual destructor
@@ -113,10 +114,25 @@ class Node
 
         /**
          * Provided it has not finished() yet, can process() be invoked
-         * right now?
+         * right now? (finished() is called first -- isReady() is only
+         * invoked if finished() returns false. So isReady() doesn't need
+         * to check for eof.)
          */
         virtual bool isReady() const = 0;
         //@}
+
+        /**
+         * Invoked by the dataflow manager when the node's finished() first
+         * returns true. It sets a status flag so that further invocations
+         * of finished() can be avoided.
+         */
+        void setAlreadyFinished() {alreadyfinished = true;}
+
+        /**
+         * Used by the dataflow manager. Returns true if setAlreadyFinished()
+         * has already been invoked.
+         */
+        bool alreadyFinished() {return alreadyfinished;}
 };
 
 #endif

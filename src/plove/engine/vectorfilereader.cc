@@ -26,7 +26,7 @@ VectorFileReaderNode::VectorFileReaderNode(const char *fileName, size_t bufferSi
     buffersize = bufferSize;
     f = NULL;
     eofreached = false;
-    buffer = new char[buffersize+100];  // +1 for EOS
+    buffer = new char[buffersize+100];  // +1 for EOS, +100 for MSVC hack (see later)
     bufferused = 0;
 }
 
@@ -111,9 +111,10 @@ void VectorFileReaderNode::process()
             }
             else
             {
-                char old = *(s+50);
+                // MSVC hack: their strtol() calls strlen() first (!!!), so we have to shorten the string somewhat
+                char oldchar = *(s+60);
                 char *olds = s;
-                *(s+50) = 0;
+                *(s+60) = 0;
 
                 // time
                 double time = strtod(s,&e);
@@ -127,7 +128,7 @@ void VectorFileReaderNode::process()
                     throw new Exception("invalid vector file syntax: invalid value column");
                 s = e;
 
-                *(olds+50) = old;
+                *(olds+60) = oldchar; // MSVC hack
 
                 // skip trailing white space
                 while (*s==' ' || *s=='\t') s++;
@@ -150,14 +151,7 @@ void VectorFileReaderNode::process()
         line = s;
     }
 
-    if (eofreached)
-    {
-        // close all ports
-        for (Portmap::iterator portvec=ports.begin(); portvec!=ports.end(); portvec++)
-            for (PortVector::iterator p=portvec->second.begin(); p!=portvec->second.end(); ++p)
-                p->channel()->close();
-    }
-    else
+    if (!eofreached)
     {
         // copy the last (partial) line to beginning of buffer
         bufferused = endbuffer-line;
@@ -175,7 +169,7 @@ bool VectorFileReaderNode::finished() const
 
 const char *VectorFileReaderNodeType::description() const
 {
-    return "Reads output vector files. FIXME more";
+    return "Reads output vector files.";
 }
 
 void VectorFileReaderNodeType::getAttributes(StringMap& attrs) const

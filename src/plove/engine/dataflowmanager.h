@@ -30,9 +30,11 @@ class DataflowManager
     protected:
         std::vector<Node *> nodes;
         std::vector<Channel *> channels;
-        Node *selectNode();
         int threshold; // channel buffer upper limit
         int lastnode; // for round robin
+
+        Node *selectNode();
+        bool nodeFinished(Node *node);
     public:
         DataflowManager();
         ~DataflowManager();

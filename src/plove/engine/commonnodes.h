@@ -51,7 +51,6 @@ class SingleSinkNode : public Node
 class FilterNode : public Node
 {
     protected:
-        virtual void closeAtEof();
         virtual bool finished() const;
     public:
         Port in;

@@ -41,9 +41,10 @@ Port *XYPlotNode::portOut(int k)
 
 bool XYPlotNode::isReady() const
 {
-    // all input ports must have something (except those at EOF)
-    if (xin()->length()==0 && !xin()->closing())
+    // if no "x" data, we're not ready
+    if (xin()->length()==0)
         return false;
+    // otherwise, we're ready only if all "y" ports have something (except those at EOF)
     for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
         if ((*it)()->length()==0 && !(*it)()->closing())
             return false;
@@ -56,19 +57,7 @@ void XYPlotNode::process()
     // return ty>tx values (where tx is timestamp of the "x" value). Meanwhile,
     // if we find ty==tx values, output the (x,y) pair. If a port has reached
     // EOF, skip it.
-    if (xin()->length()==0)
-    {
-         // "x" at EOF, discard all "y" values
-         ASSERT(xin()->eof()); // isReady() guarantees this
-         for (int i=0; i<yin.size(); i++)
-         {
-             yin[i]()->flush();
-             if (yin[i]()->eof())
-                 out[i]()->close();
-         }
-         return;
-    }
-
+    ASSERT(xin()->length()>0);
     Datum xd;
     xin()->read(&xd,1);
 
@@ -90,16 +79,17 @@ void XYPlotNode::process()
         }
         if (ychan->eof())
         {
-            out[i]()->close();
+            out[i]()->close(); // doesn't hurt
         }
     }
 }
 
 bool XYPlotNode::finished() const
 {
-    // only finished if all ports are at EOF
-    if (!xin()->eof())
-        return false;
+    // if "x" reached eof, we're finished in any case
+    if (xin()->eof())
+        return true;
+    // otherwise only if all "y" ports are at EOF
     for (PortVector::const_iterator it=yin.begin(); it!=yin.end(); it++)
         if (!(*it)()->eof())
             return false;

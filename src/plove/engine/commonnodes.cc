@@ -36,15 +36,6 @@ Port *SingleSinkNodeType::getPort(Node *node, const char *name) const
     throw new Exception("no such port `%s'", name);
 }
 
-void FilterNode::closeAtEof()
-{
-    if (in()->eof())
-    {
-        out()->close();
-        DBG(("%s: closing output\n", nodeType()->name()));
-    }
-}
-
 bool FilterNode::finished() const
 {
     return in()->eof();

@@ -54,7 +54,6 @@ void WindowAverageNode::process()
         out()->write(&o,1);
     }
     while (in()->length()>=winsize);
-    closeAtEof();
 }
 
 //-----

@@ -36,11 +36,6 @@ void RandomSourceNode::process()
     DBG(("rand: produced (%lg,%lg)\n", a.x, a.y));
     out()->write(&a,1);
     k++;
-    if (k==n)
-    {
-        out()->close();
-        DBG(("rand: closing output\n"));
-    }
 }
 
 bool RandomSourceNode::finished() const

@@ -22,7 +22,7 @@
 
 bool NopNode::isReady() const
 {
-    return in()->length()>0 || in()->closing();
+    return in()->length()>0;
 }
 
 void NopNode::process()
@@ -34,7 +34,6 @@ void NopNode::process()
         in()->read(&d,1);
         out()->write(&d,1);
     }
-    closeAtEof();
 }
 
 //--
@@ -61,7 +60,7 @@ Node *NopNodeType::create(DataflowManager *, StringMap& attrs) const
 
 bool AdderNode::isReady() const
 {
-    return in()->length()>0 || in()->closing();
+    return in()->length()>0;
 }
 
 void AdderNode::process()
@@ -74,7 +73,6 @@ void AdderNode::process()
         d.y += c;
         out()->write(&d,1);
     }
-    closeAtEof();
 }
 
 //--
@@ -104,7 +102,7 @@ Node *AdderNodeType::create(DataflowManager *, StringMap& attrs) const
 
 bool MultiplierNode::isReady() const
 {
-    return in()->length()>0 || in()->closing();
+    return in()->length()>0;
 }
 
 void MultiplierNode::process()
@@ -117,7 +115,6 @@ void MultiplierNode::process()
         d.y *= a;
         out()->write(&d,1);
     }
-    closeAtEof();
 }
 
 //--
@@ -152,7 +149,7 @@ Node *MultiplierNodeType::create(DataflowManager *, StringMap& attrs) const
 
 bool TimeShiftNode::isReady() const
 {
-    return in()->length()>0 || in()->closing();
+    return in()->length()>0;
 }
 
 void TimeShiftNode::process()
@@ -165,7 +162,6 @@ void TimeShiftNode::process()
         d.x += dt;
         out()->write(&d,1);
     }
-    closeAtEof();
 }
 
 //--
@@ -195,7 +191,7 @@ Node *TimeShiftNodeType::create(DataflowManager *, StringMap& attrs) const
 
 bool LinearTrendNode::isReady() const
 {
-    return in()->length()>0 || in()->closing();
+    return in()->length()>0;
 }
 
 void LinearTrendNode::process()
@@ -208,7 +204,6 @@ void LinearTrendNode::process()
         d.y += a * d.x;
         out()->write(&d,1);
     }
-    closeAtEof();
 }
 
 //--
@@ -244,7 +239,7 @@ Node *LinearTrendNodeType::create(DataflowManager *, StringMap& attrs) const
 
 bool CropNode::isReady() const
 {
-    return in()->length()>0 || in()->closing();
+    return in()->length()>0;
 }
 
 void CropNode::process()
@@ -257,7 +252,6 @@ void CropNode::process()
         if (d.x >= from && d.x <= to)
             out()->write(&d,1);
     }
-    closeAtEof();
 }
 
 //--
@@ -290,7 +284,7 @@ Node *CropNodeType::create(DataflowManager *, StringMap& attrs) const
 
 bool MeanNode::isReady() const
 {
-    return in()->length()>0 || in()->closing();
+    return in()->length()>0;
 }
 
 void MeanNode::process()
@@ -305,7 +299,6 @@ void MeanNode::process()
         d.y = sum/count;
         out()->write(&d,1);
     }
-    closeAtEof();
 }
 
 //--

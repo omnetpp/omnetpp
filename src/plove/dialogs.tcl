@@ -32,7 +32,9 @@ proc createVectorScatterPlotDialog {idlist} {
     set w .dlg
     createOkCancelDialog $w "Create scatter plot"
 
-    label $w.f.l -justify left -text "A scatter (X-Y) plot matches values from two vectors by timestamp, and uses them as (x,y) coordinates.\n"
+    label $w.f.l -justify left -text "A scatter (X-Y) plot matches values from two vectors by timestamp,\
+                                     and uses them as (x,y) coordinates.\nValues which have different timestamps\
+                                     will not form data points."
     pack $w.f.l -expand 0 -fill x -side top
 
     # add entry fields and focus on first one

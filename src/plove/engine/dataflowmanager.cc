@@ -88,9 +88,21 @@ void DataflowManager::execute()
     }
     DBG(("execute: processing finished\n"));
 
+    // propagate finished state to all nodes (transitive closure)
+    int i=0;
+    while (i<nodes.size())
+    {
+        if (nodes[i]->alreadyFinished())
+            i++;
+        else if (!nodeFinished(nodes[i]))
+            i++;  // if not finished, skip it
+        else
+            i=0;  // if one node finished, start over (to let it cascade)
+    }
+
     // check all nodes have finished now
-    for (int i=0; i<nodes.size(); i++)
-        if (!nodes[i]->finished())
+    for (i=0; i<nodes.size(); i++)
+        if (!nodes[i]->alreadyFinished())
             throw new Exception("execute: deadlock: no ready nodes but node %s not finished",
                                 nodes[i]->nodeType()->name());
 
@@ -100,24 +112,50 @@ void DataflowManager::execute()
             throw new Exception("execute: all nodes finished but channel %d not at eof", j);
 }
 
-Node *DataflowManager::selectNode()
+bool DataflowManager::nodeFinished(Node *node)
 {
-    // FIXME todo:
+    //
     // if node says it's finished():
     // - call consumerClose() on its input channels (they'll ignore futher writes then);
     // - call close() on its output channels
-    // - set state flag in node to FINISHED (so that we won't need to keep asking it)
-    // FIXME todo: remove all close(), closeAtEof(), flush() etc calls from nodes
+    // - set alreadyFinished() state flag in node, so that we won't keep asking it
     //
+    if (!node->finished())
+        return false;
 
+    printf("DBG: %s finished\n", node->nodeType()->name());
+    node->setAlreadyFinished();
+    int nc = channels.size();
+    for (int i=0; i!=nc; i++)
+    {
+        Channel *ch = channels[i];
+        if (ch->consumerNode()==node)
+        {
+            printf("DBG:   one input closed\n");
+            ch->consumerClose();
+        }
+        if (ch->producerNode()==node)
+        {
+            printf("DBG:   one output closed\n");
+            ch->close();
+        }
+    }
+    return true;
+}
+
+Node *DataflowManager::selectNode()
+{
     // if a channel has buffered too much, try to schedule its consumer node
     int nc = channels.size();
     for (int j=0; j!=nc; j++)
     {
         Channel *ch = channels[j];
-        if (ch->length()>threshold && ch->consumerNode()->isReady() && !ch->consumerNode()->finished())
+        if (ch->length()>threshold && ch->consumerNode()->isReady())
         {
-            return channels[j]->consumerNode();
+            Node *node = ch->consumerNode();
+            ASSERT(!node->alreadyFinished());
+            if (!nodeFinished(node))
+                return node;
         }
     }
 
@@ -128,7 +166,7 @@ Node *DataflowManager::selectNode()
     {
         i = (i+1)%n;
         Node *node = nodes[i];
-        if (node->isReady() && !node->finished())
+        if (!node->alreadyFinished() && !nodeFinished(node) && node->isReady())
         {
             lastnode = i;
             return node;

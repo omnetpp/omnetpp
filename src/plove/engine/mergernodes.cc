@@ -54,11 +54,7 @@ void MergerNode::process()
     }
 
     // if we couldn't get any data, all input ports must be at EOF (see isReady())
-    if (!minPort)
-    {
-        out()->close();
-    }
-    else
+    if (minPort)
     {
         Datum d;
         (*minPort)()->read(&d,1);
@@ -70,7 +66,7 @@ bool MergerNode::finished() const
 {
     // only finished if all ports are at EOF
     for (PortVector::const_iterator it=ports.begin(); it!=ports.end(); it++)
-        if (!(*it)()->closing() || (*it)()->length()>0)
+        if (!(*it)()->eof())
             return false;
     return true;
 }
