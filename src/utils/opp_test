@@ -11,6 +11,8 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 #  - %contains --> %check-output:
 #
 
+use Cwd;
+
 #
 # If no args, print usage
 #
@@ -23,7 +25,7 @@ Syntax: opp_test [-g|-r] [-v] [-d] [-w <dir>] <testcase-file> ...
   -v         verbose
   -d         very verbose (debug)
   -w <dir>   working directory (defaults to `./work\')
-  -s <prog>  shell to use to run test program
+  -s <prog>  shell to use to run test program (not used on windows)
   -p <prog>  name of test program (defaults to name of working directory)
 
 Usage in nutshell:
@@ -120,6 +122,9 @@ if ($mode eq '')
     exit(1);
 }
 
+# are we on Windows?
+$isWindows = ($ENV{'OS'} =~ /windows/i) ? 1 : 0;
+
 # test existence of working directory
 if (! -d $workingdir) {
     print stderr "$arg0: error: working directory `$workingdir' does not exist\n";
@@ -129,7 +134,7 @@ if (! -d $workingdir) {
 # produce name of test program
 if ($testprogram eq '') {
 
-    if ($ENV{'OS'} =~ /windows/i) {
+    if ($isWindows) {
       $exesuffix='.exe';
     } else {
       $exesuffix='';
@@ -163,6 +168,11 @@ if ($mode eq 'run')
 
     @unresolved_tests = ();
     @failed_tests = ();
+
+    if (! -x "$workingdir/$testprogram")
+    {
+        print stderr "$arg0: error: test program '$workingdir/$testprogram' not found\n"; exit(1);
+    }
 
     foreach $testfilename (@filenames)
     {
@@ -403,8 +413,8 @@ sub testcase_run()
 
     parse_testfile($testfilename);
 
-    $outfname = $workingdir.'/'.$testname.'.out';
-    $errfname = $workingdir.'/'.$testname.'.err';
+    $outfname = $testname.'.out';
+    $errfname = $testname.'.err';
 
     # delete temp files before running the test case
     foreach $key (keys(%values))
@@ -422,9 +432,9 @@ sub testcase_run()
                 $infname = $values{$key};
             }
 
-            if (-f $infname) {
+            if (-f $workingdir."/".$infname) {
                 print "  deleting old copy of file `$infname'\n" if ($debug);
-                unlink $workingdir.'/'.$infname;
+                unlink $workingdir."/".$infname;
             }
         }
     }
@@ -436,27 +446,25 @@ sub testcase_run()
     }
 
     # run the program
-    print "  running: $shell -c 'cd $workingdir && $testprogram -f $inifname' >$outfname 2>$errfname\n" if ($debug);
-    $status = system ("$shell -c 'cd $workingdir && $testprogram -f $inifname' >$outfname 2>$errfname");
-    if ($status ne '0') {
-        if (256*int($status/256) != $status) {
-            unresolved($testfilename, "could not execute test program, exit code: $status");
+    $exitcode = exec_program("$testprogram -f $inifname", $workingdir, $outfname, $errfname);
+    if ($exitcode != 0) {
+        if ($exitcode == -1) {
+            unresolved($testfilename, "could not execute test program");
             return;
         } else {
-            $status = $status/256;
             if ($values{'ignore-exitcode(1)'}) {
                 print "  ignoring exitcode\n" if ($debug);
-            } elsif ($status == $values{'exitcode(1)'}) {
-                print "  exitcode ok ($status)\n" if ($debug);
+            } elsif ($exitcode == $values{'exitcode(1)'}) {
+                print "  exitcode ok ($exitcode)\n" if ($debug);
             } elsif ($values{'exitcode(1)'} ne '') {
-                fail($testfilename, "test program returned exit code $status instead of $values{'exitcode(1)'}");
-                print_tail("stdout", $outfname) if ($verbose);
-                print_tail("stderr", $errfname) if ($verbose);
+                fail($testfilename, "test program returned exit code $exitcode instead of $values{'exitcode(1)'}");
+                print_tail("stdout", $workingdir."/".$outfname) if ($verbose);
+                print_tail("stderr", $workingdir."/".$errfname) if ($verbose);
                 return;
             } else {
-                fail($testfilename, "test program returned nonzero exit code: $status");
-                print_tail("stdout", $outfname) if ($verbose);
-                print_tail("stderr", $errfname) if ($verbose);
+                fail($testfilename, "test program returned nonzero exit code: $exitcode");
+                print_tail("stdout", $workingdir."/".$outfname) if ($verbose);
+                print_tail("stderr", $workingdir."/".$errfname) if ($verbose);
                 return;
             }
         }
@@ -475,12 +483,12 @@ sub testcase_run()
                 $infname = $errfname;
             }
             else {
-                $infname = $workingdir."/".$values{$key};
+                $infname = $values{$key};
             }
 
             print "  checking $infname\n" if ($debug);
 
-            if (!open(IN,"$infname")) {
+            if (!open(IN,$workingdir."/".$infname)) {
                 unresolved($testfilename, "cannot read test case output file `$infname'");
                 return;
             }
@@ -529,7 +537,7 @@ sub print_tail()
     my $label = shift;
     my $fname = shift;
 
-    if (!open(IN,"$fname")) {
+    if (!open(IN,$fname)) {
         print "cannot open `$fname'\n";
         return;
     }
@@ -622,6 +630,66 @@ sub writefile()
         close OUT;
     }
 }
+
+
+# args: command, working-directory, stdout-file, stderr-file
+# return: exit code, or -1 if program crashed
+sub exec_program()
+{
+    my $cmd = shift;
+    my $dir = shift;
+    my $outfile = shift;
+    my $errfile = shift;
+
+    if ($isWindows)
+    {
+        my $savedir = cwd;
+        print "  chdir to \"$dir\"\n" if ($debug);
+        if (!chdir($dir))
+        {
+            print "  cannot chdir to \"$dir\"\n" if ($debug);
+            return -1;
+        }
+        print "  running \"$cmd >$outfile 2>$errfile\"\n" if ($debug);
+        $status = system ("$cmd >$outfile 2>$errfile");
+        print "  returned status = $status\n" if ($debug);
+        print "  restoring dir \"$savedir\"\n" if ($debug);
+        chdir($savedir);
+        if ($status == 0)
+        {
+            return 0;
+        }
+        elsif (256*int($status/256) != $status)
+        {
+            # this will never happen on Windows: if program doesn't exist, 256 is returned...
+            return -1;
+        }
+        else
+        {
+            return $status/256;
+        }
+
+    }
+    else
+    {
+        print "  running \"$shell -c 'cd $dir && $cmd' >$dir/$outfile 2>$dir/$errfile\"\n" if ($debug);
+        $status = system ("$shell -c 'cd $dir && $cmd' >$dir/$outfile 2>$dir/$errfile");
+        print "  returned status = $status\n" if ($debug);
+        if ($status == 0)
+        {
+            return 0;
+        }
+        elsif (256*int($status/256) != $status)
+        {
+            return -1;
+        }
+        else
+        {
+            return $status/256;
+        }
+    }
+}
+
 
 sub define_templates()
 {
