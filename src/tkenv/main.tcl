@@ -409,8 +409,6 @@ set bitmap_ctr 0
 proc load_bitmaps {path} {
    global tcl_platform bitmaps bitmap_ctr
 
-   puts "Loading bitmaps from $path:"
-
    # On Windows, we use ";" to separate directories in $path. Using ":" (the
    # Unix separator) would cause trouble with dirs containing drive letter
    # (like "c:\bitmaps"). Using a space is also not an option (think of
@@ -424,8 +422,9 @@ proc load_bitmaps {path} {
 
    foreach dir [split $path $sep] {
        if {$dir!=""} {
-           do_load_bitmaps $dir
-           puts -nonewline "; "
+           puts -nonewline "Loading bitmaps from $dir: "
+           do_load_bitmaps $dir ""
+           puts ""
        }
    }
 
@@ -434,10 +433,9 @@ proc load_bitmaps {path} {
    }
 
    puts ""
-   puts ""
 }
 
-proc do_load_bitmaps {dir {prefix ""}} {
+proc do_load_bitmaps {dir prefix} {
    global bitmaps bitmap_ctr
 
    #puts "DBG: entering $dir"
@@ -445,25 +443,35 @@ proc do_load_bitmaps {dir {prefix ""}} {
                      [glob -nocomplain -- [file join $dir {*.png}]]]
 
    # load bitmaps from this directory
+   set n 0
    foreach f $files {
       set name [string tolower [file tail [file rootname $f]]]
-      set imgname "$prefix$name"
       set img "i[incr bitmap_ctr]$name"
       if [catch {
          image create photo $img -file $f
-         puts -nonewline "$imgname "
-         set bitmaps($imgname) $img
+         do_add_bitmap $img $prefix $name ""
+         incr n
       } err] {
-         puts -nonewline "(*** $f is bad: $err ***) "
+         puts -nonewline "(*** cannot load $f: $err ***) "
       }
    }
+   puts -nonewline "$prefix*: $n  "
 
    # recurse into subdirs
    foreach f [glob -nocomplain -- [file join $dir {*}]] {
-      if [file isdirectory $f] {
+      if {[file isdirectory $f] && [file tail $f]!="CVS"} {
          do_load_bitmaps "$f" "$prefix[file tail $f]/"
       }
    }
+}
+
+
+# register loaded image
+proc do_add_bitmap {img prefix name size} {
+   global bitmaps
+
+   set imgname "$prefix$name"
+   set bitmaps($imgname) $img
 }
 
 

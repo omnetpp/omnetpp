@@ -344,7 +344,7 @@ void cEnvir::printfmsg(const char *fmt,...)
     if (app)
        app->putmsg(buffer);
     else
-       ::printf("<!> %s\n", buffer);
+       ::printf("\n<!> %s\n\n", buffer);
 }
 
 void cEnvir::printf(const char *fmt,...)

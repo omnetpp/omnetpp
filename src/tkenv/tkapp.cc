@@ -1558,7 +1558,7 @@ void TOmnetTkApp::putmsg(const char *str)
 {
     if (!interp)
     {
-        ::printf("<!> %s\n", str); // fallback in case Tkenv didn't fire up correctly
+        ::printf("\n<!> %s\n\n", str); // fallback in case Tkenv didn't fire up correctly
         return;
     }
     CHK(Tcl_VarEval(interp,"messagebox {Confirm} {",str,"} info ok",NULL));

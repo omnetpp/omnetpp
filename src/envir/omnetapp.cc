@@ -436,14 +436,19 @@ void TOmnetApp::readOptions()
 
     opt_fname_append_host = cfg->getAsBool("General","fname-append-host",false);
 
-    // FIXME do thorough job of warning! all genX-seed 0..31, all runs
-    if (cfg->exists2("Run 1", "General", "random-seed") ||
-        cfg->exists2("Run 1", "General", "gen0-seed") ||
-        cfg->exists2("Run 1", "General", "gen1-seed")
-       )
-         ev.printfmsg("Warning: config entries random-seed= and genX-seed= are obsolete, "
-                      "YOUR SEEDS ARE NOT BEING USED "
-                      "(check new Random Number Architecture for version 3.0)");
+    // warn for obsolete RNG seed entries
+    bool found = false;
+    for (int k=0; k<cfg->getNumSections(); k++)
+        if (cfg->exists(cfg->getSectionName(k), "random-seed") ||
+            cfg->exists(cfg->getSectionName(k), "gen0-seed") ||
+            cfg->exists(cfg->getSectionName(k), "gen1-seed") ||
+            cfg->exists(cfg->getSectionName(k), "gen2-seed") ||
+            cfg->exists(cfg->getSectionName(k), "gen3-seed"))
+            found = true;
+    if (found)
+        ev.printfmsg("Warning: config entries random-seed= and genX-seed= are obsolete!\n"
+                     "THE SEEDS YOU SPECIFIED ARE NOT USED. "
+                     "Please update your ini file to the OMNeT++ 3.0 Random Number Architecture.");
 
     // other options are read on per-run basis
 }

@@ -434,7 +434,7 @@ void TCmdenvApp::simulate()
 
 void TCmdenvApp::putmsg(const char *s)
 {
-    ::fprintf(fout, "<!> %s\n", s);
+    ::fprintf(fout, "\n<!> %s\n\n", s);
     ::fflush(fout);
 }
 
