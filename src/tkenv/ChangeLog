@@ -1,5 +1,8 @@
 2002-01-23  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
+	* objinsp.tcl (create_structpanel): Added vertical scrollbars for
+	those who use a lot of message fields.
+
 	* structinsp.cc (update): 4k as buf[] size is not enough
 	especially for large messages containing arrays. I have set it to
 	5M !!

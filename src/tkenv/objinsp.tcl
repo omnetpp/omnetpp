@@ -155,8 +155,14 @@ proc inspect_this {win type} {
 
 proc create_structpanel {w} {
     # FIXME: a text is a temporary solution... should be sth like a property sheet
-    text $w.txt -height 12 -width 40
-    pack $w.txt -expand 1 -fill both -side top
+	scrollbar $w.sb -borderwidth 1 -command "$w.txt yview"
+	text $w.txt  -height 12 -width 40 -yscrollcommand "$w.sb set"
+
+	pack $w.sb -anchor center -expand 0 -fill y -side right
+	pack $w.txt -anchor center -expand 1 -fill both -side left
+
+#      text $w.txt -height 12 -width 40
+#      pack $w.txt -expand 1 -fill both -side top
 }
 
 
