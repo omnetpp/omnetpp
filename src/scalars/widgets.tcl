@@ -212,13 +212,7 @@ proc comboconfig {w list {cmd {}}} {
 }
 
 proc combo-onchange {w cmd} {
-    # Tk sucks: no event is triggered when entry content changes.
-    # entry -validate is no better than bind <Key>,
-    # vtrace is too error-prone.
-    bind $w.entry <1> $cmd
-    bind $w.entry <Key> $cmd
-    bind $w.entry <FocusIn> $cmd
-    bind $w.entry <FocusOut> $cmd
+    $w configure -command "$cmd ;#" -commandstate normal
 }
 
 proc label-entry {w label {text {}}} {
@@ -1075,21 +1069,28 @@ proc aboutDialog {title contents} {
 # Show a hint once; state is saved into config(dontshow)
 #
 set config(dontshow) {}
-proc showTextOnceDialog {parent key text} {
-    global config tmp_once
+proc showTextOnceDialog {key} {
+    global config tmp_once hints
 
     if {[lsearch -exact $config(dontshow) $key]!=-1} {
         # already shown
         return
     }
 
+    if {![info exists hints($key)]} {
+        debug "dbg: showTextOnceDialog: hint hints($key) not found"
+        return
+    }
+
+    set text $hints($key)
+
     # create dialog with OK button
-    if {$parent=="."} {set w .once} else {set w $parent.once}
+    set w .once
     createOkCancelDialog $w "Hint"
     destroy $w.buttons.cancelbutton
-    wm geometry $w "340x160"
+    wm geometry $w "360x180"
 
-    text $w.f.text -relief solid -bd 1
+    text $w.f.text -relief solid -bd 1 -wrap word
     $w.f.text insert 1.0 $text
     $w.f.text config -state disabled
     checkbutton $w.f.x -text {do not show this hint again} -variable tmp_once

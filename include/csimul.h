@@ -93,7 +93,14 @@ class SIM_API cSimulation : public cObject
     int exception_type;        // helper variable, also for getting exceptions back from activity()
 
   public:
+    // internal: FES
     cMessageHeap msgQueue;     // future messages (FES)
+
+    // internal: things that cannot be done from the constructor of global object
+    void init();
+
+    // internal: complements init().
+    void shutdown();
 
   public:
     /** @name Constructor, destructor. */
@@ -152,10 +159,6 @@ class SIM_API cSimulation : public cObject
      */
     cSimulation& operator=(const cSimulation&)  {copyNotSupported();return *this;}
     //@}
-
-    // Internal: things that cannot be done from the constructor
-    // (because it is called before main()).
-    void init();
 
     /** @name Accessing modules. */
     //@{

@@ -226,9 +226,9 @@ void TOmnetApp::printHelp()
     ev << "  -f <inifile>  Use the given ini file instead of omnetpp.ini. Multiple\n";
     ev << "                -f options are accepted to load several ini files.\n";
     ev << "  -u <ui>       Selects the user interface. Standard choices are Cmdenv\n";
-    ev << "                and Tkenv. The executable must have been built to contain\n";
-    ev << "                the appropriate user interface library, or it must be loaded\n";
-    ev << "                via the -l option.\n";
+    ev << "                and Tkenv. To make a user interface available, you need\n";
+    ev << "                to link the simulation executable with the cmdenv/tkenv\n";
+    ev << "                library, or load it as shared library via the -l option.\n";
     ev << "  -l <library>  Load the specified shared library (.so or .dll) on startup.\n";
     ev << "                The file name should be given without the .so or .dll suffix\n";
     ev << "                (it will be appended automatically.) The loaded module may\n";
@@ -241,28 +241,28 @@ void TOmnetApp::printHelp()
 
     if (networks.instance()->items()>0)
     {
-        ev << "networks:\n";
+        ev << "  networks:\n";
         cArray::Iterator iter(*networks.instance());
         for (; iter(); iter++)
-            ev << "  " << iter()->name() << '\n';
+            ev << "    " << iter()->name() << '\n';
         ev << "\n";
     }
 
     if (modtypes.instance()->items()>0)
     {
-        ev << "modules types:\n";
+        ev << "  module types:\n";
         cArray::Iterator iter2(*modtypes.instance());
         for (; iter2(); iter2++)
-            ev << "  " << iter2()->name() << '\n';
+            ev << "    " << iter2()->name() << '\n';
         ev << "\n";
     }
 
     if (channeltypes.instance()->items()>0)
     {
-        ev << "channel types:\n";
+        ev << "  channel types:\n";
         cArray::Iterator iter3(*channeltypes.instance());
         for (; iter3(); iter3++)
-            ev << "  " << iter3()->name() << '\n';
+            ev << "    " << iter3()->name() << '\n';
         ev << "\n";
     }
 }

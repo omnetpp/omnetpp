@@ -136,6 +136,7 @@ class SIM_API cObject : public cPolymorphic
 {
   private:
     friend class cDefaultList;
+    friend class cSimulation;
 
     union
     {

@@ -193,9 +193,11 @@ void cEnvir::setup(int argc, char *argv[])
             appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->get(appname));
             if (!appreg)
             {
-                ::printf("\nUser interface '%s' not found. Available ones are:\n", appname);
+                ::printf("\n"
+                         "User interface '%s' not found (not linked in or loaded dynamically).\n"
+                         "Available ones are:\n", appname);
                 for (cArray::Iterator iter(*omnetapps.instance()); iter(); iter++)
-                    ::printf("  '%s' : %s\n", iter()->name(), iter()->info().c_str());
+                    ::printf("  %s : %s\n", iter()->name(), iter()->info().c_str());
 
                 throw new cRuntimeError("Could not start user interface '%s'",appname);
             }
@@ -205,7 +207,7 @@ void cEnvir::setup(int argc, char *argv[])
             // user interface not explicitly selected: pick one from what we have
             appreg = chooseBestOmnetApp();
             if (!appreg)
-                throw new cRuntimeError("No appropriate user interface (Cmdenv,Tkenv,etc.) found");
+                throw new cRuntimeError("No user interface (Cmdenv, Tkenv, etc.) found");
         }
 
         //
@@ -240,9 +242,12 @@ int cEnvir::run()
 void cEnvir::shutdown()
 {
     if (app)
+    {
         app->shutdown();
-    delete app;
-    app = NULL;
+        delete app;
+        app = NULL;
+    }
+    simulation.shutdown();
 }
 
 //-----------------------------------------------------------------
