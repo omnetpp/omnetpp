@@ -219,10 +219,6 @@ filtering by vector names and by simulation time (start/stop recording).
 For details, see section \ref{sec:ch-run-sim:outvectors}
 \\\hline
 %%
-\ttt{[DisplayStrings]} & Module display strings for Tkenv.
-For details, see section \ref{sec:ch-run-sim:displaystrings-section}
-\\\hline
-%%
 \end{longtable}
 
 
@@ -319,6 +315,298 @@ class has to implement the \cclass{cSnapshotManager} interface defined
 in \ttt{envirext.h}.\\\hline
 
 \end{longtable}
+
+
+
+\section{Setting module parameters in omnetpp.ini}
+\label{sec:ch-run-sim:parameter-settings}
+\index{module!parameters}
+
+Values for module parameters go into the \texttt{[Parameters]} or the
+\texttt{[Run 1]}, \texttt{[Run 2]} etc. sections of the ini file. The
+run-specific settings take precedence over the overall settings.
+Parameters that were assigned a (non-input) value in the NED file are
+not influenced by ini file settings.
+
+Wildcards (\ttt{*,?})\index{ini file!wildcards} can be used to supply values
+to several model parameters at a time. Filename (glob) style patterns
+are used. One difference to the usual rules is that character ranges
+should be written with curly braces instead of square brackets (that is,
+letters are \ttt{\{a-zA-Z\}} not \ttt{[a-zA-Z]}) because square brackets
+are already reserved for the notation of module vector indices.
+
+If you use wildcards, the order of entries is important: if a parameter
+name matches several wildcards-patterns, the first matching occurrence
+is used. This means that you need to list specific settings first, and
+more general ones later. Catch-all settings should come last.
+
+
+An example ini file:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+# omnetpp.ini
+
+\tbf{[Parameters]}
+token.numStations = 3
+token.numMessages = 10000
+
+\tbf{[Run 1]}
+token.stations[*].waitTime = 10ms
+
+\tbf{[Run 2]}
+token.stations[0].waitTime = 5ms
+token.stations[*].waitTime = 1000ms
+\end{Verbatim}
+
+
+It is also possible to utilize the default values specifified with
+\ttt{input(}\textit{default-value}\ttt{)} in the NED files.{\new}
+The \textit{<parameter-name>}\ttt{.use-default=yes} setting assigns
+the default value to the parameter, or 0, false or empty string if
+there was no default value in the NED file.
+
+The following example sets \ttt{ttl} (time-to-live) of \ttt{hostA}'s
+\ttt{ip} module to 5, while all other nodes in the network
+will use the default specified with \ttt{input()} in the NED files.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+# omnetpp.ini
+
+\tbf{[Parameters]}
+**.hostA.ip.ttl = 5
+**.ip.ttl.use-default = yes
+\end{Verbatim}
+
+
+
+\section{Configuring output vectors}
+\label{sec:ch-run-sim:outvectors}
+
+As a simulation program is evolving, it is becoming capable of
+collecting more and more statistics. The size of output vector
+files\index{output!vector file} can easily reach a magnitude of
+several ten or hundred megabytes, but very often, only some of the
+recorded statistics are interesting to the analyst.
+
+
+In {\opp}, you can control how \cclass{cOutVector} objects record data
+to disk. You can turn output vectors on/off or you can assign a result
+collection interval. Output vector configuration is given in the
+\texttt{[OutVectors]} section of the ini file, or in the \texttt{[Run
+  1]}, \texttt{[Run 2]} etc sections individually for each run. By
+default, all output vectors are turned on.
+
+
+Entries configuring output vectors can be like that:
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\textit{module-pathname}.\textit{objectname}.enabled = yes/no
+\textit{module-pathname}.\textit{objectname}.interval = \textit{start}..\textit{stop}
+\textit{module-pathname}.\textit{objectname}.interval = ..\textit{stop}
+\textit{module-pathname}.\textit{objectname}.interval = \textit{start}..
+\end{Verbatim}
+
+The object name is the string passed to \cclass{cOutVector} in its constructor
+or with the \fname{setName()} member function.
+
+\begin{verbatim}
+cOutVector eed("End-to-End Delay",1);
+\end{verbatim}
+
+Start and stop values can be any time specification accepted
+in NED and config files (e.g. \textit{10h 30m 45.2s}).
+
+
+As with parameter names, wildcards are allowed in the object
+names and module path names.
+
+An example:
+
+\begin{verbatim}
+#
+# omnetpp.ini
+#
+
+[OutVectors]
+*.interval = 1s..60s
+*.End-to-End Delay.enabled = yes
+*.Router2.*.enabled = yes
+*.enabled = no
+\end{verbatim}
+
+
+The above configuration limits collection of all output vectors
+to the 1s..60s interval, and disables collection of output vectors
+except all end-to-end delays and the ones in any module called Router2.
+
+%%
+%% NOTE: Module parameter logging not supported since 2.1.
+%%
+%
+% \subsection{Module parameter logging}
+%
+% It is possible to log all the changes to module parameters into a text
+% file\index{module!parameter logging}. This can be useful when the
+% simulation contains run-time tuning of one or more module parameters
+% and one wants to have the trajectory documented.
+%
+%
+% Module parameter logging must be explicitly enabled from the
+% header file if one wants to use it:
+%
+% begin{verbatim}
+% [General]
+% log-parchanges = yes
+% parchange-file = token.pch
+% end{verbatim}
+%
+%
+% The format of the parameter change file is similar to the that
+% of the output vector file.
+%
+% If a parameter is taken by reference\index{module!parameters!by reference} by
+% several modules, any change to the parameter will appear in the file
+% under the name of the top-level parameter, no matter which module
+% actually changed it and under what name.
+%
+
+
+\section{Configuring the random number generators}
+\label{sec:ch-run-sim:rng-config}
+
+As is was pointed out earlier, it is of great importance that
+different simulation runs and different random number sources
+within one simulation run use non-overlapping sequences of random
+numbers\index{random!numbers}.
+
+
+In {\opp}, you have three choices:
+\begin{enumerate}
+  \item{Automatic seed selection.}
+  \item{Specify seeds in the ini file (with the help of the seedtool
+    program, see later)}
+  \item{Manually set the seed from within the program.}
+\end{enumerate}
+
+\subsection{Manual seed configuration}
+
+If you decide for automatic seed selection\index{seed!automatic selection},
+do not specify any seed value in the ini file. For the
+random number generators, {\opp} will automatically select seeds that
+are 1,000,000 values apart in the sequence. If you have several runs,
+each run is started with a fresh set of seeds that are 1,000,000
+values apart from the seeds used for previous runs. Since the
+generation of new seed values is costly, {\opp} has a table of
+pre-calculated seeds (256 values); if they are all used up, {\opp}
+starts from the beginning of the table again.
+
+\textbf{Warning!} Be aware that each time the simulation program
+is started, {\opp} starts assigning seeds from the beginning
+of the table. That is, if you execute Run 1, Run 2, Run 3 one
+at a time (e.g. from a shell script, using the Cmdenv -r command-line
+flag), all your runs will be executed using the \textit{same} seeds!
+This behavior is almost surely not what you want, and it will be
+fixed in future versions of {\opp}. Until then, it is a good
+idea to stick to manually generating seeds and explicitly adding them
+to the ini file.
+
+
+Automatic seed selection may not be appropriate for you for several
+reasons. First, you may need more than 256 seeds values; or, if you
+use variance reduction techniques, you may want to use the same seeds
+for several simulation runs. In this case, there is a standalone
+program to generate appropriate seed values (\fprog{seedtool} will be
+discussed in Section \ref{sec:ch-run-sim:seedtool}), and you
+can specify the seeds explicitly in the ini file.
+
+
+The following ini file explicitly initializes two of the random
+number generators, and uses different seed values for each run:
+
+\begin{verbatim}
+[Run 1]
+gen0-seed = 1768507984
+gen1-seed = 33648008
+
+[Run 2]
+gen0-seed = 1082809519
+gen1-seed = 703931312
+...
+\end{verbatim}
+
+
+If you want the same seed values for all runs, you will write
+something like this:
+
+\begin{verbatim}
+[General]
+gen0-seed = 1768507984
+gen1-seed = 33648008
+\end{verbatim}
+
+
+All other random number generators (2,3,...) will have their seeds
+automatically assigned.  As a third way, you can also set the seed
+values from the code of a simple module using
+\fname{genk\_randseed()}, but I see no reason why you would want to do
+so.
+
+
+\subsection{Choosing good seed values: the seedtool utility}
+\label{sec:ch-run-sim:seedtool}
+
+For selecting good seeds, the \fprog{seedtool} program can be used (it
+is in the utils directory). When started without command-line
+arguments, the program prints out the following help:
+
+\begin{verbatim}
+seedtool - part of OMNeT++, (c) 1992-2001 Andras Varga, TU Budapest
+See the license for distribution terms and warranty disclaimer.
+
+A tool to help select good random number generator seed values.
+Usage:
+  seedtool i seed         - index of `seed' in cycle
+  seedtool s index        - seed at index `index' in cycle
+  seedtool d seed1 seed2  - distance of `seed1' and `seed2' in cycle
+  seedtool g seed0 dist   - generate seed `dist' away from `seed0'
+  seedtool g seed0 dist n - generate `n' seeds `dist' apart, starting
+                            at `seed0'
+  seedtool t              - generate hashtable
+  seedtool p              - print out hashtable
+\end{verbatim}
+
+
+The last two options, p and t were used internally to generate
+a hash table of pre-computed seeds that greatly speeds up the
+tool. For practical use, the g option is the most important.
+Suppose you have 4 simulation runs that need two independent
+random number generators each and you want to start their seeds
+at least 10,000,000 values apart. The first seed value can be
+simply 1. You would type the following command:
+
+\begin{verbatim}
+C:\OMNETPP\UTILS> seedtool g 1 10000000 8
+\end{verbatim}
+
+
+The program outputs 8 numbers that can be used as random number
+seeds:
+
+\begin{verbatim}
+1768507984
+33648008
+1082809519
+703931312
+1856610745
+784675296
+426676692
+1100642647
+\end{verbatim}
+
+
+You would specify these seed values in the ini file.
+
+
 
 \section{Cmdenv: the command-line interface}
 
@@ -793,300 +1081,6 @@ from the distribution:
     its immense productivity in GUI building. XEnv never got too far
     because it was really very-very slow to program in Motif\dots
 \end{itemize}
-
-
-\section{More omnetpp.ini settings}
-
-
-\subsection{Module parameters in the configuration file}
-\label{sec:ch-run-sim:parameter-settings}
-\index{module!parameters}
-
-Values for module parameters go into the \texttt{[Parameters]} or the
-\texttt{[Run 1]}, \texttt{[Run 2]} etc. sections of the ini file. The
-run-specific settings take precedence over the overall settings.
-Parameters that were assigned a (non-input) value in the NED file are
-not influenced by ini file settings.
-
-Wildcards (*,?)\index{ini file!wildcards} can be used to supply values
-to several model parameters at a time. Filename-style (glob) and not
-regex-style pattern matching is used. Character ranges use curly
-braces instead of square brackets to avoid interference with the
-notation of module vectors: \{a-zA-Z\}. If a parameter name matches
-several wildcards-patterns, the first matching occurrence is used.
-
-
-An example ini file:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-# omnetpp.ini
-
-\tbf{[Parameters]}
-token.numStations = 3
-token.numMessages = 10000
-
-\tbf{[Run 1]}
-token.stations[*].waitTime = 10ms
-
-\tbf{[Run 2]}
-token.stations[0].waitTime = 5ms
-token.stations[*].waitTime = 1000ms
-\end{Verbatim}
-
-
-\subsection{Configuring output vectors}
-\label{sec:ch-run-sim:outvectors}
-
-As a simulation program is evolving, it is becoming capable of
-collecting more and more statistics. The size of output vector
-files\index{output!vector file} can easily reach a magnitude of
-several ten or hundred megabytes, but very often, only some of the
-recorded statistics are interesting to the analyst.
-
-
-In {\opp}, you can control how \cclass{cOutVector} objects record data
-to disk. You can turn output vectors on/off or you can assign a result
-collection interval. Output vector configuration is given in the
-\texttt{[OutVectors]} section of the ini file, or in the \texttt{[Run
-  1]}, \texttt{[Run 2]} etc sections individually for each run. By
-default, all output vectors are turned on.
-
-
-Entries configuring output vectors can be like that:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-\textit{module-pathname}.\textit{objectname}.enabled = yes/no
-\textit{module-pathname}.\textit{objectname}.interval = \textit{start}..\textit{stop}
-\textit{module-pathname}.\textit{objectname}.interval = ..\textit{stop}
-\textit{module-pathname}.\textit{objectname}.interval = \textit{start}..
-\end{Verbatim}
-
-The object name is the string passed to \cclass{cOutVector} in its constructor
-or with the \fname{setName()} member function.
-
-\begin{verbatim}
-cOutVector eed("End-to-End Delay",1);
-\end{verbatim}
-
-Start and stop values can be any time specification accepted
-in NED and config files (e.g. \textit{10h 30m 45.2s}).
-
-
-As with parameter names, wildcards are allowed in the object
-names and module path names.
-
-An example:
-
-\begin{verbatim}
-#
-# omnetpp.ini
-#
-
-[OutVectors]
-*.interval = 1s..60s
-*.End-to-End Delay.enabled = yes
-*.Router2.*.enabled = yes
-*.enabled = no
-\end{verbatim}
-
-
-The above configuration limits collection of all output vectors
-to the 1s..60s interval, and disables collection of output vectors
-except all end-to-end delays and the ones in any module called Router2.
-
-%%
-%% NOTE: Module parameter logging not supported since 2.1.
-%%
-%
-% \subsection{Module parameter logging}
-%
-% It is possible to log all the changes to module parameters into a text
-% file\index{module!parameter logging}. This can be useful when the
-% simulation contains run-time tuning of one or more module parameters
-% and one wants to have the trajectory documented.
-%
-%
-% Module parameter logging must be explicitly enabled from the
-% header file if one wants to use it:
-%
-% begin{verbatim}
-% [General]
-% log-parchanges = yes
-% parchange-file = token.pch
-% end{verbatim}
-%
-%
-% The format of the parameter change file is similar to the that
-% of the output vector file.
-%
-% If a parameter is taken by reference\index{module!parameters!by reference} by
-% several modules, any change to the parameter will appear in the file
-% under the name of the top-level parameter, no matter which module
-% actually changed it and under what name.
-%
-
-
-\subsection{Display strings}
-\label{sec:ch-run-sim:displaystrings-section}
-
-Display strings\index{display strings} control the modules' graphical
-appearance in the Tkenv user interface. Display strings can be
-assigned to modules, submodules and gates (a connection's display
-string is stored in its ``from'' gate). Display strings can be
-hardcoded into the NED file or specified in the configuration file.
-(Hardcoded display strings take precedence over the ones given in ini
-files.) Format of display string are documented in section
-\ref{sec:ch-ned-lang:display-strings}).
-
-Display strings can appear in the \texttt{[DisplayStrings]} section of
-the ini file. They are expected as entries in one of the following
-forms:
-
-\begin{verbatim}
-moduletype = "..."
-moduletype.submodulename = "..."
-
-moduletype.inputgatename = "..."
-moduletype.submodulename.outputgatename = "..."
-\end{verbatim}
-
-As with parameter names, wildcards\index{display strings!wildcards}
-are allowed in module types, submodule and gate names.
-
-
-\subsection{Specifying seed values}
-\label{sec:ch-run-sim:rng-config}
-
-As is was pointed out earlier, it is of great importance that
-different simulation runs and different random number sources
-within one simulation run use non-overlapping sequences of random
-numbers\index{random!numbers}.
-
-
-In {\opp}, you have three choices:
-\begin{enumerate}
-  \item{Automatic seed selection.}
-  \item{Specify seeds in the ini file (with the help of the seedtool
-    program, see later)}
-  \item{Manually set the seed from within the program.}
-\end{enumerate}
-
-If you decide for automatic seed selection\index{seed!automatic selection},
-do not specify any seed value in the ini file. For the
-random number generators, {\opp} will automatically select seeds that
-are 1,000,000 values apart in the sequence. If you have several runs,
-each run is started with a fresh set of seeds that are 1,000,000
-values apart from the seeds used for previous runs. Since the
-generation of new seed values is costly, {\opp} has a table of
-pre-calculated seeds (256 values); if they are all used up, {\opp}
-starts from the beginning of the table again.
-
-\textbf{Warning!} Be aware that each time the simulation program
-is started, {\opp} starts assigning seeds from the beginning
-of the table. That is, if you execute Run 1, Run 2, Run 3 one
-at a time (e.g. from a shell script, using the Cmdenv -r command-line
-flag), all your runs will be executed using the \textit{same} seeds!
-This behavior is almost surely not what you want, and it will be
-fixed in future versions of {\opp}. Until then, it is a good
-idea to stick to manually generating seeds and explicitly adding them
-to the ini file.
-
-
-Automatic seed selection may not be appropriate for you for several
-reasons. First, you may need more than 256 seeds values; or, if you
-use variance reduction techniques, you may want to use the same seeds
-for several simulation runs. In this case, there is a standalone
-program to generate appropriate seed values (\fprog{seedtool} will be
-discussed in Section \ref{sec:ch-run-sim:seedtool}), and you
-can specify the seeds explicitly in the ini file.
-
-
-The following ini file explicitly initializes two of the random
-number generators, and uses different seed values for each run:
-
-\begin{verbatim}
-[Run 1]
-gen0-seed = 1768507984
-gen1-seed = 33648008
-
-[Run 2]
-gen0-seed = 1082809519
-gen1-seed = 703931312
-...
-\end{verbatim}
-
-
-If you want the same seed values for all runs, you will write
-something like this:
-
-\begin{verbatim}
-[General]
-gen0-seed = 1768507984
-gen1-seed = 33648008
-\end{verbatim}
-
-
-All other random number generators (2,3,...) will have their seeds
-automatically assigned.  As a third way, you can also set the seed
-values from the code of a simple module using
-\fname{genk\_randseed()}, but I see no reason why you would want to do
-so.
-
-
-\section{Choosing good seed values: the seedtool utility}
-\label{sec:ch-run-sim:seedtool}
-
-For selecting good seeds, the \fprog{seedtool} program can be used (it
-is in the utils directory). When started without command-line
-arguments, the program prints out the following help:
-
-\begin{verbatim}
-seedtool - part of OMNeT++, (c) 1992-2001 Andras Varga, TU Budapest
-See the license for distribution terms and warranty disclaimer.
-
-A tool to help select good random number generator seed values.
-Usage:
-  seedtool i seed         - index of `seed' in cycle
-  seedtool s index        - seed at index `index' in cycle
-  seedtool d seed1 seed2  - distance of `seed1' and `seed2' in cycle
-  seedtool g seed0 dist   - generate seed `dist' away from `seed0'
-  seedtool g seed0 dist n - generate `n' seeds `dist' apart, starting
-                            at `seed0'
-  seedtool t              - generate hashtable
-  seedtool p              - print out hashtable
-\end{verbatim}
-
-
-The last two options, p and t were used internally to generate
-a hash table of pre-computed seeds that greatly speeds up the
-tool. For practical use, the g option is the most important.
-Suppose you have 4 simulation runs that need two independent
-random number generators each and you want to start their seeds
-at least 10,000,000 values apart. The first seed value can be
-simply 1. You would type the following command:
-
-\begin{verbatim}
-C:\OMNETPP\UTILS> seedtool g 1 10000000 8
-\end{verbatim}
-
-
-The program outputs 8 numbers that can be used as random number
-seeds:
-
-\begin{verbatim}
-1768507984
-33648008
-1082809519
-703931312
-1856610745
-784675296
-426676692
-1100642647
-\end{verbatim}
-
-
-You would specify these seed values in the ini file.
-
 
 
 \section{Repeating or iterating simulation runs}
