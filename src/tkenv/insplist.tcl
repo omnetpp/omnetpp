@@ -31,9 +31,12 @@
 # THIS PROC IS CALLED FROM C++ CODE, at each inspector display update.
 #
 proc inspectorupdate_callback {} {
+    global priv
+
+    set priv(animspeed) [opp_getsimoption animation_speed]
+
     inspectorlist_openinspectors
     notifyPlugins inspectorUpdate
-    #FIXME readParams
 }
 
 

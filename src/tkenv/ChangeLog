@@ -5,13 +5,12 @@
 	Added [Tkenv]/show-bubbles=true/false omnetpp.ini entry.
 	TBD bubble() drawing could be a bit faster (too much Tcl code)
 
-	* added anum speed slider in main dialog 
-TBD get that working!!!!!!
+	* added anum speed slider in main dialog and graphical module inspector
 FIXME: module name changes don't propagate to graphics!
 
 2004-01-06  Andras Varga
 
-        * virtual bool isGUI() {return false;}
+        * tkapp.h: added isGUI() (returns false)
 
 2004-01-01  Andras Varga
 	* tkapp.cc/h: handle new cEnvir notifications: moduleCreated(),

@@ -469,6 +469,10 @@ proc create_graphicalmodwindow {name geom} {
     foreach i {ascont win sep1 parent sep2 mrun mfast stop sep3 redraw} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
+
+    animcontrol $w.toolbar.animspeed
+    pack $w.toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
+
     bind $w <Control-F4> "module_run_fast $w"
 
     set help_tips($w.toolbar.ascont)  {Inspect as object}
@@ -478,6 +482,7 @@ proc create_graphicalmodwindow {name geom} {
     set help_tips($w.toolbar.mfast)   {Fast run until next local event (Ctrl-F4)}
     set help_tips($w.toolbar.stop)    {Stop running simulation (F8)}
     set help_tips($w.toolbar.redraw)  {Re-layout}
+    set help_tips($w.toolbar.animspeed) {Animation speed -- see Options dialog}
 
     # create canvas
     set c $w.c

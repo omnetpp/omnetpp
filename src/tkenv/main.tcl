@@ -41,7 +41,7 @@ set pluginlist {}
 
 proc create_omnetpp_window {} {
 
-    global icons fonts tcl_version help_tips widgets config
+    global icons fonts tcl_version help_tips widgets config priv
 
     wm focusmodel . passive
     wm geometry . 640x350
@@ -236,12 +236,8 @@ proc create_omnetpp_window {} {
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
 
-    #FIXME refine (and get it working :)
-    scale .toolbar.animspeed -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
-    .toolbar.animspeed config -from .5 -to 3 -resolution 0.01 -variable param(animspeed)
+    animcontrol .toolbar.animspeed
     pack .toolbar.animspeed -anchor c -expand 0 -fill none -side left -padx 5 -pady 0
-    #trace add variable param(animspeed)  write paramChanged
-
 
     set help_tips(.toolbar.loadned) {Load NED file for compound module definitions}
     set help_tips(.toolbar.newrun)  {Set up a run}
@@ -260,7 +256,7 @@ proc create_omnetpp_window {} {
     set help_tips(.toolbar.tree)    {Show/hide object tree}
     set help_tips(.toolbar.options) {Simulation options}
     set help_tips(.toolbar.find)    {Find string in main window (Ctrl-F)}
-    set help_tips(.toolbar.animspeed) {Animation speed -- see Options dialog too}
+    set help_tips(.toolbar.animspeed) {Animation speed -- see Options dialog}
 
     #################################
     # Create status bars
@@ -572,3 +568,12 @@ proc notifyPlugins {command args} {
     }
 }
 
+#------------------------------------------------------------------
+
+proc animcontrol {w} {
+    global priv
+
+    scale $w -orient horizontal -length 50 -sliderlength 8 -showvalue 0 -bd 1
+    $w config -from .5 -to 3 -resolution 0.01 -variable priv(animspeed)
+    trace add variable priv(animspeed) write animSpeedChanged
+}
