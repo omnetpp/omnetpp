@@ -56,6 +56,7 @@ $hfile = $filename;
 $hfile =~ s/\.[^.]*$/$hsuffix/;
 $hdef =  $hfile;
 $hdef =~ s/\.[^.]*$/_H_/;
+$hdef =~ tr/[a-z]/[A-Z]/;
 $ccfile = $filename;
 $ccfile =~ s/\.[^.]*$/$ccsuffix/;
 
