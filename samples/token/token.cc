@@ -106,8 +106,7 @@ void TokenRingMAC::activity()
     // station 0 issues the token
     if (myAddress == 0)
     {
-        TRToken *token = new TRToken("token");
-        token->setKind(TR_TOKEN);
+        TRToken *token = new TRToken("token", TR_TOKEN);
         token->setLength(TR_TOKEN_BITS);
         send(token, "phy_out");
     }
@@ -160,8 +159,7 @@ void TokenRingMAC::activity()
 
                 // create Token Ring frame, and send data in it
                 sprintf(msgname, "%d-->%d", myAddress, data->getDestination());
-                TRFrame *frame = new TRFrame(msgname);
-                token->setKind(TR_TOKEN);
+                TRFrame *frame = new TRFrame(msgname, TR_FRAME);
                 frame->setLength(TR_HEADER_BITS);
                 frame->setSource(myAddress);
                 frame->setDestination(data->getDestination());

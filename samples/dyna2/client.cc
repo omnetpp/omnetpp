@@ -39,8 +39,7 @@ void Client::activity()
 
         // connection setup
         ev << "sending DYNA_CONN_REQ\n";
-        conn_req = new DynaPacket("DYNA_CONN_REQ");
-        conn_req->setKind(DYNA_CONN_REQ);
+        conn_req = new DynaPacket("DYNA_CONN_REQ", DYNA_CONN_REQ);
         conn_req->setSrcAddress(own_addr);
         conn_req->setDestAddress(server_addr);
         send( conn_req, "out" );
@@ -59,8 +58,7 @@ void Client::activity()
         for (i=0; i<act_num_query; i++)
         {
             ev << "sending DATA(query)\n";
-            query = new DynaDataPacket("DATA(query)");
-            query->setKind(DYNA_DATA);
+            query = new DynaDataPacket("DATA(query)", DYNA_DATA);
             query->setSrcAddress(own_addr);
             query->setDestAddress(server_addr);
             query->setServerProcId(serverproc_id);
@@ -79,8 +77,7 @@ void Client::activity()
 
         // connection teardown
         ev << "sending DYNA_DISC_REQ\n";
-        disc_req = new DynaPacket("DYNA_DISC_REQ");
-		disc_req->setKind(DYNA_DISC_REQ);
+        disc_req = new DynaPacket("DYNA_DISC_REQ", DYNA_DISC_REQ);
         disc_req->setSrcAddress(own_addr);
         disc_req->setDestAddress(server_addr);
         disc_req->setServerProcId(serverproc_id);
