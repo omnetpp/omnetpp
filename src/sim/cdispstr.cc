@@ -345,6 +345,7 @@ bool cDisplayString::parse()
                 case 'r': *d = '\r'; break;
                 case 't': *d = '\t'; break;
                 case 'x': s++; *d = h2d(s); s--; break;
+                case '\0': *d--; s--; break; // dispstr terminates in stray backslash
                 default: *d = *s;
             }
         }
