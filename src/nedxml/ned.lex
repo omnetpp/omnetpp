@@ -30,14 +30,14 @@ E                       [Ee][+-]?{D}+
 
 #include <string.h>
 
-#ifdef __BORLANDC__
-#include <io.h>
-#pragma warn -rch  /*turn off tons of 'Unreachable code' warnings --VA */
-#endif
-
-#ifdef _MSC_VER
-#include <io.h>
-#define isatty _isatty
+#if defined(__BORLANDC__)
+# include <io.h>
+# pragma warn -rch  /*turn off tons of 'Unreachable code' warnings --VA */
+#elseif defined(_MSC_VER)
+# include <io.h>
+# define isatty _isatty
+#else 
+extern "C" { int isatty(int); }
 #endif
 
 #include "nedgrammar.h"

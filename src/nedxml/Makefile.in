@@ -10,6 +10,7 @@ SHLIB_LD=@SHLIB_LD@
 MAKEDEPEND=@MAKEDEPEND@
 CPPFLAGS=@CPPFLAGS@
 CFLAGS=@CFLAGS@
+XML_CFLAGS=@XML_CFLAGS@
 
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
@@ -22,17 +23,19 @@ LIB_SUFFIX=@LIB_SUFFIX@
 A_LIB_SUFFIX=@A_LIB_SUFFIX@
 SO_LIB_SUFFIX=@SO_LIB_SUFFIX@
 
+XMLPARSER=@XMLPARSER@
+
 #
 # Local definitions
 #
-COPTS=$(CPPFLAGS) $(CFLAGS) -I$(OMNETPP_INCL_DIR) -I.  -DBUILDING_SIM
+COPTS=$(CPPFLAGS) $(CFLAGS) $(XML_CFLAGS) -I$(OMNETPP_INCL_DIR) -I. -DBUILDING_NEDXML
 
 OBJS= nedelements.o nedelement.o nederror.o \
-     nedvalidator.o neddtdvalidator.o neddtdvalidator1.o \
-     nedbasicvalidator.o nedsemanticvalidator.o nedcompiler.o \
-     cppgenerator.o cppexprgenerator.o nedgenerator.o nedfilebuffer.o \
-     nedparser.o ned.tab.o lex.yy.o nedutil.o \
-     xmlgenerator.o nedxmlparser.o nedsaxhandler.o saxparser.o
+      nedvalidator.o neddtdvalidator.o neddtdvalidator1.o \
+      nedbasicvalidator.o nedsemanticvalidator.o nedcompiler.o \
+      cppmsggenerator.o cppgenerator.o cppexprgenerator.o nedgenerator.o \
+      nedfilebuffer.o nedparser.o ned.tab.o lex.yy.o nedutil.o \
+      xmlgenerator.o nedxmlparser.o nedsaxhandler.o saxparser_$(XMLPARSER).o
 
 
 #
@@ -56,6 +59,9 @@ nedelements.cc nedelements.h nedvalidator.cc nedvalidator.h : dtdclassgen.pl ned
 
 cppgenerator.o : cppgenerator.cc
 	$(CXX) -c $(COPTS) cppgenerator.cc
+
+cppmsggenerator.o : cppmsggenerator.cc
+	$(CXX) -c $(COPTS) cppmsggenerator.cc
 
 cppexprgenerator.o : cppexprgenerator.cc
 	$(CXX) -c $(COPTS) cppexprgenerator.cc
@@ -120,8 +126,11 @@ nedxmlparser.o : nedxmlparser.cc
 nedsaxhandler.o : nedsaxhandler.cc
 	$(CXX) -c $(COPTS) nedsaxhandler.cc
 
-saxparser.o : saxparser.cc
-	$(CXX) -c $(COPTS) saxparser.cc
+saxparser_expat.o : saxparser_expat.cc
+	$(CXX) -c $(COPTS) saxparser_expat.cc
+
+saxparser_libxml.o : saxparser_libxml.cc
+	$(CXX) -c $(COPTS) saxparser_libxml.cc
 
 nedutil.o : nedutil.cc
 	$(CXX) -c $(COPTS) nedutil.cc
@@ -212,7 +221,9 @@ nedxmlparser.o: nedxmlparser.cc \
   saxparser.h \
   nedsaxhandler.h \
   nedelement.h
-saxparser.o: saxparser.cc \
+saxparser_expat.o: saxparser_expat.cc \
+  saxparser.h
+saxparser_libxml.o: saxparser_libxml.cc \
   saxparser.h
 xmlgenerator.o: xmlgenerator.cc \
   nedelements.h \

@@ -10,13 +10,13 @@ CFLAGS=$(CFLAGS) /DWIN32_DLL
 #
 # Local definitions
 #
-COPTS=$(CFLAGS)  $(EXPAT_CFLAGS)
-OBJS=nedelements.obj nedelement.obj nederror.obj \
-     nedvalidator.obj neddtdvalidator.obj neddtdvalidator1.obj \
-     nedbasicvalidator.obj nedsemanticvalidator.obj nedcompiler.obj \
-     cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj nedgenerator.obj \
-     nedfilebuffer.obj nedparser.obj ned.tab.obj lex.yy.obj nedutil.obj \
-     xmlgenerator.obj nedxmlparser.obj nedsaxhandler.obj saxparser.obj \
+COPTS=$(CFLAGS) $(XML_CFLAGS)
+OBJS= nedelements.obj nedelement.obj nederror.obj \
+      nedvalidator.obj neddtdvalidator.obj neddtdvalidator1.obj \
+      nedbasicvalidator.obj nedsemanticvalidator.obj nedcompiler.obj \
+      cppgenerator.obj cppmsggenerator.obj cppexprgenerator.obj nedgenerator.obj \
+      nedfilebuffer.obj nedparser.obj ned.tab.obj lex.yy.obj nedutil.obj \
+      xmlgenerator.obj nedxmlparser.obj nedsaxhandler.obj saxparser.obj \
 
 
 #
@@ -120,20 +120,17 @@ cppexprgenerator.obj: cppexprgenerator.cc \
   cppexprgenerator.h \
   nederror.h \
   nedelements.h \
-  nedelement.h \
-
+  nedelement.h
 cppgenerator.obj: cppgenerator.cc \
   nedelements.h \
   cppgenerator.h \
   nederror.h \
   nedelement.h \
-   \
   cppexprgenerator.h
 nedbasicvalidator.obj: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \
   nedelement.h \
-   \
   nedvalidator.h \
   nedelements.h
 nedcompiler.obj: nedcompiler.cc \
@@ -144,7 +141,6 @@ nedcompiler.obj: nedcompiler.cc \
   nedbasicvalidator.h \
   nedsemanticvalidator.h \
   nedelement.h \
-   \
   nedelements.h \
   nedgrammar.h \
   nedvalidator.h
@@ -152,85 +148,71 @@ neddtdvalidator.obj: neddtdvalidator.cc \
   nederror.h \
   neddtdvalidator.h \
   nedelement.h \
-   \
   nedelements.h \
   nedvalidator.h
 neddtdvalidator1.obj: neddtdvalidator1.cc \
   nederror.h \
   neddtdvalidator.h \
   nedelement.h \
-   \
   nedelements.h \
   nedvalidator.h
 nedelement.obj: nedelement.cc \
-  nedelement.h \
-
+  nedelement.h
 nedelements.obj: nedelements.cc \
   nederror.h \
   nedelements.h \
-  nedelement.h \
-
+  nedelement.h
 nederror.obj: nederror.cc \
   nederror.h \
-  nedelement.h \
-
+  nedelement.h
 nedfilebuffer.obj: nedfilebuffer.cc \
   nedfilebuffer.h \
   nedparser.h \
   nedgrammar.h \
-  nedelement.h \
-
+  nedelement.h
 nedgenerator.obj: nedgenerator.cc \
   nedgenerator.h \
   nederror.h \
   nedelements.h \
-  nedelement.h \
-
+  nedelement.h
 nedparser.obj: nedparser.cc \
   nedparser.h \
   nedfilebuffer.h \
   nedelements.h \
   nederror.h \
   nedgrammar.h \
-  nedelement.h \
-
+  nedelement.h
 nedsaxhandler.obj: nedsaxhandler.cc \
   nedsaxhandler.h \
   nedelements.h \
   nedelement.h \
-  saxparser.h \
-
+  saxparser.h
 nedsemanticvalidator.obj: nedsemanticvalidator.cc \
   nederror.h \
   nedsemanticvalidator.h \
   nedcompiler.h \
   nedelement.h \
-   \
   nedvalidator.h \
   nedelements.h
-nedstring.obj: nedstring.cc \
-
+nedstring.obj: nedstring.cc
 nedutil.obj: nedutil.cc \
   nederror.h \
   nedutil.h \
-  nedelement.h \
-
+  nedelement.h
 nedvalidator.obj: nedvalidator.cc \
   nederror.h \
   nedvalidator.h \
   nedelement.h \
-   \
   nedelements.h
 nedxmlparser.obj: nedxmlparser.cc \
   saxparser.h \
   nedsaxhandler.h \
   nederror.h \
-  nedelement.h \
-
+  nedelement.h
 saxparser.obj: saxparser.cc \
   saxparser.h
 xmlgenerator.obj: xmlgenerator.cc \
   nedelements.h \
   xmlgenerator.h \
-  nedelement.h \
+  nedelement.h
 
