@@ -7,11 +7,14 @@ TMPFILE=/tmp/opp_neddoc.tmp.$$
 # process command-line options
 outdir=html
 screenshots=yes
+unassignedpars=yes
 while [ $# -gt 0 ]; do
     case "$1" in
     -o)       shift ; outdir=$1 ;;
     -n)       screenshots=no ;;
-    --nofig)  screenshots=no ;;
+    --no-figures)  screenshots=no ;;
+    -p)       unassignedpars=no ;;
+    --no-unassigned-pars)  unassignedpars=no ;;
     -a)       all_files=y ;;
     --all)    all_files=y ;;
     -h)       do_help=y ;;
@@ -32,10 +35,12 @@ if [ -n "$do_help" ]; then
     echo ""
     fi
     echo "Usage: opp_neddoc [-o <dir>] [-n] [-a] file1 file2 ..."
-    echo " -o <dir>      output directory, defaults to ./html"
-    echo " -n, --nofig   do not generate screenshots"
-    echo " -a, --all     process all *.ned and *.msg files recursively"
-    echo " -h, --help    this help text"
+    echo " -a, --all         process all *.ned and *.msg files recursively"
+    echo " -o <dir>          output directory, defaults to ./html"
+    echo " -n, --no-figures  do not generate diagrams"
+    echo " -p, --no-unassigned-pars"
+    echo "                   do not document unassigned parameters"
+    echo " -h, --help        this help text"
     echo ""
     exit
 fi
@@ -93,7 +98,9 @@ fi
 
 echo 'applying xslt stylesheet...'
 # FIXME xslt outputs lots of blank lines, hence the >/dev/null
-xsltproc  --stringparam outputdir "$outdir" --stringparam imagesxml "$imagesxml" $NEDDOC_XSL $TMPFILE >/dev/null || exit 1
+xsltproc --stringparam outputdir "$outdir" --stringparam imagesxml "$imagesxml" \
+         --stringparam document-unassigned-params "$unassignedpars" \
+         $NEDDOC_XSL $TMPFILE >/dev/null || exit 1
 
 echo 'formatting comments...'
 perl $NEDDOC_PL $outdir || exit 1
