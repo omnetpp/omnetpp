@@ -4,6 +4,13 @@
 !include ..\..\configuser.vc
 
 #
+# Local definitions
+#
+COPTS=$(CFLAGS) $(TK_CFLAGS)
+
+OBJS = plove.obj
+
+#
 # NOTE: an 'all: plove.bat' rule wouldn't be good, wouldn't overwrite
 #       stock plove.bat right after installation
 #
@@ -15,6 +22,18 @@ all:
 plove.bat:
 	echo @$(WISH:/=\) -f $(OMNETPP_SRC_DIR)/plove/plove %%1 %%2 %%3 %%4 %%5 %%6 %%7 %%8 %%9 > plove.bat
         copy plove.bat $(OMNETPP_BIN_DIR:/=\)
+
+plove : plove.exe
+
+plove.exe : $(OBJS)
+	$(LINK) /out:"plove.exe" $(OBJS) $(LDFLAGS) $(TK_LIBS) $(SYS_LIBS)
+	copy plove.exe $(OMNETPP_BIN_DIR:/=\)
+
+plove.obj: plove.cc tclcode.cc
+	$(CXX) $(COPTS) /c /Tp plove.cc
+
+tclcode.cc: *.tcl
+	..\utils\tcl2c tclcode.cc *.tcl
 
 depend:
 
