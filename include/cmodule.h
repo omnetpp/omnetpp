@@ -94,10 +94,8 @@ typedef void (*DisplayStringNotifyFunc)(cModule*,bool,void*);
 
 /**
  * Common base for cSimpleModule and cCompoundModule.
- * Provides gates, parameters, error handling, etc.
- *
- * NOTE: dup() cannot be use with modules.
- * Use <tt>mod->moduleType()->create()</tt>/<tt>buildInside()</tt> instead.
+ * cModule provides gates, parameters, RNG mapping, display strings, 
+ * and a set of virtual methods.
  *
  * @ingroup SimCore
  */
@@ -629,14 +627,14 @@ class SIM_API cModule : public cDefaultList
     void setBackgroundDisplayString(const char *dispstr, bool immediate=true);
 
     /**
-     * DEPRECATED. Use displayString()/backgroundDisplayString() and cDisplayString
-     * methods instead.
+     * DEPRECATED. Use displayString() or backgroundDisplayString(), plus 
+     * cDisplayString methods instead.
      */
     const char *displayString(int type);
 
     /**
-     * DEPRECATED. Use displayString()/backgroundDisplayString() and cDisplayString
-     * methods instead.
+     * DEPRECATED. Use displayString() or backgroundDisplayString(), plus
+     * cDisplayString methods instead.
      */
     void setDisplayString(int type, const char *dispstr, bool immediate=true);
 
