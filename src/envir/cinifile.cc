@@ -185,17 +185,19 @@ void cIniFile::_readFile(const char *fname, int section_id)
            }
 
            // fill in the entry
-           entries[num_entries].section_id = section_id;
-           entries[num_entries].key = opp_strdup(s);
+           sEntry& entry = entries[num_entries++];
+           entry.section_id = section_id;
+           entry.key = opp_strdup(s);
            if (*e=='"') {
-              entries[num_entries].rawvalue = opp_strdup(e);
+              entry.rawvalue = opp_strdup(e);
               *e1=0;
-              entries[num_entries].value = opp_strdup(e+1);
+              entry.value = opp_strdup(e+1);
            } else {
-              entries[num_entries].rawvalue = NULL;
-              entries[num_entries].value = opp_strdup(e);
+              entry.rawvalue = NULL;
+              entry.value = opp_strdup(e);
            }
-           entries[num_entries++].accessed = 0;
+           entry.accessed = 0;
+           entry.haswildcard = strchr(entry.key,'*') || strchr(entry.key,'?') || strchr(entry.key,'{');
 
            // // maybe already exists
            // for (i=0; i<num_entries; i++)
@@ -282,9 +284,7 @@ const char *cIniFile::_getValue(const char *sect, const char *ent, int raw)
               return (raw && entries[i].rawvalue) ? entries[i].rawvalue : entries[i].value;
           }
 
-          if (strchr(entries[i].key,'*') ||
-              strchr(entries[i].key,'?') ||
-              strchr(entries[i].key,'{'))
+          if (entries[i].haswildcard)
           {
              // try pattern matching
              short pat[256];

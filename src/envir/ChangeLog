@@ -1,8 +1,13 @@
+2003-03-04  Andras Varga
+
+	* cinifile.cc/h: made it faster to process large ini files (added
+	haswildcard field) 
+
 2003-02-15  ------ omnetpp-2.3b1 released ------
 
 2003-02-14  Andras Varga
 
-	* inifile.cc: improved handling of lines ~ 1024 chars
+	* cinifile.cc: improved handling of lines ~ 1024 chars
 
 2003-01-07  Andras Varga
 

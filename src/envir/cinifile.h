@@ -43,10 +43,11 @@ class ENVIR_API cIniFile
     struct sEntry {             // one entry contains:
         int section_id;         //  section it belongs to
         char *key;              //  the parameter
-        char *value;            //  its value
+        char *value;            //  its value (without quotes)
         char *rawvalue;         //  if original was quoted, this is the
                                 //        strdupped version of it, otherwise NULL
         bool accessed;          //  has it been accessed?
+        bool haswildcard;       //  does key contain a wildcard?
     };
 
     char **sections;            // table of section names
