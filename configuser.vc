@@ -16,7 +16,7 @@
 OMNETPP_ROOT=d:/home/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
-OMNETPP_VERSION=omnetpp-3.0a5
+OMNETPP_VERSION=omnetpp-3.0a6
 
 #
 # Directory and version of Tcl/Tk and BLT, for example "8.4" and "2.4".
@@ -111,10 +111,10 @@ WITH_PARSIM=yes
 #
 # Choose between debug and release libraries here
 #
-CFLAGS=$(CFLAGS_DEBUG)
-LDFLAGS=$(LDFLAGS_DEBUG)
-#CFLAGS=$(CFLAGS_RELEASE)
-#LDFLAGS=$(LDFLAGS_RELEASE)
+#CFLAGS=$(CFLAGS_DEBUG)
+#LDFLAGS=$(LDFLAGS_DEBUG)
+CFLAGS=$(CFLAGS_RELEASE)
+LDFLAGS=$(LDFLAGS_RELEASE)
 
 
 #==============================================================================
