@@ -317,7 +317,7 @@ char *NEDFileBuffer::stripComment(const char *comment)
     if (commentBufLen < (int)strlen(comment)+1)
     {
         commentBufLen = strlen(comment)+1;
-        delete commentBuf;
+        delete [] commentBuf;
         commentBuf = new char[commentBufLen];
     }
 
