@@ -11,14 +11,17 @@ Like Javadoc and Doxygen... opp\_neddoc
 
 \subsection{Documentation comments}
 
-Documentation is embedded in comments. Javadoc and Doxygen use special
-comments (those beginning with \texttt{/**}, \texttt{//} or similar marker)
-to distinguish them from ``normal'' comments in the source files.
-In {\opp}, the NED and message syntax is very compact and practically all
-comments one would write in them are for documentation purposes,
-so there's no need for special comment marker -- all comments will be
-regarded as documentation comments. That is, all \texttt{//} comments
-that are appropriately placed will be included in the documentation.
+Documentation is embedded in normal comments. All \texttt{//} comments
+that are in the ``right place'' (from the documentation tool's 
+point of view) will be included in the generated documentation.
+  \footnote{In contrast, Javadoc and Doxygen use special comments (those 
+     beginning with \texttt{/**}, \texttt{///}, \texttt{//<} or a similar 
+     marker) to distinguish documentation from ``normal'' comments in the 
+     source code. In {\opp} there's no need for that: NED and the message 
+     syntax so compact that practically all comments one would want to write 
+     in them can serve documentation purposes. Still, there is a way to write
+     comments that \textit{don't} make it into the documentation -- by starting
+     them with \texttt{//\#}.}
 
 Example:
 
@@ -369,7 +372,9 @@ sure the hyperlinks work.
 
 \ttt{opp\_neddoc} generates HTML documentation from NED and MSG files.
 
-Usage: opp_neddoc [-o <dir>] [-n] [-a] file1 file2 ...
+FIXME describe.
+
+Usage: opp\_neddoc [-o <dir>] [-n] [-a] file1 file2 ...
 
 It accepts the following options:
  -o <dir>      output directory, defaults to ./html
