@@ -3,6 +3,10 @@
 	* neddoc.xsl: "NED file" pages in generated HTML now contain full
 	NED file listing
 
+	* opp_neddoc.in, neddoc.xsl: added -z (--no-source) option to turn off
+	adding the source code on component pages (but NED file pages will
+	still contain the source)
+
 2004-07-19  Andras Varga
 
 	* opp_nmakemake,opp_makemake: added -x (--notstamp) option: the 

@@ -49,6 +49,7 @@ $doxytagfile = "";
 $doxyhtmldir = "../api-doc/html";
 $screenshots = 1;
 $unassignedpars = 1;
+$sourcecode = 1;
 $all_files = 0;
 $verbose = 1;
 $debug = 0;
@@ -97,6 +98,10 @@ while (@ARGV)
     elsif ($arg eq '-x' || $arg eq '--no-diagrams')
     {
        $have_dot = 0;
+    }
+    elsif ($arg eq '-z' || $arg eq '--no-source')
+    {
+       $sourcecode = 0;
     }
     elsif ($arg eq '-g' || $arg eq '--debug')
     {
@@ -152,6 +157,8 @@ if ($do_help)
     print "              do not document unassigned parameters\n";
     print " -x, --no-diagrams\n";
     print "              do not generate usage and inheritance diagrams\n";
+    print " -z, --no-source\n";
+    print "              do not generate source code listing\n";
     print " -s, --silent suppress informational messages\n";
     print " -g, --debug  print invocations of external programs and other info\n";
     print " -h, --help   displays this help text\n";
@@ -323,6 +330,7 @@ $xsltcommand = "$XSLTPROC".
                " --stringparam imagesxml \"".toslash($imagesxml)."\"".
                " --stringparam document-unassigned-params \"".($unassignedpars?"yes":"no")."\"".
                " --stringparam have-dot \"".($have_dot?"yes":"no")."\"".
+               " --stringparam include-source-code \"".($sourcecode?"yes":"no")."\"".
                " --stringparam doxytagfile \"".toslash($doxytagfile)."\"".
                " --stringparam doxyhtmldir \"".toslash($doxyhtmldir)."\"".
                " --output -".
