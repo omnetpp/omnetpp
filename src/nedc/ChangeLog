@@ -235,3 +235,5 @@ Dec 18, 1999
   - changed isA() to className() in generated code (see sim/ChangeLog)
   - macro names in module interface declarations (Interface...End) changed to
     reduce chance of name clashes
+Dec 19, 1999
+  - changes in generated code due to cPar interface change (see sim/ChangeLog)
