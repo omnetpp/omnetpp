@@ -62,7 +62,7 @@ void Dist::activity()
 
     // write file
     FILE *f = fopen(filename, "w");
-    fprintf(f,"\"x\",\"theoretical %s pdf\",\"measured %s\" pdf\n",distname, distname);
+    fprintf(f,"\"x\",\"theoretical %s pdf\",\"measured %s\" pdf\n",distname.c_str(), distname.c_str());
 
     for (int k=0; k<h->cells(); k++)
     {
