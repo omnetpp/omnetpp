@@ -1,0 +1,53 @@
+TOKEN
+=====
+
+Model of a Token Ring network.
+
+Demonstrates:
+  - ring topology with the number of nodes as parameter
+  - using cQueue
+  - wait() and the putaside-queue
+  - output vectors
+
+Each station in the ring consists of a MAC module, a source and a sink.
+
+The following statistics are written into the output vector file:
+  - queue lengths in the MAC modules
+  - transmission times and queuing times (measured by the sink modules)
+
+Explore the model, you can try the following things in Tkenv:
+  1. Open a message window for a MAC module. Select Trace|Module output...
+     from the menu, and double-click 'token.comp[1].mac' from the list
+     that pops up. A module output window appears.
+  2. Single-step the MAC module. Click the Step icon on the toolbar of the
+     module output window several times. At each event, the MAC module
+     reports what it is doing.
+  3. Open an inspector for the message queue (that is, the future event set).
+     Select Inspect|Message queue from the menu. If you run or single-step
+     the simulation, the window showing the contents of the message queue
+     is continuously updated.
+  4. Open an inspector for the token that cycles in the ring; its object name
+     is 'token'. Select Inspect|Special|By pattern matching... from the menu,
+     type '*.token' in the dialog that appears, and select 'default' from the
+     next dialog asking for inspector type. A window with the properties of
+     the token object appears. Note that as you single-step the simulation,
+     the 'Owner' field will always indicate the station that currently owns
+     the token.
+  5. Open an inspector window for a queuing time output vector. Select
+     Inspect|Module local variables... from the menu, double-click
+     'token.comp[1].sink' in the list that pops up to select a module, and
+     then double-click 'queuing-time' from the next window. A yellow
+     output vector window appears, currently empty. Run the simulation,
+     and window will display a graph of the new values written to the output
+     vector. The drawing style and the bounds can be customised.
+  6. The load of the network is determined by the ia-time parameter of the
+     system module. To view and set that parameter, select
+     Inspect|Top level modules.. from the menu, click the red Params icon
+     at the toolbar of the window that appears, and double-click 'ia-time'
+     from the parameter list. An inspector window for the parameter pops up.
+     You can change the value of the parameter; try to increase the mean of
+     ia_time (first argument to 'truncnormal()') in order to decrease network
+     load. The queuing times (plotted in the output vector windows) should
+     decrease.
+
+Have fun!
