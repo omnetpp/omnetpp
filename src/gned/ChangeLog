@@ -187,3 +187,6 @@ Dec 6, 1999
   - adapted to Tcl8.2: font size changed.
   - improved dialog box positioning
   - added label-entry-chooser to widgets.tcl
+Dec 19, 1999
+  - wsize proc added to widgets.tcl
+  - font changes
