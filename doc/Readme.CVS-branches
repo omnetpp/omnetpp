@@ -7,22 +7,28 @@ This graph shows the CVS branch history.
 
   Main Trunk            Branches
 
-        ^                                     ^
-        |                                     |
-        |                                     |
-      mpi-2 >-----------mpi-2-branch----------|
-        |
-        |
-  merge-omnetpp-2_2_2 <-----------------omnetpp-2_2_2
-        |                                     |
-        |                                     |
-        |                               std-namespace-start
-        |                                     |
-        |                                     |
-        |                               omnetpp-2_2_1
-        |                                     |
-        |                                     |
-  omnetpp-2_2 >---------omnetpp-2_2-patches---|  
+        ^                                               ^                            ^
+        |                                               |                            |
+        |                                               |                            |
+  merge-omnetpp-2_2p3 <---------------------------omnetpp-2_2p3 >--bless-aix-patches-|
+        |                                               |
+        |                                               |
+        |                                     |         |
+        |                                     |         |
+        |                                     |         |
+      mpi-2 >-----------mpi-2-branch----------|         |
+        |                                               |
+        |                                               |
+  merge-omnetpp-2_2_2 <---------------------------omnetpp-2_2_2
+        |                                               |
+        |                                               |
+        |                                         std-namespace-start
+        |                                               |
+        |                                               |
+        |                                         omnetpp-2_2_1
+        |                                               |
+        |                                               |
+  omnetpp-2_2 >---------omnetpp-2_2-patches-------------|  
         |
         |
         |>--------------mpi-patches-------- (dead)
