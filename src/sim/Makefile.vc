@@ -166,11 +166,25 @@ cdetect.obj: cdetect.cc \
   ../../include/cexception.h \
   ../../include/cstat.h
 cdispstr.obj: cdispstr.cc \
+  ../../include/cenvir.h \
+  ../../include/cmodule.h \
+  ../../include/cgate.h \
   ../../include/cdispstr.h \
-  ../../include/cobject.h \
   ../../include/defs.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
   ../../include/util.h \
-  ../../include/cexception.h
+  ../../include/cexception.h \
+  ../../include/ccoroutine.h \
+  ../../include/globals.h \
+  ../../include/carray.h \
+  ../../include/cqueue.h \
+  ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
+  ../../include/onstartup.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/coutvect.h
 cenum.obj: cenum.cc \
   ../../include/macros.h \
   ../../include/ctypes.h \
@@ -227,6 +241,7 @@ cgate.obj: cgate.cc \
   ../../include/macros.h \
   ../../include/cgate.h \
   ../../include/cchannel.h \
+  ../../include/cdispstr.h \
   ../../include/cobject.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -321,6 +336,7 @@ cmodule.obj: cmodule.cc \
   ../../include/cpar.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
+  ../../include/cdispstr.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/ccoroutine.h \

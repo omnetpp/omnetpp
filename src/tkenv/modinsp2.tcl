@@ -860,7 +860,11 @@ proc graphmodwin_do_draw_methodcall {win x1 y1 x2 y2 methodlabel} {
 
     set x [expr ($x1+$x2)/2]
     set y [expr ($y1+$y2)/2]
-    $c create text $x $y -tags {methodcall} -text $methodlabel -anchor c
+    set txtid  [$c create text $x $y -tags {methodcall} -text " $methodlabel " -anchor c]
+    set color #F0F0D0
+    #catch {set color [$c itemcget mod -fill]}
+    set rectid [$c create rect [$c bbox $txtid] -tags {methodcall} -outline "" -fill $color]
+    $c lower $rectid $txtid
 
     # flash arrow a bit
     set sp [opp_getsimoption animation_speed]

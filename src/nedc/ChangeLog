@@ -1,3 +1,11 @@
+2004-01-04  Andras Varga
+
+	* opp_msgc: updated for changed ownership management rules
+
+2003-12-10  Andras Varga
+
+	* opp_msgc: removed sEnumBuilder usage
+
 2003-12-06  Andras Varga
 
 	* jar.c: removed check for zero-size module vectors

@@ -65,17 +65,18 @@ akoutvectormgr.obj: akoutvectormgr.cc \
   ../../include/util.h \
   ../../include/cexception.h \
   ../../include/carray.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/onstartup.h \
+  ../../include/cdefaultlist.h \
   ../../include/ctypes.h \
   filemgrs.h
 args.obj: args.cc \
@@ -100,13 +101,14 @@ cenvir.obj: cenvir.cc \
   ../../include/util.h \
   ../../include/cexception.h \
   ../../include/carray.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/envirext.h \
   ../../include/onstartup.h \
   ../../include/ccoroutine.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/csimul.h \
+  ../../include/cdefaultlist.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h
@@ -136,16 +138,17 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cexception.h \
   envdefs.h \
   ../../include/carray.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   args.h \
   ../../include/envirext.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
-  ../../include/onstartup.h \
+  ../../include/cdefaultlist.h \
   ../../include/ctypes.h
 main.obj: main.cc \
   ../../include/cobject.h \
@@ -153,11 +156,11 @@ main.obj: main.cc \
   ../../include/random.h \
   ../../include/cenvir.h \
   ../../include/onstartup.h \
+  ../../include/defs.h \
   ../../include/util.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
   ../../include/errmsg.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cmsgheap.h \
   ../../include/ccoroutine.h \
   ../../include/coutvect.h \
@@ -177,17 +180,19 @@ omnetapp.obj: omnetapp.cc \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   ../../include/envirext.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/onstartup.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h \
   ../../include/cqueue.h \
-  ../../include/cgate.h
+  ../../include/cgate.h \
+  ../../include/cdefaultlist.h
 patmatch.obj: patmatch.cc \
   patmatch.h \
   ../../include/defs.h \
@@ -202,15 +207,16 @@ platdep.obj: platdep.cc \
 seeds.obj: seeds.cc \
   omnetapp.h \
   ../../include/carray.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cenvir.h \
   ../../include/cexception.h \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cobject.h \
-  ../../include/util.h \
   ../../include/defs.h \
+  ../../include/util.h \
+  ../../include/onstartup.h \
   ../../include/cpar.h
 speedmtr.obj: speedmtr.cc \
   speedmtr.h \

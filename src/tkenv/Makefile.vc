@@ -72,8 +72,7 @@ clean:
 arrow.obj: arrow.cc \
   arrow.h
 graphlayout.obj: graphlayout.cc \
-  graphlayout.h \
-  tkapp.h
+  graphlayout.h
 inspector.obj: inspector.cc \
   ../../include/omnetpp.h \
   tkapp.h \
