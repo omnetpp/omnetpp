@@ -1,4 +1,6 @@
 Parse/Generate:
+- generation with multiple channel attributes is wrong: don't need "-->"
+  between "error xxx" and "delay xxx"!
 - comments around display strings are lost
 - display string parsing -- rewrite!!!
 - default comments for modules
