@@ -111,9 +111,8 @@ void TOmnetTkApp::setup()
 #endif
 
     // path for icon directories
-    std::string bitmap_path = getenv("OMNETPP_BITMAP_PATH");
-    if (bitmap_path.empty())
-        bitmap_path = OMNETPP_BITMAP_PATH;
+	const char *bitmap_path_env = getenv("OMNETPP_BITMAP_PATH");
+    std::string bitmap_path = bitmap_path_env ? bitmap_path_env : OMNETPP_BITMAP_PATH;
     if (!opt_bitmap_path.empty())
         bitmap_path = std::string(opt_bitmap_path.c_str()) + ";" + bitmap_path;
 
