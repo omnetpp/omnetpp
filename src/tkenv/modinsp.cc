@@ -153,7 +153,7 @@ int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int, char **)
 
       // first, see if there's an explicit position ("p=" tag) given
       int p_tag_present;
-      const char *dstr = submod()->displayString(dispSUBMOD);
+      const char *dstr = submod()->displayString();
       if (dstr[0]==0)
          p_tag_present = 0;
       else if (dstr[0]=='p' && dstr[1]=='=')
@@ -202,7 +202,7 @@ int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int, char **)
                       canvas, " ",
                       ptrToStr( submod() ), " ",
                       "{", submod()->fullName(), "} ",
-                      "{", submod()->displayString(dispSUBMOD), "} ",
+                      "{", submod()->displayString(), "} ",
                       index, ringlayout?"ring":"row",
                       NULL ));
    }
@@ -212,7 +212,7 @@ int TGraphicalModWindow::redrawModules(Tcl_Interp *interp, int, char **)
                       canvas, " ",
                       ptrToStr( object ), " ",
                       "{", object->fullPath(), "} ",
-                      "{", ((cModule *)object)->displayString( dispENCLOSINGMOD ), "}",
+                      "{", ((cModule *)object)->displayStringAsParent(), "}",
                       NULL ));
 
    // loop through all submodules and enclosing module & draw their connections

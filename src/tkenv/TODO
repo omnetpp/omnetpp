@@ -12,3 +12,4 @@ General:
    not-yet-existing objects)
  - graphical FES inspector
  - CDF display for histogram classes
+ - plugins should be loaded from a path

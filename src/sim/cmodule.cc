@@ -451,6 +451,47 @@ void cModule::callInitialize()
         ++stage;
 }
 
+const char *cModule::displayString()
+{
+    if ((const char *)dispstr != NULL)
+        return dispstr;
+
+    // no display string stored -- try to get it from Envir
+    char dispname[128];
+    if (!parentModule()) return "";
+    sprintf(dispname, "%s.%s",parentModule()->className(),fullName());
+    const char *s = ev.getDisplayString(simulation.runNumber(),dispname);
+    return s ? s : "";
+}
+
+void cModule::setDisplayString(const char *s, bool immediate)
+{
+    dispstr = s;
+
+    // notify the parent module's inspector
+    cModule *p = parentModule();
+    if (p && p->notify_inspector) p->notify_inspector(this,immediate,p->data_for_inspector);
+}
+
+const char *cModule::displayStringAsParent()
+{
+    if ((const char *)parentdispstr != NULL)
+        return parentdispstr;
+
+    // no display string stored -- try to get it from Envir
+    const char *s = ev.getDisplayString(simulation.runNumber(),className());
+    return s ? s : "";
+}
+
+void cModule::setDisplayStringAsParent(const char *s, bool immediate)
+{
+    parentdispstr = s;
+
+    // notify inspector
+    if (notify_inspector) notify_inspector(this,immediate,data_for_inspector);
+}
+
+// DEPRECATED
 void cModule::setDisplayString(int type, const char *s, bool immediate)
 {
     if (type<0 || type>=dispNUMTYPES)
@@ -460,20 +501,20 @@ void cModule::setDisplayString(int type, const char *s, bool immediate)
          return;
     }
 
-    dispstr[type] = s;
-
     if (type==dispENCLOSINGMOD)
     {
+         parentdispstr = s;
          if (notify_inspector) notify_inspector(this,immediate,data_for_inspector);
     }
     else if (type==dispSUBMOD)
     {
-         // notify the parent module's inspector
+         dispstr = s;
          cModule *p = parentModule();
          if (p && p->notify_inspector) p->notify_inspector(this,immediate,p->data_for_inspector);
     }
 }
 
+// DEPRECATED
 const char *cModule::displayString(int type)
 {
     if (type<0 || type>=dispNUMTYPES)
@@ -483,8 +524,10 @@ const char *cModule::displayString(int type)
          return NULL;
     }
 
-    if ((const char *)dispstr[type] != NULL)
-        return dispstr[type];
+    if (type==dispSUBMOD && (const char *)dispstr != NULL)
+        return dispstr;
+    if (type==dispENCLOSINGMOD && (const char *)parentdispstr != NULL)
+        return parentdispstr;
 
     // no hardcoded display string -- try to get it from Envir
     char dispname[128];

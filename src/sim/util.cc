@@ -106,12 +106,17 @@ long genk_randseed(int gen_nr, long seed)
 *    Source:  Raj Jain: The Art of Computer Systems Performance Analysis
 *                (John Wiley & Sons, 1991)   Pages 441-444, 455
 *---------------------------------------------------------*/
-long intrand()
+long opp_nextrand(long& seed)
 {
      const long int a=16807, q=127773, r=2836;
-     seeds[0]=a*(seeds[0]%q) - r*(seeds[0]/q);
-     if (seeds[0]<=0) seeds[0]+=INTRAND_MAX+1;
-     return seeds[0];
+     seed=a*(seed%q) - r*(seed/q);
+     if (seed<=0) seed+=INTRAND_MAX+1;
+     return seed;
+}
+
+long intrand()
+{
+     return opp_nextrand(seeds[0]);
 }
 
 long genk_intrand(int gen_nr)
@@ -119,21 +124,14 @@ long genk_intrand(int gen_nr)
      if (gen_nr<0 || gen_nr>=NUM_RANDOM_GENERATORS)
         {opp_error("Invalid random number generator %d",gen_nr);return 0;}
 
-     const long int a=16807, q=127773, r=2836;
-     long& seed = seeds[gen_nr];
-     seed=a*(seed%q) - r*(seed/q);
-     if (seed<=0) seed+=INTRAND_MAX+1;
-     return seed;
+     return opp_nextrand(seeds[gen_nr]);
 }
 
 int testrand()
 {
-     long oldseed = seeds[0];
-     seeds[0] = 1;
-     for(int i=0; i<10000; i++) intrand();
-     int good = (seeds[0]==1043618065L);
-     seeds[0] = oldseed;
-     return good;
+     long seed= 1;
+     for(int i=0; i<10000; i++) opp_nextrand(seed);
+     return (seed==1043618065L);
 }
 
 long intrand(long r)

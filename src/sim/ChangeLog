@@ -1,3 +1,8 @@
+2001-09-14 Andras Varga
+
+	* utils.cc: added opp_nextrand(long& seed)
+        * cmodule.cc: display string methods reorganized
+
 2001-09-06 Andras Varga
 
 	* cleanup around object copying (see include/ChangeLog for details)

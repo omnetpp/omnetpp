@@ -1,3 +1,7 @@
+2001-09-14  Andras Varga
+
+        * updated to cModule's new display string methods
+
 2001-09-11  Andras Varga
 
 	* improved plugin handling: reads plugins from OMNETPP_PLUGIN_PATH
