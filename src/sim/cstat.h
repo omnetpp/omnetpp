@@ -56,6 +56,8 @@ class cStatistic : public cObject
     // number of samples, minimum, maximum, mean, standard deviation:
     virtual long samples() = 0;
     virtual double weights() = 0;
+    virtual double sum() = 0;
+    virtual double sqrSum() = 0;
     virtual double min() = 0;
     virtual double max() = 0;
     virtual double mean() = 0;
@@ -88,11 +90,12 @@ class cStdDev : public cStatistic
 {
   protected:
     long num_samples;
-    double min_samples,max_samples,sum,sqrsum;
+    double min_samples,max_samples;
+    double sum_samples,sqrsum_samples;
 
   public:
     cStdDev(cStdDev& r) : cStatistic(r) {setName(r.name());operator=(r);}
-    explicit cStdDev(char *s=NULL) : cStatistic(s)  {sum=sqrsum=min_samples=max_samples=num_samples=0;}
+    explicit cStdDev(char *s=NULL);
     virtual ~cStdDev() {}
 
     // redefined functions
@@ -107,11 +110,13 @@ class cStdDev : public cStatistic
     // redefined cStatistic functions
     virtual void collect(double val);
 
-    virtual long samples() {return num_samples;}
+    virtual long samples()   {return num_samples;}
     virtual double weights() {return num_samples;}
-    virtual double min()   {return min_samples;}
-    virtual double max()   {return max_samples;}
-    virtual double mean()  {return num_samples ? sum/num_samples : 0.0;}
+    virtual double sum()     {return sum_samples;}
+    virtual double sqrSum()  {return sqrsum_samples;}
+    virtual double min()     {return min_samples;}
+    virtual double max()     {return max_samples;}
+    virtual double mean()    {return num_samples ? sum_samples/num_samples : 0.0;}
     virtual double stddev();
     virtual double variance();
 
@@ -151,7 +156,7 @@ class cWeightedStdDev : public cStdDev
     virtual void clearResult();
 
     virtual double weights() {return sum_weights;}
-    virtual double mean()    {return sum_weights!=0 ? sum/sum_weights : 0.0;}
+    virtual double mean()    {return sum_weights!=0 ? sum_samples/sum_weights : 0.0;}
     virtual double variance();
 
     virtual void saveToFile(FILE *);

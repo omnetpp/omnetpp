@@ -780,3 +780,8 @@ Jan 25, 2000
  - cArray functions changed to take and return cArray* instead of cArray&.
    This affects add(), addAt(), remove(), get() and op[].
 ------ omnetpp-2.0b3 released ------
+Feb 3, 2000
+ - pvm files fixed.
+Mar 12, 2000
+ - pvm files really fixed. Debugging done by Gabor Lencse.
+ - sum() and sqrSum() members added to statistics classes (cStdDev & subclasses)

@@ -101,6 +101,13 @@ void cStatistic::freadvarsf (FILE *f,  char *fmt, ...)
 //==========================================================================
 // cStdDev - member functions
 
+cStdDev::cStdDev(char *s) : cStatistic(s)
+{
+    num_samples = 0L;
+    sum_samples = sqrsum_samples = 0;
+    min_samples = max_samples= 0;
+}
+
 void cStdDev::info(char *buf)
 {
     cStatistic::info( buf );
@@ -113,8 +120,8 @@ cStdDev& cStdDev::operator=(cStdDev& res)
     num_samples = res.num_samples;
     min_samples = res.min_samples;
     max_samples = res.max_samples;
-    sum = res.sum;
-    sqrsum = res.sqrsum;
+    sum_samples = res.sum_samples;
+    sqrsum_samples = res.sqrsum_samples;
 
     return *this;
 }
@@ -123,8 +130,8 @@ cStdDev& cStdDev::operator=(cStdDev& res)
 void cStdDev::collect(double val)
 {
     num_samples++;
-    sum+=val;
-    sqrsum+=val*val;
+    sum_samples+=val;
+    sqrsum_samples+=val*val;
 
     if (num_samples>1)
     {
@@ -148,7 +155,7 @@ double cStdDev::variance()
         return 0.0;
     else
     {
-        double devsqr = (sqrsum - sum*sum/num_samples)/(num_samples-1);
+        double devsqr = (sqrsum_samples - sum_samples*sum_samples/num_samples)/(num_samples-1);
         if (devsqr<=0)
             return 0.0;
         else
@@ -178,7 +185,7 @@ void cStdDev::writeContents(ostream& os)
 void cStdDev::clearResult()
 {
     num_samples=0;
-    sum=sqrsum=min_samples=max_samples=0;
+    sum_samples=sqrsum_samples=min_samples=max_samples=0;
 }
 
 double cStdDev::random()
@@ -196,8 +203,8 @@ void cStdDev::saveToFile(FILE *f)
     fprintf(f,"\n#\n# (%s) %s\n#\n", className(), fullPath());
     fprintf(f,"%ld\t #= num_samples\n",num_samples);
     fprintf(f,"%lg %lg\t #= min, max\n", min_samples, max_samples);
-    fprintf(f,"%lg\t #= sum\n", sum);
-    fprintf(f,"%lg\t #= square sum\n", sqrsum );
+    fprintf(f,"%lg\t #= sum\n", sum_samples);
+    fprintf(f,"%lg\t #= square sum\n", sqrsum_samples );
 }
 
 void cStdDev::loadFromFile(FILE *f)
@@ -205,8 +212,8 @@ void cStdDev::loadFromFile(FILE *f)
     freadvarsf(f,"");  freadvarsf(f,""); freadvarsf(f,""); freadvarsf(f,"");
     freadvarsf(f,"%ld\t #= num_samples",&num_samples);
     freadvarsf(f,"%lg %lg\t #= min, max", &min_samples, &max_samples);
-    freadvarsf(f,"%lg\t #= sum", &sum);
-    freadvarsf(f,"%lg\t #= square sum", &sqrsum);
+    freadvarsf(f,"%lg\t #= sum", &sum_samples);
+    freadvarsf(f,"%lg\t #= square sum", &sqrsum_samples);
 }
 
 //==========================================================================
@@ -242,7 +249,7 @@ double cWeightedStdDev::variance()
     //   return 0.0;
     // else
     // {
-    //   double devsqr = (sqrsum - sum*sum/sum_weights)/(sum_weights-1);
+    //   double devsqr = (sqrsum_samples - sum_samples*sum_samples/sum_weights)/(sum_weights-1);
     //   if (devsqr<=0)
     //       return 0.0;
     //   else
