@@ -198,7 +198,7 @@ class cXMLElement
      * Returns list of contained elements with the given tag name, in preorder
      * traversal order.
      */
-    virtual cXMLElementList getElementsByTagName(const char *tagname) const;
+    virtual cXMLElementList getElementsByTagName(const char *tagname);
     //@}
 
     /** @name Utility functions */
