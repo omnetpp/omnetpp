@@ -213,13 +213,7 @@ proc comboconfig {w list {cmd {}}} {
 }
 
 proc combo-onchange {w cmd} {
-    # Tk sucks: no event is triggered when entry content changes.
-    # entry -validate is no better than bind <Key>,
-    # vtrace is too error-prone.
-    bind $w.entry <1> $cmd
-    bind $w.entry <Key> $cmd
-    bind $w.entry <FocusIn> $cmd
-    bind $w.entry <FocusOut> $cmd
+    $w configure -command "$cmd ;#" -commandstate normal
 }
 
 proc label-entry {w label {text {}}} {
