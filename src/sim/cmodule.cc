@@ -764,7 +764,9 @@ cCompoundModule& cCompoundModule::operator=(const cCompoundModule& mod)
 
 void cCompoundModule::arrived(cMessage *msg, int g, simtime_t)
 {
-    throw new cException("Message `%s' arrived at COMPOUND module gate `%s' (which is not further connected)", msg->name(), gate(g)->fullPath());
+    throw new cException("Message (%s)`%s' arrived at COMPOUND module gate `%s' "
+                         "(which is not further connected)",
+                         msg->className(), msg->name(), gate(g)->fullPath());
 }
 
 void cCompoundModule::scheduleStart(simtime_t t)

@@ -35,7 +35,7 @@
 
 
 // decide platform
-#if defined(_WIN32) && !defined(__CYGWIN32__)
+#if defined(_WIN32)
 #define USE_WINDOWS_PIPES
 #endif
 

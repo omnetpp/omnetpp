@@ -17,6 +17,11 @@
   `license' for details on this and other legal matters.
 *--------------------------------------------------------------*/
 
+
+#include "cnamedpipecomm.h"
+
+#ifndef USE_WINDOWS_PIPES
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -26,13 +31,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "cexception.h"
-#include "cnamedpipecomm.h"
 #include "cmemcommbuffer.h"
 #include "macros.h"
 #include "cenvir.h"
-
-
-#ifndef USE_WINDOWS_PIPES
 
 
 Register_Class(cNamedPipeCommunications);
