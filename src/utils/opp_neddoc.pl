@@ -24,13 +24,13 @@ $NEDDOC_PL = "$progdir\\neddocproc.pl";
 
 # process command-line options
 $outdir = "html";
-$screenshots = "y";
-$unassignedpars = "y";
 $doxytagfile = "";
 $doxyhtmldir = "../api-doc/html";
-$all_files = "";
-$verbose = "y";
-$debug = "n";
+$screenshots = 1;
+$unassignedpars = 1;
+$all_files = 0;
+$verbose = 1;
+$debug = 0;
 
 if ($DOT ne "")
 {
@@ -40,46 +40,52 @@ if ($DOT ne "")
 # process arg vector
 while (@ARGV)
 {
-    $arg = shift @ARGV;
+    $arg = $ARGV[0];
     if ($arg eq '-o')
     {
-       $outdir = shift @ARGV;
+       shift @ARGV;
+       $outdir = $ARGV[0];
+       $outdir =~ s|/|\\|g;
     }
     elsif ($arg eq '-a' || $arg eq '--all')
     {
-       $all_files = "y";
+       $all_files = 1;
     }
     elsif ($arg eq '-d' || $arg eq '--doxyhtmldir')
     {
-       $doxyhtmldir = shift @ARGV;
+       shift @ARGV;
+       $doxyhtmldir = $ARGV[0];
+       $doxyhtmldir =~ s|/|\\|g;
     }
     elsif ($arg eq '-t' || $arg eq '--doxytagfile')
     {
-       $doxytagfile = shift @ARGV;
+       shift @ARGV;
+       $doxytagfile = $ARGV[0];
+       $doxytagfile =~ s|/|\\|g;
     }
     elsif ($arg eq '-n' || $arg eq '--no-figures')
     {
-       $screenshots = "n";
+       $screenshots = 0;
     }
     elsif ($arg eq '-p' || $arg eq '--no-unassigned-pars')
     {
-       $unassignedpars = "n";
+       $unassignedpars = 0;
     }
     elsif ($arg eq '-x' || $arg eq '--no-diagrams')
     {
-       $have_dot = "n";
+       $have_dot = 1;
     }
     elsif ($arg eq '-D' || $arg eq '--debug')
     {
-       $debug = "y";
+       $debug = 1;
     }
     elsif ($arg eq '-s' || $arg eq '--silent')
     {
-       $verbose = "n";
+       $verbose = 0;
     }
     elsif ($arg eq '-h' || $arg eq '--help')
     {
-       $do_help = "y";
+       $do_help = 1;
     }
     elsif ($arg =~ /^-/)
     {
@@ -88,12 +94,12 @@ while (@ARGV)
     }
     else
     {
-       break;
+       last;
     }
-    shift;
+    shift @ARGV;
 }
 
-if ($do_help eq "y")
+if ($do_help)
 {
     print "opp_neddoc - NED and MSG documentation tool, part of OMNeT++\n";
     print "(c) 2003 Andras Varga\n";
@@ -109,6 +115,8 @@ if ($do_help eq "y")
         print "\n";
     }
     print "Usage: opp_neddoc [-o <dir>] [-n] [-a] files-or-directories ...\n";
+    print " -s, --silent do not print what it is doing\n";
+    print " -D, --debug  print invocations of external programs and other info\n";
     print " -a, --all    process all *.ned and *.msg files recursively\n";
     print "              ('opp_neddoc -a' is equivalent to 'opp_neddoc .')\n";
     print " -o <dir>     output directory, defaults to ./html\n";
@@ -124,7 +132,7 @@ if ($do_help eq "y")
     print " -p, --no-unassigned-pars\n";
     print "              do not document unassigned parameters\n";
     print " -x, --no-diagrams\n";
-    print "              do not generate usage and interitance diagrams\n";
+    print "              do not generate usage and inheritance diagrams\n";
     print " -h, --help   displays this help text\n";
     print "Files specified as arguments are parsed and documented. If directories\n";
     print "are specified, all *.ned and *.msg files in them are documented.\n";
@@ -144,25 +152,30 @@ $NEDDOC_XSL =~ s|/|\\|g;
 $NEDDOC_PL =~ s|/|\\|g;
 
 
-#cleanup()
-#{
-#    rm $TMPFILE
-#}
-#trap cleanup HUP INT QUIT TERM
-
-if (! -d $outdir) {
-    mkdir($outdir) || die "cannot create output directory '$outdir'";
-}
-runprog("del /s /q $outdir\\* >nul")==0 || die "cannot clean output directory '$outdir' from old files";
-
-print "collecting files...\n" if $verbose;
-if ($all_files eq "")
+# OS check
+if ($ENV{"OS"} ne "Windows_NT")
 {
-    runprog("dir /s /b *.ned *.msg >$outdir\\filelist.txt")==0 || die "error creating the file list";
+    error("this program can only be used on Windows NT/2000/XP, but your OS environment variable says '$ENV{OS}'\n");
+}
+
+if (! -d $outdir)
+{
+    print "creating directory $outdir\n" if $debug;
+    mkdir($outdir) || error("cannot create output directory '$outdir'");
 }
 else
 {
-    if (@ARGV = ()) {
+   runprog("del /s /q $outdir\\* >nul")==0 || error("cannot clean output directory '$outdir' from old files");
+}
+print "collecting files...\n" if $verbose;
+if ($all_files eq "")
+{
+    runprog("dir /s /b *.ned *.msg >$outdir\\filelist.txt")==0 || error("error creating the file list");
+}
+else
+{
+    if (@ARGV==())
+    {
         print STDERR "opp_neddoc: no input files specified, try . to include all *.ned and *.msg files in current directory and below\n";
         exit(2);
     }
@@ -171,35 +184,56 @@ else
     while (@ARGV)
     {
         $arg = shift @ARGV;
+        $arg =~ s|/|\\|g;
         if (-d "$arg")
         {
-            runprog("dir /s /b *.ned *.msg >>$outdir\\filelist.txt")==0 || die "error creating the file list";
+            runprog("dir /s /b $arg\\*.ned $arg\\*.msg >>$outdir\\filelist.txt")==0 || error("error creating the file list");
         }
         else
         {
-            runprog("echo $arg >>$outdir\\filelist.txt")==0 || die "error creating the file list";
+            runprog("echo $arg >>$outdir\\filelist.txt")==0 || error("error creating the file list");
         }
         shift;
     }
 }
 
-print "transforming to xml...\n" if $verbose;
-runprog("$NEDTOOL -x -e -t -y -m -o $outdir\\inputfiles.xml \@$outdir\\filelist.txt")==0 || die "error";
+# make file names in filelist.txt relative to current directory; also weed out
+# filenames not ending in .ned or .msg (i.e. backup files ending in .ned~0)
+$currentdir = cwd();
+$currentdir =~ s|/|\\|g;
+rename("$outdir\\filelist.txt", "$outdir\\filelist.tmp");
+open FLIN, "$outdir\\filelist.tmp";
+open FLOUT, ">$outdir\\filelist.txt";
+while (<FLIN>)
+{
+    next if (!/.ned$/ && !/.msg$/);
+    s|^\Q$currentdir\E\\*||;
+    print FLOUT;
+}
+close FLOUT;
+unlink("$outdir\\filelist.tmp");
 
-if ($screenshots eq "y")
+#
+# now start the real job
+#
+print "transforming to xml...\n" if $verbose;
+runprog("$NEDTOOL -x -e -t -y -m -o $outdir\\inputfiles.xml \@$outdir\\filelist.txt")==0 || error("error");
+
+if ($screenshots)
 {
     if ($GHOSTSCRIPT ne "")
     {
         print "exporting screenshots (Postscript) using GNED...\n";
         $nedfilesonly = `type $outdir\\filelist.txt`;
-        runprog("$GNED -- -c $outdir -e jpg $nedfilesonly")==0 || die "error invoking GNED";
+        runprog("$GNED -- -s -c $outdir -e jpg $nedfilesonly")==0 || error("error invoking GNED");
         print "converting Postscript to JPG with Ghostscript...\n";
         foreach $i (glob("$outdir/*.eps"))
         {
            print "#";
            $jpg = $i;
            $jpg =~ s/eps$/jpg/;
-           runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >$outdir\\gs.err")==0 || die "error invoking Ghostscript";
+           runprog("$GHOSTSCRIPT -dEPSCrop -sNOPAUSE -sBATCH -sDEVICE=jpeg -sOutputFile=$jpg $i >>$outdir\\gs.err")==0 || error("error invoking Ghostscript");
+           unlink($i)
         }
         print "\n";
 
@@ -227,17 +261,18 @@ if ($doxytagfile ne "") {
 
 print "applying xslt stylesheet...\n" if $verbose;
 $xsltcommand = "$XSLTPROC".
-               " --stringparam outputdir \"$outdir\"".
-               " --stringparam imagesxml \"$imagesxml\"".
+               " --stringparam outputdir \"".toslash($outdir)."\"".
+               " --stringparam imagesxml \"".toslash($imagesxml)."\"".
                " --stringparam document-unassigned-params \"$unassignedpars\"".
                " --stringparam have_dot \"$have_dot\"".
-               " --stringparam doxytagfile \"$doxytagfile\"".
-               " --stringparam doxyhtmldir \"$doxyhtmldir\"".
+               " --stringparam doxytagfile \"".toslash($doxytagfile)."\"".
+               " --stringparam doxyhtmldir \"".toslash($doxyhtmldir)."\"".
                " --output nul".
                " $NEDDOC_XSL $outdir\\inputfiles.xml";
-runprog($xsltcommand)==0 || die "error invoking xsltproc";
+runprog($xsltcommand)==0 || error("error invoking xsltproc");
+unlink("$outdir/inputfiles.xml");
 
-if ($have_dot eq "y")
+if ($have_dot)
 {
     print "generating diagrams via DOT...\n";
     foreach $i (glob("$outdir/*.dot"))
@@ -245,12 +280,12 @@ if ($have_dot eq "y")
        print "#";
        $gif = $i; $gif =~ s/dot$/gif/;
        $map = $i; $map =~ s/dot$/map/;
-       runprog("$DOT -Tgif  <$i >$gif 2>>$outdir\\dot.err")==0 || die "error invoking DOT";
-       runprog("$DOT -Tcmap <$i >$map 2>>$outdir\\dot.err")==0 || die "error invoking DOT";
+       runprog("$DOT -Tgif  <$i >$gif 2>>$outdir\\dot.err")==0 || error("error invoking DOT");
+       runprog("$DOT -Tcmap <$i >$map 2>>$outdir\\dot.err")==0 || error("error invoking DOT");
        if ($GIFTRANS ne "")
        {
            rename($gif, "$gif.tmp");
-           runprog("$GIFTRANS -t white $gif.tmp >$gif")==0 || die "error invoking giftrans";
+           runprog("$GIFTRANS -t white $gif.tmp >$gif")==0 || error("error invoking giftrans");
            unlink("$gif.tmp");
        }
     }
@@ -262,17 +297,17 @@ if ($have_dot eq "y")
 }
 
 print "formatting comments...\n" if $verbose;
-runprog("$PERL $NEDDOC_PL $outdir")==0 || die "error invoking formatter";
+runprog("$PERL $NEDDOC_PL $outdir")==0 || error("error invoking HTML formatter");
 
-print "documentation created in '$outdir'/ -- start page is index.html\n" if $verbose;
+print "documentation created in $outdir/ -- start page is index.html\n" if $verbose;
 
-#unlink("$outdir/inputfiles.xml"); FIXME put it back after debugging
+#unlink("$outdir\\filelist.txt");
 
 
 sub runprog
 {
     my $prog = shift;
-    print "running: $prog\n" if ($debug eq "y");
+    print "running: $prog\n" if $debug;
     system($prog);
 }
 
@@ -281,6 +316,28 @@ sub absolutepath
     my $filename = shift;
     $absfilename = `dir /s /b $filename`;
     chomp($absfilename);
-    if ($absfilename eq "") {die "'$filename' does not exist";}
+    if ($absfilename eq "") {error("'$filename' does not exist");}
     $absfilename;
 }
+
+sub error
+{
+    my $msg = shift;
+    print STDERR "opp_neddoc: ", $msg, "\n";
+    exit(2);
+}
+
+sub tobackslash
+{
+    my $f = shift;
+    $f =~ s|/|\\|g;
+    $f;
+}
+
+sub toslash
+{
+    my $f = shift;
+    $f =~ s|\\|/|g;
+    $f;
+}
+

@@ -64,7 +64,7 @@ if [ -n "$do_help" ]; then
     echo " -p, --no-unassigned-pars"
     echo "              do not document unassigned parameters"
     echo " -x, --no-diagrams"
-    echo "              do not generate usage and interitance diagrams"
+    echo "              do not generate usage and inheritance diagrams"
     echo " -h, --help   displays this help text"
     echo "Files specified as arguments are parsed and documented. If directories"
     echo "are specified, all *.ned and *.msg files in them are documented."
