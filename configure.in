@@ -69,6 +69,8 @@ PVM_CFLAGS=
 PVM_LIBS=
 TK_CFLAGS=
 TK_LIBS=
+EXPAT_LIBS=
+LIBXML_LIBS=
 
 CFLAGS='-g'
 NEDCFLAGS='-Wno-unused'
@@ -196,7 +198,6 @@ fi
 if test "x$WISH" = "x"; then
     AC_MSG_WARN(cannot find wish -- you'll need to manually adjust the Plove script)
 fi
-
 
 
 #----------------------
@@ -339,16 +340,59 @@ fi
 # Check for EXPAT header and lib
 #----------------------
 
+if test ! -n "$EXPAT_LIBS"; then
+   EXPAT_LIBS=-lexpat
+fi
+
+opp_save_CFLAGS=$CFLAGS
+CFLAGS="$EXPAT_CFLAGS $CFLAGS"
 AC_CHECK_HEADER(expat.h, ,
-   AC_MSG_WARN(expat header is missing; nedxml library can't be build.
-   If you *do* have expat installed then add the include path to CPPFLAGS.
-   You can get expat from http://expat.sourceforge.net/), )
+   NO_EXPAT=1; AC_MSG_WARN(Expat header not found. (nedxml needs Expat or LIBXML.)
+   If you *do* have Expat installed then add the include path to CPPFLAGS.
+   You can get Expat from http://expat.sourceforge.net/), )
+CFLAGS=$opp_save_CFLAGS
 
-AC_CHECK_LIB(expat, XML_ParserCreate, EXPAT_LIB="-lexpat",
-   AC_MSG_WARN(expat library is missing; nedtool can't be build.)
-   )
+# FIXME this ignores the EXPAT_LIBS variable
+AC_CHECK_LIB(expat, XML_ParserCreate, ,
+   NO_EXPAT=1; AC_MSG_WARN(Expat library not found. (nedxml needs Expat or LIBXML.)), )
 
+#----------------------
+# Check for LIBXML header and lib
+#----------------------
 
+if test ! -n "$NEDXML_LIBS"; then
+   LIBXML_LIBS=-lxml2
+fi
+
+opp_save_CFLAGS=$CFLAGS
+CFLAGS="$LIBXML_CFLAGS $CFLAGS"
+AC_CHECK_HEADER(libxml/parser.h, ,
+   NO_LIBXML=1; AC_MSG_WARN(LIBXML headers not found. (nedxml needs Expat or LIBXML.)
+   If you *do* have LIBXML installed (e.g. as part of GNOME) then add the include path to CPPFLAGS.
+   You can get expat from http://www.xmlsoft.org), )
+CFLAGS=$opp_save_CFLAGS
+
+# FIXME this ignores the LIBXML_LIBS variable
+AC_CHECK_LIB(xml2, xmlParseChunk, ,
+   NO_LIBXML=1; AC_MSG_WARN(LIBXML library not found. (nedxml needs Expat or LIBXML.)), )
+
+#----------------------
+# Choose between Expat and LIBXML.
+#----------------------
+
+if test "x$NO_EXPAT" != "x1"; then
+   AC_MSG_NOTICE(Using Expat for XML parsing in NEDXML.)
+   XMLPARSER=expat
+   XML_CFLAGS=$EXPAT_CFLAGS
+   XML_LIBS=$EXPAT_LIBS
+elif test "x$NO_LIBXML" != "x1"; then
+   AC_MSG_NOTICE(Using LIBXML for XML parsing in NEDXML.)
+   XMLPARSER=libxml
+   XML_CFLAGS=$LIBXML_CFLAGS
+   XML_LIBS=$LIBXML_LIBS
+else
+   AC_MSG_WARN(No suitable XML parser -- NEDXML cannot be built.)
+fi
 
 #----------------------
 # Checks for header files.
@@ -573,7 +617,10 @@ AC_SUBST(MPI_LIBS)
 AC_SUBST(PVM_CFLAGS)
 AC_SUBST(PVM_LIBS)
 AC_SUBST(SYS_LIBS)
-AC_SUBST(EXPAT_LIB)
+
+AC_SUBST(XMLPARSER)
+AC_SUBST(XML_CFLAGS)
+AC_SUBST(XML_LIBS)
 
 AC_SUBST(TKENV_IF_POSSIBLE)
 AC_SUBST(SIM_PVM_IF_POSSIBLE)
