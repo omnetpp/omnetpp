@@ -292,3 +292,5 @@ Apr 16, 2001
    would result in a working command prompt in the console window (!!!).
    Pretty weird.
  - added gned.ico
+Apr 20, 2001
+ - bugfix in new WinMain() startup code

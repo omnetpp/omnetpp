@@ -149,11 +149,25 @@ static void setargv(int *argcPtr, char ***argvPtr)
 	    }
 	}
     }
+
+    /*
+     * We must add '--' as the first command-line arg. Therefore we increment
+     * size by 1.
+     * --Andras
+     */
+    size++;
+
     argSpace = (char *) ckalloc((unsigned) (size * sizeof(char *)
 	    + strlen(cmdLine) + 1));
     argv = (char **) argSpace;
     argSpace += size * sizeof(char *);
     size--;
+
+    /*
+     * We must make room for the '--', so shift argv[] by one
+     * --Andras
+     */
+    argv++;
 
     p = cmdLine;
     for (argc = 0; argc < size; argc++) {
@@ -206,13 +220,10 @@ static void setargv(int *argcPtr, char ***argvPtr)
     }
     argv[argc] = NULL;
 
-    *argcPtr = argc;
-    *argvPtr = argv;
-
-
     /*
      * Replace argv[0] with full pathname of executable, and forward
      * slashes substituted for backslashes.
+     * --Andras
      */
     GetModuleFileName(NULL, buffer, sizeof(buffer));
     argv[0] = buffer;
@@ -221,6 +232,19 @@ static void setargv(int *argcPtr, char ***argvPtr)
 	    *p = '/';
 	}
     }
+
+    /*
+     * Insert the '--' arg.
+     * --Andras
+     */
+    argv--;
+    argc++;
+    argv[0] = argv[1];
+    argv[1] = "--";
+
+    *argcPtr = argc;
+    *argvPtr = argv;
+
 }
 
 static int Tcl_AppInit(Tcl_Interp *interp)
@@ -248,7 +272,7 @@ WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdLine, int nCm
 
     // enter Tk event loop
     // pass 1 as argc, otherwise Tk would try to interpret args as Tcl scripts to source
-    Tk_Main(1, argv, Tcl_AppInit);
+    Tk_Main(argc, argv, Tcl_AppInit);
     return 1;
 }
 
