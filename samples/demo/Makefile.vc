@@ -1,3 +1,77 @@
 #
-# A dummy. Linking a single demo.exe is not supported with MSVC at the moment.
+# Global definitions
 #
+!include ..\..\configuser.vc
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS)
+
+OBJS = \
+  ../dyna/debug/client.obj \
+  ../dyna/debug/dyna_n.obj \
+  ../dyna/debug/server.obj \
+  ../dyna/debug/servproc.obj \
+  ../dyna/debug/switch.obj \
+  ../fddi/debug/fddi_mac.obj \
+  ../fddi/debug/fddi_mac_n.obj \
+  ../fddi/debug/fddi_nets_n.obj \
+  ../fddi/debug/fddi_nodes_n.obj \
+  ../fddi/debug/fddi_rings_n.obj \
+  ../fddi/debug/othermod.obj \
+  ../fddi/debug/othermod_n.obj \
+  ../fddi/debug/ssm_ifs.obj \
+  ../fddi/debug/ssm_ifs_n.obj \
+  ../fifo1/debug/fifo1.obj \
+  ../fifo1/debug/fifo1_n.obj \
+  ../fifo1/debug/fifonet1_n.obj \
+  ../fifo1/debug/gen1.obj \
+  ../fifo1/debug/gen1_n.obj \
+  ../fifo1/debug/sink1.obj \
+  ../fifo1/debug/sink1_n.obj \
+  ../fifo2/debug/fifo2.obj \
+  ../fifo2/debug/fifo2_n.obj \
+  ../fifo2/debug/fifonet2_n.obj \
+  ../fifo2/debug/gen2.obj \
+  ../fifo2/debug/gen2_n.obj \
+  ../fifo2/debug/sink2.obj \
+  ../fifo2/debug/sink2_n.obj \
+  ../hcube/debug/gensink.obj \
+  ../hcube/debug/gensink_n.obj \
+  ../hcube/debug/hcube_n.obj \
+  ../hcube/debug/hc_net_n.obj \
+  ../hcube/debug/hc_rte.obj \
+  ../hcube/debug/hc_rte_n.obj \
+  ../hist/debug/hist.obj \
+  ../hist/debug/hist_n.obj \
+  ../nim/debug/game.obj \
+  ../nim/debug/nim_n.obj \
+  ../nim/debug/players.obj \
+  ../token/debug/tknmods_n.obj \
+  ../token/debug/tknring_n.obj \
+  ../token/debug/token.obj
+
+OPP_LIBS=/libpath:"..\..\lib" sim_std.lib tkenv.lib envir.lib
+
+#
+# Targets
+#
+default: demo.exe
+
+demo : demo.exe
+
+demo.exe : $(OBJS)
+	$(LINK) /out:"demo.exe" $(OBJS) $(LDFLAGS) $(OPP_LIBS) $(TK_LIBS) $(SYS_LIBS)
+
+depend:
+	@ echo *** make depend not (yet) supported with MSVC
+
+clean:
+	del demo.exe *.ilk *.pdb 2> nul
+
+realclean: clean
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+
