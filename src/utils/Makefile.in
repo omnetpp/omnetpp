@@ -20,6 +20,7 @@ all: seedtool tcl2c
 	cp opp_neddoc $(OMNETPP_BIN_DIR)
 	cp splitvec $(OMNETPP_BIN_DIR)
 	cp neddoc.xsl $(OMNETPP_BIN_DIR)
+	cp neddocproc.pl $(OMNETPP_BIN_DIR)
 	../utils/install-prog seedtool $(OMNETPP_BIN_DIR)
 
 seedtool : seedtool.cc

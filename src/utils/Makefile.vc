@@ -18,6 +18,7 @@ all: seedtool.exe tcl2c.exe opp_replace.exe
 	copy opp_neddoc.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy opp_neddocall.cmd $(OMNETPP_BIN_DIR:/=\)
 	copy neddoc.xsl $(OMNETPP_BIN_DIR:/=\)
+	copy neddocproc.pl $(OMNETPP_BIN_DIR:/=\)
 	copy opp_stacktool.cmd $(OMNETPP_BIN_DIR:/=\)
 
 seedtool.exe : seedtool.cc

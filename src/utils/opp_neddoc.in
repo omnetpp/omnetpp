@@ -11,6 +11,10 @@ cleanup()
 
 trap cleanup HUP INT QUIT TERM
 
+if [ ! -d $OUTDIR ]; then
+  mkdir $OUTDIR || exit -1
+fi
+rm -f $OUTDIR/*
 nedtool -x -e -t -y -m -o $TMPFILE $* || exit 1
 xsltproc  --stringparam outputdir $OUTDIR $NEDDOC_XSL $TMPFILE || exit 1
 perl $NEDDOC_PL $OUTDIR/*.html || exit 1
