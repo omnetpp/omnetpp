@@ -247,7 +247,7 @@ static double _factorial(int n)
 
 int intuniform(int a, int b, int rng)
 {
-    return a + genk_intrand(rng) % (b-a+1);
+    return a + genk_intrand(rng, b-a+1);
 }
 
 

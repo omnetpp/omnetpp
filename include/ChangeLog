@@ -22,6 +22,21 @@ add deleteGate()
 	local RNG number. This function maps k to a physical RNG number and 
 	calls ev.rng(k) with it.
 
+	* random.h: following symbols and functions were removed because they
+	didn't fit into the new architecture:
+	#define NUM_RANDOM_GENERATORS -- this is now an omnetpp.ini setting
+        #define INTRAND_MAX -- see cRNG::intRandMax()
+	int testrand() -- see cRNG::selfTest()
+	long opp_nextrand(long& seed) -- no replacement
+	void opp_randomize() -- no replacement
+	long randseed() -- no replacement (Mersenne Twister state is >32 bits!)
+	long randseed(long seed) -- no replacement (seeding from C++ not supported)
+	long intrand() -- see cRNG::intRand()
+	void genk_opp_randomize(int gen_nr) -- no replacement (see above)
+	long genk_randseed(int gen_nr) -- no replacement (see above)
+	long genk_randseed(int gen_nr, long seed) -- no replacement (see above)
+	long genk_intrand(int gen_nr) -- see cRNG::intRand()
+
 2004-10-25  Andras Varga
 
         * all files: void info(char *buf) changed to std::string info() const
