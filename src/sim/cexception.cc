@@ -90,6 +90,7 @@ void cException::init(const cObject *where, int errc, const char *fmt, va_list v
     //  - if object is the module itself: skip
     //  - if object is local in module: use fullName()
     //  - if object is somewhere else: use fullPath()
+    buffer[0]='\0';
     if (where && where!=simulation.contextModule())
     {
         // try: if module's fullpath is same as module fullpath + object fullname, no need to print path
