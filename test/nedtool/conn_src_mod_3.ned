@@ -1,4 +1,4 @@
-//ERROR: submodule 'a' is not a vector submodule
+//ERROR: wrong source gate for connection: submodule 'a' is not a vector submodule
 simple Node
 endsimple
 

@@ -1,4 +1,4 @@
-//ERROR: source gate 'in' is a vector gate
+//ERROR: wrong source gate for connection: 'in' is a vector gate
 module Network
     gates:
         in: in[];

@@ -1,4 +1,4 @@
-//ERROR: source gate 'out' is not a vector gate
+//ERROR: wrong source gate for connection: 'out' is not a vector gate
 simple Node
     gates:
         out: out;

@@ -1,4 +1,4 @@
-//ERROR: source gate 'out' is an output gate
+//ERROR: wrong source gate for connection: 'out' is an output gate
 module Network
     gates:
         out: out;

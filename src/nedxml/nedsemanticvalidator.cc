@@ -18,6 +18,11 @@
 #include "nedcompiler.h" // for NEDSymbolTable
 
 
+inline bool strnull(const char *s)
+{
+    return !s || !s[0];
+}
+
 inline bool strnotnull(const char *s)
 {
     return s && s[0];
@@ -215,33 +220,34 @@ void NEDSemanticValidator::validateElement(ConnectionsNode *node)
 {
 }
 
-void NEDSemanticValidator::checkGate(GateNode *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrcGate)
+void NEDSemanticValidator::checkGate(GateNode *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrc)
 {
     // check gate direction, check if vector
-    const char *q = isSrcGate ? "source" : "destination";
+    const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
     if (hasGateIndex && !gate->getIsVector())
-        NEDError(conn, "%s gate '%s' is not a vector gate", q, gate->getName());
+        NEDError(conn, "%s: '%s' is not a vector gate", q, gate->getName());
     else if (!hasGateIndex && gate->getIsVector())
-        NEDError(conn, "%s gate '%s' is a vector gate", q, gate->getName());
+        NEDError(conn, "%s: '%s' is a vector gate", q, gate->getName());
 
     // check gate direction, check if vector
     if (isInput && gate->getDirection()==NED_GATEDIR_OUTPUT)
-        NEDError(conn, "%s gate '%s' is an output gate", q, gate->getName());
+        NEDError(conn, "%s: '%s' is an output gate", q, gate->getName());
     else if (!isInput && gate->getDirection()==NED_GATEDIR_INPUT)
-        NEDError(conn, "%s gate '%s' is an input gate", q, gate->getName());
+        NEDError(conn, "%s: '%s' is an input gate", q, gate->getName());
 }
 
 void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubmodIndex,
                                             const char *gateName, bool hasGateIndex,
                                             NEDElement *parent, NEDElement *conn, bool isSrc)
 {
-    if (!submodName)
+    const char *q = isSrc ? "wrong source gate for connection" : "wrong destination gate for connection";
+    if (strnull(submodName))
     {
         // connected to parent module: check such gate is declared
         NEDElement *gates = parent->getFirstChildWithTag(NED_GATES);
         GateNode *gate;
         if (!gates || (gate=(GateNode*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
-            NEDError(conn, "compound module has no gate named '%s'", gateName);
+            NEDError(conn, "%s: compound module has no gate named '%s'", q, gateName);
         else
             checkGate(gate, hasGateIndex, isSrc, conn, isSrc);
     }
@@ -251,23 +257,28 @@ void NEDSemanticValidator::validateConnGate(const char *submodName, bool hasSubm
         NEDElement *submods = parent->getFirstChildWithTag(NED_SUBMODULES);
         SubmoduleNode *submod = NULL;
         if (!submods || (submod=(SubmoduleNode*)submods->getFirstChildWithAttribute(NED_SUBMODULE, "name", submodName))==NULL)
-            NEDError(conn, "no submodule named '%s'", submodName);
-        bool isSubmodVector = submod->getFirstChildWithAttribute(NED_SUBMODULE, "target", "vector-size")==NULL;
-        if (hasSubmodIndex && !isSubmodVector)
-            NEDError(conn, "submodule '%s' is not a vector submodule", submodName);
-        else if (!hasSubmodIndex && isSubmodVector)
-            NEDError(conn, "submodule '%s' is a vector submodule", submodName);
-
-        // check gate
-        NEDElement *submodType = symboltable->getModuleDeclaration(submod->getTypeName());
-        if (!submodType)
-            return; // we gave error earlier if submod type is not present
-        NEDElement *gates = submodType->getFirstChildWithTag(NED_GATES);
-        GateNode *gate;
-        if (!gates || (gate=(GateNode*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
-            NEDError(conn, "submodule '%s' has no gate named '%s'", submodName, gateName);
+        {
+            NEDError(conn, "%s: compound module has no submodule named '%s'", q, submodName);
+        }
         else
-            checkGate(gate, hasGateIndex, !isSrc, conn, isSrc);
+        {
+            bool isSubmodVector = submod->getFirstChildWithAttribute(NED_EXPRESSION, "target", "vector-size")!=NULL;
+            if (hasSubmodIndex && !isSubmodVector)
+                NEDError(conn, "%s: submodule '%s' is not a vector submodule", q, submodName);
+            else if (!hasSubmodIndex && isSubmodVector)
+                NEDError(conn, "%s: submodule '%s' is a vector submodule", q, submodName);
+
+            // check gate
+            NEDElement *submodType = symboltable->getModuleDeclaration(submod->getTypeName());
+            if (!submodType)
+                return; // we gave error earlier if submod type is not present
+            NEDElement *gates = submodType->getFirstChildWithTag(NED_GATES);
+            GateNode *gate;
+            if (!gates || (gate=(GateNode*)gates->getFirstChildWithAttribute(NED_GATE, "name", gateName))==NULL)
+                NEDError(conn, "%s: submodule '%s' has no gate named '%s'", q, submodName, gateName);
+            else
+                checkGate(gate, hasGateIndex, !isSrc, conn, isSrc);
+        }
     }
 }
 
