@@ -1,7 +1,8 @@
 To be finished (top priority!):
+- finish "Channel Properties" dialog (chanprops.tcl)
+- improve comment handling in all dialogs!!!
 - reduce number of "array names ned ..." lines -- they're SLOW!
   --> introduce "ownedkeys" attr and rewrite deleteItem, connKeysOfItem, etc.
-- finish "properties" dialogs
 
 Parse/Generate:
 - comments around display strings, channel attributes are lost
@@ -52,6 +53,7 @@ Dialogs:
 - process comments (add newlines, etc.)
 - process imports: strip/add quotes -- maybe quotes should be stripped/added
   during parsing/NED generation??
+- support 'for' loops in "Connection Properties" dialog (connprops.tcl)
 - check all dialogs if everything works
 
 Longer-term plans:

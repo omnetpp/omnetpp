@@ -21,9 +21,10 @@
 proc editConnectionProps {key} {
     global gned ned canvas
 
-    tk_messageBox -title "GNED" -icon warning -type ok \
-                 -message "Dialog implementation not finished yet"
-    return
+    global tmp
+#    tk_messageBox -title "GNED" -icon warning -type ok \
+#                 -message "Dialog implementation not finished yet"
+#    return
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .connprops "Connection Properties"
@@ -51,8 +52,8 @@ proc editConnectionProps {key} {
     label $nb.gates.lto -text  "To:"
     ConnProps:gateSpec $nb.gates.to
     label $nb.gates.ldir -text  "Arrow direction in NED source:"
-    radiobutton $nb.gates.r1 -text "src --> dest" -value 0 -variable tmp(l2r)
-    radiobutton $nb.gates.r2 -text "dest <-- src" -value 1 -variable tmp(l2r)
+    radiobutton $nb.gates.r1 -text "source --> destination" -value 1 -variable tmp(l2r)
+    radiobutton $nb.gates.r2 -text "destination <-- source" -value 0 -variable tmp(l2r)
     label-entry $nb.gates.condition "Condition:"
 
     pack $nb.gates.for -expand 0 -fill x -side top
@@ -73,13 +74,13 @@ proc editConnectionProps {key} {
     label-entry $nb.attrs.datarate "  Data Rate:"
     label-entry $nb.attrs.error "  Bit error rate:"
 
-    label $nb.attrs.l -text  "  Additional attributes:"
-    tableEdit $nb.attrs.tbl 10 {
-      {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
-      {Value              value          {entry $e -textvariable $v -width 20 -bd 1}}
-      {{End-line comment} right-comment  {entry $e -textvariable $v -width 15 -bd 1}}
-      {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
-    }
+    #label $nb.attrs.l -text  "  Additional attributes:"
+    #tableEdit $nb.attrs.tbl 10 {
+    #  {Name               name           {entry $e -textvariable $v -width 20 -bd 1}}
+    #  {Value              value          {entry $e -textvariable $v -width 20 -bd 1}}
+    #  {{End-line comment} right-comment  {entry $e -textvariable $v -width 15 -bd 1}}
+    #  {{Doc. comment}     banner-comment {entry $e -textvariable $v -width 15 -bd 1}}
+    #}
 
     pack $nb.attrs.r1 -expand 0 -fill none -side top -anchor w
     pack $nb.attrs.channel -expand 0 -fill x -side top
@@ -88,87 +89,78 @@ proc editConnectionProps {key} {
     pack $nb.attrs.datarate -expand 0 -fill x -side top
     pack $nb.attrs.error  -expand 0 -fill x -side top
 
-    pack $nb.attrs.l -side top -anchor w
-    pack $nb.attrs.tbl -side top -pady 4
+    #pack $nb.attrs.l -side top -anchor w
+    #pack $nb.attrs.tbl -side top -pady 4
+
+    # fill "General" page
+    $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
+    $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
 
     # fill "Gates" page
     ConnProps:fillGateSpec $nb.gates.from $key src
     ConnProps:fillGateSpec $nb.gates.to $key dest
     $nb.gates.condition.e  insert 0 $ned($key,condition)
+    set tmp(l2r) $ned($key,arrowdir-l2r)
 
     # fill "Attributes" page
-if 0 {
-    if {$ned($key,channel-ownerkey)!=""} {
-       set chown $ned($key,channel-ownerkey)
-       $nb.attrs.error.e insert 0 $ned($chown,error)
-       $nb.attrs.delay.e insert 0 $ned($chown,delay)
-       $nb.attrs.datarate.e insert 0 $ned($chown,datarate)
-       $nb.attrs.channel.e insert 0 $ned($chown,name)
-    } else {
-       # Attributes
-       $nb.attrs.error.e insert 0 $ned($key,error)
-       $nb.attrs.delay.e insert 0 $ned($key,delay)
-       $nb.attrs.datarate.e insert 0 $ned($key,datarate)
-       $nb.attrs.channel.e insert 0 $ned($key,channel-name)
+    set tmp(usechannel) 0
+    foreach connattr_key [getChildren $key] {
+        if {$ned($connattr_key,type)!="connattr"} {error "non-connattr child of conn!"}
+        set attrname  $ned($connattr_key,name)
+        set attrvalue $ned($connattr_key,value)
+        switch $attrname {
+            channel   {set tmp(usechannel) 1; $nb.attrs.channel.e insert 0 $attrvalue}
+            delay     {$nb.attrs.delay.e insert 0 $attrvalue}
+            error     {$nb.attrs.error.e insert 0 $attrvalue}
+            datarate  {$nb.attrs.datarate.e insert 0 $attrvalue}
+            default   {error "nonstandard attribute of a conn: $attrname!"}
+        }
     }
-}
 
     # focus on first one
-#    focus $nb.gates.srcgate.e
+    focus $nb.gates.from.mod.name
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .connprops] == 1} {
-        # Gates
-        set ned($key,srcgate)  [$nb.gates.srcgate.e get]
-        set ned($key,destgate) [$nb.gates.destgate.e get]
+        # "General" page
+        set ned($key,banner-comment) [getCommentFromText $nb.general.comment.t]
+        set ned($key,right-comment) [getCommentFromText $nb.general.rcomment.t]
+
+        # 'Gates' page
         set ned($key,condition) [$nb.gates.condition.e get]
 
-        set ned($key,src-mod-index) [$nb.gates.src_index.e get]
-        set ned($key,dest-mod-index) [$nb.gates.dest_index.e get]
-        set ned($key,src-gate-index) [$nb.gates.src_gate_index.e get]
-        set ned($key,dest-gate-index) [$nb.gates.dest_gate_index.e get]
-        set ned($key,for_expression) [$nb.gates.for.e get]
+        set ned($key,src-mod-index) [$nb.gates.from.mod.index get]
+        set ned($key,dest-mod-index) [$nb.gates.to.mod.index get]
 
-        set chname             [$nb.attrs.channel.e get]
-        if {$chname!=""} {
-           #megnezem hogy van e ilyen nevu channel
-           set chkey [itemKeyFromName $chname channel]
-           if {$chkey!=""} {
-               set ned($key,channel-ownerkey) $chkey
-           } else {
-               #kerdest teszek fel
-                set reply [tk_messageBox -title "Last chance" -icon warning -type yesno \
-                                                  -message "Do you want to Define this channel  now?"]
-                if {$reply == "yes"} {
-                   # beszurom az uj channelt
-                   set chkey [addItem channel]
-                   # kitoltom a nevet
-                   set ned($chkey,name) $chname
-                   # feltoltom ertekekkel
-                   set ned($chkey,error)    [$nb.attrs.error.e get]
-                   set ned($chkey,delay)    [$nb.attrs.delay.e get]
-                   set ned($chkey,datarate) [$nb.attrs.datarate.e get]
-                   # kikeresek mindent ahoz hogy be tudja allitani a ownerkeyt
-                   set canv_id $gned(canvas_id)
-                   set modkey $canvas($canv_id,module-key)
-                   set fkey $ned($modkey,parentkey)
-                   set ned($chkey,parentkey) $fkey
-                   # bejegyzem ehez a connectionhoz tulajdonosnak
-                   set ned($key,channel-ownerkey) $chkey
-                } else {
-                   set ned($key,channel-ownerkey) ""
-                   set ned($key,error)    [$nb.attrs.error.e get]
-                   set ned($key,delay)    [$nb.attrs.delay.e get]
-                   set ned($key,datarate) [$nb.attrs.datarate.e get]
-                   set ned($key,channel-name) $chname
-                }
-           }
+        set ned($key,srcgate) [$nb.gates.from.gate.name get]
+        set ned($key,destgate) [$nb.gates.to.gate.name get]
+
+        set ned($key,src-gate-index) [$nb.gates.from.gate.index get]
+        set ned($key,dest-gate-index) [$nb.gates.to.gate.index get]
+
+        set ned($key,arrowdir-l2r) $tmp(l2r)
+
+        puts "todo: 'for' to be handled!"
+
+        # 'Attributes' page
+        foreach connattr_key [getChildren $key] {
+            deleteItem $connattr_key
+        }
+        if {$tmp(usechannel)} {
+            set channel [$nb.attrs.channel.e get]
+            if {$channel==""} {
+                tk_messageBox -type ok -title GNED -icon warning -message "Channel name not defined! Using 'Channel1' as default."
+                set channel "Channel1"
+            }
+            ConnProps:addConnAttr $key channel $channel
         } else {
-           set ned($key,channel-ownerkey) ""
-           set ned($key,error)    [$nb.attrs.error.e get]
-           set ned($key,delay)    [$nb.attrs.delay.e get]
-           set ned($key,datarate) [$nb.attrs.datarate.e get]
-           set ned($key,channel-name) $chname
+            set delay [$nb.attrs.delay.e get]
+            set error [$nb.attrs.error.e get]
+            set datarate [$nb.attrs.datarate.e get]
+
+            if {$delay!=""} {ConnProps:addConnAttr $key delay $delay}
+            if {$error!=""} {ConnProps:addConnAttr $key error $error}
+            if {$datarate!=""} {ConnProps:addConnAttr $key datarate $datarate}
         }
     }
     destroy .connprops
@@ -176,15 +168,17 @@ if 0 {
 
 
 proc ConnProps:forLoopEdit {w} {
-    set list {{i=0..1,j=1..5} {i=0..10}}
+    puts "dbg: TODO: 'for' handling to be implemented!"
+
     frame $w
-    label $w.l -text "For loop around connection:"
-    combo $w.e $list
-    button $w.c -text "Edit..."
+    label $w.l -text "Handling of loop connections not implemented yet."
+    #combo $w.e $list
+    #button $w.c -text "Edit..."
     pack $w.l -expand 0 -fill none -padx 2 -pady 2 -side left
-    pack $w.e -expand 1 -fill x -padx 2 -pady 2 -side left
-    pack $w.c -expand 0 -fill none -padx 2 -pady 2 -side left
-    $w.e config -text [lindex $list 0]
+    #pack $w.e -expand 1 -fill x -padx 2 -pady 2 -side left
+    #pack $w.c -expand 0 -fill none -padx 2 -pady 2 -side left
+    #set list {{i=0..1,j=1..5} {i=0..10}}
+    #$w.e config -text [lindex $list 0]
 }
 
 proc ConnProps:gateSpec {w} {
@@ -226,9 +220,9 @@ proc ConnProps:fillGateSpec {w key srcdest} {
 
     set modkey $ned($key,${srcdest}-ownerkey)
     $w.mod.name config -text $ned($modkey,name)
-    $w.mod.index insert 0 $ned($key,${srcdest}_index)
+    $w.mod.index insert 0 $ned($key,${srcdest}-mod-index)
     $w.gate.name insert 0 $ned($key,${srcdest}gate)
-    $w.gate.index insert 0 $ned($key,${srcdest}_gate_index)
+    $w.gate.index insert 0 $ned($key,${srcdest}-gate-index)
 
     $w.gate.c config -command "ConnProps:chooseGate $modkey $w.gate.name"
 }
@@ -247,3 +241,11 @@ proc ConnProps:chooseGate {modkey w} {
     }
 }
 
+proc ConnProps:addConnAttr {conn_key attrname attrvalue} {
+    global ned
+
+    set key [addItem connattr $conn_key]
+    set ned($key,name) $attrname
+    set ned($key,value) $attrvalue
+    return $key
+}
