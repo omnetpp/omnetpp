@@ -20,7 +20,7 @@ OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 
 all: components
 
-components: all_libs all_progs install-local all_models all_samples
+components: check-env all-libs all-progs install-local all-models all-samples
 
 
 #=====================================================================
@@ -30,13 +30,13 @@ components: all_libs all_progs install-local all_models all_samples
 #=====================================================================
 
 
-all_libs: sim envir cmdenv tkenv tvenv
+all-libs: sim envir cmdenv tkenv tvenv
 
-all_progs: nedc gned plove utils
+all-progs: nedc gned plove utils
 
-all_models: support
+all-models: support
 
-all_samples: dyna fddi fifo1 fifo2 hcube hist nim pvmex token
+all-samples: dyna fddi fifo1 fifo2 hcube hist nim pvmex token
 
 
 #
@@ -119,6 +119,14 @@ token:
 # Utilities
 #
 #=====================================================================
+
+check-env:
+	if echo $$PATH | grep -q "@OMNETPP_BIN_DIR@"; then :; else \
+	  echo ' *** Error: @OMNETPP_BIN_DIR@ is not in the path!'; exit 1; \
+	fi
+	if echo $$LD_LIBRARY_PATH | grep -q "@OMNETPP_LIB_DIR@"; then :; else \
+	  echo ' *** Warning: @OMNETPP_LIB_DIR@ is not in LD_LIBRARY_PATH!'; \
+	fi
 
 clean:
 	for i in sim envir tkenv tvenv cmdenv nedc gned plove utils; do \

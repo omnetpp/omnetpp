@@ -351,21 +351,20 @@ chmod +x src/utils/makemake
 # Env. vars
 #----------------------
 
-if echo $PATH | grep -q $OMNETPP_ROOT/bin; then
-  echo "Your PATH contains $OMNETPP_ROOT/bin. Good."
+if echo $PATH | grep -q `eval echo $OMNETPP_BIN_DIR`; then
+  echo "Your PATH contains $OMNETPP_BIN_DIR. Good."
 else
   cat << EOT
 
-You should put $OMNETPP_ROOT/bin into your path.
+You should put $OMNETPP_BIN_DIR into your path.
 Add the following line to your startup file:
-  export PATH=\$PATH:\$HOME/omnetpp/bin  # .(bash_)profile if you use sh/bash
-  setenv PATH \$PATH:\$HOME/omnetpp/bin  # .cshrc if you use csh,tcsh etc.
+  export PATH=\$PATH:$OMNETPP_BIN_DIR  # .(bash_)profile if you use sh/bash
+  setenv PATH \$PATH:$OMNETPP_BIN_DIR  # .cshrc if you use csh,tcsh etc.
 
 EOT
-   export PATH=$PATH:$HOME/omnetpp/bin
 fi
 
-if test "$LIB_SUFFIX" = "so"; then
+if test "$build_shared_libs" = yes; then
   if echo $LD_LIBRARY_PATH | grep -q `eval echo $OMNETPP_LIB_DIR`; then
     echo "Your LD_LIBRARY_PATH is set. Good."
   else
@@ -382,10 +381,10 @@ Add the corresponding line to your startup file:
   setenv LD_LIBRARY_PATH \$LD_LIBRARY_PATH:$OMNETPP_LIB_DIR
          # into .cshrc if you use tcsh or other csh-like shell
 
-If you prefer static libraries, change LIB_SUFFIX='so' to
-LIB_SUFFIX='a' in the configure script, then re-run configure and make.
+If you prefer static libraries, edit configure.user and change the
+build_shared_libs=yes line to build_shared_libs=no, then delete the shared
+libraries, re-run configure and make.
 EOT
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/omnetpp/lib
   fi
 fi
 
