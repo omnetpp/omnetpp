@@ -324,5 +324,6 @@ Jan 9,2000
   - small modification to TOmnetTkApp's constructor
 Jan 15,2000
   - OmnetTkApp::setup() reorganized
-Jan 17,2000
-  - bugfix in OmnetTkApp::objectDeleted()
+Jan 17-18,2000
+  - bugfix in OmnetTkApp::objectDeleted() (tkapp.cc)
+  - edited error msgs in tkapp.cc

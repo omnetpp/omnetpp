@@ -107,25 +107,26 @@ void TOmnetTkApp::setup(int argc, char *argv[])
 
     Tcl_SetVar(interp, "OMNETPP_BITMAP_PATH", bitmap_dir, TCL_GLOBAL_ONLY);
 
-    // load sources
+    // eval Tcl sources: either from .tcl files or from compiler-in string
+    // literal (tclcode.cc)...
+
 #ifdef OMNETPP_TKENV_DIR
+    //
     // Case A: TCL code in separate .tcl files
     //
     Tcl_SetVar(interp, "OMNETPP_TKENV_DIR",  tkenv_dir, TCL_GLOBAL_ONLY);
     if (Tcl_EvalFile(interp,fastconcat(tkenv_dir,"/tkenv.tcl"))==TCL_ERROR)
     {
-        fprintf(stderr, "**** Error starting Tkenv: %s\n", interp->result);
-        fprintf(stderr, "Is OMNETPP_TKENV_DIR set correctly?"
-#ifdef _WIN32
-                         " (e.g. C:\\omnetpp\\src\\envir\\tkenv)\n");
-#else
-                         " (e.g. /home/demimoore/omnetpp/src/envir/tkenv)\n");
-#endif
+        fprintf(stderr, "\n<!> Error starting Tkenv: %s. "
+                        "Is the OMNETPP_TKENV_DIR environment variable set correctly? "
+                        "When not set, it defaults to " OMNETPP_TKENV_DIR ".\n",
+                        interp->result);
         interp = 0;
         simulation.setErrorCode(eUISTARTUP);
         return;
     }
 #else
+    //
     // Case B: compiled-in TCL code
     //
     // The tclcode.cc file must be generated from the TCL scripts
@@ -136,7 +137,7 @@ void TOmnetTkApp::setup(int argc, char *argv[])
 #   include "tclcode.cc"
     if (Tcl_Eval(interp,(char *)tcl_code)==TCL_ERROR)
     {
-        fprintf(stderr, "**** Error starting Tkenv: %s\n", interp->result);
+        fprintf(stderr, "\n<!> Error starting Tkenv: %s\n", interp->result);
         interp = 0;
         simulation.setErrorCode(eUISTARTUP);
         return;
@@ -146,7 +147,7 @@ void TOmnetTkApp::setup(int argc, char *argv[])
     // evaluate main script and build user interface
     if (Tcl_Eval(interp,"start_tkenv")==TCL_ERROR)
     {
-        fprintf(stderr, "**** Error starting Tkenv: %s\n", interp->result);
+        fprintf(stderr, "\n<!> Error starting Tkenv: %s\n", interp->result);
         interp = 0;
         simulation.setErrorCode(eUISTARTUP);
         return;
