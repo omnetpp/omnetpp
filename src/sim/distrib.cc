@@ -25,7 +25,8 @@
 #endif
 
 #ifndef M_E
-#define M_E     2.718281828
+#define M_E     2.7182818284590452353602874713527
+            //  2.718281828
 #endif
 
 
@@ -72,7 +73,6 @@ double gamma_d(double alpha, double beta, int rng)
     }
     else if (alpha < 1.0)
     {
-        // FIXME bogus code -- does not even contain beta!!!
         double b = (M_E + alpha) / M_E;
 
         double Y;
@@ -100,11 +100,10 @@ double gamma_d(double alpha, double beta, int rng)
                     break;  // accept Y
             }
         }
-        return Y;
+        return beta * Y;
     }
     else // if (alpha > 1.0)
     {
-        // FIXME bogus code -- does not even contain beta!!!
         double a = 1.0 / sqrt(2.0 * alpha - 1);
         double b = alpha - log(4.0);
         double q = alpha + 1.0 / a;
@@ -134,7 +133,7 @@ double gamma_d(double alpha, double beta, int rng)
             if (W >= log(Z))
                 break;  // accept Y
         }
-        return Y;
+        return beta * Y;
     }
 }
 
