@@ -219,7 +219,7 @@ proc label-colorchooser {w label var {color ""}} {
     frame $w.f
     radiobutton $w.f.r1 -text "default" -value default -variable gned($var)
     radiobutton $w.f.r2 -text "color:"   -value color   -variable gned($var)
-    button $w.f.b -command "_setColor $w.f.b $var" -width 4
+    button $w.f.b -command [list _setColor $w.f.b $var [winfo toplevel $w]] -width 4
 
     pack $w.l -anchor nw -expand 0 -fill none -side left
     pack $w.f -anchor n -expand 1 -fill y -side left
@@ -245,7 +245,7 @@ proc label-iconchooser {w label  {image ""}} {
 
     frame $w
     label $w.l -anchor w -width 16 -text $label
-    button $w.b -command [list _chooseIcon $image $w.b]
+    button $w.b -command [list _chooseIcon $image $w.b [winfo toplevel $w]]
 
     if {$image == ""} {
         $w.b config -text "-none-"
@@ -256,12 +256,12 @@ proc label-iconchooser {w label  {image ""}} {
     pack $w.b -anchor n -expand 0 -side left
 }
 
-proc _setColor {butt var} {
+proc _setColor {butt var pwin} {
 
     # side effect: set gned(radio) "icon"
 
     global gned
-    set color [tk_chooseColor]
+    set color [tk_chooseColor -parent $pwin]
     if {$color!=""} {
         $butt config -background $color -activebackground $color
         set gned($var) color
@@ -269,53 +269,53 @@ proc _setColor {butt var} {
     }
 }
 
-proc _chooseIcon {oldicon w} {
+proc _chooseIcon {oldicon w {pwin {}}} {
      global gned
 
      # side effect: set gned(radio) "icon"
+     set dlg $pwin.iconbox
+     createOkCancelDialog $dlg "Icon selection"
 
-     createOkCancelDialog .iconBox "Icon selection"
+     frame  $dlg.f.select
+     pack   $dlg.f.select -side top -expand 0 -fill x
+     label  $dlg.f.select.label -text "Icon selected:"
+     label  $dlg.f.select.name -text "$oldicon" -foreground #ff0000 -font bold
+     pack   $dlg.f.select.label  -side left
+     pack   $dlg.f.select.name  -side left
 
-     frame  .iconBox.f.select
-     pack   .iconBox.f.select -side top -expand 0 -fill x
-     label  .iconBox.f.select.felirat -text "Icon selected:"
-     label  .iconBox.f.select.name -text "$oldicon" -foreground #ff0000 -font bold
-     pack   .iconBox.f.select.felirat  -side left
-     pack   .iconBox.f.select.name  -side left
+     canvas $dlg.f.c -xscrollcommand "$dlg.f.s set"
+     scrollbar $dlg.f.s -command "$dlg.f.c xview" -orient horizontal
+     pack $dlg.f.s -side bottom -fill x
+     pack $dlg.f.c -side top -expand yes -fill both
+     frame $dlg.f.c.f
 
-     canvas .iconBox.f.c -xscrollcommand ".iconBox.f.s set"
-     scrollbar .iconBox.f.s -command ".iconBox.f.c xview" -orient horizontal
-     pack .iconBox.f.s -side bottom -fill x
-     pack .iconBox.f.c -side top -expand yes -fill both
-     frame .iconBox.f.c.f
-
-     .iconBox.f.c create window 0 0 -anchor nw -window .iconBox.f.c.f
+     $dlg.f.c create window 0 0 -anchor nw -window $dlg.f.c.f
 
      foreach imgName $gned(icons) {
 
-         set f .iconBox.f.c.f.$imgName
+         set f $dlg.f.c.f.$imgName
          frame $f -highlightthickness 1 -highlightbackground #000000
-         button $f.b -image $imgName -command "_iconSelected .iconBox.f.select.name $imgName .iconBox.f.c.f"
-         bind $f.b <Double-1> ".iconBox.buttons.okbutton invoke"
+         button $f.b -image $imgName -command "_iconSelected $dlg.f.select.name $imgName $dlg.f.c.f"
+         bind $f.b <Double-1> "$dlg.buttons.okbutton invoke"
          label $f.l -text $imgName
          pack $f  -side left -fill y
          pack $f.l -side bottom -anchor s -padx 2
          pack $f.b -side top  -anchor center -expand 1 -padx 2
      }
 
-     .iconBox.f.c config -height 70
+     $dlg.f.c config -height 70
      update idletasks
-     .iconBox.f.c config -scrollregion "0 0  [winfo width .iconBox.f.c.f] 0"
+     $dlg.f.c config -scrollregion "0 0  [winfo width $dlg.f.c.f] 0"
 
-     if {[execOkCancelDialog .iconBox] == 1} {
-         set icon [.iconBox.f.select.name cget -text]
+     if {[execOkCancelDialog $dlg] == 1} {
+         set icon [$dlg.f.select.name cget -text]
 
          if {$icon != ""} {
              $w configure -image $icon
              set gned(radio) "icon"
          }
      }
-     destroy .iconBox
+     destroy $dlg
 }
 
 proc _iconSelected {select me frame} {

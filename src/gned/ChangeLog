@@ -269,3 +269,6 @@ Jan 21, 2001
  - fixed bug with Ctrl-N (Find next) binding
 Feb 6, 2001
  - make clean didn't delete tclcode.cc
+Feb 13, 2001
+ - fixed bug which caused the "Drawing options" dialog to go behind the main
+   app window after closing the color selection dialog
