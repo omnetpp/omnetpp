@@ -196,14 +196,23 @@ void TStructPanel::update()
    cStructDescriptor *sd = object->createDescriptor();
    if (!sd)
    {
-       CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {No cStructDescriptor registered for this class!}", NULL));
+       CHK(Tcl_VarEval(interp, widgetname, ".txt insert 1.0 {class ", object->className()," {\n"
+                               "    <fields cannot be displayed -- no descriptor object registered>\n"
+                               "}}\n", NULL));
+       return;
    }
 
    // display object and delete descriptor
    writeptr = buf;
    *writeptr = '\0';
-   displayStruct(sd,0);
+
+   sprintf(writeptr,"class %s {\n", object->className());
+   flushIfNeeded(FLUSHLIMIT);
+
+   displayStruct(sd,1);
    delete sd;
+
+   sprintf(writeptr,"}\n");
 
    // flush the rest
    flushIfNeeded(0);
