@@ -2,6 +2,17 @@
 # generate classes from NED DTD
 #
 
+#
+# NOTE: some REDHAT Perl versions are broken, and cannot recognize the \s,
+# so this code had to be patched up!!!
+#
+# If you have a good perl version and want readable REs in here, do these
+# replacements throughout:
+#
+# [ \t\n]   --> \s
+# [^ \t\n]  --> [^\s]
+#
+
 $filename = $ARGV[0];
 $filename =~ /./ || die "*** no file name given\n";
 
@@ -46,16 +57,16 @@ $elements = ();
 #
 # Parse ELEMENTs in DTD
 #
-while ($buf =~ s/(<!ELEMENT\s+([^\s]+)\s+(.*?)>)//s) {
+while ($buf =~ s/(<!ELEMENT[ \t\n]+([^ \t\n]+)[ \t\n]+(.*?)>)//s) {
     $decl = $1;
     $element = $2;
     push(@elements,$element);
 
     $elementsdef = $3;
-    $elementsdef =~ s/\s//g;
+    $elementsdef =~ s/[ \t\n]//g;
     $elementdef{$element} = $elementsdef;
     $elementsdef =~ s/[*+?,|()]/ /g;  # simplify it a bit...
-    $elementsdef =~ s/\s+/ /g;  # simplify it a bit...
+    $elementsdef =~ s/[ \t\n]+/ /g;  # simplify it a bit...
     @children = ();
     @childmult = ();
     foreach $child (split(' ',$elementsdef)) {
@@ -79,7 +90,7 @@ while ($buf =~ s/(<!ELEMENT\s+([^\s]+)\s+(.*?)>)//s) {
 #
 # Parse ATTLISTs in DTD
 #
-while ($buf =~ s/(<!ATTLIST\s+([^\s]+)\s+(.*?)>)//s) {
+while ($buf =~ s/(<!ATTLIST[ \t\n]+([^ \t\n]+)[ \t\n]+(.*?)>)//s) {
     $decl = $1;
     $element = $2;
     $attlist = $3."\n";
@@ -89,10 +100,10 @@ while ($buf =~ s/(<!ATTLIST\s+([^\s]+)\s+(.*?)>)//s) {
     @attvals = ();
     while ($attlist =~ s/^([^\n]*)\n//s) {
         $line = $1;
-        if ($line =~ /^\s+$/) {
+        if ($line =~ /^[ \t\n]+$/) {
             next;
         }
-        if ($line =~ /^\s*([^\s]+)\s+([^\s]+)\s+([^\s]+)\s*$/) {
+        if ($line =~ /^[ \t\n]*([^ \t\n]+)[ \t\n]+([^ \t\n]+)[ \t\n]+([^ \t\n]+)[ \t\n]*$/) {
             push(@attnames,$1);
             push(@atttypes,$2);
             push(@attvals,$3);
