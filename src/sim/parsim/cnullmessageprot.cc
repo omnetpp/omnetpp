@@ -97,7 +97,7 @@ void cNullMessageProtocol::startRun()
         {
             sprintf(buf,"resendEOT-%d", i);
             cMessage *eotMsg =  new cMessage(buf,MK_PARSIM_RESENDEOT);
-            eotMsg->setContextPointer((void *)i);  // FIXME very ugly...
+            eotMsg->setContextPointer((void *)i);  // khmm...
             segInfo[i].eotEvent = eotMsg;
             rescheduleEvent(eotMsg, 0.0);
         }
@@ -229,8 +229,11 @@ cMessage *cNullMessageProtocol::getNextEvent()
     if (sim->msgQueue.empty())
         return NULL;
 
-    // look at our mailbox, maybe we got something
-    // FIXME only look at mailbox if we're stuck on EIT, why at other times? only each 1000 events
+    // we could do a receiveNonblocking() call here to look at our mailbox,
+    // but for performance reasons we don't -- it's enough to read it
+    // (receiveBlocking()) when we're stuck on an EIT. Or should we do it
+    // every 1000 events or so? If MPI receive buffer fills up it can cause
+    // deadlock.
     //receiveNonblocking();
 
     cMessage *msg;
@@ -240,7 +243,7 @@ cMessage *cNullMessageProtocol::getNextEvent()
         if (msg->kind() == MK_PARSIM_RESENDEOT)
         {
             // send null messages if window closed for a partition
-            int procId = (int) msg->contextPointer();  // FIXME very ugly...
+            int procId = (int) msg->contextPointer();  // khmm...
             sendNullMessage(procId, msg->arrivalTime());
         }
         else if (msg->kind() == MK_PARSIM_EIT)
