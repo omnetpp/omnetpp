@@ -254,7 +254,9 @@
          <li><a href="full-usage-diagram.html" target="mainframe">Module Usage Diagram</a></li>
          <li><a href="class-inheritance-diagram.html" target="mainframe">Class Inheritance Diagram</a></li>
       </xsl:if>
-      <xsl:for-each select="//ned-file/@banner-comment[contains(.,'@page')]">
+   </ul>
+   <ul>
+      <xsl:for-each select="//ned-file/@banner-comment[contains(.,'@page') or contains(.,'@externalpage')]">
          <xsl:call-template name="do-extract-pageindex">
             <xsl:with-param name="comment" select="."/>
          </xsl:call-template>
@@ -1309,7 +1311,17 @@
 <xsl:template name="do-extract-pageindex">
    <xsl:param name="comment"/>
 
-   <xsl:variable name="tmp1" select="substring-after($comment,'@page')"/>
+   <xsl:variable name="tmp1">
+      <!-- choose first of @page, @externalpage -->
+      <xsl:choose>
+         <xsl:when test="contains(substring-before(concat($comment,'@page'),'@page'),'@externalpage')">
+            <xsl:value-of select="substring-after($comment,'@externalpage')"/>
+         </xsl:when>
+         <xsl:otherwise>
+            <xsl:value-of select="substring-after($comment,'@page')"/>
+         </xsl:otherwise>
+      </xsl:choose>
+   </xsl:variable>
    <xsl:variable name="pageline" select="substring-before($tmp1,'&#10;')"/>
    <xsl:variable name="tmp2" select="substring-before(concat($pageline,','),',')"/>
    <xsl:variable name="filename" select="normalize-space($tmp2)"/>
@@ -1327,7 +1339,7 @@
       <a href="{$filename}" target="mainframe"><xsl:value-of select="$title-or-filename"/></a>
    </li>   
 
-   <xsl:if test="contains($rest,'@page')">
+   <xsl:if test="contains($rest,'@page') or contains($rest,'@externalpage')">
       <xsl:call-template name="do-extract-pageindex">
          <xsl:with-param name="comment" select="$rest"/>
       </xsl:call-template>
