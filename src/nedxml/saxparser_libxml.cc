@@ -36,6 +36,8 @@ void SAXParser::setHandler(SAXHandler *sh)
 static int nodeLine;  // line number of current node
 static xmlParserCtxtPtr ctxt; // parser context
 
+static void dontPrintError(void *, xmlErrorPtr) {} // an xmlStructuredErrorFunc
+
 static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
 {
     nodeLine = node->line;
@@ -58,8 +60,6 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
             attrs[k] = NULL;
             attrs[k+1] = NULL;
 
-            printf("<%s, %d attrs>\n", node->name, numAttrs);
-
             // invoke startElement()
             sh->startElement((const char *)node->name, attrs);
             delete [] attrs;
@@ -71,7 +71,6 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
                     generateSAXEvents(child, sh);
 
             // invoke endElement()
-            printf("</%s>\n", node->name);
             sh->endElement((const char *)node->name);
             break;
         }
@@ -85,18 +84,17 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
             sh->comment((const char *)node->content);
             break;
         case XML_CDATA_SECTION_NODE:
-            sh->startCdataSection();
-            sh->characterData((const char *)node->content,strlen((const char *)node->content));
-            sh->endCdataSection();
-            break;
-
         case XML_ENTITY_REF_NODE:
         case XML_ENTITY_NODE:
         case XML_XINCLUDE_START:
         case XML_XINCLUDE_END:
+        case XML_ATTRIBUTE_NODE:
             // should not occur (see XML_PARSE_xxx options)
+            fprintf(stderr,"ERROR: libxml wrapper: generateSAXEvents(): node type %d unexpected\n",node->type);
+            assert(0);
             break;
         default:
+            // DTD stuff: ignore
             break;
 
     }
@@ -105,6 +103,13 @@ static void generateSAXEvents(xmlNode *node, SAXHandler *sh)
 
 bool SAXParser::parse(const char *filename)
 {
+    //
+    // When there's a DTD given, we *must* use it, and complete default attrs from it.
+    //
+    // Strategy: build DOM tree with validation enabled, then generate SAX events
+    // from it. LibXML's SAX2-based validation code isn't robust enough yet
+    // (as of 09/2004)
+    //
     ctxt = xmlNewParserCtxt();
     if (!ctxt)
     {
@@ -120,17 +125,31 @@ bool SAXParser::parse(const char *filename)
                        XML_PARSE_NOCDATA |  // merge CDATA as text nodes
                        XML_PARSE_NOERROR |  // suppress error reports
                        XML_PARSE_NOWARNING; // suppress warning reports
+    //ctxt->vctxt.warning = NULL;
+    //ctxt->vctxt.error = NULL;
+    xmlStructuredError = dontPrintError; // hack to prevent errors being written to stdout
     xmlDocPtr doc = xmlCtxtReadFile(ctxt, filename, NULL, options);
-    // check if parsing suceeded
+
+    // check if parsing succeeded
     if (!doc)
     {
-        strcpy(errortext, "Parse error (document not well-formed)");
+        sprintf(errortext, "Parse error: %s at line %s:%d",
+                ctxt->lastError.message, ctxt->lastError.file, ctxt->lastError.line);
         xmlFreeParserCtxt(ctxt);
 	return false;
     }
-    if (!ctxt->valid)
+
+    // handle validation errors.
+    // note: errNo==XML_ERR_NO_DTD is unusable, because it occurs both when there's
+    // no DOCTYPE in document and when DTD cannot be opened (wrong URI)
+    bool hasDTD = false;
+    for (xmlNode *child = doc->children; child; child = child->next)
+        if (child->type == XML_DTD_NODE)
+            hasDTD = true;
+    if (!ctxt->valid && hasDTD) // ctxt->errNo!=XML_ERR_NO_DTD
     {
-        strcpy(errortext, "Validation error (document does not conform to DTD)");
+        sprintf(errortext, "Validation error: %s at line %s:%d",
+                ctxt->lastError.message, ctxt->lastError.file, ctxt->lastError.line);
         xmlFreeParserCtxt(ctxt);
 	xmlFreeDoc(doc);
 	return false;
@@ -153,7 +172,12 @@ int SAXParser::getCurrentLineNumber()
 
 
 
-/*-----------------------------------------------------------------------------
+/*
+*-----------------------------------------------------------------------------
+*
+* Old, SAX1-based code. Doesn't perform DTD validation and attr completion.
+*
+*-----------------------------------------------------------------------------
 
 static void libxmlStartElementHandler(void *userData, const xmlChar *name, const xmlChar **atts)
 {
@@ -260,7 +284,7 @@ static xmlSAXHandler libxmlSAXParser = {
     (fatalErrorSAXFunc)libxmlFatalErrorHandler, // fatalError
 };
 
-static xmlParserCtxtPtr ctxt;  //FIXME very ugly -- should be class member or something...
+static xmlParserCtxtPtr ctxt;
 
 bool SAXParser::parse(const char *filename)
 {
