@@ -13,46 +13,15 @@ $tagfile = "../../api/opptags.xml";
 
 #$apidir = "../api";
 $apidir = "../../api";
+#$templatefile = "omnetpp.thtml";
+$templatefile = "omnest.thtml";
 
 #
-# general template for our output HTML pages; real contents will go to __BODY__
+# read template file
 #
-$template = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-   <TITLE>OMNeT++ - Manual</TITLE>
-   <META NAME="Author" CONTENT="Andras Varga">
-</HEAD>
-
-<style type="text/css">
-h1,h2,h3,h4,h5,h6,.subheading,.toc {font-family: "Trebuchet MS", Geneva, Arial, Helvetica, sans-serif;}
-h1 {color: #006f00;}
-h2 {color: #006f00;}
-h3 {color: #006f00;}
-pre { margin-left:8pt; font-size:8pt; background:#fffff4; padding:5pt; border:1px solid; border-color:#a0a0a0 }
-table {background:#fffff4; margin-left:8pt; border-collapse:collapse; border: 2px solid}
-td,th {text-align:left; vertical-align:top; border:1px solid; padding:3pt; border-color:#000000}
-.subheading {color: black; font-weight: bold;}
-a {text-decoration: none;}
-a:visited {text-decoration: none;}
-# a:hover {text-decoration: underline;}
-</style>
-
-<BODY TEXT="#000000" BGCOLOR="#FFFFE8" LINK="#0000EE" VLINK="#551A8B" ALINK="#FF0000">
-
-<h1><FONT COLOR="#FF0000"><B><FONT SIZE=+4>OMNeT++ </FONT></B>
-<I><FONT SIZE=+1>Discrete Event Simulation System</FONT></I></FONT></h1>
-
-__BODY__
-
-<HR>
-<EM>Document converted from LaTeX by <a href="http://www.best.com/~quong/ltoh.html">ltoh</a>
-from <A href="http://www.best.com/~quong">Russell W. Quong</A>
-(<A href="mailto:quong@best.com">quong@best.com</A>)</EM>
-
-</BODY>
-</HTML>
-';
+print "reading template $templatefile\n" unless $quiet;
+open(T, $templatefile) || die "cannot open $templatefile";
+read(T, $template, 1000000) || die "cannot read $templatefile";
 
 #
 # read file into variable
