@@ -12,11 +12,6 @@ TARGET = aloha
 # USERIF_LIBS=$(CMDENV_LIBS)
 USERIF_LIBS=$(TKENV_LIBS)
 
-# uncomment 1 of the 3 lines to support either serial or parallel operation
-KERNEL_LIBS=$(STD_KERNEL_LIBS)
-# KERNEL_LIBS=$(PVM_KERNEL_LIBS)
-# KERNEL_LIBS=$(MPI_KERNEL_LIBS)
-
 # .ned or .h include paths with -I
 INCLUDE_PATH=
 
@@ -44,12 +39,15 @@ NEDCFLAGS=@NEDCFLAGS@
 LDFLAGS=@LDFLAGS@
 EXE_SUFFIX=@EXE_SUFFIX@
 
+WITH_PARSIM=@WITH_PARSIM@
+WITH_NETBUILDER=@WITH_NETBUILDER@
+
 OMNETPP_INCL_DIR=@OMNETPP_INCL_DIR@
 OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 
 TK_LIBS=@TK_LIBS@
 MPI_LIBS=@MPI_LIBS@
-PVM_LIBS=@PVM_LIBS@
+XML_LIBS=@XML_LIBS@
 SYS_LIBS=@SYS_LIBS@
 SYS_LIBS_PURE=-lm $(shell $(CXX) -print-file-name=libstdc++.a)
 
@@ -58,9 +56,15 @@ CMDENV_LIBS=-lenvir -lcmdenv
 TKENV_LIBS=-lenvir -ltkenv $(TK_LIBS)
 
 # Simulation kernel
-STD_KERNEL_LIBS=-lsim_std
-MPI_KERNEL_LIBS=-lsim_mpi $(MPI_LIBS)
-PVM_KERNEL_LIBS=-lsim_pvm $(PVM_LIBS)
+KERNEL_LIBS=-lsim_std
+
+ifeq ($(WITH_NETBUILDER),yes)
+KERNEL_LIBS += -lnedxml $(XML_LIBS)
+endif
+
+ifeq ($(WITH_PARSIM),yes)
+KERNEL_LIBS += $(MPI_LIBS)
+endif
 
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS=-L$(OMNETPP_LIB_DIR) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
@@ -71,10 +75,10 @@ NEDCOPTS=$(CFLAGS) $(NEDCFLAGS) $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
 #------------------------------------------------------------------------------
 
 # subdirectories to recurse into
-SUBDIRS=  release
+SUBDIRS= 
 
 # object files in this directory
-OBJS= network_n.o  host.o server.o
+OBJS= network_n.o  host.o  server.o
 
 #------------------------------------------------------------------------------
 
@@ -87,9 +91,6 @@ purify: $(OBJS) $(EXTRA_OBJS) Makefile
 .PHONY: subdirs $(SUBDIRS)
 
 subdirs: $(SUBDIRS)
-
-release:
-	cd release && $(MAKE)
 
 network_n.o: network_n.cc
 	$(CXX) -c $(NEDCOPTS) network_n.cc
@@ -115,7 +116,7 @@ server.o: server.cc
 clean:
 	rm -f *.o *_n.cc *_n.h *_m.cc *_m.h $(TARGET)$(EXE_SUFFIX)
 	rm -f *.vec *.sca
-	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done 
+	for i in $(SUBDIRS); do (cd $$i && $(MAKE) clean); done
 
 depend:
 	$(MAKEDEPEND) $(INCLUDE_PATH) -- *.cc
@@ -130,4 +131,5 @@ re-makemake-m:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 host.o: host.cc
+network_n.o: network_n.cc
 server.o: server.cc
