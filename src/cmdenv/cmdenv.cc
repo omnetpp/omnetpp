@@ -392,7 +392,7 @@ void TCmdenvApp::simulate()
     stopClock();
 }
 
-void TCmdenvApp::messageSent(cMessage *msg)
+void TCmdenvApp::messageSent(cMessage *msg, cGate *)
 {
     if (!opt_expressmode && opt_messagetrace)
     {

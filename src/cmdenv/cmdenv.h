@@ -59,7 +59,7 @@ class TCmdenvApp : public TOmnetApp
      virtual int run();
      //virtual void shutdown();
 
-     virtual void messageSent(cMessage *msg);
+     virtual void messageSent(cMessage *msg, cGate *directToGate);
      virtual void messageDelivered(cMessage *msg);
 
      virtual void readOptions();

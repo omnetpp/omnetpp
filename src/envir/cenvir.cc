@@ -259,10 +259,10 @@ cEnvir& cEnvir::setPrompt(const char *s)
     return *this;
 }
 
-void cEnvir::messageSent( cMessage *msg )
+void cEnvir::messageSent( cMessage *msg, cGate *directToGate)
 {
     if (disable_tracing) return;
-    app->messageSent( msg );
+    app->messageSent( msg, directToGate );
 }
 
 void cEnvir::messageDelivered( cMessage *msg )
