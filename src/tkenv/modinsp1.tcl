@@ -61,6 +61,8 @@ proc create_compoundmodinspector {name geom} {
     notebook_addpage $nb params  {Params}
     notebook_addpage $nb gates   {Gates}
 
+    notebook_showpage $nb info
+
     # page 1: info
     label-entry $nb.info.name {Module name:}
     label-sunkenlabel $nb.info.id {Module ID:}
@@ -118,6 +120,8 @@ proc create_simplemodinspector {name geom} {
     notebook_addpage $nb gates   {Gates}
     notebook_addpage $nb vars    {Contents}
     notebook_addpage $nb submods {Submodules}
+
+    notebook_showpage $nb info
 
     # page 1: info
     label-entry $nb.info.name {Module name:}
