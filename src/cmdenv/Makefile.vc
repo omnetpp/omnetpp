@@ -51,6 +51,7 @@ cmdenv.obj: cmdenv.cc \
   enumstr.h \
   ../../include/csimplemodule.h \
   ../../include/cmessage.h \
+  ../../include/platdep/time.h \
   ../../include/defs.h \
   ../../include/ctypes.h \
   ../../include/csimul.h \

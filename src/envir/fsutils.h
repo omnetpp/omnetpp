@@ -20,11 +20,7 @@
 #define __FSUTILS_H
 
 #include "util.h"
-
-/**
- * Wrapper around Unix getpid().
- */
-long getProcessId();
+#include "opp_string.h"
 
 /**
  * Utility function to split a file path into directory and file name parts.
@@ -42,25 +38,6 @@ class PushDir
   public:
     PushDir(const char *changetodir);
     ~PushDir();
-};
-
-
-struct GlobPrivateData;
-
-/**
- * Utility for resolving wildcards in file names. If the pattern doesn't contain
- * a wildcard, it is returned as it is, regardless whether such file exists
- * or not.
- */
-class Globber
-{
-  private:
-    opp_string fnamepattern;
-    GlobPrivateData *data;
-  public:
-    Globber(const char *filenamepattern);
-    ~Globber();
-    const char *getNext();
 };
 
 #endif

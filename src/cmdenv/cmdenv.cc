@@ -29,6 +29,7 @@
 #include "cmessage.h"
 #include "args.h"
 #include "speedmtr.h"
+#include "platdep/time.h"
 
 
 static char buffer[1024];
@@ -50,17 +51,17 @@ bool TCmdenvApp::sigint_received;
 
 
 // utility function for printing elapsed time
-char *timeToStr(struct timeb t, char *buf=NULL)
+char *timeToStr(timeval t, char *buf=NULL)
 {
    static char buf2[64];
    char *b = buf ? buf : buf2;
 
-   if (t.time<3600)
-       sprintf(b,"%ld.%.3ds (%dm %02ds)", (long)t.time, (int)t.millitm, int(t.time/60L), int(t.time%60L));
-   else if (t.time<86400)
-       sprintf(b,"%ld.%.3ds (%dh %02dm)", (long)t.time, (int)t.millitm, int(t.time/3600L), int((t.time%3600L)/60L));
+   if (t.tv_sec<3600)
+       sprintf(b,"%ld.%.3ds (%dm %02ds)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/60L), int(t.tv_sec%60L));
+   else if (t.tv_sec<86400)
+       sprintf(b,"%ld.%.3ds (%dh %02dm)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/3600L), int((t.tv_sec%3600L)/60L));
    else
-       sprintf(b,"%ld.%.3ds (%dd %02dh)", (long)t.time, (int)t.millitm, int(t.time/86400L), int((t.time%86400L)/3600L));
+       sprintf(b,"%ld.%.3ds (%dd %02dh)", (long)t.tv_sec, (int)(t.tv_usec/1000), int(t.tv_sec/86400L), int((t.tv_sec%86400L)/3600L));
 
    return b;
 }

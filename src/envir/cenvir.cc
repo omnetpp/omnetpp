@@ -29,6 +29,7 @@
 #include "omnetapp.h"
 #include "appreg.h"
 #include "cmodule.h"
+#include "platdep/loadlib.h"
 
 #include "speedmtr.h"       // env_dummy_function()
 #include "filemgrs.h"       // env_dummy_function()
@@ -102,7 +103,11 @@ static void loadLibs(const char *libs)
             lib = s;
             while (*s && !isspace(*s)) s++;
             if (*s) *s++ = 0;
-            opp_loadlibrary(lib);
+            try {
+                opp_loadlibrary(lib);
+            } catch (std::runtime_error e) {
+                throw new cException(e.what());
+            }
         }
         delete buf;
     }

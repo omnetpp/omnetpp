@@ -47,6 +47,12 @@
 #include "parsim/creceivedexception.h"
 #endif
 
+#include "platdep/time.h"
+#include "platdep/misc.h"
+#include "platdep/fileglobber.h"
+
+#include "platdep/fileglobber.c" // pull in implementation
+
 
 #ifdef USE_PORTABLE_COROUTINES /* coroutine stacks reside in main stack area */
 
@@ -397,7 +403,7 @@ void TOmnetApp::processFileName(opp_string& fname)
             throw new cException("Cannot append hostname to file name `%s': no HOST, HOSTNAME "
                                  "or COMPUTERNAME (Windows) environment variable",
                                  fname.c_str());
-        int pid = getProcessId();
+        int pid = getpid();
 
         // add ".<hostname>.<pid>" to fname
         opp_string origfname = fname;
@@ -498,22 +504,30 @@ void TOmnetApp::makeOptionsEffective()
 
 void TOmnetApp::globAndLoadNedFile(const char *fnamepattern)
 {
-    Globber glob(fnamepattern);
-    const char *fname;
-    while ((fname=glob.getNext())!=NULL)
-    {
-        ev.printf("Loading NED file: %s\n", fname);
-        simulation.loadNedFile(fname);
+    try {
+        FileGlobber glob(fnamepattern);
+        const char *fname;
+        while ((fname=glob.getNext())!=NULL)
+        {
+            ev.printf("Loading NED file: %s\n", fname);
+            simulation.loadNedFile(fname);
+        }
+    } catch (std::runtime_error e) {
+        throw new cException(e.what());
     }
 }
 
 void TOmnetApp::globAndLoadListFile(const char *fnamepattern)
 {
-    Globber glob(fnamepattern);
-    const char *fname;
-    while ((fname=glob.getNext())!=NULL)
-    {
-        processListFile(fname);
+    try {
+        FileGlobber glob(fnamepattern);
+        const char *fname;
+        while ((fname=glob.getNext())!=NULL)
+        {
+            processListFile(fname);
+        }
+    } catch (std::runtime_error e) {
+        throw new cException(e.what());
     }
 }
 
@@ -699,28 +713,28 @@ bool TOmnetApp::idle()
 
 void TOmnetApp::resetClock()
 {
-    struct timeb now;
-    ftime(&now);
+    timeval now;
+    gettimeofday(&now, NULL);
     laststarted = simendtime = simbegtime = now;
-    elapsedtime.time = elapsedtime.millitm = 0;
+    elapsedtime.tv_sec = elapsedtime.tv_usec = 0;
 }
 
 void TOmnetApp::startClock()
 {
-    ftime(&laststarted);
+    gettimeofday(&laststarted, NULL);
 }
 
 void TOmnetApp::stopClock()
 {
-    ftime(&simendtime);
+    gettimeofday(&simendtime, NULL);
     elapsedtime = elapsedtime + simendtime - laststarted;
     simulatedtime = simulation.simTime();
 }
 
-struct timeb TOmnetApp::totalElapsed()
+timeval TOmnetApp::totalElapsed()
 {
-    struct timeb now;
-    ftime(&now);
+    timeval now;
+    gettimeofday(&now, NULL);
     return now - laststarted + elapsedtime;
 }
 
@@ -730,9 +744,9 @@ void TOmnetApp::checkTimeLimits()
          throw new cTerminationException(eSIMTIME);
     if (opt_cputimelimit==0)
          return;
-    struct timeb now;
-    ftime(&now);
-    long elapsedsecs = now.time - laststarted.time + elapsedtime.time;
+    timeval now;
+    gettimeofday(&now, NULL);
+    long elapsedsecs = now.tv_sec - laststarted.tv_sec + elapsedtime.tv_sec;
     if (elapsedsecs>=opt_cputimelimit)
          throw new cTerminationException(eREALTIME);
 }

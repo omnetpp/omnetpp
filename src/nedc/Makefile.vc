@@ -4,9 +4,9 @@
 !include ..\..\configuser.vc
 
 #
-# Local definitions
+# Local definitions (OMNETPP_INCL_DIR is used for platdep/*)
 #
-COPTS=$(CFLAGS)
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)"
 
 OBJS=ebnf.tab.obj lex.yy.obj jar.obj jar_lib.obj jar_mod.obj jar_expr.obj jar_mem.obj
 

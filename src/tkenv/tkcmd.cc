@@ -29,13 +29,13 @@
 #include "cstruct.h"
 #include "cdispstr.h"
 #include "cdispstr.h"
-#include "platdep.h"
 #include "tkapp.h"
 #include "tklib.h"
 #include "inspector.h"
 #include "inspfactory.h"
 #include "patmatch.h"
 #include "visitor.h"
+#include "platdep/loadlib.h"
 
 using std::string;
 
@@ -390,7 +390,12 @@ int finishSimulation_cmd(ClientData, Tcl_Interp *interp, int argc, const char **
 int loadLib_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
    if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
-   return opp_loadlibrary(argv[1]) ? TCL_OK : TCL_ERROR;
+   try {
+       return opp_loadlibrary(argv[1]) ? TCL_OK : TCL_ERROR;
+   } catch (std::runtime_error e) {
+       Tcl_SetResult(interp, TCLCONST(e.what()), TCL_VOLATILE);
+       return TCL_ERROR;
+   }
 }
 
 //--------------

@@ -18,21 +18,10 @@
 #ifndef __TASK_H
 #define __TASK_H
 
-#if defined(_AIX)
-   typedef struct {char regblk[240];} my_jmp_buf[1];
-   extern "C" {
-     int my_setjmp(my_jmp_buf b);
-     void my_longjmp(my_jmp_buf b, int retv);
-   };
-   #define JMP_BUF my_jmp_buf
-   #define SETJMP  my_setjmp
-   #define LONGJMP my_longjmp
-#else
-   #include <setjmp.h>
-   #define JMP_BUF jmp_buf
-   #define SETJMP  setjmp
-   #define LONGJMP longjmp
-#endif
+#include <setjmp.h>
+#define JMP_BUF jmp_buf
+#define SETJMP  setjmp
+#define LONGJMP longjmp
 
 //=== some defines
 #define SAFETY_AREA     512

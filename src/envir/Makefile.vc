@@ -16,8 +16,7 @@ CFLAGS=$(CFLAGS) /DWITH_NETBUILDER
 #
 COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "../sim" /DBUILDING_ENVIR /DHAVE_DLOPEN=$(HAVE_DLOPEN)
 OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj fsutils.obj \
-     patmatch.obj platdep.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj \
-     cxmldoccache.obj
+     patmatch.obj speedmtr.obj filemgrs.obj akoutvectormgr.obj cxmldoccache.obj
 LIBS=$(OMNETPP_SRC_DIR)/sim/sim_std.ilib
 
 #
@@ -88,7 +87,7 @@ akoutvectormgr.obj: akoutvectormgr.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  platdep.h \
+  ../../include/platdep/time.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -117,6 +116,7 @@ cenvir.obj: cenvir.cc \
   omnetapp.h \
   appreg.h \
   ../../include/cmodule.h \
+  ../../include/platdep/loadlib.h \
   speedmtr.h \
   filemgrs.h \
   akaroarng.h \
@@ -142,10 +142,11 @@ cenvir.obj: cenvir.cc \
   patmatch.h \
   ../../include/carray.h \
   ../../include/envirext.h \
-  platdep.h \
+  ../../include/platdep/time.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
   ../../include/cdefaultlist.h \
+  ../../include/platdep/misc.h \
   ../../include/macros.h
 cinifile.obj: cinifile.cc \
   ../../include/cenvir.h \
@@ -184,7 +185,7 @@ filemgrs.obj: filemgrs.cc \
   envdefs.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  platdep.h \
+  ../../include/platdep/time.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -200,11 +201,12 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cdefaultlist.h \
   ../../include/ctypes.h
 fsutils.obj: fsutils.cc \
-  ../../include/opp_string.h \
+  ../../include/platdep/misc.h \
   fsutils.h \
   ../../include/cexception.h \
-  ../../include/defs.h \
-  ../../include/util.h
+  ../../include/util.h \
+  ../../include/opp_string.h \
+  ../../include/defs.h
 main.obj: main.cc \
   ../../include/cobject.h \
   ../../include/cenvir.h \
@@ -230,6 +232,10 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cxmlelement.h \
   cxmldoccache.h \
   ../../include/cparsimcomm.h \
+  ../../include/platdep/time.h \
+  ../../include/platdep/misc.h \
+  ../../include/platdep/fileglobber.h \
+  ../../include/platdep/fileglobber.c \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \
@@ -238,7 +244,6 @@ omnetapp.obj: omnetapp.cc \
   ../../include/cexception.h \
   ../../include/envirext.h \
   ../../include/cconfig.h \
-  platdep.h \
   ../../include/cobject.h \
   ../../include/util.h \
   ../../include/cpolymorphic.h \
@@ -258,15 +263,8 @@ patmatch.obj: patmatch.cc \
   envdefs.h \
   ../../include/opp_string.h \
   ../../include/util.h
-platdep.obj: platdep.cc \
-  ../../include/defs.h \
-  platdep.h \
-  ../../include/cexception.h \
-  ../../include/cenvir.h \
-  ../../include/opp_string.h \
-  ../../include/util.h
 speedmtr.obj: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \
-  platdep.h \
-  envdefs.h
+  envdefs.h \
+  ../../include/platdep/time.h

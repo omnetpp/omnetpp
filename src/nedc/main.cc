@@ -32,71 +32,12 @@
 #include "xmlgenerator.h"
 #include "cppgenerator.h"
 #include "nedcompiler.h"
+#include "platdep/misc.h"
+
 
 using std::ofstream;
 using std::ifstream;
 using std::ios;
-
-
-#if defined(_WIN32) && !defined(__CYGWIN32__)
-
-//
-// On Windows, wildcards must be expanded by hand :-(
-//
-#define MUST_EXPAND_WILDCARDS 1
-const char *findFirstFile(const char *mask);
-const char *findNextFile();
-
-//
-// code for Windows/MSVC
-//
-#include <io.h>
-long handle;
-char _ff_dir[1024];
-char _ff_fname[1024];
-struct _finddata_t fdata;
-const char *findFirstFile(const char *mask)
-{
-    strcpy(_ff_dir,mask);
-    char *s = _ff_dir + strlen(_ff_dir);
-    while (s>=_ff_dir && *s!='\\' && *s!='/') s--;
-    *(s+1)='\0';
-    handle = _findfirst(mask, &fdata);
-    if (handle<0) {_findclose(handle); return NULL;}
-    strcpy(_ff_fname,_ff_dir);
-    strcat(_ff_fname,fdata.name);
-    return _ff_fname;
-}
-const char *findNextFile()
-{
-    int done=_findnext(handle, &fdata);
-    if (done) {_findclose(handle); return NULL;}
-    strcpy(_ff_fname,_ff_dir);
-    strcat(_ff_fname,fdata.name);
-    return _ff_fname;
-}
-
-/*
-
-//
-// code for Borland C++ -- currently not used
-//
-#include <dir.h>
-struct ffblk ffblk;
-const char *findFirstFile(const char *mask)
-{
-    int done = findfirst(argv[k],&ffblk,0);
-    return done ? NULL : ffblk.ff_name;
-}
-const char *findNextFile()
-{
-    int done = findnext(&ffblk);
-    return done ? NULL : ffblk.ff_name;
-}
-
-*/
-
-#endif /* _WIN32 */
 
 
 // file types
@@ -508,7 +449,7 @@ int main(int argc, char **argv)
                 fprintf(stderr,"nedtool: option -m not supported with C++ output\n");
                 return 1;
             }
-#ifdef MUST_EXPAND_WILDCARDS
+#ifdef SHELL_DOES_NOT_EXPAND_WILDCARDS
             const char *fname = findFirstFile(argv[i]);
             if (!fname) {
                 fprintf(stderr,"nedtool: not found: %s\n",argv[i]);
@@ -519,6 +460,7 @@ int main(int argc, char **argv)
                 if (!processFile(fname)) return 1;
                 fname = findNextFile();
             }
+            findCleanup();
 #else
             if (!processFile(argv[i])) return 1;
 #endif

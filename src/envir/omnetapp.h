@@ -19,7 +19,6 @@
 #ifndef __OMNETAPP_H
 #define __OMNETAPP_H
 
-#include <time.h>     // time_t, clock_t
 #include "carray.h"
 #include "globals.h"
 #include "cenvir.h"
@@ -28,7 +27,7 @@
 #include "envdefs.h"
 #include "envirext.h"
 #include "cconfig.h"
-#include "platdep.h"
+#include "platdep/time.h"
 
 
 class cXMLDocCache;
@@ -99,10 +98,10 @@ class ENVIR_API TOmnetApp
 
     unsigned long nextuniquenumber;
 
-    struct timeb simbegtime;  // real time when sim. started
-    struct timeb simendtime;  // real time when sim. ended
-    struct timeb laststarted; // real time from where sim. was last cont'd
-    struct timeb elapsedtime; // time spent simulating
+    timeval simbegtime;  // real time when sim. started
+    timeval simendtime;  // real time when sim. ended
+    timeval laststarted; // real time from where sim. was last cont'd
+    timeval elapsedtime; // time spent simulating
     simtime_t simulatedtime;  // sim. time after finishing simulation
 
   protected:
@@ -315,7 +314,7 @@ class ENVIR_API TOmnetApp
     /**
      * Elapsed time
      */
-    struct timeb totalElapsed();
+    timeval totalElapsed();
     //@}
 
     //@{

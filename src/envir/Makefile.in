@@ -28,8 +28,7 @@ HAVE_DLOPEN=@HAVE_DLOPEN@
 COPTS=$(CFLAGS) $(AKAROA_CFLAGS) -I$(OMNETPP_INCL_DIR) -I../sim -DBUILDING_ENVIR -DHAVE_DLOPEN=$(HAVE_DLOPEN)
 
 OBJS=args.o cenvir.o cinifile.o main.o omnetapp.o fsutils.o \
-     patmatch.o platdep.o speedmtr.o filemgrs.o akoutvectormgr.o \
-     cxmldoccache.o
+     patmatch.o speedmtr.o filemgrs.o akoutvectormgr.o cxmldoccache.o
 
 #
 # Automatic rules

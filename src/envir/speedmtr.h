@@ -19,10 +19,9 @@
 #ifndef __SPEEDMTR_H
 #define __SPEEDMTR_H
 
-#include <time.h>
 #include "defs.h"
-#include "platdep.h"
 #include "envdefs.h"
+#include "platdep/time.h"
 
 
 //
@@ -35,7 +34,7 @@ class ENVIR_API Speedometer
     long events;
     simtime_t current_simtime;
     simtime_t intvstart_simtime;
-    struct timeb intvstart_walltime;
+    timeval intvstart_walltime;
     double last_eventspersec;
     double last_eventspersimsec;
     double last_simsecpersec;

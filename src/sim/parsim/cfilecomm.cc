@@ -30,72 +30,10 @@
 #include "cenvir.h"
 #include "cconfig.h"
 #include "parsimutil.h"
+#include "platdep/misc.h"
+
 
 Register_Class(cFileCommunications);
-
-
-//
-// First, some stuff to hide platform dependent details
-// of getting a directory listing...
-//
-#if defined(_WIN32) && !defined(__CYGWIN32__)
-#include <io.h>
-#include <direct.h>
-#define usleep(x) _sleep((x)/1000)
-#define stat _stat
-#define mkdir(x,y) _mkdir(x)
-static long _handle;
-static struct _finddata_t _fdata;
-static char _dir[_MAX_FNAME];
-static char _tmpfname[_MAX_FNAME];
-const char *findFirstFile(const char *mask)
-{
-    _handle = _findfirst(mask, &_fdata);
-    if (_handle<0) {_findclose(_handle); return NULL;}
-    strcpy(_dir,mask);
-    char *s = _dir + strlen(_dir);
-    while (--s>=_dir)
-        if (*s=='/' || *s=='\\')
-            {*(s+1)='\0'; break;}
-    strcpy(_tmpfname,_dir);
-    strcat(_tmpfname,_fdata.name);
-    return _tmpfname;
-}
-const char *findNextFile()
-{
-    int done=_findnext(_handle, &_fdata);
-    if (done) {_findclose(_handle); return NULL;}
-    strcpy(_tmpfname,_dir);
-    strcat(_tmpfname,_fdata.name);
-    return _tmpfname;
-}
-void findCleanup()
-{
-}
-#else
-#include <unistd.h>  // usleep()
-#include <glob.h>
-glob_t globdata;
-int globpos;
-const char *findFirstFile(const char *mask)
-{
-    if (glob(mask, 0, NULL, &globdata)!=0)
-        return NULL;
-    globpos = 0;
-    return globdata.gl_pathv[globpos++];
-}
-const char *findNextFile()
-{
-    return globdata.gl_pathv[globpos++];
-}
-void findCleanup()
-{
-    globfree(&globdata);
-}
-#endif
-
-
-//----------------
 
 cFileCommunications::cFileCommunications()
 {

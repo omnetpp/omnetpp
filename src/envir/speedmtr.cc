@@ -16,21 +16,6 @@
 *--------------------------------------------------------------*/
 
 #include <assert.h>
-
-#ifdef __APPLE__
-#include <sys/time.h>
-static int ftime(struct timeb *tp)
-{
-    struct timeval tv;
-
-    gettimeofday(&tv, NULL);
-    tp->time = tv.tv_sec;
-    tp->millitm = tv.tv_usec / 1000;
-    tp->timezone = 0;
-    tp->dstflag = 0;
-}
-#endif
-
 #include "speedmtr.h"
 
 
@@ -43,7 +28,7 @@ void Speedometer::start(simtime_t t)
 {
     // begin 1st interval
     events = 0;
-    ftime(&intvstart_walltime);
+    gettimeofday(&intvstart_walltime, NULL);
     intvstart_simtime = t;
 
     last_eventspersec = 0;
@@ -67,9 +52,9 @@ unsigned long Speedometer::millisecsInThisInterval()
     // start() mush have been called already
     assert(started);
 
-    struct timeb now;
-    ftime(&now);
-    return opp_difftimebmillis(now, intvstart_walltime);
+    timeval now;
+    gettimeofday(&now, NULL);
+    return timeval_msec(now - intvstart_walltime);
 }
 
 void Speedometer::beginNewInterval()
@@ -77,9 +62,9 @@ void Speedometer::beginNewInterval()
     // start() mush have been called already
     assert(started);
 
-    struct timeb now;
-    ftime(&now);
-    unsigned long elapsed_msecs = opp_difftimebmillis(now, intvstart_walltime);
+    timeval now;
+    gettimeofday(&now, NULL);
+    unsigned long elapsed_msecs = timeval_msec(now - intvstart_walltime);
     if (elapsed_msecs<10 || events==0)
     {
         // if we're called too often, refuse to give readings as probably

@@ -20,7 +20,6 @@
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
 #include <string>
 
 #include "appreg.h"
@@ -29,7 +28,6 @@
 #include "cmessage.h"
 #include "ctypes.h"
 #include "speedmtr.h"
-#include "platdep.h"
 
 #include "tkdefs.h"
 #include "tkapp.h"
@@ -38,6 +36,8 @@
 #include "inspfactory.h"
 
 #include "modinsp.h"
+
+#include "platdep/time.h"
 
 
 //
@@ -425,9 +425,9 @@ bool TOmnetTkApp::doRunSimulation()
         // delay loop for slow simulation
         if (runmode==RUNMODE_SLOW)
         {
-            struct timeb start, now;
-            ftime(&start);
-            while ((ftime(&now), opp_difftimebmillis(now,start)<(unsigned long)opt_stepdelay) && !stopsimulation_flag)
+            timeval start, now;
+            gettimeofday(&start, NULL);
+            while ((gettimeofday(&now, NULL), timeval_msec(now-start) < (unsigned long)opt_stepdelay) && !stopsimulation_flag)
                 Tcl_Eval(interp, "update");
         }
 

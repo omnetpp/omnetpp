@@ -355,6 +355,7 @@ tkapp.obj: tkapp.cc \
   inspector.h \
   inspfactory.h \
   modinsp.h \
+  ../../include/platdep/time.h \
   tclcode.cc \
   ../../include/defs.h \
   ../../include/cmodule.h \
@@ -395,6 +396,7 @@ tkcmd.obj: tkcmd.cc \
   inspector.h \
   inspfactory.h \
   visitor.h \
+  ../../include/platdep/loadlib.h \
   ../../include/defs.h \
   ../../include/cobject.h \
   ../../include/util.h \
@@ -415,7 +417,8 @@ tkcmd.obj: tkcmd.cc \
   ../../include/cpar.h \
   ../../include/cenum.h \
   tkutil.h \
-  ../../include/macros.h
+  ../../include/macros.h \
+  ../../include/platdep/misc.h
 tklib.obj: tklib.cc \
   tklib.h \
   tkapp.h

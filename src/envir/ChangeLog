@@ -1,3 +1,7 @@
+2005-01-10  Andras Varga
+
+	* factored out platform dependencies to include/platdep
+
 2005-01-03  Andras Varga
 
 	* omnetapp.cc: scheduler's startRun() and endRun() methods didn't
