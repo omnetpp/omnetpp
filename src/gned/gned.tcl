@@ -18,14 +18,13 @@
 # intro text
 #
 puts {
-GNED 1.2 ALPHA 1
+GNED 1.2 BETA 2
 
-This is an early preview of a GNED that uses human-readable NED as the
-ONLY file format. It is a fully two-way tool: you can edit the modules
-in graphics or in NED source form, and switch to the other view any time.
+This is the first version of GNED that uses human-readable NED as the ONLY
+file format. It is a fully two-way tool: you can edit the modules in graphics
+or in NED source form, and switch to the other view any time.
 
-WARNING!!! Code under heavy development -- see todo.txt for bugs and
-missing features.
+WARNING! Code under development -- see TODO for known bugs and missing features.
 }
 
 #
