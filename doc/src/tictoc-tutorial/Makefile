@@ -1,7 +1,7 @@
 #
-# Definitions to be customized by 'configure'
+# Definitions
 #
-DOXYGEN=@DOXYGEN@
+DOXYGEN=doxygen
 
 #
 # Targets
