@@ -26,7 +26,6 @@
 #include "cmessage.h"
 #include "cmodule.h"
 #include "csimul.h"
-#include "cstk.h"
 #include "macros.h"
 #include "ctypes.h"
 #include "cenvir.h"
