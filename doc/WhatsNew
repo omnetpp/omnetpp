@@ -58,9 +58,11 @@ Tkenv:
 - Implemented the "t=<string>,<color>" display string tag for connections.
   It makes the given string to appear near the connection arrow.
 
-- Implemented new display string tag:  tt=<tooltip-string>
-  It can be used in module, submodule, connection and msg display
-  strings, and will cause the given string to appear in a tooltip.
+- Tooltips can now be added to submodule icons, connection arrows and messages.
+  The tooltip text has to be given in the "tt=<tooltip-string>" display
+  string tag, and will be displayed if the mouse rests over the component for
+  a while. Tooltips allows more info to be displayed than can be squeezed
+  into the "t=" display string tag.
 
 - Added support for -r <run-number> command-line option, which has the same
   effect as (but takes priority over) the [Tkenv]/default-run ini file entry.
