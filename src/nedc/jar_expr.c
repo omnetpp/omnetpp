@@ -30,7 +30,7 @@ static struct { char *fname; int args; } known_funcs[] =
 {
    /* <math.h> */
    {"fabs", 1},    {"fmod", 2},
-   {"acos", 1},    {"asin", 1},    {"atan", 1},   {"atan2", 1},
+   {"acos", 1},    {"asin", 1},    {"atan", 1},   {"atan2", 2},
    {"sin", 1},     {"cos", 1},     {"tan", 1},    {"hypot", 2},
    {"ceil", 1},    {"floor", 1},
    {"exp", 1},     {"pow", 2},     {"sqrt", 1},
