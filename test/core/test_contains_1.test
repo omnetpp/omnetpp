@@ -1,0 +1,55 @@
+%description:
+Test %contains checks of opp_test. This testing is incomplete -- should
+also check that if one of the %contains checks fail this makes the test case 
+fail.
+
+%file: {x}.txt
+one[x]
+two***
+three?
+four
+::twenty one[x]
+::twenty two***
+::twenty three?
+::twenty six
+
+%activity:
+rename("{x}.txt", "{a}.txt");
+
+
+%contains: {a}.txt
+one[x]
+two***
+three?
+four
+::twe
+
+%not-contains: {a}.txt
+foo
+
+%contains-regex: {a}.txt
+three\?
+.*
+::twentyX* t.o\*+
+.*
+::twe
+
+%not-contains-regex: {a}.txt
+foo
+
+%contains-filt: {a}.txt
+::twenty one[x]
+::twenty two***
+::twenty three?
+::twenty six
+
+%not-contains-filt: {a}.txt
+four
+
+%contains-regex-filt: {a}.txt
+::twentyX* t.o\*+
+.*
+::twe
+
+%not-contains-regex-filt: {a}.txt
+four
