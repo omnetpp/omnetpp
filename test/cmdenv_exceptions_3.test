@@ -23,7 +23,7 @@ void {Module}::finish()
 
 %exitcode: 1
 
-%contains: stdout
+%contains-regex: stdout
 Error in module .*: test exception
 
 

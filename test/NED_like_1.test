@@ -28,5 +28,5 @@ warnings=yes
 
 %exitcode: 1
 
-%contains: stdout
+%contains-regex: stdout
 Error in module .*mod_type

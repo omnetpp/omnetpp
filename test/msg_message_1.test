@@ -1,0 +1,71 @@
+%description:
+Check that messages work in msg files
+
+%file: {}.msg
+
+message {MyMessage}
+{
+    fields:
+        bool b;
+        char c;
+        short s;
+        unsigned short us;
+        int i;
+        unsigned int ui;
+        long l;
+        unsigned long ul;
+        double d;
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+{MyMessage} x("msg");
+
+// test it's really subclassed from cMessage
+cMessage *m = &x;
+
+// scalars
+x.setB(true); PRINT(x.getB());
+x.setB(false); PRINT(x.getB());
+
+x.setC('a'); PRINT(x.getC());
+
+x.setS(10);  PRINT(x.getS());
+x.setS(-10);  PRINT(x.getS());
+x.setUs(10);  PRINT(x.getUs());
+x.setUs(-10);  PRINT((x.getUs()>0));
+
+x.setI(10);  PRINT(x.getI());
+x.setI(-10);  PRINT(x.getI());
+x.setUi(10);  PRINT(x.getUi());
+x.setUi(-10);  PRINT((x.getUi()>0));
+
+x.setL(10);  PRINT(x.getL());
+x.setL(-10);  PRINT(x.getL());
+x.setUl(10);  PRINT(x.getUl());
+x.setUl(-10);  PRINT((x.getUl()>0));
+
+x.setD(3.1415); PRINT(x.getD());
+
+%contains: stdout
+x.getB():1
+x.getB():0
+x.getC():a
+x.getS():10
+x.getS():-10
+x.getUs():10
+(x.getUs()>0):1
+x.getI():10
+x.getI():-10
+x.getUi():10
+(x.getUi()>0):1
+x.getL():10
+x.getL():-10
+x.getUl():10
+(x.getUl()>0):1
+x.getD():3.1415

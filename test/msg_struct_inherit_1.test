@@ -1,0 +1,33 @@
+%description:
+Check inheritance for structs
+
+%file: {}.msg
+
+struct {Base}
+{
+    fields:
+        int b;
+}
+
+struct {MyStruct} extends {Base}
+{
+    fields:
+        char c;
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+{MyStruct} x;
+
+x.b = 11; PRINT(x.b);
+x.c = 'x'; PRINT(x.c);
+
+%contains: stdout
+x.b:11
+x.c:x
+

@@ -1,0 +1,35 @@
+%description:
+Check struct as message member
+
+%file: {}.msg
+
+struct {MyStruct}
+{
+    fields:
+        int bb;
+}
+
+
+message {MyMessage}
+{
+    fields:
+        {MyStruct} b;
+        char c;
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+
+{MyMessage} x;
+
+x.getB().bb=11; PRINT(x.getB().bb);
+x.setC('x'); PRINT(x.getC());
+
+%contains: stdout
+x.getB().bb:11
+x.getC():x
+

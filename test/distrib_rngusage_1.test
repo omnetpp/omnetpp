@@ -67,7 +67,7 @@ for (int rng=0; rng<=2; rng++)
 }
 ev << "finished";
 
-%contains: stdout
+%contains-regex: stdout
 checking uniform\(1.0, 2.0, rng\)
 checking exponential\(1.0, rng\)
 checking normal\(1.0, 1.0, rng\)

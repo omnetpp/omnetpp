@@ -33,7 +33,7 @@ void {Module}::finish()
    ev << "finish() at " << simTime() << endl;
 }
 
-%contains: stdout
+%contains-regex: stdout
 initialize\(\) at 0
 .*handleMessage\(\) at 15
 .*finish\(\) at 15

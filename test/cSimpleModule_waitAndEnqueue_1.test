@@ -36,7 +36,7 @@ msg = receive();
 ev << "  " << msg->name() << endl;
 delete msg;
 
-%contains: stdout
+%contains-regex: stdout
 queue contents after waitAndEnqueue:
   one
   two

@@ -32,11 +32,11 @@ class X2 : public cObject
 X2 *x = new X2();
 x->y.setName("yname");
 
-%contains: stdout
+%contains-regex: stdout
 noisy born.*
 noisy died
 
-%not-contains: stdout
+%not-contains-regex: stdout
 noisy died.*
 noisy died
 

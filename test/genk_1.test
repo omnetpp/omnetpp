@@ -47,7 +47,7 @@ gen22-seed=2022
 # remaining seeds (0,5,6,10,11,..) should be initialized from table,
 # not repeating seeds used in Run 1
 
-%contains: stdout
+%contains-regex: stdout
 .*
 RNG0: 9000
 RNG1: 9001

@@ -20,7 +20,7 @@ ev << msg.length() << endl;
 
 %exitcode: 1
 
-%contains: stdout
+%contains-regex: stdout
 1
 101
 151

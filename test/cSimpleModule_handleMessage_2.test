@@ -31,10 +31,10 @@ void {Module}::finish()
    ev << "finish()\n";
 }
 
-%contains: stdout
+%contains-regex: stdout
 initialize\(\)
 .*finish\(\)
 
 %not-contains: stdout
-handleMessage\(\)
+handleMessage()
 
