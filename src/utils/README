@@ -1,0 +1,17 @@
+All kinds of UNIX scripts and DOS batch files:
+
+ configure   - configure makefiles (sets library paths etc)
+ makeall     - compiles and builds all OMNeT++ sources
+ makeall.bat - makeall's DOS version (BC3.1)
+ makemake    - create makefile for a simulation
+ convert     - upgrade old OMNeT++ sources
+ splitvec    - split an output vector file to separate vectors
+ splitvec.bat- splitvec's DOS version
+ all2unix    - convert all text files from DOS to Unix
+ dos2unix    - convert text files to Unix
+ gcc.c       - a hack to 'emulate' gcc on AIX
+ seedtool.cc - generates seeds for random number generators
+ readme      - this file
+ prephtml, makedist, install.bat, pack.bat - used during development
+
+--VA

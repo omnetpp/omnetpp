@@ -1,0 +1,110 @@
+#!/bin/sh
+#
+# makeall: compiles all OMNeT++ libraries and sample programs
+#
+
+# Variables to be set by 'configure'
+OMNETPP_ROOT=
+OMNETPP_SRC_DIR="/home/andras/omnetpp/src"
+OMNETPP_SAMPLES_DIR="/home/andras/omnetpp/samples"
+OMNETPP_MODELS_DIR="/home/andras/omnetpp/models"
+
+LIB_SUFFIX="a"
+
+TV_INCL_PATH=""
+TK_INCL_PATH="-I/usr/include -I/usr/include"
+PVM_INCL_PATH="-I/home/andras/pvm3/include"
+
+if [ "$OMNETPP_ROOT" = "" ]; then
+        echo $0: run \'configure\' first
+        exit
+fi
+
+cd $OMNETPP_ROOT
+
+make_component () {
+        # $1=component name $2=subdir [$3=make target]
+        TMPFILE=/tmp/err.$USER.$RANDOM
+        echo -n " building $1... "
+        if (cd $2; make $3) > $TMPFILE 2>&1
+        then
+                rm $TMPFILE
+                echo OK
+        else
+                mv $TMPFILE $1.errors
+                echo failed, errors in $1.errors
+        fi
+}
+
+#
+# Make OMNeT++ components
+#
+echo 'System components:'
+
+make_component nedc $OMNETPP_SRC_DIR/nedc
+
+make_component sim_std $OMNETPP_SRC_DIR/sim libsim_std.$LIB_SUFFIX
+
+if [ "$PVM_INCL_PATH" != "" ]; then
+        make_component sim_pvm $OMNETPP_SRC_DIR/sim libsim_pvm.$LIB_SUFFIX
+else
+        echo ' skipping sim_pvm  (no PVM installation found by configure)'
+fi
+
+make_component envir $OMNETPP_SRC_DIR/envir
+
+make_component cmdenv $OMNETPP_SRC_DIR/envir/cmdenv
+
+if [ "$TK_INCL_PATH" != "" ]; then
+        make_component tkenv $OMNETPP_SRC_DIR/envir/tkenv
+else
+        echo ' skipping tkenv  (no Tcl/Tk installation found by configure)'
+fi
+
+if [ "$TV_INCL_PATH" != "" ]; then
+        make_component tvenv $OMNETPP_SRC_DIR/envir/tvenv
+else
+        echo ' skipping tvenv  (no Turbo Vision installation found by configure)'
+fi
+
+make_component gned $OMNETPP_SRC_DIR/gned
+
+make_component utils $OMNETPP_SRC_DIR/utils
+
+#
+# Create a ./lib directory
+#
+echo "Updating soft links into $OMNETPP_ROOT/lib..."
+if [ ! -d lib ]; then mkdir lib; fi
+cd lib
+rm -f *
+if [ "$LIB_SUFFIX" = "a" ]; then
+  ln -s ../src/sim/libsim_std.a .
+  ln -s ../src/sim/libsim_pvm.a .
+  ln -s ../src/envir/libenvir.a .
+  ln -s ../src/envir/cmdenv/libcmdenv.a .
+  ln -s ../src/envir/tkenv/libtkenv.a .
+  ln -s ../src/envir/tvenv/libtvenv.a .
+else
+  ln -s ../src/sim/libsim_std.so .
+  ln -s ../src/sim/libsim_pvm.so .
+  ln -s ../src/envir/libenvir.so .
+  ln -s ../src/envir/cmdenv/libcmdenv.so .
+  ln -s ../src/envir/tkenv/libtkenv.so .
+  ln -s ../src/envir/tvenv/libtvenv.so .
+fi
+cd ..
+
+# Make models
+echo 'Models:'
+for i in `(cd models; echo *)`
+do
+        make_component $i $OMNETPP_MODELS_DIR/$i
+done
+
+# Make sample programs
+echo 'Sample simulations:'
+for i in `(cd samples; echo *)`
+do
+        make_component $i $OMNETPP_SAMPLES_DIR/$i
+done

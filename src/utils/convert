@@ -1,0 +1,380 @@
+#!/bin/sh
+#
+# Converts an OMNeT++ project from OMNeT++ versions before Oct 1997.
+# Simply run it in the directory of your sources.
+#
+replace () {
+	type=$1
+	old=$2
+	new=$3
+
+	if [ $type = f ]
+	then
+	       c='s/\<'$old'\([ 	]*(\)/'$new'\1/g'
+	else
+	       c='s/\<'$old'\>/'$new'/g'
+	fi
+	cmd="$cmd;$c"
+}
+
+cmd=""
+
+#---------------------------------------------------------------
+
+# cObj
+replace n cObj		    cObject
+replace f isa		    isA
+replace n namestr	    name_str
+replace n name		    namestr
+replace f getname	    name
+replace f getfullname	    fullName
+replace f getfullpath	    fullPath
+replace f setname	    setName
+replace f isname	    isName
+
+replace f setowner	    setOwner
+replace f defaultowner	    defaultOwner
+replace f takeownership     takeOwnership
+
+replace f writeto	    writeTo
+replace f deletechildren    deleteChildren
+replace f destructchildren  destructChildren
+replace f findobj	    findObject
+
+replace f foreach	    forEach
+replace f writecontents     writeContents
+replace f net_pack	    netPack
+replace f net_upack	    netUnpack
+
+# cArray
+replace f addat 	    addAt
+replace f isused	    isUsed
+
+# cQueue
+replace f isenqueued	    isEnqueued
+
+# cCoroutine
+replace f switchto	    switchTo
+replace f stackleft	    stackLeft
+replace f stacklow	    stackLow
+
+# cDetect..
+replace n algoritme	    algorithm
+replace n cTDResult	    cTransientDetection
+replace n cRAResult	    cAccuracyDetection
+replace n cTDAlg1	    cTDExpandingWindows
+replace n cRAAlg1	     cADByStddev
+replace n PostRAFunc	    PostADFunc
+replace f detect	    detected
+replace f addfunc	    setPostDetectFunction
+replace f setRApars	    setParameters
+replace f setTDpars	    setParameters
+replace f transdetect	    detectTransient
+replace f resaccdetect	    detectAccuracy
+replace f sethostobject     setHostObject
+replace f gethostobject     hostObject
+
+# iterators
+replace n cIter 	    cIterator
+replace n cSubmodIter	    cSubModIterator
+replace n cQueueIter	    cQueueIterator
+
+# cGate
+replace f setindex	    setIndex
+replace f setdelay	    setDelay
+replace f seterror	    setError
+replace f setdatarate	    setDataRate
+replace f setfrom	    setFrom
+replace f setto 	    setTo
+replace f setownermod	    setOwnerModule
+
+replace f ownermod	    ownerModule
+replace f ownergate	    ownerGate
+replace f fromgate	    fromGate
+replace f togate	    toGate
+replace f sourcegate	    sourceGate
+replace f destinationgate   destinationGate
+
+replace f isbusy	    isBusy
+replace f transmission_finishes  transmissionFinishes
+
+replace f routecontains     routeContains
+replace f isconnected	    isConnected
+replace f isrouteallright   isRouteOK
+
+# find...
+replace f findnet	    findNetwork
+replace f findmodtype	    findModuleType
+replace f findlink	    findLink
+replace f findfunction	    findFunction
+
+# cHistogram...
+replace f clearresult	    clearResult
+replace f deletefirstvals   deleteFirstvals
+replace f recreatefirstvals recreateFirstvals
+replace f getcellunder	    underflowCell
+replace f getcellover	    overflowCell
+
+# cType's...
+replace n Param 	   Parameter
+replace n cModType	   cModuleType
+replace n ModCreateFunc    ModuleCreateFunc
+replace n ModBuildFunc	   ModuleBuildFunc
+
+# in JAR: "\tParam.."
+replace n tParam	   tParameter
+replace n tcMod 	   tcModule
+replace n tcModType	   tcModuleType
+
+# cMod
+replace n cMod		   cModule
+replace n cSimpleMod	   cSimpleModule
+replace n cCompoundMod	   cCompoundModule
+
+replace f setsubscript	   setSubscript
+replace f addgate	   addGate
+replace f setgatesize	   setGateSize
+replace f setsubscript	   setSubscript
+
+replace f setindex		    setIndex
+replace f addgate		    addGate
+replace f setgatesize		    setGateSize
+replace f addpar		    addPar
+replace f addmachinepar 	    addMachinePar
+replace f setmachinepar 	    setMachinePar
+replace f issimple		    isSimple
+replace f modtype		    moduleType
+replace f parentmod		    parentModule
+replace f isonlocalmachine	    isOnLocalMachine
+replace f findgate		    findGate
+replace f checkinternalconnections  checkInternalConnections
+replace f findpar		    findPar
+replace f ancestorpar		    ancestorPar
+replace f machinepars		    machinePars
+replace f machinepar		    machinePar
+replace f schedulestart 	    scheduleStart
+replace f deletemodule		    deleteModule
+replace f memfree		    memFree
+replace f alloc 		    memAlloc
+
+# cSimpleMod
+replace n putaside_queue	    putAsideQueue
+replace f gettime		    simTime
+replace f phase 		    setPhase
+replace f getphase		    phase
+
+replace f sendmsgdelayed    sendDelayed
+replace f sendmsgdirect     sendDirect
+replace f sendmsg	    send
+replace f getmsg	    receive
+replace f getmsgon	    receiveOn
+replace f getnewmsg	    receiveNew
+replace f getnewmsgon	    receiveNewOn
+
+replace f scheduleat	    scheduleAt
+replace f cancelevent	    cancelEvent
+replace f cancelsyncpoint   cancelSyncpoint
+replace f istheremessage    isThereMessage
+replace f endsimulation     endSimulation
+replace f clearheap	    clearHeap
+replace f getstate	    moduleState
+
+# cMsg
+replace f setkind	    setKind
+replace f setpriority	    setPriority
+replace f setlength	    setLength
+replace f seterror	    setError
+replace f settimestamp	    setTimestamp
+replace f insertorder	    insertOrder
+replace f parlist	    parList
+replace f addpar	    addPar
+replace f sentfrommod	    sentFromModule
+replace f sentfromgate	    sentFromGate
+replace f arrivedinmod	    arrivedInModule
+replace f arrivedongate     arrivedOnGate
+replace f sendingtime	    sendingTime
+replace f arrivaltime	    arrivalTime
+replace f arrivedon	    arrivedOn
+
+# cMsgHeap
+replace f peekfirst	    peekFirst
+replace f getfirst	    getFirst
+
+# cNetMod
+replace f isconsole	    isConsole
+replace f islocalmachinein  isLocalMachineIn
+replace f stopallsegments   stop_all_segments
+
+# cOutFileMgr
+replace f setfilename  setFileName
+replace f filename     fileName
+replace f openfile     openFile
+replace f closefile    closeFile
+replace f deletefile   deleteFile
+replace f filepointer  filePointer
+replace f getnewID     getNewID
+
+# cPar
+replace f settext		 setFromText
+replace f gettext		 getAsText
+replace f getindirection	 indirection
+replace f cancelindirection	 cancelIndirection
+replace f conv2const		 convertToConst
+replace f gettype		 type
+replace n prompt		 promptstr
+replace f getprompt		 prompt
+replace f setprompt		 setPrompt
+replace f setinput		 setInput
+replace f isinput		 isInput
+
+replace f valuechanges		 valueChanges
+
+#   setval must be replaced as 'n' because it occurs without '('
+replace n setval		 setValue
+replace f stringval		 stringValue
+replace f charval		 charValue
+replace f boolval		 boolBalue
+replace f longval		 longValue
+replace f doubleval		 doubleValue
+replace f pointerval		 pointerValue
+
+# cQueue
+replace f inserthead		 insertHead
+replace f insertbefore		 insertBefore
+replace f insertafter		 insertAfter
+replace f peektail		 peekTail
+replace f peekhead		 peekHead
+replace f gettail		 getTail
+replace f gethead		 getHead
+
+# cSimulation
+replace n msg_queue		 msgQueue
+replace f lastmodindex		 lastModuleIndex
+replace f getbypath		 findModuleByPath
+replace f isunique		 isUnique
+
+replace f setsystemmod		 setSystemModule
+replace f systemmod		 systemModule
+
+replace f netinterface		 netInterface
+replace f setnetinterface	 setNetInterface
+replace f simulationtime	 simTime
+replace f resetclock		 resetClock
+replace f startclock		 startClock
+replace f stopclock		 stopClock
+replace f checktimes		 checkTimes
+
+replace f setupnetwork		 setupNetwork
+replace f startrun		 startRun
+replace f endrun		 endRun
+replace f deletenetwork 	 deleteNetwork
+replace f settimelimit		 setTimeLimit
+replace f setsimtimelimit	 setSimTimeLimit
+replace f inc_eventnumber	 incEventNumber
+replace f set_netif_check_freq	 setNetIfCheckFreq
+
+replace f getnetworktype	 networkType
+
+replace f getrunnumber		 runNumber
+replace f gettimelimit		 timeLimit
+replace f getsimtimelimit	 simTimeLimit
+replace f geteventnumber	 eventNumber
+
+replace f nextmodule		 selectNextModule
+
+replace f setcontext		 setContextModule
+replace f runningmod		 runningModule
+replace f contextmod		 contextModule
+replace f contextsimplemod	 contextSimpleModule
+replace f locallist		 localList
+
+replace f printmsg		 printMsg
+replace f errorcode		 errorCode
+replace f reseterror		 resetError
+
+# cStat
+replace f getcount   count
+replace n min	     min_samples
+replace n max	     max_samples
+replace f getmin     min
+replace f getmax     max
+replace f getmean    mean
+replace f getstddev  stddev
+
+replace f setgenk    setGenK
+
+# cModuleType
+#   buildinside must be replaced as 'n' because it occurs without '('
+replace n buildinside	    buildInside
+
+# cLinkType
+replace f createdelay	 createDelay
+replace f createerror	 createError
+replace f createdatarate createDataRate
+
+# cWatch
+replace f printto	 printTo
+replace f typechar	 typeChar
+
+# cEnvir
+replace f objectdeleted 	   objectDeleted
+replace f messagesent		   messageSent
+replace f messagedelivered	   messageDelivered
+replace f breakpointhit 	   breakpointHit
+replace f getparameter		   getParameter
+replace f getphysicalmachinefor    getPhysicalMachineFor
+replace f foreignputs		   foreignPuts
+replace f runningmode		   runningMode
+replace f extrastack		   extraStackForEnvir
+
+# other stuff
+replace n cMsg		   cMessage
+replace n cMsgHeap	   cMessageHeap
+replace n cPiSquare	   cPSquare
+replace n cModPar	   cModulePar
+replace n cSimpleStatistic cStdDev
+replace n cMsgHeapIter	   cMessageHeapIterator
+replace f fread 	   loadFromFile
+replace f fwrite	   saveToFile
+replace f basepoints	   cells+1
+replace f counter	   cell
+replace f count 	   samples
+
+# for sim151
+
+replace f Module	  such-interface-declarations-no-longer-needed
+replace f Define_Simple_Module	       Define_Module
+replace f Define_Simple_Module_Like    Define_Module_Like
+replace f Define_Compound_Module       Define_Module
+replace f Define_Compound_Module_Like  Define_Module_Like
+
+replace f ownerGate	  id
+replace f subscript	  id
+replace f sendFromModule  senderModuleId
+replace f sentFromGate	  senderGateId
+replace f arrivedInModule arrivalModuleId
+replace f arrivedOnGate   arrivalGateId
+
+#---------------------------------------------------------------
+
+echo Sed command: $cmd
+
+src1=`find . -name "*.cc"`
+src2=`find . -name "*.c"`
+src3=`find . -name "*.h"`
+src="$src1 $src2 $src3"
+echo Source files: $src
+
+for file in $src
+do
+    if [ -f "$file" ]
+    then
+       echo -n $file '	'
+       sed "$cmd" < $file > $file.new
+       mv $file.new $file
+    else
+       echo -n "(Cannot open $file)  "
+    fi
+done
+
+echo ""

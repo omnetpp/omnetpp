@@ -1,0 +1,38 @@
+# Definitions to be customized by 'configure'
+CC=gcc -g -I. -c -x c++
+AS=gcc -g -c
+AR=ar rs
+MAKE_SO=gcc -shared -o
+OMNETPP_ROOT=/home/andras/omnetpp
+OMNETPP_SRC_DIR=/home/andras/omnetpp/src
+OMNETPP_INCL_PATH=-I$(OMNETPP_SRC_DIR)/sim
+OMNETPP_INCLUDES=$(OMNETPP_SRC_DIR)/sim/*.h
+LIB_SUFFIX=so
+
+# Local definitions
+ENVIR_INCLUDES=../args.h ../cinifile.h ../omnetapp.h ../slaveapp.h
+CMDENV_INCLUDES=cmdenv.h enumstr.h
+INCL_PATH=-I..
+
+INCLUDES=$(OMNETPP_INCLUDES) $(ENVIR_INCLUDES) $(CMDENV_INCLUDES)
+CC_OPTS=$(OMNETPP_INCL_PATH) $(INCL_PATH)
+
+OBJS = cmdenv.o enumstr.o heap.o
+
+all : libcmdenv.$(LIB_SUFFIX)
+
+libcmdenv.a : $(OBJS)
+	$(AR) libcmdenv.a $(OBJS)
+
+libcmdenv.so : $(OBJS)
+	$(MAKE_SO) libcmdenv.so $(OBJS)
+
+cmdenv.o : cmdenv.cc $(INCLUDES)
+	$(CC) $(CC_OPTS) cmdenv.cc
+
+enumstr.o : enumstr.cc enumstr.h $(INCLUDES)
+	$(CC) $(CC_OPTS) enumstr.cc
+
+heap.o : heap.cc $(INCLUDES)
+	$(CC) $(CC_OPTS) heap.cc
+

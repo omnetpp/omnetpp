@@ -1,0 +1,387 @@
+#!/bin/sh
+#
+#    OMNeT++ config utility
+#
+#  configures paths and other options in makefiles
+#
+
+#----------------------------------------------------------------------
+# This script configures some variables in the makefiles
+#----------------------------------------------------------------------
+
+#Root directory and its subdirs
+# OMNETPP_ROOT
+# OMNETPP_SRC_DIR
+# OMNETPP_SAMPLES_DIR
+# OMNETPP_MODELS_DIR
+#
+#Programs
+# YACC    - yacc or bison
+# LEX     - lex or flex
+# CCC     - plain C compiler
+# CC      - C++ compiler
+# NEDC    - NED compiler
+# AS      - assembler
+# AR      - librarian
+# MAKE_SO - librarian to create shared objects 
+# LD      - linker
+#
+#Dynamic linking and run-time loaded libraries
+# LIB_SUFFIX - possible values are `a' and `so'. Selects whether
+#              OMNeT++ libraries should be made static or shared
+# USE_DLOPEN - possible values: 1 or 0. Selects whether dlopen()
+#              is available
+#
+#Directories etc.
+# OMNETPP_INCLUDES - list of OMNeT++ header files needed for apps
+# OMNETPP_INCL_PATH, OMNETPP_LIB_PATH
+# OMNETPP_BITMAP_PATH
+# TV_INCL_PATH,  TV_LIB_PATH,  TV_LIBS
+# TK_INCL_PATH,  TK_LIB_PATH,  TK_LIBS
+# X_INCL_PATH,   X_LIB_PATH,   X_LIBS
+# PVM_INCL_PATH, PVM_LIB_PATH, PVM_LIBS
+# SYS_LIBS
+#
+
+#
+# Directories where 'configur' will look to find library and include files.
+# Ordering is important if you have multiple files (e.g. multiple versions).
+#
+SEARCH_DIRS="/usr* /opt /local $HOME"
+
+#
+# The variables below will be substituted into makefiles, the makemake script etc.
+#
+OMNETPP_ROOT="$HOME/omnetpp"
+
+#
+# a=static, so=shared libraries. 
+#  If you change this setting, remember to delete the other set of libraries
+#  (or at least the soft links from lib/).
+#
+# LIB_SUFFIX='so'
+LIB_SUFFIX='a'  
+
+#
+# Enable/disable use of dlopen(), used by OMNeT++'s -l command line option 
+# and [General]/load-libs= ini file option
+#
+USE_DLOPEN=1
+
+#
+# Compile options. Use -g for debugging, -O3... for speed.
+#
+# CFLAGS='-g'
+CFLAGS='-O3 -DNDEBUG=1'
+
+#
+# normally you do not need to touch the things below:
+#
+YACC='bison'
+LEX='flex'
+CCC='gcc '$CFLAGS' -c'
+CC='gcc '$CFLAGS' -I. -c -x c++'
+NEDC='nedc'
+AS='gcc -g -c'
+AR='ar rs'
+MAKE_SO='gcc -shared -o'
+LD='gcc'
+
+#
+# The script will try to figure out what to put in the ..._PATH variables,
+# unless you explicitly specify a value here:
+#
+OMNETPP_SRC_DIR='$OMNETPP_ROOT/src'
+OMNETPP_SAMPLES_DIR='$OMNETPP_ROOT/samples'
+OMNETPP_MODELS_DIR='$OMNETPP_ROOT/models'
+OMNETPP_BITMAP_PATH='$OMNETPP_ROOT/bitmaps'
+
+OMNETPP_INCL_PATH='-I$OMNETPP_SRC_DIR/sim'
+OMNETPP_LIB_PATH='-L$OMNETPP_ROOT/lib'
+OMNETPP_INCLUDES=
+
+# TV_INCL_PATH='-I/usr/include/tvision'
+# X_INCL_PATH='-I/usr/include/X11'
+# TK_INCL_PATH='-I/usr/include/tcl7.5 -I/usr/include/tk4.1'
+# PVM_INCL_PATH='-I$PVM_ROOT/include'
+
+# TV_LIB_PATH='-L/usr/lib'
+# X_LIB_PATH='-L/usr/X11/lib'
+# TK_LIB_PATH='-L/usr/lib'
+# PVM_LIB_PATH='-L$PVM_ROOT/lib/$PVM_ARCH'
+
+TV_LIBS='-ltv'
+X_LIBS='-lX11'
+TK_LIBS='-ltk -ltcl -ldl'
+PVM_LIBS='-lgpvm3 -lpvm3'
+SYS_LIBS='-lm -lstdc++'
+
+OMNETPP_INCLUDES='$OMNETPP_SRC_DIR/sim/*.h'
+
+#--- customizable part ends here -------------------------------------------
+
+if [ "$USE_DLOPEN" = "1" ]; then
+  SYS_LIBS="-ldl $SYS_LIBS"
+fi
+
+if echo $PATH | grep -q $OMNETPP_ROOT/bin; then
+  echo "Your PATH contains $OMNETPP_ROOT/bin. Good."
+else 
+  cat << EOT
+You should put $OMNETPP_ROOT/bin into your path. Add the following line to 
+your startup file:
+  export PATH=\$PATH:\$HOME/omnetpp/bin  # .(bash_)profile if you use sh/bash
+  setenv PATH \$PATH:\$HOME/omnetpp/bin  # .cshrc if you use csh,tcsh etc.
+
+EOT
+   export PATH=$PATH:$HOME/omnetpp/bin
+fi
+
+if [ "$LIB_SUFFIX" = "so" ]; then  
+  if echo $LD_LIBRARY_PATH | grep -q $OMNETPP_ROOT/lib; then
+    echo "Your LD_LIBRARY_PATH is set. Good."
+  else
+    cat << EOT
+Note: Dynamic libraries are selected in configure (LIB_SUFFIX=so). 
+You'll either have to create symbolic links from /usr/lib to the 
+OMNeT++ shared libraries (as root) or set the LD_LIBRARY_PATH environment 
+variable. Add the corresponding line to your startup file:
+  export LD_LIBRARY_PATH=\$LD_LIBRARY_PATH:\$HOME/omnetpp/lib
+         # into .(bash_)profile if you use bash or other sh-like shell
+  setenv LD_LIBRARY_PATH \$LD_LIBRARY_PATH:\$HOME/omnetpp/lib
+         # into .cshrc if you use tcsh or other csh-like shell
+If you prefer static libraries, change LIB_SUFFIX='so' to
+LIB_SUFFIX='a' in the configure script, then re-run configure and makeall.
+EOT
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/omnetpp/lib
+  fi
+fi
+
+#
+# some checks for gcc, yacc, flex
+#
+if [ "$CCC" = "gcc -g -c" ]; then
+    if gcc --version >/dev/null 2>&1; then : ; else
+        echo 'Warning: gcc not found, you have to manually edit CC=, CCC=, MAKE_SO and LD= lines in configure'
+    fi
+fi
+
+if [ "$YACC" = "bison" ]; then
+    if bison --version >/dev/null 2>&1; then : ; else
+        echo 'Warning: bison not found, using yacc (not supported)'
+        YACC='yacc'
+    fi
+fi
+
+if [ "$LEX" = "flex" ]; then
+    if flex --version >/dev/null 2>&1; then : ; else
+        echo 'Warning: flex not found, using lex (not supported)'
+        LEX='lex'
+    fi
+fi
+
+#
+# code that sets missing variables
+#
+echo
+echo "Searching (`echo $SEARCH_DIRS`) for Tcl/Tk, X, PVM etc. include and lib files"
+echo
+TMPFILE=/tmp/files.$USER.$RANDOM
+find $SEARCH_DIRS \
+        -name tv.h -or -name tk.h -or -name tcl.h -or \
+        -name Xlib.h -or -name pvm3.h -or \
+        -name 'libtv.a*' -or -name 'libtcl*.a*' -or -name 'libtk*.a*' -or \
+        -name 'libX11.a*' -or -name 'libpvm3.a*' -or \
+        -name 'libtv.so*' -or -name 'libtcl*.so*' -or -name 'libtk*.so*' -or \
+        -name 'libX11.so*' -or -name 'libpvm3.so*' \
+        >$TMPFILE 2>/dev/null
+
+libname () {
+    echo $1 | sed 's/.*\/lib\([^\/]*\)\..*/\1/'
+}
+
+if [ "$TV_INCL_PATH" = "" ]; then
+    count=`grep tv.h $TMPFILE | wc -l | awk '{print $1}'`
+    files=`grep tv.h $TMPFILE`
+    file=`grep tv.h $TMPFILE | sed '2,$d'`
+    case $count in
+        0)  echo 'Turbo Vision include files not found'; ;;
+        1)  TV_INCL_PATH="-I`dirname $file`"; ;;
+        *)  echo $count' copies of tv.h found ('$files'), using '$file
+            TV_INCL_PATH="-I`dirname $file`"; ;;
+    esac
+fi
+if [ "$TV_LIB_PATH" = "" ]; then
+    count=`grep libtv.a $TMPFILE | wc -l | awk '{print $1}'`
+    files=`grep libtv.a $TMPFILE`
+    file=`grep libtv.a $TMPFILE | sed '2,$d'`
+    case $count in
+        0)  echo 'Turbo Vision library not found'; ;;
+        1)  TV_LIB_PATH="-L`dirname $file`"; ;;
+        *)  echo $count' copies of libtv.a found ('$files'), using '$file
+            TV_LIB_PATH="-L`dirname $file`"; ;;
+    esac
+fi
+if [ "$TK_INCL_PATH" = "" ]; then
+    count=`grep tk.h $TMPFILE | wc -l | awk '{print $1}'`
+    files=`grep tk.h $TMPFILE`
+    file=`grep tk.h $TMPFILE | sed '2,$d'`
+    case $count in
+        0)  echo 'Tk include files not found'; ;;
+        1)  TK_INCL_PATH="-I`dirname $file`"; ;;
+        *)  echo $count' copies of tk.h found ('$files'), using '$file
+            TK_INCL_PATH="-I`dirname $file`"; ;;
+    esac
+    count=`grep tcl.h $TMPFILE | wc -l | awk '{print $1}'`
+    files=`grep tcl.h $TMPFILE`
+    file=`grep tcl.h $TMPFILE | sed '2,$d'`
+    case $count in
+        0)  echo 'Tcl include files not found'; ;;
+        1)  TK_INCL_PATH="$TK_INCL_PATH -I`dirname $file`"; ;;
+        *)  echo $count' copies of tcl.h found ('$files'), using '$file
+            TK_INCL_PATH="$TK_INCL_PATH -I`dirname $file`"; ;;
+    esac
+fi
+if [ "$TK_LIB_PATH" = "" ]; then
+    TK_LIBS=""
+    count=`grep 'libtk[.0-9]*\.[aso]*' $TMPFILE | wc -l | awk '{print $1}'`
+    files=`grep 'libtk[.0-9]*\.[aso]*' $TMPFILE`
+    file=`grep 'libtk[.0-9]*\.[aso]*' $TMPFILE | sed '2,$d'`
+    case $count in
+        0)  echo 'Tk library not found'; ;;
+        1)  TK_LIB_PATH="-L`dirname $file`"
+            TK_LIBS="-l`libname $file`"; ;;
+        *)  echo $count' copies of libtk*.* found ('$files'), using '$file
+            TK_LIB_PATH="-L`dirname $file`"
+            TK_LIBS="-l`libname $file`"; ;;
+    esac
+    count=`grep 'libtcl[.0-9]*\.[aso]*' $TMPFILE | wc -l | awk '{print $1}'`
+    files=`grep 'libtcl[.0-9]*\.[aso]*' $TMPFILE`
+    file=`grep 'libtcl[.0-9]*\.[aso]*' $TMPFILE | sed '2,$d'`
+    case $count in
+        0)  echo 'Tcl library not found'; ;;
+        1)  TK_LIB_PATH="$TK_LIB_PATH -L`dirname $file`"
+            TK_LIBS="$TK_LIBS -l`libname $file`"; ;;
+        *)  echo $count' copies of libtcl*.* found ('$files'), using '$file
+            TK_LIB_PATH="$TK_LIB_PATH -L`dirname $file`"
+            TK_LIBS="$TK_LIBS -l`libname $file`"; ;;
+    esac
+    TK_LIBS="$TK_LIBS -ldl"
+fi
+if [ "$X_INCL_PATH" = "" ]; then
+    count=`grep Xlib.h $TMPFILE | wc -l | awk '{print $1}'`
+    files=`grep Xlib.h $TMPFILE`
+    file=`grep Xlib.h $TMPFILE | sed '2,$d'`
+    case $count in
+        0)  echo 'X11 include files not found'; ;;
+        1)  X_INCL_PATH="-I`dirname $file`"; ;;
+        *)  echo $count' copies of Xlib.h found ('$files'), using '$file
+            X_INCL_PATH="-I`dirname $file`"; ;;
+    esac
+fi
+if [ "$X_LIB_PATH" = "" ]; then
+    count=`grep libX11.a $TMPFILE | wc -l | awk '{print $1}'`
+    files=`grep libX11.a $TMPFILE`
+    file=`grep libX11.a $TMPFILE | sed '2,$d'`
+    case $count in
+        0)  echo 'X11 library not found'; ;;
+        1)  X_LIB_PATH="-L`dirname $file`"; ;;
+        *)  echo $count' copies of libX11.a found ('$files'), using '$file
+            X_LIB_PATH="-L`dirname $file`"; ;;
+    esac
+fi
+if [ "$PVM_INCL_PATH" = "" ]; then
+    count=`grep pvm3.h $TMPFILE | wc -l | awk '{print $1}'`
+    files=`grep pvm3.h $TMPFILE`
+    file=`grep pvm3.h $TMPFILE | sed '2,$d'`
+    case $count in
+        0)  echo 'Pvm3 include files not found'; ;;
+        1)  PVM_INCL_PATH="-I`dirname $file`"; ;;
+        *)  echo $count' copies of pvm3.h, using '$file
+            PVM_INCL_PATH="-I`dirname $file`"; ;;
+    esac
+fi
+if [ "$PVM_LIB_PATH" = "" ]; then
+    count=`grep libpvm3.a $TMPFILE | wc -l | awk '{print $1}'`
+    files=`grep libpvm3.a $TMPFILE`
+    file=`grep libpvm3.a $TMPFILE | sed '2,$d'`
+    case $count in
+        0)  echo 'Pvm3 library not found'; ;;
+        1)  PVM_LIB_PATH="-L`dirname $file`"; ;;
+        *)  echo $count' copies of libpvm3.a found ('$files'), using '$file
+            PVM_LIB_PATH="-L`dirname $file`"; ;;
+    esac
+fi
+
+rm -f $TMPFILE
+
+#
+# prepare sed command that modifies files
+#
+#echo
+#echo Variables:
+sedcmd=""
+sedcmd2=""
+for var in \
+  OMNETPP_ROOT OMNETPP_SRC_DIR OMNETPP_SAMPLES_DIR OMNETPP_MODELS_DIR \
+  YACC LEX CCC CC NEDC AS AR MAKE_SO LD \
+  LIB_SUFFIX USE_DLOPEN \
+  TV_INCL_PATH  TV_LIB_PATH  TV_LIBS \
+  TK_INCL_PATH  TK_LIB_PATH  TK_LIBS \
+  X_INCL_PATH   X_LIB_PATH   X_LIBS \
+  PVM_INCL_PATH PVM_LIB_PATH PVM_LIBS \
+  SYS_LIBS \
+  OMNETPP_INCLUDES OMNETPP_INCL_PATH OMNETPP_LIB_PATH OMNETPP_BITMAP_PATH
+do
+    # sedcmd: sed command for makefiles. $FOO in values modified to $(FOO)
+    # sedcmd2: sed command for scripts. Values are placed between quotes
+    val=`eval echo \\$$var`
+    #echo '  '$var' = '$val
+    val=`echo $val | sed 's/\\//\\\\\\//g'`
+    valp=`echo $val | sed 's/\$\([_A-Z0-9].[_A-Z0-9]*\)/$(\1)/g'`
+    c="s/^$var[ ]*=.*$/$var=$valp/"
+    cq="s/^$var[ ]*=.*$/$var=\"$val\"/"
+    if [ "$sedcmd" = "" ]; then
+        sedcmd="$c"
+        sedcmd2="$cq"
+    else
+        sedcmd="$sedcmd;$c"
+        sedcmd2="$sedcmd2;$cq"
+    fi
+done
+
+#
+# modify makefiles and makemake using sed
+#
+echo
+echo Configuring all makefiles plus scripts in src/utils/
+makefile_ins=`find $OMNETPP_ROOT -name makefile.in`
+for infile in $makefile_ins
+do
+    file=`echo $infile | sed 's/\.in$//'`
+    if sed "$sedcmd" < $infile > $file; then
+       : #echo "  $infile --> $file OK"    
+    else
+       echo "Cannot create makefile from $infile"
+    fi
+done
+scripts=`find $OMNETPP_ROOT/src/utils -name makemake -or -name makeall \
+                                 -or -name all2unix -or -name makedist`
+for file in $scripts
+do
+    if [ -f "$file" ]; then
+       if (cp $file $file.new && \
+           sed "$sedcmd2" < $file > $file.new && \
+           mv $file.new $file)
+       then
+           : #echo "  $file OK"
+       else
+           echo "Cannot update $file"
+           rm -f $file.new
+       fi
+    else
+       echo "Cannot open $file"
+    fi
+done
+echo
+

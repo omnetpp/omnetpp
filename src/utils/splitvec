@@ -1,0 +1,16 @@
+#!/usr/bin/awk -f
+#
+# Splits an output vector (.vec) file into files with one vector in each
+#   ie: foo.vec --> foo-1.vec, foo-2.vec, foo-3.vec,...
+# --VA
+#
+/^vector/	{
+			basefname=FILENAME
+			gsub( "\.[^.]*$", "", basefname );
+			fname[$2] = basefname "-" $2 ".vec"
+			print "creating file `" fname[$2] "'"
+			print "# " $0 > fname[$2]
+		}
+/^[0-9]/	{
+			print $2 "\t" $3 "\t" $4 >> fname[$1]
+		}

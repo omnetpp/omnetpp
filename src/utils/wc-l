@@ -1,0 +1,23 @@
+# count lines
+wc -l `find .   -name '*.c' -or \
+                -name '*.cc' -or \
+                -name '*.h' -or \
+                -name '*.tcl' -or \
+                -name '*.ned' -or \
+                -name '*.y' -or \
+                -name '*.lex'` | \
+awk '
+!/total/        {a["total"]+=$1;}
+/\/jar\//       {a["jar"]+=$1;}
+/\/sim\//       {a["sim"]+=$1;}
+/\/envir\//     {a["envir"]+=$1;}
+/\/cmdenv\//    {a["cmdenv"]+=$1;}
+/\/tkenv\//     {a["tkenv"]+=$1;}
+/\/tvenv\//     {a["tvenv"]+=$1;}
+/\/gned\//      {a["gned"]+=$1;}
+/\/plove\//     {a["plove"]+=$1;}
+/\/samples\//   {a["samples"]+=$1;}
+END             {a["envir"]-=a["cmdenv"]+a["tkenv"]+a["tvenv"];
+                 for (i in a) print i ":\t" a[i];}
+'
+

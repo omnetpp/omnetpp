@@ -1,0 +1,91 @@
+#23
+  - integrating VZ's stuff. Won't compile
+#71
+  - improved alloctable[]
+  - better heap debugging messages
+#72
+  - upgraded for sim102's
+  - added periodic display update
+#74
+  - heap.cc's alloctable[] made dynamic
+#75
+  - bugfixes
+#76  Feb 28, 1997
+  - adopted to sim105 & 'multiple runs' bug fixed
+#77  Feb 28, 1997
+  - adopted to envir81 and sim109
+#78  Mar 15, 1997
+  - adopted to sim120c
+#80  Mar 24, 1997
+  - opt_networkname now explicitly casted from string to char* in printf()
+#81  Apr 11, 1997
+  - opt_helponly moved from envir package to cmdenv
+#82  Apr 22, 1997
+  - cSimulation's geteventnumber() and inc_eventnumber() introduced
+    instead of own event counting (compatible with sim130 and up)
+#83  Jul 1, 1997
+  - small changes
+#84  Jul 2, 1997
+  - opt_verbose bug fixed
+  - usage of cEnvir::disable_tracing added
+#85 Jul 10, 1997
+  - makefile hacked upon to make it edible for Cygnus gcc
+#86 Jul 20, 1997
+  - removed TCmdenv::foreignputs()
+#87 Jul 31, 1997
+  - [General]/number-of-runs= ini file option was replaced by
+    [Cmdenv]/runs-to-execute=.
+    Now it's possible to say things like:
+       [Cmdenv]
+       runs-to-execute = 1,2, 5-8
+    There is a command-line equivalent: -r1,2,5-8
+    If the list of runs is not given explicitly, executes all runs
+    that have an ini file section; if no runs are given in the ini file,
+    does one run.
+  - compatibility: envir97 or newer
+#88 Aug 7, 1997
+  - cNetSimpleMod corrected to cNetMod
+  - [Cmdenv]/runs-to-execute default value changed: NULL-->""
+  - compatibility: sim144a or up
+#89 Aug 17, 1997
+  - updated for sim146a
+#90 Aug 17, 1997
+  - "Network not found" msg improved
+#91 Oct 2, 1997
+  - cleaned up & renamed several member functions; compatible with sim147
+#92 Oct 6, 1997
+  - further renaming; compatible with sim148
+#93 Dec 13, 1997
+  - brought up-to-date with sim151
+#94 Feb 15, 1998
+  - makefile changed; cmdenv.a-->libcmdenv.a
+#95 April 26, 1998
+  - makefile can now create shared object (libcmdenv.so)
+#96 May 12, 1998
+  - makefile updated
+#97 May 18, 1998
+  - inspectors made compatible with sim160
+#98 May 18, 1998
+  - inspectors made compatible with sim162
+#99 June 24, 1998
+  - callFinish() added
+#100 July 15, 1998
+  - small fixes
+  - callFinish() added
+#101 August 12, 1998
+  - Borland C++ 5.0 project file added
+  - small fixes
+#102 August 14, 1998
+  - makefile fix
+#103 Dec 27, 1998
+  - updated for sim170
+  - extraStackForEnvir() raised to 8K (was zero)
+  - some bugs fixed in heap.cc
+  - makefile renamed to makefile.in
+  - runningModule() corrected to contextModule()
+#104 Jan 25, 1999
+  - updated for sim172d
+#105 Feb 7, 1999
+  - small fixes
+
+--- CVS begin ---

@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Converts files from DOS
+# --VA
+#
+while [ "$1" != "" ]
+do
+    if [ -f $1 ]; then
+       echo -n $1 '  '
+       cp $1 $1.b
+       sed 's/[[:cntrl:]]$//g' $1.b > $1
+       rm $1.b
+    else
+       echo -n "($1:cannot open)  "
+    fi
+    shift
+done
+echo ""
+echo Done
