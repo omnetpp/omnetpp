@@ -91,7 +91,7 @@ void CDirs::OnOppdirBrowse()
     lpbi.hwndOwner = m_hWnd;
 	lpbi.pidlRoot = NULL;
     lpbi.pszDisplayName = dirN;
-    lpbi.lpszTitle = "Select OMNeT++ root Directory";
+    lpbi.lpszTitle = "Select OMNeT++ root directory";
     lpbi.ulFlags = BIF_EDITBOX;
     lpbi.lpfn = NULL;
     lpbi.lParam = NULL;
@@ -116,7 +116,7 @@ void CDirs::OnTcldirBrowse()
     lpbi.hwndOwner = m_hWnd;
 	lpbi.pidlRoot = NULL;
     lpbi.pszDisplayName = dirN;
-    lpbi.lpszTitle = "Select TCL/TK root Directory";
+    lpbi.lpszTitle = "Select TCL/TK lib directory";
     lpbi.ulFlags = BIF_EDITBOX;
     lpbi.lpfn = NULL;
     lpbi.lParam = NULL;
@@ -138,11 +138,6 @@ void CDirs::OnChangeOppdir()
 
 	// TODO: Add your control notification handler code here
 	m_OppDir.GetWindowText(OppDir, MAX_PATH);
-//	m_OppDir.SetWindowText(OppDir);
-//	strcpy(TclDir, "e:\\tcl");
-//	m_TclDir.SetWindowText(TclDir);
-//	strcpy(TclVer, "8.2");
-//	m_TclVer.SetWindowText(TclVer);
 
 }
 

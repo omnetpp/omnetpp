@@ -28,12 +28,16 @@ void COmnetppWizardAppWiz::InitCustomAppWiz()
 	SetNumberOfSteps(LAST_DLG);
 
 	// TODO: Add any other custom AppWizard-wide initialization here.
-	if(!GetFromReg("RootPath", OppDir))
-		strcpy(OppDir, OPP_DIR);
-	if(!GetFromReg("TclPath", TclDir))
-		strcpy(TclDir, TCL_DIR);
-	if(!GetFromReg("TclVer", TclVer))
-		strcpy(TclVer, TCL_VER);
+	if(!GetFromReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\OMNeT++AppWizard", "omnetpp-root", OppDir))
+	    if(!GetFromReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\OMNeT++", "", OppDir))
+    		strcpy(OppDir, OPP_DIR);
+	if(!GetFromReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\OMNeT++AppWizard", "tcl-lib-dir", TclDir))
+	{
+	    strcpy(TclDir, OppDir);
+		strcat(TclDir,"\\lib");
+	}
+	if(!GetFromReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\OMNeT++AppWizard", "tcl-ver", TclVer))
+	    strcpy(TclVer, TCL_VER);
 }
 
 // This is called just before the custom AppWizard is unloaded.
@@ -45,9 +49,9 @@ void COmnetppWizardAppWiz::ExitCustomAppWiz()
 	m_pChooser = NULL;
 
 	// TODO: Add code here to deallocate resources used by the custom AppWizard
-	PutToReg("RootPath", OppDir);
-	PutToReg("TclPath", TclDir);
-	PutToReg("TclVer", TclVer);
+	PutToReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\OMNeT++AppWizard", "omnetpp-root", OppDir);
+	PutToReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\OMNeT++AppWizard", "tcl-lib-dir", TclDir);
+	PutToReg(HKEY_LOCAL_MACHINE, "SOFTWARE\\OMNeT++AppWizard", "tcl-ver", TclVer);
 
 
 	char in[MAX_PATH], out[MAX_PATH];
@@ -106,13 +110,13 @@ void COmnetppWizardAppWiz::CustomizeProject(IBuildProject* pProject)
 
 }
 
-bool COmnetppWizardAppWiz::GetFromReg(char *variable, char *value)
+bool COmnetppWizardAppWiz::GetFromReg(HKEY hkey, char *subkey, char *variable, char *value)
 {
 	HKEY hk;
 	unsigned long type;
 	unsigned long size;
 
-	if(RegOpenKey(HKEY_CURRENT_USER, REG_KEY, &hk) != ERROR_SUCCESS)
+	if(RegOpenKey(hkey, subkey, &hk) != ERROR_SUCCESS)
 		return false;
 	size = 255;
 	if(RegQueryValueEx(hk, variable, NULL, &type, (unsigned char *)value, &size) != ERROR_SUCCESS)
@@ -123,13 +127,13 @@ bool COmnetppWizardAppWiz::GetFromReg(char *variable, char *value)
 	return true;
 }
 
-bool COmnetppWizardAppWiz::PutToReg(char *variable, char *value)
+bool COmnetppWizardAppWiz::PutToReg(HKEY hkey, char *subkey, char *variable, char *value)
 {
 	HKEY hk;
 	unsigned long type;
 	unsigned long size;
 
-	if(RegCreateKey(HKEY_CURRENT_USER, REG_KEY, &hk) != ERROR_SUCCESS)
+	if(RegCreateKey(hkey, subkey, &hk) != ERROR_SUCCESS)
 		return FALSE;
 	size = strlen(value);
 	type = REG_SZ;

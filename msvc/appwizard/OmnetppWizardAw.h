@@ -22,8 +22,8 @@ public:
 
 protected:
 	CDialogChooser* m_pChooser;
-	bool GetFromReg(char *variable, char *value);
-	bool PutToReg(char *variable, char *value);
+	bool GetFromReg(HKEY hkey, char *subkey, char *variable, char *value);
+	bool PutToReg(HKEY hkey, char *subkey, char *variable, char *value);
 };
 
 // This declares the one instance of the COmnetppWizardAppWiz class.  You can access

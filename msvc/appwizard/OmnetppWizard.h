@@ -8,9 +8,8 @@
 #include "resource.h"       // main symbols
 
 // TODO: You may add any other custom AppWizard-wide declarations here.
-#define REG_KEY "Software\\OMNeT++"
-#define OPP_DIR "c:\\work\\omnetpp"
-#define TCL_DIR "e:\\tcl"
+#define OPP_DIR "c:\\OMNeT++"
+#define TCL_DIR "c:\\OMNeT++\\lib"
 #define TCL_VER "8.2"
 
 #define PROJ_DESC_L 300

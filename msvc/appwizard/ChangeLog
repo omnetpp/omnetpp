@@ -1,5 +1,11 @@
 Apr 18, 2001
  - added OMNeT++ MSVC appwizard to the repository
+May 19, 2001
+ Brushed up for OMNeT++ 2.1:
+  - use HKLM\SOFTWARE\OMNeT++ and HKLM\SOFTWARE\OMNeT++Appwizard registry
+    entries
+  - location of include files changed
+  - added hotkeys
 
 
 
