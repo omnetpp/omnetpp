@@ -1,5 +1,8 @@
 
-TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-opnet.tex ch-parallel-exec.tex ch-sim-lib.tex references.tex ch-build-sim-progs.tex ch-ned-grammar.tex ch-opp-design.tex ch-parsec.tex ch-simple-modules.tex title.tex ch-example-nim.tex ch-ned-lang.tex ch-overview.tex ch-run-sim.tex history.tex usman.tex
+TEXSRC = ch-ana-sim.tex ch-introduction.tex ch-parallel-exec.tex ch-sim-lib.tex \
+         references.tex ch-build-sim-progs.tex ch-ned-grammar.tex \
+         ch-opp-design.tex ch-simple-modules.tex title.tex ch-example-nim.tex \
+         ch-ned-lang.tex ch-overview.tex ch-run-sim.tex history.tex usman.tex
 
 PSPICS = figures/*.eps
 PDFPICS = figures/*.pdf

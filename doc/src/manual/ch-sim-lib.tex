@@ -4669,7 +4669,7 @@ left unchanged.
 
 In fact, the same question arises at three places:
 the assignment operator \fname{operator=()}, the copy constructor
-(e.g. \fname{cArray(const cArray&)}) and the \fname{dup()} method.
+(e.g. \fname{cArray(const cArray\&)}) and the \fname{dup()} method.
 In OMNeT++, the convention is that copying is implemented
 in the assignment operator. (The copy constructor just constructs
 an empty object and invokes assigment, while \fname{dup()}
