@@ -604,7 +604,8 @@ cSimpleModule::cSimpleModule(const cSimpleModule& mod) :
   putAsideQueue( NULL, NULL, false )
 {
     take( &locals );
-    take( &putAsideQueue );
+    //take( &putAsideQueue );
+    putAsideQueue.setOwner(NULL); // hide deprecated putAsideQueue from object tree
 
     heap = NULL;
     timeoutmsg = NULL;
@@ -625,7 +626,8 @@ cSimpleModule::cSimpleModule(const char *name, cModule *parentmod, unsigned stks
     usesactivity = (stksize!=0);
 
     take( &locals );
-    take( &putAsideQueue );
+    //take( &putAsideQueue );
+    putAsideQueue.setOwner(NULL); // hide deprecated putAsideQueue from object tree
 
     // for an activity() module, timeoutmsg will be created in scheduleStart()
     // which must always be called
@@ -1068,6 +1070,34 @@ void cSimpleModule::wait(simtime_t t)
         {
             ev.messageDelivered( newmsg );
             putAsideQueue.insert( newmsg );
+        }
+    }
+    take(timeoutmsg);
+}
+
+void cSimpleModule::waitAndEnqueue(simtime_t t, cQueue *queue)
+{
+    if (!usesactivity)
+        throw new cException(eNORECV);
+    if (t<0)
+        throw new cException(eNEGTIME);
+    if (!queue)
+        throw new cException("waitAndEnqueue(): queue pointer is NULL");
+
+    timeoutmsg->setArrivalTime(simTime()+t);
+    simulation.msgQueue.insert( timeoutmsg );
+
+    for(;;)
+    {
+        simulation.transferToMain();
+        cMessage *newmsg = simulation.msgQueue.getFirst();
+
+        if (newmsg==timeoutmsg)
+            break;
+        else
+        {
+            ev.messageDelivered( newmsg );
+            queue->insert( newmsg );
         }
     }
     take(timeoutmsg);
