@@ -214,8 +214,8 @@ void cPar::info(char *buf)
                   };
                   break;
         case 'B': sprintf(b,"%s (B)", lng.val?"true":"false"); break;
-        case 'M': if (xml.node)
-                      sprintf(b,"<%s> from %s (M)", xml.node->getTagName(), xml.node->getSourceLocation());
+        case 'M': if (xmlp.node)
+                      sprintf(b,"<%s> from %s (M)", xmlp.node->getTagName(), xmlp.node->getSourceLocation());
                   else
                       sprintf(b,"nil (M)");
                   break;
@@ -736,7 +736,7 @@ cPar& cPar::setXMLValue(cXMLElement *node)
 
     beforeChange();
     deleteold();
-    xml.node = node;
+    xmlp.node = node;
     typechar = 'M';
     inputflag=false;
     afterChange();
@@ -893,7 +893,7 @@ cXMLElement *cPar::xmlValue()
 
     if (isInput()) read();
     if (typechar=='M')
-        return xml.node;
+        return xmlp.node;
     else
         throw new cException(this,eBADCAST,typeName(typechar),typeName('M'));
 }
@@ -935,7 +935,7 @@ bool cPar::equalsTo(cPar *par)
         case 'T': return dtr.res == par->dtr.res;
         case 'P': return ptr.ptr == par->ptr.ptr;
         case 'O': return obj.obj == par->obj.obj;
-        case 'M': return xml.node == par->xml.node;
+        case 'M': return xmlp.node == par->xmlp.node;
         case 'X': throw new cException(this, "equalsTo() with X type not implemented");
         case 'C': throw new cException(this, "equalsTo() with C type not implemented");
         default: return 0;
@@ -1007,8 +1007,8 @@ string cPar::getAsText() const
        case 'O': return string("object ")+(obj.obj?obj.obj->fullPath():"NULL");
        case 'C': return string("compiled expression ")+cexpr.expr->getAsText();
        case 'X': return string("reverse Polish expression");
-       case 'M': if (xml.node)
-                     return string("<")+xml.node->getTagName()+"> from "+xml.node->getSourceLocation();
+       case 'M': if (xmlp.node)
+                     return string("<")+xmlp.node->getTagName()+"> from "+xmlp.node->getSourceLocation();
                  else
                      return string("NULL");
                  break;
