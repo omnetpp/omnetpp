@@ -213,7 +213,7 @@ proc create_omnetpp_window {} {
       {sep5     -separator}
       {network  -image $icons(network) -command {inspect_systemmodule}}
       {fes      -image $icons(fes)     -command {inspect_messagequeue}}
-      {objs     -image $icons(config)  -command {inspect_filteredobjectlist}}
+      {objs     -image $icons(findobj) -command {inspect_filteredobjectlist}}
       {sep6     -separator}
       {tree     -image $icons(tree)    -command {toggle_treeview}}
       {options  -image $icons(config)  -command {simulation_options}}

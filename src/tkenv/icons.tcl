@@ -173,6 +173,13 @@ set icons(finish) [image create photo -data {
     HgMrsLGys7QSEQAAOw==
 }]
 
+set icons(findobj) [image create photo -data {
+    R0lGODlhFAATALMAAAAAAAAAhAD//4SEhOferf///8AAAIAAAP//////////////
+    /////////////////yH5BAEAAAQALAAAAAAUABMAAARVkMhJq60gg3sz9ZwEDEU5
+    DVsIlILwqUThWikdG3gucht+/EBCDUMwHHLGg1CVBB5AvMExNxp2AMBRYBuSGDSA
+    AGErDiVzYnLX+UtzuxU33PKe2++TCAA7
+}]
+
 set icons(chan_vs) [image create photo -data {
     R0lGODlhEAAQALMAAAAAAISEhP//////////////////////////////////////////////
     /////////yH5BAEAAAIALAAAAAAQABAAAAQpUMhJq704A5Dn3oH2BQFnfQC5nWP5Uaj6ei1a
