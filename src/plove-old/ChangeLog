@@ -70,4 +70,12 @@ Mar 24, 2001
 Apr 3, 2001
  - fix: the ap window didn't acquire focus on startup (added deiconify command)
 Apr 16, 2001
+ - Plove can now be compiled as GUI application (not console app) on Windows,
+   setting USE_WINMAIN=yes in configuser.vc.
+   NOTE: main() and WinMain() use completely different startup sequences.
+   The reason: main()'s startup code with WinMain would result in an "unknown
+   channel stdout" error in the Tcl code (and it's not so easy to create a
+   dummy channel named stdout), while WinMain()'s startup sequence with main()
+   would result in a working command prompt in the console window (!!!).
+   Pretty weird.
  - added plove.ico

@@ -12,6 +12,11 @@ PLOVE_EXE_IF_NEEDED=plove.exe
 PLOVE_EXE_IF_NEEDED=
 !endif
 
+!if "$(USE_WINMAIN)"=="yes"
+CFLAGS=$(CFLAGS) /DUSE_WINMAIN
+LDFLAGS=$(LDFLAGS) /SUBSYSTEM:WINDOWS
+!endif
+
 #
 # Local definitions
 #
