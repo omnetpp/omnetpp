@@ -713,6 +713,7 @@ double cNEDNetworkBuilder::evalConst(ConstNode *node, cModule *, cModule *)
 // build reverse Polish expressions
 
 // helper, for debugging
+#if 0
 static void printXElems(char *buf, cPar::ExprElem *xelems, int n)
 {
     for (int i=0; i<n; i++)
@@ -734,6 +735,7 @@ static void printXElems(char *buf, cPar::ExprElem *xelems, int n)
         buf += strlen(buf);
     }
 }
+#endif
 
 void cNEDNetworkBuilder::assignParamValue(cPar& p, ExpressionNode *expr, cModule *parentmodp, cModule *submodp)
 {

@@ -43,7 +43,7 @@ void PPSink::handleMessage(cMessage *msg)
 
     // update status string above icon
     char txt[32];
-    sprintf(txt, "received: %d", qstats.samples());
+    sprintf(txt, "received: %ld", qstats.samples());
     displayString().setTagArg("t",0, txt);
 }
 

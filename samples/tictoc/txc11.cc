@@ -118,7 +118,7 @@ void Txc11::handleMessage(cMessage *msg)
 void Txc11::updateDisplay()
 {
     char buf[40];
-    sprintf(buf, "rcvd: %d sent: %d", numReceived, numSent);
+    sprintf(buf, "rcvd: %ld sent: %ld", numReceived, numSent);
     displayString().setTagArg("t",0,buf);
 }
 

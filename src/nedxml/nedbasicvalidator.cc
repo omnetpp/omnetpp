@@ -536,7 +536,7 @@ void NEDBasicValidator::validateElement(ConstNode *node)
     // verify syntax of constant
     int type = node->getType();
     const char *value = node->getValue();
-    const char *text = node->getText();
+    //const char *text = node->getText();
 
     if (strnull(value))
         INTERNAL_ERROR0(node,"required attribute 'value' missing");
