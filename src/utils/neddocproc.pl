@@ -79,15 +79,15 @@ foreach $fname (glob($fnamepatt))
               }
 
               # format @author, @date, @todo, @bug, @see, @since, @warning, @version
-              #FIXME put them on separate lines...
-              $comment =~ s!\@author\b!<b>Author:</b>!gs;
-              $comment =~ s!\@date\b!<b>Date:</b>!gs;
-              $comment =~ s!\@todo\b!<b>TODO:</b>!gs;
-              $comment =~ s!\@bug\b!<b>BUG:</b>!gs;
-              $comment =~ s!\@see\b!<b>See also:</b>!gs;
-              $comment =~ s!\@since\b!<b>Since:</b>!gs;
-              $comment =~ s!\@warning\b!<b>WARNING:</b>!gs;
-              $comment =~ s!\@version\b!<b>Version:</b>!gs;
+              $comment =~ s|\@author\b|\n\n<b>Author:</b>|gs;
+              $comment =~ s|\@date\b|\n\n<b>Date:</b>|gs;
+              $comment =~ s|\@todo\b|\n\n<b>TODO:</b>|gs;
+              $comment =~ s|\@bug\b|\n\n<b>BUG:</b>|gs;
+              $comment =~ s|\@see\b|\n\n<b>See also:</b>|gs;
+              $comment =~ s|\@since\b|\n\n<b>Since:</b>|gs;
+              $comment =~ s|\@warning\b|\n\n<b>WARNING:</b>|gs;
+              $comment =~ s|\@version\b|\n\n<b>Version:</b>|gs;
+              $comment =~ s|\n\n\n+|\n\n|gs;
 
               # wrap paragraphs NOT beginning with '-' into <p></p>.
               # well, we should write "paragraphs not beginning with '- ' or '-# '", but
