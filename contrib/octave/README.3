@@ -1,0 +1,171 @@
+Hi,
+
+So far I have examined how to use Octave to access seedtool and run
+simulations. The third step is to use octave to retrieve results and perform
+statistical analysis.
+
+Octave includes C-like functions for reading data from files. Some of these
+are fopen, fgets, fgetl, fscanf and fclose. With these functions it is
+possible to read data from the scalar and vector files.
+
+Everything that has been presented can be achieved using a shell script or a
+simple c/c++ program. The main advantage using octave is that there is a
+rich set of statistical facilities available, which may be used to analyse
+the simulation results.
+
+
+Using octave to analyse the simulation results
+--------------------------------------------------------------
+
+Once we have obtained the results, it is generally necessary to perform some
+form of statistical analysis. Octave provides a reasonable set of
+statistical functions. Some of these include t-test, Kolmogorov-Smirnov
+goodness-of-fit, Chi-Square goodness-of-fit, etc ....
+
+As an example I will consider my current simulation project. The model is a
+communication channel which has access contention. Data is transferred using
+using a continuous RQ link protocol. The objective is to estimate the
+following:
+
+    the capacity of the channel,
+    the variation of transmitted traffic versus submitted traffic
+    the variation of received traffic versus submitted traffic
+
+Submitted traffic is the external traffic submitted to the system.
+Transmitted traffic is the actual traffic transmitted over the channel.
+Received traffic is the traffic successfully transmitted over the channel.
+
+The traffic is measured in Erlangs. That is the total cummulative message
+time divided by the total simulation time. In other words, I am trying to
+estimate a mean value. Each simulation run outputs the submitted traffic,
+transmitted traffic and received traffic.
+
+To obtain useful results I have to able to state the traffic, which is an
+estimate of a mean and a confidence interval for the estimate. It is
+required that the 95% confidence interval be less than a certain value for
+all results.
+
+By varying the simulation duration and number of replications of each point
+measurement, it possible to achieve a sufficient confidence interval. Each
+replication is carried out with orthogonal random number sequences, so the
+replications are statistically independent. The omnetpp seedtool is used to
+pick starting seeds for each replication.
+
+After running a number of replications I can see that the traffic samples
+appear to come from a roughly bell-shaped population. I can use the
+Kolmogorov-Smirnov goodness-of-fit test to quantify this observation. The
+important conclusion is that the t-student probability distribution is the
+appropriate method of calculating the confidence interval.
+
+So I have to use Octave to take a set samples, estimate the mean and give a
+confidence interval. The function I use is listed below:
+
+>---------- start of estimate_mean.m  file -----------------
+##
+## Name:
+##
+##   estimate_mean
+##
+## Description:
+##
+##   Given a vector of samples, this function estimates the mean
+##   and confidence interval. It is assumed that the samples
+##   are taken from a approximately bell-shaped population.
+##   The function is optimised for sample set sizes of less
+##   than 30.
+##
+##   t_inv is the inverse cummulative t distribution function.
+##   It is supplied as part of the octave contributed functions
+##   package.
+##
+## Parameters:
+##
+##   samples
+##   A vector containing the sample values.
+##
+##   confidence
+##   The confidence as a percentage.
+##
+## Return:
+##
+##   x
+##   The estimated mean
+##
+##   hl
+##   The half length confidence interval for the estimate
+##   (The actual confidence interval is x +- hl)
+##
+
+
+function [x, hl] = estimate_mean(samples, confidence)
+
+  ## parameter usage checks
+  if (nargin!=2)
+    usage("estimate_mean: requires two arguments");
+  elseif (!is_vector(samples))
+    usage("estimate_mean: first argument must be a vector");
+  elseif (!is_scalar(confidence))
+    usage("estimate_mean: second argument must be a scalar");
+  endif
+
+  ## retrieve sample size
+  row = rows(samples);
+  col = columns(samples);
+  if (row==1)
+    n = col;
+  elseif (col==1)
+    n = row;
+  else
+    error("estimate_mean: invalid sample size");
+  endif
+
+  ## calculate the mean of the samples
+  x = mean(samples);
+  ## calculate the half length confidence interval
+  hl = t_inv((0.5+(confidence/200)), n-1)*std(samples)/sqrt(n);
+
+endfunction
+>---------- end of estimate_mean.m  file -----------------
+
+A simple Octave script for testing this function is shown below.
+
+>---------- start of test_estimate.m  file -----------------
+##
+## A simple script for testing estimate_mean function
+##
+
+clear;
+
+## parameters (an execise from text book)
+c = 95; ## confidence
+a = [9.8, 10.2, 10.4, 9.8, 10.0, 10.2, 9.6]; ## samples
+
+## estimate the mean
+[mm, hll] = estimate_mean(a, c);
+
+## display results
+fprintf("Mean = %f\n", mm);                  ## given ans: 10.0
+fprintf("Half length interval = %f\n", hll); ## given ans: 0.26
+>---------- end of test_estimate.m  file -----------------
+
+These code snippets illustrate that Octave is useful for perfoming
+statistical analysis of simulations results. The next step is to put all of
+individual components together into single Octave script. This script will
+allow us to generate a configuration file, run the simulations and then
+estimate mean values. This approach saves a considerable amount of time and
+is very flexible.
+
+A further feature of Octave is that it includes functions for graphical
+display of results. These functions call gnuplot, so you can generate output
+for display on the screen and for importation into documents.
+
+I'm going away for the weekend, so I'll send the final script on Monday.
+It's pretty straight forward and is based on the functions presented so far.
+Hopefully these emails are giving people some ideas for their own work.
+Octave is good house keeping tool for use alongside omnetpp.
+
+
+Regards Richard ....
+
+
+

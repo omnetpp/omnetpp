@@ -1,0 +1,120 @@
+Hi,
+
+I have tidied up the octave code for calling a simulation and here it is.
+
+Calling the omnetpp simulation from octave
+-----------------------------------------------------------
+
+When running a large number of replications, I usually create a
+configuration file with a large number of simulation runs. Each run will
+contain entries for the random number generator seeds and possiblely other
+variables. The simulations may be manually started with a command line
+something like; "./model -f demo.ini". The simulations use the command line
+environment only as I am only interested in obtaining replication results.
+
+With an octave script is possible to directly call the simulations, without
+having to exit back to a shell. This is useful, as the process of creating
+configuration files, running the simulations and analysing the results may
+be combined in a single octave script. This automation speeds up model
+testing significantly.
+
+A set of simulation replications may take sometime to complete, so it
+important that any console output from the simulations be displayed
+immediately. I would be severely dismayed to look at a static screen for a
+number of hours.
+
+The Octave code for a function to run a simulation is shown below. The popen
+function is not used, as it buffers output in the pipe buffer before
+forwarding to Octave. The system function is slightly cruder and all
+simulation output data must be stored in files, if it is to be analysed by
+an Octave script. For me this is a good thing, at least an audit trail is
+created.
+
+---------- start of run_sim.m  file -----------------
+##
+## Name:
+##
+##   run_sim
+##
+## Description:
+##
+##   This function calls a simulation and displays the output immediately
+##   on the console. The function only returns when the simulation
+##   is completed. Apart from the simulation file, the configuration file
+##   may also be optionally specified.
+##
+## Parameters:
+##
+##   sim_file
+##   A string containing the simulation filename. This must be identical
+##   to what you normally enter from the command line. Some typical
+##   examples are:
+##                    "./MySimulation"
+##                    "/usr/home/user1/MySimulation"
+##
+##   This string should not contain any command-line arguments apart
+##   from the simulation filename.
+##
+##   ini_file
+##   A string containing the simulation configuration filename. This must be
+##   identical to what you normally enter from the command line. Some
+##   typical examples are:
+##                    "demo.ini"
+##                    "/usr/home/user1/omnetpp.ini
+##
+## Return:
+##
+##   None. If there is an error the function will abort and display an
+##   error message.
+##
+
+
+function run_sim(sim_file, ini_file)
+
+  ## check the number of arguments and create the command line
+  if (nargin==2)
+    com_line = sprintf("%s -f %s", sim_file, ini_file);
+  elseif (nargin==1)
+    com_line = sprintf("%s", sim_file);
+  else
+    error("run_sim called with an incorrect parameter list");
+  endif
+
+  ## run the simulation, immediately displaying the output
+  fflush(stdout);
+  system(com_line);
+  fflush(stdout);
+
+endfunction
+---------- end of run_sim.m  file -----------------
+
+A typical script for testing this function is shown below.
+
+---------- start of test_sim.m  file -----------------
+##
+## A simple script for testing the run_sim function
+##
+
+
+clear;
+
+## parameters (you'll have to change these)
+simulation = "./model";
+configuration = "demo.ini";
+
+## run the simulation
+disp("\n---- SIMULATION STARTED ----");
+run_sim(simulation, configuration)
+disp("\n------- SIMULATION ENDED -------");
+---------- end of test_sim.m  file -----------------
+
+It is possible to modify these files to allow other omnetpp command line
+options. For me, the simpler the better. It's just a means of speeding up
+the process. If I need to change some Octave code, I'll do it on the fly
+(unlike the model).
+
+I will send part 3 tonight.
+
+Regards Richard ....
+
+
