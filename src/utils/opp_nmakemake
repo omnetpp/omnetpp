@@ -483,7 +483,9 @@ elsif ($type eq 'so')
 }
 elsif ($type eq 'o')
 {
-    print OUT "\$(TARGET): \$(OBJS) $makefile $subdirs_target\n";
+    print OUT "\$(TARGET): \$(OBJS) $makefile $subdirs_target .tstamp\n";
+    print OUT "\n";
+    print OUT ".tstamp: \$(OBJS)\n";
     print OUT "\t\@echo.>.tstamp\n";
 }
 print OUT "\n";

@@ -1,3 +1,8 @@
+2004-07-12  Andras Varga
+
+	* opp_makemake.in,opp_nmakemake: fixed bug which caused .tstamp to be
+	always updated, and thus depended directories to be always re-built.
+
 2004-07-10  Andras Varga
 
 	* opp_test: added further checks: %contains-filt, %not-contains-filt, 

@@ -509,11 +509,13 @@ so)
     echo '	echo>.tstamp'
     ;;
 o)
-    echo '$(TARGET): $(OBJS)' $subdirs_target 'Makefile'
+    echo '$(TARGET): $(OBJS)' $subdirs_target 'Makefile .tstamp'
+    echo
+    echo '.tstamp: $(OBJS)'
     echo '	echo>.tstamp'
-    echo '	'
     ;;
 esac
+echo
 
 if [ "$objs" != "" ]; then
     echo '$(OBJS) : $(GENERATEDHEADERS)'
