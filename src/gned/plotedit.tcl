@@ -998,7 +998,7 @@ proc _getCenterAndSize {c key} {
 
     if {[info exist ned($key,icon-cid)] && $ned($key,icon-cid)!=""} {
        set cid $ned($key,icon-cid)
-       set img [$c itemcget $cid -image]
+       if [catch {set img [$c itemcget $cid -image]}] {return {}} ;# mysterious bug
        return [concat [$c coords $cid] [image width $img] [image height $img]]
 
     } elseif {$ned($key,rect-cid)!=""} {
