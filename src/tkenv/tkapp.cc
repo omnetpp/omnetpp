@@ -509,7 +509,17 @@ void TOmnetTkApp::finishSimulation()
               ".main.text see end", NULL));
 
     // should print banner into per module windows too!
-    // TO BE IMPLEMENTED
+    for (TInspectorList::iterator it = inspectors.begin(); it!=inspectors.end(); ++it)
+    {
+        TModuleWindow *insp = dynamic_cast<TModuleWindow *>(*it);
+        if (insp)
+        {
+           CHK(Tcl_VarEval(interp,
+               insp->windowName(),".main.text insert end {** Calling finish() method\n} event\n",
+               insp->windowName(),".main.text see end",
+               NULL));
+        }
+    }
 
     // now really call finish()
     try
