@@ -37,7 +37,7 @@ point of view) will be included in the generated documentation.
      beginning with \texttt{/**}, \texttt{///}, \texttt{//<} or a similar
      marker) to distinguish documentation from ``normal'' comments in the
      source code. In {\opp} there's no need for that: NED and the message
-     syntax so compact that practically all comments one would want to write
+     syntax is so compact that practically all comments one would want to write
      in them can serve documentation purposes. Still, there is a way to write
      comments that \textit{don't} make it into the documentation -- by starting
      them with \texttt{//\#}.}
@@ -131,7 +131,7 @@ Example:
 
 \subsection{Special tags}
 
-\fname{\opp_neddoc} will understand the following tags and render them accordingly:
+\fname{\opp_neddoc} understands the following tags and will render them accordingly:
 \ttt{@author}, \ttt{@date}, \ttt{@todo}, \ttt{@bug}, \ttt{@see}, \ttt{@since},
 \ttt{@warning}, \ttt{@version}. An example usage:
 
@@ -248,7 +248,6 @@ will be rendered approximately as:
 3 & three \\\hline
 \end{longtable}
 
-%TBD document @date, @author etc.
 
 \subsection{Escaping HTML tags}
 
@@ -313,7 +312,7 @@ will be awkward.
 
 The title page is the one that appears in the main frame after
 opening the documentation in the browser. By default it contains
-a boilerplate text with the generic title \textit{``OMNeT++ Model Documentation''}.
+a boilerplate text with the generic title \textit{``{\opp} Model Documentation''}.
 You probably want to customize that, and at least change the title
 to the name of the documented simulation model.
 
@@ -478,7 +477,7 @@ that refers to pages in this documentation via HTML links.
 \ttt{*.ned} and \ttt{*.msg} files are collected (e.g. via the \ttt{find}
 command if you used the \ttt{-a} option on Unix) and processed
 with \ttt{nedtool}. \ttt{nedtool} parses them and outputs the resulting syntax
-tree in XML -- a single large XML file wich contains all files.
+tree in XML -- a single large XML file which contains all files.
 
 The \ttt{*.ned} files are processed with the \ttt{-c} (export-diagrams-and-exit)
 option of \ttt{gned}. This causes \ttt{gned} to export diagrams for the

@@ -7,7 +7,7 @@ previous chapters:
 
 \begin{itemize}
   \item{the message class \cclass{cMessage} (chapter \ref{cha:messages})}
-  \item{sending and receiving messages, scheduling and cancelling
+  \item{sending and receiving messages, scheduling and canceling
     events, terminating the module or the simulation
     (section \ref{ch:simple-modules:sending-and-receiving})}
   \item{access to module gates and parameters via \cclass{cModule} member functions
@@ -24,7 +24,7 @@ This chapter discusses the rest of the simulation library:
   \item{module parameters: \cclass{cPar} class}
   \item{storing data in containers: the \cclass{cArray} and \cclass{cQueue} classes}
   \item{routing support and discovery of network topology: \cclass{cTopology} class}
-  \item{recording statistics into file: \cclass{cOutVector} class}
+  \item{recording statistics into files: \cclass{cOutVector} class}
   \item{collecting simple statistics: \cclass{cStdDev} and \cclass{cWeightedStddev} classes}
   \item{distribution estimation: \cclass{cLongHistogram},
     \cclass{cDoubleHistogram}, \cclass{cVarHistogram}, \cclass{cPSquare},
@@ -181,13 +181,13 @@ cMessage *copyMsg = (cMessage *) msg->dup();
 \end{verbatim}
 
 
-\fname{dup()} works through calling the copy constructor, which in
+\fname{dup()} works by calling the copy constructor, which in
 turn relies on the assignment operator between objects.
 \fname{operator=()} can be used to copy contents of an object into
-another object of the same type. The copying is done properly; object
-contained in the object will also be duplicated if necessary. For
-various reasons, \fname{operator=()} does not copy the name string;
-the copy constructor\index{copy constructor} does it.
+another object of the same type. This is a deep copy: object
+contained in the object will also be duplicated if necessary. 
+\fname{operator=()} does not copy the name string -- this task is done
+by the copy constructor\index{copy constructor}.
 
 
 \subsection{Iterators}
@@ -248,14 +248,14 @@ from \ttt{omnetpp.ini} and it is more convenient to view, using Tkenv.
 
 Simulation time is represented by the type \ttt{simtime\_t}
 which is a typedef to \ttt{double}.
-{\opp} provides utility functions which convert \ttt{simtime\_t}
+{\opp} provides utility functions, which convert \ttt{simtime\_t}
 to a printable string (\ttt{"3s 130ms 230us"}) and vica versa.
 
 The \fname{simtimeToStr()} function converts a \cclass{simtime\_t}
-(passed in the first arg) to textual form. The result is placed into
-the buffer pointed to by the second arg. If the second arg is omitted
+(passed in the first argument) to textual form. The result is placed into
+the \ttt{char} array pointed to by the second argument. If the second argument is omitted
 or it is \ttt{NULL}, \fname{simtimeToStr()} will place the result into a
-static buffer which is overwritten with each call:
+static buffer which is overwritten with each call. An example:
 
 \begin{verbatim}
 char buf[32];
@@ -616,9 +616,9 @@ for( cQueue::Iterator iter(queue,1); !iter.end(), iter++)
 \cclass{cArray} is a container class that holds objects derived from
 \cclass{cObject}. \cclass{cArray} stores the pointers of the objects
 inserted instead of making copies. \cclass{cArray} works as an array,
-but if it gets full, it grows automatically. Internally,
-\cclass{cArray} is implemented with an array of pointers; if the array
-gets full, it is reallocated.
+but it grows automatically when it gets full. Internally,
+\cclass{cArray} is implemented with an array of pointers; when the array
+fills up, it is reallocated.
 
 \cclass{cArray} objects are used in {\opp} to store parameters
 attached to messages, and internally, for storing module parameters
@@ -731,7 +731,7 @@ The module parameter name is the \cclass{cPar} object's name, and the object
 can store any parameter type supported by the NED language, that is,
 numeric (long or double), bool, string and XML config file reference.
     \footnote{\cclass{cPar} objects used to be employed also for adding
-    parameters (extra fields) to \cclass{cMessage}. However, while technically this is
+    parameters (extra fields) to \cclass{cMessage}. While technically this is
     still feasible, message definitions (section \ref{ch:messages:message-definitions})
     are a far superior solution in every respect.}
 
@@ -945,7 +945,7 @@ Mathematical function with constant arguments. The function
 is given by its pointer; it must take 0,1,2 or 3 doubles and
 return a double. This type is mainly used to generate random
 numbers: e.g. the function takes mean and standard deviation
-and returns random variable of a certain distribution.\\\hline
+and returns a random variable of a certain distribution.\\\hline
 %% ROW 7
 X & expr. &
 \ttt{setDoubleValue( \linebreak
@@ -1426,7 +1426,7 @@ range.
   \end{center}
 \end{figure}
 
-After the cells have been set up, collecting can go on.
+After the cells have been set up, collection can go on.
 
 The \fname{transformed()} function returns \textit{true} when the cells have
 already been set up. You can force range estimation and setting
@@ -1489,8 +1489,8 @@ for (int i=0; i<histogram.cells(); i++)
 
 
 The \fname[pdf()]{pdf(x)} and \fname[cdf()]{cdf(x)} member functions
-return the value of the probability density function and the cumulated
-density function at a given \textit{x}, respectively.
+return the value of the Probability Density Function and the Cumulated
+Density Function at a given \textit{x}, respectively.
 
 
 \subsubsection{Random number generation from distributions}
@@ -1702,9 +1702,9 @@ error. It has been shown that the cell division error can
 be reduced to a more-than-acceptable small value.\\
 Strictly speaking, the \textit{k}-split algorithm is semi-online,
 because its needs some observations to set up the initial histogram
-range.  However, because of the range extension and cell split
+range.  Because of the range extension and cell split
 capabilities, the algorithm is not very sensitive to the choice of the
-initial range, so very few observations are enough for range
+initial range, so very few observations are sufficient for range
 estimation (say $N_{pre}=10$). Thus we can regard \textit{k}-split as
 an on-line method.
 
@@ -1774,7 +1774,7 @@ In many simulations, only the steady state performance (i.e.
 the performance after the system has reached a stable state)
 is of interest. The initial part of the simulation is called
 the transient period. After the model has entered steady state,
-simulation must proceed until enough statistical data have been
+simulation must proceed until enough statistical data has been
 collected to compute result with the required accuracy.
 
 
@@ -2276,18 +2276,18 @@ If you plan to implement a completely new class (as opposed to
 subclassing something already present in {\opp}), you have
 to ask yourself whether you want the new class to be based
 on \cclass{cObject} or not.
-Note that we're \textit{not} saying you should always
+Note that we are \textit{not} saying you should always
 subclass from \cclass{cObject}.
-Both solutions have advantages and disadvantages which you
+Both solutions have advantages and disadvantages, which you
 have to consider individually for each class.
 
-\cclass{cObject} already carries (or provides framework for)
-significant functionality that are either important for
+\cclass{cObject} already carries (or provides a framework for)
+significant functionality that is either relevant to
 your particular purpose or not. Subclassing \cclass{cObject}
 generally means you have more code to write (as you \textit{have to}
-redefine certain virtual functions and adopt to conventions)
+redefine certain virtual functions and adhere to conventions)
 and your class will be a bit more heavy-weight.
-In turn, it will integrate into OMNeT++ better, for example
+In turn, it will integrate into {\opp} better, for example
 it will be more visible in Tkenv and can be automatically
 garbage-collected (this will be discussed later). If you
 need to store your objects in {\opp} objects like \cclass{cQueue},
@@ -2307,8 +2307,8 @@ As a general rule, small \ttt{struct}-like classes like \ttt{IPAddress},
 \ttt{MACAddress}, \ttt{RoutingTableEntry}, \ttt{TCPConnectionDescriptor}, etc.
 are better \textit{not} sublassed from \cclass{cObject}.
 If your class has at least one virtual member function, consider
-subclassing from \cclass{cPolymorphic}, which does not cause any
-extra cost because it doesn't have data members at all only
+subclassing from \cclass{cPolymorphic}, which does not impose any
+extra cost because it doesn't have data members at all, only
 virtual functions.
 
 
@@ -2320,7 +2320,7 @@ Most classes in the simulation class library are descendants of
 some member functions so that objects of the new type can fully
 co-operate with other parts of the simulation system. A more or less
 complete list of these functions is presented here. You do not need to
-worry at the length of the list: most functions are not
+worry about the length of the list: most functions are not
 absolutely necessary to implement. For example, you do not need to
 redefine \fname{forEachChild()} unless your class is a container class.
 
@@ -2349,8 +2349,9 @@ The following methods \textbf{must} be implemented:
         if the object contains pointers to other objects.}
 \end{itemize}
 
-The following function \textbf{should} be implemented if your class contains
-via pointers or as data member) other object subclassed from \cclass{cObject}.
+If your class contains other objects subclassed from \cclass{cObject},
+either via pointers or as data member, the following function \textbf{should} 
+be implemented:
 
 \begin{itemize}
   \item{\textit{Iteration function,} \ttt{void forEachChild(cVisitor * v)}.
@@ -2658,10 +2659,10 @@ The purpose of maintaining the ownership tree is threefold:
     \item{to provide a certain degree of garbage collection (that is,
     automatic deletion of objects that are no longer needed)}
 
-    \item{to prevent a certain types of programming errors, namely,
+    \item{to prevent certain types of programming errors, namely,
     those associated with wrong ownership handling.}
 
-    \item{it provides some ``reflection'' (in the Java sense), which
+    \item{to provide some ``reflection'' (in the Java sense), which
     enables Tkenv to display which objects are present (and where)
     in the simulation, to find ``lost'' (leaked) objects, etc.}
 \end{itemize}
@@ -2761,14 +2762,14 @@ when \fname{cPar}'s are removed from a \cclass{cArray}, and in many more cases.
 \subsubsection{Sanity checks}
 
 The \fname{send()} and \fname{scheduleAt()} functions make use
-of the ownership mechanism to do some sanity check:
+of the ownership mechanism to do some sanity checking:
 the message being sent/scheduled \textit{must} be owned
-by module's local objects list.
-If it is not, then it is an error, because then the message is
-probably with another module (i.e. already sent), or
+by the module's local objects list.
+If it is not, then an error occured, because then the message is
+probably owned by another module (i.e. already sent), or
 currently scheduled, or inside a queue, a message or some
 other object -- in either case, you do not have any authority
-to send it. When you get this error message (\ttt{"not owner of object"}),
+to send it. When you get the error message (\ttt{"not owner of object"}),
 you need to carefully examine the error message: which object has the ownership
 of the message, why's that, and then probably you'll need to fix the logic somewhere
 in your program.
@@ -2974,7 +2975,7 @@ After the object was removed from a \cclass{cQueue}/\cclass{cArray},
 you may further use it, or if it is not needed any more, you can delete it.
 
 The \textit{release ownership} phrase requires further explanation.
-When you remove and object from a queue or array, the ownership
+When you remove an object from a queue or array, the ownership
 is expected to be transferred to the simple module's local objects list.
 This is acomplished by the \fname{drop()} function, which transfers the
 ownership to the object's default owner.
@@ -3015,7 +3016,7 @@ The ownership mechanism also has to be taken into consideration
 when a \cclass{cArray} or \cclass{cQueue} object is duplicated.
 The duplicate is supposed to have the same content as the
 original, however the question is whether the contained objects
-should also be duplicated or just their pointers taken over
+should also be duplicated or only their pointers taken over
 to the duplicate \cclass{cArray} or \cclass{cQueue}.
 
 The convention followed by \cclass{cArray}/\cclass{cQueue} is that
@@ -3023,7 +3024,7 @@ only owned objects are copied, and the contained but not owned ones
 will have their pointers taken over and their original owners
 left unchanged.
 
-In fact, the same question arises at three places:
+In fact, the same question arises in three places:
 the assignment operator \fname{operator=()}, the copy constructor
 and the \fname{dup()} method.
 In {\opp}, the convention is that copying is implemented
