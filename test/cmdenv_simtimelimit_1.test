@@ -25,7 +25,7 @@ void {Module}::activity()
 
 void {Module}::finish()
 {
-   ev << "finish() at: " << simTime() << endl;
+   ev << "finish() at " << simTime() << endl;
 }
 
 %inifile: {}.ini

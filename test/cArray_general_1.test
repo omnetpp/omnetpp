@@ -13,7 +13,8 @@ cArray a("a");
 // add 100 messages to cArray
 cMessage *msgs[100];
 int pos[100];
-for (int i=0; i<100; i++)
+int i;
+for (i=0; i<100; i++)
 {
     if (i==50)
         a.takeOwnership(false);
@@ -25,7 +26,7 @@ for (int i=0; i<100; i++)
 
 // test if they were added correctly
 CHECK(a.items()==100);
-for (int i=0; i<100; i++)
+for (i=0; i<100; i++)
 {
     cMessage *msg = msgs[i];
     int k = pos[i];
@@ -50,7 +51,7 @@ for (int i=0; i<100; i++)
 }
 
 // remove them
-for (int i=0; i<100; i++)
+for (i=0; i<100; i++)
 {
     cMessage *msg = msgs[i];
     int k = pos[i];

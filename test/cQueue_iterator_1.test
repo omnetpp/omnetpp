@@ -9,7 +9,8 @@ cQueue q("queue");
 
 // add 5 messages to cQueue
 cMessage *msgs[5];
-for (int i=0; i<5; i++)
+int i;
+for (i=0; i<5; i++)
 {
     char name[20];
     sprintf(name,"msg-%d", i);
@@ -17,7 +18,7 @@ for (int i=0; i<5; i++)
     q.insert(msgs[i]);
 }
 
-int i=4;
+i=4;
 ev << "forward:\n";
 for (cQueueIterator iter(q); !iter.end(); iter++, i--)
 {
@@ -27,10 +28,10 @@ for (cQueueIterator iter(q); !iter.end(); iter++, i--)
 
 i=0;
 ev << "backward:\n";
-for (cQueueIterator iter(q,false); !iter.end(); iter--, i++)
+for (cQueueIterator iter2(q,false); !iter2.end(); iter2--, i++)
 {
-    ev << " msg[" << i << "]=" << msgs[i]->name() << ", iter()=" << iter()->name() << endl;
-    CHECK(iter()==msgs[i]);
+    ev << " msg[" << i << "]=" << msgs[i]->name() << ", iter()=" << iter2()->name() << endl;
+    CHECK(iter2()==msgs[i]);
 }
 
 ev << "OK!\n";
