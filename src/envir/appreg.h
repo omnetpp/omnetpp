@@ -19,7 +19,7 @@
 #ifndef __APPREG_H
 #define __APPREG_H
 
-#include "chead.h"
+#include "globals.h"
 #include "onstartup.h"
 
 //
@@ -39,13 +39,13 @@
 // the macro
 #define Register_OmnetApp(UINAME,CLASSNAME,SCORE,DESCR) \
   TOmnetApp *CLASSNAME##__create(ArgList *args, cIniFile *inifile) {return new CLASSNAME(args, inifile);} \
-  EXECUTE_ON_STARTUP(__##CLASSNAME##_ui, (new cOmnetAppRegistration(UINAME,SCORE,DESCR,CLASSNAME##__create))->setOwner(&omnetapps);)
+  EXECUTE_ON_STARTUP(__##CLASSNAME##_ui, (omnetapps.instance()->add(new cOmnetAppRegistration(UINAME,SCORE,DESCR,CLASSNAME##__create))))
 
 class TOmnetApp;
 class ArgList;
 class cIniFile;
 
-extern ENVIR_API cHead omnetapps;
+extern ENVIR_API cSingleton<cArray> omnetapps;
 
 // registration class
 class ENVIR_API cOmnetAppRegistration : public cObject

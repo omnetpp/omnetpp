@@ -21,7 +21,7 @@
 
 #include <time.h>     // time_t, clock_t
 #include "carray.h"
-#include "chead.h"
+#include "globals.h"
 #include "cenvir.h"
 #include "cexception.h"
 #include "args.h"
@@ -159,6 +159,8 @@ class ENVIR_API TOmnetApp
 
     /** @name Functions called from the objects of the simulation kernel
      *  to notify the application about certain events.
+     *
+     * For documentation see corresponding methods in cEnvir.
      */
     //@{
     virtual void objectDeleted(cObject *object) {}
@@ -166,6 +168,13 @@ class ENVIR_API TOmnetApp
     virtual void messageDelivered(cMessage *msg) {}
     virtual void breakpointHit(const char *lbl, cSimpleModule *mod) {}
     virtual void moduleMethodCalled(cModule *from, cModule *to, const char *method) {}
+    virtual void moduleCreated(cModule *newmodule) {}
+    virtual void moduleDeleted(cModule *module) {}
+    virtual void connectionCreated(cGate *srcgate) {}
+    virtual void connectionRemoved(cGate *srcgate) {}
+    virtual void displayStringChanged(cGate *gate) {}
+    virtual void displayStringChanged(cModule *submodule) {}
+    virtual void displayStringAsParentChanged(cModule *parentmodule) {}
     //@}
 
     /** @name Functions called by cEnvir's similar functions.
@@ -197,8 +206,8 @@ class ENVIR_API TOmnetApp
 
     /* @name Methods for snapshot management; called by cEnvir's similar functions. */
     //@{
-    ostream *getStreamForSnapshot();
-    void releaseStreamForSnapshot(ostream *os);
+    std::ostream *getStreamForSnapshot();
+    void releaseStreamForSnapshot(std::ostream *os);
     //@}
 
     /**

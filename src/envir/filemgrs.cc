@@ -31,6 +31,7 @@
 #include "macros.h"
 #include "filemgrs.h"
 
+using std::ostream;
 using std::ofstream;
 using std::ios;
 
@@ -296,7 +297,7 @@ ostream *cFileSnapshotManager::getStreamForSnapshot()
     return os;
 }
 
-void cFileSnapshotManager::releaseStreamForSnapshot(ostream *os)
+void cFileSnapshotManager::releaseStreamForSnapshot(std::ostream *os)
 {
     delete os;
 }

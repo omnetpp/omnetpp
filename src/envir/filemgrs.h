@@ -229,12 +229,12 @@ class cFileSnapshotManager : public cSnapshotManager
     /**
      * Returns a stream where a snapshot can be written.
      */
-    virtual ostream *getStreamForSnapshot();
+    virtual std::ostream *getStreamForSnapshot();
 
     /**
      * Releases a stream after a snapshot was written.
      */
-    virtual void releaseStreamForSnapshot(ostream *os);
+    virtual void releaseStreamForSnapshot(std::ostream *os);
 
     /**
      * Returns the file name.

@@ -67,12 +67,14 @@
 #include <unistd.h>  // getpid()
 #endif
 
+using std::ostream;
 
 // This variable could really be a local var inside the functions where it is
 // used; it was only made a static to reduce per-module stack size with activity().
 static char buffer[1024];
 
 
+// FIXME static_cast<> here?
 #define CREATE_BY_CLASSNAME(var,classname,baseclass,description) \
      baseclass *var ## _tmp = (baseclass *) createOne(classname); \
      var = dynamic_cast<baseclass *>(var ## _tmp); \

@@ -30,12 +30,13 @@
 #include "speedmtr.h"   // env_dummy_function()
 #include "filemgrs.h"   // env_dummy_function()
 
+using std::ostream;
 
 //=== Global objects:
 cEnvir ev;
 
 // the global list for the registration objects
-cHead omnetapps("user-interfaces");
+cSingleton<cArray> omnetapps("omnetapps");
 
 // output buffer
 #define ENVIR_TEXTBUF_LEN 1024
@@ -75,9 +76,10 @@ cOmnetAppRegistration *chooseBestOmnetApp()
     cOmnetAppRegistration *best_appreg = NULL;
 
     // choose the one with highest score.
-    for (cIterator i(omnetapps); !i.end(); i++)
+    cArray *a = omnetapps.instance();
+    for (int i=0; i<a->items(); i++)
     {
-        cOmnetAppRegistration *appreg = (cOmnetAppRegistration*) i();
+        cOmnetAppRegistration *appreg = static_cast<cOmnetAppRegistration *>(a->get(i));
         if (!best_appreg || appreg->score()>best_appreg->score())
             best_appreg = appreg;
     }
@@ -172,14 +174,14 @@ void cEnvir::setup(int argc, char *argv[])
         {
             // try to look up specified user interface; if we don't have it already,
             // try to load dynamically...
-            appreg = (cOmnetAppRegistration *) omnetapps.find(appname);
+            appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->get(appname));
             if (!appreg)
             {
                 // try to load it dynamically
                 // TBD add extension: .so or .dll
                 if (opp_loadlibrary(appname))
                 {
-                    appreg = (cOmnetAppRegistration *) omnetapps.find(appname);
+                    appreg = static_cast<cOmnetAppRegistration *>(omnetapps.instance()->get(appname));
                 }
             }
             if (!appreg)
@@ -279,6 +281,42 @@ void cEnvir::breakpointHit( const char *label, cSimpleModule *module )
 {
     app->breakpointHit( label, module );
 }
+
+void cEnvir::moduleCreated(cModule *newmodule)
+{
+    app->moduleCreated(newmodule);
+}
+
+void cEnvir::moduleDeleted(cModule *module)
+{
+    app->moduleDeleted(module);
+}
+
+void cEnvir::connectionCreated(cGate *srcgate)
+{
+    app->connectionCreated(srcgate);
+}
+
+void cEnvir::connectionRemoved(cGate *srcgate)
+{
+    app->connectionRemoved(srcgate);
+}
+
+void cEnvir::displayStringChanged(cGate *gate)
+{
+    app->displayStringChanged(gate);
+}
+
+void cEnvir::displayStringChanged(cModule *submodule)
+{
+    app->displayStringChanged(submodule);
+}
+
+void cEnvir::displayStringAsParentChanged(cModule *parentmodule)
+{
+    app->displayStringAsParentChanged(parentmodule);
+}
+
 
 //-----------------------------------------------------------------
 
