@@ -257,4 +257,6 @@ Dec 18, 2000
  - old display string classes (disp.cc) removed
  - small bugfix on comment handling in Properties dialogs (no longer adds extra
    blank lines)
+ - experimental implementation of scrolling the tab strip if there're too many
+   buttons on it
 

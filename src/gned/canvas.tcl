@@ -100,7 +100,8 @@ proc openModuleOnNewCanvas {modkey} {
     # create widgets and register in $canvas()
     set canv .main.f.c$canv_id
     set txt  .main.f.t$canv_id
-    set tab  .main.f.tabs.tab$canv_id
+    #set tab  .main.f.tabs.tab$canv_id
+    set tab  .main.f.tabs.c.f.tab$canv_id
 
     set canvas($canv_id,canvas)      $canv
     set canvas($canv_id,textedit)    $txt
@@ -108,14 +109,20 @@ proc openModuleOnNewCanvas {modkey} {
     set canvas($canv_id,tab)         $tab
     set canvas($canv_id,module-key)  $modkey
 
+    # create editor
     canvas $canv -background #a0e0a0  -relief ridge -border 2
     text   $txt  -background wheat2   -relief ridge -border 2 -wrap none -font $fonts(fixed)
-
     configureEditor $txt
 
+    # create tab
     button $tab -command "switchToCanvas $canv_id" -relief ridge \
                 -bg wheat2 -highlightthickness 0 -height 1
     pack $tab -anchor n -expand 0 -fill none -side left
+
+    # very dirty code to update scrollbar to scroll the 'tabs' strip
+    update idletasks
+    .main.f.tabs.c config -height [winfo height .main.f.tabs.c.f]
+    .main.f.tabs.c config -scrollregion "0 0 [winfo width .main.f.tabs.c.f] 0"
 
     # bindings for the canvas
     selectOrMoveBindings $canv
