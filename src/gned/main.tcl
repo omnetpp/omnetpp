@@ -227,7 +227,12 @@ proc create_omnetpp_window {} {
     #################################
     frame $w.main.mgr -relief flat -borderwidth 1
 
-    frame $w.main.mgr.resize -width 5 -relief raised -borderwidth 1 -cursor size_we
+    frame $w.main.mgr.resize -width 5 -relief raised -borderwidth 1
+    if [catch {$w.main.mgr.resize config -cursor size_we}] {
+      if [catch {$w.main.mgr.resize config -cursor sb_h_double_arrow}] {
+        catch {$w.main.mgr.resize config -cursor sizing}
+      }
+    }
     canvas $w.main.mgr.tree -width 140 -bg #ffffe0 -relief groove \
                             -yscrollcommand "$w.main.mgr.sb set"
     scrollbar $w.main.mgr.sb -command "$w.main.mgr.tree yview"
@@ -396,20 +401,24 @@ proc checkVersion {} {
 
    global tk_version tk_patchLevel
 
-   catch {package require Tk}     ; #for dynamic loading tk
-   if {$tk_version<8.0 || ($tk_version==8.0 && [string compare $tk_patchLevel "8.0p1"]<0)} {
+   catch {package require Tk}
+   if {$tk_version<8.0} {
       wm deiconify .
       wm title . "Bad news..."
       frame .f
       pack .f -expand 1 -fill both -padx 2 -pady 2
       label .f.l1 -text "Your version of Tcl/Tk is too old!"
-      label .f.l2 -text "Tcl/Tk 8.0 patchlevel 1 or later required."
+      label .f.l2 -text "Tcl/Tk 8.0 or later required."
       button .f.b -text "OK" -command {exit}
       pack .f.l1 .f.l2 -side top -padx 5
       pack .f.b -side top -pady 5
       focus .f.b
       wm protocol . WM_DELETE_WINDOW {exit}
       tkwait variable ok
+   }
+   if {[string compare $tk_patchLevel "8.0p1"]<0} {
+      tk_messageBox -title {Warning} -type ok -icon warning \
+        -message {Old Tcl/Tk version. At least 8.0p1 is strongly recommended!}
    }
 }
 

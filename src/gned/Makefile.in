@@ -24,7 +24,7 @@ GNED_EMBED_SUFFIX=@GNED_EMBED_SUFFIX@
 #
 COPTS=$(CFLAGS) $(TK_CFLAGS)
 
-OMNETPP_GNED_DIR=`pwd`
+OMNETPP_GNED_DIR=`@PWD@`
 
 OBJS = gned$(GNED_EMBED_SUFFIX).o tklib.o arrow.o ebnf.tab.o lex.yy.o parsened.o disp.o nedfile.o
 
