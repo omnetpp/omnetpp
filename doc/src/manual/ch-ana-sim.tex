@@ -19,7 +19,7 @@ or specify a simulation time interval for recording
 
 All \cclass{cOutVector} objects write to the same, common file.
 The following sections describe the format of the file, and
-how you can process them.
+how to process it.
 
 
 \section{Plotting output vectors with Plove}
@@ -28,45 +28,31 @@ how you can process them.
 
 Typically, you'll get output vector files as a result of a simulation.
 Data written to \cclass{cOutVector} objects from
-simple modules go to output vector
-files\index{output!vector file}. Normally, you use Plove to look
-into output vector files and plot vectors from them.
+simple modules are written to output vector
+files\index{output!vector file}. You can use Plove to look
+into the output vector files and plot vectors from them.
 
-Plove\index{Plove} is a handy tool for plotting {\opp} output vectors.
-It uses Gnuplot\index{Gnuplot} to do the actual work. You can specify
-the line type (lines, dots etc) for each vector as well as set the
-most frequent drawing options like axis bounds, scaling, titles and
-labels etc. You can save the gnuplot graphs to files (postscript,
-latex, pbm etc) with a click. Plove can also generate standalone shell
-scripts that plot output vectors in much the same way Plove does. 
-These scripts can be used for batch processing or to debug
-filters (see later). Plove does not take away any of gnuplot's
-flexibility -- you can embed your own gnuplot commands to customize
-the output.
-
+Plove\index{Plove} is a handy tool for plotting
+{\opp} output vectors. Line type (lines, dots etc) for each vector can be set
+as well as the most frequent drawing options like axis bounds, scaling, titles
+and labels. You can save the graphs to files (as Encapsulated Postscript or
+raster formats such as GIF) with a click. On Windows, you can also
+copy the graph to the clipboard in a vector format (Windows metafile)
+and paste it into other applications.
+    \footnote{Note: prior to {\opp} 3.0, Plove has been a front-end to
+    gnuplot. This older version of Plove is no longer supported, but it's still
+    available in the {\opp} source distribution.}
 
 Filtering the results\index{filtering results} before plotting is
 possible. Filters can do averaging, truncation of extreme values,
 smoothing, they can do density estimation\index{density estimation} by
 calculating histograms\index{histogram} etc. Some filters are built
-in, and you can easily create new filters or modify the existing ones.
-Filters can be incorporated in one of three ways: as \fprog{awk} expressions,
-as \fprog{awk} programs and as external filter programs. Filters can be
-parameterized. Using multiple filters for the same vector is currently not
-supported; also, you cannot currently feed several vectors into a
-single filter.
-
-Plove creates no temporary files, so you don't need to worry
-about disk space: if the output vector is there, Plove can plot
-it for you. Moreover, it can also work with gzipped vector files
-without extracting them -- just make sure you have zcat.
-
-
-Plove never modifies the output vector files themselves.
+in, and you can create new filters by parameterizing and aggregating existing ones.
+You can apply several filters to a vector.
 
 On startup, Plove automatically reads the \texttt{.ploverc} file in
-your home directory. The file contains general gnuplot settings, the
-filter configuration etc. (that is, the stuff from the Options menu).
+your home directory. The file contains general application settings,
+including the custom filters you created.
 
 
 
@@ -74,12 +60,12 @@ filter configuration etc. (that is, the stuff from the Options menu).
 \subsection{Usage}
 
 First, you load an output vector file (\texttt{.vec}) into the left
-pane.  You can also load gzipped vector files (\texttt{.vec.gz})
-without having to decompress them. You can copy vectors from the left
-pane to the right pane by clicking the right arrow icon in the middle.
-The large PLOT button will plot the \textit{selected} vectors in the
-right pane. Selection works as in Windows: dragging and shift+left
-click selects a range, and ctrl+left click selects/deselects
+pane. You can copy vectors from the left
+pane to the right pane by clicking the button with the right arrow icon
+in the middle.
+The PLOT button will initiate plotting the \textit{selected}
+vectors in the right pane. Selection works as in Windows: dragging
+and shift+left click selects a range, and ctrl+left click selects/deselects
 individual items. To adjust drawing style, change vector title or add
 a filter, click the Options... button. This works for several selected
 vectors too. Plove accepts nc/mc-like keystrokes: F3, F4, F5, F6, F8,
@@ -88,8 +74,10 @@ grey '+' and grey '*'.
 
 The left pane works as a general storage for vectors you're working
 with. You can load several vector files, delete vectors you don't
-want to deal with, rename them etc. All this will not affect
-the vector files on disk. In the right pane, you can duplicate
+want to deal with, rename them etc. These changes will not affect
+the vector files on disk.
+(Plove never modifies the output vector files themselves.)
+In the right pane, you can duplicate
 vectors if you want to filter the vector and also keep the original.
 If you set the right options for a vector but temporarily do
 not want it to hang around in the right pane, you can put it
@@ -97,87 +85,10 @@ back into the left pane for storage.
 
 
 
-
-
-\subsection{Writing filters}
-
-Filters get an output vector on their standard input (as plain
-text, with the timestamp being the second and the value being
-the third field on each line), do some processing to it and write
-the result to the standard output.
-
-
-Filters can be incorporated in one of three ways: as \fprog{awk}
-expressions, as \fprog{awk} programs or as external programs. An `awk
-expression' filter means assembling and launching a command like this:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-cat foobar.vec | awk '\{$3 = \textit{<expression>}; print\}' | ...
-\end{Verbatim}
-%%$
-
-An \fprog{awk} program filter means running the following command:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-cat foobar.vec | awk '\{\textit{<program>}\}' | ...
-\end{Verbatim}
-
-The third type of filters is used like this:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-cat foobar.vec | \textit{<program> <parameters>} | ...
-\end{Verbatim}
-
-Before the filter pipeline is launched, the following substitutions
-are performed on the \fprog{awk} scripts:
-
-\begin{itemize}
-  \item \tbf{t} gets substituted to \$2, which is the simulation time
-  (the second column in the output vector file)
-  \item \tbf{x} gets substituted to \$3, the actual value (the third column)
-\end{itemize}
-
-The parameters of the form \ttt{\$(paramname)} are also replaced with
-their actual value.
-
-For example, if you want to add 1 to all values, you can use the \fprog{awk}
-expression filter \ttt{x+1}. It will turn into the following awk script:
-
-\begin{verbatim}
-awk '{$3 = $3+1}; print'
-\end{verbatim}
-
-
-When you want to shift the vector by a used-defined DT time,
-you can create the following \fprog{awk} program filter:
-
-\begin{verbatim}
-{t += $(DT); print}
-\end{verbatim}
-
-To plot the mean on \textit{(0,t)}, you'd write
-
-\begin{verbatim}
-{sum+=x; x=sum/++n; print}
-\end{verbatim}
-
-Do not forget the print statement, or your filter will not output
-anything and the gnuplot graph will be empty.
-
-Filters are automatically saved into and loaded from the \ttt{~/.ploverc}
-file.
-
-%%
-%% TBD add example scripts
-%%
-
-
-
-
 \section{Format of output vector files}
 
 An output vector file\index{output!vector file} contains several
-series of data produced during simulation. The file is textual, it
+series of data produced during simulation. The file is textual, and it
 looks like this:
 
 \begin{Verbatim}[commandchars=\\\{\}]
@@ -192,15 +103,13 @@ vector 2   "subnet[4].srvr"  "queue length"  1
 \end{Verbatim}
 
 
-There are label lines (beginning with vector) and data lines.
-
-A vector line introduces a new vector. Its columns are: vector ID,
-module of creation, name of \cclass{cOutVector} object, multiplicity
-of data (single numbers or pairs will be written).
-
-Lines beginning with numbers are data lines. The columns: vector
-ID, current simulation time, and one or two double values.
-
+There two types of lines: vector declaration lines (beginning with
+the word \ttt{vector}), and data lines.
+A \textit{vector declaration line} introduces a new output vector, and
+its columns are: vector Id, module of creation, name of \cclass{cOutVector}
+object, and multiplicity (usually 1). Actual data recorded in this
+vector are on \textit{data lines} which begin with the vector Id.
+Further columns on data lines are the simulation time and the recorded value.
 
 
 
@@ -210,7 +119,7 @@ ID, current simulation time, and one or two double values.
 \subsection{Extracting vectors from the file}
 
 You can use the Unix \fprog{grep} tool to extract a particular vector
-from the file. As the first step, you must find out the ID of the
+from the file. As the first step, you must find out the Id of the
 vector. You can find the appropriate vector line with a text editor or
 you can use \fprog{grep} for this purpose:
 
@@ -230,7 +139,7 @@ This will output the appropriate vector line:
 vector 6  "subnet[4].srvr"  "queue length"  1
 \end{verbatim}
 
-Pick the vector ID, which is 6 in this case, and grep the file
+Pick the vector Id, which is 6 in this case, and grep the file
 for the vector's data lines:
 
 \begin{verbatim}
@@ -239,8 +148,8 @@ grep ^6 vector.vec > vector6.vec
 
 
 Now, \texttt{vector6.vec} contains the appropriate vector. The only
-potential problem is that the vector ID is there at the beginning of
-each line and this may be hard to explain to some programs that you
+potential problem is that the vector Id is there at the beginning of
+each line and this may be hard to digest for some programs that you
 use for post-processing and/or visualization. This problem is
 eliminated by the {\opp} \fprog{splitvec} utility (written in
 \fprog{awk}), to be discussed in the next section.
@@ -250,15 +159,16 @@ eliminated by the {\opp} \fprog{splitvec} utility (written in
 
 \subsection{Using splitvec}
 
-The \fprog{splitvec} script (part of {\opp}) breaks the vector file
-into several files which contain one vector each:
+The \fprog{splitvec} script (part of {\opp}) automates the process described
+in the previous section: it breaks the vector file into several files which
+contain one vector each. The command
 
 \begin{verbatim}
 % splitvec mysim.vec
 \end{verbatim}
 
-
-creates several files: mysim1.vec, mysim2.vec etc.
+would create the files \ttt{mysim1.vec}, \ttt{mysim2.vec} etc. with
+contents similar to the following:
 
 \begin{Verbatim}[commandchars=\\\{\}]
 \textbf{mysim1.vec:}
@@ -274,43 +184,41 @@ creates several files: mysim1.vec, mysim2.vec etc.
 \end{Verbatim}
 
 
-As you can see, the vector ID is gone.
-
-The files can be further processed with math packages, or read
-by analysis or spreadsheet programs which provide numerous ways
-to display data as diagrams, do calculations on them etc. One
-could use for example Matlab/Octave, Excel, or one of the programs
-described in the next section.
+As you can see, the vector Id column has been stripped from the files.
 
 
 
 
-\section{Visualization tools}
+\section{Analysis and visualization tools}
 
-There are a couple of open-source programs you can use for plotting
-the results. \textit{Gnuplot} is the most commonly used one
-(also supported by {\opp} Plove); other, more powerful ones
-include \textit{Grace} and \textit{ROOT}.
+Due to their straightforward file format, vector files or files
+produced by \fprog{splitvec} can be analysed and/or plotted by
+a number of applications in addition to \fprog{Plove}.
+These programs can produce output in various forms (on the screen,
+as PostScript, in various image formats, etc.)
 
-These programs can eat files produced by \fprog{splitvec}, and
-can produce output in various forms (on the screen, as PostScript,
-in various image formats, etc.)
-
-On Windows, the easiest way to include a picture in a document
-is to copy the picture to the clipboard from the Gnuplot
-window's system menu.
+One straightforward solution is to import or paste them into spreadsheet
+programs such as OpenOffice Calc, Gnumeric or MS Excel. These programs
+have good charting and statistical features, but the number of rows
+is usually limited at around 32,000..64,000.
+Alternatively, one can use numerical packages such as \textit{Octave},
+\textit{Matlab} or the statistics package \textit{R}.
+In addition to their support for statistical computations, they can also
+create various plots.
+There are also open-source programs directly for plotting, \textit{Gnuplot}
+still being the most commonly used one. Other, potentially more powerful ones
+include \textit{Grace}, \textit{ROOT} and \textit{PlotMTV}.
 
 
 \subsection{Grace}
 
 \textit{Grace} (also known as \textit{xmgrace}, a successor of \textit{ACE/gr} or
 \textit{Xmgr}) is a GPL-ed powerful data visualization program
-with a WYSIWIG point-and-click graphical user interface. It has been
-written for Unix, but has a Windows version, too.
+with a WYSIWIG point-and-click graphical user interface. It was developed for
+Unix, but there is a Windows version, too.
 
-You load the appropriate file by selecting from a dialog box.
-The icon bar and menu commands can be used to customize
-the graph.
+You load the appropriate file by selecting it in a dialog box.
+The icon bar and menu commands can be used to customize the graph.
 
 As of June 2003, Grace 1.5.12 can export graphics to (E)PS, PDF, MIF, SVG,
 PNM, JPEG and PNG formats. It has many useful features like built-in statistics
@@ -322,19 +230,19 @@ and it also sports its own built-in programming language.
 
 \textit{ROOT} is a powerful object-oriented data analysis framework,
 with strong support for plotting and graphics in general.
-ROOT has been developed at CERN, and it is distributed under a BSD-like license.
+ROOT was developed at CERN, and is distributed under a BSD-like license.
 
-An interesting thing is that ROOT is based on \textit{CINT}, a ``C/C++ interpreter''
+ROOT is based on \textit{CINT}, a ``C/C++ interpreter''
 aimed at processing C/C++ scripts. It is probably harder to get started
 using ROOT than with either Gnuplot or Grace, but if you are serious
-about analysing simulation results, you will find that ROOT gives you
-power and flexibility that would be unthinkable in the other two programs.
+about analysing simulation results, you will find that ROOT provides
+power and flexibility that would be unattainable the other two programs.
 
 Curt Brune's page at Stanford (http://www.slac.stanford.edu/~curt/omnet++/)
-shows examples what you can achieve using ROOT with OMNeT++.
+shows examples what you can achieve using ROOT with {\opp}.
 
 
-\subsection{Using Gnuplot}
+\subsection{Gnuplot}
 
 Gnuplot has an interactive command interface. To get the vectors in
 \texttt{mysim1.vec} and \texttt{mysim4.vec} plotted in the same graph,
@@ -351,14 +259,12 @@ set yrange [0:1.2]
 replot
 \end{verbatim}
 
-
-There are several commands to adjust ranges, plotting style, labels,
+Several commands are available to adjust ranges, plotting style, labels,
 scaling etc. Gnuplot\index{Gnuplot} can also plot 3D graphs. Gnuplot
-is available for Windows and other platforms. Gnuplot has a simple, interactive
-graphical user interface called PlotMTV, however, we recommend that you use
-{\opp}'s Plove tool, described in an earlier section.
-
-
+is available for Windows and other platforms.
+On Windows, you can copy the resulting graph to the clipboard from
+the Gnuplot window's system menu, then insert it into the application you
+are working with.
 
 
 %%% Local Variables:
