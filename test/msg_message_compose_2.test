@@ -1,19 +1,18 @@
 %description:
-Check cobject-class as message member
+Check static array of structs as message member
 
 %file: {}.msg
 
-class {Class1}
+struct {MyStruct}
 {
     fields:
         int bb;
 }
 
-
 message {MyMessage}
 {
     fields:
-        {Class1} b;
+        {MyStruct} b[3];
         char c;
 };
 
@@ -26,10 +25,31 @@ message {MyMessage}
 
 {MyMessage} x;
 
-x.getB().setBb(11); PRINT(x.getB().getBb());
-x.setC('x'); PRINT(x.getC());
+// access
+x.getB(0).bb=10;
+x.getB(1).bb=11;
+x.getB(2).bb=12;
+x.setC('x');
+
+PRINT(x.getB(0).bb);
+PRINT(x.getB(1).bb);
+PRINT(x.getB(2).bb);
+PRINT(x.getC());
+ev << "-" << endl;
+
+// assigment
+x.setB(0,x.getB(2));
+PRINT(x.getB(0).bb);
+PRINT(x.getB(1).bb);
+PRINT(x.getB(2).bb);
 
 %contains: stdout
-x.getB().getBb():11
+x.getB(0).bb:10
+x.getB(1).bb:11
+x.getB(2).bb:12
 x.getC():x
+-
+x.getB(0).bb:12
+x.getB(1).bb:11
+x.getB(2).bb:12
 

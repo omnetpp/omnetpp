@@ -1,9 +1,9 @@
 %description:
-Check primitive scalar field types in non-cObject rooted classes
+Check primitive scalar field types in cObject-rooted classes
 
 %file: {}.msg
 
-class {MyClass}
+class {MyClass} extends cObject
 {
     fields:
         bool b;
@@ -24,10 +24,24 @@ class {MyClass}
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyClass} x;
+{MyClass} x("myclass");
 
-// test it's really not subclassed from cObject
+// test it's really subclassed from cObject
+(void)(cObject *)&x;
 ev << (dynamic_cast<cObject *>(&x)!=0 ? "cObject" : "generic") << endl;
+ev << x.className() << ":" << x.name() << endl;
+
+// fields must initialize to zero
+PRINT(x.getB());
+PRINT(x.getC());
+PRINT(x.getS());
+PRINT(x.getUs());
+PRINT(x.getI());
+PRINT(x.getUi());
+PRINT(x.getL());
+PRINT(x.getUl());
+PRINT(x.getD());
+ev << "--\n";
 
 // scalar fields
 x.setB(true); PRINT(x.getB());
@@ -53,7 +67,18 @@ x.setUl(-10);  PRINT((x.getUl()>0));
 x.setD(3.1415); PRINT(x.getD());
 
 %contains: stdout
-generic
+cObject
+{MyClass}:myclass
+x.getB():0
+x.getC():
+x.getS():0
+x.getUs():0
+x.getI():0
+x.getUi():0
+x.getL():0
+x.getUl():0
+x.getD():0
+--
 x.getB():1
 x.getB():0
 x.getC():a
@@ -70,3 +95,4 @@ x.getL():-10
 x.getUl():10
 (x.getUl()>0):1
 x.getD():3.1415
+

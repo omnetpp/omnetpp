@@ -1,18 +1,14 @@
 %description:
-Check cobject-class as message member
+Check cObject-based class as message member
 
 %file: {}.msg
 
-class {Class1}
-{
-    fields:
-        int bb;
-}
+class cQueue;
 
 message {MyMessage}
 {
     fields:
-        {Class1} b;
+        cQueue q;
         char c;
 };
 
@@ -25,10 +21,13 @@ message {MyMessage}
 
 {MyMessage} x;
 
-x.getB().setBb(11); PRINT(x.getB().getBb());
+cQueue& q = x.getQ();
+q.setName("queue");
+ev << q.className() << ":" << q.name() << ":" <<
+      (q.owner()==&x ? "owned" : "not owned") << endl;
 x.setC('x'); PRINT(x.getC());
 
 %contains: stdout
-x.getB().getBb():11
+cQueue:queue:owned
 x.getC():x
 

@@ -1,26 +1,18 @@
 %description:
-Check external non-cObject class as message member
+Check dynamic array of structs as message member
 
 %file: {}.msg
 
-cplusplus {{
-
-  class {A} {
-    private:
-      int a;
-    public:
-      int getA() {return a;}
-      void setA(int newa) {a=newa;}
-  };
-
-}}
-
-class noncobject {A};
+struct {MyStruct}
+{
+    fields:
+        int bb;
+}
 
 message {MyMessage}
 {
     fields:
-        {A} b;
+        {MyStruct} b[];
         char c;
 };
 
@@ -33,10 +25,33 @@ message {MyMessage}
 
 {MyMessage} x;
 
-x.getB().setA(11); PRINT(x.getB().getA());
-x.setC('x'); PRINT(x.getC());
+x.setBArraySize(3);
+
+// access
+x.getB(0).bb=10;
+x.getB(1).bb=11;
+x.getB(2).bb=12;
+x.setC('x');
+
+PRINT(x.getB(0).bb);
+PRINT(x.getB(1).bb);
+PRINT(x.getB(2).bb);
+PRINT(x.getC());
+ev << "-" << endl;
+
+// assigment
+x.setB(0,x.getB(2));
+PRINT(x.getB(0).bb);
+PRINT(x.getB(1).bb);
+PRINT(x.getB(2).bb);
 
 %contains: stdout
-x.getB().getA():11
+x.getB(0).bb:10
+x.getB(1).bb:11
+x.getB(2).bb:12
 x.getC():x
+-
+x.getB(0).bb:12
+x.getB(1).bb:11
+x.getB(2).bb:12
 

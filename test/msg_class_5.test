@@ -1,11 +1,6 @@
 %description:
 Check static arrays in classes
 
-FIXME TBD: test6 should be index out of bounds with static arrays
-FIXME TBD: test7 should be dynamic arrays
-FIXME TBD: test8 should be index out of bounds with dynamic arrays
-FIXME TBD: op= should be tested for all cases
-
 %file: {}.msg
 
 class {MyClass}

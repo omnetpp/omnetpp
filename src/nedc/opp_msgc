@@ -778,7 +778,7 @@ sub generateClass
         } else {
             print H "*     $realmsgclass() : $msgclass() {}\n";
         }
-        print H "*     $realmsgclass(const $realmsgclass& other) : $msgclass(other) {}\n";
+        print H "*     $realmsgclass(const $realmsgclass& other) : $msgclass() {operator=(other);}\n";
         print H "*     $realmsgclass& operator=(const $realmsgclass& other) {$msgclass\:\:operator=(other); return *this;}\n";
         if ($classtype eq "cobject") {
             print H "*     virtual cObject *dup() {return new $realmsgclass(*this);}\n";
@@ -813,7 +813,7 @@ sub generateClass
     {
         if (!$fisabstract{$fieldname}) {
             if ($fisarray{$fieldname} && $farraysize{$fieldname} ne '') {
-                if ($fval{$fieldname} ne '') {
+                if ($fkind{$fieldname} eq 'basic' && $fval{$fieldname} ne '') {
                     print CC "    for (i=0; i<$farraysize{$fieldname}; i++)\n";
                     print CC "        this->$var{$fieldname}\[i\] = 0;\n";
                 }
@@ -932,8 +932,10 @@ sub generateClass
                 print CC "    unsigned int i;\n";
                 print CC "    for (i=0; i<sz; i++)\n";
                 print CC "        $var{$fieldname}2\[i\] = this->$var{$fieldname}\[i\];\n";
-                print CC "    for (i=sz; i<size; i++)\n";
-                print CC "        $var{$fieldname}2\[i\] = 0;\n";
+                if ($fkind{$fieldname} eq 'basic') {
+                  print CC "    for (i=sz; i<size; i++)\n";
+                  print CC "        $var{$fieldname}2\[i\] = 0;\n";
+                }
                 print CC "    $varsize{$fieldname} = size;\n";
                 print CC "    delete [] this->$var{$fieldname};\n";
                 print CC "    this->$var{$fieldname} = $var{$fieldname}2;\n";

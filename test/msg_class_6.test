@@ -1,5 +1,5 @@
 %description:
-Static array out of bounds test for classes
+Static array out of bounds test for non-cObject rooted classes
 
 %file: {}.msg
 

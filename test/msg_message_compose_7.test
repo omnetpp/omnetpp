@@ -1,0 +1,51 @@
+%description:
+Check static array of cObject-based class as message member
+
+%file: {}.msg
+
+class cQueue;
+
+message {MyMessage}
+{
+    fields:
+        cQueue q[3];
+        char c;
+};
+
+%global:
+#include "{}_m.h"
+
+%activity:
+
+#define PRINT(X) ev << #X << ":" << X << endl
+#define PRINTOBJ(X)  ev << #X << ":" << X.className() << ":" << X.name() << ":" \
+                        << (X.owner()==&x ? "owned" : "not owned") << ":" \
+                        << X.length() << endl;
+
+{MyMessage} x;
+
+// access
+x.getQ(0).setName("q0"); x.getQ(0).insert(new cMessage());
+x.getQ(1).setName("q1");
+x.getQ(2).setName("q2"); x.getQ(2).insert(new cMessage());x.getQ(2).insert(new cMessage());
+PRINTOBJ(x.getQ(0));
+PRINTOBJ(x.getQ(1));
+PRINTOBJ(x.getQ(2));
+x.setC('x'); PRINT(x.getC());
+ev << "-" << endl;
+
+// assignment (doesn't copy object name, but contents must be transferred)
+x.setQ(0,x.getQ(2));
+PRINTOBJ(x.getQ(0));
+PRINTOBJ(x.getQ(1));
+PRINTOBJ(x.getQ(2));
+
+%contains: stdout
+x.getQ(0):cQueue:q0:owned:1
+x.getQ(1):cQueue:q1:owned:0
+x.getQ(2):cQueue:q2:owned:2
+x.getC():x
+-
+x.getQ(0):cQueue:q0:owned:2
+x.getQ(1):cQueue:q1:owned:0
+x.getQ(2):cQueue:q2:owned:2

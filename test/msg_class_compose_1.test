@@ -1,5 +1,5 @@
 %description:
-Check struct as class member
+Check struct as class member in non-cObject rooted classes
 
 %file: {}.msg
 
@@ -10,7 +10,7 @@ struct {MyStruct}
 }
 
 
-class {MyClass} extends cObject
+class {MyClass}
 {
     fields:
         {MyStruct} b;

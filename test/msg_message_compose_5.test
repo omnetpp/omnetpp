@@ -1,5 +1,5 @@
 %description:
-Check external non-cObject class as member in non-cObject class
+Check external non-cObject class as message member
 
 %file: {}.msg
 
@@ -17,7 +17,7 @@ cplusplus {{
 
 class noncobject {A};
 
-class {MyClass} extends cObject
+message {MyMessage}
 {
     fields:
         {A} b;
@@ -31,7 +31,7 @@ class {MyClass} extends cObject
 
 #define PRINT(X) ev << #X << ":" << X << endl
 
-{MyClass} x;
+{MyMessage} x;
 
 x.getB().setA(11); PRINT(x.getB().getA());
 x.setC('x'); PRINT(x.getC());

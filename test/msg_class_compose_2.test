@@ -1,5 +1,5 @@
 %description:
-Check cobject-class as class member
+Check non-cObject-class as member in non-cObject class
 
 %file: {}.msg
 

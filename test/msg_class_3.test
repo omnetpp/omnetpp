@@ -1,22 +1,13 @@
 %description:
-Check field initializers in non-cObject-rooted classes
+Check string fields in non-cObject-rooted classes
 
 %file: {}.msg
 
 class {MyClass}
 {
     fields:
-        bool b1 = true;
-        bool b2 = false;
-        char c1 = 'a';
-        char c2 = 64;
-        short s = 5;
-        unsigned short us = 6;
-        int i = 7;
-        unsigned int ui = 8;
-        long l = 9;
-        unsigned long ul = 10;
-        double d = 3.1415;
+        string s1;
+        string s2 = "test";
 };
 
 %global:
@@ -24,37 +15,18 @@ class {MyClass}
 
 %activity:
 
-#define PRINT(X) ev << #X << ":" << X << endl
-
 {MyClass} x;
+ev << "s1:" << (x.getS1() ? x.getS1() : "(null)") << endl;
+ev << "s2:" << (x.getS2() ? x.getS2() : "(null)") << endl;
 
-// scalar fields
-PRINT(x.getB1());
-PRINT(x.getB2());
-
-PRINT(x.getC1());
-PRINT(x.getC2());
-
-PRINT(x.getS());
-PRINT(x.getUs());
-
-PRINT(x.getI());
-PRINT(x.getUi());
-
-PRINT(x.getL());
-PRINT(x.getUl());
-
-PRINT(x.getD());
+char *p = "alice";
+x.setS1(p);
+x.setS2(p);
+ev << "s1:" << x.getS1() << ":" << (x.getS1()==p ? "shallow" : "deep") << endl;
+ev << "s2:" << x.getS2() << ":" << (x.getS2()==p ? "shallow" : "deep") << endl;
 
 %contains: stdout
-x.getB1():1
-x.getB2():0
-x.getC1():a
-x.getC2():@
-x.getS():5
-x.getUs():6
-x.getI():7
-x.getUi():8
-x.getL():9
-x.getUl():10
-x.getD():3.1415
+s1:(null)
+s2:test
+s1:alice:deep
+s2:alice:deep
