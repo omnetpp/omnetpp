@@ -99,9 +99,9 @@ char *do_func (int args, char *fname, char *p1,char *p2,char *p3)
     else /* unknown */
     {
         sprintf(findfunc_code,
-                "%sfunctype = findFunction(\"%s\");\n"
+                "%sfunctype = findFunction(\"%s\",%d);\n"
                 "%scheck_function%s( functype, \"%s\");\n",
-                indent, fname,
+                indent, fname, args,
                 indent, (inside_nonvoid_function ? "_retnull" : ""), fname,
                 indent);
         switch (args)

@@ -69,3 +69,16 @@ int cHead::count() const
       return i;
 }
 
+//-----------------------
+
+cFunctionType *findFunction(const char *s,int argcount)
+{
+    for (cIterator i(functions); !i.end(); i++)
+    {
+        cFunctionType *f = (cFunctionType *) i();
+        if (f->isName(s) && f->argCount()==argcount)
+            return f;
+    }
+    return NULL;
+}
+ 

@@ -873,18 +873,30 @@ bool cPar::setfunction(char *text)
     if (*d!='(') return false;  // no opening paren
     char *args = d;
 
-    // look up function name (temporarily overwriting '(' with a '\0')
-    *args = '\0';
-    cFunctionType *ff = findFunction( text );
-    *args = '(';
-    if (ff==NULL) return false;
-
     // remove whitespaces in-place
     const char *s;
     for (s=d=args; *s; s++)
        if (!isspace(*s))
           *d++ = *s;
     *d = '\0';
+
+    // determine argccount: number of commas+1, or zero
+    int commas = 0;
+    for (d=args; *d; d++)
+        if (*d==',')
+            commas++;
+    int argc;
+    if (commas==0 && args[1]==')')
+        argc = 0;
+    else
+        argc = commas+1;
+
+    // look up function name (temporarily overwriting '(' with a '\0')
+    *args = '\0';
+    cFunctionType *ff = findFunction(text, argc);
+    *args = '(';
+    if (ff==NULL) return false;
+
 
     // now `args' points to something like '(10,1.5E-3)', without spaces
     s = args;
