@@ -127,9 +127,9 @@ class SIM_API cException
 };
 
 /**
- * This exception is thrown when there is no error, but the simulation has
- * to be terminated. For example, cSimpleModule::endSimulation() throws
- * this exception. Statistics object may also use this exception to
+ * Thrown when the simulation is completed. 
+ * For example, cSimpleModule::endSimulation() throws this exception.
+ * Statistics object may also throw this exception to
  * signal that accuracy of simulation results has reached the desired level.
  *
  * @ingroup Internals
@@ -175,9 +175,10 @@ class SIM_API cEndModuleException : public cException
 };
 
 /**
- * Used internally: when deleting an activity() simple module, it is "asked"
- * to throw a cStackCleanupException for the side effect of exceptions --
- * to properly clean up variables on the module's coroutine stack.
+ * Used internally when deleting an activity() simple module.
+ * Then, the coroutine running activity() is "asked" to throw a 
+ * cStackCleanupException to achieve stack unwinding, a side effect of 
+ * exceptions, in order to properly clean up activity()'s local variables.
  *
  * @ingroup Internals
  */
