@@ -1,0 +1,67 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS)
+
+OBJS=ebnf.tab.obj lex.yy.obj jar.obj jar_lib.obj jar_mod.obj jar_expr.obj jar_mem.obj
+
+#
+# Targets
+#
+nedc: $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) -o nedc
+
+lex.yy.obj: jar_func.h lex.yy.c
+	$(CXX) $(COPTS) /c /Tp lex.yy.c
+
+ebnf.tab.obj: jar_func.h ebnf.tab.h ebnf.tab.c
+	$(CXX) $(COPTS) /c /Tp ebnf.tab.c
+
+ebnf.tab.h: ebnf.y
+	$(YACC) -b ebnf -d ebnf.y
+
+ebnf.tab.c: ebnf.y
+	$(YACC) -b ebnf -d ebnf.y
+
+lex.yy.c: ebnf.lex
+	$(LEX) ebnf.lex
+
+jar.obj: jar_lib.h jar_func.h jar.c
+	$(CXX) $(COPTS) /c /Tp jar.c
+
+jar_lib.obj: jar_lib.h jar_func.h jar_lib.c
+	$(CXX) $(COPTS) /c /Tp jar_lib.c
+
+jar_mod.obj: jar_lib.h jar_func.h jar_mod.c
+	$(CXX) $(COPTS) /c /Tp jar_mod.c
+
+jar_expr.obj: jar_lib.h jar_func.h jar_expr.c
+	$(CXX) $(COPTS) /c /Tp jar_expr.c
+
+jar_mem.obj: jar_func.h jar_mem.c
+	$(CXX) $(COPTS) /c /Tp jar_mem.c
+
+depend:
+	@ echo *** make depend not (yet) supported with MSVC
+
+clean:
+	del *.obj lex.yy.c ebnf.tab.c ebnf.tab.h nedc.exe *_n.cc
+
+install-local: nedc
+	..\utils/install-prog nedc $(OMNETPP_BIN_DIR)
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+ebnf.tab.obj: ebnfcfg.h jar_func.h
+jar.obj: jar_func.h jar_lib.h
+jar_expr.obj: jar_func.h jar_lib.h
+jar_lib.obj: jar_func.h jar_lib.h
+jar_mem.obj: jar_func.h
+jar_mod.obj: jar_func.h jar_lib.h
+lex.yy.obj: ebnf.tab.h

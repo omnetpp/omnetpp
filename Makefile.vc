@@ -1,0 +1,148 @@
+#=====================================================================
+#
+# toplevel makefile for OMNeT++ libraries and programs
+#
+#=====================================================================
+
+#
+# Directories
+#
+OMNETPP_SRC_DIR =       @OMNETPP_SRC_DIR@
+OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
+
+#=====================================================================
+#
+# Main targets
+#
+#=====================================================================
+
+
+all: check-env components
+
+components: libs progs install-local samples
+
+
+#=====================================================================
+#
+# OMNeT++ components
+#
+#=====================================================================
+
+LIBS=sim envir cmdenv tkenv tvenv
+PROGS=utils nedc gned plove
+SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo
+
+#
+# Group targets. Note that utils has to be built BEFORE other libs and progs
+# because tcl2c might be needed to build tkenv or gned.
+#
+libs: utils $(LIBS)
+progs: $(PROGS)
+samples: $(SAMPLES)
+
+
+#
+# Libraries
+#
+
+sim:
+	cd $(OMNETPP_SRC_DIR)/sim && $(MAKE)
+
+envir:
+	cd $(OMNETPP_SRC_DIR)/envir && $(MAKE)
+
+cmdenv:
+	cd $(OMNETPP_SRC_DIR)/cmdenv && $(MAKE)
+
+tkenv:
+	cd $(OMNETPP_SRC_DIR)/tkenv && $(MAKE)
+
+tvenv:
+	cd $(OMNETPP_SRC_DIR)/tvenv && $(MAKE)
+
+
+#
+# Programs
+#
+
+nedc:
+	cd $(OMNETPP_SRC_DIR)/nedc && $(MAKE)
+
+gned:
+	cd $(OMNETPP_SRC_DIR)/gned && $(MAKE)
+
+plove:
+	@ # needs no build
+
+utils:
+	cd $(OMNETPP_SRC_DIR)/utils &&  $(MAKE)
+
+#
+# Sample programs
+#
+
+dyna:
+	cd $(OMNETPP_SAMPLES_DIR)/dyna && $(MAKE)
+
+fddi:
+	cd $(OMNETPP_SAMPLES_DIR)/fddi && $(MAKE)
+
+fifo1:
+	cd $(OMNETPP_SAMPLES_DIR)/fifo1 && $(MAKE)
+
+fifo2:
+	cd $(OMNETPP_SAMPLES_DIR)/fifo2 && $(MAKE)
+
+hcube:
+	cd $(OMNETPP_SAMPLES_DIR)/hcube && $(MAKE)
+
+hist:
+	cd $(OMNETPP_SAMPLES_DIR)/hist && $(MAKE)
+
+nim:
+	cd $(OMNETPP_SAMPLES_DIR)/nim && $(MAKE)
+
+pvmex:
+	cd $(OMNETPP_SAMPLES_DIR)/pvmex && $(MAKE)
+
+token:
+	cd $(OMNETPP_SAMPLES_DIR)/token && $(MAKE)
+
+demo:
+	cd $(OMNETPP_SAMPLES_DIR)/demo && $(MAKE)
+
+#=====================================================================
+#
+# Utilities
+#
+#=====================================================================
+
+check-env:
+	@ if echo $$PATH | grep -q "@OMNETPP_BIN_DIR@"; then :; else \
+	  echo ' *** Warning: @OMNETPP_BIN_DIR@ not in the path, some components won'\''t build!'; \
+	fi
+	@ if echo $$LD_LIBRARY_PATH | grep -q "@OMNETPP_LIB_DIR@"; then :; else \
+	  echo ' *** Warning: @OMNETPP_LIB_DIR@ not in LD_LIBRARY_PATH, shared libs won'\''t work!'; \
+	fi
+
+clean:
+	for i in $(LIBS) $(PROGS); do \
+	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
+	done
+	for i in $(SAMPLES); do \
+	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); \
+	done
+
+depend:
+	for i in $(LIBS) $(PROGS); do \
+	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) depend); \
+	done
+	for i in $(SAMPLES); do \
+	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) depend); \
+	done
+
+install-local:
+	for i in $(LIBS) $(PROGS); do \
+	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) install-local); \
+	done
+

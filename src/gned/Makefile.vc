@@ -1,0 +1,84 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) $(TK_CFLAGS)
+
+OMNETPP_GNED_DIR=`@MYPWD@`
+
+OBJS = gned$(GNED_EMBED_SUFFIX).obj tklib.obj arrow.obj ebnf.tab.obj lex.yy.obj parsened.obj disp.obj nedfile.obj
+
+#
+# Targets
+#
+default: @GNED_IF_POSSIBLE@
+
+gned : $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) $(TK_LIBS) $(SYS_LIBS) -o gned
+
+gned.obj : gned.cc
+	$(CXX) $(COPTS) /c /Tp -DOMNETPP_GNED_DIR="\"$(OMNETPP_GNED_DIR)\"" -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" gned.cc
+
+gned-e.obj : gned.cc tclcode.cc
+	$(CXX) $(COPTS) /c /Tp -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" gned.cc -o gned-e.obj
+
+tklib.obj : tklib.cc
+	$(CXX) $(COPTS) /c /Tp tklib.cc
+
+arrow.obj: arrow.cc
+	$(CXX) $(COPTS) /c /Tp arrow.cc
+
+parsened.obj: parsened.cc
+	$(CXX) $(COPTS) /c /Tp parsened.cc
+
+nedfile.obj: nedfile.cc
+	$(CXX) $(COPTS) /c /Tp nedfile.cc
+
+disp.obj: disp.cc
+	$(CXX) $(COPTS) /c /Tp disp.cc
+
+lex.yy.obj: lex.yy.c
+	$(CXX) $(COPTS) /c /Tp lex.yy.c
+
+ebnf.tab.obj: ebnf.tab.c
+	$(CXX) $(COPTS) /c /Tp ebnf.tab.c
+
+ebnf.tab.h: ebnf.y
+	$(YACC) -b ebnf -d ebnf.y
+
+ebnf.tab.c: ebnf.y
+	$(YACC) -b ebnf -d ebnf.y
+
+lex.yy.c: ebnf.lex
+	$(LEX) ebnf.lex
+
+tclcode.cc: *.tcl
+	..\utils/tcl2c tclcode.cc *.tcl
+
+missing-library:
+	@ echo '  *** No Tk installation found -- skipping GNED'
+
+depend:
+	@ echo *** make depend not (yet) supported with MSVC
+
+clean:
+	del *.obj lex.yy.c ebnf.tab.c ebnf.tab.h gned.exe
+
+install-local: default
+	..\utils/install-prog gned $(OMNETPP_BIN_DIR)
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+ebnf.tab.obj: ebnfcfg.h parsened.h nedfile.h disp.h
+lex.yy.obj: ebnf.tab.h ebnfcfg.h parsened.h
+arrow.obj: arrow.h
+disp.obj: disp.h
+gned.obj: arrow.h parsened.h tklib.h
+nedfile.obj: nedfile.h parsened.h
+parsened.obj: parsened.h nedfile.h disp.h tklib.h
+tklib.obj: tklib.h

@@ -1,0 +1,122 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "..\envir" $(TK_CFLAGS)
+
+OMNETPP_TKENV_DIR=`@MYPWD@`
+
+OBJS = tkapp$(TKENV_EMBED_SUFFIX).obj tkcmd.obj tklib.obj objinsp.obj modinsp.obj statinsp.obj inspect.obj arrow.obj
+
+#
+# Targets
+#
+default: $(TKENV_IF_POSSIBLE)
+
+tkenv : tkenv$(LIB_SUFFIX)
+
+tkenv.lib : $(OBJS)
+	$(AR) /nologo /out:tkenv.lib $(OBJS)
+
+tkenv.dll : $(OBJS)
+	#FIXME $(SHLIB_LD) -o tkenv.dll $(OBJS)
+
+tkapp.obj : tkapp.cc
+	$(CXX) $(COPTS) /c /Tp -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" tkapp.cc
+
+tkapp-e.obj : tkapp.cc  tclcode.cc
+	$(CXX) $(COPTS) /c /Tp -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" tkapp.cc -o tkapp-e.obj
+
+tkcmd.obj : tkcmd.cc
+	$(CXX) $(COPTS) /c /Tp tkcmd.cc
+
+tklib.obj : tklib.cc
+	$(CXX) $(COPTS) /c /Tp tklib.cc
+
+objinsp.obj: objinsp.cc
+	$(CXX) $(COPTS) /c /Tp objinsp.cc
+
+modinsp.obj: modinsp.cc
+	$(CXX) $(COPTS) /c /Tp modinsp.cc
+
+statinsp.obj: statinsp.cc
+	$(CXX) $(COPTS) /c /Tp statinsp.cc
+
+inspect.obj: inspect.cc
+	$(CXX) $(COPTS) /c /Tp inspect.cc
+
+arrow.obj: arrow.cc arrow.h
+	$(CXX) $(COPTS) /c /Tp arrow.cc
+
+tclcode.cc: *.tcl
+	..\utils/tcl2c tclcode.cc *.tcl
+
+missing-library:
+	@ echo '  *** No Tk installation found -- skipping Tkenv'
+
+depend:
+	@ echo *** make depend not (yet) supported with MSVC
+
+clean:
+	del *.obj tkenv.lib tkenv.dll tcl2c
+
+install-local: $(TKENV_IF_POSSIBLE)
+	copy tkenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+arrow.obj: arrow.h
+inspect.obj: ..\sim\omnetpp.h ..\sim\defs.h ..\sim\util.h ..\sim\errmsg.h
+inspect.obj: ..\sim\cobject.h ..\sim\csimul.h ..\sim\chead.h ..\sim\cmsgheap.h
+inspect.obj: ..\sim\coutvect.h ..\sim\ccor.h ..\sim\macros.h ..\sim\ctypes.h
+inspect.obj: ..\sim\carray.h ..\sim\cqueue.h ..\sim\cllist.h ..\sim\cwatch.h
+inspect.obj: ..\sim\cpar.h ..\sim\cgate.h ..\sim\cmessage.h ..\sim\cpacket.h
+inspect.obj: ..\sim\cstk.h ..\sim\cmodule.h ..\sim\cstat.h ..\sim\cdensity.h
+inspect.obj: ..\sim\chist.h ..\sim\cvarhist.h ..\sim\cpsquare.h
+inspect.obj: ..\sim\cksplit.h ..\sim\cdetect.h ..\sim\ctopo.h ..\sim\cnetmod.h
+inspect.obj: ..\sim\cfsm.h ..\sim\protocol.h ..\sim\cenvir.h tkapp.h
+inspect.obj: ..\envir\omnetapp.h tklib.h tkinsp.h
+modinsp.obj: ..\sim\cmodule.h ..\sim\cobject.h ..\sim\defs.h ..\sim\util.h
+modinsp.obj: ..\sim\ccor.h ..\sim\chead.h ..\sim\carray.h ..\sim\cqueue.h
+modinsp.obj: ..\sim\cgate.h ..\sim\csimul.h ..\sim\errmsg.h ..\sim\cmsgheap.h
+modinsp.obj: ..\sim\coutvect.h ..\sim\cmessage.h ..\sim\cpar.h ..\sim\cnetmod.h
+modinsp.obj: ..\sim\cstat.h ..\sim\cdensity.h tkapp.h ..\envir\omnetapp.h
+modinsp.obj: ..\sim\cenvir.h tklib.h tkinsp.h arrow.h
+objinsp.obj: ..\sim\omnetpp.h ..\sim\defs.h ..\sim\util.h ..\sim\errmsg.h
+objinsp.obj: ..\sim\cobject.h ..\sim\csimul.h ..\sim\chead.h ..\sim\cmsgheap.h
+objinsp.obj: ..\sim\coutvect.h ..\sim\ccor.h ..\sim\macros.h ..\sim\ctypes.h
+objinsp.obj: ..\sim\carray.h ..\sim\cqueue.h ..\sim\cllist.h ..\sim\cwatch.h
+objinsp.obj: ..\sim\cpar.h ..\sim\cgate.h ..\sim\cmessage.h ..\sim\cpacket.h
+objinsp.obj: ..\sim\cstk.h ..\sim\cmodule.h ..\sim\cstat.h ..\sim\cdensity.h
+objinsp.obj: ..\sim\chist.h ..\sim\cvarhist.h ..\sim\cpsquare.h
+objinsp.obj: ..\sim\cksplit.h ..\sim\cdetect.h ..\sim\ctopo.h ..\sim\cnetmod.h
+objinsp.obj: ..\sim\cfsm.h ..\sim\protocol.h ..\sim\cenvir.h tkapp.h
+objinsp.obj: ..\envir\omnetapp.h tklib.h tkinsp.h arrow.h
+statinsp.obj: ..\sim\cmodule.h ..\sim\cobject.h ..\sim\defs.h ..\sim\util.h
+statinsp.obj: ..\sim\ccor.h ..\sim\chead.h ..\sim\carray.h ..\sim\cqueue.h
+statinsp.obj: ..\sim\cgate.h ..\sim\csimul.h ..\sim\errmsg.h ..\sim\cmsgheap.h
+statinsp.obj: ..\sim\coutvect.h ..\sim\cmessage.h ..\sim\cpar.h
+statinsp.obj: ..\sim\cnetmod.h ..\sim\cstat.h ..\sim\cdensity.h tkapp.h
+statinsp.obj: ..\envir\omnetapp.h ..\sim\cenvir.h tklib.h tkinsp.h arrow.h
+tkapp.obj: ..\envir\slaveapp.h ..\envir\omnetapp.h ..\sim\carray.h
+tkapp.obj: ..\sim\cobject.h ..\sim\defs.h ..\sim\util.h ..\sim\cenvir.h
+tkapp.obj: ..\envir\cinifile.h ..\sim\cmodule.h ..\sim\ccor.h ..\sim\chead.h
+tkapp.obj: ..\sim\cqueue.h ..\sim\cgate.h ..\sim\csimul.h ..\sim\errmsg.h
+tkapp.obj: ..\sim\cmsgheap.h ..\sim\coutvect.h ..\sim\cmessage.h ..\sim\cpar.h
+tkapp.obj: ..\sim\cstk.h ..\sim\ctypes.h ..\sim\cnetmod.h tkapp.h tklib.h
+tkapp.obj: tkinsp.h
+tkcmd.obj: ..\sim\cenvir.h ..\sim\defs.h ..\sim\carray.h ..\sim\cobject.h
+tkcmd.obj: ..\sim\util.h ..\sim\csimul.h ..\sim\errmsg.h ..\sim\chead.h
+tkcmd.obj: ..\sim\cmsgheap.h ..\sim\coutvect.h ..\sim\ccor.h ..\sim\cmodule.h
+tkcmd.obj: ..\sim\cqueue.h ..\sim\cgate.h ..\sim\ctypes.h tkapp.h
+tkcmd.obj: ..\envir\omnetapp.h tklib.h tkinsp.h
+tklib.obj: ..\sim\cobject.h ..\sim\defs.h ..\sim\util.h ..\sim\cmodule.h
+tklib.obj: ..\sim\ccor.h ..\sim\chead.h ..\sim\carray.h ..\sim\cqueue.h
+tklib.obj: ..\sim\cgate.h ..\sim\csimul.h ..\sim\errmsg.h ..\sim\cmsgheap.h
+tklib.obj: ..\sim\coutvect.h tklib.h tkinsp.h ..\envir\omnetapp.h
+tklib.obj: ..\sim\cenvir.h tkapp.h

@@ -1,0 +1,81 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)"
+
+OBJS=args.obj cenvir.obj cinifile.obj main.obj omnetapp.obj slaveapp.obj seeds.obj patmatch.obj
+
+#
+# Targets
+#
+all : envir$(LIB_SUFFIX)
+
+envir.lib : $(OBJS)
+	$(AR) /nologo /out:envir.lib $(OBJS)
+
+envir.dll : $(OBJS)
+	#FIXME $(SHLIB_LD) -o envir.dll $(OBJS)
+
+args.obj : args.cc args.h
+	$(CXX) $(COPTS) /c /Tp args.cc
+
+cenvir.obj : cenvir.cc
+	$(CXX) $(COPTS) /c /Tp cenvir.cc
+
+cinifile.obj : cinifile.cc
+	$(CXX) $(COPTS) /c /Tp cinifile.cc
+
+main.obj : main.cc
+	$(CXX) $(COPTS) /c /Tp main.cc
+
+omnetapp.obj : omnetapp.cc
+	$(CXX) $(COPTS) /c /Tp -DHAVE_DLOPEN=$(HAVE_DLOPEN) omnetapp.cc
+
+slaveapp.obj : slaveapp.cc
+	$(CXX) $(COPTS) /c /Tp slaveapp.cc
+
+seeds.obj : seeds.cc
+	$(CXX) $(COPTS) /c /Tp seeds.cc
+
+patmatch.obj : patmatch.cc
+	$(CXX) $(COPTS) /c /Tp patmatch.cc
+
+depend:
+	@ echo *** make depend not (yet) supported with MSVC
+
+clean:
+	del *.obj envir.lib envir.dll
+
+install-local: envir$(LIB_SUFFIX)
+	copy envir$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+args.obj: args.h
+cenvir.obj: args.h ..\sim\cenvir.h ..\sim\defs.h omnetapp.h ..\sim\carray.h
+cenvir.obj: ..\sim\cobject.h ..\sim\util.h slaveapp.h ..\sim\cmodule.h
+cenvir.obj: ..\sim\ccor.h ..\sim\chead.h ..\sim\cqueue.h ..\sim\cgate.h
+cenvir.obj: ..\sim\csimul.h ..\sim\errmsg.h ..\sim\cmsgheap.h ..\sim\coutvect.h
+cenvir.obj: ..\sim\cnetmod.h
+cinifile.obj: ..\sim\cenvir.h ..\sim\defs.h ..\sim\util.h cinifile.h patmatch.h
+main.obj: ..\sim\cobject.h ..\sim\defs.h ..\sim\util.h ..\sim\csimul.h
+main.obj: ..\sim\errmsg.h ..\sim\chead.h ..\sim\cmsgheap.h ..\sim\coutvect.h
+main.obj: ..\sim\ccor.h ..\sim\cenvir.h
+omnetapp.obj: args.h omnetapp.h ..\sim\carray.h ..\sim\cobject.h ..\sim\defs.h
+omnetapp.obj: ..\sim\util.h ..\sim\cenvir.h cinifile.h patmatch.h
+omnetapp.obj: ..\sim\ctypes.h ..\sim\chead.h ..\sim\ccor.h ..\sim\csimul.h
+omnetapp.obj: ..\sim\errmsg.h ..\sim\cmsgheap.h ..\sim\coutvect.h ..\sim\cpar.h
+omnetapp.obj: ..\sim\cnetmod.h ..\sim\cmodule.h ..\sim\cqueue.h ..\sim\cgate.h
+patmatch.obj: patmatch.h ..\sim\defs.h
+seeds.obj: omnetapp.h ..\sim\carray.h ..\sim\cobject.h ..\sim\defs.h
+seeds.obj: ..\sim\util.h ..\sim\cenvir.h
+slaveapp.obj: slaveapp.h omnetapp.h ..\sim\carray.h ..\sim\cobject.h
+slaveapp.obj: ..\sim\defs.h ..\sim\util.h ..\sim\cenvir.h cinifile.h
+slaveapp.obj: ..\sim\csimul.h ..\sim\errmsg.h ..\sim\chead.h ..\sim\cmsgheap.h
+slaveapp.obj: ..\sim\coutvect.h ..\sim\ccor.h ..\sim\cnetmod.h ..\sim\cmodule.h
+slaveapp.obj: ..\sim\cqueue.h ..\sim\cgate.h

@@ -1,0 +1,50 @@
+#
+# Global definitions
+#
+!include ..\..\configuser.vc
+
+#
+# Local definitions
+#
+COPTS=$(CFLAGS) /I "$(OMNETPP_INCL_DIR)" /I "..\envir"
+
+OBJS = cmdenv.obj enumstr.obj heap.obj
+
+#
+# Targets
+#
+all: cmdenv$(LIB_SUFFIX)
+
+cmdenv.lib : $(OBJS)
+	$(AR) /nologo /out:cmdenv.lib $(OBJS)
+
+cmdenv.dll : $(OBJS)
+	#FIXME $(SHLIB_LD) -o cmdenv.dll $(OBJS)
+
+cmdenv.obj : cmdenv.cc
+	$(CXX) $(COPTS) /c /Tp cmdenv.cc
+
+enumstr.obj : enumstr.cc
+	$(CXX) $(COPTS) /c /Tp enumstr.cc
+
+heap.obj : heap.cc
+	$(CXX) $(COPTS) /c /Tp heap.cc
+
+depend:
+	@ echo *** make depend not (yet) supported with MSVC
+
+clean:
+	del *.obj cmdenv.lib cmdenv.dll
+
+install-local: cmdenv$(LIB_SUFFIX)
+	copy cmdenv$(LIB_SUFFIX) $(OMNETPP_LIB_DIR)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+cmdenv.obj: cmdenv.h ..\sim\ctypes.h ..\sim\chead.h ..\sim\cobject.h
+cmdenv.obj: ..\sim\defs.h ..\sim\util.h ..\sim\csimul.h ..\sim\errmsg.h
+cmdenv.obj: ..\sim\cmsgheap.h ..\sim\coutvect.h ..\sim\ccor.h
+cmdenv.obj: ..\envir\omnetapp.h ..\sim\carray.h ..\sim\cenvir.h enumstr.h
+cmdenv.obj: ..\envir\slaveapp.h ..\envir\cinifile.h ..\sim\cmodule.h
+cmdenv.obj: ..\sim\cqueue.h ..\sim\cgate.h ..\sim\cnetmod.h ..\envir\args.h
+enumstr.obj: enumstr.h

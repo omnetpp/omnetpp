@@ -30,13 +30,13 @@ sim_std.lib : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 	$(AR) /nologo /out:sim_std.lib $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 
 sim_std.dll : $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
-	$(SHLIB_LD) -o sim_std.dll $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
+	#FIXME $(SHLIB_LD) -o sim_std.dll $(CPPOBJS) $(CPPOBJS_STD) $(ASMOBJS)
 
 sim_pvm.lib : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 	$(AR) /nologo /out:sim_pvm.lib $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 
 sim_pvm.dll : $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
-	$(SHLIB_LD) -o sim_pvm.dll $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
+	#FIXME $(SHLIB_LD) -o sim_pvm.dll $(CPPOBJS) $(CPPOBJS_PVM) $(ASMOBJS)
 
 ccor.obj : ccor.cc
 	$(CXX) $(COPTS) /c /Tp ccor.cc
