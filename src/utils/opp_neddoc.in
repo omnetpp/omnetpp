@@ -6,14 +6,14 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}' && eval 'exec perl -S $0 $
 
 #--------------------------------------------------
 # Following lines are configured by the Makefile:
-$NEDTOOL = "@NEDTOOL@";
-$XSLTPROC = "@XSLTPROC@";
-$GNED = "@GNED@";
-$GHOSTSCRIPT = "@GHOSTSCRIPT@";
-$CONVERT = "@CONVERT@";
-$GIFTRANS = "@GIFTRANS@";
-$DOT = "@DOT@";
-$PERL = "@PERL@";
+$NEDTOOL = '@NEDTOOL@';
+$XSLTPROC = '@XSLTPROC@';
+$GNED = '@GNED@';
+$GHOSTSCRIPT = '@GHOSTSCRIPT@';
+$CONVERT = '@CONVERT@';
+$GIFTRANS = '@GIFTRANS@';
+$DOT = '@DOT@';
+$PERL = '@PERL@';
 #--------------------------------------------------
 
 # OS check
