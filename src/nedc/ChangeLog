@@ -1,3 +1,9 @@
+2001-10-06 Andras Varga
+
+	* msgc.pl msgtest.ned msgdoc.txt nedcwrapper.sh: checked in files for
+        experimental message subclassing. Read msgdoc.txt for instructions on
+        how to try it.
+
 2001-07-11 Andras Varga
 
 	* ebnf.y: Eric Wu's Tru64/MPI port. Tru64 needs extra #includes.

@@ -1,0 +1,135 @@
+EXPERIMENTAL MESSAGE SUBCLASSING SUPPORT
+========================================
+
+Motivation
+==========
+The original idea is described in:
+  http://www.hit.bme.hu/phd/vargaa/omnetpp/subclass.htm
+
+The solution described here is aimed at making the process easier by
+adding direct support for the messsage subclassing concept to the NED
+language. The idea is that the NED compiler should generate the message
+classes instead of having to write them by hand.
+
+See also the NED II draft at:
+  http://www.hit.bme.hu/phd/vargaa/omnetpp/neddraft.htm
+
+*** WARNING: The syntax and features described here are all experimental!!!
+    They may change as this thing evolves.
+
+Files
+=====
+msgc.pl         -- "message subclassing compiler"
+msgtest.ned     -- example NED source
+nedcwrapper.sh  -- 'glue' script to integrate message subclassing
+                   into the current OMNeT++ releases
+msgdoc.txt      -- this file
+
+
+How to try
+==========
+You place your message subclassing stuff into a file with .ned extension.
+This file is going to be processed with msgc.pl, the experimental
+"message subclassing compiler". Since msgc.pl doesn't understand
+"conventional" NED elements (i.e. modules, networks, channels), don't put
+any of them into a message subclassing .ned file! (Similarly, because
+old nedc doesn't understand message subclassing syntax, don't put any such
+elements into normal .ned files.)  The first line of your message subclassing
+ned files should be:
+  //--subclassing--
+You'll immediately see why.
+
+As the next step, generate a makefile with opp_makemake, then (this is
+important!) replace the NEDC=nedc line in it with:
+  NEDC=$(HOME)/omnetpp/src/nedc/nedcwrapper.sh
+nedcwrapper.sh is a small script that peeks into the ned file looking
+for the '//--subclassing--' line, an depending whether it's there or not,
+invokes msgc.pl or nedc to process it. nedcwrapper.sh as well as the msgc.pl
+script are an intermediate solution until the new extended nedc becomes
+available.
+
+The task of the "message subclassing compiler" is to generate C++ classes
+you can use from your models as well as "reflection" classes that allow
+Tkenv to inspect these data stuctures. From a file called foo.ned,
+the compiler will generate the foo_n.h and foo_n.cc files. You'll need to
+#include foo_n.h into your C++ sources to be able to use the generated
+classes. The foo_n.cc file contains implementation of the generated classes
+as well as "reflection" code that (at some point in the future) will allow
+you to inspect these data stuctures from the Tkenv GUI. The foo_n.cc file
+should be compiled and linked into you simulation (the generated makefile
+will take care of this).
+
+
+Features in nutshell
+====================
+You're strongly advised to experiment with the source and always check out
+the generated code!!!
+
+For lack of time, syntax is not described here -- you should study the
+msgtest.ned file instead!  What you find here however is very brief
+explanations of certain keywords or features you find in msgtest.ned.
+
+1. cppinclude directive:
+Adds a C++ #include to the generated header file.
+Example:
+  cppinclude "myclasses.h"
+
+
+2. enums:
+An enum{..} generates a normal C++ enum, plus creates an object which stores
+textual representations of the constants. The object makes it possible to
+display symbolic names in Tkenv.
+
+
+3. class, message declarations:
+Different flavours of the same thing -- generated data classes with associated
+descriptor objects which make them inspectable in Tkenv.
+- class: class (default base class: none [NOT cObject!!!])
+- message: class (default base class: cMessage)
+- struct: public data members instead of set/get methods
+Slightly different code is generated for classes that are rooted in cObject
+than for those that are not. (For the latter, no className() or dup() method
+is generated, and the constructor doesn't have the 'name' argument.)
+
+
+4. struct declarations:
+Generated structs have public data members instead of set/get methods.
+They have no virtual functions (no vtable!). Inheritance is supported, but
+"generation gap" or virtual fields are not (they build upon virtual functions).
+
+
+5. fields, properties sections within the class/message/struct declarations:
+fields section: data members to be generated.
+properties section: contains meta info that affects how generated code will
+look like.
+
+
+6. 'customize' property (true/false):
+When set, the 'generation gap' pattern is used which allows the programmer
+to customize the generated class by redefining virtual member functions.
+
+
+7. announcing your C++ types to the compiler
+Announcement of all types unknown to msgc is mandatory. Use the struct, cobject,
+noncobject keywords.
+Examples:
+  struct IPAddress;
+  cobject PayloadPacket;
+Types announced this way are assumed to have NO associated descriptor objects.
+
+
+8. 'virtual' fields:
+No data member is generated, and generated getter/setter methods are pure
+virtual. Purpose is to allow the programmer to store the value of this field
+in whatever way he/she wants. Assumes that the class has the 'customize'
+property set.
+Example:
+   virtual int a;
+
+
+9. enum declarations for fields:
+It is possible to tell nedc if an integral field will take values from an enum.
+Example:
+   int p enum(ProtocolTypes);
+
+
