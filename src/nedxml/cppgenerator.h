@@ -47,8 +47,6 @@ class NEDCppGenerator
     ostream& out;
     ostream& outh;
     bool in_network;
-    std::string module_name;
-    std::string submodule_name;
     std::string submodule_var;
     int indentsize;
 
@@ -97,8 +95,6 @@ class NEDCppGenerator
     ExpressionNode *findExpression(NEDElement *parent, const char *target);
     /// If expression consists of a constant, return its pointer, NULL otherwise.
     ConstNode *getConstantExpression(ExpressionNode *node);
-    /// Find first child in node which has given attribute with given value.
-    NEDElement *findFirstChildWithAttribute(NEDElement *node, int tagcode, const char *attr, const char *attrvalue);
 
     void writeProlog(ostream& out);
     void printTemporaryVariables(const char *indent);

@@ -13,6 +13,7 @@
 
 
 #include <stdio.h>
+#include <assert.h>
 #include "cppexprgenerator.h"
 #include "nederror.h"
 
@@ -416,23 +417,49 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     // operators should be handled specially
     if (!strcmp(funcname,"index"))
     {
-        // TBD validation: if (argcount!=0) -->error
-        out << "submod_index";
+        // validation code should ensure this only occurs within a submodule vector
+        out << "submodindex";
         return;
     }
     else if (!strcmp(funcname,"sizeof"))
     {
-        //ASSERT( op1 && op1->getTagCode()==NED_IDENT);
-        //const char *name = ((IdentNode *)op1)->getName();
+        IdentNode *op1 = node->getFirstIdentChild();
+        assert(op1);
+        const char *name = op1->getName();
 
-        // TBD validation: if (argcount!=1) -->error
+        // we must decide if "name" is a gate or a submodule
+        bool isgate = false;
+        bool issubmod = false;
+        NEDElement *mod1 = node;
+        while (mod1->getTagCode()!=NED_COMPOUND_MODULE && mod1->getParent())
+            mod1 = mod1->getParent();
+        if (!mod1)
+            INTERNAL_ERROR0(node, "sizeof can only be within a compound module declaration");
+        CompoundModuleNode *mod = (CompoundModuleNode *)mod1;
+        GatesNode *gates = mod->getFirstGatesChild();
+        if (gates && gates->getFirstChildWithAttribute(NED_GATE,"name",name))
+            isgate = true;
 
-        // FIXME TBD
-        INTERNAL_ERROR0(node, "sizeof operator not implemented yet");
+        if (!isgate)
+        {
+            SubmodulesNode *submods = mod->getFirstSubmodulesChild();
+            if (submods && submods->getFirstChildWithAttribute(NED_SUBMODULE,"name",name))
+                issubmod = true;
+        }
 
-        // find among local module gates
-        // if not found, find among submodules
-
+        // generate code
+        if (isgate)
+        {
+            out << "_gateVectorSize(mod,\"" << name << "\")";
+        }
+        else if (issubmod)
+        {
+            out << name << "_size";
+        }
+        else
+        {
+            INTERNAL_ERROR2(node, "%s is neither a module gate not a submodule in sizeof(%s)", name, name);
+        }
         return;
     }
     else if (!strcmp(funcname,"input"))

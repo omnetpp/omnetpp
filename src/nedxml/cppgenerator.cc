@@ -240,21 +240,6 @@ ConstNode *NEDCppGenerator::getConstantExpression(ExpressionNode *node)
     return (ConstNode *)firstchild;
 }
 
-NEDElement *NEDCppGenerator::findFirstChildWithAttribute(NEDElement *node, int tagcode,
-                                                         const char *attr, const char *attrvalue)
-{
-    if (!node)
-        return NULL;
-    for (NEDElement *child=node->getFirstChildWithTag(tagcode); child; child = child->getNextSiblingWithTag(tagcode))
-    {
-        const char *val = child->getAttribute(attr);
-        if (val && !strcmp(val,attrvalue))
-            return child;
-    }
-    return NULL;
-}
-
-
 //--------------------------------------
 
 //
@@ -423,10 +408,10 @@ void NEDCppGenerator::writeProlog(ostream& out)
 
     out << "static cChannel *_createChannel(const char *channeltypename)\n";
     out << "{\n";
-    out << "    cChannelType *chantype = findChannelType(channeltypename);\n";
-    out << "    if (!chantype)\n";
+    out << "    cChannelType *channeltype = findChannelType(channeltypename);\n";
+    out << "    if (!channeltype)\n";
     out << "        throw new cException(\"Channel type %s not found\", channeltypename);\n";
-    out << "    cChannel *channel = chantype->create(\"channel\");\n";
+    out << "    cChannel *channel = channeltype->create(\"channel\");\n";
     out << "    return channel;\n";
     out << "}\n";
     out << "\n";
@@ -440,6 +425,14 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "    return channel;\n";
     out << "}\n";
     out << "\n";
+
+    out << "static int _gateVectorSize(cModule *mod, const char *gatename)\n";
+    out << "{\n";
+    out << "    cGate *g = mod->gate(gatename);\n";
+    out << "    return g ? g->size() : 0;\n";
+    out << "}\n";
+    out << "\n";
+
 }
 
 // generators
@@ -498,7 +491,7 @@ void NEDCppGenerator::doChannel(ChannelNode *node, const char *indent, int mode,
     out << "cChannel *" << channelname << "::create(const char *name)\n";
     out << "{\n";
     out << "    cChannel *chan = new cSimpleChannel(name);\n";
-    out << "    cPar tmpval;\n\n";
+    out << "    cPar tmpval, *p;\n\n";
 
     // generate channel attributes code
     generateChildren(node, increaseIndent(indent));
@@ -511,7 +504,7 @@ void NEDCppGenerator::doChannelAttr(ChannelAttrNode *node, const char *indent, i
 {
     const char *attrname = node->getName();    // attribute name
 
-    out << "    cPar *p = new cPar(\"" << attrname << "\");\n";
+    out << "    p = new cPar(\"" << attrname << "\");\n";
     ExpressionNode *value = findExpression(node, "value");
     out << "    *p = ";
     generateItem(value, indent, mode);
@@ -555,10 +548,10 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     out << indent << "modtype = _getModuleType(\"" << node->getTypeName() << "\");\n";
 
     // create module
-    submodule_name = node->getName();
+    const char *submodule_name = node->getName();
     submodule_var = node->getName();
     submodule_var += "_p";
-    out << indent << "cModule *" << submodule_var.c_str() << " = modtype->create(\"" << submodule_name.c_str() << "\", NULL);\n\n";
+    out << indent << "cModule *" << submodule_var.c_str() << " = modtype->create(\"" << submodule_name << "\", NULL);\n\n";
 
     // generate children (except expressions)
     generateChildrenWithTags(node, "substmachines,substparams,gatesizes", indent, mode);
@@ -583,25 +576,25 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
 void NEDCppGenerator::doSimple(SimpleModuleNode *node, const char *indent, int mode, const char *)
 {
     // generate Interface() stuff
-    module_name = node->getName();
+    const char *module_name = node->getName();
 
-    out << "ModuleInterface(" << module_name.c_str() << ")\n";
+    out << "ModuleInterface(" << module_name << ")\n";
     generateChildrenWithTags(node, "params,gates,machines", increaseIndent(indent));
     out << "EndInterface\n\n";
-    out << "Register_ModuleInterface(" << module_name.c_str() << ")\n\n";
+    out << "Register_ModuleInterface(" << module_name << ")\n\n";
 
     // epilog
     out << "//// Sample code:\n";
-    out << "// class " << module_name.c_str() << " : public cSimpleModule\n";
+    out << "// class " << module_name << " : public cSimpleModule\n";
     out << "// {\n";
-    out << "//     Module_Class_Members(" << module_name.c_str() << ",cSimpleModule,16384)\n";
+    out << "//     Module_Class_Members(" << module_name << ",cSimpleModule,16384)\n";
     out << "//     virtual void activity();\n";
     out << "//     // Add you own member functions here!\n";
     out << "// };\n";
     out << "//\n";
-    out << "// Define_Module(" << module_name.c_str() << ");\n";
+    out << "// Define_Module(" << module_name << ");\n";
     out << "//\n";
-    out << "// void " << module_name.c_str() << "::activity()\n";
+    out << "// void " << module_name << "::activity()\n";
     out << "// {\n";
     out << "//     // Put code for simple module activity here!\n";
     out << "// }\n";
@@ -611,33 +604,33 @@ void NEDCppGenerator::doSimple(SimpleModuleNode *node, const char *indent, int m
 void NEDCppGenerator::doModule(CompoundModuleNode *node, const char *indent, int mode, const char *)
 {
     // generate Interface() stuff
-    module_name = node->getName();
+    const char *module_name = node->getName();
 
-    out << "ModuleInterface(" << module_name.c_str() << ")\n";
+    out << "ModuleInterface(" << module_name << ")\n";
     generateChildrenWithTags(node, "params,gates,machines", increaseIndent(indent));
     out << "EndInterface\n\n";
 
-    out << "Register_ModuleInterface(" << module_name.c_str() << ");\n\n";
+    out << "Register_ModuleInterface(" << module_name << ");\n\n";
 
     // class declaration
-    out << "class " << module_name.c_str() << " : public cCompoundModule\n";
+    out << "class " << module_name << " : public cCompoundModule\n";
     out << "{\n";
     out << "  public:\n";
-    out << "    " << module_name.c_str() << "(const char *name, cModule *parent) :\n";
+    out << "    " << module_name << "(const char *name, cModule *parent) :\n";
     out << "      cCompoundModule(name, parent) {}\n";
     out << "\n";
     out << "  protected:\n";
     out << "    virtual void doBuildInside();\n";
     out << "};\n\n";
 
-    out << "Define_Module(" << module_name.c_str() << ");\n\n";
+    out << "Define_Module(" << module_name << ");\n\n";
 
     // generate expression shells
     exprgen.collectExpressions(node);
     exprgen.generateExpressionClasses();
 
     // prolog
-    out << "void " << module_name.c_str() << "::doBuildInside()\n";
+    out << "void " << module_name << "::doBuildInside()\n";
     out << "{\n";
 
     indent = increaseIndent(indent);
@@ -745,14 +738,14 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     }
 
     // create module
-    submodule_name = node->getName();
+    const char *submodule_name = node->getName();
 
     ExpressionNode *vectorsize = findExpression(node, "vector-size");
     if (!vectorsize)
     {
         submodule_var = node->getName();
         submodule_var += "_p";
-        out << indent << "cModule *" << submodule_var.c_str() << " = modtype->create(\"" << submodule_name.c_str() << "\", mod);\n";
+        out << indent << "cModule *" << submodule_var.c_str() << " = modtype->create(\"" << submodule_name << "\", mod);\n";
         out << indent << "int " << node->getName() << "_size = 1;\n";
     }
     else
@@ -766,13 +759,13 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
         generateItem(vectorsize, indent, mode);
         out << ";\n";
 
-        out << indent << "_checkModuleVectorSize(" << submodulesize_var.c_str() << ",\"" << submodule_name.c_str() << "\");\n";
+        out << indent << "_checkModuleVectorSize(" << submodulesize_var.c_str() << ",\"" << submodule_name << "\");\n";
         out << indent << "cModule **" << submodule_var.c_str() << " = new cModule *[" << submodulesize_var.c_str() << "];\n\n";
         out << indent << "for (submodindex=0; submodindex<" << submodulesize_var.c_str() << "; submodindex++)\n";
         out << indent << "{\n";
         submodule_var += "[submodindex]";
         indent = increaseIndent(indent);
-        out << indent << submodule_var.c_str() << " = modtype->create(\"" << submodule_name.c_str() << "\", mod, " << submodulesize_var.c_str() << ", submodindex);\n";
+        out << indent << submodule_var.c_str() << " = modtype->create(\"" << submodule_name << "\", mod, " << submodulesize_var.c_str() << ", submodindex);\n";
     }
     out << "\n";
 
@@ -953,7 +946,7 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
     // emit code that creates channel and puts its ptr to "channel" variable
 
     // channel?
-    ConnAttrNode *channelAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","channel");
+    ConnAttrNode *channelAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","channel");
     ConstNode *channel = getConstantExpression(findExpression(channelAttr,"value"));
     if (channel)
     {
@@ -962,13 +955,13 @@ void NEDCppGenerator::resolveConnectionAttributes(ConnectionNode *node, const ch
     }
 
     // optimization: assess if simplified code can be generated
-    ConnAttrNode *delayAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","delay");
+    ConnAttrNode *delayAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","delay");
     ConstNode *delay = getConstantExpression(findExpression(delayAttr,"value"));
     bool isDelaySimple =  !delayAttr ? true : delay!=NULL;
-    ConnAttrNode *errorAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","error");
+    ConnAttrNode *errorAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","error");
     ConstNode *error = getConstantExpression(findExpression(errorAttr,"value"));
     bool isErrorSimple =  !errorAttr ? true : error!=NULL;
-    ConnAttrNode *datarateAttr = (ConnAttrNode *)findFirstChildWithAttribute(node,NED_CONN_ATTR,"name","datarate");
+    ConnAttrNode *datarateAttr = (ConnAttrNode *)node->getFirstChildWithAttribute(NED_CONN_ATTR,"name","datarate");
     ConstNode *datarate = getConstantExpression(findExpression(datarateAttr,"value"));
     bool isDatarateSimple =  !datarateAttr ? true : datarate!=NULL;
 

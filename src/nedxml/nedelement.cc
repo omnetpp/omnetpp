@@ -270,6 +270,17 @@ int NEDElement::getNumChildrenWithTag(int tagcode) const
     return n;
 }
 
+NEDElement *NEDElement::getFirstChildWithAttribute(int tagcode, const char *attr, const char *attrvalue)
+{
+    for (NEDElement *child=getFirstChildWithTag(tagcode); child; child = child->getNextSiblingWithTag(tagcode))
+    {
+        const char *val = child->getAttribute(attr);
+        if (val && !strcmp(val,attrvalue))
+            return child;
+    }
+    return NULL;
+}
+
 void NEDElement::setUserData(NEDElementUserData *data)
 {
     delete userdata;

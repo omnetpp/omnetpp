@@ -307,6 +307,16 @@ class NEDElement
     virtual int getNumChildrenWithTag(int tagcode) const;
     //@}
 
+    /** @name Utility functions */
+
+    //@{
+    /**
+     * Returns find first child element with the give tagcode and the given
+     * attribute (optionally) having the given value. Returns NULL if not found.
+     */
+    NEDElement *getFirstChildWithAttribute(int tagcode, const char *attr, const char *attrvalue=NULL);
+    //@}
+
     /** @name User data */
     //@{
 
