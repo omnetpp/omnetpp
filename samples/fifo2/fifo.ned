@@ -5,26 +5,28 @@
 
 
 // ACPFifo --
-//
+// 
 // single-server queue
-//
-simple ACPFifo
-  parameters:
-    service_time;
-  gates:
-    in: in;
-    out: out;
-endsimple
+// 
+simple ACPFifo 
+    parameters: 
+        service_time : numeric; 
+    gates: 
+        in: in; 
+        out: out; 
+endsimple 
 
 
 // ACPFifo --
-//
+// 
 // single-server queues in another flavour
-//
-simple ACBFifo
-  parameters:
-    bits_per_sec;
-  gates:
-    in: in;
-    out: out;
-endsimple
+// 
+simple ACBFifo 
+    parameters: 
+        bits_per_sec : numeric; 
+    gates: 
+        in: in; 
+        out: out; 
+endsimple 
+
+
