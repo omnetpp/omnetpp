@@ -29,7 +29,7 @@ TKENV_EMBED_SUFFIX=@TKENV_EMBED_SUFFIX@
 #
 COPTS=$(CFLAGS) -I$(OMNETPP_INCL_DIR) -I../envir $(TK_CFLAGS)
 
-OMNETPP_TKENV_DIR=`@PWD@`
+OMNETPP_TKENV_DIR=`@MYPWD@`
 
 OBJS = tkapp$(TKENV_EMBED_SUFFIX).o tkcmd.o tklib.o objinsp.o modinsp.o statinsp.o inspect.o arrow.o
 
@@ -48,10 +48,10 @@ libtkenv$(SO_LIB_SUFFIX) : $(OBJS)
 	$(SHLIB_LD) -o libtkenv$(SO_LIB_SUFFIX) $(OBJS)
 
 tkapp.o : tkapp.cc
-	$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR=\"$(OMNETPP_TKENV_DIR)\" -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc
+	$(CXX) -c $(COPTS) -DOMNETPP_TKENV_DIR="\"$(OMNETPP_TKENV_DIR)\"" -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" tkapp.cc
 
 tkapp-e.o : tkapp.cc  tclcode.cc
-	$(CXX) -c $(COPTS) -DOMNETPP_BITMAP_PATH=\"$(OMNETPP_BITMAP_PATH)\" tkapp.cc -o tkapp-e.o
+	$(CXX) -c $(COPTS) -DOMNETPP_BITMAP_PATH="\"$(OMNETPP_BITMAP_PATH)\"" tkapp.cc -o tkapp-e.o
 
 tkcmd.o : tkcmd.cc
 	$(CXX) -c $(COPTS) tkcmd.cc

@@ -437,6 +437,7 @@ proc load_bitmaps {path} {
 
    set files {}
    foreach dir [split $path $sep] {
+puts "dir: $dir"
        set files [concat $files \
                      [glob -nocomplain -- [file join $dir {*.gif}]] \
                      [glob -nocomplain -- [file join $dir {*.xpm}]] \
@@ -453,7 +454,7 @@ proc load_bitmaps {path} {
         {.gif} {set type photo}
       }
       if {$type==""} {error "load_bitmaps: internal error"}
-
+puts "file: $f"
       set name [string tolower [file tail [file rootname $f]]]
       if {$name=="proc"} {
          puts -nonewline "(*** $name -- Tk dislikes this name, skipping ***) "
