@@ -310,6 +310,9 @@ proc editUndo {} {
        tk_messageBox -title "GNED" -icon info -type ok -message "Undo/redo not available in graphics mode."
        return
    }
+   if [catch {text .tmp -undo true; destroy .tmp}] {
+       tk_messageBox -title "GNED" -icon info -type ok -message "This version of Tcl/Tk doesn't support Undo/Redo in text widgets yet."
+   }
    catch {$canvas($canv_id,textedit) edit undo}
 }
 
@@ -320,6 +323,9 @@ proc editRedo {} {
    if {$canvas($canv_id,mode)=="graphics"} {
        tk_messageBox -title "GNED" -icon info -type ok -message "Undo/redo not available in graphics mode."
        return
+   }
+   if [catch {text .tmp -undo true; destroy .tmp}] {
+       tk_messageBox -title "GNED" -icon info -type ok -message "This version of Tcl/Tk doesn't support Undo/Redo in text widgets yet."
    }
    catch {$canvas($canv_id,textedit) edit redo}
 }

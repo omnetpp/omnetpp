@@ -220,6 +220,13 @@ proc createMainWindow {} {
     }
     .toolbar.graph config -relief sunken
 
+    # check if undo works
+    if [catch {text .tmp -undo true; destroy .tmp}] {
+        .toolbar.undo config -state disabled
+        .toolbar.redo config -state disabled
+        puts "NOTE: This version of Tcl/Tk doesn't support Undo in text widgets yet."
+    }
+
     # close button
     set b [button .toolbar.close -image $icons(close) -command fileCloseCanvas -relief flat]
     pack $b -anchor n -expand 0 -fill none -side right -padx 0 -pady 2
