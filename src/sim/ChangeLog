@@ -906,4 +906,4 @@ May 21, 2000
    Multi-stage initialization defaults to the good old single-stage initialize()
    function (without args): the default numInitStages() returns 1, and the
    default initialize(int stage) simply calls initialize().
------- omnetpp-2_0b4 released ------
+------ omnetpp-2.0b4 released ------
