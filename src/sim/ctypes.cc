@@ -68,23 +68,36 @@ Define_Function( log10, 1 )
 //=========================================================================
 //=== cModuleInterface - member functions
 
-cModuleInterface::cModuleInterface(const char *name, sDescrItem *descr_tab ) :
+cModuleInterface::cModuleInterface(const char *name) :
   cObject(name)
 {
+    numgates = maxnumgates = 0;
+    numparams = maxnumparams = 0;
+
+    gatev = NULL;
+    paramv = NULL;
+}
+
+cModuleInterface::cModuleInterface(const char *name, DeclarationItem *decltable) :
+  cObject(name)
+{
+    numgates = maxnumgates = 0;
+    numparams = maxnumparams = 0;
+
     gatev = NULL;
     paramv = NULL;
 
-    setup( descr_tab );
+    setup(decltable);
 
     // do consistency check anyway
     checkConsistency();
 }
 
-void cModuleInterface::setup( sDescrItem *descr_tab )
+void cModuleInterface::setup(DeclarationItem *decltable)
 {
-    // Sets up gates and params in this cModuleInterface.
+    // Sets up params and params in this cModuleInterface.
     //
-    // descr_tab points to the data table created by the macros:
+    // decltable points to the data table created by the macros:
     //    Interface(...)
     //      Parameter( parname, types )
     //      Gate( gatename, type )
@@ -93,37 +106,37 @@ void cModuleInterface::setup( sDescrItem *descr_tab )
     //    gatev, paramv
     // The create() member function will use it.
 
-    sDescrItem *tab;
+    DeclarationItem *tab;
 
-    ngate = nparam = 0;
-    for (tab=descr_tab; tab->what!='E'; tab++)
+    int ng = 0, np = 0;
+    for (tab=decltable; tab->what!='E'; tab++)
     {
-       switch( tab->what ) {
-         case 'G': ngate++;    break;
-         case 'P': nparam++;   break;
+       switch (tab->what)
+       {
+         case 'G': ng++; break;
+         case 'P': np++; break;
        }
     }
-    allocate( ngate, nparam); // allocate vectors of gates and params
 
-    int g=0, p=0;      // fill vector with data
-    for (tab=descr_tab; tab->what!='E'; tab++)
+    allocateGateDecls(ng);
+    allocateParamDecls(np);
+
+    for (tab=decltable; tab->what!='E'; tab++)
     {
-        bool v; int l; char *s;
-        switch (tab->what) {
-           case 'G':  // GATE( name, Input/Output )
-              s = opp_strdup( tab->name );
-              v = s && (l=strlen(s))>=3 && s[l-2]=='[' && s[l-1]==']';
-              if (v)  s[ strlen(s)-2 ]='\x0';  // cut off '[]'
-              gatev[g].name = s;
-              gatev[g].type = tab->type;
-              gatev[g].vect = v;
-              g++;
+        bool isvec; int len; char *s;
+        switch (tab->what)
+        {
+           case 'G':  // GATE(name, Input/Output)
+              s = opp_strdup(tab->name);
+              isvec = s && (len=strlen(s))>=3 && s[len-2]=='[' && s[len-1]==']';
+              if (isvec)
+                  s[len-2]='\x0';  // cut off '[]'
+              addGateDecl(s, tab->type, isvec);
+              delete [] s;
               break;
 
-           case 'P':  // PARAM( name, types )
-              paramv[p].name = opp_strdup( tab->name );
-              paramv[p].types = opp_strdup( tab->types );
-              p++;
+           case 'P':  // PARAM(name, types)
+              addParamDecl(tab->name, tab->types);
               break;
         }
     }
@@ -141,8 +154,8 @@ cModuleInterface::cModuleInterface(const cModuleInterface& mi) :
 cModuleInterface::~cModuleInterface()
 {
     int i;
-    for (i=0; i<ngate; i++)    {delete gatev[i].name;}
-    for (i=0; i<nparam; i++)   {delete paramv[i].name;delete paramv[i].types;}
+    for (i=0; i<numgates; i++)    {delete gatev[i].name;}
+    for (i=0; i<numparams; i++)   {delete paramv[i].name;delete paramv[i].types;}
     delete [] gatev;
     delete [] paramv;
 }
@@ -152,21 +165,48 @@ cModuleInterface& cModuleInterface::operator=(const cModuleInterface&)
     throw new cException("cModuleInterface cannot copy itself!");
 }
 
-void cModuleInterface::allocate( int ngte, int npram)
+void cModuleInterface::allocateGateDecls(int maxngates)
 {
-    ngate = ngte;
-    gatev = new sGateInfo[ngate];
-
-    nparam = npram;
-    paramv = new sParamInfo[nparam];
+    if (numgates>0)
+        throw new cException(this, "allocateGateDecls(): too late, some gates already added");
+    maxnumgates = maxngates;
+    gatev = new GateDecl[maxnumgates];
 }
+
+void cModuleInterface::allocateParamDecls(int maxnparams)
+{
+    if (numparams>0)
+        throw new cException(this, "allocateParamDecls(): too late, some parameters already added");
+    maxnumparams = maxnparams;
+    paramv = new ParamDecl[maxnumparams];
+}
+
+void cModuleInterface::addGateDecl(const char *name, const char type, bool isvector)
+{
+    if (numgates==maxnumgates)
+        throw new cException(this, "addGateDecl(): vector full or not yet allocated");
+    int k = numgates++;
+    gatev[k].name = opp_strdup(name);
+    gatev[k].type = type;
+    gatev[k].vect = isvector;
+}
+
+void cModuleInterface::addParamDecl(const char *name, const char *types)
+{
+    if (numparams==maxnumparams)
+        throw new cException(this, "addParamDecl(): vector full or not yet allocated");
+    int k = numparams++;
+    paramv[k].name = opp_strdup(name);
+    paramv[k].types = opp_strdup(types);
+}
+
 
 void cModuleInterface::addParametersGatesTo( cModule *module)
 {
     int i;
-    for (i=0;i<ngate;i++)
+    for (i=0;i<numgates;i++)
        module->addGate( gatev[i].name, gatev[i].type );
-    for (i=0;i<nparam;i++)
+    for (i=0;i<numparams;i++)
     {
        module->addPar( paramv[i].name );
        if (opp_strcmp(paramv[i].types,"S")==0)
@@ -180,12 +220,11 @@ void cModuleInterface::addParametersGatesTo( cModule *module)
 void cModuleInterface::checkParametersOf( cModule *mod )
 {
     // check parameter types and convert const parameters to constant
-    for (int i=0;i<nparam;i++)
+    for (int i=0;i<numparams;i++)
     {
-        cPar *par = &(mod->par( paramv[i].name ));
+        cPar *par = &(mod->par(paramv[i].name));
 
-        if (!strchr(paramv[i].types, '*') &&
-            !strchr(paramv[i].types, par->type()))
+        if (!strchr(paramv[i].types, '*') && !strchr(paramv[i].types, par->type()))
         {
            throw new cException("Module declaration doesn't allow type `%c' for parameter `%s'",
                                 par->type(), par->fullPath());
@@ -218,13 +257,13 @@ void cModuleInterface::checkConsistency()
     int id;
 
     // now check if everything's consistent
-    if (ngate!=other->ngate)
+    if (numgates!=other->numgates)
           {what="number of gates";goto error1;}
-    if (nparam!=other->nparam)
+    if (numparams!=other->numparams)
           {what="number of parameters";goto error1;}
 
     int i;
-    for (i=0;i<nparam;i++)
+    for (i=0;i<numparams;i++)
     {
        if (opp_strcmp(paramv[i].name,other->paramv[i].name)!=0)
           {what="names for parameter";id=i;which=paramv[i].name;goto error2;}
@@ -236,7 +275,7 @@ void cModuleInterface::checkConsistency()
              )
               {what="allowed types for parameter";id=i;which=paramv[i].name;goto error2;}
     }
-    for (i=0;i<ngate;i++)
+    for (i=0;i<numgates;i++)
     {
        if (opp_strcmp(gatev[i].name,other->gatev[i].name)!=0)
           {what="names for gate #";id=i;which=gatev[i].name;goto error2;}
@@ -342,10 +381,10 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     mod = createModuleObject(modname, parentmod);
 #endif
 
-    // set vector size, module type
+    // set module type, vector size
+    mod->setModuleType(this);
     if (vectorsize>=0)
         mod->setIndex(index, vectorsize);
-    mod->setModuleType(this);
 
     // set system module (must be done before takeAllObjectsFrom(tmplist) because
     // if parentmod==NULL, mod itself is on tmplist)
@@ -363,7 +402,8 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
     mod->setId(id);
 
     // add parameters and gates to the new module
-    addParametersGatesTo(mod);
+    cModuleInterface *iface = moduleInterface();
+    iface->addParametersGatesTo(mod);
 
     // notify envir
     ev.moduleCreated(mod);
@@ -375,13 +415,6 @@ cModule *cModuleType::create(const char *modname, cModule *parentmod, int vector
 cModule *cModuleType::createModuleObject(const char *modname, cModule *parentmod)
 {
     return create_func(modname, parentmod);
-}
-
-void cModuleType::addParametersGatesTo(cModule *mod)
-{
-    // add parameters and gates to the new module, using module interface object
-    cModuleInterface *iface = moduleInterface();
-    iface->addParametersGatesTo(mod);
 }
 
 void cModuleType::buildInside(cModule *mod)

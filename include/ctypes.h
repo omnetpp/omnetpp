@@ -65,8 +65,12 @@ typedef cPar *(*ParCreateFunc)();
 
 /**
  * Describes the interface (modules, gates,...) of a module type.
+ * cModuleInterfaces are used during network setup (and dynamic module
+ * creation) to add gates and parameters to the freshly created module
+ * object, and also to verify that module parameters set correctly.
  *
- * cModuleInterfaces are the compiled form of NED declarations of simple
+ * cModuleInterfaces may be created either dynamically or by the NED compiler.
+ * In the latter case, the are the compiled form of NED declarations of simple
  * modules. They are created in the following way:
  *
  *  1) starting point is the NED declarations of simple modules, e.g:
@@ -80,17 +84,18 @@ typedef cPar *(*ParCreateFunc)();
  *  2) the nedc compiler translates the NED declaration into a
  *     ModuleInterface...End macro and places it into the _n.cc file.
  *     <PRE><TT>
- *        ModuleInterface( Generator )
- *          Parameter ( "ia_rate", AnyType )
- *          Gate      ( "out",     Output  )
- *        End
+ *        ModuleInterface(Generator)
+ *          Parameter("speed", Numeric)
+ *          Gate( "out", Output)
+ *        EndInterface
  *     </PRE></TT>
  *
- *     The macro translates into a static cModuleInterface object declaration
- *     (#define for macros in macros.h)
+ *     The above translates into cModuleInterface::DeclarationItem array
+ *     by means of #define macros.
  *
- *  3) When the program starts up, cModuleInterface constructor runs and
- *     places the object on the modinterfaces list.
+ *  3) When the program starts up, cModuleInterfaces are registered,
+ *     and cModuleInterface constructor parses the array into an internal
+ *     data structure.
  *
  *  4) When a module is created, the appropriate cModuleInterface object
  *     is looked up from the list, and the module's gates and parameters
@@ -103,7 +108,8 @@ class SIM_API cModuleInterface : public cObject
 {
   public:
     // used by the ModuleInterface macro
-    struct sDescrItem {
+    struct DeclarationItem
+    {
         char what;
         char *name;
         char *types;
@@ -111,33 +117,33 @@ class SIM_API cModuleInterface : public cObject
     };
 
   protected:
-    // structures used in a cModuleInterface
-    struct sGateInfo {
+    struct GateDecl
+    {
        char *name;
        char type;
        bool vect;
     };
 
-    struct sParamInfo {
+    struct ParamDecl
+    {
        char *name;
        char *types;
     };
 
+    int maxnumgates;  // allocated room for gate declarations
+    int numgates;     // actually used
+    GateDecl *gatev;  // the vector
+
+    int maxnumparams; // as above
+    int numparams;
+    ParamDecl *paramv;
+
   protected:
-    int ngate;
-    sGateInfo *gatev;
-    int nparam;
-    sParamInfo *paramv;
-
-  private:
-    // internal
-    void allocate(int ngte, int npram);
-
     // internal
     void checkConsistency();
 
     // internal
-    void setup(sDescrItem *descr_table);
+    void setup(DeclarationItem *decltable);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -146,7 +152,12 @@ class SIM_API cModuleInterface : public cObject
     /**
      * Constructor.
      */
-    cModuleInterface(const char *name, sDescrItem *descr_table);
+    cModuleInterface(const char *name);
+
+    /**
+     * Constructor.
+     */
+    cModuleInterface(const char *name, DeclarationItem *decltable);
 
     /**
      * Copy constructor.
@@ -172,6 +183,29 @@ class SIM_API cModuleInterface : public cObject
      * See cObject for more details.
      */
     virtual cObject *dup() const  {return new cModuleInterface(*this);}
+    //@}
+
+    /** @name Setting up a module interface manually */
+    //@{
+    /**
+     * Make room for a given number of gate declarations
+     */
+    void allocateGateDecls(int maxnumgates);
+
+    /**
+     * Make room for a given number of parameter declarations
+     */
+    void allocateParamDecls(int maxnumparams);
+
+    /**
+     * Add a gate declaration
+     */
+    void addGateDecl(const char *name, const char type, bool isvector=false);
+
+    /**
+     * Add a parameter declaration
+     */
+    void addParamDecl(const char *name, const char *types);
     //@}
 
     /** @name Applying the interface to modules. */
@@ -221,9 +255,6 @@ class SIM_API cModuleType : public cObject
 
     // internal: here it invokes create_func
     virtual cModule *createModuleObject(const char *modname, cModule *parentmod);
-
-    // internal: here it invokes iface->addParametersGatesTo(mod)
-    virtual void addParametersGatesTo(cModule *mod);
 
   public:
     /** @name Constructors, destructor, assignment */

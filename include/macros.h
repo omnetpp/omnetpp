@@ -164,7 +164,7 @@
 //        Parameter(NAME,TYPES)
 //    EndInterface
 //
-#define ModuleInterface(CLASSNAME)    static cModuleInterface::sDescrItem CLASSNAME##__descr[] = {
+#define ModuleInterface(CLASSNAME)    static cModuleInterface::DeclarationItem CLASSNAME##__descr[] = {
 #define Gate(NAME,TYPE)         {'G', #NAME, NULL,  TYPE},
 #define Parameter(NAME,TYPES)   {'P', #NAME, TYPES, 0   },
 #define EndInterface            {'E', NULL,  NULL,  0   }};

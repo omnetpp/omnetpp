@@ -1,3 +1,8 @@
+2004-02-09  Andras Varga 
+
+	* ctypes.h: added methods to cModuleInterface so that it's possible
+	to dynamically assemble it (needed by networkbuilder)
+
 2004-02-07  Andras Varga 
 
 	* ctypes.h: added createOneIfClassIsKnown(const char *classname) 

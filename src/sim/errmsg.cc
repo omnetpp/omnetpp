@@ -29,11 +29,13 @@
 char *emsg[] = {
   "No error -- everything's fine",                       // eOK
   "Cannot cast from type `%c' to `%c'",                  // eBADCAST
-  "Indirection would create circular reference",         // eCIRCREF
+  "cPar indirection would create circular reference",    // eCIRCREF
   "Bad number of arguments, %d expected",                // eNUMARGS
-  "Cannot find module interface `%s' needed to create module of type `%s'", // eNOMODIF
+  "Cannot find module interface `%s', needed to create module of type `%s' -- "
+      "compile and link NED file with its definition into the program, "
+      "or load it dynamically",                          // eNOMODIF
   "Error during starting up user interface",             // eUISTARTUP
-  "Simulation stopped by partition %d: %s",                // eSTOPSIMRCVD
+  "Simulation stopped by partition %d: %s",              // eSTOPSIMRCVD
   "No such module or module finished already",           // eNOMOD
   "Module has no gate %d",                               // eNOGATE
   "send(): Gate `%s' is an input gate",                  // eINGATE
