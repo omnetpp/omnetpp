@@ -266,7 +266,7 @@ void NEDCppGenerator::printTemporaryVariables(const char *indent)
 {
         out << indent << "// temporary variables:\n";
         out << indent << "cPar tmpval;\n";  // for compiled expressions
-        out << indent << "const char *typename;\n";   // for submodule creation
+        out << indent << "const char *modtypename;\n";   // for submodule creation
         out << "\n";
 }
 
@@ -388,19 +388,31 @@ void NEDCppGenerator::writeProlog(ostream& out)
     out << "}\n";
     out << "\n";
 
-    out << "static cGate *_getFirstUnusedGateNoExpand(cModule *mod, const char *gatename)\n";
+    out << "static cGate *_getFirstUnusedParentModGate(cModule *mod, const char *gatename)\n";
     out << "{\n";
-    out << "    cGate *g = mod->gate(gatename);\n";
-    out << "    // FIXME implement!!!\n";
-    out << "    return g;\n";
+    out << "    int baseId = mod->findGate(gatename);\n";
+    out << "    if (baseId<0)\n";
+    out << "        throw new cException(\"%s has no %s[] gate\",mod->fullPath(), gatename);\n";
+    out << "    int n = mod->gate(baseId)->size();\n";
+    out << "    for (int i=0; i<n; i++)\n";
+    out << "        if (!mod->gate(baseId+i)->isConnectedInside())\n";
+    out << "            return mod->gate(baseId+i);\n";
+    out << "    throw new cException(\"%s[] gates are all connected, no gate left for `++' operator\",mod->fullPath(), gatename);\n";
     out << "}\n";
     out << "\n";
 
-    out << "static cGate *_getFirstUnusedGate(cModule *mod, const char *gatename)\n";
+    out << "static cGate *_getFirstUnusedSubmodGate(cModule *mod, const char *gatename)\n";
     out << "{\n";
-    out << "    cGate *g = mod->gate(gatename);\n";
-    out << "    // FIXME implement!!!\n";
-    out << "    return g;\n";
+    out << "    int baseId = mod->findGate(gatename);\n";
+    out << "    if (baseId<0)\n";
+    out << "        throw new cException(\"%s has no %s[] gate\",mod->fullPath(), gatename);\n";
+    out << "    int n = mod->gate(baseId)->size();\n";
+    out << "    for (int i=0; i<n; i++)\n";
+    out << "        if (!mod->gate(baseId+i)->isConnectedOutside())\n";
+    out << "            return mod->gate(baseId+i);\n";
+    out << "    const int delta = 1; // can be increased\n";
+    out << "    mod->setGateSize(gatename,n+delta);\n";
+    out << "    return mod->gate(baseId+n);\n";
     out << "}\n";
     out << "\n";
 
@@ -732,8 +744,8 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
     }
     else
     {
-        out << indent << "typename = mod->par(\"" << node->getLikeParam() << "\");\n";
-        out << indent << "modtype = _getModuleType(typename);\n";
+        out << indent << "modtypename = mod->par(\"" << node->getLikeParam() << "\");\n";
+        out << indent << "modtype = _getModuleType(modtypename);\n";
     }
 
     // create module
@@ -908,9 +920,9 @@ void NEDCppGenerator::resolveGate(const char *modname, ExpressionNode *modindex,
 
    // wrap
    if (isplusplus && !strnotnull(modname))
-       out << "_getFirstUnusedGateNoExpand("; // parent module gate
+       out << "_getFirstUnusedParentModGate(";
    else if (isplusplus)
-       out << "_getFirstUnusedGate("; // submodule gate
+       out << "_getFirstUnusedSubmodGate(";
    else
        out << "_checkGate(";
 

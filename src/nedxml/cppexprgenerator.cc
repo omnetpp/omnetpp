@@ -376,21 +376,21 @@ void CppExpressionGenerator::doOperator(OperatorNode *node, const char *indent, 
                 clangoperator = "!=";  // use "!=" on bools for logical xor
 
             // we may need to cast operands to bool or unsigned long
-            // with %, right operand has to be long
+            // with %, both operands has to be long (C++ rule)
             bool boolcast = !strcmp(name,"&&") || !strcmp(name,"||") || !strcmp(name,"##");
             bool ulongcast = !strcmp(name,"&") || !strcmp(name,"|") || !strcmp(name,"#") ||
                              !strcmp(name,"<<") || !strcmp(name,">>") || !strcmp(name,"~");
-            bool rightlongcast = !strcmp(name,"%");
+            bool longcast = !strcmp(name,"%");
 
             // always put parens to force NED precedence (might be different from C++'s)
             out << "(";
-            out << (boolcast ? "(bool)(" : ulongcast ? "(unsigned long)(" : "");
+            out << (boolcast ? "(bool)(" : ulongcast ? "(unsigned long)(" : longcast ? "(long)(" : "");
             generateItem(op1,indent,mode);
-            out << (boolcast || ulongcast ? ")" : "");
+            out << (boolcast || ulongcast || longcast ? ")" : "");
             out << clangoperator;
-            out << (boolcast ? "(bool)(" : ulongcast ? "(unsigned long)(" : rightlongcast ? "(long)(" : "");
+            out << (boolcast ? "(bool)(" : ulongcast ? "(unsigned long)(" : longcast ? "(long)(" : "");
             generateItem(op2,indent,mode);
-            out << (boolcast || ulongcast || rightlongcast ? ")" : "");
+            out << (boolcast || ulongcast || longcast ? ")" : "");
             out << ")";
         }
     }
