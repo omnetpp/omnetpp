@@ -13,20 +13,20 @@
 # Directory names with spaces may also cause problems, it's better to use
 # short file names (e.g. 'C:/PROGRA~1' instead of 'C:/Program files').
 #
-OMNETPP_ROOT=c:/home/omnetpp
+OMNETPP_ROOT=d:/home/omnetpp
 
 # Version. Should ideally come from the 'Version' file...
 OMNETPP_VERSION=omnetpp-2.3
 
 #
-# Location of Tcl/Tk, PVM, MPI, Expat
+# Location of Tcl/Tk, MPI, Expat, etc.
 #
-TK_DIR=c:/home/tools/Tcl-8.4.2
+TK_DIR=d:/home/tools/Tcl-8.4.2
 TK_VER=8.4
-PVM_DIR=c:/home/tools/pvm3
-MPI_DIR=c:/home/tools/mpi
-EXPAT_DIR=c:/home/tools/expat-1.95.6
-DOXYGEN_DIR=c:/home/tools/doxygen
+MPI_DIR=
+#MPI_DIR=d:/home/tools/mpi
+EXPAT_DIR=d:/home/tools/expat-1.95.6
+DOXYGEN_DIR=d:/home/tools/doxygen
 
 #
 # Choice of XML parser. Possible choices: expat or none (perhaps libxml in the
@@ -54,7 +54,9 @@ TCL_LIB=tcl$(TK_VER:.=).lib
 TK_LIB=tk$(TK_VER:.=).lib
 _TCL_LIBRARY=$(TK_DIR)/lib/tcl$(TK_VER)
 
-PVM_INCL_DIR=$(PVM_DIR)/include
+!if "$(MPI_DIR)"!=""
+HAVE_MPI=yes
+!endif
 MPI_INCL_DIR=$(MPI_DIR)/include
 
 EXPAT_INCL_DIR=$(EXPAT_DIR)/source/lib
@@ -89,8 +91,8 @@ REPLACE=$(OMNETPP_SRC_DIR)/utils/opp_replace
 WISH=$(TK_DIR)/bin/wish$(TK_VER:.=).exe
 
 # flex/bison: only needed it you want to modify NEDC or GNED
-YACC=bison.exe
-LEX=flex.exe
+YACC=D:/home/tools/UnxUtils/usr/local/wbin/bison.exe
+LEX=D:/home/tools/UnxUtils/usr/local/wbin/flex.exe
 
 # for documentation generation
 DOXYGEN=$(DOXYGEN_DIR)/bin/doxygen
@@ -123,12 +125,10 @@ OMNETPP_BITMAP_PATH=.;./bitmaps;$(OMNETPP_ROOT)/bitmaps
 
 #
 # Compile switches (e.g. -Ixxx) and linker switches
-# necessary to build an app with PVM or Tcl/Tk.
+# necessary to build an app with MPI or Tcl/Tk.
 #
 TK_CFLAGS=/I "$(TK_INCL_DIR)"
 TK_LIBS=$(TCL_LIB) $(TK_LIB) /libpath:"$(TK_LIB_DIR)"
-PVM_CFLAGS=/I "$(PVM_INCL_DIR)"
-PVM_LIBS=
 MPI_CFLAGS=/I "$(MPI_INCL_DIR)"
 MPI_LIBS=
 XML_CFLAGS=/I "$(EXPAT_INCL_DIR)"
@@ -153,9 +153,9 @@ GNED_IF_POSSIBLE=gned
 # This option is available at present for Tkenv, GNED and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-TKENV_EMBED_TCL=yes
+TKENV_EMBED_TCL=no
 GNED_EMBED_TCL=yes
-PLOVE_EMBED_TCL=yes
+PLOVE_EMBED_TCL=no
 
 #
 # It is possible to compile GNED and Plove as Windows GUI apps (ie. not
@@ -163,4 +163,15 @@ PLOVE_EMBED_TCL=yes
 # GUI apps.
 #
 USE_WINMAIN=yes
+
+#
+# Set to "yes" to enable simulation executables load NED files dynamically.
+#
+WITH_NETBUILDER=no
+
+#
+# Set to "yes" to enable the parallel distributed simulation feature.
+#
+WITH_PARSIM=yes
+
 

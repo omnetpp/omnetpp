@@ -46,7 +46,7 @@ components: libs progs configsamples samples configtutorial thetutorial
 #
 #=====================================================================
 
-LIBS=$(ENVIR_ILIB) sim envir cmdenv tkenv nedxml
+LIBS=$(ENVIR_ILIB) nedxml sim envir cmdenv tkenv
 PROGS=utils nedc gned plove
 SAMPLES=dyna fddi fifo1 fifo2 hcube hist nim token dyna2 topo demo
 
