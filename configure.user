@@ -50,6 +50,8 @@ PVM_LIBS=
 
 TK_CFLAGS=
 TK_LIBS=
+# (for CYGWIN:) TK_CFLAGS='-IC:/Cygnus/Cygwin-b20/include -fwritable-strings'
+# (for CYGWIN:) TK_LIBS='-ltk80 -ltcl80'
 
 TV_CFLAGS=
 TV_LIBS=
