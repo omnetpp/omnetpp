@@ -39,6 +39,17 @@ synchronisation methods.
 OMNeT++ Home Page: http://www.hit.bme.hu/phd/vargaa/omnetpp.htm
 
 
+OMNeT++ is PhDware!
+~~~~~~~~~~~~~~~~~~~
+OMNeT++ is supposed to help its author (me) get a PhD degree. Which means
+I need as many references as possible to my work! If you use OMNeT++ for your
+research and happen to publish the results in some form, please include
+a reference to OMNeT++ and LET ME KNOW!
+
+In any case, if you find OMNeT++ useful for your work, I'd be more than happy
+learn about that! Just send me a short mail. Thanks in advance!
+
+
 What you'll find in the OMNeT++ directory
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -107,10 +118,10 @@ Installation
 
 For installation instructions, read one of these files, depending on your
 compiler:
-   INSTALL.Unix    -- generic Unix/Linux
-   INSTALL.Cygwin  -- Cygwin on NT/W95 (www.cygnus.com)
-   INSTALL.MSVC    -- Microsoft Visual C++ 6.0 on NT/W95
-   INSTALL.BC5     -- Borland C++ 5.0 on NT/W95
+   Readme.Unix    -- generic Unix/Linux
+   Readme.Cygwin  -- Cygwin on NT/W95 (www.cygnus.com)
+   Readme.MSVC    -- Microsoft Visual C++ 6.0 on NT/W95
+   Readme.BC5     -- Borland C++ 5.0 on NT/W95
 For the first two, the process is not much different from the normal GNU build
 and install procedure, except that you may need to edit configure.user manually.
 
@@ -124,8 +135,8 @@ currently not affiliated with the University.
 
 Here's a list of the people who have or had anything to do with OMNeT++:
 
-Primary author and maintainer:
-        Andras Varga            andras@metechnology.com
+Principal author:
+        Andras Varga            andras@whale.hit.bme.hu
                                 http://www.hit.bme.hu/phd/vargaa
 
 Advisor:
@@ -148,6 +159,14 @@ JAR support for distributed execution; also current user:
 Initial revision of PVM support (as final project), spring 1996:
         Zoltan Vass             BME-HIT
 
+I'm indebted to Gy”rgy Pongor for supporting my OMNeT++-related work at the
+university in many different ways, from organizing students to work on parts of
+OMNeT++ to providing web and ftp space at the university (although I'm no longer
+affiliated). Also, the original (1992) design of OMNeT++ was largely based on
+his Pascal-based simulation package called OMNeT. (The ideas of message passing,
+simple and compound modules, topology description language and coroutine-based
+programming were all taken over from the original OMNeT.)
+
 I'd like to acknowledge the help and support of several people who contributed
 (with providing their opinions, sending bug reports/fixes, etc.) to making
 OMNeT++ better and more useful for the Internet community: Richard Lyon,
@@ -167,9 +186,7 @@ Feedback requested
 Remarks, opinions, suggestions, bug reports/fixes and contributions are
 WELCOME! They drive OMNeT++ towards new and better releases...
 
+Andras Varga, andras@whale.hit.bme.hu
 
-Author contact:
- Andras Varga
- andras@metechnology.com [andras@whale.hit.bme.hu,vargaa@hit.bme.hu]
 
 
