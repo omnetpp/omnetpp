@@ -383,7 +383,7 @@ void BasicSpringEmbedderLayout::doColoring()
 
 double BasicSpringEmbedderLayout::relax()
 {
-    // FIXME:
+    // TBD revise:
     //   - calculates in double (slow)
     //   - ignores connections to parent module
     //   - ignores node sizes altogether
@@ -758,7 +758,7 @@ double AdvSpringEmbedderLayout::relax()
 {
     // This is an implementation of the SpringEmbedder layouting algorithm.
     //
-    // FIXME: this algorithm currently ignores:
+    // TBD revise:
     //   - calculates in double (slow)
     //   - ignores connections to parent module
     //   - ignores node sizes altogether

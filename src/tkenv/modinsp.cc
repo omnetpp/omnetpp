@@ -334,7 +334,10 @@ void TGraphicalModWindow::getSubmoduleCoords(cModule *submod, bool& explicitcoor
     }
     else
     {
-        // FIXME error: "invalid layout specified in display string `p=' tag"
+        Tcl_Interp *interp = getTkApplication()->getInterp();
+        CHK(Tcl_VarEval(interp,"messagebox {Error} "
+                        "{Error: invalid layout `", layout, "' in `p' tag "
+                        "of display string \"", ds.getString(), "\"} error ok", NULL));
     }
 }
 

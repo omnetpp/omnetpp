@@ -94,7 +94,7 @@ class GraphLayouter
     //@{
     void setSeed(unsigned long seed) {rndseed = seed;}
     void setDefaultEdgeLength(int len) {defaultEdgeLen = len;}
-    void setConfineToArea(int width, int height, int border);// FIXME currently ignored
+    void setConfineToArea(int width, int height, int border); // TBD currently ignored
     void setScaleToArea(int width, int height, int border);
 
     /**
