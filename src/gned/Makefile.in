@@ -28,7 +28,8 @@ COPTS=$(CFLAGS) $(TK_CFLAGS)
 
 OMNETPP_GNED_DIR=@OMNETPP_GNED_DIR@
 
-OBJS = gned$(GNED_EMBED_SUFFIX).o tklib.o arrow.o ebnf.tab.o lex.yy.o parsened.o nedfile.o
+OBJS = gned$(GNED_EMBED_SUFFIX).o tklib.o tkcmd.o arrow.o \
+       ebnf.tab.o lex.yy.o parsened.o nedfile.o
 
 #
 # Automatic rules
