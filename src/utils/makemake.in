@@ -247,7 +247,7 @@ OMNETPP_LIB_DIR=@OMNETPP_LIB_DIR@
 TK_LIBS=@TK_LIBS@
 PVM_LIBS=@PVM_LIBS@
 SYS_LIBS=@SYS_LIBS@
-SYS_LIBS_PURE=-ldl -lsocket -lnsl -lm $(shell $(CXX) -print-file-name=libstdc++.a)
+SYS_LIBS_PURE=-ldl -lsocket -lnsl -lm \$(shell \$(CXX) -print-file-name=libstdc++.a)
 EOT
 
 else
@@ -272,7 +272,7 @@ OMNETPP_LIB_DIR=@${null}OMNETPP_LIB_DIR@
 TK_LIBS=@${null}TK_LIBS@
 PVM_LIBS=@${null}PVM_LIBS@
 SYS_LIBS=@${null}SYS_LIBS@
-SYS_LIBS_PURE=-lm $(shell $(CXX) -print-file-name=libstdc++.a)
+SYS_LIBS_PURE=-lm \$(shell \$(CXX) -print-file-name=libstdc++.a)
 EOT
 
 fi
