@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include "defs.h"
+#include "cpolymorphic.h"
 
 
 class cModule;
@@ -36,7 +37,7 @@ class cPar;
  *
  * @ingroup EnvirExtensions
  */
-class cOutputVectorManager
+class cOutputVectorManager : public cPolymorphic
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
@@ -120,7 +121,7 @@ class cOutputVectorManager
  *
  * @ingroup EnvirExtensions
  */
-class cOutputScalarManager
+class cOutputScalarManager : public cPolymorphic
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented
@@ -193,7 +194,7 @@ class cOutputScalarManager
  *
  * @ingroup EnvirExtensions
  */
-class cSnapshotManager
+class cSnapshotManager : public cPolymorphic
 {
   private:
     // copy constructor and assignment unsupported, make them inaccessible and also leave unimplemented

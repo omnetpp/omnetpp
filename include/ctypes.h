@@ -628,7 +628,7 @@ cFunctionType *findfunctionbyptr(MathFunc f);
  */
 class SIM_API cClassRegister : public cObject
 {
-    void *(*creatorfunc)();
+    cPolymorphic *(*creatorfunc)();
 
   public:
     /** @name Constructors, destructor, assignment. */
@@ -642,7 +642,7 @@ class SIM_API cClassRegister : public cObject
     /**
      * Constructor.
      */
-    cClassRegister(const char *name, void *(*f)());
+    cClassRegister(const char *name, cPolymorphic *(*f)());
 
     /**
      * Destructor.
@@ -670,11 +670,13 @@ class SIM_API cClassRegister : public cObject
 
     /**
      * Creates an instance of a particular class by calling the creator
-     * function. The result has to be cast to the appropriate type by hand.
+     * function. The result has to be cast to the appropriate type
+     * (preferably by dynamic_cast or check_and_cast).
      */
-    void *createOne() const  {return creatorfunc();}
+    cPolymorphic *createOne() const  {return creatorfunc();}
     //@}
 };
+
 
 /**
  * @name Miscellaneous functions.
@@ -704,7 +706,7 @@ class SIM_API cClassRegister : public cObject
  * @see cClassRegister class
  */
 // FIXME into some class, as static member!!!
-SIM_API void *createOne(const char *classname);
+SIM_API cPolymorphic *createOne(const char *classname);
 
 /**
  * A variant of the createOne() function; this function doesn't throw an
@@ -714,7 +716,7 @@ SIM_API void *createOne(const char *classname);
  * @see createOne()
  */
 // FIXME into some class, as static member!!!
-SIM_API void *createOneIfClassIsKnown(const char *classname);
+SIM_API cPolymorphic *createOneIfClassIsKnown(const char *classname);
 //@}
 
 //==========================================================================

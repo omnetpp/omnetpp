@@ -97,7 +97,7 @@
  * @hideinitializer
  */
 #define Register_Class(CLASSNAME) \
-  void *CLASSNAME##__create() {return new CLASSNAME;} \
+  cPolymorphic *CLASSNAME##__create() {return new CLASSNAME;} \
   EXECUTE_ON_STARTUP(CLASSNAME##__class, classes.instance()->add(new cClassRegister(#CLASSNAME,CLASSNAME##__create));)
 
 //@}

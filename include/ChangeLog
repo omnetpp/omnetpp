@@ -1,3 +1,15 @@
+2004-03-01  Andras Varga
+
+	* ctypes.h,macros.h: createOne() return value changed from void* to
+	cPolymorphic* so that it can be used with type safety. Only classes
+	derived from cPolymorphic can be registered using Register_Class().
+
+	* envirext.h: classe cOutputVectorManager, cOutputScalarManager,
+	cSnapshotManager are now subclassed from cPolymorphic.
+
+	* cobject.h, cpolymorphic.h: cPolymorphic removed from cobject.h and
+	placed into its own header file.
+
 2004-02-23  Andras Varga
 
 	* cmodule.h: added changeParentTo() to cModule.

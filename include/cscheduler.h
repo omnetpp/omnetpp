@@ -20,6 +20,7 @@
 #ifndef __CSCHEDULER_H
 #define __CSCHEDULER_H
 
+#include "cpolymorphic.h"
 
 // forward declarations
 class cSimulation;
@@ -31,7 +32,7 @@ class cMessage;
  *
  * @ingroup Internals
  */
-class cScheduler
+class cScheduler : public cPolymorphic
 {
   protected:
     cSimulation *sim;
