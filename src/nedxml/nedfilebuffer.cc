@@ -104,7 +104,6 @@ bool NEDFileBuffer::indexLines()
 
     // allocate array
     lineBeg = new char * [numLines+2];
-    if (!lineBeg) return false;
 
     // fill in array
     lineBeg[0] = NULL;
@@ -113,6 +112,10 @@ bool NEDFileBuffer::indexLines()
     for (s = wholeFile; *s; s++)
         if (*s=='\n')
             lineBeg[line++] = s+1;
+
+    // last line plus one points to end of file (terminating zero)
+    lineBeg[numLines+1] = s;
+
     return true;
 }
 
@@ -235,10 +238,10 @@ const char *NEDFileBuffer::getFileComment()
 int NEDFileBuffer::topLineOfBannerComment(int li)
 {
     // seek beginning of comment block
-    int indent = getIndent(lineBeg[li]);
+    int indent = getIndent(getPosition(li,0));
     while (li>=2 &&
-           lineType(lineBeg[li-1])==COMMENT_LINE  &&
-           getIndent(lineBeg[li-1])<=indent
+           lineType(getPosition(li-1,0))==COMMENT_LINE  &&
+           getIndent(getPosition(li-1,0))<=indent
            )
         li--;
     return li;
@@ -282,7 +285,7 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
     // seek 1st line after comment (lineafter)
     int lineafter;
 
-    if (pos.last_line==numLines) // 'pos' ends on last line of file
+    if (pos.last_line>=numLines) // 'pos' ends on last line of file
     {
         lineafter = numLines+1;
     }
@@ -290,7 +293,7 @@ const char *NEDFileBuffer::getTrailingComment(YYLTYPE pos)
     {
         // seek fwd to next code line (or end of file)
         lineafter = pos.last_line+1;
-        while (lineafter<numLines && lineType(lineBeg[lineafter])!=CODE_LINE)
+        while (lineafter<numLines && lineType(getPosition(lineafter,0))!=CODE_LINE)
             lineafter++;
 
         // now seek back to beginning of comment block
