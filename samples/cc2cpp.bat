@@ -1,6 +1,10 @@
 @echo off
+rem
+rem Renaming all .cc files to .cpp for building the samples from the MSVC IDE.
+rem
 
-rem Rename all .cc files to .cpp for building the samples from the MSVC IDE.
+if exist .cpps exit
+echo > .cpps
 
 ren dyna\*.cc *.cpp
 ren fddi\*.cc *.cpp
