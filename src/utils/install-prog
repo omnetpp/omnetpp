@@ -8,7 +8,7 @@ prog=$1
 dest_dir=$2
 
 if uname | grep "CYGWIN" >/dev/null; then
-    $prog=$prog.exe
+    prog="$prog.exe"
 fi
 
 cp $prog $dest_dir
