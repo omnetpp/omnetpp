@@ -19,7 +19,7 @@ OMNETPP_SAMPLES_DIR =   @OMNETPP_SAMPLES_DIR@
 
 all: check-env components
 
-components: libs progs install-local samples
+components: libs progs samples
 
 
 #=====================================================================
@@ -134,6 +134,8 @@ clean:
 	for i in $(LIBS) $(PROGS); do \
 	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) clean); \
 	done
+	rm -f $(OMNETPP_BIN_DIR)/*
+	rm -f $(OMNETPP_LIB_DIR)/*
 	for i in $(SAMPLES); do \
 	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) clean); \
 	done
@@ -144,10 +146,5 @@ depend:
 	done
 	for i in $(SAMPLES); do \
 	    (cd $(OMNETPP_SAMPLES_DIR)/$$i && $(MAKE) depend); \
-	done
-
-install-local:
-	for i in $(LIBS) $(PROGS); do \
-	    (cd $(OMNETPP_SRC_DIR)/$$i && $(MAKE) install-local); \
 	done
 
