@@ -9,6 +9,15 @@ would be really useful to test the integrity of the sim. library after
 code changes!!!
 
 
+documentation
+~~~~~~~~~~~~~
+to be documented:
+ - send() functions with cGate* arg
+ - multi-stage initialization
+fill TBD's
+general polishing
+
+
 better MSVC support
 ~~~~~~~~~~~~~~~~~~~
 replace the coroutine library with Win32 fibers
@@ -61,10 +70,17 @@ find out the possibility of integrating GNED with Tkenv
 
 NED, nedc
 ~~~~~~~~~
-add inheritance to the NED language. A derived module could add new
-parameters and gates, give values to parameters, fix gate vector sizes.
-This would allow NED descriptions to follow simple module inheritance tree.
+write white paper about future NED extensions and architecture
 
+extensions:
+ - add inheritance to the NED language. A derived module could add new
+   parameters and gates, give values to parameters, fix gate vector sizes.
+   This would allow NED descriptions to follow simple module inheritance tree.
+ - data structure descriptions
+ - references to parameters of sibling submods
+ - arbitrary parameters for channels 
+ - 'generation gap' design pattern
+  - ...
 
 foundations towards a consistent model library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,13 +93,6 @@ make a library of abstract models: abstract queue, bus, router,
 application packet dispatcher, transport protocol abstraction etc.
 They could serve as skeletons for development (one could use them
 by deriving new simple module classes from them).
-
- 
-documentation
-~~~~~~~~~~~~~
-fill TBD's
-general polishing
-
 
 add more simulation models
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
