@@ -753,3 +753,79 @@ proc findSubmodule {modkey submodname} {
     return $submodkey
 }
 
+
+
+# nedClipboard:cut --
+#
+# doesn't work yet
+#
+proc nedClipboard:cut {} {       
+       tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
+       return
+       editCopy
+       deleteSelected
+}
+
+
+# nedClipboard:copy --
+#
+# doesn't work yet
+#
+proc nedClipboard:copy {} {       
+       tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
+       return
+
+       global clipboard_ned ned
+
+       set selection [selectedItems]
+
+       # accept only submodules and connections whose both ends will be copied
+       set keys {}
+       foreach key $selection {
+          if {$ned($key,type)=="submod"} {
+             lappend keys $key
+          } elseif {$ned($key,type)=="conn"} {
+             if {[lsearch $selection $ned($key,src-ownerkey)]!=-1 &&
+                 [lsearch $selection $ned($key,dest-ownerkey)]!=-1} \
+             {
+                 lappend keys $key
+             }
+          }
+       }
+
+       # copy out items to clipboard
+       copyArrayFromNed clipboard_ned $keys
+       return $keys
+}
+
+
+# nedClipboard:paste --
+#
+# doesn't work yet
+#
+proc nedClipboard:paste {} {       
+       tk_messageBox -title "GNED" -icon info -type ok -message "NED clipboard doesn't work yet. Sorry."
+       return
+
+       global clipboard_ned ned gned canvas
+
+       deselectAllItems
+
+       # offset disp-xpos and disp-ypos
+       foreach i [array names clipboard_ned "*,?-pos"] {
+          set clipboard_ned($i) [expr $clipboard_ned($i)+8]
+       }
+
+       set new_keys [pasteArrayIntoNed clipboard_ned]
+
+       # make items owned by the module on this canvas
+       set modkey $canvas($gned(canvas_id),module-key)
+       foreach key $new_keys {
+          set ned($key,module-ownerkey) $modkey
+          selectItem $key
+       }
+
+       # draw pasted items on canvas
+       drawItems $new_keys
+}
+

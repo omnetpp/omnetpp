@@ -64,6 +64,12 @@ proc setupTkOptions {} {
    set tcl_wordchars {\w}
    set tcl_nonwordchars {\W}
 
+   # by default, undo/redo bindings are platform-specific -- change it:
+   event add <<Undo>> <Control-Key-z>
+   event add <<Undo>> <Control-Key-Z>
+   event add <<Redo>> <Control-Key-y>
+   event add <<Redo>> <Control-Key-Y>
+
    #
    # fonts() array elements:
    #  normal:  menus, labels etc
@@ -272,7 +278,7 @@ proc label-text {w label height {text {}}} {
     # utility function: create a frame with a label+text
     frame $w
     label $w.l -anchor w -width 16 -text $label
-    text $w.t -highlightthickness 0 -height $height -width 40
+    text -undo true -maxundo 1000 $w.t -highlightthickness 0 -height $height -width 40
     pack $w.l -anchor n -expand 0 -fill none -padx 2 -pady 2 -side left
     pack $w.t -anchor center -expand 1 -fill both -padx 2 -pady 2 -side right
     $w.t insert 1.0 $text

@@ -135,6 +135,9 @@ proc createMainWindow {} {
 
     # Edit menu
     foreach i {
+      {command -command editUndo   -label {Undo} -accel {Ctrl-Z}  -underline 0}
+      {command -command editRedo   -label {Redo} -accel {Ctrl-Y}  -underline 0}
+      {separator}
       {command -command editCut    -label {Cut} -accel {Ctrl-X} -underline 2}
       {command -command editCopy   -label {Copy} -accel {Ctrl-C}  -underline 0}
       {command -command editPaste  -label {Paste} -accel {Ctrl-V}  -underline 0}
