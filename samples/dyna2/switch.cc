@@ -3,7 +3,7 @@
 //        (part of DYNA - an OMNeT++ demo simulation)
 //-------------------------------------------------------------
 
-#include "dynapk_n.h"
+#include "dynapk_m.h"
 
 class Switch : public cSimpleModule
 {

@@ -41,7 +41,7 @@ ALL : "$(OUTDIR)\dyna2.exe"
 CLEAN :
 	-@erase "$(INTDIR)\client.obj"
 	-@erase "$(INTDIR)\dyna_n.obj"
-	-@erase "$(INTDIR)\dynapk_n.obj"
+	-@erase "$(INTDIR)\dynapk_m.obj"
 	-@erase "$(INTDIR)\server.obj"
 	-@erase "$(INTDIR)\servproc.obj"
 	-@erase "$(INTDIR)\switch.obj"
@@ -100,7 +100,7 @@ LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib use
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
-	"$(INTDIR)\dynapk_n.obj" \
+	"$(INTDIR)\dynapk_m.obj" \
 	"$(INTDIR)\server.obj" \
 	"$(INTDIR)\servproc.obj" \
 	"$(INTDIR)\switch.obj"
@@ -124,7 +124,7 @@ ALL : "$(OUTDIR)\dyna2.exe"
 CLEAN :
 	-@erase "$(INTDIR)\client.obj"
 	-@erase "$(INTDIR)\dyna_n.obj"
-	-@erase "$(INTDIR)\dynapk_n.obj"
+	-@erase "$(INTDIR)\dynapk_m.obj"
 	-@erase "$(INTDIR)\server.obj"
 	-@erase "$(INTDIR)\servproc.obj"
 	-@erase "$(INTDIR)\switch.obj"
@@ -183,7 +183,7 @@ LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib 
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
-	"$(INTDIR)\dynapk_n.obj" \
+	"$(INTDIR)\dynapk_m.obj" \
 	"$(INTDIR)\server.obj" \
 	"$(INTDIR)\servproc.obj" \
 	"$(INTDIR)\switch.obj"
@@ -207,7 +207,7 @@ ALL : "$(OUTDIR)\dyna2.exe"
 CLEAN :
 	-@erase "$(INTDIR)\client.obj"
 	-@erase "$(INTDIR)\dyna_n.obj"
-	-@erase "$(INTDIR)\dynapk_n.obj"
+	-@erase "$(INTDIR)\dynapk_m.obj"
 	-@erase "$(INTDIR)\server.obj"
 	-@erase "$(INTDIR)\servproc.obj"
 	-@erase "$(INTDIR)\switch.obj"
@@ -263,7 +263,7 @@ LINK32_FLAGS=sim_std.lib envir.lib tkenv.lib @TCL_LIB@ @TK_LIB@ kernel32.lib use
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
-	"$(INTDIR)\dynapk_n.obj" \
+	"$(INTDIR)\dynapk_m.obj" \
 	"$(INTDIR)\server.obj" \
 	"$(INTDIR)\servproc.obj" \
 	"$(INTDIR)\switch.obj"
@@ -287,7 +287,7 @@ ALL : "$(OUTDIR)\dyna2.exe"
 CLEAN :
 	-@erase "$(INTDIR)\client.obj"
 	-@erase "$(INTDIR)\dyna_n.obj"
-	-@erase "$(INTDIR)\dynapk_n.obj"
+	-@erase "$(INTDIR)\dynapk_m.obj"
 	-@erase "$(INTDIR)\server.obj"
 	-@erase "$(INTDIR)\servproc.obj"
 	-@erase "$(INTDIR)\switch.obj"
@@ -343,7 +343,7 @@ LINK32_FLAGS=sim_std.lib envir.lib cmdenv.lib kernel32.lib user32.lib gdi32.lib 
 LINK32_OBJS= \
 	"$(INTDIR)\client.obj" \
 	"$(INTDIR)\dyna_n.obj" \
-	"$(INTDIR)\dynapk_n.obj" \
+	"$(INTDIR)\dynapk_m.obj" \
 	"$(INTDIR)\server.obj" \
 	"$(INTDIR)\servproc.obj" \
 	"$(INTDIR)\switch.obj"
@@ -434,10 +434,10 @@ SOURCE=.\dynapk.ned
 
 InputPath=.\dynapk.ned
 
-".\dynapk_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	perl @OMNETPP_BIN_DIR@\msgc.pl -s _n.cpp dynapk.ned
+	perl @OMNETPP_BIN_DIR@\msgc -s _m.cpp dynapk.ned
 <<
 
 
@@ -445,10 +445,10 @@ InputPath=.\dynapk.ned
 
 InputPath=.\dynapk.ned
 
-".\dynapk_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	perl @OMNETPP_BIN_DIR@\msgc.pl -s _n.cpp dynapk.ned
+	perl @OMNETPP_BIN_DIR@\msgc -s _m.cpp dynapk.ned
 <<
 
 
@@ -456,10 +456,10 @@ InputPath=.\dynapk.ned
 
 InputPath=.\dynapk.ned
 
-".\dynapk_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	perl @OMNETPP_BIN_DIR@\msgc.pl -s _n.cpp dynapk.ned
+	perl @OMNETPP_BIN_DIR@\msgc -s _m.cpp dynapk.ned
 <<
 
 
@@ -467,18 +467,18 @@ InputPath=.\dynapk.ned
 
 InputPath=.\dynapk.ned
 
-".\dynapk_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+".\dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	<<tempfile.bat
 	@echo off
-	perl @OMNETPP_BIN_DIR@\msgc.pl -s _n.cpp dynapk.ned
+	perl @OMNETPP_BIN_DIR@\msgc -s _m.cpp dynapk.ned
 <<
 
 
 !ENDIF
 
-SOURCE=.\dynapk_n.cpp
+SOURCE=.\dynapk_m.cpp
 
-"$(INTDIR)\dynapk_n.obj" : $(SOURCE) "$(INTDIR)"
+"$(INTDIR)\dynapk_m.obj" : $(SOURCE) "$(INTDIR)"
 
 
 SOURCE=.\server.cpp

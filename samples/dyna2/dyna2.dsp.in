@@ -204,41 +204,41 @@ SOURCE=.\dynapk.ned
 
 !IF  "$(CFG)" == "dyna - Win32 Debug Tkenv"
 
-# Begin Custom Build - Processing $(InputPath) with msgc.pl (needs Perl!)
+# Begin Custom Build - Processing $(InputPath) with msgc (needs Perl!)
 InputPath=.\dynapk.ned
 
-"dynapk_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	perl @OMNETPP_BIN_DIR@\msgc.pl -s _n.cpp dynapk.ned
+"dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	perl @OMNETPP_BIN_DIR@\msgc -s _m.cpp dynapk.ned
 
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "dyna - Win32 Debug Cmdenv"
 
-# Begin Custom Build - Processing $(InputPath) with msgc.pl (needs Perl!)
+# Begin Custom Build - Processing $(InputPath) with msgc (needs Perl!)
 InputPath=.\dynapk.ned
 
-"dynapk_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	perl @OMNETPP_BIN_DIR@\msgc.pl -s _n.cpp dynapk.ned
+"dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	perl @OMNETPP_BIN_DIR@\msgc -s _m.cpp dynapk.ned
 
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "dyna - Win32 Release Tkenv"
 
-# Begin Custom Build - Processing $(InputPath) with msgc.pl (needs Perl!)
+# Begin Custom Build - Processing $(InputPath) with msgc (needs Perl!)
 InputPath=.\dynapk.ned
 
-"dynapk_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	perl @OMNETPP_BIN_DIR@\msgc.pl -s _n.cpp dynapk.ned
+"dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	perl @OMNETPP_BIN_DIR@\msgc -s _m.cpp dynapk.ned
 
 # End Custom Build
 
 !ELSEIF  "$(CFG)" == "dyna - Win32 Release Cmdenv"
 
-# Begin Custom Build - Processing $(InputPath) with msgc.pl (needs Perl!)
+# Begin Custom Build - Processing $(InputPath) with msgc (needs Perl!)
 InputPath=.\dynapk.ned
 
-"dynapk_n.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	perl @OMNETPP_BIN_DIR@\msgc.pl -s _n.cpp dynapk.ned
+"dynapk_m.cpp" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	perl @OMNETPP_BIN_DIR@\msgc -s _m.cpp dynapk.ned
 
 # End Custom Build
 
@@ -247,7 +247,7 @@ InputPath=.\dynapk.ned
 # End Source File
 # Begin Source File
 
-SOURCE=.\dynapk_n.cpp
+SOURCE=.\dynapk_m.cpp
 # End Source File
 # Begin Source File
 
