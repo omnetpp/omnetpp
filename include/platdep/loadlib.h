@@ -25,6 +25,9 @@
 #endif
 
 #include <exception>
+#ifndef _MSC_VER
+#include <stdexcept>
+#endif
 #include "platdep/misc.h"  // opp_getWindowsError()
 
 
