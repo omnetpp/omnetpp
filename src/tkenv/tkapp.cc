@@ -1045,8 +1045,9 @@ void TOmnetTkApp::messageSent(cMessage *msg, cGate *directToGate)
 {
     // display in message window
     CHK(Tcl_VarEval(interp, "catch {\n"
-                            " .messagewindow.main.text insert end"
-                            "    {SENT:\t (",msg->className(),")",msg->fullName(),"  ",TclQuotedString(msg->info().c_str()).get(),"\n}\n" // FIXME extra "{}" around info()!
+                            " .messagewindow.main.text insert end {SENT:\t (",msg->className(),")",msg->fullName(),"}\n"
+                            " .messagewindow.main.text insert end ",TclQuotedString(msg->info().c_str()).get(),"\n"
+                            " .messagewindow.main.text insert end {\n}\n"
                             " .messagewindow.main.text see end\n"
                             "}\n",
                             NULL));
@@ -1074,8 +1075,9 @@ void TOmnetTkApp::messageDelivered(cMessage *msg)
 {
     // display in message window
     CHK(Tcl_VarEval(interp, "catch {\n"
-                            " .messagewindow.main.text insert end"
-                            "    {DELIVD:\t (",msg->className(),")",msg->fullName(),"  ",TclQuotedString(msg->info().c_str()).get(),"\n}\n" // FIXME extra "{}" around info()!
+                            " .messagewindow.main.text insert end {DELIVD:\t (",msg->className(),")",msg->fullName(),"}\n"
+                            " .messagewindow.main.text insert end ",TclQuotedString(msg->info().c_str()).get(),"\n"
+                            " .messagewindow.main.text insert end {\n}\n"
                             " .messagewindow.main.text see end\n"
                             "}\n",
                             NULL));
