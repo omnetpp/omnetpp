@@ -266,7 +266,7 @@ specify when they should arrive back at the module.
 @skip ::handleMessage
 @skipline scheduleAt(
 
-Note that we added two cMessage* variables, <tt>event</tt> and <tt>tictocMsg</tt>
+Note that we added two cMessage * variables, <tt>event</tt> and <tt>tictocMsg</tt>
 to the class, to remember the message we use for timing and message whose
 processing delay we are simulating. In handleMessage() now we have to
 differentiate whether a new message has arrived via the input gate
@@ -294,10 +294,49 @@ In this step we'll introduce random numbers. We change the delay from 1s
 to a random value which can be set from the NED file or from omnetpp.ini.
 In addition, we'll "lose" (delete) the packet with a small probability.
 
-For tic, we hardcode the delayTime parameter into the NED file.
+For tic, we hardcode the <tt>delayTime</tt> parameter into the NED file.
 
-For `toc', we leave the delayTime parameter unassigned in the NED file,
+For toc, we leave the <tt>delayTime</tt> parameter unassigned in the NED file,
 and put the value into omnetpp.ini instead, to make it easier to change.
+It is done by the following line in omnetpp.ini (truncnormal returns nonnegative
+values from a normal distribution, the first argument being the mean
+and the second being standard deviation):
+
+@dontinclude omnetpp.ini
+@skipline tictoc6.toc
+
+You can try that no matter how many times you re-run the simulation (or
+restart it, Simulate|Rebuild network menu item), you'll get exactly the
+same results. This is because OMNeT++ uses a deterministic algorithm
+(by default the Mersenne Twister RNG) to generate random numbers, and
+initializes it to the same seed. You can experiment with different
+seeds if you add the following lines to omnetpp.ini:
+
+@code
+[General]
+seed-0-mt=532569  # or any other 32-bit value
+@endcode
+
+(From the syntax you have probably guessed that OMNeT++ supports
+more than one RNGs. That's right, however, all models in this tutorial
+use RNG 0.)
+
+Note that because omnetpp.ini supports wildcards, and parameters
+assigned from NED files take precedence over the ones in omnetpp.ini,
+we could have used
+
+@code
+tictoc6.t*c.delayTime=...
+@endcode
+
+or even
+
+@code
+**.delayTime=...
+@endcode
+
+with the same effect. (The difference between * and ** is that * will not match
+a dot and ** will.)
 
 Sources: @ref tictoc6.ned, @ref txc6.cc, @ref omnetpp.ini
 
