@@ -18,6 +18,7 @@
 
 #include <string>
 
+
 inline void splitFileName(const char *pathname, std::string& dir, std::string& fnameonly)
 {
     if (!pathname || !*pathname)
@@ -45,6 +46,13 @@ inline void splitFileName(const char *pathname, std::string& dir, std::string& f
         dir = "";
         dir.append(pathname, s-pathname+1);
     }
+}
+
+inline std::string directoryOf(const char *pathname)
+{
+    std::string dir, dummy;
+    splitFileName(pathname, dir, dummy);
+    return dir;
 }
 
 #endif

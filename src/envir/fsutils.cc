@@ -3,9 +3,6 @@
 //                     OMNeT++/OMNEST
 //             Discrete System Simulation in C++
 //
-//  Implementation of
-//    TOmnetApp
-//
 //==========================================================================
 
 /*--------------------------------------------------------------*
@@ -25,38 +22,6 @@
 #include "platdep/loadlib.h"
 #include "onstartup.h"
 #include "cexception.h"
-
-void splitFileName(const char *pathname, opp_string& dir, opp_string& fnameonly)
-{
-    if (!pathname || !*pathname)
-    {
-         dir = "";
-         fnameonly = "";
-         return;
-    }
-
-    dir = pathname;
-
-    // find last "/" or "\"
-    char *dirbeg = dir.buffer();
-    char *s = dirbeg + strlen(dirbeg) - 1;
-    while (s>=dirbeg && *s!='\\' && *s!='/') s--;
-
-    // split along that
-    if (s<dirbeg)
-    {
-        fnameonly = dirbeg;
-        dir = ".";
-    }
-    else
-    {
-        fnameonly = s+1;
-        *(s+1) = '\0';
-    }
-
-}
-
-//------------
 
 PushDir::PushDir(const char *changetodir)
 {

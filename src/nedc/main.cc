@@ -33,6 +33,7 @@
 #include "cppgenerator.h"
 #include "nedcompiler.h"
 #include "platdep/misc.h"
+#include "platdep/fileutil.h"  // splitFileName
 
 
 using std::ofstream;
@@ -89,13 +90,14 @@ void printUsage()
        "  -s <suffix>: suffix for generated files\n"
        "  -S <suffix>: when generating C++, suffix for generated header files\n"
        "  -e: do not parse expressions in NED input; expect unparsed expressions in XML\n"
-       "  -t: with NED parsing: include source code of components in XML\n"
        "  -y: skip semantic validation (implies -z, skip processing imports)\n"
        "  -z: skip processing imports\n"
+       "  -t: with NED parsing: include source code of components in XML\n"
        "  -p: with -x: add source location info (src-loc attributes) to XML output\n"
        "  -V: verbose\n"
        "NOTE: C++ code generation from .msg files and the new NED-2 syntax are still\n"
-       "experimental and should not be used in production environment.\n"
+       "experimental and should not be used in production environment. Message (.msg)\n"
+       "should be processed with opp_msgc.\n"
     );
 }
 
@@ -267,7 +269,21 @@ bool processListFile(const char *listfilename)
 
     if (opt_verbose) fprintf(stderr,"processing list file '%s'...\n",listfilename);
 
-    ifstream in(listfilename, ios::in);
+    // files should be relative to list file, so try cd into list file's directory
+    std::string dir, fnameonly;
+    splitFileName(listfilename, dir, fnameonly);
+    char olddir[1024];
+    if (!getcwd(olddir,1024))
+    {
+        fprintf(stderr,"nedtool: cannot get the name of current directory\n");
+        return false;
+    }
+    if (chdir(dir.c_str()))
+    {
+        fprintf(stderr,"nedtool: cannot temporarily change to directory `%s' (does it exist?)\n", dir.c_str());
+        return false;
+    }
+    ifstream in(fnameonly.c_str(), ios::in);
     if (in.fail())
     {
         fprintf(stderr,"nedtool: cannot open list file '%s'\n",listfilename);
@@ -305,6 +321,11 @@ bool processListFile(const char *listfilename)
     }
     in.close();
 
+    if (chdir(dir.c_str()))
+    {
+        fprintf(stderr,"nedtool: cannot change back to directory `%s'\n", olddir);
+        return false;
+    }
     return true;
 }
 

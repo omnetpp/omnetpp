@@ -24,6 +24,7 @@
 #include "patmatch.h"
 #include "cexception.h"
 #include "fsutils.h"
+#include "platdep/fileutil.h"  // directoryOf
 
 
 #define MAX_LINE   1024
@@ -130,10 +131,8 @@ void cIniFile::_readFile(const char *fname, int section_id)
             *e = '\0';
 
             // filenames should be relative to the current ini file we're processing,
-            // so cd into its directory before opening incuded file
-            opp_string dir, dummy;
-            splitFileName(fname, dir, dummy);
-            PushDir d(dir.c_str());
+            // so cd into its directory before opening included file
+            PushDir d(directoryOf(fname).c_str());
 
             // process included inifile
             _readFile(s, section_id);

@@ -49,6 +49,7 @@
 
 #include "platdep/time.h"
 #include "platdep/misc.h"
+#include "platdep/fileutil.h"  // splitFileName
 #include "platdep/fileglobber.h"
 
 #include "platdep/fileglobber.c" // pull in implementation
@@ -531,7 +532,7 @@ void TOmnetApp::globAndLoadListFile(const char *fnamepattern)
 void TOmnetApp::processListFile(const char *listfilename)
 {
     // files should be relative to list file, so try cd into list file's directory
-    opp_string dir, fnameonly;
+    std::string dir, fnameonly;
     splitFileName(listfilename, dir, fnameonly);
     PushDir d(dir.c_str());
 
