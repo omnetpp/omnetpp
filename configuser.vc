@@ -65,7 +65,7 @@ LEX=flex.exe
 # Compiler switches
 
 CFLAGS_DEBUG=/nologo /MLd /Od /GZ /Zi /Gm /FD
-CFLAGS_RELEASE=/nologo /ML /O2 /D "NDEBUG" /F
+CFLAGS_RELEASE=/nologo /ML /O2 /D "NDEBUG" /FD
 
 LDFLAGS_DEBUG=/nologo /subsystem:console /debug /machine:I386 /pdbtype:sept /incremental:no
 LDFLAGS_RELEASE=/nologo /subsystem:console /machine:I386 /pdbtype:sept /incremental:no

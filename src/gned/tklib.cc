@@ -59,7 +59,7 @@ static int XErrorProc( ClientData, XErrorEvent *errEventPtr)
 int initTk(int argc, char **argv, Tcl_Interp *&interp )
 {
     // create interpreter
-    Tcl_Interp *interp = Tcl_CreateInterp();
+    interp = Tcl_CreateInterp();
 
     // pass application name to interpreter
     Tcl_FindExecutable(argv[0]);
