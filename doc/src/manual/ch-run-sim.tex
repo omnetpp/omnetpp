@@ -514,6 +514,23 @@ Pattern syntax:
     subsequent character
 \end{itemize}
 
+\subsubsection{Precedence}
+
+If you use wildcards, the order of entries is important: if a parameter
+name matches several wildcards-patterns, the \textit{first} matching occurrence
+is used. This means that you need to list specific settings first, and
+more general ones later. Catch-all settings should come last.
+
+An example ini file:
+
+\begin{verbatim}
+[Parameters]
+*.host[0].waitTime = 5ms   # specifics come first
+*.host[3].waitTime = 6ms
+*.host[*].waitTime = 10ms  # catch-all comes last
+\end{verbatim}
+
+
 \subsubsection{Asterisk vs double asterisk}
 
 The \ttt{*} wildcard is for matching a single module or parameter name in the
@@ -547,6 +564,15 @@ The specification must use exactly two dots.
 Caveat: \ttt{*\{17..19\}} will match \ttt{a17}, \ttt{117} and \ttt{963217} as well,
 because the \ttt{*} can also match digits!
 
+An example for numeric ranges:
+
+\begin{verbatim}
+[Parameters]
+*.*.queue[3..5].bufSize = 10
+*.*.queue[12..].bufSize = 18
+*.*.queue[*].bufSize = 6  # this will only affect queues 0,1,2 and 6..11
+\end{verbatim}
+
 \subsubsection{Compatibility}
 
 In {\opp} versions prior to 3.0, the \ttt{**} wildcard did not exist, and \ttt{*}
@@ -568,31 +594,6 @@ behaviour. Since \ttt{#\% old-wildcards} is only provided to ease transition
 from {\opp} 2.3 to 3.0, it will be removed in some future version.
 
 
-\subsection{Precedence with wildcards}
-
-If you use wildcards, the order of entries is important: if a parameter
-name matches several wildcards-patterns, the first matching occurrence
-is used. This means that you need to list specific settings first, and
-more general ones later. Catch-all settings should come last.
-
-An example ini file:
-
-\begin{Verbatim}[commandchars=\\\{\}]
-# omnetpp.ini
-
-\tbf{[Parameters]}
-token.numStations = 3
-token.numMessages = 10000
-
-\tbf{[Run 1]}
-token.stations[*].waitTime = 10ms
-
-\tbf{[Run 2]}
-token.stations[0].waitTime = 5ms
-token.stations[*].waitTime = 1000ms
-\end{Verbatim}
-
-
 \subsection{Applying the defaults}
 
 It is also possible to utilize the default values specifified with
@@ -606,13 +607,18 @@ The following example sets \ttt{ttl} (time-to-live) of \ttt{hostA}'s
 will get the default specified with \ttt{input()} in the NED files.
 
 \begin{Verbatim}[commandchars=\\\{\}]
-# omnetpp.ini
-
-\tbf{[Parameters]}
+[Parameters]
 **.hostA.ip.ttl = 5
 **.ip.ttl.use-default = yes
 \end{Verbatim}
 
+To make use of \textit{all} defaults in NED files, you'd add the following to
+\ttt{omnetpp.ini}:
+
+\begin{verbatim}
+[Parameters]
+**.use-default = yes
+\end{verbatim}
 
 
 \section{Configuring output vectors}
