@@ -60,11 +60,6 @@ achieved by writing a C++ file txc1.cc:
 
 txc1.cc: @include txc1.cc
 
-Then, we need to write the file omnetpp.ini which will tell the simulation tool
-what to do:
-
-omnetpp.ini: @include omnetpp.ini
-
 We now create the Makefile which will help us to compile and link our program
 to create the executable tictoc:
 
@@ -79,6 +74,26 @@ make
 
 If there are compilation errors, you need to rectify those and repeat the make until
 you get an error-free compilation and linking.
+
+7. If you start the executable now, it will complain that it cannot find
+the file omnetpp.ini, so you have to create one. omnetpp.ini tells the
+simulation program which network you want to simulate (yes, several networks
+can live in the same simulation program), you can pass parameters
+to the model, explicitly specify seeds for the random number generators etc.
+
+Create the following very simple omnetpp.ini:
+
+\code
+[General]
+network = tictoc1
+\endcode
+
+tictoc2 and further steps will all share the following omnetpp.ini:
+
+omnetpp.ini: @include omnetpp.ini
+
+which even doesn't specify the network (the simulation program ask it
+in a dialog when it starts).
 
 8. Once you complete the above steps, you launch the simulation by issuing this
 command:
