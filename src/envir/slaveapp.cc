@@ -137,23 +137,38 @@ int TSlaveApp::run()
 
      if (had_error)
          return 1;
-     else 
+     else
          return 0;
 }
 
 void TSlaveApp::simulate()
 {
-/* FIXME to be revised!
-     simulation.startClock();
-     while(1)
-     {
-         cSimpleModule *mod = simulation.selectNextModule();
-         if (mod==NULL || !simulation.ok()) break;
-         simulation.transferTo( mod ); //FIXME!!!!
-         if (!simulation.ok()) break;
-     }
-     simulation.stopClock();
-*/
+    startClock();
+    try
+    {
+        ev.disable_tracing = true;
+        while (true)
+        {
+            cSimpleModule *mod = simulation.selectNextModule();
+            ASSERT(mod!=NULL);
+
+            simulation.doOneEvent( mod );
+            checkTimeLimits();
+        }
+    }
+    catch (cTerminationException *e)
+    {
+        stopClock();
+        displayMessage(e);
+        delete e;
+        return;
+    }
+    catch (cException *e)
+    {
+        stopClock();
+        throw;
+    }
+    stopClock();
 }
 
 void TSlaveApp::shutdown()
