@@ -397,7 +397,7 @@ proc save_inspectorlist {} {
        foreach win [winfo children .] {
           if [regexp {\.(ptr.*)-([0-9]+)} $win match object type] {
               puts $f "\"[opp_getobjectfullpath $object]\" \
-                         [opp_inspectortype $type]"
+                       \"[opp_inspectortype $type]\""
           }
        }
        close $f

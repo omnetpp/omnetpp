@@ -1,5 +1,6 @@
 Oct 10, 1999
  - standardized indentation of source files
 ------ omnetpp-2.0b3 released ------
-May 19, 2000
+May 21, 2000
  - removed reference to TVEnv
+ - inspect.lst fixed (see Tkenv's Options|Load inspector list menu item)
