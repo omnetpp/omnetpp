@@ -4,9 +4,9 @@
 OMNETPP_DOC_DIR=@OMNETPP_DOC_DIR@
 DOXYGEN=@DOXYGEN@
 
-all: apidoc
+all: doc
 
-apidoc:
+doc:
 	# NOTE: doxy.cfg has the output directory hardcoded!
 	$(DOXYGEN) doxy.cfg
 

@@ -8,6 +8,7 @@ AR=@AR@
 RANLIB=@RANLIB@
 SHLIB_LD=@SHLIB_LD@
 MAKEDEPEND=@MAKEDEPEND@
+DOXYGEN=@DOXYGEN@
 CPPFLAGS=@CPPFLAGS@
 CFLAGS=@CFLAGS@
 XML_CFLAGS=@XML_CFLAGS@
@@ -141,6 +142,10 @@ nedutil.o : nedutil.cc
 depend:
 	$(MAKEDEPEND) -I../../include -- *.cc
 	$(MAKEDEPEND) -I../../include -fMakefile.in -- *.cc
+
+doc:
+	# NOTE: doxy.cfg has the output directory hardcoded!
+	$(DOXYGEN) doxy.cfg
 
 clean:
 	rm -f *.o
