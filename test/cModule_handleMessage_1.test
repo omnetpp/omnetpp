@@ -33,8 +33,6 @@ void {Module}::finish()
    ev << "finish() at " << simTime() << endl;
 }
 
-%ignore-exitcode: 1
-
 %contains: stdout
 initialize\(\) at 0
 .*

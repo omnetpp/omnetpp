@@ -36,12 +36,10 @@ void {Queues}::fillQueue(cQueue& q)
 
 void {Queues}::output(cQueue& q, char* prefix)
 {
-  ev << prefix << " "
-     << q.name() << ": "
-     << q.pop()->name() << " "
-     << q.pop()->name() << " "
-     << q.pop()->name() << endl;
-  
+  ev << prefix << " " << q.name() << ":";
+  while (!q.empty()) 
+    ev << " " << q.pop()->name();
+  ev << endl;
 }
 
 void {Queues}::activity()
@@ -54,7 +52,7 @@ void {Queues}::activity()
   duplicate = initial;
   output(initial, "Unsorted");
   output(duplicate, "Unsorted");
-  
+
   initial.clear();
   duplicate.clear();
 
@@ -65,7 +63,7 @@ void {Queues}::activity()
   duplicate = initial;
   output(initial, "Descending");
   output(duplicate, "Descending");
-  
+
   initial.clear();
   duplicate.clear();
 
@@ -77,8 +75,6 @@ void {Queues}::activity()
   output(initial, "Ascending");
   output(duplicate, "Ascending");
 }
-
-%ignore-exitcode:1
 
 %contains: stdout
 Unsorted Initial: 1 3 2

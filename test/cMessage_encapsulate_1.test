@@ -10,8 +10,6 @@ cMessage *payload2 = frame->decapsulate();
 
 ev << "payload==payload2: " << (payload==payload2) << endl;
 
-%ignore-exitcode: 1
-
 %contains: stdout
 payload==payload2: 1
 

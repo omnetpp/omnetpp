@@ -73,9 +73,6 @@ void {Simple}::activity()
 [General]
 network={Net}
 
-
-%ignore-exitcode: 1
-
 %contains: stdout
 p0 = 5
 p1 = 100

@@ -26,10 +26,10 @@ void {Llist}::fillLlist(cLinkedList& ll)
 
 void {Llist}::output(cLinkedList& ll)
 {
-  ev << ll.name() << ": "
-     << *((int*) ll.pop()) << " "
-     << *((int*) ll.pop()) << " "
-     << *((int*) ll.pop()) << endl;
+  ev << ll.name() << ":";
+  while (!ll.empty()) 
+    ev << " " << *((int*) ll.pop());
+  ev << endl;
 }
 
 void {Llist}::activity()
@@ -42,8 +42,6 @@ void {Llist}::activity()
   output(initial);
   output(duplicate);
 }
-
-%ignore-exitcode:1
 
 %contains: stdout
 Initial: 1 3 2

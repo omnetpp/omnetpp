@@ -38,8 +38,6 @@ PRINT_CLASSNAME( cWeightedStdDev )
 PRINT_CLASSNAME( cTopology )
 PRINT_CLASSNAME( cVarHistogram )
 
-%exitcode: 19
-
 %contains: stdout
 cBag: cBag
 cArray: cArray

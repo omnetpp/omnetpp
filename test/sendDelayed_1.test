@@ -34,8 +34,6 @@ void {Receiver}::activity()
    ev << "diff: " << diff << endl;
 }
 
-%ignore-exitcode: 1
-
 %contains: stdout
 diff: 0.3456
 

@@ -20,8 +20,6 @@ ev << "bitError: " << msg.hasBitError() << endl;
 ev << "timestamp: " << msg.timestamp() << endl;
 ev << "contextPointer ok: " << (msg.contextPointer() == &dummy) << endl;
 
-%exitcode: 19
-
 %contains: stdout
 kind: 10
 priority: 3

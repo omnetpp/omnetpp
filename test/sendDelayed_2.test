@@ -60,8 +60,6 @@ void {Receiver}::activity()
 [General]
 network={net}
 
-%ignore-exitcode: 1
-
 %contains: stdout
 diff: 0.3456
 
