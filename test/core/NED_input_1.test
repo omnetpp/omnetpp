@@ -46,6 +46,14 @@ endmodule
 network {network}: {Wrapper}
 endnetwork
 
+%inifile: {}.ini
+[General]
+preload-ned-files=*.ned
+network={network}
+
+[Parameters]
+**.use-default=yes
+
 %file: {}.cc
 
 #include <omnetpp.h>
@@ -66,37 +74,37 @@ void {Simple}::activity()
 
 %contains: stdout
 sub[0].p0=0
-sub[0].p1=5
-sub[0].p2=8
+sub[0].p1=1
+sub[0].p2=1
 sub[0].p3=100
-sub[0].p4=105
-sub[0].p5=108
-sub[0].p6=5
-sub[0].p7=8
-sub[0].p8=105
-sub[0].p9=108
+sub[0].p4=0
+sub[0].p5=100
+sub[0].p6=8
+sub[0].p7=5
+sub[0].p8=108
+sub[0].p9=105
 
 %contains: stdout
-sub[1].p0=1
-sub[1].p1=5
-sub[1].p2=8
-sub[1].p3=101
-sub[1].p4=105
-sub[1].p5=108
-sub[1].p6=5
-sub[1].p7=8
-sub[1].p8=105
-sub[1].p9=108
+sub[1].p0=0
+sub[1].p1=1
+sub[1].p2=1
+sub[1].p3=100
+sub[1].p4=1
+sub[1].p5=101
+sub[1].p6=8
+sub[1].p7=5
+sub[1].p8=108
+sub[1].p9=105
 
 %contains: stdout
-sub[2].p0=2
-sub[2].p1=5
-sub[2].p2=8
-sub[2].p3=102
-sub[2].p4=105
-sub[2].p5=108
-sub[2].p6=5
-sub[2].p7=8
-sub[2].p8=105
-sub[2].p9=108
+sub[2].p0=0
+sub[2].p1=1
+sub[2].p2=1
+sub[2].p3=100
+sub[2].p4=2
+sub[2].p5=102
+sub[2].p6=8
+sub[2].p7=5
+sub[2].p8=108
+sub[2].p9=105
 
