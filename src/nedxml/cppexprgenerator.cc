@@ -410,10 +410,6 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     // get function name, arg count, args
     const char *funcname = node->getName();
     int argcount = node->getNumChildren();
-    NEDElement *op1 = node->getFirstChild();
-    NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
-    NEDElement *op3 = op2 ? op2->getNextSibling() : NULL;
-    NEDElement *op4 = op3 ? op3->getNextSibling() : NULL;
 
     // operators should be handled specially
     if (!strcmp(funcname,"index"))
@@ -439,7 +435,8 @@ void CppExpressionGenerator::doFunction(FunctionNode *node, const char *indent, 
     }
     else if (!strcmp(funcname,"input"))
     {
-        // TBD validation: if (argcount!=1 && argcount!=2) -->error
+        NEDElement *op1 = node->getFirstChild();
+        NEDElement *op2 = op1 ? op1->getNextSibling() : NULL;
 
         if (mode==MODE_INLINE_EXPRESSION)
         {
