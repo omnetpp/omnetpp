@@ -55,6 +55,8 @@ OMNETPP_TUTORIAL_DIR="$OMNETPP_ROOT/tutorial"
 OMNETPP_TEST_DIR="$OMNETPP_ROOT/test"
 OMNETPP_BITMAP_PATH=".;./bitmaps;$OMNETPP_ROOT/bitmaps"
 
+OMNETPP_SAMPLES="dyna fddi fifo1 fifo2 hcube hist nim pvmex token demo"
+
 OMNETPP_BIN_DIR="$OMNETPP_ROOT/bin"
 OMNETPP_INCL_DIR="$OMNETPP_ROOT/include"
 OMNETPP_LIB_DIR="$OMNETPP_ROOT/lib"
@@ -460,9 +462,40 @@ Warning: You have enabled nedc subclassing which is experimental.
 EOT
 
   NEDC="${OMNETPP_NEDC_DIR}/nedcwrapper.sh"
-
+  AC_CONFIG_FILES( samples/dyna2/Makefile )
+  OMNETPP_SAMPLES="$OMNETPP_SAMPLES dyna2"
   fi
 fi
+
+
+#----------------------
+# Files to be generated
+#----------------------
+AC_CONFIG_FILES(
+  Makefile
+  src/cmdenv/Makefile
+  src/envir/Makefile
+  src/gned/Makefile
+  src/nedc/Makefile
+  src/plove/Makefile
+  src/sim/Makefile
+  src/tkenv/Makefile
+  src/utils/Makefile
+  src/utils/opp_makemake
+  samples/dyna/Makefile
+  samples/fddi/Makefile
+  samples/fifo1/Makefile
+  samples/fifo2/Makefile
+  samples/hcube/Makefile
+  samples/hist/Makefile
+  samples/nim/Makefile
+  samples/pvmex/Makefile
+  samples/token/Makefile
+  samples/demo/Makefile
+  tutorial/queues/Makefile
+  include/Makefile
+  test/Makefile
+)
 
 
 #----------------------
@@ -482,6 +515,8 @@ AC_SUBST(OMNETPP_SAMPLES_DIR)
 AC_SUBST(OMNETPP_TUTORIAL_DIR)
 AC_SUBST(OMNETPP_TEST_DIR)
 dnl AC_SUBST(OMNETPP_MODELS_DIR)
+
+AC_SUBST(OMNETPP_SAMPLES)
 
 AC_SUBST(YACC)
 AC_SUBST(LEX)
@@ -526,36 +561,12 @@ AC_SUBST(OMNETPP_TKENV_DIR)
 AC_SUBST(OMNETPP_GNED_DIR)
 AC_SUBST(OMNETPP_PLOVE_DIR)
 
-#----------------------
-# Generate files.
-#----------------------
 
-AC_OUTPUT(
-  Makefile
-  src/cmdenv/Makefile
-  src/envir/Makefile
-  src/gned/Makefile
-  src/nedc/Makefile
-  src/plove/Makefile
-  src/sim/Makefile
-  src/tkenv/Makefile
-  src/utils/Makefile
-  src/utils/opp_makemake
-  samples/dyna/Makefile
-  samples/fddi/Makefile
-  samples/fifo1/Makefile
-  samples/fifo2/Makefile
-  samples/hcube/Makefile
-  samples/hist/Makefile
-  samples/nim/Makefile
-  samples/pvmex/Makefile
-  samples/token/Makefile
-  samples/demo/Makefile
-  samples/demo/Makefile
-  tutorial/queues/Makefile
-  include/Makefile
-  test/Makefile
-)
+
+#
+# Generate files
+#
+AC_OUTPUT()
 
 chmod +x src/utils/opp_makemake
 
