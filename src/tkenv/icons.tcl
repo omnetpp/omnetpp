@@ -174,10 +174,11 @@ set icons(finish) [image create photo -data {
 }]
 
 set icons(findobj) [image create photo -data {
-    R0lGODlhFAATALMAAAAAAAAAhAD//4SEhOferf///8AAAIAAAP//////////////
-    /////////////////yH5BAEAAAQALAAAAAAUABMAAARVkMhJq60gg3sz9ZwEDEU5
-    DVsIlILwqUThWikdG3gucht+/EBCDUMwHHLGg1CVBB5AvMExNxp2AMBRYBuSGDSA
-    AGErDiVzYnLX+UtzuxU33PKe2++TCAA7
+    R0lGODlhFAATALMAAAAAAOnqvkZJuQAAwACA/8PDw25ubp6enkAAAIAAAMbGxv//
+    /////////////////yH5BAEAAAEALAAAAAAUABMAAARwMMhJqzU4652lEWAojoLh
+    kWhoBkbhukAMvPTatsj85kXWey7EQUF8HRA1YAFQpC17N+BMwcG9bE/qBtb7sZ5O
+    GtKF1W0PzygLM/YdEZsKAG0UAiwVXuFoGAzueBQIOQADCn6AgRaGf4mKFIyPkhMR
+    AAA7
 }]
 
 set icons(chan_vs) [image create photo -data {
