@@ -239,23 +239,32 @@ void TOmnetApp::printHelp()
 
     ev << "The following components are available:\n";
 
-    ev << "networks:\n";
-    cArray::Iterator iter(*networks.instance());
-    for (; iter(); iter++)
-        ev << "  " << iter()->name() << '\n';
-    ev << "\n";
+    if (networks.instance()->items()>0)
+    {
+        ev << "networks:\n";
+        cArray::Iterator iter(*networks.instance());
+        for (; iter(); iter++)
+            ev << "  " << iter()->name() << '\n';
+        ev << "\n";
+    }
 
-    ev << "modules types:\n";
-    cArray::Iterator iter2(*modtypes.instance());
-    for (; iter2(); iter2++)
-        ev << "  " << iter2()->name() << '\n';
-    ev << "\n";
+    if (modtypes.instance()->items()>0)
+    {
+        ev << "modules types:\n";
+        cArray::Iterator iter2(*modtypes.instance());
+        for (; iter2(); iter2++)
+            ev << "  " << iter2()->name() << '\n';
+        ev << "\n";
+    }
 
-    ev << "channel types:\n";
-    cArray::Iterator iter3(*channeltypes.instance());
-    for (; iter3(); iter3++)
-        ev << "  " << iter3()->name() << '\n';
-    ev << "\n";
+    if (channeltypes.instance()->items()>0)
+    {
+        ev << "channel types:\n";
+        cArray::Iterator iter3(*channeltypes.instance());
+        for (; iter3(); iter3++)
+            ev << "  " << iter3()->name() << '\n';
+        ev << "\n";
+    }
 }
 
 const char *TOmnetApp::getRunSectionName(int runnumber)
