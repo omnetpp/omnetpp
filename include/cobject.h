@@ -54,7 +54,7 @@ typedef int (*CompareFunc)(cObject *a, cObject *b);
 
 
 /**
- * cObject is the base class for almost all classes in the OMNeT++ library.
+ * Base class for almost all classes in the OMNeT++ library.
  *
  * It is usually NOT a good idea to subclass your own classes
  * (esp. data storage classes) from cObject,

@@ -23,10 +23,10 @@
 
 
 /**
- * cSimpleModule is the base class for all simple module classes.
+ * Base class for all simple module classes.
  * cSimpleModule, although stuffed with simulation-related functionality,
- * doesn't do anything useful by itself: one has to redefine
- * one or more virtual member functions to make it do useful work:
+ * doesn't do anything useful by itself: one has to subclass from it
+ * and redefine one or more virtual member functions to make it do useful work:
  *
  *    - void initialize()
  *    - void handleMessage(cMessage *msg)

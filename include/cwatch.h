@@ -70,8 +70,8 @@ class  cWatch;
 //==========================================================================
 
 /**
- * Shell for an ordinary char, int, long, double, char* or cObject* variable.
- * Its purpose is to make variables visible in Tkenv.
+ * Utility class to make int, long, double, char, etc. variables 
+ * to be inspectable in Tkenv.
  *
  * Users rarely need to create cWatch objects directly, they rather use
  * the WATCH() and LWATCH() macros.

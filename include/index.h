@@ -44,6 +44,7 @@
 
 /**
  * @page APIChanges API Changes
+ *
  * @verbinclude API-changes.txt
  */
 
@@ -51,7 +52,8 @@
 /**
  * @defgroup SimCore  Simulation core classes
  *
- * Simulation core classes:
+ * Simulation core classes:       <!-- blank line needed for autobrief=yes -->
+ *
  *    - cObject is the base class for most OMNeT++ classes
  *    - cModule, cCompoundModule and cSimpleModule represent modules
  *      in the simulation. The user implements new models by subclassing
@@ -69,7 +71,8 @@
 /**
  * @defgroup SimSupport  Simulation supporting classes
  *
- * Classes that make it easier to write simulation models:
+ * Classes that make it easier to write simulation models: <!-- blank line needed for autobrief=yes -->
+ *
  *    - cXMLElement makes XML configuration available for simple modules
  *    - cTopology supports routing in telecommunication or multiprocessor networks.
  *    - cFSM is used to build Final State Machines
@@ -83,7 +86,8 @@
 /**
  * @defgroup Containers  Container classes
  *
- * Container classes:
+ * Container classes:      <!-- blank line needed for autobrief=yes -->
+ *
  *    - cQueue: a (priority) queue for objects derived from cObject
  *    - cArray: a dynamic array for storing objects derived from cObject
  *

@@ -499,7 +499,8 @@ class SIM_API cNetworkType : public cObject
 //==========================================================================
 
 /**
- * Registration class. Stores a function pointer (returning a double).
+ * Registration class for extending NED with new functions. Stores a function 
+ * pointer (returning a double).
  *
  * Objects of this class are usually created via the Define_Function() macro.
  *

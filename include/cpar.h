@@ -86,21 +86,20 @@ class cDoubleExpression : public cExpression
 //==========================================================================
 
 /**
- * Parameter class are designed to hold a value.
+ * Parameter class. cPar is used for module parameters, and its instances can
+ * also be attached to cMessage objects.
  *
  * cPar supports several data types. Data types are identified by type
  * characters. The current data type is returned by type().
  *
- * <UL>
- *   <LI> basic types: <b>S</b> string, <b>B</b> bool, <b>L</b> long, <b>D</b> double
- *   <LI> <b>F</b> math function (MathFuncNoArgs,MathFunc1Args,etc),
- *   <LI> <b>X</b> reverse Polish expression (array of ExprElem objects),
- *   <LI> <b>C</b> compiled expression (subclassed from cDoubleExpression),
- *   <LI> <b>T</b> distribution from a cStatistic,
- *   <LI> <b>P</b> pointer to cObject,
- *   <LI> <b>I</b> indirection (refers to another cPar)
- *   <LI> <b>M</b> XML element (pointer to a cXMLElement)
- * </UL>
+ *     - basic types: <b>S</b> string, <b>B</b> bool, <b>L</b> long, <b>D</b> double
+ *     - <b>F</b> math function (MathFuncNoArgs,MathFunc1Args,etc),
+ *     - <b>X</b> reverse Polish expression (array of ExprElem objects),
+ *     - <b>C</b> compiled expression (subclassed from cDoubleExpression),
+ *     - <b>T</b> distribution from a cStatistic,
+ *     - <b>P</b> pointer to cObject,
+ *     - <b>I</b> indirection (refers to another cPar)
+ *     - <b>M</b> XML element (pointer to a cXMLElement)
  *
  * For all types, an input flag can be set. In this case,
  * the user will be asked to enter the value when the object's value
@@ -249,14 +248,12 @@ class SIM_API cPar : public cObject
          * is applied to them and the result is pushed back on the stack.
          *
          * The operation can be:
-         * <UL>
-         *   <LI> + - * / add, subtract, multiply, divide
-         *   <LI> % ^  modulo, power of
-         *   <LI> = !  equal, not equal
-         *   <LI> > }  greater, greater or equal
-         *   <LI> < {  less, less or equal
-         *   <LI> ?  inline if (the C/C++ ?: operator)
-         * </UL>
+         *     - + - * / add, subtract, multiply, divide
+         *     - \% ^  modulo, power of
+         *     - = !  equal, not equal
+         *     - > }  greater, greater or equal
+         *     - < {  less, less or equal
+         *     - ?  inline if (the C/C++ ?: operator)
          */
         void operator=(char _op)          {type='@'; op=_op;}
     };

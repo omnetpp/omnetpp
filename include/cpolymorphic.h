@@ -25,7 +25,7 @@
 class cStructDescriptor;
 
 /**
- * This is the ultimate base class for cObject, and thus for nearly all
+ * Ultimate base class for cObject, and thus for nearly all
  * OMNeT++ classes. cPolymorphic is a <b>lightweight common base class</b>:
  * it only contains virtual member functions but NO DATA MEMBERS at all.
  *

@@ -26,7 +26,7 @@
 
 
 /**
- * Utility class for easy manipulation of display strings. Display strings
+ * Class for storage and easy manipulation of display strings. Display strings
  * are used to control the graphical presentation of network elements
  * when a GUI execution environment is used (Tkenv).
  *
