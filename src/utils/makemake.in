@@ -393,4 +393,4 @@ EOT
 
 ) > $outputfile
 
-echo "$outputfile created -- still needs a 'make depend'"
+echo "$outputfile created -- type 'make depend' to add dependencies to it"
