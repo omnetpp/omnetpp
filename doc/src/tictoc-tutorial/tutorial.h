@@ -1,5 +1,4 @@
 /**
-
 @mainpage TicToc Tutorial for OMNeT++
 
 This short tutorial to OMNeT++ guides you through an example
@@ -31,6 +30,8 @@ the original TicToc tutorial from Ahmet Sekercioglu (Monash University).
 
 NEXT: @ref part1
 */
+
+--------------------------------------------------------------------------
 
 /**
 @page part1 1. Getting started
@@ -175,6 +176,8 @@ the propagation delay on the connections.
 
 NEXT: @ref part2
 */
+
+--------------------------------------------------------------------------
 
 /**
 @page part2 2. Enhancing the 2-node TicToc
@@ -394,6 +397,8 @@ Sources: @ref tictoc8.ned, @ref txc8.cc, @ref omnetpp.ini
 NEXT: @ref part3
 */
 
+--------------------------------------------------------------------------
+
 /**
 @page part3 3. Turning it into a real network
 
@@ -434,6 +439,8 @@ Sources: @ref tictoc10.ned, @ref tictoc10.msg, @ref txc10.cc, @ref omnetpp.ini
 NEXT: @ref part4
 */
 
+--------------------------------------------------------------------------
+
 /**
 @page part4 4. Collecting and analysing statistics
 
@@ -450,8 +457,9 @@ We also collect basic statistics (min, max, mean, std.dev.) and histogram
 about the hop count which we'll print out at the end of the simulation.
 
 Sources: @ref tictoc11.ned, @ref tictoc11.msg, @ref txc11.cc, @ref omnetpp.ini
-
 */
+
+--------------------------------------------------------------------------
 
 
 /// @page tictoc1.ned tictoc1.ned
