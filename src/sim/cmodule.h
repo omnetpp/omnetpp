@@ -60,9 +60,6 @@ class  cNetMod;
 class  cSimulation;
 class  cNetworkType;
 
-//=== global vector of modules:
-SIM_API extern cSimulation simulation;
-
 extern char *modstate[];
 
 //=== to connect two gates:

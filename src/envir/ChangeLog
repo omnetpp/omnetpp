@@ -218,3 +218,9 @@ Jan 28, 2000
 Mar 26, 2000
  - 'char *' pointers made const-correct (lots of 'char *' --> 'const char *'
    replacements throughout the code)
+April 4, 2000
+ - dynamic registration of user interface (TOmnetApp) classes introduced.
+   (The formerly used method didn't make it possible to create separate DLLs
+   on Windows: envir.dll, tkenv.dll, cmdenv.dll).
+   See appreg.h, the Register_OmnetApp macros in cmdenv.cc and tkapp.cc,
+   and the chooseBestOmnetApp() function in envir.cc.

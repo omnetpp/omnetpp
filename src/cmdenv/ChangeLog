@@ -108,3 +108,6 @@ Dec 5,1999
 Mar 26, 2000
  - 'char *' pointers made const-correct (lots of 'char *' --> 'const char *'
    replacements throughout the code)
+April 4, 2000
+ - dynamic registration of user interface (TOmnetApp) classes introduced:
+   Register_OmnetApp() macro added to cmdenv.cc

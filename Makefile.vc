@@ -9,6 +9,7 @@
 #
 include configuser.vc
 
+MOPTS=/nologo
 MAKEFILE=/F Makefile.vc
 
 #=====================================================================
@@ -49,66 +50,66 @@ samples: $(SAMPLES)
 #
 
 sim:
-	cd /d $(OMNETPP_SRC_DIR:/=\)\sim && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SRC_DIR:/=\)\sim && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 envir:
-	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SRC_DIR:/=\)\envir && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 cmdenv:
-	cd /d $(OMNETPP_SRC_DIR:/=\)\cmdenv && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SRC_DIR:/=\)\cmdenv && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 tkenv:
-	cd /d $(OMNETPP_SRC_DIR:/=\)\tkenv && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SRC_DIR:/=\)\tkenv && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
 # Programs
 #
 
 nedc:
-	cd /d $(OMNETPP_SRC_DIR:/=\)\nedc && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SRC_DIR:/=\)\nedc && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 gned:
-	cd /d $(OMNETPP_SRC_DIR:/=\)\gned && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SRC_DIR:/=\)\gned && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 plove:
 	@ rem needs no build
 
 utils:
-	cd /d $(OMNETPP_SRC_DIR:/=\)\utils &&  $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SRC_DIR:/=\)\utils &&  $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #
 # Sample programs
 #
 
 dyna:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\dyna && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 fddi:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fddi && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fddi && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 fifo1:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo1 && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo1 && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 fifo2:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo2 && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\fifo2 && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 hcube:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hcube && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hcube && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 hist:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hist && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\hist && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 nim:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\nim && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\nim && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 pvmex:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\pvmex && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\pvmex && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 token:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\token && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\token && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 demo:
-	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\demo && $(MAKE) $(MAKEFILE)
+	cd /d $(OMNETPP_SAMPLES_DIR:/=\)\demo && $(MAKE) $(MOPTS) $(MAKEFILE)
 
 #=====================================================================
 #
@@ -122,17 +123,17 @@ demo:
 
 clean:
 	-for %%i in ( $(LIBS) $(PROGS) ) do \
-	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MAKEFILE) clean
+	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 #	-for %%i in ( $(SAMPLES) ) do \
-#	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MAKEFILE) clean
+#	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) clean
 
 depend:
 	for %%i in ( $(LIBS) $(PROGS) ) do \
-	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MAKEFILE) depend
+	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
 #	for %%i in ( $(SAMPLES) ) do \
-#	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MAKEFILE) depend
+#	    cd $(OMNETPP_SAMPLES_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) depend
 
 install-local:
 	for %%i in ( $(LIBS) $(PROGS) ) do \
-	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MAKEFILE) install-local
+	    cd $(OMNETPP_SRC_DIR:/=\)\%%i && $(MAKE) $(MOPTS) $(MAKEFILE) install-local
 
