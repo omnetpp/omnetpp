@@ -147,10 +147,9 @@ proc deleteItem {key} {
     }
 
     # delete empty for-loop, conns, etc
-    if {![info exist ned($key,being-deleted)]} {
+    if {![info exist ned($parentkey,being-deleted)]} {
         if {$ned($parentkey,childrenkeys)==""} {
             if {[lsearch {gates params submods substmachines substparams gatesizes conns} $ned($parentkey,type)]!=-1} {
-                tk_messageBox -message "deleting $parentkey $ned($parentkey,type)"
                 deleteItem $parentkey
             }
         } elseif {$ned($parentkey,type)=="forloop"} {
