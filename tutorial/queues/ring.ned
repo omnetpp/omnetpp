@@ -21,7 +21,7 @@ module Ring
                 num_cells = num_cells,
                 service_time = input,
                 num_init_jobs = input;
-            display: "p=125,152;i=queue";
+            display: "i=queue";
     connections:
         for i=0..num_buffers-2 do
             fifo[i].out --> fifo[i+1].in;
