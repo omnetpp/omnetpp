@@ -1,0 +1,36 @@
+#
+# make OMNeT++ distribution
+#
+version=1.2
+
+if test -f configure; then
+	echo Start with a clean page by doing 'cvs checkout omnetpp'!!!
+        exit 1
+fi
+
+./setperm
+autoconf
+
+# regenerate samples' makefiles and all dependencies
+./configure
+
+(cd bin; ln -s ../src/utils/makemake .)
+for i in models/* samples/*; do
+	(cd $i; make re-makemake; make re-makemake-m; make depend; rm Makefile)
+done
+for i in sim/*; do
+	if test -f $i/Makefile.in; then
+	(cd $i; make depend; rm Makefile)
+done
+rm bin/makemake
+
+# cleanup
+rm -f src/gned/icons
+rm setperm
+rm makedist
+
+# pack
+cd ..
+mv omnetpp omnetpp-$version
+tar cvfz omnetpp-$version.tgz omnetpp-$version
+
