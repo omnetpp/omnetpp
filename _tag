@@ -13,7 +13,7 @@ cvstag=`echo $relname | sed 's/\./_/g'`
 
 # check tag format
 if echo $relname | grep -q '^omnetpp-[0-9]\+\.[0-9]\+b\?[0-9]*$'; then
-    echo "relname: $relname, cvstag: $cvstag"
+    echo "OK! relname=$relname, cvstag=$cvstag"
 else
     echo "usage: $0 <relname>.  relname looks like: omnetpp-2.0b1"
     exit
