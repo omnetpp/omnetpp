@@ -158,6 +158,7 @@ proc display_stopdialog {mode} {
 
     bind $w <Return> "opp_stopsimulation"
     bind $w <Escape> "opp_stopsimulation"
+    bind $w <F8>     "opp_stopsimulation"
 
     # 2. Center window
     center $w

@@ -1,5 +1,4 @@
 General:
- - hotkeys for Step,Run,...
  - .tkenvrc to store options
  - reload omnetpp.ini before new run
  - rearrange modules with mouse (problem: where to save positions? .tkenvrc?)

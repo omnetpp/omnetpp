@@ -32,11 +32,12 @@ proc create_compoundmodinspector {name} {
     foreach i {graph win sep1 parent sep2 step} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
+    bind $w <Control-F5> "one_step_in_module $w"
 
     set help_tips($w.toolbar.graph)   {Inspect as network graphics}
     set help_tips($w.toolbar.win)     {See module output}
     set help_tips($w.toolbar.parent)  {Inspect parent module}
-    set help_tips($w.toolbar.step)    {Stop at events in this module}
+    set help_tips($w.toolbar.step)    {Stop at events in this module (Ctrl-F5)}
 
     set nb $w.nb
     notebook $nb
@@ -74,10 +75,11 @@ proc create_simplemodinspector {name} {
     foreach i {win sep1 parent sep2 step} {
        pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
     }
+    bind $w <Control-F5> "one_step_in_module $w"
 
     set help_tips($w.toolbar.win)    {See module output}
     set help_tips($w.toolbar.parent) {Inspect parent module}
-    set help_tips($w.toolbar.step)   {Stop at events in this module}
+    set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F5)}
 
     set nb $w.nb
     notebook $nb
@@ -149,14 +151,14 @@ proc _create_modulewindow {name iscompound} {
         iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
         iconbutton $w.toolbar.sep2   -separator
         iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
-
         foreach i {obj graph sep1 parent sep2 step} {
            pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
         }
+        bind $w <Control-F5> "one_step_in_module $w"
 
         set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.parent) {Inspect parent module}
-        set help_tips($w.toolbar.step)   {Stop at events in this module}
+        set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F5)}
     } else {
         # for simple module
         iconbutton $w.toolbar.obj    -image $icons(asobject) -command "inspect_this $w {As Object}"
@@ -164,14 +166,14 @@ proc _create_modulewindow {name iscompound} {
         iconbutton $w.toolbar.parent -image $icons(parent) ;#command assigned from C++
         iconbutton $w.toolbar.sep2   -separator
         iconbutton $w.toolbar.step   -image $icons(step) -command "one_step_in_module $w"
-
         foreach i {obj sep1 parent sep2 step} {
            pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
         }
+        bind $w <Control-F5> "one_step_in_module $w"
 
         set help_tips($w.toolbar.obj)    {Inspect as object}
         set help_tips($w.toolbar.parent) {Inspect parent module}
-        set help_tips($w.toolbar.step)   {Stop at events in this module}
+        set help_tips($w.toolbar.step)   {Stop at events in this module (Ctrl-F5)}
     }
 
     frame $w.main

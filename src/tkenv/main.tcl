@@ -104,15 +104,15 @@ proc create_omnetpp_window {} {
     #  {command -command init_step -label {First real event} -underline 1}
     #  {separator}
     foreach i {
-      {command -command one_step -label {One step} -underline 4}
+      {command -command one_step -label {One step} -accel {F4} -underline 4}
       {command -command slow_exec -label {Slow execution} -underline 1}
       {separator}
-      {command -command run -label {Run} -underline 0 ;# -accelerator F9}
-      {command -command run_fast -label {Fast run (rare display updates)} -underline 0}
-      {command -command run_notracing -label {Express run (tracing off)} -underline 0}
+      {command -command run -label {Run}  -accel {F5} -underline 0}
+      {command -command run_fast -label {Fast run (rare display updates)} -accel {F6} -underline 0}
+      {command -command run_notracing -label {Express run (tracing off)} -accel {F7} -underline 0}
       {command -command run_until -label {Run until...} -underline 4}
       {separator}
-      {command -command stop_simulation -label {Stop execution} -underline 0}
+      {command -command stop_simulation -label {Stop execution} -accel {F8} -underline 0}
       {separator}
       {command -command call_finish -label {Call finish() for all modules} -underline 0}
       {command -command rebuild -label {Rebuild network} -underline 1}
@@ -234,12 +234,12 @@ proc create_omnetpp_window {} {
       pack $b -anchor n -expand 0 -fill none -side left -padx 0 -pady 2
     }
 
-    set help_tips(.toolbar.step)    {Execute one event}
-    set help_tips(.toolbar.run)     {Run with full animation}
-    set help_tips(.toolbar.fastrun) {Run faster: no animation and rare inspector updates}
-    set help_tips(.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates}
+    set help_tips(.toolbar.step)    {Execute one event (F4)}
+    set help_tips(.toolbar.run)     {Run with full animation (F5)}
+    set help_tips(.toolbar.fastrun) {Run faster: no animation and rare inspector updates (F6)}
+    set help_tips(.toolbar.exprrun) {Run at full speed: no text output, animation or inspector updates (F7)}
     set help_tips(.toolbar.until)   {Run until time or event number}
-    set help_tips(.toolbar.stop)    {Stop simulation (if running)}
+    set help_tips(.toolbar.stop)    {Stop simulation if running (F8)}
     set help_tips(.toolbar.network) {Inspect network}
     set help_tips(.toolbar.fes)     {Inspect Future Event Set}
 
@@ -335,7 +335,17 @@ proc create_omnetpp_window {} {
     bind .main.text <Control-N> {findNext .main.text;break}
     bind .main.text <F3> {findNext .main.text}
 
+    bind_runcommands .
 }
+
+proc bind_runcommands {w} {
+    bind $w <F4> {one_step}
+    bind $w <F5> {run}
+    bind $w <F6> {run_fast}
+    bind $w <F7> {run_notracing}
+    bind $w <F8> {stop_simulation}
+}
+
 
 #===================================================================
 #    LOAD BITMAPS

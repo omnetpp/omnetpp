@@ -51,9 +51,12 @@ proc create_inspector_toplevel {w {geom ""}} {
 
     set help_tips($w.toolbar.inspect) {Open another inspector for this object}
 
+    # Keyboard bindings
     bind $w <Escape>     "catch {.popup unpost}"
     bind $w <Button-1>   "catch {.popup unpost}"
     bind $w <Key-Return> "opp_writebackinspector $w; opp_updateinspectors"
+
+    bind_runcommands $w
 }
 
 proc create_inspector_listbox {w} {
@@ -144,6 +147,7 @@ proc inspect_this {win type} {
     regexp {\.(ptr.*)-[0-9]+} $win match object
     opp_inspect $object $type
 }
+
 
 #===================================================================
 #    INSPECTOR WINDOWS
@@ -291,3 +295,4 @@ proc create_packetinspector {name} {
     pack $nb.info.protocol -after $nb.info.kind -expand 1 -fill x -side top
     pack $nb.info.pdu -after $nb.info.protocol -expand 1 -fill x -side top
 }
+
