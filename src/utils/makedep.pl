@@ -18,6 +18,7 @@
 #   --objsuffix <object-file-suffix>
 #   --objdir <object-file-directory>
 #   --srcdir <source-directory>
+#   --objdirtree
 #
 # <file_list> is the list of C/C++ files for which dependencies must be generated.
 #
@@ -37,7 +38,12 @@
 #
 # --objdir sets the directory of the object filename.  Defaults to current dir.
 #
-# Bug: difference between #include <foo.h> and #include "foo.h" is ignored.
+# --objdirtree the object files are assumed to be in the same directory structure
+#    as the sources (by default, they're assumed to be all in the same directory)
+#
+# Bugs:
+#  - #include <foo.h> and #include "foo.h" are treated the same
+#  - ignores #ifdefs altogether
 #
 # Based on the script at:
 #  http://faqchest.dynhost.com/prgm/perlu-l/perl-98/perl-9802/perl-980200/perl98020418_25228.html
@@ -60,9 +66,17 @@ $Separator = '# DO NOT DELETE THIS LINE -- make depend depends on it.';
 
 # Below is the default suffix for the object file printed in the
 # dependency list.  This default is overriden with --objsuffix
-#
 $ObjSuffix = ".o";
+
+# Source directory
 $SourceDirectory = "";
+
+# Target (object files) directory
+$ObjDir = "";
+
+# If set, the object files are assumed to be in the same directory structure
+# as the sources. Otherwise, they're assumed to be all in the same directory.
+$ObjDirTree = 0;
 
 # If this flag is set, include files that are not found in the search path are
 # ignored. (Otherwise they cause an error.) The -Y option sets the flag to 1.
@@ -77,7 +91,7 @@ $Makefile = "Makefile";
 
 #
 #  This first thing this script does is parse the command line
-#  for Include Path specifications, options, and files.
+#  for include path specifications, options, and files.
 #
 $accept_flags = 1;
 while (@ARGV)
@@ -127,6 +141,10 @@ while (@ARGV)
     elsif ($arg eq "--objdir")
     {
         $ObjDir = shift @ARGV;
+    }
+    elsif ($arg eq "--objdirtree")
+    {
+        $ObjDirTree = 1;
     }
     elsif ($arg eq "--srcdir")
     {
@@ -183,8 +201,13 @@ sub scan {
    }
    if (!open( INPUT, $filename ))
    {
-       print STDERR "makedep: unable to open $filename: $!\n" ;
-       exit(2);
+       # be more tolerant if filename contains wildcard (which means the shell couldn't expand it)
+       if ($filename =~ /[\*\?]/) {
+           print STDERR "makedep: warning: unable to open $filename: $!\n";
+       } else {
+           print STDERR "makedep: unable to open $filename: $!\n" ;
+           exit(2);
+       }
    }
 
    while ( <INPUT> ) {
@@ -258,37 +281,24 @@ sub print_dep {
    local( $_ );
    local( $dep );
 
-   $target = &get_file($filename);
+   $filename =~ s/^\.\///;
 
+   if ($ObjDirTree) {
+       $target = $filename;
+   } else {
+       $filename =~ /([^\/]*)$/;
+       $target = $2;
+   }
    $target =~ s/\.[^.]*$/$ObjSuffix/ ;
 
-   if (defined($ObjDir))
-   {
+   if ($ObjDir ne "") {
         $target = $ObjDir . "/" . $target;
    }
 
-   if ( $filename !~ /^[.\/]/ ) {
-      $filename = $filename;
-   }
-
-   $dep = "${target}: ";
+   $dep = "$target: ";
    $dep .= join( " \\\n  ", ("$SourceDirectory$filename", @includes) );
    $dep .= "\n";
    return $dep;
-}
-
-#
-#       This function takes a string in the form of a directory path
-# and returns a string that is just the file part.  Given a string of the
-# form "./some/path/witha/filename", "filename" will be returned.
-#
-sub get_file {
-    local($base) = @_;
-    local($splitdir);
-    local($file);
-
-    @splitdir = split('/', $base);
-    $file = $splitdir[$#splitdir];
 }
 
 #

@@ -157,8 +157,11 @@ pvm\pvmpack.obj : pvm\pvmpack.cc
 pvm\pvmmod.obj : pvm\pvmmod.cc
 	$(CXX) $(PVM_CFLAGS) /Fo"pvm\pvmmod.obj" $(COPTS) /c /Tp pvm\pvmmod.cc
 
-missing-library:
-	@ echo *** No PVM installation found -- skipping sim_pvm
+missing-pvm-library:
+	@ echo *** No PVM installation -- skipping sim_pvm
+
+missing-mpi-library:
+	@ echo *** No MPI installation -- skipping sim_mpi
 
 depend:
 	$(MAKEDEPEND) -I../../include -fMakefile.vc -- *.cc std/*.cc pvm/*.cc mpi/*.cc
@@ -551,7 +554,7 @@ util.obj: util.cc \
   ../../include/cmessage.h \
   ../../include/carray.h \
   ../../include/cpar.h
-netpack.obj: std/netpack.cc \
+std/netpack.obj: std/netpack.cc \
   ../../include/omnetpp.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -586,7 +589,7 @@ netpack.obj: std/netpack.cc \
   ../../include/cfsm.h \
   ../../include/protocol.h \
   ../../include/cenvir.h
-pvmmod.obj: pvm/pvmmod.cc \
+pvm/pvmmod.obj: pvm/pvmmod.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
   ../../include/csimul.h \
@@ -606,7 +609,7 @@ pvmmod.obj: pvm/pvmmod.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h
-pvmpack.obj: pvm/pvmpack.cc \
+pvm/pvmpack.obj: pvm/pvmpack.cc \
   ../../include/omnetpp.h \
   ../../include/defs.h \
   ../../include/util.h \
@@ -641,7 +644,7 @@ pvmpack.obj: pvm/pvmpack.cc \
   ../../include/cfsm.h \
   ../../include/protocol.h \
   ../../include/cenvir.h
-mpimod.obj: mpi/mpimod.cc \
+mpi/mpimod.obj: mpi/mpimod.cc \
   ../../include/cmessage.h \
   ../../include/cmodule.h \
   ../../include/csimul.h \
@@ -661,7 +664,7 @@ mpimod.obj: mpi/mpimod.cc \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
   ../../include/coutvect.h
-mpipack.obj: mpi/mpipack.cc \
+mpi/mpipack.obj: mpi/mpipack.cc \
   ../../include/omnetpp.h \
   ../../include/defs.h \
   ../../include/util.h \

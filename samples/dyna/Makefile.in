@@ -106,4 +106,12 @@ re-makemake-m:
 	opp_makemake -f -m    #recreate Makefile.in
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+client.o: client.cc \
+  dyna.h
+dyna_n.o: dyna_n.cc
+server.o: server.cc \
+  dyna.h
+servproc.o: servproc.cc \
+  dyna.h
+switch.o: switch.cc \
+  dyna.h

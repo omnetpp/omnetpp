@@ -20,6 +20,7 @@ OMNETPP_ROOT=d:/home/omnetpp
 TK_DIR=d:/tcl
 TK_VER=8.2
 PVM_DIR=d:/home/pvm3
+MPI_DIR=d:/home/mpi
 
 #
 # other directories & files based on the base dirs
@@ -39,6 +40,7 @@ TK_LIB=tk$(TK_VER:.=).lib
 _TCL_LIBRARY=$(TK_DIR)/lib/tcl$(TK_VER)
 
 PVM_INCL_DIR=$(PVM_DIR)/include
+MPI_INCL_DIR=$(MPI_DIR)/include
 
 #
 # tools
@@ -53,7 +55,7 @@ SHLIB_LD=link.exe /dll
 RC=rc.exe
 
 # dependency generator (needs Perl in the path!)
-MAKEDEPEND=perl $(OMNETPP_ROOT)/src/utils/makedep.pl -Y --objsuffix .obj 
+MAKEDEPEND=perl $(OMNETPP_ROOT)/src/utils/makedep.pl -Y --objsuffix .obj --objdirtree
 
 # OMNeT++ tools
 NEDC=$(OMNETPP_BIN_DIR)/nedc.exe
@@ -102,14 +104,17 @@ TK_CFLAGS=/I "$(TK_INCL_DIR)"
 TK_LIBS=$(TCL_LIB) $(TK_LIB) /libpath:"$(TK_LIB_DIR)"
 PVM_CFLAGS=/I "$(PVM_INCL_DIR)"
 PVM_LIBS=
+MPI_CFLAGS=/I "$(MPI_INCL_DIR)"
+MPI_LIBS=
 SYS_LIBS=
 
 #
 # If you don't want to build some of the components below, substitute
-# missing-library below
+# missing-library (or missing-pvm-library, missing-mpi-library) below
 #
 TKENV_IF_POSSIBLE=tkenv
-SIM_PVM_IF_POSSIBLE=missing-library
+SIM_PVM_IF_POSSIBLE=missing-pvm-library
+SIM_MPI_IF_POSSIBLE=missing-mpi-library
 GNED_IF_POSSIBLE=gned
 
 #

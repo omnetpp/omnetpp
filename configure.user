@@ -72,10 +72,16 @@ TK_CFLAGS=
 TK_LIBS=
 
 #
-# Similar settings for PVM.
+# Similar settings for PVM
 #
 PVM_CFLAGS=
 PVM_LIBS=
+
+#
+# and for MPI
+#
+MPI_CFLAGS=
+MPI_LIBS=
 
 #
 # You may override the settings below. This is only useful if you have moved

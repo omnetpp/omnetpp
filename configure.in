@@ -116,7 +116,7 @@ AS="as"
 AR="ar cr"
 SHLIB_LD="$CXX -shared"
 NEDC="nedc"
-MAKEDEPEND="perl `pwd`/src/utils/makedep.pl -Y"
+MAKEDEPEND="perl `pwd`/src/utils/makedep.pl -Y --objdirtree"
 
 case "$CXX" in
    "cxx") # Tru64 machine
@@ -215,6 +215,18 @@ if test ! -n "$PVM_LIBS"; then
        AC_MSG_WARN(...and re-run configure!)],
        -lpvm3
     )
+fi
+
+#----------------------
+# Check for MPI.
+#----------------------
+
+if test ! -n "$MPI_CFLAGS"; then
+    AC_MSG_WARN(FIXME: check for presence of MPI headers not implemented!)
+fi
+
+if test ! -n "$MPI_LIBS"; then
+    AC_MSG_WARN(FIXME: check for presence of MPI libs not implemented!)
 fi
 
 #----------------------

@@ -121,4 +121,9 @@ re-makemake-m:
 	opp_makemake -f -m    #recreate Makefile.in
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+fifo1.o: fifo1.cc \
+  fifo1.h
+gen1.o: gen1.cc \
+  gen1.h
+sink1.o: sink1.cc \
+  sink1.h

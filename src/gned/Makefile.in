@@ -81,18 +81,41 @@ missing-library:
 	@ echo '  *** No Tk installation found -- skipping GNED'
 
 depend:
-	$(MAKEDEPEND) -I. -- *.c *.cc
-	$(MAKEDEPEND) -I. -fMakefile.in -- *.c *.cc
+	$(MAKEDEPEND) -I. -- *.cc
+	$(MAKEDEPEND) -I. -fMakefile.in -- *.cc
 
 clean:
 	rm -f tclcode.cc *.o lex.yy.cc ebnf.tab.cc ebnf.tab.h gned$(EXE_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
-ebnf.tab.o: ebnf.h ebnfcfg.h parsened.h nedfile.h
-lex.yy.o: ebnf.h ebnf.tab.h ebnfcfg.h parsened.h
-arrow.o: arrow.h
-gned.o: arrow.h parsened.h ebnf.h tklib.h
-nedfile.o: nedfile.h parsened.h ebnf.h
-parsened.o: parsened.h ebnf.h nedfile.h tklib.h
-tklib.o: tklib.h
+arrow.o: arrow.cc \
+  arrow.h
+ebnf.tab.o: ebnf.tab.cc \
+  ebnf.h \
+  ebnfcfg.h \
+  parsened.h \
+  nedfile.h
+gned.o: gned.cc \
+  arrow.h \
+  parsened.h \
+  tklib.h \
+  tclcode.cc \
+  ebnf.h
+lex.yy.o: lex.yy.cc \
+  unistd.h \
+  ebnf.h \
+  ebnf.tab.h \
+  ebnfcfg.h \
+  parsened.h
+nedfile.o: nedfile.cc \
+  nedfile.h \
+  parsened.h \
+  ebnf.h
+parsened.o: parsened.cc \
+  parsened.h \
+  nedfile.h \
+  tklib.h \
+  ebnf.h
+tclcode.o: tclcode.cc
+tklib.o: tklib.cc \
+  tklib.h

@@ -33,3 +33,4 @@ clean:
 	rm -f *.o seedtool$(EXE_SUFFIX) tcl2c$(EXE_SUFFIX)
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+seedtool.o: seedtool.cc

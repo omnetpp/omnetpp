@@ -100,4 +100,6 @@ re-makemake-m:
 	opp_makemake -f -m    #recreate Makefile.in
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-
+game.o: game.cc
+players.o: players.cc \
+  players.h
