@@ -38,6 +38,10 @@ class NEDSemanticValidator : public NEDValidatorBase
     NEDElement *moduletypedecl;
 
     NEDElement *findChildWithTagAndAttribute(NEDElement *node, int tag, const char *attr, const char *value);
+    void checkGate(GateNode *gate, bool hasGateIndex, bool isInput, NEDElement *conn, bool isSrcGate);
+    void validateConnGate(const char *submodName, bool hasSubmodIndex,
+                          const char *gateName, bool hasGateIndex,
+                          NEDElement *parent, NEDElement *conn, bool isSrc);
 
   public:
     /** Constructor */
