@@ -86,7 +86,7 @@ cNetGate::cNetGate(const char *name, int type) : cGate(name,type)
 }
 
 // The copy operator (though unnecessary in the case of a network gate)
-cNetGate& cNetGate::operator=(cNetGate& gate)
+cNetGate& cNetGate::operator=(const cNetGate& gate)
 {
 	printf("cNetGate() operator=()\n");
    if (this==&gate) return *this;
@@ -146,7 +146,7 @@ void cMpiMod::init()
 	printf("my_host: %s\n", (const char*)my_host);
 // <-- **
 
-    int data, status;
+    int data;
 
     if(ev.runningMode()==SLAVE_MODE)
     {
@@ -283,10 +283,8 @@ void cMpiMod::setup_connections()
     ev.printf("Setting up connections across segments...\n");
 
     // status of the MPI functions
-    MPI_Status status;
     char ***temp_link_table = new char **[mSize];
-    char      *str, *tempStr;
-	int        pack_length;
+    char      *str;
     int err = 0;
     int* segm_numgates =  new int[mSize];
 
@@ -384,10 +382,10 @@ void cMpiMod::sync_after_modinits()
 //   Overrides the virtual function in cSimpleModule. The message will
 //   be sent out immediately to the other MPI module.
 
-void cMpiMod::arrived(cMessage *msg,int ongate)
+void cMpiMod::arrived(cMessage *msg,int ongate,simtime_t at)
 {
 	printf("Rank %dcMpiMod::arrived() fullPath() %s\n", mMy_Rank, fullPath());
-    net_sendmsg( msg, ongate);
+    net_sendmsg( msg, ongate, at);
 }
 
 //-------------------------------------------------------------------------
@@ -420,7 +418,7 @@ int cMpiMod::net_addgate(cModule * mod,int gate, char tp)
 //   Packs the cMessage object to a MPI buffer, and sends to the
 //   appropriate host, with the serial number of the output gate.
 
-void cMpiMod::net_sendmsg(cMessage *msg,int ongate)
+void cMpiMod::net_sendmsg(cMessage *msg,int ongate,simtime_t t)
 {
 	printf("Rank %d cMpiMod::net_sendmsg()\n", mMy_Rank);
     int gate_num = ((cNetGate *)gatev[ongate])->t_gate();
@@ -429,6 +427,7 @@ void cMpiMod::net_sendmsg(cMessage *msg,int ongate)
     int err=0;
 
     pack->pack_data(&gate_num, MPI_INT);
+    pack->pack_data(&t, MPI_DOUBLE);
     err|=msg->netPack();
 printf("File %s, Line %d from Rank %d \n", __FILE__, __LINE__, mMy_Rank);
     err|=pack->send_pack(mpi_dest, MPIMSG_SIMULATION_CMSG);
@@ -654,7 +653,6 @@ void cMpiMod::do_process_netmsg(int tag)
     char *str, *mod;
     char *promptstr;
     char *buff;
-    int srctid;
     int length;
     char res;
     cNetGate *netg;
@@ -668,6 +666,7 @@ void cMpiMod::do_process_netmsg(int tag)
 			printf("simulation message\n");
             err=0;
             err|=pack->unpack_data((void*)&gate_num, MPI_INT);
+            err|=pack->unpack_data((void*)&t, MPI_DOUBLE);
             msg = (cMessage *)upack_object(err);
             if (err)
               throw new cException("do_process_netmsg()/unpacking the message");
@@ -683,7 +682,7 @@ void cMpiMod::do_process_netmsg(int tag)
             if (msg->arrivalTime() < simulation.simTime())
               throw new cException("Arrival time of cMessage from another segment already passed");
 
-            netg->deliver(msg);
+            netg->deliver(msg,t);
             break;
 
         // syncpoint request

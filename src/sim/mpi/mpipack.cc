@@ -582,7 +582,7 @@ cObject *upack_object(int& err)
   
   if (err) {
 	delete [] clname;
-	return NO(cObject);
+	return NULL;
   }
 
   cObject *obj = (cObject*)createOne(clname);
@@ -602,8 +602,6 @@ int cObject::netPack()
   int err=0;
   cMpiPack* pack = cMpiPack::instance();
   const char *pack_string;
-  char        nullChar;
-  int         pack_length;
   int         obj_ptr;
 
   printf("Packing cObject\n");
@@ -743,6 +741,7 @@ int cPar::netPack()
 int cPar::netUnpack()
 {
   char* funcname;
+  int argcount;
 
   cMpiPack* pack = cMpiPack::instance();
 
@@ -759,7 +758,6 @@ int cPar::netUnpack()
   promptstr = tempBuff;
   delete [] tempBuff;
 
-  char *tip;
   cFunctionType *ff;
   switch (typechar)
   {
@@ -778,14 +776,16 @@ int cPar::netUnpack()
       break;
     case 'F':
       err|=pack->unpack_data((void**)&funcname, MPI_CHAR);
-      ff = findFunction(funcname);
+      err|=pack->unpack_data((void*)&argcount, MPI_INT);
+      ff = findFunction(funcname,argcount);
       if (ff==NULL)
       {
 	  delete [] funcname;
 	  throw new cException("cPar::netUnpack(): transmitted function `%s' not registered here",funcname);
       }
-      func.f = ff->f;
+      func.f = ff->mathFunc();
 
+      func.argc = argcount;
       err|=pack->unpack_data((void*)&(func.p1), MPI_DOUBLE);
       err|=pack->unpack_data((void*)&(func.p2), MPI_DOUBLE);
       err|=pack->unpack_data((void*)&(func.p3), MPI_DOUBLE);
@@ -860,7 +860,7 @@ int cQueue::netPack()
   err|=pack->pack_data(&n, MPI_INT);
   err|=pack->pack_data(&asc, MPI_BYTE);
 
-  for (sQElem * pt=headp;pt!=NULL;pt=pt->next)
+  for (cQueue::QElem * pt=headp;pt!=NULL;pt=pt->next)
   {
       if (notnull(pt->obj,err))
       {
@@ -885,15 +885,15 @@ int cQueue::netUnpack()
 
   if (n)
   {
-    headp = new sQElem;
-    sQElem * pt1=headp;
-    sQElem * pt2;
+    headp = new cQueue::QElem;
+    cQueue::QElem * pt1=headp;
+    cQueue::QElem * pt2;
     pt1->prev=NULL;
     take( pt1->obj = upack_object(err) );
     for (int i=1;i<n;i++)
     {
       pt2=pt1;
-      pt1->next = new sQElem;
+      pt1->next = new cQueue::QElem;
       pt1=pt1->next;
       pt1->prev=pt2;
       take( pt1->obj = upack_object(err) );

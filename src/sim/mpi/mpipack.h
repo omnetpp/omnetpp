@@ -67,7 +67,7 @@ class cMpiPack
   // [IN] data type
   // [IN] data length
   // [IN] communication group
-  int pack_data(void* data, MPI_Datatype, int datalength = 1, MPI_Comm comm = MPI_COMM_WORLD);
+  int pack_data(void* data, MPI_Datatype, int datalength, MPI_Comm comm = MPI_COMM_WORLD);
 
   // Receiver functions
   // --------------------------------------------------------------

@@ -75,7 +75,7 @@ class cMpiMod : public cNetMod
     sSyncPoint *syncpoints;
 
   private:
-    void net_sendmsg(cMessage *msg,int ongate); // send cMessage over MPI
+    void net_sendmsg(cMessage *msg,int ongate,simtime_t t); // send cMessage over MPI
     void do_process_netmsg(int tag);      // core of process_netmsgs
     void synchronize();                     // waits until all segments call synchronize()
 
