@@ -1336,6 +1336,23 @@ Objects that may have display strings are:
   \item{connections}
 \end{itemize}
 
+The following NED sample shows where to place display strings in the code.
+
+\begin{Verbatim}[commandchars=\\\{\}]
+\tbf{module} ClientServer
+    \tbf{submodules}:
+        pc: Host;
+            \tbf{display}: "p=66,55;i=comp"; // position and icon
+        server: Server;
+            \tbf{display}: "p=135,73;i=server1";
+    \tbf{connections}:
+        pc.out --> server.in
+            \tbf{display} "m=m,61,40,41,28"; // note missing ":"
+        server.out --> pc.in
+            \tbf{display} "m=m,15,57,35,69";
+    \tbf{display}: "o=#ffffff"; // affects background
+\tbf{endmodule}
+\end{Verbatim}
 
 
 \subsection{Submodule display strings}
