@@ -389,7 +389,7 @@ with RNG awareness.
 
 \subsection{Accessing the RNGs}
 
-The \fname{intrand()} function generates random integers in the range $[0, n-1]$, and
+The \fname{intrand(n)} function generates random integers in the range $[0, n-1]$, and
 \fname{dblrand()} generates a random double on $[0,1)$. These functions
 simply wrap the underlying RNG objects. Examples:
 
@@ -1023,7 +1023,8 @@ member function. Module parameters taken by \ttt{ref} use this mechanism.}\\\hli
 \end{longtable}
 
 
-
+%FIXME document: cXMLElement
+%FIXME document: simulation.getUniqueNumber(), for generating unique IDs for models
 
 
 \section{Routing support: cTopology}

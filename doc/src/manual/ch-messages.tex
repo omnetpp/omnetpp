@@ -1133,7 +1133,7 @@ void FooPacket::setPayloadLength(int payloadLength)
 {
     int diff = payloadLength - this->payloadLength;
     this->payloadLength = payloadLength;
-    setLength( length() + diff );
+    setLength(length() + diff);
 }
 \end{verbatim}
 
