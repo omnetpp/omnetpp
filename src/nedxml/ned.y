@@ -44,9 +44,10 @@
 %token REF ANCESTOR
 %token CONSTDECL NUMERICTYPE STRINGTYPE BOOLTYPE ANYTYPE
 
-%token CPPINCLUDE SYSINCFILENAME STRUCT COBJECT NONCOBJECT
-%token ENUM EXTENDS MESSAGE CLASS FIELDS PROPERTIES ABSTRACT
-%token CHARTYPE SHORTTYPE INTTYPE LONGTYPE DOUBLETYPE
+%token CPLUSPLUS CPLUSPLUSBODY
+%token MESSAGE CLASS STRUCT ENUM NONCOBJECT
+%token EXTENDS FIELDS PROPERTIES ABSTRACT
+%token CHARTYPE SHORTTYPE INTTYPE LONGTYPE DOUBLETYPE UNSIGNED_
 
 %token SIZEOF SUBMODINDEX
 %token EQ NE GT GE LS LE
@@ -165,10 +166,9 @@ struct ParserState
     LoopVarNode *loopvar;
 
     /* NED-II: message subclassing */
-    CppincludeNode *cppinclude;
-    CppStructNode *cppstruct;
-    CppCobjectNode *cppcobject;
-    CppNoncobjectNode *cppnoncobject;
+    CplusplusNode *cplusplus;
+    StructDeclNode *structdecl;
+    ClassDeclNode *classdecl;
     EnumNode *enump;
     MessageNode *messagep;
     ClassNode *classp;
@@ -205,6 +205,7 @@ DisplayStringNode *addDisplayString(NEDElement *parent, YYLTYPE dispstrpos);
 
 YYLTYPE trimBrackets(YYLTYPE vectorpos);
 YYLTYPE trimQuotes(YYLTYPE vectorpos);
+YYLTYPE trimDoubleBraces(YYLTYPE vectorpos);
 void swapAttributes(NEDElement *node, const char *attr1, const char *attr2);
 void swapExpressionChildren(NEDElement *node, const char *attr1, const char *attr2);
 void swapConnection(NEDElement *conn);
@@ -261,10 +262,9 @@ definition
         | networkdefinition_old
                 { if (ps.storeSourceCode) ps.network->setSourceCode(toString(@1)); }
 
-        | cppinclude
-        | cppstruct
-        | cppcobject
-        | cppnoncobject
+        | cplusplus
+        | struct_decl
+        | class_decl
 
         | enum
                 { if (ps.storeSourceCode) ps.enump->setSourceCode(toString(@1)); }
@@ -2072,45 +2072,38 @@ timeconstant
  * NED-2: Message subclassing (no shift-reduce conflict here)
  */
 
-cppinclude
-        : CPPINCLUDE STRINGCONSTANT
+cplusplus
+        : CPLUSPLUS CPLUSPLUSBODY
                 {
-                  ps.cppinclude = (CppincludeNode *)createNodeWithTag(NED_CPPINCLUDE, ps.nedfile );
-                  ps.cppinclude->setFilename(toString(@2));
-                  setComments(ps.cppinclude,@1,@2);
-                }
-        | CPPINCLUDE SYSINCFILENAME
-                {
-                  ps.cppinclude = (CppincludeNode *)createNodeWithTag(NED_CPPINCLUDE, ps.nedfile );
-                  ps.cppinclude->setFilename(toString(@2));
-                  setComments(ps.cppinclude,@1,@2);
+                  ps.cplusplus = (CplusplusNode *)createNodeWithTag(NED_CPLUSPLUS, ps.nedfile );
+                  ps.cplusplus->setBody(toString(trimDoubleBraces(@2)));
+                  setComments(ps.cplusplus,@1,@2);
                 }
         ;
 
-cppstruct
+struct_decl
         : STRUCT NAME ';'
                 {
-                  ps.cppstruct = (CppStructNode *)createNodeWithTag(NED_CPP_STRUCT, ps.nedfile );
-                  ps.cppstruct->setName(toString(@2));
-                  setComments(ps.cppstruct,@1,@2);
+                  ps.structdecl = (StructDeclNode *)createNodeWithTag(NED_STRUCT_DECL, ps.nedfile );
+                  ps.structdecl->setName(toString(@2));
+                  setComments(ps.structdecl,@1,@2);
                 }
         ;
 
-cppcobject
-        : COBJECT NAME ';'
+class_decl
+        : CLASS NAME ';'
                 {
-                  ps.cppcobject = (CppCobjectNode *)createNodeWithTag(NED_CPP_COBJECT, ps.nedfile );
-                  ps.cppcobject->setName(toString(@2));
-                  setComments(ps.cppcobject,@1,@2);
+                  ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.nedfile );
+                  ps.classdecl->setName(toString(@2));
+                  ps.classdecl->setIsCobject(true);
+                  setComments(ps.classdecl,@1,@2);
                 }
-        ;
-
-cppnoncobject
-        : NONCOBJECT NAME ';'
+        | CLASS NONCOBJECT NAME ';'
                 {
-                  ps.cppnoncobject = (CppNoncobjectNode *)createNodeWithTag(NED_CPP_NONCOBJECT, ps.nedfile );
-                  ps.cppnoncobject->setName(toString(@2));
-                  setComments(ps.cppnoncobject,@1,@2);
+                  ps.classdecl = (ClassDeclNode *)createNodeWithTag(NED_CLASS_DECL, ps.nedfile );
+                  ps.classdecl->setIsCobject(false);
+                  ps.classdecl->setName(toString(@3));
+                  setComments(ps.classdecl,@1,@2);
                 }
         ;
 
@@ -2322,14 +2315,22 @@ field
 fielddatatype
         : NAME
         | NAME '*'
+
         | CHARTYPE
         | SHORTTYPE
         | INTTYPE
         | LONGTYPE
+
+        | UNSIGNED_ CHARTYPE
+        | UNSIGNED_ SHORTTYPE
+        | UNSIGNED_ INTTYPE
+        | UNSIGNED_ LONGTYPE
+
         | DOUBLETYPE
         | STRINGTYPE
         | BOOLTYPE
         ;
+
 
 opt_fieldvector
         : '[' INTCONSTANT ']'
@@ -2602,6 +2603,14 @@ YYLTYPE trimQuotes(YYLTYPE vectorpos)
    // should check it's really quotes that get chopped off
    vectorpos.first_column++;
    vectorpos.last_column--;
+   return vectorpos;
+}
+
+YYLTYPE trimDoubleBraces(YYLTYPE vectorpos)
+{
+   // should check it's really '{{' and '}}' that get chopped off
+   vectorpos.first_column+=2;
+   vectorpos.last_column-=2;
    return vectorpos;
 }
 

@@ -66,10 +66,9 @@ void  NEDValidatorBase::validateElement(NEDElement *node)
         case NED_PARAM_REF: validateElement((ParamRefNode *) node); break;
         case NED_IDENT: validateElement((IdentNode *) node); break;
         case NED_CONST: validateElement((ConstNode *) node); break;
-        case NED_CPPINCLUDE: validateElement((CppincludeNode *) node); break;
-        case NED_CPP_STRUCT: validateElement((CppStructNode *) node); break;
-        case NED_CPP_COBJECT: validateElement((CppCobjectNode *) node); break;
-        case NED_CPP_NONCOBJECT: validateElement((CppNoncobjectNode *) node); break;
+        case NED_CPLUSPLUS: validateElement((CplusplusNode *) node); break;
+        case NED_STRUCT_DECL: validateElement((StructDeclNode *) node); break;
+        case NED_CLASS_DECL: validateElement((ClassDeclNode *) node); break;
         case NED_ENUM: validateElement((EnumNode *) node); break;
         case NED_ENUM_FIELDS: validateElement((EnumFieldsNode *) node); break;
         case NED_ENUM_FIELD: validateElement((EnumFieldNode *) node); break;

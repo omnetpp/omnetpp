@@ -36,22 +36,19 @@ inline ostream& operator<< (ostream& out, const std::string& str)
 
 //---------------------------------------
 
-void NEDCppGenerator::doCppinclude(CppincludeNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doCplusplus(CplusplusNode *node, const char *indent, int mode, const char *)
 {
-    out << "#include " << node->getFilename() << "\n\n";
+    out << "// cplusplus {{\n";
+    out << node->getBody();
+    out << "// }}\n";
 }
 
-void NEDCppGenerator::doCppStruct(CppStructNode *node, const char *indent, int mode, const char *)
-{
-    // nothing to output
-}
-
-void NEDCppGenerator::doCppCobject(CppCobjectNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doStructDecl(StructDeclNode *node, const char *indent, int mode, const char *)
 {
     // nothing to output
 }
 
-void NEDCppGenerator::doCppNoncobject(CppNoncobjectNode *node, const char *indent, int mode, const char *)
+void NEDCppGenerator::doClassDecl(ClassDeclNode *node, const char *indent, int mode, const char *)
 {
     // nothing to output
 }

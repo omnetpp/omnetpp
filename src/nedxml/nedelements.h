@@ -57,10 +57,9 @@ class FunctionNode;
 class ParamRefNode;
 class IdentNode;
 class ConstNode;
-class CppincludeNode;
-class CppStructNode;
-class CppCobjectNode;
-class CppNoncobjectNode;
+class CplusplusNode;
+class StructDeclNode;
+class ClassDeclNode;
 class EnumNode;
 class EnumFieldsNode;
 class EnumFieldNode;
@@ -115,10 +114,9 @@ enum NEDElementCode {
     NED_PARAM_REF,
     NED_IDENT,
     NED_CONST,
-    NED_CPPINCLUDE,
-    NED_CPP_STRUCT,
-    NED_CPP_COBJECT,
-    NED_CPP_NONCOBJECT,
+    NED_CPLUSPLUS,
+    NED_STRUCT_DECL,
+    NED_CLASS_DECL,
     NED_ENUM,
     NED_ENUM_FIELDS,
     NED_ENUM_FIELD,
@@ -178,7 +176,7 @@ class NedFilesNode : public NEDElement
  * 
  * <pre>
  * <!ELEMENT ned-file ((import|channel|simple-module|compound-module|network|
- *                      cppinclude|cpp-struct|cpp-cobject|cpp-noncobject|
+ *                      cplusplus|struct-decl|class-decl|
  *                      enum|message|class|struct)*)>
  * <!ATTLIST ned-file
  *      filename            CDATA     #IMPLIED
@@ -224,10 +222,9 @@ class NedFileNode : public NEDElement
     virtual SimpleModuleNode *getFirstSimpleModuleChild() const;
     virtual CompoundModuleNode *getFirstCompoundModuleChild() const;
     virtual NetworkNode *getFirstNetworkChild() const;
-    virtual CppincludeNode *getFirstCppincludeChild() const;
-    virtual CppStructNode *getFirstCppStructChild() const;
-    virtual CppCobjectNode *getFirstCppCobjectChild() const;
-    virtual CppNoncobjectNode *getFirstCppNoncobjectChild() const;
+    virtual CplusplusNode *getFirstCplusplusChild() const;
+    virtual StructDeclNode *getFirstStructDeclChild() const;
+    virtual ClassDeclNode *getFirstClassDeclChild() const;
     virtual EnumNode *getFirstEnumChild() const;
     virtual MessageNode *getFirstMessageChild() const;
     virtual ClassNode *getFirstClassChild() const;
@@ -1931,12 +1928,12 @@ class ConstNode : public NEDElement
 };
 
 /**
- * GENERATED CLASS. Represents the <cppinclude> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the <cplusplus> XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT cppinclude EMPTY>
- * <!ATTLIST cppinclude
- *      filename            CDATA     #REQUIRED
+ * <!ELEMENT cplusplus EMPTY>
+ * <!ATTLIST cplusplus
+ *      body                CDATA     #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
@@ -1944,21 +1941,21 @@ class ConstNode : public NEDElement
  * 
  * @ingroup Data
  */
-class CppincludeNode : public NEDElement
+class CplusplusNode : public NEDElement
 {
   private:
-    std::string filename;
+    std::string body;
     std::string bannerComment;
     std::string rightComment;
     std::string trailingComment;
   public:
-    CppincludeNode() {applyDefaults();}
-    CppincludeNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~CppincludeNode() {}
+    CplusplusNode() {applyDefaults();}
+    CplusplusNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~CplusplusNode() {}
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "cppinclude";}
-    virtual int getTagCode() const {return NED_CPPINCLUDE;}
+    virtual const char *getTagName() const {return "cplusplus";}
+    virtual int getTagCode() const {return NED_CPLUSPLUS;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -1968,8 +1965,8 @@ class CppincludeNode : public NEDElement
 
     /** @name Typed access to attributes, children and siblings */
     //@{
-    const char * getFilename() const  {return filename.c_str();}
-    void setFilename(const char * val)  {filename = val;}
+    const char * getBody() const  {return body.c_str();}
+    void setBody(const char * val)  {body = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
@@ -1977,16 +1974,16 @@ class CppincludeNode : public NEDElement
     const char * getTrailingComment() const  {return trailingComment.c_str();}
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
-    virtual CppincludeNode *getNextCppincludeNodeSibling() const;
+    virtual CplusplusNode *getNextCplusplusNodeSibling() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the <cpp-struct> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the <struct-decl> XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT cpp-struct EMPTY>
- * <!ATTLIST cpp-struct
+ * <!ELEMENT struct-decl EMPTY>
+ * <!ATTLIST struct-decl
  *      name                NMTOKEN   #REQUIRED
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
@@ -1995,7 +1992,7 @@ class CppincludeNode : public NEDElement
  * 
  * @ingroup Data
  */
-class CppStructNode : public NEDElement
+class StructDeclNode : public NEDElement
 {
   private:
     std::string name;
@@ -2003,13 +2000,13 @@ class CppStructNode : public NEDElement
     std::string rightComment;
     std::string trailingComment;
   public:
-    CppStructNode() {applyDefaults();}
-    CppStructNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~CppStructNode() {}
+    StructDeclNode() {applyDefaults();}
+    StructDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~StructDeclNode() {}
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "cpp-struct";}
-    virtual int getTagCode() const {return NED_CPP_STRUCT;}
+    virtual const char *getTagName() const {return "struct-decl";}
+    virtual int getTagCode() const {return NED_STRUCT_DECL;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -2028,17 +2025,18 @@ class CppStructNode : public NEDElement
     const char * getTrailingComment() const  {return trailingComment.c_str();}
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
-    virtual CppStructNode *getNextCppStructNodeSibling() const;
+    virtual StructDeclNode *getNextStructDeclNodeSibling() const;
     //@}
 };
 
 /**
- * GENERATED CLASS. Represents the <cpp-cobject> XML element in memory. DTD declaration:
+ * GENERATED CLASS. Represents the <class-decl> XML element in memory. DTD declaration:
  * 
  * <pre>
- * <!ELEMENT cpp-cobject EMPTY>
- * <!ATTLIST cpp-cobject
+ * <!ELEMENT class-decl EMPTY>
+ * <!ATTLIST class-decl
  *      name                NMTOKEN   #REQUIRED
+ *      is-cobject      (true|false)  "false"
  *      banner-comment      CDATA     #IMPLIED
  *      right-comment       CDATA     "&#10;"
  *      trailing-comment    CDATA     "&#10;" >
@@ -2046,21 +2044,22 @@ class CppStructNode : public NEDElement
  * 
  * @ingroup Data
  */
-class CppCobjectNode : public NEDElement
+class ClassDeclNode : public NEDElement
 {
   private:
     std::string name;
+    bool isCobject;
     std::string bannerComment;
     std::string rightComment;
     std::string trailingComment;
   public:
-    CppCobjectNode() {applyDefaults();}
-    CppCobjectNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~CppCobjectNode() {}
+    ClassDeclNode() {applyDefaults();}
+    ClassDeclNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
+    virtual ~ClassDeclNode() {}
     /** @name Redefined NEDElement methods, incl. generic access to attributes */
     //@{
-    virtual const char *getTagName() const {return "cpp-cobject";}
-    virtual int getTagCode() const {return NED_CPP_COBJECT;}
+    virtual const char *getTagName() const {return "class-decl";}
+    virtual int getTagCode() const {return NED_CLASS_DECL;}
     virtual int getNumAttributes() const;
     virtual const char *getAttributeName(int k) const;
     virtual const char *getAttribute(int k) const;
@@ -2072,6 +2071,8 @@ class CppCobjectNode : public NEDElement
     //@{
     const char * getName() const  {return name.c_str();}
     void setName(const char * val)  {name = val;}
+    bool getIsCobject() const  {return isCobject;}
+    void setIsCobject(bool val)  {isCobject = val;}
     const char * getBannerComment() const  {return bannerComment.c_str();}
     void setBannerComment(const char * val)  {bannerComment = val;}
     const char * getRightComment() const  {return rightComment.c_str();}
@@ -2079,58 +2080,7 @@ class CppCobjectNode : public NEDElement
     const char * getTrailingComment() const  {return trailingComment.c_str();}
     void setTrailingComment(const char * val)  {trailingComment = val;}
 
-    virtual CppCobjectNode *getNextCppCobjectNodeSibling() const;
-    //@}
-};
-
-/**
- * GENERATED CLASS. Represents the <cpp-noncobject> XML element in memory. DTD declaration:
- * 
- * <pre>
- * <!ELEMENT cpp-noncobject EMPTY>
- * <!ATTLIST cpp-noncobject
- *      name                NMTOKEN   #REQUIRED
- *      banner-comment      CDATA     #IMPLIED
- *      right-comment       CDATA     "&#10;"
- *      trailing-comment    CDATA     "&#10;" >
- * </pre>
- * 
- * @ingroup Data
- */
-class CppNoncobjectNode : public NEDElement
-{
-  private:
-    std::string name;
-    std::string bannerComment;
-    std::string rightComment;
-    std::string trailingComment;
-  public:
-    CppNoncobjectNode() {applyDefaults();}
-    CppNoncobjectNode(NEDElement *parent) : NEDElement(parent) {applyDefaults();}
-    virtual ~CppNoncobjectNode() {}
-    /** @name Redefined NEDElement methods, incl. generic access to attributes */
-    //@{
-    virtual const char *getTagName() const {return "cpp-noncobject";}
-    virtual int getTagCode() const {return NED_CPP_NONCOBJECT;}
-    virtual int getNumAttributes() const;
-    virtual const char *getAttributeName(int k) const;
-    virtual const char *getAttribute(int k) const;
-    virtual void setAttribute(int k, const char *val);
-    virtual const char *getAttributeDefault(int k) const;
-    //@}
-
-    /** @name Typed access to attributes, children and siblings */
-    //@{
-    const char * getName() const  {return name.c_str();}
-    void setName(const char * val)  {name = val;}
-    const char * getBannerComment() const  {return bannerComment.c_str();}
-    void setBannerComment(const char * val)  {bannerComment = val;}
-    const char * getRightComment() const  {return rightComment.c_str();}
-    void setRightComment(const char * val)  {rightComment = val;}
-    const char * getTrailingComment() const  {return trailingComment.c_str();}
-    void setTrailingComment(const char * val)  {trailingComment = val;}
-
-    virtual CppNoncobjectNode *getNextCppNoncobjectNodeSibling() const;
+    virtual ClassDeclNode *getNextClassDeclNodeSibling() const;
     //@}
 };
 

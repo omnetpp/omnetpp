@@ -77,10 +77,9 @@ class NEDSemanticValidator : public NEDValidatorBase
     virtual void validateElement(ParamRefNode *node);
     virtual void validateElement(IdentNode *node);
     virtual void validateElement(ConstNode *node);
-    virtual void validateElement(CppincludeNode *node);
-    virtual void validateElement(CppStructNode *node);
-    virtual void validateElement(CppCobjectNode *node);
-    virtual void validateElement(CppNoncobjectNode *node);
+    virtual void validateElement(CplusplusNode *node);
+    virtual void validateElement(StructDeclNode *node);
+    virtual void validateElement(ClassDeclNode *node);
     virtual void validateElement(EnumNode *node);
     virtual void validateElement(EnumFieldsNode *node);
     virtual void validateElement(EnumFieldNode *node);

@@ -142,10 +142,9 @@ class NEDCppGenerator
     struct ClassDesc;
     struct FieldDesc;
 
-    void doCppinclude(CppincludeNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doCppStruct(CppStructNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doCppCobject(CppCobjectNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
-    void doCppNoncobject(CppNoncobjectNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doCplusplus(CplusplusNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doStructDecl(StructDeclNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
+    void doClassDecl(ClassDeclNode *node, const char *indent, int mode=MODE_NORMAL, const char *arg=NULL);
     void doEnum(EnumNode *node, const char *indent, int mode, const char *);
     void doEnumFields(EnumFieldsNode *node, const char *indent, int mode, const char *);
     void doEnumField(EnumFieldNode *node, const char *indent, int mode, const char *);

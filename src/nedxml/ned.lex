@@ -1,6 +1,9 @@
-D                       [0-9]
-L                       [a-zA-Z_]
-E                       [Ee][+-]?{D}+
+D  [0-9]
+L  [a-zA-Z_]
+E  [Ee][+-]?{D}+
+
+%x cplusplusbody
+
 
 %{
 /*==================================================
@@ -105,12 +108,11 @@ char textbuf[TEXTBUF_LEN];
 "bool"                  { count(); return BOOLTYPE; }
 "anytype"               { count(); return ANYTYPE; }
 
-"cppinclude"            { count(); use_chanattrname_token = 0; return CPPINCLUDE; }
+"cplusplus"             { count(); use_chanattrname_token = 0; return CPLUSPLUS; }
 "struct"                { count(); use_chanattrname_token = 0; return STRUCT; }
-"cobject"               { count(); use_chanattrname_token = 0; return COBJECT; }
-"noncobject"            { count(); use_chanattrname_token = 0; return NONCOBJECT; }
 "message"               { count(); use_chanattrname_token = 0; return MESSAGE; }
 "class"                 { count(); use_chanattrname_token = 0; return CLASS; }
+"noncobject"            { count(); use_chanattrname_token = 0; return NONCOBJECT; }
 "enum"                  { count(); use_chanattrname_token = 0; return ENUM; }
 "extends"               { count(); return EXTENDS; }
 "fields"                { count(); return FIELDS; }
@@ -122,6 +124,7 @@ char textbuf[TEXTBUF_LEN];
 "int"                   { count(); return INTTYPE; }
 "long"                  { count(); return LONGTYPE; }
 "double"                { count(); return DOUBLETYPE; }
+"unsigned"              { count(); return UNSIGNED_; }
 
 "delay"                 { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
 "error"                 { count(); return use_chanattrname_token ? CHANATTRNAME : NAME; }
@@ -134,7 +137,10 @@ char textbuf[TEXTBUF_LEN];
 
 \"[^\"]*\"              { count(); return STRINGCONSTANT; }
 \'[^\']\'               { count(); return CHARCONSTANT; }
-"<"[^ \t\n\>]*">"       { count(); return SYSINCFILENAME; }
+
+"{{"                    { count(); BEGIN(cplusplusbody); }
+<cplusplusbody>"}}"     { count(); BEGIN(INITIAL); return CPLUSPLUSBODY; }
+<cplusplusbody>.        { count(); /*FIXME*/ }
 
 ";"                     { count(); return (';'); }
 ","                     { count(); return (','); }

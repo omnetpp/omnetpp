@@ -150,14 +150,12 @@ void NEDCppGenerator::generateItem(NEDElement *node, const char *indent, int mod
                     doDisplayString((DisplayStringNode *)node, newindent, mode, arg); break;
                 case NED_EXPRESSION:
                     doExpression((ExpressionNode *)node, newindent, mode, arg); break;
-                case NED_CPPINCLUDE:
-                    doCppinclude((CppincludeNode *)node, newindent, mode, arg); break;
-                case NED_CPP_STRUCT:
-                    doCppStruct((CppStructNode *)node, newindent, mode, arg); break;
-                case NED_CPP_COBJECT:
-                    doCppCobject((CppCobjectNode *)node, newindent, mode, arg); break;
-                case NED_CPP_NONCOBJECT:
-                    doCppNoncobject((CppNoncobjectNode *)node, newindent, mode, arg); break;
+                case NED_CPLUSPLUS:
+                    doCplusplus((CplusplusNode *)node, newindent, mode, arg); break;
+                case NED_STRUCT_DECL:
+                    doStructDecl((StructDeclNode *)node, newindent, mode, arg); break;
+                case NED_CLASS_DECL:
+                    doClassDecl((ClassDeclNode *)node, newindent, mode, arg); break;
                 case NED_ENUM:
                     doEnum((EnumNode *)node, newindent, mode, arg); break;
                 case NED_ENUM_FIELDS:

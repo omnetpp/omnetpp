@@ -71,10 +71,9 @@ class NEDValidatorBase
     virtual void validateElement(ParamRefNode *node) = 0;
     virtual void validateElement(IdentNode *node) = 0;
     virtual void validateElement(ConstNode *node) = 0;
-    virtual void validateElement(CppincludeNode *node) = 0;
-    virtual void validateElement(CppStructNode *node) = 0;
-    virtual void validateElement(CppCobjectNode *node) = 0;
-    virtual void validateElement(CppNoncobjectNode *node) = 0;
+    virtual void validateElement(CplusplusNode *node) = 0;
+    virtual void validateElement(StructDeclNode *node) = 0;
+    virtual void validateElement(ClassDeclNode *node) = 0;
     virtual void validateElement(EnumNode *node) = 0;
     virtual void validateElement(EnumFieldsNode *node) = 0;
     virtual void validateElement(EnumFieldNode *node) = 0;

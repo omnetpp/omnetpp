@@ -271,19 +271,15 @@ void NEDSemanticValidator::validateElement(ConstNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(CppincludeNode *node)
+void NEDSemanticValidator::validateElement(CplusplusNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(CppStructNode *node)
+void NEDSemanticValidator::validateElement(StructDeclNode *node)
 {
 }
 
-void NEDSemanticValidator::validateElement(CppCobjectNode *node)
-{
-}
-
-void NEDSemanticValidator::validateElement(CppNoncobjectNode *node)
+void NEDSemanticValidator::validateElement(ClassDeclNode *node)
 {
 }
 

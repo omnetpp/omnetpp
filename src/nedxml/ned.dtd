@@ -17,7 +17,7 @@
 <!ELEMENT ned-files ((ned-files|ned-file)*)>
 
 <!ELEMENT ned-file ((import|channel|simple-module|compound-module|network|
-                     cppinclude|cpp-struct|cpp-cobject|cpp-noncobject|
+                     cplusplus|struct-decl|class-decl|
                      enum|message|class|struct)*)>
 <!ATTLIST ned-file
      filename            CDATA     #IMPLIED
@@ -259,32 +259,26 @@
 <!--
   **  NED-II: message subclassing part
   -->
-<!ELEMENT cppinclude EMPTY>
-<!ATTLIST cppinclude
-     filename            CDATA     #REQUIRED
+<!ELEMENT cplusplus EMPTY>
+<!ATTLIST cplusplus
+     body                CDATA     #REQUIRED
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >
 
 <!-- C++ type announcements -->
 
-<!ELEMENT cpp-struct EMPTY>
-<!ATTLIST cpp-struct
+<!ELEMENT struct-decl EMPTY>
+<!ATTLIST struct-decl
      name                NMTOKEN   #REQUIRED
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >
 
-<!ELEMENT cpp-cobject EMPTY>
-<!ATTLIST cpp-cobject
+<!ELEMENT class-decl EMPTY>
+<!ATTLIST class-decl
      name                NMTOKEN   #REQUIRED
-     banner-comment      CDATA     #IMPLIED
-     right-comment       CDATA     "&#10;"
-     trailing-comment    CDATA     "&#10;" >
-
-<!ELEMENT cpp-noncobject EMPTY>
-<!ATTLIST cpp-noncobject
-     name                NMTOKEN   #REQUIRED
+     is-cobject      (true|false)  "false"
      banner-comment      CDATA     #IMPLIED
      right-comment       CDATA     "&#10;"
      trailing-comment    CDATA     "&#10;" >

@@ -157,24 +157,19 @@ NetworkNode *NedFileNode::getFirstNetworkChild() const
     return (NetworkNode *)getFirstChildWithTag(NED_NETWORK);
 }
 
-CppincludeNode *NedFileNode::getFirstCppincludeChild() const
+CplusplusNode *NedFileNode::getFirstCplusplusChild() const
 {
-    return (CppincludeNode *)getFirstChildWithTag(NED_CPPINCLUDE);
+    return (CplusplusNode *)getFirstChildWithTag(NED_CPLUSPLUS);
 }
 
-CppStructNode *NedFileNode::getFirstCppStructChild() const
+StructDeclNode *NedFileNode::getFirstStructDeclChild() const
 {
-    return (CppStructNode *)getFirstChildWithTag(NED_CPP_STRUCT);
+    return (StructDeclNode *)getFirstChildWithTag(NED_STRUCT_DECL);
 }
 
-CppCobjectNode *NedFileNode::getFirstCppCobjectChild() const
+ClassDeclNode *NedFileNode::getFirstClassDeclChild() const
 {
-    return (CppCobjectNode *)getFirstChildWithTag(NED_CPP_COBJECT);
-}
-
-CppNoncobjectNode *NedFileNode::getFirstCppNoncobjectChild() const
-{
-    return (CppNoncobjectNode *)getFirstChildWithTag(NED_CPP_NONCOBJECT);
+    return (ClassDeclNode *)getFirstChildWithTag(NED_CLASS_DECL);
 }
 
 EnumNode *NedFileNode::getFirstEnumChild() const
@@ -2221,15 +2216,15 @@ ConstNode *ConstNode::getNextConstNodeSibling() const
     return (ConstNode *)getNextSiblingWithTag(NED_CONST);
 }
 
-int CppincludeNode::getNumAttributes() const
+int CplusplusNode::getNumAttributes() const
 {
     return 4;
 }
 
-const char *CppincludeNode::getAttributeName(int k) const
+const char *CplusplusNode::getAttributeName(int k) const
 {
     switch (k) {
-        case 0: return "filename";
+        case 0: return "body";
         case 1: return "banner-comment";
         case 2: return "right-comment";
         case 3: return "trailing-comment";
@@ -2237,10 +2232,10 @@ const char *CppincludeNode::getAttributeName(int k) const
     }
 }
 
-const char *CppincludeNode::getAttribute(int k) const
+const char *CplusplusNode::getAttribute(int k) const
 {
     switch (k) {
-        case 0: return filename.c_str();
+        case 0: return body.c_str();
         case 1: return bannerComment.c_str();
         case 2: return rightComment.c_str();
         case 3: return trailingComment.c_str();
@@ -2248,10 +2243,10 @@ const char *CppincludeNode::getAttribute(int k) const
     }
 }
 
-void CppincludeNode::setAttribute(int k, const char *val)
+void CplusplusNode::setAttribute(int k, const char *val)
 {
     switch (k) {
-        case 0: filename = val; break;
+        case 0: body = val; break;
         case 1: bannerComment = val; break;
         case 2: rightComment = val; break;
         case 3: trailingComment = val; break;
@@ -2259,7 +2254,7 @@ void CppincludeNode::setAttribute(int k, const char *val)
     }
 }
 
-const char *CppincludeNode::getAttributeDefault(int k) const
+const char *CplusplusNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
@@ -2270,17 +2265,17 @@ const char *CppincludeNode::getAttributeDefault(int k) const
     }
 }
 
-CppincludeNode *CppincludeNode::getNextCppincludeNodeSibling() const
+CplusplusNode *CplusplusNode::getNextCplusplusNodeSibling() const
 {
-    return (CppincludeNode *)getNextSiblingWithTag(NED_CPPINCLUDE);
+    return (CplusplusNode *)getNextSiblingWithTag(NED_CPLUSPLUS);
 }
 
-int CppStructNode::getNumAttributes() const
+int StructDeclNode::getNumAttributes() const
 {
     return 4;
 }
 
-const char *CppStructNode::getAttributeName(int k) const
+const char *StructDeclNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
@@ -2291,7 +2286,7 @@ const char *CppStructNode::getAttributeName(int k) const
     }
 }
 
-const char *CppStructNode::getAttribute(int k) const
+const char *StructDeclNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
@@ -2302,7 +2297,7 @@ const char *CppStructNode::getAttribute(int k) const
     }
 }
 
-void CppStructNode::setAttribute(int k, const char *val)
+void StructDeclNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
@@ -2313,7 +2308,7 @@ void CppStructNode::setAttribute(int k, const char *val)
     }
 }
 
-const char *CppStructNode::getAttributeDefault(int k) const
+const char *StructDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
@@ -2324,117 +2319,67 @@ const char *CppStructNode::getAttributeDefault(int k) const
     }
 }
 
-CppStructNode *CppStructNode::getNextCppStructNodeSibling() const
+StructDeclNode *StructDeclNode::getNextStructDeclNodeSibling() const
 {
-    return (CppStructNode *)getNextSiblingWithTag(NED_CPP_STRUCT);
+    return (StructDeclNode *)getNextSiblingWithTag(NED_STRUCT_DECL);
 }
 
-int CppCobjectNode::getNumAttributes() const
+int ClassDeclNode::getNumAttributes() const
 {
-    return 4;
+    return 5;
 }
 
-const char *CppCobjectNode::getAttributeName(int k) const
+const char *ClassDeclNode::getAttributeName(int k) const
 {
     switch (k) {
         case 0: return "name";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        case 3: return "trailing-comment";
+        case 1: return "is-cobject";
+        case 2: return "banner-comment";
+        case 3: return "right-comment";
+        case 4: return "trailing-comment";
         default: return 0;
     }
 }
 
-const char *CppCobjectNode::getAttribute(int k) const
+const char *ClassDeclNode::getAttribute(int k) const
 {
     switch (k) {
         case 0: return name.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        case 3: return trailingComment.c_str();
+        case 1: return boolToString(isCobject);
+        case 2: return bannerComment.c_str();
+        case 3: return rightComment.c_str();
+        case 4: return trailingComment.c_str();
         default: return 0;
     }
 }
 
-void CppCobjectNode::setAttribute(int k, const char *val)
+void ClassDeclNode::setAttribute(int k, const char *val)
 {
     switch (k) {
         case 0: name = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        case 3: trailingComment = val; break;
+        case 1: isCobject = stringToBool(val); break;
+        case 2: bannerComment = val; break;
+        case 3: rightComment = val; break;
+        case 4: trailingComment = val; break;
         default: ;
     }
 }
 
-const char *CppCobjectNode::getAttributeDefault(int k) const
+const char *ClassDeclNode::getAttributeDefault(int k) const
 {
     switch (k) {
         case 0: return "";
-        case 1: return "";
-        case 2: return "\n";
+        case 1: return "false";
+        case 2: return "";
         case 3: return "\n";
+        case 4: return "\n";
         default: return 0;
     }
 }
 
-CppCobjectNode *CppCobjectNode::getNextCppCobjectNodeSibling() const
+ClassDeclNode *ClassDeclNode::getNextClassDeclNodeSibling() const
 {
-    return (CppCobjectNode *)getNextSiblingWithTag(NED_CPP_COBJECT);
-}
-
-int CppNoncobjectNode::getNumAttributes() const
-{
-    return 4;
-}
-
-const char *CppNoncobjectNode::getAttributeName(int k) const
-{
-    switch (k) {
-        case 0: return "name";
-        case 1: return "banner-comment";
-        case 2: return "right-comment";
-        case 3: return "trailing-comment";
-        default: return 0;
-    }
-}
-
-const char *CppNoncobjectNode::getAttribute(int k) const
-{
-    switch (k) {
-        case 0: return name.c_str();
-        case 1: return bannerComment.c_str();
-        case 2: return rightComment.c_str();
-        case 3: return trailingComment.c_str();
-        default: return 0;
-    }
-}
-
-void CppNoncobjectNode::setAttribute(int k, const char *val)
-{
-    switch (k) {
-        case 0: name = val; break;
-        case 1: bannerComment = val; break;
-        case 2: rightComment = val; break;
-        case 3: trailingComment = val; break;
-        default: ;
-    }
-}
-
-const char *CppNoncobjectNode::getAttributeDefault(int k) const
-{
-    switch (k) {
-        case 0: return "";
-        case 1: return "";
-        case 2: return "\n";
-        case 3: return "\n";
-        default: return 0;
-    }
-}
-
-CppNoncobjectNode *CppNoncobjectNode::getNextCppNoncobjectNodeSibling() const
-{
-    return (CppNoncobjectNode *)getNextSiblingWithTag(NED_CPP_NONCOBJECT);
+    return (ClassDeclNode *)getNextSiblingWithTag(NED_CLASS_DECL);
 }
 
 int EnumNode::getNumAttributes() const
@@ -3142,10 +3087,9 @@ NEDElement *NEDElementFactory::createNodeWithTag(const char *tagname)
     if (tagname[0]=='p' && !strcmp(tagname,"param-ref"))  return new ParamRefNode();
     if (tagname[0]=='i' && !strcmp(tagname,"ident"))  return new IdentNode();
     if (tagname[0]=='c' && !strcmp(tagname,"const"))  return new ConstNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"cppinclude"))  return new CppincludeNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"cpp-struct"))  return new CppStructNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"cpp-cobject"))  return new CppCobjectNode();
-    if (tagname[0]=='c' && !strcmp(tagname,"cpp-noncobject"))  return new CppNoncobjectNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"cplusplus"))  return new CplusplusNode();
+    if (tagname[0]=='s' && !strcmp(tagname,"struct-decl"))  return new StructDeclNode();
+    if (tagname[0]=='c' && !strcmp(tagname,"class-decl"))  return new ClassDeclNode();
     if (tagname[0]=='e' && !strcmp(tagname,"enum"))  return new EnumNode();
     if (tagname[0]=='e' && !strcmp(tagname,"enum-fields"))  return new EnumFieldsNode();
     if (tagname[0]=='e' && !strcmp(tagname,"enum-field"))  return new EnumFieldNode();
@@ -3199,10 +3143,9 @@ NEDElement *NEDElementFactory::createNodeWithTag(int tagcode)
         case NED_PARAM_REF: return new ParamRefNode();
         case NED_IDENT: return new IdentNode();
         case NED_CONST: return new ConstNode();
-        case NED_CPPINCLUDE: return new CppincludeNode();
-        case NED_CPP_STRUCT: return new CppStructNode();
-        case NED_CPP_COBJECT: return new CppCobjectNode();
-        case NED_CPP_NONCOBJECT: return new CppNoncobjectNode();
+        case NED_CPLUSPLUS: return new CplusplusNode();
+        case NED_STRUCT_DECL: return new StructDeclNode();
+        case NED_CLASS_DECL: return new ClassDeclNode();
         case NED_ENUM: return new EnumNode();
         case NED_ENUM_FIELDS: return new EnumFieldsNode();
         case NED_ENUM_FIELD: return new EnumFieldNode();

@@ -783,15 +783,15 @@ void NEDGenerator::doConst(ConstNode *node, const char *indent, bool islast, con
     if (isstring) out << "\"";
 }
 
-void NEDGenerator::doCppinclude(CppincludeNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "cppinclude " << node->getFilename();
+    out << indent << "cplusplus {{" << node->getBody() << "}}";
     appendRightComment(node->getRightComment(), indent);
     appendTrailingComment(node->getTrailingComment(), "");
 }
 
-void NEDGenerator::doCppStruct(CppStructNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doStructDecl(StructDeclNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
     out << indent << "struct " << node->getName() << ";";
@@ -799,18 +799,12 @@ void NEDGenerator::doCppStruct(CppStructNode *node, const char *indent, bool isl
     appendTrailingComment(node->getTrailingComment(), "");
 }
 
-void NEDGenerator::doCppCobject(CppCobjectNode *node, const char *indent, bool islast, const char *)
+void NEDGenerator::doClassDecl(ClassDeclNode *node, const char *indent, bool islast, const char *)
 {
     appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "cobject " << node->getName() << ";";
-    appendRightComment(node->getRightComment(), indent);
-    appendTrailingComment(node->getTrailingComment(), "");
-}
-
-void NEDGenerator::doCppNoncobject(CppNoncobjectNode *node, const char *indent, bool islast, const char *)
-{
-    appendBannerComment(node->getBannerComment(), indent);
-    out << indent << "noncobject " << node->getName() << ";";
+    out << indent << "class ";
+    if (!node->getIsCobject()) out << "noncobject ";
+    out << node->getName() << ";";
     appendRightComment(node->getRightComment(), indent);
     appendTrailingComment(node->getTrailingComment(), "");
 }
@@ -1005,14 +999,12 @@ void NEDGenerator::generateNedItem(NEDElement *node, const char *indent, bool is
             doIdent((IdentNode *)node, indent, islast, arg); break;
         case NED_CONST:
             doConst((ConstNode *)node, indent, islast, arg); break;
-        case NED_CPPINCLUDE:
-            doCppinclude((CppincludeNode *)node, indent, islast, arg); break;
-        case NED_CPP_STRUCT:
-            doCppStruct((CppStructNode *)node, indent, islast, arg); break;
-        case NED_CPP_COBJECT:
-            doCppCobject((CppCobjectNode *)node, indent, islast, arg); break;
-        case NED_CPP_NONCOBJECT:
-            doCppNoncobject((CppNoncobjectNode *)node, indent, islast, arg); break;
+        case NED_CPLUSPLUS:
+            doCplusplus((CplusplusNode *)node, indent, islast, arg); break;
+        case NED_STRUCT_DECL:
+            doStructDecl((StructDeclNode *)node, indent, islast, arg); break;
+        case NED_CLASS_DECL:
+            doClassDecl((ClassDeclNode *)node, indent, islast, arg); break;
         case NED_ENUM:
             doEnum((EnumNode *)node, indent, islast, arg); break;
         case NED_ENUM_FIELDS:

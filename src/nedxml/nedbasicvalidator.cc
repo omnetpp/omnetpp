@@ -483,20 +483,15 @@ void NEDBasicValidator::validateElement(ConstNode *node)
     }
 }
 
-void NEDBasicValidator::validateElement(CppincludeNode *node)
-{
-    // FIXME check filename syntax
-}
-
-void NEDBasicValidator::validateElement(CppStructNode *node)
+void NEDBasicValidator::validateElement(CplusplusNode *node)
 {
 }
 
-void NEDBasicValidator::validateElement(CppCobjectNode *node)
+void NEDBasicValidator::validateElement(StructDeclNode *node)
 {
 }
 
-void NEDBasicValidator::validateElement(CppNoncobjectNode *node)
+void NEDBasicValidator::validateElement(ClassDeclNode *node)
 {
 }
 

@@ -121,10 +121,9 @@ class NEDGenerator
     void doIdent(IdentNode *node, const char *indent, bool islast, const char *);
     void doConst(ConstNode *node, const char *indent, bool islast, const char *);
 
-    void doCppinclude(CppincludeNode *node, const char *indent, bool islast, const char *);
-    void doCppStruct(CppStructNode *node, const char *indent, bool islast, const char *);
-    void doCppCobject(CppCobjectNode *node, const char *indent, bool islast, const char *);
-    void doCppNoncobject(CppNoncobjectNode *node, const char *indent, bool islast, const char *);
+    void doCplusplus(CplusplusNode *node, const char *indent, bool islast, const char *);
+    void doStructDecl(StructDeclNode *node, const char *indent, bool islast, const char *);
+    void doClassDecl(ClassDeclNode *node, const char *indent, bool islast, const char *);
     void doEnum(EnumNode *node, const char *indent, bool islast, const char *);
     void doEnumFields(EnumFieldsNode *node, const char *indent, bool islast, const char *);
     void doEnumField(EnumFieldNode *node, const char *indent, bool islast, const char *);
