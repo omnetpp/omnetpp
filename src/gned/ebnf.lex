@@ -226,9 +226,9 @@ int yywrap(void)
 #endif
 void comment(void)
 {
-        char c;
-        while ((c = input())!='\n' && c!=0);
-        unput(c);
+        int c;
+        while ((c = input())!='\n' && c!=0 && c!=EOF);
+        if (c=='\n') unput(c);
 }
 
 /***************************************************
