@@ -183,12 +183,13 @@ void CppExpressionGenerator::doExtractArgs(ExpressionInfo& info, NEDElement *nod
         int tag = child->getTagCode();
         if (tag==NED_IDENT)
             isctorarg = true;
-        //else if (tag==NED_FUNCTION && !strcmp(((FunctionNode *)child)->getName(),"index"))
-        //     isctorarg = true;
-        //else if (tag==NED_FUNCTION && !strcmp(((FunctionNode *)child)->getName(),"sizeof"))
-        //     isctorarg = true;
+        else if (tag==NED_FUNCTION && !strcmp(((FunctionNode *)child)->getName(),"index"))
+             isctorarg = true;
+        else if (tag==NED_FUNCTION && !strcmp(((FunctionNode *)child)->getName(),"sizeof"))
+             isctorarg = true;
         else if (tag==NED_FUNCTION)
              iscachedvar = true;
+
         if (isctorarg)
             info.ctorargs.push_back(child);
         if (iscachedvar)
@@ -229,7 +230,7 @@ void CppExpressionGenerator::generateExpressionClass(ExpressionInfo& info)
         out << ", " << getTypeForArg(*i) << " " << getNameForArg(*i) << (*i)->getId();
     out << ")  {\n";
     if (info.ctxtype==NED_SIMPLE_MODULE || info.ctxtype==NED_COMPOUND_MODULE)
-        out << "        this->mod=mod;";
+        out << "        this->mod=mod;\n";
     for (i=info.ctorargs.begin(); i!=info.ctorargs.end(); ++i)
         out << "        this->" << getNameForArg(*i) << (*i)->getId() << "=" << getNameForArg(*i) << (*i)->getId() << ";\n";
     for (i=info.cachedvars.begin(); i!=info.cachedvars.end(); ++i)
@@ -264,7 +265,7 @@ const char *CppExpressionGenerator::getTypeForArg(NEDElement *node)
     else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"index"))
         return "long";
     else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"sizeof"))
-        return "???"; // FIXME cModule* or cGate* ?
+        return "long"; // FIXME cModule* or cGate* ?
     else if (node->getTagCode()==NED_FUNCTION)
     {
         const char *types[] = {"MathFuncNoArg", "MathFunc1Arg", "MathFunc2Args",
@@ -290,8 +291,10 @@ void CppExpressionGenerator::doValueForArg(NEDElement *node)
 {
     if (node->getTagCode()==NED_IDENT)
         out << ((IdentNode *)node)->getName() << "_var";
-    else if (node->getTagCode()==NED_FUNCTION)
-        out << "fixme:" << ((FunctionNode *)node)->getName(); //FIXME!!!
+    else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"index"))
+        out << "submodindex";
+    else if (node->getTagCode()==NED_FUNCTION && !strcmp(((FunctionNode *)node)->getName(),"sizeof"))
+        out << "sizeof(...)"; //FIXME
     else
         {INTERNAL_ERROR1(node, "doValueForArg(): unexpected tag '%s'", node->getTagName());}
 }
