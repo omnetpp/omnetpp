@@ -209,20 +209,15 @@ different ways do not always compare equal even if they mathematically
 should be. For example, addition is not an associative operation
 when it comes to floating point calculations: $(x+y)+z != x+(y+z)$!
 (See~\cite{Goldberg91what}).
-This means that if you want to explicitly rely on the
-arrival times of two events being the same, you should take care that
-they are calculated in exactly the same way.
-Another possible approach is to avoid equal arrival times,
-for example by adding/subtracting small values to schedule times to
-ensure specific execution order
-(\textit{inorder\_epsilon}\index{inorder\_epsilon}).
+This means that it is generally not a good idea to rely on
+arrival times of two events being the same unless they are
+calculated in exactly the same way.
 
 One may suggest introducing a small \textit{simtime\_precision} parameter in
 the simulation kernel that would force $t_{1}$ and $t_{2}$ to be regarded
 equal if they are ``very close'' (if they differ
-less than \textit{simtime\_precision}). However, in addition to the problem
-determining the correct value for \textit{simtime\_precision},
-this approach is likely to cause confusion in many cases.
+less than \textit{simtime\_precision}). This approach, however, would
+be more likely to cause confusion than actually cure the problem.
 
 
 
