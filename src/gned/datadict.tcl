@@ -163,14 +163,14 @@ set ned_attr(module,rect-cid)         {}
 set ned_attr(module,rect2-cid)        {}
 set ned_attr(module,label-cid)        {}
 set ned_attr(module,background-cid)   {}
-set ned_attr(module,x-pos)            {}
-set ned_attr(module,y-pos)            {}
-set ned_attr(module,x-size)           {}
-set ned_attr(module,y-size)           {}
-set ned_attr(module,outline-color)    {}
-set ned_attr(module,fill-color)       {}
-set ned_attr(module,linethickness)    {}
-set ned_attr(module,selected)         {0}
+set ned_attr(module,disp-xpos)            {}
+set ned_attr(module,disp-ypos)            {}
+set ned_attr(module,disp-xsize)           {}
+set ned_attr(module,disp-ysize)           {}
+set ned_attr(module,disp-outlinecolor)    {}
+set ned_attr(module,disp-fillcolor)       {}
+set ned_attr(module,disp-linethickness)   {}
+set ned_attr(module,selected)             {0}
 
 #
 # params
@@ -250,14 +250,14 @@ set ned_attr(submod,rect-cid)         {}
 set ned_attr(submod,icon-cid)         {}
 set ned_attr(submod,label-cid)        {}
 set ned_attr(submod,icon)             {}
-set ned_attr(submod,x-pos)            {}
-set ned_attr(submod,y-pos)            {}
-set ned_attr(submod,x-size)           {}
-set ned_attr(submod,y-size)           {}
-set ned_attr(submod,outline-color)    {}
-set ned_attr(submod,fill-color)       {}
-set ned_attr(submod,linethickness)    {}
-set ned_attr(submod,selected)         {0}
+set ned_attr(submod,disp-xpos)            {}
+set ned_attr(submod,disp-ypos)            {}
+set ned_attr(submod,disp-xsize)           {}
+set ned_attr(submod,disp-ysize)           {}
+set ned_attr(submod,disp-outlinecolor)    {}
+set ned_attr(submod,disp-fillcolor)       {}
+set ned_attr(submod,disp-linethickness)   {}
+set ned_attr(submod,selected)             {0}
 
 #
 # substparams
@@ -333,24 +333,24 @@ set ned_attr(conn,banner-comment)  {}
 set ned_attr(conn,right-comment)   {}
 set ned_attr(conn,src-ownerkey)    {}
 set ned_attr(conn,dest-ownerkey)   {}
-set ned_attr(conn,src_index)       {}
-set ned_attr(conn,dest_index)      {}
+set ned_attr(conn,src-mod-index)   {}
+set ned_attr(conn,dest-mod-index)  {}
 set ned_attr(conn,srcgate)         {out}
 set ned_attr(conn,destgate)        {in}
-set ned_attr(conn,src_gate_index)  {}
-set ned_attr(conn,dest_gate_index) {}
+set ned_attr(conn,src-gate-index)  {}
+set ned_attr(conn,dest-gate-index) {}
 set ned_attr(conn,condition)       {}
 set ned_attr(conn,arrowdir-l2r)    {1}
 set ned_attr(conn,displaystring)   {}
 set ned_attr(conn,arrow-cid)       {}
-set ned_attr(conn,fill-color)      {}
-set ned_attr(conn,linethickness)   {}
-set ned_attr(conn,drawmode)        {}
-set ned_attr(conn,an_src_x)        {}
-set ned_attr(conn,an_src_y)        {}
-set ned_attr(conn,an_dest_x)       {}
-set ned_attr(conn,an_dest_y)       {}
-set ned_attr(conn,selected)        {0}
+set ned_attr(conn,disp-fillcolor)     {}
+set ned_attr(conn,disp-linethickness) {}
+set ned_attr(conn,disp-drawmode)      {}
+set ned_attr(conn,disp-src-anchor-x)  {}
+set ned_attr(conn,disp-src-anchor-y)  {}
+set ned_attr(conn,disp-dest-anchor-x) {}
+set ned_attr(conn,disp-dest-anchor-y) {}
+set ned_attr(conn,selected)           {0}
 
 #
 # connattr (connection attribute: channel, delay, error or datarate)

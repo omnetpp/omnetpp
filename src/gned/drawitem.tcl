@@ -203,11 +203,11 @@ proc deselectItem {key} {
     set c $canvas($canv_id,canvas)
 
     if {$ned($key,type)=="module"} {
-        set outline   [_getPar {} "$key,outline-color" #000000]
+        set outline   [_getPar {} "$key,disp-outlinecolor" #000000]
         $c itemconfig $ned($key,rect2-cid) -outline $outline
         $c itemconfig $ned($key,label-cid) -fill #000000
     } elseif {$ned($key,type)=="submod"} {
-        set outline   [_getPar {} "$key,outline-color" #000000]
+        set outline   [_getPar {} "$key,disp-outlinecolor" #000000]
         if {$ned($key,icon-cid)!=""} {
            $c itemconfig $ned($key,rect-cid) -outline ""
         } else {
@@ -215,7 +215,7 @@ proc deselectItem {key} {
         }
         $c itemconfig $ned($key,label-cid) -fill #000000
     } elseif {$ned($key,type)=="conn"} {
-        set fill      [_getPar {} "$key,fill-color" #000000]
+        set fill      [_getPar {} "$key,disp-fillcolor" #000000]
         $c itemconfig $ned($key,arrow-cid) -fill $fill
     } else {
         error "item $key is neither module, submod or conn"
@@ -278,14 +278,14 @@ proc draw_module {c key} {
     global ned
 
     # top-left corner
-    set x1 $ned($key,x-pos)
-    set y1 $ned($key,y-pos)
+    set x1 $ned($key,disp-xpos)
+    set y1 $ned($key,disp-ypos)
     if {$x1==""} {set x1 10}
     if {$y1==""} {set y1 10}
 
     # size
-    set sx $ned($key,x-size)
-    set sy $ned($key,y-size)
+    set sx $ned($key,disp-xsize)
+    set sy $ned($key,disp-ysize)
 
     set bb [$c bbox submod]
     if {$sx==""} {
@@ -308,9 +308,9 @@ proc draw_module {c key} {
     set y2 [expr $y1+$sy]
 
     # now: draw it!
-    set fill    [_getPar {} "$key,fill-color" #c0c0c0]
-    set outline [_getPar {} "$key,outline-color" #000000]
-    set thickness [_getPar {} "$key,linethickness" 2]
+    set fill    [_getPar {} "$key,disp-fillcolor" #c0c0c0]
+    set outline [_getPar {} "$key,disp-outlinecolor" #000000]
+    set thickness [_getPar {} "$key,disp-linethickness" 2]
 
     set bg  [$c create rect $x1 $y1 $x2 $y2 -outline ""  -fill $fill]
     set r1  [$c create rect [expr $x1+6] [expr $y1+6] [expr $x2-6] [expr $y2-6] -width 12 -outline $fill -fill ""]
@@ -347,21 +347,21 @@ proc draw_submod {c key} {
 
     set icon  [_getPar {} "$key,icon" ""]
 
-    set x  [_getPar {} "$key,x-pos" [expr 100+100*rand()]]
-    set y  [_getPar {} "$key,y-pos" [expr 100+100*rand()]]
+    set x  [_getPar {} "$key,disp-xpos" [expr 100+100*rand()]]
+    set y  [_getPar {} "$key,disp-ypos" [expr 100+100*rand()]]
 
     if {$icon==""} {
-        set sx [_getPar {} "$key,x-size" 40]
-        set sy [_getPar {} "$key,y-size" 24]
+        set sx [_getPar {} "$key,disp-xsize" 40]
+        set sy [_getPar {} "$key,disp-ysize" 24]
 
         set x1 [expr $x-$sx/2]
         set y1 [expr $y-$sy/2]
         set x2 [expr $x+$sx/2]
         set y2 [expr $y+$sy/2]
 
-        set fill      [_getPar {} "$key,fill-color" #8080ff]
-        set outline   [_getPar {} "$key,outline-color" #000000]
-        set thickness [_getPar {} "$key,linethickness" 2]
+        set fill      [_getPar {} "$key,disp-fillcolor" #8080ff]
+        set outline   [_getPar {} "$key,disp-outlinecolor" #000000]
+        set thickness [_getPar {} "$key,disp-linethickness" 2]
 
         set r   [$c create rect $x1 $y1 $x2 $y2 -width $thickness -outline $outline -fill $fill]
         set lbl [$c create text $x $y2 -anchor n]
@@ -413,15 +413,15 @@ proc draw_submod {c key} {
 proc draw_connection {c key} {
     global ned
 
-    set mode  [_getPar {} "$key,drawmode" "auto"]
+    set mode  [_getPar {} "$key,disp-drawmode" "auto"]
 
-    set src_x [_getPar {} "$key,an_src_x" 50]
-    set src_y [_getPar {} "$key,an_src_y" 50]
-    set dest_x [_getPar {} "$key,an_dest_x" 50]
-    set dest_y [_getPar {} "$key,an_dest_y" 50]
+    set src_x [_getPar {} "$key,disp-src-anchor-x" 50]
+    set src_y [_getPar {} "$key,disp-src-anchor-y" 50]
+    set dest_x [_getPar {} "$key,disp-dest-anchor-x" 50]
+    set dest_y [_getPar {} "$key,disp-dest-anchor-y" 50]
 
-    set fill      [_getPar {} "$key,fill-color" #000000]
-    set thickness [_getPar {} "$key,linethickness" 1]
+    set fill      [_getPar {} "$key,disp-fillcolor" #000000]
+    set thickness [_getPar {} "$key,disp-linethickness" 1]
 
     set s_coords [_getCoords $c $ned($ned($key,src-ownerkey),rect-cid)]
     set d_coords [_getCoords $c $ned($ned($key,dest-ownerkey),rect-cid)]

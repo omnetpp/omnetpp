@@ -813,7 +813,7 @@ mod_L
                 {NEDC( do_mod_L ($1, $2); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey(@1));
-                       np->set(CONN_KEY, "src_index", trimBrackets(@2)); )}
+                       np->set(CONN_KEY, "src-mod-index", trimBrackets(@2)); )}
         | NAME
                 {NEDC( do_mod_L ($1, NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
@@ -824,7 +824,7 @@ gate_L
         : NAME vector
                 {NEDC( do_gate_L ($1, $2); )
                  GNED( np->set(CONN_KEY, "srcgate", @1);
-                       np->set(CONN_KEY, "src_gate_index", trimBrackets(@2)); )}
+                       np->set(CONN_KEY, "src-gate-index", trimBrackets(@2)); )}
         | NAME
                 {NEDC( do_gate_L ($1, NULL); )
                  GNED( np->set(CONN_KEY, "srcgate", @1); )}
@@ -836,7 +836,7 @@ parentgate_L
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "srcgate", @1);
-                       np->set(CONN_KEY, "src_gate_index", trimBrackets(@2)); )}
+                       np->set(CONN_KEY, "src-gate-index", trimBrackets(@2)); )}
         | NAME
                 {NEDC( do_mod_L (NULL, NULL); do_gate_L ($1, NULL); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
@@ -853,7 +853,7 @@ mod_R
         : NAME vector
                 {NEDC( do_mod_R ($1, $2); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey(@1));
-                       np->set(CONN_KEY, "dest_index", trimBrackets(@2)); )}
+                       np->set(CONN_KEY, "dest-mod-index", trimBrackets(@2)); )}
         | NAME
                 {NEDC( do_mod_R ($1, NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey(@1)); )}
@@ -863,7 +863,7 @@ gate_R
         : NAME vector
                 {NEDC( do_gate_R ($1, $2); )
                  GNED( np->set(CONN_KEY, "destgate", @1);
-                       np->set(CONN_KEY, "dest_gate_index", trimBrackets(@2)); )}
+                       np->set(CONN_KEY, "dest-gate-index", trimBrackets(@2)); )}
         | NAME
                 {NEDC( do_gate_R ($1, NULL); )
                  GNED( np->set(CONN_KEY, "destgate", @1); )}
@@ -874,7 +874,7 @@ parentgate_R
                 {NEDC( do_mod_R (NULL, NULL); do_gate_R ($1, $2); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "destgate", @1);
-                       np->set(CONN_KEY, "dest_gate_index", trimBrackets(@2)); )}
+                       np->set(CONN_KEY, "dest-gate-index", trimBrackets(@2)); )}
         | NAME
                 {NEDC( do_mod_R (NULL, NULL); do_gate_R ($1, NULL); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
@@ -1394,11 +1394,8 @@ void swapConnection(int conn_key)
 {
    np->swap(conn_key, "src-ownerkey", "dest-ownerkey");
    np->swap(conn_key, "srcgate", "destgate");
-   np->swap(conn_key, "src_index", "dest_index");
-   np->swap(conn_key, "src_gate_index", "dest_gate_index");
-
-   np->swap(conn_key, "an_src_x", "an_dest_x");
-   np->swap(conn_key, "an_src_y", "an_dest_y");
+   np->swap(conn_key, "src-mod-index", "dest-mod-index");
+   np->swap(conn_key, "src-gate-index", "dest-gate-index");
 }
 
 void setDisplayString(int key, YYLTYPE dispstrpos)

@@ -1802,7 +1802,7 @@ case 184:
 {NEDC( do_mod_L (yyvsp[-1], yyvsp[0]); )
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", findSubmoduleKey(yylsp[-1]));
-                       np->set(CONN_KEY, "src_index", trimBrackets(yylsp[0])); );
+                       np->set(CONN_KEY, "src-mod-index", trimBrackets(yylsp[0])); );
     break;}
 case 185:
 #line 818 "ebnf.y"
@@ -1814,7 +1814,7 @@ case 186:
 #line 825 "ebnf.y"
 {NEDC( do_gate_L (yyvsp[-1], yyvsp[0]); )
                  GNED( np->set(CONN_KEY, "srcgate", yylsp[-1]);
-                       np->set(CONN_KEY, "src_gate_index", trimBrackets(yylsp[0])); );
+                       np->set(CONN_KEY, "src-gate-index", trimBrackets(yylsp[0])); );
     break;}
 case 187:
 #line 829 "ebnf.y"
@@ -1827,7 +1827,7 @@ case 188:
                  GNED( CONN_KEY = np->create("conn",in_loop?FORLOOP_KEY:CONNS_KEY);
                        np->set(CONN_KEY, "src-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "srcgate", yylsp[-1]);
-                       np->set(CONN_KEY, "src_gate_index", trimBrackets(yylsp[0])); );
+                       np->set(CONN_KEY, "src-gate-index", trimBrackets(yylsp[0])); );
     break;}
 case 189:
 #line 841 "ebnf.y"
@@ -1840,7 +1840,7 @@ case 192:
 #line 854 "ebnf.y"
 {NEDC( do_mod_R (yyvsp[-1], yyvsp[0]); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", findSubmoduleKey(yylsp[-1]));
-                       np->set(CONN_KEY, "dest_index", trimBrackets(yylsp[0])); );
+                       np->set(CONN_KEY, "dest-mod-index", trimBrackets(yylsp[0])); );
     break;}
 case 193:
 #line 858 "ebnf.y"
@@ -1851,7 +1851,7 @@ case 194:
 #line 864 "ebnf.y"
 {NEDC( do_gate_R (yyvsp[-1], yyvsp[0]); )
                  GNED( np->set(CONN_KEY, "destgate", yylsp[-1]);
-                       np->set(CONN_KEY, "dest_gate_index", trimBrackets(yylsp[0])); );
+                       np->set(CONN_KEY, "dest-gate-index", trimBrackets(yylsp[0])); );
     break;}
 case 195:
 #line 868 "ebnf.y"
@@ -1863,7 +1863,7 @@ case 196:
 {NEDC( do_mod_R (NULL, NULL); do_gate_R (yyvsp[-1], yyvsp[0]); )
                  GNED( np->set(CONN_KEY, "dest-ownerkey", MODULE_KEY);
                        np->set(CONN_KEY, "destgate", yylsp[-1]);
-                       np->set(CONN_KEY, "dest_gate_index", trimBrackets(yylsp[0])); );
+                       np->set(CONN_KEY, "dest-gate-index", trimBrackets(yylsp[0])); );
     break;}
 case 197:
 #line 879 "ebnf.y"
@@ -2659,11 +2659,8 @@ void swapConnection(int conn_key)
 {
    np->swap(conn_key, "src-ownerkey", "dest-ownerkey");
    np->swap(conn_key, "srcgate", "destgate");
-   np->swap(conn_key, "src_index", "dest_index");
-   np->swap(conn_key, "src_gate_index", "dest_gate_index");
-
-   np->swap(conn_key, "an_src_x", "an_dest_x");
-   np->swap(conn_key, "an_src_y", "an_dest_y");
+   np->swap(conn_key, "src-mod-index", "dest-mod-index");
+   np->swap(conn_key, "src-gate-index", "dest-gate-index");
 }
 
 void setDisplayString(int key, YYLTYPE dispstrpos)

@@ -123,10 +123,10 @@ if 0 {
         set ned($key,destgate) [$nb.gates.destgate.e get]
         set ned($key,condition) [$nb.gates.condition.e get]
 
-        set ned($key,src_index) [$nb.gates.src_index.e get]
-        set ned($key,dest_index) [$nb.gates.dest_index.e get]
-        set ned($key,src_gate_index) [$nb.gates.src_gate_index.e get]
-        set ned($key,dest_gate_index) [$nb.gates.dest_gate_index.e get]
+        set ned($key,src-mod-index) [$nb.gates.src_index.e get]
+        set ned($key,dest-mod-index) [$nb.gates.dest_index.e get]
+        set ned($key,src-gate-index) [$nb.gates.src_gate_index.e get]
+        set ned($key,dest-gate-index) [$nb.gates.dest_gate_index.e get]
         set ned($key,for_expression) [$nb.gates.for.e get]
 
         set chname             [$nb.attrs.channel.e get]

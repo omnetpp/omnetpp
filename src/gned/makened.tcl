@@ -413,10 +413,10 @@ proc generate_conn {key indent islast} {
     set dest_index ""
     set src_gate_index ""
     set dest_gate_index ""
-    if {$ned($key,src_index)!=""}       {set src_index "\[$ned($key,src_index)\]"}
-    if {$ned($key,dest_index)!=""}      {set dest_index "\[$ned($key,dest_index)\]"}
-    if {$ned($key,src_gate_index)!=""}  {set src_gate_index "\[$ned($key,src_gate_index)\]"}
-    if {$ned($key,dest_gate_index)!=""} {set dest_gate_index "\[$ned($key,dest_gate_index)\]"}
+    if {$ned($key,src-mod-index)!=""}       {set src_index "\[$ned($key,src-mod-index)\]"}
+    if {$ned($key,dest-mod-index)!=""}      {set dest_index "\[$ned($key,dest-mod-index)\]"}
+    if {$ned($key,src-gate-index)!=""}  {set src_gate_index "\[$ned($key,src-gate-index)\]"}
+    if {$ned($key,dest-gate-index)!=""} {set dest_gate_index "\[$ned($key,dest-gate-index)\]"}
 
     # src and dest gates
     if {$ned($ned($key,src-ownerkey),type)=="module"} {

@@ -19,8 +19,11 @@
 
 foreach i {label-cid icon-cid rect-cid rect2-cid arrow-cid background-cid
            dirty unnamed selected
-           fill-color outline-color icon linethickness drawmode
-           an_src_x an_src_y an_dest_x an_dest_y x-pos y-pos x-size y-size} {
+           icon
+           disp-fillcolor disp-outlinecolor disp-linethickness
+           disp-drawmode disp-src-anchor-x disp-src-anchor-y
+           disp-dest-anchor-x disp-dest-anchor-y
+           disp-xpos disp-ypos disp-xsize disp-ysize} {
    set ned_internal($i) 1
 }
 

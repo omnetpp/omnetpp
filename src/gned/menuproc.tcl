@@ -310,7 +310,7 @@ proc editPaste {} {
 
    deselectAllItems
 
-   # offset x-pos and y-pos
+   # offset disp-xpos and disp-ypos
    foreach i [array names clipboard_ned "*,?-pos"] {
       set clipboard_ned($i) [expr $clipboard_ned($i)+8]
    }

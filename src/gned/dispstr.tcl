@@ -96,17 +96,17 @@ proc parse_module_dispstr {key} {
 
    # GNED currently only handles only few values from a dispstr...
    if [info exist tags(p)] {
-      set ned($key,x-pos) [lindex $tags(p) 0]
-      set ned($key,y-pos) [lindex $tags(p) 1]
+      set ned($key,disp-xpos) [lindex $tags(p) 0]
+      set ned($key,disp-ypos) [lindex $tags(p) 1]
    }
    if [info exist tags(b)] {
-      set ned($key,x-size) [lindex $tags(b) 0]
-      set ned($key,y-size) [lindex $tags(b) 1]
+      set ned($key,disp-xsize) [lindex $tags(b) 0]
+      set ned($key,disp-ysize) [lindex $tags(b) 1]
    }
    if [info exist tags(o)] {
-      set ned($key,fill-color) [lindex $tags(o) 0]
-      set ned($key,outline-color) [lindex $tags(o) 1]
-      set ned($key,linethickness) [lindex $tags(o) 2]
+      set ned($key,disp-fillcolor) [lindex $tags(o) 0]
+      set ned($key,disp-outlinecolor) [lindex $tags(o) 1]
+      set ned($key,disp-linethickness) [lindex $tags(o) 2]
    }
 }
 
@@ -122,20 +122,20 @@ proc parse_submod_dispstr {key} {
 
    # GNED currently only handles only few values from a dispstr...
    if [info exist tags(p)] {
-      set ned($key,x-pos) [lindex $tags(p) 0]
-      set ned($key,y-pos) [lindex $tags(p) 1]
+      set ned($key,disp-xpos) [lindex $tags(p) 0]
+      set ned($key,disp-ypos) [lindex $tags(p) 1]
    }
    if [info exist tags(b)] {
-      set ned($key,x-size) [lindex $tags(b) 0]
-      set ned($key,y-size) [lindex $tags(b) 1]
+      set ned($key,disp-xsize) [lindex $tags(b) 0]
+      set ned($key,disp-ysize) [lindex $tags(b) 1]
    }
    if [info exist tags(i)] {
       set ned($key,icon) [lindex $tags(i) 0]
    }
    if [info exist tags(o)] {
-      set ned($key,fill-color) [lindex $tags(o) 0]
-      set ned($key,outline-color) [lindex $tags(o) 1]
-      set ned($key,linethickness) [lindex $tags(o) 2]
+      set ned($key,disp-fillcolor) [lindex $tags(o) 0]
+      set ned($key,disp-outlinecolor) [lindex $tags(o) 1]
+      set ned($key,disp-linethickness) [lindex $tags(o) 2]
    }
 }
 
@@ -150,16 +150,16 @@ proc parse_conn_dispstr {key} {
 
    # GNED currently only handles only few values from a dispstr...
    if [info exist tags(m)] {
-      set ned($key,drawmode) [lindex $tags(m) 0]
-      set ned($key,an_src_x) [lindex $tags(p) 1]
-      set ned($key,an_src_y) [lindex $tags(p) 2]
-      set ned($key,an_dest_x) [lindex $tags(p) 3]
-      set ned($key,an_dest_y) [lindex $tags(p) 4]
+      set ned($key,disp-drawmode) [lindex $tags(m) 0]
+      set ned($key,disp-src-anchor-x) [lindex $tags(m) 1]
+      set ned($key,disp-src-anchor-y) [lindex $tags(m) 2]
+      set ned($key,disp-dest-anchor-x) [lindex $tags(m) 3]
+      set ned($key,disp-dest-anchor-y) [lindex $tags(m) 4]
    }
 
    if [info exist tags(o)] {
-      set ned($key,fill-color) [lindex $tags(o) 0]
-      set ned($key,linethickness) [lindex $tags(o) 1]
+      set ned($key,disp-fillcolor) [lindex $tags(o) 0]
+      set ned($key,disp-linethickness) [lindex $tags(o) 1]
    }
 }
 
@@ -189,17 +189,17 @@ proc update_module_dispstr {key} {
    set order [split_dispstr $ned($key,displaystring) tags]
 
    if ![info exist tags(p)] {set tags(p) {}}
-   _setlistitem tags(p) 0 $ned($key,x-pos)
-   _setlistitem tags(p) 1 $ned($key,y-pos)
+   _setlistitem tags(p) 0 $ned($key,disp-xpos)
+   _setlistitem tags(p) 1 $ned($key,disp-ypos)
 
    if ![info exist tags(b)] {set tags(b) {}}
-   _setlistitem tags(b) 0 $ned($key,x-size)
-   _setlistitem tags(b) 1 $ned($key,y-size)
+   _setlistitem tags(b) 0 $ned($key,disp-xsize)
+   _setlistitem tags(b) 1 $ned($key,disp-ysize)
 
    if ![info exist tags(o)] {set tags(o) {}}
-   _setlistitem tags(o) 0 $ned($key,fill-color)
-   _setlistitem tags(o) 1 $ned($key,outline-color)
-   _setlistitem tags(o) 2 $ned($key,linethickness)
+   _setlistitem tags(o) 0 $ned($key,disp-fillcolor)
+   _setlistitem tags(o) 1 $ned($key,disp-outlinecolor)
+   _setlistitem tags(o) 2 $ned($key,disp-linethickness)
 
    set ned($key,displaystring) [assemble_dispstr tags $order]
 }
@@ -214,17 +214,17 @@ proc update_submod_dispstr {key} {
    set order [split_dispstr $ned($key,displaystring) tags]
 
    if ![info exist tags(p)] {set tags(p) {}}
-   _setlistitem tags(p) 0 $ned($key,x-pos)
-   _setlistitem tags(p) 1 $ned($key,y-pos)
+   _setlistitem tags(p) 0 $ned($key,disp-xpos)
+   _setlistitem tags(p) 1 $ned($key,disp-ypos)
 
    if ![info exist tags(b)] {set tags(b) {}}
-   _setlistitem tags(b) 0 $ned($key,x-size)
-   _setlistitem tags(b) 1 $ned($key,y-size)
+   _setlistitem tags(b) 0 $ned($key,disp-xsize)
+   _setlistitem tags(b) 1 $ned($key,disp-ysize)
 
    if ![info exist tags(o)] {set tags(o) {}}
-   _setlistitem tags(o) 0 $ned($key,fill-color)
-   _setlistitem tags(o) 1 $ned($key,outline-color)
-   _setlistitem tags(o) 2 $ned($key,linethickness)
+   _setlistitem tags(o) 0 $ned($key,disp-fillcolor)
+   _setlistitem tags(o) 1 $ned($key,disp-outlinecolor)
+   _setlistitem tags(o) 2 $ned($key,disp-linethickness)
 
    if ![info exist tags(i)] {set tags(i) {}}
    _setlistitem tags(i) 0 $ned($key,icon)
@@ -243,15 +243,15 @@ proc update_conn_dispstr {key} {
    set order [split_dispstr $ned($key,displaystring) tags]
 
    if ![info exist tags(m)] {set tags(m) {}}
-   _setlistitem tags(m) 0 $ned($key,drawmode)
-   _setlistitem tags(m) 1 $ned($key,an_src_x)
-   _setlistitem tags(m) 2 $ned($key,an_src_y)
-   _setlistitem tags(m) 3 $ned($key,an_dest_x)
-   _setlistitem tags(m) 4 $ned($key,an_dest_y)
+   _setlistitem tags(m) 0 $ned($key,disp-drawmode)
+   _setlistitem tags(m) 1 $ned($key,disp-src-anchor-x)
+   _setlistitem tags(m) 2 $ned($key,disp-src-anchor-y)
+   _setlistitem tags(m) 3 $ned($key,disp-dest-anchor-x)
+   _setlistitem tags(m) 4 $ned($key,disp-dest-anchor-y)
 
    if ![info exist tags(o)] {set tags(o) {}}
-   _setlistitem tags(o) 0 $ned($key,fill-color)
-   _setlistitem tags(o) 1 $ned($key,linethickness)
+   _setlistitem tags(o) 0 $ned($key,disp-fillcolor)
+   _setlistitem tags(o) 1 $ned($key,disp-linethickness)
 
    set ned($key,displaystring) [assemble_dispstr tags $order]
 }

@@ -185,10 +185,10 @@ proc createSubmoduleOnCanvas {typekey {canvx {}} {canvy {}}} {
     set x2 [expr $canvx+20]
     set y2 [expr $canvy+14]
 
-    set ned($key,x-pos)  [expr int(($x1+$x2)/2)]
-    set ned($key,y-pos)  [expr int(($y1+$y2)/2)]
-    set ned($key,x-size) [expr int($x2-$x1)]
-    set ned($key,y-size) [expr int($y2-$y1)]
+    set ned($key,disp-xpos)  [expr int(($x1+$x2)/2)]
+    set ned($key,disp-ypos)  [expr int(($y1+$y2)/2)]
+    set ned($key,disp-xsize) [expr int($x2-$x1)]
+    set ned($key,disp-ysize) [expr int($y2-$y1)]
 
     # draw on canvas
     drawItem $key

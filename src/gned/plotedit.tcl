@@ -274,10 +274,10 @@ proc resetModuleBounds {} {
     set modkey $canvas($canv_id,module-key)
 
     # set display string data to default
-    set ned($modkey,x-pos)  {}
-    set ned($modkey,y-pos)  {}
-    set ned($modkey,x-size) {}
-    set ned($modkey,y-size) {}
+    set ned($modkey,disp-xpos)  {}
+    set ned($modkey,disp-ypos)  {}
+    set ned($modkey,disp-xsize) {}
+    set ned($modkey,disp-ysize) {}
 
     # redraw parent module and connections
     redrawItem $modkey
@@ -557,9 +557,9 @@ proc selectOrMoveDrag {c x y} {
 
        foreach key $mouse(tweaked-items) {
           _moveAnchoring $c $ned($key,src-ownerkey) \
-                         ned($key,an_src_x) ned($key,an_src_y) $byX $byY
+                         ned($key,disp-src-anchor-x) ned($key,disp-src-anchor-y) $byX $byY
           _moveAnchoring $c $ned($key,dest-ownerkey) \
-                         ned($key,an_dest_x) ned($key,an_dest_y) $byX $byY
+                         ned($key,disp-dest-anchor-x) ned($key,disp-dest-anchor-y) $byX $byY
           _redrawArrow $c $key
        }
 
@@ -574,10 +574,10 @@ proc selectOrMoveDrag {c x y} {
        foreach key $mouse(tweaked-items) {
           if $mouse(reanchor-src) {
              _moveAnchoring $c $ned($key,src-ownerkey) \
-                         ned($key,an_src_x) ned($key,an_src_y) $byX $byY
+                         ned($key,disp-src-anchor-x) ned($key,disp-src-anchor-y) $byX $byY
           } else {
              _moveAnchoring $c $ned($key,dest-ownerkey) \
-                         ned($key,an_dest_x) ned($key,an_dest_y) $byX $byY
+                         ned($key,disp-dest-anchor-x) ned($key,disp-dest-anchor-y) $byX $byY
           }
           _redrawArrow $c $key
        }
@@ -625,15 +625,15 @@ proc selectOrMoveEnd {c x y} {
           if {$ned($key,type)=="module"} {
              # with the parent module, we store the top-left corner...
              set cc [$c coords $ned($key,rect2-cid)]
-             set ned($key,x-pos)  [expr int([lindex $cc 0])]
-             set ned($key,y-pos)  [expr int([lindex $cc 1])]
+             set ned($key,disp-xpos)  [expr int([lindex $cc 0])]
+             set ned($key,disp-ypos)  [expr int([lindex $cc 1])]
           } else {
              # ...in all other cases, the center
-             set ned($key,x-pos)  [expr int([lindex $centsiz 0])]
-             set ned($key,y-pos)  [expr int([lindex $centsiz 1])]
+             set ned($key,disp-xpos)  [expr int([lindex $centsiz 0])]
+             set ned($key,disp-ypos)  [expr int([lindex $centsiz 1])]
           }
-          set ned($key,x-size) [expr int([lindex $centsiz 2])]
-          set ned($key,y-size) [expr int([lindex $centsiz 3])]
+          set ned($key,disp-xsize) [expr int([lindex $centsiz 2])]
+          set ned($key,disp-ysize) [expr int([lindex $centsiz 3])]
        }
 
     } elseif {$mouse(mode) == "reanchor" || $mouse(mode) == "endp-reanchor"} {
@@ -792,10 +792,10 @@ proc drawEnd {c x y} {
           set x2 [lindex $cc 2]
           set y2 [lindex $cc 3]
 
-          set ned($key,x-pos)  [expr int(($x1+$x2)/2)]
-          set ned($key,y-pos)  [expr int(($y1+$y2)/2)]
-          set ned($key,x-size) [expr int($x2-$x1)]
-          set ned($key,y-size) [expr int($y2-$y1)]
+          set ned($key,disp-xpos)  [expr int(($x1+$x2)/2)]
+          set ned($key,disp-ypos)  [expr int(($y1+$y2)/2)]
+          set ned($key,disp-xsize) [expr int($x2-$x1)]
+          set ned($key,disp-ysize) [expr int($y2-$y1)]
 
           drawItem $key
           updateTreeManager
@@ -858,14 +858,14 @@ proc drawEnd {c x y} {
                   _snapAnchor an_sr_x 10
                   _snapAnchor an_sr_y 10
                }
-               set ned($key,an_src_x) $an_sr_x
-               set ned($key,an_src_y) $an_sr_y
-               set ned($key,an_dest_x) $an_dt_x
-               set ned($key,an_dest_y) $an_dt_y
+               set ned($key,disp-src-anchor-x) $an_sr_x
+               set ned($key,disp-src-anchor-y) $an_sr_y
+               set ned($key,disp-dest-anchor-x) $an_dt_x
+               set ned($key,disp-dest-anchor-y) $an_dt_y
                if {$config(connmodeauto)} {
-                  set ned($key,drawmode) "a"
+                  set ned($key,disp-drawmode) "a"
                } else {
-                  set ned($key,drawmode) "m"
+                  set ned($key,disp-drawmode) "m"
                }
 
                drawItem $key
@@ -941,9 +941,9 @@ proc _redrawArrow {c key} {
    #       trouble. Without them, if some of the achors is "", arrowcoords
    #       would be called with less args then necessary
    set a_coords [eval opp_arrowcoords $s_coords $d_coords  0 1 0 1 \
-                         $ned($key,drawmode)- \
-                         $ned($key,an_src_x)- $ned($key,an_src_y)- \
-                         $ned($key,an_dest_x)- $ned($key,an_dest_y)-]
+                         $ned($key,disp-drawmode)- \
+                         $ned($key,disp-src-anchor-x)- $ned($key,disp-src-anchor-y)- \
+                         $ned($key,disp-dest-anchor-x)- $ned($key,disp-dest-anchor-y)-]
    eval [concat $c coords $cid $a_coords]
 }
 
