@@ -1060,7 +1060,7 @@ void NEDCppGenerator::doLoopvar(LoopVarNode *node, const char *indent, int mode,
 
 void NEDCppGenerator::doDisplayString(DisplayStringNode *node, const char *indent, int mode, const char *)
 {
-    // FIXME!!!
+    // unused
 }
 
 
