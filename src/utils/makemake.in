@@ -38,7 +38,7 @@ makemake [-h] [-f] [-m] [-o make-target] [-t exe|so|o] [-u user-interface] [-p]
     -h, --help            This help text
     -f, --force           Force overwriting existing Makefile
     -o, --outputfile      Name of simulation executable/library
-    -n, --nolink          Produce object files but no not create executable or
+    -n, --nolink          Produce object files but do not create executable or
                           library. Useful for models with parts in several dirs.
     -s, --make-so         Make shared library. Useful if you want to load the
                           model dynamically (Cmdenv/Tkenv -l so-file switch).
@@ -54,7 +54,7 @@ makemake [-h] [-f] [-m] [-o make-target] [-t exe|so|o] [-u user-interface] [-p]
                           include in the Makefile.
     library or object     Link with that file
 
-With -n and -s options, -u, -p and -l have no effect.
+With the -n and -s options, -u, -p and -l have no effect.
 If you have a source tree instead of a single directory, run makemake -n
 in the subdirs and then makemake dir1 dir2 etc. in your top-level directory.
 The -i option is useful if a source file (.ned or .cc) is to be generated
