@@ -474,6 +474,8 @@ void cContextSwitcher::methodCall(const char *fmt,...)
 #include "cpacket.h"
 #include "clcg32.h"
 #include "cmersennetwister.h"
+#include "cksplit.h"
+#include "cpsquare.h"
 //void _dummy_for_env();
 void _sim_dummy_func()
 {
@@ -489,6 +491,10 @@ void _sim_dummy_func()
       lcg.intRand();
       cMersenneTwister mt;
       mt.intRand();
+      cKSplit ks;
+      ks.info();
+      cPSquare ps;
+      ps.info();
       //_dummy_for_env();
 }
 
