@@ -150,7 +150,7 @@ int nodeType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    if (!strcmp(field,"exists"))
    {
        bool exists = NodeTypeRegistry::instance()->exists(nodetypename);
-       Tcl_SetResult(interp, (exists?"1":"0"), TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST(exists?"1":"0"), TCL_STATIC);
        return TCL_OK;
    }
 
@@ -169,7 +169,7 @@ int nodeType_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
    }
    else if (!strcmp(field,"hidden"))
    {
-       Tcl_SetResult(interp, (nodetype->isHidden()?"1":"0"), TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST(nodetype->isHidden()?"1":"0"), TCL_STATIC);
    }
    else if (!strcmp(field,"attrs"))
    {
@@ -448,7 +448,7 @@ int compoundFilterType_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        }
        bool equal = nodetype->equals(*nodetype2);
        DBG(("type %s%s%s\n", nodetype->name(), (equal?"==":"!="), nodetype2->name()));
-       Tcl_SetResult(interp, (equal?"1":"0"), TCL_STATIC);
+       Tcl_SetResult(interp, TCLCONST(equal?"1":"0"), TCL_STATIC);
        return TCL_OK;
    }
    else if (!strcmp(cmd,"setDescription"))
