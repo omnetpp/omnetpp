@@ -281,3 +281,4 @@ class SIM_API cDensityEstBase : public cStdDev
     virtual void loadFromFile(FILE *);
 };
 
+#endif

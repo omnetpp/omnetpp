@@ -269,3 +269,4 @@ class SIM_API cLinkedListIterator
     void *operator--(int)  {sLLElem *t=p; if(p) p=p->prev; return t->item;}
 };
 
+#endif

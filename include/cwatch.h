@@ -163,3 +163,4 @@ class SIM_API cWatch : public cObject
     //virtual int netUnpack();
 };
 
+#endif

@@ -494,3 +494,4 @@ class SIM_API cWeightedStdDev : public cStdDev
 
 };
 
+#endif

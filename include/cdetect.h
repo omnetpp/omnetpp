@@ -421,3 +421,4 @@ class SIM_API cADByStddev : public cAccuracyDetection
         {accuracy=acc; repeats=detreps=reps;}
 };
 
+#endif

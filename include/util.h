@@ -330,3 +330,4 @@ inline double genk_dblrand(int gen_nr)
    return (double)genk_intrand(gen_nr) / (double)((unsigned long)INTRAND_MAX+1UL);
 }
 
+#endif

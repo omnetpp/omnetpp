@@ -189,3 +189,4 @@ class SIM_API cMessageHeapIterator
     bool end()                  {return (bool)(pos>q->n);}
 };
 
+#endif

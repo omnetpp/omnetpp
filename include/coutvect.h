@@ -276,3 +276,4 @@ class SIM_API cOutVector : public cObject
 
 };
 
+#endif

@@ -191,3 +191,4 @@ inline cLinkType *findLink(const char *s)          {return (cLinkType *)linktype
 inline cFunctionType *findFunction(const char *s)  {return (cFunctionType *)functions.find(s);}
 inline cInspectorFactory *findInspectorFactory(const char *s) {return (cInspectorFactory *)inspectorfactories.find(s);}
 
+#endif
