@@ -182,7 +182,7 @@ else
 }
 
 print "collecting files...\n" if $verbose;
-if ($all_files eq "")
+if ($all_files)
 {
     collect_files(".", "$outdir/filelist.txt")==0 || error("error creating the file list");
 }
@@ -197,13 +197,31 @@ else
     while (@ARGV)
     {
         $arg = tobackslash(shift @ARGV);
-        if (-d "$arg")
+        if (-d $arg)
         {
             collect_files($arg, "$outdir/filelist.txt")==0 || error("error creating the file list");
         }
+        elsif (-f $arg)
+        {
+            open FL,">>$outdir/filelist.txt";
+            print FL $arg, "\n";
+            close FL;
+        }
+        elsif ($arg =~ /[*?]/)
+        {
+            # looks like a glob pattern
+            @files = glob($arg);
+            if (@files==()) {
+                print STDERR "opp_nedtool: warning: $arg doesn't match any files\n";
+            } else {
+                open FL,">>$outdir/filelist.txt";
+                print FL join("\n",@files);
+                close FL;
+            }
+        }
         else
         {
-            runprog("echo $arg >>".tobackslash("$outdir/filelist.txt"))==0 || error("error creating the file list");
+            error("$arg not found");
         }
     }
 }
@@ -294,7 +312,7 @@ if ($have_dot)
        if ($GIFTRANS ne "")
        {
            rename($gif, "$outdir/__tmp.gif");
-           runprog("$GIFTRANS -t \"#ffffff\" $outdir/__tmp.gif >$gif")==0 || error("error invoking giftrans");
+           runprog("$GIFTRANS -t \"#ffffff\" ".tobackslash("$outdir/__tmp.gif")." >$gif")==0 || error("error invoking giftrans");
            unlink("$outdir/__tmp.gif");
        }
     }
