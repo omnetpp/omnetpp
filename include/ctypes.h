@@ -213,10 +213,17 @@ class SIM_API cModuleInterface : public cObject
 class SIM_API cModuleType : public cObject
 {
     friend class cModule;
-  private:
+
+  protected:
     char *interface_name;
     cModuleInterface *iface;
     ModuleCreateFunc create_func;
+
+    // internal: here it invokes create_func
+    virtual cModule *createModuleObject(const char *modname, cModule *parentmod);
+
+    // internal: here it invokes iface->addParametersGatesTo(mod)
+    virtual void addParametersGatesTo(cModule *mod);
 
   public:
     /** @name Constructors, destructor, assignment */
@@ -261,7 +268,6 @@ class SIM_API cModuleType : public cObject
      * In addition to creating an object of the correct type,
      * this function inserts it into cSimulation's module vector and adds the
      * parameters and gates specified in the interface description.
-FIXME cf with netbuilder stuff!!!!
      */
     virtual cModule *create(const char *name, cModule *parentmod);
 
@@ -269,7 +275,6 @@ FIXME cf with netbuilder stuff!!!!
      * Creates a module to be an element of a module vector.
      * The last two arguments specify the vector size and the index
      * of the new module within the vector.
-FIXME cf with netbuilder stuff!!!!
      */
     virtual cModule *create(const char *name, cModule *parentmod, int vectorsize, int index);
 
