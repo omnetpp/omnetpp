@@ -54,8 +54,9 @@ cmdenv.obj: cmdenv.cc \
   ../../include/defs.h \
   ../../include/ctypes.h \
   ../../include/csimul.h \
-  ../../include/chead.h \
+  ../../include/globals.h \
   ../../include/cobject.h \
+  ../../include/onstartup.h \
   ../../include/util.h \
   ../../include/cexception.h \
   ../../include/errmsg.h \
@@ -66,6 +67,7 @@ cmdenv.obj: cmdenv.cc \
   ../../include/carray.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/cdefaultlist.h \
   ../../include/cpar.h
 enumstr.obj: enumstr.cc \
   enumstr.h

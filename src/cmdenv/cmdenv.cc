@@ -523,21 +523,21 @@ void TCmdenvApp::help()
     ev << "\n";
 
     ev << "Available networks:\n";
-    cIterator iter(networks);
+    cArray::Iterator iter(*networks.instance());
     for (; iter(); iter++)
-        ev << "  " << ((cNetworkType *)iter())->name() << '\n';
+        ev << "  " << iter()->name() << '\n';
     ev << "\n";
 
     ev << "Available modules:\n";
-    cIterator iter2(modtypes);
+    cArray::Iterator iter2(*modtypes.instance());
     for (; iter2(); iter2++)
-        ev << "  " << ((cModuleType *)iter2())->name() << '\n';
+        ev << "  " << iter2()->name() << '\n';
     ev << "\n";
 
     ev << "Available channels:\n";
-    cIterator iter3(linktypes);
+    cArray::Iterator iter3(*linktypes.instance());
     for (; iter3(); iter3++)
-        ev << "  " << ((cLinkType *)iter3())->name() << '\n';
+        ev << "  " << iter3()->name() << '\n';
     ev << "\n";
 }
 
