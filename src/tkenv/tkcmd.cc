@@ -185,6 +185,7 @@ int getObjectFullPath_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectClassName_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectInfoString_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getObjectBaseClass_cmd(ClientData, Tcl_Interp *, int, const char **);
+int getObjectId_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getChildObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSubObjects_cmd(ClientData, Tcl_Interp *, int, const char **);
 int getSimulationState_cmd(ClientData, Tcl_Interp *, int, const char **);
@@ -242,6 +243,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_getobjectfullpath",getObjectFullPath_cmd}, // args: <pointer>  ret: fullPath()
    { "opp_getobjectclassname",getObjectClassName_cmd}, // args: <pointer>  ret: className()
    { "opp_getobjectbaseclass",getObjectBaseClass_cmd}, // args: <pointer>  ret: a base class
+   { "opp_getobjectid",      getObjectId_cmd}, // args: <pointer>  ret: object ID (if object has one) or ""
    { "opp_getobjectinfostring",getObjectInfoString_cmd}, // args: <pointer>  ret: info()
    { "opp_getchildobjects",  getChildObjects_cmd    }, // args: <pointer> ret: list with its child object ptrs
    { "opp_getsubobjects",    getSubObjects_cmd    }, // args: <pointer> ret: list with all object ptrs in subtree
@@ -563,6 +565,25 @@ int getObjectBaseClass_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
        Tcl_SetResult(interp, "cWatch", TCL_STATIC);
    else
        Tcl_SetResult(interp, const_cast<char *>(object->className()), TCL_STATIC);
+   return TCL_OK;
+}
+
+int getObjectId_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
+{
+   if (argc!=2) {Tcl_SetResult(interp, "wrong argcount", TCL_STATIC); return TCL_ERROR;}
+   cObject *object = (cObject *)strToPtr( argv[1] );
+   if (!object) {Tcl_SetResult(interp, "null or malformed pointer", TCL_STATIC); return TCL_ERROR;}
+
+   if (dynamic_cast<cModule *>(object))
+   {
+       char buf[32];
+       sprintf(buf, "%d", dynamic_cast<cModule *>(object)->id());
+       Tcl_SetResult(interp, buf, TCL_VOLATILE);
+   }
+   else
+   {
+       Tcl_SetResult(interp, "", TCL_STATIC);
+   }
    return TCL_OK;
 }
 

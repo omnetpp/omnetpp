@@ -47,10 +47,6 @@ proc create_inspector_toplevel {w geom} {
 
     iconbutton $w.toolbar.sep0 -separator
     pack $w.toolbar.sep0 -anchor n -side left -padx 0 -pady 2
-    #iconbutton $w.toolbar.inspect -image $icons(as) -command "inspect_this_as $w"
-    #foreach i {inspect} {
-    #   pack $w.toolbar.$i -anchor n -side left -padx 0 -pady 2
-    #}
 
     # add object type-and-name bar with color codes
     regexp {\.(ptr.*)-[0-9]+} $w match ptr
@@ -63,7 +59,6 @@ proc create_inspector_toplevel {w geom} {
     pack $w.infobar.color -anchor n -side left -expand 0 -fill none -pady 1
     pack $w.infobar.name -anchor n -side left -expand 1 -fill both -pady 1
 
-    #set help_tips($w.toolbar.inspect) {Open another inspector for this object}
     set help_tips($w.infobar.color) {Different inspectors of the same object have the same color}
 
     # Keyboard bindings
@@ -203,17 +198,35 @@ proc popup_insp_menu {ptr X Y} {
    .popup post $X $Y
 }
 
-proc ask_inspectortype {ptr} {
+proc ask_inspectortype {ptr parentwin {typelist {}}} {
     set w .asktype
-    createOkCancelDialog $w {Inspector type...}
-    label-combo $w.f.type {Inspect} [opp_supported_insp_types $ptr]
+
+    if {$typelist=={}} {
+        set typelist [opp_supported_insp_types $ptr]
+    }
+
+    # if there's only one, use yes/no dialog instead
+    if {[llength $typelist]==1} {
+        set type [lindex $typelist 0]
+        set ans [tk_messageBox -message "Open inspector of type '$type'?" \
+                  -title "Open inspector" -icon question -type yesno -parent $parentwin]
+        if {$ans == "yes"} {
+            return [lindex $typelist 0]
+        } else {
+            return ""
+        }
+    }
+
+    # chooser dialog
+    createOkCancelDialog $w {Open Inspector}
+    label-combo $w.f.type {Choose type:} $typelist
     pack $w.f.type -expand 0 -fill x -side top
 
     set type ""
     if [execOkCancelDialog $w] {
         set type [$w.f.type.e cget -value]
 
-        if {[lsearch [opp_supported_insp_types $ptr] $type] == -1} {
+        if {[lsearch $typelist $type] == -1} {
             messagebox {Error} "Invalid inspector type. Please choose from the list." error ok
             set type ""
         }
@@ -241,7 +254,7 @@ proc inspectas_item_in {lb} {
     set sel [$lb curselection]
     if {$sel != ""} {
         set ptr [lindex [$lb get $sel] 0]
-        set type [ask_inspectortype $ptr]
+        set type [ask_inspectortype $ptr [winfo toplevel $lb]]
         if {$type != ""} {
             opp_inspect $ptr $type
         }
@@ -251,9 +264,18 @@ proc inspectas_item_in {lb} {
 proc inspect_this_as {win} {
     # called by the "Inspect As.." button at the TOP of an inspector
     # extract object pointer from window path name and create inpector
-    regexp {\.(ptr.*)-[0-9]+} $win match ptr
+    regexp {\.(ptr.*)-([0-9]+)} $win match ptr curtype
 
-    set type [ask_inspectortype $ptr]
+    # do not offer the type of the inspector from which we're invoked
+    set typelist [opp_supported_insp_types $ptr]
+    set pos [lsearch $typelist [opp_inspectortype $curtype]]
+    set typelist [lreplace $typelist $pos $pos]
+
+    # if no choice, don't do anything
+    if {[llength $typelist]==0} {return}
+
+    # type selection dialog
+    set type [ask_inspectortype $ptr $win $typelist]
     if {$type != ""} {
         opp_inspect $ptr $type
     }

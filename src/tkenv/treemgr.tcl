@@ -108,7 +108,9 @@ proc getNodeInfo {w op {key {}}} {
       }
 
       text {
-        return "[opp_getobjectfullname $ptr] ([opp_getobjectclassname $ptr])"
+        set id [opp_getobjectid $ptr]
+        if {$id!=""} {set id " (id=$id)"}
+        return "[opp_getobjectfullname $ptr] ([opp_getobjectclassname $ptr])$id"
       }
 
       options {
