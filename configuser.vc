@@ -116,13 +116,13 @@ GNED_IF_POSSIBLE=gned
 # This option is available at present for Tkenv, GNED and Plove.
 # Set the following variables to "yes" to enable embedding Tcl files.
 #
-TKENV_EMBED_TCL=no
-GNED_EMBED_TCL=no
-PLOVE_EMBED_TCL=no
+TKENV_EMBED_TCL=yes
+GNED_EMBED_TCL=yes
+PLOVE_EMBED_TCL=yes
 
 #
 # It is possible to compile GNED and Plove as Windows GUI apps (ie. not
 # console apps). Set the following variable to "yes" to enable compiling
 # GUI apps.
 #
-USE_WINMAIN=no
+USE_WINMAIN=yes
