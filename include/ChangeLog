@@ -1,3 +1,7 @@
+2003-02-10  Andras Varga
+
+	* chist.h: cHistogramBase: added setNumCells() method
+
 2003-01-30  Andras Varga
 
 	* defs.h: added MathFunc4Args (it was needed by triang() and other 

@@ -81,6 +81,9 @@ SIM_API double truncnormal(double mean, double stddev, int rng=0);
  * k values, which becomes the alpha parameter. The chi-square distribution
  * is a special case of the gamma distribution.
  *
+ * The mean of this distribution is alpha*beta; for special case alpha=1,
+ * it becomes the exponential distribution with mean=beta.
+ *
  * Generation method depends on the value of alpha:
  *
  *   - alpha=1: gamma_d(1,beta)=exponential(beta)
@@ -261,7 +264,7 @@ inline int bernoulli(double p, int rng=0)
 }
 
 /**
- * Returns a random integer from the Binomial distribution with
+ * Returns a random integer from the binomial distribution with
  * parameters n and p, that is, the number of successes in n independent
  * trials with probability p.
  *
@@ -278,6 +281,8 @@ SIM_API int binomial(int n, double p, int rng=0);
  * Returns a random integer from the geometric distribution with parameter p,
  * that is, the number of independent trials with probability p until the
  * first success.
+ *
+ * This is the n=1 special case of the negative binomial distribution.
  *
  * Generation uses inverse transform.
  *
@@ -320,6 +325,8 @@ SIM_API int hypergeometric(int a, int b, int n, int rng=0);
  * Returns a random integer from the Poisson distribution with parameter lambda,
  * that is, the number of arrivals over unit time where the time between
  * successive arrivals follow exponential distribution with parameter lambda.
+ *
+ * Lambda is also the mean (and variance) of the distribution.
  *
  * Generation method depends on value of lambda:
  *
