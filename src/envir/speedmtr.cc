@@ -70,16 +70,19 @@ void Speedometer::beginNewInterval()
 
 double Speedometer::eventsPerSec()
 {
+    if (!started) return 0;
     return last_eventspersec;
 }
 
 double Speedometer::eventsPerSimSec()
 {
+    if (!started) return 0;
     return last_eventspersimsec;
 }
 
 double Speedometer::simSecPerSec()
 {
+    if (!started) return 0;
     return last_simsecpersec;
 }
 

@@ -395,8 +395,7 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
         do
         {
             cSimpleModule *mod = simulation.selectNextModule();
-            if (!mod)
-                break;
+            ASSERT(mod!=NULL);
 
             simulation.doOneEvent( mod );
 

@@ -77,6 +77,7 @@ class ENVIR_API cIniFile
     bool warnings;  // enable/disable warnings
 
     // get an entry from [section]
+    bool exists(const char *section, const char *key);
     const char *getRaw(const char *section, const char *key, const char *defaultval=NULL); // with quotes (if any)
     bool getAsBool(const char *section, const char *key, bool defaultval=false);
     long getAsInt(const char *section, const char *key, long defaultval=0);
@@ -85,6 +86,7 @@ class ENVIR_API cIniFile
     double getAsTime(const char *sect, const char *key, double defaultval=0.0);
 
     // get an entry from [sect1] or if it isn't there, from [sect2]
+    bool exists2(const char *sect1, const char *sect2, const char *key);
     const char *getRaw2(const char *sect1, const char *sect2, const char *key, const char *defaultval=NULL);
     bool getAsBool2(const char *sect1, const char *sect2, const char *key, bool defaultval=false);
     long getAsInt2(const char *sect1, const char *sect2, const char *key, long defaultval=0);

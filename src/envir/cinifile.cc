@@ -306,6 +306,11 @@ int cIniFile::error()
 
 //-----------
 
+bool cIniFile::exists(const char *sect, const char *ent)
+{
+    return _getValue(sect, ent, 1)!=NULL;
+}
+
 const char *cIniFile::getRaw(const char *sect, const char *ent, const char *defaultval)
 {
     const char *s = _getValue(sect, ent, 1);
@@ -413,6 +418,11 @@ double cIniFile::getAsTime(const char *sect, const char *ent, double defaultval)
 }
 
 //-----------
+
+bool cIniFile::exists2(const char *sect1, const char *sect2, const char *ent)
+{
+    return exists(sect1, ent) || exists(sect2, ent);
+}
 
 const char *cIniFile::getRaw2(const char *sect1, const char *sect2, const char *key, const char *defaultval)
 {
