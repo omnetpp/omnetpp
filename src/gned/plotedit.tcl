@@ -63,14 +63,16 @@ proc selectOrMoveBindings c {
     bind $c <Delete>           "deleteSelected"
     bind $c <Escape>           "catch {destroy .popup}"
     bind $c <Double-1>         "selectOrMoveEnd $c %x %y; openSubmodule $c"
-    bind $c <Button-3>         "popupMenu $c %X %Y"
-    bind $c <Button-2>         "drawBindings $c"
+    bind $c <Button-3>         "popupMenu $c %x %y"
     bind $c <Button-1>         "selectOrMoveStart $c %x %y 0"
     bind $c <Control-Button-1> "selectOrMoveStart $c %x %y 1"
     bind $c <B1-Motion>        "selectOrMoveDrag $c %x %y"
     bind $c <ButtonRelease-1>  "selectOrMoveEnd $c %x %y"
     #bind $c <Insert>           "printNed $c"
-    bind $c <2>                "printNed $c"
+    #bind $c <Button-2>         "drawBindings $c"
+    #bind $c <Button-2>         "printNed $c"
+    bind $c <Button-2>         "$c scan mark %x %y"
+    bind $c <B2-Motion>        "$c scan dragto %x %y"
 }
 
 #  drawBindings --
@@ -90,15 +92,16 @@ proc drawBindings c {
     bind $c <Delete>           "deleteSelected"
     bind $c <Escape>           "catch {destroy .popup}"
     bind $c <Button-3>         "popupMenu $c %X %Y"
-    bind $c <Button-2>         "selectOrMoveBindings $c"
     bind $c <Double-1>         "drawEnd $c %x %y; openSubmodule $c"
     bind $c <Button-1>         "drawStart $c %x %y"
     bind $c <Shift-Button-1>   "drawStart $c %x %y"
     bind $c <B1-Motion>        "drawDrag $c %x %y"
     bind $c <ButtonRelease-1>  "drawEnd $c %x %y"
     #bind $c <Insert>           "printNed $c"
-
-    bind $c <2>                "printNed $c"
+    #bind $c <Button-2>         "selectOrMoveBindings $c"
+    #bind $c <Button-2>         "printNed $c"
+    bind $c <Button-2>         "$c scan mark %x %y"
+    bind $c <B2-Motion>        "$c scan dragto %x %y"
 }
 
 set mouse(mode) ""

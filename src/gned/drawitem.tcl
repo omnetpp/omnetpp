@@ -167,7 +167,7 @@ proc redrawItem {key {canv_id {}}} {
 
 # selectItem --
 #
-#   Display item selected
+#   Display item as selected
 #
 proc selectItem {key} {
     global ned canvas
@@ -192,12 +192,10 @@ proc selectItem {key} {
 
 # deselectItem --
 #
-#   Display item deselected
+#   Display item as deselected
 #
 proc deselectItem {key} {
     global ned canvas
-
-puts "dbg: deselectItem $key"
 
     set ned($key,selected) 0
 
@@ -226,7 +224,7 @@ puts "dbg: deselectItem $key"
 
 # deselectAllItems --
 #
-#   Display all items deselected
+#   Display all items as deselected
 #
 proc deselectAllItems {} {
     global ned

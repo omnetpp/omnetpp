@@ -56,7 +56,7 @@ proc create_omnetpp_window {} {
 
     toplevel $w -class Toplevel
     wm focusmodel $w passive
-    wm geometry $w 620x450
+    wm geometry $w 640x450
 
     wm maxsize $w 1009 738
     wm minsize $w 1 1
@@ -228,7 +228,7 @@ proc create_omnetpp_window {} {
     frame $w.main.mgr -relief flat -borderwidth 1
 
     frame $w.main.mgr.resize -width 5 -relief raised -borderwidth 1 -cursor size_we
-    canvas $w.main.mgr.tree -width 120 -bg #ffffe0 -relief groove \
+    canvas $w.main.mgr.tree -width 140 -bg #ffffe0 -relief groove \
                             -yscrollcommand "$w.main.mgr.sb set"
     scrollbar $w.main.mgr.sb -command "$w.main.mgr.tree yview"
     pack $w.main.mgr.resize -side right -fill y

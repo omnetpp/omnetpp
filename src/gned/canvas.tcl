@@ -30,7 +30,6 @@ proc openModuleOnCanvas {modkey} {
     } else {
         switchToCanvas $canv_id
     }
-puts "dbg: openModuleOnCanvas returning $canv_id"
     return $canv_id
 }
 
@@ -71,8 +70,6 @@ proc openUnnamedCanvas {} {
         set nedfilekey [addItem nedfile 0]
         set modkey [addItem module $nedfilekey]
     }
-
-puts "dbg: openUnnamedCanvas: file $nedfilekey, module $modkey"
 
     set canv_id [openModuleOnCanvas $modkey]
     return $canv_id
@@ -136,7 +133,6 @@ proc openModuleOnNewCanvas {modkey} {
 
     # show the canvas -- must be the last one because it needs the module name
     switchToCanvas $canv_id
-puts "dbg: openModuleOnNewCanvas created $canv_id"
     return $canv_id
 }
 
@@ -148,8 +144,6 @@ puts "dbg: openModuleOnNewCanvas created $canv_id"
 proc switchToCanvas {canv_id} {
     global gned canvas ned
     set w .omnetpp
-
-puts "dbg: switchToCanvas $canv_id entered"
 
     # unmap old canvas
     if {$gned(canvas_id)!=""} {
@@ -247,7 +241,7 @@ proc closeCurrentCanvas {} {
 
     # must be in graphics mode (because data structure must be up-to-date)
     if {$canvas($canv_id,mode)=="textedit"} {
-puts "dbg: must check if NED text has in fact changed"
+puts "dbg: closeCurrentCanvas: must check if NED text has in fact changed"
          tk_messageBox -icon warning -type ok -title GNED \
             -message "Switch back to graphics mode first. Changes on the\
                       NED source must be backparsed before canvas can be closed."
