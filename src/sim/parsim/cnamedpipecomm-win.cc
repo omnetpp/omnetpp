@@ -198,10 +198,11 @@ void cNamedPipeCommunications::send(cCommBuffer *buffer, int tag, int destinatio
 
 bool cNamedPipeCommunications::receive(int filtTag, cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
 {
-    if (filtTag==PARSIM_ANY_TAG)
-        return doReceive(buffer, receivedTag, sourceProcId, blocking);
-    // TBD implement tag filtering (tag filtering not used by current parsim implementation)
-    throw new cException("cNamedPipeCommunications: tag filtering not implemented");
+    bool recv = doReceive(buffer, receivedTag, sourceProcId, blocking);
+    // TBD implement tag filtering
+    if (recv && filtTag!=PARSIM_ANY_TAG && filtTag!=receivedTag)
+        throw new cException("cNamedPipeCommunications: tag filtering not implemented");
+    return recv;
 }
 
 bool cNamedPipeCommunications::doReceive(cCommBuffer *buffer, int& receivedTag, int& sourceProcId, bool blocking)
