@@ -74,6 +74,7 @@ depend:
 
 clean:
 	rm -f tclcode.cc *.o scalars$(EXE_SUFFIX)
+	rm -f engine/*.o
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 scalars.o: scalars.cc \

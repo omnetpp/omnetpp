@@ -1,3 +1,8 @@
+2005-01-17  Andras Varga
+
+	* combobox.tcl updated to version 2.3 which also works on Mac OS/X 
+	[suggested by Michael Tuexen]
+
 2005-01-10  Andras Varga
 
 	* tkapp.cc, tkcmd.cc: factored out platform dependencies to 

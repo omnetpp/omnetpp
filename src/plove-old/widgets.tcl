@@ -163,7 +163,7 @@ proc wsize {w width height} {
 #    PROCEDURES FOR CREATING NEW 'WIDGET TYPES'
 #===================================================================
 
-package require combobox 1.0
+package require combobox 2.3
 
 proc iconbutton {w args} {
     global fonts

@@ -94,6 +94,7 @@ depend:
 
 clean:
 	rm -f tclcode.cc *.o plove$(EXE_SUFFIX)
+	rm -f engine/*.o
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 plove.o: plove.cc \
