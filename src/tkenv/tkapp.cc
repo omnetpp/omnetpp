@@ -1080,8 +1080,8 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
     while (mod!=commonparent && (mod->parentModule()!=commonparent || destmod==commonparent))
     {
         cModule *enclosingmod = mod->parentModule();
-        ev << "DBG: animate ascent inside " << enclosingmod->fullPath()
-           << " from " << mod->fullPath() << endl; // FIXME
+        //ev << "DBG: animate ascent inside " << enclosingmod->fullPath()
+        //   << " from " << mod->fullPath() << endl;
         TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
         if (insp)
         {
@@ -1108,8 +1108,8 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
         cModule *to = findSubmoduleTowards(commonparent, destmod);
 
         // animate inside commonparent (msg moves between two modules)
-        ev << "DBG: animate horiz in " << commonparent->fullPath() << 
-              " from " << from->fullPath() << " to " << to->fullPath() << endl; // FIXME
+        //ev << "DBG: animate horiz in " << commonparent->fullPath() << 
+        //      " from " << from->fullPath() << " to " << to->fullPath() << endl;
 
         TInspector *insp = findInspector(commonparent,INSP_GRAPHICAL);
         if (insp)
@@ -1138,8 +1138,8 @@ void TOmnetTkApp::animateSendDirect(cMessage *msg, cModule *frommodule, cGate *t
     {
         // animate descent towards destmod
         cModule *enclosingmod = mod->parentModule();
-        ev << "DBG: animate descent in " << enclosingmod->fullPath() << 
-           " to " << mod->fullPath() << endl; // FIXME
+        //ev << "DBG: animate descent in " << enclosingmod->fullPath() << 
+        //   " to " << mod->fullPath() << endl; 
 
         TInspector *insp = findInspector(enclosingmod,INSP_GRAPHICAL);
         if (insp)
