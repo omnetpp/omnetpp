@@ -76,7 +76,7 @@ long genk_randseed(int gen_nr)
 
 long randseed(long seed)
 {
-       if (seed<=0 || seed>=INTRAND_MAX)
+       if (seed<=0 || seed>INTRAND_MAX)
           {opp_error("Invalid random number seed %ld",seed);return 0;}
 
        long res = seeds[0];
@@ -88,7 +88,7 @@ long genk_randseed(int gen_nr, long seed)
 {
        if (gen_nr<0 || gen_nr>=NUM_RANDOM_GENERATORS)
           {opp_error("Invalid random number generator %d",gen_nr);return 0;}
-       if (seed<=0 || seed>=INTRAND_MAX)
+       if (seed<=0 || seed>INTRAND_MAX)
           {opp_error("Invalid random number seed %ld",seed);return 0;}
 
        long res = seeds[gen_nr];
