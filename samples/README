@@ -13,3 +13,5 @@ The source code for all models are provided for you to study. While we have
 done our best to comment the sources, it is probably necessary to browse
 through the Manual before you try to understand them. You might also find
 the simulation kernel API reference useful.
+
+We suggest that you start your tour with the TicToc tutorial.
