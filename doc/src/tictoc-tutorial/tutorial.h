@@ -408,8 +408,9 @@ You can try that no matter how many times you re-run the simulation (or
 restart it, Simulate|Rebuild network menu item), you'll get exactly the
 same results. This is because OMNeT++ uses a deterministic algorithm
 (by default the Mersenne Twister RNG) to generate random numbers, and
-initializes it to the same seed. You can experiment with different
-seeds if you add the following lines to omnetpp.ini:
+initializes it to the same seed. This is important for reproducible
+simulations. You can experiment with different seeds if you add the
+following lines to omnetpp.ini:
 
 @code
 [General]
