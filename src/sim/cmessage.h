@@ -131,9 +131,10 @@ class cMessage : public cObject
         cPar& addPar(char *s) {cPar *p=new cPar(s);parList().add(*p);return *p;}
         cPar& addPar(cPar *p) {parList().add(*p); return *p;}
         cPar& addPar(cPar& p) {parList().add(p); return p;} // DEPRECATED
-        cPar& par(int n);
-        cPar& par(char *s);
-        int   findPar(char *s);
+        cPar& par(int n);                             // get parameter by index
+        cPar& par(char *s);                           // get parameter by name
+        int findPar(char *s);                         // get index of parameter, -1 if doesn't exist
+        bool hasPar(char *s) {return findPar(s)>=0;}  // check if parameter exists
 
         // message encapsulation
         void encapsulate(cMessage *msg);

@@ -163,17 +163,19 @@ class cModule : public cObject
         cModuleType *moduleType()   {return mod_type;}
         int id()                    {return mod_id;}
         cModule *parentModule();
+        bool isOnLocalMachine();
 
+        // if this module is in a module vector:
         bool isVector()             {return vectsize>=0;}
         int index()                 {return idx;}
         int size()                  {return vectsize<0?1:vectsize;}
-        bool isOnLocalMachine();
 
         // module gates
         int gates() {return gatev.items();}            // total num of gates
         cGate *gate(int g) {return (cGate*)&gatev[g];} // gate by id
         cGate *gate(char *s,int sn=-1);                // gate by name & index
         int findGate(char *s, int sn=-1);              // id of a gate
+        bool hasGate(char *s, int sn=-1) {return findGate(s,sn)>=0;} // check if gate exists
 
         bool cModule::checkInternalConnections();  // OK=TRUE; called from NEDC code
 
@@ -183,6 +185,7 @@ class cModule : public cObject
         cPar& par(char *namestr);             // par by name
         int findPar(char *s);                 // index of a par; -1 of not found
         cPar& ancestorPar(char *namestr);     // search for par in parents;error if not found
+        bool hasPar(char *s) {return findPar(s)>=0;}  // check if parameter exists
 
         // machine parameters
         int machinePars()  {return machinev.items();}  // NET

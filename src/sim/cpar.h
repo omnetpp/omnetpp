@@ -195,6 +195,7 @@ class cPar : public cObject
      bool changed();                // has changed? (clears `changed' flag)
 
      // redefined operators to set/get value
+     cPar& operator=(bool b)          {return setBoolValue(s);}
      cPar& operator=(char *s)         {return setStringValue(s);}
      cPar& operator=(char c)          {return setLongValue((long)c);}
      cPar& operator=(unsigned char c) {return setLongValue((long)c);}
@@ -207,6 +208,7 @@ class cPar : public cObject
      cPar& operator=(void *ptr)       {return setPointerValue(ptr);}
      cPar& operator=(cObject *obj)    {return setObjectValue(obj);}
 
+     operator bool()          {return boolValue();}
      operator char*()         {return stringValue();}
      operator char()          {return (char)longValue();}
      operator unsigned char() {return (unsigned char)longValue();}

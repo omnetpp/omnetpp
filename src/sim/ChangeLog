@@ -729,3 +729,6 @@ Dec 19,1999
            msg->addPar("dest") = dest;
        Note that the two new and better forms have been available for a long
        time, so the change should not affect much existing code.
+    o  conversons to/from bool were not fully supported
+ - convenience function hasPar(char*) added to cMessage
+ - convenience functions hasPar(char*) and hasGate(char*,int) added to cModule
