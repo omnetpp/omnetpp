@@ -57,6 +57,9 @@ proc setupTkOptions {} {
    set HAVE_BLT 0
    catch {package require BLT; set HAVE_BLT 1}
 
+   # load combobox
+   package require combobox 1.0
+
    # work around Tcl bug: these vars got reset when words.tcl was autoloaded
    catch {tcl_wordBreakAfter};
    set tcl_wordchars {\w}
@@ -161,7 +164,6 @@ proc wsize {w width height} {
 #    PROCEDURES FOR CREATING NEW 'WIDGET TYPES'
 #===================================================================
 
-package require combobox 1.0
 
 proc iconbutton {w args} {
     global fonts
