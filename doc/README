@@ -182,6 +182,11 @@ which proved to be an extemely productive environment to build user interfaces;
 to D. Richard Hipp for tree.tcl that served as a base for the tree widget in
 GNED, and to Victor Wagner for balloon.tcl.
 
+Thanks to Justin Frankel at Nullsoft for creating NSIS, the Nullsoft Installer,
+which is extremely handy for creating installers on Windows. NSIS is small,
+fast, flexible, and does its job very well. Without NSIS, probably there
+wouldn't be an installer version of OMNeT++.
+
 
 Feedback requested
 ~~~~~~~~~~~~~~~~~~
