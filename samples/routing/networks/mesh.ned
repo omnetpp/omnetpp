@@ -19,7 +19,7 @@ module Mesh
             gatesizes:
                 in[4],
                 out[4];
-            display: "p=,,m,$width";
+            display: "p=,,m,$width,40,40;i=ball_s";
     connections nocheck:
         for i=0..height-1, j=0..width-1 do
             node[i*width+j].out[0] --> node[(i+1)*width+j].in[1] if i!=height-1;
@@ -32,7 +32,7 @@ endmodule
 
 network mesh : Mesh
     parameters:
-        height = input(12,"Number of rows"),
-        width = input(9,"Number of columns");
+        height = input(9,"Number of rows"),
+        width = input(7,"Number of columns");
 endnetwork
 
