@@ -40,7 +40,7 @@ inline bool strnotnull(const char *s)
 //-----------------------------------------------------------------------
 
 NEDCppGenerator::NEDCppGenerator(ostream& _out, ostream& _outh, NEDSymbolTable *symtab) :
-  out(_out), outh(_outh), exprgen(_out), symboltable(symtab)
+  out(_out), outh(_outh), exprgen(_out,symtab), symboltable(symtab)
 {
     indentsize = 4;
     in_network = false;

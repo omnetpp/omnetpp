@@ -27,6 +27,8 @@
 #include "nedelements.h"
 
 using std::ostream;
+class NEDSymbolTable;
+
 
 /**
  * Helper class for NEDCppGenerator. Should be used in the following manner:
@@ -50,6 +52,7 @@ class CppExpressionGenerator
     struct ExpressionInfo {
         ExpressionNode *expr;
         int ctxtype; // tagcode of toplevel element which contains this expr.
+        NEDElement *submoduleTypeDecl; // if submodule or network, the type decl.
         std::string name;
         NEDElementVector ctorargs;
         NEDElementVector cachedvars;
@@ -58,6 +61,7 @@ class CppExpressionGenerator
 
     static int count;
     ostream& out;
+    NEDSymbolTable *symboltable;
     NEDExpressionMap exprMap;
 
     enum {
@@ -66,8 +70,8 @@ class CppExpressionGenerator
     };
 
     void doExtractArgs(ExpressionInfo& info, NEDElement *node);
-    void doCollectExpressions(NEDElement *node);
-    void collectExpressionInfo(ExpressionNode *expr);
+    void doCollectExpressions(NEDElement *node, NEDElement *currentSubmodTypeDecl);
+    void collectExpressionInfo(ExpressionNode *expr, NEDElement *currentSubmodTypeDecl);
     void generateExpressionClass(ExpressionInfo& info);
     const char *getTypeForArg(NEDElement *node);
     const char *getNameForArg(NEDElement *node);
@@ -83,13 +87,13 @@ class CppExpressionGenerator
     void doConst(ConstNode *node, const char *indent, int mode);
     void doExpression(ExpressionNode *node, const char *indent, int mode);
 
-    bool needsExpressionClass(ExpressionNode *expr);
+    bool needsExpressionClass(ExpressionNode *expr, NEDElement *currentSubmodTypeDecl);
 
   public:
     /**
      * Constructor.
      */
-    CppExpressionGenerator(ostream& out);
+    CppExpressionGenerator(ostream& out, NEDSymbolTable *symboltable);
 
     /**
      * Destructor.

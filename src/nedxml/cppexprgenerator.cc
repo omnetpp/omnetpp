@@ -14,6 +14,7 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include "nedcompiler.h"
 #include "cppexprgenerator.h"
 #include "nederror.h"
 
@@ -47,36 +48,66 @@ inline bool strnotnull(const char *s)
 //    {NULL,0}
 // };
 
+static ParamNode *getParameterDecl(NEDElement *moduletypedecl, const char *paramName)
+{
+    if (!moduletypedecl)
+        return NULL;
+    ParamsNode *paramsdecl = (ParamsNode *)moduletypedecl->getFirstChildWithTag(NED_PARAMS);
+    if (!paramsdecl)
+        return NULL;
+    return (ParamNode *) paramsdecl->getFirstChildWithAttribute(NED_PARAM, "name", paramName);
+}
+
+static bool isParameterConst(NEDElement *moduletypedecl, const char *paramName)
+{
+    ParamNode *param = getParameterDecl(moduletypedecl, paramName);
+    if (!param)
+        return false;
+    return strstr(param->getDataType(), "const")!=NULL;
+}
+
 
 int CppExpressionGenerator::count = 0;
 
-CppExpressionGenerator::CppExpressionGenerator(ostream& _out) : out(_out)
+CppExpressionGenerator::CppExpressionGenerator(ostream& _out, NEDSymbolTable *_symboltable) :
+  out(_out), symboltable(_symboltable)
 {
 }
 
 void CppExpressionGenerator::collectExpressions(NEDElement *node)
 {
     exprMap.clear();
-    doCollectExpressions(node);
+    doCollectExpressions(node, NULL);
 }
 
-void CppExpressionGenerator::doCollectExpressions(NEDElement *node)
+void CppExpressionGenerator::doCollectExpressions(NEDElement *node, NEDElement *currentSubmodTypeDecl)
 {
     for (NEDElement *child=node->getFirstChild(); child; child = child->getNextSibling())
     {
         if (child->getTagCode()==NED_EXPRESSION)
         {
-            if (needsExpressionClass((ExpressionNode *)child))
-                collectExpressionInfo((ExpressionNode *)child);
+            // stop recursion at expressions: embedded expressions are merged into their parents
+            if (needsExpressionClass((ExpressionNode *)child, currentSubmodTypeDecl))
+                collectExpressionInfo((ExpressionNode *)child, currentSubmodTypeDecl);
         }
-        else // stop at expressions: embedded expressions are merged into their parents
+        else if (child->getTagCode()==NED_SUBMODULE)
         {
-            doCollectExpressions(child);
+            // get submodule's type decl from symbol table -- we need it for expression generation
+            const char *typeName = ((SubmoduleNode *)child)->getTypeName();
+            NEDElement *thisSubmodTypeDecl = symboltable->getModuleDeclaration(typeName);
+            if (!thisSubmodTypeDecl)
+                INTERNAL_ERROR1(node,"doCollectExpressions(): module type not found: %s", typeName);
+
+            doCollectExpressions(child, thisSubmodTypeDecl);
+        }
+        else
+        {
+            doCollectExpressions(child, currentSubmodTypeDecl);
         }
     }
 }
 
-bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr)
+bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr, NEDElement *currentSubmodTypeDecl)
 {
     // if simple expr, no expression class necessary
     NEDElement *node = expr->getFirstChild();
@@ -89,7 +120,7 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr)
         return false;
 
     // also: if the parameter is non-volatile (that is, const), we don't need expr class
-    if (parenttag==NED_SUBSTPARAM && false /*FIXME ...and param is const*/)
+    if (parenttag==NED_SUBSTPARAM && isParameterConst(currentSubmodTypeDecl, ((SubstparamNode *)expr->getParent())->getName()))
         return false;
 
     // identifiers and constants never need expression classes
@@ -121,7 +152,7 @@ bool CppExpressionGenerator::needsExpressionClass(ExpressionNode *expr)
     return true;
 }
 
-void CppExpressionGenerator::collectExpressionInfo(ExpressionNode *expr)
+void CppExpressionGenerator::collectExpressionInfo(ExpressionNode *expr, NEDElement *currentSubmodTypeDecl)
 {
     char buf[32];
     sprintf(buf,"Expr%d",count++);
@@ -139,6 +170,7 @@ void CppExpressionGenerator::collectExpressionInfo(ExpressionNode *expr)
     info.expr = expr;
     info.name = buf;
     info.ctxtype = ctx ? ctx->getTagCode() : 0;
+    info.submoduleTypeDecl = currentSubmodTypeDecl;
     doExtractArgs(info, expr);
     exprMap[expr] = info;
 }
