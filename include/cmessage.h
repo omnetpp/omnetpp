@@ -620,7 +620,7 @@ class SIM_API cMessage : public cObject
     static int cmpbydelivtime(cObject *one, cObject *other);
 
     /**
-     * Static function that compares two messages by their priority.
+     * Static function that compares two messages by their priorities.
      * It can be used to sort messages in a priority queue.
      * Usable as cQeueue CompareFunc.
      */
