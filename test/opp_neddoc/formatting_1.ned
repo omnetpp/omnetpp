@@ -21,7 +21,7 @@
 //
 // "br" can be used for line breaks,<br>like<br>this (this paragraph should be 3 lines).
 //
-// Accented characters and special symbols: Th&uuml;bingen, G&aacute;bor,
+// Accented characters and special symbols: T&uuml;bingen, G&aacute;bor,
 // Andr&eacute;, ampersand &amp;, quote &quot;.
 // But &gar-bage; and &n0th1ng; are left with & and ; marks.
 //
@@ -56,6 +56,12 @@
 // @todo more testing
 // @bug so far none noticed
 // @see manual
+//
+// Backslash handling: a single backslash should prevent hyperlinking a word.
+// So this should be hyperlinked: Formatting_1, but this not: \Formatting_1.
+// Single backslashes should also be removed, so none should be here: 
+// \one,\Two, Th\ree. Double backslashes should become one, so you should
+// see one \\here, another here: \\, and two here: \\\\.
 //
 // Preformatted text ("pre" tag, should ideally be displayed in fixed-width font):
 // <pre>
