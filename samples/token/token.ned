@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// File: tknring.ned
+// File: token.ned
 // 
 // Network description of a Token Ring network
 // 
@@ -10,9 +10,46 @@
 // 
 //--------------------------------------------------
 
-import  
-    "tknmods"; 
- 
+
+// TokenRingMAC --
+// 
+// implements the Token Ring protocol
+// 
+simple TokenRingMAC 
+    parameters: 
+        data_rate : numeric, 
+        THT : numeric; 
+    gates: 
+        in: phy_in; 
+        in: from_gen; 
+        out: phy_out; 
+        out: to_sink; 
+endsimple 
+
+
+// Generator --
+// 
+// generates data packets for MAC
+// 
+simple Generator 
+    parameters: 
+        num_messages : numeric, 
+        num_stations : numeric const, 
+        ia_time : numeric; 
+    gates: 
+        out: out; 
+endsimple 
+
+
+// Sink --
+// 
+// destroys the packets and creates statistics
+// 
+simple Sink 
+    gates: 
+        in: in; 
+endsimple 
+
 
 // Computer --
 // 
