@@ -217,11 +217,8 @@ configsamples:
 	    $(REPLACE:/=\) %%i.dsp.in - "@OMNETPP_INCL_DIR@" "$(OMNETPP_INCL_DIR)" | \
 	    $(REPLACE:/=\) -          - "@OMNETPP_LIB_DIR@"  "$(OMNETPP_LIB_DIR)"  | \
 	    $(REPLACE:/=\) -          - "@OMNETPP_BIN_DIR@"  "$(OMNETPP_BIN_DIR:/=\)"  | \
-	    $(REPLACE:/=\) -          - "@EXPAT_LIB@" "$(EXPAT_LIB)" | \
-	    $(REPLACE:/=\) -          - "@EXPAT_LIB_PATH@" "$(EXPAT_LIB_DIR)" | \
-	    $(REPLACE:/=\) -          - "@TK_LIB_PATH@" "$(TK_LIB_DIR)" | \
-	    $(REPLACE:/=\) -          - "@TCL_LIB@"     "$(TCL_LIB)"    | \
-	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIB@"      "$(TK_LIB)"
+	    $(REPLACE:/=\) -          - "@XML_LIBS@"         "$(XML_LIBS)" | \
+	    $(REPLACE:/=\) -    %%i.dsp "@TK_LIBS@"          "$(TK_LIBS)"
 
 clean:
 	-for %%i in ( $(LIBS) $(PROGS) ) do \

@@ -10,19 +10,25 @@ option senddirect_arrows	{1}
 option anim_methodcalls	{1}
 option methodcalls_delay	{200}
 option animation_msgnames	{1}
+option animation_msgclassnames	{1}
 option animation_msgcolors	{1}
 option penguin_mode	{0}
 option showlayouting	{0}
 option bubbles	{1}
 option animation_speed	{1}
 option bkpts_enabled	{1}
+option expressmode_autoupdate	{1}
+config rununtil-event	{}
 config last-nedfile	{}
 config filtobjlist-category	{mqsgvo}
 config filtobjlist-maxcount	{100000}
 config editor-findstring	{}
+config rununtil-time	{}
 config editor-regexp	{0}
 config filtobjlist-class	{}
+config rununtil-mode	{Express (tracing off)}
 config filtobjlist-name	{}
+config confirm-exit	{1}
 config editor-backwards	{1}
 config display-treeview	{1}
 config editor-case-sensitive	{0}
