@@ -36,8 +36,9 @@ foreach line {
    {"About..."         "README"}
    {"Tictoc"           "tictoc"           "./tictoc"    "tictoc.exe"}
    {"Fifo"             "fifo"             "./fifo"      "fifo.exe"}
-   {"Queueing"         "queueing"         "./queueing"  "queueing.exe"}
+   {"Queues"           "queues"           "./queues"    "queues.exe"}
    {"CQN"              "cqn"              "./cqn"       "cqn.exe"}
+   {"Queueing"         "queueing"         "./queueing"  "queueing.exe"}
    {"Parallel CQN"     "cqn/parsim"       "./runparsim" "runparsim.bat"}
    {"Hist"             "hist"             "./hist"      "hist.exe"}
    {"P-to-P"           "p-to-p"           "./p-to-p"    "p-to-p.exe"}
@@ -47,7 +48,6 @@ foreach line {
    {"HCube"            "hcube"            "./hcube"     "hcube.exe"}
    {"Routing"          "routing"          "./routing"   "routing.exe"}
    {"Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
-   {"RoutingDB"        "routingdb"        "./routingdb" "routingdb.exe"}
    {"TokenRing"        "tokenring"        "./tokenring" "tokenring.exe"}
    {"NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
 } {

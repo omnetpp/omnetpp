@@ -1,9 +1,9 @@
 Routing
 =======
 
-Demonstrates static shortest-path routing. Routing tables are set up at the 
-beginning of the simulation using the cTopology class. The model is 
-intentionally kept simple to facilitate understanding. 
+Demonstrates static shortest-path routing. Routing tables are set up at the
+beginning of the simulation using the cTopology class. The model is
+intentionally kept simple to facilitate understanding.
 
 The network topology is the one widely known as the "NTT backbone", and it was
 contributed by Mudassar Farooq.
@@ -13,24 +13,18 @@ object. Then it computes shortest paths to every other node, and stores the
 first nodes of the paths in a next-hop table. (Actually the table contains
 the port number to the next-hop node not the node address itself -- the table
 thus provides dest-address -> next-hop-address mapping). All the above takes
-place once, at the beginning of this simulation. The topology is static during 
+place once, at the beginning of this simulation. The topology is static during
 the simulation, and so there's no need for the nodes to do anything to keep
 the tables up-to-date. There's no routing protocol in the model.
 
-Once the routing tables are set up, nodes start sending packets at random 
-intervals. Every node gets a list of destination addresses in a parameter, 
+Once the routing tables are set up, nodes start sending packets at random
+intervals. Every node gets a list of destination addresses in a parameter,
 and for every packet it randomly chooses a destination from the list.
 
 To keep the model simple, packet forwarding takes zero time in the model,
-and so it is not necessary to queue the packets. In a realistic simulation 
+and so it is not necessary to queue the packets. In a realistic simulation
 this also has to be changed.
 
-For real routing simulations, it might be practical to set up a central 
-"routing database" to reduce the memory consumption of routing tables
-kept at each node, and to reduce the time of topology discovery (only once,
-instead of per node) and setting up the routing tables. The idea is illustrated
-in the RoutingDB example.
-
 The networks/ subdirectory contains further networks that can be tested with
-the "routing" executable -- provided OMNeT++ was compiled with support for 
+the "routing" executable -- provided OMNeT++ was compiled with support for
 dynamic loading of NED files (WITH_NETBUILDER option).

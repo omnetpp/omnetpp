@@ -36,7 +36,7 @@ components: libs progs samples tutorials
 
 LIBS=sim nedxml envir cmdenv tkenv
 PROGS=utils nedc gned scalars plove
-SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing routingdb tictoc tokenring
+SAMPLES=aloha cqn dyna fddi fifo hcube hist neddemo p-to-p queueing routing queues tictoc tokenring
 
 #
 # Group targets. Note that utils has to be built BEFORE other libs and progs
@@ -122,7 +122,7 @@ queueing:
 routing:
 	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
-routingdb:
+queues:
 	cd $(OMNETPP_SAMPLES_DIR)/$@ && $(MAKE)
 
 tictoc:

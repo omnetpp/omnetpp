@@ -547,7 +547,7 @@ AC_CONFIG_FILES(
   samples/p-to-p/Makefile
   samples/queueing/Makefile
   samples/routing/Makefile
-  samples/routingdb/Makefile
+  samples/queues/Makefile
   samples/tictoc/Makefile
   samples/tokenring/Makefile
   tutorial/queues/Makefile
