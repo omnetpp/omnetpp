@@ -1,3 +1,23 @@
+2004-03-10   Andras Varga
+
+	* cenvir.h: use std::ostream as base class for cEnvir. ev<< works 
+	exactly as with any C++ stream now (stream manipulators can be used,
+	etc). Also, there are no bounded buffers along the data path, so
+	outputting arbitrarily long strings are supported. (Except in 
+	ev.printf(), but as of 2004, one shouldn't feel much temptation to 
+	use it.)  
+
+	Users should change custom << operators written for cEnvir to use
+	std::ostream instead. Leaving cEnvir<< will continue to work,
+	but ostream<< is just more useful.
+
+	* cenvir.h: removed stream input ev>> operators, and also the methods
+	askf(), prompt(), setprompt(). gets() was retained for now, but added
+	an overloaded equivalent which stores input in std::string.
+
+	cpar.h: changed void getAsText(char *buf, int bufsize) functions to 
+	std::string getAsText().
+
 2004-03-08   Andras Varga
 
 	* cobject.h, cpolymorphic.h: defined fullName() and fullPath() in

@@ -19,21 +19,72 @@
 #ifndef __CENVIR_H
 #define __CENVIR_H
 
+#include <sstream>
+#include <iostream>
 #include "defs.h"
-
-#include <stdlib.h> // atol, atof
-#include "cpar.h"
-
 
 class cObject;
 class cMessage;
 class cGate;
+class cModule;
 class cSimpleModule;
-
+class cStatistic;
 class TOmnetApp;
 
-//=== class declared:
 class cEnvir;
+
+using std::endl;
+
+//
+// std::streambuf used by cEnvir's ostream base. It redirects writes to
+// cEnvir::sputn(s,n). Flush is done at the end of each line, meanwhile
+// writes are buffered in a stringbuf.
+//
+template <class E, class T = std::char_traits<E> >
+    class basic_evbuf : public std::basic_stringbuf<E,T> {
+public:
+    basic_evbuf(cEnvir *ev) : _ev(ev) {}
+protected:
+    virtual int sync() {
+        _ev->sputn(pbase(), pptr()-pbase());
+        setp(pbase(),epptr());
+        return 0;
+    }
+    virtual std::streamsize xsputn(const E *s, std::streamsize n) {
+#if !defined(_MSC_VER) || _MSC_VER>1200
+        std::streamsize r = std::basic_stringbuf<E,T>::xsputn(s,n);
+#else
+        // **HACK** I want to do a really simple thing here -- to call the
+        // same function in the base class. However, MSVC6.0 gives a weird
+        // compilation error on the above line. I couldn't find any other
+        // workaround than copying here the body of the original xsputn()
+        // function from the MSVC header, VC98/Include/streambuf.
+        const E *_S = s;
+        std::streamsize _N = n;
+        std::streamsize _M, _Ns;
+        for (_Ns = 0; 0 < _N; )
+            if (pptr() != 0 && 0 < (_M = epptr() - pptr()))
+                {if (_N < _M)
+                    _M = _N;
+                T::copy(pptr(), _S, _M);
+                _S += _M, _Ns += _M, _N -= _M, pbump(_M); }
+            else if (T::eq_int_type(T::eof(),
+                overflow(T::to_int_type(*_S))))
+                break;
+            else
+                ++_S, ++_Ns, --_N;
+        std::streamsize r = _Ns;
+#endif
+        for(;n>0;n--,s++)
+            if (*s=='\n')
+               {sync();break;}
+        return r;
+    }
+    cEnvir *_ev;
+};
+
+typedef basic_evbuf<char> evbuf;
+
 
 /**
  * The environment object global instance.
@@ -42,19 +93,10 @@ class cEnvir;
  */
 ENVIR_API extern cEnvir ev;
 
-
-// return codes for runningMode()
-enum {
-    SLAVE_MODE = 0,  // must be 0
-    MASTER_MODE = 1,
-    NONPARALLEL_MODE = 2,
-    STARTUPERROR_MODE = 3
-};
-
 ENVIR_API bool memoryIsLow();
 ENVIR_API bool opp_loadlibrary(const char *libname);
 
-//==========================================================================
+
 
 /**
  * Interface to the environment (user interface) of the simulation. cEnvir
@@ -70,7 +112,7 @@ ENVIR_API bool opp_loadlibrary(const char *libname);
  *   <LI> functions for exchanging information between the simulation and the
  *        environment.
  * </UL>
-
+ *
  * The implementation of cEnvir is <b>not</b> part of the simulation kernel,
  * it's in a separate library (the Envir library; see src/envir). This means that
  * customizers are free to replace the environment of the simulation as
@@ -88,16 +130,14 @@ ENVIR_API bool opp_loadlibrary(const char *libname);
  * @see cOutputScalarManager class
  * @ingroup Envir
  */
-class ENVIR_API cEnvir
+class ENVIR_API cEnvir : public std::ostream
 {
   public:
     TOmnetApp *app;  // the "simulation application" instance
-  public:
     int disable_tracing;
   private:
+    evbuf ev_buf;
     bool isgui;
-    int running_mode; // MASTER_MODE / SLAVE_MODE / NONPARALLEL_MODE / STARTUPERROR_MODE
-    char prmpt[81];    // prompt used by prompt() and operator >>
 
   public:
     /** @name Constructor, destructor.
@@ -213,12 +253,14 @@ class ENVIR_API cEnvir
     void moduleDeleted(cModule *module);
 
     /**
-     * FIXME finalize semantics and document it
+     * Notifies the environment that a connection has been created using
+     * srcgate->connectTo().
      */
     void connectionCreated(cGate *srcgate);
 
     /**
-     * FIXME finalize semantics and document it; what if conn parameters change?
+     * Notifies the environment that a connection has been removed using
+     * srcgate->disconnect().
      */
     void connectionRemoved(cGate *srcgate);
 
@@ -290,15 +332,26 @@ class ENVIR_API cEnvir
 
     /**
      * Simple modules can output text into their own window through this
-     * function. The text  is expected in printf() format (format
+     * function. The text is expected in printf() format (format
      * string + arguments).
+     *
+     * It is recommended to use C++-style I/O instead of this function.
      */
     void printf(const char *fmt="\n",...);
 
     /**
-     * Similar to ev.printf(), but just writes out its argument string with no formatting.
+     * Similar to ev.printf(), but just writes out its argument string with
+     * no formatting.
+     * It is recommended to use C++-style I/O instead of this function.
      */
     void puts(const char *s);
+
+    /**
+     * Similar to ev.puts(), but only n characters of string s are written.
+     * Used internally: the streambuf underlying cEnvir's ostream base class
+     * writes via this function.
+     */
+    void sputn(const char *s, int n);
 
     /**
      * Flushes the output buffer of ev.printf() and ev<< operations.
@@ -306,21 +359,19 @@ class ENVIR_API cEnvir
      * writes to the standard output, but no need for it with Tkenv which
      * displays all output immediately anyway.
      */
-    void flush();
+    cEnvir& flush();
 
     /**
-     * Similar to cEnvir::askf(), but just writes out the prompt
-     * message string with no formatting.
+     * Interactively prompts the user to enter a string. std::stringstream
+     * can be used to further process the input.
+     */
+    std::string gets(const char *prompt, const char *defaultreply=NULL);
+
+    /**
+     * The old-style equivalent of the other gets() method which uses std::string.
+     * Retained for compatibility only.
      */
     bool gets(const char *prompt, char *buf, int len=255);
-
-    /**
-     * Pops up a dialog, displays the message given in 'promptfmt' and following
-     * arguments in printf() format and reads a line (maximum
-     * len characters) from the user into the buffer 'buf'.
-     * Returns true if the user pressed the Cancel button.
-     */
-    bool askf(char *buf, int len, const char *promptfmt,...);
 
     /**
      * Puts a yes/no question to the user. The question itself  is expected
@@ -328,16 +379,6 @@ class ENVIR_API cEnvir
      * true return value means yes, false means no.
      */
     bool askYesNo(const char *msgfmt,...);
-
-    /**
-     * Sets the prompt for >> operators.
-     */
-    cEnvir& setPrompt(const char *s);
-
-    /**
-     * Returns the prompt string.
-     */
-    const char *prompt() const  {return prmpt;}
     //@}
 
     /** @name Methods for recording data from output vectors.
@@ -460,75 +501,6 @@ class ENVIR_API cEnvir
     //@}
 };
 
-//==========================================================================
-//  Overloaded operators to provide iostream-like I/O for cEnvir
-
-cEnvir& operator<< (cEnvir& ev, cPar& p);
-inline cEnvir& operator<< (cEnvir& ev, const char *s)
-  {ev.puts(s); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, const signed char *s)
-  {ev.puts((const char *)s); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, const unsigned char *s)
-  {ev.puts((const char *)s); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, char c)
-  {ev.printf("%c",c); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, unsigned char c)
-  {ev.printf("%c",c); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, signed char c)
-  {ev.printf("%c",c); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, short i)
-  {ev.printf("%d", (int)i); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, unsigned short i)
-  {ev.printf("%u", (int)i); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, int i)
-  {ev.printf("%d", i); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, unsigned int i)
-  {ev.printf("%u", i); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, long l)
-  {ev.printf("%ld", l); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, unsigned long l)
-  {ev.printf("%lu", l); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, double d)
-  {ev.printf("%g", d); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, long double d)
-  {ev.printf("%Lg", d); return ev;}
-
-inline cEnvir& operator<< (cEnvir& ev, cObject *p)
-  {if (!p) ev.puts("NULL"); else {ev.printf("(%s)",p->className()); ev.puts(p->fullName());} return ev;}
-inline cEnvir& operator<< (cEnvir& ev, const cObject *p)
-  {if (!p) ev.puts("NULL"); else {ev.printf("(%s)",p->className()); ev.puts(p->fullName());} return ev;}
-inline cEnvir& operator<< (cEnvir& ev, cObject& o)
-  {ev.printf("(%s)",o.className()); ev.puts(o.fullName()); return ev;}
-inline cEnvir& operator<< (cEnvir& ev, const cObject& o)
-  {ev.printf("(%s)",o.className()); ev.puts(o.fullName()); return ev;}
-
-
-// endl
-inline cEnvir& endl(cEnvir& ev) {ev.puts("\n"); return ev;}
-inline cEnvir& operator<<(cEnvir& ev, cEnvir& (*f)(cEnvir&)) {return (*f)(ev);}
-
-// '*' operator is a synonym to ev.setPrompt()
-// e.g.: ev*"How many?" >> n;
-cEnvir& operator* (cEnvir& ev, char *s);
-cEnvir& operator* (cEnvir& ev, const signed char *s);
-cEnvir& operator* (cEnvir& ev, const unsigned char *s);
-
-// NOTE: each >> operator reads a whole line!
-cEnvir& operator>> (cEnvir& ev, cPar& p);
-cEnvir& operator>> (cEnvir& ev, char *s);
-cEnvir& operator>> (cEnvir& ev, signed char *s);
-cEnvir& operator>> (cEnvir& ev, unsigned char *s);
-cEnvir& operator>> (cEnvir& ev, char& c);
-cEnvir& operator>> (cEnvir& ev, signed char& c);
-cEnvir& operator>> (cEnvir& ev, unsigned char& c);
-cEnvir& operator>> (cEnvir& ev, short& i);
-cEnvir& operator>> (cEnvir& ev, int& i);
-cEnvir& operator>> (cEnvir& ev, long& l);
-cEnvir& operator>> (cEnvir& ev, unsigned short& i);
-cEnvir& operator>> (cEnvir& ev, unsigned int& i);
-cEnvir& operator>> (cEnvir& ev, unsigned long& l);
-cEnvir& operator>> (cEnvir& ev, double& d);
-cEnvir& operator>> (cEnvir& ev, long double& d);
 
 
 #endif

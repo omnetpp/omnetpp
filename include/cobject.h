@@ -20,6 +20,7 @@
 
 #include <typeinfo>
 #include <iostream>
+#include "cenvir.h"
 #include "defs.h"
 #include "util.h"
 #include "cpolymorphic.h"
@@ -481,6 +482,17 @@ class cStaticFlag
     ~cStaticFlag() {staticflag = false;}
     static bool isSet() {return staticflag;}
 };
+
+std::ostream& operator<< (std::ostream& os, const cObject *p);
+std::ostream& operator<< (std::ostream& os, const cObject& o);
+
+inline std::ostream& operator<< (std::ostream& os, cObject *p) {
+    return os << (const cObject *)p;
+}
+
+inline std::ostream& operator<< (std::ostream& os, cObject& o) {
+    return os << (const cObject&)o;
+}
 
 
 /**

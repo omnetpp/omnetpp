@@ -44,7 +44,7 @@ class cExpression
 {
   public:
     virtual ~cExpression() {}
-    virtual void getAsText(char *buf, int maxlen) = 0;
+    virtual std::string getAsText() = 0;
     virtual bool parseText(const char *text) = 0;
     virtual cExpression *dup() = 0;
 };
@@ -77,7 +77,7 @@ class cExpression
 class cDoubleExpression : public cExpression
 {
   public:
-    virtual void getAsText(char *buf, int maxlen);
+    virtual std::string getAsText();
     virtual bool parseText(const char *text);
     virtual double evaluate() = 0;
 };
@@ -673,7 +673,7 @@ class SIM_API cPar : public cObject
      * Places the value in text format it into buffer buf which
      * is maxlen characters long.
      */
-    virtual void getAsText(char *buf, int maxlen);
+    virtual std::string getAsText() const;
 
     /**
      * This function tries to interpret the argument text as a type
@@ -910,6 +910,14 @@ class SIM_API cModulePar : public cPar
     cModule *ownerModule() const        {return omodp;}
     //@}
 };
+
+inline std::ostream& operator<< (std::ostream& os, const cPar& o) {
+    return os << o.getAsText();
+}
+
+inline std::ostream& operator<< (std::ostream& os, cPar& o) {
+    return os << o.getAsText();
+}
 
 
 //=== operators dealing with cPars
