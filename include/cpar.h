@@ -90,7 +90,7 @@ class cDoubleExpression : public cExpression
  * Types and type characters:
  *
  * <UL>
- *   <LI> basic types: C char, S string, L long, D double
+ *   <LI> basic types: S string, B bool, L long, D double
  *   <LI> F math function (MathFuncNoArgs,MathFunc1Args,etc),
  *   <LI> X expression (table of ExprElems),
  *   <LI> C compiled expression (subclassed from cDoubleExpression),
