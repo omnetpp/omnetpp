@@ -458,8 +458,8 @@
          <xsl:if test="$have-dot='yes'">
             <xsl:call-template name="print-module-usage-diagram"/>
          </xsl:if>
-         <xsl:call-template name="print-attrs"/>
          <xsl:call-template name="print-channel-used-in"/>
+         <xsl:call-template name="print-attrs"/>
          <xsl:call-template name="print-source"/>
       </xsl:with-param>
    </xsl:call-template>
@@ -478,9 +478,9 @@
          <xsl:if test="$have-dot='yes'">
             <xsl:call-template name="print-module-usage-diagram"/>
          </xsl:if>
+         <xsl:call-template name="print-module-used-in"/>
          <xsl:call-template name="print-params"/>
          <xsl:call-template name="print-gates"/>
-         <xsl:call-template name="print-module-used-in"/>
          <xsl:call-template name="print-source"/>
       </xsl:with-param>
    </xsl:call-template>
@@ -497,10 +497,10 @@
          <xsl:if test="$have-dot='yes'">
             <xsl:call-template name="print-module-usage-diagram"/>
          </xsl:if>
-         <xsl:call-template name="print-params"/>
-         <xsl:call-template name="print-gates"/>
          <xsl:call-template name="print-uses"/>
          <xsl:call-template name="print-module-used-in"/>
+         <xsl:call-template name="print-params"/>
+         <xsl:call-template name="print-gates"/>
          <xsl:if test="$document-unassigned-params='yes'">
             <xsl:call-template name="print-unset-submodparams"/>
          </xsl:if>
