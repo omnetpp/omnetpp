@@ -31,15 +31,15 @@ tcl2c.exe: tcl2c.c
 opp_replace.exe: opp_replace.c
 	$(CC) $(CFLAGS) opp_replace.c
 
-opp_neddoc: opp_neddoc.in
+opp_neddoc: opp_neddoc.in ..\..\configuser.vc
 	copy opp_neddoc.in opp_neddoc
-	$(PERL) -i.bak -pe "s|\@NEDTOOL\@|$(OMNETPP_BIN_DIR)/nedtool.exe|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@GNED\@|$(OMNETPP_BIN_DIR)/gned.exe|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@XSLTPROC\@|$(XSLTPROC)|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@GHOSTSCRIPT\@|$(GHOSTSCRIPT)|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@GIFTRANS\@|$(GIFTRANS)|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@DOT\@|$(DOT)|" opp_neddoc
-	$(PERL) -i.bak -pe "s|\@PERL\@|$(PERL)|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@NEDTOOL\@|$(OMNETPP_BIN_DIR:\=/)/nedtool.exe|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@GNED\@|$(OMNETPP_BIN_DIR:\=/)/gned.exe|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@XSLTPROC\@|$(XSLTPROC:\=/)|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@GHOSTSCRIPT\@|$(GHOSTSCRIPT:\=/)|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@GIFTRANS\@|$(GIFTRANS:\=/)|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@DOT\@|$(DOT:\=/)|" opp_neddoc
+	$(PERL) -i.bak -pe "s|\@PERL\@|$(PERL:\=/)|" opp_neddoc
 	del opp_neddoc.bak
 
 depend:
