@@ -1,8 +1,5 @@
 To be finished (top priority!):
-- finish "Channel Properties" dialog (chanprops.tcl)
 - improve comment handling in all dialogs!!!
-- reduce number of "array names ned ..." lines -- they're SLOW!
-  --> introduce "ownedkeys" attr and rewrite deleteItem, connKeysOfItem, etc.
 
 Parse/Generate:
 - comments around display strings, channel attributes are lost
@@ -44,6 +41,8 @@ General:
 - different vertical toolbar when changing from graphics to NED view;
   on that toolbar: Find, Replace
 - scrollbar for the tabs below if there are too many windows open
+- reduce number of "array names ned ..." lines -- they're SLOW!
+  --> introduce "ownedkeys" attr and rewrite deleteItem, connKeysOfItem, etc.
 
 Dialogs:
 - merge "Drawing options" dialogs into properties

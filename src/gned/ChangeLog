@@ -251,8 +251,9 @@ Dec 17, 2000
  - improvement: GNED will refuse to exit or close a NED file if there are text mode
    canvases with edits. You'll have to switch those canvases to graphics
    to get the NED source backparsed.
- - improvement: "Channel Properties" dialog implemented (cannot handle 'for'
-   loops yet).
+ - Connection Properties dialog implemented. (Cannot handle 'for' loops yet.)
+Dec 18, 2000
+ - implemented Channel Properties dialog
 TODO:
   delete disp str class from source
 

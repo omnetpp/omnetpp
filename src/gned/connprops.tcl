@@ -22,9 +22,6 @@ proc editConnectionProps {key} {
     global gned ned canvas
 
     global tmp
-#    tk_messageBox -title "GNED" -icon warning -type ok \
-#                 -message "Dialog implementation not finished yet"
-#    return
 
     # create dialog with OK and Cancel buttons
     createOkCancelDialog .connprops "Connection Properties"
@@ -249,3 +246,4 @@ proc ConnProps:addConnAttr {conn_key attrname attrvalue} {
     set ned($key,value) $attrvalue
     return $key
 }
+
