@@ -49,7 +49,7 @@ for i in Nim Token FDDI FIFO1 FIFO2 Hist HCube Dyna; do
 done
 
 # produce rundemo.bat
-cat >rundemo.bat <<__END__
+cat >$DIR/rundemo.bat <<__END__
 @echo off
 if not "x%1"=="x" goto okay
 echo Usage: %0 demoname
