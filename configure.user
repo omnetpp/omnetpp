@@ -14,7 +14,7 @@
 #
 #CFLAGS='-g -Wno-unused'
 #CFLAGS='-g -Wall'
-CFLAGS='-gstabs+3 -Wall'  
+CFLAGS='-gstabs+3 -Wall'
 #CFLAGS='-O3 -DNDEBUG=1'
 
 # To suppress the 'unused variable' warnings in ned-generated _n.cc files
@@ -49,31 +49,29 @@ PLOVE_EMBED_TCL=no
 #PLOVE_EMBED_TCL=yes
 
 #
-# Here you may help 'configure' to determine which compile switches (TK_CFLAGS)
-# and which linker switches (TK_LIBS) are needed to build an app with Tcl/Tk.
+# You can explicitly tell 'configure' what compile switches (TK_CFLAGS)
+# and linker switches (TK_LIBS) are needed to build an application with Tcl/Tk.
 # Normally these settings are autodetected by 'configure', so you only need to
 # edit here if autodetection doesn't work.
 #
-# In the rare case you need to set TK_CFLAGS, here's what it typically contains:
-#    TK_CFLAGS="-I/usr/local/include -fwritable-strings"
-# In the above line, /usr/local/include is the directory where tcl.h and tk.h
-# live. (This might be different on your system). If they are in different
-# directories, you may have to specify multiple -I switches, like this:
-#    TK_CFLAGS="-I/usr/local/include/tcl -I/usr/local/include/tk -fwritable-strings"
-# The '-fwritable-strings' flag is a gcc option Tcl needs. (Actually, permission
-# to temporarily overwrite string constants).
+# With gcc, settings typically look like this:
 #
-# TK_LIBS (if you need to set it) normally contains something like this:
-#    TK_LIBS="-L/usr/local/lib -ltk8.3 -ltcl8.3"
-# /usr/local/lib is the directory that contains the Tcl/Tk library files.
-# (Something like libtcl8.3.so, libtk83.a, etc; search for libtcl* and libtk*
-# to find them.) The -l options contain the library names: the library file
-# names, with the leading 'lib' and trailing '.so*' or '.a*' cut off.
-# (Sometimes you need to explicitly link with the X11 libraries too, in that
-# case add -lX11 to TK_LIBS).
+# TK_CFLAGS="-I/usr/local/include -fwritable-strings"
+# TK_LIBS="-L/usr/local/lib -ltk8.4 -ltcl8.4"
 #
-TK_CFLAGS="-I/d/Tcl831/include -fwritable-strings"
-TK_LIBS="-L/d/Tcl831/lib -ltk83 -ltcl83"
+# /usr/local/include should be replaced with the directory where tcl.h and tk.h
+# live. If they are in two different directories, use two -I switches.
+# The '-fwritable-strings' flag is a gcc option Tcl needs.
+#
+# /usr/local/lib should be replaced with the directory that contains the Tcl/Tk
+# library files (something like libtcl84.so, libtk8.4.a etc; search for libtcl*
+# and libtk* to find them.) The -l options contain the library names: the
+# library file names, with the leading 'lib' and trailing '.so*' or '.a*' cut
+# off. Sometimes you need to explicitly link with the X11 libraries too, in that
+# case add -lX11 to TK_LIBS.
+#
+TK_CFLAGS="-I/d/home/tools/Tcl-8.4.1/include -fwritable-strings"
+TK_LIBS="-L/d/home/tools/Tcl-8.4.1/lib -ltk84 -ltcl84"
 
 #
 # Similar settings for PVM
@@ -90,19 +88,19 @@ MPI_LIBS=
 #
 # for Expat
 #
-EXPAT_CFLAGS="-I ../expat-1.95.2/Source/lib"
-EXPAT_LIBS=
+EXPAT_CFLAGS="-I/d/home/tools/expat-1.95.2/Source/lib"
+EXPAT_LIBS="-L/d/home/tools/expat-1.95.2/libs -lexpat"
 
 #
 # for LIBXML
 #
-LIBXML_CFLAGS="-I /usr/include/libxml2"
-LIBXML_LIBS=
+LIBXML_CFLAGS="-I/d/home/tools/libxml2-2.4.26.win32/include/libxml"
+LIBXML_LIBS="-L/d/home/tools/libxml2-2.4.26.win32/lib -lxml2 -L/d/home/tools/iconv-1.8.win32/lib -liconv"
 
 #
 # for Akaroa
 #
-AKAROA_CFLAGS="-I /usr/include/akaroa"
+AKAROA_CFLAGS="-I/d/home/tools/akaroa-2.7.2/src/include"
 AKAROA_LIBS=
 
 #
