@@ -14,253 +14,250 @@ module Net60
         rte: Node[57];
             parameters:
                 address = index;
-            gatesizes:
-                in[6],
-                out[6];
             display: "i=ball_vs,gold,100";
     connections nocheck:
-        rte[0].out[0] --> rte[1].in[0];
-        rte[0].in[0] <-- rte[1].out[0];
+        rte[0].out++ --> rte[1].in++;
+        rte[0].in++ <-- rte[1].out++;
 
-        rte[1].out[1] --> rte[2].in[0];
-        rte[1].in[1] <-- rte[2].out[0];
+        rte[1].out++ --> rte[2].in++;
+        rte[1].in++ <-- rte[2].out++;
 
-        rte[1].out[2] --> rte[4].in[0];
-        rte[1].in[2] <-- rte[4].out[0];
+        rte[1].out++ --> rte[4].in++;
+        rte[1].in++ <-- rte[4].out++;
 
-        rte[3].out[0] --> rte[4].in[1];
-        rte[3].in[0] <-- rte[4].out[1];
+        rte[3].out++ --> rte[4].in++;
+        rte[3].in++ <-- rte[4].out++;
 
-        rte[4].out[2] --> rte[5].in[0];
-        rte[4].in[2] <-- rte[5].out[0];
+        rte[4].out++ --> rte[5].in++;
+        rte[4].in++ <-- rte[5].out++;
 
-        rte[4].out[3] --> rte[7].in[0];
-        rte[4].in[3] <-- rte[7].out[0];
+        rte[4].out++ --> rte[7].in++;
+        rte[4].in++ <-- rte[7].out++;
 
-        rte[5].out[1] --> rte[6].in[0];
-        rte[5].in[1] <-- rte[6].out[0];
+        rte[5].out++ --> rte[6].in++;
+        rte[5].in++ <-- rte[6].out++;
 
-        rte[5].out[2] --> rte[10].in[0];
-        rte[5].in[2] <-- rte[10].out[0];
+        rte[5].out++ --> rte[10].in++;
+        rte[5].in++ <-- rte[10].out++;
 
-        rte[6].out[1] --> rte[7].in[1];
-        rte[6].in[1] <-- rte[7].out[1];
+        rte[6].out++ --> rte[7].in++;
+        rte[6].in++ <-- rte[7].out++;
 
-        rte[6].out[2] --> rte[9].in[0];
-        rte[6].in[2] <-- rte[9].out[0];
+        rte[6].out++ --> rte[9].in++;
+        rte[6].in++ <-- rte[9].out++;
 
-        rte[7].out[2] --> rte[8].in[0];
-        rte[7].in[2] <-- rte[8].out[0];
+        rte[7].out++ --> rte[8].in++;
+        rte[7].in++ <-- rte[8].out++;
 
-        rte[7].out[3] --> rte[12].in[0];
-        rte[7].in[3] <-- rte[12].out[0];
+        rte[7].out++ --> rte[12].in++;
+        rte[7].in++ <-- rte[12].out++;
 
-        rte[9].out[1] --> rte[11].in[0];
-        rte[9].in[1] <-- rte[11].out[0];
+        rte[9].out++ --> rte[11].in++;
+        rte[9].in++ <-- rte[11].out++;
 
-        rte[10].out[1] --> rte[11].in[1];
-        rte[10].in[1] <-- rte[11].out[1];
+        rte[10].out++ --> rte[11].in++;
+        rte[10].in++ <-- rte[11].out++;
 
-        rte[10].out[2] --> rte[13].in[0];
-        rte[10].in[2] <-- rte[13].out[0];
+        rte[10].out++ --> rte[13].in++;
+        rte[10].in++ <-- rte[13].out++;
 
-        rte[11].out[2] --> rte[12].in[1];
-        rte[11].in[2] <-- rte[12].out[1];
+        rte[11].out++ --> rte[12].in++;
+        rte[11].in++ <-- rte[12].out++;
 
-        rte[11].out[3] --> rte[14].in[0];
-        rte[11].in[3] <-- rte[14].out[0];
+        rte[11].out++ --> rte[14].in++;
+        rte[11].in++ <-- rte[14].out++;
 
-        rte[12].out[2] --> rte[15].in[0];
-        rte[12].in[2] <-- rte[15].out[0];
+        rte[12].out++ --> rte[15].in++;
+        rte[12].in++ <-- rte[15].out++;
 
-        rte[13].out[1] --> rte[18].in[0];
-        rte[13].in[1] <-- rte[18].out[0];
+        rte[13].out++ --> rte[18].in++;
+        rte[13].in++ <-- rte[18].out++;
 
-        rte[14].out[1] --> rte[15].in[1];
-        rte[14].in[1] <-- rte[15].out[1];
+        rte[14].out++ --> rte[15].in++;
+        rte[14].in++ <-- rte[15].out++;
 
-        rte[14].out[2] --> rte[22].in[0];
-        rte[14].in[2] <-- rte[22].out[0];
+        rte[14].out++ --> rte[22].in++;
+        rte[14].in++ <-- rte[22].out++;
 
-        rte[15].out[2] --> rte[16].in[0];
-        rte[15].in[2] <-- rte[16].out[0];
+        rte[15].out++ --> rte[16].in++;
+        rte[15].in++ <-- rte[16].out++;
 
-        rte[16].out[1] --> rte[17].in[0];
-        rte[16].in[1] <-- rte[17].out[0];
+        rte[16].out++ --> rte[17].in++;
+        rte[16].in++ <-- rte[17].out++;
 
-        rte[16].out[2] --> rte[23].in[0];
-        rte[16].in[2] <-- rte[23].out[0];
+        rte[16].out++ --> rte[23].in++;
+        rte[16].in++ <-- rte[23].out++;
 
-        rte[18].out[1] --> rte[19].in[0];
-        rte[18].in[1] <-- rte[19].out[0];
+        rte[18].out++ --> rte[19].in++;
+        rte[18].in++ <-- rte[19].out++;
 
-        rte[18].out[2] --> rte[21].in[0];
-        rte[18].in[2] <-- rte[21].out[0];
+        rte[18].out++ --> rte[21].in++;
+        rte[18].in++ <-- rte[21].out++;
 
-        rte[19].out[1] --> rte[20].in[0];
-        rte[19].in[1] <-- rte[20].out[0];
+        rte[19].out++ --> rte[20].in++;
+        rte[19].in++ <-- rte[20].out++;
 
-        rte[19].out[2] --> rte[26].in[0];
-        rte[19].in[2] <-- rte[26].out[0];
+        rte[19].out++ --> rte[26].in++;
+        rte[19].in++ <-- rte[26].out++;
 
-        rte[20].out[1] --> rte[21].in[1];
-        rte[20].in[1] <-- rte[21].out[1];
+        rte[20].out++ --> rte[21].in++;
+        rte[20].in++ <-- rte[21].out++;
 
-        rte[20].out[2] --> rte[24].in[0];
-        rte[20].in[2] <-- rte[24].out[0];
+        rte[20].out++ --> rte[24].in++;
+        rte[20].in++ <-- rte[24].out++;
 
-        rte[20].out[3] --> rte[25].in[0];
-        rte[20].in[3] <-- rte[25].out[0];
+        rte[20].out++ --> rte[25].in++;
+        rte[20].in++ <-- rte[25].out++;
 
-        rte[21].out[2] --> rte[22].in[1];
-        rte[21].in[2] <-- rte[22].out[1];
+        rte[21].out++ --> rte[22].in++;
+        rte[21].in++ <-- rte[22].out++;
 
-        rte[21].out[3] --> rte[23].in[1];
-        rte[21].in[3] <-- rte[23].out[1];
+        rte[21].out++ --> rte[23].in++;
+        rte[21].in++ <-- rte[23].out++;
 
-        rte[21].out[4] --> rte[24].in[1];
-        rte[21].in[4] <-- rte[24].out[1];
+        rte[21].out++ --> rte[24].in++;
+        rte[21].in++ <-- rte[24].out++;
 
-        rte[23].out[2] --> rte[24].in[2];
-        rte[23].in[2] <-- rte[24].out[2];
+        rte[23].out++ --> rte[24].in++;
+        rte[23].in++ <-- rte[24].out++;
 
-        rte[24].out[3] --> rte[28].in[0];
-        rte[24].in[3] <-- rte[28].out[0];
+        rte[24].out++ --> rte[28].in++;
+        rte[24].in++ <-- rte[28].out++;
 
-        rte[25].out[1] --> rte[27].in[0];
-        rte[25].in[1] <-- rte[27].out[0];
+        rte[25].out++ --> rte[27].in++;
+        rte[25].in++ <-- rte[27].out++;
 
-        rte[26].out[1] --> rte[32].in[0];
-        rte[26].in[1] <-- rte[32].out[0];
+        rte[26].out++ --> rte[32].in++;
+        rte[26].in++ <-- rte[32].out++;
 
-        rte[27].out[1] --> rte[29].in[0];
-        rte[27].in[1] <-- rte[29].out[0];
+        rte[27].out++ --> rte[29].in++;
+        rte[27].in++ <-- rte[29].out++;
 
-        rte[27].out[2] --> rte[30].in[0];
-        rte[27].in[2] <-- rte[30].out[0];
+        rte[27].out++ --> rte[30].in++;
+        rte[27].in++ <-- rte[30].out++;
 
-        rte[27].out[3] --> rte[32].in[1];
-        rte[27].in[3] <-- rte[32].out[1];
+        rte[27].out++ --> rte[32].in++;
+        rte[27].in++ <-- rte[32].out++;
 
-        rte[28].out[1] --> rte[29].in[1];
-        rte[28].in[1] <-- rte[29].out[1];
+        rte[28].out++ --> rte[29].in++;
+        rte[28].in++ <-- rte[29].out++;
 
-        rte[28].out[2] --> rte[31].in[0];
-        rte[28].in[2] <-- rte[31].out[0];
+        rte[28].out++ --> rte[31].in++;
+        rte[28].in++ <-- rte[31].out++;
 
-        rte[29].out[2] --> rte[31].in[1];
-        rte[29].in[2] <-- rte[31].out[1];
+        rte[29].out++ --> rte[31].in++;
+        rte[29].in++ <-- rte[31].out++;
 
-        rte[30].out[1] --> rte[36].in[0];
-        rte[30].in[1] <-- rte[36].out[0];
+        rte[30].out++ --> rte[36].in++;
+        rte[30].in++ <-- rte[36].out++;
 
-        rte[31].out[2] --> rte[33].in[0];
-        rte[31].in[2] <-- rte[33].out[0];
+        rte[31].out++ --> rte[33].in++;
+        rte[31].in++ <-- rte[33].out++;
 
-        rte[32].out[2] --> rte[34].in[0];
-        rte[32].in[2] <-- rte[34].out[0];
+        rte[32].out++ --> rte[34].in++;
+        rte[32].in++ <-- rte[34].out++;
 
-        rte[33].out[1] --> rte[37].in[0];
-        rte[33].in[1] <-- rte[37].out[0];
+        rte[33].out++ --> rte[37].in++;
+        rte[33].in++ <-- rte[37].out++;
 
-        rte[34].out[1] --> rte[35].in[0];
-        rte[34].in[1] <-- rte[35].out[0];
+        rte[34].out++ --> rte[35].in++;
+        rte[34].in++ <-- rte[35].out++;
 
-        rte[34].out[2] --> rte[40].in[0];
-        rte[34].in[2] <-- rte[40].out[0];
+        rte[34].out++ --> rte[40].in++;
+        rte[34].in++ <-- rte[40].out++;
 
-        rte[35].out[1] --> rte[36].in[1];
-        rte[35].in[1] <-- rte[36].out[1];
+        rte[35].out++ --> rte[36].in++;
+        rte[35].in++ <-- rte[36].out++;
 
-        rte[35].out[2] --> rte[39].in[0];
-        rte[35].in[2] <-- rte[39].out[0];
+        rte[35].out++ --> rte[39].in++;
+        rte[35].in++ <-- rte[39].out++;
 
-        rte[36].out[2] --> rte[37].in[1];
-        rte[36].in[2] <-- rte[37].out[1];
+        rte[36].out++ --> rte[37].in++;
+        rte[36].in++ <-- rte[37].out++;
 
-        rte[37].out[2] --> rte[38].in[0];
-        rte[37].in[2] <-- rte[38].out[0];
+        rte[37].out++ --> rte[38].in++;
+        rte[37].in++ <-- rte[38].out++;
 
-        rte[38].out[1] --> rte[39].in[1];
-        rte[38].in[1] <-- rte[39].out[1];
+        rte[38].out++ --> rte[39].in++;
+        rte[38].in++ <-- rte[39].out++;
 
-        rte[38].out[2] --> rte[42].in[0];
-        rte[38].in[2] <-- rte[42].out[0];
+        rte[38].out++ --> rte[42].in++;
+        rte[38].in++ <-- rte[42].out++;
 
-        rte[39].out[2] --> rte[40].in[1];
-        rte[39].in[2] <-- rte[40].out[1];
+        rte[39].out++ --> rte[40].in++;
+        rte[39].in++ <-- rte[40].out++;
 
-        rte[39].out[3] --> rte[41].in[0];
-        rte[39].in[3] <-- rte[41].out[0];
+        rte[39].out++ --> rte[41].in++;
+        rte[39].in++ <-- rte[41].out++;
 
-        rte[40].out[2] --> rte[43].in[0];
-        rte[40].in[2] <-- rte[43].out[0];
+        rte[40].out++ --> rte[43].in++;
+        rte[40].in++ <-- rte[43].out++;
 
-        rte[40].out[3] --> rte[44].in[0];
-        rte[40].in[3] <-- rte[44].out[0];
+        rte[40].out++ --> rte[44].in++;
+        rte[40].in++ <-- rte[44].out++;
 
-        rte[40].out[4] --> rte[52].in[0];
-        rte[40].in[4] <-- rte[52].out[0];
+        rte[40].out++ --> rte[52].in++;
+        rte[40].in++ <-- rte[52].out++;
 
-        rte[41].out[1] --> rte[42].in[1];
-        rte[41].in[1] <-- rte[42].out[1];
+        rte[41].out++ --> rte[42].in++;
+        rte[41].in++ <-- rte[42].out++;
 
-        rte[41].out[2] --> rte[43].in[1];
-        rte[41].in[2] <-- rte[43].out[1];
+        rte[41].out++ --> rte[43].in++;
+        rte[41].in++ <-- rte[43].out++;
 
-        rte[42].out[2] --> rte[43].in[2];
-        rte[42].in[2] <-- rte[43].out[2];
+        rte[42].out++ --> rte[43].in++;
+        rte[42].in++ <-- rte[43].out++;
 
-        rte[43].out[3] --> rte[46].in[0];
-        rte[43].in[3] <-- rte[46].out[0];
+        rte[43].out++ --> rte[46].in++;
+        rte[43].in++ <-- rte[46].out++;
 
-        rte[44].out[1] --> rte[45].in[0];
-        rte[44].in[1] <-- rte[45].out[0];
+        rte[44].out++ --> rte[45].in++;
+        rte[44].in++ <-- rte[45].out++;
 
-        rte[44].out[2] --> rte[47].in[0];
-        rte[44].in[2] <-- rte[47].out[0];
+        rte[44].out++ --> rte[47].in++;
+        rte[44].in++ <-- rte[47].out++;
 
-        rte[45].out[1] --> rte[46].in[1];
-        rte[45].in[1] <-- rte[46].out[1];
+        rte[45].out++ --> rte[46].in++;
+        rte[45].in++ <-- rte[46].out++;
 
-        rte[46].out[2] --> rte[49].in[0];
-        rte[46].in[2] <-- rte[49].out[0];
+        rte[46].out++ --> rte[49].in++;
+        rte[46].in++ <-- rte[49].out++;
 
-        rte[47].out[1] --> rte[48].in[0];
-        rte[47].in[1] <-- rte[48].out[0];
+        rte[47].out++ --> rte[48].in++;
+        rte[47].in++ <-- rte[48].out++;
 
-        rte[48].out[1] --> rte[50].in[0];
-        rte[48].in[1] <-- rte[50].out[0];
+        rte[48].out++ --> rte[50].in++;
+        rte[48].in++ <-- rte[50].out++;
 
-        rte[48].out[2] --> rte[51].in[0];
-        rte[48].in[2] <-- rte[51].out[0];
+        rte[48].out++ --> rte[51].in++;
+        rte[48].in++ <-- rte[51].out++;
 
-        rte[49].out[1] --> rte[50].in[1];
-        rte[49].in[1] <-- rte[50].out[1];
+        rte[49].out++ --> rte[50].in++;
+        rte[49].in++ <-- rte[50].out++;
 
-        rte[50].out[2] --> rte[53].in[0];
-        rte[50].in[2] <-- rte[53].out[0];
+        rte[50].out++ --> rte[53].in++;
+        rte[50].in++ <-- rte[53].out++;
 
-        rte[51].out[1] --> rte[52].in[1];
-        rte[51].in[1] <-- rte[52].out[1];
+        rte[51].out++ --> rte[52].in++;
+        rte[51].in++ <-- rte[52].out++;
 
-        rte[51].out[2] --> rte[53].in[1];
-        rte[51].in[2] <-- rte[53].out[1];
+        rte[51].out++ --> rte[53].in++;
+        rte[51].in++ <-- rte[53].out++;
 
-        rte[52].out[2] --> rte[53].in[2];
-        rte[52].in[2] <-- rte[53].out[2];
+        rte[52].out++ --> rte[53].in++;
+        rte[52].in++ <-- rte[53].out++;
 
-        rte[52].out[3] --> rte[54].in[0];
-        rte[52].in[3] <-- rte[54].out[0];
+        rte[52].out++ --> rte[54].in++;
+        rte[52].in++ <-- rte[54].out++;
 
-        rte[53].out[3] --> rte[56].in[0];
-        rte[53].in[3] <-- rte[56].out[0];
+        rte[53].out++ --> rte[56].in++;
+        rte[53].in++ <-- rte[56].out++;
 
-        rte[54].out[1] --> rte[55].in[0];
-        rte[54].in[1] <-- rte[55].out[0];
+        rte[54].out++ --> rte[55].in++;
+        rte[54].in++ <-- rte[55].out++;
 
-        rte[55].out[1] --> rte[56].in[1];
-        rte[55].in[1] <-- rte[56].out[1];
+        rte[55].out++ --> rte[56].in++;
+        rte[55].in++ <-- rte[56].out++;
 endmodule
 
 network net60 : Net60
