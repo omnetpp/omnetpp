@@ -230,7 +230,7 @@ proc loadConfig {{fname {}}} {
                        deserializeFilter $line
                    } else {
                        # unrecognized
-                       error
+                       error "unrecognised keyword at beginning of line -- old .ploverc format?"
                    }
                } errmsg] {
                    tk_messageBox -icon warning -type ok -title {Error reading .ploverc} -message "$fname line $lineno is invalid, ignoring ($errmsg)"
