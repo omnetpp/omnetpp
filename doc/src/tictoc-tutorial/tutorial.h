@@ -506,10 +506,10 @@ PREV: @ref part2 UP: @ref contents
 
 @section s9 Step 9
 
-Let's make it a real networkg: we'll use several (n) tic modules,
-and connect every node to every other. For now, we'll keep it
-simple what they do: one of the nodes generates a message, and the others
-keep tossing it around in random directions until it arrives at
+Now we'll make a big step: create several tic modules and connect
+them into a network. For now, we'll keep it simple what they do:
+one of the nodes generates a message, and the others keep tossing
+it around in random directions until it arrives at
 a predetermined destination node.
 
 The NED file will need a few changes. First of all, the Txc module will
@@ -526,7 +526,7 @@ the network.
 @skip module Tictoc9
 @until endmodule
 
-Here we created n modules as a module vector, and connected them.
+Here we created 6 modules as a module vector, and connected them.
 
 The resulting topology looks like this:
 
@@ -545,9 +545,17 @@ sends out message on that gate.
 @skip ::forwardMessage
 @until }
 
-If the message arrives at tic[2], handleMessage() will delete the message.
+If the message arrives at tic[3], handleMessage() will delete the message.
 
 See the full code in @ref txc9.cc.
+
+<i>Exercise: you'll notice that this simple "routing" is not very efficient:
+often the packet keeps bouncing between two nodes for a while before it is sent
+to a different direction. This can be improved somewhat if nodes don't send
+the packet back to the sender. Implement this. Hints: cMessage::arrivalGate(),
+cGate::index(). Note that if the message didn't arrive via a gate but was
+a self-message, then arrivalGate() returns NULL.
+</i>
 
 Sources: @ref tictoc9.ned, @ref txc9.cc, @ref omnetpp.ini
 
