@@ -71,7 +71,7 @@ cDefaultList::~cDefaultList()
     // delete all owned objects. One place we make use of this is behavior is
     // when a simple module gets deleted -- there we have to delete all dynamically
     // allocated objects held by the module.
-    // TBD khmm... really delete? what about objects in structs etc?
+    // TBD consider not deleting -- delete might crash if there were objects in structs etc.
     while (count>0)
         delete vect[0];
     delete [] vect;

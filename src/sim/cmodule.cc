@@ -197,7 +197,8 @@ void cModule::insertSubmodule(cModule *mod)
     // take ownership
     take(mod);
 
-    // find end of submodule list; TBD maybe introduce a lastsubmodp member?
+    // find end of submodule list
+    // TBD maybe introduce a lastsubmodp member to make this more efficient
     cModule *lastsubmodp = firstsubmodp;
     if (lastsubmodp)
         while (lastsubmodp->nextp)

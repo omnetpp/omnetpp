@@ -506,7 +506,7 @@ cSimpleModule *cSimulation::guessNextModule()
         return NULL;
 
     // TBD if this event is "not good" (no module or module ended),
-    // we might look for another event, but this is not done right now...
+    // we might look for another event, but this is not done right now.
 
     // check if dest module exists and still running
     if (msg->arrivalModuleId()==-1)
@@ -534,7 +534,7 @@ void cSimulation::transferTo(cSimpleModule *modp)
     if (simulation.exception)
     {
         // alas, type info was lost, so we have to recover manually...
-        // FIXME use dynamic_cast
+        // TBD change to using dynamic_cast
         if (simulation.exception_type==0)
             throw (cException *)simulation.exception;
         else if (simulation.exception_type==1)
@@ -580,7 +580,7 @@ void cSimulation::doOneEvent(cSimpleModule *mod)
     catch (cEndModuleException *e)
     {
         // handle locally
-        // TBD make separate cDeleteModuleException!
+        // TBD make separate cDeleteModuleException
         setGlobalContext();
         if (e->moduleToBeDeleted())
             delete mod;

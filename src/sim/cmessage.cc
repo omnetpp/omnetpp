@@ -228,6 +228,10 @@ cMessage& cMessage::operator=(const cMessage& msg)
 {
     if (this==&msg) return *this;
 
+    if (refcount!=0)
+        throw new cException(this,"operator=(): assigning to a refcounted msg object "
+                             "(probably encapsulated in another message) not supported");
+
     cObject::operator=(msg);
 
     msgkind = msg.msgkind;
@@ -236,9 +240,8 @@ cMessage& cMessage::operator=(const cMessage& msg)
     error = msg.error;
     tstamp = msg.tstamp;
     srcprocid = msg.srcprocid; // probably redundant
-    // TBD refcount!!! should be left alone
 
-    created = msg.created;  // hmm...
+    created = msg.created;
 
     dropAndDelete(parlistp);
     if (msg.parlistp)

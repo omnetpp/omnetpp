@@ -192,8 +192,6 @@ cBasicChannel::~cBasicChannel()
 std::string cBasicChannel::info() const
 {
     return cChannel::info();
-    // append other info
-    //TBD
 }
 
 void cBasicChannel::forEach( ForeachFunc do_fn )

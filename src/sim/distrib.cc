@@ -219,7 +219,9 @@ double weibull(double a, double b, int rng)
 
 double pareto_shifted(double a, double b, double c, int rng)
 {
-    // FIXME: check arg values
+    if (a==0)
+        throw new cException("pareto_shifted(): parameter a cannot be zero)");
+
     double u_pow = pow(1.0 - genk_dblrand(rng), 1.0 / a);
     return (b - c * u_pow) / u_pow;
 }
@@ -287,7 +289,7 @@ int negbinomial(int n, double p, int rng)
 
 
 /*
- * FIXME: hypergeometric() doesn't work yet
+ * TBD: hypergeometric() doesn't work yet
  *
 int hypergeometric(int a, int b, int n, int rng)
 {

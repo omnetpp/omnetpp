@@ -26,7 +26,6 @@
 #include "util.h"
 #include "errmsg.h"
 #include "ctypes.h"  // createOne()
-// #include "cenum.h" --TBD
 
 
 void cStructDescriptor::long2string(long l, char *buf, int bufsize)
