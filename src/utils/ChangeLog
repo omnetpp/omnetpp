@@ -116,3 +116,4 @@ Feb 6, 2001
 ------ omnetpp-2.0 released ------
 Feb 27, 2001
  - fixed bug in tcl2c which prevented it from compiling with Cygwin
+------ omnetpp-2.0p1 released ------
