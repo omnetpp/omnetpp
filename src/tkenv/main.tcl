@@ -245,7 +245,14 @@ proc create_omnetpp_window {} {
     label .statusbar.timelabel \
         -justify left -relief groove -text {T=0.0000000 (0.00s)} -width 20
     label .statusbar.nextlabel \
-        -justify left -relief groove -text Next: -width 26
+        -justify left -relief groove -text {Next:} -width 26
+
+    label .statusbar2.simsecpersec \
+        -relief groove -text {simsec/sec: n/a} -width 20
+    label .statusbar2.eventspersec \
+        -relief groove -text {ev/sec: n/a} -width 20
+    label .statusbar2.eventspersimsec \
+        -relief groove -text {ev/simsec: n/a} -width 20
 
     label .statusbar2.feslength \
         -relief groove -text {Msgs in FES: 0} -width 20
@@ -258,6 +265,10 @@ proc create_omnetpp_window {} {
     pack .statusbar.eventlabel -anchor n -expand 0 -fill x -side left
     pack .statusbar.timelabel -anchor n -expand 1 -fill x -side left
     pack .statusbar.nextlabel -anchor n -expand 1 -fill x -side right
+
+    pack .statusbar2.simsecpersec -anchor n -expand 0 -fill x -side left
+    pack .statusbar2.eventspersec -anchor n -expand 0 -fill x -side left
+    pack .statusbar2.eventspersimsec -anchor n -expand 0 -fill x -side left
 
     pack .statusbar2.feslength -anchor n -expand 0 -fill x -side left
     pack .statusbar2.totalmsgs -anchor n -expand 0 -fill x -side left

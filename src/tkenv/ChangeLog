@@ -393,3 +393,11 @@ Sep 29, 2000
 Jan 3, 2000
  - added 2nd status bar (containing: number of messages in the FES, total
    number of messages created, number of currently existing message objects)
+Jan 13, 2000
+ - added performance status bar (simsec/sec, events/sec, events/simsec gauges)
+
+ TBD:
+      left-align labels;
+      add Speedometer calls to all necessary places;
+      time-driven intervals;
+      events/simsec calculation

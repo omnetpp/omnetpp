@@ -48,6 +48,7 @@ TKENV_API void tkenvDummy() {}
 TKENV_API void envirDummy() {}
 
 
+// widgets in the Tk user interface
 #define NETWORK_LABEL   ".statusbar.networklabel"
 #define EVENT_LABEL     ".statusbar.eventlabel"
 #define TIME_LABEL      ".statusbar.timelabel"
@@ -57,6 +58,84 @@ TKENV_API void envirDummy() {}
 #define TOTALMSGS_LABEL ".statusbar2.totalmsgs"
 #define LIVEMSGS_LABEL  ".statusbar2.livemsgs"
 
+#define SIMSECPERSEC_LABEL    ".statusbar2.simsecpersec"
+#define EVENTSPERSEC_LABEL    ".statusbar2.eventspersec"
+#define EVENTSPERSIMSEC_LABEL ".statusbar2.eventspersimsec"
+
+
+//
+// Speedometer: utility class to measure simulation speed
+//
+class Speedometer
+{
+    bool started;
+    long events;
+    simtime_t current_simtime;
+    simtime_t intvstart_simtime;
+    clock_t intvstart_clock;
+    double last_eventspersec;
+    double last_simsecpersec;
+
+  public:
+    Speedometer();
+    void addEvent(simtime_t t);
+    void beginNewInterval();
+    double eventsPerSec();
+    double eventsPerSimSec();
+    double simSecPerSec();
+};
+
+Speedometer::Speedometer()
+{
+    started = false;
+}
+
+void Speedometer::addEvent(simtime_t t)
+{
+    if (!started)
+    {
+        // begin 1st interval
+        events = 0;
+        intvstart_clock = clock();
+        intvstart_simtime = t;
+
+        last_eventspersec = 0;
+        last_simsecpersec = 0;
+
+        started = true;
+    }
+
+    events++;
+    current_simtime = t;
+}
+
+void Speedometer::beginNewInterval()
+{
+    clock_t now = clock();
+    long elapsed_clocks = now - intvstart_clock;
+    double elapsed_sec = (double)elapsed_clocks / CLOCKS_PER_SEC;
+    last_eventspersec = events / elapsed_sec;
+    last_simsecpersec = (current_simtime-intvstart_simtime) / elapsed_sec;
+
+    events = 0;
+    intvstart_clock = now;
+    intvstart_simtime = current_simtime;
+}
+
+double Speedometer::eventsPerSec()
+{
+    return last_eventspersec;
+}
+
+double Speedometer::eventsPerSimSec()
+{
+    return 0; //TBD
+}
+
+double Speedometer::simSecPerSec()
+{
+    return last_simsecpersec;
+}
 
 //=========================================================================
 // TOmnetTkApp
@@ -246,6 +325,7 @@ void TOmnetTkApp::runSimulation( simtime_t until_time, long until_event,
 
     is_running = true;
     simulation.startClock();
+
     while(1)
     {
         // query which module will execute the next event
@@ -322,15 +402,19 @@ void TOmnetTkApp::runSimulationNoTracing(simtime_t until_time,long until_event)
 
     is_running = true;
     simulation.startClock();
+    Speedometer speedometer;
     do {
          cSimpleModule *mod = simulation.selectNextModule();
          if (mod==NULL) break;
          simulation.doOneEvent( mod );
          simulation.incEventNumber();
+         speedometer.addEvent(simulation.simTime());
 
          if (simulation.eventNumber()%opt_updatefreq_express==0)
          {
             updateSimtimeDisplay();
+            speedometer.beginNewInterval();
+            updatePerformanceDisplay(speedometer);
             Tcl_Eval(interp, "update");
          }
 
@@ -640,6 +724,36 @@ void TOmnetTkApp::clearNextModuleDisplay()
 {
     CHK(Tcl_VarEval(interp, NEXT_LABEL " config -text {"
                         "Running..."
+                        "}", NULL ));
+}
+
+void TOmnetTkApp::updatePerformanceDisplay(Speedometer& speedometer)
+{
+    char buf[16];
+    sprintf(buf, "%g", speedometer.simSecPerSec());
+    CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {"
+                        "simsec/sec: ", buf,
+                        "}", NULL ));
+    sprintf(buf, "%g", speedometer.eventsPerSec());
+    CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {"
+                        "ev/sec: ", buf,
+                        "}", NULL ));
+    sprintf(buf, "%g", speedometer.eventsPerSimSec());
+    CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {"
+                        "ev/simsec: ", buf,
+                        "}", NULL ));
+}
+
+void TOmnetTkApp::clearPerformanceDisplay()
+{
+    CHK(Tcl_VarEval(interp, SIMSECPERSEC_LABEL " config -text {"
+                        "simsec/sec: n/a"
+                        "}", NULL ));
+    CHK(Tcl_VarEval(interp, EVENTSPERSEC_LABEL " config -text {"
+                        "ev/sec: n/a"
+                        "}", NULL ));
+    CHK(Tcl_VarEval(interp, EVENTSPERSIMSEC_LABEL " config -text {"
+                        "ev/simsec: n/a"
                         "}", NULL ));
 }
 

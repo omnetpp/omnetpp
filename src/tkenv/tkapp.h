@@ -22,6 +22,9 @@
 
 #define TKENV_EXTRASTACK   16384
 
+
+class Speedometer;
+
 //=========================================================================
 // TOmnetTkApp: Tcl/Tk-based user interface.
 
@@ -107,6 +110,9 @@ class TOmnetTkApp : public TOmnetApp
       void updateSimtimeDisplay();
       void updateNextModuleDisplay();
       void clearNextModuleDisplay();
+      void updatePerformanceDisplay(Speedometer& speedometer);
+      void clearPerformanceDisplay();
+
       void printEventBanner(cSimpleModule *mod);
 
       const char *getIniFileName()       {return opt_inifile_name;}
