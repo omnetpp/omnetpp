@@ -76,7 +76,7 @@ $arg0 = "opp_test";
 if ($#ARGV == -1)
 {
     print $Usage;
-    exit(1);
+    exit;
 }
 
 while (@ARGV)
@@ -111,7 +111,7 @@ while (@ARGV)
         $mode='run';
     }
     elsif ($arg =~ /^-/) {
-        print $Usage;
+        print STDERR "$arg0: error: unknown switch $arg\n";
         exit(1);
     }
     else {
@@ -122,7 +122,7 @@ while (@ARGV)
 
 if ($mode eq '')
 {
-    print $Usage;
+    print STDERR "$arg0: error: either -g or -r must be present\n";
     exit(1);
 }
 
@@ -158,6 +158,8 @@ if ($testprogram eq '') {
 #
 if ($mode eq 'gen')
 {
+    print "$arg0: extracting files from *.test files into $workingdir...\n";
+
     define_templates();
 
     foreach $testfilename (@filenames)
@@ -171,6 +173,8 @@ if ($mode eq 'gen')
 #
 if ($mode eq 'run')
 {
+    print "$arg0: running tests using $testprogram...\n";
+
     $num_pass=0;
     $num_fail=0;
     $num_unresolved=0;

@@ -120,7 +120,7 @@ from other files.
         if ($userif ne "CMDENV" && $userif ne "TKENV")
         {
             print STDERR "opp_makemake: -u: valid user interface names are Cmdenv or Tkenv";
-            exit;
+            exit(1);
         }
     }
     elsif ($arg eq '-M' || $arg eq '--mpi')
@@ -149,18 +149,18 @@ from other files.
     }
     else
     {
-        if (-d $ARGV[1])
+        if (-d $arg)
         {
-            push(@dirs, $ARGV[1]);
+            push(@dirs, $arg);
+        }
+        elsif (-f $arg)
+        {
+            push(@xobjs, $arg);
         }
         else
         {
-            if (! -f $ARGV[1])
-            {
-                print STDERR"opp_makemake: $ARGV[1] is neither an existing file/dir nor a valid option";
-                exit;
-            }
-            push(@xobjs, $ARGV[1]);
+            print STDERR "opp_makemake: $arg is neither an existing file/dir nor a valid option";
+            exit(1);
         }
     }
 }
@@ -170,7 +170,7 @@ $makefile = "Makefile.vc";
 if (-f $makefile && $force ne "y")
 {
     print STDERR "opp_makemake: use -f to force overwriting existing $makefile\n";
-    exit;
+    exit(1);
 }
 
 @sobjs = ();
@@ -203,7 +203,7 @@ foreach $i (@dirs)
     else
     {
         print STDERR "opp_makemake: make in $i failed, exiting\n";
-        exit;
+        exit(1);
     }
 }
 
