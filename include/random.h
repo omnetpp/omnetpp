@@ -32,21 +32,8 @@
 /**
  * @name Random number generation.
  *
- * OMNeT++ has a built-in pseudo random number generator that gives long int
- * (32-bit) values in the range 1...2^31-2, with a period length of 2^31-2.
- *
- * The generator is a linear congruential generator (LCG), and uses the method
- * x=(x * 75) mod (2^31-1). The testrand() method can be used
- * to check if the generator works correctly. Required hardware is exactly
- * 32-bit integer arithmetics.
- *
- * OMNeT++ provides several independent random number generators
- * (by default 32; this number is #defined as NUM_RANDOM_GENERATORS in
- * utils.h), identified by numbers. The generator number is usually the gen_nr
- * argument to functions beginning with genk_.
- *
- * Source: Raj Jain: The Art of Computer Systems Performance Analysis
- * (John Wiley & Sons, 1991), pages 441-444, 455.
+ * Docs is in the group documentation in index.h. Whatever you type here is
+ * ignored by Doxygen :-(
  *
  * @ingroup RandomNumbers
  */

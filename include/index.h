@@ -90,7 +90,42 @@
 /**
  * @defgroup RandomNumbers  Random number generation
  *
- * lots of random numbers!
+ * <b>Distributions</b>
+ *
+ * There are several functions which generate random variates
+ * from different distributions: uniform, exponential, normal,
+ * truncated normal, gamma, beta, Erlang, Weibull, Bernoulli,
+ * binomial, geometric, poisson, and several more.
+ *
+ * The functions rely on the random number generator described below.
+ *
+ * The documentation of individual functions includes the generation method
+ * it uses. The description may refer to one of the following publications:
+ *
+ * LawKelton: A.M. Law and W.D. Kelton, Simulation Modeling and Analysis,
+ * 3rd ed., McGraw Hill, 2000.
+ *
+ * Banks: J. Banks: Handbook of Simulation, Wiley, 1998.
+ *
+ * <b>Random number generator</b>
+ *
+ * OMNeT++ currently has a 31-bit built-in pseudo random number generator (RNG)
+ * that gives long int (32-bit) values in the range 1...2^31-2, with
+ * a period length of 2^31-2.
+ *
+ * The generator is a linear congruential generator (LCG), and uses the method
+ * x=(x * 75) mod (2^31-1). The testrand() method can be used
+ * to check if the generator works correctly. Required hardware is exactly
+ * 32-bit integer arithmetics.
+ *
+ * OMNeT++ provides several independent random number generators
+ * (by default 32; this number is #defined as NUM_RANDOM_GENERATORS in
+ * utils.h), identified by numbers. The generator number is usually the gen_nr
+ * argument to functions beginning with genk_.
+ *
+ * Source: Raj Jain: The Art of Computer Systems Performance Analysis
+ * (John Wiley & Sons, 1991), pages 441-444, 455.
+ *
  */
 
 /**

@@ -22,12 +22,8 @@
 /**
  * @name Continuous distributions
  *
- * Literature:
- *
- * -# LawKelton: A.M. Law and W.D. Kelton, Simulation Modeling and Analysis,
- *     3rd ed., McGraw Hill, 2000.
- *
- * -# Banks: J. Banks: Handbook of Simulation, Wiley, 1998.
+ * Docs is in the group documentation in index.h. Whatever you type here is
+ * ignored by Doxygen :-(
  *
  * @ingroup RandomNumbers
  */
@@ -233,12 +229,8 @@ SIM_API double pareto_shifted(double a, double b, double c, int rng=0);
 /**
  * @name Discrete distributions
  *
- * Literature:
- *
- * -# LawKelton: A.M. Law and W.D. Kelton, Simulation Modeling and Analysis,
- *     3rd ed., McGraw Hill, 2000.
- *
- * -# Banks: J. Banks: Handbook of Simulation, Wiley, 1998.
+ * Docs is in the group documentation in index.h. Whatever you type here is
+ * ignored by Doxygen :-(
  *
  * @ingroup RandomNumbers
  */
