@@ -35,9 +35,13 @@ Module/submodule parameters can be included with the \ttt{\$name} notation:
 
 Objects that may have display strings are:
 \begin{itemize}
-  \item{compound modules (as the enclosing module in the drawing),}
-  \item{submodules}
-  \item{connections}
+  \item \textit{submodules} -- display string may contain position, arrangement
+        (for module vectors), icon, icon color, auxiliary icon, status text,
+        communication range (as circle or filled circle), etc.
+  \item \textit{connections} -- display string can specify positioning, arrow color,
+        arrow thickness
+  \item \textit{compound modules} -- display string can specify background color,
+        border color, border thickness
 \end{itemize}
 
 The following NED sample shows where to place display strings in the code.
@@ -276,40 +280,39 @@ Examples:
   "m=a;o=blue,3"
 \end{verbatim}
 
+%FIXME more examples
+
+%FIXME displayString().setTagArg(), bubble() etc here!
+
+%FIXME bitmap path here
 
 \section{GNED -- Graphical NED Editor}
 
 \index{ned!graphical interface}
 
 The GNED editor allows you to design compound modules graphically.
-GNED works with NED files -- it doesn't use any nasty internal file
+GNED works directly with NED files -- it doesn't have any internal file
 format. You can load any of your existing NED files, edit the compound
-modules in it graphically and then save the file back. The rest of the
-stuff in the NED file (simple modules, channels, networks etc.) will
+modules in it graphically and then save the file back. Other components
+in the NED file (simple modules, channels, networks etc.) will
 survive the operation. GNED puts all graphics-related data into
 display strings.
 
-
 GNED works by parsing your NED file into an internal data structure,
 and regenerating the NED text when you save the file. One consequence
-of this is that indentation will be ``canonized''
--- hopefully you consider this fact as a plus and not as a minus.
+of this is that indentation will be ``canonized''.
 Comments in the original NED are preserved -- the parser associates
 them with the NED elements they belong to, so comments won't
 be messed up even if you edit the graphical representation to
 death by removing/adding submodules, gates, parameters, connections,
 etc.
 
-GNED is now a fully two-way visual tool. While editing the graphics,
+GNED is a fully two-way visual tool. While editing the graphics,
 you can always switch to NED source view, edit in there and switch
 back to graphics. Your changes in the NED source will be immediately
 backparsed to graphics; in fact, the graphics will be totally
 reconstructed from the NED source and the display strings in
 it.
-
-GNED is still under development. There are some missing functions
-and bugs, but overall it should be fairly reliable. See the TODO
-file in the GNED source directory for problems and missing features.
 
 
 \subsection{Keyboard and mouse bindings}
