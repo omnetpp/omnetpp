@@ -1,6 +1,60 @@
 What's New
 ==========
 
+OMNeT++ 3.0 (Dec 2004)
+----------------------
+
+The following list summarizes *all* changes since OMNeT++ 2.3:
+
+- The simulation kernel has received an overhaul.
+
+- A new step-by-step tutorial, revised documentation and several new 
+  sample simulations have been included to shorten your learning curve.
+
+- Dynamic NED loading will cut model build time and simplify your work.
+
+- Documentation generation tool will document your own large simulation 
+  models, and help you quickly get an overview about the structure 
+  of 3rd party models.
+
+- The new Random Number Architecture features a modern, very long cycle 
+  Random Number Generator (Mersenne Twister) for more realistic simulation 
+  results, and RNG mapping for more flexibility in simulation experiments.
+
+- Simulation models can now conveniently access XML configuration files 
+  for complex input.
+
+- Plove now features a powerful interactive charting component, and also 
+  an internal data-flow engine for processing output vectors before 
+  plotting.
+
+- The new Scalars tool complements Plove, and lets you analyze and plot 
+  scalar data produced by simulations.
+
+- Support for Parallel Distributed Simulation
+
+- Several Simulation GUI usability enhancements will save you time, and 
+  make your work more efficient.
+
+- New icons, and enhanced animation capabilities (icon coloring, queue 
+  length display, status text, transmission range, transient bubbles, 
+  etc.) improve the overall look and feel of your models, give you more 
+  insight, and make the models instantly presentable.
+
+- For better visualization of model dynamics, OMNEST now supports 
+  animation of direct message sending and C++ method calls across modules.
+
+- The automatic network layouting using the SpringEmbedder algorithm will 
+  let you work with large networks in the GUI, without the need for 
+  individual positioning of nodes.
+
+- Ready to receive your extensions: plug-in interfaces for new random 
+  number generators, new configuration databases and simulation event 
+  schedulers complement existing plug-in interfaces for recording simulation 
+  data, and let you implement custom input/output, real-time simulation, 
+  hardware-in-the-loop simulation and more.
+
+
 OMNeT++ 3.0 beta 1 (Nov 24 2004)
 --------------------------------
 - added new TicToc tutorial
