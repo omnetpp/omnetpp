@@ -269,7 +269,7 @@ void cIniFile::clearContents()
     fname = NULL;
 }
 
-const char *cIniFile::_getValue(const char *sect, const char *ent, int raw)
+const char *cIniFile::_getValue(const char *sect, const char *ent, bool raw)
 {
     notfound=false;  // clear error flag
     int i;
@@ -319,12 +319,12 @@ const char *cIniFile::getSectionName(int k)
 
 bool cIniFile::exists(const char *sect, const char *ent)
 {
-    return _getValue(sect, ent, 1)!=NULL;
+    return _getValue(sect, ent, true)!=NULL;
 }
 
 bool cIniFile::getAsBool(const char *sect, const char *ent, bool defaultval)
 {
-    const char *s = _getValue(sect, ent, 1);
+    const char *s = _getValue(sect, ent, true);
     if (s==0 || *s==0)
     {
        if (warnings)
@@ -353,7 +353,7 @@ bool cIniFile::getAsBool(const char *sect, const char *ent, bool defaultval)
 
 long cIniFile::getAsInt(const char *sect, const char *ent, long defaultval)
 {
-    const char *s = _getValue(sect, ent, 1);
+    const char *s = _getValue(sect, ent, true);
     if (s==0 || *s==0)
     {
        if (warnings)
@@ -372,7 +372,7 @@ long cIniFile::getAsInt(const char *sect, const char *ent, long defaultval)
 
 double cIniFile::getAsDouble(const char *sect, const char *ent, double defaultval)
 {
-    const char *s = _getValue(sect, ent, 1);
+    const char *s = _getValue(sect, ent, true);
     if (s==0 || *s==0)
     {
        if (warnings)
@@ -388,7 +388,7 @@ double cIniFile::getAsDouble(const char *sect, const char *ent, double defaultva
 
 const char *cIniFile::getAsString(const char *sect, const char *ent, const char *defaultval)
 {
-    const char *s = _getValue(sect, ent, 0);
+    const char *s = _getValue(sect, ent, false);
     if (s==0)
     {
        if (warnings)
@@ -402,7 +402,7 @@ const char *cIniFile::getAsString(const char *sect, const char *ent, const char 
 
 double cIniFile::getAsTime(const char *sect, const char *ent, double defaultval)
 {
-    const char *s = _getValue(sect, ent, 1);
+    const char *s = _getValue(sect, ent, true);
     if (s==0)
     {
        if (warnings)
@@ -416,7 +416,7 @@ double cIniFile::getAsTime(const char *sect, const char *ent, double defaultval)
 
 const char *cIniFile::getAsCustom(const char *sect, const char *ent, const char *defaultval)
 {
-    const char *s = _getValue(sect, ent, 1);
+    const char *s = _getValue(sect, ent, true);
     if (s==0)
     {
        if (warnings)
@@ -523,5 +523,52 @@ const char *cIniFile::getAsCustom2(const char *sect1, const char *sect2, const c
 const char *cIniFile::fileName() const
 {
     return fname;
+}
+
+//-----------
+
+std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section, const char *keypart1, const char *keypart2)
+{
+    int i;
+
+    // search for section
+    int section_id = -1;
+    if (section)
+       for(i=0; i<num_sections && section_id<0; i++)
+          if (strcmp(section,sections[i])==0)
+              section_id = i;
+
+    // search through entries in that section
+    std::string keyprefix = keypart1;
+    keyprefix += keypart2;
+    int keypart1len = strlen(keypart1);
+    int prefixlen = strlen(keyprefix.c_str());
+
+    std::vector<opp_string> result;
+    for (i=0; i<num_entries; i++)
+    {
+       if (!section || entries[i].section_id==section_id)
+       {
+          const char *rest = NULL;
+          if (!strncmp(keyprefix.c_str(), entries[i].key, prefixlen))
+              rest = entries[i].key+prefixlen;
+          else
+              rest = entries[i].keypattern->patternPrefixMatches(keyprefix.c_str(), keypart1len);
+          if (rest)
+          {
+              // add to result
+              result.push_back(opp_string(rest));
+              result.push_back(opp_string(entries[i].value));
+          }
+
+       }
+    }
+    return result;
+}
+
+std::vector<opp_string> cIniFile::getEntriesWithPrefix(const char *section1, const char *section2, const char *keypart1, const char *keypart2)
+{
+    // FIXME finish!!!!!!!!!!!!!!!!
+    return NULL;
 }
 

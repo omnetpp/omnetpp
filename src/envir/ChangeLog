@@ -1,3 +1,21 @@
+2004-10-31  Andras Varga
+
+	* omnetapp.cc: RNG mapping implemented. New ini file entries:
+	  [General]
+	  <modulepath>.rng-N=M  (where N,M are numeric, M<num-rngs)
+	This maps module-local RNG N to physical RNG M. The following
+	example maps all "gen" module's default (N=0) RNG to physical RNG 1,
+	and all "noisychannel" module's default (N=0) RNG to physical RNG 2. 
+	  [General]
+	  num-rngs=3
+	  **.gen[*].rng-0=1
+	  **.noisychannel[*].rng-0=2
+	This mapping allows variance reduction techniques to be applied to
+	OMNeT++ models, without any model change or recompilation.
+
+	* cinifile.cc/h, patmatch.cc/h: added stuff needed for RNG mapping:
+	getEntriesWithPrefix(), patternPrefixMatches()
+
 2004-10-28  Andras Varga
 
 	* added cakaroarng.h/cc. Akaroa's RNG has some limitations, see class

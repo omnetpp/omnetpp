@@ -60,7 +60,7 @@ class ENVIR_API cIniFile : public cConfiguration
     int entrytable_size;        // size of entry table allocated
     int num_entries;            // number of entries used
 
-    const char *_getValue(const char *section, const char *key,int raw);
+    const char *_getValue(const char *section, const char *key, bool raw);
     void _readFile(const char *fname, int section_id);
     void clearContents();
 
@@ -98,6 +98,7 @@ class ENVIR_API cIniFile : public cConfiguration
     virtual const char *getAsString(const char *section, const char *key, const char *defaultvalue=""); // quotes stripped (if any)
     virtual const char *getAsCustom(const char *section, const char *key, const char *defaultvalue=NULL); // with quotes (if any)
     virtual bool notFound();
+    virtual std::vector<opp_string> getEntriesWithPrefix(const char *section, const char *keypart1, const char *keypart2);
     //@}
 
     /** @name Redefined two-section getter methods from cConfiguration */
@@ -109,6 +110,7 @@ class ENVIR_API cIniFile : public cConfiguration
     virtual double getAsTime2(const char *section1, const char *section2, const char *key, double defaultvalue=0.0);
     virtual const char *getAsString2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
     virtual const char *getAsCustom2(const char *section1, const char *section2, const char *key, const char *defaultvalue="");
+    virtual std::vector<opp_string> getEntriesWithPrefix(const char *section1, const char *section2, const char *keypart1, const char *keypart2);
     //@}
 
     /**

@@ -545,15 +545,57 @@ int TOmnetApp::numRNGs()
 cRNG *TOmnetApp::rng(int k)
 {
     if (k<0 || k>=num_rngs)
-        throw new cException("RNG index %d out of range 0..%d (check num-rngs= "
-                             "ini file setting, default is 1)", k, num_rngs-1);
+        throw new cException("RNG index %d is out of range (num-rngs=%d, "
+                             "check the configuration)", k, num_rngs);
     return rngs[k];
 }
 
 void TOmnetApp::getRNGMappingFor(cModule *mod)
 {
-    // FIXME TBD
-    mod->setRNGMap(0, NULL);
+    cConfiguration *cfg = getConfig();
+    std::vector<opp_string> entries = cfg->getEntriesWithPrefix("General", mod->fullPath().c_str(), ".rng-");
+    if (entries.size()==0)
+        return;
+
+    // extract into tmpmap[]
+    int mapsize=0;
+    int tmpmap[100];
+    for (int i=0; i<entries.size(); i+=2)
+    {
+        char *s1, *s2;
+        int modRng = strtol(entries[i].c_str(), &s1, 10);
+        int physRng = strtol(entries[i+1].c_str(), &s2, 10);
+        if (*s1!='\0' || *s2!='\0')
+            throw new cException("Configuration error: rng-%s=%s of module %s: "
+                                 "numeric RNG indices expected",
+                                 entries[i].c_str(), entries[i+1].c_str(), mod->fullPath().c_str());
+
+        if (physRng>numRNGs())
+            throw new cException("Configuration error: rng-%d=%d of module %s: "
+                                 "RNG index out of range (num-rngs=%d)",
+                                 modRng, physRng, mod->fullPath().c_str(), numRNGs());
+        if (modRng>=mapsize)
+        {
+            if (modRng>=100)
+                throw new cException("Configuration error: rng-%d=... of module %s: "
+                                     "local RNG index out of supported range 0..99",
+                                     modRng, mod->fullPath().c_str());
+            while (mapsize<=modRng)
+            {
+                tmpmap[mapsize] = mapsize;
+                mapsize++;
+            }
+        }
+        tmpmap[modRng] = physRng;
+    }
+
+    // install map into the module
+    if (mapsize>0)
+    {
+        int *map = new int[mapsize];
+        memcpy(map, tmpmap, mapsize*sizeof(int));
+        mod->setRNGMap(mapsize, map);
+    }
 }
 
 //-------------------------------------------------------------
