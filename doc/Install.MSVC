@@ -17,6 +17,11 @@ your Windows NT 4.0 (or higher).
 to compile OMNeT++ and to install all related packages. (And about +20MB 
 temporary space for the downloaded packages and documentations.)
 
+Win95/98 users:
+---------------
+The makefiles don't work on these systems! You have to patch them, see
+Appendix C at the end of this file!
+
 
 2. Packages to download and install
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -238,4 +243,55 @@ Appendix B
 
 * flex / bison: They are included in the Cygwin package (http://www.cygnus.com)
       another option is http://www.monmouth.com/~wstreett/lex-yacc/lex-yacc.html
+
+
+Appendix C
+~~~~~~~~~~
+Patching the makefiles for Win95/98, a posting from the mailing list:
+
+Subject: Re: Questions of installation with OMNet++ on MSVC 
+From: Andras Varga <avarga@freemail.hu> 
+Date: Mon, 19 Jun 2000 20:20:57 +0200 
+
+> I've encountered some problems while installing OMNet++ on my system
+> (VC6.0 + Windows 98).
+> After executing nmake, the prompted message are as following:
+>  
+> C:\omnetpp>nmake -f makefile.vc
+> 
+[output from failed build]
+
+Win98 doesn't seem to support '&&' and '||' as command separators, 
+and its cd command doesn't have the /D option (=change drive too). 
+I didn't test the MSVC makefiles on Win98 as I have only NT4...
+When will all win32 platforms finally be equal???
+
+I just received a nice trick (dirty hack?) from a guy at my 
+university to get omnetpp compiled on Win98. First, create a cdm.bat
+with the following contents in the toplevel omnetpp dir:
+
+-------
+@echo off
+if "%1" == "/d" shift
+set DIR="%1%"
+shift
+shift
+cd %DIR%
+echo Executing %1 in %DIR% with arguments %2 %3 %4 %5 %6 %7 %8 %9
+%1 %2 %3 %4 %5 %6 %7 %8 %9
+-------
+
+Then replace each 'cd' in the toplevel Makefile.vc with 'cdm'.
+You may also need (I'm not sure) to remove the 'check-env' dependency
+from the 'all' target in Makefile.vc line 30 if it causes problems.
+
+With this modification you should be able to build everything but the 
+samples. I haven't verified though if it really works, and I won't
+be able to support it... Hope it helps though.
+
+Oops, and it doesn't hurt to enlarge the environment space for
+the command prompt where you compile.
+
+If you try this and you can refine it, you're most welcome to post an
+update here...
 
