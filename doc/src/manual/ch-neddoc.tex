@@ -55,7 +55,7 @@ endsimple
 \end{verbatim}
 
 If you want a comment line \textit{not} to appear in the documentation,
-begin it with \texttt{//-}. Those lines will be ignored by the
+begin it with \texttt{//#}. Those lines will be ignored by the
 documentation generation, and can be used to comment out
 unused NED code or to make ``private'' comments like \texttt{FIXME} or
 \texttt{TBD}.
@@ -63,13 +63,13 @@ unused NED code or to make ``private'' comments like \texttt{FIXME} or
 \begin{verbatim}
 //
 // An ad-hoc traffic generator to test the Ethernet models.
-//- FIXME above description needs to be refined
+//# FIXME above description needs to be refined
 //
 simple Gen
     parameters:
         destAddress: string,  // destination MAC address
         protocolId: numeric,  // value for SSAP/DSAP in Ethernet frame
-        //- burstiness: numeric;  -- not yet supported
+        //# burstiness: numeric;  -- not yet supported
         waitMean: numeric;    // mean for exponential interarrival times
     gates:
         out: out;             // to Ethernet LLC
@@ -86,9 +86,7 @@ special commands, and use HTML for more fancy formatting.
 
 Paragraphs are separated by empty lines, like in Latex. Lines beginning with `\ttt{-}'
 will be turned into bulleted lists, and lines beginning with
-`\ttt{-#}' into numbered lists. Note that there must be at least one space
-between '\ttt{//} and `\ttt{-}' (otherwise it will be interpreted as \ttt{//-},
-a line to be ignored).
+`\ttt{-#}' into numbered lists.
 
 Example:
 
