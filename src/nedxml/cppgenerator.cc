@@ -543,6 +543,8 @@ void NEDCppGenerator::doNetwork(NetworkNode *node, const char *indent, int mode,
     // generate children (except expressions)
     generateChildrenWithTags(node, "substmachines,substparams,gatesizes", indent, mode);
 
+    // FIXME convert const params to const
+
     // force all parameters to pick up a value before doing buildInside()
     out << indent << "_readModuleParameters(" << submodule_var.c_str() << ");\n";
 
@@ -761,6 +763,8 @@ void NEDCppGenerator::doSubmodule(SubmoduleNode *node, const char *indent, int m
 
     // generate children (except expressions)
     generateChildrenWithTags(node, "substmachines,substparams,gatesizes", indent, mode);
+
+    // FIXME convert const params to const
 
     // force all parameters to pick up a value before building connections and esp. calling buildInside()
     out << indent << "_readModuleParameters(" << submodule_var.c_str() << ");\n";
