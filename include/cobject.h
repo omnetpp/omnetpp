@@ -278,12 +278,14 @@ class SIM_API cObject
     void destruct() {this->~cObject();}
 
     /**
-     * The assignment operator. Most derived classes contain a
-     * <tt>cClassName& cClassName::operator=(cClassName&)</tt> function.
-     * Copies the object EXCEPT for the NAME string; derived classes are
-     * expected to define similar functions (e.g. <tt>cPar::operator=(cPar&)</tt>)
+     * The assignment operator. Derived classes should contain similar
+     * methods (<tt>cClassName& cClassName::operator=(cClassName&)</tt>).
+     *
+     * Assigment copies the contents of the object EXCEPT for the name string.
      * If you want to copy the name string, you can do it by hand:
      * <tt>setName(o.name()</tt>).
+     *
+     * Ownership of the object is not affected by assigments.
      */
     cObject& operator=(const cObject& o);
     //@}
