@@ -29,4 +29,19 @@ scheduler-class = "cRealTimeScheduler"
 
 When you run the simulation, set animation speed to the maximum (using the
 slider at the top of the graphics window), because otherwise the simulation
-won't be able to keep up with real time.
+won't be able to keep up with real time. You can check on the performance
+gauge bar at the top of the simulation main window how well the real-time
+scheduler is doing: the Simsec/sec (middle) gauge should stay around 1.0.
+Switching to Fast Run will result in more accurate synchronization (the
+gauge staying between 0.999 and 1.001), because less time will be spent on 
+updating the graphical user interface.
+
+The real time is calculated as relative to the time when the simulation
+was initialized, so at first you'll observe that the simulation runs as
+fast as possible, in order to catch up (simsec/sec will be greater than one),
+only then will execution be really real-time.
+
+Additionally, the realtimescheduler-scaling= omnetpp.ini setting will let you
+scale the simulation execution. E.g. 0.5 means that the simulation should
+be executed half as fast, and 2.0 means it should be executed twice as fast
+as real-time.

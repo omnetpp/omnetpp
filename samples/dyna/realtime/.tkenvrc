@@ -35,5 +35,5 @@ config display-treeview	{1}
 config editor-case-sensitive	{0}
 config editor-whole-words	{0}
 config filtobjlist-order	{Class}
-inspector "dyna" "ClientServer" "2" "405x417+22+29"
+inspector "dyna" "ClientServer" "2" "405x417+377+217"
 
