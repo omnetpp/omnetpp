@@ -114,7 +114,8 @@ while (@ARGV)
     if (!$accept_flags)
     {
         # after "--", everything is treated as input file name
-        push(@CFileList, $arg);
+        # call glob for Windows' sake
+        push(@CFileList, glob($arg));
     }
     elsif ($arg eq "--")
     {
@@ -175,7 +176,8 @@ while (@ARGV)
     else
     {
         # otherwise we have a file name that needs to be added to the file list
-        push(@CFileList, $arg);
+        # call glob for Windows' sake
+        push(@CFileList, glob($arg));
     }
 }
 
