@@ -784,6 +784,11 @@ sub generateClass
                 print CC "    $var{$fieldname} = 0;\n";
             }
         }
+# # FIXME (UK): Ownership 	
+# #  	$ftype = $ftype{$fieldname};
+# #  	if ($classtype{$ftype} eq 'cobject') {
+# #  	  print CC "    $var{$fieldname}.setOwner(this);\n";
+# #  	}
     }
     print CC "    operator=(other);\n";
     print CC "}\n\n";
@@ -1210,6 +1215,7 @@ sub generateDescriptorClass
         print CC "        return $msgbasedescclass\:\:getFieldStructPointer(field, i);\n";
         print CC "    field -= $msgbasedescclass\:\:getFieldCount();\n";
     }
+    print CC "    $msgclass *pp = ($msgclass *)p;\n";
     print CC "    switch (field) {\n";
     for ($i=0; $i<$fieldcount; $i++)
     {
@@ -1222,9 +1228,9 @@ sub generateDescriptorClass
                 }
             } else {
                 if ($fisarray{$fieldlist[$i]}) {
-                    print CC "        case $i: return (void *)&$getter{$fieldlist[$i]}(i); break;\n";
+                    print CC "        case $i: return (void *)&pp->$getter{$fieldlist[$i]}(i); break;\n";
                 } else {
-                    print CC "        case $i: return (void *)&$getter{$fieldlist[$i]}(); break;\n";
+                    print CC "        case $i: return (void *)&pp->$getter{$fieldlist[$i]}(); break;\n";
                 }
             }
         }

@@ -1,3 +1,9 @@
+2002-01-22  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
+
+	* msgc.pl (generateDescriptorClass): when generating
+	getFieldStructPointer(): use getter function of message class,
+	implies to get the pointer to the message class first.
+
 2002-01-17  Ulrich Kaage  <kaage@int.uni-karlsruhe.de>
 
 	* msgc.pl: added surrounding #ifndef/#define/#endif construct to
