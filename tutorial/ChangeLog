@@ -4,6 +4,7 @@ May 6, 2001 (AV)
      - cosmetics on sources (tabs to spaces, indentation, file headings, etc.)
  - renamed 'some' script to 'run' (also in tutorial.tex)
  - removed the 'rm queues' line from the 'run' script, and removed the
-   corresponding sentence from tutorial.tex too.
+   corresponding sentence from tutorial.tex, too.
+ - in tutorial.tex, replaced all occurrences of 'makemake' with 'opp_makemake'
  - added makefile for creating pdf from the latex sources
  - added MSVC makefile, updated unix makefile
