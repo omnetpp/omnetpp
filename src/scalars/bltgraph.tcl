@@ -239,9 +239,10 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
         set tabs($tab) [$nb insert end -text $title -window $nb.$tab  -fill both]
     }
     if {$what==""} {
-        set what $tmp(graphproperties-tab)
+        $nb select $tmp(graphproperties-tab)
+    } else {
+        $nb select $tabs($what)
     }
-    $nb select $tabs($what)
 
     # Titles page
     set f $nb.titles
@@ -276,9 +277,11 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
     set f $nb.gridlines
     label-combo $f.display "Grid lines" {off {at major ticks} {at all ticks}}
     pack $f.display -side top -anchor w -expand 0 -fill x
+    #FIXME todo
 
     # Lines page
     set f $nb.lines
+    #FIXME todo
 
     # Legend page
     set f $nb.legend
@@ -334,7 +337,7 @@ proc bltGraph_PropertiesDialog {graph {what ""}} {
         $graph legend config -relief $tmp(legendrelief)
         $graph legend config -font $tmp(legendfont)
     }
-    set tmp(graphproperties-tab) [$nb index -index select]
+    set tmp(graphproperties-tab) [$nb index select]
     destroy $w
 }
 
