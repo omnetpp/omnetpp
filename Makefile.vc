@@ -117,7 +117,7 @@ utils:
 #
 
 rundemo:
-	echo @$(WISH:/=\) -f ^%~dpn0 ^%* > $(OMNETPP_SAMPLES_DIR:/=\)\rundemo.bat
+	echo @$(WISH:/=\) -f "%~dpn0" ^%* > $(OMNETPP_SAMPLES_DIR:/=\)\rundemo.bat
 
 aloha:
 	@echo ===== Compiling $@ ====
