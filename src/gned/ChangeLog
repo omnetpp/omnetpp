@@ -1,3 +1,7 @@
+2002-11-28 Andras Varga
+
+	* drawopts.tcl: icon selection dialog improved
+
 2002-11-12 Andras Varga
 
 	* ported to Tk8.4 (several 'char *' to 'const char *' changes)

@@ -269,7 +269,7 @@ proc _setColor {butt var pwin} {
     }
 }
 
-proc _chooseIcon {oldicon w {pwin {}}} {
+proc _chooseIcon {oldicon win {pwin {}}} {
      global gned
 
      # side effect: set gned(radio) "icon"
@@ -283,48 +283,74 @@ proc _chooseIcon {oldicon w {pwin {}}} {
      pack   $dlg.f.select.label  -side left
      pack   $dlg.f.select.name  -side left
 
-     canvas $dlg.f.c -xscrollcommand "$dlg.f.s set"
-     scrollbar $dlg.f.s -command "$dlg.f.c xview" -orient horizontal
-     pack $dlg.f.s -side bottom -fill x
-     pack $dlg.f.c -side top -expand yes -fill both
-     frame $dlg.f.c.f
+     set w $dlg.f.icons
+     frame $w  -highlightthickness 1 -highlightbackground #000000
+     pack $w -expand 1 -fill both -padx 14 -pady 6
 
-     $dlg.f.c create window 0 0 -anchor nw -window $dlg.f.c.f
+     frame $w.tb -height 16
+     canvas $w.c -yscrollcommand "$w.vsb set" -height 150 -bd 0
+     scrollbar $w.vsb -command "$w.c yview"
 
+     grid rowconfig $w 0 -weight 1 -minsize 0
+     grid $w.c   -in $w -row 0 -column 0 -rowspan 1 -columnspan 1 -sticky news
+     grid $w.vsb -in $w -row 0 -column 1 -rowspan 1 -columnspan 1 -sticky news
+
+     frame $w.c.f -bd 0
+     $w.c create window 0 0 -anchor nw -window $w.c.f
+
+     set tb $w.tb
+     set f $w.c.f
+
+     set li 0
+     set col 0
      foreach imgName $gned(icons) {
+         set e $f.$imgName
 
-         set f $dlg.f.c.f.$imgName
-         frame $f -highlightthickness 1 -highlightbackground #000000
-         button $f.b -image $imgName -command "_iconSelected $dlg.f.select.name $imgName $dlg.f.c.f"
-         bind $f.b <Double-1> "$dlg.buttons.okbutton invoke"
-         label $f.l -text $imgName
-         pack $f  -side left -fill y
-         pack $f.l -side bottom -anchor s -padx 2
-         pack $f.b -side top  -anchor center -expand 1 -padx 2
+         frame $e -relief flat -borderwidth 2
+
+         button $e.b -image $imgName -command "_iconSelected $dlg.f.select.name $imgName $f"
+         bind $e.b <Double-1> "$dlg.buttons.okbutton invoke"
+         label $e.l -text $imgName
+         pack $e.l -side bottom -anchor s -padx 2
+         pack $e.b -side top  -anchor center -expand 1 -padx 2
+
+         grid $e -in $f -row $li -column $col -rowspan 1 -columnspan 1 -sticky news
+
+         # next column
+         incr col
+         if {$col == 6} {
+             incr li
+             set col 0
+         }
      }
 
-     $dlg.f.c config -height 70
      update idletasks
-     $dlg.f.c config -scrollregion "0 0  [winfo width $dlg.f.c.f] 0"
+
+     # adjust canvas width to frame width
+     $w.c config -width [winfo width $f]
+     $w.c config -scrollregion "0 0 0 [winfo height $f]"
+
+     wm resizable $dlg 0 1
 
      if {[execOkCancelDialog $dlg] == 1} {
          set icon [$dlg.f.select.name cget -text]
 
          if {$icon != ""} {
-             $w configure -image $icon
+             $win configure -image $icon
              set gned(radio) "icon"
          }
      }
      destroy $dlg
 }
 
-proc _iconSelected {select me frame} {
+proc _iconSelected {select imgname frame} {
 
      if {[ $select cget -text ] != "" } {
-         $frame.[$select cget -text] configure -background #d9d9d9
-         $frame.[$select cget -text].l configure -background #d9d9d9
+         $frame.[$select cget -text] config -relief flat
      }
-     $select configure -text $me
-     $frame.$me configure -background red
-     $frame.$me.l configure -background red
+     $frame.$imgname config -relief solid
+
+     $select configure -text $imgname
+
 }
+
