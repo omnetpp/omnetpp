@@ -204,6 +204,7 @@ void TGraphicalModWindow::relayoutAndRedrawAll()
    for (cSubModIterator submod(*static_cast<cModule *>(object)); !submod.end(); submod++)
    {
        submodcount++;
+       // note: gatecountestimate will count unconnected gates and "holes" in the gate array as well
        gatecountestimate += submod()->gates();
    }
 
@@ -215,7 +216,7 @@ void TGraphicalModWindow::relayoutAndRedrawAll()
        if (submodcount>1000)
            sprintf(problem,"contains more than 1000 submodules (exactly %d)", submodcount);
        else
-           sprintf(problem,"may contain a lot of connections (modules have total ~%d gates)", gatecountestimate);
+           sprintf(problem,"may contain a lot of connections (modules have a large number of gates)");
        CHK(Tcl_VarEval(interp,"tk_messageBox -parent ",windowname," -type yesno -title Warning -icon question "
                               "-message {Module '", object->fullName(), "' ", problem,
                               ", it may take a long time to display the graphics. "
