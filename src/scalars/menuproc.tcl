@@ -88,9 +88,19 @@ proc chartCreateBarChart {} {
 proc chartCreateScatterPlot {} {
 
     # collect data (we'll need it for X axis selection combo)
+    puts "DBG: getting filtered list"
     set idlist [getFilteredList]
 
-    set idlistforcombo [opp_getModuleAndNamePairs $idlist]
+    puts "DBG: getting module-scalar pairs for combo"
+    set maxcount 100
+    set idlistforcombo [opp_getModuleAndNamePairs $idlist $maxcount]
+    if {[llength $idlistforcombo]==$maxcount} {
+        tk_messageBox -icon warning -type ok -title "Selection too broad" \
+             -message "There are too many, more than $maxcount variables (module+scalar pairs), \
+                       which would make as many lines on the plot. \
+                       Please narrow the set of variables to be plotted, then try again."
+        return
+    }
 
     set res [createScatterPlotDialog $idlistforcombo]
     if {$res==""} return

@@ -29,6 +29,7 @@ proc createBltGraph {graphtype {graphname ""}} {
         wm deiconify $w
         wm title $w "Charts"
         wm protocol $w WM_DELETE_WINDOW {bltGraph_CloseWindow}
+        wm geometry $w "640x540"
 
         # toolbar
         set toolbar $w.toolbar

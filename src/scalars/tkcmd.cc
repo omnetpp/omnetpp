@@ -87,7 +87,7 @@ OmnetTclCommand tcl_commands[] = {
    { "opp_groupByRunAndName",     groupByRunAndName_cmd },    // opp_groupByRunAndName $idlist
    { "opp_groupByModuleAndName",  groupByModuleAndName_cmd }, // opp_groupByModuleAndName $idlist
    { "opp_prepareScatterPlot",    prepareScatterPlot_cmd },   // opp_prepareScatterPlot $idlist $modulename $scalarname
-   { "opp_getModuleAndNamePairs", getModuleAndNamePairs_cmd },// opp_getModuleAndNamePairs $idlist
+   { "opp_getModuleAndNamePairs", getModuleAndNamePairs_cmd },// opp_getModuleAndNamePairs $idlist $maxcount
    // end of list
    { NULL, },
 };
@@ -509,9 +509,10 @@ int prepareScatterPlot_cmd(ClientData, Tcl_Interp *interp, int argc, const char 
 
 int getModuleAndNamePairs_cmd(ClientData, Tcl_Interp *interp, int argc, const char **argv)
 {
-    if (argc!=2) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getModuleAndNamePairs <idlist>\"", TCL_STATIC); return TCL_ERROR;}
+    if (argc!=3) {Tcl_SetResult(interp, "wrong # args: should be \"opp_getModuleAndNamePairs <idlist> <maxcount>\"", TCL_STATIC); return TCL_ERROR;}
 
     const char *idlist = argv[1];
+    int maxcount = atoi(argv[2]);
     ScalarManager::IntVector vec;
 
     // parse idlist and pick ids that represent a new (module, name pair)
@@ -536,7 +537,11 @@ int getModuleAndNamePairs_cmd(ClientData, Tcl_Interp *interp, int argc, const ch
 
         // not yet -- then add it
         if (i==vec.end())
+        {
             vec.push_back(id);
+            if ((int)vec.size()>=maxcount)
+                break; // enough is enough
+        }
     }
 
     // return vec[]

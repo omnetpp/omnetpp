@@ -175,7 +175,7 @@ proc createMainWindow {{geom ""}} {
 
     set w .
     wm focusmodel $w passive
-    if {$geom != ""} {wm geometry $w $geom} else {wm geometry $w "640x360"}
+    if {$geom != ""} {wm geometry $w $geom} else {wm geometry $w "700x500"}
     #wm maxsize $w 1009 738
     wm minsize $w 1 1
     wm overrideredirect $w 0
@@ -246,6 +246,7 @@ proc busyCursor {{msg {}}} {
     global widget
     $widget(status) config -text $msg
     . config -cursor watch
+    catch {.bltwin config -cursor watch}
     update idletasks
 }
 
@@ -254,6 +255,7 @@ proc idleCursor {} {
     $widget(status) config -text "Ready"
     update idletasks
     . config -cursor ""
+    catch {.bltwin config -cursor ""}
 }
 
 #===================================================================
