@@ -190,7 +190,7 @@ proc editConnectionDrawOptions {key} {
            set ned($key,disp-drawmode)  ""
         } else {
            set ned($key,disp-drawmode)  [string index $dm 0]
-puts "dbg: drawmode=$ned($key,disp-drawmode)"
+           puts "dbg: drawmode=$ned($key,disp-drawmode)"
         }
 
         # fill color

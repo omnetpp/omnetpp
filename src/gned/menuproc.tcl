@@ -144,13 +144,33 @@ proc fileCloseNedfile {{nedfilekey {}}} {
    global canvas gned ned
 
    if {$nedfilekey==""} {
-      # default: current canvas
-      set canv_id $gned(canvas_id)
-      set modkey $canvas($canv_id,module-key)
-      set nedfilekey $ned($modkey,parentkey)
+       # default: current canvas
+       set canv_id $gned(canvas_id)
+       set modkey $canvas($canv_id,module-key)
+       set nedfilekey $ned($modkey,parentkey)
+   }
+
+   # all canvases belonging to this file must be in graphics mode
+   # (or must be unchanged)
+   foreach i [array names canvas "*,canvas"] {
+       regsub -- ",canvas" $i "" loop_canvid
+       set loop_modkey $canvas($loop_canvid,module-key)
+       set loop_nedfilekey $ned($loop_modkey,parentkey)
+       # does this canvas belong to the file to be closed?
+       if {$loop_nedfilekey==$nedfilekey} {
+           # does canvas contain unsaved text edits?
+           if {$canvas($loop_canvid,mode)=="textedit" && [textCanvasContainsChanges $loop_canvid]}  {
+               switchToCanvas $loop_canvid
+               tk_messageBox -icon warning -type ok -title GNED \
+                   -message "Switch back '$ned($loop_modkey,name)' to graphics mode first! \
+                      The NED source has been edited, and your changes must be backparsed before the canvas can be closed."
+               return
+           }
+       }
    }
 
    # offer saving it
+   set canclose 1
    if [nedfileIsDirty $nedfilekey] {
        if {$ned($nedfilekey,aux-isunnamed)} {
           set reply [tk_messageBox -title "Last chance" -icon warning -type yesnocancel \
@@ -163,9 +183,12 @@ proc fileCloseNedfile {{nedfilekey {}}} {
                 -message "File $fname contains unsaved changes. Save?"]
           if {$reply=="yes"} fileSave
        }
+       if {$reply=="cancel"} {
+          set canclose 0
+       }
    }
 
-   if {$reply!="cancel"} {
+   if {$canclose} {
        # delete from memory
        deleteNedfile $nedfilekey
        updateTreeManager
@@ -241,13 +264,13 @@ proc fileExit {} {
 
    # close all ned files
    foreach key $ned(0,childrenkeys) {
-       if $ned($key,aux-isdirty) {
+#       if $ned($key,aux-isdirty) {
            fileCloseNedfile $key
            if [info exist ned($key,type)] {
                 # don't exit if user cancelled closing a canvas
                 return
            }
-       }
+#       }
    }
 
    # ok, exit now

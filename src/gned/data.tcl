@@ -110,7 +110,7 @@ proc deleteItem {key} {
 
     # delete non-child linked objects
     #   (e.g. connections when a submod is deleted)
-puts "deleteItem: inefficient code ('foreach array names')"
+    puts "dbg: deleteItem: inefficient code ('foreach array names')"
     foreach i [array names ned "*,*ownerkey"] {
        if {[info exist ned($i)] && $ned($i)==$key} {
           regsub -- ",.*ownerkey" $i "" childkey

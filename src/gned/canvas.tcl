@@ -239,16 +239,35 @@ proc closeCurrentCanvas {} {
     set canv_id $gned(canvas_id)
 
     # must be in graphics mode (because data structure must be up-to-date)
-    if {$canvas($canv_id,mode)=="textedit"} {
-puts "dbg: closeCurrentCanvas: must check if NED text has in fact changed"
+    if {$canvas($canv_id,mode)=="textedit" && [textCanvasContainsChanges $canv_id]} {
          tk_messageBox -icon warning -type ok -title GNED \
-            -message "Switch back to graphics mode first. Changes on the\
-                      NED source must be backparsed before canvas can be closed."
+            -message "Switch back to graphics mode first! The NED source has been edited, \
+                      and your changes must be backparsed before the canvas can be closed."
          return
     }
 
     # actually close the canvas
     destroyCanvas $canv_id
+}
+
+
+# textCanvasContainsChanges --
+#
+# check if a text mode canvas contains unsaved edits.
+#
+proc textCanvasContainsChanges {canv_id} {
+    global gned canvas ned
+
+    # check if there were edits in the source
+    set nedcode [$canvas($canv_id,textedit) get 1.0 end]
+    set originalnedcode $canvas($canv_id,nedsource)
+
+    # the text widget seems to add a newline, so we'll take this into account
+    if {[string compare $nedcode "$originalnedcode\n"]==0} {
+        return 0
+    } else {
+        return 1
+    }
 }
 
 
@@ -259,7 +278,7 @@ puts "dbg: closeCurrentCanvas: must check if NED text has in fact changed"
 proc destroyCanvas {canv_id} {
     global canvas gned
 
-puts "dbg: destroyCanvas $canv_id"
+    puts "dbg: destroyCanvas $canv_id"
 
     # find canvas that will be current after closing this one
     # select previous one, then if it fails, try next one

@@ -3,20 +3,16 @@ To be finished (top priority!):
   --> introduce "ownedkeys" attr and rewrite deleteItem, connKeysOfItem, etc.
 - finish "properties" dialogs
 
-Bugs:
-- module name mismatch in the submods and conns sections ==> sometimes
-  "assert failed" *** FIXED ***
-- connection drawing doesn't work sometimes (can't reproduce...)
+Parse/Generate:
+- comments around display strings, channel attributes are lost
+- add default comments for newly created modules!
 - after an "import", generates an empty line into the code
 - should eliminate "staircase comment" effect, like:
     param1: string,
                     // param2: string;
 
-Parse/Generate:
-- comments around display strings, channel attributes are lost
-- add default comments for newly created modules!
-
 Drawing:
+- connection drawing doesn't work sometimes (can't reproduce...)
 - random placement of submods should be the same as in Tkenv
 - should support ovals too (not only rects)
 - it's possible to fool the connection drawing: if, while dragging out
@@ -27,20 +23,10 @@ Drawing:
 
 Load/save:
 - command-line args: 'glob' doesn't handle filenames with "\" on Windows
-- SaveAll feature [from Niko] *** DONE ***
 - should refuse to load the same file twice
-- save: what should it do with canvases switched to text?
-     - save the text version? (maybe try to backparse it before saving,
-       and warn user if there's a parse error and she won't be able to
-       load the saves file back into gned)
-     - silently backparse?
-     - refuse to save: ask user to switch to graphics?
-  now it just silently ignores that canvas...
 - load: if there's a parse error, load the whole stuff into a "scratch" text-mode canvas?
 
 Text editor:
-- "find next" missing ***DONE***
-- ctrl-H doesn't bring up Find/Replace dialog [from Niko]  ***FIXED***
 - <Enter> in the Find/Replace dialog causes error (at least in Windows)
 - pgup, ctrl-pgup doesn't work correctly  *** Tk problem!***
 - syntax highlighting not 100% OK: it can be fooled with string constants
@@ -49,8 +35,7 @@ Text editor:
 - syntax highlight: <paste> should update the whole file
 
 General:
-- introduce ~/.gnedrc  ***DONE***
-- switching back from text to graphics should check if text really changed or not
+- on Windows, Ctrl-F4 causes runtime error if the current canvas is in text mode
 - display string: numeric parameters must be checked!!!
 - cut,copy,paste should work everywhere (menu,toolbar,keys),
   for both text and graphics
@@ -58,9 +43,6 @@ General:
 - different vertical toolbar when changing from graphics to NED view;
   on that toolbar: Find, Replace
 - scrollbar for the tabs below if there are too many windows open
-- it's possible to exit GNED while editing canvas(es) in text mode which have
-  unsaved changes!!!
-- open/save dialog should remember the directory ***DONE***
 
 Dialogs:
 - merge "Drawing options" dialogs into properties

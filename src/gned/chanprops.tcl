@@ -62,7 +62,7 @@ proc editChannelProps {key} {
     $nb.general.comment.t insert 1.0 $ned($key,banner-comment)
     $nb.general.rcomment.t insert 1.0 $ned($key,right-comment)
     fillTableEditFromNed $nb.attrs.tbl $key
-puts "DBG: editChannelProps: implement (Add standard attributes) button"
+    puts "DBG: editChannelProps: implement (Add standard attributes) button"
 
     # exec the dialog, extract its contents if OK was pressed, then delete dialog
     if {[execOkCancelDialog .chanprops] == 1} {

@@ -37,7 +37,7 @@ proc makeFancyName {nedfile} {
 proc saveNED {nedfilekey} {
    global ned
 
-puts "DBG: saving nedfilekey $nedfilekey"
+   puts "DBG: saving nedfilekey $nedfilekey"
 
    if [catch {
        set nedfile $ned($nedfilekey,filename)

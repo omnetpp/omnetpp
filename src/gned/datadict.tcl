@@ -19,12 +19,12 @@
 #------------------------------------------------
 # Data structure:
 #
-#  ned(key,fieldname) array.
+#  All NED data are stored in a single array: $ned(key,fieldname).
 #
-#  keys are: knnn
-#  the ned(nextkey) variable stores the next available key number
+#  Keys are unique integer numbers. The $ned(nextkey) variable stores the
+#  next available key number.
 #
-#  fieldnames have some conventions:
+#  the fieldnames follow certainv naming conventions:
 #    *-key    refers to another element
 #    disp-*   holds display string data
 #    aux-*    internally used data

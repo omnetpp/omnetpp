@@ -38,6 +38,9 @@ proc switchToNED {} {
     catch {$t mark set insert $curpos}
     $t see insert
 
+    # remember ned code
+    set canvas($canv_id,nedsource) $nedcode
+
     # initial syntax hightlight
     syntaxHighlight $t 1.0 end
     updateTextStatusbar $t
@@ -58,11 +61,21 @@ proc switchToGraphics {} {
     # get source from textedit
     set nedcode [$canvas($canv_id,textedit) get 1.0 end]
 
+    # check if there were edits in the source
+    # (the text widget seems to add a newline, so we'll take this into account)
+    set originalnedcode $canvas($canv_id,nedsource)
+    if {[string compare $nedcode "$originalnedcode\n"]==0} {
+        # no change, so simply switch back to original graphics
+        puts "dbg: source unchanged, switching back without parsing..."
+        setCanvasMode "graphics"
+        return
+    }
+
     #
     # parse it into tmp_ned() array, then merge into ned()
     #
 
-puts "dbg: parsing and checking..."
+    puts "dbg: parsing and checking..."
 
     # parse NED file and fill the tmp_ned() array
     catch {unset tmp_ned}
@@ -143,13 +156,13 @@ puts "dbg: parsing and checking..."
     # OK! In the next lines we'll transfer the new stuff into ned()
     #
 
-puts "dbg: deleting old stuff..."
+    puts "dbg: deleting old stuff..."
 
     # delete old stuff from ned() and add new stuff
     set origmodkey $canvas($canv_id,module-key)
     deleteModuleData $origmodkey
 
-puts "dbg: pasting into ned..."
+    puts "dbg: pasting into ned..."
 
     # we're not supposed to overwrite the nedfile's properties in ned():
     foreach i [array names tmp_ned "$filekey,*"] {
@@ -169,7 +182,7 @@ puts "dbg: pasting into ned..."
     # parse display strings
     parse_displaystrings $modkey
 
-puts "dbg: drawing..."
+    puts "dbg: drawing..."
 
     # update canvas
     set canvas($canv_id,module-key) $modkey

@@ -245,6 +245,12 @@ Nov 20, 2000
    save?" dialog now has a Cancel button
  - improvement: implemented File|Save all
  - bugfix: new submodules, modules, channels etc. now always get unique names
+Dec 17, 2000
+ - improvement: switching from text mode to graphics made faster: now GNED
+   won't parse the ned source if it hasn't been edited
+ - improvement: GNED will refuse to exit or close a NED file if there are text mode
+   canvases with edits. You'll have to switch those canvases to graphics
+   to get the NED source backparsed.
 TODO:
   delete disp str class from source
 
