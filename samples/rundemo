@@ -51,7 +51,8 @@ foreach line {
    {"Routing/Networks" "routing/networks" "../routing"  "..\\routing.exe"}
    {"TokenRing"        "tokenring"        "./tokenring" "tokenring.exe"}
    {"NEDDemo"          "neddemo"          "./neddemo"   "neddemo.exe"}
-   {"Sockets/HTTP"     "sockets"          "./sockets"   "sockets.exe"}
+   {"Sockets/HTTP"     "sockets"          "./sockets -r 1"  "sockets.exe -r 1"}
+   {"Sockets/Telnet"   "sockets"          "./sockets -r 2"  "sockets.exe -r 2"}
 } {
    lappend samples $i
    if {[llength $line]==0} {
