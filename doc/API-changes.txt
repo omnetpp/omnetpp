@@ -67,6 +67,10 @@ Simulation library:
 
 (+)     added cModule::changeParentTo()
 
+(+)	added cSimulation::getUniqueNumber(). Useful in models for ID 
+	generation, and (unlike incrementing global vars) it also works 
+	with parallel execution
+
 (-)     cDisplayStringParser renamed to cDisplayString (compatibility
         typedef exists)
 
