@@ -743,7 +743,7 @@
 <xsl:template name="print-link-to-doxygen">
    <xsl:variable name="name" select="@name"/>
    <xsl:for-each select="document($doxytagfile)//compound[@kind='class' and name[text()=$name]]"> 
-      <p><b>C++ definition: <a href="{$doxyhtmldir}/{filename/text()}">here</a></b></p>
+      <p><b>C++ definition: <a href="{$doxyhtmldir}/{filename/text()}" target="_blank">click here</a></b></p>
    </xsl:for-each>
 </xsl:template>
 
