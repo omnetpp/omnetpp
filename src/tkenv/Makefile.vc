@@ -6,7 +6,7 @@
 #
 # Local setup
 #
-!if "$(TKENV_EMBED_TCL)"=="yes"
+!if "$(EMBED_TCL_CODE)"=="yes"
 TKENV_EMBED_SUFFIX=-e
 !else
 TKENV_EMBED_SUFFIX=

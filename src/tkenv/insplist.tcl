@@ -32,6 +32,7 @@
 #
 proc inspectorupdate_callback {} {
     inspectorlist_openinspectors
+    notifyPlugins inspectorUpdate
 }
 
 
@@ -161,7 +162,7 @@ proc inspectorlist_tkenvrc_process_line {line} {
     global pil_name pil_class pil_type pil_geom
 
     if {[llength $line]!=5} {error "wrong number of columns"}
-     
+
     set objname [lindex $line 1]
     set class [lindex $line 2]
     set type [lindex $line 3]

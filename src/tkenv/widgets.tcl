@@ -59,19 +59,30 @@ proc checkTclTkVersion {} {
 proc setupTkOptions {} {
    global fonts tcl_platform tk_version
    global tcl_wordchars tcl_nonwordchars
+   global HAVE_BLT
 
-   catch {tcl_wordBreakAfter}; # work around Tcl bug: these vars got reset when words.tcl was autoloaded
+   # test for BLT
+   set HAVE_BLT 0
+   catch {package require BLT; set HAVE_BLT 1}
+
+   # work around Tcl bug: these vars got reset when words.tcl was autoloaded
+   catch {tcl_wordBreakAfter};
    set tcl_wordchars {\w}
    set tcl_nonwordchars {\W}
 
+   # by default, undo/redo bindings are platform-specific -- change it:
    catch {
-       # by default, undo/redo bindings are platform-specific -- change it:
        event add <<Undo>> <Control-Key-z>
        event add <<Undo>> <Control-Key-Z>
        event add <<Redo>> <Control-Key-y>
        event add <<Redo>> <Control-Key-Y>
    }
-   
+
+   # for some reason, Ctrl-v (Paste) doesn't work out-of-the box with Tk 8.3/8.4 on Unix,
+   # we need the following lines:
+   bind Entry <Control-v> {}
+   bind Text <Control-v> {}
+
    #
    # fonts() array elements:
    #  normal:  menus, labels etc
@@ -346,42 +357,69 @@ proc commentlabel {w text} {
 #  pack .x.p1.e
 #
 proc notebook {w {side top}} {
-    #  utility function: create an empty notebook widget
-    global nb
-    set nb($w) ""
+    global HAVE_BLT
 
-    frame $w
-    frame $w.tabs
-    pack $w.tabs -side $side -fill x
-}
+    if {$HAVE_BLT} {
+        blt::tabset $w -tearoff no -relief flat -side top -samewidth no -highlightthickness 0
+    } else {
+        # poor man's tabnotebook
+        global nb
+        set nb($w) ""
 
-proc notebook_addpage {w name label} {
-    #  utility function: add page to notebook widget
-    set tab $w.tabs.$name
-    set page $w.$name
-
-    frame $page -border 2 -relief raised
-    button $tab -text $label -command "notebook_showpage $w $name" -relief flat
-    pack $tab -anchor n -expand 0 -fill none -side left
-
-    global nb
-    if {$nb($w)==""} {notebook_showpage $w $name}
-}
-
-proc notebook_showpage {w name} {
-    #  notebook internal function
-    global nb
-
-    if {$nb($w)==$name} return
-
-    pack $w.$name -expand 1 -fill both
-    $w.tabs.$name config -relief raised
-
-    if {$nb($w)!=""} {
-       pack forget $w.$nb($w)
-       $w.tabs.$nb($w) config -relief flat
+        frame $w
+        frame $w.tabs
+        pack $w.tabs -side $side -fill x
     }
-    set nb($w) $name
+}
+
+#
+#  utility function: add page to notebook widget
+#
+proc notebook_addpage {w name label} {
+    global HAVE_BLT
+
+    if {$HAVE_BLT} {
+        set page $w.$name
+        frame $page
+        $w insert end $name -text $label -window $page -fill both
+        $w invoke [$w index -name $name]
+    } else {
+        # poor man's tabnotebook
+        set tab $w.tabs.$name
+        set page $w.$name
+
+        frame $page -border 2 -relief raised
+        button $tab -text $label -command "notebook_showpage $w $name" -relief flat
+        pack $tab -anchor n -expand 0 -fill none -side left
+
+        global nb
+        if {$nb($w)==""} {notebook_showpage $w $name}
+    }
+}
+
+#
+# show given notebook page
+#
+proc notebook_showpage {w name} {
+    global HAVE_BLT
+
+    if {$HAVE_BLT} {
+        $w invoke [$w index -name $name]
+    } else {
+        # poor man's tabnotebook
+        global nb
+
+        if {$nb($w)==$name} return
+
+        pack $w.$name -expand 1 -fill both
+        $w.tabs.$name config -relief raised
+
+        if {$nb($w)!=""} {
+           pack forget $w.$nb($w)
+           $w.tabs.$nb($w) config -relief flat
+        }
+        set nb($w) $name
+    }
 }
 
 
@@ -492,6 +530,17 @@ proc tableEdit {w numlines columnlist} {
            eval $wcmd
            grid $e -in $f -row $li -column $col -rowspan 1 -columnspan 1 -sticky news
 
+           # make sure edited entry is always visible
+           bind $e <Key> [list _focusTableEntry $f.li$li-$attr $w.c]
+
+           # key bindings: up, down
+           if {$li!=0} {
+               bind $e <Up> [list _focusTableEntry $f.li[expr $li-1]-$attr $w.c]
+           }
+           if {$li!=$numlines-1} {
+               bind $e <Down> [list _focusTableEntry $f.li[expr $li+1]-$attr $w.c]
+           }
+
            # next column
            incr col
        }
@@ -523,6 +572,129 @@ proc tableEdit {w numlines columnlist} {
 
 }
 
+#
+# internal to tableEdit: ensures current widget is always visible
+#
+proc _focusTableEntry {e c} {
+    focus $e
+    # are we below the visible canvas area?
+    set d [expr [winfo rooty $e]-[winfo rooty $c]-[winfo height $c]]
+    if {$d>-10} {
+        $c yview scroll [expr $d+10] units
+    }
+    # are we above the visible canvas area?
+    set d [expr [winfo rooty $c]-[winfo rooty $e]-[winfo height $e]]
+    if {$d>0} {
+        $c yview scroll [expr -$d+10] units
+    }
+}
+
+#
+# Create multicolumn listbox. The $columnlist arg should contain a list of
+# column descriptions, each one either as {name label width} or
+# {name label} pair (in the latter case, column width will be auto).
+#
+# Example:
+#  multicolumnlistbox .lb {
+#     {name    Name          20}
+#     {date    Date          15}
+#     {descr   Description}
+#  }
+#
+#
+proc multicolumnlistbox {w columnlist args} {
+    global HAVE_BLT
+    if {$HAVE_BLT} {
+        blt::treeview $w -font "arial 8"
+        $w column configure treeView -hide yes
+        if {$args!=""} {
+             eval $w config $args
+        }
+
+        foreach i $columnlist {
+            set name [lindex $i 0]
+            set label [lindex $i 1]
+            set width [lindex $i 2]
+            $w column insert end $name -text $label -justify left -edit no
+            if {$width!=""} {
+                 $w column config $name -width $width
+            }
+        }
+        bind $w <3> {%W selection clearall; %W select set [%W nearest %x %y]}
+    } else {
+        error "no multicolumnlistbox without BLT!"
+    }
+}
+
+
+#
+# Inserts a line into a multicolumn-listbox. The $rowname can be used later
+# to identify the row. $data contains values for different columns in the
+# format {name1 value1 name2 value2 ...}, conventiently produced from
+# arrays by the command "array get".
+#
+proc multicolumnlistbox_insert {w rowname data} {
+    global HAVE_BLT
+    if {$HAVE_BLT} {
+        $w insert end $rowname -data $data
+    } else {
+        error "no multicolumnlistbox without BLT!"
+    }
+}
+
+#
+# Returns data from the given row.
+#
+# FIXME split to: getrowname, getrowdata (both should take index)
+#
+proc multicolumnlistbox_getrow {w rowname} {
+    global HAVE_BLT
+    if {$HAVE_BLT} {
+        set id [$w find -full $rowname]
+        if {$id==""} {error "row $rowname not found"}
+        return [$w entry cget $id -data]
+    } else {
+        error "no multicolumnlistbox without BLT!"
+    }
+}
+
+#
+# Returns a list containing the rownames of all of the entries
+# that are currently selected. If there are no entries selected,
+# then the empty string is returned.
+#
+# FIXME change back to work with index
+#
+proc multicolumnlistbox_curselection {w} {
+    global HAVE_BLT
+    if {$HAVE_BLT} {
+        set rownamelist {}
+        foreach id [$w curselection] {
+            lappend rownamelist [$w get -full $id]
+        }
+        return $rownamelist
+    } else {
+        error "no multicolumnlistbox without BLT!"
+    }
+    }
+
+#
+# Delete the given rows.
+#
+# FIXME change back to work with index
+#
+proc multicolumnlistbox_delete {w rownames} {
+    global HAVE_BLT
+    if {$HAVE_BLT} {
+        foreach rowname $rownames {
+            set id [$w find -full $rowname]
+            if {$id==""} {error "row $rowname not found"}
+            $w delete $id
+        }
+    } else {
+        error "no multicolumnlistbox without BLT!"
+    }
+}
 
 # center --
 #
@@ -584,8 +756,8 @@ proc createOkCancelDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    button $w.buttons.okbutton  -text {  OK  }
-    button $w.buttons.cancelbutton  -text {Cancel}
+    button $w.buttons.okbutton  -text {OK} -width 10
+    button $w.buttons.cancelbutton  -text {Cancel} -width 10
 
     pack $w.buttons -expand 0 -fill x -padx 5 -pady 5 -side bottom
     pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top
@@ -634,7 +806,7 @@ proc execOkCancelDialog {w {validating_proc {}}} {
     # restore any grab that was in effect.
 
     if {$validating_proc==""} {
-    tkwait variable opp($w)
+        tkwait variable opp($w)
     } else {
         tkwait variable opp($w)
         while {$opp($w)==1 && ![eval $validating_proc $w]} {
@@ -680,7 +852,7 @@ proc createCloseDialog {w title} {
 
     frame $w.f
     frame $w.buttons
-    button $w.buttons.closebutton  -text {Close}
+    button $w.buttons.closebutton  -text {Close} -width 10
 
     pack $w.buttons -expand 0 -fill x -padx 5 -pady 5 -side bottom
     pack $w.f -expand 1 -fill both -padx 5 -pady 5 -side top

@@ -1,3 +1,10 @@
+2003-11-29  Andras Varga
+
+	* widgets.tcl: added BLT support
+
+	* insplist.tcl: added <pluginname>:inspectorUpdate Tkenv plugin 
+	callback
+
 2003-11-13  Andras Varga
 
 	* statinsp.cc: added typecast for MSVC 7.0 compiler [reported by Bob 
