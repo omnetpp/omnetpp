@@ -101,9 +101,9 @@ akoutvectormgr.o: akoutvectormgr.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/carray.h \
   ../../include/chead.h \
-  ../../include/cexception.h \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
@@ -136,9 +136,9 @@ cenvir.o: cenvir.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/carray.h \
   ../../include/chead.h \
-  ../../include/cexception.h \
   ../../include/envirext.h \
   ../../include/onstartup.h \
   ../../include/ccoroutine.h \
@@ -156,6 +156,7 @@ cinifile.o: cinifile.cc \
   ../../include/defs.h \
   ../../include/cpar.h \
   ../../include/cobject.h \
+  ../../include/cexception.h \
   envdefs.h
 filemgrs.o: filemgrs.cc \
   ../../include/defs.h \
@@ -170,10 +171,10 @@ filemgrs.o: filemgrs.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   envdefs.h \
   ../../include/carray.h \
   ../../include/chead.h \
-  ../../include/cexception.h \
   args.h \
   ../../include/envirext.h \
   ../../include/errmsg.h \
@@ -187,9 +188,11 @@ filemgrs.o: filemgrs.cc \
 main.o: main.cc \
   ../../include/cobject.h \
   ../../include/csimul.h \
+  ../../include/random.h \
   ../../include/cenvir.h \
   ../../include/onstartup.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
   ../../include/chead.h \
@@ -207,6 +210,7 @@ omnetapp.o: omnetapp.cc \
   ../../include/csimul.h \
   ../../include/cpar.h \
   ../../include/cnetmod.h \
+  ../../include/random.h \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \

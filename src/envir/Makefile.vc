@@ -78,6 +78,34 @@ clean:
 	-del *.ilk *.idb *.pdb *.pch 2> nul
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+akoutvectormgr.obj: akoutvectormgr.cc \
+  ../../include/cenvir.h \
+  omnetapp.h \
+  cinifile.h \
+  ../../include/csimul.h \
+  ../../include/cmodule.h \
+  ../../include/cstat.h \
+  ../../include/macros.h \
+  akoutvectormgr.h \
+  ../../include/defs.h \
+  ../../include/cpar.h \
+  ../../include/cobject.h \
+  ../../include/util.h \
+  ../../include/cexception.h \
+  ../../include/carray.h \
+  ../../include/chead.h \
+  args.h \
+  envdefs.h \
+  ../../include/envirext.h \
+  ../../include/errmsg.h \
+  ../../include/cmsgheap.h \
+  ../../include/ccoroutine.h \
+  ../../include/coutvect.h \
+  ../../include/cqueue.h \
+  ../../include/cgate.h \
+  ../../include/onstartup.h \
+  ../../include/ctypes.h \
+  filemgrs.h
 args.obj: args.cc \
   args.h \
   envdefs.h \
@@ -98,9 +126,11 @@ cenvir.obj: cenvir.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/carray.h \
   ../../include/chead.h \
   ../../include/envirext.h \
+  ../../include/onstartup.h \
   ../../include/ccoroutine.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
@@ -116,10 +146,12 @@ cinifile.obj: cinifile.cc \
   ../../include/defs.h \
   ../../include/cpar.h \
   ../../include/cobject.h \
+  ../../include/cexception.h \
   envdefs.h
 filemgrs.obj: filemgrs.cc \
   ../../include/defs.h \
   ../../include/cenvir.h \
+  cinifile.h \
   omnetapp.h \
   ../../include/csimul.h \
   ../../include/cmodule.h \
@@ -129,10 +161,11 @@ filemgrs.obj: filemgrs.cc \
   ../../include/cpar.h \
   ../../include/cobject.h \
   ../../include/util.h \
+  ../../include/cexception.h \
+  envdefs.h \
   ../../include/carray.h \
   ../../include/chead.h \
   args.h \
-  envdefs.h \
   ../../include/envirext.h \
   ../../include/errmsg.h \
   ../../include/cmsgheap.h \
@@ -140,12 +173,16 @@ filemgrs.obj: filemgrs.cc \
   ../../include/coutvect.h \
   ../../include/cqueue.h \
   ../../include/cgate.h \
+  ../../include/onstartup.h \
   ../../include/ctypes.h
 main.obj: main.cc \
   ../../include/cobject.h \
   ../../include/csimul.h \
+  ../../include/random.h \
   ../../include/cenvir.h \
+  ../../include/onstartup.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/defs.h \
   ../../include/errmsg.h \
   ../../include/chead.h \
@@ -163,11 +200,13 @@ omnetapp.obj: omnetapp.cc \
   ../../include/csimul.h \
   ../../include/cpar.h \
   ../../include/cnetmod.h \
+  ../../include/random.h \
   envdefs.h \
   ../../include/defs.h \
   ../../include/carray.h \
   ../../include/chead.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   ../../include/envirext.h \
   ../../include/cobject.h \
   ../../include/util.h \
@@ -184,6 +223,7 @@ patmatch.obj: patmatch.cc \
 platdep.obj: platdep.cc \
   ../../include/defs.h \
   ../../include/util.h \
+  ../../include/cexception.h \
   ../../include/cenvir.h \
   ../../include/cpar.h \
   ../../include/cobject.h
@@ -192,6 +232,7 @@ seeds.obj: seeds.cc \
   ../../include/carray.h \
   ../../include/chead.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   args.h \
   envdefs.h \
   ../../include/envirext.h \
@@ -211,6 +252,7 @@ slaveapp.obj: slaveapp.cc \
   ../../include/carray.h \
   ../../include/chead.h \
   ../../include/cenvir.h \
+  ../../include/cexception.h \
   args.h \
   ../../include/envirext.h \
   ../../include/cobject.h \
@@ -222,7 +264,8 @@ slaveapp.obj: slaveapp.cc \
   ../../include/coutvect.h \
   ../../include/cmodule.h \
   ../../include/cqueue.h \
-  ../../include/cgate.h
+  ../../include/cgate.h \
+  ../../include/onstartup.h
 speedmtr.obj: speedmtr.cc \
   speedmtr.h \
   ../../include/defs.h \

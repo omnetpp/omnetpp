@@ -163,13 +163,15 @@ cppgenerator.o: cppgenerator.cc \
   cppgenerator.h \
   nederror.h \
   nedelement.h \
-  cppexprgenerator.h
+  cppexprgenerator.h \
+  nedcompiler.h
 cppmsggenerator.o: cppmsggenerator.cc \
   nedelements.h \
   cppgenerator.h \
   nederror.h \
   nedelement.h \
-  cppexprgenerator.h
+  cppexprgenerator.h \
+  nedcompiler.h
 nedbasicvalidator.o: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \
@@ -253,12 +255,20 @@ nedxmlparser.o: nedxmlparser.cc \
   nedsaxhandler.h \
   nederror.h \
   nedelement.h
+networkbuilder.o: networkbuilder.cc \
+  nedelements.h \
+  networkbuilder.h \
+  nederror.h \
+  nedelement.h \
+  nedcompiler.h
 saxparser_expat.o: saxparser_expat.cc \
   saxparser.h
 saxparser_libxml.o: saxparser_libxml.cc \
   saxparser.h
 saxparser_none.o: saxparser_none.cc \
-  saxparser.h
+  nederror.h \
+  saxparser.h \
+  nedelement.h
 xmlgenerator.o: xmlgenerator.cc \
   nedelements.h \
   xmlgenerator.h \

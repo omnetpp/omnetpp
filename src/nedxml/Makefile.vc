@@ -134,7 +134,15 @@ cppgenerator.obj: cppgenerator.cc \
   cppgenerator.h \
   nederror.h \
   nedelement.h \
-  cppexprgenerator.h
+  cppexprgenerator.h \
+  nedcompiler.h
+cppmsggenerator.obj: cppmsggenerator.cc \
+  nedelements.h \
+  cppgenerator.h \
+  nederror.h \
+  nedelement.h \
+  cppexprgenerator.h \
+  nedcompiler.h
 nedbasicvalidator.obj: nedbasicvalidator.cc \
   nederror.h \
   nedbasicvalidator.h \
@@ -165,7 +173,8 @@ neddtdvalidator1.obj: neddtdvalidator1.cc \
   nedelements.h \
   nedvalidator.h
 nedelement.obj: nedelement.cc \
-  nedelement.h
+  nedelement.h \
+  nederror.h
 nedelements.obj: nedelements.cc \
   nederror.h \
   nedelements.h \
@@ -193,6 +202,7 @@ nedparser.obj: nedparser.cc \
 nedsaxhandler.obj: nedsaxhandler.cc \
   nedsaxhandler.h \
   nedelements.h \
+  nederror.h \
   nedelement.h \
   saxparser.h
 nedsemanticvalidator.obj: nedsemanticvalidator.cc \
@@ -202,7 +212,6 @@ nedsemanticvalidator.obj: nedsemanticvalidator.cc \
   nedelement.h \
   nedvalidator.h \
   nedelements.h
-nedstring.obj: nedstring.cc
 nedutil.obj: nedutil.cc \
   nederror.h \
   nedutil.h \
@@ -217,14 +226,21 @@ nedxmlparser.obj: nedxmlparser.cc \
   nedsaxhandler.h \
   nederror.h \
   nedelement.h
+networkbuilder.obj: networkbuilder.cc \
+  nedelements.h \
+  networkbuilder.h \
+  nederror.h \
+  nedelement.h \
+  nedcompiler.h
 saxparser_expat.obj: saxparser_expat.cc \
   saxparser.h
 saxparser_libxml.obj: saxparser_libxml.cc \
   saxparser.h
 saxparser_none.obj: saxparser_none.cc \
-  saxparser.h
+  nederror.h \
+  saxparser.h \
+  nedelement.h
 xmlgenerator.obj: xmlgenerator.cc \
   nedelements.h \
   xmlgenerator.h \
   nedelement.h
-

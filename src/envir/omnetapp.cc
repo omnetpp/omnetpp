@@ -66,7 +66,7 @@ TOmnetApp::TOmnetApp(ArgList *arglist, cIniFile *inifile)
 
 TOmnetApp::~TOmnetApp()
 {
-     delete opt_genk_randomseed;
+     delete [] opt_genk_randomseed;
      delete args;
      delete ini_file;
 
