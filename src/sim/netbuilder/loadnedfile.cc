@@ -221,7 +221,7 @@ void loadNedFile(const char *fname, bool isXML)
         }
         else
         {
-            opp_string tagname = node->getTagName();
+            opp_string tagname(node->getTagName());
             delete node;
             delete tree;
             throw new cException("Error loading `%s': unsupported element", tagname.c_str());
